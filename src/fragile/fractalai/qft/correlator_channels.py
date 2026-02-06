@@ -76,10 +76,9 @@ class ChannelConfig:
 
     Neighbor Method:
         The neighbor_method parameter controls how neighbor topology is computed:
-        - "auto" (default): Auto-detect best available (recorded → companions → voronoi)
+        - "auto" (default): Auto-detect best available (recorded -> companions)
         - "recorded": Explicitly use pre-computed neighbor_edges from simulation
         - "companions": Use companion walker indices
-        - "voronoi": Recompute Delaunay/Voronoi tessellation (slowest but most flexible)
 
         Using "auto" provides optimal performance by prioritizing pre-computed data
         when available, with automatic fallback to slower methods as needed.
@@ -103,13 +102,13 @@ class ChannelConfig:
     ell0: float | None = None
 
     # Neighbor selection
-    neighbor_method: str = "auto"  # Auto-detect: recorded → companions → voronoi
+    neighbor_method: str = "auto"  # Auto-detect: recorded -> companions
     neighbor_k: int = 100
-    voronoi_pbc_mode: str = "mirror"
-    voronoi_exclude_boundary: bool = True
-    voronoi_boundary_tolerance: float = 1e-6
-    use_time_sliced_tessellation: bool = True
-    time_sliced_neighbor_mode: str = "spacelike"
+
+    # Geometric weighting for operator averaging
+    operator_weighting: str = "uniform"
+    # "uniform" (default, current behavior), "geodesic" (1/d_geodesic),
+    # "volume" (sqrt(det g)), "geodesic_volume" (both combined)
 
 
 @dataclass
@@ -886,20 +885,9 @@ class ChannelCorrelator(ABC):
         if self.config.neighbor_method == "uniform":
             self.config.neighbor_method = "companions"
 
-        if self.config.neighbor_method not in {"companions", "voronoi", "recorded", "auto"}:
-            msg = "neighbor_method must be 'auto', 'companions', 'voronoi', or 'recorded'"
+        if self.config.neighbor_method not in {"companions", "recorded", "auto"}:
+            msg = "neighbor_method must be 'auto', 'companions', or 'recorded'"
             raise ValueError(msg)
-        if self.config.use_time_sliced_tessellation:
-            if self.config.time_sliced_neighbor_mode not in {
-                "spacelike",
-                "timelike",
-                "spacelike+timelike",
-            }:
-                msg = (
-                    "time_sliced_neighbor_mode must be "
-                    "'spacelike', 'timelike', or 'spacelike+timelike'"
-                )
-                raise ValueError(msg)
         if self.config.ell0 is None:
             self.config.ell0 = estimate_ell0(self.history)
 

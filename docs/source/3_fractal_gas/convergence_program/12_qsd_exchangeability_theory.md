@@ -609,11 +609,29 @@ The cloning operator $\mathcal{L}_{\text{clone}}$ contracts the Wasserstein dist
 
 **Step 3: Perturbation Theory (Holley-Stroock)**
 
-The full generator is $\mathcal{L} = \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{clone}}$. We apply the **Holley-Stroock perturbation theorem** for LSI under additive perturbations of generators:
+The full generator is $\mathcal{L} = \mathcal{L}_{\text{kin}} + \mathcal{L}_{\text{clone}}$. We apply the **Holley-Stroock perturbation theorem** {cite}`holley1987logarithmic` for LSI under bounded perturbations of the invariant measure.
 
-If $\nu$ satisfies LSI with constant $C_1$ under generator $\mathcal{L}_1$, and $\mathcal{L}_2$ is a "controlled perturbation," then $\nu$ satisfies LSI under $\mathcal{L}_1 + \mathcal{L}_2$ with constant $C \leq C_1 + \epsilon(C_1, \|\mathcal{L}_2\|)$.
+**Precise statement**: Let $\pi_0$ denote the invariant measure of $\mathcal{L}_{\text{kin}}$ (the kinetic component without cloning), satisfying LSI with constant $C_{\text{kin}}$. The full QSD $\pi$ satisfies:
 
-Since cloning preserves LSI and the kinetic LSI constant is N-uniform, the combined LSI constant $C_{\text{LSI}}$ is also N-uniform.
+$$
+\frac{d\pi}{d\pi_0}(X) = \frac{1}{Z} \exp\bigl(-\Phi_{\text{clone}}(X)\bigr)
+$$
+
+where $\Phi_{\text{clone}}$ encodes the cloning potential. The Holley-Stroock criterion states: if $\mathrm{osc}(\Phi_{\text{clone}}) := \sup \Phi_{\text{clone}} - \inf \Phi_{\text{clone}} < \infty$, then $\pi$ satisfies LSI with constant:
+
+$$
+C_{\text{LSI}} \leq C_{\text{kin}} \cdot e^{\mathrm{osc}(\Phi_{\text{clone}})}
+$$
+
+**Application to cloning**: The cloning potential $\Phi_{\text{clone}}$ has bounded oscillation because the cloning rate is bounded: $0 \leq r_{\text{clone}}(i) \leq r_{\max}$ (from the bounded fitness assumption). Specifically, $\mathrm{osc}(\Phi_{\text{clone}}) \leq r_{\max} T$ where $T$ is the time horizon. This bound is independent of $N$ because the cloning rate depends only on local fitness differences.
+
+**Resulting LSI constant**: Combining Steps 1-3:
+
+$$
+C_{\text{LSI}} \leq C_{\text{kin}} \cdot e^{r_{\max} T}
+$$
+
+where $C_{\text{kin}}$ is N-uniform (Step 1) and $e^{r_{\max} T}$ is independent of $N$. Therefore $C_{\text{LSI}}$ is N-uniform.
 
 **Conclusion**: The complete technical proof, including precise definitions of "controlled perturbation" and verification of all hypotheses, is provided in {doc}`15_kl_convergence`. The N-uniformity of $C_{\text{LSI}}$ is the key technical achievement enabling quantitative propagation of chaos bounds in Chapter 12. $\square$
 :::

@@ -201,6 +201,7 @@ In practice, $d_{\mathrm{geo}}$ is computed from the reconstructed $g_R$ on each
 either by a geodesic solver in the continuum lift, or by the IG-graph shortest-path
 distance with edge lengths induced by $g_R$ (which converges to $d_{\mathrm{geo}}$ by
 {prf:ref}`thm:induced-riemannian-structure` and {prf:ref}`mt:cheeger-gradient`).
+(For the homogeneous/periodic case, the Riemannian structure is Euclidean by construction, and the Cheeger-gradient metatheorem is not required; graph-distance convergence follows from standard Belkin-Niyogi kernel convergence {cite}`belkin2008foundation`.)
 
 **Physical meaning**: $e_i \prec_{\mathrm{LC}} e_j$ iff information from $e_i$ can causally
 influence $e_j$.
@@ -255,6 +256,7 @@ For CST-connected pairs, let $h:=\max_k \Delta t_k$ and interpolate the CST path
 curve in the continuum lift. Expansion Adjunction and the continuum injection
 ({prf:ref}`thm-expansion-adjunction`, {prf:ref}`mt:continuum-injection`) imply the discrete
 length $d_g(e_i,e_j)$ converges to the length of that realized trajectory as $h\to 0$.
+(For flat/periodic geometries, the continuum injection is the standard graph-Laplacian-to-Laplacian convergence of Belkin-Niyogi {cite}`belkin2008foundation`, and the metatheorem is not required.)
 Since $d_{\mathrm{geo}}$ is the infimum over all $C^1$ curves, we have
 $d_{\mathrm{geo}}(e_i,e_j) \le \lim_{h\to 0} d_g(e_i,e_j)$ on CST-connected pairs. Thus the
 Lorentzian order induced by $g=-c^2 dt^2+g_R$ is compatible with $\prec_{\mathrm{CST}}$ on the
@@ -715,6 +717,7 @@ assumptions are introduced; each item names the exact proof objects to cite.
    {prf:ref}`mt:continuum-injection`, {prf:ref}`mt:emergent-continuum`, and
    {prf:ref}`mt:cheeger-gradient` to promote the discrete IG geometry to a
    $C^2$ Riemannian metric compatible with the algorithmic distance.
+   (For the homogeneous/periodic case, the spatial geometry is flat Euclidean by construction and the continuum injection reduces to the standard graph-Laplacian convergence of Belkin-Niyogi {cite}`belkin2008foundation`; no emergent-geometry metatheorems are needed.)
 4. **Lorentzian signature from causal order**: Use CST order and the algorithmic
    time function $t(e)$ to define the product metric
    $g=-c^2 dt^2 + g_R$ with $c=V_{\mathrm{alg}}$, and verify that CST edges

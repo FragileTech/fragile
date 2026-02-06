@@ -36,7 +36,7 @@ from torch import Tensor
 from fragile.fractalai.qft.neighbor_analysis import (
     compute_neighbor_topology,
     compute_full_neighbor_matrix,
-    check_neighbor_data_availability,
+    extract_geometric_weights,
 )
 
 if TYPE_CHECKING:
@@ -76,6 +76,11 @@ class AggregatedTimeSeries:
 
     # For glueball channel (direct force access)
     force_viscous: Tensor | None = None  # [T, N, d]
+
+    # Geometric weighting data (from pre-computed scutoid data)
+    sample_edge_weights: Tensor | None = None  # [T, S] geodesic dist for (sample, 1st neighbor)
+    sample_volume_weights: Tensor | None = None  # [T, S] sqrt(det g) for sample walkers
+    operator_weighting: str = "uniform"  # weighting mode from config
 
     # For Euclidean time mode (per-walker operators)
     time_coords: Tensor | None = None  # bin centers
@@ -399,20 +404,27 @@ def aggregate_time_series(
     )
 
     # Compute neighbor topology
-    voronoi_config = {
-        "pbc_mode": config.voronoi_pbc_mode,
-        "exclude_boundary": config.voronoi_exclude_boundary,
-        "boundary_tolerance": config.voronoi_boundary_tolerance,
-    }
-
     sample_indices, neighbor_indices, alive = compute_neighbor_topology(
         history,
         start_idx,
         config.neighbor_method,
         config.neighbor_k,
-        voronoi_config,
         sample_size=None,
     )
+
+    # Extract geometric weights when non-uniform weighting is requested
+    sample_edge_weights = None
+    sample_volume_weights = None
+    operator_weighting = getattr(config, "operator_weighting", "uniform")
+
+    if operator_weighting != "uniform":
+        sample_edge_weights, sample_volume_weights = extract_geometric_weights(
+            history,
+            start_idx,
+            sample_indices,
+            neighbor_indices,
+            alive,
+        )
 
     # Extract force for glueball channel
     n_recorded = history.n_recorded
@@ -436,6 +448,9 @@ def aggregate_time_series(
         d=d,
         dt=dt,
         device=device,
+        sample_edge_weights=sample_edge_weights,
+        sample_volume_weights=sample_volume_weights,
+        operator_weighting=operator_weighting,
         force_viscous=force_viscous,
         time_coords=None,
     )
@@ -512,6 +527,40 @@ def build_gamma_matrices(
 
 
 # =============================================================================
+# Geometric Weighting Helper
+# =============================================================================
+
+
+def _compute_operator_weights(agg_data: AggregatedTimeSeries, valid_mask: Tensor) -> Tensor:
+    """Compute per-sample operator weights based on geometric weighting mode.
+
+    Args:
+        agg_data: Aggregated time series with weighting config and geometric data.
+        valid_mask: Boolean validity mask [T, S].
+
+    Returns:
+        Weights tensor [T, S] (float). For "uniform" mode, equivalent to valid_mask.float().
+    """
+    mode = agg_data.operator_weighting
+    weights = valid_mask.float()
+
+    if mode == "uniform":
+        return weights
+
+    if mode in ("geodesic", "geodesic_volume"):
+        if agg_data.sample_edge_weights is not None:
+            geodesic = agg_data.sample_edge_weights.to(weights.device, dtype=weights.dtype)
+            weights = weights * (1.0 / geodesic.clamp(min=1e-8))
+
+    if mode in ("volume", "geodesic_volume"):
+        if agg_data.sample_volume_weights is not None:
+            volume = agg_data.sample_volume_weights.to(weights.device, dtype=weights.dtype)
+            weights = weights * volume.clamp(min=0.0)
+
+    return weights
+
+
+# =============================================================================
 # Channel-Specific Operator Computation
 # =============================================================================
 
@@ -560,9 +609,9 @@ def compute_scalar_operators(
     # Mask invalid
     op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
 
-    # Mean over samples per timestep
-    counts = valid_mask.sum(dim=1).clamp(min=1)
-    series = op_values.sum(dim=1) / counts
+    # Weighted mean over samples per timestep
+    weights = _compute_operator_weights(agg_data, valid_mask)
+    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
     return series
 
@@ -608,9 +657,9 @@ def compute_pseudoscalar_operators(
     # Mask invalid
     op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
 
-    # Mean over samples
-    counts = valid_mask.sum(dim=1).clamp(min=1)
-    series = op_values.sum(dim=1) / counts
+    # Weighted mean over samples
+    weights = _compute_operator_weights(agg_data, valid_mask)
+    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
     return series
 
@@ -657,9 +706,9 @@ def compute_vector_operators(
     # Mask invalid
     op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
 
-    # Mean over samples
-    counts = valid_mask.sum(dim=1).clamp(min=1)
-    series = op_values.sum(dim=1) / counts
+    # Weighted mean over samples
+    weights = _compute_operator_weights(agg_data, valid_mask)
+    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
     return series
 
@@ -706,9 +755,9 @@ def compute_axial_vector_operators(
     # Mask invalid
     op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
 
-    # Mean over samples
-    counts = valid_mask.sum(dim=1).clamp(min=1)
-    series = op_values.sum(dim=1) / counts
+    # Weighted mean over samples
+    weights = _compute_operator_weights(agg_data, valid_mask)
+    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
     return series
 
@@ -758,9 +807,9 @@ def compute_tensor_operators(
     # Mask invalid
     op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
 
-    # Mean over samples
-    counts = valid_mask.sum(dim=1).clamp(min=1)
-    series = op_values.sum(dim=1) / counts
+    # Weighted mean over samples
+    weights = _compute_operator_weights(agg_data, valid_mask)
+    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
     return series
 
@@ -829,9 +878,13 @@ def compute_nucleon_operators(
     # Mask invalid
     det = torch.where(valid_mask, det, torch.zeros_like(det))
 
-    # Mean over samples
-    counts = valid_mask.sum(dim=1).clamp(min=1)
-    series = det.sum(dim=1) / counts
+    # Weighted mean over samples
+    weights = _compute_operator_weights(agg_data, valid_mask)
+    if det.is_complex():
+        weights_c = weights.to(det.dtype)
+        series = (det * weights_c).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
+    else:
+        series = (det * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
     return series.real if series.is_complex() else series
 
@@ -840,6 +893,9 @@ def compute_glueball_operators(
     agg_data: AggregatedTimeSeries,
 ) -> Tensor:
     """Compute glueball channel operators: ||force||².
+
+    When volume weighting is enabled, applies Riemannian volume weights
+    to per-walker force-squared values.
 
     Args:
         agg_data: Aggregated time series data.
@@ -850,21 +906,48 @@ def compute_glueball_operators(
     force = agg_data.force_viscous
     alive = agg_data.alive
     T = force.shape[0]
+    N = force.shape[1]
     device = force.device
 
     # Force squared norm: [T, N]
     force_sq = torch.linalg.vector_norm(force, dim=-1).pow(2)
 
-    # Average over alive walkers per timestep
-    series = []
-    for t in range(T):
-        alive_t = alive[t] if t < alive.shape[0] else torch.ones(force.shape[1], dtype=torch.bool, device=device)
-        if alive_t.any():
-            series.append(force_sq[t, alive_t].mean())
-        else:
-            series.append(torch.tensor(0.0, device=device))
+    # Check if volume weighting should be applied
+    use_volume = (
+        agg_data.operator_weighting in ("volume", "geodesic_volume")
+        and agg_data.sample_volume_weights is not None
+    )
 
-    return torch.stack(series)
+    # Clamp alive mask to match T
+    alive_T = alive[:T] if alive.shape[0] >= T else F.pad(
+        alive, (0, 0, 0, T - alive.shape[0]), value=True,
+    )
+
+    if use_volume:
+        vol_w = agg_data.sample_volume_weights  # [T, S]
+        sample_idx = agg_data.sample_indices  # [T, S]
+
+        # Scatter sample volume weights into per-walker tensor [T, N]
+        vol_per_walker = torch.ones(T, N, device=device, dtype=torch.float32)
+        if vol_w is not None:
+            T_vol = min(T, vol_w.shape[0], sample_idx.shape[0])
+            # Use scatter to map sample weights back to walker positions
+            idx_clamped = sample_idx[:T_vol].long().clamp(max=N - 1)
+            vol_per_walker[:T_vol].scatter_(1, idx_clamped, vol_w[:T_vol].to(device).float())
+        vol_per_walker = vol_per_walker.clamp(min=0.0)
+
+        # Weighted mean over alive walkers per timestep
+        weights = vol_per_walker * alive_T.float()  # [T, N]
+        weighted_sum = (force_sq * weights).sum(dim=1)  # [T]
+        w_sum = weights.sum(dim=1).clamp(min=1e-12)  # [T]
+        series = weighted_sum / w_sum
+    else:
+        # Simple mean over alive walkers per timestep
+        alive_f = alive_T.float()
+        alive_count = alive_f.sum(dim=1).clamp(min=1.0)  # [T]
+        series = (force_sq * alive_f).sum(dim=1) / alive_count  # [T]
+
+    return series
 
 
 # =============================================================================

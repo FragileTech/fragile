@@ -33,10 +33,8 @@ from fragile.fractalai.qft.neighbor_analysis import (
     # Neighbor computation functions
     compute_neighbor_topology,
     compute_full_neighbor_matrix,
-    check_neighbor_data_availability,
     # Individual neighbor methods
     compute_companion_batch,
-    compute_voronoi_batch,
     compute_recorded_neighbors_batch,
     compute_neighbors_auto,
 )
@@ -171,9 +169,7 @@ __all__ = [
     # Neighbor analysis
     "compute_neighbor_topology",
     "compute_full_neighbor_matrix",
-    "check_neighbor_data_availability",
     "compute_companion_batch",
-    "compute_voronoi_batch",
     "compute_recorded_neighbors_batch",
     "compute_neighbors_auto",
     # Time series aggregation (new)

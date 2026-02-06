@@ -833,6 +833,8 @@ together with the usual normalization absorbed into $w_{ee'}$.
 :::{dropdown} 📖 Hypostructure Route (Framework-Native, Volume 2)
 :icon: book
 
+**Note**: This route is only needed for the general curved-geometry case. In the homogeneous/periodic setting (flat Euclidean spatial geometry), the classical Belkin-Niyogi route below suffices and no metatheorems are required.
+
 An alternative, fully rigorous proof route is provided by the Volume 2 hypostructure.
 Under the certified permits for the Fractal Gas mean-field limit and reconstruction,
 the continuum operator is obtained by the metatheorem chain:
@@ -846,7 +848,8 @@ appendices (e.g., {doc}`/source/3_fractal_gas/convergence_program/07_discrete_qs
 This establishes the continuum Laplacian without invoking classical kernel scaling.
 :::
 
-**Convergence (density-weighted)**: Under QSD sampling and the emergent-continuum permits, the unnormalized
+**Convergence (density-weighted)**: Under QSD sampling and kernel bandwidth
+$\varepsilon_N \to 0$, $N\varepsilon_N^{d/2+2} \to \infty$ (Belkin-Niyogi conditions), the unnormalized
 graph Laplacian converges in expectation to the weighted Laplacian
 
 $$
@@ -864,16 +867,31 @@ the QSD limit $\mu_\infty$ with concentration, so graph averages converge to con
 continuous test functions.
 
 **Step 2 (Dirichlet-form convergence).**
-The emergent-continuum metatheorem ({prf:ref}`mt:emergent-continuum`) and continuum injection
-({prf:ref}`mt:continuum-injection`) identify the graph Dirichlet forms with the continuum weighted Dirichlet form on
-$(M,g,\rho)$.
-The required permits $C_\mu$, $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$, and $\mathrm{Rep}_K$ are certified in
-{doc}`../1_the_algorithm/02_fractal_gas_latent`; in particular, $\mathrm{LS}_\sigma$ follows from the LSI
-thin-permit lift ({prf:ref}`thm-lsi-thin-permit`) using the N-uniform LSI.
+We apply Theorem 4.1 of Belkin-Niyogi {cite}`belkin2008foundation` to the graph Dirichlet forms.
+The hypotheses are:
 
-**Step 3 (Cheeger gradient).**
-The Cheeger-gradient isomorphism ({prf:ref}`mt:cheeger-gradient`) upgrades energy convergence to gradient convergence,
-yielding $\Delta_{\mathcal{F}} \to \mathcal{L}_\rho$ in the continuum limit. $\square$
+- **(BN1)** The sampling measure $\mu_N$ converges weakly to $\mu_\infty$ (the QSD limit) — established by propagation of chaos in Step 1.
+- **(BN2)** The kernel $k$ is compactly supported and $C^2$ — satisfied by the localization kernel $K_\rho$ ({prf:ref}`def-fractal-set-viscous-force`).
+- **(BN3)** The bandwidth satisfies $\varepsilon_N \to 0$ with $N\varepsilon_N^{d/2+2} \to \infty$ — ensured by the kernel scaling stated above.
+
+Under (BN1)-(BN3), the graph Dirichlet form $\mathcal{E}_N(\phi, \phi) := \sum_{e \sim e'} w_{ee'} |\phi(e') - \phi(e)|^2$ converges to the continuum weighted Dirichlet form $\mathcal{E}(\phi, \phi) = \int |\nabla_{g_R} \phi|^2 \rho \, d\mathrm{vol}_{g_R}$ on $(M, g_R, \rho)$.
+
+The concentration upgrade follows from the N-uniform LSI ({prf:ref}`thm-n-uniform-lsi-exchangeable`): the Herbst argument gives sub-Gaussian tails for the empirical Dirichlet form, upgrading convergence in expectation to convergence in probability at rate $O(e^{-cN\varepsilon_N^{d/2+2}})$.
+
+**Step 3 (Gradient convergence).**
+By the spectral convergence theorem of Giné-Koltchinskii {cite}`gine2006empirical`, the eigenvalues and eigenfunctions of the graph Laplacian converge to those of $\mathcal{L}_\rho$. Specifically, under the bandwidth conditions above plus a regularity assumption on the density $\rho$ (which holds for QSD densities by elliptic regularity of the Fokker-Planck equation), the $k$-th eigenvalue $\lambda_k^{(N)}$ of $-\Delta_{\mathcal{F}}$ satisfies $|\lambda_k^{(N)} - \lambda_k| \to 0$ as $N \to \infty$, where $\lambda_k$ is the $k$-th eigenvalue of $-\mathcal{L}_\rho$.
+
+Combined with Step 2, this upgrades energy convergence to gradient convergence: $\Delta_{\mathcal{F}} \to \mathcal{L}_\rho$ in operator norm on finite-dimensional spectral subspaces.
+
+**Homogeneous/periodic shortcut**: When the spatial geometry is flat Euclidean (homogeneous or periodic boundary conditions), the Riemannian metric $g_R$ is the standard Euclidean metric by construction, and the convergence $\Delta_{\mathcal{F}} \to \Delta_{\mathbb{R}^d}$ follows from the classical graph-Laplacian-to-Laplacian convergence of {cite}`belkin2008foundation` without invoking any emergent-geometry metatheorems.
+
+:::{dropdown} General Curved Case (Metatheorem Route)
+:icon: book
+
+For general curved emergent geometries, the Dirichlet-form identification and gradient convergence can alternatively be established via the emergent-continuum metatheorem ({prf:ref}`mt:emergent-continuum`), continuum injection ({prf:ref}`mt:continuum-injection`), and Cheeger-gradient isomorphism ({prf:ref}`mt:cheeger-gradient`). The required permits $C_\mu$, $\mathrm{Cap}_H$, $\mathrm{LS}_\sigma$, and $\mathrm{Rep}_K$ are certified in {doc}`../1_the_algorithm/02_fractal_gas_latent`; in particular, $\mathrm{LS}_\sigma$ follows from the LSI thin-permit lift ({prf:ref}`thm-lsi-thin-permit`) using the N-uniform LSI.
+:::
+
+$\square$
 :::
 :::
 

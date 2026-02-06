@@ -278,7 +278,15 @@ $$
 
 **Confinement**: The localization kernel $K_\rho$ provides short-range coupling—walkers are "confined" to fitness basins by the viscous force structure (see {prf:ref}`def-fractal-set-viscous-force`).
 
-*Proof*: If $K_\rho$ depends only on distances, the viscous force $\mathbf{F}_{\text{viscous}}(i) = \nu \sum_j K_\rho(x_i, x_j)(v_j - v_i)$ is invariant under global orthogonal rotations of the velocity basis. After complexification of the force components (via the momentum-phase encoding), this redundancy becomes invariance under $U(d)$ basis changes; imposing $\det U = 1$ (equivalently, removing the global $U(1)$ phase) yields $SU(d)$. In $d=3$ spatial dimensions, this gives $SU(3)$ on the complexified force vector.
+*Proof*:
+
+**Step 1 (Real O(d) invariance).** The viscous force $\mathbf{F}_{\text{viscous}}(i) = \nu \sum_j K_\rho(x_i, x_j)(v_j - v_i)$ depends on velocity *differences* weighted by the localization kernel $K_\rho$. Since $K_\rho$ depends only on distances $|x_i - x_j|$, the force is invariant under global orthogonal rotations $O \in O(d)$ of the velocity basis: $\mathbf{F}_{\text{viscous}}(Ov_1, \ldots, Ov_N) = O \cdot \mathbf{F}_{\text{viscous}}(v_1, \ldots, v_N)$. This gives an $O(d)$ redundancy on the $d$-dimensional velocity components.
+
+**Step 2 (Complexification via position-momentum pairing).** The force amplitudes are complexified through the momentum-phase encoding: $\tilde{c}_i^{(\alpha)} := F_\alpha^{(\text{visc})}(i) \cdot \exp(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}})$, producing a complex $d$-vector $\tilde{c}_i \in \mathbb{C}^d$. The normalization $c_i^{(\alpha)} = \tilde{c}_i^{(\alpha)}/\|\tilde{c}_i\|$ places this vector on the unit sphere $S^{2d-1} \subset \mathbb{C}^d$. The real $O(d)$ rotation symmetry of Step 1 extends under complexification: if $v \mapsto Ov$, then $\tilde{c} \mapsto U_O \tilde{c}$ where $U_O$ is the natural embedding of $O$ into $U(d)$ via $O(d) \hookrightarrow U(d)$.
+
+**Step 3 (Unitary invariance).** Since the normalized complex vector $c_i$ lives on $S^{2d-1}$ and the physical observables (gauge-invariant quantities like $|c_i^\dagger c_j|^2$) depend only on the inner product structure, the full redundancy group is $U(d)$: any unitary basis change $c \mapsto Uc$ leaves the physics invariant.
+
+**Step 4 ($U(d) \to SU(d)$).** The overall $U(1)$ phase of the complex force vector is already accounted for by the $U(1)$ fitness gauge field ({prf:ref}`thm-sm-u1-emergence`). Factoring out this global phase via $U(d) = (U(1) \times SU(d))/\mathbb{Z}_d$ and imposing $\det U = 1$ yields the residual gauge group $SU(d)$. In $d=3$ spatial dimensions, this gives $SU(3)$ — the color gauge group of the strong force.
 
 **Note on dimension**: The choice $d=3$ for physical space selects $SU(3)$ as the color group. In general dimension $d$, the structure would be $SU(d)$. $\square$
 :::
