@@ -29,8 +29,13 @@ def setup(app: Sphinx):
     except Exception:
         return {"version": "builtin", "parallel_read_safe": True, "parallel_write_safe": True}
 
+    from sphinx_proof.directive import DEFAULT_REALTYP_TO_COUNTERTYP
+
     proof_nodes.NODE_TYPES.setdefault("metatheorem", metatheorem_node)
     proof_nodes.NODE_TYPES.setdefault("principle", principle_node)
+
+    DEFAULT_REALTYP_TO_COUNTERTYP.setdefault("metatheorem", "metatheorem")
+    DEFAULT_REALTYP_TO_COUNTERTYP.setdefault("principle", "principle")
 
     app.add_enumerable_node(
         metatheorem_node,
