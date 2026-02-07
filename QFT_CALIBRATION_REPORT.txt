@@ -123,7 +123,7 @@ Immediate Candidate Configs
 - Best rho/pi: thr=0.9, pen=1.1, beta=0.5 (nucleon dead)
 - Best nucleon/pi: thr=0.75, pen=1.1, stable2 (rho low)
 
-Open Gap
+Open Gaphow c
 - No configuration in the current parameter space achieves both ratios within +/-2%.
 - Curl experiments with anisotropic diffusion are invalid until the diffusion regularization is fixed.
 

@@ -42,6 +42,7 @@ NEIGHBOR_WEIGHT_MODES = (
     "inv_euclidean",
     "inv_geodesic_iso",
     "inv_geodesic_full",
+    "kernel",
 )
 
 
@@ -56,6 +57,7 @@ class RadialChannelConfig:
     neighbor_method: str = "voronoi"  # voronoi, companions, recorded
     neighbor_k: int = 0  # 0 = use all neighbors, >0 = cap neighbor count
     neighbor_weighting: str = "inv_geodesic_full"
+    kernel_length_scale: float = 1.0
     h_eff: float = 1.0
     mass: float = 1.0
     ell0: float | None = None
@@ -371,6 +373,7 @@ def _build_neighbor_data(
     edge_weight_map: dict[tuple[int, int], float] | None,
     max_neighbors: int,
     pbc: bool,
+    kernel_length_scale: float = 1.0,
 ) -> tuple[list[Tensor], list[Tensor]]:
     alive_list = alive_idx.tolist()
     global_to_alive = {int(g): i for i, g in enumerate(alive_list)}
@@ -416,6 +419,7 @@ def _build_neighbor_data(
             "inv_euclidean",
             "inv_geodesic_iso",
             "inv_geodesic_full",
+            "kernel",
         }:
             pos_i = positions[alive_pos]
             pos_j = positions[neighbors_tensor]
@@ -423,7 +427,11 @@ def _build_neighbor_data(
             if pbc and bounds is not None:
                 diff = _apply_pbc_diff_torch(diff, bounds)
             dist = torch.linalg.vector_norm(diff, dim=-1).clamp(min=1e-8)
-            if weight_mode == "euclidean":
+            if weight_mode == "kernel":
+                weights_tensor = torch.exp(
+                    -(dist ** 2) / (2.0 * kernel_length_scale ** 2)
+                )
+            elif weight_mode == "euclidean":
                 weights_tensor = dist
             elif weight_mode == "inv_euclidean":
                 weights_tensor = 1.0 / dist
@@ -1160,6 +1168,7 @@ def compute_radial_channels(
             edge_weight_map,
             max_neighbors=int(config.neighbor_k),
             pbc=bool(history.pbc),
+            kernel_length_scale=config.kernel_length_scale,
         )
     else:
         empty_idx = torch.zeros(0, dtype=torch.long, device=positions_alive.device)
@@ -1304,6 +1313,7 @@ def compute_radial_channels(
                         edge_weight_map,
                         max_neighbors=int(config.neighbor_k),
                         pbc=bool(history.pbc),
+                        kernel_length_scale=config.kernel_length_scale,
                     )
                 else:
                     empty_idx = torch.zeros(0, dtype=torch.long, device=positions_proj.device)

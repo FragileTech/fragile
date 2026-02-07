@@ -85,7 +85,7 @@ class OperatorConfig:
     epsilon_Sigma: float = 0.1
     nu: float = 0.948271
     use_viscous_coupling: bool = True
-    viscous_length_scale: float = 0.00976705
+    viscous_length_scale: float = 1.0
     viscous_neighbor_weighting: str = "kernel"
     viscous_neighbor_threshold: float | None = None
     viscous_neighbor_penalty: float = 1.1

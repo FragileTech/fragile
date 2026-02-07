@@ -54,7 +54,9 @@ class ElectroweakChannelConfig:
     use_connected: bool = True
     neighbor_method: str = "voronoi"
     edge_weight_mode: str = "inverse_riemannian_distance"
+    neighbor_weighting: str = "inv_geodesic_full"
     neighbor_k: int = 0
+    kernel_length_scale: float = 1.0
     voronoi_pbc_mode: str = "mirror"
     voronoi_exclude_boundary: bool = True
     voronoi_boundary_tolerance: float = 1e-6
@@ -94,6 +96,7 @@ NEIGHBOR_WEIGHT_MODES = (
     "inv_euclidean",
     "inv_geodesic_iso",
     "inv_geodesic_full",
+    "kernel",
 )
 
 
@@ -447,6 +450,7 @@ def _build_neighbor_weights(
     bounds,
     pbc: bool,
     max_neighbors: int,
+    kernel_length_scale: float = 1.0,
 ) -> tuple[list[Tensor], list[Tensor]]:
     alive_list = alive_idx.tolist()
     global_to_alive = {int(g): i for i, g in enumerate(alive_list)}
@@ -472,7 +476,9 @@ def _build_neighbor_weights(
             if pbc and bounds is not None:
                 diff = _apply_pbc_diff(diff, bounds)
             dist = torch.linalg.vector_norm(diff, dim=-1).clamp(min=1e-8)
-            if weight_mode == "euclidean":
+            if weight_mode == "kernel":
+                weights = torch.exp(-(dist ** 2) / (2.0 * kernel_length_scale ** 2))
+            elif weight_mode == "euclidean":
                 weights = dist
             elif weight_mode == "inv_euclidean":
                 weights = 1.0 / dist
@@ -984,11 +990,12 @@ def _compute_electroweak_series(
                 alive_idx,
                 neighbor_lists_global,
                 volumes,
-                "inv_geodesic_full",
+                cfg.neighbor_weighting,
                 edge_weight_map,
                 history.bounds,
                 bool(history.pbc),
                 int(cfg.neighbor_k),
+                kernel_length_scale=cfg.kernel_length_scale,
             )
         operators = _compute_weighted_electroweak_ops(
             positions,
@@ -1036,11 +1043,12 @@ def _compute_electroweak_series(
                     alive_idx,
                     neighbor_lists_global,
                     volumes,
-                    "inv_geodesic_full",
+                    cfg.neighbor_weighting,
                     edge_weight_map,
                     history.bounds,
                     bool(history.pbc),
                     int(cfg.neighbor_k),
+                    kernel_length_scale=cfg.kernel_length_scale,
                 )
             frame_ops = _compute_weighted_electroweak_ops(
                 positions,
@@ -1341,11 +1349,12 @@ def compute_electroweak_snapshot_operators(
             alive_idx,
             neighbor_lists_global,
             volumes,
-            "inv_geodesic_full",
+            config.neighbor_weighting,
             edge_weight_map,
             history.bounds,
             bool(history.pbc),
             int(config.neighbor_k),
+            kernel_length_scale=config.kernel_length_scale,
         )
     operators = _compute_weighted_electroweak_ops(
         positions,

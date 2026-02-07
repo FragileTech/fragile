@@ -405,23 +405,44 @@ def build_effective_mass_plot(
     )
 
 
+def _default_mass_getter(result: Any, _mode: str = "AIC-Weighted") -> float:
+    return result.mass_fit.get("mass", 0.0)
+
+
+def _default_error_getter(result: Any, _mode: str = "AIC-Weighted") -> float:
+    return result.mass_fit.get("mass_error", float("inf"))
+
+
 def build_mass_spectrum_bar(
     channel_results: dict[str, Any],
+    mass_getter: Any = None,
+    error_getter: Any = None,
+    title: str = "Channel Mass Spectrum",
+    ylabel: str = "Mass (algorithmic units)",
 ) -> hv.Bars | None:
     """Build bar chart of extracted masses across channels.
 
     Args:
         channel_results: Dict mapping channel names to ChannelCorrelatorResult.
+        mass_getter: Optional callable(result, mode) -> float for mass extraction.
+        error_getter: Optional callable(result, mode) -> float for error extraction.
+        title: Chart title.
+        ylabel: Y-axis label.
 
     Returns:
         HoloViews Bars chart, or None if no valid masses.
     """
+    if mass_getter is None:
+        mass_getter = _default_mass_getter
+    if error_getter is None:
+        error_getter = _default_error_getter
+
     bars_data = []
     for name, result in channel_results.items():
         if result.n_samples == 0:
             continue
-        mass = result.mass_fit.get("mass", 0.0)
-        mass_error = result.mass_fit.get("mass_error", float("inf"))
+        mass = mass_getter(result, "AIC-Weighted")
+        mass_error = error_getter(result, "AIC-Weighted")
         if mass > 0 and mass_error < float("inf"):
             bars_data.append((name, mass, mass_error))
 
@@ -441,8 +462,8 @@ def build_mass_spectrum_bar(
         vdims=["mass"],
     ).opts(
         xlabel="Channel",
-        ylabel="Mass (algorithmic units)",
-        title="Channel Mass Spectrum",
+        ylabel=ylabel,
+        title=title,
         width=600,
         height=350,
         color=hv.dim("channel").categorize(dict(zip(names, colors))),

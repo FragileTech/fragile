@@ -1891,12 +1891,18 @@ class RadialSettings(param.Parameterized):
             "inv_euclidean",
             "inv_geodesic_iso",
             "inv_geodesic_full",
+            "kernel",
         ),
     )
     neighbor_k = param.Integer(
         default=0,
         bounds=(0, 50),
         doc="Maximum neighbors per walker (0 = use all).",
+    )
+    kernel_length_scale = param.Number(
+        default=1.0,
+        bounds=(1e-6, None),
+        doc="Length scale for Gaussian kernel weighting: exp(-d²/(2l²))",
     )
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
     mass = param.Number(default=1.0, bounds=(1e-6, None))
@@ -1940,6 +1946,18 @@ class RadialElectroweakSettings(param.Parameterized):
         objects=("voronoi",),
         doc="Neighbor selection for electroweak phases.",
     )
+    neighbor_weighting = param.ObjectSelector(
+        default="inv_geodesic_full",
+        objects=(
+            "volume",
+            "euclidean",
+            "inv_euclidean",
+            "inv_geodesic_iso",
+            "inv_geodesic_full",
+            "kernel",
+        ),
+        doc="Neighbor weighting for legacy Voronoi fallback path",
+    )
     edge_weight_mode = param.ObjectSelector(
         default="inverse_riemannian_distance",
         objects=[
@@ -1957,6 +1975,11 @@ class RadialElectroweakSettings(param.Parameterized):
         default=0,
         bounds=(0, 50),
         doc="Maximum neighbors per walker (0 = use all).",
+    )
+    kernel_length_scale = param.Number(
+        default=1.0,
+        bounds=(1e-6, None),
+        doc="Length scale for Gaussian kernel weighting: exp(-d²/(2l²))",
     )
     use_volume_weights = param.Boolean(default=True)
     apply_power_correction = param.Boolean(default=True)
@@ -1994,6 +2017,18 @@ class ElectroweakSettings(param.Parameterized):
         default="voronoi",
         objects=("voronoi",),
     )
+    neighbor_weighting = param.ObjectSelector(
+        default="inv_geodesic_full",
+        objects=(
+            "volume",
+            "euclidean",
+            "inv_euclidean",
+            "inv_geodesic_iso",
+            "inv_geodesic_full",
+            "kernel",
+        ),
+        doc="Neighbor weighting for legacy Voronoi fallback path",
+    )
     edge_weight_mode = param.ObjectSelector(
         default="inverse_riemannian_distance",
         objects=[
@@ -2011,6 +2046,11 @@ class ElectroweakSettings(param.Parameterized):
         default=0,
         bounds=(0, 50),
         doc="Maximum neighbors per walker (0 = use all).",
+    )
+    kernel_length_scale = param.Number(
+        default=1.0,
+        bounds=(1e-6, None),
+        doc="Length scale for Gaussian kernel weighting: exp(-d²/(2l²))",
     )
 
     # User-friendly time dimension selection
@@ -2339,6 +2379,7 @@ def _compute_radial_channels_bundle(
         neighbor_method=str(settings.neighbor_method),
         neighbor_weighting=str(settings.neighbor_weighting),
         neighbor_k=int(settings.neighbor_k),
+        kernel_length_scale=float(settings.kernel_length_scale),
         h_eff=float(settings.h_eff),
         mass=float(settings.mass),
         ell0=settings.ell0,
@@ -2364,8 +2405,9 @@ def _compute_radial_electroweak_bundle(
         max_pairs=int(settings.max_pairs),
         distance_mode=str(settings.distance_mode),
         neighbor_method=str(settings.neighbor_method),
-        neighbor_weighting="inv_geodesic_full",
+        neighbor_weighting=str(settings.neighbor_weighting),
         neighbor_k=int(settings.neighbor_k),
+        kernel_length_scale=float(settings.kernel_length_scale),
         h_eff=float(settings.h_eff),
         mass=1.0,
         ell0=None,
@@ -2382,8 +2424,10 @@ def _compute_radial_electroweak_bundle(
     ew_config = ElectroweakChannelConfig(
         h_eff=settings.h_eff,
         neighbor_method=settings.neighbor_method,
+        neighbor_weighting=str(settings.neighbor_weighting),
         edge_weight_mode=getattr(settings, "edge_weight_mode", "inverse_riemannian_distance"),
         neighbor_k=settings.neighbor_k,
+        kernel_length_scale=float(settings.kernel_length_scale),
         epsilon_d=settings.epsilon_d,
         epsilon_c=settings.epsilon_c,
         epsilon_clone=settings.epsilon_clone,
@@ -2414,8 +2458,10 @@ def _compute_electroweak_channels(
         h_eff=settings.h_eff,
         use_connected=settings.use_connected,
         neighbor_method=settings.neighbor_method,
+        neighbor_weighting=str(settings.neighbor_weighting),
         edge_weight_mode=settings.edge_weight_mode,
         neighbor_k=settings.neighbor_k,
+        kernel_length_scale=float(settings.kernel_length_scale),
         mc_time_index=settings.mc_time_index,
         time_axis=time_axis,
         euclidean_time_dim=euclidean_time_dim,
@@ -2542,6 +2588,13 @@ def _compute_force_stats(history: RunHistory | None) -> dict[str, float]:
     counts = alive.sum().clamp(min=1)
     mean_force_sq = float((masked.sum() / counts).item())
     return {"mean_force_sq": mean_force_sq}
+
+
+def _to_numpy(t):
+    """Convert a tensor or array-like to a numpy array."""
+    if hasattr(t, "cpu"):
+        return t.cpu().numpy()
+    return np.asarray(t)
 
 
 def _compute_coupling_constants(
@@ -2814,45 +2867,130 @@ def _format_closest(value: float | None, refs: dict[str, float]) -> str:
     return f"{name} {ref:.3f} ({err:+.1f}%)"
 
 
+def _build_best_fit_rows_generic(
+    masses: dict[str, float],
+    ref_groups: list[tuple[str, dict[str, float]]],
+    r2s: dict[str, float] | None = None,
+) -> list[dict[str, Any]]:
+    """Build best-fit scale rows from reference groups.
+
+    *ref_groups* is a list of ``(group_name, {ref_name: mass_GeV})`` tuples.
+    For strong force this is ``[("baryon", BARYON_REFS), ("meson", MESON_REFS)]``;
+    for electroweak it is ``[("electroweak", user_refs)]``.
+    """
+    r2s = r2s or {}
+
+    # Build per-group anchor lists
+    group_anchors: list[tuple[str, list[tuple[str, float, str]]]] = []
+    for group_name, refs in ref_groups:
+        anchors = [(f"{group_name}->{name}", mass, group_name) for name, mass in refs.items()]
+        group_anchors.append((group_name, anchors))
+
+    # Build combined anchor list
+    all_anchors: list[tuple[str, float, str]] = []
+    for _group_name, anchors in group_anchors:
+        all_anchors.extend(anchors)
+
+    # If only one group, just compute a single fit row using its label
+    if len(ref_groups) == 1:
+        group_name, refs = ref_groups[0]
+        anchors_for_fit = [(f"{name}->{mass:.6f}", mass, name) for name, mass in refs.items()]
+        scale = _best_fit_scale(masses, anchors_for_fit)
+        if scale is None:
+            return [{"fit_mode": f"{group_name} refs", "scale_GeV_per_alg": None}]
+        row: dict[str, Any] = {
+            "fit_mode": f"{group_name} refs",
+            "scale_GeV_per_alg": scale,
+        }
+        for name, alg_mass in masses.items():
+            row[f"{name}_pred_GeV"] = alg_mass * scale
+            if name in r2s:
+                row[f"{name}_r2"] = r2s[name]
+        return [row]
+
+    # Multiple groups: per-group fits + combined fit
+    rows: list[dict[str, Any]] = []
+    fit_sets: list[tuple[str, list[tuple[str, float, str]]]] = []
+    for group_name, anchors in group_anchors:
+        fit_sets.append((f"{group_name} refs", anchors))
+    combined_label = "+".join(g for g, _ in ref_groups) + " refs"
+    fit_sets.append((combined_label, all_anchors))
+
+    # Collect all mass keys that predictions should cover
+    mass_keys = list(masses.keys())
+    # Collect all reference dicts for closest matching
+    all_refs: dict[str, dict[str, float]] = {g: r for g, r in ref_groups}
+
+    for label, anchor_list in fit_sets:
+        scale = _best_fit_scale(masses, anchor_list)
+        if scale is None:
+            rows.append({"fit_mode": label, "scale_GeV_per_alg": None})
+            continue
+        row = {
+            "fit_mode": label,
+            "scale_GeV_per_alg": scale,
+        }
+        for key in mass_keys:
+            pred = masses.get(key, 0.0) * scale
+            row[f"{key}_pred_GeV"] = pred
+            # Find matching ref group for closest formatting
+            if key in all_refs:
+                row[f"closest_{key}"] = _format_closest(pred, all_refs[key])
+            key_r2 = r2s.get(key)
+            row[f"{key}_r2"] = key_r2 if key_r2 is not None and np.isfinite(key_r2) else None
+        rows.append(row)
+    return rows
+
+
+def _build_anchor_rows_generic(
+    masses: dict[str, float],
+    anchors: list[tuple[str, float, str]],
+    r2s: dict[str, float] | None = None,
+    closest_refs: dict[str, dict[str, float]] | None = None,
+) -> list[dict[str, Any]]:
+    """Build anchored mass table using individual reference masses.
+
+    *anchors* is ``[(label, physical_mass, mass_key)]``.
+    *closest_refs* maps mass keys to reference dicts for closest-match formatting
+    (e.g. ``{"baryon": BARYON_REFS, "meson": MESON_REFS}``).
+    When *closest_refs* is ``None``, no closest matching is performed and all
+    mass keys get ``{key}_pred_GeV`` columns.
+    """
+    r2s = r2s or {}
+    closest_refs = closest_refs or {}
+    mass_keys = list(masses.keys())
+
+    rows: list[dict[str, Any]] = []
+    for label, mass_phys, family in anchors:
+        alg_mass = masses.get(family)
+        if alg_mass is None or alg_mass <= 0:
+            rows.append({"anchor": label})
+            continue
+        scale = mass_phys / alg_mass
+        row: dict[str, Any] = {
+            "anchor": label,
+            "scale_GeV_per_alg": scale,
+        }
+        for key in mass_keys:
+            pred = masses.get(key, 0.0) * scale
+            row[f"{key}_pred_GeV"] = pred
+            if key in closest_refs:
+                row[f"closest_{key}"] = _format_closest(pred, closest_refs[key])
+            key_r2 = r2s.get(key)
+            if key_r2 is not None and np.isfinite(key_r2):
+                row[f"{key}_r2"] = key_r2
+        rows.append(row)
+    return rows
+
+
 def _build_best_fit_rows(
     masses: dict[str, float],
     r2s: dict[str, float] | None = None,
 ) -> list[dict[str, Any]]:
     """Build best-fit scale rows using baryon/meson references."""
-    anchors: list[tuple[str, float, str]] = []
-    anchors.extend((f"baryon->{name}", mass, "baryon") for name, mass in BARYON_REFS.items())
-    anchors.extend((f"meson->{name}", mass, "meson") for name, mass in MESON_REFS.items())
-    baryon_anchors = [a for a in anchors if a[2] == "baryon"]
-    meson_anchors = [a for a in anchors if a[2] == "meson"]
-    combined_anchors = baryon_anchors + meson_anchors
-
-    r2s = r2s or {}
-    baryon_r2 = r2s.get("baryon")
-    meson_r2 = r2s.get("meson")
-
-    rows: list[dict[str, Any]] = []
-    for label, anchor_list in (
-        ("baryon refs", baryon_anchors),
-        ("meson refs", meson_anchors),
-        ("baryon+meson refs", combined_anchors),
-    ):
-        scale = _best_fit_scale(masses, anchor_list)
-        if scale is None:
-            rows.append({"fit_mode": label, "scale_GeV_per_alg": None})
-            continue
-        pred_b = masses.get("baryon", 0.0) * scale
-        pred_m = masses.get("meson", 0.0) * scale
-        rows.append({
-            "fit_mode": label,
-            "scale_GeV_per_alg": scale,
-            "baryon_pred_GeV": pred_b,
-            "closest_baryon": _format_closest(pred_b, BARYON_REFS),
-            "baryon_r2": baryon_r2 if baryon_r2 is not None and np.isfinite(baryon_r2) else None,
-            "meson_pred_GeV": pred_m,
-            "closest_meson": _format_closest(pred_m, MESON_REFS),
-            "meson_r2": meson_r2 if meson_r2 is not None and np.isfinite(meson_r2) else None,
-        })
-    return rows
+    return _build_best_fit_rows_generic(
+        masses, [("baryon", BARYON_REFS), ("meson", MESON_REFS)], r2s,
+    )
 
 
 def _build_anchor_rows(
@@ -2876,43 +3014,16 @@ def _build_anchor_rows(
         label, mass = glueball_ref
         glueball_refs[label] = mass
 
-    r2s = r2s or {}
-    baryon_r2 = r2s.get("baryon")
-    meson_r2 = r2s.get("meson")
-    glueball_r2 = r2s.get("glueball")
+    closest_refs: dict[str, dict[str, float]] = {
+        "baryon": BARYON_REFS,
+        "meson": MESON_REFS,
+    }
+    if glueball_refs:
+        closest_refs["glueball"] = glueball_refs
+    if sqrt_sigma_ref is not None:
+        closest_refs["sqrt_sigma"] = {f"{sqrt_sigma_ref:.3f}": sqrt_sigma_ref}
 
-    rows: list[dict[str, Any]] = []
-    for label, mass_phys, family in anchors:
-        alg_mass = masses.get(family)
-        if alg_mass is None or alg_mass <= 0:
-            rows.append({"anchor": label})
-            continue
-        scale = mass_phys / alg_mass
-        pred_b = masses.get("baryon", 0.0) * scale
-        pred_m = masses.get("meson", 0.0) * scale
-        row = {
-            "anchor": label,
-            "scale_GeV_per_alg": scale,
-            "baryon_pred_GeV": pred_b,
-            "closest_baryon": _format_closest(pred_b, BARYON_REFS),
-            "baryon_r2": baryon_r2 if baryon_r2 is not None and np.isfinite(baryon_r2) else None,
-            "meson_pred_GeV": pred_m,
-            "closest_meson": _format_closest(pred_m, MESON_REFS),
-            "meson_r2": meson_r2 if meson_r2 is not None and np.isfinite(meson_r2) else None,
-        }
-        if masses.get("glueball") and glueball_ref is not None:
-            pred_g = masses.get("glueball", 0.0) * scale
-            row["glueball_pred_GeV"] = pred_g
-            row["closest_glueball"] = _format_closest(pred_g, glueball_refs)
-            row["glueball_r2"] = (
-                glueball_r2 if glueball_r2 is not None and np.isfinite(glueball_r2) else None
-            )
-        if masses.get("sqrt_sigma") and sqrt_sigma_ref is not None:
-            pred_s = masses.get("sqrt_sigma", 0.0) * scale
-            row["sqrt_sigma_pred_GeV"] = pred_s
-            row["closest_sqrt_sigma"] = f"{sqrt_sigma_ref:.3f}"
-        rows.append(row)
-    return rows
+    return _build_anchor_rows_generic(masses, anchors, r2s, closest_refs)
 
 
 # Default electroweak mass references (GeV) mapped to proxy channels.
@@ -2984,108 +3095,147 @@ def _get_channel_r2(
     return best_window.get("r2", float("nan"))
 
 
-def _extract_channel_masses(
+_STRONG_FAMILY_MAP: dict[str, str] = {
+    "pseudoscalar": "meson",
+    "nucleon": "baryon",
+    "glueball": "glueball",
+}
+
+STRONG_FORCE_RATIO_SPECS: list[tuple[str, str, str]] = [
+    ("nucleon", "pseudoscalar", "proton/pion ≈ 6.7"),
+    ("vector", "pseudoscalar", "rho/pion ≈ 5.5"),
+    ("scalar", "pseudoscalar", "sigma/pion"),
+    ("glueball", "pseudoscalar", ""),
+]
+
+RADIAL_STRONG_FORCE_RATIO_SPECS: list[tuple[str, str, str]] = [
+    ("nucleon", "pseudoscalar", "proton/pion ≈ 6.7"),
+    ("vector", "pseudoscalar", "rho/pion ≈ 5.5"),
+    ("glueball", "pseudoscalar", "glueball/pion ≈ 10"),
+]
+
+
+def _extract_masses(
     results: dict[str, ChannelCorrelatorResult],
     mode: str = "AIC-Weighted",
+    mass_getter=None,
+    family_map: dict[str, str] | None = _STRONG_FAMILY_MAP,
 ) -> dict[str, float]:
-    """Extract masses from channel results, mapped to families.
+    """Extract masses from channel results.
 
-    Uses pseudoscalar as the primary meson reference (maps to pion).
-    Returns dict like {"baryon": nucleon_mass, "meson": pseudoscalar_mass, "glueball": glueball_mass}.
+    When *family_map* is provided, only channels present in the map are used and
+    the returned keys are the mapped family names (e.g. "meson", "baryon").
+    When *family_map* is ``None``, all channels with positive mass are returned
+    using their original channel names (electroweak mode).
     """
+    if mass_getter is None:
+        mass_getter = _get_channel_mass
     masses: dict[str, float] = {}
-
-    # Use pseudoscalar as the primary meson mass (maps to pion)
-    if "pseudoscalar" in results:
-        ps_mass = _get_channel_mass(results["pseudoscalar"], mode)
-        if ps_mass > 0:
-            masses["meson"] = ps_mass
-
-    # Use nucleon channel for baryon mass
-    if "nucleon" in results:
-        nuc_mass = _get_channel_mass(results["nucleon"], mode)
-        if nuc_mass > 0:
-            masses["baryon"] = nuc_mass
-
-    # Use glueball channel directly
-    if "glueball" in results:
-        glue_mass = _get_channel_mass(results["glueball"], mode)
-        if glue_mass > 0:
-            masses["glueball"] = glue_mass
-
+    if family_map is not None:
+        for channel, family in family_map.items():
+            if channel in results:
+                mass = mass_getter(results[channel], mode)
+                if mass > 0:
+                    masses[family] = mass
+    else:
+        for name, result in results.items():
+            if result.n_samples == 0:
+                continue
+            mass = mass_getter(result, mode)
+            if mass > 0:
+                masses[name] = mass
     return masses
 
 
-def _extract_channel_r2(
+def _extract_r2(
     results: dict[str, ChannelCorrelatorResult],
     mode: str = "AIC-Weighted",
+    family_map: dict[str, str] | None = _STRONG_FAMILY_MAP,
 ) -> dict[str, float]:
+    """Extract R² values from channel results, using the same mapping logic as _extract_masses."""
     r2s: dict[str, float] = {}
-
-    if "pseudoscalar" in results:
-        ps_r2 = _get_channel_r2(results["pseudoscalar"], mode)
-        if np.isfinite(ps_r2):
-            r2s["meson"] = ps_r2
-
-    if "nucleon" in results:
-        nuc_r2 = _get_channel_r2(results["nucleon"], mode)
-        if np.isfinite(nuc_r2):
-            r2s["baryon"] = nuc_r2
-
-    if "glueball" in results:
-        glue_r2 = _get_channel_r2(results["glueball"], mode)
-        if np.isfinite(glue_r2):
-            r2s["glueball"] = glue_r2
-
+    if family_map is not None:
+        for channel, family in family_map.items():
+            if channel in results:
+                r2 = _get_channel_r2(results[channel], mode)
+                if np.isfinite(r2):
+                    r2s[family] = r2
+    else:
+        for name, result in results.items():
+            if result.n_samples == 0:
+                continue
+            r2 = _get_channel_r2(result, mode)
+            if np.isfinite(r2):
+                r2s[name] = r2
     return r2s
 
 
-def _format_channel_ratios(
+def _format_ratios(
     results: dict[str, ChannelCorrelatorResult],
     mode: str = "AIC-Weighted",
+    mass_getter=None,
+    ratio_specs: list[tuple[str, str, str]] | None = None,
+    title: str = "Mass Ratios",
 ) -> str:
-    """Format mass ratios: nucleon/pseudoscalar, vector/pseudoscalar, etc."""
-    lines = ["**Mass Ratios:**"]
+    """Format mass ratios.
 
-    # Get pseudoscalar mass as denominator
-    ps_mass = 0.0
-    if "pseudoscalar" in results:
-        ps_mass = _get_channel_mass(results["pseudoscalar"], mode)
+    In **spec-based** mode (*ratio_specs* given), each spec is
+    ``(numerator_channel, denominator_channel, annotation)``.
 
-    if ps_mass <= 0:
-        return "**Mass Ratios:** n/a (no pseudoscalar mass)"
+    In **generic** mode (*ratio_specs* is ``None``), auto-selects the best
+    denominator and computes all-vs-base ratios (electroweak style).
+    """
+    if mass_getter is None:
+        mass_getter = _get_channel_mass
 
-    # Nucleon / Pseudoscalar (proton/pion ≈ 6.7)
-    if "nucleon" in results:
-        nuc_mass = _get_channel_mass(results["nucleon"], mode)
-        if nuc_mass > 0:
-            ratio = nuc_mass / ps_mass
-            lines.append(f"- nucleon/pseudoscalar: **{ratio:.3f}** (proton/pion ≈ 6.7)")
+    if ratio_specs is not None:
+        lines = [f"**{title}:**"]
+        # Gather all unique denominators to check availability
+        denom_masses: dict[str, float] = {}
+        for _num, denom, _ann in ratio_specs:
+            if denom not in denom_masses and denom in results:
+                denom_masses[denom] = mass_getter(results[denom], mode)
 
-    # Vector / Pseudoscalar (rho/pion ≈ 5.5)
-    if "vector" in results:
-        vec_mass = _get_channel_mass(results["vector"], mode)
-        if vec_mass > 0:
-            ratio = vec_mass / ps_mass
-            lines.append(f"- vector/pseudoscalar: **{ratio:.3f}** (rho/pion ≈ 5.5)")
+        # Check first spec's denominator as the primary one
+        primary_denom = ratio_specs[0][1]
+        primary_mass = denom_masses.get(primary_denom, 0.0)
+        if primary_mass <= 0:
+            return f"**{title}:** n/a (no {primary_denom} mass)"
 
-    # Scalar / Pseudoscalar (sigma/pion ≈ 3.5-7.0 depending on interpretation)
-    if "scalar" in results:
-        scalar_mass = _get_channel_mass(results["scalar"], mode)
-        if scalar_mass > 0:
-            ratio = scalar_mass / ps_mass
-            lines.append(f"- scalar/pseudoscalar: **{ratio:.3f}** (sigma/pion)")
+        for num, denom, annotation in ratio_specs:
+            denom_mass = denom_masses.get(denom, 0.0)
+            if denom_mass <= 0 or num not in results:
+                continue
+            num_mass = mass_getter(results[num], mode)
+            if num_mass > 0:
+                ratio = num_mass / denom_mass
+                suffix = f" ({annotation})" if annotation else ""
+                lines.append(f"- {num}/{denom}: **{ratio:.3f}**{suffix}")
 
-    # Glueball / Pseudoscalar
-    if "glueball" in results:
-        glue_mass = _get_channel_mass(results["glueball"], mode)
-        if glue_mass > 0:
-            ratio = glue_mass / ps_mass
-            lines.append(f"- glueball/pseudoscalar: **{ratio:.3f}**")
+        if len(lines) == 1:
+            return f"**{title}:** n/a (no valid channel masses)"
+        return "  \n".join(lines)
 
-    if len(lines) == 1:
-        return "**Mass Ratios:** n/a (no valid channel masses)"
+    # Generic mode (electroweak)
+    if not results:
+        return f"**{title}:** n/a"
 
+    base_name = "u1_dressed" if "u1_dressed" in results else "u1_phase"
+    base_result = results.get(base_name)
+    if base_result is None:
+        return f"**{title}:** n/a (no U1 mass)"
+    base_mass = mass_getter(base_result, mode)
+    if base_mass <= 0:
+        return f"**{title}:** n/a (no U1 mass)"
+
+    lines = [f"**{title} (proxy):**"]
+    for name in sorted(results.keys()):
+        if name == base_name:
+            continue
+        mass = mass_getter(results[name], mode)
+        if mass > 0:
+            ratio = mass / base_mass
+            lines.append(f"- {name}/{base_name}: **{ratio:.3f}**")
     return "  \n".join(lines)
 
 
@@ -3110,170 +3260,6 @@ def _get_radial_mass_error(
     return mass_error / dt
 
 
-def _extract_radial_channel_masses(
-    results: dict[str, ChannelCorrelatorResult],
-    mode: str = "AIC-Weighted",
-) -> dict[str, float]:
-    masses: dict[str, float] = {}
-
-    if "pseudoscalar" in results:
-        ps_mass = _get_radial_mass(results["pseudoscalar"], mode)
-        if ps_mass > 0:
-            masses["meson"] = ps_mass
-
-    if "nucleon" in results:
-        nuc_mass = _get_radial_mass(results["nucleon"], mode)
-        if nuc_mass > 0:
-            masses["baryon"] = nuc_mass
-
-    if "glueball" in results:
-        glue_mass = _get_radial_mass(results["glueball"], mode)
-        if glue_mass > 0:
-            masses["glueball"] = glue_mass
-
-    return masses
-
-
-def _extract_radial_channel_r2(
-    results: dict[str, ChannelCorrelatorResult],
-    mode: str = "AIC-Weighted",
-) -> dict[str, float]:
-    return _extract_channel_r2(results, mode)
-
-
-def _format_radial_channel_ratios(
-    results: dict[str, ChannelCorrelatorResult],
-    mode: str = "AIC-Weighted",
-) -> str:
-    lines = ["**Mass Ratios:**"]
-
-    ps_mass = 0.0
-    if "pseudoscalar" in results:
-        ps_mass = _get_radial_mass(results["pseudoscalar"], mode)
-
-    if ps_mass <= 0:
-        return "**Mass Ratios:** n/a (no pseudoscalar mass)"
-
-    if "nucleon" in results:
-        nuc_mass = _get_radial_mass(results["nucleon"], mode)
-        if nuc_mass > 0:
-            ratio = nuc_mass / ps_mass
-            lines.append(f"- nucleon/pseudoscalar: **{ratio:.3f}** (proton/pion ≈ 6.7)")
-
-    if "vector" in results:
-        vec_mass = _get_radial_mass(results["vector"], mode)
-        if vec_mass > 0:
-            ratio = vec_mass / ps_mass
-            lines.append(f"- vector/pseudoscalar: **{ratio:.3f}** (rho/pion ≈ 5.5)")
-
-    if "glueball" in results:
-        glue_mass = _get_radial_mass(results["glueball"], mode)
-        if glue_mass > 0:
-            ratio = glue_mass / ps_mass
-            lines.append(f"- glueball/pseudoscalar: **{ratio:.3f}** (glueball/pion ≈ 10)")
-
-    return "  \n".join(lines)
-
-
-def _build_radial_mass_spectrum_bar(
-    results: dict[str, ChannelCorrelatorResult],
-) -> hv.Bars | None:
-    bars_data = []
-    for name, result in results.items():
-        if result.n_samples == 0:
-            continue
-        mass = _get_radial_mass(result, "AIC-Weighted")
-        mass_error = _get_radial_mass_error(result, "AIC-Weighted")
-        if mass > 0 and mass_error < float("inf"):
-            bars_data.append((name, mass, mass_error))
-
-    if not bars_data:
-        return None
-
-    bars_data.sort(key=lambda x: x[1])
-    names = [d[0] for d in bars_data]
-    masses = [d[1] for d in bars_data]
-    errors = [d[2] for d in bars_data]
-    colors = [CHANNEL_COLORS.get(n, "#1f77b4") for n in names]
-
-    bars = hv.Bars(
-        list(zip(names, masses)),
-        kdims=["channel"],
-        vdims=["mass"],
-    ).opts(
-        xlabel="Channel",
-        ylabel="Mass (1 / distance)",
-        title="Radial Channel Mass Spectrum",
-        width=600,
-        height=350,
-        color=hv.dim("channel").categorize(dict(zip(names, colors))),
-        xrotation=45,
-    )
-
-    error_data = [(n, m, e) for n, m, e in zip(names, masses, errors)]
-    errorbars = hv.ErrorBars(
-        error_data,
-        kdims=["channel"],
-        vdims=["mass", "error"],
-    ).opts(line_width=2, color="black")
-
-    return bars * errorbars
-
-
-def _format_electroweak_ratios(
-    results: dict[str, ChannelCorrelatorResult],
-    mode: str = "AIC-Weighted",
-) -> str:
-    """Format proxy ratios for electroweak channels."""
-    if not results:
-        return "**Electroweak Ratios:** n/a"
-
-    base_name = "u1_dressed" if "u1_dressed" in results else "u1_phase"
-    base_result = results.get(base_name)
-    if base_result is None:
-        return "**Electroweak Ratios:** n/a (no U1 mass)"
-    base_mass = _get_channel_mass(base_result, mode)
-    if base_mass <= 0:
-        return "**Electroweak Ratios:** n/a (no U1 mass)"
-
-    lines = ["**Electroweak Ratios (proxy):**"]
-    for name in sorted(results.keys()):
-        if name == base_name:
-            continue
-        mass = _get_channel_mass(results[name], mode)
-        if mass > 0:
-            ratio = mass / base_mass
-            lines.append(f"- {name}/{base_name}: **{ratio:.3f}**")
-
-    return "  \n".join(lines)
-
-
-def _extract_electroweak_masses(
-    results: dict[str, ChannelCorrelatorResult],
-    mode: str = "AIC-Weighted",
-) -> dict[str, float]:
-    masses: dict[str, float] = {}
-    for name, result in results.items():
-        if result.n_samples == 0:
-            continue
-        mass = _get_channel_mass(result, mode)
-        if mass > 0:
-            masses[name] = mass
-    return masses
-
-
-def _extract_electroweak_r2(
-    results: dict[str, ChannelCorrelatorResult],
-    mode: str = "AIC-Weighted",
-) -> dict[str, float]:
-    r2s: dict[str, float] = {}
-    for name, result in results.items():
-        if result.n_samples == 0:
-            continue
-        r2 = _get_channel_r2(result, mode)
-        if np.isfinite(r2):
-            r2s[name] = r2
-    return r2s
 
 
 def _build_electroweak_best_fit_rows(
@@ -3281,21 +3267,7 @@ def _build_electroweak_best_fit_rows(
     refs: dict[str, float],
     r2s: dict[str, float] | None = None,
 ) -> list[dict[str, Any]]:
-    r2s = r2s or {}
-    anchors = [(f"{name}->{mass:.6f}", mass, name) for name, mass in refs.items()]
-    scale = _best_fit_scale(masses, anchors)
-    if scale is None:
-        return [{"fit_mode": "electroweak refs", "scale_GeV_per_alg": None}]
-
-    row: dict[str, Any] = {
-        "fit_mode": "electroweak refs",
-        "scale_GeV_per_alg": scale,
-    }
-    for name, alg_mass in masses.items():
-        row[f"{name}_pred_GeV"] = alg_mass * scale
-        if name in r2s:
-            row[f"{name}_r2"] = r2s[name]
-    return [row]
+    return _build_best_fit_rows_generic(masses, [("electroweak", refs)], r2s)
 
 
 def _build_electroweak_anchor_rows(
@@ -3303,24 +3275,8 @@ def _build_electroweak_anchor_rows(
     refs: dict[str, float],
     r2s: dict[str, float] | None = None,
 ) -> list[dict[str, Any]]:
-    r2s = r2s or {}
-    rows: list[dict[str, Any]] = []
-    for name, mass_phys in refs.items():
-        alg_mass = masses.get(name)
-        if alg_mass is None or alg_mass <= 0:
-            rows.append({"anchor": f"{name}->{mass_phys:.6f}"})
-            continue
-        scale = mass_phys / alg_mass
-        row: dict[str, Any] = {
-            "anchor": f"{name}->{mass_phys:.6f}",
-            "scale_GeV_per_alg": scale,
-        }
-        for ch_name, alg in masses.items():
-            row[f"{ch_name}_pred_GeV"] = alg * scale
-            if ch_name in r2s:
-                row[f"{ch_name}_r2"] = r2s[ch_name]
-        rows.append(row)
-    return rows
+    anchors = [(f"{name}->{mass:.6f}", mass, name) for name, mass in refs.items()]
+    return _build_anchor_rows_generic(masses, anchors, r2s)
 
 
 def _build_electroweak_comparison_rows(
@@ -3409,6 +3365,176 @@ def _extract_metric(metrics: dict[str, Any], key: str) -> float:
     return float(np.nan)
 
 
+def _update_mass_table(
+    results: dict[str, ChannelCorrelatorResult],
+    table,
+    mode: str = "AIC-Weighted",
+    mass_getter=None,
+    error_getter=None,
+) -> None:
+    """Update a mass table widget with extracted masses (module-level, no closure)."""
+    if mass_getter is None:
+        mass_getter = _get_channel_mass
+    if error_getter is None:
+        # Default: extract mass_error from mass_fit directly
+        def error_getter(result, m):
+            if m == "AIC-Weighted":
+                return result.mass_fit.get("mass_error", float("inf"))
+            return 0.0
+
+    rows = []
+    for name, result in results.items():
+        if result.n_samples == 0:
+            continue
+
+        mass = mass_getter(result, mode)
+        mass_error = error_getter(result, mode)
+        if mode == "AIC-Weighted":
+            r2 = result.mass_fit.get("r_squared", float("nan"))
+        else:
+            best_window = result.mass_fit.get("best_window", {})
+            r2 = best_window.get("r2", float("nan"))
+
+        n_windows = result.mass_fit.get("n_valid_windows", 0)
+        rows.append({
+            "channel": name,
+            "mass": f"{mass:.6f}" if mass > 0 else "n/a",
+            "mass_error": f"{mass_error:.6f}" if mass_error < float("inf") else "n/a",
+            "r2": f"{r2:.4f}" if np.isfinite(r2) else "n/a",
+            "n_windows": n_windows,
+            "n_samples": result.n_samples,
+        })
+    table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+def _update_correlator_plots(
+    results: dict[str, ChannelCorrelatorResult],
+    plateau_container,
+    spectrum_pane,
+    overlay_corr_pane,
+    overlay_meff_pane,
+    heatmap_container=None,
+    heatmap_color_metric_widget=None,
+    heatmap_alpha_metric_widget=None,
+    spectrum_builder=None,
+) -> None:
+    """Update all correlator plots for a tab (module-level, no closure).
+
+    Parameters
+    ----------
+    spectrum_builder : callable, optional
+        Function to build the mass spectrum bar chart.  Signature is
+        ``(results) -> hv.Bars | None``.  Defaults to ``build_mass_spectrum_bar``.
+    """
+    channel_plot_items = []
+    heatmap_items = []
+
+    for name, result in results.items():
+        if result.n_samples == 0:
+            continue
+
+        channel_plot = ChannelPlot(result, logy=True, width=400, height=350)
+        side_by_side = channel_plot.side_by_side()
+        if side_by_side is not None:
+            channel_plot_items.append(side_by_side)
+
+        if (
+            heatmap_container is not None
+            and result.window_masses is not None
+            and result.window_aic is not None
+        ):
+            window_masses = _to_numpy(result.window_masses)
+            window_aic = _to_numpy(result.window_aic)
+            window_r2 = _to_numpy(result.window_r2) if result.window_r2 is not None else None
+            best_window = result.mass_fit.get("best_window", {})
+            color_metric = str(heatmap_color_metric_widget.value) if heatmap_color_metric_widget else "mass"
+            alpha_metric = str(heatmap_alpha_metric_widget.value) if heatmap_alpha_metric_widget else "aic"
+            heatmap_plot = build_window_heatmap(
+                window_masses,
+                window_aic,
+                result.window_widths or [],
+                best_window,
+                name,
+                window_r2=window_r2,
+                color_metric=color_metric,
+                alpha_metric=alpha_metric,
+            )
+            if heatmap_plot is not None:
+                heatmap_items.append(
+                    pn.pane.HoloViews(heatmap_plot, sizing_mode="stretch_width", linked_axes=False)
+                )
+
+    plateau_container.objects = channel_plot_items if channel_plot_items else [
+        pn.pane.Markdown("_No channel plots available._")
+    ]
+
+    if heatmap_container is not None:
+        heatmap_container.objects = heatmap_items if heatmap_items else [
+            pn.pane.Markdown("_No window heatmaps available._")
+        ]
+
+    if spectrum_builder is None:
+        spectrum_builder = build_mass_spectrum_bar
+    spectrum_pane.object = spectrum_builder(results)
+    overlay_corr_pane.object = build_all_channels_overlay(results, plot_type="correlator")
+    overlay_meff_pane.object = build_all_channels_overlay(results, plot_type="effective_mass")
+
+
+def _update_strong_tables(
+    results: dict[str, ChannelCorrelatorResult],
+    mode: str,
+    mass_table,
+    ratio_pane,
+    fit_table,
+    anchor_table,
+    glueball_ref_input,
+    mass_getter=None,
+    error_getter=None,
+    ratio_specs=None,
+) -> None:
+    """Orchestrate all strong-force table updates (module-level, no closure)."""
+    if ratio_specs is None:
+        ratio_specs = STRONG_FORCE_RATIO_SPECS
+
+    _update_mass_table(results, mass_table, mode, mass_getter=mass_getter, error_getter=error_getter)
+    ratio_pane.object = _format_ratios(results, mode, mass_getter=mass_getter, ratio_specs=ratio_specs)
+
+    channel_masses = _extract_masses(results, mode, mass_getter=mass_getter)
+    channel_r2 = _extract_r2(results, mode)
+
+    if not channel_masses:
+        fit_table.value = pd.DataFrame()
+        anchor_table.value = pd.DataFrame()
+        return
+
+    fit_rows = _build_best_fit_rows(channel_masses, channel_r2)
+    fit_table.value = pd.DataFrame(fit_rows)
+
+    glueball_ref = None
+    if glueball_ref_input.value is not None:
+        glueball_ref = ("glueball", float(glueball_ref_input.value))
+
+    anchor_rows = _build_anchor_rows(
+        channel_masses, glueball_ref, sqrt_sigma_ref=None, r2s=channel_r2,
+    )
+    anchor_table.value = pd.DataFrame(anchor_rows)
+
+
+def _run_tab_computation(state, status_pane, label, compute_fn):
+    """Run a correlator tab computation with shared guard/try/except pattern."""
+    history = state.get("history")
+    if history is None:
+        status_pane.object = "**Error:** Load a RunHistory first."
+        return
+    status_pane.object = f"**Computing {label}...**"
+    try:
+        compute_fn(history)
+    except Exception as e:
+        status_pane.object = f"**Error:** {e}"
+        import traceback
+        traceback.print_exc()
+
+
 def create_app() -> pn.template.FastListTemplate:
     """Create the QFT convergence + analysis dashboard."""
     debug = os.environ.get("QFT_DASH_DEBUG", "").lower() in {"1", "true", "yes"}
@@ -3444,7 +3570,7 @@ def create_app() -> pn.template.FastListTemplate:
 
         _debug("building config + visualizer")
         gas_config = GasConfigPanel.create_qft_config(spatial_dims=3, bounds_extent=12.0)
-        gas_config.hide_viscous_kernel_widgets = True
+        gas_config.hide_viscous_kernel_widgets = False
         # Override with the best stable calibration settings found in QFT tuning.
         # This matches weak_potential_fit1_aniso_stable2 (200 walkers, 300 steps).
         gas_config.n_steps = 300
@@ -3485,7 +3611,7 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.kinetic_op.nu = 1.0
         gas_config.kinetic_op.beta_curl = 1.0
         gas_config.kinetic_op.use_viscous_coupling = True
-        gas_config.kinetic_op.viscous_length_scale = 0.251372
+        gas_config.kinetic_op.viscous_length_scale = 1.0
         gas_config.kinetic_op.viscous_neighbor_weighting = "inverse_riemannian_distance"
         gas_config.kinetic_op.viscous_neighbor_threshold = None
         gas_config.kinetic_op.viscous_neighbor_penalty = 0.0
@@ -4735,135 +4861,32 @@ def create_app() -> pn.template.FastListTemplate:
         # =====================================================================
 
         def _update_channel_plots(results: dict[str, ChannelCorrelatorResult]) -> None:
-            """Update all channel plots from computed results using ChannelPlot."""
-            channel_plots = []
-            heatmap_plots = []
-
-            for name, result in results.items():
-                if result.n_samples == 0:
-                    continue
-
-                # Build side-by-side plot using ChannelPlot (with error bars if available)
-                channel_plot = ChannelPlot(result, logy=True, width=400, height=350)
-                side_by_side = channel_plot.side_by_side()
-                if side_by_side is not None:
-                    channel_plots.append(side_by_side)
-
-                # Build window heatmap if window data is available
-                if result.window_masses is not None and result.window_aic is not None:
-                    window_masses = result.window_masses.cpu().numpy() if hasattr(result.window_masses, "cpu") else np.asarray(result.window_masses)
-                    window_aic = result.window_aic.cpu().numpy() if hasattr(result.window_aic, "cpu") else np.asarray(result.window_aic)
-                    window_r2 = None
-                    if result.window_r2 is not None:
-                        window_r2 = result.window_r2.cpu().numpy() if hasattr(result.window_r2, "cpu") else np.asarray(result.window_r2)
-                    best_window = result.mass_fit.get("best_window", {})
-
-                    heatmap_plot = build_window_heatmap(
-                        window_masses,
-                        window_aic,
-                        result.window_widths or [],
-                        best_window,
-                        name,
-                        window_r2=window_r2,
-                        color_metric=str(heatmap_color_metric.value),
-                        alpha_metric=str(heatmap_alpha_metric.value),
-                    )
-                    if heatmap_plot is not None:
-                        heatmap_plots.append(pn.pane.HoloViews(
-                            heatmap_plot,
-                            sizing_mode="stretch_width",
-                            linked_axes=False,
-                        ))
-
-            channel_plateau_plots.objects = channel_plots if channel_plots else [
-                pn.pane.Markdown("_No channel plots available._")
-            ]
-            channel_heatmap_plots.objects = heatmap_plots if heatmap_plots else [
-                pn.pane.Markdown("_No window heatmaps available._")
-            ]
-
-            # Mass spectrum bar chart
-            spectrum = build_mass_spectrum_bar(results)
-            channel_plots_spectrum.object = spectrum
-
-            # Overlay plots
-            overlay_corr = build_all_channels_overlay(results, plot_type="correlator")
-            channel_plots_overlay_corr.object = overlay_corr
-
-            overlay_meff = build_all_channels_overlay(results, plot_type="effective_mass")
-            channel_plots_overlay_meff.object = overlay_meff
-
-        def _update_channel_mass_table(
-            results: dict[str, ChannelCorrelatorResult],
-            mode: str = "AIC-Weighted",
-        ) -> None:
-            """Update the channel mass table with extracted masses."""
-            rows = []
-            for name, result in results.items():
-                if result.n_samples == 0:
-                    continue
-
-                if mode == "AIC-Weighted":
-                    mass = result.mass_fit.get("mass", 0.0)
-                    mass_error = result.mass_fit.get("mass_error", float("inf"))
-                    r2 = result.mass_fit.get("r_squared", float("nan"))
-                else:  # Best Window
-                    best_window = result.mass_fit.get("best_window", {})
-                    mass = best_window.get("mass", 0.0)
-                    mass_error = 0.0  # No error for single window
-                    r2 = best_window.get("r2", float("nan"))
-
-                n_windows = result.mass_fit.get("n_valid_windows", 0)
-                rows.append({
-                    "channel": name,
-                    "mass": f"{mass:.6f}" if mass > 0 else "n/a",
-                    "mass_error": f"{mass_error:.6f}" if mass_error < float("inf") else "n/a",
-                    "r2": f"{r2:.4f}" if np.isfinite(r2) else "n/a",
-                    "n_windows": n_windows,
-                    "n_samples": result.n_samples,
-                })
-            channel_mass_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
+            _update_correlator_plots(
+                results,
+                channel_plateau_plots,
+                channel_plots_spectrum,
+                channel_plots_overlay_corr,
+                channel_plots_overlay_meff,
+                heatmap_container=channel_heatmap_plots,
+                heatmap_color_metric_widget=heatmap_color_metric,
+                heatmap_alpha_metric_widget=heatmap_alpha_metric,
+            )
 
         def _update_channel_tables(
             results: dict[str, ChannelCorrelatorResult],
             mode: str | None = None,
         ) -> None:
-            """Update all channel tables from computed results."""
             if mode is None:
                 mode = channel_mass_mode.value
-
-            # 1. Update raw mass table (existing)
-            _update_channel_mass_table(results, mode)
-
-            # 2. Update ratio pane
-            channel_ratio_pane.object = _format_channel_ratios(results, mode)
-
-            # 3. Extract family-mapped masses
-            channel_masses = _extract_channel_masses(results, mode)
-            channel_r2 = _extract_channel_r2(results, mode)
-
-            if not channel_masses:
-                channel_fit_table.value = pd.DataFrame()
-                channel_anchor_table.value = pd.DataFrame()
-                return
-
-            # 4. Update best-fit table (reuse existing function)
-            fit_rows = _build_best_fit_rows(channel_masses, channel_r2)
-            channel_fit_table.value = pd.DataFrame(fit_rows)
-
-            # 5. Update anchor table
-            glueball_ref = None
-            if channel_glueball_ref_input.value is not None:
-                glueball_ref = ("glueball", float(channel_glueball_ref_input.value))
-
-            # sqrt_sigma not available from channels, pass None
-            anchor_rows = _build_anchor_rows(
-                channel_masses,
-                glueball_ref,
-                sqrt_sigma_ref=None,
-                r2s=channel_r2,
+            _update_strong_tables(
+                results,
+                mode,
+                channel_mass_table,
+                channel_ratio_pane,
+                channel_fit_table,
+                channel_anchor_table,
+                channel_glueball_ref_input,
             )
-            channel_anchor_table.value = pd.DataFrame(anchor_rows)
 
         def _on_channel_mass_mode_change(event):
             """Handle mass mode toggle changes - updates all tables."""
@@ -4888,175 +4911,73 @@ def create_app() -> pn.template.FastListTemplate:
 
         def on_run_channels(_):
             """Compute channels using vectorized correlator_channels (new code)."""
-            history = state.get("history")
-            if history is None:
-                channels_status.object = "**Error:** Load a RunHistory first."
-                return
-
-            channels_status.object = "**Computing channels (vectorized)...**"
-
-            try:
+            def _compute(history):
                 results = _compute_channels_vectorized(history, channel_settings)
                 state["channel_results"] = results
-
-                # Update plots
                 _update_channel_plots(results)
-
-                # Update all tables (mass table, ratios, best-fit, anchored)
                 _update_channel_tables(results)
                 _update_strong_couplings(history)
-
                 n_channels = len([r for r in results.values() if r.n_samples > 0])
                 channels_status.object = f"**Complete:** {n_channels} channels computed."
-            except Exception as e:
-                channels_status.object = f"**Error:** {e}"
-                import traceback
-                traceback.print_exc()
+
+            _run_tab_computation(state, channels_status, "channels (vectorized)", _compute)
 
         # =====================================================================
         # Radial channels tab callbacks
         # =====================================================================
 
+        def _radial_spectrum_builder(results):
+            return build_mass_spectrum_bar(
+                results,
+                mass_getter=_get_radial_mass,
+                error_getter=_get_radial_mass_error,
+                title="Radial Channel Mass Spectrum",
+                ylabel="Mass (1 / distance)",
+            )
+
         def _update_radial_plots(
             results: dict[str, ChannelCorrelatorResult],
-            plots_spectrum: pn.pane.HoloViews,
-            plots_overlay_corr: pn.pane.HoloViews,
-            plots_overlay_meff: pn.pane.HoloViews,
-            channel_plots_container: pn.Column,
-            heatmap_plots: pn.Column,
+            plots_spectrum,
+            plots_overlay_corr,
+            plots_overlay_meff,
+            channel_plots_container,
+            heatmap_plots_container,
         ) -> None:
-            """Update radial plots using ChannelPlot for side-by-side display."""
-            channel_plot_items = []
-            heatmap_items = []
-
-            for name, result in results.items():
-                if result.n_samples == 0:
-                    continue
-
-                # Build side-by-side plot using ChannelPlot (with error bars if available)
-                channel_plot = ChannelPlot(result, logy=True, width=400, height=350)
-                side_by_side = channel_plot.side_by_side()
-                if side_by_side is not None:
-                    channel_plot_items.append(side_by_side)
-
-                if result.window_masses is not None and result.window_aic is not None:
-                    window_masses = (
-                        result.window_masses.cpu().numpy()
-                        if hasattr(result.window_masses, "cpu")
-                        else np.asarray(result.window_masses)
-                    )
-                    window_aic = (
-                        result.window_aic.cpu().numpy()
-                        if hasattr(result.window_aic, "cpu")
-                        else np.asarray(result.window_aic)
-                    )
-                    window_r2 = None
-                    if result.window_r2 is not None:
-                        window_r2 = (
-                            result.window_r2.cpu().numpy()
-                            if hasattr(result.window_r2, "cpu")
-                            else np.asarray(result.window_r2)
-                        )
-                    best_window = result.mass_fit.get("best_window", {})
-                    heatmap_plot = build_window_heatmap(
-                        window_masses,
-                        window_aic,
-                        result.window_widths or [],
-                        best_window,
-                        name,
-                        window_r2=window_r2,
-                        color_metric=str(radial_heatmap_color_metric.value),
-                        alpha_metric=str(radial_heatmap_alpha_metric.value),
-                    )
-                    if heatmap_plot is not None:
-                        heatmap_items.append(
-                            pn.pane.HoloViews(
-                                heatmap_plot, sizing_mode="stretch_width", linked_axes=False
-                            )
-                        )
-
-            channel_plots_container.objects = channel_plot_items or [
-                pn.pane.Markdown("_No channel plots available._")
-            ]
-            heatmap_plots.objects = heatmap_items or [pn.pane.Markdown("_No window heatmaps available._")]
-
-            plots_spectrum.object = _build_radial_mass_spectrum_bar(results)
-            plots_overlay_corr.object = build_all_channels_overlay(results, plot_type="correlator")
-            plots_overlay_meff.object = build_all_channels_overlay(results, plot_type="effective_mass")
-
-        def _update_radial_mass_table(
-            results: dict[str, ChannelCorrelatorResult],
-            table: pn.widgets.Tabulator,
-            mode: str,
-        ) -> None:
-            rows = []
-            for name, result in results.items():
-                if result.n_samples == 0:
-                    continue
-
-                if mode == "AIC-Weighted":
-                    mass = _get_radial_mass(result, mode)
-                    mass_error = _get_radial_mass_error(result, mode)
-                    r2 = result.mass_fit.get("r_squared", float("nan"))
-                else:
-                    best_window = result.mass_fit.get("best_window", {})
-                    mass_raw = best_window.get("mass", 0.0)
-                    dt = result.dt if result.dt and result.dt > 0 else 1.0
-                    mass = mass_raw / dt
-                    mass_error = 0.0
-                    r2 = best_window.get("r2", float("nan"))
-
-                n_windows = result.mass_fit.get("n_valid_windows", 0)
-                rows.append(
-                    {
-                        "channel": name,
-                        "mass": f"{mass:.6f}" if mass > 0 else "n/a",
-                        "mass_error": f"{mass_error:.6f}" if mass_error < float("inf") else "n/a",
-                        "r2": f"{r2:.4f}" if np.isfinite(r2) else "n/a",
-                        "n_windows": n_windows,
-                        "n_samples": result.n_samples,
-                    }
-                )
-
-            table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
+            _update_correlator_plots(
+                results,
+                channel_plots_container,
+                plots_spectrum,
+                plots_overlay_corr,
+                plots_overlay_meff,
+                heatmap_container=heatmap_plots_container,
+                heatmap_color_metric_widget=radial_heatmap_color_metric,
+                heatmap_alpha_metric_widget=radial_heatmap_alpha_metric,
+                spectrum_builder=_radial_spectrum_builder,
+            )
 
         def _update_radial_tables(
             results: dict[str, ChannelCorrelatorResult],
-            table: pn.widgets.Tabulator,
-            ratio_pane: pn.pane.Markdown,
-            fit_table: pn.widgets.Tabulator,
-            anchor_table: pn.widgets.Tabulator,
-            glueball_input: pn.widgets.FloatInput,
+            table,
+            ratio_pane,
+            fit_table,
+            anchor_table,
+            glueball_input,
             mode: str | None = None,
         ) -> None:
             if mode is None:
                 mode = radial_mass_mode.value
-
-            _update_radial_mass_table(results, table, mode)
-            ratio_pane.object = _format_radial_channel_ratios(results, mode)
-
-            channel_masses = _extract_radial_channel_masses(results, mode)
-            channel_r2 = _extract_radial_channel_r2(results, mode)
-
-            if not channel_masses:
-                fit_table.value = pd.DataFrame()
-                anchor_table.value = pd.DataFrame()
-                return
-
-            fit_rows = _build_best_fit_rows(channel_masses, channel_r2)
-            fit_table.value = pd.DataFrame(fit_rows)
-
-            glueball_ref = None
-            if glueball_input.value is not None:
-                glueball_ref = ("glueball", float(glueball_input.value))
-
-            anchor_rows = _build_anchor_rows(
-                channel_masses,
-                glueball_ref,
-                sqrt_sigma_ref=None,
-                r2s=channel_r2,
+            _update_strong_tables(
+                results,
+                mode,
+                table,
+                ratio_pane,
+                fit_table,
+                anchor_table,
+                glueball_input,
+                mass_getter=_get_radial_mass,
+                error_getter=_get_radial_mass_error,
+                ratio_specs=RADIAL_STRONG_FORCE_RATIO_SPECS,
             )
-            anchor_table.value = pd.DataFrame(anchor_rows)
 
         def _on_radial_mass_mode_change(event):
             if state.get("radial_results_4d") is not None:
@@ -5106,14 +5027,7 @@ def create_app() -> pn.template.FastListTemplate:
         radial_heatmap_alpha_metric.param.watch(_on_radial_heatmap_metric_change, "value")
 
         def on_run_radial_channels(_):
-            history = state.get("history")
-            if history is None:
-                radial_status.object = "**Error:** Load a RunHistory first."
-                return
-
-            radial_status.object = "**Computing radial strong force channels...**"
-
-            try:
+            def _compute(history):
                 bundle = _compute_radial_channels_bundle(history, radial_settings)
                 state["radial_results_4d"] = bundle.radial_4d.channel_results
                 state["radial_results_3d"] = (
@@ -5204,10 +5118,8 @@ def create_app() -> pn.template.FastListTemplate:
                 radial_status.object = (
                     f"**Complete:** {n_channels} radial strong force channels computed."
                 )
-            except Exception as e:
-                radial_status.object = f"**Error:** {e}"
-                import traceback
-                traceback.print_exc()
+
+            _run_tab_computation(state, radial_status, "radial strong force channels", _compute)
 
         # =====================================================================
         # Electroweak tab callbacks (U1/SU2 correlators)
@@ -5215,85 +5127,35 @@ def create_app() -> pn.template.FastListTemplate:
 
         def _update_electroweak_plots_generic(
             results: dict[str, ChannelCorrelatorResult],
-            channel_plots_container: pn.Column,
-            plots_spectrum: pn.pane.HoloViews,
-            plots_overlay_corr: pn.pane.HoloViews,
-            plots_overlay_meff: pn.pane.HoloViews,
+            channel_plots_container,
+            plots_spectrum,
+            plots_overlay_corr,
+            plots_overlay_meff,
         ) -> None:
-            """Update electroweak plots using ChannelPlot for side-by-side display."""
-            channel_plot_items = []
-
-            for name, result in results.items():
-                if result.n_samples == 0:
-                    continue
-
-                # Build side-by-side plot using ChannelPlot (with error bars if available)
-                channel_plot = ChannelPlot(result, logy=True, width=400, height=350)
-                side_by_side = channel_plot.side_by_side()
-                if side_by_side is not None:
-                    channel_plot_items.append(side_by_side)
-
-            channel_plots_container.objects = channel_plot_items if channel_plot_items else [
-                pn.pane.Markdown("_No channel plots available._")
-            ]
-
-            plots_spectrum.object = build_mass_spectrum_bar(results)
-            plots_overlay_corr.object = build_all_channels_overlay(results, plot_type="correlator")
-            plots_overlay_meff.object = build_all_channels_overlay(
-                results, plot_type="effective_mass"
+            _update_correlator_plots(
+                results,
+                channel_plots_container,
+                plots_spectrum,
+                plots_overlay_corr,
+                plots_overlay_meff,
             )
-
-        def _update_electroweak_mass_table_generic(
-            results: dict[str, ChannelCorrelatorResult],
-            mass_table: pn.widgets.Tabulator,
-            mode: str = "AIC-Weighted",
-        ) -> None:
-            rows = []
-            for name, result in results.items():
-                if result.n_samples == 0:
-                    continue
-
-                if mode == "AIC-Weighted":
-                    mass = result.mass_fit.get("mass", 0.0)
-                    mass_error = result.mass_fit.get("mass_error", float("inf"))
-                    r2 = result.mass_fit.get("r_squared", float("nan"))
-                else:
-                    best_window = result.mass_fit.get("best_window", {})
-                    mass = best_window.get("mass", 0.0)
-                    mass_error = 0.0
-                    r2 = best_window.get("r2", float("nan"))
-
-                n_windows = result.mass_fit.get("n_valid_windows", 0)
-                rows.append(
-                    {
-                        "channel": name,
-                        "mass": f"{mass:.6f}" if mass > 0 else "n/a",
-                        "mass_error": (
-                            f"{mass_error:.6f}" if mass_error < float("inf") else "n/a"
-                        ),
-                        "r2": f"{r2:.4f}" if np.isfinite(r2) else "n/a",
-                        "n_windows": n_windows,
-                        "n_samples": result.n_samples,
-                    }
-                )
-            mass_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
 
         def _update_electroweak_tables_generic(
             results: dict[str, ChannelCorrelatorResult],
             mode: str,
-            mass_table: pn.widgets.Tabulator,
-            ratio_pane: pn.pane.Markdown,
-            ratio_table: pn.widgets.Tabulator,
-            fit_table: pn.widgets.Tabulator,
-            anchor_table: pn.widgets.Tabulator,
-            compare_table: pn.widgets.Tabulator,
-            ref_table: pn.widgets.Tabulator,
+            mass_table,
+            ratio_pane,
+            ratio_table,
+            fit_table,
+            anchor_table,
+            compare_table,
+            ref_table,
         ) -> None:
-            _update_electroweak_mass_table_generic(results, mass_table, mode)
-            ratio_pane.object = _format_electroweak_ratios(results, mode)
+            _update_mass_table(results, mass_table, mode)
+            ratio_pane.object = _format_ratios(results, mode, title="Electroweak Ratios")
 
-            masses = _extract_electroweak_masses(results, mode)
-            r2s = _extract_electroweak_r2(results, mode)
+            masses = _extract_masses(results, mode, family_map=None)
+            r2s = _extract_r2(results, mode, family_map=None)
 
             base_name = "u1_dressed" if "u1_dressed" in masses else "u1_phase"
 
@@ -5341,12 +5203,6 @@ def create_app() -> pn.template.FastListTemplate:
                 electroweak_plots_overlay_meff,
             )
 
-        def _update_electroweak_mass_table(
-            results: dict[str, ChannelCorrelatorResult],
-            mode: str = "AIC-Weighted",
-        ) -> None:
-            _update_electroweak_mass_table_generic(results, electroweak_mass_table, mode)
-
         def _update_electroweak_tables(
             results: dict[str, ChannelCorrelatorResult],
             mode: str | None = None,
@@ -5372,16 +5228,9 @@ def create_app() -> pn.template.FastListTemplate:
         electroweak_mass_mode.param.watch(_on_electroweak_mass_mode_change, "value")
 
         def on_run_electroweak(_):
-            history = state.get("history")
-            if history is None:
-                electroweak_status.object = "**Error:** Load a RunHistory first."
-                return
-
-            electroweak_status.object = "**Computing electroweak channels...**"
-            try:
+            def _compute(history):
                 results = _compute_electroweak_channels(history, electroweak_settings)
                 state["electroweak_results"] = results
-
                 _update_electroweak_plots(results)
                 _update_electroweak_tables(results)
                 couplings = _compute_coupling_constants(
@@ -5398,15 +5247,12 @@ def create_app() -> pn.template.FastListTemplate:
                         refs=_extract_coupling_refs(electroweak_coupling_ref_table),
                     )
                 )
-
                 n_channels = len([r for r in results.values() if r.n_samples > 0])
                 electroweak_status.object = (
                     f"**Complete:** {n_channels} electroweak channels computed."
                 )
-            except Exception as e:
-                electroweak_status.object = f"**Error:** {e}"
-                import traceback
-                traceback.print_exc()
+
+            _run_tab_computation(state, electroweak_status, "electroweak channels", _compute)
 
         # =====================================================================
         # Radial electroweak tab callbacks
@@ -5478,13 +5324,7 @@ def create_app() -> pn.template.FastListTemplate:
         radial_ew_mass_mode.param.watch(_on_radial_ew_mass_mode_change, "value")
 
         def on_run_radial_electroweak(_):
-            history = state.get("history")
-            if history is None:
-                radial_ew_status.object = "**Error:** Load a RunHistory first."
-                return
-
-            radial_ew_status.object = "**Computing radial electroweak channels...**"
-            try:
+            def _compute(history):
                 bundle = _compute_radial_electroweak_bundle(history, radial_ew_settings)
                 state["radial_ew_results_4d"] = bundle.radial_4d.channel_results
                 state["radial_ew_results_3d"] = (
@@ -5550,10 +5390,8 @@ def create_app() -> pn.template.FastListTemplate:
                 radial_ew_status.object = (
                     f"**Complete:** {n_channels} radial electroweak channels computed."
                 )
-            except Exception as e:
-                radial_ew_status.object = f"**Error:** {e}"
-                import traceback
-                traceback.print_exc()
+
+            _run_tab_computation(state, radial_ew_status, "radial electroweak channels", _compute)
 
         def on_run_higgs(_):
             history = state.get("history")
