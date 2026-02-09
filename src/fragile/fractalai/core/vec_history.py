@@ -3,10 +3,17 @@
 This module provides the VectorizedHistoryRecorder class that pre-allocates
 all storage arrays and fills them in-place during EuclideanGas execution,
 eliminating dynamic allocation overhead and keeping the run() method clean.
+
+When ``chunk_size`` is set, only a small buffer is kept in memory and full
+chunks are flushed to temporary ``.pt`` files on disk, then merged in
+``build()`` to produce the same ``RunHistory`` as the unchunked path.
 """
 
 from __future__ import annotations
 
+import shutil
+import tempfile
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import torch
@@ -30,6 +37,11 @@ class VectorizedHistoryRecorder:
     - In-place recording via record_initial_state() and record_step()
     - Automatic trimming to actual_recorded size
     - Construction of final RunHistory object
+
+    When ``chunk_size`` is provided, only a buffer of that many timesteps is
+    kept in memory.  Once full the buffer is flushed to a temporary ``.pt``
+    file on disk and the buffer is reset.  ``build()`` merges all chunks into
+    the same ``RunHistory`` that the unchunked path produces.
 
     Example:
         >>> recorder = VectorizedHistoryRecorder(
@@ -66,6 +78,44 @@ class VectorizedHistoryRecorder:
     Reference: Replaces inline recording logic in euclidean_gas.py:472-778
     """
 
+    # ------------------------------------------------------------------
+    # Field category constants – used by flush/merge to avoid duplicating
+    # the field list in multiple places.
+    # ------------------------------------------------------------------
+
+    # Fields indexed with the *full* time axis [buf_cap, ...]
+    _FULL_INDEXED_FIELDS = (
+        "x_before_clone", "v_before_clone", "U_before",
+        "x_final", "v_final", "U_final", "n_alive",
+    )
+
+    # Fields indexed with the *minus-one* time axis [buf_cap - 1, ...]
+    _MINUS_ONE_INDEXED_FIELDS = (
+        "x_after_clone", "v_after_clone", "U_after_clone",
+        "num_cloned", "step_times",
+        "fitness", "rewards", "cloning_scores", "cloning_probs",
+        "will_clone", "alive_mask", "companions_distance", "companions_clone",
+        "clone_jitter", "clone_delta_x", "clone_delta_v",
+        "distances", "z_rewards", "z_distances",
+        "pos_squared_differences", "vel_squared_differences",
+        "rescaled_rewards", "rescaled_distances",
+        "mu_rewards", "sigma_rewards", "mu_distances", "sigma_distances",
+        "force_stable", "force_adapt", "force_viscous", "force_friction",
+        "force_total", "noise",
+    )
+
+    # Optional minus-one fields (may be None)
+    _OPTIONAL_MINUS_ONE_FIELDS = (
+        "fitness_gradients", "fitness_hessians_diag", "fitness_hessians_full",
+        "sigma_reg_diag", "sigma_reg_full",
+        "riemannian_volume_weights", "ricci_scalar_proxy", "diffusion_tensors_full",
+    )
+
+    # List-valued fields (variable-length per step)
+    _LIST_FIELDS = (
+        "neighbor_edges", "geodesic_edge_distances", "voronoi_regions", "edge_weights",
+    )
+
     def __init__(
         self,
         N: int,
@@ -85,6 +135,7 @@ class VectorizedHistoryRecorder:
         record_neighbors: bool = False,
         record_voronoi: bool = False,
         record_edge_weights: bool = False,
+        chunk_size: int | None = None,
     ):
         """Initialize recorder with pre-allocated arrays.
 
@@ -97,6 +148,10 @@ class VectorizedHistoryRecorder:
             record_gradients: Whether to record fitness gradients
             record_hessians_diag: Whether to record diagonal Hessians
             record_hessians_full: Whether to record full Hessians
+            chunk_size: If set, only allocate buffers for this many timesteps
+                and flush to disk when full. Reduces peak memory from
+                O(n_recorded) to O(chunk_size). ``build()`` merges all
+                chunks transparently.
         """
         self.N = N
         self.d = d
@@ -108,59 +163,71 @@ class VectorizedHistoryRecorder:
         self.record_voronoi = record_voronoi
         self.record_geodesic_edges = record_geodesic_edges
 
+        # -- Chunking state --------------------------------------------------
+        self._chunk_size = chunk_size
+        if chunk_size is not None:
+            self._buf_capacity = min(chunk_size, n_recorded)
+        else:
+            self._buf_capacity = n_recorded
+        self._chunk_dir: Path | None = None  # created lazily on first flush
+        self._flushed_chunks: list[Path] = []
+        self._is_first_chunk = True
+
+        buf_cap = self._buf_capacity
+
         # ====================================================================
-        # Preallocate all storage arrays
+        # Preallocate all storage arrays (sized to buf_cap, not n_recorded)
         # ====================================================================
 
-        # States: Before Cloning [n_recorded, N, d]
-        self.x_before_clone = torch.zeros(n_recorded, N, d, device=device, dtype=dtype)
-        self.v_before_clone = torch.zeros(n_recorded, N, d, device=device, dtype=dtype)
-        self.U_before = torch.zeros(n_recorded, N, device=device, dtype=dtype)
+        # States: Before Cloning [buf_cap, N, d]
+        self.x_before_clone = torch.zeros(buf_cap, N, d, device=device, dtype=dtype)
+        self.v_before_clone = torch.zeros(buf_cap, N, d, device=device, dtype=dtype)
+        self.U_before = torch.zeros(buf_cap, N, device=device, dtype=dtype)
 
-        # States: After Cloning [n_recorded-1, N, d]
-        self.x_after_clone = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
-        self.v_after_clone = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
-        self.U_after_clone = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
+        # States: After Cloning [buf_cap-1, N, d]
+        self.x_after_clone = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
+        self.v_after_clone = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
+        self.U_after_clone = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
 
-        # States: Final (After Kinetic) [n_recorded, N, d]
-        self.x_final = torch.zeros(n_recorded, N, d, device=device, dtype=dtype)
-        self.v_final = torch.zeros(n_recorded, N, d, device=device, dtype=dtype)
-        self.U_final = torch.zeros(n_recorded, N, device=device, dtype=dtype)
+        # States: Final (After Kinetic) [buf_cap, N, d]
+        self.x_final = torch.zeros(buf_cap, N, d, device=device, dtype=dtype)
+        self.v_final = torch.zeros(buf_cap, N, d, device=device, dtype=dtype)
+        self.U_final = torch.zeros(buf_cap, N, device=device, dtype=dtype)
 
-        # Per-step scalars [n_recorded] or [n_recorded-1]
-        self.n_alive = torch.zeros(n_recorded, dtype=torch.long, device=device)
-        self.num_cloned = torch.zeros(n_recorded - 1, dtype=torch.long, device=device)
-        self.step_times = torch.zeros(n_recorded - 1, dtype=torch.float32, device=device)
+        # Per-step scalars [buf_cap] or [buf_cap-1]
+        self.n_alive = torch.zeros(buf_cap, dtype=torch.long, device=device)
+        self.num_cloned = torch.zeros(buf_cap - 1, dtype=torch.long, device=device)
+        self.step_times = torch.zeros(buf_cap - 1, dtype=torch.float32, device=device)
 
-        # Per-walker per-step data [n_recorded-1, N]
-        self.fitness = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.rewards = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.cloning_scores = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.cloning_probs = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.will_clone = torch.zeros(n_recorded - 1, N, dtype=torch.bool, device=device)
-        self.alive_mask = torch.zeros(n_recorded - 1, N, dtype=torch.bool, device=device)
-        self.companions_distance = torch.zeros(n_recorded - 1, N, dtype=torch.long, device=device)
-        self.companions_clone = torch.zeros(n_recorded - 1, N, dtype=torch.long, device=device)
-        self.clone_jitter = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
-        self.clone_delta_x = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
-        self.clone_delta_v = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
+        # Per-walker per-step data [buf_cap-1, N]
+        self.fitness = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.rewards = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.cloning_scores = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.cloning_probs = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.will_clone = torch.zeros(buf_cap - 1, N, dtype=torch.bool, device=device)
+        self.alive_mask = torch.zeros(buf_cap - 1, N, dtype=torch.bool, device=device)
+        self.companions_distance = torch.zeros(buf_cap - 1, N, dtype=torch.long, device=device)
+        self.companions_clone = torch.zeros(buf_cap - 1, N, dtype=torch.long, device=device)
+        self.clone_jitter = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
+        self.clone_delta_x = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
+        self.clone_delta_v = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
 
-        # Fitness intermediate values [n_recorded-1, N]
-        self.distances = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.z_rewards = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.z_distances = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.pos_squared_differences = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.vel_squared_differences = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.rescaled_rewards = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
-        self.rescaled_distances = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
+        # Fitness intermediate values [buf_cap-1, N]
+        self.distances = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.z_rewards = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.z_distances = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.pos_squared_differences = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.vel_squared_differences = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.rescaled_rewards = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
+        self.rescaled_distances = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
 
-        # Localized statistics [n_recorded-1]
-        self.mu_rewards = torch.zeros(n_recorded - 1, device=device, dtype=dtype)
-        self.sigma_rewards = torch.zeros(n_recorded - 1, device=device, dtype=dtype)
-        self.mu_distances = torch.zeros(n_recorded - 1, device=device, dtype=dtype)
-        self.sigma_distances = torch.zeros(n_recorded - 1, device=device, dtype=dtype)
+        # Localized statistics [buf_cap-1]
+        self.mu_rewards = torch.zeros(buf_cap - 1, device=device, dtype=dtype)
+        self.sigma_rewards = torch.zeros(buf_cap - 1, device=device, dtype=dtype)
+        self.mu_distances = torch.zeros(buf_cap - 1, device=device, dtype=dtype)
+        self.sigma_distances = torch.zeros(buf_cap - 1, device=device, dtype=dtype)
 
-        # Adaptive kinetics data (optional) [n_recorded-1, N, d] or [n_recorded-1, N, d, d]
+        # Adaptive kinetics data (optional) [buf_cap-1, N, d] or [buf_cap-1, N, d, d]
         self.fitness_gradients: Tensor | None = None
         self.fitness_hessians_diag: Tensor | None = None
         self.fitness_hessians_full: Tensor | None = None
@@ -171,37 +238,37 @@ class VectorizedHistoryRecorder:
         self.diffusion_tensors_full: Tensor | None = None
 
         if record_gradients:
-            self.fitness_gradients = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
+            self.fitness_gradients = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
         if record_hessians_diag:
             self.fitness_hessians_diag = torch.zeros(
-                n_recorded - 1, N, d, device=device, dtype=dtype
+                buf_cap - 1, N, d, device=device, dtype=dtype
             )
         if record_hessians_full:
             self.fitness_hessians_full = torch.zeros(
-                n_recorded - 1, N, d, d, device=device, dtype=dtype
+                buf_cap - 1, N, d, d, device=device, dtype=dtype
             )
         if record_sigma_reg_diag:
-            self.sigma_reg_diag = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
+            self.sigma_reg_diag = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
         if record_sigma_reg_full:
-            self.sigma_reg_full = torch.zeros(n_recorded - 1, N, d, d, device=device, dtype=dtype)
+            self.sigma_reg_full = torch.zeros(buf_cap - 1, N, d, d, device=device, dtype=dtype)
         if record_volume_weights:
             self.riemannian_volume_weights = torch.zeros(
-                n_recorded - 1, N, device=device, dtype=dtype
+                buf_cap - 1, N, device=device, dtype=dtype
             )
         if record_ricci_scalar:
-            self.ricci_scalar_proxy = torch.zeros(n_recorded - 1, N, device=device, dtype=dtype)
+            self.ricci_scalar_proxy = torch.zeros(buf_cap - 1, N, device=device, dtype=dtype)
         if record_diffusion_tensors:
             self.diffusion_tensors_full = torch.zeros(
-                n_recorded - 1, N, d, d, device=device, dtype=dtype
+                buf_cap - 1, N, d, d, device=device, dtype=dtype
             )
 
         # Kinetic operator data
-        self.force_stable = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
-        self.force_adapt = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
-        self.force_viscous = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
-        self.force_friction = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
-        self.force_total = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
-        self.noise = torch.zeros(n_recorded - 1, N, d, device=device, dtype=dtype)
+        self.force_stable = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
+        self.force_adapt = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
+        self.force_viscous = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
+        self.force_friction = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
+        self.force_total = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
+        self.noise = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
 
         # Optional neighbor graph storage (variable-length per step)
         self.neighbor_edges: list[Tensor] | None = [] if record_neighbors else None
@@ -403,6 +470,87 @@ class VectorizedHistoryRecorder:
         # Increment recorded index for next step
         self.recorded_idx += 1
 
+        # Auto-flush when chunk buffer is full
+        if self._chunk_size is not None and self.recorded_idx >= self._buf_capacity:
+            self._flush_chunk()
+            self._reset_buffer()
+
+    # ------------------------------------------------------------------
+    # Chunked recording helpers
+    # ------------------------------------------------------------------
+
+    def _flush_chunk(self) -> None:
+        """Save the current buffer contents to a ``.pt`` file on disk."""
+        if self._chunk_dir is None:
+            self._chunk_dir = Path(tempfile.mkdtemp(prefix="vechistory_chunks_"))
+
+        idx = self.recorded_idx  # number of full-indexed slots written
+        chunk: dict[str, object] = {}
+
+        # Full-indexed fields --------------------------------------------------
+        if self._is_first_chunk:
+            full_slice = slice(0, idx)
+        else:
+            # Non-first chunks: slot 0 is an unused dummy → skip it
+            full_slice = slice(1, idx)
+
+        for name in self._FULL_INDEXED_FIELDS:
+            chunk[name] = getattr(self, name)[full_slice].clone()
+
+        # Minus-one-indexed fields ---------------------------------------------
+        minus_one_end = idx - 1
+        for name in self._MINUS_ONE_INDEXED_FIELDS:
+            chunk[name] = getattr(self, name)[0:minus_one_end].clone()
+
+        # Optional minus-one fields --------------------------------------------
+        for name in self._OPTIONAL_MINUS_ONE_FIELDS:
+            val = getattr(self, name)
+            if val is not None:
+                chunk[name] = val[0:minus_one_end].clone()
+
+        # List fields ----------------------------------------------------------
+        if self._is_first_chunk:
+            list_slice = slice(0, idx)
+        else:
+            list_slice = slice(1, idx)
+
+        for name in self._LIST_FIELDS:
+            val = getattr(self, name)
+            if val is not None:
+                chunk[name] = list(val[list_slice])
+
+        chunk_path = self._chunk_dir / f"chunk_{len(self._flushed_chunks):04d}.pt"
+        torch.save(chunk, str(chunk_path))
+        self._flushed_chunks.append(chunk_path)
+
+    def _reset_buffer(self) -> None:
+        """Reset buffers after a flush for the next chunk of recording."""
+        self.recorded_idx = 1  # slot 0 = unused dummy for non-first chunks
+        self._is_first_chunk = False
+
+        # Zero out tensor buffers so stale data doesn't leak
+        for name in self._FULL_INDEXED_FIELDS:
+            getattr(self, name).zero_()
+        for name in self._MINUS_ONE_INDEXED_FIELDS:
+            getattr(self, name).zero_()
+        for name in self._OPTIONAL_MINUS_ONE_FIELDS:
+            val = getattr(self, name)
+            if val is not None:
+                val.zero_()
+
+        # Clear list fields
+        for name in self._LIST_FIELDS:
+            val = getattr(self, name)
+            if val is not None:
+                val.clear()
+                # Add dummy placeholder for slot 0 (unused in non-first chunks)
+                if name == "neighbor_edges":
+                    val.append(torch.zeros((0, 2), dtype=torch.long, device=self.device))
+                elif name == "geodesic_edge_distances":
+                    val.append(torch.zeros((0,), dtype=self.dtype, device=self.device))
+                elif name in ("voronoi_regions", "edge_weights"):
+                    val.append({})
+
     def build(
         self,
         n_steps: int,
@@ -421,6 +569,10 @@ class VectorizedHistoryRecorder:
     ):
         """Construct final RunHistory with trimming to actual recorded size.
 
+        If chunks have been flushed to disk, the remaining buffer is flushed as
+        a final chunk and all chunks are merged via ``torch.cat``.  The merged
+        tensors are identical to what the unchunked path would produce.
+
         Args:
             n_steps: Total number of steps requested
             record_every: Recording interval
@@ -435,7 +587,48 @@ class VectorizedHistoryRecorder:
         """
         from fragile.fractalai.core.history import RunHistory
 
-        # Actual recorded size (may be less than n_recorded if terminated early)
+        # ----- Chunked path: merge all flushed chunks -----------------------
+        if self._flushed_chunks:
+            # Flush the remaining buffer as the final chunk (if any data beyond
+            # the dummy slot 0 / the initial state recorded_idx==1 case).
+            has_remaining = (
+                (self._is_first_chunk and self.recorded_idx > 0)
+                or (not self._is_first_chunk and self.recorded_idx > 1)
+            )
+            if has_remaining:
+                self._flush_chunk()
+
+            merged = self._merge_chunks()
+
+            # Clean up temp files
+            if self._chunk_dir is not None:
+                shutil.rmtree(self._chunk_dir, ignore_errors=True)
+                self._chunk_dir = None
+            self._flushed_chunks.clear()
+
+            actual_recorded = merged[self._FULL_INDEXED_FIELDS[0]].shape[0]
+
+            return RunHistory(
+                N=self.N,
+                d=self.d,
+                n_steps=final_step,
+                n_recorded=actual_recorded,
+                record_every=record_every,
+                terminated_early=terminated_early,
+                final_step=final_step,
+                recorded_steps=recorded_steps or [],
+                delta_t=delta_t or 0.0,
+                pbc=pbc,
+                params=params,
+                rng_seed=rng_seed,
+                rng_state=rng_state,
+                total_time=total_time,
+                init_time=init_time,
+                bounds=bounds,
+                **merged,
+            )
+
+        # ----- Unchunked path (original logic) ------------------------------
         actual_recorded = self.recorded_idx
 
         return RunHistory(
@@ -532,3 +725,46 @@ class VectorizedHistoryRecorder:
             init_time=init_time,
             bounds=bounds,
         )
+
+    def _merge_chunks(self) -> dict[str, object]:
+        """Load all flushed chunks and concatenate each field along dim 0."""
+        all_tensor_fields = (
+            self._FULL_INDEXED_FIELDS
+            + self._MINUS_ONE_INDEXED_FIELDS
+            + self._OPTIONAL_MINUS_ONE_FIELDS
+        )
+
+        # Accumulators: tensors → list of tensors, lists → flat list
+        accum: dict[str, list] = {name: [] for name in all_tensor_fields}
+        list_accum: dict[str, list] = {}
+        for name in self._LIST_FIELDS:
+            if getattr(self, name) is not None:
+                list_accum[name] = []
+
+        for chunk_path in self._flushed_chunks:
+            chunk = torch.load(str(chunk_path), map_location="cpu", weights_only=True)
+            for name in all_tensor_fields:
+                if name in chunk:
+                    accum[name].append(chunk[name])
+            # List fields are saved as plain lists in the chunk
+            for name in list_accum:
+                if name in chunk:
+                    list_accum[name].extend(chunk[name])
+            del chunk  # free memory before loading next
+
+        merged: dict[str, object] = {}
+        for name in all_tensor_fields:
+            parts = accum[name]
+            if parts:
+                merged[name] = torch.cat(parts, dim=0)
+            else:
+                merged[name] = None
+        for name in list_accum:
+            merged[name] = list_accum[name] if list_accum[name] else None
+
+        # Ensure list fields that were None stay None
+        for name in self._LIST_FIELDS:
+            if name not in merged:
+                merged[name] = None
+
+        return merged

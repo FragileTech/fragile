@@ -86,6 +86,13 @@ class GasConfigPanel(param.Parameterized):
         softbounds=(1, 200),
         doc="Record every k-th step (1=all steps)",
     )
+    chunk_size = param.Integer(
+        default=None,
+        allow_None=True,
+        bounds=(10, None),
+        doc="Chunk size for history recording (None=no chunking). "
+        "Reduces peak memory by flushing to disk every chunk_size steps.",
+    )
     neighbor_graph_method = param.ObjectSelector(
         default="delaunay",
         objects=["none", "delaunay", "voronoi"],
@@ -111,6 +118,7 @@ class GasConfigPanel(param.Parameterized):
             "inverse_riemannian_distance",
             "kernel",
             "riemannian_kernel",
+            "riemannian_kernel_volume",
         ],
         doc="Edge weight modes to pre-compute during Voronoi tessellation",
     )
@@ -128,7 +136,7 @@ class GasConfigPanel(param.Parameterized):
         softbounds=(0.01, 2.0),
         doc="Initial velocity scale",
     )
-    bounds_extent = param.Number(default=3.0, bounds=(1, 12), doc="Spatial bounds half-width")
+    bounds_extent = param.Integer(default=3, bounds=(1, 1000), doc="Spatial bounds half-width")
 
     # Benchmark visualization controls
     show_optimum = param.Boolean(default=True, doc="Show global optimum marker on benchmark plot")
@@ -228,6 +236,13 @@ class GasConfigPanel(param.Parameterized):
                 value=self.riemannian_ricci_weight,
                 step=0.1,
             ),
+            "bounds_extent": pnw.EditableIntSlider(
+                name="bounds_extent",
+                start=1,
+                end=1000,
+                value=int(self.bounds_extent),
+                step=1,
+            ),
         }
         self._widget_links: set[str] = set()
 
@@ -259,7 +274,7 @@ class GasConfigPanel(param.Parameterized):
 
     @staticmethod
     def create_qft_config(
-        spatial_dims: int = 3, bounds_extent: float = 3.0, dims: int | None = None
+        spatial_dims: int = 3, bounds_extent: int = 3, dims: int | None = None
     ) -> GasConfigPanel:
         """Create GasConfigPanel with QFT calibration defaults.
 
@@ -280,7 +295,7 @@ class GasConfigPanel(param.Parameterized):
         config = GasConfigPanel(spatial_dims=spatial_dims)
 
         # Benchmark
-        config.bounds_extent = bounds_extent
+        config.bounds_extent = int(bounds_extent)
         config.benchmark_name = "Voronoi Ricci Scalar"
 
         # Simulation
@@ -453,6 +468,7 @@ class GasConfigPanel(param.Parameterized):
             "clone_every": 1,
             "enable_kinetic": True,
             "pbc": False,
+            "pbc_fitness_only": False,
             "dtype": "float32",
         }
 
@@ -700,7 +716,7 @@ class GasConfigPanel(param.Parameterized):
         Raises:
             ValueError: If parameters are invalid
         """
-        for name in ("n_steps", "record_every"):
+        for name in ("n_steps", "record_every", "chunk_size"):
             widget = self._widget_overrides.get(name)
             if widget is not None and hasattr(widget, "value"):
                 setattr(self, name, widget.value)
@@ -734,6 +750,7 @@ class GasConfigPanel(param.Parameterized):
             clone_every=int(self.gas_params.get("clone_every", 1)),
             enable_kinetic=self.gas_params["enable_kinetic"],
             pbc=self.gas_params["pbc"],
+            pbc_fitness_only=self.gas_params["pbc_fitness_only"],
             neighbor_graph_method=self.neighbor_graph_method,
             neighbor_graph_update_every=int(self.neighbor_graph_update_every),
             neighbor_graph_record=self.neighbor_graph_record,
@@ -753,6 +770,7 @@ class GasConfigPanel(param.Parameterized):
             v_init=v_init,
             record_every=int(self.record_every),
             progress_callback=progress_callback,
+            chunk_size=self.chunk_size,
         )
 
         # Store history and notify listeners
@@ -879,6 +897,10 @@ Euclidean time will be added as an additional dimension for QFT analysis.
             name="PBC (periodic bounds)",
             value=self.gas_params["pbc"],
         )
+        pbc_fitness_only_cb = pn.widgets.Checkbox(
+            name="PBC fitness only",
+            value=self.gas_params["pbc_fitness_only"],
+        )
 
         # Set up watchers separately (watch() returns Watcher, not widget)
         n_slider.param.watch(lambda e: self.gas_params.update({"N": e.new}), "value")
@@ -889,6 +911,9 @@ Euclidean time will be added as an additional dimension for QFT analysis.
             lambda e: self.gas_params.update({"enable_kinetic": e.new}), "value"
         )
         pbc_cb.param.watch(lambda e: self.gas_params.update({"pbc": e.new}), "value")
+        pbc_fitness_only_cb.param.watch(
+            lambda e: self.gas_params.update({"pbc_fitness_only": e.new}), "value"
+        )
 
         # Add widgets to column
         neighbor_params = [
@@ -899,10 +924,11 @@ Euclidean time will be added as an additional dimension for QFT analysis.
         ]
         general_panel = pn.Column(
             n_slider,
-            self._build_param_panel(["n_steps", "record_every"]),
+            self._build_param_panel(["n_steps", "record_every", "chunk_size"]),
             enable_cloning_cb,
             enable_kinetic_cb,
             pbc_cb,
+            pbc_fitness_only_cb,
             self._build_param_panel(neighbor_params),
             sizing_mode="stretch_width",
         )

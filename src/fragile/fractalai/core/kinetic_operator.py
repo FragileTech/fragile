@@ -181,6 +181,7 @@ class KineticOperator(PanelModel):
             "inverse_riemannian_distance",
             "inverse_riemannian_volume",
             "riemannian_kernel",
+            "riemannian_kernel_volume",
             "inverse_distance",
             "inverse_volume",
             "kernel",
@@ -211,11 +212,12 @@ class KineticOperator(PanelModel):
         doc="Optional cap on viscous degree to saturate multi-neighbor coupling",
     )
     viscous_volume_weighting = param.Boolean(
-        default=True,
-        doc="Weight viscous neighbors by Riemannian volume element",
+        default=False,
+        doc="Weight viscous neighbors by Riemannian volume element. "
+        "Disable when using riemannian_kernel_volume to avoid double-counting √(det g).",
     )
     compute_volume_weights = param.Boolean(
-        default=True,
+        default=False,
         doc="Compute and store Riemannian volume weights for analysis",
     )
 
@@ -470,8 +472,8 @@ class KineticOperator(PanelModel):
         viscous_neighbor_threshold: float | None = None,
         viscous_neighbor_penalty: float = 0.0,
         viscous_degree_cap: float | None = None,
-        viscous_volume_weighting: bool = True,
-        compute_volume_weights: bool = True,
+        viscous_volume_weighting: bool = False,
+        compute_volume_weights: bool = False,
         beta_curl: float = 0.0,
         curl_field=None,
         V_alg: float = float("inf"),
@@ -682,17 +684,20 @@ class KineticOperator(PanelModel):
         Returns:
             viscous_force: [N, d]
 
-        Raises:
-            ValueError: If neighbor_edges is None (required for all modes)
         """
         if not self.use_viscous_coupling or self.nu == 0.0:
             return torch.zeros_like(v)
 
         if neighbor_edges is None or neighbor_edges.numel() == 0:
-            raise ValueError(
-                "neighbor_edges required for viscous coupling. "
-                "Ensure neighbor_graph_record=True during simulation."
+            import warnings
+
+            warnings.warn(
+                "neighbor_edges empty for viscous coupling; returning zero viscous force. "
+                "This can happen when Delaunay degenerates (e.g., clustered walkers).",
+                RuntimeWarning,
+                stacklevel=2,
             )
+            return torch.zeros_like(v)
 
         # Prepare edges
         edges = neighbor_edges.to(x.device)

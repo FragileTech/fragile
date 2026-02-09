@@ -161,6 +161,14 @@ class EuclideanGas(PanelModel):
             "PBC is applied before computing fitness and after kinetic updates."
         ),
     )
+    pbc_fitness_only = param.Boolean(
+        default=False,
+        doc=(
+            "When True and pbc=True, periodic distances are used only for "
+            "companion selection and fitness computation. Voronoi/scutoid "
+            "tessellation and derived distances remain non-periodic."
+        ),
+    )
     neighbor_graph_method = param.Selector(
         default="delaunay",
         objects=["none", "delaunay", "voronoi"],
@@ -186,6 +194,7 @@ class EuclideanGas(PanelModel):
             "inverse_riemannian_distance",
             "kernel",
             "riemannian_kernel",
+            "riemannian_kernel_volume",
         ],
         doc="Edge weight modes to pre-compute during Voronoi tessellation",
     )
@@ -529,6 +538,9 @@ class EuclideanGas(PanelModel):
         else:
             alive_mask = torch.ones(state.N, dtype=torch.bool, device=self.device)
 
+        # Derived flag: use PBC for geometry (Voronoi/scutoid) unless fitness-only mode
+        pbc_geometry = self.pbc and not self.pbc_fitness_only
+
         # SAFETY: If all walkers are dead, revive all within bounds (only in non-PBC mode)
         if not self.pbc and alive_mask.sum().item() == 0:
             msg = "All walkers are dead (out of bounds); cannot proceed with step."
@@ -762,9 +774,9 @@ class EuclideanGas(PanelModel):
                         positions=state_cloned.x,
                         alive=alive_mask,
                         bounds=self.bounds,
-                        pbc=self.pbc,
-                        pbc_mode="mirror" if self.pbc else "ignore",
-                        exclude_boundary=not self.pbc,  # Exclude boundary only if not using PBC
+                        pbc=pbc_geometry,
+                        pbc_mode="mirror" if pbc_geometry else "ignore",
+                        exclude_boundary=not pbc_geometry,  # Exclude boundary only if not using PBC
                         boundary_tolerance=1e-6,
                         compute_curvature=False,  # Not needed for diffusion
                         spatial_dims=spatial_dims,  # Exclude time dimension in QFT mode
@@ -926,6 +938,7 @@ class EuclideanGas(PanelModel):
         record_rng_state: bool = False,
         show_progress: bool = False,
         progress_callback: Callable[[int, int, float], None] | None = None,
+        chunk_size: int | None = None,
     ):
         """
         Run Euclidean Gas for multiple steps and return complete history.
@@ -938,6 +951,9 @@ class EuclideanGas(PanelModel):
                          Step 0 (initial) and final step are always recorded.
             show_progress: Show tqdm progress bar during simulation.
             progress_callback: Optional callback invoked as (step, total_steps, elapsed_seconds).
+            chunk_size: If set, the history recorder keeps only this many
+                timesteps in memory and flushes full chunks to disk. Reduces
+                peak memory from O(n_recorded) to O(chunk_size).
 
         Returns:
             RunHistory object with complete execution trace including:
@@ -1011,6 +1027,7 @@ class EuclideanGas(PanelModel):
                     "clone_every": self.clone_every,
                     "enable_kinetic": self.enable_kinetic,
                     "pbc": self.pbc,
+                    "pbc_fitness_only": self.pbc_fitness_only,
                 },
                 "companion_selection": {
                     "method": self.companion_selection.method
@@ -1156,6 +1173,7 @@ class EuclideanGas(PanelModel):
             record_neighbors=self.neighbor_graph_record and self.neighbor_graph_method != "none",
             record_voronoi=self.neighbor_graph_record and self.neighbor_graph_method != "none",
             record_edge_weights=record_edge_weights,
+            chunk_size=chunk_size,
         )
         self._neighbor_cache = None
 

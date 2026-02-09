@@ -966,25 +966,25 @@ class VoronoiRicciScalar(OptimBenchmark):
 
 
 class RiemannianMix(OptimBenchmark):
-    """Weighted mixture of Riemannian volume element and Ricci scalar benchmarks.
+    """Einstein-Hilbert integrand benchmark: R · √(det g).
 
-    Returns U(x) = w_V * (-dμ_i) + w_R * R_i for each walker, where:
-    - dμ_i is the Riemannian volume element (maximizing volume)
-    - R_i is the Ricci curvature scalar
-    - w_V, w_R are configurable weights (can be positive or negative)
+    Returns U(x) = w · R_i · √(det g_i) for each walker, discretising
+    the Einstein-Hilbert action density on the emergent lattice.
 
-    This benchmark combines:
-    - Volume maximization: particles spread to maximize Riemannian volume
-    - Curvature sensitivity: particles respond to Ricci curvature
+    This is the natural potential for lattice sums that approximate the
+    continuum integral ∫ R √(det g) d^d x, consistent with the
+    ``riemannian_kernel_volume`` edge weight mode.
 
     Args:
         dims: Spatial dimension
-        volume_weight: Weight for volume element term (default: 1.0)
-        ricci_weight: Weight for Ricci scalar term (default: 1.0)
+        volume_weight: Overall coupling weight (default: 1.0)
+        ricci_weight: Kept for backward compat; multiplied into the
+            coupling so that ``volume_weight * ricci_weight`` gives the
+            effective overall scale.
     """
 
-    volume_weight = param.Number(default=1.0, doc="Weight for volume element (-dμ)")
-    ricci_weight = param.Number(default=1.0, doc="Weight for Ricci scalar (R)")
+    volume_weight = param.Number(default=1.0, doc="Overall coupling weight")
+    ricci_weight = param.Number(default=1.0, doc="Secondary scale (multiplied with volume_weight)")
 
     def __init__(
         self,
@@ -1000,17 +1000,20 @@ class RiemannianMix(OptimBenchmark):
 
         def riemannian_mix_potential(x: torch.Tensor) -> torch.Tensor:
             n = x.shape[0]
-            result = torch.zeros(n, dtype=x.dtype, device=x.device)
 
-            # Add volume element contribution: -dμ (negative for maximization)
-            if self._cache_volume is not None and self._cache_volume.shape[0] == n:
-                result += self._volume_weight * self._cache_volume
+            has_vol = self._cache_volume is not None and self._cache_volume.shape[0] == n
+            has_ric = self._cache_ricci is not None and self._cache_ricci.shape[0] == n
 
-            # Add Ricci scalar contribution
-            if self._cache_ricci is not None and self._cache_ricci.shape[0] == n:
-                result += self._ricci_weight * self._cache_ricci
+            if has_vol and has_ric:
+                # Negative Einstein-Hilbert integrand: U = -R · √(det g)
+                # Langevin minimises U, so walkers maximise R·√(det g)
+                # matching the Euclidean path-integral weight exp(+∫R√g).
+                # _cache_volume stores -√(det g), so negate to recover √(det g)
+                sqrt_det_g = -self._cache_volume
+                scale = self._volume_weight * self._ricci_weight
+                return -scale * self._cache_ricci * sqrt_det_g
 
-            return result
+            return torch.zeros(n, dtype=x.dtype, device=x.device)
 
         super().__init__(
             dims=dims,

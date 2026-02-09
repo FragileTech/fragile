@@ -723,6 +723,16 @@ def _select_electroweak_neighbors_snapshot(
     if neighbor_method == "uniform":
         neighbor_method = "companions"
 
+    if neighbor_method == "auto":
+        if history.neighbor_edges is not None and frame_idx < len(history.neighbor_edges):
+            edges = history.neighbor_edges[frame_idx]
+            if torch.is_tensor(edges) and edges.numel() > 0:
+                neighbor_method = "recorded"
+            else:
+                neighbor_method = "companions"
+        else:
+            neighbor_method = "companions"
+
     if neighbor_method == "companions":
         return (
             history.companions_distance[frame_idx - 1],
@@ -800,7 +810,7 @@ def _select_electroweak_neighbors_snapshot(
             neighbors_clone[i_orig] = int(neighbor_orig)
         return neighbors_distance, neighbors_clone
 
-    msg = "neighbor_method must be 'companions', 'voronoi', or 'recorded'"
+    msg = "neighbor_method must be 'auto', 'companions', 'voronoi', or 'recorded'"
     raise ValueError(msg)
 
 
@@ -813,6 +823,12 @@ def _select_electroweak_neighbors(
     neighbor_method = cfg.neighbor_method
     if neighbor_method == "uniform":
         neighbor_method = "companions"
+
+    if neighbor_method == "auto":
+        if history.neighbor_edges is not None:
+            neighbor_method = "recorded"
+        else:
+            neighbor_method = "companions"
 
     if neighbor_method == "companions":
         companions_distance = history.companions_distance[start_idx - 1 : history.n_recorded - 1]
@@ -943,7 +959,7 @@ def _select_electroweak_neighbors(
                 neighbors_clone[t, i_orig] = int(neighbor_orig)
         return neighbors_distance, neighbors_clone
 
-    msg = "neighbor_method must be 'companions', 'voronoi', or 'recorded'"
+    msg = "neighbor_method must be 'auto', 'companions', 'voronoi', or 'recorded'"
     raise ValueError(msg)
 
 

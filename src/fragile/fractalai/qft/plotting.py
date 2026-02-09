@@ -395,6 +395,12 @@ def build_effective_mass_plot(
             )
             overlays = overlays * band
 
+    # Y-range from central points only (let error bands overflow)
+    y_vals = [m_plot.min(), m_plot.max()]
+    if mass > 0:
+        y_vals.extend([mass])
+    y_lo, y_hi = float(min(y_vals)), float(max(y_vals))
+    margin = 0.05 * (y_hi - y_lo) if y_hi > y_lo else 0.05 * y_hi
     return overlays.opts(
         xlabel="t (time lag)",
         ylabel="m_eff(t)",
@@ -402,6 +408,7 @@ def build_effective_mass_plot(
         width=600,
         height=350,
         show_legend=True,
+        ylim=(y_lo - margin, y_hi + margin),
     )
 
 
@@ -819,6 +826,12 @@ def build_effective_mass_plateau_plot(
     )
     right_overlays = right_overlays * annotation
 
+    # Y-range from central points only (let error bands overflow)
+    y_vals = list(m_plot)
+    if mass_scaled > 0:
+        y_vals.append(mass_scaled)
+    y_lo, y_hi = float(min(y_vals)), float(max(y_vals))
+    margin = 0.05 * (y_hi - y_lo) if y_hi > y_lo else 0.05 * y_hi
     right_panel = right_overlays.opts(
         xlabel="t (time lag)",
         ylabel="m_eff(t)",
@@ -826,6 +839,7 @@ def build_effective_mass_plateau_plot(
         width=400,
         height=350,
         show_legend=True,
+        ylim=(y_lo - margin, y_hi + margin),
     )
 
     return left_panel, right_panel
@@ -1068,6 +1082,13 @@ class ChannelPlot:
                 )
                 overlays = band * overlays
 
+        # Y-range from central points only (let error bars overflow)
+        y_vals = [m_plot.min(), m_plot.max()]
+        mass = mass_fit.get("mass", 0.0)
+        if mass > 0:
+            y_vals.append(mass)
+        y_lo, y_hi = float(min(y_vals)), float(max(y_vals))
+        margin = 0.05 * (y_hi - y_lo) if y_hi > y_lo else 0.05 * y_hi
         return overlays.opts(
             xlabel="t (time lag)",
             ylabel="m_eff(t)",
@@ -1076,6 +1097,7 @@ class ChannelPlot:
             height=self.height,
             show_legend=True,
             shared_axes=False,
+            ylim=(y_lo - margin, y_hi + margin),
         )
 
     def side_by_side(self) -> "pn.Row | None":

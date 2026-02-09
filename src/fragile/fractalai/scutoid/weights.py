@@ -16,6 +16,7 @@ WeightMode = Literal[
     "inverse_riemannian_distance",
     "kernel",
     "riemannian_kernel",
+    "riemannian_kernel_volume",
 ]
 
 
@@ -277,6 +278,58 @@ def compute_riemannian_kernel_weights(
     return _normalize_edge_weights(edge_index, raw_weights, n_nodes=positions.shape[0])
 
 
+def compute_riemannian_kernel_volume_weights(
+    positions: Tensor,
+    edge_index: Tensor,
+    length_scale: float = 1.0,
+    metric_tensors: Tensor | None = None,
+    riemannian_volumes: Tensor | None = None,
+    cell_volumes: Tensor | None = None,
+    alive: Tensor | None = None,
+    normalize: bool = True,
+    symmetrize_metric: bool = True,
+    min_eig: float | None = 1e-6,
+    max_eig: float | None = None,
+    eps: float = 1e-8,
+) -> Tensor:
+    """Riemannian kernel weighted by the integration measure sqrt(det g).
+
+    w_ij = exp(-d_g(i,j)^2 / (2 l^2)) * sqrt(det g_j)
+
+    This pre-multiplies the Riemannian kernel by the volume element at
+    the destination node, making it suitable for lattice sums that
+    approximate continuum integrals with the correct measure.
+    """
+    if metric_tensors is None:
+        metric_tensors = compute_emergent_metric(positions, edge_index, alive)
+    if symmetrize_metric:
+        metric_tensors = 0.5 * (metric_tensors + metric_tensors.transpose(-1, -2))
+    metric_tensors = clamp_metric_eigenvalues(metric_tensors, min_eig=min_eig, max_eig=max_eig)
+
+    src, dst = edge_index
+    delta = positions[dst] - positions[src]
+    g_src = metric_tensors[src]
+    g_dst = metric_tensors[dst]
+    g_edge = 0.5 * (g_src + g_dst) if symmetrize_metric else g_src
+
+    d_sq = torch.einsum("ei,eij,ej->e", delta, g_edge, delta)
+    d_sq = torch.clamp(d_sq, min=0.0)
+
+    kernel = torch.exp(-d_sq / (2 * length_scale**2))
+
+    # Volume element at destination: sqrt(det g_j)
+    if riemannian_volumes is None:
+        if cell_volumes is None:
+            raise ValueError("cell_volumes or riemannian_volumes required for riemannian_kernel_volume.")
+        riemannian_volumes = compute_riemannian_volumes(cell_volumes, metric_tensors, eps=eps)
+
+    raw_weights = kernel * riemannian_volumes[dst]
+    raw_weights = _apply_alive_mask(edge_index, raw_weights, alive)
+    if not normalize:
+        return raw_weights
+    return _normalize_edge_weights(edge_index, raw_weights, n_nodes=positions.shape[0])
+
+
 def compute_edge_weights(
     positions: Tensor,
     edge_index: Tensor,
@@ -360,6 +413,20 @@ def compute_edge_weights(
             edge_index,
             length_scale=length_scale,
             metric_tensors=metric_tensors,
+            alive=alive,
+            normalize=normalize,
+            symmetrize_metric=riemannian_symmetrize,
+            min_eig=riemannian_min_eig,
+            max_eig=riemannian_max_eig,
+        )
+    if mode == "riemannian_kernel_volume":
+        return compute_riemannian_kernel_volume_weights(
+            positions,
+            edge_index,
+            length_scale=length_scale,
+            metric_tensors=metric_tensors,
+            riemannian_volumes=riemannian_volumes,
+            cell_volumes=cell_volumes,
             alive=alive,
             normalize=normalize,
             symmetrize_metric=riemannian_symmetrize,

@@ -139,6 +139,31 @@ from fragile.fractalai.qft.quantum_gravity_plotting import (
     build_all_gravity_plots,
     build_all_quantum_gravity_time_series_plots,
 )
+from fragile.fractalai.qft.dirac_spectrum import (
+    DiracSpectrumConfig,
+    DiracSpectrumResult,
+    SectorSpectrum,
+    compute_dirac_spectrum,
+    build_antisymmetric_kernel,
+    classify_walkers,
+)
+from fragile.fractalai.qft.dirac_spectrum_plotting import (
+    build_all_dirac_plots,
+)
+from fragile.fractalai.qft.isospin_channels import (
+    ISOSPIN_CHANNEL_SPLITTINGS,
+    ISOSPIN_MASS_RATIOS,
+    IsospinChannelResult,
+    compute_isospin_channels,
+)
+from fragile.fractalai.qft.einstein_equations import (
+    EinsteinConfig,
+    EinsteinTestResult,
+    compute_einstein_test,
+)
+from fragile.fractalai.qft.einstein_equations_plotting import (
+    build_all_einstein_plots,
+)
 
 __all__ = [
     # SMoC pipeline
@@ -247,4 +272,22 @@ __all__ = [
     "compute_quantum_gravity_time_evolution",
     "build_all_gravity_plots",
     "build_all_quantum_gravity_time_series_plots",
+    # Dirac spectrum analysis
+    "DiracSpectrumConfig",
+    "DiracSpectrumResult",
+    "SectorSpectrum",
+    "compute_dirac_spectrum",
+    "build_antisymmetric_kernel",
+    "classify_walkers",
+    "build_all_dirac_plots",
+    # Isospin channel correlators
+    "ISOSPIN_CHANNEL_SPLITTINGS",
+    "ISOSPIN_MASS_RATIOS",
+    "IsospinChannelResult",
+    "compute_isospin_channels",
+    # Einstein equation verification
+    "EinsteinConfig",
+    "EinsteinTestResult",
+    "compute_einstein_test",
+    "build_all_einstein_plots",
 ]
