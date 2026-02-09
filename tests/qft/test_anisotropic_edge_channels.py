@@ -113,3 +113,29 @@ def test_anisotropic_edges_nucleon_companion_triplets() -> None:
     assert "nucleon" in out.channel_results
     assert out.channel_results["nucleon"].correlator.shape == (config.max_lag + 1,)
     assert out.channel_results["nucleon"].n_samples > 0
+
+
+def test_anisotropic_edges_bootstrap_is_batched_across_channels() -> None:
+    """Bootstrap errors should be produced for multiple channels in one run."""
+    history = MockRunHistoryWithGeometry(N=28, d=3, n_recorded=24)
+    _make_recorded_graph_bidirectional(history)
+    config = AnisotropicEdgeChannelConfig(
+        edge_weight_mode="riemannian_kernel",
+        use_volume_weights=True,
+        component_mode="isotropic+axes",
+        max_lag=8,
+        compute_bootstrap_errors=True,
+        n_bootstrap=16,
+    )
+
+    out = compute_anisotropic_edge_channels(
+        history,
+        config=config,
+        channels=["scalar", "pseudoscalar", "vector", "glueball"],
+    )
+
+    for name, result in out.channel_results.items():
+        if result.n_samples == 0:
+            continue
+        assert result.correlator_err is not None, f"{name} missing bootstrap error"
+        assert result.correlator_err.shape == (config.max_lag + 1,)

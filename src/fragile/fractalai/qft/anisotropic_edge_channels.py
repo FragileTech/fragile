@@ -22,9 +22,13 @@ from torch import Tensor
 
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.qft.correlator_channels import (
+    _fft_correlator_batched,
     ChannelCorrelatorResult,
     compute_channel_correlator,
+    compute_effective_mass_torch,
     CorrelatorConfig,
+    extract_mass_aic,
+    extract_mass_linear,
 )
 from fragile.fractalai.qft.radial_channels import (
     _apply_pbc_diff_torch,
@@ -63,6 +67,8 @@ SUPPORTED_CHANNELS = {
     "nucleon",
     "glueball",
 }
+PACK_CHUNK_FRAMES_EDGE = 64
+PACK_CHUNK_FRAMES_NUCLEON_DIRECT = 16
 
 
 @dataclass
@@ -281,34 +287,6 @@ def _resolve_edge_weights(
     raise ValueError(f"Unsupported edge_weight_mode: {mode}.")
 
 
-def _compute_edge_channel_values(
-    history: RunHistory,
-    channel: str,
-    frame_idx: int,
-    alive_idx: Tensor,
-    src: Tensor,
-    dst: Tensor,
-    color_alive: Tensor,
-    valid_alive: Tensor,
-    gamma: dict[str, Tensor],
-    keep_dims: list[int] | None,
-) -> tuple[Tensor, Tensor]:
-    if channel == "glueball":
-        force = history.force_viscous[frame_idx - 1]
-        if keep_dims is not None:
-            force = force[:, keep_dims]
-        force_sq = torch.linalg.vector_norm(force, dim=-1).pow(2)[alive_idx]
-        edge_vals = 0.5 * (force_sq[src] + force_sq[dst])
-        valid_edge = torch.isfinite(edge_vals)
-        return edge_vals.float(), valid_edge
-
-    color_i = color_alive[src]
-    color_j = color_alive[dst]
-    edge_vals = _apply_projection(channel, color_i, color_j, gamma).float()
-    valid_edge = valid_alive[src] & valid_alive[dst] & torch.isfinite(edge_vals)
-    return edge_vals, valid_edge
-
-
 def _compute_nucleon_triplet_values(
     color_alive: Tensor,
     valid_alive: Tensor,
@@ -353,46 +331,72 @@ def _build_direct_neighbor_triplets(
     """Build (i,j,k) triplets from direct recorded outgoing neighbors of each i."""
     device = src.device
     dim = int(diff.shape[1])
-
-    src_parts: list[Tensor] = []
-    j_parts: list[Tensor] = []
-    k_parts: list[Tensor] = []
-    weight_parts: list[Tensor] = []
-    dir_parts: list[Tensor] = []
-
-    for walker in range(n_alive):
-        mask = src == walker
-        deg = int(mask.sum().item())
-        if deg < 2:
-            continue
-        neigh = dst[mask]
-        weights = edge_weights[mask]
-        disp = diff[mask]
-
-        pair_idx = torch.triu_indices(deg, deg, offset=1, device=device)
-        if pair_idx.numel() == 0:
-            continue
-        idx_j = pair_idx[0]
-        idx_k = pair_idx[1]
-        n_pairs = int(idx_j.numel())
-        src_parts.append(torch.full((n_pairs,), walker, device=device, dtype=torch.long))
-        j_parts.append(neigh[idx_j])
-        k_parts.append(neigh[idx_k])
-        weight_parts.append((weights[idx_j] * weights[idx_k]).float())
-        dir_parts.append((disp[idx_j] + disp[idx_k]).float())
-
-    if not src_parts:
+    if src.numel() == 0 or n_alive <= 0:
         empty_long = torch.empty(0, device=device, dtype=torch.long)
         empty_w = torch.empty(0, device=device, dtype=torch.float32)
         empty_dir = torch.empty(0, dim, device=device, dtype=torch.float32)
         return empty_long, empty_long, empty_long, empty_w, empty_dir
 
+    order = torch.argsort(src, stable=True)
+    src_sorted = src[order]
+    dst_sorted = dst[order]
+    weights_sorted = edge_weights[order].float()
+    diff_sorted = diff[order].float()
+
+    counts = torch.bincount(src_sorted, minlength=n_alive)
+    k = int(counts.max().item())
+    if k < 2:
+        empty_long = torch.empty(0, device=device, dtype=torch.long)
+        empty_w = torch.empty(0, device=device, dtype=torch.float32)
+        empty_dir = torch.empty(0, dim, device=device, dtype=torch.float32)
+        return empty_long, empty_long, empty_long, empty_w, empty_dir
+
+    row_starts = torch.zeros(n_alive, dtype=torch.long, device=device)
+    if n_alive > 1:
+        row_starts[1:] = torch.cumsum(counts[:-1], dim=0)
+    col = torch.arange(src_sorted.shape[0], device=device, dtype=torch.long) - row_starts[src_sorted]
+
+    neighbor_idx = torch.full((n_alive, k), -1, dtype=torch.long, device=device)
+    neighbor_weights = torch.zeros((n_alive, k), dtype=torch.float32, device=device)
+    neighbor_diff = torch.zeros((n_alive, k, dim), dtype=torch.float32, device=device)
+    neighbor_mask = torch.zeros((n_alive, k), dtype=torch.bool, device=device)
+
+    neighbor_idx[src_sorted, col] = dst_sorted
+    neighbor_weights[src_sorted, col] = weights_sorted
+    neighbor_diff[src_sorted, col] = diff_sorted
+    neighbor_mask[src_sorted, col] = True
+
+    pair_idx = torch.triu_indices(k, k, offset=1, device=device)
+    if pair_idx.numel() == 0:
+        empty_long = torch.empty(0, device=device, dtype=torch.long)
+        empty_w = torch.empty(0, device=device, dtype=torch.float32)
+        empty_dir = torch.empty(0, dim, device=device, dtype=torch.float32)
+        return empty_long, empty_long, empty_long, empty_w, empty_dir
+
+    j_idx = neighbor_idx[:, pair_idx[0]]
+    k_idx = neighbor_idx[:, pair_idx[1]]
+    pair_weights = neighbor_weights[:, pair_idx[0]] * neighbor_weights[:, pair_idx[1]]
+    pair_dir = neighbor_diff[:, pair_idx[0], :] + neighbor_diff[:, pair_idx[1], :]
+    valid_pairs = (
+        neighbor_mask[:, pair_idx[0]]
+        & neighbor_mask[:, pair_idx[1]]
+        & (j_idx >= 0)
+        & (k_idx >= 0)
+        & (j_idx != k_idx)
+    )
+    if not torch.any(valid_pairs):
+        empty_long = torch.empty(0, device=device, dtype=torch.long)
+        empty_w = torch.empty(0, device=device, dtype=torch.float32)
+        empty_dir = torch.empty(0, dim, device=device, dtype=torch.float32)
+        return empty_long, empty_long, empty_long, empty_w, empty_dir
+
+    src_grid = torch.arange(n_alive, device=device, dtype=torch.long).unsqueeze(1).expand_as(j_idx)
     return (
-        torch.cat(src_parts, dim=0),
-        torch.cat(j_parts, dim=0),
-        torch.cat(k_parts, dim=0),
-        torch.cat(weight_parts, dim=0),
-        torch.cat(dir_parts, dim=0),
+        src_grid[valid_pairs],
+        j_idx[valid_pairs],
+        k_idx[valid_pairs],
+        pair_weights[valid_pairs],
+        pair_dir[valid_pairs],
     )
 
 
@@ -503,6 +507,222 @@ def _build_companion_triplets(
     return src_kept, neigh_j_kept, neigh_k_kept, weights, direction_raw
 
 
+def _accumulate_channel_components(
+    *,
+    channel: str,
+    frame_ids: Tensor,
+    values: Tensor,
+    weights: Tensor,
+    factors: dict[str, Tensor],
+    numerators: dict[str, Tensor],
+    denominators: dict[str, Tensor],
+) -> None:
+    """Segmented weighted accumulation keyed by frame index."""
+    if frame_ids.numel() == 0:
+        return
+    for component, factor in factors.items():
+        factor_finite = torch.where(torch.isfinite(factor), factor, torch.zeros_like(factor))
+        weighted = values * factor_finite * weights
+        name = _channel_component_name(channel, component)
+        numerators[name].index_add_(0, frame_ids, weighted)
+        denominators[name].index_add_(0, frame_ids, weights)
+
+
+def _clear_chunk(chunk: dict[str, list[Tensor]]) -> None:
+    for values in chunk.values():
+        values.clear()
+
+
+def _flush_edge_chunk(
+    *,
+    chunk: dict[str, list[Tensor]],
+    bilinear_channels: list[str],
+    include_glueball: bool,
+    component_mode: str,
+    gamma: dict[str, Tensor],
+    numerators: dict[str, Tensor],
+    denominators: dict[str, Tensor],
+) -> None:
+    if not chunk["frame_ids"]:
+        return
+    frame_ids = torch.cat(chunk["frame_ids"], dim=0)
+    weights = torch.cat(chunk["weights"], dim=0).float()
+    direction = torch.cat(chunk["direction"], dim=0).float()
+    factors = _component_factors(direction, component_mode)
+
+    if bilinear_channels:
+        color_i = torch.cat(chunk["color_i"], dim=0)
+        color_j = torch.cat(chunk["color_j"], dim=0)
+        valid_pair = torch.cat(chunk["valid_pair"], dim=0)
+        for channel in bilinear_channels:
+            values = _apply_projection(channel, color_i, color_j, gamma).float()
+            valid = valid_pair & torch.isfinite(values)
+            weights_valid = torch.where(valid, weights, torch.zeros_like(weights))
+            if torch.any(weights_valid > 0):
+                _accumulate_channel_components(
+                    channel=channel,
+                    frame_ids=frame_ids,
+                    values=values,
+                    weights=weights_valid,
+                    factors=factors,
+                    numerators=numerators,
+                    denominators=denominators,
+                )
+
+    if include_glueball:
+        glueball_values = torch.cat(chunk["glueball_values"], dim=0).float()
+        valid = torch.isfinite(glueball_values)
+        weights_valid = torch.where(valid, weights, torch.zeros_like(weights))
+        if torch.any(weights_valid > 0):
+            _accumulate_channel_components(
+                channel="glueball",
+                frame_ids=frame_ids,
+                values=glueball_values,
+                weights=weights_valid,
+                factors=factors,
+                numerators=numerators,
+                denominators=denominators,
+            )
+
+    _clear_chunk(chunk)
+
+
+def _flush_nucleon_chunk(
+    *,
+    chunk: dict[str, list[Tensor]],
+    component_mode: str,
+    numerators: dict[str, Tensor],
+    denominators: dict[str, Tensor],
+) -> None:
+    if not chunk["frame_ids"]:
+        return
+    frame_ids = torch.cat(chunk["frame_ids"], dim=0)
+    values = torch.cat(chunk["values"], dim=0).float()
+    weights = torch.cat(chunk["weights"], dim=0).float()
+    direction = torch.cat(chunk["direction"], dim=0).float()
+    valid = torch.cat(chunk["valid"], dim=0)
+
+    valid_mask = valid & torch.isfinite(values) & torch.isfinite(weights) & (weights > 0)
+    weights_valid = torch.where(valid_mask, weights, torch.zeros_like(weights))
+    if torch.any(weights_valid > 0):
+        factors = _component_factors(direction, component_mode)
+        _accumulate_channel_components(
+            channel="nucleon",
+            frame_ids=frame_ids,
+            values=values,
+            weights=weights_valid,
+            factors=factors,
+            numerators=numerators,
+            denominators=denominators,
+        )
+    _clear_chunk(chunk)
+
+
+def _build_result_from_precomputed(
+    channel_name: str,
+    series: Tensor,
+    correlator: Tensor,
+    correlator_err: Tensor | None,
+    dt: float,
+    config: CorrelatorConfig,
+) -> ChannelCorrelatorResult:
+    effective_mass = compute_effective_mass_torch(correlator, dt)
+    if config.fit_mode == "linear_abs":
+        mass_fit = extract_mass_linear(correlator.abs(), dt, config)
+        window_data = {}
+    elif config.fit_mode == "linear":
+        mass_fit = extract_mass_linear(correlator, dt, config)
+        window_data = {}
+    else:
+        mass_fit = extract_mass_aic(correlator, dt, config)
+        window_data = {
+            "window_masses": mass_fit.pop("window_masses", None),
+            "window_aic": mass_fit.pop("window_aic", None),
+            "window_widths": mass_fit.pop("window_widths", None),
+            "window_r2": mass_fit.pop("window_r2", None),
+        }
+    return ChannelCorrelatorResult(
+        channel_name=channel_name,
+        correlator=correlator,
+        correlator_err=correlator_err,
+        effective_mass=effective_mass,
+        mass_fit=mass_fit,
+        series=series,
+        n_samples=int(series.numel()),
+        dt=dt,
+        **window_data,
+    )
+
+
+def _compute_channel_results_batched(
+    series_buffers: dict[str, Tensor],
+    valid_buffers: dict[str, Tensor],
+    dt: float,
+    config: CorrelatorConfig,
+) -> dict[str, ChannelCorrelatorResult]:
+    """Compute correlators/masses with grouped batched FFT + bootstrap."""
+    results: dict[str, ChannelCorrelatorResult] = {}
+    groups: dict[bytes, tuple[Tensor, list[str]]] = {}
+
+    for name, valid_t in valid_buffers.items():
+        key = valid_t.detach().cpu().numpy().tobytes()
+        if key in groups:
+            groups[key][1].append(name)
+        else:
+            groups[key] = (valid_t, [name])
+
+    for valid_t, names in groups.values():
+        if not torch.any(valid_t):
+            for name in names:
+                results[name] = compute_channel_correlator(
+                    series=torch.zeros(0, device=valid_t.device, dtype=torch.float32),
+                    dt=dt,
+                    config=config,
+                    channel_name=name,
+                )
+            continue
+
+        series_stack = torch.stack([series_buffers[name][valid_t] for name in names], dim=0).float()
+        correlators = _fft_correlator_batched(
+            series_stack,
+            max_lag=int(config.max_lag),
+            use_connected=bool(config.use_connected),
+        )
+
+        correlator_errs: Tensor | None = None
+        if config.compute_bootstrap_errors:
+            n_bootstrap = int(max(1, config.n_bootstrap))
+            t_len = int(series_stack.shape[1])
+            idx = torch.randint(0, t_len, (n_bootstrap, t_len), device=series_stack.device)
+            idx = idx.unsqueeze(1).expand(-1, series_stack.shape[0], -1)
+            sampled = torch.gather(
+                series_stack.unsqueeze(0).expand(n_bootstrap, -1, -1),
+                dim=2,
+                index=idx,
+            )
+            boot_corr = _fft_correlator_batched(
+                sampled.reshape(-1, t_len),
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+            )
+            correlator_errs = boot_corr.reshape(n_bootstrap, series_stack.shape[0], -1).std(dim=0)
+
+        for idx_name, name in enumerate(names):
+            series = series_stack[idx_name]
+            correlator = correlators[idx_name]
+            err = correlator_errs[idx_name] if correlator_errs is not None else None
+            results[name] = _build_result_from_precomputed(
+                channel_name=name,
+                series=series,
+                correlator=correlator,
+                correlator_err=err,
+                dt=dt,
+                config=config,
+            )
+
+    return results
+
+
 def compute_anisotropic_edge_channels(
     history: RunHistory,
     config: AnisotropicEdgeChannelConfig | None = None,
@@ -568,17 +788,42 @@ def compute_anisotropic_edge_channels(
     bounds = _slice_bounds(history.bounds, keep_dims)
     component_labels = _component_labels(len(keep_dims), config.component_mode)
 
-    series_buffers: dict[str, Tensor] = {}
-    valid_buffers: dict[str, Tensor] = {}
+    numerators: dict[str, Tensor] = {}
+    denominators: dict[str, Tensor] = {}
     for channel in channels:
         for component in component_labels:
             name = _channel_component_name(channel, component)
-            series_buffers[name] = torch.zeros(n_frames, device=device, dtype=torch.float32)
-            valid_buffers[name] = torch.zeros(n_frames, device=device, dtype=torch.bool)
+            numerators[name] = torch.zeros(n_frames, device=device, dtype=torch.float32)
+            denominators[name] = torch.zeros(n_frames, device=device, dtype=torch.float32)
+
+    bilinear_channels = [
+        channel
+        for channel in channels
+        if channel in {"scalar", "pseudoscalar", "vector", "axial_vector", "tensor"}
+    ]
+    include_glueball = "glueball" in channels
+    include_nucleon = "nucleon" in channels
+    use_edge_chunk = bool(bilinear_channels) or include_glueball
+
+    edge_chunk: dict[str, list[Tensor]] = {
+        "frame_ids": [],
+        "weights": [],
+        "direction": [],
+        "color_i": [],
+        "color_j": [],
+        "valid_pair": [],
+        "glueball_values": [],
+    }
+    nucleon_chunk: dict[str, list[Tensor]] = {
+        "frame_ids": [],
+        "values": [],
+        "weights": [],
+        "direction": [],
+        "valid": [],
+    }
 
     alive_counts: list[float] = []
     edge_counts: list[float] = []
-    frame_valid_any = torch.zeros(n_frames, device=device, dtype=torch.bool)
 
     for t_idx, frame_idx in enumerate(frame_indices):
         alive_mask = history.alive_mask[frame_idx - 1]
@@ -633,45 +878,53 @@ def compute_anisotropic_edge_channels(
             diff = _apply_pbc_diff_torch(diff, bounds)
         distance = torch.linalg.vector_norm(diff, dim=-1).clamp(min=1e-8)
         direction = diff / distance.unsqueeze(-1)
-        components = _component_factors(direction.float(), config.component_mode)
 
         alive_counts.append(float(alive_idx.numel()))
         edge_counts.append(float(src.numel()))
 
-        for channel in channels:
-            if channel == "nucleon":
-                if config.nucleon_triplet_mode == "companions":
-                    triplet_src, triplet_j, triplet_k, triplet_weights, direction_raw = (
-                        _build_companion_triplets(
-                            history=history,
-                            frame_idx=frame_idx,
-                            alive_idx=alive_idx,
-                            positions_alive=positions_alive,
-                            bounds=bounds,
-                            src=src,
-                            dst=dst,
-                            edge_weights=edge_weights,
-                            volume_weights_alive=volume_weights_alive,
-                            edge_weight_mode=str(config.edge_weight_mode),
-                        )
-                    )
-                else:
-                    triplet_src, triplet_j, triplet_k, triplet_weights, direction_raw = (
-                        _build_direct_neighbor_triplets(
-                            src=src,
-                            dst=dst,
-                            edge_weights=edge_weights,
-                            diff=diff,
-                            n_alive=int(alive_idx.numel()),
-                        )
-                    )
-                if triplet_src.numel() == 0:
-                    continue
+        if use_edge_chunk:
+            frame_ids = torch.full((src.shape[0],), t_idx, device=device, dtype=torch.long)
+            edge_chunk["frame_ids"].append(frame_ids)
+            edge_chunk["weights"].append(edge_weights.float())
+            edge_chunk["direction"].append(direction.float())
+            if bilinear_channels:
+                edge_chunk["color_i"].append(color_alive[src])
+                edge_chunk["color_j"].append(color_alive[dst])
+                edge_chunk["valid_pair"].append(valid_alive[src] & valid_alive[dst])
+            if include_glueball:
+                force = history.force_viscous[frame_idx - 1]
+                if keep_dims is not None:
+                    force = force[:, keep_dims]
+                force_sq = torch.linalg.vector_norm(force, dim=-1).pow(2)[alive_idx]
+                edge_chunk["glueball_values"].append((0.5 * (force_sq[src] + force_sq[dst])).float())
 
-                triplet_norm = torch.linalg.vector_norm(direction_raw, dim=-1).clamp(min=1e-8)
-                triplet_dir = direction_raw / triplet_norm.unsqueeze(-1)
-                triplet_components = _component_factors(triplet_dir.float(), config.component_mode)
-
+        if include_nucleon:
+            if config.nucleon_triplet_mode == "companions":
+                triplet_src, triplet_j, triplet_k, triplet_weights, direction_raw = (
+                    _build_companion_triplets(
+                        history=history,
+                        frame_idx=frame_idx,
+                        alive_idx=alive_idx,
+                        positions_alive=positions_alive,
+                        bounds=bounds,
+                        src=src,
+                        dst=dst,
+                        edge_weights=edge_weights,
+                        volume_weights_alive=volume_weights_alive,
+                        edge_weight_mode=str(config.edge_weight_mode),
+                    )
+                )
+            else:
+                triplet_src, triplet_j, triplet_k, triplet_weights, direction_raw = (
+                    _build_direct_neighbor_triplets(
+                        src=src,
+                        dst=dst,
+                        edge_weights=edge_weights,
+                        diff=diff,
+                        n_alive=int(alive_idx.numel()),
+                    )
+                )
+            if triplet_src.numel() > 0:
                 triplet_values, valid_triplets = _compute_nucleon_triplet_values(
                     color_alive=color_alive,
                     valid_alive=valid_alive,
@@ -679,62 +932,70 @@ def compute_anisotropic_edge_channels(
                     neigh_j=triplet_j,
                     neigh_k=triplet_k,
                 )
-                valid_triplets = valid_triplets & torch.isfinite(triplet_weights) & (triplet_weights > 0)
-                if not torch.any(valid_triplets):
-                    continue
-                weights_valid = torch.where(
-                    valid_triplets,
-                    triplet_weights,
-                    torch.zeros_like(triplet_weights),
+                triplet_norm = torch.linalg.vector_norm(direction_raw, dim=-1).clamp(min=1e-8)
+                triplet_dir = direction_raw / triplet_norm.unsqueeze(-1)
+                n_triplets = int(triplet_src.shape[0])
+                nucleon_chunk["frame_ids"].append(
+                    torch.full((n_triplets,), t_idx, device=device, dtype=torch.long)
                 )
-                denom = weights_valid.sum().clamp(min=1e-12)
-                if float(denom.item()) <= 0:
-                    continue
+                nucleon_chunk["values"].append(triplet_values.float())
+                nucleon_chunk["weights"].append(triplet_weights.float())
+                nucleon_chunk["direction"].append(triplet_dir.float())
+                nucleon_chunk["valid"].append(valid_triplets)
 
-                for component, factor in triplet_components.items():
-                    factor_finite = torch.where(
-                        torch.isfinite(factor),
-                        factor,
-                        torch.zeros_like(factor),
-                    )
-                    value = (triplet_values * factor_finite * weights_valid).sum() / denom
-                    name = _channel_component_name(channel, component)
-                    series_buffers[name][t_idx] = value.float()
-                    valid_buffers[name][t_idx] = True
-                    frame_valid_any[t_idx] = True
-                continue
-
-            edge_values, valid_edge = _compute_edge_channel_values(
-                history=history,
-                channel=channel,
-                frame_idx=frame_idx,
-                alive_idx=alive_idx,
-                src=src,
-                dst=dst,
-                color_alive=color_alive,
-                valid_alive=valid_alive,
+        if use_edge_chunk and (t_idx + 1) % PACK_CHUNK_FRAMES_EDGE == 0:
+            _flush_edge_chunk(
+                chunk=edge_chunk,
+                bilinear_channels=bilinear_channels,
+                include_glueball=include_glueball,
+                component_mode=config.component_mode,
                 gamma=gamma,
-                keep_dims=keep_dims,
+                numerators=numerators,
+                denominators=denominators,
             )
-            if not torch.any(valid_edge):
-                continue
-
-            weights_valid = torch.where(valid_edge, edge_weights, torch.zeros_like(edge_weights))
-            denom = weights_valid.sum().clamp(min=1e-12)
-            if float(denom.item()) <= 0:
-                continue
-
-            for component, factor in components.items():
-                factor_finite = torch.where(
-                    torch.isfinite(factor),
-                    factor,
-                    torch.zeros_like(factor),
+        if include_nucleon:
+            flush_stride = (
+                PACK_CHUNK_FRAMES_NUCLEON_DIRECT
+                if config.nucleon_triplet_mode == "direct_neighbors"
+                else PACK_CHUNK_FRAMES_EDGE
+            )
+            if (t_idx + 1) % flush_stride == 0:
+                _flush_nucleon_chunk(
+                    chunk=nucleon_chunk,
+                    component_mode=config.component_mode,
+                    numerators=numerators,
+                    denominators=denominators,
                 )
-                value = (edge_values * factor_finite * weights_valid).sum() / denom
-                name = _channel_component_name(channel, component)
-                series_buffers[name][t_idx] = value.float()
-                valid_buffers[name][t_idx] = True
-                frame_valid_any[t_idx] = True
+
+    if use_edge_chunk:
+        _flush_edge_chunk(
+            chunk=edge_chunk,
+            bilinear_channels=bilinear_channels,
+            include_glueball=include_glueball,
+            component_mode=config.component_mode,
+            gamma=gamma,
+            numerators=numerators,
+            denominators=denominators,
+        )
+    if include_nucleon:
+        _flush_nucleon_chunk(
+            chunk=nucleon_chunk,
+            component_mode=config.component_mode,
+            numerators=numerators,
+            denominators=denominators,
+        )
+
+    series_buffers: dict[str, Tensor] = {}
+    valid_buffers: dict[str, Tensor] = {}
+    frame_valid_any = torch.zeros(n_frames, device=device, dtype=torch.bool)
+    for name, numerator in numerators.items():
+        denom = denominators[name]
+        valid_t = denom > 0
+        series = torch.zeros_like(numerator)
+        series[valid_t] = numerator[valid_t] / denom[valid_t].clamp(min=1e-12)
+        series_buffers[name] = series
+        valid_buffers[name] = valid_t
+        frame_valid_any = frame_valid_any | valid_t
 
     dt = float(history.delta_t * history.record_every)
     correlator_config = CorrelatorConfig(
@@ -751,16 +1012,12 @@ def compute_anisotropic_edge_channels(
         n_bootstrap=int(config.n_bootstrap),
     )
 
-    results: dict[str, ChannelCorrelatorResult] = {}
-    for name, series_full in series_buffers.items():
-        valid_t = valid_buffers[name]
-        series = series_full[valid_t]
-        results[name] = compute_channel_correlator(
-            series=series,
-            dt=dt,
-            config=correlator_config,
-            channel_name=name,
-        )
+    results = _compute_channel_results_batched(
+        series_buffers=series_buffers,
+        valid_buffers=valid_buffers,
+        dt=dt,
+        config=correlator_config,
+    )
 
     return AnisotropicEdgeChannelOutput(
         channel_results=results,
