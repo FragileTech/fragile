@@ -4688,6 +4688,7 @@ def _update_correlator_plots(
     heatmap_color_metric_widget=None,
     heatmap_alpha_metric_widget=None,
     spectrum_builder=None,
+    correlator_logy: bool = True,
 ) -> None:
     """Update all correlator plots for a tab (module-level, no closure).
 
@@ -4704,7 +4705,7 @@ def _update_correlator_plots(
         if result.n_samples == 0:
             continue
 
-        channel_plot = ChannelPlot(result, logy=True, width=400, height=350)
+        channel_plot = ChannelPlot(result, logy=correlator_logy, width=400, height=350)
         side_by_side = channel_plot.side_by_side()
         if side_by_side is not None:
             channel_plot_items.append(side_by_side)
@@ -4747,7 +4748,11 @@ def _update_correlator_plots(
     if spectrum_builder is None:
         spectrum_builder = build_mass_spectrum_bar
     spectrum_pane.object = spectrum_builder(results)
-    overlay_corr_pane.object = build_all_channels_overlay(results, plot_type="correlator")
+    overlay_corr_pane.object = build_all_channels_overlay(
+        results,
+        plot_type="correlator",
+        correlator_logy=correlator_logy,
+    )
     overlay_meff_pane.object = build_all_channels_overlay(results, plot_type="effective_mass")
 
 
@@ -4808,6 +4813,11 @@ def _run_tab_computation(state, status_pane, label, compute_fn):
 
 def create_app() -> pn.template.FastListTemplate:
     """Create the QFT convergence + analysis dashboard."""
+    # Load JS extensions before any document/template objects are built.
+    # Calling this inside onload can race with frontend model initialization,
+    # leaving window.Plotly undefined in Panel resize handlers.
+    pn.extension("plotly", "tabulator")
+
     debug = os.environ.get("QFT_DASH_DEBUG", "").lower() in {"1", "true", "yes"}
     skip_sidebar = os.environ.get("QFT_DASH_SKIP_SIDEBAR", "").lower() in {"1", "true", "yes"}
     skip_visual = os.environ.get("QFT_DASH_SKIP_VIS", "").lower() in {"1", "true", "yes"}
@@ -4837,7 +4847,6 @@ def create_app() -> pn.template.FastListTemplate:
     def _build_ui():
         start_total = time.time()
         _debug("initializing extensions")
-        pn.extension("plotly", "tabulator")
 
         _debug("building config + visualizer")
         gas_config = GasConfigPanel.create_qft_config(spatial_dims=2, bounds_extent=12.0)
@@ -7223,6 +7232,7 @@ def create_app() -> pn.template.FastListTemplate:
                 heatmap_color_metric_widget=anisotropic_edge_heatmap_color_metric,
                 heatmap_alpha_metric_widget=anisotropic_edge_heatmap_alpha_metric,
                 spectrum_builder=_anisotropic_edge_spectrum_builder,
+                correlator_logy=False,
             )
 
         def _update_anisotropic_edge_tables(

@@ -889,7 +889,10 @@ class ChannelPlot:
         else:
             correlator = np.asarray(correlator)
 
-        mask = (correlator > 0) & np.isfinite(correlator)
+        if self.logy:
+            mask = np.isfinite(correlator) & (correlator > 0)
+        else:
+            mask = np.isfinite(correlator)
         if mask.sum() < 2:
             return None
 
@@ -947,6 +950,8 @@ class ChannelPlot:
 
             if c_anchor > 0:
                 c_line = c_anchor * np.exp(-mass_scaled * (t_line - t_anchor))
+                if self.logy:
+                    c_line = np.maximum(c_line, np.finfo(float).tiny)
                 curve = hv.Curve(
                     (t_line, c_line), "t", "C(t)"
                 ).opts(
@@ -956,16 +961,28 @@ class ChannelPlot:
                 ).relabel(f"fit m={mass_scaled:.4f}")
                 overlays = overlays * curve
 
-        return overlays.opts(
-            logy=self.logy,
-            xlabel="t (time lag)",
-            ylabel="C(t)",
-            title=f"{self.result.channel_name.replace('_', ' ').title()} Correlator",
-            width=self.width,
-            height=self.height,
-            show_legend=True,
-            shared_axes=False,
-        )
+        opts_kwargs: dict[str, Any] = {
+            "logy": self.logy,
+            "xlabel": "t (time lag)",
+            "ylabel": "C(t)",
+            "title": f"{self.result.channel_name.replace('_', ' ').title()} Correlator",
+            "width": self.width,
+            "height": self.height,
+            "show_legend": True,
+            "shared_axes": False,
+        }
+        if self.logy:
+            y_min = float(np.min(c_plot))
+            y_max = float(np.max(c_plot))
+            if np.isfinite(y_min) and np.isfinite(y_max) and y_max > y_min and y_min > 0:
+                opts_kwargs["ylim"] = (max(np.finfo(float).tiny, y_min * 0.8), y_max * 1.2)
+        else:
+            y_lo = float(np.min(c_plot))
+            y_hi = float(np.max(c_plot))
+            margin = 0.05 * (y_hi - y_lo) if y_hi > y_lo else 0.05 * max(abs(y_hi), 1.0)
+            opts_kwargs["ylim"] = (y_lo - margin, y_hi + margin)
+
+        return overlays.opts(**opts_kwargs)
 
     def effective_mass_plot(self) -> hv.Overlay | None:
         """Build effective mass m_eff(t) plot with error bars and plateau line.
@@ -1131,17 +1148,21 @@ class ChannelPlot:
 def build_all_channels_overlay(
     channel_results: dict[str, Any],
     plot_type: str = "correlator",
+    correlator_logy: bool = True,
 ) -> hv.Overlay | None:
     """Build overlay of all channels on single plot.
 
     Args:
         channel_results: Dict mapping channel names to ChannelCorrelatorResult.
         plot_type: "correlator" or "effective_mass".
+        correlator_logy: Whether correlator overlays should use log y-axis.
 
     Returns:
         HoloViews Overlay with all channels, or None if no data.
     """
     curves = []
+    y_min_positive = float("inf")
+    y_max_positive = 0.0
     for name, result in channel_results.items():
         if result.n_samples == 0:
             continue
@@ -1150,11 +1171,22 @@ def build_all_channels_overlay(
         dt = result.dt
 
         if plot_type == "correlator":
-            corr = result.correlator.cpu().numpy() if hasattr(result.correlator, "cpu") else np.asarray(result.correlator)
-            mask = (corr > 0) & np.isfinite(corr)
+            corr = (
+                result.correlator.cpu().numpy()
+                if hasattr(result.correlator, "cpu")
+                else np.asarray(result.correlator)
+            )
+            if correlator_logy:
+                mask = np.isfinite(corr) & (corr > 0)
+            else:
+                mask = np.isfinite(corr)
             if mask.sum() < 2:
                 continue
             t = np.arange(len(corr)) * dt
+            if correlator_logy:
+                c_masked = corr[mask]
+                y_min_positive = min(y_min_positive, float(np.min(c_masked)))
+                y_max_positive = max(y_max_positive, float(np.max(c_masked)))
             curve = hv.Curve(
                 (t[mask], corr[mask]), "t", "C(t)"
             ).opts(
@@ -1163,7 +1195,11 @@ def build_all_channels_overlay(
             ).relabel(name)
             curves.append(curve)
         else:  # effective_mass
-            meff = result.effective_mass.cpu().numpy() if hasattr(result.effective_mass, "cpu") else np.asarray(result.effective_mass)
+            meff = (
+                result.effective_mass.cpu().numpy()
+                if hasattr(result.effective_mass, "cpu")
+                else np.asarray(result.effective_mass)
+            )
             mask = np.isfinite(meff) & (meff > 0)
             if mask.sum() < 2:
                 continue
@@ -1186,13 +1222,27 @@ def build_all_channels_overlay(
     ylabel = "C(t)" if plot_type == "correlator" else "m_eff(t)"
     title = "All Channel Correlators" if plot_type == "correlator" else "All Channel Effective Masses"
 
+    opts_kwargs: dict[str, Any] = {
+        "logy": (plot_type == "correlator" and correlator_logy),
+        "xlabel": "t (time lag)",
+        "ylabel": ylabel,
+        "title": title,
+        "width": 700,
+        "height": 400,
+        "show_legend": True,
+        "shared_axes": False,
+    }
+    if (
+        plot_type == "correlator"
+        and correlator_logy
+        and np.isfinite(y_min_positive)
+        and y_min_positive > 0
+        and y_max_positive > y_min_positive
+    ):
+        ymin = max(np.finfo(float).tiny, y_min_positive * 0.8)
+        ymax = y_max_positive * 1.2
+        opts_kwargs["ylim"] = (ymin, ymax)
+
     return overlay.opts(
-        logy=(plot_type == "correlator"),
-        xlabel="t (time lag)",
-        ylabel=ylabel,
-        title=title,
-        width=700,
-        height=400,
-        show_legend=True,
-        shared_axes=False,
+        **opts_kwargs,
     )
