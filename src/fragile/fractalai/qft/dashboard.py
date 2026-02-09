@@ -47,6 +47,11 @@ from fragile.fractalai.qft.radial_channels import (
     RadialChannelConfig,
     compute_radial_channels,
 )
+from fragile.fractalai.qft.anisotropic_edge_channels import (
+    AnisotropicEdgeChannelConfig,
+    AnisotropicEdgeChannelOutput,
+    compute_anisotropic_edge_channels,
+)
 from fragile.fractalai.qft.higgs_plotting import build_all_higgs_plots
 from fragile.fractalai.qft.dirac_spectrum import (
     DiracSpectrumConfig,
@@ -1903,13 +1908,12 @@ class RadialSettings(param.Parameterized):
         allow_None=True,
         doc=(
             "For time_axis='radial': recorded index/step for the snapshot. "
-            "For time_axis='mc': optional starting recorded index/step (None uses warmup_fraction)."
+            "For time_axis='mc': optional starting recorded index/step (None uses simulation_range)."
         ),
     )
-    warmup_fraction = param.Number(
-        default=0.1,
-        bounds=(0.0, 0.5),
-        doc="Warmup fraction used as MC start when time_axis='mc' and mc_time_index is blank.",
+    simulation_range = param.Range(
+        default=(0.1, 1.0), bounds=(0.0, 1.0),
+        doc="Fraction of simulation timeline to use (start, end). Trims both warmup and late-time frames.",
     )
     max_lag = param.Integer(
         default=80,
@@ -1986,6 +1990,74 @@ class RadialSettings(param.Parameterized):
         bounds=(10, 1000),
         doc="Number of bootstrap resamples for error estimation",
     )
+
+
+class AnisotropicEdgeSettings(param.Parameterized):
+    """Settings for anisotropic edge-channel MC-time correlators."""
+
+    simulation_range = param.Range(
+        default=(0.1, 1.0), bounds=(0.0, 1.0),
+        doc="Fraction of simulation timeline to use (start, end).",
+    )
+    mc_time_index = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Optional starting recorded index/step (None uses simulation_range start).",
+    )
+    max_lag = param.Integer(default=80, bounds=(10, 500))
+    use_connected = param.Boolean(default=True)
+    h_eff = param.Number(default=1.0, bounds=(1e-6, None))
+    mass = param.Number(default=1.0, bounds=(1e-6, None))
+    ell0 = param.Number(default=None, bounds=(1e-6, None), allow_None=True)
+    spatial_dims_spec = param.String(
+        default="",
+        doc="Comma-separated spatial dims to use (blank = all). Example: '0,1,2'.",
+    )
+    edge_weight_mode = param.ObjectSelector(
+        default="riemannian_kernel_volume",
+        objects=(
+            "uniform",
+            "inv_geodesic_iso",
+            "inv_geodesic_full",
+            "inverse_distance",
+            "inverse_volume",
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "kernel",
+            "riemannian_kernel",
+            "riemannian_kernel_volume",
+        ),
+        doc="Recorded edge weighting mode from simulation scutoid pipeline.",
+    )
+    use_volume_weights = param.Boolean(
+        default=True,
+        doc="Multiply edge weights by sqrt(V_i V_j) from recorded Riemannian volumes.",
+    )
+    component_mode = param.ObjectSelector(
+        default="isotropic+axes",
+        objects=("isotropic", "axes", "isotropic+axes", "quadrupole", "isotropic+quadrupole"),
+        doc="Directional basis used to build anisotropic edge moments.",
+    )
+    nucleon_triplet_mode = param.ObjectSelector(
+        default="direct_neighbors",
+        objects=("direct_neighbors", "companions"),
+        doc=(
+            "Nucleon triplet construction: "
+            "'direct_neighbors' uses Delaunay-neighbor triplets, "
+            "'companions' uses (distance companion, clone companion)."
+        ),
+    )
+    channel_list = param.String(
+        default="scalar,pseudoscalar,vector,axial_vector,tensor,nucleon,glueball"
+    )
+    window_widths_spec = param.String(default="5-50")
+    fit_mode = param.ObjectSelector(default="aic", objects=("aic", "linear", "linear_abs"))
+    fit_start = param.Integer(default=2, bounds=(0, None))
+    fit_stop = param.Integer(default=None, bounds=(1, None), allow_None=True)
+    min_fit_points = param.Integer(default=2, bounds=(2, None))
+    compute_bootstrap_errors = param.Boolean(default=False)
+    n_bootstrap = param.Integer(default=100, bounds=(10, 1000))
 
 
 class RadialElectroweakSettings(param.Parameterized):
@@ -2460,6 +2532,25 @@ def _parse_window_widths(spec: str) -> list[int]:
         return list(range(5, 51))
 
 
+def _parse_dims_spec(spec: str, history_d: int) -> list[int] | None:
+    """Parse a comma-separated dimension list. Blank means all dimensions."""
+    spec_clean = str(spec).strip()
+    if not spec_clean:
+        return None
+    try:
+        dims = sorted({int(item.strip()) for item in spec_clean.split(",") if item.strip()})
+    except ValueError as exc:
+        raise ValueError(f"Invalid spatial_dims_spec: {spec!r}. Expected comma-separated integers.") from exc
+    if not dims:
+        return None
+    invalid = [dim for dim in dims if dim < 0 or dim >= history_d]
+    if invalid:
+        raise ValueError(
+            f"spatial_dims_spec contains invalid dims {invalid}; valid range is [0, {history_d - 1}]."
+        )
+    return dims
+
+
 def _map_time_dimension(time_dimension: str, history_d: int | None = None) -> tuple[str, int]:
     """Map user-friendly time dimension name to backend parameters.
 
@@ -2578,6 +2669,37 @@ def _compute_channels_vectorized(
     return results
 
 
+def _compute_anisotropic_edge_bundle(
+    history: RunHistory,
+    settings: AnisotropicEdgeSettings,
+) -> AnisotropicEdgeChannelOutput:
+    """Compute anisotropic direct-edge correlators from recorded geometry."""
+    config = AnisotropicEdgeChannelConfig(
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mc_time_index=settings.mc_time_index,
+        max_lag=int(settings.max_lag),
+        use_connected=bool(settings.use_connected),
+        h_eff=float(settings.h_eff),
+        mass=float(settings.mass),
+        ell0=settings.ell0,
+        keep_dims=_parse_dims_spec(settings.spatial_dims_spec, history.d),
+        edge_weight_mode=str(settings.edge_weight_mode),
+        use_volume_weights=bool(settings.use_volume_weights),
+        component_mode=str(settings.component_mode),
+        nucleon_triplet_mode=str(settings.nucleon_triplet_mode),
+        window_widths=_parse_window_widths(settings.window_widths_spec),
+        fit_mode=str(settings.fit_mode),
+        fit_start=int(settings.fit_start),
+        fit_stop=settings.fit_stop,
+        min_fit_points=int(settings.min_fit_points),
+        compute_bootstrap_errors=bool(settings.compute_bootstrap_errors),
+        n_bootstrap=int(settings.n_bootstrap),
+    )
+    channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
+    return compute_anisotropic_edge_channels(history, config=config, channels=channels)
+
+
 def _compute_radial_channels_bundle(
     history: RunHistory,
     settings: RadialSettings,
@@ -2586,7 +2708,8 @@ def _compute_radial_channels_bundle(
     config = RadialChannelConfig(
         time_axis=str(settings.time_axis),
         mc_time_index=settings.mc_time_index,
-        warmup_fraction=float(settings.warmup_fraction),
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
         max_lag=int(settings.max_lag),
         use_connected=bool(settings.use_connected),
         n_bins=int(settings.n_bins),
@@ -4255,6 +4378,13 @@ RADIAL_STRONG_FORCE_RATIO_SPECS: list[tuple[str, str, str]] = [
     ("glueball", "pseudoscalar", "glueball/pion ≈ 10"),
 ]
 
+ANISOTROPIC_EDGE_RATIO_SPECS: list[tuple[str, str, str]] = [
+    ("nucleon", "pseudoscalar", "proton/pion ≈ 6.7"),
+    ("vector", "pseudoscalar", "rho/pion ≈ 5.5"),
+    ("scalar", "pseudoscalar", "sigma/pion"),
+    ("glueball", "pseudoscalar", "glueball/pion ≈ 10"),
+]
+
 
 def _extract_masses(
     results: dict[str, ChannelCorrelatorResult],
@@ -4805,6 +4935,7 @@ def create_app() -> pn.template.FastListTemplate:
             "radial_ew_results_4d": None,
             "radial_ew_results_3d": None,
             "radial_ew_results_3d_axes": None,
+            "anisotropic_edge_results": None,
             "einstein_test_result": None,
         }
 
@@ -5210,7 +5341,7 @@ def create_app() -> pn.template.FastListTemplate:
             parameters=[
                 "time_axis",
                 "mc_time_index",
-                "warmup_fraction",
+                "simulation_range",
                 "max_lag",
                 "use_connected",
                 "n_bins",
@@ -5303,6 +5434,123 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         radial_glueball_ref_input = pn.widgets.FloatInput(
+            name="Glueball ref (GeV)",
+            value=None,
+            step=0.01,
+            min_width=200,
+            sizing_mode="stretch_width",
+        )
+
+        # =====================================================================
+        # Anisotropic edge channels tab components (direct recorded neighbors)
+        # =====================================================================
+        anisotropic_edge_settings = AnisotropicEdgeSettings()
+        anisotropic_edge_status = pn.pane.Markdown(
+            "**Anisotropic Edge Channels:** Load a RunHistory and click Compute.",
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_run_button = pn.widgets.Button(
+            name="Compute Anisotropic Edge Channels",
+            button_type="primary",
+            min_width=240,
+            sizing_mode="stretch_width",
+            disabled=True,
+        )
+        anisotropic_edge_settings_panel = pn.Param(
+            anisotropic_edge_settings,
+            parameters=[
+                "simulation_range",
+                "mc_time_index",
+                "max_lag",
+                "use_connected",
+                "h_eff",
+                "mass",
+                "ell0",
+                "spatial_dims_spec",
+                "edge_weight_mode",
+                "use_volume_weights",
+                "component_mode",
+                "nucleon_triplet_mode",
+                "channel_list",
+                "window_widths_spec",
+                "fit_mode",
+                "fit_start",
+                "fit_stop",
+                "min_fit_points",
+                "compute_bootstrap_errors",
+                "n_bootstrap",
+            ],
+            show_name=False,
+            widgets={
+                "mc_time_index": {"name": "MC start (step or idx)"},
+                "spatial_dims_spec": {"name": "Spatial dims (blank=all)"},
+            },
+            default_layout=type("AnisotropicEdgeSettingsGrid", (pn.GridBox,), {"ncols": 2}),
+        )
+        anisotropic_edge_summary = pn.pane.Markdown(
+            "## Anisotropic Edge Summary\n_Run analysis to populate._",
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_mass_mode = pn.widgets.RadioButtonGroup(
+            name="Mass Display",
+            options=["AIC-Weighted", "Best Window"],
+            value="AIC-Weighted",
+            button_type="default",
+        )
+        anisotropic_edge_heatmap_color_metric = pn.widgets.RadioButtonGroup(
+            name="Heatmap Color",
+            options=["mass", "aic", "r2"],
+            value="mass",
+            button_type="default",
+        )
+        anisotropic_edge_heatmap_alpha_metric = pn.widgets.RadioButtonGroup(
+            name="Heatmap Opacity",
+            options=["aic", "mass", "r2"],
+            value="aic",
+            button_type="default",
+        )
+        anisotropic_edge_plots_spectrum = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        anisotropic_edge_plots_overlay_corr = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        anisotropic_edge_plots_overlay_meff = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        anisotropic_edge_plateau_plots = pn.Column(sizing_mode="stretch_width")
+        anisotropic_edge_heatmap_plots = pn.Column(sizing_mode="stretch_width")
+        anisotropic_edge_mass_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_ratio_pane = pn.pane.Markdown(
+            "**Mass Ratios:** Compute anisotropic edge channels to see ratios.",
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_fit_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_anchor_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_ref_table = pn.widgets.Tabulator(
+            _build_hadron_reference_table(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+            selectable=False,
+        )
+        anisotropic_edge_glueball_ref_input = pn.widgets.FloatInput(
             name="Glueball ref (GeV)",
             value=None,
             step=0.01,
@@ -6093,6 +6341,11 @@ def create_app() -> pn.template.FastListTemplate:
             # Enable radial tab
             radial_run_button.disabled = False
             radial_status.object = "**Radial Strong Force ready:** click Compute Radial Strong Force."
+            # Enable anisotropic edge tab
+            anisotropic_edge_run_button.disabled = False
+            anisotropic_edge_status.object = (
+                "**Anisotropic Edge Channels ready:** click Compute Anisotropic Edge Channels."
+            )
             # Enable radial electroweak tab
             radial_ew_run_button.disabled = False
             radial_ew_status.object = "**Radial Electroweak ready:** click Compute Radial Electroweak."
@@ -6947,6 +7200,96 @@ def create_app() -> pn.template.FastListTemplate:
             _run_tab_computation(state, radial_status, "radial strong force channels", _compute)
 
         # =====================================================================
+        # Anisotropic edge channels tab callbacks
+        # =====================================================================
+
+        def _anisotropic_edge_spectrum_builder(results):
+            return build_mass_spectrum_bar(
+                results,
+                title="Anisotropic Edge Channel Mass Spectrum",
+                ylabel="Mass (algorithmic units)",
+            )
+
+        def _update_anisotropic_edge_plots(
+            results: dict[str, ChannelCorrelatorResult],
+        ) -> None:
+            _update_correlator_plots(
+                results,
+                anisotropic_edge_plateau_plots,
+                anisotropic_edge_plots_spectrum,
+                anisotropic_edge_plots_overlay_corr,
+                anisotropic_edge_plots_overlay_meff,
+                heatmap_container=anisotropic_edge_heatmap_plots,
+                heatmap_color_metric_widget=anisotropic_edge_heatmap_color_metric,
+                heatmap_alpha_metric_widget=anisotropic_edge_heatmap_alpha_metric,
+                spectrum_builder=_anisotropic_edge_spectrum_builder,
+            )
+
+        def _update_anisotropic_edge_tables(
+            results: dict[str, ChannelCorrelatorResult],
+            mode: str | None = None,
+        ) -> None:
+            if mode is None:
+                mode = anisotropic_edge_mass_mode.value
+            _update_strong_tables(
+                results,
+                mode,
+                anisotropic_edge_mass_table,
+                anisotropic_edge_ratio_pane,
+                anisotropic_edge_fit_table,
+                anisotropic_edge_anchor_table,
+                anisotropic_edge_glueball_ref_input,
+                ratio_specs=ANISOTROPIC_EDGE_RATIO_SPECS,
+            )
+
+        def _on_anisotropic_edge_mass_mode_change(event):
+            if state.get("anisotropic_edge_results") is None:
+                return
+            _update_anisotropic_edge_tables(state["anisotropic_edge_results"], event.new)
+
+        anisotropic_edge_mass_mode.param.watch(_on_anisotropic_edge_mass_mode_change, "value")
+
+        def _on_anisotropic_edge_heatmap_metric_change(_event):
+            if state.get("anisotropic_edge_results") is None:
+                return
+            _update_anisotropic_edge_plots(state["anisotropic_edge_results"])
+
+        anisotropic_edge_heatmap_color_metric.param.watch(
+            _on_anisotropic_edge_heatmap_metric_change,
+            "value",
+        )
+        anisotropic_edge_heatmap_alpha_metric.param.watch(
+            _on_anisotropic_edge_heatmap_metric_change,
+            "value",
+        )
+
+        def on_run_anisotropic_edge_channels(_):
+            def _compute(history):
+                output = _compute_anisotropic_edge_bundle(history, anisotropic_edge_settings)
+                results = output.channel_results
+                state["anisotropic_edge_results"] = results
+                _update_anisotropic_edge_plots(results)
+                _update_anisotropic_edge_tables(results)
+                anisotropic_edge_summary.object = (
+                    "## Anisotropic Edge Summary\n"
+                    f"- Components: `{', '.join(output.component_labels)}`\n"
+                    f"- Frames used: `{output.n_valid_frames}/{len(output.frame_indices)}`\n"
+                    f"- Mean alive walkers/frame: `{output.avg_alive_walkers:.2f}`\n"
+                    f"- Mean directed edges/frame: `{output.avg_edges:.2f}`\n"
+                )
+                n_channels = len([res for res in results.values() if res.n_samples > 0])
+                anisotropic_edge_status.object = (
+                    f"**Complete:** {n_channels} anisotropic edge channels computed."
+                )
+
+            _run_tab_computation(
+                state,
+                anisotropic_edge_status,
+                "anisotropic edge channels",
+                _compute,
+            )
+
+        # =====================================================================
         # Electroweak tab callbacks (U1/SU2 correlators)
         # =====================================================================
 
@@ -7653,6 +7996,7 @@ def create_app() -> pn.template.FastListTemplate:
         einstein_run_button.on_click(on_run_einstein_test)
         channels_run_button.on_click(on_run_channels)
         radial_run_button.on_click(on_run_radial_channels)
+        anisotropic_edge_run_button.on_click(on_run_anisotropic_edge_channels)
         radial_ew_run_button.on_click(on_run_radial_electroweak)
         electroweak_run_button.on_click(on_run_electroweak)
         higgs_run_button.on_click(on_run_higgs)
@@ -8108,6 +8452,66 @@ Use **MC time slice** to select the snapshot.""",
                     ("3D Avg", radial_3d_section),
                     sizing_mode="stretch_both",
                 ),
+                sizing_mode="stretch_both",
+            )
+
+            anisotropic_edge_note = pn.pane.Alert(
+                """**Anisotropic Edge Channels:** Computes MC-time correlators from direct
+recorded Delaunay neighbors only (no tessellation recomputation). Local edge
+observables are projected onto directional components to preserve anisotropy
+under symmetry breaking. Nucleon supports two triplet modes:
+direct-neighbor triplets or (distance companion, clone companion).""",
+                alert_type="info",
+                sizing_mode="stretch_width",
+            )
+
+            anisotropic_edge_tab = pn.Column(
+                anisotropic_edge_status,
+                anisotropic_edge_note,
+                pn.Row(anisotropic_edge_run_button, sizing_mode="stretch_width"),
+                pn.Accordion(
+                    ("Anisotropic Edge Settings", anisotropic_edge_settings_panel),
+                    (
+                        "Reference Anchors",
+                        pn.Column(
+                            anisotropic_edge_glueball_ref_input,
+                            pn.pane.Markdown("### Observed Mass Anchors (GeV)"),
+                            anisotropic_edge_ref_table,
+                        ),
+                    ),
+                    sizing_mode="stretch_width",
+                ),
+                pn.layout.Divider(),
+                anisotropic_edge_summary,
+                pn.pane.Markdown("### Mass Display Mode"),
+                anisotropic_edge_mass_mode,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### All Channels Overlay - Correlators"),
+                anisotropic_edge_plots_overlay_corr,
+                pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
+                anisotropic_edge_plots_overlay_meff,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Mass Spectrum"),
+                anisotropic_edge_plots_spectrum,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Extracted Masses"),
+                anisotropic_edge_mass_table,
+                anisotropic_edge_ratio_pane,
+                pn.pane.Markdown("### Best-Fit Scales"),
+                anisotropic_edge_fit_table,
+                pn.pane.Markdown("### Anchored Mass Table"),
+                anisotropic_edge_anchor_table,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
+                anisotropic_edge_plateau_plots,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Window Heatmaps"),
+                pn.Row(
+                    anisotropic_edge_heatmap_color_metric,
+                    anisotropic_edge_heatmap_alpha_metric,
+                    sizing_mode="stretch_width",
+                ),
+                anisotropic_edge_heatmap_plots,
                 sizing_mode="stretch_both",
             )
 
@@ -8576,6 +8980,7 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                     ("Strong Force", channels_tab),
                     ("Weak Isospin", isospin_tab),
                     ("Radial Strong Force", radial_tab),
+                    ("Anisotropic Edge", anisotropic_edge_tab),
                     ("Radial Electroweak", radial_ew_tab),
                     ("Electroweak", electroweak_tab),
                     ("Higgs Field", higgs_tab),
@@ -8599,10 +9004,9 @@ def _parse_args() -> argparse.Namespace:
 if __name__ == "__main__":
     args = _parse_args()
     print("Starting QFT Swarm Convergence Dashboard...", flush=True)
-    app = create_app()
     print(
         f"QFT Swarm Convergence Dashboard running at http://localhost:{args.port} "
         f"(use --open to launch a browser)",
         flush=True,
     )
-    app.show(port=args.port, open=args.open)
+    pn.serve(create_app, port=args.port, show=args.open, title="QFT Swarm Convergence Dashboard")

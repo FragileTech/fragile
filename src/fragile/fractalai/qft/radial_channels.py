@@ -16,10 +16,11 @@ strong-force channel views.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import heapq
 from typing import Any
 
 import numpy as np
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import dijkstra as sparse_dijkstra
 import torch
 from torch import Tensor
 
@@ -67,6 +68,7 @@ class RadialChannelConfig:
     time_axis: str = "mc"  # "mc" (Monte Carlo time) or "radial" (single-slice screening)
     mc_time_index: int | None = None
     warmup_fraction: float = 0.1
+    end_fraction: float = 1.0
     max_lag: int = 80
     use_connected: bool = True
     n_bins: int = 48
@@ -269,6 +271,45 @@ def _compute_color_states_single(
     return color, valid
 
 
+def _compute_color_states_batch(
+    history: RunHistory,
+    start_idx: int,
+    end_idx: int,
+    config: RadialChannelConfig,
+    keep_dims: list[int] | None = None,
+) -> tuple[Tensor, Tensor]:
+    """Compute color states for [start_idx, end_idx) in one batched pass."""
+    if end_idx <= start_idx:
+        empty_color = history.x_before_clone.new_empty((0, history.N, history.d)).to(torch.complex64)
+        empty_valid = torch.zeros(0, history.N, dtype=torch.bool, device=history.x_before_clone.device)
+        return empty_color, empty_valid
+
+    v_pre = history.v_before_clone[start_idx:end_idx]
+    force_visc = history.force_viscous[start_idx - 1 : end_idx - 1]
+
+    h_eff = float(max(config.h_eff, 1e-8))
+    mass = float(max(config.mass, 1e-8))
+    ell0 = config.ell0 if config.ell0 is not None else _estimate_ell0(history)
+
+    phase = (mass * v_pre * ell0) / h_eff
+    complex_phase = torch.polar(torch.ones_like(phase), phase.float())
+
+    complex_dtype = torch.complex128 if force_visc.dtype == torch.float64 else torch.complex64
+    tilde = force_visc.to(complex_dtype) * complex_phase.to(complex_dtype)
+    norm = torch.linalg.vector_norm(tilde, dim=-1, keepdim=True).clamp(min=1e-12)
+    color = tilde / norm
+    valid = norm.squeeze(-1) > 1e-12
+
+    if keep_dims is None:
+        return color, valid
+
+    color = color[:, :, keep_dims]
+    proj_norm = torch.linalg.vector_norm(color, dim=-1, keepdim=True).clamp(min=1e-12)
+    color = color / proj_norm
+    valid = valid & (proj_norm.squeeze(-1) > 1e-12)
+    return color, valid
+
+
 def _apply_projection(
     channel: str, color_i: Tensor, color_j: Tensor, gamma: dict[str, Tensor]
 ) -> Tensor:
@@ -307,204 +348,162 @@ def _compute_glueball_operator(
     return force_sq[alive_idx]
 
 
-def _build_edge_weight_map(
+def _build_neighbor_data_dense(
     edges: np.ndarray,
-    weights: np.ndarray,
-    alive_idx: Tensor,
-    *,
-    symmetric: bool = True,
-) -> dict[tuple[int, int], float]:
-    if edges.size == 0 or weights.size == 0:
-        return {}
-    alive_list = alive_idx.tolist()
-    edge_map: dict[tuple[int, int], float] = {}
-    for (i, j), w in zip(edges, weights):
-        if i >= len(alive_list) or j >= len(alive_list):
-            continue
-        gi = int(alive_list[int(i)])
-        gj = int(alive_list[int(j)])
-        edge_map[gi, gj] = float(w)
-        if symmetric:
-            edge_map[gj, gi] = float(w)
-    return edge_map
-
-
-def _build_neighbor_data(
-    neighbor_lists_global: dict[int, list[int]] | None,
     alive_idx: Tensor,
     positions: Tensor,
     bounds: Any | None,
-    volumes: np.ndarray | None,
+    volumes: Tensor | None,
     weight_mode: str,
-    edge_weight_map: dict[tuple[int, int], float] | None,
+    edge_mode_values: np.ndarray | None,
     max_neighbors: int,
     pbc: bool,
     kernel_length_scale: float = 1.0,
-) -> tuple[list[Tensor], list[Tensor]]:
-    if neighbor_lists_global is None:
-        msg = "Recorded neighbor lists are required for radial channel analysis."
+) -> tuple[Tensor, Tensor, Tensor]:
+    """Build dense [N, k] neighbor/weight matrices for one frame."""
+    if edges.ndim != 2 or edges.shape[1] != 2:
+        msg = f"Expected edges with shape [E, 2], got {edges.shape}."
         raise ValueError(msg)
-    alive_list = alive_idx.tolist()
-    global_to_alive = {int(g): i for i, g in enumerate(alive_list)}
-    n_alive = len(alive_list)
-    neighbor_indices: list[Tensor] = []
-    neighbor_weights: list[Tensor] = []
-    edge_weight_map = edge_weight_map or {}
+    n_alive = int(positions.shape[0])
+    if n_alive <= 0:
+        empty_i = torch.empty(0, 0, dtype=torch.long, device=positions.device)
+        empty_w = torch.empty(0, 0, dtype=positions.dtype, device=positions.device)
+        empty_m = torch.empty(0, 0, dtype=torch.bool, device=positions.device)
+        return empty_i, empty_w, empty_m
 
-    for alive_pos, global_idx in enumerate(alive_list):
-        neighbors_global = []
-        if neighbor_lists_global is not None:
-            neighbors_global = neighbor_lists_global.get(int(global_idx), [])
+    edges_t = torch.as_tensor(edges, device=positions.device, dtype=torch.long)
+    if edges_t.numel() == 0:
+        msg = "Recorded neighbor graph has no alive-alive edges for the requested frame."
+        raise ValueError(msg)
 
-        neighbors_alive: list[int] = []
-        neighbors_global_filtered: list[int] = []
-        for n in neighbors_global:
-            n_int = int(n)
-            if n_int not in global_to_alive or n_int == int(global_idx):
-                continue
-            neighbors_alive.append(global_to_alive[n_int])
-            neighbors_global_filtered.append(n_int)
+    src = edges_t[:, 0]
+    dst = edges_t[:, 1]
+    valid_edges = (
+        (src >= 0)
+        & (src < n_alive)
+        & (dst >= 0)
+        & (dst < n_alive)
+        & (src != dst)
+    )
+    if not torch.any(valid_edges):
+        msg = "Recorded neighbor graph has no valid directed edges after filtering."
+        raise ValueError(msg)
+    src = src[valid_edges]
+    dst = dst[valid_edges]
 
-        if not neighbors_alive:
-            msg = f"Walker {int(global_idx)} has no recorded alive neighbors."
+    volumes_t: Tensor | None = None
+    if volumes is not None:
+        volumes_t = volumes.to(device=positions.device, dtype=positions.dtype)
+        if volumes_t.ndim != 1 or int(volumes_t.shape[0]) != n_alive:
+            msg = (
+                "Volume weighting requires per-alive recorded volume weights "
+                f"of shape [{n_alive}], got {tuple(volumes_t.shape)}."
+            )
             raise ValueError(msg)
 
-        if max_neighbors and max_neighbors > 0 and len(neighbors_alive) > max_neighbors:
-            neighbors_alive = neighbors_alive[:max_neighbors]
-            neighbors_global_filtered = neighbors_global_filtered[:max_neighbors]
-
-        neighbors_tensor = torch.tensor(neighbors_alive, device=positions.device, dtype=torch.long)
-
-        if weight_mode == "uniform":
-            weights_tensor = torch.ones(len(neighbors_alive), device=positions.device)
-        elif weight_mode == "volume":
-            if volumes is None or len(volumes) != n_alive:
-                msg = "Volume weighting requires per-alive recorded volume weights."
-                raise ValueError(msg)
-            weights_tensor = torch.tensor(
-                volumes[neighbors_alive],
-                device=positions.device,
-                dtype=positions.dtype,
+    edge_mode_t: Tensor | None = None
+    if edge_mode_values is not None:
+        edge_vals = np.asarray(edge_mode_values, dtype=float).reshape(-1)
+        if edge_vals.shape[0] != edges.shape[0]:
+            msg = (
+                f"Edge weight mode values must align with edges: "
+                f"E={edges.shape[0]}, W={edge_vals.shape[0]}."
             )
-        elif weight_mode in {
-            "euclidean",
-            "inv_euclidean",
-            "inv_geodesic_iso",
-            "inv_geodesic_full",
-            "kernel",
-        }:
-            pos_i = positions[alive_pos]
-            pos_j = positions[neighbors_tensor]
-            diff = pos_j - pos_i
-            if pbc and bounds is not None:
-                diff = _apply_pbc_diff_torch(diff, bounds)
-            dist = torch.linalg.vector_norm(diff, dim=-1).clamp(min=1e-8)
-            if weight_mode == "kernel":
-                weights_tensor = torch.exp(
-                    -(dist ** 2) / (2.0 * kernel_length_scale ** 2)
-                )
-            elif weight_mode == "euclidean":
-                weights_tensor = dist
-            elif weight_mode == "inv_euclidean":
-                weights_tensor = 1.0 / dist
-            else:
-                geo_weights = []
-                for nbr_global, base_dist in zip(
-                    neighbors_global_filtered, dist.tolist(), strict=False
-                ):
-                    edge_weight = edge_weight_map.get(
-                        (int(global_idx), int(nbr_global)), None
-                    )
-                    if (
-                        edge_weight is None
-                        or not np.isfinite(edge_weight)
-                        or float(edge_weight) <= 0
-                    ):
-                        msg = (
-                            "Missing recorded geodesic edge weight for "
-                            f"({int(global_idx)} -> {int(nbr_global)})."
-                        )
-                        raise ValueError(msg)
-                    geo_weights.append(1.0 / max(edge_weight, 1e-8))
-                if not geo_weights:
-                    msg = f"No geometric weights available for walker {int(global_idx)}."
-                    raise ValueError(msg)
-                weights_tensor = torch.tensor(
-                    geo_weights, device=positions.device, dtype=positions.dtype
-                )
-        elif weight_mode in RECORDED_EDGE_WEIGHT_MODES:
-            recorded_weights = []
-            for nbr_global in neighbors_global_filtered:
-                edge_weight = edge_weight_map.get((int(global_idx), int(nbr_global)), None)
-                if edge_weight is None or not np.isfinite(edge_weight):
-                    msg = (
-                        f"Missing recorded weight mode '{weight_mode}' for "
-                        f"edge ({int(global_idx)} -> {int(nbr_global)})."
-                    )
-                    raise ValueError(msg)
-                if float(edge_weight) < 0:
-                    msg = (
-                        f"Negative recorded weight mode '{weight_mode}' for "
-                        f"edge ({int(global_idx)} -> {int(nbr_global)})."
-                    )
-                    raise ValueError(msg)
-                recorded_weights.append(float(edge_weight))
-            if not recorded_weights:
-                msg = (
-                    f"No recorded weights for walker {int(global_idx)} "
-                    f"under mode '{weight_mode}'."
-                )
-                raise ValueError(msg)
-            weights_tensor = torch.tensor(
-                recorded_weights, device=positions.device, dtype=positions.dtype
-            )
+            raise ValueError(msg)
+        edge_vals = edge_vals[valid_edges.detach().cpu().numpy()]
+        edge_mode_t = torch.as_tensor(edge_vals, device=positions.device, dtype=positions.dtype)
+
+    if weight_mode == "uniform":
+        edge_weights = torch.ones(src.shape[0], device=positions.device, dtype=positions.dtype)
+    elif weight_mode == "volume":
+        if volumes_t is None:
+            msg = "neighbor_weighting='volume' requires per-alive volume weights."
+            raise ValueError(msg)
+        edge_weights = volumes_t[dst]
+    elif weight_mode in {"euclidean", "inv_euclidean", "kernel"}:
+        diff = positions[dst] - positions[src]
+        if pbc and bounds is not None:
+            diff = _apply_pbc_diff_torch(diff, bounds)
+        dist = torch.linalg.vector_norm(diff, dim=-1).clamp(min=1e-8)
+        if weight_mode == "kernel":
+            edge_weights = torch.exp(-(dist ** 2) / (2.0 * kernel_length_scale ** 2))
+        elif weight_mode == "euclidean":
+            edge_weights = dist
         else:
-            msg = f"Unsupported neighbor_weighting mode: {weight_mode}"
+            edge_weights = 1.0 / dist
+    elif weight_mode in {"inv_geodesic_iso", "inv_geodesic_full"}:
+        if edge_mode_t is None:
+            msg = f"neighbor_weighting='{weight_mode}' requires recorded edge distances."
+            raise ValueError(msg)
+        if not torch.isfinite(edge_mode_t).all() or torch.any(edge_mode_t <= 0):
+            msg = f"neighbor_weighting='{weight_mode}' received non-positive/non-finite edge values."
+            raise ValueError(msg)
+        edge_weights = 1.0 / edge_mode_t.clamp(min=1e-8)
+    elif weight_mode in RECORDED_EDGE_WEIGHT_MODES:
+        if edge_mode_t is None:
+            msg = f"neighbor_weighting='{weight_mode}' requires recorded edge mode values."
+            raise ValueError(msg)
+        if not torch.isfinite(edge_mode_t).all() or torch.any(edge_mode_t < 0):
+            msg = f"neighbor_weighting='{weight_mode}' received negative/non-finite edge values."
+            raise ValueError(msg)
+        edge_weights = edge_mode_t
+    else:
+        msg = f"Unsupported neighbor_weighting mode: {weight_mode}"
+        raise ValueError(msg)
+
+    # Keep existing semantics: for non-recorded and non-volume modes, multiply by V_j when available.
+    if (
+        weight_mode != "volume"
+        and weight_mode not in RECORDED_EDGE_WEIGHT_MODES
+        and volumes_t is not None
+    ):
+        edge_weights = edge_weights * volumes_t[dst]
+
+    order = torch.argsort(src, stable=True)
+    src = src[order]
+    dst = dst[order]
+    edge_weights = edge_weights[order]
+
+    counts = torch.bincount(src, minlength=n_alive)
+    if torch.any(counts == 0):
+        missing_local = torch.where(counts == 0)[0]
+        if alive_idx.numel() == n_alive:
+            missing = alive_idx[missing_local].detach().cpu().tolist()
+        else:
+            missing = missing_local.detach().cpu().tolist()
+        preview = ", ".join(str(int(m)) for m in missing[:8])
+        suffix = "..." if len(missing) > 8 else ""
+        msg = (
+            f"Recorded graph has walkers without neighbors in alive set "
+            f"({len(missing)} walkers: {preview}{suffix})."
+        )
+        raise ValueError(msg)
+
+    row_starts = torch.zeros(n_alive, dtype=torch.long, device=positions.device)
+    if n_alive > 1:
+        row_starts[1:] = torch.cumsum(counts[:-1], dim=0)
+    col = torch.arange(src.shape[0], device=positions.device, dtype=torch.long) - row_starts[src]
+
+    if max_neighbors and max_neighbors > 0:
+        keep = col < int(max_neighbors)
+        src = src[keep]
+        dst = dst[keep]
+        edge_weights = edge_weights[keep]
+        col = col[keep]
+        if src.numel() == 0:
+            msg = "No neighbors remain after applying neighbor_k cap."
             raise ValueError(msg)
 
-        if (
-            weight_mode != "volume"
-            and weight_mode not in RECORDED_EDGE_WEIGHT_MODES
-            and volumes is not None
-            and len(volumes) == n_alive
-        ):
-            vol_tensor = torch.tensor(
-                volumes[neighbors_alive],
-                device=positions.device,
-                dtype=positions.dtype,
-            )
-            weights_tensor = weights_tensor * vol_tensor
+    k = int(col.max().item()) + 1
+    rows = torch.arange(n_alive, device=positions.device, dtype=torch.long).unsqueeze(1).expand(-1, k)
+    neighbor_indices = rows.clone()
+    neighbor_weights = torch.zeros((n_alive, k), device=positions.device, dtype=positions.dtype)
+    neighbor_mask = torch.zeros((n_alive, k), device=positions.device, dtype=torch.bool)
 
-        neighbor_indices.append(neighbors_tensor)
-        neighbor_weights.append(weights_tensor)
-
-    return neighbor_indices, neighbor_weights
-
-
-def _build_neighbor_array(
-    neighbor_lists: dict[int, list[int]],
-    alive_idx: Tensor,
-    k: int,
-) -> Tensor:
-    alive_list = alive_idx.tolist()
-    global_to_alive = {int(g): i for i, g in enumerate(alive_list)}
-    n_alive = len(alive_list)
-    neighbors = torch.full((n_alive, k), -1, dtype=torch.long)
-    for alive_pos, global_idx in enumerate(alive_list):
-        choices = [
-            global_to_alive[c]
-            for c in neighbor_lists.get(int(global_idx), [])
-            if int(c) in global_to_alive and global_to_alive[int(c)] != alive_pos
-        ]
-        if not choices:
-            neighbors[alive_pos] = alive_pos
-            continue
-        if len(choices) < k:
-            choices = choices + [alive_pos] * (k - len(choices))
-        else:
-            choices = choices[:k]
-        neighbors[alive_pos] = torch.tensor(choices, dtype=torch.long)
-    return neighbors
+    neighbor_indices[src, col] = dst
+    neighbor_weights[src, col] = edge_weights
+    neighbor_mask[src, col] = True
+    return neighbor_indices, neighbor_weights, neighbor_mask
 
 
 def _sample_pairs(n: int, max_pairs: int, rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
@@ -526,59 +525,93 @@ def _sample_pairs(n: int, max_pairs: int, rng: np.random.Generator) -> tuple[np.
     return i, j
 
 
-def _build_adjacency(edges: np.ndarray, weights: np.ndarray, n: int) -> list[list[tuple[int, float]]]:
-    adjacency: list[list[tuple[int, float]]] = [[] for _ in range(n)]
-    for (i, j), w in zip(edges, weights):
-        if i == j:
-            continue
-        adjacency[int(i)].append((int(j), float(w)))
-    return adjacency
+def _build_graph_csr(edges: np.ndarray, weights: np.ndarray, n: int) -> csr_matrix:
+    """Build CSR graph for fast shortest-path queries."""
+    if edges.ndim != 2 or edges.shape[1] != 2:
+        msg = f"Expected edges with shape [E, 2], got {edges.shape}."
+        raise ValueError(msg)
+    w = np.asarray(weights, dtype=float).reshape(-1)
+    if w.shape[0] != edges.shape[0]:
+        msg = f"Edge/weight mismatch: E={edges.shape[0]}, W={w.shape[0]}."
+        raise ValueError(msg)
+    if not np.all(np.isfinite(w)):
+        msg = "Graph edge weights contain non-finite values."
+        raise ValueError(msg)
+    if np.any(w < 0.0):
+        msg = "Graph edge weights must be non-negative for shortest-path computation."
+        raise ValueError(msg)
 
+    src = edges[:, 0].astype(np.int64, copy=False)
+    dst = edges[:, 1].astype(np.int64, copy=False)
+    valid = src != dst
+    if not np.any(valid):
+        return csr_matrix((n, n), dtype=float)
 
-def _dijkstra_targets(
-    adjacency: list[list[tuple[int, float]]],
-    source: int,
-    targets: set[int],
-) -> dict[int, float]:
-    distances: dict[int, float] = {source: 0.0}
-    heap: list[tuple[float, int]] = [(0.0, source)]
-    remaining = set(targets)
-    remaining.discard(source)
-    while heap and remaining:
-        dist_u, u = heapq.heappop(heap)
-        if dist_u != distances.get(u):
-            continue
-        if u in remaining:
-            remaining.remove(u)
-            if not remaining:
-                break
-        for v, w in adjacency[u]:
-            new_dist = dist_u + w
-            if new_dist < distances.get(v, float("inf")):
-                distances[v] = new_dist
-                heapq.heappush(heap, (new_dist, v))
-    return {t: distances.get(t, float("inf")) for t in targets}
+    graph = csr_matrix(
+        (w[valid], (src[valid], dst[valid])),
+        shape=(n, n),
+        dtype=float,
+    )
+    graph.sum_duplicates()
+    graph.eliminate_zeros()
+    return graph
 
 
 def _pair_distances_graph(
-    adjacency: list[list[tuple[int, float]]],
+    graph: csr_matrix,
     pair_i: np.ndarray,
     pair_j: np.ndarray,
+    source_chunk_size: int = 128,
 ) -> np.ndarray:
-    pairs_by_source: dict[int, set[int]] = {}
-    for i, j in zip(pair_i, pair_j):
-        pairs_by_source.setdefault(int(i), set()).add(int(j))
+    if pair_i.shape != pair_j.shape:
+        msg = f"pair_i and pair_j must have same shape, got {pair_i.shape} vs {pair_j.shape}."
+        raise ValueError(msg)
+    if pair_i.size == 0:
+        return np.empty(0, dtype=float)
 
-    distances = np.full(pair_i.shape[0], np.inf, dtype=float)
-    index_map: dict[tuple[int, int], list[int]] = {}
-    for idx, (i, j) in enumerate(zip(pair_i, pair_j)):
-        index_map.setdefault((int(i), int(j)), []).append(idx)
+    pair_i_arr = np.asarray(pair_i, dtype=np.int64).reshape(-1)
+    pair_j_arr = np.asarray(pair_j, dtype=np.int64).reshape(-1)
+    n_nodes = graph.shape[0]
+    if np.any(pair_i_arr < 0) or np.any(pair_i_arr >= n_nodes):
+        msg = "pair_i contains indices outside graph node range."
+        raise ValueError(msg)
+    if np.any(pair_j_arr < 0) or np.any(pair_j_arr >= n_nodes):
+        msg = "pair_j contains indices outside graph node range."
+        raise ValueError(msg)
 
-    for source, targets in pairs_by_source.items():
-        target_dist = _dijkstra_targets(adjacency, source, targets)
-        for target, dist in target_dist.items():
-            for idx in index_map.get((source, target), []):
-                distances[idx] = dist
+    distances = np.full(pair_i_arr.shape[0], np.inf, dtype=float)
+    order = np.argsort(pair_i_arr, kind="stable")
+    src_sorted = pair_i_arr[order]
+    dst_sorted = pair_j_arr[order]
+
+    unique_sources, source_starts, source_counts = np.unique(
+        src_sorted,
+        return_index=True,
+        return_counts=True,
+    )
+    source_ends = source_starts + source_counts
+    chunk = max(1, int(source_chunk_size))
+
+    for source_chunk_start in range(0, unique_sources.shape[0], chunk):
+        source_chunk_end = min(source_chunk_start + chunk, unique_sources.shape[0])
+        chunk_sources = unique_sources[source_chunk_start:source_chunk_end]
+
+        dist_chunk = sparse_dijkstra(
+            csgraph=graph,
+            directed=True,
+            indices=chunk_sources,
+            return_predecessors=False,
+        )
+        if dist_chunk.ndim == 1:
+            dist_chunk = dist_chunk[np.newaxis, :]
+
+        pair_start = int(source_starts[source_chunk_start])
+        pair_end = int(source_ends[source_chunk_end - 1])
+        local_sources = src_sorted[pair_start:pair_end]
+        local_targets = dst_sorted[pair_start:pair_end]
+        row_idx = np.searchsorted(chunk_sources, local_sources)
+        gathered = dist_chunk[row_idx, local_targets]
+        distances[order[pair_start:pair_end]] = np.asarray(gathered, dtype=float)
 
     return distances
 
@@ -667,106 +700,82 @@ def _build_channel_result(
     )
 
 
-def _compute_operator_values(
+def _compute_operator_values_dense(
     channel: str,
     color: Tensor,
     valid: Tensor,
     alive_idx: Tensor,
-    neighbor_indices: list[Tensor],
-    neighbor_weights: list[Tensor],
+    neighbor_indices: Tensor,
+    neighbor_weights: Tensor,
+    neighbor_mask: Tensor,
     gamma: dict[str, Tensor],
     history: RunHistory,
     frame_idx: int,
     keep_dims: list[int] | None,
 ) -> Tensor:
+    """Vectorized per-frame operator computation on dense neighbor tensors."""
     if channel == "glueball":
         return _compute_glueball_operator(history, frame_idx, alive_idx, keep_dims=keep_dims)
 
-    n_alive = color.shape[0]
-    outputs = torch.zeros(n_alive, device=color.device)
+    n_alive = int(color.shape[0])
+    outputs = torch.zeros(n_alive, device=color.device, dtype=torch.float32)
+    if n_alive == 0 or neighbor_indices.numel() == 0:
+        return outputs
 
     if channel == "nucleon" and color.shape[1] < 3:
         return outputs
 
-    for i in range(n_alive):
-        neighbors = neighbor_indices[i]
-        weights = neighbor_weights[i]
-        if neighbors.numel() == 0:
-            continue
+    row = torch.arange(n_alive, device=color.device, dtype=torch.long).unsqueeze(1)
 
-        if channel == "nucleon":
-            if neighbors.numel() < 2:
-                continue
-            idx_pairs = torch.combinations(neighbors, r=2)
-            if idx_pairs.numel() == 0:
-                continue
-            j = idx_pairs[:, 0]
-            k = idx_pairs[:, 1]
-            # Baryon proxy uses first 3 components when d > 3.
-            color_3 = color[:, :3]
-            color_i = color_3[i].unsqueeze(0).expand(j.shape[0], -1)
-            color_j = color_3[j]
-            color_k = color_3[k]
-            matrix = torch.stack([color_i, color_j, color_k], dim=-1)
-            det = torch.linalg.det(matrix)
-            det = det.real if det.is_complex() else det
-            valid_mask = valid[i] & valid[j] & valid[k]
-            # Map pair weights by neighbor index
-            w_map = {
-                int(n.item()): float(w.item())
-                for n, w in zip(neighbors, weights, strict=False)
-            }
-            pair_weights = torch.tensor(
-                [
-                    w_map[int(jj.item())] * w_map[int(kk.item())]
-                    for jj, kk in zip(j, k, strict=False)
-                ],
-                device=color.device,
-                dtype=weights.dtype,
-            )
-            pair_weights = torch.where(valid_mask, pair_weights, torch.zeros_like(pair_weights))
-            denom = pair_weights.sum()
-            if denom > 0:
-                outputs[i] = (det * pair_weights).sum() / denom
-            continue
+    if channel == "nucleon":
+        k = int(neighbor_indices.shape[1])
+        if k < 2:
+            return outputs
+        pair_idx = torch.triu_indices(k, k, offset=1, device=color.device)
+        if pair_idx.numel() == 0:
+            return outputs
+        j = neighbor_indices[:, pair_idx[0]]
+        k_idx = neighbor_indices[:, pair_idx[1]]
 
-        color_i = color[i].unsqueeze(0).expand(neighbors.shape[0], -1)
-        color_j = color[neighbors]
-        op_vals = _apply_projection(channel, color_i, color_j, gamma)
-        valid_mask = valid[i] & valid[neighbors] & (neighbors != i)
-        weights_eff = torch.where(valid_mask, weights, torch.zeros_like(weights))
-        denom = weights_eff.sum()
-        if denom > 0:
-            outputs[i] = (op_vals * weights_eff).sum() / denom
+        pair_mask = neighbor_mask[:, pair_idx[0]] & neighbor_mask[:, pair_idx[1]]
+        valid_mask = (
+            pair_mask
+            & (j != row)
+            & (k_idx != row)
+            & valid.unsqueeze(1)
+            & valid[j]
+            & valid[k_idx]
+        )
 
-    return outputs
+        color_3 = color[:, :3]
+        color_i = color_3.unsqueeze(1).expand(-1, pair_idx.shape[1], -1)
+        color_j = color_3[j]
+        color_k = color_3[k_idx]
+        matrix = torch.stack([color_i, color_j, color_k], dim=-1)
+        det = torch.linalg.det(matrix)
+        det = det.real if det.is_complex() else det
 
+        pair_weights = neighbor_weights[:, pair_idx[0]] * neighbor_weights[:, pair_idx[1]]
+        pair_weights = torch.where(valid_mask, pair_weights, torch.zeros_like(pair_weights))
+        denom = pair_weights.sum(dim=1)
+        num = (det * pair_weights).sum(dim=1)
+        out = torch.where(denom > 0, num / denom.clamp(min=1e-12), torch.zeros_like(num))
+        return out.float()
 
-def _extract_volume_weights_for_frame(
-    history: RunHistory,
-    frame_idx: int,
-    alive_idx: Tensor,
-) -> np.ndarray | None:
-    """Extract per-alive-walker Riemannian volumes for one frame."""
-    volume_history = getattr(history, "riemannian_volume_weights", None)
-    if volume_history is None or frame_idx <= 0:
-        return None
-    if frame_idx - 1 >= len(volume_history):
-        return None
-
-    weights_full = volume_history[frame_idx - 1]
-    if torch.is_tensor(weights_full):
-        weights_full = weights_full.detach().cpu().numpy()
-    else:
-        weights_full = np.asarray(weights_full)
-
-    alive_np = alive_idx.detach().cpu().numpy()
-    if alive_np.size == 0:
-        return None
-    max_idx = int(alive_np.max())
-    if weights_full.size <= max_idx:
-        return None
-    return np.asarray(weights_full[alive_np], dtype=float)
+    color_i = color.unsqueeze(1).expand(-1, neighbor_indices.shape[1], -1)
+    color_j = color[neighbor_indices]
+    op_vals = _apply_projection(channel, color_i, color_j, gamma)
+    valid_mask = (
+        neighbor_mask
+        & valid.unsqueeze(1)
+        & valid[neighbor_indices]
+        & (neighbor_indices != row)
+    )
+    weights_eff = torch.where(valid_mask, neighbor_weights, torch.zeros_like(neighbor_weights))
+    denom = weights_eff.sum(dim=1)
+    num = (op_vals * weights_eff).sum(dim=1)
+    out = torch.where(denom > 0, num / denom.clamp(min=1e-12), torch.zeros_like(num))
+    return out.float()
 
 
 def _require_recorded_edges_and_geodesic(
@@ -829,38 +838,86 @@ def _recorded_subgraph_for_alive(
     edges_global: np.ndarray,
     geodesic_global: np.ndarray,
     alive_idx: Tensor,
-) -> tuple[np.ndarray, dict[int, list[int]], np.ndarray]:
-    """Project recorded graph/geodesics to alive walkers and local indexing."""
-    alive_list = [int(i) for i in alive_idx.tolist()]
-    if not alive_list:
-        return np.zeros((0, 2), dtype=np.int64), {}, np.zeros((0,), dtype=float)
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Project recorded graph/geodesics to alive walkers with vectorized indexing.
 
-    alive_set = set(alive_list)
-    global_to_local = {g: i for i, g in enumerate(alive_list)}
-    neighbor_lists_global: dict[int, list[int]] = {g: [] for g in alive_list}
-    local_edge_weights: dict[tuple[int, int], float] = {}
+    Returns:
+        - local_edges [E_alive, 2] in local alive indexing
+        - local_geodesic [E_alive] aligned with local_edges
+        - global_edge_indices [E_alive] indices into original per-frame edge arrays
+    """
+    alive_np = np.asarray(alive_idx.detach().cpu().numpy(), dtype=np.int64).reshape(-1)
+    if alive_np.size == 0:
+        return (
+            np.zeros((0, 2), dtype=np.int64),
+            np.zeros((0,), dtype=float),
+            np.zeros((0,), dtype=np.int64),
+        )
 
-    for (src, dst), geo in zip(edges_global, geodesic_global, strict=False):
-        src_i = int(src)
-        dst_i = int(dst)
-        if src_i == dst_i:
-            continue
-        if src_i not in alive_set or dst_i not in alive_set:
-            continue
-        weight = float(geo)
-        edge_key = (global_to_local[src_i], global_to_local[dst_i])
-        if edge_key not in local_edge_weights:
-            local_edge_weights[edge_key] = weight
-        if dst_i not in neighbor_lists_global[src_i]:
-            neighbor_lists_global[src_i].append(dst_i)
+    if edges_global.ndim != 2 or edges_global.shape[1] != 2:
+        msg = f"Expected edges_global shape [E, 2], got {edges_global.shape}."
+        raise ValueError(msg)
+    if geodesic_global.shape[0] != edges_global.shape[0]:
+        msg = (
+            "edges_global/geodesic_global mismatch: "
+            f"E={edges_global.shape[0]}, G={geodesic_global.shape[0]}."
+        )
+        raise ValueError(msg)
 
-    if not local_edge_weights:
+    max_global = int(
+        max(
+            np.max(alive_np),
+            np.max(edges_global) if edges_global.size else -1,
+        )
+    )
+    map_size = max_global + 1
+    global_to_local = np.full(map_size, -1, dtype=np.int64)
+    global_to_local[alive_np] = np.arange(alive_np.size, dtype=np.int64)
+
+    src = edges_global[:, 0].astype(np.int64, copy=False)
+    dst = edges_global[:, 1].astype(np.int64, copy=False)
+    valid_range = (
+        (src >= 0)
+        & (src < map_size)
+        & (dst >= 0)
+        & (dst < map_size)
+        & (src != dst)
+    )
+    if not np.any(valid_range):
+        msg = "Recorded neighbor graph has no valid directed edges in frame."
+        raise ValueError(msg)
+
+    edge_idx_range = np.nonzero(valid_range)[0]
+    src_local = global_to_local[src[valid_range]]
+    dst_local = global_to_local[dst[valid_range]]
+    keep_alive = (src_local >= 0) & (dst_local >= 0) & (src_local != dst_local)
+    if not np.any(keep_alive):
         msg = "Recorded neighbor graph has no alive-alive edges for the requested frame."
         raise ValueError(msg)
 
-    missing = [g for g, nbrs in neighbor_lists_global.items() if not nbrs]
-    if missing:
-        preview = ", ".join(str(m) for m in missing[:8])
+    kept_global_indices = edge_idx_range[keep_alive]
+    local_edges = np.stack([src_local[keep_alive], dst_local[keep_alive]], axis=1).astype(
+        np.int64, copy=False
+    )
+    local_geodesic = np.asarray(geodesic_global[kept_global_indices], dtype=float)
+
+    # Deduplicate directed local edges, preserving first appearance to keep alignment deterministic.
+    edge_keys = local_edges[:, 0] * alive_np.size + local_edges[:, 1]
+    _, first_idx = np.unique(edge_keys, return_index=True)
+    keep_order = np.sort(first_idx)
+    local_edges = local_edges[keep_order]
+    local_geodesic = local_geodesic[keep_order]
+    kept_global_indices = kept_global_indices[keep_order]
+
+    if local_edges.size == 0:
+        msg = "Recorded neighbor graph has no alive-alive edges after deduplication."
+        raise ValueError(msg)
+
+    counts = np.bincount(local_edges[:, 0], minlength=alive_np.size)
+    missing_local = np.where(counts == 0)[0]
+    if missing_local.size > 0:
+        missing = alive_np[missing_local].tolist()
+        preview = ", ".join(str(int(m)) for m in missing[:8])
         suffix = "..." if len(missing) > 8 else ""
         msg = (
             f"Recorded graph has walkers without neighbors in alive set "
@@ -868,22 +925,16 @@ def _recorded_subgraph_for_alive(
         )
         raise ValueError(msg)
 
-    local_edges = np.asarray(list(local_edge_weights.keys()), dtype=np.int64)
-    local_geodesic = np.asarray(list(local_edge_weights.values()), dtype=float)
-    return (
-        local_edges,
-        neighbor_lists_global,
-        local_geodesic,
-    )
+    return local_edges, local_geodesic, kept_global_indices
 
 
-def _extract_recorded_edge_mode_map(
+def _extract_recorded_edge_mode_values(
     history: RunHistory,
     frame_idx: int,
     mode: str,
-    edges_global: np.ndarray,
-) -> dict[tuple[int, int], float]:
-    """Extract recorded per-edge weights for a scutoid mode as directed map."""
+    n_edges: int,
+) -> np.ndarray:
+    """Extract recorded per-edge weights for a scutoid mode aligned with neighbor_edges."""
     edge_weights_history = getattr(history, "edge_weights", None)
     if edge_weights_history is None:
         msg = (
@@ -915,57 +966,16 @@ def _extract_recorded_edge_mode_map(
         msg = f"edge_weights[{frame_idx}]['{mode}'] is empty."
         raise ValueError(msg)
     values_np = np.asarray(values.detach().cpu().numpy(), dtype=float).reshape(-1)
-    if values_np.shape[0] != edges_global.shape[0]:
+    if values_np.shape[0] != n_edges:
         msg = (
             f"edge_weights[{frame_idx}]['{mode}'] size mismatch with neighbor_edges: "
-            f"W={values_np.shape[0]}, E={edges_global.shape[0]}."
+            f"W={values_np.shape[0]}, E={n_edges}."
         )
         raise ValueError(msg)
     if not np.all(np.isfinite(values_np)):
         msg = f"edge_weights[{frame_idx}]['{mode}'] contains non-finite values."
         raise ValueError(msg)
-
-    return {
-        (int(src), int(dst)): float(weight)
-        for (src, dst), weight in zip(edges_global, values_np, strict=False)
-    }
-
-
-def _project_edge_mode_values_to_local_edges(
-    edges_local: np.ndarray,
-    alive_idx: Tensor,
-    edge_mode_map: dict[tuple[int, int], float],
-    mode: str,
-) -> np.ndarray:
-    """Project directed edge-mode map from global ids to local edge array order."""
-    alive_list = [int(x) for x in alive_idx.tolist()]
-    local_values: list[float] = []
-    missing_pairs: list[tuple[int, int]] = []
-    for src_local, dst_local in edges_local:
-        src_global = int(alive_list[int(src_local)])
-        dst_global = int(alive_list[int(dst_local)])
-        value = edge_mode_map.get((src_global, dst_global))
-        if value is None or not np.isfinite(value):
-            missing_pairs.append((src_global, dst_global))
-            local_values.append(np.nan)
-            continue
-        if value < 0:
-            msg = (
-                f"edge_weights mode '{mode}' produced negative weight "
-                f"for edge ({src_global}->{dst_global})."
-            )
-            raise ValueError(msg)
-        local_values.append(float(value))
-
-    if missing_pairs:
-        preview = ", ".join(f"{i}->{j}" for i, j in missing_pairs[:8])
-        suffix = "..." if len(missing_pairs) > 8 else ""
-        msg = (
-            f"Missing recorded edge weight mode '{mode}' for projected edges "
-            f"({len(missing_pairs)} missing: {preview}{suffix})."
-        )
-        raise ValueError(msg)
-    return np.asarray(local_values, dtype=float)
+    return values_np
 
 
 def _compute_recorded_iso_edge_lengths(
@@ -1121,14 +1131,16 @@ def _compute_radial_output(
     channels: list[str],
     positions: Tensor,
     alive_idx: Tensor,
+    frame_idx: int,
     keep_dims: list[int] | None,
     pair_i: np.ndarray,
     pair_j: np.ndarray,
     distances: np.ndarray,
     bin_edges: np.ndarray,
-    neighbor_indices: list[Tensor],
-    neighbor_weights: list[Tensor],
-    volumes: np.ndarray | None,
+    neighbor_indices: Tensor,
+    neighbor_weights: Tensor,
+    neighbor_mask: Tensor,
+    volumes: Tensor | np.ndarray | None,
     operators_override: dict[str, np.ndarray] | None = None,
 ) -> RadialChannelOutput:
     n_alive = positions.shape[0]
@@ -1137,7 +1149,6 @@ def _compute_radial_output(
     if operators_override is None:
         gamma = _build_gamma_matrices(positions.shape[1], device, torch.complex128)
 
-        frame_idx = _resolve_mc_time_index(history, config.mc_time_index)
         color_full, valid_full = _compute_color_states_single(
             history,
             frame_idx,
@@ -1148,13 +1159,14 @@ def _compute_radial_output(
         valid = valid_full[alive_idx]
 
         for channel in channels:
-            op = _compute_operator_values(
+            op = _compute_operator_values_dense(
                 channel,
                 color,
                 valid,
                 alive_idx,
                 neighbor_indices,
                 neighbor_weights,
+                neighbor_mask,
                 gamma,
                 history,
                 frame_idx,
@@ -1171,13 +1183,23 @@ def _compute_radial_output(
 
     weights = None
     if config.use_volume_weights:
-        if volumes is None or volumes.size != n_alive:
+        if volumes is None:
             msg = (
                 "use_volume_weights=True requires per-alive volume weights "
                 "for radial correlator binning."
             )
             raise ValueError(msg)
-        v = volumes
+        v = (
+            volumes.detach().cpu().numpy()
+            if torch.is_tensor(volumes)
+            else np.asarray(volumes, dtype=float)
+        )
+        if v.size != n_alive:
+            msg = (
+                "use_volume_weights=True requires per-alive volume weights "
+                f"of size {n_alive}, got {v.size}."
+            )
+            raise ValueError(msg)
         weights = v[pair_i] * v[pair_j]
 
     bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2.0
@@ -1279,8 +1301,8 @@ def _compute_distances(
         msg = f"Unsupported distance_mode: {distance_mode}"
         raise ValueError(msg)
 
-    adjacency = _build_adjacency(edges, weights, positions.shape[0])
-    return _pair_distances_graph(adjacency, pair_i, pair_j)
+    graph = _build_graph_csr(edges, weights, positions.shape[0])
+    return _pair_distances_graph(graph, pair_i, pair_j)
 
 
 def _compute_mc_time_output(
@@ -1305,10 +1327,12 @@ def _compute_mc_time_output(
         raise ValueError(msg)
 
     start_idx = max(1, int(history.n_recorded * float(config.warmup_fraction)))
+    end_fraction = getattr(config, "end_fraction", 1.0)
+    end_idx = max(start_idx + 1, int(history.n_recorded * end_fraction))
     if config.mc_time_index is not None:
         start_idx = _resolve_mc_time_index(history, config.mc_time_index)
 
-    frame_indices = list(range(start_idx, history.n_recorded))
+    frame_indices = list(range(start_idx, end_idx))
     n_frames = len(frame_indices)
     if n_frames == 0:
         empty = np.array([], dtype=float)
@@ -1323,6 +1347,41 @@ def _compute_mc_time_output(
         )
 
     device = history.x_before_clone.device
+    dim = len(keep_dims) if keep_dims is not None else history.d
+    bounds = history.bounds
+    if keep_dims is not None:
+        bounds = _slice_bounds(bounds, keep_dims)
+
+    positions_batch = history.x_before_clone[start_idx:end_idx]
+    if keep_dims is not None:
+        positions_batch = positions_batch[:, :, keep_dims]
+    alive_batch = history.alive_mask[start_idx - 1 : end_idx - 1]
+    color_batch, valid_batch = _compute_color_states_batch(
+        history,
+        start_idx,
+        end_idx,
+        config,
+        keep_dims=keep_dims,
+    )
+    gamma = _build_gamma_matrices(dim, device, torch.complex128)
+
+    volume_batch: Tensor | None = None
+    volume_history = getattr(history, "riemannian_volume_weights", None)
+    if volume_history is not None:
+        if torch.is_tensor(volume_history):
+            volume_all = volume_history
+        else:
+            volume_all = torch.as_tensor(volume_history)
+        if (
+            volume_all.ndim == 2
+            and volume_all.shape[0] >= end_idx - 1
+            and volume_all.shape[1] >= history.N
+        ):
+            volume_batch = volume_all[start_idx - 1 : end_idx - 1, : history.N].to(
+                device=device,
+                dtype=positions_batch.dtype,
+            )
+
     series_buffers = {
         channel: torch.zeros(n_frames, device=device, dtype=torch.float32)
         for channel in channels
@@ -1330,21 +1389,18 @@ def _compute_mc_time_output(
     valid_frames = torch.zeros(n_frames, device=device, dtype=torch.bool)
 
     for t_idx, frame_idx in enumerate(frame_indices):
-        alive_mask_full = history.alive_mask[frame_idx - 1]
+        alive_mask_full = alive_batch[t_idx]
         alive_idx = torch.where(alive_mask_full)[0]
         if alive_idx.numel() < 2:
             continue
 
-        positions_full = history.x_before_clone[frame_idx]
-        if keep_dims is not None:
-            positions_full = positions_full[:, keep_dims]
-        positions_alive = positions_full[alive_idx]
+        positions_alive = positions_batch[t_idx, alive_idx]
+        volume_weights_alive = (
+            volume_batch[t_idx, alive_idx]
+            if volume_batch is not None
+            else None
+        )
 
-        bounds = history.bounds
-        if keep_dims is not None:
-            bounds = _slice_bounds(bounds, keep_dims)
-
-        volume_weights_alive = _extract_volume_weights_for_frame(history, frame_idx, alive_idx)
         if config.use_volume_weights and volume_weights_alive is None:
             msg = (
                 "use_volume_weights=True requires RunHistory.riemannian_volume_weights "
@@ -1357,81 +1413,56 @@ def _compute_mc_time_output(
                 f"for frame {frame_idx}."
             )
             raise ValueError(msg)
-        volumes = (
-            np.asarray(volume_weights_alive, dtype=float)
-            if volume_weights_alive is not None
-            else np.ones(len(alive_idx), dtype=float)
-        )
 
         edges_global, geodesic_global = _require_recorded_edges_and_geodesic(history, frame_idx)
-        edges, neighbor_lists_global, geodesic_edges = _recorded_subgraph_for_alive(
+        edges, geodesic_edges, local_edge_indices = _recorded_subgraph_for_alive(
             edges_global,
             geodesic_global,
             alive_idx,
         )
 
-        edge_weight_map: dict[tuple[int, int], float] = {}
+        edge_mode_values: np.ndarray | None = None
         if config.neighbor_weighting == "inv_geodesic_full":
-            edge_weight_map = _build_edge_weight_map(edges, geodesic_edges, alive_idx)
+            edge_mode_values = geodesic_edges
         elif config.neighbor_weighting == "inv_geodesic_iso":
-            iso_lengths = _compute_recorded_iso_edge_lengths(
+            edge_mode_values = _compute_recorded_iso_edge_lengths(
                 positions=positions_alive,
                 edges=edges,
                 bounds=bounds,
                 pbc=bool(history.pbc),
             )
-            edge_weight_map = _build_edge_weight_map(edges, iso_lengths, alive_idx)
         elif config.neighbor_weighting in RECORDED_EDGE_WEIGHT_MODES:
-            mode_map = _extract_recorded_edge_mode_map(
+            mode_values_global = _extract_recorded_edge_mode_values(
                 history,
                 frame_idx,
                 config.neighbor_weighting,
-                edges_global,
+                n_edges=edges_global.shape[0],
             )
-            mode_local_weights = _project_edge_mode_values_to_local_edges(
-                edges,
-                alive_idx,
-                mode_map,
-                config.neighbor_weighting,
-            )
-            edge_weight_map = _build_edge_weight_map(
-                edges,
-                mode_local_weights,
-                alive_idx,
-                symmetric=False,
-            )
+            edge_mode_values = mode_values_global[local_edge_indices]
 
-        neighbor_indices, neighbor_weights = _build_neighbor_data(
-            neighbor_lists_global,
-            alive_idx,
-            positions_alive,
-            bounds,
-            volumes,
-            config.neighbor_weighting,
-            edge_weight_map,
+        neighbor_indices, neighbor_weights, neighbor_mask = _build_neighbor_data_dense(
+            edges=edges,
+            alive_idx=alive_idx,
+            positions=positions_alive,
+            bounds=bounds,
+            volumes=volume_weights_alive,
+            weight_mode=config.neighbor_weighting,
+            edge_mode_values=edge_mode_values,
             max_neighbors=int(config.neighbor_k),
             pbc=bool(history.pbc),
             kernel_length_scale=config.kernel_length_scale,
         )
 
-        color_full, valid_full = _compute_color_states_single(
-            history,
-            frame_idx,
-            config,
-            keep_dims=keep_dims,
-        )
-        color = color_full[alive_idx]
-        valid = valid_full[alive_idx]
-        gamma = _build_gamma_matrices(color.shape[1], device, torch.complex128)
+        color = color_batch[t_idx, alive_idx]
+        valid = valid_batch[t_idx, alive_idx]
 
         volume_tensor: Tensor | None = None
         if config.use_volume_weights:
-            if volumes is None or len(volumes) != len(alive_idx):
+            if volume_weights_alive is None or volume_weights_alive.numel() != alive_idx.numel():
                 msg = f"Missing per-alive volume weights for frame {frame_idx}."
                 raise ValueError(msg)
-            volume_tensor = torch.as_tensor(
-                volumes,
-                device=positions_full.device,
+            volume_tensor = volume_weights_alive.to(
+                device=positions_alive.device,
                 dtype=torch.float32,
             ).clamp(min=0.0)
             if float(volume_tensor.sum().item()) <= 0:
@@ -1439,24 +1470,24 @@ def _compute_mc_time_output(
                 raise ValueError(msg)
 
         for channel in channels:
-            op = _compute_operator_values(
+            op = _compute_operator_values_dense(
                 channel,
                 color,
                 valid,
                 alive_idx,
                 neighbor_indices,
                 neighbor_weights,
+                neighbor_mask,
                 gamma,
                 history,
                 frame_idx,
                 keep_dims,
             )
-            op_real = op.real if op.is_complex() else op
-            if volume_tensor is not None and volume_tensor.shape[0] == op_real.shape[0]:
+            if volume_tensor is not None and volume_tensor.shape[0] == op.shape[0]:
                 denom = volume_tensor.sum().clamp(min=1e-12)
-                series_buffers[channel][t_idx] = (op_real.float() * volume_tensor).sum() / denom
+                series_buffers[channel][t_idx] = (op.float() * volume_tensor).sum() / denom
             else:
-                series_buffers[channel][t_idx] = op_real.float().mean()
+                series_buffers[channel][t_idx] = op.float().mean()
 
         valid_frames[t_idx] = True
 
@@ -1594,82 +1625,86 @@ def compute_radial_channels(
     positions_alive = positions_full[alive_idx]
     bounds_full = history.bounds
 
-    volume_weights_alive = _extract_volume_weights_for_frame(history, frame_idx, alive_idx)
+    volume_weights_alive: Tensor | None = None
+    volume_history = getattr(history, "riemannian_volume_weights", None)
+    if volume_history is not None and frame_idx > 0 and frame_idx - 1 < len(volume_history):
+        vol_full = volume_history[frame_idx - 1]
+        if not torch.is_tensor(vol_full):
+            vol_full = torch.as_tensor(vol_full)
+        volume_weights_alive = vol_full.to(
+            device=positions_alive.device,
+            dtype=positions_alive.dtype,
+        )[alive_idx]
+
     if config.use_volume_weights and volume_weights_alive is None:
         msg = (
             "use_volume_weights=True requires RunHistory.riemannian_volume_weights "
             f"for frame {frame_idx}."
         )
         raise ValueError(msg)
-    if config.neighbor_weighting == "volume" and volume_weights_alive is None:
+    if str(config.neighbor_weighting) == "volume" and volume_weights_alive is None:
         msg = (
             "neighbor_weighting='volume' requires RunHistory.riemannian_volume_weights "
             f"for frame {frame_idx}."
         )
         raise ValueError(msg)
     volumes_full = (
-        np.asarray(volume_weights_alive, dtype=float)
+        volume_weights_alive
         if volume_weights_alive is not None
-        else np.ones(len(alive_idx), dtype=float)
+        else torch.ones(len(alive_idx), device=positions_alive.device, dtype=positions_alive.dtype)
     )
     edges_global, geodesic_global = _require_recorded_edges_and_geodesic(history, frame_idx)
-    edges_full, neighbor_lists_global, geodesic_full = _recorded_subgraph_for_alive(
+    edges_full, geodesic_full, local_edge_indices = _recorded_subgraph_for_alive(
         edges_global,
         geodesic_global,
         alive_idx,
     )
 
-    neighbor_indices: list[Tensor]
-    neighbor_weights: list[Tensor]
+    neighbor_indices: Tensor
+    neighbor_weights: Tensor
+    neighbor_mask: Tensor
     if operators_override is None:
-        edge_weight_map: dict[tuple[int, int], float] = {}
+        edge_mode_values: np.ndarray | None = None
         if config.neighbor_weighting == "inv_geodesic_full":
-            edge_weight_map = _build_edge_weight_map(edges_full, geodesic_full, alive_idx)
+            edge_mode_values = geodesic_full
         elif config.neighbor_weighting == "inv_geodesic_iso":
-            iso_lengths = _compute_recorded_iso_edge_lengths(
+            edge_mode_values = _compute_recorded_iso_edge_lengths(
                 positions=positions_alive,
                 edges=edges_full,
                 bounds=bounds_full,
                 pbc=bool(history.pbc),
             )
-            edge_weight_map = _build_edge_weight_map(edges_full, iso_lengths, alive_idx)
         elif config.neighbor_weighting in RECORDED_EDGE_WEIGHT_MODES:
-            mode_map = _extract_recorded_edge_mode_map(
+            mode_values_global = _extract_recorded_edge_mode_values(
                 history,
                 frame_idx,
                 config.neighbor_weighting,
-                edges_global,
+                n_edges=edges_global.shape[0],
             )
-            mode_local_weights = _project_edge_mode_values_to_local_edges(
-                edges_full,
-                alive_idx,
-                mode_map,
-                config.neighbor_weighting,
-            )
-            edge_weight_map = _build_edge_weight_map(
-                edges_full,
-                mode_local_weights,
-                alive_idx,
-                symmetric=False,
-            )
+            edge_mode_values = mode_values_global[local_edge_indices]
 
-        neighbor_indices, neighbor_weights = _build_neighbor_data(
-            neighbor_lists_global,
-            alive_idx,
-            positions_alive,
-            bounds_full,
-            volumes_full,
-            config.neighbor_weighting,
-            edge_weight_map,
+        neighbor_indices, neighbor_weights, neighbor_mask = _build_neighbor_data_dense(
+            edges=edges_full,
+            alive_idx=alive_idx,
+            positions=positions_alive,
+            bounds=bounds_full,
+            volumes=volumes_full,
+            weight_mode=config.neighbor_weighting,
+            edge_mode_values=edge_mode_values,
             max_neighbors=int(config.neighbor_k),
             pbc=bool(history.pbc),
             kernel_length_scale=config.kernel_length_scale,
         )
     else:
-        empty_idx = torch.zeros(0, dtype=torch.long, device=positions_alive.device)
-        empty_w = torch.zeros(0, dtype=positions_alive.dtype, device=positions_alive.device)
-        neighbor_indices = [empty_idx for _ in range(len(alive_idx))]
-        neighbor_weights = [empty_w for _ in range(len(alive_idx))]
+        neighbor_indices = torch.empty(
+            len(alive_idx), 0, dtype=torch.long, device=positions_alive.device
+        )
+        neighbor_weights = torch.empty(
+            len(alive_idx), 0, dtype=positions_alive.dtype, device=positions_alive.device
+        )
+        neighbor_mask = torch.empty(
+            len(alive_idx), 0, dtype=torch.bool, device=positions_alive.device
+        )
 
     rng = np.random.default_rng(config.random_seed)
     pair_i, pair_j = _sample_pairs(len(alive_idx), config.max_pairs, rng)
@@ -1715,6 +1750,7 @@ def compute_radial_channels(
         channels,
         positions_alive,
         alive_idx,
+        frame_idx=frame_idx,
         keep_dims=None,
         pair_i=pair_i,
         pair_j=pair_j,
@@ -1722,6 +1758,7 @@ def compute_radial_channels(
         bin_edges=bin_edges_full,
         neighbor_indices=neighbor_indices,
         neighbor_weights=neighbor_weights,
+        neighbor_mask=neighbor_mask,
         volumes=volumes_full,
         operators_override=operators_alive,
     )
@@ -1738,16 +1775,19 @@ def compute_radial_channels(
                 continue
             positions_proj = positions_full[alive_idx][:, keep_dims]
             bounds_proj = _slice_bounds(bounds_full, keep_dims)
-            distances = _compute_distances(
-                positions_proj,
-                bounds_proj,
-                bool(history.pbc),
-                config.distance_mode,
-                edges_full,
-                pair_i,
-                pair_j,
-                geodesic_edge_distances=geodesic_full,
-            )
+            if config.distance_mode == "graph_full":
+                distances = distances_full
+            else:
+                distances = _compute_distances(
+                    positions_proj,
+                    bounds_proj,
+                    bool(history.pbc),
+                    config.distance_mode,
+                    edges_full,
+                    pair_i,
+                    pair_j,
+                    geodesic_edge_distances=geodesic_full,
+                )
             finite = np.isfinite(distances)
             if not finite.any():
                 msg = f"No finite projected distances for drop axis {axis}."
@@ -1768,76 +1808,66 @@ def compute_radial_channels(
             for axis, distances in axis_distances.items():
                 keep_dims = [i for i in range(history.d) if i != axis]
                 positions_proj = positions_full[alive_idx][:, keep_dims]
+                bounds_proj = _slice_bounds(bounds_full, keep_dims)
                 if operators_override is None:
-                    edge_weight_map: dict[tuple[int, int], float] = {}
+                    edge_mode_values: np.ndarray | None = None
                     if config.neighbor_weighting == "inv_geodesic_full":
-                        edge_weight_map = _build_edge_weight_map(
-                            edges_full,
-                            geodesic_full,
-                            alive_idx,
-                        )
+                        edge_mode_values = geodesic_full
                     elif config.neighbor_weighting == "inv_geodesic_iso":
-                        iso_lengths = _compute_recorded_iso_edge_lengths(
+                        edge_mode_values = _compute_recorded_iso_edge_lengths(
                             positions=positions_proj,
                             edges=edges_full,
-                            bounds=_slice_bounds(bounds_full, keep_dims),
+                            bounds=bounds_proj,
                             pbc=bool(history.pbc),
                         )
-                        edge_weight_map = _build_edge_weight_map(
-                            edges_full,
-                            iso_lengths,
-                            alive_idx,
-                        )
                     elif config.neighbor_weighting in RECORDED_EDGE_WEIGHT_MODES:
-                        mode_map = _extract_recorded_edge_mode_map(
+                        mode_values_global = _extract_recorded_edge_mode_values(
                             history,
                             frame_idx,
                             config.neighbor_weighting,
-                            edges_global,
+                            n_edges=edges_global.shape[0],
                         )
-                        mode_local_weights = _project_edge_mode_values_to_local_edges(
-                            edges_full,
-                            alive_idx,
-                            mode_map,
-                            config.neighbor_weighting,
-                        )
-                        edge_weight_map = _build_edge_weight_map(
-                            edges_full,
-                            mode_local_weights,
-                            alive_idx,
-                            symmetric=False,
-                        )
+                        edge_mode_values = mode_values_global[local_edge_indices]
 
-                    neighbor_indices, neighbor_weights = _build_neighbor_data(
-                        neighbor_lists_global,
-                        alive_idx,
-                        positions_proj,
-                        _slice_bounds(bounds_full, keep_dims),
-                        volumes_full,
-                        config.neighbor_weighting,
-                        edge_weight_map,
-                        max_neighbors=int(config.neighbor_k),
-                        pbc=bool(history.pbc),
-                        kernel_length_scale=config.kernel_length_scale,
+                    neighbor_indices_axis, neighbor_weights_axis, neighbor_mask_axis = (
+                        _build_neighbor_data_dense(
+                            edges=edges_full,
+                            alive_idx=alive_idx,
+                            positions=positions_proj,
+                            bounds=bounds_proj,
+                            volumes=volumes_full,
+                            weight_mode=config.neighbor_weighting,
+                            edge_mode_values=edge_mode_values,
+                            max_neighbors=int(config.neighbor_k),
+                            pbc=bool(history.pbc),
+                            kernel_length_scale=config.kernel_length_scale,
+                        )
                     )
                 else:
-                    empty_idx = torch.zeros(0, dtype=torch.long, device=positions_proj.device)
-                    empty_w = torch.zeros(0, dtype=positions_proj.dtype, device=positions_proj.device)
-                    neighbor_indices = [empty_idx for _ in range(len(alive_idx))]
-                    neighbor_weights = [empty_w for _ in range(len(alive_idx))]
+                    neighbor_indices_axis = torch.empty(
+                        len(alive_idx), 0, dtype=torch.long, device=positions_proj.device
+                    )
+                    neighbor_weights_axis = torch.empty(
+                        len(alive_idx), 0, dtype=positions_proj.dtype, device=positions_proj.device
+                    )
+                    neighbor_mask_axis = torch.empty(
+                        len(alive_idx), 0, dtype=torch.bool, device=positions_proj.device
+                    )
                 output = _compute_radial_output(
                     history,
                     config,
                     channels,
                     positions_proj,
                     alive_idx,
+                    frame_idx=frame_idx,
                     keep_dims=keep_dims,
                     pair_i=pair_i,
                     pair_j=pair_j,
                     distances=distances,
                     bin_edges=bin_edges_3d,
-                    neighbor_indices=neighbor_indices,
-                    neighbor_weights=neighbor_weights,
+                    neighbor_indices=neighbor_indices_axis,
+                    neighbor_weights=neighbor_weights_axis,
+                    neighbor_mask=neighbor_mask_axis,
                     volumes=volumes_full,
                     operators_override=operators_alive,
                 )
