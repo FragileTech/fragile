@@ -86,6 +86,7 @@ class ChannelConfig:
 
     # Time parameters
     warmup_fraction: float = 0.1
+    end_fraction: float = 1.0
 
     # Monte Carlo slice selection (for Euclidean time analysis)
     mc_time_index: int | None = None  # Recorded index; None => last recorded slice
@@ -1373,10 +1374,11 @@ class GlueballChannel(GaugeChannelCorrelator):
             Operator time series [T].
         """
         start_idx = max(1, int(self.history.n_recorded * self.config.warmup_fraction))
-        n_recorded = self.history.n_recorded
+        end_fraction = getattr(self.config, "end_fraction", 1.0)
+        end_idx = max(start_idx + 1, int(self.history.n_recorded * end_fraction))
 
         # Get force field
-        force = self.history.force_viscous[start_idx - 1 : n_recorded - 1]  # [T, N, d]
+        force = self.history.force_viscous[start_idx - 1 : end_idx - 1]  # [T, N, d]
         T = force.shape[0]
         device = force.device
 

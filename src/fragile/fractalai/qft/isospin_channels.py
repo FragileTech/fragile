@@ -175,9 +175,11 @@ def compute_isospin_channels(
 
     # 3. Extract will_clone aligned to the aggregation time range
     #    aggregate_time_series uses start_idx = max(1, warmup_fraction * n_recorded)
-    #    and slices history arrays as [start_idx-1 : n_recorded-1] for force,
-    #    and [start_idx : n_recorded-1] for color. The alive mask shape is [T, N].
+    #    and slices history arrays as [start_idx-1 : end_idx-1] for force,
+    #    and [start_idx : end_idx] for color. The alive mask shape is [T, N].
     start_idx = max(1, int(history.n_recorded * channel_config.warmup_fraction))
+    end_fraction = getattr(channel_config, "end_fraction", 1.0)
+    end_idx = max(start_idx + 1, int(history.n_recorded * end_fraction))
     T = agg_data.alive.shape[0]
     N = agg_data.n_walkers
 

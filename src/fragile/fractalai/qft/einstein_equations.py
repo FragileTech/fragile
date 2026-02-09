@@ -82,6 +82,16 @@ class EinsteinTestResult:
     mc_frame: int
     config: EinsteinConfig
     valid_mask: np.ndarray
+    ricci_scalar_full: np.ndarray | None = None
+    ricci_scalar_source: str = "full_derivative_pipeline"
+    volumes_full: np.ndarray | None = None
+    scalar_r2_full_volume: float | None = None
+    scalar_slope_full_volume: float | None = None
+    scalar_intercept_full_volume: float | None = None
+    g_newton_einstein_full_volume: float | None = None
+    lambda_measured_full_volume: float | None = None
+    bulk_scalar_r2_full_volume: float | None = None
+    boundary_scalar_r2_full_volume: float | None = None
 
 
 # =========================================================================
@@ -695,6 +705,35 @@ def _compute_bulk_mask(
     return dists <= threshold
 
 
+def _compute_full_volume_elements(
+    history: Any,
+    frame: int,
+    metrics: np.ndarray,
+) -> np.ndarray | None:
+    """Compute V_full = V_euclidean * sqrt(det g) from recorded Voronoi regions."""
+    if getattr(history, "voronoi_regions", None) is None:
+        return None
+
+    try:
+        from fragile.fractalai.scutoid.voronoi_observables import compute_dual_volumes_from_history
+
+        dual_volumes = compute_dual_volumes_from_history(history, record_index=frame + 1)
+    except Exception:
+        return None
+
+    dual_np = _to_numpy(dual_volumes).reshape(-1)
+    N = metrics.shape[0]
+    if dual_np.shape[0] != N:
+        return None
+
+    sign, logdet = np.linalg.slogdet(metrics)
+    sqrt_det = np.exp(0.5 * logdet)
+    sqrt_det = np.where(sign > 0, sqrt_det, np.nan)
+
+    volumes_full = dual_np * sqrt_det
+    return np.where(np.isfinite(volumes_full) & (volumes_full > 0), volumes_full, np.nan)
+
+
 # =========================================================================
 # Orchestrator
 # =========================================================================
@@ -808,7 +847,15 @@ def compute_einstein_test(
 
     riemann = _compute_riemann_vectorized(christoffels, dGamma)
 
-    ricci, R_scalar, einstein = _compute_ricci_and_einstein(riemann, metrics)
+    ricci, R_scalar_full, einstein = _compute_ricci_and_einstein(riemann, metrics)
+
+    # Align scalar Einstein analysis with the Ricci source used by RiemannianMix.
+    if ricci_proxy is not None:
+        R_scalar_for_scalar_test = ricci_proxy
+        ricci_scalar_source = "riemannian_mix_proxy"
+    else:
+        R_scalar_for_scalar_test = R_scalar_full
+        ricci_scalar_source = "full_derivative_pipeline"
 
     # 9. Compute stress-energy tensor
     T = _compute_stress_energy(
@@ -824,13 +871,34 @@ def compute_einstein_test(
             fractal_set_regressions, g_newton_metric, g_newton_manual,
         )
 
-    # 11. Validity mask: finite Ricci scalar and positive volume
-    valid = np.isfinite(R_scalar) & (volumes > 0) & np.all(np.isfinite(einstein.reshape(N, -1)), axis=1)
+    # 11. Validity masks
+    valid_base = np.isfinite(R_scalar_full) & np.all(np.isfinite(einstein.reshape(N, -1)), axis=1)
+    valid = valid_base & (volumes > 0)
 
     # 12. Scalar test
-    scalar_r2, scalar_slope, scalar_intercept = _run_scalar_test(R_scalar, volumes, valid)
+    scalar_r2, scalar_slope, scalar_intercept = _run_scalar_test(
+        R_scalar_for_scalar_test, volumes, valid,
+    )
     g_n_einstein = scalar_slope / (16.0 * np.pi) if abs(scalar_slope) > 1e-30 else 0.0
     lambda_measured = scalar_intercept / 6.0
+
+    # 12b. Theory-aligned scalar test with full volume element V_eucl * sqrt(det g)
+    volumes_full = _compute_full_volume_elements(history, frame, metrics)
+    scalar_r2_full = None
+    scalar_slope_full = None
+    scalar_intercept_full = None
+    g_n_einstein_full = None
+    lambda_measured_full = None
+    bulk_r2_full = None
+    boundary_r2_full = None
+    if volumes_full is not None:
+        scalar_r2_full, scalar_slope_full, scalar_intercept_full = _run_scalar_test(
+            R_scalar_for_scalar_test, volumes_full, valid_base,
+        )
+        g_n_einstein_full = (
+            scalar_slope_full / (16.0 * np.pi) if abs(scalar_slope_full) > 1e-30 else 0.0
+        )
+        lambda_measured_full = scalar_intercept_full / 6.0
 
     # 13. Tensor test
     tensor_r2, tensor_slope, tensor_r2_per, comp_labels = _run_tensor_test(
@@ -840,15 +908,22 @@ def compute_einstein_test(
     # 14. Cross-check
     proxy_r2 = None
     if ricci_proxy is not None:
-        finite_both = valid & np.isfinite(ricci_proxy)
+        finite_both = valid & np.isfinite(ricci_proxy) & np.isfinite(R_scalar_full)
         if finite_both.sum() >= 3:
-            res = stats.linregress(ricci_proxy[finite_both], R_scalar[finite_both])
+            res = stats.linregress(ricci_proxy[finite_both], R_scalar_full[finite_both])
             proxy_r2 = res.rvalue ** 2
 
     # 15. Bulk vs boundary
     bulk_mask = _compute_bulk_mask(positions, config.bulk_fraction)
-    bulk_r2, _, _ = _run_scalar_test(R_scalar, volumes, valid & bulk_mask)
-    boundary_r2, _, _ = _run_scalar_test(R_scalar, volumes, valid & ~bulk_mask)
+    bulk_r2, _, _ = _run_scalar_test(R_scalar_for_scalar_test, volumes, valid & bulk_mask)
+    boundary_r2, _, _ = _run_scalar_test(R_scalar_for_scalar_test, volumes, valid & ~bulk_mask)
+    if volumes_full is not None:
+        bulk_r2_full, _, _ = _run_scalar_test(
+            R_scalar_for_scalar_test, volumes_full, valid_base & bulk_mask,
+        )
+        boundary_r2_full, _, _ = _run_scalar_test(
+            R_scalar_for_scalar_test, volumes_full, valid_base & ~bulk_mask,
+        )
 
     # 16. G_N ratio
     g_n_ratio = g_n_einstein / g_n if abs(g_n) > 1e-30 else 0.0
@@ -857,7 +932,7 @@ def compute_einstein_test(
         positions=positions,
         metrics=metrics,
         ricci_tensor=ricci,
-        ricci_scalar=R_scalar,
+        ricci_scalar=R_scalar_for_scalar_test,
         einstein_tensor=einstein,
         stress_energy_tensor=T,
         volumes=volumes,
@@ -884,4 +959,14 @@ def compute_einstein_test(
         mc_frame=frame,
         config=config,
         valid_mask=valid,
+        ricci_scalar_full=R_scalar_full,
+        ricci_scalar_source=ricci_scalar_source,
+        volumes_full=volumes_full,
+        scalar_r2_full_volume=scalar_r2_full,
+        scalar_slope_full_volume=scalar_slope_full,
+        scalar_intercept_full_volume=scalar_intercept_full,
+        g_newton_einstein_full_volume=g_n_einstein_full,
+        lambda_measured_full_volume=lambda_measured_full,
+        bulk_scalar_r2_full_volume=bulk_r2_full,
+        boundary_scalar_r2_full_volume=boundary_r2_full,
     )

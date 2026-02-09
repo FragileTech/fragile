@@ -49,6 +49,7 @@ class ElectroweakChannelConfig:
     """Configuration for electroweak channel correlators."""
 
     warmup_fraction: float = 0.1
+    end_fraction: float = 1.0
     max_lag: int = 80
     h_eff: float = 1.0
     use_connected: bool = True
@@ -968,9 +969,11 @@ def _compute_electroweak_series(
     cfg: ElectroweakChannelConfig,
 ) -> dict[str, Tensor]:
     start_idx = max(1, int(history.n_recorded * cfg.warmup_fraction))
+    end_fraction = getattr(cfg, "end_fraction", 1.0)
+    end_idx = max(start_idx + 1, int(history.n_recorded * end_fraction))
     if cfg.time_axis == "euclidean":
         start_idx = _resolve_mc_time_index(history, cfg.mc_time_index)
-    if start_idx >= history.n_recorded:
+    if start_idx >= end_idx:
         return {}
 
     h_eff = float(max(cfg.h_eff, 1e-8))
@@ -1030,12 +1033,12 @@ def _compute_electroweak_series(
         )
         alive = alive.unsqueeze(0)
     else:
-        T = history.n_recorded - start_idx
+        T = end_idx - start_idx
         if T <= 0:
             return {}
         operators = {name: [] for name in ELECTROWEAK_CHANNELS}
         alive_series = []
-        for frame_idx in range(start_idx, history.n_recorded):
+        for frame_idx in range(start_idx, end_idx):
             positions = history.x_before_clone[frame_idx]
             velocities = history.v_before_clone[frame_idx]
             fitness = history.fitness[frame_idx - 1]

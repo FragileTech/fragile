@@ -51,6 +51,7 @@ def compute_companion_batch(
     start_idx: int,
     neighbor_k: int,
     sample_size: int | None = None,
+    end_idx: int | None = None,
 ) -> tuple[Tensor, Tensor, Tensor]:
     """Use stored companion indices as neighbors.
 
@@ -59,11 +60,12 @@ def compute_companion_batch(
         start_idx: Starting time index.
         neighbor_k: Number of neighbors per sample.
         sample_size: Number of samples per timestep (None = all walkers).
+        end_idx: Ending time index (exclusive). None = use all recorded frames.
 
     Returns:
         Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
     """
-    n_recorded = history.n_recorded
+    n_recorded = end_idx if end_idx is not None else history.n_recorded
     T = n_recorded - start_idx
     N = history.N
     k = max(2, int(neighbor_k))
@@ -168,6 +170,7 @@ def compute_recorded_neighbors_batch(
     start_idx: int,
     neighbor_k: int,
     sample_size: int | None = None,
+    end_idx: int | None = None,
 ) -> tuple[Tensor, Tensor, Tensor]:
     """Use recorded neighbor edges from RunHistory.
 
@@ -179,16 +182,17 @@ def compute_recorded_neighbors_batch(
         start_idx: Starting time index.
         neighbor_k: Number of neighbors per sample.
         sample_size: Number of samples per timestep (None = all walkers).
+        end_idx: Ending time index (exclusive). None = use all recorded frames.
 
     Returns:
         Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
     """
     if history.neighbor_edges is None:
         return compute_companion_batch(
-            history, start_idx, neighbor_k, sample_size=sample_size
+            history, start_idx, neighbor_k, sample_size=sample_size, end_idx=end_idx,
         )
 
-    n_recorded = history.n_recorded
+    n_recorded = end_idx if end_idx is not None else history.n_recorded
     T = n_recorded - start_idx
     N = history.N
     k = max(1, int(neighbor_k))
@@ -248,6 +252,7 @@ def compute_neighbors_auto(
     start_idx: int,
     neighbor_k: int,
     sample_size: int | None = None,
+    end_idx: int | None = None,
 ) -> tuple[Tensor, Tensor, Tensor]:
     """Auto-detect and use best available neighbor data.
 
@@ -260,11 +265,12 @@ def compute_neighbors_auto(
         start_idx: Starting timestep index.
         neighbor_k: Number of neighbors per sample.
         sample_size: Number of samples per timestep (None = all walkers).
+        end_idx: Ending time index (exclusive). None = use all recorded frames.
 
     Returns:
         Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
     """
-    n_recorded = history.n_recorded
+    n_recorded = end_idx if end_idx is not None else history.n_recorded
     required_steps = n_recorded - start_idx
 
     # Check if recorded neighbors are available
@@ -277,6 +283,7 @@ def compute_neighbors_auto(
                 start_idx=start_idx,
                 neighbor_k=neighbor_k,
                 sample_size=sample_size,
+                end_idx=end_idx,
             )
         else:
             warnings.warn(
@@ -293,6 +300,7 @@ def compute_neighbors_auto(
             start_idx=start_idx,
             neighbor_k=neighbor_k,
             sample_size=sample_size,
+            end_idx=end_idx,
         )
 
     raise RuntimeError(
@@ -312,6 +320,7 @@ def compute_neighbor_topology(
     neighbor_method: str,
     neighbor_k: int,
     sample_size: int | None = None,
+    end_idx: int | None = None,
 ) -> tuple[Tensor, Tensor, Tensor]:
     """Compute neighbor indices for all timesteps.
 
@@ -326,6 +335,7 @@ def compute_neighbor_topology(
             - "companions": Use history.companions_clone
         neighbor_k: Number of neighbors per sample.
         sample_size: Number of samples per timestep (None = all walkers).
+        end_idx: Ending time index (exclusive). None = use all recorded frames.
 
     Returns:
         Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
@@ -340,11 +350,12 @@ def compute_neighbor_topology(
             start_idx=start_idx,
             neighbor_k=neighbor_k,
             sample_size=sample_size,
+            end_idx=end_idx,
         )
     elif neighbor_method == "companions":
-        return compute_companion_batch(history, start_idx, neighbor_k, sample_size)
+        return compute_companion_batch(history, start_idx, neighbor_k, sample_size, end_idx=end_idx)
     elif neighbor_method == "recorded":
-        return compute_recorded_neighbors_batch(history, start_idx, neighbor_k, sample_size)
+        return compute_recorded_neighbors_batch(history, start_idx, neighbor_k, sample_size, end_idx=end_idx)
     else:
         raise ValueError(
             f"Unknown neighbor method: {neighbor_method}. "

@@ -167,6 +167,7 @@ def compute_color_states_batch(
     h_eff: float,
     mass: float,
     ell0: float,
+    end_idx: int | None = None,
 ) -> tuple[Tensor, Tensor]:
     """Compute color states for all timesteps from start_idx onward.
 
@@ -178,15 +179,16 @@ def compute_color_states_batch(
         h_eff: Effective Planck constant.
         mass: Particle mass.
         ell0: Length scale.
+        end_idx: Ending time index (exclusive). None = use all recorded frames.
 
     Returns:
         Tuple of (color [T, N, d], valid [T, N]).
     """
-    n_recorded = history.n_recorded
+    n_recorded = end_idx if end_idx is not None else history.n_recorded
     T = n_recorded - start_idx
 
     # Extract batched tensors
-    v_pre = history.v_before_clone[start_idx:]  # [T, N, d]
+    v_pre = history.v_before_clone[start_idx:n_recorded]  # [T, N, d]
     force_visc = history.force_viscous[start_idx - 1 : n_recorded - 1]  # [T, N, d]
 
     # Color state computation (vectorized)
@@ -386,8 +388,10 @@ def aggregate_time_series(
     Returns:
         AggregatedTimeSeries with all preprocessed data.
     """
-    # Determine start index
+    # Determine start and end indices
     start_idx = max(1, int(history.n_recorded * config.warmup_fraction))
+    end_fraction = getattr(config, "end_fraction", 1.0)
+    end_idx = max(start_idx + 1, int(history.n_recorded * end_fraction))
 
     # Estimate ell0 if not provided
     ell0 = config.ell0
@@ -401,6 +405,7 @@ def aggregate_time_series(
         config.h_eff,
         config.mass,
         ell0,
+        end_idx=end_idx,
     )
 
     # Compute neighbor topology
@@ -410,6 +415,7 @@ def aggregate_time_series(
         config.neighbor_method,
         config.neighbor_k,
         sample_size=None,
+        end_idx=end_idx,
     )
 
     # Extract edge weights when non-uniform weighting is requested
@@ -428,8 +434,7 @@ def aggregate_time_series(
         )
 
     # Extract force for glueball channel
-    n_recorded = history.n_recorded
-    force_viscous = history.force_viscous[start_idx - 1 : n_recorded - 1]
+    force_viscous = history.force_viscous[start_idx - 1 : end_idx - 1]
 
     # Compute metadata
     T = color.shape[0]

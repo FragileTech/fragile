@@ -1769,7 +1769,10 @@ class AnalysisSettings(param.Parameterized):
 class ChannelSettings(param.Parameterized):
     """Settings for the new Channels tab (independent of old particle analysis)."""
 
-    warmup_fraction = param.Number(default=0.1, bounds=(0.0, 0.5))
+    simulation_range = param.Range(
+        default=(0.1, 1.0), bounds=(0.0, 1.0),
+        doc="Fraction of simulation timeline to use (start, end). Trims both warmup and late-time frames.",
+    )
     max_lag = param.Integer(default=80, bounds=(10, 200))
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
     mass = param.Number(default=1.0, bounds=(1e-6, None))
@@ -1886,11 +1889,36 @@ class ChannelSettings(param.Parameterized):
 class RadialSettings(param.Parameterized):
     """Settings for radial channel correlators (axis-free)."""
 
+    time_axis = param.ObjectSelector(
+        default="mc",
+        objects=("mc", "radial"),
+        doc=(
+            "Analysis axis: 'mc' computes correlator decay across Monte Carlo time; "
+            "'radial' uses a single snapshot binned by radial distance."
+        ),
+    )
     mc_time_index = param.Integer(
         default=None,
         bounds=(1, None),
         allow_None=True,
-        doc="Recorded Monte Carlo index or step to use as the 4D slice (None = last).",
+        doc=(
+            "For time_axis='radial': recorded index/step for the snapshot. "
+            "For time_axis='mc': optional starting recorded index/step (None uses warmup_fraction)."
+        ),
+    )
+    warmup_fraction = param.Number(
+        default=0.1,
+        bounds=(0.0, 0.5),
+        doc="Warmup fraction used as MC start when time_axis='mc' and mc_time_index is blank.",
+    )
+    max_lag = param.Integer(
+        default=80,
+        bounds=(10, 500),
+        doc="Maximum MC lag used when time_axis='mc'.",
+    )
+    use_connected = param.Boolean(
+        default=True,
+        doc="Use connected correlators C(τ)=<OO>-<O>² when time_axis='mc'.",
     )
     n_bins = param.Integer(default=48, bounds=(10, 200))
     max_pairs = param.Integer(default=200_000, bounds=(10_000, 2_000_000))
@@ -1899,8 +1927,9 @@ class RadialSettings(param.Parameterized):
         objects=("euclidean", "graph_iso", "graph_full"),
     )
     neighbor_method = param.ObjectSelector(
-        default="voronoi",
-        objects=("voronoi", "companions", "recorded"),
+        default="recorded",
+        objects=("recorded",),
+        doc="Reuse simulation-recorded Delaunay neighbors (no recomputation).",
     )
     neighbor_weighting = param.ObjectSelector(
         default="inv_geodesic_full",
@@ -1911,6 +1940,18 @@ class RadialSettings(param.Parameterized):
             "inv_geodesic_iso",
             "inv_geodesic_full",
             "kernel",
+            "uniform",
+            "inverse_distance",
+            "inverse_volume",
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "riemannian_kernel",
+            "riemannian_kernel_volume",
+        ),
+        doc=(
+            "Neighbor weighting mode. Supports recorded scutoid edge weights "
+            "(e.g. inverse_riemannian_distance, riemannian_kernel, "
+            "riemannian_kernel_volume)."
         ),
     )
     neighbor_k = param.Integer(
@@ -1930,7 +1971,9 @@ class RadialSettings(param.Parameterized):
     apply_power_correction = param.Boolean(default=True)
     power_override = param.Number(default=None, allow_None=True)
     window_widths_spec = param.String(default="5-50")
-    channel_list = param.String(default="scalar,pseudoscalar,vector,nucleon,glueball")
+    channel_list = param.String(
+        default="scalar,pseudoscalar,vector,axial_vector,tensor,nucleon,glueball"
+    )
     drop_axis_average = param.Boolean(default=True)
 
     # Bootstrap error estimation
@@ -2029,7 +2072,10 @@ class RadialElectroweakSettings(param.Parameterized):
 class ElectroweakSettings(param.Parameterized):
     """Settings for electroweak (U1/SU2) channel correlators."""
 
-    warmup_fraction = param.Number(default=0.1, bounds=(0.0, 0.5))
+    simulation_range = param.Range(
+        default=(0.1, 1.0), bounds=(0.0, 1.0),
+        doc="Fraction of simulation timeline to use (start, end). Trims both warmup and late-time frames.",
+    )
     max_lag = param.Integer(default=80, bounds=(10, 200))
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
     use_connected = param.Boolean(default=True)
@@ -2368,7 +2414,7 @@ class EinsteinTestSettings(param.Parameterized):
     )
     bulk_fraction = param.Number(
         default=0.8,
-        bounds=(0.5, 0.99),
+        bounds=(0.01, 0.99),
         doc="Fraction of walkers considered bulk",
     )
     g_newton_metric = param.ObjectSelector(
@@ -2466,7 +2512,8 @@ def _compute_channels_vectorized(
     neighbor_method = "auto" if settings.neighbor_method == "voronoi" else settings.neighbor_method
 
     channel_config = ChannelConfig(
-        warmup_fraction=settings.warmup_fraction,
+        warmup_fraction=settings.simulation_range[0],
+        end_fraction=settings.simulation_range[1],
         h_eff=settings.h_eff,
         mass=settings.mass,
         ell0=settings.ell0,
@@ -2535,9 +2582,13 @@ def _compute_radial_channels_bundle(
     history: RunHistory,
     settings: RadialSettings,
 ) -> RadialChannelBundle:
-    """Compute radial channel correlators for 4D and 3D drop-axis averages."""
+    """Compute geometry-aware strong-force channels (MC-time or radial mode)."""
     config = RadialChannelConfig(
+        time_axis=str(settings.time_axis),
         mc_time_index=settings.mc_time_index,
+        warmup_fraction=float(settings.warmup_fraction),
+        max_lag=int(settings.max_lag),
+        use_connected=bool(settings.use_connected),
         n_bins=int(settings.n_bins),
         max_pairs=int(settings.max_pairs),
         distance_mode=str(settings.distance_mode),
@@ -2565,11 +2616,12 @@ def _compute_radial_electroweak_bundle(
     settings: RadialElectroweakSettings,
 ) -> RadialChannelBundle:
     config = RadialChannelConfig(
+        time_axis="radial",
         mc_time_index=settings.mc_time_index,
         n_bins=int(settings.n_bins),
         max_pairs=int(settings.max_pairs),
         distance_mode=str(settings.distance_mode),
-        neighbor_method=str(settings.neighbor_method),
+        neighbor_method="recorded",
         neighbor_weighting=str(settings.neighbor_weighting),
         neighbor_k=int(settings.neighbor_k),
         kernel_length_scale=float(settings.kernel_length_scale),
@@ -2618,7 +2670,8 @@ def _compute_electroweak_channels(
     )
 
     config = ElectroweakChannelConfig(
-        warmup_fraction=settings.warmup_fraction,
+        warmup_fraction=settings.simulation_range[0],
+        end_fraction=settings.simulation_range[1],
         max_lag=settings.max_lag,
         h_eff=settings.h_eff,
         use_connected=settings.use_connected,
@@ -4978,6 +5031,9 @@ def create_app() -> pn.template.FastListTemplate:
         einstein_scalar_plot = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False,
         )
+        einstein_scalar_log_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False,
+        )
         einstein_tensor_table = pn.pane.HoloViews(linked_axes=False)
         einstein_curvature_hist = pn.pane.HoloViews(linked_axes=False)
         einstein_residual_map = pn.pane.HoloViews(linked_axes=False)
@@ -5004,7 +5060,7 @@ def create_app() -> pn.template.FastListTemplate:
         channel_settings_panel = pn.Param(
             channel_settings,
             parameters=[
-                "warmup_fraction",
+                "simulation_range",
                 "max_lag",
                 "h_eff",
                 "mass",
@@ -5152,7 +5208,11 @@ def create_app() -> pn.template.FastListTemplate:
         radial_settings_panel = pn.Param(
             radial_settings,
             parameters=[
+                "time_axis",
                 "mc_time_index",
+                "warmup_fraction",
+                "max_lag",
+                "use_connected",
                 "n_bins",
                 "max_pairs",
                 "distance_mode",
@@ -5172,6 +5232,10 @@ def create_app() -> pn.template.FastListTemplate:
                 "n_bootstrap",
             ],
             show_name=False,
+            widgets={
+                "time_axis": {"type": pn.widgets.Select, "name": "Analysis Axis"},
+                "mc_time_index": {"name": "MC start/slice (step or idx)"},
+            },
             default_layout=type("RadialSettingsGrid", (pn.GridBox,), {"ncols": 2}),
         )
 
@@ -5549,7 +5613,7 @@ def create_app() -> pn.template.FastListTemplate:
         electroweak_settings_panel = pn.Param(
             electroweak_settings,
             parameters=[
-                "warmup_fraction",
+                "simulation_range",
                 "max_lag",
                 "h_eff",
                 "time_dimension",
@@ -6429,6 +6493,7 @@ def create_app() -> pn.template.FastListTemplate:
 
                 einstein_summary.object = plots["summary"]
                 einstein_scalar_plot.object = plots["scalar_test"]
+                einstein_scalar_log_plot.object = plots["scalar_test_log"]
                 einstein_tensor_table.object = plots["tensor_r2"]
                 einstein_curvature_hist.object = plots["curvature_dist"]
                 einstein_residual_map.object = plots["residual_map"]
@@ -6436,9 +6501,16 @@ def create_app() -> pn.template.FastListTemplate:
                     einstein_crosscheck_plot.object = plots["crosscheck"]
                 einstein_bulk_boundary.object = plots["bulk_boundary"]
 
+                full_volume_status = (
+                    f"Full-volume R\u00b2={result.scalar_r2_full_volume:.4f}, "
+                    if result.scalar_r2_full_volume is not None
+                    else ""
+                )
                 einstein_status.object = (
                     f"**Complete:** {result.n_walkers} walkers, d={result.spatial_dim}. "
+                    f"Ricci source={result.ricci_scalar_source}, "
                     f"Scalar R\u00b2={result.scalar_r2:.4f}, "
+                    f"{full_volume_status}"
                     f"Tensor R\u00b2={result.tensor_r2:.4f}, "
                     f"G_N ratio={result.g_newton_ratio:.3f}"
                 )
@@ -6608,7 +6680,8 @@ def create_app() -> pn.template.FastListTemplate:
                     else channel_settings.neighbor_method
                 )
                 channel_config = ChannelConfig(
-                    warmup_fraction=channel_settings.warmup_fraction,
+                    warmup_fraction=channel_settings.simulation_range[0],
+                    end_fraction=channel_settings.simulation_range[1],
                     h_eff=channel_settings.h_eff,
                     mass=channel_settings.mass,
                     ell0=channel_settings.ell0,
@@ -6683,8 +6756,8 @@ def create_app() -> pn.template.FastListTemplate:
                 results,
                 mass_getter=_get_radial_mass,
                 error_getter=_get_radial_mass_error,
-                title="Radial Channel Mass Spectrum",
-                ylabel="Mass (1 / distance)",
+                title="Geometry-Aware Channel Mass Spectrum",
+                ylabel="Mass (physical units)",
             )
 
         def _update_radial_plots(
@@ -7767,6 +7840,8 @@ def create_app() -> pn.template.FastListTemplate:
                 einstein_summary,
                 pn.pane.Markdown("### Scalar Test: R vs \u03c1"),
                 einstein_scalar_plot,
+                pn.pane.Markdown("### Scalar Test: R vs log\u2081\u2080(\u03c1)"),
+                einstein_scalar_log_plot,
                 pn.pane.Markdown("### Tensor Component R\u00b2"),
                 einstein_tensor_table,
                 pn.pane.Markdown("### Curvature Distribution"),
@@ -7857,16 +7932,16 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
             )
 
             radial_tab_note = pn.pane.Alert(
-                """**Radial Strong Force:** Axis-free correlators built from 4D radial distance
-and 3D drop-axis averages. The correlators are power-corrected by r^p before
-fitting (p defaults to (d-1)/2 unless overridden). Mass tables are scaled by
-1/bin-width to report masses per unit distance.""",
+                """**Geometry-Aware Strong Force:** Choose **time_axis=mc** (default) to fit
+correlator decay across Monte Carlo time using geometry-weighted operators.
+Choose **time_axis=radial** to recover single-snapshot radial screening
+analysis (4D radial + optional 3D drop-axis averages with r^p correction).""",
                 alert_type="info",
                 sizing_mode="stretch_width",
             )
 
             radial_4d_section = pn.Column(
-                pn.pane.Markdown("### 4D Radial Strong Force"),
+                pn.pane.Markdown("### Primary Geometry-Aware Strong Force Output"),
                 pn.pane.Markdown("### All Channels Overlay - Correlators"),
                 radial4d_plots_overlay_corr,
                 pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
@@ -7885,7 +7960,7 @@ fitting (p defaults to (d-1)/2 unless overridden). Mass tables are scaled by
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
                 pn.pane.Markdown(
-                    "_Side-by-side view: correlator C(r) (left) and effective mass m_eff(r) (right). "
+                    "_Side-by-side view: correlator C(·) (left) and effective mass m_eff(·) (right). "
                     "Error bars shown when bootstrap estimation is enabled._"
                 ),
                 radial4d_plateau_plots,
@@ -7901,7 +7976,7 @@ fitting (p defaults to (d-1)/2 unless overridden). Mass tables are scaled by
             )
 
             radial_3d_section = pn.Column(
-                pn.pane.Markdown("### 3D Drop-Axis Average"),
+                pn.pane.Markdown("### 3D Drop-Axis Average (Radial Mode)"),
                 pn.pane.Markdown("### 3D Per-Axis Summary (Avg + up to 3 axes)"),
                 radial3d_axis_grid,
                 pn.layout.Divider(),
@@ -7923,7 +7998,7 @@ fitting (p defaults to (d-1)/2 unless overridden). Mass tables are scaled by
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
                 pn.pane.Markdown(
-                    "_Side-by-side view: correlator C(r) (left) and effective mass m_eff(r) (right). "
+                    "_Side-by-side view: correlator C(·) (left) and effective mass m_eff(·) (right). "
                     "Error bars shown when bootstrap estimation is enabled._"
                 ),
                 radial3d_plateau_plots,
