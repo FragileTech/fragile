@@ -1,6 +1,6 @@
-"""Dirac spectrum analysis via antisymmetric kernel SVD.
+"""Dirac spectrum analysis via antisymmetric kernel spectral decomposition.
 
-Computes the fermion mass spectrum from the SVD of the antisymmetric kernel
+Computes the fermion mass spectrum from the antisymmetric kernel spectrum
 (discrete Dirac operator). Generations emerge as eigenvalue clusters of K_tilde
 projected onto gauge sectors defined by isospin (will_clone) and color
 (viscous force magnitude).
@@ -8,11 +8,15 @@ projected onto gauge sectors defined by isospin (will_clone) and color
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 
 from fragile.fractalai.core.history import RunHistory
+from fragile.fractalai.qft.electroweak_observables import (
+    antisymmetric_singular_values,
+    build_phase_space_antisymmetric_kernel,
+)
 
 
 def _to_numpy(t):
@@ -32,6 +36,11 @@ class DiracSpectrumConfig:
 
     mc_time_index: int | None = None
     epsilon_clone: float = 0.01
+    kernel_mode: str = "fitness_ratio"  # "fitness_ratio" or "phase_space"
+    epsilon_c: float | None = None
+    lambda_alg: float = 1.0
+    h_eff: float = 1.0
+    include_phase: bool = True
     n_generations: int | None = None
     color_threshold: str | float = 1.0
     min_sector_size: int = 10
@@ -175,6 +184,69 @@ def build_antisymmetric_kernel(
     return K_tilde, alive_indices
 
 
+def _nested_param(params: dict | None, *keys: str, default: float | None) -> float | None:
+    if params is None:
+        return default
+    current = params
+    for key in keys:
+        if not isinstance(current, dict) or key not in current:
+            return default
+        current = current[key]
+    if current is None:
+        return default
+    try:
+        return float(current)
+    except (TypeError, ValueError):
+        return default
+
+
+def _resolve_dirac_phase_space_params(
+    history: RunHistory,
+    config: DiracSpectrumConfig,
+) -> tuple[float, float, float, bool]:
+    params = history.params if isinstance(history.params, dict) else None
+    epsilon_c = config.epsilon_c
+    if epsilon_c is None:
+        epsilon_c = _nested_param(params, "companion_selection_clone", "epsilon", default=None)
+    if epsilon_c is None:
+        epsilon_c = _nested_param(params, "companion_selection", "epsilon", default=1.0)
+    lambda_alg = float(config.lambda_alg)
+    h_eff = float(max(config.h_eff, 1e-12))
+    include_phase = bool(config.include_phase)
+    return float(max(epsilon_c, 1e-12)), float(lambda_alg), h_eff, include_phase
+
+
+def _build_kernel_from_mode(
+    history: RunHistory,
+    config: DiracSpectrumConfig,
+    frame_t: int,
+    fitness_t: np.ndarray,
+    alive_t: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    mode = str(getattr(config, "kernel_mode", "fitness_ratio")).lower().strip()
+    if mode == "fitness_ratio":
+        return build_antisymmetric_kernel(fitness_t, alive_t, config.epsilon_clone)
+    if mode == "phase_space":
+        epsilon_c, lambda_alg, h_eff, include_phase = _resolve_dirac_phase_space_params(history, config)
+        positions_t = _to_numpy(history.x_before_clone[frame_t]).astype(np.float64)
+        velocities_t = _to_numpy(history.v_before_clone[frame_t]).astype(np.float64)
+        return build_phase_space_antisymmetric_kernel(
+            positions=positions_t,
+            velocities=velocities_t,
+            fitness=fitness_t,
+            alive_mask=alive_t,
+            epsilon_c=epsilon_c,
+            lambda_alg=lambda_alg,
+            h_eff=h_eff,
+            epsilon_clone=float(config.epsilon_clone),
+            bounds=getattr(history, "bounds", None),
+            pbc=bool(getattr(history, "pbc", False)),
+            include_phase=include_phase,
+        )
+    msg = "kernel_mode must be 'fitness_ratio' or 'phase_space'"
+    raise ValueError(msg)
+
+
 def classify_walkers(
     force_viscous: np.ndarray,
     will_clone: np.ndarray,
@@ -270,8 +342,7 @@ def find_generation_gaps(
     # Find the n_boundaries largest gaps
     boundary_indices = np.argsort(gaps)[-n_boundaries:]
     # Convert to sorted boundary positions (after each gap index)
-    boundaries = sorted((int(idx) + 1) for idx in boundary_indices)
-    return boundaries
+    return sorted((int(idx) + 1) for idx in boundary_indices)
 
 
 def _cluster_masses(
@@ -280,7 +351,7 @@ def _cluster_masses(
 ) -> tuple[list[float], list[int]]:
     """Compute median mass and count per cluster given boundary indices."""
     sv = singular_values
-    splits = [0] + boundaries + [len(sv)]
+    splits = [0, *boundaries, len(sv)]
     masses = []
     counts = []
     for i in range(len(splits) - 1):
@@ -340,7 +411,7 @@ def compute_dirac_spectrum(
     Steps:
         1. Select MC frame from config.
         2. Extract fitness, force_viscous, will_clone, alive_mask.
-        3. Build K_tilde for alive walkers.
+        3. Build K_tilde for alive walkers using selected `kernel_mode`.
         4. Classify walkers into 4 sectors.
         5. SVD of full K_tilde.
         6. For each sector: project K_tilde, SVD, find generation gaps.
@@ -384,8 +455,12 @@ def compute_dirac_spectrum(
     n_alive = int(alive_mask.sum())
 
     # 3. Build K_tilde
-    K_tilde, alive_indices = build_antisymmetric_kernel(
-        fitness, alive_mask, config.epsilon_clone,
+    K_tilde, alive_indices = _build_kernel_from_mode(
+        history=history,
+        config=config,
+        frame_t=t,
+        fitness_t=fitness,
+        alive_t=alive_mask,
     )
 
     # 4. Classify walkers
@@ -394,8 +469,8 @@ def compute_dirac_spectrum(
     )
     walker_fitness = fitness[alive_mask]
 
-    # 5. SVD of full K_tilde (dedup skew-symmetric pairs)
-    _, full_sigma_raw, _ = np.linalg.svd(K_tilde)
+    # 5. Spectrum of full K_tilde (dedup skew-symmetric pairs)
+    full_sigma_raw = antisymmetric_singular_values(K_tilde)
     # Banks-Casher uses the raw spectrum (pair density matters)
     chiral_condensate, near_zero_count = compute_banks_casher(full_sigma_raw)
     full_sigma = dedup_skew_sv(full_sigma_raw)
@@ -422,7 +497,7 @@ def compute_dirac_spectrum(
             continue
 
         K_sector = K_tilde[np.ix_(idx, idx)]
-        _, sigma_sector, _ = np.linalg.svd(K_sector)
+        sigma_sector = antisymmetric_singular_values(K_sector)
         sigma_sector = dedup_skew_sv(sigma_sector)
         if config.svd_top_k is not None:
             sigma_sector = sigma_sector[:config.svd_top_k]
@@ -516,8 +591,14 @@ def _compute_time_averaged(
         if alive_t.sum() < 2:
             continue
 
-        K_t, _ = build_antisymmetric_kernel(fitness_t, alive_t, config.epsilon_clone)
-        _, sigma_t_raw, _ = np.linalg.svd(K_t)
+        K_t, _ = _build_kernel_from_mode(
+            history=history,
+            config=config,
+            frame_t=int(frame_t),
+            fitness_t=fitness_t,
+            alive_t=alive_t,
+        )
+        sigma_t_raw = antisymmetric_singular_values(K_t)
         # Banks-Casher on raw spectrum (needs near-zero values + pair density)
         cc, nz = compute_banks_casher(sigma_t_raw)
         all_chiral.append(cc)
@@ -536,7 +617,7 @@ def _compute_time_averaged(
             idx = np.where(sector_t == sector_idx)[0]
             if len(idx) >= config.min_sector_size:
                 K_sec = K_t[np.ix_(idx, idx)]
-                _, sig_sec, _ = np.linalg.svd(K_sec)
+                sig_sec = antisymmetric_singular_values(K_sec)
                 sig_sec = dedup_skew_sv(sig_sec)
                 if config.svd_top_k is not None:
                     sig_sec = sig_sec[:config.svd_top_k]
@@ -593,8 +674,12 @@ def _compute_time_averaged(
     else:
         fv_plot = np.zeros((len(alive_plot), history.d))
 
-    _, alive_indices = build_antisymmetric_kernel(
-        fitness_plot, alive_plot, config.epsilon_clone,
+    _, alive_indices = _build_kernel_from_mode(
+        history=history,
+        config=config,
+        frame_t=int(t_plot),
+        fitness_t=fitness_plot,
+        alive_t=alive_plot,
     )
     sector_assignment, color_magnitude, isospin_label, threshold_value = classify_walkers(
         fv_plot, will_clone_plot, alive_plot, config.color_threshold,

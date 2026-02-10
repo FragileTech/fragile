@@ -54,7 +54,7 @@ class GasConfigPanel(param.Parameterized):
 
     # Benchmark selection
     benchmark_name = param.ObjectSelector(
-        default="Mixture of Gaussians",
+        default="Riemannian Mix",
         objects=list(BENCHMARK_NAMES.keys()),
         doc="Select benchmark potential function",
     )
@@ -109,7 +109,7 @@ class GasConfigPanel(param.Parameterized):
         doc="Record neighbor edges + Voronoi regions into RunHistory",
     )
     neighbor_weight_modes = param.ListSelector(
-        default=["inverse_riemannian_distance"],
+        default=["inverse_riemannian_distance", "kernel", "riemannian_kernel_volume"],
         objects=[
             "uniform",
             "inverse_distance",
@@ -306,7 +306,7 @@ class GasConfigPanel(param.Parameterized):
         config.neighbor_graph_method = "delaunay"
         config.neighbor_graph_update_every = 1
         config.neighbor_graph_record = True
-        config.neighbor_weight_modes = ["inverse_riemannian_distance"]
+        config.neighbor_weight_modes = ["inverse_riemannian_distance", "kernel", "riemannian_kernel_volume"]
 
         # Initialization (match EuclideanGas defaults used in QFT calibration)
         config.init_offset = 0.0
@@ -325,12 +325,12 @@ class GasConfigPanel(param.Parameterized):
         config.kinetic_op.nu = 1.10
         config.kinetic_op.use_viscous_coupling = True
         config.kinetic_op.viscous_length_scale = 0.251372
-        config.kinetic_op.viscous_neighbor_weighting = "inverse_riemannian_distance"
+        config.kinetic_op.viscous_neighbor_weighting = "riemannian_kernel_volume"
         config.kinetic_op.viscous_neighbor_threshold = 0.75
         config.kinetic_op.viscous_neighbor_penalty = 1.1
 
         # Companion selection (separate epsilon for diversity and cloning)
-        config.companion_selection.method = "uniform"
+        config.companion_selection.method = "random_pairing"
         config.companion_selection.epsilon = 2.80  # epsilon_d
         config.companion_selection.lambda_alg = 1.0
         config.companion_selection.exclude_self = True
@@ -435,7 +435,7 @@ class GasConfigPanel(param.Parameterized):
             nu=0.1,
             use_viscous_coupling=True,
             viscous_length_scale=1.0,
-            viscous_neighbor_weighting="inverse_riemannian_distance",
+            viscous_neighbor_weighting="riemannian_kernel_volume",
             viscous_neighbor_penalty=1.1,
             V_alg=10.0,
             use_velocity_squashing=False,

@@ -122,6 +122,17 @@ from fragile.fractalai.qft.higgs_plotting import (
     build_scalar_field_map,
     build_metric_eigenvalues_distribution,
 )
+from fragile.fractalai.qft.electroweak_observables import (
+    PackedNeighbors,
+    pack_neighbor_lists,
+    pack_neighbors_from_edges,
+    compute_weighted_electroweak_ops_vectorized,
+    compute_higgs_vev_from_positions,
+    compute_fitness_gap_distribution,
+    predict_yukawa_mass_from_fitness,
+    build_phase_space_antisymmetric_kernel,
+    antisymmetric_singular_values,
+)
 from fragile.fractalai.qft.radial_channels import (
     RadialChannelBundle,
     RadialChannelConfig,
@@ -259,6 +270,16 @@ __all__ = [
     "build_volume_vs_curvature_scatter",
     "build_scalar_field_map",
     "build_metric_eigenvalues_distribution",
+    # Vectorized electroweak observables
+    "PackedNeighbors",
+    "pack_neighbor_lists",
+    "pack_neighbors_from_edges",
+    "compute_weighted_electroweak_ops_vectorized",
+    "compute_higgs_vev_from_positions",
+    "compute_fitness_gap_distribution",
+    "predict_yukawa_mass_from_fitness",
+    "build_phase_space_antisymmetric_kernel",
+    "antisymmetric_singular_values",
     # Radial channel correlators
     "RadialChannelBundle",
     "RadialChannelConfig",

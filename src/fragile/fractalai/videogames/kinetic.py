@@ -105,8 +105,11 @@ class RandomActionOperator:
         self.last_actions = actions
         self.last_dt = dt
 
-        # Step environment batch
-        result = self.env.step_batch(states=states, actions=actions, dt=dt)
+        # Step environment batch (return_state=True is required for parallel
+        # envs where VectorizedEnv passes return_state=None to workers, which
+        # PlanEnv.step_batch interprets as falsy → 5-tuple, but the outer
+        # unpack_transitions expects 6-tuple).
+        result = self.env.step_batch(states=states, actions=actions, dt=dt, return_state=True)
 
         # Handle 5-tuple vs 6-tuple return (some envs don't return truncated)
         if len(result) == 5:

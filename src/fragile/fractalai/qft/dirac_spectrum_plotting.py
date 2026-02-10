@@ -266,6 +266,11 @@ def build_generation_ratios_plot(result: DiracSpectrumResult) -> hv.Element:
         )
 
     df = pd.DataFrame(rows)
+    df = df[df["ratio"] > 0]
+    if df.empty:
+        return hv.Text(0, 0, "No positive generation ratios").opts(
+            title="Generation Ratios"
+        )
     bars = hv.Bars(df, kdims=["sector", "ratio_label"], vdims=["ratio"]).opts(
         width=650, height=350,
         title="Inter-generation Mass Ratios (σ_gen_i / σ_gen_{{i+1}})",
@@ -311,6 +316,7 @@ def build_fermion_ratio_comparison_plot(result: DiracSpectrumResult, refs=None) 
         var_name="source",
         value_name="ratio",
     ).dropna(subset=["ratio"])
+    df_melt = df_melt[df_melt["ratio"] > 0]
     if df_melt.empty:
         return hv.Text(0, 0, "No valid ratios").opts(title="Fermion Ratio Comparison")
     # Use log scale since ratios can span orders of magnitude

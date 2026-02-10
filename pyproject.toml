@@ -34,10 +34,6 @@ classifiers = [
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
-        # uncomment if you test on these interpreters:
-        # "Programming Language :: Python :: Implementation :: IronPython",
-        # "Programming Language :: Python :: Implementation :: Jython",
-        # "Programming Language :: Python :: Implementation :: Stackless",
         "Topic :: Utilities",
     ]
 dynamic = ["version"]
@@ -59,13 +55,9 @@ dependencies = [
     "matplotlib",
     "pydantic",
     "scikit-learn",
-    #    "shaolin",
     "pip>=24.2",
-    #    "quantlib>=1.35",
     "hvplot>=0.11.0",
     "streamz>=0.6.4",
-    #    "plangym[dm_control,atari]>=0.1.29",
-    #    "ray>=2.37.0",
     "jupyter",
     "notebook",
     "e2cnn>=0.2.3",
@@ -73,11 +65,12 @@ dependencies = [
     "plotly>=6.5.2",
     "torchvision>=0.14.1,<0.15",
     "pytest>=9.0.2",
-    # "plangym>=0.1.30",  # Disabled: causes dependency conflicts
     "gymnasium[atari]>=1.2.3",
-    "plangym[atari]==0.1.32",
+    "plangym[atari]>=0.1.32",
     "scipy-stubs~=1.15.3",
-]  # ToDo: Modify according to your needs!
+    "pillow>=12.1.0",
+    "networkx>=3.4.2",
+]
 [project.urls]
 # important URLs for this project
 Documentation = "https://fragile.readthedocs.io/"

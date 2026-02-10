@@ -1,5 +1,6 @@
 """Dashboard for Atari Fractal Gas visualization."""
 
+import atexit
 import io
 import threading
 from typing import Callable
@@ -24,6 +25,49 @@ try:
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
+
+
+def _configure_headless_wsl(force: bool = False) -> bool:
+    """Auto-detect WSL and set headless env vars for Atari/OpenGL.
+
+    Sets PYGLET_HEADLESS, LIBGL_ALWAYS_SOFTWARE, SDL_VIDEODRIVER, MPLBACKEND
+    so that pyglet/OpenGL/SDL work without a display server.
+
+    Args:
+        force: If True, set vars regardless of WSL detection.
+
+    Returns:
+        True if headless vars were configured.
+    """
+    import os
+
+    if not force:
+        try:
+            with open("/proc/version") as f:
+                proc_version = f.read()
+        except OSError:
+            return False
+        if "microsoft" not in proc_version.lower():
+            return False
+
+    headless_vars = {
+        "PYGLET_HEADLESS": "1",
+        "LIBGL_ALWAYS_SOFTWARE": "1",
+        "SDL_VIDEODRIVER": "dummy",
+        "MPLBACKEND": "Agg",
+    }
+    configured = False
+    for key, value in headless_vars.items():
+        if key not in os.environ:
+            os.environ[key] = value
+            configured = True
+    # Unset DISPLAY to prevent any X11/XCB connections (WSLg sets it but
+    # the X server may be broken or trigger threading errors in ALE/SDL).
+    if os.environ.pop("DISPLAY", None):
+        configured = True
+    if configured:
+        print(f"Headless mode: auto-configured env vars for {'WSL' if not force else 'headless'}", flush=True)
+    return True
 
 
 def _parse_semver(version: str) -> tuple[int, int, int]:
@@ -83,6 +127,10 @@ class AtariGasConfigPanel(param.Parameterized):
         doc="Use cumulative rewards for fitness (default: step rewards only)",
     )
 
+    n_elite = param.Integer(
+        default=0, bounds=(0, 50), doc="Number of elite walkers to preserve (0=disabled)"
+    )
+
     dt_range_min = param.Integer(default=1, bounds=(1, 10), doc="Min frame skip")
     dt_range_max = param.Integer(default=4, bounds=(1, 10), doc="Max frame skip")
 
@@ -102,6 +150,8 @@ class AtariGasConfigPanel(param.Parameterized):
 
     seed = param.Integer(default=42, doc="Random seed for reproducibility")
 
+    n_workers = param.Integer(default=1, bounds=(1, 16), doc="Parallel env workers (1=serial)")
+
     def __init__(self, **params):
         super().__init__(**params)
 
@@ -110,6 +160,8 @@ class AtariGasConfigPanel(param.Parameterized):
         self.history: AtariHistory | None = None
         self._simulation_thread: threading.Thread | None = None
         self._stop_requested = False
+        self._env = None
+        atexit.register(self._close_env)
 
         # UI components
         self.run_button = pn.widgets.Button(
@@ -147,12 +199,21 @@ class AtariGasConfigPanel(param.Parameterized):
         """Register callback for simulation completion."""
         self._on_simulation_complete.append(callback)
 
+    def _close_env(self):
+        """Close tracked environment and release resources."""
+        if self._env is not None:
+            try:
+                self._env.close()
+            except Exception:
+                pass
+            self._env = None
+
     def _on_run_clicked(self, event):
         """Handle run button click.
 
-        CRITICAL: Environment creation must happen in the MAIN THREAD to avoid
-        XCB threading errors. X11/OpenGL is not thread-safe, so we create the
-        environment here and pass it to the worker thread.
+        Environment creation and simulation run in a worker thread to avoid
+        blocking the Tornado event loop. Headless env vars (auto-set on WSL)
+        eliminate X11/XCB threading concerns.
         """
         if self._simulation_thread and self._simulation_thread.is_alive():
             return
@@ -161,23 +222,10 @@ class AtariGasConfigPanel(param.Parameterized):
         self.run_button.disabled = True
         self.stop_button.disabled = False
         self.progress_bar.value = 0
-        self.status_pane.object = "Starting simulation..."
+        self.status_pane.object = "Creating environment..."
 
-        # Create environment in MAIN THREAD (X11-safe)
-        try:
-            env = self._create_environment()
-        except Exception as e:
-            self.status_pane.object = f"**Error creating environment:** {e}\n\nSee terminal for details."
-            self.run_button.disabled = False
-            self.stop_button.disabled = True
-            import traceback
-            traceback.print_exc()
-            return
-
-        # Pass pre-created environment to worker thread
         self._simulation_thread = threading.Thread(
             target=self._run_simulation_worker,
-            args=(env,),  # Pass environment to worker
             daemon=True,
         )
         self._simulation_thread.start()
@@ -188,10 +236,7 @@ class AtariGasConfigPanel(param.Parameterized):
         self.status_pane.object = "Stopping simulation..."
 
     def _create_environment(self):
-        """Create Atari environment in main thread (X11-safe).
-
-        CRITICAL: This method MUST be called from the main thread to avoid
-        XCB threading errors. X11/OpenGL initialization is not thread-safe.
+        """Create Atari environment.
 
         Returns:
             plangym Atari environment compatible with AtariFractalGas
@@ -199,17 +244,10 @@ class AtariGasConfigPanel(param.Parameterized):
         Raises:
             Exception: If environment creation fails
         """
-        # Check environment before importing
-        if not self._check_display_available():
-            msg = (
-                "OpenGL/Display not available. On WSL:\n"
-                "1. Use: bash scripts/run_dashboard_wsl.sh\n"
-                "2. Or set up xvfb manually (see scripts/run_dashboard_wsl.sh)"
-            )
-            raise RuntimeError(
-                msg
-            )
-
+        # Ensure headless env vars are set before plangym spawns worker processes.
+        # When n_workers > 1, ExternalProcess forks inherit these vars.
+        _configure_headless_wsl()
+        print("[worker] importing plangym...", flush=True)
         try:
             import plangym
         except ImportError as e:
@@ -220,33 +258,48 @@ class AtariGasConfigPanel(param.Parameterized):
             raise ImportError(msg) from e
 
         version = getattr(plangym, "__version__", "0.0.0")
+        print(f"[worker] plangym {version} imported", flush=True)
         if _parse_semver(version) < (0, 1, 32):
             raise RuntimeError(
                 f"plangym>=0.1.32 is required (found {version}). "
                 "Run: uv add \"plangym[atari]==0.1.32\""
             )
 
-        env = plangym.make(
+        # Explicit frameskip=5 is required: VectorizedEnv defaults to
+        # frameskip=1, overriding AtariEnv's default of 5. Without this,
+        # parallel workers step 5x fewer ALE frames per dt, producing
+        # near-zero rewards and suspiciously fast iterations.
+        kwargs = dict(
             name=self.game_name,
             obs_type=self.obs_type,
-            render_mode="rgb_array",
+            frameskip=5,
+            render_mode=None,
             autoreset=False,
             remove_time_limit=True,
+            episodic_life=True,
         )
-        self.status_pane.object = f"Using plangym {version}"
+        if self.n_workers > 1:
+            kwargs["n_workers"] = self.n_workers
+        print(f"[worker] calling plangym.make({', '.join(f'{k}={v!r}' for k, v in kwargs.items())})...", flush=True)
+        env = plangym.make(**kwargs)
+        print(f"[worker] plangym.make() returned: {type(env).__name__}", flush=True)
+        self._schedule_ui_update(
+            lambda v=version: setattr(self.status_pane, "object", f"Using plangym {v}")
+        )
         return env
 
-    def _run_simulation_worker(self, env):
-        """Background thread for simulation execution.
-
-        Args:
-            env: Pre-created environment (created in main thread to avoid XCB errors)
-
-        CRITICAL: Environment must be created in main thread before calling this.
-        Worker thread only uses the environment (reset/step), not create it.
-        """
+    def _run_simulation_worker(self):
+        """Background thread for environment creation and simulation execution."""
         try:
-            # Environment already created in main thread - just use it
+            self._close_env()  # close any previous env
+            print("[worker] starting environment creation...", flush=True)
+            self._schedule_ui_update(
+                lambda: setattr(self.status_pane, "object", "Creating environment...")
+            )
+            env = self._create_environment()
+            self._env = env  # track for cleanup
+
+            print("[worker] creating AtariFractalGas...", flush=True)
             self._schedule_ui_update(
                 lambda: setattr(self.status_pane, "object", "Initializing simulation...")
             )
@@ -262,10 +315,13 @@ class AtariGasConfigPanel(param.Parameterized):
                 device=self.device,
                 seed=self.seed,
                 record_frames=self.record_frames,
+                n_elite=self.n_elite,
             )
+            print("[worker] AtariFractalGas created, calling reset()...", flush=True)
 
             # Run simulation with progress updates
             state = self.gas.reset()
+            print("[worker] reset() done, starting iteration loop...", flush=True)
             infos = []
 
             for i in range(self.max_iterations):
@@ -277,6 +333,8 @@ class AtariGasConfigPanel(param.Parameterized):
 
                 state, info = self.gas.step(state)
                 infos.append(info)
+                if i == 0:
+                    print("[worker] first step() completed", flush=True)
 
                 # Update progress
                 progress = int((i + 1) / self.max_iterations * 100)
@@ -295,8 +353,6 @@ class AtariGasConfigPanel(param.Parameterized):
                 for callback in self._on_simulation_complete:
                     callback(self.history)
 
-            env.close()
-
         except Exception as e:
             error_details = str(e)
             if "xcb" in error_details.lower():
@@ -312,6 +368,7 @@ class AtariGasConfigPanel(param.Parameterized):
                 lambda: setattr(self.status_pane, "object", f"**Error:** {error_details}")
             )
         finally:
+            self._close_env()
             self._schedule_ui_update(self._cleanup_simulation)
 
     def _on_simulation_finished(self):
@@ -320,27 +377,6 @@ class AtariGasConfigPanel(param.Parameterized):
             f"**Completed:** {self.history.max_iterations} iterations, "
             f"Max reward: {max(self.history.rewards_max):.1f}"
         )
-
-    def _check_display_available(self) -> bool:
-        """Check if OpenGL/display is available."""
-        import os
-
-        # Headless mode via PYGLET_HEADLESS bypasses DISPLAY requirement
-        if os.environ.get('PYGLET_HEADLESS') == '1':
-            return True
-
-        # Check for DISPLAY environment variable
-        if not os.environ.get('DISPLAY'):
-            return False
-
-        # Try to import pyglet (will fail if OpenGL not available)
-        try:
-            import pyglet
-            # Try to create a headless context
-            pyglet.options['headless'] = True
-            return True
-        except Exception:
-            return False
 
     def _cleanup_simulation(self):
         """Reset UI state after simulation."""
@@ -369,7 +405,7 @@ class AtariGasConfigPanel(param.Parameterized):
             pn.pane.Markdown("### Algorithm"),
             pn.Param(
                 self.param,
-                parameters=["N", "dist_coef", "reward_coef", "use_cumulative_reward"],
+                parameters=["N", "dist_coef", "reward_coef", "use_cumulative_reward", "n_elite"],
             ),
             pn.pane.Markdown("### Simulation"),
             pn.Param(
@@ -381,6 +417,7 @@ class AtariGasConfigPanel(param.Parameterized):
                     "dt_range_max",
                     "device",
                     "seed",
+                    "n_workers",
                 ],
             ),
             pn.pane.Markdown("### Controls"),
@@ -485,8 +522,8 @@ class AtariGasVisualizer(param.Parameterized):
         max_curve = hv.Curve(
             reward_data, kdims=["iteration"], vdims=["max_reward"], label="Max Reward"
         ).opts(
-            width=600,
-            height=300,
+            responsive=True,
+            height=350,
             title="Cumulative Reward Progression",
             xlabel="Iteration",
             ylabel="Cumulative Reward",
@@ -505,21 +542,21 @@ class AtariGasVisualizer(param.Parameterized):
             # Alive walkers histogram
             alive_data = np.array(self.history.alive_counts[: idx + 1])
             alive_hist = hv.Histogram(np.histogram(alive_data, bins=20)).opts(
-                width=250, height=200, title="Alive Walkers", xlabel="Count", color="green"
+                responsive=True, height=280, title="Alive Walkers", xlabel="Count", color="green"
             )
             self.histogram_alive_pane.object = alive_hist
 
             # Cloning events histogram
             cloning_data = np.array(self.history.num_cloned[: idx + 1])
             cloning_hist = hv.Histogram(np.histogram(cloning_data, bins=20)).opts(
-                width=250, height=200, title="Cloning Events", xlabel="Count", color="orange"
+                responsive=True, height=280, title="Cloning Events", xlabel="Count", color="orange"
             )
             self.histogram_cloning_pane.object = cloning_hist
 
             # Virtual rewards histogram
             vr_data = np.array(self.history.virtual_rewards_mean[: idx + 1])
             vr_hist = hv.Histogram(np.histogram(vr_data, bins=30)).opts(
-                width=250, height=200, title="Virtual Rewards", xlabel="Value", color="purple"
+                responsive=True, height=280, title="Virtual Rewards", xlabel="Value", color="purple"
             )
             self.histogram_virtual_reward_pane.object = vr_hist
 
@@ -545,11 +582,16 @@ class AtariGasVisualizer(param.Parameterized):
 
     def panel(self) -> pn.Column:
         """Create visualization layout."""
-        histogram_row = (
-            pn.Row(
-                self.histogram_alive_pane,
-                self.histogram_cloning_pane,
-                self.histogram_virtual_reward_pane,
+        histogram_section = (
+            pn.Column(
+                pn.pane.Markdown("### Metrics Distribution"),
+                pn.Row(
+                    self.histogram_alive_pane,
+                    self.histogram_cloning_pane,
+                    self.histogram_virtual_reward_pane,
+                    sizing_mode="stretch_width",
+                ),
+                sizing_mode="stretch_width",
             )
             if self.show_histograms
             else None
@@ -566,10 +608,11 @@ class AtariGasVisualizer(param.Parameterized):
                 pn.Column(
                     pn.pane.Markdown("### Reward Progression"),
                     self.reward_plot_pane,
-                    pn.pane.Markdown("### Metrics Distribution"),
-                    histogram_row,
+                    sizing_mode="stretch_width",
                 ),
+                sizing_mode="stretch_width",
             ),
+            histogram_section,
             self.info_pane,
             sizing_mode="stretch_width",
         )
@@ -608,17 +651,19 @@ def _parse_args():
     parser.add_argument("--port", type=int, default=5006, help="Port to run server on")
     parser.add_argument("--open", action="store_true", help="Open browser on launch")
     parser.add_argument("--threaded", action="store_true", help="Use multi-threaded Tornado (default: single-threaded for WSL compatibility)")
+    parser.add_argument("--headless", action="store_true", help="Force headless env vars (auto-detected on WSL)")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = _parse_args()
+    _configure_headless_wsl(force=args.headless)
     print("Starting Atari Fractal Gas Dashboard...", flush=True)
     app = create_app()
-    print(
-        f"Atari Fractal Gas Dashboard running at http://localhost:{args.port}",
-        flush=True,
-    )
     if not args.threaded:
         print("Running in single-threaded mode (use --threaded for multi-threaded)", flush=True)
-    app.show(port=args.port, open=args.open, threaded=args.threaded)
+    print(
+        f"Open http://localhost:{args.port} in your browser (Ctrl+C to stop)",
+        flush=True,
+    )
+    pn.serve({"/": app}, port=args.port, show=args.open, threaded=args.threaded)

@@ -176,7 +176,7 @@ class KineticOperator(PanelModel):
         doc="Length scale (l) for Gaussian kernel K(r) = exp(-r²/(2l²))",
     )
     viscous_neighbor_weighting = param.Selector(
-        default="inverse_riemannian_distance",
+        default="riemannian_kernel_volume",
         objects=[
             "inverse_riemannian_distance",
             "inverse_riemannian_volume",

@@ -80,6 +80,10 @@ from fragile.fractalai.qft.dirac_spectrum import (
     build_fermion_ratio_comparison,
 )
 from fragile.fractalai.qft.dirac_spectrum_plotting import build_all_dirac_plots
+from fragile.fractalai.qft.dirac_electroweak import (
+    compute_dirac_electroweak_bundle,
+    DiracElectroweakConfig,
+)
 from fragile.fractalai.qft.einstein_equations import (
     EinsteinConfig,
     compute_einstein_test,
@@ -2410,6 +2414,75 @@ class ElectroweakSettings(param.Parameterized):
     )
 
 
+class NewDiracElectroweakSettings(param.Parameterized):
+    """Settings for the unified Dirac/Electroweak analysis tab."""
+
+    simulation_range = param.Range(
+        default=(0.1, 1.0),
+        bounds=(0.0, 1.0),
+        doc="Fraction of simulation timeline to use (start, end).",
+    )
+    max_lag = param.Integer(default=80, bounds=(10, 200))
+    h_eff = param.Number(default=1.0, bounds=(1e-6, None))
+    use_connected = param.Boolean(default=True)
+    neighbor_method = param.ObjectSelector(
+        default="companions",
+        objects=("auto", "recorded", "companions", "voronoi"),
+    )
+    companion_topology = param.ObjectSelector(
+        default="both",
+        objects=("distance", "clone", "both"),
+        doc="Companion topology when companion neighbors are used.",
+    )
+    edge_weight_mode = param.ObjectSelector(
+        default="inverse_riemannian_distance",
+        objects=[
+            "uniform",
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "riemannian_kernel",
+            "riemannian_kernel_volume",
+            "inverse_distance",
+            "inverse_volume",
+            "kernel",
+        ],
+    )
+    neighbor_k = param.Integer(default=0, bounds=(0, 50))
+    channel_list = param.String(default=",".join(ELECTROWEAK_CHANNELS))
+    window_widths_spec = param.String(default="5-50")
+    fit_mode = param.ObjectSelector(default="aic", objects=("aic", "linear", "linear_abs"))
+    fit_start = param.Integer(default=2, bounds=(0, None))
+    fit_stop = param.Integer(default=None, bounds=(1, None), allow_None=True)
+    min_fit_points = param.Integer(default=2, bounds=(2, None))
+    epsilon_d = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
+    epsilon_c = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
+    epsilon_clone = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
+    lambda_alg = param.Number(default=None, bounds=(0.0, None), allow_None=True)
+    compute_bootstrap_errors = param.Boolean(default=False)
+    n_bootstrap = param.Integer(default=100, bounds=(10, 1000))
+
+    mc_time_index = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Recorded MC index/step for snapshot analyses (blank=last).",
+    )
+    dirac_kernel_mode = param.ObjectSelector(
+        default="phase_space",
+        objects=("phase_space", "fitness_ratio"),
+        doc="Dirac kernel used for spectral analysis.",
+    )
+    dirac_time_average = param.Boolean(default=False)
+    dirac_warmup_fraction = param.Number(default=0.1, bounds=(0.0, 0.5))
+    dirac_max_avg_frames = param.Integer(default=80, bounds=(10, 400))
+    dirac_color_threshold_mode = param.ObjectSelector(
+        default="median",
+        objects=("median", "manual"),
+    )
+    dirac_color_threshold_value = param.Number(default=1.0, bounds=(0.0, None))
+    color_singlet_quantile = param.Number(default=0.9, bounds=(0.0, 1.0))
+
+
 class HiggsSettings(param.Parameterized):
     """Settings for Higgs field observable computation."""
 
@@ -3371,6 +3444,53 @@ def _compute_anisotropic_edge_bundle(
     )
 
 
+def _compute_strong_glueball_for_anisotropic_edge(
+    history: RunHistory,
+    settings: AnisotropicEdgeSettings,
+) -> ChannelCorrelatorResult:
+    """Compute the strong-force tab glueball channel for cross-checking.
+
+    This reuses the same operator/correlator pipeline as the strong-force channels:
+    - glueball operator from force norm squared
+    - FFT correlator + configured mass extraction
+    """
+    channel_config = ChannelConfig(
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mc_time_index=settings.mc_time_index,
+        time_axis="mc",
+        h_eff=float(settings.h_eff),
+        mass=float(settings.mass),
+        ell0=settings.ell0,
+        neighbor_method="auto",
+        edge_weight_mode=str(settings.edge_weight_mode),
+    )
+    correlator_config = CorrelatorConfig(
+        max_lag=int(settings.max_lag),
+        use_connected=bool(settings.use_connected),
+        window_widths=_parse_window_widths(settings.window_widths_spec),
+        fit_mode=str(settings.fit_mode),
+        fit_start=int(settings.fit_start),
+        fit_stop=settings.fit_stop,
+        min_fit_points=int(settings.min_fit_points),
+        compute_bootstrap_errors=bool(settings.compute_bootstrap_errors),
+        n_bootstrap=int(settings.n_bootstrap),
+    )
+
+    operator_series = compute_all_operator_series(
+        history,
+        channel_config,
+        channels=["glueball"],
+    )
+    glueball_series = operator_series.operators.get("glueball", torch.zeros(0, dtype=torch.float32))
+    return compute_channel_correlator(
+        series=glueball_series,
+        dt=operator_series.dt,
+        config=correlator_config,
+        channel_name="glueball_strong_force",
+    )
+
+
 def _compute_radial_channels_bundle(
     history: RunHistory,
     settings: RadialSettings,
@@ -3409,6 +3529,8 @@ def _compute_radial_electroweak_bundle(
     history: RunHistory,
     settings: RadialElectroweakSettings,
 ) -> RadialChannelBundle:
+    neighbor_method = "auto" if settings.neighbor_method == "voronoi" else settings.neighbor_method
+
     config = RadialChannelConfig(
         time_axis="radial",
         mc_time_index=settings.mc_time_index,
@@ -3434,7 +3556,7 @@ def _compute_radial_electroweak_bundle(
 
     ew_config = ElectroweakChannelConfig(
         h_eff=settings.h_eff,
-        neighbor_method=settings.neighbor_method,
+        neighbor_method=neighbor_method,
         neighbor_weighting=str(settings.neighbor_weighting),
         edge_weight_mode=getattr(settings, "edge_weight_mode", "inverse_riemannian_distance"),
         neighbor_k=settings.neighbor_k,
@@ -3462,6 +3584,7 @@ def _compute_electroweak_channels(
     time_axis, euclidean_time_dim = _map_time_dimension(
         settings.time_dimension, history_d=history.d
     )
+    neighbor_method = "auto" if settings.neighbor_method == "voronoi" else settings.neighbor_method
 
     config = ElectroweakChannelConfig(
         warmup_fraction=settings.simulation_range[0],
@@ -3469,7 +3592,7 @@ def _compute_electroweak_channels(
         max_lag=settings.max_lag,
         h_eff=settings.h_eff,
         use_connected=settings.use_connected,
-        neighbor_method=settings.neighbor_method,
+        neighbor_method=neighbor_method,
         neighbor_weighting=str(settings.neighbor_weighting),
         edge_weight_mode=settings.edge_weight_mode,
         neighbor_k=settings.neighbor_k,
@@ -5663,14 +5786,14 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.kinetic_op.beta_curl = 1.0
         gas_config.kinetic_op.use_viscous_coupling = True
         gas_config.kinetic_op.viscous_length_scale = 1.0
-        gas_config.kinetic_op.viscous_neighbor_weighting = "riemannian_kernel"
+        gas_config.kinetic_op.viscous_neighbor_weighting = "riemannian_kernel_volume"
         gas_config.kinetic_op.viscous_neighbor_threshold = None
         gas_config.kinetic_op.viscous_neighbor_penalty = 0.0
         gas_config.kinetic_op.viscous_degree_cap = None
         gas_config.kinetic_op.use_velocity_squashing = True
 
         # Companion selection (diversity + cloning).
-        gas_config.companion_selection.method = "uniform"
+        gas_config.companion_selection.method = "random_pairing"
         gas_config.companion_selection.epsilon = 2.80
         gas_config.companion_selection.lambda_alg = 1.0
         gas_config.companion_selection.exclude_self = True
@@ -5716,6 +5839,8 @@ def create_app() -> pn.template.FastListTemplate:
             "radial_ew_results_3d": None,
             "radial_ew_results_3d_axes": None,
             "anisotropic_edge_results": None,
+            "new_dirac_ew_bundle": None,
+            "new_dirac_ew_results": None,
             "einstein_test_result": None,
         }
 
@@ -6889,6 +7014,251 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         # =====================================================================
+        # New Dirac/Electroweak unified tab components
+        # =====================================================================
+        new_dirac_ew_settings = NewDiracElectroweakSettings()
+        new_dirac_ew_status = pn.pane.Markdown(
+            "**New Dirac/Electroweak:** Load a RunHistory and click Compute.",
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_run_button = pn.widgets.Button(
+            name="Compute New Dirac/Electroweak",
+            button_type="primary",
+            min_width=260,
+            sizing_mode="stretch_width",
+            disabled=True,
+        )
+        new_dirac_ew_summary = pn.pane.Markdown(
+            "## New Dirac/Electroweak Summary\n_Run analysis to populate._",
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_settings_panel = pn.Param(
+            new_dirac_ew_settings,
+            parameters=[
+                "simulation_range",
+                "max_lag",
+                "h_eff",
+                "mc_time_index",
+                "use_connected",
+                "neighbor_method",
+                "companion_topology",
+                "edge_weight_mode",
+                "neighbor_k",
+                "channel_list",
+                "window_widths_spec",
+                "fit_mode",
+                "fit_start",
+                "fit_stop",
+                "min_fit_points",
+                "epsilon_d",
+                "epsilon_c",
+                "epsilon_clone",
+                "lambda_alg",
+                "compute_bootstrap_errors",
+                "n_bootstrap",
+                "dirac_kernel_mode",
+                "dirac_time_average",
+                "dirac_warmup_fraction",
+                "dirac_max_avg_frames",
+                "dirac_color_threshold_mode",
+                "dirac_color_threshold_value",
+                "color_singlet_quantile",
+            ],
+            show_name=False,
+            widgets={
+                "mc_time_index": {"name": "MC time slice (step or idx; blank=last)"},
+                "dirac_color_threshold_mode": {"name": "Dirac color threshold"},
+                "dirac_color_threshold_value": {"name": "||F_visc|| threshold"},
+            },
+            default_layout=type("NewDiracEWSettingsGrid", (pn.GridBox,), {"ncols": 2}),
+        )
+
+        new_dirac_ew_coupling_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_coupling_ref_table = pn.widgets.Tabulator(
+            pd.DataFrame(
+                {
+                    "name": list(ELECTROWEAK_COUPLING_NAMES),
+                    **{
+                        col: [
+                            _format_ref_value(
+                                DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(col)
+                            )
+                            for name in ELECTROWEAK_COUPLING_NAMES
+                        ]
+                        for col in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS
+                    },
+                }
+            ),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+            selectable=False,
+            configuration={"editable": True},
+            editors={column: "input" for column in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS},
+        )
+
+        new_dirac_ew_channel_plots = pn.Column(sizing_mode="stretch_width")
+        new_dirac_ew_plots_overlay_corr = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        new_dirac_ew_plots_overlay_meff = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        new_dirac_ew_plots_spectrum = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        new_dirac_ew_mass_mode = pn.widgets.RadioButtonGroup(
+            name="Mass Display",
+            options=["AIC-Weighted", "Best Window"],
+            value="AIC-Weighted",
+            button_type="default",
+        )
+        new_dirac_ew_mass_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_ratio_pane = pn.pane.Markdown(
+            "**Electroweak Ratios:** Compute channels to see ratios.",
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_ratio_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_fit_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_compare_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_anchor_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_ref_table = pn.widgets.Tabulator(
+            pd.DataFrame(
+                {
+                    "channel": list(ELECTROWEAK_CHANNELS),
+                    "mass_ref_GeV": [
+                        _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
+                        for name in ELECTROWEAK_CHANNELS
+                    ],
+                }
+            ),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+            selectable=False,
+            configuration={"editable": True},
+            editors={"mass_ref_GeV": "input"},
+        )
+
+        new_dirac_ew_dirac_full = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        new_dirac_ew_dirac_walker = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        new_dirac_ew_dirac_up = pn.pane.HoloViews(linked_axes=False)
+        new_dirac_ew_dirac_down = pn.pane.HoloViews(linked_axes=False)
+        new_dirac_ew_dirac_nu = pn.pane.HoloViews(linked_axes=False)
+        new_dirac_ew_dirac_lep = pn.pane.HoloViews(linked_axes=False)
+        new_dirac_ew_dirac_mass_hierarchy = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        new_dirac_ew_dirac_chiral = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        new_dirac_ew_dirac_generation_ratios = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        new_dirac_ew_dirac_summary = pn.pane.Markdown("", sizing_mode="stretch_width")
+        new_dirac_ew_dirac_comparison = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_dirac_ratio = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        new_dirac_ew_color_singlet_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+
+        new_dirac_ew_electron_plot = pn.Column(sizing_mode="stretch_width")
+        new_dirac_ew_sigma_plot = pn.Column(sizing_mode="stretch_width")
+        new_dirac_ew_observable_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_ratio_table_extra = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+
+        new_dirac_ew_observed_table = pn.widgets.Tabulator(
+            pd.DataFrame(
+                {
+                    "observable": [
+                        "electron_dirac",
+                        "electron_yukawa",
+                        "electron_component",
+                        "u1_phase",
+                        "u1_dressed",
+                        "su2_phase",
+                        "su2_doublet",
+                        "ew_mixed",
+                        "higgs_sigma",
+                    ],
+                    "observed_GeV": [
+                        "0.000511",
+                        "0.000511",
+                        "0.000511",
+                        "0.000511",
+                        "0.105658",
+                        "80.379",
+                        "91.1876",
+                        "1.77686",
+                        "125.10",
+                    ],
+                }
+            ),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+            selectable=False,
+            configuration={"editable": True},
+            editors={"observed_GeV": "input"},
+        )
+
+        # =====================================================================
         # Higgs Field tab components (emergent manifold geometry)
         # =====================================================================
         higgs_settings = HiggsSettings()
@@ -7257,6 +7627,11 @@ def create_app() -> pn.template.FastListTemplate:
             # Enable electroweak tab
             electroweak_run_button.disabled = False
             electroweak_status.object = "**Electroweak ready:** click Compute Electroweak."
+            # Enable unified dirac/electroweak tab
+            new_dirac_ew_run_button.disabled = False
+            new_dirac_ew_status.object = (
+                "**New Dirac/Electroweak ready:** click Compute New Dirac/Electroweak."
+            )
             # Enable higgs tab
             higgs_run_button.disabled = False
             higgs_status.object = "**Higgs Field ready:** click Compute Higgs Observables."
@@ -8266,6 +8641,9 @@ def create_app() -> pn.template.FastListTemplate:
                 plots_spectrum,
                 plots_overlay_corr,
                 plots_overlay_meff,
+                # Match anisotropic-edge visualization: show C(t) on linear axis
+                # so fitted decays appear as exponentials rather than straight lines.
+                correlator_logy=False,
             )
 
         def _update_electroweak_tables_generic(
@@ -8520,6 +8898,420 @@ def create_app() -> pn.template.FastListTemplate:
                 )
 
             _run_tab_computation(state, radial_ew_status, "radial electroweak channels", _compute)
+
+        # =====================================================================
+        # New Dirac/Electroweak tab callbacks (unified observables)
+        # =====================================================================
+
+        def _extract_observed_refs_from_table(
+            table: pn.widgets.Tabulator,
+            key_col: str = "observable",
+            value_col: str = "observed_GeV",
+        ) -> dict[str, float]:
+            refs: dict[str, float] = {}
+            df = table.value
+            if not isinstance(df, pd.DataFrame):
+                return refs
+            for _, row in df.iterrows():
+                key = str(row.get(key_col, "")).strip()
+                if not key:
+                    continue
+                raw = row.get(value_col)
+                if isinstance(raw, str):
+                    raw = raw.strip()
+                    if raw == "":
+                        continue
+                try:
+                    val = float(raw)
+                except (TypeError, ValueError):
+                    continue
+                if val > 0:
+                    refs[key] = val
+            return refs
+
+        def _update_new_dirac_ew_electroweak_tables(
+            results: dict[str, ChannelCorrelatorResult],
+            mode: str | None = None,
+        ) -> None:
+            if mode is None:
+                mode = new_dirac_ew_mass_mode.value
+            _update_electroweak_tables_generic(
+                results,
+                mode,
+                new_dirac_ew_mass_table,
+                new_dirac_ew_ratio_pane,
+                new_dirac_ew_ratio_table,
+                new_dirac_ew_fit_table,
+                new_dirac_ew_anchor_table,
+                new_dirac_ew_compare_table,
+                new_dirac_ew_ref_table,
+            )
+
+        def _update_new_dirac_ew_derived_tables(
+            bundle,
+            mode: str | None = None,
+        ) -> None:
+            if mode is None:
+                mode = new_dirac_ew_mass_mode.value
+
+            observed = _extract_observed_refs_from_table(new_dirac_ew_observed_table)
+            ew_results = bundle.electroweak_output.channel_results
+            ew_masses = _extract_masses(ew_results, mode=mode, family_map=None)
+            electron_component_mass = _get_channel_mass(bundle.electron_component_result, mode=mode)
+            higgs_sigma_mass = _get_channel_mass(bundle.higgs_sigma_result, mode=mode)
+
+            color_singlet = bundle.color_singlet_spectrum
+            electron_dirac = color_singlet.electron_mass if color_singlet is not None else None
+
+            rows: list[dict[str, Any]] = []
+            rows.append(
+                {
+                    "observable": "electron_dirac",
+                    "measured": electron_dirac,
+                    "observed_GeV": observed.get("electron_dirac"),
+                    "error_pct": (
+                        ((electron_dirac - observed["electron_dirac"]) / observed["electron_dirac"] * 100.0)
+                        if electron_dirac is not None and observed.get("electron_dirac", 0) > 0
+                        else None
+                    ),
+                    "note": "Dirac spectral color-singlet proxy",
+                }
+            )
+            rows.append(
+                {
+                    "observable": "electron_yukawa",
+                    "measured": bundle.electron_mass_yukawa,
+                    "observed_GeV": observed.get("electron_yukawa"),
+                    "error_pct": (
+                        (bundle.electron_mass_yukawa - observed["electron_yukawa"])
+                        / observed["electron_yukawa"]
+                        * 100.0
+                        if observed.get("electron_yukawa", 0) > 0
+                        else None
+                    ),
+                    "note": "Yukawa prediction y_e * v",
+                }
+            )
+            rows.append(
+                {
+                    "observable": "electron_component",
+                    "measured": electron_component_mass,
+                    "observed_GeV": observed.get("electron_component"),
+                    "error_pct": (
+                        (electron_component_mass - observed["electron_component"])
+                        / observed["electron_component"]
+                        * 100.0
+                        if observed.get("electron_component", 0) > 0
+                        else None
+                    ),
+                    "note": "Lower SU(2) doublet correlator mass",
+                }
+            )
+            rows.append(
+                {
+                    "observable": "higgs_sigma",
+                    "measured": higgs_sigma_mass,
+                    "observed_GeV": observed.get("higgs_sigma"),
+                    "error_pct": (
+                        (higgs_sigma_mass - observed["higgs_sigma"]) / observed["higgs_sigma"] * 100.0
+                        if observed.get("higgs_sigma", 0) > 0
+                        else None
+                    ),
+                    "note": "Radial fluctuation (sigma-mode) correlator mass",
+                }
+            )
+            for channel, mass in sorted(ew_masses.items()):
+                obs = observed.get(channel)
+                rows.append(
+                    {
+                        "observable": channel,
+                        "measured": mass,
+                        "observed_GeV": obs,
+                        "error_pct": (
+                            (mass - obs) / obs * 100.0 if obs is not None and obs > 0 else None
+                        ),
+                        "note": "Electroweak proxy channel",
+                    }
+                )
+            new_dirac_ew_observable_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
+
+            ratio_rows: list[dict[str, Any]] = []
+            m_w = ew_masses.get("su2_phase")
+            m_z = ew_masses.get("su2_doublet")
+            m_h = higgs_sigma_mass if higgs_sigma_mass > 0 else None
+            if m_w is not None and m_h is not None and m_h > 0:
+                measured = m_w / m_h
+                obs = None
+                if observed.get("su2_phase", 0) > 0 and observed.get("higgs_sigma", 0) > 0:
+                    obs = observed["su2_phase"] / observed["higgs_sigma"]
+                ratio_rows.append(
+                    {
+                        "ratio": "mW/mH",
+                        "measured": measured,
+                        "observed": obs,
+                        "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
+                    }
+                )
+            if m_z is not None and m_h is not None and m_h > 0:
+                measured = m_z / m_h
+                obs = None
+                if observed.get("su2_doublet", 0) > 0 and observed.get("higgs_sigma", 0) > 0:
+                    obs = observed["su2_doublet"] / observed["higgs_sigma"]
+                ratio_rows.append(
+                    {
+                        "ratio": "mZ/mH",
+                        "measured": measured,
+                        "observed": obs,
+                        "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
+                    }
+                )
+            if bundle.electron_mass_yukawa > 0 and electron_component_mass > 0:
+                ratio_rows.append(
+                    {
+                        "ratio": "m(e_component)/m(e_yukawa)",
+                        "measured": electron_component_mass / bundle.electron_mass_yukawa,
+                        "observed": 1.0,
+                        "error_pct": (
+                            (electron_component_mass / bundle.electron_mass_yukawa - 1.0) * 100.0
+                        ),
+                    }
+                )
+            new_dirac_ew_ratio_table_extra.value = (
+                pd.DataFrame(ratio_rows) if ratio_rows else pd.DataFrame()
+            )
+
+            summary_lines = [
+                "## New Dirac/Electroweak Summary",
+                f"- Frames used: `{len(bundle.frame_indices)}`",
+                f"- Electroweak channels with samples: "
+                f"`{len([r for r in ew_results.values() if r.n_samples > 0])}`",
+                f"- Higgs VEV (snapshot): `{bundle.higgs_vev:.6f}` ± `{bundle.higgs_vev_std:.6f}`",
+                f"- Higgs VEV (time mean): `{bundle.vev_time_mean:.6f}` ± `{bundle.vev_time_std:.6f}`",
+                f"- Yukawa prediction: `m_e={bundle.electron_mass_yukawa:.6f}`, "
+                f"`y_e={bundle.yukawa_e:.6f}`, `ΔΦ_e={bundle.fitness_delta_phi_e:.6f}`, "
+                f"`Φ_0={bundle.fitness_phi0:.6f}`",
+            ]
+            if color_singlet is not None:
+                summary_lines.append(
+                    f"- Dirac color-singlet threshold q={new_dirac_ew_settings.color_singlet_quantile:.2f}: "
+                    f"`{color_singlet.lepton_threshold:.6f}` "
+                    f"(modes={color_singlet.n_singlet_modes}/{len(color_singlet.masses)})"
+                )
+                if color_singlet.electron_mass is not None:
+                    summary_lines.append(
+                        f"- Dirac electron proxy mass: `{color_singlet.electron_mass:.6f}`"
+                    )
+            new_dirac_ew_summary.object = "\n".join(summary_lines)
+
+        def _on_new_dirac_ew_mass_mode_change(event) -> None:
+            results = state.get("new_dirac_ew_results")
+            bundle = state.get("new_dirac_ew_bundle")
+            if results is None or bundle is None:
+                return
+            _update_new_dirac_ew_electroweak_tables(results, event.new)
+            _update_new_dirac_ew_derived_tables(bundle, event.new)
+
+        new_dirac_ew_mass_mode.param.watch(_on_new_dirac_ew_mass_mode_change, "value")
+
+        def on_run_new_dirac_electroweak(_):
+            def _compute(history):
+                neighbor_method = (
+                    "auto"
+                    if new_dirac_ew_settings.neighbor_method == "voronoi"
+                    else new_dirac_ew_settings.neighbor_method
+                )
+                ew_cfg = ElectroweakChannelConfig(
+                    warmup_fraction=new_dirac_ew_settings.simulation_range[0],
+                    end_fraction=new_dirac_ew_settings.simulation_range[1],
+                    max_lag=new_dirac_ew_settings.max_lag,
+                    h_eff=new_dirac_ew_settings.h_eff,
+                    use_connected=new_dirac_ew_settings.use_connected,
+                    neighbor_method=neighbor_method,
+                    companion_topology=str(new_dirac_ew_settings.companion_topology),
+                    edge_weight_mode=new_dirac_ew_settings.edge_weight_mode,
+                    neighbor_k=new_dirac_ew_settings.neighbor_k,
+                    window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
+                    fit_mode=new_dirac_ew_settings.fit_mode,
+                    fit_start=new_dirac_ew_settings.fit_start,
+                    fit_stop=new_dirac_ew_settings.fit_stop,
+                    min_fit_points=new_dirac_ew_settings.min_fit_points,
+                    epsilon_d=new_dirac_ew_settings.epsilon_d,
+                    epsilon_c=new_dirac_ew_settings.epsilon_c,
+                    epsilon_clone=new_dirac_ew_settings.epsilon_clone,
+                    lambda_alg=new_dirac_ew_settings.lambda_alg,
+                    mc_time_index=new_dirac_ew_settings.mc_time_index,
+                    compute_bootstrap_errors=new_dirac_ew_settings.compute_bootstrap_errors,
+                    n_bootstrap=new_dirac_ew_settings.n_bootstrap,
+                )
+                threshold = (
+                    new_dirac_ew_settings.dirac_color_threshold_value
+                    if new_dirac_ew_settings.dirac_color_threshold_mode == "manual"
+                    else "median"
+                )
+                dirac_idx = None
+                if new_dirac_ew_settings.mc_time_index is not None:
+                    try:
+                        raw_idx = int(new_dirac_ew_settings.mc_time_index)
+                    except (TypeError, ValueError):
+                        raw_idx = None
+                    if raw_idx is not None:
+                        if raw_idx in history.recorded_steps:
+                            raw_idx = int(history.get_step_index(raw_idx))
+                        dirac_idx = max(raw_idx - 1, 0)
+                dirac_cfg = DiracSpectrumConfig(
+                    mc_time_index=dirac_idx,
+                    epsilon_clone=(
+                        float(new_dirac_ew_settings.epsilon_clone)
+                        if new_dirac_ew_settings.epsilon_clone is not None
+                        else 0.01
+                    ),
+                    kernel_mode=str(new_dirac_ew_settings.dirac_kernel_mode),
+                    epsilon_c=new_dirac_ew_settings.epsilon_c,
+                    lambda_alg=(
+                        float(new_dirac_ew_settings.lambda_alg)
+                        if new_dirac_ew_settings.lambda_alg is not None
+                        else 1.0
+                    ),
+                    h_eff=float(new_dirac_ew_settings.h_eff),
+                    include_phase=True,
+                    color_threshold=threshold,
+                    time_average=bool(new_dirac_ew_settings.dirac_time_average),
+                    warmup_fraction=float(new_dirac_ew_settings.dirac_warmup_fraction),
+                    max_avg_frames=int(new_dirac_ew_settings.dirac_max_avg_frames),
+                )
+                bundle_cfg = DiracElectroweakConfig(
+                    electroweak=ew_cfg,
+                    electroweak_channels=[
+                        c.strip()
+                        for c in str(new_dirac_ew_settings.channel_list).split(",")
+                        if c.strip()
+                    ],
+                    dirac=dirac_cfg,
+                    color_singlet_quantile=float(new_dirac_ew_settings.color_singlet_quantile),
+                    sigma_max_lag=int(new_dirac_ew_settings.max_lag),
+                    sigma_use_connected=bool(new_dirac_ew_settings.use_connected),
+                    sigma_fit_mode=str(new_dirac_ew_settings.fit_mode),
+                    sigma_fit_start=int(new_dirac_ew_settings.fit_start),
+                    sigma_fit_stop=new_dirac_ew_settings.fit_stop,
+                    sigma_min_fit_points=int(new_dirac_ew_settings.min_fit_points),
+                    sigma_window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
+                    sigma_compute_bootstrap_errors=bool(new_dirac_ew_settings.compute_bootstrap_errors),
+                    sigma_n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
+                )
+                bundle = compute_dirac_electroweak_bundle(history, config=bundle_cfg)
+                state["new_dirac_ew_bundle"] = bundle
+                results = bundle.electroweak_output.channel_results
+                state["new_dirac_ew_results"] = results
+
+                _update_electroweak_plots_generic(
+                    results,
+                    new_dirac_ew_channel_plots,
+                    new_dirac_ew_plots_spectrum,
+                    new_dirac_ew_plots_overlay_corr,
+                    new_dirac_ew_plots_overlay_meff,
+                )
+                _update_new_dirac_ew_electroweak_tables(results)
+
+                couplings = _compute_coupling_constants(
+                    history,
+                    h_eff=float(new_dirac_ew_settings.h_eff),
+                    epsilon_d=new_dirac_ew_settings.epsilon_d,
+                    epsilon_c=new_dirac_ew_settings.epsilon_c,
+                )
+                new_dirac_ew_coupling_table.value = pd.DataFrame(
+                    _build_coupling_rows(
+                        couplings,
+                        proxies=None,
+                        include_strong=False,
+                        refs=_extract_coupling_refs(new_dirac_ew_coupling_ref_table),
+                    )
+                )
+
+                dirac_plots = build_all_dirac_plots(bundle.dirac_result)
+                new_dirac_ew_dirac_full.object = dirac_plots["full_spectrum"]
+                sector_plots = dirac_plots["sector_spectra"]
+                new_dirac_ew_dirac_up.object = sector_plots.get("up_quark")
+                new_dirac_ew_dirac_down.object = sector_plots.get("down_quark")
+                new_dirac_ew_dirac_nu.object = sector_plots.get("neutrino")
+                new_dirac_ew_dirac_lep.object = sector_plots.get("charged_lepton")
+                new_dirac_ew_dirac_walker.object = dirac_plots["walker_classification"]
+                new_dirac_ew_dirac_mass_hierarchy.object = dirac_plots["mass_hierarchy"]
+                new_dirac_ew_dirac_chiral.object = dirac_plots["chiral_density"]
+                new_dirac_ew_dirac_generation_ratios.object = dirac_plots["generation_ratios"]
+                comp_rows, best_scale = build_fermion_comparison(bundle.dirac_result)
+                new_dirac_ew_dirac_comparison.value = (
+                    pd.DataFrame(comp_rows) if comp_rows else pd.DataFrame()
+                )
+                new_dirac_ew_dirac_ratio.object = dirac_plots["fermion_ratio_comparison"]
+                sector_counts = {name: spec.n_walkers for name, spec in bundle.dirac_result.sectors.items()}
+                new_dirac_ew_dirac_summary.object = "  \n".join(
+                    [
+                        (
+                            f"**Best-fit scale:** {best_scale:.6g} GeV/σ"
+                            if best_scale
+                            else "**Best-fit scale:** N/A"
+                        ),
+                        f"**Chiral condensate:** ⟨ψ̄ψ⟩ ≈ {bundle.dirac_result.chiral_condensate:.4f}",
+                        "**Sector walkers:** " + ", ".join(f"{k}: {v}" for k, v in sector_counts.items()),
+                    ]
+                )
+
+                color_singlet = bundle.color_singlet_spectrum
+                if color_singlet is None or len(color_singlet.masses) == 0:
+                    new_dirac_ew_color_singlet_table.value = pd.DataFrame()
+                else:
+                    rows = []
+                    max_rows = min(len(color_singlet.masses), 300)
+                    for i in range(max_rows):
+                        ls = float(color_singlet.lepton_scores[i])
+                        rows.append(
+                            {
+                                "mode": int(color_singlet.mode_index[i]),
+                                "mass": float(color_singlet.masses[i]),
+                                "lepton_score": ls,
+                                "quark_score": float(color_singlet.quark_scores[i]),
+                                "is_singlet": bool(ls >= color_singlet.lepton_threshold),
+                            }
+                        )
+                    new_dirac_ew_color_singlet_table.value = pd.DataFrame(rows)
+
+                e_plot = ChannelPlot(
+                    bundle.electron_component_result,
+                    logy=False,
+                    width=420,
+                    height=320,
+                ).side_by_side()
+                sigma_plot = ChannelPlot(
+                    bundle.higgs_sigma_result,
+                    logy=False,
+                    width=420,
+                    height=320,
+                ).side_by_side()
+                new_dirac_ew_electron_plot.objects = [
+                    e_plot
+                    if e_plot is not None
+                    else pn.pane.Markdown("_No electron-component data._")
+                ]
+                new_dirac_ew_sigma_plot.objects = [
+                    sigma_plot
+                    if sigma_plot is not None
+                    else pn.pane.Markdown("_No sigma-mode data._")
+                ]
+
+                _update_new_dirac_ew_derived_tables(bundle)
+
+                n_channels = len([r for r in results.values() if r.n_samples > 0])
+                new_dirac_ew_status.object = (
+                    f"**Complete:** unified Dirac/Electroweak computed "
+                    f"({n_channels} electroweak channels + Dirac spectrum + Yukawa/Higgs proxies)."
+                )
+
+            _run_tab_computation(
+                state,
+                new_dirac_ew_status,
+                "new Dirac/electroweak observables",
+                _compute,
+            )
 
         def on_run_higgs(_):
             history = state.get("history")
@@ -8959,6 +9751,7 @@ def create_app() -> pn.template.FastListTemplate:
         anisotropic_edge_run_button.on_click(on_run_anisotropic_edge_channels)
         radial_ew_run_button.on_click(on_run_radial_electroweak)
         electroweak_run_button.on_click(on_run_electroweak)
+        new_dirac_ew_run_button.on_click(on_run_new_dirac_electroweak)
         higgs_run_button.on_click(on_run_higgs)
         qg_run_button.on_click(on_run_quantum_gravity)
         dynamics_run_button.on_click(on_run_dynamics)
@@ -9599,6 +10392,85 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 sizing_mode="stretch_both",
             )
 
+            new_dirac_ew_note = pn.pane.Alert(
+                """**New Dirac/Electroweak:** Unified workspace for:
+1) electroweak proxy channels, 2) Dirac spectral masses,
+3) color-singlet electron proxy modes, 4) Yukawa/VEV predictions,
+5) electron-component and sigma-mode correlator proxies.""",
+                alert_type="info",
+                sizing_mode="stretch_width",
+            )
+
+            new_dirac_ew_tab = pn.Column(
+                new_dirac_ew_status,
+                new_dirac_ew_note,
+                pn.Row(new_dirac_ew_run_button, sizing_mode="stretch_width"),
+                pn.Accordion(
+                    ("New Dirac/Electroweak Settings", new_dirac_ew_settings_panel),
+                    sizing_mode="stretch_width",
+                ),
+                pn.layout.Divider(),
+                new_dirac_ew_summary,
+                pn.pane.Markdown("### Electroweak Couplings"),
+                new_dirac_ew_coupling_table,
+                pn.pane.Markdown("### Electroweak Coupling References"),
+                new_dirac_ew_coupling_ref_table,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Electroweak Proxy Channels"),
+                new_dirac_ew_mass_mode,
+                new_dirac_ew_plots_spectrum,
+                new_dirac_ew_mass_table,
+                new_dirac_ew_ratio_pane,
+                new_dirac_ew_ratio_table,
+                new_dirac_ew_fit_table,
+                new_dirac_ew_compare_table,
+                new_dirac_ew_anchor_table,
+                pn.pane.Markdown("### Electroweak Reference Masses (GeV)"),
+                new_dirac_ew_ref_table,
+                pn.pane.Markdown("### All Channels Overlay - Correlators"),
+                new_dirac_ew_plots_overlay_corr,
+                pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
+                new_dirac_ew_plots_overlay_meff,
+                pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
+                new_dirac_ew_channel_plots,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Dirac Spectrum (Antisymmetric Kernel)"),
+                pn.Row(
+                    new_dirac_ew_dirac_full,
+                    new_dirac_ew_dirac_walker,
+                    sizing_mode="stretch_width",
+                ),
+                pn.GridBox(
+                    new_dirac_ew_dirac_up,
+                    new_dirac_ew_dirac_down,
+                    new_dirac_ew_dirac_nu,
+                    new_dirac_ew_dirac_lep,
+                    ncols=2,
+                ),
+                pn.Row(
+                    new_dirac_ew_dirac_mass_hierarchy,
+                    new_dirac_ew_dirac_chiral,
+                    sizing_mode="stretch_width",
+                ),
+                new_dirac_ew_dirac_generation_ratios,
+                new_dirac_ew_dirac_summary,
+                new_dirac_ew_dirac_comparison,
+                new_dirac_ew_dirac_ratio,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Color-Singlet Mode Projection"),
+                new_dirac_ew_color_singlet_table,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Electron/Higgs Proxy Correlators"),
+                pn.Row(new_dirac_ew_electron_plot, new_dirac_ew_sigma_plot, sizing_mode="stretch_width"),
+                pn.pane.Markdown("### Observed Mass Inputs (GeV)"),
+                new_dirac_ew_observed_table,
+                pn.pane.Markdown("### Derived Observable Comparison"),
+                new_dirac_ew_observable_table,
+                pn.pane.Markdown("### Cross-Sector Ratios"),
+                new_dirac_ew_ratio_table_extra,
+                sizing_mode="stretch_both",
+            )
+
             higgs_tab = pn.Column(
                 higgs_status,
                 pn.Row(higgs_run_button, sizing_mode="stretch_width"),
@@ -9951,6 +10823,7 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                     ("Anisotropic Edge", anisotropic_edge_tab),
                     ("Radial Electroweak", radial_ew_tab),
                     ("Electroweak", electroweak_tab),
+                    ("New Dirac/Electroweak", new_dirac_ew_tab),
                     ("Higgs Field", higgs_tab),
                     ("Quantum Gravity", quantum_gravity_tab),
                 )

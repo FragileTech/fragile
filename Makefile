@@ -1,4 +1,4 @@
-.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt
+.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude
 
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
@@ -46,3 +46,6 @@ prompt:
 	@echo "Preparing prompt downloads for docs..."
 	@python3 docs/build_prompt_downloads.py
 	@echo "✓ Prompts generated in prompts/"
+
+claude:
+	CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --dangerously-skip-permissions
