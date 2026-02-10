@@ -76,6 +76,32 @@ class GasConfigPanel(param.Parameterized):
         doc="Ricci scalar weight for Riemannian Mix",
     )
 
+    # Mexican-hat (Higgs-inspired) parameters
+    mexican_hat_lambda_h = param.Number(
+        default=0.13,
+        bounds=(1e-4, 5.0),
+        softbounds=(0.01, 1.0),
+        doc="Quartic Higgs self-coupling λ",
+    )
+    mexican_hat_vev = param.Number(
+        default=246.0,
+        bounds=(1.0, 5000.0),
+        softbounds=(10.0, 1000.0),
+        doc="Higgs VEV v (GeV)",
+    )
+    mexican_hat_field_scale = param.Number(
+        default=246.0,
+        bounds=(1.0, 5000.0),
+        softbounds=(10.0, 1000.0),
+        doc="GeV per simulation unit (sets ring radius r0=v/field_scale)",
+    )
+    mexican_hat_tilt = param.Number(
+        default=0.0,
+        bounds=(-5.0, 5.0),
+        softbounds=(-1.0, 1.0),
+        doc="Linear tilt along x₁ (symmetry breaking)",
+    )
+
     # Simulation controls
     n_steps = param.Integer(
         default=240, bounds=(10, 10000), softbounds=(50, 1000), doc="Simulation steps"
@@ -179,8 +205,18 @@ class GasConfigPanel(param.Parameterized):
         # Watch for benchmark parameter changes
         self.param.watch(
             self._on_benchmark_change,
-            ["benchmark_name", "n_gaussians", "benchmark_seed", "n_atoms",
-             "riemannian_volume_weight", "riemannian_ricci_weight"],
+            [
+                "benchmark_name",
+                "n_gaussians",
+                "benchmark_seed",
+                "n_atoms",
+                "riemannian_volume_weight",
+                "riemannian_ricci_weight",
+                "mexican_hat_lambda_h",
+                "mexican_hat_vev",
+                "mexican_hat_field_scale",
+                "mexican_hat_tilt",
+            ],
         )
 
         # Watch for spatial_dims changes to update dims
@@ -235,6 +271,34 @@ class GasConfigPanel(param.Parameterized):
                 end=10.0,
                 value=self.riemannian_ricci_weight,
                 step=0.1,
+            ),
+            "mexican_hat_lambda_h": pnw.EditableFloatSlider(
+                name="Higgs λ",
+                start=0.0001,
+                end=5.0,
+                value=self.mexican_hat_lambda_h,
+                step=0.01,
+            ),
+            "mexican_hat_vev": pnw.EditableFloatSlider(
+                name="Higgs VEV v (GeV)",
+                start=1.0,
+                end=5000.0,
+                value=self.mexican_hat_vev,
+                step=1.0,
+            ),
+            "mexican_hat_field_scale": pnw.EditableFloatSlider(
+                name="Field scale (GeV/sim-unit)",
+                start=1.0,
+                end=5000.0,
+                value=self.mexican_hat_field_scale,
+                step=1.0,
+            ),
+            "mexican_hat_tilt": pnw.EditableFloatSlider(
+                name="Tilt",
+                start=-5.0,
+                end=5.0,
+                value=self.mexican_hat_tilt,
+                step=0.01,
             ),
             "bounds_extent": pnw.EditableIntSlider(
                 name="bounds_extent",
@@ -502,6 +566,11 @@ class GasConfigPanel(param.Parameterized):
         elif self.benchmark_name == "Riemannian Mix":
             benchmark_kwargs["volume_weight"] = self.riemannian_volume_weight
             benchmark_kwargs["ricci_weight"] = self.riemannian_ricci_weight
+        elif self.benchmark_name == "Mexican Hat (Higgs)":
+            benchmark_kwargs["lambda_h"] = self.mexican_hat_lambda_h
+            benchmark_kwargs["vev"] = self.mexican_hat_vev
+            benchmark_kwargs["field_scale"] = self.mexican_hat_field_scale
+            benchmark_kwargs["tilt"] = self.mexican_hat_tilt
 
         # Create benchmark with background and mode_points
         benchmark, background, mode_points = prepare_benchmark_for_explorer(
@@ -524,6 +593,8 @@ class GasConfigPanel(param.Parameterized):
             self._apply_voronoi_volume_preset()
         elif self.benchmark_name == "Riemannian Mix":
             self._apply_riemannian_mix_preset()
+        elif self.benchmark_name == "Mexican Hat (Higgs)":
+            self._apply_mexican_hat_preset()
         else:
             self.status_pane.object = f"**Benchmark updated:** {self.benchmark_name}"
 
@@ -586,6 +657,19 @@ class GasConfigPanel(param.Parameterized):
         self.status_pane.object = (
             "**Applied Riemannian Mix preset (Delaunay neighbors, "
             "record every step).**"
+        )
+
+    def _apply_mexican_hat_preset(self) -> None:
+        """Apply Mexican-hat preset: walkers descend the potential valley."""
+        self.neighbor_graph_method = "delaunay"
+        self.neighbor_graph_update_every = 1
+        self.neighbor_graph_record = True
+        self.record_every = 1
+        self.kinetic_op.use_potential_force = True
+        self.kinetic_op.use_fitness_force = False
+        self.status_pane.object = (
+            "**Applied Mexican Hat preset:** enabled potential force `-∇U` so walkers "
+            "minimize the potential (flow to the valley ring); viscous coupling kept as configured."
         )
 
     def _format_eta(self, seconds: float | None) -> str:
@@ -835,6 +919,15 @@ class GasConfigPanel(param.Parameterized):
                 return self._build_param_panel(["n_atoms"])
             if benchmark_name == "Riemannian Mix":
                 return self._build_param_panel(["riemannian_volume_weight", "riemannian_ricci_weight"])
+            if benchmark_name == "Mexican Hat (Higgs)":
+                return self._build_param_panel(
+                    [
+                        "mexican_hat_lambda_h",
+                        "mexican_hat_vev",
+                        "mexican_hat_field_scale",
+                        "mexican_hat_tilt",
+                    ]
+                )
             return pn.pane.Markdown("*No additional parameters*", sizing_mode="stretch_width")
 
         benchmark_specific = pn.bind(get_benchmark_specific_params, self.param.benchmark_name)

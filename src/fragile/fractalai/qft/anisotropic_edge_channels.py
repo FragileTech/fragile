@@ -64,6 +64,7 @@ SUPPORTED_CHANNELS = {
     "vector",
     "axial_vector",
     "tensor",
+    "tensor_traceless",
     "nucleon",
     "glueball",
 }
@@ -654,6 +655,62 @@ def _build_result_from_precomputed(
     )
 
 
+def _compute_traceless_tensor_result(
+    *,
+    tensor_series: Tensor,
+    valid_t: Tensor,
+    dt: float,
+    config: CorrelatorConfig,
+    channel_name: str = "tensor_traceless",
+) -> ChannelCorrelatorResult:
+    """Compute spin-2 correlator from per-frame symmetric traceless matrices."""
+    if not torch.any(valid_t):
+        return compute_channel_correlator(
+            series=torch.zeros(0, device=tensor_series.device, dtype=torch.float32),
+            dt=dt,
+            config=config,
+            channel_name=channel_name,
+        )
+
+    valid_series = tensor_series[valid_t].float()
+    n_valid = int(valid_series.shape[0])
+    max_lag = max(0, min(int(config.max_lag), n_valid - 1))
+
+    # Flatten μν components and sum component-wise correlators to obtain
+    # C(Δt) = <O^{μν}(t) O_{μν}(t+Δt)>.
+    flat = valid_series.reshape(n_valid, -1).transpose(0, 1)  # [P, T]
+    correlator_components = _fft_correlator_batched(
+        flat,
+        max_lag=max_lag,
+        use_connected=bool(config.use_connected),
+    )
+    correlator = correlator_components.sum(dim=0)
+
+    correlator_err: Tensor | None = None
+    if bool(config.compute_bootstrap_errors):
+        n_bootstrap = int(max(1, config.n_bootstrap))
+        idx = torch.randint(0, n_valid, (n_bootstrap, n_valid), device=valid_series.device)
+        sampled = valid_series[idx]  # [B, T, d, d]
+        sampled_flat = sampled.reshape(n_bootstrap, n_valid, -1).permute(0, 2, 1)  # [B, P, T]
+        boot_corr = _fft_correlator_batched(
+            sampled_flat.reshape(-1, n_valid),
+            max_lag=max_lag,
+            use_connected=bool(config.use_connected),
+        ).reshape(n_bootstrap, sampled_flat.shape[1], -1)
+        correlator_err = boot_corr.sum(dim=1).std(dim=0)
+
+    # Scalar diagnostic series used by the standard result container.
+    series_scalar = torch.einsum("tij,tij->t", valid_series, valid_series)
+    return _build_result_from_precomputed(
+        channel_name=channel_name,
+        series=series_scalar,
+        correlator=correlator.float(),
+        correlator_err=correlator_err.float() if correlator_err is not None else None,
+        dt=dt,
+        config=config,
+    )
+
+
 def _compute_channel_results_batched(
     series_buffers: dict[str, Tensor],
     valid_buffers: dict[str, Tensor],
@@ -752,6 +809,7 @@ def compute_anisotropic_edge_channels(
             "vector",
             "axial_vector",
             "tensor",
+            "tensor_traceless",
             "nucleon",
             "glueball",
         ]
@@ -760,6 +818,8 @@ def compute_anisotropic_edge_channels(
         raise ValueError(
             f"Unsupported channels {unknown}. Supported channels: {sorted(SUPPORTED_CHANNELS)}."
         )
+    include_tensor_traceless = "tensor_traceless" in channels
+    component_channels = [channel for channel in channels if channel != "tensor_traceless"]
 
     start_idx = max(1, int(history.n_recorded * float(config.warmup_fraction)))
     end_idx = max(start_idx + 1, int(history.n_recorded * float(config.end_fraction)))
@@ -791,19 +851,28 @@ def compute_anisotropic_edge_channels(
 
     numerators: dict[str, Tensor] = {}
     denominators: dict[str, Tensor] = {}
-    for channel in channels:
+    for channel in component_channels:
         for component in component_labels:
             name = _channel_component_name(channel, component)
             numerators[name] = torch.zeros(n_frames, device=device, dtype=torch.float32)
             denominators[name] = torch.zeros(n_frames, device=device, dtype=torch.float32)
 
+    dim_keep = len(keep_dims)
+    tensor_traceless_series = torch.zeros(
+        (n_frames, dim_keep, dim_keep),
+        device=device,
+        dtype=torch.float32,
+    )
+    tensor_traceless_valid = torch.zeros(n_frames, device=device, dtype=torch.bool)
+    eye_keep = torch.eye(dim_keep, device=device, dtype=torch.float32)
+
     bilinear_channels = [
         channel
-        for channel in channels
+        for channel in component_channels
         if channel in {"scalar", "pseudoscalar", "vector", "axial_vector", "tensor"}
     ]
-    include_glueball = "glueball" in channels
-    include_nucleon = "nucleon" in channels
+    include_glueball = "glueball" in component_channels
+    include_nucleon = "nucleon" in component_channels
     use_edge_chunk = bool(bilinear_channels) or include_glueball
 
     edge_chunk: dict[str, list[Tensor]] = {
@@ -879,6 +948,33 @@ def compute_anisotropic_edge_channels(
             diff = _apply_pbc_diff_torch(diff, bounds)
         distance = torch.linalg.vector_norm(diff, dim=-1).clamp(min=1e-8)
         direction = diff / distance.unsqueeze(-1)
+
+        if include_tensor_traceless and dim_keep >= 2:
+            color_scalar = (color_alive[src].conj() * color_alive[dst]).sum(dim=-1).real.float()
+            valid_pair = valid_alive[src] & valid_alive[dst]
+            valid_tensor = (
+                valid_pair
+                & torch.isfinite(color_scalar)
+                & torch.isfinite(edge_weights)
+                & torch.isfinite(diff).all(dim=-1)
+            )
+            if torch.any(valid_tensor):
+                dx = diff[valid_tensor].float()
+                weights_tensor = edge_weights[valid_tensor].float()
+                weight_sum = weights_tensor.sum()
+                if torch.isfinite(weight_sum) and float(weight_sum.item()) > 0:
+                    color_tensor = color_scalar[valid_tensor]
+                    r2 = torch.sum(dx * dx, dim=-1)
+                    traceless = (
+                        dx.unsqueeze(-1) * dx.unsqueeze(-2)
+                        - eye_keep.unsqueeze(0) * (r2[:, None, None] / float(dim_keep))
+                    )
+                    coeff = weights_tensor * color_tensor
+                    tensor_traceless_series[t_idx] = (
+                        (coeff[:, None, None] * traceless).sum(dim=0)
+                        / weight_sum.clamp(min=1e-12)
+                    )
+                    tensor_traceless_valid[t_idx] = True
 
         alive_counts.append(float(alive_idx.numel()))
         edge_counts.append(float(src.numel()))
@@ -997,6 +1093,8 @@ def compute_anisotropic_edge_channels(
         series_buffers[name] = series
         valid_buffers[name] = valid_t
         frame_valid_any = frame_valid_any | valid_t
+    if include_tensor_traceless:
+        frame_valid_any = frame_valid_any | tensor_traceless_valid
 
     dt = float(history.delta_t * history.record_every)
     correlator_config = CorrelatorConfig(
@@ -1019,6 +1117,22 @@ def compute_anisotropic_edge_channels(
         dt=dt,
         config=correlator_config,
     )
+    if include_tensor_traceless:
+        if dim_keep < 2:
+            results["tensor_traceless"] = compute_channel_correlator(
+                series=torch.zeros(0, device=device, dtype=torch.float32),
+                dt=dt,
+                config=correlator_config,
+                channel_name="tensor_traceless",
+            )
+        else:
+            results["tensor_traceless"] = _compute_traceless_tensor_result(
+                tensor_series=tensor_traceless_series,
+                valid_t=tensor_traceless_valid,
+                dt=dt,
+                config=correlator_config,
+                channel_name="tensor_traceless",
+            )
 
     return AnisotropicEdgeChannelOutput(
         channel_results=results,

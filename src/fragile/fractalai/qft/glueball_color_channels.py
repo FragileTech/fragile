@@ -17,6 +17,7 @@ companion-based anisotropic channels.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 import torch
 from torch import Tensor
@@ -30,6 +31,7 @@ from fragile.fractalai.qft.baryon_triplet_channels import (
     _safe_gather_3d,
     build_companion_triplets,
 )
+from fragile.fractalai.qft.correlator_channels import _fft_correlator_batched
 
 
 @dataclass
@@ -47,6 +49,11 @@ class GlueballColorCorrelatorConfig:
     color_dims: tuple[int, int, int] | None = None
     eps: float = 1e-12
     use_action_form: bool = False
+    use_momentum_projection: bool = False
+    momentum_axis: int = 0
+    momentum_mode_max: int = 3
+    compute_bootstrap_errors: bool = False
+    n_bootstrap: int = 100
 
 
 @dataclass
@@ -63,6 +70,16 @@ class GlueballColorCorrelatorOutput:
     mean_glueball: float
     n_valid_source_triplets: int
     operator_glueball_series: Tensor
+    momentum_modes: Tensor | None = None
+    momentum_correlator: Tensor | None = None
+    momentum_correlator_raw: Tensor | None = None
+    momentum_correlator_connected: Tensor | None = None
+    momentum_correlator_err: Tensor | None = None
+    momentum_operator_cos_series: Tensor | None = None
+    momentum_operator_sin_series: Tensor | None = None
+    momentum_axis: int | None = None
+    momentum_length_scale: float | None = None
+    momentum_valid_frames: int = 0
 
 
 def _compute_color_plaquette_for_triplets(
@@ -126,6 +143,176 @@ def _compute_color_plaquette_for_triplets(
     return pi, valid
 
 
+def _resolve_positive_length(
+    *,
+    positions_axis: Tensor,
+    alive: Tensor,
+    box_length: float | None,
+) -> float:
+    """Resolve a positive projection length scale for Fourier modes."""
+    if box_length is not None and float(box_length) > 0:
+        return float(box_length)
+
+    alive_pos = positions_axis[alive]
+    if alive_pos.numel() == 0:
+        span = float((positions_axis.max() - positions_axis.min()).abs().item())
+    else:
+        span = float((alive_pos.max() - alive_pos.min()).abs().item())
+    return max(span, 1.0)
+
+
+def _extract_axis_bounds(
+    bounds: object | None,
+    axis: int,
+    *,
+    device: torch.device | None = None,
+) -> tuple[float | None, float | None]:
+    """Extract (low, high) for one axis from TorchBounds or array-like bounds."""
+    if bounds is None or axis < 0:
+        return None, None
+
+    try:
+        if hasattr(bounds, "low") and hasattr(bounds, "high"):
+            low_vec = torch.as_tensor(bounds.low, dtype=torch.float32, device=device).flatten()
+            high_vec = torch.as_tensor(bounds.high, dtype=torch.float32, device=device).flatten()
+            if axis < int(low_vec.numel()) and axis < int(high_vec.numel()):
+                return float(low_vec[axis].item()), float(high_vec[axis].item())
+            return None, None
+
+        bounds_t = torch.as_tensor(bounds, dtype=torch.float32, device=device)
+    except Exception:
+        return None, None
+
+    if bounds_t.ndim != 2:
+        return None, None
+    if bounds_t.shape[0] > axis and bounds_t.shape[1] >= 2:
+        return float(bounds_t[axis, 0].item()), float(bounds_t[axis, 1].item())
+    if bounds_t.shape[0] >= 2 and bounds_t.shape[1] > axis:
+        return float(bounds_t[0, axis].item()), float(bounds_t[1, axis].item())
+    return None, None
+
+
+def _compute_momentum_projected_correlators(
+    *,
+    source_obs: Tensor,
+    source_valid: Tensor,
+    positions_axis: Tensor,
+    max_lag: int,
+    use_connected: bool,
+    mode_max: int,
+    box_length: float,
+    compute_bootstrap_errors: bool,
+    n_bootstrap: int,
+) -> tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor | None, int]:
+    """Compute batched momentum-projected glueball correlators C_p(Δt)."""
+    if source_obs.shape != source_valid.shape or source_obs.shape != positions_axis.shape:
+        msg = (
+            "source_obs, source_valid, and positions_axis must share shape [T, N], got "
+            f"{tuple(source_obs.shape)}, {tuple(source_valid.shape)}, {tuple(positions_axis.shape)}."
+        )
+        raise ValueError(msg)
+    if box_length <= 0:
+        msg = "box_length must be positive."
+        raise ValueError(msg)
+
+    t_total, _ = source_obs.shape
+    n_modes = max(0, int(mode_max)) + 1
+    device = source_obs.device
+
+    modes = torch.arange(n_modes, device=device, dtype=torch.float32)
+    k_values = (2.0 * torch.pi / float(box_length)) * modes
+
+    phase_arg = k_values[:, None, None] * positions_axis[None, :, :].float()
+    cos_phase = torch.cos(phase_arg)
+    sin_phase = torch.sin(phase_arg)
+
+    weights = source_valid.to(dtype=torch.float32)
+    counts_t = weights.sum(dim=1)
+    valid_t = counts_t > 0
+    n_valid_frames = int(valid_t.sum().item())
+
+    op_cos = torch.zeros((n_modes, t_total), dtype=torch.float32, device=device)
+    op_sin = torch.zeros((n_modes, t_total), dtype=torch.float32, device=device)
+    if n_valid_frames > 0:
+        weighted_obs = source_obs.float() * weights
+        cos_num = (weighted_obs[None, :, :] * cos_phase).sum(dim=2)
+        sin_num = (weighted_obs[None, :, :] * sin_phase).sum(dim=2)
+        denom = counts_t[valid_t].to(dtype=torch.float32).clamp(min=1.0)
+        op_cos[:, valid_t] = cos_num[:, valid_t] / denom.unsqueeze(0)
+        op_sin[:, valid_t] = sin_num[:, valid_t] / denom.unsqueeze(0)
+
+    if n_valid_frames == 0:
+        n_lags = int(max(0, max_lag)) + 1
+        zeros = torch.zeros((n_modes, n_lags), dtype=torch.float32, device=device)
+        return modes, zeros, zeros.clone(), zeros.clone(), op_cos, op_sin, None, 0
+
+    series_cos = op_cos[:, valid_t]
+    series_sin = op_sin[:, valid_t]
+
+    corr_raw = _fft_correlator_batched(
+        series_cos,
+        max_lag=int(max_lag),
+        use_connected=False,
+    ) + _fft_correlator_batched(
+        series_sin,
+        max_lag=int(max_lag),
+        use_connected=False,
+    )
+    corr_connected = _fft_correlator_batched(
+        series_cos,
+        max_lag=int(max_lag),
+        use_connected=True,
+    ) + _fft_correlator_batched(
+        series_sin,
+        max_lag=int(max_lag),
+        use_connected=True,
+    )
+    correlator = corr_connected if use_connected else corr_raw
+
+    correlator_err: Tensor | None = None
+    if bool(compute_bootstrap_errors):
+        n_boot = max(1, int(n_bootstrap))
+        t_len = int(series_cos.shape[1])
+        idx = torch.randint(0, t_len, (n_boot, t_len), device=device)
+        idx_expand = idx[:, None, :].expand(n_boot, n_modes, t_len)
+
+        boot_cos = torch.gather(
+            series_cos.unsqueeze(0).expand(n_boot, n_modes, t_len),
+            dim=2,
+            index=idx_expand,
+        )
+        boot_sin = torch.gather(
+            series_sin.unsqueeze(0).expand(n_boot, n_modes, t_len),
+            dim=2,
+            index=idx_expand,
+        )
+
+        boot_cos_flat = boot_cos.reshape(n_boot * n_modes, t_len)
+        boot_sin_flat = boot_sin.reshape(n_boot * n_modes, t_len)
+
+        boot_raw = (
+            _fft_correlator_batched(boot_cos_flat, max_lag=int(max_lag), use_connected=False)
+            + _fft_correlator_batched(boot_sin_flat, max_lag=int(max_lag), use_connected=False)
+        ).reshape(n_boot, n_modes, -1)
+        boot_connected = (
+            _fft_correlator_batched(boot_cos_flat, max_lag=int(max_lag), use_connected=True)
+            + _fft_correlator_batched(boot_sin_flat, max_lag=int(max_lag), use_connected=True)
+        ).reshape(n_boot, n_modes, -1)
+        boot_corr = boot_connected if use_connected else boot_raw
+        correlator_err = boot_corr.std(dim=0)
+
+    return (
+        modes,
+        correlator.float(),
+        corr_raw.float(),
+        corr_connected.float(),
+        op_cos,
+        op_sin,
+        correlator_err.float() if correlator_err is not None else None,
+        n_valid_frames,
+    )
+
+
 def compute_glueball_color_correlator_from_color(
     color: Tensor,
     color_valid: Tensor,
@@ -137,6 +324,13 @@ def compute_glueball_color_correlator_from_color(
     eps: float = 1e-12,
     use_action_form: bool = False,
     frame_indices: list[int] | None = None,
+    positions_axis: Tensor | None = None,
+    momentum_axis: int | None = None,
+    use_momentum_projection: bool = False,
+    momentum_mode_max: int = 3,
+    projection_length: float | None = None,
+    compute_bootstrap_errors: bool = False,
+    n_bootstrap: int = 100,
 ) -> GlueballColorCorrelatorOutput:
     """Compute companion-triplet glueball correlator from precomputed color states."""
     if color.ndim != 3 or color.shape[-1] != 3:
@@ -233,6 +427,55 @@ def compute_glueball_color_correlator_from_color(
         correlator_connected[lag] = conn_prod[valid_pair].mean().float()
 
     correlator = correlator_connected if use_connected else correlator_raw
+
+    momentum_modes = None
+    momentum_correlator = None
+    momentum_correlator_raw = None
+    momentum_correlator_connected = None
+    momentum_correlator_err = None
+    momentum_operator_cos_series = None
+    momentum_operator_sin_series = None
+    momentum_valid_frames = 0
+    momentum_length_scale = None
+
+    if use_momentum_projection:
+        if positions_axis is None:
+            msg = "positions_axis is required when use_momentum_projection=True."
+            raise ValueError(msg)
+        if positions_axis.shape != source_obs.shape:
+            msg = (
+                "positions_axis must match source_obs shape [T, N], got "
+                f"{tuple(positions_axis.shape)} vs {tuple(source_obs.shape)}."
+            )
+            raise ValueError(msg)
+
+        resolved_length = _resolve_positive_length(
+            positions_axis=positions_axis,
+            alive=alive,
+            box_length=projection_length,
+        )
+        (
+            momentum_modes,
+            momentum_correlator,
+            momentum_correlator_raw,
+            momentum_correlator_connected,
+            momentum_operator_cos_series,
+            momentum_operator_sin_series,
+            momentum_correlator_err,
+            momentum_valid_frames,
+        ) = _compute_momentum_projected_correlators(
+            source_obs=source_obs,
+            source_valid=source_valid,
+            positions_axis=positions_axis,
+            max_lag=max_lag,
+            use_connected=use_connected,
+            mode_max=momentum_mode_max,
+            box_length=resolved_length,
+            compute_bootstrap_errors=compute_bootstrap_errors,
+            n_bootstrap=n_bootstrap,
+        )
+        momentum_length_scale = float(resolved_length)
+
     return GlueballColorCorrelatorOutput(
         correlator=correlator,
         correlator_raw=correlator_raw,
@@ -244,6 +487,16 @@ def compute_glueball_color_correlator_from_color(
         mean_glueball=float(mean_glueball_t.item()),
         n_valid_source_triplets=n_valid_source_triplets,
         operator_glueball_series=operator_glueball_series,
+        momentum_modes=momentum_modes,
+        momentum_correlator=momentum_correlator,
+        momentum_correlator_raw=momentum_correlator_raw,
+        momentum_correlator_connected=momentum_correlator_connected,
+        momentum_correlator_err=momentum_correlator_err,
+        momentum_operator_cos_series=momentum_operator_cos_series,
+        momentum_operator_sin_series=momentum_operator_sin_series,
+        momentum_axis=momentum_axis,
+        momentum_length_scale=momentum_length_scale,
+        momentum_valid_frames=int(momentum_valid_frames),
     )
 
 
@@ -312,6 +565,32 @@ def compute_companion_glueball_color_correlator(
         device=device,
     )
 
+    use_momentum_projection = bool(config.use_momentum_projection)
+    momentum_axis = int(config.momentum_axis)
+    positions_axis: Tensor | None = None
+    projection_length: float | None = None
+    if use_momentum_projection:
+        if momentum_axis < 0 or momentum_axis >= int(history.d):
+            msg = (
+                f"momentum_axis={momentum_axis} out of range for history.d={history.d}. "
+                f"Expected 0..{history.d - 1}."
+            )
+            raise ValueError(msg)
+        positions_axis = (
+            history.x_before_clone[start_idx:end_idx, :, momentum_axis]
+            .to(device=device, dtype=torch.float32)
+        )
+
+        low, high = _extract_axis_bounds(history.bounds, momentum_axis, device=device)
+        if (
+            low is not None
+            and high is not None
+            and math.isfinite(low)
+            and math.isfinite(high)
+            and high > low
+        ):
+            projection_length = float(high - low)
+
     return compute_glueball_color_correlator_from_color(
         color=color,
         color_valid=color_valid.to(dtype=torch.bool, device=device),
@@ -323,4 +602,11 @@ def compute_companion_glueball_color_correlator(
         eps=float(max(config.eps, 0.0)),
         use_action_form=bool(config.use_action_form),
         frame_indices=frame_indices,
+        positions_axis=positions_axis,
+        momentum_axis=momentum_axis if use_momentum_projection else None,
+        use_momentum_projection=use_momentum_projection,
+        momentum_mode_max=int(config.momentum_mode_max),
+        projection_length=projection_length,
+        compute_bootstrap_errors=bool(config.compute_bootstrap_errors),
+        n_bootstrap=int(config.n_bootstrap),
     )

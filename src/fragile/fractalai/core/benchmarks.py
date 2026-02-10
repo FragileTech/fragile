@@ -393,6 +393,90 @@ class QuadraticWell(OptimBenchmark):
         return torch.zeros(self.shape)
 
 
+class MexicanHat(OptimBenchmark):
+    """Higgs-style Mexican-hat potential.
+
+    Uses a radial quartic potential with spontaneous symmetry breaking:
+
+        U(x) = (lambda_h / 4) * (||x||^2 - r0^2)^2 - tilt * x0
+
+    where r0 = vev / field_scale controls the ring minimum radius in simulation
+    units. Defaults are Higgs-inspired:
+    - lambda_h = 0.13
+    - vev = 246.0 GeV
+    - field_scale = 246.0 GeV / sim-unit  (so r0 ≈ 1)
+
+    Args:
+        dims: Spatial dimensionality.
+        lambda_h: Quartic Higgs self-coupling.
+        vev: Vacuum expectation value (GeV).
+        field_scale: Conversion factor from sim units to GeV.
+        tilt: Optional linear symmetry-breaking tilt along x0.
+    """
+
+    lambda_h = param.Number(default=0.13, doc="Quartic Higgs self-coupling λ")
+    vev = param.Number(default=246.0, doc="Higgs vacuum expectation value v (GeV)")
+    field_scale = param.Number(
+        default=246.0,
+        doc="GeV per simulation unit (sets ring radius r0=v/field_scale)",
+    )
+    tilt = param.Number(default=0.0, doc="Linear symmetry-breaking tilt along x0")
+
+    def __init__(
+        self,
+        dims: int,
+        lambda_h: float = 0.13,
+        vev: float = 246.0,
+        field_scale: float = 246.0,
+        tilt: float = 0.0,
+        **kwargs,
+    ):
+        lambda_ = float(lambda_h)
+        vev_ = float(vev)
+        scale_ = max(float(field_scale), 1e-12)
+        tilt_ = float(tilt)
+        r0 = vev_ / scale_
+        self._ring_radius = r0
+
+        def mexican_hat_potential(x: torch.Tensor) -> torch.Tensor:
+            radius_sq = torch.sum(x**2, dim=-1)
+            base = 0.25 * lambda_ * (radius_sq - (r0 * r0)) ** 2
+            if tilt_ != 0.0 and x.shape[1] > 0:
+                base = base - tilt_ * x[:, 0]
+            return base
+
+        super().__init__(
+            dims=dims,
+            function=mexican_hat_potential,
+            lambda_h=lambda_h,
+            vev=vev,
+            field_scale=field_scale,
+            tilt=tilt,
+            **kwargs,
+        )
+
+    @property
+    def ring_radius(self) -> float:
+        """Ring minimum radius in simulation units."""
+        return float(self._ring_radius)
+
+    @staticmethod
+    def get_bounds(dims):
+        bounds = [(-10.0, 10.0) for _ in range(dims)]
+        return Bounds.from_tuples(bounds)
+
+    @property
+    def benchmark(self) -> torch.Tensor:
+        return torch.tensor(0.0)
+
+    @property
+    def best_state(self) -> torch.Tensor:
+        state = torch.zeros(self.shape)
+        if state.numel() > 0:
+            state[0] = self.ring_radius
+        return state
+
+
 class Rastrigin(OptimBenchmark):
     def __init__(self, dims: int, **kwargs):
         super().__init__(dims=dims, function=rastrigin, **kwargs)
@@ -1696,6 +1780,7 @@ ALL_BENCHMARKS = [
     RiemannianMix,
     StochasticGaussian,
     QuadraticWell,
+    MexicanHat,
 ]
 
 
@@ -1711,6 +1796,7 @@ BENCHMARK_NAMES = {
     "Riemannian Mix": RiemannianMix,
     "Stochastic Gaussian": StochasticGaussian,
     "Quadratic Well": QuadraticWell,
+    "Mexican Hat (Higgs)": MexicanHat,
 }
 
 
@@ -1854,6 +1940,41 @@ def prepare_benchmark_for_explorer(
         # No mode points for RiemannianMix
         mode_points = hv.Points([], kdims=["x₁", "x₂"])
 
+    elif benchmark_cls == MexicanHat:
+        # Higgs-style Mexican hat with ring of minima.
+        lambda_h = benchmark_kwargs.get("lambda_h", 0.13)
+        vev = benchmark_kwargs.get("vev", 246.0)
+        field_scale = benchmark_kwargs.get("field_scale", 246.0)
+        tilt = benchmark_kwargs.get("tilt", 0.0)
+        benchmark = MexicanHat(
+            dims=dims,
+            lambda_h=lambda_h,
+            vev=vev,
+            field_scale=field_scale,
+            tilt=tilt,
+        )
+        if dims == 2:
+            n_ring = int(benchmark_kwargs.get("mode_ring_points", 40))
+            theta = np.linspace(0.0, 2.0 * np.pi, num=max(8, n_ring), endpoint=False)
+            radius = benchmark.ring_radius
+            mode_df = pd.DataFrame(
+                {
+                    "x₁": radius * np.cos(theta),
+                    "x₂": radius * np.sin(theta),
+                }
+            )
+            mode_points = hv.Points(
+                mode_df,
+                kdims=["x₁", "x₂"],
+                label="Mexican-hat minima ring",
+            ).opts(
+                size=5,
+                color="#d62728",
+                alpha=0.7,
+            )
+        else:
+            mode_points = hv.Points([], kdims=["x₁", "x₂"])
+
     elif benchmark_cls in {EggHolder, Easom, HolderTable}:
         # Fixed-dimension benchmarks
         benchmark = benchmark_cls()
@@ -1945,6 +2066,28 @@ class BenchmarkSelector(param.Parameterized):
     # LennardJones parameters
     n_atoms = param.Integer(default=10, bounds=(2, 30), doc="Number of atoms")
 
+    # Mexican-hat (Higgs-inspired) parameters
+    mexican_hat_lambda_h = param.Number(
+        default=0.13,
+        bounds=(1e-4, 5.0),
+        doc="Quartic Higgs self-coupling λ",
+    )
+    mexican_hat_vev = param.Number(
+        default=246.0,
+        bounds=(1.0, 5000.0),
+        doc="Higgs VEV v (GeV)",
+    )
+    mexican_hat_field_scale = param.Number(
+        default=246.0,
+        bounds=(1.0, 5000.0),
+        doc="GeV per simulation unit (sets ring radius)",
+    )
+    mexican_hat_tilt = param.Number(
+        default=0.0,
+        bounds=(-5.0, 5.0),
+        doc="Linear tilt along x₁ (symmetry breaking)",
+    )
+
     def __init__(self, **params):
         """Initialize BenchmarkSelector.
 
@@ -1975,6 +2118,10 @@ class BenchmarkSelector(param.Parameterized):
                 "n_gaussians",
                 "seed",
                 "n_atoms",
+                "mexican_hat_lambda_h",
+                "mexican_hat_vev",
+                "mexican_hat_field_scale",
+                "mexican_hat_tilt",
             ],
         )
 
@@ -1994,6 +2141,11 @@ class BenchmarkSelector(param.Parameterized):
                 benchmark_kwargs["seed"] = self.seed
             elif self.benchmark_name == "Lennard-Jones":
                 benchmark_kwargs["n_atoms"] = self.n_atoms
+            elif self.benchmark_name == "Mexican Hat (Higgs)":
+                benchmark_kwargs["lambda_h"] = self.mexican_hat_lambda_h
+                benchmark_kwargs["vev"] = self.mexican_hat_vev
+                benchmark_kwargs["field_scale"] = self.mexican_hat_field_scale
+                benchmark_kwargs["tilt"] = self.mexican_hat_tilt
 
             # Create benchmark
             (
@@ -2118,6 +2270,23 @@ class BenchmarkSelector(param.Parameterized):
             widgets={"n_atoms": pn.widgets.IntSlider},
         )
 
+        mexican_hat_params = pn.Param(
+            self.param,
+            parameters=[
+                "mexican_hat_lambda_h",
+                "mexican_hat_vev",
+                "mexican_hat_field_scale",
+                "mexican_hat_tilt",
+            ],
+            show_name=False,
+            widgets={
+                "mexican_hat_lambda_h": pn.widgets.FloatInput,
+                "mexican_hat_vev": pn.widgets.FloatInput,
+                "mexican_hat_field_scale": pn.widgets.FloatInput,
+                "mexican_hat_tilt": pn.widgets.FloatInput,
+            },
+        )
+
         # Dynamic parameter display
         def get_specific_params(benchmark_name):
             if benchmark_name == "Mixture of Gaussians":
@@ -2129,6 +2298,11 @@ class BenchmarkSelector(param.Parameterized):
                 return pn.Column(
                     pn.pane.Markdown("#### Lennard-Jones Parameters"),
                     lj_params,
+                )
+            if benchmark_name == "Mexican Hat (Higgs)":
+                return pn.Column(
+                    pn.pane.Markdown("#### Mexican Hat (Higgs) Parameters"),
+                    mexican_hat_params,
                 )
             return pn.pane.Markdown("*No additional parameters*")
 
@@ -2184,6 +2358,7 @@ __all__ = [
     "KelvinHelmholtzInstability",
     "LennardJones",
     "LidDrivenCavity",
+    "MexicanHat",
     "MixtureOfGaussians",
     "OptimBenchmark",
     "Rastrigin",
