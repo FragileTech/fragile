@@ -70,6 +70,7 @@ dependencies = [
     "scipy-stubs~=1.15.3",
     "pillow>=12.1.0",
     "networkx>=3.4.2",
+    "seaborn>=0.13.2",
 ]
 [project.urls]
 # important URLs for this project

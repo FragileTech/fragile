@@ -37,6 +37,7 @@ from fragile.fractalai.qft.correlator_channels import (
 from fragile.fractalai.qft.aggregation import compute_all_operator_series
 from fragile.fractalai.qft.baryon_triplet_channels import (
     BaryonTripletCorrelatorConfig,
+    _resolve_frame_indices as _resolve_baryon_frame_indices,
     compute_companion_baryon_correlator,
 )
 from fragile.fractalai.qft.meson_phase_channels import (
@@ -54,6 +55,24 @@ from fragile.fractalai.qft.glueball_color_channels import (
 from fragile.fractalai.qft.tensor_momentum_channels import (
     TensorMomentumCorrelatorConfig,
     compute_companion_tensor_momentum_correlator,
+)
+from fragile.fractalai.qft.multiscale_strong_force import (
+    COMPANION_CHANNEL_MAP,
+    MultiscaleStrongForceConfig,
+    MultiscaleStrongForceOutput,
+    compute_multiscale_strong_force_channels,
+)
+from fragile.fractalai.qft.operator_analysis import (
+    analyze_channel_across_scales,
+    build_consensus_plot,
+    build_mass_vs_scale_plot,
+    build_multiscale_correlator_plot,
+    build_multiscale_effective_mass_plot,
+    build_per_scale_channel_plots,
+    format_consensus_summary,
+)
+from fragile.fractalai.qft.smeared_operators import (
+    compute_pairwise_distance_matrices_from_history,
 )
 from fragile.fractalai.qft.electroweak_channels import (
     ELECTROWEAK_CHANNELS,
@@ -2276,6 +2295,48 @@ class AnisotropicEdgeSettings(param.Parameterized):
     min_fit_points = param.Integer(default=2, bounds=(2, None))
     compute_bootstrap_errors = param.Boolean(default=False)
     n_bootstrap = param.Integer(default=100, bounds=(10, 1000))
+    use_multiscale_kernels = param.Boolean(
+        default=False,
+        doc=(
+            "Compute channels at multiple smearing scales with kernels from recorded "
+            "neighbor/edge-weight data and auto-select best scale per channel."
+        ),
+    )
+    n_scales = param.Integer(default=8, bounds=(2, 32))
+    kernel_type = param.ObjectSelector(
+        default="gaussian",
+        objects=("gaussian", "exponential", "tophat", "shell"),
+    )
+    kernel_distance_method = param.ObjectSelector(
+        default="auto",
+        objects=("auto", "floyd-warshall", "tropical"),
+    )
+    kernel_assume_all_alive = param.Boolean(
+        default=True,
+        doc="Assume all walkers alive when constructing kernel distances (fast path).",
+    )
+    kernel_batch_size = param.Integer(
+        default=1,
+        bounds=(1, 64),
+        doc="Frame batch size for kernel construction.",
+    )
+    kernel_scale_frames = param.Integer(
+        default=8,
+        bounds=(1, 128),
+        doc="Number of representative frames used to calibrate scales.",
+    )
+    kernel_scale_q_low = param.Number(default=0.05, bounds=(0.0, 0.95))
+    kernel_scale_q_high = param.Number(default=0.95, bounds=(0.05, 1.0))
+    kernel_bootstrap_mode = param.ObjectSelector(
+        default="hybrid",
+        objects=("time", "walker", "hybrid"),
+        doc="Bootstrap strategy for multiscale kernels.",
+    )
+    kernel_bootstrap_max_walkers = param.Integer(
+        default=512,
+        bounds=(16, None),
+        doc="Skip walker bootstrap when N exceeds this threshold.",
+    )
 
 
 class RadialElectroweakSettings(param.Parameterized):
@@ -3516,7 +3577,7 @@ def _compute_anisotropic_edge_bundle(
     history: RunHistory,
     settings: AnisotropicEdgeSettings,
 ) -> AnisotropicEdgeChannelOutput:
-    """Compute anisotropic direct-edge correlators from recorded geometry."""
+    """Compute non-companion anisotropic direct-edge correlators from recorded geometry."""
     config = AnisotropicEdgeChannelConfig(
         warmup_fraction=float(settings.simulation_range[0]),
         end_fraction=float(settings.simulation_range[1]),
@@ -3540,66 +3601,88 @@ def _compute_anisotropic_edge_bundle(
         n_bootstrap=int(settings.n_bootstrap),
     )
     channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
-    use_baryon_triplet = bool(settings.use_companion_baryon_triplet) and ("nucleon" in channels)
-    meson_override_targets = {"scalar", "pseudoscalar"}
-    requested_meson_targets = set(channels) & meson_override_targets
-    use_meson_phase = bool(settings.use_companion_meson_phase) and bool(requested_meson_targets)
-    vector_override_targets = {"vector", "axial_vector"}
-    requested_vector_targets = set(channels) & vector_override_targets
-    use_vector_meson = bool(settings.use_companion_vector_meson) and bool(requested_vector_targets)
-    use_glueball_color = bool(settings.use_companion_glueball_color) and ("glueball" in channels)
+    return compute_anisotropic_edge_channels(history, config=config, channels=channels)
 
-    override_channels: set[str] = set()
-    if use_baryon_triplet:
-        override_channels.add("nucleon")
-    if use_meson_phase:
-        override_channels.update(requested_meson_targets)
-    if use_vector_meson:
-        override_channels.update(requested_vector_targets)
-    if use_glueball_color:
-        override_channels.add("glueball")
-    anisotropic_channels = [channel for channel in channels if channel not in override_channels]
 
-    output = compute_anisotropic_edge_channels(history, config=config, channels=anisotropic_channels)
-    if not use_baryon_triplet and not use_meson_phase and not use_vector_meson and not use_glueball_color:
-        return output
+def _compute_companion_strong_force_bundle(
+    history: RunHistory,
+    settings: AnisotropicEdgeSettings,
+) -> AnisotropicEdgeChannelOutput:
+    """Compute companion-only strong-force correlators."""
+    channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
+    requested = set(channels)
+    results: dict[str, ChannelCorrelatorResult] = {}
+    valid_frame_counts: list[int] = []
 
-    merged_results = dict(output.channel_results)
-    valid_frame_counts = [int(output.n_valid_frames)]
-    if use_baryon_triplet:
+    if bool(settings.use_companion_baryon_triplet) and "nucleon" in requested:
         baryon_result, baryon_valid_frames = _compute_anisotropic_baryon_triplet_result(history, settings)
-        merged_results["nucleon"] = baryon_result
+        results["nucleon"] = baryon_result
         valid_frame_counts.append(int(baryon_valid_frames))
-    if use_meson_phase:
+
+    meson_targets = requested & {"scalar", "pseudoscalar"}
+    if bool(settings.use_companion_meson_phase) and meson_targets:
         meson_results, meson_valid_frames = _compute_anisotropic_meson_phase_results(
             history,
             settings,
-            requested_channels=requested_meson_targets,
+            requested_channels=meson_targets,
         )
-        merged_results.update(meson_results)
+        results.update(meson_results)
         valid_frame_counts.append(int(meson_valid_frames))
-    if use_vector_meson:
+
+    vector_targets = requested & {"vector", "axial_vector"}
+    if bool(settings.use_companion_vector_meson) and vector_targets:
         vector_results, vector_valid_frames = _compute_anisotropic_vector_meson_results(
             history,
             settings,
-            requested_channels=requested_vector_targets,
+            requested_channels=vector_targets,
         )
-        merged_results.update(vector_results)
+        results.update(vector_results)
         valid_frame_counts.append(int(vector_valid_frames))
-    if use_glueball_color:
+
+    if bool(settings.use_companion_glueball_color) and "glueball" in requested:
         glueball_results, glueball_valid_frames = _compute_anisotropic_glueball_color_result(
             history, settings
         )
-        merged_results.update(glueball_results)
+        if "glueball" in glueball_results:
+            results["glueball"] = glueball_results["glueball"]
         valid_frame_counts.append(int(glueball_valid_frames))
 
+    if bool(settings.use_companion_tensor_momentum):
+        tensor_results, tensor_meta = _compute_tensor_momentum_for_anisotropic_edge(history, settings)
+        results.update(tensor_results)
+        valid_frame_counts.append(int(tensor_meta.get("n_valid_frames", 0)))
+        # Provide legacy aliases using p=0 contracted tensor when requested.
+        p0_result = tensor_results.get("tensor_momentum_p0")
+        if p0_result is not None:
+            if "tensor" in requested:
+                results["tensor"] = p0_result
+            if "tensor_traceless" in requested:
+                results["tensor_traceless"] = p0_result
+
+    frame_indices = _resolve_baryon_frame_indices(
+        history=history,
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mc_time_index=settings.mc_time_index,
+    )
+    avg_alive = 0.0
+    if frame_indices:
+        frame_ids = torch.as_tensor(
+            frame_indices,
+            dtype=torch.long,
+            device=history.alive_mask.device,
+        )
+        alive = history.alive_mask.index_select(0, frame_ids - 1)
+        if alive.numel() > 0:
+            avg_alive = float(alive.float().sum(dim=1).mean().item())
+
     return AnisotropicEdgeChannelOutput(
-        channel_results=merged_results,
-        component_labels=output.component_labels,
-        frame_indices=output.frame_indices,
+        channel_results=results,
+        component_labels=["companion"],
+        frame_indices=list(frame_indices),
         n_valid_frames=max(valid_frame_counts) if valid_frame_counts else 0,
-        avg_alive_walkers=output.avg_alive_walkers,
-        avg_edges=output.avg_edges,
+        avg_alive_walkers=avg_alive,
+        avg_edges=float("nan"),
     )
 
 
@@ -6432,6 +6515,19 @@ ANISOTROPIC_EDGE_RATIO_SPECS: list[tuple[str, str, str]] = [
     ("tensor_traceless", "tensor", "new spin-2 / legacy tensor"),
 ]
 
+ANISOTROPIC_EDGE_COMPANION_FAMILY_MAP: dict[str, str] = {
+    "pseudoscalar_companion": "meson",
+    "nucleon_companion": "baryon",
+    "glueball_companion": "glueball",
+}
+
+ANISOTROPIC_EDGE_COMPANION_RATIO_SPECS: list[tuple[str, str, str]] = [
+    ("nucleon_companion", "pseudoscalar_companion", "proton/pion ≈ 6.7"),
+    ("vector_companion", "pseudoscalar_companion", "rho/pion ≈ 5.5"),
+    ("scalar_companion", "pseudoscalar_companion", "sigma/pion"),
+    ("glueball_companion", "pseudoscalar_companion", "glueball/pion ≈ 10"),
+]
+
 
 def _extract_masses(
     results: dict[str, ChannelCorrelatorResult],
@@ -6815,16 +6911,34 @@ def _update_strong_tables(
     error_getter=None,
     ratio_specs=None,
     anchor_mode: str = "per_anchor_row",
+    calibration_family_map: dict[str, str] | None = None,
+    calibration_ratio_specs: list[tuple[str, str, str]] | None = None,
 ) -> None:
     """Orchestrate all strong-force table updates (module-level, no closure)."""
     if ratio_specs is None:
         ratio_specs = STRONG_FORCE_RATIO_SPECS
+    ratio_specs_for_table = calibration_ratio_specs if calibration_ratio_specs is not None else ratio_specs
+    family_map = calibration_family_map if calibration_family_map is not None else _STRONG_FAMILY_MAP
 
     _update_mass_table(results, mass_table, mode, mass_getter=mass_getter, error_getter=error_getter)
-    ratio_pane.object = _format_ratios(results, mode, mass_getter=mass_getter, ratio_specs=ratio_specs)
+    ratio_pane.object = _format_ratios(
+        results,
+        mode,
+        mass_getter=mass_getter,
+        ratio_specs=ratio_specs_for_table,
+    )
 
-    channel_masses = _extract_masses(results, mode, mass_getter=mass_getter)
-    channel_r2 = _extract_r2(results, mode)
+    channel_masses = _extract_masses(
+        results,
+        mode,
+        mass_getter=mass_getter,
+        family_map=family_map,
+    )
+    channel_r2 = _extract_r2(
+        results,
+        mode,
+        family_map=family_map,
+    )
 
     if not channel_masses:
         fit_table.value = pd.DataFrame()
@@ -7019,6 +7133,11 @@ def create_app() -> pn.template.FastListTemplate:
             "anisotropic_edge_tensor_traceless_spatial_frame_idx": None,
             "anisotropic_edge_tensor_traceless_spatial_rho_edge": None,
             "anisotropic_edge_tensor_traceless_spatial_error": None,
+            "anisotropic_edge_multiscale_output": None,
+            "anisotropic_edge_multiscale_error": None,
+            "companion_strong_force_results": None,
+            "companion_strong_force_multiscale_output": None,
+            "companion_strong_force_multiscale_error": None,
             "new_dirac_ew_bundle": None,
             "new_dirac_ew_results": None,
             "einstein_test_result": None,
@@ -7349,6 +7468,17 @@ def create_app() -> pn.template.FastListTemplate:
                 "min_fit_points",
                 "compute_bootstrap_errors",
                 "n_bootstrap",
+                "use_multiscale_kernels",
+                "n_scales",
+                "kernel_type",
+                "kernel_distance_method",
+                "kernel_assume_all_alive",
+                "kernel_batch_size",
+                "kernel_scale_frames",
+                "kernel_scale_q_low",
+                "kernel_scale_q_high",
+                "kernel_bootstrap_mode",
+                "kernel_bootstrap_max_walkers",
             ],
             show_name=False,
             widgets={
@@ -7621,159 +7751,115 @@ def create_app() -> pn.template.FastListTemplate:
                 "min_fit_points",
                 "compute_bootstrap_errors",
                 "n_bootstrap",
+                "use_multiscale_kernels",
+                "n_scales",
+                "kernel_type",
+                "kernel_distance_method",
+                "kernel_assume_all_alive",
+                "kernel_batch_size",
+                "kernel_scale_frames",
+                "kernel_scale_q_low",
+                "kernel_scale_q_high",
+                "kernel_bootstrap_mode",
+                "kernel_bootstrap_max_walkers",
             ],
             show_name=False,
             widgets={
                 "mc_time_index": {"name": "MC start (step or idx)"},
                 "spatial_dims_spec": {"name": "Spatial dims (blank=all)"},
+                "use_multiscale_kernels": {"name": "Enable multiscale kernels"},
+                "n_scales": {"name": "Number of scales"},
+                "kernel_type": {"name": "Kernel shape"},
+                "kernel_distance_method": {"name": "Distance solver"},
+                "kernel_assume_all_alive": {"name": "Assume all walkers alive"},
+                "kernel_batch_size": {"name": "Kernel frame batch size"},
+                "kernel_scale_frames": {"name": "Scale calibration frames"},
+                "kernel_scale_q_low": {"name": "Scale quantile low"},
+                "kernel_scale_q_high": {"name": "Scale quantile high"},
+                "kernel_bootstrap_mode": {"name": "Kernel bootstrap mode"},
+                "kernel_bootstrap_max_walkers": {
+                    "name": "Kernel bootstrap max walkers",
+                },
             },
             default_layout=type("AnisotropicEdgeSettingsGrid", (pn.GridBox,), {"ncols": 2}),
-        )
-        anisotropic_edge_baryon_panel = pn.Param(
-            anisotropic_edge_settings,
-            parameters=[
-                "use_companion_baryon_triplet",
-                "baryon_use_connected",
-                "baryon_max_lag",
-                "baryon_color_dims_spec",
-                "baryon_eps",
-            ],
-            show_name=False,
-            widgets={
-                "baryon_max_lag": {"name": "Baryon max lag (blank=use max_lag)"},
-                "baryon_color_dims_spec": {"name": "Baryon color dims (3 dims)"},
-            },
-            default_layout=type("AnisotropicEdgeBaryonGrid", (pn.GridBox,), {"ncols": 1}),
-        )
-        anisotropic_edge_meson_panel = pn.Param(
-            anisotropic_edge_settings,
-            parameters=[
-                "use_companion_meson_phase",
-                "meson_use_connected",
-                "meson_max_lag",
-                "meson_pair_selection",
-                "meson_color_dims_spec",
-                "meson_eps",
-            ],
-            show_name=False,
-            widgets={
-                "meson_max_lag": {"name": "Meson max lag (blank=use max_lag)"},
-                "meson_pair_selection": {"name": "Meson pair selection"},
-                "meson_color_dims_spec": {"name": "Meson color dims (3 dims)"},
-            },
-            default_layout=type("AnisotropicEdgeMesonGrid", (pn.GridBox,), {"ncols": 1}),
-        )
-        anisotropic_edge_vector_panel = pn.Param(
-            anisotropic_edge_settings,
-            parameters=[
-                "use_companion_vector_meson",
-                "vector_meson_use_connected",
-                "vector_meson_max_lag",
-                "vector_meson_pair_selection",
-                "vector_meson_color_dims_spec",
-                "vector_meson_position_dims_spec",
-                "vector_meson_eps",
-                "vector_meson_use_unit_displacement",
-            ],
-            show_name=False,
-            widgets={
-                "vector_meson_max_lag": {"name": "Vector max lag (blank=use max_lag)"},
-                "vector_meson_pair_selection": {"name": "Vector pair selection"},
-                "vector_meson_color_dims_spec": {"name": "Vector color dims (3 dims)"},
-                "vector_meson_position_dims_spec": {"name": "Vector position dims (3 dims)"},
-            },
-            default_layout=type("AnisotropicEdgeVectorGrid", (pn.GridBox,), {"ncols": 1}),
-        )
-        anisotropic_edge_tensor_momentum_panel = pn.Param(
-            anisotropic_edge_settings,
-            parameters=[
-                "use_companion_tensor_momentum",
-                "tensor_momentum_use_connected",
-                "tensor_momentum_max_lag",
-                "tensor_momentum_pair_selection",
-                "tensor_momentum_color_dims_spec",
-                "tensor_momentum_position_dims_spec",
-                "tensor_momentum_axis",
-                "tensor_momentum_mode_max",
-                "tensor_momentum_eps",
-            ],
-            show_name=False,
-            widgets={
-                "tensor_momentum_max_lag": {"name": "Tensor momentum max lag (blank=use max_lag)"},
-                "tensor_momentum_pair_selection": {"name": "Tensor momentum pair selection"},
-                "tensor_momentum_color_dims_spec": {"name": "Tensor momentum color dims (3 dims)"},
-                "tensor_momentum_position_dims_spec": {
-                    "name": "Tensor momentum position dims (3 dims)"
-                },
-                "tensor_momentum_axis": {"name": "Tensor momentum axis"},
-                "tensor_momentum_mode_max": {"name": "Tensor momentum n_max"},
-            },
-            default_layout=type(
-                "AnisotropicEdgeTensorMomentumGrid",
-                (pn.GridBox,),
-                {"ncols": 1},
-            ),
-        )
-        anisotropic_edge_glueball_panel = pn.Param(
-            anisotropic_edge_settings,
-            parameters=[
-                "use_companion_glueball_color",
-                "glueball_use_connected",
-                "glueball_max_lag",
-                "glueball_color_dims_spec",
-                "glueball_eps",
-                "glueball_use_action_form",
-                "glueball_use_momentum_projection",
-                "glueball_momentum_axis",
-                "glueball_momentum_mode_max",
-            ],
-            show_name=False,
-            widgets={
-                "glueball_max_lag": {"name": "Glueball max lag (blank=use max_lag)"},
-                "glueball_color_dims_spec": {"name": "Glueball color dims (3 dims)"},
-                "glueball_momentum_axis": {"name": "Momentum axis"},
-                "glueball_momentum_mode_max": {"name": "Momentum n_max"},
-            },
-            default_layout=type("AnisotropicEdgeGlueballGrid", (pn.GridBox,), {"ncols": 1}),
         )
         anisotropic_edge_base_settings_row = pn.Row(
             anisotropic_edge_settings_panel,
             sizing_mode="stretch_width",
         )
-        anisotropic_edge_override_settings_row = pn.Row(
-            pn.Column(
-                pn.pane.Markdown("### Baryon Triplet Settings"),
-                anisotropic_edge_baryon_panel,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Meson Phase Settings"),
-                anisotropic_edge_meson_panel,
-                sizing_mode="stretch_width",
-            ),
-            pn.Column(
-                pn.pane.Markdown("### Vector Meson Settings"),
-                anisotropic_edge_vector_panel,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Tensor Momentum Settings"),
-                anisotropic_edge_tensor_momentum_panel,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Glueball Color Settings"),
-                anisotropic_edge_glueball_panel,
-                sizing_mode="stretch_width",
-            ),
-            sizing_mode="stretch_width",
-        )
         anisotropic_edge_settings_layout = pn.Column(
             pn.pane.Markdown("### Base Channel Settings"),
             anisotropic_edge_base_settings_row,
-            pn.layout.Divider(),
-            pn.pane.Markdown("### Override Parameters"),
-            anisotropic_edge_override_settings_row,
             sizing_mode="stretch_width",
         )
         anisotropic_edge_summary = pn.pane.Markdown(
             "## Anisotropic Edge Summary\n_Run analysis to populate._",
             sizing_mode="stretch_width",
         )
+        anisotropic_edge_multiscale_summary = pn.pane.Markdown(
+            "### Multiscale Kernel Summary\n_Multiscale kernels disabled._",
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_multiscale_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_multiscale_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        multiscale_status = pn.pane.Markdown(
+            "**Multiscale:** enable multiscale kernels in Companion Strong Force settings, "
+            "then run Compute Companion Strong Force Channels.",
+            sizing_mode="stretch_width",
+        )
+        multiscale_geodesic_heatmap = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        multiscale_channel_select = pn.widgets.Select(
+            name="Channel",
+            options=["nucleon"],
+            value="nucleon",
+            sizing_mode="stretch_width",
+        )
+        multiscale_corr_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        multiscale_meff_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        multiscale_mass_vs_scale_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        multiscale_estimator_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        multiscale_pairwise_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        multiscale_consensus_summary = pn.pane.Markdown(
+            "**Scale-as-Estimator Consensus:** run multiscale analysis to populate.",
+            sizing_mode="stretch_width",
+        )
+        multiscale_systematics_badge = pn.pane.Alert(
+            "Systematics verdict: run multiscale analysis to evaluate.",
+            alert_type="secondary",
+            sizing_mode="stretch_width",
+        )
+        multiscale_consensus_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        multiscale_geodesic_histogram = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        multiscale_per_scale_plots = pn.Column(sizing_mode="stretch_width")
         anisotropic_edge_mass_mode = pn.widgets.RadioButtonGroup(
             name="Mass Display",
             options=["AIC-Weighted", "Best Window", "Tensor-Corrected"],
@@ -7971,6 +8057,298 @@ def create_app() -> pn.template.FastListTemplate:
         )
         anisotropic_edge_glueball_momentum_p0_plot = pn.Column(
             pn.pane.Markdown("_Run anisotropic channels to populate this plot._"),
+            sizing_mode="stretch_width",
+        )
+
+        # =====================================================================
+        # Companion strong-force tab components (companion-only operators)
+        # =====================================================================
+        companion_strong_force_settings = AnisotropicEdgeSettings()
+        companion_strong_force_status = pn.pane.Markdown(
+            "**Companion Strong Force:** Load a RunHistory and click Compute.",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_run_button = pn.widgets.Button(
+            name="Compute Companion Strong Force Channels",
+            button_type="primary",
+            min_width=260,
+            sizing_mode="stretch_width",
+            disabled=True,
+        )
+        companion_strong_force_settings_panel = pn.Param(
+            companion_strong_force_settings,
+            parameters=[
+                "simulation_range",
+                "mc_time_index",
+                "max_lag",
+                "use_connected",
+                "h_eff",
+                "mass",
+                "ell0",
+                "edge_weight_mode",
+                "channel_list",
+                "window_widths_spec",
+                "fit_mode",
+                "fit_start",
+                "fit_stop",
+                "min_fit_points",
+                "compute_bootstrap_errors",
+                "n_bootstrap",
+                "use_multiscale_kernels",
+                "n_scales",
+                "kernel_type",
+                "kernel_distance_method",
+                "kernel_assume_all_alive",
+                "kernel_batch_size",
+                "kernel_scale_frames",
+                "kernel_scale_q_low",
+                "kernel_scale_q_high",
+                "kernel_bootstrap_mode",
+                "kernel_bootstrap_max_walkers",
+            ],
+            show_name=False,
+            widgets={
+                "mc_time_index": {"name": "MC start (step or idx)"},
+                "use_multiscale_kernels": {"name": "Enable multiscale kernels"},
+                "n_scales": {"name": "Number of scales"},
+                "kernel_type": {"name": "Kernel shape"},
+                "kernel_distance_method": {"name": "Distance solver"},
+                "kernel_assume_all_alive": {"name": "Assume all walkers alive"},
+                "kernel_batch_size": {"name": "Kernel frame batch size"},
+                "kernel_scale_frames": {"name": "Scale calibration frames"},
+                "kernel_scale_q_low": {"name": "Scale quantile low"},
+                "kernel_scale_q_high": {"name": "Scale quantile high"},
+                "kernel_bootstrap_mode": {"name": "Kernel bootstrap mode"},
+                "kernel_bootstrap_max_walkers": {"name": "Kernel bootstrap max walkers"},
+            },
+            default_layout=type("CompanionStrongForceSettingsGrid", (pn.GridBox,), {"ncols": 2}),
+        )
+        companion_strong_force_baryon_panel = pn.Param(
+            companion_strong_force_settings,
+            parameters=[
+                "use_companion_baryon_triplet",
+                "baryon_use_connected",
+                "baryon_max_lag",
+                "baryon_color_dims_spec",
+                "baryon_eps",
+            ],
+            show_name=False,
+            widgets={
+                "baryon_max_lag": {"name": "Baryon max lag (blank=use max_lag)"},
+                "baryon_color_dims_spec": {"name": "Baryon color dims (3 dims)"},
+            },
+            default_layout=type("CompanionStrongForceBaryonGrid", (pn.GridBox,), {"ncols": 1}),
+        )
+        companion_strong_force_meson_panel = pn.Param(
+            companion_strong_force_settings,
+            parameters=[
+                "use_companion_meson_phase",
+                "meson_use_connected",
+                "meson_max_lag",
+                "meson_pair_selection",
+                "meson_color_dims_spec",
+                "meson_eps",
+            ],
+            show_name=False,
+            widgets={
+                "meson_max_lag": {"name": "Meson max lag (blank=use max_lag)"},
+                "meson_pair_selection": {"name": "Meson pair selection"},
+                "meson_color_dims_spec": {"name": "Meson color dims (3 dims)"},
+            },
+            default_layout=type("CompanionStrongForceMesonGrid", (pn.GridBox,), {"ncols": 1}),
+        )
+        companion_strong_force_vector_panel = pn.Param(
+            companion_strong_force_settings,
+            parameters=[
+                "use_companion_vector_meson",
+                "vector_meson_use_connected",
+                "vector_meson_max_lag",
+                "vector_meson_pair_selection",
+                "vector_meson_color_dims_spec",
+                "vector_meson_position_dims_spec",
+                "vector_meson_eps",
+                "vector_meson_use_unit_displacement",
+            ],
+            show_name=False,
+            widgets={
+                "vector_meson_max_lag": {"name": "Vector max lag (blank=use max_lag)"},
+                "vector_meson_pair_selection": {"name": "Vector pair selection"},
+                "vector_meson_color_dims_spec": {"name": "Vector color dims (3 dims)"},
+                "vector_meson_position_dims_spec": {"name": "Vector position dims (3 dims)"},
+            },
+            default_layout=type("CompanionStrongForceVectorGrid", (pn.GridBox,), {"ncols": 1}),
+        )
+        companion_strong_force_tensor_panel = pn.Param(
+            companion_strong_force_settings,
+            parameters=[
+                "use_companion_tensor_momentum",
+                "tensor_momentum_use_connected",
+                "tensor_momentum_max_lag",
+                "tensor_momentum_pair_selection",
+                "tensor_momentum_color_dims_spec",
+                "tensor_momentum_position_dims_spec",
+                "tensor_momentum_axis",
+                "tensor_momentum_mode_max",
+                "tensor_momentum_eps",
+            ],
+            show_name=False,
+            widgets={
+                "tensor_momentum_max_lag": {"name": "Tensor momentum max lag (blank=use max_lag)"},
+                "tensor_momentum_pair_selection": {"name": "Tensor momentum pair selection"},
+                "tensor_momentum_color_dims_spec": {"name": "Tensor momentum color dims (3 dims)"},
+                "tensor_momentum_position_dims_spec": {
+                    "name": "Tensor momentum position dims (3 dims)"
+                },
+                "tensor_momentum_axis": {"name": "Tensor momentum axis"},
+                "tensor_momentum_mode_max": {"name": "Tensor momentum n_max"},
+            },
+            default_layout=type("CompanionStrongForceTensorGrid", (pn.GridBox,), {"ncols": 1}),
+        )
+        companion_strong_force_glueball_panel = pn.Param(
+            companion_strong_force_settings,
+            parameters=[
+                "use_companion_glueball_color",
+                "glueball_use_connected",
+                "glueball_max_lag",
+                "glueball_color_dims_spec",
+                "glueball_eps",
+                "glueball_use_action_form",
+                "glueball_use_momentum_projection",
+                "glueball_momentum_axis",
+                "glueball_momentum_mode_max",
+            ],
+            show_name=False,
+            widgets={
+                "glueball_max_lag": {"name": "Glueball max lag (blank=use max_lag)"},
+                "glueball_color_dims_spec": {"name": "Glueball color dims (3 dims)"},
+                "glueball_momentum_axis": {"name": "Momentum axis"},
+                "glueball_momentum_mode_max": {"name": "Momentum n_max"},
+            },
+            default_layout=type("CompanionStrongForceGlueballGrid", (pn.GridBox,), {"ncols": 1}),
+        )
+        companion_strong_force_settings_layout = pn.Column(
+            pn.pane.Markdown("### Companion Channel Settings"),
+            companion_strong_force_settings_panel,
+            pn.layout.Divider(),
+            pn.Row(
+                pn.Column(
+                    pn.pane.Markdown("### Baryon Triplet Settings"),
+                    companion_strong_force_baryon_panel,
+                    pn.layout.Divider(),
+                    pn.pane.Markdown("### Meson Phase Settings"),
+                    companion_strong_force_meson_panel,
+                    sizing_mode="stretch_width",
+                ),
+                pn.Column(
+                    pn.pane.Markdown("### Vector Meson Settings"),
+                    companion_strong_force_vector_panel,
+                    pn.layout.Divider(),
+                    pn.pane.Markdown("### Tensor Momentum Settings"),
+                    companion_strong_force_tensor_panel,
+                    pn.layout.Divider(),
+                    pn.pane.Markdown("### Glueball Color Settings"),
+                    companion_strong_force_glueball_panel,
+                    sizing_mode="stretch_width",
+                ),
+                sizing_mode="stretch_width",
+            ),
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_summary = pn.pane.Markdown(
+            "## Companion Strong Force Summary\n_Run analysis to populate._",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_multiscale_summary = pn.pane.Markdown(
+            "### Multiscale Kernel Summary\n_Multiscale kernels disabled (original companion estimators only)._",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_multiscale_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_multiscale_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        companion_strong_force_mass_mode = pn.widgets.RadioButtonGroup(
+            name="Mass Display",
+            options=["AIC-Weighted", "Best Window"],
+            value="AIC-Weighted",
+            button_type="default",
+        )
+        companion_strong_force_anchor_mode = pn.widgets.RadioButtonGroup(
+            name="Anchor Calibration",
+            options={
+                "Per-anchor rows": "per_anchor_row",
+                "Family-fixed scales": "family_fixed",
+                "Global fixed scale": "global_fixed",
+            },
+            value="per_anchor_row",
+            button_type="default",
+        )
+        companion_strong_force_heatmap_color_metric = pn.widgets.RadioButtonGroup(
+            name="Heatmap Color",
+            options=["mass", "aic", "r2"],
+            value="mass",
+            button_type="default",
+        )
+        companion_strong_force_heatmap_alpha_metric = pn.widgets.RadioButtonGroup(
+            name="Heatmap Opacity",
+            options=["aic", "mass", "r2"],
+            value="aic",
+            button_type="default",
+        )
+        companion_strong_force_plots_spectrum = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        companion_strong_force_plots_overlay_corr = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        companion_strong_force_plots_overlay_meff = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        companion_strong_force_plateau_plots = pn.Column(sizing_mode="stretch_width")
+        companion_strong_force_heatmap_plots = pn.Column(sizing_mode="stretch_width")
+        companion_strong_force_mass_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_ratio_pane = pn.pane.Markdown(
+            "**Mass Ratios:** Compute companion channels to see ratios.",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_fit_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_anchor_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_ref_table = pn.widgets.Tabulator(
+            _build_hadron_reference_table(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+            selectable=False,
+        )
+        companion_strong_force_glueball_ref_input = pn.widgets.FloatInput(
+            name="Glueball ref (GeV)",
+            value=None,
+            step=0.01,
+            min_width=200,
             sizing_mode="stretch_width",
         )
 
@@ -9031,6 +9409,10 @@ def create_app() -> pn.template.FastListTemplate:
             anisotropic_edge_status.object = (
                 "**Anisotropic Edge Channels ready:** click Compute Anisotropic Edge Channels."
             )
+            companion_strong_force_run_button.disabled = False
+            companion_strong_force_status.object = (
+                "**Companion Strong Force ready:** click Compute Companion Strong Force Channels."
+            )
             # Enable radial electroweak tab
             radial_ew_run_button.disabled = False
             radial_ew_status.object = "**Radial Electroweak ready:** click Compute Radial Electroweak."
@@ -9988,6 +10370,407 @@ def create_app() -> pn.template.FastListTemplate:
                 correlator_logy=False,
             )
 
+        def _update_anisotropic_edge_multiscale_views(
+            output: MultiscaleStrongForceOutput | None,
+            error: str | None = None,
+        ) -> None:
+            def _clear_multiscale_tab_views(status_text: str) -> None:
+                multiscale_status.object = status_text
+                multiscale_geodesic_heatmap.object = None
+                multiscale_geodesic_histogram.object = None
+                multiscale_corr_plot.object = None
+                multiscale_meff_plot.object = None
+                multiscale_mass_vs_scale_plot.object = None
+                multiscale_estimator_table.value = pd.DataFrame()
+                multiscale_pairwise_table.value = pd.DataFrame()
+                multiscale_consensus_summary.object = (
+                    "**Scale-as-Estimator Consensus:** run multiscale analysis to populate."
+                )
+                multiscale_systematics_badge.object = (
+                    "Systematics verdict: run multiscale analysis to evaluate."
+                )
+                multiscale_systematics_badge.alert_type = "secondary"
+                multiscale_consensus_plot.object = None
+                multiscale_per_scale_plots.objects = []
+
+            if error:
+                anisotropic_edge_multiscale_summary.object = (
+                    "### Multiscale Kernel Summary\n"
+                    f"- Status: failed\n"
+                    f"- Error: `{error}`"
+                )
+                anisotropic_edge_multiscale_table.value = pd.DataFrame()
+                anisotropic_edge_multiscale_plot.object = None
+                _clear_multiscale_tab_views(
+                    "## Multiscale\n"
+                    f"**Status:** failed. `{error}`"
+                )
+                return
+
+            if output is None:
+                anisotropic_edge_multiscale_summary.object = (
+                    "### Multiscale Kernel Summary\n"
+                    "_Multiscale kernels disabled._"
+                )
+                anisotropic_edge_multiscale_table.value = pd.DataFrame()
+                anisotropic_edge_multiscale_plot.object = None
+                _clear_multiscale_tab_views(
+                    "## Multiscale\n"
+                    "_Run Strong Force with **Enable multiscale kernels** to populate plots._"
+                )
+                return
+
+            scale_values = output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
+            lines = [
+                "### Multiscale Kernel Summary",
+                f"- Scales: `{len(scale_values)}`",
+                f"- Frames: `{len(output.frame_indices)}`",
+                f"- Bootstrap mode: `{output.bootstrap_mode_applied}`",
+            ]
+            if scale_values.size > 0:
+                lines.append(
+                    "- Scale range: "
+                    f"`[{float(scale_values.min()):.4g}, {float(scale_values.max()):.4g}]`"
+                )
+            if output.notes:
+                for note in output.notes:
+                    lines.append(f"- Note: {note}")
+            anisotropic_edge_multiscale_summary.object = "  \n".join(lines)
+
+            rows: list[dict[str, Any]] = []
+            curves: list[hv.Element] = []
+            for channel, results_per_scale in output.per_scale_results.items():
+                measurement_group = (
+                    "companion"
+                    if str(channel).endswith("_companion")
+                    else "non_companion"
+                )
+                masses = [
+                    float(res.mass_fit.get("mass", float("nan")))
+                    if res is not None
+                    else float("nan")
+                    for res in results_per_scale
+                ]
+                best_idx = int(output.best_scale_index.get(channel, 0))
+                best_mass = masses[best_idx] if 0 <= best_idx < len(masses) else float("nan")
+                best_scale = (
+                    float(scale_values[best_idx])
+                    if scale_values.size > best_idx >= 0
+                    else float("nan")
+                )
+                best_err = float("nan")
+                if channel in output.best_results:
+                    best_err = float(output.best_results[channel].mass_fit.get("mass_error", float("nan")))
+                rows.append(
+                    {
+                        "channel": channel,
+                        "measurement_group": measurement_group,
+                        "best_scale_idx": best_idx,
+                        "best_scale": best_scale,
+                        "mass": best_mass,
+                        "mass_error": best_err,
+                    }
+                )
+                if scale_values.size > 0 and len(masses) == len(scale_values):
+                    y = np.asarray(masses, dtype=float)
+                    if np.isfinite(y).any():
+                        color = CHANNEL_COLORS.get(channel, None)
+                        curve = hv.Curve(
+                            (scale_values, y),
+                            kdims=["scale"],
+                            vdims=["mass"],
+                            label=channel,
+                        )
+                        if color is not None:
+                            curve = curve.opts(color=color)
+                        curves.append(curve)
+
+            anisotropic_edge_multiscale_table.value = (
+                pd.DataFrame(rows).sort_values("channel") if rows else pd.DataFrame()
+            )
+            if curves:
+                overlay = curves[0]
+                for curve in curves[1:]:
+                    overlay *= curve
+                anisotropic_edge_multiscale_plot.object = overlay.opts(
+                    width=900,
+                    height=320,
+                    title="Multiscale Mass Curves",
+                    show_grid=True,
+                    legend_position="right",
+                )
+            else:
+                anisotropic_edge_multiscale_plot.object = None
+
+            # -----------------------------------------------------------------
+            # Dedicated Multiscale tab views
+            # -----------------------------------------------------------------
+            multiscale_status_lines = [
+                "## Multiscale",
+                f"- Scales available: `{len(scale_values)}`",
+                f"- Frames analyzed: `{len(output.frame_indices)}`",
+                f"- Bootstrap mode: `{output.bootstrap_mode_applied}`",
+            ]
+            base_channel_count = sum(
+                1
+                for channel_name in output.per_scale_results
+                if not str(channel_name).endswith("_companion")
+            )
+            companion_channel_count = sum(
+                1
+                for channel_name in output.per_scale_results
+                if str(channel_name).endswith("_companion")
+            )
+            multiscale_status_lines.append(
+                f"- Measurement groups: `non_companion={base_channel_count}`, "
+                f"`companion={companion_channel_count}`"
+            )
+
+            # 1) Full geodesic distance matrix heatmap (single representative frame).
+            history_obj = state.get("history")
+            geodesic_error: str | None = None
+            geodesic_frame_idx: int | None = None
+            try:
+                if history_obj is not None and output.frame_indices:
+                    geodesic_frame_idx = int(output.frame_indices[-1])
+                    _, distance_batch = compute_pairwise_distance_matrices_from_history(
+                        history_obj,
+                        method=str(anisotropic_edge_settings.kernel_distance_method),
+                        frame_indices=[geodesic_frame_idx],
+                        batch_size=1,
+                        edge_weight_mode=str(anisotropic_edge_settings.edge_weight_mode),
+                        assume_all_alive=bool(anisotropic_edge_settings.kernel_assume_all_alive),
+                        device=None,
+                        dtype=torch.float32,
+                    )
+                    if distance_batch.numel() > 0:
+                        distance_matrix = distance_batch[0].detach().cpu().numpy().astype(
+                            np.float64, copy=False
+                        )
+                        n_walkers = int(distance_matrix.shape[0])
+                        if n_walkers == 0 or distance_matrix.shape[1] != n_walkers:
+                            multiscale_geodesic_heatmap.object = None
+                            geodesic_error = "distance matrix is not square"
+                        else:
+                            matrix = np.array(distance_matrix, dtype=np.float64, copy=True)
+                            matrix[~np.isfinite(matrix)] = np.nan
+                            matrix = np.nanmean(np.stack([matrix, matrix.T], axis=0), axis=0)
+                            finite_positive = np.isfinite(matrix) & (matrix > 0)
+                            if np.any(finite_positive):
+                                fill_value = float(np.nanpercentile(matrix[finite_positive], 99.0))
+                                if not np.isfinite(fill_value) or fill_value <= 0.0:
+                                    fill_value = float(np.nanmax(matrix[finite_positive]))
+                            else:
+                                fill_value = 1.0
+                            if not np.isfinite(fill_value) or fill_value <= 0.0:
+                                fill_value = 1.0
+                            matrix = np.where(np.isfinite(matrix), matrix, fill_value)
+                            matrix = np.maximum(matrix, 0.0)
+                            np.fill_diagonal(matrix, 0.0)
+
+                            clustering_note = "not clustered"
+                            order = np.arange(n_walkers, dtype=np.int64)
+                            try:
+                                from scipy.cluster.hierarchy import leaves_list, linkage
+                                from scipy.spatial.distance import squareform
+
+                                if n_walkers >= 2:
+                                    condensed = squareform(matrix, checks=False)
+                                    linkage_mat = linkage(
+                                        condensed,
+                                        method="average",
+                                        optimal_ordering=True,
+                                    )
+                                    order = leaves_list(linkage_mat).astype(np.int64, copy=False)
+                                    clustering_note = "average-linkage"
+                                else:
+                                    clustering_note = "single walker"
+                            except Exception as cluster_exc:
+                                clustering_note = f"fallback (no clustering): {cluster_exc!s}"
+
+                            matrix_ordered = matrix[np.ix_(order, order)].astype(np.float64, copy=False)
+                            # Log-map for better visibility of variation.
+                            log_floor = np.finfo(np.float64).tiny
+                            log_matrix = np.log10(np.maximum(matrix_ordered, log_floor))
+                            # Replace diagonal (log10(0) = -inf) with NaN for display.
+                            np.fill_diagonal(log_matrix, np.nan)
+                            multiscale_geodesic_heatmap.object = hv.QuadMesh(
+                                (order, order, log_matrix.astype(np.float32, copy=False)),
+                                kdims=["walker_j", "walker_i"],
+                                vdims=["log10_geodesic_distance"],
+                            ).opts(
+                                width=900,
+                                height=420,
+                                cmap="Viridis",
+                                colorbar=True,
+                                xlabel="Walker index j (clustered order)",
+                                ylabel="Walker index i (clustered order)",
+                                title=(
+                                    f"Geodesic Distance Heatmap (log₁₀) "
+                                    f"(frame={geodesic_frame_idx}, {clustering_note})"
+                                ),
+                                tools=["hover"],
+                                show_grid=False,
+                            )
+                            # Histogram of off-diagonal geodesic distances.
+                            upper_tri = matrix_ordered[np.triu_indices(n_walkers, k=1)]
+                            valid_dists = upper_tri[np.isfinite(upper_tri) & (upper_tri > 0)]
+                            if valid_dists.size >= 2:
+                                log_dists = np.log10(valid_dists)
+                                hist_freq, hist_edges = np.histogram(log_dists, bins=60)
+                                multiscale_geodesic_histogram.object = hv.Histogram(
+                                    (hist_freq, hist_edges),
+                                    kdims=["log10_distance"],
+                                    vdims=["count"],
+                                ).opts(
+                                    width=900,
+                                    height=260,
+                                    xlabel="log₁₀(geodesic distance)",
+                                    ylabel="Pair count",
+                                    title="Geodesic Distance Distribution",
+                                    color="#4c78a8",
+                                    line_color="white",
+                                    show_grid=True,
+                                )
+                            else:
+                                multiscale_geodesic_histogram.object = None
+                            multiscale_status_lines.append(f"- Heatmap clustering: `{clustering_note}`")
+                    else:
+                        multiscale_geodesic_heatmap.object = None
+                        geodesic_error = "distance matrix is empty"
+                else:
+                    multiscale_geodesic_heatmap.object = None
+                    geodesic_error = "history or frame indices unavailable"
+            except Exception as exc:
+                multiscale_geodesic_heatmap.object = None
+                geodesic_error = str(exc)
+
+            if geodesic_frame_idx is not None:
+                multiscale_status_lines.append(f"- Heatmap frame: `{geodesic_frame_idx}`")
+            if geodesic_error:
+                multiscale_status_lines.append(f"- Heatmap note: `{geodesic_error}`")
+
+            # 2) Populate channel selector and store output for callback.
+            available_channels = sorted(
+                output.per_scale_results.keys(),
+                key=lambda name: (1 if str(name).endswith("_companion") else 0, str(name)),
+            )
+            multiscale_channel_select.options = available_channels
+            default_channel = "nucleon" if "nucleon" in available_channels else (
+                available_channels[0] if available_channels else ""
+            )
+            multiscale_channel_select.value = default_channel
+            state["_multiscale_output"] = output
+            state["_multiscale_scale_values"] = scale_values
+
+            # 3) Inner function: update channel-specific views.
+            def _update_multiscale_channel_views(channel_name: str) -> None:
+                if not channel_name:
+                    return
+                ms_output = state.get("_multiscale_output")
+                sv = state.get("_multiscale_scale_values")
+                if ms_output is None or sv is None:
+                    return
+                channel_results = ms_output.per_scale_results.get(channel_name, [])
+                if not channel_results:
+                    multiscale_corr_plot.object = None
+                    multiscale_meff_plot.object = None
+                    multiscale_mass_vs_scale_plot.object = None
+                    multiscale_estimator_table.value = pd.DataFrame()
+                    multiscale_pairwise_table.value = pd.DataFrame()
+                    multiscale_consensus_summary.object = (
+                        f"**{channel_name}:** no per-scale results available."
+                    )
+                    multiscale_systematics_badge.object = "Systematics verdict: no data."
+                    multiscale_systematics_badge.alert_type = "secondary"
+                    multiscale_consensus_plot.object = None
+                    multiscale_per_scale_plots.objects = []
+                    return
+
+                bundle = analyze_channel_across_scales(channel_results, sv, channel_name)
+
+                # Correlator plot (scatter+errorbars per scale).
+                multiscale_corr_plot.object = build_multiscale_correlator_plot(
+                    channel_results, sv, channel_name,
+                )
+                # Effective mass plot.
+                multiscale_meff_plot.object = build_multiscale_effective_mass_plot(
+                    channel_results, sv, channel_name,
+                )
+                # Mass vs scale with consensus overlay.
+                multiscale_mass_vs_scale_plot.object = build_mass_vs_scale_plot(
+                    bundle.measurements, channel_name, consensus=bundle.consensus,
+                )
+                # Estimator table.
+                est_rows = [
+                    {
+                        "scale": m.label,
+                        "scale_value": m.scale,
+                        "mass": m.mass,
+                        "mass_error": m.mass_error,
+                        "r_squared": m.r_squared,
+                    }
+                    for m in bundle.measurements
+                ]
+                multiscale_estimator_table.value = (
+                    pd.DataFrame(est_rows) if est_rows else pd.DataFrame()
+                )
+                # Pairwise discrepancy table.
+                pw_rows = [
+                    {
+                        "scale_a": d.label_a,
+                        "scale_b": d.label_b,
+                        "mass_a": d.mass_a,
+                        "mass_b": d.mass_b,
+                        "ratio": d.ratio,
+                        "delta_pct": d.delta_pct,
+                        "abs_delta_pct": d.abs_delta_pct,
+                        "combined_error": d.combined_error,
+                        "pull_sigma": d.pull_sigma,
+                    }
+                    for d in bundle.discrepancies
+                ]
+                multiscale_pairwise_table.value = (
+                    pd.DataFrame(pw_rows).sort_values("abs_delta_pct", ascending=False)
+                    if pw_rows
+                    else pd.DataFrame()
+                )
+                # Consensus summary + badge.
+                multiscale_consensus_summary.object = format_consensus_summary(
+                    bundle.consensus, bundle.discrepancies, channel_name,
+                )
+                multiscale_systematics_badge.object = (
+                    f"Systematics verdict: {bundle.verdict.label}. {bundle.verdict.details}"
+                )
+                multiscale_systematics_badge.alert_type = bundle.verdict.alert_type
+                # Consensus plot.
+                multiscale_consensus_plot.object = build_consensus_plot(
+                    bundle.measurements, bundle.consensus, channel_name,
+                )
+                # Per-scale ChannelPlot layouts.
+                per_scale_layouts = build_per_scale_channel_plots(channel_results, sv)
+                if per_scale_layouts:
+                    children: list[Any] = []
+                    for label, layout in per_scale_layouts:
+                        children.append(pn.pane.Markdown(f"#### {label}"))
+                        children.append(layout)
+                    multiscale_per_scale_plots.objects = children
+                else:
+                    multiscale_per_scale_plots.objects = []
+
+            # Wire channel selector callback.
+            def _on_multiscale_channel_change(event: Any) -> None:
+                _update_multiscale_channel_views(str(event.new))
+
+            multiscale_channel_select.param.watch(
+                _on_multiscale_channel_change, "value",
+            )
+
+            # Initial render for default channel.
+            _update_multiscale_channel_views(default_channel)
+
+            multiscale_status.object = "  \n".join(multiscale_status_lines)
+
         def _update_anisotropic_edge_tables(
             results: dict[str, ChannelCorrelatorResult],
             mode: str | None = None,
@@ -10041,6 +10824,8 @@ def create_app() -> pn.template.FastListTemplate:
                 error_getter=error_getter,
                 ratio_specs=ANISOTROPIC_EDGE_RATIO_SPECS,
                 anchor_mode=str(anchor_mode),
+                calibration_family_map=ANISOTROPIC_EDGE_COMPANION_FAMILY_MAP,
+                calibration_ratio_specs=ANISOTROPIC_EDGE_COMPANION_RATIO_SPECS,
             )
 
         def _update_anisotropic_edge_glueball_crosscheck(
@@ -11775,31 +12560,21 @@ def create_app() -> pn.template.FastListTemplate:
                 strong_tensor_result = None
                 tensor_momentum_results: dict[str, ChannelCorrelatorResult] = {}
                 tensor_momentum_meta: dict[str, Any] | None = None
-                tensor_systematics_error = None
+                tensor_systematics_error = (
+                    "companion tensor momentum estimators moved to Companion Strong Force tab"
+                )
                 try:
                     strong_tensor_result = _compute_strong_tensor_for_anisotropic_edge(
                         history, anisotropic_edge_settings
                     )
                 except Exception as exc:
                     tensor_systematics_error = f"strong-force tensor estimator failed: {exc}"
-                try:
-                    tensor_momentum_results, tensor_momentum_meta = (
-                        _compute_tensor_momentum_for_anisotropic_edge(
-                            history,
-                            anisotropic_edge_settings,
-                        )
-                    )
-                except Exception as exc:
-                    tensor_msg = f"tensor momentum estimators failed: {exc}"
-                    tensor_systematics_error = (
-                        f"{tensor_systematics_error}; {tensor_msg}"
-                        if tensor_systematics_error
-                        else tensor_msg
-                    )
                 edge_iso_glueball_result = None
                 su3_glueball_result = None
                 momentum_glueball_results: dict[str, ChannelCorrelatorResult] = {}
-                glueball_systematics_error = None
+                glueball_systematics_error = (
+                    "companion SU(3) glueball estimators moved to Companion Strong Force tab"
+                )
                 try:
                     edge_iso_glueball_result = _compute_anisotropic_edge_isotropic_glueball_result(
                         history,
@@ -11808,28 +12583,6 @@ def create_app() -> pn.template.FastListTemplate:
                 except Exception as exc:
                     glueball_systematics_error = (
                         f"isotropic-edge glueball estimator failed: {exc}"
-                    )
-                try:
-                    su3_glueball_bundle, _ = _compute_anisotropic_glueball_color_result(
-                        history,
-                        anisotropic_edge_settings,
-                        force_momentum_projection=True,
-                        momentum_mode_max=max(
-                            1, int(anisotropic_edge_settings.glueball_momentum_mode_max)
-                        ),
-                    )
-                    su3_glueball_result = su3_glueball_bundle.get("glueball")
-                    momentum_glueball_results = {
-                        name: result
-                        for name, result in su3_glueball_bundle.items()
-                        if name.startswith("glueball_momentum_p")
-                    }
-                except Exception as exc:
-                    su3_msg = f"SU(3) glueball estimators failed: {exc}"
-                    glueball_systematics_error = (
-                        f"{glueball_systematics_error}; {su3_msg}"
-                        if glueball_systematics_error
-                        else su3_msg
                     )
                 spatial_glueball_result = None
                 spatial_frame_idx = None
@@ -11850,7 +12603,62 @@ def create_app() -> pn.template.FastListTemplate:
                 spatial_error = (
                     "disabled (spatial radial estimator removed from anisotropic-edge tab)"
                 )
-                results = output.channel_results
+                multiscale_output: MultiscaleStrongForceOutput | None = None
+                multiscale_error: str | None = None
+                results = dict(output.channel_results)
+                if bool(anisotropic_edge_settings.use_multiscale_kernels):
+                    try:
+                        multiscale_cfg = MultiscaleStrongForceConfig(
+                            warmup_fraction=float(anisotropic_edge_settings.simulation_range[0]),
+                            end_fraction=float(anisotropic_edge_settings.simulation_range[1]),
+                            mc_time_index=anisotropic_edge_settings.mc_time_index,
+                            h_eff=float(anisotropic_edge_settings.h_eff),
+                            mass=float(anisotropic_edge_settings.mass),
+                            ell0=anisotropic_edge_settings.ell0,
+                            edge_weight_mode=str(anisotropic_edge_settings.edge_weight_mode),
+                            n_scales=int(anisotropic_edge_settings.n_scales),
+                            kernel_type=str(anisotropic_edge_settings.kernel_type),
+                            kernel_distance_method=str(
+                                anisotropic_edge_settings.kernel_distance_method
+                            ),
+                            kernel_assume_all_alive=bool(
+                                anisotropic_edge_settings.kernel_assume_all_alive
+                            ),
+                            kernel_batch_size=int(anisotropic_edge_settings.kernel_batch_size),
+                            kernel_scale_frames=int(anisotropic_edge_settings.kernel_scale_frames),
+                            kernel_scale_q_low=float(anisotropic_edge_settings.kernel_scale_q_low),
+                            kernel_scale_q_high=float(anisotropic_edge_settings.kernel_scale_q_high),
+                            max_lag=int(anisotropic_edge_settings.max_lag),
+                            use_connected=bool(anisotropic_edge_settings.use_connected),
+                            fit_mode=str(anisotropic_edge_settings.fit_mode),
+                            fit_start=int(anisotropic_edge_settings.fit_start),
+                            fit_stop=anisotropic_edge_settings.fit_stop,
+                            min_fit_points=int(anisotropic_edge_settings.min_fit_points),
+                            window_widths=_parse_window_widths(
+                                anisotropic_edge_settings.window_widths_spec
+                            ),
+                            compute_bootstrap_errors=bool(
+                                anisotropic_edge_settings.compute_bootstrap_errors
+                            ),
+                            n_bootstrap=int(anisotropic_edge_settings.n_bootstrap),
+                            bootstrap_mode=str(anisotropic_edge_settings.kernel_bootstrap_mode),
+                            walker_bootstrap_max_walkers=int(
+                                anisotropic_edge_settings.kernel_bootstrap_max_walkers
+                            ),
+                        )
+                        requested_multiscale_channels = [
+                            c.strip()
+                            for c in str(anisotropic_edge_settings.channel_list).split(",")
+                            if c.strip()
+                        ]
+                        multiscale_output = compute_multiscale_strong_force_channels(
+                            history,
+                            config=multiscale_cfg,
+                            channels=requested_multiscale_channels,
+                        )
+                        results.update(multiscale_output.best_results)
+                    except Exception as exc:
+                        multiscale_error = str(exc)
                 state["anisotropic_edge_results"] = results
                 state["anisotropic_edge_glueball_strong_result"] = strong_glueball_result
                 state["anisotropic_edge_glueball_edge_iso_result"] = edge_iso_glueball_result
@@ -11881,6 +12689,8 @@ def create_app() -> pn.template.FastListTemplate:
                 state["anisotropic_edge_tensor_traceless_spatial_error"] = (
                     spatial_tensor_traceless_error
                 )
+                state["anisotropic_edge_multiscale_output"] = multiscale_output
+                state["anisotropic_edge_multiscale_error"] = multiscale_error
                 _update_anisotropic_edge_plots(results)
                 _update_anisotropic_edge_tables(results)
                 _update_anisotropic_edge_glueball_crosscheck(
@@ -11914,16 +12724,352 @@ def create_app() -> pn.template.FastListTemplate:
                     f"- Frames used: `{output.n_valid_frames}/{len(output.frame_indices)}`\n"
                     f"- Mean alive walkers/frame: `{output.avg_alive_walkers:.2f}`\n"
                     f"- Mean directed edges/frame: `{output.avg_edges:.2f}`\n"
+                    f"- Multiscale kernels: `{'on' if anisotropic_edge_settings.use_multiscale_kernels else 'off'}`\n"
                 )
                 n_channels = len([res for res in results.values() if res.n_samples > 0])
-                anisotropic_edge_status.object = (
-                    f"**Complete:** {n_channels} anisotropic edge channels computed."
-                )
+                if multiscale_error:
+                    anisotropic_edge_status.object = (
+                        f"**Complete with multiscale error:** {n_channels} channels computed. "
+                        f"`{multiscale_error}`"
+                    )
+                else:
+                    anisotropic_edge_status.object = (
+                        f"**Complete:** {n_channels} anisotropic edge channels computed."
+                    )
 
             _run_tab_computation(
                 state,
                 anisotropic_edge_status,
                 "anisotropic edge channels",
+                _compute,
+            )
+
+        def _normalize_companion_channel_name(name: str) -> str:
+            suffix = "_companion"
+            if str(name).endswith(suffix):
+                return str(name)[: -len(suffix)]
+            return str(name)
+
+        def _update_companion_strong_force_plots(
+            results: dict[str, ChannelCorrelatorResult],
+        ) -> None:
+            _update_correlator_plots(
+                results,
+                companion_strong_force_plateau_plots,
+                companion_strong_force_plots_spectrum,
+                companion_strong_force_plots_overlay_corr,
+                companion_strong_force_plots_overlay_meff,
+                heatmap_container=companion_strong_force_heatmap_plots,
+                heatmap_color_metric_widget=companion_strong_force_heatmap_color_metric,
+                heatmap_alpha_metric_widget=companion_strong_force_heatmap_alpha_metric,
+                correlator_logy=False,
+            )
+
+        def _update_companion_strong_force_tables(
+            results: dict[str, ChannelCorrelatorResult],
+            mode: str | None = None,
+            anchor_mode: str | None = None,
+        ) -> None:
+            if mode is None:
+                mode = companion_strong_force_mass_mode.value
+            if anchor_mode is None:
+                anchor_mode = companion_strong_force_anchor_mode.value
+            _update_strong_tables(
+                results,
+                str(mode),
+                companion_strong_force_mass_table,
+                companion_strong_force_ratio_pane,
+                companion_strong_force_fit_table,
+                companion_strong_force_anchor_table,
+                companion_strong_force_glueball_ref_input,
+                ratio_specs=STRONG_FORCE_RATIO_SPECS,
+                anchor_mode=str(anchor_mode),
+            )
+
+        def _update_companion_strong_force_multiscale_views(
+            output: MultiscaleStrongForceOutput | None,
+            *,
+            original_results: dict[str, ChannelCorrelatorResult] | None = None,
+            error: str | None = None,
+        ) -> None:
+            if error:
+                companion_strong_force_multiscale_summary.object = (
+                    "### Multiscale Kernel Summary\n"
+                    "- Status: failed\n"
+                    f"- Error: `{error}`"
+                )
+                companion_strong_force_multiscale_table.value = pd.DataFrame()
+                companion_strong_force_multiscale_plot.object = None
+                return
+
+            if output is None:
+                companion_strong_force_multiscale_summary.object = (
+                    "### Multiscale Kernel Summary\n"
+                    "_Multiscale kernels disabled (original companion estimators only)._"
+                )
+                companion_strong_force_multiscale_table.value = pd.DataFrame()
+                companion_strong_force_multiscale_plot.object = None
+                return
+
+            scale_values = output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
+            lines = [
+                "### Multiscale Kernel Summary",
+                f"- Scales: `{len(scale_values)}`",
+                f"- Frames: `{len(output.frame_indices)}`",
+                f"- Bootstrap mode: `{output.bootstrap_mode_applied}`",
+            ]
+            if scale_values.size > 0:
+                lines.append(
+                    "- Scale range: "
+                    f"`[{float(scale_values.min()):.4g}, {float(scale_values.max()):.4g}]`"
+                )
+            if output.notes:
+                for note in output.notes:
+                    lines.append(f"- Note: {note}")
+            companion_strong_force_multiscale_summary.object = "  \n".join(lines)
+
+            rows: list[dict[str, Any]] = []
+            curves: list[hv.Element] = []
+            for channel_name, results_per_scale in output.per_scale_results.items():
+                display_name = _normalize_companion_channel_name(channel_name)
+                original_mass = float("nan")
+                original_result = (
+                    original_results.get(display_name, None)
+                    if isinstance(original_results, dict)
+                    else None
+                )
+                if original_result is not None:
+                    original_mass = float(
+                        _get_channel_mass(original_result, companion_strong_force_mass_mode.value)
+                    )
+                masses = [
+                    float(res.mass_fit.get("mass", float("nan")))
+                    if res is not None
+                    else float("nan")
+                    for res in results_per_scale
+                ]
+                best_idx = int(output.best_scale_index.get(channel_name, 0))
+                best_mass = masses[best_idx] if 0 <= best_idx < len(masses) else float("nan")
+                best_scale = (
+                    float(scale_values[best_idx])
+                    if scale_values.size > best_idx >= 0
+                    else float("nan")
+                )
+                best_err = float("nan")
+                if channel_name in output.best_results:
+                    best_err = float(
+                        output.best_results[channel_name].mass_fit.get("mass_error", float("nan"))
+                    )
+                rows.append(
+                    {
+                        "channel": display_name,
+                        "source_channel": str(channel_name),
+                        "original_mass": original_mass,
+                        "best_scale_idx": best_idx,
+                        "best_scale": best_scale,
+                        "mass": best_mass,
+                        "delta_vs_original_pct": (
+                            ((best_mass - original_mass) / original_mass) * 100.0
+                            if np.isfinite(original_mass)
+                            and original_mass > 0
+                            and np.isfinite(best_mass)
+                            else float("nan")
+                        ),
+                        "mass_error": best_err,
+                    }
+                )
+                if scale_values.size > 0 and len(masses) == len(scale_values):
+                    y = np.asarray(masses, dtype=float)
+                    if np.isfinite(y).any():
+                        color = CHANNEL_COLORS.get(display_name, None)
+                        curve = hv.Curve(
+                            (scale_values, y),
+                            kdims=["scale"],
+                            vdims=["mass"],
+                            label=display_name,
+                        )
+                        if color is not None:
+                            curve = curve.opts(color=color)
+                        curves.append(curve)
+
+            companion_strong_force_multiscale_table.value = (
+                pd.DataFrame(rows).sort_values("channel") if rows else pd.DataFrame()
+            )
+            if curves:
+                overlay = curves[0]
+                for curve in curves[1:]:
+                    overlay *= curve
+                companion_strong_force_multiscale_plot.object = overlay.opts(
+                    width=900,
+                    height=320,
+                    title="Companion Multiscale Mass Curves",
+                    show_grid=True,
+                    legend_position="right",
+                )
+            else:
+                companion_strong_force_multiscale_plot.object = None
+
+        def _on_companion_strong_force_mass_mode_change(event):
+            if state.get("companion_strong_force_results") is None:
+                return
+            _update_companion_strong_force_tables(
+                state["companion_strong_force_results"],
+                mode=event.new,
+            )
+
+        companion_strong_force_mass_mode.param.watch(
+            _on_companion_strong_force_mass_mode_change,
+            "value",
+        )
+
+        def _on_companion_strong_force_anchor_mode_change(_event):
+            if state.get("companion_strong_force_results") is None:
+                return
+            _update_companion_strong_force_tables(state["companion_strong_force_results"])
+
+        companion_strong_force_anchor_mode.param.watch(
+            _on_companion_strong_force_anchor_mode_change,
+            "value",
+        )
+
+        def _on_companion_strong_force_heatmap_metric_change(_event):
+            if state.get("companion_strong_force_results") is None:
+                return
+            _update_companion_strong_force_plots(state["companion_strong_force_results"])
+
+        companion_strong_force_heatmap_color_metric.param.watch(
+            _on_companion_strong_force_heatmap_metric_change,
+            "value",
+        )
+        companion_strong_force_heatmap_alpha_metric.param.watch(
+            _on_companion_strong_force_heatmap_metric_change,
+            "value",
+        )
+
+        def on_run_companion_strong_force_channels(_):
+            def _compute(history):
+                output = _compute_companion_strong_force_bundle(history, companion_strong_force_settings)
+                base_results = dict(output.channel_results)
+                results = dict(base_results)
+                for channel_name, channel_result in base_results.items():
+                    if isinstance(channel_result.mass_fit, dict):
+                        channel_result.mass_fit.setdefault("source", "original_companion")
+                        channel_result.mass_fit.setdefault("base_channel", str(channel_name))
+
+                multiscale_output: MultiscaleStrongForceOutput | None = None
+                multiscale_error: str | None = None
+                if bool(companion_strong_force_settings.use_multiscale_kernels):
+                    try:
+                        requested_channels = [
+                            c.strip()
+                            for c in str(companion_strong_force_settings.channel_list).split(",")
+                            if c.strip()
+                        ]
+                        requested_companion_channels = sorted(
+                            {
+                                str(COMPANION_CHANNEL_MAP[ch])
+                                for ch in requested_channels
+                                if ch in COMPANION_CHANNEL_MAP
+                            }
+                        )
+                        if requested_companion_channels:
+                            multiscale_cfg = MultiscaleStrongForceConfig(
+                                warmup_fraction=float(companion_strong_force_settings.simulation_range[0]),
+                                end_fraction=float(companion_strong_force_settings.simulation_range[1]),
+                                mc_time_index=companion_strong_force_settings.mc_time_index,
+                                h_eff=float(companion_strong_force_settings.h_eff),
+                                mass=float(companion_strong_force_settings.mass),
+                                ell0=companion_strong_force_settings.ell0,
+                                edge_weight_mode=str(companion_strong_force_settings.edge_weight_mode),
+                                n_scales=int(companion_strong_force_settings.n_scales),
+                                kernel_type=str(companion_strong_force_settings.kernel_type),
+                                kernel_distance_method=str(
+                                    companion_strong_force_settings.kernel_distance_method
+                                ),
+                                kernel_assume_all_alive=bool(
+                                    companion_strong_force_settings.kernel_assume_all_alive
+                                ),
+                                kernel_batch_size=int(companion_strong_force_settings.kernel_batch_size),
+                                kernel_scale_frames=int(
+                                    companion_strong_force_settings.kernel_scale_frames
+                                ),
+                                kernel_scale_q_low=float(
+                                    companion_strong_force_settings.kernel_scale_q_low
+                                ),
+                                kernel_scale_q_high=float(
+                                    companion_strong_force_settings.kernel_scale_q_high
+                                ),
+                                max_lag=int(companion_strong_force_settings.max_lag),
+                                use_connected=bool(companion_strong_force_settings.use_connected),
+                                fit_mode=str(companion_strong_force_settings.fit_mode),
+                                fit_start=int(companion_strong_force_settings.fit_start),
+                                fit_stop=companion_strong_force_settings.fit_stop,
+                                min_fit_points=int(companion_strong_force_settings.min_fit_points),
+                                window_widths=_parse_window_widths(
+                                    companion_strong_force_settings.window_widths_spec
+                                ),
+                                compute_bootstrap_errors=bool(
+                                    companion_strong_force_settings.compute_bootstrap_errors
+                                ),
+                                n_bootstrap=int(companion_strong_force_settings.n_bootstrap),
+                                bootstrap_mode=str(companion_strong_force_settings.kernel_bootstrap_mode),
+                                walker_bootstrap_max_walkers=int(
+                                    companion_strong_force_settings.kernel_bootstrap_max_walkers
+                                ),
+                            )
+                            multiscale_output = compute_multiscale_strong_force_channels(
+                                history,
+                                config=multiscale_cfg,
+                                channels=requested_companion_channels,
+                            )
+                            for channel_name, result in multiscale_output.best_results.items():
+                                display_name = _normalize_companion_channel_name(channel_name)
+                                tagged_name = f"{display_name}_multiscale_best"
+                                tagged_result = replace(result, channel_name=tagged_name)
+                                if isinstance(tagged_result.mass_fit, dict):
+                                    tagged_result.mass_fit["source"] = "multiscale_best"
+                                    tagged_result.mass_fit["base_channel"] = display_name
+                                results[tagged_name] = tagged_result
+                    except Exception as exc:
+                        multiscale_error = str(exc)
+
+                state["companion_strong_force_results"] = results
+                state["companion_strong_force_multiscale_output"] = multiscale_output
+                state["companion_strong_force_multiscale_error"] = multiscale_error
+
+                _update_companion_strong_force_plots(results)
+                _update_companion_strong_force_tables(results)
+                _update_companion_strong_force_multiscale_views(
+                    multiscale_output,
+                    original_results=base_results,
+                    error=multiscale_error,
+                )
+                _update_anisotropic_edge_multiscale_views(
+                    multiscale_output, multiscale_error,
+                )
+
+                companion_strong_force_summary.object = (
+                    "## Companion Strong Force Summary\n"
+                    f"- Frames used: `{output.n_valid_frames}/{len(output.frame_indices)}`\n"
+                    f"- Mean alive walkers/frame: `{output.avg_alive_walkers:.2f}`\n"
+                    f"- Multiscale kernels: "
+                    f"`{'on' if companion_strong_force_settings.use_multiscale_kernels else 'off'}`\n"
+                    f"- Channels computed: `{len([res for res in results.values() if res.n_samples > 0])}`\n"
+                )
+                if multiscale_error:
+                    companion_strong_force_status.object = (
+                        "**Complete with multiscale error:** "
+                        f"`{multiscale_error}`"
+                    )
+                else:
+                    companion_strong_force_status.object = (
+                        "**Complete:** companion strong-force channels computed."
+                    )
+
+            _run_tab_computation(
+                state,
+                companion_strong_force_status,
+                "companion strong-force channels",
                 _compute,
             )
 
@@ -13053,6 +14199,7 @@ def create_app() -> pn.template.FastListTemplate:
         channels_run_button.on_click(on_run_channels)
         radial_run_button.on_click(on_run_radial_channels)
         anisotropic_edge_run_button.on_click(on_run_anisotropic_edge_channels)
+        companion_strong_force_run_button.on_click(on_run_companion_strong_force_channels)
         radial_ew_run_button.on_click(on_run_radial_electroweak)
         electroweak_run_button.on_click(on_run_electroweak)
         new_dirac_ew_run_button.on_click(on_run_new_dirac_electroweak)
@@ -13540,21 +14687,9 @@ Use **MC time slice** to select the snapshot.""",
 
             anisotropic_edge_note = pn.pane.Alert(
                 """**Anisotropic Edge Channels:** Computes MC-time correlators from direct
-recorded Delaunay neighbors only (no tessellation recomputation). Local edge
-observables are projected onto directional components to preserve anisotropy
-under symmetry breaking. Nucleon supports two triplet modes:
-direct-neighbor triplets or (distance companion, clone companion). Enable
-**Baryon Triplet Settings** to override nucleon with companion-triplet
-color-determinant baryon correlator. Enable **Meson Phase Settings** to
-override scalar/pseudoscalar with companion-pair color-phase correlators
-Re(c_i†c_j) / Im(c_i†c_j). Enable **Vector Meson Settings** to override
-vector/axial_vector with companion-pair color-displacement correlators
-Re(c_i†c_j)Δx / Im(c_i†c_j)Δx. Enable **Glueball Color Settings** momentum
-projection to tune `glueball_momentum_pn` channels (n=0..n_max). The four
-glueball estimators (anisotropic-edge isotropic, strong-force isotropic, SU(3)
-plaquette, SU(3) momentum-projected) are always computed for comparison. Enable
-**Tensor Momentum Settings** to compute `tensor_momentum_pn` and per-component
-spin-2 momentum channels for polarization/dispersion tests.""",
+recorded Delaunay neighbors only (no tessellation recomputation). This tab is
+now non-companion only; companion-pair/triplet operators are available in the
+dedicated **Companion Strong Force** tab.""",
                 alert_type="info",
                 sizing_mode="stretch_width",
             )
@@ -13577,6 +14712,10 @@ spin-2 momentum channels for polarization/dispersion tests.""",
                 ),
                 pn.layout.Divider(),
                 anisotropic_edge_summary,
+                anisotropic_edge_multiscale_summary,
+                pn.pane.Markdown("### Multiscale Mass Selection"),
+                anisotropic_edge_multiscale_table,
+                anisotropic_edge_multiscale_plot,
                 pn.pane.Markdown("### Mass Display Mode"),
                 anisotropic_edge_mass_mode,
                 pn.layout.Divider(),
@@ -13661,6 +14800,111 @@ spin-2 momentum channels for polarization/dispersion tests.""",
                     sizing_mode="stretch_width",
                 ),
                 anisotropic_edge_heatmap_plots,
+                sizing_mode="stretch_both",
+            )
+
+            companion_strong_force_note = pn.pane.Alert(
+                """**Companion Strong Force Channels:** Computes only companion-based operators
+and keeps them fully decoupled from anisotropic direct-edge estimators. This tab
+uses companion triplets/pairs for baryon, meson, vector/axial, glueball color
+plaquette, and tensor momentum channels, with independent settings and execution.""",
+                alert_type="info",
+                sizing_mode="stretch_width",
+            )
+
+            companion_strong_force_tab = pn.Column(
+                companion_strong_force_status,
+                companion_strong_force_note,
+                pn.Row(companion_strong_force_run_button, sizing_mode="stretch_width"),
+                pn.Accordion(
+                    ("Companion Strong Force Settings", companion_strong_force_settings_layout),
+                    (
+                        "Reference Anchors",
+                        pn.Column(
+                            companion_strong_force_glueball_ref_input,
+                            pn.pane.Markdown("### Observed Mass Anchors (GeV)"),
+                            companion_strong_force_ref_table,
+                        ),
+                    ),
+                    sizing_mode="stretch_width",
+                ),
+                pn.layout.Divider(),
+                companion_strong_force_summary,
+                companion_strong_force_multiscale_summary,
+                pn.pane.Markdown("### Multiscale Mass Selection"),
+                pn.pane.Markdown(
+                    "_Table reports best-scale masses and their delta versus the original "
+                    "non-smoothed companion estimators._"
+                ),
+                companion_strong_force_multiscale_table,
+                companion_strong_force_multiscale_plot,
+                pn.pane.Markdown("### Mass Display Mode"),
+                companion_strong_force_mass_mode,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### All Channels Overlay - Correlators"),
+                companion_strong_force_plots_overlay_corr,
+                pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
+                companion_strong_force_plots_overlay_meff,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Mass Spectrum"),
+                companion_strong_force_plots_spectrum,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Extracted Masses"),
+                companion_strong_force_mass_table,
+                companion_strong_force_ratio_pane,
+                pn.pane.Markdown("### Best-Fit Scales"),
+                companion_strong_force_fit_table,
+                pn.pane.Markdown("### Anchored Mass Table"),
+                companion_strong_force_anchor_mode,
+                companion_strong_force_anchor_table,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
+                companion_strong_force_plateau_plots,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Window Heatmaps"),
+                pn.Row(
+                    companion_strong_force_heatmap_color_metric,
+                    companion_strong_force_heatmap_alpha_metric,
+                    sizing_mode="stretch_width",
+                ),
+                companion_strong_force_heatmap_plots,
+                sizing_mode="stretch_both",
+            )
+
+            multiscale_tab = pn.Column(
+                multiscale_status,
+                pn.Row(multiscale_channel_select, sizing_mode="stretch_width"),
+                pn.pane.Markdown("### Full Geodesic Distance Matrix"),
+                pn.pane.Markdown(
+                    "_Computed from recorded neighbor graph and selected edge-weight mode "
+                    "on the representative frame used by the current multiscale run._"
+                ),
+                multiscale_geodesic_heatmap,
+                pn.pane.Markdown("### Geodesic Distance Distribution"),
+                multiscale_geodesic_histogram,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Correlator Across Scales"),
+                pn.pane.Markdown(
+                    "_One color per scale; scatter+errorbars from the same multiscale kernel family._"
+                ),
+                multiscale_corr_plot,
+                pn.pane.Markdown("### Effective Mass Across Scales"),
+                multiscale_meff_plot,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Mass vs Scale"),
+                multiscale_mass_vs_scale_plot,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Scale-as-Estimator Analysis"),
+                multiscale_estimator_table,
+                pn.pane.Markdown("### Pairwise Discrepancies"),
+                multiscale_pairwise_table,
+                pn.pane.Markdown("### Consensus / Systematics"),
+                multiscale_systematics_badge,
+                multiscale_consensus_summary,
+                multiscale_consensus_plot,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Per-Scale Channel Plots"),
+                multiscale_per_scale_plots,
                 sizing_mode="stretch_both",
             )
 
@@ -14211,6 +15455,8 @@ Dirac-sector analyses are shown in the dedicated Dirac tab.""",
                     ("Algorithm", algorithm_tab),
                     ("Holographic Principle", fractal_set_tab),
                     ("Strong Force", anisotropic_edge_tab),
+                    ("Companion Strong Force", companion_strong_force_tab),
+                    ("Multiscale", multiscale_tab),
                     ("Electroweak", new_dirac_ew_tab),
                     ("Einsten Equation", einstein_tab),
                     ("Dirac", dirac_tab),
