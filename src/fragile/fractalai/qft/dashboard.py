@@ -6479,18 +6479,15 @@ def create_app() -> pn.template.FastListTemplate:
             },
             default_layout=type("AnisotropicEdgeGlueballGrid", (pn.GridBox,), {"ncols": 1}),
         )
-        anisotropic_edge_settings_columns = pn.Row(
-            pn.Column(
-                pn.pane.Markdown("### Base Channel Settings"),
-                anisotropic_edge_settings_panel,
-                sizing_mode="stretch_width",
-            ),
+        anisotropic_edge_base_settings_row = pn.Row(
+            anisotropic_edge_settings_panel,
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_override_settings_row = pn.Row(
             pn.Column(
                 pn.pane.Markdown("### Baryon Triplet Settings"),
                 anisotropic_edge_baryon_panel,
-                sizing_mode="stretch_width",
-            ),
-            pn.Column(
+                pn.layout.Divider(),
                 pn.pane.Markdown("### Meson Phase Settings"),
                 anisotropic_edge_meson_panel,
                 sizing_mode="stretch_width",
@@ -6498,13 +6495,19 @@ def create_app() -> pn.template.FastListTemplate:
             pn.Column(
                 pn.pane.Markdown("### Vector Meson Settings"),
                 anisotropic_edge_vector_panel,
-                sizing_mode="stretch_width",
-            ),
-            pn.Column(
+                pn.layout.Divider(),
                 pn.pane.Markdown("### Glueball Color Settings"),
                 anisotropic_edge_glueball_panel,
                 sizing_mode="stretch_width",
             ),
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_settings_layout = pn.Column(
+            pn.pane.Markdown("### Base Channel Settings"),
+            anisotropic_edge_base_settings_row,
+            pn.layout.Divider(),
+            pn.pane.Markdown("### Override Parameters"),
+            anisotropic_edge_override_settings_row,
             sizing_mode="stretch_width",
         )
         anisotropic_edge_summary = pn.pane.Markdown(
@@ -6585,6 +6588,18 @@ def create_app() -> pn.template.FastListTemplate:
             value=None,
             step=0.01,
             min_width=200,
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_glueball_compare_ratio = pn.pane.Markdown(
+            "**Glueball Cross-Check (Anisotropic / Strong):** run anisotropic channels to compare.",
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_glueball_aniso_plot = pn.Column(
+            pn.pane.Markdown("_Run anisotropic channels to populate this plot._"),
+            sizing_mode="stretch_width",
+        )
+        anisotropic_edge_glueball_strong_plot = pn.Column(
+            pn.pane.Markdown("_Run anisotropic channels to populate this plot._"),
             sizing_mode="stretch_width",
         )
 
@@ -8567,10 +8582,88 @@ def create_app() -> pn.template.FastListTemplate:
                 anchor_mode=str(anchor_mode),
             )
 
+        def _update_anisotropic_edge_glueball_crosscheck(
+            results: dict[str, ChannelCorrelatorResult],
+            strong_result: ChannelCorrelatorResult | None,
+            mode: str | None = None,
+        ) -> None:
+            if mode is None:
+                mode = anisotropic_edge_mass_mode.value
+            anisotropic_result = results.get("glueball")
+
+            if anisotropic_result is not None and anisotropic_result.n_samples > 0:
+                anisotropic_plot = ChannelPlot(
+                    anisotropic_result,
+                    logy=False,
+                    width=420,
+                    height=320,
+                ).side_by_side()
+                anisotropic_edge_glueball_aniso_plot.objects = [anisotropic_plot]
+            else:
+                anisotropic_edge_glueball_aniso_plot.objects = [
+                    pn.pane.Markdown("_No anisotropic-edge glueball result._")
+                ]
+
+            if strong_result is not None and strong_result.n_samples > 0:
+                strong_plot = ChannelPlot(
+                    strong_result,
+                    logy=False,
+                    width=420,
+                    height=320,
+                ).side_by_side()
+                anisotropic_edge_glueball_strong_plot.objects = [strong_plot]
+            else:
+                anisotropic_edge_glueball_strong_plot.objects = [
+                    pn.pane.Markdown("_No strong-force glueball result._")
+                ]
+
+            if (
+                anisotropic_result is None
+                or anisotropic_result.n_samples == 0
+                or strong_result is None
+                or strong_result.n_samples == 0
+            ):
+                anisotropic_edge_glueball_compare_ratio.object = (
+                    "**Glueball Cross-Check (Anisotropic / Strong):** "
+                    "n/a (missing one or both glueball results)."
+                )
+                return
+
+            mass_aniso = _get_channel_mass(anisotropic_result, mode)
+            mass_strong = _get_channel_mass(strong_result, mode)
+            if mass_aniso <= 0 or mass_strong <= 0:
+                anisotropic_edge_glueball_compare_ratio.object = (
+                    "**Glueball Cross-Check (Anisotropic / Strong):** "
+                    "n/a (non-positive fitted mass)."
+                )
+                return
+
+            ratio = mass_aniso / mass_strong
+            delta_pct = (ratio - 1.0) * 100.0
+            r2_aniso = _get_channel_r2(anisotropic_result, mode)
+            r2_strong = _get_channel_r2(strong_result, mode)
+            lines = [
+                "**Glueball Cross-Check (Anisotropic / Strong):**",
+                f"- Mass ratio: **{ratio:.4f}**",
+                f"- Δ% vs strong: `{delta_pct:+.2f}%`",
+                f"- Anisotropic glueball mass: `{mass_aniso:.6g}`",
+                f"- Strong-force glueball mass: `{mass_strong:.6g}`",
+            ]
+            if np.isfinite(r2_aniso):
+                lines.append(f"- Anisotropic fit R²: `{r2_aniso:.4f}`")
+            if np.isfinite(r2_strong):
+                lines.append(f"- Strong-force fit R²: `{r2_strong:.4f}`")
+            anisotropic_edge_glueball_compare_ratio.object = "  \n".join(lines)
+
         def _on_anisotropic_edge_mass_mode_change(event):
             if state.get("anisotropic_edge_results") is None:
                 return
             _update_anisotropic_edge_tables(state["anisotropic_edge_results"], event.new)
+            _update_anisotropic_edge_glueball_crosscheck(
+                state["anisotropic_edge_results"],
+                state.get("anisotropic_edge_glueball_strong_result"),
+                event.new,
+            )
 
         anisotropic_edge_mass_mode.param.watch(_on_anisotropic_edge_mass_mode_change, "value")
 
@@ -8601,10 +8694,18 @@ def create_app() -> pn.template.FastListTemplate:
         def on_run_anisotropic_edge_channels(_):
             def _compute(history):
                 output = _compute_anisotropic_edge_bundle(history, anisotropic_edge_settings)
+                strong_glueball_result = _compute_strong_glueball_for_anisotropic_edge(
+                    history, anisotropic_edge_settings
+                )
                 results = output.channel_results
                 state["anisotropic_edge_results"] = results
+                state["anisotropic_edge_glueball_strong_result"] = strong_glueball_result
                 _update_anisotropic_edge_plots(results)
                 _update_anisotropic_edge_tables(results)
+                _update_anisotropic_edge_glueball_crosscheck(
+                    results,
+                    strong_glueball_result,
+                )
                 anisotropic_edge_summary.object = (
                     "## Anisotropic Edge Summary\n"
                     f"- Components: `{', '.join(output.component_labels)}`\n"
@@ -10230,7 +10331,7 @@ Re(c_i†c_j)Δx / Im(c_i†c_j)Δx.""",
                 anisotropic_edge_note,
                 pn.Row(anisotropic_edge_run_button, sizing_mode="stretch_width"),
                 pn.Accordion(
-                    ("Anisotropic Edge Settings", anisotropic_edge_settings_columns),
+                    ("Anisotropic Edge Settings", anisotropic_edge_settings_layout),
                     (
                         "Reference Anchors",
                         pn.Column(
@@ -10257,6 +10358,21 @@ Re(c_i†c_j)Δx / Im(c_i†c_j)Δx.""",
                 pn.pane.Markdown("### Extracted Masses"),
                 anisotropic_edge_mass_table,
                 anisotropic_edge_ratio_pane,
+                pn.pane.Markdown("### Glueball Cross-Check (Anisotropic vs Strong Force)"),
+                anisotropic_edge_glueball_compare_ratio,
+                pn.Row(
+                    pn.Column(
+                        pn.pane.Markdown("#### Anisotropic Edge Glueball"),
+                        anisotropic_edge_glueball_aniso_plot,
+                        sizing_mode="stretch_width",
+                    ),
+                    pn.Column(
+                        pn.pane.Markdown("#### Strong-Force Glueball"),
+                        anisotropic_edge_glueball_strong_plot,
+                        sizing_mode="stretch_width",
+                    ),
+                    sizing_mode="stretch_width",
+                ),
                 pn.pane.Markdown("### Best-Fit Scales"),
                 anisotropic_edge_fit_table,
                 pn.pane.Markdown("### Anchored Mass Table"),
