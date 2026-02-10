@@ -116,7 +116,7 @@ class KineticOperator(PanelModel):
     delta_t = param.Number(
         default=0.01,
         bounds=(0, None),
-        softbounds=(0.01, 0.1),
+        softbounds=(1e-5, 0.1),
         inclusive_bounds=(False, True),
         doc="Time step size (Δt)",
     )

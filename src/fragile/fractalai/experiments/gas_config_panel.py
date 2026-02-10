@@ -334,7 +334,7 @@ class GasConfigPanel(param.Parameterized):
         config.companion_selection.epsilon = 2.80  # epsilon_d
         config.companion_selection.lambda_alg = 1.0
         config.companion_selection.exclude_self = True
-        config.companion_selection_clone.method = "uniform"
+        config.companion_selection_clone.method = "random_pairing"
         config.companion_selection_clone.epsilon = 1.68419  # epsilon_clone
         config.companion_selection_clone.lambda_alg = 1.0
         config.companion_selection_clone.exclude_self = True
@@ -415,7 +415,7 @@ class GasConfigPanel(param.Parameterized):
 
         # Companion selection for cloning (separate instance, allows different epsilon)
         self.companion_selection_clone = CompanionSelection(
-            method="uniform",
+            method="random_pairing",
             epsilon=0.5,
             lambda_alg=0.2,
         )
@@ -424,7 +424,7 @@ class GasConfigPanel(param.Parameterized):
         self.kinetic_op = KineticOperator(
             gamma=1.0,
             beta=1.0,
-            delta_t=0.05,
+            delta_t=0.01,
             integrator="boris-baoab",
             epsilon_F=0.15,
             use_fitness_force=False,

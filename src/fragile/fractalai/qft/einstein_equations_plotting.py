@@ -32,14 +32,52 @@ def _fmt_optional(value: float | None, fmt: str = ".4f", na: str = "n/a") -> str
     return format(float(value), fmt)
 
 
+def _fmt_ci(
+    ci: tuple[float, float] | None,
+    fmt: str = ".4f",
+    na: str = "n/a",
+) -> str:
+    if ci is None:
+        return na
+    return f"[{format(float(ci[0]), fmt)}, {format(float(ci[1]), fmt)}]"
+
+
+def _scalar_density_label(result: EinsteinTestResult) -> str:
+    if result.scalar_density_mode == "knn":
+        k_val = result.knn_k if result.knn_k is not None else 10
+        return f"rho_knn(k={k_val})"
+    return "rho = 1/V"
+
+
+def _scalar_regression_data(
+    result: EinsteinTestResult,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    if (
+        result.scalar_regression_density is not None
+        and result.scalar_regression_ricci is not None
+        and result.scalar_regression_valid_mask is not None
+    ):
+        return (
+            result.scalar_regression_density,
+            result.scalar_regression_ricci,
+            result.scalar_regression_valid_mask,
+        )
+
+    density = result.scalar_density
+    if density is None:
+        density = np.where(result.volumes > 0, 1.0 / result.volumes, np.nan)
+    valid = result.scalar_valid_mask if result.scalar_valid_mask is not None else result.valid_mask
+    return density, result.ricci_scalar, valid
+
+
 def build_scalar_test_plot(result: EinsteinTestResult) -> hv.Element:
     """R vs rho scatter + regression line + R2/G_N annotation."""
-    valid = result.valid_mask & (result.volumes > 0)
+    density, ricci, valid = _scalar_regression_data(result)
     if valid.sum() < 3:
         return hv.Text(0, 0, "Insufficient valid data").opts(title="Scalar Test")
 
-    rho = 1.0 / result.volumes[valid]
-    R = result.ricci_scalar[valid]
+    rho = density[valid]
+    R = ricci[valid]
     finite = np.isfinite(rho) & np.isfinite(R)
     if finite.sum() < 3:
         return hv.Text(0, 0, "No finite data").opts(title="Scalar Test")
@@ -61,33 +99,78 @@ def build_scalar_test_plot(result: EinsteinTestResult) -> hv.Element:
         kdims=["rho"], vdims=["R"],
     ).opts(color="#e45756", line_width=2)
 
+    overlay = scatter * line
+    if result.scalar_rho_coarse is not None and result.scalar_R_coarse is not None:
+        coarse_df = pd.DataFrame({"rho": result.scalar_rho_coarse, "R": result.scalar_R_coarse})
+        coarse_points = hv.Scatter(coarse_df, kdims=["rho"], vdims=["R"]).opts(
+            color="#f58518", size=7, alpha=0.95, marker="diamond", tools=["hover"]
+        )
+        overlay = overlay * coarse_points
+        if result.scalar_slope_coarse is not None and result.scalar_intercept_coarse is not None:
+            coarse_rho_range = np.linspace(
+                float(np.nanmin(result.scalar_rho_coarse)),
+                float(np.nanmax(result.scalar_rho_coarse)),
+                40,
+            )
+            coarse_fit = (
+                float(result.scalar_slope_coarse) * coarse_rho_range
+                + float(result.scalar_intercept_coarse)
+            )
+            coarse_line = hv.Curve(
+                pd.DataFrame({"rho": coarse_rho_range, "R": coarse_fit}),
+                kdims=["rho"], vdims=["R"],
+            ).opts(color="#f58518", line_width=2, line_dash="dotted")
+            overlay = overlay * coarse_line
+
+    annotation_text = (
+        "Volume: determinant approximation\n"
+        f"Ricci source: {_ricci_source_label(result)}\n"
+        f"Density mode: {_scalar_density_label(result)}\n"
+        f"R\u00b2 (pointwise) = {result.scalar_r2:.4f}\n"
+        f"G_N(Einstein) = {result.g_newton_einstein:.4e}\n"
+        f"\u039b = {result.lambda_measured:.4e}"
+    )
+    if result.temporal_average_enabled:
+        annotation_text += (
+            f"\nTemporal averaging: on ({int(result.temporal_frame_count)} frame(s))"
+        )
+    if result.scalar_r2_coarse is not None:
+        annotation_text += (
+            f"\nR\u00b2 (coarse, {result.scalar_bin_count_coarse} bins) = "
+            f"{result.scalar_r2_coarse:.4f}"
+        )
+    if result.scalar_r2_ci_bootstrap is not None:
+        annotation_text += (
+            "\nBootstrap CI (R\u00b2): "
+            f"{_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')}"
+        )
+    if result.scalar_r2_ci_jackknife is not None:
+        annotation_text += (
+            "\nJackknife CI (R\u00b2): "
+            f"{_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')}"
+        )
+
     annotation = hv.Text(
         float(np.median(rho_f)),
         float(np.max(R_f) * 0.9) if len(R_f) > 0 else 0,
-        (
-            "Volume: determinant approximation\n"
-            f"Ricci source: {_ricci_source_label(result)}\n"
-            f"R\u00b2 = {result.scalar_r2:.4f}\n"
-            f"G_N(Einstein) = {result.g_newton_einstein:.4e}\n"
-            f"\u039b = {result.lambda_measured:.4e}"
-        ),
+        annotation_text,
     ).opts(text_font_size="9pt", text_align="left")
 
-    return (scatter * line * annotation).opts(
+    return (overlay * annotation).opts(
         width=650, height=400,
         title=f"Scalar Test (det approx): R vs \u03c1 (R\u00b2={result.scalar_r2:.4f})",
-        xlabel="\u03c1 = 1/V", ylabel="R (Ricci scalar)",
+        xlabel=_scalar_density_label(result), ylabel="R (Ricci scalar)",
     )
 
 
 def build_scalar_test_log_plot(result: EinsteinTestResult) -> hv.Element:
     """Semi-log R vs rho scatter: log10(rho) on x-axis, linear R on y-axis."""
-    valid = result.valid_mask & (result.volumes > 0)
+    density, ricci, valid = _scalar_regression_data(result)
     if valid.sum() < 3:
         return hv.Text(0, 0, "Insufficient valid data").opts(title="Scalar Test (semi-log)")
 
-    rho = 1.0 / result.volumes[valid]
-    R = result.ricci_scalar[valid]
+    rho = density[valid]
+    R = ricci[valid]
     # rho must be positive for log; R can be any sign
     finite = np.isfinite(rho) & np.isfinite(R) & (rho > 0)
     if finite.sum() < 3:
@@ -121,7 +204,7 @@ def build_scalar_test_log_plot(result: EinsteinTestResult) -> hv.Element:
         (
             f"Semi-log fit: R = {slope:.3f} \u00b7 log\u2081\u2080(\u03c1) + {intercept:.3f}\n"
             f"R\u00b2 (semi-log) = {r2_log:.4f}\n"
-            f"R\u00b2 (linear) = {result.scalar_r2:.4f}\n"
+            f"R\u00b2 (pointwise linear) = {result.scalar_r2:.4f}\n"
             f"N points = {finite.sum()}"
         ),
     ).opts(text_font_size="9pt", text_align="left")
@@ -301,34 +384,94 @@ def build_summary_markdown(result: EinsteinTestResult) -> str:
     lines = [
         "## Einstein Test Summary",
         "",
-        f"| Quantity | Value |",
-        f"|----------|-------|",
+        "| Quantity | Value |",
+        "|----------|-------|",
         f"| N walkers | {result.n_walkers} |",
         f"| Spatial dim | {result.spatial_dim} |",
         f"| MC frame | {result.mc_frame} |",
         f"| Valid walkers | {result.valid_mask.sum()} |",
         f"| Bulk walkers | {result.bulk_mask.sum()} |",
+        f"| Temporal averaging | {'on' if result.temporal_average_enabled else 'off'} |",
+        f"| Temporal frames | {result.temporal_frame_count} |",
         "",
         "### Scalar Test (Determinant Approximation)",
         "",
-        f"| Metric | Value |",
-        f"|--------|-------|",
+        "| Metric | Value |",
+        "|--------|-------|",
         f"| R\u00b2 (all) | {result.scalar_r2:.4f} |",
         f"| R\u00b2 (bulk) | {result.bulk_scalar_r2:.4f} |",
         f"| R\u00b2 (boundary) | {result.boundary_scalar_r2:.4f} |",
         f"| Ricci source | {_ricci_source_label(result)} |",
+        f"| Density mode | {_scalar_density_label(result)} |",
         f"| slope | {result.scalar_slope:.6e} |",
         f"| G_N (Einstein) | {result.g_newton_einstein:.6e} |",
         f"| Lambda | {result.lambda_measured:.6e} |",
         "",
     ]
 
+    if (
+        result.scalar_r2_ci_bootstrap is not None
+        or result.scalar_slope_ci_bootstrap is not None
+        or result.scalar_intercept_ci_bootstrap is not None
+        or result.scalar_r2_ci_jackknife is not None
+        or result.scalar_slope_ci_jackknife is not None
+        or result.scalar_intercept_ci_jackknife is not None
+    ):
+        lines.extend(
+            [
+                "### Scalar Uncertainty",
+                "",
+                "| Metric | Value |",
+                "|--------|-------|",
+                f"| Bootstrap samples (valid) | {result.scalar_bootstrap_samples} |",
+                f"| Bootstrap confidence | {_fmt_optional(result.scalar_bootstrap_confidence, '.3f')} |",
+                (
+                    "| R\u00b2 CI (bootstrap) | "
+                    f"{_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')} |"
+                ),
+                (
+                    "| slope CI (bootstrap) | "
+                    f"{_fmt_ci(result.scalar_slope_ci_bootstrap, '.6e')} |"
+                ),
+                (
+                    "| intercept CI (bootstrap) | "
+                    f"{_fmt_ci(result.scalar_intercept_ci_bootstrap, '.6e')} |"
+                ),
+                (
+                    "| R\u00b2 CI (jackknife) | "
+                    f"{_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')} |"
+                ),
+                (
+                    "| slope CI (jackknife) | "
+                    f"{_fmt_ci(result.scalar_slope_ci_jackknife, '.6e')} |"
+                ),
+                (
+                    "| intercept CI (jackknife) | "
+                    f"{_fmt_ci(result.scalar_intercept_ci_jackknife, '.6e')} |"
+                ),
+                "",
+            ]
+        )
+
+    if result.scalar_r2_coarse is not None:
+        lines.extend([
+            "### Scalar Test (Coarse-Grained)",
+            "",
+            "| Metric | Value |",
+            "|--------|-------|",
+            f"| Bins used | {result.scalar_bin_count_coarse} |",
+            f"| R\u00b2 (coarse) | {_fmt_optional(result.scalar_r2_coarse, '.4f')} |",
+            f"| slope (coarse) | {_fmt_optional(result.scalar_slope_coarse, '.6e')} |",
+            f"| intercept (coarse) | {_fmt_optional(result.scalar_intercept_coarse, '.6e')} |",
+            "",
+        ])
+
     if result.scalar_r2_full_volume is not None:
         lines.extend([
             "### Scalar Test (Full Volume Element)",
             "",
-            f"| Metric | Value |",
-            f"|--------|-------|",
+            "| Metric | Value |",
+            "|--------|-------|",
             f"| R\u00b2 (all) | {_fmt_optional(result.scalar_r2_full_volume, '.4f')} |",
             f"| R\u00b2 (bulk) | {_fmt_optional(result.bulk_scalar_r2_full_volume, '.4f')} |",
             f"| R\u00b2 (boundary) | {_fmt_optional(result.boundary_scalar_r2_full_volume, '.4f')} |",
@@ -338,8 +481,8 @@ def build_summary_markdown(result: EinsteinTestResult) -> str:
             "",
             "### Volume Comparison",
             "",
-            f"| Metric | Det approx | Full volume |",
-            f"|--------|------------|-------------|",
+            "| Metric | Det approx | Full volume |",
+            "|--------|------------|-------------|",
             f"| R\u00b2 | {_fmt_optional(result.scalar_r2, '.4f')} | {_fmt_optional(result.scalar_r2_full_volume, '.4f')} |",
             (
                 f"| G_N | {_fmt_optional(result.g_newton_einstein, '.6e')} | "
@@ -362,15 +505,15 @@ def build_summary_markdown(result: EinsteinTestResult) -> str:
     lines.extend([
         "### Tensor Test (G_uv vs T_uv)",
         "",
-        f"| Metric | Value |",
-        f"|--------|-------|",
+        "| Metric | Value |",
+        "|--------|-------|",
         f"| R\u00b2 (overall) | {result.tensor_r2:.4f} |",
         f"| slope (8piG_N) | {result.tensor_slope:.6e} |",
         "",
         "### G_N Cross-Reference",
         "",
-        f"| Source | Value |",
-        f"|--------|-------|",
+        "| Source | Value |",
+        "|--------|-------|",
         f"| G_N (area law) | {result.g_newton_area_law:.6e} ({result.g_newton_source}) |",
         f"| G_N (Einstein) | {result.g_newton_einstein:.6e} |",
         f"| Ratio (Einstein/area) | {result.g_newton_ratio:.4f} |",

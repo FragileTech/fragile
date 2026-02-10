@@ -745,15 +745,16 @@ def compute_anisotropic_edge_channels(
         raise ValueError(msg)
 
     keep_dims = _resolve_keep_dims(history, config.keep_dims)
-    channels = channels or [
-        "scalar",
-        "pseudoscalar",
-        "vector",
-        "axial_vector",
-        "tensor",
-        "nucleon",
-        "glueball",
-    ]
+    if channels is None:
+        channels = [
+            "scalar",
+            "pseudoscalar",
+            "vector",
+            "axial_vector",
+            "tensor",
+            "nucleon",
+            "glueball",
+        ]
     unknown = sorted(set(channels) - SUPPORTED_CHANNELS)
     if unknown:
         raise ValueError(

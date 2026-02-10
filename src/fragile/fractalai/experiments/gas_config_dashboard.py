@@ -191,7 +191,7 @@ class GasConfig(param.Parameterized):
             ),
             "gamma": pnw.EditableFloatSlider(name="gamma", start=0.05, end=5.0, step=0.05),
             "beta": pnw.EditableFloatSlider(name="beta", start=0.1, end=5.0, step=0.05),
-            "delta_t": pnw.EditableFloatSlider(name="delta_t", start=0.01, end=0.2, step=0.005),
+            "delta_t": pnw.EditableFloatSlider(name="delta_t", start=0.0001, end=0.2, step=0.0005),
             "lambda_alg": pnw.EditableFloatSlider(
                 name="lambda_alg", start=0.0, end=3.0, step=0.05
             ),

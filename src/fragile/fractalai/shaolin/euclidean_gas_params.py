@@ -67,7 +67,7 @@ class EuclideanGasParamSelector(param.Parameterized):
         step=0.1,
         doc="Inverse temperature (higher = less random exploration)",
     )
-    delta_t = param.Number(default=0.1, bounds=(0.001, 1.0), step=0.01, doc="Integration timestep")
+    delta_t = param.Number(default=0.1, bounds=(0.0001, 1.0), step=0.001, doc="Integration timestep")
     integrator = param.Selector(
         default="baoab",
         objects=["baoab", "aboba", "babo", "obab"],

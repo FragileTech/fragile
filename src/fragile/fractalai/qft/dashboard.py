@@ -25,12 +25,32 @@ from fragile.fractalai.core.benchmarks import prepare_benchmark_for_explorer
 from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
 from fragile.fractalai.qft import analysis as qft_analysis
 from fragile.fractalai.qft.correlator_channels import (
+    _fft_correlator_batched,
     ChannelConfig,
     ChannelCorrelatorResult,
     CorrelatorConfig,
+    compute_effective_mass_torch,
     compute_channel_correlator,
+    extract_mass_aic,
+    extract_mass_linear,
 )
 from fragile.fractalai.qft.aggregation import compute_all_operator_series
+from fragile.fractalai.qft.baryon_triplet_channels import (
+    BaryonTripletCorrelatorConfig,
+    compute_companion_baryon_correlator,
+)
+from fragile.fractalai.qft.meson_phase_channels import (
+    MesonPhaseCorrelatorConfig,
+    compute_companion_meson_phase_correlator,
+)
+from fragile.fractalai.qft.vector_meson_channels import (
+    VectorMesonCorrelatorConfig,
+    compute_companion_vector_meson_correlator,
+)
+from fragile.fractalai.qft.glueball_color_channels import (
+    GlueballColorCorrelatorConfig,
+    compute_companion_glueball_color_correlator,
+)
 from fragile.fractalai.qft.electroweak_channels import (
     ELECTROWEAK_CHANNELS,
     ElectroweakChannelConfig,
@@ -216,6 +236,7 @@ class SwarmConvergence3D(param.Parameterized):
         self._mc_slice_controls = None
         self._time_bin_controls = None
         self._time_distribution_pane = None
+        self._time_distribution_container = None
         self._player_mode_pane = None
         self._time_sliced_cache_key = None
         self._time_sliced_cache_edges = None
@@ -452,9 +473,13 @@ class SwarmConvergence3D(param.Parameterized):
     def _sync_time_bin_visibility(self) -> None:
         if self._time_bin_controls is None:
             return
-        self._time_bin_controls.visible = self.time_iteration == "euclidean"
-        if self._time_distribution_pane is not None:
-            self._time_distribution_pane.visible = self._time_bin_controls.visible
+        visible = self.time_iteration == "euclidean"
+        self._time_bin_controls.visible = visible
+        # Toggle an outer container instead of the HoloViews pane itself.
+        # This avoids forwarding unsupported layout props to underlying Bokeh figures
+        # on some Panel/Bokeh version combinations.
+        if self._time_distribution_container is not None:
+            self._time_distribution_container.visible = visible
 
     def _build_time_distribution(self):
         if self.history is None or self._x is None:
@@ -1640,6 +1665,10 @@ class SwarmConvergence3D(param.Parameterized):
             sizing_mode="stretch_width",
             height=180,
         )
+        self._time_distribution_container = pn.Column(
+            self._time_distribution_pane,
+            sizing_mode="stretch_width",
+        )
         self._player_mode_pane = pn.pane.Markdown(
             "**Player:** ready",
             sizing_mode="stretch_width",
@@ -1674,7 +1703,7 @@ class SwarmConvergence3D(param.Parameterized):
             time_toggle,
             mc_slice_controls,
             time_bin_controls,
-            self._time_distribution_pane,
+            self._time_distribution_container,
             self._player_mode_pane,
             self.time_player,
             pn.Spacer(height=10),
@@ -2047,6 +2076,120 @@ class AnisotropicEdgeSettings(param.Parameterized):
             "'direct_neighbors' uses Delaunay-neighbor triplets, "
             "'companions' uses (distance companion, clone companion)."
         ),
+    )
+    use_companion_baryon_triplet = param.Boolean(
+        default=True,
+        doc="Use companion-triplet baryon channel implementation for nucleon channel.",
+    )
+    baryon_use_connected = param.Boolean(
+        default=True,
+        doc="Use connected baryon correlator C_B(τ)-<B>² for nucleon channel.",
+    )
+    baryon_max_lag = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Override max lag for baryon channel (None uses max_lag).",
+    )
+    baryon_color_dims_spec = param.String(
+        default="0,1,2",
+        doc="Comma-separated 3 dims for baryon determinant (blank uses first 3).",
+    )
+    baryon_eps = param.Number(
+        default=1e-12,
+        bounds=(0.0, None),
+        doc="Minimum |det| threshold for valid baryon triplets.",
+    )
+    use_companion_meson_phase = param.Boolean(
+        default=True,
+        doc="Use companion-pair color-phase implementation for scalar/pseudoscalar channels.",
+    )
+    meson_use_connected = param.Boolean(
+        default=True,
+        doc="Use connected meson phase correlator C(τ)-<O>² for scalar/pseudoscalar channels.",
+    )
+    meson_max_lag = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Override max lag for meson phase channels (None uses max_lag).",
+    )
+    meson_pair_selection = param.ObjectSelector(
+        default="both",
+        objects=("distance", "clone", "both"),
+        doc="Companion-pair source for meson phase channels.",
+    )
+    meson_color_dims_spec = param.String(
+        default="0,1,2",
+        doc="Comma-separated 3 dims for meson color inner products (blank uses first 3).",
+    )
+    meson_eps = param.Number(
+        default=1e-12,
+        bounds=(0.0, None),
+        doc="Minimum |c_i†c_j| threshold for valid meson pairs.",
+    )
+    use_companion_vector_meson = param.Boolean(
+        default=True,
+        doc="Use companion-pair color-displacement implementation for vector/axial channels.",
+    )
+    vector_meson_use_connected = param.Boolean(
+        default=True,
+        doc="Use connected vector meson correlator C(τ)-<O>² for vector/axial channels.",
+    )
+    vector_meson_max_lag = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Override max lag for vector meson channels (None uses max_lag).",
+    )
+    vector_meson_pair_selection = param.ObjectSelector(
+        default="both",
+        objects=("distance", "clone", "both"),
+        doc="Companion-pair source for vector meson channels.",
+    )
+    vector_meson_color_dims_spec = param.String(
+        default="0,1,2",
+        doc="Comma-separated 3 dims for vector meson color inner products (blank uses first 3).",
+    )
+    vector_meson_position_dims_spec = param.String(
+        default="0,1,2",
+        doc="Comma-separated 3 dims for vector meson displacements (blank uses first 3).",
+    )
+    vector_meson_eps = param.Number(
+        default=1e-12,
+        bounds=(0.0, None),
+        doc="Minimum |c_i†c_j| threshold for valid vector meson pairs.",
+    )
+    vector_meson_use_unit_displacement = param.Boolean(
+        default=False,
+        doc="Normalize pair displacement to unit vectors before vector meson projection.",
+    )
+    use_companion_glueball_color = param.Boolean(
+        default=True,
+        doc="Use companion-triplet color-plaquette implementation for glueball channel.",
+    )
+    glueball_use_connected = param.Boolean(
+        default=True,
+        doc="Use connected glueball correlator C(τ)-<O>² for glueball channel.",
+    )
+    glueball_max_lag = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Override max lag for glueball channel (None uses max_lag).",
+    )
+    glueball_color_dims_spec = param.String(
+        default="0,1,2",
+        doc="Comma-separated 3 dims for glueball color plaquette (blank uses first 3).",
+    )
+    glueball_eps = param.Number(
+        default=1e-12,
+        bounds=(0.0, None),
+        doc="Minimum |c_i†c_j| threshold for valid glueball triplets.",
+    )
+    glueball_use_action_form = param.Boolean(
+        default=False,
+        doc="Use action form 1-Re(Π) instead of Re(Π) for glueball operator.",
     )
     channel_list = param.String(
         default="scalar,pseudoscalar,vector,axial_vector,tensor,nucleon,glueball"
@@ -2489,6 +2632,60 @@ class EinsteinTestSettings(param.Parameterized):
         bounds=(0.01, 0.99),
         doc="Fraction of walkers considered bulk",
     )
+    scalar_density_mode = param.ObjectSelector(
+        default="volume",
+        objects=["volume", "knn"],
+        doc="Density estimator for scalar Einstein regression.",
+    )
+    knn_k = param.Integer(
+        default=10,
+        bounds=(1, 256),
+        doc="k for KNN density when scalar_density_mode='knn'.",
+    )
+    coarse_grain_bins = param.Integer(
+        default=0,
+        bounds=(0, 512),
+        doc="Number of radial coarse-graining bins (0 disables coarse fit).",
+    )
+    coarse_grain_min_points = param.Integer(
+        default=5,
+        bounds=(1, 512),
+        doc="Minimum walkers per coarse bin used in regression.",
+    )
+    temporal_average_enabled = param.Boolean(
+        default=False,
+        doc="Average scalar Einstein regression inputs across recent frames.",
+    )
+    temporal_window_frames = param.Integer(
+        default=8,
+        bounds=(1, 512),
+        doc="Number of frames included in temporal averaging window.",
+    )
+    temporal_stride = param.Integer(
+        default=1,
+        bounds=(1, 128),
+        doc="Stride between frames in the temporal averaging window.",
+    )
+    bootstrap_samples = param.Integer(
+        default=0,
+        bounds=(0, 5000),
+        doc="Bootstrap resamples for scalar regression uncertainty (0 disables).",
+    )
+    bootstrap_confidence = param.Number(
+        default=0.95,
+        bounds=(0.5, 0.999),
+        doc="Confidence level for bootstrap/jackknife intervals.",
+    )
+    bootstrap_seed = param.Integer(
+        default=12345,
+        bounds=(0, None),
+        doc="Random seed for scalar bootstrap resampling.",
+    )
+    bootstrap_frame_block_size = param.Integer(
+        default=1,
+        bounds=(1, 128),
+        doc="Temporal block size for frame bootstrap sampling.",
+    )
     g_newton_metric = param.ObjectSelector(
         default="s_total_geom",
         objects=["s_total_geom", "s_total", "s_dist_geom", "s_dist", "manual"],
@@ -2549,6 +2746,420 @@ def _parse_dims_spec(spec: str, history_d: int) -> list[int] | None:
             f"spatial_dims_spec contains invalid dims {invalid}; valid range is [0, {history_d - 1}]."
         )
     return dims
+
+
+def _parse_triplet_dims_spec(spec: str, history_d: int) -> tuple[int, int, int] | None:
+    """Parse exactly three dimensions for baryon triplet color determinant."""
+    dims = _parse_dims_spec(spec, history_d)
+    if dims is None:
+        return None
+    if len(dims) != 3:
+        raise ValueError(
+            "baryon_color_dims_spec must contain exactly 3 dims; "
+            f"received {dims}."
+        )
+    return int(dims[0]), int(dims[1]), int(dims[2])
+
+
+def _build_result_from_precomputed_correlator(
+    channel_name: str,
+    correlator: torch.Tensor,
+    dt: float,
+    config: CorrelatorConfig,
+    *,
+    n_samples: int,
+    series: torch.Tensor | None = None,
+    correlator_err: torch.Tensor | None = None,
+) -> ChannelCorrelatorResult:
+    """Build ChannelCorrelatorResult from a precomputed correlator."""
+    corr_t = correlator.float()
+    effective_mass = compute_effective_mass_torch(corr_t, dt)
+    if config.fit_mode == "linear_abs":
+        mass_fit = extract_mass_linear(corr_t.abs(), dt, config)
+        window_data: dict[str, Any] = {}
+    elif config.fit_mode == "linear":
+        mass_fit = extract_mass_linear(corr_t, dt, config)
+        window_data = {}
+    else:
+        mass_fit = extract_mass_aic(corr_t, dt, config)
+        window_data = {
+            "window_masses": mass_fit.pop("window_masses", None),
+            "window_aic": mass_fit.pop("window_aic", None),
+            "window_widths": mass_fit.pop("window_widths", None),
+            "window_r2": mass_fit.pop("window_r2", None),
+        }
+    series_t = corr_t if series is None else series.float()
+    return ChannelCorrelatorResult(
+        channel_name=channel_name,
+        correlator=corr_t,
+        correlator_err=correlator_err,
+        effective_mass=effective_mass,
+        mass_fit=mass_fit,
+        series=series_t,
+        n_samples=int(n_samples),
+        dt=dt,
+        **window_data,
+    )
+
+
+def _bootstrap_errors_batched_scalar_series(
+    series_stack: torch.Tensor,
+    *,
+    valid_t: torch.Tensor | None,
+    max_lag: int,
+    use_connected: bool,
+    n_bootstrap: int,
+) -> torch.Tensor:
+    """Compute vectorized bootstrap correlator errors for multiple scalar series [B, T]."""
+    if series_stack.ndim != 2:
+        raise ValueError(f"Expected series_stack [B, T], got {tuple(series_stack.shape)}.")
+    n_channels, n_time = series_stack.shape
+    errors = torch.zeros(
+        (n_channels, int(max_lag) + 1), dtype=torch.float32, device=series_stack.device
+    )
+    if n_channels == 0 or n_time == 0:
+        return errors
+
+    if valid_t is None:
+        valid_mask = torch.ones(n_time, dtype=torch.bool, device=series_stack.device)
+    else:
+        valid_mask = valid_t.to(dtype=torch.bool, device=series_stack.device)
+        if valid_mask.shape != (n_time,):
+            raise ValueError(
+                f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}."
+            )
+    if not torch.any(valid_mask):
+        return errors
+
+    trimmed = series_stack[:, valid_mask].float()
+    t_len = int(trimmed.shape[1])
+    if t_len == 0:
+        return errors
+
+    n_boot = int(max(1, n_bootstrap))
+    sample_idx = torch.randint(0, t_len, (n_boot, t_len), device=trimmed.device)
+    sampled = torch.gather(
+        trimmed.unsqueeze(0).expand(n_boot, -1, -1),
+        dim=2,
+        index=sample_idx.unsqueeze(1).expand(-1, trimmed.shape[0], -1),
+    )
+    boot_corr = _fft_correlator_batched(
+        sampled.reshape(-1, t_len),
+        max_lag=int(max_lag),
+        use_connected=bool(use_connected),
+    )
+    return boot_corr.reshape(n_boot, trimmed.shape[0], -1).std(dim=0)
+
+
+def _bootstrap_error_vector_dot_series(
+    vector_series: torch.Tensor,
+    *,
+    valid_t: torch.Tensor | None,
+    max_lag: int,
+    use_connected: bool,
+    n_bootstrap: int,
+) -> torch.Tensor:
+    """Bootstrap error for dot-product correlator from vector operator series [T, D]."""
+    if vector_series.ndim != 2:
+        raise ValueError(f"Expected vector_series [T, D], got {tuple(vector_series.shape)}.")
+    n_time, _ = vector_series.shape
+    errors = torch.zeros(int(max_lag) + 1, dtype=torch.float32, device=vector_series.device)
+    if n_time == 0:
+        return errors
+
+    if valid_t is None:
+        valid_mask = torch.ones(n_time, dtype=torch.bool, device=vector_series.device)
+    else:
+        valid_mask = valid_t.to(dtype=torch.bool, device=vector_series.device)
+        if valid_mask.shape != (n_time,):
+            raise ValueError(
+                f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}."
+            )
+    if not torch.any(valid_mask):
+        return errors
+
+    trimmed = vector_series[valid_mask].float()  # [T_valid, D]
+    t_len = int(trimmed.shape[0])
+    if t_len == 0:
+        return errors
+
+    # Correlator is sum over component auto-correlators: <V(t)·V(t+lag)>.
+    comp_stack = trimmed.transpose(0, 1).contiguous()  # [D, T_valid]
+    n_boot = int(max(1, n_bootstrap))
+    sample_idx = torch.randint(0, t_len, (n_boot, t_len), device=comp_stack.device)
+    sampled = torch.gather(
+        comp_stack.unsqueeze(0).expand(n_boot, -1, -1),
+        dim=2,
+        index=sample_idx.unsqueeze(1).expand(-1, comp_stack.shape[0], -1),
+    )  # [B, D, T_valid]
+    boot_corr_comp = _fft_correlator_batched(
+        sampled.reshape(-1, t_len),
+        max_lag=int(max_lag),
+        use_connected=bool(use_connected),
+    ).reshape(n_boot, comp_stack.shape[0], -1)
+    boot_corr_total = boot_corr_comp.sum(dim=1)
+    return boot_corr_total.std(dim=0)
+
+
+def _compute_anisotropic_baryon_triplet_result(
+    history: RunHistory,
+    settings: AnisotropicEdgeSettings,
+) -> tuple[ChannelCorrelatorResult, int]:
+    """Compute nucleon channel using companion-triplet baryon correlator."""
+    baryon_max_lag = int(settings.baryon_max_lag or settings.max_lag)
+    baryon_cfg = BaryonTripletCorrelatorConfig(
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mc_time_index=settings.mc_time_index,
+        max_lag=baryon_max_lag,
+        use_connected=bool(settings.baryon_use_connected),
+        h_eff=float(settings.h_eff),
+        mass=float(settings.mass),
+        ell0=settings.ell0,
+        color_dims=_parse_triplet_dims_spec(settings.baryon_color_dims_spec, history.d),
+        eps=float(settings.baryon_eps),
+    )
+    baryon_out = compute_companion_baryon_correlator(history, baryon_cfg)
+    dt = float(history.delta_t * history.record_every)
+    fit_cfg = CorrelatorConfig(
+        max_lag=baryon_max_lag,
+        use_connected=bool(settings.baryon_use_connected),
+        window_widths=_parse_window_widths(settings.window_widths_spec),
+        fit_mode=str(settings.fit_mode),
+        fit_start=int(settings.fit_start),
+        fit_stop=settings.fit_stop,
+        min_fit_points=int(settings.min_fit_points),
+        compute_bootstrap_errors=bool(settings.compute_bootstrap_errors),
+        n_bootstrap=int(settings.n_bootstrap),
+    )
+    correlator_err = None
+    if bool(settings.compute_bootstrap_errors):
+        baryon_err = _bootstrap_errors_batched_scalar_series(
+            baryon_out.operator_baryon_series.unsqueeze(0),
+            valid_t=(baryon_out.triplet_counts_per_frame > 0),
+            max_lag=baryon_max_lag,
+            use_connected=bool(settings.baryon_use_connected),
+            n_bootstrap=int(settings.n_bootstrap),
+        )
+        correlator_err = baryon_err[0]
+    result = _build_result_from_precomputed_correlator(
+        channel_name="nucleon",
+        correlator=baryon_out.correlator,
+        dt=dt,
+        config=fit_cfg,
+        n_samples=int(baryon_out.n_valid_source_triplets),
+        series=baryon_out.operator_baryon_series,
+        correlator_err=correlator_err,
+    )
+    valid_frames = int((baryon_out.triplet_counts_per_frame > 0).sum().item())
+    return result, valid_frames
+
+
+def _compute_anisotropic_meson_phase_results(
+    history: RunHistory,
+    settings: AnisotropicEdgeSettings,
+    requested_channels: set[str],
+) -> tuple[dict[str, ChannelCorrelatorResult], int]:
+    """Compute scalar/pseudoscalar channels using companion-pair meson phases."""
+    meson_max_lag = int(settings.meson_max_lag or settings.max_lag)
+    meson_cfg = MesonPhaseCorrelatorConfig(
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mc_time_index=settings.mc_time_index,
+        max_lag=meson_max_lag,
+        use_connected=bool(settings.meson_use_connected),
+        h_eff=float(settings.h_eff),
+        mass=float(settings.mass),
+        ell0=settings.ell0,
+        color_dims=_parse_triplet_dims_spec(settings.meson_color_dims_spec, history.d),
+        pair_selection=str(settings.meson_pair_selection),
+        eps=float(settings.meson_eps),
+    )
+    meson_out = compute_companion_meson_phase_correlator(history, meson_cfg)
+    dt = float(history.delta_t * history.record_every)
+    fit_cfg = CorrelatorConfig(
+        max_lag=meson_max_lag,
+        use_connected=bool(settings.meson_use_connected),
+        window_widths=_parse_window_widths(settings.window_widths_spec),
+        fit_mode=str(settings.fit_mode),
+        fit_start=int(settings.fit_start),
+        fit_stop=settings.fit_stop,
+        min_fit_points=int(settings.min_fit_points),
+        compute_bootstrap_errors=bool(settings.compute_bootstrap_errors),
+        n_bootstrap=int(settings.n_bootstrap),
+    )
+    results: dict[str, ChannelCorrelatorResult] = {}
+    n_samples = int(meson_out.n_valid_source_pairs)
+    pseudoscalar_err: torch.Tensor | None = None
+    scalar_err: torch.Tensor | None = None
+    if bool(settings.compute_bootstrap_errors):
+        meson_err = _bootstrap_errors_batched_scalar_series(
+            torch.stack(
+                [meson_out.operator_pseudoscalar_series, meson_out.operator_scalar_series], dim=0
+            ),
+            valid_t=(meson_out.pair_counts_per_frame > 0),
+            max_lag=meson_max_lag,
+            use_connected=bool(settings.meson_use_connected),
+            n_bootstrap=int(settings.n_bootstrap),
+        )
+        pseudoscalar_err = meson_err[0]
+        scalar_err = meson_err[1]
+    if "pseudoscalar" in requested_channels:
+        results["pseudoscalar"] = _build_result_from_precomputed_correlator(
+            channel_name="pseudoscalar",
+            correlator=meson_out.pseudoscalar,
+            dt=dt,
+            config=fit_cfg,
+            n_samples=n_samples,
+            series=meson_out.operator_pseudoscalar_series,
+            correlator_err=pseudoscalar_err,
+        )
+    if "scalar" in requested_channels:
+        results["scalar"] = _build_result_from_precomputed_correlator(
+            channel_name="scalar",
+            correlator=meson_out.scalar,
+            dt=dt,
+            config=fit_cfg,
+            n_samples=n_samples,
+            series=meson_out.operator_scalar_series,
+            correlator_err=scalar_err,
+        )
+    valid_frames = int((meson_out.pair_counts_per_frame > 0).sum().item())
+    return results, valid_frames
+
+
+def _compute_anisotropic_vector_meson_results(
+    history: RunHistory,
+    settings: AnisotropicEdgeSettings,
+    requested_channels: set[str],
+) -> tuple[dict[str, ChannelCorrelatorResult], int]:
+    """Compute vector/axial-vector channels using companion-pair vector mesons."""
+    vector_max_lag = int(settings.vector_meson_max_lag or settings.max_lag)
+    vector_cfg = VectorMesonCorrelatorConfig(
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mc_time_index=settings.mc_time_index,
+        max_lag=vector_max_lag,
+        use_connected=bool(settings.vector_meson_use_connected),
+        h_eff=float(settings.h_eff),
+        mass=float(settings.mass),
+        ell0=settings.ell0,
+        color_dims=_parse_triplet_dims_spec(settings.vector_meson_color_dims_spec, history.d),
+        position_dims=_parse_triplet_dims_spec(settings.vector_meson_position_dims_spec, history.d),
+        pair_selection=str(settings.vector_meson_pair_selection),
+        eps=float(settings.vector_meson_eps),
+        use_unit_displacement=bool(settings.vector_meson_use_unit_displacement),
+    )
+    vector_out = compute_companion_vector_meson_correlator(history, vector_cfg)
+    dt = float(history.delta_t * history.record_every)
+    fit_cfg = CorrelatorConfig(
+        max_lag=vector_max_lag,
+        use_connected=bool(settings.vector_meson_use_connected),
+        window_widths=_parse_window_widths(settings.window_widths_spec),
+        fit_mode=str(settings.fit_mode),
+        fit_start=int(settings.fit_start),
+        fit_stop=settings.fit_stop,
+        min_fit_points=int(settings.min_fit_points),
+        compute_bootstrap_errors=bool(settings.compute_bootstrap_errors),
+        n_bootstrap=int(settings.n_bootstrap),
+    )
+    results: dict[str, ChannelCorrelatorResult] = {}
+    n_samples = int(vector_out.n_valid_source_pairs)
+    vector_err: torch.Tensor | None = None
+    axial_err: torch.Tensor | None = None
+    if bool(settings.compute_bootstrap_errors):
+        valid_t = vector_out.pair_counts_per_frame > 0
+        vector_err = _bootstrap_error_vector_dot_series(
+            vector_out.operator_vector_series,
+            valid_t=valid_t,
+            max_lag=vector_max_lag,
+            use_connected=bool(settings.vector_meson_use_connected),
+            n_bootstrap=int(settings.n_bootstrap),
+        )
+        axial_err = _bootstrap_error_vector_dot_series(
+            vector_out.operator_axial_vector_series,
+            valid_t=valid_t,
+            max_lag=vector_max_lag,
+            use_connected=bool(settings.vector_meson_use_connected),
+            n_bootstrap=int(settings.n_bootstrap),
+        )
+    if "vector" in requested_channels:
+        results["vector"] = _build_result_from_precomputed_correlator(
+            channel_name="vector",
+            correlator=vector_out.vector,
+            dt=dt,
+            config=fit_cfg,
+            n_samples=n_samples,
+            series=vector_out.vector,
+            correlator_err=vector_err,
+        )
+    if "axial_vector" in requested_channels:
+        results["axial_vector"] = _build_result_from_precomputed_correlator(
+            channel_name="axial_vector",
+            correlator=vector_out.axial_vector,
+            dt=dt,
+            config=fit_cfg,
+            n_samples=n_samples,
+            series=vector_out.axial_vector,
+            correlator_err=axial_err,
+        )
+    valid_frames = int((vector_out.pair_counts_per_frame > 0).sum().item())
+    return results, valid_frames
+
+
+def _compute_anisotropic_glueball_color_result(
+    history: RunHistory,
+    settings: AnisotropicEdgeSettings,
+) -> tuple[ChannelCorrelatorResult, int]:
+    """Compute glueball channel using companion-triplet color plaquettes."""
+    glueball_max_lag = int(settings.glueball_max_lag or settings.max_lag)
+    glueball_cfg = GlueballColorCorrelatorConfig(
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mc_time_index=settings.mc_time_index,
+        max_lag=glueball_max_lag,
+        use_connected=bool(settings.glueball_use_connected),
+        h_eff=float(settings.h_eff),
+        mass=float(settings.mass),
+        ell0=settings.ell0,
+        color_dims=_parse_triplet_dims_spec(settings.glueball_color_dims_spec, history.d),
+        eps=float(settings.glueball_eps),
+        use_action_form=bool(settings.glueball_use_action_form),
+    )
+    glueball_out = compute_companion_glueball_color_correlator(history, glueball_cfg)
+    dt = float(history.delta_t * history.record_every)
+    fit_cfg = CorrelatorConfig(
+        max_lag=glueball_max_lag,
+        use_connected=bool(settings.glueball_use_connected),
+        window_widths=_parse_window_widths(settings.window_widths_spec),
+        fit_mode=str(settings.fit_mode),
+        fit_start=int(settings.fit_start),
+        fit_stop=settings.fit_stop,
+        min_fit_points=int(settings.min_fit_points),
+        compute_bootstrap_errors=bool(settings.compute_bootstrap_errors),
+        n_bootstrap=int(settings.n_bootstrap),
+    )
+    correlator_err = None
+    if bool(settings.compute_bootstrap_errors):
+        glueball_err = _bootstrap_errors_batched_scalar_series(
+            glueball_out.operator_glueball_series.unsqueeze(0),
+            valid_t=(glueball_out.triplet_counts_per_frame > 0),
+            max_lag=glueball_max_lag,
+            use_connected=bool(settings.glueball_use_connected),
+            n_bootstrap=int(settings.n_bootstrap),
+        )
+        correlator_err = glueball_err[0]
+    result = _build_result_from_precomputed_correlator(
+        channel_name="glueball",
+        correlator=glueball_out.correlator,
+        dt=dt,
+        config=fit_cfg,
+        n_samples=int(glueball_out.n_valid_source_triplets),
+        series=glueball_out.operator_glueball_series,
+        correlator_err=correlator_err,
+    )
+    valid_frames = int((glueball_out.triplet_counts_per_frame > 0).sum().item())
+    return result, valid_frames
 
 
 def _map_time_dimension(time_dimension: str, history_d: int | None = None) -> tuple[str, int]:
@@ -2697,7 +3308,67 @@ def _compute_anisotropic_edge_bundle(
         n_bootstrap=int(settings.n_bootstrap),
     )
     channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
-    return compute_anisotropic_edge_channels(history, config=config, channels=channels)
+    use_baryon_triplet = bool(settings.use_companion_baryon_triplet) and ("nucleon" in channels)
+    meson_override_targets = {"scalar", "pseudoscalar"}
+    requested_meson_targets = set(channels) & meson_override_targets
+    use_meson_phase = bool(settings.use_companion_meson_phase) and bool(requested_meson_targets)
+    vector_override_targets = {"vector", "axial_vector"}
+    requested_vector_targets = set(channels) & vector_override_targets
+    use_vector_meson = bool(settings.use_companion_vector_meson) and bool(requested_vector_targets)
+    use_glueball_color = bool(settings.use_companion_glueball_color) and ("glueball" in channels)
+
+    override_channels: set[str] = set()
+    if use_baryon_triplet:
+        override_channels.add("nucleon")
+    if use_meson_phase:
+        override_channels.update(requested_meson_targets)
+    if use_vector_meson:
+        override_channels.update(requested_vector_targets)
+    if use_glueball_color:
+        override_channels.add("glueball")
+    anisotropic_channels = [channel for channel in channels if channel not in override_channels]
+
+    output = compute_anisotropic_edge_channels(history, config=config, channels=anisotropic_channels)
+    if not use_baryon_triplet and not use_meson_phase and not use_vector_meson and not use_glueball_color:
+        return output
+
+    merged_results = dict(output.channel_results)
+    valid_frame_counts = [int(output.n_valid_frames)]
+    if use_baryon_triplet:
+        baryon_result, baryon_valid_frames = _compute_anisotropic_baryon_triplet_result(history, settings)
+        merged_results["nucleon"] = baryon_result
+        valid_frame_counts.append(int(baryon_valid_frames))
+    if use_meson_phase:
+        meson_results, meson_valid_frames = _compute_anisotropic_meson_phase_results(
+            history,
+            settings,
+            requested_channels=requested_meson_targets,
+        )
+        merged_results.update(meson_results)
+        valid_frame_counts.append(int(meson_valid_frames))
+    if use_vector_meson:
+        vector_results, vector_valid_frames = _compute_anisotropic_vector_meson_results(
+            history,
+            settings,
+            requested_channels=requested_vector_targets,
+        )
+        merged_results.update(vector_results)
+        valid_frame_counts.append(int(vector_valid_frames))
+    if use_glueball_color:
+        glueball_result, glueball_valid_frames = _compute_anisotropic_glueball_color_result(
+            history, settings
+        )
+        merged_results["glueball"] = glueball_result
+        valid_frame_counts.append(int(glueball_valid_frames))
+
+    return AnisotropicEdgeChannelOutput(
+        channel_results=merged_results,
+        component_labels=output.component_labels,
+        frame_indices=output.frame_indices,
+        n_valid_frames=max(valid_frame_counts) if valid_frame_counts else 0,
+        avg_alive_walkers=output.avg_alive_walkers,
+        avg_edges=output.avg_edges,
+    )
 
 
 def _compute_radial_channels_bundle(
@@ -4247,6 +4918,76 @@ def _build_anchor_rows_generic(
     return rows
 
 
+def _build_single_scale_anchor_row(
+    label: str,
+    scale: float,
+    masses: dict[str, float],
+    r2s: dict[str, float] | None = None,
+    closest_refs: dict[str, dict[str, float]] | None = None,
+) -> dict[str, Any]:
+    """Build one anchored row using a single scale applied to all masses."""
+    r2s = r2s or {}
+    closest_refs = closest_refs or {}
+    row: dict[str, Any] = {
+        "anchor": label,
+        "scale_GeV_per_alg": scale,
+    }
+    for key, alg_mass in masses.items():
+        pred = alg_mass * scale
+        row[f"{key}_pred_GeV"] = pred
+        if key in closest_refs:
+            row[f"closest_{key}"] = _format_closest(pred, closest_refs[key])
+        key_r2 = r2s.get(key)
+        if key_r2 is not None and np.isfinite(key_r2):
+            row[f"{key}_r2"] = key_r2
+    return row
+
+
+def _build_family_fixed_anchor_rows(
+    masses: dict[str, float],
+    anchors: list[tuple[str, float, str]],
+    r2s: dict[str, float] | None = None,
+    closest_refs: dict[str, dict[str, float]] | None = None,
+) -> list[dict[str, Any]]:
+    """Build one anchored row with one fixed scale per family."""
+    r2s = r2s or {}
+    closest_refs = closest_refs or {}
+
+    families = sorted({family for _, _, family in anchors})
+    scales_by_family: dict[str, float] = {}
+    for family in families:
+        family_anchors = [anchor for anchor in anchors if anchor[2] == family]
+        scale = _best_fit_scale(masses, family_anchors)
+        if scale is not None:
+            scales_by_family[family] = scale
+
+    if not scales_by_family:
+        return []
+
+    global_scale = _best_fit_scale(masses, anchors)
+    row: dict[str, Any] = {
+        "anchor": "family-fixed",
+        "scale_GeV_per_alg": None,
+    }
+    for family, scale in scales_by_family.items():
+        row[f"{family}_scale_GeV_per_alg"] = scale
+
+    for key, alg_mass in masses.items():
+        scale = scales_by_family.get(key)
+        if scale is None:
+            scale = global_scale
+        if scale is None:
+            continue
+        pred = alg_mass * scale
+        row[f"{key}_pred_GeV"] = pred
+        if key in closest_refs:
+            row[f"closest_{key}"] = _format_closest(pred, closest_refs[key])
+        key_r2 = r2s.get(key)
+        if key_r2 is not None and np.isfinite(key_r2):
+            row[f"{key}_r2"] = key_r2
+    return [row]
+
+
 def _build_best_fit_rows(
     masses: dict[str, float],
     r2s: dict[str, float] | None = None,
@@ -4262,8 +5003,15 @@ def _build_anchor_rows(
     glueball_ref: tuple[str, float] | None,
     sqrt_sigma_ref: float | None,
     r2s: dict[str, float] | None = None,
+    anchor_mode: str = "per_anchor_row",
 ) -> list[dict[str, Any]]:
-    """Build anchored mass table using individual reference masses."""
+    """Build anchored mass table with selectable calibration mode.
+
+    Modes:
+    - ``per_anchor_row``: one scale per row/anchor.
+    - ``family_fixed``: one fitted scale per family (baryon/meson/...) in one row.
+    - ``global_fixed``: one fitted scale over all anchors in one row.
+    """
     anchors: list[tuple[str, float, str]] = []
     anchors.extend((f"baryon->{name}", mass, "baryon") for name, mass in BARYON_REFS.items())
     anchors.extend((f"meson->{name}", mass, "meson") for name, mass in MESON_REFS.items())
@@ -4287,6 +5035,24 @@ def _build_anchor_rows(
     if sqrt_sigma_ref is not None:
         closest_refs["sqrt_sigma"] = {f"{sqrt_sigma_ref:.3f}": sqrt_sigma_ref}
 
+    mode = str(anchor_mode).strip().lower()
+    if mode not in {"per_anchor_row", "family_fixed", "global_fixed"}:
+        mode = "per_anchor_row"
+    if mode == "family_fixed":
+        return _build_family_fixed_anchor_rows(masses, anchors, r2s, closest_refs)
+    if mode == "global_fixed":
+        scale = _best_fit_scale(masses, anchors)
+        if scale is None:
+            return []
+        return [
+            _build_single_scale_anchor_row(
+                "global-fixed",
+                scale,
+                masses,
+                r2s=r2s,
+                closest_refs=closest_refs,
+            )
+        ]
     return _build_anchor_rows_generic(masses, anchors, r2s, closest_refs)
 
 
@@ -4767,6 +5533,7 @@ def _update_strong_tables(
     mass_getter=None,
     error_getter=None,
     ratio_specs=None,
+    anchor_mode: str = "per_anchor_row",
 ) -> None:
     """Orchestrate all strong-force table updates (module-level, no closure)."""
     if ratio_specs is None:
@@ -4791,7 +5558,11 @@ def _update_strong_tables(
         glueball_ref = ("glueball", float(glueball_ref_input.value))
 
     anchor_rows = _build_anchor_rows(
-        channel_masses, glueball_ref, sqrt_sigma_ref=None, r2s=channel_r2,
+        channel_masses,
+        glueball_ref,
+        sqrt_sigma_ref=None,
+        r2s=channel_r2,
+        anchor_mode=anchor_mode,
     )
     anchor_table.value = pd.DataFrame(anchor_rows)
 
@@ -4879,7 +5650,7 @@ def create_app() -> pn.template.FastListTemplate:
         # Kinetic operator (Langevin + viscous coupling).
         gas_config.kinetic_op.gamma = 1.0
         gas_config.kinetic_op.beta = 1.0
-        gas_config.kinetic_op.delta_t = 0.05
+        gas_config.kinetic_op.delta_t = 0.01
         gas_config.kinetic_op.epsilon_F = 1.0
         gas_config.kinetic_op.use_fitness_force = False
         gas_config.kinetic_op.use_potential_force = False
@@ -5164,7 +5935,12 @@ def create_app() -> pn.template.FastListTemplate:
             show_name=False,
             parameters=[
                 "mc_time_index", "regularization", "stress_energy_mode",
-                "bulk_fraction", "g_newton_metric", "g_newton_manual",
+                "bulk_fraction", "scalar_density_mode", "knn_k",
+                "coarse_grain_bins", "coarse_grain_min_points",
+                "temporal_average_enabled", "temporal_window_frames", "temporal_stride",
+                "bootstrap_samples", "bootstrap_confidence", "bootstrap_seed",
+                "bootstrap_frame_block_size",
+                "g_newton_metric", "g_newton_manual",
             ],
         )
         einstein_summary = pn.pane.Markdown("", sizing_mode="stretch_width")
@@ -5292,6 +6068,16 @@ def create_app() -> pn.template.FastListTemplate:
             name="Mass Display",
             options=["AIC-Weighted", "Best Window"],
             value="AIC-Weighted",
+            button_type="default",
+        )
+        channel_anchor_mode = pn.widgets.RadioButtonGroup(
+            name="Anchor Calibration",
+            options={
+                "Per-anchor rows": "per_anchor_row",
+                "Family-fixed scales": "family_fixed",
+                "Global fixed scale": "global_fixed",
+            },
+            value="per_anchor_row",
             button_type="default",
         )
 
@@ -5496,6 +6282,106 @@ def create_app() -> pn.template.FastListTemplate:
             },
             default_layout=type("AnisotropicEdgeSettingsGrid", (pn.GridBox,), {"ncols": 2}),
         )
+        anisotropic_edge_baryon_panel = pn.Param(
+            anisotropic_edge_settings,
+            parameters=[
+                "use_companion_baryon_triplet",
+                "baryon_use_connected",
+                "baryon_max_lag",
+                "baryon_color_dims_spec",
+                "baryon_eps",
+            ],
+            show_name=False,
+            widgets={
+                "baryon_max_lag": {"name": "Baryon max lag (blank=use max_lag)"},
+                "baryon_color_dims_spec": {"name": "Baryon color dims (3 dims)"},
+            },
+            default_layout=type("AnisotropicEdgeBaryonGrid", (pn.GridBox,), {"ncols": 1}),
+        )
+        anisotropic_edge_meson_panel = pn.Param(
+            anisotropic_edge_settings,
+            parameters=[
+                "use_companion_meson_phase",
+                "meson_use_connected",
+                "meson_max_lag",
+                "meson_pair_selection",
+                "meson_color_dims_spec",
+                "meson_eps",
+            ],
+            show_name=False,
+            widgets={
+                "meson_max_lag": {"name": "Meson max lag (blank=use max_lag)"},
+                "meson_pair_selection": {"name": "Meson pair selection"},
+                "meson_color_dims_spec": {"name": "Meson color dims (3 dims)"},
+            },
+            default_layout=type("AnisotropicEdgeMesonGrid", (pn.GridBox,), {"ncols": 1}),
+        )
+        anisotropic_edge_vector_panel = pn.Param(
+            anisotropic_edge_settings,
+            parameters=[
+                "use_companion_vector_meson",
+                "vector_meson_use_connected",
+                "vector_meson_max_lag",
+                "vector_meson_pair_selection",
+                "vector_meson_color_dims_spec",
+                "vector_meson_position_dims_spec",
+                "vector_meson_eps",
+                "vector_meson_use_unit_displacement",
+            ],
+            show_name=False,
+            widgets={
+                "vector_meson_max_lag": {"name": "Vector max lag (blank=use max_lag)"},
+                "vector_meson_pair_selection": {"name": "Vector pair selection"},
+                "vector_meson_color_dims_spec": {"name": "Vector color dims (3 dims)"},
+                "vector_meson_position_dims_spec": {"name": "Vector position dims (3 dims)"},
+            },
+            default_layout=type("AnisotropicEdgeVectorGrid", (pn.GridBox,), {"ncols": 1}),
+        )
+        anisotropic_edge_glueball_panel = pn.Param(
+            anisotropic_edge_settings,
+            parameters=[
+                "use_companion_glueball_color",
+                "glueball_use_connected",
+                "glueball_max_lag",
+                "glueball_color_dims_spec",
+                "glueball_eps",
+                "glueball_use_action_form",
+            ],
+            show_name=False,
+            widgets={
+                "glueball_max_lag": {"name": "Glueball max lag (blank=use max_lag)"},
+                "glueball_color_dims_spec": {"name": "Glueball color dims (3 dims)"},
+            },
+            default_layout=type("AnisotropicEdgeGlueballGrid", (pn.GridBox,), {"ncols": 1}),
+        )
+        anisotropic_edge_settings_columns = pn.Row(
+            pn.Column(
+                pn.pane.Markdown("### Base Channel Settings"),
+                anisotropic_edge_settings_panel,
+                sizing_mode="stretch_width",
+            ),
+            pn.Column(
+                pn.pane.Markdown("### Baryon Triplet Settings"),
+                anisotropic_edge_baryon_panel,
+                sizing_mode="stretch_width",
+            ),
+            pn.Column(
+                pn.pane.Markdown("### Meson Phase Settings"),
+                anisotropic_edge_meson_panel,
+                sizing_mode="stretch_width",
+            ),
+            pn.Column(
+                pn.pane.Markdown("### Vector Meson Settings"),
+                anisotropic_edge_vector_panel,
+                sizing_mode="stretch_width",
+            ),
+            pn.Column(
+                pn.pane.Markdown("### Glueball Color Settings"),
+                anisotropic_edge_glueball_panel,
+                sizing_mode="stretch_width",
+            ),
+            sizing_mode="stretch_width",
+        )
         anisotropic_edge_summary = pn.pane.Markdown(
             "## Anisotropic Edge Summary\n_Run analysis to populate._",
             sizing_mode="stretch_width",
@@ -5504,6 +6390,16 @@ def create_app() -> pn.template.FastListTemplate:
             name="Mass Display",
             options=["AIC-Weighted", "Best Window"],
             value="AIC-Weighted",
+            button_type="default",
+        )
+        anisotropic_edge_anchor_mode = pn.widgets.RadioButtonGroup(
+            name="Anchor Calibration",
+            options={
+                "Per-anchor rows": "per_anchor_row",
+                "Family-fixed scales": "family_fixed",
+                "Global fixed scale": "global_fixed",
+            },
+            value="per_anchor_row",
             button_type="default",
         )
         anisotropic_edge_heatmap_color_metric = pn.widgets.RadioButtonGroup(
@@ -6739,6 +7635,17 @@ def create_app() -> pn.template.FastListTemplate:
                     regularization=einstein_settings.regularization,
                     stress_energy_mode=einstein_settings.stress_energy_mode,
                     bulk_fraction=einstein_settings.bulk_fraction,
+                    scalar_density_mode=einstein_settings.scalar_density_mode,
+                    knn_k=einstein_settings.knn_k,
+                    coarse_grain_bins=einstein_settings.coarse_grain_bins,
+                    coarse_grain_min_points=einstein_settings.coarse_grain_min_points,
+                    temporal_average_enabled=einstein_settings.temporal_average_enabled,
+                    temporal_window_frames=einstein_settings.temporal_window_frames,
+                    temporal_stride=einstein_settings.temporal_stride,
+                    bootstrap_samples=einstein_settings.bootstrap_samples,
+                    bootstrap_confidence=einstein_settings.bootstrap_confidence,
+                    bootstrap_seed=einstein_settings.bootstrap_seed,
+                    bootstrap_frame_block_size=einstein_settings.bootstrap_frame_block_size,
                 )
                 g_metric = einstein_settings.g_newton_metric
                 g_manual = einstein_settings.g_newton_manual
@@ -6768,10 +7675,29 @@ def create_app() -> pn.template.FastListTemplate:
                     if result.scalar_r2_full_volume is not None
                     else ""
                 )
+                coarse_status = (
+                    f"Coarse R\u00b2={result.scalar_r2_coarse:.4f}, "
+                    if result.scalar_r2_coarse is not None
+                    else ""
+                )
+                temporal_status = (
+                    f"temporal={result.temporal_frame_count} frame(s), "
+                    if result.temporal_average_enabled
+                    else ""
+                )
+                bootstrap_status = (
+                    f"bootstrap={result.scalar_bootstrap_samples}, "
+                    if result.scalar_bootstrap_samples > 0
+                    else ""
+                )
                 einstein_status.object = (
                     f"**Complete:** {result.n_walkers} walkers, d={result.spatial_dim}. "
                     f"Ricci source={result.ricci_scalar_source}, "
+                    f"density={result.scalar_density_mode}, "
                     f"Scalar R\u00b2={result.scalar_r2:.4f}, "
+                    f"{temporal_status}"
+                    f"{bootstrap_status}"
+                    f"{coarse_status}"
                     f"{full_volume_status}"
                     f"Tensor R\u00b2={result.tensor_r2:.4f}, "
                     f"G_N ratio={result.g_newton_ratio:.3f}"
@@ -6798,9 +7724,12 @@ def create_app() -> pn.template.FastListTemplate:
         def _update_channel_tables(
             results: dict[str, ChannelCorrelatorResult],
             mode: str | None = None,
+            anchor_mode: str | None = None,
         ) -> None:
             if mode is None:
                 mode = channel_mass_mode.value
+            if anchor_mode is None:
+                anchor_mode = channel_anchor_mode.value
             _update_strong_tables(
                 results,
                 mode,
@@ -6809,6 +7738,7 @@ def create_app() -> pn.template.FastListTemplate:
                 channel_fit_table,
                 channel_anchor_table,
                 channel_glueball_ref_input,
+                anchor_mode=str(anchor_mode),
             )
 
         def _on_channel_mass_mode_change(event):
@@ -6817,6 +7747,12 @@ def create_app() -> pn.template.FastListTemplate:
                 _update_channel_tables(state["channel_results"], event.new)
 
         channel_mass_mode.param.watch(_on_channel_mass_mode_change, "value")
+
+        def _on_channel_anchor_mode_change(_event):
+            if "channel_results" in state:
+                _update_channel_tables(state["channel_results"])
+
+        channel_anchor_mode.param.watch(_on_channel_anchor_mode_change, "value")
 
         def _on_heatmap_metric_change(_event):
             if "channel_results" in state:
@@ -7238,9 +8174,12 @@ def create_app() -> pn.template.FastListTemplate:
         def _update_anisotropic_edge_tables(
             results: dict[str, ChannelCorrelatorResult],
             mode: str | None = None,
+            anchor_mode: str | None = None,
         ) -> None:
             if mode is None:
                 mode = anisotropic_edge_mass_mode.value
+            if anchor_mode is None:
+                anchor_mode = anisotropic_edge_anchor_mode.value
             _update_strong_tables(
                 results,
                 mode,
@@ -7250,6 +8189,7 @@ def create_app() -> pn.template.FastListTemplate:
                 anisotropic_edge_anchor_table,
                 anisotropic_edge_glueball_ref_input,
                 ratio_specs=ANISOTROPIC_EDGE_RATIO_SPECS,
+                anchor_mode=str(anchor_mode),
             )
 
         def _on_anisotropic_edge_mass_mode_change(event):
@@ -7258,6 +8198,16 @@ def create_app() -> pn.template.FastListTemplate:
             _update_anisotropic_edge_tables(state["anisotropic_edge_results"], event.new)
 
         anisotropic_edge_mass_mode.param.watch(_on_anisotropic_edge_mass_mode_change, "value")
+
+        def _on_anisotropic_edge_anchor_mode_change(_event):
+            if state.get("anisotropic_edge_results") is None:
+                return
+            _update_anisotropic_edge_tables(state["anisotropic_edge_results"])
+
+        anisotropic_edge_anchor_mode.param.watch(
+            _on_anisotropic_edge_anchor_mode_change,
+            "value",
+        )
 
         def _on_anisotropic_edge_heatmap_metric_change(_event):
             if state.get("anisotropic_edge_results") is None:
@@ -8261,6 +9211,7 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 pn.pane.Markdown("### Best-Fit Scales"),
                 channel_fit_table,
                 pn.pane.Markdown("### Anchored Mass Table"),
+                channel_anchor_mode,
                 channel_anchor_table,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
@@ -8470,7 +9421,13 @@ Use **MC time slice** to select the snapshot.""",
 recorded Delaunay neighbors only (no tessellation recomputation). Local edge
 observables are projected onto directional components to preserve anisotropy
 under symmetry breaking. Nucleon supports two triplet modes:
-direct-neighbor triplets or (distance companion, clone companion).""",
+direct-neighbor triplets or (distance companion, clone companion). Enable
+**Baryon Triplet Settings** to override nucleon with companion-triplet
+color-determinant baryon correlator. Enable **Meson Phase Settings** to
+override scalar/pseudoscalar with companion-pair color-phase correlators
+Re(c_i†c_j) / Im(c_i†c_j). Enable **Vector Meson Settings** to override
+vector/axial_vector with companion-pair color-displacement correlators
+Re(c_i†c_j)Δx / Im(c_i†c_j)Δx.""",
                 alert_type="info",
                 sizing_mode="stretch_width",
             )
@@ -8480,7 +9437,7 @@ direct-neighbor triplets or (distance companion, clone companion).""",
                 anisotropic_edge_note,
                 pn.Row(anisotropic_edge_run_button, sizing_mode="stretch_width"),
                 pn.Accordion(
-                    ("Anisotropic Edge Settings", anisotropic_edge_settings_panel),
+                    ("Anisotropic Edge Settings", anisotropic_edge_settings_columns),
                     (
                         "Reference Anchors",
                         pn.Column(
@@ -8510,6 +9467,7 @@ direct-neighbor triplets or (distance companion, clone companion).""",
                 pn.pane.Markdown("### Best-Fit Scales"),
                 anisotropic_edge_fit_table,
                 pn.pane.Markdown("### Anchored Mass Table"),
+                anisotropic_edge_anchor_mode,
                 anisotropic_edge_anchor_table,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),

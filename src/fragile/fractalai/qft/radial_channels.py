@@ -42,6 +42,7 @@ RECORDED_EDGE_WEIGHT_MODES = (
     "inverse_volume",
     "inverse_riemannian_distance",
     "inverse_riemannian_volume",
+    "kernel",
     "riemannian_kernel",
     "riemannian_kernel_volume",
 )

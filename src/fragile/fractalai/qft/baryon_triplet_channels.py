@@ -1,0 +1,624 @@
+"""Vectorized companion-triplet baryon observables and diagnostics.
+
+This module implements:
+1. A color-determinant baryon correlator using companion triplets (i, j, k)
+   with j=companions_distance[i], k=companions_clone[i].
+2. A fast triplet-coherence diagnostic based on velocity determinants.
+
+Both implementations are vectorized over time and walkers and avoid Python loops
+over triplets.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+import torch
+from torch import Tensor
+
+from fragile.fractalai.core.history import RunHistory
+from fragile.fractalai.qft.aggregation import compute_color_states_batch, estimate_ell0
+
+
+@dataclass
+class BaryonTripletCorrelatorConfig:
+    """Configuration for companion-triplet baryon correlators."""
+
+    warmup_fraction: float = 0.1
+    end_fraction: float = 1.0
+    mc_time_index: int | None = None
+    max_lag: int = 80
+    use_connected: bool = True
+    h_eff: float = 1.0
+    mass: float = 1.0
+    ell0: float | None = None
+    color_dims: tuple[int, int, int] | None = None
+    eps: float = 1e-12
+
+
+@dataclass
+class BaryonTripletCorrelatorOutput:
+    """Baryon correlator output and diagnostics."""
+
+    correlator: Tensor
+    correlator_raw: Tensor
+    correlator_connected: Tensor
+    counts: Tensor
+    frame_indices: list[int]
+    triplet_counts_per_frame: Tensor
+    disconnected_contribution: float
+    mean_baryon_real: float
+    mean_baryon_imag: float
+    n_valid_source_triplets: int
+    operator_baryon_series: Tensor
+
+
+@dataclass
+class TripletCoherenceConfig:
+    """Configuration for companion-chain triplet coherence diagnostics."""
+
+    warmup_fraction: float = 0.1
+    end_fraction: float = 1.0
+    mc_time_index: int | None = None
+    max_hops: int = 15
+    velocity_dims: tuple[int, int, int] | None = None
+    eps: float = 1e-12
+
+
+@dataclass
+class TripletCoherenceOutput:
+    """Triplet coherence diagnostic output."""
+
+    coherence: Tensor
+    counts: Tensor
+    frame_indices: list[int]
+
+
+def _resolve_mc_time_index(history: RunHistory, mc_time_index: int) -> int:
+    """Resolve mc_time_index as recorded index or recorded step."""
+    if history.n_recorded < 2:
+        msg = "Need at least 2 recorded timesteps."
+        raise ValueError(msg)
+    raw = int(mc_time_index)
+    if raw in history.recorded_steps:
+        resolved = int(history.get_step_index(raw))
+    else:
+        resolved = raw
+    if resolved < 1 or resolved >= history.n_recorded:
+        raise ValueError(
+            f"mc_time_index {resolved} out of bounds (valid recorded index "
+            f"1..{history.n_recorded - 1} or a recorded step value)."
+        )
+    return resolved
+
+
+def _resolve_frame_indices(
+    history: RunHistory,
+    warmup_fraction: float,
+    end_fraction: float,
+    mc_time_index: int | None,
+) -> list[int]:
+    """Resolve frame indices [start_idx, end_idx) used by correlator analysis."""
+    if history.n_recorded < 2:
+        return []
+
+    start_idx = max(1, int(history.n_recorded * float(warmup_fraction)))
+    end_idx = max(start_idx + 1, int(history.n_recorded * float(end_fraction)))
+    end_idx = min(end_idx, history.n_recorded)
+
+    if mc_time_index is not None:
+        start_idx = _resolve_mc_time_index(history, int(mc_time_index))
+        end_idx = history.n_recorded
+
+    if end_idx <= start_idx:
+        return []
+    return list(range(start_idx, end_idx))
+
+
+def _resolve_3d_dims(total_dims: int, dims: tuple[int, int, int] | None, name: str) -> tuple[int, int, int]:
+    """Resolve and validate exactly 3 component indices."""
+    if dims is None:
+        if total_dims < 3:
+            raise ValueError(f"{name} requires at least 3 dimensions, got d={total_dims}.")
+        return 0, 1, 2
+    if len(dims) != 3:
+        raise ValueError(f"{name} must contain exactly 3 indices.")
+    dims_tuple = tuple(int(d) for d in dims)
+    if len(set(dims_tuple)) != 3:
+        raise ValueError(f"{name} indices must be unique, got {dims_tuple}.")
+    invalid = [d for d in dims_tuple if d < 0 or d >= total_dims]
+    if invalid:
+        raise ValueError(
+            f"{name} has invalid indices {invalid}; valid range is [0, {total_dims - 1}]."
+        )
+    return dims_tuple
+
+
+def _safe_gather_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
+    """Safely gather values[:, idx] and return gathered values + in-range mask."""
+    n = values.shape[1]
+    in_range = (indices >= 0) & (indices < n)
+    idx_safe = indices.clamp(min=0, max=max(n - 1, 0))
+    gathered = torch.gather(values, dim=1, index=idx_safe)
+    return gathered, in_range
+
+
+def _safe_gather_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
+    """Safely gather values[:, idx, :] and return gathered values + in-range mask."""
+    n = values.shape[1]
+    in_range = (indices >= 0) & (indices < n)
+    idx_safe = indices.clamp(min=0, max=max(n - 1, 0))
+    gathered = torch.gather(
+        values,
+        dim=1,
+        index=idx_safe.unsqueeze(-1).expand(-1, -1, values.shape[-1]),
+    )
+    return gathered, in_range
+
+
+def _det3(a: Tensor, b: Tensor, c: Tensor) -> Tensor:
+    """Compute 3x3 determinant from column vectors a, b, c."""
+    return (
+        a[..., 0] * (b[..., 1] * c[..., 2] - b[..., 2] * c[..., 1])
+        - a[..., 1] * (b[..., 0] * c[..., 2] - b[..., 2] * c[..., 0])
+        + a[..., 2] * (b[..., 0] * c[..., 1] - b[..., 1] * c[..., 0])
+    )
+
+
+def build_companion_triplets(
+    companions_distance: Tensor,
+    companions_clone: Tensor,
+) -> tuple[Tensor, Tensor, Tensor, Tensor]:
+    """Build companion triplet indices (i, j, k) and structural-valid mask.
+
+    Args:
+        companions_distance: Companion distance indices [T, N].
+        companions_clone: Companion clone indices [T, N].
+
+    Returns:
+        Tuple:
+            anchor_idx: [T, N] anchor indices i
+            companion_j: [T, N] distance companion j
+            companion_k: [T, N] clone companion k
+            structural_valid: [T, N] index-range/distinctness validity
+    """
+    if companions_distance.shape != companions_clone.shape:
+        raise ValueError(
+            "companions_distance and companions_clone must have the same shape, got "
+            f"{tuple(companions_distance.shape)} vs {tuple(companions_clone.shape)}."
+        )
+    if companions_distance.ndim != 2:
+        raise ValueError(
+            f"Expected companion arrays with shape [T, N], got {tuple(companions_distance.shape)}."
+        )
+
+    t, n = companions_distance.shape
+    device = companions_distance.device
+    anchor_idx = torch.arange(n, device=device, dtype=torch.long).view(1, n).expand(t, n)
+    companion_j = companions_distance.to(torch.long)
+    companion_k = companions_clone.to(torch.long)
+
+    in_range_j = (companion_j >= 0) & (companion_j < n)
+    in_range_k = (companion_k >= 0) & (companion_k < n)
+    distinct = (companion_j != anchor_idx) & (companion_k != anchor_idx) & (companion_j != companion_k)
+    structural_valid = in_range_j & in_range_k & distinct
+    return anchor_idx, companion_j, companion_k, structural_valid
+
+
+def _compute_determinants_for_indices(
+    vectors: Tensor,
+    valid_vectors: Tensor,
+    alive: Tensor,
+    companion_j: Tensor,
+    companion_k: Tensor,
+    eps: float,
+) -> tuple[Tensor, Tensor]:
+    """Compute determinant observable for (i, companion_j, companion_k) triplets."""
+    if vectors.ndim != 3 or vectors.shape[-1] != 3:
+        raise ValueError(f"Expected vectors with shape [T, N, 3], got {tuple(vectors.shape)}.")
+    if valid_vectors.shape != vectors.shape[:2]:
+        raise ValueError(
+            f"valid_vectors must have shape [T, N], got {tuple(valid_vectors.shape)}."
+        )
+    if alive.shape != vectors.shape[:2]:
+        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
+    if companion_j.shape != vectors.shape[:2] or companion_k.shape != vectors.shape[:2]:
+        msg = "companion indices must have shape [T, N]."
+        raise ValueError(msg)
+
+    _, _, structural_valid = build_companion_triplets(companion_j, companion_k)[1:]
+
+    vec_j, in_j = _safe_gather_3d(vectors, companion_j)
+    vec_k, in_k = _safe_gather_3d(vectors, companion_k)
+
+    alive_j, _ = _safe_gather_2d(alive, companion_j)
+    alive_k, _ = _safe_gather_2d(alive, companion_k)
+    valid_j, _ = _safe_gather_2d(valid_vectors, companion_j)
+    valid_k, _ = _safe_gather_2d(valid_vectors, companion_k)
+
+    det = _det3(vectors, vec_j, vec_k)
+    finite = torch.isfinite(det.real) & torch.isfinite(det.imag) if det.is_complex() else torch.isfinite(det)
+
+    valid = (
+        structural_valid
+        & in_j
+        & in_k
+        & alive
+        & alive_j
+        & alive_k
+        & valid_vectors
+        & valid_j
+        & valid_k
+        & finite
+    )
+    if eps > 0:
+        valid = valid & (det.abs() > eps)
+
+    det = torch.where(valid, det, torch.zeros_like(det))
+    return det, valid
+
+
+def compute_baryon_correlator_from_color(
+    color: Tensor,
+    color_valid: Tensor,
+    alive: Tensor,
+    companions_distance: Tensor,
+    companions_clone: Tensor,
+    max_lag: int = 80,
+    use_connected: bool = True,
+    eps: float = 1e-12,
+    frame_indices: list[int] | None = None,
+) -> BaryonTripletCorrelatorOutput:
+    """Compute companion-triplet baryon correlator from precomputed color states.
+
+    Correlator definition (source-triplet propagation):
+        C(Δt) = < B*(t, i, j_t(i), k_t(i)) * B(t+Δt, i, j_t(i), k_t(i)) >
+
+    where j_t(i), k_t(i) are defined at source time t from companion arrays.
+    """
+    if color.ndim != 3 or color.shape[-1] != 3:
+        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+    if color_valid.shape != color.shape[:2]:
+        raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
+    if alive.shape != color.shape[:2]:
+        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
+    if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
+        msg = "companion arrays must have shape [T, N] aligned with color."
+        raise ValueError(msg)
+
+    t_total = int(color.shape[0])
+    max_lag = max(0, int(max_lag))
+    effective_lag = min(max_lag, max(0, t_total - 1))
+    n_lags = max_lag + 1
+    device = color.device
+
+    if t_total == 0:
+        empty_f = torch.zeros(n_lags, dtype=torch.float32, device=device)
+        empty_i = torch.zeros(n_lags, dtype=torch.int64, device=device)
+        empty_t = torch.zeros(0, dtype=torch.int64, device=device)
+        return BaryonTripletCorrelatorOutput(
+            correlator=empty_f,
+            correlator_raw=empty_f.clone(),
+            correlator_connected=empty_f.clone(),
+            counts=empty_i,
+            frame_indices=[] if frame_indices is None else frame_indices,
+            triplet_counts_per_frame=empty_t,
+            disconnected_contribution=0.0,
+            mean_baryon_real=0.0,
+            mean_baryon_imag=0.0,
+            n_valid_source_triplets=0,
+            operator_baryon_series=empty_t.float(),
+        )
+
+    source_det, source_valid = _compute_determinants_for_indices(
+        vectors=color,
+        valid_vectors=color_valid,
+        alive=alive,
+        companion_j=companions_distance,
+        companion_k=companions_clone,
+        eps=eps,
+    )
+    triplet_counts_per_frame = source_valid.sum(dim=1).to(torch.int64)
+    n_valid_source_triplets = int(source_valid.sum().item())
+    source_det_real = source_det.real.float()
+    operator_baryon_series = torch.zeros(t_total, dtype=torch.float32, device=device)
+    valid_t = triplet_counts_per_frame > 0
+    if torch.any(valid_t):
+        weight = source_valid.to(dtype=torch.float32)
+        sums = (source_det_real * weight).sum(dim=1)
+        operator_baryon_series[valid_t] = sums[valid_t] / triplet_counts_per_frame[valid_t].to(
+            torch.float32
+        )
+
+    if n_valid_source_triplets > 0:
+        mean_baryon = source_det[source_valid].mean()
+    else:
+        mean_baryon = torch.zeros((), dtype=source_det.dtype, device=device)
+
+    disconnected_contribution = float((mean_baryon.conj() * mean_baryon).real.item())
+    source_centered = source_det - mean_baryon
+
+    correlator_raw = torch.zeros(n_lags, dtype=torch.float32, device=device)
+    correlator_connected = torch.zeros(n_lags, dtype=torch.float32, device=device)
+    counts = torch.zeros(n_lags, dtype=torch.int64, device=device)
+
+    for lag in range(effective_lag + 1):
+        source_len = t_total - lag
+        sink_det, sink_valid = _compute_determinants_for_indices(
+            vectors=color[lag : lag + source_len],
+            valid_vectors=color_valid[lag : lag + source_len],
+            alive=alive[lag : lag + source_len],
+            companion_j=companions_distance[:source_len],
+            companion_k=companions_clone[:source_len],
+            eps=eps,
+        )
+
+        valid_pair = source_valid[:source_len] & sink_valid
+        count = int(valid_pair.sum().item())
+        counts[lag] = count
+        if count == 0:
+            continue
+
+        raw_prod = (torch.conj(source_det[:source_len]) * sink_det).real
+        correlator_raw[lag] = raw_prod[valid_pair].mean().float()
+
+        conn_prod = (torch.conj(source_centered[:source_len]) * (sink_det - mean_baryon)).real
+        correlator_connected[lag] = conn_prod[valid_pair].mean().float()
+
+    selected = correlator_connected if use_connected else correlator_raw
+    return BaryonTripletCorrelatorOutput(
+        correlator=selected,
+        correlator_raw=correlator_raw,
+        correlator_connected=correlator_connected,
+        counts=counts,
+        frame_indices=list(range(t_total)) if frame_indices is None else frame_indices,
+        triplet_counts_per_frame=triplet_counts_per_frame,
+        disconnected_contribution=disconnected_contribution,
+        mean_baryon_real=float(mean_baryon.real.item()),
+        mean_baryon_imag=float(mean_baryon.imag.item()) if mean_baryon.is_complex() else 0.0,
+        n_valid_source_triplets=n_valid_source_triplets,
+        operator_baryon_series=operator_baryon_series,
+    )
+
+
+def compute_companion_baryon_correlator(
+    history: RunHistory,
+    config: BaryonTripletCorrelatorConfig | None = None,
+) -> BaryonTripletCorrelatorOutput:
+    """Compute vectorized companion-triplet baryon correlator from RunHistory."""
+    config = config or BaryonTripletCorrelatorConfig()
+    frame_indices = _resolve_frame_indices(
+        history=history,
+        warmup_fraction=float(config.warmup_fraction),
+        end_fraction=float(config.end_fraction),
+        mc_time_index=config.mc_time_index,
+    )
+    if not frame_indices:
+        n_lags = int(max(0, config.max_lag)) + 1
+        empty_f = torch.zeros(n_lags, dtype=torch.float32)
+        empty_i = torch.zeros(n_lags, dtype=torch.int64)
+        empty_t = torch.zeros(0, dtype=torch.int64)
+        return BaryonTripletCorrelatorOutput(
+            correlator=empty_f,
+            correlator_raw=empty_f.clone(),
+            correlator_connected=empty_f.clone(),
+            counts=empty_i,
+            frame_indices=[],
+            triplet_counts_per_frame=empty_t,
+            disconnected_contribution=0.0,
+            mean_baryon_real=0.0,
+            mean_baryon_imag=0.0,
+            n_valid_source_triplets=0,
+            operator_baryon_series=empty_t.float(),
+        )
+
+    start_idx = frame_indices[0]
+    end_idx = frame_indices[-1] + 1
+    h_eff = float(max(config.h_eff, 1e-8))
+    mass = float(max(config.mass, 1e-8))
+    ell0 = float(config.ell0) if config.ell0 is not None else float(estimate_ell0(history))
+    if ell0 <= 0:
+        msg = "ell0 must be positive."
+        raise ValueError(msg)
+
+    color, color_valid = compute_color_states_batch(
+        history=history,
+        start_idx=start_idx,
+        h_eff=h_eff,
+        mass=mass,
+        ell0=ell0,
+        end_idx=end_idx,
+    )
+    dims = _resolve_3d_dims(color.shape[-1], config.color_dims, "color_dims")
+    color = color[:, :, list(dims)]
+
+    device = color.device
+    alive = torch.as_tensor(
+        history.alive_mask[start_idx - 1 : end_idx - 1], device=device, dtype=torch.bool
+    )
+    companions_distance = torch.as_tensor(
+        history.companions_distance[start_idx - 1 : end_idx - 1],
+        device=device,
+        dtype=torch.long,
+    )
+    companions_clone = torch.as_tensor(
+        history.companions_clone[start_idx - 1 : end_idx - 1], device=device, dtype=torch.long
+    )
+
+    return compute_baryon_correlator_from_color(
+        color=color,
+        color_valid=color_valid.to(dtype=torch.bool, device=device),
+        alive=alive,
+        companions_distance=companions_distance,
+        companions_clone=companions_clone,
+        max_lag=int(config.max_lag),
+        use_connected=bool(config.use_connected),
+        eps=float(max(config.eps, 0.0)),
+        frame_indices=frame_indices,
+    )
+
+
+def _compute_velocity_det(
+    velocities: Tensor,
+    alive: Tensor,
+    idx_i: Tensor,
+    idx_j: Tensor,
+    idx_k: Tensor,
+    eps: float,
+) -> tuple[Tensor, Tensor]:
+    """Compute |det(v_i, v_j, v_k)| with validity mask for index triplets."""
+    n = velocities.shape[1]
+    in_i = (idx_i >= 0) & (idx_i < n)
+    in_j = (idx_j >= 0) & (idx_j < n)
+    in_k = (idx_k >= 0) & (idx_k < n)
+    distinct = (idx_i != idx_j) & (idx_i != idx_k) & (idx_j != idx_k)
+
+    v_i, _ = _safe_gather_3d(velocities, idx_i)
+    v_j, _ = _safe_gather_3d(velocities, idx_j)
+    v_k, _ = _safe_gather_3d(velocities, idx_k)
+    det = _det3(v_i, v_j, v_k).abs().float()
+
+    alive_i, _ = _safe_gather_2d(alive, idx_i)
+    alive_j, _ = _safe_gather_2d(alive, idx_j)
+    alive_k, _ = _safe_gather_2d(alive, idx_k)
+    finite = torch.isfinite(det)
+
+    valid = in_i & in_j & in_k & distinct & alive_i & alive_j & alive_k & finite & (det > eps)
+    det = torch.where(valid, det, torch.zeros_like(det))
+    return det, valid
+
+
+def compute_triplet_coherence_from_velocity(
+    velocities: Tensor,
+    alive: Tensor,
+    companions_distance: Tensor,
+    companions_clone: Tensor,
+    max_hops: int = 15,
+    eps: float = 1e-12,
+    frame_indices: list[int] | None = None,
+) -> TripletCoherenceOutput:
+    """Compute companion-chain triplet coherence diagnostic (vectorized)."""
+    if velocities.ndim != 3 or velocities.shape[-1] != 3:
+        raise ValueError(f"velocities must have shape [T, N, 3], got {tuple(velocities.shape)}.")
+    if alive.shape != velocities.shape[:2]:
+        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
+    if companions_distance.shape != velocities.shape[:2] or companions_clone.shape != velocities.shape[:2]:
+        msg = "companion arrays must have shape [T, N] aligned with velocities."
+        raise ValueError(msg)
+
+    t_total, n, _ = velocities.shape
+    max_hops = max(1, int(max_hops))
+    device = velocities.device
+    coherence = torch.zeros(max_hops, dtype=torch.float32, device=device)
+    counts = torch.zeros(max_hops, dtype=torch.int64, device=device)
+    if t_total == 0:
+        return TripletCoherenceOutput(
+            coherence=coherence,
+            counts=counts,
+            frame_indices=[] if frame_indices is None else frame_indices,
+        )
+
+    anchor = torch.arange(n, device=device, dtype=torch.long).view(1, n).expand(t_total, n)
+    companion_j = companions_distance.to(torch.long)
+    companion_k = companions_clone.to(torch.long)
+
+    det0, valid0 = _compute_velocity_det(
+        velocities=velocities,
+        alive=alive,
+        idx_i=anchor,
+        idx_j=companion_j,
+        idx_k=companion_k,
+        eps=eps,
+    )
+    counts[0] = valid0.sum().to(torch.int64)
+    coherence[0] = 1.0 if counts[0].item() > 0 else 0.0
+
+    p1 = anchor
+    p2 = companion_j
+    p3 = companion_k
+    path_valid = valid0.clone()
+
+    for hop in range(1, max_hops):
+        p1_next, in1 = _safe_gather_2d(companions_distance, p1)
+        p2_next, in2 = _safe_gather_2d(companions_distance, p2)
+        p3_next, in3 = _safe_gather_2d(companions_distance, p3)
+        p1 = p1_next.to(torch.long)
+        p2 = p2_next.to(torch.long)
+        p3 = p3_next.to(torch.long)
+        path_valid = path_valid & in1 & in2 & in3
+
+        deth, valid_h = _compute_velocity_det(
+            velocities=velocities,
+            alive=alive,
+            idx_i=p1,
+            idx_j=p2,
+            idx_k=p3,
+            eps=eps,
+        )
+        valid = path_valid & valid_h & valid0
+        count = int(valid.sum().item())
+        counts[hop] = count
+        if count == 0:
+            continue
+
+        ratio = torch.zeros_like(deth)
+        ratio[valid] = deth[valid] / det0[valid].clamp(min=float(max(eps, 1e-20)))
+        coherence[hop] = ratio[valid].mean().float()
+
+    return TripletCoherenceOutput(
+        coherence=coherence,
+        counts=counts,
+        frame_indices=list(range(t_total)) if frame_indices is None else frame_indices,
+    )
+
+
+def compute_triplet_coherence(
+    history: RunHistory,
+    config: TripletCoherenceConfig | None = None,
+) -> TripletCoherenceOutput:
+    """Compute companion-chain triplet coherence from RunHistory."""
+    config = config or TripletCoherenceConfig()
+    frame_indices = _resolve_frame_indices(
+        history=history,
+        warmup_fraction=float(config.warmup_fraction),
+        end_fraction=float(config.end_fraction),
+        mc_time_index=config.mc_time_index,
+    )
+    if not frame_indices:
+        max_hops = max(1, int(config.max_hops))
+        return TripletCoherenceOutput(
+            coherence=torch.zeros(max_hops, dtype=torch.float32),
+            counts=torch.zeros(max_hops, dtype=torch.int64),
+            frame_indices=[],
+        )
+
+    start_idx = frame_indices[0]
+    end_idx = frame_indices[-1] + 1
+    velocities = history.v_before_clone[start_idx:end_idx]
+    dims = _resolve_3d_dims(velocities.shape[-1], config.velocity_dims, "velocity_dims")
+    velocities = velocities[:, :, list(dims)].float()
+
+    device = velocities.device
+    alive = torch.as_tensor(
+        history.alive_mask[start_idx - 1 : end_idx - 1], dtype=torch.bool, device=device
+    )
+    companions_distance = torch.as_tensor(
+        history.companions_distance[start_idx - 1 : end_idx - 1],
+        dtype=torch.long,
+        device=device,
+    )
+    companions_clone = torch.as_tensor(
+        history.companions_clone[start_idx - 1 : end_idx - 1],
+        dtype=torch.long,
+        device=device,
+    )
+
+    return compute_triplet_coherence_from_velocity(
+        velocities=velocities,
+        alive=alive,
+        companions_distance=companions_distance,
+        companions_clone=companions_clone,
+        max_hops=int(config.max_hops),
+        eps=float(max(config.eps, 0.0)),
+        frame_indices=frame_indices,
+    )
