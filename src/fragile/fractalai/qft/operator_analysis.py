@@ -505,6 +505,7 @@ def build_mass_vs_scale_plot(
     channel_name: str,
     consensus: ConsensusResult | None = None,
     *,
+    reference_mass: float | None = None,
     width: int = 900,
     height: int = 320,
 ) -> hv.Overlay | None:
@@ -548,6 +549,12 @@ def build_mass_vs_scale_plot(
                     consensus.mass + consensus.systematic_spread,
                 ).opts(color="#2ca02c", alpha=0.12)
             )
+    if reference_mass is not None and math.isfinite(reference_mass) and reference_mass > 0:
+        elements.append(
+            hv.HLine(reference_mass).opts(
+                color="#e67e22", line_width=2, line_dash="dashed",
+            )
+        )
     if not elements:
         return None
     overlay = elements[0]
@@ -569,6 +576,7 @@ def build_consensus_plot(
     consensus: ConsensusResult,
     channel_name: str,
     *,
+    reference_mass: float | None = None,
     width: int = 760,
     height: int = 320,
 ) -> hv.Overlay | None:
@@ -632,6 +640,10 @@ def build_consensus_plot(
             float(consensus.mass - consensus.systematic_spread),
             float(consensus.mass + consensus.systematic_spread),
         ).opts(color="#2ca02c", alpha=0.12)
+    if reference_mass is not None and math.isfinite(reference_mass) and reference_mass > 0:
+        overlay *= hv.HLine(float(reference_mass)).opts(
+            color="#e67e22", line_width=2, line_dash="dashed",
+        )
     xticks = [(float(i), m.label) for i, m in enumerate(valid)]
     overlay = overlay.opts(
         xlim=(-0.5, float(len(valid) - 0.5)),
@@ -677,6 +689,8 @@ def format_consensus_summary(
     consensus: ConsensusResult,
     discrepancies: list[PairwiseDiscrepancy],
     channel_name: str,
+    *,
+    reference_mass: float | None = None,
 ) -> str:
     """Markdown summary matching the glueball format."""
     pretty = channel_name.replace("_", " ").title()
@@ -712,4 +726,9 @@ def format_consensus_summary(
                 f"`{max_pair.label_a}` vs `{max_pair.label_b}` "
                 f"({max_pair.delta_pct:+.2f}%, pull `{max_pair.pull_sigma:.2f}σ`)"
             )
+    if reference_mass is not None and math.isfinite(reference_mass) and reference_mass > 0:
+        lines.append(f"- Original (no scale filter): `{reference_mass:.6g}`")
+        if math.isfinite(consensus.mass) and consensus.mass > 0 and reference_mass > 0:
+            delta_pct = (consensus.mass - reference_mass) / reference_mass * 100.0
+            lines.append(f"- Δ vs original: `{delta_pct:+.2f}%`")
     return "  \n".join(lines)

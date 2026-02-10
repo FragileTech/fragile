@@ -53,6 +53,8 @@ def test_companion_and_non_companion_multiscale_series_are_both_computed() -> No
         "pseudoscalar_companion",
         "vector_companion",
         "axial_vector_companion",
+        "tensor_companion",
+        "tensor_traceless_companion",
         "nucleon_companion",
         "glueball_companion",
     ]
@@ -78,6 +80,8 @@ def test_companion_and_non_companion_multiscale_series_are_both_computed() -> No
         "pseudoscalar_companion",
         "vector_companion",
         "axial_vector_companion",
+        "tensor_companion",
+        "tensor_traceless_companion",
         "nucleon_companion",
         "glueball_companion",
     ]
@@ -94,6 +98,8 @@ def test_companion_channels_zero_out_when_companions_are_invalid() -> None:
         "pseudoscalar_companion",
         "vector_companion",
         "axial_vector_companion",
+        "tensor_companion",
+        "tensor_traceless_companion",
         "nucleon_companion",
         "glueball_companion",
     ]

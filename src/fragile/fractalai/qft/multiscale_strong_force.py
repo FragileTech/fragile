@@ -20,7 +20,10 @@ from torch import Tensor
 
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.qft.aggregation import compute_color_states_batch, estimate_ell0
-from fragile.fractalai.qft.baryon_triplet_channels import _resolve_frame_indices
+from fragile.fractalai.qft.baryon_triplet_channels import (
+    _resolve_frame_indices,
+    _safe_gather_3d,
+)
 from fragile.fractalai.qft.correlator_channels import (
     _fft_correlator_batched,
     ChannelCorrelatorResult,
@@ -30,7 +33,9 @@ from fragile.fractalai.qft.correlator_channels import (
     extract_mass_linear,
 )
 from fragile.fractalai.qft.smeared_operators import (
+    compute_pairwise_distance_matrices_from_history,
     compute_smeared_kernels_from_history,
+    compute_smeared_kernels_from_distances,
     iter_smeared_kernel_batches_from_history,
     select_interesting_scales_from_history,
 )
@@ -51,6 +56,8 @@ COMPANION_CHANNEL_MAP: dict[str, str] = {
     "pseudoscalar": "pseudoscalar_companion",
     "vector": "vector_companion",
     "axial_vector": "axial_vector_companion",
+    "tensor": "tensor_companion",
+    "tensor_traceless": "tensor_traceless_companion",
     "nucleon": "nucleon_companion",
     "glueball": "glueball_companion",
 }
@@ -266,6 +273,42 @@ def _safe_gather_4d_by_2d_indices(values: Tensor, indices: Tensor) -> tuple[Tens
     return gathered, in_range[:, None, :].expand(t_len, s_count, n_walkers)
 
 
+def _safe_gather_pairwise_distances(
+    distances: Tensor,
+    row_idx: Tensor,
+    col_idx: Tensor,
+) -> tuple[Tensor, Tensor]:
+    """Safely gather distances[t, row_idx[t,i], col_idx[t,i]] for [T,N] indices."""
+    if distances.ndim != 3:
+        raise ValueError(f"distances must have shape [T,N,N], got {tuple(distances.shape)}.")
+    if row_idx.ndim != 2 or col_idx.ndim != 2:
+        raise ValueError(
+            "row_idx and col_idx must have shape [T,N], got "
+            f"{tuple(row_idx.shape)} and {tuple(col_idx.shape)}."
+        )
+    if row_idx.shape != col_idx.shape:
+        raise ValueError(
+            "row_idx and col_idx must have the same shape, got "
+            f"{tuple(row_idx.shape)} and {tuple(col_idx.shape)}."
+        )
+    t_len, n, n2 = distances.shape
+    if n != n2:
+        raise ValueError(f"distances must be square on last two axes, got {tuple(distances.shape)}.")
+    if row_idx.shape != (t_len, n):
+        raise ValueError(
+            "row_idx/col_idx must align with distances [T,N,N], got "
+            f"{tuple(row_idx.shape)} vs [T={t_len},N={n}]."
+        )
+    in_row = (row_idx >= 0) & (row_idx < n)
+    in_col = (col_idx >= 0) & (col_idx < n)
+    valid = in_row & in_col
+    row_safe = row_idx.clamp(min=0, max=max(n - 1, 0))
+    col_safe = col_idx.clamp(min=0, max=max(n - 1, 0))
+    flat_idx = row_safe * n + col_safe
+    gathered, in_flat = _safe_gather_2d(distances.reshape(t_len, n * n), flat_idx)
+    return gathered, valid & in_flat
+
+
 def _remap_companion_indices_for_bootstrap(
     companions: Tensor,
     bootstrap_idx: Tensor,
@@ -320,6 +363,8 @@ def _compute_channel_series_from_kernels(
     alive: Tensor,        # [T, N] bool
     force: Tensor,        # [T, N, d] float
     kernels: Tensor,      # [T, S, N, N] float
+    scales: Tensor | None = None,  # [S] float, used by companion hard-threshold channels
+    pairwise_distances: Tensor | None = None,  # [T, N, N] float, used by companion channels
     companions_distance: Tensor | None = None,  # [T, N] long
     companions_clone: Tensor | None = None,     # [T, N] long
     channels: list[str],
@@ -327,6 +372,10 @@ def _compute_channel_series_from_kernels(
     """Compute multiscale operator series for one frame chunk.
 
     Returns tensors shaped [S, T_chunk].
+
+    Isotropic channels use kernel-smoothed fields.
+    Companion channels use original companion operators with hard-threshold
+    geodesic gating at each scale.
     """
     if kernels.ndim != 4:
         raise ValueError(f"kernels must have shape [T,S,N,N], got {tuple(kernels.shape)}.")
@@ -506,6 +555,70 @@ def _compute_channel_series_from_kernels(
                 out["axial_vector_companion"] = (
                     torch.linalg.vector_norm(axial_mean, dim=-1).transpose(0, 1).contiguous()
                 )
+
+        if (
+            "tensor_companion" in channels
+            or "tensor_traceless_companion" in channels
+        ):
+            if positions.shape[-1] >= 3:
+                disp_j = x_j - x_sm
+                disp_k = x_k - x_sm
+                inv_sqrt2 = float(1.0 / math.sqrt(2.0))
+                inv_sqrt6 = float(1.0 / math.sqrt(6.0))
+
+                xj = disp_j[..., 0]
+                yj = disp_j[..., 1]
+                zj = disp_j[..., 2]
+                q_j = torch.stack(
+                    (
+                        xj * yj,
+                        xj * zj,
+                        yj * zj,
+                        (xj * xj - yj * yj) * inv_sqrt2,
+                        (2.0 * zj * zj - xj * xj - yj * yj) * inv_sqrt6,
+                    ),
+                    dim=-1,
+                )  # [T,S,N,5]
+
+                xk = disp_k[..., 0]
+                yk = disp_k[..., 1]
+                zk = disp_k[..., 2]
+                q_k = torch.stack(
+                    (
+                        xk * yk,
+                        xk * zk,
+                        yk * zk,
+                        (xk * xk - yk * yk) * inv_sqrt2,
+                        (2.0 * zk * zk - xk * xk - yk * yk) * inv_sqrt6,
+                    ),
+                    dim=-1,
+                )  # [T,S,N,5]
+
+                t_j = inner_j.real.float().unsqueeze(-1) * q_j
+                t_k = inner_k.real.float().unsqueeze(-1) * q_k
+                tensor_pair = torch.stack([t_j, t_k], dim=-2)  # [T,S,N,2,5]
+                pair_valid = torch.stack([pair_j_valid, pair_k_valid], dim=-1)  # [T,S,N,2]
+                tensor_mask = pair_valid.unsqueeze(-1).expand_as(tensor_pair)
+                tensor_mean = _masked_mean_multi(tensor_pair, tensor_mask, dims=(-2, -3))  # [T,S,5]
+                tensor_series = torch.linalg.vector_norm(tensor_mean, dim=-1).transpose(0, 1).contiguous()
+
+                if "tensor_companion" in channels:
+                    out["tensor_companion"] = tensor_series
+                if "tensor_traceless_companion" in channels:
+                    out["tensor_traceless_companion"] = tensor_series
+            else:
+                if "tensor_companion" in channels:
+                    out["tensor_companion"] = torch.zeros(
+                        (n_scales, t_len),
+                        dtype=torch.float32,
+                        device=device,
+                    )
+                if "tensor_traceless_companion" in channels:
+                    out["tensor_traceless_companion"] = torch.zeros(
+                        (n_scales, t_len),
+                        dtype=torch.float32,
+                        device=device,
+                    )
 
         if "nucleon_companion" in channels:
             if color.shape[-1] >= 3:

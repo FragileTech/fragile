@@ -62,17 +62,17 @@ from fragile.fractalai.qft.multiscale_strong_force import (
     MultiscaleStrongForceOutput,
     compute_multiscale_strong_force_channels,
 )
-from fragile.fractalai.qft.operator_analysis import (
-    analyze_channel_across_scales,
-    build_consensus_plot,
-    build_mass_vs_scale_plot,
-    build_multiscale_correlator_plot,
-    build_multiscale_effective_mass_plot,
-    build_per_scale_channel_plots,
-    format_consensus_summary,
+from fragile.fractalai.qft.dashboard.channel_dashboard import (
+    build_multiscale_tab_layout,
+    clear_multiscale_tab,
+    create_multiscale_widgets,
+    update_multiscale_tab,
 )
-from fragile.fractalai.qft.smeared_operators import (
-    compute_pairwise_distance_matrices_from_history,
+from fragile.fractalai.qft.dashboard.tensor_calibration import (
+    build_tensor_calibration_tab_layout,
+    clear_tensor_calibration_tab,
+    create_tensor_calibration_widgets,
+    update_tensor_calibration_tab,
 )
 from fragile.fractalai.qft.electroweak_channels import (
     ELECTROWEAK_CHANNELS,
@@ -3602,6 +3602,41 @@ def _compute_anisotropic_edge_bundle(
     )
     channels = [c.strip() for c in settings.channel_list.split(",") if c.strip()]
     return compute_anisotropic_edge_channels(history, config=config, channels=channels)
+
+
+def _compute_anisotropic_edge_tensor_only_results(
+    history: RunHistory,
+    settings: AnisotropicEdgeSettings,
+) -> dict[str, ChannelCorrelatorResult]:
+    """Compute only non-companion tensor channels for tensor calibration tab."""
+    config = AnisotropicEdgeChannelConfig(
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mc_time_index=settings.mc_time_index,
+        max_lag=int(settings.max_lag),
+        use_connected=bool(settings.use_connected),
+        h_eff=float(settings.h_eff),
+        mass=float(settings.mass),
+        ell0=settings.ell0,
+        keep_dims=_parse_dims_spec(settings.spatial_dims_spec, history.d),
+        edge_weight_mode=str(settings.edge_weight_mode),
+        use_volume_weights=bool(settings.use_volume_weights),
+        component_mode=str(settings.component_mode),
+        nucleon_triplet_mode=str(settings.nucleon_triplet_mode),
+        window_widths=_parse_window_widths(settings.window_widths_spec),
+        fit_mode=str(settings.fit_mode),
+        fit_start=int(settings.fit_start),
+        fit_stop=settings.fit_stop,
+        min_fit_points=int(settings.min_fit_points),
+        compute_bootstrap_errors=bool(settings.compute_bootstrap_errors),
+        n_bootstrap=int(settings.n_bootstrap),
+    )
+    output = compute_anisotropic_edge_channels(
+        history,
+        config=config,
+        channels=["tensor", "tensor_traceless"],
+    )
+    return dict(output.channel_results)
 
 
 def _compute_companion_strong_force_bundle(
@@ -7138,6 +7173,13 @@ def create_app() -> pn.template.FastListTemplate:
             "companion_strong_force_results": None,
             "companion_strong_force_multiscale_output": None,
             "companion_strong_force_multiscale_error": None,
+            "tensor_calibration_base_results": None,
+            "tensor_calibration_strong_result": None,
+            "tensor_calibration_momentum_results": None,
+            "tensor_calibration_momentum_meta": None,
+            "tensor_calibration_noncomp_multiscale_output": None,
+            "tensor_calibration_companion_multiscale_output": None,
+            "tensor_calibration_payload": None,
             "new_dirac_ew_bundle": None,
             "new_dirac_ew_results": None,
             "einstein_test_result": None,
@@ -7809,57 +7851,7 @@ def create_app() -> pn.template.FastListTemplate:
         anisotropic_edge_multiscale_plot = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
-        multiscale_status = pn.pane.Markdown(
-            "**Multiscale:** enable multiscale kernels in Companion Strong Force settings, "
-            "then run Compute Companion Strong Force Channels.",
-            sizing_mode="stretch_width",
-        )
-        multiscale_geodesic_heatmap = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        multiscale_channel_select = pn.widgets.Select(
-            name="Channel",
-            options=["nucleon"],
-            value="nucleon",
-            sizing_mode="stretch_width",
-        )
-        multiscale_corr_plot = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        multiscale_meff_plot = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        multiscale_mass_vs_scale_plot = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        multiscale_estimator_table = pn.widgets.Tabulator(
-            pd.DataFrame(),
-            pagination=None,
-            show_index=False,
-            sizing_mode="stretch_width",
-        )
-        multiscale_pairwise_table = pn.widgets.Tabulator(
-            pd.DataFrame(),
-            pagination=None,
-            show_index=False,
-            sizing_mode="stretch_width",
-        )
-        multiscale_consensus_summary = pn.pane.Markdown(
-            "**Scale-as-Estimator Consensus:** run multiscale analysis to populate.",
-            sizing_mode="stretch_width",
-        )
-        multiscale_systematics_badge = pn.pane.Alert(
-            "Systematics verdict: run multiscale analysis to evaluate.",
-            alert_type="secondary",
-            sizing_mode="stretch_width",
-        )
-        multiscale_consensus_plot = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        multiscale_geodesic_histogram = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        multiscale_per_scale_plots = pn.Column(sizing_mode="stretch_width")
+        _msw = create_multiscale_widgets()
         anisotropic_edge_mass_mode = pn.widgets.RadioButtonGroup(
             name="Mass Display",
             options=["AIC-Weighted", "Best Window", "Tensor-Corrected"],
@@ -8351,6 +8343,87 @@ def create_app() -> pn.template.FastListTemplate:
             min_width=200,
             sizing_mode="stretch_width",
         )
+
+        # =====================================================================
+        # Tensor calibration tab components
+        # =====================================================================
+        tensor_calibration_settings = AnisotropicEdgeSettings()
+        tensor_calibration_run_button = pn.widgets.Button(
+            name="Compute Tensor Calibration",
+            button_type="primary",
+            min_width=260,
+            sizing_mode="stretch_width",
+            disabled=True,
+        )
+        tensor_calibration_settings_panel = pn.Param(
+            tensor_calibration_settings,
+            parameters=[
+                "simulation_range",
+                "mc_time_index",
+                "max_lag",
+                "use_connected",
+                "h_eff",
+                "mass",
+                "ell0",
+                "edge_weight_mode",
+                "use_volume_weights",
+                "component_mode",
+                "window_widths_spec",
+                "fit_mode",
+                "fit_start",
+                "fit_stop",
+                "min_fit_points",
+                "compute_bootstrap_errors",
+                "n_bootstrap",
+                "use_companion_tensor_momentum",
+                "tensor_momentum_use_connected",
+                "tensor_momentum_max_lag",
+                "tensor_momentum_pair_selection",
+                "tensor_momentum_color_dims_spec",
+                "tensor_momentum_position_dims_spec",
+                "tensor_momentum_axis",
+                "tensor_momentum_mode_max",
+                "tensor_momentum_eps",
+                "n_scales",
+                "kernel_type",
+                "kernel_distance_method",
+                "kernel_assume_all_alive",
+                "kernel_batch_size",
+                "kernel_scale_frames",
+                "kernel_scale_q_low",
+                "kernel_scale_q_high",
+                "kernel_bootstrap_mode",
+                "kernel_bootstrap_max_walkers",
+            ],
+            show_name=False,
+            widgets={
+                "mc_time_index": {"name": "MC start (step or idx)"},
+                "tensor_momentum_max_lag": {"name": "Tensor momentum max lag"},
+                "tensor_momentum_pair_selection": {"name": "Tensor momentum pair selection"},
+                "tensor_momentum_color_dims_spec": {"name": "Tensor momentum color dims (3 dims)"},
+                "tensor_momentum_position_dims_spec": {
+                    "name": "Tensor momentum position dims (3 dims)"
+                },
+                "tensor_momentum_axis": {"name": "Tensor momentum axis"},
+                "tensor_momentum_mode_max": {"name": "Tensor momentum n_max"},
+                "n_scales": {"name": "Number of scales"},
+                "kernel_type": {"name": "Kernel shape"},
+                "kernel_distance_method": {"name": "Distance solver"},
+                "kernel_assume_all_alive": {"name": "Assume all walkers alive"},
+                "kernel_batch_size": {"name": "Kernel frame batch size"},
+                "kernel_scale_frames": {"name": "Scale calibration frames"},
+                "kernel_scale_q_low": {"name": "Scale quantile low"},
+                "kernel_scale_q_high": {"name": "Scale quantile high"},
+                "kernel_bootstrap_mode": {"name": "Kernel bootstrap mode"},
+                "kernel_bootstrap_max_walkers": {"name": "Kernel bootstrap max walkers"},
+            },
+            default_layout=type("TensorCalibrationSettingsGrid", (pn.GridBox,), {"ncols": 2}),
+        )
+        tensor_calibration_settings_layout = pn.Column(
+            tensor_calibration_settings_panel,
+            sizing_mode="stretch_width",
+        )
+        _tcw = create_tensor_calibration_widgets()
 
         # =====================================================================
         # Radial Electroweak tab components (axis-free electroweak correlators)
@@ -9413,6 +9486,11 @@ def create_app() -> pn.template.FastListTemplate:
             companion_strong_force_status.object = (
                 "**Companion Strong Force ready:** click Compute Companion Strong Force Channels."
             )
+            tensor_calibration_run_button.disabled = False
+            clear_tensor_calibration_tab(
+                _tcw,
+                "**Tensor Calibration ready:** click Compute Tensor Calibration.",
+            )
             # Enable radial electroweak tab
             radial_ew_run_button.disabled = False
             radial_ew_status.object = "**Radial Electroweak ready:** click Compute Radial Electroweak."
@@ -10373,26 +10451,9 @@ def create_app() -> pn.template.FastListTemplate:
         def _update_anisotropic_edge_multiscale_views(
             output: MultiscaleStrongForceOutput | None,
             error: str | None = None,
+            original_results: dict[str, Any] | None = None,
         ) -> None:
-            def _clear_multiscale_tab_views(status_text: str) -> None:
-                multiscale_status.object = status_text
-                multiscale_geodesic_heatmap.object = None
-                multiscale_geodesic_histogram.object = None
-                multiscale_corr_plot.object = None
-                multiscale_meff_plot.object = None
-                multiscale_mass_vs_scale_plot.object = None
-                multiscale_estimator_table.value = pd.DataFrame()
-                multiscale_pairwise_table.value = pd.DataFrame()
-                multiscale_consensus_summary.object = (
-                    "**Scale-as-Estimator Consensus:** run multiscale analysis to populate."
-                )
-                multiscale_systematics_badge.object = (
-                    "Systematics verdict: run multiscale analysis to evaluate."
-                )
-                multiscale_systematics_badge.alert_type = "secondary"
-                multiscale_consensus_plot.object = None
-                multiscale_per_scale_plots.objects = []
-
+            # --- Error / None guard (touches both strong-force & multiscale tabs) ---
             if error:
                 anisotropic_edge_multiscale_summary.object = (
                     "### Multiscale Kernel Summary\n"
@@ -10401,9 +10462,10 @@ def create_app() -> pn.template.FastListTemplate:
                 )
                 anisotropic_edge_multiscale_table.value = pd.DataFrame()
                 anisotropic_edge_multiscale_plot.object = None
-                _clear_multiscale_tab_views(
+                clear_multiscale_tab(
+                    _msw,
                     "## Multiscale\n"
-                    f"**Status:** failed. `{error}`"
+                    f"**Status:** failed. `{error}`",
                 )
                 return
 
@@ -10414,12 +10476,14 @@ def create_app() -> pn.template.FastListTemplate:
                 )
                 anisotropic_edge_multiscale_table.value = pd.DataFrame()
                 anisotropic_edge_multiscale_plot.object = None
-                _clear_multiscale_tab_views(
+                clear_multiscale_tab(
+                    _msw,
                     "## Multiscale\n"
-                    "_Run Strong Force with **Enable multiscale kernels** to populate plots._"
+                    "_Run Companion Strong Force with **Enable multiscale kernels** to populate plots._",
                 )
                 return
 
+            # --- Part A: Strong-force tab summary (stays in closure) ---
             scale_values = output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
             lines = [
                 "### Multiscale Kernel Summary",
@@ -10502,274 +10566,18 @@ def create_app() -> pn.template.FastListTemplate:
             else:
                 anisotropic_edge_multiscale_plot.object = None
 
-            # -----------------------------------------------------------------
-            # Dedicated Multiscale tab views
-            # -----------------------------------------------------------------
-            multiscale_status_lines = [
-                "## Multiscale",
-                f"- Scales available: `{len(scale_values)}`",
-                f"- Frames analyzed: `{len(output.frame_indices)}`",
-                f"- Bootstrap mode: `{output.bootstrap_mode_applied}`",
-            ]
-            base_channel_count = sum(
-                1
-                for channel_name in output.per_scale_results
-                if not str(channel_name).endswith("_companion")
+            # --- Part B: Dedicated Multiscale tab (delegated to module) ---
+            update_multiscale_tab(
+                _msw,
+                output,
+                scale_values,
+                state,
+                history=state.get("history"),
+                original_results=original_results,
+                kernel_distance_method=str(anisotropic_edge_settings.kernel_distance_method),
+                edge_weight_mode=str(anisotropic_edge_settings.edge_weight_mode),
+                kernel_assume_all_alive=bool(anisotropic_edge_settings.kernel_assume_all_alive),
             )
-            companion_channel_count = sum(
-                1
-                for channel_name in output.per_scale_results
-                if str(channel_name).endswith("_companion")
-            )
-            multiscale_status_lines.append(
-                f"- Measurement groups: `non_companion={base_channel_count}`, "
-                f"`companion={companion_channel_count}`"
-            )
-
-            # 1) Full geodesic distance matrix heatmap (single representative frame).
-            history_obj = state.get("history")
-            geodesic_error: str | None = None
-            geodesic_frame_idx: int | None = None
-            try:
-                if history_obj is not None and output.frame_indices:
-                    geodesic_frame_idx = int(output.frame_indices[-1])
-                    _, distance_batch = compute_pairwise_distance_matrices_from_history(
-                        history_obj,
-                        method=str(anisotropic_edge_settings.kernel_distance_method),
-                        frame_indices=[geodesic_frame_idx],
-                        batch_size=1,
-                        edge_weight_mode=str(anisotropic_edge_settings.edge_weight_mode),
-                        assume_all_alive=bool(anisotropic_edge_settings.kernel_assume_all_alive),
-                        device=None,
-                        dtype=torch.float32,
-                    )
-                    if distance_batch.numel() > 0:
-                        distance_matrix = distance_batch[0].detach().cpu().numpy().astype(
-                            np.float64, copy=False
-                        )
-                        n_walkers = int(distance_matrix.shape[0])
-                        if n_walkers == 0 or distance_matrix.shape[1] != n_walkers:
-                            multiscale_geodesic_heatmap.object = None
-                            geodesic_error = "distance matrix is not square"
-                        else:
-                            matrix = np.array(distance_matrix, dtype=np.float64, copy=True)
-                            matrix[~np.isfinite(matrix)] = np.nan
-                            matrix = np.nanmean(np.stack([matrix, matrix.T], axis=0), axis=0)
-                            finite_positive = np.isfinite(matrix) & (matrix > 0)
-                            if np.any(finite_positive):
-                                fill_value = float(np.nanpercentile(matrix[finite_positive], 99.0))
-                                if not np.isfinite(fill_value) or fill_value <= 0.0:
-                                    fill_value = float(np.nanmax(matrix[finite_positive]))
-                            else:
-                                fill_value = 1.0
-                            if not np.isfinite(fill_value) or fill_value <= 0.0:
-                                fill_value = 1.0
-                            matrix = np.where(np.isfinite(matrix), matrix, fill_value)
-                            matrix = np.maximum(matrix, 0.0)
-                            np.fill_diagonal(matrix, 0.0)
-
-                            clustering_note = "not clustered"
-                            order = np.arange(n_walkers, dtype=np.int64)
-                            try:
-                                from scipy.cluster.hierarchy import leaves_list, linkage
-                                from scipy.spatial.distance import squareform
-
-                                if n_walkers >= 2:
-                                    condensed = squareform(matrix, checks=False)
-                                    linkage_mat = linkage(
-                                        condensed,
-                                        method="average",
-                                        optimal_ordering=True,
-                                    )
-                                    order = leaves_list(linkage_mat).astype(np.int64, copy=False)
-                                    clustering_note = "average-linkage"
-                                else:
-                                    clustering_note = "single walker"
-                            except Exception as cluster_exc:
-                                clustering_note = f"fallback (no clustering): {cluster_exc!s}"
-
-                            matrix_ordered = matrix[np.ix_(order, order)].astype(np.float64, copy=False)
-                            # Log-map for better visibility of variation.
-                            log_floor = np.finfo(np.float64).tiny
-                            log_matrix = np.log10(np.maximum(matrix_ordered, log_floor))
-                            # Replace diagonal (log10(0) = -inf) with NaN for display.
-                            np.fill_diagonal(log_matrix, np.nan)
-                            multiscale_geodesic_heatmap.object = hv.QuadMesh(
-                                (order, order, log_matrix.astype(np.float32, copy=False)),
-                                kdims=["walker_j", "walker_i"],
-                                vdims=["log10_geodesic_distance"],
-                            ).opts(
-                                width=900,
-                                height=420,
-                                cmap="Viridis",
-                                colorbar=True,
-                                xlabel="Walker index j (clustered order)",
-                                ylabel="Walker index i (clustered order)",
-                                title=(
-                                    f"Geodesic Distance Heatmap (log₁₀) "
-                                    f"(frame={geodesic_frame_idx}, {clustering_note})"
-                                ),
-                                tools=["hover"],
-                                show_grid=False,
-                            )
-                            # Histogram of off-diagonal geodesic distances.
-                            upper_tri = matrix_ordered[np.triu_indices(n_walkers, k=1)]
-                            valid_dists = upper_tri[np.isfinite(upper_tri) & (upper_tri > 0)]
-                            if valid_dists.size >= 2:
-                                log_dists = np.log10(valid_dists)
-                                hist_freq, hist_edges = np.histogram(log_dists, bins=60)
-                                multiscale_geodesic_histogram.object = hv.Histogram(
-                                    (hist_freq, hist_edges),
-                                    kdims=["log10_distance"],
-                                    vdims=["count"],
-                                ).opts(
-                                    width=900,
-                                    height=260,
-                                    xlabel="log₁₀(geodesic distance)",
-                                    ylabel="Pair count",
-                                    title="Geodesic Distance Distribution",
-                                    color="#4c78a8",
-                                    line_color="white",
-                                    show_grid=True,
-                                )
-                            else:
-                                multiscale_geodesic_histogram.object = None
-                            multiscale_status_lines.append(f"- Heatmap clustering: `{clustering_note}`")
-                    else:
-                        multiscale_geodesic_heatmap.object = None
-                        geodesic_error = "distance matrix is empty"
-                else:
-                    multiscale_geodesic_heatmap.object = None
-                    geodesic_error = "history or frame indices unavailable"
-            except Exception as exc:
-                multiscale_geodesic_heatmap.object = None
-                geodesic_error = str(exc)
-
-            if geodesic_frame_idx is not None:
-                multiscale_status_lines.append(f"- Heatmap frame: `{geodesic_frame_idx}`")
-            if geodesic_error:
-                multiscale_status_lines.append(f"- Heatmap note: `{geodesic_error}`")
-
-            # 2) Populate channel selector and store output for callback.
-            available_channels = sorted(
-                output.per_scale_results.keys(),
-                key=lambda name: (1 if str(name).endswith("_companion") else 0, str(name)),
-            )
-            multiscale_channel_select.options = available_channels
-            default_channel = "nucleon" if "nucleon" in available_channels else (
-                available_channels[0] if available_channels else ""
-            )
-            multiscale_channel_select.value = default_channel
-            state["_multiscale_output"] = output
-            state["_multiscale_scale_values"] = scale_values
-
-            # 3) Inner function: update channel-specific views.
-            def _update_multiscale_channel_views(channel_name: str) -> None:
-                if not channel_name:
-                    return
-                ms_output = state.get("_multiscale_output")
-                sv = state.get("_multiscale_scale_values")
-                if ms_output is None or sv is None:
-                    return
-                channel_results = ms_output.per_scale_results.get(channel_name, [])
-                if not channel_results:
-                    multiscale_corr_plot.object = None
-                    multiscale_meff_plot.object = None
-                    multiscale_mass_vs_scale_plot.object = None
-                    multiscale_estimator_table.value = pd.DataFrame()
-                    multiscale_pairwise_table.value = pd.DataFrame()
-                    multiscale_consensus_summary.object = (
-                        f"**{channel_name}:** no per-scale results available."
-                    )
-                    multiscale_systematics_badge.object = "Systematics verdict: no data."
-                    multiscale_systematics_badge.alert_type = "secondary"
-                    multiscale_consensus_plot.object = None
-                    multiscale_per_scale_plots.objects = []
-                    return
-
-                bundle = analyze_channel_across_scales(channel_results, sv, channel_name)
-
-                # Correlator plot (scatter+errorbars per scale).
-                multiscale_corr_plot.object = build_multiscale_correlator_plot(
-                    channel_results, sv, channel_name,
-                )
-                # Effective mass plot.
-                multiscale_meff_plot.object = build_multiscale_effective_mass_plot(
-                    channel_results, sv, channel_name,
-                )
-                # Mass vs scale with consensus overlay.
-                multiscale_mass_vs_scale_plot.object = build_mass_vs_scale_plot(
-                    bundle.measurements, channel_name, consensus=bundle.consensus,
-                )
-                # Estimator table.
-                est_rows = [
-                    {
-                        "scale": m.label,
-                        "scale_value": m.scale,
-                        "mass": m.mass,
-                        "mass_error": m.mass_error,
-                        "r_squared": m.r_squared,
-                    }
-                    for m in bundle.measurements
-                ]
-                multiscale_estimator_table.value = (
-                    pd.DataFrame(est_rows) if est_rows else pd.DataFrame()
-                )
-                # Pairwise discrepancy table.
-                pw_rows = [
-                    {
-                        "scale_a": d.label_a,
-                        "scale_b": d.label_b,
-                        "mass_a": d.mass_a,
-                        "mass_b": d.mass_b,
-                        "ratio": d.ratio,
-                        "delta_pct": d.delta_pct,
-                        "abs_delta_pct": d.abs_delta_pct,
-                        "combined_error": d.combined_error,
-                        "pull_sigma": d.pull_sigma,
-                    }
-                    for d in bundle.discrepancies
-                ]
-                multiscale_pairwise_table.value = (
-                    pd.DataFrame(pw_rows).sort_values("abs_delta_pct", ascending=False)
-                    if pw_rows
-                    else pd.DataFrame()
-                )
-                # Consensus summary + badge.
-                multiscale_consensus_summary.object = format_consensus_summary(
-                    bundle.consensus, bundle.discrepancies, channel_name,
-                )
-                multiscale_systematics_badge.object = (
-                    f"Systematics verdict: {bundle.verdict.label}. {bundle.verdict.details}"
-                )
-                multiscale_systematics_badge.alert_type = bundle.verdict.alert_type
-                # Consensus plot.
-                multiscale_consensus_plot.object = build_consensus_plot(
-                    bundle.measurements, bundle.consensus, channel_name,
-                )
-                # Per-scale ChannelPlot layouts.
-                per_scale_layouts = build_per_scale_channel_plots(channel_results, sv)
-                if per_scale_layouts:
-                    children: list[Any] = []
-                    for label, layout in per_scale_layouts:
-                        children.append(pn.pane.Markdown(f"#### {label}"))
-                        children.append(layout)
-                    multiscale_per_scale_plots.objects = children
-                else:
-                    multiscale_per_scale_plots.objects = []
-
-            # Wire channel selector callback.
-            def _on_multiscale_channel_change(event: Any) -> None:
-                _update_multiscale_channel_views(str(event.new))
-
-            multiscale_channel_select.param.watch(
-                _on_multiscale_channel_change, "value",
-            )
-
-            # Initial render for default channel.
-            _update_multiscale_channel_views(default_channel)
-
-            multiscale_status.object = "  \n".join(multiscale_status_lines)
 
         def _update_anisotropic_edge_tables(
             results: dict[str, ChannelCorrelatorResult],
@@ -10785,12 +10593,19 @@ def create_app() -> pn.template.FastListTemplate:
             mass_getter = None
             error_getter = None
 
-            tensor_payload = _compute_tensor_correction_payload(
-                results=results,
-                tensor_strong_result=state.get("anisotropic_edge_tensor_strong_result"),
-                tensor_momentum_results=state.get("anisotropic_edge_tensor_momentum_results"),
-                mode=table_mode,
+            tensor_payload = state.get("tensor_calibration_payload")
+            use_cached_payload = (
+                isinstance(tensor_payload, dict)
+                and np.isfinite(float(tensor_payload.get("correction_scale", float("nan"))))
+                and str(tensor_payload.get("mode", table_mode)) == str(table_mode)
             )
+            if not use_cached_payload:
+                tensor_payload = _compute_tensor_correction_payload(
+                    results=results,
+                    tensor_strong_result=state.get("anisotropic_edge_tensor_strong_result"),
+                    tensor_momentum_results=state.get("anisotropic_edge_tensor_momentum_results"),
+                    mode=table_mode,
+                )
             state["anisotropic_edge_tensor_correction_payload"] = tensor_payload
             state["anisotropic_edge_tensor_correction_applied"] = False
 
@@ -13046,6 +12861,7 @@ def create_app() -> pn.template.FastListTemplate:
                 )
                 _update_anisotropic_edge_multiscale_views(
                     multiscale_output, multiscale_error,
+                    original_results=base_results,
                 )
 
                 companion_strong_force_summary.object = (
@@ -13072,6 +12888,184 @@ def create_app() -> pn.template.FastListTemplate:
                 "companion strong-force channels",
                 _compute,
             )
+
+        def _build_multiscale_cfg_from_tensor_settings() -> MultiscaleStrongForceConfig:
+            return MultiscaleStrongForceConfig(
+                warmup_fraction=float(tensor_calibration_settings.simulation_range[0]),
+                end_fraction=float(tensor_calibration_settings.simulation_range[1]),
+                mc_time_index=tensor_calibration_settings.mc_time_index,
+                h_eff=float(tensor_calibration_settings.h_eff),
+                mass=float(tensor_calibration_settings.mass),
+                ell0=tensor_calibration_settings.ell0,
+                edge_weight_mode=str(tensor_calibration_settings.edge_weight_mode),
+                n_scales=int(tensor_calibration_settings.n_scales),
+                kernel_type=str(tensor_calibration_settings.kernel_type),
+                kernel_distance_method=str(tensor_calibration_settings.kernel_distance_method),
+                kernel_assume_all_alive=bool(tensor_calibration_settings.kernel_assume_all_alive),
+                kernel_batch_size=int(tensor_calibration_settings.kernel_batch_size),
+                kernel_scale_frames=int(tensor_calibration_settings.kernel_scale_frames),
+                kernel_scale_q_low=float(tensor_calibration_settings.kernel_scale_q_low),
+                kernel_scale_q_high=float(tensor_calibration_settings.kernel_scale_q_high),
+                max_lag=int(tensor_calibration_settings.max_lag),
+                use_connected=bool(tensor_calibration_settings.use_connected),
+                fit_mode=str(tensor_calibration_settings.fit_mode),
+                fit_start=int(tensor_calibration_settings.fit_start),
+                fit_stop=tensor_calibration_settings.fit_stop,
+                min_fit_points=int(tensor_calibration_settings.min_fit_points),
+                window_widths=_parse_window_widths(tensor_calibration_settings.window_widths_spec),
+                compute_bootstrap_errors=bool(tensor_calibration_settings.compute_bootstrap_errors),
+                n_bootstrap=int(tensor_calibration_settings.n_bootstrap),
+                bootstrap_mode=str(tensor_calibration_settings.kernel_bootstrap_mode),
+                walker_bootstrap_max_walkers=int(
+                    tensor_calibration_settings.kernel_bootstrap_max_walkers
+                ),
+            )
+
+        def on_run_tensor_calibration(_):
+            def _compute(history):
+                enabled_estimators = {
+                    str(v) for v in (_tcw.estimator_toggles.value or [])
+                }
+                if not enabled_estimators:
+                    clear_tensor_calibration_tab(
+                        _tcw,
+                        "## Tensor Calibration\nSelect at least one estimator and rerun.",
+                    )
+                    state["tensor_calibration_payload"] = None
+                    return
+
+                status_lines = [
+                    "## Tensor Calibration",
+                    f"- Enabled estimators: `{', '.join(sorted(enabled_estimators))}`",
+                ]
+                base_results: dict[str, ChannelCorrelatorResult] = {}
+                strong_tensor_result: ChannelCorrelatorResult | None = None
+                tensor_momentum_results: dict[str, ChannelCorrelatorResult] = {}
+                tensor_momentum_meta: dict[str, Any] | None = None
+                noncomp_multiscale_output: MultiscaleStrongForceOutput | None = None
+                companion_multiscale_output: MultiscaleStrongForceOutput | None = None
+                warnings: list[str] = []
+
+                if (
+                    "anisotropic_edge" in enabled_estimators
+                    or "anisotropic_edge_traceless" in enabled_estimators
+                ):
+                    try:
+                        base_results = _compute_anisotropic_edge_tensor_only_results(
+                            history,
+                            tensor_calibration_settings,
+                        )
+                    except Exception as exc:
+                        warnings.append(f"anisotropic tensor failed: {exc}")
+
+                if "strong_force" in enabled_estimators:
+                    try:
+                        strong_tensor_result = _compute_strong_tensor_for_anisotropic_edge(
+                            history,
+                            tensor_calibration_settings,
+                        )
+                    except Exception as exc:
+                        warnings.append(f"strong-force tensor failed: {exc}")
+
+                if (
+                    "momentum_contracted" in enabled_estimators
+                    or "momentum_components" in enabled_estimators
+                ):
+                    if bool(tensor_calibration_settings.use_companion_tensor_momentum):
+                        try:
+                            tensor_momentum_results, tensor_momentum_meta = (
+                                _compute_tensor_momentum_for_anisotropic_edge(
+                                    history,
+                                    tensor_calibration_settings,
+                                )
+                            )
+                        except Exception as exc:
+                            warnings.append(f"tensor momentum failed: {exc}")
+                    else:
+                        warnings.append(
+                            "tensor momentum disabled by settings (enable companion tensor momentum)."
+                        )
+
+                if "multiscale_non_companion" in enabled_estimators:
+                    try:
+                        noncomp_multiscale_output = compute_multiscale_strong_force_channels(
+                            history,
+                            config=_build_multiscale_cfg_from_tensor_settings(),
+                            channels=["tensor", "tensor_traceless"],
+                        )
+                    except Exception as exc:
+                        warnings.append(f"non-companion multiscale failed: {exc}")
+
+                if "multiscale_companion" in enabled_estimators:
+                    try:
+                        companion_multiscale_output = compute_multiscale_strong_force_channels(
+                            history,
+                            config=_build_multiscale_cfg_from_tensor_settings(),
+                            channels=["tensor_companion", "tensor_traceless_companion"],
+                        )
+                    except Exception as exc:
+                        warnings.append(f"companion multiscale failed: {exc}")
+
+                if warnings:
+                    for warning in warnings:
+                        status_lines.append(f"- Warning: `{warning}`")
+
+                payload = update_tensor_calibration_tab(
+                    _tcw,
+                    base_results=base_results,
+                    strong_tensor_result=strong_tensor_result,
+                    tensor_momentum_results=tensor_momentum_results,
+                    tensor_momentum_meta=tensor_momentum_meta,
+                    noncomp_multiscale_output=noncomp_multiscale_output,
+                    companion_multiscale_output=companion_multiscale_output,
+                    status_lines=status_lines,
+                )
+                state["tensor_calibration_base_results"] = base_results
+                state["tensor_calibration_strong_result"] = strong_tensor_result
+                state["tensor_calibration_momentum_results"] = tensor_momentum_results
+                state["tensor_calibration_momentum_meta"] = tensor_momentum_meta
+                state["tensor_calibration_noncomp_multiscale_output"] = noncomp_multiscale_output
+                state["tensor_calibration_companion_multiscale_output"] = companion_multiscale_output
+                state["tensor_calibration_payload"] = payload
+                if isinstance(payload, dict):
+                    state["anisotropic_edge_tensor_correction_payload"] = payload
+
+            _run_tab_computation(
+                state,
+                _tcw.status,
+                "tensor calibration",
+                _compute,
+            )
+
+        def _refresh_tensor_calibration_views() -> None:
+            if state.get("history") is None:
+                return
+            if state.get("tensor_calibration_base_results") is None:
+                return
+            payload = update_tensor_calibration_tab(
+                _tcw,
+                base_results=state.get("tensor_calibration_base_results") or {},
+                strong_tensor_result=state.get("tensor_calibration_strong_result"),
+                tensor_momentum_results=state.get("tensor_calibration_momentum_results"),
+                tensor_momentum_meta=state.get("tensor_calibration_momentum_meta"),
+                noncomp_multiscale_output=state.get("tensor_calibration_noncomp_multiscale_output"),
+                companion_multiscale_output=state.get("tensor_calibration_companion_multiscale_output"),
+            )
+            state["tensor_calibration_payload"] = payload
+            if isinstance(payload, dict):
+                state["anisotropic_edge_tensor_correction_payload"] = payload
+
+        def _on_tensor_calibration_mode_change(_event):
+            _refresh_tensor_calibration_views()
+
+        def _on_tensor_calibration_estimator_toggle_change(_event):
+            _refresh_tensor_calibration_views()
+
+        _tcw.mass_mode.param.watch(_on_tensor_calibration_mode_change, "value")
+        _tcw.estimator_toggles.param.watch(
+            _on_tensor_calibration_estimator_toggle_change,
+            "value",
+        )
 
         # =====================================================================
         # Electroweak tab callbacks (U1/SU2 correlators)
@@ -14200,6 +14194,7 @@ def create_app() -> pn.template.FastListTemplate:
         radial_run_button.on_click(on_run_radial_channels)
         anisotropic_edge_run_button.on_click(on_run_anisotropic_edge_channels)
         companion_strong_force_run_button.on_click(on_run_companion_strong_force_channels)
+        tensor_calibration_run_button.on_click(on_run_tensor_calibration)
         radial_ew_run_button.on_click(on_run_radial_electroweak)
         electroweak_run_button.on_click(on_run_electroweak)
         new_dirac_ew_run_button.on_click(on_run_new_dirac_electroweak)
@@ -14290,11 +14285,6 @@ def create_app() -> pn.template.FastListTemplate:
                     ),
                     ("Simulation", gas_config.panel()),
                     ("Visualization", visualization_controls),
-                    ("Analysis: Core", analysis_core),
-                    ("Analysis: Local Fields", analysis_local),
-                    ("Analysis: String Tension", analysis_string),
-                    ("Analysis: Output", analysis_output),
-                    ("Electroweak Channels", electroweak_settings_panel),
                     sizing_mode="stretch_width",
                 ),
             ]
@@ -14689,7 +14679,8 @@ Use **MC time slice** to select the snapshot.""",
                 """**Anisotropic Edge Channels:** Computes MC-time correlators from direct
 recorded Delaunay neighbors only (no tessellation recomputation). This tab is
 now non-companion only; companion-pair/triplet operators are available in the
-dedicated **Companion Strong Force** tab.""",
+dedicated **Companion Strong Force** tab. Tensor estimator comparison and
+calibration are available in the dedicated **Tensor Calibration** tab.""",
                 alert_type="info",
                 sizing_mode="stretch_width",
             )
@@ -14743,20 +14734,8 @@ dedicated **Companion Strong Force** tab.""",
                 anisotropic_edge_glueball_consensus_plot,
                 pn.pane.Markdown("### Glueball Momentum Dispersion"),
                 anisotropic_edge_glueball_dispersion_plot,
-                pn.pane.Markdown("### Tensor Approach Comparison"),
-                anisotropic_edge_tensor_systematics_badge,
-                anisotropic_edge_tensor_approach_summary,
-                anisotropic_edge_tensor_approach_table,
-                pn.pane.Markdown("### Tensor Momentum Dispersion"),
-                anisotropic_edge_tensor_dispersion_plot,
-                pn.pane.Markdown("### Tensor Component Dispersion"),
-                anisotropic_edge_tensor_component_dispersion_plot,
                 pn.pane.Markdown("### Glueball Lorentz Check (4 Estimators + Dispersion)"),
                 anisotropic_edge_glueball_lorentz_ratio,
-                pn.pane.Markdown("### Tensor Lorentz Check (Legacy isotropic tensor)"),
-                anisotropic_edge_tensor_lorentz_ratio,
-                pn.pane.Markdown("### Tensor Lorentz Check (Traceless tensor)"),
-                anisotropic_edge_tensor_traceless_lorentz_ratio,
                 pn.pane.Markdown("### Lorentz/Anisotropy Corrections (Glueball 4-way)"),
                 anisotropic_edge_lorentz_correction_summary,
                 pn.pane.Markdown("### Glueball Estimator Plots"),
@@ -14871,42 +14850,13 @@ plaquette, and tensor momentum channels, with independent settings and execution
                 sizing_mode="stretch_both",
             )
 
-            multiscale_tab = pn.Column(
-                multiscale_status,
-                pn.Row(multiscale_channel_select, sizing_mode="stretch_width"),
-                pn.pane.Markdown("### Full Geodesic Distance Matrix"),
-                pn.pane.Markdown(
-                    "_Computed from recorded neighbor graph and selected edge-weight mode "
-                    "on the representative frame used by the current multiscale run._"
-                ),
-                multiscale_geodesic_heatmap,
-                pn.pane.Markdown("### Geodesic Distance Distribution"),
-                multiscale_geodesic_histogram,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Correlator Across Scales"),
-                pn.pane.Markdown(
-                    "_One color per scale; scatter+errorbars from the same multiscale kernel family._"
-                ),
-                multiscale_corr_plot,
-                pn.pane.Markdown("### Effective Mass Across Scales"),
-                multiscale_meff_plot,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Mass vs Scale"),
-                multiscale_mass_vs_scale_plot,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Scale-as-Estimator Analysis"),
-                multiscale_estimator_table,
-                pn.pane.Markdown("### Pairwise Discrepancies"),
-                multiscale_pairwise_table,
-                pn.pane.Markdown("### Consensus / Systematics"),
-                multiscale_systematics_badge,
-                multiscale_consensus_summary,
-                multiscale_consensus_plot,
-                pn.layout.Divider(),
-                pn.pane.Markdown("### Per-Scale Channel Plots"),
-                multiscale_per_scale_plots,
-                sizing_mode="stretch_both",
+            tensor_calibration_tab = build_tensor_calibration_tab_layout(
+                _tcw,
+                run_button=tensor_calibration_run_button,
+                settings_layout=tensor_calibration_settings_layout,
             )
+
+            multiscale_tab = build_multiscale_tab_layout(_msw)
 
             radial_ew_tab = pn.Column(
                 radial_ew_status,
@@ -15455,6 +15405,7 @@ Dirac-sector analyses are shown in the dedicated Dirac tab.""",
                     ("Algorithm", algorithm_tab),
                     ("Holographic Principle", fractal_set_tab),
                     ("Strong Force", anisotropic_edge_tab),
+                    ("Tensor Calibration", tensor_calibration_tab),
                     ("Companion Strong Force", companion_strong_force_tab),
                     ("Multiscale", multiscale_tab),
                     ("Electroweak", new_dirac_ew_tab),
