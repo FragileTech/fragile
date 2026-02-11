@@ -197,9 +197,9 @@ def _resolve_meson_operator_mode(operator_mode: str | None) -> str:
     if operator_mode is None or not str(operator_mode).strip():
         return "standard"
     mode = str(operator_mode).strip().lower()
-    if mode not in {"standard", "score_directed"}:
+    if mode not in {"standard", "score_directed", "score_weighted"}:
         raise ValueError(
-            "operator_mode must be one of {'standard','score_directed'}."
+            "operator_mode must be one of {'standard','score_directed','score_weighted'}."
         )
     return mode
 
@@ -220,6 +220,24 @@ def _orient_inner_products_by_scores(
     inner_oriented = torch.where(ds >= 0, inner, torch.conj(inner))
     inner_oriented = torch.where(oriented_valid, inner_oriented, torch.zeros_like(inner_oriented))
     return inner_oriented, oriented_valid
+
+
+def _weight_inner_products_by_score_gap(
+    *,
+    inner: Tensor,
+    valid: Tensor,
+    scores: Tensor,
+    pair_indices: Tensor,
+) -> tuple[Tensor, Tensor]:
+    """Weight pair inner products by |Δscore|, preserving pair orientation."""
+    score_j, in_range = _safe_gather_pairs_2d(scores, pair_indices)
+    score_i = scores.unsqueeze(-1).expand_as(score_j)
+    finite_scores = torch.isfinite(score_i) & torch.isfinite(score_j)
+    weighted_valid = valid & in_range & finite_scores
+    gap = (score_j - score_i).abs()
+    inner_weighted = inner * gap.to(dtype=inner.real.dtype).to(dtype=inner.dtype)
+    inner_weighted = torch.where(weighted_valid, inner_weighted, torch.zeros_like(inner_weighted))
+    return inner_weighted, weighted_valid
 
 
 def _per_frame_series(values: Tensor, valid: Tensor) -> tuple[Tensor, Tensor]:
@@ -264,9 +282,10 @@ def compute_meson_phase_correlator_from_color(
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
     resolved_operator_mode = _resolve_meson_operator_mode(operator_mode)
-    if resolved_operator_mode == "score_directed":
+    if resolved_operator_mode in {"score_directed", "score_weighted"}:
         if scores is None:
-            raise ValueError("scores is required when operator_mode='score_directed'.")
+            msg = "scores is required when operator_mode is one of {'score_directed','score_weighted'}."
+            raise ValueError(msg)
         if scores.shape != color.shape[:2]:
             raise ValueError(
                 f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
@@ -327,6 +346,13 @@ def compute_meson_phase_correlator_from_color(
             scores=scores,
             pair_indices=pair_indices,
         )
+    elif resolved_operator_mode == "score_weighted":
+        source_inner, source_valid = _weight_inner_products_by_score_gap(
+            inner=source_inner,
+            valid=source_valid,
+            scores=scores,
+            pair_indices=pair_indices,
+        )
     source_scalar = source_inner.real.float()
     source_pseudoscalar = source_inner.imag.float()
 
@@ -362,6 +388,13 @@ def compute_meson_phase_correlator_from_color(
         )
         if resolved_operator_mode == "score_directed":
             sink_inner, sink_valid = _orient_inner_products_by_scores(
+                inner=sink_inner,
+                valid=sink_valid,
+                scores=scores[lag : lag + source_len],
+                pair_indices=pair_indices[:source_len],
+            )
+        elif resolved_operator_mode == "score_weighted":
+            sink_inner, sink_valid = _weight_inner_products_by_score_gap(
                 inner=sink_inner,
                 valid=sink_valid,
                 scores=scores[lag : lag + source_len],

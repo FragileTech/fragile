@@ -66,8 +66,18 @@ COMPANION_CHANNEL_MAP: dict[str, str] = {
     "pseudoscalar": "pseudoscalar_companion",
     "scalar_score_directed": "scalar_score_directed_companion",
     "pseudoscalar_score_directed": "pseudoscalar_score_directed_companion",
+    "scalar_score_weighted": "scalar_score_weighted_companion",
+    "pseudoscalar_score_weighted": "pseudoscalar_score_weighted_companion",
     "vector": "vector_companion",
     "axial_vector": "axial_vector_companion",
+    "vector_score_directed": "vector_score_directed_companion",
+    "axial_vector_score_directed": "axial_vector_score_directed_companion",
+    "vector_score_directed_longitudinal": "vector_score_directed_longitudinal_companion",
+    "axial_vector_score_directed_longitudinal": "axial_vector_score_directed_longitudinal_companion",
+    "vector_score_directed_transverse": "vector_score_directed_transverse_companion",
+    "axial_vector_score_directed_transverse": "axial_vector_score_directed_transverse_companion",
+    "vector_score_gradient": "vector_score_gradient_companion",
+    "axial_vector_score_gradient": "axial_vector_score_gradient_companion",
     "tensor": "tensor_companion",
     "nucleon": "nucleon_companion",
     "nucleon_score_signed": "nucleon_score_signed_companion",
@@ -493,6 +503,8 @@ def _compute_channel_series_from_kernels(
     # ------------------------------------------------------------------
     requested_companion_channels = [name for name in COMPANION_CHANNEL_MAP.values() if name in channels]
     if requested_companion_channels:
+        for channel in requested_companion_channels:
+            out.setdefault(channel, torch.zeros((n_scales, t_len), dtype=torch.float32, device=device))
         if (
             companions_distance is None
             or companions_clone is None
@@ -529,6 +541,8 @@ def _compute_channel_series_from_kernels(
             for name in (
                 "scalar_score_directed_companion",
                 "pseudoscalar_score_directed_companion",
+                "scalar_score_weighted_companion",
+                "pseudoscalar_score_weighted_companion",
             )
         )
         needs_score_triplet_channels = any(
@@ -1173,8 +1187,18 @@ def _compute_companion_per_scale_results_preserving_original(
             "pseudoscalar_companion",
             "scalar_score_directed_companion",
             "pseudoscalar_score_directed_companion",
+            "scalar_score_weighted_companion",
+            "pseudoscalar_score_weighted_companion",
             "vector_companion",
             "axial_vector_companion",
+            "vector_score_directed_companion",
+            "axial_vector_score_directed_companion",
+            "vector_score_directed_longitudinal_companion",
+            "axial_vector_score_directed_longitudinal_companion",
+            "vector_score_directed_transverse_companion",
+            "axial_vector_score_directed_transverse_companion",
+            "vector_score_gradient_companion",
+            "axial_vector_score_gradient_companion",
             "tensor_companion",
         )
     )
@@ -1312,6 +1336,53 @@ def _compute_companion_per_scale_results_preserving_original(
                 result.mass_fit["source"] = "scaled_companion_source_sink"
                 out["pseudoscalar_score_directed_companion"].append(result)
 
+        if use_pair_family and (
+            "scalar_score_weighted_companion" in out
+            or "pseudoscalar_score_weighted_companion" in out
+        ):
+            meson_weighted_out = compute_meson_phase_correlator_from_color(
+                color=color3,
+                color_valid=color_valid,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                operator_mode="score_weighted",
+                scores=cloning_scores,
+                frame_indices=None,
+            )
+            if "scalar_score_weighted_companion" in out:
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="scalar_score_weighted_companion",
+                    correlator=meson_weighted_out.scalar,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(meson_weighted_out.n_valid_source_pairs),
+                    series=meson_weighted_out.operator_scalar_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["scalar_score_weighted_companion"].append(result)
+            if "pseudoscalar_score_weighted_companion" in out:
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="pseudoscalar_score_weighted_companion",
+                    correlator=meson_weighted_out.pseudoscalar,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(meson_weighted_out.n_valid_source_pairs),
+                    series=meson_weighted_out.operator_pseudoscalar_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["pseudoscalar_score_weighted_companion"].append(result)
+
         vector_out = None
         if use_pair_family and ("vector_companion" in out or "axial_vector_companion" in out):
             vector_out = compute_vector_meson_correlator_from_color_positions(
@@ -1358,6 +1429,230 @@ def _compute_companion_per_scale_results_preserving_original(
                 result.mass_fit["scale_index"] = int(s_idx)
                 result.mass_fit["source"] = "scaled_companion_source_sink"
                 out["axial_vector_companion"].append(result)
+
+        if use_pair_family and (
+            "vector_score_directed_companion" in out
+            or "axial_vector_score_directed_companion" in out
+        ):
+            vector_score_out = compute_vector_meson_correlator_from_color_positions(
+                color=color3,
+                color_valid=color_valid,
+                positions=positions3,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                use_unit_displacement=False,
+                operator_mode="score_directed",
+                projection_mode="full",
+                scores=cloning_scores,
+                frame_indices=None,
+            )
+            if "vector_score_directed_companion" in out:
+                vec_series = torch.linalg.vector_norm(
+                    vector_score_out.operator_vector_series, dim=-1
+                ).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="vector_score_directed_companion",
+                    correlator=vector_score_out.vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_score_out.n_valid_source_pairs),
+                    series=vec_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["vector_score_directed_companion"].append(result)
+            if "axial_vector_score_directed_companion" in out:
+                axial_series = torch.linalg.vector_norm(
+                    vector_score_out.operator_axial_vector_series, dim=-1
+                ).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="axial_vector_score_directed_companion",
+                    correlator=vector_score_out.axial_vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_score_out.n_valid_source_pairs),
+                    series=axial_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["axial_vector_score_directed_companion"].append(result)
+
+        if use_pair_family and (
+            "vector_score_directed_longitudinal_companion" in out
+            or "axial_vector_score_directed_longitudinal_companion" in out
+        ):
+            vector_score_long = compute_vector_meson_correlator_from_color_positions(
+                color=color3,
+                color_valid=color_valid,
+                positions=positions3,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                use_unit_displacement=False,
+                operator_mode="score_directed",
+                projection_mode="longitudinal",
+                scores=cloning_scores,
+                frame_indices=None,
+            )
+            if "vector_score_directed_longitudinal_companion" in out:
+                vec_series = torch.linalg.vector_norm(
+                    vector_score_long.operator_vector_series, dim=-1
+                ).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="vector_score_directed_longitudinal_companion",
+                    correlator=vector_score_long.vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_score_long.n_valid_source_pairs),
+                    series=vec_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["vector_score_directed_longitudinal_companion"].append(result)
+            if "axial_vector_score_directed_longitudinal_companion" in out:
+                axial_series = torch.linalg.vector_norm(
+                    vector_score_long.operator_axial_vector_series, dim=-1
+                ).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="axial_vector_score_directed_longitudinal_companion",
+                    correlator=vector_score_long.axial_vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_score_long.n_valid_source_pairs),
+                    series=axial_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["axial_vector_score_directed_longitudinal_companion"].append(result)
+
+        if use_pair_family and (
+            "vector_score_directed_transverse_companion" in out
+            or "axial_vector_score_directed_transverse_companion" in out
+        ):
+            vector_score_trans = compute_vector_meson_correlator_from_color_positions(
+                color=color3,
+                color_valid=color_valid,
+                positions=positions3,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                use_unit_displacement=False,
+                operator_mode="score_directed",
+                projection_mode="transverse",
+                scores=cloning_scores,
+                frame_indices=None,
+            )
+            if "vector_score_directed_transverse_companion" in out:
+                vec_series = torch.linalg.vector_norm(
+                    vector_score_trans.operator_vector_series, dim=-1
+                ).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="vector_score_directed_transverse_companion",
+                    correlator=vector_score_trans.vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_score_trans.n_valid_source_pairs),
+                    series=vec_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["vector_score_directed_transverse_companion"].append(result)
+            if "axial_vector_score_directed_transverse_companion" in out:
+                axial_series = torch.linalg.vector_norm(
+                    vector_score_trans.operator_axial_vector_series, dim=-1
+                ).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="axial_vector_score_directed_transverse_companion",
+                    correlator=vector_score_trans.axial_vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_score_trans.n_valid_source_pairs),
+                    series=axial_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["axial_vector_score_directed_transverse_companion"].append(result)
+
+        if use_pair_family and (
+            "vector_score_gradient_companion" in out
+            or "axial_vector_score_gradient_companion" in out
+        ):
+            vector_score_grad = compute_vector_meson_correlator_from_color_positions(
+                color=color3,
+                color_valid=color_valid,
+                positions=positions3,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                use_unit_displacement=False,
+                operator_mode="score_gradient",
+                projection_mode="full",
+                scores=cloning_scores,
+                frame_indices=None,
+            )
+            if "vector_score_gradient_companion" in out:
+                vec_series = torch.linalg.vector_norm(
+                    vector_score_grad.operator_vector_series, dim=-1
+                ).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="vector_score_gradient_companion",
+                    correlator=vector_score_grad.vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_score_grad.n_valid_source_pairs),
+                    series=vec_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["vector_score_gradient_companion"].append(result)
+            if "axial_vector_score_gradient_companion" in out:
+                axial_series = torch.linalg.vector_norm(
+                    vector_score_grad.operator_axial_vector_series, dim=-1
+                ).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="axial_vector_score_gradient_companion",
+                    correlator=vector_score_grad.axial_vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_score_grad.n_valid_source_pairs),
+                    series=axial_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["axial_vector_score_gradient_companion"].append(result)
 
         if "tensor_companion" in out:
             tensor_out = compute_tensor_momentum_correlator_from_color_positions(

@@ -265,3 +265,91 @@ def test_history_wrapper_runs_end_to_end() -> None:
     assert out.operator_vector_series.ndim == 2
     assert out.operator_vector_series.shape[-1] == 3
     assert len(out.frame_indices) == out.pair_counts_per_frame.shape[0]
+
+
+def test_vector_meson_score_directed_matches_standard_for_equal_scores() -> None:
+    torch.manual_seed(31)
+    t_total = 8
+    n = 10
+    color = (torch.randn(t_total, n, 3) + 1j * torch.randn(t_total, n, 3)).to(torch.complex64)
+    positions = torch.randn(t_total, n, 3)
+    color_valid = torch.rand(t_total, n) > 0.1
+    alive = torch.rand(t_total, n) > 0.1
+    comp_d = torch.randint(-1, n + 1, (t_total, n), dtype=torch.long)
+    comp_c = torch.randint(-1, n + 1, (t_total, n), dtype=torch.long)
+    scores_equal = torch.zeros(t_total, n, dtype=torch.float32)
+
+    out_standard = compute_vector_meson_correlator_from_color_positions(
+        color=color,
+        color_valid=color_valid,
+        positions=positions,
+        alive=alive,
+        companions_distance=comp_d,
+        companions_clone=comp_c,
+        max_lag=5,
+        use_connected=True,
+        pair_selection="both",
+        operator_mode="standard",
+        projection_mode="full",
+    )
+    out_directed = compute_vector_meson_correlator_from_color_positions(
+        color=color,
+        color_valid=color_valid,
+        positions=positions,
+        alive=alive,
+        companions_distance=comp_d,
+        companions_clone=comp_c,
+        max_lag=5,
+        use_connected=True,
+        pair_selection="both",
+        operator_mode="score_directed",
+        projection_mode="full",
+        scores=scores_equal,
+    )
+
+    torch.testing.assert_close(out_directed.vector_raw, out_standard.vector_raw, atol=1e-6, rtol=1e-5)
+    torch.testing.assert_close(
+        out_directed.vector_connected, out_standard.vector_connected, atol=1e-6, rtol=1e-5
+    )
+    torch.testing.assert_close(
+        out_directed.axial_vector_raw, out_standard.axial_vector_raw, atol=1e-6, rtol=1e-5
+    )
+    torch.testing.assert_close(
+        out_directed.axial_vector_connected,
+        out_standard.axial_vector_connected,
+        atol=1e-6,
+        rtol=1e-5,
+    )
+
+
+def test_vector_meson_score_directed_projection_modes_are_finite() -> None:
+    torch.manual_seed(32)
+    t_total = 8
+    n = 10
+    color = (torch.randn(t_total, n, 3) + 1j * torch.randn(t_total, n, 3)).to(torch.complex64)
+    positions = torch.randn(t_total, n, 3)
+    color_valid = torch.rand(t_total, n) > 0.1
+    alive = torch.rand(t_total, n) > 0.1
+    comp_d = torch.randint(-1, n + 1, (t_total, n), dtype=torch.long)
+    comp_c = torch.randint(-1, n + 1, (t_total, n), dtype=torch.long)
+    scores = torch.randn(t_total, n, dtype=torch.float32)
+
+    for projection_mode in ("longitudinal", "transverse"):
+        out = compute_vector_meson_correlator_from_color_positions(
+            color=color,
+            color_valid=color_valid,
+            positions=positions,
+            alive=alive,
+            companions_distance=comp_d,
+            companions_clone=comp_c,
+            max_lag=5,
+            use_connected=True,
+            pair_selection="both",
+            operator_mode="score_directed",
+            projection_mode=projection_mode,
+            scores=scores,
+        )
+        assert out.vector.shape == (6,)
+        assert out.axial_vector.shape == (6,)
+        assert bool(torch.isfinite(out.vector).all())
+        assert bool(torch.isfinite(out.axial_vector).all())

@@ -105,6 +105,10 @@ from fragile.fractalai.qft.dirac_electroweak import (
     compute_dirac_electroweak_bundle,
     DiracElectroweakConfig,
 )
+from fragile.fractalai.qft.coupling_diagnostics import (
+    CouplingDiagnosticsConfig,
+    compute_coupling_diagnostics,
+)
 from fragile.fractalai.qft.einstein_equations import (
     EinsteinConfig,
     compute_einstein_test,
@@ -1889,6 +1893,13 @@ class AnisotropicEdgeSettings(param.Parameterized):
         default=False,
         doc="Normalize pair displacement to unit vectors before vector meson projection.",
     )
+    companion_include_vector_score_directed_variants = param.Boolean(
+        default=True,
+        doc=(
+            "Also compute score-directed vector/axial variants "
+            "(full, longitudinal, transverse projections)."
+        ),
+    )
     use_companion_tensor_momentum = param.Boolean(
         default=True,
         doc=(
@@ -2110,6 +2121,78 @@ class NewDiracElectroweakSettings(param.Parameterized):
     )
     dirac_color_threshold_value = param.Number(default=1.0, bounds=(0.0, None))
     color_singlet_quantile = param.Number(default=0.9, bounds=(0.0, 1.0))
+
+
+class CouplingDiagnosticsSettings(param.Parameterized):
+    """Settings for quick mass-free coupling diagnostics."""
+
+    simulation_range = param.Range(
+        default=(0.1, 1.0),
+        bounds=(0.0, 1.0),
+        doc="Fraction of simulation timeline to use (start, end).",
+    )
+    h_eff = param.Number(default=1.0, bounds=(1e-6, None))
+    mass = param.Number(default=1.0, bounds=(1e-6, None))
+    ell0 = param.Number(
+        default=None,
+        bounds=(1e-8, None),
+        allow_None=True,
+        doc="Color-state length scale ell0. Blank uses estimated value.",
+    )
+    companion_topology = param.ObjectSelector(
+        default="both",
+        objects=("distance", "clone", "both"),
+        doc="Companion topology used for pair diagnostics.",
+    )
+    pair_weighting = param.ObjectSelector(
+        default="uniform",
+        objects=("uniform", "score_abs"),
+        doc="Pair weighting scheme for local color fields.",
+    )
+    color_dims_spec = param.String(
+        default="",
+        doc="Optional comma-separated color dims (blank uses all available dims).",
+    )
+    eps = param.Number(
+        default=1e-12,
+        bounds=(0.0, None),
+        doc="Minimum |inner product| for valid pair contributions.",
+    )
+    enable_kernel_diagnostics = param.Boolean(
+        default=True,
+        doc=(
+            "Enable multiscale kernel diagnostics (string tension, Polyakov, screening, "
+            "running coupling, topology)."
+        ),
+    )
+    edge_weight_mode = param.ObjectSelector(
+        default="riemannian_kernel_volume",
+        objects=(
+            "uniform",
+            "inverse_distance",
+            "inverse_volume",
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "kernel",
+            "riemannian_kernel",
+            "riemannian_kernel_volume",
+        ),
+    )
+    n_scales = param.Integer(default=8, bounds=(2, 32))
+    kernel_type = param.ObjectSelector(
+        default="gaussian",
+        objects=("gaussian", "exponential", "tophat", "shell"),
+    )
+    kernel_distance_method = param.ObjectSelector(
+        default="auto",
+        objects=("auto", "floyd-warshall", "tropical"),
+    )
+    kernel_assume_all_alive = param.Boolean(default=True)
+    kernel_scale_frames = param.Integer(default=8, bounds=(1, 64))
+    kernel_scale_q_low = param.Number(default=0.05, bounds=(0.0, 0.99))
+    kernel_scale_q_high = param.Number(default=0.95, bounds=(0.01, 1.0))
+    kernel_max_scale_samples = param.Integer(default=500_000, bounds=(1_000, 5_000_000))
+    kernel_min_scale = param.Number(default=1e-6, bounds=(1e-12, None))
 
 
 class FractalSetSettings(param.Parameterized):
@@ -2696,6 +2779,66 @@ def _compute_anisotropic_meson_phase_results(
             valid_frames, int((meson_score_out.pair_counts_per_frame > 0).sum().item())
         )
 
+    weighted_requested = requested_channels & {"scalar_score_weighted", "pseudoscalar_score_weighted"}
+    if weighted_requested:
+        meson_weighted_cfg = MesonPhaseCorrelatorConfig(
+            warmup_fraction=float(settings.simulation_range[0]),
+            end_fraction=float(settings.simulation_range[1]),
+            mc_time_index=settings.mc_time_index,
+            max_lag=meson_max_lag,
+            use_connected=bool(settings.meson_use_connected),
+            h_eff=float(settings.h_eff),
+            mass=float(settings.mass),
+            ell0=settings.ell0,
+            color_dims=_parse_triplet_dims_spec(settings.meson_color_dims_spec, history.d),
+            pair_selection=str(settings.meson_pair_selection),
+            eps=float(settings.meson_eps),
+            operator_mode="score_weighted",
+        )
+        meson_weighted_out = compute_companion_meson_phase_correlator(history, meson_weighted_cfg)
+        n_samples_weighted = int(meson_weighted_out.n_valid_source_pairs)
+        pseudoscalar_weighted_err: torch.Tensor | None = None
+        scalar_weighted_err: torch.Tensor | None = None
+        if bool(settings.compute_bootstrap_errors):
+            meson_err_weighted = _bootstrap_errors_batched_scalar_series(
+                torch.stack(
+                    [
+                        meson_weighted_out.operator_pseudoscalar_series,
+                        meson_weighted_out.operator_scalar_series,
+                    ],
+                    dim=0,
+                ),
+                valid_t=(meson_weighted_out.pair_counts_per_frame > 0),
+                max_lag=meson_max_lag,
+                use_connected=bool(settings.meson_use_connected),
+                n_bootstrap=int(settings.n_bootstrap),
+            )
+            pseudoscalar_weighted_err = meson_err_weighted[0]
+            scalar_weighted_err = meson_err_weighted[1]
+        if "pseudoscalar_score_weighted" in requested_channels:
+            results["pseudoscalar_score_weighted"] = _build_result_from_precomputed_correlator(
+                channel_name="pseudoscalar_score_weighted",
+                correlator=meson_weighted_out.pseudoscalar,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples_weighted,
+                series=meson_weighted_out.operator_pseudoscalar_series,
+                correlator_err=pseudoscalar_weighted_err,
+            )
+        if "scalar_score_weighted" in requested_channels:
+            results["scalar_score_weighted"] = _build_result_from_precomputed_correlator(
+                channel_name="scalar_score_weighted",
+                correlator=meson_weighted_out.scalar,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples_weighted,
+                series=meson_weighted_out.operator_scalar_series,
+                correlator_err=scalar_weighted_err,
+            )
+        valid_frames = max(
+            valid_frames, int((meson_weighted_out.pair_counts_per_frame > 0).sum().item())
+        )
+
     return results, valid_frames
 
 
@@ -2706,22 +2849,6 @@ def _compute_anisotropic_vector_meson_results(
 ) -> tuple[dict[str, ChannelCorrelatorResult], int]:
     """Compute vector/axial-vector channels using companion-pair vector mesons."""
     vector_max_lag = int(settings.vector_meson_max_lag or settings.max_lag)
-    vector_cfg = VectorMesonCorrelatorConfig(
-        warmup_fraction=float(settings.simulation_range[0]),
-        end_fraction=float(settings.simulation_range[1]),
-        mc_time_index=settings.mc_time_index,
-        max_lag=vector_max_lag,
-        use_connected=bool(settings.vector_meson_use_connected),
-        h_eff=float(settings.h_eff),
-        mass=float(settings.mass),
-        ell0=settings.ell0,
-        color_dims=_parse_triplet_dims_spec(settings.vector_meson_color_dims_spec, history.d),
-        position_dims=_parse_triplet_dims_spec(settings.vector_meson_position_dims_spec, history.d),
-        pair_selection=str(settings.vector_meson_pair_selection),
-        eps=float(settings.vector_meson_eps),
-        use_unit_displacement=bool(settings.vector_meson_use_unit_displacement),
-    )
-    vector_out = compute_companion_vector_meson_correlator(history, vector_cfg)
     dt = float(history.delta_t * history.record_every)
     fit_cfg = CorrelatorConfig(
         max_lag=vector_max_lag,
@@ -2734,47 +2861,88 @@ def _compute_anisotropic_vector_meson_results(
         compute_bootstrap_errors=bool(settings.compute_bootstrap_errors),
         n_bootstrap=int(settings.n_bootstrap),
     )
+
+    variant_specs: list[tuple[str, str, str, str]] = [
+        ("standard", "full", "vector", "axial_vector"),
+        ("score_directed", "full", "vector_score_directed", "axial_vector_score_directed"),
+        ("score_gradient", "full", "vector_score_gradient", "axial_vector_score_gradient"),
+        (
+            "score_directed",
+            "longitudinal",
+            "vector_score_directed_longitudinal",
+            "axial_vector_score_directed_longitudinal",
+        ),
+        (
+            "score_directed",
+            "transverse",
+            "vector_score_directed_transverse",
+            "axial_vector_score_directed_transverse",
+        ),
+    ]
+
     results: dict[str, ChannelCorrelatorResult] = {}
-    n_samples = int(vector_out.n_valid_source_pairs)
-    vector_err: torch.Tensor | None = None
-    axial_err: torch.Tensor | None = None
-    if bool(settings.compute_bootstrap_errors):
-        valid_t = vector_out.pair_counts_per_frame > 0
-        vector_err = _bootstrap_error_vector_dot_series(
-            vector_out.operator_vector_series,
-            valid_t=valid_t,
+    valid_frames = 0
+    for operator_mode, projection_mode, vector_name, axial_name in variant_specs:
+        if vector_name not in requested_channels and axial_name not in requested_channels:
+            continue
+        vector_cfg = VectorMesonCorrelatorConfig(
+            warmup_fraction=float(settings.simulation_range[0]),
+            end_fraction=float(settings.simulation_range[1]),
+            mc_time_index=settings.mc_time_index,
             max_lag=vector_max_lag,
             use_connected=bool(settings.vector_meson_use_connected),
-            n_bootstrap=int(settings.n_bootstrap),
+            h_eff=float(settings.h_eff),
+            mass=float(settings.mass),
+            ell0=settings.ell0,
+            color_dims=_parse_triplet_dims_spec(settings.vector_meson_color_dims_spec, history.d),
+            position_dims=_parse_triplet_dims_spec(settings.vector_meson_position_dims_spec, history.d),
+            pair_selection=str(settings.vector_meson_pair_selection),
+            eps=float(settings.vector_meson_eps),
+            use_unit_displacement=bool(settings.vector_meson_use_unit_displacement),
+            operator_mode=operator_mode,
+            projection_mode=projection_mode,
         )
-        axial_err = _bootstrap_error_vector_dot_series(
-            vector_out.operator_axial_vector_series,
-            valid_t=valid_t,
-            max_lag=vector_max_lag,
-            use_connected=bool(settings.vector_meson_use_connected),
-            n_bootstrap=int(settings.n_bootstrap),
-        )
-    if "vector" in requested_channels:
-        results["vector"] = _build_result_from_precomputed_correlator(
-            channel_name="vector",
-            correlator=vector_out.vector,
-            dt=dt,
-            config=fit_cfg,
-            n_samples=n_samples,
-            series=vector_out.vector,
-            correlator_err=vector_err,
-        )
-    if "axial_vector" in requested_channels:
-        results["axial_vector"] = _build_result_from_precomputed_correlator(
-            channel_name="axial_vector",
-            correlator=vector_out.axial_vector,
-            dt=dt,
-            config=fit_cfg,
-            n_samples=n_samples,
-            series=vector_out.axial_vector,
-            correlator_err=axial_err,
-        )
-    valid_frames = int((vector_out.pair_counts_per_frame > 0).sum().item())
+        vector_out = compute_companion_vector_meson_correlator(history, vector_cfg)
+        n_samples = int(vector_out.n_valid_source_pairs)
+        vector_err: torch.Tensor | None = None
+        axial_err: torch.Tensor | None = None
+        if bool(settings.compute_bootstrap_errors):
+            valid_t = vector_out.pair_counts_per_frame > 0
+            vector_err = _bootstrap_error_vector_dot_series(
+                vector_out.operator_vector_series,
+                valid_t=valid_t,
+                max_lag=vector_max_lag,
+                use_connected=bool(settings.vector_meson_use_connected),
+                n_bootstrap=int(settings.n_bootstrap),
+            )
+            axial_err = _bootstrap_error_vector_dot_series(
+                vector_out.operator_axial_vector_series,
+                valid_t=valid_t,
+                max_lag=vector_max_lag,
+                use_connected=bool(settings.vector_meson_use_connected),
+                n_bootstrap=int(settings.n_bootstrap),
+            )
+        if vector_name in requested_channels:
+            results[vector_name] = _build_result_from_precomputed_correlator(
+                channel_name=vector_name,
+                correlator=vector_out.vector,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples,
+                series=vector_out.vector,
+                correlator_err=vector_err,
+            )
+        if axial_name in requested_channels:
+            results[axial_name] = _build_result_from_precomputed_correlator(
+                channel_name=axial_name,
+                correlator=vector_out.axial_vector,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples,
+                series=vector_out.axial_vector,
+                correlator_err=axial_err,
+            )
+        valid_frames = max(valid_frames, int((vector_out.pair_counts_per_frame > 0).sum().item()))
     return results, valid_frames
 
 
@@ -3054,6 +3222,8 @@ def _compute_companion_strong_force_bundle(
         "pseudoscalar",
         "scalar_score_directed",
         "pseudoscalar_score_directed",
+        "scalar_score_weighted",
+        "pseudoscalar_score_weighted",
     }
     requested_nucleon_channels = requested & {
         "nucleon",
@@ -3068,6 +3238,18 @@ def _compute_companion_strong_force_bundle(
         "glueball_phase_action",
         "glueball_phase_sin2",
     }
+    requested_vector_channels = requested & {
+        "vector",
+        "axial_vector",
+        "vector_score_directed",
+        "axial_vector_score_directed",
+        "vector_score_gradient",
+        "axial_vector_score_gradient",
+        "vector_score_directed_longitudinal",
+        "axial_vector_score_directed_longitudinal",
+        "vector_score_directed_transverse",
+        "axial_vector_score_directed_transverse",
+    }
     if "nucleon" in requested and bool(settings.companion_include_nucleon_flux_variants):
         requested_nucleon_channels |= {
             "nucleon_flux_action",
@@ -3077,11 +3259,25 @@ def _compute_companion_strong_force_bundle(
     if "nucleon" in requested and bool(settings.companion_include_nucleon_score_variants):
         requested_nucleon_channels |= {"nucleon_score_signed", "nucleon_score_abs"}
     if "scalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
-        requested_meson_channels |= {"scalar_score_directed"}
+        requested_meson_channels |= {"scalar_score_directed", "scalar_score_weighted"}
     if "pseudoscalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
-        requested_meson_channels |= {"pseudoscalar_score_directed"}
+        requested_meson_channels |= {"pseudoscalar_score_directed", "pseudoscalar_score_weighted"}
     if "glueball" in requested and bool(settings.companion_include_glueball_phase_variants):
         requested_glueball_channels |= {"glueball_phase_action", "glueball_phase_sin2"}
+    if "vector" in requested and bool(settings.companion_include_vector_score_directed_variants):
+        requested_vector_channels |= {
+            "vector_score_directed",
+            "vector_score_gradient",
+            "vector_score_directed_longitudinal",
+            "vector_score_directed_transverse",
+        }
+    if "axial_vector" in requested and bool(settings.companion_include_vector_score_directed_variants):
+        requested_vector_channels |= {
+            "axial_vector_score_directed",
+            "axial_vector_score_gradient",
+            "axial_vector_score_directed_longitudinal",
+            "axial_vector_score_directed_transverse",
+        }
     results: dict[str, ChannelCorrelatorResult] = {}
     valid_frame_counts: list[int] = []
 
@@ -3125,6 +3321,8 @@ def _compute_companion_strong_force_bundle(
         "pseudoscalar",
         "scalar_score_directed",
         "pseudoscalar_score_directed",
+        "scalar_score_weighted",
+        "pseudoscalar_score_weighted",
     }
     if bool(settings.use_companion_meson_phase) and meson_targets:
         meson_results, meson_valid_frames = _compute_anisotropic_meson_phase_results(
@@ -3135,7 +3333,18 @@ def _compute_companion_strong_force_bundle(
         results.update(meson_results)
         valid_frame_counts.append(int(meson_valid_frames))
 
-    vector_targets = requested & {"vector", "axial_vector"}
+    vector_targets = requested_vector_channels & {
+        "vector",
+        "axial_vector",
+        "vector_score_directed",
+        "axial_vector_score_directed",
+        "vector_score_gradient",
+        "axial_vector_score_gradient",
+        "vector_score_directed_longitudinal",
+        "axial_vector_score_directed_longitudinal",
+        "vector_score_directed_transverse",
+        "axial_vector_score_directed_transverse",
+    }
     if bool(settings.use_companion_vector_meson) and vector_targets:
         vector_results, vector_valid_frames = _compute_anisotropic_vector_meson_results(
             history,
@@ -5200,6 +5409,289 @@ def _build_algorithm_diagnostics(history: RunHistory) -> dict[str, Any]:
     }
 
 
+def _build_coupling_diagnostics_summary_table(summary: dict[str, float]) -> pd.DataFrame:
+    """Build a compact summary table for coupling diagnostics."""
+    metrics = [
+        ("n_frames", summary.get("n_frames")),
+        ("phase_drift", summary.get("phase_drift")),
+        ("phase_step_std", summary.get("phase_step_std")),
+        ("phase_drift_sigma", summary.get("phase_drift_sigma")),
+        ("r_circ_mean", summary.get("r_circ_mean")),
+        ("re_im_asymmetry_mean", summary.get("re_im_asymmetry_mean")),
+        ("local_phase_coherence_mean", summary.get("local_phase_coherence_mean")),
+        ("scalar_mean", summary.get("scalar_mean")),
+        ("pseudoscalar_mean", summary.get("pseudoscalar_mean")),
+        ("field_magnitude_mean", summary.get("field_magnitude_mean")),
+        ("valid_pairs_mean", summary.get("valid_pairs_mean")),
+        ("valid_walkers_mean", summary.get("valid_walkers_mean")),
+        ("string_tension_sigma", summary.get("string_tension_sigma")),
+        ("polyakov_abs", summary.get("polyakov_abs")),
+        ("screening_length_xi", summary.get("screening_length_xi")),
+        ("running_coupling_slope", summary.get("running_coupling_slope")),
+        ("topological_flux_std", summary.get("topological_flux_std")),
+        ("topological_charge_q", summary.get("topological_charge_q")),
+        ("regime_score", summary.get("regime_score")),
+        ("kernel_diagnostics_available", summary.get("kernel_diagnostics_available")),
+    ]
+    rows = [{"metric": name, "value": value} for name, value in metrics]
+    frame = pd.DataFrame(rows)
+    frame["value"] = pd.to_numeric(frame["value"], errors="coerce")
+    return frame
+
+
+def _build_coupling_diagnostics_frame_table(
+    step_axis: np.ndarray,
+    output: Any,
+) -> pd.DataFrame:
+    """Build per-frame diagnostics table."""
+    if len(step_axis) == 0:
+        return pd.DataFrame()
+
+    def _tensor_to_numpy(tensor: torch.Tensor) -> np.ndarray:
+        return tensor.detach().cpu().numpy().astype(float, copy=False)
+
+    table = pd.DataFrame(
+        {
+            "step": step_axis,
+            "phase_mean": _tensor_to_numpy(output.phase_mean),
+            "phase_mean_unwrapped": _tensor_to_numpy(output.phase_mean_unwrapped),
+            "r_circ": _tensor_to_numpy(output.phase_concentration),
+            "re_im_asymmetry": _tensor_to_numpy(output.re_im_asymmetry),
+            "local_phase_coherence": _tensor_to_numpy(output.local_phase_coherence),
+            "scalar_mean": _tensor_to_numpy(output.scalar_mean),
+            "pseudoscalar_mean": _tensor_to_numpy(output.pseudoscalar_mean),
+            "field_magnitude_mean": _tensor_to_numpy(output.field_magnitude_mean),
+            "valid_pairs": output.valid_pair_counts.detach().cpu().numpy().astype(int, copy=False),
+            "valid_walkers": output.valid_walker_counts.detach().cpu().numpy().astype(int, copy=False),
+        }
+    )
+    return table.replace([np.inf, -np.inf], np.nan)
+
+
+def _build_coupling_diagnostics_scale_table(output: Any) -> pd.DataFrame:
+    """Build one-row-per-scale diagnostics table."""
+    if getattr(output, "scales", None) is None or int(output.scales.numel()) == 0:
+        return pd.DataFrame()
+
+    def _to_numpy(tensor: torch.Tensor) -> np.ndarray:
+        return tensor.detach().cpu().numpy().astype(float, copy=False)
+
+    table = pd.DataFrame(
+        {
+            "scale": _to_numpy(output.scales),
+            "coherence": _to_numpy(output.coherence_by_scale),
+            "phase_spread": _to_numpy(output.phase_spread_by_scale),
+            "screening_connected": _to_numpy(output.screening_connected_by_scale),
+        }
+    )
+    return table.replace([np.inf, -np.inf], np.nan)
+
+
+def _build_coupling_diagnostics_overlay(
+    *,
+    step_axis: np.ndarray,
+    series: list[tuple[str, np.ndarray, str]],
+    title: str,
+    ylabel: str,
+) -> hv.Overlay | hv.Text:
+    """Build an overlay plot from multiple diagnostics series."""
+    overlays: list[Any] = []
+    for label, values, color in series:
+        frame = pd.DataFrame({"step": step_axis, "value": values}).replace([np.inf, -np.inf], np.nan)
+        frame = frame.dropna()
+        if frame.empty:
+            continue
+        overlays.append(
+            hv.Curve(frame, "step", "value")
+            .relabel(label)
+            .opts(color=color, line_width=2)
+        )
+    if not overlays:
+        return _algorithm_placeholder_plot("No diagnostics data available")
+    plot = overlays[0]
+    for overlay in overlays[1:]:
+        plot = plot * overlay
+    return plot.opts(
+        title=title,
+        xlabel="Recorded step",
+        ylabel=ylabel,
+        width=960,
+        height=320,
+        legend_position="top_left",
+        show_grid=True,
+    )
+
+
+def _build_coupling_diagnostics_scale_overlay(
+    *,
+    scale_axis: np.ndarray,
+    series: list[tuple[str, np.ndarray, str]],
+    title: str,
+    ylabel: str,
+) -> hv.Overlay | hv.Text:
+    """Build an overlay plot on the scale axis."""
+    overlays: list[Any] = []
+    for label, values, color in series:
+        frame = pd.DataFrame({"scale": scale_axis, "value": values}).replace([np.inf, -np.inf], np.nan)
+        frame = frame.dropna()
+        if frame.empty:
+            continue
+        overlays.append(
+            hv.Curve(frame, "scale", "value")
+            .relabel(label)
+            .opts(color=color, line_width=2)
+        )
+    if not overlays:
+        return _algorithm_placeholder_plot("No kernel-scale diagnostics available")
+    plot = overlays[0]
+    for overlay in overlays[1:]:
+        plot = plot * overlay
+    return plot.opts(
+        title=title,
+        xlabel="Scale",
+        ylabel=ylabel,
+        width=960,
+        height=320,
+        legend_position="top_left",
+        show_grid=True,
+    )
+
+
+def _build_coupling_diagnostics_plots(
+    step_axis: np.ndarray,
+    output: Any,
+) -> dict[str, hv.Overlay | hv.Text]:
+    """Build coupling diagnostics plot bundle."""
+    if len(step_axis) == 0:
+        placeholder = _algorithm_placeholder_plot("No diagnostics data available")
+        return {
+            "phase": placeholder,
+            "regime": placeholder,
+            "fields": placeholder,
+            "coverage": placeholder,
+        }
+
+    phase = output.phase_mean.detach().cpu().numpy().astype(float, copy=False)
+    phase_unwrapped = output.phase_mean_unwrapped.detach().cpu().numpy().astype(float, copy=False)
+    r_circ = output.phase_concentration.detach().cpu().numpy().astype(float, copy=False)
+    asym = output.re_im_asymmetry.detach().cpu().numpy().astype(float, copy=False)
+    coherence = output.local_phase_coherence.detach().cpu().numpy().astype(float, copy=False)
+    scalar = output.scalar_mean.detach().cpu().numpy().astype(float, copy=False)
+    pseudoscalar = output.pseudoscalar_mean.detach().cpu().numpy().astype(float, copy=False)
+    magnitude = output.field_magnitude_mean.detach().cpu().numpy().astype(float, copy=False)
+    valid_pairs = output.valid_pair_counts.detach().cpu().numpy().astype(float, copy=False)
+    valid_walkers = output.valid_walker_counts.detach().cpu().numpy().astype(float, copy=False)
+
+    return {
+        "phase": _build_coupling_diagnostics_overlay(
+            step_axis=step_axis,
+            series=[
+                ("phase_mean", phase, "#4c78a8"),
+                ("phase_mean_unwrapped", phase_unwrapped, "#f58518"),
+            ],
+            title="Global Phase Trend",
+            ylabel="phase [rad]",
+        ),
+        "regime": _build_coupling_diagnostics_overlay(
+            step_axis=step_axis,
+            series=[
+                ("R_circ", r_circ, "#54a24b"),
+                ("Re/Im asymmetry", asym, "#e45756"),
+                ("local coherence", coherence, "#72b7b2"),
+            ],
+            title="Coupling Regime Diagnostics",
+            ylabel="dimensionless",
+        ),
+        "fields": _build_coupling_diagnostics_overlay(
+            step_axis=step_axis,
+            series=[
+                ("scalar_mean", scalar, "#9d755d"),
+                ("pseudoscalar_mean", pseudoscalar, "#b279a2"),
+                ("field_magnitude_mean", magnitude, "#4c78a8"),
+            ],
+            title="Local Color Field Means",
+            ylabel="operator value",
+        ),
+        "coverage": _build_coupling_diagnostics_overlay(
+            step_axis=step_axis,
+            series=[
+                ("valid_pairs", valid_pairs, "#f58518"),
+                ("valid_walkers", valid_walkers, "#54a24b"),
+            ],
+            title="Diagnostics Coverage",
+            ylabel="count",
+        ),
+    }
+
+
+def _build_coupling_diagnostics_kernel_plots(output: Any) -> dict[str, hv.Overlay | hv.Text]:
+    """Build kernel-scale diagnostics plots."""
+    if getattr(output, "scales", None) is None or int(output.scales.numel()) == 0:
+        placeholder = _algorithm_placeholder_plot("No kernel-scale diagnostics available")
+        return {"scale": placeholder, "running": placeholder}
+
+    scales = output.scales.detach().cpu().numpy().astype(float, copy=False)
+    coherence = output.coherence_by_scale.detach().cpu().numpy().astype(float, copy=False)
+    phase_spread = output.phase_spread_by_scale.detach().cpu().numpy().astype(float, copy=False)
+    screening = output.screening_connected_by_scale.detach().cpu().numpy().astype(float, copy=False)
+    creutz_mid = output.creutz_mid_scales.detach().cpu().numpy().astype(float, copy=False)
+    creutz = output.creutz_ratio_by_mid_scale.detach().cpu().numpy().astype(float, copy=False)
+    running_mid = output.running_mid_scales.detach().cpu().numpy().astype(float, copy=False)
+    running_g2 = output.running_g2_by_mid_scale.detach().cpu().numpy().astype(float, copy=False)
+
+    scale_plot = _build_coupling_diagnostics_scale_overlay(
+        scale_axis=scales,
+        series=[
+            ("coherence", coherence, "#4c78a8"),
+            ("phase_spread", phase_spread, "#f58518"),
+            ("screening_connected", screening, "#54a24b"),
+        ],
+        title="Kernel-Scale Diagnostics",
+        ylabel="dimensionless",
+    )
+
+    running_curves: list[Any] = []
+    running_frame = (
+        pd.DataFrame({"scale": running_mid, "value": running_g2})
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+    )
+    if not running_frame.empty:
+        running_curves.append(
+            hv.Curve(running_frame, "scale", "value")
+            .relabel("running_g2")
+            .opts(color="#e45756", line_width=2)
+        )
+    creutz_frame = (
+        pd.DataFrame({"scale": creutz_mid, "value": creutz})
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+    )
+    if not creutz_frame.empty:
+        running_curves.append(
+            hv.Curve(creutz_frame, "scale", "value")
+            .relabel("creutz")
+            .opts(color="#72b7b2", line_width=2)
+        )
+    if running_curves:
+        running_plot = running_curves[0]
+        for curve in running_curves[1:]:
+            running_plot = running_plot * curve
+        running_plot = running_plot.opts(
+            title="Running Coupling / Creutz Proxies",
+            xlabel="Scale",
+            ylabel="value",
+            width=960,
+            height=320,
+            legend_position="top_left",
+            show_grid=True,
+        )
+    else:
+        running_plot = _algorithm_placeholder_plot("No running/Creutz diagnostics available")
+
+    return {"scale": scale_plot, "running": running_plot}
+
+
 # Reference masses for hadrons (GeV)
 BARYON_REFS = {
     "proton": 0.938272,
@@ -6413,6 +6905,7 @@ def create_app() -> pn.template.FastListTemplate:
             "companion_strong_force_results": None,
             "companion_strong_force_multiscale_output": None,
             "companion_strong_force_multiscale_error": None,
+            "companion_strong_force_plots_unlocked": False,
             "tensor_calibration_base_results": None,
             "tensor_calibration_strong_result": None,
             "tensor_calibration_momentum_results": None,
@@ -6422,6 +6915,7 @@ def create_app() -> pn.template.FastListTemplate:
             "tensor_calibration_payload": None,
             "new_dirac_ew_bundle": None,
             "new_dirac_ew_results": None,
+            "coupling_diagnostics_output": None,
             "einstein_test_result": None,
         }
 
@@ -6975,6 +7469,17 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
             disabled=True,
         )
+        companion_strong_force_display_plots_button = pn.widgets.Button(
+            name="Display Plots",
+            button_type="default",
+            min_width=180,
+            sizing_mode="stretch_width",
+            disabled=True,
+        )
+        companion_strong_force_plot_gate_note = pn.pane.Markdown(
+            "_Plots are hidden. Click `Display Plots` after computing channels._",
+            sizing_mode="stretch_width",
+        )
         companion_strong_force_settings_panel = pn.Param(
             companion_strong_force_settings,
             parameters=[
@@ -7084,6 +7589,7 @@ def create_app() -> pn.template.FastListTemplate:
                 "vector_meson_position_dims_spec",
                 "vector_meson_eps",
                 "vector_meson_use_unit_displacement",
+                "companion_include_vector_score_directed_variants",
             ],
             show_name=False,
             widgets={
@@ -7091,6 +7597,9 @@ def create_app() -> pn.template.FastListTemplate:
                 "vector_meson_pair_selection": {"name": "Vector pair selection"},
                 "vector_meson_color_dims_spec": {"name": "Vector color dims (3 dims)"},
                 "vector_meson_position_dims_spec": {"name": "Vector position dims (3 dims)"},
+                "companion_include_vector_score_directed_variants": {
+                    "name": "Include score-directed vector variants"
+                },
             },
             default_layout=type("CompanionStrongForceVectorGrid", (pn.GridBox,), {"ncols": 1}),
         )
@@ -7208,12 +7717,19 @@ def create_app() -> pn.template.FastListTemplate:
             value="vector",
             sizing_mode="stretch_width",
         )
+        companion_strong_force_variant_axial_vector = pn.widgets.Select(
+            name="Axial Vector Variant",
+            options=["axial_vector"],
+            value="axial_vector",
+            sizing_mode="stretch_width",
+        )
         companion_strong_force_variant_selectors: dict[str, pn.widgets.Select] = {
             "pseudoscalar": companion_strong_force_variant_pseudoscalar,
             "nucleon": companion_strong_force_variant_nucleon,
             "glueball": companion_strong_force_variant_glueball,
             "scalar": companion_strong_force_variant_scalar,
             "vector": companion_strong_force_variant_vector,
+            "axial_vector": companion_strong_force_variant_axial_vector,
         }
         companion_strong_force_variant_sync = {"active": False}
         companion_strong_force_anchor_mode = pn.widgets.RadioButtonGroup(
@@ -7252,6 +7768,18 @@ def create_app() -> pn.template.FastListTemplate:
         )
         companion_strong_force_plateau_plots = pn.Column(sizing_mode="stretch_width")
         companion_strong_force_heatmap_plots = pn.Column(sizing_mode="stretch_width")
+        companion_strong_force_plateau_plots.objects = [
+            pn.pane.Markdown(
+                "_Plots are hidden. Click `Display Plots` to render channel plots._",
+                sizing_mode="stretch_width",
+            )
+        ]
+        companion_strong_force_heatmap_plots.objects = [
+            pn.pane.Markdown(
+                "_Plots are hidden. Click `Display Plots` to render heatmaps._",
+                sizing_mode="stretch_width",
+            )
+        ]
         companion_strong_force_mass_table = pn.widgets.Tabulator(
             pd.DataFrame(),
             pagination=None,
@@ -7621,6 +8149,120 @@ def create_app() -> pn.template.FastListTemplate:
             editors={"observed_GeV": "input"},
         )
 
+        # =====================================================================
+        # Coupling diagnostics tab components (quick, mass-free)
+        # =====================================================================
+        coupling_diagnostics_settings = CouplingDiagnosticsSettings()
+        coupling_diagnostics_status = pn.pane.Markdown(
+            "**Coupling Diagnostics:** Load a RunHistory and click Compute.",
+            sizing_mode="stretch_width",
+        )
+        coupling_diagnostics_run_button = pn.widgets.Button(
+            name="Compute Coupling Diagnostics",
+            button_type="primary",
+            min_width=260,
+            sizing_mode="stretch_width",
+            disabled=True,
+        )
+        coupling_diagnostics_settings_panel = pn.Param(
+            coupling_diagnostics_settings,
+            parameters=[
+                "simulation_range",
+                "h_eff",
+                "mass",
+                "ell0",
+                "companion_topology",
+                "pair_weighting",
+                "color_dims_spec",
+                "eps",
+                "enable_kernel_diagnostics",
+                "edge_weight_mode",
+                "kernel_distance_method",
+                "kernel_type",
+                "n_scales",
+                "kernel_scale_frames",
+                "kernel_scale_q_low",
+                "kernel_scale_q_high",
+                "kernel_max_scale_samples",
+                "kernel_min_scale",
+                "kernel_assume_all_alive",
+            ],
+            show_name=False,
+            widgets={
+                "color_dims_spec": {"name": "Color dims (optional)"},
+            },
+            default_layout=type("CouplingDiagnosticsSettingsGrid", (pn.GridBox,), {"ncols": 2}),
+        )
+        coupling_diagnostics_summary = pn.pane.Markdown(
+            "## Coupling Diagnostics Summary\n_Run diagnostics to populate._",
+            sizing_mode="stretch_width",
+        )
+        coupling_diagnostics_regime_evidence = pn.pane.Markdown(
+            "_Regime evidence will appear after running diagnostics._",
+            sizing_mode="stretch_width",
+        )
+        coupling_diagnostics_summary_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        coupling_diagnostics_frame_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        coupling_diagnostics_scale_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        coupling_diagnostics_phase_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        coupling_diagnostics_regime_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        coupling_diagnostics_fields_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        coupling_diagnostics_coverage_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        coupling_diagnostics_scale_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        coupling_diagnostics_running_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        )
+        coupling_diagnostics_phase_plot.object = _algorithm_placeholder_plot(
+            "Run diagnostics to show phase trend."
+        )
+        coupling_diagnostics_regime_plot.object = _algorithm_placeholder_plot(
+            "Run diagnostics to show regime metrics."
+        )
+        coupling_diagnostics_fields_plot.object = _algorithm_placeholder_plot(
+            "Run diagnostics to show field means."
+        )
+        coupling_diagnostics_coverage_plot.object = _algorithm_placeholder_plot(
+            "Run diagnostics to show pair/walker coverage."
+        )
+        coupling_diagnostics_scale_plot.object = _algorithm_placeholder_plot(
+            "Run diagnostics to show kernel-scale diagnostics."
+        )
+        coupling_diagnostics_running_plot.object = _algorithm_placeholder_plot(
+            "Run diagnostics to show running/Creutz diagnostics."
+        )
+
 
         def set_history(history: RunHistory, history_path: Path | None = None) -> None:
             state["history"] = history
@@ -7665,6 +8307,28 @@ def create_app() -> pn.template.FastListTemplate:
                 "**Anisotropic Edge Channels ready:** click Compute Anisotropic Edge Channels."
             )
             companion_strong_force_run_button.disabled = False
+            companion_strong_force_display_plots_button.disabled = True
+            companion_strong_force_display_plots_button.button_type = "default"
+            state["companion_strong_force_plots_unlocked"] = False
+            companion_strong_force_plot_gate_note.object = (
+                "_Plots are hidden. Click `Display Plots` after computing channels._"
+            )
+            companion_strong_force_plots_overlay_corr.object = None
+            companion_strong_force_plots_overlay_meff.object = None
+            companion_strong_force_plots_spectrum.object = None
+            companion_strong_force_multiscale_plot.object = None
+            companion_strong_force_plateau_plots.objects = [
+                pn.pane.Markdown(
+                    "_Plots are hidden. Click `Display Plots` to render channel plots._",
+                    sizing_mode="stretch_width",
+                )
+            ]
+            companion_strong_force_heatmap_plots.objects = [
+                pn.pane.Markdown(
+                    "_Plots are hidden. Click `Display Plots` to render heatmaps._",
+                    sizing_mode="stretch_width",
+                )
+            ]
             companion_strong_force_status.object = (
                 "**Companion Strong Force ready:** click Compute Companion Strong Force Channels."
             )
@@ -7672,6 +8336,40 @@ def create_app() -> pn.template.FastListTemplate:
             clear_tensor_calibration_tab(
                 _tcw,
                 "**Tensor Calibration ready:** click Compute Tensor Calibration.",
+            )
+            new_dirac_ew_run_button.disabled = False
+            new_dirac_ew_status.object = "**Electroweak ready:** click Compute Electroweak."
+            coupling_diagnostics_run_button.disabled = False
+            coupling_diagnostics_status.object = (
+                "**Coupling Diagnostics ready:** click Compute Coupling Diagnostics."
+            )
+            state["coupling_diagnostics_output"] = None
+            coupling_diagnostics_summary.object = (
+                "## Coupling Diagnostics Summary\n_Run diagnostics to populate._"
+            )
+            coupling_diagnostics_regime_evidence.object = (
+                "_Regime evidence will appear after running diagnostics._"
+            )
+            coupling_diagnostics_summary_table.value = pd.DataFrame()
+            coupling_diagnostics_frame_table.value = pd.DataFrame()
+            coupling_diagnostics_scale_table.value = pd.DataFrame()
+            coupling_diagnostics_phase_plot.object = _algorithm_placeholder_plot(
+                "Run diagnostics to show phase trend."
+            )
+            coupling_diagnostics_regime_plot.object = _algorithm_placeholder_plot(
+                "Run diagnostics to show regime metrics."
+            )
+            coupling_diagnostics_fields_plot.object = _algorithm_placeholder_plot(
+                "Run diagnostics to show field means."
+            )
+            coupling_diagnostics_coverage_plot.object = _algorithm_placeholder_plot(
+                "Run diagnostics to show pair/walker coverage."
+            )
+            coupling_diagnostics_scale_plot.object = _algorithm_placeholder_plot(
+                "Run diagnostics to show kernel-scale diagnostics."
+            )
+            coupling_diagnostics_running_plot.object = _algorithm_placeholder_plot(
+                "Run diagnostics to show running/Creutz diagnostics."
             )
 
         def on_simulation_complete(history: RunHistory):
@@ -10182,6 +10880,10 @@ def create_app() -> pn.template.FastListTemplate:
             }
             return spatial_canonical_label_map.get(spatial_name, spatial_name)
 
+        def _display_companion_channel_name(raw_name: str) -> str:
+            """Companion tab display uses canonical channel names (no spatial prefix)."""
+            return _base_channel_name(str(raw_name))
+
         def _channel_color_key(raw_name: str) -> str:
             return _base_channel_name(str(raw_name))
 
@@ -10236,9 +10938,38 @@ def create_app() -> pn.template.FastListTemplate:
                 overrides[str(canonical_name)] = selected_name
             return overrides
 
+        def _hide_companion_strong_force_plots(message: str) -> None:
+            companion_strong_force_plots_overlay_corr.object = None
+            companion_strong_force_plots_overlay_meff.object = None
+            companion_strong_force_plots_spectrum.object = None
+            companion_strong_force_multiscale_plot.object = None
+            companion_strong_force_plateau_plots.objects = [
+                pn.pane.Markdown(
+                    f"_{message}_",
+                    sizing_mode="stretch_width",
+                )
+            ]
+            companion_strong_force_heatmap_plots.objects = [
+                pn.pane.Markdown(
+                    f"_{message}_",
+                    sizing_mode="stretch_width",
+                )
+            ]
+
         def _update_companion_strong_force_plots(
             results: dict[str, ChannelCorrelatorResult],
         ) -> None:
+            if not bool(state.get("companion_strong_force_plots_unlocked", False)):
+                _hide_companion_strong_force_plots(
+                    "Plots are hidden. Click `Display Plots` to render."
+                )
+                companion_strong_force_plot_gate_note.object = (
+                    "_Plots are hidden. Click `Display Plots` to render them._"
+                )
+                return
+            companion_strong_force_plot_gate_note.object = (
+                "_Plots are visible for the current computed results._"
+            )
             _update_correlator_plots(
                 results,
                 companion_strong_force_plateau_plots,
@@ -10327,8 +11058,8 @@ def create_app() -> pn.template.FastListTemplate:
                             delta_pct = (ratio_value / ref_value - 1.0) * 100.0
                         rows.append(
                             {
-                                "numerator_variant": _display_channel_name(num_name),
-                                "denominator_variant": _display_channel_name(den_name),
+                                "numerator_variant": _display_companion_channel_name(num_name),
+                                "denominator_variant": _display_companion_channel_name(den_name),
                                 "ratio": ratio_value,
                                 "reference": ref_value if np.isfinite(ref_value) else np.nan,
                                 "delta_pct": delta_pct,
@@ -10421,7 +11152,7 @@ def create_app() -> pn.template.FastListTemplate:
             per_scale_rows: list[dict[str, Any]] = []
             curves: list[hv.Element] = []
             for channel_name, results_per_scale in output.per_scale_results.items():
-                display_name = _display_channel_name(str(channel_name))
+                display_name = _display_companion_channel_name(str(channel_name))
                 original_mass = float("nan")
                 original_result = None
                 if isinstance(original_results, dict):
@@ -10604,7 +11335,7 @@ def create_app() -> pn.template.FastListTemplate:
                 if per_scale_rows
                 else pd.DataFrame()
             )
-            if curves:
+            if curves and bool(state.get("companion_strong_force_plots_unlocked", False)):
                 overlay = curves[0]
                 for curve in curves[1:]:
                     overlay *= curve
@@ -10679,6 +11410,28 @@ def create_app() -> pn.template.FastListTemplate:
             "value",
         )
 
+        def _on_companion_strong_force_display_plots_click(_event) -> None:
+            results = state.get("companion_strong_force_results")
+            if results is None:
+                companion_strong_force_status.object = (
+                    "**No companion results yet:** run Compute Companion Strong Force Channels first."
+                )
+                return
+            state["companion_strong_force_plots_unlocked"] = True
+            companion_strong_force_display_plots_button.button_type = "success"
+            _update_companion_strong_force_plots(results)
+            _update_companion_strong_force_multiscale_views(
+                state.get("companion_strong_force_multiscale_output"),
+                original_results={
+                    name: result
+                    for name, result in results.items()
+                    if isinstance(result, ChannelCorrelatorResult)
+                    and str(result.mass_fit.get("source", "original_companion"))
+                    == "original_companion"
+                },
+                error=state.get("companion_strong_force_multiscale_error"),
+            )
+
         def on_run_companion_strong_force_channels(_):
             def _compute(history):
                 output = _compute_companion_strong_force_bundle(history, companion_strong_force_settings)
@@ -10716,20 +11469,52 @@ def create_app() -> pn.template.FastListTemplate:
                                 companion_strong_force_settings.companion_include_meson_score_directed_variants
                             )
                         ):
-                            requested_channels.append("scalar_score_directed")
+                            requested_channels.extend(
+                                ["scalar_score_directed", "scalar_score_weighted"]
+                            )
                         if (
                             "pseudoscalar" in requested_channels
                             and bool(
                                 companion_strong_force_settings.companion_include_meson_score_directed_variants
                             )
                         ):
-                            requested_channels.append("pseudoscalar_score_directed")
+                            requested_channels.extend(
+                                ["pseudoscalar_score_directed", "pseudoscalar_score_weighted"]
+                            )
                         if (
                             "glueball" in requested_channels
                             and bool(companion_strong_force_settings.companion_include_glueball_phase_variants)
                         ):
                             requested_channels.extend(
                                 ["glueball_phase_action", "glueball_phase_sin2"]
+                            )
+                        if (
+                            "vector" in requested_channels
+                            and bool(
+                                companion_strong_force_settings.companion_include_vector_score_directed_variants
+                            )
+                        ):
+                            requested_channels.extend(
+                                [
+                                    "vector_score_directed",
+                                    "vector_score_gradient",
+                                    "vector_score_directed_longitudinal",
+                                    "vector_score_directed_transverse",
+                                ]
+                            )
+                        if (
+                            "axial_vector" in requested_channels
+                            and bool(
+                                companion_strong_force_settings.companion_include_vector_score_directed_variants
+                            )
+                        ):
+                            requested_channels.extend(
+                                [
+                                    "axial_vector_score_directed",
+                                    "axial_vector_score_gradient",
+                                    "axial_vector_score_directed_longitudinal",
+                                    "axial_vector_score_directed_transverse",
+                                ]
                             )
                         requested_channels = list(dict.fromkeys(requested_channels))
                         requested_companion_channels = sorted(
@@ -10793,7 +11578,7 @@ def create_app() -> pn.template.FastListTemplate:
                                 channels=requested_companion_channels,
                             )
                             for channel_name, result in multiscale_output.best_results.items():
-                                display_name = _display_channel_name(str(channel_name))
+                                display_name = _display_companion_channel_name(str(channel_name))
                                 tagged_name = f"{display_name}_multiscale_best"
                                 tagged_result = replace(result, channel_name=tagged_name)
                                 if isinstance(tagged_result.mass_fit, dict):
@@ -10806,6 +11591,9 @@ def create_app() -> pn.template.FastListTemplate:
                 state["companion_strong_force_results"] = results
                 state["companion_strong_force_multiscale_output"] = multiscale_output
                 state["companion_strong_force_multiscale_error"] = multiscale_error
+                state["companion_strong_force_plots_unlocked"] = False
+                companion_strong_force_display_plots_button.disabled = False
+                companion_strong_force_display_plots_button.button_type = "primary"
 
                 _update_companion_strong_force_plots(results)
                 _update_companion_strong_force_tables(results)
@@ -11437,6 +12225,135 @@ def create_app() -> pn.template.FastListTemplate:
                 _compute,
             )
 
+        def on_run_coupling_diagnostics(_):
+            def _compute(history):
+                color_dims = _parse_dims_spec(coupling_diagnostics_settings.color_dims_spec, history.d)
+                cfg = CouplingDiagnosticsConfig(
+                    warmup_fraction=float(coupling_diagnostics_settings.simulation_range[0]),
+                    end_fraction=float(coupling_diagnostics_settings.simulation_range[1]),
+                    h_eff=float(coupling_diagnostics_settings.h_eff),
+                    mass=float(coupling_diagnostics_settings.mass),
+                    ell0=(
+                        float(coupling_diagnostics_settings.ell0)
+                        if coupling_diagnostics_settings.ell0 is not None
+                        else None
+                    ),
+                    color_dims=tuple(color_dims) if color_dims is not None else None,
+                    companion_topology=str(coupling_diagnostics_settings.companion_topology),
+                    pair_weighting=str(coupling_diagnostics_settings.pair_weighting),
+                    eps=float(coupling_diagnostics_settings.eps),
+                    enable_kernel_diagnostics=bool(
+                        coupling_diagnostics_settings.enable_kernel_diagnostics
+                    ),
+                    edge_weight_mode=str(coupling_diagnostics_settings.edge_weight_mode),
+                    n_scales=int(coupling_diagnostics_settings.n_scales),
+                    kernel_type=str(coupling_diagnostics_settings.kernel_type),
+                    kernel_distance_method=str(coupling_diagnostics_settings.kernel_distance_method),
+                    kernel_assume_all_alive=bool(
+                        coupling_diagnostics_settings.kernel_assume_all_alive
+                    ),
+                    kernel_scale_frames=int(coupling_diagnostics_settings.kernel_scale_frames),
+                    kernel_scale_q_low=float(coupling_diagnostics_settings.kernel_scale_q_low),
+                    kernel_scale_q_high=float(coupling_diagnostics_settings.kernel_scale_q_high),
+                    kernel_max_scale_samples=int(
+                        coupling_diagnostics_settings.kernel_max_scale_samples
+                    ),
+                    kernel_min_scale=float(coupling_diagnostics_settings.kernel_min_scale),
+                )
+                output = compute_coupling_diagnostics(history, config=cfg)
+                state["coupling_diagnostics_output"] = output
+
+                frame_indices = output.frame_indices
+                recorded = np.asarray(history.recorded_steps, dtype=float)
+                if frame_indices and recorded.size > max(frame_indices):
+                    step_axis = recorded[np.asarray(frame_indices, dtype=int)]
+                elif frame_indices:
+                    step_axis = _history_transition_steps(history, len(frame_indices))
+                else:
+                    step_axis = np.zeros(0, dtype=float)
+
+                summary_df = _build_coupling_diagnostics_summary_table(output.summary)
+                frame_df = _build_coupling_diagnostics_frame_table(step_axis, output)
+                scale_df = _build_coupling_diagnostics_scale_table(output)
+                plots = _build_coupling_diagnostics_plots(step_axis, output)
+                kernel_plots = _build_coupling_diagnostics_kernel_plots(output)
+
+                coupling_diagnostics_summary_table.value = summary_df
+                coupling_diagnostics_frame_table.value = frame_df
+                coupling_diagnostics_scale_table.value = scale_df
+                coupling_diagnostics_phase_plot.object = plots["phase"]
+                coupling_diagnostics_regime_plot.object = plots["regime"]
+                coupling_diagnostics_fields_plot.object = plots["fields"]
+                coupling_diagnostics_coverage_plot.object = plots["coverage"]
+                coupling_diagnostics_scale_plot.object = kernel_plots["scale"]
+                coupling_diagnostics_running_plot.object = kernel_plots["running"]
+
+                evidence = [str(item) for item in (output.regime_evidence or []) if str(item).strip()]
+                if evidence:
+                    coupling_diagnostics_regime_evidence.object = "\n".join(
+                        ["### Regime Evidence"] + [f"- {line}" for line in evidence]
+                    )
+                else:
+                    coupling_diagnostics_regime_evidence.object = (
+                        "_Regime evidence unavailable for this run._"
+                    )
+
+                n_frames = int(output.summary.get("n_frames", 0.0) or 0)
+                r_circ = output.summary.get("r_circ_mean")
+                asym = output.summary.get("re_im_asymmetry_mean")
+                coherence = output.summary.get("local_phase_coherence_mean")
+                drift_sigma = output.summary.get("phase_drift_sigma")
+                sigma = output.summary.get("string_tension_sigma")
+                poly = output.summary.get("polyakov_abs")
+                xi = output.summary.get("screening_length_xi")
+                running_slope = output.summary.get("running_coupling_slope")
+                flux_std = output.summary.get("topological_flux_std")
+                regime_score = output.summary.get("regime_score")
+                snapshot = output.snapshot_frame_index
+
+                def _fmt(value: Any, digits: int = 6) -> str:
+                    if value is None:
+                        return "n/a"
+                    try:
+                        number = float(value)
+                    except (TypeError, ValueError):
+                        return "n/a"
+                    return f"{number:.{digits}f}" if np.isfinite(number) else "n/a"
+
+                coupling_diagnostics_summary.object = "\n".join(
+                    [
+                        "## Coupling Diagnostics Summary",
+                        f"- Frames analyzed: `{n_frames}`",
+                        f"- Mean R_circ: `{_fmt(r_circ)}`",
+                        f"- Mean Re/Im asymmetry: `{_fmt(asym)}`",
+                        f"- Mean local phase coherence: `{_fmt(coherence)}`",
+                        f"- Phase drift significance: `{_fmt(drift_sigma, 3)}σ`",
+                        f"- String tension proxy σ: `{_fmt(sigma, 6)}`",
+                        f"- Polyakov loop |L|: `{_fmt(poly, 6)}`",
+                        f"- Screening length ξ: `{_fmt(xi, 6)}`",
+                        f"- Running coupling slope: `{_fmt(running_slope, 6)}`",
+                        f"- Topological flux std: `{_fmt(flux_std, 6)}`",
+                        f"- Regime score: `{_fmt(regime_score, 2)}` / 10",
+                        (
+                            f"- Kernel snapshot frame index: `{int(snapshot)}`"
+                            if snapshot is not None
+                            else "- Kernel snapshot frame index: `n/a`"
+                        ),
+                        "- This tab computes only fast regime diagnostics (no channel masses).",
+                    ]
+                )
+                coupling_diagnostics_status.object = (
+                    f"**Complete:** Coupling diagnostics computed ({n_frames} frames). "
+                    f"Kernel scales: {int(output.scales.numel())}."
+                )
+
+            _run_tab_computation(
+                state,
+                coupling_diagnostics_status,
+                "coupling diagnostics",
+                _compute,
+            )
+
         browse_button.on_click(_on_browse_clicked)
         load_button.on_click(on_load_clicked)
         save_button.on_click(on_save_clicked)
@@ -11447,8 +12364,12 @@ def create_app() -> pn.template.FastListTemplate:
         einstein_run_button.on_click(on_run_einstein_test)
         anisotropic_edge_run_button.on_click(on_run_anisotropic_edge_channels)
         companion_strong_force_run_button.on_click(on_run_companion_strong_force_channels)
+        companion_strong_force_display_plots_button.on_click(
+            _on_companion_strong_force_display_plots_click
+        )
         tensor_calibration_run_button.on_click(on_run_tensor_calibration)
         new_dirac_ew_run_button.on_click(on_run_new_dirac_electroweak)
+        coupling_diagnostics_run_button.on_click(on_run_coupling_diagnostics)
 
         visualization_controls = pn.Param(
             visualizer,
@@ -11738,7 +12659,12 @@ plaquette, and a single companion tensor channel, with independent settings and 
             companion_strong_force_tab = pn.Column(
                 companion_strong_force_status,
                 companion_strong_force_note,
-                pn.Row(companion_strong_force_run_button, sizing_mode="stretch_width"),
+                pn.Row(
+                    companion_strong_force_run_button,
+                    companion_strong_force_display_plots_button,
+                    sizing_mode="stretch_width",
+                ),
+                companion_strong_force_plot_gate_note,
                 pn.Accordion(
                     ("Companion Strong Force Settings", companion_strong_force_settings_layout),
                     (
@@ -11790,6 +12716,7 @@ plaquette, and a single companion tensor channel, with independent settings and 
                 pn.Row(
                     companion_strong_force_variant_scalar,
                     companion_strong_force_variant_vector,
+                    companion_strong_force_variant_axial_vector,
                     sizing_mode="stretch_width",
                 ),
                 pn.pane.Markdown("### Best-Fit Scales"),
@@ -11828,6 +12755,50 @@ plaquette, and a single companion tensor channel, with independent settings and 
 Dirac-sector analyses are shown in the dedicated Dirac tab.""",
                 alert_type="info",
                 sizing_mode="stretch_width",
+            )
+
+            coupling_diagnostics_note = pn.pane.Alert(
+                (
+                    "**Quick Coupling Diagnostics:** Vectorized regime metrics from run traces "
+                    "(phase concentration, asymmetry, coherence, drift, coverage, plus "
+                    "kernel-scale confinement/topology proxies). No mass-channel extraction "
+                    "is performed."
+                ),
+                alert_type="info",
+                sizing_mode="stretch_width",
+            )
+
+            coupling_diagnostics_tab = pn.Column(
+                coupling_diagnostics_status,
+                coupling_diagnostics_note,
+                pn.Row(coupling_diagnostics_run_button, sizing_mode="stretch_width"),
+                pn.Accordion(
+                    ("Diagnostics Settings", coupling_diagnostics_settings_panel),
+                    sizing_mode="stretch_width",
+                ),
+                pn.layout.Divider(),
+                coupling_diagnostics_summary,
+                coupling_diagnostics_regime_evidence,
+                pn.pane.Markdown("### Summary Metrics"),
+                coupling_diagnostics_summary_table,
+                pn.pane.Markdown("### Per-Frame Metrics"),
+                coupling_diagnostics_frame_table,
+                pn.pane.Markdown("### Kernel-Scale Metrics"),
+                coupling_diagnostics_scale_table,
+                pn.layout.Divider(),
+                pn.pane.Markdown("### Global Phase Trend"),
+                coupling_diagnostics_phase_plot,
+                pn.pane.Markdown("### Coupling Regime Metrics"),
+                coupling_diagnostics_regime_plot,
+                pn.pane.Markdown("### Local Color Field Means"),
+                coupling_diagnostics_fields_plot,
+                pn.pane.Markdown("### Coverage (Valid Pairs/Walkers)"),
+                coupling_diagnostics_coverage_plot,
+                pn.pane.Markdown("### Kernel-Scale Curves"),
+                coupling_diagnostics_scale_plot,
+                pn.pane.Markdown("### Running Coupling / Creutz"),
+                coupling_diagnostics_running_plot,
+                sizing_mode="stretch_both",
             )
 
             new_dirac_ew_tab = pn.Column(
@@ -11918,6 +12889,7 @@ Dirac-sector analyses are shown in the dedicated Dirac tab.""",
                     ("Tensor Calibration", tensor_calibration_tab),
                     ("Companion Strong Force", companion_strong_force_tab),
                     ("Multiscale", multiscale_tab),
+                    ("Coupling Diagnostics", coupling_diagnostics_tab),
                     ("Electroweak", new_dirac_ew_tab),
                     ("Einsten Equation", einstein_tab),
                     ("Dirac", dirac_tab),

@@ -11,6 +11,11 @@ Vector channels:
 
 Temporal correlators are computed from dot products of these 3-vectors at lagged
 times, reusing source-frame companion pairs.
+
+Score-directed variants are also supported:
+- operator_mode="score_directed": orient color phase uphill using cloning scores
+- projection_mode in {"full","longitudinal","transverse"}: project displacement
+  relative to the local score-gradient direction.
 """
 
 from __future__ import annotations
@@ -51,6 +56,8 @@ class VectorMesonCorrelatorConfig:
     pair_selection: str = "both"
     eps: float = 1e-12
     use_unit_displacement: bool = False
+    operator_mode: str = "standard"
+    projection_mode: str = "full"
 
 
 @dataclass
@@ -75,6 +82,34 @@ class VectorMesonCorrelatorOutput:
     n_valid_source_pairs: int
     operator_vector_series: Tensor
     operator_axial_vector_series: Tensor
+
+
+VECTOR_OPERATOR_MODES = ("standard", "score_directed", "score_gradient")
+VECTOR_PROJECTION_MODES = ("full", "longitudinal", "transverse")
+
+
+def _resolve_vector_operator_mode(operator_mode: str | None) -> str:
+    """Normalize vector meson operator mode."""
+    if operator_mode is None or not str(operator_mode).strip():
+        return "standard"
+    mode = str(operator_mode).strip().lower()
+    if mode not in VECTOR_OPERATOR_MODES:
+        raise ValueError(
+            f"operator_mode must be one of {VECTOR_OPERATOR_MODES}."
+        )
+    return mode
+
+
+def _resolve_vector_projection_mode(projection_mode: str | None) -> str:
+    """Normalize displacement projection mode for vector meson operators."""
+    if projection_mode is None or not str(projection_mode).strip():
+        return "full"
+    mode = str(projection_mode).strip().lower()
+    if mode not in VECTOR_PROJECTION_MODES:
+        raise ValueError(
+            f"projection_mode must be one of {VECTOR_PROJECTION_MODES}."
+        )
+    return mode
 
 
 def _safe_gather_pairs_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
@@ -116,6 +151,10 @@ def _compute_pair_observables(
     structural_valid: Tensor,
     eps: float,
     use_unit_displacement: bool,
+    *,
+    operator_mode: str,
+    projection_mode: str,
+    scores: Tensor | None = None,
 ) -> tuple[Tensor, Tensor, Tensor]:
     """Compute pair inner products and displacement vectors with validity mask."""
     if color.ndim != 3 or color.shape[-1] != 3:
@@ -170,6 +209,60 @@ def _compute_pair_observables(
         valid = valid & (disp_norm.squeeze(-1) > norm_floor)
         displacement = displacement / disp_norm.clamp(min=norm_floor)
 
+    resolved_operator_mode = _resolve_vector_operator_mode(operator_mode)
+    resolved_projection_mode = _resolve_vector_projection_mode(projection_mode)
+    if resolved_operator_mode in {"score_directed", "score_gradient"}:
+        if scores is None:
+            msg = (
+                "scores is required when operator_mode is one of "
+                "{'score_directed','score_gradient'}."
+            )
+            raise ValueError(msg)
+        if scores.shape != color.shape[:2]:
+            raise ValueError(
+                f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
+            )
+        score_j, score_in_range = _safe_gather_pairs_2d(scores, pair_indices)
+        score_i = scores.unsqueeze(-1).expand_as(score_j)
+        finite_scores = torch.isfinite(score_i) & torch.isfinite(score_j)
+        valid = valid & score_in_range & finite_scores
+        ds = score_j - score_i
+        if resolved_operator_mode == "score_directed":
+            inner = torch.where(ds >= 0, inner, torch.conj(inner))
+
+        if resolved_operator_mode == "score_gradient":
+            norm_floor = float(max(eps, 1e-20))
+            disp_norm = torch.linalg.vector_norm(displacement, dim=-1, keepdim=True)
+            unit_disp = displacement / disp_norm.clamp(min=norm_floor)
+            grad_valid = valid & (disp_norm.squeeze(-1) > norm_floor)
+            grad_weights = grad_valid.to(displacement.dtype).unsqueeze(-1)
+
+            grad_terms = ds.unsqueeze(-1).to(displacement.dtype) * unit_disp
+            grad_sum = (grad_terms * grad_weights).sum(dim=2)
+            grad_count = grad_weights.sum(dim=2)
+            grad = grad_sum / grad_count.clamp(min=1.0)
+            displacement = grad.unsqueeze(2).expand_as(displacement)
+        elif resolved_projection_mode != "full":
+            norm_floor = float(max(eps, 1e-20))
+            disp_norm = torch.linalg.vector_norm(displacement, dim=-1, keepdim=True)
+            unit_disp = displacement / disp_norm.clamp(min=norm_floor)
+            grad_valid = valid & (disp_norm.squeeze(-1) > norm_floor)
+            grad_weights = grad_valid.to(displacement.dtype).unsqueeze(-1)
+
+            grad_terms = ds.unsqueeze(-1).to(displacement.dtype) * unit_disp
+            grad_sum = (grad_terms * grad_weights).sum(dim=2)
+            grad_count = grad_weights.sum(dim=2)
+            grad = grad_sum / grad_count.clamp(min=1.0)
+            grad_norm = torch.linalg.vector_norm(grad, dim=-1, keepdim=True)
+            n_hat = grad / grad_norm.clamp(min=norm_floor)
+
+            parallel = (displacement * n_hat.unsqueeze(2)).sum(dim=-1, keepdim=True)
+            disp_parallel = parallel * n_hat.unsqueeze(2)
+            if resolved_projection_mode == "longitudinal":
+                displacement = disp_parallel
+            else:
+                displacement = displacement - disp_parallel
+
     inner = torch.where(valid, inner, torch.zeros_like(inner))
     displacement = torch.where(valid.unsqueeze(-1), displacement, torch.zeros_like(displacement))
     return inner, displacement, valid
@@ -206,6 +299,9 @@ def compute_vector_meson_correlator_from_color_positions(
     pair_selection: str = "both",
     eps: float = 1e-12,
     use_unit_displacement: bool = False,
+    operator_mode: str = "standard",
+    projection_mode: str = "full",
+    scores: Tensor | None = None,
     frame_indices: list[int] | None = None,
 ) -> VectorMesonCorrelatorOutput:
     """Compute vector and axial-vector meson correlators from color + positions.
@@ -227,6 +323,20 @@ def compute_vector_meson_correlator_from_color_positions(
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T,N] aligned with color."
         raise ValueError(msg)
+    resolved_operator_mode = _resolve_vector_operator_mode(operator_mode)
+    resolved_projection_mode = _resolve_vector_projection_mode(projection_mode)
+    if resolved_operator_mode in {"score_directed", "score_gradient"}:
+        if scores is None:
+            msg = (
+                "scores is required when operator_mode is one of "
+                "{'score_directed','score_gradient'}."
+            )
+            raise ValueError(msg)
+        if scores.shape != color.shape[:2]:
+            raise ValueError(
+                f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
+            )
+        scores = scores.to(dtype=torch.float32, device=color.device)
 
     mode = str(pair_selection).strip().lower()
     if mode not in PAIR_SELECTION_MODES:
@@ -278,6 +388,9 @@ def compute_vector_meson_correlator_from_color_positions(
         structural_valid=structural_valid,
         eps=eps,
         use_unit_displacement=use_unit_displacement,
+        operator_mode=resolved_operator_mode,
+        projection_mode=resolved_projection_mode,
+        scores=scores,
     )
     source_vector = source_inner.real.float().unsqueeze(-1) * source_disp
     source_axial = source_inner.imag.float().unsqueeze(-1) * source_disp
@@ -313,6 +426,13 @@ def compute_vector_meson_correlator_from_color_positions(
             structural_valid=structural_valid[:source_len],
             eps=eps,
             use_unit_displacement=use_unit_displacement,
+            operator_mode=resolved_operator_mode,
+            projection_mode=resolved_projection_mode,
+            scores=(
+                None
+                if scores is None
+                else scores[lag : lag + source_len]
+            ),
         )
         sink_vector = sink_inner.real.float().unsqueeze(-1) * sink_disp
         sink_axial = sink_inner.imag.float().unsqueeze(-1) * sink_disp
@@ -437,6 +557,13 @@ def compute_companion_vector_meson_correlator(
         dtype=torch.long,
         device=device,
     )
+    scores = None
+    if _resolve_vector_operator_mode(config.operator_mode) in {"score_directed", "score_gradient"}:
+        scores = torch.as_tensor(
+            history.cloning_scores[start_idx - 1 : end_idx - 1],
+            dtype=torch.float32,
+            device=device,
+        )
 
     return compute_vector_meson_correlator_from_color_positions(
         color=color,
@@ -450,5 +577,8 @@ def compute_companion_vector_meson_correlator(
         pair_selection=str(config.pair_selection),
         eps=float(max(config.eps, 0.0)),
         use_unit_displacement=bool(config.use_unit_displacement),
+        operator_mode=str(config.operator_mode),
+        projection_mode=str(config.projection_mode),
+        scores=scores,
         frame_indices=frame_indices,
     )
