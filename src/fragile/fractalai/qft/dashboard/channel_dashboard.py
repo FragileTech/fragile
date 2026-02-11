@@ -33,6 +33,10 @@ from fragile.fractalai.qft.smeared_operators import (
 
 COMPANION_SUFFIX = "_companion"
 SPATIAL_PREFIX = "spatial_"
+SPATIAL_CANONICAL_LABEL_MAP: dict[str, str] = {
+    "spatial_nucleon_score_abs": "nucleon",
+    "spatial_pseudoscalar_score_directed": "pseudoscalar",
+}
 
 
 def _is_companion_channel(name: str) -> bool:
@@ -52,7 +56,8 @@ def _display_channel_name(raw_name: str) -> str:
     base = _base_channel_name(raw_name)
     if _is_companion_channel(raw_name):
         return base
-    return f"{SPATIAL_PREFIX}{base}"
+    spatial_name = f"{SPATIAL_PREFIX}{base}"
+    return SPATIAL_CANONICAL_LABEL_MAP.get(spatial_name, spatial_name)
 
 
 def _display_channel_name_for_original(raw_name: str, result: Any) -> str:
@@ -62,7 +67,8 @@ def _display_channel_name_for_original(raw_name: str, result: Any) -> str:
     base = _base_channel_name(raw)
     if _is_companion_original_result(raw, result):
         return base
-    return f"{SPATIAL_PREFIX}{base}"
+    spatial_name = f"{SPATIAL_PREFIX}{base}"
+    return SPATIAL_CANONICAL_LABEL_MAP.get(spatial_name, spatial_name)
 
 
 def _is_companion_original_result(name: str, result: Any) -> bool:
@@ -451,6 +457,8 @@ def update_multiscale_tab(
     w.channel_select.options = available_channels
     if "nucleon" in available_channels:
         default_channel = "nucleon"
+    elif "spatial_nucleon_score_abs" in available_channels:
+        default_channel = "spatial_nucleon_score_abs"
     elif "spatial_nucleon" in available_channels:
         default_channel = "spatial_nucleon"
     else:

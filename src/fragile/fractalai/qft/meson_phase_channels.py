@@ -51,6 +51,7 @@ class MesonPhaseCorrelatorConfig:
     color_dims: tuple[int, int, int] | None = None
     pair_selection: str = "both"
     eps: float = 1e-12
+    operator_mode: str = "standard"
 
 
 @dataclass
@@ -191,6 +192,36 @@ def _compute_inner_products_for_pairs(
     return inner, valid
 
 
+def _resolve_meson_operator_mode(operator_mode: str | None) -> str:
+    """Normalize meson operator mode name."""
+    if operator_mode is None or not str(operator_mode).strip():
+        return "standard"
+    mode = str(operator_mode).strip().lower()
+    if mode not in {"standard", "score_directed"}:
+        raise ValueError(
+            "operator_mode must be one of {'standard','score_directed'}."
+        )
+    return mode
+
+
+def _orient_inner_products_by_scores(
+    *,
+    inner: Tensor,
+    valid: Tensor,
+    scores: Tensor,
+    pair_indices: Tensor,
+) -> tuple[Tensor, Tensor]:
+    """Orient pair inner products uphill according to score differences."""
+    score_j, in_range = _safe_gather_pairs_2d(scores, pair_indices)
+    score_i = scores.unsqueeze(-1).expand_as(score_j)
+    finite_scores = torch.isfinite(score_i) & torch.isfinite(score_j)
+    oriented_valid = valid & in_range & finite_scores
+    ds = score_j - score_i
+    inner_oriented = torch.where(ds >= 0, inner, torch.conj(inner))
+    inner_oriented = torch.where(oriented_valid, inner_oriented, torch.zeros_like(inner_oriented))
+    return inner_oriented, oriented_valid
+
+
 def _per_frame_series(values: Tensor, valid: Tensor) -> tuple[Tensor, Tensor]:
     """Average pair values per frame with masking."""
     weights = valid.to(values.dtype)
@@ -213,6 +244,8 @@ def compute_meson_phase_correlator_from_color(
     use_connected: bool = True,
     pair_selection: str = "both",
     eps: float = 1e-12,
+    operator_mode: str = "standard",
+    scores: Tensor | None = None,
     frame_indices: list[int] | None = None,
 ) -> MesonPhaseCorrelatorOutput:
     """Compute scalar/pseudoscalar correlators from companion-pair color phases.
@@ -230,6 +263,15 @@ def compute_meson_phase_correlator_from_color(
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
+    resolved_operator_mode = _resolve_meson_operator_mode(operator_mode)
+    if resolved_operator_mode == "score_directed":
+        if scores is None:
+            raise ValueError("scores is required when operator_mode='score_directed'.")
+        if scores.shape != color.shape[:2]:
+            raise ValueError(
+                f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
+            )
+        scores = scores.to(device=color.device, dtype=torch.float32)
 
     mode = str(pair_selection).strip().lower()
     if mode not in PAIR_SELECTION_MODES:
@@ -278,6 +320,13 @@ def compute_meson_phase_correlator_from_color(
         structural_valid=structural_valid,
         eps=eps,
     )
+    if resolved_operator_mode == "score_directed":
+        source_inner, source_valid = _orient_inner_products_by_scores(
+            inner=source_inner,
+            valid=source_valid,
+            scores=scores,
+            pair_indices=pair_indices,
+        )
     source_scalar = source_inner.real.float()
     source_pseudoscalar = source_inner.imag.float()
 
@@ -311,6 +360,13 @@ def compute_meson_phase_correlator_from_color(
             structural_valid=structural_valid[:source_len],
             eps=eps,
         )
+        if resolved_operator_mode == "score_directed":
+            sink_inner, sink_valid = _orient_inner_products_by_scores(
+                inner=sink_inner,
+                valid=sink_valid,
+                scores=scores[lag : lag + source_len],
+                pair_indices=pair_indices[:source_len],
+            )
         sink_scalar = sink_inner.real.float()
         sink_pseudoscalar = sink_inner.imag.float()
 
@@ -427,6 +483,11 @@ def compute_companion_meson_phase_correlator(
         dtype=torch.long,
         device=device,
     )
+    scores = torch.as_tensor(
+        history.cloning_scores[start_idx - 1 : end_idx - 1],
+        dtype=torch.float32,
+        device=device,
+    )
 
     return compute_meson_phase_correlator_from_color(
         color=color,
@@ -438,5 +499,7 @@ def compute_companion_meson_phase_correlator(
         use_connected=bool(config.use_connected),
         pair_selection=str(config.pair_selection),
         eps=float(max(config.eps, 0.0)),
+        operator_mode=str(config.operator_mode),
+        scores=scores,
         frame_indices=frame_indices,
     )

@@ -45,6 +45,7 @@ def _build_random_inputs(*, t_len: int, n_scales: int, n_walkers: int) -> dict[s
     idx = torch.arange(n_walkers, dtype=torch.long)
     companions_distance = ((idx + 1) % n_walkers).view(1, n_walkers).expand(t_len, -1).clone()
     companions_clone = ((idx + 2) % n_walkers).view(1, n_walkers).expand(t_len, -1).clone()
+    cloning_scores = torch.randn(t_len, n_walkers, dtype=torch.float32)
 
     return {
         "color": color,
@@ -57,6 +58,7 @@ def _build_random_inputs(*, t_len: int, n_scales: int, n_walkers: int) -> dict[s
         "pairwise_distances": pairwise_distances,
         "companions_distance": companions_distance,
         "companions_clone": companions_clone,
+        "cloning_scores": cloning_scores,
     }
 
 
@@ -73,10 +75,14 @@ def test_companion_and_non_companion_multiscale_series_are_both_computed() -> No
         "glueball",
         "scalar_companion",
         "pseudoscalar_companion",
+        "scalar_score_directed_companion",
+        "pseudoscalar_score_directed_companion",
         "vector_companion",
         "axial_vector_companion",
         "tensor_companion",
         "nucleon_companion",
+        "nucleon_score_signed_companion",
+        "nucleon_score_abs_companion",
         "glueball_companion",
         "nucleon_flux_action_companion",
         "nucleon_flux_sin2_companion",
@@ -95,6 +101,7 @@ def test_companion_and_non_companion_multiscale_series_are_both_computed() -> No
         pairwise_distances=data["pairwise_distances"],
         companions_distance=data["companions_distance"],
         companions_clone=data["companions_clone"],
+        cloning_scores=data["cloning_scores"],
         channels=channels,
     )
 
@@ -106,10 +113,14 @@ def test_companion_and_non_companion_multiscale_series_are_both_computed() -> No
     companion_names = [
         "scalar_companion",
         "pseudoscalar_companion",
+        "scalar_score_directed_companion",
+        "pseudoscalar_score_directed_companion",
         "vector_companion",
         "axial_vector_companion",
         "tensor_companion",
         "nucleon_companion",
+        "nucleon_score_signed_companion",
+        "nucleon_score_abs_companion",
         "glueball_companion",
         "nucleon_flux_action_companion",
         "nucleon_flux_sin2_companion",
@@ -128,10 +139,14 @@ def test_companion_channels_zero_out_when_companions_are_invalid() -> None:
     channels = [
         "scalar_companion",
         "pseudoscalar_companion",
+        "scalar_score_directed_companion",
+        "pseudoscalar_score_directed_companion",
         "vector_companion",
         "axial_vector_companion",
         "tensor_companion",
         "nucleon_companion",
+        "nucleon_score_signed_companion",
+        "nucleon_score_abs_companion",
         "glueball_companion",
         "nucleon_flux_action_companion",
         "nucleon_flux_sin2_companion",
@@ -150,6 +165,7 @@ def test_companion_channels_zero_out_when_companions_are_invalid() -> None:
         pairwise_distances=data["pairwise_distances"],
         companions_distance=bad_comp,
         companions_clone=bad_comp,
+        cloning_scores=data["cloning_scores"],
         channels=channels,
     )
 
@@ -168,6 +184,7 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
     alive = data["alive"]
     companions_distance = data["companions_distance"]
     companions_clone = data["companions_clone"]
+    cloning_scores = data["cloning_scores"]
     pairwise_distances = data["pairwise_distances"]
 
     d_ij = pairwise_distances.gather(2, companions_distance.clamp(min=0, max=n_walkers - 1).unsqueeze(-1)).squeeze(-1)
@@ -189,6 +206,7 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
         color_valid=color_valid,
         positions=positions,
         alive=alive,
+        cloning_scores=cloning_scores,
         companions_distance=companions_distance,
         companions_clone=companions_clone,
         distance_ij=d_ij,
@@ -198,9 +216,13 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
         channels=[
             "scalar_companion",
             "pseudoscalar_companion",
+            "scalar_score_directed_companion",
+            "pseudoscalar_score_directed_companion",
             "vector_companion",
             "axial_vector_companion",
             "nucleon_companion",
+            "nucleon_score_signed_companion",
+            "nucleon_score_abs_companion",
             "glueball_companion",
             "nucleon_flux_action_companion",
             "nucleon_flux_sin2_companion",
@@ -222,6 +244,19 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
         use_connected=True,
         pair_selection="both",
         eps=1e-12,
+    )
+    meson_score_directed = compute_meson_phase_correlator_from_color(
+        color=color[..., :3],
+        color_valid=color_valid,
+        alive=alive,
+        companions_distance=companions_distance,
+        companions_clone=companions_clone,
+        max_lag=4,
+        use_connected=True,
+        pair_selection="both",
+        eps=1e-12,
+        operator_mode="score_directed",
+        scores=cloning_scores,
     )
     vector = compute_vector_meson_correlator_from_color_positions(
         color=color[..., :3],
@@ -245,6 +280,30 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
         max_lag=4,
         use_connected=True,
         eps=1e-12,
+    )
+    baryon_score_signed = compute_baryon_correlator_from_color(
+        color=color[..., :3],
+        color_valid=color_valid,
+        alive=alive,
+        companions_distance=companions_distance,
+        companions_clone=companions_clone,
+        max_lag=4,
+        use_connected=True,
+        eps=1e-12,
+        operator_mode="score_signed",
+        scores=cloning_scores,
+    )
+    baryon_score_abs = compute_baryon_correlator_from_color(
+        color=color[..., :3],
+        color_valid=color_valid,
+        alive=alive,
+        companions_distance=companions_distance,
+        companions_clone=companions_clone,
+        max_lag=4,
+        use_connected=True,
+        eps=1e-12,
+        operator_mode="score_abs",
+        scores=cloning_scores,
     )
     baryon_flux_action = compute_baryon_correlator_from_color(
         color=color[..., :3],
@@ -316,10 +375,27 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
         use_action_form=False,
     )
 
-    torch.testing.assert_close(override["scalar_companion"][0].correlator, meson.scalar, atol=1e-6, rtol=1e-5)
+    torch.testing.assert_close(
+        override["scalar_companion"][0].correlator,
+        meson.scalar,
+        atol=1e-6,
+        rtol=1e-5,
+    )
     torch.testing.assert_close(
         override["pseudoscalar_companion"][0].correlator,
         meson.pseudoscalar,
+        atol=1e-6,
+        rtol=1e-5,
+    )
+    torch.testing.assert_close(
+        override["scalar_score_directed_companion"][0].correlator,
+        meson_score_directed.scalar,
+        atol=1e-6,
+        rtol=1e-5,
+    )
+    torch.testing.assert_close(
+        override["pseudoscalar_score_directed_companion"][0].correlator,
+        meson_score_directed.pseudoscalar,
         atol=1e-6,
         rtol=1e-5,
     )
@@ -333,6 +409,18 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
     torch.testing.assert_close(
         override["nucleon_companion"][0].correlator,
         baryon.correlator,
+        atol=1e-6,
+        rtol=1e-5,
+    )
+    torch.testing.assert_close(
+        override["nucleon_score_signed_companion"][0].correlator,
+        baryon_score_signed.correlator,
+        atol=1e-6,
+        rtol=1e-5,
+    )
+    torch.testing.assert_close(
+        override["nucleon_score_abs_companion"][0].correlator,
+        baryon_score_abs.correlator,
         atol=1e-6,
         rtol=1e-5,
     )

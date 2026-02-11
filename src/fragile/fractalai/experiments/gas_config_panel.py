@@ -501,7 +501,7 @@ class GasConfigPanel(param.Parameterized):
             viscous_length_scale=1.0,
             viscous_neighbor_weighting="riemannian_kernel_volume",
             viscous_neighbor_penalty=1.1,
-            V_alg=10.0,
+            V_alg=30.0,
             use_velocity_squashing=False,
         )
 

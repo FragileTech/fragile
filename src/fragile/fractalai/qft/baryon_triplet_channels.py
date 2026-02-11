@@ -260,6 +260,81 @@ def _compute_determinants_for_indices(
     return det, valid
 
 
+def _compute_score_ordered_determinants_for_indices(
+    *,
+    color: Tensor,
+    color_valid: Tensor,
+    alive: Tensor,
+    scores: Tensor,
+    companion_j: Tensor,
+    companion_k: Tensor,
+    eps: float,
+) -> tuple[Tensor, Tensor]:
+    """Compute score-ordered determinant for companion triplets."""
+    if color.ndim != 3 or color.shape[-1] != 3:
+        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+    if color_valid.shape != color.shape[:2]:
+        raise ValueError(f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}.")
+    if alive.shape != color.shape[:2]:
+        raise ValueError(f"alive must have shape [T,N], got {tuple(alive.shape)}.")
+    if scores.shape != color.shape[:2]:
+        raise ValueError(f"scores must have shape [T,N], got {tuple(scores.shape)}.")
+    if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
+        raise ValueError("companion indices must have shape [T,N].")
+
+    _, _, structural_valid = build_companion_triplets(companion_j, companion_k)[1:]
+
+    color_j, in_j = _safe_gather_3d(color, companion_j)
+    color_k, in_k = _safe_gather_3d(color, companion_k)
+    alive_j, _ = _safe_gather_2d(alive, companion_j)
+    alive_k, _ = _safe_gather_2d(alive, companion_k)
+    valid_j, _ = _safe_gather_2d(color_valid, companion_j)
+    valid_k, _ = _safe_gather_2d(color_valid, companion_k)
+    score_j, score_j_in_range = _safe_gather_2d(scores, companion_j)
+    score_k, score_k_in_range = _safe_gather_2d(scores, companion_k)
+
+    triplet_scores = torch.stack([scores, score_j, score_k], dim=-1)  # [T,N,3]
+    triplet_colors = torch.stack([color, color_j, color_k], dim=-2)  # [T,N,3,3]
+    order = torch.argsort(triplet_scores, dim=-1)
+    ordered_colors = torch.gather(
+        triplet_colors,
+        dim=-2,
+        index=order.unsqueeze(-1).expand(-1, -1, -1, 3),
+    )
+    det_ordered = _det3(
+        ordered_colors[..., 0, :],
+        ordered_colors[..., 1, :],
+        ordered_colors[..., 2, :],
+    )
+
+    finite_det = torch.isfinite(det_ordered.real) & torch.isfinite(det_ordered.imag)
+    finite_scores = (
+        torch.isfinite(scores)
+        & torch.isfinite(score_j)
+        & torch.isfinite(score_k)
+    )
+    valid = (
+        structural_valid
+        & in_j
+        & in_k
+        & alive
+        & alive_j
+        & alive_k
+        & color_valid
+        & valid_j
+        & valid_k
+        & score_j_in_range
+        & score_k_in_range
+        & finite_scores
+        & finite_det
+    )
+    if eps > 0:
+        valid = valid & (det_ordered.abs() > eps)
+
+    det_ordered = torch.where(valid, det_ordered, torch.zeros_like(det_ordered))
+    return det_ordered, valid
+
+
 def _compute_triplet_plaquette_for_indices(
     *,
     color: Tensor,
@@ -320,7 +395,21 @@ def _resolve_baryon_operator_mode(operator_mode: str | None) -> str:
     """Normalize baryon operator mode name."""
     if operator_mode is None or not str(operator_mode).strip():
         return "det_abs"
-    return str(operator_mode).strip().lower()
+    mode = str(operator_mode).strip().lower()
+    allowed = {
+        "det_abs",
+        "flux_action",
+        "flux_sin2",
+        "flux_exp",
+        "score_signed",
+        "score_abs",
+    }
+    if mode not in allowed:
+        raise ValueError(
+            "Invalid baryon operator_mode. Expected one of "
+            "{'det_abs','flux_action','flux_sin2','flux_exp','score_signed','score_abs'}."
+        )
+    return mode
 
 
 def _baryon_flux_weight_from_plaquette(
@@ -341,7 +430,7 @@ def _baryon_flux_weight_from_plaquette(
         return torch.exp(alpha * action).float()
     msg = (
         "Invalid baryon operator_mode. Expected one of "
-        "{'det_abs','flux_action','flux_sin2','flux_exp'}."
+        "{'det_abs','flux_action','flux_sin2','flux_exp','score_signed','score_abs'}."
     )
     raise ValueError(msg)
 
@@ -357,6 +446,7 @@ def compute_baryon_correlator_from_color(
     eps: float = 1e-12,
     operator_mode: str = "det_abs",
     flux_exp_alpha: float = 1.0,
+    scores: Tensor | None = None,
     frame_indices: list[int] | None = None,
 ) -> BaryonTripletCorrelatorOutput:
     """Compute companion-triplet baryon correlator from precomputed color states.
@@ -376,6 +466,16 @@ def compute_baryon_correlator_from_color(
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
     resolved_operator_mode = _resolve_baryon_operator_mode(operator_mode)
+    if resolved_operator_mode in {"score_signed", "score_abs"}:
+        if scores is None:
+            raise ValueError(
+                "scores is required when operator_mode is one of {'score_signed','score_abs'}."
+            )
+        if scores.shape != color.shape[:2]:
+            raise ValueError(
+                f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
+            )
+        scores = scores.to(device=color.device, dtype=torch.float32)
 
     t_total = int(color.shape[0])
     max_lag = max(0, int(max_lag))
@@ -401,16 +501,32 @@ def compute_baryon_correlator_from_color(
             operator_baryon_series=empty_t.float(),
         )
 
-    source_det, source_valid = _compute_determinants_for_indices(
-        vectors=color,
-        valid_vectors=color_valid,
-        alive=alive,
-        companion_j=companions_distance,
-        companion_k=companions_clone,
-        eps=eps,
-    )
-    source_obs = source_det.abs().float()
-    if resolved_operator_mode != "det_abs":
+    if resolved_operator_mode in {"score_signed", "score_abs"}:
+        source_det, source_valid = _compute_score_ordered_determinants_for_indices(
+            color=color,
+            color_valid=color_valid,
+            alive=alive,
+            scores=scores,
+            companion_j=companions_distance,
+            companion_k=companions_clone,
+            eps=eps,
+        )
+        source_obs = (
+            source_det.real.float()
+            if resolved_operator_mode == "score_signed"
+            else source_det.abs().float()
+        )
+    else:
+        source_det, source_valid = _compute_determinants_for_indices(
+            vectors=color,
+            valid_vectors=color_valid,
+            alive=alive,
+            companion_j=companions_distance,
+            companion_k=companions_clone,
+            eps=eps,
+        )
+        source_obs = source_det.abs().float()
+    if resolved_operator_mode in {"flux_action", "flux_sin2", "flux_exp"}:
         source_pi, source_pi_valid = _compute_triplet_plaquette_for_indices(
             color=color,
             color_valid=color_valid,
@@ -464,16 +580,32 @@ def compute_baryon_correlator_from_color(
 
     for lag in range(effective_lag + 1):
         source_len = t_total - lag
-        sink_det, sink_valid = _compute_determinants_for_indices(
-            vectors=color[lag : lag + source_len],
-            valid_vectors=color_valid[lag : lag + source_len],
-            alive=alive[lag : lag + source_len],
-            companion_j=companions_distance[:source_len],
-            companion_k=companions_clone[:source_len],
-            eps=eps,
-        )
-        sink_obs = sink_det.abs().float()
-        if resolved_operator_mode != "det_abs":
+        if resolved_operator_mode in {"score_signed", "score_abs"}:
+            sink_det, sink_valid = _compute_score_ordered_determinants_for_indices(
+                color=color[lag : lag + source_len],
+                color_valid=color_valid[lag : lag + source_len],
+                alive=alive[lag : lag + source_len],
+                scores=scores[lag : lag + source_len],
+                companion_j=companions_distance[:source_len],
+                companion_k=companions_clone[:source_len],
+                eps=eps,
+            )
+            sink_obs = (
+                sink_det.real.float()
+                if resolved_operator_mode == "score_signed"
+                else sink_det.abs().float()
+            )
+        else:
+            sink_det, sink_valid = _compute_determinants_for_indices(
+                vectors=color[lag : lag + source_len],
+                valid_vectors=color_valid[lag : lag + source_len],
+                alive=alive[lag : lag + source_len],
+                companion_j=companions_distance[:source_len],
+                companion_k=companions_clone[:source_len],
+                eps=eps,
+            )
+            sink_obs = sink_det.abs().float()
+        if resolved_operator_mode in {"flux_action", "flux_sin2", "flux_exp"}:
             sink_pi, sink_pi_valid = _compute_triplet_plaquette_for_indices(
                 color=color[lag : lag + source_len],
                 color_valid=color_valid[lag : lag + source_len],
@@ -587,6 +719,9 @@ def compute_companion_baryon_correlator(
     companions_clone = torch.as_tensor(
         history.companions_clone[start_idx - 1 : end_idx - 1], device=device, dtype=torch.long
     )
+    scores = torch.as_tensor(
+        history.cloning_scores[start_idx - 1 : end_idx - 1], device=device, dtype=torch.float32
+    )
 
     return compute_baryon_correlator_from_color(
         color=color,
@@ -599,6 +734,7 @@ def compute_companion_baryon_correlator(
         eps=float(max(config.eps, 0.0)),
         operator_mode=str(config.operator_mode),
         flux_exp_alpha=float(config.flux_exp_alpha),
+        scores=scores,
         frame_indices=frame_indices,
     )
 

@@ -64,10 +64,14 @@ BASE_CHANNELS = (
 COMPANION_CHANNEL_MAP: dict[str, str] = {
     "scalar": "scalar_companion",
     "pseudoscalar": "pseudoscalar_companion",
+    "scalar_score_directed": "scalar_score_directed_companion",
+    "pseudoscalar_score_directed": "pseudoscalar_score_directed_companion",
     "vector": "vector_companion",
     "axial_vector": "axial_vector_companion",
     "tensor": "tensor_companion",
     "nucleon": "nucleon_companion",
+    "nucleon_score_signed": "nucleon_score_signed_companion",
+    "nucleon_score_abs": "nucleon_score_abs_companion",
     "glueball": "glueball_companion",
     "nucleon_flux_action": "nucleon_flux_action_companion",
     "nucleon_flux_sin2": "nucleon_flux_sin2_companion",
@@ -382,6 +386,7 @@ def _compute_channel_series_from_kernels(
     pairwise_distances: Tensor | None = None,  # [T, N, N] float, used by companion channels
     companions_distance: Tensor | None = None,  # [T, N] long
     companions_clone: Tensor | None = None,     # [T, N] long
+    cloning_scores: Tensor | None = None,  # [T, N] float
     channels: list[str],
 ) -> dict[str, Tensor]:
     """Compute multiscale operator series for one frame chunk.
@@ -519,6 +524,36 @@ def _compute_channel_series_from_kernels(
                 "companion arrays must have shape [T,N] aligned with alive/color tensors, got "
                 f"{tuple(comp_j.shape)} and {tuple(comp_k.shape)} vs {tuple(alive.shape)}."
             )
+        needs_score_pair_channels = any(
+            name in channels
+            for name in (
+                "scalar_score_directed_companion",
+                "pseudoscalar_score_directed_companion",
+            )
+        )
+        needs_score_triplet_channels = any(
+            name in channels
+            for name in ("nucleon_score_signed_companion", "nucleon_score_abs_companion")
+        )
+        scores = None
+        score_j = None
+        score_k = None
+        score_j_in_range = None
+        score_k_in_range = None
+        finite_score_i = None
+        finite_score_j = None
+        finite_score_k = None
+        if needs_score_pair_channels or needs_score_triplet_channels:
+            if cloning_scores is None:
+                raise ValueError(
+                    "cloning_scores is required for score-directed companion channels."
+                )
+            scores = cloning_scores.to(device=device, dtype=torch.float32)
+            if scores.shape != alive.shape:
+                raise ValueError(
+                    "cloning_scores must have shape [T,N] aligned with alive/color tensors, got "
+                    f"{tuple(scores.shape)} vs {tuple(alive.shape)}."
+                )
 
         # Companion channels use original (non-smoothed) operators gated by
         # geodesic hard thresholds at each scale.
@@ -531,6 +566,12 @@ def _compute_channel_series_from_kernels(
         alive_k_2d, in_k_alive = _safe_gather_2d(alive, comp_k)
         valid_j_2d, in_j_valid = _safe_gather_2d(color_valid, comp_j)
         valid_k_2d, in_k_valid = _safe_gather_2d(color_valid, comp_k)
+        if scores is not None:
+            score_j, score_j_in_range = _safe_gather_2d(scores, comp_j)
+            score_k, score_k_in_range = _safe_gather_2d(scores, comp_k)
+            finite_score_i = torch.isfinite(scores)
+            finite_score_j = torch.isfinite(score_j)
+            finite_score_k = torch.isfinite(score_k)
 
         anchor_idx = torch.arange(n_walkers, device=device, dtype=torch.long).view(1, -1)
         anchor_rows = anchor_idx.expand(t_len, -1)
@@ -608,6 +649,53 @@ def _compute_channel_series_from_kernels(
             if "pseudoscalar_companion" in channels:
                 pseu_comp = _masked_mean_multi(inner_pair.imag.float(), pair_valid, dims=(-1, -2))
                 out["pseudoscalar_companion"] = pseu_comp.transpose(0, 1).contiguous()
+
+        if needs_score_pair_channels:
+            if (
+                scores is None
+                or score_j is None
+                or score_k is None
+                or score_j_in_range is None
+                or score_k_in_range is None
+                or finite_score_i is None
+                or finite_score_j is None
+                or finite_score_k is None
+            ):
+                raise RuntimeError("Internal error: missing score tensors for score-directed channels.")
+            ds_j = score_j - scores
+            ds_k = score_k - scores
+            inner_j_oriented = torch.where(ds_j >= 0, inner_j, torch.conj(inner_j))
+            inner_k_oriented = torch.where(ds_k >= 0, inner_k, torch.conj(inner_k))
+            pair_j_score_valid = (
+                pair_j_valid
+                & score_j_in_range[:, None, :]
+                & finite_score_i[:, None, :]
+                & finite_score_j[:, None, :]
+            )
+            pair_k_score_valid = (
+                pair_k_valid
+                & score_k_in_range[:, None, :]
+                & finite_score_i[:, None, :]
+                & finite_score_k[:, None, :]
+            )
+            inner_pair_oriented = torch.stack([inner_j_oriented, inner_k_oriented], dim=-1)[
+                :, None, :, :
+            ].expand(t_len, n_scales, n_walkers, 2)
+            pair_score_valid = torch.stack([pair_j_score_valid, pair_k_score_valid], dim=-1)
+            scalar_score = None
+            if "scalar_score_directed_companion" in channels:
+                scalar_score = _masked_mean_multi(
+                    inner_pair_oriented.real.float(), pair_score_valid, dims=(-1, -2)
+                )
+            if "scalar_score_directed_companion" in channels and scalar_score is not None:
+                out["scalar_score_directed_companion"] = scalar_score.transpose(0, 1).contiguous()
+            if "pseudoscalar_score_directed_companion" in channels:
+                pseudoscalar_score = _masked_mean_multi(
+                    inner_pair_oriented.imag.float(), pair_score_valid, dims=(-1, -2)
+                )
+                out["pseudoscalar_score_directed_companion"] = pseudoscalar_score.transpose(
+                    0, 1
+                ).contiguous()
 
         if "vector_companion" in channels or "axial_vector_companion" in channels:
             disp_j = x_j - positions
@@ -765,6 +853,79 @@ def _compute_channel_series_from_kernels(
                             (n_scales, t_len), dtype=torch.float32, device=device
                         )
 
+        score_nucleon_channels = (
+            "nucleon_score_signed_companion",
+            "nucleon_score_abs_companion",
+        )
+        if any(name in channels for name in score_nucleon_channels):
+            if (
+                scores is None
+                or score_j is None
+                or score_k is None
+                or score_j_in_range is None
+                or score_k_in_range is None
+                or finite_score_i is None
+                or finite_score_j is None
+                or finite_score_k is None
+            ):
+                raise RuntimeError("Internal error: missing score tensors for score-ordered nucleon channels.")
+            if color.shape[-1] >= 3:
+                c_i3 = color[..., :3]
+                c_j3 = c_j[..., :3]
+                c_k3 = c_k[..., :3]
+                triplet_scores = torch.stack([scores, score_j, score_k], dim=-1)  # [T,N,3]
+                triplet_colors = torch.stack([c_i3, c_j3, c_k3], dim=-2)  # [T,N,3,3]
+                order = torch.argsort(triplet_scores, dim=-1)
+                ordered_colors = torch.gather(
+                    triplet_colors,
+                    dim=-2,
+                    index=order.unsqueeze(-1).expand(-1, -1, -1, 3),
+                )
+                det_ordered = (
+                    ordered_colors[..., 0, 0]
+                    * (
+                        ordered_colors[..., 1, 1] * ordered_colors[..., 2, 2]
+                        - ordered_colors[..., 1, 2] * ordered_colors[..., 2, 1]
+                    )
+                    - ordered_colors[..., 0, 1]
+                    * (
+                        ordered_colors[..., 1, 0] * ordered_colors[..., 2, 2]
+                        - ordered_colors[..., 1, 2] * ordered_colors[..., 2, 0]
+                    )
+                    + ordered_colors[..., 0, 2]
+                    * (
+                        ordered_colors[..., 1, 0] * ordered_colors[..., 2, 1]
+                        - ordered_colors[..., 1, 1] * ordered_colors[..., 2, 0]
+                    )
+                )
+                finite_det = torch.isfinite(det_ordered.real) & torch.isfinite(det_ordered.imag)
+                score_triplet_valid = (
+                    triplet_valid
+                    & score_j_in_range[:, None, :]
+                    & score_k_in_range[:, None, :]
+                    & finite_score_i[:, None, :]
+                    & finite_score_j[:, None, :]
+                    & finite_score_k[:, None, :]
+                    & finite_det[:, None, :]
+                    & (det_ordered.abs() > eps).unsqueeze(1)
+                )
+                if "nucleon_score_signed_companion" in channels:
+                    det_signed = det_ordered.real.float()
+                    det_signed_scales = det_signed[:, None, :].expand(t_len, n_scales, n_walkers)
+                    det_signed_series = _masked_mean(det_signed_scales, score_triplet_valid, dim=-1)
+                    out["nucleon_score_signed_companion"] = det_signed_series.transpose(0, 1).contiguous()
+                if "nucleon_score_abs_companion" in channels:
+                    det_abs = det_ordered.abs().float()
+                    det_abs_scales = det_abs[:, None, :].expand(t_len, n_scales, n_walkers)
+                    det_abs_series = _masked_mean(det_abs_scales, score_triplet_valid, dim=-1)
+                    out["nucleon_score_abs_companion"] = det_abs_series.transpose(0, 1).contiguous()
+            else:
+                for channel_name in score_nucleon_channels:
+                    if channel_name in channels:
+                        out[channel_name] = torch.zeros(
+                            (n_scales, t_len), dtype=torch.float32, device=device
+                        )
+
         if any(name in channels for name in glueball_companion_channels):
             if plaquette is None or phase is None or plaquette_valid is None:
                 for channel_name in glueball_companion_channels:
@@ -835,6 +996,7 @@ def _walker_bootstrap_mass_std(
     positions: Tensor,    # [T,N,d]
     alive: Tensor,        # [T,N]
     force: Tensor,        # [T,N,d]
+    cloning_scores: Tensor | None,  # [T,N]
     companions_distance: Tensor | None,  # [T,N]
     companions_clone: Tensor | None,     # [T,N]
     kernels: Tensor,      # [T,S,N,N]
@@ -889,6 +1051,7 @@ def _walker_bootstrap_mass_std(
         pos_boot = positions[:, idx, :]
         alive_boot = alive[:, idx]
         force_boot = force[:, idx, :]
+        cloning_scores_boot = cloning_scores[:, idx] if cloning_scores is not None else None
         comp_dist_boot = None
         comp_clone_boot = None
         if companions_distance is not None and companions_clone is not None:
@@ -915,6 +1078,7 @@ def _walker_bootstrap_mass_std(
             pairwise_distances=d_boot,
             companions_distance=comp_dist_boot,
             companions_clone=comp_clone_boot,
+            cloning_scores=cloning_scores_boot,
             channels=channels,
         )
         for channel in channels:
@@ -947,6 +1111,7 @@ def _compute_companion_per_scale_results_preserving_original(
     color_valid: Tensor,  # [T,N]
     positions: Tensor,  # [T,N,d]
     alive: Tensor,  # [T,N]
+    cloning_scores: Tensor,  # [T,N]
     companions_distance: Tensor,  # [T,N]
     companions_clone: Tensor,  # [T,N]
     distance_ij: Tensor,  # [T,N]
@@ -966,6 +1131,12 @@ def _compute_companion_per_scale_results_preserving_original(
     t_len, n_walkers, d_color = color.shape
     n_scales = int(scales.numel())
     device = color.device
+    cloning_scores = cloning_scores.to(device=device, dtype=torch.float32)
+    if cloning_scores.shape != color.shape[:2]:
+        raise ValueError(
+            "cloning_scores must have shape [T,N] aligned with color, got "
+            f"{tuple(cloning_scores.shape)} vs {tuple(color.shape[:2])}."
+        )
     out: dict[str, list[ChannelCorrelatorResult]] = {name: [] for name in requested}
 
     if t_len == 0 or n_walkers == 0:
@@ -1000,6 +1171,8 @@ def _compute_companion_per_scale_results_preserving_original(
         for name in (
             "scalar_companion",
             "pseudoscalar_companion",
+            "scalar_score_directed_companion",
+            "pseudoscalar_score_directed_companion",
             "vector_companion",
             "axial_vector_companion",
             "tensor_companion",
@@ -1009,6 +1182,8 @@ def _compute_companion_per_scale_results_preserving_original(
         name in out
         for name in (
             "nucleon_companion",
+            "nucleon_score_signed_companion",
+            "nucleon_score_abs_companion",
             "nucleon_flux_action_companion",
             "nucleon_flux_sin2_companion",
             "nucleon_flux_exp_companion",
@@ -1057,6 +1232,8 @@ def _compute_companion_per_scale_results_preserving_original(
                 use_connected=bool(config.use_connected),
                 pair_selection="both",
                 eps=1e-12,
+                operator_mode="standard",
+                scores=cloning_scores,
                 frame_indices=None,
             )
             if "scalar_companion" in out:
@@ -1087,6 +1264,53 @@ def _compute_companion_per_scale_results_preserving_original(
                 result.mass_fit["scale_index"] = int(s_idx)
                 result.mass_fit["source"] = "scaled_companion_source_sink"
                 out["pseudoscalar_companion"].append(result)
+
+        if use_pair_family and (
+            "scalar_score_directed_companion" in out
+            or "pseudoscalar_score_directed_companion" in out
+        ):
+            meson_score_out = compute_meson_phase_correlator_from_color(
+                color=color3,
+                color_valid=color_valid,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                operator_mode="score_directed",
+                scores=cloning_scores,
+                frame_indices=None,
+            )
+            if "scalar_score_directed_companion" in out:
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="scalar_score_directed_companion",
+                    correlator=meson_score_out.scalar,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(meson_score_out.n_valid_source_pairs),
+                    series=meson_score_out.operator_scalar_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["scalar_score_directed_companion"].append(result)
+            if "pseudoscalar_score_directed_companion" in out:
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="pseudoscalar_score_directed_companion",
+                    correlator=meson_score_out.pseudoscalar,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(meson_score_out.n_valid_source_pairs),
+                    series=meson_score_out.operator_pseudoscalar_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["pseudoscalar_score_directed_companion"].append(result)
 
         vector_out = None
         if use_pair_family and ("vector_companion" in out or "axial_vector_companion" in out):
@@ -1184,6 +1408,8 @@ def _compute_companion_per_scale_results_preserving_original(
 
         baryon_channel_modes: list[tuple[str, str]] = [
             ("nucleon_companion", "det_abs"),
+            ("nucleon_score_signed_companion", "score_signed"),
+            ("nucleon_score_abs_companion", "score_abs"),
             ("nucleon_flux_action_companion", "flux_action"),
             ("nucleon_flux_sin2_companion", "flux_sin2"),
             ("nucleon_flux_exp_companion", "flux_exp"),
@@ -1203,6 +1429,7 @@ def _compute_companion_per_scale_results_preserving_original(
                     eps=1e-12,
                     operator_mode=operator_mode,
                     flux_exp_alpha=float(baryon_flux_exp_alpha),
+                    scores=cloning_scores,
                     frame_indices=None,
                 )
                 result = _build_result_from_precomputed_correlator(
@@ -1341,6 +1568,11 @@ def compute_multiscale_strong_force_channels(
         device=color.device,
         dtype=torch.long,
     )
+    cloning_scores = torch.as_tensor(
+        history.cloning_scores.index_select(0, frame_ids_t - 1),
+        device=color.device,
+        dtype=torch.float32,
+    )
 
     scales = select_interesting_scales_from_history(
         history,
@@ -1418,6 +1650,7 @@ def compute_multiscale_strong_force_channels(
             pairwise_distances=distances_chunk,
             companions_distance=companions_distance.index_select(0, pos_t),
             companions_clone=companions_clone.index_select(0, pos_t),
+            cloning_scores=cloning_scores.index_select(0, pos_t),
             channels=requested,
         )
         for channel in requested:
@@ -1448,6 +1681,7 @@ def compute_multiscale_strong_force_channels(
             color_valid=color_valid,
             positions=positions,
             alive=alive,
+            cloning_scores=cloning_scores,
             companions_distance=companions_distance,
             companions_clone=companions_clone,
             distance_ij=companion_distance_ij,
@@ -1528,6 +1762,7 @@ def compute_multiscale_strong_force_channels(
                 positions=positions,
                 alive=alive,
                 force=force,
+                cloning_scores=cloning_scores,
                 companions_distance=companions_distance,
                 companions_clone=companions_clone,
                 kernels=kernels_all,

@@ -234,7 +234,7 @@ class KineticOperator(PanelModel):
 
     # Velocity squashing map
     V_alg = param.Number(
-        default=float("inf"),
+        default=30.0,
         bounds=(0, None),
         inclusive_bounds=(False, True),
         doc="Algorithmic velocity bound for smooth squashing map",

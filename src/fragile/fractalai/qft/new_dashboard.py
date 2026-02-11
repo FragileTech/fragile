@@ -1805,7 +1805,7 @@ class AnisotropicEdgeSettings(param.Parameterized):
     )
     baryon_operator_mode = param.ObjectSelector(
         default="det_abs",
-        objects=("det_abs", "flux_action", "flux_sin2", "flux_exp"),
+        objects=("det_abs", "flux_action", "flux_sin2", "flux_exp", "score_signed", "score_abs"),
         doc="Primary baryon operator mode.",
     )
     baryon_flux_exp_alpha = param.Number(
@@ -1816,6 +1816,10 @@ class AnisotropicEdgeSettings(param.Parameterized):
     companion_include_nucleon_flux_variants = param.Boolean(
         default=True,
         doc="Also compute nucleon flux variants (flux_action, flux_sin2, flux_exp).",
+    )
+    companion_include_nucleon_score_variants = param.Boolean(
+        default=True,
+        doc="Also compute nucleon score variants (score_signed, score_abs).",
     )
     use_companion_meson_phase = param.Boolean(
         default=True,
@@ -1844,6 +1848,10 @@ class AnisotropicEdgeSettings(param.Parameterized):
         default=1e-12,
         bounds=(0.0, None),
         doc="Minimum |c_i†c_j| threshold for valid meson pairs.",
+    )
+    companion_include_meson_score_directed_variants = param.Boolean(
+        default=True,
+        doc="Also compute score-directed meson variants for scalar/pseudoscalar channels.",
     )
     use_companion_vector_meson = param.Boolean(
         default=True,
@@ -2557,7 +2565,7 @@ def _compute_anisotropic_meson_phase_results(
     settings: AnisotropicEdgeSettings,
     requested_channels: set[str],
 ) -> tuple[dict[str, ChannelCorrelatorResult], int]:
-    """Compute scalar/pseudoscalar channels using companion-pair meson phases."""
+    """Compute meson channels using companion-pair meson phases."""
     meson_max_lag = int(settings.meson_max_lag or settings.max_lag)
     meson_cfg = MesonPhaseCorrelatorConfig(
         warmup_fraction=float(settings.simulation_range[0]),
@@ -2571,8 +2579,8 @@ def _compute_anisotropic_meson_phase_results(
         color_dims=_parse_triplet_dims_spec(settings.meson_color_dims_spec, history.d),
         pair_selection=str(settings.meson_pair_selection),
         eps=float(settings.meson_eps),
+        operator_mode="standard",
     )
-    meson_out = compute_companion_meson_phase_correlator(history, meson_cfg)
     dt = float(history.delta_t * history.record_every)
     fit_cfg = CorrelatorConfig(
         max_lag=meson_max_lag,
@@ -2586,42 +2594,108 @@ def _compute_anisotropic_meson_phase_results(
         n_bootstrap=int(settings.n_bootstrap),
     )
     results: dict[str, ChannelCorrelatorResult] = {}
-    n_samples = int(meson_out.n_valid_source_pairs)
-    pseudoscalar_err: torch.Tensor | None = None
-    scalar_err: torch.Tensor | None = None
-    if bool(settings.compute_bootstrap_errors):
-        meson_err = _bootstrap_errors_batched_scalar_series(
-            torch.stack(
-                [meson_out.operator_pseudoscalar_series, meson_out.operator_scalar_series], dim=0
-            ),
-            valid_t=(meson_out.pair_counts_per_frame > 0),
+    valid_frames = 0
+
+    standard_requested = requested_channels & {"scalar", "pseudoscalar"}
+    if standard_requested:
+        meson_out = compute_companion_meson_phase_correlator(history, meson_cfg)
+        n_samples = int(meson_out.n_valid_source_pairs)
+        pseudoscalar_err: torch.Tensor | None = None
+        scalar_err: torch.Tensor | None = None
+        if bool(settings.compute_bootstrap_errors):
+            meson_err = _bootstrap_errors_batched_scalar_series(
+                torch.stack(
+                    [meson_out.operator_pseudoscalar_series, meson_out.operator_scalar_series], dim=0
+                ),
+                valid_t=(meson_out.pair_counts_per_frame > 0),
+                max_lag=meson_max_lag,
+                use_connected=bool(settings.meson_use_connected),
+                n_bootstrap=int(settings.n_bootstrap),
+            )
+            pseudoscalar_err = meson_err[0]
+            scalar_err = meson_err[1]
+        if "pseudoscalar" in requested_channels:
+            results["pseudoscalar"] = _build_result_from_precomputed_correlator(
+                channel_name="pseudoscalar",
+                correlator=meson_out.pseudoscalar,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples,
+                series=meson_out.operator_pseudoscalar_series,
+                correlator_err=pseudoscalar_err,
+            )
+        if "scalar" in requested_channels:
+            results["scalar"] = _build_result_from_precomputed_correlator(
+                channel_name="scalar",
+                correlator=meson_out.scalar,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples,
+                series=meson_out.operator_scalar_series,
+                correlator_err=scalar_err,
+            )
+        valid_frames = max(valid_frames, int((meson_out.pair_counts_per_frame > 0).sum().item()))
+
+    score_requested = requested_channels & {"scalar_score_directed", "pseudoscalar_score_directed"}
+    if score_requested:
+        meson_score_cfg = MesonPhaseCorrelatorConfig(
+            warmup_fraction=float(settings.simulation_range[0]),
+            end_fraction=float(settings.simulation_range[1]),
+            mc_time_index=settings.mc_time_index,
             max_lag=meson_max_lag,
             use_connected=bool(settings.meson_use_connected),
-            n_bootstrap=int(settings.n_bootstrap),
+            h_eff=float(settings.h_eff),
+            mass=float(settings.mass),
+            ell0=settings.ell0,
+            color_dims=_parse_triplet_dims_spec(settings.meson_color_dims_spec, history.d),
+            pair_selection=str(settings.meson_pair_selection),
+            eps=float(settings.meson_eps),
+            operator_mode="score_directed",
         )
-        pseudoscalar_err = meson_err[0]
-        scalar_err = meson_err[1]
-    if "pseudoscalar" in requested_channels:
-        results["pseudoscalar"] = _build_result_from_precomputed_correlator(
-            channel_name="pseudoscalar",
-            correlator=meson_out.pseudoscalar,
-            dt=dt,
-            config=fit_cfg,
-            n_samples=n_samples,
-            series=meson_out.operator_pseudoscalar_series,
-            correlator_err=pseudoscalar_err,
+        meson_score_out = compute_companion_meson_phase_correlator(history, meson_score_cfg)
+        n_samples_score = int(meson_score_out.n_valid_source_pairs)
+        pseudoscalar_score_err: torch.Tensor | None = None
+        scalar_score_err: torch.Tensor | None = None
+        if bool(settings.compute_bootstrap_errors):
+            meson_err_score = _bootstrap_errors_batched_scalar_series(
+                torch.stack(
+                    [
+                        meson_score_out.operator_pseudoscalar_series,
+                        meson_score_out.operator_scalar_series,
+                    ],
+                    dim=0,
+                ),
+                valid_t=(meson_score_out.pair_counts_per_frame > 0),
+                max_lag=meson_max_lag,
+                use_connected=bool(settings.meson_use_connected),
+                n_bootstrap=int(settings.n_bootstrap),
+            )
+            pseudoscalar_score_err = meson_err_score[0]
+            scalar_score_err = meson_err_score[1]
+        if "pseudoscalar_score_directed" in requested_channels:
+            results["pseudoscalar_score_directed"] = _build_result_from_precomputed_correlator(
+                channel_name="pseudoscalar_score_directed",
+                correlator=meson_score_out.pseudoscalar,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples_score,
+                series=meson_score_out.operator_pseudoscalar_series,
+                correlator_err=pseudoscalar_score_err,
+            )
+        if "scalar_score_directed" in requested_channels:
+            results["scalar_score_directed"] = _build_result_from_precomputed_correlator(
+                channel_name="scalar_score_directed",
+                correlator=meson_score_out.scalar,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples_score,
+                series=meson_score_out.operator_scalar_series,
+                correlator_err=scalar_score_err,
+            )
+        valid_frames = max(
+            valid_frames, int((meson_score_out.pair_counts_per_frame > 0).sum().item())
         )
-    if "scalar" in requested_channels:
-        results["scalar"] = _build_result_from_precomputed_correlator(
-            channel_name="scalar",
-            correlator=meson_out.scalar,
-            dt=dt,
-            config=fit_cfg,
-            n_samples=n_samples,
-            series=meson_out.operator_scalar_series,
-            correlator_err=scalar_err,
-        )
-    valid_frames = int((meson_out.pair_counts_per_frame > 0).sum().item())
+
     return results, valid_frames
 
 
@@ -2975,11 +3049,19 @@ def _compute_companion_strong_force_bundle(
         if c.strip() and c.strip() != "tensor_traceless"
     ]
     requested = set(channels)
+    requested_meson_channels = requested & {
+        "scalar",
+        "pseudoscalar",
+        "scalar_score_directed",
+        "pseudoscalar_score_directed",
+    }
     requested_nucleon_channels = requested & {
         "nucleon",
         "nucleon_flux_action",
         "nucleon_flux_sin2",
         "nucleon_flux_exp",
+        "nucleon_score_signed",
+        "nucleon_score_abs",
     }
     requested_glueball_channels = requested & {
         "glueball",
@@ -2992,6 +3074,12 @@ def _compute_companion_strong_force_bundle(
             "nucleon_flux_sin2",
             "nucleon_flux_exp",
         }
+    if "nucleon" in requested and bool(settings.companion_include_nucleon_score_variants):
+        requested_nucleon_channels |= {"nucleon_score_signed", "nucleon_score_abs"}
+    if "scalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
+        requested_meson_channels |= {"scalar_score_directed"}
+    if "pseudoscalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
+        requested_meson_channels |= {"pseudoscalar_score_directed"}
     if "glueball" in requested and bool(settings.companion_include_glueball_phase_variants):
         requested_glueball_channels |= {"glueball_phase_action", "glueball_phase_sin2"}
     results: dict[str, ChannelCorrelatorResult] = {}
@@ -2999,15 +3087,27 @@ def _compute_companion_strong_force_bundle(
 
     if bool(settings.use_companion_baryon_triplet) and requested_nucleon_channels:
         baryon_mode_primary = str(settings.baryon_operator_mode)
+        flux_variant_channels = {"nucleon_flux_action", "nucleon_flux_sin2", "nucleon_flux_exp"}
+        score_variant_channels = {"nucleon_score_signed", "nucleon_score_abs"}
         baryon_variants: list[tuple[str, str]] = [
             (baryon_mode_primary, "nucleon"),
             ("flux_action", "nucleon_flux_action"),
             ("flux_sin2", "nucleon_flux_sin2"),
             ("flux_exp", "nucleon_flux_exp"),
+            ("score_signed", "nucleon_score_signed"),
+            ("score_abs", "nucleon_score_abs"),
         ]
         for variant_mode, variant_channel in baryon_variants:
             if variant_channel != "nucleon":
-                if not bool(settings.companion_include_nucleon_flux_variants):
+                if (
+                    variant_channel in flux_variant_channels
+                    and not bool(settings.companion_include_nucleon_flux_variants)
+                ):
+                    continue
+                if (
+                    variant_channel in score_variant_channels
+                    and not bool(settings.companion_include_nucleon_score_variants)
+                ):
                     continue
                 if variant_channel not in requested_nucleon_channels:
                     continue
@@ -3020,7 +3120,12 @@ def _compute_companion_strong_force_bundle(
             results[variant_channel] = variant_result
             valid_frame_counts.append(int(variant_valid_frames))
 
-    meson_targets = requested & {"scalar", "pseudoscalar"}
+    meson_targets = requested_meson_channels & {
+        "scalar",
+        "pseudoscalar",
+        "scalar_score_directed",
+        "pseudoscalar_score_directed",
+    }
     if bool(settings.use_companion_meson_phase) and meson_targets:
         meson_results, meson_valid_frames = _compute_anisotropic_meson_phase_results(
             history,
@@ -5670,7 +5775,10 @@ ANISOTROPIC_EDGE_RATIO_SPECS: list[tuple[str, str, str]] = [
 
 ANISOTROPIC_EDGE_COMPANION_FAMILY_MAP: dict[str, str] = {
     "pseudoscalar_companion": "meson",
+    "pseudoscalar_score_directed_companion": "meson",
     "nucleon_companion": "baryon",
+    "nucleon_score_signed_companion": "baryon",
+    "nucleon_score_abs_companion": "baryon",
     "glueball_companion": "glueball",
 }
 
@@ -6078,6 +6186,7 @@ def _update_strong_tables(
     anchor_mode: str = "per_anchor_row",
     calibration_family_map: dict[str, str] | None = None,
     calibration_ratio_specs: list[tuple[str, str, str]] | None = None,
+    comparison_channel_overrides: dict[str, str] | None = None,
 ) -> None:
     """Orchestrate all strong-force table updates (module-level, no closure)."""
     if ratio_specs is None:
@@ -6086,21 +6195,32 @@ def _update_strong_tables(
     family_map = calibration_family_map if calibration_family_map is not None else _STRONG_FAMILY_MAP
 
     _update_mass_table(results, mass_table, mode, mass_getter=mass_getter, error_getter=error_getter)
+    comparison_results = dict(results)
+    if comparison_channel_overrides:
+        for canonical_name, selected_name in comparison_channel_overrides.items():
+            key = str(canonical_name).strip()
+            selected_key = str(selected_name).strip()
+            if not key or not selected_key:
+                continue
+            selected_result = results.get(selected_key)
+            if selected_result is None:
+                continue
+            comparison_results[key] = selected_result
     ratio_pane.object = _format_ratios(
-        results,
+        comparison_results,
         mode,
         mass_getter=mass_getter,
         ratio_specs=ratio_specs_for_table,
     )
 
     channel_masses = _extract_masses(
-        results,
+        comparison_results,
         mode,
         mass_getter=mass_getter,
         family_map=family_map,
     )
     channel_r2 = _extract_r2(
-        results,
+        comparison_results,
         mode,
         family_map=family_map,
     )
@@ -6180,7 +6300,7 @@ def create_app() -> pn.template.FastListTemplate:
         _debug("initializing extensions")
 
         _debug("building config + visualizer")
-        gas_config = GasConfigPanel.create_qft_config(spatial_dims=2, bounds_extent=12.0)
+        gas_config = GasConfigPanel.create_qft_config(spatial_dims=2, bounds_extent=30.0)
         gas_config.hide_viscous_kernel_widgets = False
         gas_config.benchmark_name = "Riemannian Mix"
         # Override with the best stable calibration settings found in QFT tuning.
@@ -6914,6 +7034,7 @@ def create_app() -> pn.template.FastListTemplate:
                 "baryon_operator_mode",
                 "baryon_flux_exp_alpha",
                 "companion_include_nucleon_flux_variants",
+                "companion_include_nucleon_score_variants",
             ],
             show_name=False,
             widgets={
@@ -6923,6 +7044,9 @@ def create_app() -> pn.template.FastListTemplate:
                 "baryon_flux_exp_alpha": {"name": "Flux exp α"},
                 "companion_include_nucleon_flux_variants": {
                     "name": "Include nucleon flux variants"
+                },
+                "companion_include_nucleon_score_variants": {
+                    "name": "Include nucleon score variants"
                 },
             },
             default_layout=type("CompanionStrongForceBaryonGrid", (pn.GridBox,), {"ncols": 1}),
@@ -6936,12 +7060,16 @@ def create_app() -> pn.template.FastListTemplate:
                 "meson_pair_selection",
                 "meson_color_dims_spec",
                 "meson_eps",
+                "companion_include_meson_score_directed_variants",
             ],
             show_name=False,
             widgets={
                 "meson_max_lag": {"name": "Meson max lag (blank=use max_lag)"},
                 "meson_pair_selection": {"name": "Meson pair selection"},
                 "meson_color_dims_spec": {"name": "Meson color dims (3 dims)"},
+                "companion_include_meson_score_directed_variants": {
+                    "name": "Include score-directed meson variants"
+                },
             },
             default_layout=type("CompanionStrongForceMesonGrid", (pn.GridBox,), {"ncols": 1}),
         )
@@ -7050,6 +7178,44 @@ def create_app() -> pn.template.FastListTemplate:
             value="AIC-Weighted",
             button_type="default",
         )
+        companion_strong_force_variant_pseudoscalar = pn.widgets.Select(
+            name="Pseudoscalar Variant",
+            options=["pseudoscalar"],
+            value="pseudoscalar",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_variant_nucleon = pn.widgets.Select(
+            name="Nucleon Variant",
+            options=["nucleon"],
+            value="nucleon",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_variant_glueball = pn.widgets.Select(
+            name="Glueball Variant",
+            options=["glueball"],
+            value="glueball",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_variant_scalar = pn.widgets.Select(
+            name="Scalar Variant",
+            options=["scalar"],
+            value="scalar",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_variant_vector = pn.widgets.Select(
+            name="Vector Variant",
+            options=["vector"],
+            value="vector",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_variant_selectors: dict[str, pn.widgets.Select] = {
+            "pseudoscalar": companion_strong_force_variant_pseudoscalar,
+            "nucleon": companion_strong_force_variant_nucleon,
+            "glueball": companion_strong_force_variant_glueball,
+            "scalar": companion_strong_force_variant_scalar,
+            "vector": companion_strong_force_variant_vector,
+        }
+        companion_strong_force_variant_sync = {"active": False}
         companion_strong_force_anchor_mode = pn.widgets.RadioButtonGroup(
             name="Anchor Calibration",
             options={
@@ -10009,10 +10175,66 @@ def create_app() -> pn.template.FastListTemplate:
             base = _base_channel_name(raw)
             if raw.endswith("_companion"):
                 return base
-            return f"spatial_{base}"
+            spatial_name = f"spatial_{base}"
+            spatial_canonical_label_map = {
+                "spatial_nucleon_score_abs": "nucleon",
+                "spatial_pseudoscalar_score_directed": "pseudoscalar",
+            }
+            return spatial_canonical_label_map.get(spatial_name, spatial_name)
 
         def _channel_color_key(raw_name: str) -> str:
             return _base_channel_name(str(raw_name))
+
+        def _comparison_variant_roots(base_name: str) -> list[str]:
+            return [str(base_name)]
+
+        def _variant_names_for_base_in_results(
+            results: dict[str, ChannelCorrelatorResult],
+            base_name: str,
+        ) -> list[str]:
+            variant_roots = _comparison_variant_roots(str(base_name))
+            names = [
+                str(name)
+                for name, result in results.items()
+                if isinstance(result, ChannelCorrelatorResult)
+                and result.n_samples > 0
+                and any(str(name) == root or str(name).startswith(f"{root}_") for root in variant_roots)
+            ]
+            return sorted(
+                names,
+                key=lambda name: (
+                    0 if name == base_name else 1 if not name.endswith("_multiscale_best") else 2,
+                    name,
+                ),
+            )
+
+        def _sync_companion_variant_selectors(
+            results: dict[str, ChannelCorrelatorResult],
+        ) -> None:
+            companion_strong_force_variant_sync["active"] = True
+            try:
+                for base_name, selector in companion_strong_force_variant_selectors.items():
+                    names = _variant_names_for_base_in_results(results, str(base_name))
+                    if not names:
+                        names = [str(base_name)]
+                    selector.options = names
+                    if str(selector.value) not in names:
+                        selector.value = names[0]
+            finally:
+                companion_strong_force_variant_sync["active"] = False
+
+        def _companion_comparison_overrides(
+            results: dict[str, ChannelCorrelatorResult],
+        ) -> dict[str, str]:
+            overrides: dict[str, str] = {}
+            for canonical_name, selector in companion_strong_force_variant_selectors.items():
+                selected_name = str(selector.value).strip()
+                if not selected_name:
+                    continue
+                if selected_name not in results:
+                    continue
+                overrides[str(canonical_name)] = selected_name
+            return overrides
 
         def _update_companion_strong_force_plots(
             results: dict[str, ChannelCorrelatorResult],
@@ -10038,6 +10260,8 @@ def create_app() -> pn.template.FastListTemplate:
                 mode = companion_strong_force_mass_mode.value
             if anchor_mode is None:
                 anchor_mode = companion_strong_force_anchor_mode.value
+            _sync_companion_variant_selectors(results)
+            comparison_overrides = _companion_comparison_overrides(results)
             _update_strong_tables(
                 results,
                 str(mode),
@@ -10048,24 +10272,11 @@ def create_app() -> pn.template.FastListTemplate:
                 companion_strong_force_glueball_ref_input,
                 ratio_specs=STRONG_FORCE_RATIO_SPECS,
                 anchor_mode=str(anchor_mode),
+                comparison_channel_overrides=comparison_overrides,
             )
 
             def _variant_names_for_base(base_name: str) -> list[str]:
-                names = [
-                    str(name)
-                    for name, result in results.items()
-                    if isinstance(result, ChannelCorrelatorResult)
-                    and result.n_samples > 0
-                    and (str(name) == base_name or str(name).startswith(f"{base_name}_"))
-                ]
-                names_sorted = sorted(
-                    names,
-                    key=lambda name: (
-                        0 if name == base_name else 1 if not name.endswith("_multiscale_best") else 2,
-                        name,
-                    ),
-                )
-                return names_sorted
+                return _variant_names_for_base_in_results(results, base_name)
 
             def _ratio_reference_value(
                 numerator_base: str,
@@ -10441,6 +10652,19 @@ def create_app() -> pn.template.FastListTemplate:
             "value",
         )
 
+        def _on_companion_strong_force_variant_change(_event):
+            if companion_strong_force_variant_sync["active"]:
+                return
+            if state.get("companion_strong_force_results") is None:
+                return
+            _update_companion_strong_force_tables(state["companion_strong_force_results"])
+
+        for variant_selector in companion_strong_force_variant_selectors.values():
+            variant_selector.param.watch(
+                _on_companion_strong_force_variant_change,
+                "value",
+            )
+
         def _on_companion_strong_force_heatmap_metric_change(_event):
             if state.get("companion_strong_force_results") is None:
                 return
@@ -10481,6 +10705,25 @@ def create_app() -> pn.template.FastListTemplate:
                             requested_channels.extend(
                                 ["nucleon_flux_action", "nucleon_flux_sin2", "nucleon_flux_exp"]
                             )
+                        if (
+                            "nucleon" in requested_channels
+                            and bool(companion_strong_force_settings.companion_include_nucleon_score_variants)
+                        ):
+                            requested_channels.extend(["nucleon_score_signed", "nucleon_score_abs"])
+                        if (
+                            "scalar" in requested_channels
+                            and bool(
+                                companion_strong_force_settings.companion_include_meson_score_directed_variants
+                            )
+                        ):
+                            requested_channels.append("scalar_score_directed")
+                        if (
+                            "pseudoscalar" in requested_channels
+                            and bool(
+                                companion_strong_force_settings.companion_include_meson_score_directed_variants
+                            )
+                        ):
+                            requested_channels.append("pseudoscalar_score_directed")
                         if (
                             "glueball" in requested_channels
                             and bool(companion_strong_force_settings.companion_include_glueball_phase_variants)
@@ -11537,6 +11780,18 @@ plaquette, and a single companion tensor channel, with independent settings and 
                 companion_strong_force_ratio_pane,
                 pn.pane.Markdown("### Ratio Tables by Operator Pair"),
                 companion_strong_force_ratio_tables,
+                pn.pane.Markdown("### Calibration/PDG Variant Selection"),
+                pn.Row(
+                    companion_strong_force_variant_pseudoscalar,
+                    companion_strong_force_variant_nucleon,
+                    companion_strong_force_variant_glueball,
+                    sizing_mode="stretch_width",
+                ),
+                pn.Row(
+                    companion_strong_force_variant_scalar,
+                    companion_strong_force_variant_vector,
+                    sizing_mode="stretch_width",
+                ),
                 pn.pane.Markdown("### Best-Fit Scales"),
                 companion_strong_force_fit_table,
                 pn.pane.Markdown("### Anchored Mass Table"),
