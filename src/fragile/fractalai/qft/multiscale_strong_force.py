@@ -23,6 +23,7 @@ from fragile.fractalai.qft.aggregation import compute_color_states_batch, estima
 from fragile.fractalai.qft.baryon_triplet_channels import (
     _resolve_frame_indices,
     _safe_gather_3d,
+    compute_baryon_correlator_from_color,
 )
 from fragile.fractalai.qft.correlator_channels import (
     _fft_correlator_batched,
@@ -32,12 +33,21 @@ from fragile.fractalai.qft.correlator_channels import (
     extract_mass_aic,
     extract_mass_linear,
 )
+from fragile.fractalai.qft.glueball_color_channels import (
+    compute_glueball_color_correlator_from_color,
+)
+from fragile.fractalai.qft.meson_phase_channels import compute_meson_phase_correlator_from_color
 from fragile.fractalai.qft.smeared_operators import (
     compute_pairwise_distance_matrices_from_history,
-    compute_smeared_kernels_from_history,
     compute_smeared_kernels_from_distances,
     iter_smeared_kernel_batches_from_history,
     select_interesting_scales_from_history,
+)
+from fragile.fractalai.qft.tensor_momentum_channels import (
+    compute_tensor_momentum_correlator_from_color_positions,
+)
+from fragile.fractalai.qft.vector_meson_channels import (
+    compute_vector_meson_correlator_from_color_positions,
 )
 
 
@@ -57,9 +67,13 @@ COMPANION_CHANNEL_MAP: dict[str, str] = {
     "vector": "vector_companion",
     "axial_vector": "axial_vector_companion",
     "tensor": "tensor_companion",
-    "tensor_traceless": "tensor_traceless_companion",
     "nucleon": "nucleon_companion",
     "glueball": "glueball_companion",
+    "nucleon_flux_action": "nucleon_flux_action_companion",
+    "nucleon_flux_sin2": "nucleon_flux_sin2_companion",
+    "nucleon_flux_exp": "nucleon_flux_exp_companion",
+    "glueball_phase_action": "glueball_phase_action_companion",
+    "glueball_phase_sin2": "glueball_phase_sin2_companion",
 }
 SUPPORTED_CHANNELS = BASE_CHANNELS + tuple(COMPANION_CHANNEL_MAP.values())
 BOOTSTRAP_MODES = ("time", "walker", "hybrid")
@@ -123,6 +137,7 @@ class MultiscaleStrongForceConfig:
     bootstrap_mode: str = "hybrid"
     walker_bootstrap_max_walkers: int = 512
     walker_bootstrap_max_samples: int = 64
+    companion_baryon_flux_exp_alpha: float = 1.0
 
 
 @dataclass
@@ -304,9 +319,9 @@ def _safe_gather_pairwise_distances(
     valid = in_row & in_col
     row_safe = row_idx.clamp(min=0, max=max(n - 1, 0))
     col_safe = col_idx.clamp(min=0, max=max(n - 1, 0))
-    flat_idx = row_safe * n + col_safe
-    gathered, in_flat = _safe_gather_2d(distances.reshape(t_len, n * n), flat_idx)
-    return gathered, valid & in_flat
+    flat_idx = (row_safe * n + col_safe).clamp(min=0, max=max(n * n - 1, 0))
+    gathered = torch.gather(distances.reshape(t_len, n * n), dim=1, index=flat_idx)
+    return gathered, valid
 
 
 def _remap_companion_indices_for_bootstrap(
@@ -473,10 +488,29 @@ def _compute_channel_series_from_kernels(
     # ------------------------------------------------------------------
     requested_companion_channels = [name for name in COMPANION_CHANNEL_MAP.values() if name in channels]
     if requested_companion_channels:
-        if companions_distance is None or companions_clone is None:
+        if (
+            companions_distance is None
+            or companions_clone is None
+            or pairwise_distances is None
+            or scales is None
+        ):
             for channel in requested_companion_channels:
                 out[channel] = torch.zeros((n_scales, t_len), dtype=torch.float32, device=device)
             return out
+
+        scales_t = torch.as_tensor(scales, device=device, dtype=torch.float32).reshape(-1)
+        if int(scales_t.numel()) != int(n_scales):
+            raise ValueError(
+                "scales must align with kernel scale axis, got "
+                f"{int(scales_t.numel())} scales for kernels with S={n_scales}."
+            )
+        dist = pairwise_distances.to(device=device, dtype=torch.float32)
+        n_walkers = int(alive.shape[1])
+        if dist.shape != (t_len, n_walkers, n_walkers):
+            raise ValueError(
+                "pairwise_distances must have shape [T,N,N] aligned with kernels, got "
+                f"{tuple(dist.shape)} vs [T={t_len},N={n_walkers},N={n_walkers}]."
+            )
 
         comp_j = companions_distance.to(device=device, dtype=torch.long)
         comp_k = companions_clone.to(device=device, dtype=torch.long)
@@ -486,18 +520,20 @@ def _compute_channel_series_from_kernels(
                 f"{tuple(comp_j.shape)} and {tuple(comp_k.shape)} vs {tuple(alive.shape)}."
             )
 
-        # Gather smeared companion fields once; all companion channels reuse them.
-        c_j, in_j = _safe_gather_4d_by_2d_indices(color_sm, comp_j)
-        c_k, in_k = _safe_gather_4d_by_2d_indices(color_sm, comp_k)
-        x_j, _ = _safe_gather_4d_by_2d_indices(x_sm, comp_j)
-        x_k, _ = _safe_gather_4d_by_2d_indices(x_sm, comp_k)
+        # Companion channels use original (non-smoothed) operators gated by
+        # geodesic hard thresholds at each scale.
+        c_j, in_j = _safe_gather_3d(color, comp_j)
+        c_k, in_k = _safe_gather_3d(color, comp_k)
+        x_j, _ = _safe_gather_3d(positions, comp_j)
+        x_k, _ = _safe_gather_3d(positions, comp_k)
 
         alive_j_2d, in_j_alive = _safe_gather_2d(alive, comp_j)
         alive_k_2d, in_k_alive = _safe_gather_2d(alive, comp_k)
         valid_j_2d, in_j_valid = _safe_gather_2d(color_valid, comp_j)
         valid_k_2d, in_k_valid = _safe_gather_2d(color_valid, comp_k)
 
-        anchor_idx = torch.arange(alive.shape[1], device=device, dtype=torch.long).view(1, -1)
+        anchor_idx = torch.arange(n_walkers, device=device, dtype=torch.long).view(1, -1)
+        anchor_rows = anchor_idx.expand(t_len, -1)
         distinct = (comp_j != anchor_idx) & (comp_k != anchor_idx) & (comp_j != comp_k)
         base_anchor_valid = alive & color_valid
         base_pair_j = base_anchor_valid & alive_j_2d & valid_j_2d & in_j_alive & in_j_valid & (comp_j != anchor_idx)
@@ -515,18 +551,56 @@ def _compute_channel_series_from_kernels(
             & distinct
         )
 
-        inner_j = torch.einsum("tsnd,tsnd->tsn", torch.conj(color_sm), c_j)
-        inner_k = torch.einsum("tsnd,tsnd->tsn", torch.conj(color_sm), c_k)
+        d_ij, in_dij = _safe_gather_pairwise_distances(dist, anchor_rows, comp_j)
+        d_ik, in_dik = _safe_gather_pairwise_distances(dist, anchor_rows, comp_k)
+        d_jk, in_djk = _safe_gather_pairwise_distances(dist, comp_j, comp_k)
+        finite_dij = torch.isfinite(d_ij)
+        finite_dik = torch.isfinite(d_ik)
+        finite_djk = torch.isfinite(d_jk)
+
+        inner_j = torch.einsum("tnd,tnd->tn", torch.conj(color), c_j)
+        inner_k = torch.einsum("tnd,tnd->tn", torch.conj(color), c_k)
         finite_inner_j = torch.isfinite(inner_j.real) & torch.isfinite(inner_j.imag)
         finite_inner_k = torch.isfinite(inner_k.real) & torch.isfinite(inner_k.imag)
         eps = 1e-12
-        pair_j_valid = base_pair_j[:, None, :].expand(t_len, n_scales, alive.shape[1])
-        pair_k_valid = base_pair_k[:, None, :].expand(t_len, n_scales, alive.shape[1])
-        pair_j_valid = pair_j_valid & in_j & finite_inner_j & (inner_j.abs() > eps)
-        pair_k_valid = pair_k_valid & in_k & finite_inner_k & (inner_k.abs() > eps)
+        pair_j_valid_2d = (
+            base_pair_j
+            & in_j
+            & in_dij
+            & finite_dij
+            & finite_inner_j
+            & (inner_j.abs() > eps)
+        )
+        pair_k_valid_2d = (
+            base_pair_k
+            & in_k
+            & in_dik
+            & finite_dik
+            & finite_inner_k
+            & (inner_k.abs() > eps)
+        )
+        triplet_valid_2d = (
+            base_triplet_valid
+            & in_j
+            & in_k
+            & in_dij
+            & in_dik
+            & in_djk
+            & finite_dij
+            & finite_dik
+            & finite_djk
+        )
+
+        scales_view = scales_t.view(1, n_scales, 1)
+        pair_j_valid = pair_j_valid_2d[:, None, :] & (d_ij[:, None, :] <= scales_view)
+        pair_k_valid = pair_k_valid_2d[:, None, :] & (d_ik[:, None, :] <= scales_view)
+        triplet_radius = torch.maximum(d_ij, torch.maximum(d_ik, d_jk))
+        triplet_valid = triplet_valid_2d[:, None, :] & (triplet_radius[:, None, :] <= scales_view)
 
         if "scalar_companion" in channels or "pseudoscalar_companion" in channels:
-            inner_pair = torch.stack([inner_j, inner_k], dim=-1)  # [T,S,N,2]
+            inner_pair = torch.stack([inner_j, inner_k], dim=-1)[:, None, :, :].expand(
+                t_len, n_scales, n_walkers, 2
+            )  # [T,S,N,2]
             pair_valid = torch.stack([pair_j_valid, pair_k_valid], dim=-1)  # [T,S,N,2]
             if "scalar_companion" in channels:
                 scalar_comp = _masked_mean_multi(inner_pair.real.float(), pair_valid, dims=(-1, -2))
@@ -536,33 +610,34 @@ def _compute_channel_series_from_kernels(
                 out["pseudoscalar_companion"] = pseu_comp.transpose(0, 1).contiguous()
 
         if "vector_companion" in channels or "axial_vector_companion" in channels:
-            disp_j = x_j - x_sm
-            disp_k = x_k - x_sm
+            disp_j = x_j - positions
+            disp_k = x_k - positions
             pair_valid = torch.stack([pair_j_valid, pair_k_valid], dim=-1)  # [T,S,N,2]
             if "vector_companion" in channels:
-                vec_j = inner_j.real.float().unsqueeze(-1) * disp_j
-                vec_k = inner_k.real.float().unsqueeze(-1) * disp_k
-                vec_pair = torch.stack([vec_j, vec_k], dim=-2)  # [T,S,N,2,d]
+                vec_j = inner_j.real.float().unsqueeze(-1) * disp_j  # [T,N,d]
+                vec_k = inner_k.real.float().unsqueeze(-1) * disp_k  # [T,N,d]
+                vec_pair = torch.stack([vec_j, vec_k], dim=-2)[:, None, :, :, :].expand(
+                    t_len, n_scales, n_walkers, 2, positions.shape[-1]
+                )  # [T,S,N,2,d]
                 vec_mask = pair_valid.unsqueeze(-1).expand_as(vec_pair)
                 vec_mean = _masked_mean_multi(vec_pair, vec_mask, dims=(-2, -3))  # [T,S,d]
                 out["vector_companion"] = torch.linalg.vector_norm(vec_mean, dim=-1).transpose(0, 1).contiguous()
             if "axial_vector_companion" in channels:
-                axial_j = inner_j.imag.float().unsqueeze(-1) * disp_j
-                axial_k = inner_k.imag.float().unsqueeze(-1) * disp_k
-                axial_pair = torch.stack([axial_j, axial_k], dim=-2)  # [T,S,N,2,d]
+                axial_j = inner_j.imag.float().unsqueeze(-1) * disp_j  # [T,N,d]
+                axial_k = inner_k.imag.float().unsqueeze(-1) * disp_k  # [T,N,d]
+                axial_pair = torch.stack([axial_j, axial_k], dim=-2)[:, None, :, :, :].expand(
+                    t_len, n_scales, n_walkers, 2, positions.shape[-1]
+                )  # [T,S,N,2,d]
                 axial_mask = pair_valid.unsqueeze(-1).expand_as(axial_pair)
                 axial_mean = _masked_mean_multi(axial_pair, axial_mask, dims=(-2, -3))  # [T,S,d]
                 out["axial_vector_companion"] = (
                     torch.linalg.vector_norm(axial_mean, dim=-1).transpose(0, 1).contiguous()
                 )
 
-        if (
-            "tensor_companion" in channels
-            or "tensor_traceless_companion" in channels
-        ):
+        if "tensor_companion" in channels:
             if positions.shape[-1] >= 3:
-                disp_j = x_j - x_sm
-                disp_k = x_k - x_sm
+                disp_j = x_j - positions
+                disp_k = x_k - positions
                 inv_sqrt2 = float(1.0 / math.sqrt(2.0))
                 inv_sqrt6 = float(1.0 / math.sqrt(6.0))
 
@@ -594,68 +669,121 @@ def _compute_channel_series_from_kernels(
                     dim=-1,
                 )  # [T,S,N,5]
 
-                t_j = inner_j.real.float().unsqueeze(-1) * q_j
-                t_k = inner_k.real.float().unsqueeze(-1) * q_k
-                tensor_pair = torch.stack([t_j, t_k], dim=-2)  # [T,S,N,2,5]
+                t_j = inner_j.real.float().unsqueeze(-1) * q_j  # [T,N,5]
+                t_k = inner_k.real.float().unsqueeze(-1) * q_k  # [T,N,5]
+                tensor_pair = torch.stack([t_j, t_k], dim=-2)[:, None, :, :, :].expand(
+                    t_len, n_scales, n_walkers, 2, 5
+                )  # [T,S,N,2,5]
                 pair_valid = torch.stack([pair_j_valid, pair_k_valid], dim=-1)  # [T,S,N,2]
                 tensor_mask = pair_valid.unsqueeze(-1).expand_as(tensor_pair)
                 tensor_mean = _masked_mean_multi(tensor_pair, tensor_mask, dims=(-2, -3))  # [T,S,5]
                 tensor_series = torch.linalg.vector_norm(tensor_mean, dim=-1).transpose(0, 1).contiguous()
 
-                if "tensor_companion" in channels:
-                    out["tensor_companion"] = tensor_series
-                if "tensor_traceless_companion" in channels:
-                    out["tensor_traceless_companion"] = tensor_series
+                out["tensor_companion"] = tensor_series
             else:
-                if "tensor_companion" in channels:
-                    out["tensor_companion"] = torch.zeros(
-                        (n_scales, t_len),
-                        dtype=torch.float32,
-                        device=device,
-                    )
-                if "tensor_traceless_companion" in channels:
-                    out["tensor_traceless_companion"] = torch.zeros(
-                        (n_scales, t_len),
-                        dtype=torch.float32,
-                        device=device,
-                    )
+                out["tensor_companion"] = torch.zeros(
+                    (n_scales, t_len),
+                    dtype=torch.float32,
+                    device=device,
+                )
 
-        if "nucleon_companion" in channels:
+        nucleon_companion_channels = (
+            "nucleon_companion",
+            "nucleon_flux_action_companion",
+            "nucleon_flux_sin2_companion",
+            "nucleon_flux_exp_companion",
+        )
+        glueball_companion_channels = (
+            "glueball_companion",
+            "glueball_phase_action_companion",
+            "glueball_phase_sin2_companion",
+        )
+        needs_triplet_plaquette = any(
+            name in channels
+            for name in (
+                "glueball_companion",
+                "glueball_phase_action_companion",
+                "glueball_phase_sin2_companion",
+                "nucleon_flux_action_companion",
+                "nucleon_flux_sin2_companion",
+                "nucleon_flux_exp_companion",
+            )
+        )
+
+        plaquette = None
+        phase = None
+        plaquette_valid = None
+        if needs_triplet_plaquette:
+            z_ij = inner_j
+            z_jk = torch.einsum("tnd,tnd->tn", torch.conj(c_j), c_k)
+            z_ki = torch.einsum("tnd,tnd->tn", torch.conj(c_k), color)
+            plaquette = z_ij * z_jk * z_ki  # [T,N]
+            plaquette_valid = (
+                triplet_valid
+                & torch.isfinite(plaquette.real).unsqueeze(1)
+                & torch.isfinite(plaquette.imag).unsqueeze(1)
+                & (z_ij.abs() > eps).unsqueeze(1)
+                & (z_jk.abs() > eps).unsqueeze(1)
+                & (z_ki.abs() > eps).unsqueeze(1)
+            )
+            phase = torch.angle(plaquette)
+
+        if any(name in channels for name in nucleon_companion_channels):
             if color.shape[-1] >= 3:
-                c_i3 = color_sm[..., :3]
+                c_i3 = color[..., :3]
                 c_j3 = c_j[..., :3]
                 c_k3 = c_k[..., :3]
                 det = torch.abs(
                     c_i3[..., 0] * (c_j3[..., 1] * c_k3[..., 2] - c_j3[..., 2] * c_k3[..., 1])
                     - c_i3[..., 1] * (c_j3[..., 0] * c_k3[..., 2] - c_j3[..., 2] * c_k3[..., 0])
                     + c_i3[..., 2] * (c_j3[..., 0] * c_k3[..., 1] - c_j3[..., 1] * c_k3[..., 0])
-                ).float()  # [T,S,N]
-                det_valid = base_triplet_valid[:, None, :].expand(t_len, n_scales, alive.shape[1])
-                det_valid = det_valid & in_j & in_k & torch.isfinite(det) & (det > eps)
-                nucleon_comp = _masked_mean(det, det_valid, dim=-1)
-                out["nucleon_companion"] = nucleon_comp.transpose(0, 1).contiguous()
+                ).float()  # [T,N]
+                det_valid = triplet_valid & torch.isfinite(det).unsqueeze(1) & (det > eps).unsqueeze(1)
+                det_scales = det[:, None, :].expand(t_len, n_scales, n_walkers)
+                if "nucleon_companion" in channels:
+                    nucleon_comp = _masked_mean(det_scales, det_valid, dim=-1)
+                    out["nucleon_companion"] = nucleon_comp.transpose(0, 1).contiguous()
+                if plaquette is not None and phase is not None and plaquette_valid is not None:
+                    action = 1.0 - torch.cos(phase)
+                    flux_weights: dict[str, Tensor] = {
+                        "nucleon_flux_action_companion": action.float(),
+                        "nucleon_flux_sin2_companion": torch.sin(phase).square().float(),
+                        "nucleon_flux_exp_companion": torch.exp(action).float(),
+                    }
+                    flux_valid = det_valid & plaquette_valid
+                    for channel_name, weight in flux_weights.items():
+                        if channel_name not in channels:
+                            continue
+                        flux_obs = det * weight
+                        flux_obs_scales = flux_obs[:, None, :].expand(t_len, n_scales, n_walkers)
+                        flux_series = _masked_mean(flux_obs_scales, flux_valid, dim=-1)
+                        out[channel_name] = flux_series.transpose(0, 1).contiguous()
             else:
-                out["nucleon_companion"] = torch.zeros((n_scales, t_len), dtype=torch.float32, device=device)
+                for channel_name in nucleon_companion_channels:
+                    if channel_name in channels:
+                        out[channel_name] = torch.zeros(
+                            (n_scales, t_len), dtype=torch.float32, device=device
+                        )
 
-        if "glueball_companion" in channels:
-            z_ij = inner_j
-            z_jk = torch.einsum("tsnd,tsnd->tsn", torch.conj(c_j), c_k)
-            z_ki = torch.einsum("tsnd,tsnd->tsn", torch.conj(c_k), color_sm)
-            plaquette = z_ij * z_jk * z_ki
-            obs = plaquette.real.float()
-            glue_valid = base_triplet_valid[:, None, :].expand(t_len, n_scales, alive.shape[1])
-            glue_valid = (
-                glue_valid
-                & in_j
-                & in_k
-                & torch.isfinite(plaquette.real)
-                & torch.isfinite(plaquette.imag)
-                & (z_ij.abs() > eps)
-                & (z_jk.abs() > eps)
-                & (z_ki.abs() > eps)
-            )
-            glue_comp = _masked_mean(obs, glue_valid, dim=-1)
-            out["glueball_companion"] = glue_comp.transpose(0, 1).contiguous()
+        if any(name in channels for name in glueball_companion_channels):
+            if plaquette is None or phase is None or plaquette_valid is None:
+                for channel_name in glueball_companion_channels:
+                    if channel_name in channels:
+                        out[channel_name] = torch.zeros(
+                            (n_scales, t_len), dtype=torch.float32, device=device
+                        )
+            else:
+                glue_obs: dict[str, Tensor] = {
+                    "glueball_companion": plaquette.real.float(),
+                    "glueball_phase_action_companion": (1.0 - torch.cos(phase)).float(),
+                    "glueball_phase_sin2_companion": torch.sin(phase).square().float(),
+                }
+                for channel_name, obs in glue_obs.items():
+                    if channel_name not in channels:
+                        continue
+                    obs_scales = obs[:, None, :].expand(t_len, n_scales, n_walkers)
+                    glue_series = _masked_mean(obs_scales, plaquette_valid, dim=-1)
+                    out[channel_name] = glue_series.transpose(0, 1).contiguous()
 
     return out
 
@@ -710,6 +838,8 @@ def _walker_bootstrap_mass_std(
     companions_distance: Tensor | None,  # [T,N]
     companions_clone: Tensor | None,     # [T,N]
     kernels: Tensor,      # [T,S,N,N]
+    scales: Tensor,       # [S]
+    pairwise_distances: Tensor,  # [T,N,N]
     channels: list[str],
     dt: float,
     config: CorrelatorConfig,
@@ -724,6 +854,16 @@ def _walker_bootstrap_mass_std(
       bootstrap walker indices, then row-renormalized.
     """
     t_len, s_count, n_walkers, _ = kernels.shape
+    if pairwise_distances.shape != (t_len, n_walkers, n_walkers):
+        raise ValueError(
+            "pairwise_distances must align with kernels [T,N,N], got "
+            f"{tuple(pairwise_distances.shape)} vs [T={t_len},N={n_walkers},N={n_walkers}]."
+        )
+    if int(torch.as_tensor(scales).numel()) != int(s_count):
+        raise ValueError(
+            "scales must align with kernels scale axis, got "
+            f"{int(torch.as_tensor(scales).numel())} vs S={s_count}."
+        )
     if t_len <= 0 or s_count <= 0 or n_walkers <= 0 or n_bootstrap <= 0:
         return {channel: torch.full((s_count,), float("nan"), device=kernels.device) for channel in channels}
 
@@ -742,6 +882,7 @@ def _walker_bootstrap_mass_std(
         k_boot = k_boot.masked_fill(eye, 0.0)
         row_sum = k_boot.sum(dim=-1, keepdim=True).clamp(min=1e-12)
         k_boot = k_boot / row_sum
+        d_boot = pairwise_distances[:, idx][:, :, idx].clone()  # [T,N,N]
 
         c_boot = color[:, idx, :]
         valid_boot = color_valid[:, idx]
@@ -770,6 +911,8 @@ def _walker_bootstrap_mass_std(
             alive=alive_boot,
             force=force_boot,
             kernels=k_boot,
+            scales=scales,
+            pairwise_distances=d_boot,
             companions_distance=comp_dist_boot,
             companions_clone=comp_clone_boot,
             channels=channels,
@@ -795,6 +938,326 @@ def _walker_bootstrap_mass_std(
             continue
         vals = torch.where(finite, vals, torch.nan)
         out[channel] = _nanstd_compat(vals, dim=0)
+    return out
+
+
+def _compute_companion_per_scale_results_preserving_original(
+    *,
+    color: Tensor,  # [T,N,d]
+    color_valid: Tensor,  # [T,N]
+    positions: Tensor,  # [T,N,d]
+    alive: Tensor,  # [T,N]
+    companions_distance: Tensor,  # [T,N]
+    companions_clone: Tensor,  # [T,N]
+    distance_ij: Tensor,  # [T,N]
+    distance_ik: Tensor,  # [T,N]
+    distance_jk: Tensor,  # [T,N]
+    scales: Tensor,  # [S]
+    channels: list[str],
+    dt: float,
+    config: CorrelatorConfig,
+    baryon_flux_exp_alpha: float = 1.0,
+) -> dict[str, list[ChannelCorrelatorResult]]:
+    """Compute companion-channel correlators per scale using original source/sink estimators."""
+    requested = [name for name in COMPANION_CHANNEL_MAP.values() if name in channels]
+    if not requested:
+        return {}
+
+    t_len, n_walkers, d_color = color.shape
+    n_scales = int(scales.numel())
+    device = color.device
+    out: dict[str, list[ChannelCorrelatorResult]] = {name: [] for name in requested}
+
+    if t_len == 0 or n_walkers == 0:
+        n_lags = int(max(0, config.max_lag)) + 1
+        zero_corr = torch.zeros(n_lags, dtype=torch.float32, device=device)
+        zero_series = torch.zeros(0, dtype=torch.float32, device=device)
+        for s_idx, scale_value in enumerate(scales.tolist()):
+            for channel_name in requested:
+                result = _build_result_from_precomputed_correlator(
+                    channel_name=channel_name,
+                    correlator=zero_corr,
+                    dt=dt,
+                    config=config,
+                    n_samples=0,
+                    series=zero_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = float(scale_value)
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out[channel_name].append(result)
+        return out
+
+    negative_one = torch.full_like(companions_distance, -1)
+    finite_ij = torch.isfinite(distance_ij)
+    finite_ik = torch.isfinite(distance_ik)
+    finite_jk = torch.isfinite(distance_jk)
+    triplet_radius = torch.maximum(distance_ij, torch.maximum(distance_ik, distance_jk))
+
+    use_pair_family = any(
+        name in out
+        for name in (
+            "scalar_companion",
+            "pseudoscalar_companion",
+            "vector_companion",
+            "axial_vector_companion",
+            "tensor_companion",
+        )
+    )
+    use_triplet_family = any(
+        name in out
+        for name in (
+            "nucleon_companion",
+            "nucleon_flux_action_companion",
+            "nucleon_flux_sin2_companion",
+            "nucleon_flux_exp_companion",
+            "glueball_companion",
+            "glueball_phase_action_companion",
+            "glueball_phase_sin2_companion",
+        )
+    )
+
+    if d_color >= 3:
+        color3 = color[..., :3]
+    else:
+        color3 = torch.zeros((t_len, n_walkers, 3), dtype=color.dtype, device=device)
+        color3[..., :d_color] = color
+
+    if positions.shape[-1] >= 3:
+        positions3 = positions[..., :3]
+    else:
+        positions3 = torch.zeros((t_len, n_walkers, 3), dtype=torch.float32, device=device)
+        positions3[..., : positions.shape[-1]] = positions
+    positions_axis = positions3[..., 0]
+    axis_extent = float((positions_axis.max() - positions_axis.min()).abs().item())
+    if not math.isfinite(axis_extent) or axis_extent <= 0:
+        axis_extent = 1.0
+
+    for s_idx in range(n_scales):
+        scale_value = float(scales[s_idx].item())
+        pair_j_mask = finite_ij & (distance_ij <= scale_value)
+        pair_k_mask = finite_ik & (distance_ik <= scale_value)
+        triplet_mask = finite_ij & finite_ik & finite_jk & (triplet_radius <= scale_value)
+
+        comp_dist_pair = torch.where(pair_j_mask, companions_distance, negative_one)
+        comp_clone_pair = torch.where(pair_k_mask, companions_clone, negative_one)
+        comp_dist_triplet = torch.where(triplet_mask, companions_distance, negative_one)
+        comp_clone_triplet = torch.where(triplet_mask, companions_clone, negative_one)
+
+        meson_out = None
+        if use_pair_family and ("scalar_companion" in out or "pseudoscalar_companion" in out):
+            meson_out = compute_meson_phase_correlator_from_color(
+                color=color3,
+                color_valid=color_valid,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                frame_indices=None,
+            )
+            if "scalar_companion" in out:
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="scalar_companion",
+                    correlator=meson_out.scalar,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(meson_out.n_valid_source_pairs),
+                    series=meson_out.operator_scalar_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["scalar_companion"].append(result)
+            if "pseudoscalar_companion" in out:
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="pseudoscalar_companion",
+                    correlator=meson_out.pseudoscalar,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(meson_out.n_valid_source_pairs),
+                    series=meson_out.operator_pseudoscalar_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["pseudoscalar_companion"].append(result)
+
+        vector_out = None
+        if use_pair_family and ("vector_companion" in out or "axial_vector_companion" in out):
+            vector_out = compute_vector_meson_correlator_from_color_positions(
+                color=color3,
+                color_valid=color_valid,
+                positions=positions3,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                use_unit_displacement=False,
+                frame_indices=None,
+            )
+            if "vector_companion" in out:
+                vec_series = torch.linalg.vector_norm(vector_out.operator_vector_series, dim=-1).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="vector_companion",
+                    correlator=vector_out.vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_out.n_valid_source_pairs),
+                    series=vec_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["vector_companion"].append(result)
+            if "axial_vector_companion" in out:
+                axial_series = torch.linalg.vector_norm(vector_out.operator_axial_vector_series, dim=-1).float()
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="axial_vector_companion",
+                    correlator=vector_out.axial_vector,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(vector_out.n_valid_source_pairs),
+                    series=axial_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["axial_vector_companion"].append(result)
+
+        if "tensor_companion" in out:
+            tensor_out = compute_tensor_momentum_correlator_from_color_positions(
+                color=color3,
+                color_valid=color_valid,
+                positions=positions3,
+                positions_axis=positions_axis,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                momentum_mode_max=0,
+                projection_length=axis_extent,
+                bounds=None,
+                pbc=False,
+                compute_bootstrap_errors=False,
+                n_bootstrap=0,
+                frame_indices=None,
+                momentum_axis=0,
+            )
+            tensor_series = torch.sqrt(
+                torch.clamp_min(
+                    tensor_out.momentum_operator_cos_series[0].float().pow(2).sum(dim=0)
+                    + tensor_out.momentum_operator_sin_series[0].float().pow(2).sum(dim=0),
+                    0.0,
+                )
+            )
+            result = _build_result_from_precomputed_correlator(
+                channel_name="tensor_companion",
+                correlator=tensor_out.momentum_contracted_correlator[0],
+                dt=dt,
+                config=config,
+                n_samples=int(tensor_out.momentum_valid_frames),
+                series=tensor_series,
+                correlator_err=(
+                    tensor_out.momentum_contracted_correlator_err[0]
+                    if tensor_out.momentum_contracted_correlator_err is not None
+                    else None
+                ),
+            )
+            result.mass_fit["scale"] = scale_value
+            result.mass_fit["scale_index"] = int(s_idx)
+            result.mass_fit["source"] = "scaled_companion_source_sink"
+            out["tensor_companion"].append(result)
+
+        baryon_channel_modes: list[tuple[str, str]] = [
+            ("nucleon_companion", "det_abs"),
+            ("nucleon_flux_action_companion", "flux_action"),
+            ("nucleon_flux_sin2_companion", "flux_sin2"),
+            ("nucleon_flux_exp_companion", "flux_exp"),
+        ]
+        if use_triplet_family and any(name in out for name, _ in baryon_channel_modes):
+            for channel_name, operator_mode in baryon_channel_modes:
+                if channel_name not in out:
+                    continue
+                baryon_out = compute_baryon_correlator_from_color(
+                    color=color3,
+                    color_valid=color_valid,
+                    alive=alive,
+                    companions_distance=comp_dist_triplet,
+                    companions_clone=comp_clone_triplet,
+                    max_lag=int(config.max_lag),
+                    use_connected=bool(config.use_connected),
+                    eps=1e-12,
+                    operator_mode=operator_mode,
+                    flux_exp_alpha=float(baryon_flux_exp_alpha),
+                    frame_indices=None,
+                )
+                result = _build_result_from_precomputed_correlator(
+                    channel_name=channel_name,
+                    correlator=baryon_out.correlator,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(baryon_out.n_valid_source_triplets),
+                    series=baryon_out.operator_baryon_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out[channel_name].append(result)
+
+        glueball_channel_modes: list[tuple[str, str]] = [
+            ("glueball_companion", "re_plaquette"),
+            ("glueball_phase_action_companion", "phase_action"),
+            ("glueball_phase_sin2_companion", "phase_sin2"),
+        ]
+        if use_triplet_family and any(name in out for name, _ in glueball_channel_modes):
+            for channel_name, operator_mode in glueball_channel_modes:
+                if channel_name not in out:
+                    continue
+                glue_out = compute_glueball_color_correlator_from_color(
+                    color=color3,
+                    color_valid=color_valid,
+                    alive=alive,
+                    companions_distance=comp_dist_triplet,
+                    companions_clone=comp_clone_triplet,
+                    max_lag=int(config.max_lag),
+                    use_connected=bool(config.use_connected),
+                    eps=1e-12,
+                    operator_mode=operator_mode,
+                    use_action_form=False,
+                    frame_indices=None,
+                    use_momentum_projection=False,
+                    compute_bootstrap_errors=False,
+                    n_bootstrap=0,
+                )
+                result = _build_result_from_precomputed_correlator(
+                    channel_name=channel_name,
+                    correlator=glue_out.correlator,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(glue_out.n_valid_source_triplets),
+                    series=glue_out.operator_glueball_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out[channel_name].append(result)
+
     return out
 
 
@@ -839,6 +1302,9 @@ def compute_multiscale_strong_force_channels(
     for base_name, companion_name in COMPANION_CHANNEL_MAP.items():
         if base_name in requested and companion_name not in requested:
             requested.append(companion_name)
+    requested_companion_channels = [
+        channel_name for channel_name in requested if channel_name in COMPANION_CHANNEL_MAP.values()
+    ]
 
     if config.ell0 is not None:
         ell0 = float(config.ell0)
@@ -894,12 +1360,26 @@ def compute_multiscale_strong_force_channels(
     )
     n_scales = int(scales.numel())
     n_frames = len(frame_indices)
+    n_walkers = int(alive.shape[1])
     series_by_channel: dict[str, Tensor] = {
         channel: torch.zeros((n_scales, n_frames), dtype=torch.float32, device=color.device)
         for channel in requested
     }
+    companion_distance_ij = None
+    companion_distance_ik = None
+    companion_distance_jk = None
+    if requested_companion_channels:
+        companion_distance_ij = torch.full(
+            (n_frames, n_walkers), float("inf"), dtype=torch.float32, device=color.device
+        )
+        companion_distance_ik = torch.full(
+            (n_frames, n_walkers), float("inf"), dtype=torch.float32, device=color.device
+        )
+        companion_distance_jk = torch.full(
+            (n_frames, n_walkers), float("inf"), dtype=torch.float32, device=color.device
+        )
     frame_to_pos = {int(frame_idx): pos for pos, frame_idx in enumerate(frame_indices)}
-    for frame_ids_chunk, _, kernels_chunk, _ in iter_smeared_kernel_batches_from_history(
+    for frame_ids_chunk, distances_chunk, kernels_chunk, _ in iter_smeared_kernel_batches_from_history(
         history,
         scales=scales,
         method=str(config.kernel_distance_method),
@@ -913,6 +1393,20 @@ def compute_multiscale_strong_force_channels(
     ):
         pos_idx = [frame_to_pos[int(frame_idx)] for frame_idx in frame_ids_chunk]
         pos_t = torch.as_tensor(pos_idx, dtype=torch.long, device=color.device)
+        if requested_companion_channels:
+            comp_j_chunk = companions_distance.index_select(0, pos_t)
+            comp_k_chunk = companions_clone.index_select(0, pos_t)
+            anchor_rows = (
+                torch.arange(n_walkers, device=color.device, dtype=torch.long)
+                .view(1, -1)
+                .expand(comp_j_chunk.shape[0], -1)
+            )
+            dist_ij_chunk, _ = _safe_gather_pairwise_distances(distances_chunk, anchor_rows, comp_j_chunk)
+            dist_ik_chunk, _ = _safe_gather_pairwise_distances(distances_chunk, anchor_rows, comp_k_chunk)
+            dist_jk_chunk, _ = _safe_gather_pairwise_distances(distances_chunk, comp_j_chunk, comp_k_chunk)
+            companion_distance_ij.index_copy_(0, pos_t, dist_ij_chunk.float())
+            companion_distance_ik.index_copy_(0, pos_t, dist_ik_chunk.float())
+            companion_distance_jk.index_copy_(0, pos_t, dist_jk_chunk.float())
         chunk_series = _compute_channel_series_from_kernels(
             color=color.index_select(0, pos_t),
             color_valid=color_valid.index_select(0, pos_t),
@@ -920,6 +1414,8 @@ def compute_multiscale_strong_force_channels(
             alive=alive.index_select(0, pos_t),
             force=force.index_select(0, pos_t),
             kernels=kernels_chunk,
+            scales=scales,
+            pairwise_distances=distances_chunk,
             companions_distance=companions_distance.index_select(0, pos_t),
             companions_clone=companions_clone.index_select(0, pos_t),
             channels=requested,
@@ -939,6 +1435,35 @@ def compute_multiscale_strong_force_channels(
         compute_bootstrap_errors=False,
         n_bootstrap=int(config.n_bootstrap),
     )
+
+    companion_override_results: dict[str, list[ChannelCorrelatorResult]] = {}
+    if (
+        requested_companion_channels
+        and companion_distance_ij is not None
+        and companion_distance_ik is not None
+        and companion_distance_jk is not None
+    ):
+        companion_override_results = _compute_companion_per_scale_results_preserving_original(
+            color=color,
+            color_valid=color_valid,
+            positions=positions,
+            alive=alive,
+            companions_distance=companions_distance,
+            companions_clone=companions_clone,
+            distance_ij=companion_distance_ij,
+            distance_ik=companion_distance_ik,
+            distance_jk=companion_distance_jk,
+            scales=scales,
+            channels=requested,
+            dt=dt,
+            config=correlator_cfg,
+            baryon_flux_exp_alpha=float(config.companion_baryon_flux_exp_alpha),
+        )
+        for channel_name, per_scale in companion_override_results.items():
+            if per_scale and channel_name in series_by_channel:
+                series_by_channel[channel_name] = torch.stack(
+                    [result.series.float() for result in per_scale], dim=0
+                )
 
     channel_names = list(series_by_channel.keys())
     stack = torch.stack([series_by_channel[name] for name in channel_names], dim=0)  # [C,S,T]
@@ -976,17 +1501,25 @@ def compute_multiscale_strong_force_channels(
             else:
                 mode_applied = "time"
         else:
-            _, _, kernels_all = compute_smeared_kernels_from_history(
+            dist_frame_ids, distances_all = compute_pairwise_distance_matrices_from_history(
                 history,
-                scales=scales,
                 method=str(config.kernel_distance_method),
                 frame_indices=frame_indices,
                 batch_size=int(max(1, config.kernel_batch_size)),
                 edge_weight_mode=str(config.edge_weight_mode),
                 assume_all_alive=bool(config.kernel_assume_all_alive),
-                kernel_type=str(config.kernel_type),
                 device=color.device,
                 dtype=torch.float32,
+            )
+            if dist_frame_ids != frame_indices:
+                raise RuntimeError(
+                    "Pairwise-distance frame order mismatch during walker bootstrap: "
+                    f"{dist_frame_ids} vs {frame_indices}."
+                )
+            kernels_all = compute_smeared_kernels_from_distances(
+                distances_all,
+                scales,
+                kernel_type=str(config.kernel_type),
             )
             n_walk_boot = int(max(1, min(int(config.n_bootstrap), int(config.walker_bootstrap_max_samples))))
             mass_std_walker_by_channel = _walker_bootstrap_mass_std(
@@ -998,6 +1531,8 @@ def compute_multiscale_strong_force_channels(
                 companions_distance=companions_distance,
                 companions_clone=companions_clone,
                 kernels=kernels_all,
+                scales=scales,
+                pairwise_distances=distances_all,
                 channels=channel_names,
                 dt=dt,
                 config=correlator_cfg,
@@ -1014,23 +1549,26 @@ def compute_multiscale_strong_force_channels(
     best_scale_index: dict[str, int] = {}
     bootstrap_mass_std_out: dict[str, Tensor] = {}
     for c_idx, channel in enumerate(channel_names):
-        channel_results: list[ChannelCorrelatorResult] = []
-        for s_idx in range(s_count):
-            corr_err = None
-            if corr_err_stack is not None:
-                corr_err = corr_err_stack[c_idx, s_idx]
-            result = _build_result_from_precomputed_correlator(
-                channel_name=channel,
-                correlator=corr_stack[c_idx, s_idx],
-                dt=dt,
-                config=correlator_cfg,
-                n_samples=t_len,
-                series=stack[c_idx, s_idx],
-                correlator_err=corr_err,
-            )
-            result.mass_fit["scale"] = float(scales[s_idx].item())
-            result.mass_fit["scale_index"] = int(s_idx)
-            channel_results.append(result)
+        if companion_override_results.get(channel):
+            channel_results = companion_override_results[channel]
+        else:
+            channel_results = []
+            for s_idx in range(s_count):
+                corr_err = None
+                if corr_err_stack is not None:
+                    corr_err = corr_err_stack[c_idx, s_idx]
+                result = _build_result_from_precomputed_correlator(
+                    channel_name=channel,
+                    correlator=corr_stack[c_idx, s_idx],
+                    dt=dt,
+                    config=correlator_cfg,
+                    n_samples=t_len,
+                    series=stack[c_idx, s_idx],
+                    correlator_err=corr_err,
+                )
+                result.mass_fit["scale"] = float(scales[s_idx].item())
+                result.mass_fit["scale_index"] = int(s_idx)
+                channel_results.append(result)
         per_scale_results[channel] = channel_results
 
         best_idx = _select_best_scale(channel_results)
@@ -1040,11 +1578,15 @@ def compute_multiscale_strong_force_channels(
         # Attach bootstrap mass spread if available.
         base_mass_err = float(best_result.mass_fit.get("mass_error", float("inf")))
         comp_mass_err = float("nan")
-        if mass_std_walker_by_channel is not None and channel in mass_std_walker_by_channel:
+        if (
+            channel not in companion_override_results
+            and mass_std_walker_by_channel is not None
+            and channel in mass_std_walker_by_channel
+        ):
             std_vec = mass_std_walker_by_channel[channel]
             bootstrap_mass_std_out[channel] = std_vec.detach().clone()
             comp_mass_err = float(std_vec[best_idx].item())
-        elif mass_std_time is not None:
+        elif channel not in companion_override_results and mass_std_time is not None:
             comp_mass_err = float(mass_std_time[c_idx, best_idx].item())
         if math.isfinite(comp_mass_err) and comp_mass_err >= 0:
             best_result.mass_fit["bootstrap_mass_error"] = comp_mass_err

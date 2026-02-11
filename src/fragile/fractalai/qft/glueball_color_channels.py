@@ -48,6 +48,7 @@ class GlueballColorCorrelatorConfig:
     ell0: float | None = None
     color_dims: tuple[int, int, int] | None = None
     eps: float = 1e-12
+    operator_mode: str | None = None
     use_action_form: bool = False
     use_momentum_projection: bool = False
     momentum_axis: int = 0
@@ -80,6 +81,40 @@ class GlueballColorCorrelatorOutput:
     momentum_axis: int | None = None
     momentum_length_scale: float | None = None
     momentum_valid_frames: int = 0
+
+
+def _resolve_glueball_operator_mode(
+    *,
+    operator_mode: str | None,
+    use_action_form: bool,
+) -> str:
+    """Resolve glueball operator mode with backward compatibility."""
+    if operator_mode is None or not str(operator_mode).strip():
+        return "action_re_plaquette" if use_action_form else "re_plaquette"
+    mode = str(operator_mode).strip().lower()
+    if mode == "action":
+        return "action_re_plaquette"
+    return mode
+
+
+def _glueball_observable_from_plaquette(pi: Tensor, *, operator_mode: str) -> Tensor:
+    """Build scalar glueball observable from complex plaquette Π."""
+    mode = _resolve_glueball_operator_mode(operator_mode=operator_mode, use_action_form=False)
+    if mode == "re_plaquette":
+        return pi.real.float()
+    if mode == "action_re_plaquette":
+        return (1.0 - pi.real).float()
+    if mode == "phase_action":
+        phase = torch.angle(pi)
+        return (1.0 - torch.cos(phase)).float()
+    if mode == "phase_sin2":
+        phase = torch.angle(pi)
+        return torch.sin(phase).square().float()
+    msg = (
+        "Invalid glueball operator_mode. Expected one of "
+        "{'re_plaquette','action_re_plaquette','phase_action','phase_sin2'}."
+    )
+    raise ValueError(msg)
 
 
 def _compute_color_plaquette_for_triplets(
@@ -322,6 +357,7 @@ def compute_glueball_color_correlator_from_color(
     max_lag: int = 80,
     use_connected: bool = True,
     eps: float = 1e-12,
+    operator_mode: str | None = None,
     use_action_form: bool = False,
     frame_indices: list[int] | None = None,
     positions_axis: Tensor | None = None,
@@ -374,9 +410,14 @@ def compute_glueball_color_correlator_from_color(
         companions_clone=companions_clone,
         eps=eps,
     )
-    source_obs = source_pi.real.float()
-    if use_action_form:
-        source_obs = 1.0 - source_obs
+    resolved_operator_mode = _resolve_glueball_operator_mode(
+        operator_mode=operator_mode,
+        use_action_form=use_action_form,
+    )
+    source_obs = _glueball_observable_from_plaquette(
+        source_pi,
+        operator_mode=resolved_operator_mode,
+    )
 
     triplet_counts_per_frame = source_valid.sum(dim=1).to(torch.int64)
     n_valid_source_triplets = int(source_valid.sum().item())
@@ -410,9 +451,10 @@ def compute_glueball_color_correlator_from_color(
             companions_clone=companions_clone[:source_len],
             eps=eps,
         )
-        sink_obs = sink_pi.real.float()
-        if use_action_form:
-            sink_obs = 1.0 - sink_obs
+        sink_obs = _glueball_observable_from_plaquette(
+            sink_pi,
+            operator_mode=resolved_operator_mode,
+        )
 
         valid_pair = source_valid[:source_len] & sink_valid
         count = int(valid_pair.sum().item())
@@ -600,6 +642,7 @@ def compute_companion_glueball_color_correlator(
         max_lag=int(config.max_lag),
         use_connected=bool(config.use_connected),
         eps=float(max(config.eps, 0.0)),
+        operator_mode=config.operator_mode,
         use_action_form=bool(config.use_action_form),
         frame_indices=frame_indices,
         positions_axis=positions_axis,

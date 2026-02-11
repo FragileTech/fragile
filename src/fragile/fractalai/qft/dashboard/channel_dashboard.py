@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
+import math
 from typing import Any
 
 import holoviews as hv
@@ -12,19 +12,69 @@ import pandas as pd
 import panel as pn
 import torch
 
+from fragile.fractalai.qft.multiscale_analysis import (
+    analyze_channel_across_scales,
+    build_estimator_table_rows,
+    build_pairwise_table_rows,
+    format_consensus_summary,
+)
 from fragile.fractalai.qft.multiscale_strong_force import MultiscaleStrongForceOutput
 from fragile.fractalai.qft.operator_analysis import (
-    analyze_channel_across_scales,
     build_consensus_plot,
     build_mass_vs_scale_plot,
     build_multiscale_correlator_plot,
     build_multiscale_effective_mass_plot,
     build_per_scale_channel_plots,
-    format_consensus_summary,
 )
 from fragile.fractalai.qft.smeared_operators import (
     compute_pairwise_distance_matrices_from_history,
 )
+
+
+COMPANION_SUFFIX = "_companion"
+SPATIAL_PREFIX = "spatial_"
+
+
+def _is_companion_channel(name: str) -> bool:
+    return str(name).endswith(COMPANION_SUFFIX)
+
+
+def _base_channel_name(name: str) -> str:
+    raw = str(name)
+    if raw.endswith(COMPANION_SUFFIX):
+        return raw[: -len(COMPANION_SUFFIX)]
+    if raw.startswith(SPATIAL_PREFIX):
+        return raw[len(SPATIAL_PREFIX) :]
+    return raw
+
+
+def _display_channel_name(raw_name: str) -> str:
+    base = _base_channel_name(raw_name)
+    if _is_companion_channel(raw_name):
+        return base
+    return f"{SPATIAL_PREFIX}{base}"
+
+
+def _display_channel_name_for_original(raw_name: str, result: Any) -> str:
+    raw = str(raw_name)
+    if raw.startswith(SPATIAL_PREFIX) or raw.endswith(COMPANION_SUFFIX):
+        return _display_channel_name(raw)
+    base = _base_channel_name(raw)
+    if _is_companion_original_result(raw, result):
+        return base
+    return f"{SPATIAL_PREFIX}{base}"
+
+
+def _is_companion_original_result(name: str, result: Any) -> bool:
+    if _is_companion_channel(name):
+        return True
+    mass_fit = getattr(result, "mass_fit", None)
+    if not isinstance(mass_fit, dict):
+        return False
+    if str(mass_fit.get("source", "")).strip().lower() == "original_companion":
+        return True
+    base_channel = str(mass_fit.get("base_channel", "")).strip()
+    return _is_companion_channel(base_channel)
 
 
 # ---------------------------------------------------------------------------
@@ -229,12 +279,12 @@ def update_multiscale_tab(
     base_channel_count = sum(
         1
         for channel_name in output.per_scale_results
-        if not str(channel_name).endswith("_companion")
+        if not _is_companion_channel(str(channel_name))
     )
     companion_channel_count = sum(
         1
         for channel_name in output.per_scale_results
-        if str(channel_name).endswith("_companion")
+        if _is_companion_channel(str(channel_name))
     )
     status_lines.append(
         f"- Measurement groups: `non_companion={base_channel_count}`, "
@@ -244,6 +294,7 @@ def update_multiscale_tab(
     # -- 1) Full geodesic distance matrix heatmap ----------------------------
     geodesic_error: str | None = None
     geodesic_frame_idx: int | None = None
+    geodesic_max_scale = float("nan")
     try:
         if history is not None and output.frame_indices:
             geodesic_frame_idx = int(output.frame_indices[-1])
@@ -261,6 +312,9 @@ def update_multiscale_tab(
                 distance_matrix = distance_batch[0].detach().cpu().numpy().astype(
                     np.float64, copy=False
                 )
+                finite_geodesics = distance_matrix[np.isfinite(distance_matrix) & (distance_matrix > 0)]
+                if finite_geodesics.size > 0:
+                    geodesic_max_scale = float(np.nanmax(finite_geodesics))
                 n_walkers = int(distance_matrix.shape[0])
                 if n_walkers == 0 or distance_matrix.shape[1] != n_walkers:
                     w.geodesic_heatmap.object = None
@@ -359,22 +413,55 @@ def update_multiscale_tab(
 
     if geodesic_frame_idx is not None:
         status_lines.append(f"- Heatmap frame: `{geodesic_frame_idx}`")
+    if math.isfinite(geodesic_max_scale) and geodesic_max_scale > 0:
+        status_lines.append(f"- Estimated full-scale radius (max geodesic): `{geodesic_max_scale:.6g}`")
     if geodesic_error:
         status_lines.append(f"- Heatmap note: `{geodesic_error}`")
 
     # -- 2) Populate channel selector and store output for callback ----------
-    available_channels = sorted(
+    raw_channels = sorted(
         output.per_scale_results.keys(),
-        key=lambda name: (1 if str(name).endswith("_companion") else 0, str(name)),
+        key=lambda name: (0 if _is_companion_channel(str(name)) else 1, _base_channel_name(str(name))),
     )
+    display_to_raw: dict[str, str] = {}
+    display_to_original: dict[str, str] = {}
+    for raw_name in raw_channels:
+        display_name = _display_channel_name(str(raw_name))
+        if display_name not in display_to_raw:
+            display_to_raw[display_name] = str(raw_name)
+            display_to_original.setdefault(display_name, str(raw_name))
+    if isinstance(original_results, dict):
+        for raw_name, result in original_results.items():
+            raw_name_s = str(raw_name)
+            if raw_name_s.endswith("_multiscale_best"):
+                continue
+            display_name = _display_channel_name_for_original(raw_name_s, result)
+            display_to_original.setdefault(display_name, raw_name_s)
+    available_channels = list(display_to_raw.keys())
+    for display_name in display_to_original:
+        if display_name not in available_channels:
+            available_channels.append(display_name)
+    available_channels.sort(
+        key=lambda name: (
+            0 if not str(name).startswith(SPATIAL_PREFIX) else 1,
+            _base_channel_name(str(name)),
+        )
+    )
+
     w.channel_select.options = available_channels
-    default_channel = "nucleon" if "nucleon" in available_channels else (
-        available_channels[0] if available_channels else ""
-    )
+    if "nucleon" in available_channels:
+        default_channel = "nucleon"
+    elif "spatial_nucleon" in available_channels:
+        default_channel = "spatial_nucleon"
+    else:
+        default_channel = available_channels[0] if available_channels else ""
     w.channel_select.value = default_channel
     state["_multiscale_output"] = output
     state["_multiscale_scale_values"] = scale_values
     state["_multiscale_original_results"] = original_results
+    state["_multiscale_display_to_raw"] = display_to_raw
+    state["_multiscale_display_to_original"] = display_to_original
+    state["_multiscale_geodesic_max_scale"] = geodesic_max_scale
 
     # -- 3) Inner function: update channel-specific views --------------------
     def _update_channel_views(channel_name: str) -> None:
@@ -382,99 +469,168 @@ def update_multiscale_tab(
             return
         ms_output = state.get("_multiscale_output")
         sv = state.get("_multiscale_scale_values")
+        display_to_raw_map = state.get("_multiscale_display_to_raw", {})
+        display_to_original_map = state.get("_multiscale_display_to_original", {})
+        raw_channel_name = str(display_to_raw_map.get(channel_name, channel_name))
+        display_channel_name = str(channel_name)
         if ms_output is None or sv is None:
             return
-        channel_results = ms_output.per_scale_results.get(channel_name, [])
-        if not channel_results:
-            w.corr_plot.object = None
-            w.meff_plot.object = None
-            w.mass_vs_scale_plot.object = None
-            w.estimator_table.value = pd.DataFrame()
-            w.pairwise_table.value = pd.DataFrame()
-            w.consensus_summary.object = (
-                f"**{channel_name}:** no per-scale results available."
-            )
-            w.systematics_badge.object = "Systematics verdict: no data."
-            w.systematics_badge.alert_type = "secondary"
-            w.consensus_plot.object = None
-            w.per_scale_plots.objects = []
-            return
+        channel_results = ms_output.per_scale_results.get(raw_channel_name, [])
 
-        bundle = analyze_channel_across_scales(channel_results, sv, channel_name)
+        bundle = (
+            analyze_channel_across_scales(channel_results, sv, display_channel_name)
+            if channel_results
+            else None
+        )
 
         # -- Look up original (no-scale-filter) mass for reference overlay --
         original_mass: float | None = None
         original_error: float = float("nan")
         original_r2: float = float("nan")
+        original_result_obj: Any | None = None
+        original_scale_estimate = float(state.get("_multiscale_geodesic_max_scale", float("nan")))
+        if not (math.isfinite(original_scale_estimate) and original_scale_estimate > 0):
+            sv_arr = np.asarray(sv, dtype=float)
+            finite_scales = sv_arr[np.isfinite(sv_arr) & (sv_arr > 0)]
+            if finite_scales.size > 0:
+                original_scale_estimate = float(np.max(finite_scales))
         orig_results = state.get("_multiscale_original_results")
         if isinstance(orig_results, dict):
-            orig_result = orig_results.get(channel_name)
-            if orig_result is not None:
+            mapped_key = display_to_original_map.get(display_channel_name)
+            if mapped_key is not None:
+                orig_result = orig_results.get(mapped_key)
+                if orig_result is not None:
+                    original_result_obj = orig_result
+                    _mfit = getattr(orig_result, "mass_fit", None)
+                    if isinstance(_mfit, dict):
+                        _om = float(_mfit.get("mass", float("nan")))
+                        if math.isfinite(_om) and _om > 0:
+                            original_mass = _om
+                            original_error = float(_mfit.get("mass_error", float("nan")))
+                            original_r2 = float(_mfit.get("r_squared", float("nan")))
+            base_name = _base_channel_name(raw_channel_name)
+            is_companion_selection = _is_companion_channel(raw_channel_name)
+            if is_companion_selection:
+                candidate_keys = [
+                    base_name,
+                    raw_channel_name,
+                    display_channel_name,
+                    f"{base_name}{COMPANION_SUFFIX}",
+                ]
+            else:
+                candidate_keys = [
+                    display_channel_name,
+                    raw_channel_name,
+                    f"{SPATIAL_PREFIX}{base_name}",
+                    base_name,
+                ]
+            for key in candidate_keys:
+                orig_result = orig_results.get(key)
+                if orig_result is None:
+                    continue
+                if _is_companion_original_result(str(key), orig_result) != is_companion_selection:
+                    continue
+                original_result_obj = orig_result
                 _mfit = getattr(orig_result, "mass_fit", None)
-                if isinstance(_mfit, dict):
-                    _om = float(_mfit.get("mass", float("nan")))
-                    if math.isfinite(_om) and _om > 0:
-                        original_mass = _om
-                        original_error = float(_mfit.get("mass_error", float("nan")))
-                        original_r2 = float(_mfit.get("r_squared", float("nan")))
+                if not isinstance(_mfit, dict):
+                    continue
+                _om = float(_mfit.get("mass", float("nan")))
+                if not (math.isfinite(_om) and _om > 0):
+                    continue
+                original_mass = _om
+                original_error = float(_mfit.get("mass_error", float("nan")))
+                original_r2 = float(_mfit.get("r_squared", float("nan")))
+                break
+
+        if bundle is None:
+            w.corr_plot.object = build_multiscale_correlator_plot(
+                [],
+                np.asarray([], dtype=float),
+                display_channel_name,
+                reference_result=original_result_obj,
+                reference_label="original (no filter)",
+                reference_scale=original_scale_estimate,
+            )
+            w.meff_plot.object = build_multiscale_effective_mass_plot(
+                [],
+                np.asarray([], dtype=float),
+                display_channel_name,
+                reference_result=original_result_obj,
+                reference_label="original (no filter)",
+                reference_scale=original_scale_estimate,
+            )
+            w.mass_vs_scale_plot.object = build_mass_vs_scale_plot(
+                [],
+                display_channel_name,
+                reference_mass=original_mass,
+                reference_scale=original_scale_estimate,
+            )
+            if original_mass is not None:
+                w.estimator_table.value = pd.DataFrame(
+                    build_estimator_table_rows(
+                        [],
+                        original_mass=original_mass,
+                        original_error=original_error,
+                        original_r2=original_r2,
+                        original_scale=original_scale_estimate,
+                    )
+                )
+                w.consensus_summary.object = (
+                    f"**{display_channel_name}:** original-only result available; "
+                    "no multiscale sweep was produced for this channel in the current run."
+                )
+            else:
+                w.estimator_table.value = pd.DataFrame()
+                w.consensus_summary.object = (
+                    f"**{display_channel_name}:** no per-scale or original results available."
+                )
+            w.pairwise_table.value = pd.DataFrame()
+            w.systematics_badge.object = (
+                "Systematics verdict: no multiscale sweep available for this channel."
+            )
+            w.systematics_badge.alert_type = "secondary"
+            w.consensus_plot.object = None
+            w.per_scale_plots.objects = []
+            return
 
         # Correlator plot (scatter+errorbars per scale).
         w.corr_plot.object = build_multiscale_correlator_plot(
-            channel_results, sv, channel_name,
+            channel_results,
+            sv,
+            display_channel_name,
+            reference_result=original_result_obj,
+            reference_label="original (no filter)",
+            reference_scale=original_scale_estimate,
         )
         # Effective mass plot.
         w.meff_plot.object = build_multiscale_effective_mass_plot(
-            channel_results, sv, channel_name,
+            channel_results,
+            sv,
+            display_channel_name,
+            reference_result=original_result_obj,
+            reference_label="original (no filter)",
+            reference_scale=original_scale_estimate,
         )
         # Mass vs scale with consensus overlay.
         w.mass_vs_scale_plot.object = build_mass_vs_scale_plot(
-            bundle.measurements, channel_name, consensus=bundle.consensus,
+            bundle.measurements,
+            display_channel_name,
+            consensus=bundle.consensus,
             reference_mass=original_mass,
+            reference_scale=original_scale_estimate,
         )
-        # Estimator table.
-        est_rows: list[dict[str, Any]] = []
-        if original_mass is not None:
-            est_rows.append({
-                "scale": "original (no filter)",
-                "scale_value": float("nan"),
-                "mass": original_mass,
-                "mass_error": original_error,
-                "r_squared": original_r2,
-                "delta_vs_original_pct": 0.0,
-            })
-        for m in bundle.measurements:
-            row: dict[str, Any] = {
-                "scale": m.label,
-                "scale_value": m.scale,
-                "mass": m.mass,
-                "mass_error": m.mass_error,
-                "r_squared": m.r_squared,
-            }
-            if original_mass is not None and math.isfinite(m.mass) and m.mass > 0:
-                row["delta_vs_original_pct"] = (
-                    (m.mass - original_mass) / original_mass * 100.0
-                )
-            elif original_mass is not None:
-                row["delta_vs_original_pct"] = float("nan")
-            est_rows.append(row)
+        est_rows = build_estimator_table_rows(
+            bundle.measurements,
+            original_mass=original_mass,
+            original_error=original_error,
+            original_r2=original_r2,
+            original_scale=original_scale_estimate,
+        )
         w.estimator_table.value = (
             pd.DataFrame(est_rows) if est_rows else pd.DataFrame()
         )
         # Pairwise discrepancy table.
-        pw_rows = [
-            {
-                "scale_a": d.label_a,
-                "scale_b": d.label_b,
-                "mass_a": d.mass_a,
-                "mass_b": d.mass_b,
-                "ratio": d.ratio,
-                "delta_pct": d.delta_pct,
-                "abs_delta_pct": d.abs_delta_pct,
-                "combined_error": d.combined_error,
-                "pull_sigma": d.pull_sigma,
-            }
-            for d in bundle.discrepancies
-        ]
+        pw_rows = build_pairwise_table_rows(bundle.discrepancies)
         w.pairwise_table.value = (
             pd.DataFrame(pw_rows).sort_values("abs_delta_pct", ascending=False)
             if pw_rows
@@ -482,7 +638,7 @@ def update_multiscale_tab(
         )
         # Consensus summary + badge.
         w.consensus_summary.object = format_consensus_summary(
-            bundle.consensus, bundle.discrepancies, channel_name,
+            bundle.consensus, bundle.discrepancies, display_channel_name,
             reference_mass=original_mass,
         )
         w.systematics_badge.object = (
@@ -491,7 +647,7 @@ def update_multiscale_tab(
         w.systematics_badge.alert_type = bundle.verdict.alert_type
         # Consensus plot.
         w.consensus_plot.object = build_consensus_plot(
-            bundle.measurements, bundle.consensus, channel_name,
+            bundle.measurements, bundle.consensus, display_channel_name,
             reference_mass=original_mass,
         )
         # Per-scale ChannelPlot layouts.

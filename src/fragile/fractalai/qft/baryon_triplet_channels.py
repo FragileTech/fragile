@@ -34,6 +34,8 @@ class BaryonTripletCorrelatorConfig:
     ell0: float | None = None
     color_dims: tuple[int, int, int] | None = None
     eps: float = 1e-12
+    operator_mode: str = "det_abs"
+    flux_exp_alpha: float = 1.0
 
 
 @dataclass
@@ -258,6 +260,92 @@ def _compute_determinants_for_indices(
     return det, valid
 
 
+def _compute_triplet_plaquette_for_indices(
+    *,
+    color: Tensor,
+    color_valid: Tensor,
+    alive: Tensor,
+    companion_j: Tensor,
+    companion_k: Tensor,
+    eps: float,
+) -> tuple[Tensor, Tensor]:
+    """Compute companion-triplet plaquette Π_i and validity mask."""
+    if color.ndim != 3 or color.shape[-1] != 3:
+        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+    if color_valid.shape != color.shape[:2]:
+        raise ValueError(
+            f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}."
+        )
+    if alive.shape != color.shape[:2]:
+        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
+    if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
+        msg = "companion indices must have shape [T, N]."
+        raise ValueError(msg)
+
+    _, _, structural_valid = build_companion_triplets(companion_j, companion_k)[1:]
+
+    color_j, in_j = _safe_gather_3d(color, companion_j)
+    color_k, in_k = _safe_gather_3d(color, companion_k)
+    alive_j, _ = _safe_gather_2d(alive, companion_j)
+    alive_k, _ = _safe_gather_2d(alive, companion_k)
+    valid_j, _ = _safe_gather_2d(color_valid, companion_j)
+    valid_k, _ = _safe_gather_2d(color_valid, companion_k)
+
+    z_ij = (torch.conj(color) * color_j).sum(dim=-1)
+    z_jk = (torch.conj(color_j) * color_k).sum(dim=-1)
+    z_ki = (torch.conj(color_k) * color).sum(dim=-1)
+    pi = z_ij * z_jk * z_ki
+
+    finite = torch.isfinite(pi.real) & torch.isfinite(pi.imag)
+    valid = (
+        structural_valid
+        & in_j
+        & in_k
+        & alive
+        & alive_j
+        & alive_k
+        & color_valid
+        & valid_j
+        & valid_k
+        & finite
+    )
+    if eps > 0:
+        valid = valid & (z_ij.abs() > eps) & (z_jk.abs() > eps) & (z_ki.abs() > eps)
+
+    pi = torch.where(valid, pi, torch.zeros_like(pi))
+    return pi, valid
+
+
+def _resolve_baryon_operator_mode(operator_mode: str | None) -> str:
+    """Normalize baryon operator mode name."""
+    if operator_mode is None or not str(operator_mode).strip():
+        return "det_abs"
+    return str(operator_mode).strip().lower()
+
+
+def _baryon_flux_weight_from_plaquette(
+    *,
+    pi: Tensor,
+    operator_mode: str,
+    flux_exp_alpha: float,
+) -> Tensor:
+    """Compute gauge-flux weight from plaquette phase."""
+    phase = torch.angle(pi)
+    if operator_mode == "flux_action":
+        return (1.0 - torch.cos(phase)).float()
+    if operator_mode == "flux_sin2":
+        return torch.sin(phase).square().float()
+    if operator_mode == "flux_exp":
+        action = 1.0 - torch.cos(phase)
+        alpha = float(max(flux_exp_alpha, 0.0))
+        return torch.exp(alpha * action).float()
+    msg = (
+        "Invalid baryon operator_mode. Expected one of "
+        "{'det_abs','flux_action','flux_sin2','flux_exp'}."
+    )
+    raise ValueError(msg)
+
+
 def compute_baryon_correlator_from_color(
     color: Tensor,
     color_valid: Tensor,
@@ -267,6 +355,8 @@ def compute_baryon_correlator_from_color(
     max_lag: int = 80,
     use_connected: bool = True,
     eps: float = 1e-12,
+    operator_mode: str = "det_abs",
+    flux_exp_alpha: float = 1.0,
     frame_indices: list[int] | None = None,
 ) -> BaryonTripletCorrelatorOutput:
     """Compute companion-triplet baryon correlator from precomputed color states.
@@ -285,6 +375,7 @@ def compute_baryon_correlator_from_color(
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
+    resolved_operator_mode = _resolve_baryon_operator_mode(operator_mode)
 
     t_total = int(color.shape[0])
     max_lag = max(0, int(max_lag))
@@ -318,25 +409,54 @@ def compute_baryon_correlator_from_color(
         companion_k=companions_clone,
         eps=eps,
     )
+    source_obs = source_det.abs().float()
+    if resolved_operator_mode != "det_abs":
+        source_pi, source_pi_valid = _compute_triplet_plaquette_for_indices(
+            color=color,
+            color_valid=color_valid,
+            alive=alive,
+            companion_j=companions_distance,
+            companion_k=companions_clone,
+            eps=eps,
+        )
+        source_flux_weight = _baryon_flux_weight_from_plaquette(
+            pi=source_pi,
+            operator_mode=resolved_operator_mode,
+            flux_exp_alpha=float(flux_exp_alpha),
+        )
+        source_valid = source_valid & source_pi_valid
+        source_obs = source_obs * source_flux_weight
+        source_obs = torch.where(source_valid, source_obs, torch.zeros_like(source_obs))
+
     triplet_counts_per_frame = source_valid.sum(dim=1).to(torch.int64)
     n_valid_source_triplets = int(source_valid.sum().item())
-    source_det_real = source_det.real.float()
     operator_baryon_series = torch.zeros(t_total, dtype=torch.float32, device=device)
     valid_t = triplet_counts_per_frame > 0
     if torch.any(valid_t):
         weight = source_valid.to(dtype=torch.float32)
-        sums = (source_det_real * weight).sum(dim=1)
+        sums = (source_obs * weight).sum(dim=1)
         operator_baryon_series[valid_t] = sums[valid_t] / triplet_counts_per_frame[valid_t].to(
             torch.float32
         )
 
-    if n_valid_source_triplets > 0:
-        mean_baryon = source_det[source_valid].mean()
+    if resolved_operator_mode == "det_abs":
+        if n_valid_source_triplets > 0:
+            mean_baryon = source_det[source_valid].mean()
+        else:
+            mean_baryon = torch.zeros((), dtype=source_det.dtype, device=device)
+        disconnected_contribution = float((mean_baryon.conj() * mean_baryon).real.item())
+        source_centered = source_det - mean_baryon
+        mean_baryon_real = float(mean_baryon.real.item())
+        mean_baryon_imag = float(mean_baryon.imag.item()) if mean_baryon.is_complex() else 0.0
     else:
-        mean_baryon = torch.zeros((), dtype=source_det.dtype, device=device)
-
-    disconnected_contribution = float((mean_baryon.conj() * mean_baryon).real.item())
-    source_centered = source_det - mean_baryon
+        if n_valid_source_triplets > 0:
+            mean_obs = source_obs[source_valid].mean()
+        else:
+            mean_obs = torch.zeros((), dtype=torch.float32, device=device)
+        disconnected_contribution = float((mean_obs * mean_obs).item())
+        source_centered_scalar = source_obs - mean_obs
+        mean_baryon_real = float(mean_obs.item())
+        mean_baryon_imag = 0.0
 
     correlator_raw = torch.zeros(n_lags, dtype=torch.float32, device=device)
     correlator_connected = torch.zeros(n_lags, dtype=torch.float32, device=device)
@@ -352,6 +472,24 @@ def compute_baryon_correlator_from_color(
             companion_k=companions_clone[:source_len],
             eps=eps,
         )
+        sink_obs = sink_det.abs().float()
+        if resolved_operator_mode != "det_abs":
+            sink_pi, sink_pi_valid = _compute_triplet_plaquette_for_indices(
+                color=color[lag : lag + source_len],
+                color_valid=color_valid[lag : lag + source_len],
+                alive=alive[lag : lag + source_len],
+                companion_j=companions_distance[:source_len],
+                companion_k=companions_clone[:source_len],
+                eps=eps,
+            )
+            sink_flux_weight = _baryon_flux_weight_from_plaquette(
+                pi=sink_pi,
+                operator_mode=resolved_operator_mode,
+                flux_exp_alpha=float(flux_exp_alpha),
+            )
+            sink_valid = sink_valid & sink_pi_valid
+            sink_obs = sink_obs * sink_flux_weight
+            sink_obs = torch.where(sink_valid, sink_obs, torch.zeros_like(sink_obs))
 
         valid_pair = source_valid[:source_len] & sink_valid
         count = int(valid_pair.sum().item())
@@ -359,11 +497,16 @@ def compute_baryon_correlator_from_color(
         if count == 0:
             continue
 
-        raw_prod = (torch.conj(source_det[:source_len]) * sink_det).real
-        correlator_raw[lag] = raw_prod[valid_pair].mean().float()
-
-        conn_prod = (torch.conj(source_centered[:source_len]) * (sink_det - mean_baryon)).real
-        correlator_connected[lag] = conn_prod[valid_pair].mean().float()
+        if resolved_operator_mode == "det_abs":
+            raw_prod = (torch.conj(source_det[:source_len]) * sink_det).real
+            correlator_raw[lag] = raw_prod[valid_pair].mean().float()
+            conn_prod = (torch.conj(source_centered[:source_len]) * (sink_det - mean_baryon)).real
+            correlator_connected[lag] = conn_prod[valid_pair].mean().float()
+        else:
+            raw_prod = source_obs[:source_len] * sink_obs
+            correlator_raw[lag] = raw_prod[valid_pair].mean().float()
+            conn_prod = source_centered_scalar[:source_len] * (sink_obs - mean_obs)
+            correlator_connected[lag] = conn_prod[valid_pair].mean().float()
 
     selected = correlator_connected if use_connected else correlator_raw
     return BaryonTripletCorrelatorOutput(
@@ -374,8 +517,8 @@ def compute_baryon_correlator_from_color(
         frame_indices=list(range(t_total)) if frame_indices is None else frame_indices,
         triplet_counts_per_frame=triplet_counts_per_frame,
         disconnected_contribution=disconnected_contribution,
-        mean_baryon_real=float(mean_baryon.real.item()),
-        mean_baryon_imag=float(mean_baryon.imag.item()) if mean_baryon.is_complex() else 0.0,
+        mean_baryon_real=mean_baryon_real,
+        mean_baryon_imag=mean_baryon_imag,
         n_valid_source_triplets=n_valid_source_triplets,
         operator_baryon_series=operator_baryon_series,
     )
@@ -454,6 +597,8 @@ def compute_companion_baryon_correlator(
         max_lag=int(config.max_lag),
         use_connected=bool(config.use_connected),
         eps=float(max(config.eps, 0.0)),
+        operator_mode=str(config.operator_mode),
+        flux_exp_alpha=float(config.flux_exp_alpha),
         frame_indices=frame_indices,
     )
 

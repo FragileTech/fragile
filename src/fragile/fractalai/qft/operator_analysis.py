@@ -321,6 +321,9 @@ def build_multiscale_correlator_plot(
     scales: np.ndarray,
     channel_name: str,
     *,
+    reference_result: Any | None = None,
+    reference_label: str = "original (no filter)",
+    reference_scale: float | None = None,
     width: int = 900,
     height: int = 340,
 ) -> hv.Overlay | None:
@@ -387,6 +390,69 @@ def build_multiscale_correlator_plot(
                         label=f"fit m={mass_scaled:.4f}",
                     ).opts(color=color, line_dash="dashed", line_width=1.5, alpha=0.8)
                 )
+    if reference_result is not None and getattr(reference_result, "n_samples", 0) > 0:
+        color = "#e67e22"
+        if reference_scale is not None and math.isfinite(float(reference_scale)):
+            label = f"{reference_label} (R≈{float(reference_scale):.4g})"
+        else:
+            label = reference_label
+        corr = _to_numpy(reference_result.correlator).astype(float, copy=False)
+        dt = float(reference_result.dt) if hasattr(reference_result, "dt") else 1.0
+        t_arr = np.arange(corr.shape[0], dtype=float) * dt
+        mask = np.isfinite(corr) & (corr > 0)
+        if np.count_nonzero(mask) >= 2:
+            t_plot = t_arr[mask]
+            c_plot = corr[mask]
+            elements.append(
+                hv.Scatter(
+                    (t_plot, c_plot),
+                    kdims=["lag"],
+                    vdims=["C(t)"],
+                    label=label,
+                ).opts(color=color, marker="triangle", size=7, alpha=0.95)
+            )
+            corr_err = getattr(reference_result, "correlator_err", None)
+            if corr_err is not None:
+                err_np = _to_numpy(corr_err).astype(float, copy=False)
+                err_mask = mask & (np.arange(len(corr)) < len(err_np))
+                if np.count_nonzero(err_mask) >= 2:
+                    valid_err = err_np[: len(corr)][err_mask]
+                    elements.append(
+                        hv.ErrorBars(
+                            (t_arr[err_mask], corr[err_mask], valid_err),
+                            kdims=["lag"],
+                            vdims=["C(t)", "err"],
+                        ).opts(
+                            color=color,
+                            alpha=0.75,
+                            line_width=1.2,
+                            hooks=[_errorbars_cap_hook(color)],
+                        )
+                    )
+            mass_fit = getattr(reference_result, "mass_fit", None) or {}
+            mass = float(mass_fit.get("mass", 0.0))
+            best_window = mass_fit.get("best_window", {})
+            if not isinstance(best_window, dict):
+                best_window = {}
+            t_start = best_window.get("t_start", 0)
+            dt_scale = dt if dt > 0 else 1.0
+            mass_scaled = mass / dt_scale if mass > 0 and dt_scale > 0 else 0.0
+            if mass_scaled > 0:
+                t_line = np.linspace(float(t_plot.min()), float(t_plot.max()), 200)
+                t_anchor = t_start * dt_scale
+                anchor_idx = int(np.argmin(np.abs(t_plot - t_anchor)))
+                c_anchor = float(c_plot[anchor_idx]) if anchor_idx < len(c_plot) else float(c_plot[0])
+                if c_anchor > 0:
+                    c_line = c_anchor * np.exp(-mass_scaled * (t_line - t_anchor))
+                    c_line = np.maximum(c_line, np.finfo(float).tiny)
+                    elements.append(
+                        hv.Curve(
+                            (t_line, c_line),
+                            kdims=["lag"],
+                            vdims=["C(t)"],
+                            label=f"{reference_label} fit m={mass_scaled:.4f}",
+                        ).opts(color=color, line_dash="dotdash", line_width=1.6, alpha=0.9)
+                    )
     if not elements:
         return None
     overlay = elements[0]
@@ -409,6 +475,9 @@ def build_multiscale_effective_mass_plot(
     scales: np.ndarray,
     channel_name: str,
     *,
+    reference_result: Any | None = None,
+    reference_label: str = "original (no filter)",
+    reference_scale: float | None = None,
     width: int = 900,
     height: int = 340,
 ) -> hv.Overlay | None:
@@ -483,6 +552,71 @@ def build_multiscale_effective_mass_plot(
                     label=f"M={mass:.4f}",
                 ).opts(color=color, line_dash="dashed", line_width=1.5, alpha=0.8)
             )
+    if reference_result is not None and getattr(reference_result, "n_samples", 0) > 0:
+        color = "#e67e22"
+        if reference_scale is not None and math.isfinite(float(reference_scale)):
+            label = f"{reference_label} (R≈{float(reference_scale):.4g})"
+        else:
+            label = reference_label
+        meff = _to_numpy(reference_result.effective_mass).astype(float, copy=False)
+        dt = float(reference_result.dt) if hasattr(reference_result, "dt") else 1.0
+        t_arr = np.arange(meff.shape[0], dtype=float) * dt
+        mask = np.isfinite(meff) & (meff > 0)
+        if np.count_nonzero(mask) >= 2:
+            t_plot = t_arr[mask]
+            m_plot = meff[mask]
+            elements.append(
+                hv.Scatter(
+                    (t_plot, m_plot),
+                    kdims=["lag"],
+                    vdims=["m_eff"],
+                    label=label,
+                ).opts(color=color, marker="triangle", size=7, alpha=0.95)
+            )
+            corr_err = getattr(reference_result, "correlator_err", None)
+            if corr_err is not None:
+                err_np = _to_numpy(corr_err).astype(float, copy=False)
+                corr_np = _to_numpy(reference_result.correlator).astype(float, copy=False)
+                n = min(len(meff), len(corr_np) - 1, len(err_np) - 1)
+                if n >= 2:
+                    c_t = corr_np[:n]
+                    c_tp1 = corr_np[1 : n + 1]
+                    e_t = err_np[:n]
+                    e_tp1 = err_np[1 : n + 1]
+                    with np.errstate(divide="ignore", invalid="ignore"):
+                        rel_t = np.where(np.abs(c_t) > 0, e_t / np.abs(c_t), np.nan)
+                        rel_tp1 = np.where(np.abs(c_tp1) > 0, e_tp1 / np.abs(c_tp1), np.nan)
+                        meff_err = np.sqrt(rel_t**2 + rel_tp1**2) / max(dt, 1e-12)
+                    meff_mask = mask[:n] & np.isfinite(meff_err) & (meff_err > 0)
+                    if np.count_nonzero(meff_mask) >= 2:
+                        eb_y = meff[:n][meff_mask]
+                        eb_e = meff_err[meff_mask]
+                        eb_e = np.minimum(eb_e, eb_y - _MEFF_FLOOR)
+                        eb_e = np.maximum(eb_e, 0.0)
+                        elements.append(
+                            hv.ErrorBars(
+                                (t_arr[:n][meff_mask], eb_y, eb_e),
+                                kdims=["lag"],
+                                vdims=["m_eff", "err"],
+                            ).opts(
+                                color=color,
+                                alpha=0.75,
+                                line_width=1.2,
+                                hooks=[_errorbars_cap_hook(color)],
+                            )
+                        )
+            mass_fit = getattr(reference_result, "mass_fit", None) or {}
+            mass = float(mass_fit.get("mass", 0.0))
+            if mass > 0 and len(t_plot) >= 2:
+                t_line = np.array([float(t_plot.min()), float(t_plot.max())])
+                elements.append(
+                    hv.Curve(
+                        (t_line, [mass, mass]),
+                        kdims=["lag"],
+                        vdims=["m_eff"],
+                        label=f"{reference_label} M={mass:.4f}",
+                    ).opts(color=color, line_dash="dotdash", line_width=1.6, alpha=0.9)
+                )
     if not elements:
         return None
     overlay = elements[0]
@@ -506,6 +640,7 @@ def build_mass_vs_scale_plot(
     consensus: ConsensusResult | None = None,
     *,
     reference_mass: float | None = None,
+    reference_scale: float | None = None,
     width: int = 900,
     height: int = 320,
 ) -> hv.Overlay | None:
@@ -513,10 +648,8 @@ def build_mass_vs_scale_plot(
     valid = [
         m for m in measurements if math.isfinite(m.mass) and m.mass > 0
     ]
-    if not valid:
-        return None
-    n_scales = max(m.scale_index for m in measurements) + 1 if measurements else 1
     elements: list[hv.Element] = []
+    n_scales = max(m.scale_index for m in measurements) + 1 if measurements else 1
     for m in valid:
         color = scale_color_hex(m.scale_index, n_scales)
         elements.append(
@@ -550,6 +683,20 @@ def build_mass_vs_scale_plot(
                 ).opts(color="#2ca02c", alpha=0.12)
             )
     if reference_mass is not None and math.isfinite(reference_mass) and reference_mass > 0:
+        if reference_scale is not None and math.isfinite(float(reference_scale)):
+            x_ref = float(reference_scale)
+        elif valid:
+            x_ref = float(np.max(np.asarray([m.scale for m in valid], dtype=float)))
+        else:
+            x_ref = 0.0
+        elements.append(
+            hv.Scatter(
+                [(x_ref, reference_mass)],
+                kdims=["scale"],
+                vdims=["mass"],
+                label="original (no filter)",
+            ).opts(color="#e67e22", marker="triangle", size=10, alpha=0.95)
+        )
         elements.append(
             hv.HLine(reference_mass).opts(
                 color="#e67e22", line_width=2, line_dash="dashed",
