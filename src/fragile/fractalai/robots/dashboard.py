@@ -4,6 +4,7 @@ import atexit
 import io
 import os
 import threading
+import time
 from typing import Callable
 
 import holoviews as hv
@@ -35,6 +36,16 @@ def _configure_mujoco_offscreen():
     if "MUJOCO_GL" not in os.environ:
         os.environ["MUJOCO_GL"] = "osmesa"
         print("Offscreen mode: set MUJOCO_GL=osmesa", flush=True)
+
+
+def _format_duration(seconds: float) -> str:
+    """Format seconds as ``H:MM:SS`` or ``M:SS``."""
+    s = int(seconds)
+    h, s = divmod(s, 3600)
+    m, s = divmod(s, 60)
+    if h:
+        return f"{h}:{m:02d}:{s:02d}"
+    return f"{m}:{s:02d}"
 
 
 class RoboticGasConfigPanel(param.Parameterized):
@@ -146,6 +157,8 @@ class RoboticGasConfigPanel(param.Parameterized):
             bar_color="primary",
             width=200,
         )
+
+        self.progress_text = pn.pane.Markdown("", styles={"font-family": "monospace"})
 
         self.status_pane = pn.pane.Markdown(
             "Ready to run simulation. "
@@ -260,6 +273,7 @@ class RoboticGasConfigPanel(param.Parameterized):
             state = self.gas.reset()
             print("[worker] reset() done, starting iteration loop...", flush=True)
             infos = []
+            t_start = time.monotonic()
 
             for i in range(self.max_iterations):
                 if self._stop_requested:
@@ -273,10 +287,26 @@ class RoboticGasConfigPanel(param.Parameterized):
                 if i == 0:
                     print("[worker] first step() completed", flush=True)
 
-                # Update progress
-                progress = int((i + 1) / self.max_iterations * 100)
+                # Update progress bar and text
+                done_count = i + 1
+                progress = int(done_count / self.max_iterations * 100)
+                elapsed = time.monotonic() - t_start
+                remaining = (
+                    (elapsed / done_count) * (self.max_iterations - done_count)
+                    if done_count > 0
+                    else 0.0
+                )
+                remaining_str = _format_duration(remaining)
+                pct = done_count / self.max_iterations * 100
+                txt = (
+                    f"`Progress: {done_count}/{self.max_iterations} "
+                    f"({pct:.1f}%) | Remaining: {remaining_str}`"
+                )
                 self._schedule_ui_update(
-                    lambda p=progress: setattr(self.progress_bar, "value", p)
+                    lambda p=progress, t=txt: (
+                        setattr(self.progress_bar, "value", p),
+                        setattr(self.progress_text, "object", t),
+                    )
                 )
 
             # Build history
@@ -351,6 +381,7 @@ class RoboticGasConfigPanel(param.Parameterized):
             self.run_button,
             self.stop_button,
             self.progress_bar,
+            self.progress_text,
             self.status_pane,
             sizing_mode="stretch_width",
         )

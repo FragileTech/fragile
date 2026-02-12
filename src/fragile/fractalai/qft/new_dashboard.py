@@ -3491,6 +3491,8 @@ def _compute_companion_strong_force_bundle(
             "pseudoscalar_score_directed",
             "vector_score_gradient",
             "nucleon_score_signed",
+            "axial_vector_score_directed",
+            "axial_vector_score_gradient",
         }
     ]
     requested = set(channels)
@@ -3519,8 +3521,6 @@ def _compute_companion_strong_force_bundle(
         "vector",
         "axial_vector",
         "vector_score_directed",
-        "axial_vector_score_directed",
-        "axial_vector_score_gradient",
         "vector_score_directed_longitudinal",
         "axial_vector_score_directed_longitudinal",
         "vector_score_directed_transverse",
@@ -3550,8 +3550,6 @@ def _compute_companion_strong_force_bundle(
         }
     if "axial_vector" in requested and bool(settings.companion_include_vector_score_directed_variants):
         requested_vector_channels |= {
-            "axial_vector_score_directed",
-            "axial_vector_score_gradient",
             "axial_vector_score_directed_longitudinal",
             "axial_vector_score_directed_transverse",
         }
@@ -3617,8 +3615,6 @@ def _compute_companion_strong_force_bundle(
         "vector",
         "axial_vector",
         "vector_score_directed",
-        "axial_vector_score_directed",
-        "axial_vector_score_gradient",
         "vector_score_directed_longitudinal",
         "axial_vector_score_directed_longitudinal",
         "vector_score_directed_transverse",
@@ -12150,6 +12146,8 @@ def create_app() -> pn.template.FastListTemplate:
                                 "pseudoscalar_score_directed",
                                 "vector_score_gradient",
                                 "nucleon_score_signed",
+                                "axial_vector_score_directed",
+                                "axial_vector_score_gradient",
                             }
                         ]
                         if (
@@ -12215,8 +12213,6 @@ def create_app() -> pn.template.FastListTemplate:
                         ):
                             requested_channels.extend(
                                 [
-                                    "axial_vector_score_directed",
-                                    "axial_vector_score_gradient",
                                     "axial_vector_score_directed_longitudinal",
                                     "axial_vector_score_directed_transverse",
                                 ]
