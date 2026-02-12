@@ -2949,7 +2949,7 @@ def _compute_anisotropic_meson_phase_results(
             )
         valid_frames = max(valid_frames, int((meson_out.pair_counts_per_frame > 0).sum().item()))
 
-    score_requested = requested_channels & {"scalar_score_directed", "pseudoscalar_score_directed"}
+    score_requested = requested_channels & {"scalar_score_directed"}
     if score_requested:
         meson_score_cfg = MesonPhaseCorrelatorConfig(
             warmup_fraction=float(settings.simulation_range[0]),
@@ -2967,7 +2967,6 @@ def _compute_anisotropic_meson_phase_results(
         )
         meson_score_out = compute_companion_meson_phase_correlator(history, meson_score_cfg)
         n_samples_score = int(meson_score_out.n_valid_source_pairs)
-        pseudoscalar_score_err: torch.Tensor | None = None
         scalar_score_err: torch.Tensor | None = None
         if bool(settings.compute_bootstrap_errors):
             meson_err_score = _bootstrap_errors_batched_scalar_series(
@@ -2983,18 +2982,7 @@ def _compute_anisotropic_meson_phase_results(
                 use_connected=bool(settings.meson_use_connected),
                 n_bootstrap=int(settings.n_bootstrap),
             )
-            pseudoscalar_score_err = meson_err_score[0]
             scalar_score_err = meson_err_score[1]
-        if "pseudoscalar_score_directed" in requested_channels:
-            results["pseudoscalar_score_directed"] = _build_result_from_precomputed_correlator(
-                channel_name="pseudoscalar_score_directed",
-                correlator=meson_score_out.pseudoscalar,
-                dt=dt,
-                config=fit_cfg,
-                n_samples=n_samples_score,
-                series=meson_score_out.operator_pseudoscalar_series,
-                correlator_err=pseudoscalar_score_err,
-            )
         if "scalar_score_directed" in requested_channels:
             results["scalar_score_directed"] = _build_result_from_precomputed_correlator(
                 channel_name="scalar_score_directed",
@@ -3496,7 +3484,14 @@ def _compute_companion_strong_force_bundle(
     channels = [
         c.strip()
         for c in settings.channel_list.split(",")
-        if c.strip() and c.strip() != "tensor_traceless"
+        if c.strip()
+        and c.strip()
+        not in {
+            "tensor_traceless",
+            "pseudoscalar_score_directed",
+            "vector_score_gradient",
+            "nucleon_score_signed",
+        }
     ]
     requested = set(channels)
     requested_meson_channels = requested & {
@@ -3505,7 +3500,6 @@ def _compute_companion_strong_force_bundle(
         "scalar_abs2_vacsub",
         "pseudoscalar",
         "scalar_score_directed",
-        "pseudoscalar_score_directed",
         "scalar_score_weighted",
         "pseudoscalar_score_weighted",
     }
@@ -3514,7 +3508,6 @@ def _compute_companion_strong_force_bundle(
         "nucleon_flux_action",
         "nucleon_flux_sin2",
         "nucleon_flux_exp",
-        "nucleon_score_signed",
         "nucleon_score_abs",
     }
     requested_glueball_channels = requested & {
@@ -3527,7 +3520,6 @@ def _compute_companion_strong_force_bundle(
         "axial_vector",
         "vector_score_directed",
         "axial_vector_score_directed",
-        "vector_score_gradient",
         "axial_vector_score_gradient",
         "vector_score_directed_longitudinal",
         "axial_vector_score_directed_longitudinal",
@@ -3541,19 +3533,18 @@ def _compute_companion_strong_force_bundle(
             "nucleon_flux_exp",
         }
     if "nucleon" in requested and bool(settings.companion_include_nucleon_score_variants):
-        requested_nucleon_channels |= {"nucleon_score_signed", "nucleon_score_abs"}
+        requested_nucleon_channels |= {"nucleon_score_abs"}
     if "scalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
         requested_meson_channels |= {"scalar_score_directed", "scalar_score_weighted"}
     if "scalar" in requested and bool(settings.companion_include_scalar_vacuum_variants):
         requested_meson_channels |= {"scalar_raw", "scalar_abs2_vacsub"}
     if "pseudoscalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
-        requested_meson_channels |= {"pseudoscalar_score_directed", "pseudoscalar_score_weighted"}
+        requested_meson_channels |= {"pseudoscalar_score_weighted"}
     if "glueball" in requested and bool(settings.companion_include_glueball_phase_variants):
         requested_glueball_channels |= {"glueball_phase_action", "glueball_phase_sin2"}
     if "vector" in requested and bool(settings.companion_include_vector_score_directed_variants):
         requested_vector_channels |= {
             "vector_score_directed",
-            "vector_score_gradient",
             "vector_score_directed_longitudinal",
             "vector_score_directed_transverse",
         }
@@ -3609,7 +3600,6 @@ def _compute_companion_strong_force_bundle(
         "scalar_abs2_vacsub",
         "pseudoscalar",
         "scalar_score_directed",
-        "pseudoscalar_score_directed",
         "scalar_score_weighted",
         "pseudoscalar_score_weighted",
     }
@@ -3628,7 +3618,6 @@ def _compute_companion_strong_force_bundle(
         "axial_vector",
         "vector_score_directed",
         "axial_vector_score_directed",
-        "vector_score_gradient",
         "axial_vector_score_gradient",
         "vector_score_directed_longitudinal",
         "axial_vector_score_directed_longitudinal",
@@ -12156,6 +12145,12 @@ def create_app() -> pn.template.FastListTemplate:
                             c.strip()
                             for c in str(companion_strong_force_settings.channel_list).split(",")
                             if c.strip()
+                            and c.strip()
+                            not in {
+                                "pseudoscalar_score_directed",
+                                "vector_score_gradient",
+                                "nucleon_score_signed",
+                            }
                         ]
                         if (
                             "nucleon" in requested_channels
@@ -12168,7 +12163,7 @@ def create_app() -> pn.template.FastListTemplate:
                             "nucleon" in requested_channels
                             and bool(companion_strong_force_settings.companion_include_nucleon_score_variants)
                         ):
-                            requested_channels.extend(["nucleon_score_signed", "nucleon_score_abs"])
+                            requested_channels.extend(["nucleon_score_abs"])
                         if (
                             "scalar" in requested_channels
                             and bool(
@@ -12191,9 +12186,7 @@ def create_app() -> pn.template.FastListTemplate:
                                 companion_strong_force_settings.companion_include_meson_score_directed_variants
                             )
                         ):
-                            requested_channels.extend(
-                                ["pseudoscalar_score_directed", "pseudoscalar_score_weighted"]
-                            )
+                            requested_channels.extend(["pseudoscalar_score_weighted"])
                         if (
                             "glueball" in requested_channels
                             and bool(companion_strong_force_settings.companion_include_glueball_phase_variants)
@@ -12210,7 +12203,6 @@ def create_app() -> pn.template.FastListTemplate:
                             requested_channels.extend(
                                 [
                                     "vector_score_directed",
-                                    "vector_score_gradient",
                                     "vector_score_directed_longitudinal",
                                     "vector_score_directed_transverse",
                                 ]

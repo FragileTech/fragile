@@ -678,7 +678,7 @@ class GasConfigPanel(param.Parameterized):
         if seconds is None:
             return "n/a"
         seconds = max(0.0, seconds)
-        total_seconds = int(round(seconds))
+        total_seconds = round(seconds)
         minutes, secs = divmod(total_seconds, 60)
         hours, minutes = divmod(minutes, 60)
         return f"{hours:d}:{minutes:02d}:{secs:02d}"
@@ -871,6 +871,7 @@ class GasConfigPanel(param.Parameterized):
         widgets = {
             name: self._widget_overrides[name] for name in names if name in self._widget_overrides
         }
+
         def _coerce_widget_value(widget_ref: pn.widgets.Widget, value):
             if isinstance(widget_ref, pnw.EditableIntSlider):
                 try:
@@ -902,6 +903,38 @@ class GasConfigPanel(param.Parameterized):
             widgets=widgets,
             show_name=False,
             sizing_mode="stretch_width",
+        )
+
+    def _thermostat_status_markdown(
+        self,
+        gamma: float,
+        beta_manual: float,
+        auto_thermostat: bool,
+        sigma_v: float,
+    ) -> str:
+        """Build a live thermostat status readout for the Langevin panel."""
+        del gamma, beta_manual, auto_thermostat, sigma_v  # values used via reactive binding
+
+        gamma_val = float(self.kinetic_op.gamma)
+        beta_val = float(self.kinetic_op.beta)
+        auto_mode = bool(getattr(self.kinetic_op, "auto_thermostat", False))
+        sigma_val = float(getattr(self.kinetic_op, "sigma_v", float("nan")))
+        beta_eff = (
+            float(self.kinetic_op.effective_beta())
+            if hasattr(self.kinetic_op, "effective_beta")
+            else beta_val
+        )
+        t_eff = float("inf") if beta_eff <= 0 else 1.0 / beta_eff
+        mode_label = "Auto thermostat (FDT)" if auto_mode else "Manual β thermostat"
+
+        return (
+            "#### Thermostat Readout\n"
+            f"- mode: `{mode_label}`\n"
+            f"- friction `gamma`: `{gamma_val:.6g}`\n"
+            f"- manual `beta`: `{beta_val:.6g}`\n"
+            f"- noise `sigma_v`: `{sigma_val:.6g}`\n"
+            f"- active `beta_effective`: `{beta_eff:.6g}`\n"
+            f"- active `T_effective = 1 / beta_effective`: `{t_eff:.6g}`"
         )
 
     def panel(self) -> pn.Column:
@@ -1052,12 +1085,28 @@ Euclidean time will be added as an additional dimension for QFT analysis.
             langevin_params = [name for name in langevin_params if name not in hidden_params]
             for name in hidden_params:
                 kinetic_widgets.pop(name, None)
-        langevin_panel = pn.Param(
+        thermostat_readout = pn.pane.Markdown(
+            pn.bind(
+                self._thermostat_status_markdown,
+                self.kinetic_op.param.gamma,
+                self.kinetic_op.param.beta,
+                self.kinetic_op.param.auto_thermostat,
+                self.kinetic_op.param.sigma_v,
+            ),
+            sizing_mode="stretch_width",
+        )
+        langevin_controls = pn.Param(
             self.kinetic_op,
             show_name=False,
             parameters=langevin_params,
             widgets=self.kinetic_op.process_widgets(kinetic_widgets),
             default_layout=self.kinetic_op.default_layout,
+        )
+        langevin_panel = pn.Column(
+            thermostat_readout,
+            pn.layout.Divider(),
+            langevin_controls,
+            sizing_mode="stretch_width",
         )
         fast_fitness_button = pn.widgets.Button(
             name="Apply fast fitness preset",
@@ -1071,6 +1120,7 @@ Euclidean time will be added as an additional dimension for QFT analysis.
             end=10000,
             step=1,
         )
+
         def _set_clone_every(event):
             try:
                 value = int(event.new)
