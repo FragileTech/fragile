@@ -641,6 +641,10 @@ def build_mass_vs_scale_plot(
     *,
     reference_mass: float | None = None,
     reference_scale: float | None = None,
+    gevp_mass: float | None = None,
+    gevp_error: float = float("nan"),
+    gevp_scale: float | None = None,
+    gevp_label: str = "GEVP (final)",
     width: int = 900,
     height: int = 320,
 ) -> hv.Overlay | None:
@@ -702,6 +706,50 @@ def build_mass_vs_scale_plot(
                 color="#e67e22", line_width=2, line_dash="dashed",
             )
         )
+    if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
+        if gevp_scale is not None and math.isfinite(float(gevp_scale)):
+            x_gevp = float(gevp_scale)
+        elif valid:
+            x_vals = np.asarray([m.scale for m in valid], dtype=float)
+            finite_x = x_vals[np.isfinite(x_vals)]
+            if finite_x.size > 0:
+                x_max = float(np.max(finite_x))
+                x_span = float(np.max(finite_x) - np.min(finite_x))
+                x_gevp = x_max + (0.05 * x_span if x_span > 0 else max(abs(x_max) * 0.05, 1e-3))
+            else:
+                x_gevp = 0.0
+        elif reference_scale is not None and math.isfinite(float(reference_scale)):
+            x_gevp = float(reference_scale)
+        else:
+            x_gevp = 0.0
+        gevp_color = "#8c564b"
+        elements.append(
+            hv.Scatter(
+                [(x_gevp, gevp_mass)],
+                kdims=["scale"],
+                vdims=["mass"],
+                label=gevp_label,
+            ).opts(color=gevp_color, marker="diamond", size=10, alpha=0.95)
+        )
+        if math.isfinite(gevp_error) and gevp_error > 0:
+            elements.append(
+                hv.ErrorBars(
+                    [(x_gevp, gevp_mass, float(gevp_error))],
+                    kdims=["scale"],
+                    vdims=["mass", "mass_error"],
+                ).opts(color=gevp_color, line_width=1.6, alpha=0.9)
+            )
+            elements.append(
+                hv.HSpan(
+                    float(gevp_mass - gevp_error),
+                    float(gevp_mass + gevp_error),
+                ).opts(color=gevp_color, alpha=0.10)
+            )
+        elements.append(
+            hv.HLine(float(gevp_mass)).opts(
+                color=gevp_color, line_width=2, line_dash="dotdash",
+            )
+        )
     if not elements:
         return None
     overlay = elements[0]
@@ -724,6 +772,8 @@ def build_consensus_plot(
     channel_name: str,
     *,
     reference_mass: float | None = None,
+    gevp_mass: float | None = None,
+    gevp_error: float = float("nan"),
     width: int = 760,
     height: int = 320,
 ) -> hv.Overlay | None:
@@ -791,6 +841,16 @@ def build_consensus_plot(
         overlay *= hv.HLine(float(reference_mass)).opts(
             color="#e67e22", line_width=2, line_dash="dashed",
         )
+    if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
+        gevp_color = "#8c564b"
+        overlay *= hv.HLine(float(gevp_mass)).opts(
+            color=gevp_color, line_width=2, line_dash="dotdash",
+        )
+        if math.isfinite(gevp_error) and gevp_error > 0:
+            overlay *= hv.HSpan(
+                float(gevp_mass - gevp_error),
+                float(gevp_mass + gevp_error),
+            ).opts(color=gevp_color, alpha=0.10)
     xticks = [(float(i), m.label) for i, m in enumerate(valid)]
     overlay = overlay.opts(
         xlim=(-0.5, float(len(valid) - 0.5)),

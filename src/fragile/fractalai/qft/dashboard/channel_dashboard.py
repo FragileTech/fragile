@@ -429,6 +429,8 @@ def _analyze_operator_quality_vectorized(
         "eigenvalues": evals.detach().cpu().numpy(),
         "relative_eigenvalues": rel_eval.detach().cpu().numpy(),
         "significant_mask": sig_mask.detach().cpu().numpy().astype(bool, copy=False),
+        "correlation_matrix": c0.detach().cpu().numpy(),
+        "operator_labels": [str(entry["operator_label"]) for entry in entries],
         "n_significant": int(n_significant),
         "cond_c0": float(cond_c0),
         "n_operators": int(k_count),
@@ -486,6 +488,95 @@ def _build_eigenspectrum_plot(
     return (bars * line).opts(legend_position="top_right")
 
 
+def _build_kept_eigenvalue_table(analysis: dict[str, Any]) -> pd.DataFrame:
+    """Create a table for significant/kept GEVP eigen-modes and ratios."""
+    evals = np.asarray(analysis.get("eigenvalues", []), dtype=float)
+    rel = np.asarray(analysis.get("relative_eigenvalues", []), dtype=float)
+    sig = np.asarray(analysis.get("significant_mask", []), dtype=bool)
+    if evals.size == 0 or rel.size == 0 or sig.size == 0:
+        return pd.DataFrame()
+
+    n = min(evals.size, rel.size, sig.size)
+    evals = evals[:n]
+    rel = rel[:n]
+    sig = sig[:n]
+    kept_idx = np.flatnonzero(sig)
+    if kept_idx.size == 0:
+        return pd.DataFrame()
+
+    top_mode = int(kept_idx[0])
+    top_eval = float(evals[top_mode])
+    rows: list[dict[str, float | int]] = []
+    prev_eval = float("nan")
+    for kept_rank, mode in enumerate(kept_idx, start=1):
+        eig = float(evals[int(mode)])
+        ratio_to_top = float("nan")
+        if math.isfinite(top_eval) and top_eval != 0.0 and math.isfinite(eig):
+            ratio_to_top = eig / top_eval
+        ratio_to_prev = float("nan")
+        if kept_rank > 1 and math.isfinite(prev_eval) and prev_eval != 0.0 and math.isfinite(eig):
+            ratio_to_prev = eig / prev_eval
+        rows.append(
+            {
+                "kept_rank": int(kept_rank),
+                "mode": int(mode),
+                "eigenvalue": eig,
+                "abs_rel_to_top": float(abs(rel[int(mode)])),
+                "ratio_to_top": ratio_to_top,
+                "ratio_to_prev_kept": ratio_to_prev,
+            }
+        )
+        prev_eval = eig
+    return pd.DataFrame(rows)
+
+
+def _build_correlation_matrix_heatmap(
+    analysis: dict[str, Any],
+    *,
+    family_label: str,
+) -> hv.HeatMap | None:
+    """Create a heatmap for the operator correlation matrix C(t0)."""
+    matrix = np.asarray(analysis.get("correlation_matrix", []), dtype=float)
+    labels = list(analysis.get("operator_labels", []))
+    if matrix.ndim != 2 or matrix.shape[0] == 0 or matrix.shape[0] != matrix.shape[1]:
+        return None
+
+    n = int(matrix.shape[0])
+    rows: list[dict[str, Any]] = []
+    for i in range(n):
+        for j in range(n):
+            rows.append(
+                {
+                    "mode_i": int(i),
+                    "mode_j": int(j),
+                    "operator_i": labels[i] if i < len(labels) else f"op{i}",
+                    "operator_j": labels[j] if j < len(labels) else f"op{j}",
+                    "corr": float(matrix[i, j]) if math.isfinite(float(matrix[i, j])) else float("nan"),
+                }
+            )
+    df = pd.DataFrame(rows)
+
+    finite = matrix[np.isfinite(matrix)]
+    abs_max = float(np.nanmax(np.abs(finite))) if finite.size > 0 else 1.0
+    abs_max = max(abs_max, 1e-6)
+    return hv.HeatMap(
+        df,
+        kdims=["mode_j", "mode_i"],
+        vdims=[("corr", "C(t0)"), "operator_i", "operator_j"],
+    ).opts(
+        width=900,
+        height=340,
+        xlabel="Mode j",
+        ylabel="Mode i",
+        title=f"GEVP Correlation Matrix C(t0): {family_label}",
+        cmap="RdBu_r",
+        clim=(-abs_max, abs_max),
+        colorbar=True,
+        tools=["hover"],
+        show_grid=True,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Dataclass holding multiscale-tab widget references
 # ---------------------------------------------------------------------------
@@ -509,6 +600,8 @@ class MultiscaleTabWidgets:
     consensus_plot: pn.pane.HoloViews
     operator_quality_summary: pn.pane.Markdown
     eigenspectrum_plot: pn.pane.HoloViews
+    eigenvalue_table: pn.widgets.Tabulator
+    correlation_matrix_heatmap: pn.pane.HoloViews
     operator_quality_table: pn.widgets.Tabulator
     per_scale_plots: pn.Column
 
@@ -578,6 +671,15 @@ def create_multiscale_widgets() -> MultiscaleTabWidgets:
         eigenspectrum_plot=pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False,
         ),
+        eigenvalue_table=pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        ),
+        correlation_matrix_heatmap=pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False,
+        ),
         operator_quality_table=pn.widgets.Tabulator(
             pd.DataFrame(),
             pagination="remote",
@@ -635,6 +737,14 @@ def build_multiscale_tab_layout(w: MultiscaleTabWidgets) -> pn.Column:
         ),
         w.operator_quality_summary,
         w.eigenspectrum_plot,
+        pn.pane.Markdown("### Kept GEVP Modes"),
+        pn.pane.Markdown(
+            "_Significant eigen-modes retained by the relative-eigenvalue cutoff. "
+            "Ratios help gauge spectral separation._"
+        ),
+        w.eigenvalue_table,
+        pn.pane.Markdown("### Operator Correlation Matrix"),
+        w.correlation_matrix_heatmap,
         pn.pane.Markdown("### Operator Quality Report"),
         w.operator_quality_table,
         pn.layout.Divider(),
@@ -671,6 +781,8 @@ def clear_multiscale_tab(w: MultiscaleTabWidgets, status_text: str) -> None:
         "**Operator quality report:** select a channel to inspect eigen-spectrum and quality metrics."
     )
     w.eigenspectrum_plot.object = None
+    w.eigenvalue_table.value = pd.DataFrame()
+    w.correlation_matrix_heatmap.object = None
     w.operator_quality_table.value = pd.DataFrame()
     w.per_scale_plots.objects = []
 
@@ -944,13 +1056,13 @@ def update_multiscale_tab(
                 orig_result = orig_results.get(mapped_key)
                 if orig_result is not None:
                     original_result_obj = orig_result
-                    _mfit = getattr(orig_result, "mass_fit", None)
-                    if isinstance(_mfit, dict):
-                        _om = float(_mfit.get("mass", float("nan")))
-                        if math.isfinite(_om) and _om > 0:
-                            original_mass = _om
-                            original_error = float(_mfit.get("mass_error", float("nan")))
-                            original_r2 = float(_mfit.get("r_squared", float("nan")))
+                    mass_fit = getattr(orig_result, "mass_fit", None)
+                    if isinstance(mass_fit, dict):
+                        original_mass_candidate = float(mass_fit.get("mass", float("nan")))
+                        if math.isfinite(original_mass_candidate) and original_mass_candidate > 0:
+                            original_mass = original_mass_candidate
+                            original_error = float(mass_fit.get("mass_error", float("nan")))
+                            original_r2 = float(mass_fit.get("r_squared", float("nan")))
             base_name = _base_channel_name(raw_channel_name)
             is_companion_selection = _is_companion_channel(raw_channel_name)
             if is_companion_selection:
@@ -974,18 +1086,33 @@ def update_multiscale_tab(
                 if _is_companion_original_result(str(key), orig_result) != is_companion_selection:
                     continue
                 original_result_obj = orig_result
-                _mfit = getattr(orig_result, "mass_fit", None)
-                if not isinstance(_mfit, dict):
+                mass_fit = getattr(orig_result, "mass_fit", None)
+                if not isinstance(mass_fit, dict):
                     continue
-                _om = float(_mfit.get("mass", float("nan")))
-                if not (math.isfinite(_om) and _om > 0):
+                original_mass_candidate = float(mass_fit.get("mass", float("nan")))
+                if not (math.isfinite(original_mass_candidate) and original_mass_candidate > 0):
                     continue
-                original_mass = _om
-                original_error = float(_mfit.get("mass_error", float("nan")))
-                original_r2 = float(_mfit.get("r_squared", float("nan")))
+                original_mass = original_mass_candidate
+                original_error = float(mass_fit.get("mass_error", float("nan")))
+                original_r2 = float(mass_fit.get("r_squared", float("nan")))
                 break
 
         family_key = _channel_family_key(raw_channel_name)
+        gevp_mass: float | None = None
+        gevp_error = float("nan")
+        if _is_companion_channel(raw_channel_name):
+            gevp_channel_name = f"{family_key}_gevp"
+            gevp_results_all = state.get("companion_strong_force_results")
+            if isinstance(gevp_results_all, dict):
+                gevp_candidate = gevp_results_all.get(gevp_channel_name)
+                if gevp_candidate is not None:
+                    gevp_fit = getattr(gevp_candidate, "mass_fit", None)
+                    if isinstance(gevp_fit, dict):
+                        gm = float(gevp_fit.get("mass", float("nan")))
+                        if math.isfinite(gm) and gm > 0:
+                            gevp_mass = gm
+                            gevp_error = float(gevp_fit.get("mass_error", float("nan")))
+
         quality_entries_raw = _collect_family_operator_entries(
             ms_output,
             family_key,
@@ -1052,7 +1179,14 @@ def update_multiscale_tab(
                     f"_Shown:_ `{len(quality_entries)}` operators; "
                     f"_Excluded:_ `{len(filtered_out)}`."
                 )
+            if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
+                gevp_line = f"- Final GEVP mass: `{gevp_mass:.6g}`"
+                if math.isfinite(gevp_error) and gevp_error > 0:
+                    gevp_line += f" ± `{gevp_error:.2g}`"
+                w.operator_quality_summary.object += f"  \n{gevp_line}"
             w.eigenspectrum_plot.object = None
+            w.eigenvalue_table.value = pd.DataFrame()
+            w.correlation_matrix_heatmap.object = None
             w.operator_quality_table.value = (
                 pd.DataFrame(
                     [
@@ -1093,6 +1227,11 @@ def update_multiscale_tab(
                 f"_Top operators by importance:_ `{top_ops}`.  \n"
                 "_Table includes only operators passing active GEVP-quality filters._"
             )
+            if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
+                gevp_line = f"- Final GEVP mass: `{gevp_mass:.6g}`"
+                if math.isfinite(gevp_error) and gevp_error > 0:
+                    gevp_line += f" ± `{gevp_error:.2g}`"
+                w.operator_quality_summary.object += f"  \n{gevp_line}"
             qdf = pd.DataFrame(quality_analysis.get("rows", []))
             if not qdf.empty:
                 qdf = qdf.sort_values(
@@ -1102,6 +1241,11 @@ def update_multiscale_tab(
                 )
             w.operator_quality_table.value = qdf
             w.eigenspectrum_plot.object = _build_eigenspectrum_plot(
+                quality_analysis,
+                family_label=family_key,
+            )
+            w.eigenvalue_table.value = _build_kept_eigenvalue_table(quality_analysis)
+            w.correlation_matrix_heatmap.object = _build_correlation_matrix_heatmap(
                 quality_analysis,
                 family_label=family_key,
             )
@@ -1128,26 +1272,50 @@ def update_multiscale_tab(
                 display_channel_name,
                 reference_mass=original_mass,
                 reference_scale=original_scale_estimate,
+                gevp_mass=gevp_mass,
+                gevp_error=gevp_error,
+                gevp_scale=original_scale_estimate,
             )
-            if original_mass is not None:
-                w.estimator_table.value = pd.DataFrame(
-                    build_estimator_table_rows(
-                        [],
-                        original_mass=original_mass,
-                        original_error=original_error,
-                        original_r2=original_r2,
-                        original_scale=original_scale_estimate,
+            est_rows = build_estimator_table_rows(
+                [],
+                original_mass=original_mass,
+                original_error=original_error,
+                original_r2=original_r2,
+                original_scale=original_scale_estimate,
+            )
+            if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
+                gevp_row: dict[str, float | str] = {
+                    "scale": "GEVP (final)",
+                    "scale_value": float("nan"),
+                    "mass": float(gevp_mass),
+                    "mass_error": float(gevp_error),
+                    "mass_error_pct": (
+                        abs(float(gevp_error) / float(gevp_mass)) * 100.0
+                        if math.isfinite(gevp_error) and gevp_error > 0
+                        else float("nan")
+                    ),
+                    "r_squared": float("nan"),
+                }
+                if original_mass is not None and math.isfinite(original_mass) and original_mass > 0:
+                    gevp_row["delta_vs_original_pct"] = (
+                        (float(gevp_mass) - float(original_mass)) / float(original_mass) * 100.0
                     )
-                )
+                est_rows.append(gevp_row)
+            w.estimator_table.value = pd.DataFrame(est_rows) if est_rows else pd.DataFrame()
+            if original_mass is not None:
                 w.consensus_summary.object = (
                     f"**{display_channel_name}:** original-only result available; "
                     "no multiscale sweep was produced for this channel in the current run."
                 )
             else:
-                w.estimator_table.value = pd.DataFrame()
                 w.consensus_summary.object = (
                     f"**{display_channel_name}:** no per-scale or original results available."
                 )
+            if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
+                gevp_line = f"- Final GEVP mass: `{gevp_mass:.6g}`"
+                if math.isfinite(gevp_error) and gevp_error > 0:
+                    gevp_line += f" ± `{gevp_error:.2g}`"
+                w.consensus_summary.object += f"  \n{gevp_line}"
             w.pairwise_table.value = pd.DataFrame()
             w.systematics_badge.object = (
                 "Systematics verdict: no multiscale sweep available for this channel."
@@ -1182,6 +1350,9 @@ def update_multiscale_tab(
             consensus=bundle.consensus,
             reference_mass=original_mass,
             reference_scale=original_scale_estimate,
+            gevp_mass=gevp_mass,
+            gevp_error=gevp_error,
+            gevp_scale=original_scale_estimate,
         )
         est_rows = build_estimator_table_rows(
             bundle.measurements,
@@ -1190,6 +1361,24 @@ def update_multiscale_tab(
             original_r2=original_r2,
             original_scale=original_scale_estimate,
         )
+        if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
+            gevp_row: dict[str, float | str] = {
+                "scale": "GEVP (final)",
+                "scale_value": float("nan"),
+                "mass": float(gevp_mass),
+                "mass_error": float(gevp_error),
+                "mass_error_pct": (
+                    abs(float(gevp_error) / float(gevp_mass)) * 100.0
+                    if math.isfinite(gevp_error) and gevp_error > 0
+                    else float("nan")
+                ),
+                "r_squared": float("nan"),
+            }
+            if original_mass is not None and math.isfinite(original_mass) and original_mass > 0:
+                gevp_row["delta_vs_original_pct"] = (
+                    (float(gevp_mass) - float(original_mass)) / float(original_mass) * 100.0
+                )
+            est_rows.append(gevp_row)
         w.estimator_table.value = (
             pd.DataFrame(est_rows) if est_rows else pd.DataFrame()
         )
@@ -1205,6 +1394,16 @@ def update_multiscale_tab(
             bundle.consensus, bundle.discrepancies, display_channel_name,
             reference_mass=original_mass,
         )
+        if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
+            gevp_line = f"- Final GEVP mass: `{gevp_mass:.6g}`"
+            if math.isfinite(gevp_error) and gevp_error > 0:
+                gevp_line += f" ± `{gevp_error:.2g}`"
+            if math.isfinite(bundle.consensus.mass) and bundle.consensus.mass > 0:
+                delta_gevp_pct = (
+                    (float(bundle.consensus.mass) - float(gevp_mass)) / float(gevp_mass) * 100.0
+                )
+                gevp_line += f" (consensus delta `{delta_gevp_pct:+.2f}%`)"
+            w.consensus_summary.object += f"  \n{gevp_line}"
         w.systematics_badge.object = (
             f"Systematics verdict: {bundle.verdict.label}. {bundle.verdict.details}"
         )
@@ -1213,6 +1412,8 @@ def update_multiscale_tab(
         w.consensus_plot.object = build_consensus_plot(
             bundle.measurements, bundle.consensus, display_channel_name,
             reference_mass=original_mass,
+            gevp_mass=gevp_mass,
+            gevp_error=gevp_error,
         )
         # Per-scale ChannelPlot layouts.
         per_scale_layouts = build_per_scale_channel_plots(channel_results, sv)
