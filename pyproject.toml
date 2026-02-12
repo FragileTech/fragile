@@ -71,6 +71,8 @@ dependencies = [
     "pillow>=12.1.0",
     "networkx>=3.4.2",
     "seaborn>=0.13.2",
+    "dm-control>=1.0.0",
+    "mujoco>=3.0.0",
 ]
 [project.urls]
 # important URLs for this project

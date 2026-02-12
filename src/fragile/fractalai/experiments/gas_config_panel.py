@@ -430,7 +430,9 @@ class GasConfigPanel(param.Parameterized):
 
     @property
     def beta(self):
-        """Backward compatibility: delegate to kinetic_op.beta"""
+        """Backward compatibility: delegate to kinetic effective β."""
+        if hasattr(self.kinetic_op, "effective_beta"):
+            return float(self.kinetic_op.effective_beta())
         return self.kinetic_op.beta
 
     @property

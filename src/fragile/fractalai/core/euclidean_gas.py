@@ -324,7 +324,13 @@ class EuclideanGas(PanelModel):
 
         if v_init is None:
             # Initialize velocities from thermal distribution
-            v_std = 1.0 / torch.sqrt(torch.tensor(self.kinetic_op.beta, dtype=self.torch_dtype))
+            beta_init = (
+                float(self.kinetic_op.effective_beta())
+                if hasattr(self.kinetic_op, "effective_beta")
+                else float(self.kinetic_op.beta)
+            )
+            beta_init = max(beta_init, 1e-12)
+            v_std = 1.0 / torch.sqrt(torch.tensor(beta_init, dtype=self.torch_dtype))
             v_init = v_std * torch.randn(N, d, device=self.device, dtype=self.torch_dtype)
 
         return SwarmState(
@@ -1066,6 +1072,13 @@ class EuclideanGas(PanelModel):
                 "kinetic": {
                     "gamma": self.kinetic_op.gamma,
                     "beta": self.kinetic_op.beta,
+                    "auto_thermostat": getattr(self.kinetic_op, "auto_thermostat", False),
+                    "sigma_v": getattr(self.kinetic_op, "sigma_v", None),
+                    "beta_effective": (
+                        float(self.kinetic_op.effective_beta())
+                        if hasattr(self.kinetic_op, "effective_beta")
+                        else float(self.kinetic_op.beta)
+                    ),
                     "delta_t": self.kinetic_op.delta_t,
                     "n_kinetic_steps": getattr(self.kinetic_op, "n_kinetic_steps", 1),
                     "epsilon_F": self.kinetic_op.epsilon_F,

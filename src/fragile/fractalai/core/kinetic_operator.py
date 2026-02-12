@@ -7,6 +7,7 @@ providing Langevin dynamics integration using the BAOAB scheme.
 Mathematical notation:
 - gamma (γ): Friction coefficient
 - beta (β): Inverse temperature 1/(k_B T)
+- sigma_v (σ_v): Velocity noise scale in dv = ... + σ_v dW
 - delta_t (Δt): Time step size
 """
 
@@ -86,6 +87,7 @@ class KineticOperator(PanelModel):
     Mathematical notation:
     - gamma (γ): Friction coefficient
     - beta (β): Inverse temperature 1/(k_B T)
+    - sigma_v (σ_v): Velocity noise scale when auto_thermostat=True
     - delta_t (Δt): Time step size
     - epsilon_F (ε_F): Adaptation rate for fitness force
     - epsilon_Sigma (ε_Σ): Hessian regularization parameter
@@ -111,7 +113,21 @@ class KineticOperator(PanelModel):
         bounds=(0, None),
         softbounds=(0.01, 10.0),
         inclusive_bounds=(False, True),
-        doc="Inverse temperature 1/(k_B T) (β)",
+        doc="Manual inverse temperature 1/(k_B T) (β), used when auto_thermostat=False",
+    )
+    auto_thermostat = param.Boolean(
+        default=False,
+        doc=(
+            "Enable fluctuation-dissipation auto thermostat: "
+            "use β_eff = 2γ / σ_v² instead of manual β."
+        ),
+    )
+    sigma_v = param.Number(
+        default=2**0.5,
+        bounds=(0, None),
+        softbounds=(0.05, 5.0),
+        inclusive_bounds=(False, True),
+        doc="Target velocity noise scale (σ_v) used when auto_thermostat=True",
     )
     delta_t = param.Number(
         default=0.01,
@@ -258,8 +274,21 @@ class KineticOperator(PanelModel):
             "beta": {
                 "type": pn.widgets.EditableFloatSlider,
                 "width": INPUT_WIDTH,
-                "name": "β (inverse temp)",
+                "name": "β (manual inverse temp)",
                 "start": 0.1,
+                "end": 5.0,
+                "step": 0.05,
+            },
+            "auto_thermostat": {
+                "type": pn.widgets.Checkbox,
+                "width": INPUT_WIDTH,
+                "name": "Auto thermostat (FDT)",
+            },
+            "sigma_v": {
+                "type": pn.widgets.EditableFloatSlider,
+                "width": INPUT_WIDTH,
+                "name": "σ_v (noise scale)",
+                "start": 0.05,
                 "end": 5.0,
                 "step": 0.05,
             },
@@ -425,6 +454,8 @@ class KineticOperator(PanelModel):
         return [
             "gamma",
             "beta",
+            "auto_thermostat",
+            "sigma_v",
             "delta_t",
             "n_kinetic_steps",
             "integrator",
@@ -455,6 +486,8 @@ class KineticOperator(PanelModel):
         gamma: float,
         beta: float,
         delta_t: float,
+        auto_thermostat: bool = False,
+        sigma_v: float = 2**0.5,
         n_kinetic_steps: int = 1,
         integrator: str = "boris-baoab",
         epsilon_F: float = 0.0,
@@ -491,6 +524,8 @@ class KineticOperator(PanelModel):
             gamma: Friction coefficient (γ)
             beta: Inverse temperature 1/(k_B T) (β)
             delta_t: Time step size (Δt)
+            auto_thermostat: If True, tie β to γ using β_eff = 2γ / σ_v²
+            sigma_v: Target velocity noise scale (σ_v) for auto thermostat mode
             n_kinetic_steps: Number of kinetic substeps per algorithm iteration
             integrator: Integration scheme (default: "boris-baoab")
             epsilon_F: Adaptation rate for fitness force (ε_F)
@@ -534,6 +569,8 @@ class KineticOperator(PanelModel):
         super().__init__(
             gamma=gamma,
             beta=beta,
+            auto_thermostat=auto_thermostat,
+            sigma_v=sigma_v,
             delta_t=delta_t,
             n_kinetic_steps=n_kinetic_steps,
             integrator=integrator,
@@ -579,16 +616,44 @@ class KineticOperator(PanelModel):
             msg = f"curl_field must be callable, got {type(self.curl_field)}"
             raise TypeError(msg)
 
-        # Precompute BAOAB constants
-        self.dt = self.delta_t
+        self._thermostat_eps = 1e-12
+        self.beta_effective = float(self.beta)
 
-        # O-step coefficients (for isotropic case)
-        self.c1 = torch.exp(torch.tensor(-self.gamma * self.dt, dtype=self.dtype))
-        self.c2 = torch.sqrt((1.0 - self.c1**2) / self.beta)  # Noise amplitude
+        # Precompute BAOAB constants (updated each apply in case params changed via UI).
+        self._refresh_ou_coefficients()
+
+    def effective_beta(self) -> float:
+        """Return effective inverse temperature used by the OU thermostat."""
+        beta_manual = max(float(self.beta), self._thermostat_eps)
+        if not self.auto_thermostat:
+            return beta_manual
+
+        gamma = max(float(self.gamma), self._thermostat_eps)
+        sigma_v_sq = max(float(self.sigma_v) ** 2, self._thermostat_eps)
+        beta_fdt = 2.0 * gamma / sigma_v_sq
+        return max(beta_fdt, self._thermostat_eps)
+
+    def effective_temperature(self) -> float:
+        """Return effective temperature T_eff = 1 / β_eff used by the OU thermostat."""
+        return 1.0 / self.effective_beta()
+
+    def _refresh_ou_coefficients(self) -> None:
+        """Refresh BAOAB O-step coefficients from current thermostat parameters."""
+        self.dt = float(self.delta_t)
+        self.beta_effective = self.effective_beta()
+        self.c1 = torch.exp(
+            torch.tensor(-float(self.gamma) * self.dt, dtype=self.dtype, device=self.device)
+        )
+        self.c2 = torch.sqrt(
+            torch.tensor(1.0, dtype=self.dtype, device=self.device) - self.c1**2
+        ) / torch.sqrt(
+            torch.tensor(self.beta_effective, dtype=self.dtype, device=self.device)
+        )
 
     def noise_std(self) -> float:
         """Standard deviation for BAOAB noise (isotropic case)."""
-        return (1.0 - torch.exp(torch.tensor(-2 * self.gamma * self.delta_t))).sqrt().item()
+        self._refresh_ou_coefficients()
+        return float(self.c2.item())
 
     def _compute_force(
         self,
@@ -1213,6 +1278,7 @@ class KineticOperator(PanelModel):
             using the FitnessOperator, and passed here as precomputed values.
             Reference: Geometric Viscous Fluid Model (11_geometric_gas.md)
         """
+        self._refresh_ou_coefficients()
         x, v = state.x.clone(), state.v.clone()
         N, d = state.N, state.d
         info = {}
