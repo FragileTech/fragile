@@ -68,6 +68,8 @@ COMPANION_CHANNEL_MAP: dict[str, str] = {
     "pseudoscalar_score_directed": "pseudoscalar_score_directed_companion",
     "scalar_score_weighted": "scalar_score_weighted_companion",
     "pseudoscalar_score_weighted": "pseudoscalar_score_weighted_companion",
+    "scalar_raw": "scalar_raw_companion",
+    "scalar_abs2_vacsub": "scalar_abs2_vacsub_companion",
     "vector": "vector_companion",
     "axial_vector": "axial_vector_companion",
     "vector_score_directed": "vector_score_directed_companion",
@@ -143,6 +145,10 @@ class MultiscaleStrongForceConfig:
     fit_stop: int | None = None
     min_fit_points: int = 2
     window_widths: list[int] | None = None
+    best_min_r2: float = -1.0
+    best_min_windows: int = 0
+    best_max_error_pct: float = 30.0
+    best_remove_artifacts: bool = False
 
     # Bootstrap controls
     compute_bootstrap_errors: bool = False
@@ -224,15 +230,96 @@ def _fit_mass_only(correlator: Tensor, dt: float, config: CorrelatorConfig) -> f
     return mass
 
 
-def _select_best_scale(results: list[ChannelCorrelatorResult]) -> int:
-    """Select best scale index using AIC/R²/mass-error fallback."""
-    best_idx = 0
+def _extract_n_valid_windows(result: ChannelCorrelatorResult) -> int:
+    """Extract valid fit-window count from a channel result."""
+    fit = result.mass_fit or {}
+    raw = fit.get("n_valid_windows", None)
+    if raw is not None:
+        try:
+            return max(0, int(raw))
+        except (TypeError, ValueError):
+            pass
+
+    window_masses = getattr(result, "window_masses", None)
+    if isinstance(window_masses, Tensor):
+        if int(window_masses.numel()) <= 0:
+            return 0
+        return int(torch.isfinite(window_masses).sum().item())
+    if isinstance(window_masses, list | tuple):
+        count = 0
+        for value in window_masses:
+            try:
+                fv = float(value)
+            except (TypeError, ValueError):
+                continue
+            if math.isfinite(fv):
+                count += 1
+        return count
+    return 0
+
+
+def _passes_best_scale_filters(
+    result: ChannelCorrelatorResult,
+    *,
+    min_r2: float,
+    min_windows: int,
+    max_error_pct: float,
+    remove_artifacts: bool,
+) -> bool:
+    """Return True when a result passes active best-scale quality gates."""
+    fit = result.mass_fit or {}
+    mass = float(fit.get("mass", float("nan")))
+    if not math.isfinite(mass) or mass <= 0:
+        return False
+
+    r2 = float(fit.get("r_squared", float("nan")))
+    if math.isfinite(min_r2) and (not math.isfinite(r2) or r2 < min_r2):
+        return False
+
+    n_windows = _extract_n_valid_windows(result)
+    if n_windows < max(0, int(min_windows)):
+        return False
+
+    mass_err = float(fit.get("mass_error", float("nan")))
+    if math.isfinite(max_error_pct) and max_error_pct >= 0:
+        if math.isfinite(mass_err) and mass_err >= 0 and mass > 0:
+            err_pct = abs(mass_err / mass) * 100.0
+        else:
+            err_pct = float("inf")
+        if err_pct > max_error_pct:
+            return False
+
+    if remove_artifacts:
+        if not math.isfinite(mass_err):
+            return False
+        if mass_err == 0.0:
+            return False
+        if mass == 0.0:
+            return False
+    return True
+
+
+def _select_best_scale(
+    results: list[ChannelCorrelatorResult],
+    *,
+    min_r2: float = -1.0,
+    min_windows: int = 0,
+    max_error_pct: float = 30.0,
+    remove_artifacts: bool = False,
+) -> int | None:
+    """Select best scale index using AIC/R²/mass-error fallback under quality filters."""
+    best_idx: int | None = None
     best_key = (float("inf"), float("inf"), float("inf"))
     for idx, result in enumerate(results):
-        fit = result.mass_fit or {}
-        mass = float(fit.get("mass", 0.0))
-        if not math.isfinite(mass) or mass <= 0:
+        if not _passes_best_scale_filters(
+            result,
+            min_r2=min_r2,
+            min_windows=min_windows,
+            max_error_pct=max_error_pct,
+            remove_artifacts=remove_artifacts,
+        ):
             continue
+        fit = result.mass_fit or {}
         best_window = fit.get("best_window", {}) if isinstance(fit.get("best_window", {}), dict) else {}
         aic = float(best_window.get("aic", float("inf")))
         if not math.isfinite(aic):
@@ -652,7 +739,12 @@ def _compute_channel_series_from_kernels(
         triplet_radius = torch.maximum(d_ij, torch.maximum(d_ik, d_jk))
         triplet_valid = triplet_valid_2d[:, None, :] & (triplet_radius[:, None, :] <= scales_view)
 
-        if "scalar_companion" in channels or "pseudoscalar_companion" in channels:
+        if (
+            "scalar_companion" in channels
+            or "scalar_raw_companion" in channels
+            or "scalar_abs2_vacsub_companion" in channels
+            or "pseudoscalar_companion" in channels
+        ):
             inner_pair = torch.stack([inner_j, inner_k], dim=-1)[:, None, :, :].expand(
                 t_len, n_scales, n_walkers, 2
             )  # [T,S,N,2]
@@ -660,6 +752,18 @@ def _compute_channel_series_from_kernels(
             if "scalar_companion" in channels:
                 scalar_comp = _masked_mean_multi(inner_pair.real.float(), pair_valid, dims=(-1, -2))
                 out["scalar_companion"] = scalar_comp.transpose(0, 1).contiguous()
+            if "scalar_raw_companion" in channels:
+                scalar_raw_comp = _masked_mean_multi(
+                    inner_pair.real.float(), pair_valid, dims=(-1, -2)
+                )
+                out["scalar_raw_companion"] = scalar_raw_comp.transpose(0, 1).contiguous()
+            if "scalar_abs2_vacsub_companion" in channels:
+                scalar_abs2_comp = _masked_mean_multi(
+                    inner_pair.abs().square().float(), pair_valid, dims=(-1, -2)
+                )
+                out["scalar_abs2_vacsub_companion"] = scalar_abs2_comp.transpose(
+                    0, 1
+                ).contiguous()
             if "pseudoscalar_companion" in channels:
                 pseu_comp = _masked_mean_multi(inner_pair.imag.float(), pair_valid, dims=(-1, -2))
                 out["pseudoscalar_companion"] = pseu_comp.transpose(0, 1).contiguous()
@@ -1184,6 +1288,8 @@ def _compute_companion_per_scale_results_preserving_original(
         name in out
         for name in (
             "scalar_companion",
+            "scalar_raw_companion",
+            "scalar_abs2_vacsub_companion",
             "pseudoscalar_companion",
             "scalar_score_directed_companion",
             "pseudoscalar_score_directed_companion",
@@ -1245,7 +1351,11 @@ def _compute_companion_per_scale_results_preserving_original(
         comp_clone_triplet = torch.where(triplet_mask, companions_clone, negative_one)
 
         meson_out = None
-        if use_pair_family and ("scalar_companion" in out or "pseudoscalar_companion" in out):
+        if use_pair_family and (
+            "scalar_companion" in out
+            or "scalar_raw_companion" in out
+            or "pseudoscalar_companion" in out
+        ):
             meson_out = compute_meson_phase_correlator_from_color(
                 color=color3,
                 color_valid=color_valid,
@@ -1274,6 +1384,20 @@ def _compute_companion_per_scale_results_preserving_original(
                 result.mass_fit["scale_index"] = int(s_idx)
                 result.mass_fit["source"] = "scaled_companion_source_sink"
                 out["scalar_companion"].append(result)
+            if "scalar_raw_companion" in out:
+                result = _build_result_from_precomputed_correlator(
+                    channel_name="scalar_raw_companion",
+                    correlator=meson_out.scalar_raw,
+                    dt=dt,
+                    config=config,
+                    n_samples=int(meson_out.n_valid_source_pairs),
+                    series=meson_out.operator_scalar_series,
+                    correlator_err=None,
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out["scalar_raw_companion"].append(result)
             if "pseudoscalar_companion" in out:
                 result = _build_result_from_precomputed_correlator(
                     channel_name="pseudoscalar_companion",
@@ -1288,6 +1412,35 @@ def _compute_companion_per_scale_results_preserving_original(
                 result.mass_fit["scale_index"] = int(s_idx)
                 result.mass_fit["source"] = "scaled_companion_source_sink"
                 out["pseudoscalar_companion"].append(result)
+
+        if use_pair_family and "scalar_abs2_vacsub_companion" in out:
+            meson_abs2_out = compute_meson_phase_correlator_from_color(
+                color=color3,
+                color_valid=color_valid,
+                alive=alive,
+                companions_distance=comp_dist_pair,
+                companions_clone=comp_clone_pair,
+                max_lag=int(config.max_lag),
+                use_connected=bool(config.use_connected),
+                pair_selection="both",
+                eps=1e-12,
+                operator_mode="abs2_vacsub",
+                scores=cloning_scores,
+                frame_indices=None,
+            )
+            result = _build_result_from_precomputed_correlator(
+                channel_name="scalar_abs2_vacsub_companion",
+                correlator=meson_abs2_out.scalar,
+                dt=dt,
+                config=config,
+                n_samples=int(meson_abs2_out.n_valid_source_pairs),
+                series=meson_abs2_out.operator_scalar_series,
+                correlator_err=None,
+            )
+            result.mass_fit["scale"] = scale_value
+            result.mass_fit["scale_index"] = int(s_idx)
+            result.mass_fit["source"] = "scaled_companion_source_sink"
+            out["scalar_abs2_vacsub_companion"].append(result)
 
         if use_pair_family and (
             "scalar_score_directed_companion" in out
@@ -2078,6 +2231,7 @@ def compute_multiscale_strong_force_channels(
     best_results: dict[str, ChannelCorrelatorResult] = {}
     best_scale_index: dict[str, int] = {}
     bootstrap_mass_std_out: dict[str, Tensor] = {}
+    no_best_channels: list[str] = []
     for c_idx, channel in enumerate(channel_names):
         if companion_override_results.get(channel):
             channel_results = companion_override_results[channel]
@@ -2101,7 +2255,17 @@ def compute_multiscale_strong_force_channels(
                 channel_results.append(result)
         per_scale_results[channel] = channel_results
 
-        best_idx = _select_best_scale(channel_results)
+        best_idx = _select_best_scale(
+            channel_results,
+            min_r2=float(config.best_min_r2),
+            min_windows=int(config.best_min_windows),
+            max_error_pct=float(config.best_max_error_pct),
+            remove_artifacts=bool(config.best_remove_artifacts),
+        )
+        if best_idx is None:
+            best_scale_index[channel] = -1
+            no_best_channels.append(channel)
+            continue
         best_scale_index[channel] = int(best_idx)
         best_result = channel_results[best_idx]
 
@@ -2128,6 +2292,19 @@ def compute_multiscale_strong_force_channels(
                 best_result.mass_fit["mass_error"] = comp_mass_err
 
         best_results[channel] = best_result
+
+    if no_best_channels:
+        preview = ", ".join(no_best_channels[:6])
+        suffix = " ..." if len(no_best_channels) > 6 else ""
+        notes.append(
+            "No multiscale_best selected for "
+            f"{len(no_best_channels)} channel(s) after best-scale filters "
+            f"(min_r2={float(config.best_min_r2):.3g}, "
+            f"min_windows={int(config.best_min_windows)}, "
+            f"max_error_pct={float(config.best_max_error_pct):.3g}, "
+            f"remove_artifacts={bool(config.best_remove_artifacts)}): "
+            f"{preview}{suffix}"
+        )
 
     if not bootstrap_mass_std_out:
         bootstrap_mass_std_out = None

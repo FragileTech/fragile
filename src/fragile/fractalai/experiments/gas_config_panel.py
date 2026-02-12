@@ -405,8 +405,8 @@ class GasConfigPanel(param.Parameterized):
 
         # Cloning operator
         config.cloning.p_max = 1.0
-        config.cloning.epsilon_clone = 0.01
-        config.cloning.sigma_x = 0.1
+        config.cloning.epsilon_clone = 1e-6
+        config.cloning.sigma_x = 1e-6
         config.cloning.alpha_restitution = 0.5
 
         # Fitness operator
@@ -507,10 +507,10 @@ class GasConfigPanel(param.Parameterized):
 
         # Cloning operator
         self.cloning = CloneOperator(
-            sigma_x=0.5,
+            sigma_x=1e-6,
             alpha_restitution=0.6,
             p_max=1.0,
-            epsilon_clone=0.005,
+            epsilon_clone=1e-6,
         )
 
         # Fitness operator (tuned for multimodal: β >> α for diversity)

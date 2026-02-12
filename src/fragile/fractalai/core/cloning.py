@@ -383,15 +383,15 @@ class CloneOperator(PanelModel):
         doc="Maximum cloning probability threshold",
     )
     epsilon_clone = param.Number(
-        default=0.01,
+        default=1e-6,
         bounds=(0, None),
-        softbounds=(1e-4, 0.05),
+        softbounds=(1e-12, 0.05),
         doc="Regularization for cloning score (ε_clone)",
     )
     sigma_x = param.Number(
-        default=0.1,
+        default=1e-6,
         bounds=(0, None),
-        softbounds=(0.01, 1.0),
+        softbounds=(1e-12, 1.0),
         doc="Position jitter scale (σ_x)",
     )
     alpha_restitution = param.Number(
@@ -417,17 +417,17 @@ class CloneOperator(PanelModel):
                 "type": pn.widgets.EditableFloatSlider,
                 "width": INPUT_WIDTH,
                 "name": "ε_clone (regularization)",
-                "start": 1e-4,
+                "start": 1e-12,
                 "end": 0.05,
-                "step": 1e-4,
+                "step": 1e-12,
             },
             "sigma_x": {
                 "type": pn.widgets.EditableFloatSlider,
                 "width": INPUT_WIDTH,
                 "name": "σ_x (position jitter)",
-                "start": 0.05,
+                "start": 1e-12,
                 "end": 2.0,
-                "step": 0.05,
+                "step": 1e-12,
             },
             "alpha_restitution": {
                 "type": pn.widgets.EditableFloatSlider,

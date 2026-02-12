@@ -178,6 +178,48 @@ def test_meson_correlator_constant_signal_connected_subtracts_mean() -> None:
     assert out_raw.counts[0].item() > 0
 
 
+def test_meson_correlator_abs2_vacsub_connected_subtracts_constant_signal() -> None:
+    t_total = 6
+    n = 4
+    color = torch.zeros(t_total, n, 3, dtype=torch.complex64)
+    color[:, 0, 0] = 1.0 + 0j
+    color[:, 1, 0] = 1.0 + 0j
+    color[:, 2, 0] = 1.0 + 0j
+    color[:, 3, 0] = 1.0 + 0j
+    color_valid = torch.ones(t_total, n, dtype=torch.bool)
+    alive = torch.ones(t_total, n, dtype=torch.bool)
+    comp_d = torch.tensor([[1, 0, 3, 2]] * t_total, dtype=torch.long)
+    comp_c = torch.tensor([[1, 0, 3, 2]] * t_total, dtype=torch.long)
+
+    out_raw = compute_meson_phase_correlator_from_color(
+        color=color,
+        color_valid=color_valid,
+        alive=alive,
+        companions_distance=comp_d,
+        companions_clone=comp_c,
+        max_lag=4,
+        use_connected=False,
+        pair_selection="distance",
+        operator_mode="abs2_vacsub",
+    )
+    out_conn = compute_meson_phase_correlator_from_color(
+        color=color,
+        color_valid=color_valid,
+        alive=alive,
+        companions_distance=comp_d,
+        companions_clone=comp_c,
+        max_lag=4,
+        use_connected=True,
+        pair_selection="distance",
+        operator_mode="abs2_vacsub",
+    )
+
+    torch.testing.assert_close(out_raw.scalar[:5], torch.ones(5), atol=1e-6, rtol=1e-6)
+    torch.testing.assert_close(out_conn.scalar[:5], torch.zeros(5), atol=1e-6, rtol=1e-6)
+    assert bool((out_raw.scalar[:5] >= 0).all())
+    assert out_raw.counts[0].item() > 0
+
+
 def test_meson_correlator_matches_naive_reference() -> None:
     torch.manual_seed(11)
     t_total = 7

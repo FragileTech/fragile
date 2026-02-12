@@ -63,6 +63,11 @@ from fragile.fractalai.qft.multiscale_strong_force import (
     MultiscaleStrongForceOutput,
     compute_multiscale_strong_force_channels,
 )
+from fragile.fractalai.qft.gevp_channels import (
+    GEVPConfig,
+    compute_companion_channel_gevp,
+    get_companion_gevp_basis_channels,
+)
 from fragile.fractalai.qft.dashboard.channel_dashboard import (
     build_multiscale_tab_layout,
     clear_multiscale_tab,
@@ -78,6 +83,14 @@ from fragile.fractalai.qft.dashboard.tensor_calibration import (
 from fragile.fractalai.qft.electroweak_channels import (
     ELECTROWEAK_CHANNELS,
     ElectroweakChannelConfig,
+    compute_electroweak_channels,
+)
+from fragile.fractalai.qft.multiscale_electroweak import (
+    MultiscaleElectroweakConfig,
+    MultiscaleElectroweakOutput,
+    SU2_BASE_CHANNELS,
+    SU2_COMPANION_CHANNEL_MAP,
+    compute_multiscale_electroweak_channels,
 )
 from fragile.fractalai.qft.radial_channels import (
     _apply_pbc_diff_torch,
@@ -157,7 +170,7 @@ class SwarmConvergence3D(param.Parameterized):
         doc="Dimension to map to Z axis",
     )
     time_iteration = param.ObjectSelector(
-        default="euclidean",
+        default="monte_carlo",
         objects=["monte_carlo", "euclidean"],
         doc="Player axis: Monte Carlo time or Euclidean time slices",
     )
@@ -1744,6 +1757,15 @@ class AnisotropicEdgeSettings(param.Parameterized):
     max_lag = param.Integer(default=80, bounds=(10, 500))
     use_connected = param.Boolean(default=True)
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
+    h_eff_mode = param.ObjectSelector(
+        default="manual",
+        objects=("manual", "auto_sigma_s"),
+        doc=(
+            "How to determine h_eff: "
+            "'manual' uses the h_eff value; "
+            "'auto_sigma_s' sets h_eff = sigma_S/2 from cloning score std dev."
+        ),
+    )
     mass = param.Number(default=1.0, bounds=(1e-6, None))
     ell0 = param.Number(default=None, bounds=(1e-6, None), allow_None=True)
     spatial_dims_spec = param.String(
@@ -1825,6 +1847,83 @@ class AnisotropicEdgeSettings(param.Parameterized):
         default=True,
         doc="Also compute nucleon score variants (score_signed, score_abs).",
     )
+    use_companion_nucleon_gevp = param.Boolean(
+        default=True,
+        doc=(
+            "Compute GEVP-combined companion channels "
+            "(nucleon, scalar, pseudoscalar, glueball; vector excluded)."
+        ),
+    )
+    gevp_basis_strategy = param.ObjectSelector(
+        default="base_plus_best_scale",
+        objects=("base_only", "base_plus_best_scale"),
+        doc=(
+            "GEVP basis strategy: "
+            "'base_only' uses original nucleon operators, "
+            "'base_plus_best_scale' augments each operator with its best multiscale estimator when available."
+        ),
+    )
+    gevp_t0 = param.Integer(
+        default=2,
+        bounds=(1, None),
+        doc="Reference lag t0 for generalized eigenvalue analysis.",
+    )
+    gevp_max_basis = param.Integer(
+        default=10,
+        bounds=(1, 64),
+        doc="Maximum number of basis vectors retained before GEVP pruning.",
+    )
+    gevp_min_operator_r2 = param.Number(
+        default=0.5,
+        bounds=(-1.0, 1.0),
+        doc=(
+            "Minimum operator fit R² required for inclusion in GEVP basis. "
+            "Set to -1 to disable R² filtering."
+        ),
+    )
+    gevp_min_operator_windows = param.Integer(
+        default=10,
+        bounds=(0, None),
+        doc=(
+            "Minimum number of valid fit windows required for inclusion in GEVP basis. "
+            "Set to 0 to disable window-count filtering."
+        ),
+    )
+    gevp_max_operator_error_pct = param.Number(
+        default=30.0,
+        bounds=(0.0, None),
+        doc=(
+            "Maximum operator mass-error percentage (100*mass_error/mass) allowed in GEVP "
+            "basis. Set to a large value to effectively disable this filter."
+        ),
+    )
+    gevp_remove_artifacts = param.Boolean(
+        default=True,
+        doc=(
+            "Remove artifact operators from GEVP basis "
+            "(mass_error == 0, mass_error is NaN/Inf, or mass == 0)."
+        ),
+    )
+    gevp_eig_rel_cutoff = param.Number(
+        default=1e-2,
+        bounds=(1e-8, 1.0),
+        doc="Drop GEVP C(t0) modes with eigenvalue < cutoff * max_eigenvalue.",
+    )
+    gevp_cond_limit = param.Number(
+        default=1e4,
+        bounds=(1.0, None),
+        doc="Maximum allowed condition number for the kept GEVP basis at t0.",
+    )
+    gevp_shrinkage = param.Number(
+        default=1e-6,
+        bounds=(0.0, 1.0),
+        doc="Diagonal shrinkage fraction applied to C(t0) before eigendecomposition.",
+    )
+    gevp_bootstrap_mode = param.ObjectSelector(
+        default="time",
+        objects=("time", "walker", "hybrid"),
+        doc="Bootstrap mode for GEVP uncertainty estimation.",
+    )
     use_companion_meson_phase = param.Boolean(
         default=True,
         doc="Use companion-pair color-phase implementation for scalar/pseudoscalar channels.",
@@ -1856,6 +1955,13 @@ class AnisotropicEdgeSettings(param.Parameterized):
     companion_include_meson_score_directed_variants = param.Boolean(
         default=True,
         doc="Also compute score-directed meson variants for scalar/pseudoscalar channels.",
+    )
+    companion_include_scalar_vacuum_variants = param.Boolean(
+        default=True,
+        doc=(
+            "Also compute scalar vacuum diagnostics variants "
+            "(scalar_raw, scalar_abs2_vacsub)."
+        ),
     )
     use_companion_vector_meson = param.Boolean(
         default=True,
@@ -2100,6 +2206,72 @@ class NewDiracElectroweakSettings(param.Parameterized):
     lambda_alg = param.Number(default=None, bounds=(0.0, None), allow_None=True)
     compute_bootstrap_errors = param.Boolean(default=False)
     n_bootstrap = param.Integer(default=100, bounds=(10, 1000))
+    use_multiscale_kernels = param.Boolean(
+        default=True,
+        doc=(
+            "Compute multiscale SU(2) channels using recorded kernel distances and "
+            "promote best-scale estimators."
+        ),
+    )
+    n_scales = param.Integer(default=8, bounds=(2, 32))
+    kernel_type = param.ObjectSelector(
+        default="gaussian",
+        objects=("gaussian", "exponential", "tophat", "shell"),
+    )
+    kernel_distance_method = param.ObjectSelector(
+        default="auto",
+        objects=("auto", "floyd-warshall", "tropical"),
+    )
+    kernel_assume_all_alive = param.Boolean(default=True)
+    kernel_batch_size = param.Integer(default=1, bounds=(1, 64))
+    kernel_scale_frames = param.Integer(default=8, bounds=(1, 128))
+    kernel_scale_q_low = param.Number(default=0.05, bounds=(0.0, 0.95))
+    kernel_scale_q_high = param.Number(default=0.95, bounds=(0.05, 1.0))
+    kernel_bootstrap_mode = param.ObjectSelector(
+        default="time",
+        objects=("time", "walker", "hybrid"),
+        doc="Bootstrap strategy for multiscale SU(2) channels.",
+    )
+
+    use_su2_gevp = param.Boolean(
+        default=True,
+        doc="Compute GEVP-combined SU(2) channel from SU(2) operator family.",
+    )
+    gevp_basis_strategy = param.ObjectSelector(
+        default="base_plus_best_scale",
+        objects=("base_only", "base_plus_best_scale"),
+    )
+    gevp_t0 = param.Integer(default=2, bounds=(1, None))
+    gevp_max_basis = param.Integer(default=10, bounds=(1, 64))
+    gevp_min_operator_r2 = param.Number(
+        default=0.5,
+        bounds=(-1.0, 1.0),
+        doc="Minimum operator fit R² required for GEVP basis inclusion.",
+    )
+    gevp_min_operator_windows = param.Integer(
+        default=10,
+        bounds=(0, None),
+        doc="Minimum valid fit-window count required for GEVP basis inclusion.",
+    )
+    gevp_max_operator_error_pct = param.Number(
+        default=30.0,
+        bounds=(0.0, None),
+        doc="Maximum allowed operator mass error percentage for GEVP basis inclusion.",
+    )
+    gevp_remove_artifacts = param.Boolean(
+        default=True,
+        doc=(
+            "Remove artifact operators (mass_error==0, mass_error NaN/Inf, or mass==0) "
+            "from GEVP basis and displayed tables."
+        ),
+    )
+    gevp_eig_rel_cutoff = param.Number(default=1e-2, bounds=(1e-8, 1.0))
+    gevp_cond_limit = param.Number(default=1e4, bounds=(1.0, None))
+    gevp_shrinkage = param.Number(default=1e-6, bounds=(0.0, 1.0))
+    gevp_bootstrap_mode = param.ObjectSelector(
+        default="time",
+        objects=("time", "walker", "hybrid"),
+    )
 
     mc_time_index = param.Integer(
         default=None,
@@ -2580,10 +2752,44 @@ def _bootstrap_error_vector_dot_series(
     return boot_corr_total.std(dim=0)
 
 
+def _resolve_h_eff(
+    history: RunHistory,
+    settings: AnisotropicEdgeSettings,
+) -> tuple[float, str]:
+    """Resolve h_eff: manual value or auto sigma_S/2."""
+    if str(settings.h_eff_mode) != "auto_sigma_s":
+        val = float(settings.h_eff)
+        return val, f"manual: {val:.6g}"
+    frame_indices = _resolve_baryon_frame_indices(
+        history=history,
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mc_time_index=settings.mc_time_index,
+    )
+    if len(frame_indices) < 2:
+        val = float(settings.h_eff)
+        return val, f"auto fallback (too few frames): {val:.6g}"
+    start_idx = frame_indices[0]
+    end_idx = frame_indices[-1] + 1
+    scores = history.cloning_scores[start_idx - 1 : end_idx - 1]
+    alive = history.alive_mask[start_idx - 1 : end_idx - 1]
+    alive_scores = scores[alive]
+    if alive_scores.numel() < 2:
+        val = float(settings.h_eff)
+        return val, f"auto fallback (no alive scores): {val:.6g}"
+    sigma_s = float(alive_scores.float().std().item())
+    if sigma_s < 1e-12:
+        val = float(settings.h_eff)
+        return val, f"auto fallback (sigma_S~0): {val:.6g}"
+    h_eff_auto = sigma_s / 2.0
+    return h_eff_auto, f"auto: {h_eff_auto:.6g} (sigma_S={sigma_s:.6g})"
+
+
 def _compute_anisotropic_baryon_triplet_result(
     history: RunHistory,
     settings: AnisotropicEdgeSettings,
     *,
+    h_eff: float,
     operator_mode: str | None = None,
     channel_name: str = "nucleon",
 ) -> tuple[ChannelCorrelatorResult, int]:
@@ -2595,7 +2801,7 @@ def _compute_anisotropic_baryon_triplet_result(
         mc_time_index=settings.mc_time_index,
         max_lag=baryon_max_lag,
         use_connected=bool(settings.baryon_use_connected),
-        h_eff=float(settings.h_eff),
+        h_eff=h_eff,
         mass=float(settings.mass),
         ell0=settings.ell0,
         color_dims=_parse_triplet_dims_spec(settings.baryon_color_dims_spec, history.d),
@@ -2647,6 +2853,8 @@ def _compute_anisotropic_meson_phase_results(
     history: RunHistory,
     settings: AnisotropicEdgeSettings,
     requested_channels: set[str],
+    *,
+    h_eff: float,
 ) -> tuple[dict[str, ChannelCorrelatorResult], int]:
     """Compute meson channels using companion-pair meson phases."""
     meson_max_lag = int(settings.meson_max_lag or settings.max_lag)
@@ -2656,7 +2864,7 @@ def _compute_anisotropic_meson_phase_results(
         mc_time_index=settings.mc_time_index,
         max_lag=meson_max_lag,
         use_connected=bool(settings.meson_use_connected),
-        h_eff=float(settings.h_eff),
+        h_eff=h_eff,
         mass=float(settings.mass),
         ell0=settings.ell0,
         color_dims=_parse_triplet_dims_spec(settings.meson_color_dims_spec, history.d),
@@ -2679,12 +2887,13 @@ def _compute_anisotropic_meson_phase_results(
     results: dict[str, ChannelCorrelatorResult] = {}
     valid_frames = 0
 
-    standard_requested = requested_channels & {"scalar", "pseudoscalar"}
+    standard_requested = requested_channels & {"scalar", "scalar_raw", "pseudoscalar"}
     if standard_requested:
         meson_out = compute_companion_meson_phase_correlator(history, meson_cfg)
         n_samples = int(meson_out.n_valid_source_pairs)
         pseudoscalar_err: torch.Tensor | None = None
         scalar_err: torch.Tensor | None = None
+        scalar_raw_err: torch.Tensor | None = None
         if bool(settings.compute_bootstrap_errors):
             meson_err = _bootstrap_errors_batched_scalar_series(
                 torch.stack(
@@ -2697,6 +2906,17 @@ def _compute_anisotropic_meson_phase_results(
             )
             pseudoscalar_err = meson_err[0]
             scalar_err = meson_err[1]
+            if "scalar_raw" in requested_channels:
+                meson_raw_err = _bootstrap_errors_batched_scalar_series(
+                    torch.stack(
+                        [meson_out.operator_pseudoscalar_series, meson_out.operator_scalar_series], dim=0
+                    ),
+                    valid_t=(meson_out.pair_counts_per_frame > 0),
+                    max_lag=meson_max_lag,
+                    use_connected=False,
+                    n_bootstrap=int(settings.n_bootstrap),
+                )
+                scalar_raw_err = meson_raw_err[1]
         if "pseudoscalar" in requested_channels:
             results["pseudoscalar"] = _build_result_from_precomputed_correlator(
                 channel_name="pseudoscalar",
@@ -2717,6 +2937,16 @@ def _compute_anisotropic_meson_phase_results(
                 series=meson_out.operator_scalar_series,
                 correlator_err=scalar_err,
             )
+        if "scalar_raw" in requested_channels:
+            results["scalar_raw"] = _build_result_from_precomputed_correlator(
+                channel_name="scalar_raw",
+                correlator=meson_out.scalar_raw,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples,
+                series=meson_out.operator_scalar_series,
+                correlator_err=scalar_raw_err,
+            )
         valid_frames = max(valid_frames, int((meson_out.pair_counts_per_frame > 0).sum().item()))
 
     score_requested = requested_channels & {"scalar_score_directed", "pseudoscalar_score_directed"}
@@ -2727,7 +2957,7 @@ def _compute_anisotropic_meson_phase_results(
             mc_time_index=settings.mc_time_index,
             max_lag=meson_max_lag,
             use_connected=bool(settings.meson_use_connected),
-            h_eff=float(settings.h_eff),
+            h_eff=h_eff,
             mass=float(settings.mass),
             ell0=settings.ell0,
             color_dims=_parse_triplet_dims_spec(settings.meson_color_dims_spec, history.d),
@@ -2787,7 +3017,7 @@ def _compute_anisotropic_meson_phase_results(
             mc_time_index=settings.mc_time_index,
             max_lag=meson_max_lag,
             use_connected=bool(settings.meson_use_connected),
-            h_eff=float(settings.h_eff),
+            h_eff=h_eff,
             mass=float(settings.mass),
             ell0=settings.ell0,
             color_dims=_parse_triplet_dims_spec(settings.meson_color_dims_spec, history.d),
@@ -2839,6 +3069,54 @@ def _compute_anisotropic_meson_phase_results(
             valid_frames, int((meson_weighted_out.pair_counts_per_frame > 0).sum().item())
         )
 
+    abs2_requested = requested_channels & {"scalar_abs2_vacsub"}
+    if abs2_requested:
+        meson_abs2_cfg = MesonPhaseCorrelatorConfig(
+            warmup_fraction=float(settings.simulation_range[0]),
+            end_fraction=float(settings.simulation_range[1]),
+            mc_time_index=settings.mc_time_index,
+            max_lag=meson_max_lag,
+            use_connected=bool(settings.meson_use_connected),
+            h_eff=h_eff,
+            mass=float(settings.mass),
+            ell0=settings.ell0,
+            color_dims=_parse_triplet_dims_spec(settings.meson_color_dims_spec, history.d),
+            pair_selection=str(settings.meson_pair_selection),
+            eps=float(settings.meson_eps),
+            operator_mode="abs2_vacsub",
+        )
+        meson_abs2_out = compute_companion_meson_phase_correlator(history, meson_abs2_cfg)
+        n_samples_abs2 = int(meson_abs2_out.n_valid_source_pairs)
+        scalar_abs2_err: torch.Tensor | None = None
+        if bool(settings.compute_bootstrap_errors):
+            meson_err_abs2 = _bootstrap_errors_batched_scalar_series(
+                torch.stack(
+                    [
+                        meson_abs2_out.operator_pseudoscalar_series,
+                        meson_abs2_out.operator_scalar_series,
+                    ],
+                    dim=0,
+                ),
+                valid_t=(meson_abs2_out.pair_counts_per_frame > 0),
+                max_lag=meson_max_lag,
+                use_connected=bool(settings.meson_use_connected),
+                n_bootstrap=int(settings.n_bootstrap),
+            )
+            scalar_abs2_err = meson_err_abs2[1]
+        if "scalar_abs2_vacsub" in requested_channels:
+            results["scalar_abs2_vacsub"] = _build_result_from_precomputed_correlator(
+                channel_name="scalar_abs2_vacsub",
+                correlator=meson_abs2_out.scalar,
+                dt=dt,
+                config=fit_cfg,
+                n_samples=n_samples_abs2,
+                series=meson_abs2_out.operator_scalar_series,
+                correlator_err=scalar_abs2_err,
+            )
+        valid_frames = max(
+            valid_frames, int((meson_abs2_out.pair_counts_per_frame > 0).sum().item())
+        )
+
     return results, valid_frames
 
 
@@ -2846,6 +3124,8 @@ def _compute_anisotropic_vector_meson_results(
     history: RunHistory,
     settings: AnisotropicEdgeSettings,
     requested_channels: set[str],
+    *,
+    h_eff: float,
 ) -> tuple[dict[str, ChannelCorrelatorResult], int]:
     """Compute vector/axial-vector channels using companion-pair vector mesons."""
     vector_max_lag = int(settings.vector_meson_max_lag or settings.max_lag)
@@ -2891,7 +3171,7 @@ def _compute_anisotropic_vector_meson_results(
             mc_time_index=settings.mc_time_index,
             max_lag=vector_max_lag,
             use_connected=bool(settings.vector_meson_use_connected),
-            h_eff=float(settings.h_eff),
+            h_eff=h_eff,
             mass=float(settings.mass),
             ell0=settings.ell0,
             color_dims=_parse_triplet_dims_spec(settings.vector_meson_color_dims_spec, history.d),
@@ -2950,6 +3230,7 @@ def _compute_anisotropic_glueball_color_result(
     history: RunHistory,
     settings: AnisotropicEdgeSettings,
     *,
+    h_eff: float,
     operator_mode: str | None = None,
     channel_name: str = "glueball",
     force_momentum_projection: bool | None = None,
@@ -2978,7 +3259,7 @@ def _compute_anisotropic_glueball_color_result(
         mc_time_index=settings.mc_time_index,
         max_lag=glueball_max_lag,
         use_connected=bool(settings.glueball_use_connected),
-        h_eff=float(settings.h_eff),
+        h_eff=h_eff,
         mass=float(settings.mass),
         ell0=settings.ell0,
         color_dims=_parse_triplet_dims_spec(settings.glueball_color_dims_spec, history.d),
@@ -3209,8 +3490,9 @@ def _compute_anisotropic_edge_tensor_only_results(
 def _compute_companion_strong_force_bundle(
     history: RunHistory,
     settings: AnisotropicEdgeSettings,
-) -> AnisotropicEdgeChannelOutput:
+) -> tuple[AnisotropicEdgeChannelOutput, float, str]:
     """Compute companion-only strong-force correlators."""
+    resolved_h_eff, h_eff_desc = _resolve_h_eff(history, settings)
     channels = [
         c.strip()
         for c in settings.channel_list.split(",")
@@ -3219,6 +3501,8 @@ def _compute_companion_strong_force_bundle(
     requested = set(channels)
     requested_meson_channels = requested & {
         "scalar",
+        "scalar_raw",
+        "scalar_abs2_vacsub",
         "pseudoscalar",
         "scalar_score_directed",
         "pseudoscalar_score_directed",
@@ -3260,6 +3544,8 @@ def _compute_companion_strong_force_bundle(
         requested_nucleon_channels |= {"nucleon_score_signed", "nucleon_score_abs"}
     if "scalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
         requested_meson_channels |= {"scalar_score_directed", "scalar_score_weighted"}
+    if "scalar" in requested and bool(settings.companion_include_scalar_vacuum_variants):
+        requested_meson_channels |= {"scalar_raw", "scalar_abs2_vacsub"}
     if "pseudoscalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
         requested_meson_channels |= {"pseudoscalar_score_directed", "pseudoscalar_score_weighted"}
     if "glueball" in requested and bool(settings.companion_include_glueball_phase_variants):
@@ -3310,6 +3596,7 @@ def _compute_companion_strong_force_bundle(
             variant_result, variant_valid_frames = _compute_anisotropic_baryon_triplet_result(
                 history,
                 settings,
+                h_eff=resolved_h_eff,
                 operator_mode=variant_mode,
                 channel_name=variant_channel,
             )
@@ -3318,6 +3605,8 @@ def _compute_companion_strong_force_bundle(
 
     meson_targets = requested_meson_channels & {
         "scalar",
+        "scalar_raw",
+        "scalar_abs2_vacsub",
         "pseudoscalar",
         "scalar_score_directed",
         "pseudoscalar_score_directed",
@@ -3329,6 +3618,7 @@ def _compute_companion_strong_force_bundle(
             history,
             settings,
             requested_channels=meson_targets,
+            h_eff=resolved_h_eff,
         )
         results.update(meson_results)
         valid_frame_counts.append(int(meson_valid_frames))
@@ -3350,6 +3640,7 @@ def _compute_companion_strong_force_bundle(
             history,
             settings,
             requested_channels=vector_targets,
+            h_eff=resolved_h_eff,
         )
         results.update(vector_results)
         valid_frame_counts.append(int(vector_valid_frames))
@@ -3370,6 +3661,7 @@ def _compute_companion_strong_force_bundle(
             variant_results, variant_valid_frames = _compute_anisotropic_glueball_color_result(
                 history,
                 settings,
+                h_eff=resolved_h_eff,
                 operator_mode=variant_mode,
                 channel_name=variant_channel,
                 force_momentum_projection=allow_momentum,
@@ -3403,13 +3695,17 @@ def _compute_companion_strong_force_bundle(
         if alive.numel() > 0:
             avg_alive = float(alive.float().sum(dim=1).mean().item())
 
-    return AnisotropicEdgeChannelOutput(
-        channel_results=results,
-        component_labels=["companion"],
-        frame_indices=list(frame_indices),
-        n_valid_frames=max(valid_frame_counts) if valid_frame_counts else 0,
-        avg_alive_walkers=avg_alive,
-        avg_edges=float("nan"),
+    return (
+        AnisotropicEdgeChannelOutput(
+            channel_results=results,
+            component_labels=["companion"],
+            frame_indices=list(frame_indices),
+            n_valid_frames=max(valid_frame_counts) if valid_frame_counts else 0,
+            avg_alive_walkers=avg_alive,
+            avg_edges=float("nan"),
+        ),
+        resolved_h_eff,
+        h_eff_desc,
     )
 
 
@@ -6530,6 +6826,112 @@ def _extract_metric(metrics: dict[str, Any], key: str) -> float:
     return float(np.nan)
 
 
+def _extract_n_windows_for_filter(result: ChannelCorrelatorResult) -> int:
+    """Extract valid window count consistently for companion GEVP table filtering."""
+    mass_fit = result.mass_fit if isinstance(result.mass_fit, dict) else {}
+    raw = mass_fit.get("n_valid_windows", None)
+    if raw is not None:
+        try:
+            return max(0, int(raw))
+        except (TypeError, ValueError):
+            pass
+
+    window_masses = getattr(result, "window_masses", None)
+    if isinstance(window_masses, torch.Tensor):
+        if int(window_masses.numel()) <= 0:
+            return 0
+        return int(torch.isfinite(window_masses).sum().item())
+    if isinstance(window_masses, list | tuple):
+        count = 0
+        for value in window_masses:
+            try:
+                fv = float(value)
+            except (TypeError, ValueError):
+                continue
+            if np.isfinite(fv):
+                count += 1
+        return count
+    return 0
+
+
+def _companion_gevp_filter_reason(
+    result: ChannelCorrelatorResult,
+    *,
+    min_r2: float,
+    min_windows: int,
+    max_error_pct: float,
+    remove_artifacts: bool,
+) -> str | None:
+    """Return exclusion reason when a result fails active GEVP-quality filters."""
+    mass_fit = result.mass_fit if isinstance(result.mass_fit, dict) else {}
+    mass = float(mass_fit.get("mass", float("nan")))
+    mass_error = float(mass_fit.get("mass_error", float("nan")))
+    r2 = float(mass_fit.get("r_squared", float("nan")))
+    n_windows = _extract_n_windows_for_filter(result)
+
+    reasons: list[str] = []
+    if np.isfinite(min_r2):
+        if not np.isfinite(r2) or r2 < min_r2:
+            r2_text = "nan" if not np.isfinite(r2) else f"{r2:.3g}"
+            reasons.append(f"r2={r2_text}<{min_r2:.3g}")
+    if n_windows < int(max(0, min_windows)):
+        reasons.append(f"n_windows={n_windows}<{int(max(0, min_windows))}")
+
+    if np.isfinite(max_error_pct) and max_error_pct >= 0:
+        if np.isfinite(mass) and mass > 0 and np.isfinite(mass_error) and mass_error >= 0:
+            err_pct = abs(mass_error / mass) * 100.0
+        else:
+            err_pct = float("inf")
+        if err_pct > max_error_pct:
+            err_text = f"{err_pct:.3g}" if np.isfinite(err_pct) else "inf"
+            reasons.append(f"err_pct={err_text}>{max_error_pct:.3g}")
+
+    if remove_artifacts:
+        if not np.isfinite(mass_error):
+            reasons.append("mass_error=nan_or_inf")
+        elif mass_error == 0.0:
+            reasons.append("mass_error==0")
+        if np.isfinite(mass) and mass == 0.0:
+            reasons.append("mass==0")
+
+    return ", ".join(reasons) if reasons else None
+
+
+def _split_results_by_companion_gevp_filters(
+    results: dict[str, ChannelCorrelatorResult],
+    *,
+    min_r2: float,
+    min_windows: int,
+    max_error_pct: float,
+    remove_artifacts: bool,
+    keep_gevp_results: bool = False,
+) -> tuple[dict[str, ChannelCorrelatorResult], dict[str, tuple[ChannelCorrelatorResult, str]]]:
+    """Split results into passing and filtered-out sets under active GEVP-quality filters."""
+    kept: dict[str, ChannelCorrelatorResult] = {}
+    filtered_out: dict[str, tuple[ChannelCorrelatorResult, str]] = {}
+    for name, result in results.items():
+        if result is None or int(getattr(result, "n_samples", 0)) <= 0:
+            continue
+        mass_fit = result.mass_fit if isinstance(result.mass_fit, dict) else {}
+        source = str(mass_fit.get("source", "")).strip()
+        is_gevp_result = str(name).endswith("_gevp") or source.startswith("gevp_")
+        if keep_gevp_results and is_gevp_result:
+            kept[name] = result
+            continue
+        reason = _companion_gevp_filter_reason(
+            result,
+            min_r2=min_r2,
+            min_windows=min_windows,
+            max_error_pct=max_error_pct,
+            remove_artifacts=remove_artifacts,
+        )
+        if reason is None:
+            kept[name] = result
+        else:
+            filtered_out[name] = (result, reason)
+    return kept, filtered_out
+
+
 def _update_mass_table(
     results: dict[str, ChannelCorrelatorResult],
     table,
@@ -6827,7 +7229,7 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.kinetic_op.epsilon_F = 1.0
         gas_config.kinetic_op.use_fitness_force = False
         gas_config.kinetic_op.use_potential_force = False
-        gas_config.kinetic_op.use_anisotropic_diffusion = True
+        gas_config.kinetic_op.use_anisotropic_diffusion = False
         gas_config.kinetic_op.diagonal_diffusion = False
         gas_config.kinetic_op.diffusion_mode = "voronoi_proxy"
         gas_config.kinetic_op.diffusion_grad_scale = 30.0
@@ -6845,24 +7247,24 @@ def create_app() -> pn.template.FastListTemplate:
         # Companion selection (diversity + cloning).
         gas_config.companion_selection.method = "random_pairing"
         gas_config.companion_selection.epsilon = 2.80
-        gas_config.companion_selection.lambda_alg = 1.0
+        gas_config.companion_selection.lambda_alg = 0.0
         gas_config.companion_selection.exclude_self = True
         gas_config.companion_selection_clone.method = "random_pairing"
         gas_config.companion_selection_clone.epsilon = 1.68419
-        gas_config.companion_selection_clone.lambda_alg = 1.0
+        gas_config.companion_selection_clone.lambda_alg = 0.0
         gas_config.companion_selection_clone.exclude_self = True
 
         # Cloning operator.
         gas_config.cloning.p_max = 1.0
-        gas_config.cloning.epsilon_clone = 0.01
-        gas_config.cloning.sigma_x = 0.1
+        gas_config.cloning.epsilon_clone = 1e-6
+        gas_config.cloning.sigma_x = 1e-6
         gas_config.cloning.alpha_restitution = 1.0
 
         # Fitness operator.
         gas_config.fitness_op.alpha = 1.0
         gas_config.fitness_op.beta = 1.0
-        gas_config.fitness_op.eta = 0.1
-        gas_config.fitness_op.lambda_alg = 1.0
+        gas_config.fitness_op.eta = 0.00001
+        gas_config.fitness_op.lambda_alg = 0.0
         gas_config.fitness_op.sigma_min = 0.1
         gas_config.fitness_op.epsilon_dist = 1e-8
         gas_config.fitness_op.A = 2.0
@@ -6905,6 +7307,7 @@ def create_app() -> pn.template.FastListTemplate:
             "companion_strong_force_results": None,
             "companion_strong_force_multiscale_output": None,
             "companion_strong_force_multiscale_error": None,
+            "companion_strong_force_gevp_error": None,
             "companion_strong_force_plots_unlocked": False,
             "tensor_calibration_base_results": None,
             "tensor_calibration_strong_result": None,
@@ -6915,6 +7318,10 @@ def create_app() -> pn.template.FastListTemplate:
             "tensor_calibration_payload": None,
             "new_dirac_ew_bundle": None,
             "new_dirac_ew_results": None,
+            "new_dirac_ew_multiscale_output": None,
+            "new_dirac_ew_multiscale_error": None,
+            "new_dirac_ew_gevp_error": None,
+            "new_dirac_bundle": None,
             "coupling_diagnostics_output": None,
             "einstein_test_result": None,
         }
@@ -7458,6 +7865,8 @@ def create_app() -> pn.template.FastListTemplate:
         # Companion strong-force tab components (companion-only operators)
         # =====================================================================
         companion_strong_force_settings = AnisotropicEdgeSettings()
+        companion_strong_force_settings.max_lag = 40
+        companion_strong_force_settings.h_eff_mode = "auto_sigma_s"
         companion_strong_force_status = pn.pane.Markdown(
             "**Companion Strong Force:** Load a RunHistory and click Compute.",
             sizing_mode="stretch_width",
@@ -7488,6 +7897,7 @@ def create_app() -> pn.template.FastListTemplate:
                 "max_lag",
                 "use_connected",
                 "h_eff",
+                "h_eff_mode",
                 "mass",
                 "ell0",
                 "edge_weight_mode",
@@ -7514,6 +7924,7 @@ def create_app() -> pn.template.FastListTemplate:
             show_name=False,
             widgets={
                 "mc_time_index": {"name": "MC start (step or idx)"},
+                "h_eff_mode": {"name": "h_eff mode"},
                 "use_multiscale_kernels": {"name": "Enable multiscale kernels"},
                 "n_scales": {"name": "Number of scales"},
                 "kernel_type": {"name": "Kernel shape"},
@@ -7540,6 +7951,18 @@ def create_app() -> pn.template.FastListTemplate:
                 "baryon_flux_exp_alpha",
                 "companion_include_nucleon_flux_variants",
                 "companion_include_nucleon_score_variants",
+                "use_companion_nucleon_gevp",
+                "gevp_basis_strategy",
+                "gevp_t0",
+                "gevp_max_basis",
+                "gevp_min_operator_r2",
+                "gevp_min_operator_windows",
+                "gevp_max_operator_error_pct",
+                "gevp_remove_artifacts",
+                "gevp_eig_rel_cutoff",
+                "gevp_cond_limit",
+                "gevp_shrinkage",
+                "gevp_bootstrap_mode",
             ],
             show_name=False,
             widgets={
@@ -7553,6 +7976,18 @@ def create_app() -> pn.template.FastListTemplate:
                 "companion_include_nucleon_score_variants": {
                     "name": "Include nucleon score variants"
                 },
+                "use_companion_nucleon_gevp": {"name": "Enable companion GEVP"},
+                "gevp_basis_strategy": {"name": "GEVP basis strategy"},
+                "gevp_t0": {"name": "GEVP t0"},
+                "gevp_max_basis": {"name": "GEVP max basis"},
+                "gevp_min_operator_r2": {"name": "GEVP min operator R²"},
+                "gevp_min_operator_windows": {"name": "GEVP min operator windows"},
+                "gevp_max_operator_error_pct": {"name": "GEVP max operator error %"},
+                "gevp_remove_artifacts": {"name": "GEVP remove artifacts"},
+                "gevp_eig_rel_cutoff": {"name": "GEVP rel eig cutoff"},
+                "gevp_cond_limit": {"name": "GEVP cond limit"},
+                "gevp_shrinkage": {"name": "GEVP shrinkage"},
+                "gevp_bootstrap_mode": {"name": "GEVP bootstrap mode"},
             },
             default_layout=type("CompanionStrongForceBaryonGrid", (pn.GridBox,), {"ncols": 1}),
         )
@@ -7566,6 +8001,7 @@ def create_app() -> pn.template.FastListTemplate:
                 "meson_color_dims_spec",
                 "meson_eps",
                 "companion_include_meson_score_directed_variants",
+                "companion_include_scalar_vacuum_variants",
             ],
             show_name=False,
             widgets={
@@ -7574,6 +8010,9 @@ def create_app() -> pn.template.FastListTemplate:
                 "meson_color_dims_spec": {"name": "Meson color dims (3 dims)"},
                 "companion_include_meson_score_directed_variants": {
                     "name": "Include score-directed meson variants"
+                },
+                "companion_include_scalar_vacuum_variants": {
+                    "name": "Include scalar vacuum variants"
                 },
             },
             default_layout=type("CompanionStrongForceMesonGrid", (pn.GridBox,), {"ncols": 1}),
@@ -7786,6 +8225,16 @@ def create_app() -> pn.template.FastListTemplate:
             show_index=False,
             sizing_mode="stretch_width",
         )
+        companion_strong_force_filtered_summary = pn.pane.Markdown(
+            "**Filtered-out candidates:** run companion channels to populate.",
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_filtered_mass_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
         companion_strong_force_ratio_pane = pn.pane.Markdown(
             "**Mass Ratios:** Compute companion channels to see ratios.",
             sizing_mode="stretch_width",
@@ -7947,6 +8396,69 @@ def create_app() -> pn.template.FastListTemplate:
                 "lambda_alg",
                 "compute_bootstrap_errors",
                 "n_bootstrap",
+                "use_multiscale_kernels",
+                "n_scales",
+                "kernel_type",
+                "kernel_distance_method",
+                "kernel_assume_all_alive",
+                "kernel_batch_size",
+                "kernel_scale_frames",
+                "kernel_scale_q_low",
+                "kernel_scale_q_high",
+                "kernel_bootstrap_mode",
+                "use_su2_gevp",
+                "gevp_basis_strategy",
+                "gevp_t0",
+                "gevp_max_basis",
+                "gevp_min_operator_r2",
+                "gevp_min_operator_windows",
+                "gevp_max_operator_error_pct",
+                "gevp_remove_artifacts",
+                "gevp_eig_rel_cutoff",
+                "gevp_cond_limit",
+                "gevp_shrinkage",
+                "gevp_bootstrap_mode",
+            ],
+            show_name=False,
+            widgets={
+                "mc_time_index": {"name": "MC time slice (step or idx; blank=last)"},
+                "kernel_type": {"name": "Kernel shape"},
+                "kernel_distance_method": {"name": "Distance solver"},
+                "kernel_assume_all_alive": {"name": "Assume all walkers alive"},
+                "kernel_batch_size": {"name": "Kernel frame batch size"},
+                "kernel_scale_frames": {"name": "Scale calibration frames"},
+                "kernel_scale_q_low": {"name": "Scale quantile low"},
+                "kernel_scale_q_high": {"name": "Scale quantile high"},
+                "kernel_bootstrap_mode": {"name": "Kernel bootstrap mode"},
+                "use_su2_gevp": {"name": "Enable SU(2) GEVP"},
+                "gevp_basis_strategy": {"name": "GEVP basis strategy"},
+                "gevp_t0": {"name": "GEVP t0"},
+                "gevp_max_basis": {"name": "GEVP max basis"},
+                "gevp_min_operator_r2": {"name": "GEVP min operator R²"},
+                "gevp_min_operator_windows": {"name": "GEVP min operator windows"},
+                "gevp_max_operator_error_pct": {"name": "GEVP max operator error %"},
+                "gevp_remove_artifacts": {"name": "GEVP remove artifacts"},
+                "gevp_eig_rel_cutoff": {"name": "GEVP rel eig cutoff"},
+                "gevp_cond_limit": {"name": "GEVP cond limit"},
+                "gevp_shrinkage": {"name": "GEVP shrinkage"},
+                "gevp_bootstrap_mode": {"name": "GEVP bootstrap mode"},
+            },
+            default_layout=type("NewDiracEWSettingsGrid", (pn.GridBox,), {"ncols": 2}),
+        )
+        new_dirac_status = pn.pane.Markdown(
+            "**Dirac:** Load a RunHistory and click Compute.",
+            sizing_mode="stretch_width",
+        )
+        new_dirac_run_button = pn.widgets.Button(
+            name="Compute Dirac",
+            button_type="primary",
+            min_width=260,
+            sizing_mode="stretch_width",
+            disabled=True,
+        )
+        new_dirac_settings_panel = pn.Param(
+            new_dirac_ew_settings,
+            parameters=[
                 "dirac_kernel_mode",
                 "dirac_time_average",
                 "dirac_warmup_fraction",
@@ -7957,11 +8469,11 @@ def create_app() -> pn.template.FastListTemplate:
             ],
             show_name=False,
             widgets={
-                "mc_time_index": {"name": "MC time slice (step or idx; blank=last)"},
                 "dirac_color_threshold_mode": {"name": "Dirac color threshold"},
                 "dirac_color_threshold_value": {"name": "||F_visc|| threshold"},
+                "color_singlet_quantile": {"name": "Color-singlet quantile"},
             },
-            default_layout=type("NewDiracEWSettingsGrid", (pn.GridBox,), {"ncols": 2}),
+            default_layout=type("NewDiracSettingsGrid", (pn.GridBox,), {"ncols": 2}),
         )
 
         new_dirac_ew_coupling_table = pn.widgets.Tabulator(
@@ -8060,6 +8572,48 @@ def create_app() -> pn.template.FastListTemplate:
             selectable=False,
             configuration={"editable": True},
             editors={"mass_ref_GeV": "input"},
+        )
+        new_dirac_ew_filtered_summary = pn.pane.Markdown(
+            "**Filtered-out candidates:** none.",
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_filtered_mass_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_multiscale_summary = pn.pane.Markdown(
+            "### SU(2) Multiscale Summary\n_Multiscale kernels disabled._",
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_multiscale_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_multiscale_per_scale_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_gevp_summary = pn.pane.Markdown(
+            "_SU(2) GEVP summary appears after running Electroweak._",
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_operator_quality_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_eigenspectrum_plot = pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
         )
 
         new_dirac_ew_dirac_full = pn.pane.HoloViews(
@@ -8339,6 +8893,26 @@ def create_app() -> pn.template.FastListTemplate:
             )
             new_dirac_ew_run_button.disabled = False
             new_dirac_ew_status.object = "**Electroweak ready:** click Compute Electroweak."
+            new_dirac_run_button.disabled = False
+            new_dirac_status.object = "**Dirac ready:** click Compute Dirac."
+            new_dirac_ew_summary.object = "## Electroweak Summary\n_Run analysis to populate._"
+            new_dirac_ew_multiscale_summary.object = (
+                "### SU(2) Multiscale Summary\n_Multiscale kernels disabled (original estimators only)._"
+            )
+            new_dirac_ew_gevp_summary.object = (
+                "_SU(2) GEVP summary appears after running Electroweak._"
+            )
+            new_dirac_ew_filtered_summary.object = "**Filtered-out candidates:** none."
+            new_dirac_ew_mass_table.value = pd.DataFrame()
+            new_dirac_ew_filtered_mass_table.value = pd.DataFrame()
+            new_dirac_ew_ratio_table.value = pd.DataFrame()
+            new_dirac_ew_fit_table.value = pd.DataFrame()
+            new_dirac_ew_compare_table.value = pd.DataFrame()
+            new_dirac_ew_anchor_table.value = pd.DataFrame()
+            new_dirac_ew_multiscale_table.value = pd.DataFrame()
+            new_dirac_ew_multiscale_per_scale_table.value = pd.DataFrame()
+            new_dirac_ew_operator_quality_table.value = pd.DataFrame()
+            new_dirac_ew_eigenspectrum_plot.object = None
             coupling_diagnostics_run_button.disabled = False
             coupling_diagnostics_status.object = (
                 "**Coupling Diagnostics ready:** click Compute Coupling Diagnostics."
@@ -10991,10 +11565,35 @@ def create_app() -> pn.template.FastListTemplate:
                 mode = companion_strong_force_mass_mode.value
             if anchor_mode is None:
                 anchor_mode = companion_strong_force_anchor_mode.value
-            _sync_companion_variant_selectors(results)
-            comparison_overrides = _companion_comparison_overrides(results)
-            _update_strong_tables(
+            try:
+                gevp_min_r2 = float(companion_strong_force_settings.gevp_min_operator_r2)
+            except (TypeError, ValueError):
+                gevp_min_r2 = 0.5
+            try:
+                gevp_min_windows = max(
+                    0,
+                    int(companion_strong_force_settings.gevp_min_operator_windows),
+                )
+            except (TypeError, ValueError):
+                gevp_min_windows = 10
+            try:
+                gevp_max_error_pct = float(companion_strong_force_settings.gevp_max_operator_error_pct)
+            except (TypeError, ValueError):
+                gevp_max_error_pct = 30.0
+            gevp_remove_artifacts = bool(companion_strong_force_settings.gevp_remove_artifacts)
+
+            filtered_results, filtered_out_results = _split_results_by_companion_gevp_filters(
                 results,
+                min_r2=gevp_min_r2,
+                min_windows=gevp_min_windows,
+                max_error_pct=gevp_max_error_pct,
+                remove_artifacts=gevp_remove_artifacts,
+                keep_gevp_results=True,
+            )
+            _sync_companion_variant_selectors(filtered_results)
+            comparison_overrides = _companion_comparison_overrides(filtered_results)
+            _update_strong_tables(
+                filtered_results,
                 str(mode),
                 companion_strong_force_mass_table,
                 companion_strong_force_ratio_pane,
@@ -11005,9 +11604,45 @@ def create_app() -> pn.template.FastListTemplate:
                 anchor_mode=str(anchor_mode),
                 comparison_channel_overrides=comparison_overrides,
             )
+            filtered_out_dict = {
+                name: payload[0] for name, payload in filtered_out_results.items()
+            }
+            _update_mass_table(
+                filtered_out_dict,
+                companion_strong_force_filtered_mass_table,
+                str(mode),
+            )
+            min_r2_str = f"{gevp_min_r2:.3g}" if np.isfinite(gevp_min_r2) else "off"
+            max_error_pct_str = (
+                f"{gevp_max_error_pct:.3g}%" if np.isfinite(gevp_max_error_pct) else "off"
+            )
+            if filtered_out_results:
+                preview = ", ".join(
+                    (
+                        f"{_display_companion_channel_name(name)}"
+                        f"({reason})"
+                    )
+                    for name, (_, reason) in list(filtered_out_results.items())[:6]
+                )
+                suffix = " ..." if len(filtered_out_results) > 6 else ""
+                companion_strong_force_filtered_summary.object = (
+                    f"**Filtered-out candidates:** `{len(filtered_out_results)}` excluded; "
+                    f"`{len(filtered_results)}` shown.  \n"
+                    f"_Filters:_ `R² >= {min_r2_str}`, `n_windows >= {gevp_min_windows}`, "
+                    f"`error % <= {max_error_pct_str}`, "
+                    f"`remove artifacts={'on' if gevp_remove_artifacts else 'off'}`.  \n"
+                    f"_Preview:_ `{preview}{suffix}`"
+                )
+            else:
+                companion_strong_force_filtered_summary.object = (
+                    "**Filtered-out candidates:** none.  \n"
+                    f"_Filters:_ `R² >= {min_r2_str}`, `n_windows >= {gevp_min_windows}`, "
+                    f"`error % <= {max_error_pct_str}`, "
+                    f"`remove artifacts={'on' if gevp_remove_artifacts else 'off'}`."
+                )
 
             def _variant_names_for_base(base_name: str) -> list[str]:
-                return _variant_names_for_base_in_results(results, base_name)
+                return _variant_names_for_base_in_results(filtered_results, base_name)
 
             def _ratio_reference_value(
                 numerator_base: str,
@@ -11039,14 +11674,14 @@ def create_app() -> pn.template.FastListTemplate:
                 )
                 rows: list[dict[str, Any]] = []
                 for num_name in numerator_variants:
-                    num_result = results.get(num_name)
+                    num_result = filtered_results.get(num_name)
                     if num_result is None:
                         continue
                     num_mass = _get_channel_mass(num_result, str(mode))
                     if not np.isfinite(num_mass) or num_mass <= 0:
                         continue
                     for den_name in denominator_variants:
-                        den_result = results.get(den_name)
+                        den_result = filtered_results.get(den_name)
                         if den_result is None:
                             continue
                         den_mass = _get_channel_mass(den_result, str(mode))
@@ -11148,6 +11783,19 @@ def create_app() -> pn.template.FastListTemplate:
             companion_strong_force_multiscale_summary.object = "  \n".join(lines)
 
             mode = str(companion_strong_force_mass_mode.value)
+            try:
+                gevp_min_r2 = float(companion_strong_force_settings.gevp_min_operator_r2)
+            except (TypeError, ValueError):
+                gevp_min_r2 = 0.5
+            try:
+                gevp_min_windows = max(0, int(companion_strong_force_settings.gevp_min_operator_windows))
+            except (TypeError, ValueError):
+                gevp_min_windows = 10
+            try:
+                gevp_max_error_pct = float(companion_strong_force_settings.gevp_max_operator_error_pct)
+            except (TypeError, ValueError):
+                gevp_max_error_pct = 30.0
+            gevp_remove_artifacts = bool(companion_strong_force_settings.gevp_remove_artifacts)
             rows: list[dict[str, Any]] = []
             per_scale_rows: list[dict[str, Any]] = []
             curves: list[hv.Element] = []
@@ -11171,13 +11819,49 @@ def create_app() -> pn.template.FastListTemplate:
                         if maybe is not None:
                             original_result = maybe
                             break
-                if original_result is not None:
+                if (
+                    original_result is not None
+                    and _companion_gevp_filter_reason(
+                        original_result,
+                        min_r2=gevp_min_r2,
+                        min_windows=gevp_min_windows,
+                        max_error_pct=gevp_max_error_pct,
+                        remove_artifacts=gevp_remove_artifacts,
+                    )
+                    is None
+                ):
                     original_mass = float(_get_channel_mass(original_result, mode))
-                masses = [
-                    float(_get_channel_mass(res, mode)) if res is not None else float("nan")
-                    for res in results_per_scale
-                ]
-                best_idx = int(output.best_scale_index.get(channel_name, 0))
+                else:
+                    original_result = None
+
+                valid_scale_idx: list[int] = []
+                masses: list[float] = []
+                for scale_idx, res in enumerate(results_per_scale):
+                    if res is None:
+                        masses.append(float("nan"))
+                        continue
+                    reason = _companion_gevp_filter_reason(
+                        res,
+                        min_r2=gevp_min_r2,
+                        min_windows=gevp_min_windows,
+                        max_error_pct=gevp_max_error_pct,
+                        remove_artifacts=gevp_remove_artifacts,
+                    )
+                    if reason is None:
+                        valid_scale_idx.append(int(scale_idx))
+                        masses.append(float(_get_channel_mass(res, mode)))
+                    else:
+                        masses.append(float("nan"))
+                if not valid_scale_idx and original_result is None:
+                    continue
+
+                best_idx_from_output = int(output.best_scale_index.get(channel_name, -1))
+                if best_idx_from_output in valid_scale_idx:
+                    best_idx = best_idx_from_output
+                elif valid_scale_idx:
+                    best_idx = int(valid_scale_idx[0])
+                else:
+                    best_idx = -1
                 best_mass = masses[best_idx] if 0 <= best_idx < len(masses) else float("nan")
                 best_scale = (
                     float(scale_values[best_idx])
@@ -11188,8 +11872,16 @@ def create_app() -> pn.template.FastListTemplate:
                 best_r2 = float("nan")
                 if channel_name in output.best_results:
                     best_result = output.best_results[channel_name]
-                    best_err = float(_get_channel_mass_error(best_result, mode))
-                    best_r2 = float(_get_channel_r2(best_result, mode))
+                    best_reason = _companion_gevp_filter_reason(
+                        best_result,
+                        min_r2=gevp_min_r2,
+                        min_windows=gevp_min_windows,
+                        max_error_pct=gevp_max_error_pct,
+                        remove_artifacts=gevp_remove_artifacts,
+                    )
+                    if best_reason is None:
+                        best_err = float(_get_channel_mass_error(best_result, mode))
+                        best_r2 = float(_get_channel_r2(best_result, mode))
                 best_err_pct = (
                     abs(best_err / best_mass) * 100.0
                     if np.isfinite(best_mass)
@@ -11223,6 +11915,17 @@ def create_app() -> pn.template.FastListTemplate:
                     y = np.asarray(masses, dtype=float)
                     scale_fit = list(zip(scale_values.tolist(), results_per_scale, strict=False))
                     for scale_idx, (scale_value, result_obj) in enumerate(scale_fit):
+                        if result_obj is None:
+                            continue
+                        filter_reason = _companion_gevp_filter_reason(
+                            result_obj,
+                            min_r2=gevp_min_r2,
+                            min_windows=gevp_min_windows,
+                            max_error_pct=gevp_max_error_pct,
+                            remove_artifacts=gevp_remove_artifacts,
+                        )
+                        if filter_reason is not None:
+                            continue
                         mass_value = (
                             float(_get_channel_mass(result_obj, mode))
                             if result_obj is not None
@@ -11434,7 +12137,7 @@ def create_app() -> pn.template.FastListTemplate:
 
         def on_run_companion_strong_force_channels(_):
             def _compute(history):
-                output = _compute_companion_strong_force_bundle(history, companion_strong_force_settings)
+                output, resolved_h_eff, h_eff_desc = _compute_companion_strong_force_bundle(history, companion_strong_force_settings)
                 base_results = dict(output.channel_results)
                 results = dict(base_results)
                 for channel_name, channel_result in base_results.items():
@@ -11444,6 +12147,9 @@ def create_app() -> pn.template.FastListTemplate:
 
                 multiscale_output: MultiscaleStrongForceOutput | None = None
                 multiscale_error: str | None = None
+                gevp_results: dict[str, ChannelCorrelatorResult] = {}
+                gevp_errors: dict[str, str] = {}
+                gevp_error: str | None = None
                 if bool(companion_strong_force_settings.use_multiscale_kernels):
                     try:
                         requested_channels = [
@@ -11472,6 +12178,13 @@ def create_app() -> pn.template.FastListTemplate:
                             requested_channels.extend(
                                 ["scalar_score_directed", "scalar_score_weighted"]
                             )
+                        if (
+                            "scalar" in requested_channels
+                            and bool(
+                                companion_strong_force_settings.companion_include_scalar_vacuum_variants
+                            )
+                        ):
+                            requested_channels.extend(["scalar_raw", "scalar_abs2_vacsub"])
                         if (
                             "pseudoscalar" in requested_channels
                             and bool(
@@ -11529,7 +12242,7 @@ def create_app() -> pn.template.FastListTemplate:
                                 warmup_fraction=float(companion_strong_force_settings.simulation_range[0]),
                                 end_fraction=float(companion_strong_force_settings.simulation_range[1]),
                                 mc_time_index=companion_strong_force_settings.mc_time_index,
-                                h_eff=float(companion_strong_force_settings.h_eff),
+                                h_eff=resolved_h_eff,
                                 mass=float(companion_strong_force_settings.mass),
                                 ell0=companion_strong_force_settings.ell0,
                                 edge_weight_mode=str(companion_strong_force_settings.edge_weight_mode),
@@ -11560,6 +12273,18 @@ def create_app() -> pn.template.FastListTemplate:
                                 window_widths=_parse_window_widths(
                                     companion_strong_force_settings.window_widths_spec
                                 ),
+                                best_min_r2=float(
+                                    companion_strong_force_settings.gevp_min_operator_r2
+                                ),
+                                best_min_windows=int(
+                                    companion_strong_force_settings.gevp_min_operator_windows
+                                ),
+                                best_max_error_pct=float(
+                                    companion_strong_force_settings.gevp_max_operator_error_pct
+                                ),
+                                best_remove_artifacts=bool(
+                                    companion_strong_force_settings.gevp_remove_artifacts
+                                ),
                                 compute_bootstrap_errors=bool(
                                     companion_strong_force_settings.compute_bootstrap_errors
                                 ),
@@ -11588,9 +12313,104 @@ def create_app() -> pn.template.FastListTemplate:
                     except Exception as exc:
                         multiscale_error = str(exc)
 
+                if bool(companion_strong_force_settings.use_companion_nucleon_gevp):
+                    channel_connected = {
+                        "nucleon": bool(companion_strong_force_settings.baryon_use_connected),
+                        "scalar": bool(companion_strong_force_settings.meson_use_connected),
+                        "pseudoscalar": bool(companion_strong_force_settings.meson_use_connected),
+                        "glueball": bool(companion_strong_force_settings.glueball_use_connected),
+                    }
+                    for gevp_base_channel in ("nucleon", "scalar", "pseudoscalar", "glueball"):
+                        basis_channels = get_companion_gevp_basis_channels(gevp_base_channel)
+                        has_channel_series = any(
+                            (
+                                ch in base_results
+                                and base_results[ch] is not None
+                                and int(base_results[ch].n_samples) > 0
+                                and int(base_results[ch].series.numel()) > 0
+                            )
+                            for ch in basis_channels
+                        )
+                        if not has_channel_series:
+                            continue
+                        try:
+                            gevp_cfg = GEVPConfig(
+                                t0=int(companion_strong_force_settings.gevp_t0),
+                                max_lag=int(companion_strong_force_settings.max_lag),
+                                use_connected=bool(channel_connected[gevp_base_channel]),
+                                fit_mode=str(companion_strong_force_settings.fit_mode),
+                                fit_start=int(companion_strong_force_settings.fit_start),
+                                fit_stop=companion_strong_force_settings.fit_stop,
+                                min_fit_points=int(companion_strong_force_settings.min_fit_points),
+                                window_widths=_parse_window_widths(
+                                    companion_strong_force_settings.window_widths_spec
+                                ),
+                                basis_strategy=str(companion_strong_force_settings.gevp_basis_strategy),
+                                max_basis=int(companion_strong_force_settings.gevp_max_basis),
+                                min_operator_r2=float(
+                                    companion_strong_force_settings.gevp_min_operator_r2
+                                ),
+                                min_operator_windows=int(
+                                    companion_strong_force_settings.gevp_min_operator_windows
+                                ),
+                                max_operator_error_pct=float(
+                                    companion_strong_force_settings.gevp_max_operator_error_pct
+                                ),
+                                remove_artifacts=bool(
+                                    companion_strong_force_settings.gevp_remove_artifacts
+                                ),
+                                eig_rel_cutoff=float(
+                                    companion_strong_force_settings.gevp_eig_rel_cutoff
+                                ),
+                                cond_limit=float(companion_strong_force_settings.gevp_cond_limit),
+                                shrinkage=float(companion_strong_force_settings.gevp_shrinkage),
+                                compute_bootstrap_errors=bool(
+                                    companion_strong_force_settings.compute_bootstrap_errors
+                                ),
+                                n_bootstrap=int(companion_strong_force_settings.n_bootstrap),
+                                bootstrap_mode=str(companion_strong_force_settings.gevp_bootstrap_mode),
+                            )
+                            gevp_payload = compute_companion_channel_gevp(
+                                base_results=base_results,
+                                multiscale_output=multiscale_output,
+                                config=gevp_cfg,
+                                base_channel=gevp_base_channel,
+                            )
+                            channel_gevp_result = gevp_payload.result
+                            if isinstance(channel_gevp_result.mass_fit, dict):
+                                channel_gevp_result.mass_fit.setdefault(
+                                    "source",
+                                    f"gevp_{gevp_base_channel}",
+                                )
+                                channel_gevp_result.mass_fit.setdefault(
+                                    "base_channel",
+                                    gevp_base_channel,
+                                )
+                            results[channel_gevp_result.channel_name] = channel_gevp_result
+                            gevp_results[gevp_base_channel] = channel_gevp_result
+                        except Exception as exc:
+                            gevp_errors[gevp_base_channel] = str(exc)
+                    if gevp_errors:
+                        gevp_error = "; ".join(
+                            f"{channel}: {message}" for channel, message in gevp_errors.items()
+                        )
+
                 state["companion_strong_force_results"] = results
                 state["companion_strong_force_multiscale_output"] = multiscale_output
                 state["companion_strong_force_multiscale_error"] = multiscale_error
+                state["companion_strong_force_gevp_error"] = gevp_error
+                state["_multiscale_gevp_min_operator_r2"] = float(
+                    companion_strong_force_settings.gevp_min_operator_r2
+                )
+                state["_multiscale_gevp_min_operator_windows"] = int(
+                    companion_strong_force_settings.gevp_min_operator_windows
+                )
+                state["_multiscale_gevp_max_operator_error_pct"] = float(
+                    companion_strong_force_settings.gevp_max_operator_error_pct
+                )
+                state["_multiscale_gevp_remove_artifacts"] = bool(
+                    companion_strong_force_settings.gevp_remove_artifacts
+                )
                 state["companion_strong_force_plots_unlocked"] = False
                 companion_strong_force_display_plots_button.disabled = False
                 companion_strong_force_display_plots_button.button_type = "primary"
@@ -11607,18 +12427,81 @@ def create_app() -> pn.template.FastListTemplate:
                     original_results=base_results,
                 )
 
-                companion_strong_force_summary.object = (
-                    "## Companion Strong Force Summary\n"
-                    f"- Frames used: `{output.n_valid_frames}/{len(output.frame_indices)}`\n"
-                    f"- Mean alive walkers/frame: `{output.avg_alive_walkers:.2f}`\n"
-                    f"- Multiscale kernels: "
-                    f"`{'on' if companion_strong_force_settings.use_multiscale_kernels else 'off'}`\n"
-                    f"- Channels computed: `{len([res for res in results.values() if res.n_samples > 0])}`\n"
-                )
+                summary_lines = [
+                    "## Companion Strong Force Summary",
+                    f"- Frames used: `{output.n_valid_frames}/{len(output.frame_indices)}`",
+                    f"- Mean alive walkers/frame: `{output.avg_alive_walkers:.2f}`",
+                    f"- h_eff: `{h_eff_desc}`",
+                    (
+                        "- Multiscale kernels: "
+                        f"`{'on' if companion_strong_force_settings.use_multiscale_kernels else 'off'}`"
+                    ),
+                    f"- Channels computed: `{len([res for res in results.values() if res.n_samples > 0])}`",
+                    (
+                        "- Companion GEVP channels: "
+                        f"`{'on' if companion_strong_force_settings.use_companion_nucleon_gevp else 'off'}`"
+                    ),
+                ]
+                filters_reported = False
+                for gevp_base_channel in ("nucleon", "scalar", "pseudoscalar", "glueball"):
+                    channel_gevp_result = gevp_results.get(gevp_base_channel)
+                    if channel_gevp_result is None or not isinstance(channel_gevp_result.mass_fit, dict):
+                        continue
+                    n_input = int(channel_gevp_result.mass_fit.get("gevp_n_basis_input", 0))
+                    n_kept = int(channel_gevp_result.mass_fit.get("gevp_n_basis_kept", 0))
+                    cond_c0 = float(
+                        channel_gevp_result.mass_fit.get("gevp_condition_number", float("nan"))
+                    )
+                    cond_str = f"{cond_c0:.3g}" if np.isfinite(cond_c0) else "n/a"
+                    summary_lines.append(
+                        f"- GEVP `{gevp_base_channel}` basis kept: `{n_kept}/{n_input}` "
+                        f"(cond `{cond_str}`)"
+                    )
+                    if not filters_reported:
+                        min_r2 = float(
+                            channel_gevp_result.mass_fit.get("gevp_min_operator_r2", float("nan"))
+                        )
+                        min_windows = int(
+                            channel_gevp_result.mass_fit.get("gevp_min_operator_windows", 0)
+                        )
+                        max_error_pct = float(
+                            channel_gevp_result.mass_fit.get(
+                                "gevp_max_operator_error_pct",
+                                float("nan"),
+                            )
+                        )
+                        remove_artifacts = bool(
+                            channel_gevp_result.mass_fit.get(
+                                "gevp_remove_artifacts",
+                                channel_gevp_result.mass_fit.get(
+                                    "gevp_exclude_zero_error_operators",
+                                    False,
+                                ),
+                            )
+                        )
+                        min_r2_str = f"{min_r2:.3g}" if np.isfinite(min_r2) else "off"
+                        max_error_pct_str = (
+                            f"{max_error_pct:.3g}%" if np.isfinite(max_error_pct) else "off"
+                        )
+                        summary_lines.append(
+                            f"- GEVP operator filters: `R² >= {min_r2_str}`, "
+                            f"`n_windows >= {min_windows}`, "
+                            f"`error % <= {max_error_pct_str}`, "
+                            f"`remove artifacts={'on' if remove_artifacts else 'off'}`"
+                        )
+                        filters_reported = True
+                if gevp_error:
+                    summary_lines.append(f"- GEVP error: `{gevp_error}`")
+                companion_strong_force_summary.object = "\n".join(summary_lines)
+
+                error_parts = []
                 if multiscale_error:
+                    error_parts.append(f"multiscale: `{multiscale_error}`")
+                if gevp_error:
+                    error_parts.append(f"GEVP: `{gevp_error}`")
+                if error_parts:
                     companion_strong_force_status.object = (
-                        "**Complete with multiscale error:** "
-                        f"`{multiscale_error}`"
+                        "**Complete with errors:** " + "; ".join(error_parts)
                     )
                 else:
                     companion_strong_force_status.object = (
@@ -11815,6 +12698,278 @@ def create_app() -> pn.template.FastListTemplate:
         # New Dirac/Electroweak tab callbacks (unified observables)
         # =====================================================================
 
+        def _update_electroweak_plots_generic(
+            results: dict[str, ChannelCorrelatorResult],
+            channel_plots_container,
+            plots_spectrum,
+            plots_overlay_corr,
+            plots_overlay_meff,
+        ) -> None:
+            _update_correlator_plots(
+                results,
+                channel_plots_container,
+                plots_spectrum,
+                plots_overlay_corr,
+                plots_overlay_meff,
+                correlator_logy=False,
+            )
+
+        def _update_electroweak_tables_generic(
+            results: dict[str, ChannelCorrelatorResult],
+            mode: str,
+            mass_table,
+            ratio_pane,
+            ratio_table,
+            fit_table,
+            anchor_table,
+            compare_table,
+            ref_table,
+        ) -> None:
+            _update_mass_table(results, mass_table, mode)
+            ratio_pane.object = _format_ratios(results, mode, title="Electroweak Ratios")
+
+            masses = _extract_masses(results, mode, family_map=None)
+            r2s = _extract_r2(results, mode, family_map=None)
+            base_name = "u1_dressed" if "u1_dressed" in masses else "u1_phase"
+
+            refs_df = ref_table.value
+            refs: dict[str, float] = {}
+            if isinstance(refs_df, pd.DataFrame):
+                for _, row in refs_df.iterrows():
+                    name = str(row.get("channel", "")).strip()
+                    try:
+                        mass_raw = row.get("mass_ref_GeV")
+                        if isinstance(mass_raw, str):
+                            mass_raw = mass_raw.strip()
+                            if mass_raw == "":
+                                continue
+                        mass_ref = float(mass_raw)
+                    except (TypeError, ValueError):
+                        continue
+                    if name and mass_ref > 0:
+                        refs[name] = mass_ref
+
+            ratio_rows = _build_electroweak_ratio_rows(masses, base_name, refs=refs)
+            ratio_table.value = pd.DataFrame(ratio_rows) if ratio_rows else pd.DataFrame()
+
+            if not masses or not refs:
+                fit_table.value = pd.DataFrame()
+                anchor_table.value = pd.DataFrame()
+                compare_table.value = pd.DataFrame()
+                return
+
+            fit_table.value = pd.DataFrame(_build_electroweak_best_fit_rows(masses, refs, r2s))
+            anchor_table.value = pd.DataFrame(_build_electroweak_anchor_rows(masses, refs, r2s))
+            compare_table.value = pd.DataFrame(_build_electroweak_comparison_rows(masses, refs))
+
+        def _resolve_new_dirac_ew_filter_values() -> tuple[float, int, float, bool]:
+            try:
+                min_r2 = float(new_dirac_ew_settings.gevp_min_operator_r2)
+            except (TypeError, ValueError):
+                min_r2 = 0.5
+            try:
+                min_windows = max(0, int(new_dirac_ew_settings.gevp_min_operator_windows))
+            except (TypeError, ValueError):
+                min_windows = 10
+            try:
+                max_error_pct = float(new_dirac_ew_settings.gevp_max_operator_error_pct)
+            except (TypeError, ValueError):
+                max_error_pct = 30.0
+            remove_artifacts = bool(new_dirac_ew_settings.gevp_remove_artifacts)
+            return min_r2, min_windows, max_error_pct, remove_artifacts
+
+        def _collect_su2_operator_entries(
+            output: MultiscaleElectroweakOutput | None,
+            original_results: dict[str, ChannelCorrelatorResult],
+        ) -> list[dict[str, Any]]:
+            entries: list[dict[str, Any]] = []
+            if output is not None:
+                for alias, per_scale_results in output.per_scale_results.items():
+                    base_name = str(alias).replace("_companion", "")
+                    if base_name not in SU2_BASE_CHANNELS:
+                        continue
+                    for scale_idx, result in enumerate(per_scale_results):
+                        if result is None or int(getattr(result, "n_samples", 0)) <= 0:
+                            continue
+                        entries.append(
+                            {
+                                "operator": f"{base_name}@s{int(scale_idx)}",
+                                "result": result,
+                                "source": "multiscale",
+                            }
+                        )
+            for base_name in SU2_BASE_CHANNELS:
+                result = original_results.get(base_name)
+                if result is None or int(getattr(result, "n_samples", 0)) <= 0:
+                    continue
+                entries.append(
+                    {
+                        "operator": f"{base_name}@full",
+                        "result": result,
+                        "source": "original",
+                    }
+                )
+            return entries
+
+        def _update_new_dirac_ew_operator_quality(
+            output: MultiscaleElectroweakOutput | None,
+            results: dict[str, ChannelCorrelatorResult],
+        ) -> None:
+            entries = _collect_su2_operator_entries(output, results)
+            min_r2, min_windows, max_error_pct, remove_artifacts = _resolve_new_dirac_ew_filter_values()
+            kept_entries: list[dict[str, Any]] = []
+            excluded_entries: list[tuple[str, str]] = []
+            for entry in entries:
+                reason = _companion_gevp_filter_reason(
+                    entry["result"],
+                    min_r2=min_r2,
+                    min_windows=min_windows,
+                    max_error_pct=max_error_pct,
+                    remove_artifacts=remove_artifacts,
+                )
+                if reason is None:
+                    kept_entries.append(entry)
+                else:
+                    excluded_entries.append((str(entry["operator"]), str(reason)))
+
+            if len(kept_entries) < 2:
+                new_dirac_ew_operator_quality_table.value = pd.DataFrame()
+                new_dirac_ew_eigenspectrum_plot.object = None
+                if kept_entries:
+                    new_dirac_ew_gevp_summary.object = (
+                        f"**SU(2) operator quality:** `{len(kept_entries)}` candidate passed filters; "
+                        "need at least 2 for eigen-spectrum analysis."
+                    )
+                else:
+                    new_dirac_ew_gevp_summary.object = (
+                        "_SU(2) operator quality unavailable: no operators pass active filters._"
+                    )
+                return
+
+            lengths = [int(entry["result"].series.numel()) for entry in kept_entries]
+            t_len = min(lengths)
+            if t_len <= 3:
+                new_dirac_ew_operator_quality_table.value = pd.DataFrame()
+                new_dirac_ew_eigenspectrum_plot.object = None
+                new_dirac_ew_gevp_summary.object = (
+                    "_SU(2) operator quality unavailable: insufficient time samples._"
+                )
+                return
+
+            t0_eff = max(1, int(new_dirac_ew_settings.gevp_t0))
+            if t0_eff >= t_len:
+                t0_eff = max(1, t_len // 2)
+            if t_len - t0_eff <= 1:
+                new_dirac_ew_operator_quality_table.value = pd.DataFrame()
+                new_dirac_ew_eigenspectrum_plot.object = None
+                new_dirac_ew_gevp_summary.object = (
+                    "_SU(2) operator quality unavailable: invalid effective t0 after trimming._"
+                )
+                return
+
+            series = torch.stack(
+                [entry["result"].series[:t_len].float() for entry in kept_entries], dim=0
+            )
+            if bool(new_dirac_ew_settings.use_connected):
+                series = series - series.mean(dim=1, keepdim=True)
+            source = series[:, : t_len - t0_eff]
+            sink = series[:, t0_eff:]
+            c0 = (sink @ source.transpose(0, 1)) / float(t_len - t0_eff)
+            c0 = 0.5 * (c0 + c0.transpose(0, 1))
+            evals, evecs = torch.linalg.eigh(c0)
+            order = torch.argsort(evals, descending=True)
+            evals = evals[order].real.float()
+            evecs = evecs[:, order].real.float()
+
+            eps = torch.tensor(1e-12, dtype=torch.float32, device=series.device)
+            max_eval = torch.clamp_min(torch.abs(evals[0]), eps)
+            rel_eval = evals / max_eval
+            sig_mask = rel_eval > float(new_dirac_ew_settings.gevp_eig_rel_cutoff)
+            if int(sig_mask.sum().item()) <= 0:
+                sig_mask[0] = True
+            weights = torch.where(sig_mask, torch.clamp_min(evals, 0.0), torch.zeros_like(evals))
+            if float(weights.sum().item()) <= 0:
+                weights = torch.where(sig_mask, evals.abs(), torch.zeros_like(evals))
+            importance = (evecs.square() * weights.unsqueeze(0)).sum(dim=1)
+            importance = importance / torch.clamp_min(importance.max(), eps)
+
+            rows: list[dict[str, Any]] = []
+            for idx, entry in enumerate(kept_entries):
+                result = entry["result"]
+                fit = result.mass_fit if isinstance(result.mass_fit, dict) else {}
+                mass = float(fit.get("mass", float("nan")))
+                mass_error = float(fit.get("mass_error", float("nan")))
+                err_pct = (
+                    abs(mass_error / mass) * 100.0
+                    if np.isfinite(mass) and mass > 0 and np.isfinite(mass_error)
+                    else float("nan")
+                )
+                rows.append(
+                    {
+                        "operator": entry["operator"],
+                        "source": entry["source"],
+                        "mass": mass,
+                        "mass_error": mass_error,
+                        "mass_error_pct": err_pct,
+                        "r2": float(fit.get("r_squared", float("nan"))),
+                        "n_windows": _extract_n_windows_for_filter(result),
+                        "importance": float(importance[idx].item()),
+                        "dominant_mode": int(torch.argmax(torch.abs(evecs[idx])).item()),
+                    }
+                )
+            quality_df = pd.DataFrame(rows).sort_values(
+                ["importance", "mass_error_pct"], ascending=[False, True], kind="stable"
+            )
+            new_dirac_ew_operator_quality_table.value = quality_df
+
+            spectrum_df = pd.DataFrame(
+                {
+                    "mode": np.arange(int(evals.numel())),
+                    "eigenvalue_rel": rel_eval.detach().cpu().numpy(),
+                    "status": np.where(sig_mask.detach().cpu().numpy(), "significant", "candidate"),
+                }
+            )
+            bars = hv.Bars(spectrum_df, kdims=["mode"], vdims=["eigenvalue_rel", "status"]).opts(
+                color="status",
+                cmap=["#2ca02c", "#9aa0a6"],
+                xlabel="Mode",
+                ylabel="Relative Eigenvalue",
+                height=280,
+                responsive=True,
+                tools=["hover"],
+            )
+            cutoff = float(new_dirac_ew_settings.gevp_eig_rel_cutoff)
+            cutoff_line = hv.HLine(cutoff).opts(color="#d62728", line_dash="dashed", line_width=1.5)
+            new_dirac_ew_eigenspectrum_plot.object = bars * cutoff_line
+
+            n_significant = int(sig_mask.sum().item())
+            cond = float("nan")
+            positive = evals[sig_mask & (evals > 0)]
+            if int(positive.numel()) > 0:
+                cond = float(positive.max().item() / max(float(positive.min().item()), 1e-12))
+            excluded_preview = ", ".join(
+                f"{name}({reason})" for name, reason in excluded_entries[:4]
+            )
+            excluded_suffix = " ..." if len(excluded_entries) > 4 else ""
+            min_r2_str = f"{min_r2:.3g}" if np.isfinite(min_r2) else "off"
+            max_err_str = f"{max_error_pct:.3g}%" if np.isfinite(max_error_pct) else "off"
+            cond_text = f"{cond:.3g}" if np.isfinite(cond) else "n/a"
+            new_dirac_ew_gevp_summary.object = (
+                f"**SU(2) operator quality:** `{len(kept_entries)}` passed filters, "
+                f"`{len(excluded_entries)}` excluded.  \n"
+                f"- Significant eigen-modes: `{n_significant}/{len(kept_entries)}`  \n"
+                f"- Condition number (kept positive modes): `{cond_text}`"
+            )
+            new_dirac_ew_gevp_summary.object += (
+                f"  \n- Active filters: `R² >= {min_r2_str}`, `n_windows >= {min_windows}`, "
+                f"`error % <= {max_err_str}`, "
+                f"`remove artifacts={'on' if remove_artifacts else 'off'}`"
+            )
+            if excluded_entries:
+                new_dirac_ew_gevp_summary.object += (
+                    f"  \n- Excluded preview: `{excluded_preview}{excluded_suffix}`"
+                )
+
         def _extract_observed_refs_from_table(
             table: pn.widgets.Tabulator,
             key_col: str = "observable",
@@ -11847,8 +13002,16 @@ def create_app() -> pn.template.FastListTemplate:
         ) -> None:
             if mode is None:
                 mode = new_dirac_ew_mass_mode.value
-            _update_electroweak_tables_generic(
+            min_r2, min_windows, max_error_pct, remove_artifacts = _resolve_new_dirac_ew_filter_values()
+            filtered_results, filtered_out_results = _split_results_by_companion_gevp_filters(
                 results,
+                min_r2=min_r2,
+                min_windows=min_windows,
+                max_error_pct=max_error_pct,
+                remove_artifacts=remove_artifacts,
+            )
+            _update_electroweak_tables_generic(
+                filtered_results,
                 mode,
                 new_dirac_ew_mass_table,
                 new_dirac_ew_ratio_pane,
@@ -11857,6 +13020,200 @@ def create_app() -> pn.template.FastListTemplate:
                 new_dirac_ew_anchor_table,
                 new_dirac_ew_compare_table,
                 new_dirac_ew_ref_table,
+            )
+            filtered_out_dict = {name: payload[0] for name, payload in filtered_out_results.items()}
+            _update_mass_table(
+                filtered_out_dict,
+                new_dirac_ew_filtered_mass_table,
+                str(mode),
+            )
+
+            min_r2_str = f"{min_r2:.3g}" if np.isfinite(min_r2) else "off"
+            max_error_pct_str = f"{max_error_pct:.3g}%" if np.isfinite(max_error_pct) else "off"
+            if filtered_out_results:
+                preview = ", ".join(
+                    f"{name}({reason})"
+                    for name, (_, reason) in list(filtered_out_results.items())[:6]
+                )
+                suffix = " ..." if len(filtered_out_results) > 6 else ""
+                new_dirac_ew_filtered_summary.object = (
+                    f"**Filtered-out candidates:** `{len(filtered_out_results)}` excluded; "
+                    f"`{len(filtered_results)}` shown.  \n"
+                    f"_Filters:_ `R² >= {min_r2_str}`, `n_windows >= {min_windows}`, "
+                    f"`error % <= {max_error_pct_str}`, "
+                    f"`remove artifacts={'on' if remove_artifacts else 'off'}`.  \n"
+                    f"_Preview:_ `{preview}{suffix}`"
+                )
+            else:
+                new_dirac_ew_filtered_summary.object = (
+                    "**Filtered-out candidates:** none.  \n"
+                    f"_Filters:_ `R² >= {min_r2_str}`, `n_windows >= {min_windows}`, "
+                    f"`error % <= {max_error_pct_str}`, "
+                    f"`remove artifacts={'on' if remove_artifacts else 'off'}`."
+                )
+            _update_new_dirac_ew_operator_quality(
+                state.get("new_dirac_ew_multiscale_output"),
+                results,
+            )
+
+        def _update_new_dirac_ew_multiscale_views(
+            output: MultiscaleElectroweakOutput | None,
+            *,
+            original_results: dict[str, ChannelCorrelatorResult] | None = None,
+            error: str | None = None,
+        ) -> None:
+            if error:
+                new_dirac_ew_multiscale_summary.object = (
+                    "### SU(2) Multiscale Summary\n"
+                    "- Status: failed\n"
+                    f"- Error: `{error}`"
+                )
+                new_dirac_ew_multiscale_table.value = pd.DataFrame()
+                new_dirac_ew_multiscale_per_scale_table.value = pd.DataFrame()
+                new_dirac_ew_operator_quality_table.value = pd.DataFrame()
+                new_dirac_ew_eigenspectrum_plot.object = None
+                new_dirac_ew_gevp_summary.object = "_SU(2) GEVP summary unavailable due to error._"
+                return
+
+            if output is None:
+                new_dirac_ew_multiscale_summary.object = (
+                    "### SU(2) Multiscale Summary\n"
+                    "_Multiscale kernels disabled (original estimators only)._"
+                )
+                new_dirac_ew_multiscale_table.value = pd.DataFrame()
+                new_dirac_ew_multiscale_per_scale_table.value = pd.DataFrame()
+                return
+
+            scale_values = output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
+            summary_lines = [
+                "### SU(2) Multiscale Summary",
+                f"- Scales: `{len(scale_values)}`",
+                f"- Frames: `{len(output.frame_indices)}`",
+                f"- Bootstrap mode: `{output.bootstrap_mode_applied}`",
+            ]
+            if scale_values.size > 0:
+                summary_lines.append(
+                    f"- Scale range: `[{float(scale_values.min()):.4g}, {float(scale_values.max()):.4g}]`"
+                )
+            if output.notes:
+                for note in output.notes:
+                    summary_lines.append(f"- Note: {note}")
+            new_dirac_ew_multiscale_summary.object = "  \n".join(summary_lines)
+
+            mode = str(new_dirac_ew_mass_mode.value)
+            min_r2, min_windows, max_error_pct, remove_artifacts = _resolve_new_dirac_ew_filter_values()
+            rows: list[dict[str, Any]] = []
+            per_scale_rows: list[dict[str, Any]] = []
+            for alias, results_per_scale in output.per_scale_results.items():
+                base_name = str(alias).replace("_companion", "")
+                best_idx_raw = int(output.best_scale_index.get(alias, -1))
+                best_idx = best_idx_raw if 0 <= best_idx_raw < len(results_per_scale) else -1
+                best_result = results_per_scale[best_idx] if best_idx >= 0 else None
+                if best_result is not None:
+                    best_reason = _companion_gevp_filter_reason(
+                        best_result,
+                        min_r2=min_r2,
+                        min_windows=min_windows,
+                        max_error_pct=max_error_pct,
+                        remove_artifacts=remove_artifacts,
+                    )
+                    if best_reason is not None:
+                        best_result = None
+                        best_idx = -1
+
+                original_mass = float("nan")
+                if isinstance(original_results, dict):
+                    original_result = original_results.get(base_name)
+                    if original_result is not None:
+                        original_reason = _companion_gevp_filter_reason(
+                            original_result,
+                            min_r2=min_r2,
+                            min_windows=min_windows,
+                            max_error_pct=max_error_pct,
+                            remove_artifacts=remove_artifacts,
+                        )
+                        if original_reason is None:
+                            original_mass = float(_get_channel_mass(original_result, mode))
+
+                for scale_idx, res in enumerate(results_per_scale):
+                    if res is None:
+                        continue
+                    reason = _companion_gevp_filter_reason(
+                        res,
+                        min_r2=min_r2,
+                        min_windows=min_windows,
+                        max_error_pct=max_error_pct,
+                        remove_artifacts=remove_artifacts,
+                    )
+                    if reason is not None:
+                        continue
+                    fit = res.mass_fit if isinstance(res.mass_fit, dict) else {}
+                    mass = float(_get_channel_mass(res, mode))
+                    mass_error = float(_get_channel_mass_error(res, mode))
+                    err_pct = (
+                        abs(mass_error / mass) * 100.0
+                        if np.isfinite(mass) and mass > 0 and np.isfinite(mass_error)
+                        else float("nan")
+                    )
+                    per_scale_rows.append(
+                        {
+                            "channel": base_name,
+                            "scale_idx": int(scale_idx),
+                            "scale": (
+                                float(scale_values[scale_idx])
+                                if scale_values.size > scale_idx
+                                else float("nan")
+                            ),
+                            "mass": mass,
+                            "mass_error": mass_error,
+                            "mass_error_pct": err_pct,
+                            "r2": float(_get_channel_r2(res, mode)),
+                            "n_windows": _extract_n_windows_for_filter(res),
+                            "source": str(fit.get("source", "multiscale")),
+                        }
+                    )
+
+                if best_result is None:
+                    continue
+                best_mass = float(_get_channel_mass(best_result, mode))
+                best_error = float(_get_channel_mass_error(best_result, mode))
+                best_err_pct = (
+                    abs(best_error / best_mass) * 100.0
+                    if np.isfinite(best_mass) and best_mass > 0 and np.isfinite(best_error)
+                    else float("nan")
+                )
+                rows.append(
+                    {
+                        "channel": base_name,
+                        "best_scale_idx": int(best_idx),
+                        "best_scale": (
+                            float(scale_values[best_idx])
+                            if scale_values.size > best_idx >= 0
+                            else float("nan")
+                        ),
+                        "mass": best_mass,
+                        "mass_error": best_error,
+                        "mass_error_pct": best_err_pct,
+                        "r2": float(_get_channel_r2(best_result, mode)),
+                        "n_windows": _extract_n_windows_for_filter(best_result),
+                        "original_mass": original_mass,
+                        "delta_vs_original_pct": (
+                            ((best_mass - original_mass) / original_mass) * 100.0
+                            if np.isfinite(original_mass) and original_mass > 0 and np.isfinite(best_mass)
+                            else float("nan")
+                        ),
+                    }
+                )
+
+            new_dirac_ew_multiscale_table.value = (
+                pd.DataFrame(rows).sort_values(["channel"], kind="stable")
+                if rows
+                else pd.DataFrame()
+            )
+            new_dirac_ew_multiscale_per_scale_table.value = (
+                pd.DataFrame(per_scale_rows).sort_values(["channel", "scale_idx"], kind="stable")
+                if per_scale_rows
+                else pd.DataFrame()
             )
 
         def _update_new_dirac_ew_derived_tables(
@@ -11992,69 +13349,264 @@ def create_app() -> pn.template.FastListTemplate:
                 pd.DataFrame(ratio_rows) if ratio_rows else pd.DataFrame()
             )
 
-            summary_lines = [
-                "## Electroweak Summary",
-                f"- Frames used: `{len(bundle.frame_indices)}`",
-                f"- Electroweak channels with samples: "
-                f"`{len([r for r in ew_results.values() if r.n_samples > 0])}`",
-                f"- Higgs VEV (snapshot): `{bundle.higgs_vev:.6f}` ± `{bundle.higgs_vev_std:.6f}`",
-                f"- Higgs VEV (time mean): `{bundle.vev_time_mean:.6f}` ± `{bundle.vev_time_std:.6f}`",
-                f"- Yukawa prediction: `m_e={bundle.electron_mass_yukawa:.6f}`, "
-                f"`y_e={bundle.yukawa_e:.6f}`, `ΔΦ_e={bundle.fitness_delta_phi_e:.6f}`, "
-                f"`Φ_0={bundle.fitness_phi0:.6f}`",
-            ]
-            if color_singlet is not None:
-                summary_lines.append(
-                    f"- Dirac color-singlet threshold q={new_dirac_ew_settings.color_singlet_quantile:.2f}: "
-                    f"`{color_singlet.lepton_threshold:.6f}` "
-                    f"(modes={color_singlet.n_singlet_modes}/{len(color_singlet.masses)})"
-                )
-                if color_singlet.electron_mass is not None:
-                    summary_lines.append(
-                        f"- Dirac electron proxy mass: `{color_singlet.electron_mass:.6f}`"
-                    )
-            new_dirac_ew_summary.object = "\n".join(summary_lines)
-
         def _on_new_dirac_ew_mass_mode_change(event) -> None:
             results = state.get("new_dirac_ew_results")
-            bundle = state.get("new_dirac_ew_bundle")
-            if results is None or bundle is None:
-                return
-            _update_new_dirac_ew_electroweak_tables(results, event.new)
-            _update_new_dirac_ew_derived_tables(bundle, event.new)
+            if results is not None:
+                _update_new_dirac_ew_electroweak_tables(results, event.new)
+                _update_new_dirac_ew_multiscale_views(
+                    state.get("new_dirac_ew_multiscale_output"),
+                    original_results=results,
+                    error=state.get("new_dirac_ew_multiscale_error"),
+                )
+            bundle = state.get("new_dirac_bundle")
+            if bundle is not None:
+                _update_new_dirac_ew_derived_tables(bundle, event.new)
 
         new_dirac_ew_mass_mode.param.watch(_on_new_dirac_ew_mass_mode_change, "value")
 
+        def _build_new_dirac_ew_channel_config() -> ElectroweakChannelConfig:
+            neighbor_method = (
+                "auto"
+                if new_dirac_ew_settings.neighbor_method == "voronoi"
+                else new_dirac_ew_settings.neighbor_method
+            )
+            return ElectroweakChannelConfig(
+                warmup_fraction=new_dirac_ew_settings.simulation_range[0],
+                end_fraction=new_dirac_ew_settings.simulation_range[1],
+                max_lag=new_dirac_ew_settings.max_lag,
+                h_eff=new_dirac_ew_settings.h_eff,
+                use_connected=new_dirac_ew_settings.use_connected,
+                neighbor_method=neighbor_method,
+                companion_topology=str(new_dirac_ew_settings.companion_topology),
+                edge_weight_mode=new_dirac_ew_settings.edge_weight_mode,
+                neighbor_k=new_dirac_ew_settings.neighbor_k,
+                window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
+                fit_mode=new_dirac_ew_settings.fit_mode,
+                fit_start=new_dirac_ew_settings.fit_start,
+                fit_stop=new_dirac_ew_settings.fit_stop,
+                min_fit_points=new_dirac_ew_settings.min_fit_points,
+                epsilon_d=new_dirac_ew_settings.epsilon_d,
+                epsilon_c=new_dirac_ew_settings.epsilon_c,
+                epsilon_clone=new_dirac_ew_settings.epsilon_clone,
+                lambda_alg=new_dirac_ew_settings.lambda_alg,
+                mc_time_index=new_dirac_ew_settings.mc_time_index,
+                compute_bootstrap_errors=new_dirac_ew_settings.compute_bootstrap_errors,
+                n_bootstrap=new_dirac_ew_settings.n_bootstrap,
+            )
+
         def on_run_new_dirac_electroweak(_):
             def _compute(history):
-                neighbor_method = (
-                    "auto"
-                    if new_dirac_ew_settings.neighbor_method == "voronoi"
-                    else new_dirac_ew_settings.neighbor_method
+                ew_cfg = _build_new_dirac_ew_channel_config()
+                requested_channels = [
+                    c.strip() for c in str(new_dirac_ew_settings.channel_list).split(",") if c.strip()
+                ]
+                ew_output = compute_electroweak_channels(
+                    history,
+                    channels=requested_channels if requested_channels else None,
+                    config=ew_cfg,
                 )
-                ew_cfg = ElectroweakChannelConfig(
-                    warmup_fraction=new_dirac_ew_settings.simulation_range[0],
-                    end_fraction=new_dirac_ew_settings.simulation_range[1],
-                    max_lag=new_dirac_ew_settings.max_lag,
-                    h_eff=new_dirac_ew_settings.h_eff,
-                    use_connected=new_dirac_ew_settings.use_connected,
-                    neighbor_method=neighbor_method,
-                    companion_topology=str(new_dirac_ew_settings.companion_topology),
-                    edge_weight_mode=new_dirac_ew_settings.edge_weight_mode,
-                    neighbor_k=new_dirac_ew_settings.neighbor_k,
-                    window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
-                    fit_mode=new_dirac_ew_settings.fit_mode,
-                    fit_start=new_dirac_ew_settings.fit_start,
-                    fit_stop=new_dirac_ew_settings.fit_stop,
-                    min_fit_points=new_dirac_ew_settings.min_fit_points,
+                base_results = dict(ew_output.channel_results)
+                results = dict(base_results)
+
+                multiscale_output: MultiscaleElectroweakOutput | None = None
+                multiscale_error: str | None = None
+                gevp_error: str | None = None
+
+                su2_requested = [name for name in requested_channels if name in SU2_BASE_CHANNELS]
+                if not su2_requested:
+                    su2_requested = [name for name in SU2_BASE_CHANNELS if name in base_results]
+
+                if bool(new_dirac_ew_settings.use_multiscale_kernels) and su2_requested:
+                    try:
+                        ms_cfg = MultiscaleElectroweakConfig(
+                            warmup_fraction=float(new_dirac_ew_settings.simulation_range[0]),
+                            end_fraction=float(new_dirac_ew_settings.simulation_range[1]),
+                            mc_time_index=new_dirac_ew_settings.mc_time_index,
+                            h_eff=float(new_dirac_ew_settings.h_eff),
+                            epsilon_c=new_dirac_ew_settings.epsilon_c,
+                            epsilon_clone=new_dirac_ew_settings.epsilon_clone,
+                            lambda_alg=new_dirac_ew_settings.lambda_alg,
+                            edge_weight_mode=str(new_dirac_ew_settings.edge_weight_mode),
+                            n_scales=int(new_dirac_ew_settings.n_scales),
+                            kernel_type=str(new_dirac_ew_settings.kernel_type),
+                            kernel_distance_method=str(new_dirac_ew_settings.kernel_distance_method),
+                            kernel_assume_all_alive=bool(new_dirac_ew_settings.kernel_assume_all_alive),
+                            kernel_batch_size=int(new_dirac_ew_settings.kernel_batch_size),
+                            kernel_scale_frames=int(new_dirac_ew_settings.kernel_scale_frames),
+                            kernel_scale_q_low=float(new_dirac_ew_settings.kernel_scale_q_low),
+                            kernel_scale_q_high=float(new_dirac_ew_settings.kernel_scale_q_high),
+                            max_lag=int(new_dirac_ew_settings.max_lag),
+                            use_connected=bool(new_dirac_ew_settings.use_connected),
+                            fit_mode=str(new_dirac_ew_settings.fit_mode),
+                            fit_start=int(new_dirac_ew_settings.fit_start),
+                            fit_stop=new_dirac_ew_settings.fit_stop,
+                            min_fit_points=int(new_dirac_ew_settings.min_fit_points),
+                            window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
+                            best_min_r2=float(new_dirac_ew_settings.gevp_min_operator_r2),
+                            best_min_windows=int(new_dirac_ew_settings.gevp_min_operator_windows),
+                            best_max_error_pct=float(new_dirac_ew_settings.gevp_max_operator_error_pct),
+                            best_remove_artifacts=bool(new_dirac_ew_settings.gevp_remove_artifacts),
+                            compute_bootstrap_errors=bool(new_dirac_ew_settings.compute_bootstrap_errors),
+                            n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
+                            bootstrap_mode=str(new_dirac_ew_settings.kernel_bootstrap_mode),
+                        )
+                        multiscale_output = compute_multiscale_electroweak_channels(
+                            history,
+                            config=ms_cfg,
+                            channels=su2_requested,
+                        )
+                        min_r2, min_windows, max_error_pct, remove_artifacts = (
+                            _resolve_new_dirac_ew_filter_values()
+                        )
+                        for alias, result in multiscale_output.best_results.items():
+                            reason = _companion_gevp_filter_reason(
+                                result,
+                                min_r2=min_r2,
+                                min_windows=min_windows,
+                                max_error_pct=max_error_pct,
+                                remove_artifacts=remove_artifacts,
+                            )
+                            if reason is not None:
+                                continue
+                            base_name = str(alias).replace("_companion", "")
+                            tagged_name = f"{base_name}_multiscale_best"
+                            tagged_result = replace(result, channel_name=tagged_name)
+                            if isinstance(tagged_result.mass_fit, dict):
+                                tagged_result.mass_fit["source"] = "multiscale_best"
+                                tagged_result.mass_fit["base_channel"] = base_name
+                            results[tagged_name] = tagged_result
+                    except Exception as exc:
+                        multiscale_error = str(exc)
+
+                if bool(new_dirac_ew_settings.use_su2_gevp):
+                    basis_channels = get_companion_gevp_basis_channels("su2")
+                    has_series = any(
+                        (
+                            ch in base_results
+                            and base_results[ch] is not None
+                            and int(base_results[ch].n_samples) > 0
+                            and int(base_results[ch].series.numel()) > 0
+                        )
+                        for ch in basis_channels
+                    )
+                    if has_series:
+                        try:
+                            gevp_cfg = GEVPConfig(
+                                t0=int(new_dirac_ew_settings.gevp_t0),
+                                max_lag=int(new_dirac_ew_settings.max_lag),
+                                use_connected=bool(new_dirac_ew_settings.use_connected),
+                                fit_mode=str(new_dirac_ew_settings.fit_mode),
+                                fit_start=int(new_dirac_ew_settings.fit_start),
+                                fit_stop=new_dirac_ew_settings.fit_stop,
+                                min_fit_points=int(new_dirac_ew_settings.min_fit_points),
+                                window_widths=_parse_window_widths(
+                                    new_dirac_ew_settings.window_widths_spec
+                                ),
+                                basis_strategy=str(new_dirac_ew_settings.gevp_basis_strategy),
+                                max_basis=int(new_dirac_ew_settings.gevp_max_basis),
+                                min_operator_r2=float(new_dirac_ew_settings.gevp_min_operator_r2),
+                                min_operator_windows=int(
+                                    new_dirac_ew_settings.gevp_min_operator_windows
+                                ),
+                                max_operator_error_pct=float(
+                                    new_dirac_ew_settings.gevp_max_operator_error_pct
+                                ),
+                                remove_artifacts=bool(new_dirac_ew_settings.gevp_remove_artifacts),
+                                eig_rel_cutoff=float(new_dirac_ew_settings.gevp_eig_rel_cutoff),
+                                cond_limit=float(new_dirac_ew_settings.gevp_cond_limit),
+                                shrinkage=float(new_dirac_ew_settings.gevp_shrinkage),
+                                compute_bootstrap_errors=bool(
+                                    new_dirac_ew_settings.compute_bootstrap_errors
+                                ),
+                                n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
+                                bootstrap_mode=str(new_dirac_ew_settings.gevp_bootstrap_mode),
+                            )
+                            gevp_payload = compute_companion_channel_gevp(
+                                base_results=base_results,
+                                multiscale_output=multiscale_output,
+                                config=gevp_cfg,
+                                base_channel="su2",
+                            )
+                            results[gevp_payload.result.channel_name] = gevp_payload.result
+                        except Exception as exc:
+                            gevp_error = str(exc)
+
+                state["new_dirac_ew_results"] = results
+                state["new_dirac_ew_multiscale_output"] = multiscale_output
+                state["new_dirac_ew_multiscale_error"] = multiscale_error
+                state["new_dirac_ew_gevp_error"] = gevp_error
+
+                _update_electroweak_plots_generic(
+                    results,
+                    new_dirac_ew_channel_plots,
+                    new_dirac_ew_plots_spectrum,
+                    new_dirac_ew_plots_overlay_corr,
+                    new_dirac_ew_plots_overlay_meff,
+                )
+                _update_new_dirac_ew_electroweak_tables(results)
+                _update_new_dirac_ew_multiscale_views(
+                    multiscale_output,
+                    original_results=base_results,
+                    error=multiscale_error,
+                )
+
+                couplings = _compute_coupling_constants(
+                    history,
+                    h_eff=float(new_dirac_ew_settings.h_eff),
                     epsilon_d=new_dirac_ew_settings.epsilon_d,
                     epsilon_c=new_dirac_ew_settings.epsilon_c,
-                    epsilon_clone=new_dirac_ew_settings.epsilon_clone,
-                    lambda_alg=new_dirac_ew_settings.lambda_alg,
-                    mc_time_index=new_dirac_ew_settings.mc_time_index,
-                    compute_bootstrap_errors=new_dirac_ew_settings.compute_bootstrap_errors,
-                    n_bootstrap=new_dirac_ew_settings.n_bootstrap,
                 )
+                new_dirac_ew_coupling_table.value = pd.DataFrame(
+                    _build_coupling_rows(
+                        couplings,
+                        proxies=None,
+                        include_strong=False,
+                        refs=_extract_coupling_refs(new_dirac_ew_coupling_ref_table),
+                    )
+                )
+
+                n_channels = len([r for r in results.values() if r.n_samples > 0])
+                summary_lines = [
+                    "## Electroweak Summary",
+                    f"- Frames used: `{len(ew_output.frame_indices)}`",
+                    f"- Electroweak channels with samples: `{n_channels}`",
+                    (
+                        "- SU(2) multiscale kernels: "
+                        f"`{'on' if new_dirac_ew_settings.use_multiscale_kernels else 'off'}`"
+                    ),
+                    (
+                        "- SU(2) GEVP: "
+                        f"`{'on' if new_dirac_ew_settings.use_su2_gevp else 'off'}`"
+                    ),
+                ]
+                if multiscale_error:
+                    summary_lines.append(f"- Multiscale error: `{multiscale_error}`")
+                if gevp_error:
+                    summary_lines.append(f"- GEVP error: `{gevp_error}`")
+                new_dirac_ew_summary.object = "\n".join(summary_lines)
+
+                error_parts = []
+                if multiscale_error:
+                    error_parts.append(f"multiscale: `{multiscale_error}`")
+                if gevp_error:
+                    error_parts.append(f"GEVP: `{gevp_error}`")
+                if error_parts:
+                    new_dirac_ew_status.object = "**Complete with errors:** " + "; ".join(error_parts)
+                else:
+                    new_dirac_ew_status.object = (
+                        f"**Complete:** Electroweak computed ({n_channels} channels)."
+                    )
+
+            _run_tab_computation(
+                state,
+                new_dirac_ew_status,
+                "electroweak observables",
+                _compute,
+            )
+
+        def on_run_new_dirac(_):
+            def _compute(history):
+                ew_cfg = _build_new_dirac_ew_channel_config()
                 threshold = (
                     new_dirac_ew_settings.dirac_color_threshold_value
                     if new_dirac_ew_settings.dirac_color_threshold_mode == "manual"
@@ -12111,33 +13663,8 @@ def create_app() -> pn.template.FastListTemplate:
                     sigma_n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
                 )
                 bundle = compute_dirac_electroweak_bundle(history, config=bundle_cfg)
+                state["new_dirac_bundle"] = bundle
                 state["new_dirac_ew_bundle"] = bundle
-                results = bundle.electroweak_output.channel_results
-                state["new_dirac_ew_results"] = results
-
-                _update_electroweak_plots_generic(
-                    results,
-                    new_dirac_ew_channel_plots,
-                    new_dirac_ew_plots_spectrum,
-                    new_dirac_ew_plots_overlay_corr,
-                    new_dirac_ew_plots_overlay_meff,
-                )
-                _update_new_dirac_ew_electroweak_tables(results)
-
-                couplings = _compute_coupling_constants(
-                    history,
-                    h_eff=float(new_dirac_ew_settings.h_eff),
-                    epsilon_d=new_dirac_ew_settings.epsilon_d,
-                    epsilon_c=new_dirac_ew_settings.epsilon_c,
-                )
-                new_dirac_ew_coupling_table.value = pd.DataFrame(
-                    _build_coupling_rows(
-                        couplings,
-                        proxies=None,
-                        include_strong=False,
-                        refs=_extract_coupling_refs(new_dirac_ew_coupling_ref_table),
-                    )
-                )
 
                 dirac_plots = build_all_dirac_plots(bundle.dirac_result)
                 new_dirac_ew_dirac_full.object = dirac_plots["full_spectrum"]
@@ -12200,28 +13727,19 @@ def create_app() -> pn.template.FastListTemplate:
                     height=320,
                 ).side_by_side()
                 new_dirac_ew_electron_plot.objects = [
-                    e_plot
-                    if e_plot is not None
-                    else pn.pane.Markdown("_No electron-component data._")
+                    e_plot if e_plot is not None else pn.pane.Markdown("_No electron-component data._")
                 ]
                 new_dirac_ew_sigma_plot.objects = [
-                    sigma_plot
-                    if sigma_plot is not None
-                    else pn.pane.Markdown("_No sigma-mode data._")
+                    sigma_plot if sigma_plot is not None else pn.pane.Markdown("_No sigma-mode data._")
                 ]
 
                 _update_new_dirac_ew_derived_tables(bundle)
-
-                n_channels = len([r for r in results.values() if r.n_samples > 0])
-                new_dirac_ew_status.object = (
-                    f"**Complete:** Electroweak computed "
-                    f"({n_channels} electroweak channels; Dirac tab now updated too)."
-                )
+                new_dirac_status.object = "**Complete:** Dirac analysis computed."
 
             _run_tab_computation(
                 state,
-                new_dirac_ew_status,
-                "new Dirac/electroweak observables",
+                new_dirac_status,
+                "dirac observables",
                 _compute,
             )
 
@@ -12369,6 +13887,7 @@ def create_app() -> pn.template.FastListTemplate:
         )
         tensor_calibration_run_button.on_click(on_run_tensor_calibration)
         new_dirac_ew_run_button.on_click(on_run_new_dirac_electroweak)
+        new_dirac_run_button.on_click(on_run_new_dirac)
         coupling_diagnostics_run_button.on_click(on_run_coupling_diagnostics)
 
         visualization_controls = pn.Param(
@@ -12703,6 +14222,9 @@ plaquette, and a single companion tensor channel, with independent settings and 
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Extracted Masses"),
                 companion_strong_force_mass_table,
+                pn.pane.Markdown("### Filtered-Out Candidates"),
+                companion_strong_force_filtered_summary,
+                companion_strong_force_filtered_mass_table,
                 companion_strong_force_ratio_pane,
                 pn.pane.Markdown("### Ratio Tables by Operator Pair"),
                 companion_strong_force_ratio_tables,
@@ -12751,8 +14273,8 @@ plaquette, and a single companion tensor channel, with independent settings and 
 
 
             new_dirac_ew_note = pn.pane.Alert(
-                """**Electroweak:** Proxy channels and coupled observables from the unified run.
-Dirac-sector analyses are shown in the dedicated Dirac tab.""",
+                """**Electroweak:** Proxy channels only (no Dirac operators are computed here).
+This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
                 alert_type="info",
                 sizing_mode="stretch_width",
             )
@@ -12820,11 +14342,25 @@ Dirac-sector analyses are shown in the dedicated Dirac tab.""",
                 new_dirac_ew_mass_mode,
                 new_dirac_ew_plots_spectrum,
                 new_dirac_ew_mass_table,
+                pn.pane.Markdown("### Filtered-Out Candidates"),
+                new_dirac_ew_filtered_summary,
+                new_dirac_ew_filtered_mass_table,
                 new_dirac_ew_ratio_pane,
                 new_dirac_ew_ratio_table,
                 new_dirac_ew_fit_table,
                 new_dirac_ew_compare_table,
                 new_dirac_ew_anchor_table,
+                pn.layout.Divider(),
+                new_dirac_ew_multiscale_summary,
+                pn.pane.Markdown("### SU(2) Multiscale Best-Scale Selection"),
+                new_dirac_ew_multiscale_table,
+                pn.pane.Markdown("### SU(2) Per-Scale Candidates"),
+                new_dirac_ew_multiscale_per_scale_table,
+                pn.pane.Markdown("### SU(2) Operator Quality"),
+                new_dirac_ew_gevp_summary,
+                new_dirac_ew_operator_quality_table,
+                pn.pane.Markdown("### SU(2) GEVP Eigenvalue Spectrum"),
+                new_dirac_ew_eigenspectrum_plot,
                 pn.pane.Markdown("### Electroweak Reference Masses (GeV)"),
                 new_dirac_ew_ref_table,
                 pn.pane.Markdown("### All Channels Overlay - Correlators"),
@@ -12837,9 +14373,11 @@ Dirac-sector analyses are shown in the dedicated Dirac tab.""",
             )
 
             dirac_tab = pn.Column(
-                pn.pane.Markdown(
-                    "_Dirac outputs are computed together with Electroweak observables. "
-                    "Run the Electroweak tab to refresh these plots and tables._"
+                new_dirac_status,
+                pn.Row(new_dirac_run_button, sizing_mode="stretch_width"),
+                pn.Accordion(
+                    ("Dirac Settings", new_dirac_settings_panel),
+                    sizing_mode="stretch_width",
                 ),
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Dirac Spectrum (Antisymmetric Kernel)"),

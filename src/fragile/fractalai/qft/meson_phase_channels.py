@@ -197,10 +197,12 @@ def _resolve_meson_operator_mode(operator_mode: str | None) -> str:
     if operator_mode is None or not str(operator_mode).strip():
         return "standard"
     mode = str(operator_mode).strip().lower()
-    if mode not in {"standard", "score_directed", "score_weighted"}:
-        raise ValueError(
-            "operator_mode must be one of {'standard','score_directed','score_weighted'}."
+    if mode not in {"standard", "score_directed", "score_weighted", "abs2_vacsub"}:
+        msg = (
+            "operator_mode must be one of "
+            "{'standard','score_directed','score_weighted','abs2_vacsub'}."
         )
+        raise ValueError(msg)
     return mode
 
 
@@ -353,7 +355,10 @@ def compute_meson_phase_correlator_from_color(
             scores=scores,
             pair_indices=pair_indices,
         )
-    source_scalar = source_inner.real.float()
+    if resolved_operator_mode == "abs2_vacsub":
+        source_scalar = source_inner.abs().square().float()
+    else:
+        source_scalar = source_inner.real.float()
     source_pseudoscalar = source_inner.imag.float()
 
     operator_scalar_series, pair_counts_per_frame = _per_frame_series(source_scalar, source_valid)
@@ -400,7 +405,10 @@ def compute_meson_phase_correlator_from_color(
                 scores=scores[lag : lag + source_len],
                 pair_indices=pair_indices[:source_len],
             )
-        sink_scalar = sink_inner.real.float()
+        if resolved_operator_mode == "abs2_vacsub":
+            sink_scalar = sink_inner.abs().square().float()
+        else:
+            sink_scalar = sink_inner.real.float()
         sink_pseudoscalar = sink_inner.imag.float()
 
         valid_pair = source_valid[:source_len] & sink_valid
@@ -516,11 +524,20 @@ def compute_companion_meson_phase_correlator(
         dtype=torch.long,
         device=device,
     )
-    scores = torch.as_tensor(
-        history.cloning_scores[start_idx - 1 : end_idx - 1],
-        dtype=torch.float32,
-        device=device,
-    )
+    operator_mode = _resolve_meson_operator_mode(str(config.operator_mode))
+    scores: Tensor | None = None
+    if operator_mode in {"score_directed", "score_weighted"}:
+        if not hasattr(history, "cloning_scores"):
+            msg = (
+                "RunHistory is missing cloning_scores required for "
+                f"operator_mode={operator_mode!r}."
+            )
+            raise ValueError(msg)
+        scores = torch.as_tensor(
+            history.cloning_scores[start_idx - 1 : end_idx - 1],
+            dtype=torch.float32,
+            device=device,
+        )
 
     return compute_meson_phase_correlator_from_color(
         color=color,
@@ -532,7 +549,7 @@ def compute_companion_meson_phase_correlator(
         use_connected=bool(config.use_connected),
         pair_selection=str(config.pair_selection),
         eps=float(max(config.eps, 0.0)),
-        operator_mode=str(config.operator_mode),
+        operator_mode=operator_mode,
         scores=scores,
         frame_indices=frame_indices,
     )

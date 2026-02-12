@@ -172,6 +172,26 @@ def test_meson_score_directed_mode_matches_standard_for_equal_scores() -> None:
     )
 
 
+def test_meson_abs2_vacsub_mode_is_finite_and_nonnegative() -> None:
+    """abs2_vacsub meson mode should produce finite scalar observables."""
+    color, color_valid, alive, comp_d, comp_c, _ = _build_inputs()
+    out_abs2 = compute_meson_phase_correlator_from_color(
+        color=color,
+        color_valid=color_valid,
+        alive=alive,
+        companions_distance=comp_d,
+        companions_clone=comp_c,
+        max_lag=5,
+        use_connected=True,
+        pair_selection="both",
+        eps=1e-12,
+        operator_mode="abs2_vacsub",
+    )
+    assert bool(torch.isfinite(out_abs2.scalar).all())
+    assert bool(torch.isfinite(out_abs2.operator_scalar_series).all())
+    assert bool((out_abs2.operator_scalar_series >= 0).all())
+
+
 def test_baryon_score_modes_are_finite() -> None:
     """Score-ordered baryon modes should produce finite correlators."""
     color, color_valid, alive, comp_d, comp_c, scores = _build_inputs()

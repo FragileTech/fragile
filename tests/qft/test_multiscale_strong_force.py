@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import torch
 
 from fragile.fractalai.qft.baryon_triplet_channels import compute_baryon_correlator_from_color
@@ -13,6 +15,7 @@ from fragile.fractalai.qft.meson_phase_channels import compute_meson_phase_corre
 from fragile.fractalai.qft.multiscale_strong_force import (
     _compute_channel_series_from_kernels,
     _compute_companion_per_scale_results_preserving_original,
+    _select_best_scale,
 )
 from fragile.fractalai.qft.vector_meson_channels import (
     compute_vector_meson_correlator_from_color_positions,
@@ -62,6 +65,82 @@ def _build_random_inputs(*, t_len: int, n_scales: int, n_walkers: int) -> dict[s
     }
 
 
+def _fake_scale_result(
+    *,
+    mass: float,
+    r2: float,
+    mass_error: float,
+    n_valid_windows: int,
+    aic: float,
+) -> SimpleNamespace:
+    return SimpleNamespace(
+        mass_fit={
+            "mass": float(mass),
+            "r_squared": float(r2),
+            "mass_error": float(mass_error),
+            "n_valid_windows": int(n_valid_windows),
+            "best_window": {"aic": float(aic)},
+        },
+        window_masses=None,
+    )
+
+
+def test_select_best_scale_respects_quality_filters() -> None:
+    """Best-scale selector should ignore scales that fail active quality thresholds."""
+    results = [
+        _fake_scale_result(mass=0.55, r2=0.92, mass_error=0.10, n_valid_windows=5, aic=3.0),
+        _fake_scale_result(mass=0.50, r2=0.95, mass_error=0.08, n_valid_windows=2, aic=1.0),
+        _fake_scale_result(mass=0.45, r2=0.30, mass_error=0.05, n_valid_windows=8, aic=0.5),
+    ]
+
+    best_idx = _select_best_scale(
+        results,
+        min_r2=0.8,
+        min_windows=3,
+        max_error_pct=30.0,
+        remove_artifacts=False,
+    )
+    assert best_idx == 0
+
+
+def test_select_best_scale_returns_none_when_all_filtered_out() -> None:
+    """Selector should return None when no scale passes quality/artifact filters."""
+    results = [
+        _fake_scale_result(mass=0.60, r2=0.9, mass_error=0.0, n_valid_windows=5, aic=1.0),
+        _fake_scale_result(
+            mass=0.58, r2=0.91, mass_error=float("inf"), n_valid_windows=6, aic=1.2
+        ),
+        _fake_scale_result(mass=0.0, r2=0.95, mass_error=0.1, n_valid_windows=7, aic=0.8),
+    ]
+
+    best_idx = _select_best_scale(
+        results,
+        min_r2=0.0,
+        min_windows=0,
+        max_error_pct=30.0,
+        remove_artifacts=True,
+    )
+    assert best_idx is None
+
+
+def test_select_best_scale_respects_max_error_pct_filter() -> None:
+    """Best-scale selector should skip scales above the max mass-error percentage."""
+    results = [
+        _fake_scale_result(mass=0.55, r2=0.95, mass_error=0.22, n_valid_windows=7, aic=2.0),
+        _fake_scale_result(mass=0.52, r2=0.93, mass_error=0.12, n_valid_windows=7, aic=3.0),
+        _fake_scale_result(mass=0.51, r2=0.91, mass_error=0.20, n_valid_windows=7, aic=1.0),
+    ]
+
+    best_idx = _select_best_scale(
+        results,
+        min_r2=0.0,
+        min_windows=0,
+        max_error_pct=30.0,
+        remove_artifacts=False,
+    )
+    assert best_idx == 1
+
+
 def test_companion_and_non_companion_multiscale_series_are_both_computed() -> None:
     """Companion channels should be produced alongside base multiscale channels."""
     t_len, n_scales, n_walkers = 5, 4, 8
@@ -74,6 +153,8 @@ def test_companion_and_non_companion_multiscale_series_are_both_computed() -> No
         "nucleon",
         "glueball",
         "scalar_companion",
+        "scalar_raw_companion",
+        "scalar_abs2_vacsub_companion",
         "pseudoscalar_companion",
         "scalar_score_directed_companion",
         "pseudoscalar_score_directed_companion",
@@ -112,6 +193,8 @@ def test_companion_and_non_companion_multiscale_series_are_both_computed() -> No
 
     companion_names = [
         "scalar_companion",
+        "scalar_raw_companion",
+        "scalar_abs2_vacsub_companion",
         "pseudoscalar_companion",
         "scalar_score_directed_companion",
         "pseudoscalar_score_directed_companion",
@@ -138,6 +221,8 @@ def test_companion_channels_zero_out_when_companions_are_invalid() -> None:
     bad_comp = torch.full_like(data["companions_distance"], -1)
     channels = [
         "scalar_companion",
+        "scalar_raw_companion",
+        "scalar_abs2_vacsub_companion",
         "pseudoscalar_companion",
         "scalar_score_directed_companion",
         "pseudoscalar_score_directed_companion",
@@ -215,6 +300,8 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
         scales=scales,
         channels=[
             "scalar_companion",
+            "scalar_raw_companion",
+            "scalar_abs2_vacsub_companion",
             "pseudoscalar_companion",
             "scalar_score_directed_companion",
             "pseudoscalar_score_directed_companion",
@@ -257,6 +344,18 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
         eps=1e-12,
         operator_mode="score_directed",
         scores=cloning_scores,
+    )
+    meson_abs2_vacsub = compute_meson_phase_correlator_from_color(
+        color=color[..., :3],
+        color_valid=color_valid,
+        alive=alive,
+        companions_distance=companions_distance,
+        companions_clone=companions_clone,
+        max_lag=4,
+        use_connected=True,
+        pair_selection="both",
+        eps=1e-12,
+        operator_mode="abs2_vacsub",
     )
     vector = compute_vector_meson_correlator_from_color_positions(
         color=color[..., :3],
@@ -378,6 +477,18 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
     torch.testing.assert_close(
         override["scalar_companion"][0].correlator,
         meson.scalar,
+        atol=1e-6,
+        rtol=1e-5,
+    )
+    torch.testing.assert_close(
+        override["scalar_raw_companion"][0].correlator,
+        meson.scalar_raw,
+        atol=1e-6,
+        rtol=1e-5,
+    )
+    torch.testing.assert_close(
+        override["scalar_abs2_vacsub_companion"][0].correlator,
+        meson_abs2_vacsub.scalar,
         atol=1e-6,
         rtol=1e-5,
     )
