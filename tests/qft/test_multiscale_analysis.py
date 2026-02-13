@@ -42,7 +42,9 @@ def test_analyze_channel_across_scales_computes_expected_consensus_and_discrepan
     expected_mass = (100.0 * 1.0 + 25.0 * 1.2) / 125.0
     expected_stat_error = math.sqrt(1.0 / 125.0)
     assert math.isclose(bundle.consensus.mass, expected_mass, rel_tol=1e-12, abs_tol=1e-12)
-    assert math.isclose(bundle.consensus.stat_error, expected_stat_error, rel_tol=1e-12, abs_tol=1e-12)
+    assert math.isclose(
+        bundle.consensus.stat_error, expected_stat_error, rel_tol=1e-12, abs_tol=1e-12
+    )
 
     discrepancy = bundle.discrepancies[0]
     assert math.isclose(discrepancy.combined_error, math.sqrt(0.1**2 + 0.2**2), rel_tol=1e-12)

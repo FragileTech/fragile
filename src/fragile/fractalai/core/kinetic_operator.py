@@ -646,9 +646,7 @@ class KineticOperator(PanelModel):
         )
         self.c2 = torch.sqrt(
             torch.tensor(1.0, dtype=self.dtype, device=self.device) - self.c1**2
-        ) / torch.sqrt(
-            torch.tensor(self.beta_effective, dtype=self.dtype, device=self.device)
-        )
+        ) / torch.sqrt(torch.tensor(self.beta_effective, dtype=self.dtype, device=self.device))
 
     def noise_std(self) -> float:
         """Standard deviation for BAOAB noise (isotropic case)."""
@@ -796,7 +794,7 @@ class KineticOperator(PanelModel):
         if edge_weights is not None:
             # Precomputed weights provided by EuclideanGas
             w = edge_weights.to(x.device, x.dtype)[valid_mask]
-        elif weighting in ("kernel", "uniform", "inverse_distance"):
+        elif weighting in {"kernel", "uniform", "inverse_distance"}:
             # On-the-fly fallback for modes that support it
             from fragile.fractalai.scutoid.weights import compute_edge_weights
 
@@ -1025,6 +1023,7 @@ class KineticOperator(PanelModel):
             # Voronoi-proxy: Use cell geometry to approximate metric anisotropy (O(N), no derivatives!)
             if voronoi_data is None:
                 import warnings
+
                 warnings.warn(
                     "voronoi_data is None but diffusion_mode='voronoi_proxy'. "
                     "Falling back to isotropic diffusion.",
@@ -1033,8 +1032,10 @@ class KineticOperator(PanelModel):
                 # Return isotropic diffusion tensor
                 if self.diagonal_diffusion:
                     return torch.ones(N, d, device=x.device, dtype=x.dtype) * self.c2
-                else:
-                    return torch.eye(d, device=x.device, dtype=x.dtype).unsqueeze(0).expand(N, d, d) * self.c2
+                return (
+                    torch.eye(d, device=x.device, dtype=x.dtype).unsqueeze(0).expand(N, d, d)
+                    * self.c2
+                )
 
             # Import here to avoid circular dependency
             from fragile.fractalai.qft.voronoi_observables import compute_voronoi_diffusion_tensor
@@ -1074,9 +1075,7 @@ class KineticOperator(PanelModel):
                         neginf=self.c2,
                     )
                     sigma_full = (
-                        torch.eye(d, device=x.device, dtype=x.dtype)
-                        .unsqueeze(0)
-                        .expand(N, d, d)
+                        torch.eye(d, device=x.device, dtype=x.dtype).unsqueeze(0).expand(N, d, d)
                         * self.c2
                     )
 
@@ -1095,23 +1094,20 @@ class KineticOperator(PanelModel):
             if self.diagonal_diffusion:
                 # Diagonal mode: sigma is [N, d]
                 # Handle NaN/Inf values (fallback to isotropic)
-                sigma = torch.nan_to_num(
+                return torch.nan_to_num(
                     sigma,
                     nan=self.c2,
                     posinf=self.c2,
                     neginf=self.c2,
                 )
-                return sigma
-            else:
-                # Full anisotropic mode: sigma is [N, d, d]
-                # Handle NaN/Inf values (fallback to isotropic)
-                sigma = torch.nan_to_num(
-                    sigma,
-                    nan=self.c2,
-                    posinf=self.c2,
-                    neginf=self.c2,
-                )
-                return sigma
+            # Full anisotropic mode: sigma is [N, d, d]
+            # Handle NaN/Inf values (fallback to isotropic)
+            return torch.nan_to_num(
+                sigma,
+                nan=self.c2,
+                posinf=self.c2,
+                neginf=self.c2,
+            )
 
         # Use precomputed Hessian (default)
         if hess_fitness is None:
@@ -1283,9 +1279,13 @@ class KineticOperator(PanelModel):
         N, d = state.N, state.d
         info = {}
 
-        if volume_weights is None and voronoi_data is not None and (
-            self.compute_volume_weights
-            or (self.use_viscous_coupling and self.viscous_volume_weighting)
+        if (
+            volume_weights is None
+            and voronoi_data is not None
+            and (
+                self.compute_volume_weights
+                or (self.use_viscous_coupling and self.viscous_volume_weighting)
+            )
         ):
             volume_weights = self._compute_volume_weights(
                 x,

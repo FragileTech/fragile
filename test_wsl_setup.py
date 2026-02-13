@@ -7,14 +7,13 @@ import sys
 
 def check_display():
     """Check if DISPLAY is set."""
-    display = os.environ.get('DISPLAY')
+    display = os.environ.get("DISPLAY")
     if display:
         print(f"✓ DISPLAY is set: {display}")
         return True
-    else:
-        print("✗ DISPLAY not set")
-        print("  Run with: xvfb-run -a python test_wsl_setup.py")
-        return False
+    print("✗ DISPLAY not set")
+    print("  Run with: xvfb-run -a python test_wsl_setup.py")
+    return False
 
 
 def check_opengl():
@@ -22,17 +21,19 @@ def check_opengl():
     # Check for mesa libraries
     try:
         import subprocess
-        result = subprocess.run(['ldconfig', '-p'], capture_output=True, text=True, timeout=2)
-        if 'libGL.so' in result.stdout:
+
+        result = subprocess.run(
+            ["ldconfig", "-p"], capture_output=True, text=True, timeout=2, check=False
+        )
+        if "libGL.so" in result.stdout:
             print("✓ OpenGL libraries found")
             # Check if software rendering is configured
-            if os.environ.get('LIBGL_ALWAYS_SOFTWARE') == '1':
+            if os.environ.get("LIBGL_ALWAYS_SOFTWARE") == "1":
                 print("  (Software rendering enabled)")
             return True
-        else:
-            print("✗ OpenGL libraries not found")
-            print("  Install: sudo apt-get install mesa-utils libgl1-mesa-glx libgl1-mesa-dri")
-            return False
+        print("✗ OpenGL libraries not found")
+        print("  Install: sudo apt-get install mesa-utils libgl1-mesa-glx libgl1-mesa-dri")
+        return False
     except Exception as e:
         print(f"⚠ Could not check OpenGL libraries: {e}")
         return False
@@ -44,13 +45,13 @@ def check_pyglet():
         # Only check if pyglet is importable, don't try to use it
         # (using it may trigger XCB errors without proper setup)
         import importlib.util
+
         spec = importlib.util.find_spec("pyglet")
         if spec is not None:
             print("✓ pyglet is installed")
             return True
-        else:
-            print("✗ pyglet not installed (install: pip install pyglet)")
-            return False
+        print("✗ pyglet not installed (install: pip install pyglet)")
+        return False
     except ImportError:
         print("✗ pyglet not installed (install: pip install pyglet)")
         return False
@@ -67,6 +68,7 @@ def check_atari_env():
     # Try gymnasium first
     try:
         import importlib.util
+
         spec = importlib.util.find_spec("gymnasium")
         if spec is not None:
             print("✓ gymnasium is installed")
@@ -75,15 +77,15 @@ def check_atari_env():
             if atari_spec is not None:
                 print("✓ Atari environments available (gymnasium)")
                 return True
-            else:
-                print("⚠ gymnasium installed but ale_py not found")
-                print("  Install: pip install gymnasium[atari] gymnasium[accept-rom-license]")
+            print("⚠ gymnasium installed but ale_py not found")
+            print("  Install: pip install gymnasium[atari] gymnasium[accept-rom-license]")
     except Exception:
         print("⚠ gymnasium not installed")
 
     # Try plangym
     try:
         import importlib.util
+
         spec = importlib.util.find_spec("plangym")
         if spec is not None:
             print("✓ plangym is installed")
@@ -99,7 +101,7 @@ def check_atari_env():
 
 def check_dashboard_deps():
     """Check dashboard dependencies."""
-    deps = ['panel', 'holoviews', 'bokeh', 'PIL']
+    deps = ["panel", "holoviews", "bokeh", "PIL"]
     all_ok = True
 
     for dep in deps:
@@ -145,7 +147,9 @@ def main():
     if all(results.values()):
         print("🎉 All checks passed! You can run the dashboard:")
         print("   python src/fragile/fractalai/videogames/dashboard.py")
-    elif results["DISPLAY"] and results["Atari Environments"] and results["Dashboard Dependencies"]:
+    elif (
+        results["DISPLAY"] and results["Atari Environments"] and results["Dashboard Dependencies"]
+    ):
         print("⚠ Basic requirements met. Dashboard will start but simulations may fail.")
         print("  Use the launcher script for full support:")
         print("   bash scripts/run_dashboard_wsl.sh")

@@ -10,9 +10,9 @@ All tensors are vectorized with the first dimension being the number of walkers 
 
 from __future__ import annotations
 
+import itertools
 from typing import Callable
 
-import itertools
 import panel as pn
 import param
 import torch
@@ -403,9 +403,7 @@ class EuclideanGas(PanelModel):
                     vor = None
                     vor_data = {"error": str(exc)}
                 if vor is not None:
-                    vertices = torch.as_tensor(
-                        vor.vertices, device=x.device, dtype=x.dtype
-                    )
+                    vertices = torch.as_tensor(vor.vertices, device=x.device, dtype=x.dtype)
                     point_region = vor.point_region.tolist()
                     regions = [vor.regions[idx] for idx in point_region]
                     regions_full: list[list[int] | None] = [None] * self.N
@@ -434,9 +432,7 @@ class EuclideanGas(PanelModel):
                     edges.add((b, a))
 
                 if self.neighbor_graph_record:
-                    vertices = torch.as_tensor(
-                        vor.vertices, device=x.device, dtype=x.dtype
-                    )
+                    vertices = torch.as_tensor(vor.vertices, device=x.device, dtype=x.dtype)
                     point_region = vor.point_region.tolist()
                     regions = [vor.regions[idx] for idx in point_region]
                     regions_full = [None] * self.N
@@ -606,11 +602,7 @@ class EuclideanGas(PanelModel):
             )
             step_idx = getattr(self, "_current_step", None)
             clone_every = max(1, int(self.clone_every))
-            apply_clone = (
-                step_idx is None
-                or clone_every <= 1
-                or (step_idx % clone_every == 0)
-            )
+            apply_clone = step_idx is None or clone_every <= 1 or (step_idx % clone_every == 0)
             if apply_clone:
                 state_cloned = SwarmState(x_cloned, v_cloned)
             else:
@@ -688,9 +680,7 @@ class EuclideanGas(PanelModel):
                         else None
                     )
                     scutoid_edge_weights = (
-                        scutoid_data.edge_weights.get(viscous_mode)
-                        if viscous_mode
-                        else None
+                        scutoid_data.edge_weights.get(viscous_mode) if viscous_mode else None
                     )
                     scutoid_all_edge_weights = scutoid_data.edge_weights
 
@@ -763,7 +753,9 @@ class EuclideanGas(PanelModel):
             )
             if needs_voronoi:
                 try:
-                    from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
+                    from fragile.fractalai.qft.voronoi_observables import (
+                        compute_voronoi_tessellation,
+                    )
 
                     # For QFT mode (d>=3), use d-1 spatial dims (exclude Euclidean time)
                     # For regular mode (d<=2), use all dimensions
@@ -783,6 +775,7 @@ class EuclideanGas(PanelModel):
                 except Exception as e:
                     # Fall back to isotropic diffusion if Voronoi fails
                     import warnings
+
                     warnings.warn(
                         f"Voronoi tessellation failed: {e}. Falling back to isotropic diffusion.",
                         RuntimeWarning,
@@ -1189,7 +1182,8 @@ class EuclideanGas(PanelModel):
                 record_ricci_scalar=record_scutoid,
                 record_geodesic_edges=record_scutoid,
                 record_diffusion_tensors=record_scutoid,
-                record_neighbors=self.neighbor_graph_record and self.neighbor_graph_method != "none",
+                record_neighbors=self.neighbor_graph_record
+                and self.neighbor_graph_method != "none",
                 record_voronoi=self.neighbor_graph_record and self.neighbor_graph_method != "none",
                 record_edge_weights=record_edge_weights,
                 chunk_size=chunk_size,

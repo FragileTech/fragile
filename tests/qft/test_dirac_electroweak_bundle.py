@@ -112,3 +112,50 @@ def test_compute_dirac_electroweak_bundle_companion_topology_both():
     assert bundle.electroweak_output.channel_results
     assert bundle.electroweak_output.avg_edges >= float(history.N)
     assert bundle.electron_component_result.n_samples > 0
+
+
+def test_compute_dirac_electroweak_bundle_directional_walker_split_channels():
+    history = _HistoryStub()
+    ew_cfg = ElectroweakChannelConfig(
+        warmup_fraction=0.1,
+        end_fraction=1.0,
+        max_lag=10,
+        neighbor_method="companions",
+        companion_topology="both",
+        su2_operator_mode="score_directed",
+        enable_walker_type_split=True,
+        walker_type_scope="frame_global",
+        fit_mode="aic",
+        fit_start=2,
+        min_fit_points=2,
+    )
+    dirac_cfg = DiracSpectrumConfig(
+        kernel_mode="phase_space",
+        epsilon_clone=0.02,
+        epsilon_c=0.8,
+        lambda_alg=0.5,
+        h_eff=1.0,
+        min_sector_size=1,
+    )
+    cfg = DiracElectroweakConfig(
+        electroweak=ew_cfg,
+        electroweak_channels=[
+            "su2_phase",
+            "su2_phase_directed",
+            "su2_phase_cloner",
+            "su2_phase_resister",
+            "su2_phase_persister",
+        ],
+        dirac=dirac_cfg,
+        sigma_max_lag=10,
+    )
+
+    bundle = compute_dirac_electroweak_bundle(history, cfg)
+    channel_results = bundle.electroweak_output.channel_results
+
+    assert bundle.electroweak_output.n_valid_frames > 0
+    assert "su2_phase" in channel_results
+    assert "su2_phase_directed" in channel_results
+    assert "su2_phase_cloner" in channel_results
+    assert "su2_phase_resister" in channel_results
+    assert "su2_phase_persister" in channel_results

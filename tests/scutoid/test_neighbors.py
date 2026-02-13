@@ -1,23 +1,23 @@
 """Tests for neighbor tracking system with virtual boundaries."""
 
-import pytest
-import torch
 import numpy as np
+import pytest
 from scipy.spatial import Voronoi
+import torch
 
+from fragile.fractalai.bounds import TorchBounds
 from fragile.fractalai.scutoid.neighbors import (
-    detect_nearby_boundary_faces,
-    project_to_boundary_face,
-    project_faces_vectorized,
-    estimate_boundary_facet_area,
+    build_csr_from_coo,
     compute_boundary_neighbors,
     create_extended_edge_index,
-    build_csr_from_coo,
+    detect_nearby_boundary_faces,
+    estimate_boundary_facet_area,
+    project_faces_vectorized,
+    project_to_boundary_face,
     query_walker_neighbors,
     query_walker_neighbors_vectorized,
 )
 from fragile.fractalai.scutoid.voronoi import compute_vectorized_voronoi
-from fragile.fractalai.bounds import TorchBounds
 
 
 class TestBoundaryDetection:
@@ -48,9 +48,7 @@ class TestBoundaryDetection:
 
     def test_boundary_detection_3d(self):
         """Test detecting boundary in 3D."""
-        bounds = TorchBounds(
-            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
-        )
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0]))
         position = torch.tensor([0.5, 0.98, 0.5])  # Near top (y-high)
 
         faces = detect_nearby_boundary_faces(position, bounds, tolerance=0.05)
@@ -125,9 +123,7 @@ class TestBoundaryProjection:
 
     def test_projection_3d(self):
         """Test projection in 3D."""
-        bounds = TorchBounds(
-            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
-        )
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0]))
         position = torch.tensor([0.5, 0.5, 0.1])
 
         proj_pos, normal = project_to_boundary_face(position, face_id=4, bounds=bounds)
@@ -264,9 +260,7 @@ class TestBoundaryNeighborComputation:
         vor = Voronoi(positions.numpy())
         tier = torch.zeros(len(positions), dtype=torch.long)
 
-        bounds = TorchBounds(
-            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
-        )
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0]))
 
         boundary_data = compute_boundary_neighbors(
             positions, tier, bounds, vor, boundary_tolerance=0.2
@@ -415,7 +409,7 @@ class TestCSRQueries:
         # Build CSR manually
         csr_ptr = torch.tensor([0, 2, 3, 3], dtype=torch.long)
         csr_indices = torch.tensor([1, 2, 2], dtype=torch.long)
-        csr_types = torch.tensor([0, 0, 0], dtype=torch.long)
+        torch.tensor([0, 0, 0], dtype=torch.long)
 
         # Query node 0
         neighbors = query_walker_neighbors(0, csr_ptr, csr_indices)
@@ -528,7 +522,7 @@ class TestVoronoiIntegration:
 
         # Check that corner walkers have boundary neighbors
         corner_idx = 0  # Bottom-left corner
-        neighbors = tri.get_walker_neighbors(corner_idx, include_boundaries=True)
+        tri.get_walker_neighbors(corner_idx, include_boundaries=True)
         types_start = tri.neighbor_csr_ptr[corner_idx]
         types_end = tri.neighbor_csr_ptr[corner_idx + 1]
         types = tri.neighbor_csr_types[types_start:types_end]
@@ -552,9 +546,7 @@ class TestVoronoiIntegration:
 
         alive = torch.ones(len(positions), dtype=torch.bool)
 
-        bounds = TorchBounds(
-            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
-        )
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0]))
 
         tri = compute_vectorized_voronoi(positions, alive, bounds=bounds, pbc=False)
 
@@ -584,9 +576,7 @@ class TestVoronoiIntegration:
 
     def test_walker_neighbor_helper_method(self):
         """Test get_walker_neighbors helper method."""
-        positions = torch.tensor(
-            [[0.1, 0.5], [0.5, 0.5], [0.9, 0.5]], dtype=torch.float32
-        )
+        positions = torch.tensor([[0.1, 0.5], [0.5, 0.5], [0.9, 0.5]], dtype=torch.float32)
 
         alive = torch.ones(len(positions), dtype=torch.bool)
 
@@ -646,9 +636,7 @@ class TestVectorizedProjection:
 
     def test_project_faces_vectorized_3d(self):
         """Test vectorized projection in 3D."""
-        bounds = TorchBounds(
-            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
-        )
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0]))
         position = torch.tensor([0.5, 0.95, 0.5])
         face_ids = torch.tensor([3])  # y-high wall
 
@@ -675,9 +663,7 @@ class TestVectorizedProjection:
 
         # Scalar version (for comparison)
         for i, face_id in enumerate(face_ids):
-            proj_scalar, normal_scalar = project_to_boundary_face(
-                position, face_id.item(), bounds
-            )
+            proj_scalar, normal_scalar = project_to_boundary_face(position, face_id.item(), bounds)
 
             assert torch.allclose(proj_vec[i], proj_scalar)
             assert torch.allclose(normals_vec[i], normal_scalar)
@@ -690,16 +676,12 @@ class TestParallelization:
         """Verify parallel computation produces identical results to sequential."""
         # Create positions near boundaries in 3D
         np.random.seed(42)
-        positions = torch.from_numpy(
-            np.random.randn(100, 3).astype(np.float32) * 0.3 + 0.5
-        )
+        positions = torch.from_numpy(np.random.randn(100, 3).astype(np.float32) * 0.3 + 0.5)
         positions = torch.clamp(positions, 0.05, 0.95)
 
         vor = Voronoi(positions.numpy())
         tier = torch.zeros(len(positions), dtype=torch.long)
-        bounds = TorchBounds(
-            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
-        )
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0]))
 
         # Compute with sequential (n_jobs=1)
         result_seq = compute_boundary_neighbors(
@@ -727,8 +709,8 @@ class TestParallelization:
             [
                 [0.05, 0.5],  # Near left boundary
                 [0.95, 0.5],  # Near right boundary
-                [0.5, 0.2],   # Interior - lower
-                [0.5, 0.8],   # Interior - upper
+                [0.5, 0.2],  # Interior - lower
+                [0.5, 0.8],  # Interior - upper
             ],
             dtype=torch.float32,
         )
@@ -754,9 +736,7 @@ class TestPerformance:
 
         # Create positions near boundaries in 3D
         np.random.seed(42)
-        positions = torch.from_numpy(
-            np.random.randn(200, 3).astype(np.float32) * 0.3 + 0.5
-        )
+        positions = torch.from_numpy(np.random.randn(200, 3).astype(np.float32) * 0.3 + 0.5)
 
         # Clip to ensure some are near boundaries
         positions = torch.clamp(positions, 0.05, 0.95)
@@ -767,9 +747,7 @@ class TestPerformance:
         # All walkers are tier 0 (boundary) for maximum workload
         tier = torch.zeros(len(positions), dtype=torch.long)
 
-        bounds = TorchBounds(
-            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
-        )
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0]))
 
         # Warm up
         _ = compute_boundary_neighbors(positions, tier, bounds, vor, boundary_tolerance=0.2)
@@ -785,7 +763,7 @@ class TestPerformance:
             times.append(time.time() - start)
 
         avg_time = np.mean(times)
-        print(f"\nVectorized boundary neighbors (200 walkers, 3D): {avg_time*1000:.2f} ms")
+        print(f"\nVectorized boundary neighbors (200 walkers, 3D): {avg_time * 1000:.2f} ms")
         print(f"  Number of boundary pairs: {len(result.positions)}")
 
         # Performance should be reasonable (< 1 second for 200 walkers)
@@ -802,16 +780,12 @@ class TestPerformance:
 
         # Create positions with significant boundary workload
         np.random.seed(42)
-        positions = torch.from_numpy(
-            np.random.randn(200, 3).astype(np.float32) * 0.3 + 0.5
-        )
+        positions = torch.from_numpy(np.random.randn(200, 3).astype(np.float32) * 0.3 + 0.5)
         positions = torch.clamp(positions, 0.05, 0.95)
 
         vor = Voronoi(positions.numpy())
         tier = torch.zeros(len(positions), dtype=torch.long)
-        bounds = TorchBounds(
-            low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0])
-        )
+        bounds = TorchBounds(low=torch.tensor([0.0, 0.0, 0.0]), high=torch.tensor([1.0, 1.0, 1.0]))
 
         # Warm up
         _ = compute_boundary_neighbors(
@@ -823,7 +797,7 @@ class TestPerformance:
         times_seq = []
         for _ in range(num_runs):
             start = time.time()
-            result_seq = compute_boundary_neighbors(
+            compute_boundary_neighbors(
                 positions, tier, bounds, vor, boundary_tolerance=0.2, n_jobs=1
             )
             times_seq.append(time.time() - start)
@@ -841,9 +815,9 @@ class TestPerformance:
         avg_par = np.mean(times_par)
         speedup = avg_seq / avg_par
 
-        print(f"\nParallel performance (200 walkers):")
-        print(f"  Sequential: {avg_seq*1000:.2f} ms")
-        print(f"  Parallel (4 cores): {avg_par*1000:.2f} ms")
+        print("\nParallel performance (200 walkers):")
+        print(f"  Sequential: {avg_seq * 1000:.2f} ms")
+        print(f"  Parallel (4 cores): {avg_par * 1000:.2f} ms")
         print(f"  Speedup: {speedup:.2f}x")
         print(f"  Number of boundary pairs: {len(result_par.positions)}")
 
@@ -875,15 +849,13 @@ class TestPerformance:
         start = time.time()
         for node in query_nodes:
             mask = edge_index[0] == node
-            neighbors_coo = edge_index[1, mask]
+            edge_index[1, mask]
         time_coo = time.time() - start
 
         # Benchmark CSR queries
         start = time.time()
         for node in query_nodes:
-            neighbors_csr = query_walker_neighbors(
-                node.item(), csr_data["csr_ptr"], csr_data["csr_indices"]
-            )
+            query_walker_neighbors(node.item(), csr_data["csr_ptr"], csr_data["csr_indices"])
         time_csr = time.time() - start
 
         # CSR should be faster

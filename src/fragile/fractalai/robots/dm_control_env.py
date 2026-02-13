@@ -41,9 +41,9 @@ class _DMControlActionSpace:
 
     def sample(self) -> np.ndarray:
         """Sample a random action uniformly within the action bounds."""
-        return np.random.uniform(
-            low=self.minimum, high=self.maximum, size=self.shape
-        ).astype(np.float64)
+        return np.random.uniform(low=self.minimum, high=self.maximum, size=self.shape).astype(
+            np.float64
+        )
 
 
 class DMControlEnv:
@@ -107,9 +107,7 @@ class DMControlEnv:
         """Snapshot the current environment state."""
         physics_state = self.env.physics.get_state().copy()
         if observation is None:
-            observation = self._flatten_obs(
-                self.env.task.get_observation(self.env.physics)
-            )
+            observation = self._flatten_obs(self.env.task.get_observation(self.env.physics))
         rgb_frame = (
             self.env.physics.render(
                 height=self.render_height, width=self.render_width, camera_id=0

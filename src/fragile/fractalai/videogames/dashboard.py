@@ -12,8 +12,7 @@ import pandas as pd
 import panel as pn
 import param
 
-from fragile.fractalai.planning_gas import PlanningFractalGas, PlanningTrajectory
-from fragile.fractalai.utils import create_gif
+from fragile.fractalai.planning_gas import PlanningFractalGas, PlanningHistory, PlanningTrajectory
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 from fragile.fractalai.videogames.atari_history import AtariHistory
 
@@ -46,7 +45,7 @@ def _configure_headless_wsl(force: bool = False) -> bool:
 
     if not force:
         try:
-            with open("/proc/version") as f:
+            with open("/proc/version", encoding="utf-8") as f:
                 proc_version = f.read()
         except OSError:
             return False
@@ -69,7 +68,10 @@ def _configure_headless_wsl(force: bool = False) -> bool:
     if os.environ.pop("DISPLAY", None):
         configured = True
     if configured:
-        print(f"Headless mode: auto-configured env vars for {'WSL' if not force else 'headless'}", flush=True)
+        print(
+            f"Headless mode: auto-configured env vars for {'WSL' if not force else 'headless'}",
+            flush=True,
+        )
     return True
 
 
@@ -164,9 +166,7 @@ class AtariGasConfigPanel(param.Parameterized):
         doc="Record best walker frames (required for visualization, uses more memory)",
     )
 
-    device = param.ObjectSelector(
-        default="cpu", objects=["cpu", "cuda"], doc="Computation device"
-    )
+    device = param.ObjectSelector(default="cpu", objects=["cpu", "cuda"], doc="Computation device")
 
     seed = param.Integer(default=42, doc="Random seed for reproducibility")
 
@@ -197,6 +197,7 @@ class AtariGasConfigPanel(param.Parameterized):
         # State
         self.gas: AtariFractalGas | None = None
         self.history: AtariHistory | None = None
+        self.planning_history: PlanningHistory | None = None
         self.tree_history = None  # AtariTreeHistory when use_tree_history=True
         self._simulation_thread: threading.Thread | None = None
         self._stop_requested = False
@@ -237,6 +238,27 @@ class AtariGasConfigPanel(param.Parameterized):
         # Callbacks
         self._on_simulation_complete: list[Callable[[AtariHistory], None]] = []
 
+        # Mode-specific parameter sections
+        self._planning_params_section = pn.Column(
+            pn.pane.Markdown("### Planning"),
+            pn.Param(self.param, parameters=["tau_inner", "outer_dt"]),
+            visible=(self.algorithm_mode == "Planning"),
+        )
+        self._tree_history_params_section = pn.Column(
+            pn.Param(
+                self.param,
+                parameters=["use_tree_history", "prune_history"],
+            ),
+            visible=(self.algorithm_mode == "Single Loop"),
+        )
+        self.param.watch(self._on_mode_changed, "algorithm_mode")
+
+    def _on_mode_changed(self, event):
+        """Toggle visibility of mode-specific parameter sections."""
+        is_planning = event.new == "Planning"
+        self._planning_params_section.visible = is_planning
+        self._tree_history_params_section.visible = not is_planning
+
     def add_completion_callback(self, callback: Callable[[AtariHistory], None]):
         """Register callback for simulation completion."""
         self._on_simulation_complete.append(callback)
@@ -260,6 +282,11 @@ class AtariGasConfigPanel(param.Parameterized):
         if self._simulation_thread and self._simulation_thread.is_alive():
             return
 
+        # Capture the Bokeh document on the main thread so the worker
+        # thread can schedule UI updates even though pn.state.curdoc is
+        # thread-local and would be None on a new thread.
+        self._curdoc = pn.state.curdoc
+
         self._stop_requested = False
         self.run_button.disabled = True
         self.stop_button.disabled = False
@@ -280,22 +307,57 @@ class AtariGasConfigPanel(param.Parameterized):
     def _create_environment(self):
         """Create Atari environment.
 
+        Uses gymnasium-based AtariEnv for single-worker mode (captures
+        ``rgb_frame`` on every step for reliable frame display).  Falls back
+        to plangym for parallel workers (``n_workers > 1``).
+
         Returns:
-            plangym Atari environment compatible with AtariFractalGas
+            Environment compatible with AtariFractalGas
 
         Raises:
             Exception: If environment creation fails
         """
-        # Ensure headless env vars are set before plangym spawns worker processes.
-        # When n_workers > 1, ExternalProcess forks inherit these vars.
         _configure_headless_wsl()
+
+        if self.n_workers <= 1:
+            return self._create_gymnasium_env()
+        return self._create_plangym_env()
+
+    def _create_gymnasium_env(self):
+        """Create single-worker AtariEnv via gymnasium + ale-py.
+
+        Returns AtariState objects with ``rgb_frame`` populated on every
+        ``step_batch`` call, so tree history nodes get frames for all walkers.
+        """
+        print("[worker] importing AtariEnv (gymnasium backend)...", flush=True)
+        from fragile.fractalai.videogames.atari import AtariEnv
+
+        env = AtariEnv(
+            name=self.game_name,
+            obs_type=self.obs_type,
+            render_mode="rgb_array",
+            include_rgb=self.record_frames,
+            frameskip=5,
+        )
+        print(f"[worker] AtariEnv created: {self.game_name}", flush=True)
+        self._schedule_ui_update(
+            lambda: setattr(self.status_pane, "object", "Using gymnasium AtariEnv")
+        )
+        return env
+
+    def _create_plangym_env(self):
+        """Create parallel plangym environment (n_workers > 1).
+
+        Note: plangym states do not carry ``rgb_frame``; frame display may
+        be unavailable when using parallel workers.
+        """
         print("[worker] importing plangym...", flush=True)
         try:
             import plangym
         except ImportError as e:
             msg = (
-                "plangym is required for Atari dashboard.\n"
-                "Install with: uv add \"plangym[atari]==0.1.32\""
+                "plangym is required for parallel Atari workers.\n"
+                'Install with: uv add "plangym[atari]==0.1.32"'
             )
             raise ImportError(msg) from e
 
@@ -304,25 +366,23 @@ class AtariGasConfigPanel(param.Parameterized):
         if _parse_semver(version) < (0, 1, 32):
             raise RuntimeError(
                 f"plangym>=0.1.32 is required (found {version}). "
-                "Run: uv add \"plangym[atari]==0.1.32\""
+                'Run: uv add "plangym[atari]==0.1.32"'
             )
 
-        # Explicit frameskip=5 is required: VectorizedEnv defaults to
-        # frameskip=1, overriding AtariEnv's default of 5. Without this,
-        # parallel workers step 5x fewer ALE frames per dt, producing
-        # near-zero rewards and suspiciously fast iterations.
-        kwargs = dict(
-            name=self.game_name,
-            obs_type=self.obs_type,
-            frameskip=5,
-            render_mode=None,
-            autoreset=False,
-            remove_time_limit=True,
-            episodic_life=True,
+        kwargs = {
+            "name": self.game_name,
+            "obs_type": self.obs_type,
+            "frameskip": 5,
+            "render_mode": "rgb_array" if self.record_frames else None,
+            "autoreset": False,
+            "remove_time_limit": True,
+            "episodic_life": True,
+            "n_workers": self.n_workers,
+        }
+        print(
+            f"[worker] calling plangym.make({', '.join(f'{k}={v!r}' for k, v in kwargs.items())})...",
+            flush=True,
         )
-        if self.n_workers > 1:
-            kwargs["n_workers"] = self.n_workers
-        print(f"[worker] calling plangym.make({', '.join(f'{k}={v!r}' for k, v in kwargs.items())})...", flush=True)
         env = plangym.make(**kwargs)
         print(f"[worker] plangym.make() returned: {type(env).__name__}", flush=True)
         self._schedule_ui_update(
@@ -366,6 +426,7 @@ class AtariGasConfigPanel(param.Parameterized):
 
     def _run_single_loop_worker(self, env):
         """Run standard single-loop fractal gas."""
+        self.planning_history = None
         print("[worker] creating AtariFractalGas...", flush=True)
         self._schedule_ui_update(
             lambda: setattr(self.status_pane, "object", "Initializing simulation...")
@@ -396,7 +457,9 @@ class AtariGasConfigPanel(param.Parameterized):
             from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
 
             tree = AtariTreeHistory(
-                N=self.N, game_name=self.game_name, max_iterations=self.max_iterations,
+                N=self.N,
+                game_name=self.game_name,
+                max_iterations=self.max_iterations,
             )
             tree.record_initial_atari_state(state)
 
@@ -432,6 +495,11 @@ class AtariGasConfigPanel(param.Parameterized):
         # Build history
         if tree is not None:
             self.tree_history = tree
+            # For plangym (multicore): states lack rgb_frame, so only the
+            # best walker gets a frame each step.  Fill missing path frames
+            # via _render_walker_frame before converting to AtariHistory.
+            if self.record_frames and self.gas is not None:
+                tree.render_missing_path_frames(self.gas._render_walker_frame)
             self.history = tree.to_atari_history()
         else:
             self.tree_history = None
@@ -508,29 +576,14 @@ class AtariGasConfigPanel(param.Parameterized):
             if done or truncated:
                 break
 
-        # Convert PlanningTrajectory to AtariHistory for the visualizer
-        n = traj.num_steps
+        # Build PlanningHistory and convert to AtariHistory for the visualizer
         self.tree_history = None
-        self.history = AtariHistory(
-            iterations=list(range(n)),
-            rewards_mean=list(traj.cumulative_rewards),
-            rewards_max=list(traj.cumulative_rewards),
-            rewards_min=list(traj.rewards),
-            alive_counts=[pi.get("alive_count", self.N) for pi in traj.planning_infos],
-            num_cloned=[0] * n,
-            virtual_rewards_mean=[
-                pi.get("inner_mean_reward", 0.0) for pi in traj.planning_infos
-            ],
-            virtual_rewards_max=[
-                pi.get("inner_max_reward", 0.0) for pi in traj.planning_infos
-            ],
-            best_frames=traj.frames if traj.frames else [None] * n,
-            best_rewards=list(traj.cumulative_rewards),
-            best_indices=[0] * n,
-            N=self.N,
-            max_iterations=n,
-            game_name=self.game_name,
+        self.planning_history = PlanningHistory.from_trajectory(
+            traj,
+            self.N,
+            self.game_name,
         )
+        self.history = self.planning_history.to_atari_history()
 
         self._finish_simulation()
 
@@ -540,9 +593,7 @@ class AtariGasConfigPanel(param.Parameterized):
         progress = int(done_count / self.max_iterations * 100)
         elapsed = time.monotonic() - t_start
         remaining = (
-            (elapsed / done_count) * (self.max_iterations - done_count)
-            if done_count > 0
-            else 0.0
+            (elapsed / done_count) * (self.max_iterations - done_count) if done_count > 0 else 0.0
         )
         remaining_str = _format_duration(remaining)
         pct = done_count / self.max_iterations * 100
@@ -562,7 +613,7 @@ class AtariGasConfigPanel(param.Parameterized):
         if not self._stop_requested:
             self._schedule_ui_update(self._on_simulation_finished)
             for callback in self._on_simulation_complete:
-                callback(self.history)
+                self._schedule_ui_update(lambda cb=callback: cb(self.history))
 
     def _on_simulation_finished(self):
         """UI update when simulation completes."""
@@ -577,9 +628,16 @@ class AtariGasConfigPanel(param.Parameterized):
         self.stop_button.disabled = True
 
     def _schedule_ui_update(self, func):
-        """Schedule UI update on main thread."""
-        if pn.state.curdoc:
-            pn.state.curdoc.add_next_tick_callback(func)
+        """Schedule UI update on the Bokeh document thread.
+
+        Uses the document reference captured in ``_on_run_clicked`` so that
+        worker threads can schedule callbacks even though
+        ``pn.state.curdoc`` is thread-local and may be ``None`` on non-main
+        threads.
+        """
+        doc = getattr(self, "_curdoc", None) or pn.state.curdoc
+        if doc:
+            doc.add_next_tick_callback(func)
         else:
             func()
 
@@ -606,19 +664,13 @@ class AtariGasConfigPanel(param.Parameterized):
                 self.param,
                 parameters=["N", "dist_coef", "reward_coef", "use_cumulative_reward", "n_elite"],
             ),
-            pn.pane.Markdown("### Planning"),
-            pn.Param(
-                self.param,
-                parameters=["tau_inner", "outer_dt"],
-            ),
+            self._planning_params_section,
             pn.pane.Markdown("### Simulation"),
             pn.Param(
                 self.param,
                 parameters=[
                     "max_iterations",
                     "record_frames",
-                    "use_tree_history",
-                    "prune_history",
                     "dt_range_min",
                     "dt_range_max",
                     "device",
@@ -626,6 +678,7 @@ class AtariGasConfigPanel(param.Parameterized):
                     "n_workers",
                 ],
             ),
+            self._tree_history_params_section,
             pn.pane.Markdown("### Controls"),
             self.run_button,
             self.stop_button,
@@ -650,32 +703,45 @@ class AtariGasVisualizer(param.Parameterized):
     def __init__(self, history: AtariHistory | None = None, **params):
         super().__init__(**params)
         self.history = history
+        self.planning_history: PlanningHistory | None = None
 
-        # Time player for frame-by-frame navigation
-        self.time_player = pn.widgets.Player(
-            name="Iteration",
+        # Game replay player (controls frame display)
+        self.game_player = pn.widgets.Player(
+            name="Game Frame",
             start=0,
             end=0,
             value=0,
             step=1,
-            interval=200,  # 200ms = 5 FPS
+            interval=200,
             loop_policy="loop",
-            width=600,
+            width=400,
         )
-        self.time_player.disabled = True
-        self.time_player.param.watch(self._on_frame_change, "value")
+        self.game_player.disabled = True
+        self.game_player.param.watch(self._on_game_frame_change, "value")
 
-        # Frame display
-        self.frame_pane = pn.pane.GIF(
+        # Plot scrubbing player (controls metrics)
+        self.plot_player = pn.widgets.Player(
+            name="Plot Iteration",
+            start=0,
+            end=0,
+            value=0,
+            step=1,
+            interval=200,
+            loop_policy="loop",
+            width=400,
+        )
+        self.plot_player.disabled = True
+        self.plot_player.param.watch(self._on_plot_frame_change, "value")
+
+        # Frame display (per-frame PNG)
+        self.frame_pane = pn.pane.PNG(
             object=self._create_blank_frame(),
             width=640,
             height=840,
         )
 
         # Reward progression plot
-        self.reward_plot_pane = pn.pane.HoloViews(
-            sizing_mode="stretch_width", min_height=300
-        )
+        self.reward_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=300)
 
         # Info display
         self.info_pane = pn.pane.Markdown("No data loaded.")
@@ -685,14 +751,27 @@ class AtariGasVisualizer(param.Parameterized):
         self.histogram_cloning_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
         self.histogram_virtual_reward_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
 
+        # Planning-specific panes
+        self.step_reward_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
+        self.inner_quality_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
+
     def set_history(self, history: AtariHistory):
         """Load new history for visualization."""
         self.history = history
+        last_idx = len(history.iterations) - 1
 
-        # Update time player
-        self.time_player.end = len(history.iterations) - 1
-        self.time_player.value = 0
-        self.time_player.disabled = False
+        # Reset both players.  Set end first so the value stays in range.
+        # Force value to 1→0 so param watchers always fire (setting value
+        # to the same number it already holds is a no-op in param).
+        self.game_player.end = last_idx
+        self.game_player.value = min(1, last_idx)
+        self.game_player.value = 0
+        self.game_player.disabled = False
+
+        self.plot_player.end = last_idx
+        self.plot_player.value = min(1, last_idx)
+        self.plot_player.value = 0
+        self.plot_player.disabled = False
 
         # Update info
         self.info_pane.object = (
@@ -702,32 +781,40 @@ class AtariGasVisualizer(param.Parameterized):
             f"Max reward: {max(history.rewards_max):.1f}"
         )
 
-        # Create GIF from best frames
-        if history.has_frames:
-            frames = [f for f in history.best_frames if f is not None]
-            if frames:
-                gif_file = create_gif(frames, fps=5)
-                gif_file.seek(0)
-                self.frame_pane.object = gif_file.read()
+        # Force-update frame pane with the first frame regardless of
+        # whether the player watcher fired.
+        if history.has_frames and history.best_frames[0] is not None:
+            self.frame_pane.object = self._array_to_png(history.best_frames[0])
 
-        # Trigger initial display
-        self._on_frame_change(None)
+        # Trigger plot display
+        self._on_plot_frame_change(None)
 
-    def _on_frame_change(self, event):
-        """Update visualizations for current frame."""
+    def set_planning_history(self, planning_history: PlanningHistory | None):
+        """Load planning history for planning-specific visualizations."""
+        self.planning_history = planning_history
+
+    def _on_game_frame_change(self, event):
+        """Update frame display only."""
+        if self.history is None or not self.history.has_frames:
+            return
+        idx = int(self.game_player.value)
+        frame = self.history.best_frames[idx]
+        if frame is not None:
+            self.frame_pane.object = self._array_to_png(frame)
+
+    def _on_plot_frame_change(self, event):
+        """Update plots/histograms only."""
         if self.history is None:
             return
 
-        idx = int(self.time_player.value)
+        idx = int(self.plot_player.value)
 
         # Update reward curve (show data up to current frame)
-        reward_data = pd.DataFrame(
-            {
-                "iteration": self.history.iterations[: idx + 1],
-                "max_reward": self.history.rewards_max[: idx + 1],
-                "mean_reward": self.history.rewards_mean[: idx + 1],
-            }
-        )
+        reward_data = pd.DataFrame({
+            "iteration": self.history.iterations[: idx + 1],
+            "max_reward": self.history.rewards_max[: idx + 1],
+            "mean_reward": self.history.rewards_mean[: idx + 1],
+        })
 
         max_curve = hv.Curve(
             reward_data, kdims=["iteration"], vdims=["max_reward"], label="Max Reward"
@@ -766,15 +853,67 @@ class AtariGasVisualizer(param.Parameterized):
             # Virtual rewards histogram
             vr_data = np.array(self.history.virtual_rewards_mean[: idx + 1])
             vr_hist = hv.Histogram(np.histogram(vr_data, bins=30)).opts(
-                responsive=True, height=280, title="Virtual Rewards", xlabel="Value", color="purple"
+                responsive=True,
+                height=280,
+                title="Virtual Rewards",
+                xlabel="Value",
+                color="purple",
             )
             self.histogram_virtual_reward_pane.object = vr_hist
+
+        # Planning-specific plots
+        if self.planning_history is not None:
+            ph = self.planning_history
+            step_data = pd.DataFrame({
+                "step": ph.iterations[: idx + 1],
+                "step_reward": ph.step_rewards[: idx + 1],
+            })
+            step_curve = hv.Curve(
+                step_data, kdims=["step"], vdims=["step_reward"], label="Step Reward"
+            ).opts(
+                responsive=True,
+                height=300,
+                title="Per-Step Rewards",
+                xlabel="Step",
+                ylabel="Reward",
+                color="teal",
+                line_width=2,
+            )
+            self.step_reward_plot_pane.object = step_curve
+
+            quality_data = pd.DataFrame({
+                "step": ph.iterations[: idx + 1],
+                "inner_max_reward": ph.inner_max_rewards[: idx + 1],
+                "step_reward": ph.step_rewards[: idx + 1],
+            })
+            inner_curve = hv.Curve(
+                quality_data,
+                kdims=["step"],
+                vdims=["inner_max_reward"],
+                label="Inner Max Reward",
+            ).opts(
+                responsive=True,
+                height=300,
+                title="Inner Planning Quality",
+                xlabel="Step",
+                ylabel="Reward",
+                color="orange",
+                line_width=2,
+            )
+            step_overlay = hv.Curve(
+                quality_data,
+                kdims=["step"],
+                vdims=["step_reward"],
+                label="Actual Step Reward",
+            ).opts(color="teal", line_width=2, alpha=0.7)
+            self.inner_quality_plot_pane.object = (inner_curve * step_overlay).opts(
+                legend_position="top_left"
+            )
 
     def _create_blank_frame(self) -> bytes:
         """Create blank frame as placeholder."""
         if not PIL_AVAILABLE:
             return b""
-
         img = Image.new("RGB", (160, 210), color="black")
         buf = io.BytesIO()
         img.save(buf, format="PNG")
@@ -784,7 +923,6 @@ class AtariGasVisualizer(param.Parameterized):
         """Convert numpy array to PNG bytes."""
         if not PIL_AVAILABLE:
             return b""
-
         img = Image.fromarray(array.astype(np.uint8))
         buf = io.BytesIO()
         img.save(buf, format="PNG")
@@ -807,22 +945,35 @@ class AtariGasVisualizer(param.Parameterized):
             else None
         )
 
+        self._planning_stats_section = pn.Column(
+            pn.pane.Markdown("### Planning Stats"),
+            pn.Row(
+                self.step_reward_plot_pane,
+                self.inner_quality_plot_pane,
+                sizing_mode="stretch_width",
+            ),
+            sizing_mode="stretch_width",
+            visible=False,
+        )
+
         return pn.Column(
             pn.pane.Markdown("## Atari Gas Visualization"),
-            self.time_player,
             pn.Row(
                 pn.Column(
                     pn.pane.Markdown("### Best Game Replay"),
+                    self.game_player,
                     self.frame_pane,
                 ),
                 pn.Column(
                     pn.pane.Markdown("### Reward Progression"),
+                    self.plot_player,
                     self.reward_plot_pane,
                     sizing_mode="stretch_width",
                 ),
                 sizing_mode="stretch_width",
             ),
             histogram_section,
+            self._planning_stats_section,
             self.info_pane,
             sizing_mode="stretch_width",
         )
@@ -840,6 +991,8 @@ def create_app() -> pn.template.FastListTemplate:
     # Connect callback
     def on_simulation_complete(history: AtariHistory):
         """Update visualizer when simulation completes."""
+        visualizer.set_planning_history(config_panel.planning_history)
+        visualizer._planning_stats_section.visible = config_panel.planning_history is not None
         visualizer.set_history(history)
 
     config_panel.add_completion_callback(on_simulation_complete)
@@ -857,11 +1010,18 @@ def create_app() -> pn.template.FastListTemplate:
 def _parse_args():
     """Parse command line arguments."""
     import argparse
+
     parser = argparse.ArgumentParser(description="Atari Fractal Gas Dashboard")
     parser.add_argument("--port", type=int, default=5006, help="Port to run server on")
     parser.add_argument("--open", action="store_true", help="Open browser on launch")
-    parser.add_argument("--threaded", action="store_true", help="Use multi-threaded Tornado (default: single-threaded for WSL compatibility)")
-    parser.add_argument("--headless", action="store_true", help="Force headless env vars (auto-detected on WSL)")
+    parser.add_argument(
+        "--threaded",
+        action="store_true",
+        help="Use multi-threaded Tornado (default: single-threaded for WSL compatibility)",
+    )
+    parser.add_argument(
+        "--headless", action="store_true", help="Force headless env vars (auto-detected on WSL)"
+    )
     return parser.parse_args()
 
 

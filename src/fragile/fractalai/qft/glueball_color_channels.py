@@ -618,9 +618,8 @@ def compute_companion_glueball_color_correlator(
                 f"Expected 0..{history.d - 1}."
             )
             raise ValueError(msg)
-        positions_axis = (
-            history.x_before_clone[start_idx:end_idx, :, momentum_axis]
-            .to(device=device, dtype=torch.float32)
+        positions_axis = history.x_before_clone[start_idx:end_idx, :, momentum_axis].to(
+            device=device, dtype=torch.float32
         )
 
         low, high = _extract_axis_bounds(history.bounds, momentum_axis, device=device)

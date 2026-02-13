@@ -34,25 +34,31 @@ def _prepare_edge_index(
 
     if edge_index is not None:
         if csr_ptr is not None or csr_indices is not None:
-            raise ValueError("Provide either edge_index or csr_ptr/csr_indices, not both.")
+            msg = "Provide either edge_index or csr_ptr/csr_indices, not both."
+            raise ValueError(msg)
         if edge_index.device != device:
-            raise ValueError("edge_index must be on the same device as positions.")
+            msg = "edge_index must be on the same device as positions."
+            raise ValueError(msg)
         if edge_index.numel() == 0:
             return edge_index, torch.zeros(n_walkers, dtype=torch.long, device=device)
         if torch.any(edge_index[0] >= n_walkers) or torch.any(edge_index[1] >= n_walkers):
-            raise ValueError(
+            msg = (
                 "edge_index contains indices outside positions. "
                 "Filter boundary neighbors before calling."
             )
+            raise ValueError(msg)
         num_neighbors = torch.bincount(edge_index[0], minlength=n_walkers)
         return edge_index, num_neighbors
 
     if csr_ptr is None or csr_indices is None:
-        raise ValueError("edge_index or csr_ptr/csr_indices must be provided.")
+        msg = "edge_index or csr_ptr/csr_indices must be provided."
+        raise ValueError(msg)
     if csr_ptr.device != device or csr_indices.device != device:
-        raise ValueError("CSR tensors must be on the same device as positions.")
+        msg = "CSR tensors must be on the same device as positions."
+        raise ValueError(msg)
     if csr_ptr.numel() - 1 < n_walkers:
-        raise ValueError("csr_ptr has fewer rows than walkers in positions.")
+        msg = "csr_ptr has fewer rows than walkers in positions."
+        raise ValueError(msg)
 
     edge_end = int(csr_ptr[n_walkers].item())
     ptr = csr_ptr[: n_walkers + 1]
@@ -71,9 +77,8 @@ def _prepare_edge_index(
         return edge_index, num_neighbors
 
     if torch.any(indices >= n_walkers):
-        raise ValueError(
-            "csr_types required to filter boundary neighbors for Hessian estimation."
-        )
+        msg = "csr_types required to filter boundary neighbors for Hessian estimation."
+        raise ValueError(msg)
 
     edge_index = torch.stack([src, indices], dim=0)
     return edge_index, counts
@@ -345,11 +350,12 @@ def estimate_hessian_full_fd(
         csr_types: Optional [E] edge types (0=walker, 1=boundary)
         max_angle_deg: Angular threshold for axial alignment
     """
-    N, d = positions.shape
+    N, _d = positions.shape
     device = positions.device
 
     if method == "gradient_fd" and gradient_vectors is None:
-        raise ValueError("gradient_fd method requires gradient_vectors input")
+        msg = "gradient_fd method requires gradient_vectors input"
+        raise ValueError(msg)
 
     edge_index, num_neighbors = _prepare_edge_index(
         positions, edge_index, csr_ptr, csr_indices, csr_types
@@ -530,9 +536,7 @@ def estimate_hessian_from_metric(
     device = positions.device
 
     if metric_tensors is None:
-        edge_index, _ = _prepare_edge_index(
-            positions, edge_index, csr_ptr, csr_indices, csr_types
-        )
+        edge_index, _ = _prepare_edge_index(positions, edge_index, csr_ptr, csr_indices, csr_types)
         metric_tensors = _compute_emergent_metric(positions, edge_index, alive)
 
     identity = torch.eye(d, device=device, dtype=positions.dtype).unsqueeze(0).expand(N, d, d)
@@ -540,12 +544,14 @@ def estimate_hessian_from_metric(
 
     eigenvalues = torch.linalg.eigvalsh(hessian_tensors)
 
-    psd_violation_mask = (eigenvalues[:, 0] < -1e-6)
+    psd_violation_mask = eigenvalues[:, 0] < -1e-6
 
     eigenvalues = torch.flip(eigenvalues, dims=[1])
 
     if validate_equilibrium:
-        equilibrium_score = _compute_equilibrium_score(positions, edge_index, metric_tensors, alive)
+        equilibrium_score = _compute_equilibrium_score(
+            positions, edge_index, metric_tensors, alive
+        )
     else:
         equilibrium_score = torch.ones(N, device=device, dtype=positions.dtype)
 
@@ -603,9 +609,7 @@ def _compute_emergent_metric(
     metrics = torch.linalg.pinv(covariances)
 
     if alive is not None:
-        metrics = torch.where(
-            alive.view(N, 1, 1), metrics, torch.full_like(metrics, float("nan"))
-        )
+        metrics = torch.where(alive.view(N, 1, 1), metrics, torch.full_like(metrics, float("nan")))
 
     return metrics
 
@@ -617,7 +621,7 @@ def _compute_equilibrium_score(
     alive: Tensor | None,
 ) -> Tensor:
     """Compute equilibrium quality score based on metric isotropy."""
-    N = positions.shape[0]
+    positions.shape[0]
 
     eigenvalues = torch.linalg.eigvalsh(metric_tensors)
 

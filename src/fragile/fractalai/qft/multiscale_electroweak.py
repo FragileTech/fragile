@@ -22,11 +22,12 @@ from fragile.fractalai.qft.baryon_triplet_channels import _resolve_frame_indices
 from fragile.fractalai.qft.correlator_channels import (
     _fft_correlator_batched,
     ChannelCorrelatorResult,
-    CorrelatorConfig,
     compute_effective_mass_torch,
+    CorrelatorConfig,
     extract_mass_aic,
     extract_mass_linear,
 )
+from fragile.fractalai.qft.electroweak_observables import classify_walker_types
 from fragile.fractalai.qft.smeared_operators import (
     iter_smeared_kernel_batches_from_history,
     select_interesting_scales_from_history,
@@ -39,10 +40,16 @@ SU2_BASE_CHANNELS = (
     "su2_doublet",
     "su2_doublet_diff",
 )
+SU2_DIRECTIONAL_CHANNELS = tuple(f"{name}_directed" for name in SU2_BASE_CHANNELS)
+SU2_WALKER_TYPE_CHANNELS = tuple(
+    f"{name}_{walker_type}"
+    for name in SU2_BASE_CHANNELS
+    for walker_type in ("cloner", "resister", "persister")
+)
+SUPPORTED_CHANNELS = SU2_BASE_CHANNELS + SU2_DIRECTIONAL_CHANNELS + SU2_WALKER_TYPE_CHANNELS
 SU2_COMPANION_CHANNEL_MAP: dict[str, str] = {
-    name: f"{name}_companion" for name in SU2_BASE_CHANNELS
+    name: f"{name}_companion" for name in SUPPORTED_CHANNELS
 }
-SUPPORTED_CHANNELS = SU2_BASE_CHANNELS
 BOOTSTRAP_MODES = ("time", "walker", "hybrid")
 KERNEL_TYPES = ("gaussian", "exponential", "tophat", "shell")
 
@@ -59,6 +66,9 @@ class MultiscaleElectroweakConfig:
     epsilon_clone: float | None = None
     lambda_alg: float | None = None
     edge_weight_mode: str = "inverse_riemannian_distance"
+    su2_operator_mode: str = "standard"
+    enable_walker_type_split: bool = False
+    walker_type_scope: str = "frame_global"
 
     # Scale/kernel controls
     n_scales: int = 8
@@ -124,7 +134,9 @@ def _nanstd_compat(values: Tensor, *, dim: int) -> Tensor:
     return torch.where(count > 0, std, nan_fill)
 
 
-def _nested_param(params: dict[str, Any] | None, *keys: str, default: float | None) -> float | None:
+def _nested_param(
+    params: dict[str, Any] | None, *keys: str, default: float | None
+) -> float | None:
     if params is None:
         return default
     current: Any = params
@@ -173,6 +185,22 @@ def _resolve_electroweak_params(
         float(max(epsilon_clone, 1e-8)),
         float(max(lambda_alg, 0.0)),
     )
+
+
+def _resolve_su2_operator_mode(mode: str) -> str:
+    mode_norm = str(mode).strip().lower()
+    if mode_norm not in {"standard", "score_directed"}:
+        msg = "su2_operator_mode must be 'standard' or 'score_directed'."
+        raise ValueError(msg)
+    return mode_norm
+
+
+def _resolve_walker_type_scope(scope: str) -> str:
+    scope_norm = str(scope).strip().lower()
+    if scope_norm != "frame_global":
+        msg = "walker_type_scope must be 'frame_global'."
+        raise ValueError(msg)
+    return scope_norm
 
 
 def _build_result_from_precomputed_correlator(
@@ -315,7 +343,9 @@ def _select_best_scale(
         ):
             continue
         fit = result.mass_fit or {}
-        best_window = fit.get("best_window", {}) if isinstance(fit.get("best_window", {}), dict) else {}
+        best_window = (
+            fit.get("best_window", {}) if isinstance(fit.get("best_window", {}), dict) else {}
+        )
         aic = float(best_window.get("aic", float("inf")))
         if not math.isfinite(aic):
             aic = float("inf")
@@ -344,13 +374,22 @@ def _compute_su2_series_from_kernels(
     lambda_alg: float,
     bounds: Any | None,
     pbc: bool,
+    will_clone: Tensor | None = None,  # [T,N] bool
+    su2_operator_mode: str = "standard",
+    enable_walker_type_split: bool = False,
+    walker_type_scope: str = "frame_global",
 ) -> dict[str, Tensor]:
     if kernels.ndim != 4:
         raise ValueError(f"kernels must have shape [T,S,N,N], got {tuple(kernels.shape)}.")
+    resolved_mode = _resolve_su2_operator_mode(su2_operator_mode)
+    _resolve_walker_type_scope(walker_type_scope)
     t_len, n_scales, n_walkers, _ = kernels.shape
     if t_len <= 0 or n_scales <= 0 or n_walkers <= 0:
         empty = torch.zeros((n_scales, t_len), device=kernels.device, dtype=torch.float32)
-        return {alias: empty.clone() for alias in SU2_COMPANION_CHANNEL_MAP.values()}
+        return {
+            alias: empty.clone()
+            for alias in (SU2_COMPANION_CHANNEL_MAP[name] for name in SUPPORTED_CHANNELS)
+        }
 
     dev = kernels.device
     real_dtype = kernels.dtype
@@ -363,7 +402,9 @@ def _compute_su2_series_from_kernels(
     pair_valid = alive_mask[:, None, :, None] & alive_mask[:, None, None, :]
     weights = torch.where(pair_valid, kernels, torch.zeros_like(kernels))
     row_sum = weights.sum(dim=-1, keepdim=True)
-    weights = torch.where(row_sum > 0, weights / row_sum.clamp(min=1e-12), torch.zeros_like(weights))
+    weights = torch.where(
+        row_sum > 0, weights / row_sum.clamp(min=1e-12), torch.zeros_like(weights)
+    )
 
     fitness_t = fitness.to(device=dev, dtype=real_dtype)
     fi = fitness_t[:, None, :, None]
@@ -373,7 +414,10 @@ def _compute_su2_series_from_kernels(
 
     su2_phase = ((fj - fi) / denom) / max(float(h_eff), 1e-12)
     weights_c = weights.to(dtype=complex_dtype)
-    su2_phase_exp = (weights_c * torch.exp(1j * su2_phase.to(complex_dtype))).sum(dim=-1)
+    su2_pair = torch.exp(1j * su2_phase.to(complex_dtype))
+    su2_pair_directed = torch.where(su2_phase >= 0, su2_pair, torch.conj(su2_pair))
+    su2_phase_exp_standard = (weights_c * su2_pair).sum(dim=-1)
+    su2_phase_exp_directed = (weights_c * su2_pair_directed).sum(dim=-1)
 
     diff_x = positions[:, None, :, None, :] - positions[:, None, None, :, :]
     if pbc and bounds is not None:
@@ -386,29 +430,138 @@ def _compute_su2_series_from_kernels(
     su2_weight = torch.exp(-dist_sq / (2.0 * max(float(epsilon_c), 1e-12) ** 2))
     su2_amp = (weights * torch.sqrt(su2_weight)).sum(dim=-1)
 
-    su2_comp_phase_exp = torch.einsum("tsij,tsj->tsi", weights_c, su2_phase_exp)
+    su2_comp_phase_exp_standard = torch.einsum("tsij,tsj->tsi", weights_c, su2_phase_exp_standard)
+    su2_comp_phase_exp_directed = torch.einsum("tsij,tsj->tsi", weights_c, su2_phase_exp_directed)
     su2_comp_amp = torch.einsum("tsij,tsj->tsi", weights, su2_amp)
 
     alive_c = alive_f[:, None, :].to(dtype=complex_dtype)
     su2_amp_c = su2_amp.to(dtype=complex_dtype)
     su2_comp_amp_c = su2_comp_amp.to(dtype=complex_dtype)
 
-    su2_phase_op = su2_phase_exp * alive_c
-    su2_component_op = (su2_amp_c * su2_phase_exp) * alive_c
-    su2_doublet_op = (su2_amp_c * su2_phase_exp + su2_comp_amp_c * su2_comp_phase_exp) * alive_c
-    su2_doublet_diff_op = (su2_amp_c * su2_phase_exp - su2_comp_amp_c * su2_comp_phase_exp) * alive_c
+    su2_phase_op_standard = su2_phase_exp_standard * alive_c
+    su2_component_op_standard = (su2_amp_c * su2_phase_exp_standard) * alive_c
+    su2_doublet_op_standard = (
+        su2_amp_c * su2_phase_exp_standard + su2_comp_amp_c * su2_comp_phase_exp_standard
+    ) * alive_c
+    su2_doublet_diff_op_standard = (
+        su2_amp_c * su2_phase_exp_standard - su2_comp_amp_c * su2_comp_phase_exp_standard
+    ) * alive_c
+
+    su2_phase_op_directed = su2_phase_exp_directed * alive_c
+    su2_component_op_directed = (su2_amp_c * su2_phase_exp_directed) * alive_c
+    su2_doublet_op_directed = (
+        su2_amp_c * su2_phase_exp_directed + su2_comp_amp_c * su2_comp_phase_exp_directed
+    ) * alive_c
+    su2_doublet_diff_op_directed = (
+        su2_amp_c * su2_phase_exp_directed - su2_comp_amp_c * su2_comp_phase_exp_directed
+    ) * alive_c
+
+    if resolved_mode == "score_directed":
+        su2_phase_op = su2_phase_op_directed
+        su2_component_op = su2_component_op_directed
+        su2_doublet_op = su2_doublet_op_directed
+        su2_doublet_diff_op = su2_doublet_diff_op_directed
+    else:
+        su2_phase_op = su2_phase_op_standard
+        su2_component_op = su2_component_op_standard
+        su2_doublet_op = su2_doublet_op_standard
+        su2_doublet_diff_op = su2_doublet_diff_op_standard
 
     counts = alive_f.sum(dim=-1).clamp(min=1.0)[:, None]
 
     def _series_from_op(op: Tensor) -> Tensor:
         return ((op.real * alive_f[:, None, :]).sum(dim=-1) / counts).transpose(0, 1).contiguous()
 
-    return {
+    outputs = {
         SU2_COMPANION_CHANNEL_MAP["su2_phase"]: _series_from_op(su2_phase_op),
         SU2_COMPANION_CHANNEL_MAP["su2_component"]: _series_from_op(su2_component_op),
         SU2_COMPANION_CHANNEL_MAP["su2_doublet"]: _series_from_op(su2_doublet_op),
         SU2_COMPANION_CHANNEL_MAP["su2_doublet_diff"]: _series_from_op(su2_doublet_diff_op),
+        SU2_COMPANION_CHANNEL_MAP["su2_phase_directed"]: _series_from_op(su2_phase_op_directed),
+        SU2_COMPANION_CHANNEL_MAP["su2_component_directed"]: _series_from_op(
+            su2_component_op_directed
+        ),
+        SU2_COMPANION_CHANNEL_MAP["su2_doublet_directed"]: _series_from_op(
+            su2_doublet_op_directed
+        ),
+        SU2_COMPANION_CHANNEL_MAP["su2_doublet_diff_directed"]: _series_from_op(
+            su2_doublet_diff_op_directed
+        ),
     }
+
+    if bool(enable_walker_type_split):
+        if will_clone is not None:
+            will_clone_b = will_clone.to(device=dev, dtype=torch.bool)
+            if will_clone_b.shape != alive_mask.shape:
+                msg = (
+                    "will_clone must align with alive [T,N] when walker-type split "
+                    f"is enabled, got {tuple(will_clone_b.shape)} vs {tuple(alive_mask.shape)}."
+                )
+                raise ValueError(msg)
+        else:
+            will_clone_b = torch.zeros_like(alive_mask)
+
+        cloner_mask = torch.zeros_like(alive_mask)
+        resister_mask = torch.zeros_like(alive_mask)
+        persister_mask = torch.zeros_like(alive_mask)
+        for t_idx in range(t_len):
+            c_mask, r_mask, p_mask = classify_walker_types(
+                fitness=fitness_t[t_idx],
+                alive=alive_mask[t_idx],
+                will_clone=will_clone_b[t_idx],
+            )
+            cloner_mask[t_idx] = c_mask
+            resister_mask[t_idx] = r_mask
+            persister_mask[t_idx] = p_mask
+    else:
+        cloner_mask = torch.zeros_like(alive_mask)
+        resister_mask = torch.zeros_like(alive_mask)
+        persister_mask = torch.zeros_like(alive_mask)
+
+    def _series_from_masked_op(op: Tensor, mask: Tensor) -> Tensor:
+        mask_f = mask.to(dtype=real_dtype)
+        counts_mask = mask_f.sum(dim=-1).clamp(min=1.0)[:, None]
+        return (
+            ((op.real * mask_f[:, None, :]).sum(dim=-1) / counts_mask).transpose(0, 1).contiguous()
+        )
+
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_phase_cloner"]] = _series_from_masked_op(
+        su2_phase_op, cloner_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_phase_resister"]] = _series_from_masked_op(
+        su2_phase_op, resister_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_phase_persister"]] = _series_from_masked_op(
+        su2_phase_op, persister_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_component_cloner"]] = _series_from_masked_op(
+        su2_component_op, cloner_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_component_resister"]] = _series_from_masked_op(
+        su2_component_op, resister_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_component_persister"]] = _series_from_masked_op(
+        su2_component_op, persister_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_doublet_cloner"]] = _series_from_masked_op(
+        su2_doublet_op, cloner_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_doublet_resister"]] = _series_from_masked_op(
+        su2_doublet_op, resister_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_doublet_persister"]] = _series_from_masked_op(
+        su2_doublet_op, persister_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_doublet_diff_cloner"]] = _series_from_masked_op(
+        su2_doublet_diff_op, cloner_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_doublet_diff_resister"]] = _series_from_masked_op(
+        su2_doublet_diff_op, resister_mask
+    )
+    outputs[SU2_COMPANION_CHANNEL_MAP["su2_doublet_diff_persister"]] = _series_from_masked_op(
+        su2_doublet_diff_op, persister_mask
+    )
+    return outputs
 
 
 def _time_bootstrap_mass_std(
@@ -466,6 +619,8 @@ def compute_multiscale_electroweak_channels(
         raise ValueError(
             f"bootstrap_mode must be one of {BOOTSTRAP_MODES}, got {config.bootstrap_mode!r}."
         )
+    resolved_mode = _resolve_su2_operator_mode(config.su2_operator_mode)
+    resolved_scope = _resolve_walker_type_scope(config.walker_type_scope)
 
     frame_indices = _resolve_frame_indices(
         history=history,
@@ -497,11 +652,19 @@ def compute_multiscale_electroweak_channels(
     epsilon_c, epsilon_clone, lambda_alg = _resolve_electroweak_params(history, config)
     h_eff = float(max(config.h_eff, 1e-8))
 
-    frame_ids_t = torch.as_tensor(frame_indices, dtype=torch.long, device=history.x_before_clone.device)
+    frame_ids_t = torch.as_tensor(
+        frame_indices, dtype=torch.long, device=history.x_before_clone.device
+    )
     positions = history.x_before_clone.index_select(0, frame_ids_t).float()
     velocities = history.v_before_clone.index_select(0, frame_ids_t).float()
     fitness = history.fitness.index_select(0, frame_ids_t - 1).float()
     alive = history.alive_mask.index_select(0, frame_ids_t - 1).to(dtype=torch.bool)
+    will_clone_hist = getattr(history, "will_clone", None)
+    will_clone = None
+    if will_clone_hist is not None:
+        if not torch.is_tensor(will_clone_hist):
+            will_clone_hist = torch.as_tensor(will_clone_hist, device=frame_ids_t.device)
+        will_clone = will_clone_hist.index_select(0, frame_ids_t - 1).to(dtype=torch.bool)
 
     scales = select_interesting_scales_from_history(
         history,
@@ -554,6 +717,10 @@ def compute_multiscale_electroweak_channels(
             lambda_alg=lambda_alg,
             bounds=history.bounds,
             pbc=bool(history.pbc),
+            will_clone=will_clone.index_select(0, pos_t) if will_clone is not None else None,
+            su2_operator_mode=resolved_mode,
+            enable_walker_type_split=bool(config.enable_walker_type_split),
+            walker_type_scope=resolved_scope,
         )
         for base in requested:
             alias = SU2_COMPANION_CHANNEL_MAP[base]

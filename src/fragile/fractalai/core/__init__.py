@@ -22,7 +22,6 @@ except ModuleNotFoundError as exc:
 
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.core.kinetic_operator import KineticOperator
-from fragile.fractalai.core.tree_history import TreeHistory
 from fragile.fractalai.core.scutoids import (
     BaseScutoidHistory,
     create_scutoid_history,
@@ -31,6 +30,7 @@ from fragile.fractalai.core.scutoids import (
     ScutoidHistory3D,
     VoronoiCell,
 )
+from fragile.fractalai.core.tree_history import TreeHistory
 from fragile.fractalai.core.vec_history import VectorizedHistoryRecorder
 
 

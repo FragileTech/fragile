@@ -13,10 +13,10 @@ Supports 2D, 3D, 4D, and higher dimensional spaces.
 from dataclasses import dataclass
 from typing import Any
 
+import numpy as np
+from scipy.spatial import ConvexHull, Voronoi
 import torch
 from torch import Tensor
-from scipy.spatial import Voronoi, ConvexHull
-import numpy as np
 
 
 @dataclass
@@ -84,7 +84,11 @@ def detect_nearby_boundary_faces(
     high_face_ids = 2 * dims[near_high] + 1  # face IDs for high faces
 
     # Concatenate and convert to list
-    all_face_ids = torch.cat([low_face_ids, high_face_ids]) if len(low_face_ids) + len(high_face_ids) > 0 else torch.tensor([], dtype=torch.long, device=position.device)
+    all_face_ids = (
+        torch.cat([low_face_ids, high_face_ids])
+        if len(low_face_ids) + len(high_face_ids) > 0
+        else torch.tensor([], dtype=torch.long, device=position.device)
+    )
 
     return all_face_ids.tolist()
 
@@ -146,12 +150,11 @@ def _get_dimensional_fallback(d: int) -> float:
     """
     if d == 2:
         return 0.1
-    elif d == 3:
+    if d == 3:
         return 0.05
-    elif d == 4:
+    if d == 4:
         return 0.025
-    else:
-        return 0.1 / d
+    return 0.1 / d
 
 
 def _compute_2d_boundary_segment_length(
@@ -174,7 +177,8 @@ def _compute_2d_boundary_segment_length(
         ValueError: If insufficient vertices
     """
     if len(boundary_vertices) < 2:
-        raise ValueError("Need at least 2 vertices for 2D facet")
+        msg = "Need at least 2 vertices for 2D facet"
+        raise ValueError(msg)
 
     # Find the two extreme points along the non-boundary dimension
     other_dim = 1 - dim
@@ -235,7 +239,7 @@ def _estimate_from_ridge_areas(
     # Find all ridges involving this walker
     walker_ridges = []
     for ridge_idx, (p1, p2) in enumerate(vor.ridge_points):
-        if p1 == walker_idx or p2 == walker_idx:
+        if walker_idx in {p1, p2}:
             walker_ridges.append(ridge_idx)
 
     if not walker_ridges:
@@ -304,7 +308,8 @@ def estimate_boundary_facet_area(
         vertex_indices = [v for v in vertex_indices if v != -1]
 
         if len(vertex_indices) < 2:
-            raise ValueError("Insufficient vertices")
+            msg = "Insufficient vertices"
+            raise ValueError(msg)
 
         vertices = vor.vertices[vertex_indices]
         d = vertices.shape[1]
@@ -319,14 +324,15 @@ def estimate_boundary_facet_area(
         near_boundary = np.abs(vertices[:, dim] - bound_value) < tolerance
 
         if np.sum(near_boundary) < 2:
-            raise ValueError("Too few vertices near boundary")
+            msg = "Too few vertices near boundary"
+            raise ValueError(msg)
 
         boundary_vertices = vertices[near_boundary]
 
         # Compute area based on dimensionality
         if d == 2:
             area = _compute_2d_boundary_segment_length(boundary_vertices, dim)
-        elif d in (3, 4):
+        elif d in {3, 4}:
             area = _compute_convexhull_projection_area(boundary_vertices, dim, d)
         else:
             raise ValueError(f"Unsupported dimension: {d}")
@@ -455,7 +461,7 @@ def compute_boundary_neighbors(
 
         # VECTORIZED: all faces for this walker
         face_ids_tensor = torch.tensor(nearby_faces, dtype=torch.long, device=device)
-        k = len(face_ids_tensor)
+        len(face_ids_tensor)
 
         # Batch project all faces (vectorized)
         proj_positions, normals = project_faces_vectorized(
@@ -468,11 +474,11 @@ def compute_boundary_neighbors(
         # Store data for each walker-face pair
         for i, face_id in enumerate(nearby_faces):
             walker_face_pairs.append({
-                'walker_idx': walker_idx_item,
-                'face_id': face_id,
-                'proj_pos': proj_positions[i],
-                'normal': normals[i],
-                'distance': distances[i],
+                "walker_idx": walker_idx_item,
+                "face_id": face_id,
+                "proj_pos": proj_positions[i],
+                "normal": normals[i],
+                "distance": distances[i],
             })
 
     # Handle empty case
@@ -490,11 +496,11 @@ def compute_boundary_neighbors(
     # Facet area estimation (parallelizable bottleneck)
     if n_jobs != 1 and len(walker_face_pairs) > 10:
         # Parallel computation for significant workloads
-        from joblib import Parallel, delayed
+        from joblib import delayed, Parallel
 
         facet_areas_list = Parallel(n_jobs=n_jobs)(
             delayed(estimate_boundary_facet_area)(
-                pair['walker_idx'], pair['face_id'], vor, positions, bounds
+                pair["walker_idx"], pair["face_id"], vor, positions, bounds
             )
             for pair in walker_face_pairs
         )
@@ -502,21 +508,21 @@ def compute_boundary_neighbors(
         # Sequential computation for small workloads or n_jobs=1
         facet_areas_list = [
             estimate_boundary_facet_area(
-                pair['walker_idx'], pair['face_id'], vor, positions, bounds
+                pair["walker_idx"], pair["face_id"], vor, positions, bounds
             )
             for pair in walker_face_pairs
         ]
 
     # Reconstruct tensors from collected data
-    all_positions = torch.stack([p['proj_pos'] for p in walker_face_pairs])
-    all_normals = torch.stack([p['normal'] for p in walker_face_pairs])
-    all_distances = torch.stack([p['distance'] for p in walker_face_pairs])
+    all_positions = torch.stack([p["proj_pos"] for p in walker_face_pairs])
+    all_normals = torch.stack([p["normal"] for p in walker_face_pairs])
+    all_distances = torch.stack([p["distance"] for p in walker_face_pairs])
     all_facet_areas = torch.tensor(facet_areas_list, dtype=dtype, device=device)
     all_walker_indices = torch.tensor(
-        [p['walker_idx'] for p in walker_face_pairs], dtype=torch.long, device=device
+        [p["walker_idx"] for p in walker_face_pairs], dtype=torch.long, device=device
     )
     all_face_ids = torch.tensor(
-        [p['face_id'] for p in walker_face_pairs], dtype=torch.long, device=device
+        [p["face_id"] for p in walker_face_pairs], dtype=torch.long, device=device
     )
 
     return BoundaryWallData(

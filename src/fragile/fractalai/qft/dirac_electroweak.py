@@ -100,7 +100,9 @@ class DiracElectroweakBundle:
     frame_indices: list[int]
 
 
-def _nested_param(params: dict[str, Any] | None, *keys: str, default: float | None) -> float | None:
+def _nested_param(
+    params: dict[str, Any] | None, *keys: str, default: float | None
+) -> float | None:
     if params is None:
         return default
     current: Any = params
@@ -157,7 +159,9 @@ def _resolve_electroweak_params(
     )
 
 
-def _resolve_series_frame_indices(history: RunHistory, ew_cfg: ElectroweakChannelConfig) -> list[int]:
+def _resolve_series_frame_indices(
+    history: RunHistory, ew_cfg: ElectroweakChannelConfig
+) -> list[int]:
     start_idx = max(1, int(history.n_recorded * float(ew_cfg.warmup_fraction)))
     end_idx = max(start_idx + 1, int(history.n_recorded * float(ew_cfg.end_fraction)))
     return list(range(start_idx, min(end_idx, history.n_recorded)))
@@ -303,7 +307,9 @@ def _compute_doublet_and_sigma_series(
     _epsilon_d, epsilon_c, epsilon_clone, lambda_alg = _resolve_electroweak_params(
         history, cfg.electroweak
     )
-    topology = _resolve_companion_topology(getattr(cfg.electroweak, "companion_topology", "distance"))
+    topology = _resolve_companion_topology(
+        getattr(cfg.electroweak, "companion_topology", "distance")
+    )
     n_slots = 2 if topology == "both" else 1
     companions_distance = getattr(history, "companions_distance", None)
     companions_clone = getattr(history, "companions_clone", None)
@@ -329,8 +335,12 @@ def _compute_doublet_and_sigma_series(
             e_series.append(0.0)
             sigma_series.append(0.0)
             vev_series.append(0.0)
-            psi_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64))
-            valid_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool))
+            psi_frames.append(
+                torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64)
+            )
+            valid_frames.append(
+                torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool)
+            )
             continue
 
         # Higgs sigma mode from radial fluctuations around frame centroid.
@@ -345,8 +355,12 @@ def _compute_doublet_and_sigma_series(
         n = int(positions.shape[0])
         if companions_distance is None or info_idx >= companions_distance.shape[0]:
             e_series.append(0.0)
-            psi_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64))
-            valid_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool))
+            psi_frames.append(
+                torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64)
+            )
+            valid_frames.append(
+                torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool)
+            )
             continue
 
         comp_d = companions_distance[info_idx]
@@ -355,8 +369,12 @@ def _compute_doublet_and_sigma_series(
         comp_d = comp_d.to(device=positions.device, dtype=torch.long)
         if comp_d.numel() != n:
             e_series.append(0.0)
-            psi_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64))
-            valid_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool))
+            psi_frames.append(
+                torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64)
+            )
+            valid_frames.append(
+                torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool)
+            )
             continue
         comp_d = comp_d.clamp(min=0, max=max(n - 1, 0))
 
@@ -377,23 +395,27 @@ def _compute_doublet_and_sigma_series(
         elif topology == "clone":
             if comp_c is None:
                 e_series.append(0.0)
-                psi_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64))
-                valid_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool))
+                psi_frames.append(
+                    torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64)
+                )
+                valid_frames.append(
+                    torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool)
+                )
                 continue
             comp_slots = comp_c.unsqueeze(1)
         else:
             fallback_clone = comp_c if comp_c is not None else src
             comp_slots = torch.stack([comp_d, fallback_clone], dim=1)
 
-        valid = (
-            alive.unsqueeze(1)
-            & alive[comp_slots]
-            & (comp_slots != src.unsqueeze(1))
-        )
+        valid = alive.unsqueeze(1) & alive[comp_slots] & (comp_slots != src.unsqueeze(1))
         if not torch.any(valid):
             e_series.append(0.0)
-            psi_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64))
-            valid_frames.append(torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool))
+            psi_frames.append(
+                torch.zeros(n * n_slots, device=positions.device, dtype=torch.complex64)
+            )
+            valid_frames.append(
+                torch.zeros(n * n_slots, device=positions.device, dtype=torch.bool)
+            )
             continue
 
         diff_x = positions[comp_slots] - positions.unsqueeze(1)
@@ -431,8 +453,14 @@ def _compute_doublet_and_sigma_series(
     e_t = torch.tensor(e_series, dtype=torch.float32)
     sigma_t = torch.tensor(sigma_series, dtype=torch.float32)
     vev_t = torch.tensor(vev_series, dtype=torch.float32)
-    psi_t = torch.stack(psi_frames, dim=0) if psi_frames else torch.zeros((0, 0), dtype=torch.complex64)
-    valid_t = torch.stack(valid_frames, dim=0) if valid_frames else torch.zeros((0, 0), dtype=torch.bool)
+    psi_t = (
+        torch.stack(psi_frames, dim=0)
+        if psi_frames
+        else torch.zeros((0, 0), dtype=torch.complex64)
+    )
+    valid_t = (
+        torch.stack(valid_frames, dim=0) if valid_frames else torch.zeros((0, 0), dtype=torch.bool)
+    )
     return e_t, sigma_t, vev_t, frame_indices[: len(e_series)], psi_t, valid_t
 
 

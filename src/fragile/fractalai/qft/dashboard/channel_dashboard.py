@@ -138,10 +138,12 @@ def create_multiscale_widgets() -> MultiscaleTabWidgets:
             sizing_mode="stretch_width",
         ),
         geodesic_heatmap=pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         ),
         geodesic_histogram=pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         ),
         channel_select=pn.widgets.Select(
             name="Channel",
@@ -156,13 +158,16 @@ def create_multiscale_widgets() -> MultiscaleTabWidgets:
             sizing_mode="stretch_width",
         ),
         corr_plot=pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         ),
         meff_plot=pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         ),
         mass_vs_scale_plot=pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         ),
         estimator_table=pn.widgets.Tabulator(
             pd.DataFrame(),
@@ -186,7 +191,8 @@ def create_multiscale_widgets() -> MultiscaleTabWidgets:
             sizing_mode="stretch_width",
         ),
         consensus_plot=pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         ),
         gevp_family_select=pn.widgets.MultiChoice(
             name="GEVP Families",
@@ -311,9 +317,7 @@ def clear_multiscale_tab(w: MultiscaleTabWidgets, status_text: str) -> None:
     w.consensus_summary.object = (
         "**Scale-as-Estimator Consensus:** run multiscale analysis to populate."
     )
-    w.systematics_badge.object = (
-        "Systematics verdict: run multiscale analysis to evaluate."
-    )
+    w.systematics_badge.object = "Systematics verdict: run multiscale analysis to evaluate."
     w.systematics_badge.alert_type = "secondary"
     w.consensus_plot.object = None
     w.gevp_family_select.options = []
@@ -372,9 +376,7 @@ def update_multiscale_tab(
         if not _is_companion_channel(str(channel_name))
     )
     companion_channel_count = sum(
-        1
-        for channel_name in output.per_scale_results
-        if _is_companion_channel(str(channel_name))
+        1 for channel_name in output.per_scale_results if _is_companion_channel(str(channel_name))
     )
     status_lines.append(
         f"- Measurement groups: `non_companion={base_channel_count}`, "
@@ -385,133 +387,161 @@ def update_multiscale_tab(
     geodesic_error: str | None = None
     geodesic_frame_idx: int | None = None
     geodesic_max_scale = float("nan")
+    pairwise_distance_by_frame: dict[int, torch.Tensor] = {}
     try:
         if history is not None and output.frame_indices:
-            geodesic_frame_idx = int(output.frame_indices[-1])
-            _, distance_batch = compute_pairwise_distance_matrices_from_history(
-                history,
-                method=kernel_distance_method,
-                frame_indices=[geodesic_frame_idx],
-                batch_size=1,
-                edge_weight_mode=edge_weight_mode,
-                assume_all_alive=kernel_assume_all_alive,
-                device=None,
-                dtype=torch.float32,
-            )
-            if distance_batch.numel() > 0:
-                distance_matrix = distance_batch[0].detach().cpu().numpy().astype(
-                    np.float64, copy=False
+            requested_frames: list[int] = []
+            for raw_frame_idx in output.frame_indices:
+                try:
+                    requested_frames.append(int(raw_frame_idx))
+                except (TypeError, ValueError):
+                    continue
+            if requested_frames:
+                geodesic_frame_idx = requested_frames[-1]
+                frame_ids, distance_batch = compute_pairwise_distance_matrices_from_history(
+                    history,
+                    method=kernel_distance_method,
+                    frame_indices=requested_frames,
+                    batch_size=1,
+                    edge_weight_mode=edge_weight_mode,
+                    assume_all_alive=kernel_assume_all_alive,
+                    device=None,
+                    dtype=torch.float32,
                 )
-                finite_geodesics = distance_matrix[np.isfinite(distance_matrix) & (distance_matrix > 0)]
-                if finite_geodesics.size > 0:
-                    geodesic_max_scale = float(np.nanmax(finite_geodesics))
-                n_walkers = int(distance_matrix.shape[0])
-                if n_walkers == 0 or distance_matrix.shape[1] != n_walkers:
-                    w.geodesic_heatmap.object = None
-                    geodesic_error = "distance matrix is not square"
-                else:
-                    matrix = np.array(distance_matrix, dtype=np.float64, copy=True)
-                    matrix[~np.isfinite(matrix)] = np.nan
-                    matrix = np.nanmean(np.stack([matrix, matrix.T], axis=0), axis=0)
-                    finite_positive = np.isfinite(matrix) & (matrix > 0)
-                    if np.any(finite_positive):
-                        fill_value = float(np.nanpercentile(matrix[finite_positive], 99.0))
-                        if not np.isfinite(fill_value) or fill_value <= 0.0:
-                            fill_value = float(np.nanmax(matrix[finite_positive]))
+                if distance_batch.numel() > 0 and frame_ids:
+                    for local_idx, frame_id in enumerate(frame_ids):
+                        if local_idx >= int(distance_batch.shape[0]):
+                            break
+                        pairwise_distance_by_frame[int(frame_id)] = (
+                            distance_batch[local_idx].detach().cpu()
+                        )
+                    distance_matrix = pairwise_distance_by_frame.get(geodesic_frame_idx)
+                    if distance_matrix is None:
+                        distance_matrix = distance_batch[-1].detach().cpu()
+                    distance_matrix = distance_matrix.numpy().astype(np.float64, copy=False)
+                    finite_geodesics = distance_matrix[
+                        np.isfinite(distance_matrix) & (distance_matrix > 0)
+                    ]
+                    if finite_geodesics.size > 0:
+                        geodesic_max_scale = float(np.nanmax(finite_geodesics))
+                    n_walkers = int(distance_matrix.shape[0])
+                    if n_walkers == 0 or distance_matrix.shape[1] != n_walkers:
+                        w.geodesic_heatmap.object = None
+                        geodesic_error = "distance matrix is not square"
                     else:
-                        fill_value = 1.0
-                    if not np.isfinite(fill_value) or fill_value <= 0.0:
-                        fill_value = 1.0
-                    matrix = np.where(np.isfinite(matrix), matrix, fill_value)
-                    matrix = np.maximum(matrix, 0.0)
-                    np.fill_diagonal(matrix, 0.0)
-
-                    clustering_note = "not clustered"
-                    order = np.arange(n_walkers, dtype=np.int64)
-                    try:
-                        from scipy.cluster.hierarchy import leaves_list, linkage
-                        from scipy.spatial.distance import squareform
-
-                        if n_walkers >= 2:
-                            condensed = squareform(matrix, checks=False)
-                            linkage_mat = linkage(
-                                condensed,
-                                method="average",
-                                optimal_ordering=True,
-                            )
-                            order = leaves_list(linkage_mat).astype(np.int64, copy=False)
-                            clustering_note = "average-linkage"
+                        matrix = np.array(distance_matrix, dtype=np.float64, copy=True)
+                        matrix[~np.isfinite(matrix)] = np.nan
+                        matrix = np.nanmean(np.stack([matrix, matrix.T], axis=0), axis=0)
+                        finite_positive = np.isfinite(matrix) & (matrix > 0)
+                        if np.any(finite_positive):
+                            fill_value = float(np.nanpercentile(matrix[finite_positive], 99.0))
+                            if not np.isfinite(fill_value) or fill_value <= 0.0:
+                                fill_value = float(np.nanmax(matrix[finite_positive]))
                         else:
-                            clustering_note = "single walker"
-                    except Exception as cluster_exc:
-                        clustering_note = f"fallback (no clustering): {cluster_exc!s}"
+                            fill_value = 1.0
+                        if not np.isfinite(fill_value) or fill_value <= 0.0:
+                            fill_value = 1.0
+                        matrix = np.where(np.isfinite(matrix), matrix, fill_value)
+                        matrix = np.maximum(matrix, 0.0)
+                        np.fill_diagonal(matrix, 0.0)
 
-                    matrix_ordered = matrix[np.ix_(order, order)].astype(np.float64, copy=False)
-                    log_floor = np.finfo(np.float64).tiny
-                    log_matrix = np.log10(np.maximum(matrix_ordered, log_floor))
-                    np.fill_diagonal(log_matrix, np.nan)
-                    w.geodesic_heatmap.object = hv.QuadMesh(
-                        (order, order, log_matrix.astype(np.float32, copy=False)),
-                        kdims=["walker_j", "walker_i"],
-                        vdims=["log10_geodesic_distance"],
-                    ).opts(
-                        width=900,
-                        height=420,
-                        cmap="Viridis",
-                        colorbar=True,
-                        xlabel="Walker index j (clustered order)",
-                        ylabel="Walker index i (clustered order)",
-                        title=(
-                            f"Geodesic Distance Heatmap (log₁₀) "
-                            f"(frame={geodesic_frame_idx}, {clustering_note})"
-                        ),
-                        tools=["hover"],
-                        show_grid=False,
-                    )
-                    # Histogram of off-diagonal geodesic distances.
-                    upper_tri = matrix_ordered[np.triu_indices(n_walkers, k=1)]
-                    valid_dists = upper_tri[np.isfinite(upper_tri) & (upper_tri > 0)]
-                    if valid_dists.size >= 2:
-                        log_dists = np.log10(valid_dists)
-                        hist_freq, hist_edges = np.histogram(log_dists, bins=60)
-                        w.geodesic_histogram.object = hv.Histogram(
-                            (hist_freq, hist_edges),
-                            kdims=["log10_distance"],
-                            vdims=["count"],
+                        clustering_note = "not clustered"
+                        order = np.arange(n_walkers, dtype=np.int64)
+                        try:
+                            from scipy.cluster.hierarchy import leaves_list, linkage
+                            from scipy.spatial.distance import squareform
+
+                            if n_walkers >= 2:
+                                condensed = squareform(matrix, checks=False)
+                                linkage_mat = linkage(
+                                    condensed,
+                                    method="average",
+                                    optimal_ordering=True,
+                                )
+                                order = leaves_list(linkage_mat).astype(np.int64, copy=False)
+                                clustering_note = "average-linkage"
+                            else:
+                                clustering_note = "single walker"
+                        except Exception as cluster_exc:
+                            clustering_note = f"fallback (no clustering): {cluster_exc!s}"
+
+                        matrix_ordered = matrix[np.ix_(order, order)].astype(
+                            np.float64, copy=False
+                        )
+                        log_floor = np.finfo(np.float64).tiny
+                        log_matrix = np.log10(np.maximum(matrix_ordered, log_floor))
+                        np.fill_diagonal(log_matrix, np.nan)
+                        w.geodesic_heatmap.object = hv.QuadMesh(
+                            (order, order, log_matrix.astype(np.float32, copy=False)),
+                            kdims=["walker_j", "walker_i"],
+                            vdims=["log10_geodesic_distance"],
                         ).opts(
                             width=900,
-                            height=260,
-                            xlabel="log₁₀(geodesic distance)",
-                            ylabel="Pair count",
-                            title="Geodesic Distance Distribution",
-                            color="#4c78a8",
-                            line_color="white",
-                            show_grid=True,
+                            height=420,
+                            cmap="Viridis",
+                            colorbar=True,
+                            xlabel="Walker index j (clustered order)",
+                            ylabel="Walker index i (clustered order)",
+                            title=(
+                                f"Geodesic Distance Heatmap (log₁₀) "
+                                f"(frame={geodesic_frame_idx}, {clustering_note})"
+                            ),
+                            tools=["hover"],
+                            show_grid=False,
                         )
-                    else:
-                        w.geodesic_histogram.object = None
-                    status_lines.append(f"- Heatmap clustering: `{clustering_note}`")
+                        # Histogram of off-diagonal geodesic distances.
+                        upper_tri = matrix_ordered[np.triu_indices(n_walkers, k=1)]
+                        valid_dists = upper_tri[np.isfinite(upper_tri) & (upper_tri > 0)]
+                        if valid_dists.size >= 2:
+                            log_dists = np.log10(valid_dists)
+                            hist_freq, hist_edges = np.histogram(log_dists, bins=60)
+                            w.geodesic_histogram.object = hv.Histogram(
+                                (hist_freq, hist_edges),
+                                kdims=["log10_distance"],
+                                vdims=["count"],
+                            ).opts(
+                                width=900,
+                                height=260,
+                                xlabel="log₁₀(geodesic distance)",
+                                ylabel="Pair count",
+                                title="Geodesic Distance Distribution",
+                                color="#4c78a8",
+                                line_color="white",
+                                show_grid=True,
+                            )
+                        else:
+                            w.geodesic_histogram.object = None
+                        status_lines.append(f"- Heatmap clustering: `{clustering_note}`")
+                else:
+                    w.geodesic_heatmap.object = None
+                    geodesic_error = "distance matrix is empty"
             else:
                 w.geodesic_heatmap.object = None
-                geodesic_error = "distance matrix is empty"
+                geodesic_error = "history or frame indices unavailable"
         else:
             w.geodesic_heatmap.object = None
             geodesic_error = "history or frame indices unavailable"
     except Exception as exc:
         w.geodesic_heatmap.object = None
         geodesic_error = str(exc)
+    state["_multiscale_geodesic_distance_by_frame"] = pairwise_distance_by_frame
 
     if geodesic_frame_idx is not None:
         status_lines.append(f"- Heatmap frame: `{geodesic_frame_idx}`")
     if math.isfinite(geodesic_max_scale) and geodesic_max_scale > 0:
-        status_lines.append(f"- Estimated full-scale radius (max geodesic): `{geodesic_max_scale:.6g}`")
+        status_lines.append(
+            f"- Estimated full-scale radius (max geodesic): `{geodesic_max_scale:.6g}`"
+        )
     if geodesic_error:
         status_lines.append(f"- Heatmap note: `{geodesic_error}`")
 
     # -- 2) Populate channel selector and store output for callback ----------
     raw_channels = sorted(
         output.per_scale_results.keys(),
-        key=lambda name: (0 if _is_companion_channel(str(name)) else 1, _base_channel_name(str(name))),
+        key=lambda name: (
+            0 if _is_companion_channel(str(name)) else 1,
+            _base_channel_name(str(name)),
+        ),
     )
     display_to_raw: dict[str, str] = {}
     display_to_original: dict[str, str] = {}
@@ -730,7 +760,10 @@ def update_multiscale_tab(
                 if channel_family_key(str(name)) == selected_plot_family
             ]
             family_candidates.sort(
-                key=lambda name: (0 if _is_companion_channel(name) else 1, _base_channel_name(name))
+                key=lambda name: (
+                    0 if _is_companion_channel(name) else 1,
+                    _base_channel_name(name),
+                )
             )
             chosen_scale_plot_channel: str | None = None
             for candidate in family_candidates:
@@ -825,7 +858,11 @@ def update_multiscale_tab(
                     ),
                     "r_squared": float("nan"),
                 }
-                if original_mass is not None and math.isfinite(original_mass) and original_mass > 0:
+                if (
+                    original_mass is not None
+                    and math.isfinite(original_mass)
+                    and original_mass > 0
+                ):
                     gevp_row["delta_vs_original_pct"] = (
                         (float(gevp_mass) - float(original_mass)) / float(original_mass) * 100.0
                     )
@@ -908,9 +945,7 @@ def update_multiscale_tab(
                     (float(gevp_mass) - float(original_mass)) / float(original_mass) * 100.0
                 )
             est_rows.append(gevp_row)
-        w.estimator_table.value = (
-            pd.DataFrame(est_rows) if est_rows else pd.DataFrame()
-        )
+        w.estimator_table.value = pd.DataFrame(est_rows) if est_rows else pd.DataFrame()
         # Pairwise discrepancy table.
         pw_rows = build_pairwise_table_rows(bundle.discrepancies)
         w.pairwise_table.value = (
@@ -920,7 +955,9 @@ def update_multiscale_tab(
         )
         # Consensus summary + badge.
         w.consensus_summary.object = format_consensus_summary(
-            bundle.consensus, bundle.discrepancies, display_channel_name,
+            bundle.consensus,
+            bundle.discrepancies,
+            display_channel_name,
             reference_mass=original_mass,
         )
         if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
@@ -939,7 +976,9 @@ def update_multiscale_tab(
         w.systematics_badge.alert_type = bundle.verdict.alert_type
         # Consensus plot.
         w.consensus_plot.object = build_consensus_plot(
-            bundle.measurements, bundle.consensus, display_channel_name,
+            bundle.measurements,
+            bundle.consensus,
+            display_channel_name,
             reference_mass=original_mass,
             gevp_mass=gevp_mass,
             gevp_error=gevp_error,
@@ -1000,11 +1039,16 @@ def update_multiscale_tab(
             w.scale_plot_family_select,
             w.scale_plot_family_select.param.watch(_on_scale_plot_family_change, "value"),
         ),
-        (w.gevp_family_select, w.gevp_family_select.param.watch(_on_gevp_selection_change, "value")),
+        (
+            w.gevp_family_select,
+            w.gevp_family_select.param.watch(_on_gevp_selection_change, "value"),
+        ),
         (w.gevp_scale_select, w.gevp_scale_select.param.watch(_on_gevp_selection_change, "value")),
         (
             w.gevp_family_select_all_button,
-            w.gevp_family_select_all_button.param.watch(_on_gevp_family_select_all_click, "clicks"),
+            w.gevp_family_select_all_button.param.watch(
+                _on_gevp_family_select_all_click, "clicks"
+            ),
         ),
         (
             w.gevp_family_clear_button,
@@ -1018,7 +1062,10 @@ def update_multiscale_tab(
             w.gevp_scale_clear_button,
             w.gevp_scale_clear_button.param.watch(_on_gevp_scale_clear_click, "clicks"),
         ),
-        (w.gevp_compute_button, w.gevp_compute_button.param.watch(_on_gevp_compute_click, "clicks")),
+        (
+            w.gevp_compute_button,
+            w.gevp_compute_button.param.watch(_on_gevp_compute_click, "clicks"),
+        ),
     ]
     state["_multiscale_tab_watchers"] = new_watchers
 

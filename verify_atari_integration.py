@@ -7,6 +7,7 @@ with AtariFractalGas in WSL headless environments.
 
 import os
 
+
 # Ensure headless mode
 os.environ["PYGLET_HEADLESS"] = "1"
 
@@ -45,7 +46,7 @@ def verify_basic_env():
     print(f"  - RGB frame shape: {state.rgb_frame.shape if state.rgb_frame is not None else None}")
 
     print("\nTesting single step...")
-    new_state, obs, reward, done, truncated, info = env.step(action=2, dt=3)
+    _new_state, obs, reward, done, truncated, _info = env.step(action=2, dt=3)
 
     print("✓ Step successful")
     print(f"  - Observation shape: {obs.shape}")
@@ -92,7 +93,7 @@ def verify_batch_operations():
     actions = np.array([env.action_space.sample() for _ in range(N)])
     dt = np.random.randint(1, 4, size=N)
 
-    new_states, obs, rewards, dones, truncated, infos = env.step_batch(states, actions, dt)
+    new_states, obs, rewards, dones, _truncated, _infos = env.step_batch(states, actions, dt)
 
     print("✓ Batch step successful")
     print(f"  - States shape: {new_states.shape}")
@@ -217,7 +218,7 @@ def verify_multiple_games():
         print(f"\nTesting {game_name}...")
         try:
             env = AtariEnv(game_name, obs_type="ram", render_mode="rgb_array")
-            state = env.reset(seed=42)
+            env.reset(seed=42)
             _, _, _, _, _, _ = env.step(action=0)
             env.close()
             print(f"✓ {game_name} works")

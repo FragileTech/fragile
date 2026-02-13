@@ -145,16 +145,13 @@ class TestAtariHistory:
 class TestFrameRecording:
     """Test frame recording in AtariFractalGas."""
 
-    @pytest.mark.skipif(
-        True, reason="Requires plangym environment, tested manually"
-    )
+    @pytest.mark.skipif(True, reason="Requires plangym environment, tested manually")
     def test_frame_recording_integration(self):
         """Integration test for frame recording (requires plangym)."""
         from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 
         # This would require a real environment
         # Tested manually with actual plangym environment
-        pass
 
     def test_frame_rendering_fallback(self):
         """Test that frame rendering has proper fallback."""
@@ -162,7 +159,6 @@ class TestFrameRecording:
 
         class MockEnv:
             """Mock environment without render capability."""
-            pass
 
         gas = AtariFractalGas(MockEnv(), N=10, record_frames=False, device="cpu")
 
@@ -177,9 +173,7 @@ class TestFrameRecording:
 class TestDashboard:
     """Test dashboard components."""
 
-    @pytest.mark.skipif(
-        True, reason="Requires panel/holoviews environment, tested manually"
-    )
+    @pytest.mark.skipif(True, reason="Requires panel/holoviews environment, tested manually")
     def test_dashboard_creation(self):
         """Test dashboard can be instantiated."""
         from fragile.fractalai.videogames.dashboard import create_app

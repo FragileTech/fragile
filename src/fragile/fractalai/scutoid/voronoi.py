@@ -23,13 +23,13 @@ Example:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 import itertools
+from typing import Any
 
 import numpy as np
+from scipy.spatial import ConvexHull, Voronoi
 import torch
 from torch import Tensor
-from scipy.spatial import Voronoi, ConvexHull
 
 
 @dataclass
@@ -94,7 +94,7 @@ class VoronoiTriangulation:
 
     Device Handling:
         All tensors are on the same device. To move to GPU:
-        >>> tri_gpu = tri.to(device='cuda')
+        >>> tri_gpu = tri.to(device="cuda")
 
     Indexing Convention:
         - All tensor indices (0 to N-1) refer to alive walkers only
@@ -202,17 +202,29 @@ class VoronoiTriangulation:
             alive_indices=self.alive_indices.to(device),
             voronoi=self.voronoi,  # scipy object stays on CPU
             has_boundary_neighbors=self.has_boundary_neighbors,
-            boundary_walls=self.boundary_walls.to(device) if self.boundary_walls is not None else None,
-            boundary_wall_normals=self.boundary_wall_normals.to(device) if self.boundary_wall_normals is not None else None,
-            boundary_wall_facet_areas=self.boundary_wall_facet_areas.to(device) if self.boundary_wall_facet_areas is not None else None,
-            boundary_wall_distances=self.boundary_wall_distances.to(device) if self.boundary_wall_distances is not None else None,
-            boundary_wall_walker_indices=self.boundary_wall_walker_indices.to(device) if self.boundary_wall_walker_indices is not None else None,
+            boundary_walls=self.boundary_walls.to(device)
+            if self.boundary_walls is not None
+            else None,
+            boundary_wall_normals=self.boundary_wall_normals.to(device)
+            if self.boundary_wall_normals is not None
+            else None,
+            boundary_wall_facet_areas=self.boundary_wall_facet_areas.to(device)
+            if self.boundary_wall_facet_areas is not None
+            else None,
+            boundary_wall_distances=self.boundary_wall_distances.to(device)
+            if self.boundary_wall_distances is not None
+            else None,
+            boundary_wall_walker_indices=self.boundary_wall_walker_indices.to(device)
+            if self.boundary_wall_walker_indices is not None
+            else None,
             neighbor_csr_ptr=self.neighbor_csr_ptr.to(device),
             neighbor_csr_indices=self.neighbor_csr_indices.to(device),
             neighbor_csr_distances=self.neighbor_csr_distances.to(device),
             neighbor_csr_facet_areas=self.neighbor_csr_facet_areas.to(device),
             neighbor_csr_types=self.neighbor_csr_types.to(device),
-            edge_index_extended=self.edge_index_extended.to(device) if self.edge_index_extended is not None else None,
+            edge_index_extended=self.edge_index_extended.to(device)
+            if self.edge_index_extended is not None
+            else None,
         )
 
     @property
@@ -242,9 +254,7 @@ class VoronoiTriangulation:
         """
         return self.tier == 1
 
-    def get_walker_neighbors(
-        self, walker_idx: int, include_boundaries: bool = True
-    ) -> Tensor:
+    def get_walker_neighbors(self, walker_idx: int, include_boundaries: bool = True) -> Tensor:
         """Get neighbors of a walker using CSR format.
 
         Args:
@@ -263,14 +273,13 @@ class VoronoiTriangulation:
             return query_walker_neighbors(
                 walker_idx, self.neighbor_csr_ptr, self.neighbor_csr_indices
             )
-        else:
-            return query_walker_neighbors(
-                walker_idx,
-                self.neighbor_csr_ptr,
-                self.neighbor_csr_indices,
-                self.neighbor_csr_types,
-                filter_type=0,
-            )
+        return query_walker_neighbors(
+            walker_idx,
+            self.neighbor_csr_ptr,
+            self.neighbor_csr_indices,
+            self.neighbor_csr_types,
+            filter_type=0,
+        )
 
 
 def compute_vectorized_voronoi(
@@ -339,17 +348,13 @@ def compute_vectorized_voronoi(
         >>> print(f"Built graph with {tri.n_edges} edges")
         >>>
         >>> # With boundary exclusion
-        >>> tri = compute_vectorized_voronoi(
-        ...     positions, alive, bounds=bounds, exclude_boundary=True
-        ... )
+        >>> tri = compute_vectorized_voronoi(positions, alive, bounds=bounds, exclude_boundary=True)
         >>> n_interior = tri.interior_mask.sum()
         >>> print(f"{n_interior} interior cells for observables")
         >>>
         >>> # Time-sliced analysis (use only spatial dimensions)
         >>> positions_4d = torch.randn(1000, 4)  # [x, y, z, t]
-        >>> tri = compute_vectorized_voronoi(
-        ...     positions_4d, alive, spatial_dims=3
-        ... )
+        >>> tri = compute_vectorized_voronoi(positions_4d, alive, spatial_dims=3)
         >>> # Tessellation computed in 3D space only
 
     Notes:
@@ -423,13 +428,11 @@ def compute_vectorized_voronoi(
     cell_volumes = _compute_all_cell_volumes(vor, n_alive, d, device, dtype)
 
     # Compute facet areas for each edge
-    facet_areas = _compute_all_facet_areas(
-        vor, ridge_points, n_edges, d, device, dtype
-    )
+    facet_areas = _compute_all_facet_areas(vor, ridge_points, n_edges, d, device, dtype)
 
     # Extract vertex positions and build cell->vertex mapping
-    vertex_positions, cell_vertex_indices, cell_vertex_counts = (
-        _extract_vertex_data(vor, n_alive, d, device, dtype)
+    vertex_positions, cell_vertex_indices, cell_vertex_counts = _extract_vertex_data(
+        vor, n_alive, d, device, dtype
     )
 
     # Compute cell centroids from vertices
@@ -440,8 +443,14 @@ def compute_vectorized_voronoi(
     # Classify boundary cells if requested
     if exclude_boundary and not pbc:
         tier = _classify_boundary_cells(
-            vor, positions_spatial, edge_index, bounds, boundary_tolerance,
-            n_alive, device, spatial_dims
+            vor,
+            positions_spatial,
+            edge_index,
+            bounds,
+            boundary_tolerance,
+            n_alive,
+            device,
+            spatial_dims,
         )
     else:
         # All cells are interior (tier 2) for PBC or if not excluding boundary
@@ -450,9 +459,9 @@ def compute_vectorized_voronoi(
     # Compute virtual boundary neighbors and CSR format
     if not pbc:
         from .neighbors import (
+            build_csr_from_coo,
             compute_boundary_neighbors,
             create_extended_edge_index,
-            build_csr_from_coo,
         )
 
         # Create virtual boundary neighbors
@@ -777,7 +786,7 @@ def _extract_vertex_data(
         return vertex_positions, cell_vertex_indices, cell_vertex_counts
 
     vertex_positions = torch.from_numpy(vor.vertices).to(device=device, dtype=dtype)
-    n_vertices = len(vor.vertices)
+    len(vor.vertices)
 
     # Build cell->vertex mapping
     counts_np = np.zeros(n_alive, dtype=np.int64)
@@ -795,14 +804,11 @@ def _extract_vertex_data(
                 flat_vertices_list.append(v)
                 count += 1
         counts_np[i] = count
-        if count > max_verts:
-            max_verts = count
+        max_verts = max(count, max_verts)
 
     # Create padded array
     cell_vertex_counts = torch.from_numpy(counts_np).to(device=device)
-    cell_vertex_indices = torch.full(
-        (n_alive, max_verts), -1, dtype=torch.long, device=device
-    )
+    cell_vertex_indices = torch.full((n_alive, max_verts), -1, dtype=torch.long, device=device)
 
     total_verts = int(counts_np.sum())
     if total_verts > 0:

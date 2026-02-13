@@ -11,10 +11,12 @@ Usage:
 
 import argparse
 import json
-import time
 from pathlib import Path
 import sys
+import time
+
 import numpy as np
+
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -45,9 +47,11 @@ def create_environment(game_name, obs_type="rgb", use_gymnasium=True):
                 # Try different formats
                 name_formats = [
                     f"{game_name}NoFrameskip-v4",  # Classic format
-                    f"ALE/{game_name}-v5",          # New ALE namespace
-                    f"{game_name}-v4",              # Short format
-                    f"{game_name}-ramNoFrameskip-v4" if obs_type == "ram" else f"{game_name}NoFrameskip-v4",
+                    f"ALE/{game_name}-v5",  # New ALE namespace
+                    f"{game_name}-v4",  # Short format
+                    f"{game_name}-ramNoFrameskip-v4"
+                    if obs_type == "ram"
+                    else f"{game_name}NoFrameskip-v4",
                 ]
             else:
                 name_formats = [game_name]
@@ -65,7 +69,7 @@ def create_environment(game_name, obs_type="rgb", use_gymnasium=True):
                     continue
             else:
                 # None of the formats worked
-                raise last_error if last_error else Exception("No valid environment name found")
+                raise last_error or Exception("No valid environment name found")
 
             # Wrap to match plangym interface
             class GymEnvWrapper:
@@ -75,7 +79,7 @@ def create_environment(game_name, obs_type="rgb", use_gymnasium=True):
                     self.action_space = env.action_space
 
                 def reset(self):
-                    obs, info = self.env.reset()
+                    obs, _info = self.env.reset()
                     return obs
 
                 def step(self, action):
@@ -89,26 +93,26 @@ def create_environment(game_name, obs_type="rgb", use_gymnasium=True):
                     self.env.close()
 
             env = GymEnvWrapper(base_env)
-            print(f"  ✓ Using gymnasium")
+            print("  ✓ Using gymnasium")
             return env
 
         except Exception as e:
             print(f"  Gymnasium failed: {e}")
-            print(f"  Falling back to plangym...")
+            print("  Falling back to plangym...")
 
     # Fall back to plangym
     try:
         from plangym import AtariEnvironment
 
         # Map game names to plangym format
-        if game_name.endswith("-v5") or game_name.endswith("-v4"):
+        if game_name.endswith(("-v5", "-v4")):
             game_name = game_name.split("-")[0].split("/")[-1]
 
         env = AtariEnvironment(
             name=game_name,
             obs_type=obs_type,
         )
-        print(f"  ✓ Using plangym")
+        print("  ✓ Using plangym")
         return env
 
     except ImportError as e:
@@ -155,9 +159,9 @@ def run_simulation(
     """
     from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("ATARI FRACTAL GAS - COMMAND LINE")
-    print("="*70)
+    print("=" * 70)
     print(f"\nGame: {game_name}")
     print(f"Walkers (N): {N}")
     print(f"Max iterations: {max_iterations}")
@@ -190,7 +194,7 @@ def run_simulation(
 
     # Run simulation with progress updates
     print("\nRunning simulation...")
-    print("-"*70)
+    print("-" * 70)
 
     start_time = time.time()
     results = {
@@ -227,11 +231,13 @@ def run_simulation(
                 elapsed = time.time() - start_time
                 iter_per_sec = (i + 1) / elapsed if elapsed > 0 else 0
 
-                print(f"Iteration {i+1:4d}/{max_iterations} | "
-                      f"Episodes: {len(results['episode_rewards']):3d} | "
-                      f"Best reward: {results['best_reward']:7.1f} | "
-                      f"Avg reward: {np.mean(results['episode_rewards']) if results['episode_rewards'] else 0:7.1f} | "
-                      f"Speed: {iter_per_sec:.1f} it/s")
+                print(
+                    f"Iteration {i + 1:4d}/{max_iterations} | "
+                    f"Episodes: {len(results['episode_rewards']):3d} | "
+                    f"Best reward: {results['best_reward']:7.1f} | "
+                    f"Avg reward: {np.mean(results['episode_rewards']) if results['episode_rewards'] else 0:7.1f} | "
+                    f"Speed: {iter_per_sec:.1f} it/s"
+                )
 
             results["timestamps"].append(time.time() - start_time)
 
@@ -240,7 +246,7 @@ def run_simulation(
 
     finally:
         # Clean up
-        print("-"*70)
+        print("-" * 70)
         elapsed = time.time() - start_time
 
         print("\nSimulation complete!")
@@ -262,7 +268,7 @@ def run_simulation(
             timestamp = time.strftime("%Y%m%d_%H%M%S")
             results_file = output_path / f"{game_name}_{timestamp}_results.json"
 
-            with open(results_file, "w") as f:
+            with open(results_file, "w", encoding="utf-8") as f:
                 json.dump(results, f, indent=2)
 
             print(f"\nResults saved to: {results_file}")
@@ -276,7 +282,7 @@ def run_simulation(
         # Close environment
         env.close()
 
-    print("="*70)
+    print("=" * 70)
     return results
 
 
@@ -303,48 +309,59 @@ Examples:
 
 For WSL, make sure to run with xvfb:
   xvfb-run -a python scripts/run_atari_gas_cli.py --game Pong --N 10
-        """
+        """,
     )
 
     # Game configuration
-    parser.add_argument("--game", type=str, default="Pong",
-                        help="Atari game name (default: Pong)")
-    parser.add_argument("--obs-type", type=str, default="rgb", choices=["rgb", "ram"],
-                        help="Observation type (default: rgb)")
+    parser.add_argument("--game", type=str, default="Pong", help="Atari game name (default: Pong)")
+    parser.add_argument(
+        "--obs-type",
+        type=str,
+        default="rgb",
+        choices=["rgb", "ram"],
+        help="Observation type (default: rgb)",
+    )
 
     # Algorithm parameters
-    parser.add_argument("--N", type=int, default=10,
-                        help="Number of walkers (default: 10)")
-    parser.add_argument("--iterations", type=int, default=100,
-                        help="Maximum iterations (default: 100)")
-    parser.add_argument("--dist-coef", type=float, default=1.0,
-                        help="Distance coefficient (default: 1.0)")
-    parser.add_argument("--reward-coef", type=float, default=1.0,
-                        help="Reward coefficient (default: 1.0)")
-    parser.add_argument("--no-cumulative-reward", action="store_true",
-                        help="Disable cumulative reward (default: enabled)")
-    parser.add_argument("--dt-min", type=float, default=0.5,
-                        help="Minimum time step (default: 0.5)")
-    parser.add_argument("--dt-max", type=float, default=5.0,
-                        help="Maximum time step (default: 5.0)")
+    parser.add_argument("--N", type=int, default=10, help="Number of walkers (default: 10)")
+    parser.add_argument(
+        "--iterations", type=int, default=100, help="Maximum iterations (default: 100)"
+    )
+    parser.add_argument(
+        "--dist-coef", type=float, default=1.0, help="Distance coefficient (default: 1.0)"
+    )
+    parser.add_argument(
+        "--reward-coef", type=float, default=1.0, help="Reward coefficient (default: 1.0)"
+    )
+    parser.add_argument(
+        "--no-cumulative-reward",
+        action="store_true",
+        help="Disable cumulative reward (default: enabled)",
+    )
+    parser.add_argument(
+        "--dt-min", type=float, default=0.5, help="Minimum time step (default: 0.5)"
+    )
+    parser.add_argument(
+        "--dt-max", type=float, default=5.0, help="Maximum time step (default: 5.0)"
+    )
 
     # System configuration
-    parser.add_argument("--device", type=str, default="cpu",
-                        help="PyTorch device (default: cpu)")
-    parser.add_argument("--seed", type=int, default=None,
-                        help="Random seed (default: None)")
+    parser.add_argument("--device", type=str, default="cpu", help="PyTorch device (default: cpu)")
+    parser.add_argument("--seed", type=int, default=None, help="Random seed (default: None)")
 
     # Output configuration
-    parser.add_argument("--record-frames", action="store_true",
-                        help="Record frames during simulation")
-    parser.add_argument("--output-dir", type=str, default=None,
-                        help="Directory to save results (default: None)")
+    parser.add_argument(
+        "--record-frames", action="store_true", help="Record frames during simulation"
+    )
+    parser.add_argument(
+        "--output-dir", type=str, default=None, help="Directory to save results (default: None)"
+    )
 
     args = parser.parse_args()
 
     # Run simulation
     try:
-        results = run_simulation(
+        run_simulation(
             game_name=args.game,
             N=args.N,
             max_iterations=args.iterations,
@@ -364,6 +381,7 @@ For WSL, make sure to run with xvfb:
     except Exception as e:
         print(f"\n✗ Simulation failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

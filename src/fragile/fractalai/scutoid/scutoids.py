@@ -67,7 +67,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy.spatial import ConvexHull, Delaunay, Voronoi
-from scipy.special import gamma
 import torch
 
 
@@ -881,9 +880,8 @@ class BaseScutoidHistory:
         if d == 2:
             # 2D: R = 2δ / A, so we use C = 0.5 to get R = δ / (C * A) = 2δ / A
             return 0.5
-        else:
-            # 3D+: Use standard Regge normalization
-            return 1.0
+        # 3D+: Use standard Regge normalization
+        return 1.0
 
     def _compute_cell_volumes(self, cells: list[VoronoiCell]) -> dict[int, float]:
         """Compute d-dimensional volumes of Voronoi cells (CORRECT for Ricci scalar).

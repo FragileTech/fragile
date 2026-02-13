@@ -739,7 +739,7 @@ def compare_curvature_methods(
             vor = voronoi_data.get("voronoi")
             if vor is not None and hasattr(vor, "points"):
                 d = vor.points.shape[1]
-        
+
         laplacian_curvature = compute_laplacian_curvature_from_voronoi(
             voronoi_data, d=d, k_eigenvalues=5
         )
@@ -759,7 +759,7 @@ def compare_curvature_methods(
     # Volume variance → high variance suggests positive curvature (concentrated swarm)
     # But this is tricky: could also be transient dynamics
     # For now, we'll use it as a consistency indicator but not sign
-    
+
     # Ricci lower bound from Laplacian
     if ricci_lower_bound > 0.01:
         signs.append("+")

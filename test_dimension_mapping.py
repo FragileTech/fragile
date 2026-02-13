@@ -2,8 +2,12 @@
 """
 Test script for the dimension mapping implementation in SwarmConvergence3D.
 """
+
+import sys
+
 import numpy as np
 import torch
+
 
 # Mock the RunHistory class with minimal required attributes
 class MockHistory:
@@ -87,7 +91,7 @@ def test_dimension_options():
     print("  ✓ 4D dimension options correct")
 
     # Test color options
-    expected_color = expected_4d + ["fitness", "reward", "radius", "constant"]
+    expected_color = [*expected_4d, "fitness", "reward", "radius", "constant"]
     assert viewer_4d.param.color_metric.objects == expected_color
     print("  ✓ Color metric options correct")
 
@@ -234,5 +238,6 @@ if __name__ == "__main__":
         print(f"✗ Test failed: {e}")
         print("=" * 60)
         import traceback
+
         traceback.print_exc()
-        exit(1)
+        sys.exit(1)

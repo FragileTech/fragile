@@ -117,7 +117,9 @@ def _resolve_frame_indices(
     return list(range(start_idx, end_idx))
 
 
-def _resolve_3d_dims(total_dims: int, dims: tuple[int, int, int] | None, name: str) -> tuple[int, int, int]:
+def _resolve_3d_dims(
+    total_dims: int, dims: tuple[int, int, int] | None, name: str
+) -> tuple[int, int, int]:
     """Resolve and validate exactly 3 component indices."""
     if dims is None:
         if total_dims < 3:
@@ -202,7 +204,9 @@ def build_companion_triplets(
 
     in_range_j = (companion_j >= 0) & (companion_j < n)
     in_range_k = (companion_k >= 0) & (companion_k < n)
-    distinct = (companion_j != anchor_idx) & (companion_k != anchor_idx) & (companion_j != companion_k)
+    distinct = (
+        (companion_j != anchor_idx) & (companion_k != anchor_idx) & (companion_j != companion_k)
+    )
     structural_valid = in_range_j & in_range_k & distinct
     return anchor_idx, companion_j, companion_k, structural_valid
 
@@ -239,7 +243,11 @@ def _compute_determinants_for_indices(
     valid_k, _ = _safe_gather_2d(valid_vectors, companion_k)
 
     det = _det3(vectors, vec_j, vec_k)
-    finite = torch.isfinite(det.real) & torch.isfinite(det.imag) if det.is_complex() else torch.isfinite(det)
+    finite = (
+        torch.isfinite(det.real) & torch.isfinite(det.imag)
+        if det.is_complex()
+        else torch.isfinite(det)
+    )
 
     valid = (
         structural_valid
@@ -280,7 +288,8 @@ def _compute_score_ordered_determinants_for_indices(
     if scores.shape != color.shape[:2]:
         raise ValueError(f"scores must have shape [T,N], got {tuple(scores.shape)}.")
     if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
-        raise ValueError("companion indices must have shape [T,N].")
+        msg = "companion indices must have shape [T,N]."
+        raise ValueError(msg)
 
     _, _, structural_valid = build_companion_triplets(companion_j, companion_k)[1:]
 
@@ -308,11 +317,7 @@ def _compute_score_ordered_determinants_for_indices(
     )
 
     finite_det = torch.isfinite(det_ordered.real) & torch.isfinite(det_ordered.imag)
-    finite_scores = (
-        torch.isfinite(scores)
-        & torch.isfinite(score_j)
-        & torch.isfinite(score_k)
-    )
+    finite_scores = torch.isfinite(scores) & torch.isfinite(score_j) & torch.isfinite(score_k)
     valid = (
         structural_valid
         & in_j
@@ -348,9 +353,7 @@ def _compute_triplet_plaquette_for_indices(
     if color.ndim != 3 or color.shape[-1] != 3:
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
-        raise ValueError(
-            f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}."
-        )
+        raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
     if alive.shape != color.shape[:2]:
         raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
@@ -405,10 +408,11 @@ def _resolve_baryon_operator_mode(operator_mode: str | None) -> str:
         "score_abs",
     }
     if mode not in allowed:
-        raise ValueError(
+        msg = (
             "Invalid baryon operator_mode. Expected one of "
             "{'det_abs','flux_action','flux_sin2','flux_exp','score_signed','score_abs'}."
         )
+        raise ValueError(msg)
     return mode
 
 
@@ -468,9 +472,8 @@ def compute_baryon_correlator_from_color(
     resolved_operator_mode = _resolve_baryon_operator_mode(operator_mode)
     if resolved_operator_mode in {"score_signed", "score_abs"}:
         if scores is None:
-            raise ValueError(
-                "scores is required when operator_mode is one of {'score_signed','score_abs'}."
-            )
+            msg = "scores is required when operator_mode is one of {'score_signed','score_abs'}."
+            raise ValueError(msg)
         if scores.shape != color.shape[:2]:
             raise ValueError(
                 f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
@@ -783,7 +786,10 @@ def compute_triplet_coherence_from_velocity(
         raise ValueError(f"velocities must have shape [T, N, 3], got {tuple(velocities.shape)}.")
     if alive.shape != velocities.shape[:2]:
         raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
-    if companions_distance.shape != velocities.shape[:2] or companions_clone.shape != velocities.shape[:2]:
+    if (
+        companions_distance.shape != velocities.shape[:2]
+        or companions_clone.shape != velocities.shape[:2]
+    ):
         msg = "companion arrays must have shape [T, N] aligned with velocities."
         raise ValueError(msg)
 

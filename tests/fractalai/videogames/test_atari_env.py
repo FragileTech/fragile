@@ -108,7 +108,7 @@ def test_obs_types():
 def test_render_mode_headless():
     """Test render_mode='rgb_array' for headless environments."""
     env = AtariEnv("ALE/Pong-v5", render_mode="rgb_array")
-    state = env.reset()
+    env.reset()
 
     # Should be able to render in headless mode
     rgb = env.render()
@@ -143,7 +143,7 @@ def test_action_space_access_and_sample(pong_env):
 
     # Should be able to sample actions
     action = pong_env.action_space.sample()
-    assert isinstance(action, (int, np.integer))
+    assert isinstance(action, int | np.integer)
     assert 0 <= action < 18  # Pong has 18 actions
 
 
@@ -344,9 +344,9 @@ def test_step_with_random_action(pong_env):
     # Check return types
     assert isinstance(new_state, AtariState)
     assert isinstance(obs, np.ndarray)
-    assert isinstance(reward, (int, float))
-    assert isinstance(done, (bool, np.bool_))
-    assert isinstance(truncated, (bool, np.bool_))
+    assert isinstance(reward, int | float)
+    assert isinstance(done, bool | np.bool_)
+    assert isinstance(truncated, bool | np.bool_)
     assert isinstance(info, dict)
 
 
@@ -360,7 +360,7 @@ def test_step_with_state_restore(pong_env):
         pong_env.step(action=2)
 
     # Now step from initial state using state parameter
-    new_state, obs, reward, done, truncated, info = pong_env.step(
+    new_state, obs, _reward, _done, _truncated, _info = pong_env.step(
         action=3, state=initial_state, dt=1
     )
 
@@ -378,15 +378,15 @@ def test_step_dt_parameter_frame_skip(pong_env):
 
     # Test dt=1
     pong_env.restore_state(state0)
-    _, obs1, rew1, _, _, _ = pong_env.step(action=2, dt=1)
+    _, obs1, _rew1, _, _, _ = pong_env.step(action=2, dt=1)
 
     # Test dt=3
     pong_env.restore_state(state0)
-    _, obs3, rew3, _, _, _ = pong_env.step(action=2, dt=3)
+    _, obs3, _rew3, _, _, _ = pong_env.step(action=2, dt=3)
 
     # Test dt=5
     pong_env.restore_state(state0)
-    _, obs5, rew5, _, _, _ = pong_env.step(action=2, dt=5)
+    _, obs5, _rew5, _, _, _ = pong_env.step(action=2, dt=5)
 
     # Different dt should lead to different states
     assert not np.array_equal(obs1, obs3)
@@ -408,8 +408,8 @@ def test_reward_accumulation_across_dt_frames(pong_env):
     _, _, rew_multi, _, _, _ = pong_env.step(action=2, dt=3)
 
     # Reward should be accumulated (mechanism test)
-    assert isinstance(rew1, (int, float))
-    assert isinstance(rew_multi, (int, float))
+    assert isinstance(rew1, int | float)
+    assert isinstance(rew_multi, int | float)
 
 
 def test_early_termination_on_done(pong_env):
@@ -437,7 +437,7 @@ def test_early_termination_on_truncated(pong_env):
 
     # Just verify truncated flag is present and boolean
     _, _, _, _, truncated, _ = pong_env.step(action=0)
-    assert isinstance(truncated, (bool, np.bool_))
+    assert isinstance(truncated, bool | np.bool_)
 
 
 def test_return_state_parameter(pong_env):
@@ -483,9 +483,7 @@ def test_step_batch_basic_operation(pong_env):
     actions = np.array([pong_env.action_space.sample() for _ in range(N)])
 
     # Step batch
-    new_states, obs, rewards, dones, truncated, infos = pong_env.step_batch(
-        states, actions
-    )
+    new_states, obs, rewards, dones, truncated, infos = pong_env.step_batch(states, actions)
 
     # Check outputs
     assert len(new_states) == N and new_states.dtype == object
@@ -508,9 +506,7 @@ def test_step_batch_output_shapes_and_types(pong_env):
 
     actions = np.zeros(N, dtype=int)
 
-    new_states, obs, rewards, dones, truncated, infos = pong_env.step_batch(
-        states, actions
-    )
+    new_states, obs, rewards, dones, truncated, infos = pong_env.step_batch(states, actions)
 
     # Detailed type checks
     assert new_states.shape == (N,)
@@ -577,9 +573,7 @@ def test_step_batch_single_walker(pong_env):
 
     actions = np.array([2])
 
-    new_states, obs, rewards, dones, truncated, infos = pong_env.step_batch(
-        states, actions
-    )
+    new_states, obs, rewards, _dones, _truncated, _infos = pong_env.step_batch(states, actions)
 
     # Should work with N=1
     assert len(new_states) == 1
@@ -599,9 +593,7 @@ def test_step_batch_large_batch(pong_env):
 
     actions = np.random.randint(0, pong_env.action_space.n, size=N)
 
-    new_states, obs, rewards, dones, truncated, infos = pong_env.step_batch(
-        states, actions
-    )
+    new_states, obs, _rewards, _dones, _truncated, infos = pong_env.step_batch(states, actions)
 
     # Should handle large batch
     assert len(new_states) == N
@@ -624,9 +616,7 @@ def test_step_batch_mixed_alive_dead_walkers(pong_env):
     actions = np.array([0, 1, 2, 3, 4])
 
     # Step batch - all walkers should be processed
-    new_states, obs, rewards, dones, truncated, infos = pong_env.step_batch(
-        states, actions
-    )
+    new_states, _obs, _rewards, _dones, _truncated, _infos = pong_env.step_batch(states, actions)
 
     assert len(new_states) == N
     assert all(isinstance(s, AtariState) for s in new_states)
@@ -647,7 +637,7 @@ def test_step_batch_sequential_consistency(pong_env):
     dt = np.array([2, 2, 2])
 
     # Step batch
-    new_states, obs, rewards, _, _, _ = pong_env.step_batch(states, actions, dt)
+    _new_states, obs, rewards, _, _, _ = pong_env.step_batch(states, actions, dt)
 
     # All walkers started from same state with same action/dt
     # Results should be identical due to determinism
@@ -685,7 +675,7 @@ def test_atari_env_with_random_action_operator(pong_env, device):
     dt = kinetic_op.sample_dt(N)
 
     # Step with sampled actions
-    new_states, obs, rewards, dones, truncated, infos = pong_env.step_batch(
+    new_states, obs, _rewards, _dones, _truncated, _infos = pong_env.step_batch(
         states, actions, dt
     )
 
@@ -701,7 +691,7 @@ def test_atari_env_with_fractal_cloning_operator(pong_env, device):
     N = 10
 
     # Create operator
-    clone_op = FractalCloningOperator(
+    FractalCloningOperator(
         dist_coef=1.0,
         reward_coef=1.0,
         device=device,
@@ -713,12 +703,12 @@ def test_atari_env_with_fractal_cloning_operator(pong_env, device):
     for i in range(N):
         states[i] = initial_state.copy()
 
-    observations = torch.randn(N, 128, device=device)
-    rewards = torch.randn(N, device=device) * 0.1
-    step_rewards = torch.randn(N, device=device) * 0.1
-    dones = torch.zeros(N, dtype=torch.bool, device=device)
-    truncated = torch.zeros(N, dtype=torch.bool, device=device)
-    virtual_rewards = torch.randn(N, device=device)
+    torch.randn(N, 128, device=device)
+    torch.randn(N, device=device) * 0.1
+    torch.randn(N, device=device) * 0.1
+    torch.zeros(N, dtype=torch.bool, device=device)
+    torch.zeros(N, dtype=torch.bool, device=device)
+    torch.randn(N, device=device)
 
     # Test that cloning operator can work with AtariState objects
     # (Full integration tested in next test)
@@ -930,7 +920,7 @@ def test_multiple_games_support(breakout_env):
     assert state.observation.shape == (128,)  # RAM
 
     # Step should work
-    new_state, obs, reward, done, truncated, info = breakout_env.step(action=1)
+    new_state, _obs, _reward, _done, _truncated, _info = breakout_env.step(action=1)
     assert isinstance(new_state, AtariState)
 
 
@@ -969,7 +959,7 @@ def test_step_batch_with_default_dt(pong_env):
     actions = np.zeros(N, dtype=int)
 
     # Call without dt parameter
-    new_states, obs, rewards, dones, truncated, infos = pong_env.step_batch(
+    new_states, obs, _rewards, _dones, _truncated, _infos = pong_env.step_batch(
         states, actions, dt=None
     )
 

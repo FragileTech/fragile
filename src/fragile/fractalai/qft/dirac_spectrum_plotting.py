@@ -12,10 +12,10 @@ import numpy as np
 import pandas as pd
 
 from fragile.fractalai.qft.dirac_spectrum import (
-    DiracSpectrumResult,
-    SECTOR_NAMES,
     build_fermion_comparison,
     build_fermion_ratio_comparison,
+    DiracSpectrumResult,
+    SECTOR_NAMES,
 )
 
 
@@ -75,18 +75,21 @@ def build_full_spectrum_plot(result: DiracSpectrumResult) -> hv.Element:
         color = GENERATION_COLORS[g % len(GENERATION_COLORS)]
         df = pd.DataFrame({"index": idx_pos[mask], "sigma": sv_pos[mask]})
         pts = hv.Scatter(df, kdims=["index"], vdims=["sigma"]).opts(
-            color=color, alpha=0.8, size=5, tools=["hover"],
+            color=color,
+            alpha=0.8,
+            size=5,
+            tools=["hover"],
         )
         overlays.append(pts)
 
-    plot = hv.Overlay(overlays).opts(
-        width=650, height=400,
+    return hv.Overlay(overlays).opts(
+        width=650,
+        height=400,
         title=f"Full K̃ Spectrum ({len(sv)} singular values)",
         xlabel="Singular value index",
         ylabel="σ",
         logy=True,
     )
-    return plot
 
 
 def build_sector_spectra_plots(result: DiracSpectrumResult) -> dict[str, hv.Element]:
@@ -96,9 +99,9 @@ def build_sector_spectra_plots(result: DiracSpectrumResult) -> dict[str, hv.Elem
         spec = result.sectors.get(sector_name)
         if spec is None or len(spec.singular_values) == 0:
             n_w = spec.n_walkers if spec is not None else 0
-            plots[sector_name] = hv.Text(
-                0, 0, f"No data ({sector_name}, {n_w} walkers)"
-            ).opts(title=SECTOR_LABELS.get(sector_name, sector_name))
+            plots[sector_name] = hv.Text(0, 0, f"No data ({sector_name}, {n_w} walkers)").opts(
+                title=SECTOR_LABELS.get(sector_name, sector_name)
+            )
             continue
 
         sv = spec.singular_values
@@ -106,9 +109,9 @@ def build_sector_spectra_plots(result: DiracSpectrumResult) -> dict[str, hv.Elem
         sv_pos = sv[pos_mask]
         idx_pos = np.where(pos_mask)[0]
         if len(sv_pos) == 0:
-            plots[sector_name] = hv.Text(
-                0, 0, f"All zeros ({sector_name})"
-            ).opts(title=SECTOR_LABELS.get(sector_name, sector_name))
+            plots[sector_name] = hv.Text(0, 0, f"All zeros ({sector_name})").opts(
+                title=SECTOR_LABELS.get(sector_name, sector_name)
+            )
             continue
 
         gen = _color_by_generation(sv, spec.generation_boundaries)
@@ -121,14 +124,19 @@ def build_sector_spectra_plots(result: DiracSpectrumResult) -> dict[str, hv.Elem
             color = GENERATION_COLORS[g % len(GENERATION_COLORS)]
             df = pd.DataFrame({"index": idx_pos[mask], "sigma": sv_pos[mask]})
             pts = hv.Scatter(df, kdims=["index"], vdims=["sigma"]).opts(
-                color=color, alpha=0.8, size=5, tools=["hover"],
+                color=color,
+                alpha=0.8,
+                size=5,
+                tools=["hover"],
             )
             overlays.append(pts)
 
         plot = hv.Overlay(overlays).opts(
-            width=500, height=350,
+            width=500,
+            height=350,
             title=SECTOR_LABELS.get(sector_name, sector_name),
-            xlabel="Index", ylabel="σ",
+            xlabel="Index",
+            ylabel="σ",
             logy=True,
         )
         plots[sector_name] = plot
@@ -151,13 +159,16 @@ def build_walker_classification_plot(result: DiracSpectrumResult) -> hv.Element:
         if not mask.any():
             continue
         color = SECTOR_COLORS[sector_name]
-        marker = "circle" if sector_idx in (0, 2) else "triangle"  # up-type vs down-type
+        marker = "circle" if sector_idx in {0, 2} else "triangle"  # up-type vs down-type
         df = pd.DataFrame({
             "force_viscous_norm": cm[mask],
             "fitness": fit[mask],
         })
         pts = hv.Points(df, kdims=["force_viscous_norm", "fitness"]).opts(
-            color=color, marker=marker, size=8, alpha=0.85,
+            color=color,
+            marker=marker,
+            size=8,
+            alpha=0.85,
             tools=["hover"],
         )
         overlays.append(pts)
@@ -165,14 +176,14 @@ def build_walker_classification_plot(result: DiracSpectrumResult) -> hv.Element:
     if not overlays:
         return hv.Text(0, 0, "No data").opts(title="Walker Classification")
 
-    plot = hv.Overlay(overlays).opts(
-        width=650, height=400,
+    return hv.Overlay(overlays).opts(
+        width=650,
+        height=400,
         title=f"Walker Classification ({result.n_alive} alive, MC step {result.mc_time_index})",
         xlabel="‖F_visc‖",
         ylabel="Fitness",
         logx=True if cm.max() > 0 else False,
     )
-    return plot
 
 
 def build_mass_hierarchy_plot(result: DiracSpectrumResult) -> hv.Element:
@@ -194,8 +205,9 @@ def build_mass_hierarchy_plot(result: DiracSpectrumResult) -> hv.Element:
         return hv.Text(0, 0, "No generation masses").opts(title="Mass Hierarchy")
 
     df = pd.DataFrame(rows)
-    bars = hv.Bars(df, kdims=["sector", "generation"], vdims=["mass"]).opts(
-        width=650, height=400,
+    return hv.Bars(df, kdims=["sector", "generation"], vdims=["mass"]).opts(
+        width=650,
+        height=400,
         title="Mass Hierarchy (median σ per generation per sector)",
         ylabel="Median σ",
         xrotation=45,
@@ -204,7 +216,6 @@ def build_mass_hierarchy_plot(result: DiracSpectrumResult) -> hv.Element:
         tools=["hover"],
         logy=True,
     )
-    return bars
 
 
 def build_chiral_density_plot(result: DiracSpectrumResult) -> hv.Element:
@@ -224,10 +235,13 @@ def build_chiral_density_plot(result: DiracSpectrumResult) -> hv.Element:
         near = sv  # fallback to full spectrum
 
     hist = hv.Histogram(np.histogram(near, bins=40)).opts(
-        width=500, height=350,
+        width=500,
+        height=350,
         title="Singular Value Density (near-zero region)",
-        xlabel="σ", ylabel="Count",
-        color="#b07aa1", alpha=0.8,
+        xlabel="σ",
+        ylabel="Count",
+        color="#b07aa1",
+        alpha=0.8,
         tools=["hover"],
     )
 
@@ -235,8 +249,7 @@ def build_chiral_density_plot(result: DiracSpectrumResult) -> hv.Element:
     annotation = hv.Text(
         float(np.median(near)) if len(near) > 0 else 0,
         0,
-        f"⟨ψ̄ψ⟩ ≈ {result.chiral_condensate:.3f}\n"
-        f"({result.near_zero_count} near-zero modes)",
+        f"⟨ψ̄ψ⟩ ≈ {result.chiral_condensate:.3f}\n" f"({result.near_zero_count} near-zero modes)",
     ).opts(text_font_size="9pt", text_align="left")
 
     return hist * annotation
@@ -261,18 +274,15 @@ def build_generation_ratios_plot(result: DiracSpectrumResult) -> hv.Element:
             })
 
     if not rows:
-        return hv.Text(0, 0, "Need ≥ 2 generations for ratios").opts(
-            title="Generation Ratios"
-        )
+        return hv.Text(0, 0, "Need ≥ 2 generations for ratios").opts(title="Generation Ratios")
 
     df = pd.DataFrame(rows)
     df = df[df["ratio"] > 0]
     if df.empty:
-        return hv.Text(0, 0, "No positive generation ratios").opts(
-            title="Generation Ratios"
-        )
-    bars = hv.Bars(df, kdims=["sector", "ratio_label"], vdims=["ratio"]).opts(
-        width=650, height=350,
+        return hv.Text(0, 0, "No positive generation ratios").opts(title="Generation Ratios")
+    return hv.Bars(df, kdims=["sector", "ratio_label"], vdims=["ratio"]).opts(
+        width=650,
+        height=350,
         title="Inter-generation Mass Ratios (σ_gen_i / σ_gen_{{i+1}})",
         ylabel="Mass Ratio",
         xrotation=45,
@@ -281,7 +291,6 @@ def build_generation_ratios_plot(result: DiracSpectrumResult) -> hv.Element:
         tools=["hover"],
         logy=True,
     )
-    return bars
 
 
 # ---------------------------------------------------------------------------
@@ -291,12 +300,19 @@ def build_generation_ratios_plot(result: DiracSpectrumResult) -> hv.Element:
 
 def build_fermion_comparison_table(result: DiracSpectrumResult, refs=None) -> hv.Table:
     """Table showing extracted vs PDG masses with error %."""
-    rows, scale = build_fermion_comparison(result, refs)
+    rows, _scale = build_fermion_comparison(result, refs)
     if not rows:
         return hv.Text(0, 0, "No comparison data").opts(title="Fermion Comparison")
     df = pd.DataFrame(rows)
-    cols = ["sector", "generation", "particle", "alg_mass", "obs_mass_GeV",
-            "pred_mass_GeV", "error_pct"]
+    cols = [
+        "sector",
+        "generation",
+        "particle",
+        "alg_mass",
+        "obs_mass_GeV",
+        "pred_mass_GeV",
+        "error_pct",
+    ]
     df = df[[c for c in cols if c in df.columns]]
     return hv.Table(df).opts(width=750, height=350, title="Extracted vs PDG Fermion Masses")
 
@@ -320,10 +336,13 @@ def build_fermion_ratio_comparison_plot(result: DiracSpectrumResult, refs=None) 
     if df_melt.empty:
         return hv.Text(0, 0, "No valid ratios").opts(title="Fermion Ratio Comparison")
     # Use log scale since ratios can span orders of magnitude
-    bars = hv.Bars(
-        df_melt, kdims=["sector", "source"], vdims=["ratio"],
+    return hv.Bars(
+        df_melt,
+        kdims=["sector", "source"],
+        vdims=["ratio"],
     ).opts(
-        width=650, height=400,
+        width=650,
+        height=400,
         title="Inter-Generation Mass Ratios: Measured vs Observed (PDG)",
         ylabel="Mass Ratio",
         xrotation=45,
@@ -331,7 +350,6 @@ def build_fermion_ratio_comparison_plot(result: DiracSpectrumResult, refs=None) 
         cmap={"measured": "#4c78a8", "observed": "#e45756"},
         logy=True,
     )
-    return bars
 
 
 # ---------------------------------------------------------------------------

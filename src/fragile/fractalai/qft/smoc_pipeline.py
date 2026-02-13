@@ -38,8 +38,8 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 import torch
-import torch.nn.functional as F
 from torch import Tensor
+import torch.nn.functional as F
 
 
 # =============================================================================
@@ -170,9 +170,7 @@ class SMoCSimulator:
         new_agents = agents + self.config.dt * (alignment - agents) + noise
 
         # Re-normalize to maintain unit vectors (gauge orbit constraint)
-        new_agents = F.normalize(new_agents, dim=-1)
-
-        return new_agents
+        return F.normalize(new_agents, dim=-1)
 
     def run_thermalization(self) -> None:
         """Run thermalization phase to reach equilibrium."""
@@ -310,9 +308,7 @@ class ChannelProjector:
         projected = torch.einsum("btgi,ij->btgj", history, proj_matrix)
 
         # Sum over internal dimension to get scalar field
-        field = projected.sum(dim=-1)
-
-        return field
+        return projected.sum(dim=-1)
 
     def project_all(self, history: Tensor) -> dict[str, Tensor]:
         """
@@ -421,9 +417,7 @@ class CorrelatorComputer:
         avg_field = self.spatial_average(field)
 
         # Autocorrelation via FFT
-        corr = self.compute_autocorrelation_fft(avg_field)
-
-        return corr
+        return self.compute_autocorrelation_fft(avg_field)
 
 
 # =============================================================================
@@ -460,7 +454,7 @@ def aggregate_correlators(
 
     mean_corr = correlators.mean(dim=0)
     std_corr = correlators.std(dim=0)
-    std_err = std_corr / (n_samples ** 0.5)
+    std_err = std_corr / (n_samples**0.5)
 
     return AggregatedCorrelator(
         mean=mean_corr,
@@ -598,8 +592,8 @@ class MassExtractor:
             err_valid = err_window[valid_data]
 
             # Weighted least squares: solve [1, t] @ [A, -m]^T = y
-            n_pts = t_valid.shape[0]
-            weights = 1.0 / (err_valid ** 2)
+            t_valid.shape[0]
+            weights = 1.0 / (err_valid**2)
 
             # Design matrix
             X = torch.stack([torch.ones_like(t_valid), t_valid], dim=1)
@@ -618,7 +612,7 @@ class MassExtractor:
                 # Chi-squared
                 y_pred = A + neg_m * t_valid
                 residuals = (y_valid - y_pred) / err_valid
-                chi2 = (residuals ** 2).sum()
+                chi2 = (residuals**2).sum()
 
                 # Store results
                 masses[i] = m
@@ -759,7 +753,7 @@ class MassExtractor:
 
         # Weighted standard deviation as error estimate
         mass_var = (weights * (masses - mass_final) ** 2).sum()
-        mass_error = (mass_var ** 0.5).item()
+        mass_error = (mass_var**0.5).item()
 
         # Find best window (minimum AIC)
         best_idx = (aic + (~valid).float() * 1e10).argmin().item()
@@ -888,8 +882,7 @@ def run_smoc_pipeline(
 
     correlator_computer = CorrelatorComputer(config.correlator)
     correlators = {
-        ch: correlator_computer.compute_correlator(field)
-        for ch, field in projected_fields.items()
+        ch: correlator_computer.compute_correlator(field) for ch, field in projected_fields.items()
     }
 
     # Phase 4: Statistical Aggregation
@@ -953,7 +946,7 @@ def compute_smoc_correlators_from_history(
     Returns:
         Dictionary with correlator data for each channel.
     """
-    t_steps, n_walkers, dims = positions.shape
+    t_steps, _n_walkers, _dims = positions.shape
     device = positions.device
 
     if max_lag is None:

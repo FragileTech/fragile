@@ -10,9 +10,7 @@ from .layers import FactorizedJumpOperator
 from .layers.gauge import exp_map_zero, hyperbolic_distance, log_map_zero
 
 
-def _project_to_ball(
-    z: torch.Tensor, max_norm: float = 0.99, eps: float = 1e-6
-) -> torch.Tensor:
+def _project_to_ball(z: torch.Tensor, max_norm: float = 0.99, eps: float = 1e-6) -> torch.Tensor:
     """Project points to interior of the Poincare ball."""
     norm = z.norm(dim=-1, keepdim=True).clamp(min=eps)
     scale = (max_norm / norm).clamp(max=1.0)

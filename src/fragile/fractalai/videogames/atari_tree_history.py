@@ -12,14 +12,15 @@ Node IDs are deterministic:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Callable, TYPE_CHECKING
 
 import numpy as np
 import torch
 
 from fragile.fractalai.core.tree import DataTree, DEFAULT_ROOT_ID
-from fragile.fractalai.videogames.atari_history import AtariHistory
 from fragile.fractalai.robots.robotic_history import RoboticHistory
+from fragile.fractalai.videogames.atari_history import AtariHistory
+
 
 if TYPE_CHECKING:
     from fragile.fractalai.videogames.atari_gas import WalkerState
@@ -72,12 +73,22 @@ class AtariTreeHistory:
         """Record initial state at t=0.
 
         Creates N child nodes of root, one per walker.
+        Each node stores the walker's ``env_state`` for later frame rendering.
         """
         step = 0
         for w in range(self.N):
             nid = self._nid(step, w)
             action_w = state.actions[w]
             action_val = int(action_w) if np.ndim(action_w) == 0 else action_w.tolist()
+            env_state = state.states[w]
+            if hasattr(env_state, "copy"):
+                env_state = env_state.copy()
+
+            # Extract rgb_frame from env state if available
+            frame = None
+            if hasattr(env_state, "rgb_frame") and env_state.rgb_frame is not None:
+                frame = env_state.rgb_frame.copy()
+
             node_data = {
                 "observations": state.observations[w].detach().cpu().numpy(),
                 "reward": 0.0,
@@ -89,6 +100,8 @@ class AtariTreeHistory:
                 "action": action_val,
                 "will_clone": False,
                 "clone_companion": -1,
+                "env_state": env_state,
+                "frame": frame,
             }
             self._tree.append_leaf(
                 leaf_id=nid,
@@ -128,6 +141,9 @@ class AtariTreeHistory:
         """
         step = self._n_recorded
 
+        rewards = state_final.rewards
+        best_idx = int(rewards.argmax().item())
+
         for w in range(self.N):
             nid = self._nid(step, w)
 
@@ -144,6 +160,19 @@ class AtariTreeHistory:
 
             action_w = state_final.actions[w]
             action_val = int(action_w) if np.ndim(action_w) == 0 else action_w.tolist()
+
+            # Store env_state for potential re-rendering
+            env_state = state_final.states[w]
+            if hasattr(env_state, "copy"):
+                env_state = env_state.copy()
+
+            # Extract rgb_frame directly from the walker's AtariState
+            frame = None
+            if hasattr(env_state, "rgb_frame") and env_state.rgb_frame is not None:
+                frame = env_state.rgb_frame.copy()
+            elif w == best_idx and best_frame is not None:
+                frame = best_frame
+
             node_data = {
                 "observations": state_final.observations[w].detach().cpu().numpy(),
                 "reward": float(state_final.rewards[w].item()),
@@ -155,6 +184,8 @@ class AtariTreeHistory:
                 "action": action_val,
                 "will_clone": bool(will_clone[w].item()),
                 "clone_companion": int(clone_companions[w].item()) if will_clone[w].item() else -1,
+                "env_state": env_state,
+                "frame": frame,
             }
 
             self._tree.append_leaf(
@@ -166,8 +197,6 @@ class AtariTreeHistory:
             )
 
         # Step metadata
-        rewards = state_final.rewards
-        best_idx = int(rewards.argmax().item())
 
         vr_mean = 0.0
         vr_max = 0.0
@@ -227,7 +256,8 @@ class AtariTreeHistory:
 
         nodes_before = self._tree.data.number_of_nodes()
         self._tree.prune_dead_branches(
-            dead_leafs=dead_leafs, alive_leafs=alive_leafs,
+            dead_leafs=dead_leafs,
+            alive_leafs=alive_leafs,
         )
         nodes_after = self._tree.data.number_of_nodes()
         return nodes_before - nodes_after
@@ -291,7 +321,17 @@ class AtariTreeHistory:
     # ------------------------------------------------------------------
 
     def to_atari_history(self) -> AtariHistory:
-        """Convert to :class:`AtariHistory` for backward compatibility."""
+        """Convert to :class:`AtariHistory` for backward compatibility.
+
+        Uses path-based frames (root→best-leaf) when available, falling
+        back to per-iteration metadata frames.
+        """
+        path_frames = self.get_best_path_frames()
+        # Use path frames if they exist and have at least one non-None entry
+        if path_frames and any(f is not None for f in path_frames):
+            frames = path_frames
+        else:
+            frames = self.best_frames
         return AtariHistory(
             iterations=self.iterations,
             rewards_mean=self.rewards_mean,
@@ -301,7 +341,7 @@ class AtariTreeHistory:
             num_cloned=self.num_cloned,
             virtual_rewards_mean=self.virtual_rewards_mean,
             virtual_rewards_max=self.virtual_rewards_max,
-            best_frames=self.best_frames,
+            best_frames=frames,
             best_rewards=self.best_rewards,
             best_indices=self.best_indices,
             N=self.N,
@@ -310,7 +350,16 @@ class AtariTreeHistory:
         )
 
     def to_robotic_history(self) -> RoboticHistory:
-        """Convert to :class:`RoboticHistory` for the robots dashboard."""
+        """Convert to :class:`RoboticHistory` for the robots dashboard.
+
+        Uses path-based frames (root→best-leaf) when available, falling
+        back to per-iteration metadata frames.
+        """
+        path_frames = self.get_best_path_frames()
+        if path_frames and any(f is not None for f in path_frames):
+            frames = path_frames
+        else:
+            frames = self.best_frames
         return RoboticHistory(
             iterations=self.iterations,
             rewards_mean=self.rewards_mean,
@@ -320,7 +369,7 @@ class AtariTreeHistory:
             num_cloned=self.num_cloned,
             virtual_rewards_mean=self.virtual_rewards_mean,
             virtual_rewards_max=self.virtual_rewards_max,
-            best_frames=self.best_frames,
+            best_frames=frames,
             best_rewards=self.best_rewards,
             best_indices=self.best_indices,
             N=self.N,
@@ -338,6 +387,71 @@ class AtariTreeHistory:
             return []
         leaf_nid = self._nid(self._n_recorded - 1, walker_idx)
         return self._tree.get_branch(leaf_nid)
+
+    def get_best_walker_branch(self) -> list[int]:
+        """Return the branch (root → leaf) of the best-reward walker at the last step.
+
+        Returns an empty list if nothing has been recorded.
+        """
+        if self._n_recorded <= 1:
+            return []
+        last_meta = self._step_metadata[-1]
+        best_idx = last_meta["best_walker_idx"]
+        return self.get_walker_branch(best_idx)
+
+    def get_best_path_frames(self) -> list[np.ndarray | None]:
+        """Collect frames along the best walker's branch.
+
+        Returns a list of frames (or ``None`` where no frame was stored)
+        ordered from root to leaf.  The root sentinel node is excluded.
+        """
+        branch = self.get_best_walker_branch()
+        if not branch:
+            return []
+        nodes = self._tree.data.nodes
+        # Skip root node (branch[0] is DEFAULT_ROOT_ID)
+        return [nodes[nid].get("frame") for nid in branch[1:]]
+
+    def render_missing_path_frames(
+        self,
+        render_fn: Callable[[object], np.ndarray],
+    ) -> list[np.ndarray | None]:
+        """Fill in missing frames along the best walker's branch.
+
+        For each node on the best path that has ``frame=None`` but has an
+        ``env_state``, call ``render_fn(env_state)`` and store the result
+        back in the tree node.
+
+        Parameters
+        ----------
+        render_fn : callable
+            ``(env_state) -> np.ndarray`` — renders an RGB frame from a
+            serialised environment state.  Typically
+            ``gas._render_walker_frame``.
+
+        Returns
+        -------
+        list[np.ndarray | None]
+            Ordered frames along the best branch (root excluded).
+        """
+        branch = self.get_best_walker_branch()
+        if not branch:
+            return []
+
+        nodes = self._tree.data.nodes
+        frames: list[np.ndarray | None] = []
+        for nid in branch[1:]:  # skip root
+            node = nodes[nid]
+            frame = node.get("frame")
+            if frame is None and node.get("env_state") is not None:
+                env_st = node["env_state"]
+                if hasattr(env_st, "rgb_frame") and env_st.rgb_frame is not None:
+                    frame = env_st.rgb_frame
+                elif render_fn is not None:
+                    frame = render_fn(env_st)
+                node["frame"] = frame
+            frames.append(frame)
+        return frames
 
     # ------------------------------------------------------------------
     # Serialization

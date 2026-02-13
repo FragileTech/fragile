@@ -6,13 +6,15 @@
 
 from __future__ import annotations
 
+import operator
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 import holoviews as hv
 import numpy as np
 import plotly.graph_objects as go
 import torch
+
 
 if TYPE_CHECKING:
     import panel as pn
@@ -109,6 +111,7 @@ def build_lyapunov_plot(
         width=600,
         height=400,
         show_legend=True,
+        tools=["hover"],
     )
 
 
@@ -237,23 +240,23 @@ def plot_scatter3d(points: np.ndarray, title: str, path: Path) -> Path | None:
 
 # Consistent colors for channel plots
 CHANNEL_COLORS = {
-    "scalar": "#1f77b4",        # Blue
+    "scalar": "#1f77b4",  # Blue
     "pseudoscalar": "#ff7f0e",  # Orange
-    "vector": "#2ca02c",        # Green
+    "vector": "#2ca02c",  # Green
     "axial_vector": "#d62728",  # Red
-    "tensor": "#9467bd",        # Purple
-    "nucleon": "#8c564b",       # Brown
-    "glueball": "#e377c2",      # Pink
+    "tensor": "#9467bd",  # Purple
+    "nucleon": "#8c564b",  # Brown
+    "glueball": "#e377c2",  # Pink
     # Electroweak proxy channels
-    "u1_phase": "#17becf",      # Cyan
-    "u1_dressed": "#bcbd22",    # Olive
-    "u1_phase_q2": "#00b5ad",   # Teal
-    "u1_dressed_q2": "#c7d11b", # Yellow-green
-    "su2_phase": "#ff9896",     # Light red
-    "su2_component": "#ff7b7b", # Soft red
-    "su2_doublet": "#c49c94",   # Tan
-    "su2_doublet_diff": "#b07c7c", # Dusky red
-    "ew_mixed": "#7f7f7f",      # Gray
+    "u1_phase": "#17becf",  # Cyan
+    "u1_dressed": "#bcbd22",  # Olive
+    "u1_phase_q2": "#00b5ad",  # Teal
+    "u1_dressed_q2": "#c7d11b",  # Yellow-green
+    "su2_phase": "#ff9896",  # Light red
+    "su2_component": "#ff7b7b",  # Soft red
+    "su2_doublet": "#c49c94",  # Tan
+    "su2_doublet_diff": "#b07c7c",  # Dusky red
+    "ew_mixed": "#7f7f7f",  # Gray
 }
 
 
@@ -284,13 +287,15 @@ def build_correlator_plot(
     c_plot = correlator[mask]
 
     color = CHANNEL_COLORS.get(channel_name, "#1f77b4")
-    scatter = hv.Scatter(
-        (t_plot, c_plot), "t", "C(t)"
-    ).opts(
-        color=color,
-        size=6,
-        alpha=0.8,
-    ).relabel(f"{channel_name} C(t)")
+    scatter = (
+        hv.Scatter((t_plot, c_plot), "t", "C(t)")
+        .opts(
+            color=color,
+            size=6,
+            alpha=0.8,
+        )
+        .relabel(f"{channel_name} C(t)")
+    )
 
     overlays = scatter
 
@@ -313,13 +318,15 @@ def build_correlator_plot(
 
         if c_anchor > 0:
             c_line = c_anchor * np.exp(-mass_scaled * (t_line - t_anchor))
-            curve = hv.Curve(
-                (t_line, c_line), "t", "C(t)"
-            ).opts(
-                color=color,
-                line_dash="dashed",
-                line_width=2,
-            ).relabel(f"fit m={mass_scaled:.4f}")
+            curve = (
+                hv.Curve((t_line, c_line), "t", "C(t)")
+                .opts(
+                    color=color,
+                    line_dash="dashed",
+                    line_width=2,
+                )
+                .relabel(f"fit m={mass_scaled:.4f}")
+            )
             overlays = overlays * curve
 
     return overlays.opts(
@@ -358,13 +365,15 @@ def build_effective_mass_plot(
     m_plot = effective_mass[mask]
 
     color = CHANNEL_COLORS.get(channel_name, "#1f77b4")
-    scatter = hv.Scatter(
-        (t_plot, m_plot), "t", "m_eff(t)"
-    ).opts(
-        color=color,
-        size=6,
-        alpha=0.8,
-    ).relabel(f"{channel_name} m_eff")
+    scatter = (
+        hv.Scatter((t_plot, m_plot), "t", "m_eff(t)")
+        .opts(
+            color=color,
+            size=6,
+            alpha=0.8,
+        )
+        .relabel(f"{channel_name} m_eff")
+    )
 
     overlays = scatter
 
@@ -374,19 +383,25 @@ def build_effective_mass_plot(
         # Horizontal line at fitted mass
         t_line = np.array([float(t_plot.min()), float(t_plot.max())])
         m_line = np.array([mass, mass])
-        curve = hv.Curve(
-            (t_line, m_line), "t", "m_eff(t)"
-        ).opts(
-            color=color,
-            line_dash="dashed",
-            line_width=2,
-        ).relabel(f"m={mass:.4f}±{mass_error:.4f}")
+        curve = (
+            hv.Curve((t_line, m_line), "t", "m_eff(t)")
+            .opts(
+                color=color,
+                line_dash="dashed",
+                line_width=2,
+            )
+            .relabel(f"m={mass:.4f}±{mass_error:.4f}")
+        )
         overlays = overlays * curve
 
         # Error band
         if mass_error > 0 and mass_error < mass:
             band = hv.Area(
-                (t_line, [mass - mass_error, mass - mass_error], [mass + mass_error, mass + mass_error]),
+                (
+                    t_line,
+                    [mass - mass_error, mass - mass_error],
+                    [mass + mass_error, mass + mass_error],
+                ),
                 kdims=["t"],
                 vdims=["lower", "upper"],
             ).opts(
@@ -457,7 +472,7 @@ def build_mass_spectrum_bar(
         return None
 
     # Sort by mass
-    bars_data.sort(key=lambda x: x[1])
+    bars_data.sort(key=operator.itemgetter(1))
     names = [d[0] for d in bars_data]
     masses = [d[1] for d in bars_data]
     errors = [d[2] for d in bars_data]
@@ -478,7 +493,7 @@ def build_mass_spectrum_bar(
     )
 
     # Add error bars using Scatter
-    error_data = [(n, m, e) for n, m, e in zip(names, masses, errors)]
+    error_data = list(zip(names, masses, errors))
     errorbars = hv.ErrorBars(
         error_data,
         kdims=["channel"],
@@ -531,7 +546,7 @@ def build_window_heatmap(
 
     # Convert (width_idx, start) grid to (start, end) coordinates
     records = []
-    num_widths, max_pos = window_masses.shape
+    _num_widths, max_pos = window_masses.shape
 
     for w_idx, width in enumerate(window_widths):
         for start in range(max_pos):
@@ -598,6 +613,7 @@ def build_window_heatmap(
 
     # Build DataFrame for HoloViews
     import pandas as pd
+
     df = pd.DataFrame({
         "start": starts,
         "end": ends,
@@ -638,18 +654,22 @@ def build_window_heatmap(
     if best_t_start >= 0 and best_width > 0:
         best_end = best_t_start + best_width - 1
         best_mass = best_window.get("mass", 0.0)
-        best_marker = hv.Points(
-            [(best_t_start, best_end, best_mass)],
-            kdims=["start", "end"],
-            vdims=["mass"],
-        ).opts(
-            color="red",
-            size=15,
-            marker="circle",
-            line_color="white",
-            line_width=2,
-            alpha=1.0,
-        ).relabel("Best window")
+        best_marker = (
+            hv.Points(
+                [(best_t_start, best_end, best_mass)],
+                kdims=["start", "end"],
+                vdims=["mass"],
+            )
+            .opts(
+                color="red",
+                size=15,
+                marker="circle",
+                line_color="white",
+                line_width=2,
+                alpha=1.0,
+            )
+            .relabel("Best window")
+        )
         overlays = overlays * best_marker
 
     return overlays
@@ -703,13 +723,15 @@ def build_effective_mass_plateau_plot(
     t_corr = lag_times[corr_mask]
     c_plot = correlator[corr_mask]
 
-    corr_scatter = hv.Scatter(
-        (t_corr, c_plot), "t", "C(t)"
-    ).opts(
-        color=color,
-        size=6,
-        alpha=0.8,
-    ).relabel("C(t)")
+    corr_scatter = (
+        hv.Scatter((t_corr, c_plot), "t", "C(t)")
+        .opts(
+            color=color,
+            size=6,
+            alpha=0.8,
+        )
+        .relabel("C(t)")
+    )
 
     left_overlays = corr_scatter
 
@@ -723,13 +745,15 @@ def build_effective_mass_plateau_plot(
 
         if c_anchor > 0:
             c_line = c_anchor * np.exp(-mass_scaled * (t_line - t_anchor))
-            corr_curve = hv.Curve(
-                (t_line, c_line), "t", "C(t)"
-            ).opts(
-                color=color,
-                line_dash="dashed",
-                line_width=2,
-            ).relabel(f"fit m={mass:.4f}")
+            corr_curve = (
+                hv.Curve((t_line, c_line), "t", "C(t)")
+                .opts(
+                    color=color,
+                    line_dash="dashed",
+                    line_width=2,
+                )
+                .relabel(f"fit m={mass:.4f}")
+            )
             left_overlays = left_overlays * corr_curve
 
     left_panel = left_overlays.opts(
@@ -743,17 +767,19 @@ def build_effective_mass_plateau_plot(
     )
 
     # Right panel: Effective mass plateau
-    meff_times = lag_times[:len(effective_mass)]
+    meff_times = lag_times[: len(effective_mass)]
     t_meff = meff_times[meff_mask]
     m_plot = effective_mass[meff_mask]
 
-    meff_scatter = hv.Scatter(
-        (t_meff, m_plot), "t", "m_eff(t)"
-    ).opts(
-        color=color,
-        size=6,
-        alpha=0.8,
-    ).relabel("m_eff(t)")
+    meff_scatter = (
+        hv.Scatter((t_meff, m_plot), "t", "m_eff(t)")
+        .opts(
+            color=color,
+            size=6,
+            alpha=0.8,
+        )
+        .relabel("m_eff(t)")
+    )
 
     right_overlays = meff_scatter
 
@@ -772,21 +798,26 @@ def build_effective_mass_plateau_plot(
     if mass_scaled > 0:
         t_line = np.array([float(t_meff.min()), float(t_meff.max())])
         m_line = np.array([mass_scaled, mass_scaled])
-        mass_curve = hv.Curve(
-            (t_line, m_line), "t", "m_eff(t)"
-        ).opts(
-            color="red",
-            line_dash="dashed",
-            line_width=2,
-        ).relabel(f"M={mass_scaled:.4f}±{mass_error_scaled:.4f}")
+        mass_curve = (
+            hv.Curve((t_line, m_line), "t", "m_eff(t)")
+            .opts(
+                color="red",
+                line_dash="dashed",
+                line_width=2,
+            )
+            .relabel(f"M={mass_scaled:.4f}±{mass_error_scaled:.4f}")
+        )
         right_overlays = right_overlays * mass_curve
 
         # Error band (pink region)
         if mass_error_scaled > 0 and mass_error_scaled < mass_scaled:
             # Create error band using Area
             error_band = hv.Area(
-                (t_line, [mass_scaled - mass_error_scaled, mass_scaled - mass_error_scaled],
-                 [mass_scaled + mass_error_scaled, mass_scaled + mass_error_scaled]),
+                (
+                    t_line,
+                    [mass_scaled - mass_error_scaled, mass_scaled - mass_error_scaled],
+                    [mass_scaled + mass_error_scaled, mass_scaled + mass_error_scaled],
+                ),
                 kdims=["t"],
                 vdims=["lower", "upper"],
             ).opts(
@@ -808,9 +839,7 @@ def build_effective_mass_plateau_plot(
     r2_label = f"R²={best_r2:.4f}" if np.isfinite(best_r2) else "R²=n/a"
 
     # Combine window info with data point counts
-    info_label = (
-        f"{window_label}\n{r2_label}\nC(t): {n_valid_corr} pts, m_eff: {n_valid_meff} pts"
-    )
+    info_label = f"{window_label}\n{r2_label}\nC(t): {n_valid_corr} pts, m_eff: {n_valid_meff} pts"
 
     # Use Text annotation at top of plot
     y_max = float(m_plot.max()) if len(m_plot) > 0 else mass_scaled
@@ -857,7 +886,7 @@ class ChannelPlot:
 
     def __init__(
         self,
-        result: "ChannelCorrelatorResult",
+        result: ChannelCorrelatorResult,
         logy: bool = True,
         width: int = 400,
         height: int = 350,
@@ -902,13 +931,15 @@ class ChannelPlot:
         c_plot = correlator[mask]
 
         # Scatter points
-        scatter = hv.Scatter(
-            (t_plot, c_plot), "t", "C(t)"
-        ).opts(
-            color=self._color,
-            size=6,
-            alpha=0.8,
-        ).relabel(f"{self.result.channel_name} C(t)")
+        scatter = (
+            hv.Scatter((t_plot, c_plot), "t", "C(t)")
+            .opts(
+                color=self._color,
+                size=6,
+                alpha=0.8,
+            )
+            .relabel(f"{self.result.channel_name} C(t)")
+        )
 
         overlays = scatter
 
@@ -952,13 +983,15 @@ class ChannelPlot:
                 c_line = c_anchor * np.exp(-mass_scaled * (t_line - t_anchor))
                 if self.logy:
                     c_line = np.maximum(c_line, np.finfo(float).tiny)
-                curve = hv.Curve(
-                    (t_line, c_line), "t", "C(t)"
-                ).opts(
-                    color=self._color,
-                    line_dash="dashed",
-                    line_width=2,
-                ).relabel(f"fit m={mass_scaled:.4f}")
+                curve = (
+                    hv.Curve((t_line, c_line), "t", "C(t)")
+                    .opts(
+                        color=self._color,
+                        line_dash="dashed",
+                        line_width=2,
+                    )
+                    .relabel(f"fit m={mass_scaled:.4f}")
+                )
                 overlays = overlays * curve
 
         opts_kwargs: dict[str, Any] = {
@@ -1007,13 +1040,15 @@ class ChannelPlot:
         m_plot = effective_mass[mask]
 
         # Scatter points
-        scatter = hv.Scatter(
-            (t_plot, m_plot), "t", "m_eff(t)"
-        ).opts(
-            color=self._color,
-            size=6,
-            alpha=0.8,
-        ).relabel(f"{self.result.channel_name} m_eff")
+        scatter = (
+            hv.Scatter((t_plot, m_plot), "t", "m_eff(t)")
+            .opts(
+                color=self._color,
+                size=6,
+                alpha=0.8,
+            )
+            .relabel(f"{self.result.channel_name} m_eff")
+        )
 
         overlays = scatter
 
@@ -1077,20 +1112,25 @@ class ChannelPlot:
         if mass > 0:
             t_line = np.array([float(t_plot.min()), float(t_plot.max())])
             m_line = np.array([mass, mass])
-            curve = hv.Curve(
-                (t_line, m_line), "t", "m_eff(t)"
-            ).opts(
-                color="red",
-                line_dash="dashed",
-                line_width=2,
-            ).relabel(f"M={mass:.4f}±{mass_error:.4f}")
+            curve = (
+                hv.Curve((t_line, m_line), "t", "m_eff(t)")
+                .opts(
+                    color="red",
+                    line_dash="dashed",
+                    line_width=2,
+                )
+                .relabel(f"M={mass:.4f}±{mass_error:.4f}")
+            )
             overlays = overlays * curve
 
             # Error band
             if mass_error > 0 and mass_error < mass:
                 band = hv.Area(
-                    (t_line, [mass - mass_error, mass - mass_error],
-                     [mass + mass_error, mass + mass_error]),
+                    (
+                        t_line,
+                        [mass - mass_error, mass - mass_error],
+                        [mass + mass_error, mass + mass_error],
+                    ),
                     kdims=["t"],
                     vdims=["lower", "upper"],
                 ).opts(
@@ -1117,7 +1157,7 @@ class ChannelPlot:
             ylim=(y_lo - margin, y_hi + margin),
         )
 
-    def side_by_side(self) -> "pn.Row | None":
+    def side_by_side(self) -> pn.Row | None:
         """Return both plots in a side-by-side Panel Row layout.
 
         Returns:
@@ -1134,13 +1174,9 @@ class ChannelPlot:
 
         panels = []
         if left is not None:
-            panels.append(
-                pn.pane.HoloViews(left, sizing_mode="stretch_width", linked_axes=False)
-            )
+            panels.append(pn.pane.HoloViews(left, sizing_mode="stretch_width", linked_axes=False))
         if right is not None:
-            panels.append(
-                pn.pane.HoloViews(right, sizing_mode="stretch_width", linked_axes=False)
-            )
+            panels.append(pn.pane.HoloViews(right, sizing_mode="stretch_width", linked_axes=False))
 
         return pn.Row(*panels, sizing_mode="stretch_width")
 
@@ -1187,12 +1223,14 @@ def build_all_channels_overlay(
                 c_masked = corr[mask]
                 y_min_positive = min(y_min_positive, float(np.min(c_masked)))
                 y_max_positive = max(y_max_positive, float(np.max(c_masked)))
-            curve = hv.Curve(
-                (t[mask], corr[mask]), "t", "C(t)"
-            ).opts(
-                color=color,
-                line_width=2,
-            ).relabel(name)
+            curve = (
+                hv.Curve((t[mask], corr[mask]), "t", "C(t)")
+                .opts(
+                    color=color,
+                    line_width=2,
+                )
+                .relabel(name)
+            )
             curves.append(curve)
         else:  # effective_mass
             meff = (
@@ -1204,12 +1242,14 @@ def build_all_channels_overlay(
             if mask.sum() < 2:
                 continue
             t = np.arange(len(meff)) * dt
-            curve = hv.Curve(
-                (t[mask], meff[mask]), "t", "m_eff(t)"
-            ).opts(
-                color=color,
-                line_width=2,
-            ).relabel(name)
+            curve = (
+                hv.Curve((t[mask], meff[mask]), "t", "m_eff(t)")
+                .opts(
+                    color=color,
+                    line_width=2,
+                )
+                .relabel(name)
+            )
             curves.append(curve)
 
     if not curves:
@@ -1220,7 +1260,9 @@ def build_all_channels_overlay(
         overlay = overlay * c
 
     ylabel = "C(t)" if plot_type == "correlator" else "m_eff(t)"
-    title = "All Channel Correlators" if plot_type == "correlator" else "All Channel Effective Masses"
+    title = (
+        "All Channel Correlators" if plot_type == "correlator" else "All Channel Effective Masses"
+    )
 
     opts_kwargs: dict[str, Any] = {
         "logy": (plot_type == "correlator" and correlator_logy),

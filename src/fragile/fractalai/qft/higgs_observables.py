@@ -21,16 +21,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-import numpy as np
 import torch
 from torch import Tensor
 
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.qft.voronoi_observables import (
-    compute_voronoi_tessellation,
     compute_curvature_proxies,
+    compute_voronoi_tessellation,
 )
-from fragile.fractalai.qft.voronoi_time_slices import compute_time_sliced_voronoi
 
 
 def _scatter_mean(src: Tensor, index: Tensor, dim: int, dim_size: int) -> Tensor:
@@ -188,9 +186,7 @@ def compute_emergent_metric(
     metric_tensors = torch.linalg.inv(covariance + epsilon)
 
     # Ensure symmetry (due to numerical precision)
-    metric_tensors = 0.5 * (metric_tensors + metric_tensors.transpose(-2, -1))
-
-    return metric_tensors
+    return 0.5 * (metric_tensors + metric_tensors.transpose(-2, -1))
 
 
 def compute_centroid_displacement(
@@ -213,7 +209,7 @@ def compute_centroid_displacement(
     Returns:
         displacement_vectors: [N, d] Lloyd vectors
     """
-    N, d = positions.shape
+    N, _d = positions.shape
     row, col = edge_index[0], edge_index[1]
 
     # Compute neighbor centroids using scatter_mean
@@ -279,9 +275,7 @@ def compute_geodesic_distances(
     dist_sq = (delta_x * Gv).sum(dim=1)  # [E]
 
     # Take square root (with epsilon for stability)
-    geodesic_dist = torch.sqrt(dist_sq.clamp(min=1e-8))
-
-    return geodesic_dist
+    return torch.sqrt(dist_sq.clamp(min=1e-8))
 
 
 def compute_ricci_scalars_from_curvature_proxies(
@@ -309,15 +303,13 @@ def compute_ricci_scalars_from_curvature_proxies(
     raychaudhuri = curvature_proxies.get("raychaudhuri_expansion")
     if raychaudhuri is not None and len(raychaudhuri) == n_walkers:
         # R ≈ -θ (expansion θ < 0 means positive curvature)
-        ricci = -torch.from_numpy(raychaudhuri).to(device)
-        return ricci
+        return -torch.from_numpy(raychaudhuri).to(device)
 
     # Fallback to volume distortion
     volume_distortion = curvature_proxies.get("volume_distortion")
     if volume_distortion is not None and len(volume_distortion) == n_walkers:
         # Use normalized volume deviation as curvature proxy
-        ricci = torch.from_numpy(volume_distortion).to(device)
-        return ricci
+        return torch.from_numpy(volume_distortion).to(device)
 
     # Last resort: zero curvature
     return torch.zeros(n_walkers, device=device)
@@ -370,7 +362,9 @@ def compute_higgs_action(
 
     # 2. Potential term: ∫ V(φ) dV
     # V(φ) = -μ²φ²/2 + λφ⁴/4 (Mexican hat)
-    potential_density = -0.5 * config.mu_sq * scalar_field**2 + 0.25 * config.lambda_higgs * scalar_field**4
+    potential_density = (
+        -0.5 * config.mu_sq * scalar_field**2 + 0.25 * config.lambda_higgs * scalar_field**4
+    )
     potential_term = (potential_density * cell_volumes).sum().item()
 
     # 3. Gravity term: ∫ R dV (Einstein-Hilbert)
@@ -409,21 +403,20 @@ def _extract_scalar_field(
         idx = min(mc_frame - 1, len(history.fitness) - 1)
         return history.fitness[idx]
 
-    elif scalar_field_source == "reward":
+    if scalar_field_source == "reward":
         # Use raw reward values
         if mc_frame == 0:
             return torch.zeros(history.N, device=history.x_final.device)
         idx = min(mc_frame - 1, len(history.rewards) - 1)
         return history.rewards[idx]
 
-    elif scalar_field_source == "radius":
+    if scalar_field_source == "radius":
         # Use radial distance as field
         positions = history.x_final[mc_frame]
         return torch.norm(positions, dim=1)
 
-    else:
-        msg = f"Unknown scalar_field_source: {scalar_field_source}"
-        raise ValueError(msg)
+    msg = f"Unknown scalar_field_source: {scalar_field_source}"
+    raise ValueError(msg)
 
 
 def compute_higgs_observables(
@@ -475,7 +468,9 @@ def compute_higgs_observables(
     # 3. Pull scutoid data from history when available
     edge_index = None
     geodesic_from_history = None
-    if getattr(history, "neighbor_edges", None) is not None and mc_frame < len(history.neighbor_edges):
+    if getattr(history, "neighbor_edges", None) is not None and mc_frame < len(
+        history.neighbor_edges
+    ):
         edges = history.neighbor_edges[mc_frame]
         if edges is not None:
             if torch.is_tensor(edges):
@@ -487,9 +482,8 @@ def compute_higgs_observables(
             elif edges.ndim == 2 and edges.shape[1] == 2:
                 edge_index = edges.t().contiguous().long()
 
-    if (
-        getattr(history, "geodesic_edge_distances", None) is not None
-        and mc_frame < len(history.geodesic_edge_distances)
+    if getattr(history, "geodesic_edge_distances", None) is not None and mc_frame < len(
+        history.geodesic_edge_distances
     ):
         geodesic_from_history = history.geodesic_edge_distances[mc_frame]
         if geodesic_from_history is not None:
@@ -552,10 +546,16 @@ def compute_higgs_observables(
         neighbor_lists = voronoi_data["neighbor_lists"]
         curvature_proxies = voronoi_data.get("curvature_proxies")
 
-        if config.compute_curvature and curvature_proxies is not None and volume_weights_full is not None:
+        if (
+            config.compute_curvature
+            and curvature_proxies is not None
+            and volume_weights_full is not None
+        ):
             alive_indices = voronoi_data.get("alive_indices")
             if alive_indices is not None and len(alive_indices) > 0:
-                alive_idx = torch.as_tensor(alive_indices, device=positions.device, dtype=torch.long)
+                alive_idx = torch.as_tensor(
+                    alive_indices, device=positions.device, dtype=torch.long
+                )
                 alive_idx = alive_idx[alive_idx < positions.shape[0]]
                 if alive_idx.numel() > 0:
                     volume_weights_alive = volume_weights_full[alive_idx].detach().cpu().numpy()
@@ -574,7 +574,9 @@ def compute_higgs_observables(
     elif volumes_np is not None:
         cell_volumes = torch.from_numpy(volumes_np).to(positions.device, dtype=positions.dtype)
     else:
-        cell_volumes = torch.ones(positions.shape[0], device=positions.device, dtype=positions.dtype)
+        cell_volumes = torch.ones(
+            positions.shape[0], device=positions.device, dtype=positions.dtype
+        )
 
     # Build edge index from neighbor lists if history edges unavailable
     if edge_index is None or edge_index.numel() == 0:
@@ -619,7 +621,9 @@ def compute_higgs_observables(
     centroid_vectors = compute_centroid_displacement(positions, edge_index, alive)
     geodesic_distances = None
     if geodesic_from_history is not None and geodesic_from_history.numel() == n_edges:
-        geodesic_distances = geodesic_from_history.to(device=positions.device, dtype=positions.dtype)
+        geodesic_distances = geodesic_from_history.to(
+            device=positions.device, dtype=positions.dtype
+        )
     if geodesic_distances is None:
         geodesic_distances = compute_geodesic_distances(
             positions, edge_index, metric_tensors, alive

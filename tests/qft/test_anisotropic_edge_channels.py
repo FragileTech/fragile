@@ -62,7 +62,9 @@ def test_anisotropic_edges_mc_time_runs_with_recorded_geometry() -> None:
         max_lag=8,
     )
 
-    out = compute_anisotropic_edge_channels(history, config=config, channels=["scalar", "glueball"])
+    out = compute_anisotropic_edge_channels(
+        history, config=config, channels=["scalar", "glueball"]
+    )
 
     assert out.n_valid_frames > 0
     assert out.avg_alive_walkers > 0

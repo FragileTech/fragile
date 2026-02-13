@@ -6,8 +6,8 @@ not environment configuration. The dashboard creates gymnasium environments
 in a background thread, but X11/XCB is not thread-safe.
 """
 
-import threading
 import sys
+import threading
 import traceback
 
 
@@ -35,7 +35,8 @@ def _get_test_environment():
         except Exception:
             continue
 
-    raise RuntimeError("No suitable test environment found. Install with: pip install gymnasium")
+    msg = "No suitable test environment found. Install with: pip install gymnasium"
+    raise RuntimeError(msg)
 
 
 def test_import_only():
@@ -43,6 +44,7 @@ def test_import_only():
     print("\nTest 1: Import gymnasium only...")
     try:
         import gymnasium as gym
+
         print("  ✓ PASS: Gymnasium imports successfully")
         return True
     except Exception as e:
@@ -56,8 +58,8 @@ def test_create_env_main_thread():
     try:
         env, env_name = _get_test_environment()
         print(f"  Using environment: {env_name}")
-        obs, info = env.reset()
-        if hasattr(obs, 'shape'):
+        obs, _info = env.reset()
+        if hasattr(obs, "shape"):
             print(f"  Created environment, obs shape: {obs.shape}")
         else:
             print(f"  Created environment, obs type: {type(obs)}")
@@ -82,8 +84,8 @@ def test_create_env_background_thread():
         try:
             env, env_name = _get_test_environment()
             print(f"  Worker thread: Using environment: {env_name}")
-            obs, info = env.reset()
-            if hasattr(obs, 'shape'):
+            obs, _info = env.reset()
+            if hasattr(obs, "shape"):
                 print(f"  Worker thread: Created environment, obs shape: {obs.shape}")
             else:
                 print(f"  Worker thread: Created environment, obs type: {type(obs)}")
@@ -103,18 +105,16 @@ def test_create_env_background_thread():
             print("  ✓ PASS: Background thread creation works")
             print("  (Unexpected - XCB error was expected with Atari/OpenGL)")
             return True
-        else:
-            print(f"  ✗ FAIL: {error}")
-            if "xcb" in error.lower() or "assertion" in error.lower():
-                print("  ⚠️  XCB THREADING ERROR CONFIRMED")
-                print("  This is the root cause of the dashboard crash!")
-            if error_details[0]:
-                print("\n  Full error traceback:")
-                print("  " + "\n  ".join(error_details[0].split("\n")))
-            return False
-    else:
-        print("  ✗ FAIL: Thread timed out or crashed")
+        print(f"  ✗ FAIL: {error}")
+        if "xcb" in error.lower() or "assertion" in error.lower():
+            print("  ⚠️  XCB THREADING ERROR CONFIRMED")
+            print("  This is the root cause of the dashboard crash!")
+        if error_details[0]:
+            print("\n  Full error traceback:")
+            print("  " + "\n  ".join(error_details[0].split("\n")))
         return False
+    print("  ✗ FAIL: Thread timed out or crashed")
+    return False
 
 
 def test_dashboard_scenario():
@@ -134,7 +134,7 @@ def test_dashboard_scenario():
                 print("  Worker thread: Creating environment...")
                 env, env_name = _get_test_environment()
                 print(f"  Worker thread: Using environment: {env_name}")
-                obs, info = env.reset()
+                _obs, _info = env.reset()
                 print("  Worker thread: Environment created successfully")
                 env.close()
                 result[0] = True
@@ -151,9 +151,8 @@ def test_dashboard_scenario():
     if result[0]:
         print("  ✓ PASS: Dashboard scenario works")
         return True
-    else:
-        print("  ✗ FAIL: Dashboard scenario fails (same as actual dashboard)")
-        return False
+    print("  ✗ FAIL: Dashboard scenario fails (same as actual dashboard)")
+    return False
 
 
 def test_with_pre_created_env():
@@ -175,14 +174,14 @@ def test_with_pre_created_env():
             """Worker receives pre-created environment."""
             try:
                 print("  Worker thread: Using pre-created environment...")
-                obs, info = env.reset()
-                if hasattr(obs, 'shape'):
+                obs, _info = env.reset()
+                if hasattr(obs, "shape"):
                     print(f"  Worker thread: Reset successful, obs shape: {obs.shape}")
                 else:
                     print(f"  Worker thread: Reset successful, obs type: {type(obs)}")
                 # Simulate a few steps
                 for i in range(3):
-                    obs, reward, done, truncated, info = env.step(env.action_space.sample())
+                    obs, _reward, _done, _truncated, _info = env.step(env.action_space.sample())
                 print("  Worker thread: Simulation steps successful")
                 env.close()
                 result[0] = True
@@ -199,9 +198,8 @@ def test_with_pre_created_env():
             print("  ✓ PASS: Pre-created environment works in worker thread!")
             print("  This confirms the fix strategy is correct.")
             return True
-        else:
-            print("  ✗ FAIL: Even pre-created environment fails")
-            return False
+        print("  ✗ FAIL: Even pre-created environment fails")
+        return False
 
     except Exception as e:
         print(f"  ✗ FAIL: Main thread environment creation failed - {e}")
@@ -231,10 +229,10 @@ def test_render_modes():
                         env = gym.make(env_name, render_mode=mode)
                     else:
                         env = gym.make(env_name)
-                    obs, info = env.reset()
+                    _obs, _info = env.reset()
                     env.close()
                     result[0] = True
-                except Exception as e:
+                except Exception:
                     result[0] = False
 
             thread = threading.Thread(target=worker, args=(mode,), daemon=True)

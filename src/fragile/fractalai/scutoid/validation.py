@@ -3,16 +3,17 @@
 Cross-validates finite-difference vs geometric methods and tests on synthetic functions.
 """
 
+from typing import Any, Callable, Literal
+import warnings
+
 import torch
 from torch import Tensor
-from typing import Literal, Any, Callable
-import warnings
 
 from .gradient_estimation import estimate_gradient_finite_difference
 from .hessian_estimation import (
     estimate_hessian_diagonal_fd,
-    estimate_hessian_full_fd,
     estimate_hessian_from_metric,
+    estimate_hessian_full_fd,
 )
 
 
@@ -64,32 +65,24 @@ def compare_estimation_methods(
             - "per_walker_comparison": [N, ...] if return_detailed
 
     Example:
-        >>> comparison = compare_estimation_methods(
-        ...     swarm.positions, swarm.fitness, swarm.edge_index
-        ... )
+        >>> comparison = compare_estimation_methods(swarm.positions, swarm.fitness, swarm.edge_index)
         >>> corr = comparison["comparison_metrics"]["eigenvalue_correlation"]
         >>> print(f"Method agreement: {corr:.2f}")
     """
-    N, d = positions.shape
-    device = positions.device
+    _N, _d = positions.shape
 
     # 1. Estimate gradient (FD)
-    grad_result = estimate_gradient_finite_difference(
-        positions, fitness_values, edge_index
-    )
+    grad_result = estimate_gradient_finite_difference(positions, fitness_values, edge_index)
     gradient_fd = grad_result["gradient"]
 
     # 2. Estimate Hessian diagonal (FD)
-    hess_diag_result = estimate_hessian_diagonal_fd(
-        positions, fitness_values, edge_index
-    )
+    hess_diag_result = estimate_hessian_diagonal_fd(positions, fitness_values, edge_index)
     hessian_diagonal_fd = hess_diag_result["hessian_diagonal"]
 
     # 3. Estimate full Hessian (FD) if requested
     if compute_full_hessian:
         hess_full_result = estimate_hessian_full_fd(
-            positions, fitness_values, gradient_fd, edge_index,
-            method="central", symmetrize=True
+            positions, fitness_values, gradient_fd, edge_index, method="central", symmetrize=True
         )
         hessian_full_fd = hess_full_result["hessian_tensors"]
         eigenvalues_fd = hess_full_result["hessian_eigenvalues"]
@@ -99,8 +92,7 @@ def compare_estimation_methods(
 
     # 4. Estimate Hessian (geometric)
     hess_geo_result = estimate_hessian_from_metric(
-        positions, edge_index, epsilon_sigma=epsilon_sigma,
-        validate_equilibrium=True
+        positions, edge_index, epsilon_sigma=epsilon_sigma, validate_equilibrium=True
     )
     hessian_geometric = hess_geo_result["hessian_tensors"]
     eigenvalues_geo = hess_geo_result["hessian_eigenvalues"]
@@ -108,10 +100,11 @@ def compare_estimation_methods(
 
     # 5. Compare methods
     comparison_metrics = _compute_comparison_metrics(
-        eigenvalues_fd, eigenvalues_geo,
+        eigenvalues_fd,
+        eigenvalues_geo,
         hessian_full_fd if compute_full_hessian else None,
         hessian_geometric,
-        equilibrium_score
+        equilibrium_score,
     )
 
     # Build return dict
@@ -146,7 +139,9 @@ def _compute_comparison_metrics(
         dict with scalar metrics
     """
     # Filter out NaN values
-    valid_mask = torch.isfinite(eigenvalues_fd).all(dim=1) & torch.isfinite(eigenvalues_geo).all(dim=1)
+    valid_mask = torch.isfinite(eigenvalues_fd).all(dim=1) & torch.isfinite(eigenvalues_geo).all(
+        dim=1
+    )
 
     if valid_mask.sum() == 0:
         return {
@@ -162,9 +157,9 @@ def _compute_comparison_metrics(
 
     # Eigenvalue correlation
     if len(eig_fd_valid) > 1:
-        eigenvalue_correlation = torch.corrcoef(
-            torch.stack([eig_fd_valid, eig_geo_valid])
-        )[0, 1].item()
+        eigenvalue_correlation = torch.corrcoef(torch.stack([eig_fd_valid, eig_geo_valid]))[
+            0, 1
+        ].item()
     else:
         eigenvalue_correlation = 0.0
 
@@ -185,7 +180,9 @@ def _compute_comparison_metrics(
     else:
         # Diagonal only: compare eigenvalues
         diff = (eigenvalues_fd[valid_mask] - eigenvalues_geo[valid_mask]).abs().mean()
-        scale = (eigenvalues_fd[valid_mask].abs().mean() + eigenvalues_geo[valid_mask].abs().mean()) / 2
+        scale = (
+            eigenvalues_fd[valid_mask].abs().mean() + eigenvalues_geo[valid_mask].abs().mean()
+        ) / 2
         frobenius_agreement = 1.0 - (diff / (scale + 1e-10)).item()
         element_wise_rmse = diff.item()
 
@@ -220,7 +217,7 @@ def _compute_per_walker_comparison(
     Returns:
         dict with [N] tensors
     """
-    N = eigenvalues_fd.shape[0]
+    eigenvalues_fd.shape[0]
 
     # Eigenvalue agreement per walker
     eig_diff = (eigenvalues_fd - eigenvalues_geo).abs().mean(dim=1)
@@ -286,14 +283,15 @@ def validate_on_synthetic_function(
         syn_fn = RastriginFunction(dimensionality, device)
     elif test_function == "custom":
         if custom_fn is None:
-            raise ValueError("custom_fn must be provided for test_function='custom'")
+            msg = "custom_fn must be provided for test_function='custom'"
+            raise ValueError(msg)
         syn_fn = custom_fn
     else:
         raise ValueError(f"Unknown test function: {test_function}")
 
     # Generate walker positions (grid)
     positions = syn_fn.generate_walker_grid(n_walkers)
-    N = positions.shape[0]
+    positions.shape[0]
 
     # Compute fitness values
     fitness_values = syn_fn.evaluate(positions)
@@ -306,15 +304,12 @@ def validate_on_synthetic_function(
     hess_true = syn_fn.hessian(positions)
 
     # Estimated gradient
-    grad_result = estimate_gradient_finite_difference(
-        positions, fitness_values, edge_index
-    )
+    grad_result = estimate_gradient_finite_difference(positions, fitness_values, edge_index)
     grad_estimated = grad_result["gradient"]
 
     # Estimated Hessian (FD)
     hess_result = estimate_hessian_full_fd(
-        positions, fitness_values, grad_estimated, edge_index,
-        method="central", symmetrize=True
+        positions, fitness_values, grad_estimated, edge_index, method="central", symmetrize=True
     )
     hess_estimated = hess_result["hessian_tensors"]
     eig_estimated = hess_result["hessian_eigenvalues"]
@@ -324,7 +319,7 @@ def validate_on_synthetic_function(
         positions, edge_index, epsilon_sigma=epsilon_sigma
     )
     hess_geometric = hess_geo_result["hessian_tensors"]
-    eig_geometric = hess_geo_result["hessian_eigenvalues"]
+    hess_geo_result["hessian_eigenvalues"]
 
     # Analytical eigenvalues
     eig_true = torch.linalg.eigvalsh(hess_true)
@@ -337,25 +332,23 @@ def validate_on_synthetic_function(
         ((grad_estimated[valid_mask] - grad_true[valid_mask]) ** 2).mean()
     ).item()
 
-    gradient_max_error = (
-        (grad_estimated[valid_mask] - grad_true[valid_mask]).abs().max()
-    ).item()
+    gradient_max_error = ((grad_estimated[valid_mask] - grad_true[valid_mask]).abs().max()).item()
 
-    hessian_frobenius_error = torch.norm(
-        hess_estimated[valid_mask] - hess_true[valid_mask],
-        p="fro",
-        dim=(1, 2)
-    ).mean().item()
+    hessian_frobenius_error = (
+        torch.norm(hess_estimated[valid_mask] - hess_true[valid_mask], p="fro", dim=(1, 2))
+        .mean()
+        .item()
+    )
 
     hessian_eigenvalue_error = (
         (eig_estimated[valid_mask] - eig_true[valid_mask]).abs().mean()
     ).item()
 
-    geometric_hessian_error = torch.norm(
-        hess_geometric[valid_mask] - hess_true[valid_mask],
-        p="fro",
-        dim=(1, 2)
-    ).mean().item()
+    geometric_hessian_error = (
+        torch.norm(hess_geometric[valid_mask] - hess_true[valid_mask], p="fro", dim=(1, 2))
+        .mean()
+        .item()
+    )
 
     # Tolerances (function-dependent)
     if test_function == "quadratic":
@@ -424,18 +417,18 @@ def plot_estimation_quality(
     grad_mag_np = torch.norm(gradient, dim=1).cpu().numpy()
 
     # Create figure
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    _fig, axes = plt.subplots(2, 2, figsize=(12, 10))
 
     # Panel 1: Eigenvalue scatter
     ax = axes[0, 0]
     ax.scatter(eig_fd_np, eig_geo_np, alpha=0.5, s=10)
     lims = [
         np.min([eig_fd_np.min(), eig_geo_np.min()]),
-        np.max([eig_fd_np.max(), eig_geo_np.max()])
+        np.max([eig_fd_np.max(), eig_geo_np.max()]),
     ]
-    ax.plot(lims, lims, 'r--', alpha=0.5, label='y=x')
-    ax.set_xlabel('FD Eigenvalues')
-    ax.set_ylabel('Geometric Eigenvalues')
+    ax.plot(lims, lims, "r--", alpha=0.5, label="y=x")
+    ax.set_xlabel("FD Eigenvalues")
+    ax.set_ylabel("Geometric Eigenvalues")
     ax.set_title(f"Correlation: {metrics['eigenvalue_correlation']:.3f}")
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -443,45 +436,44 @@ def plot_estimation_quality(
     # Panel 2: Gradient magnitude histogram
     ax = axes[0, 1]
     ax.hist(grad_mag_np[np.isfinite(grad_mag_np)], bins=30, alpha=0.7)
-    ax.set_xlabel('Gradient Magnitude')
-    ax.set_ylabel('Count')
-    ax.set_title('Gradient Distribution')
+    ax.set_xlabel("Gradient Magnitude")
+    ax.set_ylabel("Count")
+    ax.set_title("Gradient Distribution")
     ax.grid(True, alpha=0.3)
 
     # Panel 3: Eigenvalue difference histogram
     ax = axes[1, 0]
     eig_diff = np.abs(eig_fd_np - eig_geo_np)
     ax.hist(eig_diff[np.isfinite(eig_diff)], bins=30, alpha=0.7)
-    ax.set_xlabel('|Eigenvalue Difference|')
-    ax.set_ylabel('Count')
+    ax.set_xlabel("|Eigenvalue Difference|")
+    ax.set_ylabel("Count")
     ax.set_title(f"RMSE: {metrics['element_wise_rmse']:.3e}")
     ax.grid(True, alpha=0.3)
 
     # Panel 4: Method preference summary
     ax = axes[1, 1]
-    ax.axis('off')
+    ax.axis("off")
     summary_text = f"""
     Method Comparison Summary
 
-    Eigenvalue Correlation: {metrics['eigenvalue_correlation']:.3f}
-    Frobenius Agreement: {metrics['frobenius_agreement']:.3f}
-    Element-wise RMSE: {metrics['element_wise_rmse']:.3e}
+    Eigenvalue Correlation: {metrics["eigenvalue_correlation"]:.3f}
+    Frobenius Agreement: {metrics["frobenius_agreement"]:.3f}
+    Element-wise RMSE: {metrics["element_wise_rmse"]:.3e}
 
-    Equilibrium Score: {metrics['mean_equilibrium_score']:.3f}
-    Method Preference: {metrics['method_preference']}
+    Equilibrium Score: {metrics["mean_equilibrium_score"]:.3f}
+    Method Preference: {metrics["method_preference"]}
 
     Interpretation:
     - Correlation > 0.8: Excellent agreement
     - Correlation 0.6-0.8: Good agreement
     - Correlation < 0.6: Poor agreement
     """
-    ax.text(0.1, 0.5, summary_text, fontsize=10, family='monospace',
-            verticalalignment='center')
+    ax.text(0.1, 0.5, summary_text, fontsize=10, family="monospace", verticalalignment="center")
 
     plt.tight_layout()
 
     if save_path:
-        plt.savefig(save_path, dpi=150, bbox_inches='tight')
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
         print(f"Saved plot to {save_path}")
     else:
         plt.show()
@@ -490,6 +482,7 @@ def plot_estimation_quality(
 # ============================================================================
 # Synthetic Test Functions
 # ============================================================================
+
 
 class SyntheticFunction:
     """Base class for synthetic test functions with known derivatives."""
@@ -535,7 +528,7 @@ class QuadraticFunction(SyntheticFunction):
     def generate_walker_grid(self, n_walkers: int) -> Tensor:
         n_per_dim = int(n_walkers ** (1 / self.d)) + 1
         ranges = [torch.linspace(-2, 2, n_per_dim, device=self.device) for _ in range(self.d)]
-        grids = torch.meshgrid(*ranges, indexing='ij')
+        grids = torch.meshgrid(*ranges, indexing="ij")
         positions = torch.stack([g.flatten() for g in grids], dim=1)
         return positions[:n_walkers]
 
@@ -549,30 +542,30 @@ class RosenbrockFunction(SyntheticFunction):
 
     def evaluate(self, x: Tensor) -> Tensor:
         x1, x2 = x[:, 0], x[:, 1]
-        return (1 - x1) ** 2 + 100 * (x2 - x1 ** 2) ** 2
+        return (1 - x1) ** 2 + 100 * (x2 - x1**2) ** 2
 
     def gradient(self, x: Tensor) -> Tensor:
         x1, x2 = x[:, 0], x[:, 1]
         grad = torch.zeros_like(x)
-        grad[:, 0] = -2 * (1 - x1) - 400 * x1 * (x2 - x1 ** 2)
-        grad[:, 1] = 200 * (x2 - x1 ** 2)
+        grad[:, 0] = -2 * (1 - x1) - 400 * x1 * (x2 - x1**2)
+        grad[:, 1] = 200 * (x2 - x1**2)
         return grad
 
     def hessian(self, x: Tensor) -> Tensor:
         N = x.shape[0]
         x1, x2 = x[:, 0], x[:, 1]
         H = torch.zeros(N, 2, 2, device=self.device)
-        H[:, 0, 0] = 2 - 400 * x2 + 1200 * x1 ** 2
+        H[:, 0, 0] = 2 - 400 * x2 + 1200 * x1**2
         H[:, 0, 1] = -400 * x1
         H[:, 1, 0] = -400 * x1
         H[:, 1, 1] = 200
         return H
 
     def generate_walker_grid(self, n_walkers: int) -> Tensor:
-        n_per_dim = int(n_walkers ** 0.5) + 1
+        n_per_dim = int(n_walkers**0.5) + 1
         x = torch.linspace(-1, 1.5, n_per_dim, device=self.device)
         y = torch.linspace(-0.5, 2, n_per_dim, device=self.device)
-        X, Y = torch.meshgrid(x, y, indexing='ij')
+        X, Y = torch.meshgrid(x, y, indexing="ij")
         positions = torch.stack([X.flatten(), Y.flatten()], dim=1)
         return positions[:n_walkers]
 
@@ -586,7 +579,7 @@ class RastriginFunction(SyntheticFunction):
         self.A = A
 
     def evaluate(self, x: Tensor) -> Tensor:
-        return self.A * self.d + (x ** 2 - self.A * torch.cos(2 * torch.pi * x)).sum(dim=1)
+        return self.A * self.d + (x**2 - self.A * torch.cos(2 * torch.pi * x)).sum(dim=1)
 
     def gradient(self, x: Tensor) -> Tensor:
         return 2 * x + 2 * torch.pi * self.A * torch.sin(2 * torch.pi * x)
@@ -594,7 +587,7 @@ class RastriginFunction(SyntheticFunction):
     def hessian(self, x: Tensor) -> Tensor:
         N = x.shape[0]
         H = torch.zeros(N, self.d, self.d, device=self.device)
-        diag = 2 + 4 * torch.pi ** 2 * self.A * torch.cos(2 * torch.pi * x)
+        diag = 2 + 4 * torch.pi**2 * self.A * torch.cos(2 * torch.pi * x)
         for i in range(self.d):
             H[:, i, i] = diag[:, i]
         return H
@@ -602,7 +595,7 @@ class RastriginFunction(SyntheticFunction):
     def generate_walker_grid(self, n_walkers: int) -> Tensor:
         n_per_dim = int(n_walkers ** (1 / self.d)) + 1
         ranges = [torch.linspace(-5, 5, n_per_dim, device=self.device) for _ in range(self.d)]
-        grids = torch.meshgrid(*ranges, indexing='ij')
+        grids = torch.meshgrid(*ranges, indexing="ij")
         positions = torch.stack([g.flatten() for g in grids], dim=1)
         return positions[:n_walkers]
 
@@ -626,6 +619,4 @@ def _build_knn_graph(positions: Tensor, k: int) -> Tensor:
     src = torch.arange(N, device=positions.device).unsqueeze(1).expand(-1, k).flatten()
     dst = indices.flatten()
 
-    edge_index = torch.stack([src, dst], dim=0)
-
-    return edge_index
+    return torch.stack([src, dst], dim=0)

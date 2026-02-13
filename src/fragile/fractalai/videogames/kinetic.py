@@ -54,9 +54,8 @@ class RandomActionOperator:
         if hasattr(self.env, "action_space"):
             return np.array([self.env.action_space.sample() for _ in range(N)])
 
-        raise AttributeError(
-            "Environment must have either sample_action() or action_space.sample()"
-        )
+        msg = "Environment must have either sample_action() or action_space.sample()"
+        raise AttributeError(msg)
 
     def sample_dt(self, N: int) -> np.ndarray:
         """Sample N frame skip values from dt_range.

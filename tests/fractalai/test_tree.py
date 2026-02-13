@@ -10,6 +10,7 @@ from fragile.fractalai.core.tree import (
     NetworkxTree,
 )
 
+
 skip_ids = {DEFAULT_ROOT_ID, DEFAULT_FIRST_NODE_ID}
 
 # ---------------------------------------------------------------------------
@@ -330,11 +331,7 @@ class TestDataTreeGenerators:
 
     def test_iterate_branch_with_next_prefix(self):
         tree = self._build_data_tree()
-        steps = list(
-            tree.iterate_branch(
-                _UID(30), names=["observs", "actions", "next_observs"]
-            )
-        )
+        steps = list(tree.iterate_branch(_UID(30), names=["observs", "actions", "next_observs"]))
         assert len(steps) == 2
         # step 0: node=10, next_node=20
         assert steps[0][0].item() == 10.0  # observs of node 10
@@ -356,9 +353,7 @@ class TestDataTreeGenerators:
 
     def test_iterate_branch_batched(self):
         tree = self._build_data_tree()
-        batches = list(
-            tree.iterate_branch(_UID(30), names=["observs"], batch_size=2)
-        )
+        batches = list(tree.iterate_branch(_UID(30), names=["observs"], batch_size=2))
         # 2 steps in one batch
         assert len(batches) == 1
 

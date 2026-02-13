@@ -87,9 +87,7 @@ class FractalCloningOperator:
 
         return virtual_rewards, companions
 
-    def decide_cloning(
-        self, virtual_rewards: Tensor, alive: Tensor
-    ) -> tuple[Tensor, Tensor]:
+    def decide_cloning(self, virtual_rewards: Tensor, alive: Tensor) -> tuple[Tensor, Tensor]:
         """Decide which walkers should clone based on virtual rewards.
 
         Args:
@@ -145,7 +143,7 @@ class FractalCloningOperator:
             will_clone: Boolean mask [N], True for walkers that will clone
         """
         # Calculate fitness
-        virtual_rewards, fitness_companions = self.calculate_fitness(
+        virtual_rewards, _fitness_companions = self.calculate_fitness(
             observations, cumulative_rewards, step_rewards, alive
         )
 

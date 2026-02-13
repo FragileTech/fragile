@@ -90,7 +90,9 @@ class WalkerState:
         states[positions] = np.array([self._copy_state(s) for s in source.states], dtype=object)
         actions[positions] = source.actions.copy()
         dt[positions] = source.dt.copy()
-        idx = list(range(*positions.indices(self.N))) if isinstance(positions, slice) else positions
+        idx = (
+            list(range(*positions.indices(self.N))) if isinstance(positions, slice) else positions
+        )
         for i, j in enumerate(idx):
             infos[j] = source.infos[i]
 
@@ -101,9 +103,7 @@ class WalkerState:
         dones[positions] = source.dones.clone()
         truncated[positions] = source.truncated.clone()
 
-        vr = (
-            self.virtual_rewards.clone() if self.virtual_rewards is not None else None
-        )
+        vr = self.virtual_rewards.clone() if self.virtual_rewards is not None else None
         if vr is not None and source.virtual_rewards is not None:
             vr[positions] = source.virtual_rewards.clone()
 
@@ -136,14 +136,10 @@ class WalkerState:
         """
         # Clone numpy arrays (states, actions, dt)
         new_states = self.states.copy()
-        new_states[will_clone.cpu().numpy()] = self.states[
-            companions[will_clone].cpu().numpy()
-        ]
+        new_states[will_clone.cpu().numpy()] = self.states[companions[will_clone].cpu().numpy()]
 
         new_actions = self.actions.copy()
-        new_actions[will_clone.cpu().numpy()] = self.actions[
-            companions[will_clone].cpu().numpy()
-        ]
+        new_actions[will_clone.cpu().numpy()] = self.actions[companions[will_clone].cpu().numpy()]
 
         new_dt = self.dt.copy()
         new_dt[will_clone.cpu().numpy()] = self.dt[companions[will_clone].cpu().numpy()]
@@ -294,9 +290,7 @@ class FractalGas:
             observation = self._extract_observation_from_env()
         if observation is None:
             # Legacy fallback: infer observation through a no-op kinetic step.
-            states = np.array(
-                [self._copy_state(state) for _ in range(self.N)], dtype=object
-            )
+            states = np.array([self._copy_state(state) for _ in range(self.N)], dtype=object)
             actions = self._init_actions()
             dt = np.ones(self.N, dtype=int)
             _, obs_list, _, _, _, _ = self.kinetic_op.apply(states, actions, dt)
@@ -333,15 +327,11 @@ class FractalGas:
             init_state, init_obs, init_info = self._reset_env_with_state()
 
         # Replicate initial state and observation N times
-        states = np.array(
-            [self._copy_state(init_state) for _ in range(self.N)], dtype=object
-        )
+        states = np.array([self._copy_state(init_state) for _ in range(self.N)], dtype=object)
         obs_list = [self._copy_observation(init_obs) for _ in range(self.N)]
 
         # Convert observations to tensors
-        observations = torch.tensor(
-            np.array(obs_list), device=self.device, dtype=self.dtype
-        )
+        observations = torch.tensor(np.array(obs_list), device=self.device, dtype=self.dtype)
 
         # Initialize all walker arrays
         rewards = torch.zeros(self.N, device=self.device, dtype=self.dtype)
@@ -351,8 +341,7 @@ class FractalGas:
         actions = self._init_actions()
         dt = np.ones(self.N, dtype=int)
         infos = [
-            init_info.copy() if hasattr(init_info, "copy") else init_info
-            for _ in range(self.N)
+            init_info.copy() if hasattr(init_info, "copy") else init_info for _ in range(self.N)
         ]
 
         # Reset metrics
@@ -404,9 +393,7 @@ class FractalGas:
         )
 
         # 2. Decide cloning
-        clone_companions, will_clone = self.clone_op.decide_cloning(
-            virtual_rewards, state.alive
-        )
+        clone_companions, will_clone = self.clone_op.decide_cloning(virtual_rewards, state.alive)
 
         # 3. Clone state
         state_after_clone = state.clone(clone_companions, will_clone)
@@ -425,13 +412,9 @@ class FractalGas:
 
         # 5. Convert numpy arrays to tensors
         observations = torch.tensor(obs_np, device=self.device, dtype=self.dtype)
-        step_rewards_tensor = torch.tensor(
-            step_rewards_np, device=self.device, dtype=self.dtype
-        )
+        step_rewards_tensor = torch.tensor(step_rewards_np, device=self.device, dtype=self.dtype)
         dones_tensor = torch.tensor(dones_np, device=self.device, dtype=torch.bool)
-        truncated_tensor = torch.tensor(
-            truncated_np, device=self.device, dtype=torch.bool
-        )
+        truncated_tensor = torch.tensor(truncated_np, device=self.device, dtype=torch.bool)
 
         # 6. Update cumulative rewards
         cumulative_rewards = state_after_clone.rewards + step_rewards_tensor
@@ -475,13 +458,17 @@ class FractalGas:
         if self.n_elite > 0:
             self._update_elites(new_state)
             elite_max = self._elite_walkers.rewards.max().item()
-            if elite_max > info["max_reward"]:
-                info["max_reward"] = elite_max
+            info["max_reward"] = max(elite_max, info["max_reward"])
 
         # 9. Record best walker frame (if enabled)
         if self.record_frames:
             best_idx = new_state.rewards.argmax().item()
-            best_frame = self._render_walker_frame(new_state.states[best_idx])
+            best_state = new_state.states[best_idx]
+            best_frame = None
+            if hasattr(best_state, "rgb_frame") and best_state.rgb_frame is not None:
+                best_frame = best_state.rgb_frame
+            else:
+                best_frame = self._render_walker_frame(best_state)
             info["best_frame"] = best_frame
             info["best_walker_idx"] = best_idx
 
@@ -525,9 +512,7 @@ class FractalGas:
         return WalkerState(
             states=np.array(
                 [
-                    state.states[i].copy()
-                    if hasattr(state.states[i], "copy")
-                    else state.states[i]
+                    state.states[i].copy() if hasattr(state.states[i], "copy") else state.states[i]
                     for i in idx_np
                 ],
                 dtype=object,
@@ -621,9 +606,7 @@ class FractalGas:
         from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
 
         state = self.reset(initial_state=initial_state)
-        tree = AtariTreeHistory(
-            N=self.N, game_name=task_label, max_iterations=max_iterations
-        )
+        tree = AtariTreeHistory(N=self.N, game_name=task_label, max_iterations=max_iterations)
         tree.record_initial_atari_state(state)
 
         for _ in range(max_iterations):

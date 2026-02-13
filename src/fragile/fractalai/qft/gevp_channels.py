@@ -138,7 +138,9 @@ def _fft_cross_correlator_lags(
         raise ValueError(f"Expected series [K,T], got {tuple(series.shape)}")
     k_count, t_len = series.shape
     if k_count <= 0 or t_len <= 0:
-        return torch.zeros((int(max_lag) + 1, k_count, k_count), dtype=torch.float32, device=series.device)
+        return torch.zeros(
+            (int(max_lag) + 1, k_count, k_count), dtype=torch.float32, device=series.device
+        )
 
     work = series.float()
     if use_connected:
@@ -414,14 +416,22 @@ def _build_basis_from_results(
     if strategy == "base_plus_best_scale" and multiscale_output is not None:
         for channel in basis_channels:
             companion_name = f"{channel}_companion"
-            best_idx = int(getattr(multiscale_output, "best_scale_index", {}).get(companion_name, -1))
-            per_scale = getattr(multiscale_output, "per_scale_results", {}).get(companion_name, None)
+            best_idx = int(
+                getattr(multiscale_output, "best_scale_index", {}).get(companion_name, -1)
+            )
+            per_scale = getattr(multiscale_output, "per_scale_results", {}).get(
+                companion_name, None
+            )
             if not isinstance(per_scale, list):
                 continue
             if best_idx < 0 or best_idx >= len(per_scale):
                 continue
             best_result = per_scale[best_idx]
-            if best_result is None or best_result.n_samples <= 0 or best_result.series.numel() <= 0:
+            if (
+                best_result is None
+                or best_result.n_samples <= 0
+                or best_result.series.numel() <= 0
+            ):
                 continue
             label = f"{channel}@best_scale[{best_idx}]"
             filter_reason = _operator_filter_reason(
@@ -438,9 +448,7 @@ def _build_basis_from_results(
 
     if not basis_entries:
         if filtered_out:
-            preview = ", ".join(
-                f"{label}({reason})" for label, reason in filtered_out[:5]
-            )
+            preview = ", ".join(f"{label}({reason})" for label, reason in filtered_out[:5])
             suffix = " ..." if len(filtered_out) > 5 else ""
             msg = (
                 f"No valid {base_channel} operator series found for GEVP basis after operator quality "
@@ -454,9 +462,7 @@ def _build_basis_from_results(
         raise ValueError(msg)
 
     if filtered_out:
-        preview = ", ".join(
-            f"{label}({reason})" for label, reason in filtered_out[:5]
-        )
+        preview = ", ".join(f"{label}({reason})" for label, reason in filtered_out[:5])
         suffix = " ..." if len(filtered_out) > 5 else ""
         notes.append(
             "Operator quality filter excluded "
@@ -630,7 +636,8 @@ def compute_companion_channel_gevp(
     dropped_basis_labels = dropped_pre_prune + dropped_basis_labels
     if dropped_basis_labels:
         notes.append(
-            "Dropped basis vectors: " + ", ".join(dropped_basis_labels[:8])
+            "Dropped basis vectors: "
+            + ", ".join(dropped_basis_labels[:8])
             + (" ..." if len(dropped_basis_labels) > 8 else "")
         )
 
@@ -684,7 +691,9 @@ def compute_companion_channel_gevp(
         )
         corr_err = _nanstd_compat(principal_boot, dim=0)
 
-        mass_samples = torch.full((n_boot,), float("nan"), dtype=torch.float32, device=basis.device)
+        mass_samples = torch.full(
+            (n_boot,), float("nan"), dtype=torch.float32, device=basis.device
+        )
         for b_idx in range(n_boot):
             mass_samples[b_idx] = float(
                 _mass_from_fit_mode(principal_boot[b_idx], dt=dt, config=config)
@@ -696,7 +705,9 @@ def compute_companion_channel_gevp(
     fit["source"] = f"gevp_{canonical_base_channel}"
     fit["base_channel"] = canonical_base_channel
     fit["gevp_t0"] = int(t0)
-    fit["gevp_basis_strategy"] = _sanitize_mode(config.basis_strategy, GEVP_BASIS_STRATEGIES, "base_only")
+    fit["gevp_basis_strategy"] = _sanitize_mode(
+        config.basis_strategy, GEVP_BASIS_STRATEGIES, "base_only"
+    )
     fit["gevp_min_operator_r2"] = float(config.min_operator_r2)
     fit["gevp_min_operator_windows"] = int(max(0, config.min_operator_windows))
     fit["gevp_max_operator_error_pct"] = float(config.max_operator_error_pct)

@@ -2,11 +2,10 @@
 
 from dataclasses import dataclass
 
-import gymnasium as gym
-import numpy as np
-
 # Register ALE environments
 import ale_py  # noqa: F401
+import gymnasium as gym
+import numpy as np
 
 
 @dataclass
@@ -80,12 +79,11 @@ class AtariEnv:
         """Get current observation based on obs_type."""
         if self.obs_type == "ram":
             return self._ale.getRAM()
-        elif self.obs_type == "rgb":
+        if self.obs_type == "rgb":
             return self._ale.getScreenRGB()
-        elif self.obs_type == "grayscale":
+        if self.obs_type == "grayscale":
             return self._ale.getScreenGrayscale()
-        else:
-            raise ValueError(f"Unknown obs_type: {self.obs_type}")
+        raise ValueError(f"Unknown obs_type: {self.obs_type}")
 
     def _get_rgb_frame(self) -> np.ndarray | None:
         """Get RGB frame for visualization if enabled."""
@@ -120,7 +118,7 @@ class AtariEnv:
         """
         self._ale.restoreState(state.ale_state)
 
-    def reset(self, seed: int | None = None) -> AtariState:
+    def reset(self, seed: int | None = None, **kwargs) -> AtariState:
         """Reset environment and return initial state.
 
         Compatible with plangym interface: returns just the state.
@@ -133,8 +131,7 @@ class AtariEnv:
             state: Initial AtariState (with .copy() method)
         """
         obs, _info = self.env.reset(seed=seed)
-        state = self._clone_state(observation=obs)
-        return state
+        return self._clone_state(observation=obs)
 
     def step(
         self,
@@ -187,6 +184,7 @@ class AtariEnv:
         states: np.ndarray,
         actions: np.ndarray,
         dt: np.ndarray | None = None,
+        **kwargs,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, list]:
         """Step multiple walkers sequentially.
 

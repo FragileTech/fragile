@@ -41,7 +41,9 @@ def test_build_anchor_rows_family_fixed_mode_uses_one_scale_per_family() -> None
     assert len(rows) == 1
     row = rows[0]
     assert row["anchor"] == "family-fixed"
-    assert row["baryon_pred_GeV"] == pytest.approx(masses["baryon"] * row["baryon_scale_GeV_per_alg"])
+    assert row["baryon_pred_GeV"] == pytest.approx(
+        masses["baryon"] * row["baryon_scale_GeV_per_alg"]
+    )
     assert row["meson_pred_GeV"] == pytest.approx(masses["meson"] * row["meson_scale_GeV_per_alg"])
     assert row["glueball_pred_GeV"] == pytest.approx(
         masses["glueball"] * row["glueball_scale_GeV_per_alg"]

@@ -1,7 +1,8 @@
 """Tests for geometric Hessian estimation from metric."""
 
-import torch
 import pytest
+import torch
+
 from fragile.fractalai.scutoid import estimate_hessian_from_metric
 
 
@@ -56,9 +57,7 @@ def test_geometric_hessian_formula():
 
     epsilon_sigma = 0.2
 
-    result = estimate_hessian_from_metric(
-        positions, edge_index, epsilon_sigma=epsilon_sigma
-    )
+    result = estimate_hessian_from_metric(positions, edge_index, epsilon_sigma=epsilon_sigma)
 
     H = result["hessian_tensors"]
     g = result["metric_tensors"]
@@ -117,7 +116,9 @@ def test_psd_violation_detection():
     epsilon_sigma = 10.0
 
     result = estimate_hessian_from_metric(
-        positions, edge_index, epsilon_sigma=epsilon_sigma,
+        positions,
+        edge_index,
+        epsilon_sigma=epsilon_sigma,
         validate_equilibrium=False,  # Speed up
     )
 
@@ -130,8 +131,9 @@ def test_psd_violation_detection():
     expected_violations = min_eigenvalues < -1e-6
 
     # Should match
-    assert torch.equal(psd_violation_mask, expected_violations), \
-        "PSD violations should be correctly detected"
+    assert torch.equal(
+        psd_violation_mask, expected_violations
+    ), "PSD violations should be correctly detected"
 
 
 def test_equilibrium_score_range(isotropic_setup):
@@ -158,23 +160,19 @@ def test_precomputed_metric():
     edge_index = _build_knn_graph(positions, k=10)
 
     # First compute metric
-    result1 = estimate_hessian_from_metric(
-        positions, edge_index, epsilon_sigma=0.1
-    )
+    result1 = estimate_hessian_from_metric(positions, edge_index, epsilon_sigma=0.1)
     metric_precomputed = result1["metric_tensors"]
 
     # Now provide pre-computed metric
     result2 = estimate_hessian_from_metric(
-        positions, edge_index, epsilon_sigma=0.1,
+        positions,
+        edge_index,
+        epsilon_sigma=0.1,
         metric_tensors=metric_precomputed,
     )
 
     # Results should be identical
-    diff = torch.norm(
-        result1["hessian_tensors"] - result2["hessian_tensors"],
-        p="fro",
-        dim=(1, 2)
-    )
+    diff = torch.norm(result1["hessian_tensors"] - result2["hessian_tensors"], p="fro", dim=(1, 2))
 
     assert diff.max() < 1e-6, "Results with pre-computed metric should match"
 
@@ -191,7 +189,9 @@ def test_different_epsilon_sigma_values():
 
     for eps in epsilon_values:
         result = estimate_hessian_from_metric(
-            positions, edge_index, epsilon_sigma=eps,
+            positions,
+            edge_index,
+            epsilon_sigma=eps,
             validate_equilibrium=False,
         )
         results.append(result)
@@ -208,8 +208,9 @@ def test_different_epsilon_sigma_values():
         # (since we subtract from identity)
         mean_diff = eig_diff.mean()
 
-        assert abs(mean_diff - eps_diff) < 0.05, \
-            f"Eigenvalue difference should match epsilon difference: {mean_diff} vs {eps_diff}"
+        assert (
+            abs(mean_diff - eps_diff) < 0.05
+        ), f"Eigenvalue difference should match epsilon difference: {mean_diff} vs {eps_diff}"
 
 
 def test_metric_invertibility():
@@ -219,9 +220,7 @@ def test_metric_invertibility():
     positions = torch.randn(N, d)
     edge_index = _build_knn_graph(positions, k=10)
 
-    result = estimate_hessian_from_metric(
-        positions, edge_index, epsilon_sigma=0.1
-    )
+    result = estimate_hessian_from_metric(positions, edge_index, epsilon_sigma=0.1)
 
     metrics = result["metric_tensors"]
 
@@ -242,9 +241,7 @@ def test_alive_mask_filtering():
     alive = torch.ones(N, dtype=torch.bool)
     alive[::3] = False  # Every 3rd walker is dead
 
-    result = estimate_hessian_from_metric(
-        positions, edge_index, epsilon_sigma=0.1, alive=alive
-    )
+    result = estimate_hessian_from_metric(positions, edge_index, epsilon_sigma=0.1, alive=alive)
 
     # Dead walkers should still have metrics computed
     # (alive mask mainly affects edge filtering in utils)
@@ -259,9 +256,7 @@ def test_high_dimensional():
     positions = torch.randn(N, d)
     edge_index = _build_knn_graph(positions, k=15)
 
-    result = estimate_hessian_from_metric(
-        positions, edge_index, epsilon_sigma=0.1
-    )
+    result = estimate_hessian_from_metric(positions, edge_index, epsilon_sigma=0.1)
 
     # Should work in higher dimensions
     assert result["hessian_tensors"].shape == (N, d, d)
@@ -283,8 +278,7 @@ def test_metric_isotropy_score():
     edge_index_iso = _build_knn_graph(positions_iso, k=10)
 
     result_iso = estimate_hessian_from_metric(
-        positions_iso, edge_index_iso, epsilon_sigma=0.1,
-        validate_equilibrium=True
+        positions_iso, edge_index_iso, epsilon_sigma=0.1, validate_equilibrium=True
     )
 
     # Anisotropic distribution (stretched along one axis)
@@ -293,8 +287,7 @@ def test_metric_isotropy_score():
     edge_index_aniso = _build_knn_graph(positions_aniso, k=10)
 
     result_aniso = estimate_hessian_from_metric(
-        positions_aniso, edge_index_aniso, epsilon_sigma=0.1,
-        validate_equilibrium=True
+        positions_aniso, edge_index_aniso, epsilon_sigma=0.1, validate_equilibrium=True
     )
 
     # Isotropic should have higher equilibrium score (more uniform)
@@ -310,6 +303,7 @@ def test_metric_isotropy_score():
 # ============================================================================
 # Helper functions
 # ============================================================================
+
 
 def _build_knn_graph(positions: torch.Tensor, k: int) -> torch.Tensor:
     """Build k-nearest neighbor graph."""

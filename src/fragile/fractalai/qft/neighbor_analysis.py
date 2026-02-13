@@ -33,8 +33,9 @@ from typing import TYPE_CHECKING
 import warnings
 
 import torch
-import torch.nn.functional as F
 from torch import Tensor
+import torch.nn.functional as F
+
 
 if TYPE_CHECKING:
     from fragile.fractalai.core.history import RunHistory
@@ -102,7 +103,9 @@ def compute_companion_batch(
 
         if actual_sample_size < sample_size:
             sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
-            neighbor_idx = F.pad(neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0)
+            neighbor_idx = F.pad(
+                neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0
+            )
 
         all_sample_idx.append(sample_idx)
         all_neighbor_idx.append(neighbor_idx)
@@ -189,7 +192,11 @@ def compute_recorded_neighbors_batch(
     """
     if history.neighbor_edges is None:
         return compute_companion_batch(
-            history, start_idx, neighbor_k, sample_size=sample_size, end_idx=end_idx,
+            history,
+            start_idx,
+            neighbor_k,
+            sample_size=sample_size,
+            end_idx=end_idx,
         )
 
     n_recorded = end_idx if end_idx is not None else history.n_recorded
@@ -236,7 +243,9 @@ def compute_recorded_neighbors_batch(
 
         if actual_sample_size < sample_size:
             sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
-            neighbor_idx = F.pad(neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0)
+            neighbor_idx = F.pad(
+                neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0
+            )
 
         all_sample_idx.append(sample_idx)
         all_neighbor_idx.append(neighbor_idx)
@@ -285,13 +294,12 @@ def compute_neighbors_auto(
                 sample_size=sample_size,
                 end_idx=end_idx,
             )
-        else:
-            warnings.warn(
-                f"Recorded neighbors only available for {available_steps} steps, "
-                f"but {required_steps} steps requested. Falling back to companions.",
-                UserWarning,
-                stacklevel=2,
-            )
+        warnings.warn(
+            f"Recorded neighbors only available for {available_steps} steps, "
+            f"but {required_steps} steps requested. Falling back to companions.",
+            UserWarning,
+            stacklevel=2,
+        )
 
     # Fallback to companions
     if history.companions_clone is not None:
@@ -303,10 +311,11 @@ def compute_neighbors_auto(
             end_idx=end_idx,
         )
 
-    raise RuntimeError(
+    msg = (
         "No neighbor data available. RunHistory has neither neighbor_edges nor "
         "companions_clone. Set neighbor_graph_record=True during simulation."
     )
+    raise RuntimeError(msg)
 
 
 # =============================================================================
@@ -352,15 +361,18 @@ def compute_neighbor_topology(
             sample_size=sample_size,
             end_idx=end_idx,
         )
-    elif neighbor_method == "companions":
-        return compute_companion_batch(history, start_idx, neighbor_k, sample_size, end_idx=end_idx)
-    elif neighbor_method == "recorded":
-        return compute_recorded_neighbors_batch(history, start_idx, neighbor_k, sample_size, end_idx=end_idx)
-    else:
-        raise ValueError(
-            f"Unknown neighbor method: {neighbor_method}. "
-            f"Valid options: 'auto', 'recorded', 'companions'"
+    if neighbor_method == "companions":
+        return compute_companion_batch(
+            history, start_idx, neighbor_k, sample_size, end_idx=end_idx
         )
+    if neighbor_method == "recorded":
+        return compute_recorded_neighbors_batch(
+            history, start_idx, neighbor_k, sample_size, end_idx=end_idx
+        )
+    raise ValueError(
+        f"Unknown neighbor method: {neighbor_method}. "
+        f"Valid options: 'auto', 'recorded', 'companions'"
+    )
 
 
 def compute_full_neighbor_matrix(
@@ -396,15 +408,15 @@ def compute_full_neighbor_matrix(
 
     # Delegate to batch functions with sample_size=N to get all walkers
     try:
-        if neighbor_method in ("auto", "recorded"):
-            sample_idx, neighbor_idx, _ = compute_neighbors_auto(
+        if neighbor_method in {"auto", "recorded"}:
+            _sample_idx, neighbor_idx, _ = compute_neighbors_auto(
                 history=history,
                 start_idx=start_idx,
                 neighbor_k=k,
                 sample_size=N,
             )
         elif neighbor_method == "companions":
-            sample_idx, neighbor_idx, _ = compute_companion_batch(
+            _sample_idx, neighbor_idx, _ = compute_companion_batch(
                 history=history,
                 start_idx=start_idx,
                 neighbor_k=k,
@@ -473,8 +485,10 @@ def extract_geometric_weights(
             edges = history.neighbor_edges[record_idx]
             dists = history.geodesic_edge_distances[record_idx]
             if (
-                not torch.is_tensor(edges) or edges.numel() == 0
-                or not torch.is_tensor(dists) or dists.numel() == 0
+                not torch.is_tensor(edges)
+                or edges.numel() == 0
+                or not torch.is_tensor(dists)
+                or dists.numel() == 0
             ):
                 continue
 
@@ -513,8 +527,6 @@ def extract_geometric_weights(
 
             # Only overwrite where volume > 0
             positive = gathered > 0
-            volume_weights[valid_t] = torch.where(
-                positive, gathered, volume_weights[valid_t]
-            )
+            volume_weights[valid_t] = torch.where(positive, gathered, volume_weights[valid_t])
 
     return edge_weights, volume_weights

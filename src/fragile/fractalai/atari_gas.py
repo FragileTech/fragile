@@ -40,7 +40,7 @@ def make_plangym_atari_env(name: str, **kwargs) -> Any:
     if _parse_semver(version) < (0, 1, 32):
         msg = (
             f"plangym>=0.1.32 is required for AtariGas (found {version}). "
-            "Run: uv add \"plangym[atari]==0.1.32\""
+            'Run: uv add "plangym[atari]==0.1.32"'
         )
         raise RuntimeError(msg)
 

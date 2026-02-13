@@ -42,18 +42,16 @@ class _HistoryStub:
         base = torch.linspace(0.1, 1.0, steps=edge_count, dtype=torch.float32)
         self.edge_weights = []
         for _ in range(n_recorded):
-            self.edge_weights.append(
-                {
-                    "uniform": torch.ones(edge_count, dtype=torch.float32),
-                    "inverse_distance": base.clone(),
-                    "inverse_volume": (0.8 * base + 0.2).clone(),
-                    "inverse_riemannian_distance": (1.2 * base + 0.1).clone(),
-                    "inverse_riemannian_volume": (0.7 * base + 0.3).clone(),
-                    "kernel": (0.6 * base + 0.4).clone(),
-                    "riemannian_kernel": (0.9 * base + 0.2).clone(),
-                    "riemannian_kernel_volume": (1.1 * base + 0.15).clone(),
-                }
-            )
+            self.edge_weights.append({
+                "uniform": torch.ones(edge_count, dtype=torch.float32),
+                "inverse_distance": base.clone(),
+                "inverse_volume": (0.8 * base + 0.2).clone(),
+                "inverse_riemannian_distance": (1.2 * base + 0.1).clone(),
+                "inverse_riemannian_volume": (0.7 * base + 0.3).clone(),
+                "kernel": (0.6 * base + 0.4).clone(),
+                "riemannian_kernel": (0.9 * base + 0.2).clone(),
+                "riemannian_kernel_volume": (1.1 * base + 0.15).clone(),
+            })
 
 
 def test_compute_coupling_diagnostics_runs_default() -> None:

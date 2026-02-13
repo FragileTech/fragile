@@ -8,6 +8,7 @@ correlator pipeline used by other QFT channel modules.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from typing import Any
 
 import torch
@@ -28,12 +29,13 @@ from fragile.fractalai.qft.correlator_channels import (
 )
 from fragile.fractalai.qft.electroweak_observables import (
     compute_weighted_electroweak_ops_vectorized,
+    ELECTROWEAK_OPERATOR_CHANNELS,
     pack_neighbors_from_edges,
     PackedNeighbors,
 )
 
 
-ELECTROWEAK_CHANNELS = (
+ELECTROWEAK_BASE_CHANNELS = (
     "u1_phase",
     "u1_dressed",
     "u1_phase_q2",
@@ -44,6 +46,27 @@ ELECTROWEAK_CHANNELS = (
     "su2_doublet_diff",
     "ew_mixed",
 )
+ELECTROWEAK_DIRECTIONAL_SU2_CHANNELS = (
+    "su2_phase_directed",
+    "su2_component_directed",
+    "su2_doublet_directed",
+    "su2_doublet_diff_directed",
+)
+ELECTROWEAK_WALKER_TYPE_SU2_CHANNELS = (
+    "su2_phase_cloner",
+    "su2_phase_resister",
+    "su2_phase_persister",
+    "su2_component_cloner",
+    "su2_component_resister",
+    "su2_component_persister",
+    "su2_doublet_cloner",
+    "su2_doublet_resister",
+    "su2_doublet_persister",
+    "su2_doublet_diff_cloner",
+    "su2_doublet_diff_resister",
+    "su2_doublet_diff_persister",
+)
+ELECTROWEAK_CHANNELS = tuple(ELECTROWEAK_OPERATOR_CHANNELS)
 
 
 @dataclass
@@ -59,6 +82,9 @@ class ElectroweakChannelConfig:
     edge_weight_mode: str = "inverse_riemannian_distance"
     neighbor_weighting: str = "inv_geodesic_full"
     companion_topology: str = "distance"
+    companion_topology_u1: str | None = None
+    companion_topology_su2: str | None = None
+    companion_topology_ew_mixed: str | None = None
     neighbor_k: int = 0
     kernel_length_scale: float = 1.0
     voronoi_pbc_mode: str = "mirror"
@@ -88,6 +114,9 @@ class ElectroweakChannelConfig:
     epsilon_c: float | None = None
     epsilon_clone: float | None = None
     lambda_alg: float | None = None
+    su2_operator_mode: str = "standard"
+    enable_walker_type_split: bool = False
+    walker_type_scope: str = "frame_global"
 
     # Bootstrap error estimation
     compute_bootstrap_errors: bool = False
@@ -148,6 +177,43 @@ def _resolve_companion_topology(mode: str) -> str:
     return mode_norm
 
 
+def _resolve_companion_topologies(
+    cfg: ElectroweakChannelConfig,
+) -> tuple[str, str, str]:
+    """Resolve per-family companion topology with legacy fallback.
+
+    The legacy ``companion_topology`` is used when per-family fields are unset.
+    """
+    fallback = _resolve_companion_topology(getattr(cfg, "companion_topology", "distance"))
+
+    def _resolve(value: str | None) -> str:
+        if value is None:
+            return fallback
+        return _resolve_companion_topology(value)
+
+    return (
+        _resolve(getattr(cfg, "companion_topology_u1", None)),
+        _resolve(getattr(cfg, "companion_topology_su2", None)),
+        _resolve(getattr(cfg, "companion_topology_ew_mixed", None)),
+    )
+
+
+def _resolve_su2_operator_mode(mode: str) -> str:
+    mode_norm = str(mode).strip().lower()
+    if mode_norm not in {"standard", "score_directed"}:
+        msg = "su2_operator_mode must be 'standard' or 'score_directed'."
+        raise ValueError(msg)
+    return mode_norm
+
+
+def _resolve_walker_type_scope(scope: str) -> str:
+    scope_norm = str(scope).strip().lower()
+    if scope_norm != "frame_global":
+        msg = "walker_type_scope must be 'frame_global'."
+        raise ValueError(msg)
+    return scope_norm
+
+
 def _resolve_edge_weight_mode(
     requested_mode: str,
     edge_dict: dict[str, Tensor],
@@ -164,7 +230,9 @@ def _resolve_edge_weight_mode(
     return None
 
 
-def _nested_param(params: dict[str, Any] | None, *keys: str, default: float | None) -> float | None:
+def _nested_param(
+    params: dict[str, Any] | None, *keys: str, default: float | None
+) -> float | None:
     if params is None:
         return default
     current: Any = params
@@ -180,7 +248,9 @@ def _nested_param(params: dict[str, Any] | None, *keys: str, default: float | No
         return default
 
 
-def _resolve_electroweak_params(history: RunHistory, cfg: ElectroweakChannelConfig) -> dict[str, float]:
+def _resolve_electroweak_params(
+    history: RunHistory, cfg: ElectroweakChannelConfig
+) -> dict[str, float]:
     params = history.params if isinstance(history.params, dict) else None
     epsilon_d = cfg.epsilon_d
     if epsilon_d is None:
@@ -219,6 +289,438 @@ def _resolve_electroweak_params(history: RunHistory, cfg: ElectroweakChannelConf
     }
 
 
+def _resolve_lambda_alg(
+    history: RunHistory,
+    lambda_alg: float | None = None,
+) -> float:
+    if lambda_alg is not None:
+        return float(max(lambda_alg, 0.0))
+    params = history.params if isinstance(history.params, dict) else None
+    candidate = _nested_param(params, "companion_selection", "lambda_alg", default=None)
+    if candidate is None:
+        candidate = _nested_param(params, "fitness", "lambda_alg", default=0.0)
+    if candidate is None:
+        candidate = 0.0
+    return float(max(candidate, 0.0))
+
+
+def _resolve_transition_frames(
+    history: RunHistory,
+    frame_indices: list[int] | None = None,
+) -> Tensor:
+    device = history.x_before_clone.device
+    if frame_indices is None:
+        return torch.arange(1, int(history.n_recorded), device=device, dtype=torch.long)
+    resolved: list[int] = []
+    for raw in frame_indices:
+        try:
+            idx = int(raw)
+        except (TypeError, ValueError):
+            continue
+        if 1 <= idx < int(history.n_recorded):
+            resolved.append(idx)
+    if not resolved:
+        return torch.zeros(0, device=device, dtype=torch.long)
+    return torch.as_tensor(sorted(set(resolved)), device=device, dtype=torch.long)
+
+
+def _apply_pbc_diff(diff: Tensor, bounds: Any | None) -> Tensor:
+    if bounds is None:
+        return diff
+    high = bounds.high.to(device=diff.device, dtype=diff.dtype).reshape(1, 1, -1)
+    low = bounds.low.to(device=diff.device, dtype=diff.dtype).reshape(1, 1, -1)
+    span = high - low
+    nonzero = span.abs() > 1e-12
+    span_safe = torch.where(nonzero, span, torch.ones_like(span))
+    wrapped = diff - span_safe * torch.round(diff / span_safe)
+    return torch.where(nonzero, wrapped, diff)
+
+
+def _compute_d_alg_sq_for_companions(
+    positions: Tensor,
+    velocities: Tensor,
+    alive: Tensor,
+    companions: Tensor,
+    *,
+    lambda_alg: float,
+    bounds: Any | None,
+    pbc: bool,
+) -> tuple[Tensor, Tensor]:
+    n_walkers = int(positions.shape[1])
+    companions = companions.to(device=positions.device, dtype=torch.long).clamp(
+        min=0, max=max(n_walkers - 1, 0)
+    )
+    gather_idx = companions.unsqueeze(-1).expand(-1, -1, positions.shape[-1])
+    pos_j = torch.gather(positions, dim=1, index=gather_idx)
+    vel_j = torch.gather(velocities, dim=1, index=gather_idx)
+
+    diff_x = positions - pos_j
+    if pbc and bounds is not None:
+        diff_x = _apply_pbc_diff(diff_x, bounds)
+    diff_v = velocities - vel_j
+    d_alg_sq = (diff_x**2).sum(dim=-1) + float(lambda_alg) * (diff_v**2).sum(dim=-1)
+
+    src = torch.arange(n_walkers, device=positions.device, dtype=torch.long).unsqueeze(0)
+    src = src.expand_as(companions)
+    alive_j = torch.gather(alive, dim=1, index=companions)
+    valid = alive & alive_j & (companions != src) & torch.isfinite(d_alg_sq) & (d_alg_sq > 0)
+    return d_alg_sq, valid
+
+
+def _compute_fitness_gap_abs_for_companions(
+    fitness: Tensor,
+    alive: Tensor,
+    companions: Tensor,
+    *,
+    epsilon_clone: float,
+) -> tuple[Tensor, Tensor]:
+    n_walkers = int(fitness.shape[1])
+    companions = companions.to(device=fitness.device, dtype=torch.long).clamp(
+        min=0, max=max(n_walkers - 1, 0)
+    )
+    fit_j = torch.gather(fitness, dim=1, index=companions)
+    fit_i = fitness
+    eps = float(epsilon_clone) if epsilon_clone is not None else 1e-8
+    eps = max(eps, 1e-12)
+    denom = torch.where(
+        torch.abs(fit_i) < eps,
+        torch.full_like(fit_i, eps),
+        fit_i,
+    )
+
+    src = torch.arange(n_walkers, device=fitness.device, dtype=torch.long).unsqueeze(0)
+    src = src.expand_as(companions)
+    alive_j = torch.gather(alive, dim=1, index=companions)
+    gap_abs = torch.abs((fit_j - fit_i) / denom)
+    valid = alive & alive_j & (companions != src) & torch.isfinite(gap_abs)
+    return gap_abs, valid
+
+
+def _compute_offdiag_pairwise_rms_sq(
+    matrix: Tensor,
+    alive_mask: Tensor,
+) -> tuple[float, int]:
+    """Return (sum of squares, sample count) for finite positive off-diagonal distances."""
+    if matrix.ndim != 2:
+        return 0.0, 0
+    n_rows, n_cols = matrix.shape
+    if n_rows != n_cols or n_rows <= 1:
+        return 0.0, 0
+    n = min(int(alive_mask.numel()), n_rows)
+    if n <= 1:
+        return 0.0, 0
+
+    alive = alive_mask[:n].to(dtype=torch.bool)
+    matrix = matrix[:n, :n]
+    off_diag = torch.triu(
+        torch.ones(n, n, dtype=torch.bool, device=matrix.device),
+        diagonal=1,
+    )
+    valid = off_diag & (alive[:, None] & alive[None, :]) & torch.isfinite(matrix) & (matrix > 0)
+    flat = matrix[valid]
+    if flat.numel() == 0:
+        return 0.0, 0
+    sum_sq = torch.sum(flat * flat).item()
+    return float(sum_sq), int(flat.numel())
+
+
+def compute_emergent_electroweak_scales(
+    history: RunHistory,
+    *,
+    frame_indices: list[int] | None = None,
+    lambda_alg: float | None = None,
+    epsilon_clone: float | None = None,
+    pairwise_distance_by_frame: dict[int, Tensor] | None = None,
+) -> dict[str, float]:
+    """Estimate emergent electroweak interaction ranges from recorded trajectories."""
+    frames = _resolve_transition_frames(history, frame_indices=frame_indices)
+    if frames.numel() == 0:
+        return {
+            "eps_distance_emergent": float("nan"),
+            "eps_geodesic_emergent": float("nan"),
+            "eps_clone_emergent": float("nan"),
+            "eps_fitness_gap_emergent": float("nan"),
+            "n_distance_samples": 0.0,
+            "n_geodesic_distance_samples": 0.0,
+            "n_clone_samples": 0.0,
+            "n_fitness_gap_samples": 0.0,
+            "n_frames": 0.0,
+            "lambda_alg": float("nan"),
+            "epsilon_clone": float("nan"),
+        }
+
+    info_idx = frames - 1
+    device = history.x_before_clone.device
+    positions = history.x_before_clone.index_select(0, frames)
+    velocities = history.v_before_clone.index_select(0, frames).to(
+        device=positions.device, dtype=positions.dtype
+    )
+    alive = history.alive_mask.index_select(0, info_idx).to(device=device, dtype=torch.bool)
+    lambda_alg_resolved = _resolve_lambda_alg(history, lambda_alg=lambda_alg)
+    if epsilon_clone is None:
+        params = history.params if isinstance(history.params, dict) else None
+        epsilon_clone = _nested_param(params, "companion_selection_clone", "epsilon", default=None)
+        if epsilon_clone is None:
+            epsilon_clone = _nested_param(params, "cloning", "epsilon_clone", default=1e-8)
+        if epsilon_clone is None:
+            epsilon_clone = 1e-8
+    epsilon_clone = float(max(float(epsilon_clone), 1e-12))
+
+    precomputed_distances: dict[int, Tensor] = {}
+    if isinstance(pairwise_distance_by_frame, dict):
+        for raw_frame, matrix in pairwise_distance_by_frame.items():
+            if torch.is_tensor(matrix):
+                precomputed_distances[int(raw_frame)] = matrix
+
+    eps_distance = float("nan")
+    eps_geodesic = float("nan")
+    eps_clone = float("nan")
+    eps_fitness_gap = float("nan")
+    n_distance_samples = 0
+    n_geodesic_distance_samples = 0
+    n_clone_samples = 0
+    n_fitness_gap_samples = 0
+
+    if precomputed_distances:
+        geodesic_sum_sq = 0.0
+        geodesic_count = 0
+        frame_list = [int(v) for v in frames.tolist()]
+        for local_idx, frame_idx in enumerate(frame_list):
+            matrix = precomputed_distances.get(frame_idx)
+            if matrix is None:
+                continue
+            if not matrix.is_floating_point():
+                matrix = matrix.to(dtype=positions.dtype)
+            matrix = matrix.to(device=device)
+            if matrix.ndim != 2:
+                continue
+            sum_sq, n_pairs = _compute_offdiag_pairwise_rms_sq(matrix, alive[local_idx])
+            if n_pairs > 0:
+                geodesic_sum_sq += sum_sq
+                geodesic_count += n_pairs
+        if geodesic_count > 0:
+            eps_geodesic = float(math.sqrt(geodesic_sum_sq / geodesic_count))
+            n_geodesic_distance_samples = geodesic_count
+
+    distances_hist = getattr(history, "distances", None)
+    if (
+        torch.is_tensor(distances_hist)
+        and distances_hist.ndim == 2
+        and int(distances_hist.shape[0]) > int(info_idx.max().item())
+    ):
+        distances = distances_hist.index_select(0, info_idx).to(
+            device=device, dtype=positions.dtype
+        )
+        valid_distance = alive & torch.isfinite(distances) & (distances > 0)
+        n_distance_samples = int(valid_distance.sum().item())
+        if n_distance_samples > 0:
+            eps_distance = float(torch.sqrt((distances[valid_distance] ** 2).mean()).item())
+
+    if not math.isfinite(eps_distance):
+        companions_distance = getattr(history, "companions_distance", None)
+        if (
+            torch.is_tensor(companions_distance)
+            and companions_distance.ndim == 2
+            and int(companions_distance.shape[0]) > int(info_idx.max().item())
+        ):
+            d_alg_sq_dist, valid_dist = _compute_d_alg_sq_for_companions(
+                positions=positions,
+                velocities=velocities,
+                alive=alive,
+                companions=companions_distance.index_select(0, info_idx),
+                lambda_alg=lambda_alg_resolved,
+                bounds=history.bounds,
+                pbc=bool(history.pbc),
+            )
+            n_distance_samples = int(valid_dist.sum().item())
+            if n_distance_samples > 0:
+                eps_distance = float(torch.sqrt(d_alg_sq_dist[valid_dist].mean()).item())
+
+    companions_clone = getattr(history, "companions_clone", None)
+    if (
+        torch.is_tensor(companions_clone)
+        and companions_clone.ndim == 2
+        and int(companions_clone.shape[0]) > int(info_idx.max().item())
+    ):
+        d_alg_sq_clone, valid_clone = _compute_d_alg_sq_for_companions(
+            positions=positions,
+            velocities=velocities,
+            alive=alive,
+            companions=companions_clone.index_select(0, info_idx),
+            lambda_alg=lambda_alg_resolved,
+            bounds=history.bounds,
+            pbc=bool(history.pbc),
+        )
+        n_clone_samples = int(valid_clone.sum().item())
+        if n_clone_samples > 0:
+            eps_clone = float(torch.sqrt(d_alg_sq_clone[valid_clone].mean()).item())
+
+    fitness = getattr(history, "fitness", None)
+    if (
+        torch.is_tensor(fitness)
+        and torch.is_tensor(companions_clone)
+        and companions_clone.ndim == 2
+        and int(companions_clone.shape[0]) > int(info_idx.max().item())
+    ):
+        fitness = fitness.index_select(0, info_idx).to(device=device, dtype=positions.dtype)
+        fitness_gap_abs, valid_gap = _compute_fitness_gap_abs_for_companions(
+            fitness=fitness,
+            alive=alive,
+            companions=companions_clone.index_select(0, info_idx),
+            epsilon_clone=epsilon_clone,
+        )
+        n_fitness_gap_samples = int(valid_gap.sum().item())
+        if n_fitness_gap_samples > 0:
+            eps_fitness_gap = float(torch.sqrt((fitness_gap_abs[valid_gap] ** 2).mean()).item())
+
+    return {
+        "eps_distance_emergent": float(eps_distance),
+        "eps_geodesic_emergent": float(eps_geodesic),
+        "eps_clone_emergent": float(eps_clone),
+        "eps_fitness_gap_emergent": float(eps_fitness_gap),
+        "n_distance_samples": float(n_distance_samples),
+        "n_geodesic_distance_samples": float(n_geodesic_distance_samples),
+        "n_clone_samples": float(n_clone_samples),
+        "n_fitness_gap_samples": float(n_fitness_gap_samples),
+        "n_frames": float(frames.numel()),
+        "lambda_alg": float(lambda_alg_resolved),
+        "epsilon_clone": float(epsilon_clone),
+    }
+
+
+def compute_electroweak_coupling_constants(
+    history: RunHistory | None,
+    *,
+    h_eff: float,
+    frame_indices: list[int] | None = None,
+    lambda_alg: float | None = None,
+    pairwise_distance_by_frame: dict[int, Tensor] | None = None,
+) -> dict[str, float]:
+    """Estimate electroweak couplings and emergent Weinberg-angle diagnostics."""
+    d = float(history.d) if history is not None else float("nan")
+    h_eff = float(max(h_eff, 1e-12))
+
+    if history is not None:
+        params = history.params if isinstance(history.params, dict) else None
+        nu = _nested_param(params, "kinetic", "nu", default=None)
+    else:
+        nu = None
+
+    c2d = (d**2 - 1.0) / (2.0 * d) if d > 0 else float("nan")
+    c2_2 = 3.0 / 4.0
+
+    mean_force_sq = float("nan")
+    if history is not None and getattr(history, "force_viscous", None) is not None:
+        force = history.force_viscous
+        alive = history.alive_mask
+        if alive is None:
+            alive = torch.ones(force.shape[:-1], dtype=torch.bool, device=force.device)
+        if alive.shape[0] != force.shape[0]:
+            min_len = min(alive.shape[0], force.shape[0])
+            alive = alive[:min_len]
+            force = force[:min_len]
+        force_sq = (force**2).sum(dim=-1)
+        if alive.numel() > 0:
+            masked = torch.where(alive, force_sq, torch.zeros_like(force_sq))
+            counts = alive.sum().clamp(min=1)
+            mean_force_sq = float((masked.sum() / counts).item())
+
+    if nu is None or not math.isfinite(mean_force_sq) or d <= 0:
+        g3_est = float("nan")
+        kvisc_sq = float("nan")
+    else:
+        kvisc_sq = float(mean_force_sq / max(float(nu) ** 2, 1e-12))
+        g3_sq = (float(nu) ** 2 / h_eff**2) * (d * (d**2 - 1.0) / 12.0) * kvisc_sq
+        g3_est = float(max(g3_sq, 0.0) ** 0.5)
+
+    emergent = {
+        "eps_distance_emergent": float("nan"),
+        "eps_geodesic_emergent": float("nan"),
+        "eps_clone_emergent": float("nan"),
+        "eps_fitness_gap_emergent": float("nan"),
+        "n_distance_samples": 0.0,
+        "n_geodesic_distance_samples": 0.0,
+        "n_clone_samples": 0.0,
+        "n_fitness_gap_samples": 0.0,
+        "n_frames": 0.0,
+        "lambda_alg": float("nan"),
+        "epsilon_clone": float("nan"),
+    }
+    if history is not None:
+        emergent = compute_emergent_electroweak_scales(
+            history,
+            frame_indices=frame_indices,
+            lambda_alg=lambda_alg,
+            pairwise_distance_by_frame=pairwise_distance_by_frame,
+        )
+    eps_distance_em = float(emergent["eps_distance_emergent"])
+    eps_geodesic_em = float(emergent["eps_geodesic_emergent"])
+    eps_clone_em = float(emergent["eps_clone_emergent"])
+    eps_fitness_gap_em = float(emergent["eps_fitness_gap_emergent"])
+
+    if math.isfinite(eps_distance_em) and eps_distance_em > 0:
+        g1_em_sq = h_eff / (eps_distance_em**2)
+        g1_em = float(max(g1_em_sq, 0.0) ** 0.5)
+    else:
+        g1_em_sq = float("nan")
+        g1_em = float("nan")
+
+    if math.isfinite(eps_clone_em) and eps_clone_em > 0 and math.isfinite(c2d) and c2d > 0:
+        g2_em_sq = (2.0 * h_eff / (eps_clone_em**2)) * (c2_2 / c2d)
+        g2_em = float(max(g2_em_sq, 0.0) ** 0.5)
+    else:
+        g2_em_sq = float("nan")
+        g2_em = float("nan")
+
+    if (
+        math.isfinite(eps_fitness_gap_em)
+        and eps_fitness_gap_em > 0
+        and math.isfinite(c2d)
+        and c2d > 0
+    ):
+        g2_gap_em_sq = (2.0 * h_eff / (eps_fitness_gap_em**2)) * (c2_2 / c2d)
+        g2_gap_em = float(max(g2_gap_em_sq, 0.0) ** 0.5)
+    else:
+        g2_gap_em_sq = float("nan")
+        g2_gap_em = float("nan")
+
+    # Weinberg angle from emergent epsilon scales:
+    # sin²(θ_W) = ε_c² / (ε_c² + ε_d²)
+    # where ε_c = ε_fitness_gap (SU(2) scale) and ε_d = ε_geodesic (U(1) scale)
+    sin2_theta_w_emergent = float("nan")
+    tan_theta_w_emergent = float("nan")
+    eps_c = eps_fitness_gap_em  # SU(2) coupling scale
+    eps_d = eps_geodesic_em  # U(1) hypercharge scale
+    if (
+        math.isfinite(eps_c)
+        and eps_c > 0
+        and math.isfinite(eps_d)
+        and eps_d > 0
+    ):
+        eps_c_sq = eps_c**2
+        eps_d_sq = eps_d**2
+        denom = eps_c_sq + eps_d_sq
+        sin2_theta_w_emergent = float(eps_c_sq / denom)
+        tan_theta_w_emergent = float(eps_c / eps_d)
+
+    return {
+        "g1_est": float(g1_em),
+        "g2_est": float(g2_em),
+        "g3_est": float(g3_est),
+        "nu": float(nu) if nu is not None else float("nan"),
+        "kvisc_sq_proxy": float(kvisc_sq),
+        "mean_force_sq": float(mean_force_sq),
+        "d": float(d),
+        "h_eff": float(h_eff),
+        **emergent,
+        "g1_est_emergent": float(g1_em),
+        "g2_est_emergent": float(g2_em),
+        "g2_est_emergent_fitness_gap": float(g2_gap_em),
+        "sin2_theta_w_emergent": float(sin2_theta_w_emergent),
+        "tan_theta_w_emergent": float(tan_theta_w_emergent),
+    }
+
+
 def _resolve_mc_time_index(history: RunHistory, mc_time_index: int | None) -> int:
     """Resolve a Monte Carlo slice index from either recorded index or step."""
     if history.n_recorded < 2:
@@ -243,6 +745,27 @@ def _resolve_mc_time_index(history: RunHistory, mc_time_index: int | None) -> in
         )
         raise ValueError(msg)
     return resolved
+
+
+def _extract_will_clone_for_frame(
+    history: RunHistory,
+    info_idx: int,
+    *,
+    n_walkers: int,
+    device: torch.device,
+) -> Tensor | None:
+    will_clone_hist = getattr(history, "will_clone", None)
+    if will_clone_hist is None:
+        return None
+    if info_idx < 0 or info_idx >= int(will_clone_hist.shape[0]):
+        return None
+    will_clone = will_clone_hist[info_idx]
+    if not torch.is_tensor(will_clone):
+        will_clone = torch.as_tensor(will_clone)
+    will_clone = will_clone.to(device=device, dtype=torch.bool)
+    if will_clone.ndim != 1 or int(will_clone.shape[0]) != int(n_walkers):
+        return None
+    return will_clone
 
 
 def _build_neighbor_data_from_history(
@@ -418,6 +941,39 @@ def _require_recorded_or_companion_neighbors(
     raise ValueError(msg)
 
 
+def _require_family_neighbors(
+    *,
+    history: RunHistory,
+    frame_idx: int,
+    alive: Tensor,
+    edge_weight_mode: str,
+    neighbor_method: str,
+    topology_u1: str,
+    topology_su2: str,
+    topology_ew_mixed: str,
+    max_neighbors: int,
+) -> tuple[PackedNeighbors, PackedNeighbors, PackedNeighbors, dict[str, PackedNeighbors]]:
+    """Build cached packed neighbors for each electroweak operator family."""
+    cache: dict[str, PackedNeighbors] = {}
+
+    def _get(mode: str) -> PackedNeighbors:
+        packed = cache.get(mode)
+        if packed is None:
+            packed = _require_recorded_or_companion_neighbors(
+                history=history,
+                frame_idx=frame_idx,
+                alive=alive,
+                edge_weight_mode=edge_weight_mode,
+                neighbor_method=neighbor_method,
+                companion_topology=mode,
+                max_neighbors=max_neighbors,
+            )
+            cache[mode] = packed
+        return packed
+
+    return _get(topology_u1), _get(topology_su2), _get(topology_ew_mixed), cache
+
+
 def _masked_mean(values: Tensor, alive: Tensor) -> Tensor:
     masked = torch.where(alive, values, torch.zeros_like(values))
     counts = alive.sum(dim=1).clamp(min=1)
@@ -448,6 +1004,12 @@ def _compute_electroweak_series(
 
     h_eff = float(max(cfg.h_eff, 1e-8))
     edge_weight_mode = getattr(cfg, "edge_weight_mode", "inverse_riemannian_distance")
+    su2_operator_mode = _resolve_su2_operator_mode(getattr(cfg, "su2_operator_mode", "standard"))
+    walker_type_scope = _resolve_walker_type_scope(
+        getattr(cfg, "walker_type_scope", "frame_global")
+    )
+    topology_u1, topology_su2, topology_ew_mixed = _resolve_companion_topologies(cfg)
+    enable_walker_type_split = bool(getattr(cfg, "enable_walker_type_split", False))
     params = _resolve_electroweak_params(history, cfg)
     epsilon_d = float(params["epsilon_d"])
     epsilon_c = float(params["epsilon_c"])
@@ -458,15 +1020,24 @@ def _compute_electroweak_series(
         frame_idx = start_idx
         positions = history.x_before_clone[frame_idx]
         velocities = history.v_before_clone[frame_idx]
-        fitness = history.fitness[frame_idx - 1]
-        alive = history.alive_mask[frame_idx - 1]
-        packed_neighbors = _require_recorded_or_companion_neighbors(
+        info_idx = frame_idx - 1
+        fitness = history.fitness[info_idx]
+        alive = history.alive_mask[info_idx]
+        will_clone = _extract_will_clone_for_frame(
+            history,
+            info_idx,
+            n_walkers=int(alive.shape[0]),
+            device=alive.device,
+        )
+        packed_u1, packed_su2, packed_ew_mixed, neighbor_cache = _require_family_neighbors(
             history=history,
             frame_idx=frame_idx,
             alive=alive,
             edge_weight_mode=edge_weight_mode,
             neighbor_method=cfg.neighbor_method,
-            companion_topology=cfg.companion_topology,
+            topology_u1=topology_u1,
+            topology_su2=topology_su2,
+            topology_ew_mixed=topology_ew_mixed,
             max_neighbors=int(cfg.neighbor_k),
         )
         operators = compute_weighted_electroweak_ops_vectorized(
@@ -474,7 +1045,6 @@ def _compute_electroweak_series(
             velocities=velocities,
             fitness=fitness,
             alive=alive,
-            neighbors=packed_neighbors,
             h_eff=h_eff,
             epsilon_d=epsilon_d,
             epsilon_c=epsilon_c,
@@ -482,10 +1052,18 @@ def _compute_electroweak_series(
             lambda_alg=lambda_alg,
             bounds=history.bounds,
             pbc=bool(history.pbc),
+            will_clone=will_clone,
+            su2_operator_mode=su2_operator_mode,
+            enable_walker_type_split=enable_walker_type_split,
+            walker_type_scope=walker_type_scope,
+            neighbors_u1=packed_u1,
+            neighbors_su2=packed_su2,
+            neighbors_ew_mixed=packed_ew_mixed,
         )
         frame_indices.append(int(frame_idx))
         alive_counts.append(float(alive.sum().item()))
-        edge_counts.append(float(packed_neighbors.valid.sum().item()))
+        edge_samples = [float(packed.valid.sum().item()) for packed in neighbor_cache.values()]
+        edge_counts.append(float(sum(edge_samples) / max(len(edge_samples), 1)))
         alive = alive.unsqueeze(0)
     else:
         T = end_idx - start_idx
@@ -502,15 +1080,24 @@ def _compute_electroweak_series(
         for frame_idx in range(start_idx, end_idx):
             positions = history.x_before_clone[frame_idx]
             velocities = history.v_before_clone[frame_idx]
-            fitness = history.fitness[frame_idx - 1]
-            alive = history.alive_mask[frame_idx - 1]
-            packed_neighbors = _require_recorded_or_companion_neighbors(
+            info_idx = frame_idx - 1
+            fitness = history.fitness[info_idx]
+            alive = history.alive_mask[info_idx]
+            will_clone = _extract_will_clone_for_frame(
+                history,
+                info_idx,
+                n_walkers=int(alive.shape[0]),
+                device=alive.device,
+            )
+            packed_u1, packed_su2, packed_ew_mixed, neighbor_cache = _require_family_neighbors(
                 history=history,
                 frame_idx=frame_idx,
                 alive=alive,
                 edge_weight_mode=edge_weight_mode,
                 neighbor_method=cfg.neighbor_method,
-                companion_topology=cfg.companion_topology,
+                topology_u1=topology_u1,
+                topology_su2=topology_su2,
+                topology_ew_mixed=topology_ew_mixed,
                 max_neighbors=int(cfg.neighbor_k),
             )
             frame_ops = compute_weighted_electroweak_ops_vectorized(
@@ -518,7 +1105,6 @@ def _compute_electroweak_series(
                 velocities=velocities,
                 fitness=fitness,
                 alive=alive,
-                neighbors=packed_neighbors,
                 h_eff=h_eff,
                 epsilon_d=epsilon_d,
                 epsilon_c=epsilon_c,
@@ -526,10 +1112,18 @@ def _compute_electroweak_series(
                 lambda_alg=lambda_alg,
                 bounds=history.bounds,
                 pbc=bool(history.pbc),
+                will_clone=will_clone,
+                su2_operator_mode=su2_operator_mode,
+                enable_walker_type_split=enable_walker_type_split,
+                walker_type_scope=walker_type_scope,
+                neighbors_u1=packed_u1,
+                neighbors_su2=packed_su2,
+                neighbors_ew_mixed=packed_ew_mixed,
             )
             frame_indices.append(int(frame_idx))
             alive_counts.append(float(alive.sum().item()))
-            edge_counts.append(float(packed_neighbors.valid.sum().item()))
+            edge_samples = [float(packed.valid.sum().item()) for packed in neighbor_cache.values()]
+            edge_counts.append(float(sum(edge_samples) / max(len(edge_samples), 1)))
             for name in operators:
                 operators[name].append(frame_ops[name])
             alive_series.append(alive)
@@ -579,10 +1173,7 @@ def _compute_electroweak_series(
                     time_range=cfg.euclidean_time_range,
                 )
     else:
-        series = {
-            name: _masked_mean(op_values, alive)
-            for name, op_values in operators.items()
-        }
+        series = {name: _masked_mean(op_values, alive) for name, op_values in operators.items()}
 
     n_valid_frames = len(frame_indices)
     avg_alive_walkers = float(sum(alive_counts) / n_valid_frames) if n_valid_frames > 0 else 0.0
@@ -686,7 +1277,9 @@ def _compute_channel_results_batched(
                 )
             continue
 
-        series_stack = torch.stack([series_buffers[name][valid_t] for name in names], dim=0).float()
+        series_stack = torch.stack(
+            [series_buffers[name][valid_t] for name in names], dim=0
+        ).float()
         correlators = _fft_correlator_batched(
             series_stack,
             max_lag=int(config.max_lag),
@@ -727,11 +1320,13 @@ def _compute_channel_results_batched(
 
 def _resolve_requested_channels(channels: list[str] | None) -> list[str]:
     if channels is None:
-        return list(ELECTROWEAK_CHANNELS)
+        return list(ELECTROWEAK_BASE_CHANNELS)
     requested = [str(name) for name in channels]
     unknown = sorted(set(requested) - set(ELECTROWEAK_CHANNELS))
     if unknown:
-        msg = f"Unsupported electroweak channels {unknown}; supported: {list(ELECTROWEAK_CHANNELS)}."
+        msg = (
+            f"Unsupported electroweak channels {unknown}; supported: {list(ELECTROWEAK_CHANNELS)}."
+        )
         raise ValueError(msg)
     return requested
 
@@ -796,6 +1391,12 @@ def compute_electroweak_snapshot_operators(
         raise ValueError(msg)
 
     h_eff = float(max(cfg.h_eff, 1e-8))
+    su2_operator_mode = _resolve_su2_operator_mode(getattr(cfg, "su2_operator_mode", "standard"))
+    walker_type_scope = _resolve_walker_type_scope(
+        getattr(cfg, "walker_type_scope", "frame_global")
+    )
+    topology_u1, topology_su2, topology_ew_mixed = _resolve_companion_topologies(cfg)
+    enable_walker_type_split = bool(getattr(cfg, "enable_walker_type_split", False))
     params = _resolve_electroweak_params(history, cfg)
     epsilon_d = float(params["epsilon_d"])
     epsilon_c = float(params["epsilon_c"])
@@ -804,17 +1405,26 @@ def compute_electroweak_snapshot_operators(
 
     positions = history.x_before_clone[frame_idx]
     velocities = history.v_before_clone[frame_idx]
-    fitness = history.fitness[frame_idx - 1]
-    alive = history.alive_mask[frame_idx - 1]
+    info_idx = frame_idx - 1
+    fitness = history.fitness[info_idx]
+    alive = history.alive_mask[info_idx]
+    will_clone = _extract_will_clone_for_frame(
+        history,
+        info_idx,
+        n_walkers=int(alive.shape[0]),
+        device=alive.device,
+    )
 
     edge_weight_mode = getattr(cfg, "edge_weight_mode", "inverse_riemannian_distance")
-    packed_neighbors = _require_recorded_or_companion_neighbors(
+    packed_u1, packed_su2, packed_ew_mixed, _neighbor_cache = _require_family_neighbors(
         history=history,
         frame_idx=frame_idx,
         alive=alive,
         edge_weight_mode=edge_weight_mode,
         neighbor_method=cfg.neighbor_method,
-        companion_topology=cfg.companion_topology,
+        topology_u1=topology_u1,
+        topology_su2=topology_su2,
+        topology_ew_mixed=topology_ew_mixed,
         max_neighbors=int(cfg.neighbor_k),
     )
     operators = compute_weighted_electroweak_ops_vectorized(
@@ -822,7 +1432,6 @@ def compute_electroweak_snapshot_operators(
         velocities=velocities,
         fitness=fitness,
         alive=alive,
-        neighbors=packed_neighbors,
         h_eff=h_eff,
         epsilon_d=epsilon_d,
         epsilon_c=epsilon_c,
@@ -830,6 +1439,13 @@ def compute_electroweak_snapshot_operators(
         lambda_alg=lambda_alg,
         bounds=history.bounds,
         pbc=bool(history.pbc),
+        will_clone=will_clone,
+        su2_operator_mode=su2_operator_mode,
+        enable_walker_type_split=enable_walker_type_split,
+        walker_type_scope=walker_type_scope,
+        neighbors_u1=packed_u1,
+        neighbors_su2=packed_su2,
+        neighbors_ew_mixed=packed_ew_mixed,
     )
 
     return {name: operators[name] for name in requested_channels if name in operators}

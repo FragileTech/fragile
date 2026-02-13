@@ -37,8 +37,8 @@ import itertools
 from typing import Any
 
 import numpy as np
+from scipy.spatial import ConvexHull, Voronoi
 import torch
-from scipy.spatial import Voronoi, ConvexHull
 
 from fragile.fractalai.core.history import RunHistory
 
@@ -129,8 +129,16 @@ def classify_boundary_cells(
         if bounds is not None:
             near_boundary = False
             for dim in range(positions.shape[1]):
-                low = float(bounds.low[dim].cpu().numpy() if torch.is_tensor(bounds.low) else bounds.low[dim])
-                high = float(bounds.high[dim].cpu().numpy() if torch.is_tensor(bounds.high) else bounds.high[dim])
+                low = float(
+                    bounds.low[dim].cpu().numpy()
+                    if torch.is_tensor(bounds.low)
+                    else bounds.low[dim]
+                )
+                high = float(
+                    bounds.high[dim].cpu().numpy()
+                    if torch.is_tensor(bounds.high)
+                    else bounds.high[dim]
+                )
 
                 if abs(pos[dim] - low) < boundary_tolerance:
                     near_boundary = True
@@ -329,12 +337,12 @@ def compute_voronoi_tessellation(
             try:
                 vertices = vor.vertices[ridge_vertices]
                 area = _compute_facet_area(vertices, d)
-                facet_areas[(i, j)] = area
-                facet_areas[(j, i)] = area
+                facet_areas[i, j] = area
+                facet_areas[j, i] = area
             except Exception:
                 # Use a default small area if computation fails
-                facet_areas[(i, j)] = 1.0
-                facet_areas[(j, i)] = 1.0
+                facet_areas[i, j] = 1.0
+                facet_areas[j, i] = 1.0
 
     # Compute cell volumes
     volumes = np.zeros(n_alive)
@@ -382,10 +390,7 @@ def compute_voronoi_tessellation(
             else:
                 # Tier 2 or 3: keep only Tier 2+ neighbors (exclude Tier 1)
                 neighbors = neighbor_lists.get(i, [])
-                filtered = [
-                    j for j in neighbors
-                    if j < n_alive and classification["tier"][j] > 0
-                ]
+                filtered = [j for j in neighbors if j < n_alive and classification["tier"][j] > 0]
                 neighbor_lists_filtered[i] = filtered
 
         neighbor_lists = neighbor_lists_filtered
@@ -414,6 +419,7 @@ def compute_voronoi_tessellation(
         except Exception as e:
             # If curvature computation fails, log warning but don't break tessellation
             import warnings
+
             warnings.warn(f"Curvature proxy computation failed: {e}", RuntimeWarning, stacklevel=2)
             curvature_proxies = None
 
@@ -447,7 +453,7 @@ def _compute_facet_area(vertices: np.ndarray, d: int) -> float:
         # Distance between first two vertices
         return float(np.linalg.norm(vertices[1] - vertices[0]))
 
-    elif d == 3:
+    if d == 3:
         # In 3D, facet is a polygon
         if len(vertices) < 3:
             return 0.0
@@ -465,13 +471,12 @@ def _compute_facet_area(vertices: np.ndarray, d: int) -> float:
 
         return float(total_area)
 
-    else:
-        # For higher dimensions, use convex hull
-        try:
-            hull = ConvexHull(vertices)
-            return float(hull.volume)
-        except Exception:
-            return 1.0
+    # For higher dimensions, use convex hull
+    try:
+        hull = ConvexHull(vertices)
+        return float(hull.volume)
+    except Exception:
+        return 1.0
 
 
 def _compute_cell_volume(vertices: np.ndarray, d: int) -> float:
@@ -684,9 +689,7 @@ def compute_riemannian_volume_weights(
     log_sqrt_det_g = d * torch.log(torch.clamp(c2_val, min=eps)) - log_det_sigma
     sqrt_det_g = torch.exp(log_sqrt_det_g)
 
-    volume_euclidean = torch.as_tensor(
-        volumes, device=sigma.device, dtype=sigma.dtype
-    ).reshape(-1)
+    volume_euclidean = torch.as_tensor(volumes, device=sigma.device, dtype=sigma.dtype).reshape(-1)
     weights_alive = volume_euclidean * sqrt_det_g
     weights_alive = torch.nan_to_num(weights_alive, nan=0.0, posinf=0.0, neginf=0.0)
 
@@ -774,10 +777,10 @@ def compute_geometric_weights(
             if normalize and total_area > 0:
                 for j in neighbors:
                     area = facet_areas.get((i, j), 1.0)
-                    edge_weights[(i, j)] = area / total_area
+                    edge_weights[i, j] = area / total_area
             else:
                 for j in neighbors:
-                    edge_weights[(i, j)] = facet_areas.get((i, j), 1.0)
+                    edge_weights[i, j] = facet_areas.get((i, j), 1.0)
 
     elif weight_mode == "volume":
         # Weight by cell volume: w_i = V_i / mean(V)
@@ -791,9 +794,9 @@ def compute_geometric_weights(
             neighbors = neighbor_lists.get(i, [])
             for j in neighbors:
                 if normalize:
-                    edge_weights[(i, j)] = (node_weights[i].item() + node_weights[j].item()) / 2.0
+                    edge_weights[i, j] = (node_weights[i].item() + node_weights[j].item()) / 2.0
                 else:
-                    edge_weights[(i, j)] = (volumes_eff[i] + volumes_eff[j]) / 2.0
+                    edge_weights[i, j] = (volumes_eff[i] + volumes_eff[j]) / 2.0
 
     elif weight_mode == "combined":
         # Combined: w_ij = Area(facet_ij) / sqrt(V_i * V_j)
@@ -803,9 +806,9 @@ def compute_geometric_weights(
                 area = facet_areas.get((i, j), 1.0)
                 vol_product = volumes_eff[i] * volumes_eff[j]
                 if vol_product > 0:
-                    edge_weights[(i, j)] = area / np.sqrt(vol_product)
+                    edge_weights[i, j] = area / np.sqrt(vol_product)
                 else:
-                    edge_weights[(i, j)] = area
+                    edge_weights[i, j] = area
 
         # Normalize if requested
         if normalize:
@@ -817,7 +820,7 @@ def compute_geometric_weights(
                 if total_weight > 0:
                     for j in neighbors:
                         if (i, j) in edge_weights:
-                            edge_weights[(i, j)] /= total_weight
+                            edge_weights[i, j] /= total_weight
 
     else:
         msg = f"Unknown weight_mode: {weight_mode}"
@@ -1014,6 +1017,7 @@ def compute_baryon_operator_voronoi(
         if max_triplets is not None and len(neighbor_pairs) > max_triplets:
             # Randomly sample triplets
             import random
+
             neighbor_pairs = random.sample(neighbor_pairs, max_triplets)
 
         weighted_sum = 0.0 + 0.0j
@@ -1100,7 +1104,7 @@ def compute_curvature_proxies(
         Theory: docs/source/3_fractal_gas/3_fitness_manifold/03_curvature_gravity.md
     """
     volumes = voronoi_data["volumes"]
-    neighbor_lists = voronoi_data["neighbor_lists"]
+    voronoi_data["neighbor_lists"]
     vor = voronoi_data.get("voronoi")
     n = len(volumes)
     d = positions.shape[1]
@@ -1207,7 +1211,9 @@ def compute_curvature_proxies(
 
             # Mean curvature estimate: R ≈ -<θ>
             # Filter out extreme values for robustness
-            valid_mask = np.isfinite(raychaudhuri_expansion) & (np.abs(raychaudhuri_expansion) < 1e6)
+            valid_mask = np.isfinite(raychaudhuri_expansion) & (
+                np.abs(raychaudhuri_expansion) < 1e6
+            )
             mean_curvature_estimate = 0.0
             if valid_mask.sum() > 0:
                 mean_curvature_estimate = float(-raychaudhuri_expansion[valid_mask].mean())
@@ -1272,7 +1278,7 @@ def compute_voronoi_diffusion_tensor(
         Theory: docs/source/3_fractal_gas/3_fitness_manifold/02_scutoid_spacetime.md
     """
     volumes = voronoi_data["volumes"]
-    neighbor_lists = voronoi_data["neighbor_lists"]
+    voronoi_data["neighbor_lists"]
     vor = voronoi_data.get("voronoi")
     n = len(volumes)
     d = positions.shape[1]
@@ -1280,8 +1286,7 @@ def compute_voronoi_diffusion_tensor(
     if n == 0:
         if diagonal_only:
             return np.array([]).reshape(0, d)
-        else:
-            return np.array([]).reshape(0, d, d)
+        return np.array([]).reshape(0, d, d)
 
     # Branch based on mode
     if diagonal_only:
@@ -1325,74 +1330,71 @@ def compute_voronoi_diffusion_tensor(
 
         return sigma
 
-    else:
-        # ===== FULL ANISOTROPIC MODE (New Implementation) =====
-        # Initialize full diffusion tensors
-        sigma_full = np.zeros((n, d, d))
-        isotropic_value = c2 / np.sqrt(1.0 + epsilon_sigma)
+    # ===== FULL ANISOTROPIC MODE (New Implementation) =====
+    # Initialize full diffusion tensors
+    sigma_full = np.zeros((n, d, d))
+    isotropic_value = c2 / np.sqrt(1.0 + epsilon_sigma)
 
-        for i in range(n):
-            if vor is not None:
-                region_idx = vor.point_region[i]
-                vertices_idx = vor.regions[region_idx]
+    for i in range(n):
+        if vor is not None:
+            region_idx = vor.point_region[i]
+            vertices_idx = vor.regions[region_idx]
 
-                # Need at least d+1 vertices for valid d-dimensional inertia tensor
-                if (-1 not in vertices_idx and
-                    len(vertices_idx) >= d + 1 and
-                    volumes[i] > 1e-10):
-                    try:
-                        vertices = vor.vertices[vertices_idx]
+            # Need at least d+1 vertices for valid d-dimensional inertia tensor
+            if -1 not in vertices_idx and len(vertices_idx) >= d + 1 and volumes[i] > 1e-10:
+                try:
+                    vertices = vor.vertices[vertices_idx]
 
-                        # Compute centroid of cell vertices
-                        centroid = vertices.mean(axis=0)  # [d]
+                    # Compute centroid of cell vertices
+                    centroid = vertices.mean(axis=0)  # [d]
 
-                        # Center vertices at origin
-                        v_centered = vertices - centroid  # [n_vertices, d]
+                    # Center vertices at origin
+                    v_centered = vertices - centroid  # [n_vertices, d]
 
-                        # Compute inertia tensor (covariance matrix)
-                        # I = (1/n_vertices) * ∑_k v_k v_k^T
-                        n_verts = len(vertices)
-                        inertia = (v_centered.T @ v_centered) / n_verts  # [d, d]
+                    # Compute inertia tensor (covariance matrix)
+                    # I = (1/n_vertices) * ∑_k v_k v_k^T
+                    n_verts = len(vertices)
+                    inertia = (v_centered.T @ v_centered) / n_verts  # [d, d]
 
-                        # Ensure symmetry (numerical stability)
-                        inertia = 0.5 * (inertia + inertia.T)
+                    # Ensure symmetry (numerical stability)
+                    inertia = 0.5 * (inertia + inertia.T)
 
-                        # Eigendecompose: I = R @ diag(λ) @ R^T
-                        eigenvalues, eigenvectors = np.linalg.eigh(inertia)  # [d], [d, d]
+                    # Eigendecompose: I = R @ diag(λ) @ R^T
+                    eigenvalues, eigenvectors = np.linalg.eigh(inertia)  # [d], [d, d]
 
-                        # Clamp eigenvalues to avoid division by zero
-                        # Larger eigenvalue = more elongation in that direction
-                        eigenvalues = np.maximum(eigenvalues, epsilon_sigma * 1e-2)
+                    # Clamp eigenvalues to avoid division by zero
+                    # Larger eigenvalue = more elongation in that direction
+                    eigenvalues = np.maximum(eigenvalues, epsilon_sigma * 1e-2)
 
-                        # Compute elongation along each principal axis
-                        # elongation_k = sqrt(λ_k)
-                        elongation_principal = np.sqrt(eigenvalues)
+                    # Compute elongation along each principal axis
+                    # elongation_k = sqrt(λ_k)
+                    elongation_principal = np.sqrt(eigenvalues)
 
-                        # Diffusion coefficients along principal axes
-                        # Larger elongation → smaller diffusion
-                        sigma_principal = c2 / np.sqrt(elongation_principal + epsilon_sigma)
+                    # Diffusion coefficients along principal axes
+                    # Larger elongation → smaller diffusion
+                    sigma_principal = c2 / np.sqrt(elongation_principal + epsilon_sigma)
 
-                        # Rotate back to coordinate frame
-                        # Σ = R @ diag(σ_principal) @ R^T
-                        sigma_full[i] = eigenvectors @ np.diag(sigma_principal) @ eigenvectors.T
+                    # Rotate back to coordinate frame
+                    # Σ = R @ diag(σ_principal) @ R^T
+                    sigma_full[i] = eigenvectors @ np.diag(sigma_principal) @ eigenvectors.T
 
-                        # Ensure symmetry (numerical stability)
-                        sigma_full[i] = 0.5 * (sigma_full[i] + sigma_full[i].T)
+                    # Ensure symmetry (numerical stability)
+                    sigma_full[i] = 0.5 * (sigma_full[i] + sigma_full[i].T)
 
-                        # Validate positive-definiteness
-                        evals_check = np.linalg.eigvalsh(sigma_full[i])
-                        if np.any(evals_check <= 0):
-                            # Fallback to isotropic if not positive-definite
-                            sigma_full[i] = np.eye(d) * isotropic_value
-
-                    except Exception:
-                        # Fallback to isotropic on any error
+                    # Validate positive-definiteness
+                    evals_check = np.linalg.eigvalsh(sigma_full[i])
+                    if np.any(evals_check <= 0):
+                        # Fallback to isotropic if not positive-definite
                         sigma_full[i] = np.eye(d) * isotropic_value
-                else:
-                    # Boundary or degenerate cell - use isotropic diffusion
+
+                except Exception:
+                    # Fallback to isotropic on any error
                     sigma_full[i] = np.eye(d) * isotropic_value
             else:
-                # No Voronoi - isotropic diffusion
+                # Boundary or degenerate cell - use isotropic diffusion
                 sigma_full[i] = np.eye(d) * isotropic_value
+        else:
+            # No Voronoi - isotropic diffusion
+            sigma_full[i] = np.eye(d) * isotropic_value
 
-        return sigma_full
+    return sigma_full

@@ -231,7 +231,9 @@ def evaluate_systematics_verdict(discrepancies: list[PairwiseDiscrepancy]) -> Sy
     max_abs_delta = float(np.max(finite_abs)) if finite_abs.size > 0 else float("nan")
     max_pull = float(np.max(finite_pull)) if finite_pull.size > 0 else float("nan")
 
-    details = f"max |Δ%| = {max_abs_delta:.2f}%" if np.isfinite(max_abs_delta) else "max |Δ%| = n/a"
+    details = (
+        f"max |Δ%| = {max_abs_delta:.2f}%" if np.isfinite(max_abs_delta) else "max |Δ%| = n/a"
+    )
     details += f", max pull = {max_pull:.2f}σ" if np.isfinite(max_pull) else ", max pull = n/a"
 
     if (
@@ -279,17 +281,17 @@ def build_estimator_table_rows(
     """Create standardized estimator-table rows for the Multiscale tab."""
     rows: list[dict[str, float | str]] = []
     if original_mass is not None and math.isfinite(original_mass) and original_mass > 0.0:
-        rows.append(
-            {
-                "scale": "original (no filter)",
-                "scale_value": float(original_scale) if math.isfinite(float(original_scale)) else float("nan"),
-                "mass": float(original_mass),
-                "mass_error": float(original_error),
-                "mass_error_pct": _relative_error_pct(float(original_error), float(original_mass)),
-                "r_squared": float(original_r2),
-                "delta_vs_original_pct": 0.0,
-            }
-        )
+        rows.append({
+            "scale": "original (no filter)",
+            "scale_value": float(original_scale)
+            if math.isfinite(float(original_scale))
+            else float("nan"),
+            "mass": float(original_mass),
+            "mass_error": float(original_error),
+            "mass_error_pct": _relative_error_pct(float(original_error), float(original_mass)),
+            "r_squared": float(original_r2),
+            "delta_vs_original_pct": 0.0,
+        })
 
     for measurement in measurements:
         row: dict[str, float | str] = {
@@ -321,23 +323,21 @@ def build_pairwise_table_rows(
     rows: list[dict[str, float | str]] = []
     for discrepancy in discrepancies:
         mass_diff = float(discrepancy.mass_a) - float(discrepancy.mass_b)
-        rows.append(
-            {
-                "scale_a": discrepancy.label_a,
-                "scale_b": discrepancy.label_b,
-                "mass_a": float(discrepancy.mass_a),
-                "mass_b": float(discrepancy.mass_b),
-                "ratio": float(discrepancy.ratio),
-                "delta_pct": float(discrepancy.delta_pct),
-                "abs_delta_pct": float(discrepancy.abs_delta_pct),
-                "combined_error": float(discrepancy.combined_error),
-                "combined_error_pct": _relative_error_pct(
-                    float(discrepancy.combined_error),
-                    mass_diff,
-                ),
-                "pull_sigma": float(discrepancy.pull_sigma),
-            }
-        )
+        rows.append({
+            "scale_a": discrepancy.label_a,
+            "scale_b": discrepancy.label_b,
+            "mass_a": float(discrepancy.mass_a),
+            "mass_b": float(discrepancy.mass_b),
+            "ratio": float(discrepancy.ratio),
+            "delta_pct": float(discrepancy.delta_pct),
+            "abs_delta_pct": float(discrepancy.abs_delta_pct),
+            "combined_error": float(discrepancy.combined_error),
+            "combined_error_pct": _relative_error_pct(
+                float(discrepancy.combined_error),
+                mass_diff,
+            ),
+            "pull_sigma": float(discrepancy.pull_sigma),
+        })
     return rows
 
 

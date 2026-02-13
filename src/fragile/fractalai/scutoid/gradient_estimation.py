@@ -27,25 +27,31 @@ def _prepare_edge_index(
 
     if edge_index is not None:
         if csr_ptr is not None or csr_indices is not None:
-            raise ValueError("Provide either edge_index or csr_ptr/csr_indices, not both.")
+            msg = "Provide either edge_index or csr_ptr/csr_indices, not both."
+            raise ValueError(msg)
         if edge_index.device != device:
-            raise ValueError("edge_index must be on the same device as positions.")
+            msg = "edge_index must be on the same device as positions."
+            raise ValueError(msg)
         if edge_index.numel() == 0:
             return edge_index, torch.zeros(n_walkers, dtype=torch.long, device=device)
         if torch.any(edge_index[0] >= n_walkers) or torch.any(edge_index[1] >= n_walkers):
-            raise ValueError(
+            msg = (
                 "edge_index contains indices outside positions. "
                 "Filter boundary neighbors before calling."
             )
+            raise ValueError(msg)
         num_neighbors = torch.bincount(edge_index[0], minlength=n_walkers)
         return edge_index, num_neighbors
 
     if csr_ptr is None or csr_indices is None:
-        raise ValueError("edge_index or csr_ptr/csr_indices must be provided.")
+        msg = "edge_index or csr_ptr/csr_indices must be provided."
+        raise ValueError(msg)
     if csr_ptr.device != device or csr_indices.device != device:
-        raise ValueError("CSR tensors must be on the same device as positions.")
+        msg = "CSR tensors must be on the same device as positions."
+        raise ValueError(msg)
     if csr_ptr.numel() - 1 < n_walkers:
-        raise ValueError("csr_ptr has fewer rows than walkers in positions.")
+        msg = "csr_ptr has fewer rows than walkers in positions."
+        raise ValueError(msg)
 
     edge_end = int(csr_ptr[n_walkers].item())
     ptr = csr_ptr[: n_walkers + 1]
@@ -64,9 +70,8 @@ def _prepare_edge_index(
         return edge_index, num_neighbors
 
     if torch.any(indices >= n_walkers):
-        raise ValueError(
-            "csr_types required to filter boundary neighbors for gradient estimation."
-        )
+        msg = "csr_types required to filter boundary neighbors for gradient estimation."
+        raise ValueError(msg)
 
     edge_index = torch.stack([src, indices], dim=0)
     return edge_index, counts
@@ -132,9 +137,7 @@ def estimate_gradient_finite_difference(
         >>> positions = torch.randn(100, 2)
         >>> fitness = (positions**2).sum(dim=1)  # Quadratic potential
         >>> edge_index = build_knn_graph(positions, k=10)
-        >>> result = estimate_gradient_finite_difference(
-        ...     positions, fitness, edge_index
-        ... )
+        >>> result = estimate_gradient_finite_difference(positions, fitness, edge_index)
         >>> gradient = result["gradient"]  # [100, 2]
         >>> # For quadratic: ∇V = 2x, so should be ≈ 2*positions
     """
@@ -184,7 +187,8 @@ def estimate_gradient_finite_difference(
             normalize=normalize_weights,
         )
     elif edge_weights.numel() != edge_index.shape[1]:
-        raise ValueError("edge_weights must have the same length as edge_index edges.")
+        msg = "edge_weights must have the same length as edge_index edges."
+        raise ValueError(msg)
 
     # Compute fitness differences
     fitness_diffs = fitness_values[dst] - fitness_values[src]  # [E]
@@ -298,9 +302,7 @@ def compute_directional_derivative(
     Example:
         >>> # Compute derivative along x-axis
         >>> direction = torch.tensor([1.0, 0.0])
-        >>> dV_dx = compute_directional_derivative(
-        ...     positions, fitness, edge_index, direction
-        ... )
+        >>> dV_dx = compute_directional_derivative(positions, fitness, edge_index, direction)
     """
     N, d = positions.shape
     device = positions.device
@@ -340,7 +342,8 @@ def compute_directional_derivative(
             normalize=normalize_weights,
         )
     elif edge_weights.numel() != edge_index.shape[1]:
-        raise ValueError("edge_weights must have the same length as edge_index edges.")
+        msg = "edge_weights must have the same length as edge_index edges."
+        raise ValueError(msg)
 
     # Project displacements onto directions: n̂·Δx
     # direction[src] shape: [E, d]
@@ -348,9 +351,7 @@ def compute_directional_derivative(
     projections = (direction[src] * displacements).sum(dim=1)  # [E]
 
     # Directional derivative contributions
-    dd_contributions = (
-        edge_weights * fitness_diffs * projections / (distances + 1e-10)
-    )  # [E]
+    dd_contributions = edge_weights * fitness_diffs * projections / (distances + 1e-10)  # [E]
 
     # Accumulate per walker
     directional_derivative = torch.zeros(N, device=device, dtype=positions.dtype)

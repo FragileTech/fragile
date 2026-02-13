@@ -23,8 +23,8 @@ from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
-import torch
 from scipy.spatial import Delaunay
+import torch
 
 from fragile.fractalai.bounds import TorchBounds
 from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
@@ -75,7 +75,9 @@ def _resolve_time_range(
     return data_min, data_max
 
 
-def _spatial_bounds_from(bounds: TorchBounds | None, spatial_dims: list[int]) -> TorchBounds | None:
+def _spatial_bounds_from(
+    bounds: TorchBounds | None, spatial_dims: list[int]
+) -> TorchBounds | None:
     if bounds is None or not hasattr(bounds, "low") or not hasattr(bounds, "high"):
         return None
     low = bounds.low

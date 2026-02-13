@@ -2,11 +2,12 @@
 
 from collections.abc import Generator, Iterable
 import copy
-from typing import Any, Protocol, Union, runtime_checkable
+from typing import Any, Protocol, runtime_checkable, Union
 
 import networkx as nx
 import numpy
 import numpy as np
+
 
 DEFAULT_ROOT_ID = numpy.uint64(0)
 DEFAULT_FIRST_NODE_ID = numpy.uint64(1)

@@ -1,8 +1,9 @@
 """Test script for new geodesic kernel weighting options."""
 
 import torch
-from fragile.fractalai.core.kinetic_operator import KineticOperator
+
 from fragile.fractalai.core.euclidean_gas import SwarmState
+from fragile.fractalai.core.kinetic_operator import KineticOperator
 
 
 def test_geodesic_euclidean():
@@ -39,9 +40,7 @@ def test_geodesic_euclidean():
     # Compute viscous force
     print("\nComputing viscous force...")
     viscous_force = kinetic_op._compute_viscous_force(
-        state.x,
-        state.v,
-        neighbor_edges=neighbor_edges
+        state.x, state.v, neighbor_edges=neighbor_edges
     )
 
     # Verify shape
@@ -148,6 +147,7 @@ def test_fallback_warning():
 
     print("\nComputing viscous force WITHOUT neighbor edges (should fall back)...")
     import warnings
+
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
         viscous_force = kinetic_op._compute_viscous_force(
@@ -223,9 +223,7 @@ def test_comparison_with_euclidean():
 
     # Compute correlation
     correlation = torch.cosine_similarity(
-        force_euclidean.flatten(),
-        force_geodesic.flatten(),
-        dim=0
+        force_euclidean.flatten(), force_geodesic.flatten(), dim=0
     ).item()
     print(f"Force correlation: {correlation:.4f}")
 

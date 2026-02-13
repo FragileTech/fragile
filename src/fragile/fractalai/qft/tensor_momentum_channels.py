@@ -571,7 +571,9 @@ def compute_tensor_momentum_correlator_from_color_positions(
     )
     valid_t = component_counts_per_frame > 0
     if torch.any(valid_t):
-        sums = (local_components * valid_walker.unsqueeze(-1).to(local_components.dtype)).sum(dim=1)
+        sums = (local_components * valid_walker.unsqueeze(-1).to(local_components.dtype)).sum(
+            dim=1
+        )
         component_series[valid_t] = sums[valid_t] / component_counts_per_frame[valid_t].to(
             local_components.dtype
         ).unsqueeze(-1).clamp(min=1.0)
@@ -587,7 +589,9 @@ def compute_tensor_momentum_correlator_from_color_positions(
         momentum_correlator=momentum_correlator.float(),
         momentum_correlator_raw=momentum_correlator_raw.float(),
         momentum_correlator_connected=momentum_correlator_connected.float(),
-        momentum_correlator_err=momentum_correlator_err.float() if momentum_correlator_err is not None else None,
+        momentum_correlator_err=momentum_correlator_err.float()
+        if momentum_correlator_err is not None
+        else None,
         momentum_contracted_correlator=momentum_contracted_correlator.float(),
         momentum_contracted_correlator_raw=momentum_contracted_correlator_raw.float(),
         momentum_contracted_correlator_connected=momentum_contracted_correlator_connected.float(),
@@ -638,8 +642,12 @@ def compute_companion_tensor_momentum_correlator(
             momentum_contracted_correlator_raw=zeros_contract.clone(),
             momentum_contracted_correlator_connected=zeros_contract.clone(),
             momentum_contracted_correlator_err=None,
-            momentum_operator_cos_series=torch.zeros((n_modes, 5, 0), dtype=torch.float32, device=device),
-            momentum_operator_sin_series=torch.zeros((n_modes, 5, 0), dtype=torch.float32, device=device),
+            momentum_operator_cos_series=torch.zeros(
+                (n_modes, 5, 0), dtype=torch.float32, device=device
+            ),
+            momentum_operator_sin_series=torch.zeros(
+                (n_modes, 5, 0), dtype=torch.float32, device=device
+            ),
             momentum_axis=int(config.momentum_axis),
             momentum_length_scale=float(max(config.projection_length or 1.0, 1e-6)),
             momentum_valid_frames=0,
@@ -701,10 +709,7 @@ def compute_companion_tensor_momentum_correlator(
     low, high = _extract_axis_bounds(history.bounds, momentum_axis, device=device)
     projection_length = config.projection_length
     has_finite_bounds = (
-        low is not None
-        and high is not None
-        and math.isfinite(low)
-        and math.isfinite(high)
+        low is not None and high is not None and math.isfinite(low) and math.isfinite(high)
     )
     if projection_length is None and has_finite_bounds and high > low:
         projection_length = float(high - low)

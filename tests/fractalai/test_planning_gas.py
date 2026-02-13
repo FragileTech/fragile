@@ -14,6 +14,7 @@ from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 # Mock environments
 # ---------------------------------------------------------------------------
 
+
 class MockEnv:
     """Minimal mock env for discrete (Atari-like) actions."""
 
@@ -111,16 +112,12 @@ class TestPlanningGasCreation:
         assert isinstance(pg.inner_gas, AtariFractalGas)
 
     def test_constructor_custom_inner_gas_cls(self, mock_env):
-        pg = PlanningFractalGas(
-            env=mock_env, N=8, tau_inner=2, inner_gas_cls=AtariFractalGas
-        )
+        pg = PlanningFractalGas(env=mock_env, N=8, tau_inner=2, inner_gas_cls=AtariFractalGas)
         assert isinstance(pg.inner_gas, AtariFractalGas)
         assert pg.inner_gas.N == 8
 
     def test_constructor_forwards_params(self, mock_env):
-        pg = PlanningFractalGas(
-            env=mock_env, N=6, tau_inner=4, dist_coef=2.0, outer_dt=3
-        )
+        pg = PlanningFractalGas(env=mock_env, N=6, tau_inner=4, dist_coef=2.0, outer_dt=3)
         assert pg.inner_gas.clone_op.dist_coef == 2.0
         assert pg.outer_dt == 3
 
@@ -131,7 +128,7 @@ class TestReset:
         result = pg.reset()
         assert isinstance(result, tuple)
         assert len(result) == 3
-        state, obs, info = result
+        _state, _obs, info = result
         assert isinstance(info, dict)
 
     def test_reset_obs_shape(self, mock_env):
@@ -146,7 +143,7 @@ class TestPlanAction:
         state, obs, info = pg.reset()
         action, plan_info = pg.plan_action(state, obs, info)
         # Discrete env → action should be int
-        assert isinstance(action, (int, np.integer))
+        assert isinstance(action, int | np.integer)
         assert isinstance(plan_info, dict)
         assert "alive_count" in plan_info
         assert "inner_max_reward" in plan_info
@@ -191,7 +188,7 @@ class TestRootActionPropagation:
         assert len(root_actions) == 30
         # Each root action should be a valid action (integer for Atari)
         for a in root_actions:
-            assert isinstance(a, (int, np.integer))
+            assert isinstance(a, int | np.integer)
 
 
 class TestStep:
@@ -200,7 +197,7 @@ class TestStep:
         state, obs, info = pg.reset()
         result = pg.step(state, obs, info)
         assert len(result) == 7
-        new_state, new_obs, reward, done, truncated, new_info, step_info = result
+        _new_state, _new_obs, reward, done, truncated, _new_info, step_info = result
         assert isinstance(reward, float)
         assert isinstance(done, bool)
         assert isinstance(truncated, bool)
@@ -213,7 +210,7 @@ class TestStep:
         state, obs, info = pg.reset()
         _, _, _, _, _, _, step_info = pg.step(state, obs, info)
         # The action should be a valid discrete action
-        assert isinstance(step_info["action"], (int, np.integer))
+        assert isinstance(step_info["action"], int | np.integer)
 
 
 class TestRun:
@@ -241,9 +238,7 @@ class TestRun:
         assert traj.dones[-1] is True
 
     def test_run_frames_recorded(self, mock_env):
-        pg = PlanningFractalGas(
-            env=mock_env, N=20, tau_inner=2, record_frames=True
-        )
+        pg = PlanningFractalGas(env=mock_env, N=20, tau_inner=2, record_frames=True)
         traj = pg.run(max_steps=3, render=True)
         assert traj.frames is not None
         # frames list exists (may be empty since mock doesn't render)
@@ -255,7 +250,7 @@ class TestDiscreteActionRounding:
         pg = PlanningFractalGas(env=mock_env, N=20, tau_inner=3)
         state, obs, info = pg.reset()
         action, _ = pg.plan_action(state, obs, info)
-        assert isinstance(action, (int, np.integer))
+        assert isinstance(action, int | np.integer)
 
     def test_discrete_action_is_int_type(self, mock_env):
         """Verify the action is a Python int, not a float."""
@@ -263,7 +258,7 @@ class TestDiscreteActionRounding:
         state, obs, info = pg.reset()
         action, _ = pg.plan_action(state, obs, info)
         # Should be int, not float
-        assert type(action) in (int, np.int64, np.int32, np.intp)
+        assert type(action) in {int, np.int64, np.int32, np.intp}
 
 
 class TestAllDeadFallback:

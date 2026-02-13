@@ -152,6 +152,38 @@ class GasConfigPanel(param.Parameterized):
         default=False,
         doc="Hide viscous kernel-only widgets (deprecated).",
     )
+    hide_compute_volume_weight_widget = param.Boolean(
+        default=False,
+        doc="Hide the compute volume weights checkbox in the kinetic panel.",
+    )
+    hide_viscous_coupling_widget = param.Boolean(
+        default=False,
+        doc="Hide the global viscous coupling toggle in the kinetic panel.",
+    )
+    hide_diffusion_widgets = param.Boolean(
+        default=False,
+        doc="Hide diffusion controls in the kinetic panel.",
+    )
+    hide_integrator_widget = param.Boolean(
+        default=False,
+        doc="Hide the Langevin integrator selector in the kinetic panel.",
+    )
+    hide_localization_scale_widget = param.Boolean(
+        default=False,
+        doc="Hide the localization scale widget in the fitness panel.",
+    )
+    hide_distance_reg_widget = param.Boolean(
+        default=False,
+        doc="Hide the distance regularization (epsilon_dist) widget in the fitness panel.",
+    )
+    hide_companion_interaction_range_widgets = param.Boolean(
+        default=False,
+        doc="Hide ε (interaction range) widgets in companion-selection panels.",
+    )
+    hide_lambda_alg_widgets = param.Boolean(
+        default=False,
+        doc="Hide λ_alg (velocity weight) widgets in fitness/companion panels.",
+    )
 
     # Initialization controls
     init_offset = param.Number(default=0.0, bounds=(-6.0, 6.0), doc="Initial position offset")
@@ -386,7 +418,11 @@ class GasConfigPanel(param.Parameterized):
         config.neighbor_graph_method = "delaunay"
         config.neighbor_graph_update_every = 1
         config.neighbor_graph_record = True
-        config.neighbor_weight_modes = ["inverse_riemannian_distance", "kernel", "riemannian_kernel_volume"]
+        config.neighbor_weight_modes = [
+            "inverse_riemannian_distance",
+            "kernel",
+            "riemannian_kernel_volume",
+        ]
 
         # Initialization (match EuclideanGas defaults used in QFT calibration)
         config.init_offset = 0.0
@@ -396,18 +432,20 @@ class GasConfigPanel(param.Parameterized):
         # Kinetic operator (Langevin + viscous coupling)
         config.kinetic_op.gamma = 1.0
         config.kinetic_op.beta = 1.0
+        config.kinetic_op.auto_thermostat = True
         config.kinetic_op.delta_t = 0.1005
         config.kinetic_op.epsilon_F = 38.6373
         config.kinetic_op.use_fitness_force = False
         config.kinetic_op.use_potential_force = False
         config.kinetic_op.use_anisotropic_diffusion = True
         config.kinetic_op.diagonal_diffusion = False
-        config.kinetic_op.nu = 1.10
+        config.kinetic_op.nu = 0.125
         config.kinetic_op.use_viscous_coupling = True
         config.kinetic_op.viscous_length_scale = 0.251372
         config.kinetic_op.viscous_neighbor_weighting = "riemannian_kernel_volume"
         config.kinetic_op.viscous_neighbor_threshold = 0.75
         config.kinetic_op.viscous_neighbor_penalty = 1.1
+        config.kinetic_op.use_velocity_squashing = False
 
         # Companion selection (separate epsilon for diversity and cloning)
         config.companion_selection.method = "random_pairing"
@@ -422,7 +460,7 @@ class GasConfigPanel(param.Parameterized):
         # Cloning operator
         config.cloning.p_max = 1.0
         config.cloning.epsilon_clone = 1e-6
-        config.cloning.sigma_x = 1e-6
+        config.cloning.sigma_x = 0.01
         config.cloning.alpha_restitution = 0.5
 
         # Fitness operator
@@ -433,8 +471,8 @@ class GasConfigPanel(param.Parameterized):
         config.fitness_op.sigma_min = 1e-8
         config.fitness_op.epsilon_dist = 1e-8
         config.fitness_op.A = 2.0
-        # Tuned for improved electroweak probe ratios (Jan 2026 calibration sweep).
-        config.fitness_op.rho = 0.1
+        # Use mean-field default statistics (global Z-score).
+        config.fitness_op.rho = None
 
         return config
 
@@ -673,8 +711,7 @@ class GasConfigPanel(param.Parameterized):
         self.record_every = 1
         self.kinetic_op.use_viscous_coupling = True
         self.status_pane.object = (
-            "**Applied Riemannian Mix preset (Delaunay neighbors, "
-            "record every step).**"
+            "**Applied Riemannian Mix preset (Delaunay neighbors, " "record every step).**"
         )
 
     def _apply_mexican_hat_preset(self) -> None:
@@ -705,8 +742,7 @@ class GasConfigPanel(param.Parameterized):
         percent = (step / total_steps) * 100.0 if total_steps else 0.0
         eta_str = self._format_eta(eta_seconds)
         return (
-            f"**Progress:** {step}/{total_steps} ({percent:.1f}%) "
-            f"| **Remaining:** {eta_str}"
+            f"**Progress:** {step}/{total_steps} ({percent:.1f}%) " f"| **Remaining:** {eta_str}"
         )
 
     def _sync_progress_total(self, total_steps: int) -> None:
@@ -737,17 +773,16 @@ class GasConfigPanel(param.Parameterized):
 
     def _progress_callback(self, step: int, total_steps: int, elapsed: float) -> None:
         now = time.perf_counter()
-        if step < total_steps and (
-            now - self._progress_last_emit
-        ) < self._progress_update_interval:
+        if (
+            step < total_steps
+            and (now - self._progress_last_emit) < self._progress_update_interval
+        ):
             return
         self._progress_last_emit = now
         eta = None
         if step > 0 and total_steps > step:
             eta = (elapsed / step) * (total_steps - step)
-        self._schedule_ui_update(
-            lambda: self._update_progress_display(step, total_steps, eta)
-        )
+        self._schedule_ui_update(lambda: self._update_progress_display(step, total_steps, eta))
 
     def _current_steps_value(self) -> int:
         widget = self._widget_overrides.get("n_steps")
@@ -779,9 +814,7 @@ class GasConfigPanel(param.Parameterized):
                 f"**Simulation complete!** {history.n_steps} steps, "
                 f"{history.n_recorded} recorded timesteps"
             )
-            self.progress_bar.bar_color = (
-                "warning" if history.terminated_early else "success"
-            )
+            self.progress_bar.bar_color = "warning" if history.terminated_early else "success"
             self._update_progress_display(history.final_step, self.progress_bar.max, 0.0)
 
         self._schedule_ui_update(_finalize)
@@ -908,7 +941,9 @@ class GasConfigPanel(param.Parameterized):
                         lambda e, widget_ref=widget: (
                             None
                             if getattr(widget_ref, "value", None) == e.new
-                            else setattr(widget_ref, "value", _coerce_widget_value(widget_ref, e.new))
+                            else setattr(
+                                widget_ref, "value", _coerce_widget_value(widget_ref, e.new)
+                            )
                         ),
                         name,
                     )
@@ -969,16 +1004,17 @@ class GasConfigPanel(param.Parameterized):
             if benchmark_name == "Lennard-Jones":
                 return self._build_param_panel(["n_atoms"])
             if benchmark_name == "Riemannian Mix":
-                return self._build_param_panel(["riemannian_volume_weight", "riemannian_ricci_weight"])
+                return self._build_param_panel([
+                    "riemannian_volume_weight",
+                    "riemannian_ricci_weight",
+                ])
             if benchmark_name == "Mexican Hat (Higgs)":
-                return self._build_param_panel(
-                    [
-                        "mexican_hat_lambda_h",
-                        "mexican_hat_vev",
-                        "mexican_hat_field_scale",
-                        "mexican_hat_tilt",
-                    ]
-                )
+                return self._build_param_panel([
+                    "mexican_hat_lambda_h",
+                    "mexican_hat_vev",
+                    "mexican_hat_field_scale",
+                    "mexican_hat_tilt",
+                ])
             return pn.pane.Markdown("*No additional parameters*", sizing_mode="stretch_width")
 
         benchmark_specific = pn.bind(get_benchmark_specific_params, self.param.benchmark_name)
@@ -1083,6 +1119,8 @@ Euclidean time will be added as an additional dimension for QFT analysis.
             name: (dict(cfg) if isinstance(cfg, dict) else cfg)
             for name, cfg in self.kinetic_op.widgets.items()
         }
+        hidden_kinetic_params: set[str] = set()
+
         if self.hide_viscous_kernel_widgets:
             current_objects = list(self.kinetic_op.param.viscous_neighbor_weighting.objects)
             filtered = [opt for opt in current_objects if opt != "kernel"]
@@ -1092,14 +1130,34 @@ Euclidean time will be added as an additional dimension for QFT analysis.
                     weighting_widget["options"] = filtered
                 if self.kinetic_op.viscous_neighbor_weighting not in filtered:
                     self.kinetic_op.viscous_neighbor_weighting = filtered[0]
-            hidden_params = {
-                "viscous_length_scale",
-                "viscous_neighbor_penalty",
-                "viscous_neighbor_threshold",
-                "viscous_degree_cap",
-            }
-            langevin_params = [name for name in langevin_params if name not in hidden_params]
-            for name in hidden_params:
+            hidden_kinetic_params.update(
+                {
+                    "viscous_length_scale",
+                    "viscous_neighbor_penalty",
+                    "viscous_neighbor_threshold",
+                    "viscous_degree_cap",
+                }
+            )
+        if self.hide_compute_volume_weight_widget:
+            hidden_kinetic_params.add("compute_volume_weights")
+        if self.hide_viscous_coupling_widget:
+            hidden_kinetic_params.add("use_viscous_coupling")
+        if self.hide_diffusion_widgets:
+            hidden_kinetic_params.update(
+                {
+                    "diagonal_diffusion",
+                    "diffusion_mode",
+                    "diffusion_grad_scale",
+                }
+            )
+        if self.hide_integrator_widget:
+            hidden_kinetic_params.add("integrator")
+
+        if hidden_kinetic_params:
+            langevin_params = [
+                name for name in langevin_params if name not in hidden_kinetic_params
+            ]
+            for name in hidden_kinetic_params:
                 kinetic_widgets.pop(name, None)
         thermostat_readout = pn.pane.Markdown(
             pn.bind(
@@ -1148,17 +1206,58 @@ Euclidean time will be added as an additional dimension for QFT analysis.
                 clone_every_input.value = value
 
         clone_every_input.param.watch(_set_clone_every, "value")
+        companion_distance_params = list(self.companion_selection.widget_parameters)
+        companion_clone_params = list(self.companion_selection_clone.widget_parameters)
+        fitness_params = list(self.fitness_op.widget_parameters)
+        hidden_fitness_params: set[str] = set()
+        if self.hide_companion_interaction_range_widgets:
+            companion_distance_params = [
+                name for name in companion_distance_params if name != "epsilon"
+            ]
+            companion_clone_params = [name for name in companion_clone_params if name != "epsilon"]
+        if self.hide_lambda_alg_widgets:
+            companion_distance_params = [
+                name for name in companion_distance_params if name != "lambda_alg"
+            ]
+            companion_clone_params = [
+                name for name in companion_clone_params if name != "lambda_alg"
+            ]
+            fitness_params = [name for name in fitness_params if name != "lambda_alg"]
+        if self.hide_distance_reg_widget:
+            hidden_fitness_params.add("epsilon_dist")
+        if self.hide_localization_scale_widget:
+            hidden_fitness_params.add("rho")
+
+        if hidden_fitness_params:
+            fitness_params = [
+                name for name in fitness_params if name not in hidden_fitness_params
+            ]
+
+        def _build_operator_panel(operator, parameters: list[str]) -> pn.Param:
+            widgets = {
+                name: (dict(cfg) if isinstance(cfg, dict) else cfg)
+                for name, cfg in operator.widgets.items()
+                if name in parameters
+            }
+            return pn.Param(
+                operator,
+                show_name=False,
+                parameters=parameters,
+                widgets=operator.process_widgets(widgets),
+                default_layout=operator.default_layout,
+            )
+
         cloning_panel_combined = pn.Column(
             pn.pane.Markdown("#### Cloning Operator"),
             clone_every_input,
             self.cloning.__panel__(),
             pn.pane.Markdown("#### Fitness Potential"),
             fast_fitness_button,
-            self.fitness_op.__panel__(),
+            _build_operator_panel(self.fitness_op, fitness_params),
             pn.pane.Markdown("#### Companion Selection (distance)"),
-            self.companion_selection.__panel__(),
+            _build_operator_panel(self.companion_selection, companion_distance_params),
             pn.pane.Markdown("#### Companion Selection (clone)"),
-            self.companion_selection_clone.__panel__(),
+            _build_operator_panel(self.companion_selection_clone, companion_clone_params),
             sizing_mode="stretch_width",
         )
 

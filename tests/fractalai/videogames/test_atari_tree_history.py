@@ -9,12 +9,27 @@ import torch
 from fragile.fractalai.core.tree import DEFAULT_ROOT_ID
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas, WalkerState
 from fragile.fractalai.videogames.atari_history import AtariHistory
-from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory, _node_id
+from fragile.fractalai.videogames.atari_tree_history import _node_id, AtariTreeHistory
 
 
 # ---------------------------------------------------------------------------
 # Mock environment
 # ---------------------------------------------------------------------------
+
+
+class MockAtariState:
+    """Mock AtariState with rgb_frame attribute."""
+
+    def __init__(self, data: np.ndarray, rgb_frame: np.ndarray | None = None):
+        self._data = data
+        self.rgb_frame = rgb_frame
+
+    def copy(self):
+        return MockAtariState(
+            self._data.copy(),
+            self.rgb_frame.copy() if self.rgb_frame is not None else None,
+        )
+
 
 class MockEnv:
     """Mock plangym environment returning a 3-tuple from reset()."""
@@ -27,7 +42,10 @@ class MockEnv:
     def reset(self, **kwargs):
         """Reset returning (state, observation, info)."""
         self.step_count = 0
-        state = np.zeros(4, dtype=np.float32)
+        state = MockAtariState(
+            np.zeros(4, dtype=np.float32),
+            rgb_frame=np.random.randint(0, 255, (210, 160, 3), dtype=np.uint8),
+        )
         observation = np.zeros(self.obs_shape, dtype=np.float32)
         info = {}
         return state, observation, info
@@ -41,7 +59,14 @@ class MockEnv:
         self.step_count += N
 
         new_states = np.array(
-            [np.random.randn(4).astype(np.float32) for _ in range(N)], dtype=object,
+            [
+                MockAtariState(
+                    np.random.randn(4).astype(np.float32),
+                    rgb_frame=np.random.randint(0, 255, (210, 160, 3), dtype=np.uint8),
+                )
+                for _ in range(N)
+            ],
+            dtype=object,
         )
         observations = np.random.rand(N, *self.obs_shape).astype(np.float32)
         rewards = np.random.randn(N).astype(np.float32) * 0.1
@@ -71,19 +96,23 @@ def mock_env():
 @pytest.fixture
 def gas(mock_env):
     return AtariFractalGas(
-        env=mock_env, N=N_WALKERS, device="cpu", seed=42,
+        env=mock_env,
+        N=N_WALKERS,
+        device="cpu",
+        seed=42,
     )
 
 
 @pytest.fixture
 def tree(gas):
     """Run a short simulation and return the AtariTreeHistory."""
-    return gas.run_with_tree(max_iterations=MAX_ITER, game_name="MockPacman")
+    return gas.run_with_tree(max_iterations=MAX_ITER, task_label="MockPacman")
 
 
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 class TestRunWithTree:
     """Tests for AtariFractalGas.run_with_tree integration."""
@@ -93,7 +122,7 @@ class TestRunWithTree:
         assert tree._n_recorded > 1
 
     def test_graph_node_count(self, tree):
-        n_iterations = tree._n_recorded - 1  # subtract initial state
+        tree._n_recorded - 1  # subtract initial state
         expected = 1 + N_WALKERS * tree._n_recorded  # root + N per recorded step
         actual = tree._tree.data.number_of_nodes()
         assert actual == expected, f"Expected {expected} nodes, got {actual}"
@@ -135,6 +164,32 @@ class TestRunWithTree:
         assert isinstance(node["observations"], np.ndarray)
         assert isinstance(node["reward"], float)
         assert isinstance(node["alive"], bool)
+
+    def test_env_state_stored_in_nodes(self, tree):
+        """Every node should have an env_state field."""
+        nodes = tree._tree.data.nodes
+        for step in range(tree._n_recorded):
+            for w in range(N_WALKERS):
+                nid = _node_id(step, w, N_WALKERS)
+                assert nid in nodes
+                assert "env_state" in nodes[nid], f"Node (step={step}, w={w}) missing env_state"
+
+    def test_frame_stored_for_all_walkers(self, tree):
+        """When states have rgb_frame, every node should have a non-None frame."""
+        nodes = tree._tree.data.nodes
+        for step in range(tree._n_recorded):
+            for w in range(N_WALKERS):
+                nid = _node_id(step, w, N_WALKERS)
+                assert "frame" in nodes[nid], f"Node (step={step}, w={w}) missing frame field"
+                assert (
+                    nodes[nid]["frame"] is not None
+                ), f"Node (step={step}, w={w}) has frame=None despite rgb_frame"
+
+    def test_get_best_path_frames_all_filled(self, tree):
+        """Path frames should all be non-None without needing render_missing_path_frames."""
+        frames = tree.get_best_path_frames()
+        assert len(frames) > 0
+        assert all(f is not None for f in frames), "Expected all path frames to be non-None"
 
 
 class TestDashboardProperties:
@@ -225,6 +280,207 @@ class TestWalkerBranch:
             assert len(branch) >= 2
 
 
+class TestPathFrames:
+    """Tests for path-based frame reconstruction."""
+
+    def test_get_best_walker_branch_returns_path(self, tree):
+        branch = tree.get_best_walker_branch()
+        assert isinstance(branch, list)
+        assert len(branch) >= 2
+
+    def test_get_best_path_frames_length(self, tree):
+        """Path frames should have one entry per node (excluding root)."""
+        branch = tree.get_best_walker_branch()
+        frames = tree.get_best_path_frames()
+        # Branch includes root, frames excludes it
+        assert len(frames) == len(branch) - 1
+
+    def test_render_missing_path_frames(self):
+        """render_missing_path_frames should call render_fn for nodes with
+        env_state but no frame, and store the result."""
+        N = 4
+        tree = AtariTreeHistory(N=N, game_name="render_test")
+
+        obs = torch.zeros(N, 8)
+        state = WalkerState(
+            states=np.array([np.ones(4, dtype=np.float32) * i for i in range(N)], dtype=object),
+            observations=obs,
+            rewards=torch.zeros(N),
+            step_rewards=torch.zeros(N),
+            dones=torch.zeros(N, dtype=torch.bool),
+            truncated=torch.zeros(N, dtype=torch.bool),
+            actions=np.zeros(N, dtype=int),
+            dt=np.ones(N, dtype=int),
+            infos=[{} for _ in range(N)],
+            virtual_rewards=torch.zeros(N),
+        )
+        tree.record_initial_atari_state(state)
+
+        # Step 1 — no frames, no cloning
+        state1 = WalkerState(
+            states=np.array(
+                [np.ones(4, dtype=np.float32) * (i + 10) for i in range(N)], dtype=object
+            ),
+            observations=torch.randn(N, 8),
+            rewards=torch.tensor([1.0, 2.0, 3.0, 4.0]),
+            step_rewards=torch.tensor([1.0, 2.0, 3.0, 4.0]),
+            dones=torch.zeros(N, dtype=torch.bool),
+            truncated=torch.zeros(N, dtype=torch.bool),
+            actions=np.zeros(N, dtype=int),
+            dt=np.ones(N, dtype=int),
+            infos=[{} for _ in range(N)],
+            virtual_rewards=torch.tensor([1.0, 2.0, 3.0, 4.0]),
+        )
+        tree.record_atari_step(
+            state_before=state,
+            state_after_clone=state1,
+            state_final=state1,
+            info={},
+            clone_companions=torch.arange(N),
+            will_clone=torch.zeros(N, dtype=torch.bool),
+            best_frame=None,  # no pre-rendered frame
+        )
+
+        # All frames should be None along best path before rendering
+        frames_before = tree.get_best_path_frames()
+        assert all(f is None for f in frames_before)
+
+        # Render missing frames with a dummy render function
+        render_calls = []
+
+        def dummy_render(env_state):
+            render_calls.append(env_state)
+            return np.ones((4, 4, 3), dtype=np.uint8) * 42
+
+        frames_after = tree.render_missing_path_frames(dummy_render)
+
+        # Should have called render for each node on the path
+        assert len(render_calls) > 0
+        # All frames should now be filled in
+        assert all(f is not None for f in frames_after)
+        assert frames_after[0].shape == (4, 4, 3)
+
+    def test_render_preserves_existing_frames(self):
+        """Nodes that already have a frame should not be re-rendered."""
+        N = 3
+        tree = AtariTreeHistory(N=N, game_name="preserve_test")
+
+        obs = torch.zeros(N, 8)
+        state = WalkerState(
+            states=np.array([np.ones(4, dtype=np.float32) * i for i in range(N)], dtype=object),
+            observations=obs,
+            rewards=torch.zeros(N),
+            step_rewards=torch.zeros(N),
+            dones=torch.zeros(N, dtype=torch.bool),
+            truncated=torch.zeros(N, dtype=torch.bool),
+            actions=np.zeros(N, dtype=int),
+            dt=np.ones(N, dtype=int),
+            infos=[{} for _ in range(N)],
+            virtual_rewards=torch.zeros(N),
+        )
+        tree.record_initial_atari_state(state)
+
+        existing_frame = np.ones((4, 4, 3), dtype=np.uint8) * 99
+        state1 = WalkerState(
+            states=np.array(
+                [np.ones(4, dtype=np.float32) * (i + 10) for i in range(N)], dtype=object
+            ),
+            observations=torch.randn(N, 8),
+            rewards=torch.tensor([1.0, 5.0, 3.0]),  # walker 1 is best
+            step_rewards=torch.tensor([1.0, 5.0, 3.0]),
+            dones=torch.zeros(N, dtype=torch.bool),
+            truncated=torch.zeros(N, dtype=torch.bool),
+            actions=np.zeros(N, dtype=int),
+            dt=np.ones(N, dtype=int),
+            infos=[{} for _ in range(N)],
+            virtual_rewards=torch.tensor([1.0, 5.0, 3.0]),
+        )
+        tree.record_atari_step(
+            state_before=state,
+            state_after_clone=state1,
+            state_final=state1,
+            info={},
+            clone_companions=torch.arange(N),
+            will_clone=torch.zeros(N, dtype=torch.bool),
+            best_frame=existing_frame,  # best walker (1) gets this frame
+        )
+
+        render_calls = []
+
+        def dummy_render(env_state):
+            render_calls.append(env_state)
+            return np.ones((4, 4, 3), dtype=np.uint8) * 77
+
+        frames = tree.render_missing_path_frames(dummy_render)
+
+        # The step-1 node for the best walker already has a frame,
+        # so render should NOT be called for it
+        # (render_calls should only be for the initial-state node)
+        for f in frames:
+            assert f is not None
+
+        # Check the existing frame was preserved (last frame on path is step 1)
+        # Best walker is 1, so last frame in path should be the existing_frame
+        np.testing.assert_array_equal(frames[-1], existing_frame)
+
+    def test_to_atari_history_uses_path_frames(self):
+        """Converted history should use path-based frames when available."""
+        N = 3
+        tree = AtariTreeHistory(N=N, game_name="path_convert")
+
+        obs = torch.zeros(N, 8)
+        state = WalkerState(
+            states=np.array([np.ones(4, dtype=np.float32) * i for i in range(N)], dtype=object),
+            observations=obs,
+            rewards=torch.zeros(N),
+            step_rewards=torch.zeros(N),
+            dones=torch.zeros(N, dtype=torch.bool),
+            truncated=torch.zeros(N, dtype=torch.bool),
+            actions=np.zeros(N, dtype=int),
+            dt=np.ones(N, dtype=int),
+            infos=[{} for _ in range(N)],
+            virtual_rewards=torch.zeros(N),
+        )
+        tree.record_initial_atari_state(state)
+
+        frame = np.ones((4, 4, 3), dtype=np.uint8) * 55
+        state1 = WalkerState(
+            states=np.array(
+                [np.ones(4, dtype=np.float32) * (i + 10) for i in range(N)], dtype=object
+            ),
+            observations=torch.randn(N, 8),
+            rewards=torch.tensor([1.0, 5.0, 3.0]),
+            step_rewards=torch.tensor([1.0, 5.0, 3.0]),
+            dones=torch.zeros(N, dtype=torch.bool),
+            truncated=torch.zeros(N, dtype=torch.bool),
+            actions=np.zeros(N, dtype=int),
+            dt=np.ones(N, dtype=int),
+            infos=[{} for _ in range(N)],
+            virtual_rewards=torch.tensor([1.0, 5.0, 3.0]),
+        )
+        tree.record_atari_step(
+            state_before=state,
+            state_after_clone=state1,
+            state_final=state1,
+            info={},
+            clone_companions=torch.arange(N),
+            will_clone=torch.zeros(N, dtype=torch.bool),
+            best_frame=frame,
+        )
+
+        # Render missing frames to fill the path
+        tree.render_missing_path_frames(
+            lambda env_state: np.ones((4, 4, 3), dtype=np.uint8) * 88,
+        )
+
+        ah = tree.to_atari_history()
+        # Path frames should be used: they follow root→best-leaf
+        assert ah.has_frames
+        # The frames should come from the path, not per-iteration metadata
+        path_frames = tree.get_best_path_frames()
+        assert len(ah.best_frames) == len(path_frames)
+
+
 class TestSaveLoad:
     """Tests for serialization roundtrip."""
 
@@ -263,6 +519,7 @@ class TestSaveLoad:
 # High-death-rate mock for pruning tests
 # ---------------------------------------------------------------------------
 
+
 class HighDeathMockEnv:
     """Mock environment that kills ~50% of walkers per step.
 
@@ -275,7 +532,10 @@ class HighDeathMockEnv:
         self.action_space_size = action_space_size
 
     def reset(self, **kwargs):
-        state = np.zeros(4, dtype=np.float32)
+        state = MockAtariState(
+            np.zeros(4, dtype=np.float32),
+            rgb_frame=np.random.randint(0, 255, (210, 160, 3), dtype=np.uint8),
+        )
         observation = np.zeros(self.obs_shape, dtype=np.float32)
         return state, observation, {}
 
@@ -285,7 +545,14 @@ class HighDeathMockEnv:
     def step_batch(self, states, actions, dt, **kwargs):
         N = len(states)
         new_states = np.array(
-            [np.random.randn(4).astype(np.float32) for _ in range(N)], dtype=object,
+            [
+                MockAtariState(
+                    np.random.randn(4).astype(np.float32),
+                    rgb_frame=np.random.randint(0, 255, (210, 160, 3), dtype=np.uint8),
+                )
+                for _ in range(N)
+            ],
+            dtype=object,
         )
         observations = np.random.rand(N, *self.obs_shape).astype(np.float32)
         rewards = np.random.randn(N).astype(np.float32) * 0.5
@@ -301,6 +568,7 @@ class HighDeathMockEnv:
 # ---------------------------------------------------------------------------
 # Pruning tests
 # ---------------------------------------------------------------------------
+
 
 class TestPruning:
     """Tests for dynamic pruning of dead walker branches."""
@@ -355,9 +623,12 @@ class TestPruning:
         companions1 = torch.arange(N)
         will_clone1 = torch.zeros(N, dtype=torch.bool)
         tree.record_atari_step(
-            state_before=state0, state_after_clone=state1,
-            state_final=state1, info={},
-            clone_companions=companions1, will_clone=will_clone1,
+            state_before=state0,
+            state_after_clone=state1,
+            state_final=state1,
+            info={},
+            clone_companions=companions1,
+            will_clone=will_clone1,
         )
         # nodes: 5 + 4 = 9
         assert tree._tree.data.number_of_nodes() == 9
@@ -380,9 +651,12 @@ class TestPruning:
         companions2 = torch.tensor([0, 1, 3, 3])  # walker 2 clones from 3
         will_clone2 = torch.tensor([False, False, True, False])
         tree.record_atari_step(
-            state_before=state1, state_after_clone=state2,
-            state_final=state2, info={},
-            clone_companions=companions2, will_clone=will_clone2,
+            state_before=state1,
+            state_after_clone=state2,
+            state_final=state2,
+            info={},
+            clone_companions=companions2,
+            will_clone=will_clone2,
         )
         # nodes: 9 + 4 = 13
         assert tree._tree.data.number_of_nodes() == 13
@@ -437,8 +711,10 @@ class TestPruning:
 
         # Step 1 — no cloning
         tree.record_atari_step(
-            state_before=state, state_after_clone=state,
-            state_final=state, info={},
+            state_before=state,
+            state_after_clone=state,
+            state_final=state,
+            info={},
             clone_companions=torch.arange(N),
             will_clone=torch.zeros(N, dtype=torch.bool),
         )
@@ -472,8 +748,10 @@ class TestPruning:
         # Step 1: walker 1 clones from 0, walker 2 clones from 0
         # Both (1,1) and (1,2) have parent (0,0)
         tree.record_atari_step(
-            state_before=base, state_after_clone=base,
-            state_final=base, info={},
+            state_before=base,
+            state_after_clone=base,
+            state_final=base,
+            info={},
             clone_companions=torch.tensor([0, 0, 0]),
             will_clone=torch.tensor([False, True, True]),
         )
@@ -482,15 +760,17 @@ class TestPruning:
 
         # Step 2: walker 2 clones from 1 → node(1,2) becomes orphan
         tree.record_atari_step(
-            state_before=base, state_after_clone=base,
-            state_final=base, info={},
+            state_before=base,
+            state_after_clone=base,
+            state_final=base,
+            info={},
             clone_companions=torch.tensor([0, 1, 1]),
             will_clone=torch.tensor([False, False, True]),
         )
 
         # Before pruning: node(0,1), node(0,2) are orphan leaves from step 1
         # and node(1,2) is orphan from step 2
-        nodes_before = tree._tree.data.number_of_nodes()
+        tree._tree.data.number_of_nodes()
         removed = tree.prune_dead_branches()
         assert removed > 0
 
@@ -539,8 +819,7 @@ class TestPruning:
         unpruned_max = 1 + N * (n_steps + 1)  # root + N per recorded step
         actual = tree._tree.data.number_of_nodes()
         assert actual < unpruned_max, (
-            f"Pruned graph ({actual}) should be smaller than "
-            f"unpruned ({unpruned_max})"
+            f"Pruned graph ({actual}) should be smaller than " f"unpruned ({unpruned_max})"
         )
 
     def test_pruned_tree_branches_still_valid(self):
@@ -574,14 +853,15 @@ class TestPruning:
             assert branch[-1] == _node_id(n_steps, w, N)
             # Branch must start at root or DEFAULT_FIRST_NODE_ID (get_branch
             # stops at whichever it hits first).
-            assert branch[0] in {int(DEFAULT_ROOT_ID), 1}, (
-                f"Walker {w}: unexpected branch start {branch[0]}"
-            )
+            assert branch[0] in {
+                int(DEFAULT_ROOT_ID),
+                1,
+            }, f"Walker {w}: unexpected branch start {branch[0]}"
             # Every consecutive pair should be a real edge
             for i in range(len(branch) - 1):
-                assert tree._tree.data.has_edge(branch[i], branch[i + 1]), (
-                    f"Missing edge {branch[i]} → {branch[i+1]} in walker {w}'s branch"
-                )
+                assert tree._tree.data.has_edge(
+                    branch[i], branch[i + 1]
+                ), f"Missing edge {branch[i]} → {branch[i + 1]} in walker {w}'s branch"
 
     def test_pruned_tree_to_atari_history(self):
         """Conversion to AtariHistory must succeed after pruning."""
@@ -674,8 +954,8 @@ class TestPruning:
                 will_clone=info["will_clone"],
             )
 
-        first_removed = tree.prune_dead_branches()
+        tree.prune_dead_branches()
         second_removed = tree.prune_dead_branches()
-        assert second_removed == 0, (
-            f"Second prune should be no-op but removed {second_removed} nodes"
-        )
+        assert (
+            second_removed == 0
+        ), f"Second prune should be no-op but removed {second_removed} nodes"

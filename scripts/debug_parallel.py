@@ -1,7 +1,9 @@
 """Debug script: compare serial vs parallel AtariFractalGas on MsPacman."""
+
 import os
 import time
 import traceback
+
 
 os.environ.pop("DISPLAY", None)
 os.environ["PYGLET_HEADLESS"] = "1"
@@ -10,9 +12,9 @@ os.environ["SDL_VIDEODRIVER"] = "dummy"
 os.environ["MPLBACKEND"] = "Agg"
 
 import numpy as np
+import plangym
 import torch
 
-import plangym
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 
 
@@ -21,14 +23,18 @@ def run_gas(env, label, n_iters=80, N=20, seed=42, record_frames=True):
     np.random.seed(seed)
     torch.manual_seed(seed)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"  {label}")
     print(f"  env type: {type(env).__name__}, N={N}, iters={n_iters}")
     print(f"  record_frames={record_frames}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     gas = AtariFractalGas(
-        env=env, N=N, seed=seed, record_frames=record_frames, dt_range=(3, 8),
+        env=env,
+        N=N,
+        seed=seed,
+        record_frames=record_frames,
+        dt_range=(3, 8),
     )
 
     t0 = time.time()
@@ -72,7 +78,7 @@ def run_gas(env, label, n_iters=80, N=20, seed=42, record_frames=True):
             print("  WARNING: step took <1ms — suspiciously fast, env may not be stepping")
 
     total = time.time() - t0
-    print(f"  DONE in {total:.1f}s  ({n_iters/total:.1f} iter/s)")
+    print(f"  DONE in {total:.1f}s  ({n_iters / total:.1f} iter/s)")
     print(f"  Final max_reward={info['max_reward']:.1f}, alive={info['alive_count']}")
 
 
@@ -83,11 +89,14 @@ if __name__ == "__main__":
 
     # Common kwargs — frameskip=5 is critical: VectorizedEnv defaults to
     # frameskip=1, overriding AtariEnv's default of 5.
-    common = dict(
-        obs_type="ram", render_mode=None,
-        autoreset=False, remove_time_limit=True, episodic_life=True,
-        frameskip=5,
-    )
+    common = {
+        "obs_type": "ram",
+        "render_mode": None,
+        "autoreset": False,
+        "remove_time_limit": True,
+        "episodic_life": True,
+        "frameskip": 5,
+    }
 
     # --- SERIAL ---
     env_serial = plangym.make(game, **common)
@@ -106,10 +115,16 @@ if __name__ == "__main__":
 
     # Check for orphan processes
     import subprocess
+
     result = subprocess.run(
-        ["ps", "aux"], capture_output=True, text=True,
+        ["ps", "aux"],
+        capture_output=True,
+        text=True,
+        check=False,
     )
-    ale_procs = [l for l in result.stdout.splitlines() if "ale" in l.lower() or "plangym" in l.lower()]
+    ale_procs = [
+        l for l in result.stdout.splitlines() if "ale" in l.lower() or "plangym" in l.lower()
+    ]
     if ale_procs:
         print(f"\nWARNING: {len(ale_procs)} orphan ALE/plangym processes found:")
         for p in ale_procs:

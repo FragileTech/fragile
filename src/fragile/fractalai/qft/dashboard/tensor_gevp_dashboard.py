@@ -72,15 +72,13 @@ def create_tensor_gevp_calibration_widgets() -> TensorGEVPCalibrationWidgets:
     base = create_tensor_calibration_widgets()
     initial_tabs = pn.Tabs(sizing_mode="stretch_width", dynamic=False)
     for _, label in TENSOR_VARIANT_TABS:
-        initial_tabs.append(
-            (
-                label,
-                pn.pane.Markdown(
-                    "_Run tensor calibration to populate this multiscale analysis tab._",
-                    sizing_mode="stretch_width",
-                ),
-            )
-        )
+        initial_tabs.append((
+            label,
+            pn.pane.Markdown(
+                "_Run tensor calibration to populate this multiscale analysis tab._",
+                sizing_mode="stretch_width",
+            ),
+        ))
     return TensorGEVPCalibrationWidgets(
         status=base.status,
         estimator_toggles=base.estimator_toggles,
@@ -153,33 +151,31 @@ def build_tensor_gevp_calibration_tab_layout(
         run_button=run_button,
         settings_layout=settings_layout,
     )
-    base_layout.objects.extend(
-        [
-            pn.layout.Divider(),
-            pn.pane.Markdown("### Multiscale Analysis By Tensor Variant"),
-            pn.pane.Markdown(
-                "_One tab per tensor-family channel, with per-scale correlator, effective-mass, "
-                "mass-vs-scale, consensus, and discrepancy diagnostics._"
-            ),
-            w.multiscale_variant_tabs,
-            pn.layout.Divider(),
-            pn.pane.Markdown("### GEVP Controls"),
-            pn.Row(
-                w.gevp_family_select,
-                w.gevp_scale_select,
-                w.gevp_compute_button,
-                sizing_mode="stretch_width",
-            ),
-            pn.Row(
-                w.gevp_family_select_all_button,
-                w.gevp_family_clear_button,
-                w.gevp_scale_select_all_button,
-                w.gevp_scale_clear_button,
-                sizing_mode="stretch_width",
-            ),
-            *build_gevp_dashboard_sections(w.gevp),
-        ]
-    )
+    base_layout.objects.extend([
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Multiscale Analysis By Tensor Variant"),
+        pn.pane.Markdown(
+            "_One tab per tensor-family channel, with per-scale correlator, effective-mass, "
+            "mass-vs-scale, consensus, and discrepancy diagnostics._"
+        ),
+        w.multiscale_variant_tabs,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### GEVP Controls"),
+        pn.Row(
+            w.gevp_family_select,
+            w.gevp_scale_select,
+            w.gevp_compute_button,
+            sizing_mode="stretch_width",
+        ),
+        pn.Row(
+            w.gevp_family_select_all_button,
+            w.gevp_family_clear_button,
+            w.gevp_scale_select_all_button,
+            w.gevp_scale_clear_button,
+            sizing_mode="stretch_width",
+        ),
+        *build_gevp_dashboard_sections(w.gevp),
+    ])
     return base_layout
 
 
@@ -193,15 +189,13 @@ def clear_tensor_gevp_calibration_tab(
     clear_tensor_calibration_tab(w, status_text)
     w.multiscale_variant_tabs.clear()
     for _, label in TENSOR_VARIANT_TABS:
-        w.multiscale_variant_tabs.append(
-            (
-                label,
-                pn.pane.Markdown(
-                    "_Run tensor calibration to populate this multiscale analysis tab._",
-                    sizing_mode="stretch_width",
-                ),
-            )
-        )
+        w.multiscale_variant_tabs.append((
+            label,
+            pn.pane.Markdown(
+                "_Run tensor calibration to populate this multiscale analysis tab._",
+                sizing_mode="stretch_width",
+            ),
+        ))
     w.gevp_family_select.options = []
     w.gevp_family_select.value = []
     w.gevp_scale_select.options = []
@@ -267,7 +261,10 @@ def _collect_tensor_per_scale_results(
     if noncomp_multiscale_output is not None and int(noncomp_multiscale_output.scales.numel()) > 0:
         for raw_name, series in noncomp_multiscale_output.per_scale_results.items():
             per_scale[str(raw_name)] = series
-    if companion_multiscale_output is not None and int(companion_multiscale_output.scales.numel()) > 0:
+    if (
+        companion_multiscale_output is not None
+        and int(companion_multiscale_output.scales.numel()) > 0
+    ):
         for raw_name, series in companion_multiscale_output.per_scale_results.items():
             per_scale[str(raw_name)] = series
     return per_scale
@@ -306,12 +303,10 @@ def _configure_gevp_controls(
     per_scale_results: Mapping[str, Sequence[ChannelCorrelatorResult]],
     original_results: Mapping[str, ChannelCorrelatorResult],
 ) -> None:
-    families = sorted(
-        {
-            channel_family_key(str(raw_name))
-            for raw_name in list(per_scale_results.keys()) + list(original_results.keys())
-        }
-    )
+    families = sorted({
+        channel_family_key(str(raw_name))
+        for raw_name in list(per_scale_results.keys()) + list(original_results.keys())
+    })
     if not families:
         families = ["tensor"]
 
@@ -383,7 +378,10 @@ def _output_for_variant(
     candidate_outputs: list[MultiscaleStrongForceOutput] = []
     if noncomp_multiscale_output is not None and int(noncomp_multiscale_output.scales.numel()) > 0:
         candidate_outputs.append(noncomp_multiscale_output)
-    if companion_multiscale_output is not None and int(companion_multiscale_output.scales.numel()) > 0:
+    if (
+        companion_multiscale_output is not None
+        and int(companion_multiscale_output.scales.numel()) > 0
+    ):
         candidate_outputs.append(companion_multiscale_output)
     for output in candidate_outputs:
         if channel_name not in output.per_scale_results:

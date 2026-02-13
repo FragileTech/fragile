@@ -272,12 +272,15 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
     cloning_scores = data["cloning_scores"]
     pairwise_distances = data["pairwise_distances"]
 
-    d_ij = pairwise_distances.gather(2, companions_distance.clamp(min=0, max=n_walkers - 1).unsqueeze(-1)).squeeze(-1)
-    d_ik = pairwise_distances.gather(2, companions_clone.clamp(min=0, max=n_walkers - 1).unsqueeze(-1)).squeeze(-1)
-    flat_idx = (
-        companions_distance.clamp(min=0, max=n_walkers - 1) * n_walkers
-        + companions_clone.clamp(min=0, max=n_walkers - 1)
-    )
+    d_ij = pairwise_distances.gather(
+        2, companions_distance.clamp(min=0, max=n_walkers - 1).unsqueeze(-1)
+    ).squeeze(-1)
+    d_ik = pairwise_distances.gather(
+        2, companions_clone.clamp(min=0, max=n_walkers - 1).unsqueeze(-1)
+    ).squeeze(-1)
+    flat_idx = companions_distance.clamp(
+        min=0, max=n_walkers - 1
+    ) * n_walkers + companions_clone.clamp(min=0, max=n_walkers - 1)
     d_jk = pairwise_distances.reshape(t_len, n_walkers * n_walkers).gather(1, flat_idx)
 
     max_radius = float(
@@ -510,7 +513,9 @@ def test_companion_multiscale_full_scale_matches_original_estimators() -> None:
         atol=1e-6,
         rtol=1e-5,
     )
-    torch.testing.assert_close(override["vector_companion"][0].correlator, vector.vector, atol=1e-6, rtol=1e-5)
+    torch.testing.assert_close(
+        override["vector_companion"][0].correlator, vector.vector, atol=1e-6, rtol=1e-5
+    )
     torch.testing.assert_close(
         override["axial_vector_companion"][0].correlator,
         vector.axial_vector,

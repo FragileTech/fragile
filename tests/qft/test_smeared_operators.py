@@ -30,11 +30,16 @@ class MockNeighborHistory:
         device: str = "cpu",
     ) -> None:
         self.N = int(n_walkers)
-        self.neighbor_edges = [edges.to(device=device, dtype=torch.long) for edges in neighbor_edges]
+        self.neighbor_edges = [
+            edges.to(device=device, dtype=torch.long) for edges in neighbor_edges
+        ]
         self.geodesic_edge_distances = (
             None
             if geodesic_edge_distances is None
-            else [weights.to(device=device, dtype=torch.float32) for weights in geodesic_edge_distances]
+            else [
+                weights.to(device=device, dtype=torch.float32)
+                for weights in geodesic_edge_distances
+            ]
         )
         if edge_weights is None:
             self.edge_weights = None

@@ -654,9 +654,9 @@ class CovariantCIFARBackbone(nn.Module):
             if standard_head_blocks <= 0:
                 msg = "standard_head_blocks must be positive when standard_head is enabled."
                 raise ValueError(msg)
-            self.standard_head = nn.Sequential(
-                *[StandardConvBlock(c3) for _ in range(int(standard_head_blocks))]
-            )
+            self.standard_head = nn.Sequential(*[
+                StandardConvBlock(c3) for _ in range(int(standard_head_blocks))
+            ])
 
     @property
     def num_features(self) -> int:

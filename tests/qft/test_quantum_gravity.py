@@ -63,8 +63,10 @@ def test_vectorized_bootstrap_scalar_regression_ci_on_linear_data():
     intercept_true = -0.7
 
     density_frames = rng.uniform(0.3, 3.0, size=(n_frames, n_walkers))
-    ricci_frames = slope_true * density_frames + intercept_true + 0.02 * rng.normal(
-        size=(n_frames, n_walkers)
+    ricci_frames = (
+        slope_true * density_frames
+        + intercept_true
+        + 0.02 * rng.normal(size=(n_frames, n_walkers))
     )
     valid_frames = np.ones((n_frames, n_walkers), dtype=bool)
 

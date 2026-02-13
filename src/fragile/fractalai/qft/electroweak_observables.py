@@ -31,6 +31,92 @@ class PackedNeighbors:
     valid: Tensor
 
 
+SU2_BASE_OPERATOR_CHANNELS = (
+    "su2_phase",
+    "su2_component",
+    "su2_doublet",
+    "su2_doublet_diff",
+)
+SU2_DIRECTIONAL_OPERATOR_CHANNELS = tuple(
+    f"{name}_directed" for name in SU2_BASE_OPERATOR_CHANNELS
+)
+WALKER_TYPE_LABELS = ("cloner", "resister", "persister")
+SU2_WALKER_TYPE_CHANNELS = tuple(
+    f"{name}_{label}" for name in SU2_BASE_OPERATOR_CHANNELS for label in WALKER_TYPE_LABELS
+)
+ELECTROWEAK_OPERATOR_CHANNELS = (
+    "u1_phase",
+    "u1_dressed",
+    "u1_phase_q2",
+    "u1_dressed_q2",
+    *SU2_BASE_OPERATOR_CHANNELS,
+    *SU2_DIRECTIONAL_OPERATOR_CHANNELS,
+    *SU2_WALKER_TYPE_CHANNELS,
+    "ew_mixed",
+)
+
+
+def _resolve_su2_operator_mode(mode: str) -> str:
+    mode_norm = str(mode).strip().lower()
+    if mode_norm not in {"standard", "score_directed"}:
+        msg = "su2_operator_mode must be 'standard' or 'score_directed'."
+        raise ValueError(msg)
+    return mode_norm
+
+
+def _resolve_walker_type_scope(scope: str) -> str:
+    scope_norm = str(scope).strip().lower()
+    if scope_norm != "frame_global":
+        msg = "walker_type_scope must be 'frame_global'."
+        raise ValueError(msg)
+    return scope_norm
+
+
+def classify_walker_types(
+    fitness: Tensor,
+    alive: Tensor,
+    will_clone: Tensor | None = None,
+) -> tuple[Tensor, Tensor, Tensor]:
+    """Classify alive walkers into (cloner, resister, persister) masks.
+
+    Definitions:
+    - cloner: alive and Bernoulli cloning event is True.
+    - resister: alive, not cloner, and lower fitness than at least one other alive walker.
+    - persister: all remaining alive walkers.
+    """
+    if fitness.ndim != 1 or alive.ndim != 1 or fitness.shape[0] != alive.shape[0]:
+        msg = "fitness and alive must be aligned 1D tensors [N]."
+        raise ValueError(msg)
+    n_walkers = int(fitness.shape[0])
+    if n_walkers == 0:
+        empty = torch.zeros(0, device=fitness.device, dtype=torch.bool)
+        return empty, empty, empty
+
+    alive_b = alive.to(device=fitness.device, dtype=torch.bool)
+    if will_clone is None:
+        clone_b = torch.zeros_like(alive_b)
+    else:
+        clone_b = will_clone.to(device=fitness.device, dtype=torch.bool)
+        if clone_b.ndim != 1 or clone_b.shape[0] != n_walkers:
+            msg = "will_clone must be a 1D tensor [N] aligned with fitness/alive."
+            raise ValueError(msg)
+
+    cloner = alive_b & clone_b
+
+    n_alive = int(alive_b.sum().item())
+    if n_alive <= 1:
+        resister = torch.zeros_like(alive_b)
+    else:
+        neg_inf = torch.full_like(fitness, float("-inf"))
+        alive_fitness = torch.where(alive_b, fitness, neg_inf)
+        max_alive = alive_fitness.max()
+        has_fitter_peer = alive_b & torch.isfinite(max_alive) & (fitness < max_alive)
+        resister = alive_b & (~clone_b) & has_fitter_peer
+
+    persister = alive_b & (~cloner) & (~resister)
+    return cloner, resister, persister
+
+
 def _apply_pbc_diff(diff: Tensor, bounds: Any | None) -> Tensor:
     """Apply minimum-image convention to a difference tensor."""
     if bounds is None:
@@ -145,13 +231,7 @@ def pack_neighbors_from_edges(
     w = edge_weights.to(device=device, dtype=dtype)
     alive_d = alive.to(device=device, dtype=torch.bool)
 
-    in_bounds = (
-        (src >= 0)
-        & (src < n_walkers)
-        & (dst >= 0)
-        & (dst < n_walkers)
-        & (src != dst)
-    )
+    in_bounds = (src >= 0) & (src < n_walkers) & (dst >= 0) & (dst < n_walkers) & (src != dst)
     if not in_bounds.any():
         empty_idx3 = torch.zeros((n_walkers, 0), device=device, dtype=torch.long)
         empty_w3 = torch.zeros((n_walkers, 0), device=device, dtype=dtype)
@@ -201,7 +281,9 @@ def pack_neighbors_from_edges(
         top_score, top_idx = torch.topk(score, k=k, dim=1, largest=True, sorted=True)
         top_valid = torch.isfinite(top_score)
         padded_idx = torch.gather(padded_idx, 1, top_idx)
-        padded_w = torch.where(top_valid, torch.gather(padded_w, 1, top_idx), torch.zeros_like(top_score))
+        padded_w = torch.where(
+            top_valid, torch.gather(padded_w, 1, top_idx), torch.zeros_like(top_score)
+        )
         valid = top_valid
 
     row_sum = padded_w.sum(dim=1, keepdim=True)
@@ -218,7 +300,7 @@ def compute_weighted_electroweak_ops_vectorized(
     velocities: Tensor,
     fitness: Tensor,
     alive: Tensor,
-    neighbors: PackedNeighbors,
+    neighbors: PackedNeighbors | None = None,
     *,
     h_eff: float,
     epsilon_d: float,
@@ -227,6 +309,13 @@ def compute_weighted_electroweak_ops_vectorized(
     lambda_alg: float,
     bounds: Any | None = None,
     pbc: bool = False,
+    will_clone: Tensor | None = None,
+    su2_operator_mode: str = "standard",
+    enable_walker_type_split: bool = False,
+    walker_type_scope: str = "frame_global",
+    neighbors_u1: PackedNeighbors | None = None,
+    neighbors_su2: PackedNeighbors | None = None,
+    neighbors_ew_mixed: PackedNeighbors | None = None,
 ) -> dict[str, Tensor]:
     """Compute all electroweak operators in vectorized form.
 
@@ -235,7 +324,7 @@ def compute_weighted_electroweak_ops_vectorized(
         velocities: Walker velocities [N, d].
         fitness: Fitness values [N].
         alive: Alive mask [N].
-        neighbors: Packed neighbor indices/weights.
+        neighbors: Optional shared packed neighbor indices/weights for all families.
         h_eff: Effective Planck constant.
         epsilon_d: U(1) locality scale.
         epsilon_c: SU(2) locality scale.
@@ -243,85 +332,251 @@ def compute_weighted_electroweak_ops_vectorized(
         lambda_alg: Velocity contribution to algorithmic distance.
         bounds: Optional bounds for PBC correction.
         pbc: Whether to apply periodic boundary conditions.
+        will_clone: Optional Bernoulli cloning outcomes [N].
+        su2_operator_mode: Either ``standard`` or ``score_directed``.
+        enable_walker_type_split: Whether to emit cloner/resister/persister SU(2) channels.
+        walker_type_scope: Walker classification scope (currently ``frame_global`` only).
+        neighbors_u1: Optional U(1)-family packed neighbors.
+        neighbors_su2: Optional SU(2)-family packed neighbors.
+        neighbors_ew_mixed: Optional EW-mixed-family packed neighbors.
 
     Returns:
         Dict mapping channel name to per-walker complex operator [N].
     """
+    resolved_mode = _resolve_su2_operator_mode(su2_operator_mode)
+    _resolve_walker_type_scope(walker_type_scope)
+
     N = positions.shape[0]
     device = positions.device
     complex_dtype = torch.complex128 if positions.dtype == torch.float64 else torch.complex64
 
-    if N == 0 or neighbors.indices.numel() == 0:
+    if N == 0:
         zeros = torch.zeros(N, device=device, dtype=complex_dtype)
+        return {name: zeros.clone() for name in ELECTROWEAK_OPERATOR_CHANNELS}
+
+    if (
+        neighbors is None
+        and neighbors_u1 is None
+        and neighbors_su2 is None
+        and neighbors_ew_mixed is None
+    ):
+        msg = "At least one neighbor set must be provided for electroweak operators."
+        raise ValueError(msg)
+
+    neighbors_u1 = neighbors_u1 if neighbors_u1 is not None else neighbors
+    neighbors_su2 = neighbors_su2 if neighbors_su2 is not None else neighbors
+    neighbors_ew_mixed = neighbors_ew_mixed if neighbors_ew_mixed is not None else neighbors
+    if neighbors_u1 is None or neighbors_su2 is None or neighbors_ew_mixed is None:
+        msg = "U(1), SU(2), and EW-mixed neighbor sets must be resolvable."
+        raise ValueError(msg)
+
+    for label, packed in (
+        ("neighbors_u1", neighbors_u1),
+        ("neighbors_su2", neighbors_su2),
+        ("neighbors_ew_mixed", neighbors_ew_mixed),
+    ):
+        if int(packed.indices.shape[0]) != N:
+            msg = (
+                f"{label} walker axis mismatch: expected {N}, got {int(packed.indices.shape[0])}."
+            )
+            raise ValueError(msg)
+
+    zeros_complex = torch.zeros(N, device=device, dtype=complex_dtype)
+    zeros_real = torch.zeros(N, device=device, dtype=positions.dtype)
+
+    def _compute_family_terms(packed: PackedNeighbors) -> dict[str, Tensor]:
+        if packed.indices.numel() == 0:
+            return {
+                "has_neighbors": torch.zeros(N, device=device, dtype=torch.bool),
+                "u1_phase_exp": zeros_complex.clone(),
+                "u1_phase_q2_exp": zeros_complex.clone(),
+                "u1_amp": zeros_real.clone(),
+                "su2_phase_exp_standard": zeros_complex.clone(),
+                "su2_phase_exp_directed": zeros_complex.clone(),
+                "su2_amp": zeros_real.clone(),
+                "su2_comp_phase_exp_standard": zeros_complex.clone(),
+                "su2_comp_phase_exp_directed": zeros_complex.clone(),
+                "su2_comp_amp": zeros_real.clone(),
+            }
+
+        nbr_idx = packed.indices
+        valid = packed.valid.to(device=device, dtype=torch.bool)
+        neighbor_w = packed.weights.to(device=device, dtype=positions.dtype)
+        weights = torch.where(valid, neighbor_w, torch.zeros_like(neighbor_w))
+        weight_sum = weights.sum(dim=1, keepdim=True)
+        weights = torch.where(
+            weight_sum > 0,
+            weights / weight_sum.clamp(min=1e-12),
+            torch.zeros_like(weights),
+        )
+        has_neighbors = valid.any(dim=1)
+
+        fitness_i = fitness.unsqueeze(1)
+        fitness_j = fitness[nbr_idx]
+        weights_c = weights.to(complex_dtype)
+
+        phase_u1 = -(fitness_j - fitness_i) / max(h_eff, 1e-12)
+        u1_phase_exp = (weights_c * torch.exp(1j * phase_u1).to(complex_dtype)).sum(dim=1)
+        u1_phase_q2_exp = (weights_c * torch.exp(1j * (2.0 * phase_u1)).to(complex_dtype)).sum(
+            dim=1
+        )
+
+        denom = fitness_i + epsilon_clone
+        denom = torch.where(
+            denom.abs() < 1e-12,
+            torch.full_like(denom, float(max(epsilon_clone, 1e-12))),
+            denom,
+        )
+        su2_phase = ((fitness_j - fitness_i) / denom) / max(h_eff, 1e-12)
+        su2_phase_pair = torch.exp(1j * su2_phase).to(complex_dtype)
+        su2_phase_pair_directed = torch.where(
+            su2_phase >= 0, su2_phase_pair, torch.conj(su2_phase_pair)
+        )
+        su2_phase_exp_standard = (weights_c * su2_phase_pair).sum(dim=1)
+        su2_phase_exp_directed = (weights_c * su2_phase_pair_directed).sum(dim=1)
+
+        diff_x = positions.unsqueeze(1) - positions[nbr_idx]
+        if pbc and bounds is not None:
+            diff_x = _apply_pbc_diff(diff_x, bounds)
+        diff_v = velocities.unsqueeze(1) - velocities[nbr_idx]
+        dist_sq = (diff_x**2).sum(dim=-1) + float(lambda_alg) * (diff_v**2).sum(dim=-1)
+        u1_weight = torch.exp(-dist_sq / (2.0 * max(float(epsilon_d), 1e-12) ** 2))
+        su2_weight = torch.exp(-dist_sq / (2.0 * max(float(epsilon_c), 1e-12) ** 2))
+        u1_amp = (weights * torch.sqrt(u1_weight)).sum(dim=1)
+        su2_amp = (weights * torch.sqrt(su2_weight)).sum(dim=1)
+
+        su2_comp_phase_exp_standard = (weights_c * su2_phase_exp_standard[nbr_idx]).sum(dim=1)
+        su2_comp_phase_exp_directed = (weights_c * su2_phase_exp_directed[nbr_idx]).sum(dim=1)
+        su2_comp_amp = (weights * su2_amp[nbr_idx]).sum(dim=1)
+
         return {
-            "u1_phase": zeros,
-            "u1_dressed": zeros,
-            "u1_phase_q2": zeros,
-            "u1_dressed_q2": zeros,
-            "su2_phase": zeros,
-            "su2_component": zeros,
-            "su2_doublet": zeros,
-            "su2_doublet_diff": zeros,
-            "ew_mixed": zeros,
+            "has_neighbors": has_neighbors,
+            "u1_phase_exp": u1_phase_exp,
+            "u1_phase_q2_exp": u1_phase_q2_exp,
+            "u1_amp": u1_amp,
+            "su2_phase_exp_standard": su2_phase_exp_standard,
+            "su2_phase_exp_directed": su2_phase_exp_directed,
+            "su2_amp": su2_amp,
+            "su2_comp_phase_exp_standard": su2_comp_phase_exp_standard,
+            "su2_comp_phase_exp_directed": su2_comp_phase_exp_directed,
+            "su2_comp_amp": su2_comp_amp,
         }
 
-    nbr_idx = neighbors.indices
-    valid = neighbors.valid
-    neighbor_w = neighbors.weights.to(device=device, dtype=positions.dtype)
-    weights = torch.where(valid, neighbor_w, torch.zeros_like(neighbor_w))
-    weight_sum = weights.sum(dim=1, keepdim=True)
-    weights = torch.where(weight_sum > 0, weights / weight_sum.clamp(min=1e-12), torch.zeros_like(weights))
-
-    fitness_i = fitness.unsqueeze(1)
-    fitness_j = fitness[nbr_idx]
-    weights_c = weights.to(complex_dtype)
-
-    # U(1) phase channels
-    phase_u1 = -(fitness_j - fitness_i) / max(h_eff, 1e-12)
-    u1_phase_exp = (weights_c * torch.exp(1j * phase_u1).to(complex_dtype)).sum(dim=1)
-    u1_phase_q2_exp = (weights_c * torch.exp(1j * (2.0 * phase_u1)).to(complex_dtype)).sum(dim=1)
-
-    # SU(2) phase channels
-    denom = fitness_i + epsilon_clone
-    denom = torch.where(
-        denom.abs() < 1e-12,
-        torch.full_like(denom, float(max(epsilon_clone, 1e-12))),
-        denom,
-    )
-    su2_phase = ((fitness_j - fitness_i) / denom) / max(h_eff, 1e-12)
-    su2_phase_exp = (weights_c * torch.exp(1j * su2_phase).to(complex_dtype)).sum(dim=1)
-
-    # Locality amplitudes
-    diff_x = positions.unsqueeze(1) - positions[nbr_idx]
-    if pbc and bounds is not None:
-        diff_x = _apply_pbc_diff(diff_x, bounds)
-    diff_v = velocities.unsqueeze(1) - velocities[nbr_idx]
-    dist_sq = (diff_x**2).sum(dim=-1) + float(lambda_alg) * (diff_v**2).sum(dim=-1)
-    u1_weight = torch.exp(-dist_sq / (2.0 * max(float(epsilon_d), 1e-12) ** 2))
-    su2_weight = torch.exp(-dist_sq / (2.0 * max(float(epsilon_c), 1e-12) ** 2))
-    u1_amp = (weights * torch.sqrt(u1_weight)).sum(dim=1)
-    su2_amp = (weights * torch.sqrt(su2_weight)).sum(dim=1)
-
-    # Companion-composed SU(2) terms
-    su2_comp_phase_exp = (weights_c * su2_phase_exp[nbr_idx]).sum(dim=1)
-    su2_comp_amp = (weights * su2_amp[nbr_idx]).sum(dim=1)
+    u1_terms = _compute_family_terms(neighbors_u1)
+    su2_terms = _compute_family_terms(neighbors_su2)
+    ew_terms = _compute_family_terms(neighbors_ew_mixed)
 
     alive_c = alive.to(complex_dtype)
-    u1_amp_c = u1_amp.to(complex_dtype)
-    su2_amp_c = su2_amp.to(complex_dtype)
-    su2_comp_amp_c = su2_comp_amp.to(complex_dtype)
+    u1_amp_c = u1_terms["u1_amp"].to(complex_dtype)
+    su2_amp_c = su2_terms["su2_amp"].to(complex_dtype)
+    su2_comp_amp_c = su2_terms["su2_comp_amp"].to(complex_dtype)
 
-    return {
-        "u1_phase": u1_phase_exp * alive_c,
-        "u1_dressed": (u1_amp_c * u1_phase_exp) * alive_c,
-        "u1_phase_q2": u1_phase_q2_exp * alive_c,
-        "u1_dressed_q2": (u1_amp_c * u1_phase_q2_exp) * alive_c,
-        "su2_phase": su2_phase_exp * alive_c,
-        "su2_component": (su2_amp_c * su2_phase_exp) * alive_c,
-        "su2_doublet": (su2_amp_c * su2_phase_exp + su2_comp_amp_c * su2_comp_phase_exp) * alive_c,
-        "su2_doublet_diff": (su2_amp_c * su2_phase_exp - su2_comp_amp_c * su2_comp_phase_exp) * alive_c,
-        "ew_mixed": (u1_amp_c * su2_amp_c * u1_phase_exp * su2_phase_exp) * alive_c,
+    su2_phase_exp_standard = su2_terms["su2_phase_exp_standard"]
+    su2_phase_exp_directed = su2_terms["su2_phase_exp_directed"]
+    su2_comp_phase_exp_standard = su2_terms["su2_comp_phase_exp_standard"]
+    su2_comp_phase_exp_directed = su2_terms["su2_comp_phase_exp_directed"]
+
+    su2_phase_op_standard = su2_phase_exp_standard * alive_c
+    su2_component_op_standard = (su2_amp_c * su2_phase_exp_standard) * alive_c
+    su2_doublet_op_standard = (
+        su2_amp_c * su2_phase_exp_standard + su2_comp_amp_c * su2_comp_phase_exp_standard
+    ) * alive_c
+    su2_doublet_diff_op_standard = (
+        su2_amp_c * su2_phase_exp_standard - su2_comp_amp_c * su2_comp_phase_exp_standard
+    ) * alive_c
+
+    su2_phase_op_directed = su2_phase_exp_directed * alive_c
+    su2_component_op_directed = (su2_amp_c * su2_phase_exp_directed) * alive_c
+    su2_doublet_op_directed = (
+        su2_amp_c * su2_phase_exp_directed + su2_comp_amp_c * su2_comp_phase_exp_directed
+    ) * alive_c
+    su2_doublet_diff_op_directed = (
+        su2_amp_c * su2_phase_exp_directed - su2_comp_amp_c * su2_comp_phase_exp_directed
+    ) * alive_c
+
+    if resolved_mode == "score_directed":
+        su2_phase_op = su2_phase_op_directed
+        su2_component_op = su2_component_op_directed
+        su2_doublet_op = su2_doublet_op_directed
+        su2_doublet_diff_op = su2_doublet_diff_op_directed
+    else:
+        su2_phase_op = su2_phase_op_standard
+        su2_component_op = su2_component_op_standard
+        su2_doublet_op = su2_doublet_op_standard
+        su2_doublet_diff_op = su2_doublet_diff_op_standard
+
+    ew_u1_amp_c = ew_terms["u1_amp"].to(complex_dtype)
+    ew_su2_amp_c = ew_terms["su2_amp"].to(complex_dtype)
+    ew_u1_phase = ew_terms["u1_phase_exp"]
+    if resolved_mode == "score_directed":
+        ew_su2_phase = ew_terms["su2_phase_exp_directed"]
+    else:
+        ew_su2_phase = ew_terms["su2_phase_exp_standard"]
+
+    results: dict[str, Tensor] = {
+        "u1_phase": u1_terms["u1_phase_exp"] * alive_c,
+        "u1_dressed": (u1_amp_c * u1_terms["u1_phase_exp"]) * alive_c,
+        "u1_phase_q2": u1_terms["u1_phase_q2_exp"] * alive_c,
+        "u1_dressed_q2": (u1_amp_c * u1_terms["u1_phase_q2_exp"]) * alive_c,
+        "su2_phase": su2_phase_op,
+        "su2_component": su2_component_op,
+        "su2_doublet": su2_doublet_op,
+        "su2_doublet_diff": su2_doublet_diff_op,
+        "su2_phase_directed": su2_phase_op_directed,
+        "su2_component_directed": su2_component_op_directed,
+        "su2_doublet_directed": su2_doublet_op_directed,
+        "su2_doublet_diff_directed": su2_doublet_diff_op_directed,
+        "ew_mixed": (ew_u1_amp_c * ew_su2_amp_c * ew_u1_phase * ew_su2_phase) * alive_c,
     }
+
+    if bool(enable_walker_type_split):
+        if will_clone is not None:
+            will_clone_b = will_clone.to(device=device, dtype=torch.bool)
+            if will_clone_b.ndim != 1 or will_clone_b.shape[0] != N:
+                msg = (
+                    "will_clone must be aligned with walker axis [N] when splitting walker types."
+                )
+                raise ValueError(msg)
+        else:
+            will_clone_b = torch.zeros(N, device=device, dtype=torch.bool)
+
+        cloner_mask, resister_mask, persister_mask = classify_walker_types(
+            fitness=fitness.to(device=device),
+            alive=alive.to(device=device, dtype=torch.bool),
+            will_clone=will_clone_b,
+        )
+    else:
+        false_mask = torch.zeros(N, device=device, dtype=torch.bool)
+        cloner_mask = false_mask
+        resister_mask = false_mask
+        persister_mask = false_mask
+
+    cloner_c = cloner_mask.to(complex_dtype)
+    resister_c = resister_mask.to(complex_dtype)
+    persister_c = persister_mask.to(complex_dtype)
+    results["su2_phase_cloner"] = su2_phase_op * cloner_c
+    results["su2_phase_resister"] = su2_phase_op * resister_c
+    results["su2_phase_persister"] = su2_phase_op * persister_c
+    results["su2_component_cloner"] = su2_component_op * cloner_c
+    results["su2_component_resister"] = su2_component_op * resister_c
+    results["su2_component_persister"] = su2_component_op * persister_c
+    results["su2_doublet_cloner"] = su2_doublet_op * cloner_c
+    results["su2_doublet_resister"] = su2_doublet_op * resister_c
+    results["su2_doublet_persister"] = su2_doublet_op * persister_c
+    results["su2_doublet_diff_cloner"] = su2_doublet_diff_op * cloner_c
+    results["su2_doublet_diff_resister"] = su2_doublet_diff_op * resister_c
+    results["su2_doublet_diff_persister"] = su2_doublet_diff_op * persister_c
+
+    zeros = torch.zeros(N, device=device, dtype=complex_dtype)
+    for name in ELECTROWEAK_OPERATOR_CHANNELS:
+        results.setdefault(name, zeros)
+
+    # Keep split channels zeroed for walkers without any valid SU(2) neighbors.
+    if not bool(su2_terms["has_neighbors"].any()):
+        for name in SU2_WALKER_TYPE_CHANNELS:
+            results[name] = zeros
+
+    return results
 
 
 def compute_higgs_vev_from_positions(
@@ -368,7 +623,11 @@ def compute_fitness_gap_distribution(
         return {"fitness_sorted": empty, "gaps": empty, "phi0": 0.0}
 
     values_sorted, _ = torch.sort(values)
-    gaps = values_sorted[1:] - values_sorted[:-1] if values_sorted.numel() > 1 else values_sorted.new_zeros(0)
+    gaps = (
+        values_sorted[1:] - values_sorted[:-1]
+        if values_sorted.numel() > 1
+        else values_sorted.new_zeros(0)
+    )
     phi0 = float(values.std(unbiased=False).item()) if values.numel() > 1 else 0.0
     return {"fitness_sorted": values_sorted, "gaps": gaps, "phi0": phi0}
 
@@ -426,9 +685,17 @@ def build_phase_space_antisymmetric_kernel(
         K_tilde [N_alive, N_alive] complex matrix and alive indices [N_alive].
     """
     pos = positions.detach().cpu().numpy() if torch.is_tensor(positions) else np.asarray(positions)
-    vel = velocities.detach().cpu().numpy() if torch.is_tensor(velocities) else np.asarray(velocities)
+    vel = (
+        velocities.detach().cpu().numpy()
+        if torch.is_tensor(velocities)
+        else np.asarray(velocities)
+    )
     fit = fitness.detach().cpu().numpy() if torch.is_tensor(fitness) else np.asarray(fitness)
-    alive = alive_mask.detach().cpu().numpy() if torch.is_tensor(alive_mask) else np.asarray(alive_mask)
+    alive = (
+        alive_mask.detach().cpu().numpy()
+        if torch.is_tensor(alive_mask)
+        else np.asarray(alive_mask)
+    )
     alive = alive.astype(bool)
 
     alive_indices = np.where(alive)[0]
@@ -441,8 +708,16 @@ def build_phase_space_antisymmetric_kernel(
 
     dx = x[:, None, :] - x[None, :, :]
     if pbc and bounds is not None:
-        high = bounds.high.detach().cpu().numpy() if torch.is_tensor(bounds.high) else np.asarray(bounds.high)
-        low = bounds.low.detach().cpu().numpy() if torch.is_tensor(bounds.low) else np.asarray(bounds.low)
+        high = (
+            bounds.high.detach().cpu().numpy()
+            if torch.is_tensor(bounds.high)
+            else np.asarray(bounds.high)
+        )
+        low = (
+            bounds.low.detach().cpu().numpy()
+            if torch.is_tensor(bounds.low)
+            else np.asarray(bounds.low)
+        )
         span = high - low
         dx = dx - span * np.round(dx / span)
     dv = v[:, None, :] - v[None, :, :]

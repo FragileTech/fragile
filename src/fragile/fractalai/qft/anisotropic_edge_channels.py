@@ -145,7 +145,9 @@ def _component_factors(direction: Tensor, mode: str) -> dict[str, Tensor]:
     dim = int(direction.shape[1])
     factors: dict[str, Tensor] = {}
     if mode in {"isotropic", "isotropic+axes", "isotropic+quadrupole"}:
-        factors["iso"] = torch.ones(direction.shape[0], device=direction.device, dtype=direction.dtype)
+        factors["iso"] = torch.ones(
+            direction.shape[0], device=direction.device, dtype=direction.dtype
+        )
     if mode in {"axes", "isotropic+axes"}:
         for axis in range(dim):
             factors[f"axis_{axis}"] = direction[:, axis].pow(2)
@@ -182,7 +184,9 @@ def _extract_edges_for_frame(
         raise ValueError(f"neighbor_edges[{frame_idx}] is empty.")
     edges_np = np.asarray(edges.detach().cpu().numpy(), dtype=np.int64)
     if edges_np.ndim != 2 or edges_np.shape[1] != 2:
-        raise ValueError(f"neighbor_edges[{frame_idx}] must have shape [E,2], got {edges_np.shape}.")
+        raise ValueError(
+            f"neighbor_edges[{frame_idx}] must have shape [E,2], got {edges_np.shape}."
+        )
 
     geodesic_history = getattr(history, "geodesic_edge_distances", None)
     if geodesic_history is None or frame_idx >= len(geodesic_history):
@@ -355,7 +359,9 @@ def _build_direct_neighbor_triplets(
     row_starts = torch.zeros(n_alive, dtype=torch.long, device=device)
     if n_alive > 1:
         row_starts[1:] = torch.cumsum(counts[:-1], dim=0)
-    col = torch.arange(src_sorted.shape[0], device=device, dtype=torch.long) - row_starts[src_sorted]
+    col = (
+        torch.arange(src_sorted.shape[0], device=device, dtype=torch.long) - row_starts[src_sorted]
+    )
 
     neighbor_idx = torch.full((n_alive, k), -1, dtype=torch.long, device=device)
     neighbor_weights = torch.zeros((n_alive, k), dtype=torch.float32, device=device)
@@ -430,7 +436,9 @@ def _build_companion_triplets(
     companions_dist = getattr(history, "companions_distance", None)
     companions_clone = getattr(history, "companions_clone", None)
     if companions_dist is None or companions_clone is None:
-        msg = "nucleon_triplet_mode='companions' requires companions_distance and companions_clone."
+        msg = (
+            "nucleon_triplet_mode='companions' requires companions_distance and companions_clone."
+        )
         raise ValueError(msg)
     if info_idx >= companions_dist.shape[0] or info_idx >= companions_clone.shape[0]:
         msg = f"Companion arrays missing data for frame {frame_idx} (info index {info_idx})."
@@ -739,7 +747,9 @@ def _compute_channel_results_batched(
                 )
             continue
 
-        series_stack = torch.stack([series_buffers[name][valid_t] for name in names], dim=0).float()
+        series_stack = torch.stack(
+            [series_buffers[name][valid_t] for name in names], dim=0
+        ).float()
         correlators = _fft_correlator_batched(
             series_stack,
             max_lag=int(config.max_lag),
@@ -939,9 +949,10 @@ def compute_anisotropic_edge_channels(
                 device=device,
                 dtype=positions_alive.dtype,
             )
-            edge_weights = edge_weights * torch.sqrt(
-                volume_weights_alive[src] * volume_weights_alive[dst]
-            ).float()
+            edge_weights = (
+                edge_weights
+                * torch.sqrt(volume_weights_alive[src] * volume_weights_alive[dst]).float()
+            )
 
         diff = positions_alive[dst] - positions_alive[src]
         if bool(history.pbc) and bounds is not None:
@@ -965,15 +976,13 @@ def compute_anisotropic_edge_channels(
                 if torch.isfinite(weight_sum) and float(weight_sum.item()) > 0:
                     color_tensor = color_scalar[valid_tensor]
                     r2 = torch.sum(dx * dx, dim=-1)
-                    traceless = (
-                        dx.unsqueeze(-1) * dx.unsqueeze(-2)
-                        - eye_keep.unsqueeze(0) * (r2[:, None, None] / float(dim_keep))
+                    traceless = dx.unsqueeze(-1) * dx.unsqueeze(-2) - eye_keep.unsqueeze(0) * (
+                        r2[:, None, None] / float(dim_keep)
                     )
                     coeff = weights_tensor * color_tensor
-                    tensor_traceless_series[t_idx] = (
-                        (coeff[:, None, None] * traceless).sum(dim=0)
-                        / weight_sum.clamp(min=1e-12)
-                    )
+                    tensor_traceless_series[t_idx] = (coeff[:, None, None] * traceless).sum(
+                        dim=0
+                    ) / weight_sum.clamp(min=1e-12)
                     tensor_traceless_valid[t_idx] = True
 
         alive_counts.append(float(alive_idx.numel()))
@@ -993,7 +1002,9 @@ def compute_anisotropic_edge_channels(
                 if keep_dims is not None:
                     force = force[:, keep_dims]
                 force_sq = torch.linalg.vector_norm(force, dim=-1).pow(2)[alive_idx]
-                edge_chunk["glueball_values"].append((0.5 * (force_sq[src] + force_sq[dst])).float())
+                edge_chunk["glueball_values"].append(
+                    (0.5 * (force_sq[src] + force_sq[dst])).float()
+                )
 
         if include_nucleon:
             if config.nucleon_triplet_mode == "companions":

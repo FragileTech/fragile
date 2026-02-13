@@ -4,8 +4,10 @@
 import os
 import sys
 
+
 # Enable headless mode
 os.environ["PYGLET_HEADLESS"] = "1"
+
 
 def test_atari_env_creation():
     """Test that AtariEnv can be created with dashboard parameters."""
@@ -26,8 +28,15 @@ def test_atari_env_creation():
 
             # Verify required methods exist
             required_methods = [
-                'reset', 'step', 'step_batch', 'get_state',
-                'clone_state', 'restore_state', 'render', 'close', 'action_space'
+                "reset",
+                "step",
+                "step_batch",
+                "get_state",
+                "clone_state",
+                "restore_state",
+                "render",
+                "close",
+                "action_space",
             ]
             missing = [m for m in required_methods if not hasattr(env, m)]
 
@@ -38,13 +47,13 @@ def test_atari_env_creation():
 
             # Test basic functionality
             state = env.reset(seed=42)
-            if not hasattr(state, 'copy'):
-                print(f"    ✗ State doesn't have copy() method")
+            if not hasattr(state, "copy"):
+                print("    ✗ State doesn't have copy() method")
                 env.close()
                 return False
 
             if state.rgb_frame is None:
-                print(f"    ✗ RGB frame is None (include_rgb=True should provide it)")
+                print("    ✗ RGB frame is None (include_rgb=True should provide it)")
                 env.close()
                 return False
 
@@ -54,6 +63,7 @@ def test_atari_env_creation():
         except Exception as e:
             print(f"    ✗ Failed: {e}")
             import traceback
+
             traceback.print_exc()
             return False
 
@@ -96,12 +106,14 @@ def test_atari_gas_integration():
 
         for i in range(5):
             state, info = gas.step(state)
-            print(f"  ✓ Iteration {i}: reward={info['max_reward']:.2f}, clones={info['num_cloned']}")
+            print(
+                f"  ✓ Iteration {i}: reward={info['max_reward']:.2f}, clones={info['num_cloned']}"
+            )
 
             if "best_frame" in info and info["best_frame"] is not None:
                 print(f"    Frame captured: {info['best_frame'].shape}")
             else:
-                print(f"    ⚠ No frame captured (record_frames=True)")
+                print("    ⚠ No frame captured (record_frames=True)")
 
         env.close()
         print("  ✓ Integration test completed successfully!")
@@ -110,6 +122,7 @@ def test_atari_gas_integration():
     except Exception as e:
         print(f"  ✗ Integration test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -179,9 +192,8 @@ def main():
     if all_passed:
         print("\n✓ All tests passed! Dashboard integration is ready.")
         return 0
-    else:
-        print("\n✗ Some tests failed. Check output above for details.")
-        return 1
+    print("\n✗ Some tests failed. Check output above for details.")
+    return 1
 
 
 if __name__ == "__main__":

@@ -7,16 +7,18 @@ from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
 from fragile.fractalai.videogames.cloning import FractalCloningOperator
 from fragile.fractalai.videogames.kinetic import RandomActionOperator
 
+
 __all__ = [
     "AtariEnv",
-    "AtariState",
     "AtariFractalGas",
-    "WalkerState",
     "AtariHistory",
+    "AtariState",
     "AtariTreeHistory",
     "FractalCloningOperator",
     "RandomActionOperator",
+    "WalkerState",
 ]
+
 
 # Dashboard imports are optional and only loaded when explicitly requested
 # to avoid importing heavy dependencies (panel, holoviews) during normal use

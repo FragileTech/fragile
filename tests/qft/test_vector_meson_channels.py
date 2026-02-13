@@ -51,7 +51,11 @@ def _naive_vector_correlators(
                     if valid_np[t, i] and valid_np[t, j]:
                         inner = np.vdot(color_np[t, i], color_np[t, j])
                         dx = pos_np[t, j] - pos_np[t, i]
-                        if np.isfinite(inner.real) and np.isfinite(inner.imag) and np.all(np.isfinite(dx)):
+                        if (
+                            np.isfinite(inner.real)
+                            and np.isfinite(inner.imag)
+                            and np.all(np.isfinite(dx))
+                        ):
                             if use_unit_displacement:
                                 norm_dx = np.linalg.norm(dx)
                                 if norm_dx <= eps:
@@ -73,7 +77,11 @@ def _naive_vector_correlators(
                     if valid_np[t, i] and valid_np[t, j]:
                         inner = np.vdot(color_np[t, i], color_np[t, j])
                         dx = pos_np[t, j] - pos_np[t, i]
-                        if np.isfinite(inner.real) and np.isfinite(inner.imag) and np.all(np.isfinite(dx)):
+                        if (
+                            np.isfinite(inner.real)
+                            and np.isfinite(inner.imag)
+                            and np.all(np.isfinite(dx))
+                        ):
                             if use_unit_displacement:
                                 norm_dx = np.linalg.norm(dx)
                                 if norm_dx <= eps:
@@ -125,7 +133,9 @@ def _naive_vector_correlators(
                         continue
 
                     tt = t + lag
-                    if not (alive_np[tt, i] and alive_np[tt, j] and valid_np[tt, i] and valid_np[tt, j]):
+                    if not (
+                        alive_np[tt, i] and alive_np[tt, j] and valid_np[tt, i] and valid_np[tt, j]
+                    ):
                         continue
 
                     inner_sink = np.vdot(color_np[tt, i], color_np[tt, j])
@@ -148,7 +158,9 @@ def _naive_vector_correlators(
                     ax_src = axial_source[t, i, slot]
 
                     raw_vec_vals.append(float(np.dot(vec_src, vec_sink)))
-                    conn_vec_vals.append(float(np.dot(vec_src - mean_vector, vec_sink - mean_vector)))
+                    conn_vec_vals.append(
+                        float(np.dot(vec_src - mean_vector, vec_sink - mean_vector))
+                    )
                     raw_ax_vals.append(float(np.dot(ax_src, ax_sink)))
                     conn_ax_vals.append(float(np.dot(ax_src - mean_axial, ax_sink - mean_axial)))
 
@@ -240,8 +252,12 @@ def test_vector_meson_correlator_matches_naive_reference() -> None:
     )
 
     np.testing.assert_allclose(out.vector_raw.cpu().numpy(), vec_raw_ref, rtol=1e-5, atol=1e-5)
-    np.testing.assert_allclose(out.vector_connected.cpu().numpy(), vec_conn_ref, rtol=1e-5, atol=1e-5)
-    np.testing.assert_allclose(out.axial_vector_raw.cpu().numpy(), ax_raw_ref, rtol=1e-5, atol=1e-5)
+    np.testing.assert_allclose(
+        out.vector_connected.cpu().numpy(), vec_conn_ref, rtol=1e-5, atol=1e-5
+    )
+    np.testing.assert_allclose(
+        out.axial_vector_raw.cpu().numpy(), ax_raw_ref, rtol=1e-5, atol=1e-5
+    )
     np.testing.assert_allclose(
         out.axial_vector_connected.cpu().numpy(), ax_conn_ref, rtol=1e-5, atol=1e-5
     )
@@ -307,7 +323,9 @@ def test_vector_meson_score_directed_matches_standard_for_equal_scores() -> None
         scores=scores_equal,
     )
 
-    torch.testing.assert_close(out_directed.vector_raw, out_standard.vector_raw, atol=1e-6, rtol=1e-5)
+    torch.testing.assert_close(
+        out_directed.vector_raw, out_standard.vector_raw, atol=1e-6, rtol=1e-5
+    )
     torch.testing.assert_close(
         out_directed.vector_connected, out_standard.vector_connected, atol=1e-6, rtol=1e-5
     )

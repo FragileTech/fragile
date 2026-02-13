@@ -38,7 +38,8 @@ class MockEnv:
 
         # Create mock outputs
         new_states = np.array(
-            [np.random.randn(4).astype(np.float32) for _ in range(N)], dtype=object,
+            [np.random.randn(4).astype(np.float32) for _ in range(N)],
+            dtype=object,
         )
         observations = np.random.rand(N, *self.obs_shape).astype(np.float32)
         rewards = np.random.randn(N).astype(np.float32) * 0.1
@@ -142,13 +143,10 @@ def test_walker_state_alive_property(device):
 def test_walker_state_clone(device):
     """Test state cloning method."""
     N = 8
-    obs_shape = (128,)
 
     # Create initial state
     states = np.array([MagicMock() for _ in range(N)], dtype=object)
-    observations = torch.arange(N * 128, device=device, dtype=torch.float32).reshape(
-        N, 128
-    )
+    observations = torch.arange(N * 128, device=device, dtype=torch.float32).reshape(N, 128)
     rewards = torch.arange(N, device=device, dtype=torch.float32)
     step_rewards = torch.zeros(N, device=device)
     dones = torch.zeros(N, dtype=torch.bool, device=device)
@@ -297,7 +295,8 @@ def test_atari_gas_termination(device):
         def step_batch(self, states, actions, dt, **kwargs):
             N = len(states)
             new_states = np.array(
-                [np.random.randn(4).astype(np.float32) for _ in range(N)], dtype=object,
+                [np.random.randn(4).astype(np.float32) for _ in range(N)],
+                dtype=object,
             )
             observations = np.random.rand(N, *self.obs_shape).astype(np.float32)
             rewards = np.zeros(N, dtype=np.float32)
@@ -379,7 +378,7 @@ def test_cloning_happens(mock_env, device):
         seed=42,
     )
 
-    final_state, history = gas.run(max_iterations=100)
+    _final_state, history = gas.run(max_iterations=100)
 
     # Check that some cloning happened
     total_clones = sum(info["num_cloned"] for info in history)
@@ -403,7 +402,7 @@ def test_rewards_accumulate(mock_env, device):
 
     # Run a few steps
     for _ in range(5):
-        state, info = gas.step(state)
+        state, _info = gas.step(state)
 
     # Rewards should have accumulated (unless all negative)
     # Just check they're not all zero
@@ -423,8 +422,8 @@ def test_different_coefficients(mock_env, device):
     )
 
     # Both should run without errors
-    state1, history1 = gas1.run(max_iterations=10)
-    state2, history2 = gas2.run(max_iterations=10)
+    _state1, history1 = gas1.run(max_iterations=10)
+    _state2, history2 = gas2.run(max_iterations=10)
 
     assert len(history1) == 10
     assert len(history2) == 10

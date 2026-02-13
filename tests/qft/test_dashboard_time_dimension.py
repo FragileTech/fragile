@@ -92,12 +92,10 @@ def test_anisotropic_edge_bundle_runs_with_recorded_geometry():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()
@@ -127,12 +125,10 @@ def test_anisotropic_edge_bundle_companion_nucleon_triplets():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()
@@ -161,12 +157,10 @@ def test_anisotropic_edge_bundle_can_disable_baryon_triplet_override():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()
@@ -196,12 +190,10 @@ def test_anisotropic_edge_bundle_companion_meson_phase_override():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()
@@ -229,12 +221,10 @@ def test_anisotropic_edge_bundle_can_disable_meson_phase_override():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()
@@ -263,12 +253,10 @@ def test_anisotropic_edge_bundle_companion_vector_meson_override():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()
@@ -296,12 +284,10 @@ def test_anisotropic_edge_bundle_can_disable_vector_meson_override():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()
@@ -330,12 +316,10 @@ def test_anisotropic_edge_bundle_companion_glueball_override():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()
@@ -363,12 +347,10 @@ def test_anisotropic_edge_bundle_can_disable_glueball_override():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()
@@ -397,12 +379,10 @@ def test_anisotropic_edge_bundle_override_channels_support_bootstrap_errors():
         history.neighbor_edges.append(torch.cat([edges, edges[:, [1, 0]]], dim=0))
         history.geodesic_edge_distances.append(torch.cat([geodesic, geodesic], dim=0))
         kernel = torch.ones(2 * (history.N - 1), dtype=torch.float32) * 0.9
-        history.edge_weights.append(
-            {
-                "riemannian_kernel_volume": kernel.clone(),
-                "riemannian_kernel": kernel.clone(),
-            }
-        )
+        history.edge_weights.append({
+            "riemannian_kernel_volume": kernel.clone(),
+            "riemannian_kernel": kernel.clone(),
+        })
     history.riemannian_volume_weights = torch.ones(history.n_recorded - 1, history.N)
 
     settings = AnisotropicEdgeSettings()

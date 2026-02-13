@@ -33,6 +33,11 @@ from fragile.fractalai.geometry.curvature import (
     compute_ricci_from_fractal_set_hessian,
 )
 from fragile.fractalai.lyapunov import compute_lyapunov_components_trajectory
+from fragile.fractalai.qft.mass_correlator_plots import (
+    MassCorrelatorComputer,
+    MassCorrelatorConfig,
+    save_mass_correlator_plots,
+)
 from fragile.fractalai.qft.particle_observables import (
     compute_baryon_operator,
     compute_baryon_operator_knn,
@@ -52,13 +57,6 @@ from fragile.fractalai.qft.plotting import (
     plot_phase_histograms,
     plot_wilson_histogram,
     plot_wilson_timeseries,
-)
-from fragile.fractalai.qft.mass_correlator_plots import (
-    MassCorrelatorComputer,
-    MassCorrelatorConfig,
-    MassCorrelatorPlotter,
-    STANDARD_CHANNELS,
-    save_mass_correlator_plots,
 )
 
 
@@ -1155,8 +1153,8 @@ def _compute_particle_observables(
         elif neighbor_method == "voronoi" and series_ops:
             # Import Voronoi functions
             from fragile.fractalai.qft.voronoi_observables import (
-                compute_voronoi_tessellation,
                 compute_geometric_weights,
+                compute_voronoi_tessellation,
             )
 
             try:
@@ -1208,7 +1206,11 @@ def _compute_particle_observables(
                         value = meson[valid].mean().item() if valid.any() else 0.0 + 0.0j
                         series_lists[op].append(value)
                 elif neighbor_method == "voronoi":
-                    if voronoi_data is None or geometric_weights is None or sample_indices.numel() == 0:
+                    if (
+                        voronoi_data is None
+                        or geometric_weights is None
+                        or sample_indices.numel() == 0
+                    ):
                         series_lists[op].append(0.0 + 0.0j)
                     else:
                         from fragile.fractalai.qft.voronoi_observables import (
@@ -1254,7 +1256,11 @@ def _compute_particle_observables(
                         value = baryon[valid].mean().item() if valid.any() else 0.0 + 0.0j
                         series_lists[op].append(value)
                 elif neighbor_method == "voronoi":
-                    if voronoi_data is None or geometric_weights is None or sample_indices.numel() == 0:
+                    if (
+                        voronoi_data is None
+                        or geometric_weights is None
+                        or sample_indices.numel() == 0
+                    ):
                         series_lists[op].append(0.0 + 0.0j)
                     else:
                         try:
@@ -1310,7 +1316,9 @@ def _compute_particle_observables(
         "voronoi_weight": voronoi_weight,
         "voronoi_pbc_mode": voronoi_pbc_mode,
         "voronoi_normalize": voronoi_normalize,
-        "voronoi_max_triplets": int(voronoi_max_triplets) if voronoi_max_triplets is not None else None,
+        "voronoi_max_triplets": int(voronoi_max_triplets)
+        if voronoi_max_triplets is not None
+        else None,
     }
 
     if time_tau:
@@ -1597,9 +1605,7 @@ def main() -> None:
         string_tension_bins=args.string_tension_bins,
         compute_mass_correlators=args.compute_mass_correlators,
         mass_correlator_channels=tuple(
-            ch.strip().lower()
-            for ch in args.mass_correlator_channels.split(",")
-            if ch.strip()
+            ch.strip().lower() for ch in args.mass_correlator_channels.split(",") if ch.strip()
         ),
     )
     if analysis_cfg.h_eff <= 0:

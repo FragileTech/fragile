@@ -1,11 +1,12 @@
 """Tests for Hessian estimation using finite differences."""
 
-import torch
 import pytest
+import torch
+
 from fragile.fractalai.scutoid import (
+    estimate_gradient_finite_difference,
     estimate_hessian_diagonal_fd,
     estimate_hessian_full_fd,
-    estimate_gradient_finite_difference,
 )
 from fragile.fractalai.scutoid.neighbors import build_csr_from_coo
 
@@ -14,12 +15,12 @@ from fragile.fractalai.scutoid.neighbors import build_csr_from_coo
 def quadratic_2d_setup():
     """Setup for 2D quadratic function."""
     N = 100
-    device = torch.device("cpu")
+    torch.device("cpu")
 
     # Grid positions
     x = torch.linspace(-2, 2, 10)
     y = torch.linspace(-2, 2, 10)
-    X, Y = torch.meshgrid(x, y, indexing='ij')
+    X, Y = torch.meshgrid(x, y, indexing="ij")
     positions = torch.stack([X.flatten(), Y.flatten()], dim=1)
 
     # Quadratic: V(x,y) = x² + 2y²
@@ -185,8 +186,8 @@ def test_hessian_full_quadratic_gradient_fd(quadratic_2d_setup):
         symmetrize=True,
     )
 
-    H_estimated = result["hessian_tensors"]
-    H_true = quadratic_2d_setup["H_true"]
+    result["hessian_tensors"]
+    quadratic_2d_setup["H_true"]
 
     # Check eigenvalues
     eig_estimated = result["hessian_eigenvalues"]
@@ -289,8 +290,9 @@ def test_hessian_eigenvalues_sorted(quadratic_2d_setup):
     # Check descending order
     for i in range(eigenvalues.shape[0]):
         if torch.isfinite(eigenvalues[i]).all():
-            assert (eigenvalues[i, :-1] >= eigenvalues[i, 1:] - 1e-6).all(), \
-                "Eigenvalues should be sorted descending"
+            assert (
+                eigenvalues[i, :-1] >= eigenvalues[i, 1:] - 1e-6
+            ).all(), "Eigenvalues should be sorted descending"
 
 
 def test_hessian_rosenbrock():
@@ -299,17 +301,17 @@ def test_hessian_rosenbrock():
     n_per_dim = 8
     x = torch.linspace(-1, 1.5, n_per_dim)
     y = torch.linspace(-0.5, 2, n_per_dim)
-    X, Y = torch.meshgrid(x, y, indexing='ij')
+    X, Y = torch.meshgrid(x, y, indexing="ij")
     positions = torch.stack([X.flatten(), Y.flatten()], dim=1)
 
     # Fitness
     x1, x2 = positions[:, 0], positions[:, 1]
-    fitness = (1 - x1) ** 2 + 100 * (x2 - x1 ** 2) ** 2
+    fitness = (1 - x1) ** 2 + 100 * (x2 - x1**2) ** 2
 
     # True Hessian
     N = positions.shape[0]
     H_true = torch.zeros(N, 2, 2)
-    H_true[:, 0, 0] = 2 - 400 * x2 + 1200 * x1 ** 2
+    H_true[:, 0, 0] = 2 - 400 * x2 + 1200 * x1**2
     H_true[:, 0, 1] = -400 * x1
     H_true[:, 1, 0] = -400 * x1
     H_true[:, 1, 1] = 200
@@ -343,13 +345,10 @@ def test_hessian_psd_fraction():
 
     edge_index = _build_knn_graph(positions, k=10)
 
-    grad_result = estimate_gradient_finite_difference(
-        positions, fitness, edge_index
-    )
+    grad_result = estimate_gradient_finite_difference(positions, fitness, edge_index)
 
     result = estimate_hessian_full_fd(
-        positions, fitness, grad_result["gradient"], edge_index,
-        method="central", symmetrize=True
+        positions, fitness, grad_result["gradient"], edge_index, method="central", symmetrize=True
     )
 
     # PSD fraction should be high for this simple case
@@ -391,8 +390,9 @@ def test_hessian_condition_numbers(quadratic_2d_setup):
         mean_condition = condition_numbers[valid_mask].mean()
 
         # Allow some error
-        assert abs(mean_condition - true_condition) / true_condition < 0.5, \
-            f"Condition number error: {mean_condition} vs {true_condition}"
+        assert (
+            abs(mean_condition - true_condition) / true_condition < 0.5
+        ), f"Condition number error: {mean_condition} vs {true_condition}"
 
 
 def test_hessian_with_step_size():
@@ -407,9 +407,7 @@ def test_hessian_with_step_size():
     step_sizes = [0.1, 0.5, 1.0]
 
     for h in step_sizes:
-        result = estimate_hessian_diagonal_fd(
-            positions, fitness, edge_index, step_size=h
-        )
+        result = estimate_hessian_diagonal_fd(positions, fitness, edge_index, step_size=h)
 
         # Should complete without error
         assert result["hessian_diagonal"].shape == (N, 2)
@@ -422,22 +420,23 @@ def test_hessian_handles_isolated_walkers():
     positions = torch.randn(N, 2)
 
     # Create sparse graph with some isolated walkers
-    edge_index = torch.tensor([
-        [0, 1, 2, 3],
-        [1, 0, 3, 2],
-    ], dtype=torch.long)
+    edge_index = torch.tensor(
+        [
+            [0, 1, 2, 3],
+            [1, 0, 3, 2],
+        ],
+        dtype=torch.long,
+    )
 
     fitness = positions[:, 0] ** 2 + positions[:, 1] ** 2
 
-    result = estimate_hessian_diagonal_fd(
-        positions, fitness, edge_index
-    )
+    result = estimate_hessian_diagonal_fd(positions, fitness, edge_index)
 
     # Should handle gracefully
     H_diag = result["hessian_diagonal"]
 
     # Isolated walkers should have NaN
-    isolated_walkers = torch.tensor([i for i in range(N) if i not in [0, 1, 2, 3]])
+    isolated_walkers = torch.tensor([i for i in range(N) if i not in {0, 1, 2, 3}])
 
     if len(isolated_walkers) > 0:
         assert torch.isnan(H_diag[isolated_walkers]).any(), "Isolated walkers should have NaN"
@@ -463,6 +462,7 @@ def test_axis_quality_scores(quadratic_2d_setup):
 # ============================================================================
 # Helper functions
 # ============================================================================
+
 
 def _build_knn_graph(positions: torch.Tensor, k: int) -> torch.Tensor:
     """Build k-nearest neighbor graph."""

@@ -3,6 +3,7 @@
 Demo script showing the dimension mapping feature in action.
 This creates a simple visualization to demonstrate the new functionality.
 """
+
 import numpy as np
 import torch
 
@@ -49,7 +50,9 @@ def demo_dimension_mapping():
     # Create 4D history
     print("\n1. Creating 4D simulation data...")
     history = MockHistory(d=4, N=100, n_recorded=10)
-    print(f"   ✓ Created history with d={history.d}, N={history.N}, n_recorded={history.n_recorded}")
+    print(
+        f"   ✓ Created history with d={history.d}, N={history.N}, n_recorded={history.n_recorded}"
+    )
 
     # Create viewer
     print("\n2. Creating SwarmConvergence3D viewer...")
@@ -68,12 +71,12 @@ def demo_dimension_mapping():
     viewer.y_axis_dim = "dim_1"
     viewer.z_axis_dim = "dim_2"
     viewer.color_metric = "fitness"
-    fig1 = viewer._make_figure(frame=5)
+    viewer._make_figure(frame=5)
     print(f"   ✓ X axis: {viewer.x_axis_dim} → {viewer._axis_label(viewer.x_axis_dim)}")
     print(f"   ✓ Y axis: {viewer.y_axis_dim} → {viewer._axis_label(viewer.y_axis_dim)}")
     print(f"   ✓ Z axis: {viewer.z_axis_dim} → {viewer._axis_label(viewer.z_axis_dim)}")
     print(f"   ✓ Color: {viewer.color_metric}")
-    print(f"   ✓ Figure created successfully")
+    print("   ✓ Figure created successfully")
 
     # Demo configuration 2: 4D view with Euclidean time
     print("\n5. Configuration 2: XY plane across Euclidean time")
@@ -81,12 +84,12 @@ def demo_dimension_mapping():
     viewer.y_axis_dim = "dim_1"
     viewer.z_axis_dim = "dim_3"  # Euclidean time
     viewer.color_metric = "dim_2"  # Color by Z position
-    fig2 = viewer._make_figure(frame=5)
+    viewer._make_figure(frame=5)
     print(f"   ✓ X axis: {viewer.x_axis_dim} → {viewer._axis_label(viewer.x_axis_dim)}")
     print(f"   ✓ Y axis: {viewer.y_axis_dim} → {viewer._axis_label(viewer.y_axis_dim)}")
     print(f"   ✓ Z axis: {viewer.z_axis_dim} → {viewer._axis_label(viewer.z_axis_dim)}")
     print(f"   ✓ Color: {viewer.color_metric} → {viewer._axis_label(viewer.color_metric)}")
-    print(f"   ✓ Figure created successfully")
+    print("   ✓ Figure created successfully")
 
     # Demo configuration 3: MC time visualization
     print("\n6. Configuration 3: Spatial evolution with MC time")
@@ -94,12 +97,12 @@ def demo_dimension_mapping():
     viewer.y_axis_dim = "dim_1"
     viewer.z_axis_dim = "mc_time"
     viewer.color_metric = "dim_3"
-    fig3 = viewer._make_figure(frame=5)
+    viewer._make_figure(frame=5)
     print(f"   ✓ X axis: {viewer.x_axis_dim} → {viewer._axis_label(viewer.x_axis_dim)}")
     print(f"   ✓ Y axis: {viewer.y_axis_dim} → {viewer._axis_label(viewer.y_axis_dim)}")
     print(f"   ✓ Z axis: {viewer.z_axis_dim} → {viewer._axis_label(viewer.z_axis_dim)}")
     print(f"   ✓ Color: {viewer.color_metric} → {viewer._axis_label(viewer.color_metric)}")
-    print(f"   ✓ Figure created successfully")
+    print("   ✓ Figure created successfully")
 
     # Demo configuration 4: All MC time (creates a point at frame index)
     print("\n7. Configuration 4: Pure MC time view")
@@ -107,10 +110,10 @@ def demo_dimension_mapping():
     viewer.y_axis_dim = "mc_time"
     viewer.z_axis_dim = "mc_time"
     viewer.color_metric = "fitness"
-    fig4 = viewer._make_figure(frame=5)
+    viewer._make_figure(frame=5)
     print(f"   ✓ All axes mapped to MC time (frame={5})")
-    print(f"   ✓ Creates single point cluster at coordinates (5, 5, 5)")
-    print(f"   ✓ Figure created successfully")
+    print("   ✓ Creates single point cluster at coordinates (5, 5, 5)")
+    print("   ✓ Figure created successfully")
 
     # Test axis ranges
     print("\n8. Testing axis range calculation...")

@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from fragile.fractalai.videogames.cloning import FractalCloningOperator, clone_walker_data
+from fragile.fractalai.videogames.cloning import clone_walker_data, FractalCloningOperator
 
 
 @pytest.fixture
@@ -83,7 +83,7 @@ def test_calculate_fitness_distance_computation(clone_op, device):
     alive = torch.ones(N, dtype=torch.bool, device=device)
 
     # Calculate fitness
-    virtual_rewards, companions = clone_op.calculate_fitness(observations, rewards, alive)
+    virtual_rewards, _companions = clone_op.calculate_fitness(observations, rewards, alive)
 
     # Virtual rewards should be computed (exact values depend on normalization)
     assert virtual_rewards.shape == (N,)
@@ -126,11 +126,11 @@ def test_decide_cloning_dead_always_clone(clone_op, device):
     alive[3] = False  # Walker 3 is dead
     alive[7] = False  # Walker 7 is dead
 
-    companions, will_clone = clone_op.decide_cloning(virtual_rewards, alive)
+    _companions, will_clone = clone_op.decide_cloning(virtual_rewards, alive)
 
     # Dead walkers must clone
-    assert will_clone[3] == True
-    assert will_clone[7] == True
+    assert will_clone[3] is True
+    assert will_clone[7] is True
 
 
 def test_clone_walker_data(device):
@@ -168,7 +168,7 @@ def test_fitness_with_ram_observations(clone_op, device):
     alive = torch.ones(N, dtype=torch.bool, device=device)
 
     # Calculate fitness
-    virtual_rewards, companions = clone_op.calculate_fitness(observations, rewards, alive)
+    virtual_rewards, _companions = clone_op.calculate_fitness(observations, rewards, alive)
 
     # Check outputs are valid
     assert virtual_rewards.shape == (N,)
@@ -211,10 +211,10 @@ def test_cloning_with_all_dead(clone_op, device):
     alive = torch.zeros(N, dtype=torch.bool, device=device)  # All dead
 
     # Calculate fitness (should still work)
-    virtual_rewards, companions = clone_op.calculate_fitness(observations, rewards, alive)
+    virtual_rewards, _companions = clone_op.calculate_fitness(observations, rewards, alive)
 
     # Decide cloning
-    companions, will_clone = clone_op.decide_cloning(virtual_rewards, alive)
+    _companions, will_clone = clone_op.decide_cloning(virtual_rewards, alive)
 
     # All walkers should clone (because they're all dead)
     assert will_clone.all()

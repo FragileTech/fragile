@@ -13,8 +13,6 @@ from typing import Any
 import numpy as np
 import torch
 
-from fragile.fractalai.fractal_gas import WalkerState
-
 
 @dataclass
 class PlanningTrajectory:
@@ -49,6 +47,125 @@ class PlanningTrajectory:
     def num_steps(self) -> int:
         """Number of outer steps taken."""
         return len(self.actions)
+
+    def to_planning_history(self, N: int, env_name: str) -> "PlanningHistory":
+        """Convert to a PlanningHistory preserving all outer-loop data.
+
+        Args:
+            N: Number of inner walkers used.
+            env_name: Environment name.
+
+        Returns:
+            PlanningHistory instance.
+        """
+        return PlanningHistory.from_trajectory(self, N, env_name)
+
+
+@dataclass
+class PlanningHistory:
+    """Outer-loop statistics from a planning run.
+
+    Preserves per-step rewards, actions, inner planning quality,
+    and termination flags -- data lost in AtariHistory/RoboticHistory.
+    """
+
+    iterations: list[int]
+    step_rewards: list[float]
+    cumulative_rewards: list[float]
+    actions: list
+    dones: list[bool]
+
+    # Inner planning quality
+    inner_alive_counts: list[int]
+    inner_mean_rewards: list[float]
+    inner_max_rewards: list[float]
+    inner_iterations: list[int]
+
+    # Frames
+    best_frames: list[np.ndarray | None]
+
+    # Config
+    N: int
+    max_steps: int
+    env_name: str
+
+    @classmethod
+    def from_trajectory(cls, traj: PlanningTrajectory, N: int, env_name: str) -> "PlanningHistory":
+        """Build from a PlanningTrajectory.
+
+        Args:
+            traj: Recorded trajectory from a planning run.
+            N: Number of inner walkers.
+            env_name: Environment name.
+
+        Returns:
+            PlanningHistory instance.
+        """
+        n = traj.num_steps
+        return cls(
+            iterations=list(range(n)),
+            step_rewards=list(traj.rewards),
+            cumulative_rewards=list(traj.cumulative_rewards),
+            actions=list(traj.actions),
+            dones=list(traj.dones),
+            inner_alive_counts=[pi.get("alive_count", N) for pi in traj.planning_infos],
+            inner_mean_rewards=[pi.get("inner_mean_reward", 0.0) for pi in traj.planning_infos],
+            inner_max_rewards=[pi.get("inner_max_reward", 0.0) for pi in traj.planning_infos],
+            inner_iterations=[pi.get("inner_iterations", 0) for pi in traj.planning_infos],
+            best_frames=list(traj.frames) if traj.frames else [None] * n,
+            N=N,
+            max_steps=n,
+            env_name=env_name,
+        )
+
+    def to_atari_history(self):
+        """Convert to AtariHistory for the Atari visualizer."""
+        from fragile.fractalai.videogames.atari_history import AtariHistory
+
+        n = len(self.iterations)
+        return AtariHistory(
+            iterations=list(self.iterations),
+            rewards_mean=list(self.cumulative_rewards),
+            rewards_max=list(self.cumulative_rewards),
+            rewards_min=list(self.step_rewards),
+            alive_counts=list(self.inner_alive_counts),
+            num_cloned=[0] * n,
+            virtual_rewards_mean=list(self.inner_mean_rewards),
+            virtual_rewards_max=list(self.inner_max_rewards),
+            best_frames=list(self.best_frames),
+            best_rewards=list(self.cumulative_rewards),
+            best_indices=[0] * n,
+            N=self.N,
+            max_iterations=self.max_steps,
+            game_name=self.env_name,
+        )
+
+    def to_robotic_history(self):
+        """Convert to RoboticHistory for the robotics visualizer."""
+        from fragile.fractalai.robots.robotic_history import RoboticHistory
+
+        n = len(self.iterations)
+        return RoboticHistory(
+            iterations=list(self.iterations),
+            rewards_mean=list(self.cumulative_rewards),
+            rewards_max=list(self.cumulative_rewards),
+            rewards_min=list(self.step_rewards),
+            alive_counts=list(self.inner_alive_counts),
+            num_cloned=[0] * n,
+            virtual_rewards_mean=list(self.inner_mean_rewards),
+            virtual_rewards_max=list(self.inner_max_rewards),
+            best_frames=list(self.best_frames),
+            best_rewards=list(self.cumulative_rewards),
+            best_indices=[0] * n,
+            N=self.N,
+            max_iterations=self.max_steps,
+            task_name=self.env_name,
+        )
+
+    @property
+    def has_frames(self) -> bool:
+        """Check if frames were recorded."""
+        return self.best_frames[0] is not None if self.best_frames else False
 
 
 class PlanningFractalGas:
@@ -134,9 +251,7 @@ class PlanningFractalGas:
         """
         return self.inner_gas._reset_env_with_state()
 
-    def plan_action(
-        self, state: Any, obs: Any, info: dict
-    ) -> tuple[Any, dict]:
+    def plan_action(self, state: Any, obs: Any, info: dict) -> tuple[Any, dict]:
         """Run the inner fractal gas and select an action.
 
         Args:
@@ -164,9 +279,7 @@ class PlanningFractalGas:
                 companions = step_info["clone_companions"].cpu().numpy()
                 root_actions[wc] = root_actions[companions[wc]]
 
-        action = self._select_action(
-            root_actions, inner_state.alive, inner_state.rewards
-        )
+        action = self._select_action(root_actions, inner_state.alive, inner_state.rewards)
 
         plan_info = {
             "alive_count": inner_state.alive.sum().item(),
@@ -190,9 +303,7 @@ class PlanningFractalGas:
             new_state, new_obs, reward, done, truncated, new_info, step_info
         """
         action, plan_info = self.plan_action(state, obs, info)
-        new_state, new_obs, reward, done, truncated, new_info = self._outer_step(
-            state, action
-        )
+        new_state, new_obs, reward, done, truncated, new_info = self._outer_step(state, action)
         step_info = {"action": action, "plan_info": plan_info}
         return new_state, new_obs, reward, done, truncated, new_info, step_info
 
@@ -216,8 +327,8 @@ class PlanningFractalGas:
 
         cum_reward = 0.0
         for _ in range(max_steps):
-            new_state, new_obs, reward, done, truncated, new_info, step_info = (
-                self.step(state, obs, info)
+            new_state, new_obs, reward, done, truncated, new_info, step_info = self.step(
+                state, obs, info
             )
 
             cum_reward += float(reward)
@@ -269,17 +380,13 @@ class PlanningFractalGas:
 
         return action
 
-    def _outer_step(
-        self, state: Any, action: Any
-    ) -> tuple[Any, Any, float, bool, bool, dict]:
+    def _outer_step(self, state: Any, action: Any) -> tuple[Any, Any, float, bool, bool, dict]:
         """Apply a single action to the outer environment."""
         states = np.array([state], dtype=object)
         actions = np.array([action])
         dt = np.array([self.outer_dt], dtype=int)
 
-        result = self.env.step_batch(
-            states=states, actions=actions, dt=dt, return_state=True
-        )
+        result = self.env.step_batch(states=states, actions=actions, dt=dt, return_state=True)
 
         if len(result) == 5:
             new_states, observations, rewards, dones, infos = result

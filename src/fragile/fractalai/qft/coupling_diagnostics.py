@@ -306,7 +306,9 @@ def _compute_regime_score(
             score += 1.0
             evidence.append(f"String tension sigma={sigma:.4f} indicates crossover behavior.")
         else:
-            evidence.append(f"String tension sigma={sigma:.4f} indicates weak/deconfined behavior.")
+            evidence.append(
+                f"String tension sigma={sigma:.4f} indicates weak/deconfined behavior."
+            )
     else:
         evidence.append("String tension unavailable.")
 
@@ -645,7 +647,9 @@ def _compute_kernel_scale_diagnostics(
             poly_loop = poly_per_walker[walker_valid_poly].mean()
             poly_abs = float(poly_loop.abs().item())
             poly_phase = float(torch.angle(poly_loop).item())
-            poly_spread = float(poly_per_walker[walker_valid_poly].abs().float().std(unbiased=False).item())
+            poly_spread = float(
+                poly_per_walker[walker_valid_poly].abs().float().std(unbiased=False).item()
+            )
         else:
             poly_abs = float("nan")
             poly_phase = float("nan")
@@ -734,7 +738,9 @@ def compute_coupling_diagnostics(
         mass=float(max(cfg.mass, 1e-8)),
         ell0=ell0,
     )
-    alive = history.alive_mask[start_idx - 1 : end_idx - 1].to(dtype=torch.bool, device=color.device)
+    alive = history.alive_mask[start_idx - 1 : end_idx - 1].to(
+        dtype=torch.bool, device=color.device
+    )
     comp_d = history.companions_distance[start_idx - 1 : end_idx - 1].to(
         dtype=torch.long, device=color.device
     )
@@ -753,7 +759,9 @@ def compute_coupling_diagnostics(
         d_total = int(color.shape[-1])
         invalid = [d for d in dims if d < 0 or d >= d_total]
         if invalid:
-            raise ValueError(f"color_dims contains invalid dims {invalid}; valid range [0, {d_total - 1}].")
+            raise ValueError(
+                f"color_dims contains invalid dims {invalid}; valid range [0, {d_total - 1}]."
+            )
         color = color[..., list(dims)]
         proj_norm = torch.linalg.vector_norm(color, dim=-1, keepdim=True).clamp(min=1e-12)
         color = color / proj_norm
@@ -850,7 +858,9 @@ def compute_coupling_diagnostics(
     phase_mean_np = phase_mean.detach().cpu().numpy()
     if phase_mean_np.size > 0:
         phase_unwrapped_np = np.unwrap(phase_mean_np)
-        phase_mean_unwrapped = torch.as_tensor(phase_unwrapped_np, dtype=torch.float32, device=phase_mean.device)
+        phase_mean_unwrapped = torch.as_tensor(
+            phase_unwrapped_np, dtype=torch.float32, device=phase_mean.device
+        )
     else:
         phase_mean_unwrapped = torch.zeros_like(phase_mean)
 
@@ -906,15 +916,21 @@ def compute_coupling_diagnostics(
         "phase_step_std": phase_step_std,
         "phase_drift_sigma": phase_drift_sigma,
         "r_circ_mean": float(phase_concentration.mean().item()) if t_len > 0 else float("nan"),
-        "re_im_asymmetry_mean": float(re_im_asymmetry.mean().item()) if t_len > 0 else float("nan"),
+        "re_im_asymmetry_mean": float(re_im_asymmetry.mean().item())
+        if t_len > 0
+        else float("nan"),
         "local_phase_coherence_mean": (
             float(local_phase_coherence.mean().item()) if t_len > 0 else float("nan")
         ),
         "scalar_mean": float(scalar_mean.mean().item()) if t_len > 0 else float("nan"),
         "pseudoscalar_mean": float(pseudoscalar_mean.mean().item()) if t_len > 0 else float("nan"),
-        "field_magnitude_mean": float(field_magnitude_mean.mean().item()) if t_len > 0 else float("nan"),
+        "field_magnitude_mean": float(field_magnitude_mean.mean().item())
+        if t_len > 0
+        else float("nan"),
         "valid_pairs_mean": float(valid_pair_counts.float().mean().item()) if t_len > 0 else 0.0,
-        "valid_walkers_mean": float(valid_walker_counts.float().mean().item()) if t_len > 0 else 0.0,
+        "valid_walkers_mean": float(valid_walker_counts.float().mean().item())
+        if t_len > 0
+        else 0.0,
         "string_tension_sigma": string_tension_sigma,
         "polyakov_abs": polyakov_abs,
         "screening_length_xi": screening_length_xi,

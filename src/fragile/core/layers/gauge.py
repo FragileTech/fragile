@@ -13,7 +13,9 @@ import torch.nn.functional as F
 # =============================================================================
 
 
-def mobius_add(x: torch.Tensor, y: torch.Tensor, c: float = 1.0, eps: float = 1e-5) -> torch.Tensor:
+def mobius_add(
+    x: torch.Tensor, y: torch.Tensor, c: float = 1.0, eps: float = 1e-5
+) -> torch.Tensor:
     """Möbius addition in the Poincaré ball: x ⊕ y.
 
     This is the fundamental operation in hyperbolic geometry, replacing

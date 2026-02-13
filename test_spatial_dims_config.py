@@ -8,10 +8,13 @@ This script tests:
 4. Voronoi tessellation with spatial_dims parameter
 """
 
+import sys
+
 import torch
+
 from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
+from fragile.fractalai.qft.correlator_channels import CHANNEL_REGISTRY
 from fragile.fractalai.qft.simulation import PotentialWellConfig
-from fragile.fractalai.qft.correlator_channels import compute_all_channels, CHANNEL_REGISTRY
 
 
 def test_gas_config_panel_spatial_dims():
@@ -67,29 +70,29 @@ def test_baryon_channel_filtering():
 
     # Check that nucleon (baryon) is in the registry
     assert "nucleon" in all_channels, "Nucleon channel should be in registry"
-    print(f"✓ Nucleon channel found in registry")
+    print("✓ Nucleon channel found in registry")
 
     # In 3D mode, all channels should be available
     print("\nTesting 3D mode (spatial_dims=3):")
     channels_3d = all_channels.copy()
     # Simulate filtering logic from compute_all_channels
     if 3 < 3:  # spatial_dims < 3
-        channels_3d = [ch for ch in channels_3d if ch not in {"nucleon"}]
+        channels_3d = [ch for ch in channels_3d if ch != "nucleon"]
 
     assert "nucleon" in channels_3d, "Nucleon should be available in 3D mode"
     print(f"  ✓ Available channels in 3D: {channels_3d}")
-    print(f"  ✓ Nucleon channel available: True")
+    print("  ✓ Nucleon channel available: True")
 
     # In 2D mode, nucleon should be filtered out
     print("\nTesting 2D mode (spatial_dims=2):")
     channels_2d = all_channels.copy()
     # Simulate filtering logic from compute_all_channels
     if 2 < 3:  # spatial_dims < 3
-        channels_2d = [ch for ch in channels_2d if ch not in {"nucleon"}]
+        channels_2d = [ch for ch in channels_2d if ch != "nucleon"]
 
     assert "nucleon" not in channels_2d, "Nucleon should be filtered in 2D mode"
     print(f"  ✓ Available channels in 2D: {channels_2d}")
-    print(f"  ✓ Nucleon channel filtered: True")
+    print("  ✓ Nucleon channel filtered: True")
 
     print()
 
@@ -101,8 +104,8 @@ def test_voronoi_spatial_dims():
     print("=" * 80)
 
     try:
-        from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
         from fragile.fractalai.bounds import TorchBounds
+        from fragile.fractalai.qft.voronoi_observables import compute_voronoi_tessellation
 
         # Test 2D spatial Voronoi
         print("\nTesting 2D Voronoi tessellation:")
@@ -120,7 +123,7 @@ def test_voronoi_spatial_dims():
 
         assert voronoi_2d is not None
         assert "volumes" in voronoi_2d
-        print(f"  ✓ 2D Voronoi computed successfully")
+        print("  ✓ 2D Voronoi computed successfully")
         print(f"  ✓ Number of cells: {len(voronoi_2d.get('volumes', []))}")
 
         # Test 3D spatial Voronoi
@@ -139,7 +142,7 @@ def test_voronoi_spatial_dims():
 
         assert voronoi_3d is not None
         assert "volumes" in voronoi_3d
-        print(f"  ✓ 3D Voronoi computed successfully")
+        print("  ✓ 3D Voronoi computed successfully")
         print(f"  ✓ Number of cells: {len(voronoi_3d.get('volumes', []))}")
 
         # Test 4D with spatial_dims=3 (QFT mode: 3 spatial + 1 time)
@@ -158,9 +161,9 @@ def test_voronoi_spatial_dims():
 
         assert voronoi_4d is not None
         assert "volumes" in voronoi_4d
-        print(f"  ✓ 4D Voronoi with spatial_dims=3 computed successfully")
+        print("  ✓ 4D Voronoi with spatial_dims=3 computed successfully")
         print(f"  ✓ Number of cells: {len(voronoi_4d.get('volumes', []))}")
-        print(f"  ✓ Voronoi computed on 3D spatial positions (time dimension excluded)")
+        print("  ✓ Voronoi computed on 3D spatial positions (time dimension excluded)")
 
     except ImportError as e:
         print(f"  ⚠ Skipping Voronoi test (scipy not available): {e}")
@@ -216,10 +219,11 @@ def main():
         print("=" * 80)
         print(f"Error: {e}")
         import traceback
+
         traceback.print_exc()
         print()
         return 1
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

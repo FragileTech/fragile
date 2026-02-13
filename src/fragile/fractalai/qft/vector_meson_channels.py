@@ -94,9 +94,7 @@ def _resolve_vector_operator_mode(operator_mode: str | None) -> str:
         return "standard"
     mode = str(operator_mode).strip().lower()
     if mode not in VECTOR_OPERATOR_MODES:
-        raise ValueError(
-            f"operator_mode must be one of {VECTOR_OPERATOR_MODES}."
-        )
+        raise ValueError(f"operator_mode must be one of {VECTOR_OPERATOR_MODES}.")
     return mode
 
 
@@ -106,9 +104,7 @@ def _resolve_vector_projection_mode(projection_mode: str | None) -> str:
         return "full"
     mode = str(projection_mode).strip().lower()
     if mode not in VECTOR_PROJECTION_MODES:
-        raise ValueError(
-            f"projection_mode must be one of {VECTOR_PROJECTION_MODES}."
-        )
+        raise ValueError(f"projection_mode must be one of {VECTOR_PROJECTION_MODES}.")
     return mode
 
 
@@ -162,9 +158,7 @@ def _compute_pair_observables(
     if positions.ndim != 3 or positions.shape[-1] != 3:
         raise ValueError(f"positions must have shape [T,N,3], got {tuple(positions.shape)}.")
     if color_valid.shape != color.shape[:2]:
-        raise ValueError(
-            f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}."
-        )
+        raise ValueError(f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}.")
     if alive.shape != color.shape[:2]:
         raise ValueError(f"alive must have shape [T,N], got {tuple(alive.shape)}.")
     if pair_indices.shape[:2] != color.shape[:2]:
@@ -395,7 +389,9 @@ def compute_vector_meson_correlator_from_color_positions(
     source_vector = source_inner.real.float().unsqueeze(-1) * source_disp
     source_axial = source_inner.imag.float().unsqueeze(-1) * source_disp
 
-    operator_vector_series, pair_counts_per_frame = _per_frame_vector_series(source_vector, source_valid)
+    operator_vector_series, pair_counts_per_frame = _per_frame_vector_series(
+        source_vector, source_valid
+    )
     operator_axial_series, _ = _per_frame_vector_series(source_axial, source_valid)
 
     n_valid_source_pairs = int(source_valid.sum().item())
@@ -428,11 +424,7 @@ def compute_vector_meson_correlator_from_color_positions(
             use_unit_displacement=use_unit_displacement,
             operator_mode=resolved_operator_mode,
             projection_mode=resolved_projection_mode,
-            scores=(
-                None
-                if scores is None
-                else scores[lag : lag + source_len]
-            ),
+            scores=(None if scores is None else scores[lag : lag + source_len]),
         )
         sink_vector = sink_inner.real.float().unsqueeze(-1) * sink_disp
         sink_axial = sink_inner.imag.float().unsqueeze(-1) * sink_disp
@@ -451,7 +443,9 @@ def compute_vector_meson_correlator_from_color_positions(
         vector_raw[lag] = vec_raw_prod[valid_pair].mean().float()
         axial_raw[lag] = axial_raw_prod[valid_pair].mean().float()
 
-        vec_conn_prod = ((src_vector_l - mean_vector_t) * (sink_vector - mean_vector_t)).sum(dim=-1)
+        vec_conn_prod = ((src_vector_l - mean_vector_t) * (sink_vector - mean_vector_t)).sum(
+            dim=-1
+        )
         axial_conn_prod = ((src_axial_l - mean_axial_t) * (sink_axial - mean_axial_t)).sum(dim=-1)
         vector_connected[lag] = vec_conn_prod[valid_pair].mean().float()
         axial_connected[lag] = axial_conn_prod[valid_pair].mean().float()

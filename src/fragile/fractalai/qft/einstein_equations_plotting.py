@@ -86,9 +86,13 @@ def build_scalar_test_plot(result: EinsteinTestResult) -> hv.Element:
 
     scatter = hv.Scatter(
         pd.DataFrame({"rho": rho_f, "R": R_f}),
-        kdims=["rho"], vdims=["R"],
+        kdims=["rho"],
+        vdims=["R"],
     ).opts(
-        color="#4c78a8", alpha=0.6, size=4, tools=["hover"],
+        color="#4c78a8",
+        alpha=0.6,
+        size=4,
+        tools=["hover"],
     )
 
     # Regression line
@@ -96,7 +100,8 @@ def build_scalar_test_plot(result: EinsteinTestResult) -> hv.Element:
     R_fit = result.scalar_slope * rho_range + result.scalar_intercept
     line = hv.Curve(
         pd.DataFrame({"rho": rho_range, "R": R_fit}),
-        kdims=["rho"], vdims=["R"],
+        kdims=["rho"],
+        vdims=["R"],
     ).opts(color="#e45756", line_width=2)
 
     overlay = scatter * line
@@ -112,13 +117,13 @@ def build_scalar_test_plot(result: EinsteinTestResult) -> hv.Element:
                 float(np.nanmax(result.scalar_rho_coarse)),
                 40,
             )
-            coarse_fit = (
-                float(result.scalar_slope_coarse) * coarse_rho_range
-                + float(result.scalar_intercept_coarse)
+            coarse_fit = float(result.scalar_slope_coarse) * coarse_rho_range + float(
+                result.scalar_intercept_coarse
             )
             coarse_line = hv.Curve(
                 pd.DataFrame({"rho": coarse_rho_range, "R": coarse_fit}),
-                kdims=["rho"], vdims=["R"],
+                kdims=["rho"],
+                vdims=["R"],
             ).opts(color="#f58518", line_width=2, line_dash="dotted")
             overlay = overlay * coarse_line
 
@@ -141,13 +146,11 @@ def build_scalar_test_plot(result: EinsteinTestResult) -> hv.Element:
         )
     if result.scalar_r2_ci_bootstrap is not None:
         annotation_text += (
-            "\nBootstrap CI (R\u00b2): "
-            f"{_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')}"
+            "\nBootstrap CI (R\u00b2): " f"{_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')}"
         )
     if result.scalar_r2_ci_jackknife is not None:
         annotation_text += (
-            "\nJackknife CI (R\u00b2): "
-            f"{_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')}"
+            "\nJackknife CI (R\u00b2): " f"{_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')}"
         )
 
     annotation = hv.Text(
@@ -157,9 +160,11 @@ def build_scalar_test_plot(result: EinsteinTestResult) -> hv.Element:
     ).opts(text_font_size="9pt", text_align="left")
 
     return (overlay * annotation).opts(
-        width=650, height=400,
+        width=650,
+        height=400,
         title=f"Scalar Test (det approx): R vs \u03c1 (R\u00b2={result.scalar_r2:.4f})",
-        xlabel=_scalar_density_label(result), ylabel="R (Ricci scalar)",
+        xlabel=_scalar_density_label(result),
+        ylabel="R (Ricci scalar)",
     )
 
 
@@ -181,13 +186,17 @@ def build_scalar_test_log_plot(result: EinsteinTestResult) -> hv.Element:
 
     # Fit in semi-log space: R = slope * log10(rho) + intercept
     slope, intercept, r_value, _p, _se = stats.linregress(log_rho, R_f)
-    r2_log = r_value ** 2
+    r2_log = r_value**2
 
     scatter = hv.Scatter(
         pd.DataFrame({"log10_rho": log_rho, "R": R_f}),
-        kdims=["log10_rho"], vdims=["R"],
+        kdims=["log10_rho"],
+        vdims=["R"],
     ).opts(
-        color="#4c78a8", alpha=0.6, size=4, tools=["hover"],
+        color="#4c78a8",
+        alpha=0.6,
+        size=4,
+        tools=["hover"],
     )
 
     # Regression line in semi-log space
@@ -195,7 +204,8 @@ def build_scalar_test_log_plot(result: EinsteinTestResult) -> hv.Element:
     R_fit = slope * log_rho_range + intercept
     line = hv.Curve(
         pd.DataFrame({"log10_rho": log_rho_range, "R": R_fit}),
-        kdims=["log10_rho"], vdims=["R"],
+        kdims=["log10_rho"],
+        vdims=["R"],
     ).opts(color="#e45756", line_width=2)
 
     annotation = hv.Text(
@@ -210,9 +220,11 @@ def build_scalar_test_log_plot(result: EinsteinTestResult) -> hv.Element:
     ).opts(text_font_size="9pt", text_align="left")
 
     return (scatter * line * annotation).opts(
-        width=650, height=400,
+        width=650,
+        height=400,
         title=f"Scalar Test (semi-log): R vs log\u2081\u2080(\u03c1) (R\u00b2={r2_log:.4f})",
-        xlabel="log\u2081\u2080(\u03c1)", ylabel="R (Ricci scalar)",
+        xlabel="log\u2081\u2080(\u03c1)",
+        ylabel="R (Ricci scalar)",
     )
 
 
@@ -243,30 +255,30 @@ def build_curvature_histogram(result: EinsteinTestResult) -> hv.Element:
     if len(R_clip) < 2:
         R_clip = R
 
-    hist = hv.Histogram(np.histogram(R_clip, bins=40)).opts(
-        width=500, height=350,
+    return hv.Histogram(np.histogram(R_clip, bins=40)).opts(
+        width=500,
+        height=350,
         title=f"Ricci Scalar Distribution ({_ricci_source_label(result)}, N={len(R)} valid)",
-        xlabel="R (Ricci scalar)", ylabel="Count",
-        color="#72b7b2", alpha=0.8,
+        xlabel="R (Ricci scalar)",
+        ylabel="Count",
+        color="#72b7b2",
+        alpha=0.8,
         tools=["hover"],
     )
-    return hist
 
 
 def build_residual_scatter(result: EinsteinTestResult) -> hv.Element:
     """Spatial map colored by ||G - 8piG_N*T||_F."""
     valid = result.valid_mask
     if valid.sum() < 2 or result.spatial_dim < 2:
-        return hv.Text(0, 0, "Insufficient data for residual map").opts(
-            title="Residual Map"
-        )
+        return hv.Text(0, 0, "Insufficient data for residual map").opts(title="Residual Map")
 
     G = result.einstein_tensor[valid]
     T = result.stress_energy_tensor[valid]
     g_n = result.g_newton_area_law
 
     residual = G - 8.0 * np.pi * g_n * T
-    residual_norm = np.sqrt(np.sum(residual ** 2, axis=(1, 2)))
+    residual_norm = np.sqrt(np.sum(residual**2, axis=(1, 2)))
 
     pos = result.positions[valid]
     df = pd.DataFrame({
@@ -275,14 +287,19 @@ def build_residual_scatter(result: EinsteinTestResult) -> hv.Element:
         "residual": residual_norm,
     })
 
-    scatter = hv.Points(df, kdims=["x", "y"], vdims=["residual"]).opts(
-        color="residual", cmap="inferno", colorbar=True,
-        size=6, alpha=0.8, tools=["hover"],
-        width=550, height=450,
+    return hv.Points(df, kdims=["x", "y"], vdims=["residual"]).opts(
+        color="residual",
+        cmap="inferno",
+        colorbar=True,
+        size=6,
+        alpha=0.8,
+        tools=["hover"],
+        width=550,
+        height=450,
         title=f"Residual ||G - 8\u03c0G_N T||_F (G_N={g_n:.3e})",
-        xlabel="x\u2080", ylabel="x\u2081",
+        xlabel="x\u2080",
+        ylabel="x\u2081",
     )
-    return scatter
 
 
 def _symlog(x: np.ndarray) -> np.ndarray:
@@ -324,7 +341,7 @@ def build_crosscheck_plot(result: EinsteinTestResult) -> hv.Element | None:
 
     # R² in symlog space via linear regression
     sl_slope, sl_intercept, sl_r, _p, _se = stats.linregress(proxy_sl, full_sl)
-    r2_symlog_fit = sl_r ** 2
+    r2_symlog_fit = sl_r**2
 
     # Build dataframe with region labels
     df = pd.DataFrame({
@@ -335,13 +352,15 @@ def build_crosscheck_plot(result: EinsteinTestResult) -> hv.Element | None:
 
     scatter_bulk = hv.Scatter(
         df[df["region"] == "bulk"],
-        kdims=["proxy_symlog"], vdims=["full_symlog"],
+        kdims=["proxy_symlog"],
+        vdims=["full_symlog"],
         label="Bulk",
     ).opts(color="#4c78a8", alpha=0.5, size=4, tools=["hover"])
 
     scatter_boundary = hv.Scatter(
         df[df["region"] == "boundary"],
-        kdims=["proxy_symlog"], vdims=["full_symlog"],
+        kdims=["proxy_symlog"],
+        vdims=["full_symlog"],
         label="Boundary",
     ).opts(color="#e45756", alpha=0.5, size=4, tools=["hover"])
 
@@ -349,7 +368,9 @@ def build_crosscheck_plot(result: EinsteinTestResult) -> hv.Element | None:
     vmin = min(proxy_sl.min(), full_sl.min())
     vmax = max(proxy_sl.max(), full_sl.max())
     diag = hv.Curve([(vmin, vmin), (vmax, vmax)]).opts(
-        color="gray", line_dash="dashed", line_width=1,
+        color="gray",
+        line_dash="dashed",
+        line_width=1,
     )
 
     # Regression line in symlog space
@@ -357,7 +378,8 @@ def build_crosscheck_plot(result: EinsteinTestResult) -> hv.Element | None:
     fit_y = sl_slope * fit_x + sl_intercept
     reg_line = hv.Curve(
         pd.DataFrame({"proxy_symlog": fit_x, "full_symlog": fit_y}),
-        kdims=["proxy_symlog"], vdims=["full_symlog"],
+        kdims=["proxy_symlog"],
+        vdims=["full_symlog"],
     ).opts(color="#54a24b", line_width=2, line_dash="solid")
 
     annotation = hv.Text(
@@ -372,9 +394,11 @@ def build_crosscheck_plot(result: EinsteinTestResult) -> hv.Element | None:
     ).opts(text_font_size="9pt", text_align="left")
 
     return (scatter_bulk * scatter_boundary * diag * reg_line * annotation).opts(
-        width=600, height=450,
+        width=600,
+        height=450,
         title=f"Full Ricci vs Proxy \u2014 symlog (R\u00b2={r2_symlog_fit:.4f})",
-        xlabel="symlog(Ricci Proxy)", ylabel="symlog(Full Ricci Scalar)",
+        xlabel="symlog(Ricci Proxy)",
+        ylabel="symlog(Full Ricci Scalar)",
         legend_position="bottom_right",
     )
 
@@ -417,41 +441,27 @@ def build_summary_markdown(result: EinsteinTestResult) -> str:
         or result.scalar_slope_ci_jackknife is not None
         or result.scalar_intercept_ci_jackknife is not None
     ):
-        lines.extend(
-            [
-                "### Scalar Uncertainty",
-                "",
-                "| Metric | Value |",
-                "|--------|-------|",
-                f"| Bootstrap samples (valid) | {result.scalar_bootstrap_samples} |",
-                f"| Bootstrap confidence | {_fmt_optional(result.scalar_bootstrap_confidence, '.3f')} |",
-                (
-                    "| R\u00b2 CI (bootstrap) | "
-                    f"{_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')} |"
-                ),
-                (
-                    "| slope CI (bootstrap) | "
-                    f"{_fmt_ci(result.scalar_slope_ci_bootstrap, '.6e')} |"
-                ),
-                (
-                    "| intercept CI (bootstrap) | "
-                    f"{_fmt_ci(result.scalar_intercept_ci_bootstrap, '.6e')} |"
-                ),
-                (
-                    "| R\u00b2 CI (jackknife) | "
-                    f"{_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')} |"
-                ),
-                (
-                    "| slope CI (jackknife) | "
-                    f"{_fmt_ci(result.scalar_slope_ci_jackknife, '.6e')} |"
-                ),
-                (
-                    "| intercept CI (jackknife) | "
-                    f"{_fmt_ci(result.scalar_intercept_ci_jackknife, '.6e')} |"
-                ),
-                "",
-            ]
-        )
+        lines.extend([
+            "### Scalar Uncertainty",
+            "",
+            "| Metric | Value |",
+            "|--------|-------|",
+            f"| Bootstrap samples (valid) | {result.scalar_bootstrap_samples} |",
+            f"| Bootstrap confidence | {_fmt_optional(result.scalar_bootstrap_confidence, '.3f')} |",
+            ("| R\u00b2 CI (bootstrap) | " f"{_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')} |"),
+            ("| slope CI (bootstrap) | " f"{_fmt_ci(result.scalar_slope_ci_bootstrap, '.6e')} |"),
+            (
+                "| intercept CI (bootstrap) | "
+                f"{_fmt_ci(result.scalar_intercept_ci_bootstrap, '.6e')} |"
+            ),
+            ("| R\u00b2 CI (jackknife) | " f"{_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')} |"),
+            ("| slope CI (jackknife) | " f"{_fmt_ci(result.scalar_slope_ci_jackknife, '.6e')} |"),
+            (
+                "| intercept CI (jackknife) | "
+                f"{_fmt_ci(result.scalar_intercept_ci_jackknife, '.6e')} |"
+            ),
+            "",
+        ])
 
     if result.scalar_r2_coarse is not None:
         lines.extend([

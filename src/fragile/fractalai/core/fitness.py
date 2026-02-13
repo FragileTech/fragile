@@ -540,8 +540,8 @@ class FitnessOperator(PanelModel):
     eta = param.Number(
         default=0.1,
         bounds=(0, None),
-        softbounds=(0.001, 0.5),
-        inclusive_bounds=(False, True),
+        softbounds=(0.0, 0.5),
+        inclusive_bounds=(True, True),
         doc="Positivity floor parameter (η)",
     )
     lambda_alg = param.Number(
@@ -553,8 +553,8 @@ class FitnessOperator(PanelModel):
     sigma_min = param.Number(
         default=1e-8,
         bounds=(0, None),
-        softbounds=(1e-9, 1e-3),
-        inclusive_bounds=(False, True),
+        softbounds=(0.0, 1e-3),
+        inclusive_bounds=(True, True),
         doc="Regularization for patched standardization (σ_min)",
     )
     epsilon_dist = param.Number(
@@ -622,7 +622,7 @@ class FitnessOperator(PanelModel):
                 "type": pn.widgets.EditableFloatSlider,
                 "width": INPUT_WIDTH,
                 "name": "η (positivity floor)",
-                "start": 0.001,
+                "start": 0.0,
                 "end": 0.1,
                 "step": 0.001,
             },

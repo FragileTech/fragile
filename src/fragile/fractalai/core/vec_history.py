@@ -11,9 +11,9 @@ chunks are flushed to temporary ``.pt`` files on disk, then merged in
 
 from __future__ import annotations
 
+from pathlib import Path
 import shutil
 import tempfile
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import torch
@@ -85,35 +85,70 @@ class VectorizedHistoryRecorder:
 
     # Fields indexed with the *full* time axis [buf_cap, ...]
     _FULL_INDEXED_FIELDS = (
-        "x_before_clone", "v_before_clone", "U_before",
-        "x_final", "v_final", "U_final", "n_alive",
+        "x_before_clone",
+        "v_before_clone",
+        "U_before",
+        "x_final",
+        "v_final",
+        "U_final",
+        "n_alive",
     )
 
     # Fields indexed with the *minus-one* time axis [buf_cap - 1, ...]
     _MINUS_ONE_INDEXED_FIELDS = (
-        "x_after_clone", "v_after_clone", "U_after_clone",
-        "num_cloned", "step_times",
-        "fitness", "rewards", "cloning_scores", "cloning_probs",
-        "will_clone", "alive_mask", "companions_distance", "companions_clone",
-        "clone_jitter", "clone_delta_x", "clone_delta_v",
-        "distances", "z_rewards", "z_distances",
-        "pos_squared_differences", "vel_squared_differences",
-        "rescaled_rewards", "rescaled_distances",
-        "mu_rewards", "sigma_rewards", "mu_distances", "sigma_distances",
-        "force_stable", "force_adapt", "force_viscous", "force_friction",
-        "force_total", "noise",
+        "x_after_clone",
+        "v_after_clone",
+        "U_after_clone",
+        "num_cloned",
+        "step_times",
+        "fitness",
+        "rewards",
+        "cloning_scores",
+        "cloning_probs",
+        "will_clone",
+        "alive_mask",
+        "companions_distance",
+        "companions_clone",
+        "clone_jitter",
+        "clone_delta_x",
+        "clone_delta_v",
+        "distances",
+        "z_rewards",
+        "z_distances",
+        "pos_squared_differences",
+        "vel_squared_differences",
+        "rescaled_rewards",
+        "rescaled_distances",
+        "mu_rewards",
+        "sigma_rewards",
+        "mu_distances",
+        "sigma_distances",
+        "force_stable",
+        "force_adapt",
+        "force_viscous",
+        "force_friction",
+        "force_total",
+        "noise",
     )
 
     # Optional minus-one fields (may be None)
     _OPTIONAL_MINUS_ONE_FIELDS = (
-        "fitness_gradients", "fitness_hessians_diag", "fitness_hessians_full",
-        "sigma_reg_diag", "sigma_reg_full",
-        "riemannian_volume_weights", "ricci_scalar_proxy", "diffusion_tensors_full",
+        "fitness_gradients",
+        "fitness_hessians_diag",
+        "fitness_hessians_full",
+        "sigma_reg_diag",
+        "sigma_reg_full",
+        "riemannian_volume_weights",
+        "ricci_scalar_proxy",
+        "diffusion_tensors_full",
     )
 
     # List-valued fields (variable-length per step)
     _LIST_FIELDS = (
-        "neighbor_edges", "geodesic_edge_distances", "voronoi_regions", "edge_weights",
+        "neighbor_edges",
+        "geodesic_edge_distances",
+        "voronoi_regions",
+        "edge_weights",
     )
 
     def __init__(
@@ -240,9 +275,7 @@ class VectorizedHistoryRecorder:
         if record_gradients:
             self.fitness_gradients = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
         if record_hessians_diag:
-            self.fitness_hessians_diag = torch.zeros(
-                buf_cap - 1, N, d, device=device, dtype=dtype
-            )
+            self.fitness_hessians_diag = torch.zeros(buf_cap - 1, N, d, device=device, dtype=dtype)
         if record_hessians_full:
             self.fitness_hessians_full = torch.zeros(
                 buf_cap - 1, N, d, d, device=device, dtype=dtype
@@ -272,9 +305,7 @@ class VectorizedHistoryRecorder:
 
         # Optional neighbor graph storage (variable-length per step)
         self.neighbor_edges: list[Tensor] | None = [] if record_neighbors else None
-        self.geodesic_edge_distances: list[Tensor] | None = (
-            [] if record_geodesic_edges else None
-        )
+        self.geodesic_edge_distances: list[Tensor] | None = [] if record_geodesic_edges else None
         self.voronoi_regions: list[dict] | None = [] if record_voronoi else None
         self.edge_weights: list[dict[str, torch.Tensor]] | None = (
             [] if record_edge_weights else None
@@ -303,9 +334,7 @@ class VectorizedHistoryRecorder:
             self.U_final[0] = U_final
         self.n_alive[0] = n_alive
         if self.neighbor_edges is not None:
-            self.neighbor_edges.append(
-                torch.zeros((0, 2), dtype=torch.long, device=self.device)
-            )
+            self.neighbor_edges.append(torch.zeros((0, 2), dtype=torch.long, device=self.device))
         if self.geodesic_edge_distances is not None:
             self.geodesic_edge_distances.append(
                 torch.zeros((0,), dtype=self.dtype, device=self.device)
@@ -442,9 +471,7 @@ class VectorizedHistoryRecorder:
                 kinetic_info.get("diffusion_tensors_full") is not None
                 and self.diffusion_tensors_full is not None
             ):
-                self.diffusion_tensors_full[idx_minus_1] = kinetic_info[
-                    "diffusion_tensors_full"
-                ]
+                self.diffusion_tensors_full[idx_minus_1] = kinetic_info["diffusion_tensors_full"]
 
         if self.neighbor_edges is not None:
             edges = info.get("neighbor_edges")
@@ -548,7 +575,7 @@ class VectorizedHistoryRecorder:
                     val.append(torch.zeros((0, 2), dtype=torch.long, device=self.device))
                 elif name == "geodesic_edge_distances":
                     val.append(torch.zeros((0,), dtype=self.dtype, device=self.device))
-                elif name in ("voronoi_regions", "edge_weights"):
+                elif name in {"voronoi_regions", "edge_weights"}:
                     val.append({})
 
     def build(
@@ -591,9 +618,8 @@ class VectorizedHistoryRecorder:
         if self._flushed_chunks:
             # Flush the remaining buffer as the final chunk (if any data beyond
             # the dummy slot 0 / the initial state recorded_idx==1 case).
-            has_remaining = (
-                (self._is_first_chunk and self.recorded_idx > 0)
-                or (not self._is_first_chunk and self.recorded_idx > 1)
+            has_remaining = (self._is_first_chunk and self.recorded_idx > 0) or (
+                not self._is_first_chunk and self.recorded_idx > 1
             )
             if has_remaining:
                 self._flush_chunk()
@@ -760,7 +786,7 @@ class VectorizedHistoryRecorder:
             else:
                 merged[name] = None
         for name in list_accum:
-            merged[name] = list_accum[name] if list_accum[name] else None
+            merged[name] = list_accum[name] or None
 
         # Ensure list fields that were None stay None
         for name in self._LIST_FIELDS:

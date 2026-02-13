@@ -52,11 +52,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 import torch
-import torch.nn.functional as F
 from torch import Tensor
+import torch.nn.functional as F
+
 
 if TYPE_CHECKING:
     from fragile.fractalai.core.history import RunHistory
@@ -92,7 +93,9 @@ class ChannelConfig:
     mc_time_index: int | None = None  # Recorded index; None => last recorded slice
 
     # Time axis selection (Monte Carlo vs Euclidean)
-    time_axis: str = "mc"  # "mc" (Monte Carlo timesteps) or "euclidean" (spatial dimension as time)
+    time_axis: str = (
+        "mc"  # "mc" (Monte Carlo timesteps) or "euclidean" (spatial dimension as time)
+    )
     euclidean_time_dim: int = 3  # Which spatial dimension to use as Euclidean time (0-indexed)
     euclidean_time_bins: int = 50  # Number of time bins for Euclidean time analysis
     euclidean_time_range: tuple[float, float] | None = None  # (t_min, t_max) or None for auto
@@ -159,8 +162,6 @@ class ChannelCorrelatorResult:
     window_r2: Tensor | None = None  # [num_widths, max_positions]
 
 
-
-
 # =============================================================================
 # Convolutional AIC Mass Extractor
 # =============================================================================
@@ -197,9 +198,7 @@ class ConvolutionalAICExtractor:
         self.min_mass = min_mass
         self.max_mass = max_mass
 
-    def _build_kernels(
-        self, W: int, device: torch.device
-    ) -> tuple[Tensor, Tensor]:
+    def _build_kernels(self, W: int, device: torch.device) -> tuple[Tensor, Tensor]:
         """Build convolution kernels for window size W.
 
         Args:
@@ -251,7 +250,9 @@ class ConvolutionalAICExtractor:
 
         if denom.abs() < 1e-12:
             # Degenerate case
-            inf_tensor = torch.full_like(log_corr[:, :, : log_corr.shape[-1] - W + 1], float("inf"))
+            inf_tensor = torch.full_like(
+                log_corr[:, :, : log_corr.shape[-1] - W + 1], float("inf")
+            )
             nan_tensor = torch.full_like(inf_tensor, float("nan"))
             return torch.zeros_like(inf_tensor), inf_tensor, nan_tensor
 
@@ -309,7 +310,6 @@ class ConvolutionalAICExtractor:
             Dict with mass, mass_error, best_window, n_valid_windows.
         """
         T = log_corr.shape[0]
-        device = log_corr.device
 
         # Reshape for conv1d: [1, 1, T]
         log_corr = log_corr.view(1, 1, -1)
@@ -403,7 +403,11 @@ class ConvolutionalAICExtractor:
         best_flat_idx = flat_aic.argmin().item()
         best_w_idx = best_flat_idx // T
         best_t_idx = best_flat_idx % T
-        best_r2 = flat_r2[best_flat_idx].item() if torch.isfinite(flat_r2[best_flat_idx]) else float("nan")
+        best_r2 = (
+            flat_r2[best_flat_idx].item()
+            if torch.isfinite(flat_r2[best_flat_idx])
+            else float("nan")
+        )
 
         return {
             "mass": mass_final,
@@ -805,7 +809,6 @@ def compute_all_correlators(
     Returns:
         Dictionary mapping channel names to results.
     """
-    from fragile.fractalai.qft.aggregation import OperatorTimeSeries
 
     if channels is None:
         channels = list(operator_series.operators.keys())
@@ -841,8 +844,6 @@ def compute_all_correlators(
     return results
 
 
-
-
 # =============================================================================
 # Base Channel Correlator Classes
 # =============================================================================
@@ -876,17 +877,19 @@ class ChannelCorrelator(ABC):
         # This maintains backward compatibility
         if correlator_config is None:
             correlator_config = CorrelatorConfig(
-                max_lag=getattr(config, 'max_lag', 80) if config else 80,
-                use_connected=getattr(config, 'use_connected', True) if config else True,
-                window_widths=getattr(config, 'window_widths', None) if config else None,
-                min_mass=getattr(config, 'min_mass', 0.0) if config else 0.0,
-                max_mass=getattr(config, 'max_mass', float('inf')) if config else float('inf'),
-                fit_mode=getattr(config, 'fit_mode', 'aic') if config else 'aic',
-                fit_start=getattr(config, 'fit_start', 2) if config else 2,
-                fit_stop=getattr(config, 'fit_stop', None) if config else None,
-                min_fit_points=getattr(config, 'min_fit_points', 2) if config else 2,
-                compute_bootstrap_errors=getattr(config, 'compute_bootstrap_errors', False) if config else False,
-                n_bootstrap=getattr(config, 'n_bootstrap', 100) if config else 100,
+                max_lag=getattr(config, "max_lag", 80) if config else 80,
+                use_connected=getattr(config, "use_connected", True) if config else True,
+                window_widths=getattr(config, "window_widths", None) if config else None,
+                min_mass=getattr(config, "min_mass", 0.0) if config else 0.0,
+                max_mass=getattr(config, "max_mass", float("inf")) if config else float("inf"),
+                fit_mode=getattr(config, "fit_mode", "aic") if config else "aic",
+                fit_start=getattr(config, "fit_start", 2) if config else 2,
+                fit_stop=getattr(config, "fit_stop", None) if config else None,
+                min_fit_points=getattr(config, "min_fit_points", 2) if config else 2,
+                compute_bootstrap_errors=getattr(config, "compute_bootstrap_errors", False)
+                if config
+                else False,
+                n_bootstrap=getattr(config, "n_bootstrap", 100) if config else 100,
             )
         self.correlator_config = correlator_config
 
@@ -906,7 +909,6 @@ class ChannelCorrelator(ABC):
             raise ValueError(msg)
         if self.config.ell0 is None:
             self.config.ell0 = estimate_ell0(self.history)
-
 
     def _build_gamma_matrices(self) -> None:
         """Build gamma matrices for bilinear projections."""
@@ -958,7 +960,6 @@ class ChannelCorrelator(ABC):
             self.gamma["sigma"] = torch.stack(sigma_list, dim=0)  # [n_pairs, d, d]
         else:
             self.gamma["sigma"] = torch.zeros(0, d, d, device=device, dtype=dtype)
-
 
     @abstractmethod
     def _compute_operators_vectorized(
@@ -1021,6 +1022,7 @@ class ChannelCorrelator(ABC):
             max_lag=self.correlator_config.max_lag,
             use_connected=self.correlator_config.use_connected,
         )
+
     def compute(self) -> ChannelCorrelatorResult:
         """Compute full channel analysis.
 
@@ -1087,7 +1089,7 @@ class BilinearChannelCorrelator(ChannelCorrelator):
         Returns:
             Operator time series [T].
         """
-        T, N, d = color.shape
+        T, _N, _d = color.shape
         S = sample_indices.shape[1]
         device = color.device
 
@@ -1101,8 +1103,14 @@ class BilinearChannelCorrelator(ChannelCorrelator):
         color_j = color[t_idx, first_neighbor]
 
         # Validity masks
-        valid_i = valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
-        valid_j = valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+        valid_i = (
+            valid[t_idx, sample_indices]
+            & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
+        )
+        valid_j = (
+            valid[t_idx, first_neighbor]
+            & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+        )
         valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
 
         # Apply channel-specific projection
@@ -1113,9 +1121,7 @@ class BilinearChannelCorrelator(ChannelCorrelator):
 
         # Mean over samples per timestep
         counts = valid_mask.sum(dim=1).clamp(min=1)
-        series = op_values.sum(dim=1) / counts
-
-        return series
+        return op_values.sum(dim=1) / counts
 
 
 class ScalarChannel(BilinearChannelCorrelator):
@@ -1249,8 +1255,6 @@ class TrilinearChannelCorrelator(ChannelCorrelator):
     Computes εᵃᵇᶜ ψᵃ ψᵇ ψᶜ operators using determinant of color matrix.
     """
 
-    pass
-
 
 class NucleonChannel(TrilinearChannelCorrelator):
     """Nucleon channel: 3×3 determinant of color states.
@@ -1282,7 +1286,7 @@ class NucleonChannel(TrilinearChannelCorrelator):
         Returns:
             Operator time series [T].
         """
-        T, N, d = color.shape
+        T, _N, d = color.shape
         device = color.device
 
         if d < 3:
@@ -1313,13 +1317,18 @@ class NucleonChannel(TrilinearChannelCorrelator):
         det = torch.linalg.det(matrix)
 
         # Validity mask
-        valid_i = valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
-        valid_j = valid[t_idx, neighbor_indices[:, :, 0]] & alive[
-            t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 0]
-        ]
-        valid_k = valid[t_idx, neighbor_indices[:, :, 1]] & alive[
-            t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 1]
-        ]
+        valid_i = (
+            valid[t_idx, sample_indices]
+            & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
+        )
+        valid_j = (
+            valid[t_idx, neighbor_indices[:, :, 0]]
+            & alive[t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 0]]
+        )
+        valid_k = (
+            valid[t_idx, neighbor_indices[:, :, 1]]
+            & alive[t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 1]]
+        )
         valid_mask = valid_i & valid_j & valid_k
 
         # Mask invalid
@@ -1339,8 +1348,6 @@ class NucleonChannel(TrilinearChannelCorrelator):
 
 class GaugeChannelCorrelator(ChannelCorrelator):
     """Base class for gauge field correlators."""
-
-    pass
 
 
 class GlueballChannel(GaugeChannelCorrelator):
@@ -1388,7 +1395,11 @@ class GlueballChannel(GaugeChannelCorrelator):
         # Average over alive walkers per timestep
         series = []
         for t in range(T):
-            alive_t = alive[t] if t < alive.shape[0] else torch.ones(force.shape[1], dtype=torch.bool, device=device)
+            alive_t = (
+                alive[t]
+                if t < alive.shape[0]
+                else torch.ones(force.shape[1], dtype=torch.bool, device=device)
+            )
             if alive_t.any():
                 series.append(force_sq[t, alive_t].mean())
             else:
@@ -1440,7 +1451,7 @@ def compute_all_channels(
 
     # Filter out baryon channels in 2D mode (they require d=3)
     if spatial_dims is not None and spatial_dims < 3:
-        channels = [ch for ch in channels if ch not in {"nucleon"}]
+        channels = [ch for ch in channels if ch != "nucleon"]
 
     config = config or ChannelConfig()
 
@@ -1450,17 +1461,17 @@ def compute_all_channels(
     # Step 2: Create correlator config from channel config
     # Extract correlator parameters from config (for backward compatibility)
     correlator_config = CorrelatorConfig(
-        max_lag=getattr(config, 'max_lag', 80),
-        use_connected=getattr(config, 'use_connected', True),
-        window_widths=getattr(config, 'window_widths', None),
-        min_mass=getattr(config, 'min_mass', 0.0),
-        max_mass=getattr(config, 'max_mass', float('inf')),
-        fit_mode=getattr(config, 'fit_mode', 'aic'),
-        fit_start=getattr(config, 'fit_start', 2),
-        fit_stop=getattr(config, 'fit_stop', None),
-        min_fit_points=getattr(config, 'min_fit_points', 2),
-        compute_bootstrap_errors=getattr(config, 'compute_bootstrap_errors', False),
-        n_bootstrap=getattr(config, 'n_bootstrap', 100),
+        max_lag=getattr(config, "max_lag", 80),
+        use_connected=getattr(config, "use_connected", True),
+        window_widths=getattr(config, "window_widths", None),
+        min_mass=getattr(config, "min_mass", 0.0),
+        max_mass=getattr(config, "max_mass", float("inf")),
+        fit_mode=getattr(config, "fit_mode", "aic"),
+        fit_start=getattr(config, "fit_start", 2),
+        fit_stop=getattr(config, "fit_stop", None),
+        min_fit_points=getattr(config, "min_fit_points", 2),
+        compute_bootstrap_errors=getattr(config, "compute_bootstrap_errors", False),
+        n_bootstrap=getattr(config, "n_bootstrap", 100),
     )
 
     # Step 3: Compute correlators (analysis phase)

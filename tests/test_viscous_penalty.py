@@ -43,7 +43,9 @@ def test_precomputed_weights():
     """Viscous force works with precomputed edge weights."""
     x, v, neighbor_edges, edge_weights = _make_setup()
     kin = KineticOperator(**BASE_PARAMS, viscous_neighbor_weighting="inverse_riemannian_distance")
-    force = kin._compute_viscous_force(x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights)
+    force = kin._compute_viscous_force(
+        x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights
+    )
     assert force.shape == v.shape
     assert torch.norm(force) > 0
 
@@ -70,8 +72,12 @@ def test_threshold_penalty_reduces_force():
         viscous_neighbor_weighting="inverse_riemannian_distance",
         viscous_neighbor_penalty=1.0,
     )
-    force_no = kin_no._compute_viscous_force(x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights)
-    force_pen = kin_pen._compute_viscous_force(x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights)
+    force_no = kin_no._compute_viscous_force(
+        x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights
+    )
+    force_pen = kin_pen._compute_viscous_force(
+        x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights
+    )
     assert torch.norm(force_pen) < torch.norm(force_no)
 
 
@@ -96,5 +102,7 @@ def test_disabled_returns_zero():
     x, v, neighbor_edges, edge_weights = _make_setup()
     params = {**BASE_PARAMS, "nu": 0.0}
     kin = KineticOperator(**params, viscous_neighbor_weighting="inverse_riemannian_distance")
-    force = kin._compute_viscous_force(x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights)
+    force = kin._compute_viscous_force(
+        x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights
+    )
     assert torch.allclose(force, torch.zeros_like(v))

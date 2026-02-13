@@ -1,7 +1,8 @@
 """Tests for cross-validation between FD and geometric methods."""
 
-import torch
 import pytest
+import torch
+
 from fragile.fractalai.scutoid import (
     compare_estimation_methods,
     validate_on_synthetic_function,
@@ -16,14 +17,16 @@ def test_compare_methods_basic():
     positions = torch.randn(N, d) * 0.5  # Keep compact for good neighbors
 
     # Quadratic fitness
-    fitness = (positions ** 2).sum(dim=1)
+    fitness = (positions**2).sum(dim=1)
 
     # Build graph
     edge_index = _build_knn_graph(positions, k=10)
 
     # Compare methods
     result = compare_estimation_methods(
-        positions, fitness, edge_index,
+        positions,
+        fitness,
+        edge_index,
         epsilon_sigma=0.1,
         compute_full_hessian=True,
         return_detailed=False,
@@ -46,13 +49,11 @@ def test_compare_methods_basic():
 
 def test_compare_methods_quadratic_agreement():
     """Test that FD and geometric methods agree well on quadratic."""
-    N = 100
-    d = 2
 
     # Grid for better structure
     x = torch.linspace(-1, 1, 10)
     y = torch.linspace(-1, 1, 10)
-    X, Y = torch.meshgrid(x, y, indexing='ij')
+    X, Y = torch.meshgrid(x, y, indexing="ij")
     positions = torch.stack([X.flatten(), Y.flatten()], dim=1)
 
     # Quadratic: V = x² + 2y²
@@ -61,7 +62,9 @@ def test_compare_methods_quadratic_agreement():
     edge_index = _build_knn_graph(positions, k=12)
 
     result = compare_estimation_methods(
-        positions, fitness, edge_index,
+        positions,
+        fitness,
+        edge_index,
         epsilon_sigma=0.1,
         compute_full_hessian=True,
     )
@@ -70,11 +73,11 @@ def test_compare_methods_quadratic_agreement():
 
     # For simple quadratic, methods should agree reasonably
     # (may not be perfect due to non-equilibrium distribution)
-    assert metrics["eigenvalue_correlation"] > 0.3, \
-        f"Correlation too low: {metrics['eigenvalue_correlation']}"
+    assert (
+        metrics["eigenvalue_correlation"] > 0.3
+    ), f"Correlation too low: {metrics['eigenvalue_correlation']}"
 
-    assert 0 <= metrics["frobenius_agreement"] <= 1, \
-        "Frobenius agreement should be in [0, 1]"
+    assert 0 <= metrics["frobenius_agreement"] <= 1, "Frobenius agreement should be in [0, 1]"
 
 
 def test_compare_methods_detailed_output():
@@ -82,11 +85,13 @@ def test_compare_methods_detailed_output():
     N = 50
     d = 2
     positions = torch.randn(N, d) * 0.5
-    fitness = (positions ** 2).sum(dim=1)
+    fitness = (positions**2).sum(dim=1)
     edge_index = _build_knn_graph(positions, k=10)
 
     result = compare_estimation_methods(
-        positions, fitness, edge_index,
+        positions,
+        fitness,
+        edge_index,
         epsilon_sigma=0.1,
         compute_full_hessian=False,  # Just diagonal
         return_detailed=True,
@@ -123,12 +128,12 @@ def test_validate_quadratic():
     assert "passed" in errors
 
     # Quadratic should have low errors
-    assert errors["gradient_rmse"] < 0.01, \
-        f"Gradient RMSE too high: {errors['gradient_rmse']}"
+    assert errors["gradient_rmse"] < 0.01, f"Gradient RMSE too high: {errors['gradient_rmse']}"
 
     # Hessian may have more error due to second-order FD
-    assert errors["hessian_frobenius_error"] < 0.1, \
-        f"Hessian error too high: {errors['hessian_frobenius_error']}"
+    assert (
+        errors["hessian_frobenius_error"] < 0.1
+    ), f"Hessian error too high: {errors['hessian_frobenius_error']}"
 
 
 def test_validate_rosenbrock():
@@ -142,8 +147,7 @@ def test_validate_rosenbrock():
     )
 
     # Rosenbrock is harder - allow larger errors
-    assert errors["gradient_rmse"] < 0.05, \
-        f"Rosenbrock gradient RMSE: {errors['gradient_rmse']}"
+    assert errors["gradient_rmse"] < 0.05, f"Rosenbrock gradient RMSE: {errors['gradient_rmse']}"
 
     # Just check it completes without crashing
     assert "passed" in errors
@@ -189,12 +193,10 @@ def test_comparison_metrics_ranges():
     N = 80
     d = 2
     positions = torch.randn(N, d) * 0.5
-    fitness = (positions ** 2).sum(dim=1)
+    fitness = (positions**2).sum(dim=1)
     edge_index = _build_knn_graph(positions, k=10)
 
-    result = compare_estimation_methods(
-        positions, fitness, edge_index, epsilon_sigma=0.1
-    )
+    result = compare_estimation_methods(positions, fitness, edge_index, epsilon_sigma=0.1)
 
     metrics = result["comparison_metrics"]
 
@@ -211,7 +213,7 @@ def test_comparison_metrics_ranges():
     assert 0 <= metrics["mean_equilibrium_score"] <= 1
 
     # Method preference: one of the expected values
-    assert metrics["method_preference"] in ["both_agree", "fd", "geometric", "ambiguous"]
+    assert metrics["method_preference"] in {"both_agree", "fd", "geometric", "ambiguous"}
 
 
 def test_comparison_with_different_epsilon():
@@ -219,7 +221,7 @@ def test_comparison_with_different_epsilon():
     N = 50
     d = 2
     positions = torch.randn(N, d) * 0.5
-    fitness = (positions ** 2).sum(dim=1)
+    fitness = (positions**2).sum(dim=1)
     edge_index = _build_knn_graph(positions, k=10)
 
     epsilon_values = [0.05, 0.2]
@@ -227,7 +229,9 @@ def test_comparison_with_different_epsilon():
 
     for eps in epsilon_values:
         result = compare_estimation_methods(
-            positions, fitness, edge_index,
+            positions,
+            fitness,
+            edge_index,
             epsilon_sigma=eps,
             compute_full_hessian=False,
         )
@@ -257,11 +261,13 @@ def test_comparison_diagonal_only():
     N = 50
     d = 2
     positions = torch.randn(N, d) * 0.5
-    fitness = (positions ** 2).sum(dim=1)
+    fitness = (positions**2).sum(dim=1)
     edge_index = _build_knn_graph(positions, k=10)
 
     result = compare_estimation_methods(
-        positions, fitness, edge_index,
+        positions,
+        fitness,
+        edge_index,
         epsilon_sigma=0.1,
         compute_full_hessian=False,  # Diagonal only
     )
@@ -281,25 +287,21 @@ def test_comparison_diagonal_only():
 
 def test_method_preference_logic():
     """Test that method preference is assigned sensibly."""
-    N = 100
-    d = 2
 
     # Case 1: Good agreement (quadratic on grid)
     x = torch.linspace(-1, 1, 10)
     y = torch.linspace(-1, 1, 10)
-    X, Y = torch.meshgrid(x, y, indexing='ij')
+    X, Y = torch.meshgrid(x, y, indexing="ij")
     positions = torch.stack([X.flatten(), Y.flatten()], dim=1)
-    fitness = (positions ** 2).sum(dim=1)
+    fitness = (positions**2).sum(dim=1)
     edge_index = _build_knn_graph(positions, k=12)
 
-    result = compare_estimation_methods(
-        positions, fitness, edge_index, epsilon_sigma=0.1
-    )
+    result = compare_estimation_methods(positions, fitness, edge_index, epsilon_sigma=0.1)
 
     preference = result["comparison_metrics"]["method_preference"]
 
     # Should have some preference (not just error)
-    assert preference in ["both_agree", "fd", "geometric", "ambiguous"]
+    assert preference in {"both_agree", "fd", "geometric", "ambiguous"}
 
 
 def test_validation_passes_on_simple_case():
@@ -322,13 +324,16 @@ def test_handles_all_nan_gracefully():
     positions = torch.randn(N, d)
 
     # All NaN fitness
-    fitness = torch.full((N,), float('nan'))
+    fitness = torch.full((N,), float("nan"))
 
     edge_index = _build_knn_graph(positions, k=10)
 
     # Should not crash
     result = compare_estimation_methods(
-        positions, fitness, edge_index, epsilon_sigma=0.1,
+        positions,
+        fitness,
+        edge_index,
+        epsilon_sigma=0.1,
         compute_full_hessian=False,
     )
 
@@ -343,6 +348,7 @@ def test_handles_all_nan_gracefully():
 # ============================================================================
 # Helper functions
 # ============================================================================
+
 
 def _build_knn_graph(positions: torch.Tensor, k: int) -> torch.Tensor:
     """Build k-nearest neighbor graph."""

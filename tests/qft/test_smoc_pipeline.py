@@ -19,19 +19,19 @@ import pytest
 import torch
 
 from fragile.fractalai.qft.smoc_pipeline import (
+    aggregate_correlators,
     AggregatedCorrelator,
     ChannelProjector,
+    compute_smoc_correlators_from_history,
     CorrelatorComputer,
     CorrelatorConfig,
     MassExtractionConfig,
     MassExtractor,
     ProjectorConfig,
+    run_smoc_pipeline,
     SimulationConfig,
     SMoCPipelineConfig,
     SMoCSimulator,
-    aggregate_correlators,
-    compute_smoc_correlators_from_history,
-    run_smoc_pipeline,
 )
 
 
@@ -238,7 +238,7 @@ class TestChannelProjector:
         all_fields = projector.project_all(sample_history)
 
         assert len(all_fields) == 6
-        for name, field in all_fields.items():
+        for field in all_fields.values():
             assert field.shape == (2, 10, 5)
 
 
@@ -449,7 +449,7 @@ class TestMassExtractor:
 
     def test_extract_mass_with_constraints(self, exponential_correlator):
         """Test mass extraction with mass constraints."""
-        agg, true_mass = exponential_correlator
+        agg, _true_mass = exponential_correlator
 
         # Set minimum mass well above true mass
         config = MassExtractionConfig(
@@ -568,16 +568,16 @@ class TestRunSMoCPipeline:
 
     def test_pipeline_reproducibility(self):
         """Test pipeline reproducibility with seed."""
-        kwargs = dict(
-            batch_size=4,
-            grid_size=8,
-            internal_dim=4,
-            t_thermalization=10,
-            t_measurement=30,
-            channels=("scalar",),
-            seed=123,
-            verbose=False,
-        )
+        kwargs = {
+            "batch_size": 4,
+            "grid_size": 8,
+            "internal_dim": 4,
+            "t_thermalization": 10,
+            "t_measurement": 30,
+            "channels": ("scalar",),
+            "seed": 123,
+            "verbose": False,
+        }
 
         result1 = run_smoc_pipeline(**kwargs)
         result2 = run_smoc_pipeline(**kwargs)

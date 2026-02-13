@@ -38,7 +38,7 @@ class MockEnv:
     def _mock_state(self):
         """Create a mock state object."""
         state = MagicMock()
-        state.copy = lambda: self._mock_state()
+        state.copy = self._mock_state
         return state
 
 
@@ -61,7 +61,7 @@ def test_sample_actions(kinetic_op):
 
     # Check output
     assert actions.shape == (N,)
-    assert actions.dtype in [np.int64, np.int32, np.int_]
+    assert actions.dtype in {np.int64, np.int32, np.int_}
     assert (actions >= 0).all()
     assert (actions < 18).all()  # Mock env has 18 actions
 
@@ -73,9 +73,7 @@ def test_sample_actions_with_custom_sampler(mock_env):
     def custom_sampler(n):
         return np.ones(n, dtype=int) * 5  # Always return action 5
 
-    kinetic_op = RandomActionOperator(
-        env=mock_env, action_sampler=custom_sampler, seed=42
-    )
+    kinetic_op = RandomActionOperator(env=mock_env, action_sampler=custom_sampler, seed=42)
 
     actions = kinetic_op.sample_actions(N)
 
@@ -90,7 +88,7 @@ def test_sample_dt(kinetic_op):
 
     # Check output
     assert dt.shape == (N,)
-    assert dt.dtype in [np.int64, np.int32, np.int_]
+    assert dt.dtype in {np.int64, np.int32, np.int_}
     assert (dt >= 1).all()  # Min dt
     assert (dt <= 4).all()  # Max dt
 
@@ -158,6 +156,7 @@ def test_apply_with_custom_actions(kinetic_op, mock_env):
 
 def test_apply_with_5_tuple_return(mock_env):
     """Test handling of 5-tuple return (no truncated)."""
+
     # Create env that returns 5-tuple
     class MockEnv5Tuple(MockEnv):
         def step_batch(self, states, actions, dt):
@@ -176,7 +175,7 @@ def test_apply_with_5_tuple_return(mock_env):
     states = np.array([env_5tuple._mock_state() for _ in range(N)], dtype=object)
 
     # Apply kinetic operator
-    new_states, observations, rewards, dones, truncated, infos = kinetic_op.apply(states)
+    _new_states, _observations, _rewards, _dones, truncated, _infos = kinetic_op.apply(states)
 
     # Check that truncated was filled in
     assert truncated.shape == (N,)
@@ -228,7 +227,6 @@ def test_no_action_sampling_raises_error():
 
     class BadEnv:
         """Environment without action sampling."""
-        pass
 
     bad_env = BadEnv()
     kinetic_op = RandomActionOperator(env=bad_env, dt_range=(1, 4))

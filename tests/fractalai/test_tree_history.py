@@ -1,10 +1,10 @@
 """Tests for TreeHistory: graph-backed history recorder."""
 
-import tempfile
 from pathlib import Path
+import tempfile
 
-import torch
 import pytest
+import torch
 
 from fragile.fractalai.core.tree_history import TreeHistory
 
@@ -12,6 +12,7 @@ from fragile.fractalai.core.tree_history import TreeHistory
 # ---------------------------------------------------------------------------
 # Mock SwarmState (minimal duck-type for the recording API)
 # ---------------------------------------------------------------------------
+
 
 class _MockState:
     """Minimal SwarmState stand-in."""
@@ -102,6 +103,7 @@ def _record_mock(n_steps: int = 3) -> TreeHistory:
 # Tests: Construction and recording
 # ---------------------------------------------------------------------------
 
+
 class TestRecording:
     def test_initial_state_sets_n_recorded(self):
         hist = TreeHistory(N=N, d=D)
@@ -114,13 +116,16 @@ class TestRecording:
         state = _make_state()
         hist.record_initial_state(state, n_alive=N)
         info = _make_info(1)
-        hist.record_step(_make_state(1.0), _make_state(1.1), _make_state(1.2), info, step_time=0.01)
+        hist.record_step(
+            _make_state(1.0), _make_state(1.1), _make_state(1.2), info, step_time=0.01
+        )
         assert hist.n_recorded == 2
 
 
 # ---------------------------------------------------------------------------
 # Tests: Dense tensor shapes and values
 # ---------------------------------------------------------------------------
+
 
 class TestDenseTensors:
     @pytest.fixture(autouse=True)
@@ -182,18 +187,23 @@ class TestDenseTensors:
 # Tests: Cache invalidation
 # ---------------------------------------------------------------------------
 
+
 class TestCacheInvalidation:
     def test_cache_invalidated_on_record_step(self):
         hist = TreeHistory(N=N, d=D)
         hist.record_initial_state(_make_state(), n_alive=N)
         info = _make_info(1)
-        hist.record_step(_make_state(1.0), _make_state(1.1), _make_state(1.2), info, step_time=0.01)
+        hist.record_step(
+            _make_state(1.0), _make_state(1.1), _make_state(1.2), info, step_time=0.01
+        )
         _ = hist.x_final  # populate cache
         assert len(hist._cache) > 0
 
         # Record another step → cache should be cleared
         info2 = _make_info(2)
-        hist.record_step(_make_state(2.0), _make_state(2.1), _make_state(2.2), info2, step_time=0.02)
+        hist.record_step(
+            _make_state(2.0), _make_state(2.1), _make_state(2.2), info2, step_time=0.02
+        )
         assert len(hist._cache) == 0
 
     def test_cache_reused_on_repeated_access(self):
@@ -208,6 +218,7 @@ class TestCacheInvalidation:
 # ---------------------------------------------------------------------------
 # Tests: Query API
 # ---------------------------------------------------------------------------
+
 
 class TestQueryAPI:
     @pytest.fixture(autouse=True)
@@ -266,6 +277,7 @@ class TestQueryAPI:
 # Tests: Save / Load round-trip
 # ---------------------------------------------------------------------------
 
+
 class TestSaveLoad:
     def test_save_load_roundtrip(self, tmp_path):
         hist = _record_mock(2)
@@ -285,11 +297,13 @@ class TestSaveLoad:
 # Tests: Conversion to RunHistory
 # ---------------------------------------------------------------------------
 
+
 class TestToRunHistory:
     def test_to_run_history_produces_valid_object(self):
         hist = _record_mock(3)
         rh = hist.to_run_history()
         from fragile.fractalai.core.history import RunHistory
+
         assert isinstance(rh, RunHistory)
         assert rh.N == N
         assert rh.d == D
@@ -309,6 +323,7 @@ class TestToRunHistory:
 # Tests: With kinetic info
 # ---------------------------------------------------------------------------
 
+
 class TestWithKineticInfo:
     def test_force_fields_recorded(self):
         hist = TreeHistory(N=N, d=D)
@@ -323,8 +338,12 @@ class TestWithKineticInfo:
             "noise": torch.randn(N, D),
         }
         hist.record_step(
-            _make_state(1.0), _make_state(1.1), _make_state(1.2),
-            info, step_time=0.01, kinetic_info=kinetic,
+            _make_state(1.0),
+            _make_state(1.1),
+            _make_state(1.2),
+            info,
+            step_time=0.01,
+            kinetic_info=kinetic,
         )
         assert torch.allclose(hist.force_stable, torch.ones(1, N, D))
         assert hist.force_friction.shape == (1, N, D)
@@ -335,8 +354,12 @@ class TestWithKineticInfo:
         info = _make_info(1)
         grad = torch.randn(N, D)
         hist.record_step(
-            _make_state(1.0), _make_state(1.1), _make_state(1.2),
-            info, step_time=0.01, grad_fitness=grad,
+            _make_state(1.0),
+            _make_state(1.1),
+            _make_state(1.2),
+            info,
+            step_time=0.01,
+            grad_fitness=grad,
         )
         assert hist.fitness_gradients is not None
         assert hist.fitness_gradients.shape == (1, N, D)

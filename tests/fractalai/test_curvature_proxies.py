@@ -366,9 +366,7 @@ class TestLaplacianCurvature:
     def test_laplacian_curvature_basic(self):
         """Test Graph Laplacian curvature computation."""
         # Create simple grid
-        positions = np.array(
-            [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]], dtype=np.float32
-        )
+        positions = np.array([[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]], dtype=np.float32)
         alive = torch.ones(4, dtype=torch.bool)
 
         voronoi_data = compute_voronoi_tessellation(
@@ -476,14 +474,12 @@ class TestMultiMethodComparison:
         assert "unified_curvature_estimate" in comparison
 
         # Consistency check should pass (True/False)
-        assert isinstance(comparison["consistency_check"], (bool, np.bool_))
+        assert isinstance(comparison["consistency_check"], bool | np.bool_)
 
     def test_method_comparison_with_raychaudhuri(self):
         """Test method comparison including Raychaudhuri."""
         # Create expanding swarm
-        positions_t0 = np.array(
-            [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]], dtype=np.float32
-        )
+        positions_t0 = np.array([[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]], dtype=np.float32)
         alive = torch.ones(4, dtype=torch.bool)
 
         voronoi_t0 = compute_voronoi_tessellation(

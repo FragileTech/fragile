@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import panel as pn
 
+
 if TYPE_CHECKING:
     from fragile.fractalai.qft.higgs_observables import HiggsObservables
 
@@ -54,8 +55,7 @@ def build_metric_tensor_heatmap(
     # Validate spatial dimensions
     if x_dim >= positions.shape[1] or y_dim >= positions.shape[1]:
         return hv.Text(
-            0, 0,
-            f"Spatial dims ({x_dim}, {y_dim}) invalid for {positions.shape[1]}D positions"
+            0, 0, f"Spatial dims ({x_dim}, {y_dim}) invalid for {positions.shape[1]}D positions"
         ).opts(title="Metric Tensor Heatmap - Error")
 
     # Filter finite values
@@ -65,24 +65,22 @@ def build_metric_tensor_heatmap(
 
     # Create scatter plot data
     data = pd.DataFrame({
-        'x': positions[valid, x_dim],
-        'y': positions[valid, y_dim],
-        f'g_{i}{j}': metric_values[valid],
+        "x": positions[valid, x_dim],
+        "y": positions[valid, y_dim],
+        f"g_{i}{j}": metric_values[valid],
     })
 
-    points = hv.Points(data, ['x', 'y'], f'g_{i}{j}').opts(
-        color=f'g_{i}{j}',
-        cmap='viridis',
+    return hv.Points(data, ["x", "y"], f"g_{i}{j}").opts(
+        color=f"g_{i}{j}",
+        cmap="viridis",
         size=5,
         colorbar=True,
         width=600,
         height=500,
-        title=f'Metric Tensor Component g_{i}{j}',
-        xlabel=f'Dimension {x_dim}',
-        ylabel=f'Dimension {y_dim}',
+        title=f"Metric Tensor Component g_{i}{j}",
+        xlabel=f"Dimension {x_dim}",
+        ylabel=f"Dimension {y_dim}",
     )
-
-    return points
 
 
 def build_centroid_vector_field(
@@ -119,16 +117,14 @@ def build_centroid_vector_field(
         # Edge case: 1D vectors (should have been 2D [N, d])
         # This indicates a bug upstream, but handle gracefully
         return hv.Text(
-            0, 0,
-            f"Invalid centroid vectors shape {vec_alive.shape} (expected 2D)"
+            0, 0, f"Invalid centroid vectors shape {vec_alive.shape} (expected 2D)"
         ).opts(title="Centroid Vector Field - Error")
 
     # Validate spatial dimensions exist
     x_dim, y_dim = spatial_dims
     if x_dim >= vec_alive.shape[1] or y_dim >= vec_alive.shape[1]:
         return hv.Text(
-            0, 0,
-            f"Spatial dims ({x_dim}, {y_dim}) invalid for {vec_alive.shape[1]}D vectors"
+            0, 0, f"Spatial dims ({x_dim}, {y_dim}) invalid for {vec_alive.shape[1]}D vectors"
         ).opts(title="Centroid Vector Field - Error")
 
     # Subsample for clarity
@@ -147,27 +143,25 @@ def build_centroid_vector_field(
     magnitude = np.sqrt(u**2 + v**2)
 
     data = pd.DataFrame({
-        'x': x,
-        'y': y,
-        'u': u,
-        'v': v,
-        'magnitude': magnitude,
+        "x": x,
+        "y": y,
+        "u": u,
+        "v": v,
+        "magnitude": magnitude,
     })
 
-    vector_field = hv.VectorField(data, ['x', 'y'], ['u', 'v', 'magnitude']).opts(
-        color='magnitude',
-        cmap='fire',
-        magnitude='magnitude',
-        pivot='tail',
+    return hv.VectorField(data, ["x", "y"], ["u", "v", "magnitude"]).opts(
+        color="magnitude",
+        cmap="fire",
+        magnitude="magnitude",
+        pivot="tail",
         colorbar=True,
         width=600,
         height=500,
-        title='Centroid Displacement Field (Lloyd Vectors)',
-        xlabel=f'Dimension {x_dim}',
-        ylabel=f'Dimension {y_dim}',
+        title="Centroid Displacement Field (Lloyd Vectors)",
+        xlabel=f"Dimension {x_dim}",
+        ylabel=f"Dimension {y_dim}",
     )
-
-    return vector_field
 
 
 def build_ricci_scalar_distribution(
@@ -205,10 +199,10 @@ def build_ricci_scalar_distribution(
         hist = hv.Histogram(np.histogram(ricci_finite, bins=50)).opts(
             width=600,
             height=400,
-            title='Ricci Scalar Distribution',
-            xlabel='Ricci Scalar R',
-            ylabel='Count',
-            color='#4c78a8',
+            title="Ricci Scalar Distribution",
+            xlabel="Ricci Scalar R",
+            ylabel="Count",
+            color="#4c78a8",
         )
     else:
         # Create logarithmic bins for absolute values
@@ -221,10 +215,10 @@ def build_ricci_scalar_distribution(
         hist = hv.Histogram(np.histogram(ricci_abs, bins=log_bins)).opts(
             width=600,
             height=400,
-            title='Ricci Scalar Distribution (|R|)',
-            xlabel='|Ricci Scalar R|',
-            ylabel='Count',
-            color='#4c78a8',
+            title="Ricci Scalar Distribution (|R|)",
+            xlabel="|Ricci Scalar R|",
+            ylabel="Count",
+            color="#4c78a8",
             logx=True,  # Logarithmic x-axis
         )
 
@@ -253,27 +247,27 @@ def build_geodesic_distance_scatter(
         return hv.Text(0, 0, "No valid distances").opts(title="Geodesic vs Euclidean Distances")
 
     data = pd.DataFrame({
-        'euclidean': euc,
-        'geodesic': geo,
+        "euclidean": euc,
+        "geodesic": geo,
     })
 
-    scatter = hv.Scatter(data, 'euclidean', 'geodesic').opts(
-        color='#4c78a8',
+    scatter = hv.Scatter(data, "euclidean", "geodesic").opts(
+        color="#4c78a8",
         size=3,
         alpha=0.5,
         width=600,
         height=500,
-        title='Geodesic vs Euclidean Distances',
-        xlabel='Euclidean Distance',
-        ylabel='Geodesic Distance',
+        title="Geodesic vs Euclidean Distances",
+        xlabel="Euclidean Distance",
+        ylabel="Geodesic Distance",
     )
 
     # Add diagonal reference line (geodesic = euclidean)
     max_dist = max(euc.max(), geo.max())
     min_dist = min(euc.min(), geo.min())
     diagonal = hv.Curve([(min_dist, min_dist), (max_dist, max_dist)]).opts(
-        color='red',
-        line_dash='dashed',
+        color="red",
+        line_dash="dashed",
         line_width=2,
     )
 
@@ -299,7 +293,9 @@ def build_higgs_action_summary(
     min_field = float(observables.scalar_field.min())
     max_field = float(observables.scalar_field.max())
     mean_volume = float(observables.cell_volumes.mean())
-    gravity_term_str = f"{observables.gravity_term:.6e}" if observables.gravity_term is not None else "N/A"
+    gravity_term_str = (
+        f"{observables.gravity_term:.6e}" if observables.gravity_term is not None else "N/A"
+    )
 
     action_md = (
         "### Higgs Action Summary\n\n"
@@ -360,23 +356,21 @@ def build_volume_vs_curvature_scatter(
         return hv.Text(0, 0, "No valid data").opts(title="Cell Volume vs Curvature")
 
     data = pd.DataFrame({
-        'volume': vols,
-        'ricci': ricci,
+        "volume": vols,
+        "ricci": ricci,
     })
 
-    scatter = hv.Scatter(data, 'volume', 'ricci').opts(
-        color='#e15759',
+    return hv.Scatter(data, "volume", "ricci").opts(
+        color="#e15759",
         size=4,
         alpha=0.6,
         width=600,
         height=500,
-        title='Cell Volume vs Ricci Scalar',
-        xlabel='Cell Volume',
-        ylabel='Ricci Scalar R',
+        title="Cell Volume vs Ricci Scalar",
+        xlabel="Cell Volume",
+        ylabel="Ricci Scalar R",
         logx=True,  # Often volumes span orders of magnitude
     )
-
-    return scatter
 
 
 def build_scalar_field_map(
@@ -406,24 +400,22 @@ def build_scalar_field_map(
         return hv.Text(0, 0, "No alive walkers").opts(title="Scalar Field Configuration")
 
     data = pd.DataFrame({
-        f'dim_{x_dim}': pos_alive[:, x_dim],
-        f'dim_{y_dim}': pos_alive[:, y_dim],
-        'phi': field_alive,
+        f"dim_{x_dim}": pos_alive[:, x_dim],
+        f"dim_{y_dim}": pos_alive[:, y_dim],
+        "phi": field_alive,
     })
 
-    points = hv.Points(data, [f'dim_{x_dim}', f'dim_{y_dim}'], 'phi').opts(
-        color='phi',
-        cmap='coolwarm',
+    return hv.Points(data, [f"dim_{x_dim}", f"dim_{y_dim}"], "phi").opts(
+        color="phi",
+        cmap="coolwarm",
         size=5,
         colorbar=True,
         width=600,
         height=500,
-        title='Higgs Field φ Configuration',
-        xlabel=f'Dimension {x_dim}',
-        ylabel=f'Dimension {y_dim}',
+        title="Higgs Field φ Configuration",
+        xlabel=f"Dimension {x_dim}",
+        ylabel=f"Dimension {y_dim}",
     )
-
-    return points
 
 
 def build_metric_eigenvalues_distribution(
@@ -459,23 +451,21 @@ def build_metric_eigenvalues_distribution(
         if len(eigs_finite) > 0:
             hist = hv.Histogram(np.histogram(np.log10(eigs_finite), bins=50)).opts(
                 alpha=0.6,
-                color=hv.Cycle('Category10').values[i % 10],
+                color=hv.Cycle("Category10").values[i % 10],
             )
             histograms.append(hist)
 
     if not histograms:
         return hv.Text(0, 0, "No finite eigenvalues").opts(title="Metric Eigenvalue Distribution")
 
-    overlay = hv.Overlay(histograms).opts(
+    return hv.Overlay(histograms).opts(
         width=600,
         height=400,
-        title='Metric Eigenvalue Distribution (log scale)',
-        xlabel='log₁₀(Eigenvalue)',
-        ylabel='Count',
+        title="Metric Eigenvalue Distribution (log scale)",
+        xlabel="log₁₀(Eigenvalue)",
+        ylabel="Count",
         show_legend=True,
     )
-
-    return overlay
 
 
 def build_all_higgs_plots(
@@ -496,19 +486,49 @@ def build_all_higgs_plots(
         Dictionary of plot names to HoloViews objects
     """
     # Convert tensors to numpy
-    centroid_np = observables.centroid_vectors.cpu().numpy() if hasattr(observables.centroid_vectors, 'cpu') else observables.centroid_vectors
-    cell_volumes_np = observables.cell_volumes.cpu().numpy() if hasattr(observables.cell_volumes, 'cpu') else observables.cell_volumes
-    scalar_field_np = observables.scalar_field.cpu().numpy() if hasattr(observables.scalar_field, 'cpu') else observables.scalar_field
-    alive_np = observables.alive.cpu().numpy() if hasattr(observables.alive, 'cpu') else observables.alive
-    metric_np = observables.metric_tensors.cpu().numpy() if hasattr(observables.metric_tensors, 'cpu') else observables.metric_tensors
+    centroid_np = (
+        observables.centroid_vectors.cpu().numpy()
+        if hasattr(observables.centroid_vectors, "cpu")
+        else observables.centroid_vectors
+    )
+    cell_volumes_np = (
+        observables.cell_volumes.cpu().numpy()
+        if hasattr(observables.cell_volumes, "cpu")
+        else observables.cell_volumes
+    )
+    scalar_field_np = (
+        observables.scalar_field.cpu().numpy()
+        if hasattr(observables.scalar_field, "cpu")
+        else observables.scalar_field
+    )
+    alive_np = (
+        observables.alive.cpu().numpy() if hasattr(observables.alive, "cpu") else observables.alive
+    )
+    metric_np = (
+        observables.metric_tensors.cpu().numpy()
+        if hasattr(observables.metric_tensors, "cpu")
+        else observables.metric_tensors
+    )
 
     ricci_np = None
     if observables.ricci_scalars is not None:
-        ricci_np = observables.ricci_scalars.cpu().numpy() if hasattr(observables.ricci_scalars, 'cpu') else observables.ricci_scalars
+        ricci_np = (
+            observables.ricci_scalars.cpu().numpy()
+            if hasattr(observables.ricci_scalars, "cpu")
+            else observables.ricci_scalars
+        )
 
     # Compute Euclidean distances for comparison
-    edge_index_np = observables.edge_index.cpu().numpy() if hasattr(observables.edge_index, 'cpu') else observables.edge_index
-    geo_dist_np = observables.geodesic_distances.cpu().numpy() if hasattr(observables.geodesic_distances, 'cpu') else observables.geodesic_distances
+    edge_index_np = (
+        observables.edge_index.cpu().numpy()
+        if hasattr(observables.edge_index, "cpu")
+        else observables.edge_index
+    )
+    geo_dist_np = (
+        observables.geodesic_distances.cpu().numpy()
+        if hasattr(observables.geodesic_distances, "cpu")
+        else observables.geodesic_distances
+    )
 
     if edge_index_np.shape[1] > 0:
         row, col = edge_index_np[0], edge_index_np[1]
@@ -522,9 +542,15 @@ def build_all_higgs_plots(
         "metric_tensor_heatmap": build_metric_tensor_heatmap(
             positions, metric_np, alive_np, metric_component, spatial_dims
         ),
-        "centroid_vector_field": build_centroid_vector_field(positions, centroid_np, alive_np, spatial_dims),
-        "scalar_field_map": build_scalar_field_map(positions, scalar_field_np, alive_np, spatial_dims),
-        "metric_eigenvalues_distribution": build_metric_eigenvalues_distribution(metric_np, alive_np),
+        "centroid_vector_field": build_centroid_vector_field(
+            positions, centroid_np, alive_np, spatial_dims
+        ),
+        "scalar_field_map": build_scalar_field_map(
+            positions, scalar_field_np, alive_np, spatial_dims
+        ),
+        "metric_eigenvalues_distribution": build_metric_eigenvalues_distribution(
+            metric_np, alive_np
+        ),
     }
 
     if len(euc_dist) > 0 and len(geo_dist_np) > 0:
@@ -532,6 +558,8 @@ def build_all_higgs_plots(
 
     if ricci_np is not None:
         plots["ricci_scalar_distribution"] = build_ricci_scalar_distribution(ricci_np, alive_np)
-        plots["volume_vs_curvature_scatter"] = build_volume_vs_curvature_scatter(cell_volumes_np, ricci_np, alive_np)
+        plots["volume_vs_curvature_scatter"] = build_volume_vs_curvature_scatter(
+            cell_volumes_np, ricci_np, alive_np
+        )
 
     return plots

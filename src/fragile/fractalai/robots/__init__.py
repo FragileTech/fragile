@@ -1,8 +1,13 @@
 """Fractal gas implementation for robotics (DM Control)."""
 
-from fragile.fractalai.robots.dm_control_env import DMControlEnv, DMControlState, VectorizedDMControlEnv
+from fragile.fractalai.robots.dm_control_env import (
+    DMControlEnv,
+    DMControlState,
+    VectorizedDMControlEnv,
+)
 from fragile.fractalai.robots.robotic_gas import RoboticFractalGas
 from fragile.fractalai.robots.robotic_history import RoboticHistory
+
 
 __all__ = [
     "DMControlEnv",
@@ -23,9 +28,9 @@ def get_dashboard_components():
         ImportError: If panel or holoviews are not installed
     """
     from fragile.fractalai.robots.dashboard import (
+        create_app,
         RoboticGasConfigPanel,
         RoboticGasVisualizer,
-        create_app,
     )
 
     return RoboticGasConfigPanel, RoboticGasVisualizer, create_app

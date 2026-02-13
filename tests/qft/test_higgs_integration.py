@@ -7,9 +7,9 @@ import pytest
 import torch
 
 from fragile.fractalai.qft.higgs_observables import (
+    compute_higgs_observables,
     HiggsConfig,
     HiggsObservables,
-    compute_higgs_observables,
 )
 from fragile.fractalai.qft.higgs_plotting import build_all_higgs_plots
 
@@ -244,15 +244,14 @@ def test_metric_tensor_properties():
         metric = metric_tensors[i]
         # Metric should be symmetric: g_ij = g_ji
         np.testing.assert_allclose(
-            metric,
-            metric.T,
-            rtol=1e-5,
-            err_msg=f"Metric tensor {i} is not symmetric"
+            metric, metric.T, rtol=1e-5, err_msg=f"Metric tensor {i} is not symmetric"
         )
 
         # Metric should have positive eigenvalues (positive definite)
         eigenvalues = np.linalg.eigvalsh(metric)
-        assert np.all(eigenvalues > 0), f"Metric tensor {i} has non-positive eigenvalues: {eigenvalues}"
+        assert np.all(
+            eigenvalues > 0
+        ), f"Metric tensor {i} has non-positive eigenvalues: {eigenvalues}"
 
 
 if __name__ == "__main__":

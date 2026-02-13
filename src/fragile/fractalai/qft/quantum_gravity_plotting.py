@@ -6,12 +6,13 @@ analyses computed from emergent spacetime geometry.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 import holoviews as hv
 import numpy as np
 import pandas as pd
 import panel as pn
+
 
 if TYPE_CHECKING:
     from fragile.fractalai.qft.quantum_gravity import QuantumGravityObservables
@@ -36,24 +37,22 @@ def build_regge_action_density_heatmap(
         return hv.Text(0, 0, "No alive walkers").opts(title="Regge Action Density")
 
     data = pd.DataFrame({
-        'x': positions[alive_mask, x_dim],
-        'y': positions[alive_mask, y_dim],
-        'action_density': action_density[alive_mask],
+        "x": positions[alive_mask, x_dim],
+        "y": positions[alive_mask, y_dim],
+        "action_density": action_density[alive_mask],
     })
 
-    points = hv.Points(data, ['x', 'y'], 'action_density').opts(
-        color='action_density',
-        cmap='coolwarm',
+    return hv.Points(data, ["x", "y"], "action_density").opts(
+        color="action_density",
+        cmap="coolwarm",
         size=5,
         colorbar=True,
         width=600,
         height=500,
-        title='Regge Action Density (R * Vol)',
-        xlabel=f'Dimension {x_dim}',
-        ylabel=f'Dimension {y_dim}',
+        title="Regge Action Density (R * Vol)",
+        xlabel=f"Dimension {x_dim}",
+        ylabel=f"Dimension {y_dim}",
     )
-
-    return points
 
 
 def build_deficit_angle_distribution(
@@ -69,16 +68,14 @@ def build_deficit_angle_distribution(
     if len(finite_angles) == 0:
         return hv.Text(0, 0, "No finite deficit angles").opts(title="Deficit Angle Distribution")
 
-    hist = hv.Histogram(np.histogram(finite_angles, bins=50)).opts(
+    return hv.Histogram(np.histogram(finite_angles, bins=50)).opts(
         width=600,
         height=400,
-        title='Deficit Angle Distribution',
-        xlabel='Deficit Angle δ',
-        ylabel='Count',
-        color='#4c78a8',
+        title="Deficit Angle Distribution",
+        xlabel="Deficit Angle δ",
+        ylabel="Count",
+        color="#4c78a8",
     )
-
-    return hist
 
 
 # =============================================================================
@@ -105,24 +102,22 @@ def build_ricci_landscape(
         return hv.Text(0, 0, "No valid Ricci scalars").opts(title="Ricci Scalar Landscape")
 
     data = pd.DataFrame({
-        'x': positions[valid, x_dim],
-        'y': positions[valid, y_dim],
-        'ricci': ricci_scalars[valid],
+        "x": positions[valid, x_dim],
+        "y": positions[valid, y_dim],
+        "ricci": ricci_scalars[valid],
     })
 
-    points = hv.Points(data, ['x', 'y'], 'ricci').opts(
-        color='ricci',
-        cmap='RdBu_r',
+    return hv.Points(data, ["x", "y"], "ricci").opts(
+        color="ricci",
+        cmap="RdBu_r",
         size=5,
         colorbar=True,
         width=600,
         height=500,
-        title='Ricci Scalar Landscape R(x)',
-        xlabel=f'Dimension {x_dim}',
-        ylabel=f'Dimension {y_dim}',
+        title="Ricci Scalar Landscape R(x)",
+        xlabel=f"Dimension {x_dim}",
+        ylabel=f"Dimension {y_dim}",
     )
-
-    return points
 
 
 def build_action_decomposition(
@@ -133,26 +128,26 @@ def build_action_decomposition(
 ) -> pn.Column:
     """Bar chart showing action components."""
     components = {
-        'Kinetic': kinetic,
-        'Potential': potential,
-        'Total': total,
+        "Kinetic": kinetic,
+        "Potential": potential,
+        "Total": total,
     }
 
     if gravity is not None:
-        components['Gravity'] = gravity
+        components["Gravity"] = gravity
 
     data = pd.DataFrame({
-        'Component': list(components.keys()),
-        'Value': list(components.values()),
+        "Component": list(components.keys()),
+        "Value": list(components.values()),
     })
 
-    bars = hv.Bars(data, 'Component', 'Value').opts(
+    bars = hv.Bars(data, "Component", "Value").opts(
         width=600,
         height=400,
-        title='Einstein-Hilbert Action Components',
-        ylabel='Action',
-        color='Component',
-        cmap='Category10',
+        title="Einstein-Hilbert Action Components",
+        ylabel="Action",
+        color="Component",
+        cmap="Category10",
         show_legend=False,
     )
 
@@ -169,7 +164,7 @@ def build_adm_energy_summary(
     mean_density: float,
 ) -> str:
     """Summary of ADM energy."""
-    md = f"""
+    return f"""
 ### ADM Energy (Hamiltonian Formalism)
 
 **Total ADM Mass:** {adm_mass:.6e}
@@ -180,7 +175,6 @@ The ADM (Arnowitt-Deser-Misner) mass is the total gravitational energy
 from the spatial hypersurface. In the emergent geometry, this corresponds
 to the integrated Ricci scalar curvature.
 """
-    return md
 
 
 def build_energy_density_distribution(
@@ -197,18 +191,18 @@ def build_energy_density_distribution(
     finite = density_alive[np.isfinite(density_alive)]
 
     if len(finite) == 0:
-        return hv.Text(0, 0, "No finite energy densities").opts(title="Energy Density Distribution")
+        return hv.Text(0, 0, "No finite energy densities").opts(
+            title="Energy Density Distribution"
+        )
 
-    hist = hv.Histogram(np.histogram(finite, bins=50)).opts(
+    return hv.Histogram(np.histogram(finite, bins=50)).opts(
         width=600,
         height=400,
-        title='ADM Energy Density Distribution',
-        xlabel='Energy Density',
-        ylabel='Count',
-        color='#e15759',
+        title="ADM Energy Density Distribution",
+        xlabel="Energy Density",
+        ylabel="Count",
+        color="#e15759",
     )
-
-    return hist
 
 
 # =============================================================================
@@ -235,31 +229,33 @@ def build_spectral_dimension_curve(
         return hv.Text(0, 0, "No valid data").opts(title="Spectral Dimension")
 
     data = pd.DataFrame({
-        'sigma': sigma_valid,
-        'spectral_dim': dim_valid,
+        "sigma": sigma_valid,
+        "spectral_dim": dim_valid,
     })
 
-    curve = hv.Curve(data, 'sigma', 'spectral_dim').opts(
+    curve = hv.Curve(data, "sigma", "spectral_dim").opts(
         width=600,
         height=500,
-        title='Spectral Dimension d_s(σ)',
-        xlabel='Diffusion Time σ',
-        ylabel='Spectral Dimension d_s',
-        color='#4c78a8',
+        title="Spectral Dimension d_s(σ)",
+        xlabel="Diffusion Time σ",
+        ylabel="Spectral Dimension d_s",
+        color="#4c78a8",
         line_width=2,
         logx=True,
     )
 
     # Add horizontal line for spatial dimension
     hline = hv.HLine(spatial_dims).opts(
-        color='red',
-        line_dash='dashed',
+        color="red",
+        line_dash="dashed",
         line_width=1,
     )
 
     # Add annotation for Planck-scale value
-    annotation = hv.Text(sigma_valid[len(sigma_valid) // 10], planck_value, f'd_s(Planck) = {planck_value:.2f}').opts(
-        color='green',
+    annotation = hv.Text(
+        sigma_valid[len(sigma_valid) // 10], planck_value, f"d_s(Planck) = {planck_value:.2f}"
+    ).opts(
+        color="green",
     )
 
     return curve * hline * annotation
@@ -281,23 +277,21 @@ def build_heat_kernel_trace(
         return hv.Text(0, 0, "No valid data").opts(title="Heat Kernel Trace")
 
     data = pd.DataFrame({
-        'sigma': sigma_valid,
-        'trace': trace_valid,
+        "sigma": sigma_valid,
+        "trace": trace_valid,
     })
 
-    curve = hv.Curve(data, 'sigma', 'trace').opts(
+    return hv.Curve(data, "sigma", "trace").opts(
         width=600,
         height=400,
-        title='Heat Kernel Return Probability P(σ)',
-        xlabel='Diffusion Time σ',
-        ylabel='Trace P(σ)',
-        color='#f28e2b',
+        title="Heat Kernel Return Probability P(σ)",
+        xlabel="Diffusion Time σ",
+        ylabel="Trace P(σ)",
+        color="#f28e2b",
         line_width=2,
         logx=True,
         logy=True,
     )
-
-    return curve
 
 
 # =============================================================================
@@ -325,29 +319,29 @@ def build_volume_scaling_plot(
     log_N = np.log(counts_valid.astype(float))
 
     data = pd.DataFrame({
-        'log_r': log_r,
-        'log_N': log_N,
+        "log_r": log_r,
+        "log_N": log_N,
     })
 
-    scatter = hv.Scatter(data, 'log_r', 'log_N').opts(
+    scatter = hv.Scatter(data, "log_r", "log_N").opts(
         width=600,
         height=500,
-        title=f'Volume Scaling: d_H = {hausdorff_dim:.2f}',
-        xlabel='log(r)',
-        ylabel='log(N(r))',
-        color='#4c78a8',
+        title=f"Volume Scaling: d_H = {hausdorff_dim:.2f}",
+        xlabel="log(r)",
+        ylabel="log(N(r))",
+        color="#4c78a8",
         size=6,
     )
 
     # Fit line: log(N) = d_H * log(r) + const
     fit_line_data = pd.DataFrame({
-        'log_r': log_r,
-        'log_N_fit': hausdorff_dim * log_r + log_N[0] - hausdorff_dim * log_r[0],
+        "log_r": log_r,
+        "log_N_fit": hausdorff_dim * log_r + log_N[0] - hausdorff_dim * log_r[0],
     })
 
-    fit_line = hv.Curve(fit_line_data, 'log_r', 'log_N_fit').opts(
-        color='red',
-        line_dash='dashed',
+    fit_line = hv.Curve(fit_line_data, "log_r", "log_N_fit").opts(
+        color="red",
+        line_dash="dashed",
         line_width=2,
     )
 
@@ -375,24 +369,22 @@ def build_local_hausdorff_heatmap(
     pos_alive = positions[alive_mask]
 
     data = pd.DataFrame({
-        'x': pos_alive[:, x_dim],
-        'y': pos_alive[:, y_dim],
-        'local_dim': local_dim,
+        "x": pos_alive[:, x_dim],
+        "y": pos_alive[:, y_dim],
+        "local_dim": local_dim,
     })
 
-    points = hv.Points(data, ['x', 'y'], 'local_dim').opts(
-        color='local_dim',
-        cmap='viridis',
+    return hv.Points(data, ["x", "y"], "local_dim").opts(
+        color="local_dim",
+        cmap="viridis",
         size=5,
         colorbar=True,
         width=600,
         height=500,
-        title='Local Hausdorff Dimension',
-        xlabel=f'Dimension {x_dim}',
-        ylabel=f'Dimension {y_dim}',
+        title="Local Hausdorff Dimension",
+        xlabel=f"Dimension {x_dim}",
+        ylabel=f"Dimension {y_dim}",
     )
-
-    return points
 
 
 # =============================================================================
@@ -418,19 +410,19 @@ def build_causal_diamond(
 
     # Create node dataframe
     nodes = pd.DataFrame({
-        'x': pos_alive[:, x_dim],
-        'y': pos_alive[:, y_dim],
-        'index': np.arange(len(pos_alive)),
+        "x": pos_alive[:, x_dim],
+        "y": pos_alive[:, y_dim],
+        "index": np.arange(len(pos_alive)),
     })
 
-    points = hv.Points(nodes, ['x', 'y']).opts(
-        color='black',
+    points = hv.Points(nodes, ["x", "y"]).opts(
+        color="black",
         size=4,
         width=600,
         height=500,
-        title='Causal Structure',
-        xlabel=f'Dimension {x_dim}',
-        ylabel=f'Dimension {y_dim}',
+        title="Causal Structure",
+        xlabel=f"Dimension {x_dim}",
+        ylabel=f"Dimension {y_dim}",
     )
 
     summary_md = f"""
@@ -455,7 +447,7 @@ def build_causal_order_violations(
     total_edges: int,
 ) -> str:
     """Summary of causality violations."""
-    md = f"""
+    return f"""
 ### Causal Order Violations
 
 **Violations detected:** {violation_count}
@@ -467,7 +459,6 @@ def build_causal_order_violations(
 Causal violations indicate timelike edges going backward in time,
 which would violate causality in a physical spacetime.
 """
-    return md
 
 
 # =============================================================================
@@ -482,7 +473,7 @@ def build_holographic_summary(
     area_law_coeff: float,
 ) -> str:
     """Summary of holographic entropy."""
-    md = f"""
+    return f"""
 ### Holographic Entropy (Bekenstein-Hawking)
 
 **Entropy:** S = {entropy:.6e}
@@ -498,7 +489,6 @@ area rather than volume: S ∝ A / (4G ℏ)
 
 This is the Bekenstein-Hawking formula for black hole entropy.
 """
-    return md
 
 
 # =============================================================================
@@ -518,16 +508,14 @@ def build_spin_distribution(
     if len(finite_spins) == 0:
         return hv.Text(0, 0, "No finite spins").opts(title="Spin Distribution")
 
-    hist = hv.Histogram(np.histogram(finite_spins, bins=50)).opts(
+    return hv.Histogram(np.histogram(finite_spins, bins=50)).opts(
         width=600,
         height=400,
-        title='Spin Network: SU(2) Spin Distribution',
-        xlabel='Spin j',
-        ylabel='Count',
-        color='#9467bd',
+        title="Spin Network: SU(2) Spin Distribution",
+        xlabel="Spin j",
+        ylabel="Count",
+        color="#9467bd",
     )
-
-    return hist
 
 
 def build_spin_network_summary(
@@ -537,7 +525,7 @@ def build_spin_network_summary(
     mean_volume: float,
 ) -> str:
     """Summary of spin network state."""
-    md = f"""
+    return f"""
 ### Spin Network State (Loop Quantum Gravity)
 
 **Edges (links):** {n_edges}
@@ -553,7 +541,6 @@ In Loop Quantum Gravity, spacetime is represented as a spin network:
 - Vertices have quantized volumes
 - The graph encodes the quantum geometry
 """
-    return md
 
 
 # =============================================================================
@@ -580,24 +567,22 @@ def build_expansion_field(
         return hv.Text(0, 0, "No valid expansion data").opts(title="Raychaudhuri Expansion")
 
     data = pd.DataFrame({
-        'x': positions[valid, x_dim],
-        'y': positions[valid, y_dim],
-        'theta': expansion_scalar[valid],
+        "x": positions[valid, x_dim],
+        "y": positions[valid, y_dim],
+        "theta": expansion_scalar[valid],
     })
 
-    points = hv.Points(data, ['x', 'y'], 'theta').opts(
-        color='theta',
-        cmap='RdBu_r',
+    return hv.Points(data, ["x", "y"], "theta").opts(
+        color="theta",
+        cmap="RdBu_r",
         size=5,
         colorbar=True,
         width=600,
         height=500,
-        title='Raychaudhuri Expansion θ = (1/V) dV/dt',
-        xlabel=f'Dimension {x_dim}',
-        ylabel=f'Dimension {y_dim}',
+        title="Raychaudhuri Expansion θ = (1/V) dV/dt",
+        xlabel=f"Dimension {x_dim}",
+        ylabel=f"Dimension {y_dim}",
     )
-
-    return points
 
 
 def build_convergence_regions(
@@ -607,7 +592,7 @@ def build_convergence_regions(
     """Highlight singularity-forming regions."""
     fraction = n_converging / max(n_total, 1)
 
-    md = f"""
+    return f"""
 ### Raychaudhuri Singularity Prediction
 
 **Converging regions (θ < 0):** {n_converging} / {n_total} ({100 * fraction:.1f}%)
@@ -617,7 +602,6 @@ Regions with negative expansion θ < 0 are focusing (contracting).
 The Raychaudhuri equation predicts that continued focusing leads to
 singularities (Hawking-Penrose singularity theorems).
 """
-    return md
 
 
 # =============================================================================
@@ -639,16 +623,14 @@ def build_tidal_eigenvalues_violin(
     if len(finite_eigs) == 0:
         return hv.Text(0, 0, "No finite eigenvalues").opts(title="Tidal Eigenvalues")
 
-    dist = hv.Distribution(finite_eigs).opts(
+    return hv.Distribution(finite_eigs).opts(
         width=600,
         height=400,
-        title='Tidal Tensor Eigenvalue Distribution',
-        xlabel='Eigenvalue (Stretch/Squeeze)',
-        ylabel='Density',
-        color='#17becf',
+        title="Tidal Tensor Eigenvalue Distribution",
+        xlabel="Eigenvalue (Stretch/Squeeze)",
+        ylabel="Density",
+        color="#17becf",
     )
-
-    return dist
 
 
 def build_tidal_summary(
@@ -657,7 +639,7 @@ def build_tidal_summary(
     max_tidal: float,
 ) -> str:
     """Summary of geodesic deviation."""
-    md = f"""
+    return f"""
 ### Geodesic Deviation (Tidal Forces)
 
 **Mean Stretching Eigenvalue:** {mean_stretch:.6e}
@@ -671,7 +653,6 @@ curvature. This is the operational definition of the Riemann tensor.
 
 Positive eigenvalues = stretching, Negative eigenvalues = squeezing.
 """
-    return md
 
 
 # =============================================================================
@@ -709,31 +690,91 @@ def build_all_gravity_plots(
     - "summary_panel"
     """
     # Convert tensors to numpy
-    action_density_np = observables.regge_action_density.cpu().numpy() if hasattr(observables.regge_action_density, 'cpu') else observables.regge_action_density
-    deficit_angles_np = observables.deficit_angles.cpu().numpy() if hasattr(observables.deficit_angles, 'cpu') else observables.deficit_angles
-    ricci_np = observables.ricci_scalars.cpu().numpy() if hasattr(observables.ricci_scalars, 'cpu') else observables.ricci_scalars
-    adm_density_np = observables.adm_energy_density.cpu().numpy() if hasattr(observables.adm_energy_density, 'cpu') else observables.adm_energy_density
-    spectral_curve_np = observables.spectral_dimension_curve.cpu().numpy() if hasattr(observables.spectral_dimension_curve, 'cpu') else observables.spectral_dimension_curve
-    heat_kernel_np = observables.heat_kernel_trace.cpu().numpy() if hasattr(observables.heat_kernel_trace, 'cpu') else observables.heat_kernel_trace
+    action_density_np = (
+        observables.regge_action_density.cpu().numpy()
+        if hasattr(observables.regge_action_density, "cpu")
+        else observables.regge_action_density
+    )
+    deficit_angles_np = (
+        observables.deficit_angles.cpu().numpy()
+        if hasattr(observables.deficit_angles, "cpu")
+        else observables.deficit_angles
+    )
+    ricci_np = (
+        observables.ricci_scalars.cpu().numpy()
+        if hasattr(observables.ricci_scalars, "cpu")
+        else observables.ricci_scalars
+    )
+    adm_density_np = (
+        observables.adm_energy_density.cpu().numpy()
+        if hasattr(observables.adm_energy_density, "cpu")
+        else observables.adm_energy_density
+    )
+    spectral_curve_np = (
+        observables.spectral_dimension_curve.cpu().numpy()
+        if hasattr(observables.spectral_dimension_curve, "cpu")
+        else observables.spectral_dimension_curve
+    )
+    heat_kernel_np = (
+        observables.heat_kernel_trace.cpu().numpy()
+        if hasattr(observables.heat_kernel_trace, "cpu")
+        else observables.heat_kernel_trace
+    )
 
     radii_np, counts_np = observables.volume_scaling_data
-    radii_np = radii_np.cpu().numpy() if hasattr(radii_np, 'cpu') else radii_np
-    counts_np = counts_np.cpu().numpy() if hasattr(counts_np, 'cpu') else counts_np
+    radii_np = radii_np.cpu().numpy() if hasattr(radii_np, "cpu") else radii_np
+    counts_np = counts_np.cpu().numpy() if hasattr(counts_np, "cpu") else counts_np
 
-    local_hausdorff_np = observables.local_hausdorff.cpu().numpy() if hasattr(observables.local_hausdorff, 'cpu') else observables.local_hausdorff
-    spacelike_np = observables.spacelike_edges.cpu().numpy() if hasattr(observables.spacelike_edges, 'cpu') else observables.spacelike_edges
-    timelike_np = observables.timelike_edges.cpu().numpy() if hasattr(observables.timelike_edges, 'cpu') else observables.timelike_edges
-    edge_spins_np = observables.edge_spins.cpu().numpy() if hasattr(observables.edge_spins, 'cpu') else observables.edge_spins
-    vertex_vols_np = observables.vertex_quantum_volumes.cpu().numpy() if hasattr(observables.vertex_quantum_volumes, 'cpu') else observables.vertex_quantum_volumes
-    expansion_np = observables.expansion_scalar.cpu().numpy() if hasattr(observables.expansion_scalar, 'cpu') else observables.expansion_scalar
-    convergence_np = observables.convergence_regions.cpu().numpy() if hasattr(observables.convergence_regions, 'cpu') else observables.convergence_regions
-    tidal_eigs_np = observables.tidal_eigenvalues.cpu().numpy() if hasattr(observables.tidal_eigenvalues, 'cpu') else observables.tidal_eigenvalues
+    local_hausdorff_np = (
+        observables.local_hausdorff.cpu().numpy()
+        if hasattr(observables.local_hausdorff, "cpu")
+        else observables.local_hausdorff
+    )
+    spacelike_np = (
+        observables.spacelike_edges.cpu().numpy()
+        if hasattr(observables.spacelike_edges, "cpu")
+        else observables.spacelike_edges
+    )
+    timelike_np = (
+        observables.timelike_edges.cpu().numpy()
+        if hasattr(observables.timelike_edges, "cpu")
+        else observables.timelike_edges
+    )
+    edge_spins_np = (
+        observables.edge_spins.cpu().numpy()
+        if hasattr(observables.edge_spins, "cpu")
+        else observables.edge_spins
+    )
+    vertex_vols_np = (
+        observables.vertex_quantum_volumes.cpu().numpy()
+        if hasattr(observables.vertex_quantum_volumes, "cpu")
+        else observables.vertex_quantum_volumes
+    )
+    expansion_np = (
+        observables.expansion_scalar.cpu().numpy()
+        if hasattr(observables.expansion_scalar, "cpu")
+        else observables.expansion_scalar
+    )
+    convergence_np = (
+        observables.convergence_regions.cpu().numpy()
+        if hasattr(observables.convergence_regions, "cpu")
+        else observables.convergence_regions
+    )
+    tidal_eigs_np = (
+        observables.tidal_eigenvalues.cpu().numpy()
+        if hasattr(observables.tidal_eigenvalues, "cpu")
+        else observables.tidal_eigenvalues
+    )
 
     # Create alive mask (assume all positions are alive)
     alive_np = np.ones(len(positions), dtype=bool)
 
     # Compute sigma values for spectral dimension
-    sigma_values_np = np.logspace(-3, np.log10(observables.config.max_diffusion_time), observables.config.diffusion_time_steps)
+    sigma_values_np = np.logspace(
+        -3,
+        np.log10(observables.config.max_diffusion_time),
+        observables.config.diffusion_time_steps,
+    )
 
     plots = {
         # 1. Regge Calculus
@@ -741,20 +782,17 @@ def build_all_gravity_plots(
             positions, action_density_np, alive_np, spatial_dims
         ),
         "deficit_angle_dist": build_deficit_angle_distribution(deficit_angles_np),
-
         # 2. Einstein-Hilbert
         "ricci_landscape": build_ricci_landscape(positions, ricci_np, alive_np, spatial_dims),
         "action_decomposition": build_action_decomposition(
             0.0, 0.0, None, observables.einstein_hilbert_action
         ),
-
         # 3. ADM Energy
         "adm_summary": build_adm_energy_summary(
             observables.adm_mass,
             adm_density_np.mean() if len(adm_density_np) > 0 else 0.0,
         ),
         "energy_density_dist": build_energy_density_distribution(adm_density_np, alive_np),
-
         # 4. Spectral Dimension
         "spectral_dimension_curve": build_spectral_dimension_curve(
             sigma_values_np,
@@ -763,7 +801,6 @@ def build_all_gravity_plots(
             observables.spatial_dims,
         ),
         "heat_kernel_trace": build_heat_kernel_trace(sigma_values_np, heat_kernel_np),
-
         # 5. Hausdorff Dimension
         "hausdorff_scaling": build_volume_scaling_plot(
             radii_np, counts_np, observables.hausdorff_dimension
@@ -771,16 +808,16 @@ def build_all_gravity_plots(
         "local_hausdorff_map": build_local_hausdorff_heatmap(
             positions, local_hausdorff_np, alive_np, spatial_dims
         ),
-
         # 6. Causal Structure
         "causal_diamond": build_causal_diamond(
             positions, spacelike_np, timelike_np, alive_np, spatial_dims
         ),
         "causal_violations": build_causal_order_violations(
             observables.causal_violations,
-            spacelike_np.shape[1] + timelike_np.shape[1] if spacelike_np.ndim == 2 and timelike_np.ndim == 2 else 0,
+            spacelike_np.shape[1] + timelike_np.shape[1]
+            if spacelike_np.ndim == 2 and timelike_np.ndim == 2
+            else 0,
         ),
-
         # 7. Holographic Entropy
         "holographic_summary": build_holographic_summary(
             observables.holographic_entropy,
@@ -788,7 +825,6 @@ def build_all_gravity_plots(
             observables.bulk_volume,
             observables.area_law_coefficient,
         ),
-
         # 8. Spin Network
         "spin_distribution": build_spin_distribution(edge_spins_np),
         "spin_network_summary": build_spin_network_summary(
@@ -797,14 +833,12 @@ def build_all_gravity_plots(
             edge_spins_np.mean() if len(edge_spins_np) > 0 else 0.0,
             vertex_vols_np.mean() if len(vertex_vols_np) > 0 else 0.0,
         ),
-
         # 9. Raychaudhuri Expansion
         "expansion_field": build_expansion_field(positions, expansion_np, alive_np, spatial_dims),
         "convergence_regions": build_convergence_regions(
             convergence_np.sum() if len(convergence_np) > 0 else 0,
             len(convergence_np),
         ),
-
         # 10. Geodesic Deviation
         "tidal_eigenvalues": build_tidal_eigenvalues_violin(tidal_eigs_np),
         "tidal_summary": build_tidal_summary(
@@ -860,17 +894,17 @@ def build_regge_action_evolution(
         return hv.Text(0, 0, "No time series data").opts(title="Regge Action Evolution")
 
     data = pd.DataFrame({
-        'frame': mc_frames,
-        'action': regge_action,
+        "frame": mc_frames,
+        "action": regge_action,
     })
 
-    return hv.Curve(data, 'frame', 'action').opts(
+    return hv.Curve(data, "frame", "action").opts(
         width=800,
         height=400,
-        title='Regge Action Evolution',
-        xlabel='MC Frame',
-        ylabel='Total Action S_Regge',
-        color='#4c78a8',
+        title="Regge Action Evolution",
+        xlabel="MC Frame",
+        ylabel="Total Action S_Regge",
+        color="#4c78a8",
         line_width=2,
     )
 
@@ -888,17 +922,17 @@ def build_adm_mass_evolution(
         return hv.Text(0, 0, "No time series data").opts(title="ADM Mass Evolution")
 
     data = pd.DataFrame({
-        'frame': mc_frames,
-        'mass': adm_mass,
+        "frame": mc_frames,
+        "mass": adm_mass,
     })
 
-    return hv.Curve(data, 'frame', 'mass').opts(
+    return hv.Curve(data, "frame", "mass").opts(
         width=800,
         height=400,
-        title='ADM Mass Evolution (Energy Conservation Check)',
-        xlabel='MC Frame',
-        ylabel='ADM Mass M',
-        color='#e15759',
+        title="ADM Mass Evolution (Energy Conservation Check)",
+        xlabel="MC Frame",
+        ylabel="ADM Mass M",
+        color="#e15759",
         line_width=2,
     )
 
@@ -918,35 +952,35 @@ def build_spectral_dimension_evolution(
         return hv.Text(0, 0, "No time series data").opts(title="Spectral Dimension Evolution")
 
     data_planck = pd.DataFrame({
-        'frame': mc_frames,
-        'spectral_dim': spectral_dim_planck,
-        'scale': 'Planck scale',
+        "frame": mc_frames,
+        "spectral_dim": spectral_dim_planck,
+        "scale": "Planck scale",
     })
 
     data_large = pd.DataFrame({
-        'frame': mc_frames,
-        'spectral_dim': spectral_dim_large,
-        'scale': 'Large scale',
+        "frame": mc_frames,
+        "spectral_dim": spectral_dim_large,
+        "scale": "Large scale",
     })
 
     data = pd.concat([data_planck, data_large])
 
     # Specify both spectral_dim and scale as value dimensions for groupby
-    curves = hv.Curve(data, 'frame', ['spectral_dim', 'scale']).groupby('scale').overlay()
+    curves = hv.Curve(data, "frame", ["spectral_dim", "scale"]).groupby("scale").overlay()
 
     # Add horizontal line for target spatial dimension
     hline = hv.HLine(target_spatial_dim).opts(
-        color='red',
-        line_dash='dashed',
+        color="red",
+        line_dash="dashed",
         line_width=1,
     )
 
     return (curves * hline).opts(
         width=800,
         height=400,
-        title='Spectral Dimension Evolution (Dimension Reduction)',
-        xlabel='MC Frame',
-        ylabel='Spectral Dimension d_s',
+        title="Spectral Dimension Evolution (Dimension Reduction)",
+        xlabel="MC Frame",
+        ylabel="Spectral Dimension d_s",
         show_legend=True,
     )
 
@@ -965,28 +999,28 @@ def build_hausdorff_dimension_evolution(
         return hv.Text(0, 0, "No time series data").opts(title="Hausdorff Dimension Evolution")
 
     data = pd.DataFrame({
-        'frame': mc_frames,
-        'hausdorff_dim': hausdorff_dim,
+        "frame": mc_frames,
+        "hausdorff_dim": hausdorff_dim,
     })
 
-    curve = hv.Curve(data, 'frame', 'hausdorff_dim').opts(
-        color='#59a14f',
+    curve = hv.Curve(data, "frame", "hausdorff_dim").opts(
+        color="#59a14f",
         line_width=2,
     )
 
     # Target dimension line
     hline = hv.HLine(target_spatial_dim).opts(
-        color='red',
-        line_dash='dashed',
+        color="red",
+        line_dash="dashed",
         line_width=1,
     )
 
     return (curve * hline).opts(
         width=800,
         height=400,
-        title='Hausdorff Dimension Evolution (Fractal → Manifold)',
-        xlabel='MC Frame',
-        ylabel='Hausdorff Dimension d_H',
+        title="Hausdorff Dimension Evolution (Fractal → Manifold)",
+        xlabel="MC Frame",
+        ylabel="Hausdorff Dimension d_H",
     )
 
 
@@ -1006,32 +1040,36 @@ def build_holographic_entropy_evolution(
         return hv.Text(0, 0, "No time series data").opts(title="Holographic Entropy Evolution")
 
     # Normalize both to [0, 1] for comparison
-    entropy_norm = (holographic_entropy - holographic_entropy.min()) / (holographic_entropy.max() - holographic_entropy.min() + 1e-10)
-    area_norm = (boundary_area - boundary_area.min()) / (boundary_area.max() - boundary_area.min() + 1e-10)
+    entropy_norm = (holographic_entropy - holographic_entropy.min()) / (
+        holographic_entropy.max() - holographic_entropy.min() + 1e-10
+    )
+    area_norm = (boundary_area - boundary_area.min()) / (
+        boundary_area.max() - boundary_area.min() + 1e-10
+    )
 
     data_entropy = pd.DataFrame({
-        'frame': mc_frames,
-        'value': entropy_norm,
-        'observable': 'Entropy S (normalized)',
+        "frame": mc_frames,
+        "value": entropy_norm,
+        "observable": "Entropy S (normalized)",
     })
 
     data_area = pd.DataFrame({
-        'frame': mc_frames,
-        'value': area_norm,
-        'observable': 'Boundary Area A (normalized)',
+        "frame": mc_frames,
+        "value": area_norm,
+        "observable": "Boundary Area A (normalized)",
     })
 
     data = pd.concat([data_entropy, data_area])
 
     # Specify both value and observable as value dimensions for groupby
-    curves = hv.Curve(data, 'frame', ['value', 'observable']).groupby('observable').overlay()
+    curves = hv.Curve(data, "frame", ["value", "observable"]).groupby("observable").overlay()
 
     return curves.opts(
         width=800,
         height=400,
-        title='Holographic Entropy Evolution (2nd Law)',
-        xlabel='MC Frame',
-        ylabel='Normalized Value',
+        title="Holographic Entropy Evolution (2nd Law)",
+        xlabel="MC Frame",
+        ylabel="Normalized Value",
         show_legend=True,
     )
 
@@ -1051,28 +1089,28 @@ def build_raychaudhuri_expansion_evolution(
         return hv.Text(0, 0, "No time series data").opts(title="Raychaudhuri Expansion Evolution")
 
     data_theta = pd.DataFrame({
-        'frame': mc_frames,
-        'expansion': expansion_mean,
+        "frame": mc_frames,
+        "expansion": expansion_mean,
     })
 
-    curve_theta = hv.Curve(data_theta, 'frame', 'expansion').opts(
-        color='#4c78a8',
+    curve_theta = hv.Curve(data_theta, "frame", "expansion").opts(
+        color="#4c78a8",
         line_width=2,
-        ylabel='Mean Expansion θ',
+        ylabel="Mean Expansion θ",
     )
 
     # Add zero line
     hline = hv.HLine(0).opts(
-        color='red',
-        line_dash='dashed',
+        color="red",
+        line_dash="dashed",
         line_width=1,
     )
 
     return (curve_theta * hline).opts(
         width=800,
         height=400,
-        title='Raychaudhuri Expansion Evolution (Singularity Predictor)',
-        xlabel='MC Frame',
+        title="Raychaudhuri Expansion Evolution (Singularity Predictor)",
+        xlabel="MC Frame",
     )
 
 
@@ -1086,28 +1124,28 @@ def build_causal_structure_evolution(
         return hv.Text(0, 0, "No time series data").opts(title="Causal Structure Evolution")
 
     data_space = pd.DataFrame({
-        'frame': mc_frames,
-        'count': n_spacelike,
-        'type': 'Spacelike edges',
+        "frame": mc_frames,
+        "count": n_spacelike,
+        "type": "Spacelike edges",
     })
 
     data_time = pd.DataFrame({
-        'frame': mc_frames,
-        'count': n_timelike,
-        'type': 'Timelike edges',
+        "frame": mc_frames,
+        "count": n_timelike,
+        "type": "Timelike edges",
     })
 
     data = pd.concat([data_space, data_time])
 
     # Specify both count and type as value dimensions for groupby
-    curves = hv.Curve(data, 'frame', ['count', 'type']).groupby('type').overlay()
+    curves = hv.Curve(data, "frame", ["count", "type"]).groupby("type").overlay()
 
     return curves.opts(
         width=800,
         height=400,
-        title='Causal Structure Evolution',
-        xlabel='MC Frame',
-        ylabel='Edge Count',
+        title="Causal Structure Evolution",
+        xlabel="MC Frame",
+        ylabel="Edge Count",
         show_legend=True,
     )
 
@@ -1126,28 +1164,28 @@ def build_spin_network_evolution(
     vol_norm = (mean_volume - mean_volume.min()) / (mean_volume.max() - mean_volume.min() + 1e-10)
 
     data_spin = pd.DataFrame({
-        'frame': mc_frames,
-        'value': spin_norm,
-        'observable': 'Mean Spin (normalized)',
+        "frame": mc_frames,
+        "value": spin_norm,
+        "observable": "Mean Spin (normalized)",
     })
 
     data_vol = pd.DataFrame({
-        'frame': mc_frames,
-        'value': vol_norm,
-        'observable': 'Mean Volume (normalized)',
+        "frame": mc_frames,
+        "value": vol_norm,
+        "observable": "Mean Volume (normalized)",
     })
 
     data = pd.concat([data_spin, data_vol])
 
     # Specify both value and observable as value dimensions for groupby
-    curves = hv.Curve(data, 'frame', ['value', 'observable']).groupby('observable').overlay()
+    curves = hv.Curve(data, "frame", ["value", "observable"]).groupby("observable").overlay()
 
     return curves.opts(
         width=800,
         height=400,
-        title='Spin Network Evolution',
-        xlabel='MC Frame',
-        ylabel='Normalized Value',
+        title="Spin Network Evolution",
+        xlabel="MC Frame",
+        ylabel="Normalized Value",
         show_legend=True,
     )
 
@@ -1162,28 +1200,28 @@ def build_tidal_strength_evolution(
         return hv.Text(0, 0, "No time series data").opts(title="Tidal Strength Evolution")
 
     data_mean = pd.DataFrame({
-        'frame': mc_frames,
-        'strength': tidal_mean,
-        'statistic': 'Mean',
+        "frame": mc_frames,
+        "strength": tidal_mean,
+        "statistic": "Mean",
     })
 
     data_max = pd.DataFrame({
-        'frame': mc_frames,
-        'strength': tidal_max,
-        'statistic': 'Maximum',
+        "frame": mc_frames,
+        "strength": tidal_max,
+        "statistic": "Maximum",
     })
 
     data = pd.concat([data_mean, data_max])
 
     # Specify both strength and statistic as value dimensions for groupby
-    curves = hv.Curve(data, 'frame', ['strength', 'statistic']).groupby('statistic').overlay()
+    curves = hv.Curve(data, "frame", ["strength", "statistic"]).groupby("statistic").overlay()
 
     return curves.opts(
         width=800,
         height=400,
-        title='Tidal Strength Evolution',
-        xlabel='MC Frame',
-        ylabel='Tidal Force Magnitude',
+        title="Tidal Strength Evolution",
+        xlabel="MC Frame",
+        ylabel="Tidal Force Magnitude",
         show_legend=True,
     )
 
@@ -1215,9 +1253,7 @@ def build_all_quantum_gravity_time_series_plots(
         "regge_action_evolution": build_regge_action_evolution(
             mc_frames, time_series.regge_action
         ),
-        "adm_mass_evolution": build_adm_mass_evolution(
-            mc_frames, time_series.adm_mass
-        ),
+        "adm_mass_evolution": build_adm_mass_evolution(mc_frames, time_series.adm_mass),
         "spectral_dimension_evolution": build_spectral_dimension_evolution(
             mc_frames,
             time_series.spectral_dimension_planck,
@@ -1261,8 +1297,12 @@ def build_all_quantum_gravity_time_series_plots(
         # Compute percent changes
         adm_change = 100 * (time_series.adm_mass[-1] / (time_series.adm_mass[0] + 1e-10) - 1)
         spectral_reduction = time_series.spectral_dimension_planck[-1] < time_series.spatial_dims
-        hausdorff_convergence = abs(time_series.hausdorff_dimension[-1] - time_series.spatial_dims) < 0.5
-        entropy_growth = 100 * (time_series.holographic_entropy[-1] / (time_series.holographic_entropy[0] + 1e-10) - 1)
+        hausdorff_convergence = (
+            abs(time_series.hausdorff_dimension[-1] - time_series.spatial_dims) < 0.5
+        )
+        entropy_growth = 100 * (
+            time_series.holographic_entropy[-1] / (time_series.holographic_entropy[0] + 1e-10) - 1
+        )
         singularity_risk = "HIGH" if time_series.convergence_fraction[-1] > 0.5 else "LOW"
 
         summary_md = f"""
@@ -1280,12 +1320,12 @@ def build_all_quantum_gravity_time_series_plots(
 2. **Spectral Dimension (Planck scale):**
    - Initial: {time_series.spectral_dimension_planck[0]:.2f}
    - Final: {time_series.spectral_dimension_planck[-1]:.2f}
-   - Dimension reduction detected: {'YES' if spectral_reduction else 'NO'}
+   - Dimension reduction detected: {"YES" if spectral_reduction else "NO"}
 
 3. **Hausdorff Dimension:**
    - Initial: {time_series.hausdorff_dimension[0]:.2f}
    - Final: {time_series.hausdorff_dimension[-1]:.2f}
-   - Convergence to spatial dim: {'YES' if hausdorff_convergence else 'NO'}
+   - Convergence to spatial dim: {"YES" if hausdorff_convergence else "NO"}
 
 4. **Holographic Entropy:**
    - Initial: {time_series.holographic_entropy[0]:.6e}
@@ -1300,13 +1340,13 @@ def build_all_quantum_gravity_time_series_plots(
 ### Physical Interpretation:
 
 **Dimension Reduction:** CDT predicts d_s ≈ 2 at Planck scale, d_s → 4 at large scales.
-Our simulation shows {'dimension reduction' if spectral_reduction else 'classical behavior'}.
+Our simulation shows {"dimension reduction" if spectral_reduction else "classical behavior"}.
 
 **Energy Conservation:** ADM mass change of {adm_change:.2f}% indicates
-{'good energy conservation' if abs(adm_change) < 5 else 'energy flow or boundary effects'}.
+{"good energy conservation" if abs(adm_change) < 5 else "energy flow or boundary effects"}.
 
-**Thermalization:** Hausdorff dimension {'has converged' if hausdorff_convergence else 'is still evolving'},
-indicating {'thermal equilibrium' if hausdorff_convergence else 'ongoing thermalization'}.
+**Thermalization:** Hausdorff dimension {"has converged" if hausdorff_convergence else "is still evolving"},
+indicating {"thermal equilibrium" if hausdorff_convergence else "ongoing thermalization"}.
 
 **Holographic Principle:** Entropy growth of {entropy_growth:.2f}% validates the second law.
 The S/A ratio evolution tests the holographic bound.

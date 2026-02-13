@@ -22,6 +22,7 @@ from torch import Tensor
 
 from fragile.fractalai.core.tree import DataTree, DEFAULT_ROOT_ID
 
+
 if TYPE_CHECKING:
     from fragile.fractalai.bounds import TorchBounds
     from fragile.fractalai.core.euclidean_gas import SwarmState
@@ -33,26 +34,49 @@ if TYPE_CHECKING:
 
 # Node attributes stored with the *full* time axis (present at step 0 too)
 _FULL_NODE_FIELDS = (
-    "x_before_clone", "v_before_clone", "U_before",
-    "x_final", "v_final", "U_final",
+    "x_before_clone",
+    "v_before_clone",
+    "U_before",
+    "x_final",
+    "v_final",
+    "U_final",
 )
 
 # Node attributes stored only from step 1 onward (minus-one axis)
 _MINUS_ONE_NODE_FIELDS = (
-    "x_after_clone", "v_after_clone", "U_after_clone",
-    "fitness", "rewards", "cloning_scores", "cloning_probs",
-    "will_clone", "alive_mask", "companions_distance", "companions_clone",
-    "clone_jitter", "clone_delta_x", "clone_delta_v",
-    "distances", "z_rewards", "z_distances",
-    "pos_squared_differences", "vel_squared_differences",
-    "rescaled_rewards", "rescaled_distances",
+    "x_after_clone",
+    "v_after_clone",
+    "U_after_clone",
+    "fitness",
+    "rewards",
+    "cloning_scores",
+    "cloning_probs",
+    "will_clone",
+    "alive_mask",
+    "companions_distance",
+    "companions_clone",
+    "clone_jitter",
+    "clone_delta_x",
+    "clone_delta_v",
+    "distances",
+    "z_rewards",
+    "z_distances",
+    "pos_squared_differences",
+    "vel_squared_differences",
+    "rescaled_rewards",
+    "rescaled_distances",
 )
 
 # Optional node attributes (may be absent)
 _OPTIONAL_NODE_FIELDS = (
-    "fitness_gradients", "fitness_hessians_diag", "fitness_hessians_full",
-    "sigma_reg_diag", "sigma_reg_full",
-    "riemannian_volume_weights", "ricci_scalar_proxy", "diffusion_tensors_full",
+    "fitness_gradients",
+    "fitness_hessians_diag",
+    "fitness_hessians_full",
+    "sigma_reg_diag",
+    "sigma_reg_full",
+    "riemannian_volume_weights",
+    "ricci_scalar_proxy",
+    "diffusion_tensors_full",
 )
 
 # Step-level metadata fields stored in _step_metadata (full axis)
@@ -60,14 +84,22 @@ _FULL_STEP_META = ("n_alive",)
 
 # Step-level metadata fields stored in _step_metadata (minus-one axis)
 _MINUS_ONE_STEP_META = (
-    "num_cloned", "step_time",
-    "mu_rewards", "sigma_rewards", "mu_distances", "sigma_distances",
+    "num_cloned",
+    "step_time",
+    "mu_rewards",
+    "sigma_rewards",
+    "mu_distances",
+    "sigma_distances",
 )
 
 # Force / kinetic fields stored in _force_data (minus-one axis)
 _FORCE_FIELDS = (
-    "force_stable", "force_adapt", "force_viscous", "force_friction",
-    "force_total", "noise",
+    "force_stable",
+    "force_adapt",
+    "force_viscous",
+    "force_friction",
+    "force_total",
+    "noise",
 )
 
 
@@ -208,14 +240,20 @@ class TreeHistory:
                 # Full-axis fields
                 "x_before_clone": _to_np(state_before.x[w]),
                 "v_before_clone": _to_np(state_before.v[w]),
-                "U_before": float(info["U_before"][w].item()) if isinstance(info["U_before"], Tensor) else float(info["U_before"]),
+                "U_before": float(info["U_before"][w].item())
+                if isinstance(info["U_before"], Tensor)
+                else float(info["U_before"]),
                 "x_final": _to_np(state_final.x[w]),
                 "v_final": _to_np(state_final.v[w]),
-                "U_final": float(info["U_final"][w].item()) if isinstance(info["U_final"], Tensor) else float(info["U_final"]),
+                "U_final": float(info["U_final"][w].item())
+                if isinstance(info["U_final"], Tensor)
+                else float(info["U_final"]),
                 # Minus-one fields
                 "x_after_clone": _to_np(state_cloned.x[w]),
                 "v_after_clone": _to_np(state_cloned.v[w]),
-                "U_after_clone": float(info["U_after_clone"][w].item()) if isinstance(info["U_after_clone"], Tensor) else float(info["U_after_clone"]),
+                "U_after_clone": float(info["U_after_clone"][w].item())
+                if isinstance(info["U_after_clone"], Tensor)
+                else float(info["U_after_clone"]),
                 "fitness": float(info["fitness"][w].item()),
                 "rewards": float(info["rewards"][w].item()),
                 "cloning_scores": float(info["cloning_scores"][w].item()),
@@ -251,9 +289,13 @@ class TreeHistory:
                     if fname in kinetic_info:
                         node_data[fname] = _to_np(kinetic_info[fname][w])
                 # Optional per-walker kinetic fields
-                for opt_name in ("sigma_reg_diag", "sigma_reg_full",
-                                 "riemannian_volume_weights", "ricci_scalar_proxy",
-                                 "diffusion_tensors_full"):
+                for opt_name in (
+                    "sigma_reg_diag",
+                    "sigma_reg_full",
+                    "riemannian_volume_weights",
+                    "ricci_scalar_proxy",
+                    "diffusion_tensors_full",
+                ):
                     if kinetic_info.get(opt_name) is not None:
                         val = kinetic_info[opt_name]
                         if isinstance(val, Tensor) and val.ndim >= 1:
@@ -270,7 +312,9 @@ class TreeHistory:
         # Step-level metadata
         self._step_metadata.append({
             "n_alive": int(alive_mask.sum().item()),
-            "num_cloned": int(info["num_cloned"]) if not isinstance(info["num_cloned"], Tensor) else int(info["num_cloned"].item()),
+            "num_cloned": int(info["num_cloned"])
+            if not isinstance(info["num_cloned"], Tensor)
+            else int(info["num_cloned"].item()),
             "step_time": float(step_time),
             "mu_rewards": _reduce_stat(info["mu_rewards"], alive_mask),
             "sigma_rewards": _reduce_stat(info["sigma_rewards"], alive_mask),
@@ -359,11 +403,15 @@ class TreeHistory:
 
         n_steps = self._n_recorded - start_step
         if n_steps <= 0:
-            t = torch.zeros(0, self.N, *shape_suffix, device=self.device, dtype=tensor_dtype or self.dtype)
+            t = torch.zeros(
+                0, self.N, *shape_suffix, device=self.device, dtype=tensor_dtype or self.dtype
+            )
             self._cache[cache_key] = t
             return t
 
-        out = torch.zeros(n_steps, self.N, *shape_suffix, device=self.device, dtype=tensor_dtype or self.dtype)
+        out = torch.zeros(
+            n_steps, self.N, *shape_suffix, device=self.device, dtype=tensor_dtype or self.dtype
+        )
         nodes = self._tree.data.nodes
         for si, step in enumerate(range(start_step, self._n_recorded)):
             for w in range(self.N):
@@ -375,7 +423,9 @@ class TreeHistory:
         self._cache[cache_key] = out
         return out
 
-    def _reconstruct_step_meta(self, attr: str, start_step: int = 0, tensor_dtype: torch.dtype | None = None) -> Tensor:
+    def _reconstruct_step_meta(
+        self, attr: str, start_step: int = 0, tensor_dtype: torch.dtype | None = None
+    ) -> Tensor:
         """Build a 1-D tensor from step metadata."""
         cache_key = f"meta:{attr}:{start_step}"
         if cache_key in self._cache:
@@ -460,19 +510,27 @@ class TreeHistory:
 
     @property
     def will_clone(self) -> Tensor:
-        return self._reconstruct_node_tensor("will_clone", (), start_step=1, tensor_dtype=torch.bool)
+        return self._reconstruct_node_tensor(
+            "will_clone", (), start_step=1, tensor_dtype=torch.bool
+        )
 
     @property
     def alive_mask(self) -> Tensor:
-        return self._reconstruct_node_tensor("alive_mask", (), start_step=1, tensor_dtype=torch.bool)
+        return self._reconstruct_node_tensor(
+            "alive_mask", (), start_step=1, tensor_dtype=torch.bool
+        )
 
     @property
     def companions_distance(self) -> Tensor:
-        return self._reconstruct_node_tensor("companions_distance", (), start_step=1, tensor_dtype=torch.long)
+        return self._reconstruct_node_tensor(
+            "companions_distance", (), start_step=1, tensor_dtype=torch.long
+        )
 
     @property
     def companions_clone(self) -> Tensor:
-        return self._reconstruct_node_tensor("companions_clone", (), start_step=1, tensor_dtype=torch.long)
+        return self._reconstruct_node_tensor(
+            "companions_clone", (), start_step=1, tensor_dtype=torch.long
+        )
 
     @property
     def clone_jitter(self) -> Tensor:

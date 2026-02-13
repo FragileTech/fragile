@@ -16,6 +16,7 @@ from typing import Any
 import holoviews as hv
 import numpy as np
 
+
 # ---------------------------------------------------------------------------
 # Dataclasses
 # ---------------------------------------------------------------------------
@@ -143,9 +144,7 @@ def compute_consensus_mass(
     measurements: list[ScaleMeasurement],
 ) -> ConsensusResult:
     """Compute inverse-variance weighted consensus from scale measurements."""
-    valid = [
-        m for m in measurements if math.isfinite(m.mass) and m.mass > 0
-    ]
+    valid = [m for m in measurements if math.isfinite(m.mass) and m.mass > 0]
     if not valid:
         return ConsensusResult(
             mass=float("nan"),
@@ -182,9 +181,7 @@ def compute_consensus_mass(
         chi2 = float("nan")
         weighting = "unweighted mean"
 
-    systematic_spread = (
-        float(np.std(masses, ddof=1)) if masses.size > 1 else 0.0
-    )
+    systematic_spread = float(np.std(masses, ddof=1)) if masses.size > 1 else 0.0
 
     return ConsensusResult(
         mass=consensus_mass,
@@ -201,9 +198,7 @@ def compute_pairwise_discrepancies(
     measurements: list[ScaleMeasurement],
 ) -> list[PairwiseDiscrepancy]:
     """All-pairs ratio, delta%, pull_sigma between valid measurements."""
-    valid = [
-        m for m in measurements if math.isfinite(m.mass) and m.mass > 0
-    ]
+    valid = [m for m in measurements if math.isfinite(m.mass) and m.mass > 0]
     rows: list[PairwiseDiscrepancy] = []
     for i in range(len(valid)):
         for j in range(i + 1, len(valid)):
@@ -245,9 +240,7 @@ def evaluate_systematics_verdict(
             alert_type="secondary",
             details="Need at least two scales with valid fits.",
         )
-    abs_deltas = np.asarray(
-        [d.abs_delta_pct for d in discrepancies], dtype=float
-    )
+    abs_deltas = np.asarray([d.abs_delta_pct for d in discrepancies], dtype=float)
     pulls = np.asarray([d.pull_sigma for d in discrepancies], dtype=float)
     finite_abs = abs_deltas[np.isfinite(abs_deltas)]
     finite_pull = pulls[np.isfinite(pulls)]
@@ -270,14 +263,13 @@ def evaluate_systematics_verdict(
         and (not np.isfinite(max_pull) or max_pull <= 1.5)
     ):
         return SystematicsVerdict(label="consistent", alert_type="success", details=details)
-    elif (
+    if (
         np.isfinite(max_abs_delta)
         and max_abs_delta <= 15.0
         and (not np.isfinite(max_pull) or max_pull <= 3.0)
     ):
         return SystematicsVerdict(label="mild tension", alert_type="warning", details=details)
-    else:
-        return SystematicsVerdict(label="tension", alert_type="danger", details=details)
+    return SystematicsVerdict(label="tension", alert_type="danger", details=details)
 
 
 def analyze_channel_across_scales(
@@ -306,6 +298,7 @@ def analyze_channel_across_scales(
 
 def _errorbars_cap_hook(color: str):
     """Return a Bokeh hook that colors error-bar caps to match *color*."""
+
     def hook(plot, element):
         whisker = plot.handles.get("glyph")
         if whisker is not None:
@@ -313,6 +306,7 @@ def _errorbars_cap_hook(color: str):
                 head = getattr(whisker, attr, None)
                 if head is not None:
                     head.line_color = color
+
     return hook
 
 
@@ -363,7 +357,9 @@ def build_multiscale_correlator_plot(
                         (t_arr[err_mask], corr[err_mask], valid_err),
                         kdims=["lag"],
                         vdims=["C(t)", "err"],
-                    ).opts(color=color, alpha=0.7, line_width=1, hooks=[_errorbars_cap_hook(color)])
+                    ).opts(
+                        color=color, alpha=0.7, line_width=1, hooks=[_errorbars_cap_hook(color)]
+                    )
                 )
         # AIC exponential fit line: C(t) = C(t_anchor) * exp(-m_scaled * (t - t_anchor)).
         mass_fit = getattr(result, "mass_fit", None) or {}
@@ -441,7 +437,9 @@ def build_multiscale_correlator_plot(
                 t_line = np.linspace(float(t_plot.min()), float(t_plot.max()), 200)
                 t_anchor = t_start * dt_scale
                 anchor_idx = int(np.argmin(np.abs(t_plot - t_anchor)))
-                c_anchor = float(c_plot[anchor_idx]) if anchor_idx < len(c_plot) else float(c_plot[0])
+                c_anchor = (
+                    float(c_plot[anchor_idx]) if anchor_idx < len(c_plot) else float(c_plot[0])
+                )
                 if c_anchor > 0:
                     c_line = c_anchor * np.exp(-mass_scaled * (t_line - t_anchor))
                     c_line = np.maximum(c_line, np.finfo(float).tiny)
@@ -537,7 +535,12 @@ def build_multiscale_effective_mass_plot(
                             (t_arr[:n][meff_mask], eb_y, eb_e),
                             kdims=["lag"],
                             vdims=["m_eff", "err"],
-                        ).opts(color=color, alpha=0.7, line_width=1, hooks=[_errorbars_cap_hook(color)])
+                        ).opts(
+                            color=color,
+                            alpha=0.7,
+                            line_width=1,
+                            hooks=[_errorbars_cap_hook(color)],
+                        )
                     )
         # AIC fitted mass horizontal line.
         mass_fit = getattr(result, "mass_fit", None) or {}
@@ -649,9 +652,7 @@ def build_mass_vs_scale_plot(
     height: int = 320,
 ) -> hv.Overlay | None:
     """Per-scale colored scatter+errorbars of mass vs kernel scale."""
-    valid = [
-        m for m in measurements if math.isfinite(m.mass) and m.mass > 0
-    ]
+    valid = [m for m in measurements if math.isfinite(m.mass) and m.mass > 0]
     elements: list[hv.Element] = []
     n_scales = max(m.scale_index for m in measurements) + 1 if measurements else 1
     for m in valid:
@@ -671,14 +672,14 @@ def build_mass_vs_scale_plot(
                     kdims=["scale"],
                     vdims=["mass", "mass_error"],
                 ).opts(
-                    color=color, line_width=1.5, alpha=0.8,
+                    color=color,
+                    line_width=1.5,
+                    alpha=0.8,
                     hooks=[_errorbars_cap_hook(color)],
                 )
             )
     if consensus is not None and math.isfinite(consensus.mass) and consensus.mass > 0:
-        elements.append(
-            hv.HLine(consensus.mass).opts(color="#2ca02c", line_width=2)
-        )
+        elements.append(hv.HLine(consensus.mass).opts(color="#2ca02c", line_width=2))
         if math.isfinite(consensus.systematic_spread) and consensus.systematic_spread > 0:
             elements.append(
                 hv.HSpan(
@@ -703,7 +704,9 @@ def build_mass_vs_scale_plot(
         )
         elements.append(
             hv.HLine(reference_mass).opts(
-                color="#e67e22", line_width=2, line_dash="dashed",
+                color="#e67e22",
+                line_width=2,
+                line_dash="dashed",
             )
         )
     if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
@@ -747,7 +750,9 @@ def build_mass_vs_scale_plot(
             )
         elements.append(
             hv.HLine(float(gevp_mass)).opts(
-                color=gevp_color, line_width=2, line_dash="dotdash",
+                color=gevp_color,
+                line_width=2,
+                line_dash="dotdash",
             )
         )
     if not elements:
@@ -778,9 +783,7 @@ def build_consensus_plot(
     height: int = 320,
 ) -> hv.Overlay | None:
     """Scatter per scale at x=index with consensus HLine + systematic HSpan."""
-    valid = [
-        m for m in measurements if math.isfinite(m.mass) and m.mass > 0
-    ]
+    valid = [m for m in measurements if math.isfinite(m.mass) and m.mass > 0]
     if not valid:
         return None
     import pandas as pd
@@ -788,15 +791,13 @@ def build_consensus_plot(
     n_scales = max(m.scale_index for m in measurements) + 1 if measurements else 1
     rows = []
     for i, m in enumerate(valid):
-        rows.append(
-            {
-                "x": float(i),
-                "mass": m.mass,
-                "mass_error": m.mass_error,
-                "label": m.label,
-                "color": scale_color_hex(m.scale_index, n_scales),
-            }
-        )
+        rows.append({
+            "x": float(i),
+            "mass": m.mass,
+            "mass_error": m.mass_error,
+            "label": m.label,
+            "color": scale_color_hex(m.scale_index, n_scales),
+        })
     df = pd.DataFrame(rows)
     scatter = hv.Scatter(
         df,
@@ -823,7 +824,9 @@ def build_consensus_plot(
             kdims=[("x", "Scale index")],
             vdims=[("mass", "Mass"), ("mass_error", "Mass Error")],
         ).opts(
-            color="#4c78a8", alpha=0.9, line_width=1,
+            color="#4c78a8",
+            alpha=0.9,
+            line_width=1,
             hooks=[_errorbars_cap_hook("#4c78a8")],
         )
     if math.isfinite(consensus.mass):
@@ -839,12 +842,16 @@ def build_consensus_plot(
         ).opts(color="#2ca02c", alpha=0.12)
     if reference_mass is not None and math.isfinite(reference_mass) and reference_mass > 0:
         overlay *= hv.HLine(float(reference_mass)).opts(
-            color="#e67e22", line_width=2, line_dash="dashed",
+            color="#e67e22",
+            line_width=2,
+            line_dash="dashed",
         )
     if gevp_mass is not None and math.isfinite(gevp_mass) and gevp_mass > 0:
         gevp_color = "#8c564b"
         overlay *= hv.HLine(float(gevp_mass)).opts(
-            color=gevp_color, line_width=2, line_dash="dotdash",
+            color=gevp_color,
+            line_width=2,
+            line_dash="dotdash",
         )
         if math.isfinite(gevp_error) and gevp_error > 0:
             overlay *= hv.HSpan(
@@ -852,13 +859,12 @@ def build_consensus_plot(
                 float(gevp_mass + gevp_error),
             ).opts(color=gevp_color, alpha=0.10)
     xticks = [(float(i), m.label) for i, m in enumerate(valid)]
-    overlay = overlay.opts(
+    return overlay.opts(
         xlim=(-0.5, float(len(valid) - 0.5)),
         xticks=xticks,
         xrotation=20,
         show_grid=True,
     )
-    return overlay
 
 
 def build_per_scale_channel_plots(

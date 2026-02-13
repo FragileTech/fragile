@@ -30,6 +30,7 @@ def _to_numpy(t):
 # Configuration
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class DiracSpectrumConfig:
     """Configuration for Dirac spectrum analysis."""
@@ -54,6 +55,7 @@ class DiracSpectrumConfig:
 # ---------------------------------------------------------------------------
 # Result dataclasses
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class SectorSpectrum:
@@ -227,7 +229,9 @@ def _build_kernel_from_mode(
     if mode == "fitness_ratio":
         return build_antisymmetric_kernel(fitness_t, alive_t, config.epsilon_clone)
     if mode == "phase_space":
-        epsilon_c, lambda_alg, h_eff, include_phase = _resolve_dirac_phase_space_params(history, config)
+        epsilon_c, lambda_alg, h_eff, include_phase = _resolve_dirac_phase_space_params(
+            history, config
+        )
         positions_t = _to_numpy(history.x_before_clone[frame_t]).astype(np.float64)
         velocities_t = _to_numpy(history.v_before_clone[frame_t]).astype(np.float64)
         return build_phase_space_antisymmetric_kernel(
@@ -282,7 +286,7 @@ def classify_walkers(
 
     color_mag = np.linalg.norm(fv_alive, axis=1)
 
-    if isinstance(color_threshold, (int, float)):
+    if isinstance(color_threshold, int | float):
         threshold_value = float(color_threshold)
     else:
         threshold_value = float(np.median(color_mag))
@@ -291,10 +295,10 @@ def classify_walkers(
     is_up = wc_alive  # cloner = up-type
 
     sector = np.zeros(len(color_mag), dtype=np.int32)
-    sector[is_up & is_quark] = 0       # up_quark
-    sector[~is_up & is_quark] = 1      # down_quark
-    sector[is_up & ~is_quark] = 2      # neutrino
-    sector[~is_up & ~is_quark] = 3     # charged_lepton
+    sector[is_up & is_quark] = 0  # up_quark
+    sector[~is_up & is_quark] = 1  # down_quark
+    sector[is_up & ~is_quark] = 2  # neutrino
+    sector[~is_up & ~is_quark] = 3  # charged_lepton
 
     isospin_label = np.where(is_up, 1, -1)
 
@@ -355,7 +359,7 @@ def _cluster_masses(
     masses = []
     counts = []
     for i in range(len(splits) - 1):
-        cluster = sv[splits[i]:splits[i + 1]]
+        cluster = sv[splits[i] : splits[i + 1]]
         if len(cluster) > 0:
             masses.append(float(np.median(cluster)))
             counts.append(len(cluster))
@@ -465,7 +469,10 @@ def compute_dirac_spectrum(
 
     # 4. Classify walkers
     sector_assignment, color_magnitude, isospin_label, threshold_value = classify_walkers(
-        force_viscous, will_clone, alive_mask, config.color_threshold,
+        force_viscous,
+        will_clone,
+        alive_mask,
+        config.color_threshold,
     )
     walker_fitness = fitness[alive_mask]
 
@@ -475,7 +482,7 @@ def compute_dirac_spectrum(
     chiral_condensate, near_zero_count = compute_banks_casher(full_sigma_raw)
     full_sigma = dedup_skew_sv(full_sigma_raw)
     if config.svd_top_k is not None:
-        full_sigma = full_sigma[:config.svd_top_k]
+        full_sigma = full_sigma[: config.svd_top_k]
 
     full_boundaries = find_generation_gaps(full_sigma, config.n_generations, n_dims)
     full_masses, _ = _cluster_masses(full_sigma, full_boundaries)
@@ -500,7 +507,7 @@ def compute_dirac_spectrum(
         sigma_sector = antisymmetric_singular_values(K_sector)
         sigma_sector = dedup_skew_sv(sigma_sector)
         if config.svd_top_k is not None:
-            sigma_sector = sigma_sector[:config.svd_top_k]
+            sigma_sector = sigma_sector[: config.svd_top_k]
 
         boundaries = find_generation_gaps(sigma_sector, config.n_generations, n_dims)
         masses, counts = _cluster_masses(sigma_sector, boundaries)
@@ -572,9 +579,7 @@ def _compute_time_averaged(
 
     # Phase 1: Collect per-frame SVD spectra
     all_full_sigmas: list[np.ndarray] = []
-    all_sector_sigmas: dict[str, list[np.ndarray]] = {
-        name: [] for name in SECTOR_NAMES.values()
-    }
+    all_sector_sigmas: dict[str, list[np.ndarray]] = {name: [] for name in SECTOR_NAMES.values()}
     all_chiral: list[float] = []
     all_near_zero: list[int] = []
 
@@ -606,12 +611,15 @@ def _compute_time_averaged(
         # Dedup for gap detection / mass extraction
         sigma_t = dedup_skew_sv(sigma_t_raw)
         if config.svd_top_k is not None:
-            sigma_t = sigma_t[:config.svd_top_k]
+            sigma_t = sigma_t[: config.svd_top_k]
         all_full_sigmas.append(sigma_t)
 
         # Per-frame sector classification
         sector_t, _, _, _ = classify_walkers(
-            fv_t, will_clone_t, alive_t, config.color_threshold,
+            fv_t,
+            will_clone_t,
+            alive_t,
+            config.color_threshold,
         )
         for sector_idx, sector_name in SECTOR_NAMES.items():
             idx = np.where(sector_t == sector_idx)[0]
@@ -620,7 +628,7 @@ def _compute_time_averaged(
                 sig_sec = antisymmetric_singular_values(K_sec)
                 sig_sec = dedup_skew_sv(sig_sec)
                 if config.svd_top_k is not None:
-                    sig_sec = sig_sec[:config.svd_top_k]
+                    sig_sec = sig_sec[: config.svd_top_k]
                 all_sector_sigmas[sector_name].append(sig_sec)
 
     # Phase 2: Average spectra (truncate to common min length)
@@ -682,7 +690,10 @@ def _compute_time_averaged(
         alive_t=alive_plot,
     )
     sector_assignment, color_magnitude, isospin_label, threshold_value = classify_walkers(
-        fv_plot, will_clone_plot, alive_plot, config.color_threshold,
+        fv_plot,
+        will_clone_plot,
+        alive_plot,
+        config.color_threshold,
     )
     walker_fitness = fitness_plot[alive_plot]
     n_alive = int(alive_plot.sum())

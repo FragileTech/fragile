@@ -12,8 +12,8 @@ from __future__ import annotations
 import argparse
 from dataclasses import asdict, replace
 from datetime import datetime
-import json
 import inspect
+import json
 from pathlib import Path
 from typing import Any
 
@@ -28,18 +28,19 @@ from fragile.fractalai.qft.correlator_channels import (
     get_channel_class,
 )
 from fragile.fractalai.qft.electroweak_channels import (
+    compute_all_electroweak_channels,
     ELECTROWEAK_CHANNELS,
     ElectroweakChannelConfig,
-    compute_all_electroweak_channels,
 )
 from fragile.fractalai.qft.simulation import (
     OperatorConfig,
     PotentialWellConfig,
-    RunConfig,
     run_simulation,
+    RunConfig,
     save_outputs,
-
 )
+
+
 TARGET_RATIOS = {
     "rho_pi": 5.5,
     "nucleon_pi": 6.7,
@@ -47,11 +48,11 @@ TARGET_RATIOS = {
 
 # Default electroweak reference masses (GeV) mapped to proxy channels.
 ELECTROWEAK_REF_MASSES = {
-    "u1_phase": 0.000511,   # electron
-    "u1_dressed": 0.105658, # muon
-    "su2_phase": 80.379,    # W boson
-    "su2_doublet": 91.1876, # Z boson
-    "ew_mixed": 1.77686,    # tau
+    "u1_phase": 0.000511,  # electron
+    "u1_dressed": 0.105658,  # muon
+    "su2_phase": 80.379,  # W boson
+    "su2_doublet": 91.1876,  # Z boson
+    "ew_mixed": 1.77686,  # tau
 }
 
 # Coupling reference values (mZ and GUT benchmarks).
@@ -201,7 +202,11 @@ def _build_coupling_rows(
 ) -> list[dict[str, Any]]:
     refs = refs or {}
     rows = [
-        {"name": "g1_est (N1=1)", "value": couplings.get("g1_est"), "note": "from epsilon_d, h_eff"},
+        {
+            "name": "g1_est (N1=1)",
+            "value": couplings.get("g1_est"),
+            "note": "from epsilon_d, h_eff",
+        },
         {"name": "g2_est", "value": couplings.get("g2_est"), "note": "from epsilon_c, h_eff, C2"},
         {
             "name": "g3_est",
@@ -263,14 +268,12 @@ def _build_electroweak_ratio_rows(
             observed = obs_num / obs_den
             if observed > 0:
                 error_pct = (measured - observed) / observed * 100.0
-        rows.append(
-            {
-                "ratio": f"{name}/{base_name}",
-                "measured": measured,
-                "observed": observed,
-                "error_pct": error_pct,
-            }
-        )
+        rows.append({
+            "ratio": f"{name}/{base_name}",
+            "measured": measured,
+            "observed": observed,
+            "error_pct": error_pct,
+        })
     return rows
 
 
@@ -331,16 +334,15 @@ def _build_electroweak_comparison_rows(
         err_pct = None
         if obs is not None and obs > 0:
             err_pct = (pred - obs) / obs * 100.0
-        rows.append(
-            {
-                "channel": name,
-                "alg_mass": alg_mass,
-                "obs_mass_GeV": obs,
-                "pred_mass_GeV": pred,
-                "error_pct": err_pct,
-            }
-        )
+        rows.append({
+            "channel": name,
+            "alg_mass": alg_mass,
+            "obs_mass_GeV": obs,
+            "pred_mass_GeV": pred,
+            "error_pct": err_pct,
+        })
     return rows
+
 
 def _build_channel_config(args: argparse.Namespace) -> tuple[ChannelConfig, dict[str, Any]]:
     # Match the Channels tab defaults where possible. Extra keys are ignored.
@@ -365,12 +367,13 @@ def _build_channel_config(args: argparse.Namespace) -> tuple[ChannelConfig, dict
     kwargs = {k: v for k, v in desired.items() if k in sig.parameters}
     return ChannelConfig(**kwargs), kwargs
 
+
 def _extract_fit_value(fit: Any, key: str) -> float | None:
     if isinstance(fit, dict):
         value = fit.get(key)
     else:
         value = getattr(fit, key, None)
-    return float(value) if isinstance(value, (int, float)) else None
+    return float(value) if isinstance(value, int | float) else None
 
 
 def _extract_masses(
@@ -426,11 +429,11 @@ def _pack_results(obj: Any, arrays: dict[str, np.ndarray], prefix: str = "arr") 
         key = f"{prefix}_{len(arrays)}"
         arrays[key] = obj
         return {"__ndarray__": key, "shape": list(obj.shape), "dtype": str(obj.dtype)}
-    if isinstance(obj, (float, int, str, bool)) or obj is None:
+    if isinstance(obj, float | int | str | bool) or obj is None:
         return obj
     if isinstance(obj, dict):
         return {k: _pack_results(v, arrays, f"{prefix}_{k}") for k, v in obj.items()}
-    if isinstance(obj, (list, tuple)):
+    if isinstance(obj, list | tuple):
         return [_pack_results(v, arrays, f"{prefix}_i") for v in obj]
     if hasattr(obj, "__dict__"):
         return _pack_results(obj.__dict__, arrays, prefix)
@@ -458,7 +461,6 @@ def _save_full_analysis(
             "results": packed,
             "arrays_path": str(arrays_path) if arrays_path is not None else None,
         },
-
     )
     return full_path, arrays_path
 
@@ -580,36 +582,47 @@ def _build_curl_field(dims: int, mode: str, strength: float) -> callable | None:
         return None
     if mode == "constant":
         if dims == 3:
+
             def _curl(x: torch.Tensor) -> torch.Tensor:
                 curl = torch.zeros_like(x)
                 curl[:, 2] = strength
                 return curl
+
             return _curl
         if dims >= 2:
+
             def _curl(x: torch.Tensor) -> torch.Tensor:
                 N = x.shape[0]
                 curl = torch.zeros((N, dims, dims), device=x.device, dtype=x.dtype)
                 curl[:, 0, 1] = strength
                 curl[:, 1, 0] = -strength
                 return curl
+
             return _curl
-        raise ValueError("curl-mode constant requires dims >= 2.")
+        msg = "curl-mode constant requires dims >= 2."
+        raise ValueError(msg)
     if mode == "radial":
         if dims != 3:
-            raise ValueError("curl-mode radial is only supported for dims=3.")
+            msg = "curl-mode radial is only supported for dims=3."
+            raise ValueError(msg)
+
         def _curl(x: torch.Tensor) -> torch.Tensor:
             norm = torch.linalg.norm(x, dim=-1, keepdim=True).clamp_min(1e-8)
             return strength * x / norm
+
         return _curl
     if mode == "plane":
         if dims < 2:
-            raise ValueError("curl-mode plane requires dims >= 2.")
+            msg = "curl-mode plane requires dims >= 2."
+            raise ValueError(msg)
+
         def _curl(x: torch.Tensor) -> torch.Tensor:
             N = x.shape[0]
             curl = torch.zeros((N, dims, dims), device=x.device, dtype=x.dtype)
             curl[:, 0, 1] = strength
             curl[:, 1, 0] = -strength
             return curl
+
         return _curl
     raise ValueError(f"Unknown curl-mode {mode}")
 
@@ -784,7 +797,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--fit-start", type=int, default=2)
     parser.add_argument("--fit-stop", type=int, default=None)
     parser.add_argument("--min-fit-points", type=int, default=2)
-    parser.add_argument("--nucleon-fit-mode", default=None, choices=["aic", "linear", "linear_abs"])
+    parser.add_argument(
+        "--nucleon-fit-mode", default=None, choices=["aic", "linear", "linear_abs"]
+    )
     parser.add_argument("--nucleon-fit-start", type=int, default=None)
     parser.add_argument("--nucleon-fit-stop", type=int, default=None)
     parser.add_argument("--nucleon-min-fit-points", type=int, default=None)
@@ -818,14 +833,14 @@ def main() -> None:
     args = parse_args()
 
     if args.p_max is not None and not (0.0 < args.p_max <= 1.0):
-        raise ValueError("--p-max must be in (0, 1].")
+        msg = "--p-max must be in (0, 1]."
+        raise ValueError(msg)
 
     # Reward mode (default Voronoi cell volume).
     potential_cfg = PotentialWellConfig(
         dims=args.dims,
         alpha=args.alpha,
         bounds_extent=args.bounds_extent,
-
     )
     # QFT dashboard defaults (GasConfigPanel.create_qft_config) + viscosity-only forces.
     operator_cfg = OperatorConfig()
@@ -937,7 +952,6 @@ def main() -> None:
         neighbor_graph_method=args.neighbor_graph_method,
         neighbor_graph_update_every=args.neighbor_graph_update_every,
         neighbor_graph_record=args.neighbor_graph_record,
-
     )
     run_id = args.run_id or datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     output_dir = Path(args.output_dir)
@@ -949,6 +963,7 @@ def main() -> None:
 
     reward_1form = None
     if reward_mode == "zero":
+
         def reward_1form(x: torch.Tensor) -> torch.Tensor:
             return torch.zeros_like(x)
 
@@ -993,11 +1008,15 @@ def main() -> None:
     if args.use_nucleon_abs:
         results["nucleon_abs"] = _compute_channel_transform(history, nucleon_cfg, "nucleon", "abs")
     if args.use_nucleon_abs2:
-        results["nucleon_abs2"] = _compute_channel_transform(history, nucleon_cfg, "nucleon", "abs2")
+        results["nucleon_abs2"] = _compute_channel_transform(
+            history, nucleon_cfg, "nucleon", "abs2"
+        )
     if args.use_vector_abs2:
         results["vector_abs2"] = _compute_channel_transform(history, channel_cfg, "vector", "abs2")
 
-    full_json_path, arrays_path = _save_full_analysis(results, output_dir, run_id, label="channels")
+    full_json_path, arrays_path = _save_full_analysis(
+        results, output_dir, run_id, label="channels"
+    )
     masses, r2s, summaries = _extract_masses(results)
     ratios = _compute_ratios(
         masses,
@@ -1006,7 +1025,10 @@ def main() -> None:
     )
 
     electroweak_block = None
-    electroweak_paths: dict[str, str | None] = {"electroweak_full": None, "electroweak_arrays": None}
+    electroweak_paths: dict[str, str | None] = {
+        "electroweak_full": None,
+        "electroweak_arrays": None,
+    }
     if not args.no_electroweak:
         ew_channels = [c.strip() for c in args.ew_channels.split(",") if c.strip()]
         ew_cfg = ElectroweakChannelConfig(
@@ -1044,9 +1066,7 @@ def main() -> None:
             ew_masses, ew_base, refs=ELECTROWEAK_REF_MASSES
         )
         ew_fit_rows = _build_electroweak_best_fit_rows(ew_masses, ELECTROWEAK_REF_MASSES, ew_r2s)
-        ew_anchor_rows = _build_electroweak_anchor_rows(
-            ew_masses, ELECTROWEAK_REF_MASSES, ew_r2s
-        )
+        ew_anchor_rows = _build_electroweak_anchor_rows(ew_masses, ELECTROWEAK_REF_MASSES, ew_r2s)
         ew_compare_rows = _build_electroweak_comparison_rows(ew_masses, ELECTROWEAK_REF_MASSES)
 
         ew_couplings = _compute_coupling_constants(
@@ -1111,7 +1131,7 @@ def main() -> None:
         "channels": {
             "list": list(results.keys()),
             "settings": channel_kwargs,
-            "nucleon_fit_override": nucleon_override if nucleon_override else None,
+            "nucleon_fit_override": nucleon_override or None,
             "masses": masses,
             "r_squared": r2s,
             "summaries": summaries,

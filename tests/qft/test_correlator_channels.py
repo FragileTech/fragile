@@ -6,32 +6,32 @@ import numpy as np
 import pytest
 import torch
 
+from fragile.fractalai.qft.aggregation import (
+    compute_all_operator_series,
+    OperatorTimeSeries,
+)
 from fragile.fractalai.qft.correlator_channels import (
-    CHANNEL_REGISTRY,
     AxialVectorChannel,
     BilinearChannelCorrelator,
+    bootstrap_correlator_error,
+    CHANNEL_REGISTRY,
     ChannelConfig,
-    CorrelatorConfig,
     ChannelCorrelator,
     ChannelCorrelatorResult,
+    compute_all_channels,
+    compute_all_correlators,
+    compute_channel_correlator,
+    compute_correlator_fft,
+    compute_effective_mass_torch,
     ConvolutionalAICExtractor,
+    CorrelatorConfig,
+    get_channel_class,
     GlueballChannel,
     NucleonChannel,
     PseudoscalarChannel,
     ScalarChannel,
     TensorChannel,
     VectorChannel,
-    bootstrap_correlator_error,
-    compute_all_channels,
-    compute_all_correlators,
-    compute_channel_correlator,
-    compute_correlator_fft,
-    compute_effective_mass_torch,
-    get_channel_class,
-)
-from fragile.fractalai.qft.aggregation import (
-    compute_all_operator_series,
-    OperatorTimeSeries,
 )
 
 
@@ -223,7 +223,9 @@ class TestFFTCorrelator:
         indices = torch.randint(0, series.shape[0], (n_bootstrap, series.shape[0]))
         ref_corrs = []
         for i in range(n_bootstrap):
-            ref_corrs.append(compute_correlator_fft(series[indices[i]], max_lag, use_connected=True))
+            ref_corrs.append(
+                compute_correlator_fft(series[indices[i]], max_lag, use_connected=True)
+            )
         ref_err = torch.stack(ref_corrs).std(dim=0)
 
         torch.testing.assert_close(batched_err, ref_err, atol=1e-5, rtol=1e-5)
@@ -365,7 +367,7 @@ class TestPseudoscalarChannel:
         result = channel._apply_gamma_projection(color_i, color_j)
         # For identity matrices: Tr(γ₅) = sum of diagonal of γ₅
         # γ₅ = diag(1, -1, 1) for d=3
-        expected = 1 - 1 + 1  # = 1
+        1 - 1 + 1  # = 1
         assert result.shape == (5, d)
 
 
@@ -527,7 +529,7 @@ class TestVectorization:
 
         start_idx = max(1, int(mock_history.n_recorded * config.warmup_fraction))
 
-        sample_idx, neighbor_idx, alive = compute_neighbor_topology(
+        sample_idx, neighbor_idx, _alive = compute_neighbor_topology(
             mock_history,
             start_idx,
             config.neighbor_method,
@@ -646,12 +648,19 @@ class TestPureFunctionAPI:
         assert operator_series.time_axis == "mc"
 
         # Verify all channels computed
-        expected_channels = {"scalar", "pseudoscalar", "vector", "axial_vector",
-                           "tensor", "nucleon", "glueball"}
+        expected_channels = {
+            "scalar",
+            "pseudoscalar",
+            "vector",
+            "axial_vector",
+            "tensor",
+            "nucleon",
+            "glueball",
+        }
         assert set(operator_series.operators.keys()) == expected_channels
 
         # Verify each channel has series
-        for channel_name, series in operator_series.operators.items():
+        for series in operator_series.operators.values():
             assert series.numel() > 0
             assert series.shape[0] == operator_series.n_timesteps
 
@@ -732,6 +741,7 @@ class TestPureFunctionAPI:
 
         # Create OperatorTimeSeries without any RunHistory
         from fragile.fractalai.qft.aggregation import AggregatedTimeSeries
+
         mock_agg = AggregatedTimeSeries(
             color=torch.zeros(100, 50, 3, dtype=torch.complex128),
             color_valid=torch.ones(100, 50, dtype=torch.bool),
@@ -836,11 +846,17 @@ class TestGeometricWeighting:
         """inverse_distance mode should weight differently, changing results."""
         history = MockRunHistoryWithGeometry(N=30, d=3, n_recorded=50)
 
-        config_uniform = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="uniform")
-        config_weighted = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="inverse_distance")
+        config_uniform = ChannelConfig(
+            neighbor_k=2, neighbor_method="recorded", edge_weight_mode="uniform"
+        )
+        config_weighted = ChannelConfig(
+            neighbor_k=2, neighbor_method="recorded", edge_weight_mode="inverse_distance"
+        )
 
         series_uniform = compute_all_operator_series(history, config_uniform, channels=["scalar"])
-        series_weighted = compute_all_operator_series(history, config_weighted, channels=["scalar"])
+        series_weighted = compute_all_operator_series(
+            history, config_weighted, channels=["scalar"]
+        )
 
         # Results should differ (weighted applies pre-computed edge weights)
         assert not torch.allclose(
@@ -852,8 +868,12 @@ class TestGeometricWeighting:
         """inverse_riemannian_volume mode should weight differently, changing results."""
         history = MockRunHistoryWithGeometry(N=30, d=3, n_recorded=50)
 
-        config_uniform = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="uniform")
-        config_volume = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="inverse_riemannian_volume")
+        config_uniform = ChannelConfig(
+            neighbor_k=2, neighbor_method="recorded", edge_weight_mode="uniform"
+        )
+        config_volume = ChannelConfig(
+            neighbor_k=2, neighbor_method="recorded", edge_weight_mode="inverse_riemannian_volume"
+        )
 
         series_uniform = compute_all_operator_series(history, config_uniform, channels=["scalar"])
         series_volume = compute_all_operator_series(history, config_volume, channels=["scalar"])
@@ -868,7 +888,9 @@ class TestGeometricWeighting:
         """riemannian_kernel mode should produce valid results."""
         history = MockRunHistoryWithGeometry(N=30, d=3, n_recorded=50)
 
-        config = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="riemannian_kernel")
+        config = ChannelConfig(
+            neighbor_k=2, neighbor_method="recorded", edge_weight_mode="riemannian_kernel"
+        )
         series = compute_all_operator_series(history, config, channels=["scalar"])
 
         # Should produce valid results
@@ -896,17 +918,25 @@ class TestGeometricWeighting:
         """Weighting should affect all bilinear channels consistently."""
         history = MockRunHistoryWithGeometry(N=30, d=3, n_recorded=50)
 
-        config_uniform = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="uniform")
-        config_weighted = ChannelConfig(neighbor_k=2, neighbor_method="recorded", edge_weight_mode="inverse_riemannian_distance")
+        config_uniform = ChannelConfig(
+            neighbor_k=2, neighbor_method="recorded", edge_weight_mode="uniform"
+        )
+        config_weighted = ChannelConfig(
+            neighbor_k=2,
+            neighbor_method="recorded",
+            edge_weight_mode="inverse_riemannian_distance",
+        )
 
         channels = ["scalar", "pseudoscalar", "vector", "axial_vector", "tensor"]
-        series_uniform = compute_all_operator_series(history, config_uniform, channels=channels)
+        compute_all_operator_series(history, config_uniform, channels=channels)
         series_weighted = compute_all_operator_series(history, config_weighted, channels=channels)
 
         for ch in channels:
             # Each channel should have valid output with weighted mode
             assert series_weighted.operators[ch].numel() > 0
-            assert torch.isfinite(series_weighted.operators[ch]).all(), f"Channel {ch} has non-finite values"
+            assert torch.isfinite(
+                series_weighted.operators[ch]
+            ).all(), f"Channel {ch} has non-finite values"
 
     def test_extract_geometric_weights_function(self):
         """Test extract_geometric_weights directly."""

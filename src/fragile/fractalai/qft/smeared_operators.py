@@ -46,7 +46,9 @@ _EDGE_WEIGHT_MODE_ALIASES = {
 }
 
 
-def _resolve_default_device(history: RunHistory, device: torch.device | str | None) -> torch.device:
+def _resolve_default_device(
+    history: RunHistory, device: torch.device | str | None
+) -> torch.device:
     """Resolve output device from explicit argument or history tensors."""
     if device is not None:
         return torch.device(device)
@@ -65,10 +67,7 @@ def _normalize_method(method: str, device: torch.device) -> str:
         return "tropical"
     if normalized in _AUTO_ALIASES:
         return "floyd-warshall" if device.type == "cpu" else "tropical"
-    msg = (
-        f"Unknown APSP method {method!r}. "
-        "Expected one of: auto, floyd-warshall, tropical."
-    )
+    msg = f"Unknown APSP method {method!r}. " "Expected one of: auto, floyd-warshall, tropical."
     raise ValueError(msg)
 
 
@@ -81,10 +80,7 @@ def _normalize_edge_weight_mode(mode: str) -> str:
     normalized = _EDGE_WEIGHT_MODE_ALIASES.get(normalized, normalized)
     if normalized in EDGE_WEIGHT_MODES:
         return normalized
-    msg = (
-        f"Unsupported edge_weight_mode {mode!r}. "
-        f"Expected one of {EDGE_WEIGHT_MODES}."
-    )
+    msg = f"Unsupported edge_weight_mode {mode!r}. " f"Expected one of {EDGE_WEIGHT_MODES}."
     raise ValueError(msg)
 
 
@@ -272,9 +268,7 @@ def _resolve_frame_edge_weights(
 
     edge_weights_all = getattr(history, "edge_weights", None)
     if edge_weights_all is None:
-        msg = (
-            f"edge_weight_mode={mode!r} requires RunHistory.edge_weights to be recorded."
-        )
+        msg = f"edge_weight_mode={mode!r} requires RunHistory.edge_weights to be recorded."
         raise ValueError(msg)
     if frame_idx < 0 or frame_idx >= len(edge_weights_all):
         msg = (
@@ -354,10 +348,7 @@ def build_adjacency_batch_from_history(
     """Build dense adjacency matrices `[T, N, N]` for requested frames."""
     neighbor_edges = getattr(history, "neighbor_edges", None)
     if neighbor_edges is None:
-        msg = (
-            "RunHistory.neighbor_edges is None. "
-            "Enable neighbor recording during simulation."
-        )
+        msg = "RunHistory.neighbor_edges is None. " "Enable neighbor recording during simulation."
         raise RuntimeError(msg)
 
     n_nodes = int(history.N)
@@ -427,7 +418,9 @@ def build_adjacency_batch_from_history(
 def batched_floyd_warshall(distance_batch: Tensor, *, clone: bool = True) -> Tensor:
     """Compute batched all-pairs shortest paths with Floyd-Warshall."""
     if distance_batch.ndim != 3:
-        raise ValueError(f"distance_batch must have shape [T, N, N], got {tuple(distance_batch.shape)}.")
+        raise ValueError(
+            f"distance_batch must have shape [T, N, N], got {tuple(distance_batch.shape)}."
+        )
     if distance_batch.shape[-1] != distance_batch.shape[-2]:
         msg = "distance_batch must be square on the last two dimensions."
         raise ValueError(msg)
@@ -455,7 +448,9 @@ def batched_min_plus_matmul(
             f"left/right must have shape [T, N, N], got {tuple(left.shape)} and {tuple(right.shape)}."
         )
     if left.shape != right.shape:
-        raise ValueError(f"left and right must have the same shape, got {left.shape} vs {right.shape}.")
+        raise ValueError(
+            f"left and right must have the same shape, got {left.shape} vs {right.shape}."
+        )
     if left.shape[-1] != left.shape[-2]:
         msg = "left/right must be square on the last two dimensions."
         raise ValueError(msg)
@@ -500,7 +495,9 @@ def batched_tropical_shortest_paths(
 ) -> Tensor:
     """Compute APSP by repeated tropical squaring."""
     if distance_batch.ndim != 3:
-        raise ValueError(f"distance_batch must have shape [T, N, N], got {tuple(distance_batch.shape)}.")
+        raise ValueError(
+            f"distance_batch must have shape [T, N, N], got {tuple(distance_batch.shape)}."
+        )
     if distance_batch.shape[-1] != distance_batch.shape[-2]:
         msg = "distance_batch must be square on the last two dimensions."
         raise ValueError(msg)
@@ -845,7 +842,9 @@ def compute_smeared_kernels_from_distances(
 
     scales_t = torch.as_tensor(scales, dtype=distance_batch.dtype, device=distance_batch.device)
     if scales_t.ndim != 1 or scales_t.numel() == 0:
-        raise ValueError(f"scales must be a non-empty 1D sequence, got shape {tuple(scales_t.shape)}.")
+        raise ValueError(
+            f"scales must be a non-empty 1D sequence, got shape {tuple(scales_t.shape)}."
+        )
     if not bool(torch.all(scales_t > 0)):
         msg = "All scales must be strictly positive."
         raise ValueError(msg)
@@ -1046,9 +1045,13 @@ def compute_smeared_kernels_from_history(
     if not kernel_chunks:
         if scales_out is None:
             if scales is None:
-                scales_out = torch.full((int(n_scales),), float(min_scale), dtype=dtype, device=resolved_device)
+                scales_out = torch.full(
+                    (int(n_scales),), float(min_scale), dtype=dtype, device=resolved_device
+                )
             else:
-                scales_out = torch.as_tensor(scales, dtype=dtype, device=resolved_device).reshape(-1)
+                scales_out = torch.as_tensor(scales, dtype=dtype, device=resolved_device).reshape(
+                    -1
+                )
         empty = torch.empty(
             (0, int(scales_out.numel()), n_nodes, n_nodes),
             dtype=dtype,
@@ -1058,5 +1061,7 @@ def compute_smeared_kernels_from_history(
 
     kernels = torch.cat(kernel_chunks, dim=0)
     if scales_out is None:
-        scales_out = torch.full((int(n_scales),), float(min_scale), dtype=dtype, device=resolved_device)
+        scales_out = torch.full(
+            (int(n_scales),), float(min_scale), dtype=dtype, device=resolved_device
+        )
     return frame_ids_all, scales_out, kernels

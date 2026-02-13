@@ -29,7 +29,7 @@ Usage:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -40,12 +40,11 @@ from torch import Tensor
 
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.qft.particle_observables import (
+    compute_baryon_operator_knn,
     compute_color_state,
     compute_companion_distance,
     compute_effective_mass,
     compute_knn_indices,
-    compute_meson_operator_knn,
-    compute_baryon_operator_knn,
     compute_time_correlator,
     fit_mass_exponential,
 )
@@ -57,6 +56,7 @@ hv.extension("bokeh")
 # =============================================================================
 # Channel Definitions (Standard Lattice QFT)
 # =============================================================================
+
 
 @dataclass
 class ChannelDefinition:
@@ -373,9 +373,7 @@ class MassCorrelatorComputer:
         comp_dist = self.history.companions_distance[mid_idx - 1]
         alive = self.history.alive_mask[mid_idx - 1]
 
-        dist = compute_companion_distance(
-            x_pre, comp_dist, self.history.pbc, self.history.bounds
-        )
+        dist = compute_companion_distance(x_pre, comp_dist, self.history.pbc, self.history.bounds)
         if dist.numel() > 0 and alive.any():
             self.config.ell0 = float(dist[alive].median().item())
         else:
@@ -513,9 +511,7 @@ class MassCorrelatorComputer:
                 valid_j = alive[neighbors[:, 0]] & color_valid[neighbors[:, 0]]
                 valid = valid_i & valid_j
 
-                op_values = self.projector.project_bilinear(
-                    color_i, color_j, channel
-                )
+                op_values = self.projector.project_bilinear(color_i, color_j, channel)
 
             # Average over valid samples
             if valid.any():
@@ -551,7 +547,7 @@ class MassCorrelatorComputer:
             raise ValueError(f"Unknown channel: {channel}")
 
         # Get operator series
-        time_index, time_tau, series = self.compute_channel_series(channel)
+        _time_index, _time_tau, series = self.compute_channel_series(channel)
 
         if series.size == 0:
             return ChannelCorrelatorResult(
@@ -718,7 +714,7 @@ class MassCorrelatorPlotter:
             )
             elements.append(curve)
 
-        overlay = hv.Overlay(elements).opts(
+        return hv.Overlay(elements).opts(
             xlabel="t",
             ylabel="C(t)",
             title=f"{result.channel.display_name} Correlator",
@@ -727,8 +723,6 @@ class MassCorrelatorPlotter:
             height=height,
             legend_position="top_right",
         )
-
-        return overlay
 
     def build_effective_mass_plot(
         self,
@@ -796,15 +790,13 @@ class MassCorrelatorPlotter:
             )
             elements.append(label)
 
-        overlay = hv.Overlay(elements).opts(
+        return hv.Overlay(elements).opts(
             xlabel="t",
             ylabel="m_eff(t)",
             title=f"{result.channel.display_name} Effective Mass",
             width=width,
             height=height,
         )
-
-        return overlay
 
     def build_all_correlators_overlay(
         self,
@@ -825,7 +817,7 @@ class MassCorrelatorPlotter:
         """
         curves = []
 
-        for channel, result in self.results.items():
+        for result in self.results.values():
             if result.correlator.size == 0:
                 continue
 
@@ -878,7 +870,7 @@ class MassCorrelatorPlotter:
         """
         curves = []
 
-        for channel, result in self.results.items():
+        for result in self.results.values():
             if result.effective_mass.size == 0:
                 continue
 
@@ -942,7 +934,7 @@ class MassCorrelatorPlotter:
         data = []
         colors = []
 
-        for channel, result in self.results.items():
+        for result in self.results.values():
             mass = result.mass_fit.get("mass", 0)
             if mass > 0:
                 data.append((result.channel.display_name, mass))
@@ -951,7 +943,7 @@ class MassCorrelatorPlotter:
         if not data:
             return None
 
-        bars = hv.Bars(
+        return hv.Bars(
             data,
             kdims=["Channel"],
             vdims=["Mass"],
@@ -964,8 +956,6 @@ class MassCorrelatorPlotter:
             height=height,
             xrotation=45,
         )
-
-        return bars
 
     def build_dashboard(
         self,
@@ -1010,9 +1000,7 @@ class MassCorrelatorPlotter:
 
         if not plots:
             # Return empty layout
-            return hv.Text(0.5, 0.5, "No data available").opts(
-                width=400, height=200
-            )
+            return hv.Text(0.5, 0.5, "No data available").opts(width=400, height=200)
 
         return hv.Layout(plots).cols(2)
 

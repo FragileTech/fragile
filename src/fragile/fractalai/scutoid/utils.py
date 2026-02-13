@@ -49,9 +49,7 @@ def estimate_optimal_step_size(
     edge_distances = torch.norm(positions[dst] - positions[src], dim=1)
 
     # Find minimum distance per source walker
-    min_distances.scatter_reduce_(
-        0, src, edge_distances, reduce="amin", include_self=False
-    )
+    min_distances.scatter_reduce_(0, src, edge_distances, reduce="amin", include_self=False)
 
     # Handle isolated walkers (no neighbors)
     isolated_mask = torch.isinf(min_distances)
@@ -65,8 +63,6 @@ def estimate_optimal_step_size(
         min_distances = torch.where(alive, min_distances, torch.nan)
 
     return target_fraction * min_distances
-
-
 
 
 def find_axial_neighbors(
@@ -181,7 +177,7 @@ def validate_finite_difference_inputs(
     Raises:
         ValueError: If critical issues detected (all walkers invalid, etc.)
     """
-    N, d = positions.shape
+    N, _d = positions.shape
     device = positions.device
 
     # Initialize masks
@@ -198,8 +194,9 @@ def validate_finite_difference_inputs(
     # Count neighbors per walker
     if num_neighbors is None:
         if edge_index is None:
-            raise ValueError("edge_index is required when num_neighbors is not provided.")
-        src, dst = edge_index
+            msg = "edge_index is required when num_neighbors is not provided."
+            raise ValueError(msg)
+        src, _dst = edge_index
         num_neighbors = torch.zeros(N, dtype=torch.long, device=device)
         num_neighbors.scatter_add_(0, src, torch.ones_like(src))
 

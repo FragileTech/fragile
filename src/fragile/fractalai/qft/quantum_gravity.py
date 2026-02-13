@@ -51,13 +51,13 @@ from torch import Tensor
 from fragile.fractalai.bounds import TorchBounds
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.core.scutoids import create_scutoid_history
+from fragile.fractalai.qft.higgs_observables import compute_emergent_metric
 from fragile.fractalai.qft.voronoi_observables import (
-    compute_voronoi_tessellation,
-    compute_curvature_proxies,
     classify_boundary_cells,
+    compute_curvature_proxies,
+    compute_voronoi_tessellation,
 )
 from fragile.fractalai.qft.voronoi_time_slices import compute_time_sliced_voronoi
-from fragile.fractalai.qft.higgs_observables import compute_emergent_metric
 
 
 @dataclass
@@ -122,6 +122,7 @@ def _normalize_analysis_dims(
         # Warn if truncating high-dimensional data
         if total_dims > 3:
             import warnings
+
             warnings.warn(
                 f"Data has {total_dims} dimensions but analysis limited to first 3. "
                 f"To analyze dimension {total_dims - 1}, set analysis_dims explicitly.",
@@ -434,7 +435,9 @@ def compute_regge_action(
             if isinstance(alive_indices, np.ndarray)
             else alive_indices
         )
-        volumes_full[alive_indices_torch] = volumes.to(device=ricci_tensor.device, dtype=ricci_tensor.dtype)
+        volumes_full[alive_indices_torch] = volumes.to(
+            device=ricci_tensor.device, dtype=ricci_tensor.dtype
+        )
 
     # Action density: R_i * Vol_i
     action_density = ricci_tensor * volumes_full
@@ -516,7 +519,11 @@ def compute_einstein_hilbert_action(
         else:
             ricci_np = np.array([])
 
-    ricci = torch.from_numpy(ricci_np).float() if len(ricci_np) > 0 else torch.zeros(positions.shape[0])
+    ricci = (
+        torch.from_numpy(ricci_np).float()
+        if len(ricci_np) > 0
+        else torch.zeros(positions.shape[0])
+    )
 
     if volume_weights is not None:
         if torch.is_tensor(volume_weights):
@@ -525,7 +532,9 @@ def compute_einstein_hilbert_action(
             weights_full = torch.as_tensor(volume_weights)
         alive_indices = voronoi_data.get("alive_indices")
         if alive_indices is not None:
-            alive_idx = torch.as_tensor(alive_indices, device=weights_full.device, dtype=torch.long)
+            alive_idx = torch.as_tensor(
+                alive_indices, device=weights_full.device, dtype=torch.long
+            )
             alive_idx = alive_idx[alive_idx < weights_full.shape[0]]
             volumes = weights_full[alive_idx].to(device=ricci.device, dtype=torch.float32)
         else:
@@ -643,7 +652,9 @@ def compute_spectral_dimension(
         }
 
     # Heat kernel trace: P(σ) = Σ_i exp(-σ λ_i)
-    sigma_values = torch.logspace(-3, np.log10(config.max_diffusion_time), config.diffusion_time_steps)
+    sigma_values = torch.logspace(
+        -3, np.log10(config.max_diffusion_time), config.diffusion_time_steps
+    )
     heat_kernel_trace = torch.zeros_like(sigma_values)
 
     for i, sigma in enumerate(sigma_values):
@@ -657,7 +668,9 @@ def compute_spectral_dimension(
     # d/dx f(x) ≈ (f(x+h) - f(x-h)) / (2h)
     d_log_P_d_log_sigma = torch.zeros_like(log_P)
     for i in range(1, len(log_P) - 1):
-        d_log_P_d_log_sigma[i] = (log_P[i + 1] - log_P[i - 1]) / (log_sigma[i + 1] - log_sigma[i - 1])
+        d_log_P_d_log_sigma[i] = (log_P[i + 1] - log_P[i - 1]) / (
+            log_sigma[i + 1] - log_sigma[i - 1]
+        )
     # Forward difference for first point
     if len(log_P) > 1:
         d_log_P_d_log_sigma[0] = (log_P[1] - log_P[0]) / (log_sigma[1] - log_sigma[0])
@@ -866,7 +879,7 @@ def compute_boundary_area(
         neighbors = neighbor_lists.get(i, [])
         for j in neighbors:
             if (i, j) in facet_areas:
-                total_area += facet_areas[(i, j)]
+                total_area += facet_areas[i, j]
 
     # Divide by 2 since we double-counted edges (both (i,j) and (j,i))
     return total_area / 2.0
@@ -936,8 +949,12 @@ def compute_holographic_entropy(
             boundary_area = 0.0
         else:
             # Handle both torch tensors and numpy arrays
-            if hasattr(is_boundary, 'numpy'):
-                boundary_mask = is_boundary.cpu().numpy() if hasattr(is_boundary, 'cpu') else is_boundary.numpy()
+            if hasattr(is_boundary, "numpy"):
+                boundary_mask = (
+                    is_boundary.cpu().numpy()
+                    if hasattr(is_boundary, "cpu")
+                    else is_boundary.numpy()
+                )
             elif isinstance(is_boundary, np.ndarray):
                 boundary_mask = is_boundary
             else:
@@ -1025,7 +1042,9 @@ def compute_spin_network_state(
             weights_full = torch.as_tensor(volume_weights)
         alive_indices = voronoi_data.get("alive_indices")
         if alive_indices is not None:
-            alive_idx = torch.as_tensor(alive_indices, device=weights_full.device, dtype=torch.long)
+            alive_idx = torch.as_tensor(
+                alive_indices, device=weights_full.device, dtype=torch.long
+            )
             alive_idx = alive_idx[alive_idx < weights_full.shape[0]]
             vertex_volumes = weights_full[alive_idx].float()
         else:
@@ -1110,9 +1129,7 @@ def compute_tidal_tensor(
         # For simplicity, use average of outer products
         for j_idx in range(d):
             for k_idx in range(d):
-                grad_component = delta_g[:, j_idx, k_idx] / (
-                    torch.norm(delta_x, dim=1) + 1e-10
-                )
+                grad_component = delta_g[:, j_idx, k_idx] / (torch.norm(delta_x, dim=1) + 1e-10)
                 tidal[i, j_idx, k_idx] = grad_component.mean()
 
     return tidal
@@ -1235,12 +1252,16 @@ def compute_quantum_gravity_observables(
         if mc_frame > 0
         else torch.ones(history.N, dtype=torch.bool)
     )
-    analysis_bounds = _slice_bounds(history.bounds, analysis_dims) if history.bounds is not None else None
+    analysis_bounds = (
+        _slice_bounds(history.bounds, analysis_dims) if history.bounds is not None else None
+    )
     time_dim = _map_time_dim(config.euclidean_time_dim, analysis_dims)
     scutoid_history = _build_scutoid_history_view(history, analysis_dims, analysis_bounds)
 
     edge_index = None
-    if getattr(history, "neighbor_edges", None) is not None and mc_frame < len(history.neighbor_edges):
+    if getattr(history, "neighbor_edges", None) is not None and mc_frame < len(
+        history.neighbor_edges
+    ):
         edges = history.neighbor_edges[mc_frame]
         if edges is not None:
             if torch.is_tensor(edges):
@@ -1342,13 +1363,11 @@ def compute_quantum_gravity_observables(
         if scutoid_history.d in {2, 3}:
             results.update(compute_regge_action(scutoid_history, mc_frame, config))
         else:
-            results.update(
-                {
-                    "regge_action": 0.0,
-                    "regge_action_density": torch.zeros(history.N, device=positions.device),
-                    "deficit_angles": torch.zeros(0, device=positions.device),
-                }
-            )
+            results.update({
+                "regge_action": 0.0,
+                "regge_action_density": torch.zeros(history.N, device=positions.device),
+                "deficit_angles": torch.zeros(0, device=positions.device),
+            })
 
         # 2. Einstein-Hilbert
         results.update(
@@ -1375,15 +1394,15 @@ def compute_quantum_gravity_observables(
                     if isinstance(alive_indices, np.ndarray)
                     else alive_indices
                 )
-                volumes_full[alive_indices_torch] = volumes.to(device=positions.device, dtype=ricci.dtype)
+                volumes_full[alive_indices_torch] = volumes.to(
+                    device=positions.device, dtype=ricci.dtype
+                )
             action = (ricci * volumes_full).sum()
-            results.update(
-                {
-                    "einstein_hilbert_action": action.item(),
-                    "ricci_scalars": ricci,
-                    "scalar_curvature_mean": ricci.mean().item() if ricci.numel() > 0 else 0.0,
-                }
-            )
+            results.update({
+                "einstein_hilbert_action": action.item(),
+                "ricci_scalars": ricci,
+                "scalar_curvature_mean": ricci.mean().item() if ricci.numel() > 0 else 0.0,
+            })
 
         # 3. ADM Energy
         ricci = results.get("ricci_scalars", torch.zeros(history.N))
@@ -1398,7 +1417,9 @@ def compute_quantum_gravity_observables(
                 if isinstance(alive_indices, np.ndarray)
                 else alive_indices
             )
-            volumes_full[alive_indices_torch] = volumes.to(device=positions.device, dtype=ricci.dtype)
+            volumes_full[alive_indices_torch] = volumes.to(
+                device=positions.device, dtype=ricci.dtype
+            )
 
         ricci_full = torch.zeros(history.N, device=positions.device, dtype=ricci.dtype)
         alive_indices = voronoi_data["alive_indices"]
@@ -1444,7 +1465,9 @@ def compute_quantum_gravity_observables(
         )
 
         # 8. Spin Network
-        results.update(compute_spin_network_state(voronoi_data, volume_weights=volume_weights_full))
+        results.update(
+            compute_spin_network_state(voronoi_data, volume_weights=volume_weights_full)
+        )
 
         # 9. Raychaudhuri Expansion
         results.update(compute_raychaudhuri_expansion(curvature_proxies, history.N))
@@ -1584,7 +1607,9 @@ def compute_quantum_gravity_time_evolution(
             einstein_hilbert_action[i] = obs.einstein_hilbert_action
             scalar_curvature_mean[i] = obs.scalar_curvature_mean
             adm_mass[i] = obs.adm_mass
-            adm_mass_density[i] = obs.adm_energy_density.mean().item() if len(obs.adm_energy_density) > 0 else 0.0
+            adm_mass_density[i] = (
+                obs.adm_energy_density.mean().item() if len(obs.adm_energy_density) > 0 else 0.0
+            )
             spectral_dim_planck[i] = obs.spectral_dimension_planck
             # Large-scale spectral dimension (last point of curve)
             if len(obs.spectral_dimension_curve) > 0:
@@ -1600,13 +1625,33 @@ def compute_quantum_gravity_time_evolution(
             bulk_volume[i] = obs.bulk_volume
             area_law_coeff[i] = obs.area_law_coefficient
             mean_spin[i] = obs.edge_spins.mean().item() if len(obs.edge_spins) > 0 else 0.0
-            mean_vol[i] = obs.vertex_quantum_volumes.mean().item() if len(obs.vertex_quantum_volumes) > 0 else 0.0
+            mean_vol[i] = (
+                obs.vertex_quantum_volumes.mean().item()
+                if len(obs.vertex_quantum_volumes) > 0
+                else 0.0
+            )
             n_edges_arr[i] = obs.n_edges
-            expansion_mean[i] = obs.expansion_scalar.mean().item() if len(obs.expansion_scalar) > 0 else 0.0
-            expansion_std[i] = obs.expansion_scalar.std().item() if len(obs.expansion_scalar) > 0 else 0.0
-            convergence_frac[i] = obs.convergence_regions.float().mean().item() if len(obs.convergence_regions) > 0 else 0.0
-            tidal_mean[i] = torch.abs(obs.tidal_eigenvalues).mean().item() if obs.tidal_eigenvalues.numel() > 0 else 0.0
-            tidal_max[i] = torch.abs(obs.tidal_eigenvalues).max().item() if obs.tidal_eigenvalues.numel() > 0 else 0.0
+            expansion_mean[i] = (
+                obs.expansion_scalar.mean().item() if len(obs.expansion_scalar) > 0 else 0.0
+            )
+            expansion_std[i] = (
+                obs.expansion_scalar.std().item() if len(obs.expansion_scalar) > 0 else 0.0
+            )
+            convergence_frac[i] = (
+                obs.convergence_regions.float().mean().item()
+                if len(obs.convergence_regions) > 0
+                else 0.0
+            )
+            tidal_mean[i] = (
+                torch.abs(obs.tidal_eigenvalues).mean().item()
+                if obs.tidal_eigenvalues.numel() > 0
+                else 0.0
+            )
+            tidal_max[i] = (
+                torch.abs(obs.tidal_eigenvalues).max().item()
+                if obs.tidal_eigenvalues.numel() > 0
+                else 0.0
+            )
             n_walkers[i] = obs.n_walkers
         except Exception as e:
             # If computation fails for a frame, fill with defaults

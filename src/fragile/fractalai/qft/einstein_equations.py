@@ -293,7 +293,7 @@ def _compute_christoffel(
     #   term1[n, d, b, c] = dg[n, b, d, c]  (partial_b g_{dc})
     #   term2[n, d, b, c] = dg[n, c, d, b]  (partial_c g_{db})
     #   term3[n, d, b, c] = dg[n, d, b, c]  (partial_d g_{bc})
-    term1 = np.swapaxes(dg, 1, 2)  # [N, b->d, a->b, c] hmm, need careful indexing
+    np.swapaxes(dg, 1, 2)  # [N, b->d, a->b, c] hmm, need careful indexing
 
     N, d_dim = metrics.shape[:2]
     bracket = np.zeros_like(dg)  # [N, d, d, d] -> bracket[n, d_idx, b, c]
@@ -302,15 +302,12 @@ def _compute_christoffel(
             for b in range(d_dim):
                 for c in range(d_dim):
                     bracket[n, d_idx, b, c] = (
-                        dg[n, b, d_idx, c]
-                        + dg[n, c, d_idx, b]
-                        - dg[n, d_idx, b, c]
+                        dg[n, b, d_idx, c] + dg[n, c, d_idx, b] - dg[n, d_idx, b, c]
                     )
 
     # Gamma^a_{bc} = 0.5 * g^{ad} * bracket[d, b, c]
     # gamma[n, a, b, c] = 0.5 * sum_d g_inv[n, a, d] * bracket[n, d, b, c]
-    gamma = 0.5 * np.einsum("nad,ndbc->nabc", g_inv, bracket)
-    return gamma
+    return 0.5 * np.einsum("nad,ndbc->nabc", g_inv, bracket)
 
 
 def _compute_christoffel_vectorized(
@@ -339,8 +336,7 @@ def _compute_christoffel_vectorized(
         - dg  # dg[n, d_idx, b, c]
     )
 
-    gamma = 0.5 * np.einsum("nad,ndbc->nabc", g_inv, bracket)
-    return gamma
+    return 0.5 * np.einsum("nad,ndbc->nabc", g_inv, bracket)
 
 
 def _compute_christoffel_derivatives(
@@ -417,7 +413,7 @@ def _compute_riemann(
 
     # Derivative terms
     # R1[n, a, b, c, d] = dGamma[n, c, a, b, d]
-    R1 = dGamma.transpose(0, 3, 2, 1, 4)  # hmm, let me be explicit
+    dGamma.transpose(0, 3, 2, 1, 4)  # hmm, let me be explicit
 
     N = christoffels.shape[0]
     d_dim = christoffels.shape[1]
@@ -481,8 +477,7 @@ def _compute_riemann_vectorized(
     # nabdc -> we need nabcd, so swap last two:
     term4 = term4.transpose(0, 1, 2, 4, 3)
 
-    R = term1 - term2 + term3 - term4
-    return R
+    return term1 - term2 + term3 - term4
 
 
 def _compute_ricci_and_einstein(
@@ -554,7 +549,7 @@ def _compute_stress_energy(
     T_phi = grad_outer - 0.5 * grad_sq[:, None, None] * metrics
     T += T_phi
 
-    if mode in ("kinetic_pressure", "full"):
+    if mode in {"kinetic_pressure", "full"}:
         # Kinetic contribution: rho * v_u * v_v
         # Use 1/volume as energy density proxy
         rho = np.where(volumes > 0, 1.0 / volumes, 0.0)
@@ -650,8 +645,7 @@ def _compute_gradient_from_neighbors(
 
     eye = reg * np.eye(d, dtype=positions.dtype)
     xtx_inv = np.linalg.inv(xtx + eye[None, :, :])
-    grads = np.einsum("nij,nj->ni", xtx_inv, xty)
-    return grads
+    return np.einsum("nij,nj->ni", xtx_inv, xty)
 
 
 def _run_scalar_test(
@@ -708,9 +702,11 @@ def _vectorized_weighted_linear_regression(
     w_arr = np.asarray(w, dtype=np.float64)
 
     if x_arr.ndim != 2 or y_arr.ndim != 2 or w_arr.ndim != 2:
-        raise ValueError("x, y, and w must be rank-2 arrays [B, K].")
+        msg = "x, y, and w must be rank-2 arrays [B, K]."
+        raise ValueError(msg)
     if x_arr.shape != y_arr.shape or x_arr.shape != w_arr.shape:
-        raise ValueError("x, y, and w must share identical shape.")
+        msg = "x, y, and w must share identical shape."
+        raise ValueError(msg)
 
     w_sum = np.sum(w_arr, axis=1)
     safe = w_sum > 0.0
@@ -816,9 +812,11 @@ def _bootstrap_scalar_regression_cis(
     y_f = np.asarray(ricci_frames, dtype=np.float64)
     m_f = np.asarray(valid_frames, dtype=bool)
     if x_f.ndim != 2 or y_f.ndim != 2 or m_f.ndim != 2:
-        raise ValueError("density_frames, ricci_frames, and valid_frames must be [F, N].")
+        msg = "density_frames, ricci_frames, and valid_frames must be [F, N]."
+        raise ValueError(msg)
     if x_f.shape != y_f.shape or x_f.shape != m_f.shape:
-        raise ValueError("Bootstrap frame arrays must share identical shape.")
+        msg = "Bootstrap frame arrays must share identical shape."
+        raise ValueError(msg)
 
     f_count, n_count = x_f.shape
     if f_count == 0 or n_count == 0:
@@ -843,7 +841,9 @@ def _bootstrap_scalar_regression_cis(
     y_sel = y_f[sampled_frames]
     m_sel = m_f[sampled_frames]
 
-    walker_idx = rng.integers(0, n_count, size=(b, sampled_frames.shape[1], n_count), dtype=np.int64)
+    walker_idx = rng.integers(
+        0, n_count, size=(b, sampled_frames.shape[1], n_count), dtype=np.int64
+    )
     x_boot = np.take_along_axis(x_sel, walker_idx, axis=2)
     y_boot = np.take_along_axis(y_sel, walker_idx, axis=2)
     w_boot = np.take_along_axis(m_sel, walker_idx, axis=2).astype(np.float64)
@@ -892,9 +892,11 @@ def _jackknife_scalar_regression_cis(
     y_f = np.asarray(ricci_frames, dtype=np.float64)
     w_f = np.asarray(valid_frames, dtype=np.float64)
     if x_f.ndim != 2 or y_f.ndim != 2 or w_f.ndim != 2:
-        raise ValueError("Jackknife frame arrays must be rank-2 [F, N].")
+        msg = "Jackknife frame arrays must be rank-2 [F, N]."
+        raise ValueError(msg)
     if x_f.shape != y_f.shape or x_f.shape != w_f.shape:
-        raise ValueError("Jackknife frame arrays must share identical shape.")
+        msg = "Jackknife frame arrays must share identical shape."
+        raise ValueError(msg)
 
     f_count = x_f.shape[0]
     if f_count < 2:
@@ -955,7 +957,9 @@ def _jackknife_scalar_regression_cis(
     r2_ci = _jk_ci(r2[valid])
     slope_ci = _jk_ci(slope[valid])
     intercept_ci = _jk_ci(intercept[valid])
-    g_ci = None if slope_ci is None else (slope_ci[0] / (16.0 * np.pi), slope_ci[1] / (16.0 * np.pi))
+    g_ci = (
+        None if slope_ci is None else (slope_ci[0] / (16.0 * np.pi), slope_ci[1] / (16.0 * np.pi))
+    )
     lambda_ci = None if intercept_ci is None else (intercept_ci[0] / 6.0, intercept_ci[1] / 6.0)
 
     return (r2_ci, slope_ci, intercept_ci, g_ci, lambda_ci)
@@ -1012,11 +1016,7 @@ def _run_scalar_test_coarse_grained(
     if method != "radial":
         raise ValueError(f"Unsupported coarse_grain_method: {method!r}.")
 
-    valid = (
-        mask
-        & np.isfinite(ricci_scalar)
-        & np.isfinite(density)
-    )
+    valid = mask & np.isfinite(ricci_scalar) & np.isfinite(density)
     if valid.sum() < 3:
         return None
 
@@ -1121,7 +1121,7 @@ def _run_tensor_test(
                 continue
 
             res = stats.linregress(T_comp[finite], G_comp[finite])
-            r2_components.append(res.rvalue ** 2)
+            r2_components.append(res.rvalue**2)
 
             G_all.append(G_comp[finite])
             T_all.append(T_comp[finite])
@@ -1133,7 +1133,7 @@ def _run_tensor_test(
         finite = np.isfinite(G_flat) & np.isfinite(T_flat)
         if finite.sum() >= 3:
             res = stats.linregress(T_flat[finite], G_flat[finite])
-            overall_r2 = res.rvalue ** 2
+            overall_r2 = res.rvalue**2
             slope = res.slope
         else:
             overall_r2, slope = 0.0, 0.0
@@ -1242,7 +1242,10 @@ def _compute_einstein_frame_data(
         gradients = _to_numpy(history.fitness_gradients[frame])  # [N, d]
     else:
         gradients = _compute_gradient_from_neighbors(
-            positions, fitness_vals, edge_index_full, config.fd_regularization,
+            positions,
+            fitness_vals,
+            edge_index_full,
+            config.fd_regularization,
         )
 
     ricci_proxy = None
@@ -1250,11 +1253,17 @@ def _compute_einstein_frame_data(
         ricci_proxy = _to_numpy(history.ricci_scalar_proxy[frame])
 
     dg = _compute_metric_derivatives_vectorized(
-        positions, metrics, edge_index_full, config.fd_regularization,
+        positions,
+        metrics,
+        edge_index_full,
+        config.fd_regularization,
     )
     christoffels = _compute_christoffel_vectorized(metrics, dg)
     d_gamma = _compute_christoffel_derivatives(
-        positions, christoffels, edge_index_full, config.fd_regularization,
+        positions,
+        christoffels,
+        edge_index_full,
+        config.fd_regularization,
     )
     riemann = _compute_riemann_vectorized(christoffels, d_gamma)
     ricci_tensor, ricci_scalar_full, einstein = _compute_ricci_and_einstein(riemann, metrics)
@@ -1267,11 +1276,19 @@ def _compute_einstein_frame_data(
         ricci_scalar_source = "full_derivative_pipeline"
 
     stress_energy = _compute_stress_energy(
-        positions, velocities, fitness_vals, gradients,
-        metrics, volumes, neighbors, config.stress_energy_mode,
+        positions,
+        velocities,
+        fitness_vals,
+        gradients,
+        metrics,
+        volumes,
+        neighbors,
+        config.stress_energy_mode,
     )
 
-    valid_base = np.isfinite(ricci_scalar_full) & np.all(np.isfinite(einstein.reshape(n_walkers, -1)), axis=1)
+    valid_base = np.isfinite(ricci_scalar_full) & np.all(
+        np.isfinite(einstein.reshape(n_walkers, -1)), axis=1
+    )
     valid = valid_base & (volumes > 0)
 
     density_mode = str(config.scalar_density_mode).strip().lower()
@@ -1337,7 +1354,8 @@ def compute_einstein_test(
     # 1. Select MC frame
     n_rec_minus1 = history.n_recorded - 1
     if n_rec_minus1 <= 0:
-        raise ValueError("history has no recorded fitness frames.")
+        msg = "history has no recorded fitness frames."
+        raise ValueError(msg)
 
     if config.mc_time_index is not None:
         frame = int(min(config.mc_time_index, n_rec_minus1 - 1))
@@ -1414,7 +1432,9 @@ def compute_einstein_test(
         g_n, g_n_source = g_newton_manual, "manual"
     else:
         g_n, g_n_source = _extract_g_newton(
-            fractal_set_regressions, g_newton_metric, g_newton_manual,
+            fractal_set_regressions,
+            g_newton_metric,
+            g_newton_manual,
         )
 
     # 3. Scalar test
@@ -1449,12 +1469,16 @@ def compute_einstein_test(
         scalar_intercept_ci_jackknife,
         g_newton_ci_jackknife,
         lambda_ci_jackknife,
-    ) = _jackknife_scalar_regression_cis(
-        density_frames=scalar_density_frames,
-        ricci_frames=scalar_ricci_frames,
-        valid_frames=scalar_valid_frames,
-        confidence=float(config.bootstrap_confidence),
-    ) if temporal_enabled else (None, None, None, None, None)
+    ) = (
+        _jackknife_scalar_regression_cis(
+            density_frames=scalar_density_frames,
+            ricci_frames=scalar_ricci_frames,
+            valid_frames=scalar_valid_frames,
+            confidence=float(config.bootstrap_confidence),
+        )
+        if temporal_enabled
+        else (None, None, None, None, None)
+    )
 
     # 5. Coarse-grained scalar test
     coarse_r2 = None
@@ -1498,7 +1522,9 @@ def compute_einstein_test(
     boundary_r2_full = None
     if volumes_full is not None:
         scalar_r2_full, scalar_slope_full, scalar_intercept_full = _run_scalar_test(
-            R_scalar_for_scalar_test, volumes_full, valid_base,
+            R_scalar_for_scalar_test,
+            volumes_full,
+            valid_base,
         )
         g_n_einstein_full = (
             scalar_slope_full / (16.0 * np.pi) if abs(scalar_slope_full) > 1e-30 else 0.0
@@ -1507,7 +1533,10 @@ def compute_einstein_test(
 
     # 7. Tensor test
     tensor_r2, tensor_slope, tensor_r2_per, comp_labels = _run_tensor_test(
-        einstein, T, valid, d,
+        einstein,
+        T,
+        valid,
+        d,
     )
 
     # 8. Cross-check
@@ -1516,7 +1545,7 @@ def compute_einstein_test(
         finite_both = valid & np.isfinite(ricci_proxy) & np.isfinite(R_scalar_full)
         if finite_both.sum() >= 3:
             res = stats.linregress(ricci_proxy[finite_both], R_scalar_full[finite_both])
-            proxy_r2 = res.rvalue ** 2
+            proxy_r2 = res.rvalue**2
 
     # 9. Bulk vs boundary
     bulk_mask = _compute_bulk_mask(positions, config.bulk_fraction)
@@ -1528,10 +1557,14 @@ def compute_einstein_test(
     )
     if volumes_full is not None:
         bulk_r2_full, _, _ = _run_scalar_test(
-            R_scalar_for_scalar_test, volumes_full, valid_base & bulk_mask,
+            R_scalar_for_scalar_test,
+            volumes_full,
+            valid_base & bulk_mask,
         )
         boundary_r2_full, _, _ = _run_scalar_test(
-            R_scalar_for_scalar_test, volumes_full, valid_base & ~bulk_mask,
+            R_scalar_for_scalar_test,
+            volumes_full,
+            valid_base & ~bulk_mask,
         )
 
     # 10. G_N ratio

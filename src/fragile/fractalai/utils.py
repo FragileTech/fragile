@@ -40,7 +40,7 @@ def numpy_dtype_to_torch_dtype(dtype):
 
 
 def create_gif(data, filename=None, fps=10, optimize=False):
-    duration = int((len(data) / fps) * 20)
+    duration = int(1000 / fps)
     filename = tempfile.NamedTemporaryFile(suffix="a.gif") if filename is None else filename
     images = [Image.fromarray(v) for v in data]
     images[0].save(

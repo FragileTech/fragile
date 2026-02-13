@@ -22,10 +22,9 @@ from .hessian_estimation import (
 from .neighbors import build_csr_from_coo, query_walker_neighbors_vectorized
 from .ricci import (
     compute_ricci_proxy,
-    compute_ricci_tensor_proxy,
     compute_ricci_tensor_proxy_full_metric,
 )
-from .weights import WeightMode, clamp_metric_eigenvalues, compute_edge_weights
+from .weights import clamp_metric_eigenvalues, compute_edge_weights, WeightMode
 
 
 @dataclass
@@ -95,8 +94,7 @@ def _build_delaunay_edges(positions: np.ndarray) -> np.ndarray:
     edges_all = np.concatenate([edges, edges_rev], axis=0)
 
     # Remove duplicates without Python loops.
-    edges_unique = np.unique(edges_all, axis=0)
-    return edges_unique
+    return np.unique(edges_all, axis=0)
 
 
 def _compute_metric_from_hessian(
@@ -171,7 +169,6 @@ def _compute_geodesic_distances(
     return torch.sqrt(torch.clamp(d_sq, min=1e-12))
 
 
-
 def compute_delaunay_scutoid(
     positions: Tensor,
     fitness_values: Tensor,
@@ -203,7 +200,8 @@ def compute_delaunay_scutoid(
 
     alive_indices = torch.where(alive_mask)[0]
     if alive_indices.numel() == 0:
-        raise ValueError("No alive walkers for Delaunay computation.")
+        msg = "No alive walkers for Delaunay computation."
+        raise ValueError(msg)
 
     if spatial_dims is not None:
         pos_alive = positions[alive_mask, :spatial_dims]
@@ -259,13 +257,12 @@ def compute_delaunay_scutoid(
     if metric_mode == "covariance":
         metric_tensors = compute_emergent_metric(pos_alive, edge_index, alive=None)
         metric_tensors = 0.5 * (metric_tensors + metric_tensors.transpose(-1, -2))
-        metric_tensors = clamp_metric_eigenvalues(
-            metric_tensors, min_eig=min_eig, max_eig=max_eig
-        )
+        metric_tensors = clamp_metric_eigenvalues(metric_tensors, min_eig=min_eig, max_eig=max_eig)
         metric_det, volume_weights = _compute_det_and_volume(metric_tensors)
     elif metric_mode == "hessian":
         if hessian_mode == "none":
-            raise ValueError("hessian_mode must not be 'none' when metric_mode='hessian'.")
+            msg = "hessian_mode must not be 'none' when metric_mode='hessian'."
+            raise ValueError(msg)
         metric_tensors, metric_det, volume_weights = _compute_metric_from_hessian(
             hessian_diag=hessian_diag,
             hessian_full=hessian_full,

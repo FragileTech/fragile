@@ -59,7 +59,9 @@ def test_collect_family_operator_entries_includes_multiscale_and_original() -> N
         "scalar": _result([1.0, 0.9, 0.85, 0.8, 0.76], mass=0.21, mass_error=0.03),
     }
 
-    entries = _collect_family_operator_entries(output, "nucleon", original_results=original_results)
+    entries = _collect_family_operator_entries(
+        output, "nucleon", original_results=original_results
+    )
 
     assert len(entries) == 4
     assert all("nucleon" in str(entry["source_channel"]) for entry in entries)

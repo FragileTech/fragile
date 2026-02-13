@@ -98,7 +98,8 @@ def compute_inverse_volume_weights(
 ) -> Tensor:
     """Compute weights proportional to inverse destination cell volume."""
     if cell_volumes is None:
-        raise ValueError("cell_volumes is required for inverse_volume weights.")
+        msg = "cell_volumes is required for inverse_volume weights."
+        raise ValueError(msg)
 
     dst = edge_index[1]
     raw_weights = 1.0 / (cell_volumes[dst] + eps)
@@ -115,7 +116,8 @@ def compute_riemannian_volumes(
 ) -> Tensor:
     """Compute Riemannian cell volumes: V_i^R = V_i^E * sqrt(det g_i)."""
     if cell_volumes is None:
-        raise ValueError("cell_volumes is required for Riemannian volumes.")
+        msg = "cell_volumes is required for Riemannian volumes."
+        raise ValueError(msg)
 
     sign, logdet = torch.linalg.slogdet(metric_tensors)
     if (sign <= 0).any():
@@ -161,13 +163,12 @@ def compute_inverse_riemannian_volume_weights(
     if riemannian_volumes is None:
         if metric_tensors is None:
             if positions is None:
-                raise ValueError("metric_tensors or positions is required for Riemannian weights.")
+                msg = "metric_tensors or positions is required for Riemannian weights."
+                raise ValueError(msg)
             metric_tensors = compute_emergent_metric(positions, edge_index, alive)
         if symmetrize_metric:
             metric_tensors = 0.5 * (metric_tensors + metric_tensors.transpose(-1, -2))
-        metric_tensors = clamp_metric_eigenvalues(
-            metric_tensors, min_eig=min_eig, max_eig=max_eig
-        )
+        metric_tensors = clamp_metric_eigenvalues(metric_tensors, min_eig=min_eig, max_eig=max_eig)
         riemannian_volumes = compute_riemannian_volumes(cell_volumes, metric_tensors, eps=eps)
 
     dst = edge_index[1]
@@ -320,7 +321,8 @@ def compute_riemannian_kernel_volume_weights(
     # Volume element at destination: sqrt(det g_j)
     if riemannian_volumes is None:
         if cell_volumes is None:
-            raise ValueError("cell_volumes or riemannian_volumes required for riemannian_kernel_volume.")
+            msg = "cell_volumes or riemannian_volumes required for riemannian_kernel_volume."
+            raise ValueError(msg)
         riemannian_volumes = compute_riemannian_volumes(cell_volumes, metric_tensors, eps=eps)
 
     raw_weights = kernel * riemannian_volumes[dst]

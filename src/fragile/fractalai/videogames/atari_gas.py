@@ -51,6 +51,11 @@ class AtariFractalGas(FractalGas):
             elif hasattr(self.env, "restore_state"):
                 self.env.restore_state(state)
 
+            # ALE restoreState() only restores RAM/game counters but does NOT
+            # update the screen buffer.  We must execute a no-op action (0) so
+            # the emulator re-renders pixels from the restored state.
+            self._noop_to_refresh_screen()
+
             # Render frame: prefer get_image() (reads ALE buffer directly,
             # no OpenGL needed), fall back to render() then ALE buffer.
             if hasattr(self.env, "get_image"):
@@ -64,15 +69,14 @@ class AtariFractalGas(FractalGas):
                     return frame.astype(np.uint8)
 
             # Last resort: read ALE screen buffer directly
-            ale = getattr(self.env, "ale", None) or getattr(
-                getattr(self.env, "unwrapped", None), "ale", None
-            )
+            ale = self._find_ale()
             if ale is not None and hasattr(ale, "getScreenRGB"):
                 return ale.getScreenRGB().astype(np.uint8)
 
             return np.zeros((210, 160, 3), dtype=np.uint8)
 
-        except Exception:
+        except Exception as exc:
+            print(f"[_render_walker_frame] failed: {exc}", flush=True)
             return np.zeros((210, 160, 3), dtype=np.uint8)
 
         finally:
@@ -81,6 +85,56 @@ class AtariFractalGas(FractalGas):
                     self.env.set_state(saved_state)
                 elif hasattr(self.env, "restore_state"):
                     self.env.restore_state(saved_state)
+
+    def _find_ale(self):
+        """Locate the ALE interface through various wrapper chains.
+
+        Searches for ALE via:
+        - ``env.ale`` (plangym attribute delegation)
+        - ``env.unwrapped.ale`` (gymnasium standard)
+        - ``env._ale`` (our custom AtariEnv)
+        - ``env.gym_env.unwrapped.ale`` (plangym direct access)
+        """
+        ale = getattr(self.env, "ale", None)
+        if ale is not None:
+            return ale
+        unwrapped = getattr(self.env, "unwrapped", None)
+        if unwrapped is not None:
+            ale = getattr(unwrapped, "ale", None)
+            if ale is not None:
+                return ale
+        ale = getattr(self.env, "_ale", None)
+        if ale is not None:
+            return ale
+        # plangym: env.gym_env.unwrapped.ale
+        gym_env = getattr(self.env, "gym_env", None)
+        if gym_env is not None:
+            unwrapped = getattr(gym_env, "unwrapped", None)
+            if unwrapped is not None:
+                ale = getattr(unwrapped, "ale", None)
+                if ale is not None:
+                    return ale
+        return None
+
+    def _noop_to_refresh_screen(self) -> None:
+        """Execute a no-op action so ALE re-renders the screen buffer.
+
+        After ``set_state()`` / ``restoreState()``, ALE restores RAM and
+        game counters but the pixel buffer remains stale from the last
+        ``act()`` call.  Sending action 0 (NOOP) forces the Stella
+        emulator to redraw the screen from the current state.
+        """
+        # Prefer the low-level ALE interface to avoid side effects
+        ale = self._find_ale()
+        if ale is not None and hasattr(ale, "act"):
+            ale.act(0)
+            return
+        # Fallback: use the env's step with action 0
+        if hasattr(self.env, "step"):
+            try:
+                self.env.step(0)
+            except Exception:
+                pass
 
     def run_with_tree(
         self,

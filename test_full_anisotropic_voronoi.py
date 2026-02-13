@@ -10,17 +10,16 @@ This script verifies:
 5. Off-diagonal elements capture rotated cell geometry
 """
 
+import sys
+
 import numpy as np
 import torch
-from scipy.spatial import Voronoi
 
 # Import the modules
 from src.fragile.fractalai.qft.voronoi_observables import (
     compute_voronoi_diffusion_tensor,
     compute_voronoi_tessellation,
 )
-from src.fragile.fractalai.core.kinetic_operator import KineticOperator
-from src.fragile.fractalai.core.euclidean_gas import EuclideanGas
 
 
 def test_diagonal_mode_backward_compatibility():
@@ -111,7 +110,9 @@ def test_full_mode_shape_and_symmetry():
     # Check off-diagonal elements exist
     off_diag_elements = sigma_full[:, 0, 1]  # Upper-right elements
     num_nonzero = np.sum(np.abs(off_diag_elements) > 1e-6)
-    print(f"✓ Off-diagonal elements non-zero: {num_nonzero}/{N} cells ({100*num_nonzero/N:.1f}%)")
+    print(
+        f"✓ Off-diagonal elements non-zero: {num_nonzero}/{N} cells ({100 * num_nonzero / N:.1f}%)"
+    )
 
     if num_nonzero > 0:
         print(f"✓ Max off-diagonal magnitude: {np.abs(off_diag_elements).max():.4f}")
@@ -153,7 +154,7 @@ def test_positive_definiteness():
     print(f"✓ Testing {N} tensors in {d}D...")
 
     all_positive_definite = True
-    min_eigenvalue_overall = float('inf')
+    min_eigenvalue_overall = float("inf")
 
     for i in range(N):
         eigenvalues = np.linalg.eigvalsh(sigma_full[i])
@@ -166,7 +167,7 @@ def test_positive_definiteness():
 
     print(f"✓ Minimum eigenvalue across all tensors: {min_eigenvalue_overall:.6f}")
     assert all_positive_definite, "Some tensors are not positive-definite"
-    print(f"✓ PASSED: All tensors are positive-definite")
+    print("✓ PASSED: All tensors are positive-definite")
 
 
 def test_rotated_cells_capture():
@@ -223,12 +224,16 @@ def test_rotated_cells_capture():
     off_diag = sigma_full[:, 0, 1]
     num_significant = np.sum(np.abs(off_diag) > 0.01)
 
-    print(f"✓ Cells with significant off-diagonal: {num_significant}/{N} ({100*num_significant/N:.1f}%)")
+    print(
+        f"✓ Cells with significant off-diagonal: {num_significant}/{N} ({100 * num_significant / N:.1f}%)"
+    )
     print(f"✓ Max |off-diagonal|: {np.abs(off_diag).max():.4f}")
     print(f"✓ Mean |off-diagonal|: {np.abs(off_diag).mean():.4f}")
 
     # For rotated structure, we expect some cells to have non-zero off-diagonal
-    assert num_significant > 0, "Expected some cells to have off-diagonal elements for rotated structure"
+    assert (
+        num_significant > 0
+    ), "Expected some cells to have off-diagonal elements for rotated structure"
 
     # Compare with diagonal mode
     sigma_diag = compute_voronoi_diffusion_tensor(
@@ -239,8 +244,10 @@ def test_rotated_cells_capture():
         diagonal_only=True,
     )
 
-    print(f"\n✓ Diagonal mode - mean σ_x: {sigma_diag[:, 0].mean():.4f}, σ_y: {sigma_diag[:, 1].mean():.4f}")
-    print(f"✓ Full mode - sample tensor [0]:")
+    print(
+        f"\n✓ Diagonal mode - mean σ_x: {sigma_diag[:, 0].mean():.4f}, σ_y: {sigma_diag[:, 1].mean():.4f}"
+    )
+    print("✓ Full mode - sample tensor [0]:")
     print(f"  {sigma_full[0]}")
     print("✓ PASSED: Rotated cells captured in off-diagonal elements")
 
@@ -311,7 +318,7 @@ def test_integration_with_kinetic_operator():
     # Check off-diagonal elements
     off_diag = sigma_full[:, 0, 1]
     num_nonzero = torch.sum(torch.abs(off_diag) > 1e-6).item()
-    print(f"✓ Cells with non-zero off-diagonal: {num_nonzero}/{N} ({100*num_nonzero/N:.1f}%)")
+    print(f"✓ Cells with non-zero off-diagonal: {num_nonzero}/{N} ({100 * num_nonzero / N:.1f}%)")
 
     # Verify consistency: diagonal elements of full mode should be similar to diagonal mode
     diag_from_full = torch.stack([sigma_full[:, i, i] for i in range(d)], dim=1)
@@ -320,7 +327,7 @@ def test_integration_with_kinetic_operator():
     print(f"✓ Diagonal consistency (mean rel. diff): {mean_rel_diff:.4f}")
 
     print(f"\n✓ Sample diagonal tensor [0]: {sigma_diag[0]}")
-    print(f"✓ Sample full tensor [0]:")
+    print("✓ Sample full tensor [0]:")
     print(f"  {sigma_full[0]}")
 
     print("✓ PASSED: Torch integration and consistency verified")
@@ -351,9 +358,10 @@ def run_all_tests():
         print("\nImplementation successful!")
 
     except Exception as e:
-        print(f"\n✗✗✗ TEST FAILED ✗✗✗")
+        print("\n✗✗✗ TEST FAILED ✗✗✗")
         print(f"Error: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -362,4 +370,4 @@ def run_all_tests():
 
 if __name__ == "__main__":
     success = run_all_tests()
-    exit(0 if success else 1)
+    sys.exit(0 if success else 1)

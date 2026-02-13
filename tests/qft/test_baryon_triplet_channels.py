@@ -101,9 +101,11 @@ def _naive_baryon_correlator(
                     and color_valid_np[t_sink, k]
                 ):
                     continue
-                m_sink = np.column_stack(
-                    [color_np[t_sink, i], color_np[t_sink, j], color_np[t_sink, k]]
-                )
+                m_sink = np.column_stack([
+                    color_np[t_sink, i],
+                    color_np[t_sink, j],
+                    color_np[t_sink, k],
+                ])
                 det_sink = np.linalg.det(m_sink)
                 if not np.isfinite(det_sink.real) or not np.isfinite(det_sink.imag):
                     continue

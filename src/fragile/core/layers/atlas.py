@@ -1141,9 +1141,7 @@ class CovariantChartRouter(nn.Module):
         tau = math.sqrt(self.key_dim) * denom / 2.0
         return tau.clamp(min=self.tau_min)
 
-    def _hyperbolic_score(
-        self, z: torch.Tensor, chart_centers: torch.Tensor
-    ) -> torch.Tensor:
+    def _hyperbolic_score(self, z: torch.Tensor, chart_centers: torch.Tensor) -> torch.Tensor:
         """Compute logits based on negative hyperbolic distance. O(N*D).
 
         Uses the Poincaré ball distance formula for efficient chart scoring
@@ -1721,7 +1719,7 @@ class PrimitiveTopologicalDecoder(nn.Module):
         self.render_skip = None
         self.vision_decoder = None
         if vision_preproc:
-            if vision_backbone_type in ("covariant_cifar", "standard_cifar"):
+            if vision_backbone_type in {"covariant_cifar", "standard_cifar"}:
                 from fragile.core.layers.vision import StandardResNetDecoder
 
                 self.vision_decoder = StandardResNetDecoder(

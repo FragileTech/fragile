@@ -26,18 +26,17 @@ Usage:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
-import numpy as np
 import torch
-import torch.nn.functional as F
 from torch import Tensor
+import torch.nn.functional as F
 
 from fragile.fractalai.qft.neighbor_analysis import (
-    compute_neighbor_topology,
     compute_full_neighbor_matrix,
-    extract_geometric_weights,
+    compute_neighbor_topology,
 )
+
 
 if TYPE_CHECKING:
     from fragile.fractalai.core.history import RunHistory
@@ -134,7 +133,8 @@ def _resolve_mc_time_index(history, mc_time_index: int | None) -> int:
         ValueError: If index is out of bounds.
     """
     if history.n_recorded < 2:
-        raise ValueError("Need at least 2 recorded timesteps for Euclidean analysis.")
+        msg = "Need at least 2 recorded timesteps for Euclidean analysis."
+        raise ValueError(msg)
     if mc_time_index is None:
         resolved = history.n_recorded - 1
     else:
@@ -185,7 +185,7 @@ def compute_color_states_batch(
         Tuple of (color [T, N, d], valid [T, N]).
     """
     n_recorded = end_idx if end_idx is not None else history.n_recorded
-    T = n_recorded - start_idx
+    n_recorded - start_idx
 
     # Extract batched tensors
     v_pre = history.v_before_clone[start_idx:n_recorded]  # [T, N, d]
@@ -242,8 +242,7 @@ def estimate_ell0(history: RunHistory) -> float:
 
     if dist.numel() > 0 and alive.any():
         return float(dist[alive].median().item())
-    else:
-        return 1.0
+    return 1.0
 
 
 # =============================================================================
@@ -538,11 +537,11 @@ def build_gamma_matrices(
 
 
 def extract_precomputed_edge_weights(
-    history: "RunHistory",
+    history: RunHistory,
     start_idx: int,
-    sample_indices: Tensor,   # [T, S]
+    sample_indices: Tensor,  # [T, S]
     neighbor_indices: Tensor,  # [T, S, k]
-    alive: Tensor,             # [T, N]
+    alive: Tensor,  # [T, N]
     mode: str,
 ) -> Tensor | None:
     """Extract pre-computed edge weights for sample-neighbor pairs.
@@ -649,7 +648,7 @@ def compute_scalar_operators(
     sample_indices = agg_data.sample_indices
     neighbor_indices = agg_data.neighbor_indices
 
-    T, N, d = color.shape
+    T, _N, _d = color.shape
     S = sample_indices.shape[1]
     device = color.device
 
@@ -662,8 +661,12 @@ def compute_scalar_operators(
     color_j = color[t_idx, first_neighbor]
 
     # Validity masks
-    valid_i = valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
-    valid_j = valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    valid_i = (
+        valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
+    )
+    valid_j = (
+        valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    )
     valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
 
     # Identity projection: simple dot product
@@ -674,9 +677,7 @@ def compute_scalar_operators(
 
     # Weighted mean over samples per timestep
     weights = _compute_operator_weights(agg_data, valid_mask)
-    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
-
-    return series
+    return (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
 
 def compute_pseudoscalar_operators(
@@ -698,7 +699,7 @@ def compute_pseudoscalar_operators(
     sample_indices = agg_data.sample_indices
     neighbor_indices = agg_data.neighbor_indices
 
-    T, N, d = color.shape
+    T, _N, _d = color.shape
     S = sample_indices.shape[1]
     device = color.device
 
@@ -709,8 +710,12 @@ def compute_pseudoscalar_operators(
     color_j = color[t_idx, first_neighbor]
 
     # Validity masks
-    valid_i = valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
-    valid_j = valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    valid_i = (
+        valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
+    )
+    valid_j = (
+        valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    )
     valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
 
     # γ₅ projection: alternating sign dot product
@@ -722,9 +727,7 @@ def compute_pseudoscalar_operators(
 
     # Weighted mean over samples
     weights = _compute_operator_weights(agg_data, valid_mask)
-    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
-
-    return series
+    return (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
 
 def compute_vector_operators(
@@ -746,7 +749,7 @@ def compute_vector_operators(
     sample_indices = agg_data.sample_indices
     neighbor_indices = agg_data.neighbor_indices
 
-    T, N, d = color.shape
+    T, _N, _d = color.shape
     S = sample_indices.shape[1]
     device = color.device
 
@@ -757,8 +760,12 @@ def compute_vector_operators(
     color_j = color[t_idx, first_neighbor]
 
     # Validity masks
-    valid_i = valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
-    valid_j = valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    valid_i = (
+        valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
+    )
+    valid_j = (
+        valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    )
     valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
 
     # γ_μ projection using einsum
@@ -771,9 +778,7 @@ def compute_vector_operators(
 
     # Weighted mean over samples
     weights = _compute_operator_weights(agg_data, valid_mask)
-    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
-
-    return series
+    return (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
 
 def compute_axial_vector_operators(
@@ -795,7 +800,7 @@ def compute_axial_vector_operators(
     sample_indices = agg_data.sample_indices
     neighbor_indices = agg_data.neighbor_indices
 
-    T, N, d = color.shape
+    T, _N, _d = color.shape
     S = sample_indices.shape[1]
     device = color.device
 
@@ -806,8 +811,12 @@ def compute_axial_vector_operators(
     color_j = color[t_idx, first_neighbor]
 
     # Validity masks
-    valid_i = valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
-    valid_j = valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    valid_i = (
+        valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
+    )
+    valid_j = (
+        valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    )
     valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
 
     # γ₅γ_μ projection
@@ -820,9 +829,7 @@ def compute_axial_vector_operators(
 
     # Weighted mean over samples
     weights = _compute_operator_weights(agg_data, valid_mask)
-    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
-
-    return series
+    return (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
 
 def compute_tensor_operators(
@@ -844,7 +851,7 @@ def compute_tensor_operators(
     sample_indices = agg_data.sample_indices
     neighbor_indices = agg_data.neighbor_indices
 
-    T, N, d = color.shape
+    T, _N, _d = color.shape
     S = sample_indices.shape[1]
     device = color.device
 
@@ -855,8 +862,12 @@ def compute_tensor_operators(
     color_j = color[t_idx, first_neighbor]
 
     # Validity masks
-    valid_i = valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
-    valid_j = valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    valid_i = (
+        valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
+    )
+    valid_j = (
+        valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    )
     valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
 
     # σ_μν projection
@@ -872,9 +883,7 @@ def compute_tensor_operators(
 
     # Weighted mean over samples
     weights = _compute_operator_weights(agg_data, valid_mask)
-    series = (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
-
-    return series
+    return (op_values * weights).sum(dim=1) / weights.sum(dim=1).clamp(min=1e-12)
 
 
 def compute_nucleon_operators(
@@ -898,7 +907,7 @@ def compute_nucleon_operators(
     sample_indices = agg_data.sample_indices
     neighbor_indices = agg_data.neighbor_indices
 
-    T, N, d = color.shape
+    T, _N, d = color.shape
     device = color.device
 
     if d < 3:
@@ -929,13 +938,17 @@ def compute_nucleon_operators(
     det = torch.linalg.det(matrix)
 
     # Validity mask
-    valid_i = valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
-    valid_j = valid[t_idx, neighbor_indices[:, :, 0]] & alive[
-        t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 0]
-    ]
-    valid_k = valid[t_idx, neighbor_indices[:, :, 1]] & alive[
-        t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 1]
-    ]
+    valid_i = (
+        valid[t_idx, sample_indices] & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
+    )
+    valid_j = (
+        valid[t_idx, neighbor_indices[:, :, 0]]
+        & alive[t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 0]]
+    )
+    valid_k = (
+        valid[t_idx, neighbor_indices[:, :, 1]]
+        & alive[t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 1]]
+    )
     valid_mask = valid_i & valid_j & valid_k
 
     # Mask invalid
@@ -977,13 +990,18 @@ def compute_glueball_operators(
 
     # Check if volume weighting should be applied
     use_volume = (
-        agg_data.operator_weighting != "uniform"
-        and agg_data.sample_volume_weights is not None
+        agg_data.operator_weighting != "uniform" and agg_data.sample_volume_weights is not None
     )
 
     # Clamp alive mask to match T
-    alive_T = alive[:T] if alive.shape[0] >= T else F.pad(
-        alive, (0, 0, 0, T - alive.shape[0]), value=True,
+    alive_T = (
+        alive[:T]
+        if alive.shape[0] >= T
+        else F.pad(
+            alive,
+            (0, 0, 0, T - alive.shape[0]),
+            value=True,
+        )
     )
 
     if use_volume:
@@ -1039,7 +1057,7 @@ def _apply_bilinear_projection_per_walker(
     Returns:
         Operator values [T, N] for each walker.
     """
-    T, N, d = color.shape
+    T, N, _d = color.shape
     device = color.device
 
     # Use first neighbor for each walker
@@ -1052,7 +1070,9 @@ def _apply_bilinear_projection_per_walker(
 
     # Validity masks
     valid_i = valid & alive
-    valid_j = valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    valid_j = (
+        valid[t_idx, first_neighbor] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+    )
     self_neighbor = first_neighbor == torch.arange(N, device=device).unsqueeze(0)
     valid_mask = valid_i & valid_j & (~self_neighbor)
 
@@ -1060,9 +1080,7 @@ def _apply_bilinear_projection_per_walker(
     op_values = gamma_projection_func(color_i, color_j)  # [T, N]
 
     # Mask invalid
-    op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
-
-    return op_values
+    return torch.where(valid_mask, op_values, torch.zeros_like(op_values))
 
 
 def compute_scalar_operators_per_walker(
@@ -1079,7 +1097,8 @@ def compute_scalar_operators_per_walker(
         Operator values [T, N] for each walker.
     """
     if agg_data.full_neighbor_indices is None:
-        raise ValueError("full_neighbor_indices required for per-walker computation")
+        msg = "full_neighbor_indices required for per-walker computation"
+        raise ValueError(msg)
 
     def scalar_projection(color_i: Tensor, color_j: Tensor) -> Tensor:
         return (color_i.conj() * color_j).sum(dim=-1).real
@@ -1107,7 +1126,8 @@ def compute_pseudoscalar_operators_per_walker(
         Operator values [T, N] for each walker.
     """
     if agg_data.full_neighbor_indices is None:
-        raise ValueError("full_neighbor_indices required for per-walker computation")
+        msg = "full_neighbor_indices required for per-walker computation"
+        raise ValueError(msg)
 
     gamma5_diag = gamma_matrices["5"]
 
@@ -1137,12 +1157,18 @@ def compute_vector_operators_per_walker(
         Operator values [T, N] for each walker.
     """
     if agg_data.full_neighbor_indices is None:
-        raise ValueError("full_neighbor_indices required for per-walker computation")
+        msg = "full_neighbor_indices required for per-walker computation"
+        raise ValueError(msg)
 
     gamma_mu = gamma_matrices["mu"]
 
     def vector_projection(color_i: Tensor, color_j: Tensor) -> Tensor:
-        result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_mu.to(color_i.device, dtype=color_i.dtype), color_j)
+        result = torch.einsum(
+            "...i,mij,...j->...m",
+            color_i.conj(),
+            gamma_mu.to(color_i.device, dtype=color_i.dtype),
+            color_j,
+        )
         return result.mean(dim=-1).real
 
     return _apply_bilinear_projection_per_walker(
@@ -1168,12 +1194,18 @@ def compute_axial_vector_operators_per_walker(
         Operator values [T, N] for each walker.
     """
     if agg_data.full_neighbor_indices is None:
-        raise ValueError("full_neighbor_indices required for per-walker computation")
+        msg = "full_neighbor_indices required for per-walker computation"
+        raise ValueError(msg)
 
     gamma_5mu = gamma_matrices["5mu"]
 
     def axial_projection(color_i: Tensor, color_j: Tensor) -> Tensor:
-        result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_5mu.to(color_i.device, dtype=color_i.dtype), color_j)
+        result = torch.einsum(
+            "...i,mij,...j->...m",
+            color_i.conj(),
+            gamma_5mu.to(color_i.device, dtype=color_i.dtype),
+            color_j,
+        )
         return result.mean(dim=-1).real
 
     return _apply_bilinear_projection_per_walker(
@@ -1199,7 +1231,8 @@ def compute_tensor_operators_per_walker(
         Operator values [T, N] for each walker.
     """
     if agg_data.full_neighbor_indices is None:
-        raise ValueError("full_neighbor_indices required for per-walker computation")
+        msg = "full_neighbor_indices required for per-walker computation"
+        raise ValueError(msg)
 
     sigma = gamma_matrices["sigma"]
 
@@ -1208,7 +1241,12 @@ def compute_tensor_operators_per_walker(
         return torch.zeros(T, N, device=agg_data.device)
 
     def tensor_projection(color_i: Tensor, color_j: Tensor) -> Tensor:
-        result = torch.einsum("...i,pij,...j->...p", color_i.conj(), sigma.to(color_i.device, dtype=color_i.dtype), color_j)
+        result = torch.einsum(
+            "...i,pij,...j->...p",
+            color_i.conj(),
+            sigma.to(color_i.device, dtype=color_i.dtype),
+            color_j,
+        )
         return result.mean(dim=-1).real
 
     return _apply_bilinear_projection_per_walker(
@@ -1234,7 +1272,8 @@ def compute_nucleon_operators_per_walker(
         Operator values [T, N] for each walker.
     """
     if agg_data.full_neighbor_indices is None:
-        raise ValueError("full_neighbor_indices required for per-walker computation")
+        msg = "full_neighbor_indices required for per-walker computation"
+        raise ValueError(msg)
 
     color = agg_data.color
     T, N, d = color.shape
@@ -1268,8 +1307,14 @@ def compute_nucleon_operators_per_walker(
     valid = agg_data.color_valid
     alive = agg_data.alive
     valid_i = valid & alive
-    valid_j = valid[t_idx, neighbor_indices[:, :, 0]] & alive[t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 0]]
-    valid_k = valid[t_idx, neighbor_indices[:, :, 1]] & alive[t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 1]]
+    valid_j = (
+        valid[t_idx, neighbor_indices[:, :, 0]]
+        & alive[t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 0]]
+    )
+    valid_k = (
+        valid[t_idx, neighbor_indices[:, :, 1]]
+        & alive[t_idx.clamp(max=alive.shape[0] - 1), neighbor_indices[:, :, 1]]
+    )
     valid_mask = valid_i & valid_j & valid_k
 
     # Mask invalid
@@ -1296,9 +1341,7 @@ def compute_glueball_operators_per_walker(
     force_sq = torch.linalg.vector_norm(force, dim=-1).pow(2)
 
     # Mask dead walkers
-    force_sq = torch.where(alive, force_sq, torch.zeros_like(force_sq))
-
-    return force_sq
+    return torch.where(alive, force_sq, torch.zeros_like(force_sq))
 
 
 # =============================================================================
@@ -1338,8 +1381,15 @@ def compute_all_operator_series(
 
     # 3. Set up channels
     if channels is None:
-        channels = ["scalar", "pseudoscalar", "vector", "axial_vector",
-                   "tensor", "nucleon", "glueball"]
+        channels = [
+            "scalar",
+            "pseudoscalar",
+            "vector",
+            "axial_vector",
+            "tensor",
+            "nucleon",
+            "glueball",
+        ]
 
     # Filter channels based on dimensionality
     if agg_data.d < 3:

@@ -200,20 +200,18 @@ def collect_family_operator_entries(
             if series is None or int(series.numel()) <= 0:
                 continue
             mass_fit = getattr(result, "mass_fit", {})
-            entries.append(
-                {
-                    "operator_label": f"{display_name}@s{int(scale_idx)}",
-                    "source_channel": raw_name_s,
-                    "scale_label": f"s{int(scale_idx)}",
-                    "series": series.detach().float(),
-                    "mass": float(mass_fit.get("mass", float("nan"))),
-                    "mass_error": float(mass_fit.get("mass_error", float("nan"))),
-                    "r2": float(mass_fit.get("r_squared", float("nan"))),
-                    "n_valid_windows": _extract_n_valid_windows(result),
-                    "n_samples": int(getattr(result, "n_samples", 0)),
-                    "source_kind": "multiscale",
-                }
-            )
+            entries.append({
+                "operator_label": f"{display_name}@s{int(scale_idx)}",
+                "source_channel": raw_name_s,
+                "scale_label": f"s{int(scale_idx)}",
+                "series": series.detach().float(),
+                "mass": float(mass_fit.get("mass", float("nan"))),
+                "mass_error": float(mass_fit.get("mass_error", float("nan"))),
+                "r2": float(mass_fit.get("r_squared", float("nan"))),
+                "n_valid_windows": _extract_n_valid_windows(result),
+                "n_samples": int(getattr(result, "n_samples", 0)),
+                "source_kind": "multiscale",
+            })
 
     if isinstance(original_results, Mapping):
         for raw_name, result in original_results.items():
@@ -229,20 +227,18 @@ def collect_family_operator_entries(
                 continue
             display_name = display_channel_name_for_original(raw_name_s, result)
             mass_fit = getattr(result, "mass_fit", {})
-            entries.append(
-                {
-                    "operator_label": f"{display_name}@full",
-                    "source_channel": raw_name_s,
-                    "scale_label": "full_original_no_threshold",
-                    "series": series.detach().float(),
-                    "mass": float(mass_fit.get("mass", float("nan"))),
-                    "mass_error": float(mass_fit.get("mass_error", float("nan"))),
-                    "r2": float(mass_fit.get("r_squared", float("nan"))),
-                    "n_valid_windows": _extract_n_valid_windows(result),
-                    "n_samples": int(getattr(result, "n_samples", 0)),
-                    "source_kind": "original",
-                }
-            )
+            entries.append({
+                "operator_label": f"{display_name}@full",
+                "source_channel": raw_name_s,
+                "scale_label": "full_original_no_threshold",
+                "series": series.detach().float(),
+                "mass": float(mass_fit.get("mass", float("nan"))),
+                "mass_error": float(mass_fit.get("mass_error", float("nan"))),
+                "r2": float(mass_fit.get("r_squared", float("nan"))),
+                "n_valid_windows": _extract_n_valid_windows(result),
+                "n_samples": int(getattr(result, "n_samples", 0)),
+                "source_kind": "original",
+            })
 
     if not entries:
         return entries
@@ -329,13 +325,17 @@ def analyze_operator_quality_vectorized(
     dom_mode = active_idx[dom_local]
     dom_loading = active_vecs[torch.arange(k_count, device=series.device), dom_local]
 
-    mass = torch.tensor([float(entry["mass"]) for entry in entries], dtype=torch.float32, device=series.device)
+    mass = torch.tensor(
+        [float(entry["mass"]) for entry in entries], dtype=torch.float32, device=series.device
+    )
     mass_error = torch.tensor(
         [float(entry["mass_error"]) for entry in entries],
         dtype=torch.float32,
         device=series.device,
     )
-    r2 = torch.tensor([float(entry["r2"]) for entry in entries], dtype=torch.float32, device=series.device)
+    r2 = torch.tensor(
+        [float(entry["r2"]) for entry in entries], dtype=torch.float32, device=series.device
+    )
     n_samples = torch.tensor(
         [int(entry["n_samples"]) for entry in entries],
         dtype=torch.float32,
@@ -346,7 +346,9 @@ def analyze_operator_quality_vectorized(
     err_valid = torch.isfinite(mass_error) & (mass_error >= 0)
     err_pct = torch.full_like(mass, float("inf"))
     err_pct = torch.where(mass_valid & err_valid, (mass_error / mass).abs() * 100.0, err_pct)
-    r2_score = torch.where(torch.isfinite(r2), torch.clamp((r2 + 1.0) / 2.0, 0.0, 1.0), torch.zeros_like(r2))
+    r2_score = torch.where(
+        torch.isfinite(r2), torch.clamp((r2 + 1.0) / 2.0, 0.0, 1.0), torch.zeros_like(r2)
+    )
     err_score = torch.exp(-torch.clamp(err_pct, min=0.0, max=500.0) / 100.0)
     sample_score = torch.log1p(torch.clamp_min(n_samples, 0.0))
     sample_score = sample_score / torch.clamp_min(sample_score.max(), eps)
@@ -376,29 +378,27 @@ def analyze_operator_quality_vectorized(
 
     rows: list[dict[str, Any]] = []
     for idx, entry in enumerate(entries):
-        rows.append(
-            {
-                "operator": entry["operator_label"],
-                "source_channel": entry["source_channel"],
-                "scale_label": entry["scale_label"],
-                "source_kind": entry["source_kind"],
-                "mass": float(mass[idx].item()) if torch.isfinite(mass[idx]) else float("nan"),
-                "mass_error": (
-                    float(mass_error[idx].item()) if torch.isfinite(mass_error[idx]) else float("nan")
-                ),
-                "mass_error_pct": (
-                    float(err_pct[idx].item()) if torch.isfinite(err_pct[idx]) else float("nan")
-                ),
-                "r2": float(r2[idx].item()) if torch.isfinite(r2[idx]) else float("nan"),
-                "n_valid_windows": int(entry.get("n_valid_windows", 0)),
-                "n_samples": int(entry["n_samples"]),
-                "importance": float(importance[idx].item()),
-                "quality_score": float(quality_score[idx].item()),
-                "dominant_mode": int(dom_mode[idx].item()),
-                "dominant_loading": float(dom_loading[idx].item()),
-                "suggestion": suggestions[idx],
-            }
-        )
+        rows.append({
+            "operator": entry["operator_label"],
+            "source_channel": entry["source_channel"],
+            "scale_label": entry["scale_label"],
+            "source_kind": entry["source_kind"],
+            "mass": float(mass[idx].item()) if torch.isfinite(mass[idx]) else float("nan"),
+            "mass_error": (
+                float(mass_error[idx].item()) if torch.isfinite(mass_error[idx]) else float("nan")
+            ),
+            "mass_error_pct": (
+                float(err_pct[idx].item()) if torch.isfinite(err_pct[idx]) else float("nan")
+            ),
+            "r2": float(r2[idx].item()) if torch.isfinite(r2[idx]) else float("nan"),
+            "n_valid_windows": int(entry.get("n_valid_windows", 0)),
+            "n_samples": int(entry["n_samples"]),
+            "importance": float(importance[idx].item()),
+            "quality_score": float(quality_score[idx].item()),
+            "dominant_mode": int(dom_mode[idx].item()),
+            "dominant_loading": float(dom_loading[idx].item()),
+            "suggestion": suggestions[idx],
+        })
 
     order = torch.argsort(importance, descending=True)
     ranked_ops = [entries[int(i)]["operator_label"] for i in order.tolist()]
@@ -437,14 +437,12 @@ def build_eigenspectrum_plot(
     rel_abs = np.abs(rel)
     cutoff = float(analysis.get("eig_rel_cutoff", 1e-2))
 
-    df = pd.DataFrame(
-        {
-            "mode": mode_idx,
-            "rel_abs": rel_abs,
-            "eigenvalue": evals,
-            "significant": np.where(sig, "significant", "candidate_redundant"),
-        }
-    )
+    df = pd.DataFrame({
+        "mode": mode_idx,
+        "rel_abs": rel_abs,
+        "eigenvalue": evals,
+        "significant": np.where(sig, "significant", "candidate_redundant"),
+    })
     bars = hv.Bars(df, kdims=["mode"], vdims=["rel_abs", "eigenvalue", "significant"]).opts(
         width=900,
         height=300,
@@ -495,16 +493,14 @@ def build_kept_eigenvalue_table(analysis: dict[str, Any]) -> pd.DataFrame:
         ratio_to_prev = float("nan")
         if kept_rank > 1 and math.isfinite(prev_eval) and prev_eval != 0.0 and math.isfinite(eig):
             ratio_to_prev = eig / prev_eval
-        rows.append(
-            {
-                "kept_rank": int(kept_rank),
-                "mode": int(mode),
-                "eigenvalue": eig,
-                "abs_rel_to_top": float(abs(rel[int(mode)])),
-                "ratio_to_top": ratio_to_top,
-                "ratio_to_prev_kept": ratio_to_prev,
-            }
-        )
+        rows.append({
+            "kept_rank": int(kept_rank),
+            "mode": int(mode),
+            "eigenvalue": eig,
+            "abs_rel_to_top": float(abs(rel[int(mode)])),
+            "ratio_to_top": ratio_to_top,
+            "ratio_to_prev_kept": ratio_to_prev,
+        })
         prev_eval = eig
     return pd.DataFrame(rows)
 
@@ -524,15 +520,15 @@ def build_correlation_matrix_heatmap(
     rows: list[dict[str, Any]] = []
     for i in range(n):
         for j in range(n):
-            rows.append(
-                {
-                    "mode_i": int(i),
-                    "mode_j": int(j),
-                    "operator_i": labels[i] if i < len(labels) else f"op{i}",
-                    "operator_j": labels[j] if j < len(labels) else f"op{j}",
-                    "corr": float(matrix[i, j]) if math.isfinite(float(matrix[i, j])) else float("nan"),
-                }
-            )
+            rows.append({
+                "mode_i": int(i),
+                "mode_j": int(j),
+                "operator_i": labels[i] if i < len(labels) else f"op{i}",
+                "operator_j": labels[j] if j < len(labels) else f"op{j}",
+                "corr": float(matrix[i, j])
+                if math.isfinite(float(matrix[i, j]))
+                else float("nan"),
+            })
     df = pd.DataFrame(rows)
 
     finite = matrix[np.isfinite(matrix)]
@@ -624,9 +620,7 @@ def build_gevp_dashboard_sections(w: GEVPDashboardWidgets) -> list[Any]:
 
 def clear_gevp_dashboard(w: GEVPDashboardWidgets) -> None:
     """Reset GEVP diagnostics widgets."""
-    w.summary.object = (
-        "**Operator quality report:** select a channel to inspect eigen-spectrum and quality metrics."
-    )
+    w.summary.object = "**Operator quality report:** select a channel to inspect eigen-spectrum and quality metrics."
     w.eigenspectrum_plot.object = None
     w.eigenvalue_table.value = pd.DataFrame()
     w.correlation_matrix_heatmap.object = None
@@ -692,12 +686,16 @@ def update_gevp_dashboard(
             collect_family_operator_entries(
                 per_scale_results,
                 family_key,
-                original_results=original_results if isinstance(original_results, Mapping) else None,
+                original_results=original_results
+                if isinstance(original_results, Mapping)
+                else None,
             )
         )
     if selected_scale_set:
         quality_entries_raw = [
-            entry for entry in quality_entries_raw if str(entry.get("scale_label", "")) in selected_scale_set
+            entry
+            for entry in quality_entries_raw
+            if str(entry.get("scale_label", "")) in selected_scale_set
         ]
 
     if len(families) == 1:
@@ -755,23 +753,21 @@ def update_gevp_dashboard(
         w.eigenvalue_table.value = pd.DataFrame()
         w.correlation_matrix_heatmap.object = None
         w.operator_quality_table.value = (
-            pd.DataFrame(
-                [
-                    {
-                        "operator": entry["operator_label"],
-                        "source_channel": entry["source_channel"],
-                        "scale_label": entry["scale_label"],
-                        "source_kind": entry["source_kind"],
-                        "mass": entry["mass"],
-                        "mass_error": entry["mass_error"],
-                        "r2": entry["r2"],
-                        "n_valid_windows": int(entry.get("n_valid_windows", 0)),
-                        "n_samples": entry["n_samples"],
-                        "suggestion": "insufficient_data",
-                    }
-                    for entry in quality_entries
-                ]
-            )
+            pd.DataFrame([
+                {
+                    "operator": entry["operator_label"],
+                    "source_channel": entry["source_channel"],
+                    "scale_label": entry["scale_label"],
+                    "source_kind": entry["source_kind"],
+                    "mass": entry["mass"],
+                    "mass_error": entry["mass_error"],
+                    "r2": entry["r2"],
+                    "n_valid_windows": int(entry.get("n_valid_windows", 0)),
+                    "n_samples": entry["n_samples"],
+                    "suggestion": "insufficient_data",
+                }
+                for entry in quality_entries
+            ])
             if quality_entries
             else pd.DataFrame()
         )

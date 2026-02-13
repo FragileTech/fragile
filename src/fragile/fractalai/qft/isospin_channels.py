@@ -14,22 +14,22 @@ from torch import Tensor
 
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.qft.aggregation import (
-    AggregatedTimeSeries,
     aggregate_time_series,
+    AggregatedTimeSeries,
     build_gamma_matrices,
-    compute_glueball_operators,
-    compute_scalar_operators,
-    compute_pseudoscalar_operators,
-    compute_vector_operators,
     compute_axial_vector_operators,
-    compute_tensor_operators,
+    compute_glueball_operators,
     compute_nucleon_operators,
+    compute_pseudoscalar_operators,
+    compute_scalar_operators,
+    compute_tensor_operators,
+    compute_vector_operators,
 )
 from fragile.fractalai.qft.correlator_channels import (
     ChannelConfig,
     ChannelCorrelatorResult,
-    CorrelatorConfig,
     compute_channel_correlator,
+    CorrelatorConfig,
 )
 
 
@@ -43,9 +43,9 @@ class IsospinChannelResult:
 
 # PDG quark mass ratios (up-type / down-type) per generation
 ISOSPIN_MASS_RATIOS: dict[str, float] = {
-    "Gen1 (u/d)": 0.00216 / 0.00467,     # ≈ 0.46
-    "Gen2 (c/s)": 1.27 / 0.0934,         # ≈ 13.6
-    "Gen3 (t/b)": 172.69 / 4.18,         # ≈ 41.3
+    "Gen1 (u/d)": 0.00216 / 0.00467,  # ≈ 0.46
+    "Gen2 (c/s)": 1.27 / 0.0934,  # ≈ 13.6
+    "Gen3 (t/b)": 172.69 / 4.18,  # ≈ 41.3
 }
 
 # Per-channel observed isospin splittings.
@@ -94,8 +94,8 @@ def _compute_filtered_operators(
         walker_mask: [T, N] bool tensor — True for walkers to include.
     """
     # Inject isospin mask into color_valid for bilinear channels
-    filtered_valid = agg_data.color_valid & walker_mask[:agg_data.color_valid.shape[0]]
-    filtered_alive = agg_data.alive & walker_mask[:agg_data.alive.shape[0]]
+    filtered_valid = agg_data.color_valid & walker_mask[: agg_data.color_valid.shape[0]]
+    filtered_alive = agg_data.alive & walker_mask[: agg_data.alive.shape[0]]
 
     # Shallow copy with filtered validity (no memory duplication of large arrays)
     filtered_agg = replace(agg_data, color_valid=filtered_valid, alive=filtered_alive)
@@ -160,8 +160,15 @@ def compute_isospin_channels(
         IsospinChannelResult with up_results and down_results dicts.
     """
     if channels is None:
-        channels = ["scalar", "pseudoscalar", "vector", "axial_vector",
-                     "tensor", "nucleon", "glueball"]
+        channels = [
+            "scalar",
+            "pseudoscalar",
+            "vector",
+            "axial_vector",
+            "tensor",
+            "nucleon",
+            "glueball",
+        ]
 
     # Filter nucleon in low dimensions
     if history.d < 3:
@@ -179,14 +186,14 @@ def compute_isospin_channels(
     #    and [start_idx : end_idx] for color. The alive mask shape is [T, N].
     start_idx = max(1, int(history.n_recorded * channel_config.warmup_fraction))
     end_fraction = getattr(channel_config, "end_fraction", 1.0)
-    end_idx = max(start_idx + 1, int(history.n_recorded * end_fraction))
+    max(start_idx + 1, int(history.n_recorded * end_fraction))
     T = agg_data.alive.shape[0]
     N = agg_data.n_walkers
 
     # will_clone[t] tells us which walkers will clone at step t.
     # The aggregation time range starts at start_idx (for color) but alive
     # comes from start_idx-1.  We align will_clone to the same T-length window.
-    wc_raw = history.will_clone[start_idx - 1: start_idx - 1 + T]  # [T_raw, N]
+    wc_raw = history.will_clone[start_idx - 1 : start_idx - 1 + T]  # [T_raw, N]
     # Ensure we have the right length (pad with False if history is short)
     if wc_raw.shape[0] < T:
         pad = torch.zeros(T - wc_raw.shape[0], N, dtype=torch.bool, device=wc_raw.device)

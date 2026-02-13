@@ -894,7 +894,9 @@ class VoronoiCellVolume(OptimBenchmark):
             self._cache_step += 1
             return values
 
-        super().__init__(dims=dims, function=voronoi_volume_potential, update_every=update_every, **kwargs)
+        super().__init__(
+            dims=dims, function=voronoi_volume_potential, update_every=update_every, **kwargs
+        )
 
     def _cached_values_for_x(self, x: torch.Tensor) -> torch.Tensor | None:
         if self._cache_values is None:
@@ -1957,12 +1959,10 @@ def prepare_benchmark_for_explorer(
             n_ring = int(benchmark_kwargs.get("mode_ring_points", 40))
             theta = np.linspace(0.0, 2.0 * np.pi, num=max(8, n_ring), endpoint=False)
             radius = benchmark.ring_radius
-            mode_df = pd.DataFrame(
-                {
-                    "x₁": radius * np.cos(theta),
-                    "x₂": radius * np.sin(theta),
-                }
-            )
+            mode_df = pd.DataFrame({
+                "x₁": radius * np.cos(theta),
+                "x₂": radius * np.sin(theta),
+            })
             mode_points = hv.Points(
                 mode_df,
                 kdims=["x₁", "x₂"],

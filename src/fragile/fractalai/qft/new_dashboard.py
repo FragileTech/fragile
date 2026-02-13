@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import argparse
-from contextlib import contextmanager
 from dataclasses import replace
 from datetime import datetime
-import json
+import itertools
 import os
 from pathlib import Path
 import re
-import sys
 import time
 from typing import Any
 
@@ -21,52 +19,35 @@ import panel as pn
 import param
 import torch
 
-from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.core.benchmarks import prepare_benchmark_for_explorer
+from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
-from fragile.fractalai.qft import analysis as qft_analysis
+from fragile.fractalai.qft.aggregation import compute_all_operator_series
+from fragile.fractalai.qft.anisotropic_edge_channels import (
+    _extract_edges_for_frame,
+    _resolve_edge_weights,
+    AnisotropicEdgeChannelConfig,
+    AnisotropicEdgeChannelOutput,
+    compute_anisotropic_edge_channels,
+)
+from fragile.fractalai.qft.baryon_triplet_channels import (
+    _resolve_frame_indices as _resolve_baryon_frame_indices,
+    BaryonTripletCorrelatorConfig,
+    compute_companion_baryon_correlator,
+)
 from fragile.fractalai.qft.correlator_channels import (
     _fft_correlator_batched,
     ChannelConfig,
     ChannelCorrelatorResult,
-    CorrelatorConfig,
-    compute_effective_mass_torch,
     compute_channel_correlator,
+    compute_effective_mass_torch,
+    CorrelatorConfig,
     extract_mass_aic,
     extract_mass_linear,
 )
-from fragile.fractalai.qft.aggregation import compute_all_operator_series
-from fragile.fractalai.qft.baryon_triplet_channels import (
-    BaryonTripletCorrelatorConfig,
-    _resolve_frame_indices as _resolve_baryon_frame_indices,
-    compute_companion_baryon_correlator,
-)
-from fragile.fractalai.qft.meson_phase_channels import (
-    MesonPhaseCorrelatorConfig,
-    compute_companion_meson_phase_correlator,
-)
-from fragile.fractalai.qft.vector_meson_channels import (
-    VectorMesonCorrelatorConfig,
-    compute_companion_vector_meson_correlator,
-)
-from fragile.fractalai.qft.glueball_color_channels import (
-    GlueballColorCorrelatorConfig,
-    compute_companion_glueball_color_correlator,
-)
-from fragile.fractalai.qft.tensor_momentum_channels import (
-    TensorMomentumCorrelatorConfig,
-    compute_companion_tensor_momentum_correlator,
-)
-from fragile.fractalai.qft.multiscale_strong_force import (
-    COMPANION_CHANNEL_MAP,
-    MultiscaleStrongForceConfig,
-    MultiscaleStrongForceOutput,
-    compute_multiscale_strong_force_channels,
-)
-from fragile.fractalai.qft.gevp_channels import (
-    GEVPConfig,
-    compute_companion_channel_gevp,
-    get_companion_gevp_basis_channels,
+from fragile.fractalai.qft.coupling_diagnostics import (
+    compute_coupling_diagnostics,
+    CouplingDiagnosticsConfig,
 )
 from fragile.fractalai.qft.dashboard.channel_dashboard import (
     build_multiscale_tab_layout,
@@ -81,72 +62,188 @@ from fragile.fractalai.qft.dashboard.tensor_gevp_dashboard import (
     GEVP_DIRTY_STATE_KEY as TENSOR_GEVP_DIRTY_STATE_KEY,
     update_tensor_gevp_calibration_tab,
 )
+from fragile.fractalai.qft.dirac_electroweak import (
+    compute_dirac_electroweak_bundle,
+    DiracElectroweakConfig,
+)
+from fragile.fractalai.qft.dirac_spectrum import (
+    build_fermion_comparison,
+    DiracSpectrumConfig,
+)
+from fragile.fractalai.qft.dirac_spectrum_plotting import build_all_dirac_plots
+from fragile.fractalai.qft.einstein_equations import (
+    compute_einstein_test,
+    EinsteinConfig,
+)
+from fragile.fractalai.qft.einstein_equations_plotting import build_all_einstein_plots
 from fragile.fractalai.qft.electroweak_channels import (
+    compute_electroweak_channels,
+    compute_electroweak_coupling_constants,
     ELECTROWEAK_CHANNELS,
     ElectroweakChannelConfig,
-    compute_electroweak_channels,
+)
+from fragile.fractalai.qft.gevp_channels import (
+    compute_companion_channel_gevp,
+    get_companion_gevp_basis_channels,
+    GEVPConfig,
+)
+from fragile.fractalai.qft.glueball_color_channels import (
+    compute_companion_glueball_color_correlator,
+    GlueballColorCorrelatorConfig,
+)
+from fragile.fractalai.qft.meson_phase_channels import (
+    compute_companion_meson_phase_correlator,
+    MesonPhaseCorrelatorConfig,
 )
 from fragile.fractalai.qft.multiscale_electroweak import (
+    compute_multiscale_electroweak_channels,
     MultiscaleElectroweakConfig,
     MultiscaleElectroweakOutput,
     SU2_BASE_CHANNELS,
-    SU2_COMPANION_CHANNEL_MAP,
-    compute_multiscale_electroweak_channels,
+    SU2_DIRECTIONAL_CHANNELS,
+    SU2_WALKER_TYPE_CHANNELS,
+)
+from fragile.fractalai.qft.multiscale_strong_force import (
+    COMPANION_CHANNEL_MAP,
+    compute_multiscale_strong_force_channels,
+    MultiscaleStrongForceConfig,
+    MultiscaleStrongForceOutput,
+)
+from fragile.fractalai.qft.plotting import (
+    build_all_channels_overlay,
+    build_lyapunov_plot,
+    build_mass_spectrum_bar,
+    build_window_heatmap,
+    CHANNEL_COLORS,
+    ChannelPlot,
 )
 from fragile.fractalai.qft.radial_channels import (
     _apply_pbc_diff_torch,
     _compute_color_states_single,
     _recorded_subgraph_for_alive,
     _slice_bounds,
-    RadialChannelConfig,
     compute_radial_channels,
+    RadialChannelConfig,
 )
-from fragile.fractalai.qft.anisotropic_edge_channels import (
-    _extract_edges_for_frame,
-    _resolve_edge_weights,
-    AnisotropicEdgeChannelConfig,
-    AnisotropicEdgeChannelOutput,
-    compute_anisotropic_edge_channels,
+from fragile.fractalai.qft.smeared_operators import (
+    compute_pairwise_distance_matrices_from_history,
 )
-from fragile.fractalai.qft.dirac_spectrum import (
-    DiracSpectrumConfig,
-    compute_dirac_spectrum,
-    build_fermion_comparison,
-    build_fermion_ratio_comparison,
+from fragile.fractalai.qft.tensor_momentum_channels import (
+    compute_companion_tensor_momentum_correlator,
+    TensorMomentumCorrelatorConfig,
 )
-from fragile.fractalai.qft.dirac_spectrum_plotting import build_all_dirac_plots
-from fragile.fractalai.qft.dirac_electroweak import (
-    compute_dirac_electroweak_bundle,
-    DiracElectroweakConfig,
-)
-from fragile.fractalai.qft.coupling_diagnostics import (
-    CouplingDiagnosticsConfig,
-    compute_coupling_diagnostics,
-)
-from fragile.fractalai.qft.einstein_equations import (
-    EinsteinConfig,
-    compute_einstein_test,
-)
-from fragile.fractalai.qft.einstein_equations_plotting import build_all_einstein_plots
-from fragile.fractalai.qft.plotting import (
-    CHANNEL_COLORS,
-    ChannelPlot,
-    build_all_channels_overlay,
-    build_correlation_decay_plot,
-    build_correlator_plot,
-    build_effective_mass_plot,
-    build_effective_mass_plateau_plot,
-    build_lyapunov_plot,
-    build_mass_spectrum_bar,
-    build_window_heatmap,
-    build_wilson_histogram_plot,
-    build_wilson_timeseries_plot,
+from fragile.fractalai.qft.vector_meson_channels import (
+    compute_companion_vector_meson_correlator,
+    VectorMesonCorrelatorConfig,
 )
 
 
 # Prevent Plotly from probing the system browser during import.
 os.environ.setdefault("PLOTLY_RENDERER", "json")
 hv.extension("bokeh")
+
+COMPANION_CHANNEL_VARIANTS_BY_FAMILY: dict[str, tuple[str, ...]] = {
+    "pseudoscalar": (
+        "pseudoscalar",
+        "pseudoscalar_score_weighted",
+    ),
+    "scalar": (
+        "scalar",
+        "scalar_score_directed",
+        "scalar_score_weighted",
+        "scalar_raw",
+        "scalar_abs2_vacsub",
+    ),
+    "vector": (
+        "vector",
+        "vector_score_directed",
+        "vector_score_gradient",
+        "vector_score_directed_longitudinal",
+        "vector_score_directed_transverse",
+    ),
+    "axial_vector": (
+        "axial_vector",
+        "axial_vector_score_directed",
+        "axial_vector_score_gradient",
+        "axial_vector_score_directed_longitudinal",
+        "axial_vector_score_directed_transverse",
+    ),
+    "nucleon": (
+        "nucleon",
+        "nucleon_flux_action",
+        "nucleon_flux_sin2",
+        "nucleon_flux_exp",
+        "nucleon_score_signed",
+        "nucleon_score_abs",
+    ),
+    "glueball": (
+        "glueball",
+        "glueball_phase_action",
+        "glueball_phase_sin2",
+    ),
+    "tensor": ("tensor",),
+}
+
+DEFAULT_COMPANION_CHANNEL_VARIANT_SELECTION: dict[str, tuple[str, ...]] = {
+    "pseudoscalar": ("pseudoscalar",),
+    "scalar": ("scalar",),
+    "vector": ("vector",),
+    "axial_vector": ("axial_vector",),
+    "nucleon": ("nucleon",),
+    "glueball": ("glueball",),
+    "tensor": ("tensor",),
+}
+
+ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY: dict[str, tuple[str, ...]] = {
+    "u1": (
+        "u1_phase",
+        "u1_dressed",
+        "u1_phase_q2",
+        "u1_dressed_q2",
+    ),
+    "su2": SU2_BASE_CHANNELS,
+    "su2_directional": SU2_DIRECTIONAL_CHANNELS,
+    "su2_walker_type": SU2_WALKER_TYPE_CHANNELS,
+    "ew_mixed": ("ew_mixed",),
+}
+
+DEFAULT_ELECTROWEAK_CHANNEL_VARIANT_SELECTION: dict[str, tuple[str, ...]] = {
+    "u1": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["u1"],
+    "su2": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["su2"],
+    "su2_directional": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["su2_directional"],
+    "su2_walker_type": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["su2_walker_type"],
+    "ew_mixed": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["ew_mixed"],
+}
+
+ELECTROWEAK_CANONICAL_CHANNEL_ORDER = (
+    "u1_phase",
+    "u1_dressed",
+    "su2_phase",
+    "su2_component",
+    "su2_doublet",
+    "su2_doublet_diff",
+    "ew_mixed",
+)
+
+DEFAULT_ELECTROWEAK_CHANNELS_FOR_DIRAC = list(ELECTROWEAK_CHANNELS)
+
+
+def _collect_multiselect_values(
+    selectors: dict[str, pn.widgets.MultiSelect],
+) -> list[str]:
+    selected: list[str] = []
+    seen: set[str] = set()
+    for selector in selectors.values():
+        for value in selector.value or []:
+            channel_name = str(value).strip()
+            if not channel_name:
+                continue
+            if channel_name in seen:
+                continue
+            seen.add(channel_name)
+            selected.append(channel_name)
+    return selected
+
 
 __all__ = ["create_app"]
 
@@ -360,7 +457,8 @@ class SwarmConvergence3D(param.Parameterized):
         self.param.y_axis_dim.objects = dim_options
         self.param.z_axis_dim.objects = dim_options
         # For color, include all dimensions plus existing metrics
-        color_options = dim_options + [
+        color_options = [
+            *dim_options,
             "fitness",
             "reward",
             "riemannian_volume",
@@ -398,9 +496,7 @@ class SwarmConvergence3D(param.Parameterized):
                 "neighbor_graph_record=True to show edges)"
             )
         elif self._neighbor_graph_method and self._neighbor_graph_method != "delaunay":
-            self.status_pane.object += (
-                f" | Neighbor graph method: {self._neighbor_graph_method}"
-            )
+            self.status_pane.object += f" | Neighbor graph method: {self._neighbor_graph_method}"
         self._refresh_frame()
 
     def _sync_frame(self, event):
@@ -604,7 +700,11 @@ class SwarmConvergence3D(param.Parameterized):
         return False
 
     def _axis_uses_mc_time(self) -> bool:
-        return self.x_axis_dim == "mc_time" or self.y_axis_dim == "mc_time" or self.z_axis_dim == "mc_time"
+        return (
+            self.x_axis_dim == "mc_time"
+            or self.y_axis_dim == "mc_time"
+            or self.z_axis_dim == "mc_time"
+        )
 
     def _slice_dim_displayed(self, d: int) -> bool:
         if self.time_iteration != "euclidean":
@@ -659,12 +759,12 @@ class SwarmConvergence3D(param.Parameterized):
         if slice_dim is not None:
             label = self._axis_label(f"dim_{slice_dim}")
         if slice_bounds is None:
-            return (
-                f"QFT Swarm Convergence (frame {mc_frame}, step {step}, slice {slice_index})"
-            )
+            return f"QFT Swarm Convergence (frame {mc_frame}, step {step}, slice {slice_index})"
         low, high = slice_bounds
-        label_text = f"{label} in [{low:.2f}, {high:.2f})" if label else (
-            f"time in [{low:.2f}, {high:.2f})"
+        label_text = (
+            f"{label} in [{low:.2f}, {high:.2f})"
+            if label
+            else (f"time in [{low:.2f}, {high:.2f})")
         )
         mode = f", {slice_mode}" if slice_mode else ""
         return (
@@ -846,7 +946,7 @@ class SwarmConvergence3D(param.Parameterized):
                 return np.zeros(alive.sum())
             return positions_all[alive, dim_idx]
 
-        elif dim_spec.startswith("dim_"):
+        if dim_spec.startswith("dim_"):
             # Extract spatial dimension
             dim_idx = int(dim_spec.split("_")[1])
             if dim_idx >= positions_all.shape[1]:
@@ -854,9 +954,8 @@ class SwarmConvergence3D(param.Parameterized):
                 return np.zeros(alive.sum())
             return positions_all[alive, dim_idx]
 
-        else:
-            # Invalid spec, return zeros
-            return np.zeros(alive.sum())
+        # Invalid spec, return zeros
+        return np.zeros(alive.sum())
 
     def _get_color_values(self, frame: int, positions_all: np.ndarray, alive: np.ndarray):
         """Extract color values based on color_metric selection.
@@ -883,13 +982,13 @@ class SwarmConvergence3D(param.Parameterized):
                 colors = np.zeros(alive.sum())
             return colors, True, {"title": "Euclidean Time"}
 
-        elif metric == "mc_time":
+        if metric == "mc_time":
             # Color by MC time (constant for this frame)
             colors = np.full(alive.sum(), frame, dtype=float)
             return colors, True, {"title": "MC Time (frame)"}
 
         # Existing metrics
-        elif metric == "fitness":
+        if metric == "fitness":
             if frame == 0 or self._fitness is None:
                 colors = "#1f77b4"
                 return colors, False, None
@@ -897,7 +996,7 @@ class SwarmConvergence3D(param.Parameterized):
             colors = self._fitness[idx][alive]
             return colors, True, {"title": "Fitness"}
 
-        elif metric == "reward":
+        if metric == "reward":
             if frame == 0 or self._rewards is None:
                 colors = "#1f77b4"
                 return colors, False, None
@@ -905,7 +1004,7 @@ class SwarmConvergence3D(param.Parameterized):
             colors = self._rewards[idx][alive]
             return colors, True, {"title": "Reward"}
 
-        elif metric == "riemannian_volume":
+        if metric == "riemannian_volume":
             if frame == 0 or self._volume_weights is None:
                 colors = "#1f77b4"
                 return colors, False, None
@@ -913,14 +1012,14 @@ class SwarmConvergence3D(param.Parameterized):
             colors = self._volume_weights[idx][alive]
             return colors, True, {"title": "Riemannian Volume"}
 
-        elif metric == "radius":
+        if metric == "radius":
             # Compute radius from original positions (first 3 dims)
             positions_filtered = positions_all[alive][:, : min(3, positions_all.shape[1])]
             colors = np.linalg.norm(positions_filtered, axis=1)
             return colors, True, {"title": "Radius"}
 
-        else:  # "constant"
-            return "#1f77b4", False, None
+        # "constant"
+        return "#1f77b4", False, None
 
     def _get_color_values_all_frames(
         self,
@@ -999,12 +1098,11 @@ class SwarmConvergence3D(param.Parameterized):
             if dim_spec == "euclidean_time":
                 extent = self.bounds_extent
                 return [-extent, extent]
-            elif dim_spec.startswith("dim_"):
+            if dim_spec.startswith("dim_"):
                 # Use bounds extent for spatial dimensions
                 extent = self.bounds_extent
                 return [-extent, extent]
-            else:
-                return [-10, 10]  # Default
+            return [-10, 10]  # Default
 
         return {
             "xaxis": {"range": get_range(self.x_axis_dim)},
@@ -1024,7 +1122,7 @@ class SwarmConvergence3D(param.Parameterized):
             return f"Euclidean Time (dim_{dim_idx})"
         if dim_spec == "riemannian_volume":
             return "Riemannian Volume"
-        elif dim_spec.startswith("dim_"):
+        if dim_spec.startswith("dim_"):
             dim_idx = int(dim_spec.split("_")[1])
             labels = ["X", "Y", "Z", "T"]
             if dim_idx < len(labels):
@@ -1046,7 +1144,11 @@ class SwarmConvergence3D(param.Parameterized):
         edge_values = None
         if use_geodesic:
             edge_values = self._get_geodesic_edge_distances(frame)
-            if edge_values is not None and edges is not None and edge_values.shape[0] != edges.shape[0]:
+            if (
+                edge_values is not None
+                and edges is not None
+                and edge_values.shape[0] != edges.shape[0]
+            ):
                 edge_values = None
         if edges is None or positions_mapped.size == 0:
             return None
@@ -1181,9 +1283,7 @@ class SwarmConvergence3D(param.Parameterized):
             showlegend=showlegend,
         )
 
-    def _build_delaunay_trace(
-        self, frame: int, positions: np.ndarray, alive_mask: np.ndarray
-    ):
+    def _build_delaunay_trace(self, frame: int, positions: np.ndarray, alive_mask: np.ndarray):
         import plotly.graph_objects as go
 
         edges = self._get_delaunay_edges(frame)
@@ -1252,12 +1352,10 @@ class SwarmConvergence3D(param.Parameterized):
             slice_index = int(np.clip(frame, 0, max(0, int(self.euclidean_time_bins) - 1)))
             slice_dim = self._resolve_euclidean_dim(positions_all.shape[1])
             slice_mode = "euclidean"
-            slice_dim_visible = self._axis_uses_dim(
-                self.x_axis_dim, slice_dim, positions_all.shape[1]
-            ) or self._axis_uses_dim(
-                self.y_axis_dim, slice_dim, positions_all.shape[1]
-            ) or self._axis_uses_dim(
-                self.z_axis_dim, slice_dim, positions_all.shape[1]
+            slice_dim_visible = (
+                self._axis_uses_dim(self.x_axis_dim, slice_dim, positions_all.shape[1])
+                or self._axis_uses_dim(self.y_axis_dim, slice_dim, positions_all.shape[1])
+                or self._axis_uses_dim(self.z_axis_dim, slice_dim, positions_all.shape[1])
             )
             if slice_dim_visible:
                 slice_mask, slice_bounds, slice_dim = self._get_slice_mask(
@@ -1301,20 +1399,12 @@ class SwarmConvergence3D(param.Parameterized):
             z_coords = np.concatenate(z_all) if z_all else np.array([])
             colors, showscale, colorbar = self._get_color_values_all_frames(n_frames)
         else:
-            x_coords = self._extract_dimension(
-                self.x_axis_dim, mc_frame, positions_all, alive
-            )
-            y_coords = self._extract_dimension(
-                self.y_axis_dim, mc_frame, positions_all, alive
-            )
-            z_coords = self._extract_dimension(
-                self.z_axis_dim, mc_frame, positions_all, alive
-            )
+            x_coords = self._extract_dimension(self.x_axis_dim, mc_frame, positions_all, alive)
+            y_coords = self._extract_dimension(self.y_axis_dim, mc_frame, positions_all, alive)
+            z_coords = self._extract_dimension(self.z_axis_dim, mc_frame, positions_all, alive)
 
             # Extract color values
-            colors, showscale, colorbar = self._get_color_values(
-                mc_frame, positions_all, alive
-            )
+            colors, showscale, colorbar = self._get_color_values(mc_frame, positions_all, alive)
 
         # Create scatter trace
         scatter = go.Scatter3d(
@@ -1424,7 +1514,9 @@ class SwarmConvergence3D(param.Parameterized):
                 highlight_name = "MC frame highlight"
                 highlight_color = "rgba(54, 162, 235, 0.6)"
             else:
-                highlight_frame = int(np.clip(self._resolve_mc_time_index(), 0, self._x.shape[0] - 1))
+                highlight_frame = int(
+                    np.clip(self._resolve_mc_time_index(), 0, self._x.shape[0] - 1)
+                )
                 highlight_name = "MC slice highlight"
                 highlight_color = "rgba(0, 166, 140, 0.55)"
             alive_h = self._get_alive_mask(highlight_frame)
@@ -1634,14 +1726,10 @@ class SwarmConvergence3D(param.Parameterized):
             value=self.time_iteration,
             sizing_mode="stretch_width",
         )
-        time_toggle.param.watch(
-            lambda e: setattr(self, "time_iteration", e.new), "value"
-        )
+        time_toggle.param.watch(lambda e: setattr(self, "time_iteration", e.new), "value")
         self.param.watch(
             lambda e, widget_ref=time_toggle: (
-                None
-                if widget_ref.value == e.new
-                else setattr(widget_ref, "value", e.new)
+                None if widget_ref.value == e.new else setattr(widget_ref, "value", e.new)
             ),
             "time_iteration",
         )
@@ -1702,6 +1790,7 @@ class SwarmConvergence3D(param.Parameterized):
         self._sync_mc_slice_visibility()
         self._sync_time_bin_visibility()
         self._update_player_mode()
+
         def _update_euclidean_dim_note(*_):
             if self.history is None:
                 euclidean_dim_note.object = "**Euclidean time dimension:** dim_0"
@@ -1746,7 +1835,8 @@ class AnisotropicEdgeSettings(param.Parameterized):
     """Settings for anisotropic edge-channel MC-time correlators."""
 
     simulation_range = param.Range(
-        default=(0.1, 1.0), bounds=(0.0, 1.0),
+        default=(0.1, 1.0),
+        bounds=(0.0, 1.0),
         doc="Fraction of simulation timeline to use (start, end).",
     )
     mc_time_index = param.Integer(
@@ -1839,14 +1929,6 @@ class AnisotropicEdgeSettings(param.Parameterized):
         default=1.0,
         bounds=(0.0, None),
         doc="Exponent coefficient α for baryon flux_exp mode.",
-    )
-    companion_include_nucleon_flux_variants = param.Boolean(
-        default=True,
-        doc="Also compute nucleon flux variants (flux_action, flux_sin2, flux_exp).",
-    )
-    companion_include_nucleon_score_variants = param.Boolean(
-        default=True,
-        doc="Also compute nucleon score variants (score_signed, score_abs).",
     )
     use_companion_nucleon_gevp = param.Boolean(
         default=True,
@@ -1953,17 +2035,6 @@ class AnisotropicEdgeSettings(param.Parameterized):
         bounds=(0.0, None),
         doc="Minimum |c_i†c_j| threshold for valid meson pairs.",
     )
-    companion_include_meson_score_directed_variants = param.Boolean(
-        default=True,
-        doc="Also compute score-directed meson variants for scalar/pseudoscalar channels.",
-    )
-    companion_include_scalar_vacuum_variants = param.Boolean(
-        default=True,
-        doc=(
-            "Also compute scalar vacuum diagnostics variants "
-            "(scalar_raw, scalar_abs2_vacsub)."
-        ),
-    )
     use_companion_vector_meson = param.Boolean(
         default=True,
         doc="Use companion-pair color-displacement implementation for vector/axial channels.",
@@ -1999,13 +2070,6 @@ class AnisotropicEdgeSettings(param.Parameterized):
     vector_meson_use_unit_displacement = param.Boolean(
         default=False,
         doc="Normalize pair displacement to unit vectors before vector meson projection.",
-    )
-    companion_include_vector_score_directed_variants = param.Boolean(
-        default=True,
-        doc=(
-            "Also compute score-directed vector/axial variants "
-            "(full, longitudinal, transverse projections)."
-        ),
     )
     use_companion_tensor_momentum = param.Boolean(
         default=True,
@@ -2087,10 +2151,6 @@ class AnisotropicEdgeSettings(param.Parameterized):
             "glueball_use_action_form."
         ),
     )
-    companion_include_glueball_phase_variants = param.Boolean(
-        default=True,
-        doc="Also compute glueball phase variants (phase_action, phase_sin2).",
-    )
     glueball_use_momentum_projection = param.Boolean(
         default=False,
         doc="Compute momentum-projected SU(3) glueball correlators C_p(Δt) from Fourier modes.",
@@ -2104,11 +2164,6 @@ class AnisotropicEdgeSettings(param.Parameterized):
         default=3,
         bounds=(0, 32),
         doc="Maximum integer momentum mode n (computes p_n = 2πn/L for n=0..n_max).",
-    )
-    channel_list = param.String(
-        default=(
-            "scalar,pseudoscalar,vector,axial_vector,tensor,nucleon,glueball"
-        )
     )
     window_widths_spec = param.String(default="5-50")
     fit_mode = param.ObjectSelector(default="aic", objects=("aic", "linear", "linear_abs"))
@@ -2176,13 +2231,23 @@ class NewDiracElectroweakSettings(param.Parameterized):
         default="companions",
         objects=("auto", "recorded", "companions", "voronoi"),
     )
-    companion_topology = param.ObjectSelector(
+    companion_topology_u1 = param.ObjectSelector(
+        default="distance",
+        objects=("distance", "clone", "both"),
+        doc="Companion topology used by U(1) operator family.",
+    )
+    companion_topology_su2 = param.ObjectSelector(
+        default="clone",
+        objects=("distance", "clone", "both"),
+        doc="Companion topology used by SU(2) operator family.",
+    )
+    companion_topology_ew_mixed = param.ObjectSelector(
         default="both",
         objects=("distance", "clone", "both"),
-        doc="Companion topology when companion neighbors are used.",
+        doc="Companion topology used by EW mixed operator family.",
     )
     edge_weight_mode = param.ObjectSelector(
-        default="inverse_riemannian_distance",
+        default="riemannian_kernel_volume",
         objects=[
             "uniform",
             "inverse_riemannian_distance",
@@ -2195,16 +2260,27 @@ class NewDiracElectroweakSettings(param.Parameterized):
         ],
     )
     neighbor_k = param.Integer(default=0, bounds=(0, 50))
-    channel_list = param.String(default=",".join(ELECTROWEAK_CHANNELS))
     window_widths_spec = param.String(default="5-50")
     fit_mode = param.ObjectSelector(default="aic", objects=("aic", "linear", "linear_abs"))
     fit_start = param.Integer(default=2, bounds=(0, None))
     fit_stop = param.Integer(default=None, bounds=(1, None), allow_None=True)
     min_fit_points = param.Integer(default=2, bounds=(2, None))
-    epsilon_d = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
-    epsilon_c = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
     epsilon_clone = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
     lambda_alg = param.Number(default=None, bounds=(0.0, None), allow_None=True)
+    su2_operator_mode = param.ObjectSelector(
+        default="standard",
+        objects=("standard", "score_directed"),
+        doc="SU(2) operator branch (standard or score-directed).",
+    )
+    enable_walker_type_split = param.Boolean(
+        default=False,
+        doc="Emit cloner/resister/persister split SU(2) channels.",
+    )
+    walker_type_scope = param.ObjectSelector(
+        default="frame_global",
+        objects=("frame_global",),
+        doc="Walker-type classification scope.",
+    )
     compute_bootstrap_errors = param.Boolean(default=False)
     n_bootstrap = param.Integer(default=100, bounds=(10, 1000))
     use_multiscale_kernels = param.Boolean(
@@ -2589,7 +2665,9 @@ def _parse_dims_spec(spec: str, history_d: int) -> list[int] | None:
     try:
         dims = sorted({int(item.strip()) for item in spec_clean.split(",") if item.strip()})
     except ValueError as exc:
-        raise ValueError(f"Invalid spatial_dims_spec: {spec!r}. Expected comma-separated integers.") from exc
+        raise ValueError(
+            f"Invalid spatial_dims_spec: {spec!r}. Expected comma-separated integers."
+        ) from exc
     if not dims:
         return None
     invalid = [dim for dim in dims if dim < 0 or dim >= history_d]
@@ -2607,8 +2685,7 @@ def _parse_triplet_dims_spec(spec: str, history_d: int) -> tuple[int, int, int] 
         return None
     if len(dims) != 3:
         raise ValueError(
-            "baryon_color_dims_spec must contain exactly 3 dims; "
-            f"received {dims}."
+            "baryon_color_dims_spec must contain exactly 3 dims; " f"received {dims}."
         )
     return int(dims[0]), int(dims[1]), int(dims[2])
 
@@ -2677,9 +2754,7 @@ def _bootstrap_errors_batched_scalar_series(
     else:
         valid_mask = valid_t.to(dtype=torch.bool, device=series_stack.device)
         if valid_mask.shape != (n_time,):
-            raise ValueError(
-                f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}."
-            )
+            raise ValueError(f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}.")
     if not torch.any(valid_mask):
         return errors
 
@@ -2724,9 +2799,7 @@ def _bootstrap_error_vector_dot_series(
     else:
         valid_mask = valid_t.to(dtype=torch.bool, device=vector_series.device)
         if valid_mask.shape != (n_time,):
-            raise ValueError(
-                f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}."
-            )
+            raise ValueError(f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}.")
     if not torch.any(valid_mask):
         return errors
 
@@ -2808,9 +2881,7 @@ def _compute_anisotropic_baryon_triplet_result(
         color_dims=_parse_triplet_dims_spec(settings.baryon_color_dims_spec, history.d),
         eps=float(settings.baryon_eps),
         operator_mode=(
-            str(operator_mode)
-            if operator_mode is not None
-            else str(settings.baryon_operator_mode)
+            str(operator_mode) if operator_mode is not None else str(settings.baryon_operator_mode)
         ),
         flux_exp_alpha=float(settings.baryon_flux_exp_alpha),
     )
@@ -2898,7 +2969,8 @@ def _compute_anisotropic_meson_phase_results(
         if bool(settings.compute_bootstrap_errors):
             meson_err = _bootstrap_errors_batched_scalar_series(
                 torch.stack(
-                    [meson_out.operator_pseudoscalar_series, meson_out.operator_scalar_series], dim=0
+                    [meson_out.operator_pseudoscalar_series, meson_out.operator_scalar_series],
+                    dim=0,
                 ),
                 valid_t=(meson_out.pair_counts_per_frame > 0),
                 max_lag=meson_max_lag,
@@ -2910,7 +2982,8 @@ def _compute_anisotropic_meson_phase_results(
             if "scalar_raw" in requested_channels:
                 meson_raw_err = _bootstrap_errors_batched_scalar_series(
                     torch.stack(
-                        [meson_out.operator_pseudoscalar_series, meson_out.operator_scalar_series], dim=0
+                        [meson_out.operator_pseudoscalar_series, meson_out.operator_scalar_series],
+                        dim=0,
                     ),
                     valid_t=(meson_out.pair_counts_per_frame > 0),
                     max_lag=meson_max_lag,
@@ -2998,7 +3071,10 @@ def _compute_anisotropic_meson_phase_results(
             valid_frames, int((meson_score_out.pair_counts_per_frame > 0).sum().item())
         )
 
-    weighted_requested = requested_channels & {"scalar_score_weighted", "pseudoscalar_score_weighted"}
+    weighted_requested = requested_channels & {
+        "scalar_score_weighted",
+        "pseudoscalar_score_weighted",
+    }
     if weighted_requested:
         meson_weighted_cfg = MesonPhaseCorrelatorConfig(
             warmup_fraction=float(settings.simulation_range[0]),
@@ -3164,7 +3240,9 @@ def _compute_anisotropic_vector_meson_results(
             mass=float(settings.mass),
             ell0=settings.ell0,
             color_dims=_parse_triplet_dims_spec(settings.vector_meson_color_dims_spec, history.d),
-            position_dims=_parse_triplet_dims_spec(settings.vector_meson_position_dims_spec, history.d),
+            position_dims=_parse_triplet_dims_spec(
+                settings.vector_meson_position_dims_spec, history.d
+            ),
             pair_selection=str(settings.vector_meson_pair_selection),
             eps=float(settings.vector_meson_eps),
             use_unit_displacement=bool(settings.vector_meson_use_unit_displacement),
@@ -3238,9 +3316,7 @@ def _compute_anisotropic_glueball_color_result(
         else int(settings.glueball_momentum_mode_max)
     )
     resolved_glueball_mode = (
-        str(operator_mode)
-        if operator_mode is not None
-        else str(settings.glueball_operator_mode)
+        str(operator_mode) if operator_mode is not None else str(settings.glueball_operator_mode)
     )
     glueball_cfg = GlueballColorCorrelatorConfig(
         warmup_fraction=float(settings.simulation_range[0]),
@@ -3253,11 +3329,7 @@ def _compute_anisotropic_glueball_color_result(
         ell0=settings.ell0,
         color_dims=_parse_triplet_dims_spec(settings.glueball_color_dims_spec, history.d),
         eps=float(settings.glueball_eps),
-        operator_mode=(
-            None
-            if resolved_glueball_mode == "auto"
-            else resolved_glueball_mode
-        ),
+        operator_mode=(None if resolved_glueball_mode == "auto" else resolved_glueball_mode),
         use_action_form=bool(settings.glueball_use_action_form),
         use_momentum_projection=use_momentum_projection,
         momentum_axis=int(settings.glueball_momentum_axis),
@@ -3384,11 +3456,11 @@ def _map_time_dimension(time_dimension: str, history_d: int | None = None) -> tu
         - euclidean_time_dim: 0-3 (dimension index, clamped for "t" if needed)
     """
     mapping = {
-        "monte_carlo": ("mc", 3),      # MC time, dim doesn't matter
-        "x": ("euclidean", 0),         # X spatial dimension
-        "y": ("euclidean", 1),         # Y spatial dimension
-        "z": ("euclidean", 2),         # Z spatial dimension
-        "t": ("euclidean", 3),         # Euclidean time (default)
+        "monte_carlo": ("mc", 3),  # MC time, dim doesn't matter
+        "x": ("euclidean", 0),  # X spatial dimension
+        "y": ("euclidean", 1),  # Y spatial dimension
+        "z": ("euclidean", 2),  # Z spatial dimension
+        "t": ("euclidean", 3),  # Euclidean time (default)
     }
 
     if time_dimension not in mapping:
@@ -3479,24 +3551,19 @@ def _compute_anisotropic_edge_tensor_only_results(
 def _compute_companion_strong_force_bundle(
     history: RunHistory,
     settings: AnisotropicEdgeSettings,
+    requested_channels: list[str] | None = None,
 ) -> tuple[AnisotropicEdgeChannelOutput, float, str]:
     """Compute companion-only strong-force correlators."""
     resolved_h_eff, h_eff_desc = _resolve_h_eff(history, settings)
-    channels = [
-        c.strip()
-        for c in settings.channel_list.split(",")
-        if c.strip()
-        and c.strip()
-        not in {
-            "tensor_traceless",
-            "pseudoscalar_score_directed",
-            "vector_score_gradient",
-            "nucleon_score_signed",
-            "axial_vector_score_directed",
-            "axial_vector_score_gradient",
-        }
-    ]
-    requested = set(channels)
+    if requested_channels is None:
+        channels = [
+            channel
+            for family in DEFAULT_COMPANION_CHANNEL_VARIANT_SELECTION.values()
+            for channel in family
+        ]
+    else:
+        channels = list(requested_channels)
+    requested = {str(c).strip() for c in channels if str(c).strip()}
     requested_meson_channels = requested & {
         "scalar",
         "scalar_raw",
@@ -3511,6 +3578,7 @@ def _compute_companion_strong_force_bundle(
         "nucleon_flux_action",
         "nucleon_flux_sin2",
         "nucleon_flux_exp",
+        "nucleon_score_signed",
         "nucleon_score_abs",
     }
     requested_glueball_channels = requested & {
@@ -3526,41 +3594,14 @@ def _compute_companion_strong_force_bundle(
         "axial_vector_score_directed_longitudinal",
         "vector_score_directed_transverse",
         "axial_vector_score_directed_transverse",
+        "vector_score_gradient",
+        "axial_vector_score_gradient",
     }
-    if "nucleon" in requested and bool(settings.companion_include_nucleon_flux_variants):
-        requested_nucleon_channels |= {
-            "nucleon_flux_action",
-            "nucleon_flux_sin2",
-            "nucleon_flux_exp",
-        }
-    if "nucleon" in requested and bool(settings.companion_include_nucleon_score_variants):
-        requested_nucleon_channels |= {"nucleon_score_abs"}
-    if "scalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
-        requested_meson_channels |= {"scalar_score_directed", "scalar_score_weighted"}
-    if "scalar" in requested and bool(settings.companion_include_scalar_vacuum_variants):
-        requested_meson_channels |= {"scalar_raw", "scalar_abs2_vacsub"}
-    if "pseudoscalar" in requested and bool(settings.companion_include_meson_score_directed_variants):
-        requested_meson_channels |= {"pseudoscalar_score_weighted"}
-    if "glueball" in requested and bool(settings.companion_include_glueball_phase_variants):
-        requested_glueball_channels |= {"glueball_phase_action", "glueball_phase_sin2"}
-    if "vector" in requested and bool(settings.companion_include_vector_score_directed_variants):
-        requested_vector_channels |= {
-            "vector_score_directed",
-            "vector_score_directed_longitudinal",
-            "vector_score_directed_transverse",
-        }
-    if "axial_vector" in requested and bool(settings.companion_include_vector_score_directed_variants):
-        requested_vector_channels |= {
-            "axial_vector_score_directed_longitudinal",
-            "axial_vector_score_directed_transverse",
-        }
     results: dict[str, ChannelCorrelatorResult] = {}
     valid_frame_counts: list[int] = []
 
     if bool(settings.use_companion_baryon_triplet) and requested_nucleon_channels:
         baryon_mode_primary = str(settings.baryon_operator_mode)
-        flux_variant_channels = {"nucleon_flux_action", "nucleon_flux_sin2", "nucleon_flux_exp"}
-        score_variant_channels = {"nucleon_score_signed", "nucleon_score_abs"}
         baryon_variants: list[tuple[str, str]] = [
             (baryon_mode_primary, "nucleon"),
             ("flux_action", "nucleon_flux_action"),
@@ -3570,19 +3611,8 @@ def _compute_companion_strong_force_bundle(
             ("score_abs", "nucleon_score_abs"),
         ]
         for variant_mode, variant_channel in baryon_variants:
-            if variant_channel != "nucleon":
-                if (
-                    variant_channel in flux_variant_channels
-                    and not bool(settings.companion_include_nucleon_flux_variants)
-                ):
-                    continue
-                if (
-                    variant_channel in score_variant_channels
-                    and not bool(settings.companion_include_nucleon_score_variants)
-                ):
-                    continue
-                if variant_channel not in requested_nucleon_channels:
-                    continue
+            if variant_channel != "nucleon" and variant_channel not in requested_nucleon_channels:
+                continue
             variant_result, variant_valid_frames = _compute_anisotropic_baryon_triplet_result(
                 history,
                 settings,
@@ -3620,6 +3650,8 @@ def _compute_companion_strong_force_bundle(
         "axial_vector_score_directed_longitudinal",
         "vector_score_directed_transverse",
         "axial_vector_score_directed_transverse",
+        "vector_score_gradient",
+        "axial_vector_score_gradient",
     }
     if bool(settings.use_companion_vector_meson) and vector_targets:
         vector_results, vector_valid_frames = _compute_anisotropic_vector_meson_results(
@@ -3640,8 +3672,6 @@ def _compute_companion_strong_force_bundle(
         ]
         for variant_mode, variant_channel, allow_momentum in glueball_variants:
             if variant_channel != "glueball":
-                if not bool(settings.companion_include_glueball_phase_variants):
-                    continue
                 if variant_channel not in requested_glueball_channels:
                     continue
             variant_results, variant_valid_frames = _compute_anisotropic_glueball_color_result(
@@ -3658,7 +3688,9 @@ def _compute_companion_strong_force_bundle(
             valid_frame_counts.append(int(variant_valid_frames))
 
     if bool(settings.use_companion_tensor_momentum) and "tensor" in requested:
-        tensor_results, tensor_meta = _compute_tensor_momentum_for_anisotropic_edge(history, settings)
+        tensor_results, tensor_meta = _compute_tensor_momentum_for_anisotropic_edge(
+            history, settings
+        )
         p0_result = tensor_results.get("tensor_momentum_p0")
         if p0_result is not None:
             results["tensor"] = p0_result
@@ -3733,7 +3765,9 @@ def _compute_strong_glueball_for_anisotropic_edge(
         channel_config,
         channels=["glueball"],
     )
-    glueball_series = operator_series.operators.get("glueball", torch.zeros(0, dtype=torch.float32))
+    glueball_series = operator_series.operators.get(
+        "glueball", torch.zeros(0, dtype=torch.float32)
+    )
     return compute_channel_correlator(
         series=glueball_series,
         dt=operator_series.dt,
@@ -3790,7 +3824,7 @@ def _compute_tensor_momentum_for_anisotropic_edge(
 ) -> tuple[dict[str, ChannelCorrelatorResult], dict[str, Any]]:
     """Compute momentum-projected tensor correlators and build fit results."""
     if not bool(settings.use_companion_tensor_momentum):
-        return {}, {"component_labels": tuple(), "momentum_axis": int(settings.tensor_momentum_axis)}
+        return {}, {"component_labels": (), "momentum_axis": int(settings.tensor_momentum_axis)}
 
     tensor_max_lag = int(settings.tensor_momentum_max_lag or settings.max_lag)
     tensor_cfg = TensorMomentumCorrelatorConfig(
@@ -3803,7 +3837,9 @@ def _compute_tensor_momentum_for_anisotropic_edge(
         mass=float(settings.mass),
         ell0=settings.ell0,
         color_dims=_parse_triplet_dims_spec(settings.tensor_momentum_color_dims_spec, history.d),
-        position_dims=_parse_triplet_dims_spec(settings.tensor_momentum_position_dims_spec, history.d),
+        position_dims=_parse_triplet_dims_spec(
+            settings.tensor_momentum_position_dims_spec, history.d
+        ),
         pair_selection=str(settings.tensor_momentum_pair_selection),
         eps=float(settings.tensor_momentum_eps),
         momentum_axis=int(settings.tensor_momentum_axis),
@@ -4049,10 +4085,9 @@ def _compute_tensor_traceless_snapshot_operator(
         volume_full = volume_history[frame_idx - 1]
         if not torch.is_tensor(volume_full):
             volume_full = torch.as_tensor(volume_full)
-        volume_alive = (
-            volume_full.to(device=positions_alive.device, dtype=positions_alive.dtype)[alive_idx]
-            .clamp(min=0.0)
-        )
+        volume_alive = volume_full.to(device=positions_alive.device, dtype=positions_alive.dtype)[
+            alive_idx
+        ].clamp(min=0.0)
         if float(volume_alive.sum().item()) <= 0:
             msg = f"Non-positive total alive volume weight at frame {frame_idx}."
             raise ValueError(msg)
@@ -4083,13 +4118,14 @@ def _compute_tensor_traceless_snapshot_operator(
 
     r2 = torch.sum(dx_valid * dx_valid, dim=-1)
     eye = torch.eye(dim, device=positions_alive.device, dtype=torch.float32)
-    traceless = (
-        dx_valid.unsqueeze(-1) * dx_valid.unsqueeze(-2)
-        - eye.unsqueeze(0) * (r2[:, None, None] / float(dim))
+    traceless = dx_valid.unsqueeze(-1) * dx_valid.unsqueeze(-2) - eye.unsqueeze(0) * (
+        r2[:, None, None] / float(dim)
     )
 
     weighted_tensor = (w_valid * c_valid)[:, None, None] * traceless
-    tensor_sum = torch.zeros((n_alive, dim * dim), device=positions_alive.device, dtype=torch.float32)
+    tensor_sum = torch.zeros(
+        (n_alive, dim * dim), device=positions_alive.device, dtype=torch.float32
+    )
     tensor_sum.index_add_(0, src_valid, weighted_tensor.reshape(-1, dim * dim))
     weight_sum = torch.zeros(n_alive, device=positions_alive.device, dtype=torch.float32)
     weight_sum.index_add_(0, src_valid, w_valid)
@@ -4097,7 +4133,9 @@ def _compute_tensor_traceless_snapshot_operator(
     local_tensor = torch.zeros_like(tensor_sum)
     has_weight = weight_sum > 0
     if torch.any(has_weight):
-        local_tensor[has_weight] = tensor_sum[has_weight] / weight_sum[has_weight, None].clamp(min=1e-12)
+        local_tensor[has_weight] = tensor_sum[has_weight] / weight_sum[has_weight, None].clamp(
+            min=1e-12
+        )
     local_tensor = local_tensor.reshape(n_alive, dim, dim)
 
     # Scalar contraction per walker for radial correlation binning.
@@ -4111,7 +4149,9 @@ def _compute_spatial_glueball_and_tensor_for_anisotropic_edge(
 ) -> tuple[ChannelCorrelatorResult | None, ChannelCorrelatorResult | None, int, float | None]:
     """Compute spatial glueball/tensor correlators in one batched radial pass."""
     radial_config = _build_lorentz_radial_config(anisotropic_settings, radial_settings)
-    bundle = compute_radial_channels(history, config=radial_config, channels=["glueball", "tensor"])
+    bundle = compute_radial_channels(
+        history, config=radial_config, channels=["glueball", "tensor"]
+    )
     frame_idx = _resolve_lorentz_mc_time_index(history, radial_config.mc_time_index)
     rho_edge = _estimate_frame_geodesic_edge_spacing(history, frame_idx)
     return (
@@ -4666,7 +4706,7 @@ def _compute_fractal_set_measurements(
         else:
             spatial_cut_types = (str(settings.cut_geometry),)
     else:
-        spatial_cut_types = tuple()
+        spatial_cut_types = ()
 
     graph_specs: list[tuple[str, str]] = []
     if include_graph:
@@ -4743,12 +4783,8 @@ def _compute_fractal_set_measurements(
             s_fit = _count_cross_boundary(masks, companions_fit[info_idx])
             s_total = s_dist + s_fit
             area_cst = _count_crossing_lineages(masks, labels)
-            s_dist_geom = _sum_cross_boundary_weights(
-                masks, companions_dist[info_idx], w_dist
-            )
-            s_fit_geom = _sum_cross_boundary_weights(
-                masks, companions_fit[info_idx], w_fit
-            )
+            s_dist_geom = _sum_cross_boundary_weights(masks, companions_dist[info_idx], w_dist)
+            s_fit_geom = _sum_cross_boundary_weights(masks, companions_fit[info_idx], w_fit)
             s_total_geom = s_dist_geom + s_fit_geom
             area_cst_geom = _count_crossing_lineages_weighted(
                 masks=masks,
@@ -4759,42 +4795,38 @@ def _compute_fractal_set_measurements(
             region_size = masks.sum(axis=1, dtype=np.int64)
 
             for local_idx, cut_value in enumerate(cut_values.tolist()):
-                rows.append(
-                    {
-                        "info_idx": int(info_idx),
-                        "recorded_step": step,
-                        "partition_family": partition_family,
-                        "cut_type": cut_type,
-                        "cut_value": float(cut_value),
-                        "region_size": int(region_size[local_idx]),
-                        "area_cst": int(area_cst[local_idx]),
-                        "area_cst_geom": float(area_cst_geom[local_idx]),
-                        "s_dist": int(s_dist[local_idx]),
-                        "s_fit": int(s_fit[local_idx]),
-                        "s_total": int(s_total[local_idx]),
-                        "s_dist_geom": float(s_dist_geom[local_idx]),
-                        "s_fit_geom": float(s_fit_geom[local_idx]),
-                        "s_total_geom": float(s_total_geom[local_idx]),
-                    }
-                )
-
-            frame_rows.append(
-                {
+                rows.append({
                     "info_idx": int(info_idx),
                     "recorded_step": step,
                     "partition_family": partition_family,
                     "cut_type": cut_type,
-                    "n_partitions": int(masks.shape[0]),
-                    "mean_area_cst": float(np.mean(area_cst)),
-                    "mean_area_cst_geom": float(np.mean(area_cst_geom)),
-                    "mean_s_dist": float(np.mean(s_dist)),
-                    "mean_s_fit": float(np.mean(s_fit)),
-                    "mean_s_total": float(np.mean(s_total)),
-                    "mean_s_dist_geom": float(np.mean(s_dist_geom)),
-                    "mean_s_fit_geom": float(np.mean(s_fit_geom)),
-                    "mean_s_total_geom": float(np.mean(s_total_geom)),
-                }
-            )
+                    "cut_value": float(cut_value),
+                    "region_size": int(region_size[local_idx]),
+                    "area_cst": int(area_cst[local_idx]),
+                    "area_cst_geom": float(area_cst_geom[local_idx]),
+                    "s_dist": int(s_dist[local_idx]),
+                    "s_fit": int(s_fit[local_idx]),
+                    "s_total": int(s_total[local_idx]),
+                    "s_dist_geom": float(s_dist_geom[local_idx]),
+                    "s_fit_geom": float(s_fit_geom[local_idx]),
+                    "s_total_geom": float(s_total_geom[local_idx]),
+                })
+
+            frame_rows.append({
+                "info_idx": int(info_idx),
+                "recorded_step": step,
+                "partition_family": partition_family,
+                "cut_type": cut_type,
+                "n_partitions": int(masks.shape[0]),
+                "mean_area_cst": float(np.mean(area_cst)),
+                "mean_area_cst_geom": float(np.mean(area_cst_geom)),
+                "mean_s_dist": float(np.mean(s_dist)),
+                "mean_s_fit": float(np.mean(s_fit)),
+                "mean_s_total": float(np.mean(s_total)),
+                "mean_s_dist_geom": float(np.mean(s_dist_geom)),
+                "mean_s_fit_geom": float(np.mean(s_fit_geom)),
+                "mean_s_total_geom": float(np.mean(s_total_geom)),
+            })
 
         for cut_type in spatial_cut_types:
             masks, cut_values = _build_region_masks(
@@ -4860,19 +4892,17 @@ def _compute_fractal_set_measurements(
         x_all = points_df[area_key].to_numpy(dtype=float)
         y_all = points_df[metric_key].to_numpy(dtype=float)
         slope, intercept, r2 = _fit_linear_relation(x_all, y_all)
-        regression_rows.append(
-            {
-                "metric": metric_key,
-                "metric_label": metric_label,
-                "area_key": area_key,
-                "cut_type": "all",
-                "partition_family": "all",
-                "n_points": int(x_all.size),
-                "slope_alpha": slope,
-                "intercept": intercept,
-                "r2": r2,
-            }
-        )
+        regression_rows.append({
+            "metric": metric_key,
+            "metric_label": metric_label,
+            "area_key": area_key,
+            "cut_type": "all",
+            "partition_family": "all",
+            "n_points": int(x_all.size),
+            "slope_alpha": slope,
+            "intercept": intercept,
+            "r2": r2,
+        })
 
         for cut_type in sorted(points_df["cut_type"].unique()):
             subset = points_df[points_df["cut_type"] == cut_type]
@@ -4881,38 +4911,34 @@ def _compute_fractal_set_measurements(
             slope, intercept, r2 = _fit_linear_relation(x, y)
             families = subset["partition_family"].unique().tolist()
             family = str(families[0]) if len(families) == 1 else "mixed"
-            regression_rows.append(
-                {
-                    "metric": metric_key,
-                    "metric_label": metric_label,
-                    "area_key": area_key,
-                    "cut_type": str(cut_type),
-                    "partition_family": family,
-                    "n_points": int(x.size),
-                    "slope_alpha": slope,
-                    "intercept": intercept,
-                    "r2": r2,
-                }
-            )
+            regression_rows.append({
+                "metric": metric_key,
+                "metric_label": metric_label,
+                "area_key": area_key,
+                "cut_type": str(cut_type),
+                "partition_family": family,
+                "n_points": int(x.size),
+                "slope_alpha": slope,
+                "intercept": intercept,
+                "r2": r2,
+            })
 
         for family in sorted(points_df["partition_family"].unique()):
             subset = points_df[points_df["partition_family"] == family]
             x = subset[area_key].to_numpy(dtype=float)
             y = subset[metric_key].to_numpy(dtype=float)
             slope, intercept, r2 = _fit_linear_relation(x, y)
-            regression_rows.append(
-                {
-                    "metric": metric_key,
-                    "metric_label": metric_label,
-                    "area_key": area_key,
-                    "cut_type": f"family:{family}",
-                    "partition_family": str(family),
-                    "n_points": int(x.size),
-                    "slope_alpha": slope,
-                    "intercept": intercept,
-                    "r2": r2,
-                }
-            )
+            regression_rows.append({
+                "metric": metric_key,
+                "metric_label": metric_label,
+                "area_key": area_key,
+                "cut_type": f"family:{family}",
+                "partition_family": str(family),
+                "n_points": int(x.size),
+                "slope_alpha": slope,
+                "intercept": intercept,
+                "r2": r2,
+            })
 
     regression_df = pd.DataFrame(regression_rows)
     return points_df, regression_df, frame_df
@@ -5022,7 +5048,9 @@ def _format_fractal_set_summary(
 ) -> str:
     """Summarize Fractal Set boundary measurements and area-law fits."""
     if points_df.empty:
-        return "## Fractal Set Summary\n_No valid measurements. Load a RunHistory and run compute._"
+        return (
+            "## Fractal Set Summary\n_No valid measurements. Load a RunHistory and run compute._"
+        )
 
     lines = [
         "## Fractal Set Summary",
@@ -5064,9 +5092,7 @@ def _format_fractal_set_summary(
             b_alpha = float(b.get("slope_alpha", float("nan")))
             b_r2 = float(b.get("r2", float("nan")))
             if np.isfinite(b_alpha) and np.isfinite(b_r2):
-                lines.append(
-                    f"  random baseline: alpha={b_alpha:.6f}, R2={b_r2:.4f}"
-                )
+                lines.append(f"  random baseline: alpha={b_alpha:.6f}, R2={b_r2:.4f}")
 
     if not frame_df.empty:
         lines.append(f"- Mean per-frame Area_CST: {float(frame_df['mean_area_cst'].mean()):.3f}")
@@ -5122,28 +5148,26 @@ def _build_fractal_set_baseline_comparison(regression_df: pd.DataFrame) -> pd.Da
                 continue
             r2 = float(fit.get("r2", float("nan")))
             alpha = float(fit.get("slope_alpha", float("nan")))
-            rows.append(
-                {
-                    "metric": metric_label,
-                    "cut_type": cut_type,
-                    "partition_family": str(fit.get("partition_family", "")),
-                    "n_points": int(fit.get("n_points", 0)),
-                    "alpha": alpha,
-                    "r2": r2,
-                    "baseline_alpha_random": baseline_alpha,
-                    "baseline_r2_random": baseline_r2,
-                    "delta_r2_vs_random": (
-                        r2 - baseline_r2
-                        if np.isfinite(r2) and np.isfinite(baseline_r2)
-                        else float("nan")
-                    ),
-                    "delta_alpha_vs_random": (
-                        alpha - baseline_alpha
-                        if np.isfinite(alpha) and np.isfinite(baseline_alpha)
-                        else float("nan")
-                    ),
-                }
-            )
+            rows.append({
+                "metric": metric_label,
+                "cut_type": cut_type,
+                "partition_family": str(fit.get("partition_family", "")),
+                "n_points": int(fit.get("n_points", 0)),
+                "alpha": alpha,
+                "r2": r2,
+                "baseline_alpha_random": baseline_alpha,
+                "baseline_r2_random": baseline_r2,
+                "delta_r2_vs_random": (
+                    r2 - baseline_r2
+                    if np.isfinite(r2) and np.isfinite(baseline_r2)
+                    else float("nan")
+                ),
+                "delta_alpha_vs_random": (
+                    alpha - baseline_alpha
+                    if np.isfinite(alpha) and np.isfinite(baseline_alpha)
+                    else float("nan")
+                ),
+            })
 
     if not rows:
         return pd.DataFrame()
@@ -5154,53 +5178,82 @@ def _build_fractal_set_baseline_comparison(regression_df: pd.DataFrame) -> pd.Da
 def _compute_coupling_constants(
     history: RunHistory | None,
     h_eff: float,
-    epsilon_d: float | None = None,
-    epsilon_c: float | None = None,
+    frame_indices: list[int] | None = None,
+    lambda_alg: float | None = None,
+    pairwise_distance_by_frame: dict[int, torch.Tensor] | None = None,
 ) -> dict[str, float]:
-    d = float(history.d) if history is not None else float("nan")
-    h_eff = float(max(h_eff, 1e-12))
-
-    epsilon_d = epsilon_d or _resolve_history_param(history, "companion_selection", "epsilon", default=None)
-    epsilon_c = epsilon_c or _resolve_history_param(
-        history, "companion_selection_clone", "epsilon", default=None
+    return compute_electroweak_coupling_constants(
+        history,
+        h_eff=h_eff,
+        frame_indices=frame_indices,
+        lambda_alg=lambda_alg,
+        pairwise_distance_by_frame=pairwise_distance_by_frame,
     )
-    nu = _resolve_history_param(history, "kinetic", "nu", default=None)
 
-    if epsilon_d is None or epsilon_d <= 0:
-        g1_est = float("nan")
-    else:
-        g1_est = (h_eff / (epsilon_d**2)) ** 0.5
 
-    c2d = (d**2 - 1.0) / (2.0 * d) if d > 0 else float("nan")
-    c2_2 = 3.0 / 4.0
-    if epsilon_c is None or epsilon_c <= 0 or not np.isfinite(c2d) or c2d <= 0:
-        g2_est = float("nan")
-    else:
-        g2_sq = (2.0 * h_eff / (epsilon_c**2)) * (c2_2 / c2d)
-        g2_est = float(max(g2_sq, 0.0) ** 0.5)
+def _resolve_electroweak_geodesic_matrices(
+    history: RunHistory | None,
+    frame_indices: list[int] | None,
+    state: dict[str, Any],
+    *,
+    method: str,
+    edge_weight_mode: str,
+    assume_all_alive: bool,
+) -> dict[int, torch.Tensor] | None:
+    if not isinstance(state, dict):
+        return None
 
-    force_stats = _compute_force_stats(history)
-    mean_force_sq = force_stats["mean_force_sq"]
-    if nu is None or not np.isfinite(mean_force_sq) or d <= 0:
-        g3_est = float("nan")
-        kvisc_sq = float("nan")
-    else:
-        kvisc_sq = mean_force_sq / max(float(nu) ** 2, 1e-12)
-        g3_sq = (float(nu) ** 2 / h_eff**2) * (d * (d**2 - 1.0) / 12.0) * kvisc_sq
-        g3_est = float(max(g3_sq, 0.0) ** 0.5)
+    requested_frames: list[int] = []
+    for frame in frame_indices or []:
+        try:
+            frame_idx = int(frame)
+        except (TypeError, ValueError):
+            continue
+        if frame_idx not in requested_frames:
+            requested_frames.append(frame_idx)
+    if not requested_frames:
+        return None
 
-    return {
-        "g1_est": float(g1_est),
-        "g2_est": float(g2_est),
-        "g3_est": float(g3_est),
-        "epsilon_d": float(epsilon_d) if epsilon_d is not None else float("nan"),
-        "epsilon_c": float(epsilon_c) if epsilon_c is not None else float("nan"),
-        "nu": float(nu) if nu is not None else float("nan"),
-        "kvisc_sq_proxy": float(kvisc_sq),
-        "mean_force_sq": float(mean_force_sq),
-        "d": float(d),
-        "h_eff": float(h_eff),
-    }
+    cached = state.get("_multiscale_geodesic_distance_by_frame")
+    merged: dict[int, torch.Tensor] = {}
+    if isinstance(cached, dict):
+        for raw_key, value in cached.items():
+            try:
+                frame = int(raw_key)
+            except (TypeError, ValueError):
+                continue
+            if torch.is_tensor(value):
+                merged[frame] = value.detach().to(dtype=torch.float32, device="cpu")
+
+    missing_frames = [frame for frame in requested_frames if frame not in merged]
+    if not missing_frames or history is None:
+        return merged or None
+
+    try:
+        frame_ids, distance_batch = compute_pairwise_distance_matrices_from_history(
+            history,
+            method=method,
+            frame_indices=missing_frames,
+            batch_size=1,
+            edge_weight_mode=edge_weight_mode,
+            assume_all_alive=bool(assume_all_alive),
+            device=None,
+            dtype=torch.float32,
+        )
+    except Exception:
+        return merged or None
+
+    for local_idx, frame_id in enumerate(frame_ids):
+        if local_idx >= int(distance_batch.shape[0]):
+            break
+        matrix = distance_batch[local_idx]
+        if torch.is_tensor(matrix):
+            merged[int(frame_id)] = matrix.detach().to(dtype=torch.float32, device="cpu")
+
+    if merged:
+        state["_multiscale_geodesic_distance_by_frame"] = merged
+        return merged
+    return None
 
 
 def _build_coupling_rows(
@@ -5212,44 +5265,79 @@ def _build_coupling_rows(
     proxies = proxies or {}
     refs = refs or {}
     rows = [
-        {"name": "g1_est (N1=1)", "value": couplings.get("g1_est"), "note": "from ε_d, h_eff"},
-        {"name": "g2_est", "value": couplings.get("g2_est"), "note": "from ε_c, h_eff, C2"},
+        {
+            "name": "ε_distance emergent",
+            "value": couplings.get("eps_distance_emergent"),
+            "note": "RMS d_alg to diversity companions",
+        },
+        {
+            "name": "ε_clone emergent",
+            "value": couplings.get("eps_clone_emergent"),
+            "note": "RMS d_alg to cloning companions",
+        },
+        {
+            "name": "ε_fitness_gap emergent",
+            "value": couplings.get("eps_fitness_gap_emergent"),
+            "note": "RMS |S_i| to random cloning companion",
+        },
+        {
+            "name": "g1_est emergent",
+            "value": couplings.get("g1_est_emergent"),
+            "note": "from ε_distance emergent",
+        },
+        {
+            "name": "g2_est emergent",
+            "value": couplings.get("g2_est_emergent"),
+            "note": "from ε_clone emergent",
+        },
+        {
+            "name": "ε_geodesic emergent",
+            "value": couplings.get("eps_geodesic_emergent"),
+            "note": "RMS geodesic pairwise distance across walkers",
+        },
+        {
+            "name": "g2_est emergent fitness-gap",
+            "value": couplings.get("g2_est_emergent_fitness_gap"),
+            "note": "from ε_fitness_gap emergent",
+        },
+        {
+            "name": "sin²θ_W emergent",
+            "value": couplings.get("sin2_theta_w_emergent"),
+            "note": "ε_c²/(ε_c²+ε_d²), ε_c=fitness_gap, ε_d=geodesic",
+        },
+        {
+            "name": "tanθ_W emergent",
+            "value": couplings.get("tan_theta_w_emergent"),
+            "note": "ε_c/ε_d, ε_c=fitness_gap, ε_d=geodesic",
+        },
     ]
     if "g1_proxy" in proxies:
         rows.append({"name": "g1_proxy", "value": proxies.get("g1_proxy"), "note": "phase std"})
     if "g2_proxy" in proxies:
         rows.append({"name": "g2_proxy", "value": proxies.get("g2_proxy"), "note": "phase std"})
     if "sin2_theta_w_proxy" in proxies:
-        rows.append(
-            {
-                "name": "sin2θw proxy",
-                "value": proxies.get("sin2_theta_w_proxy"),
-                "note": "from phase stds",
-            }
-        )
+        rows.append({
+            "name": "sin2θw proxy",
+            "value": proxies.get("sin2_theta_w_proxy"),
+            "note": "from phase stds",
+        })
     if "tan_theta_w_proxy" in proxies:
-        rows.append(
-            {
-                "name": "tanθw proxy",
-                "value": proxies.get("tan_theta_w_proxy"),
-                "note": "from phase stds",
-            }
-        )
+        rows.append({
+            "name": "tanθw proxy",
+            "value": proxies.get("tan_theta_w_proxy"),
+            "note": "from phase stds",
+        })
     if include_strong:
-        rows.append(
-            {
-                "name": "g3_est",
-                "value": couplings.get("g3_est"),
-                "note": "from ν, h_eff, <K_visc^2>",
-            }
-        )
-        rows.append(
-            {
-                "name": "<K_visc^2> proxy",
-                "value": couplings.get("kvisc_sq_proxy"),
-                "note": "mean ||F_visc||^2 / ν^2",
-            }
-        )
+        rows.append({
+            "name": "g3_est",
+            "value": couplings.get("g3_est"),
+            "note": "from ν, h_eff, <K_visc^2>",
+        })
+        rows.append({
+            "name": "<K_visc^2> proxy",
+            "value": couplings.get("kvisc_sq_proxy"),
+            "note": "mean ||F_visc||^2 / ν^2",
+        })
 
     for row in rows:
         name = row.get("name")
@@ -5299,7 +5387,9 @@ def _history_transition_steps(history: RunHistory, n_steps: int) -> np.ndarray:
     return np.arange(1, n_steps + 1, dtype=float) * record_every
 
 
-def _compute_masked_mean_p95(values: np.ndarray, alive_mask: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def _compute_masked_mean_p95(
+    values: np.ndarray, alive_mask: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
     """Compute per-step mean and p95 over alive walkers (vectorized)."""
     arr = np.asarray(values, dtype=float)
     mask = np.asarray(alive_mask, dtype=bool)
@@ -5397,7 +5487,7 @@ def _build_timeseries_mean_p95_plot(
     if frame.empty:
         return _algorithm_placeholder_plot("No data available")
 
-    curve = hv.Curve(frame, "step", "mean").opts(color=color, line_width=2)
+    curve = hv.Curve(frame, "step", "mean").opts(color=color, line_width=2, tools=["hover"])
     errorbars = hv.ErrorBars(frame, "step", ["mean", "err95"]).opts(
         color=color,
         alpha=0.45,
@@ -5429,7 +5519,7 @@ def _build_timeseries_mean_error_plot(
     if frame.empty:
         return _algorithm_placeholder_plot("No data available")
 
-    curve = hv.Curve(frame, "step", "mean").opts(color=color, line_width=2)
+    curve = hv.Curve(frame, "step", "mean").opts(color=color, line_width=2, tools=["hover"])
     errorbars = hv.ErrorBars(frame, "step", ["mean", "error"]).opts(
         color=color,
         alpha=0.45,
@@ -5524,7 +5614,7 @@ def _build_companion_distance_plot(
         overlays.append(
             hv.Curve(clone_df, "step", "mean")
             .relabel("Clone mean")
-            .opts(color="#e45756", line_width=2)
+            .opts(color="#e45756", line_width=2, tools=["hover"])
         )
     if not random_df.empty:
         overlays.append(
@@ -5535,7 +5625,7 @@ def _build_companion_distance_plot(
         overlays.append(
             hv.Curve(random_df, "step", "mean")
             .relabel("Random mean")
-            .opts(color="#4c78a8", line_width=2)
+            .opts(color="#4c78a8", line_width=2, tools=["hover"])
         )
 
     if not overlays:
@@ -5562,6 +5652,7 @@ def _build_algorithm_diagnostics(history: RunHistory) -> dict[str, Any]:
     fitness = _to_numpy(history.fitness).astype(float, copy=False)
     rewards = _to_numpy(history.rewards).astype(float, copy=False)
     x_pre = _to_numpy(history.x_before_clone).astype(float, copy=False)
+    v_pre = _to_numpy(history.v_before_clone).astype(float, copy=False)
     companions_clone = _to_numpy(history.companions_clone).astype(np.int64, copy=False)
     companions_random = _to_numpy(history.companions_distance).astype(np.int64, copy=False)
 
@@ -5571,6 +5662,7 @@ def _build_algorithm_diagnostics(history: RunHistory) -> dict[str, Any]:
         fitness.shape[0],
         rewards.shape[0],
         x_pre.shape[0],
+        v_pre.shape[0],
         companions_clone.shape[0],
         companions_random.shape[0],
     )
@@ -5583,6 +5675,7 @@ def _build_algorithm_diagnostics(history: RunHistory) -> dict[str, Any]:
     fitness = fitness[:n_steps]
     rewards = rewards[:n_steps]
     x_pre = x_pre[:n_steps]
+    v_pre = v_pre[:n_steps]
     companions_clone = companions_clone[:n_steps]
     companions_random = companions_random[:n_steps]
 
@@ -5636,6 +5729,7 @@ def _build_algorithm_diagnostics(history: RunHistory) -> dict[str, Any]:
             line_width=2,
             ylim=(0, 100),
             show_grid=True,
+            tools=["hover"],
         )
 
     fitness_plot = _build_timeseries_mean_p95_plot(
@@ -5671,6 +5765,68 @@ def _build_algorithm_diagnostics(history: RunHistory) -> dict[str, Any]:
         color="#54a24b",
     )
 
+    # Average walker speed (||v||) over time with p95 error bars.
+    speed = np.linalg.norm(v_pre, axis=-1)  # [n_steps, N]
+    speed_mean, speed_p95 = _compute_masked_mean_p95(speed, alive)
+    velocity_plot = _build_timeseries_mean_p95_plot(
+        step=step,
+        mean=speed_mean,
+        p95=speed_p95,
+        title="Mean Walker Speed Over Time (p95 error bars)",
+        ylabel="Speed (||v||)",
+        color="#e45756",
+    )
+
+    # Geodesic edge distances and riemannian_kernel_volume weights over time.
+    geodesic_plot = _algorithm_placeholder_plot("No geodesic edge distance data available.")
+    rkv_plot = _algorithm_placeholder_plot("No riemannian_kernel_volume data available.")
+    geo_list = getattr(history, "geodesic_edge_distances", None)
+    ew_list = getattr(history, "edge_weights", None)
+    recorded_steps = np.asarray(history.recorded_steps, dtype=float)
+    if geo_list is not None and len(geo_list) > 0:
+        geo_means = np.full(len(geo_list), np.nan)
+        geo_stds = np.full(len(geo_list), np.nan)
+        for t, geo_t in enumerate(geo_list):
+            vals = _to_numpy(geo_t).astype(float).ravel()
+            if vals.size > 0:
+                geo_means[t] = float(np.mean(vals))
+                geo_stds[t] = float(np.std(vals))
+        geo_step = (
+            recorded_steps[: len(geo_list)]
+            if recorded_steps.size >= len(geo_list)
+            else np.arange(len(geo_list), dtype=float)
+        )
+        geodesic_plot = _build_timeseries_mean_error_plot(
+            step=geo_step,
+            mean=geo_means,
+            error=geo_stds,
+            title="Mean Geodesic Edge Distance Over Time (mean ± 1σ)",
+            ylabel="Geodesic distance",
+            color="#9d755d",
+        )
+    if ew_list is not None and len(ew_list) > 0:
+        rkv_means = np.full(len(ew_list), np.nan)
+        rkv_stds = np.full(len(ew_list), np.nan)
+        for t, ew_t in enumerate(ew_list):
+            if isinstance(ew_t, dict) and "riemannian_kernel_volume" in ew_t:
+                vals = _to_numpy(ew_t["riemannian_kernel_volume"]).astype(float).ravel()
+                if vals.size > 0:
+                    rkv_means[t] = float(np.mean(vals))
+                    rkv_stds[t] = float(np.std(vals))
+        rkv_step = (
+            recorded_steps[: len(ew_list)]
+            if recorded_steps.size >= len(ew_list)
+            else np.arange(len(ew_list), dtype=float)
+        )
+        rkv_plot = _build_timeseries_mean_error_plot(
+            step=rkv_step,
+            mean=rkv_means,
+            error=rkv_stds,
+            title="Riemannian Kernel Volume Weights Over Time (mean ± 1σ)",
+            ylabel="Weight",
+            color="#b279a2",
+        )
+
     lyapunov = _compute_vectorized_lyapunov(history)
     lyapunov_plot = build_lyapunov_plot(
         lyapunov["time"],
@@ -5685,6 +5841,9 @@ def _build_algorithm_diagnostics(history: RunHistory) -> dict[str, Any]:
         "reward_plot": reward_plot,
         "companion_plot": companion_plot,
         "interwalker_plot": interwalker_plot,
+        "velocity_plot": velocity_plot,
+        "geodesic_plot": geodesic_plot,
+        "rkv_plot": rkv_plot,
         "lyapunov_plot": lyapunov_plot,
         "n_transition_steps": int(n_steps),
         "n_lyapunov_steps": int(len(lyapunov["time"])),
@@ -5732,21 +5891,19 @@ def _build_coupling_diagnostics_frame_table(
     def _tensor_to_numpy(tensor: torch.Tensor) -> np.ndarray:
         return tensor.detach().cpu().numpy().astype(float, copy=False)
 
-    table = pd.DataFrame(
-        {
-            "step": step_axis,
-            "phase_mean": _tensor_to_numpy(output.phase_mean),
-            "phase_mean_unwrapped": _tensor_to_numpy(output.phase_mean_unwrapped),
-            "r_circ": _tensor_to_numpy(output.phase_concentration),
-            "re_im_asymmetry": _tensor_to_numpy(output.re_im_asymmetry),
-            "local_phase_coherence": _tensor_to_numpy(output.local_phase_coherence),
-            "scalar_mean": _tensor_to_numpy(output.scalar_mean),
-            "pseudoscalar_mean": _tensor_to_numpy(output.pseudoscalar_mean),
-            "field_magnitude_mean": _tensor_to_numpy(output.field_magnitude_mean),
-            "valid_pairs": output.valid_pair_counts.detach().cpu().numpy().astype(int, copy=False),
-            "valid_walkers": output.valid_walker_counts.detach().cpu().numpy().astype(int, copy=False),
-        }
-    )
+    table = pd.DataFrame({
+        "step": step_axis,
+        "phase_mean": _tensor_to_numpy(output.phase_mean),
+        "phase_mean_unwrapped": _tensor_to_numpy(output.phase_mean_unwrapped),
+        "r_circ": _tensor_to_numpy(output.phase_concentration),
+        "re_im_asymmetry": _tensor_to_numpy(output.re_im_asymmetry),
+        "local_phase_coherence": _tensor_to_numpy(output.local_phase_coherence),
+        "scalar_mean": _tensor_to_numpy(output.scalar_mean),
+        "pseudoscalar_mean": _tensor_to_numpy(output.pseudoscalar_mean),
+        "field_magnitude_mean": _tensor_to_numpy(output.field_magnitude_mean),
+        "valid_pairs": output.valid_pair_counts.detach().cpu().numpy().astype(int, copy=False),
+        "valid_walkers": output.valid_walker_counts.detach().cpu().numpy().astype(int, copy=False),
+    })
     return table.replace([np.inf, -np.inf], np.nan)
 
 
@@ -5758,14 +5915,12 @@ def _build_coupling_diagnostics_scale_table(output: Any) -> pd.DataFrame:
     def _to_numpy(tensor: torch.Tensor) -> np.ndarray:
         return tensor.detach().cpu().numpy().astype(float, copy=False)
 
-    table = pd.DataFrame(
-        {
-            "scale": _to_numpy(output.scales),
-            "coherence": _to_numpy(output.coherence_by_scale),
-            "phase_spread": _to_numpy(output.phase_spread_by_scale),
-            "screening_connected": _to_numpy(output.screening_connected_by_scale),
-        }
-    )
+    table = pd.DataFrame({
+        "scale": _to_numpy(output.scales),
+        "coherence": _to_numpy(output.coherence_by_scale),
+        "phase_spread": _to_numpy(output.phase_spread_by_scale),
+        "screening_connected": _to_numpy(output.screening_connected_by_scale),
+    })
     return table.replace([np.inf, -np.inf], np.nan)
 
 
@@ -5779,14 +5934,14 @@ def _build_coupling_diagnostics_overlay(
     """Build an overlay plot from multiple diagnostics series."""
     overlays: list[Any] = []
     for label, values, color in series:
-        frame = pd.DataFrame({"step": step_axis, "value": values}).replace([np.inf, -np.inf], np.nan)
+        frame = pd.DataFrame({"step": step_axis, "value": values}).replace(
+            [np.inf, -np.inf], np.nan
+        )
         frame = frame.dropna()
         if frame.empty:
             continue
         overlays.append(
-            hv.Curve(frame, "step", "value")
-            .relabel(label)
-            .opts(color=color, line_width=2)
+            hv.Curve(frame, "step", "value").relabel(label).opts(color=color, line_width=2)
         )
     if not overlays:
         return _algorithm_placeholder_plot("No diagnostics data available")
@@ -5814,14 +5969,14 @@ def _build_coupling_diagnostics_scale_overlay(
     """Build an overlay plot on the scale axis."""
     overlays: list[Any] = []
     for label, values, color in series:
-        frame = pd.DataFrame({"scale": scale_axis, "value": values}).replace([np.inf, -np.inf], np.nan)
+        frame = pd.DataFrame({"scale": scale_axis, "value": values}).replace(
+            [np.inf, -np.inf], np.nan
+        )
         frame = frame.dropna()
         if frame.empty:
             continue
         overlays.append(
-            hv.Curve(frame, "scale", "value")
-            .relabel(label)
-            .opts(color=color, line_width=2)
+            hv.Curve(frame, "scale", "value").relabel(label).opts(color=color, line_width=2)
         )
     if not overlays:
         return _algorithm_placeholder_plot("No kernel-scale diagnostics available")
@@ -5915,7 +6070,9 @@ def _build_coupling_diagnostics_kernel_plots(output: Any) -> dict[str, hv.Overla
     scales = output.scales.detach().cpu().numpy().astype(float, copy=False)
     coherence = output.coherence_by_scale.detach().cpu().numpy().astype(float, copy=False)
     phase_spread = output.phase_spread_by_scale.detach().cpu().numpy().astype(float, copy=False)
-    screening = output.screening_connected_by_scale.detach().cpu().numpy().astype(float, copy=False)
+    screening = (
+        output.screening_connected_by_scale.detach().cpu().numpy().astype(float, copy=False)
+    )
     creutz_mid = output.creutz_mid_scales.detach().cpu().numpy().astype(float, copy=False)
     creutz = output.creutz_ratio_by_mid_scale.detach().cpu().numpy().astype(float, copy=False)
     running_mid = output.running_mid_scales.detach().cpu().numpy().astype(float, copy=False)
@@ -6090,7 +6247,7 @@ def _build_best_fit_rows_generic(
     # Collect all mass keys that predictions should cover
     mass_keys = list(masses.keys())
     # Collect all reference dicts for closest matching
-    all_refs: dict[str, dict[str, float]] = {g: r for g, r in ref_groups}
+    all_refs: dict[str, dict[str, float]] = dict(ref_groups)
 
     for label, anchor_list in fit_sets:
         scale = _best_fit_scale(masses, anchor_list)
@@ -6230,7 +6387,9 @@ def _build_best_fit_rows(
 ) -> list[dict[str, Any]]:
     """Build best-fit scale rows using baryon/meson references."""
     return _build_best_fit_rows_generic(
-        masses, [("baryon", BARYON_REFS), ("meson", MESON_REFS)], r2s,
+        masses,
+        [("baryon", BARYON_REFS), ("meson", MESON_REFS)],
+        r2s,
     )
 
 
@@ -6294,16 +6453,23 @@ def _build_anchor_rows(
 
 # Default electroweak mass references (GeV) mapped to proxy channels.
 DEFAULT_ELECTROWEAK_REFS = {
-    "u1_phase": 0.000511,   # electron
-    "u1_dressed": 0.105658, # muon
-    "su2_phase": 80.379,    # W boson
-    "su2_doublet": 91.1876, # Z boson
-    "ew_mixed": 1.77686,    # tau
+    "u1_phase": 0.000511,  # electron
+    "u1_dressed": 0.105658,  # muon
+    "su2_phase": 80.379,  # W boson
+    "su2_doublet": 91.1876,  # Z boson
+    "ew_mixed": 1.77686,  # tau
 }
 
 ELECTROWEAK_COUPLING_NAMES = (
-    "g1_est (N1=1)",
-    "g2_est",
+    "ε_distance emergent",
+    "ε_clone emergent",
+    "ε_fitness_gap emergent",
+    "ε_geodesic emergent",
+    "g1_est emergent",
+    "g2_est emergent",
+    "g2_est emergent fitness-gap",
+    "sin²θ_W emergent",
+    "tanθ_W emergent",
     "g1_proxy",
     "g2_proxy",
     "sin2θw proxy",
@@ -6313,8 +6479,11 @@ ELECTROWEAK_COUPLING_NAMES = (
 ELECTROWEAK_COUPLING_REFERENCE_COLUMNS = ("observed_mZ", "observed_GUT")
 
 DEFAULT_ELECTROWEAK_COUPLING_REFS = {
-    "g1_est (N1=1)": {"observed_mZ": 0.357468, "observed_GUT": 0.560499},
-    "g2_est": {"observed_mZ": 0.651689, "observed_GUT": 0.723601},
+    "g1_est emergent": {"observed_mZ": 0.357468, "observed_GUT": 0.560499},
+    "g2_est emergent": {"observed_mZ": 0.651689, "observed_GUT": 0.723601},
+    "g2_est emergent fitness-gap": {"observed_mZ": 0.651689, "observed_GUT": 0.723601},
+    "sin²θ_W emergent": {"observed_mZ": 0.23129, "observed_GUT": 0.375},
+    "tanθ_W emergent": {"observed_mZ": 0.548526, "observed_GUT": 0.774597},
     "g1_proxy": {"observed_mZ": 0.357468, "observed_GUT": 0.560499},
     "g2_proxy": {"observed_mZ": 0.651689, "observed_GUT": 0.723601},
     "sin2θw proxy": {"observed_mZ": 0.23129, "observed_GUT": 0.375},
@@ -6326,6 +6495,7 @@ def _format_ref_value(value: float | None) -> str:
     if value is None or not np.isfinite(value):
         return ""
     return f"{value:.6f}"
+
 
 # Channel-to-family mapping for physics comparisons
 CHANNEL_FAMILY_MAP = {
@@ -6468,11 +6638,7 @@ def _compute_tensor_correction_payload(
         if mass_v.size > 1:
             consensus_err = float(np.std(mass_v, ddof=1) / np.sqrt(float(mass_v.size)))
 
-    spread = (
-        float(np.std(masses[valid], ddof=1))
-        if int(np.count_nonzero(valid)) > 1
-        else 0.0
-    )
+    spread = float(np.std(masses[valid], ddof=1)) if int(np.count_nonzero(valid)) > 1 else 0.0
 
     base_idx = int(np.where(labels == "tensor")[0][0])
     if not bool(valid[base_idx]) and bool(np.any(valid)):
@@ -6482,13 +6648,20 @@ def _compute_tensor_correction_payload(
 
     correction_scale = float("nan")
     correction_scale_err = float("nan")
-    if np.isfinite(consensus_mass) and consensus_mass > 0 and np.isfinite(base_mass) and base_mass > 0:
+    if (
+        np.isfinite(consensus_mass)
+        and consensus_mass > 0
+        and np.isfinite(base_mass)
+        and base_mass > 0
+    ):
         correction_scale = float(consensus_mass / base_mass)
         base_err = errors[base_idx]
         if np.isfinite(consensus_err) and np.isfinite(base_err):
             rel_cons = consensus_err / max(consensus_mass, 1e-12)
             rel_base = base_err / max(base_mass, 1e-12)
-            correction_scale_err = abs(correction_scale) * float(np.sqrt(rel_cons**2 + rel_base**2))
+            correction_scale_err = abs(correction_scale) * float(
+                np.sqrt(rel_cons**2 + rel_base**2)
+            )
 
     per_estimator_scale = np.full_like(masses, np.nan, dtype=float)
     per_estimator_scale[valid & np.isfinite(consensus_mass) & (consensus_mass > 0)] = (
@@ -6744,15 +6917,13 @@ def _build_electroweak_comparison_rows(
         err_pct = None
         if obs is not None and obs > 0:
             err_pct = (pred - obs) / obs * 100.0
-        rows.append(
-            {
-                "channel": name,
-                "alg_mass": alg_mass,
-                "obs_mass_GeV": obs,
-                "pred_mass_GeV": pred,
-                "error_pct": err_pct,
-            }
-        )
+        rows.append({
+            "channel": name,
+            "alg_mass": alg_mass,
+            "obs_mass_GeV": obs,
+            "pred_mass_GeV": pred,
+            "error_pct": err_pct,
+        })
     return rows
 
 
@@ -6778,14 +6949,12 @@ def _build_electroweak_ratio_rows(
             observed = obs_num / obs_den
             if observed > 0:
                 error_pct = (measured - observed) / observed * 100.0
-        rows.append(
-            {
-                "ratio": f"{name}/{base_name}",
-                "measured": measured,
-                "observed": observed,
-                "error_pct": error_pct,
-            }
-        )
+        rows.append({
+            "ratio": f"{name}/{base_name}",
+            "measured": measured,
+            "observed": observed,
+            "error_pct": error_pct,
+        })
     return rows
 
 
@@ -6962,11 +7131,7 @@ def _update_mass_table(
             "channel": name,
             "mass": f"{mass:.6f}" if mass > 0 else "n/a",
             "mass_error": f"{mass_error:.6f}" if mass_error < float("inf") else "n/a",
-            "mass_error_pct": (
-                f"{mass_error_pct:.2f}%"
-                if np.isfinite(mass_error_pct)
-                else "n/a"
-            ),
+            "mass_error_pct": (f"{mass_error_pct:.2f}%" if np.isfinite(mass_error_pct) else "n/a"),
             "r2": f"{r2:.4f}" if np.isfinite(r2) else "n/a",
             "n_windows": n_windows,
             "n_samples": result.n_samples,
@@ -6978,13 +7143,14 @@ def _update_correlator_plots(
     results: dict[str, ChannelCorrelatorResult],
     plateau_container,
     spectrum_pane,
-    overlay_corr_pane,
-    overlay_meff_pane,
+    overlay_corr_pane: pn.pane.HoloViews | None,
+    overlay_meff_pane: pn.pane.HoloViews | None,
     heatmap_container=None,
     heatmap_color_metric_widget=None,
     heatmap_alpha_metric_widget=None,
     spectrum_builder=None,
     correlator_logy: bool = True,
+    channels_per_row: int = 1,
 ) -> None:
     """Update all correlator plots for a tab (module-level, no closure).
 
@@ -7015,8 +7181,12 @@ def _update_correlator_plots(
             window_aic = _to_numpy(result.window_aic)
             window_r2 = _to_numpy(result.window_r2) if result.window_r2 is not None else None
             best_window = result.mass_fit.get("best_window", {})
-            color_metric = str(heatmap_color_metric_widget.value) if heatmap_color_metric_widget else "mass"
-            alpha_metric = str(heatmap_alpha_metric_widget.value) if heatmap_alpha_metric_widget else "aic"
+            color_metric = (
+                str(heatmap_color_metric_widget.value) if heatmap_color_metric_widget else "mass"
+            )
+            alpha_metric = (
+                str(heatmap_alpha_metric_widget.value) if heatmap_alpha_metric_widget else "aic"
+            )
             heatmap_plot = build_window_heatmap(
                 window_masses,
                 window_aic,
@@ -7032,24 +7202,35 @@ def _update_correlator_plots(
                     pn.pane.HoloViews(heatmap_plot, sizing_mode="stretch_width", linked_axes=False)
                 )
 
-    plateau_container.objects = channel_plot_items if channel_plot_items else [
-        pn.pane.Markdown("_No channel plots available._")
-    ]
+    if channel_plot_items:
+        ncols = max(1, int(channels_per_row))
+        if ncols == 1:
+            plateau_container.objects = channel_plot_items
+        else:
+            rows = [
+                pn.Row(*channel_plot_items[i : i + ncols], sizing_mode="stretch_width")
+                for i in range(0, len(channel_plot_items), ncols)
+            ]
+            plateau_container.objects = rows
+    else:
+        plateau_container.objects = [pn.pane.Markdown("_No channel plots available._")]
 
     if heatmap_container is not None:
-        heatmap_container.objects = heatmap_items if heatmap_items else [
+        heatmap_container.objects = heatmap_items or [
             pn.pane.Markdown("_No window heatmaps available._")
         ]
 
     if spectrum_builder is None:
         spectrum_builder = build_mass_spectrum_bar
     spectrum_pane.object = spectrum_builder(results)
-    overlay_corr_pane.object = build_all_channels_overlay(
-        results,
-        plot_type="correlator",
-        correlator_logy=correlator_logy,
-    )
-    overlay_meff_pane.object = build_all_channels_overlay(results, plot_type="effective_mass")
+    if overlay_corr_pane is not None:
+        overlay_corr_pane.object = build_all_channels_overlay(
+            results,
+            plot_type="correlator",
+            correlator_logy=correlator_logy,
+        )
+    if overlay_meff_pane is not None:
+        overlay_meff_pane.object = build_all_channels_overlay(results, plot_type="effective_mass")
 
 
 def _update_strong_tables(
@@ -7058,8 +7239,8 @@ def _update_strong_tables(
     mass_table,
     ratio_pane,
     fit_table,
-    anchor_table,
-    glueball_ref_input,
+    anchor_table=None,
+    glueball_ref_input=None,
     mass_getter=None,
     error_getter=None,
     ratio_specs=None,
@@ -7071,10 +7252,16 @@ def _update_strong_tables(
     """Orchestrate all strong-force table updates (module-level, no closure)."""
     if ratio_specs is None:
         ratio_specs = STRONG_FORCE_RATIO_SPECS
-    ratio_specs_for_table = calibration_ratio_specs if calibration_ratio_specs is not None else ratio_specs
-    family_map = calibration_family_map if calibration_family_map is not None else _STRONG_FAMILY_MAP
+    ratio_specs_for_table = (
+        calibration_ratio_specs if calibration_ratio_specs is not None else ratio_specs
+    )
+    family_map = (
+        calibration_family_map if calibration_family_map is not None else _STRONG_FAMILY_MAP
+    )
 
-    _update_mass_table(results, mass_table, mode, mass_getter=mass_getter, error_getter=error_getter)
+    _update_mass_table(
+        results, mass_table, mode, mass_getter=mass_getter, error_getter=error_getter
+    )
     comparison_results = dict(results)
     if comparison_channel_overrides:
         for canonical_name, selected_name in comparison_channel_overrides.items():
@@ -7107,15 +7294,19 @@ def _update_strong_tables(
 
     if not channel_masses:
         fit_table.value = pd.DataFrame()
-        anchor_table.value = pd.DataFrame()
+        if anchor_table is not None:
+            anchor_table.value = pd.DataFrame()
         return
 
     fit_rows = _build_best_fit_rows(channel_masses, channel_r2)
     fit_table.value = pd.DataFrame(fit_rows)
 
     glueball_ref = None
-    if glueball_ref_input.value is not None:
+    if glueball_ref_input is not None and glueball_ref_input.value is not None:
         glueball_ref = ("glueball", float(glueball_ref_input.value))
+
+    if anchor_table is None:
+        return
 
     anchor_rows = _build_anchor_rows(
         channel_masses,
@@ -7139,6 +7330,7 @@ def _run_tab_computation(state, status_pane, label, compute_fn):
     except Exception as e:
         status_pane.object = f"**Error:** {e}"
         import traceback
+
         traceback.print_exc()
 
 
@@ -7181,7 +7373,15 @@ def create_app() -> pn.template.FastListTemplate:
 
         _debug("building config + visualizer")
         gas_config = GasConfigPanel.create_qft_config(spatial_dims=2, bounds_extent=30.0)
-        gas_config.hide_viscous_kernel_widgets = False
+        gas_config.hide_viscous_kernel_widgets = True
+        gas_config.hide_compute_volume_weight_widget = True
+        gas_config.hide_viscous_coupling_widget = True
+        gas_config.hide_diffusion_widgets = True
+        gas_config.hide_integrator_widget = True
+        gas_config.hide_localization_scale_widget = True
+        gas_config.hide_distance_reg_widget = True
+        gas_config.hide_companion_interaction_range_widgets = True
+        gas_config.hide_lambda_alg_widgets = True
         gas_config.benchmark_name = "Riemannian Mix"
         # Override with the best stable calibration settings found in QFT tuning.
         # This matches weak_potential_fit1_aniso_stable2 (200 walkers, 300 steps).
@@ -7189,10 +7389,14 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.gas_params["N"] = 200
         gas_config.gas_params["dtype"] = "float32"
         gas_config.gas_params["pbc"] = False
-        gas_config.gas_params["clone_every"] = 1
+        gas_config.gas_params["clone_every"] = 3
         gas_config.neighbor_graph_method = "delaunay"
         gas_config.neighbor_graph_record = True
-        gas_config.neighbor_weight_modes = ["inverse_riemannian_distance", "kernel", "riemannian_kernel_volume"]
+        gas_config.neighbor_weight_modes = [
+            "inverse_riemannian_distance",
+            "kernel",
+            "riemannian_kernel_volume",
+        ]
         gas_config.init_offset = 0.0
         gas_config.init_spread = 0.0
         gas_config.init_velocity_scale = 0.0
@@ -7211,6 +7415,8 @@ def create_app() -> pn.template.FastListTemplate:
         # Kinetic operator (Langevin + viscous coupling).
         gas_config.kinetic_op.gamma = 1.0
         gas_config.kinetic_op.beta = 1.0
+        gas_config.kinetic_op.integrator = "boris-baoab"
+        gas_config.kinetic_op.auto_thermostat = True
         gas_config.kinetic_op.delta_t = 0.01
         gas_config.kinetic_op.epsilon_F = 1.0
         gas_config.kinetic_op.use_fitness_force = False
@@ -7220,15 +7426,12 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.kinetic_op.diffusion_mode = "voronoi_proxy"
         gas_config.kinetic_op.diffusion_grad_scale = 30.0
         gas_config.kinetic_op.epsilon_Sigma = 0.5
-        gas_config.kinetic_op.nu = 1.0
+        gas_config.kinetic_op.nu = 0.125
         gas_config.kinetic_op.beta_curl = 1.0
         gas_config.kinetic_op.use_viscous_coupling = True
-        gas_config.kinetic_op.viscous_length_scale = 1.0
         gas_config.kinetic_op.viscous_neighbor_weighting = "riemannian_kernel_volume"
-        gas_config.kinetic_op.viscous_neighbor_threshold = None
-        gas_config.kinetic_op.viscous_neighbor_penalty = 0.0
-        gas_config.kinetic_op.viscous_degree_cap = None
-        gas_config.kinetic_op.use_velocity_squashing = True
+        gas_config.kinetic_op.compute_volume_weights = False
+        gas_config.kinetic_op.use_velocity_squashing = False
 
         # Companion selection (diversity + cloning).
         gas_config.companion_selection.method = "random_pairing"
@@ -7243,18 +7446,18 @@ def create_app() -> pn.template.FastListTemplate:
         # Cloning operator.
         gas_config.cloning.p_max = 1.0
         gas_config.cloning.epsilon_clone = 1e-6
-        gas_config.cloning.sigma_x = 1e-6
+        gas_config.cloning.sigma_x = 0.01
         gas_config.cloning.alpha_restitution = 1.0
 
         # Fitness operator.
         gas_config.fitness_op.alpha = 1.0
         gas_config.fitness_op.beta = 1.0
-        gas_config.fitness_op.eta = 0.00001
+        gas_config.fitness_op.eta = 0.0
         gas_config.fitness_op.lambda_alg = 0.0
-        gas_config.fitness_op.sigma_min = 0.1
+        gas_config.fitness_op.sigma_min = 0.0
         gas_config.fitness_op.epsilon_dist = 1e-8
         gas_config.fitness_op.A = 2.0
-        gas_config.fitness_op.rho = 0.1
+        gas_config.fitness_op.rho = None
         gas_config.fitness_op.grad_mode = "sum"
         gas_config.fitness_op.detach_stats = True
         gas_config.fitness_op.detach_companions = True
@@ -7307,6 +7510,9 @@ def create_app() -> pn.template.FastListTemplate:
             "new_dirac_ew_multiscale_output": None,
             "new_dirac_ew_multiscale_error": None,
             "new_dirac_ew_gevp_error": None,
+            "new_dirac_ew_comparison_overrides": None,
+            "new_dirac_ew_ratio_specs": None,
+            "_multiscale_geodesic_distance_by_frame": None,
             "new_dirac_bundle": None,
             "coupling_diagnostics_output": None,
             "einstein_test_result": None,
@@ -7355,7 +7561,6 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
 
-
         algorithm_status = pn.pane.Markdown(
             "**Algorithm:** run a simulation or load a RunHistory, then click Run Algorithm Analysis.",
             sizing_mode="stretch_width",
@@ -7392,12 +7597,28 @@ def create_app() -> pn.template.FastListTemplate:
             linked_axes=False,
             sizing_mode="stretch_width",
         )
+        algorithm_velocity_plot = pn.pane.HoloViews(
+            _algorithm_placeholder_plot("Load RunHistory to show walker speed."),
+            linked_axes=False,
+            sizing_mode="stretch_width",
+        )
+        algorithm_geodesic_plot = pn.pane.HoloViews(
+            _algorithm_placeholder_plot("Load RunHistory to show geodesic edge distances."),
+            linked_axes=False,
+            sizing_mode="stretch_width",
+        )
+        algorithm_rkv_plot = pn.pane.HoloViews(
+            _algorithm_placeholder_plot(
+                "Load RunHistory to show riemannian kernel volume weights."
+            ),
+            linked_axes=False,
+            sizing_mode="stretch_width",
+        )
         algorithm_lyapunov_plot = pn.pane.HoloViews(
             _algorithm_placeholder_plot("Load RunHistory to show Lyapunov convergence."),
             linked_axes=False,
             sizing_mode="stretch_width",
         )
-
 
         # =====================================================================
         # Fractal Set tab components (IG/CST area-law measurements)
@@ -7479,9 +7700,15 @@ def create_app() -> pn.template.FastListTemplate:
         fractal_set_plot_dist = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         fractal_set_plot_fit = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         fractal_set_plot_total = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        fractal_set_plot_dist_geom = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        fractal_set_plot_fit_geom = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        fractal_set_plot_total_geom = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        fractal_set_plot_dist_geom = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        fractal_set_plot_fit_geom = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        fractal_set_plot_total_geom = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
         fractal_set_regression_table = pn.widgets.Tabulator(
             pd.DataFrame(),
             pagination=None,
@@ -7528,21 +7755,33 @@ def create_app() -> pn.template.FastListTemplate:
             einstein_settings,
             show_name=False,
             parameters=[
-                "mc_time_index", "regularization", "stress_energy_mode",
-                "bulk_fraction", "scalar_density_mode", "knn_k",
-                "coarse_grain_bins", "coarse_grain_min_points",
-                "temporal_average_enabled", "temporal_window_frames", "temporal_stride",
-                "bootstrap_samples", "bootstrap_confidence", "bootstrap_seed",
+                "mc_time_index",
+                "regularization",
+                "stress_energy_mode",
+                "bulk_fraction",
+                "scalar_density_mode",
+                "knn_k",
+                "coarse_grain_bins",
+                "coarse_grain_min_points",
+                "temporal_average_enabled",
+                "temporal_window_frames",
+                "temporal_stride",
+                "bootstrap_samples",
+                "bootstrap_confidence",
+                "bootstrap_seed",
                 "bootstrap_frame_block_size",
-                "g_newton_metric", "g_newton_manual",
+                "g_newton_metric",
+                "g_newton_manual",
             ],
         )
         einstein_summary = pn.pane.Markdown("", sizing_mode="stretch_width")
         einstein_scalar_plot = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         )
         einstein_scalar_log_plot = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         )
         einstein_tensor_table = pn.pane.HoloViews(linked_axes=False)
         einstein_curvature_hist = pn.pane.HoloViews(linked_axes=False)
@@ -7887,7 +8126,6 @@ def create_app() -> pn.template.FastListTemplate:
                 "mass",
                 "ell0",
                 "edge_weight_mode",
-                "channel_list",
                 "window_widths_spec",
                 "fit_mode",
                 "fit_start",
@@ -7935,8 +8173,6 @@ def create_app() -> pn.template.FastListTemplate:
                 "baryon_eps",
                 "baryon_operator_mode",
                 "baryon_flux_exp_alpha",
-                "companion_include_nucleon_flux_variants",
-                "companion_include_nucleon_score_variants",
                 "use_companion_nucleon_gevp",
                 "gevp_basis_strategy",
                 "gevp_t0",
@@ -7956,12 +8192,6 @@ def create_app() -> pn.template.FastListTemplate:
                 "baryon_color_dims_spec": {"name": "Baryon color dims (3 dims)"},
                 "baryon_operator_mode": {"name": "Baryon operator mode"},
                 "baryon_flux_exp_alpha": {"name": "Flux exp α"},
-                "companion_include_nucleon_flux_variants": {
-                    "name": "Include nucleon flux variants"
-                },
-                "companion_include_nucleon_score_variants": {
-                    "name": "Include nucleon score variants"
-                },
                 "use_companion_nucleon_gevp": {"name": "Enable companion GEVP"},
                 "gevp_basis_strategy": {"name": "GEVP basis strategy"},
                 "gevp_t0": {"name": "GEVP t0"},
@@ -7986,20 +8216,12 @@ def create_app() -> pn.template.FastListTemplate:
                 "meson_pair_selection",
                 "meson_color_dims_spec",
                 "meson_eps",
-                "companion_include_meson_score_directed_variants",
-                "companion_include_scalar_vacuum_variants",
             ],
             show_name=False,
             widgets={
                 "meson_max_lag": {"name": "Meson max lag (blank=use max_lag)"},
                 "meson_pair_selection": {"name": "Meson pair selection"},
                 "meson_color_dims_spec": {"name": "Meson color dims (3 dims)"},
-                "companion_include_meson_score_directed_variants": {
-                    "name": "Include score-directed meson variants"
-                },
-                "companion_include_scalar_vacuum_variants": {
-                    "name": "Include scalar vacuum variants"
-                },
             },
             default_layout=type("CompanionStrongForceMesonGrid", (pn.GridBox,), {"ncols": 1}),
         )
@@ -8014,7 +8236,6 @@ def create_app() -> pn.template.FastListTemplate:
                 "vector_meson_position_dims_spec",
                 "vector_meson_eps",
                 "vector_meson_use_unit_displacement",
-                "companion_include_vector_score_directed_variants",
             ],
             show_name=False,
             widgets={
@@ -8022,9 +8243,6 @@ def create_app() -> pn.template.FastListTemplate:
                 "vector_meson_pair_selection": {"name": "Vector pair selection"},
                 "vector_meson_color_dims_spec": {"name": "Vector color dims (3 dims)"},
                 "vector_meson_position_dims_spec": {"name": "Vector position dims (3 dims)"},
-                "companion_include_vector_score_directed_variants": {
-                    "name": "Include score-directed vector variants"
-                },
             },
             default_layout=type("CompanionStrongForceVectorGrid", (pn.GridBox,), {"ncols": 1}),
         )
@@ -8038,7 +8256,6 @@ def create_app() -> pn.template.FastListTemplate:
                 "glueball_eps",
                 "glueball_use_action_form",
                 "glueball_operator_mode",
-                "companion_include_glueball_phase_variants",
                 "glueball_use_momentum_projection",
                 "glueball_momentum_axis",
                 "glueball_momentum_mode_max",
@@ -8048,17 +8265,35 @@ def create_app() -> pn.template.FastListTemplate:
                 "glueball_max_lag": {"name": "Glueball max lag (blank=use max_lag)"},
                 "glueball_color_dims_spec": {"name": "Glueball color dims (3 dims)"},
                 "glueball_operator_mode": {"name": "Glueball operator mode"},
-                "companion_include_glueball_phase_variants": {
-                    "name": "Include glueball phase variants"
-                },
                 "glueball_momentum_axis": {"name": "Momentum axis"},
                 "glueball_momentum_mode_max": {"name": "Momentum n_max"},
             },
             default_layout=type("CompanionStrongForceGlueballGrid", (pn.GridBox,), {"ncols": 1}),
         )
+        companion_strong_force_channel_family_selectors: dict[str, pn.widgets.MultiSelect] = {
+            family: pn.widgets.MultiSelect(
+                name=f"{family.replace('_', ' ').title()} Variants",
+                options=list(variants),
+                value=list(DEFAULT_COMPANION_CHANNEL_VARIANT_SELECTION.get(family, ())),
+                size=6,
+            )
+            for family, variants in COMPANION_CHANNEL_VARIANTS_BY_FAMILY.items()
+        }
+        companion_strong_force_channel_family_selector_grid = pn.GridBox(
+            *companion_strong_force_channel_family_selectors.values(),
+            ncols=2,
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_channel_family_selector_layout = pn.Column(
+            pn.pane.Markdown("### Companion Channel Family Selection"),
+            companion_strong_force_channel_family_selector_grid,
+            sizing_mode="stretch_width",
+        )
         companion_strong_force_settings_layout = pn.Column(
             pn.pane.Markdown("### Companion Channel Settings"),
             companion_strong_force_settings_panel,
+            pn.layout.Divider(),
+            companion_strong_force_channel_family_selector_layout,
             pn.layout.Divider(),
             pn.Row(
                 pn.Column(
@@ -8157,16 +8392,6 @@ def create_app() -> pn.template.FastListTemplate:
             "axial_vector": companion_strong_force_variant_axial_vector,
         }
         companion_strong_force_variant_sync = {"active": False}
-        companion_strong_force_anchor_mode = pn.widgets.RadioButtonGroup(
-            name="Anchor Calibration",
-            options={
-                "Per-anchor rows": "per_anchor_row",
-                "Family-fixed scales": "family_fixed",
-                "Global fixed scale": "global_fixed",
-            },
-            value="per_anchor_row",
-            button_type="default",
-        )
         companion_strong_force_heatmap_color_metric = pn.widgets.RadioButtonGroup(
             name="Heatmap Color",
             options=["mass", "aic", "r2"],
@@ -8180,14 +8405,6 @@ def create_app() -> pn.template.FastListTemplate:
             button_type="default",
         )
         companion_strong_force_plots_spectrum = pn.pane.HoloViews(
-            sizing_mode="stretch_width",
-            linked_axes=False,
-        )
-        companion_strong_force_plots_overlay_corr = pn.pane.HoloViews(
-            sizing_mode="stretch_width",
-            linked_axes=False,
-        )
-        companion_strong_force_plots_overlay_meff = pn.pane.HoloViews(
             sizing_mode="stretch_width",
             linked_axes=False,
         )
@@ -8222,11 +8439,27 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
         companion_strong_force_ratio_pane = pn.pane.Markdown(
-            "**Mass Ratios:** Compute companion channels to see ratios.",
+            (
+                "**Mass Ratios (Best Global Combo):** compute companion channels to "
+                "populate best-combination ratios."
+            ),
             sizing_mode="stretch_width",
         )
         companion_strong_force_ratio_tables = pn.Column(
             pn.pane.Markdown("_Per-ratio variant tables will appear after computation._"),
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_best_combo_summary = pn.pane.Markdown(
+            (
+                "**Best global variant combo:** compute companion channels to evaluate "
+                "the top 5 one-variant-per-channel combinations by total absolute % ratio error."
+            ),
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_best_combo_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
             sizing_mode="stretch_width",
         )
         companion_strong_force_fit_table = pn.widgets.Tabulator(
@@ -8235,10 +8468,17 @@ def create_app() -> pn.template.FastListTemplate:
             show_index=False,
             sizing_mode="stretch_width",
         )
-        companion_strong_force_anchor_table = pn.widgets.Tabulator(
+        companion_strong_force_cross_ratio_summary = pn.pane.Markdown(
+            (
+                "**Cross-channel ratio debug:** run companion channels to populate all "
+                "cross-channel variant ratios."
+            ),
+            sizing_mode="stretch_width",
+        )
+        companion_strong_force_cross_ratio_table = pn.widgets.Tabulator(
             pd.DataFrame(),
             pagination="remote",
-            page_size=20,
+            page_size=30,
             show_index=False,
             sizing_mode="stretch_width",
         )
@@ -8338,7 +8578,6 @@ def create_app() -> pn.template.FastListTemplate:
         )
         _tcw = create_tensor_gevp_calibration_widgets()
 
-
         # =====================================================================
         # New Dirac/Electroweak unified tab components
         # =====================================================================
@@ -8367,19 +8606,21 @@ def create_app() -> pn.template.FastListTemplate:
                 "mc_time_index",
                 "use_connected",
                 "neighbor_method",
-                "companion_topology",
+                "companion_topology_u1",
+                "companion_topology_su2",
+                "companion_topology_ew_mixed",
                 "edge_weight_mode",
                 "neighbor_k",
-                "channel_list",
                 "window_widths_spec",
                 "fit_mode",
                 "fit_start",
                 "fit_stop",
                 "min_fit_points",
-                "epsilon_d",
-                "epsilon_c",
                 "epsilon_clone",
                 "lambda_alg",
+                "su2_operator_mode",
+                "enable_walker_type_split",
+                "walker_type_scope",
                 "compute_bootstrap_errors",
                 "n_bootstrap",
                 "use_multiscale_kernels",
@@ -8416,6 +8657,9 @@ def create_app() -> pn.template.FastListTemplate:
                 "kernel_scale_q_low": {"name": "Scale quantile low"},
                 "kernel_scale_q_high": {"name": "Scale quantile high"},
                 "kernel_bootstrap_mode": {"name": "Kernel bootstrap mode"},
+                "su2_operator_mode": {"name": "SU(2) operator mode"},
+                "enable_walker_type_split": {"name": "Enable walker-type split"},
+                "walker_type_scope": {"name": "Walker-type scope"},
                 "use_su2_gevp": {"name": "Enable SU(2) GEVP"},
                 "gevp_basis_strategy": {"name": "GEVP basis strategy"},
                 "gevp_t0": {"name": "GEVP t0"},
@@ -8430,6 +8674,25 @@ def create_app() -> pn.template.FastListTemplate:
                 "gevp_bootstrap_mode": {"name": "GEVP bootstrap mode"},
             },
             default_layout=type("NewDiracEWSettingsGrid", (pn.GridBox,), {"ncols": 2}),
+        )
+        new_dirac_ew_channel_family_selectors: dict[str, pn.widgets.MultiSelect] = {
+            family: pn.widgets.MultiSelect(
+                name=f"{family.replace('_', ' ').title()} Variants",
+                options=list(variants),
+                value=list(DEFAULT_ELECTROWEAK_CHANNEL_VARIANT_SELECTION.get(family, ())),
+                size=6,
+            )
+            for family, variants in ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY.items()
+        }
+        new_dirac_ew_channel_family_selector_grid = pn.GridBox(
+            *new_dirac_ew_channel_family_selectors.values(),
+            ncols=2,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_channel_family_selector_layout = pn.Column(
+            pn.pane.Markdown("### Electroweak Channel Family Selection"),
+            new_dirac_ew_channel_family_selector_grid,
+            sizing_mode="stretch_width",
         )
         new_dirac_status = pn.pane.Markdown(
             "**Dirac:** Load a RunHistory and click Compute.",
@@ -8469,26 +8732,22 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
         new_dirac_ew_coupling_ref_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "name": list(ELECTROWEAK_COUPLING_NAMES),
-                    **{
-                        col: [
-                            _format_ref_value(
-                                DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(col)
-                            )
-                            for name in ELECTROWEAK_COUPLING_NAMES
-                        ]
-                        for col in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS
-                    },
-                }
-            ),
+            pd.DataFrame({
+                "name": list(ELECTROWEAK_COUPLING_NAMES),
+                **{
+                    col: [
+                        _format_ref_value(DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(col))
+                        for name in ELECTROWEAK_COUPLING_NAMES
+                    ]
+                    for col in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS
+                },
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
             selectable=False,
             configuration={"editable": True},
-            editors={column: "input" for column in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS},
+            editors=dict.fromkeys(ELECTROWEAK_COUPLING_REFERENCE_COLUMNS, "input"),
         )
 
         new_dirac_ew_channel_plots = pn.Column(sizing_mode="stretch_width")
@@ -8523,6 +8782,26 @@ def create_app() -> pn.template.FastListTemplate:
             show_index=False,
             sizing_mode="stretch_width",
         )
+        new_dirac_ew_best_combo_summary = pn.pane.Markdown(
+            (
+                "**Best global variant combo:** compute electroweak channels to evaluate "
+                "the top 5 one-variant-per-channel combinations by total absolute % ratio error."
+            ),
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_best_combo_table = pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        )
+        new_dirac_ew_best_combo_ratio_pane = pn.pane.Markdown(
+            (
+                "**Mass Ratios (Best Global Combo):** compute electroweak channels to "
+                "populate best-combination ratios."
+            ),
+            sizing_mode="stretch_width",
+        )
         new_dirac_ew_fit_table = pn.widgets.Tabulator(
             pd.DataFrame(),
             pagination=None,
@@ -8543,15 +8822,13 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
         new_dirac_ew_ref_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "channel": list(ELECTROWEAK_CHANNELS),
-                    "mass_ref_GeV": [
-                        _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
-                        for name in ELECTROWEAK_CHANNELS
-                    ],
-                }
-            ),
+            pd.DataFrame({
+                "channel": list(ELECTROWEAK_CHANNELS),
+                "mass_ref_GeV": [
+                    _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
+                    for name in ELECTROWEAK_CHANNELS
+                ],
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
@@ -8602,9 +8879,7 @@ def create_app() -> pn.template.FastListTemplate:
             linked_axes=False,
         )
 
-        new_dirac_ew_dirac_full = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
+        new_dirac_ew_dirac_full = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         new_dirac_ew_dirac_walker = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
@@ -8655,32 +8930,30 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         new_dirac_ew_observed_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "observable": [
-                        "electron_dirac",
-                        "electron_yukawa",
-                        "electron_component",
-                        "u1_phase",
-                        "u1_dressed",
-                        "su2_phase",
-                        "su2_doublet",
-                        "ew_mixed",
-                        "higgs_sigma",
-                    ],
-                    "observed_GeV": [
-                        "0.000511",
-                        "0.000511",
-                        "0.000511",
-                        "0.000511",
-                        "0.105658",
-                        "80.379",
-                        "91.1876",
-                        "1.77686",
-                        "125.10",
-                    ],
-                }
-            ),
+            pd.DataFrame({
+                "observable": [
+                    "electron_dirac",
+                    "electron_yukawa",
+                    "electron_component",
+                    "u1_phase",
+                    "u1_dressed",
+                    "su2_phase",
+                    "su2_doublet",
+                    "ew_mixed",
+                    "higgs_sigma",
+                ],
+                "observed_GeV": [
+                    "0.000511",
+                    "0.000511",
+                    "0.000511",
+                    "0.000511",
+                    "0.105658",
+                    "80.379",
+                    "91.1876",
+                    "1.77686",
+                    "125.10",
+                ],
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
@@ -8803,16 +9076,61 @@ def create_app() -> pn.template.FastListTemplate:
             "Run diagnostics to show running/Creutz diagnostics."
         )
 
-
-        def set_history(history: RunHistory, history_path: Path | None = None) -> None:
+        def set_history(
+            history: RunHistory,
+            history_path: Path | None = None,
+            defer_dashboard_updates: bool = False,
+        ) -> None:
             state["history"] = history
             state["history_path"] = history_path
-            visualizer.bounds_extent = float(gas_config.bounds_extent)
-            visualizer.set_history(history)
-            algorithm_status.object = (
-                "**Algorithm ready:** click Run Algorithm Analysis."
-            )
+            state["_multiscale_geodesic_distance_by_frame"] = None
+            state["new_dirac_ew_comparison_overrides"] = None
+            state["new_dirac_ew_ratio_specs"] = None
+            if not defer_dashboard_updates:
+                visualizer.bounds_extent = float(gas_config.bounds_extent)
+                visualizer.set_history(history)
+            algorithm_status.object = "**Algorithm ready:** click Run Algorithm Analysis."
             algorithm_run_button.disabled = False
+            if defer_dashboard_updates:
+                visualizer.status_pane.object = (
+                    "**Simulation complete:** history captured; click a Compute button to "
+                    "run post-processing."
+                )
+                save_button.disabled = False
+                save_status.object = "**Save a history**: choose a path and click Save."
+                fractal_set_run_button.disabled = False
+                fractal_set_status.object = (
+                    "**Holographic Principle ready:** click Compute Fractal Set."
+                )
+                einstein_run_button.disabled = False
+                einstein_status.object = (
+                    "**Einstein Test ready:** run Holographic Principle for G_N, then click."
+                )
+                anisotropic_edge_run_button.disabled = False
+                anisotropic_edge_status.object = (
+                    "**Anisotropic Edge Channels ready:** click Compute Anisotropic Edge Channels."
+                )
+                companion_strong_force_run_button.disabled = False
+                companion_strong_force_display_plots_button.disabled = True
+                companion_strong_force_display_plots_button.button_type = "default"
+                state["companion_strong_force_plots_unlocked"] = False
+                companion_strong_force_plot_gate_note.object = (
+                    "_Plots are hidden. Click `Display Plots` after computing channels._"
+                )
+                companion_strong_force_status.object = "**Companion Strong Force ready:** click Compute Companion Strong Force Channels."
+                tensor_calibration_run_button.disabled = False
+                _tcw.status.object = (
+                    "**Tensor Calibration ready:** click Compute Tensor Calibration."
+                )
+                new_dirac_ew_run_button.disabled = False
+                new_dirac_ew_status.object = "**Electroweak ready:** click Compute Electroweak."
+                new_dirac_run_button.disabled = False
+                new_dirac_status.object = "**Dirac ready:** click Compute Dirac."
+                coupling_diagnostics_run_button.disabled = False
+                coupling_diagnostics_status.object = (
+                    "**Coupling Diagnostics ready:** click Compute Coupling Diagnostics."
+                )
+                return
             algorithm_clone_plot.object = _algorithm_placeholder_plot(
                 "Click Run Algorithm Analysis to show clone percentage."
             )
@@ -8828,6 +9146,15 @@ def create_app() -> pn.template.FastListTemplate:
             algorithm_interwalker_plot.object = _algorithm_placeholder_plot(
                 "Click Run Algorithm Analysis to show inter-walker distances."
             )
+            algorithm_velocity_plot.object = _algorithm_placeholder_plot(
+                "Click Run Algorithm Analysis to show walker speed."
+            )
+            algorithm_geodesic_plot.object = _algorithm_placeholder_plot(
+                "Click Run Algorithm Analysis to show geodesic edge distances."
+            )
+            algorithm_rkv_plot.object = _algorithm_placeholder_plot(
+                "Click Run Algorithm Analysis to show riemannian kernel volume weights."
+            )
             algorithm_lyapunov_plot.object = _algorithm_placeholder_plot(
                 "Click Run Algorithm Analysis to show Lyapunov convergence."
             )
@@ -8835,7 +9162,9 @@ def create_app() -> pn.template.FastListTemplate:
             save_status.object = "**Save a history**: choose a path and click Save."
             # Enable fractal set tab
             fractal_set_run_button.disabled = False
-            fractal_set_status.object = "**Holographic Principle ready:** click Compute Fractal Set."
+            fractal_set_status.object = (
+                "**Holographic Principle ready:** click Compute Fractal Set."
+            )
             # Enable einstein test
             einstein_run_button.disabled = False
             einstein_status.object = (
@@ -8853,8 +9182,6 @@ def create_app() -> pn.template.FastListTemplate:
             companion_strong_force_plot_gate_note.object = (
                 "_Plots are hidden. Click `Display Plots` after computing channels._"
             )
-            companion_strong_force_plots_overlay_corr.object = None
-            companion_strong_force_plots_overlay_meff.object = None
             companion_strong_force_plots_spectrum.object = None
             companion_strong_force_multiscale_plot.object = None
             companion_strong_force_plateau_plots.objects = [
@@ -8883,9 +9210,7 @@ def create_app() -> pn.template.FastListTemplate:
             new_dirac_run_button.disabled = False
             new_dirac_status.object = "**Dirac ready:** click Compute Dirac."
             new_dirac_ew_summary.object = "## Electroweak Summary\n_Run analysis to populate._"
-            new_dirac_ew_multiscale_summary.object = (
-                "### SU(2) Multiscale Summary\n_Multiscale kernels disabled (original estimators only)._"
-            )
+            new_dirac_ew_multiscale_summary.object = "### SU(2) Multiscale Summary\n_Multiscale kernels disabled (original estimators only)._"
             new_dirac_ew_gevp_summary.object = (
                 "_SU(2) GEVP summary appears after running Electroweak._"
             )
@@ -8934,7 +9259,7 @@ def create_app() -> pn.template.FastListTemplate:
             )
 
         def on_simulation_complete(history: RunHistory):
-            set_history(history)
+            set_history(history, defer_dashboard_updates=True)
 
         def _infer_bounds_extent(history: RunHistory) -> float | None:
             if history.bounds is None:
@@ -8976,7 +9301,7 @@ def create_app() -> pn.template.FastListTemplate:
                 if inferred_extent is not None:
                     visualizer.bounds_extent = inferred_extent
                     gas_config.bounds_extent = float(inferred_extent)
-                set_history(history, history_path)
+                set_history(history, history_path, defer_dashboard_updates=True)
                 load_status.object = f"**Loaded:** `{history_path}`"
             except Exception as exc:
                 load_status.object = f"**Error loading history:** {exc!s}"
@@ -9048,6 +9373,9 @@ def create_app() -> pn.template.FastListTemplate:
                 algorithm_reward_plot.object = fallback
                 algorithm_companion_plot.object = fallback
                 algorithm_interwalker_plot.object = fallback
+                algorithm_velocity_plot.object = fallback
+                algorithm_geodesic_plot.object = fallback
+                algorithm_rkv_plot.object = fallback
                 algorithm_lyapunov_plot.object = fallback
                 return
 
@@ -9056,6 +9384,9 @@ def create_app() -> pn.template.FastListTemplate:
             algorithm_reward_plot.object = diagnostics["reward_plot"]
             algorithm_companion_plot.object = diagnostics["companion_plot"]
             algorithm_interwalker_plot.object = diagnostics["interwalker_plot"]
+            algorithm_velocity_plot.object = diagnostics["velocity_plot"]
+            algorithm_geodesic_plot.object = diagnostics["geodesic_plot"]
+            algorithm_rkv_plot.object = diagnostics["rkv_plot"]
             algorithm_lyapunov_plot.object = diagnostics["lyapunov_plot"]
             algorithm_status.object = (
                 "**Algorithm diagnostics updated:** "
@@ -9120,12 +9451,17 @@ def create_app() -> pn.template.FastListTemplate:
                 fractal_set_baseline_table.value = _build_fractal_set_baseline_comparison(
                     regression_df
                 )
-                fractal_set_frame_table.value = frame_df.sort_values(
-                    ["recorded_step", "partition_family", "cut_type"]
-                ).reset_index(drop=True)
-                fractal_set_points_table.value = points_df.sort_values(
-                    ["recorded_step", "partition_family", "cut_type", "cut_value"]
-                ).reset_index(drop=True)
+                fractal_set_frame_table.value = frame_df.sort_values([
+                    "recorded_step",
+                    "partition_family",
+                    "cut_type",
+                ]).reset_index(drop=True)
+                fractal_set_points_table.value = points_df.sort_values([
+                    "recorded_step",
+                    "partition_family",
+                    "cut_type",
+                    "cut_value",
+                ]).reset_index(drop=True)
 
                 fractal_set_summary.object = _format_fractal_set_summary(
                     points_df,
@@ -9135,9 +9471,8 @@ def create_app() -> pn.template.FastListTemplate:
                 show_geom = bool(fractal_set_settings.use_geometry_correction) and (
                     fractal_set_settings.metric_display in {"geometry", "both"}
                 )
-                show_raw = (
-                    fractal_set_settings.metric_display in {"raw", "both"}
-                    or not bool(fractal_set_settings.use_geometry_correction)
+                show_raw = fractal_set_settings.metric_display in {"raw", "both"} or not bool(
+                    fractal_set_settings.use_geometry_correction
                 )
 
                 if show_raw:
@@ -9280,7 +9615,6 @@ def create_app() -> pn.template.FastListTemplate:
 
             _run_tab_computation(state, einstein_status, "Einstein equation test", _compute)
 
-
         # =====================================================================
         # Anisotropic edge channels tab callbacks
         # =====================================================================
@@ -9316,23 +9650,19 @@ def create_app() -> pn.template.FastListTemplate:
             # --- Error / None guard (touches both strong-force & multiscale tabs) ---
             if error:
                 anisotropic_edge_multiscale_summary.object = (
-                    "### Multiscale Kernel Summary\n"
-                    f"- Status: failed\n"
-                    f"- Error: `{error}`"
+                    "### Multiscale Kernel Summary\n" f"- Status: failed\n" f"- Error: `{error}`"
                 )
                 anisotropic_edge_multiscale_table.value = pd.DataFrame()
                 anisotropic_edge_multiscale_plot.object = None
                 clear_multiscale_tab(
                     _msw,
-                    "## Multiscale\n"
-                    f"**Status:** failed. `{error}`",
+                    "## Multiscale\n" f"**Status:** failed. `{error}`",
                 )
                 return
 
             if output is None:
                 anisotropic_edge_multiscale_summary.object = (
-                    "### Multiscale Kernel Summary\n"
-                    "_Multiscale kernels disabled._"
+                    "### Multiscale Kernel Summary\n" "_Multiscale kernels disabled._"
                 )
                 anisotropic_edge_multiscale_table.value = pd.DataFrame()
                 anisotropic_edge_multiscale_plot.object = None
@@ -9344,7 +9674,9 @@ def create_app() -> pn.template.FastListTemplate:
                 return
 
             # --- Part A: Strong-force tab summary (stays in closure) ---
-            scale_values = output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
+            scale_values = (
+                output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
+            )
             lines = [
                 "### Multiscale Kernel Summary",
                 f"- Scales: `{len(scale_values)}`",
@@ -9366,9 +9698,7 @@ def create_app() -> pn.template.FastListTemplate:
             for channel, results_per_scale in output.per_scale_results.items():
                 display_channel = _display_channel_name(str(channel))
                 measurement_group = (
-                    "companion"
-                    if str(channel).endswith("_companion")
-                    else "non_companion"
+                    "companion" if str(channel).endswith("_companion") else "non_companion"
                 )
                 masses = [
                     float(res.mass_fit.get("mass", float("nan")))
@@ -9385,18 +9715,18 @@ def create_app() -> pn.template.FastListTemplate:
                 )
                 best_err = float("nan")
                 if channel in output.best_results:
-                    best_err = float(output.best_results[channel].mass_fit.get("mass_error", float("nan")))
-                rows.append(
-                    {
-                        "channel": display_channel,
-                        "source_channel": display_channel,
-                        "measurement_group": measurement_group,
-                        "best_scale_idx": best_idx,
-                        "best_scale": best_scale,
-                        "mass": best_mass,
-                        "mass_error": best_err,
-                    }
-                )
+                    best_err = float(
+                        output.best_results[channel].mass_fit.get("mass_error", float("nan"))
+                    )
+                rows.append({
+                    "channel": display_channel,
+                    "source_channel": display_channel,
+                    "measurement_group": measurement_group,
+                    "best_scale_idx": best_idx,
+                    "best_scale": best_scale,
+                    "mass": best_mass,
+                    "mass_error": best_err,
+                })
                 if scale_values.size > 0 and len(masses) == len(scale_values):
                     y = np.asarray(masses, dtype=float)
                     if np.isfinite(y).any():
@@ -9554,21 +9884,13 @@ def create_app() -> pn.template.FastListTemplate:
 
             def _display_mass(result_obj: ChannelCorrelatorResult) -> float:
                 mass_value = _get_channel_mass(result_obj, base_mode)
-                if (
-                    apply_tensor_correction
-                    and np.isfinite(mass_value)
-                    and mass_value > 0
-                ):
+                if apply_tensor_correction and np.isfinite(mass_value) and mass_value > 0:
                     return mass_value * correction_scale_display
                 return mass_value
 
             def _display_mass_error(result_obj: ChannelCorrelatorResult) -> float:
                 mass_err = _get_channel_mass_error(result_obj, base_mode)
-                if (
-                    apply_tensor_correction
-                    and np.isfinite(mass_err)
-                    and mass_err >= 0
-                ):
+                if apply_tensor_correction and np.isfinite(mass_err) and mass_err >= 0:
                     return abs(correction_scale_display) * mass_err
                 return mass_err
 
@@ -9654,9 +9976,7 @@ def create_app() -> pn.template.FastListTemplate:
             momentum_axis = int(anisotropic_edge_settings.glueball_momentum_axis)
             momentum_length = float("nan")
             if history is not None and 0 <= momentum_axis < int(history.d):
-                momentum_length = _extract_axis_extent_from_bounds(
-                    history.bounds, momentum_axis
-                )
+                momentum_length = _extract_axis_extent_from_bounds(history.bounds, momentum_axis)
 
             momentum_channels = dict(momentum_results or {})
             if not momentum_channels:
@@ -9668,13 +9988,14 @@ def create_app() -> pn.template.FastListTemplate:
                 }
             momentum_p0_result = momentum_channels.get("glueball_momentum_p0")
             if momentum_p0_result is None and momentum_channels:
+
                 def _mode_sort_key(name: str) -> int:
                     try:
                         return int(name[len("glueball_momentum_p") :])
                     except Exception:
                         return 10**9
 
-                first_mode_name = sorted(momentum_channels.keys(), key=_mode_sort_key)[0]
+                first_mode_name = min(momentum_channels.keys(), key=_mode_sort_key)
                 momentum_p0_result = momentum_channels.get(first_mode_name)
             if momentum_p0_result is not None and momentum_p0_result.n_samples > 0:
                 momentum_plot = ChannelPlot(
@@ -9728,7 +10049,9 @@ def create_app() -> pn.template.FastListTemplate:
                     "channel": channel_name,
                     "n_mode": n_mode if n_mode is not None else "",
                     "mass": float(mass_value),
-                    "mass_error": float(mass_err) if np.isfinite(mass_err) and mass_err >= 0 else np.nan,
+                    "mass_error": float(mass_err)
+                    if np.isfinite(mass_err) and mass_err >= 0
+                    else np.nan,
                     "r2": float(r2_value) if np.isfinite(r2_value) else np.nan,
                     "p": p_value,
                     "p2": p2_value,
@@ -9738,21 +10061,17 @@ def create_app() -> pn.template.FastListTemplate:
                 if is_core:
                     core_rows.append(row)
                 if n_mode is not None and np.isfinite(p2_value):
-                    momentum_rows.append(
-                        {
-                            "estimator": estimator,
-                            "channel": channel_name,
-                            "n_mode": int(n_mode),
-                            "p": float(p_value),
-                            "p2": float(p2_value),
-                            "mass": float(mass_value),
-                            "mass_error": (
-                                float(mass_err)
-                                if np.isfinite(mass_err) and mass_err >= 0
-                                else np.nan
-                            ),
-                        }
-                    )
+                    momentum_rows.append({
+                        "estimator": estimator,
+                        "channel": channel_name,
+                        "n_mode": int(n_mode),
+                        "p": float(p_value),
+                        "p2": float(p2_value),
+                        "mass": float(mass_value),
+                        "mass_error": (
+                            float(mass_err) if np.isfinite(mass_err) and mass_err >= 0 else np.nan
+                        ),
+                    })
 
             _append_estimator_row(
                 estimator="Strong-force isotropic",
@@ -9836,9 +10155,7 @@ def create_app() -> pn.template.FastListTemplate:
                         else float("nan")
                     )
                     consensus_weighting = "unweighted mean"
-                consensus_syst = (
-                    float(np.std(core_mass, ddof=1)) if core_mass.size > 1 else 0.0
-                )
+                consensus_syst = float(np.std(core_mass, ddof=1)) if core_mass.size > 1 else 0.0
 
             strong_mass = float("nan")
             if strong_result is not None and strong_result.n_samples > 0:
@@ -9866,9 +10183,9 @@ def create_app() -> pn.template.FastListTemplate:
                 table_df["n_mode_sort"] = (
                     pd.to_numeric(table_df["n_mode"], errors="coerce").fillna(-1).astype(int)
                 )
-                table_df = table_df.sort_values(
-                    ["approach_order", "n_mode_sort", "channel"]
-                ).drop(columns=["approach_order", "n_mode_sort"], errors="ignore")
+                table_df = table_df.sort_values(["approach_order", "n_mode_sort", "channel"]).drop(
+                    columns=["approach_order", "n_mode_sort"], errors="ignore"
+                )
                 anisotropic_edge_glueball_approach_table.value = table_df
             else:
                 anisotropic_edge_glueball_approach_table.value = pd.DataFrame()
@@ -9891,20 +10208,18 @@ def create_app() -> pn.template.FastListTemplate:
                         comb_err = float(np.sqrt(max(err_a, 0.0) ** 2 + max(err_b, 0.0) ** 2))
                         if comb_err > 0:
                             pull_sigma = abs_diff / comb_err
-                    pairwise_rows.append(
-                        {
-                            "estimator_a": str(row_a["estimator"]),
-                            "estimator_b": str(row_b["estimator"]),
-                            "mass_a": mass_a,
-                            "mass_b": mass_b,
-                            "ratio_a_over_b": ratio,
-                            "delta_pct": delta_pct,
-                            "abs_delta_pct": abs(delta_pct) if np.isfinite(delta_pct) else np.nan,
-                            "abs_mass_diff": abs_diff,
-                            "combined_error": comb_err,
-                            "pull_sigma": pull_sigma,
-                        }
-                    )
+                    pairwise_rows.append({
+                        "estimator_a": str(row_a["estimator"]),
+                        "estimator_b": str(row_b["estimator"]),
+                        "mass_a": mass_a,
+                        "mass_b": mass_b,
+                        "ratio_a_over_b": ratio,
+                        "delta_pct": delta_pct,
+                        "abs_delta_pct": abs(delta_pct) if np.isfinite(delta_pct) else np.nan,
+                        "abs_mass_diff": abs_diff,
+                        "combined_error": comb_err,
+                        "pull_sigma": pull_sigma,
+                    })
             if pairwise_rows:
                 pairwise_df = pd.DataFrame(pairwise_rows).sort_values(
                     "abs_delta_pct", ascending=False
@@ -10003,16 +10318,12 @@ def create_app() -> pn.template.FastListTemplate:
                         f"- Momentum axis/length: axis `{momentum_axis}`, `L={momentum_length:.6g}`"
                     )
             if glueball_systematics_error:
-                summary_lines.append(
-                    f"- Estimator warnings: `{glueball_systematics_error}`"
-                )
+                summary_lines.append(f"- Estimator warnings: `{glueball_systematics_error}`")
             anisotropic_edge_glueball_approach_summary.object = "  \n".join(summary_lines)
 
             consensus_lines = ["**Glueball Consensus / Systematics:**"]
             if np.isfinite(consensus_mass) and consensus_mass > 0:
-                line = (
-                    f"- Consensus mass ({consensus_weighting}): `{consensus_mass:.6g}`"
-                )
+                line = f"- Consensus mass ({consensus_weighting}): `{consensus_mass:.6g}`"
                 if np.isfinite(consensus_stat):
                     line += f" ± `{consensus_stat:.2g}` (stat)"
                 if np.isfinite(consensus_syst):
@@ -10053,7 +10364,11 @@ def create_app() -> pn.template.FastListTemplate:
                 scatter = hv.Scatter(
                     core_df,
                     kdims=[("x", "Estimator index")],
-                    vdims=[("mass", "Mass"), ("estimator", "Estimator"), ("mass_error", "Mass Error")],
+                    vdims=[
+                        ("mass", "Mass"),
+                        ("estimator", "Estimator"),
+                        ("mass_error", "Mass Error"),
+                    ],
                 ).opts(
                     width=760,
                     height=320,
@@ -10237,8 +10552,7 @@ def create_app() -> pn.template.FastListTemplate:
                 (tensor_momentum_meta or {}).get("momentum_length_scale", float("nan"))
             )
             if (
-                not np.isfinite(tensor_momentum_length)
-                or tensor_momentum_length <= 0
+                not np.isfinite(tensor_momentum_length) or tensor_momentum_length <= 0
             ) and history is not None:
                 tensor_momentum_length = _extract_axis_extent_from_bounds(
                     history.bounds, tensor_momentum_axis
@@ -10311,38 +10625,34 @@ def create_app() -> pn.template.FastListTemplate:
                     tensor_core_rows.append(row)
                 if n_mode is not None and np.isfinite(p2_value):
                     if component is None:
-                        tensor_momentum_rows.append(
-                            {
-                                "estimator": estimator,
-                                "channel": channel_name,
-                                "n_mode": int(n_mode),
-                                "p": float(p_value),
-                                "p2": float(p2_value),
-                                "mass": float(mass_value),
-                                "mass_error": (
-                                    float(mass_err)
-                                    if np.isfinite(mass_err) and mass_err >= 0
-                                    else np.nan
-                                ),
-                            }
-                        )
+                        tensor_momentum_rows.append({
+                            "estimator": estimator,
+                            "channel": channel_name,
+                            "n_mode": int(n_mode),
+                            "p": float(p_value),
+                            "p2": float(p2_value),
+                            "mass": float(mass_value),
+                            "mass_error": (
+                                float(mass_err)
+                                if np.isfinite(mass_err) and mass_err >= 0
+                                else np.nan
+                            ),
+                        })
                     else:
-                        tensor_component_rows.append(
-                            {
-                                "estimator": estimator,
-                                "channel": channel_name,
-                                "component": str(component),
-                                "n_mode": int(n_mode),
-                                "p": float(p_value),
-                                "p2": float(p2_value),
-                                "mass": float(mass_value),
-                                "mass_error": (
-                                    float(mass_err)
-                                    if np.isfinite(mass_err) and mass_err >= 0
-                                    else np.nan
-                                ),
-                            }
-                        )
+                        tensor_component_rows.append({
+                            "estimator": estimator,
+                            "channel": channel_name,
+                            "component": str(component),
+                            "n_mode": int(n_mode),
+                            "p": float(p_value),
+                            "p2": float(p2_value),
+                            "mass": float(mass_value),
+                            "mass_error": (
+                                float(mass_err)
+                                if np.isfinite(mass_err) and mass_err >= 0
+                                else np.nan
+                            ),
+                        })
 
             _append_tensor_row(
                 estimator="Anisotropic-edge tensor",
@@ -10426,7 +10736,9 @@ def create_app() -> pn.template.FastListTemplate:
                     weighted_mass = core_mass[finite_weight_mask]
                     weighted_err = core_err[finite_weight_mask]
                     weights = 1.0 / np.maximum(weighted_err, 1e-12) ** 2
-                    tensor_consensus_mass = float(np.sum(weights * weighted_mass) / np.sum(weights))
+                    tensor_consensus_mass = float(
+                        np.sum(weights * weighted_mass) / np.sum(weights)
+                    )
                     tensor_consensus_stat = float(np.sqrt(1.0 / np.sum(weights)))
                     tensor_consensus_weighting = "inverse-variance weighted"
                 else:
@@ -10462,9 +10774,12 @@ def create_app() -> pn.template.FastListTemplate:
                 table_df["n_mode_sort"] = (
                     pd.to_numeric(table_df["n_mode"], errors="coerce").fillna(-1).astype(int)
                 )
-                table_df = table_df.sort_values(
-                    ["approach_order", "n_mode_sort", "component_sort", "channel"]
-                ).drop(
+                table_df = table_df.sort_values([
+                    "approach_order",
+                    "n_mode_sort",
+                    "component_sort",
+                    "channel",
+                ]).drop(
                     columns=["approach_order", "component_sort", "n_mode_sort"],
                     errors="ignore",
                 )
@@ -10490,17 +10805,13 @@ def create_app() -> pn.template.FastListTemplate:
                         combined_err = float(np.sqrt(max(err_a, 0.0) ** 2 + max(err_b, 0.0) ** 2))
                         if combined_err > 0:
                             pull_sigma = abs_diff / combined_err
-                    tensor_pairwise_rows.append(
-                        {
-                            "estimator_a": str(row_a["estimator"]),
-                            "estimator_b": str(row_b["estimator"]),
-                            "delta_pct": delta_pct,
-                            "abs_delta_pct": (
-                                abs(delta_pct) if np.isfinite(delta_pct) else np.nan
-                            ),
-                            "pull_sigma": pull_sigma,
-                        }
-                    )
+                    tensor_pairwise_rows.append({
+                        "estimator_a": str(row_a["estimator"]),
+                        "estimator_b": str(row_b["estimator"]),
+                        "delta_pct": delta_pct,
+                        "abs_delta_pct": (abs(delta_pct) if np.isfinite(delta_pct) else np.nan),
+                        "pull_sigma": pull_sigma,
+                    })
 
             expected_tensor_core = {
                 "Anisotropic-edge tensor",
@@ -10516,10 +10827,7 @@ def create_app() -> pn.template.FastListTemplate:
             tensor_verdict_details = "Need at least two core tensor estimators with valid fits."
             if tensor_pairwise_rows:
                 abs_delta_values = np.asarray(
-                    [
-                        float(row.get("abs_delta_pct", np.nan))
-                        for row in tensor_pairwise_rows
-                    ],
+                    [float(row.get("abs_delta_pct", np.nan)) for row in tensor_pairwise_rows],
                     dtype=float,
                 )
                 pull_values = np.asarray(
@@ -10815,10 +11123,14 @@ def create_app() -> pn.template.FastListTemplate:
             else:
                 tensor_summary_lines.append("- No valid tensor estimators available.")
             if missing_tensor_core:
-                tensor_summary_lines.append(f"- Missing estimators: `{', '.join(missing_tensor_core)}`")
+                tensor_summary_lines.append(
+                    f"- Missing estimators: `{', '.join(missing_tensor_core)}`"
+                )
             if tensor_momentum_rows:
                 mode_count = len({int(row["n_mode"]) for row in tensor_momentum_rows})
-                tensor_summary_lines.append(f"- Contracted momentum modes available: `{mode_count}`")
+                tensor_summary_lines.append(
+                    f"- Contracted momentum modes available: `{mode_count}`"
+                )
                 if np.isfinite(tensor_momentum_length) and tensor_momentum_length > 0:
                     tensor_summary_lines.append(
                         f"- Momentum axis/length: axis `{tensor_momentum_axis}`, "
@@ -10859,18 +11171,14 @@ def create_app() -> pn.template.FastListTemplate:
                     return
                 mass_err = _display_mass_error(result_obj)
                 r2_value = _display_r2(result_obj)
-                glueball_lorentz_rows.append(
-                    {
-                        "estimator": estimator,
-                        "mass": float(mass_value),
-                        "mass_error": (
-                            float(mass_err)
-                            if np.isfinite(mass_err) and mass_err >= 0
-                            else np.nan
-                        ),
-                        "r2": float(r2_value) if np.isfinite(r2_value) else np.nan,
-                    }
-                )
+                glueball_lorentz_rows.append({
+                    "estimator": estimator,
+                    "mass": float(mass_value),
+                    "mass_error": (
+                        float(mass_err) if np.isfinite(mass_err) and mass_err >= 0 else np.nan
+                    ),
+                    "r2": float(r2_value) if np.isfinite(r2_value) else np.nan,
+                })
 
             _append_glueball_lorentz_row("Anisotropic-edge isotropic", edge_iso_result)
             _append_glueball_lorentz_row("Strong-force isotropic", strong_result)
@@ -10883,7 +11191,9 @@ def create_app() -> pn.template.FastListTemplate:
             ndof_lorentz = 1
             if glueball_lorentz_rows:
                 masses = np.asarray([row["mass"] for row in glueball_lorentz_rows], dtype=float)
-                errors = np.asarray([row["mass_error"] for row in glueball_lorentz_rows], dtype=float)
+                errors = np.asarray(
+                    [row["mass_error"] for row in glueball_lorentz_rows], dtype=float
+                )
                 weighted_mask = np.isfinite(errors) & (errors > 0)
                 if bool(np.any(weighted_mask)):
                     mass_w = masses[weighted_mask]
@@ -10996,21 +11306,16 @@ def create_app() -> pn.template.FastListTemplate:
                     if np.isfinite(float(row["r2"])):
                         entry += f", `R²={float(row['r2']):.4f}`"
                     if np.isfinite(float(row.get("delta_vs_consensus_pct", np.nan))):
-                        entry += (
-                            f", Δ vs consensus `{float(row['delta_vs_consensus_pct']):+.2f}%`"
-                        )
+                        entry += f", Δ vs consensus `{float(row['delta_vs_consensus_pct']):+.2f}%`"
                     glueball_lorentz_lines.append(entry)
             else:
                 glueball_lorentz_lines.append("- No valid glueball estimators available.")
 
             if np.isfinite(consensus_mass_lorentz) and consensus_mass_lorentz > 0:
-                consensus_line = (
-                    f"- Consensus mass: `{consensus_mass_lorentz:.6g}`"
-                    + (
-                        f" ± `{consensus_mass_lorentz_err:.2g}`"
-                        if np.isfinite(consensus_mass_lorentz_err)
-                        else ""
-                    )
+                consensus_line = f"- Consensus mass: `{consensus_mass_lorentz:.6g}`" + (
+                    f" ± `{consensus_mass_lorentz_err:.2g}`"
+                    if np.isfinite(consensus_mass_lorentz_err)
+                    else ""
                 )
                 glueball_lorentz_lines.append(consensus_line)
             if np.isfinite(max_abs_delta_pct):
@@ -11064,19 +11369,21 @@ def create_app() -> pn.template.FastListTemplate:
                         f"- `{row['estimator']}` correction to consensus: "
                         f"`{correction_factor:.6g}`"
                     )
-                    if np.isfinite(float(row["mass_error"])) and np.isfinite(consensus_mass_lorentz_err):
+                    if np.isfinite(float(row["mass_error"])) and np.isfinite(
+                        consensus_mass_lorentz_err
+                    ):
                         rel_cons = consensus_mass_lorentz_err / max(consensus_mass_lorentz, 1e-12)
                         rel_row = float(row["mass_error"]) / max(mass_value, 1e-12)
-                        corr_err = abs(correction_factor) * np.sqrt(rel_cons * rel_cons + rel_row * rel_row)
+                        corr_err = abs(correction_factor) * np.sqrt(
+                            rel_cons * rel_cons + rel_row * rel_row
+                        )
                         correction_line += f" ± `{corr_err:.2g}`"
                     correction_lines.append(correction_line)
             else:
                 correction_lines.append("- n/a (consensus glueball mass unavailable).")
 
             if np.isfinite(dispersion_ceff) and dispersion_ceff > 0:
-                correction_lines.append(
-                    f"- Dispersion-derived `c_eff`: `{dispersion_ceff:.6g}`"
-                )
+                correction_lines.append(f"- Dispersion-derived `c_eff`: `{dispersion_ceff:.6g}`")
                 correction_lines.append(
                     f"- Absolute-scale correction proxy (`1/c_eff`): `{(1.0 / dispersion_ceff):.6g}`"
                 )
@@ -11089,9 +11396,7 @@ def create_app() -> pn.template.FastListTemplate:
                     f"- Missing estimators: `{', '.join(missing_lorentz_estimators)}`"
                 )
             if glueball_systematics_error:
-                correction_lines.append(
-                    f"- Estimator warnings: `{glueball_systematics_error}`"
-                )
+                correction_lines.append(f"- Estimator warnings: `{glueball_systematics_error}`")
 
             tensor_payload = tensor_payload_display
             state["anisotropic_edge_tensor_correction_payload"] = tensor_payload
@@ -11101,23 +11406,21 @@ def create_app() -> pn.template.FastListTemplate:
             tensor_base_label = str(tensor_payload.get("base_label", "tensor"))
             tensor_base_mass = float(tensor_payload.get("base_mass", float("nan")))
             tensor_scale = float(tensor_payload.get("correction_scale", float("nan")))
-            tensor_scale_err = float(
-                tensor_payload.get("correction_scale_err", float("nan"))
-            )
+            tensor_scale_err = float(tensor_payload.get("correction_scale_err", float("nan")))
             tensor_mode = str(tensor_payload.get("base_mode", _resolve_base_mass_mode(mode)))
             tensor_labels = np.asarray(tensor_payload.get("labels", []), dtype=object)
             tensor_valid = np.asarray(tensor_payload.get("valid_mask", []), dtype=bool)
             tensor_missing = [
                 str(label)
-                for label, is_valid in zip(tensor_labels.tolist(), tensor_valid.tolist(), strict=False)
+                for label, is_valid in zip(
+                    tensor_labels.tolist(), tensor_valid.tolist(), strict=False
+                )
                 if not bool(is_valid)
             ]
             correction_lines.append("- Tensor calibration (4-way consensus):")
             correction_lines.append(f"- Tensor calibration mode: `{tensor_mode}`")
             if np.isfinite(tensor_consensus_mass) and tensor_consensus_mass > 0:
-                tensor_consensus_line = (
-                    f"- Tensor consensus mass: `{tensor_consensus_mass:.6g}`"
-                )
+                tensor_consensus_line = f"- Tensor consensus mass: `{tensor_consensus_mass:.6g}`"
                 if np.isfinite(tensor_consensus_err):
                     tensor_consensus_line += f" ± `{tensor_consensus_err:.2g}` (stat)"
                 correction_lines.append(tensor_consensus_line)
@@ -11198,7 +11501,9 @@ def create_app() -> pn.template.FastListTemplate:
                 tensor_traceless_spatial_error=state.get(
                     "anisotropic_edge_tensor_traceless_spatial_error"
                 ),
-                glueball_systematics_error=state.get("anisotropic_edge_glueball_systematics_error"),
+                glueball_systematics_error=state.get(
+                    "anisotropic_edge_glueball_systematics_error"
+                ),
                 mode=event.new,
             )
 
@@ -11258,9 +11563,7 @@ def create_app() -> pn.template.FastListTemplate:
                         anisotropic_edge_settings,
                     )
                 except Exception as exc:
-                    glueball_systematics_error = (
-                        f"isotropic-edge glueball estimator failed: {exc}"
-                    )
+                    glueball_systematics_error = f"isotropic-edge glueball estimator failed: {exc}"
                 spatial_glueball_result = None
                 spatial_frame_idx = None
                 spatial_rho_edge = None
@@ -11304,7 +11607,9 @@ def create_app() -> pn.template.FastListTemplate:
                             kernel_batch_size=int(anisotropic_edge_settings.kernel_batch_size),
                             kernel_scale_frames=int(anisotropic_edge_settings.kernel_scale_frames),
                             kernel_scale_q_low=float(anisotropic_edge_settings.kernel_scale_q_low),
-                            kernel_scale_q_high=float(anisotropic_edge_settings.kernel_scale_q_high),
+                            kernel_scale_q_high=float(
+                                anisotropic_edge_settings.kernel_scale_q_high
+                            ),
                             max_lag=int(anisotropic_edge_settings.max_lag),
                             use_connected=bool(anisotropic_edge_settings.use_connected),
                             fit_mode=str(anisotropic_edge_settings.fit_mode),
@@ -11461,7 +11766,9 @@ def create_app() -> pn.template.FastListTemplate:
                 for name, result in results.items()
                 if isinstance(result, ChannelCorrelatorResult)
                 and result.n_samples > 0
-                and any(str(name) == root or str(name).startswith(f"{root}_") for root in variant_roots)
+                and any(
+                    str(name) == root or str(name).startswith(f"{root}_") for root in variant_roots
+                )
             ]
             return sorted(
                 names,
@@ -11500,8 +11807,6 @@ def create_app() -> pn.template.FastListTemplate:
             return overrides
 
         def _hide_companion_strong_force_plots(message: str) -> None:
-            companion_strong_force_plots_overlay_corr.object = None
-            companion_strong_force_plots_overlay_meff.object = None
             companion_strong_force_plots_spectrum.object = None
             companion_strong_force_multiscale_plot.object = None
             companion_strong_force_plateau_plots.objects = [
@@ -11535,8 +11840,8 @@ def create_app() -> pn.template.FastListTemplate:
                 results,
                 companion_strong_force_plateau_plots,
                 companion_strong_force_plots_spectrum,
-                companion_strong_force_plots_overlay_corr,
-                companion_strong_force_plots_overlay_meff,
+                None,
+                None,
                 heatmap_container=companion_strong_force_heatmap_plots,
                 heatmap_color_metric_widget=companion_strong_force_heatmap_color_metric,
                 heatmap_alpha_metric_widget=companion_strong_force_heatmap_alpha_metric,
@@ -11546,12 +11851,9 @@ def create_app() -> pn.template.FastListTemplate:
         def _update_companion_strong_force_tables(
             results: dict[str, ChannelCorrelatorResult],
             mode: str | None = None,
-            anchor_mode: str | None = None,
         ) -> None:
             if mode is None:
                 mode = companion_strong_force_mass_mode.value
-            if anchor_mode is None:
-                anchor_mode = companion_strong_force_anchor_mode.value
             try:
                 gevp_min_r2 = float(companion_strong_force_settings.gevp_min_operator_r2)
             except (TypeError, ValueError):
@@ -11564,7 +11866,9 @@ def create_app() -> pn.template.FastListTemplate:
             except (TypeError, ValueError):
                 gevp_min_windows = 10
             try:
-                gevp_max_error_pct = float(companion_strong_force_settings.gevp_max_operator_error_pct)
+                gevp_max_error_pct = float(
+                    companion_strong_force_settings.gevp_max_operator_error_pct
+                )
             except (TypeError, ValueError):
                 gevp_max_error_pct = 30.0
             gevp_remove_artifacts = bool(companion_strong_force_settings.gevp_remove_artifacts)
@@ -11585,10 +11889,9 @@ def create_app() -> pn.template.FastListTemplate:
                 companion_strong_force_mass_table,
                 companion_strong_force_ratio_pane,
                 companion_strong_force_fit_table,
-                companion_strong_force_anchor_table,
-                companion_strong_force_glueball_ref_input,
+                anchor_table=None,
+                glueball_ref_input=companion_strong_force_glueball_ref_input,
                 ratio_specs=STRONG_FORCE_RATIO_SPECS,
-                anchor_mode=str(anchor_mode),
                 comparison_channel_overrides=comparison_overrides,
             )
             filtered_out_dict = {
@@ -11605,10 +11908,7 @@ def create_app() -> pn.template.FastListTemplate:
             )
             if filtered_out_results:
                 preview = ", ".join(
-                    (
-                        f"{_display_companion_channel_name(name)}"
-                        f"({reason})"
-                    )
+                    (f"{_display_companion_channel_name(name)}" f"({reason})")
                     for name, (_, reason) in list(filtered_out_results.items())[:6]
                 )
                 suffix = " ..." if len(filtered_out_results) > 6 else ""
@@ -11647,6 +11947,358 @@ def create_app() -> pn.template.FastListTemplate:
                         return float("nan")
                 return float("nan")
 
+            companion_reference_masses: dict[str, float] = {
+                "pseudoscalar": float(MESON_REFS["pion"]),
+                "nucleon": float(BARYON_REFS["proton"]),
+                "vector": float(MESON_REFS["rho"]),
+                "scalar": 0.500,
+            }
+            if companion_strong_force_glueball_ref_input.value is not None:
+                try:
+                    glueball_ref_value = float(companion_strong_force_glueball_ref_input.value)
+                except (TypeError, ValueError):
+                    glueball_ref_value = float("nan")
+                if np.isfinite(glueball_ref_value) and glueball_ref_value > 0:
+                    companion_reference_masses["glueball"] = glueball_ref_value
+
+            canonical_channel_order = (
+                "pseudoscalar",
+                "nucleon",
+                "vector",
+                "scalar",
+                "axial_vector",
+                "glueball",
+                "tensor_traceless",
+                "tensor",
+            )
+
+            def _canonical_companion_channel(variant_name: str) -> str:
+                base = _base_channel_name(str(variant_name))
+                for canonical in canonical_channel_order:
+                    if base == canonical or base.startswith(f"{canonical}_"):
+                        return canonical
+                return base
+
+            ratio_mass_entries: list[dict[str, Any]] = []
+            for variant_name, variant_result in filtered_results.items():
+                if not isinstance(variant_result, ChannelCorrelatorResult):
+                    continue
+                if variant_result.n_samples == 0:
+                    continue
+                variant_mass = _get_channel_mass(variant_result, str(mode))
+                if not np.isfinite(variant_mass) or variant_mass <= 0:
+                    continue
+                canonical_channel = _canonical_companion_channel(str(variant_name))
+                reference_mass = companion_reference_masses.get(canonical_channel, float("nan"))
+                ratio_mass_entries.append({
+                    "variant_key": str(variant_name),
+                    "variant_display": _display_companion_channel_name(str(variant_name)),
+                    "canonical_channel": canonical_channel,
+                    "mass": float(variant_mass),
+                    "reference_mass": float(reference_mass)
+                    if np.isfinite(reference_mass)
+                    else float("nan"),
+                })
+
+            cross_ratio_rows: list[dict[str, Any]] = []
+            for numerator_entry in ratio_mass_entries:
+                for denominator_entry in ratio_mass_entries:
+                    if numerator_entry["variant_key"] == denominator_entry["variant_key"]:
+                        continue
+                    if (
+                        numerator_entry["canonical_channel"]
+                        == denominator_entry["canonical_channel"]
+                    ):
+                        continue
+                    ratio_value = float(numerator_entry["mass"] / denominator_entry["mass"])
+                    measured_ratio = float("nan")
+                    numerator_reference_mass = float(numerator_entry["reference_mass"])
+                    denominator_reference_mass = float(denominator_entry["reference_mass"])
+                    if (
+                        np.isfinite(numerator_reference_mass)
+                        and np.isfinite(denominator_reference_mass)
+                        and denominator_reference_mass > 0
+                    ):
+                        measured_ratio = float(
+                            numerator_reference_mass / denominator_reference_mass
+                        )
+                    delta_pct = float("nan")
+                    if np.isfinite(measured_ratio) and measured_ratio > 0:
+                        delta_pct = float((ratio_value / measured_ratio - 1.0) * 100.0)
+                    cross_ratio_rows.append({
+                        "numerator_variant": numerator_entry["variant_display"],
+                        "numerator_channel": numerator_entry["canonical_channel"],
+                        "numerator_mass": numerator_entry["mass"],
+                        "denominator_variant": denominator_entry["variant_display"],
+                        "denominator_channel": denominator_entry["canonical_channel"],
+                        "denominator_mass": denominator_entry["mass"],
+                        "ratio_alg": ratio_value,
+                        "measured_ratio": measured_ratio,
+                        "delta_pct": delta_pct,
+                        "abs_delta_pct": abs(delta_pct) if np.isfinite(delta_pct) else np.nan,
+                        "numerator_measured_mass": numerator_reference_mass,
+                        "denominator_measured_mass": denominator_reference_mass,
+                        "has_measured_ratio": bool(np.isfinite(measured_ratio)),
+                    })
+
+            if cross_ratio_rows:
+                cross_ratio_df = pd.DataFrame(cross_ratio_rows).sort_values(
+                    [
+                        "has_measured_ratio",
+                        "abs_delta_pct",
+                        "numerator_variant",
+                        "denominator_variant",
+                    ],
+                    ascending=[False, False, True, True],
+                    kind="stable",
+                )
+                measured_mask = np.isfinite(
+                    cross_ratio_df["measured_ratio"].to_numpy(dtype=float, copy=False)
+                )
+                n_measured_pairs = int(np.sum(measured_mask))
+                measured_df = cross_ratio_df[measured_mask]
+                if not measured_df.empty:
+                    worst_row = measured_df.iloc[0]
+                    companion_strong_force_cross_ratio_summary.object = (
+                        f"**Cross-channel ratio debug:** `{len(cross_ratio_df)}` ordered "
+                        f"cross-channel pairs; `{n_measured_pairs}` have measured targets.  \n"
+                        f"_Largest measured mismatch:_ "
+                        f"`{worst_row['numerator_variant']}/{worst_row['denominator_variant']}` = "
+                        f"`{float(worst_row['ratio_alg']):.6g}` vs measured "
+                        f"`{float(worst_row['measured_ratio']):.6g}` "
+                        f"(`{float(worst_row['delta_pct']):+.2f}%`)."
+                    )
+                else:
+                    companion_strong_force_cross_ratio_summary.object = (
+                        f"**Cross-channel ratio debug:** `{len(cross_ratio_df)}` ordered "
+                        "cross-channel pairs, but none has a measured-ratio target with the "
+                        "current reference map."
+                    )
+                companion_strong_force_cross_ratio_table.value = cross_ratio_df.drop(
+                    columns=["has_measured_ratio"],
+                    errors="ignore",
+                )
+            else:
+                companion_strong_force_cross_ratio_summary.object = (
+                    "**Cross-channel ratio debug:** no valid cross-channel pairs from the "
+                    "currently filtered companion results."
+                )
+                companion_strong_force_cross_ratio_table.value = pd.DataFrame()
+
+            ratio_specs_with_targets: list[tuple[str, str, float]] = []
+            for numerator_base, denominator_base, reference_label in STRONG_FORCE_RATIO_SPECS:
+                reference_value = _ratio_reference_value(
+                    str(numerator_base),
+                    str(denominator_base),
+                    str(reference_label),
+                )
+                if np.isfinite(reference_value) and reference_value > 0:
+                    ratio_specs_with_targets.append((
+                        str(numerator_base),
+                        str(denominator_base),
+                        float(reference_value),
+                    ))
+
+            combo_channels: list[str] = []
+            for numerator_base, denominator_base, _reference_value in ratio_specs_with_targets:
+                if numerator_base not in combo_channels:
+                    combo_channels.append(numerator_base)
+                if denominator_base not in combo_channels:
+                    combo_channels.append(denominator_base)
+
+            variant_options_by_channel: dict[str, list[str]] = {
+                channel: _variant_names_for_base(channel) for channel in combo_channels
+            }
+            missing_combo_channels = [
+                channel for channel, options in variant_options_by_channel.items() if not options
+            ]
+            variant_mass_lookup: dict[str, float] = {}
+            for variant_name, variant_result in filtered_results.items():
+                if not isinstance(variant_result, ChannelCorrelatorResult):
+                    continue
+                if variant_result.n_samples == 0:
+                    continue
+                variant_mass = _get_channel_mass(variant_result, str(mode))
+                if np.isfinite(variant_mass) and variant_mass > 0:
+                    variant_mass_lookup[str(variant_name)] = float(variant_mass)
+
+            combo_rows: list[dict[str, Any]] = []
+            combo_truncated = False
+            combos_considered = 0
+            total_combinations = 0
+            max_combo_evaluations = 100000
+            evaluation_options = {
+                channel: list(options) for channel, options in variant_options_by_channel.items()
+            }
+            if combo_channels and not missing_combo_channels:
+                total_combinations = int(
+                    np.prod(
+                        np.asarray(
+                            [len(evaluation_options[channel]) for channel in combo_channels],
+                            dtype=np.int64,
+                        )
+                    )
+                )
+                if total_combinations > max_combo_evaluations:
+                    per_channel_cap = max(
+                        1,
+                        int(np.floor(max_combo_evaluations ** (1.0 / float(len(combo_channels))))),
+                    )
+                    for channel in combo_channels:
+                        if len(evaluation_options[channel]) > per_channel_cap:
+                            evaluation_options[channel] = evaluation_options[channel][
+                                :per_channel_cap
+                            ]
+                            combo_truncated = True
+                    total_combinations = int(
+                        np.prod(
+                            np.asarray(
+                                [len(evaluation_options[channel]) for channel in combo_channels],
+                                dtype=np.int64,
+                            )
+                        )
+                    )
+
+                option_lists = [evaluation_options[channel] for channel in combo_channels]
+                for selected_variants in itertools.product(*option_lists):
+                    combos_considered += 1
+                    selection = {
+                        channel: str(variant_name)
+                        for channel, variant_name in zip(combo_channels, selected_variants)
+                    }
+                    per_channel_error = dict.fromkeys(combo_channels, 0.0)
+                    per_ratio_error: dict[str, float] = {}
+                    total_abs_pct_error = 0.0
+                    used_ratio_count = 0
+                    valid_combo = True
+                    for (
+                        numerator_base,
+                        denominator_base,
+                        reference_value,
+                    ) in ratio_specs_with_targets:
+                        numerator_variant = selection.get(numerator_base)
+                        denominator_variant = selection.get(denominator_base)
+                        if numerator_variant is None or denominator_variant is None:
+                            valid_combo = False
+                            break
+                        numerator_mass = variant_mass_lookup.get(numerator_variant, float("nan"))
+                        denominator_mass = variant_mass_lookup.get(
+                            denominator_variant, float("nan")
+                        )
+                        if (
+                            not np.isfinite(numerator_mass)
+                            or not np.isfinite(denominator_mass)
+                            or denominator_mass <= 0
+                        ):
+                            valid_combo = False
+                            break
+                        ratio_value = float(numerator_mass / denominator_mass)
+                        abs_pct_error = float(abs((ratio_value / reference_value - 1.0) * 100.0))
+                        per_ratio_error[
+                            f"error_{numerator_base}_over_{denominator_base}_abs_pct"
+                        ] = abs_pct_error
+                        per_channel_error[numerator_base] += abs_pct_error
+                        per_channel_error[denominator_base] += abs_pct_error
+                        total_abs_pct_error += abs_pct_error
+                        used_ratio_count += 1
+
+                    if not valid_combo or used_ratio_count != len(ratio_specs_with_targets):
+                        continue
+
+                    combo_row: dict[str, Any] = {
+                        "total_abs_pct_error": total_abs_pct_error,
+                        "mean_abs_pct_error": total_abs_pct_error / float(used_ratio_count),
+                        "n_ratio_targets": int(used_ratio_count),
+                    }
+                    for channel in combo_channels:
+                        combo_row[f"variant_{channel}"] = selection[channel]
+                        combo_row[f"error_{channel}_abs_pct"] = float(per_channel_error[channel])
+                    combo_row.update(per_ratio_error)
+                    combo_rows.append(combo_row)
+
+            if combo_rows:
+                combo_df = pd.DataFrame(combo_rows).sort_values(
+                    ["total_abs_pct_error", "mean_abs_pct_error"],
+                    ascending=[True, True],
+                    kind="stable",
+                )
+                top_combo_df = combo_df.head(5).reset_index(drop=True)
+                companion_strong_force_best_combo_table.value = top_combo_df
+                best_row = top_combo_df.iloc[0]
+                best_selection = {
+                    channel: str(best_row[f"variant_{channel}"])
+                    for channel in combo_channels
+                    if f"variant_{channel}" in best_row
+                }
+                truncation_note = (
+                    " Evaluated a capped subset of combinations." if combo_truncated else ""
+                )
+                companion_strong_force_best_combo_summary.object = (
+                    f"**Best global variant combo (top 5):** "
+                    f"`{len(combo_df)}` valid combinations ranked by summed absolute `%` error "
+                    f"across `{len(ratio_specs_with_targets)}` ratio targets.  \n"
+                    f"_Best total error:_ `{float(best_row['total_abs_pct_error']):.4g}%` "
+                    f"(mean `{float(best_row['mean_abs_pct_error']):.4g}%`).  \n"
+                    f"_Combinations considered:_ `{combos_considered}`.{truncation_note}"
+                )
+                best_ratio_lines = ["**Mass Ratios (Best Global Combo):**"]
+                for numerator_base, denominator_base, reference_label in STRONG_FORCE_RATIO_SPECS:
+                    numerator_variant = best_selection.get(str(numerator_base))
+                    denominator_variant = best_selection.get(str(denominator_base))
+                    if not numerator_variant or not denominator_variant:
+                        continue
+                    numerator_mass = variant_mass_lookup.get(numerator_variant, float("nan"))
+                    denominator_mass = variant_mass_lookup.get(denominator_variant, float("nan"))
+                    if (
+                        not np.isfinite(numerator_mass)
+                        or not np.isfinite(denominator_mass)
+                        or denominator_mass <= 0
+                    ):
+                        continue
+                    ratio_value = float(numerator_mass / denominator_mass)
+                    ref_value = _ratio_reference_value(
+                        str(numerator_base),
+                        str(denominator_base),
+                        str(reference_label),
+                    )
+                    abs_pct_error = float("nan")
+                    if np.isfinite(ref_value) and ref_value > 0:
+                        abs_pct_error = float(abs((ratio_value / ref_value - 1.0) * 100.0))
+                    if str(reference_label).strip():
+                        annotation = str(reference_label).strip()
+                    elif np.isfinite(ref_value) and ref_value > 0:
+                        annotation = f"target ≈ {ref_value:.4g}"
+                    else:
+                        annotation = "no external target"
+                    if np.isfinite(abs_pct_error):
+                        annotation = f"{annotation}; abs error {abs_pct_error:.2f}%"
+                    best_ratio_lines.append(
+                        f"- {numerator_base}/{denominator_base}: **{ratio_value:.3f}** ({annotation})"
+                    )
+                if len(best_ratio_lines) == 1:
+                    best_ratio_lines.append("- n/a (missing valid masses for selected variants)")
+                companion_strong_force_ratio_pane.object = "  \n".join(best_ratio_lines)
+            else:
+                if not ratio_specs_with_targets:
+                    reason = "no finite measured ratio targets are configured"
+                elif missing_combo_channels:
+                    reason = "missing variants for: " + ", ".join(
+                        f"`{channel}`" for channel in missing_combo_channels
+                    )
+                elif total_combinations == 0:
+                    reason = "no variant combinations available"
+                else:
+                    reason = (
+                        "no complete variant combination has valid masses for all ratio targets"
+                    )
+                companion_strong_force_best_combo_summary.object = (
+                    f"**Best global variant combo:** unavailable ({reason})."
+                )
+                companion_strong_force_best_combo_table.value = pd.DataFrame()
+                companion_strong_force_ratio_pane.object = (
+                    f"**Mass Ratios (Best Global Combo):** unavailable ({reason})."
+                )
+
             ratio_blocks: list[Any] = []
             for numerator_base, denominator_base, reference_label in STRONG_FORCE_RATIO_SPECS:
                 numerator_variants = _variant_names_for_base(str(numerator_base))
@@ -11678,15 +12330,13 @@ def create_app() -> pn.template.FastListTemplate:
                         delta_pct = float("nan")
                         if np.isfinite(ref_value) and ref_value > 0:
                             delta_pct = (ratio_value / ref_value - 1.0) * 100.0
-                        rows.append(
-                            {
-                                "numerator_variant": _display_companion_channel_name(num_name),
-                                "denominator_variant": _display_companion_channel_name(den_name),
-                                "ratio": ratio_value,
-                                "reference": ref_value if np.isfinite(ref_value) else np.nan,
-                                "delta_pct": delta_pct,
-                            }
-                        )
+                        rows.append({
+                            "numerator_variant": _display_companion_channel_name(num_name),
+                            "denominator_variant": _display_companion_channel_name(den_name),
+                            "ratio": ratio_value,
+                            "reference": ref_value if np.isfinite(ref_value) else np.nan,
+                            "delta_pct": delta_pct,
+                        })
 
                 if not rows:
                     continue
@@ -11699,21 +12349,19 @@ def create_app() -> pn.template.FastListTemplate:
                     header_ref = f"{ref_value:.4f}"
                 else:
                     header_ref = "n/a"
-                ratio_blocks.extend(
-                    [
-                        pn.pane.Markdown(
-                            f"#### {numerator_base}/{denominator_base} variants"
-                            f" (reference: `{header_ref}`; {reference_label or 'no external target'})",
-                            sizing_mode="stretch_width",
-                        ),
-                        pn.widgets.Tabulator(
-                            ratio_df,
-                            pagination=None,
-                            show_index=False,
-                            sizing_mode="stretch_width",
-                        ),
-                    ]
-                )
+                ratio_blocks.extend([
+                    pn.pane.Markdown(
+                        f"#### {numerator_base}/{denominator_base} variants"
+                        f" (reference: `{header_ref}`; {reference_label or 'no external target'})",
+                        sizing_mode="stretch_width",
+                    ),
+                    pn.widgets.Tabulator(
+                        ratio_df,
+                        pagination=None,
+                        show_index=False,
+                        sizing_mode="stretch_width",
+                    ),
+                ])
 
             if ratio_blocks:
                 companion_strong_force_ratio_tables.objects = ratio_blocks
@@ -11733,9 +12381,7 @@ def create_app() -> pn.template.FastListTemplate:
         ) -> None:
             if error:
                 companion_strong_force_multiscale_summary.object = (
-                    "### Multiscale Kernel Summary\n"
-                    "- Status: failed\n"
-                    f"- Error: `{error}`"
+                    "### Multiscale Kernel Summary\n" "- Status: failed\n" f"- Error: `{error}`"
                 )
                 companion_strong_force_multiscale_table.value = pd.DataFrame()
                 companion_strong_force_multiscale_per_scale_table.value = pd.DataFrame()
@@ -11752,7 +12398,9 @@ def create_app() -> pn.template.FastListTemplate:
                 companion_strong_force_multiscale_plot.object = None
                 return
 
-            scale_values = output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
+            scale_values = (
+                output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
+            )
             lines = [
                 "### Multiscale Kernel Summary",
                 f"- Scales: `{len(scale_values)}`",
@@ -11775,11 +12423,15 @@ def create_app() -> pn.template.FastListTemplate:
             except (TypeError, ValueError):
                 gevp_min_r2 = 0.5
             try:
-                gevp_min_windows = max(0, int(companion_strong_force_settings.gevp_min_operator_windows))
+                gevp_min_windows = max(
+                    0, int(companion_strong_force_settings.gevp_min_operator_windows)
+                )
             except (TypeError, ValueError):
                 gevp_min_windows = 10
             try:
-                gevp_max_error_pct = float(companion_strong_force_settings.gevp_max_operator_error_pct)
+                gevp_max_error_pct = float(
+                    companion_strong_force_settings.gevp_max_operator_error_pct
+                )
             except (TypeError, ValueError):
                 gevp_max_error_pct = 30.0
             gevp_remove_artifacts = bool(companion_strong_force_settings.gevp_remove_artifacts)
@@ -11877,27 +12529,25 @@ def create_app() -> pn.template.FastListTemplate:
                     and best_err >= 0
                     else float("nan")
                 )
-                rows.append(
-                    {
-                        "channel": display_name,
-                        "source_channel": display_name,
-                        "original_mass": original_mass,
-                        "full_scale_mass": original_mass,
-                        "best_scale_idx": best_idx,
-                        "best_scale": best_scale,
-                        "mass": best_mass,
-                        "delta_vs_original_pct": (
-                            ((best_mass - original_mass) / original_mass) * 100.0
-                            if np.isfinite(original_mass)
-                            and original_mass > 0
-                            and np.isfinite(best_mass)
-                            else float("nan")
-                        ),
-                        "mass_error": best_err,
-                        "mass_error_pct": best_err_pct,
-                        "r2": best_r2,
-                    }
-                )
+                rows.append({
+                    "channel": display_name,
+                    "source_channel": display_name,
+                    "original_mass": original_mass,
+                    "full_scale_mass": original_mass,
+                    "best_scale_idx": best_idx,
+                    "best_scale": best_scale,
+                    "mass": best_mass,
+                    "delta_vs_original_pct": (
+                        ((best_mass - original_mass) / original_mass) * 100.0
+                        if np.isfinite(original_mass)
+                        and original_mass > 0
+                        and np.isfinite(best_mass)
+                        else float("nan")
+                    ),
+                    "mass_error": best_err,
+                    "mass_error_pct": best_err_pct,
+                    "r2": best_r2,
+                })
                 if scale_values.size > 0 and len(masses) == len(scale_values):
                     y = np.asarray(masses, dtype=float)
                     scale_fit = list(zip(scale_values.tolist(), results_per_scale, strict=False))
@@ -11936,28 +12586,26 @@ def create_app() -> pn.template.FastListTemplate:
                             if result_obj is not None
                             else float("nan")
                         )
-                        per_scale_rows.append(
-                            {
-                                "channel": display_name,
-                                "source_channel": display_name,
-                                "scale_label": f"s{int(scale_idx)}",
-                                "scale_idx": int(scale_idx),
-                                "scale": float(scale_value),
-                                "mass": mass_value,
-                                "mass_error": mass_error,
-                                "mass_error_pct": mass_error_pct,
-                                "r2": r2_value,
-                                "is_best": bool(scale_idx == best_idx),
-                                "is_full_scale": False,
-                                "delta_vs_original_pct": (
-                                    ((mass_value - original_mass) / original_mass) * 100.0
-                                    if np.isfinite(original_mass)
-                                    and original_mass > 0
-                                    and np.isfinite(mass_value)
-                                    else float("nan")
-                                ),
-                            }
-                        )
+                        per_scale_rows.append({
+                            "channel": display_name,
+                            "source_channel": display_name,
+                            "scale_label": f"s{int(scale_idx)}",
+                            "scale_idx": int(scale_idx),
+                            "scale": float(scale_value),
+                            "mass": mass_value,
+                            "mass_error": mass_error,
+                            "mass_error_pct": mass_error_pct,
+                            "r2": r2_value,
+                            "is_best": bool(scale_idx == best_idx),
+                            "is_full_scale": False,
+                            "delta_vs_original_pct": (
+                                ((mass_value - original_mass) / original_mass) * 100.0
+                                if np.isfinite(original_mass)
+                                and original_mass > 0
+                                and np.isfinite(mass_value)
+                                else float("nan")
+                            ),
+                        })
                     if original_result is not None:
                         full_mass = float(_get_channel_mass(original_result, mode))
                         full_err = float(_get_channel_mass_error(original_result, mode))
@@ -11970,22 +12618,20 @@ def create_app() -> pn.template.FastListTemplate:
                             else float("nan")
                         )
                         full_r2 = float(_get_channel_r2(original_result, mode))
-                        per_scale_rows.append(
-                            {
-                                "channel": display_name,
-                                "source_channel": display_name,
-                                "scale_label": "full_original_no_threshold",
-                                "scale_idx": -1,
-                                "scale": float("nan"),
-                                "mass": full_mass,
-                                "mass_error": full_err,
-                                "mass_error_pct": full_err_pct,
-                                "r2": full_r2,
-                                "is_best": False,
-                                "is_full_scale": True,
-                                "delta_vs_original_pct": 0.0,
-                            }
-                        )
+                        per_scale_rows.append({
+                            "channel": display_name,
+                            "source_channel": display_name,
+                            "scale_label": "full_original_no_threshold",
+                            "scale_idx": -1,
+                            "scale": float("nan"),
+                            "mass": full_mass,
+                            "mass_error": full_err,
+                            "mass_error_pct": full_err_pct,
+                            "r2": full_r2,
+                            "is_best": False,
+                            "is_full_scale": True,
+                            "delta_vs_original_pct": 0.0,
+                        })
                     if np.isfinite(y).any():
                         color = CHANNEL_COLORS.get(_channel_color_key(str(channel_name)), None)
                         curve = hv.Curve(
@@ -12063,16 +12709,6 @@ def create_app() -> pn.template.FastListTemplate:
             "value",
         )
 
-        def _on_companion_strong_force_anchor_mode_change(_event):
-            if state.get("companion_strong_force_results") is None:
-                return
-            _update_companion_strong_force_tables(state["companion_strong_force_results"])
-
-        companion_strong_force_anchor_mode.param.watch(
-            _on_companion_strong_force_anchor_mode_change,
-            "value",
-        )
-
         def _on_companion_strong_force_variant_change(_event):
             if companion_strong_force_variant_sync["active"]:
                 return
@@ -12103,9 +12739,7 @@ def create_app() -> pn.template.FastListTemplate:
         def _on_companion_strong_force_display_plots_click(_event) -> None:
             results = state.get("companion_strong_force_results")
             if results is None:
-                companion_strong_force_status.object = (
-                    "**No companion results yet:** run Compute Companion Strong Force Channels first."
-                )
+                companion_strong_force_status.object = "**No companion results yet:** run Compute Companion Strong Force Channels first."
                 return
             state["companion_strong_force_plots_unlocked"] = True
             companion_strong_force_display_plots_button.button_type = "success"
@@ -12124,7 +12758,20 @@ def create_app() -> pn.template.FastListTemplate:
 
         def on_run_companion_strong_force_channels(_):
             def _compute(history):
-                output, resolved_h_eff, h_eff_desc = _compute_companion_strong_force_bundle(history, companion_strong_force_settings)
+                requested_companion_channels = _collect_multiselect_values(
+                    companion_strong_force_channel_family_selectors
+                )
+                if not requested_companion_channels:
+                    requested_companion_channels = [
+                        channel
+                        for channels in DEFAULT_COMPANION_CHANNEL_VARIANT_SELECTION.values()
+                        for channel in channels
+                    ]
+                output, resolved_h_eff, h_eff_desc = _compute_companion_strong_force_bundle(
+                    history,
+                    companion_strong_force_settings,
+                    requested_channels=requested_companion_channels,
+                )
                 base_results = dict(output.channel_results)
                 results = dict(base_results)
                 for channel_name, channel_result in base_results.items():
@@ -12139,103 +12786,26 @@ def create_app() -> pn.template.FastListTemplate:
                 gevp_error: str | None = None
                 if bool(companion_strong_force_settings.use_multiscale_kernels):
                     try:
-                        requested_channels = [
-                            c.strip()
-                            for c in str(companion_strong_force_settings.channel_list).split(",")
-                            if c.strip()
-                            and c.strip()
-                            not in {
-                                "pseudoscalar_score_directed",
-                                "vector_score_gradient",
-                                "nucleon_score_signed",
-                                "axial_vector_score_directed",
-                                "axial_vector_score_gradient",
-                            }
-                        ]
-                        if (
-                            "nucleon" in requested_channels
-                            and bool(companion_strong_force_settings.companion_include_nucleon_flux_variants)
-                        ):
-                            requested_channels.extend(
-                                ["nucleon_flux_action", "nucleon_flux_sin2", "nucleon_flux_exp"]
-                            )
-                        if (
-                            "nucleon" in requested_channels
-                            and bool(companion_strong_force_settings.companion_include_nucleon_score_variants)
-                        ):
-                            requested_channels.extend(["nucleon_score_abs"])
-                        if (
-                            "scalar" in requested_channels
-                            and bool(
-                                companion_strong_force_settings.companion_include_meson_score_directed_variants
-                            )
-                        ):
-                            requested_channels.extend(
-                                ["scalar_score_directed", "scalar_score_weighted"]
-                            )
-                        if (
-                            "scalar" in requested_channels
-                            and bool(
-                                companion_strong_force_settings.companion_include_scalar_vacuum_variants
-                            )
-                        ):
-                            requested_channels.extend(["scalar_raw", "scalar_abs2_vacsub"])
-                        if (
-                            "pseudoscalar" in requested_channels
-                            and bool(
-                                companion_strong_force_settings.companion_include_meson_score_directed_variants
-                            )
-                        ):
-                            requested_channels.extend(["pseudoscalar_score_weighted"])
-                        if (
-                            "glueball" in requested_channels
-                            and bool(companion_strong_force_settings.companion_include_glueball_phase_variants)
-                        ):
-                            requested_channels.extend(
-                                ["glueball_phase_action", "glueball_phase_sin2"]
-                            )
-                        if (
-                            "vector" in requested_channels
-                            and bool(
-                                companion_strong_force_settings.companion_include_vector_score_directed_variants
-                            )
-                        ):
-                            requested_channels.extend(
-                                [
-                                    "vector_score_directed",
-                                    "vector_score_directed_longitudinal",
-                                    "vector_score_directed_transverse",
-                                ]
-                            )
-                        if (
-                            "axial_vector" in requested_channels
-                            and bool(
-                                companion_strong_force_settings.companion_include_vector_score_directed_variants
-                            )
-                        ):
-                            requested_channels.extend(
-                                [
-                                    "axial_vector_score_directed_longitudinal",
-                                    "axial_vector_score_directed_transverse",
-                                ]
-                            )
-                        requested_channels = list(dict.fromkeys(requested_channels))
-                        requested_companion_channels = sorted(
-                            {
-                                str(COMPANION_CHANNEL_MAP[ch])
-                                for ch in requested_channels
-                                if ch in COMPANION_CHANNEL_MAP
-                            }
-                        )
-                        if requested_companion_channels:
+                        requested_companion_multiscale_channels = sorted({
+                            str(COMPANION_CHANNEL_MAP[ch])
+                            for ch in requested_companion_channels
+                            if ch in COMPANION_CHANNEL_MAP
+                        })
+                        if requested_companion_multiscale_channels:
                             multiscale_cfg = MultiscaleStrongForceConfig(
-                                warmup_fraction=float(companion_strong_force_settings.simulation_range[0]),
-                                end_fraction=float(companion_strong_force_settings.simulation_range[1]),
+                                warmup_fraction=float(
+                                    companion_strong_force_settings.simulation_range[0]
+                                ),
+                                end_fraction=float(
+                                    companion_strong_force_settings.simulation_range[1]
+                                ),
                                 mc_time_index=companion_strong_force_settings.mc_time_index,
                                 h_eff=resolved_h_eff,
                                 mass=float(companion_strong_force_settings.mass),
                                 ell0=companion_strong_force_settings.ell0,
-                                edge_weight_mode=str(companion_strong_force_settings.edge_weight_mode),
+                                edge_weight_mode=str(
+                                    companion_strong_force_settings.edge_weight_mode
+                                ),
                                 n_scales=int(companion_strong_force_settings.n_scales),
                                 kernel_type=str(companion_strong_force_settings.kernel_type),
                                 kernel_distance_method=str(
@@ -12244,7 +12814,9 @@ def create_app() -> pn.template.FastListTemplate:
                                 kernel_assume_all_alive=bool(
                                     companion_strong_force_settings.kernel_assume_all_alive
                                 ),
-                                kernel_batch_size=int(companion_strong_force_settings.kernel_batch_size),
+                                kernel_batch_size=int(
+                                    companion_strong_force_settings.kernel_batch_size
+                                ),
                                 kernel_scale_frames=int(
                                     companion_strong_force_settings.kernel_scale_frames
                                 ),
@@ -12279,7 +12851,9 @@ def create_app() -> pn.template.FastListTemplate:
                                     companion_strong_force_settings.compute_bootstrap_errors
                                 ),
                                 n_bootstrap=int(companion_strong_force_settings.n_bootstrap),
-                                bootstrap_mode=str(companion_strong_force_settings.kernel_bootstrap_mode),
+                                bootstrap_mode=str(
+                                    companion_strong_force_settings.kernel_bootstrap_mode
+                                ),
                                 walker_bootstrap_max_walkers=int(
                                     companion_strong_force_settings.kernel_bootstrap_max_walkers
                                 ),
@@ -12290,7 +12864,7 @@ def create_app() -> pn.template.FastListTemplate:
                             multiscale_output = compute_multiscale_strong_force_channels(
                                 history,
                                 config=multiscale_cfg,
-                                channels=requested_companion_channels,
+                                channels=requested_companion_multiscale_channels,
                             )
                             for channel_name, result in multiscale_output.best_results.items():
                                 display_name = _display_companion_channel_name(str(channel_name))
@@ -12335,7 +12909,9 @@ def create_app() -> pn.template.FastListTemplate:
                                 window_widths=_parse_window_widths(
                                     companion_strong_force_settings.window_widths_spec
                                 ),
-                                basis_strategy=str(companion_strong_force_settings.gevp_basis_strategy),
+                                basis_strategy=str(
+                                    companion_strong_force_settings.gevp_basis_strategy
+                                ),
                                 max_basis=int(companion_strong_force_settings.gevp_max_basis),
                                 min_operator_r2=float(
                                     companion_strong_force_settings.gevp_min_operator_r2
@@ -12358,7 +12934,9 @@ def create_app() -> pn.template.FastListTemplate:
                                     companion_strong_force_settings.compute_bootstrap_errors
                                 ),
                                 n_bootstrap=int(companion_strong_force_settings.n_bootstrap),
-                                bootstrap_mode=str(companion_strong_force_settings.gevp_bootstrap_mode),
+                                bootstrap_mode=str(
+                                    companion_strong_force_settings.gevp_bootstrap_mode
+                                ),
                             )
                             gevp_payload = compute_companion_channel_gevp(
                                 base_results=base_results,
@@ -12413,7 +12991,8 @@ def create_app() -> pn.template.FastListTemplate:
                     error=multiscale_error,
                 )
                 _update_anisotropic_edge_multiscale_views(
-                    multiscale_output, multiscale_error,
+                    multiscale_output,
+                    multiscale_error,
                     original_results=base_results,
                 )
 
@@ -12435,7 +13014,9 @@ def create_app() -> pn.template.FastListTemplate:
                 filters_reported = False
                 for gevp_base_channel in ("nucleon", "scalar", "pseudoscalar", "glueball"):
                     channel_gevp_result = gevp_results.get(gevp_base_channel)
-                    if channel_gevp_result is None or not isinstance(channel_gevp_result.mass_fit, dict):
+                    if channel_gevp_result is None or not isinstance(
+                        channel_gevp_result.mass_fit, dict
+                    ):
                         continue
                     n_input = int(channel_gevp_result.mass_fit.get("gevp_n_basis_input", 0))
                     n_kept = int(channel_gevp_result.mass_fit.get("gevp_n_basis_kept", 0))
@@ -12529,7 +13110,9 @@ def create_app() -> pn.template.FastListTemplate:
                 fit_stop=tensor_calibration_settings.fit_stop,
                 min_fit_points=int(tensor_calibration_settings.min_fit_points),
                 window_widths=_parse_window_widths(tensor_calibration_settings.window_widths_spec),
-                compute_bootstrap_errors=bool(tensor_calibration_settings.compute_bootstrap_errors),
+                compute_bootstrap_errors=bool(
+                    tensor_calibration_settings.compute_bootstrap_errors
+                ),
                 n_bootstrap=int(tensor_calibration_settings.n_bootstrap),
                 bootstrap_mode=str(tensor_calibration_settings.kernel_bootstrap_mode),
                 walker_bootstrap_max_walkers=int(
@@ -12539,9 +13122,7 @@ def create_app() -> pn.template.FastListTemplate:
 
         def on_run_tensor_calibration(_):
             def _compute(history):
-                enabled_estimators = {
-                    str(v) for v in (_tcw.estimator_toggles.value or [])
-                }
+                enabled_estimators = {str(v) for v in (_tcw.estimator_toggles.value or [])}
                 if not enabled_estimators:
                     clear_tensor_gevp_calibration_tab(
                         _tcw,
@@ -12612,7 +13193,9 @@ def create_app() -> pn.template.FastListTemplate:
                             noncomp_multiscale_channels.append("tensor_traceless")
                         if not noncomp_multiscale_channels:
                             noncomp_multiscale_channels = ["tensor", "tensor_traceless"]
-                        noncomp_multiscale_channels = list(dict.fromkeys(noncomp_multiscale_channels))
+                        noncomp_multiscale_channels = list(
+                            dict.fromkeys(noncomp_multiscale_channels)
+                        )
                         noncomp_multiscale_output = compute_multiscale_strong_force_channels(
                             history,
                             config=_build_multiscale_cfg_from_tensor_settings(),
@@ -12679,7 +13262,9 @@ def create_app() -> pn.template.FastListTemplate:
                 state["tensor_calibration_momentum_results"] = tensor_momentum_results
                 state["tensor_calibration_momentum_meta"] = tensor_momentum_meta
                 state["tensor_calibration_noncomp_multiscale_output"] = noncomp_multiscale_output
-                state["tensor_calibration_companion_multiscale_output"] = companion_multiscale_output
+                state["tensor_calibration_companion_multiscale_output"] = (
+                    companion_multiscale_output
+                )
                 state["tensor_calibration_payload"] = payload
                 if isinstance(payload, dict):
                     state["anisotropic_edge_tensor_correction_payload"] = payload
@@ -12702,8 +13287,12 @@ def create_app() -> pn.template.FastListTemplate:
                 strong_tensor_result=state.get("tensor_calibration_strong_result"),
                 tensor_momentum_results=state.get("tensor_calibration_momentum_results"),
                 tensor_momentum_meta=state.get("tensor_calibration_momentum_meta"),
-                noncomp_multiscale_output=state.get("tensor_calibration_noncomp_multiscale_output"),
-                companion_multiscale_output=state.get("tensor_calibration_companion_multiscale_output"),
+                noncomp_multiscale_output=state.get(
+                    "tensor_calibration_noncomp_multiscale_output"
+                ),
+                companion_multiscale_output=state.get(
+                    "tensor_calibration_companion_multiscale_output"
+                ),
                 state=state,
                 force_gevp=force_gevp,
             )
@@ -12772,7 +13361,6 @@ def create_app() -> pn.template.FastListTemplate:
             "clicks",
         )
 
-
         # =====================================================================
         # New Dirac/Electroweak tab callbacks (unified observables)
         # =====================================================================
@@ -12784,14 +13372,399 @@ def create_app() -> pn.template.FastListTemplate:
             plots_overlay_corr,
             plots_overlay_meff,
         ) -> None:
+            mandatory_channels = (
+                "su2_doublet",
+                "ew_mixed",
+                "su2_component",
+                "su2_phase",
+            )
+            filtered_results: dict[str, ChannelCorrelatorResult] = {}
+            seen: set[str] = set()
+
+            for name in mandatory_channels:
+                result = results.get(name)
+                if result is None or result.n_samples <= 0 or name in seen:
+                    continue
+                filtered_results[name] = result
+                seen.add(name)
+
+            for name, result in results.items():
+                if name in seen or result.n_samples <= 0:
+                    continue
+                if name.endswith("_gevp"):
+                    filtered_results[name] = result
+                    seen.add(name)
+                    continue
+                if "_multiscale" in name:
+                    continue
+                filtered_results[name] = result
+                seen.add(name)
+
             _update_correlator_plots(
-                results,
+                filtered_results,
                 channel_plots_container,
                 plots_spectrum,
                 plots_overlay_corr,
                 plots_overlay_meff,
                 correlator_logy=False,
+                channels_per_row=2,
             )
+
+        def _canonicalize_electroweak_channel_name(raw_name: str) -> str:
+            channel_name = str(raw_name).strip()
+            if not channel_name:
+                return ""
+            while channel_name.endswith("_q2"):
+                channel_name = channel_name[:-3]
+            while channel_name.endswith("_companion"):
+                channel_name = channel_name[:-10]
+            changed = True
+            while changed:
+                changed = False
+                for suffix in ("_directed", "_cloner", "_resister", "_persister"):
+                    if channel_name.endswith(suffix):
+                        channel_name = channel_name[: -len(suffix)]
+                        changed = True
+            return channel_name
+
+        def _extract_electroweak_refs_from_table(table: pn.widgets.Tabulator) -> dict[str, float]:
+            refs: dict[str, float] = {}
+            df = table.value
+            if not isinstance(df, pd.DataFrame):
+                return refs
+            for _, row in df.iterrows():
+                channel = str(row.get("channel", "")).strip()
+                if not channel:
+                    continue
+                raw_mass = row.get("mass_ref_GeV")
+                if isinstance(raw_mass, str):
+                    raw_mass = raw_mass.strip()
+                    if raw_mass == "":
+                        continue
+                try:
+                    mass_ref = float(raw_mass)
+                except (TypeError, ValueError):
+                    continue
+                if mass_ref > 0:
+                    refs[channel] = mass_ref
+            return refs
+
+        def _build_electroweak_ratio_specs(
+            refs: dict[str, float],
+        ) -> list[tuple[str, str, str]]:
+            ordered_channels: list[str] = []
+            for channel in ELECTROWEAK_CANONICAL_CHANNEL_ORDER:
+                if channel in refs:
+                    ordered_channels.append(channel)
+            for channel in sorted(refs):
+                if channel not in ordered_channels:
+                    ordered_channels.append(channel)
+
+            ratio_specs: list[tuple[str, str, str]] = []
+            for numerator in ordered_channels:
+                num_ref = refs.get(numerator, float("nan"))
+                if not np.isfinite(num_ref) or num_ref <= 0:
+                    continue
+                for denominator in ordered_channels:
+                    if numerator == denominator:
+                        continue
+                    den_ref = refs.get(denominator, float("nan"))
+                    if not np.isfinite(den_ref) or den_ref <= 0:
+                        continue
+                    ratio_specs.append((
+                        numerator,
+                        denominator,
+                        f"target ≈ {num_ref / den_ref:.5g}",
+                    ))
+            return ratio_specs
+
+        def _extract_electroweak_ratio_reference(spec_annotation: str) -> float:
+            match = re.search(r"≈\s*([0-9]+(?:\.[0-9]+)?)", str(spec_annotation))
+            if match is None:
+                return float("nan")
+            try:
+                return float(match.group(1))
+            except (TypeError, ValueError):
+                return float("nan")
+
+        def _electroweak_variant_options(
+            results: dict[str, ChannelCorrelatorResult],
+        ) -> dict[str, list[str]]:
+            options: dict[str, list[str]] = {}
+            for name, result in results.items():
+                if int(getattr(result, "n_samples", 0)) <= 0:
+                    continue
+                canonical = _canonicalize_electroweak_channel_name(name)
+                if not canonical:
+                    continue
+                options.setdefault(canonical, [])
+                name_str = str(name)
+                if name_str not in options[canonical]:
+                    options[canonical].append(name_str)
+            return options
+
+        def _electroweak_best_variant_overrides(
+            results: dict[str, ChannelCorrelatorResult],
+            ratio_specs: list[tuple[str, str, str]] | None,
+            mode: str = "AIC-Weighted",
+        ) -> dict[str, str]:
+            if not ratio_specs:
+                new_dirac_ew_best_combo_summary.object = (
+                    "**Best global variant combo:** unavailable "
+                    "(no finite measured ratio targets are configured)."
+                )
+                new_dirac_ew_best_combo_table.value = pd.DataFrame()
+                new_dirac_ew_best_combo_ratio_pane.object = (
+                    "**Mass Ratios (Best Global Combo):** unavailable "
+                    "(no finite measured ratio targets are configured)."
+                )
+                return {}
+
+            variant_options = _electroweak_variant_options(results)
+            combo_channels: list[str] = []
+            for numerator, denominator, _spec in ratio_specs:
+                if numerator not in combo_channels:
+                    combo_channels.append(numerator)
+                if denominator not in combo_channels:
+                    combo_channels.append(denominator)
+
+            available = {
+                channel: list(variants)
+                for channel, variants in variant_options.items()
+                if variants
+            }
+            missing_channels = [channel for channel in combo_channels if channel not in available]
+            if missing_channels:
+                reason = "missing variants for: " + ", ".join(
+                    f"`{ch}`" for ch in missing_channels
+                )
+                new_dirac_ew_best_combo_summary.object = (
+                    f"**Best global variant combo:** unavailable ({reason})."
+                )
+                new_dirac_ew_best_combo_table.value = pd.DataFrame()
+                new_dirac_ew_best_combo_ratio_pane.object = (
+                    f"**Mass Ratios (Best Global Combo):** unavailable ({reason})."
+                )
+                return {}
+
+            variant_mass_lookup: dict[str, dict[str, float]] = {
+                channel: {
+                    variant: _get_channel_mass(results[variant], mode=mode)
+                    if variant in results
+                    else float("nan")
+                    for variant in variants
+                }
+                for channel, variants in available.items()
+            }
+
+            combo_rows: list[dict[str, Any]] = []
+            option_lists = [available[channel] for channel in combo_channels]
+            combos_considered = 0
+            combo_truncated = False
+            max_combo_evaluations = 100000
+            total_combinations = int(
+                np.prod([len(options) for options in option_lists], dtype=np.int64)
+            )
+            evaluation_options = {channel: list(options) for channel, options in available.items()}
+            if total_combinations > max_combo_evaluations:
+                if len(combo_channels) <= 0:
+                    return {}
+                per_channel_cap = max(
+                    1,
+                    int(np.floor(max_combo_evaluations ** (1.0 / float(len(combo_channels))))),
+                )
+                for channel in combo_channels:
+                    if len(evaluation_options[channel]) > per_channel_cap:
+                        evaluation_options[channel] = evaluation_options[channel][:per_channel_cap]
+                        combo_truncated = True
+                option_lists = [evaluation_options[channel] for channel in combo_channels]
+
+            for selected_variants in itertools.product(*option_lists):
+                combos_considered += 1
+                selection = {
+                    channel: str(variant_name)
+                    for channel, variant_name in zip(
+                        combo_channels, selected_variants, strict=False
+                    )
+                }
+                per_channel_error = dict.fromkeys(combo_channels, 0.0)
+                per_ratio_error: dict[str, float] = {}
+                total_abs_pct_error = 0.0
+                used_ratio_count = 0
+                valid_combo = True
+
+                for numerator, denominator, annotation in ratio_specs:
+                    num_variant = selection.get(numerator)
+                    den_variant = selection.get(denominator)
+                    if num_variant is None or den_variant is None:
+                        valid_combo = False
+                        break
+                    num_mass = variant_mass_lookup.get(numerator, {}).get(
+                        num_variant, float("nan")
+                    )
+                    den_mass = variant_mass_lookup.get(denominator, {}).get(
+                        den_variant, float("nan")
+                    )
+                    if not np.isfinite(num_mass) or not np.isfinite(den_mass) or den_mass <= 0:
+                        valid_combo = False
+                        break
+
+                    reference = _extract_electroweak_ratio_reference(annotation)
+                    if not np.isfinite(reference) or reference <= 0:
+                        continue
+                    ratio = float(num_mass / den_mass)
+                    abs_pct_error = float(abs((ratio / reference - 1.0) * 100.0))
+                    per_ratio_error[
+                        f"error_{numerator}_over_{denominator}_abs_pct"
+                    ] = abs_pct_error
+                    per_channel_error[numerator] += abs_pct_error
+                    per_channel_error[denominator] += abs_pct_error
+                    total_abs_pct_error += abs_pct_error
+                    used_ratio_count += 1
+
+                if not valid_combo or used_ratio_count == 0:
+                    continue
+
+                combo_row: dict[str, Any] = {
+                    "total_abs_pct_error": total_abs_pct_error,
+                    "mean_abs_pct_error": total_abs_pct_error / float(used_ratio_count),
+                    "n_ratio_targets": int(used_ratio_count),
+                }
+                for channel in combo_channels:
+                    combo_row[f"variant_{channel}"] = selection[channel]
+                    combo_row[f"error_{channel}_abs_pct"] = float(per_channel_error[channel])
+                combo_row.update(per_ratio_error)
+                combo_rows.append(combo_row)
+
+            if combo_rows:
+                combo_df = pd.DataFrame(combo_rows).sort_values(
+                    ["total_abs_pct_error", "mean_abs_pct_error"],
+                    ascending=[True, True],
+                    kind="stable",
+                )
+                top_combo_df = combo_df.head(5).reset_index(drop=True)
+                new_dirac_ew_best_combo_table.value = top_combo_df
+                best_row = top_combo_df.iloc[0]
+                best_selection = {
+                    channel: str(best_row[f"variant_{channel}"])
+                    for channel in combo_channels
+                    if f"variant_{channel}" in best_row
+                }
+                truncation_note = (
+                    " Evaluated a capped subset of combinations." if combo_truncated else ""
+                )
+                new_dirac_ew_best_combo_summary.object = (
+                    f"**Best global variant combo (top 5):** "
+                    f"`{len(combo_df)}` valid combinations ranked by summed absolute `%` error "
+                    f"across `{len(ratio_specs)}` ratio targets.  \n"
+                    f"_Best total error:_ `{float(best_row['total_abs_pct_error']):.4g}%` "
+                    f"(mean `{float(best_row['mean_abs_pct_error']):.4g}%`).  \n"
+                    f"_Combinations considered:_ `{combos_considered}`.{truncation_note}"
+                )
+                best_ratio_lines = ["**Mass Ratios (Best Global Combo):**"]
+                for numerator, denominator, annotation in ratio_specs:
+                    num_variant = best_selection.get(numerator)
+                    den_variant = best_selection.get(denominator)
+                    if not num_variant or not den_variant:
+                        continue
+                    num_mass = variant_mass_lookup.get(numerator, {}).get(
+                        num_variant, float("nan")
+                    )
+                    den_mass = variant_mass_lookup.get(denominator, {}).get(
+                        den_variant, float("nan")
+                    )
+                    if (
+                        not np.isfinite(num_mass)
+                        or not np.isfinite(den_mass)
+                        or den_mass <= 0
+                    ):
+                        continue
+                    ratio_value = float(num_mass / den_mass)
+                    ref_value = _extract_electroweak_ratio_reference(annotation)
+                    abs_pct_err = float("nan")
+                    if np.isfinite(ref_value) and ref_value > 0:
+                        abs_pct_err = float(abs((ratio_value / ref_value - 1.0) * 100.0))
+                    ann = str(annotation).strip()
+                    if not ann:
+                        if np.isfinite(ref_value) and ref_value > 0:
+                            ann = f"target ≈ {ref_value:.4g}"
+                        else:
+                            ann = "no external target"
+                    if np.isfinite(abs_pct_err):
+                        ann = f"{ann}; abs error {abs_pct_err:.2f}%"
+                    best_ratio_lines.append(
+                        f"- {numerator}/{denominator}: **{ratio_value:.3f}** ({ann})"
+                    )
+                if len(best_ratio_lines) == 1:
+                    best_ratio_lines.append(
+                        "- n/a (missing valid masses for selected variants)"
+                    )
+                new_dirac_ew_best_combo_ratio_pane.object = "  \n".join(best_ratio_lines)
+                return best_selection
+            else:
+                if total_combinations == 0:
+                    reason = "no variant combinations available"
+                else:
+                    reason = (
+                        "no complete variant combination has valid masses "
+                        "for all ratio targets"
+                    )
+                new_dirac_ew_best_combo_summary.object = (
+                    f"**Best global variant combo:** unavailable ({reason})."
+                )
+                new_dirac_ew_best_combo_table.value = pd.DataFrame()
+                new_dirac_ew_best_combo_ratio_pane.object = (
+                    f"**Mass Ratios (Best Global Combo):** unavailable ({reason})."
+                )
+                return {}
+
+        def _apply_electroweak_comparison_overrides(
+            results: dict[str, ChannelCorrelatorResult],
+            comparison_channel_overrides: dict[str, str] | None,
+        ) -> dict[str, ChannelCorrelatorResult]:
+            if not comparison_channel_overrides:
+                comparison_channel_overrides = {}
+
+            variant_options = _electroweak_variant_options(results)
+            canonical_order = list(ELECTROWEAK_CANONICAL_CHANNEL_ORDER)
+            for channel in sorted(variant_options):
+                if channel not in canonical_order:
+                    canonical_order.append(channel)
+
+            projected: dict[str, ChannelCorrelatorResult] = {}
+            for canonical_name in canonical_order:
+                options = variant_options.get(canonical_name)
+                if not options:
+                    continue
+                selected_name = comparison_channel_overrides.get(canonical_name)
+                chosen_name = selected_name if selected_name in options else options[0]
+                chosen_result = results.get(chosen_name)
+                if chosen_result is not None:
+                    projected[canonical_name] = chosen_result
+
+            for name, result in results.items():
+                canonical_name = _canonicalize_electroweak_channel_name(name)
+                if canonical_name in projected:
+                    continue
+                projected[str(name)] = result
+
+            return projected
+
+        def _build_electroweak_gevp_input_results(
+            base_results: dict[str, ChannelCorrelatorResult],
+            comparison_channel_overrides: dict[str, str] | None,
+        ) -> dict[str, ChannelCorrelatorResult]:
+            gevp_results = dict(base_results)
+            if not comparison_channel_overrides:
+                return gevp_results
+            for base_channel in SU2_BASE_CHANNELS:
+                selected = str(
+                    comparison_channel_overrides.get(base_channel, base_channel)
+                ).strip()
+                selected_result = base_results.get(selected)
+                if selected_result is not None:
+                    gevp_results[base_channel] = selected_result
+            return gevp_results
 
         def _update_electroweak_tables_generic(
             results: dict[str, ChannelCorrelatorResult],
@@ -12803,30 +13776,32 @@ def create_app() -> pn.template.FastListTemplate:
             anchor_table,
             compare_table,
             ref_table,
+            comparison_channel_overrides: dict[str, str] | None = None,
+            ratio_specs: list[tuple[str, str, str]] | None = None,
         ) -> None:
-            _update_mass_table(results, mass_table, mode)
-            ratio_pane.object = _format_ratios(results, mode, title="Electroweak Ratios")
+            if ratio_specs is None:
+                ratio_specs = _build_electroweak_ratio_specs(
+                    _extract_electroweak_refs_from_table(ref_table)
+                )
+            comparison_results = dict(results)
+            if comparison_channel_overrides:
+                comparison_results = _apply_electroweak_comparison_overrides(
+                    results,
+                    comparison_channel_overrides,
+                )
+            _update_mass_table(comparison_results, mass_table, mode)
+            ratio_pane.object = _format_ratios(
+                comparison_results,
+                mode,
+                title="Electroweak Ratios",
+                ratio_specs=ratio_specs,
+            )
 
-            masses = _extract_masses(results, mode, family_map=None)
-            r2s = _extract_r2(results, mode, family_map=None)
+            masses = _extract_masses(comparison_results, mode, family_map=None)
+            r2s = _extract_r2(comparison_results, mode, family_map=None)
             base_name = "u1_dressed" if "u1_dressed" in masses else "u1_phase"
 
-            refs_df = ref_table.value
-            refs: dict[str, float] = {}
-            if isinstance(refs_df, pd.DataFrame):
-                for _, row in refs_df.iterrows():
-                    name = str(row.get("channel", "")).strip()
-                    try:
-                        mass_raw = row.get("mass_ref_GeV")
-                        if isinstance(mass_raw, str):
-                            mass_raw = mass_raw.strip()
-                            if mass_raw == "":
-                                continue
-                        mass_ref = float(mass_raw)
-                    except (TypeError, ValueError):
-                        continue
-                    if name and mass_ref > 0:
-                        refs[name] = mass_ref
+            refs = _extract_electroweak_refs_from_table(ref_table)
 
             ratio_rows = _build_electroweak_ratio_rows(masses, base_name, refs=refs)
             ratio_table.value = pd.DataFrame(ratio_rows) if ratio_rows else pd.DataFrame()
@@ -12861,33 +13836,35 @@ def create_app() -> pn.template.FastListTemplate:
             output: MultiscaleElectroweakOutput | None,
             original_results: dict[str, ChannelCorrelatorResult],
         ) -> list[dict[str, Any]]:
+            su2_supported = (
+                tuple(SU2_BASE_CHANNELS)
+                + tuple(SU2_DIRECTIONAL_CHANNELS)
+                + tuple(SU2_WALKER_TYPE_CHANNELS)
+            )
+            su2_supported_set = set(su2_supported)
             entries: list[dict[str, Any]] = []
             if output is not None:
                 for alias, per_scale_results in output.per_scale_results.items():
                     base_name = str(alias).replace("_companion", "")
-                    if base_name not in SU2_BASE_CHANNELS:
+                    if base_name not in su2_supported_set:
                         continue
                     for scale_idx, result in enumerate(per_scale_results):
                         if result is None or int(getattr(result, "n_samples", 0)) <= 0:
                             continue
-                        entries.append(
-                            {
-                                "operator": f"{base_name}@s{int(scale_idx)}",
-                                "result": result,
-                                "source": "multiscale",
-                            }
-                        )
-            for base_name in SU2_BASE_CHANNELS:
+                        entries.append({
+                            "operator": f"{base_name}@s{int(scale_idx)}",
+                            "result": result,
+                            "source": "multiscale",
+                        })
+            for base_name in su2_supported:
                 result = original_results.get(base_name)
                 if result is None or int(getattr(result, "n_samples", 0)) <= 0:
                     continue
-                entries.append(
-                    {
-                        "operator": f"{base_name}@full",
-                        "result": result,
-                        "source": "original",
-                    }
-                )
+                entries.append({
+                    "operator": f"{base_name}@full",
+                    "result": result,
+                    "source": "original",
+                })
             return entries
 
         def _update_new_dirac_ew_operator_quality(
@@ -12895,7 +13872,9 @@ def create_app() -> pn.template.FastListTemplate:
             results: dict[str, ChannelCorrelatorResult],
         ) -> None:
             entries = _collect_su2_operator_entries(output, results)
-            min_r2, min_windows, max_error_pct, remove_artifacts = _resolve_new_dirac_ew_filter_values()
+            min_r2, min_windows, max_error_pct, remove_artifacts = (
+                _resolve_new_dirac_ew_filter_values()
+            )
             kept_entries: list[dict[str, Any]] = []
             excluded_entries: list[tuple[str, str]] = []
             for entry in entries:
@@ -12983,31 +13962,27 @@ def create_app() -> pn.template.FastListTemplate:
                     if np.isfinite(mass) and mass > 0 and np.isfinite(mass_error)
                     else float("nan")
                 )
-                rows.append(
-                    {
-                        "operator": entry["operator"],
-                        "source": entry["source"],
-                        "mass": mass,
-                        "mass_error": mass_error,
-                        "mass_error_pct": err_pct,
-                        "r2": float(fit.get("r_squared", float("nan"))),
-                        "n_windows": _extract_n_windows_for_filter(result),
-                        "importance": float(importance[idx].item()),
-                        "dominant_mode": int(torch.argmax(torch.abs(evecs[idx])).item()),
-                    }
-                )
+                rows.append({
+                    "operator": entry["operator"],
+                    "source": entry["source"],
+                    "mass": mass,
+                    "mass_error": mass_error,
+                    "mass_error_pct": err_pct,
+                    "r2": float(fit.get("r_squared", float("nan"))),
+                    "n_windows": _extract_n_windows_for_filter(result),
+                    "importance": float(importance[idx].item()),
+                    "dominant_mode": int(torch.argmax(torch.abs(evecs[idx])).item()),
+                })
             quality_df = pd.DataFrame(rows).sort_values(
                 ["importance", "mass_error_pct"], ascending=[False, True], kind="stable"
             )
             new_dirac_ew_operator_quality_table.value = quality_df
 
-            spectrum_df = pd.DataFrame(
-                {
-                    "mode": np.arange(int(evals.numel())),
-                    "eigenvalue_rel": rel_eval.detach().cpu().numpy(),
-                    "status": np.where(sig_mask.detach().cpu().numpy(), "significant", "candidate"),
-                }
-            )
+            spectrum_df = pd.DataFrame({
+                "mode": np.arange(int(evals.numel())),
+                "eigenvalue_rel": rel_eval.detach().cpu().numpy(),
+                "status": np.where(sig_mask.detach().cpu().numpy(), "significant", "candidate"),
+            })
             bars = hv.Bars(spectrum_df, kdims=["mode"], vdims=["eigenvalue_rel", "status"]).opts(
                 color="status",
                 cmap=["#2ca02c", "#9aa0a6"],
@@ -13018,7 +13993,9 @@ def create_app() -> pn.template.FastListTemplate:
                 tools=["hover"],
             )
             cutoff = float(new_dirac_ew_settings.gevp_eig_rel_cutoff)
-            cutoff_line = hv.HLine(cutoff).opts(color="#d62728", line_dash="dashed", line_width=1.5)
+            cutoff_line = hv.HLine(cutoff).opts(
+                color="#d62728", line_dash="dashed", line_width=1.5
+            )
             new_dirac_ew_eigenspectrum_plot.object = bars * cutoff_line
 
             n_significant = int(sig_mask.sum().item())
@@ -13078,10 +14055,14 @@ def create_app() -> pn.template.FastListTemplate:
         def _update_new_dirac_ew_electroweak_tables(
             results: dict[str, ChannelCorrelatorResult],
             mode: str | None = None,
+            comparison_channel_overrides: dict[str, str] | None = None,
+            ratio_specs: list[tuple[str, str, str]] | None = None,
         ) -> None:
             if mode is None:
                 mode = new_dirac_ew_mass_mode.value
-            min_r2, min_windows, max_error_pct, remove_artifacts = _resolve_new_dirac_ew_filter_values()
+            min_r2, min_windows, max_error_pct, remove_artifacts = (
+                _resolve_new_dirac_ew_filter_values()
+            )
             filtered_results, filtered_out_results = _split_results_by_companion_gevp_filters(
                 results,
                 min_r2=min_r2,
@@ -13099,8 +14080,12 @@ def create_app() -> pn.template.FastListTemplate:
                 new_dirac_ew_anchor_table,
                 new_dirac_ew_compare_table,
                 new_dirac_ew_ref_table,
+                comparison_channel_overrides=comparison_channel_overrides,
+                ratio_specs=ratio_specs,
             )
-            filtered_out_dict = {name: payload[0] for name, payload in filtered_out_results.items()}
+            filtered_out_dict = {
+                name: payload[0] for name, payload in filtered_out_results.items()
+            }
             _update_mass_table(
                 filtered_out_dict,
                 new_dirac_ew_filtered_mass_table,
@@ -13143,9 +14128,7 @@ def create_app() -> pn.template.FastListTemplate:
         ) -> None:
             if error:
                 new_dirac_ew_multiscale_summary.object = (
-                    "### SU(2) Multiscale Summary\n"
-                    "- Status: failed\n"
-                    f"- Error: `{error}`"
+                    "### SU(2) Multiscale Summary\n" "- Status: failed\n" f"- Error: `{error}`"
                 )
                 new_dirac_ew_multiscale_table.value = pd.DataFrame()
                 new_dirac_ew_multiscale_per_scale_table.value = pd.DataFrame()
@@ -13163,7 +14146,9 @@ def create_app() -> pn.template.FastListTemplate:
                 new_dirac_ew_multiscale_per_scale_table.value = pd.DataFrame()
                 return
 
-            scale_values = output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
+            scale_values = (
+                output.scales.detach().cpu().numpy() if output.scales.numel() else np.array([])
+            )
             summary_lines = [
                 "### SU(2) Multiscale Summary",
                 f"- Scales: `{len(scale_values)}`",
@@ -13180,7 +14165,9 @@ def create_app() -> pn.template.FastListTemplate:
             new_dirac_ew_multiscale_summary.object = "  \n".join(summary_lines)
 
             mode = str(new_dirac_ew_mass_mode.value)
-            min_r2, min_windows, max_error_pct, remove_artifacts = _resolve_new_dirac_ew_filter_values()
+            min_r2, min_windows, max_error_pct, remove_artifacts = (
+                _resolve_new_dirac_ew_filter_values()
+            )
             rows: list[dict[str, Any]] = []
             per_scale_rows: list[dict[str, Any]] = []
             for alias, results_per_scale in output.per_scale_results.items():
@@ -13234,23 +14221,21 @@ def create_app() -> pn.template.FastListTemplate:
                         if np.isfinite(mass) and mass > 0 and np.isfinite(mass_error)
                         else float("nan")
                     )
-                    per_scale_rows.append(
-                        {
-                            "channel": base_name,
-                            "scale_idx": int(scale_idx),
-                            "scale": (
-                                float(scale_values[scale_idx])
-                                if scale_values.size > scale_idx
-                                else float("nan")
-                            ),
-                            "mass": mass,
-                            "mass_error": mass_error,
-                            "mass_error_pct": err_pct,
-                            "r2": float(_get_channel_r2(res, mode)),
-                            "n_windows": _extract_n_windows_for_filter(res),
-                            "source": str(fit.get("source", "multiscale")),
-                        }
-                    )
+                    per_scale_rows.append({
+                        "channel": base_name,
+                        "scale_idx": int(scale_idx),
+                        "scale": (
+                            float(scale_values[scale_idx])
+                            if scale_values.size > scale_idx
+                            else float("nan")
+                        ),
+                        "mass": mass,
+                        "mass_error": mass_error,
+                        "mass_error_pct": err_pct,
+                        "r2": float(_get_channel_r2(res, mode)),
+                        "n_windows": _extract_n_windows_for_filter(res),
+                        "source": str(fit.get("source", "multiscale")),
+                    })
 
                 if best_result is None:
                     continue
@@ -13261,28 +14246,28 @@ def create_app() -> pn.template.FastListTemplate:
                     if np.isfinite(best_mass) and best_mass > 0 and np.isfinite(best_error)
                     else float("nan")
                 )
-                rows.append(
-                    {
-                        "channel": base_name,
-                        "best_scale_idx": int(best_idx),
-                        "best_scale": (
-                            float(scale_values[best_idx])
-                            if scale_values.size > best_idx >= 0
-                            else float("nan")
-                        ),
-                        "mass": best_mass,
-                        "mass_error": best_error,
-                        "mass_error_pct": best_err_pct,
-                        "r2": float(_get_channel_r2(best_result, mode)),
-                        "n_windows": _extract_n_windows_for_filter(best_result),
-                        "original_mass": original_mass,
-                        "delta_vs_original_pct": (
-                            ((best_mass - original_mass) / original_mass) * 100.0
-                            if np.isfinite(original_mass) and original_mass > 0 and np.isfinite(best_mass)
-                            else float("nan")
-                        ),
-                    }
-                )
+                rows.append({
+                    "channel": base_name,
+                    "best_scale_idx": int(best_idx),
+                    "best_scale": (
+                        float(scale_values[best_idx])
+                        if scale_values.size > best_idx >= 0
+                        else float("nan")
+                    ),
+                    "mass": best_mass,
+                    "mass_error": best_error,
+                    "mass_error_pct": best_err_pct,
+                    "r2": float(_get_channel_r2(best_result, mode)),
+                    "n_windows": _extract_n_windows_for_filter(best_result),
+                    "original_mass": original_mass,
+                    "delta_vs_original_pct": (
+                        ((best_mass - original_mass) / original_mass) * 100.0
+                        if np.isfinite(original_mass)
+                        and original_mass > 0
+                        and np.isfinite(best_mass)
+                        else float("nan")
+                    ),
+                })
 
             new_dirac_ew_multiscale_table.value = (
                 pd.DataFrame(rows).sort_values(["channel"], kind="stable")
@@ -13305,82 +14290,78 @@ def create_app() -> pn.template.FastListTemplate:
             observed = _extract_observed_refs_from_table(new_dirac_ew_observed_table)
             ew_results = bundle.electroweak_output.channel_results
             ew_masses = _extract_masses(ew_results, mode=mode, family_map=None)
-            electron_component_mass = _get_channel_mass(bundle.electron_component_result, mode=mode)
+            electron_component_mass = _get_channel_mass(
+                bundle.electron_component_result, mode=mode
+            )
             higgs_sigma_mass = _get_channel_mass(bundle.higgs_sigma_result, mode=mode)
 
             color_singlet = bundle.color_singlet_spectrum
             electron_dirac = color_singlet.electron_mass if color_singlet is not None else None
 
             rows: list[dict[str, Any]] = []
-            rows.append(
-                {
-                    "observable": "electron_dirac",
-                    "measured": electron_dirac,
-                    "observed_GeV": observed.get("electron_dirac"),
-                    "error_pct": (
-                        ((electron_dirac - observed["electron_dirac"]) / observed["electron_dirac"] * 100.0)
-                        if electron_dirac is not None and observed.get("electron_dirac", 0) > 0
-                        else None
-                    ),
-                    "note": "Dirac spectral color-singlet proxy",
-                }
-            )
-            rows.append(
-                {
-                    "observable": "electron_yukawa",
-                    "measured": bundle.electron_mass_yukawa,
-                    "observed_GeV": observed.get("electron_yukawa"),
-                    "error_pct": (
-                        (bundle.electron_mass_yukawa - observed["electron_yukawa"])
-                        / observed["electron_yukawa"]
+            rows.append({
+                "observable": "electron_dirac",
+                "measured": electron_dirac,
+                "observed_GeV": observed.get("electron_dirac"),
+                "error_pct": (
+                    (
+                        (electron_dirac - observed["electron_dirac"])
+                        / observed["electron_dirac"]
                         * 100.0
-                        if observed.get("electron_yukawa", 0) > 0
-                        else None
-                    ),
-                    "note": "Yukawa prediction y_e * v",
-                }
-            )
-            rows.append(
-                {
-                    "observable": "electron_component",
-                    "measured": electron_component_mass,
-                    "observed_GeV": observed.get("electron_component"),
-                    "error_pct": (
-                        (electron_component_mass - observed["electron_component"])
-                        / observed["electron_component"]
-                        * 100.0
-                        if observed.get("electron_component", 0) > 0
-                        else None
-                    ),
-                    "note": "Lower SU(2) doublet correlator mass",
-                }
-            )
-            rows.append(
-                {
-                    "observable": "higgs_sigma",
-                    "measured": higgs_sigma_mass,
-                    "observed_GeV": observed.get("higgs_sigma"),
-                    "error_pct": (
-                        (higgs_sigma_mass - observed["higgs_sigma"]) / observed["higgs_sigma"] * 100.0
-                        if observed.get("higgs_sigma", 0) > 0
-                        else None
-                    ),
-                    "note": "Radial fluctuation (sigma-mode) correlator mass",
-                }
-            )
+                    )
+                    if electron_dirac is not None and observed.get("electron_dirac", 0) > 0
+                    else None
+                ),
+                "note": "Dirac spectral color-singlet proxy",
+            })
+            rows.append({
+                "observable": "electron_yukawa",
+                "measured": bundle.electron_mass_yukawa,
+                "observed_GeV": observed.get("electron_yukawa"),
+                "error_pct": (
+                    (bundle.electron_mass_yukawa - observed["electron_yukawa"])
+                    / observed["electron_yukawa"]
+                    * 100.0
+                    if observed.get("electron_yukawa", 0) > 0
+                    else None
+                ),
+                "note": "Yukawa prediction y_e * v",
+            })
+            rows.append({
+                "observable": "electron_component",
+                "measured": electron_component_mass,
+                "observed_GeV": observed.get("electron_component"),
+                "error_pct": (
+                    (electron_component_mass - observed["electron_component"])
+                    / observed["electron_component"]
+                    * 100.0
+                    if observed.get("electron_component", 0) > 0
+                    else None
+                ),
+                "note": "Lower SU(2) doublet correlator mass",
+            })
+            rows.append({
+                "observable": "higgs_sigma",
+                "measured": higgs_sigma_mass,
+                "observed_GeV": observed.get("higgs_sigma"),
+                "error_pct": (
+                    (higgs_sigma_mass - observed["higgs_sigma"]) / observed["higgs_sigma"] * 100.0
+                    if observed.get("higgs_sigma", 0) > 0
+                    else None
+                ),
+                "note": "Radial fluctuation (sigma-mode) correlator mass",
+            })
             for channel, mass in sorted(ew_masses.items()):
                 obs = observed.get(channel)
-                rows.append(
-                    {
-                        "observable": channel,
-                        "measured": mass,
-                        "observed_GeV": obs,
-                        "error_pct": (
-                            (mass - obs) / obs * 100.0 if obs is not None and obs > 0 else None
-                        ),
-                        "note": "Electroweak proxy channel",
-                    }
-                )
+                rows.append({
+                    "observable": channel,
+                    "measured": mass,
+                    "observed_GeV": obs,
+                    "error_pct": (
+                        (mass - obs) / obs * 100.0 if obs is not None and obs > 0 else None
+                    ),
+                    "note": "Electroweak proxy channel",
+                })
             new_dirac_ew_observable_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
 
             ratio_rows: list[dict[str, Any]] = []
@@ -13392,38 +14373,32 @@ def create_app() -> pn.template.FastListTemplate:
                 obs = None
                 if observed.get("su2_phase", 0) > 0 and observed.get("higgs_sigma", 0) > 0:
                     obs = observed["su2_phase"] / observed["higgs_sigma"]
-                ratio_rows.append(
-                    {
-                        "ratio": "mW/mH",
-                        "measured": measured,
-                        "observed": obs,
-                        "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
-                    }
-                )
+                ratio_rows.append({
+                    "ratio": "mW/mH",
+                    "measured": measured,
+                    "observed": obs,
+                    "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
+                })
             if m_z is not None and m_h is not None and m_h > 0:
                 measured = m_z / m_h
                 obs = None
                 if observed.get("su2_doublet", 0) > 0 and observed.get("higgs_sigma", 0) > 0:
                     obs = observed["su2_doublet"] / observed["higgs_sigma"]
-                ratio_rows.append(
-                    {
-                        "ratio": "mZ/mH",
-                        "measured": measured,
-                        "observed": obs,
-                        "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
-                    }
-                )
+                ratio_rows.append({
+                    "ratio": "mZ/mH",
+                    "measured": measured,
+                    "observed": obs,
+                    "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
+                })
             if bundle.electron_mass_yukawa > 0 and electron_component_mass > 0:
-                ratio_rows.append(
-                    {
-                        "ratio": "m(e_component)/m(e_yukawa)",
-                        "measured": electron_component_mass / bundle.electron_mass_yukawa,
-                        "observed": 1.0,
-                        "error_pct": (
-                            (electron_component_mass / bundle.electron_mass_yukawa - 1.0) * 100.0
-                        ),
-                    }
-                )
+                ratio_rows.append({
+                    "ratio": "m(e_component)/m(e_yukawa)",
+                    "measured": electron_component_mass / bundle.electron_mass_yukawa,
+                    "observed": 1.0,
+                    "error_pct": (
+                        (electron_component_mass / bundle.electron_mass_yukawa - 1.0) * 100.0
+                    ),
+                })
             new_dirac_ew_ratio_table_extra.value = (
                 pd.DataFrame(ratio_rows) if ratio_rows else pd.DataFrame()
             )
@@ -13431,7 +14406,12 @@ def create_app() -> pn.template.FastListTemplate:
         def _on_new_dirac_ew_mass_mode_change(event) -> None:
             results = state.get("new_dirac_ew_results")
             if results is not None:
-                _update_new_dirac_ew_electroweak_tables(results, event.new)
+                _update_new_dirac_ew_electroweak_tables(
+                    results,
+                    event.new,
+                    comparison_channel_overrides=state.get("new_dirac_ew_comparison_overrides"),
+                    ratio_specs=state.get("new_dirac_ew_ratio_specs"),
+                )
                 _update_new_dirac_ew_multiscale_views(
                     state.get("new_dirac_ew_multiscale_output"),
                     original_results=results,
@@ -13456,7 +14436,10 @@ def create_app() -> pn.template.FastListTemplate:
                 h_eff=new_dirac_ew_settings.h_eff,
                 use_connected=new_dirac_ew_settings.use_connected,
                 neighbor_method=neighbor_method,
-                companion_topology=str(new_dirac_ew_settings.companion_topology),
+                companion_topology=str(new_dirac_ew_settings.companion_topology_u1),
+                companion_topology_u1=str(new_dirac_ew_settings.companion_topology_u1),
+                companion_topology_su2=str(new_dirac_ew_settings.companion_topology_su2),
+                companion_topology_ew_mixed=str(new_dirac_ew_settings.companion_topology_ew_mixed),
                 edge_weight_mode=new_dirac_ew_settings.edge_weight_mode,
                 neighbor_k=new_dirac_ew_settings.neighbor_k,
                 window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
@@ -13464,10 +14447,11 @@ def create_app() -> pn.template.FastListTemplate:
                 fit_start=new_dirac_ew_settings.fit_start,
                 fit_stop=new_dirac_ew_settings.fit_stop,
                 min_fit_points=new_dirac_ew_settings.min_fit_points,
-                epsilon_d=new_dirac_ew_settings.epsilon_d,
-                epsilon_c=new_dirac_ew_settings.epsilon_c,
                 epsilon_clone=new_dirac_ew_settings.epsilon_clone,
                 lambda_alg=new_dirac_ew_settings.lambda_alg,
+                su2_operator_mode=str(new_dirac_ew_settings.su2_operator_mode),
+                enable_walker_type_split=bool(new_dirac_ew_settings.enable_walker_type_split),
+                walker_type_scope=str(new_dirac_ew_settings.walker_type_scope),
                 mc_time_index=new_dirac_ew_settings.mc_time_index,
                 compute_bootstrap_errors=new_dirac_ew_settings.compute_bootstrap_errors,
                 n_bootstrap=new_dirac_ew_settings.n_bootstrap,
@@ -13475,26 +14459,53 @@ def create_app() -> pn.template.FastListTemplate:
 
         def on_run_new_dirac_electroweak(_):
             def _compute(history):
+                state["new_dirac_ew_comparison_overrides"] = None
+                state["new_dirac_ew_ratio_specs"] = None
                 ew_cfg = _build_new_dirac_ew_channel_config()
-                requested_channels = [
-                    c.strip() for c in str(new_dirac_ew_settings.channel_list).split(",") if c.strip()
-                ]
+                requested_electroweak_channels = _collect_multiselect_values(
+                    new_dirac_ew_channel_family_selectors
+                )
+                if not requested_electroweak_channels:
+                    requested_electroweak_channels = [
+                        channel
+                        for channels in DEFAULT_ELECTROWEAK_CHANNEL_VARIANT_SELECTION.values()
+                        for channel in channels
+                    ]
                 ew_output = compute_electroweak_channels(
                     history,
-                    channels=requested_channels if requested_channels else None,
+                    channels=requested_electroweak_channels,
                     config=ew_cfg,
                 )
                 base_results = dict(ew_output.channel_results)
                 results = dict(base_results)
+                ratio_specs = _build_electroweak_ratio_specs(
+                    _extract_electroweak_refs_from_table(new_dirac_ew_ref_table)
+                )
+                comparison_overrides = _electroweak_best_variant_overrides(
+                    base_results,
+                    ratio_specs,
+                )
+                state["new_dirac_ew_ratio_specs"] = ratio_specs
+                state["new_dirac_ew_comparison_overrides"] = comparison_overrides
 
                 multiscale_output: MultiscaleElectroweakOutput | None = None
                 multiscale_error: str | None = None
                 gevp_error: str | None = None
+                gevp_input_results = _build_electroweak_gevp_input_results(
+                    base_results=base_results,
+                    comparison_channel_overrides=comparison_overrides,
+                )
 
-                su2_requested = [name for name in requested_channels if name in SU2_BASE_CHANNELS]
-                if not su2_requested:
-                    su2_requested = [name for name in SU2_BASE_CHANNELS if name in base_results]
-
+                su2_supported_channels = (
+                    tuple(SU2_BASE_CHANNELS)
+                    + tuple(SU2_DIRECTIONAL_CHANNELS)
+                    + tuple(SU2_WALKER_TYPE_CHANNELS)
+                )
+                su2_requested = [
+                    name
+                    for name in requested_electroweak_channels
+                    if name in su2_supported_channels
+                ]
                 if bool(new_dirac_ew_settings.use_multiscale_kernels) and su2_requested:
                     try:
                         ms_cfg = MultiscaleElectroweakConfig(
@@ -13502,14 +14513,22 @@ def create_app() -> pn.template.FastListTemplate:
                             end_fraction=float(new_dirac_ew_settings.simulation_range[1]),
                             mc_time_index=new_dirac_ew_settings.mc_time_index,
                             h_eff=float(new_dirac_ew_settings.h_eff),
-                            epsilon_c=new_dirac_ew_settings.epsilon_c,
                             epsilon_clone=new_dirac_ew_settings.epsilon_clone,
                             lambda_alg=new_dirac_ew_settings.lambda_alg,
+                            su2_operator_mode=str(new_dirac_ew_settings.su2_operator_mode),
+                            enable_walker_type_split=bool(
+                                new_dirac_ew_settings.enable_walker_type_split
+                            ),
+                            walker_type_scope=str(new_dirac_ew_settings.walker_type_scope),
                             edge_weight_mode=str(new_dirac_ew_settings.edge_weight_mode),
                             n_scales=int(new_dirac_ew_settings.n_scales),
                             kernel_type=str(new_dirac_ew_settings.kernel_type),
-                            kernel_distance_method=str(new_dirac_ew_settings.kernel_distance_method),
-                            kernel_assume_all_alive=bool(new_dirac_ew_settings.kernel_assume_all_alive),
+                            kernel_distance_method=str(
+                                new_dirac_ew_settings.kernel_distance_method
+                            ),
+                            kernel_assume_all_alive=bool(
+                                new_dirac_ew_settings.kernel_assume_all_alive
+                            ),
                             kernel_batch_size=int(new_dirac_ew_settings.kernel_batch_size),
                             kernel_scale_frames=int(new_dirac_ew_settings.kernel_scale_frames),
                             kernel_scale_q_low=float(new_dirac_ew_settings.kernel_scale_q_low),
@@ -13520,12 +14539,20 @@ def create_app() -> pn.template.FastListTemplate:
                             fit_start=int(new_dirac_ew_settings.fit_start),
                             fit_stop=new_dirac_ew_settings.fit_stop,
                             min_fit_points=int(new_dirac_ew_settings.min_fit_points),
-                            window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
+                            window_widths=_parse_window_widths(
+                                new_dirac_ew_settings.window_widths_spec
+                            ),
                             best_min_r2=float(new_dirac_ew_settings.gevp_min_operator_r2),
                             best_min_windows=int(new_dirac_ew_settings.gevp_min_operator_windows),
-                            best_max_error_pct=float(new_dirac_ew_settings.gevp_max_operator_error_pct),
-                            best_remove_artifacts=bool(new_dirac_ew_settings.gevp_remove_artifacts),
-                            compute_bootstrap_errors=bool(new_dirac_ew_settings.compute_bootstrap_errors),
+                            best_max_error_pct=float(
+                                new_dirac_ew_settings.gevp_max_operator_error_pct
+                            ),
+                            best_remove_artifacts=bool(
+                                new_dirac_ew_settings.gevp_remove_artifacts
+                            ),
+                            compute_bootstrap_errors=bool(
+                                new_dirac_ew_settings.compute_bootstrap_errors
+                            ),
                             n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
                             bootstrap_mode=str(new_dirac_ew_settings.kernel_bootstrap_mode),
                         )
@@ -13561,10 +14588,10 @@ def create_app() -> pn.template.FastListTemplate:
                     basis_channels = get_companion_gevp_basis_channels("su2")
                     has_series = any(
                         (
-                            ch in base_results
-                            and base_results[ch] is not None
-                            and int(base_results[ch].n_samples) > 0
-                            and int(base_results[ch].series.numel()) > 0
+                            ch in gevp_input_results
+                            and gevp_input_results[ch] is not None
+                            and int(gevp_input_results[ch].n_samples) > 0
+                            and int(gevp_input_results[ch].series.numel()) > 0
                         )
                         for ch in basis_channels
                     )
@@ -13601,7 +14628,7 @@ def create_app() -> pn.template.FastListTemplate:
                                 bootstrap_mode=str(new_dirac_ew_settings.gevp_bootstrap_mode),
                             )
                             gevp_payload = compute_companion_channel_gevp(
-                                base_results=base_results,
+                                base_results=gevp_input_results,
                                 multiscale_output=multiscale_output,
                                 config=gevp_cfg,
                                 base_channel="su2",
@@ -13622,18 +14649,31 @@ def create_app() -> pn.template.FastListTemplate:
                     new_dirac_ew_plots_overlay_corr,
                     new_dirac_ew_plots_overlay_meff,
                 )
-                _update_new_dirac_ew_electroweak_tables(results)
+                _update_new_dirac_ew_electroweak_tables(
+                    results,
+                    comparison_channel_overrides=comparison_overrides,
+                    ratio_specs=ratio_specs,
+                )
                 _update_new_dirac_ew_multiscale_views(
                     multiscale_output,
                     original_results=base_results,
                     error=multiscale_error,
                 )
 
+                pairwise_distance_by_frame = _resolve_electroweak_geodesic_matrices(
+                    history,
+                    ew_output.frame_indices,
+                    state,
+                    method=str(new_dirac_ew_settings.kernel_distance_method),
+                    edge_weight_mode=str(new_dirac_ew_settings.edge_weight_mode),
+                    assume_all_alive=bool(new_dirac_ew_settings.kernel_assume_all_alive),
+                )
                 couplings = _compute_coupling_constants(
                     history,
                     h_eff=float(new_dirac_ew_settings.h_eff),
-                    epsilon_d=new_dirac_ew_settings.epsilon_d,
-                    epsilon_c=new_dirac_ew_settings.epsilon_c,
+                    frame_indices=ew_output.frame_indices,
+                    lambda_alg=new_dirac_ew_settings.lambda_alg,
+                    pairwise_distance_by_frame=pairwise_distance_by_frame,
                 )
                 new_dirac_ew_coupling_table.value = pd.DataFrame(
                     _build_coupling_rows(
@@ -13649,6 +14689,18 @@ def create_app() -> pn.template.FastListTemplate:
                     "## Electroweak Summary",
                     f"- Frames used: `{len(ew_output.frame_indices)}`",
                     f"- Electroweak channels with samples: `{n_channels}`",
+                    f"- Neighbor source mode: `{new_dirac_ew_settings.neighbor_method}`",
+                    (
+                        "- Companion routing (U(1), SU(2), EW mixed): "
+                        f"`{new_dirac_ew_settings.companion_topology_u1}`, "
+                        f"`{new_dirac_ew_settings.companion_topology_su2}`, "
+                        f"`{new_dirac_ew_settings.companion_topology_ew_mixed}`"
+                    ),
+                    f"- SU(2) operator mode: `{new_dirac_ew_settings.su2_operator_mode}`",
+                    (
+                        "- Walker-type split: "
+                        f"`{'on' if new_dirac_ew_settings.enable_walker_type_split else 'off'}`"
+                    ),
                     (
                         "- SU(2) multiscale kernels: "
                         f"`{'on' if new_dirac_ew_settings.use_multiscale_kernels else 'off'}`"
@@ -13658,6 +14710,29 @@ def create_app() -> pn.template.FastListTemplate:
                         f"`{'on' if new_dirac_ew_settings.use_su2_gevp else 'off'}`"
                     ),
                 ]
+                eps_distance_em = float(couplings.get("eps_distance_emergent", float("nan")))
+                eps_clone_em = float(couplings.get("eps_clone_emergent", float("nan")))
+                eps_fitness_gap_em = float(couplings.get("eps_fitness_gap_emergent", float("nan")))
+                eps_geodesic_em = float(couplings.get("eps_geodesic_emergent", float("nan")))
+                sin2_theta_w_em = float(couplings.get("sin2_theta_w_emergent", float("nan")))
+                tan_theta_w_em = float(couplings.get("tan_theta_w_emergent", float("nan")))
+                if np.isfinite(eps_distance_em):
+                    summary_lines.append(f"- ε_distance emergent: `{eps_distance_em:.6g}`")
+                if np.isfinite(eps_clone_em):
+                    summary_lines.append(f"- ε_clone emergent: `{eps_clone_em:.6g}`")
+                if np.isfinite(eps_geodesic_em):
+                    summary_lines.append(f"- ε_geodesic emergent: `{eps_geodesic_em:.6g}`")
+                if np.isfinite(eps_fitness_gap_em):
+                    summary_lines.append(f"- ε_fitness_gap emergent: `{eps_fitness_gap_em:.6g}`")
+                if np.isfinite(sin2_theta_w_em):
+                    theta_w_deg = float(np.degrees(np.arcsin(np.sqrt(sin2_theta_w_em))))
+                    summary_lines.append(
+                        f"- sin²θ_W emergent: `{sin2_theta_w_em:.6g}` "
+                        f"(θ_W ≈ {theta_w_deg:.1f}°, "
+                        f"observed@M_Z: 0.231, GUT: 0.375)"
+                    )
+                if np.isfinite(tan_theta_w_em):
+                    summary_lines.append(f"- tanθ_W emergent: `{tan_theta_w_em:.6g}`")
                 if multiscale_error:
                     summary_lines.append(f"- Multiscale error: `{multiscale_error}`")
                 if gevp_error:
@@ -13670,7 +14745,9 @@ def create_app() -> pn.template.FastListTemplate:
                 if gevp_error:
                     error_parts.append(f"GEVP: `{gevp_error}`")
                 if error_parts:
-                    new_dirac_ew_status.object = "**Complete with errors:** " + "; ".join(error_parts)
+                    new_dirac_ew_status.object = "**Complete with errors:** " + "; ".join(
+                        error_parts
+                    )
                 else:
                     new_dirac_ew_status.object = (
                         f"**Complete:** Electroweak computed ({n_channels} channels)."
@@ -13686,6 +14763,11 @@ def create_app() -> pn.template.FastListTemplate:
         def on_run_new_dirac(_):
             def _compute(history):
                 ew_cfg = _build_new_dirac_ew_channel_config()
+                requested_electroweak_channels = _collect_multiselect_values(
+                    new_dirac_ew_channel_family_selectors
+                )
+                if not requested_electroweak_channels:
+                    requested_electroweak_channels = list(DEFAULT_ELECTROWEAK_CHANNELS_FOR_DIRAC)
                 threshold = (
                     new_dirac_ew_settings.dirac_color_threshold_value
                     if new_dirac_ew_settings.dirac_color_threshold_mode == "manual"
@@ -13709,7 +14791,6 @@ def create_app() -> pn.template.FastListTemplate:
                         else 0.01
                     ),
                     kernel_mode=str(new_dirac_ew_settings.dirac_kernel_mode),
-                    epsilon_c=new_dirac_ew_settings.epsilon_c,
                     lambda_alg=(
                         float(new_dirac_ew_settings.lambda_alg)
                         if new_dirac_ew_settings.lambda_alg is not None
@@ -13724,11 +14805,7 @@ def create_app() -> pn.template.FastListTemplate:
                 )
                 bundle_cfg = DiracElectroweakConfig(
                     electroweak=ew_cfg,
-                    electroweak_channels=[
-                        c.strip()
-                        for c in str(new_dirac_ew_settings.channel_list).split(",")
-                        if c.strip()
-                    ],
+                    electroweak_channels=requested_electroweak_channels,
                     dirac=dirac_cfg,
                     color_singlet_quantile=float(new_dirac_ew_settings.color_singlet_quantile),
                     sigma_max_lag=int(new_dirac_ew_settings.max_lag),
@@ -13737,8 +14814,12 @@ def create_app() -> pn.template.FastListTemplate:
                     sigma_fit_start=int(new_dirac_ew_settings.fit_start),
                     sigma_fit_stop=new_dirac_ew_settings.fit_stop,
                     sigma_min_fit_points=int(new_dirac_ew_settings.min_fit_points),
-                    sigma_window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
-                    sigma_compute_bootstrap_errors=bool(new_dirac_ew_settings.compute_bootstrap_errors),
+                    sigma_window_widths=_parse_window_widths(
+                        new_dirac_ew_settings.window_widths_spec
+                    ),
+                    sigma_compute_bootstrap_errors=bool(
+                        new_dirac_ew_settings.compute_bootstrap_errors
+                    ),
                     sigma_n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
                 )
                 bundle = compute_dirac_electroweak_bundle(history, config=bundle_cfg)
@@ -13761,18 +14842,19 @@ def create_app() -> pn.template.FastListTemplate:
                     pd.DataFrame(comp_rows) if comp_rows else pd.DataFrame()
                 )
                 new_dirac_ew_dirac_ratio.object = dirac_plots["fermion_ratio_comparison"]
-                sector_counts = {name: spec.n_walkers for name, spec in bundle.dirac_result.sectors.items()}
-                new_dirac_ew_dirac_summary.object = "  \n".join(
-                    [
-                        (
-                            f"**Best-fit scale:** {best_scale:.6g} GeV/σ"
-                            if best_scale
-                            else "**Best-fit scale:** N/A"
-                        ),
-                        f"**Chiral condensate:** ⟨ψ̄ψ⟩ ≈ {bundle.dirac_result.chiral_condensate:.4f}",
-                        "**Sector walkers:** " + ", ".join(f"{k}: {v}" for k, v in sector_counts.items()),
-                    ]
-                )
+                sector_counts = {
+                    name: spec.n_walkers for name, spec in bundle.dirac_result.sectors.items()
+                }
+                new_dirac_ew_dirac_summary.object = "  \n".join([
+                    (
+                        f"**Best-fit scale:** {best_scale:.6g} GeV/σ"
+                        if best_scale
+                        else "**Best-fit scale:** N/A"
+                    ),
+                    f"**Chiral condensate:** ⟨ψ̄ψ⟩ ≈ {bundle.dirac_result.chiral_condensate:.4f}",
+                    "**Sector walkers:** "
+                    + ", ".join(f"{k}: {v}" for k, v in sector_counts.items()),
+                ])
 
                 color_singlet = bundle.color_singlet_spectrum
                 if color_singlet is None or len(color_singlet.masses) == 0:
@@ -13782,15 +14864,13 @@ def create_app() -> pn.template.FastListTemplate:
                     max_rows = min(len(color_singlet.masses), 300)
                     for i in range(max_rows):
                         ls = float(color_singlet.lepton_scores[i])
-                        rows.append(
-                            {
-                                "mode": int(color_singlet.mode_index[i]),
-                                "mass": float(color_singlet.masses[i]),
-                                "lepton_score": ls,
-                                "quark_score": float(color_singlet.quark_scores[i]),
-                                "is_singlet": bool(ls >= color_singlet.lepton_threshold),
-                            }
-                        )
+                        rows.append({
+                            "mode": int(color_singlet.mode_index[i]),
+                            "mass": float(color_singlet.masses[i]),
+                            "lepton_score": ls,
+                            "quark_score": float(color_singlet.quark_scores[i]),
+                            "is_singlet": bool(ls >= color_singlet.lepton_threshold),
+                        })
                     new_dirac_ew_color_singlet_table.value = pd.DataFrame(rows)
 
                 e_plot = ChannelPlot(
@@ -13806,10 +14886,14 @@ def create_app() -> pn.template.FastListTemplate:
                     height=320,
                 ).side_by_side()
                 new_dirac_ew_electron_plot.objects = [
-                    e_plot if e_plot is not None else pn.pane.Markdown("_No electron-component data._")
+                    e_plot
+                    if e_plot is not None
+                    else pn.pane.Markdown("_No electron-component data._")
                 ]
                 new_dirac_ew_sigma_plot.objects = [
-                    sigma_plot if sigma_plot is not None else pn.pane.Markdown("_No sigma-mode data._")
+                    sigma_plot
+                    if sigma_plot is not None
+                    else pn.pane.Markdown("_No sigma-mode data._")
                 ]
 
                 _update_new_dirac_ew_derived_tables(bundle)
@@ -13824,7 +14908,9 @@ def create_app() -> pn.template.FastListTemplate:
 
         def on_run_coupling_diagnostics(_):
             def _compute(history):
-                color_dims = _parse_dims_spec(coupling_diagnostics_settings.color_dims_spec, history.d)
+                color_dims = _parse_dims_spec(
+                    coupling_diagnostics_settings.color_dims_spec, history.d
+                )
                 cfg = CouplingDiagnosticsConfig(
                     warmup_fraction=float(coupling_diagnostics_settings.simulation_range[0]),
                     end_fraction=float(coupling_diagnostics_settings.simulation_range[1]),
@@ -13845,7 +14931,9 @@ def create_app() -> pn.template.FastListTemplate:
                     edge_weight_mode=str(coupling_diagnostics_settings.edge_weight_mode),
                     n_scales=int(coupling_diagnostics_settings.n_scales),
                     kernel_type=str(coupling_diagnostics_settings.kernel_type),
-                    kernel_distance_method=str(coupling_diagnostics_settings.kernel_distance_method),
+                    kernel_distance_method=str(
+                        coupling_diagnostics_settings.kernel_distance_method
+                    ),
                     kernel_assume_all_alive=bool(
                         coupling_diagnostics_settings.kernel_assume_all_alive
                     ),
@@ -13885,7 +14973,9 @@ def create_app() -> pn.template.FastListTemplate:
                 coupling_diagnostics_scale_plot.object = kernel_plots["scale"]
                 coupling_diagnostics_running_plot.object = kernel_plots["running"]
 
-                evidence = [str(item) for item in (output.regime_evidence or []) if str(item).strip()]
+                evidence = [
+                    str(item) for item in (output.regime_evidence or []) if str(item).strip()
+                ]
                 if evidence:
                     coupling_diagnostics_regime_evidence.object = "\n".join(
                         ["### Regime Evidence"] + [f"- {line}" for line in evidence]
@@ -13917,28 +15007,26 @@ def create_app() -> pn.template.FastListTemplate:
                         return "n/a"
                     return f"{number:.{digits}f}" if np.isfinite(number) else "n/a"
 
-                coupling_diagnostics_summary.object = "\n".join(
-                    [
-                        "## Coupling Diagnostics Summary",
-                        f"- Frames analyzed: `{n_frames}`",
-                        f"- Mean R_circ: `{_fmt(r_circ)}`",
-                        f"- Mean Re/Im asymmetry: `{_fmt(asym)}`",
-                        f"- Mean local phase coherence: `{_fmt(coherence)}`",
-                        f"- Phase drift significance: `{_fmt(drift_sigma, 3)}σ`",
-                        f"- String tension proxy σ: `{_fmt(sigma, 6)}`",
-                        f"- Polyakov loop |L|: `{_fmt(poly, 6)}`",
-                        f"- Screening length ξ: `{_fmt(xi, 6)}`",
-                        f"- Running coupling slope: `{_fmt(running_slope, 6)}`",
-                        f"- Topological flux std: `{_fmt(flux_std, 6)}`",
-                        f"- Regime score: `{_fmt(regime_score, 2)}` / 10",
-                        (
-                            f"- Kernel snapshot frame index: `{int(snapshot)}`"
-                            if snapshot is not None
-                            else "- Kernel snapshot frame index: `n/a`"
-                        ),
-                        "- This tab computes only fast regime diagnostics (no channel masses).",
-                    ]
-                )
+                coupling_diagnostics_summary.object = "\n".join([
+                    "## Coupling Diagnostics Summary",
+                    f"- Frames analyzed: `{n_frames}`",
+                    f"- Mean R_circ: `{_fmt(r_circ)}`",
+                    f"- Mean Re/Im asymmetry: `{_fmt(asym)}`",
+                    f"- Mean local phase coherence: `{_fmt(coherence)}`",
+                    f"- Phase drift significance: `{_fmt(drift_sigma, 3)}σ`",
+                    f"- String tension proxy σ: `{_fmt(sigma, 6)}`",
+                    f"- Polyakov loop |L|: `{_fmt(poly, 6)}`",
+                    f"- Screening length ξ: `{_fmt(xi, 6)}`",
+                    f"- Running coupling slope: `{_fmt(running_slope, 6)}`",
+                    f"- Topological flux std: `{_fmt(flux_std, 6)}`",
+                    f"- Regime score: `{_fmt(regime_score, 2)}` / 10",
+                    (
+                        f"- Kernel snapshot frame index: `{int(snapshot)}`"
+                        if snapshot is not None
+                        else "- Kernel snapshot frame index: `n/a`"
+                    ),
+                    "- This tab computes only fast regime diagnostics (no channel masses).",
+                ])
                 coupling_diagnostics_status.object = (
                     f"**Complete:** Coupling diagnostics computed ({n_frames} frames). "
                     f"Kernel scales: {int(output.scales.numel())}."
@@ -13974,7 +15062,6 @@ def create_app() -> pn.template.FastListTemplate:
             parameters=["point_size", "point_alpha", "color_metric", "fix_axes"],
             show_name=False,
         )
-
 
         if skip_sidebar:
             sidebar.objects = [
@@ -14043,6 +15130,12 @@ def create_app() -> pn.template.FastListTemplate:
                 algorithm_companion_plot,
                 pn.pane.Markdown("### Average Inter-Walker Distance Over Time (mean ± 1σ)"),
                 algorithm_interwalker_plot,
+                pn.pane.Markdown("### Mean Walker Speed Over Time (p95 error bars)"),
+                algorithm_velocity_plot,
+                pn.pane.Markdown("### Mean Geodesic Edge Distance Over Time (mean ± 1σ)"),
+                algorithm_geodesic_plot,
+                pn.pane.Markdown("### Riemannian Kernel Volume Weights Over Time (mean ± 1σ)"),
+                algorithm_rkv_plot,
                 pn.pane.Markdown("### Lyapunov Convergence Over Time"),
                 algorithm_lyapunov_plot,
                 sizing_mode="stretch_both",
@@ -14108,7 +15201,9 @@ def create_app() -> pn.template.FastListTemplate:
             )
 
             einstein_tab = pn.Column(
-                pn.pane.Markdown("## Einstein Equation Test: G_uv + \u039b g_uv = 8\u03c0 G_N T_uv"),
+                pn.pane.Markdown(
+                    "## Einstein Equation Test: G_uv + \u039b g_uv = 8\u03c0 G_N T_uv"
+                ),
                 einstein_status,
                 pn.Row(einstein_run_button, sizing_mode="stretch_width"),
                 pn.Accordion(
@@ -14136,7 +15231,6 @@ def create_app() -> pn.template.FastListTemplate:
 
             # New Channels tab (vectorized correlator_channels)
             # Informational alert for time dimension selection
-
 
             anisotropic_edge_note = pn.pane.Alert(
                 """**Anisotropic Edge Channels:** Computes MC-time correlators from direct
@@ -14291,10 +15385,6 @@ plaquette, and a single companion tensor channel, with independent settings and 
                 pn.pane.Markdown("### Mass Display Mode"),
                 companion_strong_force_mass_mode,
                 pn.layout.Divider(),
-                pn.pane.Markdown("### All Channels Overlay - Correlators"),
-                companion_strong_force_plots_overlay_corr,
-                pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
-                companion_strong_force_plots_overlay_meff,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Mass Spectrum"),
                 companion_strong_force_plots_spectrum,
@@ -14304,9 +15394,13 @@ plaquette, and a single companion tensor channel, with independent settings and 
                 pn.pane.Markdown("### Filtered-Out Candidates"),
                 companion_strong_force_filtered_summary,
                 companion_strong_force_filtered_mass_table,
-                companion_strong_force_ratio_pane,
                 pn.pane.Markdown("### Ratio Tables by Operator Pair"),
                 companion_strong_force_ratio_tables,
+                pn.pane.Markdown("### Best Global Variant Combinations (Top 5)"),
+                companion_strong_force_best_combo_summary,
+                companion_strong_force_best_combo_table,
+                pn.pane.Markdown("### Mass Ratios (From Best Global Combination)"),
+                companion_strong_force_ratio_pane,
                 pn.pane.Markdown("### Calibration/PDG Variant Selection"),
                 pn.Row(
                     companion_strong_force_variant_pseudoscalar,
@@ -14322,9 +15416,9 @@ plaquette, and a single companion tensor channel, with independent settings and 
                 ),
                 pn.pane.Markdown("### Best-Fit Scales"),
                 companion_strong_force_fit_table,
-                pn.pane.Markdown("### Anchored Mass Table"),
-                companion_strong_force_anchor_mode,
-                companion_strong_force_anchor_table,
+                pn.pane.Markdown("### Cross-Channel Ratio Debug (All Variant Pairs)"),
+                companion_strong_force_cross_ratio_summary,
+                companion_strong_force_cross_ratio_table,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
                 companion_strong_force_plateau_plots,
@@ -14347,9 +15441,7 @@ plaquette, and a single companion tensor channel, with independent settings and 
 
             multiscale_tab = build_multiscale_tab_layout(_msw)
 
-
             # Informational alert for time dimension selection
-
 
             new_dirac_ew_note = pn.pane.Alert(
                 """**Electroweak:** Proxy channels only (no Dirac operators are computed here).
@@ -14408,6 +15500,10 @@ This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
                 pn.Row(new_dirac_ew_run_button, sizing_mode="stretch_width"),
                 pn.Accordion(
                     ("Electroweak Settings", new_dirac_ew_settings_panel),
+                    (
+                        "Electroweak Channel Family Selection",
+                        new_dirac_ew_channel_family_selector_layout,
+                    ),
                     sizing_mode="stretch_width",
                 ),
                 pn.layout.Divider(),
@@ -14426,6 +15522,11 @@ This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
                 new_dirac_ew_filtered_mass_table,
                 new_dirac_ew_ratio_pane,
                 new_dirac_ew_ratio_table,
+                pn.pane.Markdown("### Best Global Variant Combinations (Top 5)"),
+                new_dirac_ew_best_combo_summary,
+                new_dirac_ew_best_combo_table,
+                pn.pane.Markdown("### Mass Ratios (From Best Global Combination)"),
+                new_dirac_ew_best_combo_ratio_pane,
                 new_dirac_ew_fit_table,
                 new_dirac_ew_compare_table,
                 new_dirac_ew_anchor_table,
@@ -14442,10 +15543,6 @@ This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
                 new_dirac_ew_eigenspectrum_plot,
                 pn.pane.Markdown("### Electroweak Reference Masses (GeV)"),
                 new_dirac_ew_ref_table,
-                pn.pane.Markdown("### All Channels Overlay - Correlators"),
-                new_dirac_ew_plots_overlay_corr,
-                pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
-                new_dirac_ew_plots_overlay_meff,
                 pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
                 new_dirac_ew_channel_plots,
                 sizing_mode="stretch_both",
@@ -14486,7 +15583,11 @@ This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
                 new_dirac_ew_color_singlet_table,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Electron/Higgs Proxy Correlators"),
-                pn.Row(new_dirac_ew_electron_plot, new_dirac_ew_sigma_plot, sizing_mode="stretch_width"),
+                pn.Row(
+                    new_dirac_ew_electron_plot,
+                    new_dirac_ew_sigma_plot,
+                    sizing_mode="stretch_width",
+                ),
                 pn.pane.Markdown("### Observed Mass Inputs (GeV)"),
                 new_dirac_ew_observed_table,
                 pn.pane.Markdown("### Derived Observable Comparison"),
@@ -14495,7 +15596,6 @@ This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
                 new_dirac_ew_ratio_table_extra,
                 sizing_mode="stretch_both",
             )
-
 
             main.objects = [
                 pn.Tabs(

@@ -14,6 +14,7 @@ from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 # Mock environments
 # ---------------------------------------------------------------------------
 
+
 class MockEnv:
     """Minimal mock env returning (state, observation, info) from reset."""
 
@@ -55,6 +56,7 @@ def mock_env():
 # Hierarchy & isinstance
 # ---------------------------------------------------------------------------
 
+
 class TestSubclassHierarchy:
     """Verify the inheritance chain works correctly."""
 
@@ -72,9 +74,9 @@ class TestSubclassHierarchy:
 
     def test_walker_state_importable_from_all_paths(self):
         from fragile.fractalai.fractal_gas import WalkerState as WS1
-        from fragile.fractalai.videogames.atari_gas import WalkerState as WS2
-        from fragile.fractalai.videogames import WalkerState as WS3
         from fragile.fractalai.robots.robotic_gas import WalkerState as WS4
+        from fragile.fractalai.videogames import WalkerState as WS3
+        from fragile.fractalai.videogames.atari_gas import WalkerState as WS2
 
         assert WS1 is WS2 is WS3 is WS4
 
@@ -82,6 +84,7 @@ class TestSubclassHierarchy:
 # ---------------------------------------------------------------------------
 # DEFAULT_DT_RANGE
 # ---------------------------------------------------------------------------
+
 
 class TestDefaultDtRange:
     def test_base_default(self):
@@ -107,6 +110,7 @@ class TestDefaultDtRange:
 # ---------------------------------------------------------------------------
 # initial_state on reset()
 # ---------------------------------------------------------------------------
+
 
 class TestInitialState:
     """Tests for the new initial_state parameter."""
@@ -211,9 +215,7 @@ class TestInitialState:
     def test_step_after_initial_state_reset(self, mock_env):
         """Ensure step() works normally after initial_state reset."""
         gas = AtariFractalGas(env=mock_env, N=10)
-        state = gas.reset(
-            initial_state=(np.zeros(4), np.zeros(128, dtype=np.float32), {})
-        )
+        state = gas.reset(initial_state=(np.zeros(4), np.zeros(128, dtype=np.float32), {}))
 
         new_state, info = gas.step(state)
 
@@ -226,6 +228,7 @@ class TestInitialState:
 # ---------------------------------------------------------------------------
 # Backward compatibility: game_name / task_name wrappers
 # ---------------------------------------------------------------------------
+
 
 class TestBackwardCompat:
     def test_atari_run_with_tree_game_name(self, mock_env):

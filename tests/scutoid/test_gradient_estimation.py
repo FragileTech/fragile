@@ -1,27 +1,26 @@
 """Tests for gradient estimation using finite differences."""
 
-import torch
 import pytest
+import torch
+
 from fragile.fractalai.scutoid import (
-    estimate_gradient_finite_difference,
     compute_directional_derivative,
+    estimate_gradient_finite_difference,
     estimate_gradient_quality_metrics,
 )
-from fragile.fractalai.scutoid.weights import compute_edge_weights
 from fragile.fractalai.scutoid.neighbors import build_csr_from_coo
+from fragile.fractalai.scutoid.weights import compute_edge_weights
 
 
 @pytest.fixture
 def quadratic_setup():
     """Setup for quadratic function V(x) = (1/2) x^T A x."""
-    N = 100
-    d = 2
     device = torch.device("cpu")
 
     # Generate grid of positions
     x = torch.linspace(-2, 2, 10)
     y = torch.linspace(-2, 2, 10)
-    X, Y = torch.meshgrid(x, y, indexing='ij')
+    X, Y = torch.meshgrid(x, y, indexing="ij")
     positions = torch.stack([X.flatten(), Y.flatten()], dim=1)  # [100, 2]
 
     # Quadratic: V(x,y) = x² + 2y²
@@ -126,25 +125,23 @@ def test_gradient_rosenbrock():
     n_per_dim = 10
     x = torch.linspace(-1, 1.5, n_per_dim)
     y = torch.linspace(-0.5, 2, n_per_dim)
-    X, Y = torch.meshgrid(x, y, indexing='ij')
+    X, Y = torch.meshgrid(x, y, indexing="ij")
     positions = torch.stack([X.flatten(), Y.flatten()], dim=1)
 
     # Fitness
     x1, x2 = positions[:, 0], positions[:, 1]
-    fitness = (1 - x1) ** 2 + 100 * (x2 - x1 ** 2) ** 2
+    fitness = (1 - x1) ** 2 + 100 * (x2 - x1**2) ** 2
 
     # True gradient
     grad_true = torch.zeros_like(positions)
-    grad_true[:, 0] = -2 * (1 - x1) - 400 * x1 * (x2 - x1 ** 2)
-    grad_true[:, 1] = 200 * (x2 - x1 ** 2)
+    grad_true[:, 0] = -2 * (1 - x1) - 400 * x1 * (x2 - x1**2)
+    grad_true[:, 1] = 200 * (x2 - x1**2)
 
     # Build graph
     edge_index = _build_knn_graph(positions, k=8)
 
     # Estimate
-    result = estimate_gradient_finite_difference(
-        positions, fitness, edge_index
-    )
+    result = estimate_gradient_finite_difference(positions, fitness, edge_index)
 
     grad_estimated = result["gradient"]
     valid_mask = result["valid_mask"]
@@ -284,8 +281,7 @@ def test_convergence_with_neighbors(quadratic_setup):
         valid_mask = result["valid_mask"]
 
         error = torch.norm(
-            grad_estimated[valid_mask] - quadratic_setup["grad_true"][valid_mask],
-            dim=1
+            grad_estimated[valid_mask] - quadratic_setup["grad_true"][valid_mask], dim=1
         ).mean()
 
         errors.append(error.item())
@@ -303,7 +299,7 @@ def test_gradient_handles_nan_fitness():
     fitness = torch.randn(N)
 
     # Introduce some NaN values
-    fitness[::5] = float('nan')
+    fitness[::5] = float("nan")
 
     edge_index = _build_knn_graph(positions, k=8)
 
@@ -322,6 +318,7 @@ def test_gradient_handles_nan_fitness():
 # ============================================================================
 # Helper functions
 # ============================================================================
+
 
 def _build_knn_graph(positions: torch.Tensor, k: int) -> torch.Tensor:
     """Build k-nearest neighbor graph."""

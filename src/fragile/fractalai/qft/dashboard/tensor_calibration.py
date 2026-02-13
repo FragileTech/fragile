@@ -168,48 +168,44 @@ def build_tensor_calibration_tab_layout(
         pn.Row(run_button, sizing_mode="stretch_width"),
     ]
     if settings_layout is not None:
-        sections.extend(
-            [
-                pn.Accordion(
-                    ("Tensor Calibration Settings", settings_layout),
-                    sizing_mode="stretch_width",
-                ),
-            ]
-        )
-    sections.extend(
-        [
-            pn.pane.Markdown("### Estimator Selection"),
-            w.estimator_toggles,
-            pn.pane.Markdown("### Mass Display Mode"),
-            w.mass_mode,
-            pn.layout.Divider(),
-            pn.pane.Markdown("### Tensor Estimator Comparison"),
-            w.systematics_badge,
-            w.summary,
-            w.estimator_table,
-            pn.pane.Markdown("### Tensor Pairwise Discrepancies"),
-            w.pairwise_table,
-            pn.pane.Markdown("### Tensor Correction"),
-            w.correction_summary,
-            pn.layout.Divider(),
-            pn.pane.Markdown("### Tensor Momentum Dispersion (Contracted)"),
-            w.dispersion_plot,
-            pn.pane.Markdown("### Tensor Momentum Dispersion (Components)"),
-            w.component_dispersion_plot,
-            pn.pane.Markdown("### Tensor Anisotropy Coefficients"),
-            w.anisotropy_summary,
-            w.anisotropy_table,
-            w.anisotropy_plot,
-            pn.layout.Divider(),
-            pn.pane.Markdown("### Tensor Mass vs Scale"),
-            w.multiscale_plot,
-            pn.pane.Markdown("### Tensor Calibration Surface"),
-            w.calibration_surface_plot,
-            pn.pane.Markdown("### Tensor Calibration Residuals"),
-            w.calibration_residual_plot,
-            w.cv_summary,
-        ]
-    )
+        sections.extend([
+            pn.Accordion(
+                ("Tensor Calibration Settings", settings_layout),
+                sizing_mode="stretch_width",
+            ),
+        ])
+    sections.extend([
+        pn.pane.Markdown("### Estimator Selection"),
+        w.estimator_toggles,
+        pn.pane.Markdown("### Mass Display Mode"),
+        w.mass_mode,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Tensor Estimator Comparison"),
+        w.systematics_badge,
+        w.summary,
+        w.estimator_table,
+        pn.pane.Markdown("### Tensor Pairwise Discrepancies"),
+        w.pairwise_table,
+        pn.pane.Markdown("### Tensor Correction"),
+        w.correction_summary,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Tensor Momentum Dispersion (Contracted)"),
+        w.dispersion_plot,
+        pn.pane.Markdown("### Tensor Momentum Dispersion (Components)"),
+        w.component_dispersion_plot,
+        pn.pane.Markdown("### Tensor Anisotropy Coefficients"),
+        w.anisotropy_summary,
+        w.anisotropy_table,
+        w.anisotropy_plot,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Tensor Mass vs Scale"),
+        w.multiscale_plot,
+        pn.pane.Markdown("### Tensor Calibration Surface"),
+        w.calibration_surface_plot,
+        pn.pane.Markdown("### Tensor Calibration Residuals"),
+        w.calibration_residual_plot,
+        w.cv_summary,
+    ])
     return pn.Column(*sections, sizing_mode="stretch_both")
 
 
@@ -226,7 +222,9 @@ def clear_tensor_calibration_tab(w: TensorCalibrationWidgets, status_text: str) 
     )
     w.dispersion_plot.object = None
     w.component_dispersion_plot.object = None
-    w.anisotropy_summary.object = "**Tensor anisotropy coefficients:** run tensor calibration to populate."
+    w.anisotropy_summary.object = (
+        "**Tensor anisotropy coefficients:** run tensor calibration to populate."
+    )
     w.anisotropy_table.value = pd.DataFrame()
     w.anisotropy_plot.object = None
     w.multiscale_plot.object = None
@@ -360,8 +358,7 @@ def _build_component_dispersion_plot(component_rows: list[dict[str, Any]]) -> hv
             label=str(component),
         ).opts(size=7, color=color, tools=["hover"])
         err_sub = sub[
-            np.isfinite(sub["mass_error"].to_numpy())
-            & (sub["mass_error"].to_numpy() > 0)
+            np.isfinite(sub["mass_error"].to_numpy()) & (sub["mass_error"].to_numpy() > 0)
         ][["p2", "mass", "mass_error"]]
         if not err_sub.empty:
             layer *= hv.ErrorBars(
@@ -427,21 +424,23 @@ def _compute_component_anisotropy(
             if mode_n == 0 and np.isfinite(mass) and mass > 0:
                 p0_values.append(mass)
         p0_mass = float(np.mean(np.asarray(p0_values, dtype=float))) if p0_values else float("nan")
-        rows.append(
-            {
-                "component": component,
-                "n_points": len(samples),
-                "n_fit_points": n_fit_points,
-                "n_modes": ",".join(str(v) for v in sorted(set(mode_values))),
-                "p0_mass": p0_mass,
-                "m0": m0,
-                "c_eff": c_eff,
-            }
-        )
+        rows.append({
+            "component": component,
+            "n_points": len(samples),
+            "n_fit_points": n_fit_points,
+            "n_modes": ",".join(str(v) for v in sorted(set(mode_values))),
+            "p0_mass": p0_mass,
+            "m0": m0,
+            "c_eff": c_eff,
+        })
 
-    c_eff_ref = _robust_positive_reference(np.asarray([float(r["c_eff"]) for r in rows], dtype=float))
+    c_eff_ref = _robust_positive_reference(
+        np.asarray([float(r["c_eff"]) for r in rows], dtype=float)
+    )
     m0_ref = _robust_positive_reference(np.asarray([float(r["m0"]) for r in rows], dtype=float))
-    p0_ref = _robust_positive_reference(np.asarray([float(r["p0_mass"]) for r in rows], dtype=float))
+    p0_ref = _robust_positive_reference(
+        np.asarray([float(r["p0_mass"]) for r in rows], dtype=float)
+    )
 
     for row in rows:
         c_eff = float(row["c_eff"])
@@ -716,7 +715,9 @@ def _predict_single_point(
     scale_idx: int,
     fit: dict[str, Any],
 ) -> float:
-    return float(fit["m_inf"][op_idx] + fit["amp"][op_idx] * np.exp(-scales[scale_idx] / fit["r_scale"]))
+    return float(
+        fit["m_inf"][op_idx] + fit["amp"][op_idx] * np.exp(-scales[scale_idx] / fit["r_scale"])
+    )
 
 
 def _cross_validate_surface(scales: np.ndarray, grid: np.ndarray) -> dict[str, Any]:
@@ -796,7 +797,9 @@ def update_tensor_calibration_tab(
     enabled = {str(v) for v in (w.estimator_toggles.value or [])}
 
     momentum_axis = int((tensor_momentum_meta or {}).get("momentum_axis", 0))
-    momentum_length = float((tensor_momentum_meta or {}).get("momentum_length_scale", float("nan")))
+    momentum_length = float(
+        (tensor_momentum_meta or {}).get("momentum_length_scale", float("nan"))
+    )
     momentum_rows: list[dict[str, Any]] = []
     component_rows: list[dict[str, Any]] = []
     estimator_rows: list[dict[str, Any]] = []
@@ -840,17 +843,15 @@ def update_tensor_calibration_tab(
             core_rows.append(row)
         if n_mode is not None and np.isfinite(p2_value):
             target = component_rows if component else momentum_rows
-            target.append(
-                {
-                    "estimator": estimator,
-                    "component": component or "",
-                    "n_mode": int(n_mode),
-                    "p": float(p_value),
-                    "p2": float(p2_value),
-                    "mass": float(mass),
-                    "mass_error": float(err) if np.isfinite(err) else np.nan,
-                }
-            )
+            target.append({
+                "estimator": estimator,
+                "component": component or "",
+                "n_mode": int(n_mode),
+                "p": float(p_value),
+                "p2": float(p2_value),
+                "mass": float(mass),
+                "mass_error": float(err) if np.isfinite(err) else np.nan,
+            })
 
     if "anisotropic_edge" in enabled:
         append_row(
@@ -932,11 +933,16 @@ def update_tensor_calibration_tab(
             .fillna(10)
             .astype(int)
         )
-        table_df["mode_sort"] = pd.to_numeric(table_df["n_mode"], errors="coerce").fillna(-1).astype(int)
+        table_df["mode_sort"] = (
+            pd.to_numeric(table_df["n_mode"], errors="coerce").fillna(-1).astype(int)
+        )
         table_df["component_sort"] = table_df["component"].apply(lambda c: 0 if not str(c) else 1)
-        table_df = table_df.sort_values(
-            ["approach_order", "mode_sort", "component_sort", "estimator"]
-        ).drop(columns=["approach_order", "mode_sort", "component_sort"], errors="ignore")
+        table_df = table_df.sort_values([
+            "approach_order",
+            "mode_sort",
+            "component_sort",
+            "estimator",
+        ]).drop(columns=["approach_order", "mode_sort", "component_sort"], errors="ignore")
         w.estimator_table.value = table_df
     else:
         w.estimator_table.value = pd.DataFrame()
@@ -957,15 +963,13 @@ def update_tensor_calibration_tab(
                 comb = np.sqrt(max(err_a, 0.0) ** 2 + max(err_b, 0.0) ** 2)
                 if comb > 0:
                     pull = abs(mass_a - mass_b) / comb
-            pairwise_rows.append(
-                {
-                    "estimator_a": a["estimator"],
-                    "estimator_b": b["estimator"],
-                    "delta_pct": delta_pct,
-                    "abs_delta_pct": abs(delta_pct) if np.isfinite(delta_pct) else np.nan,
-                    "pull_sigma": pull,
-                }
-            )
+            pairwise_rows.append({
+                "estimator_a": a["estimator"],
+                "estimator_b": b["estimator"],
+                "delta_pct": delta_pct,
+                "abs_delta_pct": abs(delta_pct) if np.isfinite(delta_pct) else np.nan,
+                "pull_sigma": pull,
+            })
     if pairwise_rows:
         w.pairwise_table.value = pd.DataFrame(pairwise_rows).sort_values(
             "abs_delta_pct", ascending=False
@@ -982,10 +986,18 @@ def update_tensor_calibration_tab(
         max_abs = float(np.nanmax(abs_vals)) if np.isfinite(abs_vals).any() else float("nan")
         max_pull = float(np.nanmax(pull_vals)) if np.isfinite(pull_vals).any() else float("nan")
         details = f"max |Δ%|={max_abs:.2f}%, max pull={max_pull:.2f}σ"
-        if np.isfinite(max_abs) and max_abs <= 7.5 and (not np.isfinite(max_pull) or max_pull <= 1.5):
+        if (
+            np.isfinite(max_abs)
+            and max_abs <= 7.5
+            and (not np.isfinite(max_pull) or max_pull <= 1.5)
+        ):
             verdict = "consistent"
             verdict_type = "success"
-        elif np.isfinite(max_abs) and max_abs <= 20.0 and (not np.isfinite(max_pull) or max_pull <= 3.0):
+        elif (
+            np.isfinite(max_abs)
+            and max_abs <= 20.0
+            and (not np.isfinite(max_pull) or max_pull <= 3.0)
+        ):
             verdict = "mild tension"
             verdict_type = "warning"
         else:
@@ -1129,7 +1141,12 @@ def update_tensor_calibration_tab(
     if tensor_base is not None:
         reference_mass = _get_channel_mass(tensor_base, mode)
     correction_scale = float("nan")
-    if np.isfinite(consensus_mass) and consensus_mass > 0 and np.isfinite(reference_mass) and reference_mass > 0:
+    if (
+        np.isfinite(consensus_mass)
+        and consensus_mass > 0
+        and np.isfinite(reference_mass)
+        and reference_mass > 0
+    ):
         correction_scale = float(consensus_mass / reference_mass)
 
     m0, c_eff = _fit_dispersion(momentum_rows)
@@ -1141,7 +1158,9 @@ def update_tensor_calibration_tab(
     else:
         correction_lines.append("- Global correction scale: n/a")
     if fit is not None:
-        correction_lines.append(f"- Shared multiscale decay length `r_scale`: `{fit['r_scale']:.6g}`")
+        correction_lines.append(
+            f"- Shared multiscale decay length `r_scale`: `{fit['r_scale']:.6g}`"
+        )
     if np.isfinite(m0):
         correction_lines.append(f"- Momentum-dispersion intercept `m0`: `{m0:.6g}`")
     if np.isfinite(c_eff):
@@ -1163,9 +1182,7 @@ def update_tensor_calibration_tab(
         "dispersion_m0": m0,
         "dispersion_ceff": c_eff,
         "anisotropy_component_count": len(anisotropy_rows),
-        "anisotropy_xi_ceff_rms_pct": float(
-            anisotropy_stats.get("xi_c_eff_rms_pct", float("nan"))
-        )
+        "anisotropy_xi_ceff_rms_pct": float(anisotropy_stats.get("xi_c_eff_rms_pct", float("nan")))
         if anisotropy_rows
         else float("nan"),
         "anisotropy_xi_ceff_max_abs_pct": float(

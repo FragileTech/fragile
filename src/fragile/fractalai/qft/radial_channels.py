@@ -47,18 +47,16 @@ RECORDED_EDGE_WEIGHT_MODES = (
     "riemannian_kernel_volume",
 )
 NEIGHBOR_WEIGHT_MODES = (
-    *dict.fromkeys(
-        (
-            "uniform",
-            "volume",
-            "euclidean",
-            "inv_euclidean",
-            "inv_geodesic_iso",
-            "inv_geodesic_full",
-            "kernel",
-            *RECORDED_EDGE_WEIGHT_MODES,
-        )
-    ),
+    *dict.fromkeys((
+        "uniform",
+        "volume",
+        "euclidean",
+        "inv_euclidean",
+        "inv_geodesic_iso",
+        "inv_geodesic_full",
+        "kernel",
+        *RECORDED_EDGE_WEIGHT_MODES,
+    )),
 )
 
 
@@ -152,8 +150,16 @@ def _resolve_mc_time_index(history: RunHistory, mc_time_index: int | None) -> in
 def _apply_pbc_diff(diff: np.ndarray, bounds: Any | None) -> np.ndarray:
     if bounds is None:
         return diff
-    high = bounds.high.detach().cpu().numpy() if torch.is_tensor(bounds.high) else np.asarray(bounds.high)
-    low = bounds.low.detach().cpu().numpy() if torch.is_tensor(bounds.low) else np.asarray(bounds.low)
+    high = (
+        bounds.high.detach().cpu().numpy()
+        if torch.is_tensor(bounds.high)
+        else np.asarray(bounds.high)
+    )
+    low = (
+        bounds.low.detach().cpu().numpy()
+        if torch.is_tensor(bounds.low)
+        else np.asarray(bounds.low)
+    )
     span = high - low
     return diff - span * np.round(diff / span)
 
@@ -281,8 +287,12 @@ def _compute_color_states_batch(
 ) -> tuple[Tensor, Tensor]:
     """Compute color states for [start_idx, end_idx) in one batched pass."""
     if end_idx <= start_idx:
-        empty_color = history.x_before_clone.new_empty((0, history.N, history.d)).to(torch.complex64)
-        empty_valid = torch.zeros(0, history.N, dtype=torch.bool, device=history.x_before_clone.device)
+        empty_color = history.x_before_clone.new_empty((0, history.N, history.d)).to(
+            torch.complex64
+        )
+        empty_valid = torch.zeros(
+            0, history.N, dtype=torch.bool, device=history.x_before_clone.device
+        )
         return empty_color, empty_valid
 
     v_pre = history.v_before_clone[start_idx:end_idx]
@@ -379,13 +389,7 @@ def _build_neighbor_data_dense(
 
     src = edges_t[:, 0]
     dst = edges_t[:, 1]
-    valid_edges = (
-        (src >= 0)
-        & (src < n_alive)
-        & (dst >= 0)
-        & (dst < n_alive)
-        & (src != dst)
-    )
+    valid_edges = (src >= 0) & (src < n_alive) & (dst >= 0) & (dst < n_alive) & (src != dst)
     if not torch.any(valid_edges):
         msg = "Recorded neighbor graph has no valid directed edges after filtering."
         raise ValueError(msg)
@@ -427,7 +431,7 @@ def _build_neighbor_data_dense(
             diff = _apply_pbc_diff_torch(diff, bounds)
         dist = torch.linalg.vector_norm(diff, dim=-1).clamp(min=1e-8)
         if weight_mode == "kernel":
-            edge_weights = torch.exp(-(dist ** 2) / (2.0 * kernel_length_scale ** 2))
+            edge_weights = torch.exp(-(dist**2) / (2.0 * kernel_length_scale**2))
         elif weight_mode == "euclidean":
             edge_weights = dist
         else:
@@ -437,7 +441,9 @@ def _build_neighbor_data_dense(
             msg = f"neighbor_weighting='{weight_mode}' requires recorded edge distances."
             raise ValueError(msg)
         if not torch.isfinite(edge_mode_t).all() or torch.any(edge_mode_t <= 0):
-            msg = f"neighbor_weighting='{weight_mode}' received non-positive/non-finite edge values."
+            msg = (
+                f"neighbor_weighting='{weight_mode}' received non-positive/non-finite edge values."
+            )
             raise ValueError(msg)
         edge_weights = 1.0 / edge_mode_t.clamp(min=1e-8)
     elif weight_mode in RECORDED_EDGE_WEIGHT_MODES:
@@ -496,7 +502,9 @@ def _build_neighbor_data_dense(
             raise ValueError(msg)
 
     k = int(col.max().item()) + 1
-    rows = torch.arange(n_alive, device=positions.device, dtype=torch.long).unsqueeze(1).expand(-1, k)
+    rows = (
+        torch.arange(n_alive, device=positions.device, dtype=torch.long).unsqueeze(1).expand(-1, k)
+    )
     neighbor_indices = rows.clone()
     neighbor_weights = torch.zeros((n_alive, k), device=positions.device, dtype=positions.dtype)
     neighbor_mask = torch.zeros((n_alive, k), device=positions.device, dtype=torch.bool)
@@ -507,7 +515,9 @@ def _build_neighbor_data_dense(
     return neighbor_indices, neighbor_weights, neighbor_mask
 
 
-def _sample_pairs(n: int, max_pairs: int, rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
+def _sample_pairs(
+    n: int, max_pairs: int, rng: np.random.Generator
+) -> tuple[np.ndarray, np.ndarray]:
     total_pairs = n * (n - 1) // 2
     if total_pairs <= max_pairs:
         pairs = np.array([(i, j) for i in range(n) for j in range(i + 1, n)], dtype=np.int64)
@@ -740,12 +750,7 @@ def _compute_operator_values_dense(
 
         pair_mask = neighbor_mask[:, pair_idx[0]] & neighbor_mask[:, pair_idx[1]]
         valid_mask = (
-            pair_mask
-            & (j != row)
-            & (k_idx != row)
-            & valid.unsqueeze(1)
-            & valid[j]
-            & valid[k_idx]
+            pair_mask & (j != row) & (k_idx != row) & valid.unsqueeze(1) & valid[j] & valid[k_idx]
         )
 
         color_3 = color[:, :3]
@@ -767,10 +772,7 @@ def _compute_operator_values_dense(
     color_j = color[neighbor_indices]
     op_vals = _apply_projection(channel, color_i, color_j, gamma)
     valid_mask = (
-        neighbor_mask
-        & valid.unsqueeze(1)
-        & valid[neighbor_indices]
-        & (neighbor_indices != row)
+        neighbor_mask & valid.unsqueeze(1) & valid[neighbor_indices] & (neighbor_indices != row)
     )
     weights_eff = torch.where(valid_mask, neighbor_weights, torch.zeros_like(neighbor_weights))
     denom = weights_eff.sum(dim=1)
@@ -802,8 +804,7 @@ def _require_recorded_edges_and_geodesic(
     edges_np = edges.detach().cpu().numpy()
     if edges_np.ndim != 2 or edges_np.shape[1] != 2:
         msg = (
-            f"neighbor_edges[{frame_idx}] must have shape [E,2], "
-            f"got {tuple(edges_np.shape)}."
+            f"neighbor_edges[{frame_idx}] must have shape [E,2], " f"got {tuple(edges_np.shape)}."
         )
         raise ValueError(msg)
     edges_np = np.asarray(edges_np, dtype=np.int64)
@@ -877,13 +878,7 @@ def _recorded_subgraph_for_alive(
 
     src = edges_global[:, 0].astype(np.int64, copy=False)
     dst = edges_global[:, 1].astype(np.int64, copy=False)
-    valid_range = (
-        (src >= 0)
-        & (src < map_size)
-        & (dst >= 0)
-        & (dst < map_size)
-        & (src != dst)
-    )
+    valid_range = (src >= 0) & (src < map_size) & (dst >= 0) & (dst < map_size) & (src != dst)
     if not np.any(valid_range):
         msg = "Recorded neighbor graph has no valid directed edges in frame."
         raise ValueError(msg)
@@ -1294,8 +1289,7 @@ def _compute_distances(
         weights = np.asarray(geodesic_edge_distances, dtype=float).reshape(-1)
         if weights.shape[0] != edges.shape[0]:
             msg = (
-                "graph_full edge/geodesic mismatch: "
-                f"E={edges.shape[0]}, G={weights.shape[0]}."
+                "graph_full edge/geodesic mismatch: " f"E={edges.shape[0]}, G={weights.shape[0]}."
             )
             raise ValueError(msg)
     else:
@@ -1384,8 +1378,7 @@ def _compute_mc_time_output(
             )
 
     series_buffers = {
-        channel: torch.zeros(n_frames, device=device, dtype=torch.float32)
-        for channel in channels
+        channel: torch.zeros(n_frames, device=device, dtype=torch.float32) for channel in channels
     }
     valid_frames = torch.zeros(n_frames, device=device, dtype=torch.bool)
 
@@ -1396,11 +1389,7 @@ def _compute_mc_time_output(
             continue
 
         positions_alive = positions_batch[t_idx, alive_idx]
-        volume_weights_alive = (
-            volume_batch[t_idx, alive_idx]
-            if volume_batch is not None
-            else None
-        )
+        volume_weights_alive = volume_batch[t_idx, alive_idx] if volume_batch is not None else None
 
         if config.use_volume_weights and volume_weights_alive is None:
             msg = (
@@ -1534,9 +1523,7 @@ def _compute_mc_time_output(
             channel,
             n_samples=int(series.numel()),
             correlator_err=(
-                correlator_err.detach().cpu().numpy()
-                if correlator_err is not None
-                else None
+                correlator_err.detach().cpu().numpy() if correlator_err is not None else None
             ),
         )
 
@@ -1568,9 +1555,7 @@ def compute_radial_channels(
     if config.neighbor_method not in NEIGHBOR_METHODS:
         raise ValueError(f"neighbor_method must be one of {NEIGHBOR_METHODS}")
     if config.neighbor_weighting not in NEIGHBOR_WEIGHT_MODES:
-        raise ValueError(
-            f"neighbor_weighting must be one of {NEIGHBOR_WEIGHT_MODES}"
-        )
+        raise ValueError(f"neighbor_weighting must be one of {NEIGHBOR_WEIGHT_MODES}")
     if history.neighbor_edges is None:
         msg = "RunHistory.neighbor_edges is required for radial channel analysis."
         raise ValueError(msg)
@@ -1798,7 +1783,11 @@ def compute_radial_channels(
         if axis_distances:
             global_min = min(float(np.min(d[np.isfinite(d)])) for d in axis_distances.values())
             global_max = max(float(np.max(d[np.isfinite(d)])) for d in axis_distances.values())
-            if not np.isfinite(global_min) or not np.isfinite(global_max) or global_max <= global_min:
+            if (
+                not np.isfinite(global_min)
+                or not np.isfinite(global_max)
+                or global_max <= global_min
+            ):
                 global_min = 0.0
                 global_max = 1.0
             bin_edges_3d = np.linspace(global_min, global_max, config.n_bins + 1)

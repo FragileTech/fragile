@@ -8,10 +8,10 @@ This script shows:
 3. Visualization of the tensor differences
 """
 
+from matplotlib.patches import Ellipse
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import matplotlib.pyplot as plt
-from matplotlib.patches import Ellipse
 
 from src.fragile.fractalai.qft.voronoi_observables import (
     compute_voronoi_diffusion_tensor,
@@ -26,10 +26,10 @@ def plot_diffusion_ellipses(positions, sigma_tensors, title="Diffusion Tensors",
     For a 2D tensor [[a, b], [b, c]], the ellipse shows the diffusion anisotropy.
     """
     if ax is None:
-        fig, ax = plt.subplots(figsize=(10, 10))
+        _fig, ax = plt.subplots(figsize=(10, 10))
 
     # Plot points
-    ax.scatter(positions[:, 0], positions[:, 1], c='black', s=50, zorder=3, alpha=0.5)
+    ax.scatter(positions[:, 0], positions[:, 1], c="black", s=50, zorder=3, alpha=0.5)
 
     # Plot diffusion ellipses
     for i, (pos, sigma) in enumerate(zip(positions, sigma_tensors)):
@@ -50,17 +50,17 @@ def plot_diffusion_ellipses(positions, sigma_tensors, title="Diffusion Tensors",
             width=width,
             height=height,
             angle=angle,
-            facecolor='blue',
+            facecolor="blue",
             alpha=0.2,
-            edgecolor='blue',
+            edgecolor="blue",
             linewidth=1.5,
         )
         ax.add_patch(ellipse)
 
-    ax.set_aspect('equal')
-    ax.set_title(title, fontsize=14, fontweight='bold')
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
+    ax.set_aspect("equal")
+    ax.set_title(title, fontsize=14, fontweight="bold")
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
     ax.grid(True, alpha=0.3)
 
     return ax
@@ -100,7 +100,7 @@ def demo_comparison():
 
     print(f"\n✓ Created {N} positions in rotated elliptical pattern")
     print(f"  Rotation angle: {np.degrees(angle):.1f}°")
-    print(f"  Aspect ratio: {a/b:.2f}")
+    print(f"  Aspect ratio: {a / b:.2f}")
 
     # Compute Voronoi tessellation
     print("\n✓ Computing Voronoi tessellation...")
@@ -124,7 +124,7 @@ def demo_comparison():
     print(f"Shape: {sigma_diag.shape}")
     print(f"Mean σ_x: {sigma_diag[:, 0].mean():.4f} ± {sigma_diag[:, 0].std():.4f}")
     print(f"Mean σ_y: {sigma_diag[:, 1].mean():.4f} ± {sigma_diag[:, 1].std():.4f}")
-    print(f"Anisotropy ratio (σ_x/σ_y): {(sigma_diag[:, 0]/sigma_diag[:, 1]).mean():.4f}")
+    print(f"Anisotropy ratio (σ_x/σ_y): {(sigma_diag[:, 0] / sigma_diag[:, 1]).mean():.4f}")
 
     # Convert to full tensor for plotting
     sigma_diag_full = np.zeros((N, 2, 2))
@@ -146,7 +146,9 @@ def demo_comparison():
     # Analyze off-diagonal elements
     off_diag = sigma_full[:, 0, 1]
     num_significant = np.sum(np.abs(off_diag) > 0.01)
-    print(f"Cells with significant off-diagonal: {num_significant}/{N} ({100*num_significant/N:.1f}%)")
+    print(
+        f"Cells with significant off-diagonal: {num_significant}/{N} ({100 * num_significant / N:.1f}%)"
+    )
     print(f"Max |off-diagonal|: {np.abs(off_diag).max():.4f}")
     print(f"Mean |off-diagonal|: {np.abs(off_diag).mean():.4f}")
 
@@ -156,28 +158,32 @@ def demo_comparison():
 
     # Compute anisotropy ratio from eigenvalues
     anisotropy_ratios = eigenvalues_all[:, 1] / eigenvalues_all[:, 0]
-    print(f"Anisotropy ratio (λ_max/λ_min): {anisotropy_ratios.mean():.4f} ± {anisotropy_ratios.std():.4f}")
+    print(
+        f"Anisotropy ratio (λ_max/λ_min): {anisotropy_ratios.mean():.4f} ± {anisotropy_ratios.std():.4f}"
+    )
 
     # Compare with diagonal
     print("\n--- COMPARISON ---")
-    diag_from_full = np.array([sigma_full[i, j, j] for i in range(N) for j in range(2)]).reshape(N, 2)
+    diag_from_full = np.array([sigma_full[i, j, j] for i in range(N) for j in range(2)]).reshape(
+        N, 2
+    )
     rel_diff = np.abs(sigma_diag - diag_from_full) / (sigma_diag + 1e-8)
     print(f"Diagonal element difference: {rel_diff.mean():.4f} (mean relative)")
 
     # Example tensors
     print("\n--- EXAMPLE TENSORS ---")
-    idx = num_significant > 0 and np.argmax(np.abs(off_diag)) or 0
+    idx = (num_significant > 0 and np.argmax(np.abs(off_diag))) or 0
     print(f"\nCell {idx} (position: [{positions_np[idx, 0]:.2f}, {positions_np[idx, 1]:.2f}]):")
-    print(f"  Diagonal mode:")
+    print("  Diagonal mode:")
     print(f"    [{sigma_diag[idx, 0]:.4f},  0.0000]")
     print(f"    [0.0000,  {sigma_diag[idx, 1]:.4f}]")
-    print(f"\n  Full mode:")
+    print("\n  Full mode:")
     print(f"    [{sigma_full[idx, 0, 0]:7.4f}, {sigma_full[idx, 0, 1]:7.4f}]")
     print(f"    [{sigma_full[idx, 1, 0]:7.4f}, {sigma_full[idx, 1, 1]:7.4f}]")
 
     # Visualization
     print("\n✓ Creating visualization...")
-    fig, axes = plt.subplots(1, 2, figsize=(16, 8))
+    _fig, axes = plt.subplots(1, 2, figsize=(16, 8))
 
     plot_diffusion_ellipses(
         positions_np,
@@ -194,7 +200,7 @@ def demo_comparison():
     )
 
     plt.tight_layout()
-    plt.savefig("demo_full_anisotropic_comparison.png", dpi=150, bbox_inches='tight')
+    plt.savefig("demo_full_anisotropic_comparison.png", dpi=150, bbox_inches="tight")
     print("✓ Saved visualization to: demo_full_anisotropic_comparison.png")
 
     plt.show()
@@ -216,7 +222,7 @@ def demo_usage():
     print("USAGE EXAMPLE")
     print("=" * 70)
 
-    code_example = '''
+    code_example = """
 # Import
 from fragile.fractalai.qft.voronoi_observables import compute_voronoi_diffusion_tensor
 from fragile.fractalai.core.kinetic_operator import KineticOperator
@@ -245,7 +251,7 @@ kinetic_op = KineticOperator(
 
 # The kinetic operator will automatically use full tensors
 # when computing the Langevin dynamics
-'''
+"""
 
     print(code_example)
 

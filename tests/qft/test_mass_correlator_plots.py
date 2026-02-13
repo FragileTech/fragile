@@ -7,14 +7,14 @@ import pytest
 import torch
 
 from fragile.fractalai.qft.mass_correlator_plots import (
-    STANDARD_CHANNELS,
     ChannelCorrelatorResult,
     ChannelDefinition,
     ChannelProjector,
+    compute_all_channel_correlators,
     MassCorrelatorComputer,
     MassCorrelatorConfig,
     MassCorrelatorPlotter,
-    compute_all_channel_correlators,
+    STANDARD_CHANNELS,
 )
 
 
@@ -23,7 +23,15 @@ class TestStandardChannels:
 
     def test_all_channels_defined(self):
         """All standard lattice QFT channels should be defined."""
-        expected = {"scalar", "pseudoscalar", "vector", "axial_vector", "tensor", "nucleon", "glueball"}
+        expected = {
+            "scalar",
+            "pseudoscalar",
+            "vector",
+            "axial_vector",
+            "tensor",
+            "nucleon",
+            "glueball",
+        }
         assert set(STANDARD_CHANNELS.keys()) == expected
 
     def test_channel_quantum_numbers(self):
@@ -203,13 +211,13 @@ class TestIntegration:
 
     def test_standard_channels_consistent(self):
         """Ensure channel definitions are internally consistent."""
-        for name, channel in STANDARD_CHANNELS.items():
+        for channel in STANDARD_CHANNELS.values():
             # Each channel should have required attributes
-            assert hasattr(channel, 'name')
-            assert hasattr(channel, 'display_name')
-            assert hasattr(channel, 'quantum_numbers')
-            assert hasattr(channel, 'color')
-            assert hasattr(channel, 'operator_type')
+            assert hasattr(channel, "name")
+            assert hasattr(channel, "display_name")
+            assert hasattr(channel, "quantum_numbers")
+            assert hasattr(channel, "color")
+            assert hasattr(channel, "operator_type")
 
             # Operator type should be valid
-            assert channel.operator_type in {'bilinear', 'trilinear', 'gauge'}
+            assert channel.operator_type in {"bilinear", "trilinear", "gauge"}

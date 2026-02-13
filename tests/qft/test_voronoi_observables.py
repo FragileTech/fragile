@@ -60,9 +60,7 @@ class TestVoronoiTessellation:
         positions = torch.rand(10, 3) * 5.0
         alive = torch.ones(10, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         assert voronoi_data["voronoi"] is not None
         assert len(voronoi_data["neighbor_lists"]) == 10
@@ -80,9 +78,7 @@ class TestVoronoiTessellation:
         positions = torch.rand(10, 2)
         alive = torch.zeros(10, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         assert voronoi_data["voronoi"] is None
         assert len(voronoi_data["neighbor_lists"]) == 0
@@ -93,9 +89,7 @@ class TestVoronoiTessellation:
         positions = torch.tensor([[0.5, 0.5]], dtype=torch.float32)
         alive = torch.ones(1, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         # Single point has no neighbors
         assert len(voronoi_data["neighbor_lists"]) == 1
@@ -116,9 +110,7 @@ class TestVoronoiTessellation:
         # Only first 3 are alive
         alive = torch.tensor([True, True, True, False, False])
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         # Should only compute for 3 alive walkers
         assert len(voronoi_data["alive_indices"]) == 3
@@ -136,13 +128,9 @@ class TestGeometricWeights:
         )
         alive = torch.ones(4, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
-        weights = compute_geometric_weights(
-            voronoi_data, weight_mode="facet_area", normalize=True
-        )
+        weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area", normalize=True)
 
         edge_weights = weights["edge_weights"]
 
@@ -158,31 +146,23 @@ class TestGeometricWeights:
         positions = torch.rand(10, 3)
         alive = torch.ones(10, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
-        weights = compute_geometric_weights(
-            voronoi_data, weight_mode="volume", normalize=True
-        )
+        weights = compute_geometric_weights(voronoi_data, weight_mode="volume", normalize=True)
 
         node_weights = weights["node_weights"]
         assert torch.all(node_weights > 0)
 
     def test_combined_weights(self):
         """Test combined weight mode."""
-        positions = torch.tensor(
-            [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]], dtype=torch.float32
-        )
+        positions = torch.tensor([[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]], dtype=torch.float32)
         alive = torch.ones(3, dtype=torch.bool)
 
         voronoi_data = compute_voronoi_tessellation(
             positions, alive, bounds=None, pbc=False, exclude_boundary=False
         )
 
-        weights = compute_geometric_weights(
-            voronoi_data, weight_mode="combined", normalize=True
-        )
+        weights = compute_geometric_weights(voronoi_data, weight_mode="combined", normalize=True)
 
         edge_weights = weights["edge_weights"]
         assert len(edge_weights) > 0
@@ -208,9 +188,7 @@ class TestMesonOperatorVoronoi:
             positions, alive, bounds=None, pbc=False, exclude_boundary=False
         )
 
-        weights = compute_geometric_weights(
-            voronoi_data, weight_mode="facet_area", normalize=True
-        )
+        weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area", normalize=True)
 
         sample_indices = torch.arange(5)
 
@@ -233,23 +211,19 @@ class TestMesonOperatorVoronoi:
 
     def test_meson_with_invalid_colors(self):
         """Test meson operator with some invalid colors."""
-        positions = torch.tensor(
-            [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]], dtype=torch.float32
-        )
+        positions = torch.tensor([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]], dtype=torch.float32)
         alive = torch.ones(3, dtype=torch.bool)
 
         color = torch.randn(3, 2, dtype=torch.complex64)
         color_valid = torch.tensor([True, False, True])
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area")
 
         sample_indices = torch.arange(3)
 
-        meson, valid = compute_meson_operator_voronoi(
+        _meson, valid = compute_meson_operator_voronoi(
             color=color,
             sample_indices=sample_indices,
             voronoi_neighbors=voronoi_data["neighbor_lists"],
@@ -270,9 +244,7 @@ class TestMesonOperatorVoronoi:
         color = torch.randn(5, 2, dtype=torch.complex64)
         color_valid = torch.ones(5, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area")
 
@@ -317,15 +289,13 @@ class TestBaryonOperatorVoronoi:
         )
         color_valid = torch.ones(4, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area")
 
         sample_indices = torch.arange(4)
 
-        baryon, valid = compute_baryon_operator_voronoi(
+        baryon, _valid = compute_baryon_operator_voronoi(
             color=color,
             sample_indices=sample_indices,
             voronoi_neighbors=voronoi_data["neighbor_lists"],
@@ -351,9 +321,7 @@ class TestBaryonOperatorVoronoi:
         color = torch.randn(5, 2, dtype=torch.complex64)
         color_valid = torch.ones(5, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area")
 
@@ -379,16 +347,14 @@ class TestBaryonOperatorVoronoi:
         color = torch.randn(20, 3, dtype=torch.complex64)
         color_valid = torch.ones(20, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area")
 
         sample_indices = torch.arange(20)
 
         # Should work with limited triplets
-        baryon, valid = compute_baryon_operator_voronoi(
+        baryon, _valid = compute_baryon_operator_voronoi(
             color=color,
             sample_indices=sample_indices,
             voronoi_neighbors=voronoi_data["neighbor_lists"],
@@ -410,15 +376,13 @@ class TestBaryonOperatorVoronoi:
         color = torch.randn(2, 3, dtype=torch.complex64)
         color_valid = torch.ones(2, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area")
 
         sample_indices = torch.arange(2)
 
-        baryon, valid = compute_baryon_operator_voronoi(
+        _baryon, valid = compute_baryon_operator_voronoi(
             color=color,
             sample_indices=sample_indices,
             voronoi_neighbors=voronoi_data["neighbor_lists"],
@@ -470,7 +434,6 @@ class TestBoundaryExclusion:
         classification = voronoi_data.get("classification")
         if classification is not None:
             # Center point should be interior (or adjacent)
-            center_idx = 4
             # At minimum, not all should be boundary
             assert not torch.all(classification["is_boundary"])
 
@@ -521,7 +484,7 @@ class TestBoundaryExclusion:
         weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area")
         sample_indices = torch.arange(10)
 
-        meson, valid = compute_meson_operator_voronoi(
+        _meson, valid = compute_meson_operator_voronoi(
             color=color,
             sample_indices=sample_indices,
             voronoi_neighbors=voronoi_data["neighbor_lists"],
@@ -538,7 +501,9 @@ class TestBoundaryExclusion:
             # Tier 0 and 1 should be invalid
             for i in range(10):
                 if classification["tier"][i] < 2:
-                    assert not valid[i], f"Walker {i} with tier {classification['tier'][i]} should be invalid"
+                    assert not valid[
+                        i
+                    ], f"Walker {i} with tier {classification['tier'][i]} should be invalid"
 
     def test_baryon_skips_boundary_tiers(self):
         """Test baryon operator skips Tier 0-1 cells."""
@@ -563,7 +528,7 @@ class TestBoundaryExclusion:
         weights = compute_geometric_weights(voronoi_data, weight_mode="facet_area")
         sample_indices = torch.arange(10)
 
-        baryon, valid = compute_baryon_operator_voronoi(
+        _baryon, valid = compute_baryon_operator_voronoi(
             color=color,
             sample_indices=sample_indices,
             voronoi_neighbors=voronoi_data["neighbor_lists"],
@@ -581,7 +546,9 @@ class TestBoundaryExclusion:
             # Tier 0 and 1 should be invalid
             for i in range(10):
                 if classification["tier"][i] < 2:
-                    assert not valid[i], f"Walker {i} with tier {classification['tier'][i]} should be invalid"
+                    assert not valid[
+                        i
+                    ], f"Walker {i} with tier {classification['tier'][i]} should be invalid"
 
     def test_pbc_disables_boundary_exclusion(self):
         """Test that PBC disables boundary exclusion."""
@@ -610,7 +577,6 @@ class TestBoundaryExclusion:
         # This is implicitly tested by the meson/baryon skip tests
         # If Tier 2 cells weren't used as neighbors, Tier 3 would have no neighbors
         # and would also be invalid, which would make the tests fail
-        pass
 
 
 class TestWeightModes:
@@ -623,9 +589,7 @@ class TestWeightModes:
         color = torch.randn(10, 2, dtype=torch.complex64)
         color_valid = torch.ones(10, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         sample_indices = torch.arange(10)
 
@@ -634,7 +598,7 @@ class TestWeightModes:
                 voronoi_data, weight_mode=weight_mode, normalize=True
             )
 
-            meson, valid = compute_meson_operator_voronoi(
+            meson, _valid = compute_meson_operator_voronoi(
                 color=color,
                 sample_indices=sample_indices,
                 voronoi_neighbors=voronoi_data["neighbor_lists"],
@@ -655,9 +619,7 @@ class TestWeightModes:
         color = torch.randn(10, 3, dtype=torch.complex64)
         color_valid = torch.ones(10, dtype=torch.bool)
 
-        voronoi_data = compute_voronoi_tessellation(
-            positions, alive, bounds=None, pbc=False
-        )
+        voronoi_data = compute_voronoi_tessellation(positions, alive, bounds=None, pbc=False)
 
         sample_indices = torch.arange(10)
 
@@ -666,7 +628,7 @@ class TestWeightModes:
                 voronoi_data, weight_mode=weight_mode, normalize=True
             )
 
-            baryon, valid = compute_baryon_operator_voronoi(
+            baryon, _valid = compute_baryon_operator_voronoi(
                 color=color,
                 sample_indices=sample_indices,
                 voronoi_neighbors=voronoi_data["neighbor_lists"],

@@ -14,8 +14,8 @@ import argparse
 import time
 
 import numpy as np
-import torch
 from scipy.spatial import Voronoi
+import torch
 
 from fragile.fractalai.scutoid.voronoi import (
     _compute_all_cell_volumes,
@@ -91,8 +91,12 @@ def main() -> None:
     fac_close = torch.isclose(baseline_facets, cached_facets, rtol=1e-5, atol=1e-7)
 
     print("Correctness checks")
-    print(f"Volumes: max={vol_diff.max():.6g} mean={vol_diff.mean():.6g} mismatches={int((~vol_close).sum())}")
-    print(f"Facets:  max={fac_diff.max():.6g} mean={fac_diff.mean():.6g} mismatches={int((~fac_close).sum())}")
+    print(
+        f"Volumes: max={vol_diff.max():.6g} mean={vol_diff.mean():.6g} mismatches={int((~vol_close).sum())}"
+    )
+    print(
+        f"Facets:  max={fac_diff.max():.6g} mean={fac_diff.mean():.6g} mismatches={int((~fac_close).sum())}"
+    )
 
     baseline_times = _timeit(baseline, repeats)
     cached_times = _timeit(cached, repeats)
@@ -102,8 +106,12 @@ def main() -> None:
     speedup = baseline_avg / cached_avg if cached_avg > 0 else float("inf")
 
     print("\nTiming (seconds)")
-    print(f"Baseline avg: {baseline_avg:.6f} (min {min(baseline_times):.6f}, max {max(baseline_times):.6f})")
-    print(f"Cached   avg: {cached_avg:.6f} (min {min(cached_times):.6f}, max {max(cached_times):.6f})")
+    print(
+        f"Baseline avg: {baseline_avg:.6f} (min {min(baseline_times):.6f}, max {max(baseline_times):.6f})"
+    )
+    print(
+        f"Cached   avg: {cached_avg:.6f} (min {min(cached_times):.6f}, max {max(cached_times):.6f})"
+    )
     print(f"Speedup: {speedup:.2f}x")
 
 

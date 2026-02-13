@@ -2,6 +2,7 @@
 
 import pytest
 
+
 # Check if plangym is available
 try:
     from plangym import AtariEnvironment
@@ -127,17 +128,13 @@ def test_reproducibility():
     env1 = AtariEnvironment(name="Pong-v5", obs_type="ram")
     env2 = AtariEnvironment(name="Pong-v5", obs_type="ram")
 
-    gas1 = AtariFractalGas(
-        env=env1, N=10, dist_coef=1.0, reward_coef=1.0, device="cpu", seed=42
-    )
+    gas1 = AtariFractalGas(env=env1, N=10, dist_coef=1.0, reward_coef=1.0, device="cpu", seed=42)
 
-    gas2 = AtariFractalGas(
-        env=env2, N=10, dist_coef=1.0, reward_coef=1.0, device="cpu", seed=42
-    )
+    gas2 = AtariFractalGas(env=env2, N=10, dist_coef=1.0, reward_coef=1.0, device="cpu", seed=42)
 
     # Run both for same number of iterations
-    final_state1, history1 = gas1.run(max_iterations=20)
-    final_state2, history2 = gas2.run(max_iterations=20)
+    _final_state1, history1 = gas1.run(max_iterations=20)
+    _final_state2, history2 = gas2.run(max_iterations=20)
 
     # Check results are similar (not exact due to env stochasticity)
     assert len(history1) == len(history2)

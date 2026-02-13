@@ -20,105 +20,98 @@ import panel as pn
 import param
 import torch
 
-from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.core.benchmarks import prepare_benchmark_for_explorer
+from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.experiments.gas_config_panel import GasConfigPanel
 from fragile.fractalai.qft import analysis as qft_analysis
-from fragile.fractalai.qft.correlator_channels import (
-    _fft_correlator_batched,
-    ChannelConfig,
-    ChannelCorrelatorResult,
-    CorrelatorConfig,
-    compute_effective_mass_torch,
-    compute_channel_correlator,
-    extract_mass_aic,
-    extract_mass_linear,
-)
 from fragile.fractalai.qft.aggregation import compute_all_operator_series
-from fragile.fractalai.qft.baryon_triplet_channels import (
-    BaryonTripletCorrelatorConfig,
-    compute_companion_baryon_correlator,
-)
-from fragile.fractalai.qft.meson_phase_channels import (
-    MesonPhaseCorrelatorConfig,
-    compute_companion_meson_phase_correlator,
-)
-from fragile.fractalai.qft.vector_meson_channels import (
-    VectorMesonCorrelatorConfig,
-    compute_companion_vector_meson_correlator,
-)
-from fragile.fractalai.qft.glueball_color_channels import (
-    GlueballColorCorrelatorConfig,
-    compute_companion_glueball_color_correlator,
-)
-from fragile.fractalai.qft.electroweak_channels import (
-    ELECTROWEAK_CHANNELS,
-    ElectroweakChannelConfig,
-    compute_all_electroweak_channels,
-    compute_electroweak_snapshot_operators,
-)
-from fragile.fractalai.qft.higgs_observables import (
-    HiggsConfig,
-    HiggsObservables,
-    compute_higgs_observables,
-)
-from fragile.fractalai.qft.radial_channels import (
-    RadialChannelBundle,
-    RadialChannelConfig,
-    compute_radial_channels,
-)
 from fragile.fractalai.qft.anisotropic_edge_channels import (
     AnisotropicEdgeChannelConfig,
     AnisotropicEdgeChannelOutput,
     compute_anisotropic_edge_channels,
 )
-from fragile.fractalai.qft.higgs_plotting import build_all_higgs_plots
-from fragile.fractalai.qft.dirac_spectrum import (
-    DiracSpectrumConfig,
-    compute_dirac_spectrum,
-    build_fermion_comparison,
-    build_fermion_ratio_comparison,
+from fragile.fractalai.qft.baryon_triplet_channels import (
+    BaryonTripletCorrelatorConfig,
+    compute_companion_baryon_correlator,
 )
-from fragile.fractalai.qft.dirac_spectrum_plotting import build_all_dirac_plots
+from fragile.fractalai.qft.correlator_channels import (
+    _fft_correlator_batched,
+    ChannelConfig,
+    ChannelCorrelatorResult,
+    compute_channel_correlator,
+    compute_effective_mass_torch,
+    CorrelatorConfig,
+    extract_mass_aic,
+    extract_mass_linear,
+)
 from fragile.fractalai.qft.dirac_electroweak import (
     compute_dirac_electroweak_bundle,
     DiracElectroweakConfig,
 )
+from fragile.fractalai.qft.dirac_spectrum import (
+    build_fermion_comparison,
+    build_fermion_ratio_comparison,
+    compute_dirac_spectrum,
+    DiracSpectrumConfig,
+)
+from fragile.fractalai.qft.dirac_spectrum_plotting import build_all_dirac_plots
 from fragile.fractalai.qft.einstein_equations import (
-    EinsteinConfig,
     compute_einstein_test,
+    EinsteinConfig,
 )
 from fragile.fractalai.qft.einstein_equations_plotting import build_all_einstein_plots
+from fragile.fractalai.qft.electroweak_channels import (
+    compute_all_electroweak_channels,
+    compute_electroweak_snapshot_operators,
+    ELECTROWEAK_CHANNELS,
+    ElectroweakChannelConfig,
+)
+from fragile.fractalai.qft.glueball_color_channels import (
+    compute_companion_glueball_color_correlator,
+    GlueballColorCorrelatorConfig,
+)
+from fragile.fractalai.qft.higgs_observables import (
+    compute_higgs_observables,
+    HiggsConfig,
+)
+from fragile.fractalai.qft.higgs_plotting import build_all_higgs_plots
 from fragile.fractalai.qft.isospin_channels import (
+    compute_isospin_channels,
     ISOSPIN_CHANNEL_SPLITTINGS,
     ISOSPIN_MASS_RATIOS,
     IsospinChannelResult,
-    compute_isospin_channels,
+)
+from fragile.fractalai.qft.meson_phase_channels import (
+    compute_companion_meson_phase_correlator,
+    MesonPhaseCorrelatorConfig,
+)
+from fragile.fractalai.qft.plotting import (
+    build_all_channels_overlay,
+    build_correlation_decay_plot,
+    build_lyapunov_plot,
+    build_mass_spectrum_bar,
+    build_wilson_histogram_plot,
+    build_wilson_timeseries_plot,
+    build_window_heatmap,
+    ChannelPlot,
 )
 from fragile.fractalai.qft.quantum_gravity import (
-    QuantumGravityConfig,
-    QuantumGravityObservables,
-    QuantumGravityTimeSeries,
     compute_quantum_gravity_observables,
     compute_quantum_gravity_time_evolution,
+    QuantumGravityConfig,
 )
 from fragile.fractalai.qft.quantum_gravity_plotting import (
     build_all_gravity_plots,
     build_all_quantum_gravity_time_series_plots,
 )
-from fragile.fractalai.qft.plotting import (
-    CHANNEL_COLORS,
-    ChannelPlot,
-    build_all_channels_overlay,
-    build_correlation_decay_plot,
-    build_correlator_plot,
-    build_effective_mass_plot,
-    build_effective_mass_plateau_plot,
-    build_lyapunov_plot,
-    build_mass_spectrum_bar,
-    build_window_heatmap,
-    build_wilson_histogram_plot,
-    build_wilson_timeseries_plot,
+from fragile.fractalai.qft.radial_channels import (
+    compute_radial_channels,
+    RadialChannelBundle,
+    RadialChannelConfig,
+)
+from fragile.fractalai.qft.vector_meson_channels import (
+    compute_companion_vector_meson_correlator,
+    VectorMesonCorrelatorConfig,
 )
 
 
@@ -338,7 +331,8 @@ class SwarmConvergence3D(param.Parameterized):
         self.param.y_axis_dim.objects = dim_options
         self.param.z_axis_dim.objects = dim_options
         # For color, include all dimensions plus existing metrics
-        color_options = dim_options + [
+        color_options = [
+            *dim_options,
             "fitness",
             "reward",
             "riemannian_volume",
@@ -376,9 +370,7 @@ class SwarmConvergence3D(param.Parameterized):
                 "neighbor_graph_record=True to show edges)"
             )
         elif self._neighbor_graph_method and self._neighbor_graph_method != "delaunay":
-            self.status_pane.object += (
-                f" | Neighbor graph method: {self._neighbor_graph_method}"
-            )
+            self.status_pane.object += f" | Neighbor graph method: {self._neighbor_graph_method}"
         self._refresh_frame()
 
     def _sync_frame(self, event):
@@ -582,7 +574,11 @@ class SwarmConvergence3D(param.Parameterized):
         return False
 
     def _axis_uses_mc_time(self) -> bool:
-        return self.x_axis_dim == "mc_time" or self.y_axis_dim == "mc_time" or self.z_axis_dim == "mc_time"
+        return (
+            self.x_axis_dim == "mc_time"
+            or self.y_axis_dim == "mc_time"
+            or self.z_axis_dim == "mc_time"
+        )
 
     def _slice_dim_displayed(self, d: int) -> bool:
         if self.time_iteration != "euclidean":
@@ -637,12 +633,12 @@ class SwarmConvergence3D(param.Parameterized):
         if slice_dim is not None:
             label = self._axis_label(f"dim_{slice_dim}")
         if slice_bounds is None:
-            return (
-                f"QFT Swarm Convergence (frame {mc_frame}, step {step}, slice {slice_index})"
-            )
+            return f"QFT Swarm Convergence (frame {mc_frame}, step {step}, slice {slice_index})"
         low, high = slice_bounds
-        label_text = f"{label} in [{low:.2f}, {high:.2f})" if label else (
-            f"time in [{low:.2f}, {high:.2f})"
+        label_text = (
+            f"{label} in [{low:.2f}, {high:.2f})"
+            if label
+            else (f"time in [{low:.2f}, {high:.2f})")
         )
         mode = f", {slice_mode}" if slice_mode else ""
         return (
@@ -824,7 +820,7 @@ class SwarmConvergence3D(param.Parameterized):
                 return np.zeros(alive.sum())
             return positions_all[alive, dim_idx]
 
-        elif dim_spec.startswith("dim_"):
+        if dim_spec.startswith("dim_"):
             # Extract spatial dimension
             dim_idx = int(dim_spec.split("_")[1])
             if dim_idx >= positions_all.shape[1]:
@@ -832,9 +828,8 @@ class SwarmConvergence3D(param.Parameterized):
                 return np.zeros(alive.sum())
             return positions_all[alive, dim_idx]
 
-        else:
-            # Invalid spec, return zeros
-            return np.zeros(alive.sum())
+        # Invalid spec, return zeros
+        return np.zeros(alive.sum())
 
     def _get_color_values(self, frame: int, positions_all: np.ndarray, alive: np.ndarray):
         """Extract color values based on color_metric selection.
@@ -861,13 +856,13 @@ class SwarmConvergence3D(param.Parameterized):
                 colors = np.zeros(alive.sum())
             return colors, True, {"title": "Euclidean Time"}
 
-        elif metric == "mc_time":
+        if metric == "mc_time":
             # Color by MC time (constant for this frame)
             colors = np.full(alive.sum(), frame, dtype=float)
             return colors, True, {"title": "MC Time (frame)"}
 
         # Existing metrics
-        elif metric == "fitness":
+        if metric == "fitness":
             if frame == 0 or self._fitness is None:
                 colors = "#1f77b4"
                 return colors, False, None
@@ -875,7 +870,7 @@ class SwarmConvergence3D(param.Parameterized):
             colors = self._fitness[idx][alive]
             return colors, True, {"title": "Fitness"}
 
-        elif metric == "reward":
+        if metric == "reward":
             if frame == 0 or self._rewards is None:
                 colors = "#1f77b4"
                 return colors, False, None
@@ -883,7 +878,7 @@ class SwarmConvergence3D(param.Parameterized):
             colors = self._rewards[idx][alive]
             return colors, True, {"title": "Reward"}
 
-        elif metric == "riemannian_volume":
+        if metric == "riemannian_volume":
             if frame == 0 or self._volume_weights is None:
                 colors = "#1f77b4"
                 return colors, False, None
@@ -891,14 +886,14 @@ class SwarmConvergence3D(param.Parameterized):
             colors = self._volume_weights[idx][alive]
             return colors, True, {"title": "Riemannian Volume"}
 
-        elif metric == "radius":
+        if metric == "radius":
             # Compute radius from original positions (first 3 dims)
             positions_filtered = positions_all[alive][:, : min(3, positions_all.shape[1])]
             colors = np.linalg.norm(positions_filtered, axis=1)
             return colors, True, {"title": "Radius"}
 
-        else:  # "constant"
-            return "#1f77b4", False, None
+        # "constant"
+        return "#1f77b4", False, None
 
     def _get_color_values_all_frames(
         self,
@@ -977,12 +972,11 @@ class SwarmConvergence3D(param.Parameterized):
             if dim_spec == "euclidean_time":
                 extent = self.bounds_extent
                 return [-extent, extent]
-            elif dim_spec.startswith("dim_"):
+            if dim_spec.startswith("dim_"):
                 # Use bounds extent for spatial dimensions
                 extent = self.bounds_extent
                 return [-extent, extent]
-            else:
-                return [-10, 10]  # Default
+            return [-10, 10]  # Default
 
         return {
             "xaxis": {"range": get_range(self.x_axis_dim)},
@@ -1002,7 +996,7 @@ class SwarmConvergence3D(param.Parameterized):
             return f"Euclidean Time (dim_{dim_idx})"
         if dim_spec == "riemannian_volume":
             return "Riemannian Volume"
-        elif dim_spec.startswith("dim_"):
+        if dim_spec.startswith("dim_"):
             dim_idx = int(dim_spec.split("_")[1])
             labels = ["X", "Y", "Z", "T"]
             if dim_idx < len(labels):
@@ -1024,7 +1018,11 @@ class SwarmConvergence3D(param.Parameterized):
         edge_values = None
         if use_geodesic:
             edge_values = self._get_geodesic_edge_distances(frame)
-            if edge_values is not None and edges is not None and edge_values.shape[0] != edges.shape[0]:
+            if (
+                edge_values is not None
+                and edges is not None
+                and edge_values.shape[0] != edges.shape[0]
+            ):
                 edge_values = None
         if edges is None or positions_mapped.size == 0:
             return None
@@ -1159,9 +1157,7 @@ class SwarmConvergence3D(param.Parameterized):
             showlegend=showlegend,
         )
 
-    def _build_delaunay_trace(
-        self, frame: int, positions: np.ndarray, alive_mask: np.ndarray
-    ):
+    def _build_delaunay_trace(self, frame: int, positions: np.ndarray, alive_mask: np.ndarray):
         import plotly.graph_objects as go
 
         edges = self._get_delaunay_edges(frame)
@@ -1230,12 +1226,10 @@ class SwarmConvergence3D(param.Parameterized):
             slice_index = int(np.clip(frame, 0, max(0, int(self.euclidean_time_bins) - 1)))
             slice_dim = self._resolve_euclidean_dim(positions_all.shape[1])
             slice_mode = "euclidean"
-            slice_dim_visible = self._axis_uses_dim(
-                self.x_axis_dim, slice_dim, positions_all.shape[1]
-            ) or self._axis_uses_dim(
-                self.y_axis_dim, slice_dim, positions_all.shape[1]
-            ) or self._axis_uses_dim(
-                self.z_axis_dim, slice_dim, positions_all.shape[1]
+            slice_dim_visible = (
+                self._axis_uses_dim(self.x_axis_dim, slice_dim, positions_all.shape[1])
+                or self._axis_uses_dim(self.y_axis_dim, slice_dim, positions_all.shape[1])
+                or self._axis_uses_dim(self.z_axis_dim, slice_dim, positions_all.shape[1])
             )
             if slice_dim_visible:
                 slice_mask, slice_bounds, slice_dim = self._get_slice_mask(
@@ -1279,20 +1273,12 @@ class SwarmConvergence3D(param.Parameterized):
             z_coords = np.concatenate(z_all) if z_all else np.array([])
             colors, showscale, colorbar = self._get_color_values_all_frames(n_frames)
         else:
-            x_coords = self._extract_dimension(
-                self.x_axis_dim, mc_frame, positions_all, alive
-            )
-            y_coords = self._extract_dimension(
-                self.y_axis_dim, mc_frame, positions_all, alive
-            )
-            z_coords = self._extract_dimension(
-                self.z_axis_dim, mc_frame, positions_all, alive
-            )
+            x_coords = self._extract_dimension(self.x_axis_dim, mc_frame, positions_all, alive)
+            y_coords = self._extract_dimension(self.y_axis_dim, mc_frame, positions_all, alive)
+            z_coords = self._extract_dimension(self.z_axis_dim, mc_frame, positions_all, alive)
 
             # Extract color values
-            colors, showscale, colorbar = self._get_color_values(
-                mc_frame, positions_all, alive
-            )
+            colors, showscale, colorbar = self._get_color_values(mc_frame, positions_all, alive)
 
         # Create scatter trace
         scatter = go.Scatter3d(
@@ -1402,7 +1388,9 @@ class SwarmConvergence3D(param.Parameterized):
                 highlight_name = "MC frame highlight"
                 highlight_color = "rgba(54, 162, 235, 0.6)"
             else:
-                highlight_frame = int(np.clip(self._resolve_mc_time_index(), 0, self._x.shape[0] - 1))
+                highlight_frame = int(
+                    np.clip(self._resolve_mc_time_index(), 0, self._x.shape[0] - 1)
+                )
                 highlight_name = "MC slice highlight"
                 highlight_color = "rgba(0, 166, 140, 0.55)"
             alive_h = self._get_alive_mask(highlight_frame)
@@ -1612,14 +1600,10 @@ class SwarmConvergence3D(param.Parameterized):
             value=self.time_iteration,
             sizing_mode="stretch_width",
         )
-        time_toggle.param.watch(
-            lambda e: setattr(self, "time_iteration", e.new), "value"
-        )
+        time_toggle.param.watch(lambda e: setattr(self, "time_iteration", e.new), "value")
         self.param.watch(
             lambda e, widget_ref=time_toggle: (
-                None
-                if widget_ref.value == e.new
-                else setattr(widget_ref, "value", e.new)
+                None if widget_ref.value == e.new else setattr(widget_ref, "value", e.new)
             ),
             "time_iteration",
         )
@@ -1680,6 +1664,7 @@ class SwarmConvergence3D(param.Parameterized):
         self._sync_mc_slice_visibility()
         self._sync_time_bin_visibility()
         self._update_player_mode()
+
         def _update_euclidean_dim_note(*_):
             if self.history is None:
                 euclidean_dim_note.object = "**Euclidean time dimension:** dim_0"
@@ -1808,7 +1793,8 @@ class ChannelSettings(param.Parameterized):
     """Settings for the new Channels tab (independent of old particle analysis)."""
 
     simulation_range = param.Range(
-        default=(0.1, 1.0), bounds=(0.0, 1.0),
+        default=(0.1, 1.0),
+        bounds=(0.0, 1.0),
         doc="Fraction of simulation timeline to use (start, end). Trims both warmup and late-time frames.",
     )
     max_lag = param.Integer(default=80, bounds=(10, 200))
@@ -1945,7 +1931,8 @@ class RadialSettings(param.Parameterized):
         ),
     )
     simulation_range = param.Range(
-        default=(0.1, 1.0), bounds=(0.0, 1.0),
+        default=(0.1, 1.0),
+        bounds=(0.0, 1.0),
         doc="Fraction of simulation timeline to use (start, end). Trims both warmup and late-time frames.",
     )
     max_lag = param.Integer(
@@ -2029,7 +2016,8 @@ class AnisotropicEdgeSettings(param.Parameterized):
     """Settings for anisotropic edge-channel MC-time correlators."""
 
     simulation_range = param.Range(
-        default=(0.1, 1.0), bounds=(0.0, 1.0),
+        default=(0.1, 1.0),
+        bounds=(0.0, 1.0),
         doc="Fraction of simulation timeline to use (start, end).",
     )
     mc_time_index = param.Integer(
@@ -2292,7 +2280,8 @@ class ElectroweakSettings(param.Parameterized):
     """Settings for electroweak (U1/SU2) channel correlators."""
 
     simulation_range = param.Range(
-        default=(0.1, 1.0), bounds=(0.0, 1.0),
+        default=(0.1, 1.0),
+        bounds=(0.0, 1.0),
         doc="Fraction of simulation timeline to use (start, end). Trims both warmup and late-time frames.",
     )
     max_lag = param.Integer(default=80, bounds=(10, 200))
@@ -2810,7 +2799,9 @@ def _parse_dims_spec(spec: str, history_d: int) -> list[int] | None:
     try:
         dims = sorted({int(item.strip()) for item in spec_clean.split(",") if item.strip()})
     except ValueError as exc:
-        raise ValueError(f"Invalid spatial_dims_spec: {spec!r}. Expected comma-separated integers.") from exc
+        raise ValueError(
+            f"Invalid spatial_dims_spec: {spec!r}. Expected comma-separated integers."
+        ) from exc
     if not dims:
         return None
     invalid = [dim for dim in dims if dim < 0 or dim >= history_d]
@@ -2828,8 +2819,7 @@ def _parse_triplet_dims_spec(spec: str, history_d: int) -> tuple[int, int, int] 
         return None
     if len(dims) != 3:
         raise ValueError(
-            "baryon_color_dims_spec must contain exactly 3 dims; "
-            f"received {dims}."
+            "baryon_color_dims_spec must contain exactly 3 dims; " f"received {dims}."
         )
     return int(dims[0]), int(dims[1]), int(dims[2])
 
@@ -2898,9 +2888,7 @@ def _bootstrap_errors_batched_scalar_series(
     else:
         valid_mask = valid_t.to(dtype=torch.bool, device=series_stack.device)
         if valid_mask.shape != (n_time,):
-            raise ValueError(
-                f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}."
-            )
+            raise ValueError(f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}.")
     if not torch.any(valid_mask):
         return errors
 
@@ -2945,9 +2933,7 @@ def _bootstrap_error_vector_dot_series(
     else:
         valid_mask = valid_t.to(dtype=torch.bool, device=vector_series.device)
         if valid_mask.shape != (n_time,):
-            raise ValueError(
-                f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}."
-            )
+            raise ValueError(f"valid_t must have shape [{n_time}], got {tuple(valid_mask.shape)}.")
     if not torch.any(valid_mask):
         return errors
 
@@ -3118,7 +3104,9 @@ def _compute_anisotropic_vector_meson_results(
         mass=float(settings.mass),
         ell0=settings.ell0,
         color_dims=_parse_triplet_dims_spec(settings.vector_meson_color_dims_spec, history.d),
-        position_dims=_parse_triplet_dims_spec(settings.vector_meson_position_dims_spec, history.d),
+        position_dims=_parse_triplet_dims_spec(
+            settings.vector_meson_position_dims_spec, history.d
+        ),
         pair_selection=str(settings.vector_meson_pair_selection),
         eps=float(settings.vector_meson_eps),
         use_unit_displacement=bool(settings.vector_meson_use_unit_displacement),
@@ -3248,11 +3236,11 @@ def _map_time_dimension(time_dimension: str, history_d: int | None = None) -> tu
         - euclidean_time_dim: 0-3 (dimension index, clamped for "t" if needed)
     """
     mapping = {
-        "monte_carlo": ("mc", 3),      # MC time, dim doesn't matter
-        "x": ("euclidean", 0),         # X spatial dimension
-        "y": ("euclidean", 1),         # Y spatial dimension
-        "z": ("euclidean", 2),         # Z spatial dimension
-        "t": ("euclidean", 3),         # Euclidean time (default)
+        "monte_carlo": ("mc", 3),  # MC time, dim doesn't matter
+        "x": ("euclidean", 0),  # X spatial dimension
+        "y": ("euclidean", 1),  # Y spatial dimension
+        "z": ("euclidean", 2),  # Z spatial dimension
+        "t": ("euclidean", 3),  # Euclidean time (default)
     }
 
     if time_dimension not in mapping:
@@ -3401,14 +3389,23 @@ def _compute_anisotropic_edge_bundle(
         override_channels.add("glueball")
     anisotropic_channels = [channel for channel in channels if channel not in override_channels]
 
-    output = compute_anisotropic_edge_channels(history, config=config, channels=anisotropic_channels)
-    if not use_baryon_triplet and not use_meson_phase and not use_vector_meson and not use_glueball_color:
+    output = compute_anisotropic_edge_channels(
+        history, config=config, channels=anisotropic_channels
+    )
+    if (
+        not use_baryon_triplet
+        and not use_meson_phase
+        and not use_vector_meson
+        and not use_glueball_color
+    ):
         return output
 
     merged_results = dict(output.channel_results)
     valid_frame_counts = [int(output.n_valid_frames)]
     if use_baryon_triplet:
-        baryon_result, baryon_valid_frames = _compute_anisotropic_baryon_triplet_result(history, settings)
+        baryon_result, baryon_valid_frames = _compute_anisotropic_baryon_triplet_result(
+            history, settings
+        )
         merged_results["nucleon"] = baryon_result
         valid_frame_counts.append(int(baryon_valid_frames))
     if use_meson_phase:
@@ -3482,7 +3479,9 @@ def _compute_strong_glueball_for_anisotropic_edge(
         channel_config,
         channels=["glueball"],
     )
-    glueball_series = operator_series.operators.get("glueball", torch.zeros(0, dtype=torch.float32))
+    glueball_series = operator_series.operators.get(
+        "glueball", torch.zeros(0, dtype=torch.float32)
+    )
     return compute_channel_correlator(
         series=glueball_series,
         dt=operator_series.dt,
@@ -4170,7 +4169,7 @@ def _compute_fractal_set_measurements(
         else:
             spatial_cut_types = (str(settings.cut_geometry),)
     else:
-        spatial_cut_types = tuple()
+        spatial_cut_types = ()
 
     graph_specs: list[tuple[str, str]] = []
     if include_graph:
@@ -4247,12 +4246,8 @@ def _compute_fractal_set_measurements(
             s_fit = _count_cross_boundary(masks, companions_fit[info_idx])
             s_total = s_dist + s_fit
             area_cst = _count_crossing_lineages(masks, labels)
-            s_dist_geom = _sum_cross_boundary_weights(
-                masks, companions_dist[info_idx], w_dist
-            )
-            s_fit_geom = _sum_cross_boundary_weights(
-                masks, companions_fit[info_idx], w_fit
-            )
+            s_dist_geom = _sum_cross_boundary_weights(masks, companions_dist[info_idx], w_dist)
+            s_fit_geom = _sum_cross_boundary_weights(masks, companions_fit[info_idx], w_fit)
             s_total_geom = s_dist_geom + s_fit_geom
             area_cst_geom = _count_crossing_lineages_weighted(
                 masks=masks,
@@ -4263,42 +4258,38 @@ def _compute_fractal_set_measurements(
             region_size = masks.sum(axis=1, dtype=np.int64)
 
             for local_idx, cut_value in enumerate(cut_values.tolist()):
-                rows.append(
-                    {
-                        "info_idx": int(info_idx),
-                        "recorded_step": step,
-                        "partition_family": partition_family,
-                        "cut_type": cut_type,
-                        "cut_value": float(cut_value),
-                        "region_size": int(region_size[local_idx]),
-                        "area_cst": int(area_cst[local_idx]),
-                        "area_cst_geom": float(area_cst_geom[local_idx]),
-                        "s_dist": int(s_dist[local_idx]),
-                        "s_fit": int(s_fit[local_idx]),
-                        "s_total": int(s_total[local_idx]),
-                        "s_dist_geom": float(s_dist_geom[local_idx]),
-                        "s_fit_geom": float(s_fit_geom[local_idx]),
-                        "s_total_geom": float(s_total_geom[local_idx]),
-                    }
-                )
-
-            frame_rows.append(
-                {
+                rows.append({
                     "info_idx": int(info_idx),
                     "recorded_step": step,
                     "partition_family": partition_family,
                     "cut_type": cut_type,
-                    "n_partitions": int(masks.shape[0]),
-                    "mean_area_cst": float(np.mean(area_cst)),
-                    "mean_area_cst_geom": float(np.mean(area_cst_geom)),
-                    "mean_s_dist": float(np.mean(s_dist)),
-                    "mean_s_fit": float(np.mean(s_fit)),
-                    "mean_s_total": float(np.mean(s_total)),
-                    "mean_s_dist_geom": float(np.mean(s_dist_geom)),
-                    "mean_s_fit_geom": float(np.mean(s_fit_geom)),
-                    "mean_s_total_geom": float(np.mean(s_total_geom)),
-                }
-            )
+                    "cut_value": float(cut_value),
+                    "region_size": int(region_size[local_idx]),
+                    "area_cst": int(area_cst[local_idx]),
+                    "area_cst_geom": float(area_cst_geom[local_idx]),
+                    "s_dist": int(s_dist[local_idx]),
+                    "s_fit": int(s_fit[local_idx]),
+                    "s_total": int(s_total[local_idx]),
+                    "s_dist_geom": float(s_dist_geom[local_idx]),
+                    "s_fit_geom": float(s_fit_geom[local_idx]),
+                    "s_total_geom": float(s_total_geom[local_idx]),
+                })
+
+            frame_rows.append({
+                "info_idx": int(info_idx),
+                "recorded_step": step,
+                "partition_family": partition_family,
+                "cut_type": cut_type,
+                "n_partitions": int(masks.shape[0]),
+                "mean_area_cst": float(np.mean(area_cst)),
+                "mean_area_cst_geom": float(np.mean(area_cst_geom)),
+                "mean_s_dist": float(np.mean(s_dist)),
+                "mean_s_fit": float(np.mean(s_fit)),
+                "mean_s_total": float(np.mean(s_total)),
+                "mean_s_dist_geom": float(np.mean(s_dist_geom)),
+                "mean_s_fit_geom": float(np.mean(s_fit_geom)),
+                "mean_s_total_geom": float(np.mean(s_total_geom)),
+            })
 
         for cut_type in spatial_cut_types:
             masks, cut_values = _build_region_masks(
@@ -4364,19 +4355,17 @@ def _compute_fractal_set_measurements(
         x_all = points_df[area_key].to_numpy(dtype=float)
         y_all = points_df[metric_key].to_numpy(dtype=float)
         slope, intercept, r2 = _fit_linear_relation(x_all, y_all)
-        regression_rows.append(
-            {
-                "metric": metric_key,
-                "metric_label": metric_label,
-                "area_key": area_key,
-                "cut_type": "all",
-                "partition_family": "all",
-                "n_points": int(x_all.size),
-                "slope_alpha": slope,
-                "intercept": intercept,
-                "r2": r2,
-            }
-        )
+        regression_rows.append({
+            "metric": metric_key,
+            "metric_label": metric_label,
+            "area_key": area_key,
+            "cut_type": "all",
+            "partition_family": "all",
+            "n_points": int(x_all.size),
+            "slope_alpha": slope,
+            "intercept": intercept,
+            "r2": r2,
+        })
 
         for cut_type in sorted(points_df["cut_type"].unique()):
             subset = points_df[points_df["cut_type"] == cut_type]
@@ -4385,38 +4374,34 @@ def _compute_fractal_set_measurements(
             slope, intercept, r2 = _fit_linear_relation(x, y)
             families = subset["partition_family"].unique().tolist()
             family = str(families[0]) if len(families) == 1 else "mixed"
-            regression_rows.append(
-                {
-                    "metric": metric_key,
-                    "metric_label": metric_label,
-                    "area_key": area_key,
-                    "cut_type": str(cut_type),
-                    "partition_family": family,
-                    "n_points": int(x.size),
-                    "slope_alpha": slope,
-                    "intercept": intercept,
-                    "r2": r2,
-                }
-            )
+            regression_rows.append({
+                "metric": metric_key,
+                "metric_label": metric_label,
+                "area_key": area_key,
+                "cut_type": str(cut_type),
+                "partition_family": family,
+                "n_points": int(x.size),
+                "slope_alpha": slope,
+                "intercept": intercept,
+                "r2": r2,
+            })
 
         for family in sorted(points_df["partition_family"].unique()):
             subset = points_df[points_df["partition_family"] == family]
             x = subset[area_key].to_numpy(dtype=float)
             y = subset[metric_key].to_numpy(dtype=float)
             slope, intercept, r2 = _fit_linear_relation(x, y)
-            regression_rows.append(
-                {
-                    "metric": metric_key,
-                    "metric_label": metric_label,
-                    "area_key": area_key,
-                    "cut_type": f"family:{family}",
-                    "partition_family": str(family),
-                    "n_points": int(x.size),
-                    "slope_alpha": slope,
-                    "intercept": intercept,
-                    "r2": r2,
-                }
-            )
+            regression_rows.append({
+                "metric": metric_key,
+                "metric_label": metric_label,
+                "area_key": area_key,
+                "cut_type": f"family:{family}",
+                "partition_family": str(family),
+                "n_points": int(x.size),
+                "slope_alpha": slope,
+                "intercept": intercept,
+                "r2": r2,
+            })
 
     regression_df = pd.DataFrame(regression_rows)
     return points_df, regression_df, frame_df
@@ -4526,7 +4511,9 @@ def _format_fractal_set_summary(
 ) -> str:
     """Summarize Fractal Set boundary measurements and area-law fits."""
     if points_df.empty:
-        return "## Fractal Set Summary\n_No valid measurements. Load a RunHistory and run compute._"
+        return (
+            "## Fractal Set Summary\n_No valid measurements. Load a RunHistory and run compute._"
+        )
 
     lines = [
         "## Fractal Set Summary",
@@ -4568,9 +4555,7 @@ def _format_fractal_set_summary(
             b_alpha = float(b.get("slope_alpha", float("nan")))
             b_r2 = float(b.get("r2", float("nan")))
             if np.isfinite(b_alpha) and np.isfinite(b_r2):
-                lines.append(
-                    f"  random baseline: alpha={b_alpha:.6f}, R2={b_r2:.4f}"
-                )
+                lines.append(f"  random baseline: alpha={b_alpha:.6f}, R2={b_r2:.4f}")
 
     if not frame_df.empty:
         lines.append(f"- Mean per-frame Area_CST: {float(frame_df['mean_area_cst'].mean()):.3f}")
@@ -4626,28 +4611,26 @@ def _build_fractal_set_baseline_comparison(regression_df: pd.DataFrame) -> pd.Da
                 continue
             r2 = float(fit.get("r2", float("nan")))
             alpha = float(fit.get("slope_alpha", float("nan")))
-            rows.append(
-                {
-                    "metric": metric_label,
-                    "cut_type": cut_type,
-                    "partition_family": str(fit.get("partition_family", "")),
-                    "n_points": int(fit.get("n_points", 0)),
-                    "alpha": alpha,
-                    "r2": r2,
-                    "baseline_alpha_random": baseline_alpha,
-                    "baseline_r2_random": baseline_r2,
-                    "delta_r2_vs_random": (
-                        r2 - baseline_r2
-                        if np.isfinite(r2) and np.isfinite(baseline_r2)
-                        else float("nan")
-                    ),
-                    "delta_alpha_vs_random": (
-                        alpha - baseline_alpha
-                        if np.isfinite(alpha) and np.isfinite(baseline_alpha)
-                        else float("nan")
-                    ),
-                }
-            )
+            rows.append({
+                "metric": metric_label,
+                "cut_type": cut_type,
+                "partition_family": str(fit.get("partition_family", "")),
+                "n_points": int(fit.get("n_points", 0)),
+                "alpha": alpha,
+                "r2": r2,
+                "baseline_alpha_random": baseline_alpha,
+                "baseline_r2_random": baseline_r2,
+                "delta_r2_vs_random": (
+                    r2 - baseline_r2
+                    if np.isfinite(r2) and np.isfinite(baseline_r2)
+                    else float("nan")
+                ),
+                "delta_alpha_vs_random": (
+                    alpha - baseline_alpha
+                    if np.isfinite(alpha) and np.isfinite(baseline_alpha)
+                    else float("nan")
+                ),
+            })
 
     if not rows:
         return pd.DataFrame()
@@ -4664,7 +4647,9 @@ def _compute_coupling_constants(
     d = float(history.d) if history is not None else float("nan")
     h_eff = float(max(h_eff, 1e-12))
 
-    epsilon_d = epsilon_d or _resolve_history_param(history, "companion_selection", "epsilon", default=None)
+    epsilon_d = epsilon_d or _resolve_history_param(
+        history, "companion_selection", "epsilon", default=None
+    )
     epsilon_c = epsilon_c or _resolve_history_param(
         history, "companion_selection_clone", "epsilon", default=None
     )
@@ -4724,36 +4709,28 @@ def _build_coupling_rows(
     if "g2_proxy" in proxies:
         rows.append({"name": "g2_proxy", "value": proxies.get("g2_proxy"), "note": "phase std"})
     if "sin2_theta_w_proxy" in proxies:
-        rows.append(
-            {
-                "name": "sin2θw proxy",
-                "value": proxies.get("sin2_theta_w_proxy"),
-                "note": "from phase stds",
-            }
-        )
+        rows.append({
+            "name": "sin2θw proxy",
+            "value": proxies.get("sin2_theta_w_proxy"),
+            "note": "from phase stds",
+        })
     if "tan_theta_w_proxy" in proxies:
-        rows.append(
-            {
-                "name": "tanθw proxy",
-                "value": proxies.get("tan_theta_w_proxy"),
-                "note": "from phase stds",
-            }
-        )
+        rows.append({
+            "name": "tanθw proxy",
+            "value": proxies.get("tan_theta_w_proxy"),
+            "note": "from phase stds",
+        })
     if include_strong:
-        rows.append(
-            {
-                "name": "g3_est",
-                "value": couplings.get("g3_est"),
-                "note": "from ν, h_eff, <K_visc^2>",
-            }
-        )
-        rows.append(
-            {
-                "name": "<K_visc^2> proxy",
-                "value": couplings.get("kvisc_sq_proxy"),
-                "note": "mean ||F_visc||^2 / ν^2",
-            }
-        )
+        rows.append({
+            "name": "g3_est",
+            "value": couplings.get("g3_est"),
+            "note": "from ν, h_eff, <K_visc^2>",
+        })
+        rows.append({
+            "name": "<K_visc^2> proxy",
+            "value": couplings.get("kvisc_sq_proxy"),
+            "note": "mean ||F_visc||^2 / ν^2",
+        })
 
     for row in rows:
         name = row.get("name")
@@ -4977,7 +4954,7 @@ def _build_best_fit_rows_generic(
     # Collect all mass keys that predictions should cover
     mass_keys = list(masses.keys())
     # Collect all reference dicts for closest matching
-    all_refs: dict[str, dict[str, float]] = {g: r for g, r in ref_groups}
+    all_refs: dict[str, dict[str, float]] = dict(ref_groups)
 
     for label, anchor_list in fit_sets:
         scale = _best_fit_scale(masses, anchor_list)
@@ -5117,7 +5094,9 @@ def _build_best_fit_rows(
 ) -> list[dict[str, Any]]:
     """Build best-fit scale rows using baryon/meson references."""
     return _build_best_fit_rows_generic(
-        masses, [("baryon", BARYON_REFS), ("meson", MESON_REFS)], r2s,
+        masses,
+        [("baryon", BARYON_REFS), ("meson", MESON_REFS)],
+        r2s,
     )
 
 
@@ -5181,11 +5160,11 @@ def _build_anchor_rows(
 
 # Default electroweak mass references (GeV) mapped to proxy channels.
 DEFAULT_ELECTROWEAK_REFS = {
-    "u1_phase": 0.000511,   # electron
-    "u1_dressed": 0.105658, # muon
-    "su2_phase": 80.379,    # W boson
-    "su2_doublet": 91.1876, # Z boson
-    "ew_mixed": 1.77686,    # tau
+    "u1_phase": 0.000511,  # electron
+    "u1_dressed": 0.105658,  # muon
+    "su2_phase": 80.379,  # W boson
+    "su2_doublet": 91.1876,  # Z boson
+    "ew_mixed": 1.77686,  # tau
 }
 
 ELECTROWEAK_COUPLING_NAMES = (
@@ -5214,6 +5193,7 @@ def _format_ref_value(value: float | None) -> str:
         return ""
     return f"{value:.6f}"
 
+
 # Channel-to-family mapping for physics comparisons
 CHANNEL_FAMILY_MAP = {
     "scalar": "meson",  # σ (sigma)
@@ -5233,9 +5213,9 @@ def _get_channel_mass(
     """Extract mass from a channel result based on mode."""
     if mode == "AIC-Weighted":
         return result.mass_fit.get("mass", 0.0)
-    else:  # Best Window
-        best_window = result.mass_fit.get("best_window", {})
-        return best_window.get("mass", 0.0)
+    # Best Window
+    best_window = result.mass_fit.get("best_window", {})
+    return best_window.get("mass", 0.0)
 
 
 def _get_channel_r2(
@@ -5420,8 +5400,6 @@ def _get_radial_mass_error(
     return mass_error / dt
 
 
-
-
 def _build_electroweak_best_fit_rows(
     masses: dict[str, float],
     refs: dict[str, float],
@@ -5457,15 +5435,13 @@ def _build_electroweak_comparison_rows(
         err_pct = None
         if obs is not None and obs > 0:
             err_pct = (pred - obs) / obs * 100.0
-        rows.append(
-            {
-                "channel": name,
-                "alg_mass": alg_mass,
-                "obs_mass_GeV": obs,
-                "pred_mass_GeV": pred,
-                "error_pct": err_pct,
-            }
-        )
+        rows.append({
+            "channel": name,
+            "alg_mass": alg_mass,
+            "obs_mass_GeV": obs,
+            "pred_mass_GeV": pred,
+            "error_pct": err_pct,
+        })
     return rows
 
 
@@ -5491,14 +5467,12 @@ def _build_electroweak_ratio_rows(
             observed = obs_num / obs_den
             if observed > 0:
                 error_pct = (measured - observed) / observed * 100.0
-        rows.append(
-            {
-                "ratio": f"{name}/{base_name}",
-                "measured": measured,
-                "observed": observed,
-                "error_pct": error_pct,
-            }
-        )
+        rows.append({
+            "ratio": f"{name}/{base_name}",
+            "measured": measured,
+            "observed": observed,
+            "error_pct": error_pct,
+        })
     return rows
 
 
@@ -5608,8 +5582,12 @@ def _update_correlator_plots(
             window_aic = _to_numpy(result.window_aic)
             window_r2 = _to_numpy(result.window_r2) if result.window_r2 is not None else None
             best_window = result.mass_fit.get("best_window", {})
-            color_metric = str(heatmap_color_metric_widget.value) if heatmap_color_metric_widget else "mass"
-            alpha_metric = str(heatmap_alpha_metric_widget.value) if heatmap_alpha_metric_widget else "aic"
+            color_metric = (
+                str(heatmap_color_metric_widget.value) if heatmap_color_metric_widget else "mass"
+            )
+            alpha_metric = (
+                str(heatmap_alpha_metric_widget.value) if heatmap_alpha_metric_widget else "aic"
+            )
             heatmap_plot = build_window_heatmap(
                 window_masses,
                 window_aic,
@@ -5625,12 +5603,12 @@ def _update_correlator_plots(
                     pn.pane.HoloViews(heatmap_plot, sizing_mode="stretch_width", linked_axes=False)
                 )
 
-    plateau_container.objects = channel_plot_items if channel_plot_items else [
+    plateau_container.objects = channel_plot_items or [
         pn.pane.Markdown("_No channel plots available._")
     ]
 
     if heatmap_container is not None:
-        heatmap_container.objects = heatmap_items if heatmap_items else [
+        heatmap_container.objects = heatmap_items or [
             pn.pane.Markdown("_No window heatmaps available._")
         ]
 
@@ -5662,8 +5640,12 @@ def _update_strong_tables(
     if ratio_specs is None:
         ratio_specs = STRONG_FORCE_RATIO_SPECS
 
-    _update_mass_table(results, mass_table, mode, mass_getter=mass_getter, error_getter=error_getter)
-    ratio_pane.object = _format_ratios(results, mode, mass_getter=mass_getter, ratio_specs=ratio_specs)
+    _update_mass_table(
+        results, mass_table, mode, mass_getter=mass_getter, error_getter=error_getter
+    )
+    ratio_pane.object = _format_ratios(
+        results, mode, mass_getter=mass_getter, ratio_specs=ratio_specs
+    )
 
     channel_masses = _extract_masses(results, mode, mass_getter=mass_getter)
     channel_r2 = _extract_r2(results, mode)
@@ -5702,6 +5684,7 @@ def _run_tab_computation(state, status_pane, label, compute_fn):
     except Exception as e:
         status_pane.object = f"**Error:** {e}"
         import traceback
+
         traceback.print_exc()
 
 
@@ -5754,7 +5737,11 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.gas_params["clone_every"] = 1
         gas_config.neighbor_graph_method = "delaunay"
         gas_config.neighbor_graph_record = True
-        gas_config.neighbor_weight_modes = ["inverse_riemannian_distance", "kernel", "riemannian_kernel_volume"]
+        gas_config.neighbor_weight_modes = [
+            "inverse_riemannian_distance",
+            "kernel",
+            "riemannian_kernel_volume",
+        ]
         gas_config.init_offset = 0.0
         gas_config.init_spread = 0.0
         gas_config.init_velocity_scale = 0.0
@@ -6010,9 +5997,15 @@ def create_app() -> pn.template.FastListTemplate:
         fractal_set_plot_dist = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         fractal_set_plot_fit = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         fractal_set_plot_total = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        fractal_set_plot_dist_geom = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        fractal_set_plot_fit_geom = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        fractal_set_plot_total_geom = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        fractal_set_plot_dist_geom = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        fractal_set_plot_fit_geom = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        fractal_set_plot_total_geom = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
         fractal_set_regression_table = pn.widgets.Tabulator(
             pd.DataFrame(),
             pagination=None,
@@ -6059,21 +6052,33 @@ def create_app() -> pn.template.FastListTemplate:
             einstein_settings,
             show_name=False,
             parameters=[
-                "mc_time_index", "regularization", "stress_energy_mode",
-                "bulk_fraction", "scalar_density_mode", "knn_k",
-                "coarse_grain_bins", "coarse_grain_min_points",
-                "temporal_average_enabled", "temporal_window_frames", "temporal_stride",
-                "bootstrap_samples", "bootstrap_confidence", "bootstrap_seed",
+                "mc_time_index",
+                "regularization",
+                "stress_energy_mode",
+                "bulk_fraction",
+                "scalar_density_mode",
+                "knn_k",
+                "coarse_grain_bins",
+                "coarse_grain_min_points",
+                "temporal_average_enabled",
+                "temporal_window_frames",
+                "temporal_stride",
+                "bootstrap_samples",
+                "bootstrap_confidence",
+                "bootstrap_seed",
                 "bootstrap_frame_block_size",
-                "g_newton_metric", "g_newton_manual",
+                "g_newton_metric",
+                "g_newton_manual",
             ],
         )
         einstein_summary = pn.pane.Markdown("", sizing_mode="stretch_width")
         einstein_scalar_plot = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         )
         einstein_scalar_log_plot = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         )
         einstein_tensor_table = pn.pane.HoloViews(linked_axes=False)
         einstein_curvature_hist = pn.pane.HoloViews(linked_axes=False)
@@ -6158,8 +6163,12 @@ def create_app() -> pn.template.FastListTemplate:
         # Plot containers for channel tab
         # Channel plots container removed - now using channel_plateau_plots with ChannelPlot
         channel_plots_spectrum = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        channel_plots_overlay_corr = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        channel_plots_overlay_meff = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        channel_plots_overlay_corr = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        channel_plots_overlay_meff = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
         strong_coupling_table = pn.widgets.Tabulator(
             pd.DataFrame(),
             pagination=None,
@@ -6311,9 +6320,7 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         # Plot containers (4D) - using ChannelPlot for side-by-side display
-        radial4d_plots_spectrum = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
+        radial4d_plots_spectrum = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         radial4d_plots_overlay_corr = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
@@ -6660,26 +6667,22 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
         radial_ew_coupling_ref_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "name": list(ELECTROWEAK_COUPLING_NAMES),
-                    **{
-                        col: [
-                            _format_ref_value(
-                                DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(col)
-                            )
-                            for name in ELECTROWEAK_COUPLING_NAMES
-                        ]
-                        for col in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS
-                    },
-                }
-            ),
+            pd.DataFrame({
+                "name": list(ELECTROWEAK_COUPLING_NAMES),
+                **{
+                    col: [
+                        _format_ref_value(DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(col))
+                        for name in ELECTROWEAK_COUPLING_NAMES
+                    ]
+                    for col in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS
+                },
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
             selectable=False,
             configuration={"editable": True},
-            editors={column: "input" for column in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS},
+            editors=dict.fromkeys(ELECTROWEAK_COUPLING_REFERENCE_COLUMNS, "input"),
         )
         radial_ew_phase_plot = pn.pane.HTML(
             "<p><em>Phase histograms will appear after analysis.</em></p>",
@@ -6687,15 +6690,13 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         radial_ew_ref_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "channel": list(ELECTROWEAK_CHANNELS),
-                    "mass_ref_GeV": [
-                        _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
-                        for name in ELECTROWEAK_CHANNELS
-                    ],
-                }
-            ),
+            pd.DataFrame({
+                "channel": list(ELECTROWEAK_CHANNELS),
+                "mass_ref_GeV": [
+                    _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
+                    for name in ELECTROWEAK_CHANNELS
+                ],
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
@@ -6807,9 +6808,7 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         # Plot containers (3D average) - using ChannelPlot for side-by-side display
-        radial3d_plots_spectrum = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
+        radial3d_plots_spectrum = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         radial3d_plots_overlay_corr = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
@@ -6869,33 +6868,27 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
         electroweak_coupling_ref_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "name": list(ELECTROWEAK_COUPLING_NAMES),
-                    "observed_mZ": [
-                        _format_ref_value(
-                            DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(
-                                "observed_mZ"
-                            )
-                        )
-                        for name in ELECTROWEAK_COUPLING_NAMES
-                    ],
-                    "observed_GUT": [
-                        _format_ref_value(
-                            DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(
-                                "observed_GUT"
-                            )
-                        )
-                        for name in ELECTROWEAK_COUPLING_NAMES
-                    ],
-                }
-            ),
+            pd.DataFrame({
+                "name": list(ELECTROWEAK_COUPLING_NAMES),
+                "observed_mZ": [
+                    _format_ref_value(
+                        DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get("observed_mZ")
+                    )
+                    for name in ELECTROWEAK_COUPLING_NAMES
+                ],
+                "observed_GUT": [
+                    _format_ref_value(
+                        DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get("observed_GUT")
+                    )
+                    for name in ELECTROWEAK_COUPLING_NAMES
+                ],
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
             selectable=False,
             configuration={"editable": True},
-            editors={column: "input" for column in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS},
+            editors=dict.fromkeys(ELECTROWEAK_COUPLING_REFERENCE_COLUMNS, "input"),
         )
         electroweak_phase_plot = pn.pane.HTML(
             "<p><em>Phase histograms will appear after analysis.</em></p>",
@@ -7011,15 +7004,13 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
         electroweak_ref_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "channel": list(ELECTROWEAK_CHANNELS),
-                    "mass_ref_GeV": [
-                        _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
-                        for name in ELECTROWEAK_CHANNELS
-                    ],
-                }
-            ),
+            pd.DataFrame({
+                "channel": list(ELECTROWEAK_CHANNELS),
+                "mass_ref_GeV": [
+                    _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
+                    for name in ELECTROWEAK_CHANNELS
+                ],
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
@@ -7095,26 +7086,22 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
         new_dirac_ew_coupling_ref_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "name": list(ELECTROWEAK_COUPLING_NAMES),
-                    **{
-                        col: [
-                            _format_ref_value(
-                                DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(col)
-                            )
-                            for name in ELECTROWEAK_COUPLING_NAMES
-                        ]
-                        for col in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS
-                    },
-                }
-            ),
+            pd.DataFrame({
+                "name": list(ELECTROWEAK_COUPLING_NAMES),
+                **{
+                    col: [
+                        _format_ref_value(DEFAULT_ELECTROWEAK_COUPLING_REFS.get(name, {}).get(col))
+                        for name in ELECTROWEAK_COUPLING_NAMES
+                    ]
+                    for col in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS
+                },
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
             selectable=False,
             configuration={"editable": True},
-            editors={column: "input" for column in ELECTROWEAK_COUPLING_REFERENCE_COLUMNS},
+            editors=dict.fromkeys(ELECTROWEAK_COUPLING_REFERENCE_COLUMNS, "input"),
         )
 
         new_dirac_ew_channel_plots = pn.Column(sizing_mode="stretch_width")
@@ -7169,15 +7156,13 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
         new_dirac_ew_ref_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "channel": list(ELECTROWEAK_CHANNELS),
-                    "mass_ref_GeV": [
-                        _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
-                        for name in ELECTROWEAK_CHANNELS
-                    ],
-                }
-            ),
+            pd.DataFrame({
+                "channel": list(ELECTROWEAK_CHANNELS),
+                "mass_ref_GeV": [
+                    _format_ref_value(DEFAULT_ELECTROWEAK_REFS.get(name))
+                    for name in ELECTROWEAK_CHANNELS
+                ],
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
@@ -7186,9 +7171,7 @@ def create_app() -> pn.template.FastListTemplate:
             editors={"mass_ref_GeV": "input"},
         )
 
-        new_dirac_ew_dirac_full = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
+        new_dirac_ew_dirac_full = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         new_dirac_ew_dirac_walker = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
@@ -7239,32 +7222,30 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         new_dirac_ew_observed_table = pn.widgets.Tabulator(
-            pd.DataFrame(
-                {
-                    "observable": [
-                        "electron_dirac",
-                        "electron_yukawa",
-                        "electron_component",
-                        "u1_phase",
-                        "u1_dressed",
-                        "su2_phase",
-                        "su2_doublet",
-                        "ew_mixed",
-                        "higgs_sigma",
-                    ],
-                    "observed_GeV": [
-                        "0.000511",
-                        "0.000511",
-                        "0.000511",
-                        "0.000511",
-                        "0.105658",
-                        "80.379",
-                        "91.1876",
-                        "1.77686",
-                        "125.10",
-                    ],
-                }
-            ),
+            pd.DataFrame({
+                "observable": [
+                    "electron_dirac",
+                    "electron_yukawa",
+                    "electron_component",
+                    "u1_phase",
+                    "u1_dressed",
+                    "su2_phase",
+                    "su2_doublet",
+                    "ew_mixed",
+                    "higgs_sigma",
+                ],
+                "observed_GeV": [
+                    "0.000511",
+                    "0.000511",
+                    "0.000511",
+                    "0.000511",
+                    "0.105658",
+                    "80.379",
+                    "91.1876",
+                    "1.77686",
+                    "125.10",
+                ],
+            }),
             pagination=None,
             show_index=False,
             sizing_mode="stretch_width",
@@ -7322,27 +7303,13 @@ def create_app() -> pn.template.FastListTemplate:
             "**Action Summary:** _Compute observables to populate._",
             sizing_mode="stretch_width",
         )
-        higgs_metric_heatmap = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        higgs_centroid_field = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        higgs_ricci_histogram = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        higgs_geodesic_scatter = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        higgs_volume_curvature = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        higgs_scalar_field_map = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        higgs_eigenvalue_dist = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
+        higgs_metric_heatmap = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        higgs_centroid_field = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        higgs_ricci_histogram = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        higgs_geodesic_scatter = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        higgs_volume_curvature = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        higgs_scalar_field_map = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        higgs_eigenvalue_dist = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
 
         # =====================================================================
         # Dynamics tab components (forces, cloning, fitness distributions)
@@ -7367,7 +7334,8 @@ def create_app() -> pn.template.FastListTemplate:
             sizing_mode="stretch_width",
         )
         dirac_time_avg_checkbox = pn.widgets.Checkbox(
-            name="Time-average spectrum", value=False,
+            name="Time-average spectrum",
+            value=False,
         )
         dirac_warmup_slider = pn.widgets.FloatSlider(
             name="Warmup fraction",
@@ -7399,26 +7367,14 @@ def create_app() -> pn.template.FastListTemplate:
         )
 
         # Plot panes (HoloViews)
-        dynamics_scatter_pane = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        dynamics_fitness_hist = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        dynamics_cloning_hist = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        dynamics_force_hist = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        dynamics_momentum_hist = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
+        dynamics_scatter_pane = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        dynamics_fitness_hist = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        dynamics_cloning_hist = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        dynamics_force_hist = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        dynamics_momentum_hist = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
 
         # Dirac spectrum plot panes (attached to dynamics tab)
-        dirac_full_spectrum = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
+        dirac_full_spectrum = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         dirac_sector_up = pn.pane.HoloViews(linked_axes=False)
         dirac_sector_down = pn.pane.HoloViews(linked_axes=False)
         dirac_sector_nu = pn.pane.HoloViews(linked_axes=False)
@@ -7426,26 +7382,24 @@ def create_app() -> pn.template.FastListTemplate:
         dirac_walker_classification = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
         )
-        dirac_mass_hierarchy = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        dirac_chiral_density = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
-        dirac_generation_ratios = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False
-        )
+        dirac_mass_hierarchy = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        dirac_chiral_density = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        dirac_generation_ratios = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
 
         # Dirac fermion comparison widgets
         dirac_comparison_table = pn.widgets.Tabulator(
-            pd.DataFrame(), pagination=None, show_index=False,
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
             sizing_mode="stretch_width",
         )
         dirac_ratio_comparison_pane = pn.pane.HoloViews(
-            sizing_mode="stretch_width", linked_axes=False,
+            sizing_mode="stretch_width",
+            linked_axes=False,
         )
         dirac_summary_pane = pn.pane.Markdown(
-            "", sizing_mode="stretch_width",
+            "",
+            sizing_mode="stretch_width",
         )
 
         # =====================================================================
@@ -7529,13 +7483,20 @@ def create_app() -> pn.template.FastListTemplate:
         qg_tidal_summary = pn.pane.Markdown(sizing_mode="stretch_width")
 
         # Time Evolution (4D Spacetime Block Analysis)
-        qg_time_summary = pn.pane.Markdown("**Time Evolution:** _Enable 'Compute Time Evolution' and run to populate._", sizing_mode="stretch_width")
+        qg_time_summary = pn.pane.Markdown(
+            "**Time Evolution:** _Enable 'Compute Time Evolution' and run to populate._",
+            sizing_mode="stretch_width",
+        )
         qg_regge_evolution = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         qg_adm_evolution = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         qg_spectral_evolution = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         qg_hausdorff_evolution = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        qg_holographic_evolution = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        qg_raychaudhuri_evolution = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        qg_holographic_evolution = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        qg_raychaudhuri_evolution = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
         qg_causal_evolution = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         qg_spin_evolution = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         qg_tidal_evolution = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
@@ -7561,36 +7522,60 @@ def create_app() -> pn.template.FastListTemplate:
         isospin_up_plateau = pn.Column()
         # Comparison tables — up-type
         isospin_up_mass_table = pn.widgets.Tabulator(
-            pd.DataFrame(), pagination=None, show_index=False, sizing_mode="stretch_width",
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
         )
         isospin_up_ratio_pane = pn.pane.Markdown(
-            "**Mass Ratios (Up):** Compute to see ratios.", sizing_mode="stretch_width",
+            "**Mass Ratios (Up):** Compute to see ratios.",
+            sizing_mode="stretch_width",
         )
         isospin_up_fit_table = pn.widgets.Tabulator(
-            pd.DataFrame(), pagination=None, show_index=False, sizing_mode="stretch_width",
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
         )
         isospin_up_anchor_table = pn.widgets.Tabulator(
-            pd.DataFrame(), pagination="remote", page_size=20,
-            show_index=False, sizing_mode="stretch_width",
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
         )
         # Plot panes — down-type
         isospin_down_spectrum = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        isospin_down_overlay_corr = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-        isospin_down_overlay_meff = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+        isospin_down_overlay_corr = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
+        isospin_down_overlay_meff = pn.pane.HoloViews(
+            sizing_mode="stretch_width", linked_axes=False
+        )
         isospin_down_plateau = pn.Column()
         # Comparison tables — down-type
         isospin_down_mass_table = pn.widgets.Tabulator(
-            pd.DataFrame(), pagination=None, show_index=False, sizing_mode="stretch_width",
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
         )
         isospin_down_ratio_pane = pn.pane.Markdown(
-            "**Mass Ratios (Down):** Compute to see ratios.", sizing_mode="stretch_width",
+            "**Mass Ratios (Down):** Compute to see ratios.",
+            sizing_mode="stretch_width",
         )
         isospin_down_fit_table = pn.widgets.Tabulator(
-            pd.DataFrame(), pagination=None, show_index=False, sizing_mode="stretch_width",
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
         )
         isospin_down_anchor_table = pn.widgets.Tabulator(
-            pd.DataFrame(), pagination="remote", page_size=20,
-            show_index=False, sizing_mode="stretch_width",
+            pd.DataFrame(),
+            pagination="remote",
+            page_size=20,
+            show_index=False,
+            sizing_mode="stretch_width",
         )
         # Mass mode toggle (shared for both up/down)
         isospin_mass_mode = pn.widgets.RadioButtonGroup(
@@ -7601,7 +7586,10 @@ def create_app() -> pn.template.FastListTemplate:
         )
         # Isospin splitting comparison
         isospin_split_table = pn.widgets.Tabulator(
-            pd.DataFrame(), pagination=None, show_index=False, sizing_mode="stretch_width",
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
         )
         isospin_ratio_pane = pn.pane.Markdown("")
 
@@ -7624,13 +7612,17 @@ def create_app() -> pn.template.FastListTemplate:
             fractal_set_status.object = "**Fractal Set ready:** click Compute Fractal Set."
             # Enable einstein test
             einstein_run_button.disabled = False
-            einstein_status.object = "**Einstein Test ready:** run Fractal Set for G_N, then click."
+            einstein_status.object = (
+                "**Einstein Test ready:** run Fractal Set for G_N, then click."
+            )
             # Enable channels tab
             channels_run_button.disabled = False
             channels_status.object = "**Strong Force ready:** click Compute Channels."
             # Enable radial tab
             radial_run_button.disabled = False
-            radial_status.object = "**Radial Strong Force ready:** click Compute Radial Strong Force."
+            radial_status.object = (
+                "**Radial Strong Force ready:** click Compute Radial Strong Force."
+            )
             # Enable anisotropic edge tab
             anisotropic_edge_run_button.disabled = False
             anisotropic_edge_status.object = (
@@ -7638,7 +7630,9 @@ def create_app() -> pn.template.FastListTemplate:
             )
             # Enable radial electroweak tab
             radial_ew_run_button.disabled = False
-            radial_ew_status.object = "**Radial Electroweak ready:** click Compute Radial Electroweak."
+            radial_ew_status.object = (
+                "**Radial Electroweak ready:** click Compute Radial Electroweak."
+            )
             # Enable electroweak tab
             electroweak_run_button.disabled = False
             electroweak_status.object = "**Electroweak ready:** click Compute Electroweak."
@@ -7833,7 +7827,7 @@ def create_app() -> pn.template.FastListTemplate:
             plots = metrics.get("plots", {}) if isinstance(metrics, dict) else {}
             phase_path = plots.get("phase_histograms")
             if phase_path and Path(phase_path).exists():
-                electroweak_phase_plot.object = Path(phase_path).read_text()
+                electroweak_phase_plot.object = Path(phase_path).read_text(encoding="utf-8")
             else:
                 electroweak_phase_plot.object = (
                     "<p><em>Phase histograms not available. "
@@ -7861,7 +7855,7 @@ def create_app() -> pn.template.FastListTemplate:
             plots = metrics.get("plots", {}) if isinstance(metrics, dict) else {}
             phase_path = plots.get("phase_histograms")
             if phase_path and Path(phase_path).exists():
-                radial_ew_phase_plot.object = Path(phase_path).read_text()
+                radial_ew_phase_plot.object = Path(phase_path).read_text(encoding="utf-8")
             else:
                 radial_ew_phase_plot.object = (
                     "<p><em>Phase histograms not available. "
@@ -7935,12 +7929,17 @@ def create_app() -> pn.template.FastListTemplate:
                 fractal_set_baseline_table.value = _build_fractal_set_baseline_comparison(
                     regression_df
                 )
-                fractal_set_frame_table.value = frame_df.sort_values(
-                    ["recorded_step", "partition_family", "cut_type"]
-                ).reset_index(drop=True)
-                fractal_set_points_table.value = points_df.sort_values(
-                    ["recorded_step", "partition_family", "cut_type", "cut_value"]
-                ).reset_index(drop=True)
+                fractal_set_frame_table.value = frame_df.sort_values([
+                    "recorded_step",
+                    "partition_family",
+                    "cut_type",
+                ]).reset_index(drop=True)
+                fractal_set_points_table.value = points_df.sort_values([
+                    "recorded_step",
+                    "partition_family",
+                    "cut_type",
+                    "cut_value",
+                ]).reset_index(drop=True)
 
                 fractal_set_summary.object = _format_fractal_set_summary(
                     points_df,
@@ -7950,9 +7949,8 @@ def create_app() -> pn.template.FastListTemplate:
                 show_geom = bool(fractal_set_settings.use_geometry_correction) and (
                     fractal_set_settings.metric_display in {"geometry", "both"}
                 )
-                show_raw = (
-                    fractal_set_settings.metric_display in {"raw", "both"}
-                    or not bool(fractal_set_settings.use_geometry_correction)
+                show_raw = fractal_set_settings.metric_display in {"raw", "both"} or not bool(
+                    fractal_set_settings.use_geometry_correction
                 )
 
                 if show_raw:
@@ -8160,6 +8158,7 @@ def create_app() -> pn.template.FastListTemplate:
 
         def on_run_channels(_):
             """Compute channels using vectorized correlator_channels (new code)."""
+
             def _compute(history):
                 results = _compute_channels_vectorized(history, channel_settings)
                 state["channel_results"] = results
@@ -8227,7 +8226,9 @@ def create_app() -> pn.template.FastListTemplate:
                     "Down particle": down_name,
                     "m_up (alg)": f"{m_up:.6f}" if m_up > 0 else "n/a",
                     "m_down (alg)": f"{m_down:.6f}" if m_down > 0 else "n/a",
-                    "up/down (measured)": f"{measured_ratio:.4f}" if np.isfinite(measured_ratio) else "n/a",
+                    "up/down (measured)": f"{measured_ratio:.4f}"
+                    if np.isfinite(measured_ratio)
+                    else "n/a",
                     "up/down (PDG)": f"{pdg_ratio:.6f}",
                     "m_up (PDG GeV)": f"{m_up_pdg:.6f}",
                     "m_down (PDG GeV)": f"{m_down_pdg:.6f}",
@@ -8246,12 +8247,20 @@ def create_app() -> pn.template.FastListTemplate:
             if iso is None:
                 return
             _update_isospin_tables(
-                iso.up_results, isospin_up_mass_table, isospin_up_ratio_pane,
-                isospin_up_fit_table, isospin_up_anchor_table, event.new,
+                iso.up_results,
+                isospin_up_mass_table,
+                isospin_up_ratio_pane,
+                isospin_up_fit_table,
+                isospin_up_anchor_table,
+                event.new,
             )
             _update_isospin_tables(
-                iso.down_results, isospin_down_mass_table, isospin_down_ratio_pane,
-                isospin_down_fit_table, isospin_down_anchor_table, event.new,
+                iso.down_results,
+                isospin_down_mass_table,
+                isospin_down_ratio_pane,
+                isospin_down_fit_table,
+                isospin_down_anchor_table,
+                event.new,
             )
             _build_isospin_comparison(iso, event.new)
 
@@ -8259,12 +8268,15 @@ def create_app() -> pn.template.FastListTemplate:
 
         def on_run_isospin(_):
             """Compute isospin-split correlator channels."""
+
             def _compute(history):
                 time_axis, euclidean_time_dim = _map_time_dimension(
-                    channel_settings.time_dimension, history_d=history.d,
+                    channel_settings.time_dimension,
+                    history_d=history.d,
                 )
                 neighbor_method = (
-                    "auto" if channel_settings.neighbor_method == "voronoi"
+                    "auto"
+                    if channel_settings.neighbor_method == "voronoi"
                     else channel_settings.neighbor_method
                 )
                 channel_config = ChannelConfig(
@@ -8291,10 +8303,15 @@ def create_app() -> pn.template.FastListTemplate:
                     compute_bootstrap_errors=channel_settings.compute_bootstrap_errors,
                     n_bootstrap=channel_settings.n_bootstrap,
                 )
-                channels = [c.strip() for c in channel_settings.channel_list.split(",") if c.strip()]
+                channels = [
+                    c.strip() for c in channel_settings.channel_list.split(",") if c.strip()
+                ]
 
                 iso_result = compute_isospin_channels(
-                    history, channel_config, correlator_config, channels=channels,
+                    history,
+                    channel_config,
+                    correlator_config,
+                    channels=channels,
                 )
                 state["isospin_results"] = iso_result
 
@@ -8307,8 +8324,11 @@ def create_app() -> pn.template.FastListTemplate:
                     isospin_up_overlay_meff,
                 )
                 _update_isospin_tables(
-                    iso_result.up_results, isospin_up_mass_table, isospin_up_ratio_pane,
-                    isospin_up_fit_table, isospin_up_anchor_table,
+                    iso_result.up_results,
+                    isospin_up_mass_table,
+                    isospin_up_ratio_pane,
+                    isospin_up_fit_table,
+                    isospin_up_anchor_table,
                 )
                 # Update down-type plots + tables
                 _update_correlator_plots(
@@ -8319,8 +8339,11 @@ def create_app() -> pn.template.FastListTemplate:
                     isospin_down_overlay_meff,
                 )
                 _update_isospin_tables(
-                    iso_result.down_results, isospin_down_mass_table, isospin_down_ratio_pane,
-                    isospin_down_fit_table, isospin_down_anchor_table,
+                    iso_result.down_results,
+                    isospin_down_mass_table,
+                    isospin_down_ratio_pane,
+                    isospin_down_fit_table,
+                    isospin_down_anchor_table,
                 )
                 # Build isospin splitting comparison
                 _build_isospin_comparison(iso_result)
@@ -8493,7 +8516,9 @@ def create_app() -> pn.template.FastListTemplate:
                 if bundle.radial_3d_avg is not None:
                     axis_panels = []
                     axis_panels.append(
-                        _build_axis_panel("Average (drop-axis)", bundle.radial_3d_avg.channel_results)
+                        _build_axis_panel(
+                            "Average (drop-axis)", bundle.radial_3d_avg.channel_results
+                        )
                     )
                     axis_dict = bundle.radial_3d_by_axis or {}
                     if len(axis_dict) >= 4:
@@ -8525,9 +8550,9 @@ def create_app() -> pn.template.FastListTemplate:
                 else:
                     radial3d_axis_grid.objects = [pn.pane.Markdown("_No 3D averages available._")]
 
-                n_channels = len(
-                    [r for r in bundle.radial_4d.channel_results.values() if r.n_samples > 0]
-                )
+                n_channels = len([
+                    r for r in bundle.radial_4d.channel_results.values() if r.n_samples > 0
+                ])
                 radial_status.object = (
                     f"**Complete:** {n_channels} radial strong force channels computed."
                 )
@@ -9058,82 +9083,78 @@ def create_app() -> pn.template.FastListTemplate:
             observed = _extract_observed_refs_from_table(new_dirac_ew_observed_table)
             ew_results = bundle.electroweak_output.channel_results
             ew_masses = _extract_masses(ew_results, mode=mode, family_map=None)
-            electron_component_mass = _get_channel_mass(bundle.electron_component_result, mode=mode)
+            electron_component_mass = _get_channel_mass(
+                bundle.electron_component_result, mode=mode
+            )
             higgs_sigma_mass = _get_channel_mass(bundle.higgs_sigma_result, mode=mode)
 
             color_singlet = bundle.color_singlet_spectrum
             electron_dirac = color_singlet.electron_mass if color_singlet is not None else None
 
             rows: list[dict[str, Any]] = []
-            rows.append(
-                {
-                    "observable": "electron_dirac",
-                    "measured": electron_dirac,
-                    "observed_GeV": observed.get("electron_dirac"),
-                    "error_pct": (
-                        ((electron_dirac - observed["electron_dirac"]) / observed["electron_dirac"] * 100.0)
-                        if electron_dirac is not None and observed.get("electron_dirac", 0) > 0
-                        else None
-                    ),
-                    "note": "Dirac spectral color-singlet proxy",
-                }
-            )
-            rows.append(
-                {
-                    "observable": "electron_yukawa",
-                    "measured": bundle.electron_mass_yukawa,
-                    "observed_GeV": observed.get("electron_yukawa"),
-                    "error_pct": (
-                        (bundle.electron_mass_yukawa - observed["electron_yukawa"])
-                        / observed["electron_yukawa"]
+            rows.append({
+                "observable": "electron_dirac",
+                "measured": electron_dirac,
+                "observed_GeV": observed.get("electron_dirac"),
+                "error_pct": (
+                    (
+                        (electron_dirac - observed["electron_dirac"])
+                        / observed["electron_dirac"]
                         * 100.0
-                        if observed.get("electron_yukawa", 0) > 0
-                        else None
-                    ),
-                    "note": "Yukawa prediction y_e * v",
-                }
-            )
-            rows.append(
-                {
-                    "observable": "electron_component",
-                    "measured": electron_component_mass,
-                    "observed_GeV": observed.get("electron_component"),
-                    "error_pct": (
-                        (electron_component_mass - observed["electron_component"])
-                        / observed["electron_component"]
-                        * 100.0
-                        if observed.get("electron_component", 0) > 0
-                        else None
-                    ),
-                    "note": "Lower SU(2) doublet correlator mass",
-                }
-            )
-            rows.append(
-                {
-                    "observable": "higgs_sigma",
-                    "measured": higgs_sigma_mass,
-                    "observed_GeV": observed.get("higgs_sigma"),
-                    "error_pct": (
-                        (higgs_sigma_mass - observed["higgs_sigma"]) / observed["higgs_sigma"] * 100.0
-                        if observed.get("higgs_sigma", 0) > 0
-                        else None
-                    ),
-                    "note": "Radial fluctuation (sigma-mode) correlator mass",
-                }
-            )
+                    )
+                    if electron_dirac is not None and observed.get("electron_dirac", 0) > 0
+                    else None
+                ),
+                "note": "Dirac spectral color-singlet proxy",
+            })
+            rows.append({
+                "observable": "electron_yukawa",
+                "measured": bundle.electron_mass_yukawa,
+                "observed_GeV": observed.get("electron_yukawa"),
+                "error_pct": (
+                    (bundle.electron_mass_yukawa - observed["electron_yukawa"])
+                    / observed["electron_yukawa"]
+                    * 100.0
+                    if observed.get("electron_yukawa", 0) > 0
+                    else None
+                ),
+                "note": "Yukawa prediction y_e * v",
+            })
+            rows.append({
+                "observable": "electron_component",
+                "measured": electron_component_mass,
+                "observed_GeV": observed.get("electron_component"),
+                "error_pct": (
+                    (electron_component_mass - observed["electron_component"])
+                    / observed["electron_component"]
+                    * 100.0
+                    if observed.get("electron_component", 0) > 0
+                    else None
+                ),
+                "note": "Lower SU(2) doublet correlator mass",
+            })
+            rows.append({
+                "observable": "higgs_sigma",
+                "measured": higgs_sigma_mass,
+                "observed_GeV": observed.get("higgs_sigma"),
+                "error_pct": (
+                    (higgs_sigma_mass - observed["higgs_sigma"]) / observed["higgs_sigma"] * 100.0
+                    if observed.get("higgs_sigma", 0) > 0
+                    else None
+                ),
+                "note": "Radial fluctuation (sigma-mode) correlator mass",
+            })
             for channel, mass in sorted(ew_masses.items()):
                 obs = observed.get(channel)
-                rows.append(
-                    {
-                        "observable": channel,
-                        "measured": mass,
-                        "observed_GeV": obs,
-                        "error_pct": (
-                            (mass - obs) / obs * 100.0 if obs is not None and obs > 0 else None
-                        ),
-                        "note": "Electroweak proxy channel",
-                    }
-                )
+                rows.append({
+                    "observable": channel,
+                    "measured": mass,
+                    "observed_GeV": obs,
+                    "error_pct": (
+                        (mass - obs) / obs * 100.0 if obs is not None and obs > 0 else None
+                    ),
+                    "note": "Electroweak proxy channel",
+                })
             new_dirac_ew_observable_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
 
             ratio_rows: list[dict[str, Any]] = []
@@ -9145,38 +9166,32 @@ def create_app() -> pn.template.FastListTemplate:
                 obs = None
                 if observed.get("su2_phase", 0) > 0 and observed.get("higgs_sigma", 0) > 0:
                     obs = observed["su2_phase"] / observed["higgs_sigma"]
-                ratio_rows.append(
-                    {
-                        "ratio": "mW/mH",
-                        "measured": measured,
-                        "observed": obs,
-                        "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
-                    }
-                )
+                ratio_rows.append({
+                    "ratio": "mW/mH",
+                    "measured": measured,
+                    "observed": obs,
+                    "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
+                })
             if m_z is not None and m_h is not None and m_h > 0:
                 measured = m_z / m_h
                 obs = None
                 if observed.get("su2_doublet", 0) > 0 and observed.get("higgs_sigma", 0) > 0:
                     obs = observed["su2_doublet"] / observed["higgs_sigma"]
-                ratio_rows.append(
-                    {
-                        "ratio": "mZ/mH",
-                        "measured": measured,
-                        "observed": obs,
-                        "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
-                    }
-                )
+                ratio_rows.append({
+                    "ratio": "mZ/mH",
+                    "measured": measured,
+                    "observed": obs,
+                    "error_pct": ((measured - obs) / obs * 100.0 if obs and obs > 0 else None),
+                })
             if bundle.electron_mass_yukawa > 0 and electron_component_mass > 0:
-                ratio_rows.append(
-                    {
-                        "ratio": "m(e_component)/m(e_yukawa)",
-                        "measured": electron_component_mass / bundle.electron_mass_yukawa,
-                        "observed": 1.0,
-                        "error_pct": (
-                            (electron_component_mass / bundle.electron_mass_yukawa - 1.0) * 100.0
-                        ),
-                    }
-                )
+                ratio_rows.append({
+                    "ratio": "m(e_component)/m(e_yukawa)",
+                    "measured": electron_component_mass / bundle.electron_mass_yukawa,
+                    "observed": 1.0,
+                    "error_pct": (
+                        (electron_component_mass / bundle.electron_mass_yukawa - 1.0) * 100.0
+                    ),
+                })
             new_dirac_ew_ratio_table_extra.value = (
                 pd.DataFrame(ratio_rows) if ratio_rows else pd.DataFrame()
             )
@@ -9295,8 +9310,12 @@ def create_app() -> pn.template.FastListTemplate:
                     sigma_fit_start=int(new_dirac_ew_settings.fit_start),
                     sigma_fit_stop=new_dirac_ew_settings.fit_stop,
                     sigma_min_fit_points=int(new_dirac_ew_settings.min_fit_points),
-                    sigma_window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
-                    sigma_compute_bootstrap_errors=bool(new_dirac_ew_settings.compute_bootstrap_errors),
+                    sigma_window_widths=_parse_window_widths(
+                        new_dirac_ew_settings.window_widths_spec
+                    ),
+                    sigma_compute_bootstrap_errors=bool(
+                        new_dirac_ew_settings.compute_bootstrap_errors
+                    ),
                     sigma_n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
                 )
                 bundle = compute_dirac_electroweak_bundle(history, config=bundle_cfg)
@@ -9344,18 +9363,19 @@ def create_app() -> pn.template.FastListTemplate:
                     pd.DataFrame(comp_rows) if comp_rows else pd.DataFrame()
                 )
                 new_dirac_ew_dirac_ratio.object = dirac_plots["fermion_ratio_comparison"]
-                sector_counts = {name: spec.n_walkers for name, spec in bundle.dirac_result.sectors.items()}
-                new_dirac_ew_dirac_summary.object = "  \n".join(
-                    [
-                        (
-                            f"**Best-fit scale:** {best_scale:.6g} GeV/σ"
-                            if best_scale
-                            else "**Best-fit scale:** N/A"
-                        ),
-                        f"**Chiral condensate:** ⟨ψ̄ψ⟩ ≈ {bundle.dirac_result.chiral_condensate:.4f}",
-                        "**Sector walkers:** " + ", ".join(f"{k}: {v}" for k, v in sector_counts.items()),
-                    ]
-                )
+                sector_counts = {
+                    name: spec.n_walkers for name, spec in bundle.dirac_result.sectors.items()
+                }
+                new_dirac_ew_dirac_summary.object = "  \n".join([
+                    (
+                        f"**Best-fit scale:** {best_scale:.6g} GeV/σ"
+                        if best_scale
+                        else "**Best-fit scale:** N/A"
+                    ),
+                    f"**Chiral condensate:** ⟨ψ̄ψ⟩ ≈ {bundle.dirac_result.chiral_condensate:.4f}",
+                    "**Sector walkers:** "
+                    + ", ".join(f"{k}: {v}" for k, v in sector_counts.items()),
+                ])
 
                 color_singlet = bundle.color_singlet_spectrum
                 if color_singlet is None or len(color_singlet.masses) == 0:
@@ -9365,15 +9385,13 @@ def create_app() -> pn.template.FastListTemplate:
                     max_rows = min(len(color_singlet.masses), 300)
                     for i in range(max_rows):
                         ls = float(color_singlet.lepton_scores[i])
-                        rows.append(
-                            {
-                                "mode": int(color_singlet.mode_index[i]),
-                                "mass": float(color_singlet.masses[i]),
-                                "lepton_score": ls,
-                                "quark_score": float(color_singlet.quark_scores[i]),
-                                "is_singlet": bool(ls >= color_singlet.lepton_threshold),
-                            }
-                        )
+                        rows.append({
+                            "mode": int(color_singlet.mode_index[i]),
+                            "mass": float(color_singlet.masses[i]),
+                            "lepton_score": ls,
+                            "quark_score": float(color_singlet.quark_scores[i]),
+                            "is_singlet": bool(ls >= color_singlet.lepton_threshold),
+                        })
                     new_dirac_ew_color_singlet_table.value = pd.DataFrame(rows)
 
                 e_plot = ChannelPlot(
@@ -9444,7 +9462,11 @@ def create_app() -> pn.template.FastListTemplate:
                 state["higgs_observables"] = observables
 
                 # Get positions for plotting (use same mc_frame as observables)
-                mc_frame = config.mc_time_index if config.mc_time_index is not None else history.n_recorded - 1
+                mc_frame = (
+                    config.mc_time_index
+                    if config.mc_time_index is not None
+                    else history.n_recorded - 1
+                )
                 mc_frame = min(mc_frame, history.n_recorded - 1)
                 positions = history.x_final[mc_frame].detach().cpu().numpy()
 
@@ -9468,7 +9490,11 @@ def create_app() -> pn.template.FastListTemplate:
                 higgs_eigenvalue_dist.object = plots["metric_eigenvalues_distribution"]
 
                 # Update action summary
-                gravity_term_str = f"{observables.gravity_term:.6f}" if observables.gravity_term is not None else "N/A"
+                gravity_term_str = (
+                    f"{observables.gravity_term:.6f}"
+                    if observables.gravity_term is not None
+                    else "N/A"
+                )
                 action_md = (
                     "**Higgs Action Summary**\n\n"
                     f"- **Kinetic Term:** {observables.kinetic_term:.6f}\n"
@@ -9494,14 +9520,17 @@ def create_app() -> pn.template.FastListTemplate:
                     "Check spatial dimensions and data shapes."
                 )
                 import traceback
+
                 traceback.print_exc()
             except ValueError as e:
                 higgs_status.object = f"**Error (ValueError):** {e}"
                 import traceback
+
                 traceback.print_exc()
             except Exception as e:
                 higgs_status.object = f"**Error:** {e}"
                 import traceback
+
                 traceback.print_exc()
 
         def on_run_dynamics(_):
@@ -9546,8 +9575,11 @@ def create_app() -> pn.template.FastListTemplate:
                     }),
                     kdims=["cloning_score", "force_modulus"],
                 ).opts(
-                    color="cloning_score", cmap="Greens",
-                    colorbar=False, alpha=0.7, size=5,
+                    color="cloning_score",
+                    cmap="Greens",
+                    colorbar=False,
+                    alpha=0.7,
+                    size=5,
                 )
 
                 scatter_neg = hv.Points(
@@ -9557,8 +9589,11 @@ def create_app() -> pn.template.FastListTemplate:
                     }),
                     kdims=["cloning_score", "force_modulus"],
                 ).opts(
-                    color="cloning_score", cmap="Reds_r",
-                    colorbar=False, alpha=0.7, size=5,
+                    color="cloning_score",
+                    cmap="Reds_r",
+                    colorbar=False,
+                    alpha=0.7,
+                    size=5,
                 )
 
                 scatter_plot = (scatter_neg * scatter_pos).opts(
@@ -9576,11 +9611,14 @@ def create_app() -> pn.template.FastListTemplate:
                 # === 2. Distributions ===
                 n_bins = 50
 
-                dynamics_fitness_hist.object = hv.Histogram(
-                    np.histogram(fit, bins=n_bins)
-                ).opts(
-                    color="#4c78a8", alpha=0.8, xlabel="Fitness", ylabel="Count",
-                    title="Fitness Distribution", width=500, height=300,
+                dynamics_fitness_hist.object = hv.Histogram(np.histogram(fit, bins=n_bins)).opts(
+                    color="#4c78a8",
+                    alpha=0.8,
+                    xlabel="Fitness",
+                    ylabel="Count",
+                    title="Fitness Distribution",
+                    width=500,
+                    height=300,
                 )
 
                 cs_pos = cs[cs > 0]
@@ -9590,8 +9628,13 @@ def create_app() -> pn.template.FastListTemplate:
                 else:
                     cs_hist_data = np.histogram(cs[cs > 0] if (cs > 0).any() else cs, bins=n_bins)
                 dynamics_cloning_hist.object = hv.Histogram(cs_hist_data).opts(
-                    color="#f58518", alpha=0.8, xlabel="Cloning Score", ylabel="Count",
-                    title="Cloning Score Distribution", width=500, height=300,
+                    color="#f58518",
+                    alpha=0.8,
+                    xlabel="Cloning Score",
+                    ylabel="Count",
+                    title="Cloning Score Distribution",
+                    width=500,
+                    height=300,
                     logx=True,
                 )
 
@@ -9600,15 +9643,25 @@ def create_app() -> pn.template.FastListTemplate:
                     if (force_mod > 0).any()
                     else np.histogram(force_mod, bins=n_bins)
                 ).opts(
-                    color="#e45756", alpha=0.8, xlabel="|Viscous Force|", ylabel="Count",
-                    title="Viscous Force Modulus Distribution", width=500, height=300,
+                    color="#e45756",
+                    alpha=0.8,
+                    xlabel="|Viscous Force|",
+                    ylabel="Count",
+                    title="Viscous Force Modulus Distribution",
+                    width=500,
+                    height=300,
                 )
 
                 dynamics_momentum_hist.object = hv.Histogram(
                     np.histogram(mom_mod, bins=n_bins)
                 ).opts(
-                    color="#72b7b2", alpha=0.8, xlabel="|Momentum|", ylabel="Count",
-                    title="Momentum Modulus Distribution", width=500, height=300,
+                    color="#72b7b2",
+                    alpha=0.8,
+                    xlabel="|Momentum|",
+                    ylabel="Count",
+                    title="Momentum Modulus Distribution",
+                    width=500,
+                    height=300,
                 )
 
                 n_alive = alive.sum()
@@ -9644,36 +9697,35 @@ def create_app() -> pn.template.FastListTemplate:
                     comp_rows, best_scale = build_fermion_comparison(dirac_result)
                     if comp_rows:
                         dirac_comparison_table.value = pd.DataFrame(comp_rows)
-                    ratio_rows = build_fermion_ratio_comparison(dirac_result)
+                    build_fermion_ratio_comparison(dirac_result)
                     dirac_ratio_comparison_pane.object = dirac_plots["fermion_ratio_comparison"]
 
                     # Summary markdown
                     sector_counts = {
-                        name: spec.n_walkers
-                        for name, spec in dirac_result.sectors.items()
+                        name: spec.n_walkers for name, spec in dirac_result.sectors.items()
                     }
                     summary_lines = [
-                        f"**Best-fit scale:** {best_scale:.6g} GeV/σ" if best_scale else "**Best-fit scale:** N/A",
+                        f"**Best-fit scale:** {best_scale:.6g} GeV/σ"
+                        if best_scale
+                        else "**Best-fit scale:** N/A",
                         f"**Chiral condensate:** ⟨ψ̄ψ⟩ ≈ {dirac_result.chiral_condensate:.4f}",
-                        f"**Sector walkers:** " + ", ".join(
-                            f"{k}: {v}" for k, v in sector_counts.items()
-                        ),
+                        "**Sector walkers:** "
+                        + ", ".join(f"{k}: {v}" for k, v in sector_counts.items()),
                     ]
                     dirac_summary_pane.object = "  \n".join(summary_lines)
                 except Exception as dirac_err:
                     import traceback
+
                     traceback.print_exc()
-                    dirac_full_spectrum.object = hv.Text(
-                        0, 0, f"Dirac error: {dirac_err}"
-                    )
+                    dirac_full_spectrum.object = hv.Text(0, 0, f"Dirac error: {dirac_err}")
 
                 dynamics_status.object = (
-                    f"**Complete:** Dynamics for MC step {t}, "
-                    f"{n_alive} alive walkers."
+                    f"**Complete:** Dynamics for MC step {t}, " f"{n_alive} alive walkers."
                 )
             except Exception as e:
                 dynamics_status.object = f"**Error:** {e}"
                 import traceback
+
                 traceback.print_exc()
 
         def on_run_quantum_gravity(_):
@@ -9709,7 +9761,11 @@ def create_app() -> pn.template.FastListTemplate:
                 state["quantum_gravity_observables"] = observables
 
                 # Get positions
-                mc_frame = config.mc_time_index if config.mc_time_index is not None else history.n_recorded - 1
+                mc_frame = (
+                    config.mc_time_index
+                    if config.mc_time_index is not None
+                    else history.n_recorded - 1
+                )
                 mc_frame = min(mc_frame, history.n_recorded - 1)
                 positions = history.x_final[mc_frame].detach().cpu().numpy()
 
@@ -9722,7 +9778,7 @@ def create_app() -> pn.template.FastListTemplate:
                 if invalid_dims:
                     qg_status.object = (
                         f"**Error:** analysis_dims {invalid_dims} invalid for "
-                        f"{positions.shape[1]}D data (valid range: 0..{positions.shape[1]-1})"
+                        f"{positions.shape[1]}D data (valid range: 0..{positions.shape[1] - 1})"
                     )
                     return
 
@@ -9812,7 +9868,9 @@ def create_app() -> pn.template.FastListTemplate:
                     qg_spectral_evolution.object = time_plots["spectral_dimension_evolution"]
                     qg_hausdorff_evolution.object = time_plots["hausdorff_dimension_evolution"]
                     qg_holographic_evolution.object = time_plots["holographic_entropy_evolution"]
-                    qg_raychaudhuri_evolution.object = time_plots["raychaudhuri_expansion_evolution"]
+                    qg_raychaudhuri_evolution.object = time_plots[
+                        "raychaudhuri_expansion_evolution"
+                    ]
                     qg_causal_evolution.object = time_plots["causal_structure_evolution"]
                     qg_spin_evolution.object = time_plots["spin_network_evolution"]
                     qg_tidal_evolution.object = time_plots["tidal_strength_evolution"]
@@ -9828,14 +9886,17 @@ def create_app() -> pn.template.FastListTemplate:
                     "Check spatial dimensions, analysis_dims, and data shapes."
                 )
                 import traceback
+
                 traceback.print_exc()
             except ValueError as e:
                 qg_status.object = f"**Error (ValueError):** {e}"
                 import traceback
+
                 traceback.print_exc()
             except Exception as e:
                 qg_status.object = f"**Error:** {e}"
                 import traceback
+
                 traceback.print_exc()
 
         browse_button.on_click(_on_browse_clicked)
@@ -9857,7 +9918,8 @@ def create_app() -> pn.template.FastListTemplate:
         qg_run_button.on_click(on_run_quantum_gravity)
         dynamics_run_button.on_click(on_run_dynamics)
         dynamics_mc_slider.param.watch(
-            lambda _: on_run_dynamics(None), "value_throttled",
+            lambda _: on_run_dynamics(None),
+            "value_throttled",
         )
 
         visualization_controls = pn.Param(
@@ -10027,7 +10089,9 @@ def create_app() -> pn.template.FastListTemplate:
                     sizing_mode="stretch_width",
                 ),
                 pn.layout.Divider(),
-                pn.pane.Markdown("## Einstein Equation Test: G_uv + \u039b g_uv = 8\u03c0 G_N T_uv"),
+                pn.pane.Markdown(
+                    "## Einstein Equation Test: G_uv + \u039b g_uv = 8\u03c0 G_N T_uv"
+                ),
                 einstein_status,
                 pn.Row(einstein_run_button, sizing_mode="stretch_width"),
                 pn.Accordion(
@@ -10413,9 +10477,7 @@ Re(c_i†c_j)Δx / Im(c_i†c_j)Δx.""",
                 radial_ew_phase_plot,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Electroweak Reference Masses (GeV)"),
-                pn.pane.Markdown(
-                    "_Edit the table below to set observed masses for calibration._"
-                ),
+                pn.pane.Markdown("_Edit the table below to set observed masses for calibration._"),
                 radial_ew_ref_table,
                 pn.pane.Markdown("### Mass Display Mode"),
                 radial_ew_mass_mode,
@@ -10478,9 +10540,7 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 pn.pane.Markdown("### Electroweak Ratios"),
                 electroweak_ratio_table,
                 pn.pane.Markdown("### Electroweak Reference Masses (GeV)"),
-                pn.pane.Markdown(
-                    "_Edit the table below to set observed masses for calibration._"
-                ),
+                pn.pane.Markdown("_Edit the table below to set observed masses for calibration._"),
                 electroweak_ref_table,
                 pn.pane.Markdown("### Best-Fit Scales"),
                 electroweak_fit_table,
@@ -10493,10 +10553,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 pn.pane.Markdown("### Anchored Mass Table"),
                 electroweak_anchor_table,
                 pn.layout.Divider(),
-                pn.pane.Markdown("### All Channels Overlay - Correlators"),
-                electroweak_plots_overlay_corr,
-                pn.pane.Markdown("### All Channels Overlay - Effective Masses"),
-                electroweak_plots_overlay_meff,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),
                 pn.pane.Markdown(
@@ -10577,7 +10633,11 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 new_dirac_ew_color_singlet_table,
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Electron/Higgs Proxy Correlators"),
-                pn.Row(new_dirac_ew_electron_plot, new_dirac_ew_sigma_plot, sizing_mode="stretch_width"),
+                pn.Row(
+                    new_dirac_ew_electron_plot,
+                    new_dirac_ew_sigma_plot,
+                    sizing_mode="stretch_width",
+                ),
                 pn.pane.Markdown("### Observed Mass Inputs (GeV)"),
                 new_dirac_ew_observed_table,
                 pn.pane.Markdown("### Derived Observable Comparison"),
@@ -10692,8 +10752,10 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 pn.layout.Divider(),
                 pn.pane.Markdown("### Sector-Projected Spectra"),
                 pn.GridBox(
-                    dirac_sector_up, dirac_sector_down,
-                    dirac_sector_nu, dirac_sector_lep,
+                    dirac_sector_up,
+                    dirac_sector_down,
+                    dirac_sector_nu,
+                    dirac_sector_lep,
                     ncols=2,
                 ),
                 pn.layout.Divider(),
@@ -10729,11 +10791,9 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                     "Reproduces 10 famous quantum gravity signatures from the emergent spacetime._"
                 ),
                 pn.layout.Divider(),
-
                 # Summary statistics
                 pn.pane.Markdown("### Overall Summary"),
                 qg_summary_panel,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 1. Regge Calculus (Deficit Angle Gravity)"),
                 pn.pane.Markdown(
@@ -10742,7 +10802,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 qg_regge_action_density,
                 qg_deficit_angle_dist,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 2. Einstein-Hilbert Action (Continuous Limit)"),
                 pn.pane.Markdown(
@@ -10751,7 +10810,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 qg_ricci_landscape,
                 qg_action_decomposition,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 3. ADM Energy (Hamiltonian Formalism)"),
                 pn.pane.Markdown(
@@ -10760,7 +10818,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 qg_adm_summary,
                 qg_energy_density_dist,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 4. Spectral Dimension (Dimension Reduction)"),
                 pn.pane.Markdown(
@@ -10769,7 +10826,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 qg_spectral_dim_curve,
                 qg_heat_kernel_trace,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 5. Hausdorff Dimension (Fractal Geometry)"),
                 pn.pane.Markdown(
@@ -10778,7 +10834,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 qg_hausdorff_scaling,
                 qg_local_hausdorff_map,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 6. Causal Set Structure (Discrete Spacetime)"),
                 pn.pane.Markdown(
@@ -10787,7 +10842,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 qg_causal_diamond,
                 qg_causal_violations,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 7. Holographic Entropy (AdS/CFT & Black Holes)"),
                 pn.pane.Markdown(
@@ -10795,7 +10849,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                     "entropy proportional to boundary area, not volume._"
                 ),
                 qg_holographic_summary,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 8. Spin Network States (Loop Quantum Gravity)"),
                 pn.pane.Markdown(
@@ -10804,7 +10857,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 qg_spin_distribution,
                 qg_spin_network_summary,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 9. Raychaudhuri Expansion (Singularity Theorem)"),
                 pn.pane.Markdown(
@@ -10813,7 +10865,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 qg_expansion_field,
                 qg_convergence_regions,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("### 10. Geodesic Deviation (Tidal Forces)"),
                 pn.pane.Markdown(
@@ -10822,7 +10873,6 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 qg_tidal_eigenvalues,
                 qg_tidal_summary,
-
                 pn.layout.Divider(),
                 pn.pane.Markdown("## 🕐 Time Evolution (4D Spacetime Block Analysis)"),
                 pn.pane.Markdown(
@@ -10830,40 +10880,48 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                     "Shows dimension reduction, ADM conservation, entropy growth, and singularity formation over time._"
                 ),
                 pn.Accordion(
-                    ("Time Evolution Plots", pn.Column(
-                        qg_time_summary,
-                        pn.layout.Divider(),
-                        pn.pane.Markdown("#### Regge Action Evolution"),
-                        qg_regge_evolution,
-                        pn.layout.Divider(),
-                        pn.pane.Markdown("#### ADM Mass Evolution (Energy Conservation)"),
-                        qg_adm_evolution,
-                        pn.layout.Divider(),
-                        pn.pane.Markdown("#### Spectral Dimension Evolution (Dimension Reduction)"),
-                        qg_spectral_evolution,
-                        pn.layout.Divider(),
-                        pn.pane.Markdown("#### Hausdorff Dimension Evolution (Fractal → Manifold)"),
-                        qg_hausdorff_evolution,
-                        pn.layout.Divider(),
-                        pn.pane.Markdown("#### Holographic Entropy Evolution (2nd Law)"),
-                        qg_holographic_evolution,
-                        pn.layout.Divider(),
-                        pn.pane.Markdown("#### Raychaudhuri Expansion Evolution (Singularity Predictor)"),
-                        qg_raychaudhuri_evolution,
-                        pn.layout.Divider(),
-                        pn.pane.Markdown("#### Causal Structure Evolution"),
-                        qg_causal_evolution,
-                        pn.layout.Divider(),
-                        pn.pane.Markdown("#### Spin Network Evolution"),
-                        qg_spin_evolution,
-                        pn.layout.Divider(),
-                        pn.pane.Markdown("#### Tidal Strength Evolution"),
-                        qg_tidal_evolution,
-                    )),
+                    (
+                        "Time Evolution Plots",
+                        pn.Column(
+                            qg_time_summary,
+                            pn.layout.Divider(),
+                            pn.pane.Markdown("#### Regge Action Evolution"),
+                            qg_regge_evolution,
+                            pn.layout.Divider(),
+                            pn.pane.Markdown("#### ADM Mass Evolution (Energy Conservation)"),
+                            qg_adm_evolution,
+                            pn.layout.Divider(),
+                            pn.pane.Markdown(
+                                "#### Spectral Dimension Evolution (Dimension Reduction)"
+                            ),
+                            qg_spectral_evolution,
+                            pn.layout.Divider(),
+                            pn.pane.Markdown(
+                                "#### Hausdorff Dimension Evolution (Fractal → Manifold)"
+                            ),
+                            qg_hausdorff_evolution,
+                            pn.layout.Divider(),
+                            pn.pane.Markdown("#### Holographic Entropy Evolution (2nd Law)"),
+                            qg_holographic_evolution,
+                            pn.layout.Divider(),
+                            pn.pane.Markdown(
+                                "#### Raychaudhuri Expansion Evolution (Singularity Predictor)"
+                            ),
+                            qg_raychaudhuri_evolution,
+                            pn.layout.Divider(),
+                            pn.pane.Markdown("#### Causal Structure Evolution"),
+                            qg_causal_evolution,
+                            pn.layout.Divider(),
+                            pn.pane.Markdown("#### Spin Network Evolution"),
+                            qg_spin_evolution,
+                            pn.layout.Divider(),
+                            pn.pane.Markdown("#### Tidal Strength Evolution"),
+                            qg_tidal_evolution,
+                        ),
+                    ),
                     active=[],  # Collapsed by default
                     sizing_mode="stretch_width",
                 ),
-
                 sizing_mode="stretch_both",
             )
 
