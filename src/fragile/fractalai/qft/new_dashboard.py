@@ -8975,7 +8975,7 @@ def create_app() -> pn.template.FastListTemplate:
                 inferred_extent = _infer_bounds_extent(history)
                 if inferred_extent is not None:
                     visualizer.bounds_extent = inferred_extent
-                    gas_config.bounds_extent = int(inferred_extent)
+                    gas_config.bounds_extent = float(inferred_extent)
                 set_history(history, history_path)
                 load_status.object = f"**Loaded:** `{history_path}`"
             except Exception as exc:

@@ -12,6 +12,7 @@ import pandas as pd
 import panel as pn
 import param
 
+from fragile.fractalai.utils import create_gif
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 from fragile.fractalai.videogames.atari_history import AtariHistory
 
@@ -164,13 +165,13 @@ class AtariGasConfigPanel(param.Parameterized):
     n_workers = param.Integer(default=1, bounds=(1, 16), doc="Parallel env workers (1=serial)")
 
     use_tree_history = param.Boolean(
-        default=False,
+        default=True,
         doc="Use graph-backed TreeHistory for cloning lineage tracking",
     )
 
     prune_history = param.Boolean(
-        default=False,
-        doc="Dynamically prune dead branches from TreeHistory each step (requires tree history)",
+        default=True,
+        doc="Dynamically prune dead branches from TreeHistory each step",
     )
 
     def __init__(self, **params):
@@ -533,7 +534,7 @@ class AtariGasVisualizer(param.Parameterized):
         self.time_player.param.watch(self._on_frame_change, "value")
 
         # Frame display
-        self.frame_pane = pn.pane.PNG(
+        self.frame_pane = pn.pane.GIF(
             object=self._create_blank_frame(),
             width=640,
             height=840,
@@ -569,6 +570,14 @@ class AtariGasVisualizer(param.Parameterized):
             f"Max reward: {max(history.rewards_max):.1f}"
         )
 
+        # Create GIF from best frames
+        if history.has_frames:
+            frames = [f for f in history.best_frames if f is not None]
+            if frames:
+                gif_file = create_gif(frames, fps=5)
+                gif_file.seek(0)
+                self.frame_pane.object = gif_file.read()
+
         # Trigger initial display
         self._on_frame_change(None)
 
@@ -578,11 +587,6 @@ class AtariGasVisualizer(param.Parameterized):
             return
 
         idx = int(self.time_player.value)
-
-        # Update frame display
-        if self.history.has_frames and self.history.best_frames[idx] is not None:
-            frame = self.history.best_frames[idx]
-            self.frame_pane.object = self._array_to_png(frame)
 
         # Update reward curve (show data up to current frame)
         reward_data = pd.DataFrame(
@@ -676,7 +680,7 @@ class AtariGasVisualizer(param.Parameterized):
             self.time_player,
             pn.Row(
                 pn.Column(
-                    pn.pane.Markdown("### Best Walker Frame"),
+                    pn.pane.Markdown("### Best Game Replay"),
                     self.frame_pane,
                 ),
                 pn.Column(

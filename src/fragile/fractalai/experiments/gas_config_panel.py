@@ -162,7 +162,11 @@ class GasConfigPanel(param.Parameterized):
         softbounds=(0.0, 2.0),
         doc="Initial velocity scale",
     )
-    bounds_extent = param.Integer(default=3, bounds=(1, 1000), doc="Spatial bounds half-width")
+    bounds_extent = param.Number(
+        default=3.0,
+        bounds=(1e-6, 1000.0),
+        doc="Spatial bounds half-width",
+    )
 
     # Benchmark visualization controls
     show_optimum = param.Boolean(default=True, doc="Show global optimum marker on benchmark plot")
@@ -249,14 +253,26 @@ class GasConfigPanel(param.Parameterized):
             "viz_n_cells": pnw.EditableIntSlider(
                 name="viz_n_cells (resolution)", start=50, end=500, value=self.viz_n_cells, step=10
             ),
-            "init_offset": pnw.EditableIntSlider(
-                name="init_offset", start=-6, end=6, value=int(self.init_offset), step=1
+            "init_offset": pnw.FloatInput(
+                name="init_offset",
+                start=-6.0,
+                end=6.0,
+                value=float(self.init_offset),
+                step=1e-6,
             ),
-            "init_spread": pnw.EditableIntSlider(
-                name="init_spread", start=0, end=50, value=int(self.init_spread), step=1
+            "init_spread": pnw.FloatInput(
+                name="init_spread",
+                start=0.0,
+                end=50.0,
+                value=float(self.init_spread),
+                step=1e-6,
             ),
-            "init_velocity_scale": pnw.EditableIntSlider(
-                name="init_velocity_scale", start=0, end=50, value=int(self.init_velocity_scale), step=1
+            "init_velocity_scale": pnw.FloatInput(
+                name="init_velocity_scale",
+                start=0.0,
+                end=50.0,
+                value=float(self.init_velocity_scale),
+                step=1e-6,
             ),
             "riemannian_volume_weight": pnw.EditableFloatSlider(
                 name="Volume Weight",
@@ -300,12 +316,12 @@ class GasConfigPanel(param.Parameterized):
                 value=self.mexican_hat_tilt,
                 step=0.01,
             ),
-            "bounds_extent": pnw.EditableIntSlider(
+            "bounds_extent": pnw.FloatInput(
                 name="bounds_extent",
-                start=1,
-                end=1000,
-                value=int(self.bounds_extent),
-                step=1,
+                start=1e-6,
+                end=1000.0,
+                value=float(self.bounds_extent),
+                step=1e-6,
             ),
         }
         self._widget_links: set[str] = set()
@@ -338,7 +354,7 @@ class GasConfigPanel(param.Parameterized):
 
     @staticmethod
     def create_qft_config(
-        spatial_dims: int = 3, bounds_extent: int = 3, dims: int | None = None
+        spatial_dims: int = 3, bounds_extent: float = 3.0, dims: int | None = None
     ) -> GasConfigPanel:
         """Create GasConfigPanel with QFT calibration defaults.
 
@@ -359,7 +375,7 @@ class GasConfigPanel(param.Parameterized):
         config = GasConfigPanel(spatial_dims=spatial_dims)
 
         # Benchmark
-        config.bounds_extent = int(bounds_extent)
+        config.bounds_extent = float(bounds_extent)
         config.benchmark_name = "Voronoi Ricci Scalar"
 
         # Simulation
