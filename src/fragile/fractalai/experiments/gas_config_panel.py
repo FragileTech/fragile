@@ -157,9 +157,9 @@ class GasConfigPanel(param.Parameterized):
     init_offset = param.Number(default=0.0, bounds=(-6.0, 6.0), doc="Initial position offset")
     init_spread = param.Number(default=10.0, bounds=(0.0, 50.0), doc="Initial position spread")
     init_velocity_scale = param.Number(
-        default=5.0,
+        default=0.0,
         bounds=(0.0, None),
-        softbounds=(0.01, 2.0),
+        softbounds=(0.0, 2.0),
         doc="Initial velocity scale",
     )
     bounds_extent = param.Integer(default=3, bounds=(1, 1000), doc="Spatial bounds half-width")
@@ -375,7 +375,7 @@ class GasConfigPanel(param.Parameterized):
         # Initialization (match EuclideanGas defaults used in QFT calibration)
         config.init_offset = 0.0
         config.init_spread = 1.0
-        config.init_velocity_scale = 1.0
+        config.init_velocity_scale = 0.0
 
         # Kinetic operator (Langevin + viscous coupling)
         config.kinetic_op.gamma = 1.0
@@ -503,7 +503,7 @@ class GasConfigPanel(param.Parameterized):
             viscous_length_scale=1.0,
             viscous_neighbor_weighting="riemannian_kernel_volume",
             viscous_neighbor_penalty=1.1,
-            V_alg=30.0,
+            V_alg=1.0,
             use_velocity_squashing=False,
         )
 

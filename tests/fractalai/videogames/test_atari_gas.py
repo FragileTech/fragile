@@ -19,24 +19,27 @@ class MockEnv:
         self.action_space.sample = lambda: np.random.randint(0, action_space_size)
         self.step_count = 0
 
-    def reset(self):
-        """Reset environment."""
+    def reset(self, **kwargs):
+        """Reset environment returning (state, observation, info)."""
         self.step_count = 0
-        state = MagicMock()
-        state.copy = lambda: self._mock_state()
-        return state
+        state = np.zeros(4, dtype=np.float32)
+        observation = np.zeros(self.obs_shape, dtype=np.float32)
+        info = {}
+        return state, observation, info
 
     def sample_action(self):
         """Sample a random action."""
         return np.random.randint(0, self.action_space_size)
 
-    def step_batch(self, states, actions, dt):
-        """Mock batch stepping."""
+    def step_batch(self, states, actions, dt, **kwargs):
+        """Mock batch stepping — accepts **kwargs for return_state etc."""
         N = len(states)
         self.step_count += N
 
         # Create mock outputs
-        new_states = np.array([self._mock_state() for _ in range(N)], dtype=object)
+        new_states = np.array(
+            [np.random.randn(4).astype(np.float32) for _ in range(N)], dtype=object,
+        )
         observations = np.random.rand(N, *self.obs_shape).astype(np.float32)
         rewards = np.random.randn(N).astype(np.float32) * 0.1
         dones = np.zeros(N, dtype=bool)
@@ -45,12 +48,6 @@ class MockEnv:
         infos = [{"step": i} for i in range(N)]
 
         return new_states, observations, rewards, dones, truncated, infos
-
-    def _mock_state(self):
-        """Create a mock state object."""
-        state = MagicMock()
-        state.copy = lambda: self._mock_state()
-        return state
 
 
 @pytest.fixture
@@ -297,9 +294,11 @@ def test_atari_gas_termination(device):
     class MockEnvAllDead(MockEnv):
         """Environment that immediately terminates all walkers."""
 
-        def step_batch(self, states, actions, dt):
+        def step_batch(self, states, actions, dt, **kwargs):
             N = len(states)
-            new_states = np.array([self._mock_state() for _ in range(N)], dtype=object)
+            new_states = np.array(
+                [np.random.randn(4).astype(np.float32) for _ in range(N)], dtype=object,
+            )
             observations = np.random.rand(N, *self.obs_shape).astype(np.float32)
             rewards = np.zeros(N, dtype=np.float32)
             dones = np.ones(N, dtype=bool)  # All done

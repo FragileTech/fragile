@@ -85,7 +85,7 @@ class GasConfig(param.Parameterized):
     viscous_length_scale = param.Number(
         default=1.0, bounds=(0.1, 5.0), doc="Viscous kernel length scale l"
     )
-    V_alg = param.Number(default=10.0, bounds=(0.1, 100.0), doc="Algorithmic velocity bound V_alg")
+    V_alg = param.Number(default=1.0, bounds=(0.1, 100.0), doc="Algorithmic velocity bound V_alg")
     use_velocity_squashing = param.Boolean(default=False, doc="Enable velocity squashing map ψ_v")
 
     # Cloning parameters (defaults tuned for multimodal exploration: β >> α for diversity)
@@ -137,7 +137,7 @@ class GasConfig(param.Parameterized):
     init_offset = param.Number(default=4.5, bounds=(-6.0, 6.0), doc="Initial position offset")
     init_spread = param.Number(default=0.5, bounds=(0.1, 3.0), doc="Initial position spread")
     init_velocity_scale = param.Number(
-        default=0.1, bounds=(0.01, 0.8), doc="Initial velocity scale"
+        default=0.0, bounds=(0.0, 0.8), doc="Initial velocity scale"
     )
     bounds_extent = param.Number(default=6.0, bounds=(1, 12), doc="Spatial bounds half-width")
 

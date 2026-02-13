@@ -2,15 +2,32 @@
 
 from collections.abc import Generator, Iterable
 import copy
-from typing import Any, Union
+from typing import Any, Protocol, Union, runtime_checkable
 
-import einops
 import networkx as nx
 import numpy
 import numpy as np
 
 DEFAULT_ROOT_ID = numpy.uint64(0)
 DEFAULT_FIRST_NODE_ID = numpy.uint64(1)
+
+# ---------------------------------------------------------------------------
+# Inline type aliases (replacing fragile.typing imports)
+# ---------------------------------------------------------------------------
+HASH_DTYPE = numpy.uint64
+NodeId = str | int
+NodeData = tuple[dict, dict] | tuple[dict, dict, dict]
+NodeDataGenerator = Generator[NodeData, None, None]
+NamesData = tuple[str, ...] | set[str] | list[str]
+Value = numpy.ndarray | list
+
+
+@runtime_checkable
+class StateProvider(Protocol):
+    """Protocol replacing the old StateProvider dependency."""
+
+    def get(self, *, index: int, names: list[str], as_dict: bool = True) -> dict: ...
+    def copy(self, as_dict: bool = True, **kwargs: object) -> dict: ...
 
 
 def remove_next_prefix(name: str, next_prefix: str) -> str:
@@ -154,7 +171,7 @@ class NetworkxTree(BaseTree):
         """Return a string representation of the current instance."""
         return f"{self.__class__.__name__}: Nodes {self._node_count} Leafs {len(self.leafs)}"
 
-    def reset(self, root_id: NodeId = None, module: FragileModule | None = None) -> None:
+    def reset(self, root_id: NodeId = None, module: StateProvider | None = None) -> None:
         """Delete all the data currently stored and reset the internal state of the tree.
 
         Optionally, reset the root node with the provided data.
@@ -179,7 +196,7 @@ class NetworkxTree(BaseTree):
 
     def update(
         self,
-        module: FragileModule,
+        module: StateProvider,
         node_ids: list[NodeId],
         parent_ids: list[NodeId],
         freeze_ids: list[NodeId] | None = None,
@@ -198,17 +215,17 @@ class NetworkxTree(BaseTree):
             freeze_ids: List of the ids of walkers that are marked as inactive.
             freeze_parents: List of the parent ids of walkers that are marked as inactive.
             n_iter: Number of iteration of the algorithm when the data was sampled.
-            module: Instance of :class:`FragileModule` containing the data that \
+            module: Instance of :class:`StateProvider` containing the data that \
                      will be added to the tree.
 
         Returns:
             None
 
         """
-        leaf_ids, parent_ids = einops.asnumpy(node_ids), einops.asnumpy(parent_ids)
+        leaf_ids, parent_ids = numpy.asarray(node_ids), numpy.asarray(parent_ids)
         # Keep track of nodes that are active to make sure that they are not pruned
-        freeze_ids = einops.asnumpy(freeze_ids) if freeze_ids is not None else []
-        freeze_parents = einops.asnumpy(freeze_parents) if freeze_parents is not None else []
+        freeze_ids = numpy.asarray(freeze_ids) if freeze_ids is not None else []
+        freeze_parents = numpy.asarray(freeze_parents) if freeze_parents is not None else []
         set(freeze_ids) | set(freeze_parents)
         self.frozen_node_ids = set(leaf_ids) | set(parent_ids)
         for i, (leaf, parent) in enumerate(zip(leaf_ids, parent_ids)):
@@ -455,7 +472,7 @@ class NetworkxTree(BaseTree):
     def _extract_data_from_states(
         self,
         index,
-        module: FragileModule,
+        module: StateProvider,
         only_node_data: bool = False,
     ):
         # We use as_dict so whenever node_names only has one value, it still returns a dict.
@@ -665,7 +682,7 @@ class DataTree(NetworkxTree):
 
         """
         skip_nodes = {self.root_id, DEFAULT_FIRST_NODE_ID}
-        permutation = numpy_random_state.permutation(list(self.data.nodes))
+        permutation = numpy.random.permutation(list(self.data.nodes))
         for next_node in permutation:
             if next_node in skip_nodes:
                 continue
@@ -696,7 +713,7 @@ class DataTree(NetworkxTree):
         names = self._validate_names(names)
         return_children = any(name.startswith(self.next_prefix) for name in names)
         path_generator = self.path_data_generator(
-            node_ids=einops.asnumpy(node_ids),
+            node_ids=numpy.asarray(node_ids),
             return_children=return_children,
         )
         return self._generate_batches(path_generator, names=names, batch_size=batch_size)

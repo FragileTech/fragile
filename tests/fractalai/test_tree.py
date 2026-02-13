@@ -1,47 +1,9 @@
 """Tests for DataTree / NetworkxTree with mock data and recursive pruning."""
 
-import sys
-import types
-
 import numpy as np
 import pytest
 
-# ---------------------------------------------------------------------------
-# Stub missing dependencies before importing the tree module
-# ---------------------------------------------------------------------------
-_stubs_installed = False
-
-
-def _install_stubs():
-    global _stubs_installed
-    if _stubs_installed:
-        return
-    # fragile.core.module
-    if "fragile.core.module" not in sys.modules:
-        mod = types.ModuleType("fragile.core.module")
-        mod.FragileModule = object
-        sys.modules["fragile.core.module"] = mod
-    # fragile.core.random_state
-    if "fragile.core.random_state" not in sys.modules:
-        rs = types.ModuleType("fragile.core.random_state")
-        rs.numpy_random_state = np.random.RandomState(0)
-        sys.modules["fragile.core.random_state"] = rs
-    # fragile.typing
-    if "fragile.typing" not in sys.modules:
-        ty = types.ModuleType("fragile.typing")
-        ty.HASH_DTYPE = np.uint64
-        ty.NamesData = list
-        ty.NodeData = tuple
-        ty.NodeDataGenerator = type(None)
-        ty.NodeId = int
-        ty.Value = object
-        sys.modules["fragile.typing"] = ty
-    _stubs_installed = True
-
-
-_install_stubs()
-
-from fragile.fractalai.core.tree import (  # noqa: E402
+from fragile.fractalai.core.tree import (
     DataTree,
     DEFAULT_FIRST_NODE_ID,
     DEFAULT_ROOT_ID,

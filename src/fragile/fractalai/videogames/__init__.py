@@ -3,6 +3,7 @@
 from fragile.fractalai.videogames.atari import AtariEnv, AtariState
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas, WalkerState
 from fragile.fractalai.videogames.atari_history import AtariHistory
+from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
 from fragile.fractalai.videogames.cloning import FractalCloningOperator
 from fragile.fractalai.videogames.kinetic import RandomActionOperator
 
@@ -12,6 +13,7 @@ __all__ = [
     "AtariFractalGas",
     "WalkerState",
     "AtariHistory",
+    "AtariTreeHistory",
     "FractalCloningOperator",
     "RandomActionOperator",
 ]

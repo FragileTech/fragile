@@ -5757,7 +5757,7 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.neighbor_weight_modes = ["inverse_riemannian_distance", "kernel", "riemannian_kernel_volume"]
         gas_config.init_offset = 0.0
         gas_config.init_spread = 0.0
-        gas_config.init_velocity_scale = 10.0
+        gas_config.init_velocity_scale = 0.0
 
         # Riemannian Mix benchmark.
         benchmark, background, mode_points = prepare_benchmark_for_explorer(

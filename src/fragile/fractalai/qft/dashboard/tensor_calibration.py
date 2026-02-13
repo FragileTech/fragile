@@ -60,6 +60,9 @@ class TensorCalibrationWidgets:
     correction_summary: pn.pane.Markdown
     dispersion_plot: pn.pane.HoloViews
     component_dispersion_plot: pn.pane.HoloViews
+    anisotropy_summary: pn.pane.Markdown
+    anisotropy_table: pn.widgets.Tabulator
+    anisotropy_plot: pn.pane.HoloViews
     multiscale_plot: pn.pane.HoloViews
     calibration_surface_plot: pn.pane.HoloViews
     calibration_residual_plot: pn.pane.HoloViews
@@ -117,6 +120,20 @@ def create_tensor_calibration_widgets() -> TensorCalibrationWidgets:
             linked_axes=False,
         ),
         component_dispersion_plot=pn.pane.HoloViews(
+            sizing_mode="stretch_width",
+            linked_axes=False,
+        ),
+        anisotropy_summary=pn.pane.Markdown(
+            "**Tensor anisotropy coefficients:** run tensor calibration to populate.",
+            sizing_mode="stretch_width",
+        ),
+        anisotropy_table=pn.widgets.Tabulator(
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
+            sizing_mode="stretch_width",
+        ),
+        anisotropy_plot=pn.pane.HoloViews(
             sizing_mode="stretch_width",
             linked_axes=False,
         ),
@@ -179,6 +196,10 @@ def build_tensor_calibration_tab_layout(
             w.dispersion_plot,
             pn.pane.Markdown("### Tensor Momentum Dispersion (Components)"),
             w.component_dispersion_plot,
+            pn.pane.Markdown("### Tensor Anisotropy Coefficients"),
+            w.anisotropy_summary,
+            w.anisotropy_table,
+            w.anisotropy_plot,
             pn.layout.Divider(),
             pn.pane.Markdown("### Tensor Mass vs Scale"),
             w.multiscale_plot,
@@ -205,6 +226,9 @@ def clear_tensor_calibration_tab(w: TensorCalibrationWidgets, status_text: str) 
     )
     w.dispersion_plot.object = None
     w.component_dispersion_plot.object = None
+    w.anisotropy_summary.object = "**Tensor anisotropy coefficients:** run tensor calibration to populate."
+    w.anisotropy_table.value = pd.DataFrame()
+    w.anisotropy_plot.object = None
     w.multiscale_plot.object = None
     w.calibration_surface_plot.object = None
     w.calibration_residual_plot.object = None
@@ -360,36 +384,198 @@ def _build_component_dispersion_plot(component_rows: list[dict[str, Any]]) -> hv
     )
 
 
+def _robust_positive_reference(values: np.ndarray) -> float:
+    valid = values[np.isfinite(values) & (values > 0)]
+    if valid.size == 0:
+        return float("nan")
+    return float(np.median(valid))
+
+
+def _compute_component_anisotropy(
+    component_rows: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], dict[str, float]]:
+    if not component_rows:
+        return [], {}
+
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for row in component_rows:
+        component = str(row.get("component", "")).strip()
+        if not component:
+            continue
+        grouped.setdefault(component, []).append(row)
+    if not grouped:
+        return [], {}
+
+    rows: list[dict[str, Any]] = []
+    for component in sorted(grouped):
+        samples = grouped[component]
+        m0, c_eff = _fit_dispersion(samples)
+        mode_values: list[int] = []
+        n_fit_points = 0
+        p0_values: list[float] = []
+        for sample in samples:
+            try:
+                mode_n = int(sample.get("n_mode", -1))
+            except (TypeError, ValueError):
+                mode_n = -1
+            if mode_n >= 0:
+                mode_values.append(mode_n)
+            mass = float(sample.get("mass", float("nan")))
+            p2 = float(sample.get("p2", float("nan")))
+            if np.isfinite(p2) and np.isfinite(mass) and mass > 0:
+                n_fit_points += 1
+            if mode_n == 0 and np.isfinite(mass) and mass > 0:
+                p0_values.append(mass)
+        p0_mass = float(np.mean(np.asarray(p0_values, dtype=float))) if p0_values else float("nan")
+        rows.append(
+            {
+                "component": component,
+                "n_points": len(samples),
+                "n_fit_points": n_fit_points,
+                "n_modes": ",".join(str(v) for v in sorted(set(mode_values))),
+                "p0_mass": p0_mass,
+                "m0": m0,
+                "c_eff": c_eff,
+            }
+        )
+
+    c_eff_ref = _robust_positive_reference(np.asarray([float(r["c_eff"]) for r in rows], dtype=float))
+    m0_ref = _robust_positive_reference(np.asarray([float(r["m0"]) for r in rows], dtype=float))
+    p0_ref = _robust_positive_reference(np.asarray([float(r["p0_mass"]) for r in rows], dtype=float))
+
+    for row in rows:
+        c_eff = float(row["c_eff"])
+        m0 = float(row["m0"])
+        p0_mass = float(row["p0_mass"])
+        row["xi_c_eff"] = c_eff / c_eff_ref if np.isfinite(c_eff_ref) and c_eff_ref > 0 else np.nan
+        row["xi_m0"] = m0 / m0_ref if np.isfinite(m0_ref) and m0_ref > 0 else np.nan
+        row["xi_p0"] = p0_mass / p0_ref if np.isfinite(p0_ref) and p0_ref > 0 else np.nan
+        row["delta_c_eff_pct"] = _delta_percent(c_eff, c_eff_ref)
+        row["delta_m0_pct"] = _delta_percent(m0, m0_ref)
+        row["delta_p0_pct"] = _delta_percent(p0_mass, p0_ref)
+
+    xi_c_eff = np.asarray([float(r.get("xi_c_eff", np.nan)) for r in rows], dtype=float)
+    xi_m0 = np.asarray([float(r.get("xi_m0", np.nan)) for r in rows], dtype=float)
+    valid_xi_c_eff = xi_c_eff[np.isfinite(xi_c_eff) & (xi_c_eff > 0)]
+    valid_xi_m0 = xi_m0[np.isfinite(xi_m0) & (xi_m0 > 0)]
+    stats = {
+        "component_count": float(len(rows)),
+        "c_eff_ref": float(c_eff_ref),
+        "m0_ref": float(m0_ref),
+        "p0_ref": float(p0_ref),
+        "xi_c_eff_rms_pct": float(np.sqrt(np.mean((valid_xi_c_eff - 1.0) ** 2)) * 100.0)
+        if valid_xi_c_eff.size > 0
+        else float("nan"),
+        "xi_c_eff_max_abs_pct": float(np.max(np.abs(valid_xi_c_eff - 1.0)) * 100.0)
+        if valid_xi_c_eff.size > 0
+        else float("nan"),
+        "xi_m0_rms_pct": float(np.sqrt(np.mean((valid_xi_m0 - 1.0) ** 2)) * 100.0)
+        if valid_xi_m0.size > 0
+        else float("nan"),
+        "xi_m0_max_abs_pct": float(np.max(np.abs(valid_xi_m0 - 1.0)) * 100.0)
+        if valid_xi_m0.size > 0
+        else float("nan"),
+    }
+    return rows, stats
+
+
+def _build_anisotropy_plot(anisotropy_rows: list[dict[str, Any]]) -> hv.Overlay | None:
+    if not anisotropy_rows:
+        return None
+    frame = pd.DataFrame(anisotropy_rows).sort_values("component")
+    overlay: hv.Overlay | None = None
+
+    c_eff_frame = frame[np.isfinite(frame["xi_c_eff"].to_numpy())]
+    if not c_eff_frame.empty:
+        c_eff_scatter = hv.Scatter(
+            c_eff_frame,
+            kdims=[("component", "Component")],
+            vdims=[("xi_c_eff", "xi c_eff")],
+            label="xi c_eff",
+        ).opts(size=9, marker="square", color="#1f77b4", tools=["hover"])
+        overlay = c_eff_scatter if overlay is None else overlay * c_eff_scatter
+
+    m0_frame = frame[np.isfinite(frame["xi_m0"].to_numpy())]
+    if not m0_frame.empty:
+        m0_scatter = hv.Scatter(
+            m0_frame,
+            kdims=[("component", "Component")],
+            vdims=[("xi_m0", "xi m0")],
+            label="xi m0",
+        ).opts(size=9, marker="triangle", color="#ff7f0e", tools=["hover"])
+        overlay = m0_scatter if overlay is None else overlay * m0_scatter
+
+    if overlay is None:
+        return None
+    overlay *= hv.HLine(1.0).opts(color="#2ca02c", line_dash="dashed", line_width=1.5)
+    return overlay.opts(
+        width=860,
+        height=300,
+        title="Tensor anisotropy coefficients by component",
+        xlabel="Tensor component",
+        ylabel="Relative coefficient (xi)",
+        show_grid=True,
+        show_legend=True,
+        legend_position="right",
+    )
+
+
 def _build_multiscale_curve_plot(
     noncomp: MultiscaleStrongForceOutput | None,
     comp: MultiscaleStrongForceOutput | None,
     mode: str,
 ) -> hv.Overlay | None:
+    def _channel_sort_key(channel_name: str) -> tuple[int, int, str]:
+        is_companion = channel_name.endswith("_companion")
+        is_traceless = "traceless" in channel_name
+        return (1 if is_companion else 0, 1 if is_traceless else 0, channel_name)
+
+    def _tensor_channels_for_output(
+        output: MultiscaleStrongForceOutput | None,
+        *,
+        companion_only: bool,
+    ) -> list[str]:
+        if output is None or output.scales.numel() == 0:
+            return []
+        channels: list[str] = []
+        for channel_name, per_scale in output.per_scale_results.items():
+            channel_name_s = str(channel_name)
+            if "tensor" not in channel_name_s:
+                continue
+            if channel_name_s.endswith("_companion") != companion_only:
+                continue
+            if not per_scale:
+                continue
+            channels.append(channel_name_s)
+        return sorted(channels, key=_channel_sort_key)
+
     curves: list[hv.Curve] = []
-    curve_specs = [
-        (noncomp, "tensor", "tensor (non-companion)", "solid"),
-        (noncomp, "tensor_traceless", "tensor_traceless (non-companion)", "dashed"),
-        (comp, "tensor_companion", "tensor (companion)", "dotted"),
-        (comp, "tensor_traceless_companion", "tensor_traceless (companion)", "dotdash"),
-    ]
-    for output, channel, label, dash in curve_specs:
+    line_dashes = ("solid", "dashed", "dotted", "dotdash", "longdash", "dashdot")
+    for output, companion_only in ((noncomp, False), (comp, True)):
+        channels = _tensor_channels_for_output(output, companion_only=companion_only)
         if output is None or output.scales.numel() == 0:
             continue
-        per_scale = output.per_scale_results.get(channel, [])
-        if not per_scale:
-            continue
         scales = output.scales.detach().cpu().numpy().astype(float, copy=False)
-        masses = np.asarray([_get_channel_mass(res, mode) for res in per_scale], dtype=float)
-        valid = np.isfinite(scales) & np.isfinite(masses) & (masses > 0)
-        if not np.any(valid):
-            continue
-        curve = hv.Curve(
-            (scales[valid], masses[valid]),
-            kdims=[("scale", "Scale")],
-            vdims=[("mass", "Mass")],
-            label=label,
-        ).opts(line_dash=dash, line_width=2)
-        curves.append(curve)
+        for idx, channel in enumerate(channels):
+            per_scale = output.per_scale_results.get(channel, [])
+            if len(per_scale) != len(scales):
+                continue
+            masses = np.asarray([_get_channel_mass(res, mode) for res in per_scale], dtype=float)
+            valid = np.isfinite(scales) & np.isfinite(masses) & (masses > 0)
+            if not np.any(valid):
+                continue
+            label = (
+                f"{channel.removesuffix('_companion')} (companion)"
+                if channel.endswith("_companion")
+                else f"{channel} (non-companion)"
+            )
+            curve = hv.Curve(
+                (scales[valid], masses[valid]),
+                kdims=[("scale", "Scale")],
+                vdims=[("mass", "Mass")],
+                label=label,
+            ).opts(line_dash=line_dashes[idx % len(line_dashes)], line_width=2)
+            curves.append(curve)
     if not curves:
         return None
     overlay = curves[0]
@@ -411,23 +597,41 @@ def _collect_surface_grid(
     comp: MultiscaleStrongForceOutput | None,
     mode: str,
 ) -> tuple[np.ndarray | None, np.ndarray | None, list[str]]:
+    def _channel_sort_key(channel_name: str) -> tuple[int, int, str]:
+        is_companion = channel_name.endswith("_companion")
+        is_traceless = "traceless" in channel_name
+        return (1 if is_companion else 0, 1 if is_traceless else 0, channel_name)
+
+    def _tensor_rows_for_output(
+        output: MultiscaleStrongForceOutput | None,
+        *,
+        companion_only: bool,
+    ) -> list[tuple[str, np.ndarray, np.ndarray]]:
+        rows_local: list[tuple[str, np.ndarray, np.ndarray]] = []
+        if output is None or output.scales.numel() == 0:
+            return rows_local
+        scales = output.scales.detach().cpu().numpy().astype(float, copy=False)
+        channels = sorted(
+            [
+                str(channel_name)
+                for channel_name, per_scale in output.per_scale_results.items()
+                if "tensor" in str(channel_name)
+                and str(channel_name).endswith("_companion") == companion_only
+                and per_scale
+            ],
+            key=_channel_sort_key,
+        )
+        for channel in channels:
+            per_scale = output.per_scale_results.get(channel, [])
+            if len(per_scale) != len(scales):
+                continue
+            masses = np.asarray([_get_channel_mass(res, mode) for res in per_scale], dtype=float)
+            rows_local.append((channel, scales, masses))
+        return rows_local
+
     rows: list[tuple[str, np.ndarray, np.ndarray]] = []
-    if noncomp is not None and noncomp.scales.numel() > 0:
-        scales = noncomp.scales.detach().cpu().numpy().astype(float, copy=False)
-        for channel in ("tensor", "tensor_traceless"):
-            per_scale = noncomp.per_scale_results.get(channel, [])
-            if len(per_scale) != len(scales):
-                continue
-            masses = np.asarray([_get_channel_mass(res, mode) for res in per_scale], dtype=float)
-            rows.append((channel, scales, masses))
-    if comp is not None and comp.scales.numel() > 0:
-        scales = comp.scales.detach().cpu().numpy().astype(float, copy=False)
-        for channel in ("tensor_companion", "tensor_traceless_companion"):
-            per_scale = comp.per_scale_results.get(channel, [])
-            if len(per_scale) != len(scales):
-                continue
-            masses = np.asarray([_get_channel_mass(res, mode) for res in per_scale], dtype=float)
-            rows.append((channel, scales, masses))
+    rows.extend(_tensor_rows_for_output(noncomp, companion_only=False))
+    rows.extend(_tensor_rows_for_output(comp, companion_only=True))
 
     if not rows:
         return None, None, []
@@ -821,6 +1025,56 @@ def update_tensor_calibration_tab(
     w.dispersion_plot.object = contracted_disp
     comp_disp = _build_component_dispersion_plot(component_rows)
     w.component_dispersion_plot.object = comp_disp
+    anisotropy_rows, anisotropy_stats = _compute_component_anisotropy(component_rows)
+    if anisotropy_rows:
+        anisotropy_df = pd.DataFrame(anisotropy_rows).sort_values("component")
+        anisotropy_cols = [
+            "component",
+            "n_points",
+            "n_fit_points",
+            "n_modes",
+            "p0_mass",
+            "m0",
+            "c_eff",
+            "xi_p0",
+            "xi_m0",
+            "xi_c_eff",
+            "delta_p0_pct",
+            "delta_m0_pct",
+            "delta_c_eff_pct",
+        ]
+        present_cols = [col for col in anisotropy_cols if col in anisotropy_df.columns]
+        w.anisotropy_table.value = anisotropy_df[present_cols]
+        anisotropy_lines = ["**Tensor anisotropy coefficients:**"]
+        c_eff_ref = float(anisotropy_stats.get("c_eff_ref", float("nan")))
+        m0_ref = float(anisotropy_stats.get("m0_ref", float("nan")))
+        p0_ref = float(anisotropy_stats.get("p0_ref", float("nan")))
+        if np.isfinite(c_eff_ref):
+            anisotropy_lines.append(f"- Isotropic reference `c_eff`: `{c_eff_ref:.6g}`")
+        if np.isfinite(m0_ref):
+            anisotropy_lines.append(f"- Isotropic reference `m0`: `{m0_ref:.6g}`")
+        if np.isfinite(p0_ref):
+            anisotropy_lines.append(f"- Isotropic reference `p0 mass`: `{p0_ref:.6g}`")
+        xi_c_eff_rms = float(anisotropy_stats.get("xi_c_eff_rms_pct", float("nan")))
+        xi_c_eff_max = float(anisotropy_stats.get("xi_c_eff_max_abs_pct", float("nan")))
+        xi_m0_rms = float(anisotropy_stats.get("xi_m0_rms_pct", float("nan")))
+        xi_m0_max = float(anisotropy_stats.get("xi_m0_max_abs_pct", float("nan")))
+        if np.isfinite(xi_c_eff_rms):
+            anisotropy_lines.append(
+                f"- `xi_c_eff` RMS anisotropy: `{xi_c_eff_rms:.2f}%`, max deviation `{xi_c_eff_max:.2f}%`"
+            )
+        if np.isfinite(xi_m0_rms):
+            anisotropy_lines.append(
+                f"- `xi_m0` RMS anisotropy: `{xi_m0_rms:.2f}%`, max deviation `{xi_m0_max:.2f}%`"
+            )
+        w.anisotropy_summary.object = "  \n".join(anisotropy_lines)
+        w.anisotropy_plot.object = _build_anisotropy_plot(anisotropy_rows)
+    else:
+        w.anisotropy_summary.object = (
+            "**Tensor anisotropy coefficients:** insufficient component momentum data."
+        )
+        w.anisotropy_table.value = pd.DataFrame()
+        w.anisotropy_plot.object = None
     w.multiscale_plot.object = _build_multiscale_curve_plot(
         noncomp_multiscale_output if "multiscale_non_companion" in enabled else None,
         companion_multiscale_output if "multiscale_companion" in enabled else None,
@@ -908,6 +1162,25 @@ def update_tensor_calibration_tab(
         "mode": mode,
         "dispersion_m0": m0,
         "dispersion_ceff": c_eff,
+        "anisotropy_component_count": len(anisotropy_rows),
+        "anisotropy_xi_ceff_rms_pct": float(
+            anisotropy_stats.get("xi_c_eff_rms_pct", float("nan"))
+        )
+        if anisotropy_rows
+        else float("nan"),
+        "anisotropy_xi_ceff_max_abs_pct": float(
+            anisotropy_stats.get("xi_c_eff_max_abs_pct", float("nan"))
+        )
+        if anisotropy_rows
+        else float("nan"),
+        "anisotropy_xi_m0_rms_pct": float(anisotropy_stats.get("xi_m0_rms_pct", float("nan")))
+        if anisotropy_rows
+        else float("nan"),
+        "anisotropy_xi_m0_max_abs_pct": float(
+            anisotropy_stats.get("xi_m0_max_abs_pct", float("nan"))
+        )
+        if anisotropy_rows
+        else float("nan"),
     }
     if fit is not None:
         payload["r_scale"] = float(fit["r_scale"])

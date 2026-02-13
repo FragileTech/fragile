@@ -81,6 +81,7 @@ COMPANION_CHANNEL_MAP: dict[str, str] = {
     "vector_score_gradient": "vector_score_gradient_companion",
     "axial_vector_score_gradient": "axial_vector_score_gradient_companion",
     "tensor": "tensor_companion",
+    "tensor_traceless": "tensor_traceless_companion",
     "nucleon": "nucleon_companion",
     "nucleon_score_signed": "nucleon_score_signed_companion",
     "nucleon_score_abs": "nucleon_score_abs_companion",
@@ -1306,6 +1307,7 @@ def _compute_companion_per_scale_results_preserving_original(
             "vector_score_gradient_companion",
             "axial_vector_score_gradient_companion",
             "tensor_companion",
+            "tensor_traceless_companion",
         )
     )
     use_triplet_family = any(
@@ -1807,7 +1809,7 @@ def _compute_companion_per_scale_results_preserving_original(
                 result.mass_fit["source"] = "scaled_companion_source_sink"
                 out["axial_vector_score_gradient_companion"].append(result)
 
-        if "tensor_companion" in out:
+        if "tensor_companion" in out or "tensor_traceless_companion" in out:
             tensor_out = compute_tensor_momentum_correlator_from_color_positions(
                 color=color3,
                 color_valid=color_valid,
@@ -1836,23 +1838,26 @@ def _compute_companion_per_scale_results_preserving_original(
                     0.0,
                 )
             )
-            result = _build_result_from_precomputed_correlator(
-                channel_name="tensor_companion",
-                correlator=tensor_out.momentum_contracted_correlator[0],
-                dt=dt,
-                config=config,
-                n_samples=int(tensor_out.momentum_valid_frames),
-                series=tensor_series,
-                correlator_err=(
-                    tensor_out.momentum_contracted_correlator_err[0]
-                    if tensor_out.momentum_contracted_correlator_err is not None
-                    else None
-                ),
-            )
-            result.mass_fit["scale"] = scale_value
-            result.mass_fit["scale_index"] = int(s_idx)
-            result.mass_fit["source"] = "scaled_companion_source_sink"
-            out["tensor_companion"].append(result)
+            for channel_name in ("tensor_companion", "tensor_traceless_companion"):
+                if channel_name not in out:
+                    continue
+                result = _build_result_from_precomputed_correlator(
+                    channel_name=channel_name,
+                    correlator=tensor_out.momentum_contracted_correlator[0],
+                    dt=dt,
+                    config=config,
+                    n_samples=int(tensor_out.momentum_valid_frames),
+                    series=tensor_series,
+                    correlator_err=(
+                        tensor_out.momentum_contracted_correlator_err[0]
+                        if tensor_out.momentum_contracted_correlator_err is not None
+                        else None
+                    ),
+                )
+                result.mass_fit["scale"] = scale_value
+                result.mass_fit["scale_index"] = int(s_idx)
+                result.mass_fit["source"] = "scaled_companion_source_sink"
+                out[channel_name].append(result)
 
         baryon_channel_modes: list[tuple[str, str]] = [
             ("nucleon_companion", "det_abs"),

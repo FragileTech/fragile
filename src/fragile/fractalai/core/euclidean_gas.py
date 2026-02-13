@@ -312,7 +312,7 @@ class EuclideanGas(PanelModel):
 
         Args:
             x_init: Initial positions [N, d] (optional, defaults to N(0, I))
-            v_init: Initial velocities [N, d] (optional, defaults to N(0, I/β))
+            v_init: Initial velocities [N, d] (optional, defaults to 0)
 
         Returns:
             Initial swarm state
@@ -323,15 +323,8 @@ class EuclideanGas(PanelModel):
             x_init = torch.randn(N, d, device=self.device, dtype=self.torch_dtype)
 
         if v_init is None:
-            # Initialize velocities from thermal distribution
-            beta_init = (
-                float(self.kinetic_op.effective_beta())
-                if hasattr(self.kinetic_op, "effective_beta")
-                else float(self.kinetic_op.beta)
-            )
-            beta_init = max(beta_init, 1e-12)
-            v_std = 1.0 / torch.sqrt(torch.tensor(beta_init, dtype=self.torch_dtype))
-            v_init = v_std * torch.randn(N, d, device=self.device, dtype=self.torch_dtype)
+            # Start walkers at rest by default.
+            v_init = torch.zeros(N, d, device=self.device, dtype=self.torch_dtype)
 
         return SwarmState(
             x_init.to(device=self.device, dtype=self.torch_dtype),
@@ -945,6 +938,7 @@ class EuclideanGas(PanelModel):
         show_progress: bool = False,
         progress_callback: Callable[[int, int, float], None] | None = None,
         chunk_size: int | None = None,
+        use_tree_history: bool = False,
     ):
         """
         Run Euclidean Gas for multiple steps and return complete history.
@@ -960,6 +954,8 @@ class EuclideanGas(PanelModel):
             chunk_size: If set, the history recorder keeps only this many
                 timesteps in memory and flushes full chunks to disk. Reduces
                 peak memory from O(n_recorded) to O(chunk_size).
+            use_tree_history: If True, use a graph-backed TreeHistory recorder
+                instead of the default VectorizedHistoryRecorder.
 
         Returns:
             RunHistory object with complete execution trace including:
@@ -1168,26 +1164,36 @@ class EuclideanGas(PanelModel):
             and bool(self.neighbor_weight_modes)
         )
 
-        recorder = VectorizedHistoryRecorder(
-            N=N,
-            d=d,
-            n_recorded=n_recorded,
-            device=self.device,
-            dtype=self.torch_dtype,
-            record_gradients=record_gradients,
-            record_hessians_diag=record_hessians_diag,
-            record_hessians_full=record_hessians_full,
-            record_sigma_reg_diag=record_sigma_reg_diag,
-            record_sigma_reg_full=record_sigma_reg_full,
-            record_volume_weights=record_volume_weights,
-            record_ricci_scalar=record_scutoid,
-            record_geodesic_edges=record_scutoid,
-            record_diffusion_tensors=record_scutoid,
-            record_neighbors=self.neighbor_graph_record and self.neighbor_graph_method != "none",
-            record_voronoi=self.neighbor_graph_record and self.neighbor_graph_method != "none",
-            record_edge_weights=record_edge_weights,
-            chunk_size=chunk_size,
-        )
+        if use_tree_history:
+            from fragile.fractalai.core.tree_history import TreeHistory
+
+            recorder = TreeHistory(
+                N=N,
+                d=d,
+                device=self.device,
+                dtype=self.torch_dtype,
+            )
+        else:
+            recorder = VectorizedHistoryRecorder(
+                N=N,
+                d=d,
+                n_recorded=n_recorded,
+                device=self.device,
+                dtype=self.torch_dtype,
+                record_gradients=record_gradients,
+                record_hessians_diag=record_hessians_diag,
+                record_hessians_full=record_hessians_full,
+                record_sigma_reg_diag=record_sigma_reg_diag,
+                record_sigma_reg_full=record_sigma_reg_full,
+                record_volume_weights=record_volume_weights,
+                record_ricci_scalar=record_scutoid,
+                record_geodesic_edges=record_scutoid,
+                record_diffusion_tensors=record_scutoid,
+                record_neighbors=self.neighbor_graph_record and self.neighbor_graph_method != "none",
+                record_voronoi=self.neighbor_graph_record and self.neighbor_graph_method != "none",
+                record_edge_weights=record_edge_weights,
+                chunk_size=chunk_size,
+            )
         self._neighbor_cache = None
 
         # Check initial alive status

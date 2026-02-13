@@ -74,11 +74,12 @@ from fragile.fractalai.qft.dashboard.channel_dashboard import (
     create_multiscale_widgets,
     update_multiscale_tab,
 )
-from fragile.fractalai.qft.dashboard.tensor_calibration import (
-    build_tensor_calibration_tab_layout,
-    clear_tensor_calibration_tab,
-    create_tensor_calibration_widgets,
-    update_tensor_calibration_tab,
+from fragile.fractalai.qft.dashboard.tensor_gevp_dashboard import (
+    build_tensor_gevp_calibration_tab_layout,
+    clear_tensor_gevp_calibration_tab,
+    create_tensor_gevp_calibration_widgets,
+    GEVP_DIRTY_STATE_KEY as TENSOR_GEVP_DIRTY_STATE_KEY,
+    update_tensor_gevp_calibration_tab,
 )
 from fragile.fractalai.qft.electroweak_channels import (
     ELECTROWEAK_CHANNELS,
@@ -7194,7 +7195,7 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.neighbor_weight_modes = ["inverse_riemannian_distance", "kernel", "riemannian_kernel_volume"]
         gas_config.init_offset = 0.0
         gas_config.init_spread = 0.0
-        gas_config.init_velocity_scale = 10.0
+        gas_config.init_velocity_scale = 0.0
 
         # Riemannian Mix benchmark.
         benchmark, background, mode_points = prepare_benchmark_for_explorer(
@@ -8335,7 +8336,7 @@ def create_app() -> pn.template.FastListTemplate:
             tensor_calibration_settings_panel,
             sizing_mode="stretch_width",
         )
-        _tcw = create_tensor_calibration_widgets()
+        _tcw = create_tensor_gevp_calibration_widgets()
 
 
         # =====================================================================
@@ -8872,9 +8873,10 @@ def create_app() -> pn.template.FastListTemplate:
                 "**Companion Strong Force ready:** click Compute Companion Strong Force Channels."
             )
             tensor_calibration_run_button.disabled = False
-            clear_tensor_calibration_tab(
+            clear_tensor_gevp_calibration_tab(
                 _tcw,
                 "**Tensor Calibration ready:** click Compute Tensor Calibration.",
+                state=state,
             )
             new_dirac_ew_run_button.disabled = False
             new_dirac_ew_status.object = "**Electroweak ready:** click Compute Electroweak."
@@ -12541,9 +12543,10 @@ def create_app() -> pn.template.FastListTemplate:
                     str(v) for v in (_tcw.estimator_toggles.value or [])
                 }
                 if not enabled_estimators:
-                    clear_tensor_calibration_tab(
+                    clear_tensor_gevp_calibration_tab(
                         _tcw,
                         "## Tensor Calibration\nSelect at least one estimator and rerun.",
+                        state=state,
                     )
                     state["tensor_calibration_payload"] = None
                     return
@@ -12602,20 +12605,54 @@ def create_app() -> pn.template.FastListTemplate:
 
                 if "multiscale_non_companion" in enabled_estimators:
                     try:
+                        noncomp_multiscale_channels: list[str] = []
+                        if "anisotropic_edge" in enabled_estimators:
+                            noncomp_multiscale_channels.append("tensor")
+                        if "anisotropic_edge_traceless" in enabled_estimators:
+                            noncomp_multiscale_channels.append("tensor_traceless")
+                        if not noncomp_multiscale_channels:
+                            noncomp_multiscale_channels = ["tensor", "tensor_traceless"]
+                        noncomp_multiscale_channels = list(dict.fromkeys(noncomp_multiscale_channels))
                         noncomp_multiscale_output = compute_multiscale_strong_force_channels(
                             history,
                             config=_build_multiscale_cfg_from_tensor_settings(),
-                            channels=["tensor", "tensor_traceless"],
+                            channels=noncomp_multiscale_channels,
+                        )
+                        status_lines.append(
+                            "- Non-companion multiscale channels: "
+                            f"`{', '.join(noncomp_multiscale_channels)}`"
                         )
                     except Exception as exc:
                         warnings.append(f"non-companion multiscale failed: {exc}")
 
                 if "multiscale_companion" in enabled_estimators:
                     try:
+                        companion_multiscale_channels: list[str] = []
+                        if (
+                            "anisotropic_edge" in enabled_estimators
+                            or "strong_force" in enabled_estimators
+                            or "momentum_contracted" in enabled_estimators
+                            or "momentum_components" in enabled_estimators
+                        ):
+                            companion_multiscale_channels.append("tensor_companion")
+                        if "anisotropic_edge_traceless" in enabled_estimators:
+                            companion_multiscale_channels.append("tensor_traceless_companion")
+                        if not companion_multiscale_channels:
+                            companion_multiscale_channels = [
+                                "tensor_companion",
+                                "tensor_traceless_companion",
+                            ]
+                        companion_multiscale_channels = list(
+                            dict.fromkeys(companion_multiscale_channels)
+                        )
                         companion_multiscale_output = compute_multiscale_strong_force_channels(
                             history,
                             config=_build_multiscale_cfg_from_tensor_settings(),
-                            channels=["tensor_companion"],
+                            channels=companion_multiscale_channels,
+                        )
+                        status_lines.append(
+                            "- Companion multiscale channels: "
+                            f"`{', '.join(companion_multiscale_channels)}`"
                         )
                     except Exception as exc:
                         warnings.append(f"companion multiscale failed: {exc}")
@@ -12624,7 +12661,8 @@ def create_app() -> pn.template.FastListTemplate:
                     for warning in warnings:
                         status_lines.append(f"- Warning: `{warning}`")
 
-                payload = update_tensor_calibration_tab(
+                state[TENSOR_GEVP_DIRTY_STATE_KEY] = False
+                payload = update_tensor_gevp_calibration_tab(
                     _tcw,
                     base_results=base_results,
                     strong_tensor_result=strong_tensor_result,
@@ -12633,6 +12671,8 @@ def create_app() -> pn.template.FastListTemplate:
                     noncomp_multiscale_output=noncomp_multiscale_output,
                     companion_multiscale_output=companion_multiscale_output,
                     status_lines=status_lines,
+                    state=state,
+                    force_gevp=True,
                 )
                 state["tensor_calibration_base_results"] = base_results
                 state["tensor_calibration_strong_result"] = strong_tensor_result
@@ -12651,12 +12691,12 @@ def create_app() -> pn.template.FastListTemplate:
                 _compute,
             )
 
-        def _refresh_tensor_calibration_views() -> None:
+        def _refresh_tensor_calibration_views(*, force_gevp: bool = False) -> None:
             if state.get("history") is None:
                 return
             if state.get("tensor_calibration_base_results") is None:
                 return
-            payload = update_tensor_calibration_tab(
+            payload = update_tensor_gevp_calibration_tab(
                 _tcw,
                 base_results=state.get("tensor_calibration_base_results") or {},
                 strong_tensor_result=state.get("tensor_calibration_strong_result"),
@@ -12664,6 +12704,8 @@ def create_app() -> pn.template.FastListTemplate:
                 tensor_momentum_meta=state.get("tensor_calibration_momentum_meta"),
                 noncomp_multiscale_output=state.get("tensor_calibration_noncomp_multiscale_output"),
                 companion_multiscale_output=state.get("tensor_calibration_companion_multiscale_output"),
+                state=state,
+                force_gevp=force_gevp,
             )
             state["tensor_calibration_payload"] = payload
             if isinstance(payload, dict):
@@ -12673,12 +12715,61 @@ def create_app() -> pn.template.FastListTemplate:
             _refresh_tensor_calibration_views()
 
         def _on_tensor_calibration_estimator_toggle_change(_event):
+            state[TENSOR_GEVP_DIRTY_STATE_KEY] = False
             _refresh_tensor_calibration_views()
+
+        def _on_tensor_calibration_gevp_selection_change(_event):
+            state[TENSOR_GEVP_DIRTY_STATE_KEY] = True
+            _refresh_tensor_calibration_views(force_gevp=False)
+
+        def _on_tensor_calibration_gevp_compute_click(_event):
+            state[TENSOR_GEVP_DIRTY_STATE_KEY] = False
+            _refresh_tensor_calibration_views(force_gevp=True)
+
+        def _on_tensor_calibration_gevp_family_select_all_click(_event):
+            _tcw.gevp_family_select.value = [str(v) for v in list(_tcw.gevp_family_select.options)]
+
+        def _on_tensor_calibration_gevp_family_clear_click(_event):
+            _tcw.gevp_family_select.value = []
+
+        def _on_tensor_calibration_gevp_scale_select_all_click(_event):
+            _tcw.gevp_scale_select.value = [str(v) for v in list(_tcw.gevp_scale_select.options)]
+
+        def _on_tensor_calibration_gevp_scale_clear_click(_event):
+            _tcw.gevp_scale_select.value = []
 
         _tcw.mass_mode.param.watch(_on_tensor_calibration_mode_change, "value")
         _tcw.estimator_toggles.param.watch(
             _on_tensor_calibration_estimator_toggle_change,
             "value",
+        )
+        _tcw.gevp_family_select.param.watch(
+            _on_tensor_calibration_gevp_selection_change,
+            "value",
+        )
+        _tcw.gevp_scale_select.param.watch(
+            _on_tensor_calibration_gevp_selection_change,
+            "value",
+        )
+        _tcw.gevp_compute_button.param.watch(
+            _on_tensor_calibration_gevp_compute_click,
+            "clicks",
+        )
+        _tcw.gevp_family_select_all_button.param.watch(
+            _on_tensor_calibration_gevp_family_select_all_click,
+            "clicks",
+        )
+        _tcw.gevp_family_clear_button.param.watch(
+            _on_tensor_calibration_gevp_family_clear_click,
+            "clicks",
+        )
+        _tcw.gevp_scale_select_all_button.param.watch(
+            _on_tensor_calibration_gevp_scale_select_all_click,
+            "clicks",
+        )
+        _tcw.gevp_scale_clear_button.param.watch(
+            _on_tensor_calibration_gevp_scale_clear_click,
+            "clicks",
         )
 
 
@@ -14248,7 +14339,7 @@ plaquette, and a single companion tensor channel, with independent settings and 
                 sizing_mode="stretch_both",
             )
 
-            tensor_calibration_tab = build_tensor_calibration_tab_layout(
+            tensor_calibration_tab = build_tensor_gevp_calibration_tab_layout(
                 _tcw,
                 run_button=tensor_calibration_run_button,
                 settings_layout=tensor_calibration_settings_layout,

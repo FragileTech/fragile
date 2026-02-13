@@ -123,7 +123,7 @@ class KineticOperator(PanelModel):
         ),
     )
     sigma_v = param.Number(
-        default=2**0.5,
+        default=1.0,
         bounds=(0, None),
         softbounds=(0.05, 5.0),
         inclusive_bounds=(False, True),
@@ -250,7 +250,7 @@ class KineticOperator(PanelModel):
 
     # Velocity squashing map
     V_alg = param.Number(
-        default=30.0,
+        default=1.0,
         bounds=(0, None),
         inclusive_bounds=(False, True),
         doc="Algorithmic velocity bound for smooth squashing map",
@@ -487,7 +487,7 @@ class KineticOperator(PanelModel):
         beta: float,
         delta_t: float,
         auto_thermostat: bool = False,
-        sigma_v: float = 2**0.5,
+        sigma_v: float = 1.0,
         n_kinetic_steps: int = 1,
         integrator: str = "boris-baoab",
         epsilon_F: float = 0.0,
@@ -509,7 +509,7 @@ class KineticOperator(PanelModel):
         compute_volume_weights: bool = False,
         beta_curl: float = 0.0,
         curl_field=None,
-        V_alg: float = float("inf"),
+        V_alg: float = 1.0,
         use_velocity_squashing: bool = False,
         potential=None,
         device: torch.device = None,
@@ -547,7 +547,7 @@ class KineticOperator(PanelModel):
             compute_volume_weights: Store Riemannian volume weights in history
             beta_curl: Curl coupling strength for Boris rotation
             curl_field: Curl/2-form field; callable F(x)->[N, d, d] or [N, 3]
-            V_alg: Algorithmic velocity bound for smooth squashing map (default: inf)
+            V_alg: Algorithmic velocity bound for smooth squashing map (default: 1.0)
             use_velocity_squashing: Enable smooth velocity squashing map ψ_v
             potential: Target potential (must be callable: U(x) -> [N]).
                       Required if use_potential_force=True, can be None otherwise.

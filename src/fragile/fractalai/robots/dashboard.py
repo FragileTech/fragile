@@ -123,12 +123,23 @@ class RoboticGasConfigPanel(param.Parameterized):
         default=1, bounds=(1, 16), doc="Parallel env workers (1=serial)"
     )
 
+    use_tree_history = param.Boolean(
+        default=False,
+        doc="Use graph-backed TreeHistory for cloning lineage tracking",
+    )
+
+    prune_history = param.Boolean(
+        default=False,
+        doc="Dynamically prune dead branches from TreeHistory each step (requires tree history)",
+    )
+
     def __init__(self, **params):
         super().__init__(**params)
 
         # State
         self.gas: RoboticFractalGas | None = None
         self.history: RoboticHistory | None = None
+        self.tree_history = None  # AtariTreeHistory when use_tree_history=True
         self._simulation_thread: threading.Thread | None = None
         self._stop_requested = False
         self._env = None
@@ -275,6 +286,16 @@ class RoboticGasConfigPanel(param.Parameterized):
             infos = []
             t_start = time.monotonic()
 
+            # Optional tree history recording
+            tree = None
+            if self.use_tree_history:
+                from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
+
+                tree = AtariTreeHistory(
+                    N=self.N, game_name=self.task_name, max_iterations=self.max_iterations,
+                )
+                tree.record_initial_atari_state(state)
+
             for i in range(self.max_iterations):
                 if self._stop_requested:
                     self._schedule_ui_update(
@@ -282,8 +303,23 @@ class RoboticGasConfigPanel(param.Parameterized):
                     )
                     break
 
-                state, info = self.gas.step(state)
+                prev_state = state
+                state, info = self.gas.step(prev_state)
                 infos.append(info)
+
+                if tree is not None:
+                    tree.record_atari_step(
+                        state_before=prev_state,
+                        state_after_clone=info["_state_after_clone"],
+                        state_final=state,
+                        info=info,
+                        clone_companions=info["clone_companions"],
+                        will_clone=info["will_clone"],
+                        best_frame=info.get("best_frame"),
+                    )
+                    if self.prune_history:
+                        tree.prune_dead_branches()
+
                 if i == 0:
                     print("[worker] first step() completed", flush=True)
 
@@ -310,7 +346,12 @@ class RoboticGasConfigPanel(param.Parameterized):
                 )
 
             # Build history
-            self.history = RoboticHistory.from_run(infos, state, self.N, self.task_name)
+            if tree is not None:
+                self.tree_history = tree
+                self.history = tree.to_robotic_history()
+            else:
+                self.tree_history = None
+                self.history = RoboticHistory.from_run(infos, state, self.N, self.task_name)
 
             # Update UI
             if not self._stop_requested:
@@ -370,6 +411,8 @@ class RoboticGasConfigPanel(param.Parameterized):
                 parameters=[
                     "max_iterations",
                     "record_frames",
+                    "use_tree_history",
+                    "prune_history",
                     "dt_range_min",
                     "dt_range_max",
                     "device",

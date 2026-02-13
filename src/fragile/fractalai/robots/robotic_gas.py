@@ -216,6 +216,11 @@ class RoboticFractalGas:
             "min_reward": cumulative_rewards.min().item(),
             "mean_virtual_reward": virtual_rewards.mean().item(),
             "max_virtual_reward": virtual_rewards.max().item(),
+            # Cloning data for tree history recording
+            "clone_companions": clone_companions,
+            "will_clone": will_clone,
+            "_state_before_clone": state,
+            "_state_after_clone": state_after_clone,
         }
 
         # 8. Update elite buffer
@@ -326,6 +331,50 @@ class RoboticFractalGas:
                 break
 
         return state, history
+
+    def run_with_tree(
+        self,
+        max_iterations: int = 1000,
+        stop_when_all_dead: bool = False,
+        task_name: str = "",
+    ):
+        """Run the algorithm and record every step in an :class:`AtariTreeHistory`.
+
+        Same loop as :meth:`run` but returns a graph-backed tree that
+        captures cloning lineage instead of flat info-dict lists.
+
+        Args:
+            max_iterations: Maximum number of iterations to run.
+            stop_when_all_dead: If True, stop when all walkers are dead.
+            task_name: Name stored in the tree metadata.
+
+        Returns:
+            AtariTreeHistory with the full run recorded.
+        """
+        from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
+
+        state = self.reset()
+        tree = AtariTreeHistory(N=self.N, game_name=task_name, max_iterations=max_iterations)
+        tree.record_initial_atari_state(state)
+
+        for _ in range(max_iterations):
+            prev_state = state
+            state, info = self.step(prev_state)
+
+            tree.record_atari_step(
+                state_before=prev_state,
+                state_after_clone=info["_state_after_clone"],
+                state_final=state,
+                info=info,
+                clone_companions=info["clone_companions"],
+                will_clone=info["will_clone"],
+                best_frame=info.get("best_frame"),
+            )
+
+            if stop_when_all_dead and not state.alive.any():
+                break
+
+        return tree
 
     def get_best_walker(self, state: WalkerState) -> tuple[int, float]:
         """Get the index and reward of the best walker."""
