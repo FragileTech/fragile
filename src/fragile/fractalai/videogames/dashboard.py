@@ -12,6 +12,7 @@ import pandas as pd
 import panel as pn
 import param
 
+from fragile.fractalai.planning_gas import PlanningFractalGas, PlanningTrajectory
 from fragile.fractalai.utils import create_gif
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 from fragile.fractalai.videogames.atari_history import AtariHistory
@@ -105,6 +106,13 @@ class AtariGasConfigPanel(param.Parameterized):
     Provides parameter controls, simulation execution, and callback system.
     """
 
+    # Mode selector
+    algorithm_mode = param.ObjectSelector(
+        default="Single Loop",
+        objects=["Single Loop", "Planning"],
+        doc="Single Loop: standard swarm exploration. Planning: two-level planner using inner swarm.",
+    )
+
     # Environment parameters
     game_name = param.ObjectSelector(
         default="ALE/Pong-v5",
@@ -163,6 +171,15 @@ class AtariGasConfigPanel(param.Parameterized):
     seed = param.Integer(default=42, doc="Random seed for reproducibility")
 
     n_workers = param.Integer(default=1, bounds=(1, 16), doc="Parallel env workers (1=serial)")
+
+    # Planning mode parameters
+    tau_inner = param.Integer(
+        default=5, bounds=(1, 50), doc="Inner planning horizon (iterations per outer step)"
+    )
+
+    outer_dt = param.Integer(
+        default=1, bounds=(1, 10), doc="Frame skip for outer environment step"
+    )
 
     use_tree_history = param.Boolean(
         default=True,
@@ -324,106 +341,10 @@ class AtariGasConfigPanel(param.Parameterized):
             env = self._create_environment()
             self._env = env  # track for cleanup
 
-            print("[worker] creating AtariFractalGas...", flush=True)
-            self._schedule_ui_update(
-                lambda: setattr(self.status_pane, "object", "Initializing simulation...")
-            )
-
-            # Create gas algorithm with pre-created environment
-            self.gas = AtariFractalGas(
-                env=env,
-                N=self.N,
-                dist_coef=self.dist_coef,
-                reward_coef=self.reward_coef,
-                use_cumulative_reward=self.use_cumulative_reward,
-                dt_range=(self.dt_range_min, self.dt_range_max),
-                device=self.device,
-                seed=self.seed,
-                record_frames=self.record_frames,
-                n_elite=self.n_elite,
-            )
-            print("[worker] AtariFractalGas created, calling reset()...", flush=True)
-
-            # Run simulation with progress updates
-            state = self.gas.reset()
-            print("[worker] reset() done, starting iteration loop...", flush=True)
-            infos = []
-            t_start = time.monotonic()
-
-            # Optional tree history recording
-            tree = None
-            if self.use_tree_history:
-                from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
-
-                tree = AtariTreeHistory(
-                    N=self.N, game_name=self.game_name, max_iterations=self.max_iterations,
-                )
-                tree.record_initial_atari_state(state)
-
-            for i in range(self.max_iterations):
-                if self._stop_requested:
-                    self._schedule_ui_update(
-                        lambda: setattr(self.status_pane, "object", "**Stopped by user**")
-                    )
-                    break
-
-                prev_state = state
-                state, info = self.gas.step(prev_state)
-                infos.append(info)
-
-                if tree is not None:
-                    tree.record_atari_step(
-                        state_before=prev_state,
-                        state_after_clone=info["_state_after_clone"],
-                        state_final=state,
-                        info=info,
-                        clone_companions=info["clone_companions"],
-                        will_clone=info["will_clone"],
-                        best_frame=info.get("best_frame"),
-                    )
-                    if self.prune_history:
-                        tree.prune_dead_branches()
-
-                if i == 0:
-                    print("[worker] first step() completed", flush=True)
-
-                # Update progress bar and text
-                done_count = i + 1
-                progress = int(done_count / self.max_iterations * 100)
-                elapsed = time.monotonic() - t_start
-                remaining = (
-                    (elapsed / done_count) * (self.max_iterations - done_count)
-                    if done_count > 0
-                    else 0.0
-                )
-                remaining_str = _format_duration(remaining)
-                pct = done_count / self.max_iterations * 100
-                txt = (
-                    f"`Progress: {done_count}/{self.max_iterations} "
-                    f"({pct:.1f}%) | Remaining: {remaining_str}`"
-                )
-                self._schedule_ui_update(
-                    lambda p=progress, t=txt: (
-                        setattr(self.progress_bar, "value", p),
-                        setattr(self.progress_text, "object", t),
-                    )
-                )
-
-            # Build history
-            if tree is not None:
-                self.tree_history = tree
-                self.history = tree.to_atari_history()
+            if self.algorithm_mode == "Planning":
+                self._run_planning_worker(env)
             else:
-                self.tree_history = None
-                self.history = AtariHistory.from_run(infos, state, self.N, self.game_name)
-
-            # Update UI
-            if not self._stop_requested:
-                self._schedule_ui_update(self._on_simulation_finished)
-
-                # Notify callbacks
-                for callback in self._on_simulation_complete:
-                    callback(self.history)
+                self._run_single_loop_worker(env)
 
         except Exception as e:
             error_details = str(e)
@@ -442,6 +363,206 @@ class AtariGasConfigPanel(param.Parameterized):
         finally:
             self._close_env()
             self._schedule_ui_update(self._cleanup_simulation)
+
+    def _run_single_loop_worker(self, env):
+        """Run standard single-loop fractal gas."""
+        print("[worker] creating AtariFractalGas...", flush=True)
+        self._schedule_ui_update(
+            lambda: setattr(self.status_pane, "object", "Initializing simulation...")
+        )
+
+        self.gas = AtariFractalGas(
+            env=env,
+            N=self.N,
+            dist_coef=self.dist_coef,
+            reward_coef=self.reward_coef,
+            use_cumulative_reward=self.use_cumulative_reward,
+            dt_range=(self.dt_range_min, self.dt_range_max),
+            device=self.device,
+            seed=self.seed,
+            record_frames=self.record_frames,
+            n_elite=self.n_elite,
+        )
+        print("[worker] AtariFractalGas created, calling reset()...", flush=True)
+
+        state = self.gas.reset()
+        print("[worker] reset() done, starting iteration loop...", flush=True)
+        infos = []
+        t_start = time.monotonic()
+
+        # Optional tree history recording
+        tree = None
+        if self.use_tree_history:
+            from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
+
+            tree = AtariTreeHistory(
+                N=self.N, game_name=self.game_name, max_iterations=self.max_iterations,
+            )
+            tree.record_initial_atari_state(state)
+
+        for i in range(self.max_iterations):
+            if self._stop_requested:
+                self._schedule_ui_update(
+                    lambda: setattr(self.status_pane, "object", "**Stopped by user**")
+                )
+                break
+
+            prev_state = state
+            state, info = self.gas.step(prev_state)
+            infos.append(info)
+
+            if tree is not None:
+                tree.record_atari_step(
+                    state_before=prev_state,
+                    state_after_clone=info["_state_after_clone"],
+                    state_final=state,
+                    info=info,
+                    clone_companions=info["clone_companions"],
+                    will_clone=info["will_clone"],
+                    best_frame=info.get("best_frame"),
+                )
+                if self.prune_history:
+                    tree.prune_dead_branches()
+
+            if i == 0:
+                print("[worker] first step() completed", flush=True)
+
+            self._update_progress(i, t_start)
+
+        # Build history
+        if tree is not None:
+            self.tree_history = tree
+            self.history = tree.to_atari_history()
+        else:
+            self.tree_history = None
+            self.history = AtariHistory.from_run(infos, state, self.N, self.game_name)
+
+        self._finish_simulation()
+
+    def _run_planning_worker(self, env):
+        """Run two-level planning fractal gas."""
+        print("[worker] creating PlanningFractalGas (Planning mode)...", flush=True)
+        self._schedule_ui_update(
+            lambda: setattr(self.status_pane, "object", "Initializing planning simulation...")
+        )
+
+        pg = PlanningFractalGas(
+            env=env,
+            N=self.N,
+            tau_inner=self.tau_inner,
+            inner_gas_cls=AtariFractalGas,
+            dist_coef=self.dist_coef,
+            reward_coef=self.reward_coef,
+            use_cumulative_reward=self.use_cumulative_reward,
+            dt_range=(self.dt_range_min, self.dt_range_max),
+            device=self.device,
+            seed=self.seed,
+            record_frames=False,
+            n_elite=self.n_elite,
+            outer_dt=self.outer_dt,
+        )
+        print("[worker] PlanningFractalGas created, calling reset()...", flush=True)
+
+        state, obs, info = pg.reset()
+        print("[worker] reset() done, starting planning loop...", flush=True)
+        t_start = time.monotonic()
+
+        traj = PlanningTrajectory(frames=[] if self.record_frames else None)
+        traj.states.append(state)
+        traj.observations.append(obs)
+        cum_reward = 0.0
+
+        for i in range(self.max_iterations):
+            if self._stop_requested:
+                self._schedule_ui_update(
+                    lambda: setattr(self.status_pane, "object", "**Stopped by user**")
+                )
+                break
+
+            new_state, new_obs, reward, done, truncated, new_info, step_info = pg.step(
+                state, obs, info
+            )
+
+            cum_reward += float(reward)
+            traj.actions.append(step_info["action"])
+            traj.rewards.append(float(reward))
+            traj.cumulative_rewards.append(cum_reward)
+            traj.dones.append(bool(done))
+            traj.planning_infos.append(step_info["plan_info"])
+            traj.states.append(new_state)
+            traj.observations.append(new_obs)
+
+            if self.record_frames:
+                try:
+                    frame = pg.inner_gas._render_walker_frame(new_state)
+                    traj.frames.append(frame)
+                except Exception:
+                    traj.frames.append(None)
+
+            if i == 0:
+                print("[worker] first planning step() completed", flush=True)
+
+            self._update_progress(i, t_start)
+
+            state, obs, info = new_state, new_obs, new_info
+            if done or truncated:
+                break
+
+        # Convert PlanningTrajectory to AtariHistory for the visualizer
+        n = traj.num_steps
+        self.tree_history = None
+        self.history = AtariHistory(
+            iterations=list(range(n)),
+            rewards_mean=list(traj.cumulative_rewards),
+            rewards_max=list(traj.cumulative_rewards),
+            rewards_min=list(traj.rewards),
+            alive_counts=[pi.get("alive_count", self.N) for pi in traj.planning_infos],
+            num_cloned=[0] * n,
+            virtual_rewards_mean=[
+                pi.get("inner_mean_reward", 0.0) for pi in traj.planning_infos
+            ],
+            virtual_rewards_max=[
+                pi.get("inner_max_reward", 0.0) for pi in traj.planning_infos
+            ],
+            best_frames=traj.frames if traj.frames else [None] * n,
+            best_rewards=list(traj.cumulative_rewards),
+            best_indices=[0] * n,
+            N=self.N,
+            max_iterations=n,
+            game_name=self.game_name,
+        )
+
+        self._finish_simulation()
+
+    def _update_progress(self, i: int, t_start: float):
+        """Update the progress bar and text for iteration *i*."""
+        done_count = i + 1
+        progress = int(done_count / self.max_iterations * 100)
+        elapsed = time.monotonic() - t_start
+        remaining = (
+            (elapsed / done_count) * (self.max_iterations - done_count)
+            if done_count > 0
+            else 0.0
+        )
+        remaining_str = _format_duration(remaining)
+        pct = done_count / self.max_iterations * 100
+        txt = (
+            f"`Progress: {done_count}/{self.max_iterations} "
+            f"({pct:.1f}%) | Remaining: {remaining_str}`"
+        )
+        self._schedule_ui_update(
+            lambda p=progress, t=txt: (
+                setattr(self.progress_bar, "value", p),
+                setattr(self.progress_text, "object", t),
+            )
+        )
+
+    def _finish_simulation(self):
+        """Notify UI and callbacks after a successful simulation."""
+        if not self._stop_requested:
+            self._schedule_ui_update(self._on_simulation_finished)
+            for callback in self._on_simulation_complete:
+                callback(self.history)
 
     def _on_simulation_finished(self):
         """UI update when simulation completes."""
@@ -465,6 +586,12 @@ class AtariGasConfigPanel(param.Parameterized):
     def panel(self) -> pn.Column:
         """Create parameter panel layout."""
         return pn.Column(
+            pn.pane.Markdown("### Mode"),
+            pn.Param(
+                self.param,
+                parameters=["algorithm_mode"],
+                widgets={"algorithm_mode": pn.widgets.RadioButtonGroup},
+            ),
             pn.pane.Markdown("### Environment"),
             pn.Param(
                 self.param,
@@ -478,6 +605,11 @@ class AtariGasConfigPanel(param.Parameterized):
             pn.Param(
                 self.param,
                 parameters=["N", "dist_coef", "reward_coef", "use_cumulative_reward", "n_elite"],
+            ),
+            pn.pane.Markdown("### Planning"),
+            pn.Param(
+                self.param,
+                parameters=["tau_inner", "outer_dt"],
             ),
             pn.pane.Markdown("### Simulation"),
             pn.Param(
