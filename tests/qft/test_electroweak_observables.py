@@ -133,6 +133,13 @@ def _reference_weighted_ops(
         out[f"{name}_resister"] = torch.zeros_like(mask)
         out[f"{name}_persister"] = torch.zeros_like(mask)
     out["ew_mixed"] = (u1_amp_c * su2_amp_c) * u1_phase_exp * su2_phase_exp * mask
+    # Symmetry-breaking channels
+    out["fitness_phase"] = (-fitness).to(complex_dtype) * mask
+    out["clone_indicator"] = torch.zeros(n_walkers, device=device, dtype=complex_dtype)
+    # Parity velocity channels (all zero when walker type split is disabled)
+    out["velocity_norm_cloner"] = torch.zeros(n_walkers, device=device, dtype=complex_dtype)
+    out["velocity_norm_resister"] = torch.zeros(n_walkers, device=device, dtype=complex_dtype)
+    out["velocity_norm_persister"] = torch.zeros(n_walkers, device=device, dtype=complex_dtype)
     return out
 
 

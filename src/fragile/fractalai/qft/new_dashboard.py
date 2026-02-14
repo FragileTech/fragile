@@ -81,11 +81,22 @@ from fragile.fractalai.qft.electroweak_channels import (
     compute_electroweak_coupling_constants,
     ELECTROWEAK_CHANNELS,
     ElectroweakChannelConfig,
+    ELECTROWEAK_PARITY_CHANNELS,
+    ELECTROWEAK_SYMMETRY_BREAKING_CHANNELS,
+)
+from fragile.fractalai.qft.dashboard.gevp_dashboard import (
+    GEVPDashboardWidgets,
+    build_gevp_dashboard_sections,
+    clear_gevp_dashboard,
+    create_gevp_dashboard_widgets,
+    update_gevp_dashboard,
 )
 from fragile.fractalai.qft.gevp_channels import (
     compute_companion_channel_gevp,
+    EW_MIXED_GEVP_BASE_CHANNELS,
     get_companion_gevp_basis_channels,
     GEVPConfig,
+    U1_GEVP_BASE_CHANNELS,
 )
 from fragile.fractalai.qft.glueball_color_channels import (
     compute_companion_glueball_color_correlator,
@@ -97,11 +108,13 @@ from fragile.fractalai.qft.meson_phase_channels import (
 )
 from fragile.fractalai.qft.multiscale_electroweak import (
     compute_multiscale_electroweak_channels,
+    EW_MIXED_BASE_CHANNELS,
     MultiscaleElectroweakConfig,
     MultiscaleElectroweakOutput,
     SU2_BASE_CHANNELS,
     SU2_DIRECTIONAL_CHANNELS,
     SU2_WALKER_TYPE_CHANNELS,
+    U1_BASE_CHANNELS,
 )
 from fragile.fractalai.qft.multiscale_strong_force import (
     COMPANION_CHANNEL_MAP,
@@ -185,12 +198,25 @@ COMPANION_CHANNEL_VARIANTS_BY_FAMILY: dict[str, tuple[str, ...]] = {
 }
 
 DEFAULT_COMPANION_CHANNEL_VARIANT_SELECTION: dict[str, tuple[str, ...]] = {
-    "pseudoscalar": ("pseudoscalar",),
-    "scalar": ("scalar",),
-    "vector": ("vector",),
+    "pseudoscalar": ("pseudoscalar", "pseudoscalar_score_weighted"),
+    "scalar": ("scalar", "scalar_raw", "scalar_abs2_vacsub"),
+    "vector": (
+        "vector",
+        "vector_score_directed",
+        "vector_score_gradient",
+        "vector_score_directed_longitudinal",
+        "vector_score_directed_transverse",
+    ),
     "axial_vector": ("axial_vector",),
-    "nucleon": ("nucleon",),
-    "glueball": ("glueball",),
+    "nucleon": (
+        "nucleon",
+        "nucleon_flux_action",
+        "nucleon_flux_sin2",
+        "nucleon_flux_exp",
+        "nucleon_score_signed",
+        "nucleon_score_abs",
+    ),
+    "glueball": ("glueball", "glueball_phase_action", "glueball_phase_sin2"),
     "tensor": ("tensor",),
 }
 
@@ -205,6 +231,8 @@ ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY: dict[str, tuple[str, ...]] = {
     "su2_directional": SU2_DIRECTIONAL_CHANNELS,
     "su2_walker_type": SU2_WALKER_TYPE_CHANNELS,
     "ew_mixed": ("ew_mixed",),
+    "symmetry_breaking": ELECTROWEAK_SYMMETRY_BREAKING_CHANNELS,
+    "parity_velocity": ELECTROWEAK_PARITY_CHANNELS,
 }
 
 DEFAULT_ELECTROWEAK_CHANNEL_VARIANT_SELECTION: dict[str, tuple[str, ...]] = {
@@ -213,6 +241,8 @@ DEFAULT_ELECTROWEAK_CHANNEL_VARIANT_SELECTION: dict[str, tuple[str, ...]] = {
     "su2_directional": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["su2_directional"],
     "su2_walker_type": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["su2_walker_type"],
     "ew_mixed": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["ew_mixed"],
+    "symmetry_breaking": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["symmetry_breaking"],
+    "parity_velocity": ELECTROWEAK_CHANNEL_VARIANTS_BY_FAMILY["parity_velocity"],
 }
 
 ELECTROWEAK_CANONICAL_CHANNEL_ORDER = (
@@ -223,6 +253,8 @@ ELECTROWEAK_CANONICAL_CHANNEL_ORDER = (
     "su2_doublet",
     "su2_doublet_diff",
     "ew_mixed",
+    "fitness_phase",
+    "clone_indicator",
 )
 
 DEFAULT_ELECTROWEAK_CHANNELS_FOR_DIRAC = list(ELECTROWEAK_CHANNELS)
@@ -1835,7 +1867,7 @@ class AnisotropicEdgeSettings(param.Parameterized):
     """Settings for anisotropic edge-channel MC-time correlators."""
 
     simulation_range = param.Range(
-        default=(0.1, 1.0),
+        default=(0.2, 1.0),
         bounds=(0.0, 1.0),
         doc="Fraction of simulation timeline to use (start, end).",
     )
@@ -1965,7 +1997,7 @@ class AnisotropicEdgeSettings(param.Parameterized):
         ),
     )
     gevp_min_operator_windows = param.Integer(
-        default=10,
+        default=5,
         bounds=(0, None),
         doc=(
             "Minimum number of valid fit windows required for inclusion in GEVP basis. "
@@ -1973,7 +2005,7 @@ class AnisotropicEdgeSettings(param.Parameterized):
         ),
     )
     gevp_max_operator_error_pct = param.Number(
-        default=30.0,
+        default=60.0,
         bounds=(0.0, None),
         doc=(
             "Maximum operator mass-error percentage (100*mass_error/mass) allowed in GEVP "
@@ -2220,7 +2252,7 @@ class NewDiracElectroweakSettings(param.Parameterized):
     """Settings for the unified Dirac/Electroweak analysis tab."""
 
     simulation_range = param.Range(
-        default=(0.1, 1.0),
+        default=(0.2, 1.0),
         bounds=(0.0, 1.0),
         doc="Fraction of simulation timeline to use (start, end).",
     )
@@ -2314,6 +2346,8 @@ class NewDiracElectroweakSettings(param.Parameterized):
         default=True,
         doc="Compute GEVP-combined SU(2) channel from SU(2) operator family.",
     )
+    use_u1_gevp = param.Boolean(default=True, doc="Compute GEVP-combined U(1) channel.")
+    use_ew_mixed_gevp = param.Boolean(default=True, doc="Compute GEVP-combined EW mixed channel.")
     gevp_basis_strategy = param.ObjectSelector(
         default="base_plus_best_scale",
         objects=("base_only", "base_plus_best_scale"),
@@ -2326,12 +2360,12 @@ class NewDiracElectroweakSettings(param.Parameterized):
         doc="Minimum operator fit R² required for GEVP basis inclusion.",
     )
     gevp_min_operator_windows = param.Integer(
-        default=10,
+        default=5,
         bounds=(0, None),
         doc="Minimum valid fit-window count required for GEVP basis inclusion.",
     )
     gevp_max_operator_error_pct = param.Number(
-        default=30.0,
+        default=60.0,
         bounds=(0.0, None),
         doc="Maximum allowed operator mass error percentage for GEVP basis inclusion.",
     )
@@ -2376,7 +2410,7 @@ class CouplingDiagnosticsSettings(param.Parameterized):
     """Settings for quick mass-free coupling diagnostics."""
 
     simulation_range = param.Range(
-        default=(0.1, 1.0),
+        default=(0.2, 1.0),
         bounds=(0.0, 1.0),
         doc="Fraction of simulation timeline to use (start, end).",
     )
@@ -6458,6 +6492,8 @@ DEFAULT_ELECTROWEAK_REFS = {
     "su2_phase": 80.379,  # W boson
     "su2_doublet": 91.1876,  # Z boson
     "ew_mixed": 1.77686,  # tau
+    "fitness_phase": 91.1876,  # Z boson (massive mode of fitness phase)
+    "clone_indicator": 80.379,  # W boson (cloning decay rate)
 }
 
 ELECTROWEAK_COUPLING_NAMES = (
@@ -7373,20 +7409,20 @@ def create_app() -> pn.template.FastListTemplate:
 
         _debug("building config + visualizer")
         gas_config = GasConfigPanel.create_qft_config(spatial_dims=2, bounds_extent=30.0)
-        gas_config.hide_viscous_kernel_widgets = True
+        gas_config.hide_viscous_kernel_widgets = False
         gas_config.hide_compute_volume_weight_widget = True
-        gas_config.hide_viscous_coupling_widget = True
+        gas_config.hide_viscous_coupling_widget = False
         gas_config.hide_diffusion_widgets = True
         gas_config.hide_integrator_widget = True
-        gas_config.hide_localization_scale_widget = True
+        gas_config.hide_localization_scale_widget = False
         gas_config.hide_distance_reg_widget = True
         gas_config.hide_companion_interaction_range_widgets = True
         gas_config.hide_lambda_alg_widgets = True
         gas_config.benchmark_name = "Riemannian Mix"
         # Override with the best stable calibration settings found in QFT tuning.
         # This matches weak_potential_fit1_aniso_stable2 (200 walkers, 300 steps).
-        gas_config.n_steps = 300
-        gas_config.gas_params["N"] = 200
+        gas_config.n_steps = 750
+        gas_config.gas_params["N"] = 500
         gas_config.gas_params["dtype"] = "float32"
         gas_config.gas_params["pbc"] = False
         gas_config.gas_params["clone_every"] = 3
@@ -7426,10 +7462,12 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.kinetic_op.diffusion_mode = "voronoi_proxy"
         gas_config.kinetic_op.diffusion_grad_scale = 30.0
         gas_config.kinetic_op.epsilon_Sigma = 0.5
-        gas_config.kinetic_op.nu = 0.125
+        gas_config.kinetic_op.nu = 1.0
         gas_config.kinetic_op.beta_curl = 1.0
         gas_config.kinetic_op.use_viscous_coupling = True
         gas_config.kinetic_op.viscous_neighbor_weighting = "riemannian_kernel_volume"
+        gas_config.kinetic_op.viscous_length_scale = 0.5
+        gas_config.kinetic_op.viscous_neighbor_penalty = 0.0
         gas_config.kinetic_op.compute_volume_weights = False
         gas_config.kinetic_op.use_velocity_squashing = False
 
@@ -8846,6 +8884,10 @@ def create_app() -> pn.template.FastListTemplate:
             show_index=False,
             sizing_mode="stretch_width",
         )
+        new_dirac_ew_symmetry_breaking_summary = pn.pane.Markdown(
+            "**Symmetry Breaking:** _run electroweak analysis to populate._",
+            sizing_mode="stretch_width",
+        )
         new_dirac_ew_multiscale_summary = pn.pane.Markdown(
             "### SU(2) Multiscale Summary\n_Multiscale kernels disabled._",
             sizing_mode="stretch_width",
@@ -8863,21 +8905,9 @@ def create_app() -> pn.template.FastListTemplate:
             show_index=False,
             sizing_mode="stretch_width",
         )
-        new_dirac_ew_gevp_summary = pn.pane.Markdown(
-            "_SU(2) GEVP summary appears after running Electroweak._",
-            sizing_mode="stretch_width",
-        )
-        new_dirac_ew_operator_quality_table = pn.widgets.Tabulator(
-            pd.DataFrame(),
-            pagination="remote",
-            page_size=20,
-            show_index=False,
-            sizing_mode="stretch_width",
-        )
-        new_dirac_ew_eigenspectrum_plot = pn.pane.HoloViews(
-            sizing_mode="stretch_width",
-            linked_axes=False,
-        )
+        new_dirac_ew_su2_gevp_widgets = create_gevp_dashboard_widgets()
+        new_dirac_ew_u1_gevp_widgets = create_gevp_dashboard_widgets()
+        new_dirac_ew_ew_mixed_gevp_widgets = create_gevp_dashboard_widgets()
 
         new_dirac_ew_dirac_full = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         new_dirac_ew_dirac_walker = pn.pane.HoloViews(
@@ -9211,9 +9241,9 @@ def create_app() -> pn.template.FastListTemplate:
             new_dirac_status.object = "**Dirac ready:** click Compute Dirac."
             new_dirac_ew_summary.object = "## Electroweak Summary\n_Run analysis to populate._"
             new_dirac_ew_multiscale_summary.object = "### SU(2) Multiscale Summary\n_Multiscale kernels disabled (original estimators only)._"
-            new_dirac_ew_gevp_summary.object = (
-                "_SU(2) GEVP summary appears after running Electroweak._"
-            )
+            clear_gevp_dashboard(new_dirac_ew_su2_gevp_widgets)
+            clear_gevp_dashboard(new_dirac_ew_u1_gevp_widgets)
+            clear_gevp_dashboard(new_dirac_ew_ew_mixed_gevp_widgets)
             new_dirac_ew_filtered_summary.object = "**Filtered-out candidates:** none."
             new_dirac_ew_mass_table.value = pd.DataFrame()
             new_dirac_ew_filtered_mass_table.value = pd.DataFrame()
@@ -9223,8 +9253,6 @@ def create_app() -> pn.template.FastListTemplate:
             new_dirac_ew_anchor_table.value = pd.DataFrame()
             new_dirac_ew_multiscale_table.value = pd.DataFrame()
             new_dirac_ew_multiscale_per_scale_table.value = pd.DataFrame()
-            new_dirac_ew_operator_quality_table.value = pd.DataFrame()
-            new_dirac_ew_eigenspectrum_plot.object = None
             coupling_diagnostics_run_button.disabled = False
             coupling_diagnostics_status.object = (
                 "**Coupling Diagnostics ready:** click Compute Coupling Diagnostics."
@@ -13757,7 +13785,7 @@ def create_app() -> pn.template.FastListTemplate:
             gevp_results = dict(base_results)
             if not comparison_channel_overrides:
                 return gevp_results
-            for base_channel in SU2_BASE_CHANNELS:
+            for base_channel in list(SU2_BASE_CHANNELS) + list(U1_BASE_CHANNELS) + list(EW_MIXED_BASE_CHANNELS):
                 selected = str(
                     comparison_channel_overrides.get(base_channel, base_channel)
                 ).strip()
@@ -13832,199 +13860,39 @@ def create_app() -> pn.template.FastListTemplate:
             remove_artifacts = bool(new_dirac_ew_settings.gevp_remove_artifacts)
             return min_r2, min_windows, max_error_pct, remove_artifacts
 
-        def _collect_su2_operator_entries(
-            output: MultiscaleElectroweakOutput | None,
-            original_results: dict[str, ChannelCorrelatorResult],
-        ) -> list[dict[str, Any]]:
-            su2_supported = (
-                tuple(SU2_BASE_CHANNELS)
-                + tuple(SU2_DIRECTIONAL_CHANNELS)
-                + tuple(SU2_WALKER_TYPE_CHANNELS)
-            )
-            su2_supported_set = set(su2_supported)
-            entries: list[dict[str, Any]] = []
-            if output is not None:
-                for alias, per_scale_results in output.per_scale_results.items():
-                    base_name = str(alias).replace("_companion", "")
-                    if base_name not in su2_supported_set:
-                        continue
-                    for scale_idx, result in enumerate(per_scale_results):
-                        if result is None or int(getattr(result, "n_samples", 0)) <= 0:
-                            continue
-                        entries.append({
-                            "operator": f"{base_name}@s{int(scale_idx)}",
-                            "result": result,
-                            "source": "multiscale",
-                        })
-            for base_name in su2_supported:
-                result = original_results.get(base_name)
-                if result is None or int(getattr(result, "n_samples", 0)) <= 0:
-                    continue
-                entries.append({
-                    "operator": f"{base_name}@full",
-                    "result": result,
-                    "source": "original",
-                })
-            return entries
-
-        def _update_new_dirac_ew_operator_quality(
-            output: MultiscaleElectroweakOutput | None,
+        def _update_ew_gevp_displays(
+            multiscale_output: MultiscaleElectroweakOutput | None,
             results: dict[str, ChannelCorrelatorResult],
         ) -> None:
-            entries = _collect_su2_operator_entries(output, results)
-            min_r2, min_windows, max_error_pct, remove_artifacts = (
-                _resolve_new_dirac_ew_filter_values()
-            )
-            kept_entries: list[dict[str, Any]] = []
-            excluded_entries: list[tuple[str, str]] = []
-            for entry in entries:
-                reason = _companion_gevp_filter_reason(
-                    entry["result"],
-                    min_r2=min_r2,
-                    min_windows=min_windows,
-                    max_error_pct=max_error_pct,
-                    remove_artifacts=remove_artifacts,
-                )
-                if reason is None:
-                    kept_entries.append(entry)
-                else:
-                    excluded_entries.append((str(entry["operator"]), str(reason)))
-
-            if len(kept_entries) < 2:
-                new_dirac_ew_operator_quality_table.value = pd.DataFrame()
-                new_dirac_ew_eigenspectrum_plot.object = None
-                if kept_entries:
-                    new_dirac_ew_gevp_summary.object = (
-                        f"**SU(2) operator quality:** `{len(kept_entries)}` candidate passed filters; "
-                        "need at least 2 for eigen-spectrum analysis."
+            min_r2, min_windows, max_error_pct, remove_artifacts = _resolve_new_dirac_ew_filter_values()
+            t0 = int(new_dirac_ew_settings.gevp_t0)
+            eig_rel_cutoff = float(new_dirac_ew_settings.gevp_eig_rel_cutoff)
+            per_scale = multiscale_output.per_scale_results if multiscale_output else {}
+            gevp_results = {k: v for k, v in results.items() if k.endswith("_gevp")}
+            for family, widgets in (
+                ("su2", new_dirac_ew_su2_gevp_widgets),
+                ("u1", new_dirac_ew_u1_gevp_widgets),
+                ("ew_mixed", new_dirac_ew_ew_mixed_gevp_widgets),
+            ):
+                try:
+                    update_gevp_dashboard(
+                        widgets,
+                        selected_channel_name=f"{family.upper()} GEVP",
+                        raw_channel_name=f"{family}_companion" if family != "ew_mixed" else "ew_mixed_companion",
+                        per_scale_results=per_scale,
+                        original_results=results,
+                        companion_gevp_results=gevp_results,
+                        min_r2=min_r2,
+                        min_windows=min_windows,
+                        max_error_pct=max_error_pct,
+                        remove_artifacts=remove_artifacts,
+                        selected_families=[family],
+                        t0=t0,
+                        eig_rel_cutoff=eig_rel_cutoff,
+                        use_connected=bool(new_dirac_ew_settings.use_connected),
                     )
-                else:
-                    new_dirac_ew_gevp_summary.object = (
-                        "_SU(2) operator quality unavailable: no operators pass active filters._"
-                    )
-                return
-
-            lengths = [int(entry["result"].series.numel()) for entry in kept_entries]
-            t_len = min(lengths)
-            if t_len <= 3:
-                new_dirac_ew_operator_quality_table.value = pd.DataFrame()
-                new_dirac_ew_eigenspectrum_plot.object = None
-                new_dirac_ew_gevp_summary.object = (
-                    "_SU(2) operator quality unavailable: insufficient time samples._"
-                )
-                return
-
-            t0_eff = max(1, int(new_dirac_ew_settings.gevp_t0))
-            if t0_eff >= t_len:
-                t0_eff = max(1, t_len // 2)
-            if t_len - t0_eff <= 1:
-                new_dirac_ew_operator_quality_table.value = pd.DataFrame()
-                new_dirac_ew_eigenspectrum_plot.object = None
-                new_dirac_ew_gevp_summary.object = (
-                    "_SU(2) operator quality unavailable: invalid effective t0 after trimming._"
-                )
-                return
-
-            series = torch.stack(
-                [entry["result"].series[:t_len].float() for entry in kept_entries], dim=0
-            )
-            if bool(new_dirac_ew_settings.use_connected):
-                series = series - series.mean(dim=1, keepdim=True)
-            source = series[:, : t_len - t0_eff]
-            sink = series[:, t0_eff:]
-            c0 = (sink @ source.transpose(0, 1)) / float(t_len - t0_eff)
-            c0 = 0.5 * (c0 + c0.transpose(0, 1))
-            evals, evecs = torch.linalg.eigh(c0)
-            order = torch.argsort(evals, descending=True)
-            evals = evals[order].real.float()
-            evecs = evecs[:, order].real.float()
-
-            eps = torch.tensor(1e-12, dtype=torch.float32, device=series.device)
-            max_eval = torch.clamp_min(torch.abs(evals[0]), eps)
-            rel_eval = evals / max_eval
-            sig_mask = rel_eval > float(new_dirac_ew_settings.gevp_eig_rel_cutoff)
-            if int(sig_mask.sum().item()) <= 0:
-                sig_mask[0] = True
-            weights = torch.where(sig_mask, torch.clamp_min(evals, 0.0), torch.zeros_like(evals))
-            if float(weights.sum().item()) <= 0:
-                weights = torch.where(sig_mask, evals.abs(), torch.zeros_like(evals))
-            importance = (evecs.square() * weights.unsqueeze(0)).sum(dim=1)
-            importance = importance / torch.clamp_min(importance.max(), eps)
-
-            rows: list[dict[str, Any]] = []
-            for idx, entry in enumerate(kept_entries):
-                result = entry["result"]
-                fit = result.mass_fit if isinstance(result.mass_fit, dict) else {}
-                mass = float(fit.get("mass", float("nan")))
-                mass_error = float(fit.get("mass_error", float("nan")))
-                err_pct = (
-                    abs(mass_error / mass) * 100.0
-                    if np.isfinite(mass) and mass > 0 and np.isfinite(mass_error)
-                    else float("nan")
-                )
-                rows.append({
-                    "operator": entry["operator"],
-                    "source": entry["source"],
-                    "mass": mass,
-                    "mass_error": mass_error,
-                    "mass_error_pct": err_pct,
-                    "r2": float(fit.get("r_squared", float("nan"))),
-                    "n_windows": _extract_n_windows_for_filter(result),
-                    "importance": float(importance[idx].item()),
-                    "dominant_mode": int(torch.argmax(torch.abs(evecs[idx])).item()),
-                })
-            quality_df = pd.DataFrame(rows).sort_values(
-                ["importance", "mass_error_pct"], ascending=[False, True], kind="stable"
-            )
-            new_dirac_ew_operator_quality_table.value = quality_df
-
-            spectrum_df = pd.DataFrame({
-                "mode": np.arange(int(evals.numel())),
-                "eigenvalue_rel": rel_eval.detach().cpu().numpy(),
-                "status": np.where(sig_mask.detach().cpu().numpy(), "significant", "candidate"),
-            })
-            bars = hv.Bars(spectrum_df, kdims=["mode"], vdims=["eigenvalue_rel", "status"]).opts(
-                color="status",
-                cmap=["#2ca02c", "#9aa0a6"],
-                xlabel="Mode",
-                ylabel="Relative Eigenvalue",
-                height=280,
-                responsive=True,
-                tools=["hover"],
-            )
-            cutoff = float(new_dirac_ew_settings.gevp_eig_rel_cutoff)
-            cutoff_line = hv.HLine(cutoff).opts(
-                color="#d62728", line_dash="dashed", line_width=1.5
-            )
-            new_dirac_ew_eigenspectrum_plot.object = bars * cutoff_line
-
-            n_significant = int(sig_mask.sum().item())
-            cond = float("nan")
-            positive = evals[sig_mask & (evals > 0)]
-            if int(positive.numel()) > 0:
-                cond = float(positive.max().item() / max(float(positive.min().item()), 1e-12))
-            excluded_preview = ", ".join(
-                f"{name}({reason})" for name, reason in excluded_entries[:4]
-            )
-            excluded_suffix = " ..." if len(excluded_entries) > 4 else ""
-            min_r2_str = f"{min_r2:.3g}" if np.isfinite(min_r2) else "off"
-            max_err_str = f"{max_error_pct:.3g}%" if np.isfinite(max_error_pct) else "off"
-            cond_text = f"{cond:.3g}" if np.isfinite(cond) else "n/a"
-            new_dirac_ew_gevp_summary.object = (
-                f"**SU(2) operator quality:** `{len(kept_entries)}` passed filters, "
-                f"`{len(excluded_entries)}` excluded.  \n"
-                f"- Significant eigen-modes: `{n_significant}/{len(kept_entries)}`  \n"
-                f"- Condition number (kept positive modes): `{cond_text}`"
-            )
-            new_dirac_ew_gevp_summary.object += (
-                f"  \n- Active filters: `R² >= {min_r2_str}`, `n_windows >= {min_windows}`, "
-                f"`error % <= {max_err_str}`, "
-                f"`remove artifacts={'on' if remove_artifacts else 'off'}`"
-            )
-            if excluded_entries:
-                new_dirac_ew_gevp_summary.object += (
-                    f"  \n- Excluded preview: `{excluded_preview}{excluded_suffix}`"
-                )
+                except Exception:
+                    clear_gevp_dashboard(widgets)
 
         def _extract_observed_refs_from_table(
             table: pn.widgets.Tabulator,
@@ -14115,10 +13983,70 @@ def create_app() -> pn.template.FastListTemplate:
                     f"`error % <= {max_error_pct_str}`, "
                     f"`remove artifacts={'on' if remove_artifacts else 'off'}`."
                 )
-            _update_new_dirac_ew_operator_quality(
+            _update_ew_gevp_displays(
                 state.get("new_dirac_ew_multiscale_output"),
                 results,
             )
+
+            # --- Symmetry-breaking derived observables ---
+            import math as _math
+
+            sb_lines = ["**Symmetry Breaking Observables:**"]
+            ew_masses = _extract_masses(filtered_results, mode=str(mode), family_map=None)
+            m_z_proxy = ew_masses.get("fitness_phase")
+            m_w_proxy = ew_masses.get("clone_indicator")
+            if m_z_proxy and m_z_proxy > 0 and m_w_proxy and m_w_proxy > 0:
+                cos_tw = min(m_w_proxy / m_z_proxy, 1.0)
+                sin2_tw = 1.0 - cos_tw ** 2
+                sb_lines.append(
+                    f"- **M_Z proxy** (fitness_phase): `{m_z_proxy:.6g}`"
+                )
+                sb_lines.append(
+                    f"- **M_W proxy** (clone_indicator): `{m_w_proxy:.6g}`"
+                )
+                theta_w_deg = _math.degrees(_math.acos(cos_tw))
+                sb_lines.append(
+                    f"- **\u03b8_W** = `{theta_w_deg:.2f}\u00b0` "
+                    f"(SM: `{_math.degrees(_math.acos(80.379 / 91.1876)):.2f}\u00b0`)"
+                )
+                sb_lines.append(
+                    f"- **sin\u00b2(\u03b8_W)** = `{sin2_tw:.5f}` (SM: `0.23129`; "
+                    f"error: `{(sin2_tw / 0.23129 - 1.0) * 100:.1f}%`)"
+                )
+            elif m_z_proxy and m_z_proxy > 0:
+                sb_lines.append(f"- **M_Z proxy** (fitness_phase): `{m_z_proxy:.6g}`")
+                sb_lines.append("- **M_W proxy** (clone_indicator): _not available_")
+            elif m_w_proxy and m_w_proxy > 0:
+                sb_lines.append("- **M_Z proxy** (fitness_phase): _not available_")
+                sb_lines.append(f"- **M_W proxy** (clone_indicator): `{m_w_proxy:.6g}`")
+            else:
+                sb_lines.append(
+                    "- _Fitness phase and clone indicator channels not computed._"
+                )
+
+            # Parity violation: compare velocity-norm masses across walker types
+            parity_masses = {}
+            for label in ("cloner", "resister", "persister"):
+                m = ew_masses.get(f"velocity_norm_{label}")
+                if m and m > 0:
+                    parity_masses[label] = m
+            if len(parity_masses) >= 2:
+                sb_lines.append("- **Parity test** (velocity norm by walker type):")
+                types = sorted(parity_masses.keys())
+                for i, t1 in enumerate(types):
+                    for t2 in types[i + 1 :]:
+                        ratio = parity_masses[t1] / parity_masses[t2]
+                        sb_lines.append(
+                            f"  - m({t1})/m({t2}) = `{ratio:.4f}` "
+                            f"(parity conservation \u2192 1.0; "
+                            f"deviation: `{(ratio - 1.0) * 100:+.1f}%`)"
+                        )
+            else:
+                sb_lines.append(
+                    "- **Parity test:** _enable walker type split and select "
+                    "parity_velocity channels._"
+                )
+            new_dirac_ew_symmetry_breaking_summary.object = "  \n".join(sb_lines)
 
         def _update_new_dirac_ew_multiscale_views(
             output: MultiscaleElectroweakOutput | None,
@@ -14132,9 +14060,9 @@ def create_app() -> pn.template.FastListTemplate:
                 )
                 new_dirac_ew_multiscale_table.value = pd.DataFrame()
                 new_dirac_ew_multiscale_per_scale_table.value = pd.DataFrame()
-                new_dirac_ew_operator_quality_table.value = pd.DataFrame()
-                new_dirac_ew_eigenspectrum_plot.object = None
-                new_dirac_ew_gevp_summary.object = "_SU(2) GEVP summary unavailable due to error._"
+                clear_gevp_dashboard(new_dirac_ew_su2_gevp_widgets)
+                clear_gevp_dashboard(new_dirac_ew_u1_gevp_widgets)
+                clear_gevp_dashboard(new_dirac_ew_ew_mixed_gevp_widgets)
                 return
 
             if output is None:
@@ -14496,17 +14424,19 @@ def create_app() -> pn.template.FastListTemplate:
                     comparison_channel_overrides=comparison_overrides,
                 )
 
-                su2_supported_channels = (
+                multiscale_supported = (
                     tuple(SU2_BASE_CHANNELS)
                     + tuple(SU2_DIRECTIONAL_CHANNELS)
                     + tuple(SU2_WALKER_TYPE_CHANNELS)
+                    + tuple(U1_BASE_CHANNELS)
+                    + tuple(EW_MIXED_BASE_CHANNELS)
                 )
-                su2_requested = [
+                multiscale_requested = [
                     name
                     for name in requested_electroweak_channels
-                    if name in su2_supported_channels
+                    if name in multiscale_supported
                 ]
-                if bool(new_dirac_ew_settings.use_multiscale_kernels) and su2_requested:
+                if bool(new_dirac_ew_settings.use_multiscale_kernels) and multiscale_requested:
                     try:
                         ms_cfg = MultiscaleElectroweakConfig(
                             warmup_fraction=float(new_dirac_ew_settings.simulation_range[0]),
@@ -14559,7 +14489,7 @@ def create_app() -> pn.template.FastListTemplate:
                         multiscale_output = compute_multiscale_electroweak_channels(
                             history,
                             config=ms_cfg,
-                            channels=su2_requested,
+                            channels=multiscale_requested,
                         )
                         min_r2, min_windows, max_error_pct, remove_artifacts = (
                             _resolve_new_dirac_ew_filter_values()
@@ -14584,58 +14514,65 @@ def create_app() -> pn.template.FastListTemplate:
                     except Exception as exc:
                         multiscale_error = str(exc)
 
-                if bool(new_dirac_ew_settings.use_su2_gevp):
-                    basis_channels = get_companion_gevp_basis_channels("su2")
-                    has_series = any(
+                gevp_cfg = GEVPConfig(
+                    t0=int(new_dirac_ew_settings.gevp_t0),
+                    max_lag=int(new_dirac_ew_settings.max_lag),
+                    use_connected=bool(new_dirac_ew_settings.use_connected),
+                    fit_mode=str(new_dirac_ew_settings.fit_mode),
+                    fit_start=int(new_dirac_ew_settings.fit_start),
+                    fit_stop=new_dirac_ew_settings.fit_stop,
+                    min_fit_points=int(new_dirac_ew_settings.min_fit_points),
+                    window_widths=_parse_window_widths(
+                        new_dirac_ew_settings.window_widths_spec
+                    ),
+                    basis_strategy=str(new_dirac_ew_settings.gevp_basis_strategy),
+                    max_basis=int(new_dirac_ew_settings.gevp_max_basis),
+                    min_operator_r2=float(new_dirac_ew_settings.gevp_min_operator_r2),
+                    min_operator_windows=int(
+                        new_dirac_ew_settings.gevp_min_operator_windows
+                    ),
+                    max_operator_error_pct=float(
+                        new_dirac_ew_settings.gevp_max_operator_error_pct
+                    ),
+                    remove_artifacts=bool(new_dirac_ew_settings.gevp_remove_artifacts),
+                    eig_rel_cutoff=float(new_dirac_ew_settings.gevp_eig_rel_cutoff),
+                    cond_limit=float(new_dirac_ew_settings.gevp_cond_limit),
+                    shrinkage=float(new_dirac_ew_settings.gevp_shrinkage),
+                    compute_bootstrap_errors=bool(
+                        new_dirac_ew_settings.compute_bootstrap_errors
+                    ),
+                    n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
+                    bootstrap_mode=str(new_dirac_ew_settings.gevp_bootstrap_mode),
+                )
+                for _gevp_family, _gevp_use_flag in (
+                    ("su2", bool(new_dirac_ew_settings.use_su2_gevp)),
+                    ("u1", bool(new_dirac_ew_settings.use_u1_gevp)),
+                    ("ew_mixed", bool(new_dirac_ew_settings.use_ew_mixed_gevp)),
+                ):
+                    if not _gevp_use_flag:
+                        continue
+                    _gevp_basis = get_companion_gevp_basis_channels(_gevp_family)
+                    _gevp_has_series = any(
                         (
                             ch in gevp_input_results
                             and gevp_input_results[ch] is not None
                             and int(gevp_input_results[ch].n_samples) > 0
                             and int(gevp_input_results[ch].series.numel()) > 0
                         )
-                        for ch in basis_channels
+                        for ch in _gevp_basis
                     )
-                    if has_series:
+                    if _gevp_has_series:
                         try:
-                            gevp_cfg = GEVPConfig(
-                                t0=int(new_dirac_ew_settings.gevp_t0),
-                                max_lag=int(new_dirac_ew_settings.max_lag),
-                                use_connected=bool(new_dirac_ew_settings.use_connected),
-                                fit_mode=str(new_dirac_ew_settings.fit_mode),
-                                fit_start=int(new_dirac_ew_settings.fit_start),
-                                fit_stop=new_dirac_ew_settings.fit_stop,
-                                min_fit_points=int(new_dirac_ew_settings.min_fit_points),
-                                window_widths=_parse_window_widths(
-                                    new_dirac_ew_settings.window_widths_spec
-                                ),
-                                basis_strategy=str(new_dirac_ew_settings.gevp_basis_strategy),
-                                max_basis=int(new_dirac_ew_settings.gevp_max_basis),
-                                min_operator_r2=float(new_dirac_ew_settings.gevp_min_operator_r2),
-                                min_operator_windows=int(
-                                    new_dirac_ew_settings.gevp_min_operator_windows
-                                ),
-                                max_operator_error_pct=float(
-                                    new_dirac_ew_settings.gevp_max_operator_error_pct
-                                ),
-                                remove_artifacts=bool(new_dirac_ew_settings.gevp_remove_artifacts),
-                                eig_rel_cutoff=float(new_dirac_ew_settings.gevp_eig_rel_cutoff),
-                                cond_limit=float(new_dirac_ew_settings.gevp_cond_limit),
-                                shrinkage=float(new_dirac_ew_settings.gevp_shrinkage),
-                                compute_bootstrap_errors=bool(
-                                    new_dirac_ew_settings.compute_bootstrap_errors
-                                ),
-                                n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
-                                bootstrap_mode=str(new_dirac_ew_settings.gevp_bootstrap_mode),
-                            )
-                            gevp_payload = compute_companion_channel_gevp(
+                            _gevp_payload = compute_companion_channel_gevp(
                                 base_results=gevp_input_results,
                                 multiscale_output=multiscale_output,
                                 config=gevp_cfg,
-                                base_channel="su2",
+                                base_channel=_gevp_family,
                             )
-                            results[gevp_payload.result.channel_name] = gevp_payload.result
+                            results[_gevp_payload.result.channel_name] = _gevp_payload.result
                         except Exception as exc:
-                            gevp_error = str(exc)
+                            if _gevp_family == "su2":
+                                gevp_error = str(exc)
 
                 state["new_dirac_ew_results"] = results
                 state["new_dirac_ew_multiscale_output"] = multiscale_output
@@ -15527,6 +15464,8 @@ This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
                 new_dirac_ew_best_combo_table,
                 pn.pane.Markdown("### Mass Ratios (From Best Global Combination)"),
                 new_dirac_ew_best_combo_ratio_pane,
+                pn.pane.Markdown("### Electroweak Symmetry Breaking"),
+                new_dirac_ew_symmetry_breaking_summary,
                 new_dirac_ew_fit_table,
                 new_dirac_ew_compare_table,
                 new_dirac_ew_anchor_table,
@@ -15536,11 +15475,12 @@ This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
                 new_dirac_ew_multiscale_table,
                 pn.pane.Markdown("### SU(2) Per-Scale Candidates"),
                 new_dirac_ew_multiscale_per_scale_table,
-                pn.pane.Markdown("### SU(2) Operator Quality"),
-                new_dirac_ew_gevp_summary,
-                new_dirac_ew_operator_quality_table,
-                pn.pane.Markdown("### SU(2) GEVP Eigenvalue Spectrum"),
-                new_dirac_ew_eigenspectrum_plot,
+                pn.pane.Markdown("### SU(2) GEVP Analysis"),
+                *build_gevp_dashboard_sections(new_dirac_ew_su2_gevp_widgets),
+                pn.pane.Markdown("### U(1) GEVP Analysis"),
+                *build_gevp_dashboard_sections(new_dirac_ew_u1_gevp_widgets),
+                pn.pane.Markdown("### EW Mixed GEVP Analysis"),
+                *build_gevp_dashboard_sections(new_dirac_ew_ew_mixed_gevp_widgets),
                 pn.pane.Markdown("### Electroweak Reference Masses (GeV)"),
                 new_dirac_ew_ref_table,
                 pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),

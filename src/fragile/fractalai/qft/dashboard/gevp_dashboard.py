@@ -76,6 +76,9 @@ def channel_family_key(name: str) -> str:
         "axial_vector",
         "glueball",
         "tensor",
+        "su2",
+        "u1",
+        "ew_mixed",
     ):
         if base == prefix or base.startswith(f"{prefix}_"):
             return prefix

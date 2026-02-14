@@ -46,9 +46,18 @@ SU2_WALKER_TYPE_CHANNELS = tuple(
     for name in SU2_BASE_CHANNELS
     for walker_type in ("cloner", "resister", "persister")
 )
-SUPPORTED_CHANNELS = SU2_BASE_CHANNELS + SU2_DIRECTIONAL_CHANNELS + SU2_WALKER_TYPE_CHANNELS
+U1_BASE_CHANNELS = ("u1_phase", "u1_dressed", "u1_phase_q2", "u1_dressed_q2")
+EW_MIXED_BASE_CHANNELS = ("ew_mixed",)
+SUPPORTED_CHANNELS = SU2_BASE_CHANNELS + SU2_DIRECTIONAL_CHANNELS + SU2_WALKER_TYPE_CHANNELS + U1_BASE_CHANNELS + EW_MIXED_BASE_CHANNELS
 SU2_COMPANION_CHANNEL_MAP: dict[str, str] = {
-    name: f"{name}_companion" for name in SUPPORTED_CHANNELS
+    name: f"{name}_companion" for name in SU2_BASE_CHANNELS + SU2_DIRECTIONAL_CHANNELS + SU2_WALKER_TYPE_CHANNELS
+}
+U1_COMPANION_CHANNEL_MAP: dict[str, str] = {name: f"{name}_companion" for name in U1_BASE_CHANNELS}
+EW_MIXED_COMPANION_CHANNEL_MAP: dict[str, str] = {name: f"{name}_companion" for name in EW_MIXED_BASE_CHANNELS}
+ALL_COMPANION_CHANNEL_MAP: dict[str, str] = {
+    **SU2_COMPANION_CHANNEL_MAP,
+    **U1_COMPANION_CHANNEL_MAP,
+    **EW_MIXED_COMPANION_CHANNEL_MAP,
 }
 BOOTSTRAP_MODES = ("time", "walker", "hybrid")
 KERNEL_TYPES = ("gaussian", "exponential", "tophat", "shell")
@@ -63,6 +72,7 @@ class MultiscaleElectroweakConfig:
     mc_time_index: int | None = None
     h_eff: float = 1.0
     epsilon_c: float | None = None
+    epsilon_d: float | None = None
     epsilon_clone: float | None = None
     lambda_alg: float | None = None
     edge_weight_mode: str = "inverse_riemannian_distance"
@@ -155,7 +165,7 @@ def _nested_param(
 def _resolve_electroweak_params(
     history: RunHistory,
     cfg: MultiscaleElectroweakConfig,
-) -> tuple[float, float, float]:
+) -> tuple[float, float, float, float]:
     params = history.params if isinstance(history.params, dict) else None
 
     epsilon_c = cfg.epsilon_c
@@ -165,6 +175,12 @@ def _resolve_electroweak_params(
         epsilon_c = _nested_param(params, "companion_selection", "epsilon", default=None)
     if epsilon_c is None:
         epsilon_c = 1.0
+
+    epsilon_d = cfg.epsilon_d
+    if epsilon_d is None:
+        epsilon_d = _nested_param(params, "companion_selection", "epsilon", default=None)
+    if epsilon_d is None:
+        epsilon_d = 1.0
 
     epsilon_clone = cfg.epsilon_clone
     if epsilon_clone is None:
@@ -182,6 +198,7 @@ def _resolve_electroweak_params(
 
     return (
         float(max(epsilon_c, 1e-8)),
+        float(max(epsilon_d, 1e-8)),
         float(max(epsilon_clone, 1e-8)),
         float(max(lambda_alg, 0.0)),
     )
@@ -361,7 +378,7 @@ def _select_best_scale(
     return best_idx
 
 
-def _compute_su2_series_from_kernels(
+def _compute_electroweak_series_from_kernels(
     *,
     positions: Tensor,  # [T,N,d]
     velocities: Tensor,  # [T,N,d]
@@ -370,6 +387,7 @@ def _compute_su2_series_from_kernels(
     kernels: Tensor,  # [T,S,N,N]
     h_eff: float,
     epsilon_c: float,
+    epsilon_d: float,
     epsilon_clone: float,
     lambda_alg: float,
     bounds: Any | None,
@@ -388,7 +406,7 @@ def _compute_su2_series_from_kernels(
         empty = torch.zeros((n_scales, t_len), device=kernels.device, dtype=torch.float32)
         return {
             alias: empty.clone()
-            for alias in (SU2_COMPANION_CHANNEL_MAP[name] for name in SUPPORTED_CHANNELS)
+            for alias in ALL_COMPANION_CHANNEL_MAP.values()
         }
 
     dev = kernels.device
@@ -488,6 +506,34 @@ def _compute_su2_series_from_kernels(
             su2_doublet_diff_op_directed
         ),
     }
+
+    # --- U(1) operators ---
+    u1_phase = -(fj - fi) / max(float(h_eff), 1e-12)
+    u1_pair = torch.exp(1j * u1_phase.to(complex_dtype))
+    u1_phase_exp = (weights_c * u1_pair).sum(dim=-1)
+    u1_phase_q2_exp = (weights_c * torch.exp(2j * u1_phase.to(complex_dtype))).sum(dim=-1)
+
+    u1_weight = torch.exp(-dist_sq / (2.0 * max(float(epsilon_d), 1e-12) ** 2))
+    u1_amp = (weights * torch.sqrt(u1_weight)).sum(dim=-1)
+
+    u1_amp_c = u1_amp.to(dtype=complex_dtype)
+    u1_phase_op = u1_phase_exp * alive_c
+    u1_dressed_op = (u1_amp_c * u1_phase_exp) * alive_c
+    u1_phase_q2_op = u1_phase_q2_exp * alive_c
+    u1_dressed_q2_op = (u1_amp_c * u1_phase_q2_exp) * alive_c
+
+    outputs[U1_COMPANION_CHANNEL_MAP["u1_phase"]] = _series_from_op(u1_phase_op)
+    outputs[U1_COMPANION_CHANNEL_MAP["u1_dressed"]] = _series_from_op(u1_dressed_op)
+    outputs[U1_COMPANION_CHANNEL_MAP["u1_phase_q2"]] = _series_from_op(u1_phase_q2_op)
+    outputs[U1_COMPANION_CHANNEL_MAP["u1_dressed_q2"]] = _series_from_op(u1_dressed_q2_op)
+
+    # --- EW mixed operator ---
+    if resolved_mode == "score_directed":
+        ew_su2_phase = su2_phase_exp_directed
+    else:
+        ew_su2_phase = su2_phase_exp_standard
+    ew_mixed_op = (u1_amp_c * su2_amp_c * u1_phase_exp * ew_su2_phase) * alive_c
+    outputs[EW_MIXED_COMPANION_CHANNEL_MAP["ew_mixed"]] = _series_from_op(ew_mixed_op)
 
     if bool(enable_walker_type_split):
         if will_clone is not None:
@@ -642,14 +688,15 @@ def compute_multiscale_electroweak_channels(
             bootstrap_mass_std=None,
         )
 
-    requested = [str(c).strip() for c in (channels or SU2_BASE_CHANNELS) if str(c).strip()]
+    all_base = SU2_BASE_CHANNELS + U1_BASE_CHANNELS + EW_MIXED_BASE_CHANNELS
+    requested = [str(c).strip() for c in (channels or all_base) if str(c).strip()]
     requested = [c for c in requested if c in SUPPORTED_CHANNELS]
     if not requested:
-        requested = list(SU2_BASE_CHANNELS)
+        requested = list(all_base)
 
-    aliases = [SU2_COMPANION_CHANNEL_MAP[name] for name in requested]
+    aliases = [ALL_COMPANION_CHANNEL_MAP[name] for name in requested]
 
-    epsilon_c, epsilon_clone, lambda_alg = _resolve_electroweak_params(history, config)
+    epsilon_c, epsilon_d, epsilon_clone, lambda_alg = _resolve_electroweak_params(history, config)
     h_eff = float(max(config.h_eff, 1e-8))
 
     frame_ids_t = torch.as_tensor(
@@ -705,7 +752,7 @@ def compute_multiscale_electroweak_channels(
     ):
         pos_idx = [frame_to_pos[int(frame_idx)] for frame_idx in frame_ids_chunk]
         pos_t = torch.as_tensor(pos_idx, dtype=torch.long, device=positions.device)
-        chunk_series = _compute_su2_series_from_kernels(
+        chunk_series = _compute_electroweak_series_from_kernels(
             positions=positions.index_select(0, pos_t),
             velocities=velocities.index_select(0, pos_t),
             fitness=fitness.index_select(0, pos_t),
@@ -713,6 +760,7 @@ def compute_multiscale_electroweak_channels(
             kernels=kernels_chunk,
             h_eff=h_eff,
             epsilon_c=epsilon_c,
+            epsilon_d=epsilon_d,
             epsilon_clone=epsilon_clone,
             lambda_alg=lambda_alg,
             bounds=history.bounds,
@@ -723,7 +771,7 @@ def compute_multiscale_electroweak_channels(
             walker_type_scope=resolved_scope,
         )
         for base in requested:
-            alias = SU2_COMPANION_CHANNEL_MAP[base]
+            alias = ALL_COMPANION_CHANNEL_MAP[base]
             series_by_channel[alias][:, pos_t] = chunk_series[alias]
 
     dt = float(history.delta_t * history.record_every)

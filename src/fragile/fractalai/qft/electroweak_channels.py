@@ -30,8 +30,10 @@ from fragile.fractalai.qft.correlator_channels import (
 from fragile.fractalai.qft.electroweak_observables import (
     compute_weighted_electroweak_ops_vectorized,
     ELECTROWEAK_OPERATOR_CHANNELS,
+    PARITY_VELOCITY_CHANNELS,
     pack_neighbors_from_edges,
     PackedNeighbors,
+    SYMMETRY_BREAKING_CHANNELS,
 )
 
 
@@ -66,6 +68,8 @@ ELECTROWEAK_WALKER_TYPE_SU2_CHANNELS = (
     "su2_doublet_diff_resister",
     "su2_doublet_diff_persister",
 )
+ELECTROWEAK_SYMMETRY_BREAKING_CHANNELS = SYMMETRY_BREAKING_CHANNELS
+ELECTROWEAK_PARITY_CHANNELS = PARITY_VELOCITY_CHANNELS
 ELECTROWEAK_CHANNELS = tuple(ELECTROWEAK_OPERATOR_CHANNELS)
 
 

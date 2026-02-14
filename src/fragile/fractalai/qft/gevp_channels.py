@@ -55,12 +55,23 @@ SU2_GEVP_BASE_CHANNELS = (
     "su2_doublet",
     "su2_doublet_diff",
 )
+U1_GEVP_BASE_CHANNELS = (
+    "u1_phase",
+    "u1_dressed",
+    "u1_phase_q2",
+    "u1_dressed_q2",
+)
+EW_MIXED_GEVP_BASE_CHANNELS = (
+    "ew_mixed",
+)
 COMPANION_GEVP_BASE_CHANNELS: dict[str, tuple[str, ...]] = {
     "nucleon": NUCLEON_GEVP_BASE_CHANNELS,
     "scalar": SCALAR_GEVP_BASE_CHANNELS,
     "pseudoscalar": PSEUDOSCALAR_GEVP_BASE_CHANNELS,
     "glueball": GLUEBALL_GEVP_BASE_CHANNELS,
     "su2": SU2_GEVP_BASE_CHANNELS,
+    "u1": U1_GEVP_BASE_CHANNELS,
+    "ew_mixed": EW_MIXED_GEVP_BASE_CHANNELS,
 }
 
 

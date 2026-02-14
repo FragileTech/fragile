@@ -44,6 +44,15 @@ WALKER_TYPE_LABELS = ("cloner", "resister", "persister")
 SU2_WALKER_TYPE_CHANNELS = tuple(
     f"{name}_{label}" for name in SU2_BASE_OPERATOR_CHANNELS for label in WALKER_TYPE_LABELS
 )
+SYMMETRY_BREAKING_CHANNELS = (
+    "fitness_phase",
+    "clone_indicator",
+)
+PARITY_VELOCITY_CHANNELS = (
+    "velocity_norm_cloner",
+    "velocity_norm_resister",
+    "velocity_norm_persister",
+)
 ELECTROWEAK_OPERATOR_CHANNELS = (
     "u1_phase",
     "u1_dressed",
@@ -53,6 +62,8 @@ ELECTROWEAK_OPERATOR_CHANNELS = (
     *SU2_DIRECTIONAL_OPERATOR_CHANNELS,
     *SU2_WALKER_TYPE_CHANNELS,
     "ew_mixed",
+    *SYMMETRY_BREAKING_CHANNELS,
+    *PARITY_VELOCITY_CHANNELS,
 )
 
 
@@ -566,6 +577,25 @@ def compute_weighted_electroweak_ops_vectorized(
     results["su2_doublet_diff_cloner"] = su2_doublet_diff_op * cloner_c
     results["su2_doublet_diff_resister"] = su2_doublet_diff_op * resister_c
     results["su2_doublet_diff_persister"] = su2_doublet_diff_op * persister_c
+
+    # --- Symmetry-breaking operators (neighbor-independent) ---
+    # Fitness phase: θ_i = -V_fit,i (scalar fitness value)
+    # Autocorrelation extracts Z mass (exponential decay) and photon (flat tail)
+    results["fitness_phase"] = (-fitness).to(complex_dtype) * alive_c
+
+    # Clone indicator: χ_i = float(will_clone_i)
+    # Connected autocorrelation (use_connected=True) extracts W mass
+    if will_clone is not None:
+        results["clone_indicator"] = will_clone.to(complex_dtype) * alive_c
+    else:
+        results["clone_indicator"] = torch.zeros(N, device=device, dtype=complex_dtype)
+
+    # Velocity-norm parity channels: ||v_i|| split by walker type
+    # C_DD ≠ C_SS indicates parity violation (V-A structure)
+    v_norm = torch.linalg.vector_norm(velocities, dim=-1).to(complex_dtype)
+    results["velocity_norm_cloner"] = v_norm * cloner_c
+    results["velocity_norm_resister"] = v_norm * resister_c
+    results["velocity_norm_persister"] = v_norm * persister_c
 
     zeros = torch.zeros(N, device=device, dtype=complex_dtype)
     for name in ELECTROWEAK_OPERATOR_CHANNELS:
