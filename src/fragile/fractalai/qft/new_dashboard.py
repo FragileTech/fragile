@@ -91,6 +91,13 @@ from fragile.fractalai.qft.dashboard.gevp_dashboard import (
     create_gevp_dashboard_widgets,
     update_gevp_dashboard,
 )
+from fragile.fractalai.qft.dashboard.gevp_mass_dashboard import (
+    GEVPMassSpectrumWidgets,
+    build_gevp_mass_spectrum_sections,
+    clear_gevp_mass_spectrum,
+    create_gevp_mass_spectrum_widgets,
+    update_gevp_mass_spectrum,
+)
 from fragile.fractalai.qft.gevp_channels import (
     compute_companion_channel_gevp,
     EW_MIXED_GEVP_BASE_CHANNELS,
@@ -2039,6 +2046,42 @@ class AnisotropicEdgeSettings(param.Parameterized):
         objects=("time", "walker", "hybrid"),
         doc="Bootstrap mode for GEVP uncertainty estimation.",
     )
+    gevp_compute_multimode = param.Boolean(
+        default=False,
+        doc="Extract multi-mode GEVP mass spectrum (ground + excited states).",
+    )
+    gevp_tau_diag = param.Integer(
+        default=None,
+        bounds=(2, None),
+        allow_None=True,
+        doc="Fixed τ_diag for multi-mode GEVP (None = auto-select).",
+    )
+    gevp_plateau_min_length = param.Integer(
+        default=3,
+        bounds=(2, None),
+        doc="Minimum plateau length for multi-mode mass extraction.",
+    )
+    gevp_plateau_max_slope = param.Number(
+        default=0.3,
+        bounds=(0.0, None),
+        doc="Maximum relative slope for plateau acceptance.",
+    )
+    gevp_t0_sweep_spec = param.String(
+        default="",
+        doc="t0 sweep: '2-6' or '2,3,5'. Empty=disabled.",
+    )
+    gevp_multimode_fit_start = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Exp fit start lag (None=auto).",
+    )
+    gevp_multimode_fit_stop = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Exp fit stop lag (None=all).",
+    )
     use_companion_meson_phase = param.Boolean(
         default=True,
         doc="Use companion-pair color-phase implementation for scalar/pseudoscalar channels.",
@@ -2259,25 +2302,6 @@ class NewDiracElectroweakSettings(param.Parameterized):
     max_lag = param.Integer(default=80, bounds=(10, 200))
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
     use_connected = param.Boolean(default=True)
-    neighbor_method = param.ObjectSelector(
-        default="companions",
-        objects=("auto", "recorded", "companions", "voronoi"),
-    )
-    companion_topology_u1 = param.ObjectSelector(
-        default="distance",
-        objects=("distance", "clone", "both"),
-        doc="Companion topology used by U(1) operator family.",
-    )
-    companion_topology_su2 = param.ObjectSelector(
-        default="clone",
-        objects=("distance", "clone", "both"),
-        doc="Companion topology used by SU(2) operator family.",
-    )
-    companion_topology_ew_mixed = param.ObjectSelector(
-        default="both",
-        objects=("distance", "clone", "both"),
-        doc="Companion topology used by EW mixed operator family.",
-    )
     edge_weight_mode = param.ObjectSelector(
         default="riemannian_kernel_volume",
         objects=[
@@ -2297,8 +2321,6 @@ class NewDiracElectroweakSettings(param.Parameterized):
     fit_start = param.Integer(default=2, bounds=(0, None))
     fit_stop = param.Integer(default=None, bounds=(1, None), allow_None=True)
     min_fit_points = param.Integer(default=2, bounds=(2, None))
-    epsilon_clone = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
-    lambda_alg = param.Number(default=None, bounds=(0.0, None), allow_None=True)
     su2_operator_mode = param.ObjectSelector(
         default="standard",
         objects=("standard", "score_directed"),
@@ -2382,6 +2404,42 @@ class NewDiracElectroweakSettings(param.Parameterized):
     gevp_bootstrap_mode = param.ObjectSelector(
         default="time",
         objects=("time", "walker", "hybrid"),
+    )
+    gevp_compute_multimode = param.Boolean(
+        default=False,
+        doc="Extract multi-mode GEVP mass spectrum (ground + excited states).",
+    )
+    gevp_tau_diag = param.Integer(
+        default=None,
+        bounds=(2, None),
+        allow_None=True,
+        doc="Fixed τ_diag for multi-mode GEVP (None = auto-select).",
+    )
+    gevp_plateau_min_length = param.Integer(
+        default=3,
+        bounds=(2, None),
+        doc="Minimum plateau length for multi-mode mass extraction.",
+    )
+    gevp_plateau_max_slope = param.Number(
+        default=0.3,
+        bounds=(0.0, None),
+        doc="Maximum relative slope for plateau acceptance.",
+    )
+    gevp_t0_sweep_spec = param.String(
+        default="",
+        doc="t0 sweep: '2-6' or '2,3,5'. Empty=disabled.",
+    )
+    gevp_multimode_fit_start = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Exp fit start lag (None=auto).",
+    )
+    gevp_multimode_fit_stop = param.Integer(
+        default=None,
+        bounds=(1, None),
+        allow_None=True,
+        doc="Exp fit stop lag (None=all).",
     )
 
     mc_time_index = param.Integer(
@@ -2658,6 +2716,26 @@ class EinsteinTestSettings(param.Parameterized):
         bounds=(1e-6, None),
         doc="Manual G_N (when g_newton_metric='manual')",
     )
+
+
+def _parse_t0_sweep_spec(spec: str) -> list[int] | None:
+    """Parse '2-6' or '2,3,5' into list of ints, or None if empty."""
+    spec = str(spec).strip()
+    if not spec:
+        return None
+    if "-" in spec and "," not in spec:
+        parts = spec.split("-")
+        if len(parts) == 2:
+            try:
+                start, end = int(parts[0]), int(parts[1])
+                return list(range(start, end + 1))
+            except ValueError:
+                return None
+    try:
+        values = [int(x.strip()) for x in spec.split(",") if x.strip()]
+        return values if values else None
+    except ValueError:
+        return None
 
 
 FRACTAL_SET_CUT_TYPES = ("hyperplane", "spherical", "median")
@@ -5213,14 +5291,13 @@ def _compute_coupling_constants(
     history: RunHistory | None,
     h_eff: float,
     frame_indices: list[int] | None = None,
-    lambda_alg: float | None = None,
     pairwise_distance_by_frame: dict[int, torch.Tensor] | None = None,
 ) -> dict[str, float]:
     return compute_electroweak_coupling_constants(
         history,
         h_eff=h_eff,
         frame_indices=frame_indices,
-        lambda_alg=lambda_alg,
+        lambda_alg=0.0,
         pairwise_distance_by_frame=pairwise_distance_by_frame,
     )
 
@@ -6566,6 +6643,41 @@ def _get_channel_mass_error(
     return mass_error if np.isfinite(mass_error) and mass_error >= 0 else float("inf")
 
 
+def _get_channel_bootstrap_mass_error(
+    result: ChannelCorrelatorResult,
+    mode: str = "AIC-Weighted",
+) -> float:
+    if mode == "Best Window":
+        return float("nan")
+    raw = result.mass_fit.get("bootstrap_mass_error", float("nan"))
+    try:
+        bootstrap_error = float(raw)
+    except (TypeError, ValueError):
+        bootstrap_error = float("nan")
+    return bootstrap_error if np.isfinite(bootstrap_error) and bootstrap_error >= 0 else float("nan")
+
+
+def _get_channel_error_components(
+    result: ChannelCorrelatorResult,
+    mode: str = "AIC-Weighted",
+) -> tuple[float, float, float]:
+    """Return (aic_error, bootstrap_error, total_error)."""
+    total_error = float(_get_channel_mass_error(result, mode))
+    if not np.isfinite(total_error) or total_error < 0:
+        total_error = float("nan")
+    bootstrap_error = float(_get_channel_bootstrap_mass_error(result, mode))
+
+    if np.isfinite(total_error):
+        if np.isfinite(bootstrap_error):
+            aic_sq = max(total_error**2 - bootstrap_error**2, 0.0)
+            aic_error = float(np.sqrt(aic_sq))
+        else:
+            aic_error = float(total_error)
+    else:
+        aic_error = float("nan")
+    return aic_error, bootstrap_error, total_error
+
+
 def _get_channel_r2(
     result: ChannelCorrelatorResult,
     mode: str = "AIC-Weighted",
@@ -7129,6 +7241,7 @@ def _update_mass_table(
     mode: str = "AIC-Weighted",
     mass_getter=None,
     error_getter=None,
+    include_error_breakdown: bool = False,
 ) -> None:
     """Update a mass table widget with extracted masses (module-level, no closure)."""
     if mass_getter is None:
@@ -7147,6 +7260,11 @@ def _update_mass_table(
 
         mass = mass_getter(result, mode)
         mass_error = error_getter(result, mode)
+        aic_error = float("nan")
+        bootstrap_error = float("nan")
+        total_error = float("nan")
+        if include_error_breakdown:
+            aic_error, bootstrap_error, total_error = _get_channel_error_components(result, mode)
         mass_error_pct = float("nan")
         if (
             np.isfinite(float(mass))
@@ -7163,7 +7281,7 @@ def _update_mass_table(
             r2 = best_window.get("r2", float("nan"))
 
         n_windows = result.mass_fit.get("n_valid_windows", 0)
-        rows.append({
+        row = {
             "channel": name,
             "mass": f"{mass:.6f}" if mass > 0 else "n/a",
             "mass_error": f"{mass_error:.6f}" if mass_error < float("inf") else "n/a",
@@ -7171,7 +7289,22 @@ def _update_mass_table(
             "r2": f"{r2:.4f}" if np.isfinite(r2) else "n/a",
             "n_windows": n_windows,
             "n_samples": result.n_samples,
-        })
+        }
+        if include_error_breakdown:
+            total_error_pct = (
+                abs(total_error / float(mass)) * 100.0
+                if np.isfinite(total_error) and np.isfinite(float(mass)) and float(mass) > 0
+                else float("nan")
+            )
+            row["aic_error"] = f"{aic_error:.6f}" if np.isfinite(aic_error) else "n/a"
+            row["bootstrap_error"] = (
+                f"{bootstrap_error:.6f}" if np.isfinite(bootstrap_error) else "n/a"
+            )
+            row["total_error"] = f"{total_error:.6f}" if np.isfinite(total_error) else "n/a"
+            row["total_error_pct"] = (
+                f"{total_error_pct:.2f}%" if np.isfinite(total_error_pct) else "n/a"
+            )
+        rows.append(row)
     table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
@@ -7284,6 +7417,7 @@ def _update_strong_tables(
     calibration_family_map: dict[str, str] | None = None,
     calibration_ratio_specs: list[tuple[str, str, str]] | None = None,
     comparison_channel_overrides: dict[str, str] | None = None,
+    include_error_breakdown: bool = False,
 ) -> None:
     """Orchestrate all strong-force table updates (module-level, no closure)."""
     if ratio_specs is None:
@@ -7296,7 +7430,12 @@ def _update_strong_tables(
     )
 
     _update_mass_table(
-        results, mass_table, mode, mass_getter=mass_getter, error_getter=error_getter
+        results,
+        mass_table,
+        mode,
+        mass_getter=mass_getter,
+        error_getter=error_getter,
+        include_error_breakdown=include_error_breakdown,
     )
     comparison_results = dict(results)
     if comparison_channel_overrides:
@@ -7462,11 +7601,11 @@ def create_app() -> pn.template.FastListTemplate:
         gas_config.kinetic_op.diffusion_mode = "voronoi_proxy"
         gas_config.kinetic_op.diffusion_grad_scale = 30.0
         gas_config.kinetic_op.epsilon_Sigma = 0.5
-        gas_config.kinetic_op.nu = 1.0
-        gas_config.kinetic_op.beta_curl = 1.0
+        gas_config.kinetic_op.nu = 3.0
+        gas_config.kinetic_op.beta_curl = 3.0
         gas_config.kinetic_op.use_viscous_coupling = True
         gas_config.kinetic_op.viscous_neighbor_weighting = "riemannian_kernel_volume"
-        gas_config.kinetic_op.viscous_length_scale = 0.5
+        gas_config.kinetic_op.viscous_length_scale = 0.1
         gas_config.kinetic_op.viscous_neighbor_penalty = 0.0
         gas_config.kinetic_op.compute_volume_weights = False
         gas_config.kinetic_op.use_velocity_squashing = False
@@ -7597,6 +7736,17 @@ def create_app() -> pn.template.FastListTemplate:
         save_status = pn.pane.Markdown(
             "**Save a history**: run a simulation or load a RunHistory first.",
             sizing_mode="stretch_width",
+        )
+        simulation_compute_status = pn.pane.Markdown(
+            "**Simulation:** run or load a RunHistory, then click Compute Simulation.",
+            sizing_mode="stretch_width",
+        )
+        simulation_compute_button = pn.widgets.Button(
+            name="Compute Simulation",
+            button_type="primary",
+            min_width=240,
+            sizing_mode="stretch_width",
+            disabled=True,
         )
 
         algorithm_status = pn.pane.Markdown(
@@ -8643,10 +8793,6 @@ def create_app() -> pn.template.FastListTemplate:
                 "h_eff",
                 "mc_time_index",
                 "use_connected",
-                "neighbor_method",
-                "companion_topology_u1",
-                "companion_topology_su2",
-                "companion_topology_ew_mixed",
                 "edge_weight_mode",
                 "neighbor_k",
                 "window_widths_spec",
@@ -8654,8 +8800,6 @@ def create_app() -> pn.template.FastListTemplate:
                 "fit_start",
                 "fit_stop",
                 "min_fit_points",
-                "epsilon_clone",
-                "lambda_alg",
                 "su2_operator_mode",
                 "enable_walker_type_split",
                 "walker_type_scope",
@@ -8908,6 +9052,9 @@ def create_app() -> pn.template.FastListTemplate:
         new_dirac_ew_su2_gevp_widgets = create_gevp_dashboard_widgets()
         new_dirac_ew_u1_gevp_widgets = create_gevp_dashboard_widgets()
         new_dirac_ew_ew_mixed_gevp_widgets = create_gevp_dashboard_widgets()
+        new_dirac_ew_su2_mass_spectrum_widgets = create_gevp_mass_spectrum_widgets()
+        new_dirac_ew_u1_mass_spectrum_widgets = create_gevp_mass_spectrum_widgets()
+        new_dirac_ew_ew_mixed_mass_spectrum_widgets = create_gevp_mass_spectrum_widgets()
 
         new_dirac_ew_dirac_full = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         new_dirac_ew_dirac_walker = pn.pane.HoloViews(
@@ -9121,6 +9268,8 @@ def create_app() -> pn.template.FastListTemplate:
                 visualizer.set_history(history)
             algorithm_status.object = "**Algorithm ready:** click Run Algorithm Analysis."
             algorithm_run_button.disabled = False
+            simulation_compute_button.disabled = False
+            simulation_compute_status.object = "**Simulation:** click Compute Simulation to visualize this RunHistory."
             if defer_dashboard_updates:
                 visualizer.status_pane.object = (
                     "**Simulation complete:** history captured; click a Compute button to "
@@ -9244,6 +9393,9 @@ def create_app() -> pn.template.FastListTemplate:
             clear_gevp_dashboard(new_dirac_ew_su2_gevp_widgets)
             clear_gevp_dashboard(new_dirac_ew_u1_gevp_widgets)
             clear_gevp_dashboard(new_dirac_ew_ew_mixed_gevp_widgets)
+            clear_gevp_mass_spectrum(new_dirac_ew_su2_mass_spectrum_widgets)
+            clear_gevp_mass_spectrum(new_dirac_ew_u1_mass_spectrum_widgets)
+            clear_gevp_mass_spectrum(new_dirac_ew_ew_mixed_mass_spectrum_widgets)
             new_dirac_ew_filtered_summary.object = "**Filtered-out candidates:** none."
             new_dirac_ew_mass_table.value = pd.DataFrame()
             new_dirac_ew_filtered_mass_table.value = pd.DataFrame()
@@ -9333,6 +9485,35 @@ def create_app() -> pn.template.FastListTemplate:
                 load_status.object = f"**Loaded:** `{history_path}`"
             except Exception as exc:
                 load_status.object = f"**Error loading history:** {exc!s}"
+
+        def on_compute_simulation_clicked(_):
+            if gas_config.run_button.disabled:
+                simulation_compute_status.object = (
+                    "**Simulation:** simulation is currently running.\n\n"
+                    "Wait for completion before recomputing visualization."
+                )
+                return
+
+            history = state.get("history")
+            if history is None:
+                simulation_compute_status.object = (
+                    "**Error:** run a simulation or load a RunHistory first."
+                )
+                return
+
+            simulation_compute_status.object = "**Computing Simulation...**"
+            try:
+                inferred_extent = _infer_bounds_extent(history)
+                if inferred_extent is not None:
+                    visualizer.bounds_extent = inferred_extent
+                    gas_config.bounds_extent = float(inferred_extent)
+                visualizer.set_history(history)
+                simulation_compute_status.object = (
+                    f"**Simulation ready:** {history.n_steps} steps / "
+                    f"{history.n_recorded} recorded frames."
+                )
+            except Exception as exc:
+                simulation_compute_status.object = f"**Error:** {exc!s}"
 
         def on_save_clicked(_):
             history = state.get("history")
@@ -11921,6 +12102,7 @@ def create_app() -> pn.template.FastListTemplate:
                 glueball_ref_input=companion_strong_force_glueball_ref_input,
                 ratio_specs=STRONG_FORCE_RATIO_SPECS,
                 comparison_channel_overrides=comparison_overrides,
+                include_error_breakdown=True,
             )
             filtered_out_dict = {
                 name: payload[0] for name, payload in filtered_out_results.items()
@@ -11929,6 +12111,7 @@ def create_app() -> pn.template.FastListTemplate:
                 filtered_out_dict,
                 companion_strong_force_filtered_mass_table,
                 str(mode),
+                include_error_breakdown=True,
             )
             min_r2_str = f"{gevp_min_r2:.3g}" if np.isfinite(gevp_min_r2) else "off"
             max_error_pct_str = (
@@ -12134,6 +12317,49 @@ def create_app() -> pn.template.FastListTemplate:
                 if denominator_base not in combo_channels:
                     combo_channels.append(denominator_base)
 
+            def _mass_error_components(
+                result_obj: ChannelCorrelatorResult,
+            ) -> tuple[float, float, float]:
+                """Return (aic_error, bootstrap_error, total_error) for one channel mass."""
+                return _get_channel_error_components(result_obj, str(mode))
+
+            def _ratio_sigma(
+                *,
+                ratio: float,
+                numerator_mass: float,
+                denominator_mass: float,
+                numerator_err: float,
+                denominator_err: float,
+            ) -> float:
+                if (
+                    not np.isfinite(ratio)
+                    or not np.isfinite(numerator_mass)
+                    or not np.isfinite(denominator_mass)
+                    or denominator_mass <= 0
+                    or not np.isfinite(numerator_err)
+                    or not np.isfinite(denominator_err)
+                    or numerator_err < 0
+                    or denominator_err < 0
+                ):
+                    return float("nan")
+                rel_num = numerator_err / max(numerator_mass, 1e-12)
+                rel_den = denominator_err / max(denominator_mass, 1e-12)
+                return float(abs(ratio) * np.sqrt(rel_num**2 + rel_den**2))
+
+            def _interval_with_target_status(
+                center: float,
+                sigma: float,
+                target: float,
+            ) -> str:
+                if not np.isfinite(sigma) or sigma <= 0:
+                    return "interval unavailable"
+                low = center - sigma
+                high = center + sigma
+                status = "n/a"
+                if np.isfinite(target):
+                    status = "yes" if (low <= target <= high) else "no"
+                return f"[{low:.3f}, {high:.3f}], target_in={status}"
+
             variant_options_by_channel: dict[str, list[str]] = {
                 channel: _variant_names_for_base(channel) for channel in combo_channels
             }
@@ -12141,6 +12367,9 @@ def create_app() -> pn.template.FastListTemplate:
                 channel for channel, options in variant_options_by_channel.items() if not options
             ]
             variant_mass_lookup: dict[str, float] = {}
+            variant_aic_error_lookup: dict[str, float] = {}
+            variant_bootstrap_error_lookup: dict[str, float] = {}
+            variant_total_error_lookup: dict[str, float] = {}
             for variant_name, variant_result in filtered_results.items():
                 if not isinstance(variant_result, ChannelCorrelatorResult):
                     continue
@@ -12149,6 +12378,10 @@ def create_app() -> pn.template.FastListTemplate:
                 variant_mass = _get_channel_mass(variant_result, str(mode))
                 if np.isfinite(variant_mass) and variant_mass > 0:
                     variant_mass_lookup[str(variant_name)] = float(variant_mass)
+                    aic_err, boot_err, total_err = _mass_error_components(variant_result)
+                    variant_aic_error_lookup[str(variant_name)] = float(aic_err)
+                    variant_bootstrap_error_lookup[str(variant_name)] = float(boot_err)
+                    variant_total_error_lookup[str(variant_name)] = float(total_err)
 
             combo_rows: list[dict[str, Any]] = []
             combo_truncated = False
@@ -12289,6 +12522,43 @@ def create_app() -> pn.template.FastListTemplate:
                         str(denominator_base),
                         str(reference_label),
                     )
+                    numerator_aic_err = variant_aic_error_lookup.get(numerator_variant, float("nan"))
+                    denominator_aic_err = variant_aic_error_lookup.get(
+                        denominator_variant, float("nan")
+                    )
+                    numerator_boot_err = variant_bootstrap_error_lookup.get(
+                        numerator_variant, float("nan")
+                    )
+                    denominator_boot_err = variant_bootstrap_error_lookup.get(
+                        denominator_variant, float("nan")
+                    )
+                    numerator_total_err = variant_total_error_lookup.get(
+                        numerator_variant, float("nan")
+                    )
+                    denominator_total_err = variant_total_error_lookup.get(
+                        denominator_variant, float("nan")
+                    )
+                    ratio_sigma_aic = _ratio_sigma(
+                        ratio=ratio_value,
+                        numerator_mass=numerator_mass,
+                        denominator_mass=denominator_mass,
+                        numerator_err=numerator_aic_err,
+                        denominator_err=denominator_aic_err,
+                    )
+                    ratio_sigma_boot = _ratio_sigma(
+                        ratio=ratio_value,
+                        numerator_mass=numerator_mass,
+                        denominator_mass=denominator_mass,
+                        numerator_err=numerator_boot_err,
+                        denominator_err=denominator_boot_err,
+                    )
+                    ratio_sigma_total = _ratio_sigma(
+                        ratio=ratio_value,
+                        numerator_mass=numerator_mass,
+                        denominator_mass=denominator_mass,
+                        numerator_err=numerator_total_err,
+                        denominator_err=denominator_total_err,
+                    )
                     abs_pct_error = float("nan")
                     if np.isfinite(ref_value) and ref_value > 0:
                         abs_pct_error = float(abs((ratio_value / ref_value - 1.0) * 100.0))
@@ -12300,8 +12570,27 @@ def create_app() -> pn.template.FastListTemplate:
                         annotation = "no external target"
                     if np.isfinite(abs_pct_error):
                         annotation = f"{annotation}; abs error {abs_pct_error:.2f}%"
+                    aic_interval = _interval_with_target_status(
+                        center=ratio_value,
+                        sigma=ratio_sigma_aic,
+                        target=ref_value,
+                    )
+                    boot_interval = _interval_with_target_status(
+                        center=ratio_value,
+                        sigma=ratio_sigma_boot,
+                        target=ref_value,
+                    )
+                    total_interval = _interval_with_target_status(
+                        center=ratio_value,
+                        sigma=ratio_sigma_total,
+                        target=ref_value,
+                    )
                     best_ratio_lines.append(
-                        f"- {numerator_base}/{denominator_base}: **{ratio_value:.3f}** ({annotation})"
+                        (
+                            f"- {numerator_base}/{denominator_base}: **{ratio_value:.3f}** "
+                            f"({annotation}; total_1sigma {total_interval}; AIC_1sigma {aic_interval}; "
+                            f"bootstrap_1sigma {boot_interval})"
+                        )
                     )
                 if len(best_ratio_lines) == 1:
                     best_ratio_lines.append("- n/a (missing valid masses for selected variants)")
@@ -12965,6 +13254,21 @@ def create_app() -> pn.template.FastListTemplate:
                                 bootstrap_mode=str(
                                     companion_strong_force_settings.gevp_bootstrap_mode
                                 ),
+                                compute_multimode=bool(
+                                    companion_strong_force_settings.gevp_compute_multimode
+                                ),
+                                tau_diag=companion_strong_force_settings.gevp_tau_diag,
+                                plateau_min_length=int(
+                                    companion_strong_force_settings.gevp_plateau_min_length
+                                ),
+                                plateau_max_slope=float(
+                                    companion_strong_force_settings.gevp_plateau_max_slope
+                                ),
+                                multimode_fit_start=companion_strong_force_settings.gevp_multimode_fit_start,
+                                multimode_fit_stop=companion_strong_force_settings.gevp_multimode_fit_stop,
+                                t0_sweep_values=_parse_t0_sweep_spec(
+                                    companion_strong_force_settings.gevp_t0_sweep_spec
+                                ),
                             )
                             gevp_payload = compute_companion_channel_gevp(
                                 base_results=base_results,
@@ -12972,6 +13276,14 @@ def create_app() -> pn.template.FastListTemplate:
                                 config=gevp_cfg,
                                 base_channel=gevp_base_channel,
                             )
+                            if gevp_payload.mass_spectrum is not None:
+                                state[f"_gevp_mass_spectrum_{gevp_base_channel}"] = (
+                                    gevp_payload.mass_spectrum
+                                )
+                            if gevp_payload.t0_sweep is not None:
+                                state[f"_gevp_t0_sweep_{gevp_base_channel}"] = (
+                                    gevp_payload.t0_sweep
+                                )
                             channel_gevp_result = gevp_payload.result
                             if isinstance(channel_gevp_result.mass_fit, dict):
                                 channel_gevp_result.mass_fit.setdefault(
@@ -13869,10 +14181,10 @@ def create_app() -> pn.template.FastListTemplate:
             eig_rel_cutoff = float(new_dirac_ew_settings.gevp_eig_rel_cutoff)
             per_scale = multiscale_output.per_scale_results if multiscale_output else {}
             gevp_results = {k: v for k, v in results.items() if k.endswith("_gevp")}
-            for family, widgets in (
-                ("su2", new_dirac_ew_su2_gevp_widgets),
-                ("u1", new_dirac_ew_u1_gevp_widgets),
-                ("ew_mixed", new_dirac_ew_ew_mixed_gevp_widgets),
+            for family, widgets, ms_widgets in (
+                ("su2", new_dirac_ew_su2_gevp_widgets, new_dirac_ew_su2_mass_spectrum_widgets),
+                ("u1", new_dirac_ew_u1_gevp_widgets, new_dirac_ew_u1_mass_spectrum_widgets),
+                ("ew_mixed", new_dirac_ew_ew_mixed_gevp_widgets, new_dirac_ew_ew_mixed_mass_spectrum_widgets),
             ):
                 try:
                     update_gevp_dashboard(
@@ -13893,6 +14205,20 @@ def create_app() -> pn.template.FastListTemplate:
                     )
                 except Exception:
                     clear_gevp_dashboard(widgets)
+                # Update multi-mode mass spectrum widgets
+                spectrum = state.get(f"_ew_gevp_mass_spectrum_{family}")
+                t0_sweep = state.get(f"_ew_gevp_t0_sweep_{family}")
+                try:
+                    dt_val = float(new_dirac_ew_settings.dt) if hasattr(new_dirac_ew_settings, "dt") else 1.0
+                except (TypeError, ValueError):
+                    dt_val = 1.0
+                update_gevp_mass_spectrum(
+                    ms_widgets,
+                    spectrum=spectrum,
+                    family_label=family.upper(),
+                    dt=dt_val,
+                    t0_sweep=t0_sweep,
+                )
 
         def _extract_observed_refs_from_table(
             table: pn.widgets.Tabulator,
@@ -14063,6 +14389,9 @@ def create_app() -> pn.template.FastListTemplate:
                 clear_gevp_dashboard(new_dirac_ew_su2_gevp_widgets)
                 clear_gevp_dashboard(new_dirac_ew_u1_gevp_widgets)
                 clear_gevp_dashboard(new_dirac_ew_ew_mixed_gevp_widgets)
+                clear_gevp_mass_spectrum(new_dirac_ew_su2_mass_spectrum_widgets)
+                clear_gevp_mass_spectrum(new_dirac_ew_u1_mass_spectrum_widgets)
+                clear_gevp_mass_spectrum(new_dirac_ew_ew_mixed_mass_spectrum_widgets)
                 return
 
             if output is None:
@@ -14352,22 +14681,17 @@ def create_app() -> pn.template.FastListTemplate:
         new_dirac_ew_mass_mode.param.watch(_on_new_dirac_ew_mass_mode_change, "value")
 
         def _build_new_dirac_ew_channel_config() -> ElectroweakChannelConfig:
-            neighbor_method = (
-                "auto"
-                if new_dirac_ew_settings.neighbor_method == "voronoi"
-                else new_dirac_ew_settings.neighbor_method
-            )
             return ElectroweakChannelConfig(
                 warmup_fraction=new_dirac_ew_settings.simulation_range[0],
                 end_fraction=new_dirac_ew_settings.simulation_range[1],
                 max_lag=new_dirac_ew_settings.max_lag,
                 h_eff=new_dirac_ew_settings.h_eff,
                 use_connected=new_dirac_ew_settings.use_connected,
-                neighbor_method=neighbor_method,
-                companion_topology=str(new_dirac_ew_settings.companion_topology_u1),
-                companion_topology_u1=str(new_dirac_ew_settings.companion_topology_u1),
-                companion_topology_su2=str(new_dirac_ew_settings.companion_topology_su2),
-                companion_topology_ew_mixed=str(new_dirac_ew_settings.companion_topology_ew_mixed),
+                neighbor_method="companions",
+                companion_topology="distance",
+                companion_topology_u1="distance",
+                companion_topology_su2="clone",
+                companion_topology_ew_mixed="both",
                 edge_weight_mode=new_dirac_ew_settings.edge_weight_mode,
                 neighbor_k=new_dirac_ew_settings.neighbor_k,
                 window_widths=_parse_window_widths(new_dirac_ew_settings.window_widths_spec),
@@ -14375,8 +14699,6 @@ def create_app() -> pn.template.FastListTemplate:
                 fit_start=new_dirac_ew_settings.fit_start,
                 fit_stop=new_dirac_ew_settings.fit_stop,
                 min_fit_points=new_dirac_ew_settings.min_fit_points,
-                epsilon_clone=new_dirac_ew_settings.epsilon_clone,
-                lambda_alg=new_dirac_ew_settings.lambda_alg,
                 su2_operator_mode=str(new_dirac_ew_settings.su2_operator_mode),
                 enable_walker_type_split=bool(new_dirac_ew_settings.enable_walker_type_split),
                 walker_type_scope=str(new_dirac_ew_settings.walker_type_scope),
@@ -14443,8 +14765,7 @@ def create_app() -> pn.template.FastListTemplate:
                             end_fraction=float(new_dirac_ew_settings.simulation_range[1]),
                             mc_time_index=new_dirac_ew_settings.mc_time_index,
                             h_eff=float(new_dirac_ew_settings.h_eff),
-                            epsilon_clone=new_dirac_ew_settings.epsilon_clone,
-                            lambda_alg=new_dirac_ew_settings.lambda_alg,
+                            lambda_alg=0.0,
                             su2_operator_mode=str(new_dirac_ew_settings.su2_operator_mode),
                             enable_walker_type_split=bool(
                                 new_dirac_ew_settings.enable_walker_type_split
@@ -14543,6 +14864,21 @@ def create_app() -> pn.template.FastListTemplate:
                     ),
                     n_bootstrap=int(new_dirac_ew_settings.n_bootstrap),
                     bootstrap_mode=str(new_dirac_ew_settings.gevp_bootstrap_mode),
+                    compute_multimode=bool(
+                        new_dirac_ew_settings.gevp_compute_multimode
+                    ),
+                    tau_diag=new_dirac_ew_settings.gevp_tau_diag,
+                    plateau_min_length=int(
+                        new_dirac_ew_settings.gevp_plateau_min_length
+                    ),
+                    plateau_max_slope=float(
+                        new_dirac_ew_settings.gevp_plateau_max_slope
+                    ),
+                    multimode_fit_start=new_dirac_ew_settings.gevp_multimode_fit_start,
+                    multimode_fit_stop=new_dirac_ew_settings.gevp_multimode_fit_stop,
+                    t0_sweep_values=_parse_t0_sweep_spec(
+                        new_dirac_ew_settings.gevp_t0_sweep_spec
+                    ),
                 )
                 for _gevp_family, _gevp_use_flag in (
                     ("su2", bool(new_dirac_ew_settings.use_su2_gevp)),
@@ -14570,6 +14906,14 @@ def create_app() -> pn.template.FastListTemplate:
                                 base_channel=_gevp_family,
                             )
                             results[_gevp_payload.result.channel_name] = _gevp_payload.result
+                            if _gevp_payload.mass_spectrum is not None:
+                                state[f"_ew_gevp_mass_spectrum_{_gevp_family}"] = (
+                                    _gevp_payload.mass_spectrum
+                                )
+                            if _gevp_payload.t0_sweep is not None:
+                                state[f"_ew_gevp_t0_sweep_{_gevp_family}"] = (
+                                    _gevp_payload.t0_sweep
+                                )
                         except Exception as exc:
                             if _gevp_family == "su2":
                                 gevp_error = str(exc)
@@ -14609,7 +14953,6 @@ def create_app() -> pn.template.FastListTemplate:
                     history,
                     h_eff=float(new_dirac_ew_settings.h_eff),
                     frame_indices=ew_output.frame_indices,
-                    lambda_alg=new_dirac_ew_settings.lambda_alg,
                     pairwise_distance_by_frame=pairwise_distance_by_frame,
                 )
                 new_dirac_ew_coupling_table.value = pd.DataFrame(
@@ -14626,13 +14969,8 @@ def create_app() -> pn.template.FastListTemplate:
                     "## Electroweak Summary",
                     f"- Frames used: `{len(ew_output.frame_indices)}`",
                     f"- Electroweak channels with samples: `{n_channels}`",
-                    f"- Neighbor source mode: `{new_dirac_ew_settings.neighbor_method}`",
-                    (
-                        "- Companion routing (U(1), SU(2), EW mixed): "
-                        f"`{new_dirac_ew_settings.companion_topology_u1}`, "
-                        f"`{new_dirac_ew_settings.companion_topology_su2}`, "
-                        f"`{new_dirac_ew_settings.companion_topology_ew_mixed}`"
-                    ),
+                    "- Neighbor source mode: `companions` (run-selected pairs)",
+                    "- Companion routing (U(1), SU(2), EW mixed): `distance`, `clone`, `both`",
                     f"- SU(2) operator mode: `{new_dirac_ew_settings.su2_operator_mode}`",
                     (
                         "- Walker-type split: "
@@ -14720,19 +15058,21 @@ def create_app() -> pn.template.FastListTemplate:
                         if raw_idx in history.recorded_steps:
                             raw_idx = int(history.get_step_index(raw_idx))
                         dirac_idx = max(raw_idx - 1, 0)
+                dirac_epsilon_clone = 0.01
+                if isinstance(history.params, dict):
+                    cloning_params = history.params.get("cloning", {})
+                    if isinstance(cloning_params, dict):
+                        raw_eps = cloning_params.get("epsilon_clone")
+                        try:
+                            dirac_epsilon_clone = float(raw_eps)
+                        except (TypeError, ValueError):
+                            pass
+                dirac_epsilon_clone = float(max(dirac_epsilon_clone, 1e-12))
                 dirac_cfg = DiracSpectrumConfig(
                     mc_time_index=dirac_idx,
-                    epsilon_clone=(
-                        float(new_dirac_ew_settings.epsilon_clone)
-                        if new_dirac_ew_settings.epsilon_clone is not None
-                        else 0.01
-                    ),
+                    epsilon_clone=dirac_epsilon_clone,
                     kernel_mode=str(new_dirac_ew_settings.dirac_kernel_mode),
-                    lambda_alg=(
-                        float(new_dirac_ew_settings.lambda_alg)
-                        if new_dirac_ew_settings.lambda_alg is not None
-                        else 1.0
-                    ),
+                    lambda_alg=0.0,
                     h_eff=float(new_dirac_ew_settings.h_eff),
                     include_phase=True,
                     color_threshold=threshold,
@@ -14979,6 +15319,7 @@ def create_app() -> pn.template.FastListTemplate:
         browse_button.on_click(_on_browse_clicked)
         load_button.on_click(on_load_clicked)
         save_button.on_click(on_save_clicked)
+        simulation_compute_button.on_click(on_compute_simulation_clicked)
         gas_config.add_completion_callback(on_simulation_complete)
         gas_config.param.watch(on_bounds_change, "bounds_extent")
         algorithm_run_button.on_click(on_run_algorithm_analysis)
@@ -15048,7 +15389,12 @@ def create_app() -> pn.template.FastListTemplate:
                 )
             ]
         else:
-            simulation_tab = pn.Column(visualizer.panel(), sizing_mode="stretch_both")
+            simulation_tab = pn.Column(
+                simulation_compute_status,
+                pn.Row(simulation_compute_button, sizing_mode="stretch_width"),
+                visualizer.panel(),
+                sizing_mode="stretch_both",
+            )
 
             algorithm_tab = pn.Column(
                 algorithm_status,
@@ -15382,7 +15728,8 @@ plaquette, and a single companion tensor channel, with independent settings and 
 
             new_dirac_ew_note = pn.pane.Alert(
                 """**Electroweak:** Proxy channels only (no Dirac operators are computed here).
-This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
+This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.
+Operator routing is fixed to run-selected companions: U(1)→distance, SU(2)→clone, EW mixed→both (with λ_alg=0).""",
                 alert_type="info",
                 sizing_mode="stretch_width",
             )
@@ -15477,10 +15824,13 @@ This tab supports SU(2) multiscale kernels, filtering, and GEVP diagnostics.""",
                 new_dirac_ew_multiscale_per_scale_table,
                 pn.pane.Markdown("### SU(2) GEVP Analysis"),
                 *build_gevp_dashboard_sections(new_dirac_ew_su2_gevp_widgets),
+                *build_gevp_mass_spectrum_sections(new_dirac_ew_su2_mass_spectrum_widgets),
                 pn.pane.Markdown("### U(1) GEVP Analysis"),
                 *build_gevp_dashboard_sections(new_dirac_ew_u1_gevp_widgets),
+                *build_gevp_mass_spectrum_sections(new_dirac_ew_u1_mass_spectrum_widgets),
                 pn.pane.Markdown("### EW Mixed GEVP Analysis"),
                 *build_gevp_dashboard_sections(new_dirac_ew_ew_mixed_gevp_widgets),
+                *build_gevp_mass_spectrum_sections(new_dirac_ew_ew_mixed_mass_spectrum_widgets),
                 pn.pane.Markdown("### Electroweak Reference Masses (GeV)"),
                 new_dirac_ew_ref_table,
                 pn.pane.Markdown("### Channel Plots (Correlator + Effective Mass)"),

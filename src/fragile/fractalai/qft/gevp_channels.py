@@ -21,6 +21,13 @@ from fragile.fractalai.qft.correlator_channels import (
     extract_mass_aic,
     extract_mass_linear,
 )
+from fragile.fractalai.qft.gevp_mass_extraction import (
+    extract_multimode_gevp_masses,
+    extract_multimode_t0_sweep,
+    GEVPMassSpectrum,
+    GEVPMultiModeConfig,
+    T0SweepResult,
+)
 
 
 GEVP_BASIS_STRATEGIES = ("base_only", "base_plus_best_scale")
@@ -100,6 +107,14 @@ class GEVPConfig:
     n_bootstrap: int = 100
     bootstrap_seed: int = 12345
     bootstrap_mode: str = "time"
+    compute_multimode: bool = False
+    tau_diag: int | None = None
+    tau_diag_search_range: tuple[int, int] = (3, 8)
+    plateau_min_length: int = 3
+    plateau_max_slope: float = 0.3
+    multimode_fit_start: int | None = None
+    multimode_fit_stop: int | None = None
+    t0_sweep_values: list[int] | None = None
 
 
 @dataclass
@@ -113,6 +128,8 @@ class GEVPResult:
     cond_c0: float
     bootstrap_mode_applied: str
     notes: list[str]
+    mass_spectrum: GEVPMassSpectrum | None = None
+    t0_sweep: T0SweepResult | None = None
 
 
 def _nanstd_compat(values: Tensor, *, dim: int) -> Tensor:
@@ -653,6 +670,33 @@ def compute_companion_channel_gevp(
         )
 
     principal = _project_and_extract_principal(c_lags, whitener)
+
+    # --- Multi-mode mass extraction (optional) ---
+    mass_spectrum: GEVPMassSpectrum | None = None
+    t0_sweep: T0SweepResult | None = None
+    if bool(config.compute_multimode):
+        try:
+            c_proj = torch.einsum("ki,tkj,jm->tim", whitener, c_lags, whitener)
+            c_proj = 0.5 * (c_proj + c_proj.transpose(-1, -2))
+            mm_config = GEVPMultiModeConfig(
+                tau_diag=config.tau_diag,
+                tau_diag_search_range=config.tau_diag_search_range,
+                plateau_min_length=config.plateau_min_length,
+                plateau_max_slope=config.plateau_max_slope,
+                fit_start=config.multimode_fit_start,
+                fit_stop=config.multimode_fit_stop,
+            )
+            mass_spectrum = extract_multimode_gevp_masses(
+                c_proj, t0=t0, dt=dt, config=mm_config
+            )
+            # t0 sweep (optional)
+            if config.t0_sweep_values is not None and len(config.t0_sweep_values) > 0:
+                t0_sweep = extract_multimode_t0_sweep(
+                    c_proj, t0_values=config.t0_sweep_values, dt=dt, config=mm_config,
+                )
+        except Exception:
+            pass  # Fall back to principal-only if multi-mode fails
+
     correlator = principal[t0:].clone()
     correlator = torch.where(
         torch.isfinite(correlator) & (correlator > 1e-12),
@@ -769,6 +813,8 @@ def compute_companion_channel_gevp(
         cond_c0=cond_c0,
         bootstrap_mode_applied=bootstrap_mode_applied,
         notes=notes,
+        mass_spectrum=mass_spectrum,
+        t0_sweep=t0_sweep,
     )
 
 

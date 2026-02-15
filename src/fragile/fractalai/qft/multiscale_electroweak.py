@@ -74,7 +74,7 @@ class MultiscaleElectroweakConfig:
     epsilon_c: float | None = None
     epsilon_d: float | None = None
     epsilon_clone: float | None = None
-    lambda_alg: float | None = None
+    lambda_alg: float = 0.0
     edge_weight_mode: str = "inverse_riemannian_distance"
     su2_operator_mode: str = "standard"
     enable_walker_type_split: bool = False
@@ -188,19 +188,11 @@ def _resolve_electroweak_params(
     if epsilon_clone is None:
         epsilon_clone = 1e-8
 
-    lambda_alg = cfg.lambda_alg
-    if lambda_alg is None:
-        lambda_alg = _nested_param(params, "companion_selection", "lambda_alg", default=None)
-    if lambda_alg is None:
-        lambda_alg = _nested_param(params, "fitness", "lambda_alg", default=0.0)
-    if lambda_alg is None:
-        lambda_alg = 0.0
-
     return (
         float(max(epsilon_c, 1e-8)),
         float(max(epsilon_d, 1e-8)),
         float(max(epsilon_clone, 1e-8)),
-        float(max(lambda_alg, 0.0)),
+        0.0,
     )
 
 

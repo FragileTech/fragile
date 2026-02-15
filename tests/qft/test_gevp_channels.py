@@ -449,3 +449,117 @@ def test_companion_nucleon_gevp_removes_artifact_operators_when_enabled() -> Non
     assert any("mass_error==0" in note for note in gevp.notes)
     assert any("mass==0" in note for note in gevp.notes)
     assert any("mass_error=nan_or_inf" in note for note in gevp.notes)
+
+
+def test_compute_multimode_false_gives_none_mass_spectrum() -> None:
+    """With compute_multimode=False (default), mass_spectrum should be None."""
+    base_results = _build_base_results()
+    cfg = GEVPConfig(
+        t0=2,
+        max_lag=40,
+        use_connected=False,
+        fit_mode="linear",
+        fit_start=3,
+        min_fit_points=3,
+        basis_strategy="base_only",
+        compute_multimode=False,
+    )
+    gevp = compute_companion_nucleon_gevp(
+        base_results=base_results,
+        multiscale_output=None,
+        config=cfg,
+    )
+    assert gevp.mass_spectrum is None
+
+
+def test_compute_multimode_true_populates_mass_spectrum() -> None:
+    """With compute_multimode=True, mass_spectrum should be populated."""
+    base_results = _build_base_results()
+    cfg = GEVPConfig(
+        t0=2,
+        max_lag=40,
+        use_connected=False,
+        fit_mode="linear",
+        fit_start=3,
+        min_fit_points=3,
+        basis_strategy="base_only",
+        compute_multimode=True,
+    )
+    gevp = compute_companion_nucleon_gevp(
+        base_results=base_results,
+        multiscale_output=None,
+        config=cfg,
+    )
+    assert gevp.mass_spectrum is not None
+    assert gevp.mass_spectrum.n_modes > 0
+    assert gevp.mass_spectrum.mode_eigenvalues.shape[0] == gevp.mass_spectrum.n_modes
+    assert gevp.mass_spectrum.plateau_masses.shape[0] == gevp.mass_spectrum.n_modes
+
+
+def test_t0_sweep_populates_when_configured() -> None:
+    """With t0_sweep_values set, t0_sweep should be populated."""
+    base_results = _build_base_results()
+    cfg = GEVPConfig(
+        t0=2,
+        max_lag=40,
+        use_connected=False,
+        fit_mode="linear",
+        fit_start=3,
+        min_fit_points=3,
+        basis_strategy="base_only",
+        compute_multimode=True,
+        t0_sweep_values=[1, 2, 3, 4],
+    )
+    gevp = compute_companion_nucleon_gevp(
+        base_results=base_results,
+        multiscale_output=None,
+        config=cfg,
+    )
+    assert gevp.t0_sweep is not None
+    assert len(gevp.t0_sweep.spectra) >= 1
+    assert gevp.t0_sweep.t0_values == [1, 2, 3, 4]
+
+
+def test_t0_sweep_none_when_not_configured() -> None:
+    """Without t0_sweep_values, t0_sweep should be None."""
+    base_results = _build_base_results()
+    cfg = GEVPConfig(
+        t0=2,
+        max_lag=40,
+        use_connected=False,
+        fit_mode="linear",
+        fit_start=3,
+        min_fit_points=3,
+        basis_strategy="base_only",
+        compute_multimode=True,
+    )
+    gevp = compute_companion_nucleon_gevp(
+        base_results=base_results,
+        multiscale_output=None,
+        config=cfg,
+    )
+    assert gevp.t0_sweep is None
+
+
+def test_multimode_exp_fields_populated() -> None:
+    """With compute_multimode=True, exp fit fields should be present in spectrum."""
+    base_results = _build_base_results()
+    cfg = GEVPConfig(
+        t0=2,
+        max_lag=40,
+        use_connected=False,
+        fit_mode="linear",
+        fit_start=3,
+        min_fit_points=3,
+        basis_strategy="base_only",
+        compute_multimode=True,
+    )
+    gevp = compute_companion_nucleon_gevp(
+        base_results=base_results,
+        multiscale_output=None,
+        config=cfg,
+    )
+    assert gevp.mass_spectrum is not None
+    assert gevp.mass_spectrum.exp_masses is not None
+    assert gevp.mass_spectrum.exp_errors is not None
+    assert gevp.mass_spectrum.exp_r2 is not None

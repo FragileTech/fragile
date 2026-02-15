@@ -170,7 +170,10 @@ def _resolve_neighbor_method_strict(method: str) -> str:
     if method_norm not in {"auto", "recorded", "companions"}:
         msg = "neighbor_method must be 'auto', 'recorded', or 'companions'."
         raise ValueError(msg)
-    return method_norm
+    # Electroweak operators are defined on run-selected companion relations.
+    # Keep legacy values accepted for compatibility, but route all variants
+    # through companion selections.
+    return "companions"
 
 
 def _resolve_companion_topology(mode: str) -> str:
@@ -184,22 +187,13 @@ def _resolve_companion_topology(mode: str) -> str:
 def _resolve_companion_topologies(
     cfg: ElectroweakChannelConfig,
 ) -> tuple[str, str, str]:
-    """Resolve per-family companion topology with legacy fallback.
+    """Resolve fixed operator-family companion routing.
 
-    The legacy ``companion_topology`` is used when per-family fields are unset.
+    U(1) operators are evaluated on diversity (distance) companions,
+    SU(2) operators on cloning companions, and EW mixed operators on both.
     """
-    fallback = _resolve_companion_topology(getattr(cfg, "companion_topology", "distance"))
-
-    def _resolve(value: str | None) -> str:
-        if value is None:
-            return fallback
-        return _resolve_companion_topology(value)
-
-    return (
-        _resolve(getattr(cfg, "companion_topology_u1", None)),
-        _resolve(getattr(cfg, "companion_topology_su2", None)),
-        _resolve(getattr(cfg, "companion_topology_ew_mixed", None)),
-    )
+    _ = cfg
+    return ("distance", "clone", "both")
 
 
 def _resolve_su2_operator_mode(mode: str) -> str:
@@ -256,17 +250,12 @@ def _resolve_electroweak_params(
     history: RunHistory, cfg: ElectroweakChannelConfig
 ) -> dict[str, float]:
     params = history.params if isinstance(history.params, dict) else None
-    epsilon_d = cfg.epsilon_d
-    if epsilon_d is None:
-        epsilon_d = _nested_param(params, "companion_selection", "epsilon", default=None)
-    epsilon_c = cfg.epsilon_c
-    if epsilon_c is None:
-        epsilon_c = _nested_param(params, "companion_selection_clone", "epsilon", default=None)
-    lambda_alg = cfg.lambda_alg
-    if lambda_alg is None:
-        lambda_alg = _nested_param(params, "companion_selection", "lambda_alg", default=None)
-    if lambda_alg is None:
-        lambda_alg = _nested_param(params, "fitness", "lambda_alg", default=0.0)
+    # Interaction ranges are sourced from run parameters only; they are not
+    # user-overridden in the electroweak analysis path.
+    epsilon_d = _nested_param(params, "companion_selection", "epsilon", default=None)
+    epsilon_c = _nested_param(params, "companion_selection_clone", "epsilon", default=None)
+    # Keep velocity-weight contribution pinned off for this pipeline.
+    lambda_alg = 0.0
     epsilon_clone = cfg.epsilon_clone
     if epsilon_clone is None:
         epsilon_clone = _nested_param(params, "cloning", "epsilon_clone", default=1e-8)
@@ -283,7 +272,7 @@ def _resolve_electroweak_params(
     epsilon_d = float(max(epsilon_d, 1e-8))
     epsilon_c = float(max(epsilon_c, 1e-8))
     epsilon_clone = float(max(epsilon_clone, 1e-8))
-    lambda_alg = float(max(lambda_alg, 0.0))
+    lambda_alg = 0.0
 
     return {
         "epsilon_d": epsilon_d,
@@ -297,15 +286,8 @@ def _resolve_lambda_alg(
     history: RunHistory,
     lambda_alg: float | None = None,
 ) -> float:
-    if lambda_alg is not None:
-        return float(max(lambda_alg, 0.0))
-    params = history.params if isinstance(history.params, dict) else None
-    candidate = _nested_param(params, "companion_selection", "lambda_alg", default=None)
-    if candidate is None:
-        candidate = _nested_param(params, "fitness", "lambda_alg", default=0.0)
-    if candidate is None:
-        candidate = 0.0
-    return float(max(candidate, 0.0))
+    _ = (history, lambda_alg)
+    return 0.0
 
 
 def _resolve_transition_frames(
