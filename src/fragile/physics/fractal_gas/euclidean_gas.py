@@ -15,11 +15,11 @@ from typing import Callable
 
 import panel as pn
 import param
-from scipy.spatial import Delaunay
 import torch
 from torch import Tensor
 
 from fragile.physics.fractal_gas.panel_model import INPUT_WIDTH, PanelModel
+from fragile.physics.geometry.delaunai import compute_delaunay_data
 
 
 def random_pairing_fisher_yates(
@@ -436,162 +436,73 @@ class EuclideanGas(PanelModel):
         scutoid_ricci_full = None
         scutoid_diffusion_full = None
 
-        if self.fitness_op is not None and self.enable_kinetic:
-            needs_scutoid = (
-                self.neighbor_graph_method != "none"
-                or self.neighbor_graph_record
-                or self.kinetic_op.use_viscous_coupling
-                or self.kinetic_op.use_anisotropic_diffusion
-                or bool(getattr(self.kinetic_op, "compute_volume_weights", False))
+
+        try:
+
+
+            spatial_dims = self.d - 1 if self.d >= 3 else None
+            scutoid_data = compute_delaunay_data(
+                positions=state_cloned.x,
+                fitness_values=fitness,
+                spatial_dims=spatial_dims,
+                weight_modes=tuple(self.neighbor_weight_modes)
+                if self.neighbor_weight_modes
+                else None,
             )
-            if needs_scutoid:
-                try:
-                    from fragile.fractalai.scutoid.delaunai import compute_delaunay_scutoid
-
-                    spatial_dims = self.d - 1 if self.d >= 3 else None
-                    scutoid_data = compute_delaunay_scutoid(
-                        positions=state_cloned.x,
-                        fitness_values=fitness,
-                        spatial_dims=spatial_dims,
-                        weight_modes=tuple(self.neighbor_weight_modes)
-                        if self.neighbor_weight_modes
-                        else None,
-                    )
-                    scutoid_edges = scutoid_data.edge_index_full.t().contiguous()
-                    scutoid_edge_geodesic = scutoid_data.edge_geodesic_distances
-                    viscous_mode = (
-                        self.kinetic_op.viscous_neighbor_weighting
-                        if self.kinetic_op.use_viscous_coupling
-                        else None
-                    )
-                    scutoid_edge_weights = (
-                        scutoid_data.edge_weights.get(viscous_mode) if viscous_mode else None
-                    )
-                    scutoid_all_edge_weights = scutoid_data.edge_weights
-
-                    # All walkers alive — results are already full-N
-                    scutoid_volume_full = scutoid_data.riemannian_volume_weights
-                    scutoid_ricci_full = scutoid_data.ricci_proxy
-                    diffusion_data = scutoid_data.diffusion_tensors
-                    if diffusion_data.shape[-1] == state.d:
-                        scutoid_diffusion_full = diffusion_data
-                    else:
-                        spatial_d = diffusion_data.shape[-1]
-                        scutoid_diffusion_full = (
-                            torch.eye(state.d, device=self.device, dtype=state_cloned.x.dtype)
-                            .unsqueeze(0)
-                            .expand(state.N, state.d, state.d)
-                            .clone()
-                        )
-                        scutoid_diffusion_full[:, :spatial_d, :spatial_d] = diffusion_data
-                except Exception as exc:
-                    import warnings
-
-                    warnings.warn(
-                        f"Delaunay scutoid computation failed: {exc}",
-                        RuntimeWarning,
-                    )
-
-            # Compute fitness gradient if needed for adaptive force or diffusion proxy
-            needs_grad = self.kinetic_op.use_fitness_force or (
-                self.kinetic_op.use_anisotropic_diffusion
-                and getattr(self.kinetic_op, "diffusion_mode", "hessian") == "grad_proxy"
+            scutoid_edges = scutoid_data.edge_index.t().contiguous()
+            scutoid_edge_geodesic = scutoid_data.edge_geodesic_distances
+            viscous_mode = (
+                self.kinetic_op.viscous_neighbor_weighting
+                if self.kinetic_op.use_viscous_coupling
+                else None
             )
-            if needs_grad:
-                grad_fitness = self.fitness_op.compute_gradient(
-                    state_cloned.x, state_cloned.v, rewards, companions_distance
+            scutoid_edge_weights = (
+                scutoid_data.edge_weights.get(viscous_mode) if viscous_mode else None
+            )
+            scutoid_all_edge_weights = scutoid_data.edge_weights
+
+            # All walkers alive — results are already full-N
+            scutoid_volume_full = scutoid_data.riemannian_volume_weights
+            scutoid_ricci_full = scutoid_data.ricci_proxy
+            diffusion_data = scutoid_data.diffusion_tensors
+            if diffusion_data.shape[-1] == state.d:
+                scutoid_diffusion_full = diffusion_data
+            else:
+                spatial_d = diffusion_data.shape[-1]
+                scutoid_diffusion_full = (
+                    torch.eye(state.d, device=self.device, dtype=state_cloned.x.dtype)
+                    .unsqueeze(0)
+                    .expand(state.N, state.d, state.d)
+                    .clone()
                 )
+                scutoid_diffusion_full[:, :spatial_d, :spatial_d] = diffusion_data
+        except Exception as exc:
+            import warnings
 
-            # Compute fitness Hessian if needed for anisotropic diffusion
-            needs_hess = (
-                self.kinetic_op.use_anisotropic_diffusion
-                and getattr(self.kinetic_op, "diffusion_mode", "hessian") == "hessian"
+            warnings.warn(
+                f"Delaunay scutoid computation failed: {exc}",
+                RuntimeWarning,
             )
-            if needs_hess:
-                hess_fitness = self.fitness_op.compute_hessian(
-                    state_cloned.x,
-                    state_cloned.v,
-                    rewards,
-                    companions_distance,
-                    diagonal_only=self.kinetic_op.diagonal_diffusion,
-                )
-                is_diagonal_hessian = self.kinetic_op.diagonal_diffusion
 
-            # Compute Voronoi data if needed for voronoi_proxy diffusion
-            needs_voronoi = (
-                self.kinetic_op.use_anisotropic_diffusion
-                and getattr(self.kinetic_op, "diffusion_mode", "hessian") == "voronoi_proxy"
+        if scutoid_edges is not None:
+            neighbor_edges = scutoid_edges
+
+        # Step 6: Kinetic update with optional fitness derivatives (if enabled)
+        n_kinetic_steps = max(1, int(getattr(self.kinetic_op, "n_kinetic_steps", 1)))
+        state_final = state_cloned
+        kinetic_info = {}
+        for _ in range(n_kinetic_steps):
+            state_final, kinetic_info = self.kinetic_op.apply(
+                state_final,
+                grad_fitness,
+                hess_fitness,
+                neighbor_edges=neighbor_edges,
+                voronoi_data=voronoi_data,
+                edge_weights=scutoid_edge_weights,
+                volume_weights=scutoid_volume_full,
+                diffusion_tensors=scutoid_diffusion_full,
+                return_info=True,
             )
-            needs_voronoi = needs_voronoi or bool(
-                getattr(self.kinetic_op, "compute_volume_weights", False)
-            )
-            needs_voronoi = needs_voronoi or (
-                self.kinetic_op.use_viscous_coupling
-                and getattr(self.kinetic_op, "viscous_volume_weighting", False)
-            )
-            if needs_voronoi:
-                try:
-                    from fragile.fractalai.qft.voronoi_observables import (
-                        compute_voronoi_tessellation,
-                    )
-
-                    # For QFT mode (d>=3), use d-1 spatial dims (exclude Euclidean time)
-                    # For regular mode (d<=2), use all dimensions
-                    spatial_dims = self.d - 1 if self.d >= 3 else None
-
-                    voronoi_data = compute_voronoi_tessellation(
-                        positions=state_cloned.x,
-                        bounds=None,
-                        pbc=False,
-                        pbc_mode="ignore",
-                        exclude_boundary=True,
-                        boundary_tolerance=1e-6,
-                        compute_curvature=False,
-                        spatial_dims=spatial_dims,
-                    )
-                except Exception as e:
-                    # Fall back to isotropic diffusion if Voronoi fails
-                    import warnings
-
-                    warnings.warn(
-                        f"Voronoi tessellation failed: {e}. Falling back to isotropic diffusion.",
-                        RuntimeWarning,
-                    )
-                    voronoi_data = None
-
-            if scutoid_edges is not None:
-                neighbor_edges = scutoid_edges
-
-            # Step 6: Kinetic update with optional fitness derivatives (if enabled)
-            n_kinetic_steps = max(1, int(getattr(self.kinetic_op, "n_kinetic_steps", 1)))
-            state_final = state_cloned
-            kinetic_info = {}
-            for _ in range(n_kinetic_steps):
-                state_final, kinetic_info = self.kinetic_op.apply(
-                    state_final,
-                    grad_fitness,
-                    hess_fitness,
-                    neighbor_edges=neighbor_edges,
-                    voronoi_data=voronoi_data,
-                    edge_weights=scutoid_edge_weights,
-                    volume_weights=scutoid_volume_full,
-                    diffusion_tensors=scutoid_diffusion_full,
-                    return_info=True,
-                )
-        else:
-            # Skip kinetic update, use cloned state as final
-            state_final = state_cloned.clone()
-            kinetic_info = {
-                "force_stable": torch.zeros_like(state.v),
-                "force_adapt": torch.zeros_like(state.v),
-                "force_viscous": torch.zeros_like(state.v),
-                "force_friction": torch.zeros_like(state.v),
-                "force_total": torch.zeros_like(state.v),
-                "noise": torch.zeros_like(state.v),
-                "sigma_reg_diag": None,
-                "sigma_reg_full": None,
-                "riemannian_volume_weights": None,
-            }
 
         if scutoid_volume_full is not None:
             kinetic_info["riemannian_volume_weights"] = scutoid_volume_full
