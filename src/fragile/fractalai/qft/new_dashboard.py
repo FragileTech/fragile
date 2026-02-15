@@ -9056,6 +9056,19 @@ def create_app() -> pn.template.FastListTemplate:
         new_dirac_ew_u1_mass_spectrum_widgets = create_gevp_mass_spectrum_widgets()
         new_dirac_ew_ew_mixed_mass_spectrum_widgets = create_gevp_mass_spectrum_widgets()
 
+        # --- GEVP Mass Spectrum tab widgets (consolidated view of all 7 families) ---
+        gevp_tab_status = pn.pane.Markdown(
+            "**GEVP Mass Spectrum:** _run Strong Force or Electroweak analysis to populate._",
+            sizing_mode="stretch_width",
+        )
+        gevp_tab_nucleon_ms_widgets = create_gevp_mass_spectrum_widgets()
+        gevp_tab_scalar_ms_widgets = create_gevp_mass_spectrum_widgets()
+        gevp_tab_pseudoscalar_ms_widgets = create_gevp_mass_spectrum_widgets()
+        gevp_tab_glueball_ms_widgets = create_gevp_mass_spectrum_widgets()
+        gevp_tab_su2_ms_widgets = create_gevp_mass_spectrum_widgets()
+        gevp_tab_u1_ms_widgets = create_gevp_mass_spectrum_widgets()
+        gevp_tab_ew_mixed_ms_widgets = create_gevp_mass_spectrum_widgets()
+
         new_dirac_ew_dirac_full = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
         new_dirac_ew_dirac_walker = pn.pane.HoloViews(
             sizing_mode="stretch_width", linked_axes=False
@@ -9396,6 +9409,17 @@ def create_app() -> pn.template.FastListTemplate:
             clear_gevp_mass_spectrum(new_dirac_ew_su2_mass_spectrum_widgets)
             clear_gevp_mass_spectrum(new_dirac_ew_u1_mass_spectrum_widgets)
             clear_gevp_mass_spectrum(new_dirac_ew_ew_mixed_mass_spectrum_widgets)
+            # Clear consolidated GEVP Mass Spectrum tab
+            for _gevp_tab_w in (
+                gevp_tab_nucleon_ms_widgets, gevp_tab_scalar_ms_widgets,
+                gevp_tab_pseudoscalar_ms_widgets, gevp_tab_glueball_ms_widgets,
+                gevp_tab_su2_ms_widgets, gevp_tab_u1_ms_widgets,
+                gevp_tab_ew_mixed_ms_widgets,
+            ):
+                clear_gevp_mass_spectrum(_gevp_tab_w)
+            gevp_tab_status.object = (
+                "**GEVP Mass Spectrum:** _run Strong Force or Electroweak analysis to populate._"
+            )
             new_dirac_ew_filtered_summary.object = "**Filtered-out candidates:** none."
             new_dirac_ew_mass_table.value = pd.DataFrame()
             new_dirac_ew_filtered_mass_table.value = pd.DataFrame()
@@ -13335,6 +13359,7 @@ def create_app() -> pn.template.FastListTemplate:
                     multiscale_error,
                     original_results=base_results,
                 )
+                _update_gevp_mass_spectrum_tab()
 
                 summary_lines = [
                     "## Companion Strong Force Summary",
@@ -14220,6 +14245,59 @@ def create_app() -> pn.template.FastListTemplate:
                     t0_sweep=t0_sweep,
                 )
 
+        def _update_gevp_mass_spectrum_tab() -> None:
+            """Refresh the consolidated GEVP Mass Spectrum tab for all 7 families."""
+            strong_families = [
+                ("nucleon", "Nucleon", gevp_tab_nucleon_ms_widgets),
+                ("scalar", "Scalar", gevp_tab_scalar_ms_widgets),
+                ("pseudoscalar", "Pseudoscalar", gevp_tab_pseudoscalar_ms_widgets),
+                ("glueball", "Glueball", gevp_tab_glueball_ms_widgets),
+            ]
+            ew_families = [
+                ("su2", "SU(2)", gevp_tab_su2_ms_widgets),
+                ("u1", "U(1)", gevp_tab_u1_ms_widgets),
+                ("ew_mixed", "EW Mixed", gevp_tab_ew_mixed_ms_widgets),
+            ]
+            populated = []
+            # Strong-force families
+            for family_key, label, widgets in strong_families:
+                spectrum = state.get(f"_gevp_mass_spectrum_{family_key}")
+                t0_sweep = state.get(f"_gevp_t0_sweep_{family_key}")
+                update_gevp_mass_spectrum(
+                    widgets,
+                    spectrum=spectrum,
+                    family_label=label,
+                    dt=1.0,
+                    t0_sweep=t0_sweep,
+                )
+                if spectrum is not None:
+                    populated.append(label)
+            # EW families
+            try:
+                dt_val = float(new_dirac_ew_settings.dt) if hasattr(new_dirac_ew_settings, "dt") else 1.0
+            except (TypeError, ValueError):
+                dt_val = 1.0
+            for family_key, label, widgets in ew_families:
+                spectrum = state.get(f"_ew_gevp_mass_spectrum_{family_key}")
+                t0_sweep = state.get(f"_ew_gevp_t0_sweep_{family_key}")
+                update_gevp_mass_spectrum(
+                    widgets,
+                    spectrum=spectrum,
+                    family_label=label,
+                    dt=dt_val,
+                    t0_sweep=t0_sweep,
+                )
+                if spectrum is not None:
+                    populated.append(label)
+            if populated:
+                gevp_tab_status.object = (
+                    f"**GEVP Mass Spectrum:** {', '.join(populated)} populated."
+                )
+            else:
+                gevp_tab_status.object = (
+                    "**GEVP Mass Spectrum:** _run Strong Force or Electroweak analysis to populate._"
+                )
+
         def _extract_observed_refs_from_table(
             table: pn.widgets.Tabulator,
             key_col: str = "observable",
@@ -14313,6 +14391,7 @@ def create_app() -> pn.template.FastListTemplate:
                 state.get("new_dirac_ew_multiscale_output"),
                 results,
             )
+            _update_gevp_mass_spectrum_tab()
 
             # --- Symmetry-breaking derived observables ---
             import math as _math
@@ -14392,6 +14471,12 @@ def create_app() -> pn.template.FastListTemplate:
                 clear_gevp_mass_spectrum(new_dirac_ew_su2_mass_spectrum_widgets)
                 clear_gevp_mass_spectrum(new_dirac_ew_u1_mass_spectrum_widgets)
                 clear_gevp_mass_spectrum(new_dirac_ew_ew_mixed_mass_spectrum_widgets)
+                # Clear EW families in consolidated GEVP tab
+                for _gevp_tab_w in (
+                    gevp_tab_su2_ms_widgets, gevp_tab_u1_ms_widgets,
+                    gevp_tab_ew_mixed_ms_widgets,
+                ):
+                    clear_gevp_mass_spectrum(_gevp_tab_w)
                 return
 
             if output is None:
@@ -15887,6 +15972,29 @@ Operator routing is fixed to run-selected companions: U(1)→distance, SU(2)→c
                 sizing_mode="stretch_both",
             )
 
+            gevp_mass_spectrum_tab = pn.Column(
+                gevp_tab_status,
+                pn.layout.Divider(),
+                pn.pane.Markdown("## Strong Force"),
+                pn.pane.Markdown("### Nucleon"),
+                *build_gevp_mass_spectrum_sections(gevp_tab_nucleon_ms_widgets),
+                pn.pane.Markdown("### Scalar"),
+                *build_gevp_mass_spectrum_sections(gevp_tab_scalar_ms_widgets),
+                pn.pane.Markdown("### Pseudoscalar"),
+                *build_gevp_mass_spectrum_sections(gevp_tab_pseudoscalar_ms_widgets),
+                pn.pane.Markdown("### Glueball"),
+                *build_gevp_mass_spectrum_sections(gevp_tab_glueball_ms_widgets),
+                pn.layout.Divider(),
+                pn.pane.Markdown("## Electroweak"),
+                pn.pane.Markdown("### SU(2)"),
+                *build_gevp_mass_spectrum_sections(gevp_tab_su2_ms_widgets),
+                pn.pane.Markdown("### U(1)"),
+                *build_gevp_mass_spectrum_sections(gevp_tab_u1_ms_widgets),
+                pn.pane.Markdown("### EW Mixed"),
+                *build_gevp_mass_spectrum_sections(gevp_tab_ew_mixed_ms_widgets),
+                sizing_mode="stretch_both",
+            )
+
             main.objects = [
                 pn.Tabs(
                     ("Simulation", simulation_tab),
@@ -15895,6 +16003,7 @@ Operator routing is fixed to run-selected companions: U(1)→distance, SU(2)→c
                     ("Strong Force", anisotropic_edge_tab),
                     ("Tensor Calibration", tensor_calibration_tab),
                     ("Companion Strong Force", companion_strong_force_tab),
+                    ("GEVP Mass Spectrum", gevp_mass_spectrum_tab),
                     ("Multiscale", multiscale_tab),
                     ("Coupling Diagnostics", coupling_diagnostics_tab),
                     ("Electroweak", new_dirac_ew_tab),
