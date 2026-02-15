@@ -123,7 +123,7 @@ class KineticOperator(PanelModel):
     )
     # Boris rotation (curl-driven velocity rotation)
     beta_curl = param.Number(
-        default=0.0,
+        default=1.0,
         bounds=(0, None),
         doc="Curl coupling strength (β_curl) for Boris rotation",
     )
@@ -309,7 +309,6 @@ class KineticOperator(PanelModel):
         v: Tensor,
         neighbor_edges: Tensor | None = None,
         edge_weights: Tensor | None = None,
-        **kwargs,
     ) -> Tensor:
         """Compute viscous coupling force using neighbor graph Laplacian.
 
@@ -323,8 +322,6 @@ class KineticOperator(PanelModel):
             v: Velocities [N, d]
             neighbor_edges: Directed edges [E, 2] from scutoid neighbor graph
             edge_weights: Precomputed edge weights [E] aligned with neighbor_edges
-            **kwargs: Unused (grad_fitness, hess_fitness, voronoi_data, diffusion_tensors
-                      kept for call-site compatibility)
 
         Returns:
             viscous_force: [N, d]
@@ -355,6 +352,72 @@ class KineticOperator(PanelModel):
         force = torch.zeros_like(v)
         force.index_add_(0, i, edge_weights.unsqueeze(1) * v_diff)
         return self.nu * force
+
+    def _compute_viscous_curl(
+        self,
+        x: Tensor,
+        viscous_force: Tensor,
+        neighbor_edges: Tensor,
+        edge_weights: Tensor,
+    ) -> Tensor:
+        """Compute the curl of the viscous force field via weighted least-squares Jacobian.
+
+        For each walker i, estimates the spatial Jacobian J_i^{ab} = dF_visc^a / dx^b
+        from neighbor differences using weighted least squares, then extracts the
+        antisymmetric part as the emergent chromomagnetic field strength:
+
+            F_curl_i = (J_i - J_i^T) / 2
+
+        The viscous force plays the role of a gauge connection (coupling walkers through
+        the Delaunay graph), and its curl is the corresponding field strength 2-form.
+
+        Args:
+            x: Positions [N, d]
+            viscous_force: Viscous force at each walker [N, d]
+            neighbor_edges: Directed edges [E, 2]
+            edge_weights: Edge weights [E]
+
+        Returns:
+            curl: Skew-symmetric 2-form field [N, d, d]
+        """
+        N, d = x.shape
+        device, dtype = x.device, x.dtype
+
+        edges = neighbor_edges.to(device)
+        i, j = edges[:, 0].long(), edges[:, 1].long()
+        valid = i != j
+        if not valid.any():
+            return torch.zeros(N, d, d, device=device, dtype=dtype)
+        i, j = i[valid], j[valid]
+        w = edge_weights.to(device, dtype)[valid]
+
+        # Displacements and force differences
+        dx = x[j] - x[i]  # [E', d]
+        dF = viscous_force[j] - viscous_force[i]  # [E', d]
+
+        # Weighted outer products for least-squares: A = J @ B
+        #   A^{ab}_i = sum_j w_ij * dF^a_ij * dx^b_ij
+        #   B^{ab}_i = sum_j w_ij * dx^a_ij * dx^b_ij
+        w_col = w.unsqueeze(-1)  # [E', 1]
+        A_edges = (w_col * dF).unsqueeze(-1) * dx.unsqueeze(-2)  # [E', d, d]
+        B_edges = (w_col * dx).unsqueeze(-1) * dx.unsqueeze(-2)  # [E', d, d]
+
+        # Accumulate per walker
+        A = torch.zeros(N, d * d, device=device, dtype=dtype)
+        B = torch.zeros(N, d * d, device=device, dtype=dtype)
+        A.index_add_(0, i, A_edges.reshape(-1, d * d))
+        B.index_add_(0, i, B_edges.reshape(-1, d * d))
+        A = A.reshape(N, d, d)
+        B = B.reshape(N, d, d)
+
+        # Solve A = J @ B for J via J^T = solve(B, A^T)  (B is symmetric)
+        eps = 1e-8
+        B_reg = B + eps * torch.eye(d, device=device, dtype=dtype).unsqueeze(0)
+        J_T = torch.linalg.solve(B_reg, A.transpose(-1, -2))  # [N, d, d]
+
+        # Extract antisymmetric part: curl = (J - J^T) / 2
+        # Since J = J_T^T, this is (J_T^T - J_T) / 2
+        return (J_T.transpose(-1, -2) - J_T) / 2
 
     def _boris_rotate(self, v: Tensor, curl: Tensor) -> Tensor:
         """Apply Boris rotation for curl-driven velocity updates.
@@ -406,31 +469,38 @@ class KineticOperator(PanelModel):
         v: Tensor,
         neighbor_edges: Tensor | None = None,
         edge_weights: Tensor | None = None,
-    ) -> Tensor:
-        """Apply one Boris-aware B step (half kick + rotation + half kick)."""
-        viscous = self._compute_viscous_force(
-                x,
-                v,
-                neighbor_edges=neighbor_edges,
-                edge_weights=edge_weights,
+        force_viscous: Tensor | None = None,
+    ) -> tuple[Tensor, Tensor | None]:
+        """Apply one Boris-aware B step (half kick + rotation + half kick).
+
+        Returns:
+            v_new: Updated velocity [N, d]
+            curl: The curl 2-form used for rotation [N, d, d], or None if no rotation.
+        """
+        if force_viscous is None:
+            force_viscous = self._compute_viscous_force(
+                x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights,
             )
 
-        v_minus = v + (self.dt / 2) * viscous
+        v_minus = v + (self.dt / 2) * force_viscous
 
+        curl = None
         if self.curl_field is not None and self.beta_curl > 0:
+            # External curl field
             curl = self.curl_field(x)
+            v_rot = self._boris_rotate(v_minus, curl)
+        elif self.beta_curl > 0 and neighbor_edges is not None and edge_weights is not None:
+            # Emergent curl from viscous force Jacobian
+            curl = self._compute_viscous_curl(x, force_viscous, neighbor_edges, edge_weights)
             v_rot = self._boris_rotate(v_minus, curl)
         else:
             v_rot = v_minus
 
         viscous_rot = self._compute_viscous_force(
-                x,
-                v_rot,
-                neighbor_edges=neighbor_edges,
-                edge_weights=edge_weights,
-            )
+            x, v_rot, neighbor_edges=neighbor_edges, edge_weights=edge_weights,
+        )
 
-        return v_rot + (self.dt / 2) * viscous_rot
+        return v_rot + (self.dt / 2) * viscous_rot, curl
 
     def apply(
         self,
@@ -472,8 +542,8 @@ class KineticOperator(PanelModel):
         self._refresh_ou_coefficients()
         x, v = state.x.clone(), state.v.clone()
         N, d = state.N, state.d
+        force_viscous = None
         info = {}
-
         if return_info:
             force_viscous = self._compute_viscous_force(
                     x,
@@ -490,21 +560,17 @@ class KineticOperator(PanelModel):
             })
 
         # === FIRST B STEP: Apply forces + optional Boris rotation ===
-        v = self._apply_boris_kick(
-            x,
-            v,
-            neighbor_edges=neighbor_edges,
-            edge_weights=edge_weights,
+        v, curl_1 = self._apply_boris_kick(
+            x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights, force_viscous=force_viscous
         )
-
         # === FIRST A STEP: Update positions ===
         x += (self.dt / 2) * v
 
         # === O STEP: Ornstein-Uhlenbeck with optional anisotropic noise ===
         # Isotropic: standard BAOAB with constant noise amplitude
-        ξ = torch.randn(N, d, device=self.device, dtype=self.dtype)
-        v = self.c1 * v + self.c2 * ξ
-        noise = self.c2 * ξ
+        xi = torch.randn(N, d, device=self.device, dtype=self.dtype)
+        v = self.c1 * v + self.c2 * xi
+        noise = self.c2 * xi
 
         if return_info:
             info["noise"] = noise
@@ -513,15 +579,13 @@ class KineticOperator(PanelModel):
         x += (self.dt / 2) * v
 
         # === SECOND B STEP: Apply forces + optional Boris rotation ===
-        v = self._apply_boris_kick(
-            x,
-            v,
-            neighbor_edges=neighbor_edges,
-            edge_weights=edge_weights,
+        v, _curl_2 = self._apply_boris_kick(
+            x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights,
         )
-        # Return state with same type as input
-        # Create new state object using the same class as input
         new_state = type(state)(x, v)
         if return_info:
+            # Record the curl from the first B-step (representative of this timestep)
+            if curl_1 is not None:
+                info["curl_field"] = curl_1
             return new_state, info
         return new_state
