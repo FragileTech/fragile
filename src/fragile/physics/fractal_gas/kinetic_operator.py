@@ -251,12 +251,12 @@ class KineticOperator(PanelModel):
             sigma_v=sigma_v,
             delta_t=delta_t,
             nu=nu,
-            use_viscous_coupling=use_viscous_coupling,
             viscous_length_scale=viscous_length_scale,
             viscous_neighbor_weighting=viscous_neighbor_weighting,
             beta_curl=beta_curl,
             curl_field=curl_field,
         )
+        self.use_viscous_coupling = use_viscous_coupling
         self.device = device if device is not None else torch.device("cpu")
         self.dtype = dtype if dtype is not None else torch.float32
 
@@ -552,6 +552,8 @@ class KineticOperator(PanelModel):
             force_friction = -self.gamma * v
             force_total = force_viscous + force_friction
             info.update({
+                "force_stable": torch.zeros_like(v),
+                "force_adapt": torch.zeros_like(v),
                 "force_viscous": force_viscous,
                 "force_friction": force_friction,
                 "force_total": force_total,

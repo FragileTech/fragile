@@ -10,13 +10,17 @@ This module provides pure functional utilities for:
 Supports 2D, 3D, 4D, and higher dimensional spaces.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
-# from scipy.spatial import ConvexHull, Voronoi
 import torch
 from torch import Tensor
+
+if TYPE_CHECKING:
+    from scipy.spatial import ConvexHull, Voronoi
 
 
 @dataclass
@@ -216,6 +220,8 @@ def _compute_convexhull_projection_area(
     verts_proj = boundary_vertices[:, dims_to_keep]
 
     # Compute ConvexHull in projected space
+    from scipy.spatial import ConvexHull
+
     hull = ConvexHull(verts_proj)
     return float(hull.volume)  # In (d-1)D, volume = (d-1)-measure
 
@@ -256,6 +262,8 @@ def _estimate_from_ridge_areas(
                 area = np.linalg.norm(verts[1] - verts[0])
             else:  # 3D+ ridge is a polygon/polyhedron
                 try:
+                    from scipy.spatial import ConvexHull
+
                     hull = ConvexHull(verts)
                     area = hull.volume
                 except Exception:

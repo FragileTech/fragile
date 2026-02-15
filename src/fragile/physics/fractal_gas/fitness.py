@@ -126,11 +126,14 @@ def compute_fitness(
     fitness = (d_prime**beta) * (r_prime**alpha)
 
     # All walkers are alive — no masking needed
+    pos_squared_differences = (pos_diff**2).sum(dim=-1)
     info = {
         "distances": distances,
         "companions": companions,
         "z_rewards": z_rewards,
         "z_distances": z_distances,
+        "pos_squared_differences": pos_squared_differences,
+        "vel_squared_differences": torch.zeros_like(pos_squared_differences),
         "rescaled_rewards": r_prime,
         "rescaled_distances": d_prime,
         "mu_rewards": mu_rewards,
