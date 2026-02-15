@@ -10,7 +10,6 @@ All tensors are vectorized with the first dimension being the number of walkers 
 
 from __future__ import annotations
 
-import itertools
 from typing import Callable
 
 import panel as pn
@@ -225,7 +224,7 @@ class EuclideanGas(PanelModel):
             msg = f"potential must be callable, got {type(self.potential)}"
             raise TypeError(msg)
 
-        # Cached scutoid values from previous step for cloning
+        # Cached Delaunay values from previous step for cloning
         self._cached_ricci_scalar: Tensor | None = None
         self._cached_riemannian_volume: Tensor | None = None
 
@@ -264,59 +263,6 @@ class EuclideanGas(PanelModel):
     def _compute_rewards(self, state: SwarmState) -> Tensor:
         """Compute per-walker rewards from reward 1-form or potential."""
         return -self.potential(state.x)
-
-    def _compute_neighbor_graph(
-        self,
-        x: Tensor,
-    ) -> dict[str, object]:
-        """Compute Delaunay neighbor graph. All walkers are assumed alive."""
-        import numpy as np
-
-        if x.shape[1] < 2:
-            empty = torch.zeros((0, 2), dtype=torch.long, device=x.device)
-            return {"neighbor_edges": empty, "updated": True}
-
-        points = x.detach().cpu().numpy()
-        try:
-            simplices = Delaunay(points).simplices  # [n_simplices, d+1]
-        except Exception:
-            empty = torch.zeros((0, 2), dtype=torch.long, device=x.device)
-            return {"neighbor_edges": empty, "updated": True}
-
-        # Extract all pairwise edges from simplices vectorized
-        n_verts = simplices.shape[1]
-        pairs = np.array(list(itertools.combinations(range(n_verts), 2)))
-        src = simplices[:, pairs[:, 0]].ravel()
-        dst = simplices[:, pairs[:, 1]].ravel()
-        # Stack both directions and deduplicate
-        all_src = np.concatenate([src, dst])
-        all_dst = np.concatenate([dst, src])
-        edge_array = np.unique(np.stack([all_src, all_dst], axis=1), axis=0)
-
-        neighbor_edges = torch.as_tensor(edge_array, dtype=torch.long, device=x.device)
-
-        return {
-            "neighbor_edges": neighbor_edges,
-            "updated": True,
-        }
-
-    def _maybe_update_neighbor_cache(
-        self,
-        x: Tensor,
-        step_idx: int | None = None,
-    ) -> dict[str, object] | None:
-        """Update neighbor graph on schedule and cache results."""
-        update_every = max(1, int(self.neighbor_graph_update_every))
-        cache = getattr(self, "_neighbor_cache", None)
-        if step_idx is None:
-            step_idx = getattr(self, "_current_step", None)
-
-        if cache is not None and step_idx is not None and (step_idx % update_every != 0):
-            return {**cache, "updated": False}
-
-        result = self._compute_neighbor_graph(x)
-        self._neighbor_cache = result
-        return result
 
     def step(
         self, state: SwarmState, return_info: bool = False
@@ -358,7 +304,6 @@ class EuclideanGas(PanelModel):
         # Select companions using random pairing
         companions_distance = random_pairing_fisher_yates(self.N, device=self.device)
 
-        # Step 4: Compute fitness using core.fitness
         # Always compute fitness even if cloning disabled (needed for adaptive forces)
         fitness, fitness_info = self.fitness_op(
             positions=state.x,
@@ -366,7 +311,93 @@ class EuclideanGas(PanelModel):
             companions=companions_distance,
         )
 
-        # Step 5: Execute cloning using cloning.py (if enabled)
+        # Delaunay geometry on pre-clone state (for EH action reward)
+        grad_fitness = None
+        hess_fitness = None
+        is_diagonal_hessian = False
+        delaunay_data = None
+        delaunay_edges = None
+        delaunay_edge_weights = None
+        delaunay_all_edge_weights = None
+        delaunay_edge_geodesic = None
+        delaunay_volume = None
+        delaunay_ricci = None
+        delaunay_diffusion = None
+
+        # Throttle Delaunay recomputation
+        update_every = max(1, int(self.neighbor_graph_update_every))
+        step_idx = getattr(self, "_current_step", None)
+        recompute = step_idx is None or (step_idx % update_every == 0)
+
+        if recompute:
+            try:
+                spatial_dims = self.d - 1 if self.d >= 3 else None
+                delaunay_data = compute_delaunay_data(
+                    positions=state.x,
+                    fitness_values=fitness,
+                    spatial_dims=spatial_dims,
+                    weight_modes=tuple(self.neighbor_weight_modes)
+                    if self.neighbor_weight_modes
+                    else None,
+                )
+                delaunay_edges = delaunay_data.edge_index.t().contiguous()
+                delaunay_edge_geodesic = delaunay_data.edge_geodesic_distances
+                viscous_mode = (
+                    self.kinetic_op.viscous_neighbor_weighting
+                    if self.kinetic_op.use_viscous_coupling
+                    else None
+                )
+                delaunay_edge_weights = (
+                    delaunay_data.edge_weights.get(viscous_mode) if viscous_mode else None
+                )
+                delaunay_all_edge_weights = delaunay_data.edge_weights
+
+                # All walkers alive — results are already full-N
+                delaunay_volume = delaunay_data.riemannian_volume_weights
+                delaunay_ricci = delaunay_data.ricci_proxy
+                diffusion_data = delaunay_data.diffusion_tensors
+                if diffusion_data.shape[-1] == state.d:
+                    delaunay_diffusion = diffusion_data
+                else:
+                    spatial_d = diffusion_data.shape[-1]
+                    delaunay_diffusion = (
+                        torch.eye(state.d, device=self.device, dtype=state.x.dtype)
+                        .unsqueeze(0)
+                        .expand(state.N, state.d, state.d)
+                        .clone()
+                    )
+                    delaunay_diffusion[:, :spatial_d, :spatial_d] = diffusion_data
+
+                self._cached_delaunay_data = {
+                    "delaunay_edges": delaunay_edges,
+                    "delaunay_edge_weights": delaunay_edge_weights,
+                    "delaunay_all_edge_weights": delaunay_all_edge_weights,
+                    "delaunay_edge_geodesic": delaunay_edge_geodesic,
+                    "delaunay_volume": delaunay_volume,
+                    "delaunay_ricci": delaunay_ricci,
+                    "delaunay_diffusion": delaunay_diffusion,
+                }
+            except Exception as exc:
+                import warnings
+
+                warnings.warn(
+                    f"Delaunay computation failed: {exc}",
+                    RuntimeWarning,
+                )
+        else:
+            cached = getattr(self, "_cached_delaunay_data", None)
+            if cached is not None:
+                delaunay_edges = cached["delaunay_edges"]
+                delaunay_edge_weights = cached["delaunay_edge_weights"]
+                delaunay_all_edge_weights = cached["delaunay_all_edge_weights"]
+                delaunay_edge_geodesic = cached["delaunay_edge_geodesic"]
+                delaunay_volume = cached["delaunay_volume"]
+                delaunay_ricci = cached["delaunay_ricci"]
+                delaunay_diffusion = cached["delaunay_diffusion"]
+
+        neighbor_edges = delaunay_edges
+
+        # Cloning
         if self.enable_cloning:
             companions_clone = random_pairing_fisher_yates(self.N, device=self.device)
             # Prepare cached values to be cloned from companion
@@ -391,7 +422,6 @@ class EuclideanGas(PanelModel):
                 companions=companions_clone,
                 **clone_tensor_kwargs,
             )
-            step_idx = getattr(self, "_current_step", None)
             clone_every = max(1, int(self.clone_every))
             apply_clone = step_idx is None or clone_every <= 1 or (step_idx % clone_every == 0)
             if apply_clone:
@@ -399,6 +429,8 @@ class EuclideanGas(PanelModel):
             else:
                 state_cloned = state.clone()
             clone_info["cloning_applied"] = apply_clone
+            # Cloned walkers inherit their companion's fitness
+            fitness = other_cloned.get("fitness_cloned", fitness)
         else:
             # Skip cloning, use current state
             state_cloned = state.clone()
@@ -413,81 +445,9 @@ class EuclideanGas(PanelModel):
                 "clone_delta_v": torch.zeros_like(state.v),
                 "cloning_applied": False,
             }
-            # No cloning happened, so no cloned tensors
             other_cloned = {}
 
-        neighbor_edges = None
-
-        neighbor_info = self._maybe_update_neighbor_cache(state_cloned.x)
-        if neighbor_info is not None:
-            neighbor_edges = neighbor_info.get("neighbor_edges")
-
-        # Step 5: Compute fitness derivatives if needed for adaptive kinetics
-        grad_fitness = None
-        hess_fitness = None
-        is_diagonal_hessian = False
-        voronoi_data = None
-        scutoid_data = None
-        scutoid_edges = None
-        scutoid_edge_weights = None
-        scutoid_all_edge_weights = None
-        scutoid_edge_geodesic = None
-        scutoid_volume_full = None
-        scutoid_ricci_full = None
-        scutoid_diffusion_full = None
-
-
-        try:
-
-
-            spatial_dims = self.d - 1 if self.d >= 3 else None
-            scutoid_data = compute_delaunay_data(
-                positions=state_cloned.x,
-                fitness_values=fitness,
-                spatial_dims=spatial_dims,
-                weight_modes=tuple(self.neighbor_weight_modes)
-                if self.neighbor_weight_modes
-                else None,
-            )
-            scutoid_edges = scutoid_data.edge_index.t().contiguous()
-            scutoid_edge_geodesic = scutoid_data.edge_geodesic_distances
-            viscous_mode = (
-                self.kinetic_op.viscous_neighbor_weighting
-                if self.kinetic_op.use_viscous_coupling
-                else None
-            )
-            scutoid_edge_weights = (
-                scutoid_data.edge_weights.get(viscous_mode) if viscous_mode else None
-            )
-            scutoid_all_edge_weights = scutoid_data.edge_weights
-
-            # All walkers alive — results are already full-N
-            scutoid_volume_full = scutoid_data.riemannian_volume_weights
-            scutoid_ricci_full = scutoid_data.ricci_proxy
-            diffusion_data = scutoid_data.diffusion_tensors
-            if diffusion_data.shape[-1] == state.d:
-                scutoid_diffusion_full = diffusion_data
-            else:
-                spatial_d = diffusion_data.shape[-1]
-                scutoid_diffusion_full = (
-                    torch.eye(state.d, device=self.device, dtype=state_cloned.x.dtype)
-                    .unsqueeze(0)
-                    .expand(state.N, state.d, state.d)
-                    .clone()
-                )
-                scutoid_diffusion_full[:, :spatial_d, :spatial_d] = diffusion_data
-        except Exception as exc:
-            import warnings
-
-            warnings.warn(
-                f"Delaunay scutoid computation failed: {exc}",
-                RuntimeWarning,
-            )
-
-        if scutoid_edges is not None:
-            neighbor_edges = scutoid_edges
-
-        # Step 6: Kinetic update with optional fitness derivatives (if enabled)
+        # Kinetic update
         n_kinetic_steps = max(1, int(getattr(self.kinetic_op, "n_kinetic_steps", 1)))
         state_final = state_cloned
         kinetic_info = {}
@@ -497,65 +457,39 @@ class EuclideanGas(PanelModel):
                 grad_fitness,
                 hess_fitness,
                 neighbor_edges=neighbor_edges,
-                voronoi_data=voronoi_data,
-                edge_weights=scutoid_edge_weights,
-                volume_weights=scutoid_volume_full,
-                diffusion_tensors=scutoid_diffusion_full,
+                voronoi_data=None,
+                edge_weights=delaunay_edge_weights,
+                volume_weights=delaunay_volume,
+                diffusion_tensors=delaunay_diffusion,
                 return_info=True,
             )
 
-        if scutoid_volume_full is not None:
-            kinetic_info["riemannian_volume_weights"] = scutoid_volume_full
-        if scutoid_ricci_full is not None:
-            kinetic_info["ricci_scalar_proxy"] = scutoid_ricci_full
-        if scutoid_diffusion_full is not None:
-            kinetic_info["diffusion_tensors_full"] = scutoid_diffusion_full
+        if delaunay_volume is not None:
+            kinetic_info["riemannian_volume_weights"] = delaunay_volume
+        if delaunay_ricci is not None:
+            kinetic_info["ricci_scalar_proxy"] = delaunay_ricci
+        if delaunay_diffusion is not None:
+            kinetic_info["diffusion_tensors_full"] = delaunay_diffusion
 
-        # Cache scutoid values for next step's cloning
-        if scutoid_ricci_full is not None:
-            self._cached_ricci_scalar = scutoid_ricci_full.clone()
-        if scutoid_volume_full is not None:
-            self._cached_riemannian_volume = scutoid_volume_full.clone()
-
-        if voronoi_data is not None:
-            volume_weights = kinetic_info.get("riemannian_volume_weights")
-            if volume_weights is not None:
-                voronoi_data["riemannian_volume_weights"] = volume_weights
-
-        if self.potential is not None and hasattr(self.potential, "update_voronoi_cache"):
-            step_id = getattr(self, "_current_step", None)
-            if voronoi_data is not None:
-                self.potential.update_voronoi_cache(
-                    voronoi_data,
-                    state_cloned.x,
-                    step_id,
-                    dt=self.kinetic_op.delta_t,
-                )
-            elif (
-                neighbor_info is not None
-                and neighbor_info.get("updated")
-                and neighbor_info.get("voronoi_regions") is not None
-            ):
-                self.potential.update_voronoi_cache(
-                    neighbor_info["voronoi_regions"],
-                    state_cloned.x,
-                    step_id,
-                    dt=self.kinetic_op.delta_t,
-                )
+        # Cache Delaunay values for next step's cloning
+        if delaunay_ricci is not None:
+            self._cached_ricci_scalar = delaunay_ricci.clone()
+        if delaunay_volume is not None:
+            self._cached_riemannian_volume = delaunay_volume.clone()
 
         if self.potential is not None and hasattr(self.potential, "update_scutoid_cache"):
-            if scutoid_volume_full is not None or scutoid_ricci_full is not None:
+            if delaunay_volume is not None or delaunay_ricci is not None:
                 # Use cloned values where available so cloned walkers get
                 # their companion's precomputed values
-                ricci_for_cache = other_cloned.get("ricci_scalar", scutoid_ricci_full)
-                volume_for_cache = other_cloned.get("riemannian_volume", scutoid_volume_full)
-                scutoid_cache = {
+                ricci_for_cache = other_cloned.get("ricci_scalar", delaunay_ricci)
+                volume_for_cache = other_cloned.get("riemannian_volume", delaunay_volume)
+                delaunay_cache = {
                     "riemannian_volume_weights": volume_for_cache,
                     "ricci_scalar": ricci_for_cache,
                 }
                 step_id = getattr(self, "_current_step", None)
                 self.potential.update_scutoid_cache(
-                    scutoid_cache,
+                    delaunay_cache,
                     state_cloned.x,
                     step_id,
                     dt=self.kinetic_op.delta_t,
@@ -580,16 +514,12 @@ class EuclideanGas(PanelModel):
                 "U_final": U_final if U_final is not None else torch.zeros_like(rewards),
                 "kinetic_info": kinetic_info,
             }
-            if neighbor_info is not None:
+            if neighbor_edges is not None:
                 info["neighbor_edges"] = neighbor_edges
-                info["voronoi_regions"] = neighbor_info.get("voronoi_regions")
-                info["neighbor_updated"] = neighbor_info.get("updated")
-            elif neighbor_edges is not None:
-                info["neighbor_edges"] = neighbor_edges
-            if scutoid_edge_geodesic is not None:
-                info["geodesic_edge_distances"] = scutoid_edge_geodesic
-            if scutoid_all_edge_weights is not None:
-                info["edge_weights"] = scutoid_all_edge_weights
+            if delaunay_edge_geodesic is not None:
+                info["geodesic_edge_distances"] = delaunay_edge_geodesic
+            if delaunay_all_edge_weights is not None:
+                info["edge_weights"] = delaunay_all_edge_weights
             if grad_fitness is not None:
                 info["grad_fitness"] = grad_fitness
             if hess_fitness is not None:
@@ -813,7 +743,7 @@ class EuclideanGas(PanelModel):
         if self.kinetic_op.use_anisotropic_diffusion:
             record_sigma_reg_diag = self.kinetic_op.diagonal_diffusion
             record_sigma_reg_full = not self.kinetic_op.diagonal_diffusion
-        record_scutoid = self.neighbor_graph_record or (
+        record_delaunay = self.neighbor_graph_record or (
             self.fitness_op is not None
             and self.enable_kinetic
             and (
@@ -823,7 +753,7 @@ class EuclideanGas(PanelModel):
             )
         )
         record_volume_weights = bool(
-            getattr(self.kinetic_op, "compute_volume_weights", False) or record_scutoid
+            getattr(self.kinetic_op, "compute_volume_weights", False) or record_delaunay
         )
         record_edge_weights = (
             self.neighbor_graph_record
@@ -853,16 +783,16 @@ class EuclideanGas(PanelModel):
                 record_sigma_reg_diag=record_sigma_reg_diag,
                 record_sigma_reg_full=record_sigma_reg_full,
                 record_volume_weights=record_volume_weights,
-                record_ricci_scalar=record_scutoid,
-                record_geodesic_edges=record_scutoid,
-                record_diffusion_tensors=record_scutoid,
+                record_ricci_scalar=record_delaunay,
+                record_geodesic_edges=record_delaunay,
+                record_diffusion_tensors=record_delaunay,
                 record_neighbors=self.neighbor_graph_record
                 and self.neighbor_graph_method != "none",
                 record_voronoi=self.neighbor_graph_record and self.neighbor_graph_method != "none",
                 record_edge_weights=record_edge_weights,
                 chunk_size=chunk_size,
             )
-        self._neighbor_cache = None
+        self._cached_delaunay_data = None
 
         # All walkers always alive
         n_alive = N
