@@ -19,7 +19,7 @@ from scipy.spatial import Delaunay
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
+from fragile.physics.fractal_gas.panel_model import INPUT_WIDTH, PanelModel
 
 
 def random_pairing_fisher_yates(
@@ -140,13 +140,6 @@ class EuclideanGas(PanelModel):
             "Can be an OptimBenchmark instance (which provides bounds) or any callable."
         ),
     )
-    reward_1form = param.Parameter(
-        default=None,
-        doc=(
-            "Optional reward 1-form field. Must be callable: R(x: [N, d]) -> [N, d]. "
-            "If provided, rewards are computed as <R(x), v> per walker."
-        ),
-    )
     kinetic_op = param.Parameter(default=None, doc="Langevin dynamics parameters")
     cloning = param.Parameter(default=None, doc="Cloning operator")
     fitness_op = param.Parameter(
@@ -232,11 +225,6 @@ class EuclideanGas(PanelModel):
             msg = f"potential must be callable, got {type(self.potential)}"
             raise TypeError(msg)
 
-        # Validate that reward 1-form is callable
-        if self.reward_1form is not None and not callable(self.reward_1form):
-            msg = f"reward_1form must be callable, got {type(self.reward_1form)}"
-            raise TypeError(msg)
-
         # Cached scutoid values from previous step for cloning
         self._cached_ricci_scalar: Tensor | None = None
         self._cached_riemannian_volume: Tensor | None = None
@@ -275,19 +263,6 @@ class EuclideanGas(PanelModel):
 
     def _compute_rewards(self, state: SwarmState) -> Tensor:
         """Compute per-walker rewards from reward 1-form or potential."""
-        if self.reward_1form is not None:
-            reward_field = self.reward_1form(state.x)
-            if reward_field.shape != state.x.shape:
-                msg = (
-                    "reward_1form must return shape [N, d] matching positions; "
-                    f"got {tuple(reward_field.shape)} vs {tuple(state.x.shape)}"
-                )
-                raise ValueError(msg)
-            return (reward_field * state.v).sum(dim=-1)
-
-        if self.potential is None:
-            msg = "potential required when reward_1form is None"
-            raise ValueError(msg)
         return -self.potential(state.x)
 
     def _compute_neighbor_graph(
@@ -350,10 +325,10 @@ class EuclideanGas(PanelModel):
         Perform one full step: compute fitness, clone (optional), then kinetic (optional).
 
         Uses cloning.py functions directly to compute:
-        1. Rewards from reward 1-form or potential
+        1. Rewards from potential
         2. Fitness using compute_fitness (always computed, even if cloning disabled)
-        3. Cloning using clone_walkers (if enable_cloning=True)
-        4. Kinetic update (if enable_kinetic=True)
+        3. Cloning using clone_walkers every n_clone_steps
+        4. Kinetic update
 
         Args:
             state: Current swarm state
@@ -366,13 +341,10 @@ class EuclideanGas(PanelModel):
         Note:
             - The info dict contains: fitness, distances, companions, rewards,
               cloning_scores, cloning_probs, will_clone, num_cloned
-            - Fitness is always computed (needed for adaptive forces)
-            - If enable_cloning=False, cloning is skipped and state_after_cloning = state
+            - Fitness is always computed (needed for viscous forces)
             - If clone_every > 1, cloning is applied every clone_every steps
             - If enable_kinetic=False, kinetic is skipped and
               state_after_kinetic = state_after_cloning
-            - If kinetic_op.n_kinetic_steps > 1, the kinetic operator is applied
-              repeatedly using the same fitness derivatives for each substep
         """
         if self.potential is not None and hasattr(self.potential, "set_step_id"):
             self.potential.set_step_id(getattr(self, "_current_step", None))
@@ -444,16 +416,11 @@ class EuclideanGas(PanelModel):
             # No cloning happened, so no cloned tensors
             other_cloned = {}
 
-        neighbor_info = None
         neighbor_edges = None
-        if self.neighbor_graph_method != "none":
-            neighbor_info = self._maybe_update_neighbor_cache(state_cloned.x)
-            if neighbor_info is not None:
-                neighbor_edges = neighbor_info.get("neighbor_edges")
 
-        # # Apply freeze mask if needed
-        # if freeze_mask is not None and freeze_mask.any():
-        #     state_cloned.copy_from(reference_state, freeze_mask)
+        neighbor_info = self._maybe_update_neighbor_cache(state_cloned.x)
+        if neighbor_info is not None:
+            neighbor_edges = neighbor_info.get("neighbor_edges")
 
         # Step 5: Compute fitness derivatives if needed for adaptive kinetics
         grad_fitness = None

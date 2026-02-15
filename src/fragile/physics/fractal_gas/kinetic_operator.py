@@ -13,14 +13,12 @@ Mathematical notation:
 
 from __future__ import annotations
 
-import warnings
-
 import panel as pn
 import param
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
+from fragile.physics.fractal_gas.panel_model import INPUT_WIDTH, PanelModel
 
 
 class KineticOperator(PanelModel):

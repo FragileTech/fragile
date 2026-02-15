@@ -3,7 +3,7 @@ import param
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
+from fragile.physics.fractal_gas.panel_model import INPUT_WIDTH, PanelModel
 
 
 def logistic_rescale(z: Tensor, A: float = 1.0) -> Tensor:
