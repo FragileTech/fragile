@@ -19,9 +19,11 @@ from __future__ import annotations
 import torch
 from torch import Tensor
 
-from .baryon_operators import build_companion_triplets
+from fragile.physics.qft_utils.companions import build_companion_triplets
+from fragile.physics.qft_utils.helpers import _safe_gather_2d, _safe_gather_3d
+
 from .config import GlueballOperatorConfig
-from .preparation import _safe_gather_2d, _safe_gather_3d, PreparedChannelData
+from .preparation import PreparedChannelData
 
 
 # ---------------------------------------------------------------------------
@@ -194,14 +196,27 @@ def compute_glueball_operators(
     source_obs = _glueball_observable_from_plaquette(source_pi, operator_mode=resolved_mode)
 
     # 3. Average per frame
-    triplet_counts = source_valid.sum(dim=1).to(torch.float32)
-    valid_t = triplet_counts > 0
+    if data.scales is not None and data.companion_d_ij is not None:
+        from .multiscale import gate_triplet_validity_by_scale, per_frame_series_multiscale
 
-    operator_series = torch.zeros(t_total, dtype=torch.float32, device=device)
-    if torch.any(valid_t):
-        weight = source_valid.to(dtype=torch.float32)
-        sums = (source_obs * weight).sum(dim=1)
-        operator_series[valid_t] = sums[valid_t] / triplet_counts[valid_t].clamp(min=1.0)
+        valid_ms = gate_triplet_validity_by_scale(
+            source_valid,
+            data.companion_d_ij,
+            data.companion_d_ik,
+            data.companion_d_jk,
+            data.scales,
+        )  # [T, S, N]
+        operator_series = per_frame_series_multiscale(source_obs, valid_ms)  # [S, T]
+    else:
+        valid_ms = None
+        triplet_counts = source_valid.sum(dim=1).to(torch.float32)
+        valid_t = triplet_counts > 0
+
+        operator_series = torch.zeros(t_total, dtype=torch.float32, device=device)
+        if torch.any(valid_t):
+            weight = source_valid.to(dtype=torch.float32)
+            sums = (source_obs * weight).sum(dim=1)
+            operator_series[valid_t] = sums[valid_t] / triplet_counts[valid_t].clamp(min=1.0)
 
     result = {"glueball": operator_series}
 
@@ -233,22 +248,47 @@ def compute_glueball_operators(
         cos_phase = torch.cos(phase_arg)
         sin_phase = torch.sin(phase_arg)
 
-        weights = source_valid.to(dtype=torch.float32)
-        counts_t = weights.sum(dim=1)
-        valid_frames = counts_t > 0
+        if valid_ms is not None:
+            # Multiscale momentum projection
+            T = t_total
+            S = data.scales.shape[0]
+            N = source_obs.shape[1]
+            for m in range(n_modes):
+                cos_m = cos_phase[m]  # [T, N]
+                sin_m = sin_phase[m]  # [T, N]
+                cos_m_exp = cos_m.unsqueeze(1).expand(T, S, N)
+                sin_m_exp = sin_m.unsqueeze(1).expand(T, S, N)
+                obs_exp = source_obs.unsqueeze(1).expand(T, S, N)
+                weights_ms = valid_ms.to(dtype=torch.float32)
+                counts_ms = weights_ms.sum(dim=2)  # [T, S]
+                valid_ts = counts_ms > 0
+                cos_num = (obs_exp * cos_m_exp * weights_ms).sum(dim=2)  # [T, S]
+                sin_num = (obs_exp * sin_m_exp * weights_ms).sum(dim=2)  # [T, S]
+                op_cos_ms = torch.zeros(T, S, dtype=torch.float32, device=device)
+                op_sin_ms = torch.zeros(T, S, dtype=torch.float32, device=device)
+                if torch.any(valid_ts):
+                    op_cos_ms[valid_ts] = cos_num[valid_ts] / counts_ms[valid_ts].clamp(min=1.0)
+                    op_sin_ms[valid_ts] = sin_num[valid_ts] / counts_ms[valid_ts].clamp(min=1.0)
+                result[f"glueball_momentum_cos_{m}"] = op_cos_ms.T  # [S, T]
+                result[f"glueball_momentum_sin_{m}"] = op_sin_ms.T  # [S, T]
+        else:
+            # Single-scale momentum projection
+            weights = source_valid.to(dtype=torch.float32)
+            counts_t = weights.sum(dim=1)
+            valid_frames = counts_t > 0
 
-        op_cos = torch.zeros((n_modes, t_total), dtype=torch.float32, device=device)
-        op_sin = torch.zeros((n_modes, t_total), dtype=torch.float32, device=device)
-        if torch.any(valid_frames):
-            weighted_obs = source_obs.float() * weights
-            cos_num = (weighted_obs[None, :, :] * cos_phase).sum(dim=2)  # [M, T]
-            sin_num = (weighted_obs[None, :, :] * sin_phase).sum(dim=2)  # [M, T]
-            denom = counts_t[valid_frames].to(dtype=torch.float32).clamp(min=1.0)
-            op_cos[:, valid_frames] = cos_num[:, valid_frames] / denom.unsqueeze(0)
-            op_sin[:, valid_frames] = sin_num[:, valid_frames] / denom.unsqueeze(0)
+            op_cos = torch.zeros((n_modes, t_total), dtype=torch.float32, device=device)
+            op_sin = torch.zeros((n_modes, t_total), dtype=torch.float32, device=device)
+            if torch.any(valid_frames):
+                weighted_obs = source_obs.float() * weights
+                cos_num = (weighted_obs[None, :, :] * cos_phase).sum(dim=2)  # [M, T]
+                sin_num = (weighted_obs[None, :, :] * sin_phase).sum(dim=2)  # [M, T]
+                denom = counts_t[valid_frames].to(dtype=torch.float32).clamp(min=1.0)
+                op_cos[:, valid_frames] = cos_num[:, valid_frames] / denom.unsqueeze(0)
+                op_sin[:, valid_frames] = sin_num[:, valid_frames] / denom.unsqueeze(0)
 
-        for m in range(n_modes):
-            result[f"glueball_momentum_cos_{m}"] = op_cos[m]
-            result[f"glueball_momentum_sin_{m}"] = op_sin[m]
+            for m in range(n_modes):
+                result[f"glueball_momentum_cos_{m}"] = op_cos[m]
+                result[f"glueball_momentum_sin_{m}"] = op_sin[m]
 
     return result

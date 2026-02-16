@@ -7,7 +7,7 @@ and a correlator config.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -69,6 +69,29 @@ class TensorOperatorConfig(ChannelConfigBase):
     momentum_axis: int = 0
     momentum_mode_max: int = 4
     projection_length: float | None = None
+
+
+@dataclass
+class MultiscaleConfig:
+    """Configuration for multiscale operator computation.
+
+    When ``n_scales == 1`` (default), no multiscale processing is applied
+    and the pipeline produces identical output to the single-scale path.
+    """
+
+    n_scales: int = 1
+    mode: str = "companion"  # "companion" | "kernel" | "both"
+    kernel_type: str = "gaussian"  # gaussian | exponential | tophat | shell
+    distance_method: str = "auto"  # floyd-warshall | tropical | auto
+    distance_batch_size: int = 4
+    scale_calibration_frames: int = 8
+    scale_q_low: float = 0.05
+    scale_q_high: float = 0.95
+    max_scale_samples: int = 500_000
+    min_scale: float = 1e-6
+    scales: list[float] | None = None  # User-specified (overrides auto)
+    edge_weight_mode: str = "riemannian_kernel_volume"
+    assume_all_alive: bool = True
 
 
 @dataclass

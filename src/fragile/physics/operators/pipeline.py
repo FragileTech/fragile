@@ -12,9 +12,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+import torch
 from torch import Tensor
 
-from fragile.fractalai.core.history import RunHistory
+from fragile.physics.fractal_gas.history import RunHistory
 
 from .config import (
     BaryonOperatorConfig,
@@ -22,6 +23,7 @@ from .config import (
     CorrelatorConfig,
     GlueballOperatorConfig,
     MesonOperatorConfig,
+    MultiscaleConfig,
     TensorOperatorConfig,
     VectorOperatorConfig,
 )
@@ -48,6 +50,7 @@ class PipelineResult:
     operators: dict[str, Tensor] = field(default_factory=dict)
     correlators: dict[str, Tensor] = field(default_factory=dict)
     prepared_data: PreparedChannelData | None = None
+    scales: Tensor | None = None  # [S] for reference
 
 
 # ---------------------------------------------------------------------------
@@ -70,6 +73,7 @@ class PipelineConfig:
     glueball: GlueballOperatorConfig = field(default_factory=GlueballOperatorConfig)
     tensor: TensorOperatorConfig = field(default_factory=TensorOperatorConfig)
     correlator: CorrelatorConfig = field(default_factory=CorrelatorConfig)
+    multiscale: MultiscaleConfig = field(default_factory=MultiscaleConfig)
     channels: list[str] | None = None  # None = all
 
 
@@ -131,7 +135,55 @@ def compute_strong_force_pipeline(
         momentum_axis=momentum_axis,
     )
 
-    # Dispatch to operator modules
+    # Stage 1.5: Multiscale preparation
+    ms = config.multiscale
+    if ms.n_scales > 1 and data.frame_indices:
+        from .geodesics import (
+            compute_pairwise_distances,
+            compute_smeared_kernels,
+            gather_companion_distances,
+            select_scales,
+        )
+
+        data.pairwise_distances = compute_pairwise_distances(
+            history,
+            data.frame_indices,
+            method=ms.distance_method,
+            edge_weight_mode=ms.edge_weight_mode,
+            batch_size=ms.distance_batch_size,
+            assume_all_alive=ms.assume_all_alive,
+        )
+
+        if ms.scales is not None:
+            data.scales = torch.as_tensor(
+                ms.scales, dtype=torch.float32, device=data.device,
+            )
+        else:
+            data.scales = select_scales(
+                data.pairwise_distances,
+                ms.n_scales,
+                q_low=ms.scale_q_low,
+                q_high=ms.scale_q_high,
+                max_samples=ms.max_scale_samples,
+                min_scale=ms.min_scale,
+            )
+
+        data.companion_d_ij, data.companion_d_ik, data.companion_d_jk = (
+            gather_companion_distances(
+                data.pairwise_distances,
+                data.companions_distance,
+                data.companions_clone,
+            )
+        )
+
+        if ms.mode in ("kernel", "both"):
+            data.kernels = compute_smeared_kernels(
+                data.pairwise_distances,
+                data.scales,
+                kernel_type=ms.kernel_type,
+            )
+
+    # Stage 2: Dispatch to operator modules
     all_operators: dict[str, Tensor] = {}
 
     if "meson" in requested:
@@ -164,17 +216,20 @@ def compute_strong_force_pipeline(
         ops = compute_tensor_operators(data, config.tensor)
         all_operators.update(ops)
 
-    # Compute correlators
+    # Stage 3: Compute correlators
+    effective_n_scales = ms.n_scales if data.scales is not None else 1
     correlators = compute_correlators_batched(
         all_operators,
         max_lag=config.correlator.max_lag,
         use_connected=config.correlator.use_connected,
+        n_scales=effective_n_scales,
     )
 
     return PipelineResult(
         operators=all_operators,
         correlators=correlators,
         prepared_data=data,
+        scales=data.scales,
     )
 
 

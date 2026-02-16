@@ -18,15 +18,14 @@ from __future__ import annotations
 import torch
 from torch import Tensor
 
+from fragile.physics.qft_utils.companions import (
+    PAIR_SELECTION_MODES,
+    build_companion_pair_indices,
+    build_companion_triplets,
+)
+
 from .config import MesonOperatorConfig
 from .preparation import _safe_gather_2d, _safe_gather_3d, PreparedChannelData
-
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-PAIR_SELECTION_MODES = ("distance", "clone", "both")
 
 
 # ---------------------------------------------------------------------------
@@ -62,56 +61,6 @@ def _safe_gather_pairs_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tens
         gathered_flat.reshape(t, n, p, c),
         in_range_flat.reshape(t, n, p),
     )
-
-
-# ---------------------------------------------------------------------------
-# Companion pair index construction
-# ---------------------------------------------------------------------------
-
-
-def _get_build_companion_triplets():
-    """Lazy import of build_companion_triplets to avoid circular imports."""
-    try:
-        from .baryon_operators import build_companion_triplets
-    except ImportError:
-        from fragile.fractalai.qft.baryon_triplet_channels import build_companion_triplets
-    return build_companion_triplets
-
-
-def build_companion_pair_indices(
-    companions_distance: Tensor,
-    companions_clone: Tensor,
-    pair_selection: str = "both",
-) -> tuple[Tensor, Tensor]:
-    """Build companion pair indices [T,N,P] and structural validity mask.
-
-    Args:
-        companions_distance: Distance companion indices [T, N].
-        companions_clone: Clone companion indices [T, N].
-        pair_selection: One of {"distance", "clone", "both"}.
-
-    Returns:
-        pair_indices: Companion indices [T, N, P].
-        structural_valid: In-range and non-self mask [T, N, P].
-    """
-    mode = str(pair_selection).strip().lower()
-    if mode not in PAIR_SELECTION_MODES:
-        raise ValueError(f"pair_selection must be one of {PAIR_SELECTION_MODES}.")
-    build_companion_triplets = _get_build_companion_triplets()
-    anchor_idx, companion_j, companion_k, _ = build_companion_triplets(
-        companions_distance=companions_distance,
-        companions_clone=companions_clone,
-    )
-    n = companions_distance.shape[1]
-    valid_j = (companion_j >= 0) & (companion_j < n) & (companion_j != anchor_idx)
-    valid_k = (companion_k >= 0) & (companion_k < n) & (companion_k != anchor_idx)
-    if mode == "distance":
-        return companion_j.unsqueeze(-1), valid_j.unsqueeze(-1)
-    if mode == "clone":
-        return companion_k.unsqueeze(-1), valid_k.unsqueeze(-1)
-    pair_indices = torch.stack([companion_j, companion_k], dim=-1)
-    structural = torch.stack([valid_j, valid_k], dim=-1)
-    return pair_indices, structural
 
 
 # ---------------------------------------------------------------------------
@@ -318,9 +267,18 @@ def compute_meson_operators(
         scalar_obs = inner.real.float()
     pseudoscalar_obs = inner.imag.float()
 
-    # 5-6. Average per frame
-    scalar_series, _ = _per_frame_series(scalar_obs, valid)
-    pseudoscalar_series, _ = _per_frame_series(pseudoscalar_obs, valid)
+    # 5-6. Average per frame (multiscale or single-scale)
+    if data.scales is not None and data.pairwise_distances is not None:
+        from .multiscale import gate_pair_validity_by_scale, per_frame_series_multiscale
+
+        valid_ms = gate_pair_validity_by_scale(
+            valid, pair_indices, data.pairwise_distances, data.scales,
+        )
+        scalar_series = per_frame_series_multiscale(scalar_obs, valid_ms)
+        pseudoscalar_series = per_frame_series_multiscale(pseudoscalar_obs, valid_ms)
+    else:
+        scalar_series, _ = _per_frame_series(scalar_obs, valid)
+        pseudoscalar_series, _ = _per_frame_series(pseudoscalar_obs, valid)
 
     # 7. Return operator time series
     return {"scalar": scalar_series, "pseudoscalar": pseudoscalar_series}

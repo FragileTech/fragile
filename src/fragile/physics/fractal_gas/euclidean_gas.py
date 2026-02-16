@@ -705,16 +705,13 @@ class EuclideanGas(PanelModel):
         params = _build_params()
 
         return recorder.build(
-            n_steps=final_step,
             record_every=record_every,
             terminated_early=terminated_early,
             final_step=final_step,
             total_time=total_time,
             init_time=init_time,
-            bounds=None,
             recorded_steps=recorded_steps,
             delta_t=self.kinetic_op.delta_t,
-            pbc=False,
             params=params,
             rng_seed=seed,
             rng_state=rng_state,

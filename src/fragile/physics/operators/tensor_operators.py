@@ -23,13 +23,13 @@ import math
 import torch
 from torch import Tensor
 
-from fragile.fractalai.qft.radial_channels import _apply_pbc_diff_torch
+from fragile.physics.qft_utils.companions import build_companion_pair_indices
+from fragile.physics.qft_utils.helpers import _apply_pbc_diff_torch
 
 from .config import TensorOperatorConfig
 from .meson_operators import (
     _safe_gather_pairs_2d,
     _safe_gather_pairs_3d,
-    build_companion_pair_indices,
 )
 from .preparation import PreparedChannelData
 
@@ -200,21 +200,27 @@ def compute_tensor_operators(
     """Compute spin-2 tensor operator time-series from prepared channel data.
 
     Returns a dict:
-        ``"tensor"`` -- per-frame averaged tensor components [T, 5].
+        ``"tensor"`` -- per-frame averaged tensor components ``[T, 5]``
+        (single-scale) or ``[S, T, 5]`` (multiscale).
 
     When momentum projection is configured (``data.positions_axis`` is not
     None), additional entries:
-        ``"tensor_momentum_cos_{n}"`` -- cosine-projected operator [T, 5] for mode *n*.
-        ``"tensor_momentum_sin_{n}"`` -- sine-projected operator [T, 5] for mode *n*.
+        ``"tensor_momentum_cos_{n}"`` -- cosine-projected operator ``[T, 5]``
+        or ``[S, T, 5]`` for mode *n*.
+        ``"tensor_momentum_sin_{n}"`` -- sine-projected operator ``[T, 5]``
+        or ``[S, T, 5]`` for mode *n*.
     """
     color = data.color
     t_total = int(color.shape[0])
     device = data.device
 
     if t_total == 0:
-        result: dict[str, Tensor] = {
-            "tensor": torch.zeros(0, 5, dtype=torch.float32, device=device),
-        }
+        if data.scales is not None:
+            S = data.scales.shape[0]
+            empty = torch.zeros(S, 0, 5, dtype=torch.float32, device=device)
+        else:
+            empty = torch.zeros(0, 5, dtype=torch.float32, device=device)
+        result: dict[str, Tensor] = {"tensor": empty}
         return result
 
     if data.positions is None:
@@ -243,21 +249,51 @@ def compute_tensor_operators(
         )
     )
 
-    # 3. Average per frame -> component_series [T, 5]
-    component_series = torch.zeros(
-        t_total,
-        5,
-        dtype=torch.float32,
-        device=device,
-    )
-    valid_t = component_counts_per_frame > 0
-    if torch.any(valid_t):
-        sums = (local_components * valid_walker.unsqueeze(-1).to(local_components.dtype)).sum(
-            dim=1
+    # 3. Average per frame
+    _multiscale = data.scales is not None and data.companion_d_ij is not None
+    # valid_ms is used later in momentum projection when multiscale
+    valid_ms: Tensor | None = None
+
+    if _multiscale:
+        # Multiscale path -> component_series [S, T, 5]
+        scales = data.scales  # [S]
+        d_gate = data.companion_d_ij  # [T, N]
+        S = scales.shape[0]
+        N = color.shape[1]
+
+        scale_view = scales.view(1, -1, 1)  # [1, S, 1]
+        d_gate_view = d_gate.unsqueeze(1)  # [T, 1, N]
+        within_scale = d_gate_view <= scale_view  # [T, S, N]
+        valid_ms = valid_walker.unsqueeze(1) & within_scale  # [T, S, N]
+
+        local_exp = local_components.unsqueeze(1).expand(t_total, S, N, 5)  # [T, S, N, 5]
+        weights_ms = valid_ms.to(local_components.dtype).unsqueeze(-1)  # [T, S, N, 1]
+        counts_ms = valid_ms.sum(dim=2).to(torch.float32)  # [T, S]
+        weighted_sums = (local_exp * weights_ms).sum(dim=2)  # [T, S, 5]
+
+        component_series = torch.zeros(t_total, S, 5, dtype=torch.float32, device=device)
+        valid_ts = counts_ms > 0
+        if torch.any(valid_ts):
+            component_series[valid_ts] = (
+                weighted_sums[valid_ts] / counts_ms[valid_ts].unsqueeze(-1).clamp(min=1.0)
+            ).float()
+        component_series = component_series.permute(1, 0, 2)  # [S, T, 5]
+    else:
+        # Single-scale path -> component_series [T, 5]
+        component_series = torch.zeros(
+            t_total,
+            5,
+            dtype=torch.float32,
+            device=device,
         )
-        component_series[valid_t] = sums[valid_t] / component_counts_per_frame[valid_t].to(
-            local_components.dtype
-        ).unsqueeze(-1).clamp(min=1.0)
+        valid_t = component_counts_per_frame > 0
+        if torch.any(valid_t):
+            sums = (local_components * valid_walker.unsqueeze(-1).to(local_components.dtype)).sum(
+                dim=1
+            )
+            component_series[valid_t] = sums[valid_t] / component_counts_per_frame[valid_t].to(
+                local_components.dtype
+            ).unsqueeze(-1).clamp(min=1.0)
 
     result: dict[str, Tensor] = {"tensor": component_series}
 
@@ -287,29 +323,72 @@ def compute_tensor_operators(
         cos_phase = torch.cos(phase_arg)
         sin_phase = torch.sin(phase_arg)
 
-        weights = valid_walker.to(dtype=torch.float32)
-        counts_t = weights.sum(dim=1)
-        valid_frames = counts_t > 0
+        if _multiscale and valid_ms is not None:
+            # Multiscale momentum projection -> [S, T, 5] per mode
+            S_scales = data.scales.shape[0]
+            N_walk = color.shape[1]
 
-        op_cos = torch.zeros((n_modes, n_comp, t_total), dtype=torch.float32, device=device)
-        op_sin = torch.zeros((n_modes, n_comp, t_total), dtype=torch.float32, device=device)
-        if torch.any(valid_frames):
-            # weighted_local: [T, N, 5]
-            weighted_local = local_components * weights.unsqueeze(-1)
-            # einsum: [T,N,C] x [M,T,N] -> [M,C,T]
-            cos_num = torch.einsum("tnc,mtn->mct", weighted_local, cos_phase)
-            sin_num = torch.einsum("tnc,mtn->mct", weighted_local, sin_phase)
-            denom = counts_t[valid_frames].to(dtype=torch.float32).clamp(min=1.0)
-            op_cos[:, :, valid_frames] = cos_num[:, :, valid_frames] / denom.unsqueeze(
-                0
-            ).unsqueeze(0)
-            op_sin[:, :, valid_frames] = sin_num[:, :, valid_frames] / denom.unsqueeze(
-                0
-            ).unsqueeze(0)
+            for m in range(n_modes):
+                cos_m = cos_phase[m]  # [T, N]
+                sin_m = sin_phase[m]  # [T, N]
+                cos_m_exp = cos_m.unsqueeze(1).expand(t_total, S_scales, N_walk)  # [T, S, N]
+                sin_m_exp = sin_m.unsqueeze(1).expand(t_total, S_scales, N_walk)  # [T, S, N]
+                local_exp = local_components.unsqueeze(1).expand(
+                    t_total, S_scales, N_walk, n_comp
+                )
+                w_ms = valid_ms.to(torch.float32)  # [T, S, N]
+                counts_ms_t = w_ms.sum(dim=2)  # [T, S]
+                valid_ts = counts_ms_t > 0
 
-        for m in range(n_modes):
-            # Each momentum mode entry is [T, 5] (transposed from [5, T])
-            result[f"tensor_momentum_cos_{m}"] = op_cos[m].T
-            result[f"tensor_momentum_sin_{m}"] = op_sin[m].T
+                weighted_local = local_exp * w_ms.unsqueeze(-1)  # [T, S, N, C]
+                cos_num = torch.einsum("tsnc,tsn->tsc", weighted_local, cos_m_exp)
+                sin_num = torch.einsum("tsnc,tsn->tsc", weighted_local, sin_m_exp)
+
+                op_cos_ms = torch.zeros(
+                    t_total, S_scales, n_comp, dtype=torch.float32, device=device
+                )
+                op_sin_ms = torch.zeros(
+                    t_total, S_scales, n_comp, dtype=torch.float32, device=device
+                )
+                if torch.any(valid_ts):
+                    op_cos_ms[valid_ts] = (
+                        cos_num[valid_ts] / counts_ms_t[valid_ts].unsqueeze(-1).clamp(min=1.0)
+                    )
+                    op_sin_ms[valid_ts] = (
+                        sin_num[valid_ts] / counts_ms_t[valid_ts].unsqueeze(-1).clamp(min=1.0)
+                    )
+
+                result[f"tensor_momentum_cos_{m}"] = op_cos_ms.permute(1, 0, 2)  # [S, T, 5]
+                result[f"tensor_momentum_sin_{m}"] = op_sin_ms.permute(1, 0, 2)  # [S, T, 5]
+        else:
+            # Single-scale momentum projection -> [T, 5] per mode
+            weights = valid_walker.to(dtype=torch.float32)
+            counts_t = weights.sum(dim=1)
+            valid_frames = counts_t > 0
+
+            op_cos = torch.zeros(
+                (n_modes, n_comp, t_total), dtype=torch.float32, device=device
+            )
+            op_sin = torch.zeros(
+                (n_modes, n_comp, t_total), dtype=torch.float32, device=device
+            )
+            if torch.any(valid_frames):
+                # weighted_local: [T, N, 5]
+                weighted_local = local_components * weights.unsqueeze(-1)
+                # einsum: [T,N,C] x [M,T,N] -> [M,C,T]
+                cos_num = torch.einsum("tnc,mtn->mct", weighted_local, cos_phase)
+                sin_num = torch.einsum("tnc,mtn->mct", weighted_local, sin_phase)
+                denom = counts_t[valid_frames].to(dtype=torch.float32).clamp(min=1.0)
+                op_cos[:, :, valid_frames] = cos_num[:, :, valid_frames] / denom.unsqueeze(
+                    0
+                ).unsqueeze(0)
+                op_sin[:, :, valid_frames] = sin_num[:, :, valid_frames] / denom.unsqueeze(
+                    0
+                ).unsqueeze(0)
+
+            for m in range(n_modes):
+                # Each momentum mode entry is [T, 5] (transposed from [5, T])
+                result[f"tensor_momentum_cos_{m}"] = op_cos[m].T
+                result[f"tensor_momentum_sin_{m}"] = op_sin[m].T
 
     return result

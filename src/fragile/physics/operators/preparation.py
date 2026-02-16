@@ -12,8 +12,10 @@ from dataclasses import dataclass
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.aggregation import compute_color_states_batch, estimate_ell0
+from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+
+from fragile.physics.qft_utils.helpers import _safe_gather_2d, _safe_gather_3d
 
 from .config import ChannelConfigBase
 
@@ -85,28 +87,6 @@ def _resolve_3d_dims(
     return dims_tuple
 
 
-def _safe_gather_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
-    """Safely gather ``values[:, idx]`` and return gathered values + in-range mask."""
-    n = values.shape[1]
-    in_range = (indices >= 0) & (indices < n)
-    idx_safe = indices.clamp(min=0, max=max(n - 1, 0))
-    gathered = torch.gather(values, dim=1, index=idx_safe)
-    return gathered, in_range
-
-
-def _safe_gather_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
-    """Safely gather ``values[:, idx, :]`` and return gathered values + in-range mask."""
-    n = values.shape[1]
-    in_range = (indices >= 0) & (indices < n)
-    idx_safe = indices.clamp(min=0, max=max(n - 1, 0))
-    gathered = torch.gather(
-        values,
-        dim=1,
-        index=idx_safe.unsqueeze(-1).expand(-1, -1, values.shape[-1]),
-    )
-    return gathered, in_range
-
-
 # ---------------------------------------------------------------------------
 # PreparedChannelData
 # ---------------------------------------------------------------------------
@@ -135,6 +115,14 @@ class PreparedChannelData:
     eps: float
     bounds: object | None = None  # For PBC-aware displacement
     pbc: bool = False
+
+    # Multiscale fields (None when n_scales=1)
+    scales: Tensor | None = None  # [S] float
+    pairwise_distances: Tensor | None = None  # [T, N, N] float geodesic
+    kernels: Tensor | None = None  # [T, S, N, N] float smeared
+    companion_d_ij: Tensor | None = None  # [T, N] float d(i, companion_j)
+    companion_d_ik: Tensor | None = None  # [T, N] float d(i, companion_k)
+    companion_d_jk: Tensor | None = None  # [T, N] float d(j, k)
 
 
 # ---------------------------------------------------------------------------

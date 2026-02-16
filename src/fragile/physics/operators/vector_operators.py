@@ -23,11 +23,12 @@ from __future__ import annotations
 import torch
 from torch import Tensor
 
+from fragile.physics.qft_utils.companions import build_companion_pair_indices
+
 from .config import VectorOperatorConfig
 from .meson_operators import (
     _safe_gather_pairs_2d,
     _safe_gather_pairs_3d,
-    build_companion_pair_indices,
 )
 from .preparation import PreparedChannelData
 
@@ -286,9 +287,18 @@ def compute_vector_operators(
     vector_obs = inner.real.float().unsqueeze(-1) * displacement
     axial_obs = inner.imag.float().unsqueeze(-1) * displacement
 
-    # 4. Average per frame
-    vector_series, _ = _per_frame_vector_series(vector_obs, valid)
-    axial_series, _ = _per_frame_vector_series(axial_obs, valid)
+    # 4. Average per frame (multiscale or single-scale)
+    if data.scales is not None and data.pairwise_distances is not None:
+        from .multiscale import gate_pair_validity_by_scale, per_frame_vector_series_multiscale
+
+        valid_ms = gate_pair_validity_by_scale(
+            valid, pair_indices, data.pairwise_distances, data.scales,
+        )
+        vector_series = per_frame_vector_series_multiscale(vector_obs, valid_ms)
+        axial_series = per_frame_vector_series_multiscale(axial_obs, valid_ms)
+    else:
+        vector_series, _ = _per_frame_vector_series(vector_obs, valid)
+        axial_series, _ = _per_frame_vector_series(axial_obs, valid)
 
     # 5. Return operator time series
     return {"vector": vector_series, "axial_vector": axial_series}

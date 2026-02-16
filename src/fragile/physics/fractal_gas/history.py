@@ -61,7 +61,6 @@ class RunHistory(BaseModel):
     final_step: int = Field(description="Last step completed (may be < n_steps)")
     recorded_steps: list[int] = Field(description="Absolute step numbers recorded")
     delta_t: float = Field(description="Algorithmic time step size")
-    pbc: bool = Field(description="Whether periodic boundary conditions were used")
     params: dict[str, Any] | None = Field(default=None, description="Run parameter snapshot")
     rng_seed: int | None = Field(default=None, description="Seed used for RNG (if provided)")
     rng_state: dict[str, Any] | None = Field(
@@ -293,10 +292,6 @@ class RunHistory(BaseModel):
         """
         idx = self.get_step_index(step)
         if idx == 0:
-            if self.pbc:
-                return torch.arange(self.N, device=self.x_before_clone.device)
-            if self.bounds is not None:
-                return torch.where(self.bounds.contains(self.x_before_clone[0]))[0]
             return torch.arange(self.N, device=self.x_before_clone.device)
         return torch.where(self.alive_mask[idx - 1])[0]
 
@@ -365,10 +360,6 @@ class RunHistory(BaseModel):
         return "\n".join(lines)
 
 
-# Rebuild model after TorchBounds is fully defined
-RunHistory.model_rebuild()
-
-
 class VectorizedHistoryRecorder:
     """Pre-allocated, vectorized history recorder for efficient in-place recording.
 
@@ -416,7 +407,6 @@ class VectorizedHistoryRecorder:
         ...     final_step=100,
         ...     total_time=1.5,
         ...     init_time=0.1,
-        ...     bounds=None,
         ... )
 
     Reference: Replaces inline recording logic in euclidean_gas.py:472-778
@@ -924,7 +914,6 @@ class VectorizedHistoryRecorder:
 
     def build(
         self,
-        n_steps: int,
         record_every: int,
         terminated_early: bool,
         final_step: int,
@@ -932,7 +921,6 @@ class VectorizedHistoryRecorder:
         init_time: float,
         recorded_steps: list[int] | None = None,
         delta_t: float | None = None,
-        pbc: bool = False,
         params: dict | None = None,
         rng_seed: int | None = None,
         rng_state: dict | None = None,
@@ -950,12 +938,10 @@ class VectorizedHistoryRecorder:
             final_step: Last step completed (may be < n_steps)
             total_time: Total execution time (seconds)
             init_time: Initialization time (seconds)
-            bounds: Position bounds used during simulation (optional)
 
         Returns:
             RunHistory object with complete execution trace
         """
-        from fragile.fractalai.core.history import RunHistory
 
         # ----- Chunked path: merge all flushed chunks -----------------------
         if self._flushed_chunks:
@@ -987,13 +973,11 @@ class VectorizedHistoryRecorder:
                 final_step=final_step,
                 recorded_steps=recorded_steps or [],
                 delta_t=delta_t or 0.0,
-                pbc=pbc,
                 params=params,
                 rng_seed=rng_seed,
                 rng_state=rng_state,
                 total_time=total_time,
                 init_time=init_time,
-                bounds=bounds,
                 **merged,
             )
 
@@ -1010,7 +994,6 @@ class VectorizedHistoryRecorder:
             final_step=final_step,
             recorded_steps=recorded_steps or [],
             delta_t=delta_t or 0.0,
-            pbc=pbc,
             params=params,
             rng_seed=rng_seed,
             rng_state=rng_state,
@@ -1092,7 +1075,6 @@ class VectorizedHistoryRecorder:
             else None,
             total_time=total_time,
             init_time=init_time,
-            bounds=bounds,
         )
 
     def _merge_chunks(self) -> dict[str, object]:

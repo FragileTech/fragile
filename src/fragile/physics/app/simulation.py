@@ -56,11 +56,6 @@ class SwarmConvergence3D(param.Parameterized):
         bounds=(5, 500),
         doc="Number of Euclidean time slices",
     )
-    use_time_sliced_tessellation = param.Boolean(
-        default=True,
-        doc="Use time-sliced tessellation for Euclidean Delaunay edges",
-    )
-
     # Appearance parameters
     point_size = param.Number(default=4, bounds=(1, 20), doc="Walker point size")
     point_alpha = param.Number(default=0.85, bounds=(0.05, 1.0), doc="Marker opacity")
@@ -92,7 +87,7 @@ class SwarmConvergence3D(param.Parameterized):
     line_alpha = param.Number(default=0.35, bounds=(0.05, 1.0), doc="Delaunay line alpha")
     line_color_metric = param.ObjectSelector(
         default="constant",
-        objects=["constant", "distance", "geodesic", "timelike/spacelike"],
+        objects=["constant", "distance", "geodesic"],
         doc="Delaunay edge color metric",
     )
     line_colorscale = param.ObjectSelector(
@@ -100,15 +95,6 @@ class SwarmConvergence3D(param.Parameterized):
         objects=["Viridis", "Plasma", "Cividis", "Turbo", "Magma", "Inferno"],
         doc="Colorscale for distance-colored edges",
     )
-    line_spacelike_color = param.Color(
-        default="#4e79a7",
-        doc="Spacelike edge color (time-sliced tessellation)",
-    )
-    line_timelike_color = param.Color(
-        default="#e15759",
-        doc="Timelike edge color (time-sliced tessellation)",
-    )
-
     def __init__(self, history: RunHistory | None, bounds_extent: float = 10.0, **params):
         super().__init__(**params)
         self.history = history
@@ -129,8 +115,6 @@ class SwarmConvergence3D(param.Parameterized):
         self._time_distribution_pane = None
         self._time_distribution_container = None
         self._player_mode_pane = None
-        self._time_sliced_cache_key = None
-        self._time_sliced_cache_edges = None
         self._camera_state = None
 
         self.time_player = pn.widgets.Player(
@@ -175,17 +159,10 @@ class SwarmConvergence3D(param.Parameterized):
                 "line_alpha",
                 "line_color_metric",
                 "line_colorscale",
-                "line_spacelike_color",
-                "line_timelike_color",
                 "euclidean_time_dim",
                 "euclidean_time_bins",
-                "use_time_sliced_tessellation",
                 "mc_time_index",
             ],
-        )
-        self.param.watch(
-            self._invalidate_time_sliced_cache,
-            ["euclidean_time_dim", "euclidean_time_bins", "use_time_sliced_tessellation"],
         )
         self.param.watch(
             self._sync_player_range,
@@ -210,8 +187,6 @@ class SwarmConvergence3D(param.Parameterized):
         self._alive = history.alive_mask.detach().cpu().numpy().astype(bool)
         self._neighbor_edges = history.neighbor_edges
         self._geodesic_edge_distances = history.geodesic_edge_distances
-        self._time_sliced_cache_key = None
-        self._time_sliced_cache_edges = None
         self._data_d = int(self._x.shape[2]) if self._x is not None and self._x.ndim >= 3 else None
         if history.params is not None:
             self._neighbor_graph_method = history.params.get("neighbor_graph", {}).get("method")
@@ -299,10 +274,6 @@ class SwarmConvergence3D(param.Parameterized):
         if self._axis_uses_mc_time():
             mode = f"{mode} | MC time plotted across frames"
         self._player_mode_pane.object = f"**Player:** {mode}"
-
-    def _invalidate_time_sliced_cache(self, *_):
-        self._time_sliced_cache_key = None
-        self._time_sliced_cache_edges = None
 
     def _refresh_frame(self, *_):
         if self.history is None:
@@ -580,89 +551,6 @@ class SwarmConvergence3D(param.Parameterized):
             distances = distances.detach().cpu().numpy()
         distances = np.asarray(distances)
         return distances if distances.size else None
-
-    def _get_time_sliced_edges(self, frame: int, time_dim: int) -> dict[str, np.ndarray] | None:
-        if self.history is None or self._x is None or not self.use_time_sliced_tessellation:
-            return None
-        if frame < 0 or frame >= self._x.shape[0]:
-            return None
-        key = (
-            int(frame),
-            int(time_dim),
-            int(self.euclidean_time_bins),
-            float(self.bounds_extent),
-            bool(self.history.pbc),
-        )
-        if key == self._time_sliced_cache_key and self._time_sliced_cache_edges is not None:
-            cached = self._time_sliced_cache_edges
-            if cached.get("combined") is None or cached["combined"].size == 0:
-                return None
-            return cached
-
-        try:
-            from fragile.fractalai.qft.voronoi_time_slices import (
-                compute_time_sliced_voronoi,
-            )
-        except Exception:
-            return None
-
-        positions = torch.as_tensor(self._x[frame])
-        alive_mask = self._get_alive_mask(frame)
-        alive = torch.as_tensor(alive_mask, dtype=torch.bool, device=positions.device)
-
-        try:
-            time_sliced = compute_time_sliced_voronoi(
-                positions=positions,
-                time_dim=int(time_dim),
-                n_bins=int(self.euclidean_time_bins),
-                min_walkers_bin=1,
-                bounds=self.history.bounds,
-                alive=alive,
-                pbc=bool(self.history.pbc),
-                pbc_mode="mirror",
-                exclude_boundary=True,
-                boundary_tolerance=1e-6,
-                compute_curvature=False,
-            )
-        except Exception:
-            self._time_sliced_cache_key = key
-            self._time_sliced_cache_edges = {
-                "spacelike": np.zeros((0, 2), dtype=np.int64),
-                "timelike": np.zeros((0, 2), dtype=np.int64),
-                "combined": np.zeros((0, 2), dtype=np.int64),
-            }
-            return None
-
-        spacelike_edges: list[np.ndarray] = []
-        for bin_result in time_sliced.bins:
-            if bin_result.spacelike_edges is not None and bin_result.spacelike_edges.size:
-                spacelike_edges.append(bin_result.spacelike_edges)
-        if spacelike_edges:
-            spacelike_array = np.vstack(spacelike_edges)
-        else:
-            spacelike_array = np.zeros((0, 2), dtype=np.int64)
-        spacelike_array = self._normalize_edges(spacelike_array)
-
-        timelike_array = self._normalize_edges(time_sliced.timelike_edges)
-
-        combined_candidates = []
-        if spacelike_array.size:
-            combined_candidates.append(spacelike_array)
-        if timelike_array.size:
-            combined_candidates.append(timelike_array)
-        if combined_candidates:
-            combined = self._normalize_edges(np.vstack(combined_candidates))
-        else:
-            combined = np.zeros((0, 2), dtype=np.int64)
-
-        edge_sets = {
-            "spacelike": spacelike_array,
-            "timelike": timelike_array,
-            "combined": combined,
-        }
-        self._time_sliced_cache_key = key
-        self._time_sliced_cache_edges = edge_sets
-        return edge_sets if combined.size else None
 
     @staticmethod
     def _rgba_from_color(color: str, alpha: float) -> str:
@@ -1164,52 +1052,11 @@ class SwarmConvergence3D(param.Parameterized):
         traces = []
         if self.show_delaunay:
             positions_mapped = np.column_stack([x_coords, y_coords, z_coords])
-            line_traces: list[go.Scatter3d] = []
-            if (
-                self.use_time_sliced_tessellation
-                and self.time_iteration == "euclidean"
-                and slice_dim_visible
-                and slice_dim is not None
-            ):
-                edge_sets = self._get_time_sliced_edges(mc_frame, slice_dim)
-                if edge_sets is not None:
-                    if self.line_color_metric == "timelike/spacelike":
-                        spacelike_trace = self._build_delaunay_trace_mapped_from_edges(
-                            edge_sets["spacelike"],
-                            positions_all,
-                            alive,
-                            positions_mapped,
-                            color_override=self.line_spacelike_color,
-                            trace_name="Spacelike edges",
-                        )
-                        timelike_trace = self._build_delaunay_trace_mapped_from_edges(
-                            edge_sets["timelike"],
-                            positions_all,
-                            alive,
-                            positions_mapped,
-                            color_override=self.line_timelike_color,
-                            trace_name="Timelike edges",
-                        )
-                        if spacelike_trace is not None:
-                            line_traces.append(spacelike_trace)
-                        if timelike_trace is not None:
-                            line_traces.append(timelike_trace)
-                    else:
-                        line_trace = self._build_delaunay_trace_mapped_from_edges(
-                            edge_sets["combined"],
-                            positions_all,
-                            alive,
-                            positions_mapped,
-                        )
-                        if line_trace is not None:
-                            line_traces.append(line_trace)
-            if not line_traces:
-                line_trace = self._build_delaunay_trace_mapped(
-                    mc_frame, positions_all, alive, positions_mapped
-                )
-                if line_trace is not None:
-                    line_traces.append(line_trace)
-            traces.extend(line_traces)
+            line_trace = self._build_delaunay_trace_mapped(
+                mc_frame, positions_all, alive, positions_mapped
+            )
+            if line_trace is not None:
+                traces.append(line_trace)
         traces.append(scatter)
         if slice_mask is not None:
             highlight_alive = alive & slice_mask
@@ -1396,20 +1243,9 @@ class SwarmConvergence3D(param.Parameterized):
             name="Edge colorscale",
             sizing_mode="stretch_width",
         )
-        edge_spacelike = pn.widgets.ColorPicker.from_param(
-            self.param.line_spacelike_color,
-            name="Spacelike color",
-            sizing_mode="stretch_width",
-        )
-        edge_timelike = pn.widgets.ColorPicker.from_param(
-            self.param.line_timelike_color,
-            name="Timelike color",
-            sizing_mode="stretch_width",
-        )
         controls_edge_colors = pn.Column(
             edge_color_metric,
             edge_colorscale,
-            pn.Row(edge_spacelike, edge_timelike, sizing_mode="stretch_width"),
             sizing_mode="stretch_width",
         )
 
@@ -1473,7 +1309,6 @@ class SwarmConvergence3D(param.Parameterized):
             parameters=[
                 "euclidean_time_dim",
                 "euclidean_time_bins",
-                "use_time_sliced_tessellation",
             ],
             sizing_mode="stretch_width",
             show_name=False,
@@ -1488,10 +1323,6 @@ class SwarmConvergence3D(param.Parameterized):
                     "start": 5,
                     "end": 500,
                     "step": 1,
-                },
-                "use_time_sliced_tessellation": {
-                    "type": pn.widgets.Checkbox,
-                    "name": "Use sliced tessellation",
                 },
             },
         )
@@ -1772,14 +1603,6 @@ class SimulationTab:
     def _on_simulation_complete(self, history: RunHistory) -> None:
         self.set_history(history, defer_dashboard_updates=True)
 
-    @staticmethod
-    def _infer_bounds_extent(history: RunHistory) -> float | None:
-        if history.bounds is None:
-            return None
-        high = history.bounds.high.detach().cpu().abs().max().item()
-        low = history.bounds.low.detach().cpu().abs().max().item()
-        return float(max(high, low))
-
     def _sync_history_path(self, value):
         if value:
             self._history_path_input.value = str(value[0])
@@ -1809,10 +1632,6 @@ class SimulationTab:
             return
         try:
             history = RunHistory.load(str(history_path))
-            inferred_extent = self._infer_bounds_extent(history)
-            if inferred_extent is not None:
-                self._visualizer.bounds_extent = inferred_extent
-                self._gas_config.bounds_extent = float(inferred_extent)
             self.set_history(history, history_path, defer_dashboard_updates=True)
             self._load_status.object = f"**Loaded:** `{history_path}`"
         except Exception as exc:
@@ -1835,10 +1654,6 @@ class SimulationTab:
 
         self._simulation_compute_status.object = "**Computing Simulation...**"
         try:
-            inferred_extent = self._infer_bounds_extent(history)
-            if inferred_extent is not None:
-                self._visualizer.bounds_extent = inferred_extent
-                self._gas_config.bounds_extent = float(inferred_extent)
             self._visualizer.set_history(history)
             self._simulation_compute_status.object = (
                 f"**Simulation ready:** {history.n_steps} steps / "

@@ -9,6 +9,8 @@ from __future__ import annotations
 import torch
 from torch import Tensor
 
+from fragile.physics.qft_utils.companions import build_companion_triplets
+
 from .config import BaryonOperatorConfig
 from .preparation import _safe_gather_2d, _safe_gather_3d, PreparedChannelData
 
@@ -25,48 +27,6 @@ def _det3(a: Tensor, b: Tensor, c: Tensor) -> Tensor:
         - a[..., 1] * (b[..., 0] * c[..., 2] - b[..., 2] * c[..., 0])
         + a[..., 2] * (b[..., 0] * c[..., 1] - b[..., 1] * c[..., 0])
     )
-
-
-def build_companion_triplets(
-    companions_distance: Tensor,
-    companions_clone: Tensor,
-) -> tuple[Tensor, Tensor, Tensor, Tensor]:
-    """Build companion triplet indices (i, j, k) and structural-valid mask.
-
-    Args:
-        companions_distance: Companion distance indices [T, N].
-        companions_clone: Companion clone indices [T, N].
-
-    Returns:
-        Tuple:
-            anchor_idx: [T, N] anchor indices i
-            companion_j: [T, N] distance companion j
-            companion_k: [T, N] clone companion k
-            structural_valid: [T, N] index-range/distinctness validity
-    """
-    if companions_distance.shape != companions_clone.shape:
-        raise ValueError(
-            "companions_distance and companions_clone must have the same shape, got "
-            f"{tuple(companions_distance.shape)} vs {tuple(companions_clone.shape)}."
-        )
-    if companions_distance.ndim != 2:
-        raise ValueError(
-            f"Expected companion arrays with shape [T, N], got {tuple(companions_distance.shape)}."
-        )
-
-    t, n = companions_distance.shape
-    device = companions_distance.device
-    anchor_idx = torch.arange(n, device=device, dtype=torch.long).view(1, n).expand(t, n)
-    companion_j = companions_distance.to(torch.long)
-    companion_k = companions_clone.to(torch.long)
-
-    in_range_j = (companion_j >= 0) & (companion_j < n)
-    in_range_k = (companion_k >= 0) & (companion_k < n)
-    distinct = (
-        (companion_j != anchor_idx) & (companion_k != anchor_idx) & (companion_j != companion_k)
-    )
-    structural_valid = in_range_j & in_range_k & distinct
-    return anchor_idx, companion_j, companion_k, structural_valid
 
 
 def _compute_determinants_for_indices(
@@ -381,14 +341,26 @@ def compute_baryon_operators(
         source_obs = torch.where(source_valid, source_obs, torch.zeros_like(source_obs))
 
     # --- Per-frame averaging ---
-    triplet_counts_per_frame = source_valid.sum(dim=1).to(torch.int64)
-    operator_baryon_series = torch.zeros(t_total, dtype=torch.float32, device=device)
-    valid_t = triplet_counts_per_frame > 0
-    if torch.any(valid_t):
-        weight = source_valid.to(dtype=torch.float32)
-        sums = (source_obs * weight).sum(dim=1)
-        operator_baryon_series[valid_t] = sums[valid_t] / triplet_counts_per_frame[valid_t].to(
-            torch.float32
-        )
+    if data.scales is not None and data.companion_d_ij is not None:
+        from .multiscale import gate_triplet_validity_by_scale, per_frame_series_multiscale
+
+        valid_ms = gate_triplet_validity_by_scale(
+            source_valid,
+            data.companion_d_ij,
+            data.companion_d_ik,
+            data.companion_d_jk,
+            data.scales,
+        )  # [T, S, N]
+        operator_baryon_series = per_frame_series_multiscale(source_obs, valid_ms)  # [S, T]
+    else:
+        triplet_counts_per_frame = source_valid.sum(dim=1).to(torch.int64)
+        operator_baryon_series = torch.zeros(t_total, dtype=torch.float32, device=device)
+        valid_t = triplet_counts_per_frame > 0
+        if torch.any(valid_t):
+            weight = source_valid.to(dtype=torch.float32)
+            sums = (source_obs * weight).sum(dim=1)
+            operator_baryon_series[valid_t] = sums[valid_t] / triplet_counts_per_frame[
+                valid_t
+            ].to(torch.float32)
 
     return {"nucleon": operator_baryon_series}
