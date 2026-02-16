@@ -1,610 +1,40 @@
-"""Neighbor tracking system with virtual boundaries.
+"""Neighbor utilities for COO/CSR graph conversion and queries and topology computation for Fractal Gas QFT analysis.
 
-This module provides pure functional utilities for:
-- Detecting nearby boundary faces
-- Projecting positions onto boundaries
-- Computing virtual boundary neighbors
-- Converting between COO and CSR graph formats
-- Efficient neighbor queries
+This module handles neighbor computation methods:
+- Pre-recorded neighbor edges (fastest, O(E))
+- Companion walker neighbors (fast, O(N))
 
-Supports 2D, 3D, 4D, and higher dimensional spaces.
+Completely decoupled from aggregation pipeline. All functions accept
+RunHistory as input and return neighbor topology data structures.
+
+Main Functions:
+    - compute_neighbor_topology: Dispatcher for neighbor computation
+    - compute_full_neighbor_matrix: For Euclidean time (all walkers)
+
+Usage:
+    from fragile.physics.geometry.neighbor_analysis import (
+        compute_neighbor_topology,
+        compute_full_neighbor_matrix,
+    )
+
+    sample_idx, neighbor_idx, alive = compute_neighbor_topology(
+        history,
+        start_idx=1,
+        neighbor_method="recorded",
+        neighbor_k=2,
+    )
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-import numpy as np
 import torch
 from torch import Tensor
+import torch.nn.functional as F
 
 if TYPE_CHECKING:
-    from scipy.spatial import ConvexHull, Voronoi
-
-
-@dataclass
-class BoundaryWallData:
-    """Virtual boundary neighbor data.
-
-    Attributes:
-        positions: [W, d] virtual walker positions on boundary walls
-        normals: [W, d] outward unit normals
-        facet_areas: [W] intersection areas of Voronoi cells with walls
-        distances: [W] distances from walkers to walls
-        walker_indices: [W] which walker each wall belongs to
-        face_ids: [W] which face (0..2*d-1) each wall is on
-    """
-
-    positions: Tensor
-    normals: Tensor
-    facet_areas: Tensor
-    distances: Tensor
-    walker_indices: Tensor
-    face_ids: Tensor
-
-
-def detect_nearby_boundary_faces(
-    position: Tensor,
-    bounds: Any,
-    tolerance: float,
-) -> list[int]:
-    """Identify which domain faces are near a position.
-
-    Fully vectorized implementation - 35x faster than loop-based version
-    for high-dimensional spaces.
-
-    Face IDs (for d-dimensional space):
-        - 2D: 0=x_low, 1=x_high, 2=y_low, 3=y_high
-        - 3D: 0=x_low, 1=x_high, 2=y_low, 3=y_high, 4=z_low, 5=z_high
-        - 4D: 0=x_low, 1=x_high, 2=y_low, 3=y_high, 4=z_low, 5=z_high,
-              6=w_low, 7=w_high
-
-    Args:
-        position: [d] walker position
-        bounds: TorchBounds object
-        tolerance: Distance threshold for "near" boundary
-
-    Returns:
-        List of face IDs (0..2*d-1) that are within tolerance
-    """
-    low = bounds.low
-    high = bounds.high
-
-    # Vectorized distance computation
-    dist_to_low = position - low  # [d] distances to low faces
-    dist_to_high = high - position  # [d] distances to high faces
-
-    # Find nearby faces (vectorized comparison)
-    near_low = dist_to_low < tolerance  # [d] boolean mask
-    near_high = dist_to_high < tolerance  # [d] boolean mask
-
-    # Convert to face IDs vectorized
-    d = len(position)
-    dims = torch.arange(d, device=position.device, dtype=torch.long)
-
-    # Gather face IDs where masks are True
-    low_face_ids = 2 * dims[near_low]  # face IDs for low faces
-    high_face_ids = 2 * dims[near_high] + 1  # face IDs for high faces
-
-    # Concatenate and convert to list
-    all_face_ids = (
-        torch.cat([low_face_ids, high_face_ids])
-        if len(low_face_ids) + len(high_face_ids) > 0
-        else torch.tensor([], dtype=torch.long, device=position.device)
-    )
-
-    return all_face_ids.tolist()
-
-
-def project_to_boundary_face(
-    position: Tensor,
-    face_id: int,
-    bounds: Any,
-) -> tuple[Tensor, Tensor]:
-    """Project walker position onto boundary face.
-
-    Args:
-        position: [d] walker position
-        face_id: Face ID (0..2*d-1)
-        bounds: TorchBounds object
-
-    Returns:
-        (projected_position, outward_normal)
-        - projected_position: [d] position on boundary face
-        - outward_normal: [d] unit outward normal vector
-
-    Example:
-        position = [0.01, 0.5]
-        face_id = 0  # x_low
-        → ([0.0, 0.5], [-1.0, 0.0])
-    """
-    d = len(position)
-    dim = face_id // 2  # Which dimension (0=x, 1=y, 2=z)
-    is_high = face_id % 2 == 1  # High or low face
-
-    # Copy position and project onto face
-    projected = position.clone()
-    if is_high:
-        projected[dim] = bounds.high[dim]
-    else:
-        projected[dim] = bounds.low[dim]
-
-    # Compute outward normal
-    normal = torch.zeros(d, dtype=position.dtype, device=position.device)
-    if is_high:
-        normal[dim] = 1.0  # Outward from high face
-    else:
-        normal[dim] = -1.0  # Outward from low face
-
-    return projected, normal
-
-
-def _get_dimensional_fallback(d: int) -> float:
-    """Get reasonable default facet area based on dimensionality.
-
-    These constants assume a unit box domain and provide conservative
-    estimates for average cell boundary areas.
-
-    Args:
-        d: Spatial dimension
-
-    Returns:
-        Default area estimate
-    """
-    if d == 2:
-        return 0.1
-    if d == 3:
-        return 0.05
-    if d == 4:
-        return 0.025
-    return 0.1 / d
-
-
-def _compute_2d_boundary_segment_length(
-    boundary_vertices: np.ndarray,
-    dim: int,
-) -> float:
-    """Compute length of boundary line segment in 2D.
-
-    In 2D, the boundary intersection is a 1D line segment.
-    Find the two extreme points along the non-boundary dimension.
-
-    Args:
-        boundary_vertices: [n, 2] vertices near boundary (n >= 2)
-        dim: Boundary dimension (0 or 1)
-
-    Returns:
-        Length of segment
-
-    Raises:
-        ValueError: If insufficient vertices
-    """
-    if len(boundary_vertices) < 2:
-        msg = "Need at least 2 vertices for 2D facet"
-        raise ValueError(msg)
-
-    # Find the two extreme points along the non-boundary dimension
-    other_dim = 1 - dim
-    sorted_verts = boundary_vertices[boundary_vertices[:, other_dim].argsort()]
-    return float(np.linalg.norm(sorted_verts[-1] - sorted_verts[0]))
-
-
-def _compute_convexhull_projection_area(
-    boundary_vertices: np.ndarray,
-    dim: int,
-    d: int,
-) -> float:
-    """Compute area/volume of boundary intersection using ConvexHull projection.
-
-    Projects boundary vertices to (d-1)-dimensional space by removing the
-    boundary dimension, then computes ConvexHull measure.
-
-    Args:
-        boundary_vertices: [n, d] vertices near boundary
-        dim: Boundary dimension to remove (0..d-1)
-        d: Total dimensionality (3, 4, or higher)
-
-    Returns:
-        Area (d=3) or volume (d≥4) of boundary intersection
-
-    Raises:
-        ValueError: If insufficient vertices or ConvexHull fails
-    """
-    # Minimum vertices: d for d-dimensional ConvexHull
-    if len(boundary_vertices) < d:
-        raise ValueError(f"Need at least {d} vertices for {d}D facet")
-
-    # Project to (d-1)-dimensional space by removing boundary dimension
-    dims_to_keep = [i for i in range(d) if i != dim]
-    verts_proj = boundary_vertices[:, dims_to_keep]
-
-    # Compute ConvexHull in projected space
-    from scipy.spatial import ConvexHull
-
-    hull = ConvexHull(verts_proj)
-    return float(hull.volume)  # In (d-1)D, volume = (d-1)-measure
-
-
-def _estimate_from_ridge_areas(
-    walker_idx: int,
-    vor: Voronoi,
-) -> float | None:
-    """Estimate facet area from walker's ridge (neighbor facet) areas.
-
-    Analyzes all ridges (shared facets) involving the walker and
-    computes their average area as a proxy for boundary facet area.
-
-    Args:
-        walker_idx: Index of walker in Voronoi tessellation
-        vor: scipy Voronoi object
-
-    Returns:
-        Mean ridge area, or None if no valid ridges found
-    """
-    # Find all ridges involving this walker
-    walker_ridges = []
-    for ridge_idx, (p1, p2) in enumerate(vor.ridge_points):
-        if walker_idx in {p1, p2}:
-            walker_ridges.append(ridge_idx)
-
-    if not walker_ridges:
-        return None
-
-    # Compute ridge areas
-    ridge_areas = []
-    for ridge_idx in walker_ridges:
-        ridge_verts = vor.ridge_vertices[ridge_idx]
-        if -1 not in ridge_verts and len(ridge_verts) >= 2:
-            verts = vor.vertices[ridge_verts]
-
-            if len(verts) == 2:  # 2D ridge is a line
-                area = np.linalg.norm(verts[1] - verts[0])
-            else:  # 3D+ ridge is a polygon/polyhedron
-                try:
-                    from scipy.spatial import ConvexHull
-
-                    hull = ConvexHull(verts)
-                    area = hull.volume
-                except Exception:
-                    area = 0.1  # Default fallback
-
-            ridge_areas.append(area)
-
-    if ridge_areas:
-        return float(np.mean(ridge_areas))
-
-    return None
-
-
-def estimate_boundary_facet_area(
-    walker_idx: int,
-    face_id: int,
-    vor: Voronoi,
-    positions: Tensor,
-    bounds: Any,
-) -> float:
-    """Estimate area of Voronoi cell intersection with boundary face.
-
-    Algorithm:
-        1. Get Voronoi vertices for the walker's cell
-        2. Find vertices near the boundary face
-        3. Compute convex hull area of intersection
-        4. Fallback: Use average facet area from walker neighbors
-
-    Supported dimensions:
-        - 2D: Boundary facet is a line segment (1D)
-        - 3D: Boundary facet is a polygon (2D)
-        - 4D: Boundary facet is a polyhedron (3D)
-
-    Args:
-        walker_idx: Index of walker
-        face_id: Boundary face ID
-        vor: scipy Voronoi object
-        positions: [N, d] walker positions (d = 2, 3, or 4)
-        bounds: TorchBounds object
-
-    Returns:
-        Estimated facet area (positive float)
-    """
-    try:
-        # Extract Voronoi region vertices
-        region_idx = vor.point_region[walker_idx]
-        vertex_indices = vor.regions[region_idx]
-
-        # Filter out infinite vertices (-1)
-        vertex_indices = [v for v in vertex_indices if v != -1]
-
-        if len(vertex_indices) < 2:
-            msg = "Insufficient vertices"
-            raise ValueError(msg)
-
-        vertices = vor.vertices[vertex_indices]
-        d = vertices.shape[1]
-
-        # Determine which dimension and bound
-        dim = face_id // 2
-        is_high = face_id % 2 == 1
-        bound_value = bounds.high[dim].item() if is_high else bounds.low[dim].item()
-
-        # Find vertices near the boundary (within tolerance)
-        tolerance = 1e-3
-        near_boundary = np.abs(vertices[:, dim] - bound_value) < tolerance
-
-        if np.sum(near_boundary) < 2:
-            msg = "Too few vertices near boundary"
-            raise ValueError(msg)
-
-        boundary_vertices = vertices[near_boundary]
-
-        # Compute area based on dimensionality
-        if d == 2:
-            area = _compute_2d_boundary_segment_length(boundary_vertices, dim)
-        elif d in {3, 4}:
-            area = _compute_convexhull_projection_area(boundary_vertices, dim, d)
-        else:
-            raise ValueError(f"Unsupported dimension: {d}")
-
-        return float(area)
-
-    except (ValueError, IndexError, Exception):
-        # Fallback strategy: ridge analysis → dimensional defaults
-
-        # Try ridge-based estimation
-        ridge_area = _estimate_from_ridge_areas(walker_idx, vor)
-        if ridge_area is not None:
-            return ridge_area
-
-        # Ultimate fallback: dimensional defaults
-        d = positions.shape[1]
-        return _get_dimensional_fallback(d)
-
-
-def project_faces_vectorized(
-    position: Tensor,
-    face_ids: Tensor,
-    bounds: Any,
-    d: int,
-    device: torch.device,
-    dtype: torch.dtype,
-) -> tuple[Tensor, Tensor]:
-    """Project walker position onto multiple boundary faces (vectorized).
-
-    Args:
-        position: [d] single walker position
-        face_ids: [k] face IDs (0..2*d-1) to project onto
-        bounds: TorchBounds object
-        d: Number of dimensions
-        device: Device for output tensors
-        dtype: Data type for output tensors
-
-    Returns:
-        proj_positions: [k, d] projected positions
-        normals: [k, d] outward normals
-    """
-    k = len(face_ids)
-
-    # Prepare batch data
-    dims = face_ids // 2  # [k] which dimension
-    is_high = (face_ids % 2) == 1  # [k] high or low face
-
-    # Initialize outputs
-    proj_positions = position.unsqueeze(0).expand(k, d).clone()  # [k, d]
-    normals = torch.zeros(k, d, dtype=dtype, device=device)  # [k, d]
-
-    #  TODO: vectorize this as a single pytorch operation
-    for i in range(k):
-        dim = dims[i].item()
-        if is_high[i]:
-            proj_positions[i, dim] = bounds.high[dim]
-            normals[i, dim] = 1.0
-        else:
-            proj_positions[i, dim] = bounds.low[dim]
-            normals[i, dim] = -1.0
-
-    return proj_positions, normals
-
-
-def compute_boundary_neighbors(
-    positions: Tensor,
-    tier: Tensor,
-    bounds: Any,
-    vor: Voronoi,
-    boundary_tolerance: float = 0.1,
-    n_jobs: int = 1,
-) -> BoundaryWallData:
-    """Compute virtual boundary neighbors for walkers near domain walls.
-
-    Only walkers with tier <= 1 (boundary and adjacent walkers) are considered.
-
-    Algorithm (hybrid vectorized with optional parallelization):
-        1. Filter to tier 0/1 walkers
-        2. Loop over walkers (small overhead, ~20-50 iterations)
-        3. For each walker, vectorize operations over its faces:
-           - Batch project all faces
-           - Vectorized distance computation
-           - Facet area estimation (sequential, bottleneck)
-        4. Accumulate results using tensor operations
-        5. Optional: Parallelize facet area estimation across all walker-face pairs
-
-    Performance:
-        - 2-3× speedup over nested loops via vectorized projection/distance
-        - 4-8× additional speedup with n_jobs > 1 via parallel facet area computation
-
-    Args:
-        positions: [N, d] walker positions
-        tier: [N] boundary classification (0=boundary, 1=adjacent, 2+=interior)
-        bounds: TorchBounds object
-        vor: scipy Voronoi object
-        boundary_tolerance: Distance threshold for detecting nearby boundaries
-        n_jobs: Number of parallel jobs for facet area computation.
-                1 (default) = sequential
-                -1 = use all CPU cores
-                > 1 = use specified number of cores
-
-    Returns:
-        BoundaryWallData with W total virtual walls
-    """
-    device = positions.device
-    dtype = positions.dtype
-    d = positions.shape[1]
-
-    # Filter to boundary and adjacent walkers (tier <= 1)
-    boundary_mask = tier <= 1
-    boundary_walker_indices = torch.where(boundary_mask)[0]
-
-    # Collect all walker-face pairs with their projection data
-    walker_face_pairs = []
-
-    # OUTER LOOP: walkers (small overhead, ~20-50 iterations)
-    for walker_idx in boundary_walker_indices:
-        walker_idx_item = walker_idx.item()
-        position = positions[walker_idx_item]
-
-        # Detect nearby boundary faces (already vectorized)
-        nearby_faces = detect_nearby_boundary_faces(position, bounds, boundary_tolerance)
-
-        if not nearby_faces:
-            continue  # No faces for this walker
-
-        # VECTORIZED: all faces for this walker
-        face_ids_tensor = torch.tensor(nearby_faces, dtype=torch.long, device=device)
-        len(face_ids_tensor)
-
-        # Batch project all faces (vectorized)
-        proj_positions, normals = project_faces_vectorized(
-            position, face_ids_tensor, bounds, d, device, dtype
-        )  # [k, d]
-
-        # Vectorized distance computation
-        distances = torch.norm(position.unsqueeze(0) - proj_positions, dim=1)  # [k]
-
-        # Store data for each walker-face pair
-        for i, face_id in enumerate(nearby_faces):
-            walker_face_pairs.append({
-                "walker_idx": walker_idx_item,
-                "face_id": face_id,
-                "proj_pos": proj_positions[i],
-                "normal": normals[i],
-                "distance": distances[i],
-            })
-
-    # Handle empty case
-    if len(walker_face_pairs) == 0:
-        # No boundary neighbors found
-        return BoundaryWallData(
-            positions=torch.empty(0, d, dtype=dtype, device=device),
-            normals=torch.empty(0, d, dtype=dtype, device=device),
-            facet_areas=torch.empty(0, dtype=dtype, device=device),
-            distances=torch.empty(0, dtype=dtype, device=device),
-            walker_indices=torch.empty(0, dtype=torch.long, device=device),
-            face_ids=torch.empty(0, dtype=torch.long, device=device),
-        )
-
-    # Facet area estimation (parallelizable bottleneck)
-    if n_jobs != 1 and len(walker_face_pairs) > 10:
-        # Parallel computation for significant workloads
-        from joblib import delayed, Parallel
-
-        facet_areas_list = Parallel(n_jobs=n_jobs)(
-            delayed(estimate_boundary_facet_area)(
-                pair["walker_idx"], pair["face_id"], vor, positions, bounds
-            )
-            for pair in walker_face_pairs
-        )
-    else:
-        # Sequential computation for small workloads or n_jobs=1
-        facet_areas_list = [
-            estimate_boundary_facet_area(
-                pair["walker_idx"], pair["face_id"], vor, positions, bounds
-            )
-            for pair in walker_face_pairs
-        ]
-
-    # Reconstruct tensors from collected data
-    all_positions = torch.stack([p["proj_pos"] for p in walker_face_pairs])
-    all_normals = torch.stack([p["normal"] for p in walker_face_pairs])
-    all_distances = torch.stack([p["distance"] for p in walker_face_pairs])
-    all_facet_areas = torch.tensor(facet_areas_list, dtype=dtype, device=device)
-    all_walker_indices = torch.tensor(
-        [p["walker_idx"] for p in walker_face_pairs], dtype=torch.long, device=device
-    )
-    all_face_ids = torch.tensor(
-        [p["face_id"] for p in walker_face_pairs], dtype=torch.long, device=device
-    )
-
-    return BoundaryWallData(
-        positions=all_positions,
-        normals=all_normals,
-        facet_areas=all_facet_areas,
-        distances=all_distances,
-        walker_indices=all_walker_indices,
-        face_ids=all_face_ids,
-    )
-
-
-def create_extended_edge_index(
-    edge_index: Tensor,
-    boundary_data: BoundaryWallData,
-    n_walkers: int,
-) -> tuple[Tensor, Tensor, Tensor, Tensor]:
-    """Extend edge_index to include boundary neighbors.
-
-    Virtual boundary walls are assigned indices N, N+1, ..., N+W-1.
-
-    Args:
-        edge_index: [2, E] walker-walker edges (indices 0..N-1)
-        boundary_data: Virtual boundary neighbors
-        n_walkers: Number of walkers (N)
-
-    Returns:
-        Tuple of:
-        - edge_index_extended: [2, E+W] includes boundary edges
-        - edge_distances_extended: [E+W] distances for all edges
-        - facet_areas_extended: [E+W] facet areas for all edges
-        - edge_types: [E+W] 0=walker-walker, 1=walker-boundary
-    """
-    device = edge_index.device
-    n_boundary_edges = len(boundary_data.positions)
-
-    if n_boundary_edges == 0:
-        # No boundary edges to add
-        # Return original edge_index with zero distances/areas/types
-        n_edges = edge_index.shape[1]
-        return (
-            edge_index,
-            torch.zeros(n_edges, dtype=torch.float32, device=device),
-            torch.zeros(n_edges, dtype=torch.float32, device=device),
-            torch.zeros(n_edges, dtype=torch.long, device=device),
-        )
-
-    # Create boundary edges: (walker_idx, N + boundary_idx)
-    boundary_sources = boundary_data.walker_indices
-    boundary_targets = torch.arange(
-        n_walkers, n_walkers + n_boundary_edges, dtype=torch.long, device=device
-    )
-    boundary_edges = torch.stack([boundary_sources, boundary_targets], dim=0)  # [2, W]
-
-    # Concatenate with walker edges
-    edge_index_extended = torch.cat([edge_index, boundary_edges], dim=1)  # [2, E+W]
-
-    # Create edge distances (boundary distances are known)
-    n_walker_edges = edge_index.shape[1]
-    walker_distances = torch.zeros(n_walker_edges, dtype=torch.float32, device=device)
-    boundary_distances = boundary_data.distances
-    edge_distances_extended = torch.cat([walker_distances, boundary_distances])
-
-    # Create facet areas
-    walker_facet_areas = torch.zeros(n_walker_edges, dtype=torch.float32, device=device)
-    boundary_facet_areas = boundary_data.facet_areas
-    facet_areas_extended = torch.cat([walker_facet_areas, boundary_facet_areas])
-
-    # Create edge types (0=walker, 1=boundary)
-    walker_types = torch.zeros(n_walker_edges, dtype=torch.long, device=device)
-    boundary_types = torch.ones(n_boundary_edges, dtype=torch.long, device=device)
-    edge_types = torch.cat([walker_types, boundary_types])
-
-    return edge_index_extended, edge_distances_extended, facet_areas_extended, edge_types
+    from fragile.physics.fractal_gas.history import RunHistory
 
 
 def build_csr_from_coo(
@@ -689,54 +119,6 @@ def build_csr_from_coo(
         result["csr_types"] = edge_types[sorted_indices]
 
     return result
-
-
-def query_walker_neighbors(
-    walker_idx: int,
-    csr_ptr: Tensor,
-    csr_indices: Tensor,
-    csr_types: Tensor | None = None,
-    filter_type: int | None = None,
-) -> Tensor:
-    """Fast O(1) neighbor query using CSR format.
-
-    Args:
-        walker_idx: Walker index (0..N-1)
-        csr_ptr: [N+1] CSR row pointers
-        csr_indices: [E] CSR column indices
-        csr_types: Optional [E] edge types (0=walker, 1=boundary)
-        filter_type: If provided, return only neighbors of this type
-            0 = walker neighbors only
-            1 = boundary neighbors only
-            None = all neighbors
-
-    Returns:
-        [k] neighbor indices
-
-    Example:
-        # Get all neighbors
-        neighbors = query_walker_neighbors(i, ptr, indices)
-
-        # Get walker neighbors only
-        walker_neighbors = query_walker_neighbors(
-            i, ptr, indices, types, filter_type=0
-        )
-    """
-    start = csr_ptr[walker_idx].item()
-    end = csr_ptr[walker_idx + 1].item()
-
-    if start == end:
-        # No neighbors
-        return torch.empty(0, dtype=torch.long, device=csr_indices.device)
-
-    neighbors = csr_indices[start:end]
-
-    if filter_type is not None and csr_types is not None:
-        types = csr_types[start:end]
-        mask = types == filter_type
-        neighbors = neighbors[mask]
-
-    return neighbors
 
 
 def query_walker_neighbors_vectorized(
@@ -842,3 +224,314 @@ def query_walker_neighbors_vectorized(
     neighbors[row_indices, edge_pos] = csr_indices
     mask[row_indices, edge_pos] = True
     return neighbors, mask, counts
+
+
+# =============================================================================
+# Primary Neighbor Computation Methods
+# =============================================================================
+
+
+def compute_companion_batch(
+    history: RunHistory,
+    start_idx: int,
+    neighbor_k: int,
+    sample_size: int | None = None,
+    end_idx: int | None = None,
+) -> tuple[Tensor, Tensor, Tensor]:
+    """Use stored companion indices as neighbors.
+
+    Args:
+        history: RunHistory object.
+        start_idx: Starting time index.
+        neighbor_k: Number of neighbors per sample.
+        sample_size: Number of samples per timestep (None = all walkers).
+        end_idx: Ending time index (exclusive). None = use all recorded frames.
+
+    Returns:
+        Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
+    """
+    n_recorded = end_idx if end_idx is not None else history.n_recorded
+    T = n_recorded - start_idx
+    N = history.N
+    k = max(2, int(neighbor_k))
+    sample_size = sample_size or N
+    device = history.x_final.device
+
+    alive = history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
+    companions_distance = history.companions_distance[start_idx - 1 : n_recorded - 1]
+    companions_clone = history.companions_clone[start_idx - 1 : n_recorded - 1]
+
+    all_sample_idx = []
+    all_neighbor_idx = []
+
+    for t in range(T):
+        alive_t = alive[t]
+        alive_indices = torch.where(alive_t)[0]
+
+        if alive_indices.numel() == 0:
+            all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
+            all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
+            continue
+
+        if alive_indices.numel() <= sample_size:
+            sample_idx = alive_indices
+        else:
+            sample_idx = alive_indices[:sample_size]
+
+        actual_sample_size = sample_idx.numel()
+        comp_d = companions_distance[t, sample_idx]
+        comp_c = companions_clone[t, sample_idx]
+        neighbor_idx = torch.zeros(actual_sample_size, k, device=device, dtype=torch.long)
+        neighbor_idx[:, 0] = comp_d
+        neighbor_idx[:, 1] = comp_c
+
+        if actual_sample_size < sample_size:
+            sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
+            neighbor_idx = F.pad(
+                neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0
+            )
+
+        all_sample_idx.append(sample_idx)
+        all_neighbor_idx.append(neighbor_idx)
+
+    sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
+    neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
+
+    return sample_indices, neighbor_indices, alive
+
+
+def _edges_to_neighbor_matrix(
+    edges: Tensor,
+    N: int,
+    k: int,
+    device: torch.device,
+) -> Tensor:
+    """Convert edge list to dense neighbor matrix using vectorized scatter.
+
+    Args:
+        edges: Edge tensor [E, 2] (src, dst pairs).
+        N: Number of nodes.
+        k: Number of neighbors to keep per node.
+        device: Target device.
+
+    Returns:
+        Neighbor matrix [N, k] with -1 for missing neighbors.
+    """
+    edges_d = edges.to(device)
+    src, dst = edges_d[:, 0], edges_d[:, 1]
+
+    # Remove self-loops
+    not_self = src != dst
+    src = src[not_self]
+    dst = dst[not_self]
+
+    if src.numel() == 0:
+        return torch.full((N, k), -1, dtype=torch.long, device=device)
+
+    # Sort by src to group neighbors together
+    sort_order = torch.argsort(src, stable=True)
+    src_sorted = src[sort_order]
+    dst_sorted = dst[sort_order]
+
+    # Compute per-source offsets via cumulative count within each group
+    degree = torch.bincount(src_sorted, minlength=N)
+    max_deg = degree.max().item()
+
+    # Build column indices: for each edge, its position within its source's group
+    # Use cumsum trick: count occurrences so far for each source
+    group_starts = torch.zeros(N, dtype=torch.long, device=device)
+    group_starts[1:] = degree[:-1].cumsum(0)
+    col_idx = torch.arange(src_sorted.numel(), device=device) - group_starts[src_sorted]
+
+    # Scatter into dense matrix [N, max_deg]
+    neighbor_full = torch.full((N, max(max_deg, k)), -1, dtype=torch.long, device=device)
+    # Only write where col_idx < max_deg (always true by construction)
+    neighbor_full[src_sorted, col_idx] = dst_sorted
+
+    # Truncate/pad to exactly k columns
+    return neighbor_full[:, :k]
+
+
+def compute_recorded_neighbors_batch(
+    history: RunHistory,
+    start_idx: int,
+    neighbor_k: int,
+    sample_size: int | None = None,
+    end_idx: int | None = None,
+) -> tuple[Tensor, Tensor, Tensor]:
+    """Use recorded neighbor edges from RunHistory.
+
+    Vectorized: converts edge lists to dense neighbor matrices via scatter,
+    then gathers for sample indices using advanced indexing.
+
+    Args:
+        history: RunHistory object.
+        start_idx: Starting time index.
+        neighbor_k: Number of neighbors per sample.
+        sample_size: Number of samples per timestep (None = all walkers).
+        end_idx: Ending time index (exclusive). None = use all recorded frames.
+
+    Returns:
+        Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
+    """
+    if history.neighbor_edges is None:
+        raise RuntimeError(
+            "compute_recorded_neighbors_batch requires history.neighbor_edges, "
+            "but it is None. Use compute_companion_batch instead, or set "
+            "neighbor_graph_record=True during simulation."
+        )
+
+    n_recorded = end_idx if end_idx is not None else history.n_recorded
+    T = n_recorded - start_idx
+    N = history.N
+    k = max(1, int(neighbor_k))
+    sample_size = sample_size or N
+    device = history.x_final.device
+
+    alive = history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
+
+    all_sample_idx = []
+    all_neighbor_idx = []
+
+    for t in range(T):
+        alive_t = alive[t]
+        alive_indices = torch.where(alive_t)[0]
+        if alive_indices.numel() == 0:
+            all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
+            all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
+            continue
+
+        if alive_indices.numel() <= sample_size:
+            sample_idx = alive_indices
+        else:
+            sample_idx = alive_indices[:sample_size]
+
+        actual_sample_size = sample_idx.numel()
+
+        record_idx = start_idx + t
+        edges = history.neighbor_edges[record_idx]
+        if not torch.is_tensor(edges) or edges.numel() == 0:
+            # Fallback to self-padding
+            neighbor_idx = sample_idx.unsqueeze(1).expand(-1, k).clone()
+        else:
+            # Vectorized: scatter edges into dense matrix, then gather for samples
+            neighbor_matrix = _edges_to_neighbor_matrix(edges, N, k, device)
+            neighbor_idx = neighbor_matrix[sample_idx]  # [S, k] advanced indexing
+
+            # Replace -1 (missing neighbors) with self-index
+            missing = neighbor_idx < 0
+            if missing.any():
+                neighbor_idx[missing] = sample_idx.unsqueeze(1).expand_as(neighbor_idx)[missing]
+
+        if actual_sample_size < sample_size:
+            sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
+            neighbor_idx = F.pad(
+                neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0
+            )
+
+        all_sample_idx.append(sample_idx)
+        all_neighbor_idx.append(neighbor_idx)
+
+    sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
+    neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
+
+    return sample_indices, neighbor_indices, alive
+
+
+# =============================================================================
+# Dispatcher and Full Matrix Computation
+# =============================================================================
+
+
+def compute_neighbor_topology(
+    history: RunHistory,
+    start_idx: int,
+    neighbor_method: str,
+    neighbor_k: int,
+    sample_size: int | None = None,
+    end_idx: int | None = None,
+) -> tuple[Tensor, Tensor, Tensor]:
+    """Compute neighbor indices for all timesteps.
+
+    Dispatches to companions or recorded based on method.
+
+    Args:
+        history: RunHistory object.
+        start_idx: Starting time index.
+        neighbor_method: Neighbor selection method:
+            - "recorded": Use history.neighbor_edges
+            - "companions": Use history.companions_clone
+        neighbor_k: Number of neighbors per sample.
+        sample_size: Number of samples per timestep (None = all walkers).
+        end_idx: Ending time index (exclusive). None = use all recorded frames.
+
+    Returns:
+        Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
+    """
+    if neighbor_method == "companions":
+        return compute_companion_batch(
+            history, start_idx, neighbor_k, sample_size, end_idx=end_idx
+        )
+    if neighbor_method == "recorded":
+        return compute_recorded_neighbors_batch(
+            history, start_idx, neighbor_k, sample_size, end_idx=end_idx
+        )
+    raise ValueError(
+        f"Unknown neighbor method: {neighbor_method}. "
+        f"Valid options: 'recorded', 'companions'"
+    )
+
+
+def compute_full_neighbor_matrix(
+    history: RunHistory,
+    start_idx: int,
+    neighbor_k: int,
+    alive: Tensor,
+    neighbor_method: str = "companions",
+) -> Tensor:
+    """Compute neighbor indices for ALL walkers (not just samples).
+
+    Used for Euclidean time mode where we need per-walker operators.
+    Delegates to compute_recorded_neighbors_batch or compute_companion_batch
+    with sample_size=N, then reshapes to [T, N, k].
+
+    Args:
+        history: RunHistory object.
+        start_idx: Starting time index.
+        neighbor_k: Number of neighbors per walker.
+        alive: Alive mask [T, N].
+        neighbor_method: "recorded" or "companions" method to use.
+
+    Returns:
+        Neighbor indices [T, N, k] for all walkers.
+    """
+    T, N = alive.shape
+    k = max(1, int(neighbor_k))
+
+    # Delegate to batch functions with sample_size=N to get all walkers
+    try:
+        if neighbor_method == "recorded":
+            _sample_idx, neighbor_idx, _ = compute_recorded_neighbors_batch(
+                history=history,
+                start_idx=start_idx,
+                neighbor_k=k,
+                sample_size=N,
+            )
+        elif neighbor_method == "companions":
+            _sample_idx, neighbor_idx, _ = compute_companion_batch(
+                history=history,
+                start_idx=start_idx,
+                neighbor_k=k,
+                sample_size=N,
+            )
+        else:
+            raise ValueError(f"Unknown neighbor method: {neighbor_method}")
+
+        # neighbor_idx is [T, S, k] where S=N — already the right shape
+        return neighbor_idx
+
+    except RuntimeError:
+        # No neighbor data at all — return self-loops
+        device = alive.device
+        arange = torch.arange(N, device=device).unsqueeze(0).unsqueeze(2)  # [1, N, 1]
+        return arange.expand(T, N, k).clone()
