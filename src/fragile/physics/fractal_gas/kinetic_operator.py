@@ -166,7 +166,6 @@ class KineticOperator(PanelModel):
                 "end": 10.0,
                 "step": 0.1,
             },
-
             "viscous_length_scale": {
                 "type": pn.widgets.EditableFloatSlider,
                 "width": INPUT_WIDTH,
@@ -477,7 +476,10 @@ class KineticOperator(PanelModel):
         """
         if force_viscous is None:
             force_viscous = self._compute_viscous_force(
-                x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights,
+                x,
+                v,
+                neighbor_edges=neighbor_edges,
+                edge_weights=edge_weights,
             )
 
         v_minus = v + (self.dt / 2) * force_viscous
@@ -495,7 +497,10 @@ class KineticOperator(PanelModel):
             v_rot = v_minus
 
         viscous_rot = self._compute_viscous_force(
-            x, v_rot, neighbor_edges=neighbor_edges, edge_weights=edge_weights,
+            x,
+            v_rot,
+            neighbor_edges=neighbor_edges,
+            edge_weights=edge_weights,
         )
 
         return v_rot + (self.dt / 2) * viscous_rot, curl
@@ -544,11 +549,11 @@ class KineticOperator(PanelModel):
         info = {}
         if return_info:
             force_viscous = self._compute_viscous_force(
-                    x,
-                    v,
-                    neighbor_edges,
-                    edge_weights=edge_weights,
-                )
+                x,
+                v,
+                neighbor_edges,
+                edge_weights=edge_weights,
+            )
             force_friction = -self.gamma * v
             force_total = force_viscous + force_friction
             info.update({
@@ -561,7 +566,11 @@ class KineticOperator(PanelModel):
 
         # === FIRST B STEP: Apply forces + optional Boris rotation ===
         v, curl_1 = self._apply_boris_kick(
-            x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights, force_viscous=force_viscous
+            x,
+            v,
+            neighbor_edges=neighbor_edges,
+            edge_weights=edge_weights,
+            force_viscous=force_viscous,
         )
         # === FIRST A STEP: Update positions ===
         x += (self.dt / 2) * v
@@ -580,7 +589,10 @@ class KineticOperator(PanelModel):
 
         # === SECOND B STEP: Apply forces + optional Boris rotation ===
         v, _curl_2 = self._apply_boris_kick(
-            x, v, neighbor_edges=neighbor_edges, edge_weights=edge_weights,
+            x,
+            v,
+            neighbor_edges=neighbor_edges,
+            edge_weights=edge_weights,
         )
         new_state = type(state)(x, v)
         if return_info:

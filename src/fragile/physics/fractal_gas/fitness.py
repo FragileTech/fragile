@@ -32,6 +32,7 @@ def global_stats(values_tensor: Tensor, sigma_min: float = 1e-8) -> tuple[Tensor
     sigma_reg = torch.sqrt(values_tensor.var() + sigma_min**2)
     return mu, sigma_reg
 
+
 def patched_standardization(
     values: Tensor,
     sigma_min: float = 1e-8,
@@ -72,7 +73,7 @@ def compute_fitness(
     companions: Tensor,
     alpha: float = 1.0,
     beta: float = 1.0,
-    eta: float = 0.,
+    eta: float = 0.0,
     sigma_min: float = 1e-8,
     A: float = 2.0,
 ) -> tuple[Tensor, dict[str, Tensor]]:
@@ -185,7 +186,7 @@ class FitnessOperator(PanelModel):
         doc="Positivity floor parameter (η)",
     )
     sigma_min = param.Number(
-        default=0.,
+        default=0.0,
         bounds=(0, None),
         softbounds=(0.0, 1e-3),
         inclusive_bounds=(True, True),

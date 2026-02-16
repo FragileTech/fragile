@@ -98,8 +98,14 @@ def build_gevp_mass_spectrum_sections(w: GEVPMassSpectrumWidgets) -> list[Any]:
 
 
 MODE_COLORS = [
-    "#4c78a8", "#f58518", "#e45756", "#72b7b2",
-    "#54a24b", "#eeca3b", "#b279a2", "#ff9da6",
+    "#4c78a8",
+    "#f58518",
+    "#e45756",
+    "#72b7b2",
+    "#54a24b",
+    "#eeca3b",
+    "#b279a2",
+    "#ff9da6",
 ]
 
 
@@ -135,7 +141,9 @@ def build_effective_mass_plateau_plot(
             "mode": label,
         })
         scatter = hv.Scatter(df, kdims=["tau"], vdims=["m_eff", "mode"]).opts(
-            color=color, size=6, tools=["hover"],
+            color=color,
+            size=6,
+            tools=["hover"],
         )
         overlays.append(scatter)
 
@@ -143,11 +151,7 @@ def build_effective_mass_plateau_plot(
         plateau_mass = float(spectrum.plateau_masses[mode_idx].item())
         plateau_err = float(spectrum.plateau_errors[mode_idx].item())
         p_start, p_end = spectrum.plateau_ranges[mode_idx]
-        if (
-            math.isfinite(plateau_mass)
-            and plateau_mass > 0
-            and p_end > p_start
-        ):
+        if math.isfinite(plateau_mass) and plateau_mass > 0 and p_end > p_start:
             if not math.isfinite(plateau_err) or plateau_err < 0:
                 plateau_err = 0.0
             x_lo = float(p_start) * dt
@@ -170,7 +174,8 @@ def build_effective_mass_plateau_plot(
     overlay = hv.Overlay(overlays)
     title = f"Effective Mass Plateau: {family_label}" if family_label else "Effective Mass Plateau"
     return overlay.opts(
-        width=900, height=350,
+        width=900,
+        height=350,
         xlabel="lag τ",
         ylabel="m_eff(τ)",
         title=title,
@@ -203,7 +208,9 @@ def build_gevp_mass_bar_chart(
             "mode": f"mode {i}",
             "mass": m,
             "error": e,
-            "ratio": m / float(masses[0]) if math.isfinite(float(masses[0])) and masses[0] > 0 else float("nan"),
+            "ratio": m / float(masses[0])
+            if math.isfinite(float(masses[0])) and masses[0] > 0
+            else float("nan"),
         })
 
     if not rows:
@@ -212,7 +219,8 @@ def build_gevp_mass_bar_chart(
     df = pd.DataFrame(rows)
     title = f"GEVP Mass Spectrum: {family_label}" if family_label else "GEVP Mass Spectrum"
     bars = hv.Bars(df, kdims=["mode"], vdims=["mass", "error", "ratio"]).opts(
-        width=600, height=300,
+        width=600,
+        height=300,
         xlabel="Mode",
         ylabel="Mass",
         title=title,
@@ -226,9 +234,9 @@ def build_gevp_mass_bar_chart(
         err_data.append((row["mode"], row["mass"] - row["error"], row["mass"] + row["error"]))
     if err_data:
         err_df = pd.DataFrame(err_data, columns=["mode", "y_lo", "y_hi"])
-        err_seg = hv.Segments(
-            err_df, kdims=["mode", "y_lo"], vdims=["mode", "y_hi"]
-        ).opts(color="black", line_width=2)
+        err_seg = hv.Segments(err_df, kdims=["mode", "y_lo"], vdims=["mode", "y_hi"]).opts(
+            color="black", line_width=2
+        )
         return (bars * err_seg).opts(title=title)
 
     return bars
@@ -270,7 +278,9 @@ def build_eigenvalue_decay_plot(
             "mode": label,
         })
         curve = hv.Curve(df, kdims=["tau"], vdims=["lambda", "mode"]).opts(
-            color=color, line_width=2, tools=["hover"],
+            color=color,
+            line_width=2,
+            tools=["hover"],
         )
         overlays.append(curve)
 
@@ -288,7 +298,9 @@ def build_eigenvalue_decay_plot(
                 "mode": f"mode {mode_idx} exp fit",
             })
             fit_curve = hv.Curve(fit_df, kdims=["tau"], vdims=["lambda", "mode"]).opts(
-                color=color, line_dash="dashed", line_width=1.5,
+                color=color,
+                line_dash="dashed",
+                line_width=1.5,
             )
             overlays.append(fit_curve)
 
@@ -298,7 +310,8 @@ def build_eigenvalue_decay_plot(
     overlay = hv.Overlay(overlays)
     title = f"Eigenvalue Decay: {family_label}" if family_label else "Eigenvalue Decay"
     return overlay.opts(
-        width=900, height=350,
+        width=900,
+        height=350,
         xlabel="lag τ",
         ylabel="λ_n(τ)",
         title=title,
@@ -321,8 +334,16 @@ def build_mode_summary_table(
     has_exp = spectrum.exp_masses is not None
     if has_exp:
         exp_m = spectrum.exp_masses.detach().cpu().numpy()
-        exp_e = spectrum.exp_errors.detach().cpu().numpy() if spectrum.exp_errors is not None else np.full(n_modes, np.nan)
-        exp_r2 = spectrum.exp_r2.detach().cpu().numpy() if spectrum.exp_r2 is not None else np.full(n_modes, np.nan)
+        exp_e = (
+            spectrum.exp_errors.detach().cpu().numpy()
+            if spectrum.exp_errors is not None
+            else np.full(n_modes, np.nan)
+        )
+        exp_r2 = (
+            spectrum.exp_r2.detach().cpu().numpy()
+            if spectrum.exp_r2 is not None
+            else np.full(n_modes, np.nan)
+        )
 
     m0 = float(masses[0]) if math.isfinite(float(masses[0])) and masses[0] > 0 else float("nan")
 
@@ -337,7 +358,9 @@ def build_mode_summary_table(
             "error": e if math.isfinite(e) else float("nan"),
             "plateau_start": p_start,
             "plateau_end": p_end,
-            "m_n / m_0": m / m0 if math.isfinite(m) and math.isfinite(m0) and m0 > 0 else float("nan"),
+            "m_n / m_0": m / m0
+            if math.isfinite(m) and math.isfinite(m0) and m0 > 0
+            else float("nan"),
         }
         if has_exp:
             row["exp_mass"] = float(exp_m[i]) if math.isfinite(float(exp_m[i])) else float("nan")
@@ -381,7 +404,9 @@ def build_t0_mass_comparison_plot(
         label = f"mode {mode_idx}"
         df = pd.DataFrame({"t0": t0s, "mass": masses, "error": errors, "mode": label})
         scatter = hv.Scatter(df, kdims=["t0"], vdims=["mass", "error", "mode"]).opts(
-            color=color, size=8, tools=["hover"],
+            color=color,
+            size=8,
+            tools=["hover"],
         )
         overlays.append(scatter)
 
@@ -390,14 +415,19 @@ def build_t0_mass_comparison_plot(
             if e > 0:
                 seg = hv.Curve(
                     [(t0_val, m - e), (t0_val, m + e)],
-                    kdims=["t0"], vdims=["mass"],
+                    kdims=["t0"],
+                    vdims=["mass"],
                 ).opts(color=color, line_width=1.5)
                 overlays.append(seg)
 
         # Consensus band
         if t0_sweep.consensus_masses is not None and mode_idx < t0_sweep.consensus_masses.shape[0]:
             cm = float(t0_sweep.consensus_masses[mode_idx].item())
-            ce = float(t0_sweep.consensus_errors[mode_idx].item()) if t0_sweep.consensus_errors is not None else 0.0
+            ce = (
+                float(t0_sweep.consensus_errors[mode_idx].item())
+                if t0_sweep.consensus_errors is not None
+                else 0.0
+            )
             if math.isfinite(cm) and cm > 0:
                 if not math.isfinite(ce):
                     ce = 0.0
@@ -405,11 +435,13 @@ def build_t0_mass_comparison_plot(
                 x_hi = max(t0s) + 0.5
                 band = hv.Area(
                     ([x_lo, x_hi], [cm - ce] * 2, [cm + ce] * 2),
-                    kdims=["t0"], vdims=["y_lo", "y_hi"],
+                    kdims=["t0"],
+                    vdims=["y_lo", "y_hi"],
                 ).opts(color=color, alpha=0.15)
                 hline = hv.Curve(
                     ([x_lo, x_hi], [cm, cm]),
-                    kdims=["t0"], vdims=["mass"],
+                    kdims=["t0"],
+                    vdims=["mass"],
                 ).opts(color=color, line_dash="dotdash", line_width=1)
                 overlays.extend([band, hline])
 
@@ -417,9 +449,12 @@ def build_t0_mass_comparison_plot(
         return None
 
     overlay = hv.Overlay(overlays)
-    title = f"t0 Sweep Mass Stability: {family_label}" if family_label else "t0 Sweep Mass Stability"
+    title = (
+        f"t0 Sweep Mass Stability: {family_label}" if family_label else "t0 Sweep Mass Stability"
+    )
     return overlay.opts(
-        width=900, height=350,
+        width=900,
+        height=350,
         xlabel="t0",
         ylabel="mass",
         title=title,
@@ -491,9 +526,7 @@ def update_gevp_mass_spectrum(
     w.effective_mass_plot.object = build_effective_mass_plateau_plot(
         spectrum, family_label=family_label, dt=dt
     )
-    w.mass_spectrum_bar.object = build_gevp_mass_bar_chart(
-        spectrum, family_label=family_label
-    )
+    w.mass_spectrum_bar.object = build_gevp_mass_bar_chart(spectrum, family_label=family_label)
     w.eigenvalue_decay_plot.object = build_eigenvalue_decay_plot(
         spectrum, family_label=family_label, dt=dt
     )
@@ -502,7 +535,8 @@ def update_gevp_mass_spectrum(
     # t0 sweep widgets
     if t0_sweep is not None and t0_sweep.spectra:
         w.t0_comparison_plot.object = build_t0_mass_comparison_plot(
-            t0_sweep, family_label=family_label,
+            t0_sweep,
+            family_label=family_label,
         )
         w.t0_comparison_table.value = build_t0_comparison_table(t0_sweep)
     else:

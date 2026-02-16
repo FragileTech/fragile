@@ -689,7 +689,8 @@ class EuclideanGas(PanelModel):
                     )
                     scutoid_ricci_full = torch.zeros_like(scutoid_volume_full)
                     scutoid_diffusion_full = (
-                        torch.eye(state.d, device=self.device, dtype=state_cloned.x.dtype)
+                        torch
+                        .eye(state.d, device=self.device, dtype=state_cloned.x.dtype)
                         .unsqueeze(0)
                         .expand(state.N, state.d, state.d)
                         .clone()

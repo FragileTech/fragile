@@ -12,8 +12,8 @@ import panel as pn
 import param
 import torch
 
-from fragile.fractalai.core.history import RunHistory
 from fragile.physics.app.gas_config_panel import GasConfigPanel
+from fragile.physics.fractal_gas.history import RunHistory
 
 
 class SwarmConvergence3D(param.Parameterized):

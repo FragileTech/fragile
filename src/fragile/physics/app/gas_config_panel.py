@@ -15,10 +15,10 @@ import panel.widgets as pnw
 import param
 import torch
 
-from fragile.fractalai.core.history import RunHistory
 from fragile.physics.fractal_gas.cloning import CloneOperator
 from fragile.physics.fractal_gas.euclidean_gas import EuclideanGas
 from fragile.physics.fractal_gas.fitness import FitnessOperator
+from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.fractal_gas.kinetic_operator import KineticOperator
 
 
@@ -298,9 +298,7 @@ class GasConfigPanel(param.Parameterized):
         step = max(0, min(int(step), total_steps))
         percent = (step / total_steps) * 100.0 if total_steps else 0.0
         eta_str = self._format_eta(eta_seconds)
-        return (
-            f"**Progress:** {step}/{total_steps} ({percent:.1f}%) " f"| **Remaining:** {eta_str}"
-        )
+        return f"**Progress:** {step}/{total_steps} ({percent:.1f}%) | **Remaining:** {eta_str}"
 
     def _sync_progress_total(self, total_steps: int) -> None:
         total_steps = max(1, int(total_steps))
@@ -354,6 +352,7 @@ class GasConfigPanel(param.Parameterized):
             history = self.run_simulation(progress_callback=self._progress_callback)
         except Exception as exc:
             import traceback
+
             traceback.print_exc()
             error = exc
 
@@ -437,9 +436,8 @@ class GasConfigPanel(param.Parameterized):
         )
 
         # Initialize state
-        x_init = (
-            torch.randn(self.gas_params["N"], self.dims) * float(self.init_spread)
-            + float(self.init_offset)
+        x_init = torch.randn(self.gas_params["N"], self.dims) * float(self.init_spread) + float(
+            self.init_offset
         )
         v_init = torch.randn(self.gas_params["N"], self.dims) * float(self.init_velocity_scale)
 

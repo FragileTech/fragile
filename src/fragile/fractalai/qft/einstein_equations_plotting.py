@@ -146,11 +146,11 @@ def build_scalar_test_plot(result: EinsteinTestResult) -> hv.Element:
         )
     if result.scalar_r2_ci_bootstrap is not None:
         annotation_text += (
-            "\nBootstrap CI (R\u00b2): " f"{_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')}"
+            f"\nBootstrap CI (R\u00b2): {_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')}"
         )
     if result.scalar_r2_ci_jackknife is not None:
         annotation_text += (
-            "\nJackknife CI (R\u00b2): " f"{_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')}"
+            f"\nJackknife CI (R\u00b2): {_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')}"
         )
 
     annotation = hv.Text(
@@ -448,14 +448,14 @@ def build_summary_markdown(result: EinsteinTestResult) -> str:
             "|--------|-------|",
             f"| Bootstrap samples (valid) | {result.scalar_bootstrap_samples} |",
             f"| Bootstrap confidence | {_fmt_optional(result.scalar_bootstrap_confidence, '.3f')} |",
-            ("| R\u00b2 CI (bootstrap) | " f"{_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')} |"),
-            ("| slope CI (bootstrap) | " f"{_fmt_ci(result.scalar_slope_ci_bootstrap, '.6e')} |"),
+            (f"| R\u00b2 CI (bootstrap) | {_fmt_ci(result.scalar_r2_ci_bootstrap, '.4f')} |"),
+            (f"| slope CI (bootstrap) | {_fmt_ci(result.scalar_slope_ci_bootstrap, '.6e')} |"),
             (
                 "| intercept CI (bootstrap) | "
                 f"{_fmt_ci(result.scalar_intercept_ci_bootstrap, '.6e')} |"
             ),
-            ("| R\u00b2 CI (jackknife) | " f"{_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')} |"),
-            ("| slope CI (jackknife) | " f"{_fmt_ci(result.scalar_slope_ci_jackknife, '.6e')} |"),
+            (f"| R\u00b2 CI (jackknife) | {_fmt_ci(result.scalar_r2_ci_jackknife, '.4f')} |"),
+            (f"| slope CI (jackknife) | {_fmt_ci(result.scalar_slope_ci_jackknife, '.6e')} |"),
             (
                 "| intercept CI (jackknife) | "
                 f"{_fmt_ci(result.scalar_intercept_ci_jackknife, '.6e')} |"

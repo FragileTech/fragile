@@ -71,8 +71,7 @@ class CloningParams(BaseModel):
         default=None,
         gt=0.0,
         description=(
-            "Companion-selection interaction scale. Defaults to max(sigma_x, 1e-8) "
-            "when omitted."
+            "Companion-selection interaction scale. Defaults to max(sigma_x, 1e-8) when omitted."
         ),
     )
 

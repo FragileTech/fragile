@@ -45,7 +45,7 @@ def compute_cloning_score(
 
 def compute_cloning_probability(
     cloning_scores: Tensor,
-    p_max: float = 1.,
+    p_max: float = 1.0,
 ) -> Tensor:
     """Convert cloning scores to cloning probabilities via clipping function.
 

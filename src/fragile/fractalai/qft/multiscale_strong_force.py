@@ -2139,7 +2139,8 @@ def compute_multiscale_strong_force_channels(
             comp_j_chunk = companions_distance.index_select(0, pos_t)
             comp_k_chunk = companions_clone.index_select(0, pos_t)
             anchor_rows = (
-                torch.arange(n_walkers, device=color.device, dtype=torch.long)
+                torch
+                .arange(n_walkers, device=color.device, dtype=torch.long)
                 .view(1, -1)
                 .expand(comp_j_chunk.shape[0], -1)
             )

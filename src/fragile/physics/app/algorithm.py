@@ -10,8 +10,8 @@ import numpy as np
 import pandas as pd
 import panel as pn
 
-from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.qft.plotting import build_lyapunov_plot
+from fragile.physics.fractal_gas.history import RunHistory
 
 
 def _to_numpy(t: Any) -> np.ndarray:
@@ -258,23 +258,27 @@ def _build_companion_distance_plot(
     overlays: list[Any] = []
     if not clone_df.empty:
         overlays.append(
-            hv.ErrorBars(clone_df, "step", ["mean", "err95"])
+            hv
+            .ErrorBars(clone_df, "step", ["mean", "err95"])
             .relabel("Clone p95")
             .opts(color="#e45756", alpha=0.4, line_width=1)
         )
         overlays.append(
-            hv.Curve(clone_df, "step", "mean")
+            hv
+            .Curve(clone_df, "step", "mean")
             .relabel("Clone mean")
             .opts(color="#e45756", line_width=2, tools=["hover"])
         )
     if not random_df.empty:
         overlays.append(
-            hv.ErrorBars(random_df, "step", ["mean", "err95"])
+            hv
+            .ErrorBars(random_df, "step", ["mean", "err95"])
             .relabel("Random p95")
             .opts(color="#4c78a8", alpha=0.4, line_width=1)
         )
         overlays.append(
-            hv.Curve(random_df, "step", "mean")
+            hv
+            .Curve(random_df, "step", "mean")
             .relabel("Random mean")
             .opts(color="#4c78a8", line_width=2, tools=["hover"])
         )
@@ -497,7 +501,7 @@ def build_algorithm_diagnostics(history: RunHistory) -> dict[str, Any]:
         "rkv_plot": rkv_plot,
         "lyapunov_plot": lyapunov_plot,
         "n_transition_steps": int(n_steps),
-        "n_lyapunov_steps": int(len(lyapunov["time"])),
+        "n_lyapunov_steps": len(lyapunov["time"]),
     }
 
 
@@ -572,8 +576,7 @@ def build_algorithm_diagnostics_tab(
         that the main dashboard wires into ``set_history`` / event handlers.
     """
     status = pn.pane.Markdown(
-        "**Algorithm:** run a simulation or load a RunHistory, "
-        "then click Run Algorithm Analysis.",
+        "**Algorithm:** run a simulation or load a RunHistory, then click Run Algorithm Analysis.",
         sizing_mode="stretch_width",
     )
     run_button = pn.widgets.Button(

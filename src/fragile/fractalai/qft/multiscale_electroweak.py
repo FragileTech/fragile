@@ -48,12 +48,21 @@ SU2_WALKER_TYPE_CHANNELS = tuple(
 )
 U1_BASE_CHANNELS = ("u1_phase", "u1_dressed", "u1_phase_q2", "u1_dressed_q2")
 EW_MIXED_BASE_CHANNELS = ("ew_mixed",)
-SUPPORTED_CHANNELS = SU2_BASE_CHANNELS + SU2_DIRECTIONAL_CHANNELS + SU2_WALKER_TYPE_CHANNELS + U1_BASE_CHANNELS + EW_MIXED_BASE_CHANNELS
+SUPPORTED_CHANNELS = (
+    SU2_BASE_CHANNELS
+    + SU2_DIRECTIONAL_CHANNELS
+    + SU2_WALKER_TYPE_CHANNELS
+    + U1_BASE_CHANNELS
+    + EW_MIXED_BASE_CHANNELS
+)
 SU2_COMPANION_CHANNEL_MAP: dict[str, str] = {
-    name: f"{name}_companion" for name in SU2_BASE_CHANNELS + SU2_DIRECTIONAL_CHANNELS + SU2_WALKER_TYPE_CHANNELS
+    name: f"{name}_companion"
+    for name in SU2_BASE_CHANNELS + SU2_DIRECTIONAL_CHANNELS + SU2_WALKER_TYPE_CHANNELS
 }
 U1_COMPANION_CHANNEL_MAP: dict[str, str] = {name: f"{name}_companion" for name in U1_BASE_CHANNELS}
-EW_MIXED_COMPANION_CHANNEL_MAP: dict[str, str] = {name: f"{name}_companion" for name in EW_MIXED_BASE_CHANNELS}
+EW_MIXED_COMPANION_CHANNEL_MAP: dict[str, str] = {
+    name: f"{name}_companion" for name in EW_MIXED_BASE_CHANNELS
+}
 ALL_COMPANION_CHANNEL_MAP: dict[str, str] = {
     **SU2_COMPANION_CHANNEL_MAP,
     **U1_COMPANION_CHANNEL_MAP,
@@ -396,10 +405,7 @@ def _compute_electroweak_series_from_kernels(
     t_len, n_scales, n_walkers, _ = kernels.shape
     if t_len <= 0 or n_scales <= 0 or n_walkers <= 0:
         empty = torch.zeros((n_scales, t_len), device=kernels.device, dtype=torch.float32)
-        return {
-            alias: empty.clone()
-            for alias in ALL_COMPANION_CHANNEL_MAP.values()
-        }
+        return {alias: empty.clone() for alias in ALL_COMPANION_CHANNEL_MAP.values()}
 
     dev = kernels.device
     real_dtype = kernels.dtype

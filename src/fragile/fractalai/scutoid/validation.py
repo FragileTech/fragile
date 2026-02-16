@@ -335,7 +335,8 @@ def validate_on_synthetic_function(
     gradient_max_error = ((grad_estimated[valid_mask] - grad_true[valid_mask]).abs().max()).item()
 
     hessian_frobenius_error = (
-        torch.norm(hess_estimated[valid_mask] - hess_true[valid_mask], p="fro", dim=(1, 2))
+        torch
+        .norm(hess_estimated[valid_mask] - hess_true[valid_mask], p="fro", dim=(1, 2))
         .mean()
         .item()
     )
@@ -345,7 +346,8 @@ def validate_on_synthetic_function(
     ).item()
 
     geometric_hessian_error = (
-        torch.norm(hess_geometric[valid_mask] - hess_true[valid_mask], p="fro", dim=(1, 2))
+        torch
+        .norm(hess_geometric[valid_mask] - hess_true[valid_mask], p="fro", dim=(1, 2))
         .mean()
         .item()
     )

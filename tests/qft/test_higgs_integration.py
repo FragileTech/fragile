@@ -249,9 +249,9 @@ def test_metric_tensor_properties():
 
         # Metric should have positive eigenvalues (positive definite)
         eigenvalues = np.linalg.eigvalsh(metric)
-        assert np.all(
-            eigenvalues > 0
-        ), f"Metric tensor {i} has non-positive eigenvalues: {eigenvalues}"
+        assert np.all(eigenvalues > 0), (
+            f"Metric tensor {i} has non-positive eigenvalues: {eigenvalues}"
+        )
 
 
 if __name__ == "__main__":

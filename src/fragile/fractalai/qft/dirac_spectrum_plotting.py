@@ -249,7 +249,7 @@ def build_chiral_density_plot(result: DiracSpectrumResult) -> hv.Element:
     annotation = hv.Text(
         float(np.median(near)) if len(near) > 0 else 0,
         0,
-        f"⟨ψ̄ψ⟩ ≈ {result.chiral_condensate:.3f}\n" f"({result.near_zero_count} near-zero modes)",
+        f"⟨ψ̄ψ⟩ ≈ {result.chiral_condensate:.3f}\n({result.near_zero_count} near-zero modes)",
     ).opts(text_font_size="9pt", text_align="left")
 
     return hist * annotation

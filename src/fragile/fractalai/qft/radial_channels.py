@@ -803,9 +803,7 @@ def _require_recorded_edges_and_geodesic(
         raise ValueError(msg)
     edges_np = edges.detach().cpu().numpy()
     if edges_np.ndim != 2 or edges_np.shape[1] != 2:
-        msg = (
-            f"neighbor_edges[{frame_idx}] must have shape [E,2], " f"got {tuple(edges_np.shape)}."
-        )
+        msg = f"neighbor_edges[{frame_idx}] must have shape [E,2], got {tuple(edges_np.shape)}."
         raise ValueError(msg)
     edges_np = np.asarray(edges_np, dtype=np.int64)
 
@@ -1288,9 +1286,7 @@ def _compute_distances(
             raise ValueError(msg)
         weights = np.asarray(geodesic_edge_distances, dtype=float).reshape(-1)
         if weights.shape[0] != edges.shape[0]:
-            msg = (
-                "graph_full edge/geodesic mismatch: " f"E={edges.shape[0]}, G={weights.shape[0]}."
-            )
+            msg = f"graph_full edge/geodesic mismatch: E={edges.shape[0]}, G={weights.shape[0]}."
             raise ValueError(msg)
     else:
         msg = f"Unsupported distance_mode: {distance_mode}"

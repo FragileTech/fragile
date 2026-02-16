@@ -2818,9 +2818,7 @@ def _parse_triplet_dims_spec(spec: str, history_d: int) -> tuple[int, int, int] 
     if dims is None:
         return None
     if len(dims) != 3:
-        raise ValueError(
-            "baryon_color_dims_spec must contain exactly 3 dims; " f"received {dims}."
-        )
+        raise ValueError(f"baryon_color_dims_spec must contain exactly 3 dims; received {dims}.")
     return int(dims[0]), int(dims[1]), int(dims[2])
 
 
@@ -4518,7 +4516,7 @@ def _format_fractal_set_summary(
     lines = [
         "## Fractal Set Summary",
         f"- Transitions analyzed: {int(points_df['info_idx'].nunique())}",
-        f"- Boundary samples: {int(len(points_df))}",
+        f"- Boundary samples: {len(points_df)}",
         f"- Geometries: {', '.join(sorted(points_df['cut_type'].unique()))}",
         f"- Partition families: {', '.join(sorted(points_df['partition_family'].unique()))}",
     ]
@@ -4539,8 +4537,7 @@ def _format_fractal_set_summary(
         n_points = int(fit.get("n_points", 0))
         if np.isfinite(slope):
             lines.append(
-                f"- {metric_label} vs {area_label}: alpha={slope:.6f}, "
-                f"R2={r2:.4f}, n={n_points}"
+                f"- {metric_label} vs {area_label}: alpha={slope:.6f}, R2={r2:.4f}, n={n_points}"
             )
         else:
             lines.append(
@@ -4567,8 +4564,7 @@ def _format_fractal_set_summary(
         lines.append(f"- Mean per-frame S_total: {float(frame_df['mean_s_total'].mean()):.3f}")
         if "mean_s_total_geom" in frame_df:
             lines.append(
-                f"- Mean per-frame S_total_geom: "
-                f"{float(frame_df['mean_s_total_geom'].mean()):.3f}"
+                f"- Mean per-frame S_total_geom: {float(frame_df['mean_s_total_geom'].mean()):.3f}"
             )
 
     lines.append("")
@@ -8002,7 +7998,7 @@ def create_app() -> pn.template.FastListTemplate:
                     fractal_set_plot_total_geom.object = hv.Text(0, 0, "Geometry metrics hidden")
 
                 n_frames = int(points_df["info_idx"].nunique())
-                n_samples = int(len(points_df))
+                n_samples = len(points_df)
                 fractal_set_status.object = (
                     f"**Complete:** {n_samples} boundary samples from "
                     f"{n_frames} recorded transitions."
@@ -9199,13 +9195,17 @@ def create_app() -> pn.template.FastListTemplate:
             summary_lines = [
                 "## New Dirac/Electroweak Summary",
                 f"- Frames used: `{len(bundle.frame_indices)}`",
-                f"- Electroweak channels with samples: "
-                f"`{len([r for r in ew_results.values() if r.n_samples > 0])}`",
+                (
+                    f"- Electroweak channels with samples: "
+                    f"`{len([r for r in ew_results.values() if r.n_samples > 0])}`"
+                ),
                 f"- Higgs VEV (snapshot): `{bundle.higgs_vev:.6f}` ± `{bundle.higgs_vev_std:.6f}`",
                 f"- Higgs VEV (time mean): `{bundle.vev_time_mean:.6f}` ± `{bundle.vev_time_std:.6f}`",
-                f"- Yukawa prediction: `m_e={bundle.electron_mass_yukawa:.6f}`, "
-                f"`y_e={bundle.yukawa_e:.6f}`, `ΔΦ_e={bundle.fitness_delta_phi_e:.6f}`, "
-                f"`Φ_0={bundle.fitness_phi0:.6f}`",
+                (
+                    f"- Yukawa prediction: `m_e={bundle.electron_mass_yukawa:.6f}`, "
+                    f"`y_e={bundle.yukawa_e:.6f}`, `ΔΦ_e={bundle.fitness_delta_phi_e:.6f}`, "
+                    f"`Φ_0={bundle.fitness_phi0:.6f}`"
+                ),
             ]
             if color_singlet is not None:
                 summary_lines.append(
@@ -9668,7 +9668,7 @@ def create_app() -> pn.template.FastListTemplate:
 
                 # === 3. Dirac spectrum analysis ===
                 try:
-                    _color_thresh = (
+                    color_thresh = (
                         dirac_threshold_value.value
                         if dirac_threshold_mode.value == "manual"
                         else "median"
@@ -9678,16 +9678,16 @@ def create_app() -> pn.template.FastListTemplate:
                         time_average=dirac_time_avg_checkbox.value,
                         warmup_fraction=dirac_warmup_slider.value,
                         max_avg_frames=dirac_max_frames.value,
-                        color_threshold=_color_thresh,
+                        color_threshold=color_thresh,
                     )
                     dirac_result = compute_dirac_spectrum(history, dirac_config)
                     dirac_plots = build_all_dirac_plots(dirac_result)
                     dirac_full_spectrum.object = dirac_plots["full_spectrum"]
-                    _sector_plots = dirac_plots["sector_spectra"]
-                    dirac_sector_up.object = _sector_plots.get("up_quark")
-                    dirac_sector_down.object = _sector_plots.get("down_quark")
-                    dirac_sector_nu.object = _sector_plots.get("neutrino")
-                    dirac_sector_lep.object = _sector_plots.get("charged_lepton")
+                    sector_plots = dirac_plots["sector_spectra"]
+                    dirac_sector_up.object = sector_plots.get("up_quark")
+                    dirac_sector_down.object = sector_plots.get("down_quark")
+                    dirac_sector_nu.object = sector_plots.get("neutrino")
+                    dirac_sector_lep.object = sector_plots.get("charged_lepton")
                     dirac_walker_classification.object = dirac_plots["walker_classification"]
                     dirac_mass_hierarchy.object = dirac_plots["mass_hierarchy"]
                     dirac_chiral_density.object = dirac_plots["chiral_density"]
@@ -9720,7 +9720,7 @@ def create_app() -> pn.template.FastListTemplate:
                     dirac_full_spectrum.object = hv.Text(0, 0, f"Dirac error: {dirac_err}")
 
                 dynamics_status.object = (
-                    f"**Complete:** Dynamics for MC step {t}, " f"{n_alive} alive walkers."
+                    f"**Complete:** Dynamics for MC step {t}, {n_alive} alive walkers."
                 )
             except Exception as e:
                 dynamics_status.object = f"**Error:** {e}"
@@ -9969,7 +9969,7 @@ def create_app() -> pn.template.FastListTemplate:
         if skip_sidebar:
             sidebar.objects = [
                 pn.pane.Markdown(
-                    "## QFT Dashboard\n" "Sidebar disabled via QFT_DASH_SKIP_SIDEBAR=1."
+                    "## QFT Dashboard\nSidebar disabled via QFT_DASH_SKIP_SIDEBAR=1."
                 ),
                 pn.pane.Markdown("### Load QFT RunHistory"),
                 history_path_input,

@@ -398,7 +398,7 @@ def plot_smoc_results(
                 best["t_end"],
                 alpha=0.1,
                 color="green",
-                label=f'Best window [{best["t_start"]}, {best["t_end"]}]',
+                label=f"Best window [{best['t_start']}, {best['t_end']}]",
             )
 
         ax_meff.set_xlabel("Time lag τ")

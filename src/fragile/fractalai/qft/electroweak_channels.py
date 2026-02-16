@@ -30,9 +30,9 @@ from fragile.fractalai.qft.correlator_channels import (
 from fragile.fractalai.qft.electroweak_observables import (
     compute_weighted_electroweak_ops_vectorized,
     ELECTROWEAK_OPERATOR_CHANNELS,
-    PARITY_VELOCITY_CHANNELS,
     pack_neighbors_from_edges,
     PackedNeighbors,
+    PARITY_VELOCITY_CHANNELS,
     SYMMETRY_BREAKING_CHANNELS,
 )
 
@@ -677,12 +677,7 @@ def compute_electroweak_coupling_constants(
     tan_theta_w_emergent = float("nan")
     eps_c = eps_fitness_gap_em  # SU(2) coupling scale
     eps_d = eps_geodesic_em  # U(1) hypercharge scale
-    if (
-        math.isfinite(eps_c)
-        and eps_c > 0
-        and math.isfinite(eps_d)
-        and eps_d > 0
-    ):
+    if math.isfinite(eps_c) and eps_c > 0 and math.isfinite(eps_d) and eps_d > 0:
         eps_c_sq = eps_c**2
         eps_d_sq = eps_d**2
         denom = eps_c_sq + eps_d_sq

@@ -5,17 +5,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable
 
-import numpy as np
 import holoviews as hv
-import param
+import numpy as np
 import pandas as pd
 import panel as pn
+import param
 import torch
 
 from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.smeared_operators import compute_pairwise_distance_matrices_from_history
-from fragile.fractalai.qft.einstein_equations import EinsteinConfig, compute_einstein_test
+from fragile.fractalai.qft.einstein_equations import compute_einstein_test, EinsteinConfig
 from fragile.fractalai.qft.einstein_equations_plotting import build_scalar_test_log_plot
+from fragile.fractalai.qft.smeared_operators import compute_pairwise_distance_matrices_from_history
 
 
 @dataclass
@@ -609,9 +609,7 @@ def _compute_fractal_set_measurements(
             continue
         axis = int(np.clip(settings.partition_axis, 0, max(positions.shape[1] - 1, 0)))
         labels = lineage_by_transition[info_idx]
-        step = int(
-            history.recorded_steps[min(info_idx + 1, len(history.recorded_steps) - 1)]
-        )
+        step = int(history.recorded_steps[min(info_idx + 1, len(history.recorded_steps) - 1)])
         vol_frame = None
         if volume_series is not None and info_idx < volume_series.shape[0]:
             vol_frame = np.asarray(volume_series[info_idx], dtype=float)
@@ -936,7 +934,7 @@ def _format_fractal_set_summary(
     lines = [
         "## Fractal Set Summary",
         f"- Transitions analyzed: {int(points_df['info_idx'].nunique())}",
-        f"- Boundary samples: {int(len(points_df))}",
+        f"- Boundary samples: {len(points_df)}",
         f"- Geometries: {', '.join(sorted(points_df['cut_type'].unique()))}",
         f"- Partition families: {', '.join(sorted(points_df['partition_family'].unique()))}",
     ]
@@ -957,8 +955,7 @@ def _format_fractal_set_summary(
         n_points = int(fit.get("n_points", 0))
         if np.isfinite(slope):
             lines.append(
-                f"- {metric_label} vs {area_label}: alpha={slope:.6f}, "
-                f"R2={r2:.4f}, n={n_points}"
+                f"- {metric_label} vs {area_label}: alpha={slope:.6f}, R2={r2:.4f}, n={n_points}"
             )
         else:
             lines.append(
@@ -985,8 +982,7 @@ def _format_fractal_set_summary(
         lines.append(f"- Mean per-frame S_total: {float(frame_df['mean_s_total'].mean()):.3f}")
         if "mean_s_total_geom" in frame_df:
             lines.append(
-                f"- Mean per-frame S_total_geom: "
-                f"{float(frame_df['mean_s_total_geom'].mean()):.3f}"
+                f"- Mean per-frame S_total_geom: {float(frame_df['mean_s_total_geom'].mean()):.3f}"
             )
 
     lines.append("")
@@ -1054,6 +1050,7 @@ def _build_fractal_set_baseline_comparison(regression_df: pd.DataFrame) -> pd.Da
         return pd.DataFrame()
     comparison = pd.DataFrame(rows)
     return comparison.sort_values(["metric", "delta_r2_vs_random"], ascending=[True, False])
+
 
 def _resolve_electroweak_geodesic_matrices(
     history: RunHistory | None,
@@ -1161,7 +1158,7 @@ def _build_geodesic_distance_distribution_by_frame(
 
     return {
         "n_geodesic_samples": int(all_distances.size),
-        "n_frames_with_samples": int(len(per_frame_counts)),
+        "n_frames_with_samples": len(per_frame_counts),
         "log10_min": float(np.min(log_distances)),
         "log10_max": float(np.max(log_distances)),
         "log10_hist": hist_freq.astype(float).tolist(),
@@ -1213,7 +1210,9 @@ def _build_geodesic_distribution_plot(
 def build_holographic_principle_tab(
     *,
     state: dict[str, Any],
-    run_tab_computation: Callable[[dict[str, Any], pn.pane.Markdown, str, Callable[[RunHistory], None]], None],
+    run_tab_computation: Callable[
+        [dict[str, Any], pn.pane.Markdown, str, Callable[[RunHistory], None]], None
+    ],
     new_dirac_ew_settings: Any,
 ) -> HolographicPrincipleSection:
     """Build Holographic Principle tab with callbacks."""
@@ -1341,8 +1340,7 @@ def build_holographic_principle_tab(
 
             if points_df.empty:
                 fractal_set_summary.object = (
-                    "## Fractal Set Summary\n"
-                    "_No valid measurements for the selected settings._"
+                    "## Fractal Set Summary\n_No valid measurements for the selected settings._"
                 )
                 fractal_set_regression_table.value = pd.DataFrame()
                 fractal_set_baseline_table.value = pd.DataFrame()
@@ -1446,10 +1444,8 @@ def build_holographic_principle_tab(
                 fractal_set_plot_total_geom.object = hv.Text(0, 0, "Geometry metrics hidden")
 
             n_frames = int(points_df["info_idx"].nunique())
-            n_samples = int(len(points_df))
-            all_frames = [
-                frame_idx for frame_idx in range(1, int(getattr(history, "n_recorded", 0)))
-            ]
+            n_samples = len(points_df)
+            all_frames = list(range(1, int(getattr(history, "n_recorded", 0))))
             precomputed_pairs = _resolve_electroweak_geodesic_matrices(
                 history,
                 all_frames,
@@ -1458,16 +1454,14 @@ def build_holographic_principle_tab(
                 str(new_dirac_ew_settings.edge_weight_mode),
                 bool(new_dirac_ew_settings.kernel_assume_all_alive),
             )
-            distribution = _build_geodesic_distance_distribution_by_frame(
-                precomputed_pairs
-            )
+            distribution = _build_geodesic_distance_distribution_by_frame(precomputed_pairs)
             state["_multiscale_geodesic_distribution"] = distribution
             fractal_set_geodesic_distribution_plot.object = _build_geodesic_distribution_plot(
                 distribution
             )
-            g_newton_metric = "s_total_geom" if bool(
-                fractal_set_settings.use_geometry_correction
-            ) else "s_total"
+            g_newton_metric = (
+                "s_total_geom" if bool(fractal_set_settings.use_geometry_correction) else "s_total"
+            )
             try:
                 einstein_result = compute_einstein_test(
                     history,
@@ -1481,11 +1475,10 @@ def build_holographic_principle_tab(
                 einstein_scalar_log_plot.object = hv.Text(
                     0,
                     0,
-                    f"Einstein test unavailable: {str(exc)}",
+                    f"Einstein test unavailable: {exc!s}",
                 ).opts(title="Einstein Scalar Test")
             fractal_set_status.object = (
-                f"**Complete:** {n_samples} boundary samples from "
-                f"{n_frames} recorded transitions."
+                f"**Complete:** {n_samples} boundary samples from {n_frames} recorded transitions."
             )
             if precomputed_pairs is not None:
                 geodesic_samples = int(
@@ -1513,9 +1506,7 @@ def build_holographic_principle_tab(
     def on_history_changed(defer_dashboard_updates: bool) -> None:
         """Update holographic-section controls when a new history is loaded."""
         fractal_set_run_button.disabled = False
-        fractal_set_status.object = (
-            "**Holographic Principle ready:** click Compute Fractal Set."
-        )
+        fractal_set_status.object = "**Holographic Principle ready:** click Compute Fractal Set."
 
     fractal_set_note = pn.pane.Alert(
         """

@@ -783,7 +783,7 @@ class MassCorrelatorPlotter:
             label = hv.Text(
                 t.max() * 0.7,
                 fit["mass"] * 1.1,
-                f'm = {fit["mass"]:.4f}',
+                f"m = {fit['mass']:.4f}",
             ).opts(
                 color=color,
                 text_font_size="10pt",

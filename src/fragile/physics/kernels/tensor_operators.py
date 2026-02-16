@@ -23,16 +23,15 @@ import math
 import torch
 from torch import Tensor
 
-from fragile.fractalai.qft.radial_channels import _apply_pbc_diff_torch, _slice_bounds
+from fragile.fractalai.qft.radial_channels import _apply_pbc_diff_torch
 
 from .config import TensorOperatorConfig
 from .meson_operators import (
-    PAIR_SELECTION_MODES,
     _safe_gather_pairs_2d,
     _safe_gather_pairs_3d,
     build_companion_pair_indices,
 )
-from .preparation import PreparedChannelData, _safe_gather_2d, _safe_gather_3d
+from .preparation import PreparedChannelData
 
 
 # ---------------------------------------------------------------------------
@@ -246,11 +245,16 @@ def compute_tensor_operators(
 
     # 3. Average per frame -> component_series [T, 5]
     component_series = torch.zeros(
-        t_total, 5, dtype=torch.float32, device=device,
+        t_total,
+        5,
+        dtype=torch.float32,
+        device=device,
     )
     valid_t = component_counts_per_frame > 0
     if torch.any(valid_t):
-        sums = (local_components * valid_walker.unsqueeze(-1).to(local_components.dtype)).sum(dim=1)
+        sums = (local_components * valid_walker.unsqueeze(-1).to(local_components.dtype)).sum(
+            dim=1
+        )
         component_series[valid_t] = sums[valid_t] / component_counts_per_frame[valid_t].to(
             local_components.dtype
         ).unsqueeze(-1).clamp(min=1.0)
@@ -296,12 +300,12 @@ def compute_tensor_operators(
             cos_num = torch.einsum("tnc,mtn->mct", weighted_local, cos_phase)
             sin_num = torch.einsum("tnc,mtn->mct", weighted_local, sin_phase)
             denom = counts_t[valid_frames].to(dtype=torch.float32).clamp(min=1.0)
-            op_cos[:, :, valid_frames] = cos_num[:, :, valid_frames] / denom.unsqueeze(0).unsqueeze(
+            op_cos[:, :, valid_frames] = cos_num[:, :, valid_frames] / denom.unsqueeze(
                 0
-            )
-            op_sin[:, :, valid_frames] = sin_num[:, :, valid_frames] / denom.unsqueeze(0).unsqueeze(
+            ).unsqueeze(0)
+            op_sin[:, :, valid_frames] = sin_num[:, :, valid_frames] / denom.unsqueeze(
                 0
-            )
+            ).unsqueeze(0)
 
         for m in range(n_modes):
             # Each momentum mode entry is [T, 5] (transposed from [5, T])

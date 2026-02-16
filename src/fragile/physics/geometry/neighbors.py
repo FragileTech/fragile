@@ -32,6 +32,7 @@ from typing import TYPE_CHECKING
 import torch
 from torch import Tensor
 
+
 if TYPE_CHECKING:
     from fragile.physics.fractal_gas.history import RunHistory
 
@@ -265,7 +266,10 @@ def compute_companion_batch(
     neighbor_matrix[:, :, 1] = companions_clone
 
     sample_indices, neighbor_indices = _select_alive_samples_and_neighbors(
-        alive, neighbor_matrix, sample_size, device,
+        alive,
+        neighbor_matrix,
+        sample_size,
+        device,
     )
 
     return sample_indices, neighbor_indices, alive
@@ -362,7 +366,7 @@ def _select_alive_samples_and_neighbors(
         neighbor_indices: ``[T, sample_size, k]`` neighbor data (zero-padded
             at padding positions).
     """
-    T, N = alive.shape
+    _T, _N = alive.shape
     k = neighbor_matrix.shape[2]
 
     # Sort so alive walkers come first; stable keeps original index order
@@ -422,11 +426,12 @@ def compute_recorded_neighbors_batch(
         Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
     """
     if history.neighbor_edges is None:
-        raise RuntimeError(
+        msg = (
             "compute_recorded_neighbors_batch requires history.neighbor_edges, "
             "but it is None. Use compute_companion_batch instead, or set "
             "neighbor_graph_record=True during simulation."
         )
+        raise RuntimeError(msg)
 
     n_recorded = end_idx if end_idx is not None else history.n_recorded
     T = n_recorded - start_idx
@@ -451,13 +456,18 @@ def compute_recorded_neighbors_batch(
         # Concatenate all edges and add per-timestep node offsets so that
         # node i at timestep t becomes global node (t * N + i).
         chunk_sizes = torch.tensor(
-            [e.shape[0] for e in edge_chunks], device=device, dtype=torch.long,
+            [e.shape[0] for e in edge_chunks],
+            device=device,
+            dtype=torch.long,
         )
         offsets_tensor = torch.tensor(
-            chunk_offsets, device=device, dtype=torch.long,
+            chunk_offsets,
+            device=device,
+            dtype=torch.long,
         )
         all_edges = torch.cat(
-            [e.to(device) for e in edge_chunks], dim=0,
+            [e.to(device) for e in edge_chunks],
+            dim=0,
         )  # [total_E, 2]
         per_edge_offset = torch.repeat_interleave(offsets_tensor, chunk_sizes)
         all_edges = all_edges + per_edge_offset.unsqueeze(1)
@@ -477,12 +487,18 @@ def compute_recorded_neighbors_batch(
     else:
         # No edges at any timestep — all -1 (will become self-loops below)
         neighbor_matrix = torch.full(
-            (T, N, k), -1, dtype=torch.long, device=device,
+            (T, N, k),
+            -1,
+            dtype=torch.long,
+            device=device,
         )
 
     # Vectorized alive-sample selection and neighbor gathering
     sample_indices, neighbor_indices = _select_alive_samples_and_neighbors(
-        alive, neighbor_matrix, sample_size, device,
+        alive,
+        neighbor_matrix,
+        sample_size,
+        device,
     )
 
     return sample_indices, neighbor_indices, alive
@@ -527,8 +543,7 @@ def compute_neighbor_topology(
             history, start_idx, neighbor_k, sample_size, end_idx=end_idx
         )
     raise ValueError(
-        f"Unknown neighbor method: {neighbor_method}. "
-        f"Valid options: 'recorded', 'companions'"
+        f"Unknown neighbor method: {neighbor_method}. Valid options: 'recorded', 'companions'"
     )
 
 

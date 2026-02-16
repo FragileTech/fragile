@@ -21,7 +21,7 @@ from torch import Tensor
 
 from .baryon_operators import build_companion_triplets
 from .config import GlueballOperatorConfig
-from .preparation import PreparedChannelData, _safe_gather_2d, _safe_gather_3d
+from .preparation import _safe_gather_2d, _safe_gather_3d, PreparedChannelData
 
 
 # ---------------------------------------------------------------------------
@@ -171,7 +171,9 @@ def compute_glueball_operators(
     device = data.device
 
     if t_total == 0:
-        result: dict[str, Tensor] = {"glueball": torch.zeros(0, dtype=torch.float32, device=device)}
+        result: dict[str, Tensor] = {
+            "glueball": torch.zeros(0, dtype=torch.float32, device=device)
+        }
         return result
 
     # 1. Compute color plaquette for all triplets

@@ -27,9 +27,9 @@ def test_quadratic_well_benchmark():
     x_test = torch.ones(10, 3)
     result_test = qw(x_test)
     expected = 0.5 * 0.1 * 3.0  # 0.5 * alpha * ||x||^2
-    assert torch.allclose(
-        result_test, torch.full((10,), expected)
-    ), f"Expected {expected}, got {result_test[0]}"
+    assert torch.allclose(result_test, torch.full((10,), expected)), (
+        f"Expected {expected}, got {result_test[0]}"
+    )
 
     print("  ✓ QuadraticWell benchmark works correctly")
     print(f"  ✓ Best state: {qw.best_state}")
@@ -43,9 +43,9 @@ def test_qft_config_creation():
     config = GasConfigPanel.create_qft_config(dims=3, bounds_extent=10.0)
 
     # Verify key parameters
-    assert (
-        config.benchmark_name == "Quadratic Well"
-    ), f"Expected 'Quadratic Well', got {config.benchmark_name}"
+    assert config.benchmark_name == "Quadratic Well", (
+        f"Expected 'Quadratic Well', got {config.benchmark_name}"
+    )
     assert config.bounds_extent == 10.0, f"Expected 10.0, got {config.bounds_extent}"
     assert config.n_steps == 5000, f"Expected 5000, got {config.n_steps}"
     assert config.gas_params["N"] == 200, f"Expected 200, got {config.gas_params['N']}"
@@ -53,9 +53,9 @@ def test_qft_config_creation():
 
     # Verify kinetic operator parameters
     assert config.kinetic_op.delta_t == 0.1005, f"Expected 0.1005, got {config.kinetic_op.delta_t}"
-    assert (
-        config.kinetic_op.epsilon_F == 38.6373
-    ), f"Expected 38.6373, got {config.kinetic_op.epsilon_F}"
+    assert config.kinetic_op.epsilon_F == 38.6373, (
+        f"Expected 38.6373, got {config.kinetic_op.epsilon_F}"
+    )
     assert config.kinetic_op.nu == 1.10, f"Expected 1.10, got {config.kinetic_op.nu}"
     assert config.kinetic_op.use_viscous_coupling is True, "Expected viscous coupling enabled"
     assert config.kinetic_op.viscous_length_scale == 0.251372
@@ -63,12 +63,12 @@ def test_qft_config_creation():
     assert config.kinetic_op.viscous_neighbor_penalty == 0.9
 
     # Verify companion selection parameters
-    assert (
-        config.companion_selection.epsilon == 2.80
-    ), f"Expected 2.80, got {config.companion_selection.epsilon}"
-    assert (
-        config.companion_selection_clone.epsilon == 1.68419
-    ), f"Expected 1.68419, got {config.companion_selection_clone.epsilon}"
+    assert config.companion_selection.epsilon == 2.80, (
+        f"Expected 2.80, got {config.companion_selection.epsilon}"
+    )
+    assert config.companion_selection_clone.epsilon == 1.68419, (
+        f"Expected 1.68419, got {config.companion_selection_clone.epsilon}"
+    )
 
     # Verify fitness operator
     assert config.fitness_op.rho == 0.251372, f"Expected 0.251372, got {config.fitness_op.rho}"
@@ -89,9 +89,9 @@ def test_potential_creation():
     config = GasConfigPanel.create_qft_config(dims=3, bounds_extent=10.0)
 
     # Verify potential is a QuadraticWell
-    assert isinstance(
-        config.potential, QuadraticWell
-    ), f"Expected QuadraticWell, got {type(config.potential)}"
+    assert isinstance(config.potential, QuadraticWell), (
+        f"Expected QuadraticWell, got {type(config.potential)}"
+    )
 
     # Test potential evaluation
     x = torch.zeros(5, 3)

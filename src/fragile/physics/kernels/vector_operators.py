@@ -245,7 +245,8 @@ def compute_vector_operators(
         return {"vector": empty, "axial_vector": empty.clone()}
 
     if data.positions is None:
-        raise ValueError("positions must be provided in PreparedChannelData for vector operators.")
+        msg = "positions must be provided in PreparedChannelData for vector operators."
+        raise ValueError(msg)
 
     resolved_operator_mode = _resolve_vector_operator_mode(config.operator_mode)
     resolved_projection_mode = _resolve_vector_projection_mode(config.projection_mode)

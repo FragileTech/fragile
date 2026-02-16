@@ -19,7 +19,7 @@ import torch
 from torch import Tensor
 
 from .config import MesonOperatorConfig
-from .preparation import PreparedChannelData, _safe_gather_2d, _safe_gather_3d
+from .preparation import _safe_gather_2d, _safe_gather_3d, PreparedChannelData
 
 
 # ---------------------------------------------------------------------------

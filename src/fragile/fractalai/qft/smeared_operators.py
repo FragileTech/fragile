@@ -67,7 +67,7 @@ def _normalize_method(method: str, device: torch.device) -> str:
         return "tropical"
     if normalized in _AUTO_ALIASES:
         return "floyd-warshall" if device.type == "cpu" else "tropical"
-    msg = f"Unknown APSP method {method!r}. " "Expected one of: auto, floyd-warshall, tropical."
+    msg = f"Unknown APSP method {method!r}. Expected one of: auto, floyd-warshall, tropical."
     raise ValueError(msg)
 
 
@@ -75,12 +75,11 @@ def _normalize_edge_weight_mode(mode: str) -> str:
     """Normalize edge-weight mode names to dashboard-compatible canonical names."""
     normalized = str(mode).strip().lower()
     prefix = "edge_weight:"
-    if normalized.startswith(prefix):
-        normalized = normalized[len(prefix) :]
+    normalized = normalized.removeprefix(prefix)
     normalized = _EDGE_WEIGHT_MODE_ALIASES.get(normalized, normalized)
     if normalized in EDGE_WEIGHT_MODES:
         return normalized
-    msg = f"Unsupported edge_weight_mode {mode!r}. " f"Expected one of {EDGE_WEIGHT_MODES}."
+    msg = f"Unsupported edge_weight_mode {mode!r}. Expected one of {EDGE_WEIGHT_MODES}."
     raise ValueError(msg)
 
 
@@ -348,7 +347,7 @@ def build_adjacency_batch_from_history(
     """Build dense adjacency matrices `[T, N, N]` for requested frames."""
     neighbor_edges = getattr(history, "neighbor_edges", None)
     if neighbor_edges is None:
-        msg = "RunHistory.neighbor_edges is None. " "Enable neighbor recording during simulation."
+        msg = "RunHistory.neighbor_edges is None. Enable neighbor recording during simulation."
         raise RuntimeError(msg)
 
     n_nodes = int(history.N)
@@ -707,7 +706,7 @@ def _select_scale_frame_indices(frame_ids: Sequence[int], *, n_scale_frames: int
     out: list[int] = []
     seen: set[int] = set()
     for raw_idx in picks:
-        idx = int(round(float(raw_idx.item())))
+        idx = round(float(raw_idx.item()))
         idx = min(max(idx, 0), len(ids) - 1)
         frame_id = ids[idx]
         if frame_id not in seen:

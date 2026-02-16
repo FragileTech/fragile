@@ -547,9 +547,7 @@ def _print_optimizer_stats(name: str, optimizers: dict[str, ThermodynamicAdam]) 
             snrs = [optimizer.last_snr]
         avg_snr = sum(snrs) / len(snrs) if snrs else None
 
-        line = (
-            f"    {opt_name}: lr={avg_base:.2e} " f"scale={avg_scale:.3f} " f"last={avg_last:.2e}"
-        )
+        line = f"    {opt_name}: lr={avg_base:.2e} scale={avg_scale:.3f} last={avg_last:.2e}"
         if avg_snr is not None:
             line = f"{line} snr={avg_snr:.3f}"
         print(line)
@@ -564,11 +562,7 @@ def _print_optimizer_stats(name: str, optimizers: dict[str, ThermodynamicAdam]) 
                     group_snr = last_snrs[idx]
                 elif idx == 0 and getattr(optimizer, "last_snr", None) is not None:
                     group_snr = optimizer.last_snr
-                line = (
-                    f"      {group_name}: lr={base_lr:.2e} "
-                    f"scale={scale:.3f} "
-                    f"last={last_lr:.2e}"
-                )
+                line = f"      {group_name}: lr={base_lr:.2e} scale={scale:.3f} last={last_lr:.2e}"
                 if group_snr is not None:
                     line = f"{line} snr={group_snr:.3f}"
                 print(line)

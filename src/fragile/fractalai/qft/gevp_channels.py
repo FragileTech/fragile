@@ -68,9 +68,7 @@ U1_GEVP_BASE_CHANNELS = (
     "u1_phase_q2",
     "u1_dressed_q2",
 )
-EW_MIXED_GEVP_BASE_CHANNELS = (
-    "ew_mixed",
-)
+EW_MIXED_GEVP_BASE_CHANNELS = ("ew_mixed",)
 COMPANION_GEVP_BASE_CHANNELS: dict[str, tuple[str, ...]] = {
     "nucleon": NUCLEON_GEVP_BASE_CHANNELS,
     "scalar": SCALAR_GEVP_BASE_CHANNELS,
@@ -686,13 +684,14 @@ def compute_companion_channel_gevp(
                 fit_start=config.multimode_fit_start,
                 fit_stop=config.multimode_fit_stop,
             )
-            mass_spectrum = extract_multimode_gevp_masses(
-                c_proj, t0=t0, dt=dt, config=mm_config
-            )
+            mass_spectrum = extract_multimode_gevp_masses(c_proj, t0=t0, dt=dt, config=mm_config)
             # t0 sweep (optional)
             if config.t0_sweep_values is not None and len(config.t0_sweep_values) > 0:
                 t0_sweep = extract_multimode_t0_sweep(
-                    c_proj, t0_values=config.t0_sweep_values, dt=dt, config=mm_config,
+                    c_proj,
+                    t0_values=config.t0_sweep_values,
+                    dt=dt,
+                    config=mm_config,
                 )
         except Exception:
             pass  # Fall back to principal-only if multi-mode fails
@@ -769,9 +768,9 @@ def compute_companion_channel_gevp(
     fit["gevp_remove_artifacts"] = bool(config.remove_artifacts)
     # Backward-compatible metadata key used by older dashboard summaries.
     fit["gevp_exclude_zero_error_operators"] = bool(config.remove_artifacts)
-    fit["gevp_n_basis_input"] = int(len(input_labels))
-    fit["gevp_n_basis_aligned"] = int(len(aligned_labels))
-    fit["gevp_n_basis_kept"] = int(len(kept_basis_labels))
+    fit["gevp_n_basis_input"] = len(input_labels)
+    fit["gevp_n_basis_aligned"] = len(aligned_labels)
+    fit["gevp_n_basis_kept"] = len(kept_basis_labels)
     fit["gevp_basis_labels"] = input_labels
     fit["gevp_basis_labels_kept"] = kept_basis_labels
     fit["gevp_basis_labels_dropped"] = dropped_basis_labels

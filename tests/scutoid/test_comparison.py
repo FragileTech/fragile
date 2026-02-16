@@ -73,9 +73,9 @@ def test_compare_methods_quadratic_agreement():
 
     # For simple quadratic, methods should agree reasonably
     # (may not be perfect due to non-equilibrium distribution)
-    assert (
-        metrics["eigenvalue_correlation"] > 0.3
-    ), f"Correlation too low: {metrics['eigenvalue_correlation']}"
+    assert metrics["eigenvalue_correlation"] > 0.3, (
+        f"Correlation too low: {metrics['eigenvalue_correlation']}"
+    )
 
     assert 0 <= metrics["frobenius_agreement"] <= 1, "Frobenius agreement should be in [0, 1]"
 
@@ -131,9 +131,9 @@ def test_validate_quadratic():
     assert errors["gradient_rmse"] < 0.01, f"Gradient RMSE too high: {errors['gradient_rmse']}"
 
     # Hessian may have more error due to second-order FD
-    assert (
-        errors["hessian_frobenius_error"] < 0.1
-    ), f"Hessian error too high: {errors['hessian_frobenius_error']}"
+    assert errors["hessian_frobenius_error"] < 0.1, (
+        f"Hessian error too high: {errors['hessian_frobenius_error']}"
+    )
 
 
 def test_validate_rosenbrock():

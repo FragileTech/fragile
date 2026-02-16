@@ -44,7 +44,7 @@ def _find_latest_metrics(search_dir: Path) -> Path:
 
 
 def _load_metrics(metrics_path: Path) -> tuple[dict[str, float], dict | None]:
-    metrics = json.loads(metrics_path.read_text())
+    metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
     particle = metrics.get("particle_observables") or {}
     operators = particle.get("operators") or {}
     masses: dict[str, float] = {}

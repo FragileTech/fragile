@@ -14,24 +14,15 @@ from __future__ import annotations
 from pathlib import Path
 import shutil
 import tempfile
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
+from pydantic import BaseModel, Field
 import torch
 from torch import Tensor
 
 
 if TYPE_CHECKING:
     from fragile.physics.fractal_gas.euclidean_gas import SwarmState
-
-from __future__ import annotations
-
-from typing import Any
-
-from pydantic import BaseModel, Field
-import torch
-from torch import Tensor
-
-# Import TorchBounds directly (not in TYPE_CHECKING) for Pydantic
 
 
 class RunHistory(BaseModel):

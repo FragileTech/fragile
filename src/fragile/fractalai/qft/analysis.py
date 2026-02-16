@@ -134,7 +134,7 @@ def _write_progress(
     data: dict[str, Any] = {}
     if progress_path.exists():
         try:
-            data = json.loads(progress_path.read_text())
+            data = json.loads(progress_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             data = {}
     data.update(payload)
@@ -143,7 +143,9 @@ def _write_progress(
         "stage": stage,
         "updated_at": datetime.utcnow().isoformat() + "Z",
     }
-    progress_path.write_text(json.dumps(_json_safe(data), indent=2, sort_keys=True))
+    progress_path.write_text(
+        json.dumps(_json_safe(data), indent=2, sort_keys=True), encoding="utf-8"
+    )
 
 
 def _get_param(params: dict[str, Any] | None, keys: list[str], default: Any) -> Any:
@@ -710,7 +712,7 @@ def _compute_wilson_loops(fractal_set, timestep: int) -> dict[str, Any] | None:
 
     return {
         "timestep": int(timestep),
-        "n_loops": int(len(phases)),
+        "n_loops": len(phases),
         "phase_mean": float(phases_np.mean()),
         "phase_std": float(phases_np.std()),
         "wilson_mean": float(wilson.mean()),
@@ -1724,8 +1726,7 @@ def main() -> None:
         analysis_time_idx = 1
     if analysis_time_idx >= history.n_recorded:
         msg = (
-            f"analysis_time_index {analysis_time_idx} out of bounds "
-            f"[0, {history.n_recorded - 1}]"
+            f"analysis_time_index {analysis_time_idx} out of bounds [0, {history.n_recorded - 1}]"
         )
         raise ValueError(msg)
 
@@ -2345,8 +2346,7 @@ def main() -> None:
                 fit_label = f"{fit_mode} {fit_start}-{fit_stop}"
                 n_samples = data.get("n_samples", 0)
                 print(
-                    f"  {name:<11} | {mass:>10.4f} | {r2:>9.4f} | "
-                    f"{fit_label:<16} | {n_samples:>7}"
+                    f"  {name:<11} | {mass:>10.4f} | {r2:>9.4f} | {fit_label:<16} | {n_samples:>7}"
                 )
 
     # Print mass correlator channel summary

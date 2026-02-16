@@ -1087,7 +1087,7 @@ def _compute_wilson_loops(fractal_set, timestep: int) -> dict | None:
 
     return {
         "timestep": int(timestep),
-        "n_loops": int(len(phases)),
+        "n_loops": len(phases),
         "phase_mean": float(phases_np.mean()),
         "phase_std": float(phases_np.std()),
         "wilson_mean": float(wilson.mean()),

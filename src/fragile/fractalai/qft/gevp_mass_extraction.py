@@ -13,7 +13,6 @@ over modes or lags.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-import math
 
 import torch
 from torch import Tensor
@@ -103,9 +102,7 @@ def auto_select_tau_diag(
         ct = c_proj[tau]
         ct_sym = 0.5 * (ct + ct.T)
         try:
-            evals = torch.linalg.eigvalsh(
-                torch.linalg.solve(c0_sym, ct_sym)
-            )
+            evals = torch.linalg.eigvalsh(torch.linalg.solve(c0_sym, ct_sym))
         except Exception:
             continue
         evals_sorted = evals.real.sort(descending=True).values
@@ -228,12 +225,11 @@ def compute_multimode_effective_masses(
     ratio = torch.clamp_min(lam_cur, clamp_floor) / torch.clamp_min(lam_next, clamp_floor)
     m_eff = torch.log(ratio) / dt
     # Mark non-physical as NaN
-    m_eff = torch.where(
+    return torch.where(
         (lam_cur > clamp_floor) & (lam_next > clamp_floor) & torch.isfinite(m_eff),
         m_eff,
         torch.full_like(m_eff, float("nan")),
     )
-    return m_eff
 
 
 def detect_plateau_per_mode(
@@ -258,7 +254,7 @@ def detect_plateau_per_mode(
         errors: Standard deviation within plateau per mode [N_modes].
         ranges: (start, end) indices of the plateau for each mode.
     """
-    n_modes, n_lags = m_eff.shape
+    n_modes, _n_lags = m_eff.shape
     device = m_eff.device
     masses = torch.full((n_modes,), float("nan"), dtype=torch.float32, device=device)
     errors = torch.full((n_modes,), float("nan"), dtype=torch.float32, device=device)
@@ -472,7 +468,10 @@ def extract_multimode_t0_sweep(
     for t0_val in t0_values:
         try:
             spectrum = extract_multimode_gevp_masses(
-                c_proj, t0=t0_val, dt=dt, config=sweep_config,
+                c_proj,
+                t0=t0_val,
+                dt=dt,
+                config=sweep_config,
             )
             spectra[t0_val] = spectrum
         except Exception:
@@ -491,7 +490,10 @@ def extract_multimode_t0_sweep(
 
     # Stack plateau masses: [n_successful, max_modes], pad with NaN
     mass_stack = torch.full(
-        (len(spectra), max_modes), float("nan"), dtype=torch.float32, device=device,
+        (len(spectra), max_modes),
+        float("nan"),
+        dtype=torch.float32,
+        device=device,
     )
     for i, s in enumerate(spectra.values()):
         n = min(s.n_modes, max_modes)
@@ -507,7 +509,9 @@ def extract_multimode_t0_sweep(
     variance = centered.square().sum(dim=0) / count.clamp(min=1)
     consensus_errors = torch.sqrt(variance.clamp(min=0))
     consensus_errors = torch.where(
-        count > 1, consensus_errors, torch.full_like(consensus_errors, float("nan")),
+        count > 1,
+        consensus_errors,
+        torch.full_like(consensus_errors, float("nan")),
     )
 
     return T0SweepResult(
@@ -546,7 +550,7 @@ def extract_multimode_gevp_masses(
     if config is None:
         config = GEVPMultiModeConfig()
 
-    l_len, m_dim, _ = c_proj.shape
+    l_len, _m_dim, _ = c_proj.shape
 
     # 1. Select τ_diag
     if config.tau_diag is not None:
@@ -560,9 +564,7 @@ def extract_multimode_gevp_masses(
     tau_diag = max(t0 + 1, min(tau_diag, l_len - 1))
 
     # 2. Solve GEVP
-    v, evals_diag, norm_diag = solve_gevp_fixed_eigenvectors(
-        c_proj, t0=t0, tau_diag=tau_diag
-    )
+    v, evals_diag, norm_diag = solve_gevp_fixed_eigenvectors(c_proj, t0=t0, tau_diag=tau_diag)
 
     n_modes = v.shape[1]
 
@@ -605,9 +607,7 @@ def extract_multimode_gevp_masses(
         diagnostics={
             "eigenvalues_at_tau_diag": evals_diag,
             "norm_diag": norm_diag,
-            "spectral_gap": float(
-                (evals_diag[0] / evals_diag[1]).item()
-            )
+            "spectral_gap": float((evals_diag[0] / evals_diag[1]).item())
             if n_modes >= 2 and evals_diag[1] > 0
             else float("inf"),
         },
@@ -658,9 +658,7 @@ def extract_multimode_gevp_masses_bootstrap(
         config = GEVPMultiModeConfig()
 
     # Central estimate
-    c_lags = _fft_cross_correlator_lags(
-        basis, max_lag=max_lag, use_connected=use_connected
-    )
+    c_lags = _fft_cross_correlator_lags(basis, max_lag=max_lag, use_connected=use_connected)
     c_proj = torch.einsum("ki,tkj,jm->tim", whitener, c_lags, whitener)
     c_proj = 0.5 * (c_proj + c_proj.transpose(-1, -2))
 
@@ -706,9 +704,7 @@ def extract_multimode_gevp_masses_bootstrap(
     )
     m_eff_boot = torch.log(ratio) / dt
     m_eff_boot = torch.where(
-        (lam_mode[:, :, :-1] > floor)
-        & (lam_mode[:, :, 1:] > floor)
-        & torch.isfinite(m_eff_boot),
+        (lam_mode[:, :, :-1] > floor) & (lam_mode[:, :, 1:] > floor) & torch.isfinite(m_eff_boot),
         m_eff_boot,
         torch.full_like(m_eff_boot, float("nan")),
     )
@@ -729,7 +725,9 @@ def extract_multimode_gevp_masses_bootstrap(
     count = finite_mask.sum(dim=0).float().clamp(min=1)
     safe = torch.where(finite_mask, bootstrap_masses, torch.zeros_like(bootstrap_masses))
     mean_mass = safe.sum(dim=0) / count
-    centered = torch.where(finite_mask, bootstrap_masses - mean_mass, torch.zeros_like(bootstrap_masses))
+    centered = torch.where(
+        finite_mask, bootstrap_masses - mean_mass, torch.zeros_like(bootstrap_masses)
+    )
     errors = torch.sqrt((centered.square().sum(dim=0) / count).clamp(min=0))
     errors = torch.where(count > 1, errors, torch.full_like(errors, float("nan")))
 

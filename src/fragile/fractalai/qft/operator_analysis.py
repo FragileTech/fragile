@@ -99,9 +99,9 @@ def scale_color_hex(scale_idx: int, n_scales: int) -> str:
     if n_scales <= 1:
         return "#1f77b4"
     frac = float(scale_idx) / float(max(1, n_scales - 1))
-    r = int(round(35 + 210 * frac))
-    g = int(round(160 - 90 * abs(2.0 * frac - 1.0)))
-    b = int(round(235 - 190 * frac))
+    r = round(35 + 210 * frac)
+    g = round(160 - 90 * abs(2.0 * frac - 1.0))
+    b = round(235 - 190 * frac)
     return f"#{max(0, min(255, r)):02x}{max(0, min(255, g)):02x}{max(0, min(255, b)):02x}"
 
 
@@ -484,7 +484,7 @@ def build_multiscale_effective_mass_plot(
     Uses a log y-axis.  Error-bar lower bounds are clamped to ``_MEFF_FLOOR``
     so they never cross zero (which would be invisible on a log scale).
     """
-    _MEFF_FLOOR = 1e-17
+    MEFF_FLOOR = 1e-17
     n_scales = len(results)
     elements: list[hv.Element] = []
     for s_idx, result in enumerate(results):
@@ -528,7 +528,7 @@ def build_multiscale_effective_mass_plot(
                     eb_y = meff[:n][meff_mask]
                     eb_e = meff_err[meff_mask]
                     # Clamp the lower extent so it never goes below _MEFF_FLOOR.
-                    eb_e = np.minimum(eb_e, eb_y - _MEFF_FLOOR)
+                    eb_e = np.minimum(eb_e, eb_y - MEFF_FLOOR)
                     eb_e = np.maximum(eb_e, 0.0)
                     elements.append(
                         hv.ErrorBars(
@@ -594,7 +594,7 @@ def build_multiscale_effective_mass_plot(
                     if np.count_nonzero(meff_mask) >= 2:
                         eb_y = meff[:n][meff_mask]
                         eb_e = meff_err[meff_mask]
-                        eb_e = np.minimum(eb_e, eb_y - _MEFF_FLOOR)
+                        eb_e = np.minimum(eb_e, eb_y - MEFF_FLOOR)
                         eb_e = np.maximum(eb_e, 0.0)
                         elements.append(
                             hv.ErrorBars(

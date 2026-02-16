@@ -290,9 +290,9 @@ def test_hessian_eigenvalues_sorted(quadratic_2d_setup):
     # Check descending order
     for i in range(eigenvalues.shape[0]):
         if torch.isfinite(eigenvalues[i]).all():
-            assert (
-                eigenvalues[i, :-1] >= eigenvalues[i, 1:] - 1e-6
-            ).all(), "Eigenvalues should be sorted descending"
+            assert (eigenvalues[i, :-1] >= eigenvalues[i, 1:] - 1e-6).all(), (
+                "Eigenvalues should be sorted descending"
+            )
 
 
 def test_hessian_rosenbrock():
@@ -390,9 +390,9 @@ def test_hessian_condition_numbers(quadratic_2d_setup):
         mean_condition = condition_numbers[valid_mask].mean()
 
         # Allow some error
-        assert (
-            abs(mean_condition - true_condition) / true_condition < 0.5
-        ), f"Condition number error: {mean_condition} vs {true_condition}"
+        assert abs(mean_condition - true_condition) / true_condition < 0.5, (
+            f"Condition number error: {mean_condition} vs {true_condition}"
+        )
 
 
 def test_hessian_with_step_size():

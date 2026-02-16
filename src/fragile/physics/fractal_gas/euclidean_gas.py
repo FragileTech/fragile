@@ -55,7 +55,6 @@ def random_pairing_fisher_yates(
     return companion_map
 
 
-
 class SwarmState:
     """
     Vectorized swarm state with positions and velocities.
@@ -270,7 +269,7 @@ class EuclideanGas(PanelModel):
             Tuple of (state_after_cloning, state_after_kinetic), or
             (state_after_cloning, state_after_kinetic, info) if return_info=True
         """
-        reference_state = state.clone()
+        state.clone()
 
         # Step 1: Delaunay tessellation on current positions
         delaunay_edges = None
@@ -318,7 +317,8 @@ class EuclideanGas(PanelModel):
                 else:
                     spatial_d = diffusion_data.shape[-1]
                     delaunay_diffusion = (
-                        torch.eye(state.d, device=self.device, dtype=state.x.dtype)
+                        torch
+                        .eye(state.d, device=self.device, dtype=state.x.dtype)
                         .unsqueeze(0)
                         .expand(state.N, state.d, state.d)
                         .clone()
@@ -395,7 +395,6 @@ class EuclideanGas(PanelModel):
         clone_info["cloning_applied"] = apply_clone
         fitness = other_cloned.get("fitness_cloned", fitness)
 
-
         # Remap edges for cloned walkers: use companion's neighborhood
         # so they receive the same viscous force as the walker they copied.
         if (
@@ -410,9 +409,7 @@ class EuclideanGas(PanelModel):
                 # companion→clone map (each companion maps to the walker that copied it)
                 cloned_idx = torch.where(will_clone)[0]
                 comp_idx = clone_info["companions"][cloned_idx]
-                comp_to_clone = torch.full(
-                    (state.N,), -1, dtype=torch.long, device=self.device
-                )
+                comp_to_clone = torch.full((state.N,), -1, dtype=torch.long, device=self.device)
                 comp_to_clone[comp_idx] = cloned_idx
 
                 # Keep all edges NOT from cloned walkers
@@ -667,6 +664,7 @@ class EuclideanGas(PanelModel):
                 state_cloned, state_final, info = self.step(state, return_info=True)
             except Exception as exc:
                 import traceback
+
                 traceback.print_exc()
                 terminated_early = True
                 final_step = t - 1
@@ -678,7 +676,9 @@ class EuclideanGas(PanelModel):
 
             if should_record:
                 # Physics gas has no alive mask — all walkers are always alive.
-                info.setdefault("alive_mask", torch.ones(state.N, dtype=torch.bool, device=self.device))
+                info.setdefault(
+                    "alive_mask", torch.ones(state.N, dtype=torch.bool, device=self.device)
+                )
                 recorder.record_step(
                     state_before=state,
                     state_cloned=state_cloned,

@@ -12,7 +12,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-import torch
 from torch import Tensor
 
 from fragile.fractalai.core.history import RunHistory
@@ -27,7 +26,7 @@ from .config import (
     VectorOperatorConfig,
 )
 from .correlators import compute_correlators_batched
-from .preparation import PreparedChannelData, prepare_channel_data
+from .preparation import prepare_channel_data, PreparedChannelData
 
 
 # ---------------------------------------------------------------------------

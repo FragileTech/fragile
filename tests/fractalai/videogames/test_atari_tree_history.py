@@ -181,9 +181,9 @@ class TestRunWithTree:
             for w in range(N_WALKERS):
                 nid = _node_id(step, w, N_WALKERS)
                 assert "frame" in nodes[nid], f"Node (step={step}, w={w}) missing frame field"
-                assert (
-                    nodes[nid]["frame"] is not None
-                ), f"Node (step={step}, w={w}) has frame=None despite rgb_frame"
+                assert nodes[nid]["frame"] is not None, (
+                    f"Node (step={step}, w={w}) has frame=None despite rgb_frame"
+                )
 
     def test_get_best_path_frames_all_filled(self, tree):
         """Path frames should all be non-None without needing render_missing_path_frames."""
@@ -819,7 +819,7 @@ class TestPruning:
         unpruned_max = 1 + N * (n_steps + 1)  # root + N per recorded step
         actual = tree._tree.data.number_of_nodes()
         assert actual < unpruned_max, (
-            f"Pruned graph ({actual}) should be smaller than " f"unpruned ({unpruned_max})"
+            f"Pruned graph ({actual}) should be smaller than unpruned ({unpruned_max})"
         )
 
     def test_pruned_tree_branches_still_valid(self):
@@ -859,9 +859,9 @@ class TestPruning:
             }, f"Walker {w}: unexpected branch start {branch[0]}"
             # Every consecutive pair should be a real edge
             for i in range(len(branch) - 1):
-                assert tree._tree.data.has_edge(
-                    branch[i], branch[i + 1]
-                ), f"Missing edge {branch[i]} → {branch[i + 1]} in walker {w}'s branch"
+                assert tree._tree.data.has_edge(branch[i], branch[i + 1]), (
+                    f"Missing edge {branch[i]} → {branch[i + 1]} in walker {w}'s branch"
+                )
 
     def test_pruned_tree_to_atari_history(self):
         """Conversion to AtariHistory must succeed after pruning."""
@@ -956,6 +956,6 @@ class TestPruning:
 
         tree.prune_dead_branches()
         second_removed = tree.prune_dead_branches()
-        assert (
-            second_removed == 0
-        ), f"Second prune should be no-op but removed {second_removed} nodes"
+        assert second_removed == 0, (
+            f"Second prune should be no-op but removed {second_removed} nodes"
+        )

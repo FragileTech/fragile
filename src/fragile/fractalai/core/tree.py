@@ -609,7 +609,7 @@ class DataTree(NetworkxTree):
         if names is None:
             return self.names
         for name_ in names:
-            name = name_[len(self.next_prefix) :] if name_.startswith(self.next_prefix) else name_
+            name = name_.removeprefix(self.next_prefix)
             if name not in self.names:
                 msg = (
                     f"Data corresponding to name {name} not present in "

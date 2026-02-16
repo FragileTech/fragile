@@ -711,7 +711,7 @@ class GasConfigPanel(param.Parameterized):
         self.record_every = 1
         self.kinetic_op.use_viscous_coupling = True
         self.status_pane.object = (
-            "**Applied Riemannian Mix preset (Delaunay neighbors, " "record every step).**"
+            "**Applied Riemannian Mix preset (Delaunay neighbors, record every step).**"
         )
 
     def _apply_mexican_hat_preset(self) -> None:
@@ -741,9 +741,7 @@ class GasConfigPanel(param.Parameterized):
         step = max(0, min(int(step), total_steps))
         percent = (step / total_steps) * 100.0 if total_steps else 0.0
         eta_str = self._format_eta(eta_seconds)
-        return (
-            f"**Progress:** {step}/{total_steps} ({percent:.1f}%) " f"| **Remaining:** {eta_str}"
-        )
+        return f"**Progress:** {step}/{total_steps} ({percent:.1f}%) | **Remaining:** {eta_str}"
 
     def _sync_progress_total(self, total_steps: int) -> None:
         total_steps = max(1, int(total_steps))
@@ -1130,26 +1128,22 @@ Euclidean time will be added as an additional dimension for QFT analysis.
                     weighting_widget["options"] = filtered
                 if self.kinetic_op.viscous_neighbor_weighting not in filtered:
                     self.kinetic_op.viscous_neighbor_weighting = filtered[0]
-            hidden_kinetic_params.update(
-                {
-                    "viscous_length_scale",
-                    "viscous_neighbor_penalty",
-                    "viscous_neighbor_threshold",
-                    "viscous_degree_cap",
-                }
-            )
+            hidden_kinetic_params.update({
+                "viscous_length_scale",
+                "viscous_neighbor_penalty",
+                "viscous_neighbor_threshold",
+                "viscous_degree_cap",
+            })
         if self.hide_compute_volume_weight_widget:
             hidden_kinetic_params.add("compute_volume_weights")
         if self.hide_viscous_coupling_widget:
             hidden_kinetic_params.add("use_viscous_coupling")
         if self.hide_diffusion_widgets:
-            hidden_kinetic_params.update(
-                {
-                    "diagonal_diffusion",
-                    "diffusion_mode",
-                    "diffusion_grad_scale",
-                }
-            )
+            hidden_kinetic_params.update({
+                "diagonal_diffusion",
+                "diffusion_mode",
+                "diffusion_grad_scale",
+            })
         if self.hide_integrator_widget:
             hidden_kinetic_params.add("integrator")
 
@@ -1229,9 +1223,7 @@ Euclidean time will be added as an additional dimension for QFT analysis.
             hidden_fitness_params.add("rho")
 
         if hidden_fitness_params:
-            fitness_params = [
-                name for name in fitness_params if name not in hidden_fitness_params
-            ]
+            fitness_params = [name for name in fitness_params if name not in hidden_fitness_params]
 
         def _build_operator_panel(operator, parameters: list[str]) -> pn.Param:
             widgets = {

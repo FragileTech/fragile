@@ -52,8 +52,7 @@ def _build_two_mode_correlator(
     c_proj = torch.zeros(t_len, n_ops, n_ops)
     for lag in range(t_len):
         c_proj[lag] = (
-            lambda_0[lag] * q[:, 0:1] @ q[:, 0:1].T
-            + lambda_1[lag] * q[:, 1:2] @ q[:, 1:2].T
+            lambda_0[lag] * q[:, 0:1] @ q[:, 0:1].T + lambda_1[lag] * q[:, 1:2] @ q[:, 1:2].T
         )
         # Add small symmetric noise
         noise = noise_scale * torch.randn(n_ops, n_ops)
@@ -154,9 +153,7 @@ class TestDetectPlateauPerMode:
         """Constant effective mass should be detected as a plateau."""
         n_lags = 20
         m_eff = torch.full((1, n_lags), 0.5, dtype=torch.float32)
-        masses, errors, ranges = detect_plateau_per_mode(
-            m_eff, min_length=3, max_slope=0.3
-        )
+        masses, _errors, _ranges = detect_plateau_per_mode(m_eff, min_length=3, max_slope=0.3)
         assert math.isfinite(float(masses[0]))
         assert abs(float(masses[0]) - 0.5) < 0.01
 
@@ -166,9 +163,7 @@ class TestDetectPlateauPerMode:
         n_lags = 20
         m_eff = 0.5 + 0.01 * torch.randn(1, n_lags)
         m_eff = torch.clamp_min(m_eff, 0.01)
-        masses, errors, ranges = detect_plateau_per_mode(
-            m_eff, min_length=3, max_slope=0.3
-        )
+        masses, _errors, _ranges = detect_plateau_per_mode(m_eff, min_length=3, max_slope=0.3)
         assert math.isfinite(float(masses[0]))
         assert abs(float(masses[0]) - 0.5) < 0.1
 
@@ -179,16 +174,14 @@ class TestDetectPlateauPerMode:
             torch.full((n_lags,), 0.3),
             torch.full((n_lags,), 0.8),
         ])
-        masses, errors, ranges = detect_plateau_per_mode(
-            m_eff, min_length=3, max_slope=0.3
-        )
+        masses, _errors, _ranges = detect_plateau_per_mode(m_eff, min_length=3, max_slope=0.3)
         assert abs(float(masses[0]) - 0.3) < 0.01
         assert abs(float(masses[1]) - 0.8) < 0.01
 
 
 class TestExtractMultimodeGEVPMasses:
     def test_shape_correctness(self) -> None:
-        c_proj, m_ground, m_excited = _build_two_mode_correlator(t_len=48, n_ops=3)
+        c_proj, _m_ground, _m_excited = _build_two_mode_correlator(t_len=48, n_ops=3)
         spectrum = extract_multimode_gevp_masses(c_proj, t0=1, dt=1.0)
 
         assert isinstance(spectrum, GEVPMassSpectrum)
@@ -222,8 +215,11 @@ class TestExtractMultimodeGEVPMasses:
         m_ground = 0.3
         m_excited = 0.9
         c_proj, _, _ = _build_two_mode_correlator(
-            m_ground=m_ground, m_excited=m_excited,
-            t_len=64, n_ops=3, noise_scale=1e-6,
+            m_ground=m_ground,
+            m_excited=m_excited,
+            t_len=64,
+            n_ops=3,
+            noise_scale=1e-6,
         )
         config = GEVPMultiModeConfig(
             plateau_min_length=3,
@@ -281,8 +277,11 @@ class TestFitExponentialPerMode:
         mass = 0.4
         t = torch.arange(30, dtype=torch.float32)
         eigenvalues = torch.exp(-mass * t).unsqueeze(0)  # [1, 30]
-        exp_masses, exp_errors, exp_r2 = fit_exponential_per_mode(
-            eigenvalues, dt=1.0, fit_start=1, fit_stop=25,
+        exp_masses, _exp_errors, exp_r2 = fit_exponential_per_mode(
+            eigenvalues,
+            dt=1.0,
+            fit_start=1,
+            fit_stop=25,
         )
         assert exp_masses.shape == (1,)
         assert math.isfinite(float(exp_masses[0]))
@@ -296,8 +295,11 @@ class TestFitExponentialPerMode:
             torch.exp(-0.3 * t),
             torch.exp(-0.7 * t),
         ])
-        exp_masses, exp_errors, exp_r2 = fit_exponential_per_mode(
-            eigenvalues, dt=1.0, fit_start=1, fit_stop=30,
+        exp_masses, _exp_errors, _exp_r2 = fit_exponential_per_mode(
+            eigenvalues,
+            dt=1.0,
+            fit_start=1,
+            fit_stop=30,
         )
         assert exp_masses.shape == (2,)
         assert abs(float(exp_masses[0]) - 0.3) < 0.01
@@ -309,8 +311,11 @@ class TestFitExponentialPerMode:
         eigenvalues = torch.exp(-0.5 * t).unsqueeze(0)
         # Corrupt some points
         eigenvalues[0, 15:] = -1.0
-        exp_masses, exp_errors, exp_r2 = fit_exponential_per_mode(
-            eigenvalues, dt=1.0, fit_start=1, fit_stop=20,
+        exp_masses, _exp_errors, _exp_r2 = fit_exponential_per_mode(
+            eigenvalues,
+            dt=1.0,
+            fit_start=1,
+            fit_stop=20,
         )
         # Should still recover mass from valid points
         assert math.isfinite(float(exp_masses[0]))
@@ -319,8 +324,11 @@ class TestFitExponentialPerMode:
     def test_insufficient_points_gives_nan(self) -> None:
         """Fewer than 3 valid points should return NaN."""
         eigenvalues = torch.tensor([[1.0, 0.5, -1.0, -1.0, -1.0]])  # [1, 5]
-        exp_masses, exp_errors, exp_r2 = fit_exponential_per_mode(
-            eigenvalues, dt=1.0, fit_start=0, fit_stop=5,
+        exp_masses, _exp_errors, _exp_r2 = fit_exponential_per_mode(
+            eigenvalues,
+            dt=1.0,
+            fit_start=0,
+            fit_stop=5,
         )
         assert math.isnan(float(exp_masses[0]))
 
@@ -333,7 +341,9 @@ class TestFitExponentialPerMode:
             torch.exp(-0.9 * t),
         ])
         exp_masses, exp_errors, exp_r2 = fit_exponential_per_mode(
-            eigenvalues, dt=1.0, fit_start=1,
+            eigenvalues,
+            dt=1.0,
+            fit_start=1,
         )
         assert exp_masses.shape == (3,)
         assert exp_errors.shape == (3,)
@@ -360,20 +370,24 @@ class TestExtractMultimodeT0Sweep:
         """Sweep should produce one spectrum per valid t0."""
         c_proj, _, _ = _build_two_mode_correlator(t_len=48, n_ops=3, noise_scale=1e-5)
         result = extract_multimode_t0_sweep(
-            c_proj, t0_values=[1, 2, 3], dt=1.0,
+            c_proj,
+            t0_values=[1, 2, 3],
+            dt=1.0,
         )
         assert isinstance(result, T0SweepResult)
         assert result.t0_values == [1, 2, 3]
         assert len(result.spectra) >= 1
         for t0_val in result.spectra:
-            assert t0_val in [1, 2, 3]
+            assert t0_val in {1, 2, 3}
 
     def test_tolerates_failed_t0(self) -> None:
         """Invalid t0 values should be silently skipped."""
         c_proj, _, _ = _build_two_mode_correlator(t_len=48, n_ops=3)
         # t0=100 is out of range
         result = extract_multimode_t0_sweep(
-            c_proj, t0_values=[1, 2, 100], dt=1.0,
+            c_proj,
+            t0_values=[1, 2, 100],
+            dt=1.0,
         )
         assert 100 not in result.spectra
         assert len(result.spectra) >= 1
@@ -382,7 +396,9 @@ class TestExtractMultimodeT0Sweep:
         """Consensus masses/errors should be populated when spectra exist."""
         c_proj, _, _ = _build_two_mode_correlator(t_len=48, n_ops=3, noise_scale=1e-5)
         result = extract_multimode_t0_sweep(
-            c_proj, t0_values=[1, 2, 3, 4], dt=1.0,
+            c_proj,
+            t0_values=[1, 2, 3, 4],
+            dt=1.0,
         )
         assert result.consensus_masses is not None
         assert result.consensus_errors is not None
@@ -392,7 +408,9 @@ class TestExtractMultimodeT0Sweep:
         """All-failed sweep should give no consensus."""
         c_proj = torch.zeros(5, 2, 2)  # degenerate
         result = extract_multimode_t0_sweep(
-            c_proj, t0_values=[10, 20], dt=1.0,
+            c_proj,
+            t0_values=[10, 20],
+            dt=1.0,
         )
         assert len(result.spectra) == 0
         assert result.consensus_masses is None
