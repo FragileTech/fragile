@@ -12,10 +12,10 @@ import panel as pn
 import param
 import torch
 
-from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.einstein_equations import compute_einstein_test, EinsteinConfig
-from fragile.fractalai.qft.einstein_equations_plotting import build_scalar_test_log_plot
-from fragile.fractalai.qft.smeared_operators import compute_pairwise_distance_matrices_from_history
+from fragile.physics.app.smeared_operators import compute_pairwise_distance_matrices_from_history
+from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.app.qft.einstein_equations import compute_einstein_test, EinsteinConfig
+from fragile.physics.app.qft.einstein_equations_plotting import build_scalar_test_log_plot
 
 
 @dataclass

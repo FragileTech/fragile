@@ -13,32 +13,32 @@ import pandas as pd
 import panel as pn
 import param
 
-from fragile.fractalai.qft.correlator_channels import ChannelCorrelatorResult
-from fragile.fractalai.qft.dashboard.gevp_dashboard import (
+from fragile.physics.app.qft.correlator_channels import ChannelCorrelatorResult
+from fragile.physics.app.qft.dashboard.gevp_dashboard import (
     build_gevp_dashboard_sections,
     clear_gevp_dashboard,
     create_gevp_dashboard_widgets,
     update_gevp_dashboard,
 )
-from fragile.fractalai.qft.dashboard.gevp_mass_dashboard import (
+from fragile.physics.app.qft.dashboard.gevp_mass_dashboard import (
     build_gevp_mass_spectrum_sections,
     clear_gevp_mass_spectrum,
     create_gevp_mass_spectrum_widgets,
     update_gevp_mass_spectrum,
 )
-from fragile.fractalai.qft.electroweak_channels import (
+from fragile.physics.app.qft.electroweak_channels import (
     compute_electroweak_channels,
     ELECTROWEAK_CHANNELS,
     ELECTROWEAK_PARITY_CHANNELS,
     ELECTROWEAK_SYMMETRY_BREAKING_CHANNELS,
     ElectroweakChannelConfig,
 )
-from fragile.fractalai.qft.gevp_channels import (
+from fragile.physics.app.qft.gevp_channels import (
     compute_companion_channel_gevp,
     get_companion_gevp_basis_channels,
     GEVPConfig,
 )
-from fragile.fractalai.qft.multiscale_electroweak import (
+from fragile.physics.app.qft.multiscale_electroweak import (
     compute_multiscale_electroweak_channels,
     EW_MIXED_BASE_CHANNELS,
     MultiscaleElectroweakConfig,

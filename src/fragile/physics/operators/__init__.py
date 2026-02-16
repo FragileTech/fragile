@@ -62,6 +62,15 @@ from .multiscale import (
 )
 from .pipeline import compute_strong_force_pipeline, PipelineConfig, PipelineResult
 from .preparation import prepare_channel_data, PreparedChannelData
+from .propagator_correlators import (
+    PropagatorChannelResult,
+    PropagatorResult,
+    compute_baryon_propagator,
+    compute_glueball_propagator,
+    compute_meson_propagator,
+    compute_propagator_pipeline,
+    compute_vector_propagator,
+)
 from .tensor_operators import compute_tensor_operators
 from .vector_operators import compute_vector_operators
 
@@ -77,6 +86,8 @@ __all__ = [
     "PipelineConfig",
     "PipelineResult",
     "PreparedChannelData",
+    "PropagatorChannelResult",
+    "PropagatorResult",
     "TensorOperatorConfig",
     "VectorOperatorConfig",
     "compute_baryon_operators",
@@ -84,14 +95,20 @@ __all__ = [
     "compute_correlators_batched",
     "compute_glueball_operators",
     # Operators
+    "compute_baryon_propagator",
+    "compute_glueball_propagator",
     "compute_meson_operators",
+    "compute_meson_propagator",
     # Geodesics
     "compute_pairwise_distances",
     "compute_smeared_kernels",
+    # Propagator correlators
+    "compute_propagator_pipeline",
     # Pipeline
     "compute_strong_force_pipeline",
     "compute_tensor_operators",
     "compute_vector_operators",
+    "compute_vector_propagator",
     # Multiscale
     "gate_pair_validity_by_scale",
     "gate_triplet_validity_by_scale",

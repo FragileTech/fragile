@@ -7418,7 +7418,7 @@ def _update_strong_tables(
     anchor_mode: str = "per_anchor_row",
     calibration_family_map: dict[str, str] | None = None,
     calibration_ratio_specs: list[tuple[str, str, str]] | None = None,
-    comparison_channel_overrides: dict[str, str] | None = None,
+    comparison_channel_overrides: dict[str, str | list[str]] | None = None,
     include_error_breakdown: bool = False,
 ) -> None:
     """Orchestrate all strong-force table updates (module-level, no closure)."""
@@ -7441,10 +7441,16 @@ def _update_strong_tables(
     )
     comparison_results = dict(results)
     if comparison_channel_overrides:
-        for canonical_name, selected_name in comparison_channel_overrides.items():
+        for canonical_name, selected in comparison_channel_overrides.items():
             key = str(canonical_name).strip()
-            selected_key = str(selected_name).strip()
-            if not key or not selected_key:
+            if not key:
+                continue
+            # Accept both single string and list of strings
+            if isinstance(selected, list):
+                selected_key = str(selected[0]).strip() if selected else ""
+            else:
+                selected_key = str(selected).strip()
+            if not selected_key:
                 continue
             selected_result = results.get(selected_key)
             if selected_result is None:
@@ -8537,43 +8543,43 @@ def create_app() -> pn.template.FastListTemplate:
             value="AIC-Weighted",
             button_type="default",
         )
-        companion_strong_force_variant_pseudoscalar = pn.widgets.Select(
+        companion_strong_force_variant_pseudoscalar = pn.widgets.MultiChoice(
             name="Pseudoscalar Variant",
             options=["pseudoscalar"],
-            value="pseudoscalar",
+            value=["pseudoscalar"],
             sizing_mode="stretch_width",
         )
-        companion_strong_force_variant_nucleon = pn.widgets.Select(
+        companion_strong_force_variant_nucleon = pn.widgets.MultiChoice(
             name="Nucleon Variant",
             options=["nucleon"],
-            value="nucleon",
+            value=["nucleon"],
             sizing_mode="stretch_width",
         )
-        companion_strong_force_variant_glueball = pn.widgets.Select(
+        companion_strong_force_variant_glueball = pn.widgets.MultiChoice(
             name="Glueball Variant",
             options=["glueball"],
-            value="glueball",
+            value=["glueball"],
             sizing_mode="stretch_width",
         )
-        companion_strong_force_variant_scalar = pn.widgets.Select(
+        companion_strong_force_variant_scalar = pn.widgets.MultiChoice(
             name="Scalar Variant",
             options=["scalar"],
-            value="scalar",
+            value=["scalar"],
             sizing_mode="stretch_width",
         )
-        companion_strong_force_variant_vector = pn.widgets.Select(
+        companion_strong_force_variant_vector = pn.widgets.MultiChoice(
             name="Vector Variant",
             options=["vector"],
-            value="vector",
+            value=["vector"],
             sizing_mode="stretch_width",
         )
-        companion_strong_force_variant_axial_vector = pn.widgets.Select(
+        companion_strong_force_variant_axial_vector = pn.widgets.MultiChoice(
             name="Axial Vector Variant",
             options=["axial_vector"],
-            value="axial_vector",
+            value=["axial_vector"],
             sizing_mode="stretch_width",
         )
-        companion_strong_force_variant_selectors: dict[str, pn.widgets.Select] = {
+        companion_strong_force_variant_selectors: dict[str, pn.widgets.MultiChoice] = {
             "pseudoscalar": companion_strong_force_variant_pseudoscalar,
             "nucleon": companion_strong_force_variant_nucleon,
             "glueball": companion_strong_force_variant_glueball,
@@ -12029,22 +12035,25 @@ def create_app() -> pn.template.FastListTemplate:
                     if not names:
                         names = [str(base_name)]
                     selector.options = names
-                    if str(selector.value) not in names:
-                        selector.value = names[0]
+                    # Keep currently selected values that are still valid, or default to first
+                    current = [v for v in (selector.value or []) if v in names]
+                    if not current:
+                        current = [names[0]]
+                    selector.value = current
             finally:
                 companion_strong_force_variant_sync["active"] = False
 
         def _companion_comparison_overrides(
             results: dict[str, ChannelCorrelatorResult],
-        ) -> dict[str, str]:
-            overrides: dict[str, str] = {}
+        ) -> dict[str, list[str]]:
+            overrides: dict[str, list[str]] = {}
             for canonical_name, selector in companion_strong_force_variant_selectors.items():
-                selected_name = str(selector.value).strip()
-                if not selected_name:
-                    continue
-                if selected_name not in results:
-                    continue
-                overrides[str(canonical_name)] = selected_name
+                selected_names = [
+                    str(v).strip() for v in (selector.value or [])
+                    if str(v).strip() and str(v).strip() in results
+                ]
+                if selected_names:
+                    overrides[str(canonical_name)] = selected_names
             return overrides
 
         def _hide_companion_strong_force_plots(message: str) -> None:

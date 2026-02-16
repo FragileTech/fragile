@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import panel as pn
 
-from fragile.fractalai.qft.plotting import build_lyapunov_plot
+from fragile.physics.app.qft.plotting import build_lyapunov_plot
 from fragile.physics.fractal_gas.history import RunHistory
 
 

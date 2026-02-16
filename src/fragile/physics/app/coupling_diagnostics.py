@@ -26,13 +26,13 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.aggregation import compute_color_states_batch, estimate_ell0
-from fragile.fractalai.qft.smeared_operators import (
+from fragile.physics.app.smeared_operators import (
     compute_pairwise_distance_matrices_from_history,
     compute_smeared_kernels_from_distances,
     select_interesting_scales_from_history,
 )
+from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.qft_utils import compute_color_states_batch, estimate_ell0
 
 
 COMPANION_TOPOLOGY_MODES = ("distance", "clone", "both")

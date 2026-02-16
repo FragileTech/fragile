@@ -2,7 +2,7 @@
 
 Each function produces a single-channel plot with scatter points (dots)
 on a log-scale Y axis, matching the style of the old dashboard's
-``ChannelPlot`` from ``fragile.fractalai.qft.plotting``.
+``ChannelPlot`` from ``fragile.physics.app.qft.plotting``.
 """
 
 from __future__ import annotations
