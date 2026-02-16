@@ -31,7 +31,6 @@ from typing import TYPE_CHECKING
 
 import torch
 from torch import Tensor
-import torch.nn.functional as F
 
 if TYPE_CHECKING:
     from fragile.physics.fractal_gas.history import RunHistory
@@ -173,23 +172,17 @@ def query_walker_neighbors_vectorized(
         filtered_row_indices = row_indices[edge_mask]
         filtered_neighbors = csr_indices[edge_mask]
 
-        edge_mask_int = edge_mask.to(torch.long)
-        cum = torch.cumsum(edge_mask_int, dim=0)
-        row_start = csr_ptr[:-1]
-        row_base = torch.zeros(n_nodes, dtype=cum.dtype, device=device)
-        if n_nodes > 1:
-            start_indices = row_start[1:]
-            safe_indices = torch.clamp(start_indices - 1, min=0)
-            row_base[1:] = torch.where(
-                start_indices > 0,
-                cum[safe_indices],
-                torch.zeros_like(start_indices),
-            )
-
-        pos_in_row = cum - row_base[row_indices]
-        filtered_pos = pos_in_row[edge_mask] - 1
-
+        # Compute within-row positions using the cumsum trick.
+        # filtered_row_indices is sorted (CSR preserves source order),
+        # so bincount + cumsum gives group starts, and arange - starts
+        # gives the 0-indexed position of each filtered edge within its row.
         counts_filtered = torch.bincount(filtered_row_indices, minlength=n_nodes)
+        group_starts = torch.zeros(n_nodes, dtype=torch.long, device=device)
+        group_starts[1:] = counts_filtered[:-1].cumsum(0)
+        filtered_pos = (
+            torch.arange(filtered_row_indices.numel(), device=device)
+            - group_starts[filtered_row_indices]
+        )
         max_degree = int(counts_filtered.max().item()) if counts_filtered.numel() > 0 else 0
         if max_degree == 0:
             neighbors = torch.empty(n_nodes, 0, dtype=csr_indices.dtype, device=device)
@@ -240,6 +233,10 @@ def compute_companion_batch(
 ) -> tuple[Tensor, Tensor, Tensor]:
     """Use stored companion indices as neighbors.
 
+    Fully vectorized — builds a dense ``[T, N, k]`` neighbor matrix from the
+    companion tensors, then delegates to :func:`_select_alive_samples_and_neighbors`
+    for alive-walker selection and padding.  No Python loop over timesteps.
+
     Args:
         history: RunHistory object.
         start_idx: Starting time index.
@@ -261,41 +258,15 @@ def compute_companion_batch(
     companions_distance = history.companions_distance[start_idx - 1 : n_recorded - 1]
     companions_clone = history.companions_clone[start_idx - 1 : n_recorded - 1]
 
-    all_sample_idx = []
-    all_neighbor_idx = []
+    # Build dense neighbor matrix [T, N, k] from companion data.
+    # Columns 0 and 1 are the distance and clone companions; columns 2+ are 0.
+    neighbor_matrix = torch.zeros(T, N, k, device=device, dtype=torch.long)
+    neighbor_matrix[:, :, 0] = companions_distance
+    neighbor_matrix[:, :, 1] = companions_clone
 
-    for t in range(T):
-        alive_t = alive[t]
-        alive_indices = torch.where(alive_t)[0]
-
-        if alive_indices.numel() == 0:
-            all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
-            all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
-            continue
-
-        if alive_indices.numel() <= sample_size:
-            sample_idx = alive_indices
-        else:
-            sample_idx = alive_indices[:sample_size]
-
-        actual_sample_size = sample_idx.numel()
-        comp_d = companions_distance[t, sample_idx]
-        comp_c = companions_clone[t, sample_idx]
-        neighbor_idx = torch.zeros(actual_sample_size, k, device=device, dtype=torch.long)
-        neighbor_idx[:, 0] = comp_d
-        neighbor_idx[:, 1] = comp_c
-
-        if actual_sample_size < sample_size:
-            sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
-            neighbor_idx = F.pad(
-                neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0
-            )
-
-        all_sample_idx.append(sample_idx)
-        all_neighbor_idx.append(neighbor_idx)
-
-    sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
-    neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
+    sample_indices, neighbor_indices = _select_alive_samples_and_neighbors(
+        alive, neighbor_matrix, sample_size, device,
+    )
 
     return sample_indices, neighbor_indices, alive
 
@@ -305,51 +276,119 @@ def _edges_to_neighbor_matrix(
     N: int,
     k: int,
     device: torch.device,
+    skip_self_loops: bool = True,
 ) -> Tensor:
     """Convert edge list to dense neighbor matrix using vectorized scatter.
 
+    Sorts edges by source, computes within-group column positions via the
+    cumsum trick, then scatters into a dense ``[N, k]`` matrix.  Only the
+    first *k* neighbors per node are kept; the rest are discarded so the
+    output is allocated at exactly ``[N, k]`` rather than ``[N, max_deg]``.
+
     Args:
-        edges: Edge tensor [E, 2] (src, dst pairs).
+        edges: Edge tensor ``[E, 2]`` (src, dst pairs).
         N: Number of nodes.
         k: Number of neighbors to keep per node.
         device: Target device.
+        skip_self_loops: If ``True`` (default), remove ``(i, i)`` edges
+            before processing.  Set to ``False`` when edges are guaranteed
+            self-loop-free to save one comparison + filter pass.
 
     Returns:
-        Neighbor matrix [N, k] with -1 for missing neighbors.
+        Neighbor matrix ``[N, k]`` with ``-1`` for missing neighbors.
     """
     edges_d = edges.to(device)
     src, dst = edges_d[:, 0], edges_d[:, 1]
 
-    # Remove self-loops
-    not_self = src != dst
-    src = src[not_self]
-    dst = dst[not_self]
+    if skip_self_loops:
+        not_self = src != dst
+        src = src[not_self]
+        dst = dst[not_self]
 
     if src.numel() == 0:
         return torch.full((N, k), -1, dtype=torch.long, device=device)
 
-    # Sort by src to group neighbors together
-    sort_order = torch.argsort(src, stable=True)
+    # Sort by src to group neighbors together (stability not needed)
+    sort_order = torch.argsort(src)
     src_sorted = src[sort_order]
     dst_sorted = dst[sort_order]
 
-    # Compute per-source offsets via cumulative count within each group
+    # Column index = position of each edge within its source's group
     degree = torch.bincount(src_sorted, minlength=N)
-    max_deg = degree.max().item()
-
-    # Build column indices: for each edge, its position within its source's group
-    # Use cumsum trick: count occurrences so far for each source
     group_starts = torch.zeros(N, dtype=torch.long, device=device)
     group_starts[1:] = degree[:-1].cumsum(0)
     col_idx = torch.arange(src_sorted.numel(), device=device) - group_starts[src_sorted]
 
-    # Scatter into dense matrix [N, max_deg]
-    neighbor_full = torch.full((N, max(max_deg, k)), -1, dtype=torch.long, device=device)
-    # Only write where col_idx < max_deg (always true by construction)
-    neighbor_full[src_sorted, col_idx] = dst_sorted
+    # Only scatter edges that fit in k columns — avoids allocating [N, max_deg]
+    fits = col_idx < k
+    neighbor_matrix = torch.full((N, k), -1, dtype=torch.long, device=device)
+    neighbor_matrix[src_sorted[fits], col_idx[fits]] = dst_sorted[fits]
 
-    # Truncate/pad to exactly k columns
-    return neighbor_full[:, :k]
+    return neighbor_matrix
+
+
+def _select_alive_samples_and_neighbors(
+    alive: Tensor,
+    neighbor_matrix: Tensor,
+    sample_size: int,
+    device: torch.device,
+) -> tuple[Tensor, Tensor]:
+    """Vectorized alive-walker selection and neighbor gathering.
+
+    Replaces the per-timestep Python loop that was previously used in both
+    ``compute_companion_batch`` and ``compute_recorded_neighbors_batch``.
+
+    Algorithm:
+        1. **argsort** the alive mask (descending, stable) so alive walkers
+           appear first within each timestep while preserving their original
+           index order — O(T N log N) but a single GPU kernel.
+        2. Truncate to ``sample_size`` columns.
+        3. Build a validity mask (positions < alive count per timestep).
+        4. **gather** neighbor data for the selected walkers.
+        5. Replace ``-1`` sentinels (missing neighbors) with self-index.
+        6. Zero-pad positions beyond the alive count.
+
+    Args:
+        alive: Boolean alive mask ``[T, N]``.
+        neighbor_matrix: Neighbor indices ``[T, N, k]``.  Use ``-1`` for
+            missing neighbors (they will be replaced with the walker's own
+            index).
+        sample_size: Output width — number of samples per timestep.
+        device: Target device.
+
+    Returns:
+        sample_indices: ``[T, sample_size]`` walker indices (alive walkers
+            first in ascending order, then zero-padded).
+        neighbor_indices: ``[T, sample_size, k]`` neighbor data (zero-padded
+            at padding positions).
+    """
+    T, N = alive.shape
+    k = neighbor_matrix.shape[2]
+
+    # Sort so alive walkers come first; stable keeps original index order
+    sort_order = torch.argsort(alive.long(), dim=1, descending=True, stable=True)
+    sort_order = sort_order[:, :sample_size]  # [T, sample_size]
+
+    # Validity mask — positions beyond alive count are padding
+    alive_counts = alive.sum(dim=1, keepdim=True)  # [T, 1]
+    positions = torch.arange(sample_size, device=device).unsqueeze(0)  # [1, S]
+    is_valid = positions < alive_counts  # [T, S]
+
+    # Sample indices: alive walker ids at valid positions, 0 at padding
+    sample_indices = torch.where(is_valid, sort_order, torch.zeros_like(sort_order))
+
+    # Gather neighbor data for selected walkers
+    gather_idx = sort_order.unsqueeze(2).expand(-1, -1, k)  # [T, S, k]
+    neighbor_indices = torch.gather(neighbor_matrix, 1, gather_idx)  # [T, S, k]
+
+    # Replace -1 (missing neighbors) with self-index
+    self_idx = sample_indices.unsqueeze(2).expand_as(neighbor_indices)
+    neighbor_indices = torch.where(neighbor_indices < 0, self_idx, neighbor_indices)
+
+    # Zero out padding positions
+    neighbor_indices = neighbor_indices * is_valid.unsqueeze(2).long()
+
+    return sample_indices, neighbor_indices
 
 
 def compute_recorded_neighbors_batch(
@@ -361,8 +400,16 @@ def compute_recorded_neighbors_batch(
 ) -> tuple[Tensor, Tensor, Tensor]:
     """Use recorded neighbor edges from RunHistory.
 
-    Vectorized: converts edge lists to dense neighbor matrices via scatter,
-    then gathers for sample indices using advanced indexing.
+    Batched implementation: concatenates all per-timestep edge lists with
+    per-timestep node offsets (node *i* in timestep *t* becomes global node
+    ``t * N + i``), builds one combined neighbor matrix for all ``T * N``
+    nodes in a single :func:`_edges_to_neighbor_matrix` call, then converts
+    global indices back to per-timestep local indices and delegates
+    alive-sample selection to :func:`_select_alive_samples_and_neighbors`.
+
+    The lightweight Python loop that collects edge tensors touches only
+    list metadata; all heavy computation (argsort, bincount, scatter,
+    gather) runs as batched GPU kernels.
 
     Args:
         history: RunHistory object.
@@ -390,50 +437,53 @@ def compute_recorded_neighbors_batch(
 
     alive = history.alive_mask[start_idx - 1 : n_recorded - 1]  # [T, N]
 
-    all_sample_idx = []
-    all_neighbor_idx = []
-
+    # --- Collect per-timestep edges (lightweight Python loop) ---
+    edge_chunks: list[Tensor] = []
+    chunk_offsets: list[int] = []
     for t in range(T):
-        alive_t = alive[t]
-        alive_indices = torch.where(alive_t)[0]
-        if alive_indices.numel() == 0:
-            all_sample_idx.append(torch.zeros(sample_size, device=device, dtype=torch.long))
-            all_neighbor_idx.append(torch.zeros(sample_size, k, device=device, dtype=torch.long))
-            continue
-
-        if alive_indices.numel() <= sample_size:
-            sample_idx = alive_indices
-        else:
-            sample_idx = alive_indices[:sample_size]
-
-        actual_sample_size = sample_idx.numel()
-
         record_idx = start_idx + t
         edges = history.neighbor_edges[record_idx]
-        if not torch.is_tensor(edges) or edges.numel() == 0:
-            # Fallback to self-padding
-            neighbor_idx = sample_idx.unsqueeze(1).expand(-1, k).clone()
-        else:
-            # Vectorized: scatter edges into dense matrix, then gather for samples
-            neighbor_matrix = _edges_to_neighbor_matrix(edges, N, k, device)
-            neighbor_idx = neighbor_matrix[sample_idx]  # [S, k] advanced indexing
+        if torch.is_tensor(edges) and edges.numel() > 0:
+            edge_chunks.append(edges)
+            chunk_offsets.append(t * N)
 
-            # Replace -1 (missing neighbors) with self-index
-            missing = neighbor_idx < 0
-            if missing.any():
-                neighbor_idx[missing] = sample_idx.unsqueeze(1).expand_as(neighbor_idx)[missing]
+    if edge_chunks:
+        # Concatenate all edges and add per-timestep node offsets so that
+        # node i at timestep t becomes global node (t * N + i).
+        chunk_sizes = torch.tensor(
+            [e.shape[0] for e in edge_chunks], device=device, dtype=torch.long,
+        )
+        offsets_tensor = torch.tensor(
+            chunk_offsets, device=device, dtype=torch.long,
+        )
+        all_edges = torch.cat(
+            [e.to(device) for e in edge_chunks], dim=0,
+        )  # [total_E, 2]
+        per_edge_offset = torch.repeat_interleave(offsets_tensor, chunk_sizes)
+        all_edges = all_edges + per_edge_offset.unsqueeze(1)
 
-        if actual_sample_size < sample_size:
-            sample_idx = F.pad(sample_idx, (0, sample_size - actual_sample_size), value=0)
-            neighbor_idx = F.pad(
-                neighbor_idx, (0, 0, 0, sample_size - actual_sample_size), value=0
-            )
+        # One scatter pass for the combined T*N-node graph
+        combined = _edges_to_neighbor_matrix(all_edges, T * N, k, device)
+        neighbor_matrix = combined.reshape(T, N, k)
 
-        all_sample_idx.append(sample_idx)
-        all_neighbor_idx.append(neighbor_idx)
+        # Convert global indices back to per-timestep local indices.
+        # Valid entries are in [t*N, (t+1)*N); missing entries are -1.
+        t_offsets = torch.arange(T, device=device).view(T, 1, 1) * N
+        neighbor_matrix = torch.where(
+            neighbor_matrix >= 0,
+            neighbor_matrix - t_offsets,
+            torch.full_like(neighbor_matrix, -1),
+        )
+    else:
+        # No edges at any timestep — all -1 (will become self-loops below)
+        neighbor_matrix = torch.full(
+            (T, N, k), -1, dtype=torch.long, device=device,
+        )
 
-    sample_indices = torch.stack(all_sample_idx, dim=0)  # [T, S]
-    neighbor_indices = torch.stack(all_neighbor_idx, dim=0)  # [T, S, k]
+    # Vectorized alive-sample selection and neighbor gathering
+    sample_indices, neighbor_indices = _select_alive_samples_and_neighbors(
+        alive, neighbor_matrix, sample_size, device,
+    )
 
     return sample_indices, neighbor_indices, alive
 

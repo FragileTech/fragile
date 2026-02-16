@@ -614,7 +614,7 @@ class EuclideanGas(PanelModel):
             }
 
         # Initialize vectorized history recorder with pre-allocated arrays
-        from fragile.fractalai.core.vec_history import VectorizedHistoryRecorder
+        from fragile.physics.fractal_gas.history import VectorizedHistoryRecorder
 
         recorder = VectorizedHistoryRecorder(
             N=N,

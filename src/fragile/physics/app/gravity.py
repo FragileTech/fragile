@@ -14,6 +14,8 @@ import torch
 
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.qft.smeared_operators import compute_pairwise_distance_matrices_from_history
+from fragile.fractalai.qft.einstein_equations import EinsteinConfig, compute_einstein_test
+from fragile.fractalai.qft.einstein_equations_plotting import build_scalar_test_log_plot
 
 
 @dataclass
@@ -1168,16 +1170,55 @@ def _build_geodesic_distance_distribution_by_frame(
     }
 
 
+def _build_geodesic_distribution_plot(
+    distribution: dict[str, Any] | None,
+    *,
+    width: int = 900,
+    height: int = 260,
+) -> hv.Element:
+    """Build a HoloViews histogram pane for precomputed geodesic samples."""
+    if not isinstance(distribution, dict):
+        return hv.Text(0, 0, "No geodesic pairwise distribution available.").opts(
+            title="Geodesic Pairwise Distance Distribution"
+        )
+    n_samples = int(distribution.get("n_geodesic_samples", 0) or 0)
+    if n_samples <= 0:
+        return hv.Text(0, 0, "No finite geodesic pairs available.").opts(
+            title="Geodesic Pairwise Distance Distribution"
+        )
+
+    hist = np.asarray(distribution.get("log10_hist", []), dtype=float)
+    edges = np.asarray(distribution.get("log10_edges", []), dtype=float)
+    if hist.size == 0 or edges.size != hist.size + 1:
+        return hv.Text(0, 0, "Malformed geodesic distribution data.").opts(
+            title="Geodesic Pairwise Distance Distribution"
+        )
+
+    return hv.Histogram((hist, edges), kdims=["log10_geodesic_distance"], vdims=["count"]).opts(
+        width=width,
+        height=height,
+        xlabel="log10(geodesic distance)",
+        ylabel="Pair count",
+        title=(
+            "Geodesic Pairwise Distance Distribution "
+            f"(frames={int(distribution.get('n_frames_with_samples', 0) or 0)}, "
+            f"samples={n_samples})"
+        ),
+        color="#4c78a8",
+        line_color="white",
+        show_grid=True,
+    )
+
+
 def build_holographic_principle_tab(
     *,
     state: dict[str, Any],
     run_tab_computation: Callable[[dict[str, Any], pn.pane.Markdown, str, Callable[[RunHistory], None]], None],
     new_dirac_ew_settings: Any,
-    fractal_set_settings_cls: type[Any] = FractalSetSettings,
 ) -> HolographicPrincipleSection:
     """Build Holographic Principle tab with callbacks."""
 
-    fractal_set_settings = fractal_set_settings_cls()
+    fractal_set_settings = FractalSetSettings()
     fractal_set_status = pn.pane.Markdown(
         "**Fractal Set:** Load a RunHistory and click Compute Fractal Set.",
         sizing_mode="stretch_width",
@@ -1257,6 +1298,11 @@ def build_holographic_principle_tab(
     fractal_set_plot_dist_geom = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
     fractal_set_plot_fit_geom = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
     fractal_set_plot_total_geom = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+    fractal_set_geodesic_distribution_plot = pn.pane.HoloViews(
+        sizing_mode="stretch_width",
+        linked_axes=False,
+    )
+    einstein_scalar_log_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
     fractal_set_regression_table = pn.widgets.Tabulator(
         pd.DataFrame(),
         pagination=None,
@@ -1412,17 +1458,50 @@ def build_holographic_principle_tab(
                 str(new_dirac_ew_settings.edge_weight_mode),
                 bool(new_dirac_ew_settings.kernel_assume_all_alive),
             )
-            state["_multiscale_geodesic_distribution"] = _build_geodesic_distance_distribution_by_frame(
+            distribution = _build_geodesic_distance_distribution_by_frame(
                 precomputed_pairs
             )
+            state["_multiscale_geodesic_distribution"] = distribution
+            fractal_set_geodesic_distribution_plot.object = _build_geodesic_distribution_plot(
+                distribution
+            )
+            g_newton_metric = "s_total_geom" if bool(
+                fractal_set_settings.use_geometry_correction
+            ) else "s_total"
+            try:
+                einstein_result = compute_einstein_test(
+                    history,
+                    EinsteinConfig(),
+                    fractal_set_regressions=regression_df,
+                    g_newton_metric=g_newton_metric,
+                )
+                state["einstein_test_result"] = einstein_result
+                einstein_scalar_log_plot.object = build_scalar_test_log_plot(einstein_result)
+            except Exception as exc:
+                einstein_scalar_log_plot.object = hv.Text(
+                    0,
+                    0,
+                    f"Einstein test unavailable: {str(exc)}",
+                ).opts(title="Einstein Scalar Test")
             fractal_set_status.object = (
                 f"**Complete:** {n_samples} boundary samples from "
                 f"{n_frames} recorded transitions."
             )
             if precomputed_pairs is not None:
-                distribution = state.get("_multiscale_geodesic_distribution") or {}
-                geodesic_samples = int(distribution.get("n_geodesic_samples", 0) or 0)
-                geodesic_frames = int(distribution.get("n_frames_with_samples", 0) or 0)
+                geodesic_samples = int(
+                    state.get("_multiscale_geodesic_distribution", {}).get(
+                        "n_geodesic_samples",
+                        0,
+                    )
+                    or 0
+                )
+                geodesic_frames = int(
+                    state.get("_multiscale_geodesic_distribution", {}).get(
+                        "n_frames_with_samples",
+                        0,
+                    )
+                    or 0
+                )
                 fractal_set_status.object = (
                     f"{fractal_set_status.object}"
                     f"  Geodesic pairwise matrix cache: {geodesic_samples} samples from "
@@ -1486,6 +1565,11 @@ def build_holographic_principle_tab(
         fractal_set_plot_fit_geom,
         pn.pane.Markdown("### S_total_geom vs Area_CST_geom"),
         fractal_set_plot_total_geom,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Geodesic Pairwise Distance Distribution"),
+        fractal_set_geodesic_distribution_plot,
+        pn.pane.Markdown("### Einstein Scalar Test: R vs log10(rho)"),
+        einstein_scalar_log_plot,
         pn.layout.Divider(),
         pn.pane.Markdown("### Per-Frame Means"),
         fractal_set_frame_table,
