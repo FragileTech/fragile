@@ -430,6 +430,16 @@ class EuclideanGas(PanelModel):
                         [delaunay_edge_weights[keep], delaunay_edge_weights[from_comp]],
                         dim=0,
                     )
+                if delaunay_edge_geodesic is not None:
+                    delaunay_edge_geodesic = torch.cat(
+                        [delaunay_edge_geodesic[keep], delaunay_edge_geodesic[from_comp]],
+                        dim=0,
+                    )
+                if delaunay_all_edge_weights is not None:
+                    delaunay_all_edge_weights = {
+                        k: torch.cat([w[keep], w[from_comp]], dim=0)
+                        for k, w in delaunay_all_edge_weights.items()
+                    }
 
         # Step 5: Kinetic update
         n_kinetic_steps = max(1, int(getattr(self.kinetic_op, "n_kinetic_steps", 1)))
