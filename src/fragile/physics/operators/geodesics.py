@@ -11,11 +11,11 @@ All public functions accept and return plain :class:`torch.Tensor` objects
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import torch
 from torch import Tensor
+
 
 if TYPE_CHECKING:
     from fragile.physics.fractal_gas.history import RunHistory
@@ -98,12 +98,8 @@ def _segment_min_by_flat_index(
         return empty, empty_val
 
     if hasattr(torch.Tensor, "scatter_reduce_"):
-        reduced = torch.full(
-            (size,), float("inf"), dtype=values.dtype, device=values.device
-        )
-        reduced.scatter_reduce_(
-            0, flat_index, values, reduce="amin", include_self=True
-        )
+        reduced = torch.full((size,), float("inf"), dtype=values.dtype, device=values.device)
+        reduced.scatter_reduce_(0, flat_index, values, reduce="amin", include_self=True)
         valid = torch.isfinite(reduced)
         unique_flat = torch.nonzero(valid, as_tuple=False).flatten()
         return unique_flat, reduced[unique_flat]
@@ -165,9 +161,7 @@ def build_adjacency_from_edges(
         weights = torch.ones(src.shape[0], dtype=torch.float32, device=dev)
     else:
         if not torch.is_tensor(edge_weights):
-            edge_weights_t = torch.as_tensor(
-                edge_weights, dtype=torch.float32, device=dev
-            )
+            edge_weights_t = torch.as_tensor(edge_weights, dtype=torch.float32, device=dev)
         else:
             edge_weights_t = edge_weights.to(device=dev, dtype=torch.float32)
         if edge_weights_t.numel() != edges_t.shape[0]:
@@ -186,23 +180,17 @@ def build_adjacency_from_edges(
 
     flat_size = n * n
     flat_index = src * n + dst
-    uniq_flat, uniq_weight = _segment_min_by_flat_index(
-        flat_index, weights, size=flat_size
-    )
+    uniq_flat, uniq_weight = _segment_min_by_flat_index(flat_index, weights, size=flat_size)
     uniq_src = torch.div(uniq_flat, n, rounding_mode="floor")
     uniq_dst = uniq_flat.remainder(n)
     adjacency[uniq_src, uniq_dst] = uniq_weight
 
     if undirected:
         rev_flat = dst * n + src
-        rev_flat_u, rev_weight_u = _segment_min_by_flat_index(
-            rev_flat, weights, size=flat_size
-        )
+        rev_flat_u, rev_weight_u = _segment_min_by_flat_index(rev_flat, weights, size=flat_size)
         rev_src = torch.div(rev_flat_u, n, rounding_mode="floor")
         rev_dst = rev_flat_u.remainder(n)
-        adjacency[rev_src, rev_dst] = torch.minimum(
-            adjacency[rev_src, rev_dst], rev_weight_u
-        )
+        adjacency[rev_src, rev_dst] = torch.minimum(adjacency[rev_src, rev_dst], rev_weight_u)
 
     return adjacency
 
@@ -230,9 +218,7 @@ def batched_floyd_warshall(distance_batch: Tensor) -> Tensor:
     return result
 
 
-def _batched_min_plus_matmul(
-    left: Tensor, right: Tensor, *, block_size: int = 64
-) -> Tensor:
+def _batched_min_plus_matmul(left: Tensor, right: Tensor, *, block_size: int = 64) -> Tensor:
     """Batched min-plus matrix multiplication in blocks.
 
     ``(left ⊗ right)_{ij} = min_k(left_{ik} + right_{kj})``
@@ -281,9 +267,7 @@ def _batched_min_plus_matmul(
     return output
 
 
-def batched_tropical_shortest_paths(
-    distance_batch: Tensor, *, block_size: int = 64
-) -> Tensor:
+def batched_tropical_shortest_paths(distance_batch: Tensor, *, block_size: int = 64) -> Tensor:
     """APSP via tropical (min-plus) matrix squaring on ``[T, N, N]``."""
     if distance_batch.ndim != 3:
         raise ValueError(
@@ -348,9 +332,7 @@ def _resolve_frame_edge_weights(
         msg = f"edge_weights[{frame_idx}][{mode!r}] is None."
         raise ValueError(msg)
     if not torch.is_tensor(frame_weights):
-        frame_weights_t = torch.as_tensor(
-            frame_weights, device=device, dtype=dtype
-        ).reshape(-1)
+        frame_weights_t = torch.as_tensor(frame_weights, device=device, dtype=dtype).reshape(-1)
     else:
         frame_weights_t = frame_weights.to(device=device, dtype=dtype).reshape(-1)
     if int(frame_weights_t.numel()) != int(n_edges):
@@ -365,37 +347,11 @@ def _resolve_frame_edge_weights(
     return frame_weights_t
 
 
-def _resolve_alive_mask_for_frame(
-    history: RunHistory,
-    *,
-    frame_idx: int,
-    n_nodes: int,
-    assume_all_alive: bool,
-    device: torch.device,
-) -> Tensor:
-    """Resolve alive walker mask aligned to a recorded neighbor frame."""
-    if assume_all_alive:
-        return torch.ones((n_nodes,), dtype=torch.bool, device=device)
-
-    alive = getattr(history, "alive_mask", None)
-    if not torch.is_tensor(alive):
-        return torch.ones((n_nodes,), dtype=torch.bool, device=device)
-    if alive.ndim != 2 or int(alive.shape[-1]) != n_nodes or int(alive.shape[0]) <= 0:
-        return torch.ones((n_nodes,), dtype=torch.bool, device=device)
-
-    if frame_idx <= 0:
-        return torch.ones((n_nodes,), dtype=torch.bool, device=device)
-
-    alive_idx = min(max(frame_idx - 1, 0), int(alive.shape[0]) - 1)
-    return alive[alive_idx].to(device=device, dtype=torch.bool)
-
-
 def build_adjacency_batch_from_history(
     history: RunHistory,
     frame_indices: list[int],
     edge_weight_mode: str = "riemannian_kernel_volume",
     undirected: bool = True,
-    assume_all_alive: bool = True,
 ) -> Tensor:
     """Build ``[T, N, N]`` adjacency from RunHistory neighbor_edges + edge_weights."""
     neighbor_edges = getattr(history, "neighbor_edges", None)
@@ -437,21 +393,6 @@ def build_adjacency_batch_from_history(
             device=dev,
             dtype=torch.float32,
         )
-        if edges_t.numel() > 0:
-            alive_mask = _resolve_alive_mask_for_frame(
-                history,
-                frame_idx=frame_idx,
-                n_nodes=n_nodes,
-                assume_all_alive=assume_all_alive,
-                device=dev,
-            )
-            if not bool(alive_mask.all()):
-                src = edges_t[:, 0]
-                dst = edges_t[:, 1]
-                valid_edges = alive_mask[src] & alive_mask[dst]
-                edges_t = edges_t[valid_edges]
-                if weights is not None:
-                    weights = weights[valid_edges]
         adjacency_batch[out_idx] = build_adjacency_from_edges(
             num_nodes=n_nodes,
             edges=edges_t,
@@ -473,7 +414,6 @@ def compute_pairwise_distances(
     method: str = "auto",
     edge_weight_mode: str = "riemannian_kernel_volume",
     batch_size: int = 4,
-    assume_all_alive: bool = True,
 ) -> Tensor:
     """Compute geodesic distance matrices ``[T, N, N]`` for given frames.
 
@@ -482,9 +422,7 @@ def compute_pairwise_distances(
     if not frame_indices:
         n_nodes = int(history.N)
         dev = _resolve_default_device(history, None)
-        return torch.empty(
-            (0, n_nodes, n_nodes), dtype=torch.float32, device=dev
-        )
+        return torch.empty((0, n_nodes, n_nodes), dtype=torch.float32, device=dev)
 
     dev = _resolve_default_device(history, None)
     resolved_method = _normalize_method(method, dev)
@@ -498,7 +436,6 @@ def compute_pairwise_distances(
             frame_indices=current_ids,
             edge_weight_mode=edge_weight_mode,
             undirected=True,
-            assume_all_alive=assume_all_alive,
         )
         if resolved_method == "floyd-warshall":
             distances = batched_floyd_warshall(adjacency)
@@ -588,16 +525,12 @@ def compute_smeared_kernels(
 ) -> Tensor:
     """Compute row-normalized smearing kernels ``[T, S, N, N]`` from distances."""
     if distances.ndim != 3:
-        raise ValueError(
-            f"distances must have shape [T, N, N], got {tuple(distances.shape)}."
-        )
+        raise ValueError(f"distances must have shape [T, N, N], got {tuple(distances.shape)}.")
     if distances.shape[-1] != distances.shape[-2]:
         msg = "distances must be square on the last two dimensions."
         raise ValueError(msg)
 
-    scales_t = torch.as_tensor(
-        scales, dtype=distances.dtype, device=distances.device
-    )
+    scales_t = torch.as_tensor(scales, dtype=distances.dtype, device=distances.device)
     if scales_t.ndim != 1 or scales_t.numel() == 0:
         raise ValueError(
             f"scales must be a non-empty 1D sequence, got shape {tuple(scales_t.shape)}."
@@ -631,9 +564,9 @@ def compute_smeared_kernels(
 
     # Zero diagonal
     n_nodes = int(distances.shape[-1])
-    diagonal_mask = torch.eye(
-        n_nodes, dtype=torch.bool, device=distances.device
-    ).view(1, 1, n_nodes, n_nodes)
+    diagonal_mask = torch.eye(n_nodes, dtype=torch.bool, device=distances.device).view(
+        1, 1, n_nodes, n_nodes
+    )
     kernels = kernels.masked_fill(diagonal_mask, 0.0)
 
     if normalize_rows:

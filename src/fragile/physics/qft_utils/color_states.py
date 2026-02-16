@@ -10,8 +10,9 @@ from typing import TYPE_CHECKING
 import torch
 from torch import Tensor
 
+
 if TYPE_CHECKING:
-    from fragile.fractalai.core.history import RunHistory
+    from fragile.physics.fractal_gas.history import RunHistory
 
 
 def compute_color_states_batch(
@@ -77,17 +78,11 @@ def estimate_ell0(history: RunHistory) -> float:
 
     x_pre = history.x_before_clone[mid_idx]
     comp_idx = history.companions_distance[mid_idx - 1]
-    alive = history.alive_mask[mid_idx - 1]
 
     # Compute distances
     diff = x_pre - x_pre[comp_idx]
-    if history.pbc and history.bounds is not None:
-        high = history.bounds.high.to(x_pre)
-        low = history.bounds.low.to(x_pre)
-        span = high - low
-        diff = diff - span * torch.round(diff / span)
     dist = torch.linalg.vector_norm(diff, dim=-1)
 
-    if dist.numel() > 0 and alive.any():
-        return float(dist[alive].median().item())
+    if dist.numel() > 0:
+        return float(dist.median().item())
     return 1.0

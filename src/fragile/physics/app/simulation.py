@@ -95,6 +95,7 @@ class SwarmConvergence3D(param.Parameterized):
         objects=["Viridis", "Plasma", "Cividis", "Turbo", "Magma", "Inferno"],
         doc="Colorscale for distance-colored edges",
     )
+
     def __init__(self, history: RunHistory | None, bounds_extent: float = 10.0, **params):
         super().__init__(**params)
         self.history = history

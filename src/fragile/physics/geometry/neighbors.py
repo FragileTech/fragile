@@ -28,6 +28,7 @@ Usage:
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+import warnings
 
 import torch
 from torch import Tensor
@@ -525,6 +526,7 @@ def compute_neighbor_topology(
         history: RunHistory object.
         start_idx: Starting time index.
         neighbor_method: Neighbor selection method:
+            - "auto": Try recorded neighbors first, fall back to companions
             - "recorded": Use history.neighbor_edges
             - "companions": Use history.companions_clone
         neighbor_k: Number of neighbors per sample.
@@ -534,6 +536,29 @@ def compute_neighbor_topology(
     Returns:
         Tuple of (sample_indices [T, S], neighbor_indices [T, S, k], alive [T, N]).
     """
+    if neighbor_method == "auto":
+        n_recorded = end_idx if end_idx is not None else history.n_recorded
+        required_steps = n_recorded - start_idx
+        if history.neighbor_edges is not None and len(history.neighbor_edges) > 0:
+            if len(history.neighbor_edges) >= required_steps:
+                return compute_recorded_neighbors_batch(
+                    history, start_idx, neighbor_k, sample_size, end_idx=end_idx
+                )
+            warnings.warn(
+                f"Recorded neighbors only available for {len(history.neighbor_edges)} steps, "
+                f"but {required_steps} steps requested. Falling back to companions.",
+                UserWarning,
+                stacklevel=2,
+            )
+        if history.companions_clone is not None:
+            return compute_companion_batch(
+                history, start_idx, neighbor_k, sample_size, end_idx=end_idx
+            )
+        msg = (
+            "No neighbor data available. RunHistory has neither neighbor_edges nor "
+            "companions_clone. Set neighbor_graph_record=True during simulation."
+        )
+        raise RuntimeError(msg)
     if neighbor_method == "companions":
         return compute_companion_batch(
             history, start_idx, neighbor_k, sample_size, end_idx=end_idx
@@ -543,7 +568,8 @@ def compute_neighbor_topology(
             history, start_idx, neighbor_k, sample_size, end_idx=end_idx
         )
     raise ValueError(
-        f"Unknown neighbor method: {neighbor_method}. Valid options: 'recorded', 'companions'"
+        f"Unknown neighbor method: {neighbor_method}. "
+        f"Valid options: 'auto', 'recorded', 'companions'"
     )
 
 

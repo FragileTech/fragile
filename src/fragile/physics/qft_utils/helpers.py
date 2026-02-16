@@ -6,39 +6,14 @@ fragile.fractalai.qft.baryon_triplet_channels.
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import torch
 from torch import Tensor
 
+
 if TYPE_CHECKING:
     from fragile.fractalai.core.history import RunHistory
-
-
-# =============================================================================
-# PBC Helpers (from radial_channels)
-# =============================================================================
-
-
-def _apply_pbc_diff_torch(diff: Tensor, bounds: Any | None) -> Tensor:
-    if bounds is None:
-        return diff
-    high = bounds.high.to(diff)
-    low = bounds.low.to(diff)
-    span = high - low
-    return diff - span * torch.round(diff / span)
-
-
-def _slice_bounds(bounds: Any | None, keep_dims: list[int]) -> Any | None:
-    if bounds is None:
-        return None
-    if not hasattr(bounds, "low") or not hasattr(bounds, "high"):
-        return bounds
-    low = bounds.low[keep_dims]
-    high = bounds.high[keep_dims]
-    from fragile.fractalai.bounds import TorchBounds
-
-    return TorchBounds(low=low, high=high, shape=low.shape)
 
 
 # =============================================================================
@@ -46,7 +21,7 @@ def _slice_bounds(bounds: Any | None, keep_dims: list[int]) -> Any | None:
 # =============================================================================
 
 
-def _safe_gather_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
+def safe_gather_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
     """Safely gather values[:, idx] and return gathered values + in-range mask."""
     n = values.shape[1]
     in_range = (indices >= 0) & (indices < n)
@@ -55,7 +30,7 @@ def _safe_gather_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
     return gathered, in_range
 
 
-def _safe_gather_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
+def safe_gather_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
     """Safely gather values[:, idx, :] and return gathered values + in-range mask."""
     n = values.shape[1]
     in_range = (indices >= 0) & (indices < n)
@@ -68,12 +43,42 @@ def _safe_gather_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
     return gathered, in_range
 
 
+def safe_gather_pairs_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
+    """Safely gather values[:, idx] for indices [T,N,P] using preparation helpers."""
+    if values.ndim != 2 or indices.ndim != 3:
+        raise ValueError(
+            f"_safe_gather_pairs_2d expects values [T,N] and indices [T,N,P], got "
+            f"{tuple(values.shape)} and {tuple(indices.shape)}."
+        )
+    t, n, p = indices.shape
+    idx_flat = indices.reshape(t, n * p)
+    gathered_flat, in_range_flat = safe_gather_2d(values, idx_flat)
+    return gathered_flat.reshape(t, n, p), in_range_flat.reshape(t, n, p)
+
+
+def safe_gather_pairs_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
+    """Safely gather values[:, idx, :] for indices [T,N,P] using preparation helpers."""
+    if values.ndim != 3 or indices.ndim != 3:
+        raise ValueError(
+            f"_safe_gather_pairs_3d expects values [T,N,C] and indices [T,N,P], got "
+            f"{tuple(values.shape)} and {tuple(indices.shape)}."
+        )
+    t, n, p = indices.shape
+    c = values.shape[-1]
+    idx_flat = indices.reshape(t, n * p)
+    gathered_flat, in_range_flat = safe_gather_3d(values, idx_flat)
+    return (
+        gathered_flat.reshape(t, n, p, c),
+        in_range_flat.reshape(t, n, p),
+    )
+
+
 # =============================================================================
 # Dimension / Index Resolution (from baryon_triplet_channels)
 # =============================================================================
 
 
-def _resolve_3d_dims(
+def resolve_3d_dims(
     total_dims: int, dims: tuple[int, int, int] | None, name: str
 ) -> tuple[int, int, int]:
     """Resolve and validate exactly 3 component indices."""
@@ -94,29 +99,10 @@ def _resolve_3d_dims(
     return dims_tuple
 
 
-def _resolve_mc_time_index(history: RunHistory, mc_time_index: int) -> int:
-    """Resolve mc_time_index as recorded index or recorded step."""
-    if history.n_recorded < 2:
-        msg = "Need at least 2 recorded timesteps."
-        raise ValueError(msg)
-    raw = int(mc_time_index)
-    if raw in history.recorded_steps:
-        resolved = int(history.get_step_index(raw))
-    else:
-        resolved = raw
-    if resolved < 1 or resolved >= history.n_recorded:
-        raise ValueError(
-            f"mc_time_index {resolved} out of bounds (valid recorded index "
-            f"1..{history.n_recorded - 1} or a recorded step value)."
-        )
-    return resolved
-
-
-def _resolve_frame_indices(
+def resolve_frame_indices(
     history: RunHistory,
     warmup_fraction: float,
     end_fraction: float,
-    mc_time_index: int | None,
 ) -> list[int]:
     """Resolve frame indices [start_idx, end_idx) used by correlator analysis."""
     if history.n_recorded < 2:
@@ -125,10 +111,6 @@ def _resolve_frame_indices(
     start_idx = max(1, int(history.n_recorded * float(warmup_fraction)))
     end_idx = max(start_idx + 1, int(history.n_recorded * float(end_fraction)))
     end_idx = min(end_idx, history.n_recorded)
-
-    if mc_time_index is not None:
-        start_idx = _resolve_mc_time_index(history, int(mc_time_index))
-        end_idx = history.n_recorded
 
     if end_idx <= start_idx:
         return []

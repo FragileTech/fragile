@@ -151,12 +151,13 @@ def compute_strong_force_pipeline(
             method=ms.distance_method,
             edge_weight_mode=ms.edge_weight_mode,
             batch_size=ms.distance_batch_size,
-            assume_all_alive=ms.assume_all_alive,
         )
 
         if ms.scales is not None:
             data.scales = torch.as_tensor(
-                ms.scales, dtype=torch.float32, device=data.device,
+                ms.scales,
+                dtype=torch.float32,
+                device=data.device,
             )
         else:
             data.scales = select_scales(
@@ -168,15 +169,13 @@ def compute_strong_force_pipeline(
                 min_scale=ms.min_scale,
             )
 
-        data.companion_d_ij, data.companion_d_ik, data.companion_d_jk = (
-            gather_companion_distances(
-                data.pairwise_distances,
-                data.companions_distance,
-                data.companions_clone,
-            )
+        data.companion_d_ij, data.companion_d_ik, data.companion_d_jk = gather_companion_distances(
+            data.pairwise_distances,
+            data.companions_distance,
+            data.companions_clone,
         )
 
-        if ms.mode in ("kernel", "both"):
+        if ms.mode in {"kernel", "both"}:
             data.kernels = compute_smeared_kernels(
                 data.pairwise_distances,
                 data.scales,

@@ -55,7 +55,9 @@ def compute_correlators_batched(
             if series.ndim == 2:
                 # Scalar [S, T]: treat S as batch dimension
                 corr = _fft_correlator_batched(
-                    series, max_lag=max_lag, use_connected=use_connected,
+                    series,
+                    max_lag=max_lag,
+                    use_connected=use_connected,
                 )  # [S, max_lag+1]
                 results[name] = corr
             elif series.ndim == 3:
@@ -63,7 +65,9 @@ def compute_correlators_batched(
                 S, T, C = series.shape
                 flat = series.reshape(S * C, T)
                 corr = _fft_correlator_batched(
-                    flat, max_lag=max_lag, use_connected=use_connected,
+                    flat,
+                    max_lag=max_lag,
+                    use_connected=use_connected,
                 )  # [S*C, max_lag+1]
                 corr = corr.reshape(S, C, -1).sum(dim=1)  # [S, max_lag+1]
                 results[name] = corr
@@ -87,7 +91,9 @@ def compute_correlators_batched(
         if scalar_series:
             batch = torch.stack(scalar_series, dim=0)
             corr = _fft_correlator_batched(
-                batch, max_lag=max_lag, use_connected=use_connected,
+                batch,
+                max_lag=max_lag,
+                use_connected=use_connected,
             )
             for i, name in enumerate(scalar_names):
                 results[name] = corr[i]
@@ -104,7 +110,9 @@ def compute_correlators_batched(
             if component_list:
                 batch = torch.stack(component_list, dim=0)
                 corr = _fft_correlator_batched(
-                    batch, max_lag=max_lag, use_connected=use_connected,
+                    batch,
+                    max_lag=max_lag,
+                    use_connected=use_connected,
                 )
                 offset = 0
                 for idx, name in enumerate(multi_names):
@@ -118,11 +126,16 @@ def compute_correlators_batched(
         if name not in results:
             if n_scales > 1:
                 results[name] = torch.zeros(
-                    n_scales, n_lags, dtype=torch.float32, device=device,
+                    n_scales,
+                    n_lags,
+                    dtype=torch.float32,
+                    device=device,
                 )
             else:
                 results[name] = torch.zeros(
-                    n_lags, dtype=torch.float32, device=device,
+                    n_lags,
+                    dtype=torch.float32,
+                    device=device,
                 )
 
     return results

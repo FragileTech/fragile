@@ -10,9 +10,10 @@ import torch
 from torch import Tensor
 
 from fragile.physics.qft_utils.companions import build_companion_triplets
+from fragile.physics.qft_utils.helpers import safe_gather_2d, safe_gather_3d
 
 from .config import BaryonOperatorConfig
-from .preparation import _safe_gather_2d, _safe_gather_3d, PreparedChannelData
+from .preparation import PreparedChannelData
 
 
 # ---------------------------------------------------------------------------
@@ -32,7 +33,6 @@ def _det3(a: Tensor, b: Tensor, c: Tensor) -> Tensor:
 def _compute_determinants_for_indices(
     vectors: Tensor,
     valid_vectors: Tensor,
-    alive: Tensor,
     companion_j: Tensor,
     companion_k: Tensor,
     eps: float,
@@ -44,21 +44,17 @@ def _compute_determinants_for_indices(
         raise ValueError(
             f"valid_vectors must have shape [T, N], got {tuple(valid_vectors.shape)}."
         )
-    if alive.shape != vectors.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if companion_j.shape != vectors.shape[:2] or companion_k.shape != vectors.shape[:2]:
         msg = "companion indices must have shape [T, N]."
         raise ValueError(msg)
 
     _, _, structural_valid = build_companion_triplets(companion_j, companion_k)[1:]
 
-    vec_j, in_j = _safe_gather_3d(vectors, companion_j)
-    vec_k, in_k = _safe_gather_3d(vectors, companion_k)
+    vec_j, in_j = safe_gather_3d(vectors, companion_j)
+    vec_k, in_k = safe_gather_3d(vectors, companion_k)
 
-    alive_j, _ = _safe_gather_2d(alive, companion_j)
-    alive_k, _ = _safe_gather_2d(alive, companion_k)
-    valid_j, _ = _safe_gather_2d(valid_vectors, companion_j)
-    valid_k, _ = _safe_gather_2d(valid_vectors, companion_k)
+    valid_j, _ = safe_gather_2d(valid_vectors, companion_j)
+    valid_k, _ = safe_gather_2d(valid_vectors, companion_k)
 
     det = _det3(vectors, vec_j, vec_k)
     finite = (
@@ -67,18 +63,7 @@ def _compute_determinants_for_indices(
         else torch.isfinite(det)
     )
 
-    valid = (
-        structural_valid
-        & in_j
-        & in_k
-        & alive
-        & alive_j
-        & alive_k
-        & valid_vectors
-        & valid_j
-        & valid_k
-        & finite
-    )
+    valid = structural_valid & in_j & in_k & valid_vectors & valid_j & valid_k & finite
     if eps > 0:
         valid = valid & (det.abs() > eps)
 
@@ -90,7 +75,6 @@ def _compute_score_ordered_determinants_for_indices(
     *,
     color: Tensor,
     color_valid: Tensor,
-    alive: Tensor,
     scores: Tensor,
     companion_j: Tensor,
     companion_k: Tensor,
@@ -101,8 +85,6 @@ def _compute_score_ordered_determinants_for_indices(
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T,N], got {tuple(alive.shape)}.")
     if scores.shape != color.shape[:2]:
         raise ValueError(f"scores must have shape [T,N], got {tuple(scores.shape)}.")
     if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
@@ -111,14 +93,12 @@ def _compute_score_ordered_determinants_for_indices(
 
     _, _, structural_valid = build_companion_triplets(companion_j, companion_k)[1:]
 
-    color_j, in_j = _safe_gather_3d(color, companion_j)
-    color_k, in_k = _safe_gather_3d(color, companion_k)
-    alive_j, _ = _safe_gather_2d(alive, companion_j)
-    alive_k, _ = _safe_gather_2d(alive, companion_k)
-    valid_j, _ = _safe_gather_2d(color_valid, companion_j)
-    valid_k, _ = _safe_gather_2d(color_valid, companion_k)
-    score_j, score_j_in_range = _safe_gather_2d(scores, companion_j)
-    score_k, score_k_in_range = _safe_gather_2d(scores, companion_k)
+    color_j, in_j = safe_gather_3d(color, companion_j)
+    color_k, in_k = safe_gather_3d(color, companion_k)
+    valid_j, _ = safe_gather_2d(color_valid, companion_j)
+    valid_k, _ = safe_gather_2d(color_valid, companion_k)
+    score_j, score_j_in_range = safe_gather_2d(scores, companion_j)
+    score_k, score_k_in_range = safe_gather_2d(scores, companion_k)
 
     triplet_scores = torch.stack([scores, score_j, score_k], dim=-1)  # [T,N,3]
     triplet_colors = torch.stack([color, color_j, color_k], dim=-2)  # [T,N,3,3]
@@ -140,9 +120,6 @@ def _compute_score_ordered_determinants_for_indices(
         structural_valid
         & in_j
         & in_k
-        & alive
-        & alive_j
-        & alive_k
         & color_valid
         & valid_j
         & valid_k
@@ -162,7 +139,6 @@ def _compute_triplet_plaquette_for_indices(
     *,
     color: Tensor,
     color_valid: Tensor,
-    alive: Tensor,
     companion_j: Tensor,
     companion_k: Tensor,
     eps: float,
@@ -172,20 +148,16 @@ def _compute_triplet_plaquette_for_indices(
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
         msg = "companion indices must have shape [T, N]."
         raise ValueError(msg)
 
     _, _, structural_valid = build_companion_triplets(companion_j, companion_k)[1:]
 
-    color_j, in_j = _safe_gather_3d(color, companion_j)
-    color_k, in_k = _safe_gather_3d(color, companion_k)
-    alive_j, _ = _safe_gather_2d(alive, companion_j)
-    alive_k, _ = _safe_gather_2d(alive, companion_k)
-    valid_j, _ = _safe_gather_2d(color_valid, companion_j)
-    valid_k, _ = _safe_gather_2d(color_valid, companion_k)
+    color_j, in_j = safe_gather_3d(color, companion_j)
+    color_k, in_k = safe_gather_3d(color, companion_k)
+    valid_j, _ = safe_gather_2d(color_valid, companion_j)
+    valid_k, _ = safe_gather_2d(color_valid, companion_k)
 
     z_ij = (torch.conj(color) * color_j).sum(dim=-1)
     z_jk = (torch.conj(color_j) * color_k).sum(dim=-1)
@@ -193,18 +165,7 @@ def _compute_triplet_plaquette_for_indices(
     pi = z_ij * z_jk * z_ki
 
     finite = torch.isfinite(pi.real) & torch.isfinite(pi.imag)
-    valid = (
-        structural_valid
-        & in_j
-        & in_k
-        & alive
-        & alive_j
-        & alive_k
-        & color_valid
-        & valid_j
-        & valid_k
-        & finite
-    )
+    valid = structural_valid & in_j & in_k & color_valid & valid_j & valid_k & finite
     if eps > 0:
         valid = valid & (z_ij.abs() > eps) & (z_jk.abs() > eps) & (z_ki.abs() > eps)
 
@@ -299,7 +260,6 @@ def compute_baryon_operators(
         source_det, source_valid = _compute_score_ordered_determinants_for_indices(
             color=data.color,
             color_valid=data.color_valid,
-            alive=data.alive,
             scores=scores,
             companion_j=data.companions_distance,
             companion_k=data.companions_clone,
@@ -314,7 +274,6 @@ def compute_baryon_operators(
         source_det, source_valid = _compute_determinants_for_indices(
             vectors=data.color,
             valid_vectors=data.color_valid,
-            alive=data.alive,
             companion_j=data.companions_distance,
             companion_k=data.companions_clone,
             eps=eps,
@@ -326,7 +285,6 @@ def compute_baryon_operators(
         source_pi, source_pi_valid = _compute_triplet_plaquette_for_indices(
             color=data.color,
             color_valid=data.color_valid,
-            alive=data.alive,
             companion_j=data.companions_distance,
             companion_k=data.companions_clone,
             eps=eps,
@@ -359,8 +317,8 @@ def compute_baryon_operators(
         if torch.any(valid_t):
             weight = source_valid.to(dtype=torch.float32)
             sums = (source_obs * weight).sum(dim=1)
-            operator_baryon_series[valid_t] = sums[valid_t] / triplet_counts_per_frame[
-                valid_t
-            ].to(torch.float32)
+            operator_baryon_series[valid_t] = sums[valid_t] / triplet_counts_per_frame[valid_t].to(
+                torch.float32
+            )
 
     return {"nucleon": operator_baryon_series}

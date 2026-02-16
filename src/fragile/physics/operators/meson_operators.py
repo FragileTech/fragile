@@ -19,48 +19,15 @@ import torch
 from torch import Tensor
 
 from fragile.physics.qft_utils.companions import (
-    PAIR_SELECTION_MODES,
     build_companion_pair_indices,
-    build_companion_triplets,
+)
+from fragile.physics.qft_utils.helpers import (
+    safe_gather_pairs_2d,
+    safe_gather_pairs_3d,
 )
 
 from .config import MesonOperatorConfig
-from .preparation import _safe_gather_2d, _safe_gather_3d, PreparedChannelData
-
-
-# ---------------------------------------------------------------------------
-# Pair-gather helpers (reshape wrappers over _safe_gather_2d / _safe_gather_3d)
-# ---------------------------------------------------------------------------
-
-
-def _safe_gather_pairs_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
-    """Safely gather values[:, idx] for indices [T,N,P] using preparation helpers."""
-    if values.ndim != 2 or indices.ndim != 3:
-        raise ValueError(
-            f"_safe_gather_pairs_2d expects values [T,N] and indices [T,N,P], got "
-            f"{tuple(values.shape)} and {tuple(indices.shape)}."
-        )
-    t, n, p = indices.shape
-    idx_flat = indices.reshape(t, n * p)
-    gathered_flat, in_range_flat = _safe_gather_2d(values, idx_flat)
-    return gathered_flat.reshape(t, n, p), in_range_flat.reshape(t, n, p)
-
-
-def _safe_gather_pairs_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
-    """Safely gather values[:, idx, :] for indices [T,N,P] using preparation helpers."""
-    if values.ndim != 3 or indices.ndim != 3:
-        raise ValueError(
-            f"_safe_gather_pairs_3d expects values [T,N,C] and indices [T,N,P], got "
-            f"{tuple(values.shape)} and {tuple(indices.shape)}."
-        )
-    t, n, p = indices.shape
-    c = values.shape[-1]
-    idx_flat = indices.reshape(t, n * p)
-    gathered_flat, in_range_flat = _safe_gather_3d(values, idx_flat)
-    return (
-        gathered_flat.reshape(t, n, p, c),
-        in_range_flat.reshape(t, n, p),
-    )
+from .preparation import PreparedChannelData
 
 
 # ---------------------------------------------------------------------------
@@ -71,7 +38,6 @@ def _safe_gather_pairs_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tens
 def _compute_inner_products_for_pairs(
     color: Tensor,
     color_valid: Tensor,
-    alive: Tensor,
     pair_indices: Tensor,
     structural_valid: Tensor,
     eps: float,
@@ -81,8 +47,6 @@ def _compute_inner_products_for_pairs(
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if pair_indices.shape[:2] != color.shape[:2]:
         raise ValueError(
             f"pair_indices must have shape [T, N, P] aligned with color, got "
@@ -94,23 +58,14 @@ def _compute_inner_products_for_pairs(
             f"{tuple(structural_valid.shape)} vs {tuple(pair_indices.shape)}."
         )
 
-    color_j, in_range = _safe_gather_pairs_3d(color, pair_indices)
-    alive_j, _ = _safe_gather_pairs_2d(alive, pair_indices)
-    valid_j, _ = _safe_gather_pairs_2d(color_valid, pair_indices)
+    color_j, in_range = safe_gather_pairs_3d(color, pair_indices)
+    valid_j, _ = safe_gather_pairs_2d(color_valid, pair_indices)
 
     color_i = color.unsqueeze(2).expand_as(color_j)
     inner = (torch.conj(color_i) * color_j).sum(dim=-1)
 
     finite = torch.isfinite(inner.real) & torch.isfinite(inner.imag)
-    valid = (
-        structural_valid
-        & in_range
-        & alive.unsqueeze(-1)
-        & alive_j
-        & color_valid.unsqueeze(-1)
-        & valid_j
-        & finite
-    )
+    valid = structural_valid & in_range & color_valid.unsqueeze(-1) & valid_j & finite
     if eps > 0:
         valid = valid & (inner.abs() > eps)
 
@@ -145,7 +100,7 @@ def _orient_inner_products_by_scores(
     pair_indices: Tensor,
 ) -> tuple[Tensor, Tensor]:
     """Orient pair inner products uphill according to score differences."""
-    score_j, in_range = _safe_gather_pairs_2d(scores, pair_indices)
+    score_j, in_range = safe_gather_pairs_2d(scores, pair_indices)
     score_i = scores.unsqueeze(-1).expand_as(score_j)
     finite_scores = torch.isfinite(score_i) & torch.isfinite(score_j)
     oriented_valid = valid & in_range & finite_scores
@@ -163,7 +118,7 @@ def _weight_inner_products_by_score_gap(
     pair_indices: Tensor,
 ) -> tuple[Tensor, Tensor]:
     """Weight pair inner products by |delta_score|, preserving pair orientation."""
-    score_j, in_range = _safe_gather_pairs_2d(scores, pair_indices)
+    score_j, in_range = safe_gather_pairs_2d(scores, pair_indices)
     score_i = scores.unsqueeze(-1).expand_as(score_j)
     finite_scores = torch.isfinite(score_i) & torch.isfinite(score_j)
     weighted_valid = valid & in_range & finite_scores
@@ -238,7 +193,6 @@ def compute_meson_operators(
     inner, valid = _compute_inner_products_for_pairs(
         color=data.color,
         color_valid=data.color_valid,
-        alive=data.alive,
         pair_indices=pair_indices,
         structural_valid=structural_valid,
         eps=data.eps,
@@ -272,7 +226,10 @@ def compute_meson_operators(
         from .multiscale import gate_pair_validity_by_scale, per_frame_series_multiscale
 
         valid_ms = gate_pair_validity_by_scale(
-            valid, pair_indices, data.pairwise_distances, data.scales,
+            valid,
+            pair_indices,
+            data.pairwise_distances,
+            data.scales,
         )
         scalar_series = per_frame_series_multiscale(scalar_obs, valid_ms)
         pseudoscalar_series = per_frame_series_multiscale(pseudoscalar_obs, valid_ms)

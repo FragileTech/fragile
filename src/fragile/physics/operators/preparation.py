@@ -15,8 +15,6 @@ from torch import Tensor
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 
-from fragile.physics.qft_utils.helpers import _safe_gather_2d, _safe_gather_3d
-
 from .config import ChannelConfigBase
 
 
@@ -25,29 +23,10 @@ from .config import ChannelConfigBase
 # ---------------------------------------------------------------------------
 
 
-def _resolve_mc_time_index(history: RunHistory, mc_time_index: int) -> int:
-    """Resolve *mc_time_index* as recorded index or recorded step."""
-    if history.n_recorded < 2:
-        msg = "Need at least 2 recorded timesteps."
-        raise ValueError(msg)
-    raw = int(mc_time_index)
-    if raw in history.recorded_steps:
-        resolved = int(history.get_step_index(raw))
-    else:
-        resolved = raw
-    if resolved < 1 or resolved >= history.n_recorded:
-        raise ValueError(
-            f"mc_time_index {resolved} out of bounds (valid recorded index "
-            f"1..{history.n_recorded - 1} or a recorded step value)."
-        )
-    return resolved
-
-
 def _resolve_frame_indices(
     history: RunHistory,
     warmup_fraction: float,
     end_fraction: float,
-    mc_time_index: int | None,
 ) -> list[int]:
     """Resolve frame indices ``[start_idx, end_idx)`` for correlator analysis."""
     if history.n_recorded < 2:
@@ -56,10 +35,6 @@ def _resolve_frame_indices(
     start_idx = max(1, int(history.n_recorded * float(warmup_fraction)))
     end_idx = max(start_idx + 1, int(history.n_recorded * float(end_fraction)))
     end_idx = min(end_idx, history.n_recorded)
-
-    if mc_time_index is not None:
-        start_idx = _resolve_mc_time_index(history, int(mc_time_index))
-        end_idx = history.n_recorded
 
     if end_idx <= start_idx:
         return []
@@ -103,7 +78,6 @@ class PreparedChannelData:
 
     color: Tensor  # [T, N, 3] complex color states
     color_valid: Tensor  # [T, N] bool
-    alive: Tensor  # [T, N] bool
     companions_distance: Tensor  # [T, N] long
     companions_clone: Tensor  # [T, N] long
     scores: Tensor | None  # [T, N] float (for score-directed modes)
@@ -113,8 +87,6 @@ class PreparedChannelData:
     frame_indices: list[int]
     device: torch.device
     eps: float
-    bounds: object | None = None  # For PBC-aware displacement
-    pbc: bool = False
 
     # Multiscale fields (None when n_scales=1)
     scales: Tensor | None = None  # [S] float
@@ -148,7 +120,6 @@ def prepare_channel_data(
         history=history,
         warmup_fraction=float(config.warmup_fraction),
         end_fraction=float(config.end_fraction),
-        mc_time_index=config.mc_time_index,
     )
 
     device = history.v_before_clone.device
@@ -161,7 +132,6 @@ def prepare_channel_data(
         return PreparedChannelData(
             color=empty_3d.to(torch.complex64),
             color_valid=empty_2d_bool,
-            alive=empty_2d_bool.clone(),
             companions_distance=empty_2d_long,
             companions_clone=empty_2d_long.clone(),
             scores=None,
@@ -171,8 +141,6 @@ def prepare_channel_data(
             frame_indices=[],
             device=device,
             eps=eps,
-            bounds=getattr(history, "bounds", None),
-            pbc=bool(getattr(history, "pbc", False)),
         )
 
     start_idx = frame_indices[0]
@@ -200,9 +168,6 @@ def prepare_channel_data(
     device = color.device
 
     # Companion arrays (offset by 1 relative to frame indices)
-    alive = torch.as_tensor(
-        history.alive_mask[start_idx - 1 : end_idx - 1], dtype=torch.bool, device=device
-    )
     companions_distance = torch.as_tensor(
         history.companions_distance[start_idx - 1 : end_idx - 1],
         dtype=torch.long,
@@ -244,18 +209,6 @@ def prepare_channel_data(
         positions_axis = history.x_before_clone[start_idx:end_idx, :, momentum_axis].to(
             device=device, dtype=torch.float32
         )
-        # Resolve projection length from bounds if available
-        import math
-
-        bounds = getattr(history, "bounds", None)
-        if bounds is not None and hasattr(bounds, "low") and hasattr(bounds, "high"):
-            low_vec = torch.as_tensor(bounds.low, dtype=torch.float32, device=device).flatten()
-            high_vec = torch.as_tensor(bounds.high, dtype=torch.float32, device=device).flatten()
-            if momentum_axis < int(low_vec.numel()) and momentum_axis < int(high_vec.numel()):
-                lo = float(low_vec[momentum_axis].item())
-                hi = float(high_vec[momentum_axis].item())
-                if math.isfinite(lo) and math.isfinite(hi) and hi > lo:
-                    projection_length = float(hi - lo)
         # Allow explicit override from config
         cfg_length = getattr(config, "projection_length", None)
         if cfg_length is not None:
@@ -264,7 +217,6 @@ def prepare_channel_data(
     return PreparedChannelData(
         color=color,
         color_valid=color_valid.to(dtype=torch.bool, device=device),
-        alive=alive,
         companions_distance=companions_distance,
         companions_clone=companions_clone,
         scores=scores,
@@ -274,6 +226,4 @@ def prepare_channel_data(
         frame_indices=frame_indices,
         device=device,
         eps=eps,
-        bounds=getattr(history, "bounds", None),
-        pbc=bool(getattr(history, "pbc", False)),
     )

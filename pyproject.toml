@@ -74,6 +74,9 @@ dependencies = [
     "dm-control>=1.0.0",
     "mujoco>=3.0.0",
     "pandas-stubs~=2.3.3",
+    "gvar>=13.1.9",
+    "lsqfit>=13.3.1",
+    "corrfitter>=8.2",
 ]
 [project.urls]
 # important URLs for this project

@@ -85,20 +85,20 @@ __all__ = [
     "compute_glueball_operators",
     # Operators
     "compute_meson_operators",
+    # Geodesics
+    "compute_pairwise_distances",
+    "compute_smeared_kernels",
     # Pipeline
     "compute_strong_force_pipeline",
     "compute_tensor_operators",
     "compute_vector_operators",
-    # Preparation
-    "prepare_channel_data",
-    # Geodesics
-    "compute_pairwise_distances",
-    "compute_smeared_kernels",
-    "gather_companion_distances",
-    "select_scales",
     # Multiscale
     "gate_pair_validity_by_scale",
     "gate_triplet_validity_by_scale",
+    "gather_companion_distances",
     "per_frame_series_multiscale",
     "per_frame_vector_series_multiscale",
+    # Preparation
+    "prepare_channel_data",
+    "select_scales",
 ]

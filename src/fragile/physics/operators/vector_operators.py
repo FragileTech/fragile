@@ -24,12 +24,12 @@ import torch
 from torch import Tensor
 
 from fragile.physics.qft_utils.companions import build_companion_pair_indices
+from fragile.physics.qft_utils.helpers import (
+    safe_gather_pairs_2d,
+    safe_gather_pairs_3d,
+)
 
 from .config import VectorOperatorConfig
-from .meson_operators import (
-    _safe_gather_pairs_2d,
-    _safe_gather_pairs_3d,
-)
 from .preparation import PreparedChannelData
 
 
@@ -75,7 +75,6 @@ def _compute_pair_observables(
     color: Tensor,
     color_valid: Tensor,
     positions: Tensor,
-    alive: Tensor,
     pair_indices: Tensor,
     structural_valid: Tensor,
     eps: float,
@@ -92,8 +91,6 @@ def _compute_pair_observables(
         raise ValueError(f"positions must have shape [T,N,3], got {tuple(positions.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T,N], got {tuple(alive.shape)}.")
     if pair_indices.shape[:2] != color.shape[:2]:
         raise ValueError(
             f"pair_indices must have shape [T,N,P] aligned with color, got {tuple(pair_indices.shape)}."
@@ -104,10 +101,9 @@ def _compute_pair_observables(
             f"{tuple(structural_valid.shape)} vs {tuple(pair_indices.shape)}."
         )
 
-    color_j, in_range = _safe_gather_pairs_3d(color, pair_indices)
-    alive_j, _ = _safe_gather_pairs_2d(alive, pair_indices)
-    valid_j, _ = _safe_gather_pairs_2d(color_valid, pair_indices)
-    pos_j, _ = _safe_gather_pairs_3d(positions, pair_indices)
+    color_j, in_range = safe_gather_pairs_3d(color, pair_indices)
+    valid_j, _ = safe_gather_pairs_2d(color_valid, pair_indices)
+    pos_j, _ = safe_gather_pairs_3d(positions, pair_indices)
 
     color_i = color.unsqueeze(2).expand_as(color_j)
     inner = (torch.conj(color_i) * color_j).sum(dim=-1)
@@ -120,8 +116,6 @@ def _compute_pair_observables(
     valid = (
         structural_valid
         & in_range
-        & alive.unsqueeze(-1)
-        & alive_j
         & color_valid.unsqueeze(-1)
         & valid_j
         & finite_inner
@@ -149,7 +143,7 @@ def _compute_pair_observables(
             raise ValueError(
                 f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
             )
-        score_j, score_in_range = _safe_gather_pairs_2d(scores, pair_indices)
+        score_j, score_in_range = safe_gather_pairs_2d(scores, pair_indices)
         score_i = scores.unsqueeze(-1).expand_as(score_j)
         finite_scores = torch.isfinite(score_i) & torch.isfinite(score_j)
         valid = valid & score_in_range & finite_scores
@@ -273,7 +267,6 @@ def compute_vector_operators(
         color=data.color,
         color_valid=data.color_valid,
         positions=data.positions,
-        alive=data.alive,
         pair_indices=pair_indices,
         structural_valid=structural_valid,
         eps=data.eps,
@@ -292,7 +285,10 @@ def compute_vector_operators(
         from .multiscale import gate_pair_validity_by_scale, per_frame_vector_series_multiscale
 
         valid_ms = gate_pair_validity_by_scale(
-            valid, pair_indices, data.pairwise_distances, data.scales,
+            valid,
+            pair_indices,
+            data.pairwise_distances,
+            data.scales,
         )
         vector_series = per_frame_vector_series_multiscale(vector_obs, valid_ms)
         axial_series = per_frame_vector_series_multiscale(axial_obs, valid_ms)

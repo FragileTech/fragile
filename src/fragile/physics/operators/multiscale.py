@@ -38,7 +38,7 @@ def gate_pair_validity_by_scale(
         ``[T, S, N, P]`` bool scale-gated validity.
     """
     T, N, P = pair_valid.shape
-    S = scales.shape[0]
+    scales.shape[0]
     device = pair_valid.device
 
     # Gather d(i, pair_j) from distance matrix for each pair index
@@ -127,9 +127,7 @@ def per_frame_series_multiscale(
         S = valid.shape[1]
         values_view = values.unsqueeze(1).expand(T, S, N, P)  # [T, S, N, P]
     else:
-        raise ValueError(
-            f"values must be 2D [T,N] or 3D [T,N,P], got {values.ndim}D."
-        )
+        raise ValueError(f"values must be 2D [T,N] or 3D [T,N,P], got {values.ndim}D.")
 
     weights = valid.to(values.dtype)
     # Sum over spatial dims (everything except T and S)
@@ -140,9 +138,7 @@ def per_frame_series_multiscale(
     series = torch.zeros(T, S, dtype=torch.float32, device=values.device)
     valid_t = counts > 0
     if torch.any(valid_t):
-        series[valid_t] = (
-            weighted_sums[valid_t] / counts[valid_t].to(values.dtype)
-        ).float()
+        series[valid_t] = (weighted_sums[valid_t] / counts[valid_t].to(values.dtype)).float()
 
     # Transpose to [S, T] (scale-major)
     return series.T
@@ -162,13 +158,9 @@ def per_frame_vector_series_multiscale(
         ``[S, T, C]`` per-scale per-frame averaged series.
     """
     if values.ndim != 4:
-        raise ValueError(
-            f"values must have shape [T,N,P,C], got {tuple(values.shape)}."
-        )
+        raise ValueError(f"values must have shape [T,N,P,C], got {tuple(values.shape)}.")
     if valid.ndim != 4:
-        raise ValueError(
-            f"valid must have shape [T,S,N,P], got {tuple(valid.shape)}."
-        )
+        raise ValueError(f"valid must have shape [T,S,N,P], got {tuple(valid.shape)}.")
 
     T, N, P, C = values.shape
     S = valid.shape[1]

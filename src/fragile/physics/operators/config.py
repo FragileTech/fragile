@@ -7,7 +7,7 @@ and a correlator config.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass
@@ -16,7 +16,6 @@ class ChannelConfigBase:
 
     warmup_fraction: float = 0.1
     end_fraction: float = 1.0
-    mc_time_index: int | None = None
     h_eff: float = 1.0
     mass: float = 1.0
     ell0: float | None = None
@@ -91,7 +90,6 @@ class MultiscaleConfig:
     min_scale: float = 1e-6
     scales: list[float] | None = None  # User-specified (overrides auto)
     edge_weight_mode: str = "riemannian_kernel_volume"
-    assume_all_alive: bool = True
 
 
 @dataclass

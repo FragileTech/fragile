@@ -24,13 +24,12 @@ import torch
 from torch import Tensor
 
 from fragile.physics.qft_utils.companions import build_companion_pair_indices
-from fragile.physics.qft_utils.helpers import _apply_pbc_diff_torch
+from fragile.physics.qft_utils.helpers import (
+    safe_gather_pairs_2d,
+    safe_gather_pairs_3d,
+)
 
 from .config import TensorOperatorConfig
-from .meson_operators import (
-    _safe_gather_pairs_2d,
-    _safe_gather_pairs_3d,
-)
 from .preparation import PreparedChannelData
 
 
@@ -80,11 +79,8 @@ def _compute_local_tensor_components(
     color: Tensor,
     color_valid: Tensor,
     positions: Tensor,
-    alive: Tensor,
     pair_indices: Tensor,
     structural_valid: Tensor,
-    bounds: object | None,
-    pbc: bool,
     eps: float,
 ) -> tuple[Tensor, Tensor, Tensor, int]:
     """Compute local 5-component tensor operator per walker and frame.
@@ -103,8 +99,6 @@ def _compute_local_tensor_components(
         )
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T,N], got {tuple(alive.shape)}.")
     if pair_indices.shape[:2] != color.shape[:2]:
         raise ValueError(
             "pair_indices must have shape [T,N,P] aligned with color, got "
@@ -116,25 +110,20 @@ def _compute_local_tensor_components(
             f"{tuple(structural_valid.shape)} vs {tuple(pair_indices.shape)}."
         )
 
-    color_j, in_range = _safe_gather_pairs_3d(color, pair_indices)
-    alive_j, _ = _safe_gather_pairs_2d(alive, pair_indices)
-    valid_j, _ = _safe_gather_pairs_2d(color_valid, pair_indices)
-    pos_j, _ = _safe_gather_pairs_3d(positions, pair_indices)
+    color_j, in_range = safe_gather_pairs_3d(color, pair_indices)
+    valid_j, _ = safe_gather_pairs_2d(color_valid, pair_indices)
+    pos_j, _ = safe_gather_pairs_3d(positions, pair_indices)
 
     color_i = color.unsqueeze(2).expand_as(color_j)
     pos_i = positions.unsqueeze(2).expand_as(pos_j)
     inner = (torch.conj(color_i) * color_j).sum(dim=-1).real.float()
     dx = (pos_j - pos_i).float()
-    if pbc and bounds is not None:
-        dx = _apply_pbc_diff_torch(dx, bounds)
 
     finite_inner = torch.isfinite(inner)
     finite_dx = torch.isfinite(dx).all(dim=-1)
     valid = (
         structural_valid
         & in_range
-        & alive.unsqueeze(-1)
-        & alive_j
         & color_valid.unsqueeze(-1)
         & valid_j
         & finite_inner
@@ -173,18 +162,13 @@ def _compute_local_tensor_components(
 def _resolve_positive_length(
     *,
     positions_axis: Tensor,
-    valid_walker: Tensor,
     box_length: float | None,
 ) -> float:
     """Resolve a positive projection length scale for Fourier modes."""
     if box_length is not None and float(box_length) > 0:
         return float(box_length)
 
-    alive_pos = positions_axis[valid_walker]
-    if alive_pos.numel() == 0:
-        span = float((positions_axis.max() - positions_axis.min()).abs().item())
-    else:
-        span = float((alive_pos.max() - alive_pos.min()).abs().item())
+    span = float((positions_axis.max() - positions_axis.min()).abs().item())
     return max(span, 1.0)
 
 
@@ -240,21 +224,18 @@ def compute_tensor_operators(
             color=color,
             color_valid=data.color_valid,
             positions=data.positions,
-            alive=data.alive,
             pair_indices=pair_indices,
             structural_valid=structural_valid,
-            bounds=data.bounds,
-            pbc=data.pbc,
             eps=data.eps,
         )
     )
 
     # 3. Average per frame
-    _multiscale = data.scales is not None and data.companion_d_ij is not None
+    multiscale = data.scales is not None and data.companion_d_ij is not None
     # valid_ms is used later in momentum projection when multiscale
     valid_ms: Tensor | None = None
 
-    if _multiscale:
+    if multiscale:
         # Multiscale path -> component_series [S, T, 5]
         scales = data.scales  # [S]
         d_gate = data.companion_d_ij  # [T, N]
@@ -309,7 +290,6 @@ def compute_tensor_operators(
 
         box_length = _resolve_positive_length(
             positions_axis=positions_axis,
-            valid_walker=valid_walker,
             box_length=data.projection_length,
         )
 
@@ -323,7 +303,7 @@ def compute_tensor_operators(
         cos_phase = torch.cos(phase_arg)
         sin_phase = torch.sin(phase_arg)
 
-        if _multiscale and valid_ms is not None:
+        if multiscale and valid_ms is not None:
             # Multiscale momentum projection -> [S, T, 5] per mode
             S_scales = data.scales.shape[0]
             N_walk = color.shape[1]
@@ -333,9 +313,7 @@ def compute_tensor_operators(
                 sin_m = sin_phase[m]  # [T, N]
                 cos_m_exp = cos_m.unsqueeze(1).expand(t_total, S_scales, N_walk)  # [T, S, N]
                 sin_m_exp = sin_m.unsqueeze(1).expand(t_total, S_scales, N_walk)  # [T, S, N]
-                local_exp = local_components.unsqueeze(1).expand(
-                    t_total, S_scales, N_walk, n_comp
-                )
+                local_exp = local_components.unsqueeze(1).expand(t_total, S_scales, N_walk, n_comp)
                 w_ms = valid_ms.to(torch.float32)  # [T, S, N]
                 counts_ms_t = w_ms.sum(dim=2)  # [T, S]
                 valid_ts = counts_ms_t > 0
@@ -351,12 +329,12 @@ def compute_tensor_operators(
                     t_total, S_scales, n_comp, dtype=torch.float32, device=device
                 )
                 if torch.any(valid_ts):
-                    op_cos_ms[valid_ts] = (
-                        cos_num[valid_ts] / counts_ms_t[valid_ts].unsqueeze(-1).clamp(min=1.0)
-                    )
-                    op_sin_ms[valid_ts] = (
-                        sin_num[valid_ts] / counts_ms_t[valid_ts].unsqueeze(-1).clamp(min=1.0)
-                    )
+                    op_cos_ms[valid_ts] = cos_num[valid_ts] / counts_ms_t[valid_ts].unsqueeze(
+                        -1
+                    ).clamp(min=1.0)
+                    op_sin_ms[valid_ts] = sin_num[valid_ts] / counts_ms_t[valid_ts].unsqueeze(
+                        -1
+                    ).clamp(min=1.0)
 
                 result[f"tensor_momentum_cos_{m}"] = op_cos_ms.permute(1, 0, 2)  # [S, T, 5]
                 result[f"tensor_momentum_sin_{m}"] = op_sin_ms.permute(1, 0, 2)  # [S, T, 5]
@@ -366,12 +344,8 @@ def compute_tensor_operators(
             counts_t = weights.sum(dim=1)
             valid_frames = counts_t > 0
 
-            op_cos = torch.zeros(
-                (n_modes, n_comp, t_total), dtype=torch.float32, device=device
-            )
-            op_sin = torch.zeros(
-                (n_modes, n_comp, t_total), dtype=torch.float32, device=device
-            )
+            op_cos = torch.zeros((n_modes, n_comp, t_total), dtype=torch.float32, device=device)
+            op_sin = torch.zeros((n_modes, n_comp, t_total), dtype=torch.float32, device=device)
             if torch.any(valid_frames):
                 # weighted_local: [T, N, 5]
                 weighted_local = local_components * weights.unsqueeze(-1)

@@ -20,7 +20,7 @@ import torch
 from torch import Tensor
 
 from fragile.physics.qft_utils.companions import build_companion_triplets
-from fragile.physics.qft_utils.helpers import _safe_gather_2d, _safe_gather_3d
+from fragile.physics.qft_utils.helpers import safe_gather_2d, safe_gather_3d
 
 from .config import GlueballOperatorConfig
 from .preparation import PreparedChannelData
@@ -74,7 +74,6 @@ def _glueball_observable_from_plaquette(pi: Tensor, *, operator_mode: str) -> Te
 def _compute_color_plaquette_for_triplets(
     color: Tensor,
     color_valid: Tensor,
-    alive: Tensor,
     companions_distance: Tensor,
     companions_clone: Tensor,
     eps: float,
@@ -89,8 +88,6 @@ def _compute_color_plaquette_for_triplets(
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
@@ -100,12 +97,10 @@ def _compute_color_plaquette_for_triplets(
         companions_clone=companions_clone,
     )
 
-    color_j, in_j = _safe_gather_3d(color, companion_j)
-    color_k, in_k = _safe_gather_3d(color, companion_k)
-    alive_j, _ = _safe_gather_2d(alive, companion_j)
-    alive_k, _ = _safe_gather_2d(alive, companion_k)
-    valid_j, _ = _safe_gather_2d(color_valid, companion_j)
-    valid_k, _ = _safe_gather_2d(color_valid, companion_k)
+    color_j, in_j = safe_gather_3d(color, companion_j)
+    color_k, in_k = safe_gather_3d(color, companion_k)
+    valid_j, _ = safe_gather_2d(color_valid, companion_j)
+    valid_k, _ = safe_gather_2d(color_valid, companion_k)
 
     z_ij = (torch.conj(color) * color_j).sum(dim=-1)
     z_jk = (torch.conj(color_j) * color_k).sum(dim=-1)
@@ -113,18 +108,7 @@ def _compute_color_plaquette_for_triplets(
     pi = z_ij * z_jk * z_ki
 
     finite = torch.isfinite(pi.real) & torch.isfinite(pi.imag)
-    valid = (
-        structural_valid
-        & in_j
-        & in_k
-        & alive
-        & alive_j
-        & alive_k
-        & color_valid
-        & valid_j
-        & valid_k
-        & finite
-    )
+    valid = structural_valid & in_j & in_k & color_valid & valid_j & valid_k & finite
     if eps > 0:
         valid = valid & (z_ij.abs() > eps) & (z_jk.abs() > eps) & (z_ki.abs() > eps)
 
@@ -135,18 +119,13 @@ def _compute_color_plaquette_for_triplets(
 def _resolve_positive_length(
     *,
     positions_axis: Tensor,
-    alive: Tensor,
     box_length: float | None,
 ) -> float:
     """Resolve a positive projection length scale for Fourier modes."""
     if box_length is not None and float(box_length) > 0:
         return float(box_length)
 
-    alive_pos = positions_axis[alive]
-    if alive_pos.numel() == 0:
-        span = float((positions_axis.max() - positions_axis.min()).abs().item())
-    else:
-        span = float((alive_pos.max() - alive_pos.min()).abs().item())
+    span = float((positions_axis.max() - positions_axis.min()).abs().item())
     return max(span, 1.0)
 
 
@@ -182,7 +161,6 @@ def compute_glueball_operators(
     source_pi, source_valid = _compute_color_plaquette_for_triplets(
         color=color,
         color_valid=data.color_valid,
-        alive=data.alive,
         companions_distance=data.companions_distance,
         companions_clone=data.companions_clone,
         eps=data.eps,
@@ -235,7 +213,6 @@ def compute_glueball_operators(
 
         box_length = _resolve_positive_length(
             positions_axis=positions_axis,
-            alive=data.alive,
             box_length=data.projection_length,
         )
 

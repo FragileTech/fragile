@@ -20,6 +20,27 @@ from fragile.physics.app.algorithm import _algorithm_placeholder_plot, _history_
 from fragile.physics.fractal_gas.history import RunHistory
 
 
+def _parse_dims_spec(spec: str, history_d: int) -> list[int] | None:
+    """Parse a comma-separated dimension list. Blank means all dimensions."""
+    spec_clean = str(spec).strip()
+    if not spec_clean:
+        return None
+    try:
+        dims = sorted({int(item.strip()) for item in spec_clean.split(",") if item.strip()})
+    except ValueError as exc:
+        raise ValueError(
+            f"Invalid spatial_dims_spec: {spec!r}. Expected comma-separated integers."
+        ) from exc
+    if not dims:
+        return None
+    invalid = [dim for dim in dims if dim < 0 or dim >= history_d]
+    if invalid:
+        raise ValueError(
+            f"spatial_dims_spec contains invalid dims {invalid}; valid range is [0, {history_d - 1}]."
+        )
+    return dims
+
+
 @dataclass
 class CouplingDiagnosticsSection:
     """Container for the coupling diagnostics dashboard section."""
@@ -394,7 +415,6 @@ def build_coupling_diagnostics_tab(
     run_tab_computation: Callable[
         [dict[str, Any], pn.pane.Markdown, str, Callable[[RunHistory], None]], None
     ],
-    parse_dims_spec: Callable[[str, int], list[int] | None],
 ) -> CouplingDiagnosticsSection:
     """Build Coupling Diagnostics tab with callbacks."""
 
@@ -513,9 +533,7 @@ def build_coupling_diagnostics_tab(
 
     def on_run_coupling_diagnostics(_):
         def _compute(history):
-            color_dims = parse_dims_spec(
-                coupling_diagnostics_settings.color_dims_spec, history.d
-            )
+            color_dims = _parse_dims_spec(coupling_diagnostics_settings.color_dims_spec, history.d)
             cfg = CouplingDiagnosticsConfig(
                 warmup_fraction=float(coupling_diagnostics_settings.simulation_range[0]),
                 end_fraction=float(coupling_diagnostics_settings.simulation_range[1]),
@@ -536,9 +554,7 @@ def build_coupling_diagnostics_tab(
                 edge_weight_mode=str(coupling_diagnostics_settings.edge_weight_mode),
                 n_scales=int(coupling_diagnostics_settings.n_scales),
                 kernel_type=str(coupling_diagnostics_settings.kernel_type),
-                kernel_distance_method=str(
-                    coupling_diagnostics_settings.kernel_distance_method
-                ),
+                kernel_distance_method=str(coupling_diagnostics_settings.kernel_distance_method),
                 kernel_assume_all_alive=bool(
                     coupling_diagnostics_settings.kernel_assume_all_alive
                 ),
@@ -578,9 +594,7 @@ def build_coupling_diagnostics_tab(
             coupling_diagnostics_scale_plot.object = kernel_plots["scale"]
             coupling_diagnostics_running_plot.object = kernel_plots["running"]
 
-            evidence = [
-                str(item) for item in (output.regime_evidence or []) if str(item).strip()
-            ]
+            evidence = [str(item) for item in (output.regime_evidence or []) if str(item).strip()]
             if evidence:
                 coupling_diagnostics_regime_evidence.object = "\n".join(
                     ["### Regime Evidence"] + [f"- {line}" for line in evidence]

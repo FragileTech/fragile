@@ -563,13 +563,9 @@ def _compute_fractal_set_measurements(
         kernel_length = 1.0
 
     use_geom = bool(settings.use_geometry_correction)
-    pbc = bool(getattr(history, "pbc", False))
-    if pbc and history.bounds is not None:
-        bounds_low = _to_numpy(history.bounds.low).astype(float)
-        bounds_high = _to_numpy(history.bounds.high).astype(float)
-    else:
-        bounds_low = None
-        bounds_high = None
+    pbc = False  # PBC no longer stored on RunHistory
+    bounds_low = None
+    bounds_high = None
 
     include_spatial = settings.partition_family in {"all", "spatial"}
     include_graph = settings.partition_family in {"all", "graph"}
@@ -1213,7 +1209,7 @@ def build_holographic_principle_tab(
     run_tab_computation: Callable[
         [dict[str, Any], pn.pane.Markdown, str, Callable[[RunHistory], None]], None
     ],
-    new_dirac_ew_settings: Any,
+    new_dirac_ew_settings: Any = None,
 ) -> HolographicPrincipleSection:
     """Build Holographic Principle tab with callbacks."""
 
@@ -1446,13 +1442,21 @@ def build_holographic_principle_tab(
             n_frames = int(points_df["info_idx"].nunique())
             n_samples = len(points_df)
             all_frames = list(range(1, int(getattr(history, "n_recorded", 0))))
+            if new_dirac_ew_settings is not None:
+                kernel_distance_method = str(new_dirac_ew_settings.kernel_distance_method)
+                edge_weight_mode = str(new_dirac_ew_settings.edge_weight_mode)
+                kernel_assume_all_alive = bool(new_dirac_ew_settings.kernel_assume_all_alive)
+            else:
+                kernel_distance_method = "auto"
+                edge_weight_mode = "riemannian_kernel_volume"
+                kernel_assume_all_alive = True
             precomputed_pairs = _resolve_electroweak_geodesic_matrices(
                 history,
                 all_frames,
                 state,
-                str(new_dirac_ew_settings.kernel_distance_method),
-                str(new_dirac_ew_settings.edge_weight_mode),
-                bool(new_dirac_ew_settings.kernel_assume_all_alive),
+                kernel_distance_method,
+                edge_weight_mode,
+                kernel_assume_all_alive,
             )
             distribution = _build_geodesic_distance_distribution_by_frame(precomputed_pairs)
             state["_multiscale_geodesic_distribution"] = distribution
