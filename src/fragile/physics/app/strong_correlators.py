@@ -29,7 +29,14 @@ from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.operators import (
     BaryonOperatorConfig,
     ChannelConfigBase,
+    compute_baryon_operators,
+    compute_correlators_batched,
+    compute_glueball_operators,
+    compute_meson_operators,
+    compute_propagator_pipeline,
     compute_strong_force_pipeline,
+    compute_tensor_operators,
+    compute_vector_operators,
     CorrelatorConfig,
     GlueballOperatorConfig,
     MesonOperatorConfig,
@@ -39,6 +46,38 @@ from fragile.physics.operators import (
     TensorOperatorConfig,
     VectorOperatorConfig,
 )
+
+_MESON_REGULAR: tuple[str, ...] = (
+    "standard", "score_directed", "score_weighted", "abs2_vacsub",
+)
+_VECTOR_REGULAR: tuple[str, ...] = (
+    "standard", "score_directed", "score_gradient",
+)
+_BARYON_REGULAR: tuple[str, ...] = (
+    "det_abs", "flux_action", "flux_sin2", "flux_exp", "score_signed", "score_abs",
+)
+_GLUEBALL_REGULAR: tuple[str, ...] = (
+    "re_plaquette", "action_re_plaquette", "phase_action", "phase_sin2",
+)
+
+
+def _with_propagator(modes: tuple[str, ...]) -> tuple[str, ...]:
+    """Append ``<mode>_propagator`` variants after regular modes."""
+    return modes + tuple(f"{m}_propagator" for m in modes)
+
+
+MESON_MODES: tuple[str, ...] = _with_propagator(_MESON_REGULAR)
+VECTOR_MODES: tuple[str, ...] = _with_propagator(_VECTOR_REGULAR)
+BARYON_MODES: tuple[str, ...] = _with_propagator(_BARYON_REGULAR)
+GLUEBALL_MODES: tuple[str, ...] = _with_propagator(_GLUEBALL_REGULAR)
+TENSOR_MODES: tuple[str, ...] = ("standard",)
+
+# Modes that require scores to be prepared in PreparedChannelData
+_SCORE_MODES: dict[str, set[str]] = {
+    "meson": {"score_directed", "score_weighted"},
+    "vector": {"score_directed", "score_gradient"},
+    "baryon": {"score_signed", "score_abs"},
+}
 
 
 # ---------------------------------------------------------------------------
@@ -85,36 +124,13 @@ class StrongCorrelatorSettings(param.Parameterized):
     max_lag = param.Integer(default=80, bounds=(1, 500))
     use_connected = param.Boolean(default=True)
 
-    # -- Channel toggles --
-    enable_meson = param.Boolean(default=True)
-    enable_vector = param.Boolean(default=True)
-    enable_baryon = param.Boolean(default=True)
-    enable_glueball = param.Boolean(default=True)
-    enable_tensor = param.Boolean(default=False, doc="Tensor channel is expensive.")
-
-    # -- Per-channel modes --
-    meson_mode = param.ObjectSelector(
-        default="standard",
-        objects=("standard", "score_directed", "score_weighted", "abs2_vacsub"),
-    )
-    vector_mode = param.ObjectSelector(
-        default="standard",
-        objects=("standard", "score_directed", "score_gradient"),
-    )
+    # -- Per-channel settings --
     vector_projection = param.ObjectSelector(
         default="full",
         objects=("full", "longitudinal", "transverse"),
     )
     vector_unit_displacement = param.Boolean(default=False)
-    baryon_mode = param.ObjectSelector(
-        default="det_abs",
-        objects=("det_abs", "flux_action", "flux_sin2", "flux_exp", "score_signed", "score_abs"),
-    )
     baryon_flux_exp_alpha = param.Number(default=1.0, bounds=(0.0, None))
-    glueball_mode = param.ObjectSelector(
-        default="re_plaquette",
-        objects=("re_plaquette", "action_re_plaquette", "phase_action", "phase_sin2"),
-    )
     glueball_momentum_projection = param.Boolean(default=False)
     glueball_momentum_axis = param.Integer(default=0, bounds=(0, 3))
     glueball_momentum_mode_max = param.Integer(default=3, bounds=(0, 8))
@@ -335,21 +351,56 @@ def build_strong_correlator_tab(
         default_layout=type("CommonGrid", (pn.GridBox,), {"ncols": 2}),
     )
 
-    channel_settings_panel = pn.Param(
+    # -- Per-channel mode selectors --
+    meson_mode_selector = pn.widgets.MultiSelect(
+        name="Meson",
+        options=list(MESON_MODES),
+        value=["standard"],
+        size=len(MESON_MODES),
+        sizing_mode="stretch_width",
+    )
+    vector_mode_selector = pn.widgets.MultiSelect(
+        name="Vector",
+        options=list(VECTOR_MODES),
+        value=["standard"],
+        size=len(VECTOR_MODES),
+        sizing_mode="stretch_width",
+    )
+    baryon_mode_selector = pn.widgets.MultiSelect(
+        name="Baryon",
+        options=list(BARYON_MODES),
+        value=["det_abs"],
+        size=len(BARYON_MODES),
+        sizing_mode="stretch_width",
+    )
+    glueball_mode_selector = pn.widgets.MultiSelect(
+        name="Glueball",
+        options=list(GLUEBALL_MODES),
+        value=["re_plaquette"],
+        size=len(GLUEBALL_MODES),
+        sizing_mode="stretch_width",
+    )
+    tensor_mode_selector = pn.widgets.MultiSelect(
+        name="Tensor",
+        options=list(TENSOR_MODES),
+        value=[],
+        size=len(TENSOR_MODES),
+        sizing_mode="stretch_width",
+    )
+    channel_mode_selectors: dict[str, pn.widgets.MultiSelect] = {
+        "meson": meson_mode_selector,
+        "vector": vector_mode_selector,
+        "baryon": baryon_mode_selector,
+        "glueball": glueball_mode_selector,
+        "tensor": tensor_mode_selector,
+    }
+
+    operator_config_panel = pn.Param(
         settings,
         parameters=[
-            "enable_meson",
-            "enable_vector",
-            "enable_baryon",
-            "enable_glueball",
-            "enable_tensor",
-            "meson_mode",
-            "vector_mode",
             "vector_projection",
             "vector_unit_displacement",
-            "baryon_mode",
             "baryon_flux_exp_alpha",
-            "glueball_mode",
             "glueball_momentum_projection",
             "glueball_momentum_axis",
             "glueball_momentum_mode_max",
@@ -357,7 +408,7 @@ def build_strong_correlator_tab(
             "tensor_momentum_mode_max",
         ],
         show_name=False,
-        default_layout=type("ChannelGrid", (pn.GridBox,), {"ncols": 2}),
+        default_layout=type("OperatorGrid", (pn.GridBox,), {"ncols": 2}),
     )
 
     multiscale_settings_panel = pn.Param(
@@ -470,34 +521,6 @@ def build_strong_correlator_tab(
                 "pair_selection": str(settings.pair_selection),
             }
 
-            base = ChannelConfigBase(**base_kwargs)
-            meson = MesonOperatorConfig(
-                operator_mode=str(settings.meson_mode),
-                **base_kwargs,
-            )
-            vector = VectorOperatorConfig(
-                operator_mode=str(settings.vector_mode),
-                projection_mode=str(settings.vector_projection),
-                use_unit_displacement=bool(settings.vector_unit_displacement),
-                **base_kwargs,
-            )
-            baryon = BaryonOperatorConfig(
-                operator_mode=str(settings.baryon_mode),
-                flux_exp_alpha=float(settings.baryon_flux_exp_alpha),
-                **base_kwargs,
-            )
-            glueball = GlueballOperatorConfig(
-                operator_mode=str(settings.glueball_mode),
-                use_momentum_projection=bool(settings.glueball_momentum_projection),
-                momentum_axis=int(settings.glueball_momentum_axis),
-                momentum_mode_max=int(settings.glueball_momentum_mode_max),
-                **base_kwargs,
-            )
-            tensor = TensorOperatorConfig(
-                momentum_axis=int(settings.tensor_momentum_axis),
-                momentum_mode_max=int(settings.tensor_momentum_mode_max),
-                **base_kwargs,
-            )
             correlator_cfg = CorrelatorConfig(
                 max_lag=int(settings.max_lag),
                 use_connected=bool(settings.use_connected),
@@ -513,36 +536,227 @@ def build_strong_correlator_tab(
                 min_scale=float(settings.min_scale),
             )
 
-            # Build channel list
-            channels: list[str] = []
-            if settings.enable_meson:
-                channels.append("meson")
-            if settings.enable_vector:
-                channels.append("vector")
-            if settings.enable_baryon:
-                channels.append("baryon")
-            if settings.enable_glueball:
-                channels.append("glueball")
-            if settings.enable_tensor:
-                channels.append("tensor")
+            # Collect selected modes per channel
+            selected_modes: dict[str, list[str]] = {}
+            for family, selector in channel_mode_selectors.items():
+                modes = [str(v) for v in selector.value]
+                if modes:
+                    selected_modes[family] = modes
 
-            if not channels:
-                status.object = "**Error:** No channels enabled."
+            if not selected_modes:
+                status.object = "**Error:** No channels selected."
                 return
 
-            pipeline_config = PipelineConfig(
-                base=base,
-                meson=meson,
-                vector=vector,
-                baryon=baryon,
-                glueball=glueball,
-                tensor=tensor,
-                correlator=correlator_cfg,
-                multiscale=multiscale_cfg,
-                channels=channels,
+            # Separate regular modes from propagator modes per channel
+            regular_modes: dict[str, list[str]] = {}
+            propagator_modes: dict[str, list[str]] = {}
+            for family, modes in selected_modes.items():
+                regs = [m for m in modes if not m.endswith("_propagator")]
+                props = [
+                    m.removesuffix("_propagator")
+                    for m in modes if m.endswith("_propagator")
+                ]
+                if regs:
+                    regular_modes[family] = regs
+                if props:
+                    propagator_modes[family] = props
+
+            # Determine which channels the pipeline must prepare data for
+            pipeline_channels = list(
+                dict.fromkeys(list(regular_modes) + list(propagator_modes))
+            )
+            if not pipeline_channels:
+                status.object = "**Error:** No channels selected."
+                return
+
+            # Pick first mode per channel for the initial pipeline run.
+            # Prefer a score mode if any is selected (regular OR propagator),
+            # so PreparedChannelData includes scores for subsequent calls.
+            def _pick_first(family: str, modes: list[str]) -> str:
+                score_set = _SCORE_MODES.get(family, set())
+                for m in modes:
+                    if m in score_set:
+                        return m
+                return modes[0]
+
+            first_modes: dict[str, str] = {}
+            _defaults = {"meson": "standard", "vector": "standard",
+                         "baryon": "det_abs", "glueball": "re_plaquette",
+                         "tensor": "standard"}
+            for family in pipeline_channels:
+                # Combine regular + propagator base modes for score detection
+                all_base = regular_modes.get(family, []) + propagator_modes.get(family, [])
+                if all_base:
+                    first_modes[family] = _pick_first(family, all_base)
+                else:
+                    first_modes[family] = _defaults.get(family, "standard")
+
+            # Build operator configs using first modes
+            meson_cfg = MesonOperatorConfig(
+                operator_mode=first_modes.get("meson", "standard"),
+                **base_kwargs,
+            )
+            vector_cfg = VectorOperatorConfig(
+                operator_mode=first_modes.get("vector", "standard"),
+                projection_mode=str(settings.vector_projection),
+                use_unit_displacement=bool(settings.vector_unit_displacement),
+                **base_kwargs,
+            )
+            baryon_cfg = BaryonOperatorConfig(
+                operator_mode=first_modes.get("baryon", "det_abs"),
+                flux_exp_alpha=float(settings.baryon_flux_exp_alpha),
+                **base_kwargs,
+            )
+            glueball_cfg = GlueballOperatorConfig(
+                operator_mode=first_modes.get("glueball", "re_plaquette"),
+                use_momentum_projection=bool(settings.glueball_momentum_projection),
+                momentum_axis=int(settings.glueball_momentum_axis),
+                momentum_mode_max=int(settings.glueball_momentum_mode_max),
+                **base_kwargs,
+            )
+            tensor_cfg = TensorOperatorConfig(
+                momentum_axis=int(settings.tensor_momentum_axis),
+                momentum_mode_max=int(settings.tensor_momentum_mode_max),
+                **base_kwargs,
             )
 
+            # Run the pipeline once to get prepared_data + first-mode results
+            pipeline_config = PipelineConfig(
+                base=ChannelConfigBase(**base_kwargs),
+                meson=meson_cfg,
+                vector=vector_cfg,
+                baryon=baryon_cfg,
+                glueball=glueball_cfg,
+                tensor=tensor_cfg,
+                correlator=correlator_cfg,
+                multiscale=multiscale_cfg,
+                channels=pipeline_channels,
+            )
             result = compute_strong_force_pipeline(history, pipeline_config)
+
+            effective_n_scales = (
+                multiscale_cfg.n_scales
+                if result.scales is not None
+                else 1
+            )
+
+            # Rename first-mode correlators/operators with mode suffix
+            merged_correlators: dict[str, Any] = {}
+            merged_operators: dict[str, Any] = {}
+
+            # Map operator keys back to their channel family
+            _family_of_key: dict[str, str] = {}
+            _FAMILY_PREFIXES = {
+                "meson": ("scalar", "pseudoscalar"),
+                "vector": ("vector", "axial_vector"),
+                "baryon": ("nucleon",),
+                "glueball": ("glueball",),
+                "tensor": ("tensor",),
+            }
+            for fam, prefixes in _FAMILY_PREFIXES.items():
+                for prefix in prefixes:
+                    _family_of_key[prefix] = fam
+                    # Also handle momentum variants like glueball_momentum_*
+            for key in list(result.correlators):
+                for fam, prefixes in _FAMILY_PREFIXES.items():
+                    if any(key == p or key.startswith(p + "_momentum") for p in prefixes):
+                        _family_of_key[key] = fam
+                        break
+
+            for key, val in result.correlators.items():
+                fam = _family_of_key.get(key)
+                mode = first_modes.get(fam, "") if fam else ""
+                merged_correlators[f"{key}_{mode}"] = val
+            for key, val in result.operators.items():
+                fam = _family_of_key.get(key)
+                mode = first_modes.get(fam, "") if fam else ""
+                merged_operators[f"{key}_{mode}"] = val
+
+            # Compute additional modes directly using prepared_data
+            _OPERATOR_FN = {
+                "meson": compute_meson_operators,
+                "vector": compute_vector_operators,
+                "baryon": compute_baryon_operators,
+                "glueball": compute_glueball_operators,
+                "tensor": compute_tensor_operators,
+            }
+
+            def _make_config(family: str, mode: str):
+                if family == "meson":
+                    return MesonOperatorConfig(operator_mode=mode, **base_kwargs)
+                if family == "vector":
+                    return VectorOperatorConfig(
+                        operator_mode=mode,
+                        projection_mode=str(settings.vector_projection),
+                        use_unit_displacement=bool(settings.vector_unit_displacement),
+                        **base_kwargs,
+                    )
+                if family == "baryon":
+                    return BaryonOperatorConfig(
+                        operator_mode=mode,
+                        flux_exp_alpha=float(settings.baryon_flux_exp_alpha),
+                        **base_kwargs,
+                    )
+                if family == "glueball":
+                    return GlueballOperatorConfig(
+                        operator_mode=mode,
+                        use_momentum_projection=bool(
+                            settings.glueball_momentum_projection
+                        ),
+                        momentum_axis=int(settings.glueball_momentum_axis),
+                        momentum_mode_max=int(settings.glueball_momentum_mode_max),
+                        **base_kwargs,
+                    )
+                # tensor has no operator_mode
+                return TensorOperatorConfig(
+                    momentum_axis=int(settings.tensor_momentum_axis),
+                    momentum_mode_max=int(settings.tensor_momentum_mode_max),
+                    **base_kwargs,
+                )
+
+            data = result.prepared_data
+            for family, modes in regular_modes.items():
+                extra = [m for m in modes if m != first_modes.get(family)]
+                op_fn = _OPERATOR_FN.get(family)
+                if not extra or op_fn is None or data is None:
+                    continue
+                for mode in extra:
+                    cfg = _make_config(family, mode)
+                    ops = op_fn(data, cfg)
+                    corrs = compute_correlators_batched(
+                        ops,
+                        max_lag=correlator_cfg.max_lag,
+                        use_connected=correlator_cfg.use_connected,
+                        n_scales=effective_n_scales,
+                    )
+                    for key, val in corrs.items():
+                        merged_correlators[f"{key}_{mode}"] = val
+                    for key, val in ops.items():
+                        merged_operators[f"{key}_{mode}"] = val
+
+            # Propagator correlators (frozen-source topology), per mode
+            if propagator_modes and data is not None:
+                for family, prop_mode_list in propagator_modes.items():
+                    for pmode in prop_mode_list:
+                        pcfg = _make_config(family, pmode)
+                        # Build kwargs for compute_propagator_pipeline
+                        prop_kw: dict[str, Any] = {
+                            f"{family}_config": pcfg,
+                        }
+                        prop_result = compute_propagator_pipeline(
+                            data,
+                            channels=[family],
+                            max_lag=int(settings.max_lag),
+                            use_connected=bool(settings.use_connected),
+                            **prop_kw,
+                        )
+                        for prop_name, prop_ch in prop_result.channels.items():
+                            merged_correlators[
+                                f"{prop_name}_{pmode}_propagator"
+                            ] = prop_ch.connected
+
+            result.correlators = merged_correlators
+            result.operators = merged_operators
             state["strong_correlator_output"] = result
 
             # Update scale selector
@@ -565,8 +779,8 @@ def build_strong_correlator_tab(
             n_channels = len(result.correlators)
             n_ops = len(result.operators)
             n_frames = 0
-            if result.prepared_data is not None and result.prepared_data.frame_indices:
-                n_frames = len(result.prepared_data.frame_indices)
+            if data is not None and data.frame_indices:
+                n_frames = len(data.frame_indices)
             ms_info = ""
             if result.scales is not None and result.scales.numel() > 1:
                 ms_info = f" | {int(result.scales.numel())} scales"
@@ -588,12 +802,26 @@ def build_strong_correlator_tab(
 
     info_note = pn.pane.Alert(
         (
-            "**Strong Correlators:** Runs the full companion-channel pipeline "
-            "(meson, vector, baryon, glueball, tensor operators and their "
-            "two-point correlators). Enable/disable channels and configure "
-            "operator modes in the settings below."
+            "**Strong Correlators:** Select operator modes per channel below. "
+            "Multiple modes can be selected simultaneously to compare across "
+            "scales. The 'propagator' option computes the frozen-source topology."
         ),
         alert_type="info",
+        sizing_mode="stretch_width",
+    )
+
+    channel_selection_panel = pn.Column(
+        pn.Row(
+            meson_mode_selector,
+            vector_mode_selector,
+            baryon_mode_selector,
+            sizing_mode="stretch_width",
+        ),
+        pn.Row(
+            glueball_mode_selector,
+            tensor_mode_selector,
+            sizing_mode="stretch_width",
+        ),
         sizing_mode="stretch_width",
     )
 
@@ -603,7 +831,8 @@ def build_strong_correlator_tab(
         pn.Row(run_button, sizing_mode="stretch_width"),
         pn.Accordion(
             ("Common Settings", common_settings_panel),
-            ("Channel Selection & Modes", channel_settings_panel),
+            ("Channel & Mode Selection", channel_selection_panel),
+            ("Operator Settings", operator_config_panel),
             ("Multiscale Settings", multiscale_settings_panel),
             sizing_mode="stretch_width",
         ),

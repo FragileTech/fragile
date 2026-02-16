@@ -19,8 +19,6 @@ import torch
 if TYPE_CHECKING:
     import panel as pn
 
-    from fragile.physics.app.qft.correlator_channels import ChannelCorrelatorResult
-
 
 hv.extension("bokeh")
 
@@ -450,7 +448,7 @@ def build_mass_spectrum_bar(
     """Build bar chart of extracted masses across channels.
 
     Args:
-        channel_results: Dict mapping channel names to ChannelCorrelatorResult.
+        channel_results: Dict mapping channel names to Any.
         mass_getter: Optional callable(result, mode) -> float for mass extraction.
         error_getter: Optional callable(result, mode) -> float for error extraction.
         title: Chart title.
@@ -887,7 +885,7 @@ def build_effective_mass_plateau_plot(
 class ChannelPlot:
     """Generates side-by-side correlator and effective mass plots for a channel.
 
-    Takes a ChannelCorrelatorResult and produces a two-panel visualization:
+    Takes a Any and produces a two-panel visualization:
     - Left: Correlator C(t) with exponential fit
     - Right: Effective mass m_eff(t) with fitted mass plateau
 
@@ -896,7 +894,7 @@ class ChannelPlot:
 
     def __init__(
         self,
-        result: ChannelCorrelatorResult,
+        result: Any,
         logy: bool = True,
         width: int = 400,
         height: int = 350,
@@ -904,7 +902,7 @@ class ChannelPlot:
         """Initialize ChannelPlot.
 
         Args:
-            result: ChannelCorrelatorResult from channel computation.
+            result: Any from channel computation.
             logy: Use logarithmic y-axis for correlator plot.
             width: Width of each panel in pixels.
             height: Height of each panel in pixels.
@@ -1203,7 +1201,7 @@ def build_all_channels_overlay(
     """Build overlay of all channels on single plot.
 
     Args:
-        channel_results: Dict mapping channel names to ChannelCorrelatorResult.
+        channel_results: Dict mapping channel names to Any.
         plot_type: "correlator" or "effective_mass".
         correlator_logy: Whether correlator overlays should use log y-axis.
 

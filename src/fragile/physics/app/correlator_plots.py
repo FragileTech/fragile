@@ -35,6 +35,12 @@ CHANNEL_COLORS: dict[str, str] = {
     "baryon_nucleon": "#54a24b",
     "glueball_plaquette": "#b279a2",
     "tensor_traceless": "#ff9da6",
+    "meson_scalar_propagator": "#7b9ec9",
+    "meson_pseudoscalar_propagator": "#a3d4d0",
+    "vector_full_propagator": "#f9a84f",
+    "axial_full_propagator": "#e8817f",
+    "baryon_nucleon_propagator": "#7ec47b",
+    "glueball_plaquette_propagator": "#c9a0bf",
 }
 
 _DEFAULT_COLOR = "#1f77b4"
