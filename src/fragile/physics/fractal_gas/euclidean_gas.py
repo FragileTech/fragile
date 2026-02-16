@@ -594,11 +594,8 @@ class EuclideanGas(PanelModel):
                     "alpha": self.fitness_op.alpha if self.fitness_op else None,
                     "beta": self.fitness_op.beta if self.fitness_op else None,
                     "eta": self.fitness_op.eta if self.fitness_op else None,
-                    "lambda_alg": self.fitness_op.lambda_alg if self.fitness_op else None,
                     "sigma_min": self.fitness_op.sigma_min if self.fitness_op else None,
-                    "epsilon_dist": self.fitness_op.epsilon_dist if self.fitness_op else None,
                     "A": self.fitness_op.A if self.fitness_op else None,
-                    "rho": self.fitness_op.rho if self.fitness_op else None,
                 },
                 "neighbor_graph": {
                     "update_every": self.neighbor_graph_update_every,
@@ -654,9 +651,17 @@ class EuclideanGas(PanelModel):
         for t in step_iterator:
             step_start = time.time()
 
-            # Execute step with return_info=True to get all data
-            self._current_step = t
-            state_cloned, state_final, info = self.step(state, return_info=True)
+            try:
+                # Execute step with return_info=True to get all data
+                self._current_step = t
+                state_cloned, state_final, info = self.step(state, return_info=True)
+            except Exception as exc:
+                import traceback
+                traceback.print_exc()
+                terminated_early = True
+                final_step = t - 1
+                print(f"Simulation terminated early at step {t}: {exc}")
+                break
 
             # Determine if this step should be recorded
             should_record = t in recorded_steps

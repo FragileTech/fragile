@@ -344,6 +344,7 @@ class KineticOperator(PanelModel):
         if not valid.any():
             return torch.zeros_like(v)
         i, j = i[valid], j[valid]
+        edge_weights = edge_weights[valid]
 
         # Velocity coupling: F_visc_i = nu * sum_j w_ij (v_j - v_i)
         v_diff = v[j] - v[i]
@@ -408,10 +409,9 @@ class KineticOperator(PanelModel):
         A = A.reshape(N, d, d)
         B = B.reshape(N, d, d)
 
-        # Solve A = J @ B for J via J^T = solve(B, A^T)  (B is symmetric)
-        eps = 1e-8
-        B_reg = B + eps * torch.eye(d, device=device, dtype=dtype).unsqueeze(0)
-        J_T = torch.linalg.solve(B_reg, A.transpose(-1, -2))  # [N, d, d]
+        # Solve A = J @ B for J via J^T = lstsq(B, A^T)  (B is symmetric)
+        # lstsq handles rank-deficient B (e.g. walker with too few neighbors)
+        J_T = torch.linalg.lstsq(B, A.transpose(-1, -2)).solution  # [N, d, d]
 
         # Extract antisymmetric part: curl = (J - J^T) / 2
         # Since J = J_T^T, this is (J_T^T - J_T) / 2

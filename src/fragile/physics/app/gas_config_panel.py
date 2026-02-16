@@ -369,11 +369,18 @@ class GasConfigPanel(param.Parameterized):
                 self.progress_bar.bar_color = "danger"
                 return
 
-            self.status_pane.object = (
-                f"**Simulation complete!** {history.n_steps} steps, "
-                f"{history.n_recorded} recorded timesteps"
-            )
-            self.progress_bar.bar_color = "warning" if history.terminated_early else "success"
+            if history.terminated_early:
+                self.status_pane.object = (
+                    f"**Terminated early** at step {history.final_step}/{history.n_steps} "
+                    f"({history.n_recorded} recorded timesteps)"
+                )
+                self.progress_bar.bar_color = "danger"
+            else:
+                self.status_pane.object = (
+                    f"**Simulation complete!** {history.n_steps} steps, "
+                    f"{history.n_recorded} recorded timesteps"
+                )
+                self.progress_bar.bar_color = "success"
             self._update_progress_display(history.final_step, self.progress_bar.max, 0.0)
 
         self._schedule_ui_update(_finalize)
