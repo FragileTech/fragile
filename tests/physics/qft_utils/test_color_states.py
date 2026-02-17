@@ -280,3 +280,24 @@ class TestEstimateEll0:
 
         # All distances are 1.0, so median should be 1.0
         assert abs(result - 1.0) < 1e-6
+
+    def test_euclidean_always_used(self):
+        """Test that Euclidean distances are always used, even with neighbor graph."""
+        history_with = MockRunHistory(N=4, d=2, n_recorded=10, with_neighbor_graph=True)
+        history_without = MockRunHistory(N=4, d=2, n_recorded=10, with_neighbor_graph=False)
+
+        # Set identical positions so Euclidean distances match
+        mid_idx = history_with.n_recorded // 2
+        positions = torch.tensor([
+            [0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0],
+        ])
+        history_with.x_before_clone[mid_idx] = positions
+        history_without.x_before_clone[mid_idx] = positions
+
+        result_with = estimate_ell0(history_with)
+        result_without = estimate_ell0(history_without)
+
+        assert isinstance(result_with, float)
+        assert result_with > 0
+        # Both should give identical Euclidean results
+        assert abs(result_with - result_without) < 1e-6

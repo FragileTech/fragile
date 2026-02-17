@@ -93,3 +93,4 @@ class MassExtractionConfig:
     compute_effective_mass: bool = True
     effective_mass_method: str = "log_ratio"  # log_ratio | cosh
     effective_mass_dt: float = 1.0
+    include_multiscale: bool = True

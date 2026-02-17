@@ -6,6 +6,9 @@ extracting particle masses with proper error propagation.
 
 from __future__ import annotations
 
+import logging
+import re
+
 import numpy as np
 
 from fragile.physics.operators.pipeline import PipelineResult
@@ -25,33 +28,75 @@ from .results import (
     extract_diagnostics,
 )
 
+_log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Channel auto-detection mapping
 # ---------------------------------------------------------------------------
 
+# Regex patterns: match channel prefix followed by underscore (mode suffix) or
+# end-of-string (bare key).  Propagator prefixes (longer strings) must precede
+# bare prefixes, and ``axial_vector`` must precede ``vector`` so that
+# ``axial_vector_standard`` is not mis-matched.
+_CHANNEL_PATTERNS: list[tuple[re.Pattern, str, str]] = [
+    # Propagator prefixes (longer → must precede bare prefixes)
+    (re.compile(r"^meson_pseudoscalar(?:_|$)"), "pseudoscalar", "meson"),
+    (re.compile(r"^meson_scalar(?:_|$)"), "scalar", "meson"),
+    (re.compile(r"^axial_full(?:_|$)"), "axial_vector", "meson"),
+    (re.compile(r"^vector_full(?:_|$)"), "vector", "meson"),
+    (re.compile(r"^baryon_nucleon(?:_|$)"), "nucleon", "baryon"),
+    (re.compile(r"^glueball_plaquette(?:_|$)"), "glueball", "glueball"),
+    # Regular operator prefixes
+    (re.compile(r"^axial_vector(?:_|$)"), "axial_vector", "meson"),
+    (re.compile(r"^pseudoscalar(?:_|$)"), "pseudoscalar", "meson"),
+    (re.compile(r"^scalar(?:_|$)"), "scalar", "meson"),
+    (re.compile(r"^vector(?:_|$)"), "vector", "meson"),
+    (re.compile(r"^nucleon(?:_|$)"), "nucleon", "baryon"),
+    (re.compile(r"^baryon(?:_|$)"), "nucleon", "baryon"),
+    (re.compile(r"^glueball(?:_|$)"), "glueball", "glueball"),
+    (re.compile(r"^tensor(?:_|$)"), "tensor", "tensor"),
+    # Electroweak operator prefixes
+    (re.compile(r"^u1_"), "u1_hypercharge", "electroweak"),
+    (re.compile(r"^su2_doublet_diff(?:_|$)"), "su2_doublet_diff", "electroweak"),
+    (re.compile(r"^su2_doublet(?:_|$)"), "su2_doublet", "electroweak"),
+    (re.compile(r"^su2_phase(?:_|$)"), "su2_phase", "electroweak"),
+    (re.compile(r"^su2_component(?:_|$)"), "su2_component", "electroweak"),
+    (re.compile(r"^ew_mixed(?:_|$)"), "ew_mixed", "electroweak"),
+    (re.compile(r"^fitness_phase(?:_|$)"), "symmetry_breaking", "electroweak"),
+    (re.compile(r"^clone_indicator(?:_|$)"), "symmetry_breaking", "electroweak"),
+    (re.compile(r"^velocity_norm_"), "parity_velocity", "electroweak"),
+]
+
 _CHANNEL_GROUP_MAP = {
-    # Meson family
-    "scalar": "pion",
-    "pseudoscalar": "pion",
-    # Vector family
-    "vector": "rho",
-    "axial_vector": "rho",
-    # Baryon family
+    "scalar": "scalar",
+    "pseudoscalar": "pseudoscalar",
+    "meson_scalar": "scalar",
+    "meson_pseudoscalar": "pseudoscalar",
+    "vector": "vector",
+    "axial_vector": "axial_vector",
+    "vector_full": "vector",
+    "axial_full": "axial_vector",
     "nucleon": "nucleon",
     "baryon": "nucleon",
-    # Glueball family (matches glueball_*)
+    "baryon_nucleon": "nucleon",
     "glueball": "glueball",
-    # Tensor family (matches tensor_*)
+    "glueball_plaquette": "glueball",
     "tensor": "tensor",
 }
 
 _CHANNEL_TYPES = {
-    "pion": "meson",
-    "rho": "meson",
+    "scalar": "meson",
+    "pseudoscalar": "meson",
+    "vector": "meson",
+    "axial_vector": "meson",
     "nucleon": "baryon",
     "glueball": "glueball",
     "tensor": "tensor",
+    "u1_hypercharge": "electroweak",
+    "su2_isospin": "electroweak",
+    "ew_mixed": "electroweak",
+    "symmetry_breaking": "electroweak",
+    "parity_velocity": "electroweak",
 }
 
 
@@ -89,7 +134,10 @@ def extract_masses(
     if config.channel_groups:
         groups = config.channel_groups
     else:
-        groups = _auto_detect_channel_groups(list(correlators.keys()))
+        groups = _auto_detect_channel_groups(
+            list(correlators.keys()),
+            include_multiscale=config.include_multiscale,
+        )
 
     if not groups:
         return MassExtractionResult()
@@ -185,7 +233,10 @@ def extract_masses_multi_run(
     if config.channel_groups:
         groups = config.channel_groups
     else:
-        groups = _auto_detect_channel_groups(all_keys)
+        groups = _auto_detect_channel_groups(
+            all_keys,
+            include_multiscale=config.include_multiscale,
+        )
 
     if not groups:
         return MassExtractionResult(data=data)
@@ -234,56 +285,76 @@ def extract_masses_multi_run(
 
 def _auto_detect_channel_groups(
     correlator_keys: list[str],
+    *,
+    include_multiscale: bool = True,
 ) -> list[ChannelGroupConfig]:
     """Auto-detect channel groups from correlator key names.
 
+    Uses regex patterns with ``(?:_|$)`` anchoring so that mode-suffixed keys
+    like ``scalar_standard`` or ``nucleon_flux_action`` are matched correctly.
+
     Maps known channel names to physical particle groups:
 
-    - scalar, pseudoscalar -> "pion" (meson)
-    - vector, axial_vector -> "rho" (meson)
-    - nucleon, baryon -> "nucleon" (baryon)
-    - glueball* -> "glueball"
-    - tensor* -> "tensor"
+    - scalar, meson_scalar -> "scalar" (meson, sigma/f0)
+    - pseudoscalar, meson_pseudoscalar -> "pseudoscalar" (meson, pion)
+    - vector, vector_full -> "vector" (meson, rho)
+    - axial_vector, axial_full -> "axial_vector" (meson, a1)
+    - nucleon, baryon, baryon_nucleon -> "nucleon" (baryon)
+    - glueball, glueball_plaquette -> "glueball"
+    - tensor -> "tensor"
 
     Args:
         correlator_keys: List of correlator key strings.
+        include_multiscale: When ``False``, skip keys containing ``_scale_N``.
 
     Returns:
         List of auto-detected :class:`ChannelGroupConfig`.
     """
     group_keys: dict[str, list[str]] = {}
+    group_types: dict[str, str] = {}
 
     for key in correlator_keys:
+        # Optionally skip multiscale keys
+        if not include_multiscale and "_scale_" in key:
+            _log.debug("Skipping multiscale key %r (include_multiscale=False)", key)
+            continue
+
         # Strip scale suffix for matching
         base = key.rsplit("_scale_", 1)[0] if "_scale_" in key else key
 
-        # Try exact match first
-        group_name = _CHANNEL_GROUP_MAP.get(base)
+        # Try regex patterns (order matters: axial_vector before vector)
+        group_name = None
+        channel_type = None
+        for pattern, gname, ctype in _CHANNEL_PATTERNS:
+            if pattern.match(base):
+                group_name = gname
+                channel_type = ctype
+                break
 
-        # Try prefix match for glueball_*, tensor_*
         if group_name is None:
-            for prefix, gname in _CHANNEL_GROUP_MAP.items():
-                if base.startswith(prefix):
-                    group_name = gname
-                    break
-
-        if group_name is None:
-            # Unknown channel -> create its own group
+            _log.warning("Unmatched correlator key %r — assigning to own group", key)
             group_name = base
+            channel_type = "meson"
 
-        if group_name not in group_keys:
-            group_keys[group_name] = []
-        group_keys[group_name].append(key)
+        group_keys.setdefault(group_name, []).append(key)
+        group_types[group_name] = channel_type
 
     groups = []
     for gname, keys in group_keys.items():
-        channel_type = _CHANNEL_TYPES.get(gname, "meson")
+        channel_type = group_types.get(gname, _CHANNEL_TYPES.get(gname, "meson"))
         groups.append(
             ChannelGroupConfig(
                 name=gname,
                 correlator_keys=sorted(keys),
                 channel_type=channel_type,
             )
+        )
+
+    if groups:
+        _log.info(
+            "Auto-detected %d channel groups: %s",
+            len(groups),
+            ", ".join(f"{g.name}({len(g.correlator_keys)})" for g in groups),
         )
 
     return groups

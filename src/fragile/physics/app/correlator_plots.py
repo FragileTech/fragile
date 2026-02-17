@@ -11,6 +11,7 @@ from typing import Any
 
 import holoviews as hv
 import numpy as np
+import pandas as pd
 import torch
 
 from fragile.physics.app.algorithm import _algorithm_placeholder_plot
@@ -41,6 +42,25 @@ CHANNEL_COLORS: dict[str, str] = {
     "axial_full_propagator": "#e8817f",
     "baryon_nucleon_propagator": "#7ec47b",
     "glueball_plaquette_propagator": "#c9a0bf",
+    # Electroweak channels
+    "u1_phase": "#1b9e77",
+    "u1_dressed": "#d95f02",
+    "u1_phase_q2": "#1b9e77",
+    "u1_dressed_q2": "#d95f02",
+    "su2_phase": "#7570b3",
+    "su2_component": "#e7298a",
+    "su2_doublet": "#66a61e",
+    "su2_doublet_diff": "#e6ab02",
+    "su2_phase_directed": "#9e9ac8",
+    "su2_component_directed": "#f768a1",
+    "su2_doublet_directed": "#a1d99b",
+    "su2_doublet_diff_directed": "#fec44f",
+    "ew_mixed": "#a6761d",
+    "fitness_phase": "#666666",
+    "clone_indicator": "#999999",
+    "velocity_norm_cloner": "#e41a1c",
+    "velocity_norm_resister": "#377eb8",
+    "velocity_norm_persister": "#4daf4a",
 }
 
 _DEFAULT_COLOR = "#1f77b4"
@@ -389,3 +409,276 @@ def get_operator_series_array(
         else:
             arr = arr.mean(axis=-1)
     return arr
+
+
+# ---------------------------------------------------------------------------
+# Summary / correlator tables (shared by strong & electroweak tabs)
+# ---------------------------------------------------------------------------
+
+
+def build_summary_table(
+    result: PipelineResult,
+    scale_index: int = 0,
+) -> pd.DataFrame:
+    """Build one-row-per-channel summary table."""
+    rows: list[dict[str, Any]] = []
+    for name in result.correlators:
+        arr = get_correlator_array(result, name, scale_index)
+        if len(arr) == 0:
+            continue
+        op_arr = get_operator_series_array(result, name, scale_index)
+        n_frames = max(0, len(op_arr))
+
+        c0 = float(arr[0]) if len(arr) > 0 else np.nan
+        c1 = float(arr[1]) if len(arr) > 1 else np.nan
+        c_last = float(arr[-1]) if len(arr) > 0 else np.nan
+        m_eff1 = np.nan
+        if len(arr) > 1 and abs(c0) > 1e-30 and c1 / c0 > 0:
+            m_eff1 = np.log(c0 / c1)
+
+        row: dict[str, Any] = {
+            "channel": name,
+            "C(0)": c0,
+            "C(1)": c1,
+            f"C({len(arr) - 1})": c_last,
+            "m_eff(1)": m_eff1,
+            "n_frames": n_frames,
+        }
+        if result.scales is not None:
+            row["scale_index"] = scale_index
+        rows.append(row)
+
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+def build_correlator_table(
+    result: PipelineResult,
+    scale_index: int = 0,
+) -> pd.DataFrame:
+    """Build full correlator table: rows = channels, columns = lag values."""
+    if not result.correlators:
+        return pd.DataFrame()
+
+    rows: list[dict[str, Any]] = []
+    for name in result.correlators:
+        arr = get_correlator_array(result, name, scale_index)
+        if len(arr) == 0:
+            continue
+        row: dict[str, Any] = {"channel": name}
+        for lag_i, val in enumerate(arr):
+            row[f"lag_{lag_i}"] = float(val)
+        rows.append(row)
+
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+# ---------------------------------------------------------------------------
+# Per-channel-group correlator / effective-mass plots
+# ---------------------------------------------------------------------------
+
+_VARIANT_PALETTE = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+    "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+    "#aec7e8", "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5",
+]
+
+# Strong-force channel prefixes → display names.
+_STRONG_PREFIX_DISPLAY: dict[str, str] = {
+    "axial_vector": "Axial Vector",
+    "pseudoscalar": "Pseudoscalar",
+    "scalar": "Scalar",
+    "vector": "Vector",
+    "nucleon": "Nucleon",
+    "glueball": "Glueball",
+    "tensor": "Tensor",
+}
+
+_STRONG_GROUP_ORDER = [
+    "Scalar", "Pseudoscalar", "Vector", "Axial Vector",
+    "Nucleon", "Glueball", "Tensor",
+]
+
+
+def group_strong_correlator_keys(keys) -> dict[str, list[str]]:
+    """Group strong-force correlator keys by channel prefix.
+
+    Returns an ordered dict of ``{display_name: [key, ...]}``.
+    """
+    groups: dict[str, list[str]] = {}
+    for key in keys:
+        if key.startswith("glueball_momentum_"):
+            groups.setdefault("Glueball", []).append(key)
+            continue
+        matched = False
+        for prefix, display in _STRONG_PREFIX_DISPLAY.items():
+            if key.startswith(prefix + "_") or key == prefix:
+                groups.setdefault(display, []).append(key)
+                matched = True
+                break
+        if not matched:
+            groups.setdefault("Other", []).append(key)
+
+    ordered: dict[str, list[str]] = {}
+    for name in _STRONG_GROUP_ORDER:
+        if name in groups:
+            ordered[name] = sorted(groups.pop(name))
+    for name in sorted(groups):
+        ordered[name] = sorted(groups[name])
+    return ordered
+
+
+_EW_GROUP_ORDER = [
+    "U(1)", "SU(2) Base", "SU(2) Directed", "SU(2) Walker-Type",
+    "EW Mixed", "Symmetry Breaking", "Parity Velocity",
+]
+
+
+def group_electroweak_correlator_keys(keys) -> dict[str, list[str]]:
+    """Group electroweak correlator keys by family.
+
+    Returns an ordered dict of ``{display_name: [key, ...]}``.
+    """
+    _rules = [
+        ("U(1)", lambda k: k.startswith("u1_")),
+        ("SU(2) Directed", lambda k: k.startswith("su2_") and k.endswith("_directed")),
+        (
+            "SU(2) Walker-Type",
+            lambda k: k.startswith("su2_")
+            and any(k.endswith(s) for s in ("_cloner", "_resister", "_persister")),
+        ),
+        ("SU(2) Base", lambda k: k.startswith("su2_")),
+        ("EW Mixed", lambda k: k == "ew_mixed"),
+        ("Symmetry Breaking", lambda k: k in ("fitness_phase", "clone_indicator")),
+        ("Parity Velocity", lambda k: k.startswith("velocity_norm_")),
+    ]
+    groups: dict[str, list[str]] = {}
+    for key in keys:
+        matched = False
+        for group_name, predicate in _rules:
+            if predicate(key):
+                groups.setdefault(group_name, []).append(key)
+                matched = True
+                break
+        if not matched:
+            groups.setdefault("Other", []).append(key)
+
+    ordered: dict[str, list[str]] = {}
+    for name in _EW_GROUP_ORDER:
+        if name in groups:
+            ordered[name] = sorted(groups.pop(name))
+    for name in sorted(groups):
+        ordered[name] = sorted(groups[name])
+    return ordered
+
+
+def build_grouped_correlator_plot(
+    result: PipelineResult,
+    group_name: str,
+    keys: list[str],
+    scale_index: int = 0,
+    logy: bool = True,
+) -> hv.Overlay | hv.Text:
+    """Build a correlator overlay for one channel group."""
+    scatters: list[Any] = []
+    y_min_pos = float("inf")
+    y_max_pos = 0.0
+
+    for idx, name in enumerate(keys):
+        arr = get_correlator_array(result, name, scale_index)
+        if len(arr) == 0:
+            continue
+        mask = (np.isfinite(arr) & (arr > 0)) if logy else np.isfinite(arr)
+        if mask.sum() < 2:
+            continue
+
+        lags = np.arange(len(arr))
+        t_plot, c_plot = lags[mask], arr[mask]
+        if logy:
+            y_min_pos = min(y_min_pos, float(np.min(c_plot)))
+            y_max_pos = max(y_max_pos, float(np.max(c_plot)))
+
+        color = _VARIANT_PALETTE[idx % len(_VARIANT_PALETTE)]
+        scatters.append(
+            hv.Scatter((t_plot, c_plot), "lag", "C(lag)")
+            .opts(color=color, size=5, alpha=0.7)
+            .relabel(name)
+        )
+
+    if not scatters:
+        return _algorithm_placeholder_plot(f"No correlator data for {group_name}")
+
+    overlay = scatters[0]
+    for s in scatters[1:]:
+        overlay = overlay * s
+
+    opts_kw: dict[str, Any] = {
+        "logy": logy,
+        "xlabel": "lag",
+        "ylabel": "C(lag)",
+        "title": f"{group_name} Correlator",
+        "width": 500,
+        "height": 350,
+        "show_legend": True,
+        "show_grid": True,
+        "shared_axes": False,
+    }
+    if (
+        logy
+        and np.isfinite(y_min_pos)
+        and y_min_pos > 0
+        and y_max_pos > y_min_pos
+    ):
+        opts_kw["ylim"] = (
+            max(np.finfo(float).tiny, y_min_pos * 0.8),
+            y_max_pos * 1.2,
+        )
+    return overlay.opts(**opts_kw)
+
+
+def build_grouped_meff_plot(
+    result: PipelineResult,
+    group_name: str,
+    keys: list[str],
+    scale_index: int = 0,
+) -> hv.Overlay | hv.Text:
+    """Build an effective-mass overlay for one channel group."""
+    scatters: list[Any] = []
+
+    for idx, name in enumerate(keys):
+        arr = get_correlator_array(result, name, scale_index)
+        if len(arr) < 2:
+            continue
+        c0, c1 = arr[:-1], arr[1:]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            ratio = np.where((c0 > 0) & (c1 > 0), c0 / c1, np.nan)
+            m_eff = np.log(ratio)
+
+        mask = np.isfinite(m_eff) & (m_eff > 0)
+        if mask.sum() < 2:
+            continue
+
+        lags = np.arange(len(m_eff))
+        color = _VARIANT_PALETTE[idx % len(_VARIANT_PALETTE)]
+        scatters.append(
+            hv.Scatter((lags[mask], m_eff[mask]), "t", "m_eff(t)")
+            .opts(color=color, size=5, alpha=0.7)
+            .relabel(name)
+        )
+
+    if not scatters:
+        return _algorithm_placeholder_plot(f"No m_eff data for {group_name}")
+
+    overlay = scatters[0]
+    for s in scatters[1:]:
+        overlay = overlay * s
+
+    return overlay.opts(
+        xlabel="t (lag)",
+        ylabel="m_eff(t)",
+        title=f"{group_name} Effective Mass",
+        width=500,
+        height=350,
+        show_legend=True,
+        show_grid=True,
+        shared_axes=False,
+    )

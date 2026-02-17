@@ -209,7 +209,7 @@ class GasConfigPanel(param.Parameterized):
         config.kinetic_op.use_viscous_coupling = True
         config.kinetic_op.viscous_length_scale = 0.251372
         config.kinetic_op.viscous_neighbor_weighting = "riemannian_kernel_volume"
-        config.kinetic_op.beta_curl = 0.0
+        config.kinetic_op.beta_curl = 2.0
         config.cloning.p_max = 1.0
         config.cloning.epsilon_clone = 1e-6
         config.cloning.sigma_x = 0.01
@@ -254,7 +254,7 @@ class GasConfigPanel(param.Parameterized):
             use_viscous_coupling=True,
             viscous_length_scale=1.0,
             viscous_neighbor_weighting="riemannian_kernel_volume",
-            beta_curl=0.0,
+            beta_curl=2.0,
         )
         self.cloning = CloneOperator(
             sigma_x=1e-6,
@@ -504,29 +504,31 @@ class GasConfigPanel(param.Parameterized):
         gamma: float,
         beta_manual: float,
         auto_thermostat: bool,
-        sigma_v: float,
+        temperature: float,
     ) -> str:
         """Build a live thermostat status readout for the Langevin panel."""
-        del gamma, beta_manual, auto_thermostat, sigma_v  # values used via reactive binding
+        del gamma, beta_manual, auto_thermostat, temperature  # values used via reactive binding
 
         gamma_val = float(self.kinetic_op.gamma)
         beta_val = float(self.kinetic_op.beta)
         auto_mode = bool(getattr(self.kinetic_op, "auto_thermostat", False))
-        sigma_val = float(getattr(self.kinetic_op, "sigma_v", float("nan")))
+        t_val = float(getattr(self.kinetic_op, "temperature", float("nan")))
+        sigma_v_derived = (2.0 * gamma_val * t_val) ** 0.5
         beta_eff = (
             float(self.kinetic_op.effective_beta())
             if hasattr(self.kinetic_op, "effective_beta")
             else beta_val
         )
         t_eff = float("inf") if beta_eff <= 0 else 1.0 / beta_eff
-        mode_label = "Auto thermostat (FDT)" if auto_mode else "Manual beta thermostat"
+        mode_label = "Auto thermostat (T_eff)" if auto_mode else "Manual beta thermostat"
 
         return (
             "#### Thermostat Readout\n"
             f"- mode: `{mode_label}`\n"
             f"- friction `gamma`: `{gamma_val:.6g}`\n"
             f"- manual `beta`: `{beta_val:.6g}`\n"
-            f"- noise `sigma_v`: `{sigma_val:.6g}`\n"
+            f"- temperature `T_eff`: `{t_val:.6g}`\n"
+            f"- derived `sigma_v = sqrt(2*gamma*T)`: `{sigma_v_derived:.6g}`\n"
             f"- active `beta_effective`: `{beta_eff:.6g}`\n"
             f"- active `T_effective = 1 / beta_effective`: `{t_eff:.6g}`"
         )
@@ -571,7 +573,7 @@ class GasConfigPanel(param.Parameterized):
                 self.kinetic_op.param.gamma,
                 self.kinetic_op.param.beta,
                 self.kinetic_op.param.auto_thermostat,
-                self.kinetic_op.param.sigma_v,
+                self.kinetic_op.param.temperature,
             ),
             sizing_mode="stretch_width",
         )

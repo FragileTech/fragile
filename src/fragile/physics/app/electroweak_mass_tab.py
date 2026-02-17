@@ -1,0 +1,514 @@
+"""Electroweak Mass Extraction dashboard tab.
+
+Feeds the electroweak-correlator PipelineResult into the Bayesian
+multi-exponential fitter, displays extracted masses, fit diagnostics,
+effective-mass plots, and correlator-vs-fit overlays.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Callable
+
+import gvar
+import numpy as np
+import pandas as pd
+import panel as pn
+import param
+
+from fragile.physics.app.algorithm import _algorithm_placeholder_plot
+from fragile.physics.app.mass_extraction_tab import (
+    _build_amplitude_table,
+    _build_correlator_fit_plot,
+    _build_cross_channel_ratio_table,
+    _build_diagnostics_container,
+    _build_mass_spectrum_bar,
+    _build_meff_plot,
+    _build_intra_channel_ratio_table,
+    _CHANNEL_PALETTE,
+)
+from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.mass_extraction import (
+    MassExtractionConfig,
+    MassExtractionResult,
+    ChannelFitConfig,
+    CovarianceConfig,
+    FitConfig,
+    PriorConfig,
+    extract_masses,
+)
+
+
+# ---------------------------------------------------------------------------
+# Section dataclass
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class ElectroweakMassSection:
+    """Container for the electroweak mass extraction dashboard section."""
+
+    tab: pn.Column
+    status: pn.pane.Markdown
+    run_button: pn.widgets.Button
+    on_run: Callable[[Any], None]
+    on_history_changed: Callable[[bool], None]
+    on_correlators_ready: Callable[[], None]
+
+
+# ---------------------------------------------------------------------------
+# Settings
+# ---------------------------------------------------------------------------
+
+
+class ElectroweakMassSettings(param.Parameterized):
+    """Settings for the electroweak mass extraction pipeline."""
+
+    covariance_method = param.ObjectSelector(
+        default="uncorrelated",
+        objects=["uncorrelated", "block_jackknife", "bootstrap"],
+    )
+    nexp = param.Integer(default=2, bounds=(1, 6))
+    tmin = param.Integer(default=2, bounds=(1, 20))
+    tmax_frac = param.Number(
+        default=1.0,
+        bounds=(0.1, 1.0),
+        doc="Fraction of max_lag for tmax (1.0 = full range).",
+    )
+    svdcut = param.Number(default=1e-4)
+    use_log_dE = param.Boolean(default=True)
+    use_fastfit_seeding = param.Boolean(default=True)
+    effective_mass_method = param.ObjectSelector(
+        default="log_ratio",
+        objects=["log_ratio", "cosh"],
+    )
+    include_multiscale = param.Boolean(default=True)
+
+
+# ---------------------------------------------------------------------------
+# Main builder
+# ---------------------------------------------------------------------------
+
+
+def build_electroweak_mass_tab(
+    *,
+    state: dict[str, Any],
+    run_tab_computation: Callable[
+        [dict[str, Any], pn.pane.Markdown, str, Callable[[RunHistory], None]], None
+    ],
+) -> ElectroweakMassSection:
+    """Build the Electroweak Mass Extraction tab with callbacks."""
+
+    settings = ElectroweakMassSettings()
+    status = pn.pane.Markdown(
+        "**Electroweak Mass:** Run Electroweak Correlators first, "
+        "then click Extract Electroweak Masses.",
+        sizing_mode="stretch_width",
+    )
+    run_button = pn.widgets.Button(
+        name="Extract Electroweak Masses",
+        button_type="primary",
+        min_width=260,
+        sizing_mode="stretch_width",
+        disabled=True,
+    )
+
+    # -- Widgets --
+    mass_spectrum_plot = pn.pane.HoloViews(
+        _algorithm_placeholder_plot("Run extraction to show mass spectrum."),
+        sizing_mode="stretch_width",
+        linked_axes=False,
+    )
+    mass_summary_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+    diagnostics_container = pn.Column(
+        pn.pane.Markdown("", sizing_mode="stretch_width"),
+        pn.widgets.Tabulator(
+            pd.DataFrame(), pagination=None, show_index=False,
+            sizing_mode="stretch_width",
+        ),
+        sizing_mode="stretch_width",
+    )
+
+    channel_selector = pn.widgets.Select(
+        name="Channel",
+        options=[],
+        sizing_mode="stretch_width",
+    )
+    channel_detail_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+    amplitude_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+    intra_ratio_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+    cross_ratio_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+
+    placeholder = _algorithm_placeholder_plot("Run extraction to show plots.")
+    meff_plot = pn.pane.HoloViews(placeholder, sizing_mode="stretch_width", linked_axes=False)
+    correlator_fit_plot = pn.pane.HoloViews(
+        placeholder, sizing_mode="stretch_width", linked_axes=False,
+    )
+
+    # -- Channel key selection widgets --
+    channel_key_selectors: dict[str, pn.widgets.MultiSelect] = {}
+
+    channel_key_selection_container = pn.Column(
+        pn.pane.Markdown(
+            "*Run Electroweak Correlators to populate channel operator selections.*",
+            sizing_mode="stretch_width",
+        ),
+        sizing_mode="stretch_width",
+    )
+
+    # -- Settings panel --
+    settings_panel = pn.Param(
+        settings,
+        parameters=[
+            "covariance_method",
+            "nexp",
+            "tmin",
+            "tmax_frac",
+            "svdcut",
+            "use_log_dE",
+            "use_fastfit_seeding",
+            "effective_mass_method",
+            "include_multiscale",
+        ],
+        show_name=False,
+        default_layout=type("FitGrid", (pn.GridBox,), {"ncols": 2}),
+    )
+
+    # -- Refresh helpers --
+
+    def _refresh_all():
+        result: MassExtractionResult | None = state.get("electroweak_mass_output")
+        if result is None:
+            return
+
+        # Mass spectrum bar chart
+        mass_spectrum_plot.object = _build_mass_spectrum_bar(result)
+
+        # Mass summary table
+        rows = []
+        for name, ch in result.channels.items():
+            gs_mean = float(gvar.mean(ch.ground_state_mass))
+            gs_err = float(gvar.sdev(ch.ground_state_mass))
+            err_pct = (gs_err / gs_mean * 100) if gs_mean != 0 else float("inf")
+            rows.append({
+                "Channel": ch.name,
+                "Type": ch.channel_type,
+                "Ground Mass": f"{gs_mean:.6f}",
+                "Error": f"{gs_err:.6f}",
+                "Error %": f"{err_pct:.2f}%",
+                "chi2/dof": f"{result.diagnostics.chi2_per_dof:.3f}",
+                "Q": f"{result.diagnostics.Q:.4f}",
+                "Variants": ", ".join(ch.variant_keys),
+            })
+        mass_summary_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
+
+        # Diagnostics container
+        diag_parts = _build_diagnostics_container(result)
+        diagnostics_container[0].object = diag_parts[0]  # global markdown
+        diagnostics_container[1].value = diag_parts[1]   # per-channel table
+
+        # Channel selector
+        channel_names = list(result.channels.keys())
+        channel_selector.options = channel_names
+        if channel_names:
+            channel_selector.value = channel_names[0]
+
+        _refresh_channel_detail()
+        cross_ratio_table.value = _build_cross_channel_ratio_table(result)
+
+    def _refresh_channel_detail(*_args):
+        result: MassExtractionResult | None = state.get("electroweak_mass_output")
+        if result is None:
+            return
+
+        selected = channel_selector.value
+        if selected is None or selected not in result.channels:
+            channel_detail_table.value = pd.DataFrame()
+            amplitude_table.value = pd.DataFrame()
+            intra_ratio_table.value = pd.DataFrame()
+            meff_plot.object = _algorithm_placeholder_plot("Select a channel.")
+            correlator_fit_plot.object = _algorithm_placeholder_plot("Select a channel.")
+            return
+
+        ch = result.channels[selected]
+
+        # Energy level detail table
+        rows = []
+        for i, E_n in enumerate(ch.energy_levels):
+            e_mean = gvar.mean(E_n)
+            e_err = gvar.sdev(E_n)
+            e_err_pct = abs(e_err / e_mean) * 100.0 if e_mean != 0 else float("inf")
+            row = {
+                "Level": i,
+                "E_n": f"{e_mean:.6f}",
+                "Error": f"{e_err:.6f}",
+                "Error (%)": f"{e_err_pct:.2f}",
+            }
+            if ch.dE is not None and i < len(ch.dE):
+                de_mean = gvar.mean(ch.dE[i])
+                de_err = gvar.sdev(ch.dE[i])
+                de_err_pct = abs(de_err / de_mean) * 100.0 if de_mean != 0 else float("inf")
+                row["dE_n"] = f"{de_mean:.6f}"
+                row["dE Error"] = f"{de_err:.6f}"
+                row["dE Error (%)"] = f"{de_err_pct:.2f}"
+            rows.append(row)
+        channel_detail_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
+
+        # Amplitude table
+        amplitude_table.value = _build_amplitude_table(ch)
+
+        # Intra-channel energy level ratios
+        intra_ratio_table.value = _build_intra_channel_ratio_table(ch)
+
+        # Effective mass plot
+        meff_plot.object = _build_meff_plot(result, selected, ch)
+
+        # Correlator + fit plot
+        correlator_fit_plot.object = _build_correlator_fit_plot(result, selected, ch)
+
+    channel_selector.param.watch(_refresh_channel_detail, "value")
+
+    # -- Compute callback --
+
+    def on_run(_event):
+        def _compute(_history: RunHistory):
+            pipeline_result = state.get("electroweak_correlator_output")
+            if pipeline_result is None:
+                status.object = (
+                    "**Error:** Run Electroweak Correlators first."
+                )
+                return
+
+            # Build config from settings
+            tmax = None
+            if settings.tmax_frac < 1.0:
+                first_key = next(iter(pipeline_result.correlators), None)
+                if first_key is not None:
+                    corr = pipeline_result.correlators[first_key]
+                    max_len = corr.shape[-1] if hasattr(corr, "shape") else len(corr)
+                    tmax = max(settings.tmin + 1, int(max_len * settings.tmax_frac))
+
+            config = MassExtractionConfig(
+                covariance=CovarianceConfig(method=str(settings.covariance_method)),
+                fit=FitConfig(svdcut=float(settings.svdcut)),
+                compute_effective_mass=True,
+                effective_mass_method=str(settings.effective_mass_method),
+                include_multiscale=bool(settings.include_multiscale),
+            )
+
+            from fragile.physics.mass_extraction.pipeline import _auto_detect_channel_groups
+
+            groups = _auto_detect_channel_groups(
+                list(pipeline_result.correlators.keys()),
+                include_multiscale=bool(settings.include_multiscale),
+            )
+
+            # Filter correlator keys per channel using selector widgets
+            for g in groups:
+                selector = channel_key_selectors.get(g.name)
+                if selector is not None:
+                    selected = set(selector.value)
+                    g.correlator_keys = [
+                        k for k in g.correlator_keys if k in selected
+                    ]
+            groups = [g for g in groups if g.correlator_keys]
+
+            if not groups:
+                status.object = (
+                    "**Error:** No correlator keys selected. "
+                    "Open *Channel Operator Selection* and select at least "
+                    "one key per channel."
+                )
+                return
+
+            for g in groups:
+                g.fit = ChannelFitConfig(
+                    tmin=int(settings.tmin),
+                    tmax=tmax,
+                    nexp=int(settings.nexp),
+                    use_log_dE=bool(settings.use_log_dE),
+                )
+                g.prior = PriorConfig(use_fastfit_seeding=bool(settings.use_fastfit_seeding))
+            config.channel_groups = groups
+
+            result = extract_masses(pipeline_result, config)
+            state["electroweak_mass_output"] = result
+
+            _refresh_all()
+
+            n_ch = len(result.channels)
+            n_eff = len(result.effective_masses)
+            status.object = (
+                f"**Complete:** {n_ch} channel groups, "
+                f"{n_eff} effective-mass curves.  "
+                f"chi2/dof = {result.diagnostics.chi2_per_dof:.3f}, "
+                f"Q = {result.diagnostics.Q:.4f}."
+            )
+
+        run_tab_computation(state, status, "electroweak mass extraction", _compute)
+
+    run_button.on_click(on_run)
+
+    # -- on_history_changed --
+
+    def on_history_changed(defer: bool) -> None:
+        run_button.disabled = True
+        status.object = (
+            "**Electroweak Mass:** Run Electroweak Correlators first, "
+            "then click Extract Electroweak Masses."
+        )
+        # Always reset channel key selectors when history changes
+        channel_key_selectors.clear()
+        channel_key_selection_container.clear()
+        channel_key_selection_container.append(
+            pn.pane.Markdown(
+                "*Run Electroweak Correlators to populate channel operator selections.*",
+                sizing_mode="stretch_width",
+            ),
+        )
+        if defer:
+            return
+        state["electroweak_mass_output"] = None
+        mass_spectrum_plot.object = _algorithm_placeholder_plot(
+            "Run extraction to show mass spectrum.",
+        )
+        mass_summary_table.value = pd.DataFrame()
+        diagnostics_container[0].object = ""
+        diagnostics_container[1].value = pd.DataFrame()
+        channel_selector.options = []
+        channel_detail_table.value = pd.DataFrame()
+        amplitude_table.value = pd.DataFrame()
+        intra_ratio_table.value = pd.DataFrame()
+        cross_ratio_table.value = pd.DataFrame()
+        placeholder = _algorithm_placeholder_plot("Run extraction to show plots.")
+        meff_plot.object = placeholder
+        correlator_fit_plot.object = placeholder
+
+    # -- on_correlators_ready --
+
+    def on_correlators_ready() -> None:
+        run_button.disabled = False
+        status.object = (
+            "**Electroweak Mass ready:** Electroweak Correlators available. "
+            "Click Extract Electroweak Masses."
+        )
+
+        # Populate channel key selection widgets from pipeline result
+        pipeline_result = state.get("electroweak_correlator_output")
+        if pipeline_result is not None:
+            from fragile.physics.mass_extraction.pipeline import (
+                _auto_detect_channel_groups,
+            )
+
+            groups = _auto_detect_channel_groups(
+                list(pipeline_result.correlators.keys()),
+                include_multiscale=True,
+            )
+            channel_key_selectors.clear()
+            widgets: list[pn.widgets.MultiSelect] = []
+            for g in groups:
+                keys = sorted(g.correlator_keys)
+                if not keys:
+                    continue
+                selector = pn.widgets.MultiSelect(
+                    name=g.name,
+                    options=keys,
+                    value=keys,
+                    size=min(len(keys), 8),
+                    sizing_mode="stretch_width",
+                )
+                channel_key_selectors[g.name] = selector
+                widgets.append(selector)
+
+            channel_key_selection_container.clear()
+            if widgets:
+                # Lay out in rows of 3
+                for i in range(0, len(widgets), 3):
+                    channel_key_selection_container.append(
+                        pn.Row(*widgets[i : i + 3], sizing_mode="stretch_width"),
+                    )
+            else:
+                channel_key_selection_container.append(
+                    pn.pane.Markdown(
+                        "*No channel groups detected.*",
+                        sizing_mode="stretch_width",
+                    ),
+                )
+
+    # -- Tab layout --
+
+    info_note = pn.pane.Alert(
+        (
+            "**Electroweak Mass Extraction:** Performs Bayesian multi-exponential fits "
+            "on the electroweak-correlator output to extract electroweak masses "
+            "with error bars.  Displays effective-mass plateaus, fit "
+            "quality diagnostics, and per-channel energy levels."
+        ),
+        alert_type="info",
+        sizing_mode="stretch_width",
+    )
+
+    tab = pn.Column(
+        status,
+        info_note,
+        pn.Row(run_button, sizing_mode="stretch_width"),
+        pn.Accordion(
+            ("Fit Settings", settings_panel),
+            ("Channel Operator Selection", channel_key_selection_container),
+            sizing_mode="stretch_width",
+        ),
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Mass Spectrum"),
+        mass_spectrum_plot,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Mass Summary"),
+        mass_summary_table,
+        pn.pane.Markdown("### Cross-Channel Mass Ratios"),
+        cross_ratio_table,
+        pn.pane.Markdown("### Fit Diagnostics"),
+        diagnostics_container,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Channel Detail"),
+        channel_selector,
+        channel_detail_table,
+        pn.pane.Markdown("#### Variant Amplitudes"),
+        amplitude_table,
+        pn.pane.Markdown("#### Energy Level Ratios"),
+        intra_ratio_table,
+        pn.Row(correlator_fit_plot, meff_plot, sizing_mode="stretch_width"),
+        sizing_mode="stretch_both",
+    )
+
+    return ElectroweakMassSection(
+        tab=tab,
+        status=status,
+        run_button=run_button,
+        on_run=on_run,
+        on_history_changed=on_history_changed,
+        on_correlators_ready=on_correlators_ready,
+    )

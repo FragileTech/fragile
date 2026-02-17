@@ -88,6 +88,13 @@ class PreparedChannelData:
     device: torch.device
     eps: float
 
+    # Electroweak fields (None when not requested)
+    fitness: Tensor | None = None  # [T, N] float
+    alive: Tensor | None = None  # [T, N] bool
+    velocities: Tensor | None = None  # [T, N, d] float
+    positions_full: Tensor | None = None  # [T, N, d] float (all dims)
+    will_clone: Tensor | None = None  # [T, N] bool
+
     # Multiscale fields (None when n_scales=1)
     scales: Tensor | None = None  # [S] float
     pairwise_distances: Tensor | None = None  # [T, N, N] float geodesic
@@ -110,6 +117,11 @@ def prepare_channel_data(
     need_scores: bool = False,
     need_momentum_axis: bool = False,
     momentum_axis: int = 0,
+    need_fitness: bool = False,
+    need_alive: bool = False,
+    need_velocities: bool = False,
+    need_positions_full: bool = False,
+    need_will_clone: bool = False,
 ) -> PreparedChannelData:
     """Convert *history* + *config* into a :class:`PreparedChannelData`.
 
@@ -214,6 +226,47 @@ def prepare_channel_data(
         if cfg_length is not None:
             projection_length = float(cfg_length)
 
+    # Optional: fitness [T, N] (same offset as companions)
+    fitness: Tensor | None = None
+    if need_fitness:
+        fitness = torch.as_tensor(
+            history.fitness[start_idx - 1 : end_idx - 1],
+            dtype=torch.float32,
+            device=device,
+        )
+
+    # Optional: alive mask [T, N]
+    alive: Tensor | None = None
+    if need_alive:
+        alive = torch.as_tensor(
+            history.alive_mask[start_idx - 1 : end_idx - 1],
+            dtype=torch.bool,
+            device=device,
+        )
+
+    # Optional: velocities [T, N, d] (no offset, all dims)
+    velocities: Tensor | None = None
+    if need_velocities:
+        velocities = history.v_before_clone[start_idx:end_idx].to(
+            device=device, dtype=torch.float32
+        )
+
+    # Optional: positions_full [T, N, d] (no offset, all dims)
+    positions_full: Tensor | None = None
+    if need_positions_full:
+        positions_full = history.x_before_clone[start_idx:end_idx].to(
+            device=device, dtype=torch.float32
+        )
+
+    # Optional: will_clone [T, N]
+    will_clone: Tensor | None = None
+    if need_will_clone:
+        will_clone = torch.as_tensor(
+            history.will_clone[start_idx - 1 : end_idx - 1],
+            dtype=torch.bool,
+            device=device,
+        )
+
     return PreparedChannelData(
         color=color,
         color_valid=color_valid.to(dtype=torch.bool, device=device),
@@ -226,4 +279,9 @@ def prepare_channel_data(
         frame_indices=frame_indices,
         device=device,
         eps=eps,
+        fitness=fitness,
+        alive=alive,
+        velocities=velocities,
+        positions_full=positions_full,
+        will_clone=will_clone,
     )

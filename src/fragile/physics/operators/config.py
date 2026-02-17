@@ -71,6 +71,19 @@ class TensorOperatorConfig(ChannelConfigBase):
 
 
 @dataclass
+class ElectroweakOperatorConfig(ChannelConfigBase):
+    """Configuration for electroweak (U(1)/SU(2)) operators."""
+
+    epsilon_d: float | None = None
+    epsilon_clone: float | None = None
+    lambda_alg: float = 0.0
+    su2_operator_mode: str = "standard"
+    enable_walker_type_split: bool = False
+    enable_directed_variants: bool = True
+    enable_parity_velocity: bool = True
+
+
+@dataclass
 class MultiscaleConfig:
     """Configuration for multiscale operator computation.
 

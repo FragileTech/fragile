@@ -174,8 +174,25 @@ def _single_correlator_to_gvar(
         return gvar.gvar(means, errors)
 
     series = operators[base_key]
-    if series.ndim > 1:
-        # For multiscale or multi-component, fall back to uncorrelated
+
+    # Step 1: Handle multiscale — extract specific scale from first axis.
+    # Operators may be [S, T] or [S, T, D]; slicing gives [T] or [T, D].
+    if "_scale_" in key and series.ndim >= 2:
+        scale_index = 0
+        try:
+            scale_index = int(key.rsplit("_scale_", 1)[1])
+        except (ValueError, IndexError):
+            pass
+        if scale_index < series.shape[0]:
+            series = series[scale_index]
+
+    # Step 2: Handle multi-component operators — average over trailing
+    # dimensions.  E.g. vector operators have shape [T, 3]; after scale
+    # slicing a [S, T, D] tensor we may still have [T, D].
+    while series.ndim > 1:
+        series = series.mean(dim=-1)
+
+    if series.ndim != 1 or len(series) < 2:
         means = corr_np
         errors = np.abs(means) * 0.1 + 1e-15
         return gvar.gvar(means, errors)

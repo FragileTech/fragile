@@ -12,8 +12,10 @@ import panel as pn
 
 from fragile.physics.app.algorithm import build_algorithm_diagnostics_tab
 from fragile.physics.app.diagnostics import build_coupling_diagnostics_tab
+from fragile.physics.app.electroweak_correlators import build_electroweak_correlator_tab
 from fragile.physics.app.gravity import build_holographic_principle_tab
 from fragile.physics.app.simulation import SimulationTab
+from fragile.physics.app.electroweak_mass_tab import build_electroweak_mass_tab
 from fragile.physics.app.mass_extraction_tab import build_mass_extraction_tab
 from fragile.physics.app.strong_correlators import build_strong_correlator_tab
 from fragile.physics.fractal_gas.history import RunHistory
@@ -88,7 +90,9 @@ def create_app() -> pn.template.FastListTemplate:
             "_multiscale_geodesic_distribution": None,
             "coupling_diagnostics_output": None,
             "strong_correlator_output": None,
+            "electroweak_correlator_output": None,
             "mass_extraction_output": None,
+            "electroweak_mass_output": None,
         }
 
         algorithm_section = build_algorithm_diagnostics_tab(state)
@@ -108,7 +112,17 @@ def create_app() -> pn.template.FastListTemplate:
             run_tab_computation=_run_tab_computation,
         )
 
+        ew_correlator_section = build_electroweak_correlator_tab(
+            state=state,
+            run_tab_computation=_run_tab_computation,
+        )
+
         mass_section = build_mass_extraction_tab(
+            state=state,
+            run_tab_computation=_run_tab_computation,
+        )
+
+        ew_mass_section = build_electroweak_mass_tab(
             state=state,
             run_tab_computation=_run_tab_computation,
         )
@@ -122,6 +136,16 @@ def create_app() -> pn.template.FastListTemplate:
                 mass_section.on_correlators_ready()
 
         strong_section.run_button.on_click(_on_strong_run)
+
+        # Wire electroweak correlator completion to enable ew mass button.
+        _orig_ew_on_run = ew_correlator_section.on_run
+
+        def _on_ew_run(event):
+            _orig_ew_on_run(event)
+            if state["electroweak_correlator_output"] is not None:
+                ew_mass_section.on_correlators_ready()
+
+        ew_correlator_section.run_button.on_click(_on_ew_run)
 
         # Wire SimulationTab history changes to all analysis sections.
         def _on_history_changed(
@@ -139,7 +163,9 @@ def create_app() -> pn.template.FastListTemplate:
             holographic_section.on_history_changed(defer)
             coupling_section.on_history_changed(defer)
             strong_section.on_history_changed(defer)
+            ew_correlator_section.on_history_changed(defer)
             mass_section.on_history_changed(defer)
+            ew_mass_section.on_history_changed(defer)
 
         sim_tab.on_history_changed(_on_history_changed)
         holographic_section.fractal_set_run_button.on_click(holographic_section.on_run_fractal_set)
@@ -183,7 +209,9 @@ def create_app() -> pn.template.FastListTemplate:
                     ("Holographic Principle", holographic_section.fractal_set_tab),
                     ("Coupling Diagnostics", coupling_section.coupling_diagnostics_tab),
                     ("Strong Correlators", strong_section.tab),
-                    ("Mass Extraction", mass_section.tab),
+                    ("Electroweak Correlators", ew_correlator_section.tab),
+                    ("Strong Force Mass", mass_section.tab),
+                    ("Electroweak Mass", ew_mass_section.tab),
                 )
             ]
 

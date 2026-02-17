@@ -210,7 +210,7 @@ def gas_kinetic_op():
         gamma=1.0,
         beta=1.0,
         delta_t=0.01,
-        sigma_v=1.0,
+        temperature=0.5,
         nu=0.1,
         use_viscous_coupling=True,
         viscous_neighbor_weighting="riemannian_kernel_volume",

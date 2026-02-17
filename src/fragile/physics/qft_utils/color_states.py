@@ -63,8 +63,16 @@ def compute_color_states_batch(
     return color, valid
 
 
-def estimate_ell0(history: RunHistory) -> float:
-    """Estimate ell0 from median companion distance at mid-point.
+def estimate_ell0(
+    history: RunHistory,
+) -> float:
+    """Estimate ell0 from median Euclidean companion distance at mid-point.
+
+    Uses Euclidean distances between companion pairs, matching the fractalai
+    implementation.  Geodesic (graph-weighted) distances are not suitable here
+    because ``ell0`` enters the colour-state phase formula
+    ``phase = mass * v * ell0 / h_eff`` and must represent a physical length
+    scale, not a graph-metric quantity.
 
     Args:
         history: RunHistory object.
@@ -76,13 +84,19 @@ def estimate_ell0(history: RunHistory) -> float:
     if mid_idx == 0:
         return 1.0
 
-    x_pre = history.x_before_clone[mid_idx]
     comp_idx = history.companions_distance[mid_idx - 1]
+    return _euclidean_companion_distance(history, mid_idx, comp_idx)
 
-    # Compute distances
+
+def _euclidean_companion_distance(
+    history: RunHistory,
+    mid_idx: int,
+    comp_idx: Tensor,
+) -> float:
+    """Compute median Euclidean distance to companions at *mid_idx*."""
+    x_pre = history.x_before_clone[mid_idx]
     diff = x_pre - x_pre[comp_idx]
     dist = torch.linalg.vector_norm(diff, dim=-1)
-
     if dist.numel() > 0:
         return float(dist.median().item())
     return 1.0

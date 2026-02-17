@@ -7,7 +7,7 @@ providing Langevin dynamics integration using the BAOAB scheme.
 Mathematical notation:
 - gamma (γ): Friction coefficient
 - beta (β): Inverse temperature 1/(k_B T)
-- sigma_v (σ_v): Velocity noise scale in dv = ... + σ_v dW
+- temperature (T_eff): Effective temperature when auto_thermostat=True
 - delta_t (Δt): Time step size
 """
 
@@ -33,7 +33,7 @@ class KineticOperator(PanelModel):
     Mathematical notation:
     - gamma (γ): Friction coefficient
     - beta (β): Inverse temperature 1/(k_B T)
-    - sigma_v (σ_v): Velocity noise scale when auto_thermostat=True
+    - temperature (T_eff): Effective temperature when auto_thermostat=True
     - delta_t (Δt): Time step size
     - epsilon_F (ε_F): Adaptation rate for fitness force
     - epsilon_Sigma (ε_Σ): Hessian regularization parameter
@@ -64,16 +64,17 @@ class KineticOperator(PanelModel):
     auto_thermostat = param.Boolean(
         default=False,
         doc=(
-            "Enable fluctuation-dissipation auto thermostat: "
-            "use β_eff = 2γ / σ_v² instead of manual β."
+            "Enable temperature-based auto thermostat: "
+            "use β_eff = 1/T instead of manual β."
         ),
     )
-    sigma_v = param.Number(
-        default=1.0,
+    temperature = param.Number(
+        default=0.5,
         bounds=(0, None),
-        softbounds=(0.05, 5.0),
+        softbounds=(0.01, 10.0),
         inclusive_bounds=(False, True),
-        doc="Target velocity noise scale (σ_v) used when auto_thermostat=True",
+        doc="Effective temperature T_eff used when auto_thermostat=True. "
+            "Sets noise via σ_v = √(2γT).",
     )
     delta_t = param.Number(
         default=0.01,
@@ -142,13 +143,13 @@ class KineticOperator(PanelModel):
                 "end": 5.0,
                 "step": 0.05,
             },
-            "sigma_v": {
+            "temperature": {
                 "type": pn.widgets.EditableFloatSlider,
                 "width": INPUT_WIDTH,
-                "name": "σ_v (noise scale)",
-                "start": 0.05,
-                "end": 5.0,
-                "step": 0.05,
+                "name": "T_eff (temperature)",
+                "start": 0.01,
+                "end": 10.0,
+                "step": 0.01,
             },
             "delta_t": {
                 "type": pn.widgets.EditableFloatSlider,
@@ -195,7 +196,7 @@ class KineticOperator(PanelModel):
         return [
             "gamma",
             "beta",
-            "sigma_v",
+            "temperature",
             "delta_t",
             "nu",
             "viscous_length_scale",
@@ -208,7 +209,7 @@ class KineticOperator(PanelModel):
         gamma: float,
         beta: float,
         delta_t: float,
-        sigma_v: float = 1.0,
+        temperature: float = 0.5,
         nu: float = 0.1,
         use_viscous_coupling: bool = True,
         viscous_length_scale: float = 1.0,
@@ -225,7 +226,7 @@ class KineticOperator(PanelModel):
             gamma: Friction coefficient (γ)
             beta: Inverse temperature 1/(k_B T) (β)
             delta_t: Time step size (Δt)
-            sigma_v: Target velocity noise scale (σ_v) for auto thermostat mode
+            temperature: Effective temperature T_eff for auto thermostat mode
             nu: Viscous coupling strength (ν)
             use_viscous_coupling: Enable viscous coupling
             viscous_length_scale: Length scale for Gaussian kernel
@@ -247,7 +248,7 @@ class KineticOperator(PanelModel):
         super().__init__(
             gamma=gamma,
             beta=beta,
-            sigma_v=sigma_v,
+            temperature=temperature,
             delta_t=delta_t,
             nu=nu,
             viscous_length_scale=viscous_length_scale,
@@ -275,10 +276,8 @@ class KineticOperator(PanelModel):
         if not self.auto_thermostat:
             return beta_manual
 
-        gamma = max(float(self.gamma), self._thermostat_eps)
-        sigma_v_sq = max(float(self.sigma_v) ** 2, self._thermostat_eps)
-        beta_fdt = 2.0 * gamma / sigma_v_sq
-        return max(beta_fdt, self._thermostat_eps)
+        t_eff = max(float(self.temperature), self._thermostat_eps)
+        return 1.0 / t_eff
 
     def effective_temperature(self) -> float:
         """Return effective temperature T_eff = 1 / β_eff used by the OU thermostat."""

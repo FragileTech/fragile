@@ -117,7 +117,7 @@ class SimulationTab:
         self._gas_config.kinetic_op.beta = 1.0
         self._gas_config.kinetic_op.auto_thermostat = True
         self._gas_config.kinetic_op.delta_t = 0.01
-        self._gas_config.kinetic_op.sigma_v = 1.0
+        self._gas_config.kinetic_op.temperature = 0.5
         self._gas_config.kinetic_op.nu = 1.0
         self._gas_config.kinetic_op.beta_curl = 1.0
         self._gas_config.kinetic_op.use_viscous_coupling = True

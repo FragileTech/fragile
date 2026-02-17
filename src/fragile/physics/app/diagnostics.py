@@ -282,6 +282,10 @@ def _build_coupling_diagnostics_summary_table(summary: dict[str, float]) -> pd.D
         ("topological_charge_q", summary.get("topological_charge_q")),
         ("regime_score", summary.get("regime_score")),
         ("kernel_diagnostics_available", summary.get("kernel_diagnostics_available")),
+        ("spectral_gap_fiedler", summary.get("spectral_gap_fiedler")),
+        ("spectral_gap_autocorrelation", summary.get("spectral_gap_autocorrelation")),
+        ("spectral_gap_autocorrelation_tau", summary.get("spectral_gap_autocorrelation_tau")),
+        ("spectral_gap_transfer_matrix", summary.get("spectral_gap_transfer_matrix")),
     ]
     frame = pd.DataFrame([{"metric": name, "value": value} for name, value in metrics])
     frame["value"] = pd.to_numeric(frame["value"], errors="coerce")
@@ -555,6 +559,22 @@ def _build_coupling_diagnostics_summary_text(output: Any) -> str:
             ),
             f"- Topological flux std: `{_format_metric(summary.get('topological_flux_std'), 6)}`",
             f"- Regime score: `{_format_metric(summary.get('regime_score'), 2)}` / 10",
+            "",
+            "**Spectral Gap Estimates:**",
+            (
+                "- Fiedler value (graph Laplacian λ₂): "
+                f"`{_format_metric(summary.get('spectral_gap_fiedler'), 6)}`"
+            ),
+            (
+                "- Autocorrelation gap (1/τ): "
+                f"`{_format_metric(summary.get('spectral_gap_autocorrelation'), 6)}`"
+                f" (τ = `{_format_metric(summary.get('spectral_gap_autocorrelation_tau'), 2)}`)"
+            ),
+            (
+                "- Transfer-matrix gap: "
+                f"`{_format_metric(summary.get('spectral_gap_transfer_matrix'), 6)}`"
+            ),
+            "",
             (
                 f"- Kernel snapshot frame index: `{int(output.snapshot_frame_index)}`"
                 if output.snapshot_frame_index is not None

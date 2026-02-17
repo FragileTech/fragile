@@ -169,6 +169,17 @@ class EuclideanGas(PanelModel):
         ],
         doc="Edge weight modes to pre-compute during Voronoi tessellation",
     )
+    tessellation_timing = param.Selector(
+        default="after_cloning",
+        objects=["after_cloning", "both"],
+        doc=(
+            "When to compute Delaunay tessellation relative to cloning: "
+            "'after_cloning' uses cached geometry from the previous step for "
+            "EH rewards and computes fresh tessellation on post-cloning "
+            "positions for the kinetic step; 'both' computes before cloning "
+            "(for rewards) and after cloning (for kinetic)."
+        ),
+    )
 
     @property
     def widgets(self) -> dict[str, dict]:
@@ -215,6 +226,8 @@ class EuclideanGas(PanelModel):
     def __init__(self, **params):
         """Initialize Euclidean Gas with post-initialization validation."""
         super().__init__(**params)
+        self._cached_reward_ricci: Tensor | None = None
+        self._cached_reward_volume: Tensor | None = None
 
     @property
     def torch_dtype(self) -> torch.dtype:
@@ -248,18 +261,139 @@ class EuclideanGas(PanelModel):
             v_init.to(device=self.device, dtype=self.torch_dtype),
         )
 
+    def _compute_tessellation(self, positions: Tensor) -> dict:
+        """Compute Delaunay tessellation on the given positions.
+
+        Returns a dict with keys: edges, edge_weights, all_edge_weights,
+        edge_geodesic, volume, ricci, diffusion.  Returns empty dict on
+        failure.
+        """
+        try:
+            spatial_dims = self.d - 1 if self.d >= 3 else None
+            delaunay_data = compute_delaunay_data(
+                positions=positions,
+                fitness_values=torch.zeros(
+                    positions.shape[0], device=self.device, dtype=self.torch_dtype,
+                ),
+                spatial_dims=spatial_dims,
+                weight_modes=tuple(self.neighbor_weight_modes)
+                if self.neighbor_weight_modes
+                else None,
+            )
+            edges = delaunay_data.edge_index.t().contiguous()
+            edge_geodesic = delaunay_data.edge_geodesic_distances
+            viscous_mode = (
+                self.kinetic_op.viscous_neighbor_weighting
+                if self.kinetic_op.use_viscous_coupling
+                else None
+            )
+            edge_weights = (
+                delaunay_data.edge_weights.get(viscous_mode)
+                if viscous_mode
+                else None
+            )
+            all_edge_weights = delaunay_data.edge_weights
+
+            volume = delaunay_data.riemannian_volume_weights
+            ricci = delaunay_data.ricci_proxy
+            diffusion_data = delaunay_data.diffusion_tensors
+            N, d = positions.shape
+            if diffusion_data.shape[-1] == d:
+                diffusion = diffusion_data
+            else:
+                spatial_d = diffusion_data.shape[-1]
+                diffusion = (
+                    torch
+                    .eye(d, device=self.device, dtype=positions.dtype)
+                    .unsqueeze(0)
+                    .expand(N, d, d)
+                    .clone()
+                )
+                diffusion[:, :spatial_d, :spatial_d] = diffusion_data
+
+            return {
+                "edges": edges,
+                "edge_weights": edge_weights,
+                "all_edge_weights": all_edge_weights,
+                "edge_geodesic": edge_geodesic,
+                "volume": volume,
+                "ricci": ricci,
+                "diffusion": diffusion,
+            }
+        except Exception as exc:
+            import warnings
+
+            warnings.warn(
+                f"Delaunay computation failed: {exc}",
+                RuntimeWarning,
+            )
+            return {}
+
+    def _get_reward_geometry(
+        self, state: SwarmState,
+    ) -> tuple[Tensor, Tensor]:
+        """Return ``(ricci, volume)`` for EH reward computation.
+
+        In *after_cloning* mode, uses cached values from the previous step's
+        post-cloning tessellation (falls back to a fresh computation on the
+        very first step).  In *both* mode, always computes a fresh
+        tessellation on the current (pre-cloning) positions.
+        """
+        if self.tessellation_timing == "both":
+            tess = self._compute_tessellation(state.x)
+        else:
+            # "after_cloning": reuse cached geometry from previous step
+            cached_ricci = self._cached_reward_ricci
+            cached_volume = self._cached_reward_volume
+            if cached_ricci is not None and cached_volume is not None:
+                return cached_ricci, cached_volume
+            # First step — no cache yet; compute from current positions
+            tess = self._compute_tessellation(state.x)
+
+        ricci = tess.get("ricci")
+        volume = tess.get("volume")
+        if ricci is None:
+            ricci = torch.zeros(
+                state.N, device=self.device, dtype=self.torch_dtype,
+            )
+        if volume is None:
+            volume = torch.ones(
+                state.N, device=self.device, dtype=self.torch_dtype,
+            )
+        return ricci, volume
+
+    def _get_kinetic_tessellation(
+        self, state_cloned: SwarmState,
+    ) -> dict:
+        """Compute or retrieve cached tessellation for the kinetic step.
+
+        Respects ``neighbor_graph_update_every`` for caching.
+        """
+        update_every = max(1, int(self.neighbor_graph_update_every))
+        step_idx = getattr(self, "_current_step", None)
+        recompute = step_idx is None or (step_idx % update_every == 0)
+
+        if recompute:
+            tess = self._compute_tessellation(state_cloned.x)
+            if tess:
+                self._cached_delaunay_data = tess
+            return tess or {}
+
+        cached = getattr(self, "_cached_delaunay_data", None)
+        return cached if cached is not None else {}
+
     def step(
         self, state: SwarmState, return_info: bool = False
     ) -> tuple[SwarmState, SwarmState] | tuple[SwarmState, SwarmState, dict] | None:
         """
-        Perform one full step: tessellation, EH rewards, fitness, clone, kinetic.
+        Perform one full step: EH rewards, fitness, clone, tessellation, kinetic.
 
         Flow:
-        1. Delaunay tessellation on current positions → Ricci, volume, edges
-        2. EH rewards from fresh geometry: eh_scale * R_i * √(det g)_i
-        3. Fitness from rewards
-        4. Cloning (optional)
-        5. Kinetic update
+        1. EH rewards from geometry (cached or freshly computed)
+        2. Fitness from rewards
+        3. Cloning
+        4. Delaunay tessellation on post-cloning positions
+        5. Kinetic update using post-cloning geometry
 
         Args:
             state: Current swarm state
@@ -271,94 +405,12 @@ class EuclideanGas(PanelModel):
         """
         state.clone()
 
-        # Step 1: Delaunay tessellation on current positions
-        delaunay_edges = None
-        delaunay_edge_weights = None
-        delaunay_all_edge_weights = None
-        delaunay_edge_geodesic = None
-        delaunay_volume = None
-        delaunay_ricci = None
-        delaunay_diffusion = None
+        # Step 1: Reward geometry (pre-cloning tessellation or cached)
+        reward_ricci, reward_volume = self._get_reward_geometry(state)
+        rewards = self.eh_scale * reward_ricci * reward_volume
+        U_before = -rewards
 
-        update_every = max(1, int(self.neighbor_graph_update_every))
-        step_idx = getattr(self, "_current_step", None)
-        recompute = step_idx is None or (step_idx % update_every == 0)
-
-        if recompute:
-            try:
-                spatial_dims = self.d - 1 if self.d >= 3 else None
-                delaunay_data = compute_delaunay_data(
-                    positions=state.x,
-                    fitness_values=torch.zeros(
-                        state.N, device=self.device, dtype=self.torch_dtype
-                    ),
-                    spatial_dims=spatial_dims,
-                    weight_modes=tuple(self.neighbor_weight_modes)
-                    if self.neighbor_weight_modes
-                    else None,
-                )
-                delaunay_edges = delaunay_data.edge_index.t().contiguous()
-                delaunay_edge_geodesic = delaunay_data.edge_geodesic_distances
-                viscous_mode = (
-                    self.kinetic_op.viscous_neighbor_weighting
-                    if self.kinetic_op.use_viscous_coupling
-                    else None
-                )
-                delaunay_edge_weights = (
-                    delaunay_data.edge_weights.get(viscous_mode) if viscous_mode else None
-                )
-                delaunay_all_edge_weights = delaunay_data.edge_weights
-
-                delaunay_volume = delaunay_data.riemannian_volume_weights
-                delaunay_ricci = delaunay_data.ricci_proxy
-                diffusion_data = delaunay_data.diffusion_tensors
-                if diffusion_data.shape[-1] == state.d:
-                    delaunay_diffusion = diffusion_data
-                else:
-                    spatial_d = diffusion_data.shape[-1]
-                    delaunay_diffusion = (
-                        torch
-                        .eye(state.d, device=self.device, dtype=state.x.dtype)
-                        .unsqueeze(0)
-                        .expand(state.N, state.d, state.d)
-                        .clone()
-                    )
-                    delaunay_diffusion[:, :spatial_d, :spatial_d] = diffusion_data
-
-                self._cached_delaunay_data = {
-                    "delaunay_edges": delaunay_edges,
-                    "delaunay_edge_weights": delaunay_edge_weights,
-                    "delaunay_all_edge_weights": delaunay_all_edge_weights,
-                    "delaunay_edge_geodesic": delaunay_edge_geodesic,
-                    "delaunay_volume": delaunay_volume,
-                    "delaunay_ricci": delaunay_ricci,
-                    "delaunay_diffusion": delaunay_diffusion,
-                }
-            except Exception as exc:
-                import warnings
-
-                warnings.warn(
-                    f"Delaunay computation failed: {exc}",
-                    RuntimeWarning,
-                )
-        else:
-            cached = getattr(self, "_cached_delaunay_data", None)
-            if cached is not None:
-                delaunay_edges = cached["delaunay_edges"]
-                delaunay_edge_weights = cached["delaunay_edge_weights"]
-                delaunay_all_edge_weights = cached["delaunay_all_edge_weights"]
-                delaunay_edge_geodesic = cached["delaunay_edge_geodesic"]
-                delaunay_volume = cached["delaunay_volume"]
-                delaunay_ricci = cached["delaunay_ricci"]
-                delaunay_diffusion = cached["delaunay_diffusion"]
-
-        neighbor_edges = delaunay_edges
-
-        # Step 2: EH rewards from fresh tessellation
-        rewards = self.eh_scale * delaunay_ricci * delaunay_volume
-        U_before = -rewards  # U = -reward by convention
-
-        # Step 3: Fitness from rewards
+        # Step 2: Fitness from rewards
         companions_distance = random_pairing_fisher_yates(self.N, device=self.device)
         fitness, fitness_info = self.fitness_op(
             positions=state.x,
@@ -366,17 +418,12 @@ class EuclideanGas(PanelModel):
             companions=companions_distance,
         )
 
-        # Step 4: Cloning
-
+        # Step 3: Cloning
         companions_clone = random_pairing_fisher_yates(self.N, device=self.device)
         clone_tensor_kwargs = {
             "fitness_cloned": fitness,
-            "ricci_scalar": delaunay_ricci
-            if delaunay_ricci is not None
-            else torch.zeros(state.N, device=self.device, dtype=self.torch_dtype),
-            "riemannian_volume": delaunay_volume
-            if delaunay_volume is not None
-            else torch.ones(state.N, device=self.device, dtype=self.torch_dtype),
+            "ricci_scalar": reward_ricci,
+            "riemannian_volume": reward_volume,
         }
 
         x_cloned, v_cloned, other_cloned, clone_info = self.cloning(
@@ -387,6 +434,7 @@ class EuclideanGas(PanelModel):
             **clone_tensor_kwargs,
         )
         clone_every = max(1, int(self.clone_every))
+        step_idx = getattr(self, "_current_step", None)
         apply_clone = step_idx is None or clone_every <= 1 or (step_idx % clone_every == 0)
         if apply_clone:
             state_cloned = SwarmState(x_cloned, v_cloned)
@@ -395,48 +443,22 @@ class EuclideanGas(PanelModel):
         clone_info["cloning_applied"] = apply_clone
         fitness = other_cloned.get("fitness_cloned", fitness)
 
-        # Remap edges for cloned walkers: use companion's neighborhood
-        # so they receive the same viscous force as the walker they copied.
-        if (
-            neighbor_edges is not None
-            and clone_info.get("cloning_applied")
-            and clone_info["num_cloned"] > 0
-        ):
-            will_clone = clone_info["will_clone"]
-            if will_clone.any():
-                src = neighbor_edges[:, 0]
+        # Step 4: Delaunay tessellation on post-cloning positions
+        tess = self._get_kinetic_tessellation(state_cloned)
 
-                # companion→clone map (each companion maps to the walker that copied it)
-                cloned_idx = torch.where(will_clone)[0]
-                comp_idx = clone_info["companions"][cloned_idx]
-                comp_to_clone = torch.full((state.N,), -1, dtype=torch.long, device=self.device)
-                comp_to_clone[comp_idx] = cloned_idx
+        neighbor_edges = tess.get("edges")
+        delaunay_edge_weights = tess.get("edge_weights")
+        delaunay_all_edge_weights = tess.get("all_edge_weights")
+        delaunay_edge_geodesic = tess.get("edge_geodesic")
+        delaunay_volume = tess.get("volume")
+        delaunay_ricci = tess.get("ricci")
+        delaunay_diffusion = tess.get("diffusion")
 
-                # Keep all edges NOT from cloned walkers
-                keep = ~will_clone[src]
-
-                # Duplicate companion's outgoing edges with source remapped to clone
-                has_clone = comp_to_clone[src] >= 0
-                from_comp = has_clone & keep
-                dup_edges = neighbor_edges[from_comp].clone()
-                dup_edges[:, 0] = comp_to_clone[dup_edges[:, 0]]
-
-                neighbor_edges = torch.cat([neighbor_edges[keep], dup_edges], dim=0)
-                if delaunay_edge_weights is not None:
-                    delaunay_edge_weights = torch.cat(
-                        [delaunay_edge_weights[keep], delaunay_edge_weights[from_comp]],
-                        dim=0,
-                    )
-                if delaunay_edge_geodesic is not None:
-                    delaunay_edge_geodesic = torch.cat(
-                        [delaunay_edge_geodesic[keep], delaunay_edge_geodesic[from_comp]],
-                        dim=0,
-                    )
-                if delaunay_all_edge_weights is not None:
-                    delaunay_all_edge_weights = {
-                        k: torch.cat([w[keep], w[from_comp]], dim=0)
-                        for k, w in delaunay_all_edge_weights.items()
-                    }
+        # Cache post-cloning geometry for next step's rewards
+        if delaunay_ricci is not None:
+            self._cached_reward_ricci = delaunay_ricci.clone()
+        if delaunay_volume is not None:
+            self._cached_reward_volume = delaunay_volume.clone()
 
         # Step 5: Kinetic update
         n_kinetic_steps = max(1, int(getattr(self.kinetic_op, "n_kinetic_steps", 1)))
@@ -457,11 +479,9 @@ class EuclideanGas(PanelModel):
         if delaunay_diffusion is not None:
             kinetic_info["diffusion_tensors_full"] = delaunay_diffusion
 
-        # U_after uses clone-aware geometry (cloned walkers inherit companion's values)
-        ricci_final = other_cloned.get("ricci_scalar", delaunay_ricci)
-        volume_final = other_cloned.get("riemannian_volume", delaunay_volume)
-        if ricci_final is not None and volume_final is not None:
-            eh_value = -(self.eh_scale * ricci_final * volume_final)
+        # U_after from post-cloning geometry
+        if delaunay_ricci is not None and delaunay_volume is not None:
+            eh_value = -(self.eh_scale * delaunay_ricci * delaunay_volume)
         else:
             eh_value = torch.zeros(state.N, device=self.device, dtype=self.torch_dtype)
         U_after_clone = eh_value
@@ -629,6 +649,8 @@ class EuclideanGas(PanelModel):
             chunk_size=chunk_size,
         )
         self._cached_delaunay_data = None
+        self._cached_reward_ricci = None
+        self._cached_reward_volume = None
 
         # All walkers always alive
         n_alive = N
@@ -716,3 +738,5 @@ class EuclideanGas(PanelModel):
             rng_seed=seed,
             rng_state=rng_state,
         )
+
+

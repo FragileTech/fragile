@@ -11,6 +11,7 @@ Operator modules:
     :func:`compute_baryon_operators`
     :func:`compute_glueball_operators`
     :func:`compute_tensor_operators`
+    :func:`compute_electroweak_operators`
 
 Correlators:
     :func:`compute_correlators_batched`
@@ -22,8 +23,8 @@ Configuration:
     :class:`ChannelConfigBase`,
     :class:`MesonOperatorConfig`, :class:`VectorOperatorConfig`,
     :class:`BaryonOperatorConfig`, :class:`GlueballOperatorConfig`,
-    :class:`TensorOperatorConfig`, :class:`CorrelatorConfig`,
-    :class:`MultiscaleConfig`
+    :class:`TensorOperatorConfig`, :class:`ElectroweakOperatorConfig`,
+    :class:`CorrelatorConfig`, :class:`MultiscaleConfig`
 
 Geodesics:
     :func:`compute_pairwise_distances`, :func:`select_scales`,
@@ -35,10 +36,12 @@ Multiscale:
 """
 
 from .baryon_operators import compute_baryon_operators
+from .electroweak_operators import compute_electroweak_operators
 from .config import (
     BaryonOperatorConfig,
     ChannelConfigBase,
     CorrelatorConfig,
+    ElectroweakOperatorConfig,
     GlueballOperatorConfig,
     MesonOperatorConfig,
     MultiscaleConfig,
@@ -79,6 +82,7 @@ __all__ = [
     "BaryonOperatorConfig",
     # Config
     "ChannelConfigBase",
+    "ElectroweakOperatorConfig",
     "CorrelatorConfig",
     "GlueballOperatorConfig",
     "MesonOperatorConfig",
@@ -93,6 +97,7 @@ __all__ = [
     "compute_baryon_operators",
     # Correlators
     "compute_correlators_batched",
+    "compute_electroweak_operators",
     "compute_glueball_operators",
     # Operators
     "compute_baryon_propagator",

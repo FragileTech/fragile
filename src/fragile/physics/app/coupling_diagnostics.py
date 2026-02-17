@@ -31,6 +31,7 @@ from fragile.physics.app.smeared_operators import (
     compute_smeared_kernels_from_distances,
     select_interesting_scales_from_history,
 )
+from fragile.physics.app.spectral_gap import compute_spectral_gap
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.qft_utils import compute_color_states_batch, estimate_ell0
 
@@ -115,6 +116,13 @@ class CouplingDiagnosticsOutput:
     topological_flux_std: float
     regime_score: float
     regime_evidence: list[str]
+
+    spectral_gap_fiedler: float
+    spectral_gap_fiedler_std: float
+    spectral_gap_autocorrelation: float
+    spectral_gap_autocorrelation_tau: float
+    spectral_gap_transfer_matrix: float
+    spectral_gap_transfer_matrix_std: float
 
     summary: dict[str, float]
 
@@ -231,6 +239,12 @@ def _empty_output() -> CouplingDiagnosticsOutput:
         topological_flux_std=float("nan"),
         regime_score=float("nan"),
         regime_evidence=["No valid frames for diagnostics."],
+        spectral_gap_fiedler=float("nan"),
+        spectral_gap_fiedler_std=float("nan"),
+        spectral_gap_autocorrelation=float("nan"),
+        spectral_gap_autocorrelation_tau=float("nan"),
+        spectral_gap_transfer_matrix=float("nan"),
+        spectral_gap_transfer_matrix_std=float("nan"),
         summary={
             "n_frames": 0.0,
             "phase_drift": float("nan"),
@@ -252,6 +266,10 @@ def _empty_output() -> CouplingDiagnosticsOutput:
             "topological_charge_q": float("nan"),
             "regime_score": float("nan"),
             "kernel_diagnostics_available": 0.0,
+            "spectral_gap_fiedler": float("nan"),
+            "spectral_gap_autocorrelation": float("nan"),
+            "spectral_gap_autocorrelation_tau": float("nan"),
+            "spectral_gap_transfer_matrix": float("nan"),
         },
     )
 
@@ -750,7 +768,7 @@ def compute_coupling_diagnostics(
 
     # Pair indices are used directly under the "all walkers in bounds" assumption.
     color_j = torch.gather(
-        color,
+        color.unsqueeze(2).expand(-1, -1, pair_indices.shape[-1], -1),
         1,
         pair_indices.unsqueeze(-1).expand(-1, -1, -1, color.shape[-1]),
     )
@@ -872,6 +890,9 @@ def compute_coupling_diagnostics(
 
     kernel_available = float(bool(scales.numel() > 0))
 
+    # Spectral gap estimation
+    sg = compute_spectral_gap(history, warmup_fraction=float(cfg.warmup_fraction))
+
     summary = {
         "n_frames": float(t_len),
         "phase_drift": phase_drift,
@@ -901,6 +922,10 @@ def compute_coupling_diagnostics(
         "topological_charge_q": topological_charge_q,
         "regime_score": regime_score,
         "kernel_diagnostics_available": kernel_available,
+        "spectral_gap_fiedler": sg.fiedler_value,
+        "spectral_gap_autocorrelation": sg.autocorrelation_gap,
+        "spectral_gap_autocorrelation_tau": sg.autocorrelation_tau,
+        "spectral_gap_transfer_matrix": sg.transfer_matrix_gap,
     }
 
     return CouplingDiagnosticsOutput(
@@ -934,5 +959,11 @@ def compute_coupling_diagnostics(
         topological_flux_std=topological_flux_std,
         regime_score=regime_score,
         regime_evidence=regime_evidence,
+        spectral_gap_fiedler=sg.fiedler_value,
+        spectral_gap_fiedler_std=sg.fiedler_std,
+        spectral_gap_autocorrelation=sg.autocorrelation_gap,
+        spectral_gap_autocorrelation_tau=sg.autocorrelation_tau,
+        spectral_gap_transfer_matrix=sg.transfer_matrix_gap,
+        spectral_gap_transfer_matrix_std=sg.transfer_matrix_gap_std,
         summary=summary,
     )

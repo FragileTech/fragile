@@ -73,6 +73,7 @@ class MassExtractionSettings(param.Parameterized):
         default="log_ratio",
         objects=["log_ratio", "cosh"],
     )
+    include_multiscale = param.Boolean(default=True)
 
 
 # ---------------------------------------------------------------------------
@@ -142,7 +143,7 @@ def _build_meff_plot(
 
     overlay = overlay * band * hline
     overlay = overlay.opts(
-        hv.opts.Scatter(size=6, width=700, height=350),
+        hv.opts.Scatter(size=6, width=500, height=350),
         hv.opts.ErrorBars(line_width=1.5),
         hv.opts.Overlay(
             title=f"{channel_name} Effective Mass",
@@ -161,8 +162,9 @@ def _build_correlator_fit_plot(
     """Build correlator data + fit curve overlay (log Y)."""
     variant_keys = channel_result.variant_keys
     curves = []
+    fit = getattr(result, "fit", None)
 
-    for vk in variant_keys:
+    for idx, vk in enumerate(variant_keys):
         corr = result.data.get(vk)
         if corr is None or len(corr) == 0:
             continue
@@ -176,13 +178,41 @@ def _build_correlator_fit_plot(
         if not mask.any():
             continue
 
+        color = _CHANNEL_PALETTE[idx % len(_CHANNEL_PALETTE)]
         scatter = hv.Scatter(
             (t[mask], means[mask]), kdims="t", vdims="C(t)", label=vk,
-        )
+        ).opts(color=color)
         ebars = hv.ErrorBars(
             (t[mask], means[mask], errs[mask]), kdims="t", vdims=["C(t)", "yerr"],
-        )
+        ).opts(color=color)
         curves.append(scatter * ebars)
+
+        # Overlay multi-exponential fit curve from posterior parameters
+        if fit is not None and getattr(fit, "p", None) is not None:
+            try:
+                dE = fit.p[f"{channel_name}.dE"]
+                a = fit.p[f"{channel_name}.{vk}.a"]
+                b = fit.p[f"{channel_name}.{vk}.b"]
+                E = np.cumsum([gvar.mean(x) for x in dE])
+                t_max = float(t[mask][-1])
+                t_fine = np.linspace(1, t_max, 200)
+                n_states = min(len(E), len(a), len(b))
+                C_fit = sum(
+                    gvar.mean(a[n]) * gvar.mean(b[n]) * np.exp(-E[n] * t_fine)
+                    for n in range(n_states)
+                )
+                # Only plot positive fit values for log scale
+                fit_mask = C_fit > 0
+                if np.any(fit_mask):
+                    fit_curve = hv.Curve(
+                        (t_fine[fit_mask], C_fit[fit_mask]),
+                        kdims="t",
+                        vdims="C(t)",
+                        label=f"{vk} fit",
+                    ).opts(color=color, line_dash="dashed", line_width=2)
+                    curves.append(fit_curve)
+            except KeyError:
+                pass
 
     if not curves:
         return _algorithm_placeholder_plot(f"No correlator data for {channel_name}")
@@ -192,7 +222,7 @@ def _build_correlator_fit_plot(
         overlay = overlay * c
 
     overlay = overlay.opts(
-        hv.opts.Scatter(size=5, width=700, height=350),
+        hv.opts.Scatter(size=5, width=500, height=350),
         hv.opts.ErrorBars(line_width=1.5),
         hv.opts.Overlay(
             title=f"{channel_name} Correlator",
@@ -201,6 +231,470 @@ def _build_correlator_fit_plot(
         ),
     )
     return overlay
+
+
+_CHANNEL_TYPE_COLORS = {
+    "meson": "#1f77b4",
+    "baryon": "#2ca02c",
+    "glueball": "#9467bd",
+    "tensor": "#e377c2",
+}
+
+# PDG reference masses (GeV) per channel group name.
+# Group names match _auto_detect_channel_groups output.
+PDG_REFERENCES: dict[str, tuple[str, float]] = {
+    "scalar": ("\u03c3/f\u2080(500)", 0.500),
+    "pseudoscalar": ("\u03c0 (0.140 GeV)", 0.13957),
+    "vector": ("\u03c1 (0.775 GeV)", 0.77526),
+    "axial_vector": ("a\u2081 (1.260 GeV)", 1.260),
+    "nucleon": ("p (0.938 GeV)", 0.938272),
+    "glueball": ("0\u207a\u207a (1.710 GeV)", 1.710),
+    "tensor": ("a\u2082 (1.318 GeV)", 1.3183),
+}
+
+
+_CHANNEL_PALETTE = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+    "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+    "#aec7e8", "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5",
+]
+
+
+def _build_mass_spectrum_bar(result: MassExtractionResult) -> hv.Overlay:
+    """Build a scatter+errorbars chart of ground-state masses (log y-axis).
+
+    Channels are ordered lightest-to-heaviest using PDG reference masses.
+    Channels without a PDG entry are appended at the end sorted by extracted mass.
+    """
+    if not result.channels:
+        return _algorithm_placeholder_plot("No channels to display.")
+
+    # Collect per-channel data
+    entries: list[tuple[str, float, float]] = []
+    for name, ch in result.channels.items():
+        gs_mean = float(gvar.mean(ch.ground_state_mass))
+        gs_err = float(gvar.sdev(ch.ground_state_mass))
+        entries.append((name, gs_mean, gs_err))
+
+    # Sort by PDG mass (lightest first); channels without PDG go last by extracted mass
+    def _sort_key(entry: tuple[str, float, float]) -> tuple[int, float]:
+        name, gs_mean, _ = entry
+        if name in PDG_REFERENCES:
+            return (0, PDG_REFERENCES[name][1])
+        return (1, gs_mean)
+
+    entries.sort(key=_sort_key)
+
+    names = [e[0] for e in entries]
+    means = [e[1] for e in entries]
+    errs = [e[2] for e in entries]
+    colors = [_CHANNEL_PALETTE[i % len(_CHANNEL_PALETTE)] for i in range(len(entries))]
+
+    scatter = hv.Scatter(
+        list(zip(names, means, colors)),
+        kdims="Channel",
+        vdims=["Mass", "color"],
+    ).opts(color="color", size=10, width=700, height=300, xrotation=45, logy=True)
+    ebars = hv.ErrorBars(
+        list(zip(names, means, errs)),
+        kdims="Channel",
+        vdims=["Mass", "yerr"],
+    ).opts(line_width=2)
+    return (scatter * ebars).opts(
+        hv.opts.Overlay(title="Ground-State Mass Spectrum"),
+    )
+
+
+def _build_pdg_comparison_plot(
+    result: MassExtractionResult,
+    anchor_channel: str,
+) -> hv.Overlay:
+    """Bar chart of predicted masses (GeV) using *anchor_channel* for scale setting.
+
+    For each channel with a PDG reference, compute
+    ``m_predicted = m_lattice * (m_PDG_anchor / m_lattice_anchor)``
+    and overlay the PDG reference values as diamond markers.
+    """
+    if anchor_channel not in result.channels or anchor_channel not in PDG_REFERENCES:
+        return _algorithm_placeholder_plot(
+            f"Anchor '{anchor_channel}' not available in extraction results.",
+        )
+
+    anchor_mass = result.channels[anchor_channel].ground_state_mass
+    anchor_mean = float(gvar.mean(anchor_mass))
+    if anchor_mean <= 0:
+        return _algorithm_placeholder_plot("Anchor mass is non-positive.")
+
+    _, anchor_pdg = PDG_REFERENCES[anchor_channel]
+    scale = anchor_pdg / anchor_mass  # gvar propagates
+
+    names, pred_means, pred_errs, pdg_vals, colors = [], [], [], [], []
+    for name, ch in result.channels.items():
+        if name not in PDG_REFERENCES:
+            continue
+        m_lat = ch.ground_state_mass
+        if float(gvar.mean(m_lat)) <= 0:
+            continue
+        m_pred = m_lat * scale
+        label, pdg_mass = PDG_REFERENCES[name]
+        names.append(label)
+        pred_means.append(float(gvar.mean(m_pred)))
+        pred_errs.append(float(gvar.sdev(m_pred)))
+        pdg_vals.append(pdg_mass)
+        colors.append(_CHANNEL_TYPE_COLORS.get(ch.channel_type, "#7f7f7f"))
+
+    if not names:
+        return _algorithm_placeholder_plot("No channels with PDG references found.")
+
+    bars = hv.Bars(
+        list(zip(names, pred_means, colors)),
+        kdims="Channel",
+        vdims=["Mass (GeV)", "color"],
+    ).opts(color="color", width=700, height=350, xrotation=45)
+    ebars = hv.ErrorBars(
+        list(zip(names, pred_means, pred_errs)),
+        kdims="Channel",
+        vdims=["Mass (GeV)", "yerr"],
+    ).opts(line_width=2)
+    pdg_scatter = hv.Scatter(
+        list(zip(names, pdg_vals)),
+        kdims="Channel",
+        vdims="Mass (GeV)",
+        label="PDG",
+    ).opts(color="red", marker="diamond", size=12)
+
+    anchor_label, _ = PDG_REFERENCES[anchor_channel]
+    return (bars * ebars * pdg_scatter).opts(
+        hv.opts.Overlay(
+            title=f"PDG Comparison (anchor: {anchor_label})",
+            legend_position="top_right",
+        ),
+    )
+
+
+def _build_ratio_comparison(
+    result: MassExtractionResult,
+) -> tuple[hv.Overlay, pd.DataFrame]:
+    """Scatter of extracted vs PDG mass ratios for all unique channel pairs.
+
+    Points on the diagonal ``y = x`` indicate perfect agreement.
+    Returns the plot overlay and a summary DataFrame.
+    """
+    matched = {
+        name: ch
+        for name, ch in result.channels.items()
+        if name in PDG_REFERENCES and float(gvar.mean(ch.ground_state_mass)) > 0
+    }
+    names = sorted(matched)
+
+    rows: list[dict[str, Any]] = []
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            m_a = matched[a].ground_state_mass
+            m_b = matched[b].ground_state_mass
+            ratio_ext = m_a / m_b  # gvar propagates
+            _, pdg_a = PDG_REFERENCES[a]
+            _, pdg_b = PDG_REFERENCES[b]
+            ratio_pdg = pdg_a / pdg_b
+            ext_mean = float(gvar.mean(ratio_ext))
+            ext_err = float(gvar.sdev(ratio_ext))
+            tension = abs(ext_mean - ratio_pdg) / ext_err if ext_err > 0 else float("inf")
+            error_pct = (ext_mean - ratio_pdg) / ratio_pdg * 100.0 if ratio_pdg != 0 else float("inf")
+            matches = "YES" if abs(ext_mean - ratio_pdg) <= ext_err else "NO"
+            rows.append({
+                "Ratio": f"{a}/{b}",
+                "Extracted": round(ext_mean, 4),
+                "Error": round(ext_err, 4),
+                "PDG": round(ratio_pdg, 4),
+                "Error (%)": round(error_pct, 2),
+                "Matches": matches,
+                "Tension (\u03c3)": round(tension, 2),
+            })
+
+    cols = ["Ratio", "Extracted", "Error", "PDG", "Error (%)", "Matches", "Tension (\u03c3)"]
+    df = pd.DataFrame(rows, columns=cols) if rows else pd.DataFrame(columns=cols)
+
+    if not rows:
+        return _algorithm_placeholder_plot("Need \u22652 channels with PDG refs for ratios."), df
+
+    pdg_vals = [r["PDG"] for r in rows]
+    ext_vals = [r["Extracted"] for r in rows]
+    ext_errs = [r["Error"] for r in rows]
+    labels = [r["Ratio"] for r in rows]
+
+    scatter = hv.Scatter(
+        list(zip(pdg_vals, ext_vals, labels)),
+        kdims="PDG ratio",
+        vdims=["Extracted ratio", "label"],
+    ).opts(size=8, color="#1f77b4", tools=["hover"])
+    ebars = hv.ErrorBars(
+        list(zip(pdg_vals, ext_vals, ext_errs)),
+        kdims="PDG ratio",
+        vdims=["Extracted ratio", "yerr"],
+    ).opts(line_width=1.5)
+
+    lo = min(min(pdg_vals), min(ext_vals)) * 0.9
+    hi = max(max(pdg_vals), max(ext_vals)) * 1.1
+    diagonal = hv.Curve([(lo, lo), (hi, hi)], kdims="PDG ratio", vdims="Extracted ratio").opts(
+        color="gray", line_dash="dashed", line_width=1,
+    )
+    overlay = (diagonal * scatter * ebars).opts(
+        hv.opts.Overlay(
+            title="Mass Ratios: Extracted vs PDG",
+            width=500,
+            height=400,
+        ),
+    )
+    return overlay, df
+
+
+def _build_anchor_spread_analysis(
+    result: MassExtractionResult,
+) -> tuple[hv.Overlay, pd.DataFrame, pd.DataFrame]:
+    """Scatter plot + tables showing how predicted GeV masses vary across anchors.
+
+    For every (channel, anchor) pair where both appear in *PDG_REFERENCES*,
+    compute ``m_pred = m_lattice_channel * (pdg_anchor / m_lattice_anchor)``
+    and measure the deviation from the PDG value.
+
+    Returns ``(overlay, summary_df, detail_df)``.
+    """
+    matched = {
+        name: ch
+        for name, ch in result.channels.items()
+        if name in PDG_REFERENCES and float(gvar.mean(ch.ground_state_mass)) > 0
+    }
+
+    detail_cols = [
+        "Channel", "Anchor", "Predicted (GeV)", "Error (GeV)",
+        "PDG (GeV)", "Deviation (%)",
+    ]
+    summary_cols = [
+        "Channel", "PDG (GeV)", "Mean Pred (GeV)", "Std Across Anchors (GeV)",
+        "Spread (%)", "Best Anchor", "Worst Anchor",
+    ]
+    empty_overlay = _algorithm_placeholder_plot("Need ≥2 channels with PDG refs.")
+    empty_detail = pd.DataFrame(columns=detail_cols)
+    empty_summary = pd.DataFrame(columns=summary_cols)
+
+    if len(matched) < 2:
+        return empty_overlay, empty_summary, empty_detail
+
+    detail_rows: list[dict[str, Any]] = []
+    # {channel_name: [(anchor_name, pred_mean, pred_err, deviation_pct)]}
+    per_channel: dict[str, list[tuple[str, float, float, float]]] = {}
+
+    for ch_name, ch in matched.items():
+        for anc_name, anc in matched.items():
+            if ch_name == anc_name:
+                continue
+            _, pdg_anc = PDG_REFERENCES[anc_name]
+            _, pdg_ch = PDG_REFERENCES[ch_name]
+            scale = pdg_anc / anc.ground_state_mass  # gvar
+            m_pred = ch.ground_state_mass * scale     # gvar
+            pred_mean = float(gvar.mean(m_pred))
+            pred_err = float(gvar.sdev(m_pred))
+            dev_pct = (pred_mean - pdg_ch) / pdg_ch * 100.0
+
+            detail_rows.append({
+                "Channel": ch_name,
+                "Anchor": anc_name,
+                "Predicted (GeV)": round(pred_mean, 4),
+                "Error (GeV)": round(pred_err, 4),
+                "PDG (GeV)": round(pdg_ch, 4),
+                "Deviation (%)": round(dev_pct, 2),
+            })
+            per_channel.setdefault(ch_name, []).append(
+                (anc_name, pred_mean, pred_err, dev_pct),
+            )
+
+    detail_df = pd.DataFrame(detail_rows, columns=detail_cols) if detail_rows else empty_detail
+
+    # --- Summary (one row per channel) ---
+    summary_rows: list[dict[str, Any]] = []
+    for ch_name, entries in per_channel.items():
+        _, pdg_ch = PDG_REFERENCES[ch_name]
+        pred_means = np.array([e[1] for e in entries])
+        mean_pred = float(np.mean(pred_means))
+        std_pred = float(np.std(pred_means, ddof=0))
+        spread_pct = std_pred / pdg_ch * 100.0
+        abs_devs = [abs(e[3]) for e in entries]
+        best_idx = int(np.argmin(abs_devs))
+        worst_idx = int(np.argmax(abs_devs))
+        summary_rows.append({
+            "Channel": ch_name,
+            "PDG (GeV)": round(pdg_ch, 4),
+            "Mean Pred (GeV)": round(mean_pred, 4),
+            "Std Across Anchors (GeV)": round(std_pred, 4),
+            "Spread (%)": round(spread_pct, 2),
+            "Best Anchor": entries[best_idx][0],
+            "Worst Anchor": entries[worst_idx][0],
+        })
+    summary_df = (
+        pd.DataFrame(summary_rows, columns=summary_cols)
+        if summary_rows else empty_summary
+    )
+
+    # --- Plot: one colour per anchor, PDG as red diamonds ---
+    anchor_names = sorted({r["Anchor"] for r in detail_rows})
+    anchor_color = {
+        a: _CHANNEL_PALETTE[i % len(_CHANNEL_PALETTE)]
+        for i, a in enumerate(anchor_names)
+    }
+
+    scatter_layers = []
+    for anc in anchor_names:
+        subset = [r for r in detail_rows if r["Anchor"] == anc]
+        scatter_layers.append(
+            hv.Scatter(
+                [(r["Channel"], r["Predicted (GeV)"]) for r in subset],
+                kdims="Channel",
+                vdims="Mass (GeV)",
+                label=anc,
+            ).opts(
+                color=anchor_color[anc],
+                size=8,
+                jitter=0.3,
+            )
+        )
+
+    # PDG reference diamonds
+    pdg_points = [
+        (ch_name, PDG_REFERENCES[ch_name][1])
+        for ch_name in per_channel
+    ]
+    pdg_scatter = hv.Scatter(
+        pdg_points, kdims="Channel", vdims="Mass (GeV)", label="PDG",
+    ).opts(color="red", marker="diamond", size=12)
+
+    overlay = scatter_layers[0]
+    for s in scatter_layers[1:]:
+        overlay = overlay * s
+    overlay = overlay * pdg_scatter
+    overlay = overlay.opts(
+        hv.opts.Overlay(
+            title="Anchor Spread: Predicted Mass by Anchor",
+            legend_position="top_right",
+            width=700,
+            height=400,
+            logy=True,
+        ),
+        hv.opts.Scatter(xrotation=45),
+    )
+
+    return overlay, summary_df, detail_df
+
+
+def _build_amplitude_table(channel_result: Any) -> pd.DataFrame:
+    """Build a DataFrame of per-variant amplitudes for a channel."""
+    rows = []
+    for vk in channel_result.variant_keys:
+        amps = channel_result.amplitudes.get(vk)
+        if amps is None or len(amps) == 0:
+            continue
+        a0 = amps[0]
+        a0_mean = float(gvar.mean(a0))
+        a0_err = float(gvar.sdev(a0))
+        significance = abs(a0_mean) / a0_err if a0_err > 0 else 0.0
+        rows.append({
+            "Variant": vk,
+            "a_0": f"{a0_mean:.6f}",
+            "Error": f"{a0_err:.6f}",
+            "Significance (σ)": f"{significance:.1f}",
+        })
+    return pd.DataFrame(rows)
+
+
+def _build_intra_channel_ratio_table(ch: Any) -> pd.DataFrame:
+    """Build a DataFrame of excited-to-ground-state mass ratios within a channel."""
+    cols = ["Ratio", "Value", "Error", "Error (%)"]
+    if len(ch.energy_levels) < 2:
+        return pd.DataFrame(columns=cols)
+    E_0 = ch.energy_levels[0]
+    rows = []
+    for i in range(1, len(ch.energy_levels)):
+        ratio = ch.energy_levels[i] / E_0
+        mean = float(gvar.mean(ratio))
+        err = float(gvar.sdev(ratio))
+        pct = abs(err / mean) * 100.0 if mean != 0 else float("inf")
+        rows.append({
+            "Ratio": f"E_{i}/E_0",
+            "Value": f"{mean:.6f}",
+            "Error": f"{err:.6f}",
+            "Error (%)": f"{pct:.2f}",
+        })
+    return pd.DataFrame(rows, columns=cols)
+
+
+def _build_cross_channel_ratio_table(result: MassExtractionResult) -> pd.DataFrame:
+    """Build a DataFrame of ground-state mass ratios across channels."""
+    cols = ["Ratio", "Value", "Error", "Error (%)"]
+    mesons = [
+        (name, ch) for name, ch in result.channels.items()
+        if ch.channel_type == "meson"
+    ]
+    baryons = [
+        (name, ch) for name, ch in result.channels.items()
+        if ch.channel_type == "baryon"
+    ]
+    rows = []
+
+    def _add_pair(a_name, a_ch, b_name, b_ch):
+        m_b = float(gvar.mean(b_ch.ground_state_mass))
+        if m_b == 0:
+            return
+        ratio = a_ch.ground_state_mass / b_ch.ground_state_mass
+        mean = float(gvar.mean(ratio))
+        err = float(gvar.sdev(ratio))
+        pct = abs(err / mean) * 100.0 if mean != 0 else float("inf")
+        rows.append({
+            "Ratio": f"{a_name}/{b_name}",
+            "Value": f"{mean:.6f}",
+            "Error": f"{err:.6f}",
+            "Error (%)": f"{pct:.2f}",
+        })
+
+    # Meson/baryon pairs first
+    for a_name, a_ch in mesons:
+        for b_name, b_ch in baryons:
+            _add_pair(a_name, a_ch, b_name, b_ch)
+    # Meson/meson pairs
+    for i, (a_name, a_ch) in enumerate(mesons):
+        for b_name, b_ch in mesons[i + 1:]:
+            _add_pair(a_name, a_ch, b_name, b_ch)
+    # Baryon/baryon pairs
+    for i, (a_name, a_ch) in enumerate(baryons):
+        for b_name, b_ch in baryons[i + 1:]:
+            _add_pair(a_name, a_ch, b_name, b_ch)
+
+    return pd.DataFrame(rows, columns=cols) if rows else pd.DataFrame(columns=cols)
+
+
+def _build_diagnostics_container(result: MassExtractionResult) -> list:
+    """Build diagnostics widgets: global fit quality + per-channel summary."""
+    d = result.diagnostics
+    global_md = (
+        f"**chi2** = {d.chi2:.2f} &nbsp;|&nbsp; "
+        f"**dof** = {d.dof} &nbsp;|&nbsp; "
+        f"**chi2/dof** = {d.chi2_per_dof:.3f} &nbsp;|&nbsp; "
+        f"**Q** = {d.Q:.4f} &nbsp;|&nbsp; "
+        f"**logGBF** = {d.logGBF:.2f} &nbsp;|&nbsp; "
+        f"**nit** = {d.nit} &nbsp;|&nbsp; "
+        f"**svdcut** = {d.svdcut:.1e}"
+    )
+
+    rows = []
+    for name, ch in result.channels.items():
+        rows.append({
+            "Group": name,
+            "Type": ch.channel_type,
+            "Ground Mass": f"{gvar.mean(ch.ground_state_mass):.6f}",
+            "Levels": len(ch.energy_levels),
+            "#Variants": len(ch.variant_keys),
+            "Variant keys": ", ".join(ch.variant_keys),
+        })
+
+    return [global_md, pd.DataFrame(rows)]
 
 
 # ---------------------------------------------------------------------------
@@ -219,11 +713,11 @@ def build_mass_extraction_tab(
 
     settings = MassExtractionSettings()
     status = pn.pane.Markdown(
-        "**Mass Extraction:** Run Strong Correlators first, then click Extract Masses.",
+        "**Strong Force Mass:** Run Strong Correlators first, then click Extract Strong Masses.",
         sizing_mode="stretch_width",
     )
     run_button = pn.widgets.Button(
-        name="Extract Masses",
+        name="Extract Strong Masses",
         button_type="primary",
         min_width=260,
         sizing_mode="stretch_width",
@@ -231,13 +725,25 @@ def build_mass_extraction_tab(
     )
 
     # -- Widgets --
+    mass_spectrum_plot = pn.pane.HoloViews(
+        _algorithm_placeholder_plot("Run extraction to show mass spectrum."),
+        sizing_mode="stretch_width",
+        linked_axes=False,
+    )
     mass_summary_table = pn.widgets.Tabulator(
         pd.DataFrame(),
         pagination=None,
         show_index=False,
         sizing_mode="stretch_width",
     )
-    diagnostics_pane = pn.pane.Markdown("", sizing_mode="stretch_width")
+    diagnostics_container = pn.Column(
+        pn.pane.Markdown("", sizing_mode="stretch_width"),
+        pn.widgets.Tabulator(
+            pd.DataFrame(), pagination=None, show_index=False,
+            sizing_mode="stretch_width",
+        ),
+        sizing_mode="stretch_width",
+    )
 
     channel_selector = pn.widgets.Select(
         name="Channel",
@@ -250,11 +756,83 @@ def build_mass_extraction_tab(
         show_index=False,
         sizing_mode="stretch_width",
     )
+    amplitude_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+    intra_ratio_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+    cross_ratio_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
 
     placeholder = _algorithm_placeholder_plot("Run extraction to show plots.")
     meff_plot = pn.pane.HoloViews(placeholder, sizing_mode="stretch_width", linked_axes=False)
     correlator_fit_plot = pn.pane.HoloViews(
         placeholder, sizing_mode="stretch_width", linked_axes=False,
+    )
+
+    # -- PDG comparison widgets --
+    anchor_selector = pn.widgets.Select(
+        name="Scale Anchor",
+        options=list(PDG_REFERENCES.keys()),
+        value="pseudoscalar",
+        sizing_mode="stretch_width",
+    )
+    pdg_comparison_plot = pn.pane.HoloViews(
+        _algorithm_placeholder_plot("Run extraction for PDG comparison."),
+        sizing_mode="stretch_width",
+        linked_axes=False,
+    )
+    ratio_comparison_plot = pn.pane.HoloViews(
+        _algorithm_placeholder_plot("Run extraction for ratio comparison."),
+        sizing_mode="stretch_width",
+        linked_axes=False,
+    )
+    ratio_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+
+    # -- Anchor spread widgets --
+    anchor_spread_plot = pn.pane.HoloViews(
+        _algorithm_placeholder_plot("Run extraction for anchor spread analysis."),
+        sizing_mode="stretch_width",
+        linked_axes=False,
+    )
+    anchor_spread_summary = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+    anchor_spread_detail = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination=None,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+
+    # -- Channel key selection widgets --
+    channel_key_selectors: dict[str, pn.widgets.MultiSelect] = {}
+
+    channel_key_selection_container = pn.Column(
+        pn.pane.Markdown(
+            "*Run Strong Correlators to populate channel operator selections.*",
+            sizing_mode="stretch_width",
+        ),
+        sizing_mode="stretch_width",
     )
 
     # -- Settings panel --
@@ -269,6 +847,7 @@ def build_mass_extraction_tab(
             "use_log_dE",
             "use_fastfit_seeding",
             "effective_mass_method",
+            "include_multiscale",
         ],
         show_name=False,
         default_layout=type("FitGrid", (pn.GridBox,), {"ncols": 2}),
@@ -281,33 +860,31 @@ def build_mass_extraction_tab(
         if result is None:
             return
 
+        # Mass spectrum bar chart
+        mass_spectrum_plot.object = _build_mass_spectrum_bar(result)
+
         # Mass summary table
         rows = []
         for name, ch in result.channels.items():
             gs_mean = float(gvar.mean(ch.ground_state_mass))
             gs_err = float(gvar.sdev(ch.ground_state_mass))
+            err_pct = (gs_err / gs_mean * 100) if gs_mean != 0 else float("inf")
             rows.append({
                 "Channel": ch.name,
                 "Type": ch.channel_type,
                 "Ground Mass": f"{gs_mean:.6f}",
                 "Error": f"{gs_err:.6f}",
+                "Error %": f"{err_pct:.2f}%",
                 "chi2/dof": f"{result.diagnostics.chi2_per_dof:.3f}",
                 "Q": f"{result.diagnostics.Q:.4f}",
                 "Variants": ", ".join(ch.variant_keys),
             })
         mass_summary_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
 
-        # Diagnostics
-        d = result.diagnostics
-        diagnostics_pane.object = (
-            f"**chi2** = {d.chi2:.2f} &nbsp;|&nbsp; "
-            f"**dof** = {d.dof} &nbsp;|&nbsp; "
-            f"**chi2/dof** = {d.chi2_per_dof:.3f} &nbsp;|&nbsp; "
-            f"**Q** = {d.Q:.4f} &nbsp;|&nbsp; "
-            f"**logGBF** = {d.logGBF:.2f} &nbsp;|&nbsp; "
-            f"**nit** = {d.nit} &nbsp;|&nbsp; "
-            f"**svdcut** = {d.svdcut:.1e}"
-        )
+        # Diagnostics container
+        diag_parts = _build_diagnostics_container(result)
+        diagnostics_container[0].object = diag_parts[0]  # global markdown
+        diagnostics_container[1].value = diag_parts[1]   # per-channel table
 
         # Channel selector
         channel_names = list(result.channels.keys())
@@ -316,6 +893,8 @@ def build_mass_extraction_tab(
             channel_selector.value = channel_names[0]
 
         _refresh_channel_detail()
+        _refresh_pdg_comparison()
+        cross_ratio_table.value = _build_cross_channel_ratio_table(result)
 
     def _refresh_channel_detail(*_args):
         result: MassExtractionResult | None = state.get("mass_extraction_output")
@@ -325,6 +904,8 @@ def build_mass_extraction_tab(
         selected = channel_selector.value
         if selected is None or selected not in result.channels:
             channel_detail_table.value = pd.DataFrame()
+            amplitude_table.value = pd.DataFrame()
+            intra_ratio_table.value = pd.DataFrame()
             meff_plot.object = _algorithm_placeholder_plot("Select a channel.")
             correlator_fit_plot.object = _algorithm_placeholder_plot("Select a channel.")
             return
@@ -334,16 +915,30 @@ def build_mass_extraction_tab(
         # Energy level detail table
         rows = []
         for i, E_n in enumerate(ch.energy_levels):
+            e_mean = gvar.mean(E_n)
+            e_err = gvar.sdev(E_n)
+            e_err_pct = abs(e_err / e_mean) * 100.0 if e_mean != 0 else float("inf")
             row = {
                 "Level": i,
-                "E_n": f"{gvar.mean(E_n):.6f}",
-                "Error": f"{gvar.sdev(E_n):.6f}",
+                "E_n": f"{e_mean:.6f}",
+                "Error": f"{e_err:.6f}",
+                "Error (%)": f"{e_err_pct:.2f}",
             }
             if ch.dE is not None and i < len(ch.dE):
-                row["dE_n"] = f"{gvar.mean(ch.dE[i]):.6f}"
-                row["dE Error"] = f"{gvar.sdev(ch.dE[i]):.6f}"
+                de_mean = gvar.mean(ch.dE[i])
+                de_err = gvar.sdev(ch.dE[i])
+                de_err_pct = abs(de_err / de_mean) * 100.0 if de_mean != 0 else float("inf")
+                row["dE_n"] = f"{de_mean:.6f}"
+                row["dE Error"] = f"{de_err:.6f}"
+                row["dE Error (%)"] = f"{de_err_pct:.2f}"
             rows.append(row)
         channel_detail_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
+
+        # Amplitude table
+        amplitude_table.value = _build_amplitude_table(ch)
+
+        # Intra-channel energy level ratios
+        intra_ratio_table.value = _build_intra_channel_ratio_table(ch)
 
         # Effective mass plot
         meff_plot.object = _build_meff_plot(result, selected, ch)
@@ -353,13 +948,34 @@ def build_mass_extraction_tab(
 
     channel_selector.param.watch(_refresh_channel_detail, "value")
 
+    # -- PDG comparison refresh --
+
+    def _refresh_pdg_comparison(*_args):
+        result: MassExtractionResult | None = state.get("mass_extraction_output")
+        if result is None:
+            return
+        pdg_comparison_plot.object = _build_pdg_comparison_plot(
+            result, anchor_selector.value,
+        )
+        ratio_overlay, ratio_df = _build_ratio_comparison(result)
+        ratio_comparison_plot.object = ratio_overlay
+        ratio_table.value = ratio_df
+        spread_overlay, spread_summary_df, spread_detail_df = (
+            _build_anchor_spread_analysis(result)
+        )
+        anchor_spread_plot.object = spread_overlay
+        anchor_spread_summary.value = spread_summary_df
+        anchor_spread_detail.value = spread_detail_df
+
+    anchor_selector.param.watch(_refresh_pdg_comparison, "value")
+
     # -- Compute callback --
 
     def on_run(_event):
         def _compute(_history: RunHistory):
             pipeline_result = state.get("strong_correlator_output")
             if pipeline_result is None:
-                status.object = "**Error:** Run Strong Correlators first."
+                status.object = "**Error:** Run Strong Correlators first for Strong Force Mass."
                 return
 
             # Build config from settings
@@ -380,6 +996,7 @@ def build_mass_extraction_tab(
                 fit=FitConfig(svdcut=float(settings.svdcut)),
                 compute_effective_mass=True,
                 effective_mass_method=str(settings.effective_mass_method),
+                include_multiscale=bool(settings.include_multiscale),
             )
 
             # Apply per-channel fit defaults via channel_groups auto-detection
@@ -395,7 +1012,29 @@ def build_mass_extraction_tab(
             # first, patch, then run.
             from fragile.physics.mass_extraction.pipeline import _auto_detect_channel_groups
 
-            groups = _auto_detect_channel_groups(list(pipeline_result.correlators.keys()))
+            groups = _auto_detect_channel_groups(
+                list(pipeline_result.correlators.keys()),
+                include_multiscale=bool(settings.include_multiscale),
+            )
+
+            # Filter correlator keys per channel using selector widgets
+            for g in groups:
+                selector = channel_key_selectors.get(g.name)
+                if selector is not None:
+                    selected = set(selector.value)
+                    g.correlator_keys = [
+                        k for k in g.correlator_keys if k in selected
+                    ]
+            groups = [g for g in groups if g.correlator_keys]
+
+            if not groups:
+                status.object = (
+                    "**Error:** No correlator keys selected. "
+                    "Open *Channel Operator Selection* and select at least "
+                    "one key per channel."
+                )
+                return
+
             for g in groups:
                 g.fit = ChannelFitConfig(
                     tmin=int(settings.tmin),
@@ -420,7 +1059,7 @@ def build_mass_extraction_tab(
                 f"Q = {result.diagnostics.Q:.4f}."
             )
 
-        run_tab_computation(state, status, "mass extraction", _compute)
+        run_tab_computation(state, status, "strong force mass extraction", _compute)
 
     run_button.on_click(on_run)
 
@@ -429,34 +1068,104 @@ def build_mass_extraction_tab(
     def on_history_changed(defer: bool) -> None:
         run_button.disabled = True
         status.object = (
-            "**Mass Extraction:** Run Strong Correlators first, "
-            "then click Extract Masses."
+            "**Strong Force Mass:** Run Strong Correlators first, "
+            "then click Extract Strong Masses."
+        )
+        # Always reset channel key selectors when history changes
+        channel_key_selectors.clear()
+        channel_key_selection_container.clear()
+        channel_key_selection_container.append(
+            pn.pane.Markdown(
+                "*Run Strong Correlators to populate channel operator selections.*",
+                sizing_mode="stretch_width",
+            ),
         )
         if defer:
             return
         state["mass_extraction_output"] = None
+        mass_spectrum_plot.object = _algorithm_placeholder_plot(
+            "Run extraction to show mass spectrum.",
+        )
         mass_summary_table.value = pd.DataFrame()
-        diagnostics_pane.object = ""
+        diagnostics_container[0].object = ""
+        diagnostics_container[1].value = pd.DataFrame()
         channel_selector.options = []
         channel_detail_table.value = pd.DataFrame()
+        amplitude_table.value = pd.DataFrame()
+        intra_ratio_table.value = pd.DataFrame()
+        cross_ratio_table.value = pd.DataFrame()
         placeholder = _algorithm_placeholder_plot("Run extraction to show plots.")
         meff_plot.object = placeholder
         correlator_fit_plot.object = placeholder
+        pdg_comparison_plot.object = _algorithm_placeholder_plot(
+            "Run extraction for PDG comparison.",
+        )
+        ratio_comparison_plot.object = _algorithm_placeholder_plot(
+            "Run extraction for ratio comparison.",
+        )
+        ratio_table.value = pd.DataFrame()
+        anchor_spread_plot.object = _algorithm_placeholder_plot(
+            "Run extraction for anchor spread analysis.",
+        )
+        anchor_spread_summary.value = pd.DataFrame()
+        anchor_spread_detail.value = pd.DataFrame()
 
     # -- on_correlators_ready --
 
     def on_correlators_ready() -> None:
         run_button.disabled = False
         status.object = (
-            "**Mass Extraction ready:** Strong Correlators available. "
-            "Click Extract Masses."
+            "**Strong Force Mass ready:** Strong Correlators available. "
+            "Click Extract Strong Masses."
         )
+
+        # Populate channel key selection widgets from pipeline result
+        pipeline_result = state.get("strong_correlator_output")
+        if pipeline_result is not None:
+            from fragile.physics.mass_extraction.pipeline import (
+                _auto_detect_channel_groups,
+            )
+
+            groups = _auto_detect_channel_groups(
+                list(pipeline_result.correlators.keys()),
+                include_multiscale=True,
+            )
+            channel_key_selectors.clear()
+            widgets: list[pn.widgets.MultiSelect] = []
+            for g in groups:
+                keys = sorted(g.correlator_keys)
+                if not keys:
+                    continue
+                selector = pn.widgets.MultiSelect(
+                    name=g.name,
+                    options=keys,
+                    value=keys,
+                    size=min(len(keys), 8),
+                    sizing_mode="stretch_width",
+                )
+                channel_key_selectors[g.name] = selector
+                widgets.append(selector)
+
+            channel_key_selection_container.clear()
+            if widgets:
+                # Lay out in rows of 3
+                for i in range(0, len(widgets), 3):
+                    channel_key_selection_container.append(
+                        pn.Row(*widgets[i : i + 3], sizing_mode="stretch_width"),
+                    )
+            else:
+                channel_key_selection_container.append(
+                    pn.pane.Markdown(
+                        "*No channel groups detected.*",
+                        sizing_mode="stretch_width",
+                    ),
+                )
 
     # -- Tab layout --
 
     info_note = pn.pane.Alert(
         (
-            "**Mass Extraction:** Performs Bayesian multi-exponential fits "
+            "**Strong Force Mass Extraction:** Performs Bayesian multi-exponential fits "
             "on the strong-correlator output to extract particle masses "
             "with error bars.  Displays effective-mass plateaus, fit "
             "quality diagnostics, and per-channel energy levels."
@@ -471,19 +1180,42 @@ def build_mass_extraction_tab(
         pn.Row(run_button, sizing_mode="stretch_width"),
         pn.Accordion(
             ("Fit Settings", settings_panel),
+            ("Channel Operator Selection", channel_key_selection_container),
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),
+        pn.pane.Markdown("### Mass Spectrum"),
+        mass_spectrum_plot,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### PDG Mass Comparison"),
+        pn.Row(anchor_selector, sizing_mode="stretch_width"),
+        pdg_comparison_plot,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Mass Ratios vs PDG"),
+        ratio_comparison_plot,
+        ratio_table,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Anchor Spread (Systematic Error)"),
+        anchor_spread_plot,
+        anchor_spread_summary,
+        pn.pane.Markdown("#### Per-Anchor Detail"),
+        anchor_spread_detail,
+        pn.layout.Divider(),
         pn.pane.Markdown("### Mass Summary"),
         mass_summary_table,
+        pn.pane.Markdown("### Cross-Channel Mass Ratios"),
+        cross_ratio_table,
         pn.pane.Markdown("### Fit Diagnostics"),
-        diagnostics_pane,
+        diagnostics_container,
         pn.layout.Divider(),
         pn.pane.Markdown("### Channel Detail"),
         channel_selector,
         channel_detail_table,
-        meff_plot,
-        correlator_fit_plot,
+        pn.pane.Markdown("#### Variant Amplitudes"),
+        amplitude_table,
+        pn.pane.Markdown("#### Energy Level Ratios"),
+        intra_ratio_table,
+        pn.Row(correlator_fit_plot, meff_plot, sizing_mode="stretch_width"),
         sizing_mode="stretch_both",
     )
 

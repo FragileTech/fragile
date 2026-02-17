@@ -10,7 +10,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable
 
-import numpy as np
 import pandas as pd
 import panel as pn
 import param
@@ -19,11 +18,16 @@ from fragile.physics.app.algorithm import _algorithm_placeholder_plot
 from fragile.physics.app.correlator_plots import (
     build_all_channels_correlator_overlay,
     build_all_channels_meff_overlay,
+    build_correlator_table,
+    build_grouped_correlator_plot,
+    build_grouped_meff_plot,
     build_single_correlator_plot,
     build_single_effective_mass_plot,
     build_single_operator_series_plot,
+    build_summary_table,
     get_correlator_array,
     get_operator_series_array,
+    group_strong_correlator_keys,
 )
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.operators import (
@@ -52,6 +56,7 @@ _MESON_REGULAR: tuple[str, ...] = (
 )
 _VECTOR_REGULAR: tuple[str, ...] = (
     "standard", "score_directed", "score_gradient",
+    "score_directed_longitudinal", "score_directed_transverse",
 )
 _BARYON_REGULAR: tuple[str, ...] = (
     "det_abs", "flux_action", "flux_sin2", "flux_exp", "score_signed", "score_abs",
@@ -75,9 +80,23 @@ TENSOR_MODES: tuple[str, ...] = ("standard",)
 # Modes that require scores to be prepared in PreparedChannelData
 _SCORE_MODES: dict[str, set[str]] = {
     "meson": {"score_directed", "score_weighted"},
-    "vector": {"score_directed", "score_gradient"},
+    "vector": {
+        "score_directed", "score_gradient",
+        "score_directed_longitudinal", "score_directed_transverse",
+    },
     "baryon": {"score_signed", "score_abs"},
 }
+
+
+def _parse_vector_mode(
+    mode: str, default_projection: str = "full",
+) -> tuple[str, str]:
+    """Decompose a composite vector mode into ``(operator_mode, projection_mode)``."""
+    if mode.endswith("_longitudinal"):
+        return mode.removesuffix("_longitudinal"), "longitudinal"
+    if mode.endswith("_transverse"):
+        return mode.removesuffix("_transverse"), "transverse"
+    return mode, default_projection
 
 
 # ---------------------------------------------------------------------------
@@ -105,7 +124,7 @@ class StrongCorrelatorSettings(param.Parameterized):
     """Settings for the strong-force correlator pipeline."""
 
     # -- Common (ChannelConfigBase) --
-    warmup_fraction = param.Number(default=0.1, bounds=(0.0, 0.95))
+    warmup_fraction = param.Number(default=0.2, bounds=(0.0, 0.95))
     end_fraction = param.Number(default=1.0, bounds=(0.05, 1.0))
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
     mass = param.Number(default=1.0, bounds=(1e-6, None))
@@ -121,7 +140,7 @@ class StrongCorrelatorSettings(param.Parameterized):
     )
 
     # -- Correlator --
-    max_lag = param.Integer(default=80, bounds=(1, 500))
+    max_lag = param.Integer(default=40, bounds=(1, 500))
     use_connected = param.Boolean(default=True)
 
     # -- Per-channel settings --
@@ -190,67 +209,6 @@ def _parse_color_dims(spec: str, d: int) -> tuple[int, int, int] | None:
 
 
 # ---------------------------------------------------------------------------
-# Helpers: summary / correlator tables
-# ---------------------------------------------------------------------------
-
-
-def _build_summary_table(
-    result: PipelineResult,
-    scale_index: int = 0,
-) -> pd.DataFrame:
-    """Build one-row-per-channel summary table."""
-    rows: list[dict[str, Any]] = []
-    for name in result.correlators:
-        arr = get_correlator_array(result, name, scale_index)
-        if len(arr) == 0:
-            continue
-        op_arr = get_operator_series_array(result, name, scale_index)
-        n_frames = max(0, len(op_arr))
-
-        c0 = float(arr[0]) if len(arr) > 0 else np.nan
-        c1 = float(arr[1]) if len(arr) > 1 else np.nan
-        c_last = float(arr[-1]) if len(arr) > 0 else np.nan
-        m_eff1 = np.nan
-        if len(arr) > 1 and abs(c0) > 1e-30 and c1 / c0 > 0:
-            m_eff1 = np.log(c0 / c1)
-
-        row: dict[str, Any] = {
-            "channel": name,
-            "C(0)": c0,
-            "C(1)": c1,
-            f"C({len(arr) - 1})": c_last,
-            "m_eff(1)": m_eff1,
-            "n_frames": n_frames,
-        }
-        if result.scales is not None:
-            row["scale_index"] = scale_index
-        rows.append(row)
-
-    return pd.DataFrame(rows) if rows else pd.DataFrame()
-
-
-def _build_correlator_table(
-    result: PipelineResult,
-    scale_index: int = 0,
-) -> pd.DataFrame:
-    """Build full correlator table: rows = channels, columns = lag values."""
-    if not result.correlators:
-        return pd.DataFrame()
-
-    rows: list[dict[str, Any]] = []
-    for name in result.correlators:
-        arr = get_correlator_array(result, name, scale_index)
-        if len(arr) == 0:
-            continue
-        row: dict[str, Any] = {"channel": name}
-        for lag_i, val in enumerate(arr):
-            row[f"lag_{lag_i}"] = float(val)
-        rows.append(row)
-
-    return pd.DataFrame(rows) if rows else pd.DataFrame()
-
-
-# ---------------------------------------------------------------------------
 # Main builder
 # ---------------------------------------------------------------------------
 
@@ -316,6 +274,9 @@ def build_strong_correlator_tab(
     single_meff_plot.object = placeholder
     single_operator_plot.object = placeholder
 
+    # -- Per-channel-group container --
+    per_channel_container = pn.Column(sizing_mode="stretch_width")
+
     # -- Tables --
     summary_table = pn.widgets.Tabulator(
         pd.DataFrame(),
@@ -352,43 +313,51 @@ def build_strong_correlator_tab(
     )
 
     # -- Per-channel mode selectors --
-    meson_mode_selector = pn.widgets.MultiSelect(
-        name="Meson",
+    scalar_mode_selector = pn.widgets.MultiSelect(
+        name="Scalar",
         options=list(MESON_MODES),
-        value=["standard"],
+        value=["standard_propagator", "score_weighted_propagator"],
+        size=len(MESON_MODES),
+        sizing_mode="stretch_width",
+    )
+    pseudoscalar_mode_selector = pn.widgets.MultiSelect(
+        name="Pseudoscalar",
+        options=list(MESON_MODES),
+        value=["standard_propagator", "score_weighted_propagator"],
         size=len(MESON_MODES),
         sizing_mode="stretch_width",
     )
     vector_mode_selector = pn.widgets.MultiSelect(
         name="Vector",
         options=list(VECTOR_MODES),
-        value=["standard"],
+        value=["standard", "standard_propagator", "score_directed_propagator"],
         size=len(VECTOR_MODES),
         sizing_mode="stretch_width",
     )
     baryon_mode_selector = pn.widgets.MultiSelect(
         name="Baryon",
         options=list(BARYON_MODES),
-        value=["det_abs"],
+        value=["flux_action_propagator", "flux_sin2_propagator", "flux_exp_propagator"],
         size=len(BARYON_MODES),
         sizing_mode="stretch_width",
     )
     glueball_mode_selector = pn.widgets.MultiSelect(
         name="Glueball",
         options=list(GLUEBALL_MODES),
-        value=["re_plaquette"],
+        value=["action_re_plaquette_propagator", "phase_action_propagator"],
         size=len(GLUEBALL_MODES),
         sizing_mode="stretch_width",
     )
     tensor_mode_selector = pn.widgets.MultiSelect(
         name="Tensor",
         options=list(TENSOR_MODES),
-        value=[],
+        value=["standard"],
         size=len(TENSOR_MODES),
         sizing_mode="stretch_width",
     )
     channel_mode_selectors: dict[str, pn.widgets.MultiSelect] = {
-        "meson": meson_mode_selector,
+        "scalar": scalar_mode_selector,
+        "pseudoscalar": pseudoscalar_mode_selector,
         "vector": vector_mode_selector,
         "baryon": baryon_mode_selector,
         "glueball": glueball_mode_selector,
@@ -445,8 +414,29 @@ def build_strong_correlator_tab(
             result,
             scale_index=si,
         )
-        summary_table.value = _build_summary_table(result, scale_index=si)
-        correlator_table.value = _build_correlator_table(result, scale_index=si)
+        summary_table.value = build_summary_table(result, scale_index=si)
+        correlator_table.value = build_correlator_table(result, scale_index=si)
+
+        # Per-channel group plots
+        groups = group_strong_correlator_keys(result.correlators.keys())
+        per_channel_container.clear()
+        for group_name, keys in groups.items():
+            corr_overlay = build_grouped_correlator_plot(
+                result, group_name, keys, si, ls,
+            )
+            meff_overlay = build_grouped_meff_plot(
+                result, group_name, keys, si,
+            )
+            per_channel_container.append(
+                pn.pane.Markdown(f"#### {group_name}")
+            )
+            per_channel_container.append(
+                pn.Row(
+                    pn.pane.HoloViews(corr_overlay, sizing_mode="stretch_width", linked_axes=False),
+                    pn.pane.HoloViews(meff_overlay, sizing_mode="stretch_width", linked_axes=False),
+                    sizing_mode="stretch_width",
+                )
+            )
 
     def _refresh_single():
         """Refresh the single-channel plots based on channel_selector."""
@@ -547,7 +537,7 @@ def build_strong_correlator_tab(
                 status.object = "**Error:** No channels selected."
                 return
 
-            # Separate regular modes from propagator modes per channel
+            # Separate regular modes from propagator modes per UI family
             regular_modes: dict[str, list[str]] = {}
             propagator_modes: dict[str, list[str]] = {}
             for family, modes in selected_modes.items():
@@ -561,9 +551,28 @@ def build_strong_correlator_tab(
                 if props:
                     propagator_modes[family] = props
 
+            # Map UI families to pipeline families (scalar/pseudoscalar share meson)
+            _UI_TO_PIPELINE = {
+                "scalar": "meson", "pseudoscalar": "meson",
+                "vector": "vector", "baryon": "baryon",
+                "glueball": "glueball", "tensor": "tensor",
+            }
+
+            # Aggregate modes by pipeline family (union of UI families)
+            pipeline_regular: dict[str, list[str]] = {}
+            pipeline_propagator: dict[str, list[str]] = {}
+            for ui_fam, modes in regular_modes.items():
+                pfam = _UI_TO_PIPELINE.get(ui_fam, ui_fam)
+                existing = pipeline_regular.get(pfam, [])
+                pipeline_regular[pfam] = list(dict.fromkeys(existing + modes))
+            for ui_fam, modes in propagator_modes.items():
+                pfam = _UI_TO_PIPELINE.get(ui_fam, ui_fam)
+                existing = pipeline_propagator.get(pfam, [])
+                pipeline_propagator[pfam] = list(dict.fromkeys(existing + modes))
+
             # Determine which channels the pipeline must prepare data for
             pipeline_channels = list(
-                dict.fromkeys(list(regular_modes) + list(propagator_modes))
+                dict.fromkeys(list(pipeline_regular) + list(pipeline_propagator))
             )
             if not pipeline_channels:
                 status.object = "**Error:** No channels selected."
@@ -585,7 +594,7 @@ def build_strong_correlator_tab(
                          "tensor": "standard"}
             for family in pipeline_channels:
                 # Combine regular + propagator base modes for score detection
-                all_base = regular_modes.get(family, []) + propagator_modes.get(family, [])
+                all_base = pipeline_regular.get(family, []) + pipeline_propagator.get(family, [])
                 if all_base:
                     first_modes[family] = _pick_first(family, all_base)
                 else:
@@ -596,9 +605,13 @@ def build_strong_correlator_tab(
                 operator_mode=first_modes.get("meson", "standard"),
                 **base_kwargs,
             )
+            _vm_op, _vm_proj = _parse_vector_mode(
+                first_modes.get("vector", "standard"),
+                default_projection=str(settings.vector_projection),
+            )
             vector_cfg = VectorOperatorConfig(
-                operator_mode=first_modes.get("vector", "standard"),
-                projection_mode=str(settings.vector_projection),
+                operator_mode=_vm_op,
+                projection_mode=_vm_proj,
                 use_unit_displacement=bool(settings.vector_unit_displacement),
                 **base_kwargs,
             )
@@ -685,9 +698,12 @@ def build_strong_correlator_tab(
                 if family == "meson":
                     return MesonOperatorConfig(operator_mode=mode, **base_kwargs)
                 if family == "vector":
+                    op_mode, proj_mode = _parse_vector_mode(
+                        mode, default_projection=str(settings.vector_projection),
+                    )
                     return VectorOperatorConfig(
-                        operator_mode=mode,
-                        projection_mode=str(settings.vector_projection),
+                        operator_mode=op_mode,
+                        projection_mode=proj_mode,
                         use_unit_displacement=bool(settings.vector_unit_displacement),
                         **base_kwargs,
                     )
@@ -715,7 +731,7 @@ def build_strong_correlator_tab(
                 )
 
             data = result.prepared_data
-            for family, modes in regular_modes.items():
+            for family, modes in pipeline_regular.items():
                 extra = [m for m in modes if m != first_modes.get(family)]
                 op_fn = _OPERATOR_FN.get(family)
                 if not extra or op_fn is None or data is None:
@@ -735,8 +751,8 @@ def build_strong_correlator_tab(
                         merged_operators[f"{key}_{mode}"] = val
 
             # Propagator correlators (frozen-source topology), per mode
-            if propagator_modes and data is not None:
-                for family, prop_mode_list in propagator_modes.items():
+            if pipeline_propagator and data is not None:
+                for family, prop_mode_list in pipeline_propagator.items():
                     for pmode in prop_mode_list:
                         pcfg = _make_config(family, pmode)
                         # Build kwargs for compute_propagator_pipeline
@@ -754,6 +770,57 @@ def build_strong_correlator_tab(
                             merged_correlators[
                                 f"{prop_name}_{pmode}_propagator"
                             ] = prop_ch.connected
+
+            # Filter results to respect per-UI-family mode selection.
+            # Pipeline families may produce multiple output prefixes
+            # (meson → scalar + pseudoscalar, vector → vector + axial_vector).
+            # Map each output prefix to the UI family's selected modes.
+            _vector_reg = set(regular_modes.get("vector", []))
+            _vector_prop = set(propagator_modes.get("vector", []))
+            _glueball_reg = set(regular_modes.get("glueball", []))
+            _glueball_prop = set(propagator_modes.get("glueball", []))
+            _filter_map: dict[str, tuple[set[str], set[str]]] = {
+                "scalar": (
+                    set(regular_modes.get("scalar", [])),
+                    set(propagator_modes.get("scalar", [])),
+                ),
+                "pseudoscalar": (
+                    set(regular_modes.get("pseudoscalar", [])),
+                    set(propagator_modes.get("pseudoscalar", [])),
+                ),
+                "vector": (_vector_reg, _vector_prop),
+                "axial_vector": (_vector_reg, _vector_prop),
+                "nucleon": (
+                    set(regular_modes.get("baryon", [])),
+                    set(propagator_modes.get("baryon", [])),
+                ),
+                "glueball": (_glueball_reg, _glueball_prop),
+                "tensor": (
+                    set(regular_modes.get("tensor", [])),
+                    set(propagator_modes.get("tensor", [])),
+                ),
+            }
+
+            def _keep(key: str) -> bool:
+                for pfx, (reg, prop) in _filter_map.items():
+                    if not key.startswith(pfx + "_"):
+                        continue
+                    # glueball_momentum_N_mode → skip the momentum index
+                    if pfx == "glueball" and key.startswith("glueball_momentum_"):
+                        rest = key[len("glueball_momentum_"):]
+                        sep = rest.find("_")
+                        if sep == -1:
+                            return False
+                        suffix = rest[sep + 1:]
+                    else:
+                        suffix = key[len(pfx) + 1:]
+                    if suffix.endswith("_propagator"):
+                        return suffix.removesuffix("_propagator") in prop
+                    return suffix in reg
+                return False
+
+            merged_correlators = {k: v for k, v in merged_correlators.items() if _keep(k)}
+            merged_operators = {k: v for k, v in merged_operators.items() if _keep(k)}
 
             result.correlators = merged_correlators
             result.operators = merged_operators
@@ -812,12 +879,13 @@ def build_strong_correlator_tab(
 
     channel_selection_panel = pn.Column(
         pn.Row(
-            meson_mode_selector,
+            scalar_mode_selector,
+            pseudoscalar_mode_selector,
             vector_mode_selector,
-            baryon_mode_selector,
             sizing_mode="stretch_width",
         ),
         pn.Row(
+            baryon_mode_selector,
             glueball_mode_selector,
             tensor_mode_selector,
             sizing_mode="stretch_width",
@@ -843,6 +911,9 @@ def build_strong_correlator_tab(
         pn.Row(log_scale_toggle, scale_selector, sizing_mode="stretch_width"),
         overlay_correlator_plot,
         overlay_meff_plot,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Per-Channel Correlators"),
+        per_channel_container,
         pn.layout.Divider(),
         pn.pane.Markdown("### Single Channel View"),
         channel_selector,
@@ -873,6 +944,7 @@ def build_strong_correlator_tab(
         single_correlator_plot.object = placeholder
         single_meff_plot.object = placeholder
         single_operator_plot.object = placeholder
+        per_channel_container.clear()
         scale_selector.visible = False
 
     return StrongCorrelatorSection(

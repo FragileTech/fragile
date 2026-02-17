@@ -19,7 +19,7 @@ from fragile.physics.fractal_gas.kinetic_operator import KineticOperator
 
 def _make_op(**kwargs) -> KineticOperator:
     """Shorthand for building a KineticOperator with sensible defaults."""
-    defaults = {"gamma": 1.0, "beta": 1.0, "delta_t": 0.01, "sigma_v": 1.0, "nu": 0.1}
+    defaults = {"gamma": 1.0, "beta": 1.0, "delta_t": 0.01, "temperature": 0.5, "nu": 0.1}
     defaults.update(kwargs)
     return KineticOperator(**defaults)
 
@@ -37,7 +37,7 @@ class TestKineticOperatorInit:
             gamma=2.0,
             beta=0.5,
             delta_t=0.02,
-            sigma_v=1.5,
+            temperature=1.5,
             nu=0.3,
             use_viscous_coupling=True,
             beta_curl=0.7,
@@ -45,7 +45,7 @@ class TestKineticOperatorInit:
         assert float(op.gamma) == 2.0
         assert float(op.beta) == 0.5
         assert float(op.delta_t) == 0.02
-        assert float(op.sigma_v) == 1.5
+        assert float(op.temperature) == 1.5
         assert float(op.nu) == 0.3
         assert op.use_viscous_coupling is True
         assert float(op.beta_curl) == 0.7
@@ -93,10 +93,10 @@ class TestEffectiveBeta:
         assert op.effective_beta() == pytest.approx(3.0)
 
     def test_auto_thermostat_fdt(self):
-        """beta_eff = 2*gamma / sigma_v^2."""
-        op = _make_op(gamma=2.0, sigma_v=1.0)
+        """beta_eff = 1 / temperature."""
+        op = _make_op(gamma=2.0, temperature=0.25)
         op.auto_thermostat = True
-        expected = 2.0 * 2.0 / (1.0**2)
+        expected = 1.0 / 0.25  # 4.0
         assert op.effective_beta() == pytest.approx(expected)
 
     def test_effective_temperature_inverse(self):
