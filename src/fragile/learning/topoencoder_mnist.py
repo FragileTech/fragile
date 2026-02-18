@@ -49,14 +49,13 @@ except ImportError:
     mlflow = None
     _MLFLOW_AVAILABLE = False
 
+from fragile.core.benchmarks import BaselineClassifier, StandardVQ, VanillaAE
 from fragile.core.layers import (
     CovariantCIFARBackbone,
     FactorizedJumpOperator,
     InvariantChartClassifier,
     StandardCIFARBackbone,
-    StandardVQ,
     TopoEncoderPrimitives,
-    VanillaAE,
 )
 from fragile.core.losses import (
     compute_chart_center_separation_loss,
@@ -80,7 +79,14 @@ from fragile.core.losses import (
 )
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
-from fragile.datasets import CIFAR10_CLASSES, get_cifar10_data, get_mnist_data
+from fragile.learning.data import (
+    DataBundle,
+    augment_inputs,
+    create_data_snapshot,
+    create_dataloaders,
+    load_dataset,
+    restore_dataset,
+)
 
 
 # ==========================================
@@ -226,21 +232,6 @@ class TopoEncoderConfig:
 
     # Device (CUDA if available, else CPU)
     device: str = field(default_factory=lambda: "cuda" if torch.cuda.is_available() else "cpu")
-
-
-class BaselineClassifier(nn.Module):
-    """Small MLP probe for baseline latent spaces."""
-
-    def __init__(self, latent_dim: int, num_classes: int, hidden_dim: int = 32) -> None:
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(latent_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, num_classes),
-        )
-
-    def forward(self, z: torch.Tensor) -> torch.Tensor:
-        return self.net(z)
 
 
 def count_parameters(model: nn.Module) -> int:
@@ -727,51 +718,6 @@ def _init_info_metrics() -> dict[str, list[float]]:
     }
 
 
-def _maybe_init_vision_shape(config: TopoEncoderConfig, dataset_name: str) -> None:
-    if not (config.vision_preproc or config.baseline_vision_preproc):
-        return
-    if config.vision_in_channels <= 0 or config.vision_height <= 0 or config.vision_width <= 0:
-        if config.dataset == "cifar10" or dataset_name == "CIFAR-10":
-            config.vision_in_channels = 3
-            config.vision_height = 32
-            config.vision_width = 32
-        elif config.dataset == "mnist" or dataset_name == "MNIST":
-            config.vision_in_channels = 1
-            config.vision_height = 28
-            config.vision_width = 28
-    expected = config.vision_in_channels * config.vision_height * config.vision_width
-    if expected <= 0:
-        msg = "vision_preproc requires valid vision_* dimensions."
-        raise ValueError(msg)
-    if config.input_dim != expected:
-        raise ValueError(
-            f"vision_preproc shape does not match input_dim ({config.input_dim} vs {expected})."
-        )
-
-
-# ==========================================
-# 8. AUGMENTATION (for invariance losses)
-# ==========================================
-def augment_inputs(
-    x: torch.Tensor,
-    dataset: str,
-    noise_std: float = 0.1,
-    _rotation_max: float = 0.3,
-) -> torch.Tensor:
-    """Apply dataset-aware augmentation.
-
-    Args:
-        x: Input tensor [B, D]
-        dataset: Dataset name
-        noise_std: Standard deviation of additive noise
-        _rotation_max: Maximum rotation angle in radians (unused for images)
-
-    Returns:
-        Augmented tensor [B, D]
-    """
-    if dataset not in {"mnist", "cifar10"}:
-        raise ValueError(f"Unsupported dataset: {dataset}")
-    return x + torch.randn_like(x) * noise_std
 
 
 # ==========================================
@@ -812,27 +758,25 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         resume_state = checkpoint.get("state", {})
         resume_metrics = checkpoint.get("metrics", {})
         resume_optim = checkpoint.get("optim", {})
-        data_snapshot = checkpoint.get("data", {})
         start_epoch = int(checkpoint.get("epoch", 0)) + 1
 
-        X_train = data_snapshot["X_train"]
-        X_test = data_snapshot["X_test"]
-        labels_train = data_snapshot["labels_train"]
-        labels_test = data_snapshot["labels_test"]
-        colors_train = data_snapshot["colors_train"]
-        colors_test = data_snapshot["colors_test"]
-        dataset_ids = data_snapshot.get("dataset_ids", {})
-        dataset_name = data_snapshot.get("dataset_name", config.dataset)
-
-        labels_full = (
-            np.concatenate([labels_train, labels_test]) if len(labels_test) else labels_train
+        bundle = restore_dataset(
+            data_snapshot=checkpoint.get("data", {}),
+            dataset_fallback=config.dataset,
+            vision_preproc=config.vision_preproc,
+            baseline_vision_preproc=config.baseline_vision_preproc,
+            vision_in_channels=config.vision_in_channels,
+            vision_height=config.vision_height,
+            vision_width=config.vision_width,
         )
-        config.input_dim = X_train.shape[1]
-        _maybe_init_vision_shape(config, dataset_name)
+        data_snapshot = checkpoint.get("data", {})
+        config.input_dim = bundle.input_dim
+        if bundle.vision_in_channels > 0:
+            config.vision_in_channels = bundle.vision_in_channels
+            config.vision_height = bundle.vision_height
+            config.vision_width = bundle.vision_width
 
         print(f"Resuming from checkpoint: {config.resume_checkpoint}")
-        print(f"Loaded {len(X_train) + len(X_test)} samples from {dataset_name}")
-        print(f"Input dim: {config.input_dim}")
         if start_epoch > config.epochs:
             print(
                 f"Checkpoint at epoch {start_epoch - 1} exceeds configured epochs "
@@ -852,60 +796,30 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 "checkpoint_path": config.resume_checkpoint,
             }
     else:
-        # Generate data (MNIST or CIFAR-10)
-        if config.dataset == "mnist":
-            X, labels, colors = get_mnist_data(config.n_samples)
-            dataset_ids = {str(i): i for i in range(10)}
-            dataset_name = "MNIST"
-        elif config.dataset == "cifar10":
-            X, labels, colors = get_cifar10_data(config.n_samples)
-            dataset_ids = {name: idx for idx, name in enumerate(CIFAR10_CLASSES)}
-            dataset_name = "CIFAR-10"
-        else:
-            raise ValueError(f"Unsupported dataset: {config.dataset}")
+        bundle = load_dataset(
+            dataset=config.dataset,
+            n_samples=config.n_samples,
+            test_split=config.test_split,
+            vision_preproc=config.vision_preproc,
+            baseline_vision_preproc=config.baseline_vision_preproc,
+            vision_in_channels=config.vision_in_channels,
+            vision_height=config.vision_height,
+            vision_width=config.vision_width,
+        )
+        config.input_dim = bundle.input_dim
+        if bundle.vision_in_channels > 0:
+            config.vision_in_channels = bundle.vision_in_channels
+            config.vision_height = bundle.vision_height
+            config.vision_width = bundle.vision_width
+        data_snapshot = create_data_snapshot(bundle)
 
-        config.input_dim = X.shape[1]
-        labels = labels.astype(np.int64)
-        labels_full = labels
-        _maybe_init_vision_shape(config, dataset_name)
-        print(f"Loaded {len(X)} samples from {dataset_name}")
-        print(f"Input dim: {config.input_dim}")
-        if not (0.0 <= config.test_split < 1.0):
-            msg = "test_split must be in [0.0, 1.0)."
-            raise ValueError(msg)
-
-        n_total = X.shape[0]
-        test_size = max(1, int(n_total * config.test_split)) if config.test_split > 0 else 0
-        if test_size >= n_total:
-            test_size = max(1, n_total - 1)
-        train_size = n_total - test_size
-        perm = torch.randperm(n_total)
-        train_idx = perm[:train_size]
-        test_idx = perm[train_size:]
-        train_idx_np = train_idx.numpy()
-        test_idx_np = test_idx.numpy()
-
-        X_train = X[train_idx]
-        X_test = X[test_idx] if test_size > 0 else X
-        labels_train = labels[train_idx_np]
-        labels_test = labels[test_idx_np] if test_size > 0 else labels
-        colors_train = colors[train_idx_np]
-        colors_test = colors[test_idx_np] if test_size > 0 else colors
-
-        print(f"Train/test split: {len(X_train)}/{len(X_test)} (test={config.test_split:.2f})")
-
-        X_train_cpu = X_train.clone()
-        X_test_cpu = X_test.clone()
-        data_snapshot = {
-            "X_train": X_train_cpu,
-            "X_test": X_test_cpu,
-            "labels_train": labels_train,
-            "labels_test": labels_test,
-            "colors_train": colors_train,
-            "colors_test": colors_test,
-            "dataset_ids": dataset_ids,
-            "dataset_name": dataset_name,
-        }
+    # Unpack bundle for local use
+    X_train, X_test = bundle.X_train, bundle.X_test
+    labels_train, labels_test = bundle.labels_train, bundle.labels_test
+    colors_train, colors_test = bundle.colors_train, bundle.colors_test
+    dataset_name = bundle.dataset_name
+    dataset_ids = bundle.dataset_ids
+    labels_full = bundle.labels_full
 
     mlflow_active = _start_mlflow_run(
         config,
@@ -1303,31 +1217,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             if opt is not None:
                 schedulers.append(CosineAnnealingLR(opt, T_max=T_max, eta_min=config.lr_min))
 
-    # Create data loader for minibatching (data already on device)
-    from torch.utils.data import DataLoader, TensorDataset
-
-    labels_train_t = torch.from_numpy(labels_train).long()
-    labels_test_t = torch.from_numpy(labels_test).long()
-    colors_train_t = torch.from_numpy(colors_train).float()
-    colors_test_t = torch.from_numpy(colors_test).float()
-    dataset = TensorDataset(X_train, labels_train_t, colors_train_t)
-    batch_size = config.batch_size if config.batch_size > 0 else len(X_train)
-    pin_memory = device.type == "cuda"
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, pin_memory=pin_memory)
-    if config.eval_batch_size > 0:
-        eval_batch_size = config.eval_batch_size
-    elif 0 < batch_size < len(X_test):
-        eval_batch_size = batch_size
-    else:
-        eval_batch_size = min(256, len(X_test)) if len(X_test) else 1
-    eval_batch_size = min(eval_batch_size, len(X_test)) if len(X_test) else eval_batch_size
-    test_dataset = TensorDataset(X_test, labels_test_t, colors_test_t)
-    test_dataloader = DataLoader(
-        test_dataset,
-        batch_size=eval_batch_size,
-        shuffle=False,
-        pin_memory=pin_memory,
+    # Create data loaders for minibatching
+    dataloader, test_dataloader = create_dataloaders(
+        bundle, config.batch_size, config.eval_batch_size, device,
     )
+    batch_size = config.batch_size if config.batch_size > 0 else len(X_train)
     batches_per_epoch = max(1, len(dataloader))
     if mlflow_active:
         mlflow.log_param("batches_per_epoch", batches_per_epoch)

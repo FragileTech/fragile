@@ -5,6 +5,7 @@ import io
 import os
 import threading
 import time
+import traceback
 from typing import Callable
 
 import holoviews as hv
@@ -238,7 +239,8 @@ class RoboticGasConfigPanel(param.Parameterized):
             try:
                 self._env.close()
             except Exception:
-                pass
+                print("[worker] error closing environment:", flush=True)
+                traceback.print_exc()
             self._env = None
 
     def _on_run_clicked(self, event):
@@ -315,6 +317,7 @@ class RoboticGasConfigPanel(param.Parameterized):
                 self._run_single_loop_worker(env)
 
         except Exception as e:
+            traceback.print_exc()
             error_details = str(e)
             self._schedule_ui_update(
                 lambda: setattr(self.status_pane, "object", f"**Error:** {error_details}")
@@ -473,6 +476,8 @@ class RoboticGasConfigPanel(param.Parameterized):
                 frame = pg.inner_gas._render_walker_frame(new_state)
                 traj.frames.append(frame)
             except Exception:
+                print("[worker] error rendering planning frame:", flush=True)
+                traceback.print_exc()
                 traj.frames.append(None)
 
             if i == 0:

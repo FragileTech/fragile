@@ -13,6 +13,21 @@ import torch
 from torch import Tensor
 
 
+def _make_object_array(items) -> np.ndarray:
+    """Create a 1D object array from *items* without collapsing same-shape sub-arrays.
+
+    ``np.array(list_of_same_shape_arrays, dtype=object)`` creates a 2D object
+    array, which breaks downstream code that expects ``arr[i]`` to return the
+    original numpy array (not an object-dtype row).  This helper pre-allocates
+    a 1D object array and fills it element-by-element.
+    """
+    n = len(items)
+    arr = np.empty(n, dtype=object)
+    for i, item in enumerate(items):
+        arr[i] = item
+    return arr
+
+
 def _clone_tensor(data: Tensor, companions: Tensor, will_clone: Tensor) -> Tensor:
     """Clone tensor data based on cloning decisions."""
     cloned = data.clone()
@@ -87,7 +102,7 @@ class WalkerState:
         infos = list(self.infos)
 
         # Numpy/list fields
-        states[positions] = np.array([self._copy_state(s) for s in source.states], dtype=object)
+        states[positions] = _make_object_array([self._copy_state(s) for s in source.states])
         actions[positions] = source.actions.copy()
         dt[positions] = source.dt.copy()
         idx = (
@@ -290,7 +305,7 @@ class FractalGas:
             observation = self._extract_observation_from_env()
         if observation is None:
             # Legacy fallback: infer observation through a no-op kinetic step.
-            states = np.array([self._copy_state(state) for _ in range(self.N)], dtype=object)
+            states = _make_object_array([self._copy_state(state) for _ in range(self.N)])
             actions = self._init_actions()
             dt = np.ones(self.N, dtype=int)
             _, obs_list, _, _, _, _ = self.kinetic_op.apply(states, actions, dt)
@@ -327,7 +342,7 @@ class FractalGas:
             init_state, init_obs, init_info = self._reset_env_with_state()
 
         # Replicate initial state and observation N times
-        states = np.array([self._copy_state(init_state) for _ in range(self.N)], dtype=object)
+        states = _make_object_array([self._copy_state(init_state) for _ in range(self.N)])
         obs_list = [self._copy_observation(init_obs) for _ in range(self.N)]
 
         # Convert observations to tensors
@@ -408,7 +423,7 @@ class FractalGas:
             self.kinetic_op.apply(state_after_clone.states)
         )
         # step_batch returns lists; convert back to numpy object array for indexing
-        new_states = np.array(new_states_list, dtype=object)
+        new_states = _make_object_array(new_states_list)
 
         # 5. Convert numpy arrays to tensors
         observations = torch.tensor(obs_np, device=self.device, dtype=self.dtype)
@@ -514,13 +529,10 @@ class FractalGas:
         """Extract a subset of walkers by index into a new WalkerState."""
         idx_np = indices.cpu().numpy()
         return WalkerState(
-            states=np.array(
-                [
-                    state.states[i].copy() if hasattr(state.states[i], "copy") else state.states[i]
-                    for i in idx_np
-                ],
-                dtype=object,
-            ),
+            states=_make_object_array([
+                state.states[i].copy() if hasattr(state.states[i], "copy") else state.states[i]
+                for i in idx_np
+            ]),
             observations=state.observations[indices].clone(),
             rewards=state.rewards[indices].clone(),
             step_rewards=state.step_rewards[indices].clone(),

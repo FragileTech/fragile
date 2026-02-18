@@ -708,16 +708,22 @@ def build_mass_extraction_tab(
     run_tab_computation: Callable[
         [dict[str, Any], pn.pane.Markdown, str, Callable[[RunHistory], None]], None
     ],
+    correlator_state_key: str = "strong_correlator_output",
+    output_state_key: str = "mass_extraction_output",
+    tab_label: str = "Strong Force Mass",
+    button_label: str = "Extract Strong Masses",
+    source_label: str = "Strong Correlators",
+    computation_label: str = "strong force mass extraction",
 ) -> MassExtractionSection:
     """Build the Mass Extraction tab with callbacks."""
 
     settings = MassExtractionSettings()
     status = pn.pane.Markdown(
-        "**Strong Force Mass:** Run Strong Correlators first, then click Extract Strong Masses.",
+        f"**{tab_label}:** Run {source_label} first, then click {button_label}.",
         sizing_mode="stretch_width",
     )
     run_button = pn.widgets.Button(
-        name="Extract Strong Masses",
+        name=button_label,
         button_type="primary",
         min_width=260,
         sizing_mode="stretch_width",
@@ -826,10 +832,11 @@ def build_mass_extraction_tab(
 
     # -- Channel key selection widgets --
     channel_key_selectors: dict[str, pn.widgets.MultiSelect] = {}
+    channel_tmax_frac_sliders: dict[str, pn.widgets.FloatSlider] = {}
 
     channel_key_selection_container = pn.Column(
         pn.pane.Markdown(
-            "*Run Strong Correlators to populate channel operator selections.*",
+            f"*Run {source_label} to populate channel operator selections.*",
             sizing_mode="stretch_width",
         ),
         sizing_mode="stretch_width",
@@ -856,7 +863,7 @@ def build_mass_extraction_tab(
     # -- Refresh helpers --
 
     def _refresh_all():
-        result: MassExtractionResult | None = state.get("mass_extraction_output")
+        result: MassExtractionResult | None = state.get(output_state_key)
         if result is None:
             return
 
@@ -897,7 +904,7 @@ def build_mass_extraction_tab(
         cross_ratio_table.value = _build_cross_channel_ratio_table(result)
 
     def _refresh_channel_detail(*_args):
-        result: MassExtractionResult | None = state.get("mass_extraction_output")
+        result: MassExtractionResult | None = state.get(output_state_key)
         if result is None:
             return
 
@@ -951,7 +958,7 @@ def build_mass_extraction_tab(
     # -- PDG comparison refresh --
 
     def _refresh_pdg_comparison(*_args):
-        result: MassExtractionResult | None = state.get("mass_extraction_output")
+        result: MassExtractionResult | None = state.get(output_state_key)
         if result is None:
             return
         pdg_comparison_plot.object = _build_pdg_comparison_plot(
@@ -973,23 +980,12 @@ def build_mass_extraction_tab(
 
     def on_run(_event):
         def _compute(_history: RunHistory):
-            pipeline_result = state.get("strong_correlator_output")
+            pipeline_result = state.get(correlator_state_key)
             if pipeline_result is None:
-                status.object = "**Error:** Run Strong Correlators first for Strong Force Mass."
+                status.object = f"**Error:** Run {source_label} first for {tab_label}."
                 return
 
             # Build config from settings
-            tmax = None
-            if settings.tmax_frac < 1.0:
-                # Will be resolved per-channel inside the pipeline using
-                # the default ChannelFitConfig.tmax = None behavior; we set
-                # tmax only when fraction < 1.
-                # Approximate from the first correlator length
-                first_key = next(iter(pipeline_result.correlators), None)
-                if first_key is not None:
-                    corr = pipeline_result.correlators[first_key]
-                    max_len = corr.shape[-1] if hasattr(corr, "shape") else len(corr)
-                    tmax = max(settings.tmin + 1, int(max_len * settings.tmax_frac))
 
             config = MassExtractionConfig(
                 covariance=CovarianceConfig(method=str(settings.covariance_method)),
@@ -1036,9 +1032,25 @@ def build_mass_extraction_tab(
                 return
 
             for g in groups:
+                # Per-channel tmax_frac from slider, fallback to global setting
+                ch_tmax_frac = float(settings.tmax_frac)
+                slider = channel_tmax_frac_sliders.get(g.name)
+                if slider is not None:
+                    ch_tmax_frac = float(slider.value)
+
+                ch_tmax = None
+                if ch_tmax_frac < 1.0:
+                    for key in g.correlator_keys:
+                        if key in pipeline_result.correlators:
+                            corr = pipeline_result.correlators[key]
+                            clen = corr.shape[-1] if hasattr(corr, "shape") else len(corr)
+                            candidate = max(int(settings.tmin) + 1, int(clen * ch_tmax_frac))
+                            if ch_tmax is None or candidate > ch_tmax:
+                                ch_tmax = candidate
+
                 g.fit = ChannelFitConfig(
                     tmin=int(settings.tmin),
-                    tmax=tmax,
+                    tmax=ch_tmax,
                     nexp=int(settings.nexp),
                     use_log_dE=bool(settings.use_log_dE),
                 )
@@ -1046,7 +1058,7 @@ def build_mass_extraction_tab(
             config.channel_groups = groups
 
             result = extract_masses(pipeline_result, config)
-            state["mass_extraction_output"] = result
+            state[output_state_key] = result
 
             _refresh_all()
 
@@ -1059,7 +1071,7 @@ def build_mass_extraction_tab(
                 f"Q = {result.diagnostics.Q:.4f}."
             )
 
-        run_tab_computation(state, status, "strong force mass extraction", _compute)
+        run_tab_computation(state, status, computation_label, _compute)
 
     run_button.on_click(on_run)
 
@@ -1068,21 +1080,22 @@ def build_mass_extraction_tab(
     def on_history_changed(defer: bool) -> None:
         run_button.disabled = True
         status.object = (
-            "**Strong Force Mass:** Run Strong Correlators first, "
-            "then click Extract Strong Masses."
+            f"**{tab_label}:** Run {source_label} first, "
+            f"then click {button_label}."
         )
         # Always reset channel key selectors when history changes
         channel_key_selectors.clear()
+        channel_tmax_frac_sliders.clear()
         channel_key_selection_container.clear()
         channel_key_selection_container.append(
             pn.pane.Markdown(
-                "*Run Strong Correlators to populate channel operator selections.*",
+                f"*Run {source_label} to populate channel operator selections.*",
                 sizing_mode="stretch_width",
             ),
         )
         if defer:
             return
-        state["mass_extraction_output"] = None
+        state[output_state_key] = None
         mass_spectrum_plot.object = _algorithm_placeholder_plot(
             "Run extraction to show mass spectrum.",
         )
@@ -1115,12 +1128,12 @@ def build_mass_extraction_tab(
     def on_correlators_ready() -> None:
         run_button.disabled = False
         status.object = (
-            "**Strong Force Mass ready:** Strong Correlators available. "
-            "Click Extract Strong Masses."
+            f"**{tab_label} ready:** {source_label} available. "
+            f"Click {button_label}."
         )
 
         # Populate channel key selection widgets from pipeline result
-        pipeline_result = state.get("strong_correlator_output")
+        pipeline_result = state.get(correlator_state_key)
         if pipeline_result is not None:
             from fragile.physics.mass_extraction.pipeline import (
                 _auto_detect_channel_groups,
@@ -1131,7 +1144,8 @@ def build_mass_extraction_tab(
                 include_multiscale=True,
             )
             channel_key_selectors.clear()
-            widgets: list[pn.widgets.MultiSelect] = []
+            channel_tmax_frac_sliders.clear()
+            widget_groups: list[pn.Column] = []
             for g in groups:
                 keys = sorted(g.correlator_keys)
                 if not keys:
@@ -1144,14 +1158,25 @@ def build_mass_extraction_tab(
                     sizing_mode="stretch_width",
                 )
                 channel_key_selectors[g.name] = selector
-                widgets.append(selector)
+                tmax_slider = pn.widgets.FloatSlider(
+                    name=f"{g.name} tmax_frac",
+                    start=0.1,
+                    end=1.0,
+                    step=0.05,
+                    value=float(settings.tmax_frac),
+                    sizing_mode="stretch_width",
+                )
+                channel_tmax_frac_sliders[g.name] = tmax_slider
+                widget_groups.append(
+                    pn.Column(selector, tmax_slider, sizing_mode="stretch_width"),
+                )
 
             channel_key_selection_container.clear()
-            if widgets:
+            if widget_groups:
                 # Lay out in rows of 3
-                for i in range(0, len(widgets), 3):
+                for i in range(0, len(widget_groups), 3):
                     channel_key_selection_container.append(
-                        pn.Row(*widgets[i : i + 3], sizing_mode="stretch_width"),
+                        pn.Row(*widget_groups[i : i + 3], sizing_mode="stretch_width"),
                     )
             else:
                 channel_key_selection_container.append(
@@ -1165,8 +1190,8 @@ def build_mass_extraction_tab(
 
     info_note = pn.pane.Alert(
         (
-            "**Strong Force Mass Extraction:** Performs Bayesian multi-exponential fits "
-            "on the strong-correlator output to extract particle masses "
+            f"**{tab_label} Extraction:** Performs Bayesian multi-exponential fits "
+            f"on the {source_label.lower()} output to extract particle masses "
             "with error bars.  Displays effective-mass plateaus, fit "
             "quality diagnostics, and per-channel energy levels."
         ),

@@ -13,6 +13,8 @@ from typing import Any
 import numpy as np
 import torch
 
+from fragile.fractalai.fractal_gas import _make_object_array
+
 
 @dataclass
 class PlanningTrajectory:
@@ -391,7 +393,7 @@ class PlanningFractalGas:
 
     def _outer_step(self, state: Any, action: Any) -> tuple[Any, Any, float, bool, bool, dict]:
         """Apply a single action to the outer environment."""
-        states = np.array([state], dtype=object)
+        states = _make_object_array([state])
         actions = np.array([action])
         dt = np.array([self.outer_dt], dtype=int)
 

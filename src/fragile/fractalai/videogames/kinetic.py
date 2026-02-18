@@ -22,8 +22,8 @@ def gaussian_action_sampler(
     Returns:
         Callable ``(N: int) -> np.ndarray[N, *action_shape]``.
     """
-    low = action_space.minimum
-    high = action_space.maximum
+    low = getattr(action_space, "low", None) or action_space.minimum
+    high = getattr(action_space, "high", None) or action_space.maximum
     shape = action_space.shape
 
     def sampler(N: int) -> np.ndarray:

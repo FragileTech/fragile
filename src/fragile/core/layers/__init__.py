@@ -3,12 +3,10 @@ from fragile.core.layers.atlas import (
     HierarchicalAtlasStack,
     PrimitiveAttentiveAtlasEncoder,
     PrimitiveTopologicalDecoder,
-    StandardVQ,
     TopoEncoder,
     TopoEncoderAttachments,
     TopoEncoderPrimitives,
     TopologicalDecoder,
-    VanillaAE,
 )
 from fragile.core.layers.gauge import (
     AreaLawScreening,
@@ -122,7 +120,6 @@ __all__ = [
     "SpectralLinear",
     "StandardCIFARBackbone",
     "StandardResNetDecoder",
-    "StandardVQ",
     "SupervisedTopologyLoss",
     "TemporalChristoffelQuery",
     "TopoEncoder",
@@ -131,7 +128,6 @@ __all__ = [
     "TopologicalDecoder",
     "UGNConfig",
     "UniversalGeometricNetwork",
-    "VanillaAE",
     "VectorQuantizer",
     "class_modulated_jump_rate",
     "compute_diagnostics",

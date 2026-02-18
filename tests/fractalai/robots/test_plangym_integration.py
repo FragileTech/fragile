@@ -2,7 +2,8 @@
 
 Validates that plangym's list-based step_batch returns are properly converted
 to numpy arrays with correct dtypes before reaching torch.tensor() calls in
-fractal_gas.py.
+fractal_gas.py, and that states stored as 1D object arrays preserve their
+original dtype when passed back to physics.set_state().
 """
 
 import os
@@ -15,6 +16,7 @@ os.environ.setdefault("MUJOCO_GL", "osmesa")
 
 import plangym
 
+from fragile.fractalai.fractal_gas import _make_object_array
 from fragile.fractalai.videogames.kinetic import RandomActionOperator
 
 ENV_NAME = "CartPole-v1"
@@ -36,10 +38,38 @@ def kinetic_op(plangym_env):
 
 
 def _get_initial_states(env, n: int):
-    """Reset env and return n copies of the initial state."""
+    """Reset env and return n copies of the initial state as a 1D object array."""
     obs, info = env.reset(return_state=False)
     state = env.get_state()
-    return np.array([state for _ in range(n)], dtype=object)
+    return _make_object_array([state.copy() for _ in range(n)])
+
+
+class TestMakeObjectArray:
+    """Verify _make_object_array preserves element dtypes."""
+
+    def test_same_shape_arrays_stay_1d(self):
+        """Same-shape sub-arrays must produce a 1D object array, not 2D."""
+        items = [np.array([1.0, 2.0, 3.0]), np.array([4.0, 5.0, 6.0])]
+        arr = _make_object_array(items)
+        assert arr.shape == (2,), f"Expected (2,), got {arr.shape}"
+        assert arr.dtype == object
+        # Each element must be the original float64 array
+        assert arr[0].dtype == np.float64
+        assert arr[1].dtype == np.float64
+        np.testing.assert_array_equal(arr[0], items[0])
+
+    def test_contrast_with_np_array(self):
+        """np.array(..., dtype=object) collapses same-shape arrays — our helper must not."""
+        items = [np.array([1.0, 2.0]), np.array([3.0, 4.0])]
+        # Standard numpy creates a 2D object array
+        bad = np.array(items, dtype=object)
+        assert bad.shape == (2, 2), "Sanity check: numpy collapses same-shape arrays"
+        assert bad[0].dtype == object, "Elements lose their float64 dtype"
+
+        # Our helper preserves 1D
+        good = _make_object_array(items)
+        assert good.shape == (2,)
+        assert good[0].dtype == np.float64
 
 
 class TestStepBatchDtypes:
@@ -74,15 +104,17 @@ class TestStepBatchDtypes:
         assert trunc_tensor.shape == (N,)
 
     def test_states_roundtrip_through_object_array(self, kinetic_op, plangym_env):
-        """States from step_batch survive np.array(states, dtype=object) and can be reused."""
+        """States from step_batch survive _make_object_array and can be reused."""
         N = 3
         states = _get_initial_states(plangym_env, N)
 
         new_states, _, _, _, _, _ = kinetic_op.apply(states)
 
-        # Convert to object array (as fractal_gas.py:411 does)
-        new_states_arr = np.array(new_states, dtype=object)
+        # Convert to 1D object array (as fractal_gas.py does)
+        new_states_arr = _make_object_array(new_states)
         assert new_states_arr.shape == (N,)
+        # Each element must preserve its original dtype
+        assert new_states_arr[0].dtype != object
 
         # Use those states for a second step_batch call
         new_states2, obs2, rewards2, dones2, truncated2, infos2 = kinetic_op.apply(new_states_arr)
@@ -100,15 +132,15 @@ class TestStepBatchDtypes:
         # Reset
         obs, info = env.reset(return_state=False)
         state = env.get_state()
-        states = np.array([state for _ in range(N)], dtype=object)
+        states = _make_object_array([state.copy() for _ in range(N)])
 
         # Step (like fractal_gas.py step())
         new_states_list, obs_np, step_rewards_np, dones_np, truncated_np, infos = (
             kinetic.apply(states)
         )
 
-        # Convert to object array for states (fractal_gas.py:411)
-        new_states = np.array(new_states_list, dtype=object)
+        # Convert to 1D object array for states
+        new_states = _make_object_array(new_states_list)
 
         # Convert to tensors (fractal_gas.py:414-417)
         device = torch.device("cpu")
@@ -125,3 +157,27 @@ class TestStepBatchDtypes:
         assert observations.shape[0] == N
         assert cumulative.shape == (N,)
         assert dones.shape == (N,)
+
+    def test_robotic_gas_reset_and_multi_step(self):
+        """RoboticFractalGas.reset() + multiple step() calls with plangym env."""
+        from fragile.fractalai.robots.robotic_gas import RoboticFractalGas
+
+        env = plangym.make("cartpole-balance")
+        try:
+            gas = RoboticFractalGas(
+                env=env, N=4, dist_coef=1.0, reward_coef=1.0,
+                use_cumulative_reward=True, dt_range=(1, 1), seed=42,
+            )
+            state = gas.reset()
+            assert state.states.shape == (4,)
+            assert state.states.dtype == object
+            assert state.states[0].dtype == np.float64
+
+            # Run 3 iterations — exercises clone + step_batch + tensor conversion
+            for _ in range(3):
+                state, info = gas.step(state)
+                assert state.observations.dtype == torch.float32
+                assert state.states.shape == (4,)
+                assert state.states[0].dtype == np.float64
+        finally:
+            env.close()
