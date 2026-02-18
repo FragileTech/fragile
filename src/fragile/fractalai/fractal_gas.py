@@ -378,7 +378,9 @@ class FractalGas:
             virtual_rewards=None,
         )
 
-    def step(self, state: WalkerState) -> tuple[WalkerState, dict]:
+    def step(
+        self, state: WalkerState, actions: np.ndarray | None = None
+    ) -> tuple[WalkerState, dict]:
         """Perform one iteration of the fractal gas algorithm.
 
         Steps:
@@ -390,6 +392,8 @@ class FractalGas:
 
         Args:
             state: Current walker state
+            actions: Optional pre-computed actions [N]. If provided, these are
+                used instead of sampling random actions.
 
         Returns:
             new_state: Updated walker state
@@ -418,9 +422,9 @@ class FractalGas:
         num_cloned = will_clone.sum().item()
         self.total_clones += num_cloned
 
-        # 4. Apply kinetic operator (random actions)
+        # 4. Apply kinetic operator (random actions, or provided actions)
         new_states_list, obs_np, step_rewards_np, dones_np, truncated_np, infos = (
-            self.kinetic_op.apply(state_after_clone.states)
+            self.kinetic_op.apply(state_after_clone.states, actions=actions)
         )
         # step_batch returns lists; convert back to numpy object array for indexing
         new_states = _make_object_array(new_states_list)

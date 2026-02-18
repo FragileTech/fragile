@@ -18,7 +18,6 @@ from fragile.physics.app.simulation import SimulationTab
 from fragile.physics.app.electroweak_mass_tab import build_electroweak_mass_tab
 from fragile.physics.app.mass_extraction_tab import build_mass_extraction_tab
 from fragile.physics.app.companion_correlators import build_companion_correlator_tab
-from fragile.physics.app.strong_correlators import build_strong_correlator_tab
 from fragile.physics.fractal_gas.history import RunHistory
 
 
@@ -90,10 +89,8 @@ def create_app() -> pn.template.FastListTemplate:
             "_multiscale_geodesic_distance_by_frame": None,
             "_multiscale_geodesic_distribution": None,
             "coupling_diagnostics_output": None,
-            "strong_correlator_output": None,
             "companion_correlator_output": None,
             "electroweak_correlator_output": None,
-            "mass_extraction_output": None,
             "companion_mass_output": None,
             "electroweak_mass_output": None,
         }
@@ -110,11 +107,6 @@ def create_app() -> pn.template.FastListTemplate:
             run_tab_computation=_run_tab_computation,
         )
 
-        strong_section = build_strong_correlator_tab(
-            state=state,
-            run_tab_computation=_run_tab_computation,
-        )
-
         companion_section = build_companion_correlator_tab(
             state=state,
             run_tab_computation=_run_tab_computation,
@@ -125,20 +117,15 @@ def create_app() -> pn.template.FastListTemplate:
             run_tab_computation=_run_tab_computation,
         )
 
-        mass_section = build_mass_extraction_tab(
-            state=state,
-            run_tab_computation=_run_tab_computation,
-        )
-
         companion_mass_section = build_mass_extraction_tab(
             state=state,
             run_tab_computation=_run_tab_computation,
             correlator_state_key="companion_correlator_output",
             output_state_key="companion_mass_output",
-            tab_label="Companion Mass",
-            button_label="Extract Companion Masses",
+            tab_label="Mass Extraction",
+            button_label="Extract Masses",
             source_label="Companion Correlators",
-            computation_label="companion mass extraction",
+            computation_label="mass extraction",
         )
 
         ew_mass_section = build_electroweak_mass_tab(
@@ -146,17 +133,7 @@ def create_app() -> pn.template.FastListTemplate:
             run_tab_computation=_run_tab_computation,
         )
 
-        # Wire strong correlator completion to enable mass extraction button.
-        _orig_strong_on_run = strong_section.on_run
-
-        def _on_strong_run(event):
-            _orig_strong_on_run(event)
-            if state["strong_correlator_output"] is not None:
-                mass_section.on_correlators_ready()
-
-        strong_section.run_button.on_click(_on_strong_run)
-
-        # Wire companion correlator completion to enable companion mass button.
+        # Wire companion correlator completion to enable mass button.
         _orig_companion_on_run = companion_section.on_run
 
         def _on_companion_run(event):
@@ -191,10 +168,8 @@ def create_app() -> pn.template.FastListTemplate:
                 algorithm_section.reset_plots()
             holographic_section.on_history_changed(defer)
             coupling_section.on_history_changed(defer)
-            strong_section.on_history_changed(defer)
             companion_section.on_history_changed(defer)
             ew_correlator_section.on_history_changed(defer)
-            mass_section.on_history_changed(defer)
             companion_mass_section.on_history_changed(defer)
             ew_mass_section.on_history_changed(defer)
 
@@ -239,11 +214,9 @@ def create_app() -> pn.template.FastListTemplate:
                     ("Algorithm", algorithm_section.tab),
                     ("Holographic Principle", holographic_section.fractal_set_tab),
                     ("Coupling Diagnostics", coupling_section.coupling_diagnostics_tab),
-                    ("Strong Correlators", strong_section.tab),
                     ("Companion Correlators", companion_section.tab),
                     ("Electroweak Correlators", ew_correlator_section.tab),
-                    ("Strong Force Mass", mass_section.tab),
-                    ("Companion Mass", companion_mass_section.tab),
+                    ("Mass Extraction", companion_mass_section.tab),
                     ("Electroweak Mass", ew_mass_section.tab),
                 )
             ]

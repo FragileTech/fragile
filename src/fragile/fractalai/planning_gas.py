@@ -276,9 +276,13 @@ class PlanningFractalGas:
         """
         inner_state = self.inner_gas.reset(initial_state=(state, obs, info))
         root_actions: np.ndarray | None = None
+        saturated = self._sample_saturated_actions(inner_state.N)
 
         for k in range(self.tau_inner):
-            inner_state, step_info = self.inner_gas.step(inner_state)
+            if k == 0:
+                inner_state, step_info = self.inner_gas.step(inner_state, actions=saturated)
+            else:
+                inner_state, step_info = self.inner_gas.step(inner_state)
 
             if k == 0:
                 # After the first kinetic step each walker has its first action
@@ -361,6 +365,15 @@ class PlanningFractalGas:
     # ------------------------------------------------------------------
     # Internals
     # ------------------------------------------------------------------
+
+    def _sample_saturated_actions(self, N: int) -> np.ndarray:
+        """Sample N actions where each dimension is randomly set to its min or max bound."""
+        action_space = self.env.action_space
+        low = action_space.low if hasattr(action_space, "low") else action_space.minimum
+        high = action_space.high if hasattr(action_space, "high") else action_space.maximum
+        shape = action_space.shape
+        choices = np.random.randint(0, 2, size=(N, *shape))
+        return np.where(choices, high, low).astype(np.float64)
 
     def _select_action(
         self,

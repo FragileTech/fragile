@@ -27,27 +27,16 @@ Reference: fragile-index.md Sections 7.8, 7.10
 """
 
 import argparse
-from dataclasses import asdict, dataclass, field
 import math
 import os
 import sys
 
 import numpy as np
 from sklearn.cluster import KMeans
-from sklearn.metrics import adjusted_mutual_info_score
 import torch
 from torch import nn, optim
 import torch.nn.functional as F
 from tqdm import tqdm
-
-
-try:
-    import mlflow
-
-    _MLFLOW_AVAILABLE = True
-except ImportError:
-    mlflow = None
-    _MLFLOW_AVAILABLE = False
 
 from fragile.core.benchmarks import BaselineClassifier, StandardVQ, VanillaAE
 from fragile.core.layers import (
@@ -88,574 +77,31 @@ from fragile.learning.data import (
     restore_dataset,
 )
 
+# --- Extracted modules ---
+from fragile.learning.config import TopoEncoderConfig  # noqa: F401
+from fragile.learning.checkpoints import (  # noqa: F401
+    benchmarks_compatible as _benchmarks_compatible,
+    compute_ami,
+    compute_grad_norm as _compute_grad_norm,
+    compute_matching_hidden_dim,
+    compute_param_norm as _compute_param_norm,
+    compute_perplexity as _compute_perplexity_from_assignments,
+    count_parameters,
+    load_benchmarks,
+    load_checkpoint,
+    load_optimizer_state as _load_optimizer_state,
+    save_benchmarks,
+    save_checkpoint,
+)
+from fragile.learning.mlflow_logging import (  # noqa: F401
+    start_mlflow_run as _start_mlflow_run,
+    log_mlflow_metrics as _log_mlflow_metrics,
+    log_mlflow_params as _log_mlflow_params,
+    end_mlflow_run as _end_mlflow_run,
+)
 
-# ==========================================
-# 1. CONFIGURATION
-# ==========================================
-@dataclass
-class TopoEncoderConfig:
-    """Configuration for the TopoEncoder benchmark."""
 
-    # Data
-    dataset: str = "mnist"
-    n_samples: int = 3000  # Subsample size
-    input_dim: int = 784  # MNIST default (overridden for CIFAR-10)
 
-    # Model architecture
-    hidden_dim: int = 32
-    latent_dim: int = 2  # For 2D visualization
-    num_charts: int = 10  # Match number of classes
-    codes_per_chart: int = 32  # Better coverage (was 21)
-    num_codes_standard: int = 64
-    covariant_attn: bool = True
-    covariant_attn_tensorization: str = "full"
-    covariant_attn_rank: int = 8
-    covariant_attn_tau_min: float = 1e-2
-    covariant_attn_denom_min: float = 1e-3
-    covariant_attn_use_transport: bool = True
-    covariant_attn_transport_eps: float = 1e-3
-    soft_equiv_metric: bool = False
-    soft_equiv_bundle_size: int | None = None
-    soft_equiv_hidden_dim: int = 64
-    soft_equiv_use_spectral_norm: bool = True
-    soft_equiv_zero_self_mixing: bool = False
-    soft_equiv_soft_assign: bool = True
-    soft_equiv_temperature: float = 1.0
-    soft_equiv_l1_weight: float = 0.0
-    soft_equiv_log_ratio_weight: float = 0.0
-    vision_preproc: bool = False
-    vision_in_channels: int = 0
-    vision_height: int = 0
-    vision_width: int = 0
-    vision_num_rotations: int = 8
-    vision_kernel_size: int = 5
-    vision_use_reflections: bool = False
-    vision_norm_nonlinearity: str = "n_sigmoid"
-    vision_norm_bias: bool = True
-    # Vision backbone selection
-    vision_backbone_type: str = "covariant_retina"  # "covariant_retina" or "covariant_cifar"
-    vision_cifar_base_channels: int = 32  # base_channels for CovariantCIFARBackbone
-    vision_cifar_bundle_size: int = 4  # bundle_size for NormGatedConv2d
-
-    # Training
-    epochs: int = 1000
-    batch_size: int = 256  # Batch size for training (0 = full batch)
-    eval_batch_size: int = 0  # Batch size for eval/logging (0 = use batch_size)
-    lr: float = 1e-3
-    vq_commitment_cost: float = 0.25
-    entropy_weight: float = 0.1  # Encourage high routing entropy (anti-collapse)
-    consistency_weight: float = 0.1  # Align encoder/decoder routing
-
-    # Tier 1 losses (low overhead ~5%)
-    variance_weight: float = 0.1  # Prevent latent collapse
-    diversity_weight: float = 0.1  # Prevent chart collapse (was 1.0)
-    separation_weight: float = 0.1  # Force chart centers apart (was 0.5)
-    separation_margin: float = 2.0  # Minimum distance between chart centers
-    codebook_center_weight: float = 0.05  # Zero-mean codebook deltas per chart
-    chart_center_sep_weight: float = 0.05  # Separate chart center tokens
-    chart_center_sep_margin: float = 2.0  # Minimum distance between chart centers (token space)
-    residual_scale_weight: float = 0.01  # Keep z_n small vs macro/meso scales
-
-    # Tier 2 losses (medium overhead ~5%)
-    window_weight: float = 0.5  # Information-stability (Theorem 15.1.3)
-    window_eps_ground: float = 0.1  # Minimum I(X;K) threshold
-    disentangle_weight: float = 0.1  # Gauge coherence (K ⊥ z_n)
-
-    # Tier 3 losses (geometry/codebook health)
-    orthogonality_weight: float = 0.0  # Singular-value spread penalty (SVD; disabled by default)
-    code_entropy_weight: float = 0.0  # Global code entropy (disabled by default)
-    per_chart_code_entropy_weight: float = 0.1  # Per-chart code diversity (enabled)
-
-    # Tier 4 losses (invariance - expensive when enabled, disabled by default)
-    kl_prior_weight: float = 0.01  # Radial energy prior on z_n, z_tex
-    orbit_weight: float = 0.0  # Chart invariance under augmentation (2x slowdown)
-    vicreg_inv_weight: float = 0.0  # Gram invariance (O(B^2), disabled by default)
-    augment_noise_std: float = 0.1  # Augmentation noise level
-    augment_rotation_max: float = 0.3  # Max rotation in radians
-
-    # Tier 5: Jump Operator (chart gluing - learns transition functions between charts)
-    jump_weight: float = 0.1  # Final jump consistency weight after warmup
-    jump_warmup: int = 50  # Epochs before jump loss starts (let atlas form first)
-    jump_ramp_end: int = 100  # Epoch when jump weight reaches final value
-    jump_global_rank: int = 0  # Rank of global tangent space (0 = use latent_dim)
-
-    # Supervised topology loss (Section 7.12)
-    enable_supervised: bool = True
-    num_classes: int = 10
-    sup_weight: float = 1.0
-    sup_purity_weight: float = 0.1
-    sup_balance_weight: float = 0.01
-    sup_metric_weight: float = 0.01
-    sup_metric_margin: float = 1.0
-    sup_temperature: float = 1.0
-
-    # Classifier readout (detached, invariant)
-    enable_classifier_head: bool = True
-    classifier_lr: float = 0.0  # 0 = use main lr
-    classifier_bundle_size: int = 0  # 0 = global norm
-
-    # Gradient clipping
-    grad_clip: float = 1.0  # Max gradient norm (0 to disable)
-
-    # LR Scheduler
-    use_scheduler: bool = True
-    lr_min: float = 1e-6  # eta_min for CosineAnnealingLR
-
-    # Benchmark control
-    disable_ae: bool = False  # Skip VanillaAE baseline
-    disable_vq: bool = False  # Skip StandardVQ baseline
-    baseline_vision_preproc: bool = False
-    baseline_attn: bool = False
-    baseline_attn_tokens: int = 4
-    baseline_attn_dim: int = 32
-    baseline_attn_heads: int = 4
-    baseline_attn_dropout: float = 0.0
-
-    # CIFAR backbone benchmark (gauge-covariant vs standard CNN)
-    enable_cifar_backbone: bool = False  # Enable CIFAR backbone benchmark
-    cifar_backbone_type: str = "both"  # "covariant", "standard", or "both"
-    cifar_base_channels: int = 32  # Base channel width (16/32/64)
-    cifar_bundle_size: int = 4  # Bundle size for NormGatedConv2d
-
-    # Train/test split
-    test_split: float = 0.2
-
-    # Logging and output
-    log_every: int = 100
-    save_every: int = 100  # Save checkpoint every N epochs (0 to disable)
-    output_dir: str = "outputs/topoencoder"
-    resume_checkpoint: str = ""
-    mlflow: bool = False
-    mlflow_tracking_uri: str = ""
-    mlflow_experiment: str = ""
-    mlflow_run_name: str = ""
-
-    # Device (CUDA if available, else CPU)
-    device: str = field(default_factory=lambda: "cuda" if torch.cuda.is_available() else "cpu")
-
-
-def count_parameters(model: nn.Module) -> int:
-    """Count total trainable parameters in a model."""
-    return sum(p.numel() for p in model.parameters())
-
-
-def compute_matching_hidden_dim(
-    target_params: int,
-    input_dim: int = 3,
-    latent_dim: int = 2,
-    num_codes: int = 64,
-    use_attention: bool = False,
-    attn_tokens: int = 4,
-    attn_dim: int = 32,
-    attn_heads: int = 4,
-    attn_dropout: float = 0.0,
-    vision_preproc: bool = False,
-    vision_in_channels: int = 0,
-    vision_height: int = 0,
-    vision_width: int = 0,
-) -> int:
-    """Compute hidden_dim for StandardVQ to match target parameter count.
-
-    StandardVQ params = 2h² + (4 + 2 + 3 + 3)h + (2 + num_codes*latent_dim + 3)
-                      = 2h² + 12h + (5 + num_codes*latent_dim)
-
-    Using quadratic formula: h = (-12 + sqrt(144 + 8*(target - offset))) / 4
-    """
-    if not use_attention and not vision_preproc:
-        offset = 5 + num_codes * latent_dim
-        # Adjust for input_dim: encoder.0 has input_dim*h, decoder.4 has h*input_dim
-        # Full formula: 2h² + (input_dim + 2 + 2 + input_dim + 2 + 2)h + ...
-        #             = 2h² + (2*input_dim + 8)h + offset
-        coef_h = 2 * input_dim + 8
-        # 2h² + coef_h*h + offset = target
-        # h = (-coef_h + sqrt(coef_h² + 8*(target - offset))) / 4
-        discriminant = coef_h**2 + 8 * (target_params - offset)
-        if discriminant < 0:
-            return 32  # fallback
-        h = (-coef_h + math.sqrt(discriminant)) / 4
-        return max(16, int(h))
-
-    def params_for_hidden(hidden_dim: int) -> int:
-        if num_codes > 0:
-            model = StandardVQ(
-                input_dim=input_dim,
-                hidden_dim=hidden_dim,
-                latent_dim=latent_dim,
-                num_codes=num_codes,
-                use_attention=use_attention,
-                attn_tokens=attn_tokens,
-                attn_dim=attn_dim,
-                attn_heads=attn_heads,
-                attn_dropout=attn_dropout,
-                vision_preproc=vision_preproc,
-                vision_in_channels=vision_in_channels,
-                vision_height=vision_height,
-                vision_width=vision_width,
-            )
-        else:
-            model = VanillaAE(
-                input_dim=input_dim,
-                hidden_dim=hidden_dim,
-                latent_dim=latent_dim,
-                use_attention=use_attention,
-                attn_tokens=attn_tokens,
-                attn_dim=attn_dim,
-                attn_heads=attn_heads,
-                attn_dropout=attn_dropout,
-                vision_preproc=vision_preproc,
-                vision_in_channels=vision_in_channels,
-                vision_height=vision_height,
-                vision_width=vision_width,
-            )
-        return count_parameters(model)
-
-    min_hidden = 16
-    max_hidden = 2048
-    low = min_hidden
-    low_params = params_for_hidden(low)
-    if low_params >= target_params:
-        return low
-    high = min_hidden * 2
-    while high < max_hidden and params_for_hidden(high) < target_params:
-        low = high
-        high = min(high * 2, max_hidden)
-
-    best_hidden = low
-    best_diff = abs(params_for_hidden(low) - target_params)
-    while low <= high:
-        mid = (low + high) // 2
-        params = params_for_hidden(mid)
-        diff = abs(params - target_params)
-        if diff < best_diff:
-            best_hidden = mid
-            best_diff = diff
-        if params < target_params:
-            low = mid + 1
-        else:
-            high = mid - 1
-    return max(min_hidden, int(best_hidden))
-
-
-# ==========================================
-# 5. ADAPTIVE CONTROL (LR + LAMBDAS)
-# ==========================================
-
-
-def _compute_perplexity_from_assignments(assignments: torch.Tensor, num_charts: int) -> float:
-    """Compute chart usage perplexity from chart assignments."""
-    if assignments.numel() == 0:
-        return 0.0
-    counts = torch.bincount(assignments, minlength=num_charts).float()
-    probs = counts / counts.sum()
-    probs = probs[probs > 0]
-    entropy = -(probs * torch.log(probs)).sum()
-    return math.exp(entropy.item())
-
-
-
-
-
-
-def _optimizer_state(
-    optimizer: optim.Optimizer | dict[str, optim.Optimizer] | None,
-) -> dict | None:
-    if optimizer is None:
-        return None
-    if isinstance(optimizer, dict):
-        return {name: opt.state_dict() for name, opt in optimizer.items()}
-    return optimizer.state_dict()
-
-
-def _compute_param_norm(params: list[torch.Tensor]) -> float:
-    total = 0.0
-    for p in params:
-        total += p.detach().pow(2).sum().item()
-    return math.sqrt(total)
-
-
-def _compute_grad_norm(params: list[torch.Tensor]) -> float:
-    total = 0.0
-    for p in params:
-        if p.grad is None:
-            continue
-        total += p.grad.detach().pow(2).sum().item()
-    return math.sqrt(total)
-
-
-
-
-def _start_mlflow_run(
-    config: TopoEncoderConfig,
-    extra_params: dict[str, object] | None = None,
-) -> bool:
-    if not config.mlflow:
-        return False
-    if not _MLFLOW_AVAILABLE:
-        print("MLflow logging requested but mlflow is not installed. Skipping MLflow.")
-        return False
-    if config.mlflow_tracking_uri:
-        mlflow.set_tracking_uri(config.mlflow_tracking_uri)
-    if config.mlflow_experiment:
-        mlflow.set_experiment(config.mlflow_experiment)
-    run_name = config.mlflow_run_name or f"topoencoder_{config.dataset}"
-    mlflow.start_run(run_name=run_name)
-    params = asdict(config)
-    if extra_params:
-        params.update(extra_params)
-    safe_params: dict[str, object] = {}
-    for key, value in params.items():
-        if isinstance(value, int | float | str | bool):
-            safe_params[key] = value
-        else:
-            safe_params[key] = str(value)
-    if safe_params:
-        mlflow.log_params(safe_params)
-    return True
-
-
-def _log_mlflow_metrics(
-    metrics: dict[str, float],
-    step: int,
-    enabled: bool,
-) -> None:
-    if not enabled:
-        return
-    safe_metrics: dict[str, float] = {}
-    for key, value in metrics.items():
-        if value is None:
-            continue
-        try:
-            val = float(value)
-        except (TypeError, ValueError):
-            continue
-        if math.isfinite(val):
-            safe_metrics[key] = val
-    if safe_metrics:
-        mlflow.log_metrics(safe_metrics, step=step)
-
-
-def _end_mlflow_run(enabled: bool) -> None:
-    if enabled and _MLFLOW_AVAILABLE:
-        mlflow.end_run()
-
-
-# ==========================================
-# 6. CHECKPOINTING
-# ==========================================
-def _state_dict_cpu(module: nn.Module | None) -> dict[str, torch.Tensor] | None:
-    if module is None:
-        return None
-    return {k: v.detach().cpu() for k, v in module.state_dict().items()}
-
-
-def save_checkpoint(
-    path: str,
-    config: TopoEncoderConfig,
-    model_atlas: nn.Module,
-    jump_op: nn.Module,
-    metrics: dict,
-    data_snapshot: dict,
-    epoch: int,
-    model_std: nn.Module | None = None,
-    model_ae: nn.Module | None = None,
-    model_cifar_cov: nn.Module | None = None,
-    model_cifar_std: nn.Module | None = None,
-    supervised_loss: nn.Module | None = None,
-    classifier_head: nn.Module | None = None,
-    classifier_std: nn.Module | None = None,
-    classifier_ae: nn.Module | None = None,
-    optimizer_atlas: optim.Optimizer | None = None,
-    optimizer_std: optim.Optimizer | None = None,
-    optimizer_ae: optim.Optimizer | None = None,
-    optimizer_cifar_cov: optim.Optimizer | None = None,
-    optimizer_cifar_std: optim.Optimizer | None = None,
-    optimizer_classifier: optim.Optimizer | None = None,
-    optimizer_classifier_std: optim.Optimizer | None = None,
-    optimizer_classifier_ae: optim.Optimizer | None = None,
-) -> None:
-    """Save training checkpoint for later analysis/plotting."""
-    checkpoint = {
-        "epoch": epoch,
-        "config": asdict(config),
-        "state": {
-            "atlas": _state_dict_cpu(model_atlas),
-            "jump": _state_dict_cpu(jump_op),
-            "supervised": _state_dict_cpu(supervised_loss),
-            "classifier": _state_dict_cpu(classifier_head),
-            "classifier_std": _state_dict_cpu(classifier_std),
-            "classifier_ae": _state_dict_cpu(classifier_ae),
-            "cifar_cov": _state_dict_cpu(model_cifar_cov),
-            "cifar_std": _state_dict_cpu(model_cifar_std),
-        },
-        "optim": {
-            "atlas": _optimizer_state(optimizer_atlas),
-            "std": _optimizer_state(optimizer_std),
-            "ae": _optimizer_state(optimizer_ae),
-            "cifar_cov": _optimizer_state(optimizer_cifar_cov),
-            "cifar_std": _optimizer_state(optimizer_cifar_std),
-            "classifier": _optimizer_state(optimizer_classifier),
-            "classifier_std": _optimizer_state(optimizer_classifier_std),
-            "classifier_ae": _optimizer_state(optimizer_classifier_ae),
-        },
-        "metrics": metrics,
-        "data": data_snapshot,
-    }
-    torch.save(checkpoint, path)
-
-
-def load_checkpoint(path: str) -> dict:
-    """Load checkpoint with unsafe deserialization allowed for trusted outputs."""
-    try:
-        return torch.load(path, map_location="cpu", weights_only=False)
-    except TypeError:
-        return torch.load(path, map_location="cpu")
-
-
-def save_benchmarks(
-    path: str,
-    config: TopoEncoderConfig,
-    model_std: nn.Module | None,
-    model_ae: nn.Module | None,
-    std_hidden_dim: int = 0,
-    ae_hidden_dim: int = 0,
-    optimizer_std: optim.Optimizer | None = None,
-    optimizer_ae: optim.Optimizer | None = None,
-    metrics: dict | None = None,
-    epoch: int = 0,
-) -> None:
-    """Save baseline (VQ/AE) checkpoints for reuse between runs."""
-    if model_std is None and model_ae is None:
-        return
-    payload = {
-        "epoch": epoch,
-        "config": {
-            "dataset": config.dataset,
-            "input_dim": config.input_dim,
-            "latent_dim": config.latent_dim,
-            "num_codes_standard": config.num_codes_standard,
-            "baseline_vision_preproc": config.baseline_vision_preproc,
-            "baseline_attn": config.baseline_attn,
-            "baseline_attn_tokens": config.baseline_attn_tokens,
-            "baseline_attn_dim": config.baseline_attn_dim,
-            "baseline_attn_heads": config.baseline_attn_heads,
-            "baseline_attn_dropout": config.baseline_attn_dropout,
-            "vision_in_channels": config.vision_in_channels,
-            "vision_height": config.vision_height,
-            "vision_width": config.vision_width,
-        },
-        "state": {
-            "std": _state_dict_cpu(model_std),
-            "ae": _state_dict_cpu(model_ae),
-        },
-        "optim": {
-            "std": _optimizer_state(optimizer_std),
-            "ae": _optimizer_state(optimizer_ae),
-        },
-        "metrics": metrics or {},
-        "dims": {
-            "std_hidden_dim": int(std_hidden_dim),
-            "ae_hidden_dim": int(ae_hidden_dim),
-        },
-    }
-    torch.save(payload, path)
-
-
-def load_benchmarks(path: str) -> dict:
-    """Load benchmark checkpoint with unsafe deserialization allowed for trusted outputs."""
-    try:
-        return torch.load(path, map_location="cpu", weights_only=False)
-    except TypeError:
-        return torch.load(path, map_location="cpu")
-
-
-def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> bool:
-    if not bench_config:
-        return False
-    baseline_vision_preproc = bool(bench_config.get("baseline_vision_preproc"))
-    if baseline_vision_preproc != bool(config.baseline_vision_preproc):
-        return False
-    if baseline_vision_preproc:
-        if int(bench_config.get("vision_in_channels", -1)) != int(config.vision_in_channels):
-            return False
-        if int(bench_config.get("vision_height", -1)) != int(config.vision_height):
-            return False
-        if int(bench_config.get("vision_width", -1)) != int(config.vision_width):
-            return False
-    return (
-        int(bench_config.get("input_dim", -1)) == int(config.input_dim)
-        and int(bench_config.get("latent_dim", -1)) == int(config.latent_dim)
-        and int(bench_config.get("num_codes_standard", -1)) == int(config.num_codes_standard)
-        and bool(bench_config.get("baseline_vision_preproc"))
-        == bool(config.baseline_vision_preproc)
-        and bool(bench_config.get("baseline_attn")) == bool(config.baseline_attn)
-        and int(bench_config.get("baseline_attn_tokens", -1)) == int(config.baseline_attn_tokens)
-        and int(bench_config.get("baseline_attn_dim", -1)) == int(config.baseline_attn_dim)
-        and int(bench_config.get("baseline_attn_heads", -1)) == int(config.baseline_attn_heads)
-        and float(bench_config.get("baseline_attn_dropout", -1.0))
-        == float(config.baseline_attn_dropout)
-    )
-
-
-def _move_optimizer_state(
-    optimizer: optim.Optimizer | dict[str, optim.Optimizer],
-    device: torch.device,
-) -> None:
-    if isinstance(optimizer, dict):
-        for opt in optimizer.values():
-            _move_optimizer_state(opt, device)
-        return
-    for state in optimizer.state.values():
-        for key, value in state.items():
-            if torch.is_tensor(value):
-                state[key] = value.to(device)
-
-
-def _load_optimizer_state(
-    optimizer: optim.Optimizer | dict[str, optim.Optimizer] | None,
-    state: dict | None,
-    device: torch.device,
-) -> None:
-    if optimizer is None or state is None:
-        return
-    if isinstance(optimizer, dict):
-        if isinstance(state, dict) and "state" in state and "param_groups" in state:
-            if len(optimizer) == 1:
-                opt = next(iter(optimizer.values()))
-                opt.load_state_dict(state)
-                _move_optimizer_state(opt, device)
-            else:
-                print(
-                    "  Optimizer state mismatch: single state for multiple optimizers; skipping."
-                )
-            return
-        if isinstance(state, dict):
-            for name, opt in optimizer.items():
-                opt_state = state.get(name)
-                if opt_state is not None:
-                    opt.load_state_dict(opt_state)
-                    _move_optimizer_state(opt, device)
-        elif len(optimizer) == 1:
-            opt = next(iter(optimizer.values()))
-            opt.load_state_dict(state)
-            _move_optimizer_state(opt, device)
-        else:
-            print("  Optimizer state mismatch: single state for multiple optimizers; skipping.")
-        return
-    if isinstance(state, dict):
-        state = state.get("all")
-        if state is None:
-            print("  Optimizer state mismatch: multi-state for single optimizer; skipping.")
-            return
-    optimizer.load_state_dict(state)
-    _move_optimizer_state(optimizer, device)
-
-
-# ==========================================
-# 7. METRICS
-# ==========================================
-def compute_ami(labels_true: np.ndarray, labels_pred: np.ndarray) -> float:
-    """Compute Adjusted Mutual Information score."""
-    return float(adjusted_mutual_info_score(labels_true, labels_pred))
 
 
 def _init_loss_components() -> dict[str, list[float]]:
@@ -1061,31 +507,30 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         model_ae.eval()
         print("  VanillaAE: loaded from benchmarks (frozen)")
 
-    if mlflow_active:
-        mlflow.log_params({
-            "topo_params": topo_params,
-            "std_params": std_params,
-            "ae_params": ae_params,
-            "cifar_cov_params": cifar_cov_params,
-            "cifar_std_params": cifar_std_params,
-            "std_hidden_dim": std_hidden_dim,
-            "ae_hidden_dim": ae_hidden_dim,
-            "benchmarks_loaded_std": benchmarks_loaded_std,
-            "benchmarks_loaded_ae": benchmarks_loaded_ae,
-            "train_std": train_std,
-            "train_ae": train_ae,
-            "train_cifar_cov": train_cifar_cov,
-            "train_cifar_std": train_cifar_std,
-            "baseline_attn": config.baseline_attn,
-            "baseline_attn_tokens": config.baseline_attn_tokens,
-            "baseline_attn_dim": config.baseline_attn_dim,
-            "baseline_attn_heads": config.baseline_attn_heads,
-            "baseline_attn_dropout": config.baseline_attn_dropout,
-            "enable_cifar_backbone": config.enable_cifar_backbone,
-            "cifar_backbone_type": config.cifar_backbone_type,
-            "cifar_base_channels": config.cifar_base_channels,
-            "cifar_bundle_size": config.cifar_bundle_size,
-        })
+    _log_mlflow_params({
+        "topo_params": topo_params,
+        "std_params": std_params,
+        "ae_params": ae_params,
+        "cifar_cov_params": cifar_cov_params,
+        "cifar_std_params": cifar_std_params,
+        "std_hidden_dim": std_hidden_dim,
+        "ae_hidden_dim": ae_hidden_dim,
+        "benchmarks_loaded_std": benchmarks_loaded_std,
+        "benchmarks_loaded_ae": benchmarks_loaded_ae,
+        "train_std": train_std,
+        "train_ae": train_ae,
+        "train_cifar_cov": train_cifar_cov,
+        "train_cifar_std": train_cifar_std,
+        "baseline_attn": config.baseline_attn,
+        "baseline_attn_tokens": config.baseline_attn_tokens,
+        "baseline_attn_dim": config.baseline_attn_dim,
+        "baseline_attn_heads": config.baseline_attn_heads,
+        "baseline_attn_dropout": config.baseline_attn_dropout,
+        "enable_cifar_backbone": config.enable_cifar_backbone,
+        "cifar_backbone_type": config.cifar_backbone_type,
+        "cifar_base_channels": config.cifar_base_channels,
+        "cifar_bundle_size": config.cifar_bundle_size,
+    }, enabled=mlflow_active)
 
     # Initialize Jump Operator for chart gluing
     jump_op = FactorizedJumpOperator(
@@ -1223,8 +668,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     )
     batch_size = config.batch_size if config.batch_size > 0 else len(X_train)
     batches_per_epoch = max(1, len(dataloader))
-    if mlflow_active:
-        mlflow.log_param("batches_per_epoch", batches_per_epoch)
+    _log_mlflow_params({"batches_per_epoch": batches_per_epoch}, enabled=mlflow_active)
 
     # Training history
     std_losses = list(resume_metrics.get("std_losses", []))

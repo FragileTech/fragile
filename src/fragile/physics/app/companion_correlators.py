@@ -96,12 +96,12 @@ class CompanionCorrelatorSettings(param.Parameterized):
     """Settings for the companion-channel correlator computations."""
 
     # -- Common --
-    warmup_fraction = param.Number(default=0.1, bounds=(0.0, 0.95))
+    warmup_fraction = param.Number(default=0.3, bounds=(0.0, 0.95))
     end_fraction = param.Number(default=1.0, bounds=(0.05, 1.0))
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
     mass = param.Number(default=1.0, bounds=(1e-6, None))
     ell0 = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
-    max_lag = param.Integer(default=80, bounds=(1, 500))
+    max_lag = param.Integer(default=40, bounds=(1, 500))
     use_connected = param.Boolean(default=True)
     color_dims_spec = param.String(
         default="",
@@ -119,7 +119,7 @@ class CompanionCorrelatorSettings(param.Parameterized):
     # -- Per-channel operator settings (non-mode) --
     baryon_flux_exp_alpha = param.Number(default=1.0, bounds=(0.0, None))
 
-    vector_unit_displacement = param.Boolean(default=False)
+    vector_unit_displacement = param.Boolean(default=True)
 
     glueball_momentum_projection = param.Boolean(default=False)
     glueball_momentum_axis = param.Integer(default=0, bounds=(0, 3))
@@ -254,35 +254,35 @@ def build_companion_correlator_tab(
     meson_mode_selector = pn.widgets.MultiSelect(
         name="Meson",
         options=list(MESON_MODES),
-        value=["standard"],
+        value=list(MESON_MODES),
         size=len(MESON_MODES),
         sizing_mode="stretch_width",
     )
     baryon_mode_selector = pn.widgets.MultiSelect(
         name="Baryon",
         options=list(BARYON_MODES),
-        value=["det_abs"],
+        value=["det_abs", "flux_action", "flux_sin2", "flux_exp"],
         size=len(BARYON_MODES),
         sizing_mode="stretch_width",
     )
     vector_mode_selector = pn.widgets.MultiSelect(
         name="Vector",
         options=list(VECTOR_MODES),
-        value=["standard"],
+        value=list(VECTOR_MODES),
         size=len(VECTOR_MODES),
         sizing_mode="stretch_width",
     )
     vector_projection_selector = pn.widgets.MultiSelect(
         name="Vector Projection",
         options=list(VECTOR_PROJECTIONS),
-        value=["full"],
+        value=list(VECTOR_PROJECTIONS),
         size=len(VECTOR_PROJECTIONS),
         sizing_mode="stretch_width",
     )
     glueball_mode_selector = pn.widgets.MultiSelect(
         name="Glueball",
         options=list(GLUEBALL_MODES),
-        value=["re_plaquette"],
+        value=list(GLUEBALL_MODES),
         size=len(GLUEBALL_MODES),
         sizing_mode="stretch_width",
     )
