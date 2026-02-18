@@ -14,7 +14,7 @@ import torch
 from torch import Tensor
 import torch.nn.functional as F
 
-from fragile.fractalai.qft.correlator_channels import (
+from fragile.physics.new_channels.correlator_channels import (
     ChannelCorrelatorResult,
     compute_effective_mass_torch,
     CorrelatorConfig,

@@ -121,7 +121,6 @@ class TestRoboticGasConfigPanel:
         assert panel.dt_range_min == 1
         assert panel.dt_range_max == 1
         assert panel.max_iterations == 100
-        assert panel.record_frames is True
         assert panel.seed == 42
         assert panel.n_workers == 1
         assert panel.tau_inner == 5

@@ -18,14 +18,14 @@ from typing import Any
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.aggregation import compute_color_states_batch, estimate_ell0
-from fragile.fractalai.qft.baryon_triplet_channels import (
+from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.new_channels.baryon_triplet_channels import (
     _resolve_frame_indices,
     _safe_gather_3d,
     compute_baryon_correlator_from_color,
 )
-from fragile.fractalai.qft.correlator_channels import (
+from fragile.physics.new_channels.correlator_channels import (
     _fft_correlator_batched,
     ChannelCorrelatorResult,
     compute_effective_mass_torch,
@@ -33,20 +33,20 @@ from fragile.fractalai.qft.correlator_channels import (
     extract_mass_aic,
     extract_mass_linear,
 )
-from fragile.fractalai.qft.glueball_color_channels import (
+from fragile.physics.new_channels.glueball_color_channels import (
     compute_glueball_color_correlator_from_color,
 )
-from fragile.fractalai.qft.meson_phase_channels import compute_meson_phase_correlator_from_color
+from fragile.physics.new_channels.meson_phase_channels import compute_meson_phase_correlator_from_color
 from fragile.fractalai.qft.smeared_operators import (
     compute_pairwise_distance_matrices_from_history,
     compute_smeared_kernels_from_distances,
     iter_smeared_kernel_batches_from_history,
     select_interesting_scales_from_history,
 )
-from fragile.fractalai.qft.tensor_momentum_channels import (
+from fragile.physics.new_channels.tensor_momentum_channels import (
     compute_tensor_momentum_correlator_from_color_positions,
 )
-from fragile.fractalai.qft.vector_meson_channels import (
+from fragile.physics.new_channels.vector_meson_channels import (
     compute_vector_meson_correlator_from_color_positions,
 )
 

@@ -60,7 +60,7 @@ import torch.nn.functional as F
 
 
 if TYPE_CHECKING:
-    from fragile.fractalai.core.history import RunHistory
+    from fragile.physics.fractal_gas.history import RunHistory
 
 
 # =============================================================================

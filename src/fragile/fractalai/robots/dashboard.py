@@ -88,7 +88,7 @@ class RoboticGasConfigPanel(param.Parameterized):
     render_height = param.Integer(default=480, bounds=(120, 1920), doc="Render height in pixels")
 
     # Algorithm parameters
-    N = param.Integer(default=100, bounds=(5, 200), doc="Number of walkers")
+    N = param.Integer(default=100, bounds=(5, 5000), doc="Number of walkers")
 
     dist_coef = param.Number(
         default=1.0, bounds=(0.0, 5.0), doc="Distance coefficient in fitness calculation"
@@ -126,11 +126,6 @@ class RoboticGasConfigPanel(param.Parameterized):
     # Simulation controls
     max_iterations = param.Integer(
         default=100, bounds=(10, 1000), doc="Maximum simulation iterations"
-    )
-
-    record_frames = param.Boolean(
-        default=True,
-        doc="Record best walker frames (required for visualization, uses more memory)",
     )
 
     seed = param.Integer(default=42, doc="Random seed for reproducibility")
@@ -413,8 +408,9 @@ class RoboticGasConfigPanel(param.Parameterized):
 
         # Build history
         self.tree_history = tree
-        if self.record_frames and self.gas is not None:
+        if self.gas is not None:
             tree.render_missing_path_frames(self.gas._render_walker_frame)
+            tree.render_elite_path_frames(self.gas._render_walker_frame)
         self.history = tree.to_robotic_history()
 
         self._finish_simulation()
@@ -448,7 +444,7 @@ class RoboticGasConfigPanel(param.Parameterized):
         print("[worker] reset() done, starting planning loop...", flush=True)
         t_start = time.monotonic()
 
-        traj = PlanningTrajectory(frames=[] if self.record_frames else None)
+        traj = PlanningTrajectory(frames=[])
         traj.states.append(state)
         traj.observations.append(obs)
         cum_reward = 0.0
@@ -473,12 +469,11 @@ class RoboticGasConfigPanel(param.Parameterized):
             traj.states.append(new_state)
             traj.observations.append(new_obs)
 
-            if self.record_frames:
-                try:
-                    frame = pg.inner_gas._render_walker_frame(new_state)
-                    traj.frames.append(frame)
-                except Exception:
-                    traj.frames.append(None)
+            try:
+                frame = pg.inner_gas._render_walker_frame(new_state)
+                traj.frames.append(frame)
+            except Exception:
+                traj.frames.append(None)
 
             if i == 0:
                 print("[worker] first planning step() completed", flush=True)
@@ -596,7 +591,6 @@ class RoboticGasConfigPanel(param.Parameterized):
                 self.param,
                 parameters=[
                     "max_iterations",
-                    "record_frames",
                     "dt_range_min",
                     "dt_range_max",
                     "seed",
@@ -634,6 +628,16 @@ class RoboticGasVisualizer(param.Parameterized):
         self.history = history
         self.planning_history: PlanningHistory | None = None
         self.tree_history = None
+        self._current_frames: list[np.ndarray | None] = []
+
+        # Elite walker dropdown (same as Atari dashboard)
+        self.elite_select = pn.widgets.Select(
+            name="Elite Walker",
+            options={"Best (global)": -1},
+            value=-1,
+            width=400,
+        )
+        self.elite_select.param.watch(self._on_elite_select_change, "value")
 
         # Game replay player (controls frame display)
         self.game_player = pn.widgets.Player(
@@ -673,13 +677,18 @@ class RoboticGasVisualizer(param.Parameterized):
     def set_history(self, history: RoboticHistory):
         """Load new history and build all static plots."""
         self.history = history
-        last_idx = len(history.iterations) - 1
+        self._current_frames = list(history.best_frames)
+        last_idx = len(self._current_frames) - 1 if history.has_frames else len(history.iterations) - 1
 
         # Reset game player
         self.game_player.end = last_idx
         self.game_player.value = min(1, last_idx)
         self.game_player.value = 0
         self.game_player.disabled = False
+
+        # Reset elite dropdown
+        self.elite_select.options = {"Best (global)": -1}
+        self.elite_select.value = -1
 
         # Update info
         self.info_pane.object = (
@@ -690,8 +699,8 @@ class RoboticGasVisualizer(param.Parameterized):
         )
 
         # Force-update frame pane with the first frame
-        if history.has_frames and history.best_frames[0] is not None:
-            self.frame_pane.object = self._array_to_png(history.best_frames[0])
+        if history.has_frames and self._current_frames[0] is not None:
+            self.frame_pane.object = self._array_to_png(self._current_frames[0])
 
         # Build all static plots
         self._build_plots(history)
@@ -699,6 +708,32 @@ class RoboticGasVisualizer(param.Parameterized):
     def set_planning_history(self, planning_history: PlanningHistory | None):
         """Load planning history for planning-specific visualizations."""
         self.planning_history = planning_history
+
+    def set_tree_history(self, tree_history):
+        """Load tree history and populate the elite walker dropdown."""
+        self.tree_history = tree_history
+        elite_infos = tree_history.get_elite_branches_info()
+        if not elite_infos:
+            return
+        options: dict[str, int] = {}
+        for info in elite_infos:
+            options[info["label"]] = info["node_id"]
+        self.elite_select.options = options
+
+    def _on_elite_select_change(self, event):
+        """Switch displayed replay to the selected elite branch."""
+        node_id = event.new
+        if self.tree_history is None:
+            return
+        frames = self.tree_history.get_path_frames_for_node(node_id)
+        if not frames:
+            return
+        self._current_frames = frames
+        last_idx = len(frames) - 1
+        self.game_player.end = last_idx
+        self.game_player.value = 0
+        if frames[0] is not None:
+            self.frame_pane.object = self._array_to_png(frames[0])
 
     def _build_plots(self, h: RoboticHistory):
         """Build all static plots from the full history data."""
@@ -822,12 +857,13 @@ class RoboticGasVisualizer(param.Parameterized):
 
     def _on_game_frame_change(self, event):
         """Update frame display only."""
-        if self.history is None or not self.history.has_frames:
+        if not self._current_frames:
             return
         idx = int(self.game_player.value)
-        frame = self.history.best_frames[idx]
-        if frame is not None:
-            self.frame_pane.object = self._array_to_png(frame)
+        if idx < len(self._current_frames):
+            frame = self._current_frames[idx]
+            if frame is not None:
+                self.frame_pane.object = self._array_to_png(frame)
 
     def _create_blank_frame(self) -> bytes:
         """Create blank frame as placeholder."""
@@ -867,6 +903,7 @@ class RoboticGasVisualizer(param.Parameterized):
             pn.Row(
                 pn.Column(
                     pn.pane.Markdown("### Best Walker Frame"),
+                    self.elite_select,
                     self.game_player,
                     self.frame_pane,
                 ),
@@ -911,6 +948,8 @@ def create_app() -> pn.template.FastListTemplate:
         # Set tree_history before set_history so _build_plots can overlay elite curves
         visualizer.tree_history = config_panel.tree_history
         visualizer.set_history(history)
+        if config_panel.tree_history is not None:
+            visualizer.set_tree_history(config_panel.tree_history)
 
     config_panel.add_completion_callback(on_simulation_complete)
 

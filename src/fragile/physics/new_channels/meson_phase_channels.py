@@ -22,9 +22,9 @@ from dataclasses import dataclass
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.aggregation import compute_color_states_batch, estimate_ell0
-from fragile.fractalai.qft.baryon_triplet_channels import (
+from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.new_channels.baryon_triplet_channels import (
     _resolve_3d_dims,
     _resolve_frame_indices,
     _safe_gather_2d,
