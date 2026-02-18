@@ -21,17 +21,20 @@ from torch import Tensor
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 from fragile.physics.new_channels.baryon_triplet_channels import (
-    _resolve_frame_indices,
-    _safe_gather_3d,
     compute_baryon_correlator_from_color,
 )
 from fragile.physics.new_channels.correlator_channels import (
-    _fft_correlator_batched,
     ChannelCorrelatorResult,
     compute_effective_mass_torch,
     CorrelatorConfig,
     extract_mass_aic,
     extract_mass_linear,
+)
+from fragile.physics.qft_utils import (
+    _fft_correlator_batched,
+    resolve_frame_indices,
+    safe_gather_2d,
+    safe_gather_3d,
 )
 from fragile.physics.new_channels.glueball_color_channels import (
     compute_glueball_color_correlator_from_color,
@@ -120,7 +123,6 @@ class MultiscaleStrongForceConfig:
 
     warmup_fraction: float = 0.1
     end_fraction: float = 1.0
-    mc_time_index: int | None = None
     h_eff: float = 1.0
     mass: float = 1.0
     ell0: float | None = None
@@ -353,23 +355,6 @@ def _masked_mean_multi(values: Tensor, mask: Tensor, *, dims: tuple[int, ...]) -
     numerator = (values * weights).sum(dim=dims)
     denominator = weights.sum(dim=dims).clamp(min=1.0)
     return numerator / denominator
-
-
-def _safe_gather_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
-    """Safely gather values[:, idx] and return gathered values plus in-range mask."""
-    if values.ndim != 2 or indices.ndim != 2:
-        raise ValueError(
-            f"_safe_gather_2d expects [T,N] tensors, got {tuple(values.shape)} and {tuple(indices.shape)}."
-        )
-    if values.shape != indices.shape:
-        raise ValueError(
-            f"_safe_gather_2d expects aligned shapes, got {tuple(values.shape)} and {tuple(indices.shape)}."
-        )
-    n = int(values.shape[1])
-    in_range = (indices >= 0) & (indices < n)
-    idx_safe = indices.clamp(min=0, max=max(n - 1, 0))
-    gathered = torch.gather(values, dim=1, index=idx_safe)
-    return gathered, in_range
 
 
 def _safe_gather_4d_by_2d_indices(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
@@ -665,16 +650,16 @@ def _compute_channel_series_from_kernels(
 
         # Companion channels use original (non-smoothed) operators gated by
         # geodesic hard thresholds at each scale.
-        c_j, in_j = _safe_gather_3d(color, comp_j)
-        c_k, in_k = _safe_gather_3d(color, comp_k)
-        x_j, _ = _safe_gather_3d(positions, comp_j)
-        x_k, _ = _safe_gather_3d(positions, comp_k)
+        c_j, in_j = safe_gather_3d(color, comp_j)
+        c_k, in_k = safe_gather_3d(color, comp_k)
+        x_j, _ = safe_gather_3d(positions, comp_j)
+        x_k, _ = safe_gather_3d(positions, comp_k)
 
-        valid_j_2d, in_j_valid = _safe_gather_2d(color_valid, comp_j)
-        valid_k_2d, in_k_valid = _safe_gather_2d(color_valid, comp_k)
+        valid_j_2d, in_j_valid = safe_gather_2d(color_valid, comp_j)
+        valid_k_2d, in_k_valid = safe_gather_2d(color_valid, comp_k)
         if scores is not None:
-            score_j, score_j_in_range = _safe_gather_2d(scores, comp_j)
-            score_k, score_k_in_range = _safe_gather_2d(scores, comp_k)
+            score_j, score_j_in_range = safe_gather_2d(scores, comp_j)
+            score_k, score_k_in_range = safe_gather_2d(scores, comp_k)
             finite_score_i = torch.isfinite(scores)
             finite_score_j = torch.isfinite(score_j)
             finite_score_k = torch.isfinite(score_k)
@@ -1973,11 +1958,10 @@ def compute_multiscale_strong_force_channels(
         raise ValueError(
             f"bootstrap_mode must be one of {BOOTSTRAP_MODES}, got {config.bootstrap_mode!r}."
         )
-    frame_indices = _resolve_frame_indices(
+    frame_indices = resolve_frame_indices(
         history=history,
         warmup_fraction=float(config.warmup_fraction),
         end_fraction=float(config.end_fraction),
-        mc_time_index=config.mc_time_index,
     )
     if not frame_indices:
         empty = torch.empty(0, dtype=torch.float32)

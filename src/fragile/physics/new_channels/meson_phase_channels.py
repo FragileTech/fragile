@@ -24,12 +24,12 @@ from torch import Tensor
 
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
-from fragile.physics.new_channels.baryon_triplet_channels import (
-    _resolve_3d_dims,
-    _resolve_frame_indices,
-    _safe_gather_2d,
-    _safe_gather_3d,
+from fragile.physics.qft_utils import (
     build_companion_triplets,
+    resolve_3d_dims,
+    resolve_frame_indices,
+    safe_gather_2d,
+    safe_gather_3d,
 )
 
 
@@ -42,7 +42,6 @@ class MesonPhaseCorrelatorConfig:
 
     warmup_fraction: float = 0.1
     end_fraction: float = 1.0
-    mc_time_index: int | None = None
     max_lag: int = 80
     use_connected: bool = True
     h_eff: float = 1.0
@@ -86,7 +85,7 @@ def _safe_gather_pairs_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tens
         )
     t, n, p = indices.shape
     idx_flat = indices.reshape(t, n * p)
-    gathered_flat, in_range_flat = _safe_gather_2d(values, idx_flat)
+    gathered_flat, in_range_flat = safe_gather_2d(values, idx_flat)
     return gathered_flat.reshape(t, n, p), in_range_flat.reshape(t, n, p)
 
 
@@ -100,7 +99,7 @@ def _safe_gather_pairs_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tens
     t, n, p = indices.shape
     c = values.shape[-1]
     idx_flat = indices.reshape(t, n * p)
-    gathered_flat, in_range_flat = _safe_gather_3d(values, idx_flat)
+    gathered_flat, in_range_flat = safe_gather_3d(values, idx_flat)
     return (
         gathered_flat.reshape(t, n, p, c),
         in_range_flat.reshape(t, n, p),
@@ -448,11 +447,10 @@ def compute_companion_meson_phase_correlator(
 ) -> MesonPhaseCorrelatorOutput:
     """Compute vectorized scalar/pseudoscalar meson phase correlators from RunHistory."""
     config = config or MesonPhaseCorrelatorConfig()
-    frame_indices = _resolve_frame_indices(
+    frame_indices = resolve_frame_indices(
         history=history,
         warmup_fraction=float(config.warmup_fraction),
         end_fraction=float(config.end_fraction),
-        mc_time_index=config.mc_time_index,
     )
     n_lags = int(max(0, config.max_lag)) + 1
     if not frame_indices:
@@ -496,7 +494,7 @@ def compute_companion_meson_phase_correlator(
         ell0=ell0,
         end_idx=end_idx,
     )
-    dims = _resolve_3d_dims(color.shape[-1], config.color_dims, "color_dims")
+    dims = resolve_3d_dims(color.shape[-1], config.color_dims, "color_dims")
     color = color[:, :, list(dims)]
 
     device = color.device

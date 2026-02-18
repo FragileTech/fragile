@@ -143,4 +143,15 @@ class RandomActionOperator:
         else:
             new_states, observations, rewards, dones, truncated, infos = result
 
+        # plangym returns all values as lists; convert to numpy arrays
+        # with explicit dtypes for downstream torch.tensor() and physics.set_state()
+        if isinstance(observations, list):
+            observations = np.array(observations, dtype=np.float64)
+        if isinstance(rewards, list):
+            rewards = np.array(rewards, dtype=np.float32)
+        if isinstance(dones, list):
+            dones = np.array(dones, dtype=bool)
+        if isinstance(truncated, list):
+            truncated = np.array(truncated, dtype=bool)
+
         return new_states, observations, rewards, dones, truncated, infos

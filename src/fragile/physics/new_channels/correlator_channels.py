@@ -58,6 +58,7 @@ import torch
 from torch import Tensor
 import torch.nn.functional as F
 
+from fragile.physics.qft_utils import _fft_correlator_batched
 
 if TYPE_CHECKING:
     from fragile.physics.fractal_gas.history import RunHistory
@@ -88,9 +89,6 @@ class ChannelConfig:
     # Time parameters
     warmup_fraction: float = 0.1
     end_fraction: float = 1.0
-
-    # Monte Carlo slice selection (for Euclidean time analysis)
-    mc_time_index: int | None = None  # Recorded index; None => last recorded slice
 
     # Time axis selection (Monte Carlo vs Euclidean)
     time_axis: str = (
@@ -449,49 +447,6 @@ def _fft_correlator_single(
         Correlator C(t) for t=0 to max_lag [max_lag+1].
     """
     return _fft_correlator_batched(series.unsqueeze(0), max_lag, use_connected).squeeze(0)
-
-
-def _fft_correlator_batched(
-    series: Tensor,
-    max_lag: int,
-    use_connected: bool = True,
-) -> Tensor:
-    """Compute time correlator for a batch of series using FFT.
-
-    Args:
-        series: Operator time series [B, T].
-        max_lag: Maximum lag to compute.
-        use_connected: Subtract per-series mean (connected correlator).
-
-    Returns:
-        Correlator C(t) for t=0 to max_lag [B, max_lag+1].
-    """
-    if series.ndim != 2:
-        raise ValueError(f"Expected 2D tensor [B, T], got shape {tuple(series.shape)}")
-
-    if series.numel() == 0:
-        return torch.zeros(series.shape[0], max_lag + 1, device=series.device, dtype=series.dtype)
-
-    _, T = series.shape
-    work = series.float()
-    if use_connected:
-        work = work - work.mean(dim=1, keepdim=True)
-
-    # Zero-pad each sample for FFT convolution along the time axis.
-    padded = F.pad(work, (0, T))  # [B, 2T]
-    fft_s = torch.fft.fft(padded, dim=1)
-    corr = torch.fft.ifft(fft_s * fft_s.conj(), dim=1).real
-
-    # Normalize by number of overlapping samples.
-    effective_lag = min(max_lag, T - 1)
-    counts = torch.arange(T, T - effective_lag - 1, -1, device=series.device, dtype=torch.float32)
-    result = corr[:, : effective_lag + 1] / counts.unsqueeze(0)
-
-    # Pad with zeros if max_lag > T-1.
-    if effective_lag < max_lag:
-        result = F.pad(result, (0, max_lag - effective_lag), value=0.0)
-
-    return result
 
 
 def bootstrap_correlator_error(

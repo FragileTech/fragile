@@ -24,14 +24,14 @@ from torch import Tensor
 
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
-from fragile.physics.new_channels.baryon_triplet_channels import (
-    _resolve_3d_dims,
-    _resolve_frame_indices,
-    _safe_gather_2d,
-    _safe_gather_3d,
+from fragile.physics.qft_utils import (
+    _fft_correlator_batched,
     build_companion_triplets,
+    resolve_3d_dims,
+    resolve_frame_indices,
+    safe_gather_2d,
+    safe_gather_3d,
 )
-from fragile.physics.new_channels.correlator_channels import _fft_correlator_batched
 
 
 @dataclass
@@ -40,7 +40,6 @@ class GlueballColorCorrelatorConfig:
 
     warmup_fraction: float = 0.1
     end_fraction: float = 1.0
-    mc_time_index: int | None = None
     max_lag: int = 80
     use_connected: bool = True
     h_eff: float = 1.0
@@ -143,10 +142,10 @@ def _compute_color_plaquette_for_triplets(
         companions_clone=companions_clone,
     )
 
-    color_j, in_j = _safe_gather_3d(color, companion_j)
-    color_k, in_k = _safe_gather_3d(color, companion_k)
-    valid_j, _ = _safe_gather_2d(color_valid, companion_j)
-    valid_k, _ = _safe_gather_2d(color_valid, companion_k)
+    color_j, in_j = safe_gather_3d(color, companion_j)
+    color_k, in_k = safe_gather_3d(color, companion_k)
+    valid_j, _ = safe_gather_2d(color_valid, companion_j)
+    valid_k, _ = safe_gather_2d(color_valid, companion_k)
 
     z_ij = (torch.conj(color) * color_j).sum(dim=-1)
     z_jk = (torch.conj(color_j) * color_k).sum(dim=-1)
@@ -529,11 +528,10 @@ def compute_companion_glueball_color_correlator(
 ) -> GlueballColorCorrelatorOutput:
     """Compute vectorized companion-triplet glueball correlator from RunHistory."""
     config = config or GlueballColorCorrelatorConfig()
-    frame_indices = _resolve_frame_indices(
+    frame_indices = resolve_frame_indices(
         history=history,
         warmup_fraction=float(config.warmup_fraction),
         end_fraction=float(config.end_fraction),
-        mc_time_index=config.mc_time_index,
     )
     n_lags = int(max(0, config.max_lag)) + 1
     if not frame_indices:
@@ -570,7 +568,7 @@ def compute_companion_glueball_color_correlator(
         ell0=ell0,
         end_idx=end_idx,
     )
-    dims = _resolve_3d_dims(color.shape[-1], config.color_dims, "color_dims")
+    dims = resolve_3d_dims(color.shape[-1], config.color_dims, "color_dims")
     color = color[:, :, list(dims)]
 
     device = color.device

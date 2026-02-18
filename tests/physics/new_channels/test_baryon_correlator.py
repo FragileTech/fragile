@@ -12,8 +12,8 @@ from fragile.fractalai.qft.baryon_triplet_channels import (
     compute_companion_baryon_correlator,
     _det3,
     build_companion_triplets,
-    _resolve_frame_indices,
 )
+from fragile.physics.qft_utils import resolve_frame_indices
 
 # New-location aliases for parity tests
 from fragile.physics.new_channels.baryon_triplet_channels import (
@@ -69,7 +69,7 @@ class TestBuildCompanionTriplets:
 class TestResolveFrameIndices:
     def test_basic_range(self):
         history = MockRunHistory(n_recorded=30)
-        indices = _resolve_frame_indices(history, warmup_fraction=0.1, end_fraction=1.0, mc_time_index=None)
+        indices = resolve_frame_indices(history, warmup_fraction=0.1, end_fraction=1.0)
         assert len(indices) > 0
         assert indices[0] >= 1
         assert indices[-1] < 30
