@@ -61,10 +61,10 @@ class MassExtractionSettings(param.Parameterized):
     )
     nexp = param.Integer(default=2, bounds=(1, 6))
     tmin = param.Integer(default=2, bounds=(1, 20))
-    tmax_frac = param.Number(
-        default=1.0,
-        bounds=(0.1, 1.0),
-        doc="Fraction of max_lag for tmax (1.0 = full range).",
+    tmax = param.Integer(
+        default=0,
+        bounds=(0, 500),
+        doc="Global tmax (0 = full range).",
     )
     svdcut = param.Number(default=1e-4)
     use_log_dE = param.Boolean(default=True)
@@ -111,7 +111,7 @@ def _build_meff_plot(
 
         scatter = hv.Scatter(
             (t, means), kdims="t", vdims="m_eff", label=vk,
-        )
+        ).opts(tools=["hover"])
         ebars = hv.ErrorBars(
             (t, means, errs), kdims="t", vdims=["m_eff", "yerr"],
         )
@@ -181,7 +181,7 @@ def _build_correlator_fit_plot(
         color = _CHANNEL_PALETTE[idx % len(_CHANNEL_PALETTE)]
         scatter = hv.Scatter(
             (t[mask], means[mask]), kdims="t", vdims="C(t)", label=vk,
-        ).opts(color=color)
+        ).opts(color=color, tools=["hover"])
         ebars = hv.ErrorBars(
             (t[mask], means[mask], errs[mask]), kdims="t", vdims=["C(t)", "yerr"],
         ).opts(color=color)
@@ -259,15 +259,15 @@ _CHANNEL_PALETTE = [
     "#aec7e8", "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5",
 ]
 
-# Default per-channel tmax_frac values.  Channels not listed fall back to
-# the global ``MassExtractionSettings.tmax_frac`` value.
-_DEFAULT_CHANNEL_TMAX_FRAC: dict[str, float] = {
-    "pseudoscalar": 0.30,
-    "scalar": 1.0,
-    "nucleon": 0.25,
-    "vector": 0.25,
-    "axial_vector": 1.0,
-    "glueball": 0.10,
+# Default per-channel tmax values (0 = full range).
+# Channels not listed fall back to the global ``MassExtractionSettings.tmax``.
+_DEFAULT_CHANNEL_TMAX: dict[str, int] = {
+    "pseudoscalar": 12,
+    "scalar": 0,
+    "nucleon": 10,
+    "vector": 10,
+    "axial_vector": 0,
+    "glueball": 4,
 }
 
 
@@ -305,7 +305,7 @@ def _build_mass_spectrum_bar(result: MassExtractionResult) -> hv.Overlay:
         list(zip(names, means, colors)),
         kdims="Channel",
         vdims=["Mass", "color"],
-    ).opts(color="color", size=10, width=700, height=300, xrotation=45, logy=True)
+    ).opts(color="color", size=10, width=700, height=300, xrotation=45, logy=True, tools=["hover"])
     ebars = hv.ErrorBars(
         list(zip(names, means, errs)),
         kdims="Channel",
@@ -361,7 +361,7 @@ def _build_pdg_comparison_plot(
         list(zip(names, pred_means, colors)),
         kdims="Channel",
         vdims=["Mass (GeV)", "color"],
-    ).opts(color="color", width=700, height=350, xrotation=45)
+    ).opts(color="color", width=700, height=350, xrotation=45, tools=["hover"])
     ebars = hv.ErrorBars(
         list(zip(names, pred_means, pred_errs)),
         kdims="Channel",
@@ -372,7 +372,7 @@ def _build_pdg_comparison_plot(
         kdims="Channel",
         vdims="Mass (GeV)",
         label="PDG",
-    ).opts(color="red", marker="diamond", size=12)
+    ).opts(color="red", marker="diamond", size=12, tools=["hover"])
 
     anchor_label, _ = PDG_REFERENCES[anchor_channel]
     return (bars * ebars * pdg_scatter).opts(
@@ -566,6 +566,7 @@ def _build_anchor_spread_analysis(
                 color=anchor_color[anc],
                 size=8,
                 jitter=0.3,
+                tools=["hover"],
             )
         )
 
@@ -576,7 +577,7 @@ def _build_anchor_spread_analysis(
     ]
     pdg_scatter = hv.Scatter(
         pdg_points, kdims="Channel", vdims="Mass (GeV)", label="PDG",
-    ).opts(color="red", marker="diamond", size=12)
+    ).opts(color="red", marker="diamond", size=12, tools=["hover"])
 
     overlay = scatter_layers[0]
     for s in scatter_layers[1:]:
@@ -817,7 +818,7 @@ def build_mass_extraction_tab(
 
     # -- Channel key selection widgets --
     channel_key_selectors: dict[str, pn.widgets.MultiSelect] = {}
-    channel_tmax_frac_sliders: dict[str, pn.widgets.FloatSlider] = {}
+    channel_tmax_sliders: dict[str, pn.widgets.IntSlider] = {}
 
     channel_key_selection_container = pn.Column(
         pn.pane.Markdown(
@@ -834,7 +835,7 @@ def build_mass_extraction_tab(
             "covariance_method",
             "nexp",
             "tmin",
-            "tmax_frac",
+            "tmax",
             "svdcut",
             "use_log_dE",
             "use_fastfit_seeding",
@@ -1034,21 +1035,13 @@ def build_mass_extraction_tab(
                 return
 
             for g in groups:
-                # Per-channel tmax_frac from slider, fallback to global setting
-                ch_tmax_frac = float(settings.tmax_frac)
-                slider = channel_tmax_frac_sliders.get(g.name)
+                # Per-channel tmax from slider, fallback to global setting
+                ch_tmax_val = int(settings.tmax)
+                slider = channel_tmax_sliders.get(g.name)
                 if slider is not None:
-                    ch_tmax_frac = float(slider.value)
+                    ch_tmax_val = int(slider.value)
 
-                ch_tmax = None
-                if ch_tmax_frac < 1.0:
-                    for key in g.correlator_keys:
-                        if key in pipeline_result.correlators:
-                            corr = pipeline_result.correlators[key]
-                            clen = corr.shape[-1] if hasattr(corr, "shape") else len(corr)
-                            candidate = max(int(settings.tmin) + 1, int(clen * ch_tmax_frac))
-                            if ch_tmax is None or candidate > ch_tmax:
-                                ch_tmax = candidate
+                ch_tmax = None if ch_tmax_val <= 0 else max(int(settings.tmin) + 1, ch_tmax_val)
 
                 g.fit = ChannelFitConfig(
                     tmin=int(settings.tmin),
@@ -1087,7 +1080,7 @@ def build_mass_extraction_tab(
         )
         # Always reset channel key selectors when history changes
         channel_key_selectors.clear()
-        channel_tmax_frac_sliders.clear()
+        channel_tmax_sliders.clear()
         channel_key_selection_container.clear()
         channel_key_selection_container.append(
             pn.pane.Markdown(
@@ -1140,7 +1133,7 @@ def build_mass_extraction_tab(
                 include_multiscale=True,
             )
             channel_key_selectors.clear()
-            channel_tmax_frac_sliders.clear()
+            channel_tmax_sliders.clear()
             widget_groups: list[pn.Column] = []
             for g in groups:
                 keys = sorted(g.correlator_keys)
@@ -1154,18 +1147,30 @@ def build_mass_extraction_tab(
                     sizing_mode="stretch_width",
                 )
                 channel_key_selectors[g.name] = selector
-                default_tmax = _DEFAULT_CHANNEL_TMAX_FRAC.get(
-                    g.name, float(settings.tmax_frac),
+                # Determine max correlator length for this group
+                max_corr_len = 0
+                for key in keys:
+                    if key in pipeline_result.correlators:
+                        corr = pipeline_result.correlators[key]
+                        clen = corr.shape[-1] if hasattr(corr, "shape") else len(corr)
+                        max_corr_len = max(max_corr_len, clen)
+                if max_corr_len <= 0:
+                    max_corr_len = 100
+                default_tmax = _DEFAULT_CHANNEL_TMAX.get(
+                    g.name, int(settings.tmax),
                 )
-                tmax_slider = pn.widgets.FloatSlider(
-                    name=f"{g.name} tmax_frac",
-                    start=0.1,
-                    end=1.0,
-                    step=0.05,
+                # Clamp default to available range
+                if default_tmax > max_corr_len:
+                    default_tmax = 0
+                tmax_slider = pn.widgets.IntSlider(
+                    name=f"{g.name} tmax",
+                    start=0,
+                    end=max_corr_len,
+                    step=1,
                     value=default_tmax,
                     sizing_mode="stretch_width",
                 )
-                channel_tmax_frac_sliders[g.name] = tmax_slider
+                channel_tmax_sliders[g.name] = tmax_slider
                 widget_groups.append(
                     pn.Column(selector, tmax_slider, sizing_mode="stretch_width"),
                 )

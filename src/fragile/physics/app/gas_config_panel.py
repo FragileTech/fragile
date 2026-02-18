@@ -250,9 +250,9 @@ class GasConfigPanel(param.Parameterized):
             gamma=1.0,
             beta=1.0,
             delta_t=0.01,
-            nu=0.1,
+            nu=3.0,
             use_viscous_coupling=True,
-            viscous_length_scale=1.0,
+            viscous_length_scale=0.1,
             viscous_neighbor_weighting="riemannian_kernel_volume",
             beta_curl=2.0,
         )

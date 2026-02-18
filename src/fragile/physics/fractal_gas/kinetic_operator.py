@@ -84,7 +84,7 @@ class KineticOperator(PanelModel):
         doc="Time step size (Δt)",
     )
     n_kinetic_steps = param.Integer(
-        default=1,
+        default=4,
         bounds=(1, None),
         doc="Number of kinetic substeps per algorithm iteration",
     )
@@ -95,9 +95,9 @@ class KineticOperator(PanelModel):
     )
 
     # Viscous coupling (velocity-dependent damping)
-    nu = param.Number(default=0.1, bounds=(0, None), doc="Viscous coupling strength (ν)")
+    nu = param.Number(default=3.0, bounds=(0, None), doc="Viscous coupling strength (ν)")
     viscous_length_scale = param.Number(
-        default=1.0,
+        default=0.1,
         bounds=(0, None),
         inclusive_bounds=(False, True),
         doc="Length scale (l) for Gaussian kernel K(r) = exp(-r²/(2l²))",
@@ -122,7 +122,7 @@ class KineticOperator(PanelModel):
     )
     # Boris rotation (curl-driven velocity rotation)
     beta_curl = param.Number(
-        default=1.0,
+        default=2.0,
         bounds=(0, None),
         doc="Curl coupling strength (β_curl) for Boris rotation",
     )
@@ -188,6 +188,14 @@ class KineticOperator(PanelModel):
                 "end": 10.0,
                 "step": 0.1,
             },
+            "n_kinetic_steps": {
+                "type": pn.widgets.IntSlider,
+                "width": INPUT_WIDTH,
+                "name": "N kinetic steps",
+                "start": 1,
+                "end": 10,
+                "step": 1,
+            },
         }
 
     @property
@@ -198,6 +206,7 @@ class KineticOperator(PanelModel):
             "beta",
             "temperature",
             "delta_t",
+            "n_kinetic_steps",
             "nu",
             "viscous_length_scale",
             "viscous_neighbor_weighting",
@@ -210,11 +219,11 @@ class KineticOperator(PanelModel):
         beta: float,
         delta_t: float,
         temperature: float = 0.5,
-        nu: float = 0.1,
+        nu: float = 3.0,
         use_viscous_coupling: bool = True,
-        viscous_length_scale: float = 1.0,
+        viscous_length_scale: float = 0.1,
         viscous_neighbor_weighting: str = "inverse_riemannian_distance",
-        beta_curl: float = 0.0,
+        beta_curl: float = 2.0,
         curl_field=None,
         device: torch.device = None,
         dtype: torch.dtype = None,

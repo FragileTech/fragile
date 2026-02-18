@@ -105,7 +105,7 @@ def build_single_correlator_plot(
     scatter = (
         hv
         .Scatter((t_plot, c_plot), "lag", "C(lag)")
-        .opts(color=color, size=6, alpha=0.8)
+        .opts(color=color, size=6, alpha=0.8, tools=["hover"])
         .relabel(f"{channel_name} C(lag)")
     )
 
@@ -168,7 +168,7 @@ def build_single_effective_mass_plot(
     scatter = (
         hv
         .Scatter((t_plot, m_plot), "t", "m_eff(t)")
-        .opts(color=color, size=6, alpha=0.8)
+        .opts(color=color, size=6, alpha=0.8, tools=["hover"])
         .relabel(f"{channel_name} m_eff")
     )
 
@@ -215,7 +215,7 @@ def build_single_operator_series_plot(
     scatter = (
         hv
         .Scatter((frames[mask], series[mask]), "frame", "value")
-        .opts(color=color, size=4, alpha=0.6)
+        .opts(color=color, size=4, alpha=0.6, tools=["hover"])
         .relabel(channel_name)
     )
 
@@ -275,7 +275,7 @@ def build_all_channels_correlator_overlay(
         scatters.append(
             hv
             .Scatter((t_plot, c_plot), "lag", "C(lag)")
-            .opts(color=color, size=5, alpha=0.7)
+            .opts(color=color, size=5, alpha=0.7, tools=["hover"])
             .relabel(name)
         )
 
@@ -345,7 +345,7 @@ def build_all_channels_meff_overlay(
         scatters.append(
             hv
             .Scatter((lags[mask], m_eff[mask]), "t", "m_eff(t)")
-            .opts(color=color, size=5, alpha=0.7)
+            .opts(color=color, size=5, alpha=0.7, tools=["hover"])
             .relabel(name)
         )
 
@@ -600,7 +600,7 @@ def build_grouped_correlator_plot(
         color = _VARIANT_PALETTE[idx % len(_VARIANT_PALETTE)]
         scatters.append(
             hv.Scatter((t_plot, c_plot), "lag", "C(lag)")
-            .opts(color=color, size=5, alpha=0.7)
+            .opts(color=color, size=5, alpha=0.7, tools=["hover"])
             .relabel(name)
         )
 
@@ -661,7 +661,7 @@ def build_grouped_meff_plot(
         color = _VARIANT_PALETTE[idx % len(_VARIANT_PALETTE)]
         scatters.append(
             hv.Scatter((lags[mask], m_eff[mask]), "t", "m_eff(t)")
-            .opts(color=color, size=5, alpha=0.7)
+            .opts(color=color, size=5, alpha=0.7, tools=["hover"])
             .relabel(name)
         )
 

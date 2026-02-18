@@ -101,6 +101,7 @@ class RandomActionOperator:
         states: np.ndarray,
         actions: np.ndarray | None = None,
         dt: np.ndarray | None = None,
+        prev_actions: np.ndarray | None = None,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, list]:
         """Apply kinetic step to walker states.
 
@@ -156,3 +157,53 @@ class RandomActionOperator:
             truncated = np.array(truncated, dtype=bool)
 
         return new_states, observations, rewards, dones, truncated, infos
+
+
+@dataclass
+class InertialActionOperator(RandomActionOperator):
+    """Kinetic operator with action inertia for smooth trajectories.
+
+    Instead of sampling fresh random actions each step, perturbs the previous
+    actions with Gaussian noise.  The momentum propagates through cloning
+    because ``WalkerState.actions`` is already cloned in ``WalkerState.clone()``.
+
+    Args:
+        noise_std: Standard deviation of the Gaussian perturbation.
+    """
+
+    noise_std: float = 0.1
+
+    def __post_init__(self):
+        super().__post_init__()
+        action_space = self.env.action_space
+        self._action_low = (
+            action_space.low if hasattr(action_space, "low") else action_space.minimum
+        )
+        self._action_high = (
+            action_space.high if hasattr(action_space, "high") else action_space.maximum
+        )
+
+    def apply(
+        self,
+        states: np.ndarray,
+        actions: np.ndarray | None = None,
+        dt: np.ndarray | None = None,
+        prev_actions: np.ndarray | None = None,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, list]:
+        """Apply inertial kinetic step.
+
+        If *actions* is provided explicitly it is used directly (e.g. saturated
+        first-step actions in planning mode).  Otherwise *prev_actions* are
+        perturbed with Gaussian noise to produce smooth trajectories.  Falls
+        back to random sampling when *prev_actions* is ``None`` (first step
+        after reset).
+        """
+        if actions is not None:
+            # Explicit actions (planning first step, etc.) — use directly
+            pass
+        elif prev_actions is not None:
+            noise = np.random.normal(0.0, self.noise_std, size=prev_actions.shape)
+            actions = np.clip(prev_actions + noise, self._action_low, self._action_high)
+        # else: actions stays None → parent will call sample_actions()
+
+        return super().apply(states, actions=actions, dt=dt)

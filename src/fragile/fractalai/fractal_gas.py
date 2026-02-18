@@ -231,6 +231,8 @@ class FractalGas:
         record_frames: bool = False,
         n_elite: int = 0,
         death_condition=None,
+        inertial: bool = False,
+        inertial_noise_std: float = 0.1,
     ):
         # Lazy imports to avoid circular dependency through videogames/__init__.py
         from fragile.fractalai.videogames.cloning import FractalCloningOperator
@@ -256,12 +258,23 @@ class FractalGas:
             device=device,
         )
 
-        self.kinetic_op = RandomActionOperator(
-            env=env,
-            dt_range=dt_range,
-            action_sampler=action_sampler,
-            seed=seed,
-        )
+        if inertial:
+            from fragile.fractalai.videogames.kinetic import InertialActionOperator
+
+            self.kinetic_op = InertialActionOperator(
+                env=env,
+                dt_range=dt_range,
+                action_sampler=action_sampler,
+                seed=seed,
+                noise_std=inertial_noise_std,
+            )
+        else:
+            self.kinetic_op = RandomActionOperator(
+                env=env,
+                dt_range=dt_range,
+                action_sampler=action_sampler,
+                seed=seed,
+            )
 
         # Metrics tracking
         self.total_steps = 0
@@ -426,7 +439,11 @@ class FractalGas:
 
         # 4. Apply kinetic operator (random actions, or provided actions)
         new_states_list, obs_np, step_rewards_np, dones_np, truncated_np, infos = (
-            self.kinetic_op.apply(state_after_clone.states, actions=actions)
+            self.kinetic_op.apply(
+                state_after_clone.states,
+                actions=actions,
+                prev_actions=state_after_clone.actions,
+            )
         )
         # step_batch returns lists; convert back to numpy object array for indexing
         new_states = _make_object_array(new_states_list)

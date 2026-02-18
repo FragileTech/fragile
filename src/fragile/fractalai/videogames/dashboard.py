@@ -165,7 +165,7 @@ class AtariGasConfigPanel(param.Parameterized):
 
     seed = param.Integer(default=42, doc="Random seed for reproducibility")
 
-    n_workers = param.Integer(default=1, bounds=(1, 16), doc="Parallel env workers (1=serial)")
+    n_workers = param.Integer(default=1, bounds=(1, 64), doc="Parallel env workers (1=serial)")
 
     # Planning mode parameters
     tau_inner = param.Integer(
@@ -812,7 +812,7 @@ class AtariGasVisualizer(param.Parameterized):
                 })
                 elite_curve = hv.Curve(
                     df, "step", "reward", label=curve_data["label"],
-                ).opts(color="blue", line_width=1, alpha=0.6)
+                ).opts(color="blue", line_width=1, alpha=0.6, tools=["hover"])
                 reward_overlay = reward_overlay * elite_curve
             if elite_curves:
                 reward_overlay = reward_overlay.opts(legend_position="top_left")
@@ -877,6 +877,7 @@ class AtariGasVisualizer(param.Parameterized):
                 color="teal",
                 line_width=2,
                 show_grid=True,
+                tools=["hover"],
             )
             self.step_reward_plot_pane.object = step_curve
 
@@ -899,13 +900,14 @@ class AtariGasVisualizer(param.Parameterized):
                 color="orange",
                 line_width=2,
                 show_grid=True,
+                tools=["hover"],
             )
             step_overlay = hv.Curve(
                 quality_data,
                 kdims=["step"],
                 vdims=["step_reward"],
                 label="Actual Step Reward",
-            ).opts(color="teal", line_width=2, alpha=0.7)
+            ).opts(color="teal", line_width=2, alpha=0.7, tools=["hover"])
             self.inner_quality_plot_pane.object = (inner_curve * step_overlay).opts(
                 legend_position="top_left"
             )

@@ -222,6 +222,8 @@ class PlanningFractalGas:
         n_elite: int = 0,
         outer_dt: int = 1,
         death_condition=None,
+        inertial: bool = False,
+        inertial_noise_std: float = 0.1,
     ):
         if inner_gas_cls is None:
             from fragile.fractalai.videogames.atari_gas import AtariFractalGas
@@ -250,6 +252,8 @@ class PlanningFractalGas:
             record_frames=False,
             n_elite=n_elite,
             death_condition=death_condition,
+            inertial=inertial,
+            inertial_noise_std=inertial_noise_std,
         )
 
     # ------------------------------------------------------------------

@@ -97,7 +97,7 @@ class RoboticGasConfigPanel(param.Parameterized):
     )
 
     reward_coef = param.Number(
-        default=1.0, bounds=(0.0, 5.0), doc="Reward coefficient in fitness calculation"
+        default=2.0, bounds=(0.0, 5.0), doc="Reward coefficient in fitness calculation"
     )
 
     n_elite = param.Integer(
@@ -106,8 +106,8 @@ class RoboticGasConfigPanel(param.Parameterized):
 
     action_mode = param.ObjectSelector(
         default="Uniform",
-        objects=["Uniform", "Gaussian"],
-        doc="Action sampling: Uniform random or Gaussian (clipped to bounds)",
+        objects=["Uniform", "Gaussian", "Inertial"],
+        doc="Action sampling: Uniform random, Gaussian (clipped), or Inertial (momentum)",
     )
 
     gaussian_mean = param.Number(
@@ -122,6 +122,12 @@ class RoboticGasConfigPanel(param.Parameterized):
         doc="Std dev of Gaussian action distribution",
     )
 
+    inertial_noise_std = param.Number(
+        default=0.1,
+        bounds=(0.001, 1.0),
+        doc="Std dev of Gaussian noise added to previous actions (inertial mode)",
+    )
+
     dt_range_min = param.Integer(default=1, bounds=(1, 10), doc="Min action repeat")
     dt_range_max = param.Integer(default=1, bounds=(1, 10), doc="Max action repeat")
 
@@ -132,7 +138,7 @@ class RoboticGasConfigPanel(param.Parameterized):
 
     seed = param.Integer(default=42, doc="Random seed for reproducibility")
 
-    n_workers = param.Integer(default=1, bounds=(1, 16), doc="Parallel env workers (1=serial)")
+    n_workers = param.Integer(default=1, bounds=(1, 64), doc="Parallel env workers (1=serial)")
 
     # Planning mode parameters
     tau_inner = param.Integer(
@@ -144,7 +150,7 @@ class RoboticGasConfigPanel(param.Parameterized):
     )
 
     kill_on_com_ground = param.Boolean(
-        default=False,
+        default=True,
         doc="Kill walkers whose torso height reaches ground level (walker tasks)",
     )
 
@@ -223,11 +229,24 @@ class RoboticGasConfigPanel(param.Parameterized):
             ),
             visible=(self.action_mode == "Gaussian"),
         )
+
+        # Inertial action params (visible only when action_mode == "Inertial")
+        self._inertial_params_section = pn.Column(
+            pn.Param(
+                self.param,
+                parameters=["inertial_noise_std"],
+                widgets={
+                    "inertial_noise_std": pn.widgets.EditableFloatSlider,
+                },
+            ),
+            visible=(self.action_mode == "Inertial"),
+        )
         self.param.watch(self._on_action_mode_changed, "action_mode")
 
     def _on_action_mode_changed(self, event):
-        """Toggle visibility of Gaussian parameter section."""
+        """Toggle visibility of action mode parameter sections."""
         self._gaussian_params_section.visible = event.new == "Gaussian"
+        self._inertial_params_section.visible = event.new == "Inertial"
 
     def _on_mode_changed(self, event):
         """Toggle visibility of mode-specific parameter sections."""
@@ -356,6 +375,7 @@ class RoboticGasConfigPanel(param.Parameterized):
         from fragile.fractalai.robots.death_conditions import walker_ground_death
 
         death_condition = walker_ground_death if self.kill_on_com_ground else None
+        is_inertial = self.action_mode == "Inertial"
         self.gas = RoboticFractalGas(
             env=env,
             N=self.N,
@@ -370,6 +390,8 @@ class RoboticGasConfigPanel(param.Parameterized):
             render_width=self.render_width,
             render_height=self.render_height,
             death_condition=death_condition,
+            inertial=is_inertial,
+            inertial_noise_std=self.inertial_noise_std,
         )
         print("[worker] RoboticFractalGas created, calling reset()...", flush=True)
 
@@ -437,6 +459,7 @@ class RoboticGasConfigPanel(param.Parameterized):
         from fragile.fractalai.robots.death_conditions import walker_ground_death
 
         death_condition = walker_ground_death if self.kill_on_com_ground else None
+        is_inertial = self.action_mode == "Inertial"
         pg = PlanningFractalGas(
             env=env,
             N=self.N,
@@ -452,6 +475,8 @@ class RoboticGasConfigPanel(param.Parameterized):
             outer_dt=self.outer_dt,
             action_sampler=action_sampler,
             death_condition=death_condition,
+            inertial=is_inertial,
+            inertial_noise_std=self.inertial_noise_std,
         )
         # Pass render dimensions to the inner gas for frame rendering
         pg.inner_gas.render_width = self.render_width
@@ -610,6 +635,7 @@ class RoboticGasConfigPanel(param.Parameterized):
                 widgets={"kill_on_com_ground": pn.widgets.Checkbox},
             ),
             self._gaussian_params_section,
+            self._inertial_params_section,
             self._planning_params_section,
             pn.pane.Markdown("### Simulation"),
             pn.Param(
@@ -782,7 +808,7 @@ class RoboticGasVisualizer(param.Parameterized):
                 })
                 elite_curve = hv.Curve(
                     df, "step", "reward", label=curve_data["label"],
-                ).opts(color="blue", line_width=1, alpha=0.6)
+                ).opts(color="blue", line_width=1, alpha=0.6, tools=["hover"])
                 reward_overlay = reward_overlay * elite_curve
             if elite_curves:
                 reward_overlay = reward_overlay.opts(legend_position="top_left")
@@ -847,6 +873,7 @@ class RoboticGasVisualizer(param.Parameterized):
                 color="teal",
                 line_width=2,
                 show_grid=True,
+                tools=["hover"],
             )
             self.step_reward_plot_pane.object = step_curve
 
@@ -869,13 +896,14 @@ class RoboticGasVisualizer(param.Parameterized):
                 color="orange",
                 line_width=2,
                 show_grid=True,
+                tools=["hover"],
             )
             step_overlay = hv.Curve(
                 quality_data,
                 kdims=["step"],
                 vdims=["step_reward"],
                 label="Actual Step Reward",
-            ).opts(color="teal", line_width=2, alpha=0.7)
+            ).opts(color="teal", line_width=2, alpha=0.7, tools=["hover"])
             self.inner_quality_plot_pane.object = (inner_curve * step_overlay).opts(
                 legend_position="top_left"
             )

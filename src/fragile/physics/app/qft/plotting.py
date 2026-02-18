@@ -57,7 +57,7 @@ def build_correlation_decay_plot(
     r_plot = r[mask]
     c_plot = C[mask]
 
-    scatter = hv.Scatter((r_plot, c_plot), "r", "C(r)").relabel("C(r)")
+    scatter = hv.Scatter((r_plot, c_plot), "r", "C(r)").relabel("C(r)").opts(tools=["hover"])
     overlays = scatter
 
     if fit.get("xi", 0.0) > 0 and fit.get("C0", 0.0) > 0:
@@ -137,8 +137,8 @@ def build_phase_histograms_plot(
     u1_hist = np.histogram(u1_vals, bins=50)
     su2_hist = np.histogram(su2_vals, bins=50)
 
-    u1_plot = hv.Histogram(u1_hist).relabel("U1 phase").opts(alpha=0.6)
-    su2_plot = hv.Histogram(su2_hist).relabel("SU2 phase").opts(alpha=0.6)
+    u1_plot = hv.Histogram(u1_hist).relabel("U1 phase").opts(alpha=0.6, tools=["hover"])
+    su2_plot = hv.Histogram(su2_hist).relabel("SU2 phase").opts(alpha=0.6, tools=["hover"])
 
     return (u1_plot * su2_plot).opts(
         xlabel="phase",
@@ -176,6 +176,7 @@ def build_wilson_histogram_plot(values: np.ndarray, title: str) -> hv.Histogram 
             title=title,
             width=600,
             height=400,
+            tools=["hover"],
         )
     )
 
@@ -198,6 +199,7 @@ def build_wilson_timeseries_plot(
         title="Wilson Action Over Time",
         width=600,
         height=400,
+        tools=["hover"],
     )
 
 
@@ -293,6 +295,7 @@ def build_correlator_plot(
             color=color,
             size=6,
             alpha=0.8,
+            tools=["hover"],
         )
         .relabel(f"{channel_name} C(t)")
     )
@@ -373,6 +376,7 @@ def build_effective_mass_plot(
             color=color,
             size=6,
             alpha=0.8,
+            tools=["hover"],
         )
         .relabel(f"{channel_name} m_eff")
     )
@@ -493,6 +497,7 @@ def build_mass_spectrum_bar(
         height=350,
         color=hv.dim("channel").categorize(dict(zip(names, colors))),
         xrotation=45,
+        tools=["hover"],
     )
 
     # Add error bars using Scatter
@@ -734,6 +739,7 @@ def build_effective_mass_plateau_plot(
             color=color,
             size=6,
             alpha=0.8,
+            tools=["hover"],
         )
         .relabel("C(t)")
     )
@@ -784,6 +790,7 @@ def build_effective_mass_plateau_plot(
             color=color,
             size=6,
             alpha=0.8,
+            tools=["hover"],
         )
         .relabel("m_eff(t)")
     )
@@ -946,6 +953,7 @@ class ChannelPlot:
                 color=self._color,
                 size=6,
                 alpha=0.8,
+                tools=["hover"],
             )
             .relabel(f"{self.result.channel_name} C(t)")
         )
@@ -1057,6 +1065,7 @@ class ChannelPlot:
                 color=self._color,
                 size=6,
                 alpha=0.8,
+                tools=["hover"],
             )
             .relabel(f"{self.result.channel_name} m_eff")
         )
@@ -1241,6 +1250,7 @@ def build_all_channels_overlay(
                 .opts(
                     color=color,
                     line_width=2,
+                    tools=["hover"],
                 )
                 .relabel(name)
             )
@@ -1261,6 +1271,7 @@ def build_all_channels_overlay(
                 .opts(
                     color=color,
                     line_width=2,
+                    tools=["hover"],
                 )
                 .relabel(name)
             )

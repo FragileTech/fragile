@@ -79,6 +79,13 @@ class CouplingDiagnosticsConfig:
     kernel_max_scale_samples: int = 500_000
     kernel_min_scale: float = 1e-6
 
+    enable_wilson_flow: bool = False
+    wilson_flow_n_steps: int = 100
+    wilson_flow_step_size: float = 0.02
+    wilson_flow_topology: str = "both"
+    wilson_flow_t0_reference: float = 0.3
+    wilson_flow_w0_reference: float = 0.3
+
 
 @dataclass
 class CouplingDiagnosticsOutput:
@@ -123,6 +130,8 @@ class CouplingDiagnosticsOutput:
     spectral_gap_autocorrelation_tau: float
     spectral_gap_transfer_matrix: float
     spectral_gap_transfer_matrix_std: float
+
+    wilson_flow: object | None
 
     summary: dict[str, float]
 
@@ -245,6 +254,7 @@ def _empty_output() -> CouplingDiagnosticsOutput:
         spectral_gap_autocorrelation_tau=float("nan"),
         spectral_gap_transfer_matrix=float("nan"),
         spectral_gap_transfer_matrix_std=float("nan"),
+        wilson_flow=None,
         summary={
             "n_frames": 0.0,
             "phase_drift": float("nan"),
@@ -270,6 +280,9 @@ def _empty_output() -> CouplingDiagnosticsOutput:
             "spectral_gap_autocorrelation": float("nan"),
             "spectral_gap_autocorrelation_tau": float("nan"),
             "spectral_gap_transfer_matrix": float("nan"),
+            "wilson_flow_t0": float("nan"),
+            "wilson_flow_w0": float("nan"),
+            "wilson_flow_sqrt_8t0": float("nan"),
         },
     )
 
@@ -890,6 +903,27 @@ def compute_coupling_diagnostics(
 
     kernel_available = float(bool(scales.numel() > 0))
 
+    # Wilson flow
+    wilson_flow_output = None
+    if cfg.enable_wilson_flow:
+        from fragile.physics.new_channels.wilson_flow import WilsonFlowConfig, compute_wilson_flow
+
+        wf_cfg = WilsonFlowConfig(
+            n_steps=int(cfg.wilson_flow_n_steps),
+            step_size=float(cfg.wilson_flow_step_size),
+            topology=str(cfg.wilson_flow_topology),
+            t0_reference=float(cfg.wilson_flow_t0_reference),
+            w0_reference=float(cfg.wilson_flow_w0_reference),
+            eps=float(cfg.eps),
+        )
+        wilson_flow_output = compute_wilson_flow(
+            color=color,
+            color_valid=color_valid,
+            companions_distance=comp_d,
+            companions_clone=comp_c,
+            config=wf_cfg,
+        )
+
     # Spectral gap estimation
     sg = compute_spectral_gap(history, warmup_fraction=float(cfg.warmup_fraction))
 
@@ -926,6 +960,11 @@ def compute_coupling_diagnostics(
         "spectral_gap_autocorrelation": sg.autocorrelation_gap,
         "spectral_gap_autocorrelation_tau": sg.autocorrelation_tau,
         "spectral_gap_transfer_matrix": sg.transfer_matrix_gap,
+        "wilson_flow_t0": wilson_flow_output.t0 if wilson_flow_output is not None else float("nan"),
+        "wilson_flow_w0": wilson_flow_output.w0 if wilson_flow_output is not None else float("nan"),
+        "wilson_flow_sqrt_8t0": (
+            wilson_flow_output.sqrt_8t0 if wilson_flow_output is not None else float("nan")
+        ),
     }
 
     return CouplingDiagnosticsOutput(
@@ -965,5 +1004,6 @@ def compute_coupling_diagnostics(
         spectral_gap_autocorrelation_tau=sg.autocorrelation_tau,
         spectral_gap_transfer_matrix=sg.transfer_matrix_gap,
         spectral_gap_transfer_matrix_std=sg.transfer_matrix_gap_std,
+        wilson_flow=wilson_flow_output,
         summary=summary,
     )

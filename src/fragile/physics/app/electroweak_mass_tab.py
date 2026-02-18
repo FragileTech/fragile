@@ -70,10 +70,10 @@ class ElectroweakMassSettings(param.Parameterized):
     )
     nexp = param.Integer(default=2, bounds=(1, 6))
     tmin = param.Integer(default=2, bounds=(1, 20))
-    tmax_frac = param.Number(
-        default=1.0,
-        bounds=(0.1, 1.0),
-        doc="Fraction of max_lag for tmax (1.0 = full range).",
+    tmax = param.Integer(
+        default=0,
+        bounds=(0, 500),
+        doc="Global tmax (0 = full range).",
     )
     svdcut = param.Number(default=1e-4)
     use_log_dE = param.Boolean(default=True)
@@ -188,7 +188,7 @@ def build_electroweak_mass_tab(
             "covariance_method",
             "nexp",
             "tmin",
-            "tmax_frac",
+            "tmax",
             "svdcut",
             "use_log_dE",
             "use_fastfit_seeding",
@@ -305,13 +305,8 @@ def build_electroweak_mass_tab(
                 return
 
             # Build config from settings
-            tmax = None
-            if settings.tmax_frac < 1.0:
-                first_key = next(iter(pipeline_result.correlators), None)
-                if first_key is not None:
-                    corr = pipeline_result.correlators[first_key]
-                    max_len = corr.shape[-1] if hasattr(corr, "shape") else len(corr)
-                    tmax = max(settings.tmin + 1, int(max_len * settings.tmax_frac))
+            tmax_val = int(settings.tmax)
+            tmax = None if tmax_val <= 0 else max(int(settings.tmin) + 1, tmax_val)
 
             config = MassExtractionConfig(
                 covariance=CovarianceConfig(method=str(settings.covariance_method)),

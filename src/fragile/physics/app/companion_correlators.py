@@ -40,8 +40,12 @@ from fragile.physics.new_channels.glueball_color_channels import (
     _extract_axis_bounds as _glueball_extract_axis_bounds,
     compute_glueball_color_correlator_from_color,
 )
+from fragile.physics.new_channels.fitness_pseudoscalar_channels import (
+    compute_fitness_pseudoscalar_from_data,
+)
 from fragile.physics.new_channels.mass_extraction_adapter import (
     extract_baryon,
+    extract_fitness_pseudoscalar,
     extract_glueball,
     extract_meson_phase,
     extract_tensor_momentum,
@@ -81,7 +85,17 @@ class CompanionCorrelatorSection:
 # Settings
 # ---------------------------------------------------------------------------
 
-MESON_MODES = ("standard", "score_directed", "score_weighted", "abs2_vacsub")
+SCALAR_MODES = ("standard", "score_directed", "score_weighted", "abs2_vacsub")
+PSEUDOSCALAR_MODES = (
+    "standard",
+    "score_weighted",
+    "fitness_pseudoscalar",
+    "fitness_scalar_variance",
+    "fitness_axial",
+)
+FITNESS_PSEUDOSCALAR_MODES = frozenset({
+    "fitness_pseudoscalar", "fitness_scalar_variance", "fitness_axial",
+})
 BARYON_MODES = (
     "det_abs", "flux_action", "flux_sin2", "flux_exp",
     "score_signed", "score_abs",
@@ -252,11 +266,18 @@ def build_companion_correlator_tab(
     )
 
     # -- Per-channel mode selectors (MultiSelect) --
-    meson_mode_selector = pn.widgets.MultiSelect(
-        name="Meson",
-        options=list(MESON_MODES),
-        value=list(MESON_MODES),
-        size=len(MESON_MODES),
+    scalar_mode_selector = pn.widgets.MultiSelect(
+        name="Scalar",
+        options=list(SCALAR_MODES),
+        value=list(SCALAR_MODES),
+        size=len(SCALAR_MODES),
+        sizing_mode="stretch_width",
+    )
+    pseudoscalar_mode_selector = pn.widgets.MultiSelect(
+        name="Pseudoscalar",
+        options=list(PSEUDOSCALAR_MODES),
+        value=["standard", "score_weighted"],
+        size=len(PSEUDOSCALAR_MODES),
         sizing_mode="stretch_width",
     )
     baryon_mode_selector = pn.widgets.MultiSelect(
@@ -289,7 +310,8 @@ def build_companion_correlator_tab(
     )
 
     channel_mode_selectors: dict[str, pn.widgets.MultiSelect] = {
-        "meson": meson_mode_selector,
+        "scalar": scalar_mode_selector,
+        "pseudoscalar": pseudoscalar_mode_selector,
         "baryon": baryon_mode_selector,
         "vector": vector_mode_selector,
         "glueball": glueball_mode_selector,
@@ -297,7 +319,8 @@ def build_companion_correlator_tab(
 
     channel_selection_panel = pn.Column(
         pn.Row(
-            meson_mode_selector,
+            scalar_mode_selector,
+            pseudoscalar_mode_selector,
             baryon_mode_selector,
             sizing_mode="stretch_width",
         ),
@@ -518,29 +541,86 @@ def build_companion_correlator_tab(
             merged_operators: dict[str, Any] = {}
             channel_labels: list[str] = []
 
-            # -- Meson: iterate over selected modes --
-            for mode in selected_modes.get("meson", []):
-                out = compute_meson_phase_correlator_from_color(
-                    color=color, color_valid=color_valid,
-                    companions_distance=companions_distance,
-                    companions_clone=companions_clone,
-                    max_lag=max_lag,
-                    use_connected=use_connected,
-                    pair_selection=str(settings.pair_selection),
-                    eps=eps,
-                    operator_mode=mode,
-                    scores=scores,
-                    frame_indices=frame_indices,
-                )
+            # -- Meson output cache (keyed by operator_mode) --
+            meson_cache: dict[str, Any] = {}
+
+            def _get_meson_output(operator_mode: str):
+                if operator_mode not in meson_cache:
+                    meson_cache[operator_mode] = compute_meson_phase_correlator_from_color(
+                        color=color, color_valid=color_valid,
+                        companions_distance=companions_distance,
+                        companions_clone=companions_clone,
+                        max_lag=max_lag,
+                        use_connected=use_connected,
+                        pair_selection=str(settings.pair_selection),
+                        eps=eps,
+                        operator_mode=operator_mode,
+                        scores=scores,
+                        frame_indices=frame_indices,
+                    )
+                return meson_cache[operator_mode]
+
+            # -- Scalar: iterate over selected scalar modes --
+            for mode in selected_modes.get("scalar", []):
+                out = _get_meson_output(mode)
                 corrs, ops = extract_meson_phase(
                     out, use_connected=use_connected, prefix="",
                 )
                 for key, val in corrs.items():
-                    merged_correlators[f"{key}_{mode}"] = val
+                    if key.startswith("scalar"):
+                        merged_correlators[f"{key}_{mode}"] = val
                 for key, val in ops.items():
-                    merged_operators[f"{key}_{mode}"] = val
-            if "meson" in selected_modes:
-                channel_labels.append("meson")
+                    if key.startswith("scalar"):
+                        merged_operators[f"{key}_{mode}"] = val
+            if "scalar" in selected_modes:
+                channel_labels.append("scalar")
+
+            # -- Pseudoscalar: meson-based + fitness modes --
+            ps_modes = selected_modes.get("pseudoscalar", [])
+            meson_ps_modes = [m for m in ps_modes if m not in FITNESS_PSEUDOSCALAR_MODES]
+            fitness_ps_modes = [m for m in ps_modes if m in FITNESS_PSEUDOSCALAR_MODES]
+
+            for mode in meson_ps_modes:
+                out = _get_meson_output(mode)
+                corrs, ops = extract_meson_phase(
+                    out, use_connected=use_connected, prefix="",
+                )
+                for key, val in corrs.items():
+                    if key.startswith("pseudoscalar"):
+                        merged_correlators[f"{key}_{mode}"] = val
+                for key, val in ops.items():
+                    if key.startswith("pseudoscalar"):
+                        merged_operators[f"{key}_{mode}"] = val
+
+            if fitness_ps_modes:
+                # Gather fitness and alive_mask tensors (same slice as scores)
+                fitness_tensor = torch.as_tensor(
+                    history.fitness[start_idx - 1 : end_idx - 1],
+                    dtype=torch.float32, device=device,
+                )
+                alive_mask = torch.as_tensor(
+                    history.alive_mask[start_idx - 1 : end_idx - 1],
+                    dtype=torch.bool, device=device,
+                )
+                fitness_output = compute_fitness_pseudoscalar_from_data(
+                    fitness=fitness_tensor,
+                    cloning_scores=scores,
+                    alive_mask=alive_mask,
+                    max_lag=max_lag,
+                    use_connected=use_connected,
+                    frame_indices=frame_indices,
+                )
+                all_fitness_corrs, all_fitness_ops = extract_fitness_pseudoscalar(
+                    fitness_output, use_connected=use_connected,
+                )
+                for mode in fitness_ps_modes:
+                    if mode in all_fitness_corrs:
+                        merged_correlators[f"pseudoscalar_{mode}"] = all_fitness_corrs[mode]
+                    if mode in all_fitness_ops:
+                        merged_operators[f"pseudoscalar_{mode}"] = all_fitness_ops[mode]
+
+            if ps_modes:
+                channel_labels.append("pseudoscalar")
 
             # -- Baryon: iterate over selected modes --
             for mode in selected_modes.get("baryon", []):

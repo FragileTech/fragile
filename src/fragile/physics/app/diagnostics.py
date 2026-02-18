@@ -127,6 +127,38 @@ class CouplingDiagnosticsSettings(param.Parameterized):
     kernel_scale_q_high = param.Number(default=0.95, bounds=(0.01, 1.0))
     kernel_max_scale_samples = param.Integer(default=500_000, bounds=(1_000, 5_000_000))
     kernel_min_scale = param.Number(default=1e-6, bounds=(1e-12, None))
+    enable_wilson_flow = param.Boolean(
+        default=False,
+        doc="Enable Wilson flow (gradient flow) analysis for scale extraction.",
+    )
+    wilson_flow_n_steps = param.Integer(
+        default=100,
+        bounds=(10, 1000),
+        doc="Number of Wilson flow diffusion steps.",
+    )
+    wilson_flow_step_size = param.Number(
+        default=0.02,
+        bounds=(0.001, 0.5),
+        step=0.01,
+        doc="Wilson flow diffusion step size (epsilon).",
+    )
+    wilson_flow_topology = param.ObjectSelector(
+        default="both",
+        objects=("distance", "clone", "both"),
+        doc="Companion topology for Wilson flow diffusion.",
+    )
+    wilson_flow_t0_reference = param.Number(
+        default=0.3,
+        bounds=(0.01, 10.0),
+        step=0.01,
+        doc="Reference value for t0 extraction (t^2<E> = ref).",
+    )
+    wilson_flow_w0_reference = param.Number(
+        default=0.3,
+        bounds=(0.01, 10.0),
+        step=0.01,
+        doc="Reference value for w0 extraction (d/dt[t^2<E>] = ref).",
+    )
 
 
 @dataclass
@@ -153,6 +185,10 @@ class _CouplingDiagnosticsWidgets:
     coverage_plot: pn.pane.HoloViews
     scale_plot: pn.pane.HoloViews
     running_plot: pn.pane.HoloViews
+    wilson_flow_plot: pn.pane.HoloViews
+    wilson_t2e_plot: pn.pane.HoloViews
+    wilson_derivative_plot: pn.pane.HoloViews
+    wilson_summary: pn.pane.Markdown
 
 
 def _build_coupling_diagnostics_settings_panel(
@@ -179,9 +215,20 @@ def _build_coupling_diagnostics_settings_panel(
             "kernel_scale_q_high",
             "kernel_max_scale_samples",
             "kernel_min_scale",
+            "enable_wilson_flow",
+            "wilson_flow_n_steps",
+            "wilson_flow_step_size",
+            "wilson_flow_topology",
+            "wilson_flow_t0_reference",
+            "wilson_flow_w0_reference",
         ],
         show_name=False,
-        widgets={"color_dims_spec": {"name": "Color dims (optional)"}},
+        widgets={
+            "color_dims_spec": {"name": "Color dims (optional)"},
+            "wilson_flow_step_size": {"type": pn.widgets.EditableFloatSlider, "step": 0.01},
+            "wilson_flow_t0_reference": {"type": pn.widgets.EditableFloatSlider, "step": 0.01},
+            "wilson_flow_w0_reference": {"type": pn.widgets.EditableFloatSlider, "step": 0.01},
+        },
         default_layout=type("CouplingDiagnosticsSettingsGrid", (pn.GridBox,), {"ncols": 2}),
     )
 
@@ -221,6 +268,13 @@ def _build_coupling_diagnostics_widgets() -> _CouplingDiagnosticsWidgets:
     coverage_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
     scale_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
     running_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+    wilson_flow_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+    wilson_t2e_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+    wilson_derivative_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+    wilson_summary = pn.pane.Markdown(
+        "_Enable Wilson flow and run diagnostics to populate._",
+        sizing_mode="stretch_width",
+    )
 
     _set_plot_placeholders(
         phase_plot,
@@ -229,6 +283,9 @@ def _build_coupling_diagnostics_widgets() -> _CouplingDiagnosticsWidgets:
         coverage_plot,
         scale_plot,
         running_plot,
+        wilson_flow_plot,
+        wilson_t2e_plot,
+        wilson_derivative_plot,
     )
 
     return _CouplingDiagnosticsWidgets(
@@ -243,6 +300,10 @@ def _build_coupling_diagnostics_widgets() -> _CouplingDiagnosticsWidgets:
         coverage_plot=coverage_plot,
         scale_plot=scale_plot,
         running_plot=running_plot,
+        wilson_flow_plot=wilson_flow_plot,
+        wilson_t2e_plot=wilson_t2e_plot,
+        wilson_derivative_plot=wilson_derivative_plot,
+        wilson_summary=wilson_summary,
     )
 
 
@@ -254,6 +315,9 @@ def _set_plot_placeholders(*plots: pn.pane.HoloViews) -> None:
         "Run diagnostics to show pair/walker coverage.",
         "Run diagnostics to show kernel-scale diagnostics.",
         "Run diagnostics to show running/Creutz diagnostics.",
+        "Enable Wilson flow to show action density E(t).",
+        "Enable Wilson flow to show t^2 E(t) and t0.",
+        "Enable Wilson flow to show d/dt[t^2 E] and w0.",
     )
     for plot, message in zip(plots, placeholders):
         plot.object = _algorithm_placeholder_plot(message)
@@ -286,6 +350,9 @@ def _build_coupling_diagnostics_summary_table(summary: dict[str, float]) -> pd.D
         ("spectral_gap_autocorrelation", summary.get("spectral_gap_autocorrelation")),
         ("spectral_gap_autocorrelation_tau", summary.get("spectral_gap_autocorrelation_tau")),
         ("spectral_gap_transfer_matrix", summary.get("spectral_gap_transfer_matrix")),
+        ("wilson_flow_t0", summary.get("wilson_flow_t0")),
+        ("wilson_flow_w0", summary.get("wilson_flow_w0")),
+        ("wilson_flow_sqrt_8t0", summary.get("wilson_flow_sqrt_8t0")),
     ]
     frame = pd.DataFrame([{"metric": name, "value": value} for name, value in metrics])
     frame["value"] = pd.to_numeric(frame["value"], errors="coerce")
@@ -354,6 +421,7 @@ def _build_overlay_plot(
             hv.Curve(frame, axis_name, "value").relabel(label).opts(
                 color=color,
                 line_width=2,
+                tools=["hover"],
             )
         )
 
@@ -365,15 +433,17 @@ def _build_overlay_plot(
         plot = plot * overlay
 
     xlabel = "Recorded step" if axis_name == "step" else "Scale"
-    return plot.opts(
+    opts_kw: dict[str, Any] = dict(
         title=title,
         xlabel=xlabel,
         ylabel=ylabel,
         width=960,
         height=320,
-        legend_position="top_left",
         show_grid=True,
     )
+    if len(overlays) > 1:
+        opts_kw["legend_position"] = "top_left"
+    return plot.opts(**opts_kw)
 
 
 def _build_coupling_diagnostics_plots(
@@ -523,11 +593,130 @@ def _build_coupling_diagnostics_kernel_plots(output: Any) -> dict[str, hv.Overla
             height=320,
             legend_position="top_left",
             show_grid=True,
+            logy=True,
         )
     else:
         running_plot = _algorithm_placeholder_plot("No running/Creutz diagnostics available")
 
     return {"scale": scale_plot, "running": running_plot}
+
+
+def _build_wilson_flow_plots(
+    wf_output: Any,
+) -> dict[str, hv.Overlay | hv.Text]:
+    """Build Wilson flow diagnostic plots."""
+    if wf_output is None:
+        placeholder = _algorithm_placeholder_plot("Wilson flow disabled")
+        return {"flow": placeholder, "t2e": placeholder, "derivative": placeholder}
+
+    flow_times = _tensor_to_numpy(wf_output.flow_times)
+    action_density = _tensor_to_numpy(wf_output.action_density)
+    t2_action = _tensor_to_numpy(wf_output.t2_action)
+
+    # 1. Action density E(t) vs flow time
+    flow_plot = _build_overlay_plot(
+        axis_name="flow_time",
+        axis=flow_times,
+        series=[("E(t)", action_density, "#4c78a8")],
+        title="Wilson Flow: Action Density E(t)",
+        ylabel="E(t)",
+        placeholder="No Wilson flow data available",
+    )
+    if not isinstance(flow_plot, hv.Text):
+        flow_plot = flow_plot.opts(xlabel="Flow time t")
+
+    # 2. t^2 * E(t) vs flow time + t0 marker
+    t2e_curves: list[Any] = []
+    t2e_frame = pd.DataFrame({"flow_time": flow_times, "value": t2_action}).replace(
+        [np.inf, -np.inf], np.nan,
+    ).dropna()
+    if not t2e_frame.empty:
+        t2e_curves.append(
+            hv.Curve(t2e_frame, "flow_time", "value")
+            .relabel("t^2 E(t)")
+            .opts(color="#4c78a8", line_width=2, tools=["hover"])
+        )
+        t2e_curves.append(
+            hv.HLine(wf_output.config.t0_reference).opts(
+                color="#e45756", line_dash="dashed", line_width=1,
+            )
+        )
+        if np.isfinite(wf_output.t0):
+            t2e_curves.append(
+                hv.VLine(wf_output.t0).opts(
+                    color="#54a24b", line_dash="dotted", line_width=1,
+                )
+            )
+
+    if t2e_curves:
+        t2e_plot = t2e_curves[0]
+        for c in t2e_curves[1:]:
+            t2e_plot = t2e_plot * c
+        t2e_plot = t2e_plot.opts(
+            title="Wilson Flow: t^2 E(t) (t0 extraction)",
+            xlabel="Flow time t",
+            ylabel="t^2 E(t)",
+            width=960,
+            height=320,
+            show_grid=True,
+        )
+    else:
+        t2e_plot = _algorithm_placeholder_plot("No t^2 E(t) data available")
+
+    # 3. d/dt[t^2 E] vs midpoint flow time + w0 marker
+    dt2_times = _tensor_to_numpy(wf_output.dt2_action_times)
+    dt2_values = _tensor_to_numpy(wf_output.dt2_action)
+    deriv_curves: list[Any] = []
+    deriv_frame = pd.DataFrame({"flow_time": dt2_times, "value": dt2_values}).replace(
+        [np.inf, -np.inf], np.nan,
+    ).dropna()
+    if not deriv_frame.empty:
+        deriv_curves.append(
+            hv.Curve(deriv_frame, "flow_time", "value")
+            .relabel("d/dt[t^2 E]")
+            .opts(color="#4c78a8", line_width=2, tools=["hover"])
+        )
+        deriv_curves.append(
+            hv.HLine(wf_output.config.w0_reference).opts(
+                color="#e45756", line_dash="dashed", line_width=1,
+            )
+        )
+        if np.isfinite(wf_output.w0):
+            deriv_curves.append(
+                hv.VLine(wf_output.w0).opts(
+                    color="#54a24b", line_dash="dotted", line_width=1,
+                )
+            )
+
+    if deriv_curves:
+        deriv_plot = deriv_curves[0]
+        for c in deriv_curves[1:]:
+            deriv_plot = deriv_plot * c
+        deriv_plot = deriv_plot.opts(
+            title="Wilson Flow: d/dt[t^2 E(t)] (w0 extraction)",
+            xlabel="Flow time t",
+            ylabel="d/dt[t^2 E]",
+            width=960,
+            height=320,
+            show_grid=True,
+        )
+    else:
+        deriv_plot = _algorithm_placeholder_plot("No derivative data available")
+
+    return {"flow": flow_plot, "t2e": t2e_plot, "derivative": deriv_plot}
+
+
+def _build_wilson_flow_summary_text(wf_output: Any) -> str:
+    """Build Wilson flow summary markdown."""
+    if wf_output is None:
+        return "_Wilson flow disabled._"
+    return "\n".join([
+        "**Wilson Flow Scale Extraction:**",
+        f"- t0 (t^2<E> = {wf_output.config.t0_reference}): `{_format_metric(wf_output.t0, 6)}`",
+        f"- w0 (d/dt[t^2<E>] = {wf_output.config.w0_reference}): `{_format_metric(wf_output.w0, 6)}`",
+        f"- sqrt(8 t0): `{_format_metric(wf_output.sqrt_8t0, 6)}`",
+        f"- Flow steps: `{wf_output.config.n_steps}`, step size: `{wf_output.config.step_size}`",
+    ])
 
 
 def _build_coupling_diagnostics_summary_text(output: Any) -> str:
@@ -580,6 +769,12 @@ def _build_coupling_diagnostics_summary_text(output: Any) -> str:
                 if output.snapshot_frame_index is not None
                 else "- Kernel snapshot frame index: `n/a`"
             ),
+            "",
+            "**Wilson Flow:**",
+            f"- t0: `{_format_metric(summary.get('wilson_flow_t0'), 6)}`",
+            f"- w0: `{_format_metric(summary.get('wilson_flow_w0'), 6)}`",
+            f"- sqrt(8 t0): `{_format_metric(summary.get('wilson_flow_sqrt_8t0'), 6)}`",
+            "",
             "- This tab computes only fast regime diagnostics (no channel masses).",
         ]
     )
@@ -634,6 +829,12 @@ def _build_coupling_diagnostics_config(
         kernel_max_scale_samples=int(settings.kernel_max_scale_samples),
         kernel_min_scale=float(settings.kernel_min_scale),
         kernel_assume_all_alive=True,
+        enable_wilson_flow=bool(settings.enable_wilson_flow),
+        wilson_flow_n_steps=int(settings.wilson_flow_n_steps),
+        wilson_flow_step_size=float(settings.wilson_flow_step_size),
+        wilson_flow_topology=str(settings.wilson_flow_topology),
+        wilson_flow_t0_reference=float(settings.wilson_flow_t0_reference),
+        wilson_flow_w0_reference=float(settings.wilson_flow_w0_reference),
     )
 
 
@@ -656,6 +857,12 @@ def _apply_diagnostics_outputs(
     widgets.coverage_plot.object = plots["coverage"]
     widgets.scale_plot.object = kernel_plots["scale"]
     widgets.running_plot.object = kernel_plots["running"]
+
+    wilson_plots = _build_wilson_flow_plots(output.wilson_flow)
+    widgets.wilson_flow_plot.object = wilson_plots["flow"]
+    widgets.wilson_t2e_plot.object = wilson_plots["t2e"]
+    widgets.wilson_derivative_plot.object = wilson_plots["derivative"]
+    widgets.wilson_summary.object = _build_wilson_flow_summary_text(output.wilson_flow)
 
 
 def _make_status_text(output: Any) -> str:
@@ -702,6 +909,14 @@ def _build_layout(
         widgets.scale_plot,
         pn.pane.Markdown("### Running Coupling / Creutz"),
         widgets.running_plot,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Wilson Flow"),
+        widgets.wilson_summary,
+        widgets.wilson_flow_plot,
+        pn.pane.Markdown("### Wilson Flow: t^2 E(t) (t0 extraction)"),
+        widgets.wilson_t2e_plot,
+        pn.pane.Markdown("### Wilson Flow: d/dt[t^2 E(t)] (w0 extraction)"),
+        widgets.wilson_derivative_plot,
         sizing_mode="stretch_both",
     )
 
@@ -790,6 +1005,12 @@ def build_coupling_diagnostics_tab(
             widgets.coverage_plot,
             widgets.scale_plot,
             widgets.running_plot,
+            widgets.wilson_flow_plot,
+            widgets.wilson_t2e_plot,
+            widgets.wilson_derivative_plot,
+        )
+        widgets.wilson_summary.object = (
+            "_Enable Wilson flow and run diagnostics to populate._"
         )
 
     coupling_diagnostics_run_button.on_click(on_run_coupling_diagnostics)
