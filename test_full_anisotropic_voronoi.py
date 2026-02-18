@@ -231,9 +231,9 @@ def test_rotated_cells_capture():
     print(f"✓ Mean |off-diagonal|: {np.abs(off_diag).mean():.4f}")
 
     # For rotated structure, we expect some cells to have non-zero off-diagonal
-    assert num_significant > 0, (
-        "Expected some cells to have off-diagonal elements for rotated structure"
-    )
+    assert (
+        num_significant > 0
+    ), "Expected some cells to have off-diagonal elements for rotated structure"
 
     # Compare with diagonal mode
     sigma_diag = compute_voronoi_diffusion_tensor(

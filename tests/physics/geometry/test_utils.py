@@ -147,14 +147,14 @@ class TestFindAxialNeighbors:
             )
             for n_idx in pos_neighbors:
                 displacement = grid_2d_positions[n_idx] - center
-                assert displacement[axis].item() > 0, (
-                    f"Positive neighbor {n_idx} has negative displacement along axis {axis}"
-                )
+                assert (
+                    displacement[axis].item() > 0
+                ), f"Positive neighbor {n_idx} has negative displacement along axis {axis}"
             for n_idx in neg_neighbors:
                 displacement = grid_2d_positions[n_idx] - center
-                assert displacement[axis].item() < 0, (
-                    f"Negative neighbor {n_idx} has positive displacement along axis {axis}"
-                )
+                assert (
+                    displacement[axis].item() < 0
+                ), f"Negative neighbor {n_idx} has positive displacement along axis {axis}"
 
     def test_tight_angle_threshold(self, grid_2d_positions: Tensor, delaunay_2d_edges: Tensor):
         """Tight angle threshold (5 deg) filters out non-axial neighbors more aggressively."""

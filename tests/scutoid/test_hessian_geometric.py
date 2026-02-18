@@ -131,9 +131,9 @@ def test_psd_violation_detection():
     expected_violations = min_eigenvalues < -1e-6
 
     # Should match
-    assert torch.equal(psd_violation_mask, expected_violations), (
-        "PSD violations should be correctly detected"
-    )
+    assert torch.equal(
+        psd_violation_mask, expected_violations
+    ), "PSD violations should be correctly detected"
 
 
 def test_equilibrium_score_range(isotropic_setup):
@@ -208,9 +208,9 @@ def test_different_epsilon_sigma_values():
         # (since we subtract from identity)
         mean_diff = eig_diff.mean()
 
-        assert abs(mean_diff - eps_diff) < 0.05, (
-            f"Eigenvalue difference should match epsilon difference: {mean_diff} vs {eps_diff}"
-        )
+        assert (
+            abs(mean_diff - eps_diff) < 0.05
+        ), f"Eigenvalue difference should match epsilon difference: {mean_diff} vs {eps_diff}"
 
 
 def test_metric_invertibility():

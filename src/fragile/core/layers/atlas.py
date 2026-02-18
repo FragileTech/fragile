@@ -13,7 +13,6 @@ from fragile.core.layers.ugn import SoftEquivariantLayer
 from fragile.core.layers.vision import (
     CovariantRetina,
     CovariantRetinaDecoder,
-    StandardResNetDecoder,
 )
 
 

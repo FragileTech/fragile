@@ -13,9 +13,11 @@ import os
 import numpy as np
 import pytest
 
+
 os.environ.setdefault("MUJOCO_GL", "osmesa")
 
 import plangym
+
 
 # MuJoCo GL rendering may produce tiny per-pixel differences after
 # state restoration.  Allow up to this per-channel difference.
@@ -52,7 +54,7 @@ class TestRGBRecovery:
 
     def test_reset_frame_recovery(self, env):
         """Render after restoring the reset state matches the original."""
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
         original_frame = _render_frame(env)
 
         # Step away, then restore and re-render
@@ -67,11 +69,14 @@ class TestRGBRecovery:
 
     def test_single_step_recovery(self, env):
         """Render after restoring a post-step state matches the original."""
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
         action = env.action_space.sample()
 
-        new_state, obs, reward, done, trunc, step_info = env.step(
-            action, state=state, dt=1, return_state=True,
+        new_state, _obs, _reward, _done, _trunc, _step_info = env.step(
+            action,
+            state=state,
+            dt=1,
+            return_state=True,
         )
         original_frame = _render_frame(env)
 
@@ -85,14 +90,17 @@ class TestRGBRecovery:
 
     def test_multi_step_sequential_recovery(self, env):
         """Recovery is near-exact after a chain of sequential steps."""
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
         states_and_frames = []
 
         # Take 10 sequential steps, saving state + rendered frame
         for _ in range(10):
             action = env.action_space.sample()
-            state, obs, reward, done, trunc, step_info = env.step(
-                action, state=state, dt=1, return_state=True,
+            state, _obs, _reward, _done, _trunc, _step_info = env.step(
+                action,
+                state=state,
+                dt=1,
+                return_state=True,
             )
             frame = _render_frame(env)
             states_and_frames.append((state.copy(), frame.copy()))
@@ -106,14 +114,17 @@ class TestRGBRecovery:
 
     def test_out_of_order_recovery(self, env):
         """Recovery works when states are restored in arbitrary order."""
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
         initial_frame = _render_frame(env)
         states_and_frames = [(state.copy(), initial_frame.copy())]
 
         for _ in range(10):
             action = env.action_space.sample()
-            state, obs, reward, done, trunc, step_info = env.step(
-                action, state=state, dt=1, return_state=True,
+            state, _obs, _reward, _done, _trunc, _step_info = env.step(
+                action,
+                state=state,
+                dt=1,
+                return_state=True,
             )
             frame = _render_frame(env)
             states_and_frames.append((state.copy(), frame.copy()))
@@ -124,13 +135,13 @@ class TestRGBRecovery:
             env.set_state(saved_state)
             recovered = _render_frame(env)
             stats = _pixel_diff_stats(original_frame, recovered)
-            assert stats["max_diff"] <= _MAX_PIXEL_TOLERANCE, (
-                f"Out-of-order recovery at index {i} mismatch: {stats}"
-            )
+            assert (
+                stats["max_diff"] <= _MAX_PIXEL_TOLERANCE
+            ), f"Out-of-order recovery at index {i} mismatch: {stats}"
 
     def test_recovery_after_different_state_interleaved(self, env):
         """Recovery is near-exact even after the env was used with a different state."""
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
 
         # Take two divergent paths from the same initial state
         action_a = env.action_space.sample()
@@ -161,12 +172,15 @@ class TestRGBRecovery:
 
     def test_dt_greater_than_one_recovery(self, env):
         """Recovery works with dt > 1 (multiple physics sub-steps)."""
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
 
         for dt in [2, 3, 5]:
             action = env.action_space.sample()
             new_state, *_ = env.step(
-                action, state=state, dt=dt, return_state=True,
+                action,
+                state=state,
+                dt=dt,
+                return_state=True,
             )
             gt_frame = _render_frame(env)
 
@@ -183,11 +197,14 @@ class TestRGBRecovery:
         for task in tasks:
             env = plangym.make(name=task)
 
-            state, obs, info = env.reset(return_state=True)
+            state, _obs, _info = env.reset(return_state=True)
             for _ in range(5):
                 action = env.action_space.sample()
                 state, *_ = env.step(
-                    action, state=state, dt=1, return_state=True,
+                    action,
+                    state=state,
+                    dt=1,
+                    return_state=True,
                 )
 
             gt_frame = _render_frame(env)
@@ -203,13 +220,16 @@ class TestRGBRecovery:
     def test_long_trajectory_recovery(self, env):
         """Recovery stays near-exact over a 100-step trajectory."""
         np.random.seed(42)
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
 
         mismatches = []
         for i in range(100):
             action = env.action_space.sample()
             state, *_ = env.step(
-                action, state=state, dt=1, return_state=True,
+                action,
+                state=state,
+                dt=1,
+                return_state=True,
             )
             gt_frame = _render_frame(env)
 
@@ -226,14 +246,17 @@ class TestRGBRecovery:
 
     def test_batch_step_recovery(self, env):
         """Recovery works for states produced by step_batch."""
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
         N = 10
         states = np.array([state.copy() for _ in range(N)])
         actions = np.array([env.action_space.sample() for _ in range(N)])
         dt = np.ones(N, dtype=int)
 
-        new_states, obs_list, rewards, dones, truncs, infos = env.step_batch(
-            actions=actions, states=states, dt=dt, return_state=True,
+        new_states, _obs_list, _rewards, _dones, _truncs, _infos = env.step_batch(
+            actions=actions,
+            states=states,
+            dt=dt,
+            return_state=True,
         )
 
         for i in range(N):
@@ -250,7 +273,7 @@ class TestOnDemandRendering:
         """Step and capture ground truth, then restore + render matches."""
         env = plangym.make(name="walker-walk")
 
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
         np.random.seed(123)
         ground_truth_frames = []
         saved_states = []
@@ -261,16 +284,14 @@ class TestOnDemandRendering:
             saved_states.append(state.copy())
 
         # Now recover each frame by restoring state + rendering
-        for i, (gt_frame, saved_state) in enumerate(
-            zip(ground_truth_frames, saved_states)
-        ):
+        for i, (gt_frame, saved_state) in enumerate(zip(ground_truth_frames, saved_states)):
             env.set_state(saved_state)
             recovered = _render_frame(env)
 
             stats = _pixel_diff_stats(gt_frame, recovered)
-            assert stats["max_diff"] <= _MAX_PIXEL_TOLERANCE, (
-                f"On-demand render at step {i} mismatch: {stats}"
-            )
+            assert (
+                stats["max_diff"] <= _MAX_PIXEL_TOLERANCE
+            ), f"On-demand render at step {i} mismatch: {stats}"
 
         env.close()
 
@@ -282,15 +303,18 @@ class TestOnDemandRendering:
         """
         env = plangym.make(name="walker-walk")
 
-        state, obs, info = env.reset(return_state=True)
+        state, _obs, _info = env.reset(return_state=True)
         N = 20
         states = np.array([state.copy() for _ in range(N)])
         np.random.seed(99)
         actions = np.array([env.action_space.sample() for _ in range(N)])
         dt = np.ones(N, dtype=int)
 
-        new_states, obs_list, rewards, dones, truncs, infos = env.step_batch(
-            actions=actions, states=states, dt=dt, return_state=True,
+        new_states, _obs_list, rewards, _dones, _truncs, _infos = env.step_batch(
+            actions=actions,
+            states=states,
+            dt=dt,
+            return_state=True,
         )
 
         # Find best walker and render on demand
@@ -315,7 +339,7 @@ class TestOnDemandRendering:
         for task in tasks:
             env = plangym.make(name=task)
 
-            state, obs, info = env.reset(return_state=True)
+            state, _obs, _info = env.reset(return_state=True)
             np.random.seed(42)
             for _ in range(10):
                 action = env.action_space.sample()
@@ -329,6 +353,6 @@ class TestOnDemandRendering:
             stats = _pixel_diff_stats(gt_frame, recovered)
             env.close()
 
-            assert stats["max_diff"] <= _MAX_PIXEL_TOLERANCE, (
-                f"Task {task} on-demand render mismatch: {stats}"
-            )
+            assert (
+                stats["max_diff"] <= _MAX_PIXEL_TOLERANCE
+            ), f"Task {task} on-demand render mismatch: {stats}"

@@ -198,9 +198,9 @@ class TestClampMetricEigenvalues:
     def test_symmetry_preserved(self, full_spd_metric_2d: Tensor):
         """Output should remain symmetric after clamping."""
         clamped = clamp_metric_eigenvalues(full_spd_metric_2d, min_eig=0.01, max_eig=50.0)
-        assert torch.allclose(clamped, clamped.transpose(-1, -2), atol=1e-5), (
-            "Clamped metrics should be symmetric."
-        )
+        assert torch.allclose(
+            clamped, clamped.transpose(-1, -2), atol=1e-5
+        ), "Clamped metrics should be symmetric."
 
 
 # ===========================================================================
@@ -494,6 +494,6 @@ class TestComputeEdgeWeightsDispatcher:
         w = compute_edge_weights(grid_2d_positions, delaunay_2d_edges, mode=mode, **kwargs)
         sums = _per_source_sums(delaunay_2d_edges, w, N)
         active = _source_nodes_with_edges(delaunay_2d_edges, N)
-        assert torch.allclose(sums[active], torch.ones_like(sums[active]), atol=1e-4), (
-            f"Per-source sums should be ~1 for mode={mode}."
-        )
+        assert torch.allclose(
+            sums[active], torch.ones_like(sums[active]), atol=1e-4
+        ), f"Per-source sums should be ~1 for mode={mode}."

@@ -11,13 +11,13 @@ import holoviews as hv
 import panel as pn
 
 from fragile.physics.app.algorithm import build_algorithm_diagnostics_tab
+from fragile.physics.app.companion_correlators import build_companion_correlator_tab
 from fragile.physics.app.diagnostics import build_coupling_diagnostics_tab
 from fragile.physics.app.electroweak_correlators import build_electroweak_correlator_tab
-from fragile.physics.app.gravity import build_holographic_principle_tab
-from fragile.physics.app.simulation import SimulationTab
 from fragile.physics.app.electroweak_mass_tab import build_electroweak_mass_tab
+from fragile.physics.app.gravity import build_holographic_principle_tab
 from fragile.physics.app.mass_extraction_tab import build_mass_extraction_tab
-from fragile.physics.app.companion_correlators import build_companion_correlator_tab
+from fragile.physics.app.simulation import SimulationTab
 from fragile.physics.fractal_gas.history import RunHistory
 
 

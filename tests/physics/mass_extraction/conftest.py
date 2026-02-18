@@ -116,9 +116,7 @@ def synthetic_correlators() -> dict[str, Tensor]:
         "pseudoscalar": make_synthetic_correlator(
             mass0=0.3, mass1=0.8, amp0=0.8, amp1=0.2, seed=43
         ),
-        "vector": make_synthetic_correlator(
-            mass0=0.5, mass1=1.0, amp0=0.9, amp1=0.25, seed=44
-        ),
+        "vector": make_synthetic_correlator(mass0=0.5, mass1=1.0, amp0=0.9, amp1=0.25, seed=44),
     }
 
 

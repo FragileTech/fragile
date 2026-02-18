@@ -12,6 +12,7 @@ from fragile.physics.new_channels.mass_extraction_adapter import (
     extract_vector_meson,
 )
 
+
 __all__ = [
     "collect_correlators",
     "extract_baryon",

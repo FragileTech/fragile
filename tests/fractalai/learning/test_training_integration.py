@@ -12,42 +12,42 @@ import pytest
 import torch
 
 from fragile.learning.topoencoder_mnist import (
-    TopoEncoderConfig,
     load_checkpoint,
+    TopoEncoderConfig,
     train_benchmark,
 )
 
 
 def _make_config(tmp_path, **overrides) -> TopoEncoderConfig:
-    defaults = dict(
-        n_samples=50,
-        epochs=2,
-        hidden_dim=16,
-        num_charts=3,
-        codes_per_chart=4,
-        batch_size=0,
-        device="cpu",
-        output_dir=str(tmp_path / "outputs"),
-        save_every=0,
-        log_every=1,
+    defaults = {
+        "n_samples": 50,
+        "epochs": 2,
+        "hidden_dim": 16,
+        "num_charts": 3,
+        "codes_per_chart": 4,
+        "batch_size": 0,
+        "device": "cpu",
+        "output_dir": str(tmp_path / "outputs"),
+        "save_every": 0,
+        "log_every": 1,
         # Disable all optional features
-        disable_ae=True,
-        disable_vq=True,
-        enable_supervised=False,
-        enable_classifier_head=False,
-        enable_cifar_backbone=False,
-        mlflow=False,
-        use_scheduler=False,
-        covariant_attn=False,
-        baseline_attn=False,
-        baseline_vision_preproc=False,
-        vision_preproc=False,
+        "disable_ae": True,
+        "disable_vq": True,
+        "enable_supervised": False,
+        "enable_classifier_head": False,
+        "enable_cifar_backbone": False,
+        "mlflow": False,
+        "use_scheduler": False,
+        "covariant_attn": False,
+        "baseline_attn": False,
+        "baseline_vision_preproc": False,
+        "vision_preproc": False,
         # Disable expensive losses
-        orbit_weight=0.0,
-        vicreg_inv_weight=0.0,
-        orthogonality_weight=0.0,
-        code_entropy_weight=0.0,
-    )
+        "orbit_weight": 0.0,
+        "vicreg_inv_weight": 0.0,
+        "orthogonality_weight": 0.0,
+        "code_entropy_weight": 0.0,
+    }
     defaults.update(overrides)
     return TopoEncoderConfig(**defaults)
 
@@ -55,6 +55,7 @@ def _make_config(tmp_path, **overrides) -> TopoEncoderConfig:
 # ==========================================
 # train_benchmark
 # ==========================================
+
 
 class TestTrainBenchmark:
     def test_minimal_training(self, tmp_path):
@@ -84,6 +85,7 @@ class TestTrainBenchmark:
 # Resume checkpoint
 # ==========================================
 
+
 class TestResumeCheckpoint:
     def test_save_then_resume(self, tmp_path):
         config = _make_config(tmp_path, epochs=1, save_every=1)
@@ -108,6 +110,7 @@ class TestResumeCheckpoint:
 # ==========================================
 # Checkpoint data integrity
 # ==========================================
+
 
 class TestCheckpointDataIntegrity:
     def test_checkpoint_data_shapes(self, tmp_path):

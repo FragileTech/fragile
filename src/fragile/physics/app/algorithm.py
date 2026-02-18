@@ -258,27 +258,23 @@ def _build_companion_distance_plot(
     overlays: list[Any] = []
     if not clone_df.empty:
         overlays.append(
-            hv
-            .ErrorBars(clone_df, "step", ["mean", "err95"])
+            hv.ErrorBars(clone_df, "step", ["mean", "err95"])
             .relabel("Clone p95")
             .opts(color="#e45756", alpha=0.4, line_width=1)
         )
         overlays.append(
-            hv
-            .Curve(clone_df, "step", "mean")
+            hv.Curve(clone_df, "step", "mean")
             .relabel("Clone mean")
             .opts(color="#e45756", line_width=2, tools=["hover"])
         )
     if not random_df.empty:
         overlays.append(
-            hv
-            .ErrorBars(random_df, "step", ["mean", "err95"])
+            hv.ErrorBars(random_df, "step", ["mean", "err95"])
             .relabel("Random p95")
             .opts(color="#4c78a8", alpha=0.4, line_width=1)
         )
         overlays.append(
-            hv
-            .Curve(random_df, "step", "mean")
+            hv.Curve(random_df, "step", "mean")
             .relabel("Random mean")
             .opts(color="#4c78a8", line_width=2, tools=["hover"])
         )

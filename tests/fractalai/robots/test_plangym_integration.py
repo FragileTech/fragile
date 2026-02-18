@@ -12,12 +12,14 @@ import numpy as np
 import pytest
 import torch
 
+
 os.environ.setdefault("MUJOCO_GL", "osmesa")
 
 import plangym
 
 from fragile.fractalai.fractal_gas import _make_object_array
 from fragile.fractalai.videogames.kinetic import RandomActionOperator
+
 
 ENV_NAME = "CartPole-v1"
 
@@ -39,7 +41,7 @@ def kinetic_op(plangym_env):
 
 def _get_initial_states(env, n: int):
     """Reset env and return n copies of the initial state as a 1D object array."""
-    obs, info = env.reset(return_state=False)
+    _obs, _info = env.reset(return_state=False)
     state = env.get_state()
     return _make_object_array([state.copy() for _ in range(n)])
 
@@ -80,7 +82,7 @@ class TestStepBatchDtypes:
         N = 4
         states = _get_initial_states(plangym_env, N)
 
-        new_states, observations, rewards, dones, truncated, infos = kinetic_op.apply(states)
+        _new_states, observations, rewards, dones, truncated, _infos = kinetic_op.apply(states)
 
         # Verify types are numpy arrays, not raw lists
         assert isinstance(observations, np.ndarray), f"observations is {type(observations)}"
@@ -117,7 +119,9 @@ class TestStepBatchDtypes:
         assert new_states_arr[0].dtype != object
 
         # Use those states for a second step_batch call
-        new_states2, obs2, rewards2, dones2, truncated2, infos2 = kinetic_op.apply(new_states_arr)
+        new_states2, obs2, _rewards2, _dones2, _truncated2, _infos2 = kinetic_op.apply(
+            new_states_arr
+        )
 
         assert isinstance(obs2, np.ndarray)
         assert obs2.dtype != np.dtype("O")
@@ -130,17 +134,17 @@ class TestStepBatchDtypes:
         kinetic = RandomActionOperator(env=env, dt_range=(1, 3), seed=0)
 
         # Reset
-        obs, info = env.reset(return_state=False)
+        _obs, _info = env.reset(return_state=False)
         state = env.get_state()
         states = _make_object_array([state.copy() for _ in range(N)])
 
         # Step (like fractal_gas.py step())
-        new_states_list, obs_np, step_rewards_np, dones_np, truncated_np, infos = (
-            kinetic.apply(states)
+        new_states_list, obs_np, step_rewards_np, dones_np, truncated_np, _infos = kinetic.apply(
+            states
         )
 
         # Convert to 1D object array for states
-        new_states = _make_object_array(new_states_list)
+        _make_object_array(new_states_list)
 
         # Convert to tensors (fractal_gas.py:414-417)
         device = torch.device("cpu")
@@ -148,7 +152,7 @@ class TestStepBatchDtypes:
         observations = torch.tensor(obs_np, device=device, dtype=dtype)
         step_rewards = torch.tensor(step_rewards_np, device=device, dtype=dtype)
         dones = torch.tensor(dones_np, device=device, dtype=torch.bool)
-        truncated = torch.tensor(truncated_np, device=device, dtype=torch.bool)
+        torch.tensor(truncated_np, device=device, dtype=torch.bool)
 
         # Cumulative reward update (fractal_gas.py:420)
         prev_rewards = torch.zeros(N, device=device, dtype=dtype)
@@ -165,8 +169,13 @@ class TestStepBatchDtypes:
         env = plangym.make("cartpole-balance")
         try:
             gas = RoboticFractalGas(
-                env=env, N=4, dist_coef=1.0, reward_coef=1.0,
-                use_cumulative_reward=True, dt_range=(1, 1), seed=42,
+                env=env,
+                N=4,
+                dist_coef=1.0,
+                reward_coef=1.0,
+                use_cumulative_reward=True,
+                dt_range=(1, 1),
+                seed=42,
             )
             state = gas.reset()
             assert state.states.shape == (4,)
@@ -175,7 +184,7 @@ class TestStepBatchDtypes:
 
             # Run 3 iterations — exercises clone + step_batch + tensor conversion
             for _ in range(3):
-                state, info = gas.step(state)
+                state, _info = gas.step(state)
                 assert state.observations.dtype == torch.float32
                 assert state.states.shape == (4,)
                 assert state.states[0].dtype == np.float64

@@ -289,7 +289,10 @@ class TestEstimateEll0:
         # Set identical positions so Euclidean distances match
         mid_idx = history_with.n_recorded // 2
         positions = torch.tensor([
-            [0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0],
+            [0.0, 0.0],
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, 1.0],
         ])
         history_with.x_before_clone[mid_idx] = positions
         history_without.x_before_clone[mid_idx] = positions

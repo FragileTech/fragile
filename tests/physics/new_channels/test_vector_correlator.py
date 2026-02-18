@@ -2,24 +2,24 @@
 
 from __future__ import annotations
 
-import torch
 import pytest
+import torch
 
 from fragile.fractalai.qft.vector_meson_channels import (
+    compute_companion_vector_meson_correlator,
+    compute_vector_meson_correlator_from_color_positions,
     VectorMesonCorrelatorConfig,
     VectorMesonCorrelatorOutput,
-    compute_vector_meson_correlator_from_color_positions,
-    compute_companion_vector_meson_correlator,
 )
 
 # New-location aliases for parity tests
 from fragile.physics.new_channels.vector_meson_channels import (
-    VectorMesonCorrelatorConfig as NewVectorConfig,
-    compute_vector_meson_correlator_from_color_positions as new_from_color,
     compute_companion_vector_meson_correlator as new_companion,
+    compute_vector_meson_correlator_from_color_positions as new_from_color,
+    VectorMesonCorrelatorConfig as NewVectorConfig,
 )
 
-from .conftest import MockRunHistory, assert_outputs_equal
+from .conftest import assert_outputs_equal, MockRunHistory
 
 
 # =============================================================================
@@ -29,8 +29,15 @@ from .conftest import MockRunHistory, assert_outputs_equal
 
 class TestFromColorPositionsOutput:
     @pytest.fixture
-    def vector_output(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                      tiny_companions_distance, tiny_companions_clone, tiny_positions):
+    def vector_output(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+        tiny_positions,
+    ):
         return compute_vector_meson_correlator_from_color_positions(
             color=tiny_color_states,
             color_valid=tiny_color_valid,
@@ -67,24 +74,38 @@ class TestFromColorPositionsOutput:
         assert vector_output.counts[0].item() > 0
 
     def test_connected_leq_raw(self, vector_output):
-        assert vector_output.vector_connected[0].item() <= vector_output.vector_raw[0].item() + 1e-6
+        assert (
+            vector_output.vector_connected[0].item() <= vector_output.vector_raw[0].item() + 1e-6
+        )
 
-    def test_unit_displacement_different(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                                         tiny_companions_distance, tiny_companions_clone,
-                                         tiny_positions):
+    def test_unit_displacement_different(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+        tiny_positions,
+    ):
         out_normal = compute_vector_meson_correlator_from_color_positions(
-            color=tiny_color_states, color_valid=tiny_color_valid,
-            positions=tiny_positions, alive=tiny_alive,
+            color=tiny_color_states,
+            color_valid=tiny_color_valid,
+            positions=tiny_positions,
+            alive=tiny_alive,
             companions_distance=tiny_companions_distance,
             companions_clone=tiny_companions_clone,
-            max_lag=3, use_unit_displacement=False,
+            max_lag=3,
+            use_unit_displacement=False,
         )
         out_unit = compute_vector_meson_correlator_from_color_positions(
-            color=tiny_color_states, color_valid=tiny_color_valid,
-            positions=tiny_positions, alive=tiny_alive,
+            color=tiny_color_states,
+            color_valid=tiny_color_valid,
+            positions=tiny_positions,
+            alive=tiny_alive,
             companions_distance=tiny_companions_distance,
             companions_clone=tiny_companions_clone,
-            max_lag=3, use_unit_displacement=True,
+            max_lag=3,
+            use_unit_displacement=True,
         )
         assert not torch.allclose(out_normal.vector, out_unit.vector, atol=1e-10)
 
@@ -103,8 +124,12 @@ class TestFromColorEmpty:
         comp_d = torch.zeros(0, 3, dtype=torch.long)
         comp_c = torch.zeros(0, 3, dtype=torch.long)
         out = compute_vector_meson_correlator_from_color_positions(
-            color=color, color_valid=valid, positions=pos, alive=alive,
-            companions_distance=comp_d, companions_clone=comp_c,
+            color=color,
+            color_valid=valid,
+            positions=pos,
+            alive=alive,
+            companions_distance=comp_d,
+            companions_clone=comp_c,
             max_lag=5,
         )
         assert out.vector.shape == (6,)
@@ -145,7 +170,9 @@ class TestCompanionVector:
 
     def test_score_directed_mode(self, mock_history):
         cfg = VectorMesonCorrelatorConfig(
-            max_lag=5, ell0=1.0, operator_mode="score_directed",
+            max_lag=5,
+            ell0=1.0,
+            operator_mode="score_directed",
         )
         out = compute_companion_vector_meson_correlator(mock_history, cfg)
         assert torch.isfinite(out.vector.sum())
@@ -159,31 +186,44 @@ class TestCompanionVector:
 class TestParityVector:
     """Verify new-location vector meson functions produce identical results to originals."""
 
-    def test_from_color_parity(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                               tiny_companions_distance, tiny_companions_clone, tiny_positions):
-        common = dict(
-            color=tiny_color_states,
-            color_valid=tiny_color_valid,
-            positions=tiny_positions,
-            companions_distance=tiny_companions_distance,
-            companions_clone=tiny_companions_clone,
-            max_lag=3,
-            use_connected=True,
-            pair_selection="both",
-            eps=1e-12,
-        )
+    def test_from_color_parity(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+        tiny_positions,
+    ):
+        common = {
+            "color": tiny_color_states,
+            "color_valid": tiny_color_valid,
+            "positions": tiny_positions,
+            "companions_distance": tiny_companions_distance,
+            "companions_clone": tiny_companions_clone,
+            "max_lag": 3,
+            "use_connected": True,
+            "pair_selection": "both",
+            "eps": 1e-12,
+        }
         old_out = compute_vector_meson_correlator_from_color_positions(alive=tiny_alive, **common)
         new_out = new_from_color(**common)
         assert_outputs_equal(old_out, new_out)
 
     def test_companion_parity(self, mock_history):
         cfg_old = VectorMesonCorrelatorConfig(
-            warmup_fraction=0.1, end_fraction=1.0, max_lag=10,
-            use_connected=True, ell0=1.0,
+            warmup_fraction=0.1,
+            end_fraction=1.0,
+            max_lag=10,
+            use_connected=True,
+            ell0=1.0,
         )
         cfg_new = NewVectorConfig(
-            warmup_fraction=0.1, end_fraction=1.0, max_lag=10,
-            use_connected=True, ell0=1.0,
+            warmup_fraction=0.1,
+            end_fraction=1.0,
+            max_lag=10,
+            use_connected=True,
+            ell0=1.0,
         )
         old_out = compute_companion_vector_meson_correlator(mock_history, cfg_old)
         new_out = new_companion(mock_history, cfg_new)

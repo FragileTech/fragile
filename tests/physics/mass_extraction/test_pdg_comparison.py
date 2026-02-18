@@ -9,9 +9,9 @@ import pandas as pd
 import pytest
 
 from fragile.physics.app.mass_extraction_tab import (
-    PDG_REFERENCES,
     _build_pdg_comparison_plot,
     _build_ratio_comparison,
+    PDG_REFERENCES,
 )
 from fragile.physics.mass_extraction.results import (
     ChannelMassResult,
@@ -48,7 +48,15 @@ def _make_result(channels: dict[str, ChannelMassResult]) -> MassExtractionResult
 
 def test_pdg_references_complete():
     """All 7 expected channel groups are present with positive masses."""
-    expected = {"scalar", "pseudoscalar", "vector", "axial_vector", "nucleon", "glueball", "tensor"}
+    expected = {
+        "scalar",
+        "pseudoscalar",
+        "vector",
+        "axial_vector",
+        "nucleon",
+        "glueball",
+        "tensor",
+    }
     assert set(PDG_REFERENCES.keys()) == expected
     for key, (label, mass) in PDG_REFERENCES.items():
         assert mass > 0, f"{key} has non-positive PDG mass"
@@ -69,7 +77,7 @@ def test_build_pdg_comparison_plot_smoke():
     }
     result = _make_result(channels)
     plot = _build_pdg_comparison_plot(result, "vector")
-    assert isinstance(plot, (hv.Overlay, hv.NdOverlay))
+    assert isinstance(plot, hv.Overlay | hv.NdOverlay)
 
 
 def test_missing_anchor_returns_placeholder():
@@ -107,7 +115,7 @@ def test_build_ratio_comparison_smoke():
     }
     result = _make_result(channels)
     overlay, df = _build_ratio_comparison(result)
-    assert isinstance(overlay, (hv.Overlay, hv.NdOverlay))
+    assert isinstance(overlay, hv.Overlay | hv.NdOverlay)
     assert len(df) == 3  # C(3,2) = 3
     assert set(df.columns) == {"Ratio", "Extracted", "Error", "PDG", "Tension (\u03c3)"}
 
@@ -118,12 +126,16 @@ def test_ratio_values_match_gvar():
     m_vector = gvar.gvar(0.40, 0.02)
     channels = {
         "pseudoscalar": ChannelMassResult(
-            name="pseudoscalar", channel_type="meson",
-            ground_state_mass=m_pseudoscalar, variant_keys=["pseudoscalar_ps"],
+            name="pseudoscalar",
+            channel_type="meson",
+            ground_state_mass=m_pseudoscalar,
+            variant_keys=["pseudoscalar_ps"],
         ),
         "vector": ChannelMassResult(
-            name="vector", channel_type="meson",
-            ground_state_mass=m_vector, variant_keys=["vector_v"],
+            name="vector",
+            channel_type="meson",
+            ground_state_mass=m_vector,
+            variant_keys=["vector_v"],
         ),
     }
     result = _make_result(channels)

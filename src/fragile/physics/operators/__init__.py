@@ -36,7 +36,6 @@ Multiscale:
 """
 
 from .baryon_operators import compute_baryon_operators
-from .electroweak_operators import compute_electroweak_operators
 from .config import (
     BaryonOperatorConfig,
     ChannelConfigBase,
@@ -49,6 +48,7 @@ from .config import (
     VectorOperatorConfig,
 )
 from .correlators import compute_correlators_batched
+from .electroweak_operators import compute_electroweak_operators
 from .geodesics import (
     compute_pairwise_distances,
     compute_smeared_kernels,
@@ -66,13 +66,13 @@ from .multiscale import (
 from .pipeline import compute_strong_force_pipeline, PipelineConfig, PipelineResult
 from .preparation import prepare_channel_data, PreparedChannelData
 from .propagator_correlators import (
-    PropagatorChannelResult,
-    PropagatorResult,
     compute_baryon_propagator,
     compute_glueball_propagator,
     compute_meson_propagator,
     compute_propagator_pipeline,
     compute_vector_propagator,
+    PropagatorChannelResult,
+    PropagatorResult,
 )
 from .tensor_operators import compute_tensor_operators
 from .vector_operators import compute_vector_operators
@@ -82,8 +82,8 @@ __all__ = [
     "BaryonOperatorConfig",
     # Config
     "ChannelConfigBase",
-    "ElectroweakOperatorConfig",
     "CorrelatorConfig",
+    "ElectroweakOperatorConfig",
     "GlueballOperatorConfig",
     "MesonOperatorConfig",
     "MultiscaleConfig",
@@ -95,20 +95,20 @@ __all__ = [
     "TensorOperatorConfig",
     "VectorOperatorConfig",
     "compute_baryon_operators",
+    # Operators
+    "compute_baryon_propagator",
     # Correlators
     "compute_correlators_batched",
     "compute_electroweak_operators",
     "compute_glueball_operators",
-    # Operators
-    "compute_baryon_propagator",
     "compute_glueball_propagator",
     "compute_meson_operators",
     "compute_meson_propagator",
     # Geodesics
     "compute_pairwise_distances",
-    "compute_smeared_kernels",
     # Propagator correlators
     "compute_propagator_pipeline",
+    "compute_smeared_kernels",
     # Pipeline
     "compute_strong_force_pipeline",
     "compute_tensor_operators",

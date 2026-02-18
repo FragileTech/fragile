@@ -43,9 +43,9 @@ class TestBuildCsrFromCoo:
             end = csr["csr_ptr"][node + 1].item()
             neighbors = set(csr["csr_indices"][start:end].tolist())
             expected_neighbors = {0, 1, 2} - {node}
-            assert neighbors == expected_neighbors, (
-                f"Node {node}: {neighbors} != {expected_neighbors}"
-            )
+            assert (
+                neighbors == expected_neighbors
+            ), f"Node {node}: {neighbors} != {expected_neighbors}"
 
     def test_empty_graph(self):
         """Empty graph (no edges): ptr all zeros, indices empty."""
@@ -144,9 +144,9 @@ class TestQueryWalkerNeighborsVectorized:
         }
         for node, expected_set in expected_neighbors.items():
             valid = neighbors[node][mask[node]].tolist()
-            assert set(valid) == expected_set, (
-                f"Node {node}: got {set(valid)}, expected {expected_set}"
-            )
+            assert (
+                set(valid) == expected_set
+            ), f"Node {node}: got {set(valid)}, expected {expected_set}"
 
     def test_padding_where_mask_false(self, simple_csr):
         """pad_value=-1 appears where mask is False."""

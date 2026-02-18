@@ -103,8 +103,7 @@ def build_single_correlator_plot(
 
     color = CHANNEL_COLORS.get(channel_name, _DEFAULT_COLOR)
     scatter = (
-        hv
-        .Scatter((t_plot, c_plot), "lag", "C(lag)")
+        hv.Scatter((t_plot, c_plot), "lag", "C(lag)")
         .opts(color=color, size=6, alpha=0.8, tools=["hover"])
         .relabel(f"{channel_name} C(lag)")
     )
@@ -166,8 +165,7 @@ def build_single_effective_mass_plot(
 
     color = CHANNEL_COLORS.get(channel_name, _DEFAULT_COLOR)
     scatter = (
-        hv
-        .Scatter((t_plot, m_plot), "t", "m_eff(t)")
+        hv.Scatter((t_plot, m_plot), "t", "m_eff(t)")
         .opts(color=color, size=6, alpha=0.8, tools=["hover"])
         .relabel(f"{channel_name} m_eff")
     )
@@ -213,8 +211,7 @@ def build_single_operator_series_plot(
     frames = np.arange(len(series))
     color = CHANNEL_COLORS.get(channel_name, _DEFAULT_COLOR)
     scatter = (
-        hv
-        .Scatter((frames[mask], series[mask]), "frame", "value")
+        hv.Scatter((frames[mask], series[mask]), "frame", "value")
         .opts(color=color, size=4, alpha=0.6, tools=["hover"])
         .relabel(channel_name)
     )
@@ -273,8 +270,7 @@ def build_all_channels_correlator_overlay(
 
         color = CHANNEL_COLORS.get(name, _DEFAULT_COLOR)
         scatters.append(
-            hv
-            .Scatter((t_plot, c_plot), "lag", "C(lag)")
+            hv.Scatter((t_plot, c_plot), "lag", "C(lag)")
             .opts(color=color, size=5, alpha=0.7, tools=["hover"])
             .relabel(name)
         )
@@ -343,8 +339,7 @@ def build_all_channels_meff_overlay(
         lags = np.arange(len(m_eff))
         color = CHANNEL_COLORS.get(name, _DEFAULT_COLOR)
         scatters.append(
-            hv
-            .Scatter((lags[mask], m_eff[mask]), "t", "m_eff(t)")
+            hv.Scatter((lags[mask], m_eff[mask]), "t", "m_eff(t)")
             .opts(color=color, size=5, alpha=0.7, tools=["hover"])
             .relabel(name)
         )
@@ -477,9 +472,21 @@ def build_correlator_table(
 # ---------------------------------------------------------------------------
 
 _VARIANT_PALETTE = [
-    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
-    "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
-    "#aec7e8", "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5",
+    "#1f77b4",
+    "#ff7f0e",
+    "#2ca02c",
+    "#d62728",
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+    "#bcbd22",
+    "#17becf",
+    "#aec7e8",
+    "#ffbb78",
+    "#98df8a",
+    "#ff9896",
+    "#c5b0d5",
 ]
 
 # Strong-force channel prefixes → display names.
@@ -494,8 +501,13 @@ _STRONG_PREFIX_DISPLAY: dict[str, str] = {
 }
 
 _STRONG_GROUP_ORDER = [
-    "Scalar", "Pseudoscalar", "Vector", "Axial Vector",
-    "Nucleon", "Glueball", "Tensor",
+    "Scalar",
+    "Pseudoscalar",
+    "Vector",
+    "Axial Vector",
+    "Nucleon",
+    "Glueball",
+    "Tensor",
 ]
 
 
@@ -528,8 +540,13 @@ def group_strong_correlator_keys(keys) -> dict[str, list[str]]:
 
 
 _EW_GROUP_ORDER = [
-    "U(1)", "SU(2) Base", "SU(2) Directed", "SU(2) Walker-Type",
-    "EW Mixed", "Symmetry Breaking", "Parity Velocity",
+    "U(1)",
+    "SU(2) Base",
+    "SU(2) Directed",
+    "SU(2) Walker-Type",
+    "EW Mixed",
+    "Symmetry Breaking",
+    "Parity Velocity",
 ]
 
 
@@ -548,7 +565,7 @@ def group_electroweak_correlator_keys(keys) -> dict[str, list[str]]:
         ),
         ("SU(2) Base", lambda k: k.startswith("su2_")),
         ("EW Mixed", lambda k: k == "ew_mixed"),
-        ("Symmetry Breaking", lambda k: k in ("fitness_phase", "clone_indicator")),
+        ("Symmetry Breaking", lambda k: k in {"fitness_phase", "clone_indicator"}),
         ("Parity Velocity", lambda k: k.startswith("velocity_norm_")),
     ]
     groups: dict[str, list[str]] = {}
@@ -622,12 +639,7 @@ def build_grouped_correlator_plot(
         "show_grid": True,
         "shared_axes": False,
     }
-    if (
-        logy
-        and np.isfinite(y_min_pos)
-        and y_min_pos > 0
-        and y_max_pos > y_min_pos
-    ):
+    if logy and np.isfinite(y_min_pos) and y_min_pos > 0 and y_max_pos > y_min_pos:
         opts_kw["ylim"] = (
             max(np.finfo(float).tiny, y_min_pos * 0.8),
             y_max_pos * 1.2,

@@ -123,15 +123,7 @@ def _compute_determinants_for_indices(
         else torch.isfinite(det)
     )
 
-    valid = (
-        structural_valid
-        & in_j
-        & in_k
-        & valid_vectors
-        & valid_j
-        & valid_k
-        & finite
-    )
+    valid = structural_valid & in_j & in_k & valid_vectors & valid_j & valid_k & finite
     if eps > 0:
         valid = valid & (det.abs() > eps)
 
@@ -233,15 +225,7 @@ def _compute_triplet_plaquette_for_indices(
     pi = z_ij * z_jk * z_ki
 
     finite = torch.isfinite(pi.real) & torch.isfinite(pi.imag)
-    valid = (
-        structural_valid
-        & in_j
-        & in_k
-        & color_valid
-        & valid_j
-        & valid_k
-        & finite
-    )
+    valid = structural_valid & in_j & in_k & color_valid & valid_j & valid_k & finite
     if eps > 0:
         valid = valid & (z_ij.abs() > eps) & (z_jk.abs() > eps) & (z_ki.abs() > eps)
 

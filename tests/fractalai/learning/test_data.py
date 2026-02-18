@@ -7,10 +7,10 @@ import pytest
 import torch
 
 from fragile.learning.data import (
-    DataBundle,
     augment_inputs,
     create_data_snapshot,
     create_dataloaders,
+    DataBundle,
     infer_vision_shape,
     load_dataset,
     restore_dataset,
@@ -20,6 +20,7 @@ from fragile.learning.data import (
 # ==========================================
 # infer_vision_shape
 # ==========================================
+
 
 class TestInferVisionShape:
     def test_mnist_auto(self):
@@ -45,6 +46,7 @@ class TestInferVisionShape:
 # ==========================================
 # load_dataset
 # ==========================================
+
 
 class TestLoadDataset:
     def test_mnist_shapes(self, mock_mnist):
@@ -100,9 +102,13 @@ class TestLoadDataset:
     def test_vision_mismatch_raises(self, mock_mnist):
         with pytest.raises(ValueError, match="vision_preproc shape does not match"):
             load_dataset(
-                "mnist", n_samples=100, test_split=0.2,
+                "mnist",
+                n_samples=100,
+                test_split=0.2,
                 vision_preproc=True,
-                vision_in_channels=3, vision_height=32, vision_width=32,
+                vision_in_channels=3,
+                vision_height=32,
+                vision_width=32,
             )
 
     def test_no_vision_keeps_zeros(self, mock_mnist):
@@ -115,6 +121,7 @@ class TestLoadDataset:
 # ==========================================
 # restore_dataset
 # ==========================================
+
 
 class TestRestoreDataset:
     def test_roundtrip_via_snapshot(self, mnist_bundle):
@@ -154,12 +161,19 @@ class TestRestoreDataset:
 # create_data_snapshot
 # ==========================================
 
+
 class TestCreateDataSnapshot:
     def test_snapshot_keys(self, mnist_bundle):
         snapshot = create_data_snapshot(mnist_bundle)
         expected = {
-            "X_train", "X_test", "labels_train", "labels_test",
-            "colors_train", "colors_test", "dataset_ids", "dataset_name",
+            "X_train",
+            "X_test",
+            "labels_train",
+            "labels_test",
+            "colors_train",
+            "colors_test",
+            "dataset_ids",
+            "dataset_name",
         }
         assert set(snapshot.keys()) == expected
 
@@ -178,41 +192,57 @@ class TestCreateDataSnapshot:
 # create_dataloaders
 # ==========================================
 
+
 class TestCreateDataloaders:
     def test_basic_batch_sizes(self, mnist_bundle):
         train_dl, test_dl = create_dataloaders(
-            mnist_bundle, batch_size=32, eval_batch_size=16, device=torch.device("cpu"),
+            mnist_bundle,
+            batch_size=32,
+            eval_batch_size=16,
+            device=torch.device("cpu"),
         )
         assert train_dl.batch_size == 32
         assert test_dl.batch_size == 16
 
     def test_full_batch_mode(self, mnist_bundle):
         train_dl, _ = create_dataloaders(
-            mnist_bundle, batch_size=0, eval_batch_size=0, device=torch.device("cpu"),
+            mnist_bundle,
+            batch_size=0,
+            eval_batch_size=0,
+            device=torch.device("cpu"),
         )
         assert train_dl.batch_size == len(mnist_bundle.X_train)
 
     def test_eval_auto_fallback(self, mnist_bundle):
-        train_dl, test_dl = create_dataloaders(
-            mnist_bundle, batch_size=16, eval_batch_size=0, device=torch.device("cpu"),
+        _train_dl, test_dl = create_dataloaders(
+            mnist_bundle,
+            batch_size=16,
+            eval_batch_size=0,
+            device=torch.device("cpu"),
         )
         # When eval_batch_size=0 and batch_size < len(X_test), uses batch_size
         assert test_dl.batch_size == 16
 
     def test_iteration_yields_three_tensors(self, mnist_bundle):
         train_dl, _ = create_dataloaders(
-            mnist_bundle, batch_size=0, eval_batch_size=0, device=torch.device("cpu"),
+            mnist_bundle,
+            batch_size=0,
+            eval_batch_size=0,
+            device=torch.device("cpu"),
         )
         batch = next(iter(train_dl))
         assert len(batch) == 3
         assert batch[0].dtype == torch.float32  # X
-        assert batch[1].dtype == torch.int64     # labels
-        assert batch[2].dtype == torch.float32   # colors
+        assert batch[1].dtype == torch.int64  # labels
+        assert batch[2].dtype == torch.float32  # colors
 
     @pytest.mark.parametrize("bs,ebs", [(0, 0), (32, 0), (0, 64), (32, 64)])
     def test_batch_size_combinations(self, mnist_bundle, bs, ebs):
         train_dl, test_dl = create_dataloaders(
-            mnist_bundle, batch_size=bs, eval_batch_size=ebs, device=torch.device("cpu"),
+            mnist_bundle,
+            batch_size=bs,
+            eval_batch_size=ebs,
+            device=torch.device("cpu"),
         )
         # Just verify loaders are functional
         batch = next(iter(train_dl))
@@ -224,6 +254,7 @@ class TestCreateDataloaders:
 # ==========================================
 # augment_inputs
 # ==========================================
+
 
 class TestAugmentInputs:
     def test_output_shape(self):

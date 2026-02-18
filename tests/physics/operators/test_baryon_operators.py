@@ -49,9 +49,9 @@ class TestDet3:
         # Reference via torch
         mat = torch.stack([a, b, c], dim=-1)  # [3, 3]
         expected = torch.linalg.det(mat)
-        assert torch.isclose(result, expected, atol=1e-5), (
-            f"Expected {expected.item()}, got {result.item()}"
-        )
+        assert torch.isclose(
+            result, expected, atol=1e-5
+        ), f"Expected {expected.item()}, got {result.item()}"
 
     def test_zero_column_det_zero(self):
         """If one column is all zeros, determinant should be 0."""
@@ -59,9 +59,9 @@ class TestDet3:
         b = torch.zeros(3)
         c = torch.tensor([7.0, 8.0, 9.0])
         result = _det3(a, b, c)
-        assert torch.isclose(result, torch.tensor(0.0), atol=1e-6), (
-            f"Expected 0.0, got {result.item()}"
-        )
+        assert torch.isclose(
+            result, torch.tensor(0.0), atol=1e-6
+        ), f"Expected 0.0, got {result.item()}"
 
     def test_batched_input(self):
         """_det3 should work with batched [T, N, 3] inputs."""
@@ -424,9 +424,10 @@ class TestComputeBaryonOperatorsMultiscale:
         )
         config = BaryonOperatorConfig()
         result = compute_baryon_operators(data, config)
-        assert result["nucleon"].shape == (n_scales, T), (
-            f"Expected shape ({n_scales}, {T}), got {result['nucleon'].shape}"
-        )
+        assert result["nucleon"].shape == (
+            n_scales,
+            T,
+        ), f"Expected shape ({n_scales}, {T}), got {result['nucleon'].shape}"
 
     def test_multiscale_s_matches_n_scales(self):
         """First dimension should match number of scales."""
@@ -440,9 +441,9 @@ class TestComputeBaryonOperatorsMultiscale:
             )
             config = BaryonOperatorConfig()
             result = compute_baryon_operators(data, config)
-            assert result["nucleon"].shape[0] == n_scales, (
-                f"Expected S={n_scales}, got {result['nucleon'].shape[0]}"
-            )
+            assert (
+                result["nucleon"].shape[0] == n_scales
+            ), f"Expected S={n_scales}, got {result['nucleon'].shape[0]}"
 
     def test_multiscale_finite(self):
         """Multiscale output should be finite."""

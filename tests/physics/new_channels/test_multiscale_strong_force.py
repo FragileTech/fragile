@@ -54,9 +54,7 @@ def _build_random_inputs(
 
     dx = positions[:, :, None, :] - positions[:, None, :, :]
     pairwise_distances = torch.linalg.vector_norm(dx, dim=-1)
-    finite_pos = pairwise_distances[
-        torch.isfinite(pairwise_distances) & (pairwise_distances > 0)
-    ]
+    finite_pos = pairwise_distances[torch.isfinite(pairwise_distances) & (pairwise_distances > 0)]
     if finite_pos.numel() > 0:
         probs = torch.linspace(0.2, 0.9, n_scales, dtype=torch.float32)
         scales = torch.quantile(finite_pos, probs).clamp(min=1e-6)
@@ -64,12 +62,8 @@ def _build_random_inputs(
         scales = torch.linspace(1e-3, 1.0, n_scales, dtype=torch.float32)
 
     idx = torch.arange(n_walkers, dtype=torch.long)
-    companions_distance = (
-        ((idx + 1) % n_walkers).view(1, n_walkers).expand(t_len, -1).clone()
-    )
-    companions_clone = (
-        ((idx + 2) % n_walkers).view(1, n_walkers).expand(t_len, -1).clone()
-    )
+    companions_distance = ((idx + 1) % n_walkers).view(1, n_walkers).expand(t_len, -1).clone()
+    companions_clone = ((idx + 2) % n_walkers).view(1, n_walkers).expand(t_len, -1).clone()
     cloning_scores = torch.randn(t_len, n_walkers, dtype=torch.float32)
 
     return {
@@ -317,18 +311,13 @@ class TestParityCompanionPerScale:
         d_ik = pairwise_distances.gather(
             2, companions_clone.clamp(0, n_walkers - 1).unsqueeze(-1)
         ).squeeze(-1)
-        flat_idx = (
-            companions_distance.clamp(0, n_walkers - 1) * n_walkers
-            + companions_clone.clamp(0, n_walkers - 1)
-        )
-        d_jk = pairwise_distances.reshape(t_len, n_walkers * n_walkers).gather(
-            1, flat_idx
-        )
+        flat_idx = companions_distance.clamp(
+            0, n_walkers - 1
+        ) * n_walkers + companions_clone.clamp(0, n_walkers - 1)
+        d_jk = pairwise_distances.reshape(t_len, n_walkers * n_walkers).gather(1, flat_idx)
 
         max_radius = float(
-            torch.nan_to_num(pairwise_distances, nan=0.0, posinf=0.0, neginf=0.0)
-            .max()
-            .item()
+            torch.nan_to_num(pairwise_distances, nan=0.0, posinf=0.0, neginf=0.0).max().item()
             + 1.0
         )
         scales = torch.tensor([max_radius], dtype=torch.float32)
@@ -475,9 +464,9 @@ class TestParityWalkerBootstrap:
             assert ch in new_out, f"{ch} missing from new output"
             old_val = old_out[ch]
             new_val = new_out[ch]
-            assert old_val.shape == new_val.shape, (
-                f"Channel {ch}: shape mismatch {old_val.shape} vs {new_val.shape}"
-            )
+            assert (
+                old_val.shape == new_val.shape
+            ), f"Channel {ch}: shape mismatch {old_val.shape} vs {new_val.shape}"
             # NaN positions must match
             assert torch.equal(
                 torch.isnan(old_val), torch.isnan(new_val)

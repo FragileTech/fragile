@@ -63,10 +63,7 @@ class KineticOperator(PanelModel):
     )
     auto_thermostat = param.Boolean(
         default=False,
-        doc=(
-            "Enable temperature-based auto thermostat: "
-            "use β_eff = 1/T instead of manual β."
-        ),
+        doc=("Enable temperature-based auto thermostat: " "use β_eff = 1/T instead of manual β."),
     )
     temperature = param.Number(
         default=0.5,
@@ -74,7 +71,7 @@ class KineticOperator(PanelModel):
         softbounds=(0.01, 10.0),
         inclusive_bounds=(False, True),
         doc="Effective temperature T_eff used when auto_thermostat=True. "
-            "Sets noise via σ_v = √(2γT).",
+        "Sets noise via σ_v = √(2γT).",
     )
     delta_t = param.Number(
         default=0.01,

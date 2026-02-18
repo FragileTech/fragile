@@ -15,12 +15,15 @@ from __future__ import annotations
 from torch import Tensor
 
 from fragile.physics.mass_extraction import (
+    extract_masses,
     MassExtractionConfig,
     MassExtractionResult,
-    extract_masses,
 )
 from fragile.physics.new_channels.baryon_triplet_channels import (
     BaryonTripletCorrelatorOutput,
+)
+from fragile.physics.new_channels.fitness_pseudoscalar_channels import (
+    FitnessPseudoscalarOutput,
 )
 from fragile.physics.new_channels.glueball_color_channels import (
     GlueballColorCorrelatorOutput,
@@ -37,10 +40,8 @@ from fragile.physics.new_channels.tensor_momentum_channels import (
 from fragile.physics.new_channels.vector_meson_channels import (
     VectorMesonCorrelatorOutput,
 )
-from fragile.physics.new_channels.fitness_pseudoscalar_channels import (
-    FitnessPseudoscalarOutput,
-)
 from fragile.physics.operators.pipeline import PipelineResult
+
 
 # Type alias for the (correlators, operators) pair returned by extractors
 _ExtractResult = tuple[dict[str, Tensor], dict[str, Tensor]]
@@ -275,8 +276,7 @@ def collect_correlators(
         for key in corrs:
             if key in all_correlators:
                 raise ValueError(
-                    f"Duplicate correlator key '{key}'. "
-                    "Use `prefix` to disambiguate."
+                    f"Duplicate correlator key '{key}'. " "Use `prefix` to disambiguate."
                 )
         all_correlators.update(corrs)
         all_operators.update(ops)
@@ -302,6 +302,7 @@ def extract_masses_from_channels(
         from fragile.physics.new_channels.mass_extraction_adapter import (
             extract_masses_from_channels,
         )
+
         result = extract_masses_from_channels(meson_out, baryon_out)
         print(result.channels["pseudoscalar"].ground_state_mass)
 
@@ -314,7 +315,5 @@ def extract_masses_from_channels(
     Returns:
         :class:`MassExtractionResult` with extracted masses and diagnostics.
     """
-    pipeline_result = collect_correlators(
-        *outputs, use_connected=use_connected, prefix=prefix
-    )
+    pipeline_result = collect_correlators(*outputs, use_connected=use_connected, prefix=prefix)
     return extract_masses(pipeline_result, config=config)

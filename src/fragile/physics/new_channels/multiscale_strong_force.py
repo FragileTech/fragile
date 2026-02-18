@@ -18,8 +18,13 @@ from typing import Any
 import torch
 from torch import Tensor
 
+from fragile.fractalai.qft.smeared_operators import (
+    compute_pairwise_distance_matrices_from_history,
+    compute_smeared_kernels_from_distances,
+    iter_smeared_kernel_batches_from_history,
+    select_interesting_scales_from_history,
+)
 from fragile.physics.fractal_gas.history import RunHistory
-from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 from fragile.physics.new_channels.baryon_triplet_channels import (
     compute_baryon_correlator_from_color,
 )
@@ -30,21 +35,11 @@ from fragile.physics.new_channels.correlator_channels import (
     extract_mass_aic,
     extract_mass_linear,
 )
-from fragile.physics.qft_utils import (
-    _fft_correlator_batched,
-    resolve_frame_indices,
-    safe_gather_2d,
-    safe_gather_3d,
-)
 from fragile.physics.new_channels.glueball_color_channels import (
     compute_glueball_color_correlator_from_color,
 )
-from fragile.physics.new_channels.meson_phase_channels import compute_meson_phase_correlator_from_color
-from fragile.fractalai.qft.smeared_operators import (
-    compute_pairwise_distance_matrices_from_history,
-    compute_smeared_kernels_from_distances,
-    iter_smeared_kernel_batches_from_history,
-    select_interesting_scales_from_history,
+from fragile.physics.new_channels.meson_phase_channels import (
+    compute_meson_phase_correlator_from_color,
 )
 from fragile.physics.new_channels.tensor_momentum_channels import (
     compute_tensor_momentum_correlator_from_color_positions,
@@ -52,6 +47,13 @@ from fragile.physics.new_channels.tensor_momentum_channels import (
 from fragile.physics.new_channels.vector_meson_channels import (
     compute_vector_meson_correlator_from_color_positions,
 )
+from fragile.physics.qft_utils import (
+    _fft_correlator_batched,
+    resolve_frame_indices,
+    safe_gather_2d,
+    safe_gather_3d,
+)
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 
 
 BASE_CHANNELS = (
@@ -668,25 +670,10 @@ def _compute_channel_series_from_kernels(
         anchor_rows = anchor_idx.expand(t_len, -1)
         distinct = (comp_j != anchor_idx) & (comp_k != anchor_idx) & (comp_j != comp_k)
         base_anchor_valid = color_valid
-        base_pair_j = (
-            base_anchor_valid
-            & valid_j_2d
-            & in_j_valid
-            & (comp_j != anchor_idx)
-        )
-        base_pair_k = (
-            base_anchor_valid
-            & valid_k_2d
-            & in_k_valid
-            & (comp_k != anchor_idx)
-        )
+        base_pair_j = base_anchor_valid & valid_j_2d & in_j_valid & (comp_j != anchor_idx)
+        base_pair_k = base_anchor_valid & valid_k_2d & in_k_valid & (comp_k != anchor_idx)
         base_triplet_valid = (
-            base_anchor_valid
-            & valid_j_2d
-            & valid_k_2d
-            & in_j_valid
-            & in_k_valid
-            & distinct
+            base_anchor_valid & valid_j_2d & valid_k_2d & in_j_valid & in_k_valid & distinct
         )
 
         d_ij, in_dij = _safe_gather_pairwise_distances(dist, anchor_rows, comp_j)
@@ -2093,8 +2080,7 @@ def compute_multiscale_strong_force_channels(
             comp_j_chunk = companions_distance.index_select(0, pos_t)
             comp_k_chunk = companions_clone.index_select(0, pos_t)
             anchor_rows = (
-                torch
-                .arange(n_walkers, device=color.device, dtype=torch.long)
+                torch.arange(n_walkers, device=color.device, dtype=torch.long)
                 .view(1, -1)
                 .expand(comp_j_chunk.shape[0], -1)
             )

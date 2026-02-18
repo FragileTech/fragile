@@ -934,9 +934,9 @@ class TestGeometricWeighting:
         for ch in channels:
             # Each channel should have valid output with weighted mode
             assert series_weighted.operators[ch].numel() > 0
-            assert torch.isfinite(series_weighted.operators[ch]).all(), (
-                f"Channel {ch} has non-finite values"
-            )
+            assert torch.isfinite(
+                series_weighted.operators[ch]
+            ).all(), f"Channel {ch} has non-finite values"
 
     def test_extract_geometric_weights_function(self):
         """Test extract_geometric_weights directly."""

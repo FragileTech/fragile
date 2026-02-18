@@ -123,7 +123,7 @@ def _propagator_lag_loop(
         else:
             src_weighted = source_obs * src_weights
         mean_val = (src_weighted.sum() / total_valid.clamp(min=1.0)).item()
-        mean_source_scalar = mean_val ** 2
+        mean_source_scalar = mean_val**2
 
     for lag in range(n_lags):
         source_len = T - lag
@@ -219,13 +219,17 @@ def compute_meson_propagator(
     # Apply score modes to source
     if resolved_mode == "score_directed" and data.scores is not None:
         inner_all, valid_all = _orient_inner_products_by_scores(
-            inner=inner_all, valid=valid_all,
-            scores=data.scores, pair_indices=pair_indices,
+            inner=inner_all,
+            valid=valid_all,
+            scores=data.scores,
+            pair_indices=pair_indices,
         )
     elif resolved_mode == "score_weighted" and data.scores is not None:
         inner_all, valid_all = _weight_inner_products_by_score_gap(
-            inner=inner_all, valid=valid_all,
-            scores=data.scores, pair_indices=pair_indices,
+            inner=inner_all,
+            valid=valid_all,
+            scores=data.scores,
+            pair_indices=pair_indices,
         )
 
     # Extract source observables
@@ -247,8 +251,8 @@ def compute_meson_propagator(
             # Re-compute inner products at sink time with source companion topology
             src_pairs = pair_indices[:source_len]
             src_structural = structural_valid[:source_len]
-            sink_color = data.color[lag:lag + source_len]
-            sink_color_valid = data.color_valid[lag:lag + source_len]
+            sink_color = data.color[lag : lag + source_len]
+            sink_color_valid = data.color_valid[lag : lag + source_len]
 
             sink_inner, sink_valid = _compute_inner_products_for_pairs(
                 color=sink_color,
@@ -260,14 +264,16 @@ def compute_meson_propagator(
 
             if resolved_mode == "score_directed" and data.scores is not None:
                 sink_inner, sink_valid = _orient_inner_products_by_scores(
-                    inner=sink_inner, valid=sink_valid,
-                    scores=data.scores[lag:lag + source_len],
+                    inner=sink_inner,
+                    valid=sink_valid,
+                    scores=data.scores[lag : lag + source_len],
                     pair_indices=src_pairs,
                 )
             elif resolved_mode == "score_weighted" and data.scores is not None:
                 sink_inner, sink_valid = _weight_inner_products_by_score_gap(
-                    inner=sink_inner, valid=sink_valid,
-                    scores=data.scores[lag:lag + source_len],
+                    inner=sink_inner,
+                    valid=sink_valid,
+                    scores=data.scores[lag : lag + source_len],
                     pair_indices=src_pairs,
                 )
 
@@ -333,7 +339,8 @@ def compute_vector_propagator(
         return {"vector_full": empty, "axial_full": _clone_result(empty)}
 
     if data.positions is None:
-        raise ValueError("positions must be provided for vector propagator.")
+        msg = "positions must be provided for vector propagator."
+        raise ValueError(msg)
 
     resolved_op_mode = _resolve_vector_operator_mode(config.operator_mode)
     resolved_proj_mode = _resolve_vector_projection_mode(config.projection_mode)
@@ -372,13 +379,13 @@ def compute_vector_propagator(
         def compute_sink(lag: int, source_len: int) -> tuple[Tensor, Tensor]:
             src_pairs = pair_indices[:source_len]
             src_structural = structural_valid[:source_len]
-            sink_color = data.color[lag:lag + source_len]
-            sink_color_valid = data.color_valid[lag:lag + source_len]
-            sink_positions = data.positions[lag:lag + source_len]
+            sink_color = data.color[lag : lag + source_len]
+            sink_color_valid = data.color_valid[lag : lag + source_len]
+            sink_positions = data.positions[lag : lag + source_len]
 
             sink_scores = None
             if data.scores is not None:
-                sink_scores = data.scores[lag:lag + source_len]
+                sink_scores = data.scores[lag : lag + source_len]
 
             sink_inner, sink_disp, sink_valid = _compute_pair_observables(
                 color=sink_color,
@@ -458,25 +465,35 @@ def compute_baryon_propagator(
 
     # Compute source observable for all T frames
     source_obs, source_valid = _compute_baryon_obs(
-        data.color, data.color_valid, data.scores,
-        data.companions_distance, data.companions_clone,
-        resolved_mode, eps, config.flux_exp_alpha,
+        data.color,
+        data.color_valid,
+        data.scores,
+        data.companions_distance,
+        data.companions_clone,
+        resolved_mode,
+        eps,
+        config.flux_exp_alpha,
     )
 
     def compute_sink(lag: int, source_len: int) -> tuple[Tensor, Tensor]:
-        sink_color = data.color[lag:lag + source_len]
-        sink_color_valid = data.color_valid[lag:lag + source_len]
+        sink_color = data.color[lag : lag + source_len]
+        sink_color_valid = data.color_valid[lag : lag + source_len]
         src_comp_d = data.companions_distance[:source_len]
         src_comp_c = data.companions_clone[:source_len]
 
         sink_scores = None
         if data.scores is not None:
-            sink_scores = data.scores[lag:lag + source_len]
+            sink_scores = data.scores[lag : lag + source_len]
 
         sink_obs, sink_valid = _compute_baryon_obs(
-            sink_color, sink_color_valid, sink_scores,
-            src_comp_d, src_comp_c,
-            resolved_mode, eps, config.flux_exp_alpha,
+            sink_color,
+            sink_color_valid,
+            sink_scores,
+            src_comp_d,
+            src_comp_c,
+            resolved_mode,
+            eps,
+            config.flux_exp_alpha,
         )
         return sink_obs, sink_valid
 
@@ -504,26 +521,39 @@ def _compute_baryon_obs(
     """Compute per-walker baryon observable and validity."""
     if resolved_mode in {"score_signed", "score_abs"}:
         if scores is None:
-            raise ValueError("scores required for score-based baryon modes.")
+            msg = "scores required for score-based baryon modes."
+            raise ValueError(msg)
         det, valid = _compute_score_ordered_determinants_for_indices(
-            color=color, color_valid=color_valid, scores=scores,
-            companion_j=companion_j, companion_k=companion_k, eps=eps,
+            color=color,
+            color_valid=color_valid,
+            scores=scores,
+            companion_j=companion_j,
+            companion_k=companion_k,
+            eps=eps,
         )
         obs = det.real.float() if resolved_mode == "score_signed" else det.abs().float()
     else:
         det, valid = _compute_determinants_for_indices(
-            vectors=color, valid_vectors=color_valid,
-            companion_j=companion_j, companion_k=companion_k, eps=eps,
+            vectors=color,
+            valid_vectors=color_valid,
+            companion_j=companion_j,
+            companion_k=companion_k,
+            eps=eps,
         )
         obs = det.abs().float()
 
     if resolved_mode in {"flux_action", "flux_sin2", "flux_exp"}:
         pi, pi_valid = _compute_triplet_plaquette_for_indices(
-            color=color, color_valid=color_valid,
-            companion_j=companion_j, companion_k=companion_k, eps=eps,
+            color=color,
+            color_valid=color_valid,
+            companion_j=companion_j,
+            companion_k=companion_k,
+            eps=eps,
         )
         flux_weight = _baryon_flux_weight_from_plaquette(
-            pi=pi, operator_mode=resolved_mode, flux_exp_alpha=flux_exp_alpha,
+            pi=pi,
+            operator_mode=resolved_mode,
+            flux_exp_alpha=flux_exp_alpha,
         )
         valid = valid & pi_valid
         obs = obs * flux_weight
@@ -577,8 +607,8 @@ def compute_glueball_propagator(
     source_obs = _glueball_observable_from_plaquette(source_pi, operator_mode=resolved_mode)
 
     def compute_sink(lag: int, source_len: int) -> tuple[Tensor, Tensor]:
-        sink_color = data.color[lag:lag + source_len]
-        sink_color_valid = data.color_valid[lag:lag + source_len]
+        sink_color = data.color[lag : lag + source_len]
+        sink_color_valid = data.color_valid[lag : lag + source_len]
         src_comp_d = data.companions_distance[:source_len]
         src_comp_c = data.companions_clone[:source_len]
 

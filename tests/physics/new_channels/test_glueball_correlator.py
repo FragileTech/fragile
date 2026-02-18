@@ -2,27 +2,27 @@
 
 from __future__ import annotations
 
-import torch
 import pytest
+import torch
 
 from fragile.fractalai.qft.glueball_color_channels import (
+    _compute_color_plaquette_for_triplets,
+    _glueball_observable_from_plaquette,
+    compute_companion_glueball_color_correlator,
+    compute_glueball_color_correlator_from_color,
     GlueballColorCorrelatorConfig,
     GlueballColorCorrelatorOutput,
-    compute_glueball_color_correlator_from_color,
-    compute_companion_glueball_color_correlator,
-    _glueball_observable_from_plaquette,
-    _compute_color_plaquette_for_triplets,
 )
 
 # New-location aliases for parity tests
 from fragile.physics.new_channels.glueball_color_channels import (
-    GlueballColorCorrelatorConfig as NewGlueballConfig,
     _glueball_observable_from_plaquette as new_glueball_obs,
-    compute_glueball_color_correlator_from_color as new_from_color,
     compute_companion_glueball_color_correlator as new_companion,
+    compute_glueball_color_correlator_from_color as new_from_color,
+    GlueballColorCorrelatorConfig as NewGlueballConfig,
 )
 
-from .conftest import MockRunHistory, assert_outputs_equal
+from .conftest import assert_outputs_equal, MockRunHistory
 
 
 # =============================================================================
@@ -46,8 +46,14 @@ class TestGlueballObservable:
 
 class TestFromColorOutput:
     @pytest.fixture
-    def glueball_output(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                        tiny_companions_distance, tiny_companions_clone):
+    def glueball_output(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+    ):
         return compute_glueball_color_correlator_from_color(
             color=tiny_color_states,
             color_valid=tiny_color_valid,
@@ -78,8 +84,14 @@ class TestFromColorOutput:
 
 
 class TestFromColorMomentum:
-    def test_momentum_fields_present(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                                      tiny_companions_distance, tiny_companions_clone):
+    def test_momentum_fields_present(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+    ):
         gen = torch.Generator().manual_seed(77)
         T, N = tiny_color_states.shape[:2]
         positions_axis = torch.randn(T, N, generator=gen)
@@ -109,8 +121,11 @@ class TestFromColorEmpty:
         comp_d = torch.zeros(0, 3, dtype=torch.long)
         comp_c = torch.zeros(0, 3, dtype=torch.long)
         out = compute_glueball_color_correlator_from_color(
-            color=color, color_valid=valid, alive=alive,
-            companions_distance=comp_d, companions_clone=comp_c,
+            color=color,
+            color_valid=valid,
+            alive=alive,
+            companions_distance=comp_d,
+            companions_clone=comp_c,
             max_lag=5,
         )
         assert out.correlator.shape == (6,)
@@ -149,10 +164,14 @@ class TestCompanionGlueball:
 
     def test_action_form_differs(self, mock_history):
         cfg_re = GlueballColorCorrelatorConfig(
-            max_lag=5, ell0=1.0, use_action_form=False,
+            max_lag=5,
+            ell0=1.0,
+            use_action_form=False,
         )
         cfg_act = GlueballColorCorrelatorConfig(
-            max_lag=5, ell0=1.0, use_action_form=True,
+            max_lag=5,
+            ell0=1.0,
+            use_action_form=True,
         )
         out_re = compute_companion_glueball_color_correlator(mock_history, cfg_re)
         out_act = compute_companion_glueball_color_correlator(mock_history, cfg_act)
@@ -176,29 +195,41 @@ class TestParityGlueball:
             new = new_glueball_obs(pi, operator_mode=mode)
             assert torch.equal(old, new), f"glueball observable differs for mode={mode}"
 
-    def test_from_color_parity(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                               tiny_companions_distance, tiny_companions_clone):
-        common = dict(
-            color=tiny_color_states,
-            color_valid=tiny_color_valid,
-            companions_distance=tiny_companions_distance,
-            companions_clone=tiny_companions_clone,
-            max_lag=3,
-            use_connected=True,
-            eps=1e-12,
-        )
+    def test_from_color_parity(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+    ):
+        common = {
+            "color": tiny_color_states,
+            "color_valid": tiny_color_valid,
+            "companions_distance": tiny_companions_distance,
+            "companions_clone": tiny_companions_clone,
+            "max_lag": 3,
+            "use_connected": True,
+            "eps": 1e-12,
+        }
         old_out = compute_glueball_color_correlator_from_color(alive=tiny_alive, **common)
         new_out = new_from_color(**common)
         assert_outputs_equal(old_out, new_out)
 
     def test_companion_parity(self, mock_history):
         cfg_old = GlueballColorCorrelatorConfig(
-            warmup_fraction=0.1, end_fraction=1.0, max_lag=10,
-            use_connected=True, ell0=1.0,
+            warmup_fraction=0.1,
+            end_fraction=1.0,
+            max_lag=10,
+            use_connected=True,
+            ell0=1.0,
         )
         cfg_new = NewGlueballConfig(
-            warmup_fraction=0.1, end_fraction=1.0, max_lag=10,
-            use_connected=True, ell0=1.0,
+            warmup_fraction=0.1,
+            end_fraction=1.0,
+            max_lag=10,
+            use_connected=True,
+            ell0=1.0,
         )
         old_out = compute_companion_glueball_color_correlator(mock_history, cfg_old)
         new_out = new_companion(mock_history, cfg_new)

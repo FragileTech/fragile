@@ -11,7 +11,6 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 import gvar
-import numpy as np
 import pandas as pd
 import panel as pn
 import param
@@ -22,20 +21,19 @@ from fragile.physics.app.mass_extraction_tab import (
     _build_correlator_fit_plot,
     _build_cross_channel_ratio_table,
     _build_diagnostics_container,
+    _build_intra_channel_ratio_table,
     _build_mass_spectrum_bar,
     _build_meff_plot,
-    _build_intra_channel_ratio_table,
-    _CHANNEL_PALETTE,
 )
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.mass_extraction import (
-    MassExtractionConfig,
-    MassExtractionResult,
     ChannelFitConfig,
     CovarianceConfig,
-    FitConfig,
-    PriorConfig,
     extract_masses,
+    FitConfig,
+    MassExtractionConfig,
+    MassExtractionResult,
+    PriorConfig,
 )
 
 
@@ -128,7 +126,9 @@ def build_electroweak_mass_tab(
     diagnostics_container = pn.Column(
         pn.pane.Markdown("", sizing_mode="stretch_width"),
         pn.widgets.Tabulator(
-            pd.DataFrame(), pagination=None, show_index=False,
+            pd.DataFrame(),
+            pagination=None,
+            show_index=False,
             sizing_mode="stretch_width",
         ),
         sizing_mode="stretch_width",
@@ -167,7 +167,9 @@ def build_electroweak_mass_tab(
     placeholder = _algorithm_placeholder_plot("Run extraction to show plots.")
     meff_plot = pn.pane.HoloViews(placeholder, sizing_mode="stretch_width", linked_axes=False)
     correlator_fit_plot = pn.pane.HoloViews(
-        placeholder, sizing_mode="stretch_width", linked_axes=False,
+        placeholder,
+        sizing_mode="stretch_width",
+        linked_axes=False,
     )
 
     # -- Channel key selection widgets --
@@ -211,7 +213,7 @@ def build_electroweak_mass_tab(
 
         # Mass summary table
         rows = []
-        for name, ch in result.channels.items():
+        for ch in result.channels.values():
             gs_mean = float(gvar.mean(ch.ground_state_mass))
             gs_err = float(gvar.sdev(ch.ground_state_mass))
             err_pct = (gs_err / gs_mean * 100) if gs_mean != 0 else float("inf")
@@ -230,7 +232,7 @@ def build_electroweak_mass_tab(
         # Diagnostics container
         diag_parts = _build_diagnostics_container(result)
         diagnostics_container[0].object = diag_parts[0]  # global markdown
-        diagnostics_container[1].value = diag_parts[1]   # per-channel table
+        diagnostics_container[1].value = diag_parts[1]  # per-channel table
 
         # Channel selector
         channel_names = list(result.channels.keys())
@@ -299,9 +301,7 @@ def build_electroweak_mass_tab(
         def _compute(_history: RunHistory):
             pipeline_result = state.get("electroweak_correlator_output")
             if pipeline_result is None:
-                status.object = (
-                    "**Error:** Run Electroweak Correlators first."
-                )
+                status.object = "**Error:** Run Electroweak Correlators first."
                 return
 
             # Build config from settings
@@ -328,9 +328,7 @@ def build_electroweak_mass_tab(
                 selector = channel_key_selectors.get(g.name)
                 if selector is not None:
                     selected = set(selector.value)
-                    g.correlator_keys = [
-                        k for k in g.correlator_keys if k in selected
-                    ]
+                    g.correlator_keys = [k for k in g.correlator_keys if k in selected]
             groups = [g for g in groups if g.correlator_keys]
 
             if not groups:

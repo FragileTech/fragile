@@ -62,7 +62,9 @@ class RoboticFractalGas(FractalGas):
             # Use physics.render for custom resolution (plangym exposes .physics)
             if hasattr(self.env, "physics"):
                 frame = self.env.physics.render(
-                    height=self.render_height, width=self.render_width, camera_id=0,
+                    height=self.render_height,
+                    width=self.render_width,
+                    camera_id=0,
                 )
                 if frame is not None and isinstance(frame, np.ndarray):
                     return frame.astype(np.uint8)

@@ -24,21 +24,29 @@ def build_minmax_error_plot(
     vmin = np.asarray(vmin, dtype=float)
     vmax = np.asarray(vmax, dtype=float)
 
-    frame = pd.DataFrame({
-        "step": step,
-        "mean": mean,
-        "lower": vmin,
-        "upper": vmax,
-    }).replace([np.inf, -np.inf], np.nan).dropna()
+    frame = (
+        pd.DataFrame({
+            "step": step,
+            "mean": mean,
+            "lower": vmin,
+            "upper": vmax,
+        })
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+    )
 
     if frame.empty:
         return hv.Text(0, 0, "No data").opts(height=320)
 
     curve = hv.Curve(frame, "step", "mean").opts(
-        color=color, line_width=2, tools=["hover"],
+        color=color,
+        line_width=2,
+        tools=["hover"],
     )
     errorbars = hv.ErrorBars(frame, "step", ["mean", "lower", "upper"]).opts(
-        color=color, alpha=0.35, line_width=1,
+        color=color,
+        alpha=0.35,
+        line_width=1,
     )
     return (errorbars * curve).opts(
         title=title,
@@ -59,10 +67,14 @@ def build_line_plot(
     color: str,
 ) -> hv.Curve:
     """Simple line plot for clone % and alive count."""
-    frame = pd.DataFrame({
-        "step": np.asarray(step, dtype=float),
-        "value": np.asarray(values, dtype=float),
-    }).replace([np.inf, -np.inf], np.nan).dropna()
+    frame = (
+        pd.DataFrame({
+            "step": np.asarray(step, dtype=float),
+            "value": np.asarray(values, dtype=float),
+        })
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+    )
 
     if frame.empty:
         return hv.Text(0, 0, "No data").opts(height=320)

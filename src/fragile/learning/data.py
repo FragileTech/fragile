@@ -135,7 +135,10 @@ def load_dataset(
     v_channels, v_height, v_width = 0, 0, 0
     if vision_preproc or baseline_vision_preproc:
         v_channels, v_height, v_width = infer_vision_shape(
-            dataset_name, vision_in_channels, vision_height, vision_width,
+            dataset_name,
+            vision_in_channels,
+            vision_height,
+            vision_width,
         )
         expected = v_channels * v_height * v_width
         if input_dim != expected:
@@ -192,16 +195,17 @@ def restore_dataset(
     dataset_ids = data_snapshot.get("dataset_ids", {})
     dataset_name = data_snapshot.get("dataset_name", dataset_fallback)
 
-    labels_full = (
-        np.concatenate([labels_train, labels_test]) if len(labels_test) else labels_train
-    )
+    labels_full = np.concatenate([labels_train, labels_test]) if len(labels_test) else labels_train
     input_dim = X_train.shape[1]
 
     # Infer vision shape if needed
     v_channels, v_height, v_width = 0, 0, 0
     if vision_preproc or baseline_vision_preproc:
         v_channels, v_height, v_width = infer_vision_shape(
-            dataset_name, vision_in_channels, vision_height, vision_width,
+            dataset_name,
+            vision_in_channels,
+            vision_height,
+            vision_width,
         )
         expected = v_channels * v_height * v_width
         if input_dim != expected:
@@ -269,7 +273,10 @@ def create_dataloaders(
     effective_batch_size = batch_size if batch_size > 0 else len(bundle.X_train)
     pin_memory = device.type == "cuda"
     train_loader = DataLoader(
-        dataset, batch_size=effective_batch_size, shuffle=True, pin_memory=pin_memory,
+        dataset,
+        batch_size=effective_batch_size,
+        shuffle=True,
+        pin_memory=pin_memory,
     )
 
     if eval_batch_size > 0:
@@ -286,7 +293,10 @@ def create_dataloaders(
 
     test_dataset = TensorDataset(bundle.X_test, labels_test_t, colors_test_t)
     test_loader = DataLoader(
-        test_dataset, batch_size=effective_eval_batch_size, shuffle=False, pin_memory=pin_memory,
+        test_dataset,
+        batch_size=effective_eval_batch_size,
+        shuffle=False,
+        pin_memory=pin_memory,
     )
 
     return train_loader, test_loader

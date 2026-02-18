@@ -142,5 +142,5 @@ def extract_diagnostics(fit: Any) -> FitDiagnostics:
         logGBF=float(fit.logGBF) if hasattr(fit, "logGBF") else 0.0,
         nit=int(fit.nit) if hasattr(fit, "nit") else 0,
         svdcut=float(fit.svdcut) if fit.svdcut is not None else 0.0,
-        fit_parameters={k: v for k, v in fit.p.items()},
+        fit_parameters=dict(fit.p.items()),
     )

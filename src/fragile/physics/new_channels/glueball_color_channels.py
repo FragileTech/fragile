@@ -23,7 +23,6 @@ import torch
 from torch import Tensor
 
 from fragile.physics.fractal_gas.history import RunHistory
-from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 from fragile.physics.qft_utils import (
     _fft_correlator_batched,
     build_companion_triplets,
@@ -32,6 +31,7 @@ from fragile.physics.qft_utils import (
     safe_gather_2d,
     safe_gather_3d,
 )
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 
 
 @dataclass
@@ -153,15 +153,7 @@ def _compute_color_plaquette_for_triplets(
     pi = z_ij * z_jk * z_ki
 
     finite = torch.isfinite(pi.real) & torch.isfinite(pi.imag)
-    valid = (
-        structural_valid
-        & in_j
-        & in_k
-        & color_valid
-        & valid_j
-        & valid_k
-        & finite
-    )
+    valid = structural_valid & in_j & in_k & color_valid & valid_j & valid_k & finite
     if eps > 0:
         valid = valid & (z_ij.abs() > eps) & (z_jk.abs() > eps) & (z_ki.abs() > eps)
 

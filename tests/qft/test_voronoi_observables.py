@@ -501,9 +501,9 @@ class TestBoundaryExclusion:
             # Tier 0 and 1 should be invalid
             for i in range(10):
                 if classification["tier"][i] < 2:
-                    assert not valid[i], (
-                        f"Walker {i} with tier {classification['tier'][i]} should be invalid"
-                    )
+                    assert not valid[
+                        i
+                    ], f"Walker {i} with tier {classification['tier'][i]} should be invalid"
 
     def test_baryon_skips_boundary_tiers(self):
         """Test baryon operator skips Tier 0-1 cells."""
@@ -546,9 +546,9 @@ class TestBoundaryExclusion:
             # Tier 0 and 1 should be invalid
             for i in range(10):
                 if classification["tier"][i] < 2:
-                    assert not valid[i], (
-                        f"Walker {i} with tier {classification['tier'][i]} should be invalid"
-                    )
+                    assert not valid[
+                        i
+                    ], f"Walker {i} with tier {classification['tier'][i]} should be invalid"
 
     def test_pbc_disables_boundary_exclusion(self):
         """Test that PBC disables boundary exclusion."""

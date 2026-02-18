@@ -435,11 +435,7 @@ class TestAtariGasVisualizer:
         viz = AtariGasVisualizer()
         layout = viz.panel()
         # Should have the "Algorithm Metrics" section
-        md_texts = [
-            str(c.object)
-            for c in layout.objects
-            if isinstance(c, pn.pane.Markdown)
-        ]
+        md_texts = [str(c.object) for c in layout.objects if isinstance(c, pn.pane.Markdown)]
         assert any("Algorithm Metrics" in t for t in md_texts)
 
 

@@ -15,12 +15,12 @@ def run():
 @click.option("--headless", is_flag=True, help="Force headless env vars (auto-detected on WSL).")
 def videogames(port, open_browser, threaded, headless):
     """Launch the Atari Fractal Gas dashboard."""
+    import panel as pn
+
     from fragile.fractalai.videogames.dashboard import (
         _configure_headless_wsl,
         create_app,
     )
-
-    import panel as pn
 
     _configure_headless_wsl(force=headless)
     click.echo("Starting Atari Fractal Gas Dashboard...")
@@ -37,12 +37,12 @@ def videogames(port, open_browser, threaded, headless):
 @click.option("--threaded", is_flag=True, help="Use multi-threaded Tornado.")
 def robots(port, open_browser, threaded):
     """Launch the DM Control Fractal Gas dashboard."""
+    import panel as pn
+
     from fragile.fractalai.robots.dashboard import (
         _configure_mujoco_offscreen,
         create_app,
     )
-
-    import panel as pn
 
     _configure_mujoco_offscreen()
     click.echo("Starting DM Control Fractal Gas Dashboard...")
@@ -59,9 +59,9 @@ def robots(port, open_browser, threaded):
 @click.option("--address", default="0.0.0.0", help="Bind address.")
 def physics(port, open_browser, address):
     """Launch the QFT Swarm Convergence dashboard."""
-    from fragile.physics.app.dashboard import create_app
-
     import panel as pn
+
+    from fragile.physics.app.dashboard import create_app
 
     click.echo("Starting QFT Swarm Convergence Dashboard...")
     click.echo(

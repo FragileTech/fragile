@@ -80,7 +80,7 @@ def _diffuse_color_step(
     neighbor_sum = torch.zeros_like(color)
     neighbor_count = torch.zeros(color.shape[:2], device=device, dtype=torch.float32)
 
-    if topology in ("distance", "both"):
+    if topology in {"distance", "both"}:
         c_d, in_d = safe_gather_3d(color, companions_distance)
         v_d, _ = safe_gather_2d(color_valid, companions_distance)
         # Non-self check
@@ -91,7 +91,7 @@ def _diffuse_color_step(
         neighbor_sum = neighbor_sum + torch.where(mask_d.unsqueeze(-1), c_d, torch.zeros_like(c_d))
         neighbor_count = neighbor_count + mask_d.float()
 
-    if topology in ("clone", "both"):
+    if topology in {"clone", "both"}:
         c_c, in_c = safe_gather_3d(color, companions_clone)
         v_c, _ = safe_gather_2d(color_valid, companions_clone)
         n = color.shape[1]
@@ -203,11 +203,11 @@ def compute_wilson_flow(
     n_steps = max(1, int(cfg.n_steps))
     step_size = float(cfg.step_size)
     topology = str(cfg.topology).strip().lower()
-    if topology not in ("distance", "clone", "both"):
+    if topology not in {"distance", "clone", "both"}:
         raise ValueError(f"topology must be 'distance', 'clone', or 'both', got {topology!r}.")
 
     device = color.device
-    t_len = color.shape[0]
+    color.shape[0]
 
     flow_times_list = [0.0]
     action_density_list: list[Tensor] = []
@@ -218,7 +218,12 @@ def compute_wilson_flow(
 
     # Measure at step 0
     mean_e, per_frame_e, valid_per_frame = _measure_action_density(
-        c, color_valid, companions_distance, companions_clone, cfg.eps, cfg.operator_mode,
+        c,
+        color_valid,
+        companions_distance,
+        companions_clone,
+        cfg.eps,
+        cfg.operator_mode,
     )
     action_density_list.append(mean_e.detach())
     action_density_per_frame_list.append(per_frame_e.detach())
@@ -227,11 +232,21 @@ def compute_wilson_flow(
     # Flow loop
     for step in range(1, n_steps + 1):
         c = _diffuse_color_step(
-            c, color_valid, companions_distance, companions_clone, step_size, topology,
+            c,
+            color_valid,
+            companions_distance,
+            companions_clone,
+            step_size,
+            topology,
         )
         flow_times_list.append(step * step_size)
         mean_e, per_frame_e, _ = _measure_action_density(
-            c, color_valid, companions_distance, companions_clone, cfg.eps, cfg.operator_mode,
+            c,
+            color_valid,
+            companions_distance,
+            companions_clone,
+            cfg.eps,
+            cfg.operator_mode,
         )
         action_density_list.append(mean_e.detach())
         action_density_per_frame_list.append(per_frame_e.detach())
@@ -252,6 +267,7 @@ def compute_wilson_flow(
     t0 = _interpolate_crossing(flow_times, t2_action, cfg.t0_reference)
     w0 = _interpolate_crossing(dt2_action_times, dt2_action, cfg.w0_reference)
     import math
+
     sqrt_8t0 = math.sqrt(8.0 * t0) if math.isfinite(t0) and t0 > 0 else float("nan")
 
     return WilsonFlowOutput(

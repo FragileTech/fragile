@@ -24,6 +24,7 @@ import numpy as np
 import torch
 from torch import Tensor
 
+
 if TYPE_CHECKING:
     from fragile.physics.fractal_gas.history import RunHistory
 
@@ -54,6 +55,7 @@ class SpectralGapResult:
 # ---------------------------------------------------------------------------
 # Method 1: Graph Laplacian (Fiedler value)
 # ---------------------------------------------------------------------------
+
 
 def _graph_laplacian_fiedler(
     positions: Tensor,
@@ -181,6 +183,7 @@ def estimate_fiedler_from_history(
 # Method 2: Autocorrelation decay
 # ---------------------------------------------------------------------------
 
+
 def _autocorrelation(x: np.ndarray, max_lag: int | None = None) -> np.ndarray:
     """Normalised autocorrelation of a 1-D signal via FFT."""
     n = len(x)
@@ -252,6 +255,7 @@ def estimate_autocorrelation_gap(
 # Method 3: Transfer-matrix proxy (effective mass)
 # ---------------------------------------------------------------------------
 
+
 def estimate_transfer_matrix_gap(
     history: RunHistory,
     warmup_fraction: float = 0.15,
@@ -308,7 +312,7 @@ def estimate_transfer_matrix_gap(
 
     arr = np.array(m_eff)
     # Use the latter half as plateau region
-    plateau = arr[len(arr) // 3:]
+    plateau = arr[len(arr) // 3 :]
     if len(plateau) < 2:
         plateau = arr
 
@@ -318,6 +322,7 @@ def estimate_transfer_matrix_gap(
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 def compute_spectral_gap(
     history: RunHistory,
@@ -333,13 +338,16 @@ def compute_spectral_gap(
         SpectralGapResult with estimates from each method.
     """
     fiedler, fiedler_std = estimate_fiedler_from_history(
-        history, warmup_fraction=warmup_fraction,
+        history,
+        warmup_fraction=warmup_fraction,
     )
     ac_gap, ac_tau = estimate_autocorrelation_gap(
-        history, warmup_fraction=warmup_fraction,
+        history,
+        warmup_fraction=warmup_fraction,
     )
     tm_gap, tm_std = estimate_transfer_matrix_gap(
-        history, warmup_fraction=warmup_fraction,
+        history,
+        warmup_fraction=warmup_fraction,
     )
 
     return SpectralGapResult(

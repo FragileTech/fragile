@@ -169,8 +169,7 @@ def build_wilson_histogram_plot(values: np.ndarray, title: str) -> hv.Histogram 
         return None
     hist = np.histogram(values, bins=50)
     return (
-        hv
-        .Histogram(hist)
+        hv.Histogram(hist)
         .relabel("Wilson loop")
         .opts(
             xlabel="Wilson loop (Re)",
@@ -289,8 +288,7 @@ def build_correlator_plot(
 
     color = CHANNEL_COLORS.get(channel_name, "#1f77b4")
     scatter = (
-        hv
-        .Scatter((t_plot, c_plot), "t", "C(t)")
+        hv.Scatter((t_plot, c_plot), "t", "C(t)")
         .opts(
             color=color,
             size=6,
@@ -321,8 +319,7 @@ def build_correlator_plot(
         if c_anchor > 0:
             c_line = c_anchor * np.exp(-mass_scaled * (t_line - t_anchor))
             curve = (
-                hv
-                .Curve((t_line, c_line), "t", "C(t)")
+                hv.Curve((t_line, c_line), "t", "C(t)")
                 .opts(
                     color=color,
                     line_dash="dashed",
@@ -369,8 +366,7 @@ def build_effective_mass_plot(
 
     color = CHANNEL_COLORS.get(channel_name, "#1f77b4")
     scatter = (
-        hv
-        .Scatter((t_plot, m_plot), "t", "m_eff(t)")
+        hv.Scatter((t_plot, m_plot), "t", "m_eff(t)")
         .opts(
             color=color,
             size=6,
@@ -388,8 +384,7 @@ def build_effective_mass_plot(
         t_line = np.array([float(t_plot.min()), float(t_plot.max())])
         m_line = np.array([mass, mass])
         curve = (
-            hv
-            .Curve((t_line, m_line), "t", "m_eff(t)")
+            hv.Curve((t_line, m_line), "t", "m_eff(t)")
             .opts(
                 color=color,
                 line_dash="dashed",
@@ -660,8 +655,7 @@ def build_window_heatmap(
         best_end = best_t_start + best_width - 1
         best_mass = best_window.get("mass", 0.0)
         best_marker = (
-            hv
-            .Points(
+            hv.Points(
                 [(best_t_start, best_end, best_mass)],
                 kdims=["start", "end"],
                 vdims=["mass"],
@@ -730,8 +724,7 @@ def build_effective_mass_plateau_plot(
     c_plot = correlator[corr_mask]
 
     corr_scatter = (
-        hv
-        .Scatter((t_corr, c_plot), "t", "C(t)")
+        hv.Scatter((t_corr, c_plot), "t", "C(t)")
         .opts(
             color=color,
             size=6,
@@ -753,8 +746,7 @@ def build_effective_mass_plateau_plot(
         if c_anchor > 0:
             c_line = c_anchor * np.exp(-mass_scaled * (t_line - t_anchor))
             corr_curve = (
-                hv
-                .Curve((t_line, c_line), "t", "C(t)")
+                hv.Curve((t_line, c_line), "t", "C(t)")
                 .opts(
                     color=color,
                     line_dash="dashed",
@@ -780,8 +772,7 @@ def build_effective_mass_plateau_plot(
     m_plot = effective_mass[meff_mask]
 
     meff_scatter = (
-        hv
-        .Scatter((t_meff, m_plot), "t", "m_eff(t)")
+        hv.Scatter((t_meff, m_plot), "t", "m_eff(t)")
         .opts(
             color=color,
             size=6,
@@ -808,8 +799,7 @@ def build_effective_mass_plateau_plot(
         t_line = np.array([float(t_meff.min()), float(t_meff.max())])
         m_line = np.array([mass_scaled, mass_scaled])
         mass_curve = (
-            hv
-            .Curve((t_line, m_line), "t", "m_eff(t)")
+            hv.Curve((t_line, m_line), "t", "m_eff(t)")
             .opts(
                 color="red",
                 line_dash="dashed",
@@ -942,8 +932,7 @@ class ChannelPlot:
 
         # Scatter points
         scatter = (
-            hv
-            .Scatter((t_plot, c_plot), "t", "C(t)")
+            hv.Scatter((t_plot, c_plot), "t", "C(t)")
             .opts(
                 color=self._color,
                 size=6,
@@ -995,8 +984,7 @@ class ChannelPlot:
                 if self.logy:
                     c_line = np.maximum(c_line, np.finfo(float).tiny)
                 curve = (
-                    hv
-                    .Curve((t_line, c_line), "t", "C(t)")
+                    hv.Curve((t_line, c_line), "t", "C(t)")
                     .opts(
                         color=self._color,
                         line_dash="dashed",
@@ -1053,8 +1041,7 @@ class ChannelPlot:
 
         # Scatter points
         scatter = (
-            hv
-            .Scatter((t_plot, m_plot), "t", "m_eff(t)")
+            hv.Scatter((t_plot, m_plot), "t", "m_eff(t)")
             .opts(
                 color=self._color,
                 size=6,
@@ -1126,8 +1113,7 @@ class ChannelPlot:
             t_line = np.array([float(t_plot.min()), float(t_plot.max())])
             m_line = np.array([mass, mass])
             curve = (
-                hv
-                .Curve((t_line, m_line), "t", "m_eff(t)")
+                hv.Curve((t_line, m_line), "t", "m_eff(t)")
                 .opts(
                     color="red",
                     line_dash="dashed",
@@ -1238,8 +1224,7 @@ def build_all_channels_overlay(
                 y_min_positive = min(y_min_positive, float(np.min(c_masked)))
                 y_max_positive = max(y_max_positive, float(np.max(c_masked)))
             curve = (
-                hv
-                .Curve((t[mask], corr[mask]), "t", "C(t)")
+                hv.Curve((t[mask], corr[mask]), "t", "C(t)")
                 .opts(
                     color=color,
                     line_width=2,
@@ -1258,8 +1243,7 @@ def build_all_channels_overlay(
                 continue
             t = np.arange(len(meff)) * dt
             curve = (
-                hv
-                .Curve((t[mask], meff[mask]), "t", "m_eff(t)")
+                hv.Curve((t[mask], meff[mask]), "t", "m_eff(t)")
                 .opts(
                     color=color,
                     line_width=2,

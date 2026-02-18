@@ -1,7 +1,7 @@
 """Checkpoint/benchmark I/O and utility functions for TopoEncoder."""
 
-import math
 from dataclasses import asdict
+import math
 
 import numpy as np
 from sklearn.metrics import adjusted_mutual_info_score

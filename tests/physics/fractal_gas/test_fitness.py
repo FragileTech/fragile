@@ -267,9 +267,9 @@ class TestComputeFitness:
         # r_prime >= eta (since logistic >= 0), d_prime >= eta
         # fitness = d_prime^beta * r_prime^alpha >= eta^beta * eta^alpha = eta^(alpha+beta)
         lower_bound = eta ** (alpha + beta)
-        assert (fitness >= lower_bound - 1e-7).all(), (
-            f"Fitness below eta floor: min={fitness.min().item()}, bound={lower_bound}"
-        )
+        assert (
+            fitness >= lower_bound - 1e-7
+        ).all(), f"Fitness below eta floor: min={fitness.min().item()}, bound={lower_bound}"
 
     def test_rescaled_values_in_range(
         self, positions: Tensor, rewards: Tensor, companions: Tensor
@@ -325,9 +325,9 @@ class TestFitnessOperator:
         fitness_custom, _ = op_custom(positions, rewards, companions)
 
         # Different parameters should give different fitness
-        assert not torch.allclose(fitness_default, fitness_custom), (
-            "Different parameters should produce different fitness"
-        )
+        assert not torch.allclose(
+            fitness_default, fitness_custom
+        ), "Different parameters should produce different fitness"
 
     def test_widget_parameters_list(self):
         """widget_parameters contains the expected parameter names."""

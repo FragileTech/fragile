@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import torch
 import pytest
+import torch
 
 from fragile.fractalai.qft.correlator_channels import (
     _fft_correlator_batched,

@@ -12,7 +12,7 @@ from typing import Any
 import gvar
 import numpy as np
 
-from .config import ChannelGroupConfig, PriorConfig
+from .config import ChannelGroupConfig
 
 
 def build_prior_for_group(
@@ -42,14 +42,14 @@ def build_prior_for_group(
         # Try to estimate from the first available key
         for key in group.correlator_keys:
             if key in available_keys and key in data:
-                ground_energy = _estimate_ground_energy(
-                    data, key, fit_cfg.tmin, fit_cfg.tp
-                )
+                ground_energy = _estimate_ground_energy(data, key, fit_cfg.tmin, fit_cfg.tp)
                 if ground_energy is not None:
                     break
 
     # Build dE prior
-    dE = _build_dE_prior(nexp, ground_energy, prior_cfg.dE_ground, prior_cfg.dE_excited, fit_cfg.use_log_dE)
+    dE = _build_dE_prior(
+        nexp, ground_energy, prior_cfg.dE_ground, prior_cfg.dE_excited, fit_cfg.use_log_dE
+    )
 
     if fit_cfg.use_log_dE:
         prior_key = f"log({group.name}.dE)"

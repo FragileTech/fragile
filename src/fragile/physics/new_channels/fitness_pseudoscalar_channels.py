@@ -15,8 +15,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import torch
-import torch.nn.functional as F
 from torch import Tensor
+import torch.nn.functional as F
 
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.qft_utils import _fft_correlator_batched, resolve_frame_indices
@@ -88,9 +88,7 @@ def _fft_cross_correlator(
     if a.ndim != 1 or b.ndim != 1:
         raise ValueError(f"Expected 1D tensors, got shapes {tuple(a.shape)} and {tuple(b.shape)}")
     if a.shape[0] != b.shape[0]:
-        raise ValueError(
-            f"Series must have same length, got {a.shape[0]} and {b.shape[0]}"
-        )
+        raise ValueError(f"Series must have same length, got {a.shape[0]} and {b.shape[0]}")
 
     T = a.shape[0]
     a_work = a.float()
@@ -107,10 +105,8 @@ def _fft_cross_correlator(
         fft_x = torch.fft.fft(x_pad)
         fft_y = torch.fft.fft(y_pad)
         corr = torch.fft.ifft(fft_x.conj() * fft_y).real
-        counts = torch.arange(
-            T, T - effective_lag - 1, -1, device=a.device, dtype=torch.float32
-        )
-        result = corr[:effective_lag + 1] / counts
+        counts = torch.arange(T, T - effective_lag - 1, -1, device=a.device, dtype=torch.float32)
+        result = corr[: effective_lag + 1] / counts
         if effective_lag < max_lag:
             result = F.pad(result, (0, max_lag - effective_lag), value=0.0)
         return result
@@ -145,7 +141,7 @@ def compute_fitness_pseudoscalar_from_data(
     Returns:
         FitnessPseudoscalarOutput with all correlators and diagnostics.
     """
-    T, N = fitness.shape
+    T, _N = fitness.shape
     device = fitness.device
 
     if frame_indices is None:
@@ -156,9 +152,15 @@ def compute_fitness_pseudoscalar_from_data(
         empty = torch.zeros(max_lag + 1, device=device)
         pcac = torch.full((max_lag + 1,), float("nan"), device=device)
         return FitnessPseudoscalarOutput(
-            cpp=empty, cpp_raw=empty.clone(), cpp_connected=empty.clone(),
-            css=empty.clone(), css_raw=empty.clone(), css_connected=empty.clone(),
-            cjp=empty.clone(), cjp_raw=empty.clone(), cjp_connected=empty.clone(),
+            cpp=empty,
+            cpp_raw=empty.clone(),
+            cpp_connected=empty.clone(),
+            css=empty.clone(),
+            css_raw=empty.clone(),
+            css_connected=empty.clone(),
+            cjp=empty.clone(),
+            cjp_raw=empty.clone(),
+            cjp_connected=empty.clone(),
             pcac_mass=pcac,
             operator_pseudoscalar_series=torch.zeros(0, device=device),
             operator_scalar_variance_series=torch.zeros(0, device=device),
@@ -278,9 +280,15 @@ def compute_fitness_pseudoscalar_correlator(
         empty = torch.zeros(max_lag + 1, device=device)
         pcac = torch.full((max_lag + 1,), float("nan"), device=device)
         return FitnessPseudoscalarOutput(
-            cpp=empty, cpp_raw=empty.clone(), cpp_connected=empty.clone(),
-            css=empty.clone(), css_raw=empty.clone(), css_connected=empty.clone(),
-            cjp=empty.clone(), cjp_raw=empty.clone(), cjp_connected=empty.clone(),
+            cpp=empty,
+            cpp_raw=empty.clone(),
+            cpp_connected=empty.clone(),
+            css=empty.clone(),
+            css_raw=empty.clone(),
+            css_connected=empty.clone(),
+            cjp=empty.clone(),
+            cjp_raw=empty.clone(),
+            cjp_connected=empty.clone(),
             pcac_mass=pcac,
             operator_pseudoscalar_series=torch.zeros(0, device=device),
             operator_scalar_variance_series=torch.zeros(0, device=device),

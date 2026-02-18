@@ -505,7 +505,7 @@ def compute_jump_consistency_loss(
                 tgt_list.append(j)
     pair_src = torch.tensor(src_list, dtype=torch.long, device=device)  # [P]
     pair_tgt = torch.tensor(tgt_list, dtype=torch.long, device=device)  # [P]
-    P = pair_src.shape[0]  # N_c * (N_c - 1)
+    pair_src.shape[0]  # N_c * (N_c - 1)
 
     # Overlap weights for all pairs: w_i * w_j  -> [B, P]
     w_overlap = router_weights[:, pair_src] * router_weights[:, pair_tgt]
@@ -519,8 +519,8 @@ def compute_jump_consistency_loss(
         return torch.tensor(0.0, device=device)
 
     # Narrow to active pairs only
-    active_src = pair_src[active_mask]   # [A]
-    active_tgt = pair_tgt[active_mask]   # [A]
+    active_src = pair_src[active_mask]  # [A]
+    active_tgt = pair_tgt[active_mask]  # [A]
     w_active = w_overlap[:, active_mask]  # [B, A]
     A = active_src.shape[0]
 
@@ -543,7 +543,7 @@ def compute_jump_consistency_loss(
 
     # Reshape and compute per-pair weighted loss
     error = error_flat.view(B, A)  # [B, A]
-    w_sums = w_active.sum(dim=0)   # [A]
+    w_sums = w_active.sum(dim=0)  # [A]
     pair_losses = (error * w_active).sum(dim=0) / (w_sums + 1e-6)  # [A]
 
     return pair_losses.mean()

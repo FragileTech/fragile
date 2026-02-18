@@ -12,6 +12,7 @@ Node IDs are deterministic:
 
 from __future__ import annotations
 
+import operator
 from typing import Callable, TYPE_CHECKING
 
 import numpy as np
@@ -567,7 +568,7 @@ class AtariTreeHistory:
             return []
 
         # Sort by reward descending so the best trajectory is first
-        elite_entries.sort(key=lambda x: x[1], reverse=True)
+        elite_entries.sort(key=operator.itemgetter(1), reverse=True)
 
         claimed: set[int] = set()
         results: list[dict] = []

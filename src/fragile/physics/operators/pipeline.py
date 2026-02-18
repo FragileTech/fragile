@@ -123,9 +123,7 @@ def compute_strong_force_pipeline(
     requested_set = set(requested)
     need_positions = bool(_NEEDS_POSITIONS & requested_set)
     need_scores = _any_score_mode(config, requested)
-    need_momentum = bool(_NEEDS_MOMENTUM & requested_set) and _any_momentum_mode(
-        config, requested
-    )
+    need_momentum = bool(_NEEDS_MOMENTUM & requested_set) and _any_momentum_mode(config, requested)
     need_fitness = bool(_NEEDS_FITNESS & requested_set)
     need_alive = bool(_NEEDS_ALIVE & requested_set)
     need_velocities = bool(_NEEDS_VELOCITIES & requested_set)

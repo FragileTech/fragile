@@ -12,11 +12,11 @@ import panel as pn
 import param
 import torch
 
-from fragile.physics.app.coupling_diagnostics import (
-    CouplingDiagnosticsConfig,
-    compute_coupling_diagnostics,
-)
 from fragile.physics.app.algorithm import _algorithm_placeholder_plot, _history_transition_steps
+from fragile.physics.app.coupling_diagnostics import (
+    compute_coupling_diagnostics,
+    CouplingDiagnosticsConfig,
+)
 from fragile.physics.fractal_gas.history import RunHistory
 
 
@@ -367,21 +367,19 @@ def _build_coupling_diagnostics_frame_table(
     if len(step_axis) == 0:
         return pd.DataFrame()
 
-    return pd.DataFrame(
-        {
-            "step": step_axis,
-            "phase_mean": _tensor_to_numpy(output.phase_mean),
-            "phase_mean_unwrapped": _tensor_to_numpy(output.phase_mean_unwrapped),
-            "r_circ": _tensor_to_numpy(output.phase_concentration),
-            "re_im_asymmetry": _tensor_to_numpy(output.re_im_asymmetry),
-            "local_phase_coherence": _tensor_to_numpy(output.local_phase_coherence),
-            "scalar_mean": _tensor_to_numpy(output.scalar_mean),
-            "pseudoscalar_mean": _tensor_to_numpy(output.pseudoscalar_mean),
-            "field_magnitude_mean": _tensor_to_numpy(output.field_magnitude_mean),
-            "valid_pairs": _tensor_to_numpy(output.valid_pair_counts, int),
-            "valid_walkers": _tensor_to_numpy(output.valid_walker_counts, int),
-        }
-    ).replace([np.inf, -np.inf], np.nan)
+    return pd.DataFrame({
+        "step": step_axis,
+        "phase_mean": _tensor_to_numpy(output.phase_mean),
+        "phase_mean_unwrapped": _tensor_to_numpy(output.phase_mean_unwrapped),
+        "r_circ": _tensor_to_numpy(output.phase_concentration),
+        "re_im_asymmetry": _tensor_to_numpy(output.re_im_asymmetry),
+        "local_phase_coherence": _tensor_to_numpy(output.local_phase_coherence),
+        "scalar_mean": _tensor_to_numpy(output.scalar_mean),
+        "pseudoscalar_mean": _tensor_to_numpy(output.pseudoscalar_mean),
+        "field_magnitude_mean": _tensor_to_numpy(output.field_magnitude_mean),
+        "valid_pairs": _tensor_to_numpy(output.valid_pair_counts, int),
+        "valid_walkers": _tensor_to_numpy(output.valid_walker_counts, int),
+    }).replace([np.inf, -np.inf], np.nan)
 
 
 def _build_coupling_diagnostics_scale_table(output: Any) -> pd.DataFrame:
@@ -390,14 +388,12 @@ def _build_coupling_diagnostics_scale_table(output: Any) -> pd.DataFrame:
     if scales is None or int(scales.numel()) == 0:
         return pd.DataFrame()
 
-    return pd.DataFrame(
-        {
-            "scale": _tensor_to_numpy(output.scales),
-            "coherence": _tensor_to_numpy(output.coherence_by_scale),
-            "phase_spread": _tensor_to_numpy(output.phase_spread_by_scale),
-            "screening_connected": _tensor_to_numpy(output.screening_connected_by_scale),
-        }
-    ).replace([np.inf, -np.inf], np.nan)
+    return pd.DataFrame({
+        "scale": _tensor_to_numpy(output.scales),
+        "coherence": _tensor_to_numpy(output.coherence_by_scale),
+        "phase_spread": _tensor_to_numpy(output.phase_spread_by_scale),
+        "screening_connected": _tensor_to_numpy(output.screening_connected_by_scale),
+    }).replace([np.inf, -np.inf], np.nan)
 
 
 def _build_overlay_plot(
@@ -412,13 +408,16 @@ def _build_overlay_plot(
     overlays: list[Any] = []
     for label, values, color in series:
         frame = pd.DataFrame({axis_name: axis, "value": values}).replace(
-            [np.inf, -np.inf], np.nan,
+            [np.inf, -np.inf],
+            np.nan,
         )
         frame = frame.dropna()
         if frame.empty:
             continue
         overlays.append(
-            hv.Curve(frame, axis_name, "value").relabel(label).opts(
+            hv.Curve(frame, axis_name, "value")
+            .relabel(label)
+            .opts(
                 color=color,
                 line_width=2,
                 tools=["hover"],
@@ -433,14 +432,14 @@ def _build_overlay_plot(
         plot = plot * overlay
 
     xlabel = "Recorded step" if axis_name == "step" else "Scale"
-    opts_kw: dict[str, Any] = dict(
-        title=title,
-        xlabel=xlabel,
-        ylabel=ylabel,
-        width=960,
-        height=320,
-        show_grid=True,
-    )
+    opts_kw: dict[str, Any] = {
+        "title": title,
+        "xlabel": xlabel,
+        "ylabel": ylabel,
+        "width": 960,
+        "height": 320,
+        "show_grid": True,
+    }
     if len(overlays) > 1:
         opts_kw["legend_position"] = "top_left"
     return plot.opts(**opts_kw)
@@ -548,12 +547,10 @@ def _build_coupling_diagnostics_kernel_plots(output: Any) -> dict[str, hv.Overla
 
     running_curves: list[Any] = []
     running_frame = (
-        pd.DataFrame(
-            {
-                "scale": _tensor_to_numpy(output.running_mid_scales),
-                "value": _tensor_to_numpy(output.running_g2_by_mid_scale),
-            }
-        )
+        pd.DataFrame({
+            "scale": _tensor_to_numpy(output.running_mid_scales),
+            "value": _tensor_to_numpy(output.running_g2_by_mid_scale),
+        })
         .replace([np.inf, -np.inf], np.nan)
         .dropna()
     )
@@ -565,12 +562,10 @@ def _build_coupling_diagnostics_kernel_plots(output: Any) -> dict[str, hv.Overla
         )
 
     creutz_frame = (
-        pd.DataFrame(
-            {
-                "scale": _tensor_to_numpy(output.creutz_mid_scales),
-                "value": _tensor_to_numpy(output.creutz_ratio_by_mid_scale),
-            }
-        )
+        pd.DataFrame({
+            "scale": _tensor_to_numpy(output.creutz_mid_scales),
+            "value": _tensor_to_numpy(output.creutz_ratio_by_mid_scale),
+        })
         .replace([np.inf, -np.inf], np.nan)
         .dropna()
     )
@@ -627,9 +622,14 @@ def _build_wilson_flow_plots(
 
     # 2. t^2 * E(t) vs flow time + t0 marker
     t2e_curves: list[Any] = []
-    t2e_frame = pd.DataFrame({"flow_time": flow_times, "value": t2_action}).replace(
-        [np.inf, -np.inf], np.nan,
-    ).dropna()
+    t2e_frame = (
+        pd.DataFrame({"flow_time": flow_times, "value": t2_action})
+        .replace(
+            [np.inf, -np.inf],
+            np.nan,
+        )
+        .dropna()
+    )
     if not t2e_frame.empty:
         t2e_curves.append(
             hv.Curve(t2e_frame, "flow_time", "value")
@@ -638,13 +638,17 @@ def _build_wilson_flow_plots(
         )
         t2e_curves.append(
             hv.HLine(wf_output.config.t0_reference).opts(
-                color="#e45756", line_dash="dashed", line_width=1,
+                color="#e45756",
+                line_dash="dashed",
+                line_width=1,
             )
         )
         if np.isfinite(wf_output.t0):
             t2e_curves.append(
                 hv.VLine(wf_output.t0).opts(
-                    color="#54a24b", line_dash="dotted", line_width=1,
+                    color="#54a24b",
+                    line_dash="dotted",
+                    line_width=1,
                 )
             )
 
@@ -667,9 +671,14 @@ def _build_wilson_flow_plots(
     dt2_times = _tensor_to_numpy(wf_output.dt2_action_times)
     dt2_values = _tensor_to_numpy(wf_output.dt2_action)
     deriv_curves: list[Any] = []
-    deriv_frame = pd.DataFrame({"flow_time": dt2_times, "value": dt2_values}).replace(
-        [np.inf, -np.inf], np.nan,
-    ).dropna()
+    deriv_frame = (
+        pd.DataFrame({"flow_time": dt2_times, "value": dt2_values})
+        .replace(
+            [np.inf, -np.inf],
+            np.nan,
+        )
+        .dropna()
+    )
     if not deriv_frame.empty:
         deriv_curves.append(
             hv.Curve(deriv_frame, "flow_time", "value")
@@ -678,13 +687,17 @@ def _build_wilson_flow_plots(
         )
         deriv_curves.append(
             hv.HLine(wf_output.config.w0_reference).opts(
-                color="#e45756", line_dash="dashed", line_width=1,
+                color="#e45756",
+                line_dash="dashed",
+                line_width=1,
             )
         )
         if np.isfinite(wf_output.w0):
             deriv_curves.append(
                 hv.VLine(wf_output.w0).opts(
-                    color="#54a24b", line_dash="dotted", line_width=1,
+                    color="#54a24b",
+                    line_dash="dotted",
+                    line_width=1,
                 )
             )
 
@@ -722,62 +735,60 @@ def _build_wilson_flow_summary_text(wf_output: Any) -> str:
 def _build_coupling_diagnostics_summary_text(output: Any) -> str:
     summary = output.summary
     n_frames = int(summary.get("n_frames", 0.0) or 0)
-    return "\n".join(
-        [
-            "## Coupling Diagnostics Summary",
-            f"- Frames analyzed: `{n_frames}`",
-            f"- Mean R_circ: `{_format_metric(summary.get('r_circ_mean'))}`",
-            f"- Mean Re/Im asymmetry: `{_format_metric(summary.get('re_im_asymmetry_mean'))}`",
-            (
-                "- Mean local phase coherence: "
-                f"`{_format_metric(summary.get('local_phase_coherence_mean'))}`"
-            ),
-            (
-                "- Phase drift significance: "
-                f"`{_format_metric(summary.get('phase_drift_sigma'), 3)}σ`"
-            ),
-            (
-                "- String tension proxy σ: "
-                f"`{_format_metric(summary.get('string_tension_sigma'), 6)}`"
-            ),
-            f"- Polyakov loop |L|: `{_format_metric(summary.get('polyakov_abs'), 6)}`",
-            f"- Screening length ξ: `{_format_metric(summary.get('screening_length_xi'), 6)}`",
-            (
-                "- Running coupling slope: "
-                f"`{_format_metric(summary.get('running_coupling_slope'), 6)}`"
-            ),
-            f"- Topological flux std: `{_format_metric(summary.get('topological_flux_std'), 6)}`",
-            f"- Regime score: `{_format_metric(summary.get('regime_score'), 2)}` / 10",
-            "",
-            "**Spectral Gap Estimates:**",
-            (
-                "- Fiedler value (graph Laplacian λ₂): "
-                f"`{_format_metric(summary.get('spectral_gap_fiedler'), 6)}`"
-            ),
-            (
-                "- Autocorrelation gap (1/τ): "
-                f"`{_format_metric(summary.get('spectral_gap_autocorrelation'), 6)}`"
-                f" (τ = `{_format_metric(summary.get('spectral_gap_autocorrelation_tau'), 2)}`)"
-            ),
-            (
-                "- Transfer-matrix gap: "
-                f"`{_format_metric(summary.get('spectral_gap_transfer_matrix'), 6)}`"
-            ),
-            "",
-            (
-                f"- Kernel snapshot frame index: `{int(output.snapshot_frame_index)}`"
-                if output.snapshot_frame_index is not None
-                else "- Kernel snapshot frame index: `n/a`"
-            ),
-            "",
-            "**Wilson Flow:**",
-            f"- t0: `{_format_metric(summary.get('wilson_flow_t0'), 6)}`",
-            f"- w0: `{_format_metric(summary.get('wilson_flow_w0'), 6)}`",
-            f"- sqrt(8 t0): `{_format_metric(summary.get('wilson_flow_sqrt_8t0'), 6)}`",
-            "",
-            "- This tab computes only fast regime diagnostics (no channel masses).",
-        ]
-    )
+    return "\n".join([
+        "## Coupling Diagnostics Summary",
+        f"- Frames analyzed: `{n_frames}`",
+        f"- Mean R_circ: `{_format_metric(summary.get('r_circ_mean'))}`",
+        f"- Mean Re/Im asymmetry: `{_format_metric(summary.get('re_im_asymmetry_mean'))}`",
+        (
+            "- Mean local phase coherence: "
+            f"`{_format_metric(summary.get('local_phase_coherence_mean'))}`"
+        ),
+        (
+            "- Phase drift significance: "
+            f"`{_format_metric(summary.get('phase_drift_sigma'), 3)}σ`"
+        ),
+        (
+            "- String tension proxy σ: "
+            f"`{_format_metric(summary.get('string_tension_sigma'), 6)}`"
+        ),
+        f"- Polyakov loop |L|: `{_format_metric(summary.get('polyakov_abs'), 6)}`",
+        f"- Screening length ξ: `{_format_metric(summary.get('screening_length_xi'), 6)}`",
+        (
+            "- Running coupling slope: "
+            f"`{_format_metric(summary.get('running_coupling_slope'), 6)}`"
+        ),
+        f"- Topological flux std: `{_format_metric(summary.get('topological_flux_std'), 6)}`",
+        f"- Regime score: `{_format_metric(summary.get('regime_score'), 2)}` / 10",
+        "",
+        "**Spectral Gap Estimates:**",
+        (
+            "- Fiedler value (graph Laplacian λ₂): "
+            f"`{_format_metric(summary.get('spectral_gap_fiedler'), 6)}`"
+        ),
+        (
+            "- Autocorrelation gap (1/τ): "
+            f"`{_format_metric(summary.get('spectral_gap_autocorrelation'), 6)}`"
+            f" (τ = `{_format_metric(summary.get('spectral_gap_autocorrelation_tau'), 2)}`)"
+        ),
+        (
+            "- Transfer-matrix gap: "
+            f"`{_format_metric(summary.get('spectral_gap_transfer_matrix'), 6)}`"
+        ),
+        "",
+        (
+            f"- Kernel snapshot frame index: `{int(output.snapshot_frame_index)}`"
+            if output.snapshot_frame_index is not None
+            else "- Kernel snapshot frame index: `n/a`"
+        ),
+        "",
+        "**Wilson Flow:**",
+        f"- t0: `{_format_metric(summary.get('wilson_flow_t0'), 6)}`",
+        f"- w0: `{_format_metric(summary.get('wilson_flow_w0'), 6)}`",
+        f"- sqrt(8 t0): `{_format_metric(summary.get('wilson_flow_sqrt_8t0'), 6)}`",
+        "",
+        "- This tab computes only fast regime diagnostics (no channel masses).",
+    ])
 
 
 def _build_regime_evidence_markdown(output: Any) -> str:
@@ -989,12 +1000,8 @@ def build_coupling_diagnostics_tab(
             return
 
         state["coupling_diagnostics_output"] = None
-        widgets.summary.object = (
-            "## Coupling Diagnostics Summary\n_Run diagnostics to populate._"
-        )
-        widgets.regime_evidence.object = (
-            "_Regime evidence will appear after running diagnostics._"
-        )
+        widgets.summary.object = "## Coupling Diagnostics Summary\n_Run diagnostics to populate._"
+        widgets.regime_evidence.object = "_Regime evidence will appear after running diagnostics._"
         widgets.summary_table.value = pd.DataFrame()
         widgets.frame_table.value = pd.DataFrame()
         widgets.scale_table.value = pd.DataFrame()
@@ -1009,9 +1016,7 @@ def build_coupling_diagnostics_tab(
             widgets.wilson_t2e_plot,
             widgets.wilson_derivative_plot,
         )
-        widgets.wilson_summary.object = (
-            "_Enable Wilson flow and run diagnostics to populate._"
-        )
+        widgets.wilson_summary.object = "_Enable Wilson flow and run diagnostics to populate._"
 
     coupling_diagnostics_run_button.on_click(on_run_coupling_diagnostics)
 

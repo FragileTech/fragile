@@ -29,13 +29,13 @@ Reference: fragile-index.md Sections 7.8, 7.10
 import argparse
 import math
 import os
-import sys
 
 import numpy as np
 from sklearn.cluster import KMeans
 import torch
-from torch import nn, optim
+from torch import optim
 import torch.nn.functional as F
+from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 
 from fragile.core.benchmarks import BaselineClassifier, StandardVQ, VanillaAE
@@ -66,19 +66,6 @@ from fragile.core.losses import (
     get_jump_weight_schedule,
     SupervisedTopologyLoss,
 )
-from torch.optim.lr_scheduler import CosineAnnealingLR
-
-from fragile.learning.data import (
-    DataBundle,
-    augment_inputs,
-    create_data_snapshot,
-    create_dataloaders,
-    load_dataset,
-    restore_dataset,
-)
-
-# --- Extracted modules ---
-from fragile.learning.config import TopoEncoderConfig  # noqa: F401
 from fragile.learning.checkpoints import (  # noqa: F401
     benchmarks_compatible as _benchmarks_compatible,
     compute_ami,
@@ -93,15 +80,22 @@ from fragile.learning.checkpoints import (  # noqa: F401
     save_benchmarks,
     save_checkpoint,
 )
+
+# --- Extracted modules ---
+from fragile.learning.config import TopoEncoderConfig  # noqa: F401
+from fragile.learning.data import (
+    augment_inputs,
+    create_data_snapshot,
+    create_dataloaders,
+    load_dataset,
+    restore_dataset,
+)
 from fragile.learning.mlflow_logging import (  # noqa: F401
-    start_mlflow_run as _start_mlflow_run,
+    end_mlflow_run as _end_mlflow_run,
     log_mlflow_metrics as _log_mlflow_metrics,
     log_mlflow_params as _log_mlflow_params,
-    end_mlflow_run as _end_mlflow_run,
+    start_mlflow_run as _start_mlflow_run,
 )
-
-
-
 
 
 def _init_loss_components() -> dict[str, list[float]]:
@@ -162,8 +156,6 @@ def _init_info_metrics() -> dict[str, list[float]]:
         "update_ratio": [],
         "lr": [],
     }
-
-
 
 
 # ==========================================
@@ -261,10 +253,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
     # Unpack bundle for local use
     X_train, X_test = bundle.X_train, bundle.X_test
-    labels_train, labels_test = bundle.labels_train, bundle.labels_test
-    colors_train, colors_test = bundle.colors_train, bundle.colors_test
+    _labels_train, labels_test = bundle.labels_train, bundle.labels_test
+    _colors_train, _colors_test = bundle.colors_train, bundle.colors_test
     dataset_name = bundle.dataset_name
-    dataset_ids = bundle.dataset_ids
     labels_full = bundle.labels_full
 
     mlflow_active = _start_mlflow_run(
@@ -507,30 +498,33 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         model_ae.eval()
         print("  VanillaAE: loaded from benchmarks (frozen)")
 
-    _log_mlflow_params({
-        "topo_params": topo_params,
-        "std_params": std_params,
-        "ae_params": ae_params,
-        "cifar_cov_params": cifar_cov_params,
-        "cifar_std_params": cifar_std_params,
-        "std_hidden_dim": std_hidden_dim,
-        "ae_hidden_dim": ae_hidden_dim,
-        "benchmarks_loaded_std": benchmarks_loaded_std,
-        "benchmarks_loaded_ae": benchmarks_loaded_ae,
-        "train_std": train_std,
-        "train_ae": train_ae,
-        "train_cifar_cov": train_cifar_cov,
-        "train_cifar_std": train_cifar_std,
-        "baseline_attn": config.baseline_attn,
-        "baseline_attn_tokens": config.baseline_attn_tokens,
-        "baseline_attn_dim": config.baseline_attn_dim,
-        "baseline_attn_heads": config.baseline_attn_heads,
-        "baseline_attn_dropout": config.baseline_attn_dropout,
-        "enable_cifar_backbone": config.enable_cifar_backbone,
-        "cifar_backbone_type": config.cifar_backbone_type,
-        "cifar_base_channels": config.cifar_base_channels,
-        "cifar_bundle_size": config.cifar_bundle_size,
-    }, enabled=mlflow_active)
+    _log_mlflow_params(
+        {
+            "topo_params": topo_params,
+            "std_params": std_params,
+            "ae_params": ae_params,
+            "cifar_cov_params": cifar_cov_params,
+            "cifar_std_params": cifar_std_params,
+            "std_hidden_dim": std_hidden_dim,
+            "ae_hidden_dim": ae_hidden_dim,
+            "benchmarks_loaded_std": benchmarks_loaded_std,
+            "benchmarks_loaded_ae": benchmarks_loaded_ae,
+            "train_std": train_std,
+            "train_ae": train_ae,
+            "train_cifar_cov": train_cifar_cov,
+            "train_cifar_std": train_cifar_std,
+            "baseline_attn": config.baseline_attn,
+            "baseline_attn_tokens": config.baseline_attn_tokens,
+            "baseline_attn_dim": config.baseline_attn_dim,
+            "baseline_attn_heads": config.baseline_attn_heads,
+            "baseline_attn_dropout": config.baseline_attn_dropout,
+            "enable_cifar_backbone": config.enable_cifar_backbone,
+            "cifar_backbone_type": config.cifar_backbone_type,
+            "cifar_base_channels": config.cifar_base_channels,
+            "cifar_bundle_size": config.cifar_bundle_size,
+        },
+        enabled=mlflow_active,
+    )
 
     # Initialize Jump Operator for chart gluing
     jump_op = FactorizedJumpOperator(
@@ -657,14 +651,25 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     schedulers: list[CosineAnnealingLR] = []
     if config.use_scheduler:
         T_max = max(1, config.epochs - start_epoch)
-        for opt in [opt_atlas, opt_std, opt_ae, opt_classifier, opt_classifier_std,
-                    opt_classifier_ae, opt_cifar_cov, opt_cifar_std]:
+        for opt in [
+            opt_atlas,
+            opt_std,
+            opt_ae,
+            opt_classifier,
+            opt_classifier_std,
+            opt_classifier_ae,
+            opt_cifar_cov,
+            opt_cifar_std,
+        ]:
             if opt is not None:
                 schedulers.append(CosineAnnealingLR(opt, T_max=T_max, eta_min=config.lr_min))
 
     # Create data loaders for minibatching
     dataloader, test_dataloader = create_dataloaders(
-        bundle, config.batch_size, config.eval_batch_size, device,
+        bundle,
+        config.batch_size,
+        config.eval_batch_size,
+        device,
     )
     batch_size = config.batch_size if config.batch_size > 0 else len(X_train)
     batches_per_epoch = max(1, len(dataloader))
@@ -804,7 +809,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             # --- Baseline classifier readouts (detached) ---
             std_cls_loss = torch.tensor(0.0, device=device)
             std_cls_acc = torch.tensor(0.0, device=device)
-            if std_classifier_head is not None and opt_classifier_std is not None and model_std is not None:
+            if (
+                std_classifier_head is not None
+                and opt_classifier_std is not None
+                and model_std is not None
+            ):
                 with torch.no_grad():
                     z_std = model_std.encoder(batch_X)
                 logits_std = std_classifier_head(z_std)
@@ -816,7 +825,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             ae_cls_loss = torch.tensor(0.0, device=device)
             ae_cls_acc = torch.tensor(0.0, device=device)
-            if ae_classifier_head is not None and opt_classifier_ae is not None and z_ae is not None:
+            if (
+                ae_classifier_head is not None
+                and opt_classifier_ae is not None
+                and z_ae is not None
+            ):
                 logits_ae = ae_classifier_head(z_ae.detach())
                 ae_cls_loss = F.cross_entropy(logits_ae, batch_labels)
                 opt_classifier_ae.zero_grad()
@@ -2310,22 +2323,58 @@ def main():
         config_data = dict(checkpoint["config"])
         # Remove fields from old checkpoints that no longer exist in config
         removed_fields = [
-            "thermo_temperature_decay", "thermo_temperature_floor", "thermo_varentropy_gamma",
-            "thermo_alignment_damping", "thermo_trust_region", "thermo_trust_region_eps",
-            "thermo_snr_eps", "thermo_snr_floor", "thermo_thermal_conductivity",
-            "thermo_history_window", "thermo_varentropy_min_history", "thermo_varentropy_eps",
-            "thermo_use_loss_varentropy", "adaptive_lr", "lr_max", "lr_increase_factor",
-            "lr_decrease_factor", "lr_max_update_ratio", "lr_ema_decay", "lr_loss_increase_tol",
-            "lr_grounding_warmup_epochs", "lr_unstable_patience", "lr_stable_patience",
-            "lr_grounding_ema_decay", "lr_recovery_factor", "lr_recovery_threshold",
-            "lr_plateau_patience", "lr_plateau_tol", "adaptive_weights",
-            "adaptive_warmup_epochs", "adaptive_dual_eta", "adaptive_pi_kp", "adaptive_pi_ki",
-            "adaptive_pi_kd", "adaptive_lambda_min", "adaptive_lambda_max",
-            "adaptive_violation_clip", "adaptive_target_ratio", "adaptive_target_ema_decay",
-            "adaptive_target_min", "entropy_target_ratio", "hk_target_ratio",
-            "code_entropy_target_ratio", "consistency_target", "use_learned_precisions",
-            "loss_rescale", "loss_rescale_reference", "loss_rescale_target_ratio",
-            "loss_rescale_ema_decay", "loss_rescale_min", "loss_rescale_max", "loss_rescale_eps",
+            "thermo_temperature_decay",
+            "thermo_temperature_floor",
+            "thermo_varentropy_gamma",
+            "thermo_alignment_damping",
+            "thermo_trust_region",
+            "thermo_trust_region_eps",
+            "thermo_snr_eps",
+            "thermo_snr_floor",
+            "thermo_thermal_conductivity",
+            "thermo_history_window",
+            "thermo_varentropy_min_history",
+            "thermo_varentropy_eps",
+            "thermo_use_loss_varentropy",
+            "adaptive_lr",
+            "lr_max",
+            "lr_increase_factor",
+            "lr_decrease_factor",
+            "lr_max_update_ratio",
+            "lr_ema_decay",
+            "lr_loss_increase_tol",
+            "lr_grounding_warmup_epochs",
+            "lr_unstable_patience",
+            "lr_stable_patience",
+            "lr_grounding_ema_decay",
+            "lr_recovery_factor",
+            "lr_recovery_threshold",
+            "lr_plateau_patience",
+            "lr_plateau_tol",
+            "adaptive_weights",
+            "adaptive_warmup_epochs",
+            "adaptive_dual_eta",
+            "adaptive_pi_kp",
+            "adaptive_pi_ki",
+            "adaptive_pi_kd",
+            "adaptive_lambda_min",
+            "adaptive_lambda_max",
+            "adaptive_violation_clip",
+            "adaptive_target_ratio",
+            "adaptive_target_ema_decay",
+            "adaptive_target_min",
+            "entropy_target_ratio",
+            "hk_target_ratio",
+            "code_entropy_target_ratio",
+            "consistency_target",
+            "use_learned_precisions",
+            "loss_rescale",
+            "loss_rescale_reference",
+            "loss_rescale_target_ratio",
+            "loss_rescale_ema_decay",
+            "loss_rescale_min",
+            "loss_rescale_max",
+            "loss_rescale_eps",
         ]
         for key in removed_fields:
             config_data.pop(key, None)

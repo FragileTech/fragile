@@ -11,7 +11,6 @@ import torch
 from torch import nn
 
 from fragile.learning.topoencoder_mnist import (
-    TopoEncoderConfig,
     _benchmarks_compatible,
     _compute_perplexity_from_assignments,
     compute_ami,
@@ -21,12 +20,14 @@ from fragile.learning.topoencoder_mnist import (
     load_checkpoint,
     save_benchmarks,
     save_checkpoint,
+    TopoEncoderConfig,
 )
 
 
 # ==========================================
 # count_parameters
 # ==========================================
+
 
 class TestCountParameters:
     def test_linear(self):
@@ -42,6 +43,7 @@ class TestCountParameters:
 # ==========================================
 # compute_matching_hidden_dim
 # ==========================================
+
 
 class TestComputeMatchingHiddenDim:
     def test_returns_at_least_16(self):
@@ -65,6 +67,7 @@ class TestComputeMatchingHiddenDim:
 # ==========================================
 # _compute_perplexity_from_assignments
 # ==========================================
+
 
 class TestComputePerplexity:
     def test_uniform_assignments(self):
@@ -92,6 +95,7 @@ class TestComputePerplexity:
 # compute_ami
 # ==========================================
 
+
 class TestComputeAMI:
     def test_perfect_match(self):
         labels = np.array([0, 0, 1, 1, 2, 2])
@@ -109,6 +113,7 @@ class TestComputeAMI:
 # ==========================================
 # _benchmarks_compatible
 # ==========================================
+
 
 class TestBenchmarksCompatible:
     def _make_config(self, **overrides) -> TopoEncoderConfig:
@@ -160,6 +165,7 @@ class TestBenchmarksCompatible:
 # Checkpoint save/load
 # ==========================================
 
+
 class TestCheckpointSaveLoad:
     def _make_minimal_model(self):
         return nn.Linear(10, 5)
@@ -172,8 +178,13 @@ class TestCheckpointSaveLoad:
         snapshot = {"X_train": torch.randn(10, 784), "X_test": torch.randn(5, 784)}
 
         save_checkpoint(
-            path=path, config=config, model_atlas=model, jump_op=jump,
-            metrics={"mse_atlas": 0.5}, data_snapshot=snapshot, epoch=3,
+            path=path,
+            config=config,
+            model_atlas=model,
+            jump_op=jump,
+            metrics={"mse_atlas": 0.5},
+            data_snapshot=snapshot,
+            epoch=3,
         )
         loaded = load_checkpoint(path)
 
@@ -189,8 +200,13 @@ class TestCheckpointSaveLoad:
         snapshot = {"X_train": torch.randn(50, 784), "X_test": torch.randn(10, 784)}
 
         save_checkpoint(
-            path=path, config=config, model_atlas=model, jump_op=jump,
-            metrics={}, data_snapshot=snapshot, epoch=0,
+            path=path,
+            config=config,
+            model_atlas=model,
+            jump_op=jump,
+            metrics={},
+            data_snapshot=snapshot,
+            epoch=0,
         )
         loaded = load_checkpoint(path)
         assert loaded["data"]["X_train"].shape == (50, 784)
@@ -199,6 +215,7 @@ class TestCheckpointSaveLoad:
 # ==========================================
 # Benchmarks save/load
 # ==========================================
+
 
 class TestBenchmarksSaveLoad:
     def test_roundtrip(self, tmp_path):
@@ -222,6 +239,7 @@ class TestBenchmarksSaveLoad:
 # ==========================================
 # TopoEncoderConfig
 # ==========================================
+
 
 class TestTopoEncoderConfig:
     def test_default_values(self):

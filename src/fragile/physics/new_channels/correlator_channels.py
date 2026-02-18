@@ -60,6 +60,7 @@ import torch.nn.functional as F
 
 from fragile.physics.qft_utils import _fft_correlator_batched
 
+
 if TYPE_CHECKING:
     from fragile.physics.fractal_gas.history import RunHistory
 

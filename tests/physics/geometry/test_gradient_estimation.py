@@ -84,9 +84,9 @@ class TestEstimateGradientFiniteDifference:
         for dim in range(2):
             mean_est = grad_est[sel, dim].mean().item()
             true_val = grad_true[0, dim].item()
-            assert abs(mean_est - true_val) / abs(true_val) < 0.15, (
-                f"dim={dim}: mean est={mean_est:.3f} vs true={true_val:.3f}"
-            )
+            assert (
+                abs(mean_est - true_val) / abs(true_val) < 0.15
+            ), f"dim={dim}: mean est={mean_est:.3f} vs true={true_val:.3f}"
 
     def test_output_shapes(self, quadratic_fitness: dict):
         """Check that gradient [N, d] and gradient_magnitude [N] have correct shapes."""
@@ -237,9 +237,9 @@ class TestComputeDirectionalDerivative:
         # Check sign agreement and rough magnitude for valid interior
         signs_agree = (dd[valid] * true_dVdx[valid]) >= 0
         frac_correct_sign = signs_agree.float().mean().item()
-        assert frac_correct_sign > 0.70, (
-            f"Only {frac_correct_sign:.1%} of walkers have correct dV/dx sign"
-        )
+        assert (
+            frac_correct_sign > 0.70
+        ), f"Only {frac_correct_sign:.1%} of walkers have correct dV/dx sign"
 
     def test_y_direction_quadratic(self, quadratic_fitness: dict):
         """dV/dy of V=x^2+2y^2 should approximate 4y for valid interior walkers."""
@@ -256,9 +256,9 @@ class TestComputeDirectionalDerivative:
         true_dVdy = 4.0 * pos[:, 1]
         signs_agree = (dd[valid] * true_dVdy[valid]) >= 0
         frac_correct_sign = signs_agree.float().mean().item()
-        assert frac_correct_sign > 0.70, (
-            f"Only {frac_correct_sign:.1%} of walkers have correct dV/dy sign"
-        )
+        assert (
+            frac_correct_sign > 0.70
+        ), f"Only {frac_correct_sign:.1%} of walkers have correct dV/dy sign"
 
     def test_per_walker_direction(self, quadratic_fitness: dict):
         """Per-walker directions [N, d] should produce output shape [N]."""

@@ -8,6 +8,9 @@ import torch
 from fragile.physics.new_channels.baryon_triplet_channels import (
     BaryonTripletCorrelatorOutput,
 )
+from fragile.physics.new_channels.correlator_channels import (
+    ChannelCorrelatorResult,
+)
 from fragile.physics.new_channels.glueball_color_channels import (
     GlueballColorCorrelatorOutput,
 )
@@ -26,9 +29,6 @@ from fragile.physics.new_channels.meson_phase_channels import (
 from fragile.physics.new_channels.multiscale_strong_force import (
     MultiscaleStrongForceOutput,
 )
-from fragile.physics.new_channels.correlator_channels import (
-    ChannelCorrelatorResult,
-)
 from fragile.physics.new_channels.tensor_momentum_channels import (
     TensorMomentumCorrelatorOutput,
 )
@@ -36,6 +36,7 @@ from fragile.physics.new_channels.vector_meson_channels import (
     VectorMesonCorrelatorOutput,
 )
 from fragile.physics.operators.pipeline import PipelineResult
+
 
 # ---------------------------------------------------------------------------
 # Fixtures — lightweight mock outputs
@@ -131,7 +132,10 @@ def glueball_output() -> GlueballColorCorrelatorOutput:
 def tensor_output() -> TensorMomentumCorrelatorOutput:
     return TensorMomentumCorrelatorOutput(
         component_labels=(
-            "q_xy", "q_xz", "q_yz", "q_xx_minus_yy",
+            "q_xy",
+            "q_xz",
+            "q_yz",
+            "q_xx_minus_yy",
             "q_2zz_minus_xx_minus_yy",
         ),
         frame_indices=list(range(T)),
@@ -178,7 +182,7 @@ def multiscale_output() -> MultiscaleStrongForceOutput:
         frame_indices=list(range(T)),
         per_scale_results=per_scale,
         best_results={ch: per_scale[ch][0] for ch in per_scale},
-        best_scale_index={ch: 0 for ch in per_scale},
+        best_scale_index=dict.fromkeys(per_scale, 0),
         series_by_channel={ch: torch.randn(S, T) for ch in per_scale},
         bootstrap_mode_applied="none",
         notes=[],
@@ -246,7 +250,9 @@ class TestExtractGlueball:
 class TestExtractTensorMomentum:
     def test_mode_zero(self, tensor_output):
         corrs, ops = extract_tensor_momentum(
-            tensor_output, use_connected=True, momentum_mode=0,
+            tensor_output,
+            use_connected=True,
+            momentum_mode=0,
         )
         assert set(corrs.keys()) == {"tensor"}
         assert corrs["tensor"].shape == (LAG,)
@@ -257,7 +263,8 @@ class TestExtractTensorMomentum:
 
     def test_different_mode(self, tensor_output):
         corrs, _ = extract_tensor_momentum(
-            tensor_output, momentum_mode=2,
+            tensor_output,
+            momentum_mode=2,
         )
         expected = tensor_output.momentum_contracted_correlator_connected[2]
         assert torch.equal(corrs["tensor"], expected)
@@ -299,13 +306,21 @@ class TestCollectCorrelators:
         assert set(result.operators.keys()) == expected_keys
 
     def test_all_types(
-        self, meson_output, baryon_output, vector_output,
-        glueball_output, tensor_output, multiscale_output,
+        self,
+        meson_output,
+        baryon_output,
+        vector_output,
+        glueball_output,
+        tensor_output,
+        multiscale_output,
     ):
         # Use prefix for multiscale to avoid "scalar" collision with meson
         result = collect_correlators(
-            meson_output, baryon_output, vector_output,
-            glueball_output, tensor_output,
+            meson_output,
+            baryon_output,
+            vector_output,
+            glueball_output,
+            tensor_output,
         )
         assert "pseudoscalar" in result.correlators
         assert "nucleon" in result.correlators
@@ -314,7 +329,7 @@ class TestCollectCorrelators:
         assert "tensor" in result.correlators
         assert "scalar" in result.correlators
         # Multiscale separately with prefix to avoid key collision
-        ms_corrs, ms_ops = extract_multiscale(multiscale_output, prefix="ms_")
+        ms_corrs, _ms_ops = extract_multiscale(multiscale_output, prefix="ms_")
         assert "ms_scalar" in ms_corrs
 
     def test_duplicate_key_raises(self, meson_output):
@@ -323,8 +338,8 @@ class TestCollectCorrelators:
 
     def test_prefix_avoids_collision(self, meson_output):
         # Two meson outputs with different prefixes should work
-        corrs1, ops1 = extract_meson_phase(meson_output, prefix="a_")
-        corrs2, ops2 = extract_meson_phase(meson_output, prefix="b_")
+        corrs1, _ops1 = extract_meson_phase(meson_output, prefix="a_")
+        corrs2, _ops2 = extract_meson_phase(meson_output, prefix="b_")
         assert set(corrs1.keys()).isdisjoint(corrs2.keys())
 
     def test_unsupported_type(self):
@@ -354,9 +369,11 @@ class TestExtractMassesFromChannels:
         from fragile.physics.new_channels.mass_extraction_adapter import (
             extract_masses_from_channels,
         )
+
         assert callable(extract_masses_from_channels)
 
     def test_importable_from_package(self):
         """Verify re-export from __init__.py."""
         from fragile.physics.new_channels import extract_masses_from_channels
+
         assert callable(extract_masses_from_channels)

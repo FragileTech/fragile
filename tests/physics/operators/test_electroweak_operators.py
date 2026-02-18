@@ -29,9 +29,9 @@ from fragile.physics.operators.electroweak_operators import (
     compute_electroweak_operators,
 )
 from fragile.physics.operators.pipeline import (
+    compute_strong_force_pipeline,
     PipelineConfig,
     PipelineResult,
-    compute_strong_force_pipeline,
 )
 from fragile.physics.operators.preparation import PreparedChannelData
 
@@ -117,10 +117,18 @@ def make_ew_prepared_data(
 
 
 COMPLEX_CHANNELS = [
-    "u1_phase", "u1_dressed", "u1_phase_q2", "u1_dressed_q2",
-    "su2_phase", "su2_component", "su2_doublet", "su2_doublet_diff",
-    "su2_phase_directed", "su2_component_directed",
-    "su2_doublet_directed", "su2_doublet_diff_directed",
+    "u1_phase",
+    "u1_dressed",
+    "u1_phase_q2",
+    "u1_dressed_q2",
+    "su2_phase",
+    "su2_component",
+    "su2_doublet",
+    "su2_doublet_diff",
+    "su2_phase_directed",
+    "su2_component_directed",
+    "su2_doublet_directed",
+    "su2_doublet_diff_directed",
     "ew_mixed",
 ]
 
@@ -131,8 +139,11 @@ WALKER_TYPE_CHANNELS = [
 ]
 
 SCALAR_CHANNELS = [
-    "fitness_phase", "clone_indicator",
-    "velocity_norm_cloner", "velocity_norm_resister", "velocity_norm_persister",
+    "fitness_phase",
+    "clone_indicator",
+    "velocity_norm_cloner",
+    "velocity_norm_resister",
+    "velocity_norm_persister",
 ]
 
 
@@ -142,7 +153,6 @@ SCALAR_CHANNELS = [
 
 
 class TestAverageHelpers:
-
     def test_average_complex_shape(self):
         z = torch.complex(torch.randn(5, 10), torch.randn(5, 10))
         valid = torch.ones(5, 10, dtype=torch.bool)
@@ -180,7 +190,6 @@ class TestAverageHelpers:
 
 
 class TestClassifyWalkerTypes:
-
     def test_basic_shapes(self):
         fitness = torch.randn(5, 10)
         alive = torch.ones(5, 10, dtype=torch.bool)
@@ -200,9 +209,9 @@ class TestClassifyWalkerTypes:
         c, r, p = _classify_walker_types_batched(fitness, alive, will_clone)
 
         # Disjoint: no walker in two categories
-        assert ((c & r).sum() == 0)
-        assert ((c & p).sum() == 0)
-        assert ((r & p).sum() == 0)
+        assert (c & r).sum() == 0
+        assert (c & p).sum() == 0
+        assert (r & p).sum() == 0
 
         # Cover: every alive walker is in exactly one category
         union = c | r | p
@@ -226,7 +235,6 @@ class TestClassifyWalkerTypes:
 
 
 class TestComputeElectroweakOperators:
-
     @pytest.fixture
     def data(self) -> PreparedChannelData:
         return make_ew_prepared_data(T=10, N=20, d=5)
@@ -251,14 +259,20 @@ class TestComputeElectroweakOperators:
         T = 10
         for name in COMPLEX_CHANNELS:
             assert name in result, f"Missing channel '{name}'"
-            assert result[name].shape == (T, 2), f"Shape mismatch for '{name}': {result[name].shape}"
+            assert result[name].shape == (
+                T,
+                2,
+            ), f"Shape mismatch for '{name}': {result[name].shape}"
 
     def test_walker_type_channel_shapes(self, data, config):
         result = compute_electroweak_operators(data, config)
         T = 10
         for name in WALKER_TYPE_CHANNELS:
             assert name in result, f"Missing channel '{name}'"
-            assert result[name].shape == (T, 2), f"Shape mismatch for '{name}': {result[name].shape}"
+            assert result[name].shape == (
+                T,
+                2,
+            ), f"Shape mismatch for '{name}': {result[name].shape}"
 
     def test_scalar_channel_shapes(self, data, config):
         result = compute_electroweak_operators(data, config)

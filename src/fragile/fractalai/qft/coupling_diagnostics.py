@@ -759,11 +759,7 @@ def compute_coupling_diagnostics(
     inner = (torch.conj(color_i) * color_j).sum(dim=-1)
     finite_inner = torch.isfinite(inner.real) & torch.isfinite(inner.imag)
 
-    valid = (
-        structural_valid
-        & color_valid.unsqueeze(-1)
-        & finite_inner
-    )
+    valid = structural_valid & color_valid.unsqueeze(-1) & finite_inner
     eps = float(max(cfg.eps, 0.0))
     if eps > 0:
         valid = valid & (inner.abs() > eps)

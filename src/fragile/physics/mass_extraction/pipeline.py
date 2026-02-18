@@ -9,8 +9,6 @@ from __future__ import annotations
 import logging
 import re
 
-import numpy as np
-
 from fragile.physics.operators.pipeline import PipelineResult
 
 from .config import (
@@ -23,10 +21,11 @@ from .fitting import run_fit
 from .models import build_all_models
 from .priors import build_combined_prior
 from .results import (
-    MassExtractionResult,
     extract_channel_results,
     extract_diagnostics,
+    MassExtractionResult,
 )
+
 
 _log = logging.getLogger(__name__)
 

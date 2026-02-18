@@ -41,7 +41,7 @@ def compute_effective_mass(
                 m_eff.append(gvar.gvar(0, 0))
         return np.array(m_eff)
 
-    elif method == "cosh":
+    if method == "cosh":
         if T < 3:
             return np.array([], dtype=object)
         m_eff = []
@@ -58,8 +58,7 @@ def compute_effective_mass(
                 m_eff.append(gvar.gvar(0, 0))
         return np.array(m_eff)
 
-    else:
-        raise ValueError(f"Unknown effective mass method: {method!r}")
+    raise ValueError(f"Unknown effective mass method: {method!r}")
 
 
 def compute_effective_mass_for_all(

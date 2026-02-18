@@ -33,42 +33,60 @@ from fragile.physics.app.strong_correlators import _parse_color_dims
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.operators import (
     ChannelConfigBase,
+    compute_strong_force_pipeline,
     CorrelatorConfig,
     ElectroweakOperatorConfig,
     MultiscaleConfig,
     PipelineConfig,
     PipelineResult,
-    compute_strong_force_pipeline,
 )
+
 
 # ---------------------------------------------------------------------------
 # Channel family constants
 # ---------------------------------------------------------------------------
 
 EW_U1_CHANNELS: tuple[str, ...] = (
-    "u1_phase", "u1_dressed", "u1_phase_q2", "u1_dressed_q2",
+    "u1_phase",
+    "u1_dressed",
+    "u1_phase_q2",
+    "u1_dressed_q2",
 )
 EW_SU2_BASE_CHANNELS: tuple[str, ...] = (
-    "su2_phase", "su2_component", "su2_doublet", "su2_doublet_diff",
+    "su2_phase",
+    "su2_component",
+    "su2_doublet",
+    "su2_doublet_diff",
 )
 EW_SU2_DIRECTED_CHANNELS: tuple[str, ...] = (
-    "su2_phase_directed", "su2_component_directed",
-    "su2_doublet_directed", "su2_doublet_diff_directed",
+    "su2_phase_directed",
+    "su2_component_directed",
+    "su2_doublet_directed",
+    "su2_doublet_diff_directed",
 )
 EW_SU2_WALKER_TYPE_CHANNELS: tuple[str, ...] = (
-    "su2_phase_cloner", "su2_component_cloner",
-    "su2_doublet_cloner", "su2_doublet_diff_cloner",
-    "su2_phase_resister", "su2_component_resister",
-    "su2_doublet_resister", "su2_doublet_diff_resister",
-    "su2_phase_persister", "su2_component_persister",
-    "su2_doublet_persister", "su2_doublet_diff_persister",
+    "su2_phase_cloner",
+    "su2_component_cloner",
+    "su2_doublet_cloner",
+    "su2_doublet_diff_cloner",
+    "su2_phase_resister",
+    "su2_component_resister",
+    "su2_doublet_resister",
+    "su2_doublet_diff_resister",
+    "su2_phase_persister",
+    "su2_component_persister",
+    "su2_doublet_persister",
+    "su2_doublet_diff_persister",
 )
 EW_MIXED_CHANNELS: tuple[str, ...] = ("ew_mixed",)
 EW_SYMMETRY_BREAKING_CHANNELS: tuple[str, ...] = (
-    "fitness_phase", "clone_indicator",
+    "fitness_phase",
+    "clone_indicator",
 )
 EW_PARITY_VELOCITY_CHANNELS: tuple[str, ...] = (
-    "velocity_norm_cloner", "velocity_norm_resister", "velocity_norm_persister",
+    "velocity_norm_cloner",
+    "velocity_norm_resister",
+    "velocity_norm_persister",
 )
 
 
@@ -118,11 +136,15 @@ class ElectroweakCorrelatorSettings(param.Parameterized):
 
     # -- Electroweak-specific --
     epsilon_d = param.Number(
-        default=None, bounds=(1e-12, None), allow_None=True,
+        default=None,
+        bounds=(1e-12, None),
+        allow_None=True,
         doc="Distance epsilon (None = auto-resolve).",
     )
     epsilon_clone = param.Number(
-        default=None, bounds=(1e-12, None), allow_None=True,
+        default=None,
+        bounds=(1e-12, None),
+        allow_None=True,
         doc="Clone epsilon (None = auto-resolve).",
     )
     lambda_alg = param.Number(default=0.0, bounds=(0.0, None))
@@ -381,10 +403,13 @@ def build_electroweak_correlator_tab(
         si = int(scale_selector.value)
         ls = bool(log_scale_toggle.value)
         overlay_correlator_plot.object = build_all_channels_correlator_overlay(
-            result, logy=ls, scale_index=si,
+            result,
+            logy=ls,
+            scale_index=si,
         )
         overlay_meff_plot.object = build_all_channels_meff_overlay(
-            result, scale_index=si,
+            result,
+            scale_index=si,
         )
         summary_table.value = build_summary_table(result, scale_index=si)
         correlator_table.value = build_correlator_table(result, scale_index=si)
@@ -394,18 +419,27 @@ def build_electroweak_correlator_tab(
         per_channel_container.clear()
         for group_name, keys in groups.items():
             corr_overlay = build_grouped_correlator_plot(
-                result, group_name, keys, si, ls,
+                result,
+                group_name,
+                keys,
+                si,
+                ls,
             )
             meff_overlay = build_grouped_meff_plot(
-                result, group_name, keys, si,
+                result,
+                group_name,
+                keys,
+                si,
             )
-            per_channel_container.append(
-                pn.pane.Markdown(f"#### {group_name}")
-            )
+            per_channel_container.append(pn.pane.Markdown(f"#### {group_name}"))
             per_channel_container.append(
                 pn.Row(
-                    pn.pane.HoloViews(corr_overlay, sizing_mode="stretch_width", linked_axes=False),
-                    pn.pane.HoloViews(meff_overlay, sizing_mode="stretch_width", linked_axes=False),
+                    pn.pane.HoloViews(
+                        corr_overlay, sizing_mode="stretch_width", linked_axes=False
+                    ),
+                    pn.pane.HoloViews(
+                        meff_overlay, sizing_mode="stretch_width", linked_axes=False
+                    ),
                     sizing_mode="stretch_width",
                 )
             )
@@ -431,10 +465,13 @@ def build_electroweak_correlator_tab(
 
         if len(corr_arr) > 0:
             single_correlator_plot.object = build_single_correlator_plot(
-                corr_arr, selected, logy=ls,
+                corr_arr,
+                selected,
+                logy=ls,
             )
             single_meff_plot.object = build_single_effective_mass_plot(
-                corr_arr, selected,
+                corr_arr,
+                selected,
             )
         else:
             single_correlator_plot.object = _algorithm_placeholder_plot(
@@ -444,7 +481,8 @@ def build_electroweak_correlator_tab(
 
         if len(op_arr) > 0:
             single_operator_plot.object = build_single_operator_series_plot(
-                op_arr, selected,
+                op_arr,
+                selected,
             )
         else:
             single_operator_plot.object = _algorithm_placeholder_plot(
@@ -478,15 +516,9 @@ def build_electroweak_correlator_tab(
             }
 
             ew_config = ElectroweakOperatorConfig(
-                epsilon_d=(
-                    float(settings.epsilon_d)
-                    if settings.epsilon_d is not None
-                    else None
-                ),
+                epsilon_d=(float(settings.epsilon_d) if settings.epsilon_d is not None else None),
                 epsilon_clone=(
-                    float(settings.epsilon_clone)
-                    if settings.epsilon_clone is not None
-                    else None
+                    float(settings.epsilon_clone) if settings.epsilon_clone is not None else None
                 ),
                 lambda_alg=float(settings.lambda_alg),
                 su2_operator_mode=str(settings.su2_operator_mode),
@@ -539,12 +571,10 @@ def build_electroweak_correlator_tab(
 
             # Filter result to only user-selected channels
             result.correlators = {
-                k: v for k, v in result.correlators.items()
-                if k in selected_channels
+                k: v for k, v in result.correlators.items() if k in selected_channels
             }
             result.operators = {
-                k: v for k, v in result.operators.items()
-                if k in selected_channels
+                k: v for k, v in result.operators.items() if k in selected_channels
             }
 
             state["electroweak_correlator_output"] = result

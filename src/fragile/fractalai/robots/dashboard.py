@@ -13,7 +13,6 @@ import numpy as np
 import pandas as pd
 import panel as pn
 import param
-
 import plangym
 
 from fragile.fractalai.dashboard_plots import build_line_plot, build_minmax_error_plot
@@ -729,7 +728,9 @@ class RoboticGasVisualizer(param.Parameterized):
         """Load new history and build all static plots."""
         self.history = history
         self._current_frames = list(history.best_frames)
-        last_idx = len(self._current_frames) - 1 if history.has_frames else len(history.iterations) - 1
+        last_idx = (
+            len(self._current_frames) - 1 if history.has_frames else len(history.iterations) - 1
+        )
 
         # Reset game player
         self.game_player.end = last_idx
@@ -807,7 +808,10 @@ class RoboticGasVisualizer(param.Parameterized):
                     "reward": curve_data["rewards"],
                 })
                 elite_curve = hv.Curve(
-                    df, "step", "reward", label=curve_data["label"],
+                    df,
+                    "step",
+                    "reward",
+                    label=curve_data["label"],
                 ).opts(color="blue", line_width=1, alpha=0.6, tools=["hover"])
                 reward_overlay = reward_overlay * elite_curve
             if elite_curves:

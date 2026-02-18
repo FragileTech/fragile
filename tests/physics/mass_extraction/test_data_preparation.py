@@ -37,7 +37,7 @@ def test_correlators_to_gvar_uncorrelated(synthetic_correlators):
     assert "pseudoscalar" in data
     assert "vector" in data
     # Check gvar output
-    for key, gv_arr in data.items():
+    for gv_arr in data.values():
         assert len(gv_arr) > 0
         assert isinstance(gv_arr[0], gvar.GVar)
 
@@ -111,6 +111,6 @@ def test_multiscale_operator_scale_slicing():
         sdev = gvar.sdev(result[i])
         fallback_err = abs(corr_np[i]) * 0.1 + 1e-15
         # The resampled error should differ from the naive 10% fallback
-        assert abs(sdev - fallback_err) / max(fallback_err, 1e-15) > 0.01, (
-            f"Error at lag {i} looks like 10% fallback — slicing may not have worked"
-        )
+        assert (
+            abs(sdev - fallback_err) / max(fallback_err, 1e-15) > 0.01
+        ), f"Error at lag {i} looks like 10% fallback — slicing may not have worked"

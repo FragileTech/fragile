@@ -16,6 +16,7 @@ from fragile.learning.data import DataBundle, load_dataset
 # Fake dataset helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_fake_mnist(n_samples: int = 100) -> tuple[torch.Tensor, np.ndarray, np.ndarray]:
     rng = np.random.RandomState(42)
     X = torch.from_numpy(rng.rand(n_samples, 784).astype(np.float32))
@@ -35,6 +36,7 @@ def _make_fake_cifar10(n_samples: int = 100) -> tuple[torch.Tensor, np.ndarray, 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def mock_mnist():

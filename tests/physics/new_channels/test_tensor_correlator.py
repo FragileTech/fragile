@@ -4,27 +4,27 @@ from __future__ import annotations
 
 import math
 
-import torch
 import pytest
+import torch
 
 from fragile.fractalai.qft.tensor_momentum_channels import (
+    _traceless_tensor_components,
+    compute_companion_tensor_momentum_correlator,
+    compute_tensor_momentum_correlator_from_color_positions,
+    TENSOR_COMPONENT_LABELS,
     TensorMomentumCorrelatorConfig,
     TensorMomentumCorrelatorOutput,
-    compute_tensor_momentum_correlator_from_color_positions,
-    compute_companion_tensor_momentum_correlator,
-    TENSOR_COMPONENT_LABELS,
-    _traceless_tensor_components,
 )
 
 # New-location aliases for parity tests
 from fragile.physics.new_channels.tensor_momentum_channels import (
-    TensorMomentumCorrelatorConfig as NewTensorConfig,
     _traceless_tensor_components as new_traceless,
-    compute_tensor_momentum_correlator_from_color_positions as new_from_color,
     compute_companion_tensor_momentum_correlator as new_companion,
+    compute_tensor_momentum_correlator_from_color_positions as new_from_color,
+    TensorMomentumCorrelatorConfig as NewTensorConfig,
 )
 
-from .conftest import MockRunHistory, assert_outputs_equal
+from .conftest import assert_outputs_equal, MockRunHistory
 
 
 # =============================================================================
@@ -59,8 +59,15 @@ class TestTracelessTensorComponents:
 
 class TestFromColorPositionsOutput:
     @pytest.fixture
-    def tensor_output(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                      tiny_companions_distance, tiny_companions_clone, tiny_positions):
+    def tensor_output(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+        tiny_positions,
+    ):
         T, N = tiny_color_states.shape[:2]
         gen = torch.Generator().manual_seed(70)
         positions_axis = torch.randn(T, N, generator=gen)
@@ -122,13 +129,23 @@ class TestFromColorEmpty:
         comp_d = torch.zeros(0, 3, dtype=torch.long)
         comp_c = torch.zeros(0, 3, dtype=torch.long)
         out = compute_tensor_momentum_correlator_from_color_positions(
-            color=color, color_valid=valid, positions=pos,
-            positions_axis=pos_axis, alive=alive,
-            companions_distance=comp_d, companions_clone=comp_c,
-            max_lag=5, use_connected=True, pair_selection="both",
-            eps=1e-12, momentum_mode_max=2, projection_length=10.0,
-            bounds=None, pbc=False,
-            compute_bootstrap_errors=False, n_bootstrap=0,
+            color=color,
+            color_valid=valid,
+            positions=pos,
+            positions_axis=pos_axis,
+            alive=alive,
+            companions_distance=comp_d,
+            companions_clone=comp_c,
+            max_lag=5,
+            use_connected=True,
+            pair_selection="both",
+            eps=1e-12,
+            momentum_mode_max=2,
+            projection_length=10.0,
+            bounds=None,
+            pbc=False,
+            compute_bootstrap_errors=False,
+            n_bootstrap=0,
         )
         assert out.momentum_correlator.shape[2] == 6  # max_lag+1
         assert out.n_valid_source_pairs == 0
@@ -170,15 +187,21 @@ class TestCompanionTensor:
 
     def test_bootstrap_errors(self, mock_history):
         cfg = TensorMomentumCorrelatorConfig(
-            max_lag=5, ell0=1.0, momentum_mode_max=1,
+            max_lag=5,
+            ell0=1.0,
+            momentum_mode_max=1,
             projection_length=10.0,
-            compute_bootstrap_errors=True, n_bootstrap=10,
+            compute_bootstrap_errors=True,
+            n_bootstrap=10,
         )
         out = compute_companion_tensor_momentum_correlator(mock_history, cfg)
         assert out.momentum_correlator_err is not None
         assert out.momentum_contracted_correlator_err is not None
         assert out.momentum_correlator_err.shape == out.momentum_correlator.shape
-        assert out.momentum_contracted_correlator_err.shape == out.momentum_contracted_correlator.shape
+        assert (
+            out.momentum_contracted_correlator_err.shape
+            == out.momentum_contracted_correlator.shape
+        )
 
 
 # =============================================================================
@@ -196,43 +219,60 @@ class TestParityTensor:
         new = new_traceless(dx)
         assert torch.equal(old, new)
 
-    def test_from_color_parity(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                               tiny_companions_distance, tiny_companions_clone, tiny_positions):
+    def test_from_color_parity(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+        tiny_positions,
+    ):
         T, N = tiny_color_states.shape[:2]
         gen = torch.Generator().manual_seed(70)
         positions_axis = torch.randn(T, N, generator=gen)
-        common = dict(
-            color=tiny_color_states,
-            color_valid=tiny_color_valid,
-            positions=tiny_positions,
-            positions_axis=positions_axis,
-            companions_distance=tiny_companions_distance,
-            companions_clone=tiny_companions_clone,
-            max_lag=3,
-            use_connected=True,
-            pair_selection="both",
-            eps=1e-12,
-            momentum_mode_max=2,
-            projection_length=10.0,
-            bounds=None,
-            pbc=False,
-            compute_bootstrap_errors=False,
-            n_bootstrap=0,
+        common = {
+            "color": tiny_color_states,
+            "color_valid": tiny_color_valid,
+            "positions": tiny_positions,
+            "positions_axis": positions_axis,
+            "companions_distance": tiny_companions_distance,
+            "companions_clone": tiny_companions_clone,
+            "max_lag": 3,
+            "use_connected": True,
+            "pair_selection": "both",
+            "eps": 1e-12,
+            "momentum_mode_max": 2,
+            "projection_length": 10.0,
+            "bounds": None,
+            "pbc": False,
+            "compute_bootstrap_errors": False,
+            "n_bootstrap": 0,
+        }
+        old_out = compute_tensor_momentum_correlator_from_color_positions(
+            alive=tiny_alive, **common
         )
-        old_out = compute_tensor_momentum_correlator_from_color_positions(alive=tiny_alive, **common)
         new_out = new_from_color(**common)
         assert_outputs_equal(old_out, new_out)
 
     def test_companion_parity(self, mock_history):
         cfg_old = TensorMomentumCorrelatorConfig(
-            warmup_fraction=0.1, end_fraction=1.0, max_lag=10,
-            use_connected=True, ell0=1.0,
-            momentum_mode_max=2, projection_length=10.0,
+            warmup_fraction=0.1,
+            end_fraction=1.0,
+            max_lag=10,
+            use_connected=True,
+            ell0=1.0,
+            momentum_mode_max=2,
+            projection_length=10.0,
         )
         cfg_new = NewTensorConfig(
-            warmup_fraction=0.1, end_fraction=1.0, max_lag=10,
-            use_connected=True, ell0=1.0,
-            momentum_mode_max=2, projection_length=10.0,
+            warmup_fraction=0.1,
+            end_fraction=1.0,
+            max_lag=10,
+            use_connected=True,
+            ell0=1.0,
+            momentum_mode_max=2,
+            projection_length=10.0,
         )
         old_out = compute_companion_tensor_momentum_correlator(mock_history, cfg_old)
         new_out = new_companion(mock_history, cfg_new)

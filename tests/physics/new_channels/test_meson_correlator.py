@@ -2,26 +2,26 @@
 
 from __future__ import annotations
 
-import torch
 import pytest
+import torch
 
 from fragile.fractalai.qft.meson_phase_channels import (
+    build_companion_pair_indices,
+    compute_companion_meson_phase_correlator,
+    compute_meson_phase_correlator_from_color,
     MesonPhaseCorrelatorConfig,
     MesonPhaseCorrelatorOutput,
-    compute_meson_phase_correlator_from_color,
-    compute_companion_meson_phase_correlator,
-    build_companion_pair_indices,
 )
 
 # New-location aliases for parity tests
 from fragile.physics.new_channels.meson_phase_channels import (
-    MesonPhaseCorrelatorConfig as NewMesonConfig,
     build_companion_pair_indices as new_build_pairs,
-    compute_meson_phase_correlator_from_color as new_from_color,
     compute_companion_meson_phase_correlator as new_companion,
+    compute_meson_phase_correlator_from_color as new_from_color,
+    MesonPhaseCorrelatorConfig as NewMesonConfig,
 )
 
-from .conftest import MockRunHistory, assert_outputs_equal
+from .conftest import assert_outputs_equal, MockRunHistory
 
 
 # =============================================================================
@@ -42,21 +42,27 @@ class TestBuildCompanionPairIndices:
         T, N = 5, 4
         comp_d = torch.arange(N).roll(-1).unsqueeze(0).expand(T, -1).clone()
         comp_c = torch.arange(N).roll(-2).unsqueeze(0).expand(T, -1).clone()
-        indices, valid = build_companion_pair_indices(comp_d, comp_c, pair_selection="distance")
+        indices, _valid = build_companion_pair_indices(comp_d, comp_c, pair_selection="distance")
         assert indices.shape == (T, N, 1)
 
     def test_clone_mode_shape(self):
         T, N = 5, 4
         comp_d = torch.arange(N).roll(-1).unsqueeze(0).expand(T, -1).clone()
         comp_c = torch.arange(N).roll(-2).unsqueeze(0).expand(T, -1).clone()
-        indices, valid = build_companion_pair_indices(comp_d, comp_c, pair_selection="clone")
+        indices, _valid = build_companion_pair_indices(comp_d, comp_c, pair_selection="clone")
         assert indices.shape == (T, N, 1)
 
 
 class TestFromColorOutput:
     @pytest.fixture
-    def meson_output(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                     tiny_companions_distance, tiny_companions_clone):
+    def meson_output(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+    ):
         return compute_meson_phase_correlator_from_color(
             color=tiny_color_states,
             color_valid=tiny_color_valid,
@@ -116,8 +122,11 @@ class TestFromColorEmpty:
         comp_d = torch.zeros(0, 3, dtype=torch.long)
         comp_c = torch.zeros(0, 3, dtype=torch.long)
         out = compute_meson_phase_correlator_from_color(
-            color=color, color_valid=valid, alive=alive,
-            companions_distance=comp_d, companions_clone=comp_c,
+            color=color,
+            color_valid=valid,
+            alive=alive,
+            companions_distance=comp_d,
+            companions_clone=comp_c,
             max_lag=5,
         )
         assert out.pseudoscalar.shape == (6,)
@@ -183,30 +192,42 @@ class TestParityMeson:
             assert torch.equal(old_idx, new_idx), f"pair indices differ for mode={mode}"
             assert torch.equal(old_valid, new_valid), f"pair valid mask differs for mode={mode}"
 
-    def test_from_color_parity(self, tiny_color_states, tiny_color_valid, tiny_alive,
-                               tiny_companions_distance, tiny_companions_clone):
-        common = dict(
-            color=tiny_color_states,
-            color_valid=tiny_color_valid,
-            companions_distance=tiny_companions_distance,
-            companions_clone=tiny_companions_clone,
-            max_lag=3,
-            use_connected=True,
-            pair_selection="both",
-            eps=1e-12,
-        )
+    def test_from_color_parity(
+        self,
+        tiny_color_states,
+        tiny_color_valid,
+        tiny_alive,
+        tiny_companions_distance,
+        tiny_companions_clone,
+    ):
+        common = {
+            "color": tiny_color_states,
+            "color_valid": tiny_color_valid,
+            "companions_distance": tiny_companions_distance,
+            "companions_clone": tiny_companions_clone,
+            "max_lag": 3,
+            "use_connected": True,
+            "pair_selection": "both",
+            "eps": 1e-12,
+        }
         old_out = compute_meson_phase_correlator_from_color(alive=tiny_alive, **common)
         new_out = new_from_color(**common)
         assert_outputs_equal(old_out, new_out)
 
     def test_companion_parity(self, mock_history):
         cfg_old = MesonPhaseCorrelatorConfig(
-            warmup_fraction=0.1, end_fraction=1.0, max_lag=10,
-            use_connected=True, ell0=1.0,
+            warmup_fraction=0.1,
+            end_fraction=1.0,
+            max_lag=10,
+            use_connected=True,
+            ell0=1.0,
         )
         cfg_new = NewMesonConfig(
-            warmup_fraction=0.1, end_fraction=1.0, max_lag=10,
-            use_connected=True, ell0=1.0,
+            warmup_fraction=0.1,
+            end_fraction=1.0,
+            max_lag=10,
+            use_connected=True,
+            ell0=1.0,
         )
         old_out = compute_companion_meson_phase_correlator(mock_history, cfg_old)
         new_out = new_companion(mock_history, cfg_new)

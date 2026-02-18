@@ -5710,27 +5710,23 @@ def _build_companion_distance_plot(
     overlays: list[Any] = []
     if not clone_df.empty:
         overlays.append(
-            hv
-            .ErrorBars(clone_df, "step", ["mean", "err95"])
+            hv.ErrorBars(clone_df, "step", ["mean", "err95"])
             .relabel("Clone p95")
             .opts(color="#e45756", alpha=0.4, line_width=1)
         )
         overlays.append(
-            hv
-            .Curve(clone_df, "step", "mean")
+            hv.Curve(clone_df, "step", "mean")
             .relabel("Clone mean")
             .opts(color="#e45756", line_width=2, tools=["hover"])
         )
     if not random_df.empty:
         overlays.append(
-            hv
-            .ErrorBars(random_df, "step", ["mean", "err95"])
+            hv.ErrorBars(random_df, "step", ["mean", "err95"])
             .relabel("Random p95")
             .opts(color="#4c78a8", alpha=0.4, line_width=1)
         )
         overlays.append(
-            hv
-            .Curve(random_df, "step", "mean")
+            hv.Curve(random_df, "step", "mean")
             .relabel("Random mean")
             .opts(color="#4c78a8", line_width=2, tools=["hover"])
         )
@@ -6198,28 +6194,24 @@ def _build_coupling_diagnostics_kernel_plots(output: Any) -> dict[str, hv.Overla
 
     running_curves: list[Any] = []
     running_frame = (
-        pd
-        .DataFrame({"scale": running_mid, "value": running_g2})
+        pd.DataFrame({"scale": running_mid, "value": running_g2})
         .replace([np.inf, -np.inf], np.nan)
         .dropna()
     )
     if not running_frame.empty:
         running_curves.append(
-            hv
-            .Curve(running_frame, "scale", "value")
+            hv.Curve(running_frame, "scale", "value")
             .relabel("running_g2")
             .opts(color="#e45756", line_width=2)
         )
     creutz_frame = (
-        pd
-        .DataFrame({"scale": creutz_mid, "value": creutz})
+        pd.DataFrame({"scale": creutz_mid, "value": creutz})
         .replace([np.inf, -np.inf], np.nan)
         .dropna()
     )
     if not creutz_frame.empty:
         running_curves.append(
-            hv
-            .Curve(creutz_frame, "scale", "value")
+            hv.Curve(creutz_frame, "scale", "value")
             .relabel("creutz")
             .opts(color="#72b7b2", line_width=2)
         )
@@ -11478,8 +11470,7 @@ def create_app() -> pn.template.FastListTemplate:
             dispersion_rel_c4 = float("nan")
             if momentum_rows:
                 momentum_df = (
-                    pd
-                    .DataFrame(momentum_rows)
+                    pd.DataFrame(momentum_rows)
                     .sort_values("n_mode")
                     .drop_duplicates(subset=["n_mode"], keep="first")
                 )
@@ -12049,7 +12040,8 @@ def create_app() -> pn.template.FastListTemplate:
             overrides: dict[str, list[str]] = {}
             for canonical_name, selector in companion_strong_force_variant_selectors.items():
                 selected_names = [
-                    str(v).strip() for v in (selector.value or [])
+                    str(v).strip()
+                    for v in (selector.value or [])
                     if str(v).strip() and str(v).strip() in results
                 ]
                 if selected_names:

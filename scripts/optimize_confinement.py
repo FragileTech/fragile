@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Optimize parameters for string tension, screening length, and spectral gap."""
+
 from __future__ import annotations
 
 import math
@@ -8,8 +9,8 @@ import time
 import torch
 
 from fragile.physics.app.coupling_diagnostics import (
-    CouplingDiagnosticsConfig,
     compute_coupling_diagnostics,
+    CouplingDiagnosticsConfig,
 )
 from fragile.physics.fractal_gas.cloning import CloneOperator
 from fragile.physics.fractal_gas.euclidean_gas import EuclideanGas
@@ -22,9 +23,12 @@ def run_and_diagnose(params: dict, seed: int = 42) -> dict:
     t0 = time.monotonic()
 
     kinetic_op = KineticOperator(
-        gamma=float(p["gamma"]), beta=float(p["beta"]),
-        delta_t=float(p["delta_t"]), temperature=float(p["temperature"]),
-        nu=float(p["nu"]), use_viscous_coupling=True,
+        gamma=float(p["gamma"]),
+        beta=float(p["beta"]),
+        delta_t=float(p["delta_t"]),
+        temperature=float(p["temperature"]),
+        nu=float(p["nu"]),
+        use_viscous_coupling=True,
         viscous_length_scale=float(p["viscous_length_scale"]),
         viscous_neighbor_weighting=str(p["viscous_neighbor_weighting"]),
         beta_curl=float(p["beta_curl"]),
@@ -33,18 +37,27 @@ def run_and_diagnose(params: dict, seed: int = 42) -> dict:
         kinetic_op.auto_thermostat = True
 
     cloning = CloneOperator(
-        p_max=float(p["p_max"]), epsilon_clone=float(p["epsilon_clone"]),
-        sigma_x=float(p["sigma_x"]), alpha_restitution=float(p["alpha_restitution"]),
+        p_max=float(p["p_max"]),
+        epsilon_clone=float(p["epsilon_clone"]),
+        sigma_x=float(p["sigma_x"]),
+        alpha_restitution=float(p["alpha_restitution"]),
     )
     fitness_op = FitnessOperator(
-        alpha=float(p["fitness_alpha"]), beta=float(p["fitness_beta"]),
-        eta=float(p["eta"]), sigma_min=float(p["sigma_min"]), A=float(p["A"]),
+        alpha=float(p["fitness_alpha"]),
+        beta=float(p["fitness_beta"]),
+        eta=float(p["eta"]),
+        sigma_min=float(p["sigma_min"]),
+        A=float(p["A"]),
     )
 
     gas = EuclideanGas(
-        N=int(p["N"]), d=int(p["d"]),
-        kinetic_op=kinetic_op, cloning=cloning, fitness_op=fitness_op,
-        device=torch.device("cpu"), dtype="float32",
+        N=int(p["N"]),
+        d=int(p["d"]),
+        kinetic_op=kinetic_op,
+        cloning=cloning,
+        fitness_op=fitness_op,
+        device=torch.device("cpu"),
+        dtype="float32",
         clone_every=int(p["clone_every"]),
         neighbor_graph_update_every=int(p["neighbor_graph_update_every"]),
         neighbor_weight_modes=list(p["neighbor_weight_modes"]),
@@ -56,8 +69,12 @@ def run_and_diagnose(params: dict, seed: int = 42) -> dict:
     v_init = torch.randn(N, d) * float(p["init_velocity_scale"])
 
     history = gas.run(
-        int(p["n_steps"]), x_init=x_init, v_init=v_init,
-        record_every=int(p["record_every"]), seed=seed, show_progress=False,
+        int(p["n_steps"]),
+        x_init=x_init,
+        v_init=v_init,
+        record_every=int(p["record_every"]),
+        seed=seed,
+        show_progress=False,
     )
 
     config = CouplingDiagnosticsConfig(warmup_fraction=0.15)
@@ -75,20 +92,40 @@ def run_and_diagnose(params: dict, seed: int = 42) -> dict:
 
 def defaults(n_steps=1000, N=500):
     return {
-        "N": N, "d": 3, "n_steps": n_steps, "record_every": 1,
-        "init_offset": 0.0, "init_spread": 0.0, "init_velocity_scale": 0.0,
-        "gamma": 1.0, "beta": 1.0, "auto_thermostat": True,
-        "delta_t": 0.01, "temperature": 0.5, "nu": 1.0,
-        "use_viscous_coupling": True, "viscous_length_scale": 1.0,
+        "N": N,
+        "d": 3,
+        "n_steps": n_steps,
+        "record_every": 1,
+        "init_offset": 0.0,
+        "init_spread": 0.0,
+        "init_velocity_scale": 0.0,
+        "gamma": 1.0,
+        "beta": 1.0,
+        "auto_thermostat": True,
+        "delta_t": 0.01,
+        "temperature": 0.5,
+        "nu": 1.0,
+        "use_viscous_coupling": True,
+        "viscous_length_scale": 1.0,
         "viscous_neighbor_weighting": "riemannian_kernel_volume",
         "beta_curl": 1.0,
-        "p_max": 1.0, "epsilon_clone": 1e-6, "sigma_x": 0.01,
+        "p_max": 1.0,
+        "epsilon_clone": 1e-6,
+        "sigma_x": 0.01,
         "alpha_restitution": 1.0,
-        "fitness_alpha": 1.0, "fitness_beta": 1.0,
-        "eta": 0.0, "sigma_min": 0.0, "A": 2.0,
+        "fitness_alpha": 1.0,
+        "fitness_beta": 1.0,
+        "eta": 0.0,
+        "sigma_min": 0.0,
+        "A": 2.0,
         "neighbor_graph_update_every": 1,
-        "neighbor_weight_modes": ["inverse_riemannian_distance", "kernel", "riemannian_kernel_volume"],
-        "clone_every": 1, "dtype": "float32",
+        "neighbor_weight_modes": [
+            "inverse_riemannian_distance",
+            "kernel",
+            "riemannian_kernel_volume",
+        ],
+        "clone_every": 1,
+        "dtype": "float32",
     }
 
 
@@ -120,6 +157,7 @@ def report(name: str, result: dict):
 
 if __name__ == "__main__":
     import warnings
+
     warnings.filterwarnings("ignore")
 
     header = (
@@ -157,7 +195,10 @@ if __name__ == "__main__":
         # Moderate push on multiple fronts
         ("T=0.5_nu=2_fit_a=2", {"temperature": 0.5, "nu": 2.0, "fitness_alpha": 2.0}),
         ("T=0.7_nu=2_fit_a=2", {"temperature": 0.7, "nu": 2.0, "fitness_alpha": 2.0}),
-        ("T=0.5_nu=2_fit_a=2_vl=2", {"temperature": 0.5, "nu": 2.0, "fitness_alpha": 2.0, "viscous_length_scale": 2.0}),
+        (
+            "T=0.5_nu=2_fit_a=2_vl=2",
+            {"temperature": 0.5, "nu": 2.0, "fitness_alpha": 2.0, "viscous_length_scale": 2.0},
+        ),
         # Higher nu with moderate T
         ("T=0.5_nu=3", {"temperature": 0.5, "nu": 3.0}),
         ("T=0.7_nu=3", {"temperature": 0.7, "nu": 3.0}),

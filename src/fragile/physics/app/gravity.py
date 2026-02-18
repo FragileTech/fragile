@@ -10,13 +10,13 @@ import pandas as pd
 import panel as pn
 
 from fragile.physics.app._fractal_set import (
-    FractalSetSettings,
     build_fractal_set_baseline_comparison,
     build_fractal_set_scatter_plot,
     build_geodesic_distance_distribution_by_frame,
     build_geodesic_distribution_plot,
     compute_fractal_set_measurements,
     format_fractal_set_summary,
+    FractalSetSettings,
     resolve_electroweak_geodesic_matrices,
 )
 from fragile.physics.app.qft.einstein_equations import compute_einstein_test, EinsteinConfig

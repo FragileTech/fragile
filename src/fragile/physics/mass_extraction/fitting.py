@@ -10,7 +10,6 @@ from copy import deepcopy
 from typing import Any
 
 import corrfitter as cf
-import gvar
 import numpy as np
 
 from .config import ChannelGroupConfig, FitConfig
@@ -115,27 +114,23 @@ def run_stability_scan(
                     except KeyError:
                         pass
 
-                results.append(
-                    {
-                        "tmin": tmin,
-                        "nexp": nexp,
-                        "chi2_dof": float(fit.chi2 / fit.dof) if fit.dof > 0 else 0.0,
-                        "Q": float(fit.Q),
-                        "logGBF": float(fit.logGBF) if hasattr(fit, "logGBF") else 0.0,
-                        "masses": masses,
-                    }
-                )
+                results.append({
+                    "tmin": tmin,
+                    "nexp": nexp,
+                    "chi2_dof": float(fit.chi2 / fit.dof) if fit.dof > 0 else 0.0,
+                    "Q": float(fit.Q),
+                    "logGBF": float(fit.logGBF) if hasattr(fit, "logGBF") else 0.0,
+                    "masses": masses,
+                })
             except Exception:
                 # Skip failed fits in scan
-                results.append(
-                    {
-                        "tmin": tmin,
-                        "nexp": nexp,
-                        "chi2_dof": float("nan"),
-                        "Q": 0.0,
-                        "logGBF": float("-inf"),
-                        "masses": {},
-                    }
-                )
+                results.append({
+                    "tmin": tmin,
+                    "nexp": nexp,
+                    "chi2_dof": float("nan"),
+                    "Q": 0.0,
+                    "logGBF": float("-inf"),
+                    "masses": {},
+                })
 
     return results

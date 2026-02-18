@@ -790,11 +790,7 @@ def compute_coupling_diagnostics(
     inner = (torch.conj(color_i) * color_j).sum(dim=-1)
     finite_inner = torch.isfinite(inner.real) & torch.isfinite(inner.imag)
 
-    valid = (
-        structural_valid
-        & color_valid.unsqueeze(-1)
-        & finite_inner
-    )
+    valid = structural_valid & color_valid.unsqueeze(-1) & finite_inner
     eps = float(max(cfg.eps, 0.0))
     if eps > 0:
         valid = valid & (inner.abs() > eps)
@@ -906,7 +902,7 @@ def compute_coupling_diagnostics(
     # Wilson flow
     wilson_flow_output = None
     if cfg.enable_wilson_flow:
-        from fragile.physics.new_channels.wilson_flow import WilsonFlowConfig, compute_wilson_flow
+        from fragile.physics.new_channels.wilson_flow import compute_wilson_flow, WilsonFlowConfig
 
         wf_cfg = WilsonFlowConfig(
             n_steps=int(cfg.wilson_flow_n_steps),
@@ -960,8 +956,12 @@ def compute_coupling_diagnostics(
         "spectral_gap_autocorrelation": sg.autocorrelation_gap,
         "spectral_gap_autocorrelation_tau": sg.autocorrelation_tau,
         "spectral_gap_transfer_matrix": sg.transfer_matrix_gap,
-        "wilson_flow_t0": wilson_flow_output.t0 if wilson_flow_output is not None else float("nan"),
-        "wilson_flow_w0": wilson_flow_output.w0 if wilson_flow_output is not None else float("nan"),
+        "wilson_flow_t0": wilson_flow_output.t0
+        if wilson_flow_output is not None
+        else float("nan"),
+        "wilson_flow_w0": wilson_flow_output.w0
+        if wilson_flow_output is not None
+        else float("nan"),
         "wilson_flow_sqrt_8t0": (
             wilson_flow_output.sqrt_8t0 if wilson_flow_output is not None else float("nan")
         ),

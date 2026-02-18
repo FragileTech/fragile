@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import gvar
 import numpy as np
-import torch
 from numpy.typing import NDArray
+import torch
 from torch import Tensor
 
 from .config import CovarianceConfig, MassExtractionConfig
@@ -78,7 +78,7 @@ def operator_series_to_correlator_samples(
             samples.append(corr.squeeze(0).cpu().to(torch.float64).numpy())
         return np.array(samples)
 
-    elif method == "bootstrap":
+    if method == "bootstrap":
         rng = np.random.default_rng(seed)
         samples = []
         for _ in range(n_bootstrap):
@@ -90,14 +90,11 @@ def operator_series_to_correlator_samples(
                 end = min(start + block_size, T)
                 parts.append(series[start:end])
             resampled = torch.cat(parts).unsqueeze(0)  # [1, ~T]
-            corr = _fft_correlator_batched(
-                resampled, max_lag=max_lag, use_connected=use_connected
-            )
+            corr = _fft_correlator_batched(resampled, max_lag=max_lag, use_connected=use_connected)
             samples.append(corr.squeeze(0).cpu().to(torch.float64).numpy())
         return np.array(samples)
 
-    else:
-        raise ValueError(f"Unknown resampling method: {method!r}")
+    raise ValueError(f"Unknown resampling method: {method!r}")
 
 
 def correlators_to_gvar(
@@ -237,7 +234,6 @@ def multi_run_correlators_to_gvar(
     # Build dataset: key -> [N_runs, T] array
     dataset: dict[str, list[NDArray]] = {}
     for key in all_keys:
-        samples = []
         for run_corr in run_correlators:
             if key in run_corr:
                 corr_t = run_corr[key]

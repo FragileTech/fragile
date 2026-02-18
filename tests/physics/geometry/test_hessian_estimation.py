@@ -212,9 +212,9 @@ class TestEstimateHessianFullFd:
             cond = result["condition_numbers"][valid]
             assert (cond >= 0).all(), "Condition numbers should be non-negative for valid walkers"
             # Most interior walkers should have positive condition numbers
-            assert (cond > 0).sum() > 0, (
-                "At least some walkers should have positive condition numbers"
-            )
+            assert (
+                cond > 0
+            ).sum() > 0, "At least some walkers should have positive condition numbers"
 
     def test_gradient_fd_method(self, quadratic_fitness: dict):
         """gradient_fd method with pre-computed gradients produces a Hessian tensor."""
@@ -317,9 +317,9 @@ class TestEstimateHessianFromMetric:
         evals = result["hessian_eigenvalues"]
         # Check descending: each column should be >= the next
         for i in range(evals.shape[1] - 1):
-            assert (evals[:, i] >= evals[:, i + 1] - 1e-6).all(), (
-                f"Eigenvalues not descending at column {i}"
-            )
+            assert (
+                evals[:, i] >= evals[:, i + 1] - 1e-6
+            ).all(), f"Eigenvalues not descending at column {i}"
 
     def test_psd_violation_detection(self, grid_2d_positions: Tensor, delaunay_2d_edges: Tensor):
         """Large epsilon_sigma forces negative eigenvalues, detected by psd_violation_mask."""
@@ -332,9 +332,9 @@ class TestEstimateHessianFromMetric:
                 epsilon_sigma=1e6,
                 validate_equilibrium=False,
             )
-        assert result["psd_violation_mask"].any(), (
-            "Large epsilon_sigma should produce PSD violations"
-        )
+        assert result[
+            "psd_violation_mask"
+        ].any(), "Large epsilon_sigma should produce PSD violations"
 
     def test_precomputed_metric_used(
         self, grid_2d_positions: Tensor, delaunay_2d_edges: Tensor, diagonal_metric_2d: Tensor
@@ -385,9 +385,9 @@ class TestComputeEmergentMetric:
         pos = grid_2d_positions
         metric = compute_emergent_metric(pos, delaunay_2d_edges)
         eigenvalues = torch.linalg.eigvalsh(metric)
-        assert (eigenvalues > 0).all(), (
-            f"Metric not positive definite: min eigenvalue = {eigenvalues.min().item()}"
-        )
+        assert (
+            eigenvalues > 0
+        ).all(), f"Metric not positive definite: min eigenvalue = {eigenvalues.min().item()}"
 
     def test_isotropic_grid_metric_near_identity_ratio(
         self, grid_2d_positions: Tensor, delaunay_2d_edges: Tensor
@@ -408,9 +408,9 @@ class TestComputeEmergentMetric:
         interior_evals = eigenvalues[interior_indices]
         ratio = interior_evals[:, -1] / (interior_evals[:, 0] + 1e-10)
         # Regular grid should have relatively isotropic metric
-        assert ratio.median().item() < 5.0, (
-            f"Eigenvalue ratio too large for regular grid: median = {ratio.median().item()}"
-        )
+        assert (
+            ratio.median().item() < 5.0
+        ), f"Eigenvalue ratio too large for regular grid: median = {ratio.median().item()}"
 
     def test_anisotropic_distribution(self):
         """Points stretched along x-axis produce metric with different eigenvalues."""
@@ -437,9 +437,9 @@ class TestComputeEmergentMetric:
         # Metric eigenvalues should differ significantly due to anisotropy
         ratio = eigenvalues[:, -1] / (eigenvalues[:, 0] + 1e-10)
         median_ratio = ratio.median().item()
-        assert median_ratio > 2.0, (
-            f"Expected anisotropic metric (ratio > 2), got median ratio = {median_ratio}"
-        )
+        assert (
+            median_ratio > 2.0
+        ), f"Expected anisotropic metric (ratio > 2), got median ratio = {median_ratio}"
 
     def test_alive_mask_dead_walkers_nan(
         self, grid_2d_positions: Tensor, delaunay_2d_edges: Tensor

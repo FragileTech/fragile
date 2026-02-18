@@ -26,17 +26,17 @@ import torch
 from torch import Tensor
 
 from fragile.physics.fractal_gas.history import RunHistory
-from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.new_channels.meson_phase_channels import (
+    build_companion_pair_indices,
+    PAIR_SELECTION_MODES,
+)
 from fragile.physics.qft_utils import (
     resolve_3d_dims,
     resolve_frame_indices,
     safe_gather_2d,
     safe_gather_3d,
 )
-from fragile.physics.new_channels.meson_phase_channels import (
-    build_companion_pair_indices,
-    PAIR_SELECTION_MODES,
-)
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 
 
 @dataclass

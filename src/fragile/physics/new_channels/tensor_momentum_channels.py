@@ -30,8 +30,12 @@ import math
 import torch
 from torch import Tensor
 
+from fragile.fractalai.qft.radial_channels import _apply_pbc_diff_torch, _slice_bounds
 from fragile.physics.fractal_gas.history import RunHistory
-from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.new_channels.meson_phase_channels import (
+    build_companion_pair_indices,
+    PAIR_SELECTION_MODES,
+)
 from fragile.physics.qft_utils import (
     _fft_correlator_batched,
     resolve_3d_dims,
@@ -39,11 +43,7 @@ from fragile.physics.qft_utils import (
     safe_gather_2d,
     safe_gather_3d,
 )
-from fragile.physics.new_channels.meson_phase_channels import (
-    build_companion_pair_indices,
-    PAIR_SELECTION_MODES,
-)
-from fragile.fractalai.qft.radial_channels import _apply_pbc_diff_torch, _slice_bounds
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 
 
 TENSOR_COMPONENT_LABELS = (

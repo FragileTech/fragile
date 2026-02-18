@@ -238,9 +238,7 @@ def _compute_su2_operators(
 
     # Walker-type split channels
     if enable_walker_type_split and will_clone is not None:
-        cloner, resister, persister = _classify_walker_types_batched(
-            fitness, alive, will_clone
-        )
+        cloner, resister, persister = _classify_walker_types_batched(fitness, alive, will_clone)
         for label, type_mask in [
             ("cloner", cloner),
             ("resister", resister),
@@ -323,9 +321,7 @@ def _compute_ew_mixed(
         u1_amp = torch.ones_like(fitness)
         su2_amp = torch.ones_like(fitness)
 
-    mixed = (
-        u1_amp.to(cdtype) * su2_amp.to(cdtype) * u1_phase * su2_phase * valid.to(cdtype)
-    )
+    mixed = u1_amp.to(cdtype) * su2_amp.to(cdtype) * u1_phase * su2_phase * valid.to(cdtype)
 
     return {"ew_mixed": _average_complex(mixed, valid)}
 
@@ -381,9 +377,7 @@ def _compute_parity_velocity(
         }
 
     v_norm = torch.linalg.vector_norm(velocities, dim=-1)  # [T, N]
-    cloner, resister, persister = _classify_walker_types_batched(
-        fitness, alive, will_clone
-    )
+    cloner, resister, persister = _classify_walker_types_batched(fitness, alive, will_clone)
 
     results: dict[str, Tensor] = {}
     for label, mask in [("cloner", cloner), ("resister", resister), ("persister", persister)]:
@@ -423,10 +417,18 @@ def compute_electroweak_operators(
         results: dict[str, Tensor] = {}
         # Complex channels
         for name in (
-            "u1_phase", "u1_dressed", "u1_phase_q2", "u1_dressed_q2",
-            "su2_phase", "su2_component", "su2_doublet", "su2_doublet_diff",
-            "su2_phase_directed", "su2_component_directed",
-            "su2_doublet_directed", "su2_doublet_diff_directed",
+            "u1_phase",
+            "u1_dressed",
+            "u1_phase_q2",
+            "u1_dressed_q2",
+            "su2_phase",
+            "su2_component",
+            "su2_doublet",
+            "su2_doublet_diff",
+            "su2_phase_directed",
+            "su2_component_directed",
+            "su2_doublet_directed",
+            "su2_doublet_diff_directed",
             "ew_mixed",
         ):
             results[name] = empty2.clone()
@@ -435,17 +437,22 @@ def compute_electroweak_operators(
                 results[f"{base}_{label}"] = empty2.clone()
         # Scalar channels
         for name in (
-            "fitness_phase", "clone_indicator",
-            "velocity_norm_cloner", "velocity_norm_resister", "velocity_norm_persister",
+            "fitness_phase",
+            "clone_indicator",
+            "velocity_norm_cloner",
+            "velocity_norm_resister",
+            "velocity_norm_persister",
         ):
             results[name] = empty1.clone()
         return results
 
     # Validate required fields
     if data.fitness is None:
-        raise ValueError("fitness is required for electroweak operators.")
+        msg = "fitness is required for electroweak operators."
+        raise ValueError(msg)
     if data.alive is None:
-        raise ValueError("alive is required for electroweak operators.")
+        msg = "alive is required for electroweak operators."
+        raise ValueError(msg)
 
     fitness = data.fitness
     alive = data.alive
@@ -455,7 +462,8 @@ def compute_electroweak_operators(
     lambda_alg = float(config.lambda_alg)
     su2_mode = str(config.su2_operator_mode).strip().lower()
     if su2_mode not in {"standard", "score_directed"}:
-        raise ValueError("su2_operator_mode must be 'standard' or 'score_directed'.")
+        msg = "su2_operator_mode must be 'standard' or 'score_directed'."
+        raise ValueError(msg)
 
     all_ops: dict[str, Tensor] = {}
 

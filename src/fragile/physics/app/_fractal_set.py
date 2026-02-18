@@ -6,7 +6,6 @@ pure computation / plotting logic.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 import holoviews as hv
@@ -23,6 +22,7 @@ from fragile.physics.fractal_gas.history import RunHistory
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def to_numpy(t: Any) -> np.ndarray:
     """Convert a tensor-like to ndarray."""
     if hasattr(t, "cpu"):
@@ -33,6 +33,7 @@ def to_numpy(t: Any) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # Settings
 # ---------------------------------------------------------------------------
+
 
 class FractalSetSettings(param.Parameterized):
     """Settings for Fractal Set IG/CST area-law measurements."""
@@ -148,6 +149,7 @@ FRACTAL_SET_METRICS_GEOM = {
 # ---------------------------------------------------------------------------
 # Internal helpers (only used within this module)
 # ---------------------------------------------------------------------------
+
 
 def _select_fractal_set_frames(
     n_transitions: int,
@@ -512,6 +514,7 @@ def _select_fractal_set_metric_map(settings: FractalSetSettings) -> dict[str, st
 # ---------------------------------------------------------------------------
 # Public computation / plotting functions
 # ---------------------------------------------------------------------------
+
 
 def compute_fractal_set_measurements(
     history: RunHistory,

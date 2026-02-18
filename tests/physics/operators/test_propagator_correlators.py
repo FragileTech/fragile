@@ -12,16 +12,17 @@ from fragile.physics.operators.config import (
     VectorOperatorConfig,
 )
 from fragile.physics.operators.propagator_correlators import (
-    PropagatorChannelResult,
-    PropagatorResult,
     compute_baryon_propagator,
     compute_glueball_propagator,
     compute_meson_propagator,
     compute_propagator_pipeline,
     compute_vector_propagator,
+    PropagatorChannelResult,
+    PropagatorResult,
 )
 
 from .conftest import make_prepared_data
+
 
 MAX_LAG = 5
 
@@ -50,7 +51,10 @@ class TestMesonPropagator:
     def test_connected_vs_raw(self):
         data = make_prepared_data(T=10, N=20)
         result = compute_meson_propagator(
-            data, MesonOperatorConfig(), max_lag=MAX_LAG, use_connected=True,
+            data,
+            MesonOperatorConfig(),
+            max_lag=MAX_LAG,
+            use_connected=True,
         )
         r = result["meson_scalar"]
         # Connected subtracts mean^2, so connected <= raw at lag 0

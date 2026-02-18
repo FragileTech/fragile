@@ -15,7 +15,7 @@ from fragile.physics.mass_extraction.pipeline import (
     extract_masses,
 )
 
-from .conftest import KNOWN_MASS_0, MockPipelineResult, make_synthetic_correlator
+from .conftest import KNOWN_MASS_0, make_synthetic_correlator, MockPipelineResult
 
 
 def test_auto_detect_channel_groups():
@@ -64,9 +64,9 @@ def test_extract_masses_end_to_end():
     assert "scalar" in result.channels
     extracted = gvar.mean(result.channels["scalar"].ground_state_mass)
     # Should recover ground state mass within ~30%
-    assert abs(extracted - mass0) / mass0 < 0.3, (
-        f"Extracted mass {extracted:.4f} too far from true {mass0}"
-    )
+    assert (
+        abs(extracted - mass0) / mass0 < 0.3
+    ), f"Extracted mass {extracted:.4f} too far from true {mass0}"
     assert result.diagnostics.chi2_per_dof > 0
 
 
@@ -181,7 +181,9 @@ def test_extract_masses_mode_suffixed():
             "scalar_standard": make_synthetic_correlator(seed=1),
             "scalar_flux_action": make_synthetic_correlator(seed=2),
             "vector_standard": make_synthetic_correlator(
-                mass0=0.5, mass1=1.0, seed=3,
+                mass0=0.5,
+                mass1=1.0,
+                seed=3,
             ),
         },
         operators={},

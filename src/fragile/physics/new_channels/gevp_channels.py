@@ -14,19 +14,19 @@ import torch
 from torch import Tensor
 import torch.nn.functional as F
 
-from fragile.physics.new_channels.correlator_channels import (
-    ChannelCorrelatorResult,
-    compute_effective_mass_torch,
-    CorrelatorConfig,
-    extract_mass_aic,
-    extract_mass_linear,
-)
 from fragile.fractalai.qft.gevp_mass_extraction import (
     extract_multimode_gevp_masses,
     extract_multimode_t0_sweep,
     GEVPMassSpectrum,
     GEVPMultiModeConfig,
     T0SweepResult,
+)
+from fragile.physics.new_channels.correlator_channels import (
+    ChannelCorrelatorResult,
+    compute_effective_mass_torch,
+    CorrelatorConfig,
+    extract_mass_aic,
+    extract_mass_linear,
 )
 
 

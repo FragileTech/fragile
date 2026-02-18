@@ -90,9 +90,7 @@ def build_channel_group_models(
         if key in available_keys:
             # Infer max_lag from available data later; use a large default
             max_lag = 80  # Will be overridden in build_all_models
-            models.append(
-                build_corr2_model(key, group.name, group.fit, max_lag)
-            )
+            models.append(build_corr2_model(key, group.name, group.fit, max_lag))
     return models
 
 

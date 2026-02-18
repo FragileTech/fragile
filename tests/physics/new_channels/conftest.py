@@ -31,7 +31,9 @@ def assert_outputs_equal(old_out, new_out):
         if old_val is None and new_val is None:
             continue
         if isinstance(old_val, Tensor):
-            assert isinstance(new_val, Tensor), f"Field {f.name}: old is Tensor, new is {type(new_val)}"
+            assert isinstance(
+                new_val, Tensor
+            ), f"Field {f.name}: old is Tensor, new is {type(new_val)}"
             assert torch.equal(old_val, new_val), (
                 f"Field {f.name}: tensors differ.\n"
                 f"  max abs diff = {(old_val - new_val).abs().max().item()}"

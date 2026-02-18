@@ -273,7 +273,9 @@ class EuclideanGas(PanelModel):
             delaunay_data = compute_delaunay_data(
                 positions=positions,
                 fitness_values=torch.zeros(
-                    positions.shape[0], device=self.device, dtype=self.torch_dtype,
+                    positions.shape[0],
+                    device=self.device,
+                    dtype=self.torch_dtype,
                 ),
                 spatial_dims=spatial_dims,
                 weight_modes=tuple(self.neighbor_weight_modes)
@@ -287,11 +289,7 @@ class EuclideanGas(PanelModel):
                 if self.kinetic_op.use_viscous_coupling
                 else None
             )
-            edge_weights = (
-                delaunay_data.edge_weights.get(viscous_mode)
-                if viscous_mode
-                else None
-            )
+            edge_weights = delaunay_data.edge_weights.get(viscous_mode) if viscous_mode else None
             all_edge_weights = delaunay_data.edge_weights
 
             volume = delaunay_data.riemannian_volume_weights
@@ -303,8 +301,7 @@ class EuclideanGas(PanelModel):
             else:
                 spatial_d = diffusion_data.shape[-1]
                 diffusion = (
-                    torch
-                    .eye(d, device=self.device, dtype=positions.dtype)
+                    torch.eye(d, device=self.device, dtype=positions.dtype)
                     .unsqueeze(0)
                     .expand(N, d, d)
                     .clone()
@@ -330,7 +327,8 @@ class EuclideanGas(PanelModel):
             return {}
 
     def _get_reward_geometry(
-        self, state: SwarmState,
+        self,
+        state: SwarmState,
     ) -> tuple[Tensor, Tensor]:
         """Return ``(ricci, volume)`` for EH reward computation.
 
@@ -354,16 +352,21 @@ class EuclideanGas(PanelModel):
         volume = tess.get("volume")
         if ricci is None:
             ricci = torch.zeros(
-                state.N, device=self.device, dtype=self.torch_dtype,
+                state.N,
+                device=self.device,
+                dtype=self.torch_dtype,
             )
         if volume is None:
             volume = torch.ones(
-                state.N, device=self.device, dtype=self.torch_dtype,
+                state.N,
+                device=self.device,
+                dtype=self.torch_dtype,
             )
         return ricci, volume
 
     def _get_kinetic_tessellation(
-        self, state_cloned: SwarmState,
+        self,
+        state_cloned: SwarmState,
     ) -> dict:
         """Compute or retrieve cached tessellation for the kinetic step.
 
@@ -738,5 +741,3 @@ class EuclideanGas(PanelModel):
             rng_seed=seed,
             rng_state=rng_state,
         )
-
-

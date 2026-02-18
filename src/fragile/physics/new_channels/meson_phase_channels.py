@@ -23,7 +23,6 @@ import torch
 from torch import Tensor
 
 from fragile.physics.fractal_gas.history import RunHistory
-from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 from fragile.physics.qft_utils import (
     build_companion_triplets,
     resolve_3d_dims,
@@ -31,6 +30,7 @@ from fragile.physics.qft_utils import (
     safe_gather_2d,
     safe_gather_3d,
 )
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 
 
 PAIR_SELECTION_MODES = ("distance", "clone", "both")
@@ -171,13 +171,7 @@ def _compute_inner_products_for_pairs(
     inner = (torch.conj(color_i) * color_j).sum(dim=-1)
 
     finite = torch.isfinite(inner.real) & torch.isfinite(inner.imag)
-    valid = (
-        structural_valid
-        & in_range
-        & color_valid.unsqueeze(-1)
-        & valid_j
-        & finite
-    )
+    valid = structural_valid & in_range & color_valid.unsqueeze(-1) & valid_j & finite
     if eps > 0:
         valid = valid & (inner.abs() > eps)
 

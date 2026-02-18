@@ -712,9 +712,7 @@ class SwarmConvergence3D(param.Parameterized):
         )
 
         if self.time_iteration == "euclidean":
-            ctx.slice_index = int(
-                np.clip(frame, 0, max(0, int(self.euclidean_time_bins) - 1))
-            )
+            ctx.slice_index = int(np.clip(frame, 0, max(0, int(self.euclidean_time_bins) - 1)))
             ctx.slice_dim = self._resolve_euclidean_dim(positions_all.shape[1])
             ctx.slice_mode = "euclidean"
             slice_dim_visible = (
@@ -749,15 +747,9 @@ class SwarmConvergence3D(param.Parameterized):
             ctx.z_coords = np.concatenate(z_all) if z_all else np.array([])
             ctx.colors, ctx.showscale, ctx.colorbar = self._get_color_values_all_frames(n_frames)
         else:
-            ctx.x_coords = self._extract_dimension(
-                self.x_axis_dim, mc_frame, positions_all, alive
-            )
-            ctx.y_coords = self._extract_dimension(
-                self.y_axis_dim, mc_frame, positions_all, alive
-            )
-            ctx.z_coords = self._extract_dimension(
-                self.z_axis_dim, mc_frame, positions_all, alive
-            )
+            ctx.x_coords = self._extract_dimension(self.x_axis_dim, mc_frame, positions_all, alive)
+            ctx.y_coords = self._extract_dimension(self.y_axis_dim, mc_frame, positions_all, alive)
+            ctx.z_coords = self._extract_dimension(self.z_axis_dim, mc_frame, positions_all, alive)
             ctx.colors, ctx.showscale, ctx.colorbar = self._get_color_values(
                 mc_frame, positions_all, alive
             )
@@ -790,9 +782,7 @@ class SwarmConvergence3D(param.Parameterized):
 
         traces = []
         if self.show_delaunay:
-            positions_mapped = np.column_stack(
-                [ctx.x_coords, ctx.y_coords, ctx.z_coords]
-            )
+            positions_mapped = np.column_stack([ctx.x_coords, ctx.y_coords, ctx.z_coords])
             line_trace = self._build_delaunay_trace_mapped(
                 ctx.mc_frame, ctx.positions_all, ctx.alive, positions_mapped
             )
@@ -833,9 +823,7 @@ class SwarmConvergence3D(param.Parameterized):
         # MC frame/slice highlight when plotting all frames
         if ctx.use_all_frames:
             if self._use_mc_time_player():
-                highlight_frame = int(
-                    np.clip(self.time_player.value, 0, self._x.shape[0] - 1)
-                )
+                highlight_frame = int(np.clip(self.time_player.value, 0, self._x.shape[0] - 1))
                 highlight_name = "MC frame highlight"
                 highlight_color = "rgba(54, 162, 235, 0.6)"
             else:

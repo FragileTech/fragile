@@ -745,7 +745,9 @@ class AtariGasVisualizer(param.Parameterized):
         self._current_frames = list(history.best_frames)
         # Use frame count when available (may be shorter than iterations
         # when the best walker peaked before the final step).
-        last_idx = len(self._current_frames) - 1 if history.has_frames else len(history.iterations) - 1
+        last_idx = (
+            len(self._current_frames) - 1 if history.has_frames else len(history.iterations) - 1
+        )
 
         # Reset game player
         self.game_player.end = last_idx
@@ -811,7 +813,10 @@ class AtariGasVisualizer(param.Parameterized):
                     "reward": curve_data["rewards"],
                 })
                 elite_curve = hv.Curve(
-                    df, "step", "reward", label=curve_data["label"],
+                    df,
+                    "step",
+                    "reward",
+                    label=curve_data["label"],
                 ).opts(color="blue", line_width=1, alpha=0.6, tools=["hover"])
                 reward_overlay = reward_overlay * elite_curve
             if elite_curves:

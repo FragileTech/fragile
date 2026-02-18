@@ -15,18 +15,18 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import hashlib
 import json
 import math
-import time
-from datetime import datetime, timezone
 from pathlib import Path
+import time
 
 import torch
 
 from fragile.physics.app.coupling_diagnostics import (
-    CouplingDiagnosticsConfig,
     compute_coupling_diagnostics,
+    CouplingDiagnosticsConfig,
 )
 from fragile.physics.fractal_gas.cloning import CloneOperator
 from fragile.physics.fractal_gas.euclidean_gas import EuclideanGas
@@ -237,12 +237,14 @@ def run_batch(batch_file: Path, seed: int, warmup_fraction: float, output_dir: P
         overrides = run_spec.get("overrides", {})
         params = get_default_params()
         params.update(overrides)
-        print(f"\n{'='*60}")
-        print(f"[{i+1}/{len(runs)}] {name}")
+        print(f"\n{'=' * 60}")
+        print(f"[{i + 1}/{len(runs)}] {name}")
         print(f"  Overrides: {overrides}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         run_seed = run_spec.get("seed", seed)
-        result = run_and_diagnose(params, seed=run_seed, warmup_fraction=warmup_fraction, run_name=name)
+        result = run_and_diagnose(
+            params, seed=run_seed, warmup_fraction=warmup_fraction, run_name=name
+        )
         path = save_result(result, output_dir)
         score = result["summary"].get("regime_score")
         print(f"  -> regime_score={score}, saved to {path.name}")
@@ -292,8 +294,12 @@ def main():
     args = parser.parse_args()
 
     if args.batch is not None:
-        run_batch(args.batch, seed=args.seed, warmup_fraction=args.warmup_fraction,
-                  output_dir=args.output_dir)
+        run_batch(
+            args.batch,
+            seed=args.seed,
+            warmup_fraction=args.warmup_fraction,
+            output_dir=args.output_dir,
+        )
         return
 
     params = get_default_params()
@@ -317,7 +323,10 @@ def main():
 
     print(f"Running with params: N={params['N']}, d={params['d']}, n_steps={params['n_steps']}")
     result = run_and_diagnose(
-        params, seed=args.seed, warmup_fraction=args.warmup_fraction, run_name=args.run_name,
+        params,
+        seed=args.seed,
+        warmup_fraction=args.warmup_fraction,
+        run_name=args.run_name,
     )
 
     path = save_result(result, args.output_dir)

@@ -1,7 +1,8 @@
 """Optional MLflow integration for TopoEncoder training."""
 
-import math
 from dataclasses import asdict
+import math
+
 
 try:
     import mlflow

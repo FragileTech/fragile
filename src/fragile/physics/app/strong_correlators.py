@@ -51,18 +51,34 @@ from fragile.physics.operators import (
     VectorOperatorConfig,
 )
 
+
 _MESON_REGULAR: tuple[str, ...] = (
-    "standard", "score_directed", "score_weighted", "abs2_vacsub", "scalar_raw",
+    "standard",
+    "score_directed",
+    "score_weighted",
+    "abs2_vacsub",
+    "scalar_raw",
 )
 _VECTOR_REGULAR: tuple[str, ...] = (
-    "standard", "score_directed", "score_gradient",
-    "score_directed_longitudinal", "score_directed_transverse",
+    "standard",
+    "score_directed",
+    "score_gradient",
+    "score_directed_longitudinal",
+    "score_directed_transverse",
 )
 _BARYON_REGULAR: tuple[str, ...] = (
-    "det_abs", "flux_action", "flux_sin2", "flux_exp", "score_signed", "score_abs",
+    "det_abs",
+    "flux_action",
+    "flux_sin2",
+    "flux_exp",
+    "score_signed",
+    "score_abs",
 )
 _GLUEBALL_REGULAR: tuple[str, ...] = (
-    "re_plaquette", "action_re_plaquette", "phase_action", "phase_sin2",
+    "re_plaquette",
+    "action_re_plaquette",
+    "phase_action",
+    "phase_sin2",
 )
 
 
@@ -81,15 +97,18 @@ TENSOR_MODES: tuple[str, ...] = ("standard",)
 _SCORE_MODES: dict[str, set[str]] = {
     "meson": {"score_directed", "score_weighted"},
     "vector": {
-        "score_directed", "score_gradient",
-        "score_directed_longitudinal", "score_directed_transverse",
+        "score_directed",
+        "score_gradient",
+        "score_directed_longitudinal",
+        "score_directed_transverse",
     },
     "baryon": {"score_signed", "score_abs"},
 }
 
 
 def _parse_vector_mode(
-    mode: str, default_projection: str = "full",
+    mode: str,
+    default_projection: str = "full",
 ) -> tuple[str, str]:
     """Decompose a composite vector mode into ``(operator_mode, projection_mode)``."""
     if mode.endswith("_longitudinal"):
@@ -429,18 +448,27 @@ def build_strong_correlator_tab(
         per_channel_container.clear()
         for group_name, keys in groups.items():
             corr_overlay = build_grouped_correlator_plot(
-                result, group_name, keys, si, ls,
+                result,
+                group_name,
+                keys,
+                si,
+                ls,
             )
             meff_overlay = build_grouped_meff_plot(
-                result, group_name, keys, si,
+                result,
+                group_name,
+                keys,
+                si,
             )
-            per_channel_container.append(
-                pn.pane.Markdown(f"#### {group_name}")
-            )
+            per_channel_container.append(pn.pane.Markdown(f"#### {group_name}"))
             per_channel_container.append(
                 pn.Row(
-                    pn.pane.HoloViews(corr_overlay, sizing_mode="stretch_width", linked_axes=False),
-                    pn.pane.HoloViews(meff_overlay, sizing_mode="stretch_width", linked_axes=False),
+                    pn.pane.HoloViews(
+                        corr_overlay, sizing_mode="stretch_width", linked_axes=False
+                    ),
+                    pn.pane.HoloViews(
+                        meff_overlay, sizing_mode="stretch_width", linked_axes=False
+                    ),
                     sizing_mode="stretch_width",
                 )
             )
@@ -549,10 +577,7 @@ def build_strong_correlator_tab(
             propagator_modes: dict[str, list[str]] = {}
             for family, modes in selected_modes.items():
                 regs = [m for m in modes if not m.endswith("_propagator")]
-                props = [
-                    m.removesuffix("_propagator")
-                    for m in modes if m.endswith("_propagator")
-                ]
+                props = [m.removesuffix("_propagator") for m in modes if m.endswith("_propagator")]
                 if regs:
                     regular_modes[family] = regs
                 if props:
@@ -560,9 +585,12 @@ def build_strong_correlator_tab(
 
             # Map UI families to pipeline families (scalar/pseudoscalar share meson)
             _UI_TO_PIPELINE = {
-                "scalar": "meson", "pseudoscalar": "meson",
-                "vector": "vector", "baryon": "baryon",
-                "glueball": "glueball", "tensor": "tensor",
+                "scalar": "meson",
+                "pseudoscalar": "meson",
+                "vector": "vector",
+                "baryon": "baryon",
+                "glueball": "glueball",
+                "tensor": "tensor",
             }
 
             # Aggregate modes by pipeline family (union of UI families)
@@ -596,9 +624,13 @@ def build_strong_correlator_tab(
                 return modes[0]
 
             first_modes: dict[str, str] = {}
-            _defaults = {"meson": "standard", "vector": "standard",
-                         "baryon": "det_abs", "glueball": "re_plaquette",
-                         "tensor": "standard"}
+            _defaults = {
+                "meson": "standard",
+                "vector": "standard",
+                "baryon": "det_abs",
+                "glueball": "re_plaquette",
+                "tensor": "standard",
+            }
             for family in pipeline_channels:
                 # Combine regular + propagator base modes for score detection
                 all_base = pipeline_regular.get(family, []) + pipeline_propagator.get(family, [])
@@ -657,11 +689,7 @@ def build_strong_correlator_tab(
             )
             result = compute_strong_force_pipeline(history, pipeline_config)
 
-            effective_n_scales = (
-                multiscale_cfg.n_scales
-                if result.scales is not None
-                else 1
-            )
+            effective_n_scales = multiscale_cfg.n_scales if result.scales is not None else 1
 
             # Rename first-mode correlators/operators with mode suffix
             merged_correlators: dict[str, Any] = {}
@@ -712,7 +740,8 @@ def build_strong_correlator_tab(
                     )
                 if family == "vector":
                     op_mode, proj_mode = _parse_vector_mode(
-                        mode, default_projection=str(settings.vector_projection),
+                        mode,
+                        default_projection=str(settings.vector_projection),
                     )
                     return VectorOperatorConfig(
                         operator_mode=op_mode,
@@ -729,9 +758,7 @@ def build_strong_correlator_tab(
                 if family == "glueball":
                     return GlueballOperatorConfig(
                         operator_mode=mode,
-                        use_momentum_projection=bool(
-                            settings.glueball_momentum_projection
-                        ),
+                        use_momentum_projection=bool(settings.glueball_momentum_projection),
                         momentum_axis=int(settings.glueball_momentum_axis),
                         momentum_mode_max=int(settings.glueball_momentum_mode_max),
                         **base_kwargs,
@@ -783,9 +810,9 @@ def build_strong_correlator_tab(
                             **prop_kw,
                         )
                         for prop_name, prop_ch in prop_result.channels.items():
-                            merged_correlators[
-                                f"{prop_name}_{pmode}_propagator"
-                            ] = prop_ch.connected
+                            merged_correlators[f"{prop_name}_{pmode}_propagator"] = (
+                                prop_ch.connected
+                            )
 
             # Filter results to respect per-UI-family mode selection.
             # Pipeline families may produce multiple output prefixes
@@ -823,13 +850,13 @@ def build_strong_correlator_tab(
                         continue
                     # glueball_momentum_N_mode → skip the momentum index
                     if pfx == "glueball" and key.startswith("glueball_momentum_"):
-                        rest = key[len("glueball_momentum_"):]
+                        rest = key[len("glueball_momentum_") :]
                         sep = rest.find("_")
                         if sep == -1:
                             return False
-                        suffix = rest[sep + 1:]
+                        suffix = rest[sep + 1 :]
                     else:
-                        suffix = key[len(pfx) + 1:]
+                        suffix = key[len(pfx) + 1 :]
                     if suffix.endswith("_propagator"):
                         return suffix.removesuffix("_propagator") in prop
                     return suffix in reg
