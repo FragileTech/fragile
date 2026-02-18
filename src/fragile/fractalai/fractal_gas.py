@@ -447,6 +447,10 @@ class FractalGas:
             "min_reward": cumulative_rewards.min().item(),
             "mean_virtual_reward": virtual_rewards.mean().item(),
             "max_virtual_reward": virtual_rewards.max().item(),
+            "min_virtual_reward": float(virtual_rewards.min().item()),
+            "mean_dt": float(self.kinetic_op.last_dt.mean()),
+            "min_dt": int(self.kinetic_op.last_dt.min()),
+            "max_dt": int(self.kinetic_op.last_dt.max()),
             # Cloning data for tree history recording
             "clone_companions": clone_companions,
             "will_clone": will_clone,

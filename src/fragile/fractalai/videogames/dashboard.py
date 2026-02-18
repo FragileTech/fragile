@@ -12,9 +12,11 @@ import pandas as pd
 import panel as pn
 import param
 
+from fragile.fractalai.dashboard_plots import build_line_plot, build_minmax_error_plot
 from fragile.fractalai.planning_gas import PlanningFractalGas, PlanningHistory, PlanningTrajectory
 from fragile.fractalai.videogames.atari_gas import AtariFractalGas
 from fragile.fractalai.videogames.atari_history import AtariHistory
+from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
 
 
 # Don't import plangym at module level - it will be imported lazily when needed
@@ -117,7 +119,7 @@ class AtariGasConfigPanel(param.Parameterized):
 
     # Environment parameters
     game_name = param.ObjectSelector(
-        default="ALE/Pong-v5",
+        default="ALE/MsPacman-v5",
         objects=[
             "ALE/Pong-v5",
             "ALE/Breakout-v5",
@@ -134,7 +136,7 @@ class AtariGasConfigPanel(param.Parameterized):
     )
 
     # Algorithm parameters
-    N = param.Integer(default=30, bounds=(5, 200), doc="Number of walkers")
+    N = param.Integer(default=100, bounds=(5, 200), doc="Number of walkers")
 
     dist_coef = param.Number(
         default=1.0, bounds=(0.0, 5.0), doc="Distance coefficient in fitness calculation"
@@ -144,13 +146,8 @@ class AtariGasConfigPanel(param.Parameterized):
         default=1.0, bounds=(0.0, 5.0), doc="Reward coefficient in fitness calculation"
     )
 
-    use_cumulative_reward = param.Boolean(
-        default=False,
-        doc="Use cumulative rewards for fitness (default: step rewards only)",
-    )
-
     n_elite = param.Integer(
-        default=0, bounds=(0, 50), doc="Number of elite walkers to preserve (0=disabled)"
+        default=5, bounds=(0, 50), doc="Number of elite walkers to preserve (0=disabled)"
     )
 
     dt_range_min = param.Integer(default=1, bounds=(1, 10), doc="Min frame skip")
@@ -166,8 +163,6 @@ class AtariGasConfigPanel(param.Parameterized):
         doc="Record best walker frames (required for visualization, uses more memory)",
     )
 
-    device = param.ObjectSelector(default="cpu", objects=["cpu", "cuda"], doc="Computation device")
-
     seed = param.Integer(default=42, doc="Random seed for reproducibility")
 
     n_workers = param.Integer(default=1, bounds=(1, 16), doc="Parallel env workers (1=serial)")
@@ -181,16 +176,6 @@ class AtariGasConfigPanel(param.Parameterized):
         default=1, bounds=(1, 10), doc="Frame skip for outer environment step"
     )
 
-    use_tree_history = param.Boolean(
-        default=True,
-        doc="Use graph-backed TreeHistory for cloning lineage tracking",
-    )
-
-    prune_history = param.Boolean(
-        default=True,
-        doc="Dynamically prune dead branches from TreeHistory each step",
-    )
-
     def __init__(self, **params):
         super().__init__(**params)
 
@@ -198,7 +183,8 @@ class AtariGasConfigPanel(param.Parameterized):
         self.gas: AtariFractalGas | None = None
         self.history: AtariHistory | None = None
         self.planning_history: PlanningHistory | None = None
-        self.tree_history = None  # AtariTreeHistory when use_tree_history=True
+        self.tree_history = None  # AtariTreeHistory always enabled
+        self.prune_tree_history = True
         self._simulation_thread: threading.Thread | None = None
         self._stop_requested = False
         self._env = None
@@ -241,15 +227,15 @@ class AtariGasConfigPanel(param.Parameterized):
         # Mode-specific parameter sections
         self._planning_params_section = pn.Column(
             pn.pane.Markdown("### Planning"),
-            pn.Param(self.param, parameters=["tau_inner", "outer_dt"]),
-            visible=(self.algorithm_mode == "Planning"),
-        )
-        self._tree_history_params_section = pn.Column(
             pn.Param(
                 self.param,
-                parameters=["use_tree_history", "prune_history"],
+                parameters=["tau_inner", "outer_dt"],
+                widgets={
+                    "tau_inner": pn.widgets.EditableIntSlider,
+                    "outer_dt": pn.widgets.EditableIntSlider,
+                },
             ),
-            visible=(self.algorithm_mode == "Single Loop"),
+            visible=(self.algorithm_mode == "Planning"),
         )
         self.param.watch(self._on_mode_changed, "algorithm_mode")
 
@@ -257,7 +243,6 @@ class AtariGasConfigPanel(param.Parameterized):
         """Toggle visibility of mode-specific parameter sections."""
         is_planning = event.new == "Planning"
         self._planning_params_section.visible = is_planning
-        self._tree_history_params_section.visible = not is_planning
 
     def add_completion_callback(self, callback: Callable[[AtariHistory], None]):
         """Register callback for simulation completion."""
@@ -437,9 +422,8 @@ class AtariGasConfigPanel(param.Parameterized):
             N=self.N,
             dist_coef=self.dist_coef,
             reward_coef=self.reward_coef,
-            use_cumulative_reward=self.use_cumulative_reward,
+            use_cumulative_reward=True,
             dt_range=(self.dt_range_min, self.dt_range_max),
-            device=self.device,
             seed=self.seed,
             record_frames=self.record_frames,
             n_elite=self.n_elite,
@@ -453,15 +437,15 @@ class AtariGasConfigPanel(param.Parameterized):
 
         # Optional tree history recording
         tree = None
-        if self.use_tree_history:
-            from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
+        from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
 
-            tree = AtariTreeHistory(
-                N=self.N,
-                game_name=self.game_name,
-                max_iterations=self.max_iterations,
-            )
-            tree.record_initial_atari_state(state)
+        tree = AtariTreeHistory(
+            N=self.N,
+            game_name=self.game_name,
+            max_iterations=self.max_iterations,
+            n_elite=self.n_elite,
+        )
+        tree.record_initial_atari_state(state)
 
         for i in range(self.max_iterations):
             if self._stop_requested:
@@ -474,18 +458,17 @@ class AtariGasConfigPanel(param.Parameterized):
             state, info = self.gas.step(prev_state)
             infos.append(info)
 
-            if tree is not None:
-                tree.record_atari_step(
-                    state_before=prev_state,
-                    state_after_clone=info["_state_after_clone"],
-                    state_final=state,
-                    info=info,
-                    clone_companions=info["clone_companions"],
-                    will_clone=info["will_clone"],
-                    best_frame=info.get("best_frame"),
-                )
-                if self.prune_history:
-                    tree.prune_dead_branches()
+            tree.record_atari_step(
+                state_before=prev_state,
+                state_after_clone=info["_state_after_clone"],
+                state_final=state,
+                info=info,
+                clone_companions=info["clone_companions"],
+                will_clone=info["will_clone"],
+                best_frame=info.get("best_frame"),
+            )
+            if self.prune_tree_history:
+                tree.prune_dead_branches()
 
             if i == 0:
                 print("[worker] first step() completed", flush=True)
@@ -493,17 +476,14 @@ class AtariGasConfigPanel(param.Parameterized):
             self._update_progress(i, t_start)
 
         # Build history
-        if tree is not None:
-            self.tree_history = tree
-            # For plangym (multicore): states lack rgb_frame, so only the
-            # best walker gets a frame each step.  Fill missing path frames
-            # via _render_walker_frame before converting to AtariHistory.
-            if self.record_frames and self.gas is not None:
-                tree.render_missing_path_frames(self.gas._render_walker_frame)
-            self.history = tree.to_atari_history()
-        else:
-            self.tree_history = None
-            self.history = AtariHistory.from_run(infos, state, self.N, self.game_name)
+        self.tree_history = tree
+        # For plangym (multicore): states lack rgb_frame, so only the
+        # best walker gets a frame each step.  Fill missing path frames
+        # via _render_walker_frame before converting to AtariHistory.
+        if self.record_frames and self.gas is not None:
+            tree.render_missing_path_frames(self.gas._render_walker_frame)
+            tree.render_elite_path_frames(self.gas._render_walker_frame)
+        self.history = tree.to_atari_history()
 
         self._finish_simulation()
 
@@ -521,9 +501,8 @@ class AtariGasConfigPanel(param.Parameterized):
             inner_gas_cls=AtariFractalGas,
             dist_coef=self.dist_coef,
             reward_coef=self.reward_coef,
-            use_cumulative_reward=self.use_cumulative_reward,
+            use_cumulative_reward=True,
             dt_range=(self.dt_range_min, self.dt_range_max),
-            device=self.device,
             seed=self.seed,
             record_frames=False,
             n_elite=self.n_elite,
@@ -662,7 +641,13 @@ class AtariGasConfigPanel(param.Parameterized):
             pn.pane.Markdown("### Algorithm"),
             pn.Param(
                 self.param,
-                parameters=["N", "dist_coef", "reward_coef", "use_cumulative_reward", "n_elite"],
+                parameters=["N", "dist_coef", "reward_coef", "n_elite"],
+                widgets={
+                    "N": pn.widgets.EditableIntSlider,
+                    "dist_coef": pn.widgets.EditableFloatSlider,
+                    "reward_coef": pn.widgets.EditableFloatSlider,
+                    "n_elite": pn.widgets.EditableIntSlider,
+                },
             ),
             self._planning_params_section,
             pn.pane.Markdown("### Simulation"),
@@ -673,12 +658,16 @@ class AtariGasConfigPanel(param.Parameterized):
                     "record_frames",
                     "dt_range_min",
                     "dt_range_max",
-                    "device",
                     "seed",
                     "n_workers",
                 ],
+                widgets={
+                    "max_iterations": pn.widgets.EditableIntSlider,
+                    "dt_range_min": pn.widgets.EditableIntSlider,
+                    "dt_range_max": pn.widgets.EditableIntSlider,
+                    "n_workers": pn.widgets.EditableIntSlider,
+                },
             ),
-            self._tree_history_params_section,
             pn.pane.Markdown("### Controls"),
             self.run_button,
             self.stop_button,
@@ -694,16 +683,26 @@ class AtariGasVisualizer(param.Parameterized):
 
     Features:
     - Best walker frame display with playback
-    - Cumulative reward progression curve
-    - Real-time metric histograms
+    - Static full-run reward plot with min/max error bars
+    - Algorithm-style error bar time-series plots (fitness, dt)
+    - Clone % and alive count line plots
     """
-
-    show_histograms = param.Boolean(default=True, doc="Show metric histograms")
 
     def __init__(self, history: AtariHistory | None = None, **params):
         super().__init__(**params)
         self.history = history
         self.planning_history: PlanningHistory | None = None
+        self.tree_history: AtariTreeHistory | None = None
+        self._current_frames: list[np.ndarray | None] = []
+
+        # Elite walker selector
+        self.elite_select = pn.widgets.Select(
+            name="Elite Walker",
+            options={"Best (global)": -1},
+            value=-1,
+            width=400,
+        )
+        self.elite_select.param.watch(self._on_elite_select_change, "value")
 
         # Game replay player (controls frame display)
         self.game_player = pn.widgets.Player(
@@ -719,20 +718,6 @@ class AtariGasVisualizer(param.Parameterized):
         self.game_player.disabled = True
         self.game_player.param.watch(self._on_game_frame_change, "value")
 
-        # Plot scrubbing player (controls metrics)
-        self.plot_player = pn.widgets.Player(
-            name="Plot Iteration",
-            start=0,
-            end=0,
-            value=0,
-            step=1,
-            interval=200,
-            loop_policy="loop",
-            width=400,
-        )
-        self.plot_player.disabled = True
-        self.plot_player.param.watch(self._on_plot_frame_change, "value")
-
         # Frame display (per-frame PNG)
         self.frame_pane = pn.pane.PNG(
             object=self._create_blank_frame(),
@@ -740,38 +725,37 @@ class AtariGasVisualizer(param.Parameterized):
             height=840,
         )
 
-        # Reward progression plot
-        self.reward_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=300)
+        # Static plot panes
+        self.reward_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
+        self.fitness_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
+        self.clone_pct_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
+        self.alive_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
+        self.dt_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
 
         # Info display
         self.info_pane = pn.pane.Markdown("No data loaded.")
-
-        # Histogram panes
-        self.histogram_alive_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
-        self.histogram_cloning_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
-        self.histogram_virtual_reward_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
 
         # Planning-specific panes
         self.step_reward_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
         self.inner_quality_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
 
     def set_history(self, history: AtariHistory):
-        """Load new history for visualization."""
+        """Load new history and build all static plots."""
         self.history = history
-        last_idx = len(history.iterations) - 1
+        self._current_frames = list(history.best_frames)
+        # Use frame count when available (may be shorter than iterations
+        # when the best walker peaked before the final step).
+        last_idx = len(self._current_frames) - 1 if history.has_frames else len(history.iterations) - 1
 
-        # Reset both players.  Set end first so the value stays in range.
-        # Force value to 1→0 so param watchers always fire (setting value
-        # to the same number it already holds is a no-op in param).
+        # Reset game player
         self.game_player.end = last_idx
         self.game_player.value = min(1, last_idx)
         self.game_player.value = 0
         self.game_player.disabled = False
 
-        self.plot_player.end = last_idx
-        self.plot_player.value = min(1, last_idx)
-        self.plot_player.value = 0
-        self.plot_player.disabled = False
+        # Reset elite dropdown to default
+        self.elite_select.options = {"Best (global)": -1}
+        self.elite_select.value = -1
 
         # Update info
         self.info_pane.object = (
@@ -781,92 +765,106 @@ class AtariGasVisualizer(param.Parameterized):
             f"Max reward: {max(history.rewards_max):.1f}"
         )
 
-        # Force-update frame pane with the first frame regardless of
-        # whether the player watcher fired.
-        if history.has_frames and history.best_frames[0] is not None:
-            self.frame_pane.object = self._array_to_png(history.best_frames[0])
+        # Force-update frame pane with the first frame
+        if history.has_frames and self._current_frames[0] is not None:
+            self.frame_pane.object = self._array_to_png(self._current_frames[0])
 
-        # Trigger plot display
-        self._on_plot_frame_change(None)
+        # Build all static plots
+        self._build_plots(history)
+
+    def set_tree_history(self, tree_history: AtariTreeHistory):
+        """Load tree history and populate the elite walker dropdown."""
+        self.tree_history = tree_history
+        elite_infos = tree_history.get_elite_branches_info()
+        if not elite_infos:
+            return
+        options: dict[str, int] = {}
+        for info in elite_infos:
+            options[info["label"]] = info["node_id"]
+        self.elite_select.options = options
+        # Default to first (highest reward) entry
+        first_key = next(iter(options))
+        self.elite_select.value = options[first_key]
 
     def set_planning_history(self, planning_history: PlanningHistory | None):
         """Load planning history for planning-specific visualizations."""
         self.planning_history = planning_history
 
-    def _on_game_frame_change(self, event):
-        """Update frame display only."""
-        if self.history is None or not self.history.has_frames:
-            return
-        idx = int(self.game_player.value)
-        frame = self.history.best_frames[idx]
-        if frame is not None:
-            self.frame_pane.object = self._array_to_png(frame)
+    def _build_plots(self, h: AtariHistory):
+        """Build all static plots from the full history data."""
+        steps = h.iterations
 
-    def _on_plot_frame_change(self, event):
-        """Update plots/histograms only."""
-        if self.history is None:
-            return
-
-        idx = int(self.plot_player.value)
-
-        # Update reward curve (show data up to current frame)
-        reward_data = pd.DataFrame({
-            "iteration": self.history.iterations[: idx + 1],
-            "max_reward": self.history.rewards_max[: idx + 1],
-            "mean_reward": self.history.rewards_mean[: idx + 1],
-        })
-
-        max_curve = hv.Curve(
-            reward_data, kdims=["iteration"], vdims=["max_reward"], label="Max Reward"
-        ).opts(
-            responsive=True,
-            height=350,
-            title="Cumulative Reward Progression",
-            xlabel="Iteration",
+        # Reward plot: mean line + elite overlays
+        reward_overlay = build_line_plot(
+            step=steps,
+            values=h.rewards_mean,
+            title="Cumulative Reward",
             ylabel="Cumulative Reward",
             color="red",
-            line_width=2,
+        )
+        # Overlay elite walker reward curves
+        if self.tree_history is not None:
+            elite_curves = self.tree_history.get_elite_reward_curves()
+            for curve_data in elite_curves:
+                df = pd.DataFrame({
+                    "step": curve_data["steps"],
+                    "reward": curve_data["rewards"],
+                })
+                elite_curve = hv.Curve(
+                    df, "step", "reward", label=curve_data["label"],
+                ).opts(color="blue", line_width=1, alpha=0.6)
+                reward_overlay = reward_overlay * elite_curve
+            if elite_curves:
+                reward_overlay = reward_overlay.opts(legend_position="top_left")
+        self.reward_plot_pane.object = reward_overlay
+
+        # Virtual reward / fitness: mean with min/max error bars
+        self.fitness_plot_pane.object = build_minmax_error_plot(
+            step=steps,
+            mean=h.virtual_rewards_mean,
+            vmin=h.virtual_rewards_min,
+            vmax=h.virtual_rewards_max,
+            title="Virtual Reward (mean / min-max)",
+            ylabel="Virtual Reward",
+            color="blue",
         )
 
-        mean_curve = hv.Curve(
-            reward_data, kdims=["iteration"], vdims=["mean_reward"], label="Mean Reward"
-        ).opts(color="blue", line_width=2, alpha=0.6)
+        # Clone %
+        clone_pct = [100.0 * nc / h.N for nc in h.num_cloned]
+        self.clone_pct_plot_pane.object = build_line_plot(
+            step=steps,
+            values=clone_pct,
+            title="Clone %",
+            ylabel="% walkers cloned",
+            color="orange",
+        )
 
-        self.reward_plot_pane.object = (max_curve * mean_curve).opts(legend_position="top_left")
+        # Alive count
+        self.alive_plot_pane.object = build_line_plot(
+            step=steps,
+            values=h.alive_counts,
+            title="Alive Walkers",
+            ylabel="Count",
+            color="green",
+        )
 
-        # Update histograms (show distribution up to current frame)
-        if self.show_histograms:
-            # Alive walkers histogram
-            alive_data = np.array(self.history.alive_counts[: idx + 1])
-            alive_hist = hv.Histogram(np.histogram(alive_data, bins=20)).opts(
-                responsive=True, height=280, title="Alive Walkers", xlabel="Count", color="green"
-            )
-            self.histogram_alive_pane.object = alive_hist
-
-            # Cloning events histogram
-            cloning_data = np.array(self.history.num_cloned[: idx + 1])
-            cloning_hist = hv.Histogram(np.histogram(cloning_data, bins=20)).opts(
-                responsive=True, height=280, title="Cloning Events", xlabel="Count", color="orange"
-            )
-            self.histogram_cloning_pane.object = cloning_hist
-
-            # Virtual rewards histogram
-            vr_data = np.array(self.history.virtual_rewards_mean[: idx + 1])
-            vr_hist = hv.Histogram(np.histogram(vr_data, bins=30)).opts(
-                responsive=True,
-                height=280,
-                title="Virtual Rewards",
-                xlabel="Value",
-                color="purple",
-            )
-            self.histogram_virtual_reward_pane.object = vr_hist
+        # dt: mean with min/max error bars
+        self.dt_plot_pane.object = build_minmax_error_plot(
+            step=steps,
+            mean=h.dt_mean,
+            vmin=h.dt_min,
+            vmax=h.dt_max,
+            title="Frame Skip dt (mean / min-max)",
+            ylabel="dt",
+            color="teal",
+        )
 
         # Planning-specific plots
         if self.planning_history is not None:
             ph = self.planning_history
             step_data = pd.DataFrame({
-                "step": ph.iterations[: idx + 1],
-                "step_reward": ph.step_rewards[: idx + 1],
+                "step": ph.iterations,
+                "step_reward": ph.step_rewards,
             })
             step_curve = hv.Curve(
                 step_data, kdims=["step"], vdims=["step_reward"], label="Step Reward"
@@ -878,13 +876,14 @@ class AtariGasVisualizer(param.Parameterized):
                 ylabel="Reward",
                 color="teal",
                 line_width=2,
+                show_grid=True,
             )
             self.step_reward_plot_pane.object = step_curve
 
             quality_data = pd.DataFrame({
-                "step": ph.iterations[: idx + 1],
-                "inner_max_reward": ph.inner_max_rewards[: idx + 1],
-                "step_reward": ph.step_rewards[: idx + 1],
+                "step": ph.iterations,
+                "inner_max_reward": ph.inner_max_rewards,
+                "step_reward": ph.step_rewards,
             })
             inner_curve = hv.Curve(
                 quality_data,
@@ -899,6 +898,7 @@ class AtariGasVisualizer(param.Parameterized):
                 ylabel="Reward",
                 color="orange",
                 line_width=2,
+                show_grid=True,
             )
             step_overlay = hv.Curve(
                 quality_data,
@@ -909,6 +909,31 @@ class AtariGasVisualizer(param.Parameterized):
             self.inner_quality_plot_pane.object = (inner_curve * step_overlay).opts(
                 legend_position="top_left"
             )
+
+    def _on_elite_select_change(self, event):
+        """Switch displayed replay to the selected elite branch."""
+        node_id = event.new
+        if self.tree_history is None:
+            return
+        frames = self.tree_history.get_path_frames_for_node(node_id)
+        if not frames:
+            return
+        self._current_frames = frames
+        last_idx = len(frames) - 1
+        self.game_player.end = last_idx
+        self.game_player.value = 0
+        if frames[0] is not None:
+            self.frame_pane.object = self._array_to_png(frames[0])
+
+    def _on_game_frame_change(self, event):
+        """Update frame display only."""
+        if not self._current_frames:
+            return
+        idx = int(self.game_player.value)
+        if idx < len(self._current_frames):
+            frame = self._current_frames[idx]
+            if frame is not None:
+                self.frame_pane.object = self._array_to_png(frame)
 
     def _create_blank_frame(self) -> bytes:
         """Create blank frame as placeholder."""
@@ -930,21 +955,6 @@ class AtariGasVisualizer(param.Parameterized):
 
     def panel(self) -> pn.Column:
         """Create visualization layout."""
-        histogram_section = (
-            pn.Column(
-                pn.pane.Markdown("### Metrics Distribution"),
-                pn.Row(
-                    self.histogram_alive_pane,
-                    self.histogram_cloning_pane,
-                    self.histogram_virtual_reward_pane,
-                    sizing_mode="stretch_width",
-                ),
-                sizing_mode="stretch_width",
-            )
-            if self.show_histograms
-            else None
-        )
-
         self._planning_stats_section = pn.Column(
             pn.pane.Markdown("### Planning Stats"),
             pn.Row(
@@ -961,18 +971,28 @@ class AtariGasVisualizer(param.Parameterized):
             pn.Row(
                 pn.Column(
                     pn.pane.Markdown("### Best Game Replay"),
+                    self.elite_select,
                     self.game_player,
                     self.frame_pane,
                 ),
                 pn.Column(
-                    pn.pane.Markdown("### Reward Progression"),
-                    self.plot_player,
+                    pn.pane.Markdown("### Reward"),
                     self.reward_plot_pane,
                     sizing_mode="stretch_width",
                 ),
                 sizing_mode="stretch_width",
             ),
-            histogram_section,
+            pn.pane.Markdown("### Algorithm Metrics"),
+            pn.Row(
+                self.fitness_plot_pane,
+                self.dt_plot_pane,
+                sizing_mode="stretch_width",
+            ),
+            pn.Row(
+                self.clone_pct_plot_pane,
+                self.alive_plot_pane,
+                sizing_mode="stretch_width",
+            ),
             self._planning_stats_section,
             self.info_pane,
             sizing_mode="stretch_width",
@@ -993,7 +1013,11 @@ def create_app() -> pn.template.FastListTemplate:
         """Update visualizer when simulation completes."""
         visualizer.set_planning_history(config_panel.planning_history)
         visualizer._planning_stats_section.visible = config_panel.planning_history is not None
+        # Set tree_history before set_history so _build_plots can overlay elite curves
+        visualizer.tree_history = config_panel.tree_history
         visualizer.set_history(history)
+        if config_panel.tree_history is not None:
+            visualizer.set_tree_history(config_panel.tree_history)
 
     config_panel.add_completion_callback(on_simulation_complete)
 

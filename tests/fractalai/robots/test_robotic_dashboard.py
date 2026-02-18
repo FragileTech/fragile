@@ -45,6 +45,10 @@ def _make_history(n_iters: int = 10, with_frames: bool = False, task: str = "car
         num_cloned=[3] * n_iters,
         virtual_rewards_mean=[0.5 + 0.05 * i for i in range(n_iters)],
         virtual_rewards_max=[1.0 + 0.05 * i for i in range(n_iters)],
+        virtual_rewards_min=[0.2 + 0.05 * i for i in range(n_iters)],
+        dt_mean=[1.0] * n_iters,
+        dt_min=[1] * n_iters,
+        dt_max=[1] * n_iters,
         best_frames=frames,
         best_rewards=[float(i) * 0.2 for i in range(n_iters)],
         best_indices=[0] * n_iters,
@@ -107,25 +111,24 @@ class TestRoboticGasConfigPanel:
     def test_default_parameters(self):
         panel = RoboticGasConfigPanel()
         assert panel.algorithm_mode == "Single Loop"
-        assert panel.task_name == "cartpole-balance"
+        assert panel.task_name == "walker-walk"
         assert panel.render_width == 480
         assert panel.render_height == 480
-        assert panel.N == 30
+        assert panel.N == 100
         assert panel.dist_coef == 1.0
         assert panel.reward_coef == 1.0
-        assert panel.use_cumulative_reward is False
-        assert panel.n_elite == 0
+        assert panel.n_elite == 5
         assert panel.dt_range_min == 1
         assert panel.dt_range_max == 1
         assert panel.max_iterations == 100
         assert panel.record_frames is True
-        assert panel.device == "cpu"
         assert panel.seed == 42
         assert panel.n_workers == 1
         assert panel.tau_inner == 5
         assert panel.outer_dt == 1
-        assert panel.use_tree_history is False
-        assert panel.prune_history is False
+        assert panel.action_mode == "Uniform"
+        assert panel.gaussian_mean == 0.0
+        assert panel.gaussian_std == 0.3
 
     def test_custom_parameters(self):
         panel = RoboticGasConfigPanel(
@@ -152,6 +155,7 @@ class TestRoboticGasConfigPanel:
             "reacher-hard",
             "cheetah-run",
             "walker-walk",
+            "walker-stand",
             "humanoid-walk",
             "hopper-stand",
             "finger-spin",
@@ -163,9 +167,17 @@ class TestRoboticGasConfigPanel:
         panel = RoboticGasConfigPanel()
         assert panel.param.algorithm_mode.objects == ["Single Loop", "Planning"]
 
-    def test_device_options(self):
+    def test_action_mode_options(self):
         panel = RoboticGasConfigPanel()
-        assert panel.param.device.objects == ["cpu", "cuda"]
+        assert panel.param.action_mode.objects == ["Uniform", "Gaussian"]
+
+    def test_gaussian_params_visibility(self):
+        panel = RoboticGasConfigPanel()
+        assert panel._gaussian_params_section.visible is False
+        panel.action_mode = "Gaussian"
+        assert panel._gaussian_params_section.visible is True
+        panel.action_mode = "Uniform"
+        assert panel._gaussian_params_section.visible is False
 
     def test_ui_widgets_created(self):
         panel = RoboticGasConfigPanel()
@@ -336,36 +348,30 @@ class TestRoboticGasVisualizer:
     def test_default_initialization(self):
         viz = RoboticGasVisualizer()
         assert viz.history is None
-        assert viz.show_histograms is True
-
-    def test_initialization_with_show_histograms_false(self):
-        viz = RoboticGasVisualizer(show_histograms=False)
-        assert viz.show_histograms is False
 
     def test_widgets_created(self):
         viz = RoboticGasVisualizer()
         assert isinstance(viz.game_player, pn.widgets.Player)
-        assert isinstance(viz.plot_player, pn.widgets.Player)
         assert isinstance(viz.frame_pane, pn.pane.PNG)
         assert isinstance(viz.reward_plot_pane, pn.pane.HoloViews)
+        assert isinstance(viz.fitness_plot_pane, pn.pane.HoloViews)
+        assert isinstance(viz.clone_pct_plot_pane, pn.pane.HoloViews)
+        assert isinstance(viz.alive_plot_pane, pn.pane.HoloViews)
+        assert isinstance(viz.dt_plot_pane, pn.pane.HoloViews)
         assert isinstance(viz.info_pane, pn.pane.Markdown)
-        assert isinstance(viz.histogram_alive_pane, pn.pane.HoloViews)
-        assert isinstance(viz.histogram_cloning_pane, pn.pane.HoloViews)
-        assert isinstance(viz.histogram_virtual_reward_pane, pn.pane.HoloViews)
 
     def test_frame_pane_is_png(self):
         """Robotics dashboard uses PNG (single-frame)."""
         viz = RoboticGasVisualizer()
         assert isinstance(viz.frame_pane, pn.pane.PNG)
 
-    def test_players_initial_state(self):
+    def test_game_player_initial_state(self):
         viz = RoboticGasVisualizer()
-        for player in (viz.game_player, viz.plot_player):
-            assert player.start == 0
-            assert player.end == 0
-            assert player.value == 0
-            assert player.disabled is True
-            assert player.interval == 200
+        assert viz.game_player.start == 0
+        assert viz.game_player.end == 0
+        assert viz.game_player.value == 0
+        assert viz.game_player.disabled is True
+        assert viz.game_player.interval == 200
 
     def test_create_blank_frame(self):
         viz = RoboticGasVisualizer()
@@ -398,12 +404,20 @@ class TestRoboticGasVisualizer:
         assert viz.game_player.end == 14
         assert viz.game_player.value == 0
         assert viz.game_player.disabled is False
-        assert viz.plot_player.end == 14
-        assert viz.plot_player.value == 0
-        assert viz.plot_player.disabled is False
         assert "15 iterations" in viz.info_pane.object
         assert "walker-walk" in viz.info_pane.object
         assert "N=30" in viz.info_pane.object
+
+    def test_set_history_builds_static_plots(self):
+        viz = RoboticGasVisualizer()
+        history = _make_history(n_iters=10)
+        viz.set_history(history)
+        # All static plots should be populated
+        assert viz.reward_plot_pane.object is not None
+        assert viz.fitness_plot_pane.object is not None
+        assert viz.clone_pct_plot_pane.object is not None
+        assert viz.alive_plot_pane.object is not None
+        assert viz.dt_plot_pane.object is not None
 
     def test_set_history_updates_max_reward_info(self):
         viz = RoboticGasVisualizer()
@@ -424,36 +438,6 @@ class TestRoboticGasVisualizer:
         viz = RoboticGasVisualizer()
         viz._on_game_frame_change(None)  # Should not raise
 
-    def test_on_plot_frame_change_no_history(self):
-        viz = RoboticGasVisualizer()
-        viz._on_plot_frame_change(None)  # Should not raise
-
-    def test_on_plot_frame_change_updates_reward_curve(self):
-        viz = RoboticGasVisualizer()
-        history = _make_history(n_iters=10)
-        viz.set_history(history)
-        viz.plot_player.value = 5
-        viz._on_plot_frame_change(None)
-        assert viz.reward_plot_pane.object is not None
-
-    def test_on_plot_frame_change_updates_histograms(self):
-        viz = RoboticGasVisualizer(show_histograms=True)
-        history = _make_history(n_iters=10)
-        viz.set_history(history)
-        viz.plot_player.value = 5
-        viz._on_plot_frame_change(None)
-        assert viz.histogram_alive_pane.object is not None
-        assert viz.histogram_cloning_pane.object is not None
-        assert viz.histogram_virtual_reward_pane.object is not None
-
-    def test_on_plot_frame_change_skips_histograms_when_disabled(self):
-        viz = RoboticGasVisualizer(show_histograms=False)
-        history = _make_history(n_iters=10)
-        viz.set_history(history)
-        viz.plot_player.value = 3
-        viz._on_plot_frame_change(None)
-        assert viz.histogram_alive_pane.object is None
-
     def test_on_game_frame_change_with_frames(self):
         viz = RoboticGasVisualizer()
         history = _make_history(n_iters=5, with_frames=True)
@@ -464,25 +448,9 @@ class TestRoboticGasVisualizer:
         assert isinstance(viz.frame_pane.object, bytes)
         assert len(viz.frame_pane.object) > 0
 
-    def test_on_plot_frame_change_boundary_first(self):
-        viz = RoboticGasVisualizer()
-        history = _make_history(n_iters=10)
-        viz.set_history(history)
-        viz.plot_player.value = 0
-        viz._on_plot_frame_change(None)
-        assert viz.reward_plot_pane.object is not None
-
-    def test_on_plot_frame_change_boundary_last(self):
-        viz = RoboticGasVisualizer()
-        history = _make_history(n_iters=10)
-        viz.set_history(history)
-        viz.plot_player.value = 9
-        viz._on_plot_frame_change(None)
-        assert viz.reward_plot_pane.object is not None
-
-    def test_game_player_independent_of_plot_player(self):
+    def test_game_player_does_not_change_plots(self):
         """Changing game_player should only update the frame, not plots."""
-        viz = RoboticGasVisualizer(show_histograms=True)
+        viz = RoboticGasVisualizer()
         history = _make_history(n_iters=10, with_frames=True)
         viz.set_history(history)
 
@@ -494,44 +462,21 @@ class TestRoboticGasVisualizer:
         # Reward plot should still be the same object (not re-rendered by game callback)
         assert viz.reward_plot_pane.object is initial_reward_plot
 
-    def test_plot_player_independent_of_game_player(self):
-        """Changing plot_player should only update plots, not the frame."""
-        viz = RoboticGasVisualizer()
-        history = _make_history(n_iters=10, with_frames=True)
-        viz.set_history(history)
-
-        # Record frame state after initial set_history (game at idx 0)
-        initial_frame = viz.frame_pane.object
-
-        # Change plot_player — frame should NOT change
-        viz.plot_player.value = 7
-        assert viz.frame_pane.object is initial_frame
-
     def test_panel_returns_column(self):
         viz = RoboticGasVisualizer()
         layout = viz.panel()
         assert isinstance(layout, pn.Column)
 
-    def test_panel_includes_histogram_section(self):
-        viz = RoboticGasVisualizer(show_histograms=True)
+    def test_panel_includes_algorithm_metrics(self):
+        viz = RoboticGasVisualizer()
         layout = viz.panel()
-        assert any(isinstance(child, pn.Column) for child in layout.objects if child is not None)
-
-    def test_panel_no_histogram_section_when_disabled(self):
-        viz = RoboticGasVisualizer(show_histograms=False)
-        layout = viz.panel()
-        # When show_histograms=False, histogram_section=None is passed to Column.
-        # Panel wraps None as pn.pane.Str(None). Verify no histogram Column is present.
-        histogram_columns = [
-            child
-            for child in layout.objects
-            if isinstance(child, pn.Column)
-            and any(
-                isinstance(c, pn.pane.Markdown) and "Metrics" in str(c.object)
-                for c in getattr(child, "objects", [])
-            )
+        # Should have the "Algorithm Metrics" section
+        md_texts = [
+            str(c.object)
+            for c in layout.objects
+            if isinstance(c, pn.pane.Markdown)
         ]
-        assert len(histogram_columns) == 0
+        assert any("Algorithm Metrics" in t for t in md_texts)
 
 
 # ---------------------------------------------------------------------------
@@ -724,18 +669,6 @@ class TestPlanningVisualization:
         assert viz.step_reward_plot_pane.object is None
         assert viz.inner_quality_plot_pane.object is None
 
-    def test_frame_change_updates_planning_plots(self):
-        viz = RoboticGasVisualizer()
-        ph = _make_planning_history(n_steps=10)
-        history = _make_history(n_iters=10)
-        viz.set_planning_history(ph)
-        viz.set_history(history)
-
-        viz.plot_player.value = 5
-        viz._on_plot_frame_change(None)
-        assert viz.step_reward_plot_pane.object is not None
-        assert viz.inner_quality_plot_pane.object is not None
-
     def test_panel_includes_planning_section(self):
         viz = RoboticGasVisualizer()
         layout = viz.panel()
@@ -794,25 +727,20 @@ class TestModeSwitch:
     def test_planning_params_hidden_in_single_loop(self):
         panel = RoboticGasConfigPanel(algorithm_mode="Single Loop")
         assert panel._planning_params_section.visible is False
-        assert panel._tree_history_params_section.visible is True
 
     def test_planning_params_shown_in_planning(self):
         panel = RoboticGasConfigPanel(algorithm_mode="Planning")
         assert panel._planning_params_section.visible is True
-        assert panel._tree_history_params_section.visible is False
 
     def test_switching_to_planning_shows_params(self):
         panel = RoboticGasConfigPanel(algorithm_mode="Single Loop")
         assert panel._planning_params_section.visible is False
         panel.algorithm_mode = "Planning"
         assert panel._planning_params_section.visible is True
-        assert panel._tree_history_params_section.visible is False
 
-    def test_switching_to_single_loop_shows_tree_params(self):
+    def test_switching_to_single_loop_hides_planning_params(self):
         panel = RoboticGasConfigPanel(algorithm_mode="Planning")
-        assert panel._tree_history_params_section.visible is False
         panel.algorithm_mode = "Single Loop"
-        assert panel._tree_history_params_section.visible is True
         assert panel._planning_params_section.visible is False
 
     def test_planning_stats_hidden_after_single_loop_run(self):

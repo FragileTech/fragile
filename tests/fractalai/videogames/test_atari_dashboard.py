@@ -42,10 +42,15 @@ def _make_history(n_iters: int = 10, with_frames: bool = False, game: str = "ALE
         rewards_mean=[float(i) for i in range(n_iters)],
         rewards_max=[float(i * 2) for i in range(n_iters)],
         rewards_min=[0.0] * n_iters,
+        rewards_std=[1.0] * n_iters,
         alive_counts=[30] * n_iters,
         num_cloned=[5] * n_iters,
         virtual_rewards_mean=[1.5 + 0.1 * i for i in range(n_iters)],
         virtual_rewards_max=[2.0 + 0.1 * i for i in range(n_iters)],
+        virtual_rewards_min=[1.0 + 0.1 * i for i in range(n_iters)],
+        dt_mean=[2.5] * n_iters,
+        dt_min=[1] * n_iters,
+        dt_max=[4] * n_iters,
         best_frames=frames,
         best_rewards=[float(i * 2) for i in range(n_iters)],
         best_indices=[0] * n_iters,
@@ -143,24 +148,20 @@ class TestAtariGasConfigPanel:
     def test_default_parameters(self):
         panel = AtariGasConfigPanel()
         assert panel.algorithm_mode == "Single Loop"
-        assert panel.game_name == "ALE/Pong-v5"
+        assert panel.game_name == "ALE/MsPacman-v5"
         assert panel.obs_type == "ram"
-        assert panel.N == 30
+        assert panel.N == 100
         assert panel.dist_coef == 1.0
         assert panel.reward_coef == 1.0
-        assert panel.use_cumulative_reward is False
-        assert panel.n_elite == 0
+        assert panel.n_elite == 5
         assert panel.dt_range_min == 1
         assert panel.dt_range_max == 4
         assert panel.max_iterations == 100
         assert panel.record_frames is True
-        assert panel.device == "cpu"
         assert panel.seed == 42
         assert panel.n_workers == 1
         assert panel.tau_inner == 5
         assert panel.outer_dt == 1
-        assert panel.use_tree_history is True
-        assert panel.prune_history is True
 
     def test_custom_parameters(self):
         panel = AtariGasConfigPanel(
@@ -192,9 +193,9 @@ class TestAtariGasConfigPanel:
         panel = AtariGasConfigPanel()
         assert panel.param.algorithm_mode.objects == ["Single Loop", "Planning"]
 
-    def test_device_options(self):
+    def test_n_elite_bounds(self):
         panel = AtariGasConfigPanel()
-        assert panel.param.device.objects == ["cpu", "cuda"]
+        assert panel.param.n_elite.bounds == (0, 50)
 
     def test_ui_widgets_created(self):
         panel = AtariGasConfigPanel()
@@ -333,30 +334,24 @@ class TestAtariGasVisualizer:
     def test_default_initialization(self):
         viz = AtariGasVisualizer()
         assert viz.history is None
-        assert viz.show_histograms is True
-
-    def test_initialization_with_show_histograms_false(self):
-        viz = AtariGasVisualizer(show_histograms=False)
-        assert viz.show_histograms is False
 
     def test_widgets_created(self):
         viz = AtariGasVisualizer()
         assert isinstance(viz.game_player, pn.widgets.Player)
-        assert isinstance(viz.plot_player, pn.widgets.Player)
         assert isinstance(viz.frame_pane, pn.pane.PNG)
         assert isinstance(viz.reward_plot_pane, pn.pane.HoloViews)
+        assert isinstance(viz.fitness_plot_pane, pn.pane.HoloViews)
+        assert isinstance(viz.clone_pct_plot_pane, pn.pane.HoloViews)
+        assert isinstance(viz.alive_plot_pane, pn.pane.HoloViews)
+        assert isinstance(viz.dt_plot_pane, pn.pane.HoloViews)
         assert isinstance(viz.info_pane, pn.pane.Markdown)
-        assert isinstance(viz.histogram_alive_pane, pn.pane.HoloViews)
-        assert isinstance(viz.histogram_cloning_pane, pn.pane.HoloViews)
-        assert isinstance(viz.histogram_virtual_reward_pane, pn.pane.HoloViews)
 
-    def test_players_initial_state(self):
+    def test_game_player_initial_state(self):
         viz = AtariGasVisualizer()
-        for player in (viz.game_player, viz.plot_player):
-            assert player.start == 0
-            assert player.end == 0
-            assert player.value == 0
-            assert player.disabled is True
+        assert viz.game_player.start == 0
+        assert viz.game_player.end == 0
+        assert viz.game_player.value == 0
+        assert viz.game_player.disabled is True
 
     def test_create_blank_frame(self):
         viz = AtariGasVisualizer()
@@ -381,12 +376,20 @@ class TestAtariGasVisualizer:
         assert viz.game_player.end == 19
         assert viz.game_player.value == 0
         assert viz.game_player.disabled is False
-        assert viz.plot_player.end == 19
-        assert viz.plot_player.value == 0
-        assert viz.plot_player.disabled is False
         assert "20 iterations" in viz.info_pane.object
         assert "ALE/Pong-v5" in viz.info_pane.object
         assert "N=30" in viz.info_pane.object
+
+    def test_set_history_builds_static_plots(self):
+        viz = AtariGasVisualizer()
+        history = _make_history(n_iters=10)
+        viz.set_history(history)
+        # All static plots should be populated
+        assert viz.reward_plot_pane.object is not None
+        assert viz.fitness_plot_pane.object is not None
+        assert viz.clone_pct_plot_pane.object is not None
+        assert viz.alive_plot_pane.object is not None
+        assert viz.dt_plot_pane.object is not None
 
     def test_set_history_updates_info_with_max_reward(self):
         viz = AtariGasVisualizer()
@@ -400,39 +403,6 @@ class TestAtariGasVisualizer:
         viz = AtariGasVisualizer()
         viz._on_game_frame_change(None)  # Should not raise
 
-    def test_on_plot_frame_change_no_history(self):
-        """_on_plot_frame_change should be a no-op when history is None."""
-        viz = AtariGasVisualizer()
-        viz._on_plot_frame_change(None)  # Should not raise
-
-    def test_on_plot_frame_change_updates_reward_curve(self):
-        viz = AtariGasVisualizer()
-        history = _make_history(n_iters=10)
-        viz.set_history(history)
-        viz.plot_player.value = 5
-        viz._on_plot_frame_change(None)
-        # Reward plot should be updated
-        assert viz.reward_plot_pane.object is not None
-
-    def test_on_plot_frame_change_updates_histograms(self):
-        viz = AtariGasVisualizer(show_histograms=True)
-        history = _make_history(n_iters=10)
-        viz.set_history(history)
-        viz.plot_player.value = 5
-        viz._on_plot_frame_change(None)
-        assert viz.histogram_alive_pane.object is not None
-        assert viz.histogram_cloning_pane.object is not None
-        assert viz.histogram_virtual_reward_pane.object is not None
-
-    def test_on_plot_frame_change_skips_histograms_when_disabled(self):
-        viz = AtariGasVisualizer(show_histograms=False)
-        history = _make_history(n_iters=10)
-        viz.set_history(history)
-        viz.plot_player.value = 3
-        viz._on_plot_frame_change(None)
-        # Histograms should not be populated
-        assert viz.histogram_alive_pane.object is None
-
     def test_on_game_frame_change_updates_frame(self):
         viz = AtariGasVisualizer()
         history = _make_history(n_iters=5, with_frames=True)
@@ -442,9 +412,9 @@ class TestAtariGasVisualizer:
         assert isinstance(viz.frame_pane.object, bytes)
         assert len(viz.frame_pane.object) > 0
 
-    def test_game_player_independent_of_plot_player(self):
+    def test_game_player_does_not_change_plots(self):
         """Changing game_player should only update the frame, not plots."""
-        viz = AtariGasVisualizer(show_histograms=True)
+        viz = AtariGasVisualizer()
         history = _make_history(n_iters=10, with_frames=True)
         viz.set_history(history)
 
@@ -456,45 +426,21 @@ class TestAtariGasVisualizer:
         # Reward plot should still be the same object (not re-rendered by game callback)
         assert viz.reward_plot_pane.object is initial_reward_plot
 
-    def test_plot_player_independent_of_game_player(self):
-        """Changing plot_player should only update plots, not the frame."""
-        viz = AtariGasVisualizer()
-        history = _make_history(n_iters=10, with_frames=True)
-        viz.set_history(history)
-
-        # Record frame state after initial set_history (game at idx 0)
-        initial_frame = viz.frame_pane.object
-
-        # Change plot_player — frame should NOT change
-        viz.plot_player.value = 7
-        assert viz.frame_pane.object is initial_frame
-
     def test_panel_returns_column(self):
         viz = AtariGasVisualizer()
         layout = viz.panel()
         assert isinstance(layout, pn.Column)
 
-    def test_panel_includes_histogram_section(self):
-        viz = AtariGasVisualizer(show_histograms=True)
+    def test_panel_includes_algorithm_metrics(self):
+        viz = AtariGasVisualizer()
         layout = viz.panel()
-        # Should have the histogram section as the last non-None item
-        assert any(isinstance(child, pn.Column) for child in layout.objects if child is not None)
-
-    def test_panel_no_histogram_section_when_disabled(self):
-        viz = AtariGasVisualizer(show_histograms=False)
-        layout = viz.panel()
-        # When show_histograms=False, histogram_section=None is passed to Column.
-        # Panel wraps None as pn.pane.Str(None). Verify no histogram Column is present.
-        histogram_columns = [
-            child
-            for child in layout.objects
-            if isinstance(child, pn.Column)
-            and any(
-                isinstance(c, pn.pane.Markdown) and "Metrics" in str(c.object)
-                for c in getattr(child, "objects", [])
-            )
+        # Should have the "Algorithm Metrics" section
+        md_texts = [
+            str(c.object)
+            for c in layout.objects
+            if isinstance(c, pn.pane.Markdown)
         ]
-        assert len(histogram_columns) == 0
+        assert any("Algorithm Metrics" in t for t in md_texts)
 
 
 # ---------------------------------------------------------------------------
@@ -656,7 +602,7 @@ class TestPlanningVisualization:
         history = _make_history(n_iters=5)
         viz.set_planning_history(ph)
         viz.set_history(history)
-        # Planning plots should be populated after _on_plot_frame_change
+        # Planning plots should be populated after set_history
         assert viz.step_reward_plot_pane.object is not None
         assert viz.inner_quality_plot_pane.object is not None
 
@@ -667,19 +613,6 @@ class TestPlanningVisualization:
         # No planning history -> planning panes should remain empty
         assert viz.step_reward_plot_pane.object is None
         assert viz.inner_quality_plot_pane.object is None
-
-    def test_frame_change_updates_planning_plots(self):
-        viz = AtariGasVisualizer()
-        ph = _make_planning_history(n_steps=10)
-        history = _make_history(n_iters=10)
-        viz.set_planning_history(ph)
-        viz.set_history(history)
-
-        # Scrub to a different frame using plot_player
-        viz.plot_player.value = 5
-        viz._on_plot_frame_change(None)
-        assert viz.step_reward_plot_pane.object is not None
-        assert viz.inner_quality_plot_pane.object is not None
 
     def test_panel_includes_planning_section(self):
         viz = AtariGasVisualizer()
@@ -740,25 +673,21 @@ class TestModeSwitch:
     def test_planning_params_hidden_in_single_loop(self):
         panel = AtariGasConfigPanel(algorithm_mode="Single Loop")
         assert panel._planning_params_section.visible is False
-        assert panel._tree_history_params_section.visible is True
 
     def test_planning_params_shown_in_planning(self):
         panel = AtariGasConfigPanel(algorithm_mode="Planning")
         assert panel._planning_params_section.visible is True
-        assert panel._tree_history_params_section.visible is False
 
     def test_switching_to_planning_shows_params(self):
         panel = AtariGasConfigPanel(algorithm_mode="Single Loop")
         assert panel._planning_params_section.visible is False
         panel.algorithm_mode = "Planning"
         assert panel._planning_params_section.visible is True
-        assert panel._tree_history_params_section.visible is False
 
-    def test_switching_to_single_loop_shows_tree_params(self):
+    def test_switching_to_single_loop_hides_planning_params(self):
         panel = AtariGasConfigPanel(algorithm_mode="Planning")
-        assert panel._tree_history_params_section.visible is False
+        assert panel._planning_params_section.visible is True
         panel.algorithm_mode = "Single Loop"
-        assert panel._tree_history_params_section.visible is True
         assert panel._planning_params_section.visible is False
 
     def test_planning_stats_hidden_after_single_loop_run(self):

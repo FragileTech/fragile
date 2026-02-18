@@ -13,6 +13,7 @@ import pandas as pd
 import panel as pn
 import param
 
+from fragile.fractalai.dashboard_plots import build_line_plot, build_minmax_error_plot
 from fragile.fractalai.planning_gas import PlanningFractalGas, PlanningHistory, PlanningTrajectory
 from fragile.fractalai.robots.dm_control_env import DMControlEnv, VectorizedDMControlEnv
 from fragile.fractalai.robots.robotic_gas import RoboticFractalGas
@@ -65,7 +66,7 @@ class RoboticGasConfigPanel(param.Parameterized):
 
     # Environment parameters
     task_name = param.ObjectSelector(
-        default="cartpole-balance",
+        default="walker-walk",
         objects=[
             "cartpole-balance",
             "cartpole-swingup",
@@ -73,6 +74,7 @@ class RoboticGasConfigPanel(param.Parameterized):
             "reacher-hard",
             "cheetah-run",
             "walker-walk",
+            "walker-stand",
             "humanoid-walk",
             "hopper-stand",
             "finger-spin",
@@ -86,7 +88,7 @@ class RoboticGasConfigPanel(param.Parameterized):
     render_height = param.Integer(default=480, bounds=(120, 1920), doc="Render height in pixels")
 
     # Algorithm parameters
-    N = param.Integer(default=30, bounds=(5, 200), doc="Number of walkers")
+    N = param.Integer(default=100, bounds=(5, 200), doc="Number of walkers")
 
     dist_coef = param.Number(
         default=1.0, bounds=(0.0, 5.0), doc="Distance coefficient in fitness calculation"
@@ -96,13 +98,26 @@ class RoboticGasConfigPanel(param.Parameterized):
         default=1.0, bounds=(0.0, 5.0), doc="Reward coefficient in fitness calculation"
     )
 
-    use_cumulative_reward = param.Boolean(
-        default=False,
-        doc="Use cumulative rewards for fitness (default: step rewards only)",
+    n_elite = param.Integer(
+        default=5, bounds=(0, 50), doc="Number of elite walkers to preserve (0=disabled)"
     )
 
-    n_elite = param.Integer(
-        default=0, bounds=(0, 50), doc="Number of elite walkers to preserve (0=disabled)"
+    action_mode = param.ObjectSelector(
+        default="Uniform",
+        objects=["Uniform", "Gaussian"],
+        doc="Action sampling: Uniform random or Gaussian (clipped to bounds)",
+    )
+
+    gaussian_mean = param.Number(
+        default=0.0,
+        bounds=(-1.0, 1.0),
+        doc="Mean of Gaussian action distribution",
+    )
+
+    gaussian_std = param.Number(
+        default=0.3,
+        bounds=(0.01, 2.0),
+        doc="Std dev of Gaussian action distribution",
     )
 
     dt_range_min = param.Integer(default=1, bounds=(1, 10), doc="Min action repeat")
@@ -118,8 +133,6 @@ class RoboticGasConfigPanel(param.Parameterized):
         doc="Record best walker frames (required for visualization, uses more memory)",
     )
 
-    device = param.ObjectSelector(default="cpu", objects=["cpu", "cuda"], doc="Computation device")
-
     seed = param.Integer(default=42, doc="Random seed for reproducibility")
 
     n_workers = param.Integer(default=1, bounds=(1, 16), doc="Parallel env workers (1=serial)")
@@ -133,16 +146,6 @@ class RoboticGasConfigPanel(param.Parameterized):
         default=1, bounds=(1, 10), doc="Action repeat for outer environment step"
     )
 
-    use_tree_history = param.Boolean(
-        default=False,
-        doc="Use graph-backed TreeHistory for cloning lineage tracking",
-    )
-
-    prune_history = param.Boolean(
-        default=False,
-        doc="Dynamically prune dead branches from TreeHistory each step (requires tree history)",
-    )
-
     def __init__(self, **params):
         super().__init__(**params)
 
@@ -150,7 +153,8 @@ class RoboticGasConfigPanel(param.Parameterized):
         self.gas: RoboticFractalGas | None = None
         self.history: RoboticHistory | None = None
         self.planning_history: PlanningHistory | None = None
-        self.tree_history = None  # AtariTreeHistory when use_tree_history=True
+        self.tree_history = None  # AtariTreeHistory always enabled
+        self.prune_tree_history = True
         self._simulation_thread: threading.Thread | None = None
         self._stop_requested = False
         self._env = None
@@ -193,23 +197,40 @@ class RoboticGasConfigPanel(param.Parameterized):
         # Mode-specific parameter sections
         self._planning_params_section = pn.Column(
             pn.pane.Markdown("### Planning"),
-            pn.Param(self.param, parameters=["tau_inner", "outer_dt"]),
-            visible=(self.algorithm_mode == "Planning"),
-        )
-        self._tree_history_params_section = pn.Column(
             pn.Param(
                 self.param,
-                parameters=["use_tree_history", "prune_history"],
+                parameters=["tau_inner", "outer_dt"],
+                widgets={
+                    "tau_inner": pn.widgets.EditableIntSlider,
+                    "outer_dt": pn.widgets.EditableIntSlider,
+                },
             ),
-            visible=(self.algorithm_mode == "Single Loop"),
+            visible=(self.algorithm_mode == "Planning"),
         )
         self.param.watch(self._on_mode_changed, "algorithm_mode")
+
+        # Gaussian action params (visible only when action_mode == "Gaussian")
+        self._gaussian_params_section = pn.Column(
+            pn.Param(
+                self.param,
+                parameters=["gaussian_mean", "gaussian_std"],
+                widgets={
+                    "gaussian_mean": pn.widgets.EditableFloatSlider,
+                    "gaussian_std": pn.widgets.EditableFloatSlider,
+                },
+            ),
+            visible=(self.action_mode == "Gaussian"),
+        )
+        self.param.watch(self._on_action_mode_changed, "action_mode")
+
+    def _on_action_mode_changed(self, event):
+        """Toggle visibility of Gaussian parameter section."""
+        self._gaussian_params_section.visible = event.new == "Gaussian"
 
     def _on_mode_changed(self, event):
         """Toggle visibility of mode-specific parameter sections."""
         is_planning = event.new == "Planning"
         self._planning_params_section.visible = is_planning
-        self._tree_history_params_section.visible = not is_planning
 
     def add_completion_callback(self, callback: Callable[[RoboticHistory], None]):
         """Register callback for simulation completion."""
@@ -269,6 +290,7 @@ class RoboticGasConfigPanel(param.Parameterized):
             "name": self.task_name,
             "render_width": self.render_width,
             "render_height": self.render_height,
+            "include_rgb": False,
         }
         if self.n_workers > 1:
             print(
@@ -311,6 +333,18 @@ class RoboticGasConfigPanel(param.Parameterized):
             self._close_env()
             self._schedule_ui_update(self._cleanup_simulation)
 
+    def _build_action_sampler(self, env):
+        """Build the action sampler based on the current action_mode setting."""
+        if self.action_mode == "Gaussian":
+            from fragile.fractalai.videogames.kinetic import gaussian_action_sampler
+
+            return gaussian_action_sampler(
+                env.action_space,
+                mean=self.gaussian_mean,
+                std=self.gaussian_std,
+            )
+        return None
+
     def _run_single_loop_worker(self, env):
         """Run standard single-loop fractal gas."""
         self.planning_history = None
@@ -319,17 +353,18 @@ class RoboticGasConfigPanel(param.Parameterized):
             lambda: setattr(self.status_pane, "object", "Initializing simulation...")
         )
 
+        action_sampler = self._build_action_sampler(env)
         self.gas = RoboticFractalGas(
             env=env,
             N=self.N,
             dist_coef=self.dist_coef,
             reward_coef=self.reward_coef,
-            use_cumulative_reward=self.use_cumulative_reward,
+            use_cumulative_reward=True,
             dt_range=(self.dt_range_min, self.dt_range_max),
-            device=self.device,
             seed=self.seed,
-            record_frames=self.record_frames,
+            record_frames=False,
             n_elite=self.n_elite,
+            action_sampler=action_sampler,
         )
         print("[worker] RoboticFractalGas created, calling reset()...", flush=True)
 
@@ -339,16 +374,14 @@ class RoboticGasConfigPanel(param.Parameterized):
         t_start = time.monotonic()
 
         # Optional tree history recording
-        tree = None
-        if self.use_tree_history:
-            from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
+        from fragile.fractalai.videogames.atari_tree_history import AtariTreeHistory
 
-            tree = AtariTreeHistory(
-                N=self.N,
-                game_name=self.task_name,
-                max_iterations=self.max_iterations,
-            )
-            tree.record_initial_atari_state(state)
+        tree = AtariTreeHistory(
+            N=self.N,
+            game_name=self.task_name,
+            max_iterations=self.max_iterations,
+        )
+        tree.record_initial_atari_state(state)
 
         for i in range(self.max_iterations):
             if self._stop_requested:
@@ -361,18 +394,17 @@ class RoboticGasConfigPanel(param.Parameterized):
             state, info = self.gas.step(prev_state)
             infos.append(info)
 
-            if tree is not None:
-                tree.record_atari_step(
-                    state_before=prev_state,
-                    state_after_clone=info["_state_after_clone"],
-                    state_final=state,
-                    info=info,
-                    clone_companions=info["clone_companions"],
-                    will_clone=info["will_clone"],
-                    best_frame=info.get("best_frame"),
-                )
-                if self.prune_history:
-                    tree.prune_dead_branches()
+            tree.record_atari_step(
+                state_before=prev_state,
+                state_after_clone=info["_state_after_clone"],
+                state_final=state,
+                info=info,
+                clone_companions=info["clone_companions"],
+                will_clone=info["will_clone"],
+                best_frame=info.get("best_frame"),
+            )
+            if self.prune_tree_history:
+                tree.prune_dead_branches()
 
             if i == 0:
                 print("[worker] first step() completed", flush=True)
@@ -380,14 +412,10 @@ class RoboticGasConfigPanel(param.Parameterized):
             self._update_progress(i, t_start)
 
         # Build history
-        if tree is not None:
-            self.tree_history = tree
-            if self.record_frames and self.gas is not None:
-                tree.render_missing_path_frames(self.gas._render_walker_frame)
-            self.history = tree.to_robotic_history()
-        else:
-            self.tree_history = None
-            self.history = RoboticHistory.from_run(infos, state, self.N, self.task_name)
+        self.tree_history = tree
+        if self.record_frames and self.gas is not None:
+            tree.render_missing_path_frames(self.gas._render_walker_frame)
+        self.history = tree.to_robotic_history()
 
         self._finish_simulation()
 
@@ -398,6 +426,7 @@ class RoboticGasConfigPanel(param.Parameterized):
             lambda: setattr(self.status_pane, "object", "Initializing planning simulation...")
         )
 
+        action_sampler = self._build_action_sampler(env)
         pg = PlanningFractalGas(
             env=env,
             N=self.N,
@@ -405,13 +434,13 @@ class RoboticGasConfigPanel(param.Parameterized):
             inner_gas_cls=RoboticFractalGas,
             dist_coef=self.dist_coef,
             reward_coef=self.reward_coef,
-            use_cumulative_reward=self.use_cumulative_reward,
+            use_cumulative_reward=True,
             dt_range=(self.dt_range_min, self.dt_range_max),
-            device=self.device,
             seed=self.seed,
             record_frames=False,
             n_elite=self.n_elite,
             outer_dt=self.outer_dt,
+            action_sampler=action_sampler,
         )
         print("[worker] PlanningFractalGas created, calling reset()...", flush=True)
 
@@ -540,13 +569,27 @@ class RoboticGasConfigPanel(param.Parameterized):
                 parameters=["task_name", "render_width", "render_height"],
                 widgets={
                     "task_name": pn.widgets.Select,
+                    "render_width": pn.widgets.EditableIntSlider,
+                    "render_height": pn.widgets.EditableIntSlider,
                 },
             ),
             pn.pane.Markdown("### Algorithm"),
             pn.Param(
                 self.param,
-                parameters=["N", "dist_coef", "reward_coef", "use_cumulative_reward", "n_elite"],
+                parameters=["N", "dist_coef", "reward_coef", "n_elite"],
+                widgets={
+                    "N": pn.widgets.EditableIntSlider,
+                    "dist_coef": pn.widgets.EditableFloatSlider,
+                    "reward_coef": pn.widgets.EditableFloatSlider,
+                    "n_elite": pn.widgets.EditableIntSlider,
+                },
             ),
+            pn.Param(
+                self.param,
+                parameters=["action_mode"],
+                widgets={"action_mode": pn.widgets.RadioButtonGroup},
+            ),
+            self._gaussian_params_section,
             self._planning_params_section,
             pn.pane.Markdown("### Simulation"),
             pn.Param(
@@ -556,12 +599,16 @@ class RoboticGasConfigPanel(param.Parameterized):
                     "record_frames",
                     "dt_range_min",
                     "dt_range_max",
-                    "device",
                     "seed",
                     "n_workers",
                 ],
+                widgets={
+                    "max_iterations": pn.widgets.EditableIntSlider,
+                    "dt_range_min": pn.widgets.EditableIntSlider,
+                    "dt_range_max": pn.widgets.EditableIntSlider,
+                    "n_workers": pn.widgets.EditableIntSlider,
+                },
             ),
-            self._tree_history_params_section,
             pn.pane.Markdown("### Controls"),
             self.run_button,
             self.stop_button,
@@ -577,16 +624,16 @@ class RoboticGasVisualizer(param.Parameterized):
 
     Features:
     - Best walker frame display with playback
-    - Cumulative reward progression curve
-    - Real-time metric histograms
+    - Static full-run reward plot with min/max error bars
+    - Algorithm-style error bar time-series plots (fitness, dt)
+    - Clone % and alive count line plots
     """
-
-    show_histograms = param.Boolean(default=True, doc="Show metric histograms")
 
     def __init__(self, history: RoboticHistory | None = None, **params):
         super().__init__(**params)
         self.history = history
         self.planning_history: PlanningHistory | None = None
+        self.tree_history = None
 
         # Game replay player (controls frame display)
         self.game_player = pn.widgets.Player(
@@ -602,20 +649,6 @@ class RoboticGasVisualizer(param.Parameterized):
         self.game_player.disabled = True
         self.game_player.param.watch(self._on_game_frame_change, "value")
 
-        # Plot scrubbing player (controls metrics)
-        self.plot_player = pn.widgets.Player(
-            name="Plot Iteration",
-            start=0,
-            end=0,
-            value=0,
-            step=1,
-            interval=200,
-            loop_policy="loop",
-            width=400,
-        )
-        self.plot_player.disabled = True
-        self.plot_player.param.watch(self._on_plot_frame_change, "value")
-
         # Frame display (480x480 for MuJoCo rendering)
         self.frame_pane = pn.pane.PNG(
             object=self._create_blank_frame(),
@@ -623,38 +656,30 @@ class RoboticGasVisualizer(param.Parameterized):
             height=480,
         )
 
-        # Reward progression plot
-        self.reward_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=300)
+        # Static plot panes
+        self.reward_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
+        self.fitness_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
+        self.clone_pct_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
+        self.alive_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
+        self.dt_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width", min_height=320)
 
         # Info display
         self.info_pane = pn.pane.Markdown("No data loaded.")
-
-        # Histogram panes
-        self.histogram_alive_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
-        self.histogram_cloning_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
-        self.histogram_virtual_reward_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
 
         # Planning-specific panes
         self.step_reward_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
         self.inner_quality_plot_pane = pn.pane.HoloViews(sizing_mode="stretch_width")
 
     def set_history(self, history: RoboticHistory):
-        """Load new history for visualization."""
+        """Load new history and build all static plots."""
         self.history = history
         last_idx = len(history.iterations) - 1
 
-        # Reset both players.  Set end first so the value stays in range.
-        # Force value to 1→0 so param watchers always fire (setting value
-        # to the same number it already holds is a no-op in param).
+        # Reset game player
         self.game_player.end = last_idx
         self.game_player.value = min(1, last_idx)
         self.game_player.value = 0
         self.game_player.disabled = False
-
-        self.plot_player.end = last_idx
-        self.plot_player.value = min(1, last_idx)
-        self.plot_player.value = 0
-        self.plot_player.disabled = False
 
         # Update info
         self.info_pane.object = (
@@ -664,92 +689,92 @@ class RoboticGasVisualizer(param.Parameterized):
             f"Max reward: {max(history.rewards_max):.1f}"
         )
 
-        # Force-update frame pane with the first frame regardless of
-        # whether the player watcher fired.
+        # Force-update frame pane with the first frame
         if history.has_frames and history.best_frames[0] is not None:
             self.frame_pane.object = self._array_to_png(history.best_frames[0])
 
-        # Trigger plot display
-        self._on_plot_frame_change(None)
+        # Build all static plots
+        self._build_plots(history)
 
     def set_planning_history(self, planning_history: PlanningHistory | None):
         """Load planning history for planning-specific visualizations."""
         self.planning_history = planning_history
 
-    def _on_game_frame_change(self, event):
-        """Update frame display only."""
-        if self.history is None or not self.history.has_frames:
-            return
-        idx = int(self.game_player.value)
-        frame = self.history.best_frames[idx]
-        if frame is not None:
-            self.frame_pane.object = self._array_to_png(frame)
+    def _build_plots(self, h: RoboticHistory):
+        """Build all static plots from the full history data."""
+        steps = h.iterations
 
-    def _on_plot_frame_change(self, event):
-        """Update plots/histograms only."""
-        if self.history is None:
-            return
-
-        idx = int(self.plot_player.value)
-
-        # Update reward curve (show data up to current frame)
-        reward_data = pd.DataFrame({
-            "iteration": self.history.iterations[: idx + 1],
-            "max_reward": self.history.rewards_max[: idx + 1],
-            "mean_reward": self.history.rewards_mean[: idx + 1],
-        })
-
-        max_curve = hv.Curve(
-            reward_data, kdims=["iteration"], vdims=["max_reward"], label="Max Reward"
-        ).opts(
-            responsive=True,
-            height=350,
-            title="Cumulative Reward Progression",
-            xlabel="Iteration",
+        # Reward plot: mean line + elite overlays
+        reward_overlay = build_line_plot(
+            step=steps,
+            values=h.rewards_mean,
+            title="Cumulative Reward",
             ylabel="Cumulative Reward",
             color="red",
-            line_width=2,
+        )
+        # Overlay elite walker reward curves
+        if self.tree_history is not None:
+            elite_curves = self.tree_history.get_elite_reward_curves()
+            for curve_data in elite_curves:
+                df = pd.DataFrame({
+                    "step": curve_data["steps"],
+                    "reward": curve_data["rewards"],
+                })
+                elite_curve = hv.Curve(
+                    df, "step", "reward", label=curve_data["label"],
+                ).opts(color="blue", line_width=1, alpha=0.6)
+                reward_overlay = reward_overlay * elite_curve
+            if elite_curves:
+                reward_overlay = reward_overlay.opts(legend_position="top_left")
+        self.reward_plot_pane.object = reward_overlay
+
+        # Virtual reward / fitness: mean with min/max error bars
+        self.fitness_plot_pane.object = build_minmax_error_plot(
+            step=steps,
+            mean=h.virtual_rewards_mean,
+            vmin=h.virtual_rewards_min,
+            vmax=h.virtual_rewards_max,
+            title="Virtual Reward (mean / min-max)",
+            ylabel="Virtual Reward",
+            color="blue",
         )
 
-        mean_curve = hv.Curve(
-            reward_data, kdims=["iteration"], vdims=["mean_reward"], label="Mean Reward"
-        ).opts(color="blue", line_width=2, alpha=0.6)
+        # Clone %
+        clone_pct = [100.0 * nc / h.N for nc in h.num_cloned]
+        self.clone_pct_plot_pane.object = build_line_plot(
+            step=steps,
+            values=clone_pct,
+            title="Clone %",
+            ylabel="% walkers cloned",
+            color="orange",
+        )
 
-        self.reward_plot_pane.object = (max_curve * mean_curve).opts(legend_position="top_left")
+        # Alive count
+        self.alive_plot_pane.object = build_line_plot(
+            step=steps,
+            values=h.alive_counts,
+            title="Alive Walkers",
+            ylabel="Count",
+            color="green",
+        )
 
-        # Update histograms (show distribution up to current frame)
-        if self.show_histograms:
-            # Alive walkers histogram
-            alive_data = np.array(self.history.alive_counts[: idx + 1])
-            alive_hist = hv.Histogram(np.histogram(alive_data, bins=20)).opts(
-                responsive=True, height=280, title="Alive Walkers", xlabel="Count", color="green"
-            )
-            self.histogram_alive_pane.object = alive_hist
-
-            # Cloning events histogram
-            cloning_data = np.array(self.history.num_cloned[: idx + 1])
-            cloning_hist = hv.Histogram(np.histogram(cloning_data, bins=20)).opts(
-                responsive=True, height=280, title="Cloning Events", xlabel="Count", color="orange"
-            )
-            self.histogram_cloning_pane.object = cloning_hist
-
-            # Virtual rewards histogram
-            vr_data = np.array(self.history.virtual_rewards_mean[: idx + 1])
-            vr_hist = hv.Histogram(np.histogram(vr_data, bins=30)).opts(
-                responsive=True,
-                height=280,
-                title="Virtual Rewards",
-                xlabel="Value",
-                color="purple",
-            )
-            self.histogram_virtual_reward_pane.object = vr_hist
+        # dt: mean with min/max error bars
+        self.dt_plot_pane.object = build_minmax_error_plot(
+            step=steps,
+            mean=h.dt_mean,
+            vmin=h.dt_min,
+            vmax=h.dt_max,
+            title="Action Repeat dt (mean / min-max)",
+            ylabel="dt",
+            color="teal",
+        )
 
         # Planning-specific plots
         if self.planning_history is not None:
             ph = self.planning_history
             step_data = pd.DataFrame({
-                "step": ph.iterations[: idx + 1],
-                "step_reward": ph.step_rewards[: idx + 1],
+                "step": ph.iterations,
+                "step_reward": ph.step_rewards,
             })
             step_curve = hv.Curve(
                 step_data, kdims=["step"], vdims=["step_reward"], label="Step Reward"
@@ -761,13 +786,14 @@ class RoboticGasVisualizer(param.Parameterized):
                 ylabel="Reward",
                 color="teal",
                 line_width=2,
+                show_grid=True,
             )
             self.step_reward_plot_pane.object = step_curve
 
             quality_data = pd.DataFrame({
-                "step": ph.iterations[: idx + 1],
-                "inner_max_reward": ph.inner_max_rewards[: idx + 1],
-                "step_reward": ph.step_rewards[: idx + 1],
+                "step": ph.iterations,
+                "inner_max_reward": ph.inner_max_rewards,
+                "step_reward": ph.step_rewards,
             })
             inner_curve = hv.Curve(
                 quality_data,
@@ -782,6 +808,7 @@ class RoboticGasVisualizer(param.Parameterized):
                 ylabel="Reward",
                 color="orange",
                 line_width=2,
+                show_grid=True,
             )
             step_overlay = hv.Curve(
                 quality_data,
@@ -792,6 +819,15 @@ class RoboticGasVisualizer(param.Parameterized):
             self.inner_quality_plot_pane.object = (inner_curve * step_overlay).opts(
                 legend_position="top_left"
             )
+
+    def _on_game_frame_change(self, event):
+        """Update frame display only."""
+        if self.history is None or not self.history.has_frames:
+            return
+        idx = int(self.game_player.value)
+        frame = self.history.best_frames[idx]
+        if frame is not None:
+            self.frame_pane.object = self._array_to_png(frame)
 
     def _create_blank_frame(self) -> bytes:
         """Create blank frame as placeholder."""
@@ -815,21 +851,6 @@ class RoboticGasVisualizer(param.Parameterized):
 
     def panel(self) -> pn.Column:
         """Create visualization layout."""
-        histogram_section = (
-            pn.Column(
-                pn.pane.Markdown("### Metrics Distribution"),
-                pn.Row(
-                    self.histogram_alive_pane,
-                    self.histogram_cloning_pane,
-                    self.histogram_virtual_reward_pane,
-                    sizing_mode="stretch_width",
-                ),
-                sizing_mode="stretch_width",
-            )
-            if self.show_histograms
-            else None
-        )
-
         self._planning_stats_section = pn.Column(
             pn.pane.Markdown("### Planning Stats"),
             pn.Row(
@@ -850,14 +871,23 @@ class RoboticGasVisualizer(param.Parameterized):
                     self.frame_pane,
                 ),
                 pn.Column(
-                    pn.pane.Markdown("### Reward Progression"),
-                    self.plot_player,
+                    pn.pane.Markdown("### Reward"),
                     self.reward_plot_pane,
                     sizing_mode="stretch_width",
                 ),
                 sizing_mode="stretch_width",
             ),
-            histogram_section,
+            pn.pane.Markdown("### Algorithm Metrics"),
+            pn.Row(
+                self.fitness_plot_pane,
+                self.dt_plot_pane,
+                sizing_mode="stretch_width",
+            ),
+            pn.Row(
+                self.clone_pct_plot_pane,
+                self.alive_plot_pane,
+                sizing_mode="stretch_width",
+            ),
             self._planning_stats_section,
             self.info_pane,
             sizing_mode="stretch_width",
@@ -878,6 +908,8 @@ def create_app() -> pn.template.FastListTemplate:
         """Update visualizer when simulation completes."""
         visualizer.set_planning_history(config_panel.planning_history)
         visualizer._planning_stats_section.visible = config_panel.planning_history is not None
+        # Set tree_history before set_history so _build_plots can overlay elite curves
+        visualizer.tree_history = config_panel.tree_history
         visualizer.set_history(history)
 
     config_panel.add_completion_callback(on_simulation_complete)

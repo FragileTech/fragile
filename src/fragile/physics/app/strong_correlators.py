@@ -52,7 +52,7 @@ from fragile.physics.operators import (
 )
 
 _MESON_REGULAR: tuple[str, ...] = (
-    "standard", "score_directed", "score_weighted", "abs2_vacsub",
+    "standard", "score_directed", "score_weighted", "abs2_vacsub", "scalar_raw",
 )
 _VECTOR_REGULAR: tuple[str, ...] = (
     "standard", "score_directed", "score_gradient",
@@ -316,35 +316,42 @@ def build_strong_correlator_tab(
     scalar_mode_selector = pn.widgets.MultiSelect(
         name="Scalar",
         options=list(MESON_MODES),
-        value=["standard_propagator", "score_weighted_propagator"],
+        value=["standard", "scalar_raw", "abs2_vacsub", "standard_propagator"],
         size=len(MESON_MODES),
         sizing_mode="stretch_width",
     )
     pseudoscalar_mode_selector = pn.widgets.MultiSelect(
         name="Pseudoscalar",
         options=list(MESON_MODES),
-        value=["standard_propagator", "score_weighted_propagator"],
+        value=["standard", "standard_propagator"],
         size=len(MESON_MODES),
         sizing_mode="stretch_width",
     )
     vector_mode_selector = pn.widgets.MultiSelect(
         name="Vector",
         options=list(VECTOR_MODES),
-        value=["standard", "standard_propagator", "score_directed_propagator"],
+        value=[
+            "standard",
+            "standard_propagator",
+            "score_directed",
+            "score_gradient",
+            "score_directed_longitudinal",
+            "score_directed_transverse",
+        ],
         size=len(VECTOR_MODES),
         sizing_mode="stretch_width",
     )
     baryon_mode_selector = pn.widgets.MultiSelect(
         name="Baryon",
         options=list(BARYON_MODES),
-        value=["flux_action_propagator", "flux_sin2_propagator", "flux_exp_propagator"],
+        value=["det_abs", "flux_action", "flux_sin2", "flux_exp", "score_signed", "score_abs"],
         size=len(BARYON_MODES),
         sizing_mode="stretch_width",
     )
     glueball_mode_selector = pn.widgets.MultiSelect(
         name="Glueball",
         options=list(GLUEBALL_MODES),
-        value=["action_re_plaquette_propagator", "phase_action_propagator"],
+        value=["re_plaquette", "phase_action", "phase_sin2"],
         size=len(GLUEBALL_MODES),
         sizing_mode="stretch_width",
     )
@@ -596,7 +603,10 @@ def build_strong_correlator_tab(
                 # Combine regular + propagator base modes for score detection
                 all_base = pipeline_regular.get(family, []) + pipeline_propagator.get(family, [])
                 if all_base:
-                    first_modes[family] = _pick_first(family, all_base)
+                    picked_mode = _pick_first(family, all_base)
+                    if family == "meson" and picked_mode == "scalar_raw":
+                        picked_mode = "standard"
+                    first_modes[family] = picked_mode
                 else:
                     first_modes[family] = _defaults.get(family, "standard")
 
@@ -696,7 +706,10 @@ def build_strong_correlator_tab(
 
             def _make_config(family: str, mode: str):
                 if family == "meson":
-                    return MesonOperatorConfig(operator_mode=mode, **base_kwargs)
+                    return MesonOperatorConfig(
+                        operator_mode="standard" if mode == "scalar_raw" else mode,
+                        **base_kwargs,
+                    )
                 if family == "vector":
                     op_mode, proj_mode = _parse_vector_mode(
                         mode, default_projection=str(settings.vector_projection),
@@ -738,11 +751,14 @@ def build_strong_correlator_tab(
                     continue
                 for mode in extra:
                     cfg = _make_config(family, mode)
+                    mode_connected = bool(correlator_cfg.use_connected)
+                    if family == "meson" and mode == "scalar_raw":
+                        mode_connected = False
                     ops = op_fn(data, cfg)
                     corrs = compute_correlators_batched(
                         ops,
                         max_lag=correlator_cfg.max_lag,
-                        use_connected=correlator_cfg.use_connected,
+                        use_connected=mode_connected,
                         n_scales=effective_n_scales,
                     )
                     for key, val in corrs.items():

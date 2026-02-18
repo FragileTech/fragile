@@ -7,6 +7,32 @@ import numpy as np
 import torch
 
 
+def gaussian_action_sampler(
+    action_space,
+    mean: float = 0.0,
+    std: float = 0.3,
+) -> callable:
+    """Create an action sampler that draws from a clipped Gaussian.
+
+    Args:
+        action_space: Must expose ``.shape``, ``.minimum``, and ``.maximum``.
+        mean: Mean of the Gaussian (default 0.0).
+        std: Standard deviation of the Gaussian.
+
+    Returns:
+        Callable ``(N: int) -> np.ndarray[N, *action_shape]``.
+    """
+    low = action_space.minimum
+    high = action_space.maximum
+    shape = action_space.shape
+
+    def sampler(N: int) -> np.ndarray:
+        actions = np.random.normal(loc=mean, scale=std, size=(N, *shape))
+        return np.clip(actions, low, high).astype(np.float64)
+
+    return sampler
+
+
 @dataclass
 class RandomActionOperator:
     """Random action operator using plangym's batch stepping interface.

@@ -42,12 +42,17 @@ class AtariTreeHistory:
         Name of the Atari game.
     max_iterations : int
         Maximum number of iterations (informational).
+    n_elite : int
+        Number of top-reward walkers whose tree branches are protected
+        from pruning.  Set to 0 to disable elite protection.
     """
 
-    def __init__(self, N: int, game_name: str = "", max_iterations: int = 1000):
+    def __init__(self, N: int, game_name: str = "", max_iterations: int = 1000, n_elite: int = 0):
         self.N = N
         self.game_name = game_name
         self.max_iterations = max_iterations
+        self.n_elite = n_elite
+        self._elite_node_ids: set[int] = set()
 
         self._tree = DataTree(
             names=[],
@@ -57,6 +62,11 @@ class AtariTreeHistory:
 
         self._n_recorded: int = 0
         self._step_metadata: list[dict] = []
+
+        # Track the all-time best walker for replay
+        self._global_best_reward: float = -float("inf")
+        self._global_best_step: int = 0
+        self._global_best_walker_idx: int = 0
 
     # ------------------------------------------------------------------
     # Deterministic node helpers
@@ -119,6 +129,10 @@ class AtariTreeHistory:
             "min_reward": 0.0,
             "mean_virtual_reward": 0.0,
             "max_virtual_reward": 0.0,
+            "min_virtual_reward": 0.0,
+            "mean_dt": 1.0,
+            "min_dt": 1,
+            "max_dt": 1,
             "best_frame": None,
             "best_walker_idx": 0,
         })
@@ -196,6 +210,20 @@ class AtariTreeHistory:
                 epoch=step,
             )
 
+        # Track elite walker node IDs (protect from pruning).
+        # Replace each step so only the current top-k are protected.
+        if self.n_elite > 0:
+            k = min(self.n_elite, self.N)
+            _, elite_indices = rewards.topk(k)
+            self._elite_node_ids = {self._nid(step, int(ei.item())) for ei in elite_indices}
+
+        # Update global best walker tracking
+        best_reward = float(rewards[best_idx].item())
+        if best_reward > self._global_best_reward:
+            self._global_best_reward = best_reward
+            self._global_best_step = step
+            self._global_best_walker_idx = best_idx
+
         # Step metadata
 
         vr_mean = 0.0
@@ -204,14 +232,23 @@ class AtariTreeHistory:
             vr_mean = float(state_final.virtual_rewards.mean().item())
             vr_max = float(state_final.virtual_rewards.max().item())
 
+        vr_min = 0.0
+        if state_final.virtual_rewards is not None:
+            vr_min = float(state_final.virtual_rewards.min().item())
+
         self._step_metadata.append({
             "n_alive": int(state_final.alive.sum().item()),
             "num_cloned": int(will_clone.sum().item()),
             "mean_reward": float(rewards.mean().item()),
             "max_reward": float(rewards.max().item()),
             "min_reward": float(rewards.min().item()),
+            "std_reward": float(rewards.std().item()),
             "mean_virtual_reward": vr_mean,
             "max_virtual_reward": vr_max,
+            "min_virtual_reward": vr_min,
+            "mean_dt": float(info.get("mean_dt", 1.0)),
+            "min_dt": int(info.get("min_dt", 1)),
+            "max_dt": int(info.get("max_dt", 1)),
             "best_frame": best_frame,
             "best_walker_idx": best_idx,
         })
@@ -247,6 +284,9 @@ class AtariTreeHistory:
             nid = self._nid(step, w)
             if nid in self._tree.data.nodes:
                 alive_leafs.add(nid)
+
+        # Protect elite walker branches from pruning
+        alive_leafs |= {nid for nid in self._elite_node_ids if nid in self._tree.data.nodes}
 
         # Everything else the tree considers a leaf is orphaned
         dead_leafs = self._tree.leafs - alive_leafs - {int(DEFAULT_ROOT_ID)}
@@ -284,6 +324,10 @@ class AtariTreeHistory:
         return [m["min_reward"] for m in self._step_metadata[1:]]
 
     @property
+    def rewards_std(self) -> list[float]:
+        return [m.get("std_reward", 0.0) for m in self._step_metadata[1:]]
+
+    @property
     def alive_counts(self) -> list[int]:
         return [m["n_alive"] for m in self._step_metadata[1:]]
 
@@ -298,6 +342,22 @@ class AtariTreeHistory:
     @property
     def virtual_rewards_max(self) -> list[float]:
         return [m["max_virtual_reward"] for m in self._step_metadata[1:]]
+
+    @property
+    def virtual_rewards_min(self) -> list[float]:
+        return [m.get("min_virtual_reward", 0.0) for m in self._step_metadata[1:]]
+
+    @property
+    def dt_mean(self) -> list[float]:
+        return [m.get("mean_dt", 1.0) for m in self._step_metadata[1:]]
+
+    @property
+    def dt_min(self) -> list[int]:
+        return [m.get("min_dt", 1) for m in self._step_metadata[1:]]
+
+    @property
+    def dt_max(self) -> list[int]:
+        return [m.get("max_dt", 1) for m in self._step_metadata[1:]]
 
     @property
     def best_frames(self) -> list[np.ndarray | None]:
@@ -337,10 +397,15 @@ class AtariTreeHistory:
             rewards_mean=self.rewards_mean,
             rewards_max=self.rewards_max,
             rewards_min=self.rewards_min,
+            rewards_std=self.rewards_std,
             alive_counts=self.alive_counts,
             num_cloned=self.num_cloned,
             virtual_rewards_mean=self.virtual_rewards_mean,
             virtual_rewards_max=self.virtual_rewards_max,
+            virtual_rewards_min=self.virtual_rewards_min,
+            dt_mean=self.dt_mean,
+            dt_min=self.dt_min,
+            dt_max=self.dt_max,
             best_frames=frames,
             best_rewards=self.best_rewards,
             best_indices=self.best_indices,
@@ -369,6 +434,10 @@ class AtariTreeHistory:
             num_cloned=self.num_cloned,
             virtual_rewards_mean=self.virtual_rewards_mean,
             virtual_rewards_max=self.virtual_rewards_max,
+            virtual_rewards_min=self.virtual_rewards_min,
+            dt_mean=self.dt_mean,
+            dt_min=self.dt_min,
+            dt_max=self.dt_max,
             best_frames=frames,
             best_rewards=self.best_rewards,
             best_indices=self.best_indices,
@@ -389,12 +458,23 @@ class AtariTreeHistory:
         return self._tree.get_branch(leaf_nid)
 
     def get_best_walker_branch(self) -> list[int]:
-        """Return the branch (root → leaf) of the best-reward walker at the last step.
+        """Return the branch (root → leaf) of the all-time best-reward walker.
+
+        Uses the walker that achieved the highest reward at any point during
+        the simulation, not just the final step.  The replay may be shorter
+        than the full simulation when the peak occurs before the last step.
+
+        Falls back to the final-step best walker if the global best node was
+        pruned (e.g. when ``n_elite=0``).
 
         Returns an empty list if nothing has been recorded.
         """
         if self._n_recorded <= 1:
             return []
+        leaf_nid = self._nid(self._global_best_step, self._global_best_walker_idx)
+        if leaf_nid in self._tree.data.nodes:
+            return self._tree.get_branch(leaf_nid)
+        # Global best was pruned — fall back to final-step best
         last_meta = self._step_metadata[-1]
         best_idx = last_meta["best_walker_idx"]
         return self.get_walker_branch(best_idx)
@@ -453,6 +533,115 @@ class AtariTreeHistory:
             frames.append(frame)
         return frames
 
+    def get_path_frames_for_node(self, leaf_node_id: int) -> list[np.ndarray | None]:
+        """Collect frames along a specific branch from root to *leaf_node_id*.
+
+        Returns an empty list when the node does not exist in the tree.
+        """
+        if leaf_node_id not in self._tree.data.nodes:
+            return []
+        branch = self._tree.get_branch(leaf_node_id)
+        nodes = self._tree.data.nodes
+        return [nodes[nid].get("frame") for nid in branch[1:]]  # skip root
+
+    def get_elite_branches_info(self) -> list[dict]:
+        """Return metadata for distinct elite walker trajectories.
+
+        Walks through all elite node IDs (sorted by reward descending),
+        deduplicates overlapping trajectories (keeps the highest-reward
+        endpoint for each unique branch), and returns info dicts.
+        """
+        if not self._elite_node_ids:
+            return []
+
+        nodes = self._tree.data.nodes
+
+        # Gather (node_id, reward) for every elite node still in the tree
+        elite_entries: list[tuple[int, float]] = []
+        for nid in self._elite_node_ids:
+            if nid in nodes:
+                reward = nodes[nid].get("reward", 0.0)
+                elite_entries.append((nid, reward))
+
+        if not elite_entries:
+            return []
+
+        # Sort by reward descending so the best trajectory is first
+        elite_entries.sort(key=lambda x: x[1], reverse=True)
+
+        claimed: set[int] = set()
+        results: list[dict] = []
+
+        for nid, reward in elite_entries:
+            # Skip if this leaf is already an intermediate node of a
+            # higher-reward branch (same replay but shorter).
+            if nid in claimed:
+                continue
+            branch = self._tree.get_branch(nid)
+            claimed |= set(branch)
+
+            # Recover step and walker index from the node id
+            step = (nid - 1) // (self.N + 1)
+            walker_idx = (nid - 1) % (self.N + 1)
+
+            results.append({
+                "node_id": nid,
+                "step": step,
+                "walker_idx": walker_idx,
+                "reward": reward,
+                "label": f"#{len(results) + 1} (R={reward:.0f}, step {step})",
+            })
+
+        return results
+
+    def get_elite_reward_curves(self) -> list[dict]:
+        """Return per-step cumulative reward for each distinct elite branch.
+
+        Each entry is a dict with ``'label'``, ``'steps'`` (list[int]),
+        and ``'rewards'`` (list[float]).
+        """
+        infos = self.get_elite_branches_info()
+        nodes = self._tree.data.nodes
+        curves: list[dict] = []
+        for info in infos:
+            branch = self._tree.get_branch(info["node_id"])
+            steps: list[int] = []
+            rewards: list[float] = []
+            for nid in branch[1:]:  # skip root
+                step = (nid - 1) // (self.N + 1)
+                reward = nodes[nid].get("reward", 0.0)
+                steps.append(step)
+                rewards.append(reward)
+            curves.append({
+                "label": info["label"],
+                "steps": steps,
+                "rewards": rewards,
+            })
+        return curves
+
+    def render_elite_path_frames(
+        self,
+        render_fn: Callable[[object], np.ndarray],
+    ) -> None:
+        """Fill missing frames along all elite branches.
+
+        Same logic as :meth:`render_missing_path_frames` but applied to
+        every distinct elite branch instead of just the global best.
+        """
+        for info in self.get_elite_branches_info():
+            branch = self._tree.get_branch(info["node_id"])
+            nodes = self._tree.data.nodes
+            for nid in branch[1:]:  # skip root
+                node = nodes[nid]
+                frame = node.get("frame")
+                if frame is None and node.get("env_state") is not None:
+                    env_st = node["env_state"]
+                    if hasattr(env_st, "rgb_frame") and env_st.rgb_frame is not None:
+                        frame = env_st.rgb_frame
+                    elif render_fn is not None:
+                        frame = render_fn(env_st)
+                    node["frame"] = frame
+
     # ------------------------------------------------------------------
     # Serialization
     # ------------------------------------------------------------------
@@ -464,10 +653,15 @@ class AtariTreeHistory:
             "N": self.N,
             "game_name": self.game_name,
             "max_iterations": self.max_iterations,
+            "n_elite": self.n_elite,
             "n_recorded": self._n_recorded,
             "step_metadata": self._step_metadata,
             "graph_nodes": dict(self._tree.data.nodes(data=True)),
             "graph_edges": list(self._tree.data.edges()),
+            "elite_node_ids": self._elite_node_ids,
+            "global_best_reward": self._global_best_reward,
+            "global_best_step": self._global_best_step,
+            "global_best_walker_idx": self._global_best_walker_idx,
         }
         torch.save(data, path)
 
@@ -479,9 +673,14 @@ class AtariTreeHistory:
             N=data["N"],
             game_name=data["game_name"],
             max_iterations=data["max_iterations"],
+            n_elite=data.get("n_elite", 0),
         )
         hist._n_recorded = data["n_recorded"]
         hist._step_metadata = data["step_metadata"]
+        hist._elite_node_ids = data.get("elite_node_ids", set())
+        hist._global_best_reward = data.get("global_best_reward", -float("inf"))
+        hist._global_best_step = data.get("global_best_step", 0)
+        hist._global_best_walker_idx = data.get("global_best_walker_idx", 0)
         # Restore graph
         hist._tree.data.clear()
         for nid, attrs in data["graph_nodes"].items():

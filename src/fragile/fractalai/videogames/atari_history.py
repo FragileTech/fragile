@@ -33,10 +33,15 @@ class AtariHistory:
     rewards_mean: list[float]
     rewards_max: list[float]
     rewards_min: list[float]
+    rewards_std: list[float]
     alive_counts: list[int]
     num_cloned: list[int]
     virtual_rewards_mean: list[float]
     virtual_rewards_max: list[float]
+    virtual_rewards_min: list[float]
+    dt_mean: list[float]
+    dt_min: list[int]
+    dt_max: list[int]
 
     # Best walker data per iteration
     best_frames: list[np.ndarray | None]
@@ -72,10 +77,15 @@ class AtariHistory:
             rewards_mean=[info["mean_reward"] for info in infos],
             rewards_max=[info["max_reward"] for info in infos],
             rewards_min=[info.get("min_reward", 0.0) for info in infos],
+            rewards_std=[info.get("std_reward", 0.0) for info in infos],
             alive_counts=[info["alive_count"] for info in infos],
             num_cloned=[info["num_cloned"] for info in infos],
             virtual_rewards_mean=[info["mean_virtual_reward"] for info in infos],
             virtual_rewards_max=[info.get("max_virtual_reward", 0.0) for info in infos],
+            virtual_rewards_min=[info.get("min_virtual_reward", 0.0) for info in infos],
+            dt_mean=[info.get("mean_dt", 1.0) for info in infos],
+            dt_min=[info.get("min_dt", 1) for info in infos],
+            dt_max=[info.get("max_dt", 1) for info in infos],
             best_frames=[info.get("best_frame") for info in infos],
             best_rewards=[info["max_reward"] for info in infos],
             best_indices=[info.get("best_walker_idx", 0) for info in infos],
