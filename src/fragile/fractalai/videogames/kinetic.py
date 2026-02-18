@@ -22,8 +22,9 @@ def gaussian_action_sampler(
     Returns:
         Callable ``(N: int) -> np.ndarray[N, *action_shape]``.
     """
-    low = getattr(action_space, "low", None) or action_space.minimum
-    high = getattr(action_space, "high", None) or action_space.maximum
+    # gym Box uses .low/.high; dm_control uses .minimum/.maximum
+    low = action_space.low if hasattr(action_space, "low") else action_space.minimum
+    high = action_space.high if hasattr(action_space, "high") else action_space.maximum
     shape = action_space.shape
 
     def sampler(N: int) -> np.ndarray:
