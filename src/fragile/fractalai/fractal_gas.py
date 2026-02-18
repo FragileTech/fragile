@@ -456,7 +456,7 @@ class FractalGas:
 
         # Apply custom death condition
         if self.death_condition is not None:
-            custom_dead = self.death_condition(new_state.observations)
+            custom_dead = self.death_condition(new_state)
             new_state.dones = new_state.dones | custom_dead
 
         # Update metrics

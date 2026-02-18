@@ -20,6 +20,7 @@ class DMControlState:
     physics_state: np.ndarray  # from env.physics.get_state()
     observation: np.ndarray  # flattened observation vector
     rgb_frame: np.ndarray | None = None
+    body_zpos: np.ndarray | None = None  # z-positions of all bodies from xpos[:, 2]
 
     def copy(self) -> DMControlState:
         """Return a deep copy of this state."""
@@ -27,6 +28,7 @@ class DMControlState:
             physics_state=self.physics_state.copy(),
             observation=self.observation.copy(),
             rgb_frame=self.rgb_frame.copy() if self.rgb_frame is not None else None,
+            body_zpos=self.body_zpos.copy() if self.body_zpos is not None else None,
         )
 
 
@@ -115,10 +117,12 @@ class DMControlEnv:
             if self.include_rgb
             else None
         )
+        body_zpos = self.env.physics.data.xpos[:, 2].copy()
         return DMControlState(
             physics_state=physics_state,
             observation=observation,
             rgb_frame=rgb_frame,
+            body_zpos=body_zpos,
         )
 
     def _restore_state(self, state: DMControlState):
