@@ -1,20 +1,12 @@
 """Fractal gas implementation for robotics (DM Control)."""
 
-from fragile.fractalai.robots.dm_control_env import (
-    DMControlEnv,
-    DMControlState,
-    VectorizedDMControlEnv,
-)
 from fragile.fractalai.robots.robotic_gas import RoboticFractalGas
 from fragile.fractalai.robots.robotic_history import RoboticHistory
 
 
 __all__ = [
-    "DMControlEnv",
-    "DMControlState",
     "RoboticFractalGas",
     "RoboticHistory",
-    "VectorizedDMControlEnv",
 ]
 
 

@@ -475,7 +475,6 @@ def compute_glueball_color_correlator_from_color(
 
         resolved_length = _resolve_positive_length(
             positions_axis=positions_axis,
-            alive=alive,
             box_length=projection_length,
         )
         (
@@ -575,9 +574,6 @@ def compute_companion_glueball_color_correlator(
     color = color[:, :, list(dims)]
 
     device = color.device
-    alive = torch.as_tensor(
-        history.alive_mask[start_idx - 1 : end_idx - 1], dtype=torch.bool, device=device
-    )
     companions_distance = torch.as_tensor(
         history.companions_distance[start_idx - 1 : end_idx - 1],
         dtype=torch.long,
@@ -617,7 +613,6 @@ def compute_companion_glueball_color_correlator(
     return compute_glueball_color_correlator_from_color(
         color=color,
         color_valid=color_valid.to(dtype=torch.bool, device=device),
-        alive=alive,
         companions_distance=companions_distance,
         companions_clone=companions_clone,
         max_lag=int(config.max_lag),

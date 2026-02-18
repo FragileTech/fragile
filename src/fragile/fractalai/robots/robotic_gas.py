@@ -15,7 +15,7 @@ class RoboticFractalGas(FractalGas):
     adapted for dm_control environments.
 
     Args:
-        env: DMControlEnv instance (or any env with step_batch, action_space.sample)
+        env: plangym DMControlEnv instance (or any env with step_batch, action_space.sample)
         N: Number of walkers
         dist_coef: Distance coefficient for fitness (default 1.0)
         reward_coef: Reward coefficient for fitness (default 1.0)
@@ -27,9 +27,16 @@ class RoboticFractalGas(FractalGas):
         seed: Random seed for reproducibility
         record_frames: Record best walker frames for visualization (default False)
         n_elite: Number of elite walkers to preserve (default 0)
+        render_width: Width in pixels for RGB rendering (default 480)
+        render_height: Height in pixels for RGB rendering (default 480)
     """
 
     DEFAULT_DT_RANGE = (1, 1)
+
+    def __init__(self, *, render_width: int = 480, render_height: int = 480, **kwargs):
+        super().__init__(**kwargs)
+        self.render_width = render_width
+        self.render_height = render_height
 
     def _init_actions(self) -> np.ndarray:
         action_shape = self.env.action_space.shape
@@ -38,43 +45,54 @@ class RoboticFractalGas(FractalGas):
     def _render_walker_frame(self, state) -> np.ndarray:
         """Render visual frame for a DM Control walker state.
 
+        Sets the environment to the given state, renders at the configured
+        resolution, then restores the original state.
+
         Returns:
             RGB array [H, W, 3] uint8, or zeros if rendering fails
         """
         saved_state = None
         if hasattr(self.env, "get_state"):
             saved_state = self._copy_state(self.env.get_state())
-        elif hasattr(self.env, "clone_state"):
-            saved_state = self._copy_state(self.env.clone_state())
 
         try:
             if hasattr(self.env, "set_state"):
                 self.env.set_state(state)
-            elif hasattr(self.env, "restore_state"):
-                self.env.restore_state(state)
 
-            if hasattr(self.env, "render"):
-                frame = self.env.render()
+            # Use physics.render for custom resolution (plangym exposes .physics)
+            if hasattr(self.env, "physics"):
+                frame = self.env.physics.render(
+                    height=self.render_height, width=self.render_width, camera_id=0,
+                )
                 if frame is not None and isinstance(frame, np.ndarray):
                     return frame.astype(np.uint8)
 
-            return np.zeros((480, 480, 3), dtype=np.uint8)
+            # Fallback to get_image() at default resolution
+            if hasattr(self.env, "get_image"):
+                frame = self.env.get_image()
+                if frame is not None and isinstance(frame, np.ndarray):
+                    return frame.astype(np.uint8)
+
+            return np.zeros((self.render_height, self.render_width, 3), dtype=np.uint8)
 
         except Exception:
-            return np.zeros((480, 480, 3), dtype=np.uint8)
+            return np.zeros((self.render_height, self.render_width, 3), dtype=np.uint8)
 
         finally:
-            if saved_state is not None:
-                if hasattr(self.env, "set_state"):
-                    self.env.set_state(saved_state)
-                elif hasattr(self.env, "restore_state"):
-                    self.env.restore_state(saved_state)
+            if saved_state is not None and hasattr(self.env, "set_state"):
+                self.env.set_state(saved_state)
 
     def _handle_non_tuple_reset(self, reset_data) -> tuple[Any, Any, dict]:
-        """Handle DMControlState returned directly from env.reset()."""
+        """Handle non-tuple reset data (fallback for non-plangym envs).
+
+        With plangym, reset(return_state=True) returns a 3-tuple so the base
+        class handles it directly.  This override is kept as a safety net.
+        """
         state = reset_data
-        observation = state.observation if hasattr(state, "observation") else None
+        observation = None
         info: dict = {}
+        if hasattr(state, "observation"):
+            observation = state.observation
         if observation is None:
             observation = self._extract_observation_from_env()
         return state, observation, info

@@ -13,9 +13,10 @@ import pandas as pd
 import panel as pn
 import param
 
+import plangym
+
 from fragile.fractalai.dashboard_plots import build_line_plot, build_minmax_error_plot
 from fragile.fractalai.planning_gas import PlanningFractalGas, PlanningHistory, PlanningTrajectory
-from fragile.fractalai.robots.dm_control_env import DMControlEnv, VectorizedDMControlEnv
 from fragile.fractalai.robots.robotic_gas import RoboticFractalGas
 from fragile.fractalai.robots.robotic_history import RoboticHistory
 
@@ -272,31 +273,25 @@ class RoboticGasConfigPanel(param.Parameterized):
         self.status_pane.object = "Stopping simulation..."
 
     def _create_environment(self):
-        """Create DM Control environment.
+        """Create DM Control environment via plangym.
 
         Returns:
-            DMControlEnv compatible with RoboticFractalGas
+            plangym DMControlEnv compatible with RoboticFractalGas
 
         Raises:
             Exception: If environment creation fails
         """
         _configure_mujoco_offscreen()
-        env_kwargs = {
-            "name": self.task_name,
-            "render_width": self.render_width,
-            "render_height": self.render_height,
-            "include_rgb": False,
-        }
         if self.n_workers > 1:
             print(
-                f"[worker] creating VectorizedDMControlEnv(name={self.task_name!r}, "
+                f"[worker] creating plangym env (name={self.task_name!r}, "
                 f"n_workers={self.n_workers})...",
                 flush=True,
             )
-            env = VectorizedDMControlEnv(n_workers=self.n_workers, **env_kwargs)
+            env = plangym.make(name=self.task_name, n_workers=self.n_workers)
         else:
-            print(f"[worker] creating DMControlEnv(name={self.task_name!r})...", flush=True)
-            env = DMControlEnv(**env_kwargs)
+            print(f"[worker] creating plangym env (name={self.task_name!r})...", flush=True)
+            env = plangym.make(name=self.task_name)
         print(f"[worker] Environment created: {self.task_name}", flush=True)
         self._schedule_ui_update(
             lambda: setattr(self.status_pane, "object", f"Using dm_control: {self.task_name}")
@@ -360,6 +355,8 @@ class RoboticGasConfigPanel(param.Parameterized):
             record_frames=False,
             n_elite=self.n_elite,
             action_sampler=action_sampler,
+            render_width=self.render_width,
+            render_height=self.render_height,
         )
         print("[worker] RoboticFractalGas created, calling reset()...", flush=True)
 
@@ -438,6 +435,9 @@ class RoboticGasConfigPanel(param.Parameterized):
             outer_dt=self.outer_dt,
             action_sampler=action_sampler,
         )
+        # Pass render dimensions to the inner gas for frame rendering
+        pg.inner_gas.render_width = self.render_width
+        pg.inner_gas.render_height = self.render_height
         print("[worker] PlanningFractalGas created, calling reset()...", flush=True)
 
         state, obs, info = pg.reset()

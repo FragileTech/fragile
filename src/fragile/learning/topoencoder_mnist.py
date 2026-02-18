@@ -79,7 +79,8 @@ from fragile.core.losses import (
     get_jump_weight_schedule,
     SupervisedTopologyLoss,
 )
-from fragile.core.optimizers import ThermodynamicAdam
+from torch.optim.lr_scheduler import CosineAnnealingLR
+
 from fragile.datasets import CIFAR10_CLASSES, get_cifar10_data, get_mnist_data
 
 
@@ -191,68 +192,9 @@ class TopoEncoderConfig:
     # Gradient clipping
     grad_clip: float = 1.0  # Max gradient norm (0 to disable)
 
-    # Thermodynamic optimizer
-    thermo_temperature_decay: float = 0.003
-    thermo_temperature_floor: float = 0.1
-    thermo_varentropy_gamma: float = 1.0
-    thermo_alignment_damping: float = 0.8
-    thermo_trust_region: float = 0.05
-    thermo_trust_region_eps: float = 0.0
-    thermo_snr_eps: float = 1e-8
-    thermo_snr_floor: float = 0.05
-    thermo_thermal_conductivity: float = 0.0
-    thermo_history_window: int = 20
-    thermo_varentropy_min_history: int = 5
-    thermo_varentropy_eps: float = 1e-8
-    thermo_use_loss_varentropy: bool = False
-
-    # Adaptive learning rate (maximize LR under stability constraints)
-    adaptive_lr: bool = False
-    lr_min: float = 1e-6
-    lr_max: float = 0.0  # 0 = use lr as max
-    lr_increase_factor: float = 1.02
-    lr_decrease_factor: float = 0.5
-    lr_max_update_ratio: float = 1e-3
-    lr_ema_decay: float = 0.98
-    lr_loss_increase_tol: float = 0.05
-    lr_grounding_warmup_epochs: int = 0  # Skip grounding checks for early LR ramp
-    lr_unstable_patience: int = 3
-    lr_stable_patience: int = 5
-    lr_grounding_ema_decay: float = 0.98
-    lr_recovery_factor: float = 1.1
-    lr_recovery_threshold: float = 0.1
-    lr_plateau_patience: int = 10
-    lr_plateau_tol: float = 1e-3
-
-    # Adaptive loss weights (primal-dual + PI controllers)
-    adaptive_weights: bool = True
-    adaptive_warmup_epochs: int = 10
-    adaptive_dual_eta: float = 0.05
-    adaptive_pi_kp: float = 0.05
-    adaptive_pi_ki: float = 0.01
-    adaptive_pi_kd: float = 0.0
-    adaptive_lambda_min: float = 0.0
-    adaptive_lambda_max: float = 10.0
-    adaptive_violation_clip: float = 2.0
-    adaptive_target_ratio: float = 1.0
-    adaptive_target_ema_decay: float = 0.98
-    adaptive_target_min: float = 1e-3
-    entropy_target_ratio: float = 0.5
-    hk_target_ratio: float = 0.9
-    code_entropy_target_ratio: float = 0.9
-    consistency_target: float = 0.05
-
-    # EMA-based loss rescaling (self-balancing across domains)
-    loss_rescale: bool = False
-    loss_rescale_reference: str = "recon"
-    loss_rescale_target_ratio: float = 1.0
-    loss_rescale_ema_decay: float = 0.98
-    loss_rescale_min: float = 0.1
-    loss_rescale_max: float = 10.0
-    loss_rescale_eps: float = 1e-8
-
-    # Learned precisions for likelihood-like losses
-    use_learned_precisions: bool = False
+    # LR Scheduler
+    use_scheduler: bool = True
+    lr_min: float = 1e-6  # eta_min for CosineAnnealingLR
 
     # Benchmark control
     disable_ae: bool = False  # Skip VanillaAE baseline
@@ -407,82 +349,6 @@ def compute_matching_hidden_dim(
 # ==========================================
 # 5. ADAPTIVE CONTROL (LR + LAMBDAS)
 # ==========================================
-@dataclass
-class AdaptiveWeightState:
-    value: float
-    integral: float = 0.0
-    prev_error: float = 0.0
-
-
-@dataclass
-class AdaptiveLRState:
-    lr: float
-    loss_ema: float = 0.0
-    best_loss_ema: float = 0.0
-    ixk_ema: float = 0.0
-    unstable_steps: int = 0
-    stable_steps: int = 0
-    plateau_steps: int = 0
-
-
-def _set_optimizer_lr(optimizer: optim.Optimizer, lr: float) -> None:
-    for group in optimizer.param_groups:
-        group["lr"] = lr
-
-
-def _set_optimizers_lr(optimizers: dict[str, optim.Optimizer], lr: float) -> None:
-    for optimizer in optimizers.values():
-        _set_optimizer_lr(optimizer, lr)
-
-
-def _mean_optimizer_lr(optimizers: dict[str, optim.Optimizer]) -> float:
-    lrs = []
-    for optimizer in optimizers.values():
-        if hasattr(optimizer, "last_base_lr"):
-            lrs.append(getattr(optimizer, "last_base_lr"))
-        else:
-            lrs.extend(group["lr"] for group in optimizer.param_groups)
-    if not lrs:
-        return 0.0
-    return float(sum(lrs) / len(lrs))
-
-
-def _mean_last_lr_scale(optimizers: dict[str, ThermodynamicAdam]) -> float:
-    if not optimizers:
-        return 1.0
-    scales = []
-    for optimizer in optimizers.values():
-        if hasattr(optimizer, "last_lrs") and hasattr(optimizer, "last_base_lrs"):
-            last_lrs = getattr(optimizer, "last_lrs")
-            base_lrs = getattr(optimizer, "last_base_lrs")
-            if last_lrs and base_lrs:
-                for lr, base_lr in zip(last_lrs, base_lrs):
-                    scales.append(lr / base_lr if base_lr > 0.0 else 0.0)
-                continue
-        if hasattr(optimizer, "last_lr_scale"):
-            scales.append(getattr(optimizer, "last_lr_scale"))
-    if not scales:
-        return 1.0
-    return float(sum(scales) / len(scales))
-
-
-def _mean_last_lr(optimizers: dict[str, ThermodynamicAdam]) -> float:
-    if not optimizers:
-        return 0.0
-    lrs = []
-    for optimizer in optimizers.values():
-        if hasattr(optimizer, "last_lrs"):
-            last_lrs = getattr(optimizer, "last_lrs")
-            if last_lrs:
-                lrs.extend(last_lrs)
-                continue
-        if hasattr(optimizer, "last_lr"):
-            lrs.append(getattr(optimizer, "last_lr"))
-        else:
-            lrs.extend(group["lr"] for group in optimizer.param_groups)
-    if not lrs:
-        return 0.0
-    return float(sum(lrs) / len(lrs))
 
 
 def _compute_perplexity_from_assignments(assignments: torch.Tensor, num_charts: int) -> float:
@@ -496,153 +362,8 @@ def _compute_perplexity_from_assignments(assignments: torch.Tensor, num_charts: 
     return math.exp(entropy.item())
 
 
-def _thermo_kwargs(config: TopoEncoderConfig) -> dict[str, float | int | bool]:
-    return {
-        "temperature_decay": config.thermo_temperature_decay,
-        "temperature_floor": config.thermo_temperature_floor,
-        "varentropy_gamma": config.thermo_varentropy_gamma,
-        "alignment_damping": config.thermo_alignment_damping,
-        "trust_region": config.thermo_trust_region,
-        "trust_region_eps": config.thermo_trust_region_eps,
-        "snr_eps": config.thermo_snr_eps,
-        "snr_floor": config.thermo_snr_floor,
-        "thermal_conductivity": config.thermo_thermal_conductivity,
-        "history_window": config.thermo_history_window,
-        "varentropy_min_history": config.thermo_varentropy_min_history,
-        "varentropy_eps": config.thermo_varentropy_eps,
-        "use_loss_varentropy": config.thermo_use_loss_varentropy,
-    }
 
 
-def _print_optimizer_stats(name: str, optimizers: dict[str, ThermodynamicAdam]) -> None:
-    if not optimizers:
-        return
-    print(f"  LR mods ({name}):")
-    for opt_name, optimizer in optimizers.items():
-        base_lrs = []
-        last_lrs = []
-        if getattr(optimizer, "last_base_lrs", None):
-            base_lrs = list(getattr(optimizer, "last_base_lrs"))
-        if getattr(optimizer, "last_lrs", None):
-            last_lrs = list(getattr(optimizer, "last_lrs"))
-        if not base_lrs:
-            base_lrs = [group["lr"] for group in optimizer.param_groups]
-        if not last_lrs:
-            last_lrs = list(base_lrs)
-
-        scales = [
-            (last_lr / base_lr if base_lr > 0.0 else 0.0)
-            for last_lr, base_lr in zip(last_lrs, base_lrs)
-        ]
-        avg_base = sum(base_lrs) / len(base_lrs) if base_lrs else 0.0
-        avg_last = sum(last_lrs) / len(last_lrs) if last_lrs else 0.0
-        avg_scale = sum(scales) / len(scales) if scales else optimizer.last_lr_scale
-        last_snrs = None
-        snrs = []
-        if getattr(optimizer, "last_snrs", None):
-            last_snrs = list(getattr(optimizer, "last_snrs"))
-            snrs = [snr for snr in last_snrs if snr is not None]
-        elif getattr(optimizer, "last_snr", None) is not None:
-            last_snrs = [optimizer.last_snr]
-            snrs = [optimizer.last_snr]
-        avg_snr = sum(snrs) / len(snrs) if snrs else None
-
-        line = f"    {opt_name}: lr={avg_base:.2e} scale={avg_scale:.3f} last={avg_last:.2e}"
-        if avg_snr is not None:
-            line = f"{line} snr={avg_snr:.3f}"
-        print(line)
-        if len(optimizer.param_groups) > 1:
-            for idx, group in enumerate(optimizer.param_groups):
-                group_name = group.get("name", f"group_{idx}")
-                base_lr = base_lrs[idx] if idx < len(base_lrs) else group["lr"]
-                last_lr = last_lrs[idx] if idx < len(last_lrs) else base_lr
-                scale = last_lr / base_lr if base_lr > 0.0 else 0.0
-                group_snr = None
-                if last_snrs is not None and idx < len(last_snrs):
-                    group_snr = last_snrs[idx]
-                elif idx == 0 and getattr(optimizer, "last_snr", None) is not None:
-                    group_snr = optimizer.last_snr
-                line = f"      {group_name}: lr={base_lr:.2e} scale={scale:.3f} last={last_lr:.2e}"
-                if group_snr is not None:
-                    line = f"{line} snr={group_snr:.3f}"
-                print(line)
-
-
-def _zero_grad_optimizers(optimizers: dict[str, optim.Optimizer]) -> None:
-    for optimizer in optimizers.values():
-        optimizer.zero_grad()
-
-
-def _step_optimizers(
-    optimizers: dict[str, optim.Optimizer],
-    loss: torch.Tensor | float | None = None,
-) -> None:
-    for optimizer in optimizers.values():
-        if loss is None:
-            optimizer.step()
-        else:
-            optimizer.step(loss=loss)
-
-
-def _build_block_optimizer(
-    blocks: list[tuple[str, nn.Module]],
-    lr: float,
-    optimizer_kwargs: dict[str, float | int | bool] | None = None,
-    fallback_module: nn.Module | None = None,
-) -> ThermodynamicAdam | None:
-    params: list[torch.Tensor] = []
-    for _name, module in blocks:
-        params.extend(list(module.parameters()))
-    if not params and fallback_module is not None:
-        params = list(fallback_module.parameters())
-    if not params:
-        return None
-    optimizer_kwargs = optimizer_kwargs or {}
-    return ThermodynamicAdam(params, lr=lr, **optimizer_kwargs)
-
-
-def _build_child_optimizers(
-    module: nn.Module,
-    lr: float,
-    prefix: str,
-    optimizer_kwargs: dict[str, float | int | bool] | None = None,
-) -> dict[str, ThermodynamicAdam]:
-    optimizers: dict[str, ThermodynamicAdam] = {}
-    optimizer_kwargs = optimizer_kwargs or {}
-    for name, child in module.named_children():
-        params = list(child.parameters())
-        if params:
-            optimizers[f"{prefix}{name}"] = ThermodynamicAdam(
-                params,
-                lr=lr,
-                **optimizer_kwargs,
-            )
-    if not optimizers:
-        params = list(module.parameters())
-        if params:
-            optimizers[f"{prefix}all"] = ThermodynamicAdam(
-                params,
-                lr=lr,
-                **optimizer_kwargs,
-            )
-    return optimizers
-
-
-def _add_module_optimizer(
-    optimizers: dict[str, ThermodynamicAdam],
-    name: str,
-    module: nn.Module,
-    lr: float,
-    optimizer_kwargs: dict[str, float | int | bool] | None = None,
-) -> None:
-    params = list(module.parameters())
-    if params:
-        optimizer_kwargs = optimizer_kwargs or {}
-        optimizers[name] = ThermodynamicAdam(
-            params,
-            lr=lr,
-            **optimizer_kwargs,
-        )
 
 
 def _optimizer_state(
@@ -671,207 +392,6 @@ def _compute_grad_norm(params: list[torch.Tensor]) -> float:
     return math.sqrt(total)
 
 
-def _update_primal_dual(
-    state: AdaptiveWeightState,
-    violation: float,
-    eta: float,
-    min_val: float,
-    max_val: float,
-) -> float:
-    state.value = float(min(max(state.value + eta * violation, min_val), max_val))
-    return state.value
-
-
-def _update_pi_controller(
-    state: AdaptiveWeightState,
-    error: float,
-    kp: float,
-    ki: float,
-    kd: float,
-    min_val: float,
-    max_val: float,
-) -> float:
-    state.integral += error
-    delta = kp * error + ki * state.integral + kd * (error - state.prev_error)
-    state.prev_error = error
-    state.value = float(min(max(state.value + delta, min_val), max_val))
-    return state.value
-
-
-def _apply_precision(loss: torch.Tensor, log_var: torch.Tensor) -> torch.Tensor:
-    return torch.exp(-log_var) * loss + log_var
-
-
-def _clip_violation(value: float, clip: float) -> float:
-    if clip <= 0:
-        return float(value)
-    return float(max(-clip, min(clip, value)))
-
-
-def _energy_violation(z: torch.Tensor, target_std: float = 1.0) -> float:
-    z_centered = z - z.mean(dim=0, keepdim=True)
-    dim = z.shape[1]
-    mean_energy = (z_centered**2).sum(dim=1).mean()
-    target = (target_std**2) * dim
-    return float(((mean_energy - target) / (target + 1e-6)).detach())
-
-
-def _update_target_state(
-    targets: dict[str, float],
-    name: str,
-    value: float,
-    decay: float,
-) -> None:
-    value = float(value)
-    if name not in targets or targets[name] <= 0.0:
-        targets[name] = value
-        return
-    targets[name] = decay * targets[name] + (1.0 - decay) * value
-
-
-def _compute_target_error(
-    targets: dict[str, float],
-    name: str,
-    value: float,
-    ratio: float,
-    min_target: float,
-) -> float:
-    base = float(targets.get(name, 0.0))
-    if base <= 0.0:
-        base = float(value)
-        targets[name] = base
-    target = max(min_target, base * ratio)
-    return (float(value) - target) / (target + 1e-6)
-
-
-def _restore_weight_state(
-    config: TopoEncoderConfig,
-    resume_metrics: dict,
-    names: list[str],
-) -> dict[str, AdaptiveWeightState]:
-    raw_state = resume_metrics.get("adaptive_weight_state", {})
-    state: dict[str, AdaptiveWeightState] = {}
-    for name in names:
-        if name in raw_state:
-            entry = raw_state[name]
-            state[name] = AdaptiveWeightState(
-                value=float(entry.get("value", getattr(config, name))),
-                integral=float(entry.get("integral", 0.0)),
-                prev_error=float(entry.get("prev_error", 0.0)),
-            )
-        else:
-            state[name] = AdaptiveWeightState(value=float(getattr(config, name)))
-    return state
-
-
-def _serialize_weight_state(
-    state: dict[str, AdaptiveWeightState],
-) -> dict[str, dict[str, float]]:
-    return {
-        name: {
-            "value": entry.value,
-            "integral": entry.integral,
-            "prev_error": entry.prev_error,
-        }
-        for name, entry in state.items()
-    }
-
-
-def _restore_loss_rescale_state(resume_metrics: dict, names: list[str]) -> dict[str, float]:
-    raw_state = resume_metrics.get("loss_rescale_state", {})
-    state: dict[str, float] = {}
-    for name in names:
-        if name in raw_state:
-            state[name] = float(raw_state[name])
-        else:
-            state[name] = 0.0
-    return state
-
-
-def _serialize_loss_rescale_state(state: dict[str, float]) -> dict[str, float]:
-    return {name: float(value) for name, value in state.items()}
-
-
-def _update_loss_rescale_ema(
-    state: dict[str, float],
-    name: str,
-    value: float,
-    decay: float,
-) -> float:
-    if not math.isfinite(value):
-        return state.get(name, 0.0)
-    value = abs(float(value))
-    if value <= 0.0:
-        return state.get(name, 0.0)
-    prev = state.get(name, 0.0)
-    if prev <= 0.0:
-        state[name] = value
-    else:
-        state[name] = decay * prev + (1.0 - decay) * value
-    return state[name]
-
-
-def _loss_rescale_value(
-    name: str,
-    value: torch.Tensor,
-    config: TopoEncoderConfig,
-    state: dict[str, float],
-    reference: str | None,
-    *,
-    allow: bool = True,
-) -> torch.Tensor:
-    if not config.loss_rescale or not allow:
-        return value
-    ema = state.get(name, 0.0)
-    if ema <= 0.0:
-        return value
-    ref_ema = state.get(reference, 0.0) if reference else 0.0
-    target = (
-        ref_ema * config.loss_rescale_target_ratio
-        if ref_ema > 0.0
-        else (config.loss_rescale_target_ratio)
-    )
-    scale = target / (ema + config.loss_rescale_eps)
-    scale = min(max(scale, config.loss_rescale_min), config.loss_rescale_max)
-    return value * float(scale)
-
-
-def _restore_lr_state(config: TopoEncoderConfig, resume_metrics: dict) -> AdaptiveLRState:
-    raw_state = resume_metrics.get("adaptive_lr_state", {})
-    lr = float(raw_state.get("lr", config.lr))
-    loss_ema = float(raw_state.get("loss_ema", 0.0))
-    best_loss_ema = float(raw_state.get("best_loss_ema", 0.0))
-    ixk_ema = float(raw_state.get("ixk_ema", 0.0))
-    unstable_steps = int(raw_state.get("unstable_steps", 0))
-    stable_steps = int(raw_state.get("stable_steps", 0))
-    plateau_steps = int(raw_state.get("plateau_steps", 0))
-    return AdaptiveLRState(
-        lr=lr,
-        loss_ema=loss_ema,
-        best_loss_ema=best_loss_ema,
-        ixk_ema=ixk_ema,
-        unstable_steps=unstable_steps,
-        stable_steps=stable_steps,
-        plateau_steps=plateau_steps,
-    )
-
-
-def _restore_target_state(
-    resume_metrics: dict,
-    names: list[str],
-) -> dict[str, float]:
-    raw_state = resume_metrics.get("adaptive_target_state", {})
-    state: dict[str, float] = {}
-    for name in names:
-        if name in raw_state:
-            state[name] = float(raw_state[name])
-        else:
-            state[name] = 0.0
-    return state
-
-
-def _serialize_target_state(state: dict[str, float]) -> dict[str, float]:
-    return {name: float(value) for name, value in state.items()}
 
 
 def _start_mlflow_run(
@@ -954,7 +474,6 @@ def save_checkpoint(
     classifier_head: nn.Module | None = None,
     classifier_std: nn.Module | None = None,
     classifier_ae: nn.Module | None = None,
-    precision_module: nn.Module | None = None,
     optimizer_atlas: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
     optimizer_std: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
     optimizer_ae: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
@@ -975,7 +494,6 @@ def save_checkpoint(
             "classifier": _state_dict_cpu(classifier_head),
             "classifier_std": _state_dict_cpu(classifier_std),
             "classifier_ae": _state_dict_cpu(classifier_ae),
-            "precisions": _state_dict_cpu(precision_module),
             "cifar_cov": _state_dict_cpu(model_cifar_cov),
             "cifar_std": _state_dict_cpu(model_cifar_std),
         },
@@ -1090,48 +608,6 @@ def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> boo
 
 def _cli_flag_set(flag: str) -> bool:
     return flag in sys.argv[1:]
-
-
-def _apply_profile(args: argparse.Namespace) -> None:
-    if not args.profile:
-        return
-
-    def set_if_unset(flag: str, attr: str, value: object) -> None:
-        if not _cli_flag_set(flag):
-            setattr(args, attr, value)
-
-    if args.profile == "stable":
-        set_if_unset("--adaptive_lr", "adaptive_lr", True)
-        set_if_unset("--lr_min", "lr_min", 3e-4)
-        set_if_unset("--lr_max", "lr_max", 3e-3)
-        set_if_unset("--lr_grounding_warmup_epochs", "lr_grounding_warmup_epochs", 5)
-        set_if_unset("--adaptive_weights", "adaptive_weights", True)
-        set_if_unset("--adaptive_warmup_epochs", "adaptive_warmup_epochs", 5)
-        set_if_unset("--use_learned_precisions", "use_learned_precisions", True)
-        set_if_unset("--loss_rescale", "loss_rescale", True)
-        set_if_unset("--loss_rescale_reference", "loss_rescale_reference", "recon")
-        set_if_unset("--loss_rescale_target_ratio", "loss_rescale_target_ratio", 1.0)
-        set_if_unset("--loss_rescale_min", "loss_rescale_min", 0.1)
-        set_if_unset("--loss_rescale_max", "loss_rescale_max", 10.0)
-        set_if_unset("--thermo_temperature_floor", "thermo_temperature_floor", 0.5)
-        set_if_unset("--thermo_snr_floor", "thermo_snr_floor", 0.2)
-        set_if_unset("--thermo_alignment_damping", "thermo_alignment_damping", 1.0)
-    elif args.profile == "fast":
-        set_if_unset("--adaptive_lr", "adaptive_lr", True)
-        set_if_unset("--lr_min", "lr_min", 5e-4)
-        set_if_unset("--lr_max", "lr_max", 1e-2)
-        set_if_unset("--lr_grounding_warmup_epochs", "lr_grounding_warmup_epochs", 2)
-        set_if_unset("--adaptive_weights", "adaptive_weights", True)
-        set_if_unset("--adaptive_warmup_epochs", "adaptive_warmup_epochs", 2)
-        set_if_unset("--use_learned_precisions", "use_learned_precisions", True)
-        set_if_unset("--loss_rescale", "loss_rescale", True)
-        set_if_unset("--loss_rescale_reference", "loss_rescale_reference", "recon")
-        set_if_unset("--loss_rescale_target_ratio", "loss_rescale_target_ratio", 1.0)
-        set_if_unset("--loss_rescale_min", "loss_rescale_min", 0.1)
-        set_if_unset("--loss_rescale_max", "loss_rescale_max", 10.0)
-        set_if_unset("--thermo_temperature_floor", "thermo_temperature_floor", 0.3)
-        set_if_unset("--thermo_snr_floor", "thermo_snr_floor", 0.1)
-        set_if_unset("--thermo_alignment_damping", "thermo_alignment_damping", 1.0)
 
 
 def _move_optimizer_state(
@@ -1253,8 +729,6 @@ def _init_info_metrics() -> dict[str, list[float]]:
         "param_norm": [],
         "update_ratio": [],
         "lr": [],
-        "lr_scale": [],
-        "lr_last": [],
     }
 
 
@@ -1737,20 +1211,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             f"λ_metric={config.sup_metric_weight}"
         )
 
-    # Learned precisions for recon/vq/supervised balance
-    precision_module = None
-    if config.use_learned_precisions:
-        precision_params: dict[str, nn.Parameter] = {
-            "recon": nn.Parameter(torch.zeros(())),
-            "vq": nn.Parameter(torch.zeros(())),
-        }
-        if supervised_loss is not None:
-            precision_params["sup"] = nn.Parameter(torch.zeros(()))
-        precision_module = nn.ParameterDict(precision_params).to(device)
-        if resume_state is not None and resume_state.get("precisions") is not None:
-            precision_module.load_state_dict(resume_state["precisions"])
-        print("  Learned Precisions: enabled")
-
     # Invariant classifier head (detached readout)
     classifier_head = None
     classifier_bundle_size = config.classifier_bundle_size or None
@@ -1793,66 +1253,41 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         if std_classifier_head is not None or ae_classifier_head is not None:
             print("  Benchmark Readout: enabled")
 
-    # Optimizers (thermo stacks + auxiliary heads)
-    thermo_kwargs = _thermo_kwargs(config)
-    opt_std: dict[str, ThermodynamicAdam] = {}
-    if train_std and model_std is not None:
-        opt_std = _build_child_optimizers(model_std, config.lr, "std/", thermo_kwargs)
+    # Optimizers (vanilla Adam + optional CosineAnnealingLR)
     atlas_params = list(model_atlas.parameters()) + list(jump_op.parameters())
     if supervised_loss is not None:
         atlas_params.extend(list(supervised_loss.parameters()))
-    if precision_module is not None:
-        atlas_params.extend(list(precision_module.parameters()))
-    opt_atlas: dict[str, ThermodynamicAdam] = {}
-    if atlas_params:
-        opt_atlas["atlas/all"] = ThermodynamicAdam(
-            atlas_params,
-            lr=config.lr,
-            **thermo_kwargs,
-        )
-    opt_classifier: dict[str, ThermodynamicAdam] = {}
+
+    opt_std: optim.Adam | None = None
+    if train_std and model_std is not None:
+        opt_std = optim.Adam(model_std.parameters(), lr=config.lr)
+
+    opt_atlas = optim.Adam(atlas_params, lr=config.lr) if atlas_params else None
+
+    opt_classifier: optim.Adam | None = None
     if classifier_head is not None:
-        opt_classifier = {
-            "classifier": ThermodynamicAdam(
-                classifier_head.parameters(),
-                lr=classifier_lr,
-                **thermo_kwargs,
-            )
-        }
-    opt_classifier_std: dict[str, ThermodynamicAdam] = {}
+        opt_classifier = optim.Adam(classifier_head.parameters(), lr=classifier_lr)
+
+    opt_classifier_std: optim.Adam | None = None
     if std_classifier_head is not None:
-        opt_classifier_std = {
-            "classifier_std": ThermodynamicAdam(
-                std_classifier_head.parameters(),
-                lr=classifier_lr,
-                **thermo_kwargs,
-            )
-        }
-    opt_classifier_ae: dict[str, ThermodynamicAdam] = {}
+        opt_classifier_std = optim.Adam(std_classifier_head.parameters(), lr=classifier_lr)
+
+    opt_classifier_ae: optim.Adam | None = None
     if ae_classifier_head is not None:
-        opt_classifier_ae = {
-            "classifier_ae": ThermodynamicAdam(
-                ae_classifier_head.parameters(),
-                lr=classifier_lr,
-                **thermo_kwargs,
-            )
-        }
-    opt_ae = {}
+        opt_classifier_ae = optim.Adam(ae_classifier_head.parameters(), lr=classifier_lr)
+
+    opt_ae: optim.Adam | None = None
     if train_ae and model_ae is not None:
-        opt_ae = _build_child_optimizers(model_ae, config.lr, "ae/", thermo_kwargs)
+        opt_ae = optim.Adam(model_ae.parameters(), lr=config.lr)
 
     # CIFAR backbone optimizers
-    opt_cifar_cov: dict[str, ThermodynamicAdam] = {}
+    opt_cifar_cov: optim.Adam | None = None
     if train_cifar_cov and model_cifar_covariant is not None:
-        opt_cifar_cov = _build_child_optimizers(
-            model_cifar_covariant, config.lr, "cifar_cov/", thermo_kwargs
-        )
+        opt_cifar_cov = optim.Adam(model_cifar_covariant.parameters(), lr=config.lr)
 
-    opt_cifar_std: dict[str, ThermodynamicAdam] = {}
+    opt_cifar_std: optim.Adam | None = None
     if train_cifar_std and model_cifar_standard is not None:
-        opt_cifar_std = _build_child_optimizers(
-            model_cifar_standard, config.lr, "cifar_std/", thermo_kwargs
-        )
+        opt_cifar_std = optim.Adam(model_cifar_standard.parameters(), lr=config.lr)
 
     if resume_optim:
         _load_optimizer_state(opt_atlas, resume_optim.get("atlas"), device)
@@ -1863,6 +1298,15 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         _load_optimizer_state(opt_classifier, resume_optim.get("classifier"), device)
         _load_optimizer_state(opt_classifier_std, resume_optim.get("classifier_std"), device)
         _load_optimizer_state(opt_classifier_ae, resume_optim.get("classifier_ae"), device)
+
+    # CosineAnnealingLR schedulers
+    schedulers: list[CosineAnnealingLR] = []
+    if config.use_scheduler:
+        T_max = max(1, config.epochs - start_epoch)
+        for opt in [opt_atlas, opt_std, opt_ae, opt_classifier, opt_classifier_std,
+                    opt_classifier_ae, opt_cifar_cov, opt_cifar_std]:
+            if opt is not None:
+                schedulers.append(CosineAnnealingLR(opt, T_max=T_max, eta_min=config.lr_min))
 
     # Create data loader for minibatching (data already on device)
     from torch.utils.data import DataLoader, TensorDataset
@@ -1890,7 +1334,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         pin_memory=pin_memory,
     )
     batches_per_epoch = max(1, len(dataloader))
-    adaptive_update_scale = 1.0 / batches_per_epoch
     if mlflow_active:
         mlflow.log_param("batches_per_epoch", batches_per_epoch)
 
@@ -1912,82 +1355,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         for key, values in resume_metrics["info_metrics"].items():
             info_metrics.setdefault(key, [])
             info_metrics[key] = list(values)
-
-    loss_rescale_names = [
-        "recon",
-        "vq",
-        "entropy",
-        "consistency",
-        "variance",
-        "diversity",
-        "separation",
-        "codebook_center",
-        "chart_center_sep",
-        "residual_scale",
-        "soft_equiv_l1",
-        "soft_equiv_log_ratio",
-        "window",
-        "disentangle",
-        "orthogonality",
-        "code_entropy",
-        "per_chart_code_entropy",
-        "kl_prior",
-        "orbit",
-        "vicreg_inv",
-        "jump",
-        "sup_total",
-    ]
-    loss_rescale_state = _restore_loss_rescale_state(resume_metrics, loss_rescale_names)
-
-    adaptive_weight_names = [
-        "entropy_weight",
-        "consistency_weight",
-        "variance_weight",
-        "diversity_weight",
-        "separation_weight",
-        "codebook_center_weight",
-        "chart_center_sep_weight",
-        "residual_scale_weight",
-        "window_weight",
-        "disentangle_weight",
-        "orthogonality_weight",
-        "code_entropy_weight",
-        "per_chart_code_entropy_weight",
-        "kl_prior_weight",
-        "orbit_weight",
-        "vicreg_inv_weight",
-        "jump_weight",
-        "sup_purity_weight",
-        "sup_balance_weight",
-        "sup_metric_weight",
-    ]
-    adaptive_weight_state = _restore_weight_state(config, resume_metrics, adaptive_weight_names)
-    for name, state in adaptive_weight_state.items():
-        setattr(config, name, state.value)
-
-    adaptive_target_names = [
-        "variance",
-        "separation",
-        "codebook_center",
-        "chart_center_sep",
-        "residual_scale",
-        "disentangle",
-        "orthogonality",
-        "kl_prior",
-        "orbit",
-        "vicreg_inv",
-        "jump",
-        "sup_purity",
-        "sup_balance",
-        "sup_metric",
-    ]
-    adaptive_target_state = _restore_target_state(resume_metrics, adaptive_target_names)
-
-    adaptive_lr_state = _restore_lr_state(config, resume_metrics)
-    lr_current = adaptive_lr_state.lr
-    lr_max = config.lr_max if config.lr_max > 0 else config.lr
-    if config.adaptive_lr:
-        _set_optimizers_lr(opt_atlas, lr_current)
 
     print("=" * 60)
     print("Training TopoEncoder (Attentive Atlas)")
@@ -2018,12 +1385,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             "param_norm": 0.0,
             "update_ratio": 0.0,
             "lr": 0.0,
-            "lr_scale": 0.0,
-            "lr_last": 0.0,
         }
-        epoch_lr_loss_signal = 0.0
-        epoch_lr_grad_norm = 0.0
-        epoch_lr_param_norm = 0.0
         n_batches = 0
 
         for batch_X, batch_labels, _batch_colors in dataloader:
@@ -2034,15 +1396,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             # --- Standard VQ Step ---
             loss_s = torch.tensor(0.0, device=device)
             if model_std is not None:
-                if train_std and opt_std:
+                if train_std and opt_std is not None:
                     recon_s, vq_loss_s, _ = model_std(batch_X)
                     loss_s = F.mse_loss(recon_s, batch_X) + vq_loss_s
-                    _zero_grad_optimizers(opt_std)
+                    opt_std.zero_grad()
                     loss_s.backward()
-                    _step_optimizers(
-                        opt_std,
-                        loss_s if config.thermo_use_loss_varentropy else None,
-                    )
+                    opt_std.step()
                 else:
                     with torch.no_grad():
                         recon_s, vq_loss_s, _ = model_std(batch_X)
@@ -2052,15 +1411,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             loss_ae = torch.tensor(0.0, device=device)
             z_ae = None
             if model_ae is not None:
-                if train_ae and opt_ae:
+                if train_ae and opt_ae is not None:
                     recon_ae, z_ae = model_ae(batch_X)
                     loss_ae = F.mse_loss(recon_ae, batch_X)
-                    _zero_grad_optimizers(opt_ae)
+                    opt_ae.zero_grad()
                     loss_ae.backward()
-                    _step_optimizers(
-                        opt_ae,
-                        loss_ae if config.thermo_use_loss_varentropy else None,
-                    )
+                    opt_ae.step()
                 else:
                     with torch.no_grad():
                         recon_ae, z_ae = model_ae(batch_X)
@@ -2074,15 +1430,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 batch_img = batch_X.view(
                     -1, config.vision_in_channels, config.vision_height, config.vision_width
                 )
-                if train_cifar_cov and opt_cifar_cov:
+                if train_cifar_cov and opt_cifar_cov is not None:
                     logits_cov = model_cifar_covariant(batch_img)
                     loss_cifar_cov = F.cross_entropy(logits_cov, batch_labels)
-                    _zero_grad_optimizers(opt_cifar_cov)
+                    opt_cifar_cov.zero_grad()
                     loss_cifar_cov.backward()
-                    _step_optimizers(
-                        opt_cifar_cov,
-                        loss_cifar_cov if config.thermo_use_loss_varentropy else None,
-                    )
+                    opt_cifar_cov.step()
                     acc_cifar_cov = (
                         (logits_cov.detach().argmax(dim=1) == batch_labels).float().mean()
                     )
@@ -2098,15 +1451,12 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 batch_img = batch_X.view(
                     -1, config.vision_in_channels, config.vision_height, config.vision_width
                 )
-                if train_cifar_std and opt_cifar_std:
+                if train_cifar_std and opt_cifar_std is not None:
                     logits_std_cifar = model_cifar_standard(batch_img)
                     loss_cifar_std = F.cross_entropy(logits_std_cifar, batch_labels)
-                    _zero_grad_optimizers(opt_cifar_std)
+                    opt_cifar_std.zero_grad()
                     loss_cifar_std.backward()
-                    _step_optimizers(
-                        opt_cifar_std,
-                        loss_cifar_std if config.thermo_use_loss_varentropy else None,
-                    )
+                    opt_cifar_std.step()
                     acc_cifar_std = (
                         (logits_std_cifar.detach().argmax(dim=1) == batch_labels).float().mean()
                     )
@@ -2121,30 +1471,24 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             # --- Baseline classifier readouts (detached) ---
             std_cls_loss = torch.tensor(0.0, device=device)
             std_cls_acc = torch.tensor(0.0, device=device)
-            if std_classifier_head is not None and opt_classifier_std and model_std is not None:
+            if std_classifier_head is not None and opt_classifier_std is not None and model_std is not None:
                 with torch.no_grad():
                     z_std = model_std.encoder(batch_X)
                 logits_std = std_classifier_head(z_std)
                 std_cls_loss = F.cross_entropy(logits_std, batch_labels)
-                _zero_grad_optimizers(opt_classifier_std)
+                opt_classifier_std.zero_grad()
                 std_cls_loss.backward()
-                _step_optimizers(
-                    opt_classifier_std,
-                    std_cls_loss if config.thermo_use_loss_varentropy else None,
-                )
+                opt_classifier_std.step()
                 std_cls_acc = (logits_std.detach().argmax(dim=1) == batch_labels).float().mean()
 
             ae_cls_loss = torch.tensor(0.0, device=device)
             ae_cls_acc = torch.tensor(0.0, device=device)
-            if ae_classifier_head is not None and opt_classifier_ae and z_ae is not None:
+            if ae_classifier_head is not None and opt_classifier_ae is not None and z_ae is not None:
                 logits_ae = ae_classifier_head(z_ae.detach())
                 ae_cls_loss = F.cross_entropy(logits_ae, batch_labels)
-                _zero_grad_optimizers(opt_classifier_ae)
+                opt_classifier_ae.zero_grad()
                 ae_cls_loss.backward()
-                _step_optimizers(
-                    opt_classifier_ae,
-                    ae_cls_loss if config.thermo_use_loss_varentropy else None,
-                )
+                opt_classifier_ae.step()
                 ae_cls_acc = (logits_ae.detach().argmax(dim=1) == batch_labels).float().mean()
 
             # --- Atlas Step (dreaming mode: decoder infers routing from z_geo) ---
@@ -2178,17 +1522,17 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 z_geo, enc_w, config.num_charts, config.separation_margin
             )
             codebook_center_loss = torch.tensor(0.0, device=device)
-            if config.codebook_center_weight > 0 or config.adaptive_weights:
+            if config.codebook_center_weight > 0:
                 codebook_center_loss = compute_codebook_centering_loss(
                     model_atlas.encoder.codebook
                 )
             chart_center_sep_loss = torch.tensor(0.0, device=device)
-            if config.chart_center_sep_weight > 0 or config.adaptive_weights:
+            if config.chart_center_sep_weight > 0:
                 chart_center_sep_loss = compute_chart_center_separation_loss(
                     model_atlas.encoder.chart_centers, config.chart_center_sep_margin
                 )
             residual_scale_loss = torch.tensor(0.0, device=device)
-            if config.residual_scale_weight > 0 or config.adaptive_weights:
+            if config.residual_scale_weight > 0:
                 residual_scale_loss = compute_residual_scale_loss(z_n)
             soft_equiv_l1 = torch.tensor(0.0, device=device)
             if config.soft_equiv_metric:
@@ -2202,27 +1546,17 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 enc_w, config.num_charts, config.window_eps_ground
             )
             dis_loss = compute_disentangle_loss(z_geo, enc_w)
-            if config.adaptive_lr:
-                ixk_val = window_info["I_XK"]
-                if adaptive_lr_state.ixk_ema <= 0.0:
-                    adaptive_lr_state.ixk_ema = ixk_val
-                else:
-                    adaptive_lr_state.ixk_ema = (
-                        config.lr_grounding_ema_decay * adaptive_lr_state.ixk_ema
-                        + (1.0 - config.lr_grounding_ema_decay) * ixk_val
-                    )
-
             # Tier 3 losses (geometry/codebook health)
             orth_loss = torch.tensor(0.0, device=device)
-            if config.orthogonality_weight > 0 or config.adaptive_weights:
+            if config.orthogonality_weight > 0:
                 orth_loss = compute_orthogonality_loss(model_atlas)
 
             code_ent_loss = torch.tensor(0.0, device=device)
-            if config.code_entropy_weight > 0 or config.adaptive_weights:
+            if config.code_entropy_weight > 0:
                 code_ent_loss = compute_code_entropy_loss(indices_stack, config.codes_per_chart)
 
             per_chart_code_ent_loss = torch.tensor(0.0, device=device)
-            if config.per_chart_code_entropy_weight > 0 or config.adaptive_weights:
+            if config.per_chart_code_entropy_weight > 0:
                 per_chart_code_ent_loss = compute_per_chart_code_entropy_loss(
                     indices_stack, K_chart, config.num_charts, config.codes_per_chart
                 )
@@ -2232,7 +1566,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             # Tier 4 losses (invariance - expensive, conditional computation)
             # KL prior (cheap, compute if enabled)
-            if config.kl_prior_weight > 0 or config.adaptive_weights:
+            if config.kl_prior_weight > 0:
                 kl_loss = compute_kl_prior_loss(z_n, z_tex)
             else:
                 kl_loss = torch.tensor(0.0, device=device)
@@ -2284,210 +1618,29 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 p_y_x = torch.matmul(enc_w, supervised_loss.p_y_given_k)
                 sup_acc = (p_y_x.argmax(dim=1) == batch_labels).float().mean()
 
-            reference_name = config.loss_rescale_reference if config.loss_rescale else None
-            if reference_name and reference_name not in loss_rescale_state:
-                reference_name = None
-            if config.loss_rescale:
-                loss_rescale_inputs = {
-                    "recon": recon_loss_a,
-                    "vq": vq_loss_a,
-                    "entropy": entropy_loss,
-                    "consistency": consistency,
-                    "variance": var_loss,
-                    "diversity": div_loss,
-                    "separation": sep_loss,
-                    "codebook_center": codebook_center_loss,
-                    "chart_center_sep": chart_center_sep_loss,
-                    "residual_scale": residual_scale_loss,
-                    "soft_equiv_l1": soft_equiv_l1,
-                    "soft_equiv_log_ratio": soft_equiv_log_ratio,
-                    "window": window_loss,
-                    "disentangle": dis_loss,
-                    "orthogonality": orth_loss,
-                    "code_entropy": code_ent_loss,
-                    "per_chart_code_entropy": per_chart_code_ent_loss,
-                    "kl_prior": kl_loss,
-                    "orbit": orbit_loss,
-                    "vicreg_inv": vicreg_loss,
-                    "jump": jump_loss,
-                    "sup_total": sup_total,
-                }
-                for name, value in loss_rescale_inputs.items():
-                    if torch.is_tensor(value):
-                        raw_value = float(value.detach().item())
-                    else:
-                        raw_value = float(value)
-                    _update_loss_rescale_ema(
-                        loss_rescale_state,
-                        name,
-                        raw_value,
-                        config.loss_rescale_ema_decay,
-                    )
-
-            rescale_core = not config.use_learned_precisions
-            recon_term = _loss_rescale_value(
-                "recon",
-                recon_loss_a,
-                config,
-                loss_rescale_state,
-                reference_name,
-                allow=rescale_core,
-            )
-            vq_term = _loss_rescale_value(
-                "vq",
-                vq_loss_a,
-                config,
-                loss_rescale_state,
-                reference_name,
-                allow=rescale_core,
-            )
-            sup_term = _loss_rescale_value(
-                "sup_total",
-                sup_total,
-                config,
-                loss_rescale_state,
-                reference_name,
-                allow=rescale_core,
-            )
-            entropy_term = _loss_rescale_value(
-                "entropy",
-                entropy_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            consistency_term = _loss_rescale_value(
-                "consistency",
-                consistency,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            var_term = _loss_rescale_value(
-                "variance",
-                var_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            div_term = _loss_rescale_value(
-                "diversity",
-                div_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            sep_term = _loss_rescale_value(
-                "separation",
-                sep_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            codebook_center_term = _loss_rescale_value(
-                "codebook_center",
-                codebook_center_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            chart_center_sep_term = _loss_rescale_value(
-                "chart_center_sep",
-                chart_center_sep_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            residual_scale_term = _loss_rescale_value(
-                "residual_scale",
-                residual_scale_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            soft_equiv_l1_term = _loss_rescale_value(
-                "soft_equiv_l1",
-                soft_equiv_l1,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            soft_equiv_log_ratio_term = _loss_rescale_value(
-                "soft_equiv_log_ratio",
-                soft_equiv_log_ratio,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            window_term = _loss_rescale_value(
-                "window",
-                window_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            disentangle_term = _loss_rescale_value(
-                "disentangle",
-                dis_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            orth_term = _loss_rescale_value(
-                "orthogonality",
-                orth_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            code_ent_term = _loss_rescale_value(
-                "code_entropy",
-                code_ent_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            per_chart_code_ent_term = _loss_rescale_value(
-                "per_chart_code_entropy",
-                per_chart_code_ent_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            kl_term = _loss_rescale_value(
-                "kl_prior",
-                kl_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            orbit_term = _loss_rescale_value(
-                "orbit",
-                orbit_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            vicreg_term = _loss_rescale_value(
-                "vicreg_inv",
-                vicreg_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-            jump_term = _loss_rescale_value(
-                "jump",
-                jump_loss,
-                config,
-                loss_rescale_state,
-                reference_name,
-            )
-
-            if precision_module is not None:
-                recon_term = _apply_precision(recon_term, precision_module["recon"])
-                vq_term = _apply_precision(vq_term, precision_module["vq"])
-                if supervised_loss is not None and "sup" in precision_module:
-                    sup_term = _apply_precision(sup_term, precision_module["sup"])
+            # Loss terms (direct, no rescaling)
+            recon_term = recon_loss_a
+            vq_term = vq_loss_a
+            sup_term = sup_total
+            entropy_term = entropy_loss
+            consistency_term = consistency
+            var_term = var_loss
+            div_term = div_loss
+            sep_term = sep_loss
+            codebook_center_term = codebook_center_loss
+            chart_center_sep_term = chart_center_sep_loss
+            residual_scale_term = residual_scale_loss
+            soft_equiv_l1_term = soft_equiv_l1
+            soft_equiv_log_ratio_term = soft_equiv_log_ratio
+            window_term = window_loss
+            disentangle_term = dis_loss
+            orth_term = orth_loss
+            code_ent_term = code_ent_loss
+            per_chart_code_ent_term = per_chart_code_ent_loss
+            kl_term = kl_loss
+            orbit_term = orbit_loss
+            vicreg_term = vicreg_loss
+            jump_term = jump_loss
 
             # Total loss
             loss_a = (
@@ -2521,432 +1674,29 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 + config.sup_weight * sup_term
             )
 
-            lr_loss_signal = (
-                recon_term
-                + vq_term
-                + config.entropy_weight * entropy_term
-                + config.consistency_weight * consistency_term
-            )
-            if supervised_loss is not None:
-                lr_loss_signal += config.sup_weight * sup_term
-
-            _zero_grad_optimizers(opt_atlas)
+            opt_atlas.zero_grad()
             loss_a.backward()
-            # Capture pre-clip norms so adaptive LR sees the true gradient scale.
             grad_norm = _compute_grad_norm(atlas_params)
             param_norm = _compute_param_norm(atlas_params)
-            # Gradient clipping (prevents instability from competing losses).
             if config.grad_clip > 0:
                 torch.nn.utils.clip_grad_norm_(atlas_params, config.grad_clip)
             grad_norm_val = grad_norm
             param_norm_val = param_norm
-            lr_for_ratio = lr_current if config.adaptive_lr else _mean_optimizer_lr(opt_atlas)
+            current_lr = opt_atlas.param_groups[0]["lr"]
             update_ratio = (
-                lr_for_ratio * grad_norm / (param_norm + 1e-12) if param_norm > 0.0 else 0.0
+                current_lr * grad_norm / (param_norm + 1e-12) if param_norm > 0.0 else 0.0
             )
-            if config.adaptive_lr:
-                epoch_lr_loss_signal += lr_loss_signal.item()
-                epoch_lr_grad_norm += grad_norm
-                epoch_lr_param_norm += param_norm
-            _step_optimizers(
-                opt_atlas,
-                loss_a if config.thermo_use_loss_varentropy else None,
-            )
-            epoch_info["lr_scale"] += _mean_last_lr_scale(opt_atlas)
-            epoch_info["lr_last"] = _mean_last_lr(opt_atlas)
-
-            if config.adaptive_weights:
-                if epoch < config.adaptive_warmup_epochs:
-                    target_decay = config.adaptive_target_ema_decay
-                    _update_target_state(
-                        adaptive_target_state, "variance", var_loss.item(), target_decay
-                    )
-                    _update_target_state(
-                        adaptive_target_state, "separation", sep_loss.item(), target_decay
-                    )
-                    _update_target_state(
-                        adaptive_target_state,
-                        "codebook_center",
-                        codebook_center_loss.item(),
-                        target_decay,
-                    )
-                    _update_target_state(
-                        adaptive_target_state,
-                        "chart_center_sep",
-                        chart_center_sep_loss.item(),
-                        target_decay,
-                    )
-                    _update_target_state(
-                        adaptive_target_state,
-                        "residual_scale",
-                        residual_scale_loss.item(),
-                        target_decay,
-                    )
-                    _update_target_state(
-                        adaptive_target_state, "disentangle", dis_loss.item(), target_decay
-                    )
-                    _update_target_state(
-                        adaptive_target_state,
-                        "orthogonality",
-                        orth_loss.item(),
-                        target_decay,
-                    )
-                    _update_target_state(
-                        adaptive_target_state, "kl_prior", kl_loss.item(), target_decay
-                    )
-                    _update_target_state(
-                        adaptive_target_state, "orbit", orbit_loss.item(), target_decay
-                    )
-                    _update_target_state(
-                        adaptive_target_state, "vicreg_inv", vicreg_loss.item(), target_decay
-                    )
-                    if current_jump_weight > 0:
-                        _update_target_state(
-                            adaptive_target_state, "jump", jump_loss.item(), target_decay
-                        )
-                    if supervised_loss is not None:
-                        _update_target_state(
-                            adaptive_target_state,
-                            "sup_purity",
-                            sup_purity.item(),
-                            target_decay,
-                        )
-                        _update_target_state(
-                            adaptive_target_state,
-                            "sup_balance",
-                            sup_balance.item(),
-                            target_decay,
-                        )
-                        _update_target_state(
-                            adaptive_target_state,
-                            "sup_metric",
-                            sup_metric.item(),
-                            target_decay,
-                        )
-                if epoch >= config.adaptive_warmup_epochs:
-                    min_val = config.adaptive_lambda_min
-                    max_val = config.adaptive_lambda_max
-                    dual_eta = config.adaptive_dual_eta * adaptive_update_scale
-                    pi_kp = config.adaptive_pi_kp * adaptive_update_scale
-                    pi_ki = config.adaptive_pi_ki * adaptive_update_scale
-                    pi_kd = config.adaptive_pi_kd * adaptive_update_scale
-                    clip = config.adaptive_violation_clip
-                    target_ratio = config.adaptive_target_ratio
-                    target_min = config.adaptive_target_min
-                    log_k = math.log(config.num_charts)
-                    entropy_target = config.entropy_target_ratio * log_k
-                    hk_target = config.hk_target_ratio * log_k
-
-                    entropy_error = entropy_target - entropy_value.item()
-                    config.entropy_weight = _update_pi_controller(
-                        adaptive_weight_state["entropy_weight"],
-                        entropy_error,
-                        pi_kp,
-                        pi_ki,
-                        pi_kd,
-                        min_val,
-                        max_val,
-                    )
-
-                    diversity_error = hk_target - window_info["H_K"]
-                    config.diversity_weight = _update_pi_controller(
-                        adaptive_weight_state["diversity_weight"],
-                        diversity_error,
-                        pi_kp,
-                        pi_ki,
-                        pi_kd,
-                        min_val,
-                        max_val,
-                    )
-
-                    max_code_entropy = math.log(config.codes_per_chart)
-                    code_entropy_value = max_code_entropy - code_ent_loss.item()
-                    code_entropy_target = config.code_entropy_target_ratio * max_code_entropy
-                    code_entropy_error = code_entropy_target - code_entropy_value
-                    config.code_entropy_weight = _update_pi_controller(
-                        adaptive_weight_state["code_entropy_weight"],
-                        code_entropy_error,
-                        pi_kp,
-                        pi_ki,
-                        pi_kd,
-                        min_val,
-                        max_val,
-                    )
-
-                    per_chart_entropy_value = max_code_entropy - per_chart_code_ent_loss.item()
-                    per_chart_entropy_error = code_entropy_target - per_chart_entropy_value
-                    config.per_chart_code_entropy_weight = _update_pi_controller(
-                        adaptive_weight_state["per_chart_code_entropy_weight"],
-                        per_chart_entropy_error,
-                        pi_kp,
-                        pi_ki,
-                        pi_kd,
-                        min_val,
-                        max_val,
-                    )
-
-                    window_violation = config.window_eps_ground - window_info["I_XK"]
-                    config.window_weight = _update_primal_dual(
-                        adaptive_weight_state["window_weight"],
-                        _clip_violation(window_violation, clip),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.consistency_weight = _update_primal_dual(
-                        adaptive_weight_state["consistency_weight"],
-                        _clip_violation(
-                            consistency.item() - config.consistency_target,
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.variance_weight = _update_primal_dual(
-                        adaptive_weight_state["variance_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "variance",
-                                var_loss.item(),
-                                target_ratio,
-                                target_min,
-                            ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.separation_weight = _update_primal_dual(
-                        adaptive_weight_state["separation_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "separation",
-                                sep_loss.item(),
-                                target_ratio,
-                                target_min,
-                            ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.codebook_center_weight = _update_primal_dual(
-                        adaptive_weight_state["codebook_center_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "codebook_center",
-                                codebook_center_loss.item(),
-                                target_ratio,
-                                target_min,
-                            ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.chart_center_sep_weight = _update_primal_dual(
-                        adaptive_weight_state["chart_center_sep_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "chart_center_sep",
-                                chart_center_sep_loss.item(),
-                                target_ratio,
-                                target_min,
-                            ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.residual_scale_weight = _update_primal_dual(
-                        adaptive_weight_state["residual_scale_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "residual_scale",
-                                residual_scale_loss.item(),
-                                target_ratio,
-                                target_min,
-                            ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.disentangle_weight = _update_primal_dual(
-                        adaptive_weight_state["disentangle_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "disentangle",
-                                dis_loss.item(),
-                                target_ratio,
-                                target_min,
-                            ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.orthogonality_weight = _update_primal_dual(
-                        adaptive_weight_state["orthogonality_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "orthogonality",
-                                orth_loss.item(),
-                                target_ratio,
-                                target_min,
-                            ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    config.kl_prior_weight = _update_primal_dual(
-                        adaptive_weight_state["kl_prior_weight"],
-                        _clip_violation(
-                            _compute_target_error(
-                                adaptive_target_state,
-                                "kl_prior",
-                                kl_loss.item(),
-                                target_ratio,
-                                target_min,
-                            ),
-                            clip,
-                        ),
-                        dual_eta,
-                        min_val,
-                        max_val,
-                    )
-                    if config.orbit_weight > 0:
-                        config.orbit_weight = _update_primal_dual(
-                            adaptive_weight_state["orbit_weight"],
-                            _clip_violation(
-                                _compute_target_error(
-                                    adaptive_target_state,
-                                    "orbit",
-                                    orbit_loss.item(),
-                                    target_ratio,
-                                    target_min,
-                                ),
-                                clip,
-                            ),
-                            dual_eta,
-                            min_val,
-                            max_val,
-                        )
-                    if config.vicreg_inv_weight > 0:
-                        config.vicreg_inv_weight = _update_primal_dual(
-                            adaptive_weight_state["vicreg_inv_weight"],
-                            _clip_violation(
-                                _compute_target_error(
-                                    adaptive_target_state,
-                                    "vicreg_inv",
-                                    vicreg_loss.item(),
-                                    target_ratio,
-                                    target_min,
-                                ),
-                                clip,
-                            ),
-                            dual_eta,
-                            min_val,
-                            max_val,
-                        )
-                    if epoch >= config.jump_warmup:
-                        config.jump_weight = _update_primal_dual(
-                            adaptive_weight_state["jump_weight"],
-                            _clip_violation(
-                                _compute_target_error(
-                                    adaptive_target_state,
-                                    "jump",
-                                    jump_loss.item(),
-                                    target_ratio,
-                                    target_min,
-                                ),
-                                clip,
-                            ),
-                            dual_eta,
-                            min_val,
-                            max_val,
-                        )
-                    if supervised_loss is not None:
-                        config.sup_purity_weight = _update_primal_dual(
-                            adaptive_weight_state["sup_purity_weight"],
-                            _clip_violation(
-                                _compute_target_error(
-                                    adaptive_target_state,
-                                    "sup_purity",
-                                    sup_purity.item(),
-                                    target_ratio,
-                                    target_min,
-                                ),
-                                clip,
-                            ),
-                            dual_eta,
-                            min_val,
-                            max_val,
-                        )
-                        config.sup_balance_weight = _update_primal_dual(
-                            adaptive_weight_state["sup_balance_weight"],
-                            _clip_violation(
-                                _compute_target_error(
-                                    adaptive_target_state,
-                                    "sup_balance",
-                                    sup_balance.item(),
-                                    target_ratio,
-                                    target_min,
-                                ),
-                                clip,
-                            ),
-                            dual_eta,
-                            min_val,
-                            max_val,
-                        )
-                        config.sup_metric_weight = _update_primal_dual(
-                            adaptive_weight_state["sup_metric_weight"],
-                            _clip_violation(
-                                _compute_target_error(
-                                    adaptive_target_state,
-                                    "sup_metric",
-                                    sup_metric.item(),
-                                    target_ratio,
-                                    target_min,
-                                ),
-                                clip,
-                            ),
-                            dual_eta,
-                            min_val,
-                            max_val,
-                        )
-                        supervised_loss.lambda_purity = config.sup_purity_weight
-                        supervised_loss.lambda_balance = config.sup_balance_weight
-                        supervised_loss.lambda_metric = config.sup_metric_weight
+            opt_atlas.step()
 
             # --- Classifier Readout Step (detached) ---
             cls_loss = torch.tensor(0.0, device=device)
             cls_acc = torch.tensor(0.0, device=device)
-            if classifier_head is not None and opt_classifier:
+            if classifier_head is not None and opt_classifier is not None:
                 logits = classifier_head(enc_w.detach(), z_geo.detach())
                 cls_loss = F.cross_entropy(logits, batch_labels)
-                _zero_grad_optimizers(opt_classifier)
+                opt_classifier.zero_grad()
                 cls_loss.backward()
-                _step_optimizers(
-                    opt_classifier,
-                    cls_loss if config.thermo_use_loss_varentropy else None,
-                )
+                opt_classifier.step()
                 cls_acc = (logits.detach().argmax(dim=1) == batch_labels).float().mean()
 
             # Accumulate batch losses
@@ -2998,7 +1748,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_info["grad_norm"] += grad_norm_val
             epoch_info["param_norm"] += param_norm_val
             epoch_info["update_ratio"] += update_ratio
-            epoch_info["lr"] += _mean_optimizer_lr(opt_atlas)
+            epoch_info["lr"] += opt_atlas.param_groups[0]["lr"]
 
         # Average over batches
         std_losses.append(epoch_std_loss / n_batches)
@@ -3021,121 +1771,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         info_metrics["param_norm"].append(epoch_info["param_norm"] / n_batches)
         info_metrics["update_ratio"].append(epoch_info["update_ratio"] / n_batches)
         info_metrics["lr"].append(epoch_info["lr"] / n_batches)
-        info_metrics["lr_scale"].append(epoch_info["lr_scale"] / n_batches)
-        info_metrics["lr_last"].append(epoch_info["lr_last"])
 
-        if config.adaptive_lr and n_batches > 0:
-            loss_val_raw = epoch_lr_loss_signal / n_batches
-            grad_norm_avg = epoch_lr_grad_norm / n_batches
-            param_norm_avg = epoch_lr_param_norm / n_batches
-            loss_ema_raw = adaptive_lr_state.loss_ema or loss_val_raw
-            loss_ema_next = (
-                config.lr_ema_decay * loss_ema_raw + (1.0 - config.lr_ema_decay) * loss_val_raw
-            )
-            loss_val = math.log1p(loss_val_raw)
-            loss_ema = math.log1p(loss_ema_raw)
-            grounding_active = epoch >= config.lr_grounding_warmup_epochs
-            if not grounding_active:
-                adaptive_lr_state.unstable_steps = 0
-                adaptive_lr_state.stable_steps = 0
-                adaptive_lr_state.lr = lr_current
-                adaptive_lr_state.loss_ema = loss_ema_next
-                if adaptive_lr_state.best_loss_ema <= 0.0:
-                    adaptive_lr_state.best_loss_ema = loss_ema_next
-                adaptive_lr_state.plateau_steps = 0
-                _set_optimizers_lr(opt_atlas, lr_current)
-                ixk_val = info_metrics["I_XK"][-1]
-                if adaptive_lr_state.ixk_ema <= 0.0:
-                    ixk_for_check = ixk_val
-                else:
-                    ixk_for_check = max(ixk_val, adaptive_lr_state.ixk_ema)
-                grounding_violation = ixk_for_check < config.window_eps_ground
-                if grounding_violation:
-                    adaptive_lr_state.unstable_steps += 1
-            else:
-                ixk_val = info_metrics["I_XK"][-1]
-                if adaptive_lr_state.ixk_ema <= 0.0:
-                    ixk_for_check = ixk_val
-                else:
-                    ixk_for_check = max(ixk_val, adaptive_lr_state.ixk_ema)
-                grounding_violation = ixk_for_check < config.window_eps_ground
-                if grounding_violation:
-                    lr_current = max(lr_current, config.lr)
-                    adaptive_lr_state.unstable_steps = 0
-                    adaptive_lr_state.stable_steps = 0
-                    adaptive_lr_state.lr = lr_current
-                    adaptive_lr_state.loss_ema = loss_ema_next
-                    if adaptive_lr_state.best_loss_ema <= 0.0:
-                        adaptive_lr_state.best_loss_ema = loss_ema_next
-                    adaptive_lr_state.plateau_steps = 0
-                    _set_optimizers_lr(opt_atlas, lr_current)
-                else:
-                    unstable = loss_val > loss_ema * (1.0 + config.lr_loss_increase_tol)
-                    if not math.isfinite(loss_val_raw) or not math.isfinite(grad_norm_avg):
-                        unstable = True
-                    if not grounding_active and unstable:
-                        unstable = False
-                    if unstable:
-                        adaptive_lr_state.unstable_steps += 1
-                        adaptive_lr_state.stable_steps = 0
-                        adaptive_lr_state.plateau_steps = 0
-                    else:
-                        adaptive_lr_state.stable_steps += 1
-                        adaptive_lr_state.unstable_steps = 0
-                    plateau_triggered = False
-                    if math.isfinite(loss_ema_next):
-                        if adaptive_lr_state.best_loss_ema <= 0.0 or not math.isfinite(
-                            adaptive_lr_state.best_loss_ema
-                        ):
-                            adaptive_lr_state.best_loss_ema = loss_ema_next
-                            adaptive_lr_state.plateau_steps = 0
-                        elif config.lr_plateau_patience > 0:
-                            if unstable:
-                                adaptive_lr_state.plateau_steps = 0
-                            else:
-                                denom = max(abs(adaptive_lr_state.best_loss_ema), 1e-8)
-                                improvement = (
-                                    adaptive_lr_state.best_loss_ema - loss_ema_next
-                                ) / denom
-                                if improvement > config.lr_plateau_tol:
-                                    adaptive_lr_state.best_loss_ema = loss_ema_next
-                                    adaptive_lr_state.plateau_steps = 0
-                                else:
-                                    adaptive_lr_state.plateau_steps += 1
-                                    if (
-                                        adaptive_lr_state.plateau_steps
-                                        >= config.lr_plateau_patience
-                                    ):
-                                        plateau_triggered = True
-                                        adaptive_lr_state.plateau_steps = 0
-                    lr_cap = lr_max
-                    if grad_norm_avg > 0.0 and param_norm_avg > 0.0:
-                        lr_cap = min(
-                            lr_max,
-                            config.lr_max_update_ratio * param_norm_avg / (grad_norm_avg + 1e-12),
-                        )
-                    increase_factor = config.lr_increase_factor
-                    if lr_current < lr_max * config.lr_recovery_threshold:
-                        increase_factor = max(increase_factor, config.lr_recovery_factor)
-                    min_lr_bound = max(config.lr_min, 1e-12)
-                    if (
-                        adaptive_lr_state.unstable_steps >= config.lr_unstable_patience
-                        or plateau_triggered
-                    ):
-                        if grounding_active:
-                            lr_current = max(min_lr_bound, lr_current * config.lr_decrease_factor)
-                        adaptive_lr_state.unstable_steps = 0
-                        adaptive_lr_state.stable_steps = 0
-                        adaptive_lr_state.plateau_steps = 0
-                    elif adaptive_lr_state.stable_steps >= config.lr_stable_patience:
-                        lr_current = min(lr_cap, lr_current * increase_factor)
-                        adaptive_lr_state.stable_steps = 0
-                        adaptive_lr_state.plateau_steps = 0
-                    lr_current = min(lr_current, lr_cap)
-                    lr_current = max(lr_current, min_lr_bound)
-                    adaptive_lr_state.lr = lr_current
-                    adaptive_lr_state.loss_ema = loss_ema_next
-                    _set_optimizers_lr(opt_atlas, lr_current)
+        # Step LR schedulers
+        for scheduler in schedulers:
+            scheduler.step()
 
         # Logging and checkpointing (matching embed_fragile.py style)
         should_log = epoch % config.log_every == 0 or epoch == config.epochs
@@ -3263,8 +1902,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             avg_param_norm = info_metrics["param_norm"][-1]
             avg_update_ratio = info_metrics["update_ratio"][-1]
             avg_lr = info_metrics["lr"][-1]
-            avg_lr_scale = info_metrics["lr_scale"][-1]
-            avg_lr_last = info_metrics["lr_last"][-1]
 
             # Get current jump weight for logging
             log_jump_weight = get_jump_weight_schedule(
@@ -3272,11 +1909,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             )
 
             # Print in embed_fragile.py style
-            if config.adaptive_lr:
-                current_lr = avg_lr
-            else:
-                current_lr = config.lr
-            print(f"Epoch {epoch:5d} | Loss: {avg_loss:.4f} | LR: {current_lr:.2e}")
+            print(f"Epoch {epoch:5d} | Loss: {avg_loss:.4f} | LR: {avg_lr:.2e}")
             print(f"  Usage: {np.array2string(usage, precision=2, separator=', ')}")
             print(
                 f"  Core: recon={avg_recon:.3f} "
@@ -3345,16 +1978,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             print(
                 f"  LR ctl: grad_norm={avg_grad_norm:.2e} "
                 f"upd_ratio={avg_update_ratio:.2e} "
-                f"lr_avg={avg_lr:.2e} "
-                f"lr_scale={avg_lr_scale:.3f} "
-                f"lr_last={avg_lr_last:.2e}"
+                f"lr={avg_lr:.2e}"
             )
-            _print_optimizer_stats("atlas", opt_atlas)
-            _print_optimizer_stats("std", opt_std)
-            _print_optimizer_stats("ae", opt_ae)
-            _print_optimizer_stats("classifier", opt_classifier)
-            _print_optimizer_stats("classifier_std", opt_classifier_std)
-            _print_optimizer_stats("classifier_ae", opt_classifier_ae)
             print(f"  Metrics: AMI={ami:.4f} perplexity={perplexity:.2f}/{config.num_charts}")
             print("-" * 60)
 
@@ -3407,15 +2032,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "control/param_norm": avg_param_norm,
                     "control/update_ratio": avg_update_ratio,
                     "control/lr": avg_lr,
-                    "control/lr_scale": avg_lr_scale,
-                    "control/lr_last": avg_lr_last,
-                    "control/lr_max": lr_max,
-                    "control/lr_loss_ema": adaptive_lr_state.loss_ema,
-                    "control/lr_best_loss_ema": adaptive_lr_state.best_loss_ema,
-                    "control/ixk_ema": adaptive_lr_state.ixk_ema,
-                    "control/unstable_steps": adaptive_lr_state.unstable_steps,
-                    "control/stable_steps": adaptive_lr_state.stable_steps,
-                    "control/lr_plateau_steps": adaptive_lr_state.plateau_steps,
                     "control/jump_weight": log_jump_weight,
                     "control/jump_weight_base": config.jump_weight,
                     "control/sup_weight": config.sup_weight,
@@ -3432,12 +2048,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     mlflow_metrics["metric/test_ae_cls_acc"] = ae_test_acc
                 for idx, value in enumerate(usage):
                     mlflow_metrics[f"usage/chart_{idx}"] = float(value)
-                for name, state in adaptive_weight_state.items():
-                    mlflow_metrics[f"control/weight/{name}"] = state.value
-                    mlflow_metrics[f"control/weight_integral/{name}"] = state.integral
-                    mlflow_metrics[f"control/weight_prev_error/{name}"] = state.prev_error
-                for name, value in adaptive_target_state.items():
-                    mlflow_metrics[f"control/target/{name}"] = value
                 _log_mlflow_metrics(mlflow_metrics, step=epoch, enabled=mlflow_active)
 
             # Save checkpoint
@@ -3453,18 +2063,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "cifar_std_accs": cifar_std_accs,
                     "loss_components": loss_components,
                     "info_metrics": info_metrics,
-                    "adaptive_weight_state": _serialize_weight_state(adaptive_weight_state),
-                    "adaptive_target_state": _serialize_target_state(adaptive_target_state),
-                    "loss_rescale_state": _serialize_loss_rescale_state(loss_rescale_state),
-                    "adaptive_lr_state": {
-                        "lr": adaptive_lr_state.lr,
-                        "loss_ema": adaptive_lr_state.loss_ema,
-                        "best_loss_ema": adaptive_lr_state.best_loss_ema,
-                        "ixk_ema": adaptive_lr_state.ixk_ema,
-                        "unstable_steps": adaptive_lr_state.unstable_steps,
-                        "stable_steps": adaptive_lr_state.stable_steps,
-                        "plateau_steps": adaptive_lr_state.plateau_steps,
-                    },
                     "ami_atlas": ami,
                     "atlas_perplexity": perplexity,
                     "chart_assignments": chart_assignments,
@@ -3487,7 +2085,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     classifier_head=classifier_head,
                     classifier_std=std_classifier_head,
                     classifier_ae=ae_classifier_head,
-                    precision_module=precision_module,
                     optimizer_atlas=opt_atlas,
                     optimizer_std=opt_std,
                     optimizer_ae=opt_ae,
@@ -3716,18 +2313,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "cifar_std_accs": cifar_std_accs,
         "loss_components": loss_components,
         "info_metrics": info_metrics,
-        "adaptive_weight_state": _serialize_weight_state(adaptive_weight_state),
-        "adaptive_target_state": _serialize_target_state(adaptive_target_state),
-        "loss_rescale_state": _serialize_loss_rescale_state(loss_rescale_state),
-        "adaptive_lr_state": {
-            "lr": adaptive_lr_state.lr,
-            "loss_ema": adaptive_lr_state.loss_ema,
-            "best_loss_ema": adaptive_lr_state.best_loss_ema,
-            "ixk_ema": adaptive_lr_state.ixk_ema,
-            "unstable_steps": adaptive_lr_state.unstable_steps,
-            "stable_steps": adaptive_lr_state.stable_steps,
-            "plateau_steps": adaptive_lr_state.plateau_steps,
-        },
         # AMI scores
         "ami_ae": ami_ae,
         "ami_std": ami_std,
@@ -3837,13 +2422,6 @@ def main():
         default="mnist",
         choices=["mnist", "cifar10"],
         help="Dataset to use (mnist or cifar10)",
-    )
-    parser.add_argument(
-        "--profile",
-        type=str,
-        default=None,
-        choices=["stable", "fast"],
-        help="Preset training profile (stable or fast)",
     )
     parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate (default: 1e-3)")
     parser.add_argument(
@@ -4207,329 +2785,22 @@ def main():
     )
 
     parser.add_argument(
-        "--thermo_temperature_decay",
-        type=float,
-        default=0.003,
-        help="Thermodynamic temperature decay (default: 0.003)",
-    )
-    parser.add_argument(
-        "--thermo_temperature_floor",
-        type=float,
-        default=0.1,
-        help="Thermodynamic temperature floor (default: 0.1)",
-    )
-    parser.add_argument(
-        "--thermo_varentropy_gamma",
-        type=float,
-        default=1.0,
-        help="Thermodynamic varentropy gain (default: 1.0)",
-    )
-    parser.add_argument(
-        "--thermo_alignment_damping",
-        type=float,
-        default=0.8,
-        help="Thermodynamic alignment damping (default: 0.8)",
-    )
-    parser.add_argument(
-        "--thermo_trust_region",
-        type=float,
-        default=0.05,
-        help="Thermodynamic trust-region scale (default: 0.05)",
-    )
-    parser.add_argument(
-        "--thermo_trust_region_eps",
-        type=float,
-        default=0.0,
-        help="Thermodynamic trust-region epsilon (default: 0.0)",
-    )
-    parser.add_argument(
-        "--thermo_snr_eps",
-        type=float,
-        default=1e-8,
-        help="Thermodynamic SNR epsilon (default: 1e-8)",
-    )
-    parser.add_argument(
-        "--thermo_snr_floor",
-        type=float,
-        default=0.05,
-        help="Thermodynamic SNR scale floor (default: 0.05)",
-    )
-    parser.add_argument(
-        "--thermo_thermal_conductivity",
-        type=float,
-        default=0.0,
-        help="Thermodynamic thermal conductivity (default: 0.0)",
-    )
-    parser.add_argument(
-        "--thermo_history_window",
-        type=int,
-        default=20,
-        help="Thermodynamic history window (default: 20)",
-    )
-    parser.add_argument(
-        "--thermo_varentropy_min_history",
-        type=int,
-        default=5,
-        help="Min samples for thermodynamic varentropy (default: 5)",
-    )
-    parser.add_argument(
-        "--thermo_varentropy_eps",
-        type=float,
-        default=1e-8,
-        help="Thermodynamic varentropy epsilon (default: 1e-8)",
-    )
-    parser.add_argument(
-        "--thermo_use_loss_varentropy",
+        "--use_scheduler",
         type=lambda x: x.lower() == "true",
-        default=False,
-        help="Use loss varentropy instead of gradient RMS (default: False)",
-    )
-    parser.add_argument(
-        "--adaptive_lr",
-        type=lambda x: x.lower() == "true",
-        default=False,
-        help="Use adaptive LR controller (default: False)",
+        default=True,
+        help="Use CosineAnnealingLR scheduler (default: True)",
     )
     parser.add_argument(
         "--lr_min",
         type=float,
         default=1e-6,
-        help="Minimum adaptive LR (default: 1e-6)",
-    )
-    parser.add_argument(
-        "--lr_max",
-        type=float,
-        default=0.0,
-        help="Maximum adaptive LR (0 = use --lr, default: 0.0)",
-    )
-    parser.add_argument(
-        "--lr_increase_factor",
-        type=float,
-        default=1.02,
-        help="Adaptive LR increase factor (default: 1.02)",
-    )
-    parser.add_argument(
-        "--lr_decrease_factor",
-        type=float,
-        default=0.5,
-        help="Adaptive LR decrease factor (default: 0.5)",
-    )
-    parser.add_argument(
-        "--lr_max_update_ratio",
-        type=float,
-        default=1e-3,
-        help="Max update ratio ||dtheta||/||theta|| (default: 1e-3)",
-    )
-    parser.add_argument(
-        "--lr_ema_decay",
-        type=float,
-        default=0.98,
-        help="EMA decay for loss stability (default: 0.98)",
-    )
-    parser.add_argument(
-        "--lr_loss_increase_tol",
-        type=float,
-        default=0.05,
-        help="Loss spike tolerance before LR reduction (default: 0.05)",
-    )
-    parser.add_argument(
-        "--lr_grounding_warmup_epochs",
-        type=int,
-        default=0,
-        help=("Epochs to skip coupling-window grounding checks for adaptive LR (default: 0)"),
-    )
-    parser.add_argument(
-        "--lr_unstable_patience",
-        type=int,
-        default=3,
-        help="Batches before LR decrease after instability (default: 3)",
-    )
-    parser.add_argument(
-        "--lr_stable_patience",
-        type=int,
-        default=5,
-        help="Batches before LR increase after stability (default: 5)",
-    )
-    parser.add_argument(
-        "--lr_plateau_patience",
-        type=int,
-        default=10,
-        help="Batches of plateau before LR decrease (default: 10)",
-    )
-    parser.add_argument(
-        "--lr_plateau_tol",
-        type=float,
-        default=1e-3,
-        help="Relative loss improvement to reset plateau (default: 1e-3)",
-    )
-    parser.add_argument(
-        "--lr_grounding_ema_decay",
-        type=float,
-        default=0.98,
-        help="EMA decay for I(X;K) grounding check (default: 0.98)",
-    )
-    parser.add_argument(
-        "--lr_recovery_factor",
-        type=float,
-        default=1.1,
-        help="LR increase factor when recovering from low LR (default: 1.1)",
-    )
-    parser.add_argument(
-        "--lr_recovery_threshold",
-        type=float,
-        default=0.1,
-        help="Fraction of lr_max to trigger recovery factor (default: 0.1)",
+        help="Minimum LR for CosineAnnealingLR (default: 1e-6)",
     )
     parser.add_argument(
         "--grad_clip",
         type=float,
         default=1.0,
         help="Gradient clipping max norm (0 to disable, default: 1.0)",
-    )
-
-    parser.add_argument(
-        "--adaptive_weights",
-        type=lambda x: x.lower() == "true",
-        default=True,
-        help="Use adaptive lambda controllers (default: True)",
-    )
-    parser.add_argument(
-        "--adaptive_warmup_epochs",
-        type=int,
-        default=10,
-        help="Epochs before adaptive lambda updates (default: 10)",
-    )
-    parser.add_argument(
-        "--adaptive_dual_eta",
-        type=float,
-        default=0.05,
-        help="Dual ascent step size for constraints (default: 0.05)",
-    )
-    parser.add_argument(
-        "--adaptive_pi_kp",
-        type=float,
-        default=0.05,
-        help="PI controller Kp (default: 0.05)",
-    )
-    parser.add_argument(
-        "--adaptive_pi_ki",
-        type=float,
-        default=0.01,
-        help="PI controller Ki (default: 0.01)",
-    )
-    parser.add_argument(
-        "--adaptive_pi_kd",
-        type=float,
-        default=0.0,
-        help="PI controller Kd (default: 0.0)",
-    )
-    parser.add_argument(
-        "--adaptive_lambda_min",
-        type=float,
-        default=0.0,
-        help="Minimum adaptive lambda (default: 0.0)",
-    )
-    parser.add_argument(
-        "--adaptive_lambda_max",
-        type=float,
-        default=10.0,
-        help="Maximum adaptive lambda (default: 10.0)",
-    )
-    parser.add_argument(
-        "--adaptive_violation_clip",
-        type=float,
-        default=2.0,
-        help="Clamp adaptive constraint violations (<=0 disables, default: 2.0)",
-    )
-    parser.add_argument(
-        "--adaptive_target_ratio",
-        type=float,
-        default=1.0,
-        help="Target ratio relative to warmup baseline (default: 1.0)",
-    )
-    parser.add_argument(
-        "--adaptive_target_ema_decay",
-        type=float,
-        default=0.98,
-        help="EMA decay for warmup target estimates (default: 0.98)",
-    )
-    parser.add_argument(
-        "--adaptive_target_min",
-        type=float,
-        default=1e-3,
-        help="Minimum target value for signed errors (default: 1e-3)",
-    )
-    parser.add_argument(
-        "--entropy_target_ratio",
-        type=float,
-        default=0.5,
-        help="Target H(K|X) ratio of log K (default: 0.5)",
-    )
-    parser.add_argument(
-        "--hk_target_ratio",
-        type=float,
-        default=0.9,
-        help="Target H(K) ratio of log K (default: 0.9)",
-    )
-    parser.add_argument(
-        "--code_entropy_target_ratio",
-        type=float,
-        default=0.9,
-        help="Target code entropy ratio of log codes (default: 0.9)",
-    )
-    parser.add_argument(
-        "--consistency_target",
-        type=float,
-        default=0.05,
-        help="Target consistency KL (default: 0.05)",
-    )
-    parser.add_argument(
-        "--use_learned_precisions",
-        type=lambda x: x.lower() == "true",
-        default=False,
-        help="Use learned precisions for recon/vq/sup (default: False)",
-    )
-    parser.add_argument(
-        "--loss_rescale",
-        type=lambda x: x.lower() == "true",
-        default=False,
-        help="Enable EMA-based loss rescaling (default: False)",
-    )
-    parser.add_argument(
-        "--loss_rescale_reference",
-        type=str,
-        default="recon",
-        help="Reference loss name for rescaling (default: recon)",
-    )
-    parser.add_argument(
-        "--loss_rescale_target_ratio",
-        type=float,
-        default=1.0,
-        help="Target ratio to reference EMA (default: 1.0)",
-    )
-    parser.add_argument(
-        "--loss_rescale_ema_decay",
-        type=float,
-        default=0.98,
-        help="EMA decay for loss rescaling (default: 0.98)",
-    )
-    parser.add_argument(
-        "--loss_rescale_min",
-        type=float,
-        default=0.1,
-        help="Minimum rescale factor (default: 0.1)",
-    )
-    parser.add_argument(
-        "--loss_rescale_max",
-        type=float,
-        default=10.0,
-        help="Maximum rescale factor (default: 10.0)",
-    )
-    parser.add_argument(
-        "--loss_rescale_eps",
-        type=float,
-        default=1e-8,
-        help="Epsilon for loss rescaling (default: 1e-8)",
     )
 
     # Tier 5: Jump Operator (chart gluing)

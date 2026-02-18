@@ -678,9 +678,6 @@ def compute_companion_baryon_correlator(
     color = color[:, :, list(dims)]
 
     device = color.device
-    alive = torch.as_tensor(
-        history.alive_mask[start_idx - 1 : end_idx - 1], device=device, dtype=torch.bool
-    )
     companions_distance = torch.as_tensor(
         history.companions_distance[start_idx - 1 : end_idx - 1],
         device=device,
@@ -696,7 +693,6 @@ def compute_companion_baryon_correlator(
     return compute_baryon_correlator_from_color(
         color=color,
         color_valid=color_valid.to(dtype=torch.bool, device=device),
-        alive=alive,
         companions_distance=companions_distance,
         companions_clone=companions_clone,
         max_lag=int(config.max_lag),
@@ -711,7 +707,6 @@ def compute_companion_baryon_correlator(
 
 def _compute_velocity_det(
     velocities: Tensor,
-    alive: Tensor,
     idx_i: Tensor,
     idx_j: Tensor,
     idx_k: Tensor,
@@ -729,19 +724,15 @@ def _compute_velocity_det(
     v_k, _ = _safe_gather_3d(velocities, idx_k)
     det = _det3(v_i, v_j, v_k).abs().float()
 
-    alive_i, _ = _safe_gather_2d(alive, idx_i)
-    alive_j, _ = _safe_gather_2d(alive, idx_j)
-    alive_k, _ = _safe_gather_2d(alive, idx_k)
     finite = torch.isfinite(det)
 
-    valid = in_i & in_j & in_k & distinct & alive_i & alive_j & alive_k & finite & (det > eps)
+    valid = in_i & in_j & in_k & distinct & finite & (det > eps)
     det = torch.where(valid, det, torch.zeros_like(det))
     return det, valid
 
 
 def compute_triplet_coherence_from_velocity(
     velocities: Tensor,
-    alive: Tensor,
     companions_distance: Tensor,
     companions_clone: Tensor,
     max_hops: int = 15,
@@ -751,8 +742,6 @@ def compute_triplet_coherence_from_velocity(
     """Compute companion-chain triplet coherence diagnostic (vectorized)."""
     if velocities.ndim != 3 or velocities.shape[-1] != 3:
         raise ValueError(f"velocities must have shape [T, N, 3], got {tuple(velocities.shape)}.")
-    if alive.shape != velocities.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if (
         companions_distance.shape != velocities.shape[:2]
         or companions_clone.shape != velocities.shape[:2]
@@ -778,7 +767,6 @@ def compute_triplet_coherence_from_velocity(
 
     det0, valid0 = _compute_velocity_det(
         velocities=velocities,
-        alive=alive,
         idx_i=anchor,
         idx_j=companion_j,
         idx_k=companion_k,
@@ -803,7 +791,6 @@ def compute_triplet_coherence_from_velocity(
 
         deth, valid_h = _compute_velocity_det(
             velocities=velocities,
-            alive=alive,
             idx_i=p1,
             idx_j=p2,
             idx_k=p3,
@@ -853,9 +840,6 @@ def compute_triplet_coherence(
     velocities = velocities[:, :, list(dims)].float()
 
     device = velocities.device
-    alive = torch.as_tensor(
-        history.alive_mask[start_idx - 1 : end_idx - 1], dtype=torch.bool, device=device
-    )
     companions_distance = torch.as_tensor(
         history.companions_distance[start_idx - 1 : end_idx - 1],
         dtype=torch.long,
@@ -869,7 +853,6 @@ def compute_triplet_coherence(
 
     return compute_triplet_coherence_from_velocity(
         velocities=velocities,
-        alive=alive,
         companions_distance=companions_distance,
         companions_clone=companions_clone,
         max_hops=int(config.max_hops),
