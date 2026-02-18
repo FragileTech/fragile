@@ -161,11 +161,10 @@ class TestParityVector:
 
     def test_from_color_parity(self, tiny_color_states, tiny_color_valid, tiny_alive,
                                tiny_companions_distance, tiny_companions_clone, tiny_positions):
-        kwargs = dict(
+        common = dict(
             color=tiny_color_states,
             color_valid=tiny_color_valid,
             positions=tiny_positions,
-            alive=tiny_alive,
             companions_distance=tiny_companions_distance,
             companions_clone=tiny_companions_clone,
             max_lag=3,
@@ -173,8 +172,8 @@ class TestParityVector:
             pair_selection="both",
             eps=1e-12,
         )
-        old_out = compute_vector_meson_correlator_from_color_positions(**kwargs)
-        new_out = new_from_color(**kwargs)
+        old_out = compute_vector_meson_correlator_from_color_positions(alive=tiny_alive, **common)
+        new_out = new_from_color(**common)
         assert_outputs_equal(old_out, new_out)
 
     def test_companion_parity(self, mock_history):

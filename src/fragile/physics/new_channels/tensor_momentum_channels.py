@@ -211,7 +211,6 @@ def _compute_local_tensor_components(
     color: Tensor,
     color_valid: Tensor,
     positions: Tensor,
-    alive: Tensor,
     pair_indices: Tensor,
     structural_valid: Tensor,
     bounds: object | None,
@@ -227,8 +226,6 @@ def _compute_local_tensor_components(
         )
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T,N], got {tuple(alive.shape)}.")
     if pair_indices.shape[:2] != color.shape[:2]:
         raise ValueError(
             "pair_indices must have shape [T,N,P] aligned with color, got "
@@ -241,7 +238,6 @@ def _compute_local_tensor_components(
         )
 
     color_j, in_range = _safe_gather_pairs_3d(color, pair_indices)
-    alive_j, _ = _safe_gather_pairs_2d(alive, pair_indices)
     valid_j, _ = _safe_gather_pairs_2d(color_valid, pair_indices)
     pos_j, _ = _safe_gather_pairs_3d(positions, pair_indices)
 
@@ -257,8 +253,6 @@ def _compute_local_tensor_components(
     valid = (
         structural_valid
         & in_range
-        & alive.unsqueeze(-1)
-        & alive_j
         & color_valid.unsqueeze(-1)
         & valid_j
         & finite_inner
@@ -469,7 +463,6 @@ def compute_tensor_momentum_correlator_from_color_positions(
     color_valid: Tensor,
     positions: Tensor,
     positions_axis: Tensor,
-    alive: Tensor,
     companions_distance: Tensor,
     companions_clone: Tensor,
     max_lag: int,
@@ -499,8 +492,6 @@ def compute_tensor_momentum_correlator_from_color_positions(
         )
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T,N], got {tuple(alive.shape)}.")
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T,N] aligned with color."
         raise ValueError(msg)
@@ -523,7 +514,6 @@ def compute_tensor_momentum_correlator_from_color_positions(
         color=color,
         color_valid=color_valid,
         positions=positions,
-        alive=alive,
         pair_indices=pair_indices,
         structural_valid=structural_valid,
         bounds=bounds,
@@ -679,11 +669,6 @@ def compute_companion_tensor_momentum_correlator(
         device=device,
         dtype=torch.float32,
     )
-    alive = torch.as_tensor(
-        history.alive_mask[start_idx - 1 : end_idx - 1],
-        dtype=torch.bool,
-        device=device,
-    )
     companions_distance = torch.as_tensor(
         history.companions_distance[start_idx - 1 : end_idx - 1],
         dtype=torch.long,
@@ -720,7 +705,6 @@ def compute_companion_tensor_momentum_correlator(
         color_valid=color_valid.to(dtype=torch.bool, device=device),
         positions=positions,
         positions_axis=positions_axis,
-        alive=alive,
         companions_distance=companions_distance,
         companions_clone=companions_clone,
         max_lag=int(config.max_lag),

@@ -145,7 +145,6 @@ def build_companion_pair_indices(
 def _compute_inner_products_for_pairs(
     color: Tensor,
     color_valid: Tensor,
-    alive: Tensor,
     pair_indices: Tensor,
     structural_valid: Tensor,
     eps: float,
@@ -155,8 +154,6 @@ def _compute_inner_products_for_pairs(
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if pair_indices.shape[:2] != color.shape[:2]:
         raise ValueError(
             f"pair_indices must have shape [T, N, P] aligned with color, got "
@@ -169,7 +166,6 @@ def _compute_inner_products_for_pairs(
         )
 
     color_j, in_range = _safe_gather_pairs_3d(color, pair_indices)
-    alive_j, _ = _safe_gather_pairs_2d(alive, pair_indices)
     valid_j, _ = _safe_gather_pairs_2d(color_valid, pair_indices)
 
     color_i = color.unsqueeze(2).expand_as(color_j)
@@ -179,8 +175,6 @@ def _compute_inner_products_for_pairs(
     valid = (
         structural_valid
         & in_range
-        & alive.unsqueeze(-1)
-        & alive_j
         & color_valid.unsqueeze(-1)
         & valid_j
         & finite
@@ -257,7 +251,6 @@ def _per_frame_series(values: Tensor, valid: Tensor) -> tuple[Tensor, Tensor]:
 def compute_meson_phase_correlator_from_color(
     color: Tensor,
     color_valid: Tensor,
-    alive: Tensor,
     companions_distance: Tensor,
     companions_clone: Tensor,
     max_lag: int = 80,
@@ -278,8 +271,6 @@ def compute_meson_phase_correlator_from_color(
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
@@ -336,7 +327,6 @@ def compute_meson_phase_correlator_from_color(
     source_inner, source_valid = _compute_inner_products_for_pairs(
         color=color,
         color_valid=color_valid,
-        alive=alive,
         pair_indices=pair_indices,
         structural_valid=structural_valid,
         eps=eps,
@@ -386,7 +376,6 @@ def compute_meson_phase_correlator_from_color(
         sink_inner, sink_valid = _compute_inner_products_for_pairs(
             color=color[lag : lag + source_len],
             color_valid=color_valid[lag : lag + source_len],
-            alive=alive[lag : lag + source_len],
             pair_indices=pair_indices[:source_len],
             structural_valid=structural_valid[:source_len],
             eps=eps,
@@ -511,9 +500,6 @@ def compute_companion_meson_phase_correlator(
     color = color[:, :, list(dims)]
 
     device = color.device
-    alive = torch.as_tensor(
-        history.alive_mask[start_idx - 1 : end_idx - 1], dtype=torch.bool, device=device
-    )
     companions_distance = torch.as_tensor(
         history.companions_distance[start_idx - 1 : end_idx - 1],
         dtype=torch.long,
@@ -542,7 +528,6 @@ def compute_companion_meson_phase_correlator(
     return compute_meson_phase_correlator_from_color(
         color=color,
         color_valid=color_valid.to(dtype=torch.bool, device=device),
-        alive=alive,
         companions_distance=companions_distance,
         companions_clone=companions_clone,
         max_lag=int(config.max_lag),

@@ -214,7 +214,6 @@ def build_companion_triplets(
 def _compute_determinants_for_indices(
     vectors: Tensor,
     valid_vectors: Tensor,
-    alive: Tensor,
     companion_j: Tensor,
     companion_k: Tensor,
     eps: float,
@@ -226,8 +225,6 @@ def _compute_determinants_for_indices(
         raise ValueError(
             f"valid_vectors must have shape [T, N], got {tuple(valid_vectors.shape)}."
         )
-    if alive.shape != vectors.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if companion_j.shape != vectors.shape[:2] or companion_k.shape != vectors.shape[:2]:
         msg = "companion indices must have shape [T, N]."
         raise ValueError(msg)
@@ -237,8 +234,6 @@ def _compute_determinants_for_indices(
     vec_j, in_j = _safe_gather_3d(vectors, companion_j)
     vec_k, in_k = _safe_gather_3d(vectors, companion_k)
 
-    alive_j, _ = _safe_gather_2d(alive, companion_j)
-    alive_k, _ = _safe_gather_2d(alive, companion_k)
     valid_j, _ = _safe_gather_2d(valid_vectors, companion_j)
     valid_k, _ = _safe_gather_2d(valid_vectors, companion_k)
 
@@ -253,9 +248,6 @@ def _compute_determinants_for_indices(
         structural_valid
         & in_j
         & in_k
-        & alive
-        & alive_j
-        & alive_k
         & valid_vectors
         & valid_j
         & valid_k
@@ -272,7 +264,6 @@ def _compute_score_ordered_determinants_for_indices(
     *,
     color: Tensor,
     color_valid: Tensor,
-    alive: Tensor,
     scores: Tensor,
     companion_j: Tensor,
     companion_k: Tensor,
@@ -283,8 +274,6 @@ def _compute_score_ordered_determinants_for_indices(
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T,N], got {tuple(alive.shape)}.")
     if scores.shape != color.shape[:2]:
         raise ValueError(f"scores must have shape [T,N], got {tuple(scores.shape)}.")
     if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
@@ -295,8 +284,6 @@ def _compute_score_ordered_determinants_for_indices(
 
     color_j, in_j = _safe_gather_3d(color, companion_j)
     color_k, in_k = _safe_gather_3d(color, companion_k)
-    alive_j, _ = _safe_gather_2d(alive, companion_j)
-    alive_k, _ = _safe_gather_2d(alive, companion_k)
     valid_j, _ = _safe_gather_2d(color_valid, companion_j)
     valid_k, _ = _safe_gather_2d(color_valid, companion_k)
     score_j, score_j_in_range = _safe_gather_2d(scores, companion_j)
@@ -322,9 +309,6 @@ def _compute_score_ordered_determinants_for_indices(
         structural_valid
         & in_j
         & in_k
-        & alive
-        & alive_j
-        & alive_k
         & color_valid
         & valid_j
         & valid_k
@@ -344,7 +328,6 @@ def _compute_triplet_plaquette_for_indices(
     *,
     color: Tensor,
     color_valid: Tensor,
-    alive: Tensor,
     companion_j: Tensor,
     companion_k: Tensor,
     eps: float,
@@ -354,8 +337,6 @@ def _compute_triplet_plaquette_for_indices(
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
         msg = "companion indices must have shape [T, N]."
         raise ValueError(msg)
@@ -364,8 +345,6 @@ def _compute_triplet_plaquette_for_indices(
 
     color_j, in_j = _safe_gather_3d(color, companion_j)
     color_k, in_k = _safe_gather_3d(color, companion_k)
-    alive_j, _ = _safe_gather_2d(alive, companion_j)
-    alive_k, _ = _safe_gather_2d(alive, companion_k)
     valid_j, _ = _safe_gather_2d(color_valid, companion_j)
     valid_k, _ = _safe_gather_2d(color_valid, companion_k)
 
@@ -379,9 +358,6 @@ def _compute_triplet_plaquette_for_indices(
         structural_valid
         & in_j
         & in_k
-        & alive
-        & alive_j
-        & alive_k
         & color_valid
         & valid_j
         & valid_k
@@ -442,7 +418,6 @@ def _baryon_flux_weight_from_plaquette(
 def compute_baryon_correlator_from_color(
     color: Tensor,
     color_valid: Tensor,
-    alive: Tensor,
     companions_distance: Tensor,
     companions_clone: Tensor,
     max_lag: int = 80,
@@ -464,8 +439,6 @@ def compute_baryon_correlator_from_color(
         raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
     if color_valid.shape != color.shape[:2]:
         raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
-    if alive.shape != color.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
@@ -508,7 +481,6 @@ def compute_baryon_correlator_from_color(
         source_det, source_valid = _compute_score_ordered_determinants_for_indices(
             color=color,
             color_valid=color_valid,
-            alive=alive,
             scores=scores,
             companion_j=companions_distance,
             companion_k=companions_clone,
@@ -523,7 +495,6 @@ def compute_baryon_correlator_from_color(
         source_det, source_valid = _compute_determinants_for_indices(
             vectors=color,
             valid_vectors=color_valid,
-            alive=alive,
             companion_j=companions_distance,
             companion_k=companions_clone,
             eps=eps,
@@ -533,7 +504,6 @@ def compute_baryon_correlator_from_color(
         source_pi, source_pi_valid = _compute_triplet_plaquette_for_indices(
             color=color,
             color_valid=color_valid,
-            alive=alive,
             companion_j=companions_distance,
             companion_k=companions_clone,
             eps=eps,
@@ -587,7 +557,6 @@ def compute_baryon_correlator_from_color(
             sink_det, sink_valid = _compute_score_ordered_determinants_for_indices(
                 color=color[lag : lag + source_len],
                 color_valid=color_valid[lag : lag + source_len],
-                alive=alive[lag : lag + source_len],
                 scores=scores[lag : lag + source_len],
                 companion_j=companions_distance[:source_len],
                 companion_k=companions_clone[:source_len],
@@ -602,7 +571,6 @@ def compute_baryon_correlator_from_color(
             sink_det, sink_valid = _compute_determinants_for_indices(
                 vectors=color[lag : lag + source_len],
                 valid_vectors=color_valid[lag : lag + source_len],
-                alive=alive[lag : lag + source_len],
                 companion_j=companions_distance[:source_len],
                 companion_k=companions_clone[:source_len],
                 eps=eps,
@@ -612,7 +580,6 @@ def compute_baryon_correlator_from_color(
             sink_pi, sink_pi_valid = _compute_triplet_plaquette_for_indices(
                 color=color[lag : lag + source_len],
                 color_valid=color_valid[lag : lag + source_len],
-                alive=alive[lag : lag + source_len],
                 companion_j=companions_distance[:source_len],
                 companion_k=companions_clone[:source_len],
                 eps=eps,
