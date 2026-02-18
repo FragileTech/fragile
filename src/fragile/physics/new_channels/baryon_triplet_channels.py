@@ -17,7 +17,7 @@ import torch
 from torch import Tensor
 
 from fragile.physics.fractal_gas.history import RunHistory
-from fragile.fractalai.qft.aggregation import compute_color_states_batch, estimate_ell0
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 
 
 @dataclass

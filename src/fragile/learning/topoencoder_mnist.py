@@ -16,13 +16,12 @@ Metrics reported:
 - Codebook usage (perplexity)
 
 Usage:
-    python src/experiments/topoencoder_2d_thermo_uniform_lr.py --dataset mnist --epochs 1000
+    python src/fragile/learning/topoencoder_mnist.py --dataset mnist --epochs 1000
 
 Notes:
-    Uses a single ThermodynamicAdam optimizer for the atlas core (one LR shared
-    across all atlas parameters), plus per-module optimizers for detached
-    baselines and auxiliary heads. All ThermodynamicAdam parameter groups share
-    a uniform base learning rate.
+    Uses vanilla Adam optimizers with optional CosineAnnealingLR scheduling.
+    One optimizer for the atlas core, plus per-module optimizers for detached
+    baselines and auxiliary heads.
 
 Reference: fragile-index.md Sections 7.8, 7.10
 """
@@ -474,14 +473,14 @@ def save_checkpoint(
     classifier_head: nn.Module | None = None,
     classifier_std: nn.Module | None = None,
     classifier_ae: nn.Module | None = None,
-    optimizer_atlas: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
-    optimizer_std: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
-    optimizer_ae: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
-    optimizer_cifar_cov: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
-    optimizer_cifar_std: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
-    optimizer_classifier: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
-    optimizer_classifier_std: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
-    optimizer_classifier_ae: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
+    optimizer_atlas: optim.Optimizer | None = None,
+    optimizer_std: optim.Optimizer | None = None,
+    optimizer_ae: optim.Optimizer | None = None,
+    optimizer_cifar_cov: optim.Optimizer | None = None,
+    optimizer_cifar_std: optim.Optimizer | None = None,
+    optimizer_classifier: optim.Optimizer | None = None,
+    optimizer_classifier_std: optim.Optimizer | None = None,
+    optimizer_classifier_ae: optim.Optimizer | None = None,
 ) -> None:
     """Save training checkpoint for later analysis/plotting."""
     checkpoint = {
@@ -528,8 +527,8 @@ def save_benchmarks(
     model_ae: nn.Module | None,
     std_hidden_dim: int = 0,
     ae_hidden_dim: int = 0,
-    optimizer_std: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
-    optimizer_ae: optim.Optimizer | dict[str, optim.Optimizer] | None = None,
+    optimizer_std: optim.Optimizer | None = None,
+    optimizer_ae: optim.Optimizer | None = None,
     metrics: dict | None = None,
     epoch: int = 0,
 ) -> None:
@@ -604,10 +603,6 @@ def _benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> boo
         and float(bench_config.get("baseline_attn_dropout", -1.0))
         == float(config.baseline_attn_dropout)
     )
-
-
-def _cli_flag_set(flag: str) -> bool:
-    return flag in sys.argv[1:]
 
 
 def _move_optimizer_state(
@@ -1037,7 +1032,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
     # Create VanillaAE with similar parameter count (reconstruction baseline)
     model_ae = None
-    opt_ae: dict[str, ThermodynamicAdam] = {}
+    opt_ae: optim.Adam | None = None
     ae_params = 0
     ae_hidden_dim = 0
     if not config.disable_ae:
@@ -2350,7 +2345,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         classifier_head=classifier_head,
         classifier_std=std_classifier_head,
         classifier_ae=ae_classifier_head,
-        precision_module=precision_module,
         optimizer_atlas=opt_atlas,
         optimizer_std=opt_std,
         optimizer_ae=opt_ae,
@@ -2964,10 +2958,6 @@ def main():
     )
 
     args = parser.parse_args()
-    _apply_profile(args)
-    if args.loss_rescale_reference:
-        args.loss_rescale_reference = args.loss_rescale_reference.strip().lower()
-
     if args.soft_equiv:
         args.soft_equiv_metric = True
         if args.soft_equiv_l1_weight == 0.0:
@@ -2980,8 +2970,27 @@ def main():
     if args.resume:
         checkpoint = load_checkpoint(args.resume)
         config_data = dict(checkpoint["config"])
-        config_data.pop("use_scheduler", None)
-        config_data.pop("min_lr", None)
+        # Remove fields from old checkpoints that no longer exist in config
+        removed_fields = [
+            "thermo_temperature_decay", "thermo_temperature_floor", "thermo_varentropy_gamma",
+            "thermo_alignment_damping", "thermo_trust_region", "thermo_trust_region_eps",
+            "thermo_snr_eps", "thermo_snr_floor", "thermo_thermal_conductivity",
+            "thermo_history_window", "thermo_varentropy_min_history", "thermo_varentropy_eps",
+            "thermo_use_loss_varentropy", "adaptive_lr", "lr_max", "lr_increase_factor",
+            "lr_decrease_factor", "lr_max_update_ratio", "lr_ema_decay", "lr_loss_increase_tol",
+            "lr_grounding_warmup_epochs", "lr_unstable_patience", "lr_stable_patience",
+            "lr_grounding_ema_decay", "lr_recovery_factor", "lr_recovery_threshold",
+            "lr_plateau_patience", "lr_plateau_tol", "adaptive_weights",
+            "adaptive_warmup_epochs", "adaptive_dual_eta", "adaptive_pi_kp", "adaptive_pi_ki",
+            "adaptive_pi_kd", "adaptive_lambda_min", "adaptive_lambda_max",
+            "adaptive_violation_clip", "adaptive_target_ratio", "adaptive_target_ema_decay",
+            "adaptive_target_min", "entropy_target_ratio", "hk_target_ratio",
+            "code_entropy_target_ratio", "consistency_target", "use_learned_precisions",
+            "loss_rescale", "loss_rescale_reference", "loss_rescale_target_ratio",
+            "loss_rescale_ema_decay", "loss_rescale_min", "loss_rescale_max", "loss_rescale_eps",
+        ]
+        for key in removed_fields:
+            config_data.pop(key, None)
         config = TopoEncoderConfig(**config_data)
         config.resume_checkpoint = args.resume
         config.epochs = max(config.epochs, args.epochs)
@@ -3003,59 +3012,8 @@ def main():
         config.vision_backbone_type = args.vision_backbone_type
         config.vision_cifar_base_channels = args.vision_cifar_base_channels
         config.vision_cifar_bundle_size = args.vision_cifar_bundle_size
-        config.thermo_temperature_decay = args.thermo_temperature_decay
-        config.thermo_temperature_floor = args.thermo_temperature_floor
-        config.thermo_varentropy_gamma = args.thermo_varentropy_gamma
-        config.thermo_alignment_damping = args.thermo_alignment_damping
-        config.thermo_trust_region = args.thermo_trust_region
-        config.thermo_trust_region_eps = args.thermo_trust_region_eps
-        config.thermo_snr_eps = args.thermo_snr_eps
-        config.thermo_snr_floor = args.thermo_snr_floor
-        config.thermo_thermal_conductivity = args.thermo_thermal_conductivity
-        config.thermo_history_window = args.thermo_history_window
-        config.thermo_varentropy_min_history = args.thermo_varentropy_min_history
-        config.thermo_varentropy_eps = args.thermo_varentropy_eps
-        config.thermo_use_loss_varentropy = args.thermo_use_loss_varentropy
-        config.adaptive_lr = args.adaptive_lr
+        config.use_scheduler = args.use_scheduler
         config.lr_min = args.lr_min
-        config.lr_max = args.lr_max
-        config.lr_increase_factor = args.lr_increase_factor
-        config.lr_decrease_factor = args.lr_decrease_factor
-        config.lr_max_update_ratio = args.lr_max_update_ratio
-        config.lr_ema_decay = args.lr_ema_decay
-        config.lr_loss_increase_tol = args.lr_loss_increase_tol
-        config.lr_grounding_warmup_epochs = args.lr_grounding_warmup_epochs
-        config.lr_unstable_patience = args.lr_unstable_patience
-        config.lr_stable_patience = args.lr_stable_patience
-        config.lr_plateau_patience = args.lr_plateau_patience
-        config.lr_plateau_tol = args.lr_plateau_tol
-        config.lr_grounding_ema_decay = args.lr_grounding_ema_decay
-        config.lr_recovery_factor = args.lr_recovery_factor
-        config.lr_recovery_threshold = args.lr_recovery_threshold
-        config.adaptive_weights = args.adaptive_weights
-        config.adaptive_warmup_epochs = args.adaptive_warmup_epochs
-        config.adaptive_dual_eta = args.adaptive_dual_eta
-        config.adaptive_pi_kp = args.adaptive_pi_kp
-        config.adaptive_pi_ki = args.adaptive_pi_ki
-        config.adaptive_pi_kd = args.adaptive_pi_kd
-        config.adaptive_lambda_min = args.adaptive_lambda_min
-        config.adaptive_lambda_max = args.adaptive_lambda_max
-        config.adaptive_violation_clip = args.adaptive_violation_clip
-        config.adaptive_target_ratio = args.adaptive_target_ratio
-        config.adaptive_target_ema_decay = args.adaptive_target_ema_decay
-        config.adaptive_target_min = args.adaptive_target_min
-        config.entropy_target_ratio = args.entropy_target_ratio
-        config.hk_target_ratio = args.hk_target_ratio
-        config.code_entropy_target_ratio = args.code_entropy_target_ratio
-        config.consistency_target = args.consistency_target
-        config.use_learned_precisions = args.use_learned_precisions
-        config.loss_rescale = args.loss_rescale
-        config.loss_rescale_reference = args.loss_rescale_reference
-        config.loss_rescale_target_ratio = args.loss_rescale_target_ratio
-        config.loss_rescale_ema_decay = args.loss_rescale_ema_decay
-        config.loss_rescale_min = args.loss_rescale_min
-        config.loss_rescale_max = args.loss_rescale_max
-        config.loss_rescale_eps = args.loss_rescale_eps
         config.window_eps_ground = args.window_eps_ground
         config.codebook_center_weight = args.codebook_center_weight
         config.chart_center_sep_weight = args.chart_center_sep_weight
@@ -3164,59 +3122,8 @@ def main():
             augment_rotation_max=args.augment_rotation_max,
             # Training dynamics
             grad_clip=args.grad_clip,
-            thermo_temperature_decay=args.thermo_temperature_decay,
-            thermo_temperature_floor=args.thermo_temperature_floor,
-            thermo_varentropy_gamma=args.thermo_varentropy_gamma,
-            thermo_alignment_damping=args.thermo_alignment_damping,
-            thermo_trust_region=args.thermo_trust_region,
-            thermo_trust_region_eps=args.thermo_trust_region_eps,
-            thermo_snr_eps=args.thermo_snr_eps,
-            thermo_snr_floor=args.thermo_snr_floor,
-            thermo_thermal_conductivity=args.thermo_thermal_conductivity,
-            thermo_history_window=args.thermo_history_window,
-            thermo_varentropy_min_history=args.thermo_varentropy_min_history,
-            thermo_varentropy_eps=args.thermo_varentropy_eps,
-            thermo_use_loss_varentropy=args.thermo_use_loss_varentropy,
-            adaptive_lr=args.adaptive_lr,
+            use_scheduler=args.use_scheduler,
             lr_min=args.lr_min,
-            lr_max=args.lr_max,
-            lr_increase_factor=args.lr_increase_factor,
-            lr_decrease_factor=args.lr_decrease_factor,
-            lr_max_update_ratio=args.lr_max_update_ratio,
-            lr_ema_decay=args.lr_ema_decay,
-            lr_loss_increase_tol=args.lr_loss_increase_tol,
-            lr_grounding_warmup_epochs=args.lr_grounding_warmup_epochs,
-            lr_unstable_patience=args.lr_unstable_patience,
-            lr_stable_patience=args.lr_stable_patience,
-            lr_plateau_patience=args.lr_plateau_patience,
-            lr_plateau_tol=args.lr_plateau_tol,
-            lr_grounding_ema_decay=args.lr_grounding_ema_decay,
-            lr_recovery_factor=args.lr_recovery_factor,
-            lr_recovery_threshold=args.lr_recovery_threshold,
-            adaptive_weights=args.adaptive_weights,
-            adaptive_warmup_epochs=args.adaptive_warmup_epochs,
-            adaptive_dual_eta=args.adaptive_dual_eta,
-            adaptive_pi_kp=args.adaptive_pi_kp,
-            adaptive_pi_ki=args.adaptive_pi_ki,
-            adaptive_pi_kd=args.adaptive_pi_kd,
-            adaptive_lambda_min=args.adaptive_lambda_min,
-            adaptive_lambda_max=args.adaptive_lambda_max,
-            adaptive_violation_clip=args.adaptive_violation_clip,
-            adaptive_target_ratio=args.adaptive_target_ratio,
-            adaptive_target_ema_decay=args.adaptive_target_ema_decay,
-            adaptive_target_min=args.adaptive_target_min,
-            entropy_target_ratio=args.entropy_target_ratio,
-            hk_target_ratio=args.hk_target_ratio,
-            code_entropy_target_ratio=args.code_entropy_target_ratio,
-            consistency_target=args.consistency_target,
-            use_learned_precisions=args.use_learned_precisions,
-            loss_rescale=args.loss_rescale,
-            loss_rescale_reference=args.loss_rescale_reference,
-            loss_rescale_target_ratio=args.loss_rescale_target_ratio,
-            loss_rescale_ema_decay=args.loss_rescale_ema_decay,
-            loss_rescale_min=args.loss_rescale_min,
-            loss_rescale_max=args.loss_rescale_max,
-            loss_rescale_eps=args.loss_rescale_eps,
             window_eps_ground=args.window_eps_ground,
             # Tier 5: Jump Operator
             jump_weight=args.jump_weight,
@@ -3244,8 +3151,6 @@ def main():
     print("Attentive Atlas vs Standard VQ-VAE")
     print("=" * 50)
     print("\nConfiguration:")
-    if args.profile:
-        print(f"  Profile: {args.profile}")
     print(f"  Dataset: {config.dataset}")
     if config.resume_checkpoint:
         print(f"  Resume: {config.resume_checkpoint}")
