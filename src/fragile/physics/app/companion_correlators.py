@@ -8,12 +8,14 @@ curves, effective masses, and operator time series using the shared
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any, Callable
 
 import pandas as pd
 import panel as pn
 import param
+import torch
 
 from fragile.physics.app.algorithm import _algorithm_placeholder_plot
 from fragile.physics.app.correlator_plots import (
@@ -32,12 +34,11 @@ from fragile.physics.app.correlator_plots import (
 )
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.new_channels.baryon_triplet_channels import (
-    BaryonTripletCorrelatorConfig,
-    compute_companion_baryon_correlator,
+    compute_baryon_correlator_from_color,
 )
 from fragile.physics.new_channels.glueball_color_channels import (
-    GlueballColorCorrelatorConfig,
-    compute_companion_glueball_color_correlator,
+    _extract_axis_bounds as _glueball_extract_axis_bounds,
+    compute_glueball_color_correlator_from_color,
 )
 from fragile.physics.new_channels.mass_extraction_adapter import (
     extract_baryon,
@@ -47,18 +48,18 @@ from fragile.physics.new_channels.mass_extraction_adapter import (
     extract_vector_meson,
 )
 from fragile.physics.new_channels.meson_phase_channels import (
-    MesonPhaseCorrelatorConfig,
-    compute_companion_meson_phase_correlator,
+    compute_meson_phase_correlator_from_color,
 )
 from fragile.physics.new_channels.tensor_momentum_channels import (
-    TensorMomentumCorrelatorConfig,
-    compute_companion_tensor_momentum_correlator,
+    _extract_axis_bounds as _tensor_extract_axis_bounds,
+    compute_tensor_momentum_correlator_from_color_positions,
 )
 from fragile.physics.new_channels.vector_meson_channels import (
-    VectorMesonCorrelatorConfig,
-    compute_companion_vector_meson_correlator,
+    compute_vector_meson_correlator_from_color_positions,
 )
 from fragile.physics.operators.pipeline import PipelineResult
+from fragile.physics.qft_utils import resolve_3d_dims, resolve_frame_indices
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 
 # ---------------------------------------------------------------------------
 # Section dataclass
@@ -427,19 +428,8 @@ def build_companion_correlator_tab(
             d = history.d
             color_dims = _parse_color_dims(settings.color_dims_spec, d)
             use_connected = bool(settings.use_connected)
-
-            # Shared config kwargs
-            common_kw: dict[str, Any] = {
-                "warmup_fraction": float(settings.warmup_fraction),
-                "end_fraction": float(settings.end_fraction),
-                "max_lag": int(settings.max_lag),
-                "use_connected": use_connected,
-                "h_eff": float(settings.h_eff),
-                "mass": float(settings.mass),
-                "ell0": float(settings.ell0) if settings.ell0 is not None else None,
-                "color_dims": color_dims,
-                "eps": float(settings.eps),
-            }
+            max_lag = int(settings.max_lag)
+            eps = float(settings.eps)
 
             # Collect selected modes per channel from MultiSelect widgets
             selected_modes: dict[str, list[str]] = {}
@@ -454,22 +444,97 @@ def build_companion_correlator_tab(
                 status.object = "**Error:** No channels selected."
                 return
 
+            # ---- Shared data prep (computed ONCE) ----
+            frame_indices = resolve_frame_indices(
+                history=history,
+                warmup_fraction=float(settings.warmup_fraction),
+                end_fraction=float(settings.end_fraction),
+            )
+            if not frame_indices:
+                status.object = "**Error:** No valid frames after warmup/end filtering."
+                return
+
+            start_idx = frame_indices[0]
+            end_idx = frame_indices[-1] + 1
+            h_eff = float(max(settings.h_eff, 1e-8))
+            mass_val = float(max(settings.mass, 1e-8))
+            ell0_val = (
+                float(settings.ell0) if settings.ell0 is not None
+                else float(estimate_ell0(history))
+            )
+            if ell0_val <= 0:
+                status.object = "**Error:** ell0 must be positive."
+                return
+
+            # Compute color states ONCE
+            color, color_valid = compute_color_states_batch(
+                history=history,
+                start_idx=start_idx,
+                h_eff=h_eff,
+                mass=mass_val,
+                ell0=ell0_val,
+                end_idx=end_idx,
+            )
+            if color_dims is not None:
+                dims = resolve_3d_dims(color.shape[-1], color_dims, "color_dims")
+                color = color[:, :, list(dims)]
+
+            device = color.device
+            color_valid = color_valid.to(dtype=torch.bool, device=device)
+
+            # Gather companions ONCE
+            companions_distance = torch.as_tensor(
+                history.companions_distance[start_idx - 1 : end_idx - 1],
+                dtype=torch.long, device=device,
+            )
+            companions_clone = torch.as_tensor(
+                history.companions_clone[start_idx - 1 : end_idx - 1],
+                dtype=torch.long, device=device,
+            )
+
+            # Scores (needed by meson, baryon, vector score modes)
+            scores = torch.as_tensor(
+                history.cloning_scores[start_idx - 1 : end_idx - 1],
+                dtype=torch.float32, device=device,
+            )
+
+            # Positions (needed by vector, tensor, glueball momentum)
+            needs_positions = (
+                "vector" in selected_modes
+                or has_tensor
+                or (
+                    "glueball" in selected_modes
+                    and bool(settings.glueball_momentum_projection)
+                )
+            )
+            positions = None
+            if needs_positions:
+                positions = torch.as_tensor(
+                    history.x_before_clone[start_idx:end_idx],
+                    device=device, dtype=torch.float32,
+                )
+
             merged_correlators: dict[str, Any] = {}
             merged_operators: dict[str, Any] = {}
             channel_labels: list[str] = []
 
             # -- Meson: iterate over selected modes --
             for mode in selected_modes.get("meson", []):
-                meson_cfg = MesonPhaseCorrelatorConfig(
+                out = compute_meson_phase_correlator_from_color(
+                    color=color, color_valid=color_valid,
+                    companions_distance=companions_distance,
+                    companions_clone=companions_clone,
+                    max_lag=max_lag,
+                    use_connected=use_connected,
                     pair_selection=str(settings.pair_selection),
+                    eps=eps,
                     operator_mode=mode,
-                    **common_kw,
+                    scores=scores,
+                    frame_indices=frame_indices,
                 )
-                out = compute_companion_meson_phase_correlator(history, meson_cfg)
                 corrs, ops = extract_meson_phase(
                     out, use_connected=use_connected, prefix="",
                 )
-                # Suffix keys with mode
                 for key, val in corrs.items():
                     merged_correlators[f"{key}_{mode}"] = val
                 for key, val in ops.items():
@@ -479,12 +544,18 @@ def build_companion_correlator_tab(
 
             # -- Baryon: iterate over selected modes --
             for mode in selected_modes.get("baryon", []):
-                baryon_cfg = BaryonTripletCorrelatorConfig(
+                out = compute_baryon_correlator_from_color(
+                    color=color, color_valid=color_valid,
+                    companions_distance=companions_distance,
+                    companions_clone=companions_clone,
+                    max_lag=max_lag,
+                    use_connected=use_connected,
+                    eps=eps,
                     operator_mode=mode,
                     flux_exp_alpha=float(settings.baryon_flux_exp_alpha),
-                    **common_kw,
+                    scores=scores,
+                    frame_indices=frame_indices,
                 )
-                out = compute_companion_baryon_correlator(history, baryon_cfg)
                 corrs, ops = extract_baryon(
                     out, use_connected=use_connected, prefix="",
                 )
@@ -502,14 +573,21 @@ def build_companion_correlator_tab(
 
             for mode in selected_modes.get("vector", []):
                 for proj in selected_projections:
-                    vector_cfg = VectorMesonCorrelatorConfig(
+                    out = compute_vector_meson_correlator_from_color_positions(
+                        color=color, color_valid=color_valid,
+                        positions=positions,
+                        companions_distance=companions_distance,
+                        companions_clone=companions_clone,
+                        max_lag=max_lag,
+                        use_connected=use_connected,
                         pair_selection=str(settings.pair_selection),
+                        eps=eps,
                         use_unit_displacement=bool(settings.vector_unit_displacement),
                         operator_mode=mode,
                         projection_mode=proj,
-                        **common_kw,
+                        scores=scores,
+                        frame_indices=frame_indices,
                     )
-                    out = compute_companion_vector_meson_correlator(history, vector_cfg)
                     corrs, ops = extract_vector_meson(
                         out, use_connected=use_connected, prefix="",
                     )
@@ -523,14 +601,44 @@ def build_companion_correlator_tab(
 
             # -- Glueball: iterate over selected modes --
             for mode in selected_modes.get("glueball", []):
-                glueball_cfg = GlueballColorCorrelatorConfig(
+                use_momentum = bool(settings.glueball_momentum_projection)
+                momentum_axis = int(settings.glueball_momentum_axis)
+                positions_axis = None
+                projection_length = None
+                if use_momentum:
+                    positions_axis = torch.as_tensor(
+                        history.x_before_clone[
+                            start_idx:end_idx, :, momentum_axis
+                        ],
+                        device=device, dtype=torch.float32,
+                    )
+                    low, high = _glueball_extract_axis_bounds(
+                        history.bounds, momentum_axis, device=device,
+                    )
+                    if (
+                        low is not None
+                        and high is not None
+                        and math.isfinite(low)
+                        and math.isfinite(high)
+                        and high > low
+                    ):
+                        projection_length = float(high - low)
+
+                out = compute_glueball_color_correlator_from_color(
+                    color=color, color_valid=color_valid,
+                    companions_distance=companions_distance,
+                    companions_clone=companions_clone,
+                    max_lag=max_lag,
+                    use_connected=use_connected,
+                    eps=eps,
                     operator_mode=mode,
-                    use_momentum_projection=bool(settings.glueball_momentum_projection),
-                    momentum_axis=int(settings.glueball_momentum_axis),
+                    frame_indices=frame_indices,
+                    positions_axis=positions_axis,
+                    momentum_axis=momentum_axis if use_momentum else None,
+                    use_momentum_projection=use_momentum,
                     momentum_mode_max=int(settings.glueball_momentum_mode_max),
-                    **common_kw,
+                    projection_length=projection_length,
                 )
-                out = compute_companion_glueball_color_correlator(history, glueball_cfg)
                 corrs, ops = extract_glueball(
                     out, use_connected=use_connected, prefix="",
                 )
@@ -543,17 +651,48 @@ def build_companion_correlator_tab(
 
             # -- Tensor: no mode variants, single compute --
             if has_tensor:
-                tensor_cfg = TensorMomentumCorrelatorConfig(
-                    pair_selection=str(settings.pair_selection),
-                    momentum_axis=int(settings.tensor_momentum_axis),
-                    momentum_mode_max=int(settings.tensor_momentum_mode_max),
-                    **common_kw,
+                momentum_axis = int(settings.tensor_momentum_axis)
+                positions_axis = torch.as_tensor(
+                    history.x_before_clone[
+                        start_idx:end_idx, :, momentum_axis
+                    ],
+                    device=device, dtype=torch.float32,
                 )
-                out = compute_companion_tensor_momentum_correlator(history, tensor_cfg)
+                low, high = _tensor_extract_axis_bounds(
+                    history.bounds, momentum_axis, device=device,
+                )
+                projection_length = None
+                has_finite_bounds = (
+                    low is not None
+                    and high is not None
+                    and math.isfinite(low)
+                    and math.isfinite(high)
+                )
+                if has_finite_bounds and high > low:
+                    projection_length = float(high - low)
+
+                out = compute_tensor_momentum_correlator_from_color_positions(
+                    color=color, color_valid=color_valid,
+                    positions=positions,
+                    positions_axis=positions_axis,
+                    companions_distance=companions_distance,
+                    companions_clone=companions_clone,
+                    max_lag=max_lag,
+                    use_connected=use_connected,
+                    pair_selection=str(settings.pair_selection),
+                    eps=eps,
+                    momentum_axis=momentum_axis,
+                    momentum_mode_max=int(settings.tensor_momentum_mode_max),
+                    projection_length=projection_length,
+                    bounds=getattr(history, "bounds", None),
+                    pbc=bool(getattr(history, "pbc", False)),
+                    compute_bootstrap_errors=False,
+                    n_bootstrap=100,
+                    frame_indices=frame_indices,
+                )
                 corrs, ops = extract_tensor_momentum(
                     out, use_connected=use_connected,
                 )
-                # No suffix for tensor (no mode variants)
                 merged_correlators.update(corrs)
                 merged_operators.update(ops)
                 channel_labels.append("tensor")

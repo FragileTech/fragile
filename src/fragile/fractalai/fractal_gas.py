@@ -230,6 +230,7 @@ class FractalGas:
         seed: int | None = None,
         record_frames: bool = False,
         n_elite: int = 0,
+        death_condition=None,
     ):
         # Lazy imports to avoid circular dependency through videogames/__init__.py
         from fragile.fractalai.videogames.cloning import FractalCloningOperator
@@ -244,6 +245,7 @@ class FractalGas:
         self.seed = seed
         self.record_frames = record_frames
         self.n_elite = n_elite
+        self.death_condition = death_condition
         self._elite_walkers: WalkerState | None = None
 
         # Initialize operators
@@ -451,6 +453,11 @@ class FractalGas:
             infos=infos,
             virtual_rewards=virtual_rewards,
         )
+
+        # Apply custom death condition
+        if self.death_condition is not None:
+            custom_dead = self.death_condition(new_state.observations)
+            new_state.dones = new_state.dones | custom_dead
 
         # Update metrics
         self.total_steps += self.N

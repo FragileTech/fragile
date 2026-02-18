@@ -36,13 +36,17 @@ def _fft_correlator_batched(
     if use_connected:
         work = work - work.mean(dim=1, keepdim=True)
 
-    # Zero-pad each sample for FFT convolution along the time axis.
-    padded = F.pad(work, (0, T))  # [B, 2T]
+    # Zero-pad for alias-free circular convolution.  We need at least
+    # T + effective_lag + 1 points; round up to next power-of-2 for FFT
+    # efficiency.  When max_lag << T this is much smaller than 2T.
+    effective_lag = min(max_lag, T - 1)
+    n_fft = T + effective_lag + 1
+    n_fft = 1 << (n_fft - 1).bit_length()  # next power of 2
+    padded = F.pad(work, (0, n_fft - T))
     fft_s = torch.fft.fft(padded, dim=1)
     corr = torch.fft.ifft(fft_s * fft_s.conj(), dim=1).real
 
     # Normalize by number of overlapping samples.
-    effective_lag = min(max_lag, T - 1)
     counts = torch.arange(T, T - effective_lag - 1, -1, device=series.device, dtype=torch.float32)
     result = corr[:, : effective_lag + 1] / counts.unsqueeze(0)
 

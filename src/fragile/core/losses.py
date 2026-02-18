@@ -473,7 +473,7 @@ def compute_jump_consistency_loss(
     z_n_all_charts: torch.Tensor,
     router_weights: torch.Tensor,
 ) -> torch.Tensor:
-    """Train Jump Operator on chart overlaps.
+    """Train Jump Operator on chart overlaps (vectorized).
 
     For pairs (i, j), if a point exists in both charts (w_i > 0 and w_j > 0),
     then Jump(i->j) applied to z_n_i should match z_n_j.
@@ -489,47 +489,64 @@ def compute_jump_consistency_loss(
     Returns:
         loss: Mean weighted MSE across all chart pairs
     """
-    B, N_c, _D = z_n_all_charts.shape
+    B, N_c, D = z_n_all_charts.shape
     device = z_n_all_charts.device
-    total_loss = torch.tensor(0.0, device=device)
-    num_pairs = 0
 
-    for i in range(N_c):
-        for j in range(N_c):
-            if i == j:
-                continue
-
-            # Weight: how much is each point in BOTH chart i and j?
-            # High weight = point is in overlap region
-            # Overlap weights restrict supervision to shared chart regions.
-            weights = router_weights[:, i] * router_weights[:, j]  # [B]
-
-            # Skip if no meaningful overlap in this batch
-            if weights.sum() < 1e-4:
-                continue
-
-            # Get local coords
-            z_i = z_n_all_charts[:, i, :]  # [B, D] source
-            z_j_target = z_n_all_charts[:, j, :]  # [B, D] ground truth target
-
-            # Predict transformation using jump operator
-            idx_i = torch.full((B,), i, dtype=torch.long, device=device)
-            idx_j = torch.full((B,), j, dtype=torch.long, device=device)
-            z_j_pred = jump_op(z_i, idx_i, idx_j)  # [B, D]
-
-            # Consistency error: weighted hyperbolic distance
-            z_j_pred = _project_to_ball(z_j_pred)
-            z_j_target = _project_to_ball(z_j_target)
-            error = hyperbolic_distance(z_j_pred, z_j_target).pow(2)  # [B]
-            pair_loss = (error * weights).sum() / (weights.sum() + 1e-6)
-
-            total_loss += pair_loss
-            num_pairs += 1
-
-    if num_pairs == 0:
+    if N_c < 2:
         return torch.tensor(0.0, device=device)
 
-    return total_loss / num_pairs
+    # Build all N_c*(N_c-1) off-diagonal pair indices once
+    src_list = []
+    tgt_list = []
+    for i in range(N_c):
+        for j in range(N_c):
+            if i != j:
+                src_list.append(i)
+                tgt_list.append(j)
+    pair_src = torch.tensor(src_list, dtype=torch.long, device=device)  # [P]
+    pair_tgt = torch.tensor(tgt_list, dtype=torch.long, device=device)  # [P]
+    P = pair_src.shape[0]  # N_c * (N_c - 1)
+
+    # Overlap weights for all pairs: w_i * w_j  -> [B, P]
+    w_overlap = router_weights[:, pair_src] * router_weights[:, pair_tgt]
+
+    # Mask out pairs with negligible total overlap across the batch
+    pair_weight_sums = w_overlap.sum(dim=0)  # [P]
+    active_mask = pair_weight_sums >= 1e-4  # [P]
+    num_active = int(active_mask.sum().item())
+
+    if num_active == 0:
+        return torch.tensor(0.0, device=device)
+
+    # Narrow to active pairs only
+    active_src = pair_src[active_mask]   # [A]
+    active_tgt = pair_tgt[active_mask]   # [A]
+    w_active = w_overlap[:, active_mask]  # [B, A]
+    A = active_src.shape[0]
+
+    # Gather source and target coords: [B, A, D]
+    z_sources = z_n_all_charts[:, active_src]
+    z_targets = z_n_all_charts[:, active_tgt]
+
+    # Flatten to [B*A, D] for a single jump_op call
+    flat_src = z_sources.reshape(B * A, D)
+    flat_src_idx = active_src.unsqueeze(0).expand(B, -1).reshape(B * A)
+    flat_tgt_idx = active_tgt.unsqueeze(0).expand(B, -1).reshape(B * A)
+
+    # Single batched forward pass through the jump operator
+    z_pred_flat = jump_op(flat_src, flat_src_idx, flat_tgt_idx)  # [B*A, D]
+
+    # Hyperbolic distance (vectorized)
+    z_pred_flat = _project_to_ball(z_pred_flat)
+    z_target_flat = _project_to_ball(z_targets.reshape(B * A, D))
+    error_flat = hyperbolic_distance(z_pred_flat, z_target_flat).pow(2)  # [B*A]
+
+    # Reshape and compute per-pair weighted loss
+    error = error_flat.view(B, A)  # [B, A]
+    w_sums = w_active.sum(dim=0)   # [A]
+    pair_losses = (error * w_active).sum(dim=0) / (w_sums + 1e-6)  # [A]
+
+    return pair_losses.mean()
 
 
 def get_jump_weight_schedule(

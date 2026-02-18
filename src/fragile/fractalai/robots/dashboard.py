@@ -143,6 +143,11 @@ class RoboticGasConfigPanel(param.Parameterized):
         default=1, bounds=(1, 10), doc="Action repeat for outer environment step"
     )
 
+    kill_on_com_ground = param.Boolean(
+        default=False,
+        doc="Kill walkers whose torso height reaches ground level (walker tasks)",
+    )
+
     def __init__(self, **params):
         super().__init__(**params)
 
@@ -347,6 +352,10 @@ class RoboticGasConfigPanel(param.Parameterized):
         )
 
         action_sampler = self._build_action_sampler(env)
+
+        from fragile.fractalai.robots.death_conditions import walker_ground_death
+
+        death_condition = walker_ground_death if self.kill_on_com_ground else None
         self.gas = RoboticFractalGas(
             env=env,
             N=self.N,
@@ -360,6 +369,7 @@ class RoboticGasConfigPanel(param.Parameterized):
             action_sampler=action_sampler,
             render_width=self.render_width,
             render_height=self.render_height,
+            death_condition=death_condition,
         )
         print("[worker] RoboticFractalGas created, calling reset()...", flush=True)
 
@@ -423,6 +433,10 @@ class RoboticGasConfigPanel(param.Parameterized):
         )
 
         action_sampler = self._build_action_sampler(env)
+
+        from fragile.fractalai.robots.death_conditions import walker_ground_death
+
+        death_condition = walker_ground_death if self.kill_on_com_ground else None
         pg = PlanningFractalGas(
             env=env,
             N=self.N,
@@ -437,6 +451,7 @@ class RoboticGasConfigPanel(param.Parameterized):
             n_elite=self.n_elite,
             outer_dt=self.outer_dt,
             action_sampler=action_sampler,
+            death_condition=death_condition,
         )
         # Pass render dimensions to the inner gas for frame rendering
         pg.inner_gas.render_width = self.render_width
@@ -588,6 +603,11 @@ class RoboticGasConfigPanel(param.Parameterized):
                 self.param,
                 parameters=["action_mode"],
                 widgets={"action_mode": pn.widgets.RadioButtonGroup},
+            ),
+            pn.Param(
+                self.param,
+                parameters=["kill_on_com_ground"],
+                widgets={"kill_on_com_ground": pn.widgets.Checkbox},
             ),
             self._gaussian_params_section,
             self._planning_params_section,

@@ -221,6 +221,7 @@ class PlanningFractalGas:
         record_frames: bool = False,
         n_elite: int = 0,
         outer_dt: int = 1,
+        death_condition=None,
     ):
         if inner_gas_cls is None:
             from fragile.fractalai.videogames.atari_gas import AtariFractalGas
@@ -248,6 +249,7 @@ class PlanningFractalGas:
             seed=seed,
             record_frames=False,
             n_elite=n_elite,
+            death_condition=death_condition,
         )
 
     # ------------------------------------------------------------------
