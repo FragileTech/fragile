@@ -3,6 +3,7 @@
 from fragile.physics.new_channels.mass_extraction_adapter import (
     collect_correlators,
     extract_baryon,
+    extract_fitness_bilinear,
     extract_fitness_pseudoscalar,
     extract_glueball,
     extract_masses_from_channels,
@@ -16,6 +17,7 @@ from fragile.physics.new_channels.mass_extraction_adapter import (
 __all__ = [
     "collect_correlators",
     "extract_baryon",
+    "extract_fitness_bilinear",
     "extract_fitness_pseudoscalar",
     "extract_glueball",
     "extract_masses_from_channels",

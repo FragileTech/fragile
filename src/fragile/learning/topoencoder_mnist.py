@@ -1760,7 +1760,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="TopoEncoder Benchmark: Attentive Atlas vs Standard VQ-VAE"
     )
-    parser.add_argument("--epochs", type=int, default=1000, help="Number of training epochs")
+    parser.add_argument("--epochs", type=int, default=200, help="Number of training epochs")
     parser.add_argument(
         "--dataset",
         type=str,
@@ -1784,8 +1784,8 @@ def main():
     parser.add_argument(
         "--n_samples",
         type=int,
-        default=50000,
-        help="Number of samples to use",
+        default=60000,
+        help="Number of samples to use (60000 = full MNIST train set)",
     )
     parser.add_argument(
         "--test_split",
@@ -1802,7 +1802,7 @@ def main():
     parser.add_argument(
         "--codes_per_chart",
         type=int,
-        default=21,
+        default=16,
         help="VQ codes per chart",
     )
     parser.add_argument(
@@ -2004,13 +2004,13 @@ def main():
     parser.add_argument(
         "--log_every",
         type=int,
-        default=100,
+        default=1,
         help="Log training metrics every N epochs",
     )
     parser.add_argument(
         "--save_every",
         type=int,
-        default=100,
+        default=10,
         help="Save checkpoint every N epochs (0 to disable)",
     )
     parser.add_argument(
@@ -2254,8 +2254,9 @@ def main():
     )
     parser.add_argument(
         "--baseline_attn",
-        action="store_true",
-        help="Enable attention blocks in StandardVQ/VanillaAE baselines",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Enable attention blocks in StandardVQ/VanillaAE baselines (default: True)",
     )
     parser.add_argument(
         "--baseline_attn_tokens",

@@ -291,6 +291,18 @@ _DEFAULT_CHANNEL_TMAX: dict[str, int] = {
     "glueball": 4,
 }
 
+# Default per-channel fit/prior overrides.
+# Channels not listed fall back to global ``MassExtractionSettings`` values.
+_DEFAULT_CHANNEL_FIT: dict[str, dict[str, Any]] = {
+    "pseudoscalar": {"dE_ground": "0.1(3)", "nexp": 2, "tmin": 2},
+    "scalar": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 2},
+    "nucleon": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 2},
+    "vector": {"dE_ground": "0.3(4)", "nexp": 2, "tmin": 2},
+    "axial_vector": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 2},
+    "glueball": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 1},
+    "tensor": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 2},
+}
+
 
 def _build_mass_spectrum_bar(result: MassExtractionResult) -> hv.Overlay:
     """Build a scatter+errorbars chart of ground-state masses (log y-axis).
@@ -467,18 +479,22 @@ def _build_ratio_comparison(
         vdims=["Extracted ratio", "yerr"],
     ).opts(line_width=1.5)
 
-    lo = min(*pdg_vals, *ext_vals) * 0.9
-    hi = max(*pdg_vals, *ext_vals) * 1.1
-    diagonal = hv.Curve([(lo, lo), (hi, hi)], kdims="PDG ratio", vdims="Extracted ratio").opts(
-        color="gray",
-        line_dash="dashed",
-        line_width=1,
-    )
+    positive_vals = [v for v in [*pdg_vals, *ext_vals] if v > 0]
+    lo = min(positive_vals) * 0.5 if positive_vals else 0.01
+    hi = max(positive_vals) * 2.0 if positive_vals else 10.0
+    diag_x = np.geomspace(lo, hi, 50)
+    diagonal = hv.Curve(
+        list(zip(diag_x, diag_x)),
+        kdims="PDG ratio",
+        vdims="Extracted ratio",
+    ).opts(color="gray", line_dash="dashed", line_width=1)
     overlay = (diagonal * scatter * ebars).opts(
         hv.opts.Overlay(
             title="Mass Ratios: Extracted vs PDG",
             width=500,
             height=400,
+            logx=True,
+            logy=True,
         ),
     )
     return overlay, df
@@ -856,6 +872,16 @@ def build_mass_extraction_tab(
         sizing_mode="stretch_width",
     )
 
+    # -- Per-channel fit/prior widgets --
+    channel_fit_widgets: dict[str, dict[str, pn.widgets.Widget]] = {}
+    channel_fit_settings_container = pn.Column(
+        pn.pane.Markdown(
+            "*Run correlators to populate per-channel fit settings.*",
+            sizing_mode="stretch_width",
+        ),
+        sizing_mode="stretch_width",
+    )
+
     # -- Settings panel --
     settings_panel = pn.Param(
         settings,
@@ -1074,15 +1100,33 @@ def build_mass_extraction_tab(
                 if slider is not None:
                     ch_tmax_val = int(slider.value)
 
-                ch_tmax = None if ch_tmax_val <= 0 else max(int(settings.tmin) + 1, ch_tmax_val)
+                # Per-channel fit/prior from widgets, fallback to global settings
+                ch_w = channel_fit_widgets.get(g.name, {})
+                ch_tmin = int(ch_w["tmin"].value) if "tmin" in ch_w else int(settings.tmin)
+                ch_tmax = None if ch_tmax_val <= 0 else max(ch_tmin + 1, ch_tmax_val)
 
                 g.fit = ChannelFitConfig(
-                    tmin=int(settings.tmin),
+                    tmin=ch_tmin,
                     tmax=ch_tmax,
-                    nexp=int(settings.nexp),
-                    use_log_dE=bool(settings.use_log_dE),
+                    nexp=int(ch_w["nexp"].value) if "nexp" in ch_w else int(settings.nexp),
+                    use_log_dE=(
+                        bool(ch_w["use_log_dE"].value)
+                        if "use_log_dE" in ch_w
+                        else bool(settings.use_log_dE)
+                    ),
                 )
-                g.prior = PriorConfig(use_fastfit_seeding=bool(settings.use_fastfit_seeding))
+                g.prior = PriorConfig(
+                    dE_ground=(str(ch_w["dE_ground"].value) if "dE_ground" in ch_w else "0.5(5)"),
+                    dE_excited=(
+                        str(ch_w["dE_excited"].value) if "dE_excited" in ch_w else "0.5(5)"
+                    ),
+                    amplitude=(str(ch_w["amplitude"].value) if "amplitude" in ch_w else "0.5(5)"),
+                    use_fastfit_seeding=(
+                        bool(ch_w["use_fastfit_seeding"].value)
+                        if "use_fastfit_seeding" in ch_w
+                        else bool(settings.use_fastfit_seeding)
+                    ),
+                )
             config.channel_groups = groups
 
             result = extract_masses(pipeline_result, config)
@@ -1110,13 +1154,21 @@ def build_mass_extraction_tab(
         status.object = (
             f"**{tab_label}:** Run {source_label} first, " f"then click {button_label}."
         )
-        # Always reset channel key selectors when history changes
+        # Always reset channel key selectors and fit widgets when history changes
         channel_key_selectors.clear()
         channel_tmax_sliders.clear()
         channel_key_selection_container.clear()
         channel_key_selection_container.append(
             pn.pane.Markdown(
                 f"*Run {source_label} to populate channel operator selections.*",
+                sizing_mode="stretch_width",
+            ),
+        )
+        channel_fit_widgets.clear()
+        channel_fit_settings_container.clear()
+        channel_fit_settings_container.append(
+            pn.pane.Markdown(
+                "*Run correlators to populate per-channel fit settings.*",
                 sizing_mode="stretch_width",
             ),
         )
@@ -1222,6 +1274,81 @@ def build_mass_extraction_tab(
                     ),
                 )
 
+            # Populate per-channel fit/prior widgets
+            channel_fit_widgets.clear()
+            fit_widget_groups: list[pn.Column] = []
+            for g in groups:
+                if not g.correlator_keys:
+                    continue
+                defaults = _DEFAULT_CHANNEL_FIT.get(g.name, {})
+                w: dict[str, pn.widgets.Widget] = {}
+                w["dE_ground"] = pn.widgets.TextInput(
+                    name="dE ground",
+                    value=defaults.get("dE_ground", "0.5(5)"),
+                    width=120,
+                )
+                w["dE_excited"] = pn.widgets.TextInput(
+                    name="dE excited",
+                    value="0.5(5)",
+                    width=120,
+                )
+                w["amplitude"] = pn.widgets.TextInput(
+                    name="amplitude",
+                    value="0.5(5)",
+                    width=120,
+                )
+                w["nexp"] = pn.widgets.IntSlider(
+                    name="nexp",
+                    start=1,
+                    end=6,
+                    step=1,
+                    value=defaults.get("nexp", int(settings.nexp)),
+                    width=120,
+                )
+                w["tmin"] = pn.widgets.IntSlider(
+                    name="tmin",
+                    start=1,
+                    end=20,
+                    step=1,
+                    value=defaults.get("tmin", int(settings.tmin)),
+                    width=120,
+                )
+                w["use_log_dE"] = pn.widgets.Checkbox(
+                    name="log dE",
+                    value=bool(settings.use_log_dE),
+                )
+                w["use_fastfit_seeding"] = pn.widgets.Checkbox(
+                    name="fastfit seed",
+                    value=bool(settings.use_fastfit_seeding),
+                )
+                channel_fit_widgets[g.name] = w
+                fit_widget_groups.append(
+                    pn.Column(
+                        pn.pane.Markdown(f"**{g.name}**"),
+                        pn.Row(w["dE_ground"], w["dE_excited"], w["amplitude"]),
+                        pn.Row(w["nexp"], w["tmin"]),
+                        pn.Row(w["use_log_dE"], w["use_fastfit_seeding"]),
+                        sizing_mode="stretch_width",
+                    ),
+                )
+
+            channel_fit_settings_container.clear()
+            if fit_widget_groups:
+                for i in range(0, len(fit_widget_groups), 2):
+                    channel_fit_settings_container.append(
+                        pn.Row(
+                            *fit_widget_groups[i : i + 2],
+                            sizing_mode="stretch_width",
+                        ),
+                    )
+            else:
+                channel_fit_settings_container.append(
+                    pn.pane.Markdown(
+                        "*No channel groups detected.*",
+                        sizing_mode="stretch_width",
+                    ),
+                )
+
     # -- Tab layout --
 
     info_note = pn.pane.Alert(
@@ -1242,6 +1369,7 @@ def build_mass_extraction_tab(
         pn.Accordion(
             ("Fit Settings", settings_panel),
             ("Channel Operator Selection", channel_key_selection_container),
+            ("Channel Prior & Fit Settings", channel_fit_settings_container),
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),

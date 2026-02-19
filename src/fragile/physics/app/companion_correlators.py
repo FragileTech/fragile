@@ -36,8 +36,8 @@ from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.new_channels.baryon_triplet_channels import (
     compute_baryon_correlator_from_color,
 )
-from fragile.physics.new_channels.fitness_pseudoscalar_channels import (
-    compute_fitness_pseudoscalar_from_data,
+from fragile.physics.new_channels.fitness_bilinear_channels import (
+    compute_fitness_bilinear_from_color,
 )
 from fragile.physics.new_channels.glueball_color_channels import (
     _extract_axis_bounds as _glueball_extract_axis_bounds,
@@ -45,7 +45,7 @@ from fragile.physics.new_channels.glueball_color_channels import (
 )
 from fragile.physics.new_channels.mass_extraction_adapter import (
     extract_baryon,
-    extract_fitness_pseudoscalar,
+    extract_fitness_bilinear,
     extract_glueball,
     extract_meson_phase,
     extract_tensor_momentum,
@@ -635,15 +635,21 @@ def build_companion_correlator_tab(
                     dtype=torch.bool,
                     device=device,
                 )
-                fitness_output = compute_fitness_pseudoscalar_from_data(
+                fitness_output = compute_fitness_bilinear_from_color(
+                    color=color,
+                    color_valid=color_valid,
+                    companions_distance=companions_distance,
+                    companions_clone=companions_clone,
                     fitness=fitness_tensor,
                     cloning_scores=scores,
                     alive_mask=alive_mask,
                     max_lag=max_lag,
                     use_connected=use_connected,
+                    pair_selection=str(settings.pair_selection),
+                    eps=eps,
                     frame_indices=frame_indices,
                 )
-                all_fitness_corrs, all_fitness_ops = extract_fitness_pseudoscalar(
+                all_fitness_corrs, all_fitness_ops = extract_fitness_bilinear(
                     fitness_output,
                     use_connected=use_connected,
                 )

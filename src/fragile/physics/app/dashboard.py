@@ -66,12 +66,27 @@ def create_app() -> pn.template.FastListTemplate:
         sizing_mode="stretch_both",
     )
 
+    # Tab selector lives in the template header bar (always visible).
+    tab_selector = pn.widgets.RadioButtonGroup(
+        options=["Loading\u2026"],
+        value="Loading\u2026",
+        disabled=True,
+        button_type="default",
+        button_style="outline",
+        stylesheets=[":host .bk-btn { color: #000 !important; }"],
+    )
+
     template = pn.template.FastListTemplate(
         title="QFT Swarm Convergence Dashboard",
         sidebar=[sidebar],
         main=[main],
+        header=[tab_selector],
         sidebar_width=435,
         main_max_width="100%",
+        raw_css=[
+            # Hide the built-in Bokeh tab bar (navigation lives in the app header)
+            ".bk-Tabs > .bk-header { display: none !important; }"
+        ],
     )
 
     def _build_ui():
@@ -208,18 +223,46 @@ def create_app() -> pn.template.FastListTemplate:
                 )
             ]
         else:
-            main.objects = [
-                pn.Tabs(
-                    ("Simulation", sim_tab.build_tab()),
-                    ("Algorithm", algorithm_section.tab),
-                    ("Holographic Principle", holographic_section.fractal_set_tab),
-                    ("Coupling Diagnostics", coupling_section.coupling_diagnostics_tab),
-                    ("Companion Correlators", companion_section.tab),
-                    ("Electroweak Correlators", ew_correlator_section.tab),
-                    ("Mass Extraction", companion_mass_section.tab),
-                    ("Electroweak Mass", ew_mass_section.tab),
-                )
+            tab_names = [
+                "Simulation",
+                "Algorithm",
+                "Holographic",
+                "Coupling",
+                "Strong Force",
+                "EW Correlators",
+                "Mass Extraction",
+                "EW Mass",
             ]
+            tabs_widget = pn.Tabs(
+                ("Simulation", sim_tab.build_tab()),
+                ("Algorithm", algorithm_section.tab),
+                ("Holographic Principle", holographic_section.fractal_set_tab),
+                ("Coupling Diagnostics", coupling_section.coupling_diagnostics_tab),
+                ("Companion Correlators", companion_section.tab),
+                ("Electroweak Correlators", ew_correlator_section.tab),
+                ("Mass Extraction", companion_mass_section.tab),
+                ("Electroweak Mass", ew_mass_section.tab),
+                dynamic=True,
+            )
+
+            # Wire header tab selector <-> Tabs widget (bidirectional)
+            tab_selector.options = tab_names
+            tab_selector.value = tab_names[0]
+            tab_selector.disabled = False
+
+            def _on_tab_selector(event):
+                idx = tab_names.index(event.new)
+                if tabs_widget.active != idx:
+                    tabs_widget.active = idx
+
+            def _on_tabs_active(event):
+                if tab_selector.value != tab_names[event.new]:
+                    tab_selector.value = tab_names[event.new]
+
+            tab_selector.param.watch(_on_tab_selector, "value")
+            tabs_widget.param.watch(_on_tabs_active, "active")
+
+            main.objects = [tabs_widget]
 
         _debug(f"ui ready ({time.time() - start_total:.2f}s)")
 

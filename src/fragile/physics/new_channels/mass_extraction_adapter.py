@@ -22,6 +22,9 @@ from fragile.physics.mass_extraction import (
 from fragile.physics.new_channels.baryon_triplet_channels import (
     BaryonTripletCorrelatorOutput,
 )
+from fragile.physics.new_channels.fitness_bilinear_channels import (
+    FitnessBilinearOutput,
+)
 from fragile.physics.new_channels.fitness_pseudoscalar_channels import (
     FitnessPseudoscalarOutput,
 )
@@ -55,6 +58,7 @@ ChannelOutput = (
     | TensorMomentumCorrelatorOutput
     | MultiscaleStrongForceOutput
     | FitnessPseudoscalarOutput
+    | FitnessBilinearOutput
 )
 
 # ---------------------------------------------------------------------------
@@ -218,6 +222,29 @@ def extract_fitness_pseudoscalar(
     return correlators, operators
 
 
+def extract_fitness_bilinear(
+    output: FitnessBilinearOutput,
+    *,
+    use_connected: bool = True,
+    prefix: str = "",
+) -> _ExtractResult:
+    """Extract fitness bilinear pseudoscalar, scalar variance, and axial correlators."""
+    corr_suffix = "connected" if use_connected else "raw"
+    correlators: dict[str, Tensor] = {
+        f"{prefix}fitness_pseudoscalar": getattr(output, f"fitness_pseudoscalar_{corr_suffix}"),
+        f"{prefix}fitness_scalar_variance": getattr(
+            output, f"fitness_scalar_variance_{corr_suffix}"
+        ),
+        f"{prefix}fitness_axial": getattr(output, f"fitness_axial_{corr_suffix}"),
+    }
+    operators: dict[str, Tensor] = {
+        f"{prefix}fitness_pseudoscalar": output.operator_fitness_pseudoscalar_series,
+        f"{prefix}fitness_scalar_variance": output.operator_fitness_scalar_variance_series,
+        f"{prefix}fitness_axial": output.operator_fitness_axial_series,
+    }
+    return correlators, operators
+
+
 # ---------------------------------------------------------------------------
 # Dispatcher mapping
 # ---------------------------------------------------------------------------
@@ -230,6 +257,7 @@ _EXTRACTORS: dict[type, callable] = {
     TensorMomentumCorrelatorOutput: extract_tensor_momentum,
     MultiscaleStrongForceOutput: extract_multiscale,
     FitnessPseudoscalarOutput: extract_fitness_pseudoscalar,
+    FitnessBilinearOutput: extract_fitness_bilinear,
 }
 
 

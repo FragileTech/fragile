@@ -1,4 +1,4 @@
-.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude
+.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow
 
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
@@ -46,6 +46,9 @@ prompt:
 	@echo "Preparing prompt downloads for docs..."
 	@python3 docs/build_prompt_downloads.py
 	@echo "✓ Prompts generated in prompts/"
+
+mlflow:
+	uv run mlflow server --host 127.0.0.1 --port 5000
 
 claude:
 	CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --dangerously-skip-permissions

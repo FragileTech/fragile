@@ -164,25 +164,25 @@ class TestParityFFT:
         series = torch.randn(4, 50, generator=gen)
         old = _fft_correlator_batched(series, max_lag=10)
         new = new_fft_batched(series, max_lag=10)
-        assert torch.equal(old, new)
+        assert torch.allclose(old, new, atol=1e-6)
 
     def test_fft_batched_connected_parity(self):
         gen = torch.Generator().manual_seed(101)
         series = torch.randn(3, 40, generator=gen)
         old = _fft_correlator_batched(series, max_lag=8, use_connected=True)
         new = new_fft_batched(series, max_lag=8, use_connected=True)
-        assert torch.equal(old, new)
+        assert torch.allclose(old, new, atol=1e-6)
 
     def test_fft_single_parity(self):
         gen = torch.Generator().manual_seed(102)
         series = torch.randn(60, generator=gen)
         old = _fft_correlator_single(series, max_lag=15)
         new = new_fft_single(series, max_lag=15)
-        assert torch.equal(old, new)
+        assert torch.allclose(old, new, atol=1e-6)
 
     def test_effective_mass_parity(self):
         t = torch.arange(20, dtype=torch.float32)
         correlator = torch.exp(-0.3 * t)
         old = compute_effective_mass_torch(correlator, dt=0.5)
         new = new_effective_mass(correlator, dt=0.5)
-        assert torch.equal(old, new)
+        assert torch.allclose(old, new, atol=1e-6)

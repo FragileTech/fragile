@@ -5,6 +5,7 @@ companion builders) ported from fragile.fractalai.qft to eliminate
 cross-package dependencies.
 """
 
+from fragile.physics.qft_utils.aggregation import bin_by_euclidean_time
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 from fragile.physics.qft_utils.companions import (
     build_companion_pair_indices,
@@ -23,6 +24,7 @@ from fragile.physics.qft_utils.helpers import (
 __all__ = [
     "PAIR_SELECTION_MODES",
     "_fft_correlator_batched",
+    "bin_by_euclidean_time",
     "build_companion_pair_indices",
     "build_companion_triplets",
     "compute_color_states_batch",

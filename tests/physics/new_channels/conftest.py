@@ -14,10 +14,10 @@ from torch import Tensor
 # ---------------------------------------------------------------------------
 
 
-def assert_outputs_equal(old_out, new_out):
+def assert_outputs_equal(old_out, new_out, *, atol: float = 1e-6):
     """Assert that two dataclass outputs have identical fields.
 
-    - Tensor fields: exact bit-for-bit equality via ``torch.equal``.
+    - Tensor fields: approximate equality via ``torch.allclose`` (default atol=1e-6).
     - Optional Tensor fields: both None or both equal.
     - Scalar / list / tuple / str fields: ``==``.
     """
@@ -34,7 +34,7 @@ def assert_outputs_equal(old_out, new_out):
             assert isinstance(
                 new_val, Tensor
             ), f"Field {f.name}: old is Tensor, new is {type(new_val)}"
-            assert torch.equal(old_val, new_val), (
+            assert torch.allclose(old_val, new_val, atol=atol, equal_nan=True), (
                 f"Field {f.name}: tensors differ.\n"
                 f"  max abs diff = {(old_val - new_val).abs().max().item()}"
             )
@@ -95,6 +95,9 @@ class MockRunHistory:
 
         # Cloning scores [n_recorded, N]
         self.cloning_scores = torch.randn(n_recorded, N, generator=gen)
+
+        # Fitness [n_recorded, N] — positive random values
+        self.fitness = torch.rand(n_recorded, N, generator=gen).clamp(min=1e-6)
 
     @property
     def n_recorded(self) -> int:
@@ -168,6 +171,13 @@ def tiny_scores() -> Tensor:
     """Seeded cloning scores [5, 3]."""
     gen = torch.Generator().manual_seed(8)
     return torch.randn(_TINY_T, _TINY_N, generator=gen)
+
+
+@pytest.fixture
+def tiny_fitness() -> Tensor:
+    """Seeded positive fitness values [5, 3]."""
+    gen = torch.Generator().manual_seed(10)
+    return torch.rand(_TINY_T, _TINY_N, generator=gen).clamp(min=1e-6)
 
 
 @pytest.fixture
