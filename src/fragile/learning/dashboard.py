@@ -19,7 +19,9 @@ import traceback
 import holoviews as hv
 import numpy as np
 import panel as pn
+from sklearn.metrics import adjusted_mutual_info_score
 import torch
+import torch.nn.functional as F
 
 from fragile.core.benchmarks import BaselineClassifier, StandardVQ, VanillaAE
 from fragile.core.layers import TopoEncoderPrimitives
@@ -38,6 +40,7 @@ from fragile.learning.plots import (
     plot_latent_3d,
     plot_loss_components,
     plot_loss_curves,
+    plot_prob_bars,
     plot_reconstruction_grid,
 )
 
@@ -244,14 +247,16 @@ def load_run_at_epoch(run: RunInfo, epoch: int) -> LoadedModels:
     classifier_std = None
     cls_std_state = state.get("classifier_std")
     if cls_std_state is not None:
-        classifier_std = BaselineClassifier(config.latent_dim, num_classes)
+        cls_std_hidden = cls_std_state["net.0.weight"].shape[0]
+        classifier_std = BaselineClassifier(config.latent_dim, num_classes, hidden_dim=cls_std_hidden)
         classifier_std.load_state_dict(cls_std_state)
         classifier_std.eval()
 
     classifier_ae = None
     cls_ae_state = state.get("classifier_ae")
     if cls_ae_state is not None:
-        classifier_ae = BaselineClassifier(config.latent_dim, num_classes)
+        cls_ae_hidden = cls_ae_state["net.0.weight"].shape[0]
+        classifier_ae = BaselineClassifier(config.latent_dim, num_classes, hidden_dim=cls_ae_hidden)
         classifier_ae.load_state_dict(cls_ae_state)
         classifier_ae.eval()
 
@@ -315,12 +320,22 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
     )
     color_by = pn.widgets.RadioButtonGroup(
         name="Color by",
-        options=["label", "chart", "correct"],
+        options=["label", "chart", "correct", "confidence"],
         value="label",
         button_type="default",
     )
     point_size = pn.widgets.IntSlider(name="Point size", start=1, end=10, value=3, width=300)
+    alpha_by_confidence = pn.widgets.Checkbox(
+        name="Alpha by confidence", value=False, width=300,
+    )
     seed_input = pn.widgets.IntInput(name="Random seed", value=42, step=1, width=300)
+    show_hierarchy = pn.widgets.Checkbox(name="Show hierarchy tree", value=False, width=300)
+    tree_line_color = pn.widgets.Select(
+        name="Line color", options=["black", "chart", "symbol"], value="black", width=300,
+    )
+    tree_line_width = pn.widgets.EditableFloatSlider(
+        name="Line width", start=0.1, end=5.0, value=0.5, step=0.1, width=300,
+    )
     status = pn.pane.Markdown("Click **Scan runs** to begin.", width=300)
 
     sidebar = pn.Column(
@@ -336,7 +351,13 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
         latent_samples,
         color_by,
         point_size,
+        alpha_by_confidence,
         seed_input,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Hierarchy"),
+        show_hierarchy,
+        tree_line_color,
+        tree_line_width,
         pn.layout.Divider(),
         status,
         width=350,
@@ -371,6 +392,17 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
         pn.Column("**VQ**", inspect_recon_vq),
         pn.Column("**AE**", inspect_recon_ae),
     )
+
+    # Probability bar chart panes (per-class distribution on click)
+    inspect_prob_atlas = pn.pane.HoloViews(hv.Div(""), width=250, height=200)
+    inspect_prob_vq = pn.pane.HoloViews(hv.Div(""), width=250, height=200)
+    inspect_prob_ae = pn.pane.HoloViews(hv.Div(""), width=250, height=200)
+    inspect_prob_row = pn.Row(
+        pn.Column(inspect_prob_atlas),
+        pn.Column(inspect_prob_vq),
+        pn.Column(inspect_prob_ae),
+    )
+
     tap_stream = hv.streams.Tap(x=0, y=0)
 
     # ---- Tabs ----
@@ -383,6 +415,7 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
         latent_2d_pane,
         inspect_label,
         inspect_row,
+        inspect_prob_row,
         usage_pane,
         sizing_mode="stretch_width",
     )
@@ -466,21 +499,25 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
 
         # Batched inference to avoid OOM on large datasets
         batch_size = 2048
-        z_geo_parts, K_chart_parts, router_parts = [], [], []
-        cls_pred_parts = []
+        z_geo_parts, K_chart_parts, K_code_parts, router_parts = [], [], [], []
+        cls_pred_parts, cls_prob_parts = [], []
         with torch.no_grad():
             for i in range(0, len(X), batch_size):
-                out = loaded.model_atlas(X[i : i + batch_size])
-                z_geo_parts.append(_to_numpy(out[5]))
-                K_chart_parts.append(_to_numpy(out[4]))
-                router_parts.append(_to_numpy(out[2]))
-                # Classifier head predictions
+                enc_out = loaded.model_atlas.encoder(X[i : i + batch_size])
+                z_geo_parts.append(_to_numpy(enc_out[5]))
+                K_chart_parts.append(_to_numpy(enc_out[0]))
+                K_code_parts.append(_to_numpy(enc_out[1]))
+                router_parts.append(_to_numpy(enc_out[4]))
+                # Classifier head predictions + probabilities
                 if loaded.classifier_head is not None:
-                    logits = loaded.classifier_head(out[2], out[5])
+                    logits = loaded.classifier_head(enc_out[4], enc_out[5])
+                    probs = F.softmax(logits, dim=1)
                     cls_pred_parts.append(_to_numpy(logits.argmax(dim=1)))
+                    cls_prob_parts.append(_to_numpy(probs))
 
         z_geo = np.concatenate(z_geo_parts)
         K_chart = np.concatenate(K_chart_parts)
+        K_code = np.concatenate(K_code_parts)
         router_weights = np.concatenate(router_parts)
 
         # Correctness via classifier head (preferred) or majority-vote fallback
@@ -491,12 +528,21 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
             predicted = c2l[K_chart]
         correct = (predicted == labels).astype(int)
 
+        # Confidence = max softmax probability per sample
+        if cls_prob_parts:
+            probs_all = np.concatenate(cls_prob_parts)
+            confidence = probs_all.max(axis=1)
+        else:
+            confidence = np.ones(len(labels))
+
         app_state["latent_cache"] = {
             "z_geo": z_geo,
             "K_chart": K_chart,
+            "K_code": K_code,
             "labels": labels,
             "correct": correct,
             "router_weights": router_weights,
+            "confidence": confidence,
         }
 
     def _refresh_latent_display(_event=None):
@@ -507,9 +553,11 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
 
         z_geo_full = cache["z_geo"]
         K_chart_full = cache["K_chart"]
+        K_code_full = cache["K_code"]
         labels_full = cache["labels"]
         correct_full = cache["correct"]
         router_full = cache["router_weights"]
+        confidence_full = cache["confidence"]
 
         n_total = len(z_geo_full)
         ns = min(latent_samples.value, n_total)
@@ -521,14 +569,30 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
             idx.sort()
             z_geo = z_geo_full[idx]
             K_chart = K_chart_full[idx]
+            K_code = K_code_full[idx]
             labels = labels_full[idx]
             correct = correct_full[idx]
+            conf = confidence_full[idx]
         else:
             idx = np.arange(n_total)
             z_geo = z_geo_full
             K_chart = K_chart_full
+            K_code = K_code_full
             labels = labels_full
             correct = correct_full
+            conf = confidence_full
+
+        # Filter points outside [-1, 1] in the first 3 latent dims
+        ndim = min(z_geo.shape[1], 3)
+        in_range = np.all((z_geo[:, :ndim] >= -1) & (z_geo[:, :ndim] <= 1), axis=1)
+        if not np.all(in_range):
+            z_geo = z_geo[in_range]
+            K_chart = K_chart[in_range]
+            K_code = K_code[in_range]
+            labels = labels[in_range]
+            correct = correct[in_range]
+            conf = conf[in_range]
+            idx = idx[in_range]
 
         # Store for click-to-inspect lookup
         app_state["display_indices"] = idx
@@ -536,6 +600,7 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
 
         cb = color_by.value
         ps = point_size.value
+        abc = alpha_by_confidence.value
 
         latent_3d_pane.object = plot_latent_3d(
             z_geo,
@@ -544,6 +609,12 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
             correct=correct,
             color_by=cb,
             point_size=ps,
+            K_code=K_code,
+            show_hierarchy=show_hierarchy.value,
+            tree_line_color=tree_line_color.value,
+            tree_line_width=tree_line_width.value,
+            confidence=conf,
+            alpha_by_confidence=abc,
         )
 
         # Build the z0-z1 scatter separately to wire the Tap stream
@@ -561,6 +632,8 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
             0,
             1,
             indices=idx,
+            confidence=conf,
+            alpha_by_confidence=abc,
         )
         tap_stream.source = scatter_z01
 
@@ -573,12 +646,14 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
             color_by=cb,
             point_size=ps,
             indices=idx,
+            confidence=conf,
+            alpha_by_confidence=abc,
         )
         # Replace the first panel with the Tap-wired scatter
         panels = list(layout)
         if panels:
             panels[0] = scatter_z01
-        latent_2d_pane.object = hv.Layout(panels).cols(min(3, len(panels)))
+        latent_2d_pane.object = hv.Layout(panels).opts(shared_axes=False).cols(min(3, len(panels)))
 
         # Chart usage from full router weights
         usage = router_full.sum(axis=0)
@@ -657,23 +732,104 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
             originals, recon_atlas, recon_vq, recon_ae, ns, image_shape
         )
 
+        # --- AMI & accuracy on full inference set ---
+        X_infer = app_state["X_infer"].float()
+        labels_infer = app_state["labels_infer"]
+        cache = app_state.get("latent_cache", {})
+        batch_size = 2048
+
+        # Atlas: AMI(chart, label) + classifier accuracy
+        atlas_ami = None
+        atlas_acc = None
+        if "K_chart" in cache:
+            atlas_ami = adjusted_mutual_info_score(labels_infer, cache["K_chart"])
+        if loaded.classifier_head is not None and "router_weights" in cache and "z_geo" in cache:
+            rw = torch.tensor(cache["router_weights"], dtype=torch.float32)
+            zg = torch.tensor(cache["z_geo"], dtype=torch.float32)
+            preds = []
+            with torch.no_grad():
+                for i in range(0, len(rw), batch_size):
+                    logits = loaded.classifier_head(rw[i:i + batch_size], zg[i:i + batch_size])
+                    preds.append(logits.argmax(dim=1).numpy())
+            atlas_acc = float((np.concatenate(preds) == labels_infer).mean())
+
+        # VQ: AMI(code, label) + classifier accuracy
+        vq_ami = None
+        vq_acc = None
+        if loaded.model_std is not None:
+            vq_codes_parts = []
+            vq_z_parts = []
+            with torch.no_grad():
+                for i in range(0, len(X_infer), batch_size):
+                    out = loaded.model_std(X_infer[i:i + batch_size])
+                    vq_codes_parts.append(_to_numpy(out[2]))  # indices
+                    vq_z_parts.append(_to_numpy(loaded.model_std.encoder(X_infer[i:i + batch_size])))
+            vq_codes = np.concatenate(vq_codes_parts)
+            vq_ami = adjusted_mutual_info_score(labels_infer, vq_codes)
+            if loaded.classifier_std is not None:
+                vq_z = torch.tensor(np.concatenate(vq_z_parts), dtype=torch.float32)
+                preds = []
+                with torch.no_grad():
+                    for i in range(0, len(vq_z), batch_size):
+                        logits = loaded.classifier_std(vq_z[i:i + batch_size])
+                        preds.append(logits.argmax(dim=1).numpy())
+                vq_acc = float((np.concatenate(preds) == labels_infer).mean())
+
+        # AE: no discrete codes → no AMI; classifier accuracy
+        ae_ami = None
+        ae_acc = None
+        if loaded.model_ae is not None and loaded.classifier_ae is not None:
+            ae_z_parts = []
+            with torch.no_grad():
+                for i in range(0, len(X_infer), batch_size):
+                    out = loaded.model_ae(X_infer[i:i + batch_size])
+                    ae_z_parts.append(_to_numpy(out[1]))  # z
+            ae_z = torch.tensor(np.concatenate(ae_z_parts), dtype=torch.float32)
+            preds = []
+            with torch.no_grad():
+                for i in range(0, len(ae_z), batch_size):
+                    logits = loaded.classifier_ae(ae_z[i:i + batch_size])
+                    preds.append(logits.argmax(dim=1).numpy())
+            ae_acc = float((np.concatenate(preds) == labels_infer).mean())
+
         # Metrics table
-        lines = ["| Model | MSE | Params |", "|-------|-----|--------|"]
-        lines.append(f"| TopoEncoder | {atlas_mse:.6f} | {atlas_params:,} |")
+        def _fmt(v, fmt=".6f"):
+            return f"{v:{fmt}}" if v is not None else "—"
+
+        def _fmt_pct(v):
+            return f"{v:.1%}" if v is not None else "—"
+
+        lines = [
+            "| Model | MSE | AMI | Accuracy | Params |",
+            "|-------|-----|-----|----------|--------|",
+        ]
+        lines.append(
+            f"| TopoEncoder | {atlas_mse:.6f} | {_fmt(atlas_ami, '.4f')} "
+            f"| {_fmt_pct(atlas_acc)} | {atlas_params:,} |"
+        )
         if vq_mse is not None:
-            lines.append(f"| StandardVQ | {vq_mse:.6f} | {vq_params:,} |")
+            lines.append(
+                f"| StandardVQ | {vq_mse:.6f} | {_fmt(vq_ami, '.4f')} "
+                f"| {_fmt_pct(vq_acc)} | {vq_params:,} |"
+            )
         if ae_mse is not None:
-            lines.append(f"| VanillaAE | {ae_mse:.6f} | {ae_params:,} |")
+            lines.append(
+                f"| VanillaAE | {ae_mse:.6f} | {_fmt(ae_ami, '.4f')} "
+                f"| {_fmt_pct(ae_acc)} | {ae_params:,} |"
+            )
         metrics_table.object = "\n".join(lines)
 
-    def _on_tap(_event=None):
+    def _on_tap(*_events):
         """Handle click on z0-z1 scatter: show original + reconstructed images."""
         x, y = tap_stream.x, tap_stream.y
         if app_state.get("display_z") is None or app_state.get("loaded") is None:
             return
 
         z = app_state["display_z"]
-        dists = (z[:, 0] - x) ** 2 + (z[:, 1] - y) ** 2
+        # Tap coords are in rescaled [0, 25] space; convert back to [-1, 1]
+        x_orig = x / 12.5 - 1.0
+        y_orig = y / 12.5 - 1.0
+        dists = (z[:, 0] - x_orig) ** 2 + (z[:, 1] - y_orig) ** 2
         local_idx = int(np.argmin(dists))
         full_idx = int(app_state["display_indices"][local_idx])
 
@@ -692,6 +848,7 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
             img = arr.reshape(image_shape)
             return hv.Image(
                 img,
+                kdims=["img_x", "img_y"],
                 bounds=(0, 0, image_shape[1], image_shape[0]),
             ).opts(cmap="gray", xaxis=None, yaxis=None, width=220, height=220)
 
@@ -723,9 +880,44 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
         chart = int(cache["K_chart"][full_idx]) if "K_chart" in cache else "?"
         corr = cache["correct"][full_idx] if "correct" in cache else "?"
         corr_str = "yes" if corr == 1 else "no"
+        conf_val = float(cache["confidence"][full_idx]) if "confidence" in cache else 0.0
         inspect_label.object = (
-            f"**Sample #{full_idx}** — Label: {lbl}, Chart: {chart}, Correct: {corr_str}"
+            f"**Sample #{full_idx}** — Label: {lbl}, Chart: {chart}, "
+            f"Correct: {corr_str}, Confidence: {conf_val:.3f}"
         )
+
+        # Probability bar charts for each classifier
+        num_classes = loaded.config.num_classes
+        with torch.no_grad():
+            if loaded.classifier_head is not None:
+                enc_out = loaded.model_atlas.encoder(x_in)
+                logits_atlas = loaded.classifier_head(enc_out[4], enc_out[5])
+                probs_atlas = F.softmax(logits_atlas, dim=1)[0].cpu().numpy()
+                inspect_prob_atlas.object = plot_prob_bars(
+                    probs_atlas, lbl, "TopoEncoder", num_classes,
+                )
+            else:
+                inspect_prob_atlas.object = hv.Div("")
+
+            if loaded.classifier_std is not None:
+                z_std = loaded.model_std.encoder(x_in)
+                logits_std = loaded.classifier_std(z_std)
+                probs_std = F.softmax(logits_std, dim=1)[0].cpu().numpy()
+                inspect_prob_vq.object = plot_prob_bars(
+                    probs_std, lbl, "VQ", num_classes,
+                )
+            else:
+                inspect_prob_vq.object = hv.Div("")
+
+            if loaded.classifier_ae is not None:
+                z_ae = loaded.model_ae(x_in)[1]
+                logits_ae = loaded.classifier_ae(z_ae)
+                probs_ae = F.softmax(logits_ae, dim=1)[0].cpu().numpy()
+                inspect_prob_ae.object = plot_prob_bars(
+                    probs_ae, lbl, "AE", num_classes,
+                )
+            else:
+                inspect_prob_ae.object = hv.Div("")
 
     tap_stream.param.watch(_on_tap, ["x", "y"])
 
@@ -735,7 +927,7 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
     load_btn.on_click(_on_load)
 
     # Latent display options: only re-render plots from cache (no re-inference)
-    for w in [latent_samples, color_by, point_size]:
+    for w in [latent_samples, color_by, point_size, show_hierarchy, tree_line_color, tree_line_width, alpha_by_confidence]:
         w.param.watch(_refresh_latent_display, "value")
 
     # Reconstruction options: need to re-run inference on subset
