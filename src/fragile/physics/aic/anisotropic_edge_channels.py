@@ -4,7 +4,7 @@ This module computes MC-time correlators from edge-local observables built on
 the simulation-recorded neighbor graph. It never recomputes neighbor topology.
 
 Workflow per frame:
-1. Reuse recorded directed Delaunay edges (restricted to alive walkers).
+1. Reuse recorded directed Delaunay edges.
 2. Compute channel edge observables on direct neighbors only.
 3. Build anisotropic moments by projecting edge observables with directional
    basis functions (axis-square or quadrupole).
@@ -14,14 +14,12 @@ Workflow per frame:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 import numpy as np
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.correlator_channels import (
+from fragile.physics.aic.correlator_channels import (
     _fft_correlator_batched,
     ChannelCorrelatorResult,
     compute_channel_correlator,
@@ -30,8 +28,7 @@ from fragile.fractalai.qft.correlator_channels import (
     extract_mass_aic,
     extract_mass_linear,
 )
-from fragile.fractalai.qft.radial_channels import (
-    _apply_pbc_diff_torch,
+from fragile.physics.aic.radial_channels import (
     _apply_projection,
     _build_gamma_matrices,
     _compute_color_states_batch,
@@ -39,9 +36,9 @@ from fragile.fractalai.qft.radial_channels import (
     _extract_recorded_edge_mode_values,
     _recorded_subgraph_for_alive,
     _resolve_mc_time_index,
-    _slice_bounds,
     RECORDED_EDGE_WEIGHT_MODES,
 )
+from fragile.physics.fractal_gas.history import RunHistory
 
 
 EDGE_WEIGHT_MODES = (
@@ -239,7 +236,6 @@ def _resolve_edge_weights(
     geodesic_local: np.ndarray,
     local_edge_indices: np.ndarray,
     positions_alive: Tensor,
-    bounds: Any | None,
 ) -> Tensor:
     mode = str(config.edge_weight_mode)
     device = positions_alive.device
@@ -267,8 +263,6 @@ def _resolve_edge_weights(
         iso = _compute_recorded_iso_edge_lengths(
             positions=positions_alive,
             edges=edges_local,
-            bounds=bounds,
-            pbc=bool(history.pbc),
         )
         iso_t = torch.as_tensor(iso, device=device, dtype=dtype)
         if not torch.isfinite(iso_t).all() or torch.any(iso_t <= 0):
@@ -412,7 +406,6 @@ def _build_companion_triplets(
     frame_idx: int,
     alive_idx: Tensor,
     positions_alive: Tensor,
-    bounds: Any | None,
     src: Tensor,
     dst: Tensor,
     edge_weights: Tensor,
@@ -509,9 +502,6 @@ def _build_companion_triplets(
 
     diff_ij = positions_alive[neigh_j_kept] - positions_alive[src_kept]
     diff_ik = positions_alive[neigh_k_kept] - positions_alive[src_kept]
-    if bool(history.pbc) and bounds is not None:
-        diff_ij = _apply_pbc_diff_torch(diff_ij, bounds)
-        diff_ik = _apply_pbc_diff_torch(diff_ik, bounds)
     direction_raw = (diff_ij + diff_ik).float()
     return src_kept, neigh_j_kept, neigh_k_kept, weights, direction_raw
 
@@ -856,7 +846,6 @@ def compute_anisotropic_edge_channels(
     )
     device = color_batch.device
     gamma = _build_gamma_matrices(len(keep_dims), device, torch.complex128)
-    bounds = _slice_bounds(history.bounds, keep_dims)
     component_labels = _component_labels(len(keep_dims), config.component_mode)
 
     numerators: dict[str, Tensor] = {}
@@ -906,14 +895,13 @@ def compute_anisotropic_edge_channels(
     edge_counts: list[float] = []
 
     for t_idx, frame_idx in enumerate(frame_indices):
-        alive_mask = history.alive_mask[frame_idx - 1]
-        alive_idx = torch.where(alive_mask)[0]
+        alive_idx = torch.arange(history.N)
         if alive_idx.numel() < 2:
             continue
 
-        positions_alive = history.x_before_clone[frame_idx][alive_idx][:, keep_dims]
-        color_alive = color_batch[t_idx, alive_idx]
-        valid_alive = valid_batch[t_idx, alive_idx]
+        positions_alive = history.x_before_clone[frame_idx][:, keep_dims]
+        color_alive = color_batch[t_idx]
+        valid_alive = valid_batch[t_idx]
 
         edges_global, geodesic_global = _extract_edges_for_frame(history, frame_idx)
         edges_local, geodesic_local, local_edge_indices = _recorded_subgraph_for_alive(
@@ -933,7 +921,6 @@ def compute_anisotropic_edge_channels(
             geodesic_local=geodesic_local,
             local_edge_indices=local_edge_indices,
             positions_alive=positions_alive,
-            bounds=bounds,
         ).float()
 
         src = torch.as_tensor(edges_local[:, 0], device=device, dtype=torch.long)
@@ -955,8 +942,6 @@ def compute_anisotropic_edge_channels(
             )
 
         diff = positions_alive[dst] - positions_alive[src]
-        if bool(history.pbc) and bounds is not None:
-            diff = _apply_pbc_diff_torch(diff, bounds)
         distance = torch.linalg.vector_norm(diff, dim=-1).clamp(min=1e-8)
         direction = diff / distance.unsqueeze(-1)
 
@@ -1014,7 +999,6 @@ def compute_anisotropic_edge_channels(
                         frame_idx=frame_idx,
                         alive_idx=alive_idx,
                         positions_alive=positions_alive,
-                        bounds=bounds,
                         src=src,
                         dst=dst,
                         edge_weights=edge_weights,

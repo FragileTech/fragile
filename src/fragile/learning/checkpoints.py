@@ -2,6 +2,8 @@
 
 from dataclasses import asdict
 import math
+import os
+import tempfile
 
 import numpy as np
 from sklearn.metrics import adjusted_mutual_info_score
@@ -10,6 +12,31 @@ from torch import nn, optim
 
 from fragile.core.benchmarks import StandardVQ, VanillaAE
 from fragile.learning.config import TopoEncoderConfig
+
+
+def _atomic_save(obj: object, path: str) -> None:
+    """Save a PyTorch object atomically to prevent 0-byte files.
+
+    Writes to a temporary file first, verifies it's non-empty,
+    then atomically replaces the target path.
+    """
+    dir_name = os.path.dirname(path) or "."
+    os.makedirs(dir_name, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".pt.tmp")
+    try:
+        os.close(fd)
+        torch.save(obj, tmp_path)
+        size = os.path.getsize(tmp_path)
+        if size == 0:
+            raise RuntimeError(
+                f"torch.save produced 0-byte file for {path}. "
+                "Check that all objects in the checkpoint are picklable."
+            )
+        os.replace(tmp_path, path)
+    except BaseException:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+        raise
 
 
 def count_parameters(model: nn.Module) -> int:
@@ -189,6 +216,8 @@ def save_checkpoint(
         "state": {
             "atlas": _state_dict_cpu(model_atlas),
             "jump": _state_dict_cpu(jump_op),
+            "std": _state_dict_cpu(model_std),
+            "ae": _state_dict_cpu(model_ae),
             "supervised": _state_dict_cpu(supervised_loss),
             "classifier": _state_dict_cpu(classifier_head),
             "classifier_std": _state_dict_cpu(classifier_std),
@@ -209,7 +238,31 @@ def save_checkpoint(
         "metrics": metrics,
         "data": data_snapshot,
     }
-    torch.save(checkpoint, path)
+    _atomic_save(checkpoint, path)
+
+
+def save_model_checkpoint(
+    path: str,
+    model: nn.Module,
+    optimizer: optim.Optimizer | None,
+    config: TopoEncoderConfig,
+    epoch: int,
+    *,
+    hidden_dim: int = 0,
+    model_type: str = "",
+    extra_metrics: dict | None = None,
+) -> None:
+    """Save a single model checkpoint (VQ or AE) for independent reuse."""
+    payload = {
+        "epoch": epoch,
+        "model_type": model_type,
+        "config": asdict(config),
+        "state_dict": _state_dict_cpu(model),
+        "optimizer": _optimizer_state(optimizer),
+        "hidden_dim": hidden_dim,
+        "metrics": extra_metrics or {},
+    }
+    _atomic_save(payload, path)
 
 
 def load_checkpoint(path: str) -> dict:
@@ -266,7 +319,7 @@ def save_benchmarks(
             "ae_hidden_dim": int(ae_hidden_dim),
         },
     }
-    torch.save(payload, path)
+    _atomic_save(payload, path)
 
 
 def load_benchmarks(path: str) -> dict:

@@ -32,7 +32,6 @@ from fragile.physics.new_channels.correlator_channels import (
     extract_mass_aic,
     extract_mass_linear,
 )
-from fragile.physics.qft_utils.aggregation import bin_by_euclidean_time
 
 
 ELECTROWEAK_BASE_CHANNELS = (
@@ -95,13 +94,6 @@ class ElectroweakChannelConfig:
     use_time_sliced_tessellation: bool = True
     time_sliced_neighbor_mode: str = "spacelike"
 
-    # Time axis selection (for 4D Euclidean time analysis)
-    time_axis: str = "mc"  # "mc" or "euclidean"
-    euclidean_time_dim: int = 3  # Which dimension is Euclidean time (0-indexed)
-    euclidean_time_bins: int = 50  # Number of time bins for Euclidean analysis
-    euclidean_time_range: tuple[float, float] | None = None  # (t_min, t_max) or None for auto
-    mc_time_index: int | None = None  # Recorded index for Euclidean slice; None => last
-
     # Fit settings
     window_widths: list[int] | None = None
     min_mass: float = 0.0
@@ -132,7 +124,6 @@ class ElectroweakChannelOutput:
     channel_results: dict[str, ChannelCorrelatorResult]
     frame_indices: list[int]
     n_valid_frames: int
-    avg_alive_walkers: float
     avg_edges: float
 
 
@@ -143,7 +134,6 @@ class _ElectroweakSeriesBundle:
     series_map: dict[str, Tensor]
     frame_indices: list[int]
     n_valid_frames: int
-    avg_alive_walkers: float
     avg_edges: float
 
 
@@ -308,27 +298,12 @@ def _resolve_transition_frames(
     return torch.as_tensor(sorted(set(resolved)), device=device, dtype=torch.long)
 
 
-def _apply_pbc_diff(diff: Tensor, bounds: Any | None) -> Tensor:
-    if bounds is None:
-        return diff
-    high = bounds.high.to(device=diff.device, dtype=diff.dtype).reshape(1, 1, -1)
-    low = bounds.low.to(device=diff.device, dtype=diff.dtype).reshape(1, 1, -1)
-    span = high - low
-    nonzero = span.abs() > 1e-12
-    span_safe = torch.where(nonzero, span, torch.ones_like(span))
-    wrapped = diff - span_safe * torch.round(diff / span_safe)
-    return torch.where(nonzero, wrapped, diff)
-
-
 def _compute_d_alg_sq_for_companions(
     positions: Tensor,
     velocities: Tensor,
-    alive: Tensor,
     companions: Tensor,
     *,
     lambda_alg: float,
-    bounds: Any | None,
-    pbc: bool,
 ) -> tuple[Tensor, Tensor]:
     n_walkers = int(positions.shape[1])
     companions = companions.to(device=positions.device, dtype=torch.long).clamp(
@@ -339,21 +314,17 @@ def _compute_d_alg_sq_for_companions(
     vel_j = torch.gather(velocities, dim=1, index=gather_idx)
 
     diff_x = positions - pos_j
-    if pbc and bounds is not None:
-        diff_x = _apply_pbc_diff(diff_x, bounds)
     diff_v = velocities - vel_j
     d_alg_sq = (diff_x**2).sum(dim=-1) + float(lambda_alg) * (diff_v**2).sum(dim=-1)
 
     src = torch.arange(n_walkers, device=positions.device, dtype=torch.long).unsqueeze(0)
     src = src.expand_as(companions)
-    alive_j = torch.gather(alive, dim=1, index=companions)
-    valid = alive & alive_j & (companions != src) & torch.isfinite(d_alg_sq) & (d_alg_sq > 0)
+    valid = (companions != src) & torch.isfinite(d_alg_sq) & (d_alg_sq > 0)
     return d_alg_sq, valid
 
 
 def _compute_fitness_gap_abs_for_companions(
     fitness: Tensor,
-    alive: Tensor,
     companions: Tensor,
     *,
     epsilon_clone: float,
@@ -374,15 +345,14 @@ def _compute_fitness_gap_abs_for_companions(
 
     src = torch.arange(n_walkers, device=fitness.device, dtype=torch.long).unsqueeze(0)
     src = src.expand_as(companions)
-    alive_j = torch.gather(alive, dim=1, index=companions)
     gap_abs = torch.abs((fit_j - fit_i) / denom)
-    valid = alive & alive_j & (companions != src) & torch.isfinite(gap_abs)
+    valid = (companions != src) & torch.isfinite(gap_abs)
     return gap_abs, valid
 
 
 def _compute_offdiag_pairwise_rms_sq(
     matrix: Tensor,
-    alive_mask: Tensor,
+    n: int,
 ) -> tuple[float, int]:
     """Return (sum of squares, sample count) for finite positive off-diagonal distances."""
     if matrix.ndim != 2:
@@ -390,17 +360,16 @@ def _compute_offdiag_pairwise_rms_sq(
     n_rows, n_cols = matrix.shape
     if n_rows != n_cols or n_rows <= 1:
         return 0.0, 0
-    n = min(int(alive_mask.numel()), n_rows)
+    n = min(n, n_rows)
     if n <= 1:
         return 0.0, 0
 
-    alive = alive_mask[:n].to(dtype=torch.bool)
     matrix = matrix[:n, :n]
     off_diag = torch.triu(
         torch.ones(n, n, dtype=torch.bool, device=matrix.device),
         diagonal=1,
     )
-    valid = off_diag & (alive[:, None] & alive[None, :]) & torch.isfinite(matrix) & (matrix > 0)
+    valid = off_diag & torch.isfinite(matrix) & (matrix > 0)
     flat = matrix[valid]
     if flat.numel() == 0:
         return 0.0, 0
@@ -439,7 +408,6 @@ def compute_emergent_electroweak_scales(
     velocities = history.v_before_clone.index_select(0, frames).to(
         device=positions.device, dtype=positions.dtype
     )
-    alive = history.alive_mask.index_select(0, info_idx).to(device=device, dtype=torch.bool)
     lambda_alg_resolved = _resolve_lambda_alg(history, lambda_alg=lambda_alg)
     if epsilon_clone is None:
         params = history.params if isinstance(history.params, dict) else None
@@ -464,12 +432,13 @@ def compute_emergent_electroweak_scales(
     n_geodesic_distance_samples = 0
     n_clone_samples = 0
     n_fitness_gap_samples = 0
+    N = int(history.N)
 
     if precomputed_distances:
         geodesic_sum_sq = 0.0
         geodesic_count = 0
         frame_list = [int(v) for v in frames.tolist()]
-        for local_idx, frame_idx in enumerate(frame_list):
+        for frame_idx in frame_list:
             matrix = precomputed_distances.get(frame_idx)
             if matrix is None:
                 continue
@@ -478,7 +447,7 @@ def compute_emergent_electroweak_scales(
             matrix = matrix.to(device=device)
             if matrix.ndim != 2:
                 continue
-            sum_sq, n_pairs = _compute_offdiag_pairwise_rms_sq(matrix, alive[local_idx])
+            sum_sq, n_pairs = _compute_offdiag_pairwise_rms_sq(matrix, N)
             if n_pairs > 0:
                 geodesic_sum_sq += sum_sq
                 geodesic_count += n_pairs
@@ -495,7 +464,7 @@ def compute_emergent_electroweak_scales(
         distances = distances_hist.index_select(0, info_idx).to(
             device=device, dtype=positions.dtype
         )
-        valid_distance = alive & torch.isfinite(distances) & (distances > 0)
+        valid_distance = torch.isfinite(distances) & (distances > 0)
         n_distance_samples = int(valid_distance.sum().item())
         if n_distance_samples > 0:
             eps_distance = float(torch.sqrt((distances[valid_distance] ** 2).mean()).item())
@@ -510,11 +479,8 @@ def compute_emergent_electroweak_scales(
             d_alg_sq_dist, valid_dist = _compute_d_alg_sq_for_companions(
                 positions=positions,
                 velocities=velocities,
-                alive=alive,
                 companions=companions_distance.index_select(0, info_idx),
                 lambda_alg=lambda_alg_resolved,
-                bounds=history.bounds,
-                pbc=bool(history.pbc),
             )
             n_distance_samples = int(valid_dist.sum().item())
             if n_distance_samples > 0:
@@ -529,11 +495,8 @@ def compute_emergent_electroweak_scales(
         d_alg_sq_clone, valid_clone = _compute_d_alg_sq_for_companions(
             positions=positions,
             velocities=velocities,
-            alive=alive,
             companions=companions_clone.index_select(0, info_idx),
             lambda_alg=lambda_alg_resolved,
-            bounds=history.bounds,
-            pbc=bool(history.pbc),
         )
         n_clone_samples = int(valid_clone.sum().item())
         if n_clone_samples > 0:
@@ -549,7 +512,6 @@ def compute_emergent_electroweak_scales(
         fitness = fitness.index_select(0, info_idx).to(device=device, dtype=positions.dtype)
         fitness_gap_abs, valid_gap = _compute_fitness_gap_abs_for_companions(
             fitness=fitness,
-            alive=alive,
             companions=companions_clone.index_select(0, info_idx),
             epsilon_clone=epsilon_clone,
         )
@@ -596,18 +558,8 @@ def compute_electroweak_coupling_constants(
     mean_force_sq = float("nan")
     if history is not None and getattr(history, "force_viscous", None) is not None:
         force = history.force_viscous
-        alive = history.alive_mask
-        if alive is None:
-            alive = torch.ones(force.shape[:-1], dtype=torch.bool, device=force.device)
-        if alive.shape[0] != force.shape[0]:
-            min_len = min(alive.shape[0], force.shape[0])
-            alive = alive[:min_len]
-            force = force[:min_len]
         force_sq = (force**2).sum(dim=-1)
-        if alive.numel() > 0:
-            masked = torch.where(alive, force_sq, torch.zeros_like(force_sq))
-            counts = alive.sum().clamp(min=1)
-            mean_force_sq = float((masked.sum() / counts).item())
+        mean_force_sq = float(force_sq.mean().item())
 
     if nu is None or not math.isfinite(mean_force_sq) or d <= 0:
         g3_est = float("nan")
@@ -700,32 +652,6 @@ def compute_electroweak_coupling_constants(
     }
 
 
-def _resolve_mc_time_index(history: RunHistory, mc_time_index: int | None) -> int:
-    """Resolve a Monte Carlo slice index from either recorded index or step."""
-    if history.n_recorded < 2:
-        msg = "Need at least 2 recorded timesteps for Euclidean analysis."
-        raise ValueError(msg)
-    if mc_time_index is None:
-        resolved = history.n_recorded - 1
-    else:
-        try:
-            raw = int(mc_time_index)
-        except (TypeError, ValueError) as exc:
-            raise ValueError(f"Invalid mc_time_index: {mc_time_index}") from exc
-        if raw in history.recorded_steps:
-            resolved = history.get_step_index(raw)
-        else:
-            resolved = raw
-    if resolved < 1 or resolved >= history.n_recorded:
-        msg = (
-            f"mc_time_index {resolved} out of bounds "
-            f"(valid recorded index 1..{history.n_recorded - 1} "
-            "or a recorded step value)."
-        )
-        raise ValueError(msg)
-    return resolved
-
-
 def _extract_will_clone_for_frame(
     history: RunHistory,
     info_idx: int,
@@ -751,7 +677,8 @@ def _build_neighbor_data_from_history(
     history: RunHistory,
     frame_idx: int,
     mode: str,
-    alive: Tensor,
+    n_walkers: int,
+    device: torch.device,
     max_neighbors: int = 0,
 ) -> PackedNeighbors | None:
     """Build per-walker neighbor indices and weights from pre-computed RunHistory data."""
@@ -776,13 +703,14 @@ def _build_neighbor_data_from_history(
         if resolved_mode is None:
             return None
         weights_flat = ew_dict[resolved_mode]
+    alive = torch.ones(n_walkers, dtype=torch.bool, device=device)
     return pack_neighbors_from_edges(
         edges=edges,
         edge_weights=weights_flat,
         alive=alive,
-        n_walkers=int(alive.shape[0]),
+        n_walkers=n_walkers,
         max_neighbors=int(max_neighbors),
-        device=alive.device,
+        device=device,
         dtype=torch.float32,
     )
 
@@ -790,7 +718,8 @@ def _build_neighbor_data_from_history(
 def _build_neighbor_data_from_companions(
     history: RunHistory,
     frame_idx: int,
-    alive: Tensor,
+    n_walkers: int,
+    device: torch.device,
     companion_topology: str = "distance",
     max_neighbors: int = 0,
 ) -> PackedNeighbors | None:
@@ -812,16 +741,15 @@ def _build_neighbor_data_from_companions(
     comp_d = companions_distance[info_idx]
     if not torch.is_tensor(comp_d):
         comp_d = torch.as_tensor(comp_d)
-    comp_d = comp_d.to(device=alive.device, dtype=torch.long)
+    comp_d = comp_d.to(device=device, dtype=torch.long)
 
     comp_c: Tensor | None = None
     if companions_clone is not None:
         comp_c = companions_clone[info_idx]
         if not torch.is_tensor(comp_c):
             comp_c = torch.as_tensor(comp_c)
-        comp_c = comp_c.to(device=alive.device, dtype=torch.long)
+        comp_c = comp_c.to(device=device, dtype=torch.long)
 
-    n_walkers = int(alive.shape[0])
     if comp_d.numel() != n_walkers:
         return None
     if mode in {"clone", "both"} and (comp_c is None or comp_c.numel() != n_walkers):
@@ -830,7 +758,7 @@ def _build_neighbor_data_from_companions(
     if comp_c is not None:
         comp_c = comp_c.clamp(min=0, max=max(n_walkers - 1, 0))
 
-    src = torch.arange(n_walkers, device=alive.device, dtype=torch.long)
+    src = torch.arange(n_walkers, device=device, dtype=torch.long)
     if mode == "distance":
         dst = comp_d
     elif mode == "clone":
@@ -844,14 +772,15 @@ def _build_neighbor_data_from_companions(
         dst = torch.cat([comp_d, comp_c], dim=0)
 
     edges = torch.stack([src, dst], dim=1)
-    weights = torch.ones(edges.shape[0], device=alive.device, dtype=torch.float32)
+    weights = torch.ones(edges.shape[0], device=device, dtype=torch.float32)
+    alive = torch.ones(n_walkers, dtype=torch.bool, device=device)
     return pack_neighbors_from_edges(
         edges=edges,
         edge_weights=weights,
         alive=alive,
         n_walkers=n_walkers,
         max_neighbors=int(max_neighbors),
-        device=alive.device,
+        device=device,
         dtype=torch.float32,
     )
 
@@ -859,7 +788,8 @@ def _build_neighbor_data_from_companions(
 def _require_recorded_or_companion_neighbors(
     history: RunHistory,
     frame_idx: int,
-    alive: Tensor,
+    n_walkers: int,
+    device: torch.device,
     edge_weight_mode: str,
     neighbor_method: str,
     companion_topology: str = "distance",
@@ -871,7 +801,8 @@ def _require_recorded_or_companion_neighbors(
             history=history,
             frame_idx=frame_idx,
             mode=edge_weight_mode,
-            alive=alive,
+            n_walkers=n_walkers,
+            device=device,
             max_neighbors=max_neighbors,
         )
         if packed is not None:
@@ -906,7 +837,8 @@ def _require_recorded_or_companion_neighbors(
         packed = _build_neighbor_data_from_companions(
             history=history,
             frame_idx=frame_idx,
-            alive=alive,
+            n_walkers=n_walkers,
+            device=device,
             companion_topology=companion_topology,
             max_neighbors=max_neighbors,
         )
@@ -924,7 +856,8 @@ def _require_family_neighbors(
     *,
     history: RunHistory,
     frame_idx: int,
-    alive: Tensor,
+    n_walkers: int,
+    device: torch.device,
     edge_weight_mode: str,
     neighbor_method: str,
     topology_u1: str,
@@ -941,7 +874,8 @@ def _require_family_neighbors(
             packed = _require_recorded_or_companion_neighbors(
                 history=history,
                 frame_idx=frame_idx,
-                alive=alive,
+                n_walkers=n_walkers,
+                device=device,
                 edge_weight_mode=edge_weight_mode,
                 neighbor_method=neighbor_method,
                 companion_topology=mode,
@@ -953,31 +887,21 @@ def _require_family_neighbors(
     return _get(topology_u1), _get(topology_su2), _get(topology_ew_mixed), cache
 
 
-def _masked_mean(values: Tensor, alive: Tensor) -> Tensor:
-    masked = torch.where(alive, values, torch.zeros_like(values))
-    counts = alive.sum(dim=1).clamp(min=1)
-    return masked.sum(dim=1) / counts
-
-
 def _compute_electroweak_series(
     history: RunHistory,
     cfg: ElectroweakChannelConfig,
 ) -> _ElectroweakSeriesBundle:
     frame_indices: list[int] = []
-    alive_counts: list[float] = []
     edge_counts: list[float] = []
 
     start_idx = max(1, int(history.n_recorded * cfg.warmup_fraction))
     end_fraction = getattr(cfg, "end_fraction", 1.0)
     end_idx = max(start_idx + 1, int(history.n_recorded * end_fraction))
-    if cfg.time_axis == "euclidean":
-        start_idx = _resolve_mc_time_index(history, cfg.mc_time_index)
     if start_idx >= end_idx:
         return _ElectroweakSeriesBundle(
             series_map={},
             frame_indices=[],
             n_valid_frames=0,
-            avg_alive_walkers=0.0,
             avg_edges=0.0,
         )
 
@@ -995,23 +919,33 @@ def _compute_electroweak_series(
     epsilon_clone = float(params["epsilon_clone"])
     lambda_alg = float(params["lambda_alg"])
 
-    if cfg.time_axis == "euclidean":
-        frame_idx = start_idx
+    T = end_idx - start_idx
+    if T <= 0:
+        return _ElectroweakSeriesBundle(
+            series_map={},
+            frame_indices=[],
+            n_valid_frames=0,
+            avg_edges=0.0,
+        )
+    N = int(history.N)
+    device = history.x_before_clone.device
+    operators = {name: [] for name in ELECTROWEAK_CHANNELS}
+    for frame_idx in range(start_idx, end_idx):
         positions = history.x_before_clone[frame_idx]
         velocities = history.v_before_clone[frame_idx]
         info_idx = frame_idx - 1
         fitness = history.fitness[info_idx]
-        alive = history.alive_mask[info_idx]
         will_clone = _extract_will_clone_for_frame(
             history,
             info_idx,
-            n_walkers=int(alive.shape[0]),
-            device=alive.device,
+            n_walkers=N,
+            device=device,
         )
         packed_u1, packed_su2, packed_ew_mixed, neighbor_cache = _require_family_neighbors(
             history=history,
             frame_idx=frame_idx,
-            alive=alive,
+            n_walkers=N,
+            device=device,
             edge_weight_mode=edge_weight_mode,
             neighbor_method=cfg.neighbor_method,
             topology_u1=topology_u1,
@@ -1019,7 +953,8 @@ def _compute_electroweak_series(
             topology_ew_mixed=topology_ew_mixed,
             max_neighbors=int(cfg.neighbor_k),
         )
-        operators = compute_weighted_electroweak_ops_vectorized(
+        alive = torch.ones(N, dtype=torch.bool, device=device)
+        frame_ops = compute_weighted_electroweak_ops_vectorized(
             positions=positions,
             velocities=velocities,
             fitness=fitness,
@@ -1029,8 +964,8 @@ def _compute_electroweak_series(
             epsilon_c=epsilon_c,
             epsilon_clone=epsilon_clone,
             lambda_alg=lambda_alg,
-            bounds=history.bounds,
-            pbc=bool(history.pbc),
+            bounds=None,
+            pbc=False,
             will_clone=will_clone,
             su2_operator_mode=su2_operator_mode,
             enable_walker_type_split=enable_walker_type_split,
@@ -1040,128 +975,20 @@ def _compute_electroweak_series(
             neighbors_ew_mixed=packed_ew_mixed,
         )
         frame_indices.append(int(frame_idx))
-        alive_counts.append(float(alive.sum().item()))
         edge_samples = [float(packed.valid.sum().item()) for packed in neighbor_cache.values()]
         edge_counts.append(float(sum(edge_samples) / max(len(edge_samples), 1)))
-        alive = alive.unsqueeze(0)
-    else:
-        T = end_idx - start_idx
-        if T <= 0:
-            return _ElectroweakSeriesBundle(
-                series_map={},
-                frame_indices=[],
-                n_valid_frames=0,
-                avg_alive_walkers=0.0,
-                avg_edges=0.0,
-            )
-        operators = {name: [] for name in ELECTROWEAK_CHANNELS}
-        alive_series = []
-        for frame_idx in range(start_idx, end_idx):
-            positions = history.x_before_clone[frame_idx]
-            velocities = history.v_before_clone[frame_idx]
-            info_idx = frame_idx - 1
-            fitness = history.fitness[info_idx]
-            alive = history.alive_mask[info_idx]
-            will_clone = _extract_will_clone_for_frame(
-                history,
-                info_idx,
-                n_walkers=int(alive.shape[0]),
-                device=alive.device,
-            )
-            packed_u1, packed_su2, packed_ew_mixed, neighbor_cache = _require_family_neighbors(
-                history=history,
-                frame_idx=frame_idx,
-                alive=alive,
-                edge_weight_mode=edge_weight_mode,
-                neighbor_method=cfg.neighbor_method,
-                topology_u1=topology_u1,
-                topology_su2=topology_su2,
-                topology_ew_mixed=topology_ew_mixed,
-                max_neighbors=int(cfg.neighbor_k),
-            )
-            frame_ops = compute_weighted_electroweak_ops_vectorized(
-                positions=positions,
-                velocities=velocities,
-                fitness=fitness,
-                alive=alive,
-                h_eff=h_eff,
-                epsilon_d=epsilon_d,
-                epsilon_c=epsilon_c,
-                epsilon_clone=epsilon_clone,
-                lambda_alg=lambda_alg,
-                bounds=history.bounds,
-                pbc=bool(history.pbc),
-                will_clone=will_clone,
-                su2_operator_mode=su2_operator_mode,
-                enable_walker_type_split=enable_walker_type_split,
-                walker_type_scope=walker_type_scope,
-                neighbors_u1=packed_u1,
-                neighbors_su2=packed_su2,
-                neighbors_ew_mixed=packed_ew_mixed,
-            )
-            frame_indices.append(int(frame_idx))
-            alive_counts.append(float(alive.sum().item()))
-            edge_samples = [float(packed.valid.sum().item()) for packed in neighbor_cache.values()]
-            edge_counts.append(float(sum(edge_samples) / max(len(edge_samples), 1)))
-            for name in operators:
-                operators[name].append(frame_ops[name])
-            alive_series.append(alive)
-        operators = {name: torch.stack(values, dim=0) for name, values in operators.items()}
-        alive = torch.stack(alive_series, dim=0)
+        for name in operators:
+            operators[name].append(frame_ops[name])
+    operators = {name: torch.stack(values, dim=0) for name, values in operators.items()}
 
-    if cfg.time_axis == "euclidean":
-        if history.d < cfg.euclidean_time_dim + 1:
-            msg = (
-                f"Cannot use dimension {cfg.euclidean_time_dim} as Euclidean time "
-                f"(only {history.d} dimensions available)"
-            )
-            raise ValueError(msg)
-
-        positions = history.x_before_clone[start_idx : start_idx + 1]
-        alive_slice = alive[:1]
-
-        series: dict[str, Tensor] = {}
-        for name, op_values in operators.items():
-            if op_values.dim() == 1:
-                op_values = op_values.unsqueeze(0)
-            if op_values.is_complex():
-                _coords_r, series_real = bin_by_euclidean_time(
-                    positions=positions,
-                    operators=op_values.real[:1],
-                    alive=alive_slice,
-                    time_dim=cfg.euclidean_time_dim,
-                    n_bins=cfg.euclidean_time_bins,
-                    time_range=cfg.euclidean_time_range,
-                )
-                _coords_i, series_imag = bin_by_euclidean_time(
-                    positions=positions,
-                    operators=op_values.imag[:1],
-                    alive=alive_slice,
-                    time_dim=cfg.euclidean_time_dim,
-                    n_bins=cfg.euclidean_time_bins,
-                    time_range=cfg.euclidean_time_range,
-                )
-                series[name] = series_real + 1j * series_imag
-            else:
-                _coords, series[name] = bin_by_euclidean_time(
-                    positions=positions,
-                    operators=op_values[:1],
-                    alive=alive_slice,
-                    time_dim=cfg.euclidean_time_dim,
-                    n_bins=cfg.euclidean_time_bins,
-                    time_range=cfg.euclidean_time_range,
-                )
-    else:
-        series = {name: _masked_mean(op_values, alive) for name, op_values in operators.items()}
+    series = {name: op_values.mean(dim=1) for name, op_values in operators.items()}
 
     n_valid_frames = len(frame_indices)
-    avg_alive_walkers = float(sum(alive_counts) / n_valid_frames) if n_valid_frames > 0 else 0.0
     avg_edges = float(sum(edge_counts) / n_valid_frames) if n_valid_frames > 0 else 0.0
     return _ElectroweakSeriesBundle(
         series_map=series,
         frame_indices=frame_indices,
         n_valid_frames=n_valid_frames,
-        avg_alive_walkers=avg_alive_walkers,
         avg_edges=avg_edges,
     )
 
@@ -1335,7 +1162,6 @@ def compute_electroweak_channels(
         channel_results=channel_results,
         frame_indices=series_bundle.frame_indices,
         n_valid_frames=series_bundle.n_valid_frames,
-        avg_alive_walkers=series_bundle.avg_alive_walkers,
         avg_edges=series_bundle.avg_edges,
     )
 
@@ -1361,7 +1187,7 @@ def compute_electroweak_snapshot_operators(
     requested_channels = _resolve_requested_channels(channels)
 
     if frame_idx is None:
-        frame_idx = _resolve_mc_time_index(history, cfg.mc_time_index)
+        frame_idx = history.n_recorded - 1
     if frame_idx < 1 or frame_idx >= history.n_recorded:
         msg = (
             f"frame_idx {frame_idx} out of bounds "
@@ -1386,19 +1212,21 @@ def compute_electroweak_snapshot_operators(
     velocities = history.v_before_clone[frame_idx]
     info_idx = frame_idx - 1
     fitness = history.fitness[info_idx]
-    alive = history.alive_mask[info_idx]
+    N = int(history.N)
+    device = positions.device
     will_clone = _extract_will_clone_for_frame(
         history,
         info_idx,
-        n_walkers=int(alive.shape[0]),
-        device=alive.device,
+        n_walkers=N,
+        device=device,
     )
 
     edge_weight_mode = getattr(cfg, "edge_weight_mode", "inverse_riemannian_distance")
     packed_u1, packed_su2, packed_ew_mixed, _neighbor_cache = _require_family_neighbors(
         history=history,
         frame_idx=frame_idx,
-        alive=alive,
+        n_walkers=N,
+        device=device,
         edge_weight_mode=edge_weight_mode,
         neighbor_method=cfg.neighbor_method,
         topology_u1=topology_u1,
@@ -1406,6 +1234,7 @@ def compute_electroweak_snapshot_operators(
         topology_ew_mixed=topology_ew_mixed,
         max_neighbors=int(cfg.neighbor_k),
     )
+    alive = torch.ones(N, dtype=torch.bool, device=device)
     operators = compute_weighted_electroweak_ops_vectorized(
         positions=positions,
         velocities=velocities,
@@ -1416,8 +1245,8 @@ def compute_electroweak_snapshot_operators(
         epsilon_c=epsilon_c,
         epsilon_clone=epsilon_clone,
         lambda_alg=lambda_alg,
-        bounds=history.bounds,
-        pbc=bool(history.pbc),
+        bounds=None,
+        pbc=False,
         will_clone=will_clone,
         su2_operator_mode=su2_operator_mode,
         enable_walker_type_split=enable_walker_type_split,

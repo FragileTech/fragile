@@ -17,19 +17,11 @@ import panel as pn
 import param
 import torch
 
-from fragile.physics.app.algorithm import _algorithm_placeholder_plot
 from fragile.physics.app.correlator_plots import (
-    build_all_channels_correlator_overlay,
-    build_all_channels_meff_overlay,
     build_correlator_table,
     build_grouped_correlator_plot,
     build_grouped_meff_plot,
-    build_single_correlator_plot,
-    build_single_effective_mass_plot,
-    build_single_operator_series_plot,
     build_summary_table,
-    get_correlator_array,
-    get_operator_series_array,
     group_strong_correlator_keys,
 )
 from fragile.physics.fractal_gas.history import RunHistory
@@ -53,6 +45,10 @@ from fragile.physics.new_channels.mass_extraction_adapter import (
 )
 from fragile.physics.new_channels.meson_phase_channels import (
     compute_meson_phase_correlator_from_color,
+)
+from fragile.physics.new_channels.multiscale_strong_force import (
+    compute_multiscale_strong_force_channels,
+    MultiscaleStrongForceConfig,
 )
 from fragile.physics.new_channels.tensor_momentum_channels import (
     _extract_axis_bounds as _tensor_extract_axis_bounds,
@@ -153,6 +149,27 @@ class CompanionCorrelatorSettings(param.Parameterized):
     tensor_momentum_axis = param.Integer(default=0, bounds=(0, 3))
     tensor_momentum_mode_max = param.Integer(default=4, bounds=(0, 8))
 
+    # -- Multiscale --
+    n_scales = param.Integer(default=4, bounds=(2, 16))
+    kernel_type = param.ObjectSelector(
+        default="gaussian",
+        objects=["gaussian", "exponential", "tophat", "shell"],
+    )
+    kernel_batch_size = param.Integer(default=1, bounds=(1, 8))
+    edge_weight_mode = param.ObjectSelector(
+        default="riemannian_kernel_volume",
+        objects=[
+            "uniform",
+            "inverse_distance",
+            "inverse_volume",
+            "inverse_riemannian_distance",
+            "inverse_riemannian_volume",
+            "kernel",
+            "riemannian_kernel",
+            "riemannian_kernel_volume",
+        ],
+    )
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -199,6 +216,13 @@ def build_companion_correlator_tab(
         sizing_mode="stretch_width",
         disabled=True,
     )
+    multiscale_button = pn.widgets.Button(
+        name="Run Multiscale",
+        button_type="warning",
+        min_width=260,
+        sizing_mode="stretch_width",
+        disabled=True,
+    )
 
     # -- Visualization widgets --
     log_scale_toggle = pn.widgets.Toggle(
@@ -215,27 +239,6 @@ def build_companion_correlator_tab(
         visible=False,
         sizing_mode="stretch_width",
     )
-    ALL_CHANNELS = "(all channels)"
-    channel_selector = pn.widgets.Select(
-        name="Channel",
-        options=[ALL_CHANNELS],
-        value=ALL_CHANNELS,
-        sizing_mode="stretch_width",
-    )
-
-    # -- Plot panes --
-    overlay_correlator_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-    overlay_meff_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-    single_correlator_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-    single_meff_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-    single_operator_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-
-    placeholder = _algorithm_placeholder_plot("Run pipeline to show plots.")
-    overlay_correlator_plot.object = placeholder
-    overlay_meff_plot.object = placeholder
-    single_correlator_plot.object = placeholder
-    single_meff_plot.object = placeholder
-    single_operator_plot.object = placeholder
 
     # -- Per-channel-group container --
     per_channel_container = pn.Column(sizing_mode="stretch_width")
@@ -363,24 +366,22 @@ def build_companion_correlator_tab(
         default_layout=type("OperatorGrid", (pn.GridBox,), {"ncols": 2}),
     )
 
+    multiscale_settings_panel = pn.Param(
+        settings,
+        parameters=["n_scales", "kernel_type", "kernel_batch_size", "edge_weight_mode"],
+        show_name=False,
+        default_layout=type("MultiscaleGrid", (pn.GridBox,), {"ncols": 2}),
+    )
+
     # -- Refresh plots helper --
 
     def _refresh_overlay():
-        """Refresh the all-channels overlay plots."""
+        """Refresh summary tables and per-channel-group plots."""
         result = state.get("companion_correlator_output")
         if result is None:
             return
         si = int(scale_selector.value)
         ls = bool(log_scale_toggle.value)
-        overlay_correlator_plot.object = build_all_channels_correlator_overlay(
-            result,
-            logy=ls,
-            scale_index=si,
-        )
-        overlay_meff_plot.object = build_all_channels_meff_overlay(
-            result,
-            scale_index=si,
-        )
         summary_table.value = build_summary_table(result, scale_index=si)
         correlator_table.value = build_correlator_table(result, scale_index=si)
 
@@ -414,59 +415,8 @@ def build_companion_correlator_tab(
                 )
             )
 
-    def _refresh_single():
-        """Refresh the single-channel plots based on channel_selector."""
-        result = state.get("companion_correlator_output")
-        if result is None:
-            return
-        selected = str(channel_selector.value)
-        si = int(scale_selector.value)
-        ls = bool(log_scale_toggle.value)
-
-        if selected == ALL_CHANNELS or selected not in result.correlators:
-            single_correlator_plot.object = _algorithm_placeholder_plot(
-                "Select a channel above to see its individual plots."
-            )
-            single_meff_plot.object = _algorithm_placeholder_plot("Select a channel above.")
-            single_operator_plot.object = _algorithm_placeholder_plot("Select a channel above.")
-            return
-
-        corr_arr = get_correlator_array(result, selected, si)
-        op_arr = get_operator_series_array(result, selected, si)
-
-        if len(corr_arr) > 0:
-            single_correlator_plot.object = build_single_correlator_plot(
-                corr_arr,
-                selected,
-                logy=ls,
-            )
-            single_meff_plot.object = build_single_effective_mass_plot(
-                corr_arr,
-                selected,
-            )
-        else:
-            single_correlator_plot.object = _algorithm_placeholder_plot(
-                f"No correlator data for {selected}"
-            )
-            single_meff_plot.object = _algorithm_placeholder_plot(f"No m_eff data for {selected}")
-
-        if len(op_arr) > 0:
-            single_operator_plot.object = build_single_operator_series_plot(
-                op_arr,
-                selected,
-            )
-        else:
-            single_operator_plot.object = _algorithm_placeholder_plot(
-                f"No operator data for {selected}"
-            )
-
-    def _refresh_all():
-        _refresh_overlay()
-        _refresh_single()
-
-    log_scale_toggle.param.watch(lambda _: _refresh_all(), "value")
-    scale_selector.param.watch(lambda _: _refresh_all(), "value")
-    channel_selector.param.watch(lambda _: _refresh_single(), "value")
+    log_scale_toggle.param.watch(lambda _: _refresh_overlay(), "value")
+    scale_selector.param.watch(lambda _: _refresh_overlay(), "value")
 
     # -- Compute callback --
 
@@ -841,12 +791,7 @@ def build_companion_correlator_tab(
             )
             state["companion_correlator_output"] = result
 
-            # Update channel selector
-            channel_names = [ALL_CHANNELS, *list(result.correlators.keys())]
-            channel_selector.options = channel_names
-            channel_selector.value = ALL_CHANNELS
-
-            _refresh_all()
+            _refresh_overlay()
 
             n_channels = len(result.correlators)
             n_ops = len(result.operators)
@@ -864,6 +809,66 @@ def build_companion_correlator_tab(
 
     run_button.on_click(on_run)
 
+    # -- Multiscale compute callback --
+
+    def on_multiscale_run(_):
+        def _compute(history: RunHistory):
+            ms_config = MultiscaleStrongForceConfig(
+                warmup_fraction=float(settings.warmup_fraction),
+                end_fraction=float(settings.end_fraction),
+                h_eff=float(settings.h_eff),
+                mass=float(settings.mass),
+                ell0=float(settings.ell0) if settings.ell0 is not None else None,
+                edge_weight_mode=str(settings.edge_weight_mode),
+                n_scales=int(settings.n_scales),
+                kernel_type=str(settings.kernel_type),
+                kernel_batch_size=int(settings.kernel_batch_size),
+                max_lag=int(settings.max_lag),
+                use_connected=bool(settings.use_connected),
+                fit_mode="aic",
+                companion_baryon_flux_exp_alpha=float(settings.baryon_flux_exp_alpha),
+            )
+
+            ms_output = compute_multiscale_strong_force_channels(
+                history,
+                config=ms_config,
+            )
+
+            # Convert MultiscaleStrongForceOutput → PipelineResult
+            merged_correlators: dict[str, torch.Tensor] = {}
+            merged_operators: dict[str, torch.Tensor] = {}
+            for ch_name, scale_results in ms_output.per_scale_results.items():
+                corrs = torch.stack([r.correlator for r in scale_results])  # [S, max_lag+1]
+                merged_correlators[ch_name] = corrs
+                if ch_name in ms_output.series_by_channel:
+                    merged_operators[ch_name] = ms_output.series_by_channel[ch_name]  # [S, T]
+
+            result = PipelineResult(
+                correlators=merged_correlators,
+                operators=merged_operators,
+                scales=ms_output.scales,
+            )
+            state["companion_correlator_output"] = result
+
+            # Activate scale selector
+            n_s = int(ms_output.scales.numel())
+            scale_selector.start = 0
+            scale_selector.end = max(0, n_s - 1)
+            scale_selector.value = 0
+            scale_selector.visible = n_s > 1
+
+            _refresh_overlay()
+
+            n_ch = len(ms_output.best_results)
+            status.object = (
+                f"**Multiscale complete:** {n_ch} channels across "
+                f"{n_s} scales ({settings.kernel_type} kernel)."
+            )
+
+        run_tab_computation(state, status, "multiscale analysis", _compute)
+
+    multiscale_button.on_click(on_multiscale_run)
+
     # -- Tab layout --
 
     info_note = pn.pane.Alert(
@@ -879,29 +884,20 @@ def build_companion_correlator_tab(
     tab = pn.Column(
         status,
         info_note,
-        pn.Row(run_button, sizing_mode="stretch_width"),
+        pn.Row(run_button, multiscale_button, sizing_mode="stretch_width"),
         pn.Accordion(
             ("Common Settings", common_settings_panel),
             ("Channel & Mode Selection", channel_selection_panel),
             ("Operator Settings", operator_config_panel),
+            ("Multiscale Settings", multiscale_settings_panel),
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),
         pn.pane.Markdown("### Correlator Summary"),
         summary_table,
-        pn.pane.Markdown("### All Channels Overlay"),
         pn.Row(log_scale_toggle, scale_selector, sizing_mode="stretch_width"),
-        overlay_correlator_plot,
-        overlay_meff_plot,
-        pn.layout.Divider(),
         pn.pane.Markdown("### Per-Channel Correlators"),
         per_channel_container,
-        pn.layout.Divider(),
-        pn.pane.Markdown("### Single Channel View"),
-        channel_selector,
-        single_correlator_plot,
-        single_meff_plot,
-        single_operator_plot,
         pn.layout.Divider(),
         pn.pane.Markdown("### Full Correlator Table"),
         correlator_table,
@@ -912,20 +908,13 @@ def build_companion_correlator_tab(
 
     def on_history_changed(defer: bool) -> None:
         run_button.disabled = False
+        multiscale_button.disabled = False
         status.object = "**Companion Correlators ready:** click Compute Companion Correlators."
         if defer:
             return
         state["companion_correlator_output"] = None
         summary_table.value = pd.DataFrame()
         correlator_table.value = pd.DataFrame()
-        channel_selector.options = [ALL_CHANNELS]
-        channel_selector.value = ALL_CHANNELS
-        placeholder = _algorithm_placeholder_plot("Run pipeline to show plots.")
-        overlay_correlator_plot.object = placeholder
-        overlay_meff_plot.object = placeholder
-        single_correlator_plot.object = placeholder
-        single_meff_plot.object = placeholder
-        single_operator_plot.object = placeholder
         per_channel_container.clear()
         scale_selector.visible = False
 

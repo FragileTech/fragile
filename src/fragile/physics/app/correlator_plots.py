@@ -541,9 +541,10 @@ def group_strong_correlator_keys(keys) -> dict[str, list[str]]:
 
 _EW_GROUP_ORDER = [
     "U(1)",
-    "SU(2) Base",
-    "SU(2) Directed",
-    "SU(2) Walker-Type",
+    "SU(2) Phase",
+    "SU(2) Component",
+    "SU(2) Doublet",
+    "SU(2) Doublet Diff",
     "EW Mixed",
     "Symmetry Breaking",
     "Parity Velocity",
@@ -557,13 +558,10 @@ def group_electroweak_correlator_keys(keys) -> dict[str, list[str]]:
     """
     _rules = [
         ("U(1)", lambda k: k.startswith("u1_")),
-        ("SU(2) Directed", lambda k: k.startswith("su2_") and k.endswith("_directed")),
-        (
-            "SU(2) Walker-Type",
-            lambda k: k.startswith("su2_")
-            and any(k.endswith(s) for s in ("_cloner", "_resister", "_persister")),
-        ),
-        ("SU(2) Base", lambda k: k.startswith("su2_")),
+        ("SU(2) Doublet Diff", lambda k: k.startswith("su2_doublet_diff")),
+        ("SU(2) Doublet", lambda k: k.startswith("su2_doublet")),
+        ("SU(2) Phase", lambda k: k.startswith("su2_phase")),
+        ("SU(2) Component", lambda k: k.startswith("su2_component")),
         ("EW Mixed", lambda k: k == "ew_mixed"),
         ("Symmetry Breaking", lambda k: k in {"fitness_phase", "clone_indicator"}),
         ("Parity Velocity", lambda k: k.startswith("velocity_norm_")),

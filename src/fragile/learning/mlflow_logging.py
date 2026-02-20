@@ -29,7 +29,11 @@ def start_mlflow_run(
     if config.mlflow_experiment:
         mlflow.set_experiment(config.mlflow_experiment)
     run_name = config.mlflow_run_name or f"topoencoder_{config.dataset}"
-    mlflow.start_run(run_name=run_name)
+    if config.mlflow_run_id:
+        mlflow.start_run(run_id=config.mlflow_run_id)
+        print(f"Resuming MLflow run: {config.mlflow_run_id}")
+    else:
+        mlflow.start_run(run_name=run_name)
     params = asdict(config)
     if extra_params:
         params.update(extra_params)
@@ -40,7 +44,11 @@ def start_mlflow_run(
         else:
             safe_params[key] = str(value)
     if safe_params:
-        mlflow.log_params(safe_params)
+        try:
+            mlflow.log_params(safe_params)
+        except mlflow.exceptions.MlflowException:
+            # Params already logged in the resumed run; ignore duplicates
+            pass
     return True
 
 

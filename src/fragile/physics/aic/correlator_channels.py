@@ -32,7 +32,7 @@ For custom time series analysis without RunHistory:
     - Use ConvolutionalAICExtractor for mass fitting
 
 Usage:
-    from fragile.fractalai.qft.correlator_channels import (
+    from fragile.physics.aic.correlator_channels import (
         ChannelConfig,
         compute_all_channels,
         ScalarChannel,
@@ -60,7 +60,7 @@ import torch.nn.functional as F
 
 
 if TYPE_CHECKING:
-    from fragile.fractalai.core.history import RunHistory
+    from fragile.physics.fractal_gas.history import RunHistory
 
 
 # =============================================================================
@@ -898,7 +898,7 @@ class ChannelCorrelator(ABC):
 
     def _validate_config(self) -> None:
         """Validate and fill missing config values."""
-        from fragile.fractalai.qft.aggregation import estimate_ell0
+        from fragile.physics.qft_utils.aggregation import estimate_ell0
 
         # Handle deprecated "uniform" alias
         if self.config.neighbor_method == "uniform":
@@ -992,7 +992,7 @@ class ChannelCorrelator(ABC):
         Returns:
             Series [T] of operator values (MC time) or [n_bins] (Euclidean time).
         """
-        from fragile.fractalai.qft.aggregation import compute_all_operator_series
+        from fragile.physics.qft_utils.aggregation import compute_all_operator_series
 
         # Compute all operators using aggregation module (handles both MC and Euclidean time)
         operator_series = compute_all_operator_series(
@@ -1444,7 +1444,7 @@ def compute_all_channels(
     Returns:
         Dictionary mapping channel names to results.
     """
-    from fragile.fractalai.qft.aggregation import compute_all_operator_series
+    from fragile.physics.qft_utils.aggregation import compute_all_operator_series
 
     if channels is None:
         channels = list(CHANNEL_REGISTRY.keys())

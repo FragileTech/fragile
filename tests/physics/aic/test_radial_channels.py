@@ -10,34 +10,18 @@ from __future__ import annotations
 import numpy as np
 import pytest
 import torch
-from torch import Tensor
 
 from fragile.fractalai.qft.radial_channels import (
-    _apply_pbc_diff_torch,
     _apply_projection,
     _build_gamma_matrices,
     _compute_radial_correlator,
 )
 from fragile.physics.aic.radial_channels import (
-    _apply_pbc_diff_torch as new_pbc_diff,
     _apply_projection as new_projection,
     _build_gamma_matrices as new_gamma,
     _compute_radial_correlator as new_radial_correlator,
 )
 from tests.physics.aic.conftest import assert_tensor_or_nan_equal
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-class MockBounds:
-    """Minimal bounds object with .low and .high tensors."""
-
-    def __init__(self, low: Tensor, high: Tensor) -> None:
-        self.low = low
-        self.high = high
 
 
 # ---------------------------------------------------------------------------
@@ -107,53 +91,6 @@ class TestParityApplyProjection:
         new_result = new_projection(channel, color_i, color_j, gamma_new)
 
         assert_tensor_or_nan_equal(old_result, new_result, label=f"projection({channel})")
-
-
-# ---------------------------------------------------------------------------
-# TestParityPBCDiff
-# ---------------------------------------------------------------------------
-
-
-class TestParityPBCDiff:
-    """Parity: _apply_pbc_diff_torch across old and new paths."""
-
-    def test_no_bounds_parity(self) -> None:
-        diff = torch.randn(10, 4)
-        old_result = _apply_pbc_diff_torch(diff, bounds=None)
-        new_result = new_pbc_diff(diff, bounds=None)
-
-        assert torch.equal(
-            old_result, new_result
-        ), "No-bounds PBC diff should return input unchanged"
-        # Also verify it is the same object (no copy when bounds=None)
-        assert old_result is diff
-        assert new_result is diff
-
-    def test_with_bounds_parity(self) -> None:
-        torch.manual_seed(123)
-        diff = torch.randn(10, 4)
-
-        low = torch.tensor([0.0, 0.0, 0.0, 0.0])
-        high = torch.tensor([1.0, 1.0, 1.0, 1.0])
-        bounds = MockBounds(low=low, high=high)
-
-        old_result = _apply_pbc_diff_torch(diff, bounds=bounds)
-        new_result = new_pbc_diff(diff, bounds=bounds)
-
-        assert_tensor_or_nan_equal(old_result, new_result, label="pbc_diff(with_bounds)")
-
-    def test_asymmetric_bounds_parity(self) -> None:
-        torch.manual_seed(456)
-        diff = torch.randn(20, 3) * 5.0
-
-        low = torch.tensor([-2.0, -3.0, -1.0])
-        high = torch.tensor([2.0, 3.0, 1.0])
-        bounds = MockBounds(low=low, high=high)
-
-        old_result = _apply_pbc_diff_torch(diff, bounds=bounds)
-        new_result = new_pbc_diff(diff, bounds=bounds)
-
-        assert_tensor_or_nan_equal(old_result, new_result, label="pbc_diff(asymmetric)")
 
 
 # ---------------------------------------------------------------------------

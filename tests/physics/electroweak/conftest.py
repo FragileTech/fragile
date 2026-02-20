@@ -8,7 +8,7 @@ import pytest
 import torch
 from torch import Tensor
 
-from tests.physics.new_channels.conftest import assert_outputs_equal, MockRunHistory
+from tests.physics.new_channels.conftest import MockRunHistory
 
 
 # ---------------------------------------------------------------------------

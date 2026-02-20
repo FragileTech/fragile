@@ -79,6 +79,7 @@ from fragile.learning.checkpoints import (  # noqa: F401
     load_optimizer_state as _load_optimizer_state,
     save_benchmarks,
     save_checkpoint,
+    save_model_checkpoint,
 )
 
 # --- Extracted modules ---
@@ -171,15 +172,22 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         - sup_acc: Final supervised accuracy (if enabled)
         - checkpoint_path: Path to final checkpoint
     """
-    # Create output directory
+    # Create output directory with subdirectories for each model type
     os.makedirs(config.output_dir, exist_ok=True)
+    os.makedirs(f"{config.output_dir}/topoencoder", exist_ok=True)
+    os.makedirs(f"{config.output_dir}/vq", exist_ok=True)
+    os.makedirs(f"{config.output_dir}/ae", exist_ok=True)
     print(f"Saving checkpoints to: {config.output_dir}/")
     benchmarks_path = os.path.join(config.output_dir, "benchmarks.pt")
     benchmarks_candidates = [benchmarks_path]
     if config.resume_checkpoint:
         resume_dir = os.path.dirname(config.resume_checkpoint)
-        if resume_dir and resume_dir not in benchmarks_candidates:
-            benchmarks_candidates.append(os.path.join(resume_dir, "benchmarks.pt"))
+        if resume_dir:
+            # Check same dir (old flat layout) and parent dir (new subdir layout)
+            for candidate_dir in [resume_dir, os.path.dirname(resume_dir)]:
+                candidate = os.path.join(candidate_dir, "benchmarks.pt")
+                if candidate not in benchmarks_candidates:
+                    benchmarks_candidates.append(candidate)
     benchmarks_payload: dict | None = None
     benchmarks_state: dict = {}
     benchmarks_metrics: dict = {}
@@ -1398,7 +1406,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             # Save checkpoint
             if should_save:
-                save_path = f"{config.output_dir}/topo_epoch_{epoch:05d}.pt"
+                save_path = f"{config.output_dir}/topoencoder/epoch_{epoch:05d}.pt"
                 checkpoint_metrics = {
                     "std_losses": std_losses,
                     "atlas_losses": atlas_losses,
@@ -1441,6 +1449,31 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     optimizer_classifier_ae=opt_classifier_ae,
                 )
                 print(f"Checkpoint saved: {save_path}")
+                # Save individual VQ and AE checkpoints
+                if model_std is not None:
+                    vq_path = f"{config.output_dir}/vq/epoch_{epoch:05d}.pt"
+                    save_model_checkpoint(
+                        vq_path,
+                        model_std,
+                        opt_std,
+                        config,
+                        epoch,
+                        hidden_dim=std_hidden_dim,
+                        model_type="standard_vq",
+                        extra_metrics={"losses": std_losses},
+                    )
+                if model_ae is not None:
+                    ae_path = f"{config.output_dir}/ae/epoch_{epoch:05d}.pt"
+                    save_model_checkpoint(
+                        ae_path,
+                        model_ae,
+                        opt_ae,
+                        config,
+                        epoch,
+                        hidden_dim=ae_hidden_dim,
+                        model_type="vanilla_ae",
+                        extra_metrics={"losses": ae_losses},
+                    )
                 if train_std or train_ae:
                     benchmarks_metrics = {
                         "std_losses": std_losses,
@@ -1648,7 +1681,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         else:
             print("  = Both backbones tie")
 
-    final_checkpoint = f"{config.output_dir}/topo_final.pt"
+    final_checkpoint = f"{config.output_dir}/topoencoder/final.pt"
     final_metrics = {
         "std_losses": std_losses,
         "atlas_losses": atlas_losses,
@@ -1706,6 +1739,33 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         optimizer_classifier_ae=opt_classifier_ae,
     )
     print(f"\nFinal checkpoint saved to: {final_checkpoint}")
+    # Save final individual VQ and AE checkpoints
+    if model_std is not None:
+        vq_final = f"{config.output_dir}/vq/final.pt"
+        save_model_checkpoint(
+            vq_final,
+            model_std,
+            opt_std,
+            config,
+            config.epochs,
+            hidden_dim=std_hidden_dim,
+            model_type="standard_vq",
+            extra_metrics={"losses": std_losses, "mse": mse_std, "ami": ami_std},
+        )
+        print(f"VQ final checkpoint saved to: {vq_final}")
+    if model_ae is not None:
+        ae_final = f"{config.output_dir}/ae/final.pt"
+        save_model_checkpoint(
+            ae_final,
+            model_ae,
+            opt_ae,
+            config,
+            config.epochs,
+            hidden_dim=ae_hidden_dim,
+            model_type="vanilla_ae",
+            extra_metrics={"losses": ae_losses, "mse": mse_ae, "ami": ami_ae},
+        )
+        print(f"AE final checkpoint saved to: {ae_final}")
     if train_std or train_ae:
         benchmarks_metrics = {
             "std_losses": std_losses,
@@ -2049,6 +2109,12 @@ def main():
         default="",
         help="MLflow run name (default: empty)",
     )
+    parser.add_argument(
+        "--mlflow_run_id",
+        type=str,
+        default="",
+        help="MLflow run ID to resume logging into an existing run",
+    )
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument(
         "--device",
@@ -2057,7 +2123,39 @@ def main():
         help="Device to use (cuda/cpu)",
     )
 
+    # Core loss weights
+    parser.add_argument(
+        "--entropy_weight",
+        type=float,
+        default=0.1,
+        help="Routing entropy weight (prevents chart collapse, default: 0.1)",
+    )
+    parser.add_argument(
+        "--consistency_weight",
+        type=float,
+        default=0.1,
+        help="Encoder/decoder routing consistency weight (default: 0.1)",
+    )
+
     # Tier 1 losses (residual hierarchy)
+    parser.add_argument(
+        "--variance_weight",
+        type=float,
+        default=0.1,
+        help="Variance loss weight (default: 0.1)",
+    )
+    parser.add_argument(
+        "--diversity_weight",
+        type=float,
+        default=0.1,
+        help="Diversity loss weight (prevents chart collapse, default: 0.1)",
+    )
+    parser.add_argument(
+        "--separation_weight",
+        type=float,
+        default=0.1,
+        help="Chart separation loss weight (default: 0.1)",
+    )
     parser.add_argument(
         "--codebook_center_weight",
         type=float,
@@ -2081,6 +2179,20 @@ def main():
         type=float,
         default=0.01,
         help="Residual scale penalty weight (default: 0.01)",
+    )
+
+    # Tier 2 losses (information-theoretic)
+    parser.add_argument(
+        "--window_weight",
+        type=float,
+        default=0.5,
+        help="Information-stability window loss weight (default: 0.5)",
+    )
+    parser.add_argument(
+        "--disentangle_weight",
+        type=float,
+        default=0.1,
+        help="Disentangle loss weight (gauge coherence, default: 0.1)",
     )
 
     # Tier 3 losses (codebook health)
@@ -2437,6 +2549,7 @@ def main():
         config.mlflow_tracking_uri = args.mlflow_tracking_uri
         config.mlflow_experiment = args.mlflow_experiment
         config.mlflow_run_name = args.mlflow_run_name
+        config.mlflow_run_id = args.mlflow_run_id
     else:
         output_dir = args.output_dir or "outputs/topoencoder"
         config = TopoEncoderConfig(
@@ -2494,11 +2607,21 @@ def main():
             mlflow_tracking_uri=args.mlflow_tracking_uri,
             mlflow_experiment=args.mlflow_experiment,
             mlflow_run_name=args.mlflow_run_name,
+            mlflow_run_id=args.mlflow_run_id,
+            # Core loss weights
+            entropy_weight=args.entropy_weight,
+            consistency_weight=args.consistency_weight,
             # Tier 1 losses
+            variance_weight=args.variance_weight,
+            diversity_weight=args.diversity_weight,
+            separation_weight=args.separation_weight,
             codebook_center_weight=args.codebook_center_weight,
             chart_center_sep_weight=args.chart_center_sep_weight,
             chart_center_sep_margin=args.chart_center_sep_margin,
             residual_scale_weight=args.residual_scale_weight,
+            # Tier 2 losses
+            window_weight=args.window_weight,
+            disentangle_weight=args.disentangle_weight,
             # Tier 3 losses
             per_chart_code_entropy_weight=args.per_chart_code_entropy_weight,
             code_entropy_weight=args.code_entropy_weight,

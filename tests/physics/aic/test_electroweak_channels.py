@@ -3,9 +3,8 @@
 Verifies that the AIC copies (fragile.physics.aic.electroweak_channels and
 fragile.physics.aic.multiscale_electroweak) produce identical outputs to the
 originals (fragile.fractalai.qft.electroweak_channels and
-fragile.fractalai.qft.multiscale_electroweak).  Since the AIC files are
-verbatim copies that still import from the original path, all outputs must
-be bit-for-bit identical.
+fragile.fractalai.qft.multiscale_electroweak) when alive is all-True,
+bounds=None, and pbc=False.
 """
 
 from __future__ import annotations
@@ -15,7 +14,7 @@ import torch
 from torch import Tensor
 
 # ---------------------------------------------------------------------------
-# Old (canonical) imports
+# Old (canonical) imports — these still accept alive/bounds/pbc
 # ---------------------------------------------------------------------------
 from fragile.fractalai.qft.electroweak_channels import (
     _compute_d_alg_sq_for_companions,
@@ -31,7 +30,7 @@ from fragile.fractalai.qft.multiscale_electroweak import (
 )
 
 # ---------------------------------------------------------------------------
-# New (AIC copy) imports
+# New (AIC) imports — alive/bounds/pbc removed from signatures
 # ---------------------------------------------------------------------------
 from fragile.physics.aic.electroweak_channels import (
     _compute_d_alg_sq_for_companions as new_compute_d_alg_sq,
@@ -158,11 +157,8 @@ class TestParityCompanionDistances:
         new_d_alg_sq, new_valid = new_compute_d_alg_sq(
             positions=positions,
             velocities=velocities,
-            alive=alive,
             companions=companions,
             lambda_alg=0.0,
-            bounds=None,
-            pbc=False,
         )
 
         assert torch.equal(old_d_alg_sq, new_d_alg_sq), (
@@ -191,11 +187,8 @@ class TestParityCompanionDistances:
         new_d_alg_sq, new_valid = new_compute_d_alg_sq(
             positions=positions,
             velocities=velocities,
-            alive=alive,
             companions=companions,
             lambda_alg=0.5,
-            bounds=None,
-            pbc=False,
         )
 
         assert torch.equal(old_d_alg_sq, new_d_alg_sq), (
@@ -204,14 +197,14 @@ class TestParityCompanionDistances:
         )
         assert torch.equal(old_valid, new_valid), "valid mask (lambda=0.5) differs"
 
-    def test_d_alg_sq_partial_alive(self) -> None:
+    def test_d_alg_sq_all_alive(self) -> None:
+        """With all walkers alive, old (alive=all-True, bounds=None, pbc=False)
+        must match new (no alive/bounds/pbc params)."""
         gen = torch.Generator().manual_seed(99)
         T, N, D = 5, 10, 3
         positions = torch.randn(T, N, D, generator=gen)
         velocities = torch.randn(T, N, D, generator=gen)
         alive = torch.ones(T, N, dtype=torch.bool)
-        alive[:, 0] = False
-        alive[:, 5] = False
         companions = torch.arange(N).roll(-1).unsqueeze(0).expand(T, -1).clone()
 
         old_d_alg_sq, old_valid = _compute_d_alg_sq_for_companions(
@@ -226,15 +219,12 @@ class TestParityCompanionDistances:
         new_d_alg_sq, new_valid = new_compute_d_alg_sq(
             positions=positions,
             velocities=velocities,
-            alive=alive,
             companions=companions,
             lambda_alg=0.0,
-            bounds=None,
-            pbc=False,
         )
 
-        assert torch.equal(old_d_alg_sq, new_d_alg_sq), "d_alg_sq (partial alive) differs"
-        assert torch.equal(old_valid, new_valid), "valid mask (partial alive) differs"
+        assert torch.equal(old_d_alg_sq, new_d_alg_sq), "d_alg_sq (all alive) differs"
+        assert torch.equal(old_valid, new_valid), "valid mask (all alive) differs"
 
 
 # ===========================================================================

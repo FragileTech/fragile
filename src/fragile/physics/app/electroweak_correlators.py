@@ -14,32 +14,20 @@ import pandas as pd
 import panel as pn
 import param
 
-from fragile.physics.app.algorithm import _algorithm_placeholder_plot
 from fragile.physics.app.correlator_plots import (
-    build_all_channels_correlator_overlay,
-    build_all_channels_meff_overlay,
     build_correlator_table,
     build_grouped_correlator_plot,
     build_grouped_meff_plot,
-    build_single_correlator_plot,
-    build_single_effective_mass_plot,
-    build_single_operator_series_plot,
     build_summary_table,
-    get_correlator_array,
-    get_operator_series_array,
     group_electroweak_correlator_keys,
 )
-from fragile.physics.app.strong_correlators import _parse_color_dims
-from fragile.physics.fractal_gas.history import RunHistory
-from fragile.physics.operators import (
-    ChannelConfigBase,
-    compute_strong_force_pipeline,
-    CorrelatorConfig,
-    ElectroweakOperatorConfig,
-    MultiscaleConfig,
-    PipelineConfig,
-    PipelineResult,
+from fragile.physics.electroweak.electroweak_channels import (
+    compute_electroweak_channels,
+    ElectroweakChannelConfig,
+    ElectroweakChannelOutput,
 )
+from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.operators import PipelineResult
 
 
 # ---------------------------------------------------------------------------
@@ -91,6 +79,21 @@ EW_PARITY_VELOCITY_CHANNELS: tuple[str, ...] = (
 
 
 # ---------------------------------------------------------------------------
+# Output adapter
+# ---------------------------------------------------------------------------
+
+
+def _electroweak_output_to_pipeline_result(ew_output: ElectroweakChannelOutput) -> PipelineResult:
+    """Convert ``ElectroweakChannelOutput`` to ``PipelineResult`` for downstream consumers."""
+    return PipelineResult(
+        operators={name: cr.series for name, cr in ew_output.channel_results.items()},
+        correlators={name: cr.correlator for name, cr in ew_output.channel_results.items()},
+        prepared_data=None,
+        scales=None,
+    )
+
+
+# ---------------------------------------------------------------------------
 # Section dataclass
 # ---------------------------------------------------------------------------
 
@@ -114,21 +117,10 @@ class ElectroweakCorrelatorSection:
 class ElectroweakCorrelatorSettings(param.Parameterized):
     """Settings for the electroweak correlator pipeline."""
 
-    # -- Common (ChannelConfigBase) --
+    # -- Common --
     warmup_fraction = param.Number(default=0.2, bounds=(0.0, 0.95))
     end_fraction = param.Number(default=1.0, bounds=(0.05, 1.0))
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
-    mass = param.Number(default=1.0, bounds=(1e-6, None))
-    ell0 = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
-    color_dims_spec = param.String(
-        default="",
-        doc="Comma-separated color dims (blank = all available).",
-    )
-    eps = param.Number(default=1e-12, bounds=(0.0, None))
-    pair_selection = param.ObjectSelector(
-        default="both",
-        objects=("both", "distance", "clone"),
-    )
 
     # -- Correlator --
     max_lag = param.Integer(default=40, bounds=(1, 500))
@@ -157,38 +149,6 @@ class ElectroweakCorrelatorSettings(param.Parameterized):
     enable_directed_variants = param.Boolean(default=True)
     enable_walker_type_split = param.Boolean(default=False)
     enable_parity_velocity = param.Boolean(default=True)
-
-    # -- Multiscale --
-    n_scales = param.Integer(
-        default=1,
-        bounds=(1, 32),
-        doc="1 = single-scale (no multiscale).",
-    )
-    kernel_type = param.ObjectSelector(
-        default="gaussian",
-        objects=("gaussian", "exponential", "tophat", "shell"),
-    )
-    distance_method = param.ObjectSelector(
-        default="auto",
-        objects=("auto", "floyd-warshall", "tropical"),
-    )
-    edge_weight_mode = param.ObjectSelector(
-        default="riemannian_kernel_volume",
-        objects=(
-            "uniform",
-            "inverse_distance",
-            "inverse_volume",
-            "inverse_riemannian_distance",
-            "inverse_riemannian_volume",
-            "kernel",
-            "riemannian_kernel",
-            "riemannian_kernel_volume",
-        ),
-    )
-    scale_q_low = param.Number(default=0.05, bounds=(0.0, 0.99))
-    scale_q_high = param.Number(default=0.95, bounds=(0.01, 1.0))
-    max_scale_samples = param.Integer(default=500_000, bounds=(1_000, 5_000_000))
-    min_scale = param.Number(default=1e-6, bounds=(1e-12, None))
 
 
 # ---------------------------------------------------------------------------
@@ -225,35 +185,6 @@ def build_electroweak_correlator_tab(
         button_type="default",
         width=120,
     )
-    scale_selector = pn.widgets.IntSlider(
-        name="Scale index",
-        value=0,
-        start=0,
-        end=0,
-        visible=False,
-        sizing_mode="stretch_width",
-    )
-    ALL_CHANNELS = "(all channels)"
-    channel_selector = pn.widgets.Select(
-        name="Channel",
-        options=[ALL_CHANNELS],
-        value=ALL_CHANNELS,
-        sizing_mode="stretch_width",
-    )
-
-    # -- Plot panes --
-    overlay_correlator_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-    overlay_meff_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-    single_correlator_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-    single_meff_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-    single_operator_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
-
-    placeholder = _algorithm_placeholder_plot("Run pipeline to show plots.")
-    overlay_correlator_plot.object = placeholder
-    overlay_meff_plot.object = placeholder
-    single_correlator_plot.object = placeholder
-    single_meff_plot.object = placeholder
-    single_operator_plot.object = placeholder
 
     # -- Per-channel-group container --
     per_channel_container = pn.Column(sizing_mode="stretch_width")
@@ -280,16 +211,10 @@ def build_electroweak_correlator_tab(
             "warmup_fraction",
             "end_fraction",
             "h_eff",
-            "mass",
-            "ell0",
-            "eps",
-            "pair_selection",
-            "color_dims_spec",
             "max_lag",
             "use_connected",
         ],
         show_name=False,
-        widgets={"color_dims_spec": {"name": "Color dims (optional)"}},
         default_layout=type("CommonGrid", (pn.GridBox,), {"ncols": 2}),
     )
 
@@ -306,22 +231,6 @@ def build_electroweak_correlator_tab(
         ],
         show_name=False,
         default_layout=type("EWGrid", (pn.GridBox,), {"ncols": 2}),
-    )
-
-    multiscale_settings_panel = pn.Param(
-        settings,
-        parameters=[
-            "n_scales",
-            "kernel_type",
-            "distance_method",
-            "edge_weight_mode",
-            "scale_q_low",
-            "scale_q_high",
-            "max_scale_samples",
-            "min_scale",
-        ],
-        show_name=False,
-        default_layout=type("MultiscaleGrid", (pn.GridBox,), {"ncols": 2}),
     )
 
     # -- Channel selection (MultiSelect per family) --
@@ -397,22 +306,13 @@ def build_electroweak_correlator_tab(
     # -- Refresh plots helper --
 
     def _refresh_overlay():
+        """Refresh summary tables and per-channel-group plots."""
         result: PipelineResult | None = state.get("electroweak_correlator_output")
         if result is None:
             return
-        si = int(scale_selector.value)
         ls = bool(log_scale_toggle.value)
-        overlay_correlator_plot.object = build_all_channels_correlator_overlay(
-            result,
-            logy=ls,
-            scale_index=si,
-        )
-        overlay_meff_plot.object = build_all_channels_meff_overlay(
-            result,
-            scale_index=si,
-        )
-        summary_table.value = build_summary_table(result, scale_index=si)
-        correlator_table.value = build_correlator_table(result, scale_index=si)
+        summary_table.value = build_summary_table(result)
+        correlator_table.value = build_correlator_table(result)
 
         # Per-channel group plots
         groups = group_electroweak_correlator_keys(result.correlators.keys())
@@ -422,14 +322,14 @@ def build_electroweak_correlator_tab(
                 result,
                 group_name,
                 keys,
-                si,
+                0,
                 ls,
             )
             meff_overlay = build_grouped_meff_plot(
                 result,
                 group_name,
                 keys,
-                si,
+                0,
             )
             per_channel_container.append(pn.pane.Markdown(f"#### {group_name}"))
             per_channel_container.append(
@@ -444,170 +344,55 @@ def build_electroweak_correlator_tab(
                 )
             )
 
-    def _refresh_single():
-        result: PipelineResult | None = state.get("electroweak_correlator_output")
-        if result is None:
-            return
-        selected = str(channel_selector.value)
-        si = int(scale_selector.value)
-        ls = bool(log_scale_toggle.value)
-
-        if selected == ALL_CHANNELS or selected not in result.correlators:
-            single_correlator_plot.object = _algorithm_placeholder_plot(
-                "Select a channel above to see its individual plots."
-            )
-            single_meff_plot.object = _algorithm_placeholder_plot("Select a channel above.")
-            single_operator_plot.object = _algorithm_placeholder_plot("Select a channel above.")
-            return
-
-        corr_arr = get_correlator_array(result, selected, si)
-        op_arr = get_operator_series_array(result, selected, si)
-
-        if len(corr_arr) > 0:
-            single_correlator_plot.object = build_single_correlator_plot(
-                corr_arr,
-                selected,
-                logy=ls,
-            )
-            single_meff_plot.object = build_single_effective_mass_plot(
-                corr_arr,
-                selected,
-            )
-        else:
-            single_correlator_plot.object = _algorithm_placeholder_plot(
-                f"No correlator data for {selected}"
-            )
-            single_meff_plot.object = _algorithm_placeholder_plot(f"No m_eff data for {selected}")
-
-        if len(op_arr) > 0:
-            single_operator_plot.object = build_single_operator_series_plot(
-                op_arr,
-                selected,
-            )
-        else:
-            single_operator_plot.object = _algorithm_placeholder_plot(
-                f"No operator data for {selected}"
-            )
-
-    def _refresh_all():
-        _refresh_overlay()
-        _refresh_single()
-
-    log_scale_toggle.param.watch(lambda _: _refresh_all(), "value")
-    scale_selector.param.watch(lambda _: _refresh_all(), "value")
-    channel_selector.param.watch(lambda _: _refresh_single(), "value")
+    log_scale_toggle.param.watch(lambda _: _refresh_overlay(), "value")
 
     # -- Compute callback --
 
     def on_run(_):
         def _compute(history: RunHistory):
-            d = history.d
-            color_dims = _parse_color_dims(settings.color_dims_spec, d)
+            # Collect user-selected channels from the MultiSelect widgets
+            selected_channels: list[str] = []
+            selected_channels.extend(u1_selector.value)
+            selected_channels.extend(su2_base_selector.value)
+            if settings.enable_directed_variants:
+                selected_channels.extend(su2_directed_selector.value)
+            if settings.enable_walker_type_split:
+                selected_channels.extend(su2_walker_type_selector.value)
+            selected_channels.extend(mixed_selector.value)
+            selected_channels.extend(symmetry_breaking_selector.value)
+            if settings.enable_parity_velocity:
+                selected_channels.extend(parity_velocity_selector.value)
 
-            base_kwargs: dict[str, Any] = {
-                "warmup_fraction": float(settings.warmup_fraction),
-                "end_fraction": float(settings.end_fraction),
-                "h_eff": float(settings.h_eff),
-                "mass": float(settings.mass),
-                "ell0": float(settings.ell0) if settings.ell0 is not None else None,
-                "color_dims": color_dims,
-                "eps": float(settings.eps),
-                "pair_selection": str(settings.pair_selection),
-            }
+            if not selected_channels:
+                status.object = "**Error:** No channels selected."
+                return
 
-            ew_config = ElectroweakOperatorConfig(
+            cfg = ElectroweakChannelConfig(
+                warmup_fraction=float(settings.warmup_fraction),
+                end_fraction=float(settings.end_fraction),
+                h_eff=float(settings.h_eff),
+                max_lag=int(settings.max_lag),
+                use_connected=bool(settings.use_connected),
                 epsilon_d=(float(settings.epsilon_d) if settings.epsilon_d is not None else None),
                 epsilon_clone=(
                     float(settings.epsilon_clone) if settings.epsilon_clone is not None else None
                 ),
                 lambda_alg=float(settings.lambda_alg),
                 su2_operator_mode=str(settings.su2_operator_mode),
-                enable_directed_variants=bool(settings.enable_directed_variants),
                 enable_walker_type_split=bool(settings.enable_walker_type_split),
-                enable_parity_velocity=bool(settings.enable_parity_velocity),
-                **base_kwargs,
             )
 
-            correlator_cfg = CorrelatorConfig(
-                max_lag=int(settings.max_lag),
-                use_connected=bool(settings.use_connected),
+            ew_output = compute_electroweak_channels(
+                history, channels=selected_channels, config=cfg
             )
-            multiscale_cfg = MultiscaleConfig(
-                n_scales=int(settings.n_scales),
-                kernel_type=str(settings.kernel_type),
-                distance_method=str(settings.distance_method),
-                edge_weight_mode=str(settings.edge_weight_mode),
-                scale_q_low=float(settings.scale_q_low),
-                scale_q_high=float(settings.scale_q_high),
-                max_scale_samples=int(settings.max_scale_samples),
-                min_scale=float(settings.min_scale),
-            )
-
-            pipeline_config = PipelineConfig(
-                base=ChannelConfigBase(**base_kwargs),
-                electroweak=ew_config,
-                correlator=correlator_cfg,
-                multiscale=multiscale_cfg,
-                channels=["electroweak"],
-            )
-            result = compute_strong_force_pipeline(history, pipeline_config)
-
-            # Collect all user-selected channels from the MultiSelect widgets
-            selected_channels: set[str] = set()
-            selected_channels.update(u1_selector.value)
-            selected_channels.update(su2_base_selector.value)
-            if settings.enable_directed_variants:
-                selected_channels.update(su2_directed_selector.value)
-            if settings.enable_walker_type_split:
-                selected_channels.update(su2_walker_type_selector.value)
-            selected_channels.update(mixed_selector.value)
-            selected_channels.update(symmetry_breaking_selector.value)
-            if settings.enable_parity_velocity:
-                selected_channels.update(parity_velocity_selector.value)
-
-            if not selected_channels:
-                status.object = "**Error:** No channels selected."
-                return
-
-            # Filter result to only user-selected channels
-            result.correlators = {
-                k: v for k, v in result.correlators.items() if k in selected_channels
-            }
-            result.operators = {
-                k: v for k, v in result.operators.items() if k in selected_channels
-            }
-
+            result = _electroweak_output_to_pipeline_result(ew_output)
             state["electroweak_correlator_output"] = result
 
-            # Update scale selector
-            if result.scales is not None and result.scales.numel() > 1:
-                scale_selector.end = int(result.scales.numel()) - 1
-                scale_selector.value = 0
-                scale_selector.visible = True
-            else:
-                scale_selector.end = 0
-                scale_selector.value = 0
-                scale_selector.visible = False
-
-            # Update channel selector
-            channel_names = [ALL_CHANNELS, *list(result.correlators.keys())]
-            channel_selector.options = channel_names
-            channel_selector.value = ALL_CHANNELS
-
-            _refresh_all()
+            _refresh_overlay()
 
             n_channels = len(result.correlators)
-            n_ops = len(result.operators)
-            n_frames = 0
-            data = result.prepared_data
-            if data is not None and data.frame_indices:
-                n_frames = len(data.frame_indices)
-            ms_info = ""
-            if result.scales is not None and result.scales.numel() > 1:
-                ms_info = f" | {int(result.scales.numel())} scales"
             status.object = (
-                f"**Complete:** {n_channels} correlators from {n_ops} operators "
-                f"({n_frames} frames){ms_info}."
+                f"**Complete:** {n_channels} correlators " f"({ew_output.n_valid_frames} frames)."
             )
 
         run_tab_computation(
@@ -660,25 +445,14 @@ def build_electroweak_correlator_tab(
             ("Common Settings", common_settings_panel),
             ("Channel Selection", channel_selection_panel),
             ("Electroweak Settings", electroweak_settings_panel),
-            ("Multiscale Settings", multiscale_settings_panel),
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),
         pn.pane.Markdown("### Correlator Summary"),
         summary_table,
-        pn.pane.Markdown("### All Channels Overlay"),
-        pn.Row(log_scale_toggle, scale_selector, sizing_mode="stretch_width"),
-        overlay_correlator_plot,
-        overlay_meff_plot,
-        pn.layout.Divider(),
+        pn.Row(log_scale_toggle, sizing_mode="stretch_width"),
         pn.pane.Markdown("### Per-Channel Correlators"),
         per_channel_container,
-        pn.layout.Divider(),
-        pn.pane.Markdown("### Single Channel View"),
-        channel_selector,
-        single_correlator_plot,
-        single_meff_plot,
-        single_operator_plot,
         pn.layout.Divider(),
         pn.pane.Markdown("### Full Correlator Table"),
         correlator_table,
@@ -695,16 +469,7 @@ def build_electroweak_correlator_tab(
         state["electroweak_correlator_output"] = None
         summary_table.value = pd.DataFrame()
         correlator_table.value = pd.DataFrame()
-        channel_selector.options = [ALL_CHANNELS]
-        channel_selector.value = ALL_CHANNELS
-        ph = _algorithm_placeholder_plot("Run pipeline to show plots.")
-        overlay_correlator_plot.object = ph
-        overlay_meff_plot.object = ph
-        single_correlator_plot.object = ph
-        single_meff_plot.object = ph
-        single_operator_plot.object = ph
         per_channel_container.clear()
-        scale_selector.visible = False
 
     return ElectroweakCorrelatorSection(
         tab=tab,

@@ -19,7 +19,7 @@ import torch
 if TYPE_CHECKING:
     import panel as pn
 
-    from fragile.fractalai.qft.correlator_channels import ChannelCorrelatorResult
+    from fragile.physics.aic.correlator_channels import ChannelCorrelatorResult
 
 
 hv.extension("bokeh")

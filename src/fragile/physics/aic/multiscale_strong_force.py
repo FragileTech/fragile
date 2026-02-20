@@ -18,37 +18,42 @@ from typing import Any
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.aggregation import compute_color_states_batch, estimate_ell0
-from fragile.fractalai.qft.baryon_triplet_channels import (
-    _resolve_frame_indices,
-    _safe_gather_3d,
-    compute_baryon_correlator_from_color,
-)
-from fragile.fractalai.qft.correlator_channels import (
-    _fft_correlator_batched,
-    ChannelCorrelatorResult,
-    compute_effective_mass_torch,
-    CorrelatorConfig,
-    extract_mass_aic,
-    extract_mass_linear,
-)
-from fragile.fractalai.qft.glueball_color_channels import (
-    compute_glueball_color_correlator_from_color,
-)
-from fragile.fractalai.qft.meson_phase_channels import compute_meson_phase_correlator_from_color
 from fragile.fractalai.qft.smeared_operators import (
     compute_pairwise_distance_matrices_from_history,
     compute_smeared_kernels_from_distances,
     iter_smeared_kernel_batches_from_history,
     select_interesting_scales_from_history,
 )
-from fragile.fractalai.qft.tensor_momentum_channels import (
+from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.new_channels.baryon_triplet_channels import (
+    compute_baryon_correlator_from_color,
+)
+from fragile.physics.new_channels.correlator_channels import (
+    ChannelCorrelatorResult,
+    compute_effective_mass_torch,
+    CorrelatorConfig,
+    extract_mass_aic,
+    extract_mass_linear,
+)
+from fragile.physics.new_channels.glueball_color_channels import (
+    compute_glueball_color_correlator_from_color,
+)
+from fragile.physics.new_channels.meson_phase_channels import (
+    compute_meson_phase_correlator_from_color,
+)
+from fragile.physics.new_channels.tensor_momentum_channels import (
     compute_tensor_momentum_correlator_from_color_positions,
 )
-from fragile.fractalai.qft.vector_meson_channels import (
+from fragile.physics.new_channels.vector_meson_channels import (
     compute_vector_meson_correlator_from_color_positions,
 )
+from fragile.physics.qft_utils import (
+    _fft_correlator_batched,
+    resolve_frame_indices,
+    safe_gather_2d,
+    safe_gather_3d,
+)
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
 
 
 BASE_CHANNELS = (
@@ -120,7 +125,6 @@ class MultiscaleStrongForceConfig:
 
     warmup_fraction: float = 0.1
     end_fraction: float = 1.0
-    mc_time_index: int | None = None
     h_eff: float = 1.0
     mass: float = 1.0
     ell0: float | None = None
@@ -355,23 +359,6 @@ def _masked_mean_multi(values: Tensor, mask: Tensor, *, dims: tuple[int, ...]) -
     return numerator / denominator
 
 
-def _safe_gather_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
-    """Safely gather values[:, idx] and return gathered values plus in-range mask."""
-    if values.ndim != 2 or indices.ndim != 2:
-        raise ValueError(
-            f"_safe_gather_2d expects [T,N] tensors, got {tuple(values.shape)} and {tuple(indices.shape)}."
-        )
-    if values.shape != indices.shape:
-        raise ValueError(
-            f"_safe_gather_2d expects aligned shapes, got {tuple(values.shape)} and {tuple(indices.shape)}."
-        )
-    n = int(values.shape[1])
-    in_range = (indices >= 0) & (indices < n)
-    idx_safe = indices.clamp(min=0, max=max(n - 1, 0))
-    gathered = torch.gather(values, dim=1, index=idx_safe)
-    return gathered, in_range
-
-
 def _safe_gather_4d_by_2d_indices(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
     """Safely gather walker features from [T,S,N,D] using [T,N] indices."""
     if values.ndim != 4 or indices.ndim != 2:
@@ -481,7 +468,6 @@ def _compute_channel_series_from_kernels(
     color: Tensor,  # [T, N, d] complex
     color_valid: Tensor,  # [T, N] bool
     positions: Tensor,  # [T, N, d] float
-    alive: Tensor,  # [T, N] bool
     force: Tensor,  # [T, N, d] float
     kernels: Tensor,  # [T, S, N, N] float
     scales: Tensor | None = None,  # [S] float, used by companion hard-threshold channels
@@ -506,7 +492,6 @@ def _compute_channel_series_from_kernels(
     color = color.to(device=device)
     color_valid = color_valid.to(device=device, dtype=torch.bool)
     positions = positions.to(device=device, dtype=torch.float32)
-    alive = alive.to(device=device, dtype=torch.bool)
     force = force.to(device=device, dtype=torch.float32)
 
     kernels_c = kernels.to(dtype=color.dtype)
@@ -518,8 +503,7 @@ def _compute_channel_series_from_kernels(
     x_sm = torch.einsum("tsij,tjd->tsid", kernels, positions)  # [T,S,N,d]
     dx = x_sm - positions[:, None, :, :]  # [T,S,N,d]
 
-    mask_color = (alive & color_valid)[:, None, :]  # [T,1,N]
-    mask_alive = alive[:, None, :]  # [T,1,N]
+    mask_color = color_valid[:, None, :]  # [T,1,N]
 
     out: dict[str, Tensor] = {}
     if "scalar" in channels:
@@ -589,7 +573,7 @@ def _compute_channel_series_from_kernels(
     if "glueball" in channels:
         force_sq = torch.linalg.vector_norm(force, dim=-1).pow(2)  # [T,N]
         force_sm = torch.einsum("tsij,tj->tsi", kernels, force_sq)  # [T,S,N]
-        glueball_series = _masked_mean(force_sm, mask_alive, dim=-1)  # [T,S]
+        glueball_series = force_sm.mean(dim=-1)  # [T,S]
         out["glueball"] = glueball_series.transpose(0, 1).contiguous()
 
     # ------------------------------------------------------------------
@@ -620,7 +604,7 @@ def _compute_channel_series_from_kernels(
                 f"{int(scales_t.numel())} scales for kernels with S={n_scales}."
             )
         dist = pairwise_distances.to(device=device, dtype=torch.float32)
-        n_walkers = int(alive.shape[1])
+        n_walkers = int(color.shape[1])
         if dist.shape != (t_len, n_walkers, n_walkers):
             raise ValueError(
                 "pairwise_distances must have shape [T,N,N] aligned with kernels, got "
@@ -629,10 +613,10 @@ def _compute_channel_series_from_kernels(
 
         comp_j = companions_distance.to(device=device, dtype=torch.long)
         comp_k = companions_clone.to(device=device, dtype=torch.long)
-        if comp_j.shape != alive.shape or comp_k.shape != alive.shape:
+        if comp_j.shape != color.shape[:2] or comp_k.shape != color.shape[:2]:
             raise ValueError(
-                "companion arrays must have shape [T,N] aligned with alive/color tensors, got "
-                f"{tuple(comp_j.shape)} and {tuple(comp_k.shape)} vs {tuple(alive.shape)}."
+                "companion arrays must have shape [T,N] aligned with color tensors, got "
+                f"{tuple(comp_j.shape)} and {tuple(comp_k.shape)} vs {tuple(color.shape[:2])}."
             )
         needs_score_pair_channels = any(
             name in channels
@@ -660,26 +644,24 @@ def _compute_channel_series_from_kernels(
                 msg = "cloning_scores is required for score-directed companion channels."
                 raise ValueError(msg)
             scores = cloning_scores.to(device=device, dtype=torch.float32)
-            if scores.shape != alive.shape:
+            if scores.shape != color.shape[:2]:
                 raise ValueError(
-                    "cloning_scores must have shape [T,N] aligned with alive/color tensors, got "
-                    f"{tuple(scores.shape)} vs {tuple(alive.shape)}."
+                    "cloning_scores must have shape [T,N] aligned with color tensors, got "
+                    f"{tuple(scores.shape)} vs {tuple(color.shape[:2])}."
                 )
 
         # Companion channels use original (non-smoothed) operators gated by
         # geodesic hard thresholds at each scale.
-        c_j, in_j = _safe_gather_3d(color, comp_j)
-        c_k, in_k = _safe_gather_3d(color, comp_k)
-        x_j, _ = _safe_gather_3d(positions, comp_j)
-        x_k, _ = _safe_gather_3d(positions, comp_k)
+        c_j, in_j = safe_gather_3d(color, comp_j)
+        c_k, in_k = safe_gather_3d(color, comp_k)
+        x_j, _ = safe_gather_3d(positions, comp_j)
+        x_k, _ = safe_gather_3d(positions, comp_k)
 
-        alive_j_2d, in_j_alive = _safe_gather_2d(alive, comp_j)
-        alive_k_2d, in_k_alive = _safe_gather_2d(alive, comp_k)
-        valid_j_2d, in_j_valid = _safe_gather_2d(color_valid, comp_j)
-        valid_k_2d, in_k_valid = _safe_gather_2d(color_valid, comp_k)
+        valid_j_2d, in_j_valid = safe_gather_2d(color_valid, comp_j)
+        valid_k_2d, in_k_valid = safe_gather_2d(color_valid, comp_k)
         if scores is not None:
-            score_j, score_j_in_range = _safe_gather_2d(scores, comp_j)
-            score_k, score_k_in_range = _safe_gather_2d(scores, comp_k)
+            score_j, score_j_in_range = safe_gather_2d(scores, comp_j)
+            score_k, score_k_in_range = safe_gather_2d(scores, comp_k)
             finite_score_i = torch.isfinite(scores)
             finite_score_j = torch.isfinite(score_j)
             finite_score_k = torch.isfinite(score_k)
@@ -687,34 +669,11 @@ def _compute_channel_series_from_kernels(
         anchor_idx = torch.arange(n_walkers, device=device, dtype=torch.long).view(1, -1)
         anchor_rows = anchor_idx.expand(t_len, -1)
         distinct = (comp_j != anchor_idx) & (comp_k != anchor_idx) & (comp_j != comp_k)
-        base_anchor_valid = alive & color_valid
-        base_pair_j = (
-            base_anchor_valid
-            & alive_j_2d
-            & valid_j_2d
-            & in_j_alive
-            & in_j_valid
-            & (comp_j != anchor_idx)
-        )
-        base_pair_k = (
-            base_anchor_valid
-            & alive_k_2d
-            & valid_k_2d
-            & in_k_alive
-            & in_k_valid
-            & (comp_k != anchor_idx)
-        )
+        base_anchor_valid = color_valid
+        base_pair_j = base_anchor_valid & valid_j_2d & in_j_valid & (comp_j != anchor_idx)
+        base_pair_k = base_anchor_valid & valid_k_2d & in_k_valid & (comp_k != anchor_idx)
         base_triplet_valid = (
-            base_anchor_valid
-            & alive_j_2d
-            & alive_k_2d
-            & valid_j_2d
-            & valid_k_2d
-            & in_j_alive
-            & in_k_alive
-            & in_j_valid
-            & in_k_valid
-            & distinct
+            base_anchor_valid & valid_j_2d & valid_k_2d & in_j_valid & in_k_valid & distinct
         )
 
         d_ij, in_dij = _safe_gather_pairwise_distances(dist, anchor_rows, comp_j)
@@ -1146,7 +1105,6 @@ def _walker_bootstrap_mass_std(
     color: Tensor,  # [T,N,d]
     color_valid: Tensor,  # [T,N]
     positions: Tensor,  # [T,N,d]
-    alive: Tensor,  # [T,N]
     force: Tensor,  # [T,N,d]
     cloning_scores: Tensor | None,  # [T,N]
     companions_distance: Tensor | None,  # [T,N]
@@ -1210,7 +1168,6 @@ def _walker_bootstrap_mass_std(
         c_boot = color[:, idx, :]
         valid_boot = color_valid[:, idx]
         pos_boot = positions[:, idx, :]
-        alive_boot = alive[:, idx]
         force_boot = force[:, idx, :]
         cloning_scores_boot = cloning_scores[:, idx] if cloning_scores is not None else None
         comp_dist_boot = None
@@ -1232,7 +1189,6 @@ def _walker_bootstrap_mass_std(
             color=c_boot,
             color_valid=valid_boot,
             positions=pos_boot,
-            alive=alive_boot,
             force=force_boot,
             kernels=k_boot,
             scales=scales,
@@ -1273,7 +1229,6 @@ def _compute_companion_per_scale_results_preserving_original(
     color: Tensor,  # [T,N,d]
     color_valid: Tensor,  # [T,N]
     positions: Tensor,  # [T,N,d]
-    alive: Tensor,  # [T,N]
     cloning_scores: Tensor,  # [T,N]
     companions_distance: Tensor,  # [T,N]
     companions_clone: Tensor,  # [T,N]
@@ -1405,7 +1360,6 @@ def _compute_companion_per_scale_results_preserving_original(
             meson_out = compute_meson_phase_correlator_from_color(
                 color=color3,
                 color_valid=color_valid,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1463,7 +1417,6 @@ def _compute_companion_per_scale_results_preserving_original(
             meson_abs2_out = compute_meson_phase_correlator_from_color(
                 color=color3,
                 color_valid=color_valid,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1495,7 +1448,6 @@ def _compute_companion_per_scale_results_preserving_original(
             meson_score_out = compute_meson_phase_correlator_from_color(
                 color=color3,
                 color_valid=color_valid,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1542,7 +1494,6 @@ def _compute_companion_per_scale_results_preserving_original(
             meson_weighted_out = compute_meson_phase_correlator_from_color(
                 color=color3,
                 color_valid=color_valid,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1588,7 +1539,6 @@ def _compute_companion_per_scale_results_preserving_original(
                 color=color3,
                 color_valid=color_valid,
                 positions=positions3,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1641,7 +1591,6 @@ def _compute_companion_per_scale_results_preserving_original(
                 color=color3,
                 color_valid=color_valid,
                 positions=positions3,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1697,7 +1646,6 @@ def _compute_companion_per_scale_results_preserving_original(
                 color=color3,
                 color_valid=color_valid,
                 positions=positions3,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1753,7 +1701,6 @@ def _compute_companion_per_scale_results_preserving_original(
                 color=color3,
                 color_valid=color_valid,
                 positions=positions3,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1809,7 +1756,6 @@ def _compute_companion_per_scale_results_preserving_original(
                 color=color3,
                 color_valid=color_valid,
                 positions=positions3,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1863,7 +1809,6 @@ def _compute_companion_per_scale_results_preserving_original(
                 color_valid=color_valid,
                 positions=positions3,
                 positions_axis=positions_axis,
-                alive=alive,
                 companions_distance=comp_dist_pair,
                 companions_clone=comp_clone_pair,
                 max_lag=int(config.max_lag),
@@ -1922,7 +1867,6 @@ def _compute_companion_per_scale_results_preserving_original(
                 baryon_out = compute_baryon_correlator_from_color(
                     color=color3,
                     color_valid=color_valid,
-                    alive=alive,
                     companions_distance=comp_dist_triplet,
                     companions_clone=comp_clone_triplet,
                     max_lag=int(config.max_lag),
@@ -1959,7 +1903,6 @@ def _compute_companion_per_scale_results_preserving_original(
                 glue_out = compute_glueball_color_correlator_from_color(
                     color=color3,
                     color_valid=color_valid,
-                    alive=alive,
                     companions_distance=comp_dist_triplet,
                     companions_clone=comp_clone_triplet,
                     max_lag=int(config.max_lag),
@@ -2002,11 +1945,10 @@ def compute_multiscale_strong_force_channels(
         raise ValueError(
             f"bootstrap_mode must be one of {BOOTSTRAP_MODES}, got {config.bootstrap_mode!r}."
         )
-    frame_indices = _resolve_frame_indices(
+    frame_indices = resolve_frame_indices(
         history=history,
         warmup_fraction=float(config.warmup_fraction),
         end_fraction=float(config.end_fraction),
-        mc_time_index=config.mc_time_index,
     )
     if not frame_indices:
         empty = torch.empty(0, dtype=torch.float32)
@@ -2061,7 +2003,6 @@ def compute_multiscale_strong_force_channels(
         frame_indices, dtype=torch.long, device=history.x_before_clone.device
     )
     positions = history.x_before_clone.index_select(0, frame_ids_t).float()
-    alive = history.alive_mask.index_select(0, frame_ids_t - 1).to(dtype=torch.bool)
     force = history.force_viscous.index_select(0, frame_ids_t - 1).float()
     companions_distance = torch.as_tensor(
         history.companions_distance.index_select(0, frame_ids_t - 1),
@@ -2097,7 +2038,7 @@ def compute_multiscale_strong_force_channels(
     )
     n_scales = int(scales.numel())
     n_frames = len(frame_indices)
-    n_walkers = int(alive.shape[1])
+    n_walkers = int(color.shape[1])
     series_by_channel: dict[str, Tensor] = {
         channel: torch.zeros((n_scales, n_frames), dtype=torch.float32, device=color.device)
         for channel in requested
@@ -2159,7 +2100,6 @@ def compute_multiscale_strong_force_channels(
             color=color.index_select(0, pos_t),
             color_valid=color_valid.index_select(0, pos_t),
             positions=positions.index_select(0, pos_t),
-            alive=alive.index_select(0, pos_t),
             force=force.index_select(0, pos_t),
             kernels=kernels_chunk,
             scales=scales,
@@ -2196,7 +2136,6 @@ def compute_multiscale_strong_force_channels(
             color=color,
             color_valid=color_valid,
             positions=positions,
-            alive=alive,
             cloning_scores=cloning_scores,
             companions_distance=companions_distance,
             companions_clone=companions_clone,
@@ -2280,7 +2219,6 @@ def compute_multiscale_strong_force_channels(
                 color=color,
                 color_valid=color_valid,
                 positions=positions,
-                alive=alive,
                 force=force,
                 cloning_scores=cloning_scores,
                 companions_distance=companions_distance,

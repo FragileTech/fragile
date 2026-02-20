@@ -24,14 +24,14 @@ from scipy.sparse.csgraph import dijkstra as sparse_dijkstra
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.correlator_channels import (
+from fragile.physics.aic.correlator_channels import (
     bootstrap_correlator_error,
     ChannelCorrelatorResult,
     compute_correlator_fft,
     compute_effective_mass_torch,
     ConvolutionalAICExtractor,
 )
+from fragile.physics.fractal_gas.history import RunHistory
 
 
 DISTANCE_MODES = ("euclidean", "graph_iso", "graph_full")
@@ -147,44 +147,6 @@ def _resolve_mc_time_index(history: RunHistory, mc_time_index: int | None) -> in
     return resolved
 
 
-def _apply_pbc_diff(diff: np.ndarray, bounds: Any | None) -> np.ndarray:
-    if bounds is None:
-        return diff
-    high = (
-        bounds.high.detach().cpu().numpy()
-        if torch.is_tensor(bounds.high)
-        else np.asarray(bounds.high)
-    )
-    low = (
-        bounds.low.detach().cpu().numpy()
-        if torch.is_tensor(bounds.low)
-        else np.asarray(bounds.low)
-    )
-    span = high - low
-    return diff - span * np.round(diff / span)
-
-
-def _apply_pbc_diff_torch(diff: Tensor, bounds: Any | None) -> Tensor:
-    if bounds is None:
-        return diff
-    high = bounds.high.to(diff)
-    low = bounds.low.to(diff)
-    span = high - low
-    return diff - span * torch.round(diff / span)
-
-
-def _slice_bounds(bounds: Any | None, keep_dims: list[int]) -> Any | None:
-    if bounds is None:
-        return None
-    if not hasattr(bounds, "low") or not hasattr(bounds, "high"):
-        return bounds
-    low = bounds.low[keep_dims]
-    high = bounds.high[keep_dims]
-    from fragile.fractalai.bounds import TorchBounds
-
-    return TorchBounds(low=low, high=high, shape=low.shape)
-
-
 def _estimate_ell0(history: RunHistory) -> float:
     mid_idx = history.n_recorded // 2
     if mid_idx == 0:
@@ -195,11 +157,6 @@ def _estimate_ell0(history: RunHistory) -> float:
     alive = history.alive_mask[mid_idx - 1]
 
     diff = x_pre - x_pre[comp_idx]
-    if history.pbc and history.bounds is not None:
-        high = history.bounds.high.to(x_pre)
-        low = history.bounds.low.to(x_pre)
-        span = high - low
-        diff = diff - span * torch.round(diff / span)
     dist = torch.linalg.vector_norm(diff, dim=-1)
 
     if dist.numel() > 0 and alive.any():
@@ -363,12 +320,10 @@ def _build_neighbor_data_dense(
     edges: np.ndarray,
     alive_idx: Tensor,
     positions: Tensor,
-    bounds: Any | None,
     volumes: Tensor | None,
     weight_mode: str,
     edge_mode_values: np.ndarray | None,
     max_neighbors: int,
-    pbc: bool,
     kernel_length_scale: float = 1.0,
 ) -> tuple[Tensor, Tensor, Tensor]:
     """Build dense [N, k] neighbor/weight matrices for one frame."""
@@ -427,8 +382,6 @@ def _build_neighbor_data_dense(
         edge_weights = volumes_t[dst]
     elif weight_mode in {"euclidean", "inv_euclidean", "kernel"}:
         diff = positions[dst] - positions[src]
-        if pbc and bounds is not None:
-            diff = _apply_pbc_diff_torch(diff, bounds)
         dist = torch.linalg.vector_norm(diff, dim=-1).clamp(min=1e-8)
         if weight_mode == "kernel":
             edge_weights = torch.exp(-(dist**2) / (2.0 * kernel_length_scale**2))
@@ -631,11 +584,8 @@ def _pair_distances_euclidean(
     positions: np.ndarray,
     pair_i: np.ndarray,
     pair_j: np.ndarray,
-    bounds: Any | None,
 ) -> np.ndarray:
     diff = positions[pair_i] - positions[pair_j]
-    if bounds is not None:
-        diff = _apply_pbc_diff(diff, bounds)
     return np.linalg.norm(diff, axis=1)
 
 
@@ -975,16 +925,12 @@ def _extract_recorded_edge_mode_values(
 def _compute_recorded_iso_edge_lengths(
     positions: Tensor,
     edges: np.ndarray,
-    bounds: Any | None,
-    pbc: bool,
 ) -> np.ndarray:
     """Compute Euclidean edge lengths on recorded edges only (no graph rebuild)."""
     if edges.size == 0:
         return np.zeros((0,), dtype=float)
     pos = positions.detach().cpu().numpy()
     diff = pos[edges[:, 0]] - pos[edges[:, 1]]
-    if pbc and bounds is not None:
-        diff = _apply_pbc_diff(diff, bounds)
     lengths = np.linalg.norm(diff, axis=1)
     return np.where(lengths <= 0, 1e-8, lengths)
 
@@ -1257,8 +1203,6 @@ def _compute_radial_output(
 
 def _compute_distances(
     positions: Tensor,
-    bounds: Any | None,
-    pbc: bool,
     distance_mode: str,
     edges: np.ndarray | None,
     pair_i: np.ndarray,
@@ -1267,7 +1211,7 @@ def _compute_distances(
 ) -> np.ndarray:
     pos_np = positions.detach().cpu().numpy()
     if distance_mode == "euclidean":
-        return _pair_distances_euclidean(pos_np, pair_i, pair_j, bounds)
+        return _pair_distances_euclidean(pos_np, pair_i, pair_j)
 
     if edges is None or edges.size == 0:
         msg = "Graph distance modes require recorded neighbor edges for the frame."
@@ -1277,8 +1221,6 @@ def _compute_distances(
         weights = _compute_recorded_iso_edge_lengths(
             positions=positions,
             edges=edges,
-            bounds=bounds,
-            pbc=pbc,
         )
     elif distance_mode == "graph_full":
         if geodesic_edge_distances is None:
@@ -1339,9 +1281,6 @@ def _compute_mc_time_output(
 
     device = history.x_before_clone.device
     dim = len(keep_dims) if keep_dims is not None else history.d
-    bounds = history.bounds
-    if keep_dims is not None:
-        bounds = _slice_bounds(bounds, keep_dims)
 
     positions_batch = history.x_before_clone[start_idx:end_idx]
     if keep_dims is not None:
@@ -1414,8 +1353,6 @@ def _compute_mc_time_output(
             edge_mode_values = _compute_recorded_iso_edge_lengths(
                 positions=positions_alive,
                 edges=edges,
-                bounds=bounds,
-                pbc=bool(history.pbc),
             )
         elif config.neighbor_weighting in RECORDED_EDGE_WEIGHT_MODES:
             mode_values_global = _extract_recorded_edge_mode_values(
@@ -1430,12 +1367,10 @@ def _compute_mc_time_output(
             edges=edges,
             alive_idx=alive_idx,
             positions=positions_alive,
-            bounds=bounds,
             volumes=volume_weights_alive,
             weight_mode=config.neighbor_weighting,
             edge_mode_values=edge_mode_values,
             max_neighbors=int(config.neighbor_k),
-            pbc=bool(history.pbc),
             kernel_length_scale=config.kernel_length_scale,
         )
 
@@ -1605,7 +1540,6 @@ def compute_radial_channels(
         )
 
     positions_alive = positions_full[alive_idx]
-    bounds_full = history.bounds
 
     volume_weights_alive: Tensor | None = None
     volume_history = getattr(history, "riemannian_volume_weights", None)
@@ -1653,8 +1587,6 @@ def compute_radial_channels(
             edge_mode_values = _compute_recorded_iso_edge_lengths(
                 positions=positions_alive,
                 edges=edges_full,
-                bounds=bounds_full,
-                pbc=bool(history.pbc),
             )
         elif config.neighbor_weighting in RECORDED_EDGE_WEIGHT_MODES:
             mode_values_global = _extract_recorded_edge_mode_values(
@@ -1669,12 +1601,10 @@ def compute_radial_channels(
             edges=edges_full,
             alive_idx=alive_idx,
             positions=positions_alive,
-            bounds=bounds_full,
             volumes=volumes_full,
             weight_mode=config.neighbor_weighting,
             edge_mode_values=edge_mode_values,
             max_neighbors=int(config.neighbor_k),
-            pbc=bool(history.pbc),
             kernel_length_scale=config.kernel_length_scale,
         )
     else:
@@ -1693,8 +1623,6 @@ def compute_radial_channels(
 
     distances_full = _compute_distances(
         positions_alive,
-        bounds_full,
-        bool(history.pbc),
         config.distance_mode,
         edges_full,
         pair_i,
@@ -1756,14 +1684,11 @@ def compute_radial_channels(
             if len(keep_dims) < 2:
                 continue
             positions_proj = positions_full[alive_idx][:, keep_dims]
-            bounds_proj = _slice_bounds(bounds_full, keep_dims)
             if config.distance_mode == "graph_full":
                 distances = distances_full
             else:
                 distances = _compute_distances(
                     positions_proj,
-                    bounds_proj,
-                    bool(history.pbc),
                     config.distance_mode,
                     edges_full,
                     pair_i,
@@ -1794,7 +1719,6 @@ def compute_radial_channels(
             for axis, distances in axis_distances.items():
                 keep_dims = [i for i in range(history.d) if i != axis]
                 positions_proj = positions_full[alive_idx][:, keep_dims]
-                bounds_proj = _slice_bounds(bounds_full, keep_dims)
                 if operators_override is None:
                     edge_mode_values: np.ndarray | None = None
                     if config.neighbor_weighting == "inv_geodesic_full":
@@ -1803,8 +1727,6 @@ def compute_radial_channels(
                         edge_mode_values = _compute_recorded_iso_edge_lengths(
                             positions=positions_proj,
                             edges=edges_full,
-                            bounds=bounds_proj,
-                            pbc=bool(history.pbc),
                         )
                     elif config.neighbor_weighting in RECORDED_EDGE_WEIGHT_MODES:
                         mode_values_global = _extract_recorded_edge_mode_values(
@@ -1820,12 +1742,10 @@ def compute_radial_channels(
                             edges=edges_full,
                             alive_idx=alive_idx,
                             positions=positions_proj,
-                            bounds=bounds_proj,
                             volumes=volumes_full,
                             weight_mode=config.neighbor_weighting,
                             edge_mode_values=edge_mode_values,
                             max_neighbors=int(config.neighbor_k),
-                            pbc=bool(history.pbc),
                             kernel_length_scale=config.kernel_length_scale,
                         )
                     )

@@ -142,6 +142,7 @@ class TopoEncoderConfig:
     mlflow_tracking_uri: str = ""
     mlflow_experiment: str = ""
     mlflow_run_name: str = ""
+    mlflow_run_id: str = ""
 
     # Device (CUDA if available, else CPU)
     device: str = field(default_factory=lambda: "cuda" if torch.cuda.is_available() else "cpu")

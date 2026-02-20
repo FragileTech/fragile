@@ -17,9 +17,11 @@ from typing import Any
 import torch
 from torch import Tensor
 
-from fragile.fractalai.core.history import RunHistory
-from fragile.fractalai.qft.baryon_triplet_channels import _resolve_frame_indices
-from fragile.fractalai.qft.correlator_channels import (
+from fragile.fractalai.qft.smeared_operators import (
+    iter_smeared_kernel_batches_from_history,
+    select_interesting_scales_from_history,
+)
+from fragile.physics.aic.correlator_channels import (
     _fft_correlator_batched,
     ChannelCorrelatorResult,
     compute_effective_mass_torch,
@@ -27,11 +29,9 @@ from fragile.fractalai.qft.correlator_channels import (
     extract_mass_aic,
     extract_mass_linear,
 )
-from fragile.fractalai.qft.electroweak_observables import classify_walker_types
-from fragile.fractalai.qft.smeared_operators import (
-    iter_smeared_kernel_batches_from_history,
-    select_interesting_scales_from_history,
-)
+from fragile.physics.electroweak.electroweak_observables import classify_walker_types
+from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.qft_utils import resolve_frame_indices
 
 
 SU2_BASE_CHANNELS = (
@@ -384,15 +384,12 @@ def _compute_electroweak_series_from_kernels(
     positions: Tensor,  # [T,N,d]
     velocities: Tensor,  # [T,N,d]
     fitness: Tensor,  # [T,N]
-    alive: Tensor,  # [T,N]
     kernels: Tensor,  # [T,S,N,N]
     h_eff: float,
     epsilon_c: float,
     epsilon_d: float,
     epsilon_clone: float,
     lambda_alg: float,
-    bounds: Any | None,
-    pbc: bool,
     will_clone: Tensor | None = None,  # [T,N] bool
     su2_operator_mode: str = "standard",
     enable_walker_type_split: bool = False,
@@ -411,12 +408,11 @@ def _compute_electroweak_series_from_kernels(
     real_dtype = kernels.dtype
     complex_dtype = torch.complex128 if real_dtype == torch.float64 else torch.complex64
 
-    alive_mask = alive.to(device=dev, dtype=torch.bool)
-    alive_f = alive_mask.to(dtype=real_dtype)
+    # All walkers are assumed alive in the AIC pipeline.
+    alive_f = torch.ones((t_len, n_walkers), device=dev, dtype=real_dtype)
 
-    # Row-normalized kernel weights restricted to alive->alive pairs.
-    pair_valid = alive_mask[:, None, :, None] & alive_mask[:, None, None, :]
-    weights = torch.where(pair_valid, kernels, torch.zeros_like(kernels))
+    # Row-normalized kernel weights.
+    weights = kernels.clone()
     row_sum = weights.sum(dim=-1, keepdim=True)
     weights = torch.where(
         row_sum > 0, weights / row_sum.clamp(min=1e-12), torch.zeros_like(weights)
@@ -436,11 +432,6 @@ def _compute_electroweak_series_from_kernels(
     su2_phase_exp_directed = (weights_c * su2_pair_directed).sum(dim=-1)
 
     diff_x = positions[:, None, :, None, :] - positions[:, None, None, :, :]
-    if pbc and bounds is not None:
-        high = bounds.high.to(diff_x)
-        low = bounds.low.to(diff_x)
-        span = high - low
-        diff_x = diff_x - span * torch.round(diff_x / span)
     diff_v = velocities[:, None, :, None, :] - velocities[:, None, None, :, :]
     dist_sq = (diff_x.square()).sum(dim=-1) + float(lambda_alg) * (diff_v.square()).sum(dim=-1)
     su2_weight = torch.exp(-dist_sq / (2.0 * max(float(epsilon_c), 1e-12) ** 2))
@@ -533,34 +524,35 @@ def _compute_electroweak_series_from_kernels(
     ew_mixed_op = (u1_amp_c * su2_amp_c * u1_phase_exp * ew_su2_phase) * alive_c
     outputs[EW_MIXED_COMPANION_CHANNEL_MAP["ew_mixed"]] = _series_from_op(ew_mixed_op)
 
+    all_true = torch.ones((t_len, n_walkers), device=dev, dtype=torch.bool)
     if bool(enable_walker_type_split):
         if will_clone is not None:
             will_clone_b = will_clone.to(device=dev, dtype=torch.bool)
-            if will_clone_b.shape != alive_mask.shape:
+            if will_clone_b.shape != all_true.shape:
                 msg = (
-                    "will_clone must align with alive [T,N] when walker-type split "
-                    f"is enabled, got {tuple(will_clone_b.shape)} vs {tuple(alive_mask.shape)}."
+                    "will_clone must align with [T,N] when walker-type split "
+                    f"is enabled, got {tuple(will_clone_b.shape)} vs {tuple(all_true.shape)}."
                 )
                 raise ValueError(msg)
         else:
-            will_clone_b = torch.zeros_like(alive_mask)
+            will_clone_b = torch.zeros_like(all_true)
 
-        cloner_mask = torch.zeros_like(alive_mask)
-        resister_mask = torch.zeros_like(alive_mask)
-        persister_mask = torch.zeros_like(alive_mask)
+        cloner_mask = torch.zeros_like(all_true)
+        resister_mask = torch.zeros_like(all_true)
+        persister_mask = torch.zeros_like(all_true)
         for t_idx in range(t_len):
             c_mask, r_mask, p_mask = classify_walker_types(
                 fitness=fitness_t[t_idx],
-                alive=alive_mask[t_idx],
+                alive=all_true[t_idx],
                 will_clone=will_clone_b[t_idx],
             )
             cloner_mask[t_idx] = c_mask
             resister_mask[t_idx] = r_mask
             persister_mask[t_idx] = p_mask
     else:
-        cloner_mask = torch.zeros_like(alive_mask)
-        resister_mask = torch.zeros_like(alive_mask)
-        persister_mask = torch.zeros_like(alive_mask)
+        cloner_mask = torch.zeros_like(all_true)
+        resister_mask = torch.zeros_like(all_true)
+        persister_mask = torch.zeros_like(all_true)
 
     def _series_from_masked_op(op: Tensor, mask: Tensor) -> Tensor:
         mask_f = mask.to(dtype=real_dtype)
@@ -666,11 +658,10 @@ def compute_multiscale_electroweak_channels(
     resolved_mode = _resolve_su2_operator_mode(config.su2_operator_mode)
     resolved_scope = _resolve_walker_type_scope(config.walker_type_scope)
 
-    frame_indices = _resolve_frame_indices(
+    frame_indices = resolve_frame_indices(
         history=history,
         warmup_fraction=float(config.warmup_fraction),
         end_fraction=float(config.end_fraction),
-        mc_time_index=config.mc_time_index,
     )
     if not frame_indices:
         empty = torch.empty(0, dtype=torch.float32)
@@ -703,7 +694,6 @@ def compute_multiscale_electroweak_channels(
     positions = history.x_before_clone.index_select(0, frame_ids_t).float()
     velocities = history.v_before_clone.index_select(0, frame_ids_t).float()
     fitness = history.fitness.index_select(0, frame_ids_t - 1).float()
-    alive = history.alive_mask.index_select(0, frame_ids_t - 1).to(dtype=torch.bool)
     will_clone_hist = getattr(history, "will_clone", None)
     will_clone = None
     if will_clone_hist is not None:
@@ -754,15 +744,12 @@ def compute_multiscale_electroweak_channels(
             positions=positions.index_select(0, pos_t),
             velocities=velocities.index_select(0, pos_t),
             fitness=fitness.index_select(0, pos_t),
-            alive=alive.index_select(0, pos_t),
             kernels=kernels_chunk,
             h_eff=h_eff,
             epsilon_c=epsilon_c,
             epsilon_d=epsilon_d,
             epsilon_clone=epsilon_clone,
             lambda_alg=lambda_alg,
-            bounds=history.bounds,
-            pbc=bool(history.pbc),
             will_clone=will_clone.index_select(0, pos_t) if will_clone is not None else None,
             su2_operator_mode=resolved_mode,
             enable_walker_type_split=bool(config.enable_walker_type_split),

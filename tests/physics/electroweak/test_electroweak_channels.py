@@ -1,9 +1,14 @@
 """Parity tests: fragile.fractalai.qft.electroweak_channels vs fragile.physics.electroweak.electroweak_channels.
 
-Each test imports from BOTH locations and asserts exact equality.
+Each test imports from BOTH locations and asserts exact numerical equality.
+The new module removes alive/bounds plumbing; since mock histories have all
+walkers alive (alive_mask=ones) and pbc=False/bounds=None, the MC-time path
+produces identical results.
 """
 
 from __future__ import annotations
+
+import dataclasses
 
 import pytest
 import torch
@@ -35,12 +40,23 @@ from fragile.physics.electroweak.electroweak_channels import (
     ELECTROWEAK_SYMMETRY_BREAKING_CHANNELS as new_ELECTROWEAK_SYMMETRY_BREAKING_CHANNELS,
     ELECTROWEAK_WALKER_TYPE_SU2_CHANNELS as new_ELECTROWEAK_WALKER_TYPE_SU2_CHANNELS,
     ElectroweakChannelConfig as new_ElectroweakChannelConfig,
+    ElectroweakChannelOutput,
 )
 from tests.physics.electroweak.conftest import (
     assert_channel_results_equal,
     assert_dict_floats_equal,
     assert_dict_tensors_equal,
 )
+
+
+# Fields removed from the new ElectroweakChannelConfig
+_REMOVED_CONFIG_FIELDS = {
+    "time_axis",
+    "euclidean_time_dim",
+    "euclidean_time_bins",
+    "euclidean_time_range",
+    "mc_time_index",
+}
 
 
 # ===================================================================
@@ -77,14 +93,47 @@ class TestParityConstants:
 
 
 class TestParityConfig:
-    def test_default_fields_identical(self):
+    def test_shared_fields_identical(self):
+        """All fields present in BOTH configs have the same default values."""
         old_cfg = old_ElectroweakChannelConfig()
         new_cfg = new_ElectroweakChannelConfig()
-        import dataclasses
-
         old_fields = {f.name: getattr(old_cfg, f.name) for f in dataclasses.fields(old_cfg)}
         new_fields = {f.name: getattr(new_cfg, f.name) for f in dataclasses.fields(new_cfg)}
-        assert old_fields == new_fields
+        # New config should be a strict subset (minus removed fields)
+        for name, value in new_fields.items():
+            assert name in old_fields, f"New field {name!r} not in old config"
+            assert (
+                old_fields[name] == value
+            ), f"Field {name!r}: old={old_fields[name]!r} new={value!r}"
+
+    def test_removed_fields(self):
+        """Fields removed from new config should still exist in old config."""
+        old_cfg = old_ElectroweakChannelConfig()
+        new_cfg = new_ElectroweakChannelConfig()
+        old_field_names = {f.name for f in dataclasses.fields(old_cfg)}
+        new_field_names = {f.name for f in dataclasses.fields(new_cfg)}
+        removed = old_field_names - new_field_names
+        assert removed == _REMOVED_CONFIG_FIELDS
+
+    def test_no_unexpected_new_fields(self):
+        """New config should not introduce fields absent from old config."""
+        old_field_names = {f.name for f in dataclasses.fields(old_ElectroweakChannelConfig())}
+        new_field_names = {f.name for f in dataclasses.fields(new_ElectroweakChannelConfig())}
+        added = new_field_names - old_field_names
+        assert added == set(), f"Unexpected new fields: {added}"
+
+
+# ===================================================================
+# Output dataclass
+# ===================================================================
+
+
+class TestOutputStructure:
+    def test_output_no_avg_alive_walkers(self):
+        """ElectroweakChannelOutput should not have avg_alive_walkers field."""
+        fields = {f.name for f in dataclasses.fields(ElectroweakChannelOutput)}
+        assert "avg_alive_walkers" not in fields
+        assert "avg_edges" in fields
 
 
 # ===================================================================
@@ -98,7 +147,6 @@ class TestParityComputeElectroweakChannels:
         new = new_compute_channels(mock_history)
         assert old.frame_indices == new.frame_indices
         assert old.n_valid_frames == new.n_valid_frames
-        assert old.avg_alive_walkers == new.avg_alive_walkers
         assert old.avg_edges == new.avg_edges
         assert_channel_results_equal(old.channel_results, new.channel_results)
 

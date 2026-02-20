@@ -78,5 +78,26 @@ def physics(port, open_browser, address):
     )
 
 
+@run.command()
+@click.option("--port", default=5008, type=int, help="Port to run server on.")
+@click.option("--open", "open_browser", is_flag=True, help="Open browser on launch.")
+@click.option("--outputs", default="outputs", help="Directory containing topoencoder runs.")
+def dl(port, open_browser, outputs):
+    """Launch the TopoEncoder learning dashboard."""
+    import panel as pn
+
+    from fragile.learning.dashboard import create_app
+
+    click.echo("Starting TopoEncoder Dashboard...")
+    click.echo(f"Open http://localhost:{port} in your browser (Ctrl+C to stop)")
+    pn.serve(
+        lambda: create_app(outputs_dir=outputs),
+        port=port,
+        show=open_browser,
+        title="TopoEncoder Dashboard",
+        websocket_origin="*",
+    )
+
+
 if __name__ == "__main__":
     run()

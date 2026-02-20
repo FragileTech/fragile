@@ -10,7 +10,7 @@ This module implements a complete pipeline for:
 The implementation is fully vectorized using PyTorch for GPU acceleration.
 
 Usage:
-    from fragile.fractalai.qft.smoc_pipeline import (
+    from fragile.physics.aic.smoc_pipeline import (
         SMoCSimulator,
         ChannelProjector,
         CorrelatorComputer,

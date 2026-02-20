@@ -150,7 +150,11 @@ class AttentiveAtlasEncoder(nn.Module):
 
         self.val_proj = nn.Linear(hidden_dim, latent_dim)
 
-        self.chart_centers = nn.Parameter(torch.randn(num_charts, latent_dim) * 0.02)
+        # Unit-sphere init: each chart gets a distinct catchment region from
+        # the first forward pass, preventing softmax winner-take-all collapse.
+        self.chart_centers = nn.Parameter(
+            torch.nn.functional.normalize(torch.randn(num_charts, latent_dim), dim=-1)
+        )
 
         self.codebook = nn.Parameter(torch.randn(num_charts, codes_per_chart, latent_dim) * 0.02)
 
@@ -1054,7 +1058,11 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
 
         self.val_proj = SpectralLinear(hidden_dim, latent_dim, bias=True)
 
-        self.chart_centers = nn.Parameter(torch.randn(num_charts, latent_dim) * 0.02)
+        # Unit-sphere init: each chart gets a distinct catchment region from
+        # the first forward pass, preventing softmax winner-take-all collapse.
+        self.chart_centers = nn.Parameter(
+            torch.nn.functional.normalize(torch.randn(num_charts, latent_dim), dim=-1)
+        )
 
         self.codebook = nn.Parameter(torch.randn(num_charts, codes_per_chart, latent_dim) * 0.02)
 
@@ -1326,7 +1334,11 @@ class PrimitiveTopologicalDecoder(nn.Module):
         ])
         self.chart_gate = NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles)
 
-        self.chart_centers = nn.Parameter(torch.randn(num_charts, latent_dim) * 0.02)
+        # Unit-sphere init: each chart gets a distinct catchment region from
+        # the first forward pass, preventing softmax winner-take-all collapse.
+        self.chart_centers = nn.Parameter(
+            torch.nn.functional.normalize(torch.randn(num_charts, latent_dim), dim=-1)
+        )
 
         if covariant_attn:
             self.cov_router = CovariantChartRouter(
@@ -1874,7 +1886,11 @@ class _AtlasEncoderLevel(nn.Module):
             self.scale = math.sqrt(hidden_dim)
 
         self.val_proj = SpectralLinear(hidden_dim, latent_dim, bias=True)
-        self.chart_centers = nn.Parameter(torch.randn(num_charts, latent_dim) * 0.02)
+        # Unit-sphere init: each chart gets a distinct catchment region from
+        # the first forward pass, preventing softmax winner-take-all collapse.
+        self.chart_centers = nn.Parameter(
+            torch.nn.functional.normalize(torch.randn(num_charts, latent_dim), dim=-1)
+        )
         self.codebook = nn.Parameter(torch.randn(num_charts, codes_per_chart, latent_dim) * 0.02)
 
         self.soft_equiv_layers: nn.ModuleList | None = None

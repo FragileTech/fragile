@@ -283,23 +283,23 @@ _CHANNEL_PALETTE = [
 # Default per-channel tmax values (0 = full range).
 # Channels not listed fall back to the global ``MassExtractionSettings.tmax``.
 _DEFAULT_CHANNEL_TMAX: dict[str, int] = {
-    "pseudoscalar": 12,
-    "scalar": 0,
+    "pseudoscalar": 22,
+    "scalar": 16,
     "nucleon": 10,
-    "vector": 10,
-    "axial_vector": 0,
-    "glueball": 4,
+    "vector": 14,
+    "axial_vector": 12,
+    "glueball": 8,
 }
 
 # Default per-channel fit/prior overrides.
 # Channels not listed fall back to global ``MassExtractionSettings`` values.
 _DEFAULT_CHANNEL_FIT: dict[str, dict[str, Any]] = {
-    "pseudoscalar": {"dE_ground": "0.1(3)", "nexp": 2, "tmin": 2},
-    "scalar": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 2},
-    "nucleon": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 2},
-    "vector": {"dE_ground": "0.3(4)", "nexp": 2, "tmin": 2},
-    "axial_vector": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 2},
-    "glueball": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 1},
+    "pseudoscalar": {"dE_ground": "0.024(15)", "nexp": 2, "tmin": 5},
+    "scalar": {"dE_ground": "0.09(5)", "nexp": 2, "tmin": 5},
+    "nucleon": {"dE_ground": "0.16(10)", "nexp": 2, "tmin": 3},
+    "vector": {"dE_ground": "0.13(8)", "nexp": 2, "tmin": 3},
+    "axial_vector": {"dE_ground": "0.22(15)", "nexp": 2, "tmin": 6},
+    "glueball": {"dE_ground": "0.29(10)", "nexp": 2, "tmin": 2},
     "tensor": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 2},
 }
 
@@ -372,7 +372,8 @@ def _build_pdg_comparison_plot(
     _, anchor_pdg = PDG_REFERENCES[anchor_channel]
     scale = anchor_pdg / anchor_mass  # gvar propagates
 
-    names, pred_means, pred_errs, pdg_vals, colors = [], [], [], [], []
+    # Collect entries and sort by PDG mass (lightest first) to match mass spectrum
+    entries: list[tuple[str, str, float, float, float]] = []
     for name, ch in result.channels.items():
         if name not in PDG_REFERENCES:
             continue
@@ -381,14 +382,24 @@ def _build_pdg_comparison_plot(
             continue
         m_pred = m_lat * scale
         label, pdg_mass = PDG_REFERENCES[name]
-        names.append(label)
-        pred_means.append(float(gvar.mean(m_pred)))
-        pred_errs.append(float(gvar.sdev(m_pred)))
-        pdg_vals.append(pdg_mass)
-        colors.append(_CHANNEL_TYPE_COLORS.get(ch.channel_type, "#7f7f7f"))
+        entries.append((
+            name,
+            label,
+            float(gvar.mean(m_pred)),
+            float(gvar.sdev(m_pred)),
+            pdg_mass,
+        ))
 
-    if not names:
+    if not entries:
         return _algorithm_placeholder_plot("No channels with PDG references found.")
+
+    entries.sort(key=lambda e: PDG_REFERENCES[e[0]][1])
+
+    names = [e[1] for e in entries]
+    pred_means = [e[2] for e in entries]
+    pred_errs = [e[3] for e in entries]
+    pdg_vals = [e[4] for e in entries]
+    colors = [_CHANNEL_PALETTE[i % len(_CHANNEL_PALETTE)] for i in range(len(entries))]
 
     bars = hv.Bars(
         list(zip(names, pred_means, colors)),

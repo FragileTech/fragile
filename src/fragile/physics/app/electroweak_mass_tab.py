@@ -134,42 +134,12 @@ def build_electroweak_mass_tab(
         sizing_mode="stretch_width",
     )
 
-    channel_selector = pn.widgets.Select(
-        name="Channel",
-        options=[],
-        sizing_mode="stretch_width",
-    )
-    channel_detail_table = pn.widgets.Tabulator(
-        pd.DataFrame(),
-        pagination=None,
-        show_index=False,
-        sizing_mode="stretch_width",
-    )
-    amplitude_table = pn.widgets.Tabulator(
-        pd.DataFrame(),
-        pagination=None,
-        show_index=False,
-        sizing_mode="stretch_width",
-    )
-    intra_ratio_table = pn.widgets.Tabulator(
-        pd.DataFrame(),
-        pagination=None,
-        show_index=False,
-        sizing_mode="stretch_width",
-    )
+    channel_details_container = pn.Column(sizing_mode="stretch_width")
     cross_ratio_table = pn.widgets.Tabulator(
         pd.DataFrame(),
         pagination=None,
         show_index=False,
         sizing_mode="stretch_width",
-    )
-
-    placeholder = _algorithm_placeholder_plot("Run extraction to show plots.")
-    meff_plot = pn.pane.HoloViews(placeholder, sizing_mode="stretch_width", linked_axes=False)
-    correlator_fit_plot = pn.pane.HoloViews(
-        placeholder,
-        sizing_mode="stretch_width",
-        linked_axes=False,
     )
 
     # -- Channel key selection widgets --
@@ -234,66 +204,91 @@ def build_electroweak_mass_tab(
         diagnostics_container[0].object = diag_parts[0]  # global markdown
         diagnostics_container[1].value = diag_parts[1]  # per-channel table
 
-        # Channel selector
-        channel_names = list(result.channels.keys())
-        channel_selector.options = channel_names
-        if channel_names:
-            channel_selector.value = channel_names[0]
-
-        _refresh_channel_detail()
+        _refresh_all_channel_details()
         cross_ratio_table.value = _build_cross_channel_ratio_table(result)
 
-    def _refresh_channel_detail(*_args):
+    def _refresh_all_channel_details():
+        """Build per-channel detail sections for all channels at once."""
         result: MassExtractionResult | None = state.get("electroweak_mass_output")
-        if result is None:
+        channel_details_container.clear()
+        if result is None or not result.channels:
             return
 
-        selected = channel_selector.value
-        if selected is None or selected not in result.channels:
-            channel_detail_table.value = pd.DataFrame()
-            amplitude_table.value = pd.DataFrame()
-            intra_ratio_table.value = pd.DataFrame()
-            meff_plot.object = _algorithm_placeholder_plot("Select a channel.")
-            correlator_fit_plot.object = _algorithm_placeholder_plot("Select a channel.")
-            return
+        for ch_name, ch in result.channels.items():
+            # Energy level detail table
+            rows = []
+            for i, E_n in enumerate(ch.energy_levels):
+                e_mean = gvar.mean(E_n)
+                e_err = gvar.sdev(E_n)
+                e_err_pct = abs(e_err / e_mean) * 100.0 if e_mean != 0 else float("inf")
+                row = {
+                    "Level": i,
+                    "E_n": f"{e_mean:.6f}",
+                    "Error": f"{e_err:.6f}",
+                    "Error (%)": f"{e_err_pct:.2f}",
+                }
+                if ch.dE is not None and i < len(ch.dE):
+                    de_mean = gvar.mean(ch.dE[i])
+                    de_err = gvar.sdev(ch.dE[i])
+                    de_err_pct = abs(de_err / de_mean) * 100.0 if de_mean != 0 else float("inf")
+                    row["dE_n"] = f"{de_mean:.6f}"
+                    row["dE Error"] = f"{de_err:.6f}"
+                    row["dE Error (%)"] = f"{de_err_pct:.2f}"
+                rows.append(row)
+            detail_df = pd.DataFrame(rows) if rows else pd.DataFrame()
+            amp_df = _build_amplitude_table(ch)
+            intra_df = _build_intra_channel_ratio_table(ch)
 
-        ch = result.channels[selected]
+            meff = _build_meff_plot(result, ch_name, ch)
+            corr_fit = _build_correlator_fit_plot(result, ch_name, ch)
 
-        # Energy level detail table
-        rows = []
-        for i, E_n in enumerate(ch.energy_levels):
-            e_mean = gvar.mean(E_n)
-            e_err = gvar.sdev(E_n)
-            e_err_pct = abs(e_err / e_mean) * 100.0 if e_mean != 0 else float("inf")
-            row = {
-                "Level": i,
-                "E_n": f"{e_mean:.6f}",
-                "Error": f"{e_err:.6f}",
-                "Error (%)": f"{e_err_pct:.2f}",
-            }
-            if ch.dE is not None and i < len(ch.dE):
-                de_mean = gvar.mean(ch.dE[i])
-                de_err = gvar.sdev(ch.dE[i])
-                de_err_pct = abs(de_err / de_mean) * 100.0 if de_mean != 0 else float("inf")
-                row["dE_n"] = f"{de_mean:.6f}"
-                row["dE Error"] = f"{de_err:.6f}"
-                row["dE Error (%)"] = f"{de_err_pct:.2f}"
-            rows.append(row)
-        channel_detail_table.value = pd.DataFrame(rows) if rows else pd.DataFrame()
-
-        # Amplitude table
-        amplitude_table.value = _build_amplitude_table(ch)
-
-        # Intra-channel energy level ratios
-        intra_ratio_table.value = _build_intra_channel_ratio_table(ch)
-
-        # Effective mass plot
-        meff_plot.object = _build_meff_plot(result, selected, ch)
-
-        # Correlator + fit plot
-        correlator_fit_plot.object = _build_correlator_fit_plot(result, selected, ch)
-
-    channel_selector.param.watch(_refresh_channel_detail, "value")
+            channel_details_container.append(
+                pn.Column(
+                    pn.pane.Markdown(f"#### {ch_name}"),
+                    pn.Row(
+                        pn.pane.HoloViews(
+                            corr_fit, sizing_mode="stretch_width", linked_axes=False
+                        ),
+                        pn.pane.HoloViews(meff, sizing_mode="stretch_width", linked_axes=False),
+                        sizing_mode="stretch_width",
+                    ),
+                    pn.Row(
+                        pn.Column(
+                            pn.pane.Markdown("**Energy Levels**"),
+                            pn.widgets.Tabulator(
+                                detail_df,
+                                pagination=None,
+                                show_index=False,
+                                sizing_mode="stretch_width",
+                            ),
+                            sizing_mode="stretch_width",
+                        ),
+                        pn.Column(
+                            pn.pane.Markdown("**Amplitudes**"),
+                            pn.widgets.Tabulator(
+                                amp_df,
+                                pagination=None,
+                                show_index=False,
+                                sizing_mode="stretch_width",
+                            ),
+                            sizing_mode="stretch_width",
+                        ),
+                        pn.Column(
+                            pn.pane.Markdown("**Energy Level Ratios**"),
+                            pn.widgets.Tabulator(
+                                intra_df,
+                                pagination=None,
+                                show_index=False,
+                                sizing_mode="stretch_width",
+                            ),
+                            sizing_mode="stretch_width",
+                        ),
+                        sizing_mode="stretch_width",
+                    ),
+                    pn.layout.Divider(),
+                    sizing_mode="stretch_width",
+                )
+            )
 
     # -- Compute callback --
 
@@ -393,14 +388,8 @@ def build_electroweak_mass_tab(
         mass_summary_table.value = pd.DataFrame()
         diagnostics_container[0].object = ""
         diagnostics_container[1].value = pd.DataFrame()
-        channel_selector.options = []
-        channel_detail_table.value = pd.DataFrame()
-        amplitude_table.value = pd.DataFrame()
-        intra_ratio_table.value = pd.DataFrame()
+        channel_details_container.clear()
         cross_ratio_table.value = pd.DataFrame()
-        placeholder = _algorithm_placeholder_plot("Run extraction to show plots.")
-        meff_plot.object = placeholder
-        correlator_fit_plot.object = placeholder
 
     # -- on_correlators_ready --
 
@@ -486,14 +475,8 @@ def build_electroweak_mass_tab(
         pn.pane.Markdown("### Fit Diagnostics"),
         diagnostics_container,
         pn.layout.Divider(),
-        pn.pane.Markdown("### Channel Detail"),
-        channel_selector,
-        channel_detail_table,
-        pn.pane.Markdown("#### Variant Amplitudes"),
-        amplitude_table,
-        pn.pane.Markdown("#### Energy Level Ratios"),
-        intra_ratio_table,
-        pn.Row(correlator_fit_plot, meff_plot, sizing_mode="stretch_width"),
+        pn.pane.Markdown("### Channel Details"),
+        channel_details_container,
         sizing_mode="stretch_both",
     )
 
