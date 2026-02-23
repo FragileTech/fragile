@@ -6,7 +6,13 @@ cross-package dependencies.
 """
 
 from fragile.physics.qft_utils.aggregation import bin_by_euclidean_time
-from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.qft_utils.color_states import (
+    compute_color_states_batch,
+    estimate_ell0,
+    estimate_ell0_auto,
+    estimate_ell0_euclidean_edges,
+    estimate_ell0_geodesic_edges,
+)
 from fragile.physics.qft_utils.companions import (
     build_companion_pair_indices,
     build_companion_triplets,
@@ -29,6 +35,9 @@ __all__ = [
     "build_companion_triplets",
     "compute_color_states_batch",
     "estimate_ell0",
+    "estimate_ell0_auto",
+    "estimate_ell0_euclidean_edges",
+    "estimate_ell0_geodesic_edges",
     "resolve_3d_dims",
     "resolve_frame_indices",
     "safe_gather_2d",

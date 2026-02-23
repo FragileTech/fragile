@@ -2,7 +2,7 @@
 TopoEncoder Benchmark: Attentive Atlas vs Standard VQ-VAE
 
 This script benchmarks the Attentive Atlas architecture (from fragile-index.md Section 7.8)
-against a standard VQ-VAE on MNIST or CIFAR-10 (MNIST default).
+against a standard VQ-VAE on MNIST or Fashion-MNIST (MNIST default).
 
 Key architectural components (from mermaid diagram):
 - Cross-attention router with learnable chart query bank
@@ -38,33 +38,43 @@ import torch.nn.functional as F
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 
-from fragile.core.benchmarks import BaselineClassifier, StandardVQ, VanillaAE
-from fragile.core.layers import (
-    CovariantCIFARBackbone,
+from fragile.learning.core.benchmarks import BaselineClassifier, StandardVQ, VanillaAE
+from fragile.learning.core.layers import (
     FactorizedJumpOperator,
     InvariantChartClassifier,
-    StandardCIFARBackbone,
     TopoEncoderPrimitives,
 )
-from fragile.core.losses import (
-    compute_chart_center_separation_loss,
-    compute_code_entropy_loss,
-    compute_codebook_centering_loss,
-    compute_disentangle_loss,
-    compute_diversity_loss,
-    compute_jump_consistency_loss,
-    compute_kl_prior_loss,
-    compute_orbit_loss,
-    compute_orthogonality_loss,
-    compute_per_chart_code_entropy_loss,
-    compute_residual_scale_loss,
-    compute_routing_entropy,
-    compute_separation_loss,
-    compute_variance_loss,
-    compute_vicreg_invariance_loss,
-    compute_window_loss,
-    get_jump_weight_schedule,
+from fragile.learning.hyperbolic_losses import (
+    # KEEP losses
     SupervisedTopologyLoss,
+    compute_routing_entropy,
+    compute_diversity_loss,
+    compute_codebook_centering_loss,
+    compute_residual_scale_loss,
+    compute_window_loss,
+    compute_code_entropy_loss,
+    compute_per_chart_code_entropy_loss,
+    compute_orthogonality_loss,
+    compute_jump_consistency_loss,
+    get_jump_weight_schedule,
+    # NEW losses
+    compute_hyperbolic_uniformity_loss,
+    compute_hyperbolic_contrastive_loss,
+    compute_radial_calibration_loss,
+    compute_codebook_spread_loss,
+    compute_symbol_purity_loss,
+    compute_symbol_calibration_loss,
+    # Anti-collapse penalties
+    compute_chart_collapse_penalty,
+    compute_code_collapse_penalty,
+)
+# DROP-flagged (still importable from old module for backwards compat)
+from fragile.learning.core.losses import (
+    compute_variance_loss,
+    compute_separation_loss,
+    compute_chart_center_separation_loss,
+    compute_disentangle_loss,
+    compute_kl_prior_loss,
 )
 from fragile.learning.checkpoints import (  # noqa: F401
     benchmarks_compatible as _benchmarks_compatible,
@@ -85,7 +95,6 @@ from fragile.learning.checkpoints import (  # noqa: F401
 # --- Extracted modules ---
 from fragile.learning.config import TopoEncoderConfig  # noqa: F401
 from fragile.learning.data import (
-    augment_inputs,
     create_data_snapshot,
     create_dataloaders,
     load_dataset,
@@ -121,12 +130,21 @@ def _init_loss_components() -> dict[str, list[float]]:
         "orthogonality": [],
         "code_entropy": [],
         "per_chart_code_entropy": [],
-        # Tier 4 losses (conditional)
+        # Tier 4 losses
         "kl_prior": [],
-        "orbit": [],
-        "vicreg_inv": [],
         # Tier 5: Jump Operator
         "jump": [],
+        # New geometric losses
+        "hyp_uniformity": [],
+        "hyp_contrastive": [],
+        "radial_cal": [],
+        "codebook_spread": [],
+        # New symbol losses
+        "sym_purity": [],
+        "sym_calibration": [],
+        # Anti-collapse penalties
+        "chart_collapse": [],
+        "code_collapse": [],
         # Supervised topology
         "sup_total": [],
         "sup_route": [],
@@ -209,18 +227,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         bundle = restore_dataset(
             data_snapshot=checkpoint.get("data", {}),
             dataset_fallback=config.dataset,
-            vision_preproc=config.vision_preproc,
-            baseline_vision_preproc=config.baseline_vision_preproc,
-            vision_in_channels=config.vision_in_channels,
-            vision_height=config.vision_height,
-            vision_width=config.vision_width,
         )
         data_snapshot = checkpoint.get("data", {})
         config.input_dim = bundle.input_dim
-        if bundle.vision_in_channels > 0:
-            config.vision_in_channels = bundle.vision_in_channels
-            config.vision_height = bundle.vision_height
-            config.vision_width = bundle.vision_width
 
         print(f"Resuming from checkpoint: {config.resume_checkpoint}")
         if start_epoch > config.epochs:
@@ -246,17 +255,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             dataset=config.dataset,
             n_samples=config.n_samples,
             test_split=config.test_split,
-            vision_preproc=config.vision_preproc,
-            baseline_vision_preproc=config.baseline_vision_preproc,
-            vision_in_channels=config.vision_in_channels,
-            vision_height=config.vision_height,
-            vision_width=config.vision_width,
         )
         config.input_dim = bundle.input_dim
-        if bundle.vision_in_channels > 0:
-            config.vision_in_channels = bundle.vision_in_channels
-            config.vision_height = bundle.vision_height
-            config.vision_width = bundle.vision_width
         data_snapshot = create_data_snapshot(bundle)
 
     # Unpack bundle for local use
@@ -311,18 +311,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         covariant_attn_denom_min=config.covariant_attn_denom_min,
         covariant_attn_use_transport=config.covariant_attn_use_transport,
         covariant_attn_transport_eps=config.covariant_attn_transport_eps,
-        vision_preproc=config.vision_preproc,
-        vision_in_channels=config.vision_in_channels,
-        vision_height=config.vision_height,
-        vision_width=config.vision_width,
-        vision_num_rotations=config.vision_num_rotations,
-        vision_kernel_size=config.vision_kernel_size,
-        vision_use_reflections=config.vision_use_reflections,
-        vision_norm_nonlinearity=config.vision_norm_nonlinearity,
-        vision_norm_bias=config.vision_norm_bias,
-        vision_backbone_type=config.vision_backbone_type,
-        vision_cifar_base_channels=config.vision_cifar_base_channels,
-        vision_cifar_bundle_size=config.vision_cifar_bundle_size,
         soft_equiv_metric=config.soft_equiv_metric,
         soft_equiv_bundle_size=config.soft_equiv_bundle_size,
         soft_equiv_hidden_dim=config.soft_equiv_hidden_dim,
@@ -330,6 +318,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         soft_equiv_zero_self_mixing=config.soft_equiv_zero_self_mixing,
         soft_equiv_soft_assign=config.soft_equiv_soft_assign,
         soft_equiv_temperature=config.soft_equiv_temperature,
+        conv_backbone=config.conv_backbone,
+        img_channels=config.img_channels,
+        img_size=config.img_size,
     )
     if resume_state is not None and resume_state.get("atlas") is not None:
         model_atlas.load_state_dict(resume_state["atlas"])
@@ -362,10 +353,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 attn_dim=config.baseline_attn_dim,
                 attn_heads=config.baseline_attn_heads,
                 attn_dropout=config.baseline_attn_dropout,
-                vision_preproc=config.baseline_vision_preproc,
-                vision_in_channels=config.vision_in_channels,
-                vision_height=config.vision_height,
-                vision_width=config.vision_width,
             )
         model_std = StandardVQ(
             input_dim=config.input_dim,
@@ -377,10 +364,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             attn_dim=config.baseline_attn_dim,
             attn_heads=config.baseline_attn_heads,
             attn_dropout=config.baseline_attn_dropout,
-            vision_preproc=config.baseline_vision_preproc,
-            vision_in_channels=config.vision_in_channels,
-            vision_height=config.vision_height,
-            vision_width=config.vision_width,
         )
         if benchmarks_std_state is not None:
             model_std.load_state_dict(benchmarks_std_state)
@@ -412,10 +395,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 attn_dim=config.baseline_attn_dim,
                 attn_heads=config.baseline_attn_heads,
                 attn_dropout=config.baseline_attn_dropout,
-                vision_preproc=config.baseline_vision_preproc,
-                vision_in_channels=config.vision_in_channels,
-                vision_height=config.vision_height,
-                vision_width=config.vision_width,
             )
         model_ae = VanillaAE(
             input_dim=config.input_dim,
@@ -426,10 +405,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             attn_dim=config.baseline_attn_dim,
             attn_heads=config.baseline_attn_heads,
             attn_dropout=config.baseline_attn_dropout,
-            vision_preproc=config.baseline_vision_preproc,
-            vision_in_channels=config.vision_in_channels,
-            vision_height=config.vision_height,
-            vision_width=config.vision_width,
         )
         if benchmarks_ae_state is not None:
             model_ae.load_state_dict(benchmarks_ae_state)
@@ -437,34 +412,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         elif resume_state is not None and resume_state.get("ae") is not None:
             model_ae.load_state_dict(resume_state["ae"])
         ae_params = count_parameters(model_ae)
-
-    # Create CIFAR backbone models for vision benchmark
-    model_cifar_covariant = None
-    model_cifar_standard = None
-    cifar_cov_params = 0
-    cifar_std_params = 0
-    if config.enable_cifar_backbone and config.dataset == "cifar10":
-        num_classes = 10
-        if config.cifar_backbone_type in {"covariant", "both"}:
-            model_cifar_covariant = CovariantCIFARBackbone(
-                in_channels=config.vision_in_channels,
-                num_classes=num_classes,
-                base_channels=config.cifar_base_channels,
-                bundle_size=config.cifar_bundle_size,
-            )
-            if resume_state is not None and resume_state.get("cifar_cov") is not None:
-                model_cifar_covariant.load_state_dict(resume_state["cifar_cov"])
-            cifar_cov_params = count_parameters(model_cifar_covariant)
-
-        if config.cifar_backbone_type in {"standard", "both"}:
-            model_cifar_standard = StandardCIFARBackbone(
-                in_channels=config.vision_in_channels,
-                num_classes=num_classes,
-                base_channels=config.cifar_base_channels,
-            )
-            if resume_state is not None and resume_state.get("cifar_std") is not None:
-                model_cifar_standard.load_state_dict(resume_state["cifar_std"])
-            cifar_std_params = count_parameters(model_cifar_standard)
 
     print("\nModel Parameters (fair comparison):")
     print(f"  TopoEncoder: {topo_params:,} params (hidden_dim={config.hidden_dim})")
@@ -476,10 +423,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         print(f"  VanillaAE:   {ae_params:,} params (hidden_dim={ae_hidden_dim})")
     else:
         print("  VanillaAE:   DISABLED")
-    if model_cifar_covariant is not None:
-        print(f"  CovariantCIFAR: {cifar_cov_params:,} params (base={config.cifar_base_channels})")
-    if model_cifar_standard is not None:
-        print(f"  StandardCIFAR:  {cifar_std_params:,} params (base={config.cifar_base_channels})")
 
     # Move models and data to device
     device = torch.device(config.device)
@@ -488,15 +431,9 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         model_std = model_std.to(device)
     if model_ae is not None:
         model_ae = model_ae.to(device)
-    if model_cifar_covariant is not None:
-        model_cifar_covariant = model_cifar_covariant.to(device)
-    if model_cifar_standard is not None:
-        model_cifar_standard = model_cifar_standard.to(device)
     print(f"  Device: {device}")
     train_std = model_std is not None
     train_ae = model_ae is not None
-    train_cifar_cov = model_cifar_covariant is not None
-    train_cifar_std = model_cifar_standard is not None
     if benchmarks_loaded_std and model_std is not None:
         train_std = False
         model_std.eval()
@@ -511,25 +448,17 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             "topo_params": topo_params,
             "std_params": std_params,
             "ae_params": ae_params,
-            "cifar_cov_params": cifar_cov_params,
-            "cifar_std_params": cifar_std_params,
             "std_hidden_dim": std_hidden_dim,
             "ae_hidden_dim": ae_hidden_dim,
             "benchmarks_loaded_std": benchmarks_loaded_std,
             "benchmarks_loaded_ae": benchmarks_loaded_ae,
             "train_std": train_std,
             "train_ae": train_ae,
-            "train_cifar_cov": train_cifar_cov,
-            "train_cifar_std": train_cifar_std,
             "baseline_attn": config.baseline_attn,
             "baseline_attn_tokens": config.baseline_attn_tokens,
             "baseline_attn_dim": config.baseline_attn_dim,
             "baseline_attn_heads": config.baseline_attn_heads,
             "baseline_attn_dropout": config.baseline_attn_dropout,
-            "enable_cifar_backbone": config.enable_cifar_backbone,
-            "cifar_backbone_type": config.cifar_backbone_type,
-            "cifar_base_channels": config.cifar_base_channels,
-            "cifar_bundle_size": config.cifar_bundle_size,
         },
         enabled=mlflow_active,
     )
@@ -636,21 +565,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     if train_ae and model_ae is not None:
         opt_ae = optim.Adam(model_ae.parameters(), lr=config.lr)
 
-    # CIFAR backbone optimizers
-    opt_cifar_cov: optim.Adam | None = None
-    if train_cifar_cov and model_cifar_covariant is not None:
-        opt_cifar_cov = optim.Adam(model_cifar_covariant.parameters(), lr=config.lr)
-
-    opt_cifar_std: optim.Adam | None = None
-    if train_cifar_std and model_cifar_standard is not None:
-        opt_cifar_std = optim.Adam(model_cifar_standard.parameters(), lr=config.lr)
-
     if resume_optim:
         _load_optimizer_state(opt_atlas, resume_optim.get("atlas"), device)
         _load_optimizer_state(opt_std, resume_optim.get("std"), device)
         _load_optimizer_state(opt_ae, resume_optim.get("ae"), device)
-        _load_optimizer_state(opt_cifar_cov, resume_optim.get("cifar_cov"), device)
-        _load_optimizer_state(opt_cifar_std, resume_optim.get("cifar_std"), device)
         _load_optimizer_state(opt_classifier, resume_optim.get("classifier"), device)
         _load_optimizer_state(opt_classifier_std, resume_optim.get("classifier_std"), device)
         _load_optimizer_state(opt_classifier_ae, resume_optim.get("classifier_ae"), device)
@@ -666,8 +584,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             opt_classifier,
             opt_classifier_std,
             opt_classifier_ae,
-            opt_cifar_cov,
-            opt_cifar_std,
         ]:
             if opt is not None:
                 schedulers.append(CosineAnnealingLR(opt, T_max=T_max, eta_min=config.lr_min))
@@ -687,10 +603,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     std_losses = list(resume_metrics.get("std_losses", []))
     atlas_losses = list(resume_metrics.get("atlas_losses", []))
     ae_losses = list(resume_metrics.get("ae_losses", []))  # VanillaAE baseline
-    cifar_cov_losses = list(resume_metrics.get("cifar_cov_losses", []))
-    cifar_std_losses = list(resume_metrics.get("cifar_std_losses", []))
-    cifar_cov_accs = list(resume_metrics.get("cifar_cov_accs", []))
-    cifar_std_accs = list(resume_metrics.get("cifar_std_accs", []))
     loss_components = _init_loss_components()
     if resume_metrics.get("loss_components"):
         for key, values in resume_metrics["loss_components"].items():
@@ -706,7 +618,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     print("Training TopoEncoder (Attentive Atlas)")
     print(f"  Epochs: {config.epochs}, LR: {config.lr}, Batch size: {batch_size}")
     print(f"  Charts: {config.num_charts}, Codes/chart: {config.codes_per_chart}")
-    print(f"  λ: entropy={config.entropy_weight}, consistency={config.consistency_weight}")
+    print(f"  λ: entropy={config.entropy_weight}")
     if start_epoch > 0:
         print(f"  Resuming at epoch {start_epoch}")
     print("=" * 60)
@@ -716,10 +628,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         epoch_std_loss = 0.0
         epoch_atlas_loss = 0.0
         epoch_ae_loss = 0.0
-        epoch_cifar_cov_loss = 0.0
-        epoch_cifar_std_loss = 0.0
-        epoch_cifar_cov_acc = 0.0
-        epoch_cifar_std_acc = 0.0
         epoch_losses = dict.fromkeys(loss_components.keys(), 0.0)
         epoch_info = {
             "I_XK": 0.0,
@@ -768,52 +676,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                         recon_ae, z_ae = model_ae(batch_X)
                         loss_ae = F.mse_loss(recon_ae, batch_X)
 
-            # --- CIFAR Backbone Training (direct classification) ---
-            loss_cifar_cov = torch.tensor(0.0, device=device)
-            acc_cifar_cov = torch.tensor(0.0, device=device)
-            if model_cifar_covariant is not None:
-                # Need image tensor for CIFAR backbone
-                batch_img = batch_X.view(
-                    -1, config.vision_in_channels, config.vision_height, config.vision_width
-                )
-                if train_cifar_cov and opt_cifar_cov is not None:
-                    logits_cov = model_cifar_covariant(batch_img)
-                    loss_cifar_cov = F.cross_entropy(logits_cov, batch_labels)
-                    opt_cifar_cov.zero_grad()
-                    loss_cifar_cov.backward()
-                    opt_cifar_cov.step()
-                    acc_cifar_cov = (
-                        (logits_cov.detach().argmax(dim=1) == batch_labels).float().mean()
-                    )
-                else:
-                    with torch.no_grad():
-                        logits_cov = model_cifar_covariant(batch_img)
-                        loss_cifar_cov = F.cross_entropy(logits_cov, batch_labels)
-                        acc_cifar_cov = (logits_cov.argmax(dim=1) == batch_labels).float().mean()
-
-            loss_cifar_std = torch.tensor(0.0, device=device)
-            acc_cifar_std = torch.tensor(0.0, device=device)
-            if model_cifar_standard is not None:
-                batch_img = batch_X.view(
-                    -1, config.vision_in_channels, config.vision_height, config.vision_width
-                )
-                if train_cifar_std and opt_cifar_std is not None:
-                    logits_std_cifar = model_cifar_standard(batch_img)
-                    loss_cifar_std = F.cross_entropy(logits_std_cifar, batch_labels)
-                    opt_cifar_std.zero_grad()
-                    loss_cifar_std.backward()
-                    opt_cifar_std.step()
-                    acc_cifar_std = (
-                        (logits_std_cifar.detach().argmax(dim=1) == batch_labels).float().mean()
-                    )
-                else:
-                    with torch.no_grad():
-                        logits_std_cifar = model_cifar_standard(batch_img)
-                        loss_cifar_std = F.cross_entropy(logits_std_cifar, batch_labels)
-                        acc_cifar_std = (
-                            (logits_std_cifar.argmax(dim=1) == batch_labels).float().mean()
-                        )
-
             # --- Baseline classifier readouts (detached) ---
             std_cls_loss = torch.tensor(0.0, device=device)
             std_cls_acc = torch.tensor(0.0, device=device)
@@ -858,6 +720,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 indices_stack,
                 z_n_all_charts,
                 _c_bar,
+                v_local,
             ) = model_atlas.encoder(batch_X)
 
             # Decoder forward (dreaming mode - infers routing from z_geo)
@@ -888,6 +751,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             residual_scale_loss = torch.tensor(0.0, device=device)
             if config.residual_scale_weight > 0:
                 residual_scale_loss = compute_residual_scale_loss(z_n)
+
+            # Soft equivariant regularization
             soft_equiv_l1 = torch.tensor(0.0, device=device)
             if config.soft_equiv_metric:
                 soft_equiv_l1 = model_atlas.encoder.soft_equiv_l1_loss()
@@ -900,6 +765,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 enc_w, config.num_charts, config.window_eps_ground
             )
             dis_loss = compute_disentangle_loss(z_geo, enc_w)
+
             # Tier 3 losses (geometry/codebook health)
             orth_loss = torch.tensor(0.0, device=device)
             if config.orthogonality_weight > 0:
@@ -918,31 +784,10 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             code_entropy_value = max_code_entropy - code_ent_loss.item()
             per_chart_entropy_value = max_code_entropy - per_chart_code_ent_loss.item()
 
-            # Tier 4 losses (invariance - expensive, conditional computation)
-            # KL prior (cheap, compute if enabled)
+            # Tier 4 losses (invariance)
+            kl_loss = torch.tensor(0.0, device=device)
             if config.kl_prior_weight > 0:
                 kl_loss = compute_kl_prior_loss(z_n, z_tex)
-            else:
-                kl_loss = torch.tensor(0.0, device=device)
-
-            # Orbit and VICReg invariance (expensive - share augmented forward pass)
-            orbit_loss = torch.tensor(0.0, device=device)
-            vicreg_loss = torch.tensor(0.0, device=device)
-
-            if config.orbit_weight > 0 or config.vicreg_inv_weight > 0:
-                # Single augmented forward pass (shared between both losses)
-                x_aug = augment_inputs(
-                    batch_X,
-                    config.dataset,
-                    config.augment_noise_std,
-                    config.augment_rotation_max,
-                )
-                _, _, _, _, enc_w_aug, z_geo_aug, _, _, _, _c_bar_aug = model_atlas.encoder(x_aug)
-
-                if config.orbit_weight > 0:
-                    orbit_loss = compute_orbit_loss(enc_w, enc_w_aug)
-                if config.vicreg_inv_weight > 0:
-                    vicreg_loss = compute_vicreg_invariance_loss(z_geo, z_geo_aug)
 
             # Tier 5: Jump Operator (scheduled warmup - let atlas form before learning transitions)
             current_jump_weight = get_jump_weight_schedule(
@@ -952,6 +797,57 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 jump_loss = compute_jump_consistency_loss(jump_op, z_n_all_charts, enc_w)
             else:
                 jump_loss = torch.tensor(0.0, device=device)
+
+            # --- NEW GEOMETRIC LOSSES (always-on, no warmup) ---
+            hyp_unif_loss = torch.tensor(0.0, device=device)
+            if config.hyperbolic_uniformity_weight > 0:
+                hyp_unif_loss = compute_hyperbolic_uniformity_loss(z_geo)
+
+            hyp_contr_loss = torch.tensor(0.0, device=device)
+            if config.hyperbolic_contrastive_weight > 0:
+                hyp_contr_loss = compute_hyperbolic_contrastive_loss(
+                    z_geo, batch_labels, config.hyperbolic_contrastive_margin
+                )
+
+            rad_cal_loss = torch.tensor(0.0, device=device)
+            if config.radial_calibration_weight > 0:
+                rad_cal_loss = compute_radial_calibration_loss(
+                    z_geo, enc_w, config.num_charts
+                )
+
+            cb_spread_loss = torch.tensor(0.0, device=device)
+            if config.codebook_spread_weight > 0:
+                cb_spread_loss = compute_codebook_spread_loss(
+                    model_atlas.encoder.codebook, config.codebook_spread_margin
+                )
+
+            sym_pur_loss = torch.tensor(0.0, device=device)
+            if config.symbol_purity_weight > 0:
+                sym_pur_loss = compute_symbol_purity_loss(
+                    K_chart, indices_stack, batch_labels, enc_w,
+                    config.num_charts, config.codes_per_chart,
+                )
+
+            sym_cal_loss = torch.tensor(0.0, device=device)
+            if config.symbol_calibration_weight > 0:
+                sym_cal_loss = compute_symbol_calibration_loss(
+                    z_geo, K_chart, indices_stack,
+                    config.num_charts, config.codes_per_chart,
+                )
+
+            # --- ANTI-COLLAPSE PENALTIES ---
+            chart_collapse_loss = torch.tensor(0.0, device=device)
+            if config.chart_collapse_weight > 0:
+                chart_collapse_loss = compute_chart_collapse_penalty(
+                    enc_w, config.num_charts
+                )
+
+            code_collapse_loss = torch.tensor(0.0, device=device)
+            if config.code_collapse_weight > 0:
+                code_collapse_loss = compute_code_collapse_penalty(
+                    v_local, model_atlas.encoder.codebook, enc_w,
+                    temperature=config.code_collapse_temperature,
+                )
 
             # Supervised topology losses
             sup_total = torch.tensor(0.0, device=device)
@@ -972,60 +868,45 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 p_y_x = torch.matmul(enc_w, supervised_loss.p_y_given_k)
                 sup_acc = (p_y_x.argmax(dim=1) == batch_labels).float().mean()
 
-            # Loss terms (direct, no rescaling)
-            recon_term = recon_loss_a
-            vq_term = vq_loss_a
-            sup_term = sup_total
-            entropy_term = entropy_loss
-            consistency_term = consistency
-            var_term = var_loss
-            div_term = div_loss
-            sep_term = sep_loss
-            codebook_center_term = codebook_center_loss
-            chart_center_sep_term = chart_center_sep_loss
-            residual_scale_term = residual_scale_loss
-            soft_equiv_l1_term = soft_equiv_l1
-            soft_equiv_log_ratio_term = soft_equiv_log_ratio
-            window_term = window_loss
-            disentangle_term = dis_loss
-            orth_term = orth_loss
-            code_ent_term = code_ent_loss
-            per_chart_code_ent_term = per_chart_code_ent_loss
-            kl_term = kl_loss
-            orbit_term = orbit_loss
-            vicreg_term = vicreg_loss
-            jump_term = jump_loss
-
             # Total loss
             loss_a = (
-                recon_term
-                + vq_term
-                + config.entropy_weight * entropy_term
-                + config.consistency_weight * consistency_term
+                recon_loss_a
+                + vq_loss_a
+                + config.entropy_weight * entropy_loss
+                + config.consistency_weight * consistency
                 # Tier 1
-                + config.variance_weight * var_term
-                + config.diversity_weight * div_term
-                + config.separation_weight * sep_term
-                + config.codebook_center_weight * codebook_center_term
-                + config.chart_center_sep_weight * chart_center_sep_term
-                + config.residual_scale_weight * residual_scale_term
-                + config.soft_equiv_l1_weight * soft_equiv_l1_term
-                + config.soft_equiv_log_ratio_weight * soft_equiv_log_ratio_term
+                + config.variance_weight * var_loss
+                + config.diversity_weight * div_loss
+                + config.separation_weight * sep_loss
+                + config.codebook_center_weight * codebook_center_loss
+                + config.chart_center_sep_weight * chart_center_sep_loss
+                + config.residual_scale_weight * residual_scale_loss
+                + config.soft_equiv_l1_weight * soft_equiv_l1
+                + config.soft_equiv_log_ratio_weight * soft_equiv_log_ratio
                 # Tier 2
-                + config.window_weight * window_term
-                + config.disentangle_weight * disentangle_term
+                + config.window_weight * window_loss
+                + config.disentangle_weight * dis_loss
                 # Tier 3
-                + config.orthogonality_weight * orth_term
-                + config.code_entropy_weight * code_ent_term
-                + config.per_chart_code_entropy_weight * per_chart_code_ent_term
-                # Tier 4 (conditional - 0 if disabled)
-                + config.kl_prior_weight * kl_term
-                + config.orbit_weight * orbit_term
-                + config.vicreg_inv_weight * vicreg_term
+                + config.orthogonality_weight * orth_loss
+                + config.code_entropy_weight * code_ent_loss
+                + config.per_chart_code_entropy_weight * per_chart_code_ent_loss
+                # Tier 4
+                + config.kl_prior_weight * kl_loss
                 # Tier 5: Jump Operator (scheduled)
-                + current_jump_weight * jump_term
+                + current_jump_weight * jump_loss
+                # New geometric losses
+                + config.hyperbolic_uniformity_weight * hyp_unif_loss
+                + config.hyperbolic_contrastive_weight * hyp_contr_loss
+                + config.radial_calibration_weight * rad_cal_loss
+                + config.codebook_spread_weight * cb_spread_loss
+                # New symbol losses
+                + config.symbol_purity_weight * sym_pur_loss
+                + config.symbol_calibration_weight * sym_cal_loss
+                # Anti-collapse penalties
+                + config.chart_collapse_weight * chart_collapse_loss
+                + config.code_collapse_weight * code_collapse_loss
                 # Supervised topology
-                + config.sup_weight * sup_term
+                + config.sup_weight * sup_total
             )
 
             opt_atlas.zero_grad()
@@ -1057,10 +938,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_std_loss += loss_s.item()
             epoch_atlas_loss += loss_a.item()
             epoch_ae_loss += loss_ae.item()
-            epoch_cifar_cov_loss += loss_cifar_cov.item()
-            epoch_cifar_std_loss += loss_cifar_std.item()
-            epoch_cifar_cov_acc += acc_cifar_cov.item()
-            epoch_cifar_std_acc += acc_cifar_std.item()
             epoch_losses["recon"] += recon_loss_a.item()
             epoch_losses["vq"] += vq_loss_a.item()
             epoch_losses["entropy"] += entropy_value.item()
@@ -1079,9 +956,15 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_losses["code_entropy"] += code_ent_loss.item()
             epoch_losses["per_chart_code_entropy"] += per_chart_code_ent_loss.item()
             epoch_losses["kl_prior"] += kl_loss.item()
-            epoch_losses["orbit"] += orbit_loss.item()
-            epoch_losses["vicreg_inv"] += vicreg_loss.item()
             epoch_losses["jump"] += jump_loss.item()
+            epoch_losses["hyp_uniformity"] += hyp_unif_loss.item()
+            epoch_losses["hyp_contrastive"] += hyp_contr_loss.item()
+            epoch_losses["radial_cal"] += rad_cal_loss.item()
+            epoch_losses["codebook_spread"] += cb_spread_loss.item()
+            epoch_losses["sym_purity"] += sym_pur_loss.item()
+            epoch_losses["sym_calibration"] += sym_cal_loss.item()
+            epoch_losses["chart_collapse"] += chart_collapse_loss.item()
+            epoch_losses["code_collapse"] += code_collapse_loss.item()
             epoch_losses["sup_total"] += sup_total.item()
             epoch_losses["sup_route"] += sup_route.item()
             epoch_losses["sup_purity"] += sup_purity.item()
@@ -1108,10 +991,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         std_losses.append(epoch_std_loss / n_batches)
         atlas_losses.append(epoch_atlas_loss / n_batches)
         ae_losses.append(epoch_ae_loss / n_batches)
-        cifar_cov_losses.append(epoch_cifar_cov_loss / n_batches)
-        cifar_std_losses.append(epoch_cifar_std_loss / n_batches)
-        cifar_cov_accs.append(epoch_cifar_cov_acc / n_batches)
-        cifar_std_accs.append(epoch_cifar_std_acc / n_batches)
         for k in loss_components.keys():
             loss_components[k].append(epoch_losses[k] / n_batches)
         info_metrics["I_XK"].append(epoch_info["I_XK"] / n_batches)
@@ -1162,6 +1041,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                         _,
                         _,
                         _c_bar_batch,
+                        _v_local_batch,
                     ) = model_atlas.encoder(batch_X)
                     usage_sum += enc_w_batch.sum(dim=0).cpu()
                     chart_assignments.append(K_chart_batch.cpu())
@@ -1227,14 +1107,20 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             avg_soft_equiv_l1 = loss_components["soft_equiv_l1"][-1]
             avg_soft_equiv_log_ratio = loss_components["soft_equiv_log_ratio"][-1]
             avg_window = loss_components["window"][-1]
-            avg_disent = loss_components["disentangle"][-1]
+            avg_disentangle = loss_components["disentangle"][-1]
             avg_orth = loss_components["orthogonality"][-1]
             avg_code_ent = loss_components["code_entropy"][-1]
             avg_pc_code_ent = loss_components["per_chart_code_entropy"][-1]
-            avg_kl = loss_components["kl_prior"][-1]
-            avg_orbit = loss_components["orbit"][-1]
-            avg_vicreg = loss_components["vicreg_inv"][-1]
+            avg_kl_prior = loss_components["kl_prior"][-1]
             avg_jump = loss_components["jump"][-1]
+            avg_hyp_unif = loss_components["hyp_uniformity"][-1]
+            avg_hyp_contr = loss_components["hyp_contrastive"][-1]
+            avg_rad_cal = loss_components["radial_cal"][-1]
+            avg_cb_spread = loss_components["codebook_spread"][-1]
+            avg_sym_pur = loss_components["sym_purity"][-1]
+            avg_sym_cal = loss_components["sym_calibration"][-1]
+            avg_chart_collapse = loss_components["chart_collapse"][-1]
+            avg_code_collapse = loss_components["code_collapse"][-1]
             avg_sup_total = loss_components["sup_total"][-1]
             avg_sup_route = loss_components["sup_route"][-1]
             avg_sup_purity = loss_components["sup_purity"][-1]
@@ -1269,26 +1155,43 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 f"  Core: recon={avg_recon:.3f} "
                 f"vq={avg_vq:.3f} "
                 f"entropy={avg_entropy:.3f} "
-                f"consistency={avg_consistency:.3f}"
+                f"consist={avg_consistency:.3f} "
+                f"var={avg_var:.3f} "
+                f"div={avg_div:.3f} "
+                f"sep={avg_sep:.3f}"
             )
             print(
-                f"  Tier1: var={avg_var:.3f} "
-                f"div={avg_div:.3f} "
-                f"sep={avg_sep:.3f} "
-                f"center={avg_codebook_center:.3f} "
+                f"  T1: center={avg_codebook_center:.3f} "
                 f"chart_sep={avg_chart_center_sep:.3f} "
                 f"res_scale={avg_residual_scale:.3f} "
-                f"soft_eq_l1={avg_soft_equiv_l1:.3f} "
-                f"soft_eq_ratio={avg_soft_equiv_log_ratio:.3f}"
+                f"seq_l1={avg_soft_equiv_l1:.3f} "
+                f"seq_ratio={avg_soft_equiv_log_ratio:.3f}"
             )
-            print(f"  Tier2: window={avg_window:.3f} disent={avg_disent:.3f}")
             print(
-                f"  Tier3: orth={avg_orth:.3f} "
+                f"  T2: window={avg_window:.3f} "
+                f"disentangle={avg_disentangle:.3f}"
+            )
+            print(
+                f"  T3: orth={avg_orth:.3f} "
                 f"code_ent={avg_code_ent:.3f} "
                 f"pc_code_ent={avg_pc_code_ent:.3f}"
             )
-            print(f"  Tier4: kl={avg_kl:.3f} orbit={avg_orbit:.3f} vicreg={avg_vicreg:.3f}")
-            print(f"  Tier5: jump={avg_jump:.3f} (λ={log_jump_weight:.3f})")
+            print(f"  T4: kl_prior={avg_kl_prior:.3f}")
+            print(f"  Jump: {avg_jump:.3f} (λ={log_jump_weight:.3f})")
+            print(
+                f"  Geo: unif={avg_hyp_unif:.3f} "
+                f"contr={avg_hyp_contr:.3f} "
+                f"rad_cal={avg_rad_cal:.3f} "
+                f"cb_spread={avg_cb_spread:.3f}"
+            )
+            print(
+                f"  Sym: purity={avg_sym_pur:.3f} "
+                f"calibration={avg_sym_cal:.3f}"
+            )
+            print(
+                f"  Collapse: chart={avg_chart_collapse:.4f} "
+                f"code={avg_code_collapse:.4f}"
+            )
             if supervised_loss is not None:
                 print(
                     f"  Sup: train_acc={avg_sup_acc:.3f} "
@@ -1355,14 +1258,20 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "loss/soft_equiv_l1": avg_soft_equiv_l1,
                     "loss/soft_equiv_log_ratio": avg_soft_equiv_log_ratio,
                     "loss/window": avg_window,
-                    "loss/disentangle": avg_disent,
+                    "loss/disentangle": avg_disentangle,
                     "loss/orthogonality": avg_orth,
                     "loss/code_entropy": avg_code_ent,
                     "loss/per_chart_code_entropy": avg_pc_code_ent,
-                    "loss/kl_prior": avg_kl,
-                    "loss/orbit": avg_orbit,
-                    "loss/vicreg_inv": avg_vicreg,
+                    "loss/kl_prior": avg_kl_prior,
                     "loss/jump": avg_jump,
+                    "loss/hyp_uniformity": avg_hyp_unif,
+                    "loss/hyp_contrastive": avg_hyp_contr,
+                    "loss/radial_cal": avg_rad_cal,
+                    "loss/codebook_spread": avg_cb_spread,
+                    "loss/sym_purity": avg_sym_pur,
+                    "loss/sym_calibration": avg_sym_cal,
+                    "loss/chart_collapse": avg_chart_collapse,
+                    "loss/code_collapse": avg_code_collapse,
                     "loss/sup_total": avg_sup_total,
                     "loss/sup_route": avg_sup_route,
                     "loss/sup_purity": avg_sup_purity,
@@ -1411,10 +1320,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     "std_losses": std_losses,
                     "atlas_losses": atlas_losses,
                     "ae_losses": ae_losses,
-                    "cifar_cov_losses": cifar_cov_losses,
-                    "cifar_std_losses": cifar_std_losses,
-                    "cifar_cov_accs": cifar_cov_accs,
-                    "cifar_std_accs": cifar_std_accs,
                     "loss_components": loss_components,
                     "info_metrics": info_metrics,
                     "ami_atlas": ami,
@@ -1433,8 +1338,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     epoch,
                     model_std=model_std,
                     model_ae=model_ae,
-                    model_cifar_cov=model_cifar_covariant,
-                    model_cifar_std=model_cifar_standard,
                     supervised_loss=supervised_loss,
                     classifier_head=classifier_head,
                     classifier_std=std_classifier_head,
@@ -1442,8 +1345,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                     optimizer_atlas=opt_atlas,
                     optimizer_std=opt_std,
                     optimizer_ae=opt_ae,
-                    optimizer_cifar_cov=opt_cifar_cov,
-                    optimizer_cifar_std=opt_cifar_std,
                     optimizer_classifier=opt_classifier,
                     optimizer_classifier_std=opt_classifier_std,
                     optimizer_classifier_ae=opt_classifier_ae,
@@ -1659,37 +1560,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
     if ae_classifier_head is not None and model_ae is not None:
         print(f"VanillaAE Readout Accuracy: {ae_cls_acc:.4f}")
 
-    # CIFAR backbone results
-    if model_cifar_covariant is not None and cifar_cov_accs:
-        print(f"\nCIFAR Backbone Benchmark (base={config.cifar_base_channels}):")
-        print(f"  CovariantCIFARBackbone Accuracy: {cifar_cov_accs[-1]:.4f}")
-        print(f"  CovariantCIFARBackbone Final Loss: {cifar_cov_losses[-1]:.4f}")
-    if model_cifar_standard is not None and cifar_std_accs:
-        print(f"  StandardCIFARBackbone Accuracy: {cifar_std_accs[-1]:.4f}")
-        print(f"  StandardCIFARBackbone Final Loss: {cifar_std_losses[-1]:.4f}")
-    if (
-        model_cifar_covariant is not None
-        and model_cifar_standard is not None
-        and cifar_cov_accs
-        and cifar_std_accs
-    ):
-        diff = cifar_cov_accs[-1] - cifar_std_accs[-1]
-        if diff > 0:
-            print(f"  ✓ Covariant backbone wins by {diff:.4f}")
-        elif diff < 0:
-            print(f"  ✓ Standard backbone wins by {-diff:.4f}")
-        else:
-            print("  = Both backbones tie")
-
     final_checkpoint = f"{config.output_dir}/topoencoder/final.pt"
     final_metrics = {
         "std_losses": std_losses,
         "atlas_losses": atlas_losses,
         "ae_losses": ae_losses,
-        "cifar_cov_losses": cifar_cov_losses,
-        "cifar_std_losses": cifar_std_losses,
-        "cifar_cov_accs": cifar_cov_accs,
-        "cifar_std_accs": cifar_std_accs,
         "loss_components": loss_components,
         "info_metrics": info_metrics,
         # AMI scores
@@ -1707,8 +1582,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "cls_acc": cls_acc,
         "std_cls_acc": std_cls_acc,
         "ae_cls_acc": ae_cls_acc,
-        "cifar_cov_acc": cifar_cov_accs[-1] if cifar_cov_accs else 0.0,
-        "cifar_std_acc": cifar_std_accs[-1] if cifar_std_accs else 0.0,
         "chart_assignments": chart_assignments,
         "std_hidden_dim": std_hidden_dim,
         "ae_hidden_dim": ae_hidden_dim,
@@ -1723,8 +1596,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         config.epochs,
         model_std=model_std,
         model_ae=model_ae,
-        model_cifar_cov=model_cifar_covariant,
-        model_cifar_std=model_cifar_standard,
         supervised_loss=supervised_loss,
         classifier_head=classifier_head,
         classifier_std=std_classifier_head,
@@ -1732,8 +1603,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         optimizer_atlas=opt_atlas,
         optimizer_std=opt_std,
         optimizer_ae=opt_ae,
-        optimizer_cifar_cov=opt_cifar_cov,
-        optimizer_cifar_std=opt_cifar_std,
         optimizer_classifier=opt_classifier,
         optimizer_classifier_std=opt_classifier_std,
         optimizer_classifier_ae=opt_classifier_ae,
@@ -1804,8 +1673,6 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         "cls_acc": cls_acc,
         "std_cls_acc": std_cls_acc,
         "ae_cls_acc": ae_cls_acc,
-        "cifar_cov_acc": cifar_cov_accs[-1] if cifar_cov_accs else 0.0,
-        "cifar_std_acc": cifar_std_accs[-1] if cifar_std_accs else 0.0,
         "atlas_perplexity": atlas_perplexity,
         "std_perplexity": std_perplexity,
         "checkpoint_path": final_checkpoint,
@@ -1825,8 +1692,8 @@ def main():
         "--dataset",
         type=str,
         default="mnist",
-        choices=["mnist", "cifar10"],
-        help="Dataset to use (mnist or cifar10)",
+        choices=["mnist", "fashion_mnist"],
+        help="Dataset to use (mnist or fashion_mnist)",
     )
     parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate (default: 1e-3)")
     parser.add_argument(
@@ -1857,7 +1724,7 @@ def main():
         "--num_charts",
         type=int,
         default=10,
-        help="Number of atlas charts (default: 10 for MNIST/CIFAR-10)",
+        help="Number of atlas charts (default: 10 for MNIST/Fashion-MNIST)",
     )
     parser.add_argument(
         "--codes_per_chart",
@@ -1919,79 +1786,6 @@ def main():
         type=float,
         default=1e-3,
         help="Diagonal stabilizer for transport (default: 1e-3)",
-    )
-    parser.add_argument(
-        "--vision_preproc",
-        type=lambda x: x.lower() == "true",
-        default=False,
-        help="Use covariant vision preprocessor (default: False)",
-    )
-    parser.add_argument(
-        "--vision_in_channels",
-        type=int,
-        default=0,
-        help="Vision preproc input channels (0 = infer from dataset)",
-    )
-    parser.add_argument(
-        "--vision_height",
-        type=int,
-        default=0,
-        help="Vision preproc input height (0 = infer from dataset)",
-    )
-    parser.add_argument(
-        "--vision_width",
-        type=int,
-        default=0,
-        help="Vision preproc input width (0 = infer from dataset)",
-    )
-    parser.add_argument(
-        "--vision_num_rotations",
-        type=int,
-        default=8,
-        help="Vision preproc rotation count (default: 8)",
-    )
-    parser.add_argument(
-        "--vision_kernel_size",
-        type=int,
-        default=5,
-        help="Vision preproc kernel size (default: 5)",
-    )
-    parser.add_argument(
-        "--vision_use_reflections",
-        type=lambda x: x.lower() == "true",
-        default=False,
-        help="Use reflections in vision preproc (default: False)",
-    )
-    parser.add_argument(
-        "--vision_norm_nonlinearity",
-        type=str,
-        default="n_sigmoid",
-        help="Vision preproc norm nonlinearity (default: n_sigmoid)",
-    )
-    parser.add_argument(
-        "--vision_norm_bias",
-        type=lambda x: x.lower() == "true",
-        default=True,
-        help="Vision preproc norm bias (default: True)",
-    )
-    parser.add_argument(
-        "--vision_backbone_type",
-        type=str,
-        default="covariant_retina",
-        choices=["covariant_retina", "covariant_cifar"],
-        help="Vision backbone type: covariant_retina (SO(2)-equivariant) or covariant_cifar (gauge-covariant)",
-    )
-    parser.add_argument(
-        "--vision_cifar_base_channels",
-        type=int,
-        default=32,
-        help="Base channels for CovariantCIFARBackbone (default: 32)",
-    )
-    parser.add_argument(
-        "--vision_cifar_bundle_size",
-        type=int,
-        default=4,
-        help="Bundle size for NormGatedConv2d in CovariantCIFARBackbone (default: 4)",
     )
     parser.add_argument(
         "--soft_equiv",
@@ -2137,12 +1931,12 @@ def main():
         help="Encoder/decoder routing consistency weight (default: 0.1)",
     )
 
-    # Tier 1 losses (residual hierarchy)
+    # Tier 1 losses
     parser.add_argument(
         "--variance_weight",
         type=float,
-        default=0.1,
-        help="Variance loss weight (default: 0.1)",
+        default=0.0,
+        help="Variance loss weight (DROP: disabled, default: 0.0)",
     )
     parser.add_argument(
         "--diversity_weight",
@@ -2153,8 +1947,14 @@ def main():
     parser.add_argument(
         "--separation_weight",
         type=float,
-        default=0.1,
-        help="Chart separation loss weight (default: 0.1)",
+        default=0.0,
+        help="Separation loss weight (DROP: disabled, default: 0.0)",
+    )
+    parser.add_argument(
+        "--separation_margin",
+        type=float,
+        default=2.0,
+        help="Minimum distance between chart centers (default: 2.0)",
     )
     parser.add_argument(
         "--codebook_center_weight",
@@ -2165,23 +1965,23 @@ def main():
     parser.add_argument(
         "--chart_center_sep_weight",
         type=float,
-        default=0.05,
-        help="Chart center separation weight (default: 0.05)",
+        default=0.0,
+        help="Chart center token separation weight (DROP: disabled, default: 0.0)",
     )
     parser.add_argument(
         "--chart_center_sep_margin",
         type=float,
         default=2.0,
-        help="Chart center separation margin (default: 2.0)",
+        help="Minimum distance between chart center tokens (default: 2.0)",
     )
     parser.add_argument(
         "--residual_scale_weight",
         type=float,
         default=0.01,
-        help="Residual scale penalty weight (default: 0.01)",
+        help="Residual scale weight (keeps z_n small, default: 0.01)",
     )
 
-    # Tier 2 losses (information-theoretic)
+    # Tier 2 losses
     parser.add_argument(
         "--window_weight",
         type=float,
@@ -2191,11 +1991,17 @@ def main():
     parser.add_argument(
         "--disentangle_weight",
         type=float,
-        default=0.1,
-        help="Disentangle loss weight (gauge coherence, default: 0.1)",
+        default=0.0,
+        help="Gauge coherence / disentangle weight (DROP: disabled, default: 0.0)",
     )
 
-    # Tier 3 losses (codebook health)
+    # Tier 3 losses
+    parser.add_argument(
+        "--orthogonality_weight",
+        type=float,
+        default=0.0,
+        help="Orthogonality / SVD spread weight (disabled by default, default: 0.0)",
+    )
     parser.add_argument(
         "--per_chart_code_entropy_weight",
         type=float,
@@ -2209,38 +2015,61 @@ def main():
         help="Global code entropy weight (all codes used uniformly, default: 0.0)",
     )
 
-    # Tier 4 losses (invariance)
+    # Tier 4 losses
     parser.add_argument(
         "--kl_prior_weight",
         type=float,
-        default=0.01,
-        help="KL prior weight on z_n, z_tex (default: 0.01)",
-    )
-    parser.add_argument(
-        "--orbit_weight",
-        type=float,
         default=0.0,
-        help="Orbit invariance weight (default: 0.0, enables 2x slowdown)",
-    )
-    parser.add_argument(
-        "--vicreg_inv_weight",
-        type=float,
-        default=0.0,
-        help="VICReg invariance weight (default: 0.0, shares augmentation pass)",
-    )
-    parser.add_argument(
-        "--augment_noise_std",
-        type=float,
-        default=0.1,
-        help="Augmentation noise std (default: 0.1)",
-    )
-    parser.add_argument(
-        "--augment_rotation_max",
-        type=float,
-        default=0.3,
-        help="Max rotation in radians for augmentation (default: 0.3)",
+        help="KL prior weight (radial energy prior on z_n, z_tex, default: 0.0)",
     )
 
+    # New geometric losses
+    parser.add_argument(
+        "--hyperbolic_uniformity_weight", type=float, default=0.1,
+        help="Hyperbolic uniformity repulsion weight (default: 0.1)",
+    )
+    parser.add_argument(
+        "--hyperbolic_contrastive_weight", type=float, default=0.0,
+        help="Hyperbolic contrastive loss weight (default: 0.5)",
+    )
+    parser.add_argument(
+        "--hyperbolic_contrastive_margin", type=float, default=2.0,
+        help="Margin for hyperbolic contrastive loss (default: 2.0)",
+    )
+    parser.add_argument(
+        "--radial_calibration_weight", type=float, default=0.1,
+        help="Radial calibration loss weight (default: 0.1)",
+    )
+    parser.add_argument(
+        "--codebook_spread_weight", type=float, default=0.05,
+        help="Codebook spread loss weight (default: 0.05)",
+    )
+    parser.add_argument(
+        "--codebook_spread_margin", type=float, default=1.0,
+        help="Margin for codebook spread loss (default: 1.0)",
+    )
+    # New symbol losses
+    parser.add_argument(
+        "--symbol_purity_weight", type=float, default=0.05,
+        help="Symbol purity loss weight (default: 0.05)",
+    )
+    parser.add_argument(
+        "--symbol_calibration_weight", type=float, default=0.05,
+        help="Symbol calibration loss weight (default: 0.05)",
+    )
+    # Anti-collapse penalties
+    parser.add_argument(
+        "--chart_collapse_weight", type=float, default=1.0,
+        help="Chart collapse penalty weight: max(p_k) - 1/K (default: 1.0)",
+    )
+    parser.add_argument(
+        "--code_collapse_weight", type=float, default=0.5,
+        help="Code collapse penalty weight: soft code usage skew (default: 0.5)",
+    )
+    parser.add_argument(
+        "--code_collapse_temperature", type=float, default=1.0,
+        help="Temperature for soft code assignment in collapse penalty (default: 1.0)",
+    )
     parser.add_argument(
         "--use_scheduler",
         type=lambda x: x.lower() == "true",
@@ -2360,9 +2189,21 @@ def main():
         help="Disable StandardVQ baseline (faster training)",
     )
     parser.add_argument(
-        "--baseline_vision_preproc",
+        "--disable_conv",
         action="store_true",
-        help="Enable standard vision backbone in baselines",
+        help="Disable conv backbone, use FC layers for feature extraction/reconstruction",
+    )
+    parser.add_argument(
+        "--img_channels",
+        type=int,
+        default=1,
+        help="Image channels (1 for grayscale MNIST/Fashion-MNIST)",
+    )
+    parser.add_argument(
+        "--img_size",
+        type=int,
+        default=28,
+        help="Image spatial dimension (28 for MNIST/Fashion-MNIST)",
     )
     parser.add_argument(
         "--baseline_attn",
@@ -2393,32 +2234,6 @@ def main():
         type=float,
         default=0.0,
         help="Attention dropout for baselines",
-    )
-
-    # CIFAR backbone benchmark
-    parser.add_argument(
-        "--enable_cifar_backbone",
-        action="store_true",
-        help="Enable CIFAR backbone benchmark (CovariantCIFARBackbone vs StandardCIFARBackbone)",
-    )
-    parser.add_argument(
-        "--cifar_backbone_type",
-        type=str,
-        default="both",
-        choices=["covariant", "standard", "both"],
-        help="Which CIFAR backbone to train: covariant, standard, or both",
-    )
-    parser.add_argument(
-        "--cifar_base_channels",
-        type=int,
-        default=32,
-        help="Base channel width for CIFAR backbone (16/32/64)",
-    )
-    parser.add_argument(
-        "--cifar_bundle_size",
-        type=int,
-        default=4,
-        help="Bundle size for NormGatedConv2d in covariant backbone",
     )
 
     args = parser.parse_args()
@@ -2488,6 +2303,32 @@ def main():
             "loss_rescale_min",
             "loss_rescale_max",
             "loss_rescale_eps",
+            # Dropped losses (orbit/vicreg/augmentation)
+            "orbit_weight",
+            "vicreg_inv_weight",
+            "augment_noise_std",
+            "augment_rotation_max",
+            # Removed vision/CIFAR support
+            "vision_preproc",
+            "vision_in_channels",
+            "vision_height",
+            "vision_width",
+            "vision_num_rotations",
+            "vision_kernel_size",
+            "vision_use_reflections",
+            "vision_norm_nonlinearity",
+            "vision_norm_bias",
+            "vision_backbone_type",
+            "vision_cifar_base_channels",
+            "vision_cifar_bundle_size",
+            "baseline_vision_preproc",
+            "enable_cifar_backbone",
+            "cifar_backbone_type",
+            "cifar_base_channels",
+            "cifar_bundle_size",
+            # Removed warmup schedules (new losses are always-on)
+            "new_geo_warmup",
+            "new_sym_warmup",
         ]
         for key in removed_fields:
             config_data.pop(key, None)
@@ -2499,26 +2340,34 @@ def main():
         if args.output_dir is not None:
             config.output_dir = args.output_dir
         config.device = args.device
-        config.vision_preproc = args.vision_preproc
-        config.vision_in_channels = args.vision_in_channels
-        config.vision_height = args.vision_height
-        config.vision_width = args.vision_width
-        config.vision_num_rotations = args.vision_num_rotations
-        config.vision_kernel_size = args.vision_kernel_size
-        config.vision_use_reflections = args.vision_use_reflections
-        config.vision_norm_nonlinearity = args.vision_norm_nonlinearity
-        config.vision_norm_bias = args.vision_norm_bias
         config.eval_batch_size = args.eval_batch_size
-        config.vision_backbone_type = args.vision_backbone_type
-        config.vision_cifar_base_channels = args.vision_cifar_base_channels
-        config.vision_cifar_bundle_size = args.vision_cifar_bundle_size
         config.use_scheduler = args.use_scheduler
         config.lr_min = args.lr_min
         config.window_eps_ground = args.window_eps_ground
+        config.consistency_weight = args.consistency_weight
+        config.variance_weight = args.variance_weight
+        config.diversity_weight = args.diversity_weight
+        config.separation_weight = args.separation_weight
+        config.separation_margin = args.separation_margin
         config.codebook_center_weight = args.codebook_center_weight
         config.chart_center_sep_weight = args.chart_center_sep_weight
         config.chart_center_sep_margin = args.chart_center_sep_margin
         config.residual_scale_weight = args.residual_scale_weight
+        config.disentangle_weight = args.disentangle_weight
+        config.orthogonality_weight = args.orthogonality_weight
+        config.kl_prior_weight = args.kl_prior_weight
+        # New geometric losses
+        config.hyperbolic_uniformity_weight = args.hyperbolic_uniformity_weight
+        config.hyperbolic_contrastive_weight = args.hyperbolic_contrastive_weight
+        config.hyperbolic_contrastive_margin = args.hyperbolic_contrastive_margin
+        config.radial_calibration_weight = args.radial_calibration_weight
+        config.codebook_spread_weight = args.codebook_spread_weight
+        config.codebook_spread_margin = args.codebook_spread_margin
+        config.symbol_purity_weight = args.symbol_purity_weight
+        config.symbol_calibration_weight = args.symbol_calibration_weight
+        config.chart_collapse_weight = args.chart_collapse_weight
+        config.code_collapse_weight = args.code_collapse_weight
+        config.code_collapse_temperature = args.code_collapse_temperature
         config.covariant_attn = args.covariant_attn
         config.covariant_attn_tensorization = args.covariant_attn_tensorization
         config.covariant_attn_rank = args.covariant_attn_rank
@@ -2535,16 +2384,14 @@ def main():
         config.soft_equiv_temperature = args.soft_equiv_temperature
         config.soft_equiv_l1_weight = args.soft_equiv_l1_weight
         config.soft_equiv_log_ratio_weight = args.soft_equiv_log_ratio_weight
-        config.baseline_vision_preproc = args.baseline_vision_preproc
+        config.conv_backbone = not args.disable_conv
+        config.img_channels = args.img_channels
+        config.img_size = args.img_size
         config.baseline_attn = args.baseline_attn
         config.baseline_attn_tokens = args.baseline_attn_tokens
         config.baseline_attn_dim = args.baseline_attn_dim
         config.baseline_attn_heads = args.baseline_attn_heads
         config.baseline_attn_dropout = args.baseline_attn_dropout
-        config.enable_cifar_backbone = args.enable_cifar_backbone
-        config.cifar_backbone_type = args.cifar_backbone_type
-        config.cifar_base_channels = args.cifar_base_channels
-        config.cifar_bundle_size = args.cifar_bundle_size
         config.mlflow = args.mlflow
         config.mlflow_tracking_uri = args.mlflow_tracking_uri
         config.mlflow_experiment = args.mlflow_experiment
@@ -2571,15 +2418,6 @@ def main():
             covariant_attn_denom_min=args.covariant_attn_denom_min,
             covariant_attn_use_transport=args.covariant_attn_use_transport,
             covariant_attn_transport_eps=args.covariant_attn_transport_eps,
-            vision_preproc=args.vision_preproc,
-            vision_in_channels=args.vision_in_channels,
-            vision_height=args.vision_height,
-            vision_width=args.vision_width,
-            vision_num_rotations=args.vision_num_rotations,
-            vision_kernel_size=args.vision_kernel_size,
-            vision_use_reflections=args.vision_use_reflections,
-            vision_norm_nonlinearity=args.vision_norm_nonlinearity,
-            vision_norm_bias=args.vision_norm_bias,
             soft_equiv_metric=args.soft_equiv_metric,
             soft_equiv_bundle_size=args.soft_equiv_bundle_size or None,
             soft_equiv_hidden_dim=args.soft_equiv_hidden_dim,
@@ -2589,16 +2427,14 @@ def main():
             soft_equiv_temperature=args.soft_equiv_temperature,
             soft_equiv_l1_weight=args.soft_equiv_l1_weight,
             soft_equiv_log_ratio_weight=args.soft_equiv_log_ratio_weight,
-            baseline_vision_preproc=args.baseline_vision_preproc,
+            conv_backbone=not args.disable_conv,
+            img_channels=args.img_channels,
+            img_size=args.img_size,
             baseline_attn=args.baseline_attn,
             baseline_attn_tokens=args.baseline_attn_tokens,
             baseline_attn_dim=args.baseline_attn_dim,
             baseline_attn_heads=args.baseline_attn_heads,
             baseline_attn_dropout=args.baseline_attn_dropout,
-            enable_cifar_backbone=args.enable_cifar_backbone,
-            cifar_backbone_type=args.cifar_backbone_type,
-            cifar_base_channels=args.cifar_base_channels,
-            cifar_bundle_size=args.cifar_bundle_size,
             log_every=args.log_every,
             save_every=args.save_every,
             output_dir=output_dir,
@@ -2608,29 +2444,36 @@ def main():
             mlflow_experiment=args.mlflow_experiment,
             mlflow_run_name=args.mlflow_run_name,
             mlflow_run_id=args.mlflow_run_id,
-            # Core loss weights
+            # Loss weights
             entropy_weight=args.entropy_weight,
             consistency_weight=args.consistency_weight,
-            # Tier 1 losses
             variance_weight=args.variance_weight,
             diversity_weight=args.diversity_weight,
             separation_weight=args.separation_weight,
+            separation_margin=args.separation_margin,
             codebook_center_weight=args.codebook_center_weight,
             chart_center_sep_weight=args.chart_center_sep_weight,
             chart_center_sep_margin=args.chart_center_sep_margin,
             residual_scale_weight=args.residual_scale_weight,
-            # Tier 2 losses
             window_weight=args.window_weight,
             disentangle_weight=args.disentangle_weight,
-            # Tier 3 losses
+            orthogonality_weight=args.orthogonality_weight,
             per_chart_code_entropy_weight=args.per_chart_code_entropy_weight,
             code_entropy_weight=args.code_entropy_weight,
-            # Tier 4 losses
             kl_prior_weight=args.kl_prior_weight,
-            orbit_weight=args.orbit_weight,
-            vicreg_inv_weight=args.vicreg_inv_weight,
-            augment_noise_std=args.augment_noise_std,
-            augment_rotation_max=args.augment_rotation_max,
+            # New geometric losses
+            hyperbolic_uniformity_weight=args.hyperbolic_uniformity_weight,
+            hyperbolic_contrastive_weight=args.hyperbolic_contrastive_weight,
+            hyperbolic_contrastive_margin=args.hyperbolic_contrastive_margin,
+            radial_calibration_weight=args.radial_calibration_weight,
+            codebook_spread_weight=args.codebook_spread_weight,
+            codebook_spread_margin=args.codebook_spread_margin,
+            symbol_purity_weight=args.symbol_purity_weight,
+            symbol_calibration_weight=args.symbol_calibration_weight,
+            # Anti-collapse penalties
+            chart_collapse_weight=args.chart_collapse_weight,
+            code_collapse_weight=args.code_collapse_weight,
+            code_collapse_temperature=args.code_collapse_temperature,
             # Training dynamics
             grad_clip=args.grad_clip,
             use_scheduler=args.use_scheduler,
@@ -2672,6 +2515,7 @@ def main():
     print(f"  Codes per chart: {config.codes_per_chart}")
     print(f"  Total atlas codes: {config.num_charts * config.codes_per_chart}")
     print(f"  Standard VQ codes: {config.num_codes_standard}")
+    print(f"  Conv backbone: {config.conv_backbone}")
     print(f"  Output dir: {config.output_dir}")
     print(f"  Save every: {config.save_every} epochs")
 

@@ -273,10 +273,6 @@ def build_latent_scatter(
     corr = _to_numpy(correct).astype(int)
     correct_str = np.where(corr == 1, "yes", "no")
 
-    # Rescale from [-1, 1] → [0, 25] to work around HoloViews axis-range bug
-    def _rescale(v: np.ndarray) -> np.ndarray:
-        return (v + 1.0) * 12.5
-
     if color_by == "confidence":
         color_col, cmap = "confidence", "Viridis"
     elif color_by == "chart":
@@ -287,8 +283,8 @@ def build_latent_scatter(
         color_col, cmap = "label", "Category10"
 
     data = {
-        "x": _rescale(z[:, dim_i]),
-        "y": _rescale(z[:, dim_j]),
+        "x": z[:, dim_i].copy(),
+        "y": z[:, dim_j].copy(),
         "label": labs,
         "chart": charts,
         "correct": corr,
@@ -686,6 +682,8 @@ def plot_prob_bars(
     true_label: int,
     model_name: str,
     num_classes: int = 10,
+    width: int = 250,
+    height: int = 200,
 ) -> hv.Bars:
     """Per-class probability bar chart for a single sample.
 
@@ -707,11 +705,110 @@ def plot_prob_bars(
     bars = hv.Bars(data, kdims=["Class"], vdims=["Probability", "color"])
     return bars.redim.range(Probability=(0, 1)).opts(
         title=f"{model_name} → {predicted}",
-        width=250,
-        height=200,
+        width=width,
+        height=height,
         color="color",
         xlabel="Class",
         ylabel="P",
+    )
+
+
+def plot_prob_bar_grid(
+    probs_topo: np.ndarray | None,
+    probs_vq: np.ndarray | None,
+    probs_ae: np.ndarray | None,
+    labels: np.ndarray,
+    n_samples: int = 8,
+    num_classes: int = 10,
+) -> hv.Layout:
+    """Grid of per-sample probability bar charts matching the reconstruction grid layout."""
+    n = min(n_samples, len(labels))
+    columns: list[tuple[str, np.ndarray | None]] = [
+        ("Original", None),
+        ("TopoEncoder", probs_topo),
+    ]
+    if probs_vq is not None:
+        columns.append(("VQ", probs_vq))
+    if probs_ae is not None:
+        columns.append(("AE", probs_ae))
+    ncols = len(columns)
+
+    bars = []
+    for row in range(n):
+        lbl = int(labels[row])
+        for col_label, probs in columns:
+            if col_label == "Original":
+                # Ground truth: 1.0 on true class, 0 elsewhere
+                gt = np.zeros(num_classes)
+                gt[lbl] = 1.0
+                bars.append(
+                    plot_prob_bars(gt, lbl, f"True: {lbl}", num_classes, width=120, height=100)
+                )
+            elif probs is None:
+                bars.append(hv.Div(""))
+            else:
+                bars.append(
+                    plot_prob_bars(probs[row], lbl, col_label, num_classes, width=120, height=100)
+                )
+    return hv.Layout(bars).cols(ncols).opts(shared_axes=False)
+
+
+FASHION_MNIST_CLASSES = {
+    0: "T-shirt/top", 1: "Trouser", 2: "Pullover", 3: "Dress", 4: "Coat",
+    5: "Sandal", 6: "Shirt", 7: "Sneaker", 8: "Bag", 9: "Ankle boot",
+}
+MNIST_CLASSES = {i: str(i) for i in range(10)}
+
+
+def build_ood_scatter_2d(
+    z_ood: np.ndarray,
+    ood_labels: np.ndarray,
+    class_names: dict[int, str],
+    dim_i: int,
+    dim_j: int,
+    point_size: int = 3,
+) -> hv.Scatter:
+    """Build a 2D scatter overlay for OOD samples.
+
+    All points are blue x-markers with hover showing the OOD class name.
+    """
+    names = np.array([class_names.get(int(l), str(l)) for l in ood_labels])
+    data = {
+        "x": z_ood[:, dim_i].copy(),
+        "y": z_ood[:, dim_j].copy(),
+        "class_name": names,
+    }
+    hover = HoverTool(tooltips=[
+        ("OOD class", "@class_name"),
+        (f"z{dim_i}", "@x{0.3f}"),
+        (f"z{dim_j}", "@y{0.3f}"),
+    ])
+    return hv.Scatter(data, kdims=["x", "y"], vdims=["class_name"], label="OOD").opts(
+        color="#1f77b4", alpha=0.5, marker="x", size=point_size,
+        width=350, height=350, tools=[hover],
+    )
+
+
+def build_ood_trace_3d(
+    z_ood: np.ndarray,
+    ood_labels: np.ndarray,
+    class_names: dict[int, str],
+    point_size: int = 2,
+) -> go.Scatter3d:
+    """Build a 3D Plotly trace for OOD samples (blue markers)."""
+    ndim = z_ood.shape[1]
+    x = z_ood[:, 0] if ndim > 0 else np.zeros(len(z_ood))
+    y = z_ood[:, 1] if ndim > 1 else np.zeros(len(z_ood))
+    z_ax = z_ood[:, 2] if ndim > 2 else np.zeros(len(z_ood))
+    hover_text = [
+        f"OOD: {class_names.get(int(ood_labels[k]), str(ood_labels[k]))}"
+        f"<br>z0={x[k]:.3f}<br>z1={y[k]:.3f}<br>z2={z_ax[k]:.3f}"
+        for k in range(len(x))
+    ]
+    return go.Scatter3d(
+        x=x, y=y, z=z_ax, mode="markers", name="OOD",
+        marker={"size": point_size, "color": "#1f77b4", "opacity": 0.5, "symbol": "x"},
+        text=hover_text, hoverinfo="text",
     )
 
 

@@ -45,7 +45,6 @@ def compute_color_states_batch(
     v_pre = history.v_before_clone[start_idx:n_recorded]  # [T, N, d]
     force_visc = history.force_viscous[start_idx - 1 : n_recorded - 1]  # [T, N, d]
 
-    # Color state computation (vectorized)
     phase = (mass * v_pre * ell0) / h_eff
     complex_phase = torch.polar(torch.ones_like(phase), phase.float())
 
@@ -69,10 +68,7 @@ def estimate_ell0(
     """Estimate ell0 from median Euclidean companion distance at mid-point.
 
     Uses Euclidean distances between companion pairs, matching the fractalai
-    implementation.  Geodesic (graph-weighted) distances are not suitable here
-    because ``ell0`` enters the colour-state phase formula
-    ``phase = mass * v * ell0 / h_eff`` and must represent a physical length
-    scale, not a graph-metric quantity.
+    implementation.
 
     Args:
         history: RunHistory object.
@@ -86,6 +82,115 @@ def estimate_ell0(
 
     comp_idx = history.companions_distance[mid_idx - 1]
     return _euclidean_companion_distance(history, mid_idx, comp_idx)
+
+
+def estimate_ell0_geodesic_edges(history: RunHistory) -> float:
+    """Mean geodesic IG edge length averaged over equilibrium frames.
+
+    Uses ``history.geodesic_edge_distances`` (list[Tensor]).
+    Averages over second half of recorded frames.  Falls back to
+    :func:`estimate_ell0` if geodesic edges are not recorded.
+
+    Args:
+        history: RunHistory object.
+
+    Returns:
+        Estimated ell0 value.
+    """
+    geodesic = getattr(history, "geodesic_edge_distances", None)
+    if geodesic is None or len(geodesic) == 0:
+        return estimate_ell0(history)
+
+    n = len(geodesic)
+    start = n // 2
+    if start >= n:
+        start = 0
+
+    means: list[float] = []
+    for i in range(start, n):
+        g = geodesic[i]
+        if not torch.is_tensor(g) or g.numel() == 0:
+            continue
+        vals = g.float()
+        finite = torch.isfinite(vals) & (vals > 0)
+        if finite.any():
+            means.append(float(vals[finite].mean().item()))
+
+    if not means:
+        return estimate_ell0(history)
+    return float(sum(means) / len(means))
+
+
+def estimate_ell0_euclidean_edges(history: RunHistory) -> float:
+    """Mean Euclidean IG edge length averaged over equilibrium frames.
+
+    Uses ``history.neighbor_edges`` and ``history.x_before_clone`` to compute
+    Euclidean distances along Delaunay edges.  Averages over second half of
+    recorded frames.  Falls back to :func:`estimate_ell0` if neighbor edges
+    are not recorded.
+
+    Args:
+        history: RunHistory object.
+
+    Returns:
+        Estimated ell0 value.
+    """
+    neighbor_edges = getattr(history, "neighbor_edges", None)
+    if neighbor_edges is None or len(neighbor_edges) == 0:
+        return estimate_ell0(history)
+
+    n = len(neighbor_edges)
+    start = n // 2
+    if start >= n:
+        start = 0
+
+    means: list[float] = []
+    for i in range(start, n):
+        edges = neighbor_edges[i]
+        if not torch.is_tensor(edges) or edges.numel() == 0:
+            continue
+        if edges.ndim != 2 or edges.shape[1] != 2:
+            continue
+        if i >= history.x_before_clone.shape[0]:
+            continue
+        x = history.x_before_clone[i]
+        src = edges[:, 0].long()
+        dst = edges[:, 1].long()
+        max_idx = x.shape[0]
+        valid = (src >= 0) & (src < max_idx) & (dst >= 0) & (dst < max_idx) & (src != dst)
+        if not valid.any():
+            continue
+        diff = x[src[valid]] - x[dst[valid]]
+        dist = torch.linalg.vector_norm(diff, dim=-1)
+        finite = torch.isfinite(dist) & (dist > 0)
+        if finite.any():
+            means.append(float(dist[finite].mean().item()))
+
+    if not means:
+        return estimate_ell0(history)
+    return float(sum(means) / len(means))
+
+
+_ELL0_METHODS = ("companion", "geodesic_edges", "euclidean_edges")
+
+
+def estimate_ell0_auto(history: RunHistory, method: str = "companion") -> float:
+    """Dispatch to the selected ell0 estimation method.
+
+    Args:
+        history: RunHistory object.
+        method: One of ``"companion"`` (median companion distance),
+            ``"geodesic_edges"`` (mean geodesic IG edge length), or
+            ``"euclidean_edges"`` (mean Euclidean IG edge length).
+
+    Returns:
+        Estimated ell0 value.
+    """
+    if method == "geodesic_edges":
+        return estimate_ell0_geodesic_edges(history)
+    if method == "euclidean_edges":
+        return estimate_ell0_euclidean_edges(history)
+    return estimate_ell0(history)
 
 
 def _euclidean_companion_distance(

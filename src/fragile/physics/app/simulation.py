@@ -102,7 +102,7 @@ class SimulationTab:
         self._gas_config.n_steps = 750
         self._gas_config.gas_params["N"] = 500
         self._gas_config.gas_params["dtype"] = "float32"
-        self._gas_config.gas_params["clone_every"] = 1
+        self._gas_config.gas_params["clone_every"] = 20
         self._gas_config.neighbor_weight_modes = [
             "inverse_riemannian_distance",
             "kernel",
@@ -116,9 +116,10 @@ class SimulationTab:
         self._gas_config.kinetic_op.gamma = 1.0
         self._gas_config.kinetic_op.beta = 1.0
         self._gas_config.kinetic_op.auto_thermostat = True
-        self._gas_config.kinetic_op.delta_t = 0.01
-        self._gas_config.kinetic_op.temperature = 0.5
-        self._gas_config.kinetic_op.nu = 1.0
+        self._gas_config.kinetic_op.delta_t = 0.002
+        self._gas_config.kinetic_op.temperature = 0.33
+        self._gas_config.kinetic_op.n_kinetic_steps = 1
+        self._gas_config.kinetic_op.nu = 3.0
         self._gas_config.kinetic_op.beta_curl = 1.0
         self._gas_config.kinetic_op.use_viscous_coupling = True
         self._gas_config.kinetic_op.viscous_neighbor_weighting = "riemannian_kernel_volume"
@@ -126,8 +127,8 @@ class SimulationTab:
 
         # Cloning operator.
         self._gas_config.cloning.p_max = 1.0
-        self._gas_config.cloning.epsilon_clone = 1e-6
-        self._gas_config.cloning.sigma_x = 0.01
+        self._gas_config.cloning.epsilon_clone = 0.0
+        self._gas_config.cloning.sigma_x = 0.0
         self._gas_config.cloning.alpha_restitution = 1.0
 
         # Fitness operator.

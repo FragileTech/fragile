@@ -210,6 +210,7 @@ def create_app() -> pn.template.FastListTemplate:
                     ("RunHistory", sim_tab.build_run_history_panel()),
                     ("Simulation", sim_tab.build_simulation_sidebar_panel()),
                     ("Visualization", sim_tab.build_visualization_controls()),
+                    active=[0, 1, 2],
                     sizing_mode="stretch_width",
                 ),
             ]

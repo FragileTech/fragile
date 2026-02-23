@@ -59,7 +59,7 @@ from fragile.physics.new_channels.vector_meson_channels import (
 )
 from fragile.physics.operators.pipeline import PipelineResult
 from fragile.physics.qft_utils import resolve_3d_dims, resolve_frame_indices
-from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0_auto
 
 
 # ---------------------------------------------------------------------------
@@ -122,6 +122,11 @@ class CompanionCorrelatorSettings(param.Parameterized):
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
     mass = param.Number(default=1.0, bounds=(1e-6, None))
     ell0 = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
+    ell0_method = param.ObjectSelector(
+        default="companion",
+        objects=("companion", "geodesic_edges", "euclidean_edges"),
+        doc="Automatic ell0 estimation method when ell0 is blank.",
+    )
     max_lag = param.Integer(default=40, bounds=(1, 500))
     use_connected = param.Boolean(default=True)
     color_dims_spec = param.String(
@@ -267,6 +272,7 @@ def build_companion_correlator_tab(
             "h_eff",
             "mass",
             "ell0",
+            "ell0_method",
             "eps",
             "pair_selection",
             "color_dims_spec",
@@ -458,7 +464,7 @@ def build_companion_correlator_tab(
             ell0_val = (
                 float(settings.ell0)
                 if settings.ell0 is not None
-                else float(estimate_ell0(history))
+                else float(estimate_ell0_auto(history, settings.ell0_method))
             )
             if ell0_val <= 0:
                 status.object = "**Error:** ell0 must be positive."
@@ -890,6 +896,7 @@ def build_companion_correlator_tab(
             ("Channel & Mode Selection", channel_selection_panel),
             ("Operator Settings", operator_config_panel),
             ("Multiscale Settings", multiscale_settings_panel),
+            active=[0, 1, 2, 3],
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),

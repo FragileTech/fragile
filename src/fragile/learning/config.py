@@ -12,7 +12,7 @@ class TopoEncoderConfig:
     # Data
     dataset: str = "mnist"
     n_samples: int = 3000  # Subsample size
-    input_dim: int = 784  # MNIST default (overridden for CIFAR-10)
+    input_dim: int = 784  # MNIST / Fashion-MNIST default
 
     # Model architecture
     hidden_dim: int = 32
@@ -36,19 +36,11 @@ class TopoEncoderConfig:
     soft_equiv_temperature: float = 1.0
     soft_equiv_l1_weight: float = 0.0
     soft_equiv_log_ratio_weight: float = 0.0
-    vision_preproc: bool = False
-    vision_in_channels: int = 0
-    vision_height: int = 0
-    vision_width: int = 0
-    vision_num_rotations: int = 8
-    vision_kernel_size: int = 5
-    vision_use_reflections: bool = False
-    vision_norm_nonlinearity: str = "n_sigmoid"
-    vision_norm_bias: bool = True
-    # Vision backbone selection
-    vision_backbone_type: str = "covariant_retina"  # "covariant_retina" or "covariant_cifar"
-    vision_cifar_base_channels: int = 32  # base_channels for CovariantCIFARBackbone
-    vision_cifar_bundle_size: int = 4  # bundle_size for NormGatedConv2d
+
+    # Convolutional backbone (for image data)
+    conv_backbone: bool = True  # Use conv layers instead of FC for feature extraction/reconstruction
+    img_channels: int = 1  # Image channels (1 for grayscale MNIST/Fashion-MNIST)
+    img_size: int = 28  # Image spatial dimension (28 for MNIST/Fashion-MNIST)
 
     # Training
     epochs: int = 1000
@@ -60,31 +52,44 @@ class TopoEncoderConfig:
     consistency_weight: float = 0.1  # Align encoder/decoder routing
 
     # Tier 1 losses (low overhead ~5%)
-    variance_weight: float = 0.1  # Prevent latent collapse
+    variance_weight: float = 0.0  # DROP: Prevent latent collapse (was 0.1)
     diversity_weight: float = 0.1  # Prevent chart collapse (was 1.0)
-    separation_weight: float = 0.1  # Force chart centers apart (was 0.5)
+    separation_weight: float = 0.0  # DROP: Force chart centers apart (was 0.1)
     separation_margin: float = 2.0  # Minimum distance between chart centers
     codebook_center_weight: float = 0.05  # Zero-mean codebook deltas per chart
-    chart_center_sep_weight: float = 0.05  # Separate chart center tokens
+    chart_center_sep_weight: float = 0.0  # DROP: Separate chart center tokens (was 0.05)
     chart_center_sep_margin: float = 2.0  # Minimum distance between chart centers (token space)
     residual_scale_weight: float = 0.01  # Keep z_n small vs macro/meso scales
 
     # Tier 2 losses (medium overhead ~5%)
     window_weight: float = 0.5  # Information-stability (Theorem 15.1.3)
     window_eps_ground: float = 0.1  # Minimum I(X;K) threshold
-    disentangle_weight: float = 0.1  # Gauge coherence (K ⊥ z_n)
+    disentangle_weight: float = 0.0  # DROP: Gauge coherence (K ⊥ z_n) (was 0.1)
 
     # Tier 3 losses (geometry/codebook health)
     orthogonality_weight: float = 0.0  # Singular-value spread penalty (SVD; disabled by default)
     code_entropy_weight: float = 0.0  # Global code entropy (disabled by default)
     per_chart_code_entropy_weight: float = 0.1  # Per-chart code diversity (enabled)
 
-    # Tier 4 losses (invariance - expensive when enabled, disabled by default)
-    kl_prior_weight: float = 0.01  # Radial energy prior on z_n, z_tex
-    orbit_weight: float = 0.0  # Chart invariance under augmentation (2x slowdown)
-    vicreg_inv_weight: float = 0.0  # Gram invariance (O(B^2), disabled by default)
-    augment_noise_std: float = 0.1  # Augmentation noise level
-    augment_rotation_max: float = 0.3  # Max rotation in radians
+    # Tier 4 losses (invariance)
+    kl_prior_weight: float = 0.0  # DROP: Radial energy prior on z_n, z_tex
+
+    # New geometric losses (Poincaré-aware)
+    hyperbolic_uniformity_weight: float = 0.1
+    hyperbolic_contrastive_weight: float = 0.0  # Disabled: causes chart collapse by clustering
+    hyperbolic_contrastive_margin: float = 2.0
+    radial_calibration_weight: float = 0.1
+    codebook_spread_weight: float = 0.05
+    codebook_spread_margin: float = 1.0
+
+    # New symbol losses
+    symbol_purity_weight: float = 0.05
+    symbol_calibration_weight: float = 0.05
+
+    # Anti-collapse penalties
+    chart_collapse_weight: float = 1.0  # max(p_k) - 1/K penalty
+    code_collapse_weight: float = 0.5  # soft code usage entropy penalty
+    code_collapse_temperature: float = 1.0  # temperature for soft code assignments
 
     # Tier 5: Jump Operator (chart gluing - learns transition functions between charts)
     jump_weight: float = 0.1  # Final jump consistency weight after warmup
@@ -98,7 +103,7 @@ class TopoEncoderConfig:
     sup_weight: float = 1.0
     sup_purity_weight: float = 0.1
     sup_balance_weight: float = 0.01
-    sup_metric_weight: float = 0.01
+    sup_metric_weight: float = 0.0
     sup_metric_margin: float = 1.0
     sup_temperature: float = 1.0
 
@@ -117,18 +122,11 @@ class TopoEncoderConfig:
     # Benchmark control
     disable_ae: bool = False  # Skip VanillaAE baseline
     disable_vq: bool = False  # Skip StandardVQ baseline
-    baseline_vision_preproc: bool = False
     baseline_attn: bool = False
     baseline_attn_tokens: int = 4
     baseline_attn_dim: int = 32
     baseline_attn_heads: int = 4
     baseline_attn_dropout: float = 0.0
-
-    # CIFAR backbone benchmark (gauge-covariant vs standard CNN)
-    enable_cifar_backbone: bool = False  # Enable CIFAR backbone benchmark
-    cifar_backbone_type: str = "both"  # "covariant", "standard", or "both"
-    cifar_base_channels: int = 32  # Base channel width (16/32/64)
-    cifar_bundle_size: int = 4  # Bundle size for NormGatedConv2d
 
     # Train/test split
     test_split: float = 0.2

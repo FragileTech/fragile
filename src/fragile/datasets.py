@@ -177,56 +177,34 @@ def get_mnist_data(
     return X, labels, colors
 
 
-# CIFAR-10 class names
-CIFAR10_CLASSES = [
-    "airplane",
-    "automobile",
-    "bird",
-    "cat",
-    "deer",
-    "dog",
-    "frog",
-    "horse",
-    "ship",
-    "truck",
-]
-
-
-def get_cifar10_data(
-    n_samples: int = 50000,
-    root: str = "/tmp/cifar10",
+def get_fashion_mnist_data(
+    n_samples: int = 10000,
+    root: str = "/tmp/fashion_mnist",
 ) -> tuple[torch.Tensor, np.ndarray, np.ndarray]:
-    """Load CIFAR-10 dataset for atlas embedding.
+    """Load Fashion-MNIST dataset for atlas embedding.
 
     Args:
         n_samples: Number of samples to load
-        root: Directory to download/cache CIFAR-10
+        root: Directory to download/cache Fashion-MNIST
 
     Returns:
-        X: Tensor of shape (n_samples, 3072) with pixel values in [0, 1]
-           (32x32x3 images flattened)
+        X: Tensor of shape (n_samples, 784) with pixel values in [0, 1]
         labels: Array of class labels (0-9)
         colors: Array of [0, 1] values for rainbow colormap (class/9)
     """
     from torchvision import datasets
 
-    # Download/load CIFAR-10
-    cifar = datasets.CIFAR10(root=root, train=True, download=True)
+    fmnist = datasets.FashionMNIST(root=root, train=True, download=True)
 
-    # CIFAR-10 data is numpy array [N, 32, 32, 3] uint8
-    # Flatten to (N, 3072), normalize to [0, 1]
-    # Use reshape instead of view due to non-contiguous memory layout
-    X = torch.from_numpy(cifar.data).float().reshape(-1, 3072) / 255.0
-    labels = np.array(cifar.targets)
+    X = fmnist.data.float().view(-1, 784) / 255.0
+    labels = fmnist.targets.numpy()
 
-    # Subsample if needed
     if n_samples < len(X):
         idx = np.random.choice(len(X), n_samples, replace=False)
         X = X[idx]
         labels = labels[idx]
 
-    # Colors: map class (0-9) to [0, 1] range for rainbow colormap
-    colors = labels / 9.0  # 0→0.0, 9→1.0
+    colors = labels / 9.0
 
     return X, labels, colors
 

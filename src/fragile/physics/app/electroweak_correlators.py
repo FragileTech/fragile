@@ -445,6 +445,7 @@ def build_electroweak_correlator_tab(
             ("Common Settings", common_settings_panel),
             ("Channel Selection", channel_selection_panel),
             ("Electroweak Settings", electroweak_settings_panel),
+            active=[0, 1, 2],
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),

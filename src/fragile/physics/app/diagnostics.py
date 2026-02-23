@@ -74,6 +74,11 @@ class CouplingDiagnosticsSettings(param.Parameterized):
         allow_None=True,
         doc="Color-state length scale ell0. Blank uses estimated value.",
     )
+    ell0_method = param.ObjectSelector(
+        default="companion",
+        objects=("companion", "geodesic_edges", "euclidean_edges"),
+        doc="Automatic ell0 estimation method when ell0 is blank.",
+    )
     companion_topology = param.ObjectSelector(
         default="both",
         objects=("distance", "clone", "both"),
@@ -201,6 +206,7 @@ def _build_coupling_diagnostics_settings_panel(
             "h_eff",
             "mass",
             "ell0",
+            "ell0_method",
             "companion_topology",
             "pair_weighting",
             "color_dims_spec",
@@ -347,6 +353,8 @@ def _build_coupling_diagnostics_summary_table(summary: dict[str, float]) -> pd.D
         ("regime_score", summary.get("regime_score")),
         ("kernel_diagnostics_available", summary.get("kernel_diagnostics_available")),
         ("spectral_gap_fiedler", summary.get("spectral_gap_fiedler")),
+        ("ell0", summary.get("ell0")),
+        ("h_eff", summary.get("h_eff")),
         ("spectral_gap_autocorrelation", summary.get("spectral_gap_autocorrelation")),
         ("spectral_gap_autocorrelation_tau", summary.get("spectral_gap_autocorrelation_tau")),
         ("spectral_gap_transfer_matrix", summary.get("spectral_gap_transfer_matrix")),
@@ -738,6 +746,8 @@ def _build_coupling_diagnostics_summary_text(output: Any) -> str:
     return "\n".join([
         "## Coupling Diagnostics Summary",
         f"- Frames analyzed: `{n_frames}`",
+        f"- ℓ₀ (estimated): `{_format_metric(summary.get('ell0'), 6)}`",
+        f"- h_eff: `{_format_metric(summary.get('h_eff'), 6)}`",
         f"- Mean R_circ: `{_format_metric(summary.get('r_circ_mean'))}`",
         f"- Mean Re/Im asymmetry: `{_format_metric(summary.get('re_im_asymmetry_mean'))}`",
         (
@@ -825,6 +835,7 @@ def _build_coupling_diagnostics_config(
         h_eff=float(settings.h_eff),
         mass=float(settings.mass),
         ell0=float(settings.ell0) if settings.ell0 is not None else None,
+        ell0_method=str(settings.ell0_method),
         color_dims=tuple(color_dims) if color_dims is not None else None,
         companion_topology=str(settings.companion_topology),
         pair_weighting=str(settings.pair_weighting),
@@ -897,7 +908,7 @@ def _build_layout(
         status,
         run_note,
         pn.Row(run_button, sizing_mode="stretch_width"),
-        pn.Accordion(("Diagnostics Settings", settings_panel), sizing_mode="stretch_width"),
+        pn.Accordion(("Diagnostics Settings", settings_panel), active=[0], sizing_mode="stretch_width"),
         pn.layout.Divider(),
         widgets.summary,
         widgets.regime_evidence,

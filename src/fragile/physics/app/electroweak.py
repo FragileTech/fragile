@@ -1905,6 +1905,7 @@ Operator routing is fixed to run-selected companions: U(1)\u2192distance, SU(2)\
                 "Electroweak Channel Family Selection",
                 new_dirac_ew_channel_family_selector_layout,
             ),
+            active=[0, 1],
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),

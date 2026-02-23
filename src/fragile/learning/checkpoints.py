@@ -10,7 +10,7 @@ from sklearn.metrics import adjusted_mutual_info_score
 import torch
 from torch import nn, optim
 
-from fragile.core.benchmarks import StandardVQ, VanillaAE
+from fragile.learning.core.benchmarks import StandardVQ, VanillaAE
 from fragile.learning.config import TopoEncoderConfig
 
 
@@ -54,10 +54,6 @@ def compute_matching_hidden_dim(
     attn_dim: int = 32,
     attn_heads: int = 4,
     attn_dropout: float = 0.0,
-    vision_preproc: bool = False,
-    vision_in_channels: int = 0,
-    vision_height: int = 0,
-    vision_width: int = 0,
 ) -> int:
     """Compute hidden_dim for StandardVQ to match target parameter count.
 
@@ -66,7 +62,7 @@ def compute_matching_hidden_dim(
 
     Using quadratic formula: h = (-12 + sqrt(144 + 8*(target - offset))) / 4
     """
-    if not use_attention and not vision_preproc:
+    if not use_attention:
         offset = 5 + num_codes * latent_dim
         # Adjust for input_dim: encoder.0 has input_dim*h, decoder.4 has h*input_dim
         # Full formula: 2h² + (input_dim + 2 + 2 + input_dim + 2 + 2)h + ...
@@ -92,10 +88,6 @@ def compute_matching_hidden_dim(
                 attn_dim=attn_dim,
                 attn_heads=attn_heads,
                 attn_dropout=attn_dropout,
-                vision_preproc=vision_preproc,
-                vision_in_channels=vision_in_channels,
-                vision_height=vision_height,
-                vision_width=vision_width,
             )
         else:
             model = VanillaAE(
@@ -107,10 +99,6 @@ def compute_matching_hidden_dim(
                 attn_dim=attn_dim,
                 attn_heads=attn_heads,
                 attn_dropout=attn_dropout,
-                vision_preproc=vision_preproc,
-                vision_in_channels=vision_in_channels,
-                vision_height=vision_height,
-                vision_width=vision_width,
             )
         return count_parameters(model)
 
@@ -194,8 +182,6 @@ def save_checkpoint(
     epoch: int,
     model_std: nn.Module | None = None,
     model_ae: nn.Module | None = None,
-    model_cifar_cov: nn.Module | None = None,
-    model_cifar_std: nn.Module | None = None,
     supervised_loss: nn.Module | None = None,
     classifier_head: nn.Module | None = None,
     classifier_std: nn.Module | None = None,
@@ -203,8 +189,6 @@ def save_checkpoint(
     optimizer_atlas: optim.Optimizer | None = None,
     optimizer_std: optim.Optimizer | None = None,
     optimizer_ae: optim.Optimizer | None = None,
-    optimizer_cifar_cov: optim.Optimizer | None = None,
-    optimizer_cifar_std: optim.Optimizer | None = None,
     optimizer_classifier: optim.Optimizer | None = None,
     optimizer_classifier_std: optim.Optimizer | None = None,
     optimizer_classifier_ae: optim.Optimizer | None = None,
@@ -222,15 +206,11 @@ def save_checkpoint(
             "classifier": _state_dict_cpu(classifier_head),
             "classifier_std": _state_dict_cpu(classifier_std),
             "classifier_ae": _state_dict_cpu(classifier_ae),
-            "cifar_cov": _state_dict_cpu(model_cifar_cov),
-            "cifar_std": _state_dict_cpu(model_cifar_std),
         },
         "optim": {
             "atlas": _optimizer_state(optimizer_atlas),
             "std": _optimizer_state(optimizer_std),
             "ae": _optimizer_state(optimizer_ae),
-            "cifar_cov": _optimizer_state(optimizer_cifar_cov),
-            "cifar_std": _optimizer_state(optimizer_cifar_std),
             "classifier": _optimizer_state(optimizer_classifier),
             "classifier_std": _optimizer_state(optimizer_classifier_std),
             "classifier_ae": _optimizer_state(optimizer_classifier_ae),
@@ -295,15 +275,11 @@ def save_benchmarks(
             "input_dim": config.input_dim,
             "latent_dim": config.latent_dim,
             "num_codes_standard": config.num_codes_standard,
-            "baseline_vision_preproc": config.baseline_vision_preproc,
             "baseline_attn": config.baseline_attn,
             "baseline_attn_tokens": config.baseline_attn_tokens,
             "baseline_attn_dim": config.baseline_attn_dim,
             "baseline_attn_heads": config.baseline_attn_heads,
             "baseline_attn_dropout": config.baseline_attn_dropout,
-            "vision_in_channels": config.vision_in_channels,
-            "vision_height": config.vision_height,
-            "vision_width": config.vision_width,
         },
         "state": {
             "std": _state_dict_cpu(model_std),
@@ -333,22 +309,10 @@ def load_benchmarks(path: str) -> dict:
 def benchmarks_compatible(bench_config: dict, config: TopoEncoderConfig) -> bool:
     if not bench_config:
         return False
-    baseline_vision_preproc = bool(bench_config.get("baseline_vision_preproc"))
-    if baseline_vision_preproc != bool(config.baseline_vision_preproc):
-        return False
-    if baseline_vision_preproc:
-        if int(bench_config.get("vision_in_channels", -1)) != int(config.vision_in_channels):
-            return False
-        if int(bench_config.get("vision_height", -1)) != int(config.vision_height):
-            return False
-        if int(bench_config.get("vision_width", -1)) != int(config.vision_width):
-            return False
     return (
         int(bench_config.get("input_dim", -1)) == int(config.input_dim)
         and int(bench_config.get("latent_dim", -1)) == int(config.latent_dim)
         and int(bench_config.get("num_codes_standard", -1)) == int(config.num_codes_standard)
-        and bool(bench_config.get("baseline_vision_preproc"))
-        == bool(config.baseline_vision_preproc)
         and bool(bench_config.get("baseline_attn")) == bool(config.baseline_attn)
         and int(bench_config.get("baseline_attn_tokens", -1)) == int(config.baseline_attn_tokens)
         and int(bench_config.get("baseline_attn_dim", -1)) == int(config.baseline_attn_dim)

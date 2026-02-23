@@ -148,6 +148,11 @@ class StrongCorrelatorSettings(param.Parameterized):
     h_eff = param.Number(default=1.0, bounds=(1e-6, None))
     mass = param.Number(default=1.0, bounds=(1e-6, None))
     ell0 = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
+    ell0_method = param.ObjectSelector(
+        default="companion",
+        objects=("companion", "geodesic_edges", "euclidean_edges"),
+        doc="Automatic ell0 estimation method when ell0 is blank.",
+    )
     color_dims_spec = param.String(
         default="",
         doc="Comma-separated color dims (blank = all available).",
@@ -320,6 +325,7 @@ def build_strong_correlator_tab(
             "h_eff",
             "mass",
             "ell0",
+            "ell0_method",
             "eps",
             "pair_selection",
             "color_dims_spec",
@@ -945,6 +951,7 @@ def build_strong_correlator_tab(
             ("Channel & Mode Selection", channel_selection_panel),
             ("Operator Settings", operator_config_panel),
             ("Multiscale Settings", multiscale_settings_panel),
+            active=[0, 1, 2, 3],
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),

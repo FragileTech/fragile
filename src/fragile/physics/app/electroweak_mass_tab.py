@@ -462,6 +462,7 @@ def build_electroweak_mass_tab(
         pn.Accordion(
             ("Fit Settings", settings_panel),
             ("Channel Operator Selection", channel_key_selection_container),
+            active=[0, 1],
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),

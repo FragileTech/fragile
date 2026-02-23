@@ -33,7 +33,7 @@ from fragile.physics.app.smeared_operators import (
 )
 from fragile.physics.app.spectral_gap import compute_spectral_gap
 from fragile.physics.fractal_gas.history import RunHistory
-from fragile.physics.qft_utils import compute_color_states_batch, estimate_ell0
+from fragile.physics.qft_utils import compute_color_states_batch, estimate_ell0_auto
 
 
 COMPANION_TOPOLOGY_MODES = ("distance", "clone", "both")
@@ -61,6 +61,7 @@ class CouplingDiagnosticsConfig:
     h_eff: float = 1.0
     mass: float = 1.0
     ell0: float | None = None
+    ell0_method: str = "companion"
     color_dims: tuple[int, ...] | None = None
     companion_topology: str = "both"
     pair_weighting: str = "uniform"
@@ -257,6 +258,8 @@ def _empty_output() -> CouplingDiagnosticsOutput:
         wilson_flow=None,
         summary={
             "n_frames": 0.0,
+            "ell0": float("nan"),
+            "h_eff": float("nan"),
             "phase_drift": float("nan"),
             "phase_step_std": float("nan"),
             "phase_drift_sigma": float("nan"),
@@ -726,7 +729,7 @@ def compute_coupling_diagnostics(
 
     start_idx = frame_indices[0]
     end_idx = frame_indices[-1] + 1
-    ell0 = float(cfg.ell0) if cfg.ell0 is not None else float(estimate_ell0(history))
+    ell0 = float(cfg.ell0) if cfg.ell0 is not None else float(estimate_ell0_auto(history, cfg.ell0_method))
 
     color, color_valid = compute_color_states_batch(
         history=history,
@@ -925,6 +928,8 @@ def compute_coupling_diagnostics(
 
     summary = {
         "n_frames": float(t_len),
+        "ell0": ell0,
+        "h_eff": float(cfg.h_eff),
         "phase_drift": phase_drift,
         "phase_step_std": phase_step_std,
         "phase_drift_sigma": phase_drift_sigma,

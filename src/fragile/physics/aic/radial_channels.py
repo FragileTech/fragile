@@ -32,6 +32,7 @@ from fragile.physics.aic.correlator_channels import (
     ConvolutionalAICExtractor,
 )
 from fragile.physics.fractal_gas.history import RunHistory
+from fragile.physics.qft_utils.color_states import estimate_ell0_auto
 
 
 DISTANCE_MODES = ("euclidean", "graph_iso", "graph_full")
@@ -80,6 +81,7 @@ class RadialChannelConfig:
     h_eff: float = 1.0
     mass: float = 1.0
     ell0: float | None = None
+    ell0_method: str = "companion"
     use_volume_weights: bool = True
     apply_power_correction: bool = True
     power_override: float | None = None
@@ -147,21 +149,8 @@ def _resolve_mc_time_index(history: RunHistory, mc_time_index: int | None) -> in
     return resolved
 
 
-def _estimate_ell0(history: RunHistory) -> float:
-    mid_idx = history.n_recorded // 2
-    if mid_idx == 0:
-        return 1.0
-
-    x_pre = history.x_before_clone[mid_idx]
-    comp_idx = history.companions_distance[mid_idx - 1]
-    alive = history.alive_mask[mid_idx - 1]
-
-    diff = x_pre - x_pre[comp_idx]
-    dist = torch.linalg.vector_norm(diff, dim=-1)
-
-    if dist.numel() > 0 and alive.any():
-        return float(dist[alive].median().item())
-    return 1.0
+def _estimate_ell0(history: RunHistory, method: str = "companion") -> float:
+    return estimate_ell0_auto(history, method)
 
 
 def _build_gamma_matrices(dim: int, device: torch.device, dtype: torch.dtype) -> dict[str, Tensor]:
@@ -214,7 +203,7 @@ def _compute_color_states_single(
 
     h_eff = float(max(config.h_eff, 1e-8))
     mass = float(max(config.mass, 1e-8))
-    ell0 = config.ell0 if config.ell0 is not None else _estimate_ell0(history)
+    ell0 = config.ell0 if config.ell0 is not None else _estimate_ell0(history, config.ell0_method)
 
     phase = (mass * v_pre * ell0) / h_eff
     complex_phase = torch.polar(torch.ones_like(phase), phase.float())
@@ -257,7 +246,7 @@ def _compute_color_states_batch(
 
     h_eff = float(max(config.h_eff, 1e-8))
     mass = float(max(config.mass, 1e-8))
-    ell0 = config.ell0 if config.ell0 is not None else _estimate_ell0(history)
+    ell0 = config.ell0 if config.ell0 is not None else _estimate_ell0(history, config.ell0_method)
 
     phase = (mass * v_pre * ell0) / h_eff
     complex_phase = torch.polar(torch.ones_like(phase), phase.float())

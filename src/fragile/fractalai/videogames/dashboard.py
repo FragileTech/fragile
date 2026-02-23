@@ -121,10 +121,29 @@ class AtariGasConfigPanel(param.Parameterized):
     game_name = param.ObjectSelector(
         default="ALE/MsPacman-v5",
         objects=[
-            "ALE/Pong-v5",
-            "ALE/Breakout-v5",
             "ALE/MsPacman-v5",
+            "ALE/Qbert-v5",
             "ALE/SpaceInvaders-v5",
+            "ALE/Breakout-v5",
+            "ALE/Pong-v5",
+            "ALE/Assault-v5",
+            "ALE/Asterix-v5",
+            "ALE/BeamRider-v5",
+            "ALE/Centipede-v5",
+            "ALE/CrazyClimber-v5",
+            "ALE/DemonAttack-v5",
+            "ALE/Enduro-v5",
+            "ALE/Galaxian-v5",
+            "ALE/Gopher-v5",
+            "ALE/Jamesbond-v5",
+            "ALE/Kangaroo-v5",
+            "ALE/KungFuMaster-v5",
+            "ALE/Phoenix-v5",
+            "ALE/RoadRunner-v5",
+            "ALE/Seaquest-v5",
+            "ALE/TimePilot-v5",
+            "ALE/UpNDown-v5",
+            "ALE/WizardOfWor-v5",
         ],
         doc="Atari game environment",
     )
@@ -136,7 +155,7 @@ class AtariGasConfigPanel(param.Parameterized):
     )
 
     # Algorithm parameters
-    N = param.Integer(default=100, bounds=(5, 200), doc="Number of walkers")
+    N = param.Integer(default=200, bounds=(5, 5000), doc="Number of walkers")
 
     dist_coef = param.Number(
         default=1.0, bounds=(0.0, 5.0), doc="Distance coefficient in fitness calculation"

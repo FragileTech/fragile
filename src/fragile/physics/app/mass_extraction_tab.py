@@ -1381,6 +1381,7 @@ def build_mass_extraction_tab(
             ("Fit Settings", settings_panel),
             ("Channel Operator Selection", channel_key_selection_container),
             ("Channel Prior & Fit Settings", channel_fit_settings_container),
+            active=[0, 1, 2],
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),
