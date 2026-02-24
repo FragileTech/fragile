@@ -1,6 +1,6 @@
 import torch
 
-from fragile.core.layers import (
+from fragile.learning.core.layers import (
     PrimitiveAttentiveAtlasEncoder,
     PrimitiveTopologicalDecoder,
     TopoEncoderPrimitives,
@@ -28,6 +28,7 @@ def test_primitive_attentive_atlas_encoder_shapes() -> None:
         indices_stack,
         z_n_all_charts,
         c_bar,
+        _v_local,
     ) = encoder(x)
 
     assert K_chart.shape == (4,)
@@ -52,11 +53,12 @@ def test_primitive_topological_decoder_shapes() -> None:
     )
     z_geo = torch.randn(4, 2)
     z_tex = torch.randn(4, 2)
-    x_hat, router_weights = decoder(z_geo, z_tex)
+    x_hat, router_weights, aux_losses = decoder(z_geo, z_tex)
 
     assert x_hat.shape == (4, 3)
     assert router_weights.shape == (4, 3)
     assert torch.allclose(router_weights.sum(dim=-1), torch.ones(4), atol=1e-5)
+    assert isinstance(aux_losses, dict)
 
 
 def test_topoencoder_primitives_forward_and_losses() -> None:
@@ -69,7 +71,7 @@ def test_topoencoder_primitives_forward_and_losses() -> None:
         codes_per_chart=5,
     )
     x = torch.randn(5, 3)
-    x_recon, vq_loss, enc_weights, dec_weights, K_chart, z_geo, z_n, c_bar = model(x)
+    x_recon, vq_loss, enc_weights, dec_weights, K_chart, z_geo, z_n, c_bar, aux_losses = model(x)
 
     assert x_recon.shape == (5, 3)
     assert vq_loss.ndim == 0
@@ -79,7 +81,125 @@ def test_topoencoder_primitives_forward_and_losses() -> None:
     assert z_geo.shape == (5, 2)
     assert z_n.shape == (5, 2)
     assert c_bar.shape == (5, 2)
+    assert isinstance(aux_losses, dict)
 
     consistency = model.compute_consistency_loss(enc_weights, dec_weights)
     assert consistency.ndim == 0
     assert model.compute_perplexity(K_chart) > 0.0
+
+
+def test_decoder_film_conditioning() -> None:
+    """Conv decoder with FiLM conditioning produces correct shapes."""
+    torch.manual_seed(3)
+    decoder = PrimitiveTopologicalDecoder(
+        latent_dim=2,
+        hidden_dim=32,
+        num_charts=5,
+        output_dim=784,
+        conv_backbone=True,
+        img_channels=1,
+        img_size=28,
+        conv_channels=32,
+        film_conditioning=True,
+    )
+    z_geo = torch.randn(4, 2)
+    z_tex = torch.randn(4, 2)
+    x_hat, router_weights, aux_losses = decoder(z_geo, z_tex)
+
+    assert x_hat.shape == (4, 784)
+    assert router_weights.shape == (4, 5)
+    assert isinstance(aux_losses, dict)
+
+
+def test_decoder_conformal_freq_gating() -> None:
+    """Conformal frequency gating produces correct shapes and modifies output."""
+    torch.manual_seed(4)
+    decoder_plain = PrimitiveTopologicalDecoder(
+        latent_dim=2,
+        hidden_dim=32,
+        num_charts=3,
+        output_dim=784,
+        conv_backbone=True,
+        img_channels=1,
+        img_size=28,
+        conv_channels=32,
+        conformal_freq_gating=False,
+    )
+    decoder_gated = PrimitiveTopologicalDecoder(
+        latent_dim=2,
+        hidden_dim=32,
+        num_charts=3,
+        output_dim=784,
+        conv_backbone=True,
+        img_channels=1,
+        img_size=28,
+        conv_channels=32,
+        conformal_freq_gating=True,
+    )
+    # Copy weights for fair comparison
+    decoder_gated.load_state_dict(decoder_plain.state_dict())
+
+    z_geo = torch.randn(4, 2)
+    z_tex = torch.randn(4, 2)
+    x_plain, _, _ = decoder_plain(z_geo, z_tex)
+    x_gated, _, _ = decoder_gated(z_geo, z_tex)
+
+    assert x_gated.shape == (4, 784)
+    # Gating should modify the output
+    assert not torch.allclose(x_plain, x_gated, atol=1e-6)
+
+
+def test_decoder_texture_flow() -> None:
+    """Texture flow produces flow_loss and is invertible."""
+    torch.manual_seed(5)
+    decoder = PrimitiveTopologicalDecoder(
+        latent_dim=2,
+        hidden_dim=32,
+        num_charts=3,
+        output_dim=3,
+        texture_flow=True,
+        texture_flow_layers=4,
+        texture_flow_hidden=32,
+    )
+    z_geo = torch.randn(4, 2)
+    z_tex = torch.randn(4, 2)
+    x_hat, _, aux_losses = decoder(z_geo, z_tex)
+
+    assert x_hat.shape == (4, 3)
+    assert "flow_loss" in aux_losses
+    assert aux_losses["flow_loss"].ndim == 0
+
+    # Test invertibility
+    flow = decoder.texture_flow
+    assert flow is not None
+    u, log_det = flow.forward(z_tex, z_geo)
+    z_tex_recovered = flow.inverse(u, z_geo)
+    assert torch.allclose(z_tex, z_tex_recovered, atol=1e-5)
+
+
+def test_decoder_all_features_combined() -> None:
+    """All three features together produce correct shapes."""
+    torch.manual_seed(6)
+    decoder = PrimitiveTopologicalDecoder(
+        latent_dim=2,
+        hidden_dim=32,
+        num_charts=5,
+        output_dim=784,
+        conv_backbone=True,
+        img_channels=1,
+        img_size=28,
+        conv_channels=32,
+        film_conditioning=True,
+        conformal_freq_gating=True,
+        texture_flow=True,
+        texture_flow_layers=4,
+        texture_flow_hidden=32,
+    )
+    z_geo = torch.randn(4, 2)
+    z_tex = torch.randn(4, 2)
+    x_hat, router_weights, aux_losses = decoder(z_geo, z_tex)
+
+    assert x_hat.shape == (4, 784)
+    assert router_weights.shape == (4, 5)
+    assert "flow_loss" in aux_losses
+    assert aux_losses["flow_loss"].ndim == 0

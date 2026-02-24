@@ -889,6 +889,123 @@ class ConvFeatureExtractor(nn.Module):
         return self.proj(x.flatten(1))  # [B, hidden_dim]
 
 
+class ChartFiLM(nn.Module):
+    """Per-chart Feature-wise Linear Modulation."""
+
+    def __init__(self, num_charts: int, channels: int) -> None:
+        super().__init__()
+        self.gammas = nn.Parameter(torch.zeros(num_charts, channels))
+        self.betas = nn.Parameter(torch.zeros(num_charts, channels))
+
+    def forward(self, h: torch.Tensor, router_weights: torch.Tensor) -> torch.Tensor:
+        # h: [B, C, H, W], router_weights: [B, num_charts]
+        gamma = (router_weights @ self.gammas)[:, :, None, None]  # [B,C,1,1]
+        beta = (router_weights @ self.betas)[:, :, None, None]
+        return h * (1.0 + gamma) + beta
+
+
+def conformal_frequency_gate(
+    x_hat: torch.Tensor, z_geo: torch.Tensor, latent_dim: int,
+) -> torch.Tensor:
+    """Gate spatial frequency by conformal factor tau(z_geo).
+
+    Center of Poincare disk -> blurred. Boundary -> sharp.
+    """
+    r_sq = (z_geo ** 2).sum(dim=-1).clamp(max=0.99)
+    tau = torch.sqrt(torch.tensor(float(latent_dim), device=z_geo.device) * (1.0 - r_sq) / 2.0)
+    tau_norm = (tau / tau.max().clamp(min=0.1)).detach()[:, None, None, None]
+    x_blur = F.avg_pool2d(F.pad(x_hat, (2, 2, 2, 2), mode='reflect'), 5, stride=1)
+    return (1.0 - tau_norm) * x_hat + tau_norm * x_blur
+
+
+class ConditionalTextureFlow(nn.Module):
+    """Conditional normalizing flow for texture latents.
+
+    Uses conditional affine coupling layers where each layer splits z_tex
+    in half and predicts (log_s, t) from one half + z_geo.
+    """
+
+    def __init__(
+        self,
+        tex_dim: int,
+        geo_dim: int,
+        hidden_dim: int = 64,
+        n_layers: int = 4,
+        clamp: float = 5.0,
+    ) -> None:
+        super().__init__()
+        self.tex_dim = tex_dim
+        self.n_layers = n_layers
+        self.clamp = clamp
+        # Split dimensions: alternate which half is conditioned on
+        self.split_a = tex_dim // 2
+        self.split_b = tex_dim - self.split_a
+        self.nets = nn.ModuleList()
+        for i in range(n_layers):
+            if i % 2 == 0:
+                in_dim = self.split_a + geo_dim
+                out_dim = self.split_b * 2  # log_s and t
+            else:
+                in_dim = self.split_b + geo_dim
+                out_dim = self.split_a * 2
+            self.nets.append(nn.Sequential(
+                nn.Linear(in_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, out_dim),
+            ))
+
+    def forward(
+        self, z_tex: torch.Tensor, z_geo: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Forward pass: z_tex -> u, returns (u, log_det_J)."""
+        log_det = torch.zeros(z_tex.shape[0], device=z_tex.device)
+        x = z_tex
+        for i, net in enumerate(self.nets):
+            if i % 2 == 0:
+                x_a, x_b = x[:, :self.split_a], x[:, self.split_a:]
+                params = net(torch.cat([x_a, z_geo], dim=-1))
+                log_s = params[:, :self.split_b].clamp(-self.clamp, self.clamp)
+                t = params[:, self.split_b:]
+                x_b = x_b * torch.exp(log_s) + t
+                log_det = log_det + log_s.sum(dim=-1)
+                x = torch.cat([x_a, x_b], dim=-1)
+            else:
+                x_a, x_b = x[:, :self.split_a], x[:, self.split_a:]
+                params = net(torch.cat([x_b, z_geo], dim=-1))
+                log_s = params[:, :self.split_a].clamp(-self.clamp, self.clamp)
+                t = params[:, self.split_a:]
+                x_a = x_a * torch.exp(log_s) + t
+                log_det = log_det + log_s.sum(dim=-1)
+                x = torch.cat([x_a, x_b], dim=-1)
+        return x, log_det
+
+    def inverse(self, u: torch.Tensor, z_geo: torch.Tensor) -> torch.Tensor:
+        """Inverse pass: u -> z_tex."""
+        x = u
+        for i in range(self.n_layers - 1, -1, -1):
+            net = self.nets[i]
+            if i % 2 == 0:
+                x_a, x_b = x[:, :self.split_a], x[:, self.split_a:]
+                params = net(torch.cat([x_a, z_geo], dim=-1))
+                log_s = params[:, :self.split_b].clamp(-self.clamp, self.clamp)
+                t = params[:, self.split_b:]
+                x_b = (x_b - t) * torch.exp(-log_s)
+                x = torch.cat([x_a, x_b], dim=-1)
+            else:
+                x_a, x_b = x[:, :self.split_a], x[:, self.split_a:]
+                params = net(torch.cat([x_b, z_geo], dim=-1))
+                log_s = params[:, :self.split_a].clamp(-self.clamp, self.clamp)
+                t = params[:, self.split_a:]
+                x_a = (x_a - t) * torch.exp(-log_s)
+                x = torch.cat([x_a, x_b], dim=-1)
+        return x
+
+    def flow_loss(self, z_tex: torch.Tensor, z_geo: torch.Tensor) -> torch.Tensor:
+        """Negative log-likelihood under standard normal base distribution."""
+        u, log_det_J = self.forward(z_tex, z_geo)
+        return (0.5 * (u ** 2).sum(-1) - log_det_J).mean()
+
+
 class ConvImageDecoder(nn.Module):
     """Conv decoder for small grayscale images.
 
@@ -899,6 +1016,7 @@ class ConvImageDecoder(nn.Module):
         hidden_dim: Input latent dimension (also used as channel width).
         out_channels: Number of output image channels.
         img_size: Spatial dimension of the (square) output image.
+        film_num_charts: If > 0, add per-chart FiLM conditioning layers.
     """
 
     def __init__(
@@ -907,6 +1025,7 @@ class ConvImageDecoder(nn.Module):
         out_channels: int = 1,
         img_size: int = 28,
         conv_channels: int = 0,
+        film_num_charts: int = 0,
     ) -> None:
         super().__init__()
         C = conv_channels or hidden_dim  # 0 means use hidden_dim
@@ -925,13 +1044,34 @@ class ConvImageDecoder(nn.Module):
             nn.GELU(),
             nn.Conv2d(C, out_channels, kernel_size=3, stride=1, padding=1),
         )
+        self.use_film = film_num_charts > 0
+        if self.use_film:
+            self.film1 = ChartFiLM(film_num_charts, C)
+            self.film2 = ChartFiLM(film_num_charts, C)
 
-    def forward(self, h: torch.Tensor) -> torch.Tensor:
-        x = self.fc(h)
-        x = x.view(-1, self.conv_ch, self.base_size, self.base_size)
-        x = self.deconv(x)
-        x = x[:, :, : self.img_size, : self.img_size]  # Crop if needed
-        return x.reshape(x.shape[0], -1)  # [B, out_channels * img_size * img_size]
+    def forward(
+        self,
+        h: torch.Tensor,
+        router_weights: torch.Tensor | None = None,
+        return_spatial: bool = False,
+    ) -> torch.Tensor:
+        x = self.fc(h).view(-1, self.conv_ch, self.base_size, self.base_size)
+        # Block 1: ConvTranspose2d -> [FiLM] -> GELU
+        x = self.deconv[0](x)
+        if self.use_film and router_weights is not None:
+            x = self.film1(x, router_weights)
+        x = F.gelu(x)
+        # Block 2: ConvTranspose2d -> [FiLM] -> GELU
+        x = self.deconv[2](x)
+        if self.use_film and router_weights is not None:
+            x = self.film2(x, router_weights)
+        x = F.gelu(x)
+        # Final conv
+        x = self.deconv[4](x)
+        x = x[:, :, : self.img_size, : self.img_size]
+        if return_spatial:
+            return x  # [B, C, H, W]
+        return x.reshape(x.shape[0], -1)
 
 
 class StandardResNetDecoder(nn.Module):

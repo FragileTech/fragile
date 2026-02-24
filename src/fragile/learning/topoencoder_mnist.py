@@ -145,6 +145,8 @@ def _init_loss_components() -> dict[str, list[float]]:
         # Anti-collapse penalties
         "chart_collapse": [],
         "code_collapse": [],
+        # Texture flow
+        "flow": [],
         # Supervised topology
         "sup_total": [],
         "sup_route": [],
@@ -322,9 +324,20 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         conv_channels=config.conv_channels,
         img_channels=config.img_channels,
         img_size=config.img_size,
+        film_conditioning=config.film_conditioning,
+        conformal_freq_gating=config.conformal_freq_gating,
+        texture_flow=config.texture_flow,
+        texture_flow_layers=config.texture_flow_layers,
+        texture_flow_hidden=config.texture_flow_hidden,
+        texture_flow_clamp=config.texture_flow_clamp,
+    )
+    _new_features_active = (
+        config.film_conditioning or config.conformal_freq_gating or config.texture_flow
     )
     if resume_state is not None and resume_state.get("atlas") is not None:
-        model_atlas.load_state_dict(resume_state["atlas"])
+        model_atlas.load_state_dict(
+            resume_state["atlas"], strict=not _new_features_active,
+        )
     topo_params = count_parameters(model_atlas)
 
     # Create StandardVQ with matching parameter count (fair comparison)
@@ -725,7 +738,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             ) = model_atlas.encoder(batch_X)
 
             # Decoder forward (dreaming mode - infers routing from z_geo)
-            recon_a, dec_w = model_atlas.decoder(z_geo, z_tex, chart_index=None)
+            recon_a, dec_w, aux_losses = model_atlas.decoder(z_geo, z_tex, chart_index=None)
 
             # Core losses
             recon_loss_a = F.mse_loss(recon_a, batch_X)
@@ -880,6 +893,11 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 p_y_x = torch.matmul(enc_w, supervised_loss.p_y_given_k)
                 sup_acc = (p_y_x.argmax(dim=1) == batch_labels).float().mean()
 
+            # Texture flow loss
+            flow_loss = aux_losses.get(
+                "flow_loss", torch.tensor(0.0, device=device),
+            )
+
             # Total loss
             loss_a = (
                 config.recon_weight * recon_loss_a
@@ -919,6 +937,8 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 + config.code_collapse_weight * code_collapse_loss
                 # Supervised topology
                 + config.sup_weight * sup_total
+                # Texture flow
+                + config.texture_flow_weight * flow_loss
             )
 
             opt_atlas.zero_grad()
@@ -977,6 +997,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
             epoch_losses["sym_calibration"] += sym_cal_loss.item()
             epoch_losses["chart_collapse"] += chart_collapse_loss.item()
             epoch_losses["code_collapse"] += code_collapse_loss.item()
+            epoch_losses["flow"] += flow_loss.item()
             epoch_losses["sup_total"] += sup_total.item()
             epoch_losses["sup_route"] += sup_route.item()
             epoch_losses["sup_purity"] += sup_purity.item()
@@ -1484,7 +1505,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         for batch_X, batch_labels, _batch_colors in test_dataloader:
             batch_X = batch_X.to(device, non_blocking=True)
             batch_labels = batch_labels.to(device, non_blocking=True)
-            recon_atlas, _, enc_w, dec_w, K_chart, z_geo, _z_n, _c_bar = model_atlas(
+            recon_atlas, _, enc_w, dec_w, K_chart, z_geo, _z_n, _c_bar, _aux = model_atlas(
                 batch_X, use_hard_routing=False
             )
             sse_atlas += F.mse_loss(recon_atlas, batch_X, reduction="sum").item()
@@ -2234,6 +2255,45 @@ def main():
         help="Image spatial dimension (28 for MNIST/Fashion-MNIST)",
     )
     parser.add_argument(
+        "--disable_film_conditioning",
+        action="store_true",
+        help="Disable per-chart FiLM conditioning in decoder",
+    )
+    parser.add_argument(
+        "--disable_conformal_freq_gating",
+        action="store_true",
+        help="Disable conformal frequency gating in decoder",
+    )
+    parser.add_argument(
+        "--disable_texture_flow",
+        action="store_true",
+        help="Disable conditional normalizing flow for texture",
+    )
+    parser.add_argument(
+        "--texture_flow_layers",
+        type=int,
+        default=4,
+        help="Number of coupling layers in texture flow (default: 4)",
+    )
+    parser.add_argument(
+        "--texture_flow_hidden",
+        type=int,
+        default=64,
+        help="Hidden dim in texture flow coupling layers (default: 64)",
+    )
+    parser.add_argument(
+        "--texture_flow_weight",
+        type=float,
+        default=1.0,
+        help="Weight for texture flow loss (default: 1.0)",
+    )
+    parser.add_argument(
+        "--texture_flow_clamp",
+        type=float,
+        default=5.0,
+        help="Clamp value for texture flow log_s (default: 5.0)",
+    )
+    parser.add_argument(
         "--baseline_attn",
         type=lambda x: x.lower() == "true",
         default=True,
@@ -2418,6 +2478,13 @@ def main():
         config.conv_channels = args.conv_channels
         config.img_channels = args.img_channels
         config.img_size = args.img_size
+        config.film_conditioning = not args.disable_film_conditioning
+        config.conformal_freq_gating = not args.disable_conformal_freq_gating
+        config.texture_flow = not args.disable_texture_flow
+        config.texture_flow_layers = args.texture_flow_layers
+        config.texture_flow_hidden = args.texture_flow_hidden
+        config.texture_flow_weight = args.texture_flow_weight
+        config.texture_flow_clamp = args.texture_flow_clamp
         config.baseline_attn = args.baseline_attn
         config.baseline_attn_tokens = args.baseline_attn_tokens
         config.baseline_attn_dim = args.baseline_attn_dim
@@ -2462,6 +2529,13 @@ def main():
             conv_channels=args.conv_channels,
             img_channels=args.img_channels,
             img_size=args.img_size,
+            film_conditioning=not args.disable_film_conditioning,
+            conformal_freq_gating=not args.disable_conformal_freq_gating,
+            texture_flow=not args.disable_texture_flow,
+            texture_flow_layers=args.texture_flow_layers,
+            texture_flow_hidden=args.texture_flow_hidden,
+            texture_flow_weight=args.texture_flow_weight,
+            texture_flow_clamp=args.texture_flow_clamp,
             baseline_attn=args.baseline_attn,
             baseline_attn_tokens=args.baseline_attn_tokens,
             baseline_attn_dim=args.baseline_attn_dim,

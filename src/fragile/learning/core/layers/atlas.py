@@ -1067,6 +1067,12 @@ class PrimitiveTopologicalDecoder(nn.Module):
         img_channels: int = 1,
         img_size: int = 28,
         conv_channels: int = 0,
+        film_conditioning: bool = False,
+        conformal_freq_gating: bool = False,
+        texture_flow: bool = False,
+        texture_flow_layers: int = 4,
+        texture_flow_hidden: int = 64,
+        texture_flow_clamp: float = 5.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -1108,11 +1114,19 @@ class PrimitiveTopologicalDecoder(nn.Module):
         else:
             self.latent_router = SpectralLinear(latent_dim, num_charts, bias=True)
         self.tex_residual_scale = nn.Parameter(torch.tensor(0.1))
+
+        # Conformal frequency gating (conv mode only)
+        self.conformal_freq_gating = conformal_freq_gating and conv_backbone
+        self._img_channels = img_channels
+        self._img_size = img_size
+
         if conv_backbone:
             from .vision import ConvImageDecoder
 
+            film_num_charts = num_charts if film_conditioning else 0
             self.renderer = ConvImageDecoder(
                 hidden_dim, img_channels, img_size, conv_channels,
+                film_num_charts=film_num_charts,
             )
             self.render_skip = None
             # Texture residual maps to hidden_dim (added before conv decoder)
@@ -1128,6 +1142,20 @@ class PrimitiveTopologicalDecoder(nn.Module):
             self.render_skip = SpectralLinear(hidden_dim, output_dim, bias=True)
             self.tex_residual = SpectralLinear(latent_dim, output_dim, bias=True)
 
+        # Conditional texture flow
+        if texture_flow:
+            from .vision import ConditionalTextureFlow
+
+            self.texture_flow: ConditionalTextureFlow | None = ConditionalTextureFlow(
+                tex_dim=latent_dim,
+                geo_dim=latent_dim,
+                hidden_dim=texture_flow_hidden,
+                n_layers=texture_flow_layers,
+                clamp=texture_flow_clamp,
+            )
+        else:
+            self.texture_flow = None
+
     def forward(
         self,
         z_geo: torch.Tensor,
@@ -1136,8 +1164,16 @@ class PrimitiveTopologicalDecoder(nn.Module):
         router_weights: torch.Tensor | None = None,
         hard_routing: bool = False,
         hard_routing_tau: float = 1.0,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        """Decode from latent geometry."""
+    ) -> tuple[torch.Tensor, torch.Tensor, dict[str, torch.Tensor]]:
+        """Decode from latent geometry.
+
+        Returns:
+            x_hat: [B, D_out] reconstruction
+            router_weights: [B, N_c] routing weights
+            aux_losses: dict of auxiliary losses (e.g. flow_loss)
+        """
+        aux_losses: dict[str, torch.Tensor] = {}
+
         # Clamp geometry to chart range (Poincare ball).
         z_geo = _project_to_ball(z_geo)
         chart_centers = _project_to_ball(self.chart_centers)
@@ -1197,8 +1233,23 @@ class PrimitiveTopologicalDecoder(nn.Module):
             if z_tex is not None:
                 z_tex = torch.tanh(z_tex)
                 h = h + self.tex_residual_scale * self.tex_residual(z_tex)
-            x_hat = self.renderer(h)
-        return x_hat, router_weights
+            need_spatial = self.conformal_freq_gating
+            x_hat = self.renderer(
+                h,
+                router_weights=router_weights,
+                return_spatial=need_spatial,
+            )
+            if self.conformal_freq_gating:
+                from .vision import conformal_frequency_gate
+
+                x_hat = conformal_frequency_gate(x_hat, z_geo, self.latent_dim)
+                x_hat = x_hat.reshape(x_hat.shape[0], -1)
+
+        # Texture flow loss
+        if self.texture_flow is not None and z_tex is not None:
+            aux_losses["flow_loss"] = self.texture_flow.flow_loss(z_tex, z_geo)
+
+        return x_hat, router_weights, aux_losses
 
 
 class TopoEncoderPrimitives(nn.Module):
@@ -1230,6 +1281,12 @@ class TopoEncoderPrimitives(nn.Module):
         img_channels: int = 1,
         img_size: int = 28,
         conv_channels: int = 0,
+        film_conditioning: bool = False,
+        conformal_freq_gating: bool = False,
+        texture_flow: bool = False,
+        texture_flow_layers: int = 4,
+        texture_flow_hidden: int = 64,
+        texture_flow_clamp: float = 5.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -1277,6 +1334,12 @@ class TopoEncoderPrimitives(nn.Module):
             img_channels=img_channels,
             img_size=img_size,
             conv_channels=conv_channels,
+            film_conditioning=film_conditioning,
+            conformal_freq_gating=conformal_freq_gating,
+            texture_flow=texture_flow,
+            texture_flow_layers=texture_flow_layers,
+            texture_flow_hidden=texture_flow_hidden,
+            texture_flow_clamp=texture_flow_clamp,
         )
 
     def forward(
@@ -1293,6 +1356,7 @@ class TopoEncoderPrimitives(nn.Module):
         torch.Tensor,
         torch.Tensor,
         torch.Tensor,
+        dict[str, torch.Tensor],
     ]:
         (
             K_chart,
@@ -1313,7 +1377,7 @@ class TopoEncoderPrimitives(nn.Module):
         )
 
         router_override = enc_router_weights if use_hard_routing else None
-        x_recon, dec_router_weights = self.decoder(
+        x_recon, dec_router_weights, aux_losses = self.decoder(
             z_geo,
             z_tex,
             chart_index=None,
@@ -1322,7 +1386,7 @@ class TopoEncoderPrimitives(nn.Module):
             hard_routing_tau=hard_routing_tau,
         )
 
-        return x_recon, vq_loss, enc_router_weights, dec_router_weights, K_chart, z_geo, z_n, c_bar
+        return x_recon, vq_loss, enc_router_weights, dec_router_weights, K_chart, z_geo, z_n, c_bar, aux_losses
 
     def compute_consistency_loss(
         self, enc_weights: torch.Tensor, dec_weights: torch.Tensor, eps: float = 1e-6

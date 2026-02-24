@@ -43,6 +43,17 @@ class TopoEncoderConfig:
     img_size: int = 28  # Image spatial dimension (28 for MNIST/Fashion-MNIST)
     conv_channels: int = 64  # Conv layer channel width (0 = use hidden_dim)
 
+    # Per-chart FiLM conditioning (decoder specialization per chart)
+    film_conditioning: bool = True
+    # Conformal frequency gating (blur uncertain reconstructions)
+    conformal_freq_gating: bool = True
+    # Conditional normalizing flow for texture
+    texture_flow: bool = True
+    texture_flow_layers: int = 4
+    texture_flow_hidden: int = 64
+    texture_flow_weight: float = 1.0
+    texture_flow_clamp: float = 5.0
+
     # Training
     epochs: int = 1000
     batch_size: int = 256  # Batch size for training (0 = full batch)
