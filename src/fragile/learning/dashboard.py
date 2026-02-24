@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import glob
+import logging
 import os
 import re
 import traceback
@@ -24,7 +25,10 @@ import torch
 import torch.nn.functional as F
 
 from fragile.core.benchmarks import BaselineClassifier, StandardVQ, VanillaAE
-from fragile.core.layers import TopoEncoderPrimitives
+from fragile.core.layers import TopoEncoderPrimitives as CoreTopoEncoderPrimitives
+from fragile.learning.core.layers.atlas import (
+    TopoEncoderPrimitives as LegacyTopoEncoderPrimitives,
+)
 from fragile.core.layers.topology import InvariantChartClassifier
 from fragile.datasets import get_mnist_data
 from fragile.learning.checkpoints import count_parameters, load_benchmarks, load_checkpoint
@@ -32,6 +36,7 @@ from fragile.learning.conformal import (
     ablation_feature_importance,
     accuracy_vs_radius,
     calibration_test_split,
+    compute_tunneling_rate,
     conditional_coverage_by_radius,
     conformal_quantile,
     conformal_quantiles_per_chart,
@@ -42,6 +47,8 @@ from fragile.learning.conformal import (
     conformal_scores_geodesic,
     conformal_scores_standard,
     conformal_factor_np,
+    hyperbolic_knn_density,
+    geodesic_isolation,
     corrupt_data,
     coverage_by_class,
     coverage_under_corruption,
@@ -49,6 +56,7 @@ from fragile.learning.conformal import (
     expected_calibration_error,
     format_ablation_table,
     format_class_coverage_table,
+    format_coverage_method_comparison,
     format_coverage_summary_table,
     format_ood_auroc_table,
     forward_pass_batch,
@@ -117,7 +125,7 @@ class LoadedModels:
     """Loaded checkpoint data ready for inference."""
 
     config: TopoEncoderConfig
-    model_atlas: TopoEncoderPrimitives
+    model_atlas: CoreTopoEncoderPrimitives | LegacyTopoEncoderPrimitives
     model_std: StandardVQ | None
     model_ae: VanillaAE | None
     classifier_head: InvariantChartClassifier | None
@@ -151,6 +159,7 @@ _ATLAS_INIT_KEYS = {
     "covariant_attn_use_transport",
     "covariant_attn_transport_eps",
     "conv_backbone",
+    "conv_channels",
     "img_channels",
     "img_size",
     "vision_preproc",
@@ -173,7 +182,6 @@ _ATLAS_INIT_KEYS = {
     "soft_equiv_soft_assign",
     "soft_equiv_temperature",
 }
-
 
 def scan_runs(outputs_dir: str = "outputs") -> list[RunInfo]:
     """Scan outputs directory for topoencoder training runs."""
@@ -221,6 +229,151 @@ def _build_baseline_kwargs(cfg: dict, hidden_dim: int, is_vq: bool) -> dict:
     return kw
 
 
+def _infer_atlas_kwargs_from_state(
+    atlas_state: dict[str, torch.Tensor] | None,
+    base_kwargs: dict,
+) -> dict:
+    """Infer missing atlas constructor kwargs from checkpoint tensor shapes.
+
+    This is critical when loading checkpoints produced by different topology
+    settings or hidden widths.
+    """
+    inferred: dict = {}
+    if atlas_state is None:
+        return dict(base_kwargs)
+
+    # Strongest signal for dimensions comes from decoder residual matrix.
+    tex_residual = atlas_state.get("decoder.tex_residual.weight")
+    if isinstance(tex_residual, torch.Tensor) and tex_residual.ndim >= 2:
+        inferred["input_dim"] = int(tex_residual.shape[0])
+        inferred["latent_dim"] = int(tex_residual.shape[1])
+
+    for key, value in atlas_state.items():
+        if not isinstance(value, torch.Tensor):
+            continue
+
+        if value.ndim == 2 and (
+            key.endswith("feature_extractor.0.weight")
+            or key.endswith("shared_feature_extractor.0.weight")
+        ):
+            inferred.setdefault("hidden_dim", int(value.shape[0]))
+
+        if value.ndim == 2 and key.endswith("latent_router.weight"):
+            inferred.setdefault("num_charts", int(value.shape[0]))
+            inferred.setdefault("latent_dim", int(value.shape[1]))
+
+        if value.ndim in (3, 4) and "codebook" in key:
+            inferred.setdefault("num_charts", int(value.shape[0]))
+            inferred.setdefault("codes_per_chart", int(value.shape[1]))
+            inferred.setdefault("latent_dim", int(value.shape[2]))
+
+        if value.ndim >= 4 and "conv" in key and key.endswith(".weight"):
+            inferred.setdefault("conv_backbone", True)
+            inferred.setdefault("conv_channels", int(value.shape[0]))
+            if value.shape[1] > 0:
+                inferred.setdefault("img_channels", int(value.shape[1]))
+            if value.ndim == 4 and value.shape[2] == value.shape[3] and value.shape[2] > 1:
+                inferred.setdefault("img_size", int(value.shape[2]))
+
+    merged = dict(base_kwargs)
+    merged.update(inferred)
+    return merged
+
+
+def _infer_conv_checkpoint(
+    atlas_state: dict[str, torch.Tensor],
+    hidden_dim: int,
+    input_dim: int,
+) -> bool:
+    """Infer whether this checkpoint was saved from a convolutional TopoEncoder."""
+    del hidden_dim
+    del input_dim
+    for key in atlas_state:
+        if "encoder.feature_extractor.conv" in key:
+            return True
+        if "encoder.shared_feature_extractor.conv" in key:
+            return True
+        if "decoder.renderer.deconv" in key:
+            return True
+        if "decoder.renderer." in key and key.endswith("deconv.weight"):
+            return True
+    return False
+
+
+def _infer_conv_state_kwargs(
+    cfg_dict: dict,
+    atlas_state: dict[str, torch.Tensor],
+    hidden_dim: int,
+    input_dim: int,
+) -> dict:
+    """Infer conv-related constructor kwargs from checkpoint tensors."""
+    inferred: dict = {}
+    conv_key_candidates: dict[str, int] = {}
+
+    for key, value in atlas_state.items():
+        if not isinstance(value, torch.Tensor):
+            continue
+        if "encoder.feature_extractor.conv" in key and key.endswith(".weight") and value.ndim >= 4:
+            if "conv_channels" not in inferred:
+                inferred["conv_channels"] = int(value.shape[0])
+            conv_idx = conv_key_candidates.get("first_conv", 0)
+            if "conv1" in key and conv_idx == 0:
+                conv_key_candidates["first_conv"] = int(value.shape[1])
+                inferred["img_channels"] = int(value.shape[1])
+        if key == "decoder.renderer.deconv.0.weight" and value.ndim >= 4:
+            inferred.setdefault("conv_channels", int(value.shape[0]))
+
+    if conv_key_candidates.get("first_conv", 0) == 0:
+        conv_key_candidates["first_conv"] = int(cfg_dict.get("img_channels", 1))
+        inferred.setdefault("img_channels", conv_key_candidates["first_conv"])
+    else:
+        inferred.setdefault("img_channels", conv_key_candidates["first_conv"])
+
+    img_size = int(cfg_dict.get("img_size", 0) or 0)
+    if img_size <= 0:
+        if input_dim > 0:
+            img_channels = inferred.get("img_channels", cfg_dict.get("img_channels", 1))
+            if img_channels > 0 and input_dim % img_channels == 0:
+                side = int(np.sqrt(input_dim // img_channels))
+                if side * side == input_dim // img_channels:
+                    img_size = side
+    if img_size <= 0:
+        img_size = 28
+    inferred.setdefault("img_size", img_size)
+    inferred.setdefault("conv_channels", int(cfg_dict.get("conv_channels", hidden_dim)))
+    inferred.setdefault("img_channels", int(cfg_dict.get("img_channels", 1)))
+
+    return inferred
+
+
+def _state_uses_legacy_layers(atlas_state: dict[str, torch.Tensor] | None) -> bool | None:
+    """Infer whether checkpoint keys match the legacy encoder layout."""
+    if atlas_state is None:
+        return None
+    for key in atlas_state:
+        if key.startswith("encoder.shared_feature_extractor"):
+            return False
+        if key.startswith("encoder.feature_extractor"):
+            return True
+    return None
+
+
+def _build_atlas_model(atlas_kwargs: dict, atlas_cls: type) -> object:
+    """Instantiate TopoEncoderPrimitives with compatibility fallback for old args."""
+    while True:
+        try:
+            return atlas_cls(**atlas_kwargs)
+        except TypeError as exc:
+            msg = str(exc)
+            if "unexpected keyword argument" in msg:
+                bad_key = msg.split("'")[1]
+                atlas_kwargs.pop(bad_key, None)
+                continue
+            if "required positional argument" in msg:
+                raise
+            raise
+
+
 def load_run_at_epoch(run: RunInfo, epoch: int) -> LoadedModels:
     """Load checkpoint + benchmarks, instantiate all 3 models in eval mode on CPU."""
     ckpt_path = os.path.join(run.path, "topoencoder", f"epoch_{epoch:05d}.pt")
@@ -247,9 +400,103 @@ def load_run_at_epoch(run: RunInfo, epoch: int) -> LoadedModels:
 
     # --- Atlas model ---
     atlas_kwargs = {k: cfg_dict[k] for k in _ATLAS_INIT_KEYS if k in cfg_dict}
-    model_atlas = TopoEncoderPrimitives(**atlas_kwargs)
-    if state.get("atlas") is not None:
-        model_atlas.load_state_dict(state["atlas"])
+    atlas_state = state.get("atlas")
+    atlas_kwargs = _infer_atlas_kwargs_from_state(atlas_state, atlas_kwargs)
+    hidden_dim = int(atlas_kwargs.get("hidden_dim", config.hidden_dim))
+    input_dim = int(atlas_kwargs.get("input_dim", config.input_dim))
+    candidate_models: list[tuple[type, dict]] = []
+    logger = logging.getLogger(__name__)
+    if atlas_state is not None:
+        is_conv = _infer_conv_checkpoint(atlas_state, hidden_dim=hidden_dim, input_dim=input_dim)
+        legacy_layout = _state_uses_legacy_layers(atlas_state)
+
+        conv_state_kwargs = _infer_conv_state_kwargs(
+            cfg_dict=cfg_dict,
+            atlas_state=atlas_state,
+            hidden_dim=hidden_dim,
+            input_dim=input_dim,
+        )
+
+        legacy_kwargs = dict(atlas_kwargs)
+        if is_conv:
+            legacy_kwargs["conv_backbone"] = True
+            legacy_kwargs.update(conv_state_kwargs)
+        else:
+            legacy_kwargs.pop("conv_backbone", None)
+            legacy_kwargs.pop("conv_channels", None)
+            legacy_kwargs.pop("img_channels", None)
+            legacy_kwargs.pop("img_size", None)
+
+        legacy_kwargs_fallback = dict(legacy_kwargs)
+        if is_conv:
+            legacy_kwargs_fallback.pop("conv_backbone", None)
+            legacy_kwargs_fallback.pop("conv_channels", None)
+            legacy_kwargs_fallback.pop("img_channels", None)
+            legacy_kwargs_fallback.pop("img_size", None)
+        else:
+            legacy_kwargs_fallback["conv_backbone"] = True
+            legacy_kwargs_fallback.update(conv_state_kwargs)
+
+        core_kwargs = dict(atlas_kwargs)
+        core_kwargs.pop("conv_backbone", None)
+        core_kwargs.pop("conv_channels", None)
+        core_kwargs.pop("img_channels", None)
+        core_kwargs.pop("img_size", None)
+
+        preferred_legacy = True if legacy_layout is not False else False
+        if legacy_layout is None:
+            preferred_legacy = is_conv
+
+        if preferred_legacy:
+            candidate_models.append((LegacyTopoEncoderPrimitives, legacy_kwargs))
+            candidate_models.append((LegacyTopoEncoderPrimitives, legacy_kwargs_fallback))
+            candidate_models.append((CoreTopoEncoderPrimitives, core_kwargs))
+        else:
+            candidate_models.append((CoreTopoEncoderPrimitives, core_kwargs))
+            candidate_models.append((LegacyTopoEncoderPrimitives, legacy_kwargs))
+            candidate_models.append((LegacyTopoEncoderPrimitives, legacy_kwargs_fallback))
+    else:
+        candidate_models = [(CoreTopoEncoderPrimitives, atlas_kwargs)]
+
+    model_atlas = None
+    result = None
+    atlas_load_error = None
+    seen: set[tuple[type, tuple[tuple[str, object], ...]]] = set()
+    for model_cls, attempt in candidate_models:
+        attempt = dict(attempt)
+        attempt_key = (model_cls, tuple(sorted(attempt.items())))
+        if attempt_key in seen:
+            continue
+        seen.add(attempt_key)
+
+        model_candidate = _build_atlas_model(attempt, model_cls)
+        if atlas_state is None:
+            model_atlas = model_candidate
+            break
+        try:
+            result = model_candidate.load_state_dict(atlas_state, strict=False)
+            model_atlas = model_candidate
+            atlas_kwargs = attempt
+            break
+        except RuntimeError as exc:
+            logger.debug("Atlas state load failed for candidate config: %s", exc)
+            model_atlas = None
+            result = None
+            atlas_load_error = exc
+
+    if model_atlas is None:
+        if atlas_state is not None:
+            raise RuntimeError(
+                "Unable to load atlas state with available architecture candidates"
+            ) from atlas_load_error
+        model_atlas = _build_atlas_model(atlas_kwargs, CoreTopoEncoderPrimitives)
+    if result is not None and (result.missing_keys or result.unexpected_keys):
+        logger.warning(
+            "Atlas state_dict partial load: %d missing, %d unexpected keys "
+            "(architecture change between checkpoint and current code)",
+            len(result.missing_keys),
+            len(result.unexpected_keys),
+        )
     model_atlas.eval()
 
     # --- Benchmark models ---
@@ -511,6 +758,7 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
     conditional_coverage_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
     set_size_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
     class_coverage_table = pn.pane.Markdown("")
+    coverage_comparison_table = pn.pane.Markdown("")
     ood_roc_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
     ood_auroc_table = pn.pane.Markdown("")
     corruption_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
@@ -538,6 +786,7 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
         coverage_summary_table,
         pn.Row(conditional_coverage_pane, set_size_pane),
         class_coverage_table,
+        coverage_comparison_table,
         pn.layout.Divider(),
         pn.pane.Markdown("## Distribution Shift"),
         pn.Row(ood_roc_pane, ood_auroc_table),
@@ -1257,12 +1506,19 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
                 z_geo=test_z, geo_beta=gb_beta,
             )
 
+            # Mondrian via class-conditional conformal scores
+            class_qs = conformal_quantiles_per_class(
+                cal_scores_std, labels[cal_idx], alpha
+            )
+            incl_mond, sizes_mond = prediction_sets_mondrian(test_probs, class_qs)
+
             cov_std, mss_std = evaluate_coverage(incl_std, test_labels)
             cov_geo, mss_geo = evaluate_coverage(incl_geo, test_labels)
             cov_chart, mss_chart = evaluate_coverage(incl_chart, test_labels)
             cov_cc, mss_cc = evaluate_coverage(incl_cc, test_labels)
             cov_rad, mss_rad = evaluate_coverage(incl_rad, test_labels)
             cov_gb, mss_gb = evaluate_coverage(incl_gb, test_labels)
+            cov_mond, mss_mond = evaluate_coverage(incl_mond, test_labels)
 
             coverage_results = {
                 "Standard": (cov_std, mss_std),
@@ -1271,6 +1527,7 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
                 "Chart×Code": (cov_cc, mss_cc),
                 "Radial": (cov_rad, mss_rad),
                 "Geo-β": (cov_gb, mss_gb),
+                "Mondrian": (cov_mond, mss_mond),
             }
             coverage_summary_table.object = format_coverage_summary_table(coverage_results, alpha)
 
@@ -1282,6 +1539,7 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
                 "Chart×Code": (incl_cc, sizes_cc),
                 "Radial": (incl_rad, sizes_rad),
                 "Geo-β": (incl_gb, sizes_gb),
+                "Mondrian": (incl_mond, sizes_mond),
             }
             cond_data = conditional_coverage_by_radius(
                 pred_sets_dict, test_labels, test_z, n_bins,
@@ -1291,15 +1549,57 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
 
             # --- Analysis 5: Mondrian Coverage by Class ---
             conformal_status.object = "Running analysis 5/9: Mondrian coverage..."
-            class_qs = conformal_quantiles_per_class(cal_scores_std, labels[cal_idx], alpha)
-            incl_mond, sizes_mond = prediction_sets_mondrian(test_probs, class_qs)
             pred_sets_cls = {
-                "Standard": (incl_std, sizes_std),
-                "Geodesic": (incl_geo, sizes_geo),
-                "Mondrian": (incl_mond, sizes_mond),
+                "Standard Cov": (incl_std, sizes_std),
+                "Geodesic Cov": (incl_geo, sizes_geo),
+                "Mondrian Cov": (incl_mond, sizes_mond),
+                "Radial Cov": (incl_rad, sizes_rad),
+                "Symbol Cov": (incl_cc, sizes_cc),
             }
             cls_data = coverage_by_class(pred_sets_cls, test_labels, num_classes)
             class_coverage_table.object = format_class_coverage_table(cls_data)
+            comparison_specs = {
+                "Standard": {
+                    "conditions": "nothing",
+                    "groups": 1,
+                    "needs_labels": False,
+                    "class_coverage_key": "Standard Cov",
+                    "radius_coverage_key": "Standard",
+                },
+                "Geodesic": {
+                    "conditions": "geodesic distance",
+                    "groups": 1,
+                    "needs_labels": False,
+                    "class_coverage_key": "Geodesic Cov",
+                    "radius_coverage_key": "Geodesic",
+                },
+                "Mondrian": {
+                    "conditions": "predicted class",
+                    "groups": num_classes,
+                    "needs_labels": True,
+                    "class_coverage_key": "Mondrian Cov",
+                    "radius_coverage_key": "Mondrian",
+                },
+                "Radial": {
+                    "conditions": "radius",
+                    "groups": rad_stats["n_shells"],
+                    "needs_labels": False,
+                    "class_coverage_key": "Radial Cov",
+                    "radius_coverage_key": "Radial",
+                },
+                "Symbol": {
+                    "conditions": "(chart, code)",
+                    "groups": cc_stats["n_groups"],
+                    "needs_labels": False,
+                    "class_coverage_key": "Symbol Cov",
+                    "radius_coverage_key": "Chart×Code",
+                },
+            }
+            coverage_comparison_table.object = format_coverage_method_comparison(
+                comparison_specs,
+                cls_data,
+                cond_data,
+            )
 
             # --- Analysis 8: Ablation ---
             conformal_status.object = "Running analysis 8/9: Feature importance..."
@@ -1326,27 +1626,140 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
             conformal_status.object = f"Running analysis 6/9: OOD detection ({ood_name})..."
             try:
                 ood_X, _ood_labels = ood_loader(len(labels))
-                fmnist_tensor = torch.tensor(
+                ood_tensor = torch.tensor(
                     ood_X if isinstance(ood_X, np.ndarray) else ood_X.numpy(),
                     dtype=torch.float32,
                 )
-                z_ood, rw_ood, probs_ood, charts_ood, _codes_ood = forward_pass_batch(loaded, fmnist_tensor)
+                z_ood, rw_ood, probs_ood, _charts_ood, _codes_ood = forward_pass_batch(
+                    loaded, ood_tensor
+                )
 
                 lam_id = conformal_factor_np(z_geo)
                 lam_ood = conformal_factor_np(z_ood)
                 ent_id = router_entropy(router_w)
                 ent_ood = router_entropy(rw_ood)
 
+                chart_to_class = chart_to_label_map(charts, labels)
+                tunnel_id = compute_tunneling_rate(
+                    router_w,
+                    chart_to_class,
+                    num_classes,
+                )
+                tunnel_ood = compute_tunneling_rate(
+                    rw_ood,
+                    chart_to_class,
+                    num_classes,
+                )
+
+                codebook = np.array([])
+                try:
+                    atlas_encoder = getattr(loaded.model_atlas, "encoder", loaded.model_atlas)
+                    cb = getattr(atlas_encoder, "codebook", None)
+                    if cb is not None:
+                        cb_np = _to_numpy(cb)
+                        codebook = cb_np.reshape(-1, cb_np.shape[-1])
+                except Exception:
+                    codebook = np.array([])
+
+                if codebook.size == 0:
+                    iso_id = np.zeros(len(labels), dtype=float)
+                    iso_ood = np.zeros(len(z_ood), dtype=float)
+                else:
+                    iso_id = geodesic_isolation(z_geo, codebook)
+                    iso_ood = geodesic_isolation(z_ood, codebook)
+
+                # Subsample in-distribution latents for efficient k-NN scoring.
+                ref_size = 5000
+                if len(z_geo) <= ref_size:
+                    z_ref = z_geo
+                else:
+                    rng = np.random.default_rng(42)
+                    ref_idx = rng.choice(len(z_geo), size=ref_size, replace=False)
+                    z_ref = z_geo[ref_idx]
+                knn_id = hyperbolic_knn_density(z_geo, z_ref, k=10)
+                knn_ood = hyperbolic_knn_density(z_ood, z_ref, k=10)
+
+                max_prob_id = 1.0 - cache["confidence"]
+                max_prob_ood = (
+                    1.0 - probs_ood.max(axis=1)
+                    if probs_ood is not None
+                    else np.ones(len(z_ood))
+                )
+
                 id_signals = {
-                    "1 - max_prob": 1.0 - cache["confidence"],
+                    "1 - max_prob": max_prob_id,
                     "1/lambda": 1.0 / lam_id,
                     "router_entropy": ent_id,
+                    "tunneling_rate": tunnel_id,
+                    "geodesic_isolation": iso_id,
+                    "hyperbolic_knn_density": knn_id,
                 }
                 ood_signals_dict = {
-                    "1 - max_prob": 1.0 - probs_ood.max(axis=1) if probs_ood is not None else np.ones(len(z_ood)),
+                    "1 - max_prob": max_prob_ood,
                     "1/lambda": 1.0 / lam_ood,
                     "router_entropy": ent_ood,
+                    "tunneling_rate": tunnel_ood,
+                    "geodesic_isolation": iso_ood,
+                    "hyperbolic_knn_density": knn_ood,
                 }
+
+                feature_order = [
+                    "1 - max_prob",
+                    "1/lambda",
+                    "router_entropy",
+                    "tunneling_rate",
+                    "geodesic_isolation",
+                    "hyperbolic_knn_density",
+                ]
+                X_id = np.column_stack([id_signals[k] for k in feature_order])
+                X_ood = np.column_stack([ood_signals_dict[k] for k in feature_order])
+                X = np.vstack([X_id, X_ood])
+                y = np.concatenate([
+                    np.zeros(len(labels), dtype=np.int64),
+                    np.ones(len(z_ood), dtype=np.int64),
+                ])
+                try:
+                    from sklearn.linear_model import LogisticRegression
+                    from sklearn.preprocessing import StandardScaler
+
+                    scaler = StandardScaler()
+                    X_scaled = scaler.fit_transform(X)
+                    lr = LogisticRegression(
+                        max_iter=1000,
+                        random_state=42,
+                    )
+                    lr.fit(X_scaled, y)
+                    probs_combined = lr.predict_proba(X_scaled)[:, 1]
+                    id_signals["combined"] = probs_combined[: len(labels)]
+                    ood_signals_dict["combined"] = probs_combined[len(labels):]
+                except Exception:
+                    z_id = np.column_stack([
+                        (vals - vals.mean()) / max(vals.std(), 1e-6)
+                        for vals in (
+                            max_prob_id,
+                            1.0 / lam_id,
+                            ent_id,
+                            tunnel_id,
+                            iso_id,
+                            knn_id,
+                        )
+                    ])
+                    z_ood = np.column_stack([
+                        (vals - vals.mean()) / max(vals.std(), 1e-6)
+                        for vals in (
+                            max_prob_ood,
+                            1.0 / lam_ood,
+                            ent_ood,
+                            tunnel_ood,
+                            iso_ood,
+                            knn_ood,
+                        )
+                    ])
+                    score_id = z_id.mean(axis=1)
+                    score_ood = z_ood.mean(axis=1)
+                    id_signals["combined"] = score_id
+                    ood_signals_dict["combined"] = score_ood
+
                 aurocs = ood_scores(id_signals, ood_signals_dict)
                 ood_roc_pane.object = plot_ood_roc(id_signals, ood_signals_dict)
                 ood_auroc_table.object = format_ood_auroc_table(aurocs)

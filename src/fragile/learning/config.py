@@ -41,6 +41,7 @@ class TopoEncoderConfig:
     conv_backbone: bool = True  # Use conv layers instead of FC for feature extraction/reconstruction
     img_channels: int = 1  # Image channels (1 for grayscale MNIST/Fashion-MNIST)
     img_size: int = 28  # Image spatial dimension (28 for MNIST/Fashion-MNIST)
+    conv_channels: int = 64  # Conv layer channel width (0 = use hidden_dim)
 
     # Training
     epochs: int = 1000
@@ -50,6 +51,10 @@ class TopoEncoderConfig:
     vq_commitment_cost: float = 0.25
     entropy_weight: float = 0.1  # Encourage high routing entropy (anti-collapse)
     consistency_weight: float = 0.1  # Align encoder/decoder routing
+
+    # Reconstruction
+    recon_weight: float = 1.0  # Reconstruction loss weight
+    recon_grad_weight: float = 1.0  # Gradient penalty weight for sharp reconstructions (0 = disable)
 
     # Tier 1 losses (low overhead ~5%)
     variance_weight: float = 0.0  # DROP: Prevent latent collapse (was 0.1)

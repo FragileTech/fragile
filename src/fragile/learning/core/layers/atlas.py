@@ -796,6 +796,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         conv_backbone: bool = False,
         img_channels: int = 1,
         img_size: int = 28,
+        conv_channels: int = 0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -811,7 +812,9 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         if conv_backbone:
             from .vision import ConvFeatureExtractor
 
-            self.feature_extractor = ConvFeatureExtractor(img_channels, hidden_dim, img_size)
+            self.feature_extractor = ConvFeatureExtractor(
+                img_channels, hidden_dim, img_size, conv_channels,
+            )
         else:
             self.feature_extractor = nn.Sequential(
                 SpectralLinear(input_dim, hidden_dim, bias=True),
@@ -1063,6 +1066,7 @@ class PrimitiveTopologicalDecoder(nn.Module):
         conv_backbone: bool = False,
         img_channels: int = 1,
         img_size: int = 28,
+        conv_channels: int = 0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -1107,7 +1111,9 @@ class PrimitiveTopologicalDecoder(nn.Module):
         if conv_backbone:
             from .vision import ConvImageDecoder
 
-            self.renderer = ConvImageDecoder(hidden_dim, img_channels, img_size)
+            self.renderer = ConvImageDecoder(
+                hidden_dim, img_channels, img_size, conv_channels,
+            )
             self.render_skip = None
             # Texture residual maps to hidden_dim (added before conv decoder)
             self.tex_residual = SpectralLinear(latent_dim, hidden_dim, bias=True)
@@ -1223,6 +1229,7 @@ class TopoEncoderPrimitives(nn.Module):
         conv_backbone: bool = False,
         img_channels: int = 1,
         img_size: int = 28,
+        conv_channels: int = 0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -1251,6 +1258,7 @@ class TopoEncoderPrimitives(nn.Module):
             conv_backbone=conv_backbone,
             img_channels=img_channels,
             img_size=img_size,
+            conv_channels=conv_channels,
         )
         self.decoder = PrimitiveTopologicalDecoder(
             latent_dim=latent_dim,
@@ -1268,6 +1276,7 @@ class TopoEncoderPrimitives(nn.Module):
             conv_backbone=conv_backbone,
             img_channels=img_channels,
             img_size=img_size,
+            conv_channels=conv_channels,
         )
 
     def forward(

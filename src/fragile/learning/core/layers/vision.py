@@ -862,21 +862,30 @@ class ConvFeatureExtractor(nn.Module):
         img_size: Spatial dimension of the (square) input image.
     """
 
-    def __init__(self, in_channels: int = 1, hidden_dim: int = 32, img_size: int = 28) -> None:
+    def __init__(
+        self,
+        in_channels: int = 1,
+        hidden_dim: int = 32,
+        img_size: int = 28,
+        conv_channels: int = 0,
+    ) -> None:
         super().__init__()
         self.in_channels = in_channels
         self.img_size = img_size
-        self.conv1 = SpectralConv2d(in_channels, hidden_dim, kernel_size=3, stride=2, padding=1)
-        self.conv2 = SpectralConv2d(hidden_dim, hidden_dim, kernel_size=3, stride=2, padding=1)
-        # Compute spatial size after two stride-2 convs (kernel=3, padding=1)
+        C = conv_channels or hidden_dim  # 0 means use hidden_dim
+        self.conv1 = SpectralConv2d(in_channels, C, kernel_size=3, stride=2, padding=1)
+        self.conv2 = SpectralConv2d(C, C, kernel_size=3, stride=2, padding=1)
+        self.conv3 = SpectralConv2d(C, C, kernel_size=3, stride=1, padding=1)
+        # Compute spatial size after two stride-2 convs (conv3 is stride-1, no change)
         s = (img_size + 2 - 3) // 2 + 1  # after conv1
         s = (s + 2 - 3) // 2 + 1  # after conv2
-        self.proj = SpectralLinear(hidden_dim * s * s, hidden_dim, bias=True)
+        self.proj = SpectralLinear(C * s * s, hidden_dim, bias=True)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = x.view(-1, self.in_channels, self.img_size, self.img_size)
         x = F.gelu(self.conv1(x))
         x = F.gelu(self.conv2(x))
+        x = F.gelu(self.conv3(x))
         return self.proj(x.flatten(1))  # [B, hidden_dim]
 
 
@@ -897,25 +906,29 @@ class ConvImageDecoder(nn.Module):
         hidden_dim: int = 32,
         out_channels: int = 1,
         img_size: int = 28,
+        conv_channels: int = 0,
     ) -> None:
         super().__init__()
+        C = conv_channels or hidden_dim  # 0 means use hidden_dim
         self.img_size = img_size
         self.out_channels = out_channels
-        self.hidden_dim = hidden_dim
+        self.conv_ch = C
         # Compute base spatial size (must match encoder's post-conv spatial size)
         s = (img_size + 2 - 3) // 2 + 1  # after stride-2 conv
         s = (s + 2 - 3) // 2 + 1  # after second stride-2 conv
         self.base_size = s
-        self.fc = SpectralLinear(hidden_dim, hidden_dim * s * s, bias=True)
+        self.fc = SpectralLinear(hidden_dim, C * s * s, bias=True)
         self.deconv = nn.Sequential(
-            nn.ConvTranspose2d(hidden_dim, hidden_dim, kernel_size=4, stride=2, padding=1),
+            nn.ConvTranspose2d(C, C, kernel_size=4, stride=2, padding=1),
             nn.GELU(),
-            nn.ConvTranspose2d(hidden_dim, out_channels, kernel_size=4, stride=2, padding=1),
+            nn.ConvTranspose2d(C, C, kernel_size=4, stride=2, padding=1),
+            nn.GELU(),
+            nn.Conv2d(C, out_channels, kernel_size=3, stride=1, padding=1),
         )
 
     def forward(self, h: torch.Tensor) -> torch.Tensor:
         x = self.fc(h)
-        x = x.view(-1, self.hidden_dim, self.base_size, self.base_size)
+        x = x.view(-1, self.conv_ch, self.base_size, self.base_size)
         x = self.deconv(x)
         x = x[:, :, : self.img_size, : self.img_size]  # Crop if needed
         return x.reshape(x.shape[0], -1)  # [B, out_channels * img_size * img_size]

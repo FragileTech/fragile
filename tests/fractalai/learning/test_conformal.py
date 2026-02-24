@@ -28,6 +28,7 @@ from fragile.learning.conformal import (
     expected_calibration_error,
     format_ablation_table,
     format_class_coverage_table,
+    format_coverage_method_comparison,
     format_coverage_summary_table,
     format_ood_auroc_table,
     ood_scores,
@@ -639,6 +640,46 @@ class TestFormatClassCoverageTable:
         assert "Class" in md
         assert "Standard Cov" in md
         assert "Count" in md
+
+
+class TestFormatCoverageMethodComparison:
+    def test_markdown_format_with_class_and_radius_gaps(self):
+        cls_data = {
+            "MethodA": [
+                {"coverage": 0.92, "set_size": 1.5, "count": 10},
+                {"coverage": 0.88, "set_size": 1.4, "count": 10},
+            ],
+            "MethodB": [
+                {"coverage": 0.80, "set_size": 2.0, "count": 10},
+                {"coverage": 0.85, "set_size": 1.9, "count": 10},
+            ],
+        }
+        cond_data = {
+            "methods": {
+                "MethodA": {"coverage": [0.95, 0.85, 0.90]},
+                "MethodB": {"coverage": [0.70, 0.74]},
+            }
+        }
+        specs = {
+            "MethodA": {
+                "conditions": "nothing",
+                "groups": 1,
+                "needs_labels": False,
+                "class_coverage_key": "MethodA",
+                "radius_coverage_key": "MethodA",
+            },
+            "MethodB": {
+                "conditions": "chart",
+                "groups": 10,
+                "needs_labels": True,
+                "class_coverage_key": "MethodB",
+                "radius_coverage_key": "MethodB",
+            },
+        }
+        md = format_coverage_method_comparison(specs, cls_data, cond_data)
+        assert "| Method | Conditions on | Groups | Needs labels? | Worst-class gap | Worst-radius gap |" in md
+        assert "| MethodA |" in md
+        assert "| MethodB |" in md
 
 
 # ---------------------------------------------------------------------------

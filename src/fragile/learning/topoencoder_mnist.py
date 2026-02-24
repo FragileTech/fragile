@@ -319,6 +319,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
         soft_equiv_soft_assign=config.soft_equiv_soft_assign,
         soft_equiv_temperature=config.soft_equiv_temperature,
         conv_backbone=config.conv_backbone,
+        conv_channels=config.conv_channels,
         img_channels=config.img_channels,
         img_size=config.img_size,
     )
@@ -728,6 +729,17 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             # Core losses
             recon_loss_a = F.mse_loss(recon_a, batch_X)
+            if config.conv_backbone and config.recon_grad_weight > 0:
+                # Gradient penalty: penalize blurry reconstructions
+                C, S = config.img_channels, config.img_size
+                x_img = batch_X.view(-1, C, S, S)
+                r_img = recon_a.view(-1, C, S, S)
+                dx_real = x_img[:, :, :, 1:] - x_img[:, :, :, :-1]
+                dx_fake = r_img[:, :, :, 1:] - r_img[:, :, :, :-1]
+                dy_real = x_img[:, :, 1:, :] - x_img[:, :, :-1, :]
+                dy_fake = r_img[:, :, 1:, :] - r_img[:, :, :-1, :]
+                grad_loss = F.mse_loss(dx_fake, dx_real) + F.mse_loss(dy_fake, dy_real)
+                recon_loss_a = recon_loss_a + config.recon_grad_weight * grad_loss
             entropy_value = compute_routing_entropy(enc_w)
             entropy_loss = math.log(config.num_charts) - entropy_value
             consistency = model_atlas.compute_consistency_loss(enc_w, dec_w)
@@ -870,7 +882,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
 
             # Total loss
             loss_a = (
-                recon_loss_a
+                config.recon_weight * recon_loss_a
                 + vq_loss_a
                 + config.entropy_weight * entropy_loss
                 + config.consistency_weight * consistency
@@ -1931,6 +1943,16 @@ def main():
         help="Encoder/decoder routing consistency weight (default: 0.1)",
     )
 
+    # Reconstruction
+    parser.add_argument(
+        "--recon_weight", type=float, default=1.0,
+        help="Reconstruction loss weight (default: 1.0)",
+    )
+    parser.add_argument(
+        "--recon_grad_weight", type=float, default=1.0,
+        help="Gradient penalty weight for sharp reconstructions (0 = disable, default: 1.0)",
+    )
+
     # Tier 1 losses
     parser.add_argument(
         "--variance_weight",
@@ -2194,6 +2216,12 @@ def main():
         help="Disable conv backbone, use FC layers for feature extraction/reconstruction",
     )
     parser.add_argument(
+        "--conv_channels",
+        type=int,
+        default=64,
+        help="Conv layer channel width (0 = use hidden_dim)",
+    )
+    parser.add_argument(
         "--img_channels",
         type=int,
         default=1,
@@ -2345,6 +2373,8 @@ def main():
         config.lr_min = args.lr_min
         config.window_eps_ground = args.window_eps_ground
         config.consistency_weight = args.consistency_weight
+        config.recon_weight = args.recon_weight
+        config.recon_grad_weight = args.recon_grad_weight
         config.variance_weight = args.variance_weight
         config.diversity_weight = args.diversity_weight
         config.separation_weight = args.separation_weight
@@ -2385,6 +2415,7 @@ def main():
         config.soft_equiv_l1_weight = args.soft_equiv_l1_weight
         config.soft_equiv_log_ratio_weight = args.soft_equiv_log_ratio_weight
         config.conv_backbone = not args.disable_conv
+        config.conv_channels = args.conv_channels
         config.img_channels = args.img_channels
         config.img_size = args.img_size
         config.baseline_attn = args.baseline_attn
@@ -2428,6 +2459,7 @@ def main():
             soft_equiv_l1_weight=args.soft_equiv_l1_weight,
             soft_equiv_log_ratio_weight=args.soft_equiv_log_ratio_weight,
             conv_backbone=not args.disable_conv,
+            conv_channels=args.conv_channels,
             img_channels=args.img_channels,
             img_size=args.img_size,
             baseline_attn=args.baseline_attn,
@@ -2447,6 +2479,8 @@ def main():
             # Loss weights
             entropy_weight=args.entropy_weight,
             consistency_weight=args.consistency_weight,
+            recon_weight=args.recon_weight,
+            recon_grad_weight=args.recon_grad_weight,
             variance_weight=args.variance_weight,
             diversity_weight=args.diversity_weight,
             separation_weight=args.separation_weight,
@@ -2516,6 +2550,7 @@ def main():
     print(f"  Total atlas codes: {config.num_charts * config.codes_per_chart}")
     print(f"  Standard VQ codes: {config.num_codes_standard}")
     print(f"  Conv backbone: {config.conv_backbone}")
+    print(f"  Conv channels: {config.conv_channels}")
     print(f"  Output dir: {config.output_dir}")
     print(f"  Save every: {config.save_every} epochs")
 

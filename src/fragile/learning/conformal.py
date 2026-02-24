@@ -41,6 +41,99 @@ def router_entropy(router_weights: np.ndarray) -> np.ndarray:
     return -np.sum(w * np.log(w), axis=1)
 
 
+def compute_tunneling_rate(
+    router_weights: np.ndarray,
+    chart_to_class: np.ndarray,
+    num_classes: int,
+) -> np.ndarray:
+    """Cross-class tunneling rate from router mass over chart-class pairs.
+
+    Args:
+        router_weights: Routing weights ``[N, N_c]`` from atlas encoder.
+        chart_to_class: Majority class per chart ``[N_c]``.
+        num_classes: Number of classes.
+
+    Returns:
+        Cross-class tunneling score for each sample in ``[N]``.
+    """
+    if len(chart_to_class) == 0:
+        return np.zeros(len(router_weights), dtype=float)
+
+    w = np.clip(router_weights, 0.0, 1.0)
+    classes = np.asarray(chart_to_class, dtype=int)
+    _ = num_classes
+    if w.shape[1] > len(classes):
+        classes = np.pad(classes, (0, w.shape[1] - len(classes)), constant_values=0)
+
+    cross_class = (classes[:, None] != classes[None, :]).astype(float)
+    return np.einsum("bi,ij,bj->b", w, cross_class, w)
+
+
+def euclidean_isolation(
+    z_geo: np.ndarray,
+    codebook: np.ndarray,
+    eps: float = 1e-7,
+) -> np.ndarray:
+    """Distance to nearest codebook prototype in latent Euclidean space.
+
+    This is the minimum Euclidean distance to any codebook atom.
+    """
+    if codebook.size == 0:
+        return np.zeros(len(z_geo), dtype=float)
+
+    x = np.asarray(z_geo, dtype=float)
+    code = np.asarray(codebook, dtype=float).reshape(-1, x.shape[1])
+    diff = x[:, None, :] - code[None, :, :]
+    dist = np.sqrt(np.sum(diff * diff, axis=2))
+    return np.min(dist, axis=1)
+
+
+def hyperbolic_knn_density(
+    z_geo: np.ndarray,
+    z_geo_train: np.ndarray,
+    k: int = 10,
+    eps: float = 1e-7,
+) -> np.ndarray:
+    """k-NN density proxy from hyperbolic Poincaré distance.
+
+    Returns the distance to the k-th nearest neighbor in the training set for each
+    sample. Larger values indicate lower local density (more outlier-like).
+    """
+    x = np.asarray(z_geo, dtype=np.float32)
+    train = np.asarray(z_geo_train, dtype=np.float32)
+    if x.size == 0 or train.size == 0:
+        return np.zeros(len(x), dtype=float)
+
+    n_train = train.shape[0]
+    k = int(k)
+    if n_train <= 1:
+        return np.zeros(len(x), dtype=float)
+    k = max(1, min(k, n_train - 1))
+
+    x_norm2 = np.clip(np.sum(x * x, axis=1), 0.0, 1.0 - eps)
+    t_norm2 = np.clip(np.sum(train * train, axis=1), 0.0, 1.0 - eps)
+    diff = x[:, None, :] - train[None, :, :]
+    dist_sq = np.sum(diff * diff, axis=2)
+    denom = (1.0 - x_norm2)[:, None] * (1.0 - t_norm2)[None, :]
+    arg = 1.0 + 2.0 * dist_sq / np.clip(denom, eps, None)
+    dist = np.arccosh(np.clip(arg, 1.0 + eps, None))
+    return np.partition(dist, k, axis=1)[:, k]
+
+
+def geodesic_isolation(
+    z_geo: np.ndarray,
+    codebook: np.ndarray,
+    eps: float = 1e-7,
+) -> np.ndarray:
+    """Backward-compatible alias for ``euclidean_isolation``.
+
+    Historically this function used a Poincaré-geodesic distance, but for OOD scoring
+    this should be radius-independent to avoid confounding with ``lambda``.
+    """
+    _ = eps
+    return euclidean_isolation(z_geo, codebook)
+
+
 def radial_bins(z_geo: np.ndarray, n_bins: int = 15) -> tuple[np.ndarray, np.ndarray]:
     """Assign samples to radial shells by |z|.
 
@@ -612,6 +705,67 @@ def format_class_coverage_table(data: dict) -> str:
     return "\n".join(lines)
 
 
+def format_coverage_method_comparison(
+    method_specs: dict[str, dict],
+    class_coverage_data: dict[str, list[dict]],
+    radius_coverage_data: dict | None = None,
+) -> str:
+    """Format a comparison table that highlights coverage method structure.
+
+    Args:
+        method_specs: Ordered mapping where key is the display method name and value
+            has ``conditions``, ``groups`` and ``needs_labels`` fields.
+            Optional ``class_coverage_key`` can map to a column key in
+            ``class_coverage_data`` when it differs from the display name.
+            Optional ``radius_coverage_key`` can map to a method key in
+            ``radius_coverage_data`` when it differs from the display name.
+        class_coverage_data: Output from ``coverage_by_class`` with per-class
+            coverage dictionaries.
+        radius_coverage_data: Output from ``conditional_coverage_by_radius`` with
+            per-radius coverage data.
+    """
+    lines = [
+        "| Method | Conditions on | Groups | Needs labels? | Worst-class gap | Worst-radius gap |",
+        "|--------|---------------|--------|---------------|-----------------|------------------|",
+    ]
+    radial_methods = radius_coverage_data.get("methods", {}) if radius_coverage_data else {}
+
+    for name, spec in method_specs.items():
+        keyspec = spec.get("class_coverage_key", name)
+        cov_rows = class_coverage_data.get(keyspec, [])
+        vals = [
+            item.get("coverage", np.nan)
+            for item in cov_rows
+            if not np.isnan(item.get("coverage", np.nan))
+        ]
+        if vals:
+            gap = float(np.nanmax(vals) - np.nanmin(vals))
+            class_gap_str = f"{gap:.1%}"
+        else:
+            class_gap_str = "—"
+
+        radius_key = spec.get("radius_coverage_key", name)
+        rad_rows = radial_methods.get(radius_key, {}).get("coverage", [])
+        if len(rad_rows) >= 2:
+            rad_vals = [float(v) for v in rad_rows if not np.isnan(float(v))]
+            if len(rad_vals) >= 2:
+                rad_gap = float(np.nanmax(rad_vals) - np.nanmin(rad_vals))
+                radius_gap_str = f"{rad_gap:.1%}"
+            else:
+                radius_gap_str = "—"
+        elif len(rad_rows) == 1:
+            radius_gap_str = "—"
+        else:
+            radius_gap_str = "—"
+
+        needs = spec.get("needs_labels", False)
+        needs_str = "Yes" if needs else "No"
+        lines.append(
+            f"| {name} | {spec['conditions']} | {spec['groups']} | {needs_str} | {class_gap_str} | {radius_gap_str} |"
+        )
+    return "\n".join(lines)
+
+
 # ---------------------------------------------------------------------------
 # Analysis 6: OOD Detection
 # ---------------------------------------------------------------------------
@@ -679,6 +833,10 @@ def plot_ood_roc(
         "1/lambda": "#4c78a8",
         "router_entropy": "#54a24b",
         "router_overlap": "#f58518",
+        "tunneling_rate": "#b07aa1",
+        "geodesic_isolation": "#9b59b6",
+        "hyperbolic_knn_density": "#e8a838",
+        "combined": "#34495e",
     }
     plots = []
     for name in id_signals:
@@ -872,12 +1030,15 @@ def format_ablation_table(data: dict) -> str:
     """Format ablation results as markdown."""
     lines = [
         f"**Logistic Regression AUC: {data['auc']:.3f}**\n",
-        "| Feature | Coefficient | |Importance| |",
-        "|---------|------------|-------------|",
+        "| Feature | Coefficient | Importance |",
+        "|--------|-------------|------------|",
     ]
-    for name, coeff, imp in zip(
-        data["feature_names"], data["coefficients"], data["importances"],
-    ):
+    rows = sorted(
+        zip(data["feature_names"], data["coefficients"], data["importances"]),
+        key=lambda t: abs(t[2]),
+        reverse=True,
+    )
+    for name, coeff, imp in rows:
         lines.append(f"| {name} | {coeff:+.3f} | {imp:.3f} |")
     return "\n".join(lines)
 

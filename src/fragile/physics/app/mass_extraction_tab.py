@@ -283,23 +283,23 @@ _CHANNEL_PALETTE = [
 # Default per-channel tmax values (0 = full range).
 # Channels not listed fall back to the global ``MassExtractionSettings.tmax``.
 _DEFAULT_CHANNEL_TMAX: dict[str, int] = {
-    "pseudoscalar": 22,
-    "scalar": 16,
-    "nucleon": 10,
-    "vector": 14,
-    "axial_vector": 12,
-    "glueball": 8,
+    "pseudoscalar": 66,
+    "scalar": 24,
+    "nucleon": 14,
+    "vector": 20,
+    "axial_vector": 20,
+    "glueball": 13,
 }
 
 # Default per-channel fit/prior overrides.
 # Channels not listed fall back to global ``MassExtractionSettings`` values.
 _DEFAULT_CHANNEL_FIT: dict[str, dict[str, Any]] = {
-    "pseudoscalar": {"dE_ground": "0.024(15)", "nexp": 2, "tmin": 5},
-    "scalar": {"dE_ground": "0.09(5)", "nexp": 2, "tmin": 5},
-    "nucleon": {"dE_ground": "0.16(10)", "nexp": 2, "tmin": 3},
-    "vector": {"dE_ground": "0.13(8)", "nexp": 2, "tmin": 3},
-    "axial_vector": {"dE_ground": "0.22(15)", "nexp": 2, "tmin": 6},
-    "glueball": {"dE_ground": "0.29(10)", "nexp": 2, "tmin": 2},
+    "pseudoscalar": {"dE_ground": "0.024(15)", "nexp": 2, "tmin": 1},
+    "scalar": {"dE_ground": "0.09(5)", "nexp": 2, "tmin": 2},
+    "nucleon": {"dE_ground": "0.16(10)", "nexp": 2, "tmin": 2},
+    "vector": {"dE_ground": "0.13(8)", "nexp": 2, "tmin": 2},
+    "axial_vector": {"dE_ground": "0.4(4)", "nexp": 2, "tmin": 1, "use_fastfit_seeding": False},
+    "glueball": {"dE_ground": "0.29(10)", "nexp": 2, "tmin": 1},
     "tensor": {"dE_ground": "0.5(5)", "nexp": 2, "tmin": 2},
 }
 
@@ -1330,7 +1330,7 @@ def build_mass_extraction_tab(
                 )
                 w["use_fastfit_seeding"] = pn.widgets.Checkbox(
                     name="fastfit seed",
-                    value=bool(settings.use_fastfit_seeding),
+                    value=defaults.get("use_fastfit_seeding", bool(settings.use_fastfit_seeding)),
                 )
                 channel_fit_widgets[g.name] = w
                 fit_widget_groups.append(
