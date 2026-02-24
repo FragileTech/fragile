@@ -17,6 +17,7 @@ from fragile.physics.app.electroweak_correlators import build_electroweak_correl
 from fragile.physics.app.electroweak_mass_tab import build_electroweak_mass_tab
 from fragile.physics.app.gravity import build_holographic_principle_tab
 from fragile.physics.app.mass_extraction_tab import build_mass_extraction_tab
+from fragile.physics.app.strong_force_aic_tab import build_strong_force_aic_tab
 from fragile.physics.app.simulation import SimulationTab
 from fragile.physics.fractal_gas.history import RunHistory
 
@@ -108,6 +109,8 @@ def create_app() -> pn.template.FastListTemplate:
             "electroweak_correlator_output": None,
             "companion_mass_output": None,
             "electroweak_mass_output": None,
+            "strong_force_aic_output": None,
+            "strong_force_aic_multiscale_output": None,
         }
 
         algorithm_section = build_algorithm_diagnostics_tab(state)
@@ -141,11 +144,18 @@ def create_app() -> pn.template.FastListTemplate:
             button_label="Extract Masses",
             source_label="Companion Correlators",
             computation_label="mass extraction",
+            aic_state_key="strong_force_aic_output",
         )
 
         ew_mass_section = build_electroweak_mass_tab(
             state=state,
             run_tab_computation=_run_tab_computation,
+        )
+
+        strong_force_aic_section = build_strong_force_aic_tab(
+            state=state,
+            run_tab_computation=_run_tab_computation,
+            on_aic_computed=lambda: companion_mass_section.on_aic_ready(),
         )
 
         # Wire companion correlator completion to enable mass button.
@@ -155,6 +165,7 @@ def create_app() -> pn.template.FastListTemplate:
             _orig_companion_on_run(event)
             if state["companion_correlator_output"] is not None:
                 companion_mass_section.on_correlators_ready()
+                strong_force_aic_section.on_correlators_ready()
 
         companion_section.run_button.on_click(_on_companion_run)
 
@@ -187,6 +198,7 @@ def create_app() -> pn.template.FastListTemplate:
             ew_correlator_section.on_history_changed(defer)
             companion_mass_section.on_history_changed(defer)
             ew_mass_section.on_history_changed(defer)
+            strong_force_aic_section.on_history_changed(defer)
 
         sim_tab.on_history_changed(_on_history_changed)
         holographic_section.fractal_set_run_button.on_click(holographic_section.on_run_fractal_set)
@@ -233,6 +245,7 @@ def create_app() -> pn.template.FastListTemplate:
                 "EW Correlators",
                 "Mass Extraction",
                 "EW Mass",
+                "Strong Force AIC",
             ]
             tabs_widget = pn.Tabs(
                 ("Simulation", sim_tab.build_tab()),
@@ -243,6 +256,7 @@ def create_app() -> pn.template.FastListTemplate:
                 ("Electroweak Correlators", ew_correlator_section.tab),
                 ("Mass Extraction", companion_mass_section.tab),
                 ("Electroweak Mass", ew_mass_section.tab),
+                ("Strong Force AIC", strong_force_aic_section.tab),
                 dynamic=True,
             )
 

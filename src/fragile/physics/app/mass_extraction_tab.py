@@ -7,6 +7,7 @@ effective-mass plots, and correlator-vs-fit overlays.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -45,6 +46,7 @@ class MassExtractionSection:
     on_run: Callable[[Any], None]
     on_history_changed: Callable[[bool], None]
     on_correlators_ready: Callable[[], None]
+    on_aic_ready: Callable[[], None]
 
 
 # ---------------------------------------------------------------------------
@@ -779,6 +781,7 @@ def build_mass_extraction_tab(
     button_label: str = "Extract Strong Masses",
     source_label: str = "Strong Correlators",
     computation_label: str = "strong force mass extraction",
+    aic_state_key: str | None = None,
 ) -> MassExtractionSection:
     """Build the Mass Extraction tab with callbacks."""
 
@@ -1414,6 +1417,33 @@ def build_mass_extraction_tab(
         sizing_mode="stretch_both",
     )
 
+    def on_aic_ready() -> None:
+        """Seed per-channel dE_ground priors from AIC mass output."""
+        if aic_state_key is None:
+            return
+        aic_output = state.get(aic_state_key)
+        if not aic_output:
+            return
+        seeded = []
+        for g_name, w in channel_fit_widgets.items():
+            result = aic_output.get(g_name)
+            if result is None:
+                continue
+            mass_fit = getattr(result, "mass_fit", None) or {}
+            mass = float(mass_fit.get("mass", 0.0))
+            if mass > 0 and math.isfinite(mass):
+                dE_str = str(gvar.gvar(mass, mass))
+                if "dE_ground" in w:
+                    w["dE_ground"].value = dE_str
+                if "use_fastfit_seeding" in w:
+                    w["use_fastfit_seeding"].value = False
+                seeded.append(g_name)
+        if seeded:
+            status.object = (
+                f"**{tab_label}:** AIC priors seeded for {', '.join(seeded)}. "
+                f"Click {button_label}."
+            )
+
     return MassExtractionSection(
         tab=tab,
         status=status,
@@ -1421,4 +1451,5 @@ def build_mass_extraction_tab(
         on_run=on_run,
         on_history_changed=on_history_changed,
         on_correlators_ready=on_correlators_ready,
+        on_aic_ready=on_aic_ready,
     )

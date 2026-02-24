@@ -86,10 +86,14 @@ SCALAR_MODES = ("standard", "score_directed", "score_weighted", "abs2_vacsub")
 PSEUDOSCALAR_MODES = (
     "standard",
     "score_weighted",
+    "standard_raw",
+    "score_weighted_raw",
     "fitness_pseudoscalar",
     "fitness_scalar_variance",
     "fitness_axial",
 )
+# Meson modes whose correlator should use raw (not vacuum-subtracted) C(lag).
+_RAW_PSEUDOSCALAR_SUFFIX = "_raw"
 FITNESS_PSEUDOSCALAR_MODES = frozenset({
     "fitness_pseudoscalar",
     "fitness_scalar_variance",
@@ -566,10 +570,12 @@ def build_companion_correlator_tab(
             fitness_ps_modes = [m for m in ps_modes if m in FITNESS_PSEUDOSCALAR_MODES]
 
             for mode in meson_ps_modes:
-                out = _get_meson_output(mode)
+                is_raw = mode.endswith(_RAW_PSEUDOSCALAR_SUFFIX)
+                base_mode = mode[: -len(_RAW_PSEUDOSCALAR_SUFFIX)] if is_raw else mode
+                out = _get_meson_output(base_mode)
                 corrs, ops = extract_meson_phase(
                     out,
-                    use_connected=use_connected,
+                    use_connected=not is_raw and use_connected,
                     prefix="",
                 )
                 for key, val in corrs.items():
