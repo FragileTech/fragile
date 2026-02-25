@@ -161,21 +161,15 @@ def _build_gamma_matrices(dim: int, device: torch.device, dtype: torch.dtype) ->
     gamma["5"] = gamma5_diag
     gamma["5_matrix"] = torch.diag(gamma5_diag)
 
+    # γ_μ matrices (vector) — purely imaginary, anti-symmetric (Levi-Civita)
     gamma_mu_list = []
     for mu in range(dim):
         gamma_mu = torch.zeros(dim, dim, device=device, dtype=dtype)
-        gamma_mu[mu, mu] = 1.0
-        if mu > 0:
-            gamma_mu[mu, 0] = 0.5j
-            gamma_mu[0, mu] = -0.5j
+        nu = (mu + 1) % dim
+        gamma_mu[mu, nu] = 1.0j
+        gamma_mu[nu, mu] = -1.0j
         gamma_mu_list.append(gamma_mu)
     gamma["mu"] = torch.stack(gamma_mu_list, dim=0)
-
-    gamma_5mu_list = []
-    for mu in range(dim):
-        gamma_5mu = gamma["5_matrix"] @ gamma_mu_list[mu]
-        gamma_5mu_list.append(gamma_5mu)
-    gamma["5mu"] = torch.stack(gamma_5mu_list, dim=0)
 
     sigma_list = []
     for mu in range(dim):
@@ -280,15 +274,15 @@ def _apply_projection(
         result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_mu, color_j)
         return result.mean(dim=-1).real
     if channel == "axial_vector":
-        gamma_5mu = gamma["5mu"].to(color_i.device, dtype=color_i.dtype)
-        result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_5mu, color_j)
-        return result.mean(dim=-1).real
+        gamma_mu = gamma["mu"].to(color_i.device, dtype=color_i.dtype)
+        result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_mu, color_j)
+        return result.mean(dim=-1).imag
     if channel == "tensor":
         sigma = gamma["sigma"].to(color_i.device, dtype=color_i.dtype)
         if sigma.shape[0] == 0:
             return torch.zeros(color_i.shape[:-1], device=color_i.device)
         result = torch.einsum("...i,pij,...j->...p", color_i.conj(), sigma, color_j)
-        return result.mean(dim=-1).real
+        return result.mean(dim=-1).imag
     raise ValueError(f"Unsupported channel projection: {channel}")
 
 

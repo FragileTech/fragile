@@ -62,12 +62,16 @@ class GlueballOperatorConfig(ChannelConfigBase):
 
 @dataclass
 class TensorOperatorConfig(ChannelConfigBase):
-    """Configuration for spin-2 traceless tensor operators."""
+    """Configuration for spin-2 tensor operators (bilinear sigma_{mu,nu} projection)."""
 
-    position_dims: tuple[int, int, int] | None = None
-    momentum_axis: int = 0
-    momentum_mode_max: int = 4
-    projection_length: float | None = None
+    pass
+
+
+@dataclass
+class DiracOperatorConfig(ChannelConfigBase):
+    """Configuration for Dirac spinor bilinear operators."""
+
+    pass
 
 
 @dataclass

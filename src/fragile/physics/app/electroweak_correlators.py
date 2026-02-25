@@ -13,6 +13,7 @@ from typing import Any, Callable
 import pandas as pd
 import panel as pn
 import param
+import torch
 
 from fragile.physics.app.correlator_plots import (
     build_correlator_table,
@@ -22,6 +23,7 @@ from fragile.physics.app.correlator_plots import (
     group_electroweak_correlator_keys,
 )
 from fragile.physics.electroweak.electroweak_channels import (
+    CHIRALITY_CHANNELS,
     compute_electroweak_channels,
     ElectroweakChannelConfig,
     ElectroweakChannelOutput,
@@ -76,6 +78,27 @@ EW_PARITY_VELOCITY_CHANNELS: tuple[str, ...] = (
     "velocity_norm_resister",
     "velocity_norm_persister",
 )
+EW_CHIRALITY_CHANNELS: tuple[str, ...] = CHIRALITY_CHANNELS
+
+EW_DIRAC_SPINOR_CHANNELS: tuple[str, ...] = (
+    "j_vector_L",
+    "j_vector_R",
+    "j_vector_V",
+    "o_scalar_L",
+    "o_scalar_R",
+    "j_vector_walkerL",
+    "j_vector_walkerR",
+    "j_vector_L_walkerL",
+    "j_vector_R_walkerR",
+    "o_yukawa_LR",
+    "o_yukawa_RL",
+    "j_vector_u1",
+    "j_vector_L_u1",
+    "j_vector_L_su2",
+    "j_vector_R_su2",
+    "parity_violation_dirac",
+    "parity_violation_walker",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -91,6 +114,150 @@ def _electroweak_output_to_pipeline_result(ew_output: ElectroweakChannelOutput) 
         prepared_data=None,
         scales=None,
     )
+
+
+# ---------------------------------------------------------------------------
+# Dirac spinor computation helper
+# ---------------------------------------------------------------------------
+
+
+def _compute_dirac_spinor_channels(
+    *,
+    history: RunHistory,
+    settings: "ElectroweakCorrelatorSettings",
+    selected_channels: list[str],
+    result: PipelineResult,
+) -> int:
+    """Compute EW Dirac spinor channels and merge into *result* in-place.
+
+    Returns the number of new channels added.
+    """
+    from fragile.physics.electroweak.chirality import classify_walkers_vectorized
+    from fragile.physics.electroweak.electroweak_spinors import (
+        compute_electroweak_spinor_operators,
+    )
+    from fragile.physics.qft_utils import _fft_correlator_batched, resolve_frame_indices
+    from fragile.physics.qft_utils.color_states import (
+        compute_color_states_batch,
+        estimate_ell0_auto,
+    )
+
+    frame_indices = resolve_frame_indices(
+        history=history,
+        warmup_fraction=float(settings.warmup_fraction),
+        end_fraction=float(settings.end_fraction),
+    )
+    if not frame_indices:
+        return 0
+
+    start_idx = frame_indices[0]
+    end_idx = frame_indices[-1] + 1
+    device = history.fitness.device
+
+    h_eff = float(max(settings.h_eff, 1e-8))
+    mass_val = float(max(settings.mass, 1e-8))
+    ell0_val = (
+        float(settings.ell0)
+        if settings.ell0 is not None
+        else float(estimate_ell0_auto(history, settings.ell0_method))
+    )
+    if ell0_val <= 0:
+        return 0
+
+    # Compute color states
+    color, color_valid = compute_color_states_batch(
+        history=history,
+        start_idx=start_idx,
+        h_eff=h_eff,
+        mass=mass_val,
+        ell0=ell0_val,
+        end_idx=end_idx,
+    )
+    if color.shape[-1] != 3:
+        return 0
+
+    color_valid = color_valid.to(dtype=torch.bool, device=device)
+
+    # Companions
+    companions_clone = torch.as_tensor(
+        history.companions_clone[start_idx - 1 : end_idx - 1],
+        dtype=torch.long,
+        device=device,
+    )
+    companions_distance = torch.as_tensor(
+        history.companions_distance[start_idx - 1 : end_idx - 1],
+        dtype=torch.long,
+        device=device,
+    )
+
+    # Alive, fitness, will_clone for walker classification
+    alive_mask = torch.as_tensor(
+        history.alive_mask[start_idx - 1 : end_idx - 1],
+        dtype=torch.bool,
+        device=device,
+    )
+    fitness = torch.as_tensor(
+        history.fitness[start_idx - 1 : end_idx - 1],
+        dtype=torch.float32,
+        device=device,
+    )
+    will_clone = torch.as_tensor(
+        history.will_clone[start_idx - 1 : end_idx - 1],
+        dtype=torch.bool,
+        device=device,
+    )
+
+    T = color.shape[0]
+    N = color.shape[1]
+
+    # Classify walkers
+    classification = classify_walkers_vectorized(
+        will_clone=will_clone,
+        companions_clone=companions_clone,
+        fitness=fitness,
+        alive=alive_mask,
+    )
+
+    # Build sample/neighbor indices
+    sample_indices = torch.arange(N, device=device).unsqueeze(0).expand(T, -1)
+    neighbor_indices = companions_distance.unsqueeze(-1)  # [T, N, 1]
+
+    # Compute electroweak spinor operators
+    epsilon_clone = (
+        float(settings.epsilon_clone) if settings.epsilon_clone is not None else 1e-8
+    )
+    ew_spinor = compute_electroweak_spinor_operators(
+        color=color,
+        color_valid=color_valid,
+        sample_indices=sample_indices,
+        neighbor_indices=neighbor_indices,
+        alive=alive_mask,
+        fitness=fitness,
+        walker_chi=classification.chi,
+        h_eff=h_eff,
+        epsilon_clone=epsilon_clone,
+    )
+
+    # FFT each selected operator -> correlator and merge
+    max_lag = int(settings.max_lag)
+    use_connected = bool(settings.use_connected)
+    count = 0
+
+    # Map channel names to ElectroweakSpinorOutput fields
+    for ch_name in selected_channels:
+        op_series = getattr(ew_spinor, ch_name, None)
+        if op_series is None:
+            continue
+        result.operators[ch_name] = op_series
+        corr = _fft_correlator_batched(
+            op_series.unsqueeze(0),
+            max_lag=max_lag,
+            use_connected=use_connected,
+        )
+        result.correlators[ch_name] = corr.squeeze(0)
+        count += 1
+
+    return count
 
 
 # ---------------------------------------------------------------------------
@@ -125,6 +292,10 @@ class ElectroweakCorrelatorSettings(param.Parameterized):
     # -- Correlator --
     max_lag = param.Integer(default=40, bounds=(1, 500))
     use_connected = param.Boolean(default=True)
+    cloning_frames_only = param.Boolean(
+        default=True,
+        doc="Only use frames where cloning occurred (e.g. every clone_every_n steps).",
+    )
 
     # -- Electroweak-specific --
     epsilon_d = param.Number(
@@ -145,10 +316,21 @@ class ElectroweakCorrelatorSettings(param.Parameterized):
         objects=("standard", "score_directed"),
     )
 
+    # -- Color state parameters (needed for Dirac spinor path) --
+    mass = param.Number(default=1.0, bounds=(1e-6, None))
+    ell0 = param.Number(default=None, bounds=(1e-8, None), allow_None=True)
+    ell0_method = param.ObjectSelector(
+        default="companion",
+        objects=("companion", "geodesic_edges", "euclidean_edges"),
+        doc="Automatic ell0 estimation method when ell0 is blank.",
+    )
+
     # -- Family toggles --
     enable_directed_variants = param.Boolean(default=True)
     enable_walker_type_split = param.Boolean(default=False)
     enable_parity_velocity = param.Boolean(default=True)
+    enable_chirality = param.Boolean(default=True)
+    enable_dirac_spinors = param.Boolean(default=False)
 
 
 # ---------------------------------------------------------------------------
@@ -213,6 +395,7 @@ def build_electroweak_correlator_tab(
             "h_eff",
             "max_lag",
             "use_connected",
+            "cloning_frames_only",
         ],
         show_name=False,
         default_layout=type("CommonGrid", (pn.GridBox,), {"ncols": 2}),
@@ -228,6 +411,11 @@ def build_electroweak_correlator_tab(
             "enable_directed_variants",
             "enable_walker_type_split",
             "enable_parity_velocity",
+            "enable_chirality",
+            "enable_dirac_spinors",
+            "mass",
+            "ell0",
+            "ell0_method",
         ],
         show_name=False,
         default_layout=type("EWGrid", (pn.GridBox,), {"ncols": 2}),
@@ -283,8 +471,22 @@ def build_electroweak_correlator_tab(
         size=len(EW_PARITY_VELOCITY_CHANNELS),
         sizing_mode="stretch_width",
     )
+    chirality_selector = pn.widgets.MultiSelect(
+        name="Chirality",
+        options=list(EW_CHIRALITY_CHANNELS),
+        value=list(EW_CHIRALITY_CHANNELS),
+        size=len(EW_CHIRALITY_CHANNELS),
+        sizing_mode="stretch_width",
+    )
+    dirac_spinor_selector = pn.widgets.MultiSelect(
+        name="Dirac Spinor",
+        options=list(EW_DIRAC_SPINOR_CHANNELS),
+        value=list(EW_DIRAC_SPINOR_CHANNELS),
+        size=min(10, len(EW_DIRAC_SPINOR_CHANNELS)),
+        sizing_mode="stretch_width",
+    )
 
-    # Gate visibility of directed/walker-type/parity selectors by their toggles
+    # Gate visibility of directed/walker-type/parity/chirality/dirac selectors by their toggles
     def _on_directed_toggle(event):
         su2_directed_selector.visible = event.new
 
@@ -294,14 +496,24 @@ def build_electroweak_correlator_tab(
     def _on_parity_toggle(event):
         parity_velocity_selector.visible = event.new
 
+    def _on_chirality_toggle(event):
+        chirality_selector.visible = event.new
+
+    def _on_dirac_spinor_toggle(event):
+        dirac_spinor_selector.visible = event.new
+
     settings.param.watch(_on_directed_toggle, "enable_directed_variants")
     settings.param.watch(_on_walker_type_toggle, "enable_walker_type_split")
     settings.param.watch(_on_parity_toggle, "enable_parity_velocity")
+    settings.param.watch(_on_chirality_toggle, "enable_chirality")
+    settings.param.watch(_on_dirac_spinor_toggle, "enable_dirac_spinors")
 
     # Initial visibility
     su2_directed_selector.visible = settings.enable_directed_variants
     su2_walker_type_selector.visible = settings.enable_walker_type_split
     parity_velocity_selector.visible = settings.enable_parity_velocity
+    chirality_selector.visible = settings.enable_chirality
+    dirac_spinor_selector.visible = settings.enable_dirac_spinors
 
     # -- Refresh plots helper --
 
@@ -362,6 +574,8 @@ def build_electroweak_correlator_tab(
             selected_channels.extend(symmetry_breaking_selector.value)
             if settings.enable_parity_velocity:
                 selected_channels.extend(parity_velocity_selector.value)
+            if settings.enable_chirality:
+                selected_channels.extend(chirality_selector.value)
 
             if not selected_channels:
                 status.object = "**Error:** No channels selected."
@@ -373,6 +587,7 @@ def build_electroweak_correlator_tab(
                 h_eff=float(settings.h_eff),
                 max_lag=int(settings.max_lag),
                 use_connected=bool(settings.use_connected),
+                cloning_frames_only=bool(settings.cloning_frames_only),
                 epsilon_d=(float(settings.epsilon_d) if settings.epsilon_d is not None else None),
                 epsilon_clone=(
                     float(settings.epsilon_clone) if settings.epsilon_clone is not None else None
@@ -386,13 +601,33 @@ def build_electroweak_correlator_tab(
                 history, channels=selected_channels, config=cfg
             )
             result = _electroweak_output_to_pipeline_result(ew_output)
+
+            # -- Dirac spinor path (if enabled) --
+            dirac_extra_count = 0
+            if settings.enable_dirac_spinors:
+                dirac_selected = [str(v) for v in dirac_spinor_selector.value]
+                if dirac_selected:
+                    try:
+                        dirac_extra_count = _compute_dirac_spinor_channels(
+                            history=history,
+                            settings=settings,
+                            selected_channels=dirac_selected,
+                            result=result,
+                        )
+                    except Exception as exc:
+                        status.object = (
+                            f"**Warning:** EW channels OK but Dirac spinor failed: {exc}"
+                        )
+
             state["electroweak_correlator_output"] = result
 
             _refresh_overlay()
 
             n_channels = len(result.correlators)
+            dirac_msg = f" + {dirac_extra_count} spinor" if dirac_extra_count else ""
             status.object = (
-                f"**Complete:** {n_channels} correlators " f"({ew_output.n_valid_frames} frames)."
+                f"**Complete:** {n_channels} correlators{dirac_msg} "
+                f"({ew_output.n_valid_frames} frames)."
             )
 
         run_tab_computation(
@@ -432,6 +667,11 @@ def build_electroweak_correlator_tab(
         pn.Row(
             symmetry_breaking_selector,
             parity_velocity_selector,
+            chirality_selector,
+            sizing_mode="stretch_width",
+        ),
+        pn.Row(
+            dirac_spinor_selector,
             sizing_mode="stretch_width",
         ),
         sizing_mode="stretch_width",

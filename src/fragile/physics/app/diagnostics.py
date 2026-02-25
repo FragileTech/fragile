@@ -17,6 +17,17 @@ from fragile.physics.app.coupling_diagnostics import (
     compute_coupling_diagnostics,
     CouplingDiagnosticsConfig,
 )
+from fragile.physics.app.heff_sweep import (
+    CRITERION_LABELS,
+    compute_heff_sweep,
+    HeffSweepConfig,
+    build_heff_sweep_primary_plot,
+    build_heff_sweep_secondary_plot,
+    build_heff_sweep_acf_plot,
+    build_heff_sweep_ratios_plot,
+    build_heff_sweep_table,
+    build_heff_sweep_summary_text,
+)
 from fragile.physics.fractal_gas.history import RunHistory
 
 
@@ -97,6 +108,35 @@ class CouplingDiagnosticsSettings(param.Parameterized):
         default=1e-12,
         bounds=(0.0, None),
         doc="Minimum |inner product| for valid pair contributions.",
+    )
+    h_eff_sweep_min = param.Number(
+        default=0.01,
+        bounds=(1e-8, None),
+        doc="Minimum h_eff for parameter sweep.",
+    )
+    h_eff_sweep_max = param.Number(
+        default=10.0,
+        bounds=(1e-8, None),
+        doc="Maximum h_eff for parameter sweep.",
+    )
+    n_sweep_points = param.Integer(
+        default=30,
+        bounds=(3, 200),
+        doc="Number of h_eff values to sweep.",
+    )
+    sweep_log_scale = param.Boolean(
+        default=True,
+        doc="Use logarithmic spacing for h_eff sweep.",
+    )
+    sweep_criterion = param.ObjectSelector(
+        default="variance_ratio",
+        objects=("variance_ratio", "mean_amplitude_ratio", "r_circ"),
+        doc=(
+            "Criterion to maximize for optimal h_eff selection: "
+            "variance_ratio = Var(Im)/Var(Re) (chiral susceptibility), "
+            "mean_amplitude_ratio = |pseudoscalar|/|scalar| (zero-momentum), "
+            "r_circ = phase concentration."
+        ),
     )
     enable_kernel_diagnostics = param.Boolean(
         default=True,
@@ -194,6 +234,13 @@ class _CouplingDiagnosticsWidgets:
     wilson_t2e_plot: pn.pane.HoloViews
     wilson_derivative_plot: pn.pane.HoloViews
     wilson_summary: pn.pane.Markdown
+    sweep_summary: pn.pane.Markdown
+    sweep_primary_plot: pn.pane.HoloViews
+    sweep_secondary_plot: pn.pane.HoloViews
+    sweep_acf_plot: pn.pane.HoloViews
+    sweep_ratios_plot: pn.pane.HoloViews
+    sweep_table: pn.widgets.Tabulator
+    sweep_optimal_display: pn.pane.Markdown
 
 
 def _build_coupling_diagnostics_settings_panel(
@@ -211,6 +258,11 @@ def _build_coupling_diagnostics_settings_panel(
             "pair_weighting",
             "color_dims_spec",
             "eps",
+            "h_eff_sweep_min",
+            "h_eff_sweep_max",
+            "n_sweep_points",
+            "sweep_log_scale",
+            "sweep_criterion",
             "enable_kernel_diagnostics",
             "edge_weight_mode",
             "kernel_distance_method",
@@ -282,6 +334,26 @@ def _build_coupling_diagnostics_widgets() -> _CouplingDiagnosticsWidgets:
         sizing_mode="stretch_width",
     )
 
+    sweep_summary = pn.pane.Markdown(
+        "_Run h_eff sweep to populate._",
+        sizing_mode="stretch_width",
+    )
+    sweep_primary_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+    sweep_secondary_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+    sweep_acf_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+    sweep_ratios_plot = pn.pane.HoloViews(sizing_mode="stretch_width", linked_axes=False)
+    sweep_table = pn.widgets.Tabulator(
+        pd.DataFrame(),
+        pagination="remote",
+        page_size=15,
+        show_index=False,
+        sizing_mode="stretch_width",
+    )
+    sweep_optimal_display = pn.pane.Markdown(
+        "",
+        sizing_mode="stretch_width",
+    )
+
     _set_plot_placeholders(
         phase_plot,
         regime_plot,
@@ -292,6 +364,18 @@ def _build_coupling_diagnostics_widgets() -> _CouplingDiagnosticsWidgets:
         wilson_flow_plot,
         wilson_t2e_plot,
         wilson_derivative_plot,
+    )
+    sweep_primary_plot.object = _algorithm_placeholder_plot(
+        "Run h_eff sweep to show variance ratio curve."
+    )
+    sweep_secondary_plot.object = _algorithm_placeholder_plot(
+        "Run h_eff sweep to show regime metrics."
+    )
+    sweep_acf_plot.object = _algorithm_placeholder_plot(
+        "Run h_eff sweep to show channel autocorrelations."
+    )
+    sweep_ratios_plot.object = _algorithm_placeholder_plot(
+        "Run h_eff sweep to show Im/Re channel ratios."
     )
 
     return _CouplingDiagnosticsWidgets(
@@ -310,6 +394,13 @@ def _build_coupling_diagnostics_widgets() -> _CouplingDiagnosticsWidgets:
         wilson_t2e_plot=wilson_t2e_plot,
         wilson_derivative_plot=wilson_derivative_plot,
         wilson_summary=wilson_summary,
+        sweep_summary=sweep_summary,
+        sweep_primary_plot=sweep_primary_plot,
+        sweep_secondary_plot=sweep_secondary_plot,
+        sweep_acf_plot=sweep_acf_plot,
+        sweep_ratios_plot=sweep_ratios_plot,
+        sweep_table=sweep_table,
+        sweep_optimal_display=sweep_optimal_display,
     )
 
 
@@ -897,12 +988,37 @@ def _make_status_text(output: Any) -> str:
     )
 
 
+def _build_heff_sweep_config(
+    settings: CouplingDiagnosticsSettings,
+    history_d: int,
+) -> HeffSweepConfig:
+    color_dims = _parse_dims_spec(settings.color_dims_spec, history_d)
+    return HeffSweepConfig(
+        h_eff_min=float(settings.h_eff_sweep_min),
+        h_eff_max=float(settings.h_eff_sweep_max),
+        n_points=int(settings.n_sweep_points),
+        log_scale=bool(settings.sweep_log_scale),
+        criterion=str(settings.sweep_criterion),
+        warmup_fraction=float(settings.simulation_range[0]),
+        end_fraction=float(settings.simulation_range[1]),
+        mass=float(settings.mass),
+        ell0=float(settings.ell0) if settings.ell0 is not None else None,
+        ell0_method=str(settings.ell0_method),
+        color_dims=tuple(color_dims) if color_dims is not None else None,
+        companion_topology=str(settings.companion_topology),
+        pair_weighting=str(settings.pair_weighting),
+        eps=float(settings.eps),
+    )
+
+
 def _build_layout(
     status: pn.pane.Markdown,
     settings_panel: pn.Param,
     run_button: pn.widgets.Button,
     run_note: pn.pane.Alert,
     widgets: _CouplingDiagnosticsWidgets,
+    sweep_button: pn.widgets.Button,
+    apply_optimal_button: pn.widgets.Button,
 ) -> pn.Column:
     return pn.Column(
         status,
@@ -931,6 +1047,19 @@ def _build_layout(
         widgets.scale_plot,
         pn.pane.Markdown("### Running Coupling / Creutz"),
         widgets.running_plot,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### h_eff Parameter Sweep"),
+        pn.Row(sweep_button, apply_optimal_button, sizing_mode="stretch_width"),
+        widgets.sweep_optimal_display,
+        widgets.sweep_summary,
+        widgets.sweep_primary_plot,
+        widgets.sweep_secondary_plot,
+        pn.pane.Markdown("### Channel Autocorrelations (mass proxies)"),
+        widgets.sweep_acf_plot,
+        pn.pane.Markdown("### All Im/Re Channel Ratios"),
+        widgets.sweep_ratios_plot,
+        pn.pane.Markdown("### Sweep Data"),
+        widgets.sweep_table,
         pn.layout.Divider(),
         pn.pane.Markdown("### Wilson Flow"),
         widgets.wilson_summary,
@@ -979,6 +1108,21 @@ def build_coupling_diagnostics_tab(
     )
     widgets = _build_coupling_diagnostics_widgets()
 
+    sweep_button = pn.widgets.Button(
+        name="Sweep h_eff",
+        button_type="warning",
+        min_width=180,
+        sizing_mode="stretch_width",
+        disabled=True,
+    )
+    apply_optimal_button = pn.widgets.Button(
+        name="Apply Optimal h_eff",
+        button_type="success",
+        min_width=180,
+        sizing_mode="stretch_width",
+        disabled=True,
+    )
+
     def on_run_coupling_diagnostics(_):
         def _compute(history: RunHistory):
             config = _build_coupling_diagnostics_config(
@@ -1002,8 +1146,57 @@ def build_coupling_diagnostics_tab(
             _compute,
         )
 
+    def on_sweep_heff(_):
+        history = state.get("history")
+        if history is None:
+            coupling_diagnostics_status.object = "**Error:** Load a RunHistory first."
+            return
+        coupling_diagnostics_status.object = "**Computing h_eff sweep...**"
+        try:
+            sweep_config = _build_heff_sweep_config(
+                coupling_diagnostics_settings,
+                history.d,
+            )
+            result = compute_heff_sweep(history, sweep_config)
+            state["heff_sweep_result"] = result
+            widgets.sweep_primary_plot.object = build_heff_sweep_primary_plot(result)
+            widgets.sweep_secondary_plot.object = build_heff_sweep_secondary_plot(result)
+            widgets.sweep_acf_plot.object = build_heff_sweep_acf_plot(result)
+            widgets.sweep_ratios_plot.object = build_heff_sweep_ratios_plot(result)
+            widgets.sweep_table.value = build_heff_sweep_table(result)
+            widgets.sweep_summary.object = build_heff_sweep_summary_text(result)
+            crit_label = CRITERION_LABELS.get(result.criterion, result.criterion)
+            widgets.sweep_optimal_display.object = (
+                f"**Optimal h_eff = `{result.optimal_h_eff:.6g}`** "
+                f"({crit_label} = `{result.optimal_criterion_value:.6g}`)"
+            )
+            apply_optimal_button.disabled = False
+            coupling_diagnostics_status.object = (
+                f"**h_eff sweep complete:** optimal h_eff = {result.optimal_h_eff:.6g} "
+                f"(by {crit_label})"
+            )
+        except Exception as e:
+            coupling_diagnostics_status.object = f"**Error:** {e}"
+            import traceback
+
+            traceback.print_exc()
+
+    def on_apply_optimal(_):
+        result = state.get("heff_sweep_result")
+        if result is None:
+            return
+        coupling_diagnostics_settings.h_eff = result.optimal_h_eff
+        coupling_diagnostics_status.object = (
+            f"**Applied:** h_eff set to `{result.optimal_h_eff:.6g}`. "
+            "Click Compute Coupling Diagnostics to use new value."
+        )
+
+    sweep_button.on_click(on_sweep_heff)
+    apply_optimal_button.on_click(on_apply_optimal)
+
     def on_history_changed(defer: bool) -> None:
         coupling_diagnostics_run_button.disabled = False
+        sweep_button.disabled = False
         coupling_diagnostics_status.object = (
             "**Coupling Diagnostics ready:** click Compute Coupling Diagnostics."
         )
@@ -1011,6 +1204,7 @@ def build_coupling_diagnostics_tab(
             return
 
         state["coupling_diagnostics_output"] = None
+        state["heff_sweep_result"] = None
         widgets.summary.object = "## Coupling Diagnostics Summary\n_Run diagnostics to populate._"
         widgets.regime_evidence.object = "_Regime evidence will appear after running diagnostics._"
         widgets.summary_table.value = pd.DataFrame()
@@ -1028,6 +1222,22 @@ def build_coupling_diagnostics_tab(
             widgets.wilson_derivative_plot,
         )
         widgets.wilson_summary.object = "_Enable Wilson flow and run diagnostics to populate._"
+        widgets.sweep_summary.object = "_Run h_eff sweep to populate._"
+        widgets.sweep_primary_plot.object = _algorithm_placeholder_plot(
+            "Run h_eff sweep to show variance ratio curve."
+        )
+        widgets.sweep_secondary_plot.object = _algorithm_placeholder_plot(
+            "Run h_eff sweep to show regime metrics."
+        )
+        widgets.sweep_acf_plot.object = _algorithm_placeholder_plot(
+            "Run h_eff sweep to show channel autocorrelations."
+        )
+        widgets.sweep_ratios_plot.object = _algorithm_placeholder_plot(
+            "Run h_eff sweep to show Im/Re channel ratios."
+        )
+        widgets.sweep_table.value = pd.DataFrame()
+        widgets.sweep_optimal_display.object = ""
+        apply_optimal_button.disabled = True
 
     coupling_diagnostics_run_button.on_click(on_run_coupling_diagnostics)
 
@@ -1037,6 +1247,8 @@ def build_coupling_diagnostics_tab(
         run_button=coupling_diagnostics_run_button,
         run_note=coupling_diagnostics_note,
         widgets=widgets,
+        sweep_button=sweep_button,
+        apply_optimal_button=apply_optimal_button,
     )
 
     return CouplingDiagnosticsSection(

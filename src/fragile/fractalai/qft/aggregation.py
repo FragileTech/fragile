@@ -479,7 +479,7 @@ def build_gamma_matrices(
         device: Compute device.
 
     Returns:
-        Dictionary with keys: "1", "5", "5_matrix", "mu", "5mu", "sigma"
+        Dictionary with keys: "1", "5", "5_matrix", "mu", "sigma"
     """
     dtype = torch.complex128
 
@@ -497,23 +497,17 @@ def build_gamma_matrices(
     gamma["5"] = gamma5_diag  # Store just diagonal for efficiency
     gamma["5_matrix"] = torch.diag(gamma5_diag)
 
-    # γ_μ matrices (vector)
+    # γ_μ matrices (vector) — purely imaginary, anti-symmetric (Levi-Civita)
+    # γ_μ[α,β] = i * ε_{μαβ}: angular momentum generators × i
+    # Purely imaginary M → Re = parity-odd (vector 1--), Im = parity-even (axial 1+-)
     gamma_mu_list = []
     for mu in range(d):
         gamma_mu = torch.zeros(d, d, device=device, dtype=dtype)
-        gamma_mu[mu, mu] = 1.0
-        if mu > 0:
-            gamma_mu[mu, 0] = 0.5j
-            gamma_mu[0, mu] = -0.5j
+        nu = (mu + 1) % d
+        gamma_mu[mu, nu] = 1.0j
+        gamma_mu[nu, mu] = -1.0j
         gamma_mu_list.append(gamma_mu)
     gamma["mu"] = torch.stack(gamma_mu_list, dim=0)  # [d, d, d]
-
-    # γ₅γ_μ matrices (axial vector)
-    gamma_5mu_list = []
-    for mu in range(d):
-        gamma_5mu = gamma["5_matrix"] @ gamma_mu_list[mu]
-        gamma_5mu_list.append(gamma_5mu)
-    gamma["5mu"] = torch.stack(gamma_5mu_list, dim=0)  # [d, d, d]
 
     # σ_μν matrices (tensor)
     sigma_list = []
@@ -684,11 +678,15 @@ def compute_pseudoscalar_operators(
     agg_data: AggregatedTimeSeries,
     gamma_matrices: dict[str, Tensor],
 ) -> Tensor:
-    """Compute pseudoscalar channel operators: ψ̄_i γ₅ ψ_j.
+    """Compute pseudoscalar channel operators: Im[c_i† c_j].
+
+    Parity-odd projection using imaginary part of color bilinear.
+    Under parity c^α → -(c^α)*, the bilinear transforms as z → z*,
+    so Im[z] → -Im[z] (parity-odd, pseudoscalar 0⁻⁺).
 
     Args:
         agg_data: Aggregated time series data.
-        gamma_matrices: Gamma matrices dictionary.
+        gamma_matrices: Gamma matrices dictionary (unused, kept for API compat).
 
     Returns:
         Operator series [T]
@@ -718,9 +716,10 @@ def compute_pseudoscalar_operators(
     )
     valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
 
-    # γ₅ projection: alternating sign dot product
-    gamma5_diag = gamma_matrices["5"].to(color_i.device)
-    op_values = (color_i.conj() * gamma5_diag * color_j).sum(dim=-1).real
+    # Parity-odd projection: Im[c_i† c_j]
+    # Under parity c^α → -(c^α)*, so c_i† c_j → (c_i† c_j)*.
+    # Im part flips sign → parity-odd (pseudoscalar 0⁻⁺).
+    op_values = (color_i.conj() * color_j).sum(dim=-1).imag
 
     # Mask invalid
     op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
@@ -819,10 +818,10 @@ def compute_axial_vector_operators(
     )
     valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
 
-    # γ₅γ_μ projection
-    gamma_5mu = gamma_matrices["5mu"].to(color_i.device, dtype=color_i.dtype)
-    result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_5mu, color_j)
-    op_values = result.mean(dim=-1).real
+    # γ_μ projection (Im = axial vector, parity-even)
+    gamma_mu = gamma_matrices["mu"].to(color_i.device, dtype=color_i.dtype)
+    result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_mu, color_j)
+    op_values = result.mean(dim=-1).imag
 
     # Mask invalid
     op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
@@ -876,7 +875,7 @@ def compute_tensor_operators(
         return torch.zeros(T, device=device)
 
     result = torch.einsum("...i,pij,...j->...p", color_i.conj(), sigma, color_j)
-    op_values = result.mean(dim=-1).real
+    op_values = result.mean(dim=-1).imag
 
     # Mask invalid
     op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
@@ -1116,11 +1115,13 @@ def compute_pseudoscalar_operators_per_walker(
     agg_data: AggregatedTimeSeries,
     gamma_matrices: dict[str, Tensor],
 ) -> Tensor:
-    """Compute pseudoscalar operators for each walker: ψ̄_i γ₅ ψ_j.
+    """Compute pseudoscalar operators for each walker: Im[c_i† c_j].
+
+    Parity-odd projection using imaginary part of color bilinear.
 
     Args:
         agg_data: Aggregated time series data.
-        gamma_matrices: Gamma matrices dictionary.
+        gamma_matrices: Gamma matrices dictionary (unused, kept for API compat).
 
     Returns:
         Operator values [T, N] for each walker.
@@ -1129,10 +1130,8 @@ def compute_pseudoscalar_operators_per_walker(
         msg = "full_neighbor_indices required for per-walker computation"
         raise ValueError(msg)
 
-    gamma5_diag = gamma_matrices["5"]
-
     def pseudoscalar_projection(color_i: Tensor, color_j: Tensor) -> Tensor:
-        return (color_i.conj() * gamma5_diag.to(color_i.device) * color_j).sum(dim=-1).real
+        return (color_i.conj() * color_j).sum(dim=-1).imag
 
     return _apply_bilinear_projection_per_walker(
         agg_data.color,
@@ -1197,16 +1196,16 @@ def compute_axial_vector_operators_per_walker(
         msg = "full_neighbor_indices required for per-walker computation"
         raise ValueError(msg)
 
-    gamma_5mu = gamma_matrices["5mu"]
+    gamma_mu = gamma_matrices["mu"]
 
     def axial_projection(color_i: Tensor, color_j: Tensor) -> Tensor:
         result = torch.einsum(
             "...i,mij,...j->...m",
             color_i.conj(),
-            gamma_5mu.to(color_i.device, dtype=color_i.dtype),
+            gamma_mu.to(color_i.device, dtype=color_i.dtype),
             color_j,
         )
-        return result.mean(dim=-1).real
+        return result.mean(dim=-1).imag
 
     return _apply_bilinear_projection_per_walker(
         agg_data.color,
@@ -1247,7 +1246,7 @@ def compute_tensor_operators_per_walker(
             sigma.to(color_i.device, dtype=color_i.dtype),
             color_j,
         )
-        return result.mean(dim=-1).real
+        return result.mean(dim=-1).imag
 
     return _apply_bilinear_projection_per_walker(
         agg_data.color,
@@ -1389,6 +1388,11 @@ def compute_all_operator_series(
             "tensor",
             "nucleon",
             "glueball",
+            "dirac_scalar",
+            "dirac_pseudoscalar",
+            "dirac_vector",
+            "dirac_axial_vector",
+            "dirac_tensor",
         ]
 
     # Filter channels based on dimensionality
@@ -1421,6 +1425,24 @@ def compute_all_operator_series(
                 ops = compute_nucleon_operators(agg_data, gamma)
             elif channel_name == "glueball":
                 ops = compute_glueball_operators(agg_data)
+            elif channel_name.startswith("dirac_"):
+                from fragile.physics.new_channels.dirac_spinors import (
+                    compute_dirac_operator_series,
+                )
+
+                dirac_result = compute_dirac_operator_series(
+                    color=agg_data.color,
+                    color_valid=agg_data.color_valid,
+                    sample_indices=agg_data.sample_indices,
+                    neighbor_indices=agg_data.neighbor_indices,
+                    alive=agg_data.alive,
+                    sample_edge_weights=agg_data.sample_edge_weights,
+                )
+                field_name = channel_name.removeprefix("dirac_")
+                if hasattr(dirac_result, field_name):
+                    ops = getattr(dirac_result, field_name)
+                else:
+                    continue
             else:
                 continue
 
@@ -1518,6 +1540,13 @@ def _compute_euclidean_time_series(
             ops_per_walker = compute_nucleon_operators_per_walker(agg_data_full, gamma)
         elif channel_name == "glueball":
             ops_per_walker = compute_glueball_operators_per_walker(agg_data_full)
+        elif channel_name.startswith("dirac_"):
+            import logging as _logging
+
+            _logging.getLogger(__name__).debug(
+                "Skipping %s in Euclidean time mode (not yet supported)", channel_name,
+            )
+            continue
         else:
             continue
 

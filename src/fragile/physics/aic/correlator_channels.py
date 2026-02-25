@@ -930,23 +930,17 @@ class ChannelCorrelator(ABC):
         self.gamma["5"] = gamma5_diag  # Store just diagonal for efficiency
         self.gamma["5_matrix"] = torch.diag(gamma5_diag)
 
-        # γ_μ matrices (vector)
+        # γ_μ matrices (vector) — purely imaginary, anti-symmetric (Levi-Civita)
+        # γ_μ[α,β] = i * ε_{μαβ}: angular momentum generators × i
+        # Purely imaginary M → Re = parity-odd (vector 1--), Im = parity-even (axial 1+-)
         gamma_mu_list = []
         for mu in range(d):
             gamma_mu = torch.zeros(d, d, device=device, dtype=dtype)
-            gamma_mu[mu, mu] = 1.0
-            if mu > 0:
-                gamma_mu[mu, 0] = 0.5j
-                gamma_mu[0, mu] = -0.5j
+            nu = (mu + 1) % d
+            gamma_mu[mu, nu] = 1.0j
+            gamma_mu[nu, mu] = -1.0j
             gamma_mu_list.append(gamma_mu)
         self.gamma["mu"] = torch.stack(gamma_mu_list, dim=0)  # [d, d, d]
-
-        # γ₅γ_μ matrices (axial vector)
-        gamma_5mu_list = []
-        for mu in range(d):
-            gamma_5mu = self.gamma["5_matrix"] @ gamma_mu_list[mu]
-            gamma_5mu_list.append(gamma_5mu)
-        self.gamma["5mu"] = torch.stack(gamma_5mu_list, dim=0)  # [d, d, d]
 
         # σ_μν matrices (tensor)
         sigma_list = []
@@ -1170,11 +1164,12 @@ class PseudoscalarChannel(BilinearChannelCorrelator):
 
 
 class VectorChannel(BilinearChannelCorrelator):
-    """Vector channel (ρ): γ_μ sum projection.
+    """Vector channel (ρ): Re[c_i† (iε_μ) c_j] projection.
 
     J^PC = 1^--
 
-    Operator: Σ_μ ψ̄_i γ_μ ψ_j averaged over spatial directions
+    Uses Levi-Civita γ_μ matrices (purely imaginary, anti-symmetric).
+    For purely imaginary M: Re[c_i† M c_j] is parity-odd → vector (1--).
     """
 
     channel_name = "vector"
@@ -1184,22 +1179,22 @@ class VectorChannel(BilinearChannelCorrelator):
         color_i: Tensor,
         color_j: Tensor,
     ) -> Tensor:
-        """γ_μ projection: einsum over gamma matrices.
+        """γ_μ projection: Re[c_i† (iε_μ) c_j] averaged over directions.
 
-        Returns: einsum("...i,mij,...j->...m", ci.conj(), gamma_mu, cj).mean(-1)
+        Purely imaginary γ_μ → Re is parity-odd (vector 1--).
         """
         gamma_mu = self.gamma["mu"].to(color_i.device, dtype=color_i.dtype)  # [d, d, d]
-        # einsum: batch dims ..., color i, matrix (m, i, j), color j -> batch, mu
         result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_mu, color_j)
         return result.mean(dim=-1).real
 
 
 class AxialVectorChannel(BilinearChannelCorrelator):
-    """Axial vector channel (a₁): γ₅γ_μ projection.
+    """Axial vector channel (a₁): Im[c_i† (iε_μ) c_j] projection.
 
     J^PC = 1^+-
 
-    Operator: Σ_μ ψ̄_i γ₅γ_μ ψ_j averaged over spatial directions
+    Uses the same Levi-Civita γ_μ matrices as VectorChannel.
+    For purely imaginary M: Im[c_i† M c_j] is parity-even → axial vector (1+-).
     """
 
     channel_name = "axial_vector"
@@ -1209,21 +1204,21 @@ class AxialVectorChannel(BilinearChannelCorrelator):
         color_i: Tensor,
         color_j: Tensor,
     ) -> Tensor:
-        """γ₅γ_μ projection.
+        """γ_μ projection: Im[c_i† (iε_μ) c_j] averaged over directions.
 
-        Returns: einsum("...i,mij,...j->...m", ci.conj(), gamma5_mu, cj).mean(-1)
+        Purely imaginary γ_μ → Im is parity-even (axial vector 1+-).
         """
-        gamma_5mu = self.gamma["5mu"].to(color_i.device, dtype=color_i.dtype)  # [d, d, d]
-        result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_5mu, color_j)
-        return result.mean(dim=-1).real
+        gamma_mu = self.gamma["mu"].to(color_i.device, dtype=color_i.dtype)  # [d, d, d]
+        result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_mu, color_j)
+        return result.mean(dim=-1).imag
 
 
 class TensorChannel(BilinearChannelCorrelator):
-    """Tensor channel (f₂): σ_μν antisymmetric projection.
+    """Tensor channel (f₂): Im[c_i† σ_μν c_j] projection.
 
     J^PC = 2^++
 
-    Operator: Σ_{μ<ν} ψ̄_i σ_μν ψ_j averaged over antisymmetric pairs
+    σ_μν is purely imaginary. Im[c_i† M c_j] is parity-even → tensor (2++).
     """
 
     channel_name = "tensor"
@@ -1233,15 +1228,15 @@ class TensorChannel(BilinearChannelCorrelator):
         color_i: Tensor,
         color_j: Tensor,
     ) -> Tensor:
-        """σ_μν projection: antisymmetric tensor.
+        """σ_μν projection: Im[c_i† σ_μν c_j] averaged over pairs.
 
-        Returns: einsum("...i,pij,...j->...p", ci.conj(), sigma_munu, cj).mean(-1)
+        Purely imaginary σ_μν → Im is parity-even (tensor 2++).
         """
         sigma = self.gamma["sigma"].to(color_i.device, dtype=color_i.dtype)  # [n_pairs, d, d]
         if sigma.shape[0] == 0:
             return torch.zeros(color_i.shape[:-1], device=color_i.device)
         result = torch.einsum("...i,pij,...j->...p", color_i.conj(), sigma, color_j)
-        return result.mean(dim=-1).real
+        return result.mean(dim=-1).imag
 
 
 # =============================================================================

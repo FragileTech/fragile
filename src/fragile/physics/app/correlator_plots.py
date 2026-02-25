@@ -61,6 +61,45 @@ CHANNEL_COLORS: dict[str, str] = {
     "velocity_norm_cloner": "#e41a1c",
     "velocity_norm_resister": "#377eb8",
     "velocity_norm_persister": "#4daf4a",
+    # Dirac spinor channels (new {channel}_dirac naming)
+    "scalar_dirac": "#aec7e8",
+    "pseudoscalar_dirac": "#c7e9c0",
+    "vector_dirac": "#fdd0a2",
+    "axial_vector_dirac": "#f4a582",
+    "tensor_dirac": "#dadaeb",
+    # Backward compat: old dirac_{channel} naming
+    "dirac_scalar": "#aec7e8",
+    "dirac_pseudoscalar": "#c7e9c0",
+    "dirac_vector": "#fdd0a2",
+    "dirac_axial_vector": "#f4a582",
+    "dirac_tensor": "#dadaeb",
+    # Dirac tensor σ_0k (pion cross-check, groups with pseudoscalar)
+    "pseudoscalar_pion_tensor": "#b2df8a",
+    "dirac_tensor_0k": "#b2df8a",
+    "tensor_0k_dirac": "#b2df8a",
+    # Chirality channels
+    "chi_mean": "#8c564b",
+    "left_fraction": "#e377c2",
+    "lr_coupling_mag": "#7f7f7f",
+    "lr_fraction": "#bcbd22",
+    # EW Dirac spinor channels
+    "j_vector_L": "#8856a7",
+    "j_vector_R": "#c994c7",
+    "j_vector_V": "#e7e1ef",
+    "o_scalar_L": "#43a2ca",
+    "o_scalar_R": "#a8ddb5",
+    "j_vector_walkerL": "#e31a1c",
+    "j_vector_walkerR": "#fd8d3c",
+    "j_vector_L_walkerL": "#b10026",
+    "j_vector_R_walkerR": "#feb24c",
+    "o_yukawa_LR": "#238b45",
+    "o_yukawa_RL": "#74c476",
+    "j_vector_u1": "#2171b5",
+    "j_vector_L_u1": "#6baed6",
+    "j_vector_L_su2": "#9e9ac8",
+    "j_vector_R_su2": "#bcbddc",
+    "parity_violation_dirac": "#636363",
+    "parity_violation_walker": "#969696",
 }
 
 _DEFAULT_COLOR = "#1f77b4"
@@ -491,6 +530,13 @@ _VARIANT_PALETTE = [
 
 # Strong-force channel prefixes → display names.
 _STRONG_PREFIX_DISPLAY: dict[str, str] = {
+    "dirac_axial_vector": "Axial Vector",
+    "dirac_pseudoscalar": "Pseudoscalar",
+    "dirac_scalar": "Scalar",
+    "dirac_vector": "Vector",
+    "dirac_tensor": "Tensor",
+    "dirac_tensor_0k": "Pseudoscalar",
+    "pseudoscalar_pion_tensor": "Pseudoscalar",
     "axial_vector": "Axial Vector",
     "pseudoscalar": "Pseudoscalar",
     "scalar": "Scalar",
@@ -548,6 +594,12 @@ _EW_GROUP_ORDER = [
     "EW Mixed",
     "Symmetry Breaking",
     "Parity Velocity",
+    "Chirality",
+    "EW Chiral Currents",
+    "EW Walker Chirality",
+    "EW Yukawa",
+    "EW Gauge-Dressed",
+    "EW Parity Violation",
 ]
 
 
@@ -556,6 +608,13 @@ def group_electroweak_correlator_keys(keys) -> dict[str, list[str]]:
 
     Returns an ordered dict of ``{display_name: [key, ...]}``.
     """
+    _EW_CHIRAL_CURRENT_KEYS = {"j_vector_L", "j_vector_R", "j_vector_V", "o_scalar_L", "o_scalar_R"}
+    _EW_WALKER_CHIRALITY_KEYS = {
+        "j_vector_walkerL", "j_vector_walkerR", "j_vector_L_walkerL", "j_vector_R_walkerR",
+    }
+    _EW_YUKAWA_KEYS = {"o_yukawa_LR", "o_yukawa_RL"}
+    _EW_GAUGE_DRESSED_KEYS = {"j_vector_u1", "j_vector_L_u1", "j_vector_L_su2", "j_vector_R_su2"}
+    _EW_PARITY_VIOLATION_KEYS = {"parity_violation_dirac", "parity_violation_walker"}
     _rules = [
         ("U(1)", lambda k: k.startswith("u1_")),
         ("SU(2) Doublet Diff", lambda k: k.startswith("su2_doublet_diff")),
@@ -565,6 +624,12 @@ def group_electroweak_correlator_keys(keys) -> dict[str, list[str]]:
         ("EW Mixed", lambda k: k == "ew_mixed"),
         ("Symmetry Breaking", lambda k: k in {"fitness_phase", "clone_indicator"}),
         ("Parity Velocity", lambda k: k.startswith("velocity_norm_")),
+        ("Chirality", lambda k: k in {"chi_mean", "left_fraction", "lr_coupling_mag", "lr_fraction"}),
+        ("EW Chiral Currents", lambda k: k in _EW_CHIRAL_CURRENT_KEYS),
+        ("EW Walker Chirality", lambda k: k in _EW_WALKER_CHIRALITY_KEYS),
+        ("EW Yukawa", lambda k: k in _EW_YUKAWA_KEYS),
+        ("EW Gauge-Dressed", lambda k: k in _EW_GAUGE_DRESSED_KEYS),
+        ("EW Parity Violation", lambda k: k in _EW_PARITY_VIOLATION_KEYS),
     ]
     groups: dict[str, list[str]] = {}
     for key in keys:

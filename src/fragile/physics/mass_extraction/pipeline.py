@@ -45,6 +45,12 @@ _CHANNEL_PATTERNS: list[tuple[re.Pattern, str, str]] = [
     (re.compile(r"^vector_full(?:_|$)"), "vector", "meson"),
     (re.compile(r"^baryon_nucleon(?:_|$)"), "nucleon", "baryon"),
     (re.compile(r"^glueball_plaquette(?:_|$)"), "glueball", "glueball"),
+    # Dirac spinor operator prefixes (map to parent channel groups)
+    (re.compile(r"^dirac_axial_vector(?:_|$)"), "axial_vector", "meson"),
+    (re.compile(r"^dirac_pseudoscalar(?:_|$)"), "pseudoscalar", "meson"),
+    (re.compile(r"^dirac_scalar(?:_|$)"), "scalar", "meson"),
+    (re.compile(r"^dirac_vector(?:_|$)"), "vector", "meson"),
+    (re.compile(r"^dirac_tensor(?:_|$)"), "tensor", "tensor"),
     # Regular operator prefixes
     (re.compile(r"^axial_vector(?:_|$)"), "axial_vector", "meson"),
     (re.compile(r"^pseudoscalar(?:_|$)"), "pseudoscalar", "meson"),
@@ -54,6 +60,17 @@ _CHANNEL_PATTERNS: list[tuple[re.Pattern, str, str]] = [
     (re.compile(r"^baryon(?:_|$)"), "nucleon", "baryon"),
     (re.compile(r"^glueball(?:_|$)"), "glueball", "glueball"),
     (re.compile(r"^tensor(?:_|$)"), "tensor", "tensor"),
+    # Electroweak Dirac spinor operator prefixes (must precede bare u1_ / su2_)
+    (re.compile(r"^j_vector_L_su2(?:_|$)"), "ew_spinor_w", "electroweak"),
+    (re.compile(r"^j_vector_L_u1(?:_|$)"), "ew_spinor_z", "electroweak"),
+    (re.compile(r"^j_vector_u1(?:_|$)"), "ew_spinor_photon", "electroweak"),
+    (re.compile(r"^j_vector_L(?:_|$)"), "ew_spinor_left", "electroweak"),
+    (re.compile(r"^j_vector_R(?:_|$)"), "ew_spinor_right", "electroweak"),
+    (re.compile(r"^j_vector_V(?:_|$)"), "ew_spinor_vector", "electroweak"),
+    (re.compile(r"^j_vector_walker"), "ew_spinor_walker", "electroweak"),
+    (re.compile(r"^o_scalar_"), "ew_spinor_scalar", "electroweak"),
+    (re.compile(r"^o_yukawa_"), "ew_spinor_yukawa", "electroweak"),
+    (re.compile(r"^parity_violation_"), "ew_parity_violation", "electroweak"),
     # Electroweak operator prefixes
     (re.compile(r"^u1_"), "u1_hypercharge", "electroweak"),
     (re.compile(r"^su2_doublet_diff(?:_|$)"), "su2_doublet_diff", "electroweak"),

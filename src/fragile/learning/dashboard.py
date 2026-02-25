@@ -635,7 +635,10 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
         name="Alpha by confidence", value=False, width=300,
     )
     seed_input = pn.widgets.IntInput(name="Random seed", value=42, step=1, width=300)
-    show_hierarchy = pn.widgets.Checkbox(name="Show hierarchy tree", value=False, width=300)
+    show_latent_points = pn.widgets.Checkbox(name="Show latent points", value=True, width=300)
+    show_chart_centers = pn.widgets.Checkbox(name="Show chart centers", value=False, width=300)
+    show_code_centers = pn.widgets.Checkbox(name="Show code centers", value=False, width=300)
+    show_tree_lines = pn.widgets.Checkbox(name="Show tree lines", value=False, width=300)
     tree_line_color = pn.widgets.Select(
         name="Line color", options=["black", "chart", "symbol"], value="black", width=300,
     )
@@ -685,8 +688,11 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
         alpha_by_confidence,
         seed_input,
         pn.layout.Divider(),
-        pn.pane.Markdown("### Hierarchy"),
-        show_hierarchy,
+        pn.pane.Markdown("### Display layers"),
+        show_latent_points,
+        show_chart_centers,
+        show_code_centers,
+        show_tree_lines,
         tree_line_color,
         tree_line_width,
         pn.layout.Divider(),
@@ -1025,11 +1031,14 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
             color_by=cb,
             point_size=ps,
             K_code=K_code,
-            show_hierarchy=show_hierarchy.value,
             tree_line_color=tree_line_color.value,
             tree_line_width=tree_line_width.value,
             confidence=conf,
             alpha_by_confidence=abc,
+            show_points=show_latent_points.value,
+            show_chart_centers=show_chart_centers.value,
+            show_code_centers=show_code_centers.value,
+            show_tree_lines=show_tree_lines.value,
         )
 
         # Build the z0-z1 scatter separately to wire the Tap stream
@@ -1037,37 +1046,53 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
         charts = _to_numpy(K_chart).astype(int)
         corr = _to_numpy(correct).astype(int)
         z_np = _to_numpy(z_geo)
-        scatter_z01 = build_latent_scatter(
-            z_np,
-            labs,
-            charts,
-            corr,
-            cb,
-            ps,
-            0,
-            1,
-            indices=idx,
-            confidence=conf,
-            alpha_by_confidence=abc,
-        )
-        tap_stream.source = scatter_z01
 
-        # Build remaining pairs via plot_latent_2d_slices, then replace the first panel
-        layout = plot_latent_2d_slices(
-            z_geo,
-            labels,
-            K_chart=K_chart,
-            correct=correct,
-            color_by=cb,
-            point_size=ps,
-            indices=idx,
-            confidence=conf,
-            alpha_by_confidence=abc,
-        )
-        # Replace the first panel with the Tap-wired scatter
-        panels = list(layout)
-        if panels:
-            panels[0] = scatter_z01
+        if show_latent_points.value:
+            scatter_z01 = build_latent_scatter(
+                z_np,
+                labs,
+                charts,
+                corr,
+                cb,
+                ps,
+                0,
+                1,
+                indices=idx,
+                confidence=conf,
+                alpha_by_confidence=abc,
+            )
+            tap_stream.source = scatter_z01
+
+            # Build remaining pairs via plot_latent_2d_slices, then replace the first panel
+            layout = plot_latent_2d_slices(
+                z_geo,
+                labels,
+                K_chart=K_chart,
+                correct=correct,
+                color_by=cb,
+                point_size=ps,
+                indices=idx,
+                confidence=conf,
+                alpha_by_confidence=abc,
+            )
+            # Replace the first panel with the Tap-wired scatter
+            panels = list(layout)
+            if panels:
+                panels[0] = scatter_z01
+        else:
+            # Empty scatter panels preserving axis labels/ranges for OOD overlay
+            ndim = z_np.shape[1]
+            dim_pairs = []
+            if ndim >= 2:
+                dim_pairs.append((0, 1))
+            if ndim >= 3:
+                dim_pairs.extend([(0, 2), (1, 2)])
+            panels = []
+            for d0, d1 in dim_pairs:
+                empty = hv.Scatter([], kdims=f"z{d0}", vdims=f"z{d1}").opts(
+                    xlim=(-1, 1), ylim=(-1, 1), width=350, height=350,
+                )
+                panels.append(empty)
 
         # OOD overlay
         if ood_toggle.value:
@@ -1809,7 +1834,7 @@ def create_app(outputs_dir: str = "outputs") -> pn.template.FastListTemplate:
     run_conformal_btn.on_click(_on_run_conformal)
 
     # Latent display options: only re-render plots from cache (no re-inference)
-    for w in [latent_samples, color_by, point_size, show_hierarchy, tree_line_color, tree_line_width, alpha_by_confidence, ood_toggle, ood_n_samples]:
+    for w in [latent_samples, color_by, point_size, show_latent_points, show_chart_centers, show_code_centers, show_tree_lines, tree_line_color, tree_line_width, alpha_by_confidence, ood_toggle, ood_n_samples]:
         w.param.watch(_refresh_latent_display, "value")
 
     # Reconstruction options: need to re-run inference on subset

@@ -1,0 +1,87 @@
+diff --git a/src/fragile/fractalai/qft/aggregation.py b/src/fragile/fractalai/qft/aggregation.py
+index 2c5a659..ad7c880 100644
+--- a/src/fragile/fractalai/qft/aggregation.py
++++ b/src/fragile/fractalai/qft/aggregation.py
+@@ -684,11 +684,15 @@ def compute_pseudoscalar_operators(
+     agg_data: AggregatedTimeSeries,
+     gamma_matrices: dict[str, Tensor],
+ ) -> Tensor:
+-    """Compute pseudoscalar channel operators: ψ̄_i γ₅ ψ_j.
++    """Compute pseudoscalar channel operators: Im[c_i† c_j].
++
++    Parity-odd projection using imaginary part of color bilinear.
++    Under parity c^α → -(c^α)*, the bilinear transforms as z → z*,
++    so Im[z] → -Im[z] (parity-odd, pseudoscalar 0⁻⁺).
+ 
+     Args:
+         agg_data: Aggregated time series data.
+-        gamma_matrices: Gamma matrices dictionary.
++        gamma_matrices: Gamma matrices dictionary (unused, kept for API compat).
+ 
+     Returns:
+         Operator series [T]
+@@ -718,9 +722,10 @@ def compute_pseudoscalar_operators(
+     )
+     valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
+ 
+-    # γ₅ projection: alternating sign dot product
+-    gamma5_diag = gamma_matrices["5"].to(color_i.device)
+-    op_values = (color_i.conj() * gamma5_diag * color_j).sum(dim=-1).real
++    # Parity-odd projection: Im[c_i† c_j]
++    # Under parity c^α → -(c^α)*, so c_i† c_j → (c_i† c_j)*.
++    # Im part flips sign → parity-odd (pseudoscalar 0⁻⁺).
++    op_values = (color_i.conj() * color_j).sum(dim=-1).imag
+ 
+     # Mask invalid
+     op_values = torch.where(valid_mask, op_values, torch.zeros_like(op_values))
+@@ -1116,11 +1121,13 @@ def compute_pseudoscalar_operators_per_walker(
+     agg_data: AggregatedTimeSeries,
+     gamma_matrices: dict[str, Tensor],
+ ) -> Tensor:
+-    """Compute pseudoscalar operators for each walker: ψ̄_i γ₅ ψ_j.
++    """Compute pseudoscalar operators for each walker: Im[c_i† c_j].
++
++    Parity-odd projection using imaginary part of color bilinear.
+ 
+     Args:
+         agg_data: Aggregated time series data.
+-        gamma_matrices: Gamma matrices dictionary.
++        gamma_matrices: Gamma matrices dictionary (unused, kept for API compat).
+ 
+     Returns:
+         Operator values [T, N] for each walker.
+@@ -1129,10 +1136,8 @@ def compute_pseudoscalar_operators_per_walker(
+         msg = "full_neighbor_indices required for per-walker computation"
+         raise ValueError(msg)
+ 
+-    gamma5_diag = gamma_matrices["5"]
+-
+     def pseudoscalar_projection(color_i: Tensor, color_j: Tensor) -> Tensor:
+-        return (color_i.conj() * gamma5_diag.to(color_i.device) * color_j).sum(dim=-1).real
++        return (color_i.conj() * color_j).sum(dim=-1).imag
+ 
+     return _apply_bilinear_projection_per_walker(
+         agg_data.color,
+diff --git a/src/fragile/physics/new_channels/correlator_channels.py b/src/fragile/physics/new_channels/correlator_channels.py
+index 1f491d4..8eaa874 100644
+--- a/src/fragile/physics/new_channels/correlator_channels.py
++++ b/src/fragile/physics/new_channels/correlator_channels.py
+@@ -1117,12 +1117,14 @@ class PseudoscalarChannel(BilinearChannelCorrelator):
+         color_i: Tensor,
+         color_j: Tensor,
+     ) -> Tensor:
+-        """γ₅ projection: alternating sign dot product.
++        """Parity-odd projection: imaginary part of color dot product.
+ 
+-        Returns: (color_i.conj() * gamma5_diag * color_j).sum(dim=-1)
++        Under parity, c^α → -(c^α)*, so the bilinear c_i† c_j → (c_i† c_j)*.
++        Im[z] → Im[z*] = -Im[z], i.e. parity-odd (pseudoscalar, 0⁻⁺).
++
++        Returns: Im[(color_i.conj() * color_j).sum(dim=-1)]
+         """
+-        gamma5_diag = self.gamma["5"].to(color_i.device)  # [d]
+-        return (color_i.conj() * gamma5_diag * color_j).sum(dim=-1).real
++        return (color_i.conj() * color_j).sum(dim=-1).imag
+ 
+ 
+ class VectorChannel(BilinearChannelCorrelator):

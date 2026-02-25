@@ -1,5 +1,12 @@
 """Vectorized companion-pair spin-2 tensor correlators with momentum projection.
 
+.. deprecated::
+    This module uses position-dependent traceless tensor operators with momentum
+    projection. The main pipeline now uses the simpler bilinear
+    ``Im[c_i^dag sigma_{mu,nu} c_j]`` form in
+    :mod:`fragile.physics.operators.tensor_operators`. This module is retained
+    for backward compatibility only.
+
 This module implements a traceless symmetric spin-2 operator from companion pairs:
 
     O_i^{ab}(t) = Re(c_i^† c_j) * Q^{ab}(dx_ij)

@@ -400,6 +400,10 @@ def plot_latent_3d(
     tree_line_width: float = 0.5,
     confidence: np.ndarray | None = None,
     alpha_by_confidence: bool = False,
+    show_points: bool = True,
+    show_chart_centers: bool = False,
+    show_code_centers: bool = False,
+    show_tree_lines: bool = False,
 ) -> go.Figure:
     """3D scatter of z_geo[:,0:3] colored by label, chart, correct, or confidence."""
     z = _to_numpy(z_geo)
@@ -416,7 +420,15 @@ def plot_latent_3d(
     base_opacity = 0.7
     traces = []
 
-    if color_by == "confidence" and confidence is not None:
+    # Backward compat: if show_hierarchy is True and no granular bools were set, enable all
+    if show_hierarchy and not (show_chart_centers or show_code_centers or show_tree_lines):
+        show_chart_centers = show_code_centers = show_tree_lines = True
+
+    color_label = color_by.capitalize()
+
+    if not show_points:
+        pass  # skip scatter traces
+    elif color_by == "confidence" and confidence is not None:
         # Continuous colorscale — single trace
         conf = confidence.astype(float)
         hover_text = [
@@ -514,11 +526,14 @@ def plot_latent_3d(
             )
 
     # Hierarchy tree overlay
-    if show_hierarchy and K_code is not None:
+    if (show_chart_centers or show_code_centers or show_tree_lines) and K_code is not None:
         codes = _to_numpy(K_code).astype(int)
         _add_hierarchy_traces(
             traces, x, y, z_ax, charts, codes, point_size, tree_line_color, tree_line_width,
             hierarchy_z=hierarchy_z,
+            show_chart_centers=show_chart_centers,
+            show_code_centers=show_code_centers,
+            show_lines=show_tree_lines,
         )
 
     fig = go.Figure(data=traces)
@@ -549,6 +564,9 @@ def _add_hierarchy_traces(
     line_color_mode: str,
     line_width: float,
     hierarchy_z: bool = False,
+    show_chart_centers: bool = True,
+    show_code_centers: bool = True,
+    show_lines: bool = True,
 ) -> None:
     """Append hierarchy center markers and tree-edge lines to *traces* (in-place).
 
@@ -582,33 +600,37 @@ def _add_hierarchy_traces(
         root = np.array([0.0, 0.0, 0.0])
 
     # --- Center markers ---
-    # Root
-    traces.append(go.Scatter3d(
-        x=[root[0]], y=[root[1]], z=[root[2]],
-        mode="markers", name="root",
-        marker={"size": point_size * 4, "color": "black", "symbol": "diamond"},
-        hoverinfo="name", showlegend=False,
-    ))
-    # Chart centers
-    for c, ctr in chart_centers.items():
-        col = _CATEGORY10[int(c) % len(_CATEGORY10)]
+    if show_chart_centers:
+        # Root
         traces.append(go.Scatter3d(
-            x=[ctr[0]], y=[ctr[1]], z=[ctr[2]],
-            mode="markers", name=f"chart {c} center",
-            marker={"size": point_size * 3, "color": col, "symbol": "diamond"},
+            x=[root[0]], y=[root[1]], z=[root[2]],
+            mode="markers", name="root",
+            marker={"size": point_size * 4, "color": "black", "symbol": "diamond"},
             hoverinfo="name", showlegend=False,
         ))
-    # Symbol centers
-    for (c, k), ctr in symbol_centers.items():
-        col = _CATEGORY10[int(c) % len(_CATEGORY10)]
-        traces.append(go.Scatter3d(
-            x=[ctr[0]], y=[ctr[1]], z=[ctr[2]],
-            mode="markers", name=f"chart {c} code {k}",
-            marker={"size": point_size * 2, "color": col, "opacity": 0.6, "symbol": "diamond"},
-            hoverinfo="name", showlegend=False,
-        ))
+        # Chart centers
+        for c, ctr in chart_centers.items():
+            col = _CATEGORY10[int(c) % len(_CATEGORY10)]
+            traces.append(go.Scatter3d(
+                x=[ctr[0]], y=[ctr[1]], z=[ctr[2]],
+                mode="markers", name=f"chart {c} center",
+                marker={"size": point_size * 3, "color": col, "symbol": "diamond"},
+                hoverinfo="name", showlegend=False,
+            ))
+    if show_code_centers:
+        # Symbol centers
+        for (c, k), ctr in symbol_centers.items():
+            col = _CATEGORY10[int(c) % len(_CATEGORY10)]
+            traces.append(go.Scatter3d(
+                x=[ctr[0]], y=[ctr[1]], z=[ctr[2]],
+                mode="markers", name=f"chart {c} code {k}",
+                marker={"size": point_size * 2, "color": col, "opacity": 0.6, "symbol": "diamond"},
+                hoverinfo="name", showlegend=False,
+            ))
 
     # --- Line traces ---
+    if not show_lines:
+        return
     if line_color_mode == "black":
         # Single trace with all edges
         lx, ly, lz = [], [], []

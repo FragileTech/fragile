@@ -111,6 +111,7 @@ def create_app() -> pn.template.FastListTemplate:
             "electroweak_mass_output": None,
             "strong_force_aic_output": None,
             "strong_force_aic_multiscale_output": None,
+            "heff_sweep_result": None,
         }
 
         algorithm_section = build_algorithm_diagnostics_tab(state)

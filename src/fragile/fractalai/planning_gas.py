@@ -282,11 +282,11 @@ class PlanningFractalGas:
         """
         inner_state = self.inner_gas.reset(initial_state=(state, obs, info))
         root_actions: np.ndarray | None = None
-        saturated = self._sample_saturated_actions(inner_state.N)
+        initial_actions = self._sample_initial_actions(inner_state.N)
 
         for k in range(self.tau_inner):
             if k == 0:
-                inner_state, step_info = self.inner_gas.step(inner_state, actions=saturated)
+                inner_state, step_info = self.inner_gas.step(inner_state, actions=initial_actions)
             else:
                 inner_state, step_info = self.inner_gas.step(inner_state)
 
@@ -372,14 +372,9 @@ class PlanningFractalGas:
     # Internals
     # ------------------------------------------------------------------
 
-    def _sample_saturated_actions(self, N: int) -> np.ndarray:
-        """Sample N actions where each dimension is randomly set to its min or max bound."""
-        action_space = self.env.action_space
-        low = action_space.low if hasattr(action_space, "low") else action_space.minimum
-        high = action_space.high if hasattr(action_space, "high") else action_space.maximum
-        shape = action_space.shape
-        choices = np.random.randint(0, 2, size=(N, *shape))
-        return np.where(choices, high, low).astype(np.float64)
+    def _sample_initial_actions(self, N: int) -> np.ndarray:
+        """Sample N random actions from the environment's action space."""
+        return self.inner_gas.kinetic_op.sample_actions(N)
 
     def _select_action(
         self,
@@ -387,26 +382,24 @@ class PlanningFractalGas:
         alive_mask: torch.Tensor,
         rewards: torch.Tensor,
     ) -> Any:
-        """Select the best action from surviving walkers' root actions.
+        """Select the best action from ALL walkers' root actions.
 
-        For continuous actions the alive-walker mean is returned.  For discrete
-        (integer) actions the result is rounded to the nearest int.  When all
-        walkers are dead the root action of the best walker by reward is used.
+        For discrete (integer) actions, returns the majority vote (mode).
+        For continuous actions, returns the mean across all walkers.
         """
-        alive = alive_mask.cpu().numpy()
-
-        if alive.any():
-            selected = root_actions[alive]
-        else:
-            # Fallback: best walker by cumulative reward
-            best_idx = rewards.argmax().item()
-            selected = root_actions[best_idx : best_idx + 1]
-
-        action = selected.mean(axis=0)
-
-        # Round to int for discrete action spaces
         if root_actions.dtype.kind == "i":
-            action = int(np.round(action))
+            # Discrete: majority vote (most common action)
+            if root_actions.ndim == 1:
+                counts = np.bincount(root_actions)
+                action = int(counts.argmax())
+            else:
+                # Multi-dimensional discrete: vote per dimension
+                action = np.array(
+                    [int(np.bincount(root_actions[:, d]).argmax()) for d in range(root_actions.shape[1])]
+                )
+        else:
+            # Continuous: mean of all walkers
+            action = root_actions.mean(axis=0)
 
         return action
 

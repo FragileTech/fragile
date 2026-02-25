@@ -21,6 +21,7 @@ from .config import (
     BaryonOperatorConfig,
     ChannelConfigBase,
     CorrelatorConfig,
+    DiracOperatorConfig,
     ElectroweakOperatorConfig,
     GlueballOperatorConfig,
     MesonOperatorConfig,
@@ -73,6 +74,7 @@ class PipelineConfig:
     baryon: BaryonOperatorConfig = field(default_factory=BaryonOperatorConfig)
     glueball: GlueballOperatorConfig = field(default_factory=GlueballOperatorConfig)
     tensor: TensorOperatorConfig = field(default_factory=TensorOperatorConfig)
+    dirac: DiracOperatorConfig = field(default_factory=DiracOperatorConfig)
     electroweak: ElectroweakOperatorConfig = field(default_factory=ElectroweakOperatorConfig)
     correlator: CorrelatorConfig = field(default_factory=CorrelatorConfig)
     multiscale: MultiscaleConfig = field(default_factory=MultiscaleConfig)
@@ -84,9 +86,9 @@ class PipelineConfig:
 # ---------------------------------------------------------------------------
 
 # Channel sets that require specific PreparedChannelData flags
-_NEEDS_POSITIONS = {"vector", "tensor"}
+_NEEDS_POSITIONS = {"vector"}
 _NEEDS_SCORES = {"meson", "vector"}  # when score-directed modes are used
-_NEEDS_MOMENTUM = {"glueball", "tensor"}
+_NEEDS_MOMENTUM = {"glueball"}
 _NEEDS_FITNESS = {"electroweak"}
 _NEEDS_ALIVE = {"electroweak"}
 _NEEDS_VELOCITIES = {"electroweak"}
@@ -117,7 +119,7 @@ def compute_strong_force_pipeline(
 
     requested = config.channels
     if requested is None:
-        requested = ["meson", "vector", "baryon", "glueball", "tensor"]
+        requested = ["meson", "vector", "baryon", "glueball", "tensor", "dirac"]
 
     # Determine what optional data the preparation step must extract
     requested_set = set(requested)
@@ -133,8 +135,6 @@ def compute_strong_force_pipeline(
     momentum_axis = 0
     if "glueball" in requested:
         momentum_axis = config.glueball.momentum_axis
-    elif "tensor" in requested:
-        momentum_axis = config.tensor.momentum_axis
 
     # Use the base config for preparation (shared physics params)
     data = prepare_channel_data(
@@ -231,6 +231,12 @@ def compute_strong_force_pipeline(
         ops = compute_tensor_operators(data, config.tensor)
         all_operators.update(ops)
 
+    if "dirac" in requested:
+        from .dirac_operators import compute_dirac_operators
+
+        ops = compute_dirac_operators(data, config.dirac)
+        all_operators.update(ops)
+
     if "electroweak" in requested:
         from .electroweak_operators import compute_electroweak_operators
 
@@ -308,8 +314,5 @@ def _resolve_electroweak_params(
 def _any_momentum_mode(config: PipelineConfig, requested: list[str]) -> bool:
     """Check whether any requested channel uses momentum projection."""
     if "glueball" in requested and config.glueball.use_momentum_projection:
-        return True
-    if "tensor" in requested:
-        # Tensor always uses momentum projection when positions_axis is present
         return True
     return False

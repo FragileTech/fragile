@@ -122,6 +122,9 @@ class ElectroweakChannelConfig:
     enable_walker_type_split: bool = False
     walker_type_scope: str = "frame_global"
 
+    # Frame selection
+    cloning_frames_only: bool = True
+
     # Bootstrap error estimation
     compute_bootstrap_errors: bool = False
     n_bootstrap: int = 100

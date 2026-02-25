@@ -153,14 +153,23 @@ def build_electroweak_mass_tab(
         sizing_mode="stretch_width",
     )
 
+    # -- Per-channel fit/prior widgets --
+    channel_max_corr_len: dict[str, int] = {}
+    channel_fit_widgets: dict[str, dict[str, pn.widgets.Widget]] = {}
+    channel_fit_settings_container = pn.Column(
+        pn.pane.Markdown(
+            "*Run Electroweak Correlators to populate per-channel fit settings.*",
+            sizing_mode="stretch_width",
+        ),
+        sizing_mode="stretch_width",
+    )
+
     # -- Settings panel --
     settings_panel = pn.Param(
         settings,
         parameters=[
             "covariance_method",
             "nexp",
-            "tmin",
-            "tmax",
             "svdcut",
             "use_log_dE",
             "use_fastfit_seeding",
@@ -300,9 +309,6 @@ def build_electroweak_mass_tab(
                 return
 
             # Build config from settings
-            tmax_val = int(settings.tmax)
-            tmax = None if tmax_val <= 0 else max(int(settings.tmin) + 1, tmax_val)
-
             config = MassExtractionConfig(
                 covariance=CovarianceConfig(method=str(settings.covariance_method)),
                 fit=FitConfig(svdcut=float(settings.svdcut)),
@@ -335,13 +341,42 @@ def build_electroweak_mass_tab(
                 return
 
             for g in groups:
+                # Per-channel fit/prior from widgets, fallback to global settings
+                ch_w = channel_fit_widgets.get(g.name, {})
+                if "t_range" in ch_w:
+                    ch_tmin, ch_tmax_val = ch_w["t_range"].value
+                    ch_tmin, ch_tmax_val = int(ch_tmin), int(ch_tmax_val)
+                else:
+                    ch_tmin = int(settings.tmin)
+                    ch_tmax_val = int(settings.tmax)
+                ch_tmax = None if ch_tmax_val <= 0 else max(ch_tmin + 1, ch_tmax_val)
+
                 g.fit = ChannelFitConfig(
-                    tmin=int(settings.tmin),
-                    tmax=tmax,
-                    nexp=int(settings.nexp),
-                    use_log_dE=bool(settings.use_log_dE),
+                    tmin=ch_tmin,
+                    tmax=ch_tmax,
+                    nexp=int(ch_w["nexp"].value) if "nexp" in ch_w else int(settings.nexp),
+                    use_log_dE=(
+                        bool(ch_w["use_log_dE"].value)
+                        if "use_log_dE" in ch_w
+                        else bool(settings.use_log_dE)
+                    ),
                 )
-                g.prior = PriorConfig(use_fastfit_seeding=bool(settings.use_fastfit_seeding))
+                g.prior = PriorConfig(
+                    dE_ground=(
+                        str(ch_w["dE_ground"].value) if "dE_ground" in ch_w else "0.5(5)"
+                    ),
+                    dE_excited=(
+                        str(ch_w["dE_excited"].value) if "dE_excited" in ch_w else "0.5(5)"
+                    ),
+                    amplitude=(
+                        str(ch_w["amplitude"].value) if "amplitude" in ch_w else "0.5(5)"
+                    ),
+                    use_fastfit_seeding=(
+                        bool(ch_w["use_fastfit_seeding"].value)
+                        if "use_fastfit_seeding" in ch_w
+                        else bool(settings.use_fastfit_seeding)
+                    ),
+                )
             config.channel_groups = groups
 
             result = extract_masses(pipeline_result, config)
@@ -370,12 +405,21 @@ def build_electroweak_mass_tab(
             "**Electroweak Mass:** Run Electroweak Correlators first, "
             "then click Extract Electroweak Masses."
         )
-        # Always reset channel key selectors when history changes
+        # Always reset channel key selectors and fit widgets when history changes
         channel_key_selectors.clear()
+        channel_max_corr_len.clear()
         channel_key_selection_container.clear()
         channel_key_selection_container.append(
             pn.pane.Markdown(
                 "*Run Electroweak Correlators to populate channel operator selections.*",
+                sizing_mode="stretch_width",
+            ),
+        )
+        channel_fit_widgets.clear()
+        channel_fit_settings_container.clear()
+        channel_fit_settings_container.append(
+            pn.pane.Markdown(
+                "*Run Electroweak Correlators to populate per-channel fit settings.*",
                 sizing_mode="stretch_width",
             ),
         )
@@ -412,7 +456,8 @@ def build_electroweak_mass_tab(
                 include_multiscale=True,
             )
             channel_key_selectors.clear()
-            widgets: list[pn.widgets.MultiSelect] = []
+            channel_max_corr_len.clear()
+            widget_groups: list[pn.Column] = []
             for g in groups:
                 keys = sorted(g.correlator_keys)
                 if not keys:
@@ -425,17 +470,112 @@ def build_electroweak_mass_tab(
                     sizing_mode="stretch_width",
                 )
                 channel_key_selectors[g.name] = selector
-                widgets.append(selector)
+                # Determine max correlator length for this group
+                mcl = 0
+                for key in keys:
+                    if key in pipeline_result.correlators:
+                        corr = pipeline_result.correlators[key]
+                        clen = corr.shape[-1] if hasattr(corr, "shape") else len(corr)
+                        mcl = max(mcl, clen)
+                if mcl <= 0:
+                    mcl = 100
+                channel_max_corr_len[g.name] = mcl
+                widget_groups.append(
+                    pn.Column(selector, sizing_mode="stretch_width"),
+                )
 
             channel_key_selection_container.clear()
-            if widgets:
+            if widget_groups:
                 # Lay out in rows of 3
-                for i in range(0, len(widgets), 3):
+                for i in range(0, len(widget_groups), 3):
                     channel_key_selection_container.append(
-                        pn.Row(*widgets[i : i + 3], sizing_mode="stretch_width"),
+                        pn.Row(*widget_groups[i : i + 3], sizing_mode="stretch_width"),
                     )
             else:
                 channel_key_selection_container.append(
+                    pn.pane.Markdown(
+                        "*No channel groups detected.*",
+                        sizing_mode="stretch_width",
+                    ),
+                )
+
+            # Populate per-channel fit/prior widgets
+            channel_fit_widgets.clear()
+            fit_widget_groups: list[pn.Column] = []
+            for g in groups:
+                if not g.correlator_keys:
+                    continue
+                w: dict[str, pn.widgets.Widget] = {}
+                w["dE_ground"] = pn.widgets.TextInput(
+                    name="dE ground",
+                    value="0.5(5)",
+                    width=120,
+                )
+                w["dE_excited"] = pn.widgets.TextInput(
+                    name="dE excited",
+                    value="0.5(5)",
+                    width=120,
+                )
+                w["amplitude"] = pn.widgets.TextInput(
+                    name="amplitude",
+                    value="0.5(5)",
+                    width=120,
+                )
+                w["nexp"] = pn.widgets.IntSlider(
+                    name="nexp",
+                    start=1,
+                    end=6,
+                    step=1,
+                    value=int(settings.nexp),
+                    width=120,
+                )
+                # IntRangeSlider for tmin/tmax
+                mcl = channel_max_corr_len.get(g.name, 100)
+                default_tmin = int(settings.tmin)
+                default_tmax = int(settings.tmax)
+                if default_tmax <= 0 or default_tmax > mcl:
+                    default_tmax = mcl
+                if default_tmin >= default_tmax:
+                    default_tmin = max(1, default_tmax - 1)
+                w["t_range"] = pn.widgets.IntRangeSlider(
+                    name="t range",
+                    start=1,
+                    end=mcl,
+                    step=1,
+                    value=(default_tmin, default_tmax),
+                    width=250,
+                )
+                w["use_log_dE"] = pn.widgets.Checkbox(
+                    name="log dE",
+                    value=bool(settings.use_log_dE),
+                )
+                w["use_fastfit_seeding"] = pn.widgets.Checkbox(
+                    name="fastfit seed",
+                    value=bool(settings.use_fastfit_seeding),
+                )
+                channel_fit_widgets[g.name] = w
+                fit_widget_groups.append(
+                    pn.Column(
+                        pn.pane.Markdown(f"**{g.name}**"),
+                        pn.Row(w["dE_ground"], w["dE_excited"], w["amplitude"]),
+                        pn.Row(w["nexp"]),
+                        w["t_range"],
+                        pn.Row(w["use_log_dE"], w["use_fastfit_seeding"]),
+                        sizing_mode="stretch_width",
+                    ),
+                )
+
+            channel_fit_settings_container.clear()
+            if fit_widget_groups:
+                for i in range(0, len(fit_widget_groups), 2):
+                    channel_fit_settings_container.append(
+                        pn.Row(
+                            *fit_widget_groups[i : i + 2],
+                            sizing_mode="stretch_width",
+                        ),
+                    )
+            else:
+                channel_fit_settings_container.append(
                     pn.pane.Markdown(
                         "*No channel groups detected.*",
                         sizing_mode="stretch_width",
@@ -462,7 +602,8 @@ def build_electroweak_mass_tab(
         pn.Accordion(
             ("Fit Settings", settings_panel),
             ("Channel Operator Selection", channel_key_selection_container),
-            active=[0, 1],
+            ("Channel Prior & Fit Settings", channel_fit_settings_container),
+            active=[0, 1, 2],
             sizing_mode="stretch_width",
         ),
         pn.layout.Divider(),

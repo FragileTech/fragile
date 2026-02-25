@@ -876,7 +876,7 @@ def build_mass_extraction_tab(
 
     # -- Channel key selection widgets --
     channel_key_selectors: dict[str, pn.widgets.MultiSelect] = {}
-    channel_tmax_sliders: dict[str, pn.widgets.IntSlider] = {}
+    channel_max_corr_len: dict[str, int] = {}
 
     channel_key_selection_container = pn.Column(
         pn.pane.Markdown(
@@ -902,8 +902,6 @@ def build_mass_extraction_tab(
         parameters=[
             "covariance_method",
             "nexp",
-            "tmin",
-            "tmax",
             "svdcut",
             "use_log_dE",
             "use_fastfit_seeding",
@@ -1108,15 +1106,14 @@ def build_mass_extraction_tab(
                 return
 
             for g in groups:
-                # Per-channel tmax from slider, fallback to global setting
-                ch_tmax_val = int(settings.tmax)
-                slider = channel_tmax_sliders.get(g.name)
-                if slider is not None:
-                    ch_tmax_val = int(slider.value)
-
                 # Per-channel fit/prior from widgets, fallback to global settings
                 ch_w = channel_fit_widgets.get(g.name, {})
-                ch_tmin = int(ch_w["tmin"].value) if "tmin" in ch_w else int(settings.tmin)
+                if "t_range" in ch_w:
+                    ch_tmin, ch_tmax_val = ch_w["t_range"].value
+                    ch_tmin, ch_tmax_val = int(ch_tmin), int(ch_tmax_val)
+                else:
+                    ch_tmin = int(settings.tmin)
+                    ch_tmax_val = int(settings.tmax)
                 ch_tmax = None if ch_tmax_val <= 0 else max(ch_tmin + 1, ch_tmax_val)
 
                 g.fit = ChannelFitConfig(
@@ -1170,7 +1167,7 @@ def build_mass_extraction_tab(
         )
         # Always reset channel key selectors and fit widgets when history changes
         channel_key_selectors.clear()
-        channel_tmax_sliders.clear()
+        channel_max_corr_len.clear()
         channel_key_selection_container.clear()
         channel_key_selection_container.append(
             pn.pane.Markdown(
@@ -1230,7 +1227,7 @@ def build_mass_extraction_tab(
                 include_multiscale=True,
             )
             channel_key_selectors.clear()
-            channel_tmax_sliders.clear()
+            channel_max_corr_len.clear()
             widget_groups: list[pn.Column] = []
             for g in groups:
                 keys = sorted(g.correlator_keys)
@@ -1245,32 +1242,17 @@ def build_mass_extraction_tab(
                 )
                 channel_key_selectors[g.name] = selector
                 # Determine max correlator length for this group
-                max_corr_len = 0
+                mcl = 0
                 for key in keys:
                     if key in pipeline_result.correlators:
                         corr = pipeline_result.correlators[key]
                         clen = corr.shape[-1] if hasattr(corr, "shape") else len(corr)
-                        max_corr_len = max(max_corr_len, clen)
-                if max_corr_len <= 0:
-                    max_corr_len = 100
-                default_tmax = _DEFAULT_CHANNEL_TMAX.get(
-                    g.name,
-                    int(settings.tmax),
-                )
-                # Clamp default to available range
-                if default_tmax > max_corr_len:
-                    default_tmax = 0
-                tmax_slider = pn.widgets.IntSlider(
-                    name=f"{g.name} tmax",
-                    start=0,
-                    end=max_corr_len,
-                    step=1,
-                    value=default_tmax,
-                    sizing_mode="stretch_width",
-                )
-                channel_tmax_sliders[g.name] = tmax_slider
+                        mcl = max(mcl, clen)
+                if mcl <= 0:
+                    mcl = 100
+                channel_max_corr_len[g.name] = mcl
                 widget_groups.append(
-                    pn.Column(selector, tmax_slider, sizing_mode="stretch_width"),
+                    pn.Column(selector, sizing_mode="stretch_width"),
                 )
 
             channel_key_selection_container.clear()
@@ -1319,13 +1301,21 @@ def build_mass_extraction_tab(
                     value=defaults.get("nexp", int(settings.nexp)),
                     width=120,
                 )
-                w["tmin"] = pn.widgets.IntSlider(
-                    name="tmin",
+                # IntRangeSlider for tmin/tmax
+                mcl = channel_max_corr_len.get(g.name, 100)
+                default_tmin = defaults.get("tmin", int(settings.tmin))
+                default_tmax = _DEFAULT_CHANNEL_TMAX.get(g.name, int(settings.tmax))
+                if default_tmax <= 0 or default_tmax > mcl:
+                    default_tmax = mcl
+                if default_tmin >= default_tmax:
+                    default_tmin = max(1, default_tmax - 1)
+                w["t_range"] = pn.widgets.IntRangeSlider(
+                    name="t range",
                     start=1,
-                    end=20,
+                    end=mcl,
                     step=1,
-                    value=defaults.get("tmin", int(settings.tmin)),
-                    width=120,
+                    value=(default_tmin, default_tmax),
+                    sizing_mode="stretch_width",
                 )
                 w["use_log_dE"] = pn.widgets.Checkbox(
                     name="log dE",
@@ -1340,7 +1330,8 @@ def build_mass_extraction_tab(
                     pn.Column(
                         pn.pane.Markdown(f"**{g.name}**"),
                         pn.Row(w["dE_ground"], w["dE_excited"], w["amplitude"]),
-                        pn.Row(w["nexp"], w["tmin"]),
+                        pn.Row(w["nexp"]),
+                        w["t_range"],
                         pn.Row(w["use_log_dE"], w["use_fastfit_seeding"]),
                         sizing_mode="stretch_width",
                     ),

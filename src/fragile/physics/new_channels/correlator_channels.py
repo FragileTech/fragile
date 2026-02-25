@@ -886,23 +886,17 @@ class ChannelCorrelator(ABC):
         self.gamma["5"] = gamma5_diag  # Store just diagonal for efficiency
         self.gamma["5_matrix"] = torch.diag(gamma5_diag)
 
-        # γ_μ matrices (vector)
+        # γ_μ matrices (vector) — purely imaginary, anti-symmetric (Levi-Civita)
+        # γ_μ[α,β] = i * ε_{μαβ}: angular momentum generators × i
+        # Purely imaginary M → Re = parity-odd (vector 1--), Im = parity-even (axial 1+-)
         gamma_mu_list = []
         for mu in range(d):
             gamma_mu = torch.zeros(d, d, device=device, dtype=dtype)
-            gamma_mu[mu, mu] = 1.0
-            if mu > 0:
-                gamma_mu[mu, 0] = 0.5j
-                gamma_mu[0, mu] = -0.5j
+            nu = (mu + 1) % d
+            gamma_mu[mu, nu] = 1.0j
+            gamma_mu[nu, mu] = -1.0j
             gamma_mu_list.append(gamma_mu)
         self.gamma["mu"] = torch.stack(gamma_mu_list, dim=0)  # [d, d, d]
-
-        # γ₅γ_μ matrices (axial vector)
-        gamma_5mu_list = []
-        for mu in range(d):
-            gamma_5mu = self.gamma["5_matrix"] @ gamma_mu_list[mu]
-            gamma_5mu_list.append(gamma_5mu)
-        self.gamma["5mu"] = torch.stack(gamma_5mu_list, dim=0)  # [d, d, d]
 
         # σ_μν matrices (tensor)
         sigma_list = []
@@ -1103,11 +1097,11 @@ class ScalarChannel(BilinearChannelCorrelator):
 
 
 class PseudoscalarChannel(BilinearChannelCorrelator):
-    """Pseudoscalar channel (π): γ₅ diagonal projection.
+    """Pseudoscalar channel (π): parity-odd projection.
 
     J^PC = 0^-+
 
-    Operator: ψ̄_i γ₅ ψ_j with γ₅ = diag(1, -1, 1, -1, ...)
+    Operator: Im[c_i† c_j] — parity-odd under c^α → -(c^α)*.
     """
 
     channel_name = "pseudoscalar"
@@ -1117,20 +1111,23 @@ class PseudoscalarChannel(BilinearChannelCorrelator):
         color_i: Tensor,
         color_j: Tensor,
     ) -> Tensor:
-        """γ₅ projection: alternating sign dot product.
+        """Parity-odd projection: imaginary part of color dot product.
 
-        Returns: (color_i.conj() * gamma5_diag * color_j).sum(dim=-1)
+        Under parity, c^α → -(c^α)*, so the bilinear c_i† c_j → (c_i† c_j)*.
+        Im[z] → Im[z*] = -Im[z], i.e. parity-odd (pseudoscalar, 0⁻⁺).
+
+        Returns: Im[(color_i.conj() * color_j).sum(dim=-1)]
         """
-        gamma5_diag = self.gamma["5"].to(color_i.device)  # [d]
-        return (color_i.conj() * gamma5_diag * color_j).sum(dim=-1).real
+        return (color_i.conj() * color_j).sum(dim=-1).imag
 
 
 class VectorChannel(BilinearChannelCorrelator):
-    """Vector channel (ρ): γ_μ sum projection.
+    """Vector channel (ρ): Re[c_i† (iε_μ) c_j] projection.
 
     J^PC = 1^--
 
-    Operator: Σ_μ ψ̄_i γ_μ ψ_j averaged over spatial directions
+    Uses Levi-Civita γ_μ matrices (purely imaginary, anti-symmetric).
+    For purely imaginary M: Re[c_i† M c_j] is parity-odd → vector (1--).
     """
 
     channel_name = "vector"
@@ -1140,22 +1137,22 @@ class VectorChannel(BilinearChannelCorrelator):
         color_i: Tensor,
         color_j: Tensor,
     ) -> Tensor:
-        """γ_μ projection: einsum over gamma matrices.
+        """γ_μ projection: Re[c_i† (iε_μ) c_j] averaged over directions.
 
-        Returns: einsum("...i,mij,...j->...m", ci.conj(), gamma_mu, cj).mean(-1)
+        Purely imaginary γ_μ → Re is parity-odd (vector 1--).
         """
         gamma_mu = self.gamma["mu"].to(color_i.device, dtype=color_i.dtype)  # [d, d, d]
-        # einsum: batch dims ..., color i, matrix (m, i, j), color j -> batch, mu
         result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_mu, color_j)
         return result.mean(dim=-1).real
 
 
 class AxialVectorChannel(BilinearChannelCorrelator):
-    """Axial vector channel (a₁): γ₅γ_μ projection.
+    """Axial vector channel (a₁): Im[c_i† (iε_μ) c_j] projection.
 
     J^PC = 1^+-
 
-    Operator: Σ_μ ψ̄_i γ₅γ_μ ψ_j averaged over spatial directions
+    Uses the same Levi-Civita γ_μ matrices as VectorChannel.
+    For purely imaginary M: Im[c_i† M c_j] is parity-even → axial vector (1+-).
     """
 
     channel_name = "axial_vector"
@@ -1165,21 +1162,21 @@ class AxialVectorChannel(BilinearChannelCorrelator):
         color_i: Tensor,
         color_j: Tensor,
     ) -> Tensor:
-        """γ₅γ_μ projection.
+        """γ_μ projection: Im[c_i† (iε_μ) c_j] averaged over directions.
 
-        Returns: einsum("...i,mij,...j->...m", ci.conj(), gamma5_mu, cj).mean(-1)
+        Purely imaginary γ_μ → Im is parity-even (axial vector 1+-).
         """
-        gamma_5mu = self.gamma["5mu"].to(color_i.device, dtype=color_i.dtype)  # [d, d, d]
-        result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_5mu, color_j)
-        return result.mean(dim=-1).real
+        gamma_mu = self.gamma["mu"].to(color_i.device, dtype=color_i.dtype)  # [d, d, d]
+        result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_mu, color_j)
+        return result.mean(dim=-1).imag
 
 
 class TensorChannel(BilinearChannelCorrelator):
-    """Tensor channel (f₂): σ_μν antisymmetric projection.
+    """Tensor channel (f₂): Im[c_i† σ_μν c_j] projection.
 
     J^PC = 2^++
 
-    Operator: Σ_{μ<ν} ψ̄_i σ_μν ψ_j averaged over antisymmetric pairs
+    σ_μν is purely imaginary. Im[c_i† M c_j] is parity-even → tensor (2++).
     """
 
     channel_name = "tensor"
@@ -1189,15 +1186,15 @@ class TensorChannel(BilinearChannelCorrelator):
         color_i: Tensor,
         color_j: Tensor,
     ) -> Tensor:
-        """σ_μν projection: antisymmetric tensor.
+        """σ_μν projection: Im[c_i† σ_μν c_j] averaged over pairs.
 
-        Returns: einsum("...i,pij,...j->...p", ci.conj(), sigma_munu, cj).mean(-1)
+        Purely imaginary σ_μν → Im is parity-even (tensor 2++).
         """
         sigma = self.gamma["sigma"].to(color_i.device, dtype=color_i.dtype)  # [n_pairs, d, d]
         if sigma.shape[0] == 0:
             return torch.zeros(color_i.shape[:-1], device=color_i.device)
         result = torch.einsum("...i,pij,...j->...p", color_i.conj(), sigma, color_j)
-        return result.mean(dim=-1).real
+        return result.mean(dim=-1).imag
 
 
 # =============================================================================
@@ -1365,6 +1362,140 @@ class GlueballChannel(GaugeChannelCorrelator):
 
 
 # =============================================================================
+# Dirac Spinor Bilinear Channel Correlators
+# =============================================================================
+
+
+class _DiracBilinearBase(BilinearChannelCorrelator):
+    """Base for Dirac spinor bilinear channels.
+
+    Converts color states c ∈ ℂ³ to Dirac spinors ψ ∈ ℂ⁴ via the Hopf
+    fibration, then computes ψ̄_i Γ ψ_j.  Subclasses specify the Γ matrix.
+    """
+
+    _dirac_gamma: dict[str, Tensor] | None = None
+
+    def _get_dirac_gamma(self, device: torch.device) -> dict[str, Tensor]:
+        if self._dirac_gamma is None:
+            from .dirac_spinors import build_dirac_gamma_matrices
+
+            self.__class__._dirac_gamma = build_dirac_gamma_matrices(device=device)
+        return self._dirac_gamma
+
+    def _color_to_spinor_pair(
+        self, color_i: Tensor, color_j: Tensor,
+    ) -> tuple[Tensor, Tensor, Tensor]:
+        """Convert color pair to Dirac spinor pair, returning (psi_i, psi_j, valid)."""
+        from .dirac_spinors import color_to_dirac_spinor
+
+        shape = color_i.shape[:-1]  # [T, S]
+        psi_i, vi = color_to_dirac_spinor(color_i.reshape(-1, 3))
+        psi_j, vj = color_to_dirac_spinor(color_j.reshape(-1, 3))
+        psi_i = psi_i.reshape(*shape, 4)
+        psi_j = psi_j.reshape(*shape, 4)
+        valid = vi.reshape(shape) & vj.reshape(shape)
+        return psi_i, psi_j, valid
+
+
+class DiracScalarChannel(_DiracBilinearBase):
+    """Dirac scalar channel: ψ̄ψ (Γ = I₄).  J^PC = 0^++."""
+
+    channel_name = "dirac_scalar"
+
+    def _apply_gamma_projection(self, color_i: Tensor, color_j: Tensor) -> Tensor:
+        from .dirac_spinors import compute_dirac_bilinear
+
+        psi_i, psi_j, valid = self._color_to_spinor_pair(color_i, color_j)
+        g = self._get_dirac_gamma(color_i.device)
+        I4 = torch.eye(4, device=color_i.device, dtype=g["gamma0"].dtype)
+        result = compute_dirac_bilinear(psi_i, psi_j, g["gamma0"], I4)
+        return torch.where(valid, result, torch.zeros_like(result))
+
+
+class DiracPseudoscalarChannel(_DiracBilinearBase):
+    """Dirac pseudoscalar channel: ψ̄γ₅ψ.  J^PC = 0^-+."""
+
+    channel_name = "dirac_pseudoscalar"
+
+    def _apply_gamma_projection(self, color_i: Tensor, color_j: Tensor) -> Tensor:
+        from .dirac_spinors import compute_dirac_bilinear
+
+        psi_i, psi_j, valid = self._color_to_spinor_pair(color_i, color_j)
+        g = self._get_dirac_gamma(color_i.device)
+        result = compute_dirac_bilinear(psi_i, psi_j, g["gamma0"], g["gamma5"])
+        return torch.where(valid, result, torch.zeros_like(result))
+
+
+class DiracVectorChannel(_DiracBilinearBase):
+    """Dirac vector channel: (1/3)Σ_k ψ̄γ_k ψ.  J^PC = 1^--."""
+
+    channel_name = "dirac_vector"
+
+    def _apply_gamma_projection(self, color_i: Tensor, color_j: Tensor) -> Tensor:
+        from .dirac_spinors import compute_dirac_bilinear
+
+        psi_i, psi_j, valid = self._color_to_spinor_pair(color_i, color_j)
+        g = self._get_dirac_gamma(color_i.device)
+        result = compute_dirac_bilinear(psi_i, psi_j, g["gamma0"], g["gamma_k"])
+        result = result.mean(dim=-1)
+        return torch.where(valid, result, torch.zeros_like(result))
+
+
+class DiracAxialVectorChannel(_DiracBilinearBase):
+    """Dirac axial vector channel: (1/3)Σ_k ψ̄γ₅γ_k ψ.  J^PC = 1^+-."""
+
+    channel_name = "dirac_axial_vector"
+
+    def _apply_gamma_projection(self, color_i: Tensor, color_j: Tensor) -> Tensor:
+        from .dirac_spinors import compute_dirac_bilinear
+
+        psi_i, psi_j, valid = self._color_to_spinor_pair(color_i, color_j)
+        g = self._get_dirac_gamma(color_i.device)
+        result = compute_dirac_bilinear(psi_i, psi_j, g["gamma0"], g["gamma5_k"])
+        result = result.mean(dim=-1)
+        return torch.where(valid, result, torch.zeros_like(result))
+
+
+class DiracTensorChannel(_DiracBilinearBase):
+    """Dirac tensor channel: (1/3)Σ_{j<k} ψ̄σ_jk ψ.  J^P = 1^+ (parity-even).
+
+    Uses only spatial-spatial σ_jk components (indices 3,4,5: σ_12, σ_13, σ_23).
+    Couples to the a₁ meson (~1260 MeV).
+    """
+
+    channel_name = "dirac_tensor"
+
+    def _apply_gamma_projection(self, color_i: Tensor, color_j: Tensor) -> Tensor:
+        from .dirac_spinors import compute_dirac_bilinear
+
+        psi_i, psi_j, valid = self._color_to_spinor_pair(color_i, color_j)
+        g = self._get_dirac_gamma(color_i.device)
+        result = compute_dirac_bilinear(psi_i, psi_j, g["gamma0"], g["sigma_munu"][3:])
+        result = result.mean(dim=-1)
+        return torch.where(valid, result, torch.zeros_like(result))
+
+
+class DiracTensor0kChannel(_DiracBilinearBase):
+    """Dirac tensor σ_0k channel: (1/3)Σ_k ψ̄σ_{0k} ψ.  J^P = 1^- (parity-odd).
+
+    Uses only temporal-spatial σ_0k components (indices 0,1,2: σ_01, σ_02, σ_03).
+    Couples to the pion (pseudoscalar) and provides a cross-check for the
+    pseudoscalar mass.
+    """
+
+    channel_name = "dirac_tensor_0k"
+
+    def _apply_gamma_projection(self, color_i: Tensor, color_j: Tensor) -> Tensor:
+        from .dirac_spinors import compute_dirac_bilinear
+
+        psi_i, psi_j, valid = self._color_to_spinor_pair(color_i, color_j)
+        g = self._get_dirac_gamma(color_i.device)
+        result = compute_dirac_bilinear(psi_i, psi_j, g["gamma0"], g["sigma_munu"][:3])
+        result = result.mean(dim=-1)
+        return torch.where(valid, result, torch.zeros_like(result))
+
+
+# =============================================================================
 # Channel Registry and Factory
 # =============================================================================
 
@@ -1377,6 +1508,12 @@ CHANNEL_REGISTRY: dict[str, type[ChannelCorrelator]] = {
     "tensor": TensorChannel,
     "nucleon": NucleonChannel,
     "glueball": GlueballChannel,
+    "dirac_scalar": DiracScalarChannel,
+    "dirac_pseudoscalar": DiracPseudoscalarChannel,
+    "dirac_vector": DiracVectorChannel,
+    "dirac_axial_vector": DiracAxialVectorChannel,
+    "dirac_tensor": DiracTensorChannel,
+    "dirac_tensor_0k": DiracTensor0kChannel,
 }
 
 

@@ -343,17 +343,10 @@ class TestGlueballOperatorConfig:
 
 
 class TestTensorOperatorConfig:
-    """Tests for TensorOperatorConfig."""
+    """Tests for TensorOperatorConfig (bilinear sigma projection, no extra fields)."""
 
     def test_inherits_from_base(self):
         assert issubclass(TensorOperatorConfig, ChannelConfigBase)
-
-    def test_default_values(self):
-        cfg = TensorOperatorConfig()
-        assert cfg.position_dims is None
-        assert cfg.momentum_axis == 0
-        assert cfg.momentum_mode_max == 4
-        assert cfg.projection_length is None
 
     def test_inherits_base_defaults(self):
         cfg = TensorOperatorConfig()
@@ -361,45 +354,12 @@ class TestTensorOperatorConfig:
         assert cfg.mass == 1.0
         assert cfg.pair_selection == "both"
 
-    def test_override_position_dims(self):
-        cfg = TensorOperatorConfig(position_dims=(0, 1, 2))
-        assert cfg.position_dims == (0, 1, 2)
-
-    def test_override_momentum_settings(self):
-        cfg = TensorOperatorConfig(momentum_axis=1, momentum_mode_max=8)
-        assert cfg.momentum_axis == 1
-        assert cfg.momentum_mode_max == 8
-
-    def test_override_projection_length(self):
-        cfg = TensorOperatorConfig(projection_length=15.0)
-        assert cfg.projection_length == 15.0
-
-    def test_all_overrides(self):
-        cfg = TensorOperatorConfig(
-            warmup_fraction=0.2,
-            mass=0.5,
-            position_dims=(1, 2, 3),
-            momentum_axis=2,
-            momentum_mode_max=6,
-            projection_length=20.0,
-        )
-        assert cfg.warmup_fraction == 0.2
-        assert cfg.mass == 0.5
-        assert cfg.position_dims == (1, 2, 3)
-        assert cfg.momentum_axis == 2
-        assert cfg.momentum_mode_max == 6
-        assert cfg.projection_length == 20.0
-
-    def test_own_fields(self):
+    def test_own_fields_empty(self):
+        """TensorOperatorConfig has no fields beyond the base class."""
         all_fields = {f.name for f in dataclasses.fields(TensorOperatorConfig)}
         base_fields = {f.name for f in dataclasses.fields(ChannelConfigBase)}
         own_fields = all_fields - base_fields
-        assert own_fields == {
-            "position_dims",
-            "momentum_axis",
-            "momentum_mode_max",
-            "projection_length",
-        }
+        assert own_fields == set()
 
     def test_isinstance_of_base(self):
         cfg = TensorOperatorConfig()

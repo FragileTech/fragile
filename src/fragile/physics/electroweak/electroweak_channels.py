@@ -69,6 +69,14 @@ ELECTROWEAK_SYMMETRY_BREAKING_CHANNELS = SYMMETRY_BREAKING_CHANNELS
 ELECTROWEAK_PARITY_CHANNELS = PARITY_VELOCITY_CHANNELS
 ELECTROWEAK_CHANNELS = tuple(ELECTROWEAK_OPERATOR_CHANNELS)
 
+CHIRALITY_CHANNELS = (
+    "chi_mean",
+    "left_fraction",
+    "lr_coupling_mag",
+    "lr_fraction",
+)
+_ALL_SUPPORTED_CHANNELS = frozenset(ELECTROWEAK_CHANNELS) | frozenset(CHIRALITY_CHANNELS)
+
 
 @dataclass
 class ElectroweakChannelConfig:
@@ -111,6 +119,9 @@ class ElectroweakChannelConfig:
     su2_operator_mode: str = "standard"
     enable_walker_type_split: bool = False
     walker_type_scope: str = "frame_global"
+
+    # Frame selection
+    cloning_frames_only: bool = True
 
     # Bootstrap error estimation
     compute_bootstrap_errors: bool = False
@@ -887,6 +898,85 @@ def _require_family_neighbors(
     return _get(topology_u1), _get(topology_su2), _get(topology_ew_mixed), cache
 
 
+def _compute_chirality_series(
+    history: RunHistory,
+    cfg: ElectroweakChannelConfig,
+) -> dict[str, Tensor]:
+    """Compute chirality-derived operator time series.
+
+    Classifies walkers into left-handed (delta + strong resister) and
+    right-handed (weak resister + persister) at each frame. Returns
+    per-frame scalar observables suitable for the correlator pipeline.
+    """
+    from fragile.physics.electroweak.chirality import classify_walkers_vectorized
+
+    start_idx = max(1, int(history.n_recorded * cfg.warmup_fraction))
+    end_fraction = getattr(cfg, "end_fraction", 1.0)
+    end_idx = max(start_idx + 1, int(history.n_recorded * end_fraction))
+
+    info_start = start_idx - 1
+    info_end = end_idx - 1
+
+    will_clone = history.will_clone[info_start:info_end]
+    companions_clone = history.companions_clone[info_start:info_end]
+    fitness = history.fitness[info_start:info_end]
+
+    alive_end = min(info_end, history.alive_mask.shape[0])
+    alive_start = min(info_start, alive_end)
+    alive = history.alive_mask[alive_start:alive_end]
+
+    T, N = will_clone.shape
+    if T < 2:
+        return {}
+
+    # Pad alive if shorter than will_clone
+    if alive.shape[0] < T:
+        pad = T - alive.shape[0]
+        alive = torch.cat([alive, alive[-1:].expand(pad, -1)], dim=0)
+
+    classification = classify_walkers_vectorized(
+        will_clone=will_clone,
+        companions_clone=companions_clone,
+        fitness=fitness,
+        alive=alive,
+    )
+
+    series: dict[str, Tensor] = {}
+    series["chi_mean"] = classification.chi.mean(dim=1)
+    series["left_fraction"] = classification.left_handed.float().mean(dim=1)
+
+    # L-R coupling: fraction of deltas with right-handed companions
+    comp_idx = companions_clone.clamp(0, N - 1)
+    right_mask = classification.right_handed
+    delta_mask = classification.delta
+    comp_is_right = torch.gather(right_mask, 1, comp_idx)
+    cross_mask = delta_mask & comp_is_right
+
+    delta_count = delta_mask.float().sum(dim=1).clamp(min=1)
+    cross_count = cross_mask.float().sum(dim=1)
+
+    series["lr_fraction"] = cross_count / delta_count
+
+    # L-R coupling magnitude via fitness phase transfer
+    h_eff = float(max(cfg.h_eff, 1e-12))
+    comp_fitness = torch.gather(fitness, 1, comp_idx)
+    phase = (comp_fitness - fitness) / h_eff
+    phase_exp = torch.exp(1j * phase.to(torch.complex64))
+
+    cross_count_coupling = cross_count.clamp(min=1)
+    lr_complex = (phase_exp * cross_mask.to(torch.complex64)).sum(dim=1) / cross_count_coupling
+    series["lr_coupling_mag"] = lr_complex.abs()
+
+    # Filter to cloning frames only if enabled
+    cloning_frames_only = bool(getattr(cfg, "cloning_frames_only", True))
+    if cloning_frames_only:
+        frame_has_cloning = will_clone.any(dim=1)  # [T]
+        if frame_has_cloning.any() and not frame_has_cloning.all():
+            series = {name: s[frame_has_cloning] for name, s in series.items()}
+
+    return series
+
+
 def _compute_electroweak_series(
     history: RunHistory,
     cfg: ElectroweakChannelConfig,
@@ -929,11 +1019,23 @@ def _compute_electroweak_series(
         )
     N = int(history.N)
     device = history.x_before_clone.device
+
+    # Pre-compute cloning frame mask if filtering is enabled
+    cloning_frames_only = bool(getattr(cfg, "cloning_frames_only", True))
+
     operators = {name: [] for name in ELECTROWEAK_CHANNELS}
     for frame_idx in range(start_idx, end_idx):
+        info_idx = frame_idx - 1
+
+        # Skip non-cloning frames if cloning_frames_only is enabled
+        if cloning_frames_only:
+            will_clone_hist = getattr(history, "will_clone", None)
+            if will_clone_hist is not None and 0 <= info_idx < will_clone_hist.shape[0]:
+                if not will_clone_hist[info_idx].any():
+                    continue
+
         positions = history.x_before_clone[frame_idx]
         velocities = history.v_before_clone[frame_idx]
-        info_idx = frame_idx - 1
         fitness = history.fitness[info_idx]
         will_clone = _extract_will_clone_for_frame(
             history,
@@ -1128,10 +1230,11 @@ def _resolve_requested_channels(channels: list[str] | None) -> list[str]:
     if channels is None:
         return list(ELECTROWEAK_BASE_CHANNELS)
     requested = [str(name) for name in channels]
-    unknown = sorted(set(requested) - set(ELECTROWEAK_CHANNELS))
+    unknown = sorted(set(requested) - _ALL_SUPPORTED_CHANNELS)
     if unknown:
         msg = (
-            f"Unsupported electroweak channels {unknown}; supported: {list(ELECTROWEAK_CHANNELS)}."
+            f"Unsupported electroweak channels {unknown}; "
+            f"supported: {sorted(_ALL_SUPPORTED_CHANNELS)}."
         )
         raise ValueError(msg)
     return requested
@@ -1145,12 +1248,42 @@ def compute_electroweak_channels(
     """Compute electroweak correlators and return results plus diagnostics."""
     cfg = config or ElectroweakChannelConfig()
     requested_channels = _resolve_requested_channels(channels)
-    series_bundle = _compute_electroweak_series(history, cfg)
+
+    # Split standard EW channels from chirality channels
+    _chirality_set = frozenset(CHIRALITY_CHANNELS)
+    ew_channels = [ch for ch in requested_channels if ch not in _chirality_set]
+    chi_channels = [ch for ch in requested_channels if ch in _chirality_set]
+
+    # Compute standard electroweak operator series
+    if ew_channels:
+        series_bundle = _compute_electroweak_series(history, cfg)
+    else:
+        series_bundle = _ElectroweakSeriesBundle(
+            series_map={}, frame_indices=[], n_valid_frames=0, avg_edges=0.0,
+        )
+
     selected_series = {
         name: series_bundle.series_map[name]
-        for name in requested_channels
+        for name in ew_channels
         if name in series_bundle.series_map
     }
+
+    # Compute chirality-derived series if any were requested
+    if chi_channels:
+        chi_series = _compute_chirality_series(history, cfg)
+        for name in chi_channels:
+            if name in chi_series:
+                selected_series[name] = chi_series[name]
+        # Update frame info if only chirality channels were requested
+        if not ew_channels and chi_series:
+            n_frames = len(next(iter(chi_series.values())))
+            series_bundle = _ElectroweakSeriesBundle(
+                series_map=chi_series,
+                frame_indices=list(range(n_frames)),
+                n_valid_frames=n_frames,
+                avg_edges=0.0,
+            )
+
     correlator_cfg = _to_correlator_config(cfg)
     dt = float(history.delta_t * history.record_every)
     channel_results = _compute_channel_results_batched(

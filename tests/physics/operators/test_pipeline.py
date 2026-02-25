@@ -395,7 +395,7 @@ class TestComputeStrongForcePipeline:
     def test_tensor_operator_shape(self, history, default_config):
         result = compute_strong_force_pipeline(history, default_config)
         T = len(result.prepared_data.frame_indices)
-        assert result.operators["tensor"].shape == (T, 5)
+        assert result.operators["tensor"].shape == (T,)
 
     def test_correlator_shape(self, history, default_config):
         result = compute_strong_force_pipeline(history, default_config)
