@@ -503,6 +503,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
     latent_3d_pane = pn.pane.Plotly(None, sizing_mode="stretch_width", height=600)
     latent_2d_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
     usage_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
+    code_time_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
     inspect_label = pn.pane.Markdown("*Click a point in z0 vs z1 to inspect*")
     inspect_image = pn.Column(
         pn.pane.Markdown("*(click a point)*"), width=200, height=200,
@@ -532,6 +533,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         inspect_label,
         inspect_row,
         usage_pane,
+        code_time_pane,
         sizing_mode="stretch_width",
     )
     recon_tab = pn.Column(recon_pane, recon_summary, sizing_mode="stretch_width")
@@ -744,6 +746,33 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
             usage_pane.object = plot_chart_usage(usage)
         except Exception:
             logger.warning("Chart usage error: %s", traceback.format_exc())
+
+        # Code-timestep boxplot
+        try:
+            timesteps = cache["timesteps"]
+            ts_sub_all = timesteps[idx]
+            # Build (code_label, timestep) pairs for each point
+            code_labels = [
+                f"c{K_np[i]}:{K_code_np[i]}" for i in range(len(K_np))
+            ]
+            box_data = {
+                "code": code_labels,
+                "timestep": ts_sub_all.astype(float),
+            }
+            boxwhisker = hv.BoxWhisker(
+                box_data, kdims=["code"], vdims=["timestep"],
+            ).opts(
+                width=max(400, 30 * len(set(code_labels))),
+                height=300,
+                xrotation=90,
+                title="Timestep distribution per code",
+                ylabel="timestep",
+                box_fill_color="#4c78a8",
+                box_fill_alpha=0.5,
+            )
+            code_time_pane.object = boxwhisker
+        except Exception:
+            logger.warning("Code-timestep boxplot error: %s", traceback.format_exc())
 
         # Store sub-arrays for click inspect
         app_state["latent_sub"] = {

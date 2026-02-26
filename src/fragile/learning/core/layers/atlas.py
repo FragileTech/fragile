@@ -830,6 +830,8 @@ class CovariantChartRouter(nn.Module):
             tau = self._temperature(z)
             scores = scores + 0.1 * feature_scores / tau.unsqueeze(1)
 
+        # Cache soft weights for radial calibration under hard routing.
+        self._last_soft_router_weights = F.softmax(scores, dim=-1).detach()
         router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)
         K_chart = torch.argmax(router_weights, dim=1)
         return router_weights, K_chart
@@ -1037,6 +1039,8 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
                 hard_routing=hard_routing,
                 hard_routing_tau=hard_routing_tau,
             )
+            # Soft weights cached by cov_router for radial calibration.
+            self._last_soft_router_weights = self.cov_router._last_soft_router_weights
         else:
             scores = _poincare_hyperbolic_score(
                 v,
@@ -1046,6 +1050,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
                 tau_denom_min=self.router_tau_denom_min,
                 eps=self.router_transport_eps,
             )
+            self._last_soft_router_weights = F.softmax(scores, dim=-1).detach()
             router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)  # [B, N_c]
             K_chart = torch.argmax(router_weights, dim=1)  # [B]
 

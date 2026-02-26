@@ -189,7 +189,10 @@ def _compute_encoder_losses(
     consistency_loss = model.compute_consistency_loss(enc_w, dec_w)
     diversity_loss = compute_diversity_loss(enc_w, K)
     uniformity_loss = compute_hyperbolic_uniformity_loss(z_geo)
-    radial_cal_loss = compute_radial_calibration_loss(z_geo, enc_w, K)
+    # Use soft router weights for radial calibration so entropy is meaningful
+    # (hard one-hot weights always have H=0, making the target degenerate).
+    radial_cal_w = getattr(model.encoder, '_last_soft_router_weights', enc_w)
+    radial_cal_loss = compute_radial_calibration_loss(z_geo, radial_cal_w, K)
 
     codebook = model.encoder.codebook
     cb_spread_loss = compute_codebook_spread_loss(codebook)

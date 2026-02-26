@@ -602,13 +602,17 @@ def compute_radial_calibration_loss(
     num_charts: int,
     eps: float = 1e-6,
 ) -> Tensor:
-    """Calibrate radius to routing entropy.
+    """Calibrate radius to routing confidence.
 
     O(BD) complexity. Schedule: epoch 100+.
 
+    Confident points (low routing entropy) → near the Poincaré boundary (r≈1),
+    where a single chart unambiguously owns the region.  Uncertain points (high
+    entropy) → near the origin (r≈0), where chart boundaries meet.
+
     r_i = ||z_i||
     H_i = -sum_k(w_ik * log(w_ik + eps))    # routing entropy
-    target_i = H_i / log(num_charts)          # normalized to [0,1]
+    target_i = 1 - H_i / log(num_charts)     # confident → 1, uncertain → 0
     L = mean((r_i - target_i)^2)
     """
     z = _project_to_ball(z_geo)
@@ -617,7 +621,7 @@ def compute_radial_calibration_loss(
     # Routing entropy per sample
     H = -(router_weights * torch.log(router_weights + eps)).sum(dim=1)  # [B]
     log_K = math.log(max(num_charts, 2))
-    target = H / log_K  # [B], normalized to [0, 1]
+    target = 1.0 - H / log_K  # [B], confident → 1, uncertain → 0
 
     return ((r - target) ** 2).mean()
 
