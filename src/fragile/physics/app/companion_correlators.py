@@ -105,6 +105,7 @@ BARYON_MODES = (
     "flux_exp",
     "score_signed",
     "score_abs",
+    "dirac",
 )
 VECTOR_MODES = ("standard", "score_directed", "score_gradient", "dirac")
 VECTOR_PROJECTIONS = ("full", "longitudinal", "transverse")
@@ -686,8 +687,60 @@ def build_companion_correlator_tab(
             if ps_modes:
                 channel_labels.append("pseudoscalar")
 
+            # -- Lazy Dirac baryon computation (shared across baryon channels) --
+            _dirac_baryon_result = None
+
+            def _get_dirac_baryon_result():
+                nonlocal _dirac_baryon_result
+                if _dirac_baryon_result is None:
+                    from fragile.physics.new_channels.dirac_baryons import (
+                        compute_dirac_baryon_operators,
+                    )
+                    alive_mask = torch.as_tensor(
+                        history.alive_mask[start_idx - 1 : end_idx - 1],
+                        dtype=torch.bool,
+                        device=device,
+                    )
+                    sample_indices = torch.arange(
+                        color.shape[1], device=device,
+                    ).unsqueeze(0).expand(color.shape[0], -1)
+                    # Baryons need 2 neighbors: j from companions_distance, k from companions_clone
+                    neighbor_indices = torch.stack(
+                        [companions_distance, companions_clone], dim=-1,
+                    )  # [T, N, 2]
+                    _dirac_baryon_result = compute_dirac_baryon_operators(
+                        color=color,
+                        color_valid=color_valid,
+                        sample_indices=sample_indices,
+                        neighbor_indices=neighbor_indices,
+                        alive=alive_mask,
+                    )
+                return _dirac_baryon_result
+
+            def _add_dirac_baryon_channel(field_name: str, key: str):
+                """Extract one Dirac baryon field and compute its FFT correlator."""
+                if color.shape[-1] < 3:
+                    return
+                from fragile.physics.qft_utils import _fft_correlator_batched
+                dr = _get_dirac_baryon_result()
+                op_series = getattr(dr, field_name)  # [T]
+                merged_operators[key] = op_series
+                corr = _fft_correlator_batched(
+                    op_series.unsqueeze(0),
+                    max_lag=max_lag,
+                    use_connected=use_connected,
+                )
+                merged_correlators[key] = corr.squeeze(0)
+
             # -- Baryon: iterate over selected modes --
             for mode in selected_modes.get("baryon", []):
+                if mode == _DIRAC_MODE:
+                    _add_dirac_baryon_channel("nucleon", "baryon_nucleon_dirac")
+                    _add_dirac_baryon_channel("delta", "baryon_delta_dirac")
+                    _add_dirac_baryon_channel("n_star_scalar", "baryon_nstar_scalar_dirac")
+                    _add_dirac_baryon_channel("n_star_axial", "baryon_nstar_axial_dirac")
+                    _add_dirac_baryon_channel("nucleon_det", "baryon_nucleon_det_dirac")
+                    continue
                 out = compute_baryon_correlator_from_color(
                     color=color,
                     color_valid=color_valid,

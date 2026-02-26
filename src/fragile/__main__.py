@@ -99,5 +99,96 @@ def dl(port, open_browser, outputs):
     )
 
 
+@run.command(
+    context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
+)
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def train(args):
+    """Train the TopoEncoder (Attentive Atlas vs Standard VQ-VAE).
+
+    All arguments after 'train' are forwarded to the training script.
+    Run `uv run fragile train -- --help` for all training options.
+    """
+    import sys
+
+    from fragile.learning.topoencoder_mnist import main
+
+    original_argv = sys.argv
+    sys.argv = ["fragile-train", *args]
+    try:
+        main()
+    finally:
+        sys.argv = original_argv
+
+
+@run.command(
+    "vla-train",
+    context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
+)
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def vla_train(args):
+    """Train the TopoEncoder VLA experiment (3-phase pipeline).
+
+    All arguments after 'vla-train' are forwarded to the training script.
+    Run `uv run fragile vla-train -- --help` for all config options.
+    """
+    import sys
+
+    from fragile.learning.vla.train import main
+
+    original_argv = sys.argv
+    sys.argv = ["fragile-vla-train", *args]
+    try:
+        main()
+    finally:
+        sys.argv = original_argv
+
+
+@run.command(
+    "vla-unsup",
+    context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
+)
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def vla_unsup(args):
+    """Unsupervised TopoEncoder training on VLA features.
+
+    All arguments after 'vla-unsup' are forwarded to the training script.
+    Run `uv run fragile vla-unsup -- --help` for all training options.
+    """
+    import sys
+
+    from fragile.learning.vla.train_unsupervised import main
+
+    original_argv = sys.argv
+    sys.argv = ["fragile-vla-unsup", *args]
+    try:
+        main()
+    finally:
+        sys.argv = original_argv
+
+
+@run.command(
+    "vla-joint",
+    context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
+)
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def vla_joint(args):
+    """Joint encoder + world model training (3-phase pipeline).
+
+    All arguments after 'vla-joint' are forwarded to the training script.
+    Run `uv run fragile vla-joint -- --help` for all training options.
+    """
+    import sys
+
+    from fragile.learning.vla.train_joint import main
+
+    original_argv = sys.argv
+    sys.argv = ["fragile-vla-joint", *args]
+    try:
+        main()
+    finally:
+        sys.argv = original_argv
+
+
 if __name__ == "__main__":
     run()

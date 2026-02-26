@@ -43,6 +43,14 @@ _CHANNEL_PATTERNS: list[tuple[re.Pattern, str, str]] = [
     (re.compile(r"^meson_scalar(?:_|$)"), "scalar", "meson"),
     (re.compile(r"^axial_full(?:_|$)"), "axial_vector", "meson"),
     (re.compile(r"^vector_full(?:_|$)"), "vector", "meson"),
+    # Dirac baryon operator prefixes (longer → must precede bare baryon_nucleon)
+    (re.compile(r"^baryon_nucleon_dirac(?:_|$)"), "nucleon", "baryon"),
+    (re.compile(r"^baryon_nucleon_det_dirac(?:_|$)"), "nucleon", "baryon"),
+    (re.compile(r"^baryon_delta_dirac(?:_|$)"), "delta", "baryon"),
+    (re.compile(r"^baryon_nstar_scalar_dirac(?:_|$)"), "n_star_scalar", "baryon"),
+    (re.compile(r"^baryon_nstar_axial_dirac(?:_|$)"), "n_star_axial", "baryon"),
+    (re.compile(r"^baryon_delta(?:_|$)"), "delta", "baryon"),
+    (re.compile(r"^baryon_nstar(?:_|$)"), "n_star", "baryon"),
     (re.compile(r"^baryon_nucleon(?:_|$)"), "nucleon", "baryon"),
     (re.compile(r"^glueball_plaquette(?:_|$)"), "glueball", "glueball"),
     # Dirac spinor operator prefixes (map to parent channel groups)
@@ -98,6 +106,10 @@ _CHANNEL_GROUP_MAP = {
     "glueball": "glueball",
     "glueball_plaquette": "glueball",
     "tensor": "tensor",
+    "delta": "delta",
+    "n_star_scalar": "n_star_scalar",
+    "n_star_axial": "n_star_axial",
+    "n_star": "n_star",
 }
 
 _CHANNEL_TYPES = {
@@ -108,6 +120,10 @@ _CHANNEL_TYPES = {
     "nucleon": "baryon",
     "glueball": "glueball",
     "tensor": "tensor",
+    "delta": "baryon",
+    "n_star_scalar": "baryon",
+    "n_star_axial": "baryon",
+    "n_star": "baryon",
     "u1_hypercharge": "electroweak",
     "su2_isospin": "electroweak",
     "ew_mixed": "electroweak",

@@ -166,6 +166,63 @@ def parallel_transport(
     return v * (lambda_x / lambda_y)
 
 
+def poincare_exp_map(
+    z: torch.Tensor, v: torch.Tensor, c: float = 1.0, eps: float = 1e-5
+) -> torch.Tensor:
+    """Exponential map at arbitrary base point z: exp_z(v).
+
+    Maps a tangent vector v at z to a point in the Poincaré ball.
+    Generalises ``exp_map_zero`` which only works from the origin.
+
+    Args:
+        z: [..., D] base point in the Poincaré ball
+        v: [..., D] tangent vector at z
+        c: curvature (c=1 for unit ball)
+        eps: numerical stability epsilon
+
+    Returns:
+        point: [..., D] resulting point in the Poincaré ball
+    """
+    sqrt_c = math.sqrt(c)
+    z_sq = (z**2).sum(dim=-1, keepdim=True)
+    lambda_z = 2.0 / (1.0 - c * z_sq).clamp(min=eps)
+
+    v_norm = v.norm(dim=-1, keepdim=True).clamp(min=eps)
+    # Hyperbolic norm of tangent vector at z
+    v_hyp_norm = lambda_z * v_norm
+    direction = v / v_norm
+    w = torch.tanh(sqrt_c * v_hyp_norm / 2.0) * direction / sqrt_c
+    return mobius_add(z, w, c=c, eps=eps)
+
+
+def christoffel_contraction(
+    z: torch.Tensor, v: torch.Tensor, c: float = 1.0, eps: float = 1e-5
+) -> torch.Tensor:
+    """Christoffel symbol contraction Γ^k_{ij} v^i v^j for the Poincaré ball.
+
+    For the conformal metric g_{ij} = λ(z)^2 δ_{ij}, the Christoffel symbols
+    give the geodesic acceleration correction:
+
+        Γ^k v^i v^j = 4c(z·v)v / (1 - c|z|^2) - 2c|v|^2 z / (1 - c|z|^2)
+
+    This is O(D) — no matrix inversions needed.
+
+    Args:
+        z: [..., D] position in the Poincaré ball
+        v: [..., D] velocity (contravariant)
+        c: curvature
+        eps: numerical stability epsilon
+
+    Returns:
+        correction: [..., D] geodesic correction vector
+    """
+    z_sq = (z**2).sum(dim=-1, keepdim=True)
+    zv = (z * v).sum(dim=-1, keepdim=True)
+    v_sq = (v**2).sum(dim=-1, keepdim=True)
+    denom = (1.0 - c * z_sq).clamp(min=eps)
+    return 4.0 * c * zv * v / denom - 2.0 * c * v_sq * z / denom
+
+
 @dataclass
 class GeodesicConfig:
     """Configuration for GeodesicCrossAttention."""

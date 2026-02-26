@@ -6,10 +6,77 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+import numpy as np
+
 from .gauge import exp_map_zero, hyperbolic_distance, log_map_zero, mobius_add
 from .primitives import IsotropicBlock, NormGatedGELU, SpectralLinear
 from .topology import FactorizedJumpOperator, InvariantChartClassifier
 from .ugn import SoftEquivariantLayer
+
+
+# ---------------------------------------------------------------------------
+# Quasi-uniform initialization helpers
+# ---------------------------------------------------------------------------
+
+
+def _fibonacci_sphere(n: int) -> torch.Tensor:
+    """Generate *n* quasi-uniformly spaced points on S² (Fibonacci lattice).
+
+    Returns a [n, 3] tensor on the unit sphere. For D != 3, falls back to
+    ``_spread_directions``.
+    """
+    golden = (1 + math.sqrt(5)) / 2
+    indices = torch.arange(n, dtype=torch.float32)
+    theta = 2 * math.pi * indices / golden          # azimuth
+    phi = torch.acos(1 - 2 * (indices + 0.5) / n)   # polar
+    x = torch.sin(phi) * torch.cos(theta)
+    y = torch.sin(phi) * torch.sin(theta)
+    z = torch.cos(phi)
+    return torch.stack([x, y, z], dim=-1)
+
+
+def _spread_directions(n: int, dim: int) -> torch.Tensor:
+    """Generate *n* spread-out unit directions in R^dim.
+
+    Uses the Fibonacci sphere for dim == 3. Otherwise generates random
+    directions and iteratively repels them (simple Lloyd-like relaxation).
+    """
+    if dim == 3:
+        return _fibonacci_sphere(n)
+
+    # Random init + greedy repulsion (5 iterations suffice for init quality)
+    pts = torch.randn(n, dim)
+    pts = torch.nn.functional.normalize(pts, dim=-1)
+    for _ in range(20):
+        # Compute pairwise cosine similarity
+        sim = pts @ pts.t()                  # [n, n]
+        sim.fill_diagonal_(-1e9)             # ignore self
+        # Push each point away from its nearest neighbor
+        nearest = sim.argmax(dim=1)          # [n]
+        neighbors = pts[nearest]             # [n, dim]
+        pts = pts - 0.3 * neighbors          # repel
+        pts = torch.nn.functional.normalize(pts, dim=-1)
+    return pts
+
+
+def _spread_codebook(num_charts: int, codes_per_chart: int, dim: int,
+                     radius: float = 0.3) -> torch.Tensor:
+    """Initialize codebook entries spread around the local origin.
+
+    Each chart gets ``codes_per_chart`` codes arranged as quasi-uniform
+    directions scaled to ``radius`` in the Poincaré ball.  This avoids the
+    usual failure mode where all codes start near zero and instantly collapse
+    to a single nearest-neighbor.
+
+    Returns [num_charts, codes_per_chart, dim].
+    """
+    cb = torch.zeros(num_charts, codes_per_chart, dim)
+    for c in range(num_charts):
+        dirs = _spread_directions(codes_per_chart, dim)
+        # Uniform radii in [radius/2, radius] so codes aren't on a thin shell
+        r = torch.rand(codes_per_chart, 1) * (radius / 2) + (radius / 2)
+        cb[c] = dirs * r
+    return cb
 
 
 def _poincare_temperature(
@@ -845,13 +912,18 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
 
         self.val_proj = SpectralLinear(hidden_dim, latent_dim, bias=True)
 
-        # Unit-sphere init: each chart gets a distinct catchment region from
-        # the first forward pass, preventing softmax winner-take-all collapse.
+        # Quasi-uniform chart centers: Fibonacci sphere (3-D) or repulsion
+        # init so every chart starts with a distinct, well-separated catchment
+        # region — prevents softmax winner-take-all collapse at epoch 0.
         self.chart_centers = nn.Parameter(
-            torch.nn.functional.normalize(torch.randn(num_charts, latent_dim), dim=-1)
+            _spread_directions(num_charts, latent_dim) * 0.5
         )
 
-        self.codebook = nn.Parameter(torch.randn(num_charts, codes_per_chart, latent_dim) * 0.02)
+        # Spread codebook codes around the local origin of each chart so that
+        # VQ does not instantly collapse to a single nearest-neighbor.
+        self.codebook = nn.Parameter(
+            _spread_codebook(num_charts, codes_per_chart, latent_dim, radius=0.3)
+        )
 
         self.soft_equiv_layers: nn.ModuleList | None = None
         if soft_equiv_metric:
@@ -1046,6 +1118,20 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         )
 
 
+class _ChartFiLM1d(nn.Module):
+    """Per-chart FiLM conditioning for 1-D feature vectors [B, H]."""
+
+    def __init__(self, num_charts: int, dim: int) -> None:
+        super().__init__()
+        self.gammas = nn.Parameter(torch.zeros(num_charts, dim))
+        self.betas = nn.Parameter(torch.zeros(num_charts, dim))
+
+    def forward(self, h: torch.Tensor, router_weights: torch.Tensor) -> torch.Tensor:
+        gamma = router_weights @ self.gammas  # [B, H]
+        beta = router_weights @ self.betas
+        return h * (1.0 + gamma) + beta
+
+
 class PrimitiveTopologicalDecoder(nn.Module):
     """Topological decoder using gauge-covariant primitives."""
 
@@ -1132,15 +1218,20 @@ class PrimitiveTopologicalDecoder(nn.Module):
             # Texture residual maps to hidden_dim (added before conv decoder)
             self.tex_residual = SpectralLinear(latent_dim, hidden_dim, bias=True)
         else:
-            self.renderer = nn.Sequential(
-                SpectralLinear(hidden_dim, hidden_dim, bias=True),
-                NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
-                SpectralLinear(hidden_dim, hidden_dim, bias=True),
-                NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles),
-                SpectralLinear(hidden_dim, output_dim, bias=True),
-            )
+            self.render_fc1 = SpectralLinear(hidden_dim, hidden_dim, bias=True)
+            self.render_act1 = NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles)
+            self.render_fc2 = SpectralLinear(hidden_dim, hidden_dim, bias=True)
+            self.render_act2 = NormGatedGELU(bundle_size=bundle_size, n_bundles=n_bundles)
+            self.render_out = SpectralLinear(hidden_dim, output_dim, bias=True)
+            self.renderer = None  # signals FC-explicit path in forward
             self.render_skip = SpectralLinear(hidden_dim, output_dim, bias=True)
             self.tex_residual = SpectralLinear(latent_dim, output_dim, bias=True)
+            if film_conditioning:
+                self.film1 = _ChartFiLM1d(num_charts, hidden_dim)
+                self.film2 = _ChartFiLM1d(num_charts, hidden_dim)
+            else:
+                self.film1 = None
+                self.film2 = None
 
         # Conditional texture flow
         if texture_flow:
@@ -1221,13 +1312,7 @@ class PrimitiveTopologicalDecoder(nn.Module):
         )
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
 
-        if self.render_skip is not None:
-            # FC mode: two parallel paths + texture in output space
-            x_hat = self.renderer(h_global) + self.render_skip(h_global)  # [B, D_out]
-            if z_tex is not None:
-                z_tex = torch.tanh(z_tex)
-                x_hat = x_hat + self.tex_residual_scale * self.tex_residual(z_tex)
-        else:
+        if self.renderer is not None:
             # Conv mode: texture added in hidden space before conv decoder
             h = h_global
             if z_tex is not None:
@@ -1244,6 +1329,20 @@ class PrimitiveTopologicalDecoder(nn.Module):
 
                 x_hat = conformal_frequency_gate(x_hat, z_geo, self.latent_dim)
                 x_hat = x_hat.reshape(x_hat.shape[0], -1)
+        else:
+            # FC mode: layer-by-layer with optional FiLM conditioning
+            h = self.render_fc1(h_global)
+            if self.film1 is not None:
+                h = self.film1(h, router_weights)
+            h = self.render_act1(h)
+            h = self.render_fc2(h)
+            if self.film2 is not None:
+                h = self.film2(h, router_weights)
+            h = self.render_act2(h)
+            x_hat = self.render_out(h) + self.render_skip(h_global)
+            if z_tex is not None:
+                z_tex = torch.tanh(z_tex)
+                x_hat = x_hat + self.tex_residual_scale * self.tex_residual(z_tex)
 
         # Texture flow loss
         if self.texture_flow is not None and z_tex is not None:

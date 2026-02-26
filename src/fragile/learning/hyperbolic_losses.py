@@ -794,9 +794,9 @@ def compute_code_collapse_penalty(
 ) -> Tensor:
     """Differentiable penalty for code usage collapse.
 
-    Computes soft code assignment probabilities from Euclidean distances
-    between v_local and codebook, weighted by router. Penalizes when
-    one code dominates: max(soft_usage) - 1/K per chart.
+    Computes soft code assignment probabilities from hyperbolic distances
+    between v_local and codebook in the Poincaré ball, weighted by router.
+    Penalizes when one code dominates: max(soft_usage) - 1/K per chart.
 
     Unlike per_chart_code_entropy (which uses bincount → zero gradients),
     this provides gradient signal through the codebook and encoder.
@@ -805,10 +805,10 @@ def compute_code_collapse_penalty(
     if K < 2:
         return torch.tensor(0.0, device=v_local.device)
 
-    # Distances from each sample to all codes [B, N_c, K]
-    v_exp = v_local.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
-    cb_exp = codebook.detach().unsqueeze(0)  # [1, N_c, K, D] detach codebook
-    dist_sq = ((v_exp - cb_exp) ** 2).sum(dim=-1)  # [B, N_c, K]
+    # Project both to Poincaré ball and compute hyperbolic distances [B, N_c, K]
+    v_exp = _project_to_ball(v_local).unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
+    cb_exp = _project_to_ball(codebook.detach()).unsqueeze(0)  # [1, N_c, K, D]
+    dist_sq = hyperbolic_distance(v_exp, cb_exp) ** 2  # [B, N_c, K]
 
     # Soft code assignments per chart
     soft_assign = F.softmax(-dist_sq / max(temperature, 1e-6), dim=-1)  # [B, N_c, K]

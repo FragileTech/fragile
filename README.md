@@ -1,87 +1,109 @@
 # Fragile
 
-Fragile is a research codebase for the Fractal Gas optimization algorithm and the
-Fractal Set data structure, with a Jupyter Book that captures the theory, derivations,
+Fragile is a research codebase for the **Fractal Gas** optimization algorithm and the
+**Fractal Set** data structure, with a Jupyter Book that captures the theory, derivations,
 and experiments.
-
-## What This Repo Contains
-
-- `src/fragile/`: installable package (core implementation lives in `src/fragile/fractalai/`)
-- `docs/`: Jupyter Book (source in `docs/source/`, build output in `docs/_build/`)
-- `tests/`: pytest suites
-- `examples/`, `media/`, `outputs/`: notebooks, assets, generated artifacts
-
-## Code Map
-
-- `src/fragile/fractalai/core/`: companion selection, fitness, cloning, kinetics,
-  and the Fractal Set data structure
-- `src/fragile/fractalai/experiments/`: simulations, dashboards, convergence studies
-- `src/fragile/fractalai/experiments/gauge/`: U(1) and SU(2) gauge symmetry tests
-- `src/fragile/fractalai/theory/`: theory utilities and analysis scripts
-- CLI entry point: `src/fragile/fractalai/cli.py`
 
 ## Install
 
-- `uv sync --all-extras` (recommended)
-- `uv pip install -e .`
-- Tooling: `uv tool install hatch` (one-time, for `uv run hatch ...` commands)
+```bash
+uv sync --all-extras          # recommended
+uv pip install -e .           # alternative
+uv tool install hatch         # one-time, for hatch commands
+```
+
+## Dashboards
+
+All dashboards launch via `uv run fragile <command>` and serve a Panel app in the browser.
+
+### Videogames — Atari Fractal Gas
+
+Explore Fractal Gas swarm dynamics on Atari environments (Breakout, Pong, etc.).
+
+```bash
+uv run fragile videogames                # http://localhost:5006
+uv run fragile videogames --port 8080    # custom port
+```
+
+### Robots — DM Control Fractal Gas
+
+Visualize Fractal Gas on continuous-control MuJoCo tasks (cartpole, humanoid, etc.).
+
+```bash
+uv run fragile robots                    # http://localhost:5007
+```
+
+### Physics — QFT Swarm Convergence
+
+Analyse lattice QFT simulations: correlator fits, mass extraction, and convergence plots.
+
+```bash
+uv run fragile physics                   # http://localhost:5007
+uv run fragile physics --open            # auto-open browser
+```
+
+### DL — TopoEncoder Learning
+
+Monitor TopoEncoder training runs: loss curves, topology metrics, atlas visualisations.
+
+```bash
+uv run fragile dl                        # http://localhost:5008
+uv run fragile dl --outputs runs/        # custom outputs directory
+```
+
+## Training
+
+Train the **TopoEncoder** (Attentive Atlas vs Standard VQ-VAE) directly from the CLI.
+All arguments after `--` are forwarded to the training script's argparse.
+
+```bash
+uv run fragile train -- --help                        # show all training options
+uv run fragile train -- --epochs 500 --dataset mnist  # full run
+uv run fragile train -- --epochs 1 --dataset mnist    # quick smoke test
+```
+
+Key arguments:
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--dataset` | `mnist` | Dataset (`mnist`, `fashionmnist`, `cifar10`) |
+| `--epochs` | `200` | Training epochs |
+| `--batch-size` | `128` | Batch size |
+| `--latent-dim` | `64` | Latent dimension |
+| `--num-embeddings` | `512` | Codebook size |
+| `--use-atlas` | off | Enable Attentive Atlas |
+| `--num-charts` | `8` | Number of atlas charts |
+| `--output-dir` | `outputs/` | Output directory |
 
 ## Documentation (Jupyter Book)
 
-- Build: `uv run hatch run docs:build`
-- Build and serve: `uv run hatch run docs:docs`
+```bash
+uv run hatch run docs:build   # build only
+uv run hatch run docs:docs    # build and serve
+```
 
 ## Development
 
-- Tests: `uv run hatch run test:test`
-- Doctests: `uv run hatch run test:doctest`
-- Lint/format: `uv run hatch run lint:all`
-
-## QFT Calibration
-
 ```bash
-python src/experiments/calibrate_fractal_gas_qft.py \
-  --history-path outputs/fractal_gas_potential_well/20260123_164153_history.pt \
-  --m-gev 91.1876 \
-  --hbar-eff 1.0 \
-  --d 3
+uv run hatch run test:test     # tests
+uv run hatch run test:doctest  # doctests
+uv run hatch run lint:all      # lint / format
 ```
 
-## QFT Ensemble Validation
+## Project Structure
 
-Run multi-trial statistical validation of QFT predictions with full Standard Model gauge group (U(1) × SU(2) × SU(3)):
-
-```bash
-python src/experiments/run_qft_validation_ensemble.py \
-  --n-trials 100 \
-  --n-walkers 1000 \
-  --n-steps 1000 \
-  --parallel-jobs 50 \
-  --use-viscous-coupling \
-  --nu 0.1 \
-  --viscous-length-scale 1.0 \
-  --output-dir outputs/qft_ensemble
 ```
-
-Quick test (runs in ~30 seconds):
-
-```bash
-python src/experiments/run_qft_validation_ensemble.py \
-  --n-trials 5 \
-  --n-walkers 100 \
-  --n-steps 200 \
-  --parallel-jobs 2 \
-  --use-viscous-coupling \
-  --output-dir outputs/qft_ensemble_test
+src/fragile/
+  fractalai/          # Fractal Gas algorithm
+    core/             # companion selection, fitness, cloning, kinetics
+    videogames/       # Atari dashboard & environments
+    robots/           # DM Control dashboard & environments
+  physics/            # lattice QFT simulations & analysis dashboard
+  learning/           # TopoEncoder, training script & dashboard
+docs/                 # Jupyter Book (source in docs/source/)
+tests/                # pytest suites
 ```
-
-Outputs:
-- `ensemble_report.md`: Summary with 95% confidence intervals
-- `ensemble_metrics.json`: Full statistics for all metrics
-- `plots/`: Correlation lengths, Wilson loops, phase distributions, SU(3) color alignment
 
 ## License
 
 MIT
-
-/home/guillem/fragiletech/fragile/outputs/qft_calibrated/qft_penalty_thr0p75_pen0p9_m354_ed2p80_nu1p10_N10000_long_history.pt

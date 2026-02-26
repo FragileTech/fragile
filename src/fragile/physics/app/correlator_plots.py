@@ -100,6 +100,12 @@ CHANNEL_COLORS: dict[str, str] = {
     "j_vector_R_su2": "#bcbddc",
     "parity_violation_dirac": "#636363",
     "parity_violation_walker": "#969696",
+    # Dirac baryon channels
+    "baryon_nucleon_dirac": "#2ca02c",
+    "baryon_delta_dirac": "#98df8a",
+    "baryon_nstar_scalar_dirac": "#d62728",
+    "baryon_nstar_axial_dirac": "#ff9896",
+    "baryon_nucleon_det_dirac": "#8c564b",
 }
 
 _DEFAULT_COLOR = "#1f77b4"
@@ -541,6 +547,8 @@ _STRONG_PREFIX_DISPLAY: dict[str, str] = {
     "pseudoscalar": "Pseudoscalar",
     "scalar": "Scalar",
     "vector": "Vector",
+    "baryon_delta": "Nucleon",
+    "baryon_nstar": "Nucleon",
     "nucleon": "Nucleon",
     "glueball": "Glueball",
     "tensor": "Tensor",
