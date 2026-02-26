@@ -455,6 +455,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         button_type="default",
     )
     point_size = pn.widgets.IntSlider(name="Point size", start=1, end=10, value=3, width=300)
+    show_latents = pn.widgets.Checkbox(name="Show latent points", value=True, width=300)
     show_chart_centers = pn.widgets.Checkbox(name="Show chart centers", value=False, width=300)
     show_code_centers = pn.widgets.Checkbox(name="Show code centers", value=False, width=300)
     show_tree_lines = pn.widgets.Checkbox(name="Show tree lines", value=False, width=300)
@@ -481,6 +482,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         seed_input,
         color_by,
         point_size,
+        show_latents,
         pn.layout.Divider(),
         pn.pane.Markdown("### Hierarchy"),
         show_chart_centers,

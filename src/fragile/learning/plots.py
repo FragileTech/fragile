@@ -257,6 +257,7 @@ def build_latent_scatter(
     alpha_by_confidence: bool = False,
     K_code: np.ndarray | None = None,
     show_code_centers: bool = False,
+    show_points: bool = True,
 ) -> hv.Points | hv.Overlay:
     """Build a single 2D scatter for one dimension pair.
 

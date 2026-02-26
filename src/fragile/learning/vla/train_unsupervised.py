@@ -142,11 +142,17 @@ def train_unsupervised(args: argparse.Namespace) -> None:  # noqa: C901
             (
                 K_chart, K_code, z_n, z_tex, enc_w, z_geo,
                 vq_loss, indices, z_n_all, c_bar, v_local,
-            ) = model.encoder(x)
+            ) = model.encoder(
+                x,
+                hard_routing=args.hard_routing,
+                hard_routing_tau=args.hard_routing_tau,
+            )
 
             # ── Decoder forward (dreaming mode) ────────────
             x_recon, dec_w, aux_losses = model.decoder(
                 z_geo, z_tex, chart_index=None,
+                hard_routing=args.hard_routing,
+                hard_routing_tau=args.hard_routing_tau,
             )
 
             # ── Loss computation (13 terms) ────────────────
@@ -410,6 +416,10 @@ def main() -> None:
     # Resume / device
     p.add_argument("--resume", default="", help="Checkpoint path to resume from")
     p.add_argument("--device", default="auto")
+    p.add_argument("--hard-routing", action="store_true", default=False,
+                   help="Use Gumbel-softmax hard routing (one-hot forward, ST gradients)")
+    p.add_argument("--hard-routing-tau", type=float, default=1.0,
+                   help="Temperature for Gumbel-softmax hard routing")
 
     # ── Loss weights ───────────────────────────────────────
     p.add_argument("--w-recon", type=float, default=1.0)

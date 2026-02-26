@@ -140,6 +140,8 @@ def _compute_encoder_losses(
     jump_op: FactorizedJumpOperator,
     args: argparse.Namespace,
     epoch: int,
+    hard_routing: bool = False,
+    hard_routing_tau: float = 1.0,
 ) -> tuple[torch.Tensor, dict[str, float], torch.Tensor, torch.Tensor, torch.Tensor]:
     """Compute all 13 encoder losses with split encoder/decoder calls.
 
@@ -149,10 +151,11 @@ def _compute_encoder_losses(
     (
         K_chart, K_code, z_n, z_tex, enc_w, z_geo,
         vq_loss, indices, z_n_all, c_bar, v_local,
-    ) = model.encoder(x)
+    ) = model.encoder(x, hard_routing=hard_routing, hard_routing_tau=hard_routing_tau)
 
     x_recon, dec_w, aux_losses = model.decoder(
         z_geo, z_tex, chart_index=None,
+        hard_routing=hard_routing, hard_routing_tau=hard_routing_tau,
     )
 
     recon_loss = F.mse_loss(x_recon, x)
@@ -347,7 +350,11 @@ def _run_phase1(
         for batch in single_loader:
             x = batch["feature"].to(device)
 
-            total, metrics, _, _, _ = _compute_encoder_losses(x, model, jump_op, args, epoch)
+            total, metrics, _, _, _ = _compute_encoder_losses(
+                x, model, jump_op, args, epoch,
+                hard_routing=args.hard_routing,
+                hard_routing_tau=args.hard_routing_tau,
+            )
 
             optimizer.zero_grad()
             total.backward()
@@ -493,7 +500,11 @@ def _run_phase2(
             # Encode all frames in one batched pass (frozen encoder)
             with torch.no_grad():
                 flat = features.reshape(B * H, D_feat)
-                K_flat, _, _, _, rw_flat, z_flat, *_ = model.encoder(flat)
+                K_flat, _, _, _, rw_flat, z_flat, *_ = model.encoder(
+                    flat,
+                    hard_routing=args.hard_routing,
+                    hard_routing_tau=args.hard_routing_tau,
+                )
                 z_all = z_flat.reshape(B, H, -1)
                 K_all = K_flat.reshape(B, H)
                 rw_0 = rw_flat[:B]  # router weights for first frame
@@ -662,12 +673,20 @@ def _run_phase3(
 
             # Frame 0: full encoder losses + reuse outputs (1 encoder call)
             enc_loss, enc_metrics_0, z_geo_0, enc_w_0, K_ch_0 = \
-                _compute_encoder_losses(features[:, 0, :], model, jump_op, args, epoch)
+                _compute_encoder_losses(
+                    features[:, 0, :], model, jump_op, args, epoch,
+                    hard_routing=args.hard_routing,
+                    hard_routing_tau=args.hard_routing_tau,
+                )
 
             # Frames 1..H-1: batched encoding (1 encoder call)
             if H > 1:
                 rest = features[:, 1:, :].reshape(B * (H - 1), D_feat)
-                K_rest, _, _, _, rw_rest, z_rest, *_ = model.encoder(rest)
+                K_rest, _, _, _, rw_rest, z_rest, *_ = model.encoder(
+                    rest,
+                    hard_routing=args.hard_routing,
+                    hard_routing_tau=args.hard_routing_tau,
+                )
                 z_geo_rest = z_rest.reshape(B, H - 1, -1)
                 K_rest = K_rest.reshape(B, H - 1)
                 z_all = torch.cat([z_geo_0.unsqueeze(1), z_geo_rest], dim=1)
@@ -1110,6 +1129,10 @@ def main() -> None:
     p.add_argument("--codes-per-chart", type=int, default=64)
     p.add_argument("--action-dim", type=int, default=6)
     p.add_argument("--sequence-length", type=int, default=8)
+    p.add_argument("--hard-routing", action="store_true", default=False,
+                   help="Use Gumbel-softmax hard routing (one-hot forward, ST gradients)")
+    p.add_argument("--hard-routing-tau", type=float, default=1.0,
+                   help="Temperature for Gumbel-softmax hard routing")
 
     # Phase epochs (0 = skip)
     p.add_argument("--phase1-epochs", type=int, default=100)

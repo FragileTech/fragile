@@ -203,3 +203,61 @@ def test_decoder_all_features_combined() -> None:
     assert router_weights.shape == (4, 5)
     assert "flow_loss" in aux_losses
     assert aux_losses["flow_loss"].ndim == 0
+
+
+def test_hard_routing_produces_onehot() -> None:
+    """Hard routing produces one-hot encoder weights with correct shapes."""
+    torch.manual_seed(10)
+    model = TopoEncoderPrimitives(
+        input_dim=3,
+        hidden_dim=32,
+        latent_dim=2,
+        num_charts=3,
+        codes_per_chart=5,
+    )
+    x = torch.randn(8, 3)
+    x_recon, vq_loss, enc_weights, dec_weights, K_chart, z_geo, z_n, c_bar, aux_losses = model(
+        x, use_hard_routing=True, hard_routing_tau=0.5,
+    )
+
+    # Shapes unchanged
+    assert x_recon.shape == (8, 3)
+    assert enc_weights.shape == (8, 3)
+    assert dec_weights.shape == (8, 3)
+    assert K_chart.shape == (8,)
+    assert z_geo.shape == (8, 2)
+
+    # Encoder weights should be one-hot: max == 1, sum == 1
+    assert torch.allclose(enc_weights.max(dim=-1).values, torch.ones(8), atol=1e-5)
+    assert torch.allclose(enc_weights.sum(dim=-1), torch.ones(8), atol=1e-5)
+
+    # Outputs finite
+    assert torch.isfinite(x_recon).all()
+    assert torch.isfinite(vq_loss)
+
+
+def test_hard_routing_gradients_flow() -> None:
+    """Straight-through gradients flow through hard routing."""
+    torch.manual_seed(11)
+    model = TopoEncoderPrimitives(
+        input_dim=3,
+        hidden_dim=32,
+        latent_dim=2,
+        num_charts=3,
+        codes_per_chart=5,
+    )
+    x = torch.randn(8, 3)
+    x_recon, vq_loss, enc_weights, dec_weights, K_chart, z_geo, z_n, c_bar, aux_losses = model(
+        x, use_hard_routing=True, hard_routing_tau=0.5,
+    )
+
+    loss = torch.nn.functional.mse_loss(x_recon, x) + vq_loss
+    loss.backward()
+
+    # Encoder parameters should receive gradients via straight-through estimator
+    has_grad = False
+    for p in model.encoder.parameters():
+        if p.grad is not None and p.grad.abs().sum() > 0:
+            has_grad = True
+            break
+    assert has_grad, "No gradients flowed to encoder parameters through hard routing"
