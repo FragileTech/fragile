@@ -399,6 +399,7 @@ def _run_phase2(
         w_jump_dynamics=args.w_jump_dynamics,
     )
 
+    K = args.num_charts
     last_metrics: dict[str, float] = {}
 
     for epoch in tqdm(range(args.phase2_epochs), desc="Phase 2"):
