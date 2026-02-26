@@ -59,7 +59,7 @@ ENCODER_LOSS_KEYS = [
 
 DYNAMICS_LOSS_KEYS = [
     "geodesic", "chart_transition", "momentum_reg",
-    "energy_conservation", "jump_dynamics",
+    "energy_conservation", "jump_dynamics", "screened_poisson", "hodge",
 ]
 
 INFO_KEYS = [
@@ -72,7 +72,10 @@ def _init_encoder_accumulators() -> dict[str, float]:
     return {k: 0.0 for k in ENCODER_LOSS_KEYS + INFO_KEYS + ["total"]}
 
 
-WM_DIAG_KEYS = ["mean_momentum", "mean_jump_rate", "jump_fraction", "mean_phi_eff"]
+WM_DIAG_KEYS = [
+    "mean_momentum", "mean_jump_rate", "jump_fraction", "mean_phi_eff",
+    "hodge_cons", "hodge_sol", "hodge_harm",
+]
 
 
 def _init_dynamics_accumulators() -> dict[str, float]:
@@ -98,12 +101,20 @@ def _wm_diagnostics(wm_output: dict[str, torch.Tensor]) -> dict[str, float]:
     jump_rates = wm_output["jump_rates"]
     jump_masks = wm_output["jump_masks"]
     phi_eff = wm_output["phi_eff"]
-    return {
+    diag = {
         "mean_momentum": momenta.norm(dim=-1).mean().item(),
         "mean_jump_rate": jump_rates.mean().item(),
         "jump_fraction": jump_masks.float().mean().item(),
         "mean_phi_eff": phi_eff.mean().item(),
+        "hodge_cons": 0.0,
+        "hodge_sol": 0.0,
+        "hodge_harm": 0.0,
     }
+    if "hodge_conservative_ratio" in wm_output:
+        diag["hodge_cons"] = wm_output["hodge_conservative_ratio"].mean().item()
+        diag["hodge_sol"] = wm_output["hodge_solenoidal_ratio"].mean().item()
+        diag["hodge_harm"] = wm_output["hodge_harmonic_ratio"].mean().item()
+    return diag
 
 
 def _chart_stats_from_tensor(
@@ -461,6 +472,9 @@ def _run_phase2(
         w_momentum_reg=args.w_momentum_reg,
         w_energy_conservation=args.w_energy_conservation,
         w_jump_dynamics=args.w_jump_dynamics,
+        w_screened_poisson=args.w_screened_poisson,
+        wm_screening_kappa=args.wm_screening_kappa,
+        w_hodge=args.w_hodge,
     )
 
     K = args.num_charts
@@ -553,6 +567,11 @@ def _run_phase2(
                 f"phi_eff={acc['mean_phi_eff']:.4f}"
             )
             print(
+                f"  Hodge: cons={acc['hodge_cons']:.4f} "
+                f"sol={acc['hodge_sol']:.4f} "
+                f"harm={acc['hodge_harm']:.4f}"
+            )
+            print(
                 f"  Train: grad={acc['grad_norm']:.2e} "
                 f"upd_ratio={acc['update_ratio']:.2e} "
                 f"param={acc['param_norm']:.2e}"
@@ -621,6 +640,9 @@ def _run_phase3(
         w_momentum_reg=args.w_momentum_reg,
         w_energy_conservation=args.w_energy_conservation,
         w_jump_dynamics=args.w_jump_dynamics,
+        w_screened_poisson=args.w_screened_poisson,
+        wm_screening_kappa=args.wm_screening_kappa,
+        w_hodge=args.w_hodge,
     )
 
     K = args.num_charts
@@ -769,6 +791,11 @@ def _run_phase3(
                 f"lambda={acc['wm/mean_jump_rate']:.4f} "
                 f"jump%={acc['wm/jump_fraction']:.4f} "
                 f"phi_eff={acc['wm/mean_phi_eff']:.4f}"
+            )
+            print(
+                f"  Hodge: cons={acc['wm/hodge_cons']:.4f} "
+                f"sol={acc['wm/hodge_sol']:.4f} "
+                f"harm={acc['wm/hodge_harm']:.4f}"
             )
             print(
                 f"  Train: grad={acc['grad_norm']:.2e} "
@@ -947,6 +974,9 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
 
     world_model = None
     if args.phase2_epochs > 0 or args.phase3_epochs > 0:
+        _risk_alpha = getattr(args, "wm_risk_metric_alpha", None)
+        if _risk_alpha is None:
+            _risk_alpha = 0.0
         world_model = GeometricWorldModel(
             latent_dim=args.latent_dim,
             action_dim=args.action_dim,
@@ -963,6 +993,7 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
             use_jump=args.wm_use_jump,
             jump_rate_hidden=args.wm_jump_rate_hidden,
             min_length=max(args.wm_min_length, 0.0),  # -1 (auto) deferred until after P1
+            risk_metric_alpha=_risk_alpha,
         ).to(device)
 
     # ── Parameter breakdown ──────────────────────────────────
@@ -1115,6 +1146,8 @@ def main() -> None:
                         "0=off, -1=auto-measure from encoder after Phase 1)")
     p.add_argument("--wm-d-model", type=int, default=128,
                    help="CovariantAttention width for world model")
+    p.add_argument("--wm-risk-metric-alpha", type=float, default=None,
+                   help="Risk-metric coupling alpha; None uses config default (0=off)")
 
     # Phase 3 scaling
     p.add_argument("--phase3-encoder-scale", type=float, default=0.1)
@@ -1143,6 +1176,12 @@ def main() -> None:
     p.add_argument("--w-momentum-reg", type=float, default=0.01)
     p.add_argument("--w-energy-conservation", type=float, default=0.01)
     p.add_argument("--w-jump-dynamics", type=float, default=0.1)
+    p.add_argument("--w-screened-poisson", type=float, default=0.0,
+                   help="Screened Poisson PDE residual weight; 0 = disabled")
+    p.add_argument("--wm-screening-kappa", type=float, default=1.0,
+                   help="Screening mass kappa for screened Poisson loss")
+    p.add_argument("--w-hodge", type=float, default=0.0,
+                   help="Hodge consistency loss weight; 0 = disabled")
 
     # Logging / saving / resume
     p.add_argument("--log-every", type=int, default=5)

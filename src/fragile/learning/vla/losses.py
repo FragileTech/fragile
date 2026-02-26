@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Callable
+
 import torch
 import torch.nn.functional as F
 
@@ -128,6 +130,157 @@ def compute_jump_dynamics_loss(
         Scalar L1 loss on jump rates.
     """
     return jump_rates.abs().mean()
+
+
+def compute_hodge_consistency_loss(
+    hodge_harmonic_forces: torch.Tensor,
+) -> torch.Tensor:
+    """Penalize the harmonic residual in the Hodge decomposition.
+
+    A well-structured model should explain all forces through either
+    the conservative potential or the solenoidal curl field. The harmonic
+    residual should be small.
+
+    Args:
+        hodge_harmonic_forces: [B, H, D] harmonic force residuals.
+
+    Returns:
+        Scalar L2 loss on harmonic forces.
+    """
+    return (hodge_harmonic_forces ** 2).mean()
+
+
+# ---------------------------------------------------------------------------
+# Screened Poisson critic (PDE residual loss)
+# ---------------------------------------------------------------------------
+
+
+def hyperbolic_laplacian(
+    V_func: Callable[[torch.Tensor], torch.Tensor],
+    z: torch.Tensor,
+) -> torch.Tensor:
+    """Compute Laplace-Beltrami operator Delta_G V at positions z on the Poincare ball.
+
+    Uses autograd to compute the Euclidean gradient and Hessian trace, then
+    applies the Poincare ball conformal correction (curvature c=1):
+
+        Delta_G f = (1/lambda^2) [Delta_E f + (D-2) lambda (z . grad f)]
+
+    where lambda(z) = 2 / (1 - |z|^2).
+
+    Args:
+        V_func: Callable mapping z [B, D] -> V [B, 1] (must be differentiable).
+        z: [B, D] positions (requires_grad will be set internally).
+
+    Returns:
+        lap_V: [B, 1] Laplace-Beltrami of V at each position.
+    """
+    z = z.detach().requires_grad_(True)
+    V = V_func(z)  # [B, 1]
+
+    # Gradient: nabla V  [B, D]
+    (grad_V,) = torch.autograd.grad(
+        V.sum(), z, create_graph=True, allow_unused=True,
+    )
+    if grad_V is None or not grad_V.requires_grad:
+        # V is constant or linear-only w.r.t. z — Hessian trace is zero.
+        # Laplacian only has the (D-2)*lambda*(z.gradV) correction for linear V.
+        if grad_V is not None:
+            r_sq = (z ** 2).sum(dim=-1, keepdim=True)
+            one_minus_r_sq = (1.0 - r_sq).clamp(min=1e-6)
+            lambda_z = 2.0 / one_minus_r_sq
+            z_dot_grad = (z * grad_V).sum(dim=-1, keepdim=True)
+            inv_lambda_sq = (one_minus_r_sq / 2.0) ** 2
+            D = z.shape[-1]
+            return inv_lambda_sq * (D - 2) * lambda_z * z_dot_grad
+        return torch.zeros(z.shape[0], 1, device=z.device, dtype=z.dtype)
+
+    # Euclidean Laplacian: Delta_E V = sum_i d^2 V / dz_i^2
+    D = z.shape[-1]
+    laplacian_E = torch.zeros(z.shape[0], 1, device=z.device, dtype=z.dtype)
+    for i in range(D):
+        grad2 = torch.autograd.grad(
+            grad_V[:, i].sum(), z, create_graph=True, allow_unused=True,
+        )[0]
+        if grad2 is not None:
+            laplacian_E[:, 0] = laplacian_E[:, 0] + grad2[:, i]
+
+    # Poincare ball correction
+    r_sq = (z ** 2).sum(dim=-1, keepdim=True)  # [B, 1]
+    one_minus_r_sq = (1.0 - r_sq).clamp(min=1e-6)
+    lambda_z = 2.0 / one_minus_r_sq  # [B, 1]
+
+    # z . grad V
+    z_dot_grad = (z * grad_V).sum(dim=-1, keepdim=True)  # [B, 1]
+
+    # Delta_G V = (1/lambda^2) [Delta_E V + (D-2) lambda (z . grad V)]
+    inv_lambda_sq = (one_minus_r_sq / 2.0) ** 2
+    lap_G = inv_lambda_sq * (laplacian_E + (D - 2) * lambda_z * z_dot_grad)
+
+    return lap_G  # [B, 1]
+
+
+def compute_screened_poisson_loss(
+    potential_net: torch.nn.Module,
+    z_trajectory: torch.Tensor,
+    z_targets: torch.Tensor,
+    router_weights: torch.Tensor,
+    kappa: float = 1.0,
+    max_samples: int = 64,
+) -> torch.Tensor:
+    """PDE residual loss: ||(-Delta_G + kappa^2) V - rho_r||^2.
+
+    Enforces that the critic V approximately solves the screened Poisson
+    equation on the Poincare ball, with reward density rho_r approximated
+    by the geodesic miss-distance to target.
+
+    Args:
+        potential_net: The CovariantPotentialNet module.
+        z_trajectory: [B, H, D] predicted positions.
+        z_targets: [B, H, D] target positions.
+        router_weights: [B, K] chart routing weights.
+        kappa: Screening mass (controls decay length).
+        max_samples: Max z samples to evaluate (limits second-order grad cost).
+
+    Returns:
+        Scalar PDE residual loss.
+    """
+    B, H, D = z_trajectory.shape
+
+    # Flatten and subsample for efficiency
+    z_flat = z_trajectory.reshape(B * H, D)
+    z_tgt_flat = z_targets.reshape(B * H, D)
+    n = z_flat.shape[0]
+    if n > max_samples:
+        idx = torch.randperm(n, device=z_flat.device)[:max_samples]
+        z_flat = z_flat[idx]
+        z_tgt_flat = z_tgt_flat[idx]
+
+    # Reward density proxy: geodesic distance to target
+    rho_r = hyperbolic_distance(z_flat.detach(), z_tgt_flat.detach()).unsqueeze(-1)  # [N, 1]
+
+    # Router weights for V evaluation (broadcast mean)
+    rw_expanded = router_weights.mean(dim=0, keepdim=True).expand(z_flat.shape[0], -1)  # [N, K]
+
+    # Define V as a function of z for autograd
+    def V_func(z_in: torch.Tensor) -> torch.Tensor:
+        n_in = z_in.shape[0]
+        rw_in = rw_expanded[:n_in]
+        ctx_x, ctx_z = potential_net.chart_tok(rw_in, z_in)
+        x_q = potential_net.z_embed(z_in)
+        v_feat, _ = potential_net.v_critic_attn(z_in, ctx_z, x_q, ctx_x, ctx_x)
+        return potential_net.v_out(v_feat)  # [N, 1]
+
+    # Compute Laplace-Beltrami of V (creates graph for backprop)
+    lap_V = hyperbolic_laplacian(V_func, z_flat)  # [N, 1]
+
+    # V at the same points (recompute for clean graph on V_val side)
+    V_val = V_func(z_flat.detach().requires_grad_(False))  # [N, 1]
+
+    # PDE residual: (-Delta_G + kappa^2) V - rho_r
+    residual = -lap_V + kappa ** 2 * V_val - rho_r
+
+    return (residual ** 2).mean()
 
 
 # ---------------------------------------------------------------------------
@@ -283,6 +436,28 @@ def compute_phase2_loss(
         )
         total = total + config.w_jump_dynamics * loss_jd
         metrics["jump_dynamics"] = loss_jd.item()
+
+    # Hodge consistency loss
+    if getattr(config, "w_hodge", 0.0) > 0 and "hodge_harmonic_forces" in wm_output:
+        loss_hodge = compute_hodge_consistency_loss(wm_output["hodge_harmonic_forces"])
+        total = total + config.w_hodge * loss_hodge
+        metrics["hodge"] = loss_hodge.item()
+
+    # Screened Poisson critic loss
+    if getattr(config, "w_screened_poisson", 0.0) > 0 and "potential_net" in wm_output:
+        rw = wm_output.get(
+            "router_weights_final",
+            torch.softmax(wm_output["chart_logits"][:, -1, :], dim=-1),
+        )
+        loss_sp = compute_screened_poisson_loss(
+            wm_output["potential_net"],
+            wm_output["z_trajectory"],
+            wm_output.get("z_targets", z_targets),
+            rw,
+            kappa=getattr(config, "wm_screening_kappa", 1.0),
+        )
+        total = total + config.w_screened_poisson * loss_sp
+        metrics["screened_poisson"] = loss_sp.item()
 
     metrics["total"] = total.item()
     return total, metrics

@@ -26,6 +26,40 @@ from fragile.learning.core.layers.primitives import SpectralLinear
 from fragile.learning.core.layers.topology import FactorizedJumpOperator
 
 
+def compute_risk_tensor(
+    force: torch.Tensor,
+    curl_tensor: torch.Tensor | None = None,
+    metric_inv: torch.Tensor | None = None,
+) -> torch.Tensor:
+    """Compute risk tensor T = T_grad + T_maxwell.
+
+    Args:
+        force: [B, D] conservative force vector.
+        curl_tensor: [B, D, D] antisymmetric field strength, or None.
+        metric_inv: [B, D, D] inverse metric tensor, or None.
+
+    Returns:
+        T: [B, D, D] risk tensor (symmetric).
+    """
+    # Gradient stress: T_grad = f (x) f
+    T = torch.einsum("bi,bj->bij", force, force)  # [B, D, D]
+
+    if curl_tensor is not None and metric_inv is not None:
+        # Maxwell stress: T_maxwell = F_ik F^k_j - 1/4 delta_ij F_kl F^kl
+        # F^k_j = G^{km} F_{mj}
+        F_up = torch.bmm(metric_inv, curl_tensor)  # [B, D, D]
+        # F_ik F^k_j
+        FF = torch.bmm(curl_tensor, F_up)  # [B, D, D]
+        # Trace: F_kl F^kl
+        trace_FF = torch.diagonal(FF, dim1=-2, dim2=-1).sum(dim=-1, keepdim=True).unsqueeze(-1)  # [B, 1, 1]
+        D = force.shape[1]
+        eye = torch.eye(D, device=force.device, dtype=force.dtype).unsqueeze(0)
+        T_maxwell = FF - 0.25 * trace_FF * eye
+        T = T + T_maxwell
+
+    return T
+
+
 # ---------------------------------------------------------------------------
 # Tokenizers
 # ---------------------------------------------------------------------------
@@ -449,6 +483,58 @@ class CovariantMomentumInit(nn.Module):
         return lam_sq * self.net(z)
 
 
+class HodgeDecomposer(nn.Module):
+    """Decomposes total force into conservative, solenoidal, and harmonic parts.
+
+    Hodge decomposition: f_total = f_conservative + f_solenoidal + f_harmonic
+
+    - f_conservative = -nabla V (gradient of critic potential, from potential_net)
+    - f_solenoidal = beta * F * G^{-1} * p (from Boris/curl field strength)
+    - f_harmonic = f_total - f_conservative - f_solenoidal (residual)
+
+    The harmonic component should be small if the model is well-structured.
+    """
+
+    def __init__(self, latent_dim: int):
+        super().__init__()
+        self.latent_dim = latent_dim
+
+    def forward(
+        self,
+        force_total: torch.Tensor,
+        force_conservative: torch.Tensor,
+        force_solenoidal: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        """Compute Hodge decomposition and diagnostics.
+
+        Args:
+            force_total: [B, D] total non-control force.
+            force_conservative: [B, D] conservative part (-nabla Phi from potential_net).
+            force_solenoidal: [B, D] solenoidal part (Boris curl force).
+
+        Returns:
+            Dictionary with:
+                harmonic: [B, D] harmonic residual
+                conservative_ratio: [B] ||f_cons|| / ||f_total||
+                solenoidal_ratio: [B] ||f_sol|| / ||f_total||
+                harmonic_ratio: [B] ||f_harm|| / ||f_total||
+        """
+        f_harmonic = force_total - force_conservative - force_solenoidal
+
+        eps = 1e-8
+        total_norm = force_total.norm(dim=-1).clamp(min=eps)  # [B]
+        cons_norm = force_conservative.norm(dim=-1)  # [B]
+        sol_norm = force_solenoidal.norm(dim=-1)  # [B]
+        harm_norm = f_harmonic.norm(dim=-1)  # [B]
+
+        return {
+            "harmonic": f_harmonic,
+            "conservative_ratio": cons_norm / total_norm,
+            "solenoidal_ratio": sol_norm / total_norm,
+            "harmonic_ratio": harm_norm / total_norm,
+        }
+
+
 # ---------------------------------------------------------------------------
 # Main world model
 # ---------------------------------------------------------------------------
@@ -505,6 +591,7 @@ class GeometricWorldModel(nn.Module):
         use_jump: bool = True,
         jump_rate_hidden: int = 64,
         min_length: float = 0.0,
+        risk_metric_alpha: float = 0.0,
     ) -> None:
         super().__init__()
         self.latent_dim = latent_dim
@@ -517,6 +604,7 @@ class GeometricWorldModel(nn.Module):
         self.use_boris = use_boris
         self.use_jump = use_jump
         self.min_length = min_length
+        self.risk_metric_alpha = risk_metric_alpha
 
         # Ornstein-Uhlenbeck coefficients
         self.c1 = math.exp(-gamma_friction * dt)
@@ -535,7 +623,11 @@ class GeometricWorldModel(nn.Module):
             self.cf_max = 0.0
 
         # Metric
-        self.metric = ConformalMetric()
+        if risk_metric_alpha > 0:
+            from fragile.learning.core.layers.gauge import RiskAdaptiveConformalMetric
+            self.metric = RiskAdaptiveConformalMetric(risk_coupling_alpha=risk_metric_alpha)
+        else:
+            self.metric = ConformalMetric()
 
         # Covariant sub-modules
         self.potential_net = CovariantPotentialNet(
@@ -565,6 +657,9 @@ class GeometricWorldModel(nn.Module):
         # Initial momentum from position
         self.momentum_init = CovariantMomentumInit(latent_dim)
 
+        # Hodge decomposition diagnostic (no learnable parameters)
+        self.hodge_decomposer = HodgeDecomposer(latent_dim)
+
     # -----------------------------------------------------------------
     # Boris rotation
     # -----------------------------------------------------------------
@@ -574,7 +669,9 @@ class GeometricWorldModel(nn.Module):
         p_minus: torch.Tensor,
         z: torch.Tensor,
         action: torch.Tensor,
-    ) -> torch.Tensor:
+        curl_F: torch.Tensor | None = None,
+        g_inv: torch.Tensor | None = None,
+    ) -> tuple[torch.Tensor, torch.Tensor | None]:
         """Norm-preserving Boris rotation for the Lorentz/curl force.
 
         For D > 3 the cross product generalises to the antisymmetric
@@ -585,16 +682,20 @@ class GeometricWorldModel(nn.Module):
             p_minus: [B, D] momentum after potential half-kick.
             z: [B, D] current position.
             action: [B, A] action vector.
+            curl_F: [B, D, D] pre-computed curl tensor, or None to compute.
+            g_inv: [B, D, D] pre-computed inverse metric, or None to compute.
 
         Returns:
             p_plus: [B, D] rotated momentum (same norm).
+            curl_F: [B, D, D] the curl tensor used (for reuse), or None.
         """
         if self.curl_net is None:
-            return p_minus
+            return p_minus, None
 
         h = self.dt
-        F = self.curl_net(z, action)  # [B, D, D] antisymmetric
-        g_inv = self.metric.metric_inv(z)  # [B, D, D]
+        F = curl_F if curl_F is not None else self.curl_net(z, action)  # [B, D, D] antisymmetric
+        if g_inv is None:
+            g_inv = self.metric.metric_inv(z)  # [B, D, D]
         T = (h / 2.0) * self.beta_curl * torch.bmm(g_inv, F)  # [B, D, D]
 
         # Boris half-rotation
@@ -605,7 +706,7 @@ class GeometricWorldModel(nn.Module):
         s_factor = 2.0 / (1.0 + t_sq).unsqueeze(-1)  # [B, 1]
         s_vec = s_factor * torch.bmm(T, p_prime.unsqueeze(-1)).squeeze(-1)  # [B, D]
 
-        return p_minus + s_vec
+        return p_minus + s_vec, F
 
     # -----------------------------------------------------------------
     # BAOAB integration step
@@ -617,7 +718,7 @@ class GeometricWorldModel(nn.Module):
         p: torch.Tensor,
         action: torch.Tensor,
         rw: torch.Tensor,
-    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict[str, torch.Tensor]]:
         """One geodesic Boris-BAOAB integration step.
 
         Fixes five geometry bugs in the original skeleton:
@@ -637,8 +738,10 @@ class GeometricWorldModel(nn.Module):
             z_next: [B, D] updated position.
             p_next: [B, D] updated momentum.
             phi_eff: [B, 1] effective potential at the step.
+            hodge_info: Hodge decomposition diagnostics dict (may be empty).
         """
         h = self.dt
+        _use_risk = self.risk_metric_alpha > 0
 
         # --- B step (first half): momentum kick ---
         # Direct force prediction (cotangent vector, no autograd).
@@ -647,6 +750,17 @@ class GeometricWorldModel(nn.Module):
         u_pi = self.control_net(z, action, rw)  # [B, D] cotangent force
         kick = force - u_pi
 
+        # Pre-compute curl tensor once for both Boris rotation and risk tensor
+        curl_F = None
+        if self.curl_net is not None:
+            curl_F = self.curl_net(z, action)
+
+        # Compute risk tensor for metric adaptation
+        risk_T = None
+        if _use_risk:
+            g_inv_for_risk = self.metric.metric_inv(z)
+            risk_T = compute_risk_tensor(force, curl_F, g_inv_for_risk)
+
         # ψ_F: smooth force squashing (1-Lipschitz, C∞, direction-preserving)
         if self.F_max > 0:
             kick = self.F_max * kick / (
@@ -654,11 +768,22 @@ class GeometricWorldModel(nn.Module):
             )
 
         p_minus = p - (h / 2.0) * kick
-        p_plus = self._boris_rotation(p_minus, z, action)
+        p_plus, _ = self._boris_rotation(p_minus, z, action, curl_F=curl_F)
+
+        # Hodge decomposition: solenoidal force = Boris impulse / dt
+        hodge_info: dict[str, torch.Tensor] = {}
+        boris_impulse = p_plus - p_minus  # [B, D]
+        f_solenoidal = boris_impulse / max(h, 1e-8)
+        f_total_no_ctrl = force + f_solenoidal
+        hodge_info = self.hodge_decomposer(f_total_no_ctrl, force, f_solenoidal)
+
         p = p_plus - (h / 2.0) * kick
 
         # --- A step (first half): geodesic drift ---
-        g_inv = self.metric.metric_inv(z)  # [B, D, D]
+        if _use_risk:
+            g_inv = self.metric.metric_inv(z, risk_tensor=risk_T)  # [B, D, D]
+        else:
+            g_inv = self.metric.metric_inv(z)  # [B, D, D]
         v = torch.einsum("bij,bj->bi", g_inv, p)  # contravariant velocity
         geo_corr = christoffel_contraction(z, v)
         v_corr = v - (h / 4.0) * geo_corr
@@ -671,7 +796,10 @@ class GeometricWorldModel(nn.Module):
         z = _project_to_ball(z)
 
         # --- O step: Ornstein-Uhlenbeck thermostat ---
-        cf = self.metric.conformal_factor(z)  # [B, 1]
+        if _use_risk:
+            cf = self.metric.conformal_factor(z, risk_tensor=risk_T)  # [B, 1]
+        else:
+            cf = self.metric.conformal_factor(z)  # [B, 1]
         if self.cf_max > 0:
             # Smooth conformal factor cap via tanh: preserves interior values,
             # smoothly saturates near boundary
@@ -680,7 +808,10 @@ class GeometricWorldModel(nn.Module):
         p = self.c1 * p + self.c2 * cf * xi
 
         # --- A step (second half): geodesic drift ---
-        g_inv = self.metric.metric_inv(z)
+        if _use_risk:
+            g_inv = self.metric.metric_inv(z, risk_tensor=risk_T)
+        else:
+            g_inv = self.metric.metric_inv(z)
         v = torch.einsum("bij,bj->bi", g_inv, p)
         geo_corr = christoffel_contraction(z, v)
         v_corr = v - (h / 4.0) * geo_corr
@@ -703,7 +834,7 @@ class GeometricWorldModel(nn.Module):
 
         p = p - (h / 2.0) * kick2
 
-        return z, p, phi_eff
+        return z, p, phi_eff, hodge_info
 
     # -----------------------------------------------------------------
     # Jump process
@@ -778,6 +909,10 @@ class GeometricWorldModel(nn.Module):
                 jump_rates: [B, H, 1] Poisson rates (diagnostic).
                 jump_masks: [B, H] jump events (diagnostic).
                 phi_eff: [B, H, 1] effective potential (diagnostic).
+                hodge_conservative_ratio: [B, H] ||f_cons|| / ||f_total||.
+                hodge_solenoidal_ratio: [B, H] ||f_sol|| / ||f_total||.
+                hodge_harmonic_ratio: [B, H] ||f_harm|| / ||f_total||.
+                hodge_harmonic_forces: [B, H, D] harmonic residual forces.
         """
         B, H, _A = actions.shape
         device = z_0.device
@@ -797,12 +932,23 @@ class GeometricWorldModel(nn.Module):
         jump_rates = torch.zeros(B, H, 1, device=device)
         jump_masks = torch.zeros(B, H, dtype=torch.bool, device=device)
         phi_eff_out = torch.zeros(B, H, 1, device=device)
+        hodge_conservative = torch.zeros(B, H, device=device)
+        hodge_solenoidal = torch.zeros(B, H, device=device)
+        hodge_harmonic = torch.zeros(B, H, device=device)
+        hodge_harmonic_forces = torch.zeros(B, H, D, device=device)
 
         for t in range(H):
             action_t = actions[:, t, :]  # [B, A]
 
-            # BAOAB step with geodesic corrections
-            z, p, phi_eff = self._baoab_step(z, p, action_t, rw)
+            # BAOAB step with geodesic corrections + Hodge diagnostics
+            z, p, phi_eff, hodge_info = self._baoab_step(z, p, action_t, rw)
+
+            # Hodge decomposition diagnostics
+            if hodge_info:
+                hodge_conservative[:, t] = hodge_info["conservative_ratio"]
+                hodge_solenoidal[:, t] = hodge_info["solenoidal_ratio"]
+                hodge_harmonic[:, t] = hodge_info["harmonic_ratio"]
+                hodge_harmonic_forces[:, t] = hodge_info["harmonic"]
 
             # Jump process
             z, rw, cl, jr, jm = self._jump_step(z, p, action_t, rw)
@@ -821,4 +967,10 @@ class GeometricWorldModel(nn.Module):
             "jump_rates": jump_rates,
             "jump_masks": jump_masks,
             "phi_eff": phi_eff_out,
+            "potential_net": self.potential_net,
+            "router_weights_final": rw,
+            "hodge_conservative_ratio": hodge_conservative,
+            "hodge_solenoidal_ratio": hodge_solenoidal,
+            "hodge_harmonic_ratio": hodge_harmonic,
+            "hodge_harmonic_forces": hodge_harmonic_forces,
         }

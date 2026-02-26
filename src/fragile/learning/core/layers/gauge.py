@@ -340,6 +340,49 @@ class ConformalMetric(nn.Module):
         return math.sqrt(d_k) / lambda_z
 
 
+class RiskAdaptiveConformalMetric(ConformalMetric):
+    """Conformal metric adapted by risk tensor: lambda(z,T) = lambda_0(z) * (1 + alpha * ||T||_F)."""
+
+    def __init__(self, risk_coupling_alpha: float = 0.1, epsilon: float = 1e-6) -> None:
+        super().__init__(epsilon=epsilon)
+        self.risk_coupling_alpha = risk_coupling_alpha
+
+    def _risk_scale(self, risk_tensor: torch.Tensor | None) -> torch.Tensor:
+        """Compute multiplicative risk scaling factor.
+
+        Args:
+            risk_tensor: [B, D, D] symmetric risk tensor, or None.
+
+        Returns:
+            scale: [B, 1] risk scaling factor >= 1.
+        """
+        if risk_tensor is None:
+            return 1.0
+        # Frobenius norm of risk tensor
+        t_norm = torch.linalg.norm(risk_tensor, ord='fro', dim=(-2, -1), keepdim=False)  # [B]
+        return (1.0 + self.risk_coupling_alpha * t_norm).unsqueeze(-1)  # [B, 1]
+
+    def conformal_factor(self, z: torch.Tensor, risk_tensor: torch.Tensor | None = None) -> torch.Tensor:
+        lam = super().conformal_factor(z)  # [B, 1]
+        return lam * self._risk_scale(risk_tensor)
+
+    def metric(self, z: torch.Tensor, risk_tensor: torch.Tensor | None = None) -> torch.Tensor:
+        _, d = z.shape
+        lambda_sq = self.conformal_factor(z, risk_tensor) ** 2
+        eye = torch.eye(d, device=z.device, dtype=z.dtype)
+        return lambda_sq.unsqueeze(-1) * eye
+
+    def metric_inv(self, z: torch.Tensor, risk_tensor: torch.Tensor | None = None) -> torch.Tensor:
+        _, d = z.shape
+        lambda_sq_inv = 1.0 / (self.conformal_factor(z, risk_tensor) ** 2 + self.epsilon)
+        eye = torch.eye(d, device=z.device, dtype=z.dtype)
+        return lambda_sq_inv.unsqueeze(-1) * eye
+
+    def temperature(self, z: torch.Tensor, d_k: int, risk_tensor: torch.Tensor | None = None) -> torch.Tensor:
+        lambda_z = self.conformal_factor(z, risk_tensor)
+        return math.sqrt(d_k) / lambda_z
+
+
 class ChristoffelQuery(nn.Module):
     """Geometric query projection encoding Christoffel symbols."""
 
