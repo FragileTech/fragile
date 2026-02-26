@@ -400,6 +400,7 @@ def _latent_bar_chart(z_vec: np.ndarray, width: int = 300, height: int = 100):
     bars = hv.Bars(data, "dim", ["value", "sign"]).opts(
         color="sign", cmap={"pos": "#4c78a8", "neg": "#e45756"},
         width=width, height=height, xrotation=90,
+        xaxis="bare",
         title="Latent vector",
     )
     return bars
@@ -413,6 +414,7 @@ def _feature_recon_bar(orig: np.ndarray, recon: np.ndarray, top_k: int = 20,
     data = [(f"d{i}", float(diff[i])) for i in top_idx]
     bars = hv.Bars(data, "dim", "|error|").opts(
         color="#f58518", width=width, height=height, xrotation=90,
+        xaxis="bare",
         title=f"Top-{top_k} recon error dims",
     )
     return bars
@@ -443,7 +445,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         name="Recon samples", start=4, end=24, value=8, step=4, width=300,
     )
     latent_samples = pn.widgets.IntSlider(
-        name="Latent samples", start=100, end=10000, value=2000, step=100, width=300,
+        name="Latent samples", start=100, end=50000, value=2000, step=100, width=300,
     )
     seed_input = pn.widgets.IntInput(name="Random seed", value=42, step=1, width=300)
     color_by = pn.widgets.RadioButtonGroup(
