@@ -65,16 +65,22 @@ def compute_dynamics_chart_loss(
 
 def compute_momentum_regularization(
     momenta: torch.Tensor,
+    z_trajectory: torch.Tensor,
 ) -> torch.Tensor:
-    """L2 penalty on momentum norms to keep dynamics stable.
+    """Metric-aware momentum penalty: mean kinetic energy 1/2 p^T G^{-1} p.
 
     Args:
         momenta: [B, H, D] momentum vectors.
+        z_trajectory: [B, H, D] latent positions.
 
     Returns:
         Scalar regularization loss.
     """
-    return (momenta.norm(dim=-1) ** 2).mean()
+    r_sq = (z_trajectory ** 2).sum(dim=-1, keepdim=True)  # [B, H, 1]
+    g_inv_factor = ((1.0 - r_sq).clamp(min=1e-6) / 2.0) ** 2  # [B, H, 1]
+    p_sq = (momenta ** 2).sum(dim=-1, keepdim=True)  # [B, H, 1]
+    kinetic = 0.5 * g_inv_factor * p_sq
+    return kinetic.mean()
 
 
 def compute_energy_conservation_loss(
@@ -258,7 +264,7 @@ def compute_phase2_loss(
     total = total + config.w_chart_transition * loss_chart
     metrics["chart_transition"] = loss_chart.item()
 
-    loss_mom = compute_momentum_regularization(wm_output["momenta"])
+    loss_mom = compute_momentum_regularization(wm_output["momenta"], wm_output["z_trajectory"])
     total = total + config.w_momentum_reg * loss_mom
     metrics["momentum_reg"] = loss_mom.item()
 

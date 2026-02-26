@@ -1,6 +1,6 @@
 *.py[cod]
 __pycache__
-
+mlflow.db
 # Temp files
 .*.sw[po]
 *~

@@ -22,7 +22,7 @@ from fragile.learning.hyperbolic_losses import (
 from .config import VLAConfig
 from .extract_features import VLAFeatureDataset
 from .losses import compute_phase1_loss, compute_phase2_loss, compute_phase3_loss
-from .world_model import GeometricWorldModel
+from .covariant_world_model import GeometricWorldModel
 
 
 # ---------------------------------------------------------------------------

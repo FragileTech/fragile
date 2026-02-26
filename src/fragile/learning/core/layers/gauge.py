@@ -256,38 +256,32 @@ class HyperbolicTransport(nn.Module):
         self.metric = ConformalMetric()
 
     def forward(self, z_query: torch.Tensor, z_key: torch.Tensor) -> torch.Tensor:
-        """Compute parallel transport matrices using hyperbolic geometry.
+        """Compute parallel transport scale factors using hyperbolic geometry.
 
-        The transport P_{x→y} scales vectors by the ratio of conformal factors,
-        which is the exact parallel transport for the Poincaré ball along
-        radial geodesics.
+        The transport P_{key→query} scales vectors by the ratio of conformal
+        factors, which is the exact parallel transport for the Poincaré ball
+        along radial geodesics.  Returns a scalar factor per key (NOT a full
+        d_k × d_k matrix) to avoid O(B·N·d_k²) memory.
 
         Args:
             z_query: [B, d_latent] query positions (transport destination)
             z_key: [B, N, d_latent] key positions (transport sources)
 
         Returns:
-            U: [B, N, d_k, d_k] transport matrices (diagonal scaling)
+            transport_scale: [B, N, 1] per-key scalar transport factor
         """
         batch_size, n, _ = z_key.shape
 
         # Conformal factors: λ(z) = 2 / (1 - |z|²)
         lambda_query = self.metric.conformal_factor(z_query)  # [B, 1]
         # Reshape z_key to compute conformal factors for each key
-        z_key_flat = z_key.view(-1, z_key.shape[-1])  # [B*N, d_latent]
+        z_key_flat = z_key.reshape(-1, z_key.shape[-1])  # [B*N, d_latent]
         lambda_key = self.metric.conformal_factor(z_key_flat)  # [B*N, 1]
-        lambda_key = lambda_key.view(batch_size, n, 1)  # [B, N, 1]
+        lambda_key = lambda_key.reshape(batch_size, n, 1)  # [B, N, 1]
 
         # Transport scale: ratio of conformal factors
         # P_{key→query}(v) = (λ_key / λ_query) · v
-        transport_scale = lambda_key / (lambda_query.unsqueeze(1) + 1e-6)  # [B, N, 1]
-
-        # Build diagonal transport matrices
-        eye = torch.eye(self.d_k, device=z_query.device, dtype=z_query.dtype)
-        eye = eye.unsqueeze(0).unsqueeze(0).expand(batch_size, n, -1, -1)  # [B, N, d_k, d_k]
-
-        # Scale the identity by the transport factor
-        return eye * transport_scale.unsqueeze(-1)  # [B, N, d_k, d_k]
+        return lambda_key / (lambda_query.unsqueeze(1) + 1e-6)  # [B, N, 1]
 
 
 class ConformalMetric(nn.Module):
@@ -583,9 +577,9 @@ class CovariantAttention(nn.Module):
         k = self.key(x_key)
         v = self.value(x_value)
 
-        # Parallel transport keys into the query frame (hyperbolic transport).
-        u = self.transport(z_query, z_key)
-        k_transported = torch.einsum("bnij,bnj->bni", u, k)
+        # Parallel transport keys into the query frame (diagonal conformal scaling).
+        transport_scale = self.transport(z_query, z_key)  # [B, N, 1]
+        k_transported = transport_scale * k  # [B, N, d_k]
 
         # Metric-aware similarity with conformal temperature scaling.
         scores = torch.einsum("bi,bni->bn", q, k_transported)

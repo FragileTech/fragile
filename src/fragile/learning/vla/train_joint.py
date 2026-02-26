@@ -45,7 +45,7 @@ from fragile.learning.hyperbolic_losses import (
 )
 from fragile.learning.vla.extract_features import VLAFeatureDataset
 from fragile.learning.vla.losses import compute_phase2_loss
-from fragile.learning.vla.world_model import GeometricWorldModel
+from fragile.learning.vla.covariant_world_model import GeometricWorldModel
 
 # ── Tracked loss terms ────────────────────────────────────────────
 ENCODER_LOSS_KEYS = [
@@ -71,18 +71,52 @@ def _init_encoder_accumulators() -> dict[str, float]:
     return {k: 0.0 for k in ENCODER_LOSS_KEYS + INFO_KEYS + ["total"]}
 
 
+WM_DIAG_KEYS = ["mean_momentum", "mean_jump_rate", "jump_fraction", "mean_phi_eff"]
+
+
 def _init_dynamics_accumulators() -> dict[str, float]:
-    return {k: 0.0 for k in DYNAMICS_LOSS_KEYS + ["grad_norm", "param_norm", "lr", "total"]}
+    return {k: 0.0 for k in
+            DYNAMICS_LOSS_KEYS + WM_DIAG_KEYS
+            + ["grad_norm", "param_norm", "update_ratio", "lr", "total"]}
 
 
 def _init_joint_accumulators() -> dict[str, float]:
     keys = (
         [f"enc/{k}" for k in ENCODER_LOSS_KEYS]
         + [f"dyn/{k}" for k in DYNAMICS_LOSS_KEYS]
+        + [f"wm/{k}" for k in WM_DIAG_KEYS]
         + INFO_KEYS
         + ["enc_total", "dyn_total", "total"]
     )
     return {k: 0.0 for k in keys}
+
+
+def _wm_diagnostics(wm_output: dict[str, torch.Tensor]) -> dict[str, float]:
+    """Extract diagnostic scalars from world model output."""
+    momenta = wm_output["momenta"]
+    jump_rates = wm_output["jump_rates"]
+    jump_masks = wm_output["jump_masks"]
+    phi_eff = wm_output["phi_eff"]
+    return {
+        "mean_momentum": momenta.norm(dim=-1).mean().item(),
+        "mean_jump_rate": jump_rates.mean().item(),
+        "jump_fraction": jump_masks.float().mean().item(),
+        "mean_phi_eff": phi_eff.mean().item(),
+    }
+
+
+def _chart_stats_from_tensor(
+    K_all: torch.Tensor, num_charts: int,
+) -> tuple[np.ndarray, float, int]:
+    """Compute usage, perplexity, active count from chart assignments."""
+    K_np = K_all.detach().cpu().reshape(-1).numpy()
+    usage = np.zeros(num_charts)
+    for c in K_np:
+        usage[int(c)] += 1
+    usage /= usage.sum() + 1e-8
+    perplexity = float(np.exp(-np.sum(usage * np.log(usage + 1e-8))))
+    active = int((usage > 0.01).sum())
+    return usage, perplexity, active
 
 
 # ── Encoder loss computation (same as train_unsupervised.py) ──────
@@ -94,8 +128,12 @@ def _compute_encoder_losses(
     jump_op: FactorizedJumpOperator,
     args: argparse.Namespace,
     epoch: int,
-) -> tuple[torch.Tensor, dict[str, float]]:
-    """Compute all 13 encoder losses with split encoder/decoder calls."""
+) -> tuple[torch.Tensor, dict[str, float], torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Compute all 13 encoder losses with split encoder/decoder calls.
+
+    Returns (total_loss, metrics, z_geo, enc_w, K_chart) so callers can
+    reuse encoder outputs without re-encoding.
+    """
     (
         K_chart, K_code, z_n, z_tex, enc_w, z_geo,
         vq_loss, indices, z_n_all, c_bar, v_local,
@@ -166,7 +204,7 @@ def _compute_encoder_losses(
         "jump_weight": current_jump_weight,
         "total": total.item(),
     }
-    return total, metrics
+    return total, metrics, z_geo, enc_w, K_chart
 
 
 # ── Eval pass (chart usage, perplexity, mean_r) ──────────────────
@@ -234,7 +272,7 @@ def _run_phase1(
         for batch in single_loader:
             x = batch["feature"].to(device)
 
-            total, metrics = _compute_encoder_losses(x, model, jump_op, args, epoch)
+            total, metrics, _, _, _ = _compute_encoder_losses(x, model, jump_op, args, epoch)
 
             optimizer.zero_grad()
             total.backward()
@@ -269,6 +307,7 @@ def _run_phase1(
             acc[k] /= max(n_batches, 1)
 
         usage, perplexity, mean_r = _eval_pass(model, single_loader, K, device)
+        active = int((usage > 0.01).sum())
 
         should_log = (epoch % args.log_every == 0) or (epoch == args.phase1_epochs - 1)
         if should_log:
@@ -279,7 +318,8 @@ def _run_phase1(
             print(f"  Usage: {np.array2string(usage, precision=2, separator=', ')}")
             print(
                 f"  Core: recon={acc['recon']:.3f} vq={acc['vq']:.3f} "
-                f"entropy={acc['entropy']:.3f} consist={acc['consistency']:.3f}"
+                f"entropy={acc['entropy']:.3f} consist={acc['consistency']:.3f} "
+                f"div={acc['diversity']:.3f}"
             )
             print(
                 f"  Geo: unif={acc['uniformity']:.3f} "
@@ -300,14 +340,13 @@ def _run_phase1(
                 f"  Jump: {acc['jump']:.3f} "
                 f"(lambda={metrics.get('jump_weight', 0.0):.3f})"
             )
-            print(f"  Info: div={acc['diversity']:.3f}")
             print(
                 f"  Train: grad={acc['grad_norm']:.2e} "
                 f"upd_ratio={acc['update_ratio']:.2e} lr={acc['lr']:.2e}"
             )
             print(
                 f"  Metrics: perplexity={perplexity:.2f}/{K} "
-                f"mean_r={mean_r:.3f}"
+                f"active={active}/{K} mean_r={mean_r:.3f}"
             )
             print("-" * 60)
 
@@ -372,41 +411,48 @@ def _run_phase2(
             actions = batch["actions"].to(device)     # [B, H, A]
             B, H, D_feat = features.shape
 
-            # Encode all frames with frozen encoder
+            # Encode all frames in one batched pass (frozen encoder)
             with torch.no_grad():
-                z_list, rw_list, K_list = [], [], []
-                for t in range(H):
-                    K_ch, _, z_n, _, enc_w, z_geo, *_ = model.encoder(features[:, t, :])
-                    z_list.append(z_geo)
-                    rw_list.append(enc_w)
-                    K_list.append(K_ch)
-                z_all = torch.stack(z_list, dim=1)
-                K_all = torch.stack(K_list, dim=1)
+                flat = features.reshape(B * H, D_feat)
+                K_flat, _, _, _, rw_flat, z_flat, *_ = model.encoder(flat)
+                z_all = z_flat.reshape(B, H, -1)
+                K_all = K_flat.reshape(B, H)
+                rw_0 = rw_flat[:B]  # router weights for first frame
 
             z_0 = z_all[:, 0, :]
-            rw_0 = rw_list[0]
             pred_actions = actions[:, :-1, :]
             z_targets = z_all[:, 1:, :]
             chart_targets = K_all[:, 1:]
 
             wm_output = world_model(z_0, pred_actions, rw_0)
             loss, metrics = compute_phase2_loss(wm_output, z_targets, chart_targets, config_ns)
+            wm_diag = _wm_diagnostics(wm_output)
 
             optimizer.zero_grad()
             loss.backward()
-            grad_norm = compute_grad_norm(list(world_model.parameters()))
-            param_norm = compute_param_norm(list(world_model.parameters()))
+            wm_params = list(world_model.parameters())
+            grad_norm = compute_grad_norm(wm_params)
+            param_norm = compute_param_norm(wm_params)
             if args.grad_clip > 0:
-                torch.nn.utils.clip_grad_norm_(world_model.parameters(), args.grad_clip)
+                torch.nn.utils.clip_grad_norm_(wm_params, args.grad_clip)
             optimizer.step()
+
+            current_lr = optimizer.param_groups[0]["lr"]
+            update_ratio = (
+                current_lr * grad_norm / (param_norm + 1e-12)
+                if param_norm > 0 else 0.0
+            )
 
             acc["total"] += metrics["total"]
             for k in DYNAMICS_LOSS_KEYS:
                 if k in metrics:
                     acc[k] += metrics[k]
+            for k in WM_DIAG_KEYS:
+                acc[k] += wm_diag[k]
             acc["grad_norm"] += grad_norm
             acc["param_norm"] += param_norm
-            acc["lr"] += optimizer.param_groups[0]["lr"]
+            acc["update_ratio"] += update_ratio
+            acc["lr"] += current_lr
             n_batches += 1
 
         if scheduler is not None:
@@ -415,12 +461,17 @@ def _run_phase2(
         for k in acc:
             acc[k] /= max(n_batches, 1)
 
+        # Chart usage from encoded frames (already computed, just aggregate last batch)
+        usage, perplexity, active = _chart_stats_from_tensor(K_all, K)
+        mean_r = z_all.norm(dim=-1).mean().item()
+
         should_log = (epoch % args.log_every == 0) or (epoch == args.phase2_epochs - 1)
         if should_log:
             print(
                 f"P2 E{epoch:5d} | Loss: {acc['total']:.4f} "
                 f"| LR: {acc['lr']:.2e}"
             )
+            print(f"  Usage: {np.array2string(usage, precision=2, separator=', ')}")
             print(
                 f"  Dynamics: geo={acc['geodesic']:.4f} "
                 f"chart={acc['chart_transition']:.4f} "
@@ -431,8 +482,19 @@ def _run_phase2(
                 f"jump_dyn={acc['jump_dynamics']:.4f}"
             )
             print(
+                f"  WM diag: |p|={acc['mean_momentum']:.4f} "
+                f"lambda={acc['mean_jump_rate']:.4f} "
+                f"jump%={acc['jump_fraction']:.4f} "
+                f"phi_eff={acc['mean_phi_eff']:.4f}"
+            )
+            print(
                 f"  Train: grad={acc['grad_norm']:.2e} "
+                f"upd_ratio={acc['update_ratio']:.2e} "
                 f"param={acc['param_norm']:.2e}"
+            )
+            print(
+                f"  Metrics: perplexity={perplexity:.2f}/{K} "
+                f"active={active}/{K} mean_r={mean_r:.3f}"
             )
             print("-" * 60)
 
@@ -511,39 +573,25 @@ def _run_phase3(
             actions = batch["actions"].to(device)     # [B, H, A]
             B, H, D_feat = features.shape
 
-            # Encode all H frames with gradients
-            z_list, rw_list, K_list = [], [], []
-            enc_metrics_0 = None
+            # Frame 0: full encoder losses + reuse outputs (1 encoder call)
+            enc_loss, enc_metrics_0, z_geo_0, enc_w_0, K_ch_0 = \
+                _compute_encoder_losses(features[:, 0, :], model, jump_op, args, epoch)
 
-            for t in range(H):
-                if t == 0:
-                    # Full encoder losses on frame 0
-                    enc_loss, enc_m = _compute_encoder_losses(
-                        features[:, 0, :], model, jump_op, args, epoch,
-                    )
-                    enc_metrics_0 = enc_m
-                    # Also get z_geo and enc_w for rollout
-                    with torch.no_grad():
-                        K_ch, _, _, _, enc_w, z_geo, *_ = model.encoder(features[:, 0, :])
-                    # Re-run with grad for z_geo used in rollout
-                    K_ch, _, z_n, _, enc_w, z_geo, _, _, z_n_all, _, _ = model.encoder(
-                        features[:, 0, :],
-                    )
-                    z_list.append(z_geo)
-                    rw_list.append(enc_w)
-                    K_list.append(K_ch)
-                else:
-                    K_ch, _, z_n, _, enc_w, z_geo, *_ = model.encoder(features[:, t, :])
-                    z_list.append(z_geo)
-                    rw_list.append(enc_w)
-                    K_list.append(K_ch)
-
-            z_all = torch.stack(z_list, dim=1)
-            K_all = torch.stack(K_list, dim=1)
+            # Frames 1..H-1: batched encoding (1 encoder call)
+            if H > 1:
+                rest = features[:, 1:, :].reshape(B * (H - 1), D_feat)
+                K_rest, _, _, _, rw_rest, z_rest, *_ = model.encoder(rest)
+                z_geo_rest = z_rest.reshape(B, H - 1, -1)
+                K_rest = K_rest.reshape(B, H - 1)
+                z_all = torch.cat([z_geo_0.unsqueeze(1), z_geo_rest], dim=1)
+                K_all = torch.cat([K_ch_0.unsqueeze(1), K_rest], dim=1)
+            else:
+                z_all = z_geo_0.unsqueeze(1)
+                K_all = K_ch_0.unsqueeze(1)
 
             # World model rollout
             z_0 = z_all[:, 0, :]
-            rw_0 = rw_list[0]
+            rw_0 = enc_w_0
             pred_actions = actions[:, :-1, :]
             z_targets = z_all[:, 1:, :].detach()
             chart_targets = K_all[:, 1:].detach()
@@ -552,6 +600,7 @@ def _run_phase3(
             dyn_loss, dyn_metrics = compute_phase2_loss(
                 wm_output, z_targets, chart_targets, config_ns,
             )
+            wm_diag = _wm_diagnostics(wm_output)
 
             # Combined loss
             total = (
@@ -586,6 +635,8 @@ def _run_phase3(
             for k in DYNAMICS_LOSS_KEYS:
                 if k in dyn_metrics:
                     acc[f"dyn/{k}"] += dyn_metrics[k]
+            for k in WM_DIAG_KEYS:
+                acc[f"wm/{k}"] += wm_diag[k]
             acc["I_XK"] += enc_metrics_0.get("I_XK", 0.0)
             acc["H_K"] += enc_metrics_0.get("H_K", 0.0)
             acc["H_K_given_X"] += enc_metrics_0.get("H_K_given_X", 0.0)
@@ -601,6 +652,10 @@ def _run_phase3(
         for k in acc:
             acc[k] /= max(n_batches, 1)
 
+        # Chart stats from training-batch encodings (last batch)
+        usage, perplexity, active = _chart_stats_from_tensor(K_all, K)
+        mean_r = z_all.detach().norm(dim=-1).mean().item()
+
         should_log = (epoch % args.log_every == 0) or (epoch == args.phase3_epochs - 1)
         if should_log:
             print(
@@ -608,17 +663,32 @@ def _run_phase3(
                 f"(enc={acc['enc_total']:.4f} dyn={acc['dyn_total']:.4f}) "
                 f"| LR: {acc['lr']:.2e}"
             )
+            print(f"  Usage: {np.array2string(usage, precision=2, separator=', ')}")
             print(
-                f"  Encoder: recon={acc['enc/recon']:.3f} "
+                f"  Core: recon={acc['enc/recon']:.3f} "
                 f"vq={acc['enc/vq']:.3f} "
                 f"entropy={acc['enc/entropy']:.3f} "
-                f"consist={acc['enc/consistency']:.3f}"
+                f"consist={acc['enc/consistency']:.3f} "
+                f"div={acc['enc/diversity']:.3f}"
             )
             print(
                 f"  Geo: unif={acc['enc/uniformity']:.3f} "
                 f"rad_cal={acc['enc/radial_cal']:.3f} "
-                f"collapse: chart={acc['enc/chart_collapse']:.4f} "
+                f"cb_spread={acc['enc/codebook_spread']:.3f} "
+                f"cb_center={acc['enc/codebook_center']:.3f}"
+            )
+            print(
+                f"  Collapse: chart={acc['enc/chart_collapse']:.4f} "
                 f"code={acc['enc/code_collapse']:.4f}"
+            )
+            print(
+                f"  Window: {acc['enc/window']:.3f} "
+                f"(I_XK={acc['I_XK']:.3f} H_K={acc['H_K']:.3f} "
+                f"H_K|X={acc['H_K_given_X']:.3f})"
+            )
+            print(
+                f"  Jump: {acc['enc/jump']:.3f} "
+                f"(lambda={enc_metrics_0.get('jump_weight', 0.0):.3f})"
             )
             print(
                 f"  Dynamics: geo={acc['dyn/geodesic']:.4f} "
@@ -630,8 +700,18 @@ def _run_phase3(
                 f"jump_dyn={acc['dyn/jump_dynamics']:.4f}"
             )
             print(
+                f"  WM diag: |p|={acc['wm/mean_momentum']:.4f} "
+                f"lambda={acc['wm/mean_jump_rate']:.4f} "
+                f"jump%={acc['wm/jump_fraction']:.4f} "
+                f"phi_eff={acc['wm/mean_phi_eff']:.4f}"
+            )
+            print(
                 f"  Train: grad={acc['grad_norm']:.2e} "
-                f"upd_ratio={acc['update_ratio']:.2e}"
+                f"upd_ratio={acc['update_ratio']:.2e} lr={acc['lr']:.2e}"
+            )
+            print(
+                f"  Metrics: perplexity={perplexity:.2f}/{K} "
+                f"active={active}/{K} mean_r={mean_r:.3f}"
             )
             print("-" * 60)
 
@@ -806,6 +886,7 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
             latent_dim=args.latent_dim,
             action_dim=args.action_dim,
             num_charts=K,
+            d_model=args.wm_d_model,
             hidden_dim=args.wm_hidden_dim,
             dt=args.wm_dt,
             gamma_friction=args.wm_gamma_friction,
@@ -818,10 +899,24 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
             jump_rate_hidden=args.wm_jump_rate_hidden,
         ).to(device)
 
-    print(f"Encoder: {count_parameters(model):,} params")
-    print(f"Jump op: {count_parameters(jump_op):,} params")
+    # ── Parameter breakdown ──────────────────────────────────
+    n_enc = count_parameters(model.encoder)
+    n_dec = count_parameters(model.decoder)
+    n_jump = count_parameters(jump_op)
+    n_total = n_enc + n_dec + n_jump
+    print(f"  Encoder:  {n_enc:>10,} params")
+    print(f"  Decoder:  {n_dec:>10,} params")
+    print(f"  Jump op:  {n_jump:>10,} params")
     if world_model is not None:
-        print(f"World model: {count_parameters(world_model):,} params")
+        n_wm = count_parameters(world_model)
+        n_total += n_wm
+        print(f"  World model breakdown:")
+        for name, child in world_model.named_children():
+            nc = count_parameters(child)
+            if nc > 0:
+                print(f"    {name:25s} {nc:>8,} params")
+        print(f"  World model total: {n_wm:>7,} params")
+    print(f"  TOTAL: {n_total:>13,} params")
 
     # ── Resume ────────────────────────────────────────────────
     if args.resume:
@@ -935,6 +1030,8 @@ def main() -> None:
     p.add_argument("--wm-use-jump", action="store_true", default=True)
     p.add_argument("--wm-no-jump", dest="wm_use_jump", action="store_false")
     p.add_argument("--wm-jump-rate-hidden", type=int, default=64)
+    p.add_argument("--wm-d-model", type=int, default=128,
+                   help="CovariantAttention width for world model")
 
     # Phase 3 scaling
     p.add_argument("--phase3-encoder-scale", type=float, default=0.1)
