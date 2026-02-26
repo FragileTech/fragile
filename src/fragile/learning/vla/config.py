@@ -46,7 +46,7 @@ class VLAConfig:
     wm_use_jump: bool = True            # enable Poisson jump process
     wm_jump_rate_hidden: int = 64       # hidden dim for jump rate predictor
     wm_min_length: float = 0.03        # minimum geodesic length scale; derives F_max, V_alg, cf_max
-    wm_risk_metric_alpha: float = 0.0  # risk-metric coupling; 0 = disabled
+    wm_risk_metric_alpha: float = 0.1  # risk-metric coupling
 
     # --- Phase 1 loss weights (encoder) ---
     w_feature_recon: float = 1.0
@@ -73,9 +73,9 @@ class VLAConfig:
     w_momentum_reg: float = 0.01
     w_energy_conservation: float = 0.01
     w_jump_dynamics: float = 0.1
-    w_screened_poisson: float = 0.0  # screened Poisson PDE residual weight; 0 = disabled
+    w_screened_poisson: float = 0.01  # screened Poisson PDE residual weight
     wm_screening_kappa: float = 1.0  # screening mass κ
-    w_hodge: float = 0.0  # Hodge consistency loss weight; 0 = disabled
+    w_hodge: float = 0.01  # Hodge consistency loss weight
 
     # --- Phase 3 joint scaling ---
     phase3_encoder_scale: float = 0.1

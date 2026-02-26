@@ -29,14 +29,14 @@ from fragile.learning.core.layers.topology import FactorizedJumpOperator
 def compute_risk_tensor(
     force: torch.Tensor,
     curl_tensor: torch.Tensor | None = None,
-    metric_inv: torch.Tensor | None = None,
+    lambda_inv_sq: torch.Tensor | None = None,
 ) -> torch.Tensor:
     """Compute risk tensor T = T_grad + T_maxwell.
 
     Args:
         force: [B, D] conservative force vector.
         curl_tensor: [B, D, D] antisymmetric field strength, or None.
-        metric_inv: [B, D, D] inverse metric tensor, or None.
+        lambda_inv_sq: [B, 1] scalar inverse-squared conformal factor lambda^{-2}.
 
     Returns:
         T: [B, D, D] risk tensor (symmetric).
@@ -44,10 +44,10 @@ def compute_risk_tensor(
     # Gradient stress: T_grad = f (x) f
     T = torch.einsum("bi,bj->bij", force, force)  # [B, D, D]
 
-    if curl_tensor is not None and metric_inv is not None:
+    if curl_tensor is not None and lambda_inv_sq is not None:
         # Maxwell stress: T_maxwell = F_ik F^k_j - 1/4 delta_ij F_kl F^kl
-        # F^k_j = G^{km} F_{mj}
-        F_up = torch.bmm(metric_inv, curl_tensor)  # [B, D, D]
+        # F^k_j = G^{km} F_{mj} = lambda^{-2} * F_{mj} (conformal metric is diagonal)
+        F_up = lambda_inv_sq.unsqueeze(-1) * curl_tensor  # [B, D, D] scalar broadcast
         # F_ik F^k_j
         FF = torch.bmm(curl_tensor, F_up)  # [B, D, D]
         # Trace: F_kl F^kl
@@ -670,7 +670,7 @@ class GeometricWorldModel(nn.Module):
         z: torch.Tensor,
         action: torch.Tensor,
         curl_F: torch.Tensor | None = None,
-        g_inv: torch.Tensor | None = None,
+        lambda_inv_sq: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor | None]:
         """Norm-preserving Boris rotation for the Lorentz/curl force.
 
@@ -683,7 +683,7 @@ class GeometricWorldModel(nn.Module):
             z: [B, D] current position.
             action: [B, A] action vector.
             curl_F: [B, D, D] pre-computed curl tensor, or None to compute.
-            g_inv: [B, D, D] pre-computed inverse metric, or None to compute.
+            lambda_inv_sq: [B, 1] scalar inverse-squared conformal factor, or None to compute.
 
         Returns:
             p_plus: [B, D] rotated momentum (same norm).
@@ -694,9 +694,10 @@ class GeometricWorldModel(nn.Module):
 
         h = self.dt
         F = curl_F if curl_F is not None else self.curl_net(z, action)  # [B, D, D] antisymmetric
-        if g_inv is None:
-            g_inv = self.metric.metric_inv(z)  # [B, D, D]
-        T = (h / 2.0) * self.beta_curl * torch.bmm(g_inv, F)  # [B, D, D]
+        if lambda_inv_sq is None:
+            cf = self.metric.conformal_factor(z)  # [B, 1]
+            lambda_inv_sq = 1.0 / (cf ** 2 + self.metric.epsilon)  # [B, 1]
+        T = (h / 2.0) * self.beta_curl * lambda_inv_sq.unsqueeze(-1) * F  # [B, D, D]
 
         # Boris half-rotation
         t_vec = torch.bmm(T, p_minus.unsqueeze(-1)).squeeze(-1)  # [B, D]
@@ -757,9 +758,11 @@ class GeometricWorldModel(nn.Module):
 
         # Compute risk tensor for metric adaptation
         risk_T = None
+        lis_base = None  # lambda^{-2} at current z (base metric, no risk)
         if _use_risk:
-            g_inv_for_risk = self.metric.metric_inv(z)
-            risk_T = compute_risk_tensor(force, curl_F, g_inv_for_risk)
+            cf_base = self.metric.conformal_factor(z)  # [B, 1] -- base ConformalMetric
+            lis_base = 1.0 / (cf_base ** 2 + self.metric.epsilon)  # [B, 1]
+            risk_T = compute_risk_tensor(force, curl_F, lis_base)
 
         # ψ_F: smooth force squashing (1-Lipschitz, C∞, direction-preserving)
         if self.F_max > 0:
@@ -768,7 +771,8 @@ class GeometricWorldModel(nn.Module):
             )
 
         p_minus = p - (h / 2.0) * kick
-        p_plus, _ = self._boris_rotation(p_minus, z, action, curl_F=curl_F)
+        # pass pre-computed lambda_inv_sq (None in non-risk case, boris computes its own)
+        p_plus, _ = self._boris_rotation(p_minus, z, action, curl_F=curl_F, lambda_inv_sq=lis_base)
 
         # Hodge decomposition: solenoidal force = Boris impulse / dt
         hodge_info: dict[str, torch.Tensor] = {}
@@ -781,10 +785,11 @@ class GeometricWorldModel(nn.Module):
 
         # --- A step (first half): geodesic drift ---
         if _use_risk:
-            g_inv = self.metric.metric_inv(z, risk_tensor=risk_T)  # [B, D, D]
+            cf = self.metric.conformal_factor(z, risk_tensor=risk_T)  # [B, 1]
         else:
-            g_inv = self.metric.metric_inv(z)  # [B, D, D]
-        v = torch.einsum("bij,bj->bi", g_inv, p)  # contravariant velocity
+            cf = self.metric.conformal_factor(z)  # [B, 1]
+        lambda_inv_sq = 1.0 / (cf ** 2 + self.metric.epsilon)  # [B, 1]
+        v = lambda_inv_sq * p  # [B, D] contravariant velocity
         geo_corr = christoffel_contraction(z, v)
         v_corr = v - (h / 4.0) * geo_corr
         # ψ_v: smooth velocity squashing (V_alg = ℓ_min / Δt)
@@ -809,10 +814,11 @@ class GeometricWorldModel(nn.Module):
 
         # --- A step (second half): geodesic drift ---
         if _use_risk:
-            g_inv = self.metric.metric_inv(z, risk_tensor=risk_T)
+            cf = self.metric.conformal_factor(z, risk_tensor=risk_T)  # [B, 1]
         else:
-            g_inv = self.metric.metric_inv(z)
-        v = torch.einsum("bij,bj->bi", g_inv, p)
+            cf = self.metric.conformal_factor(z)  # [B, 1]
+        lambda_inv_sq = 1.0 / (cf ** 2 + self.metric.epsilon)  # [B, 1]
+        v = lambda_inv_sq * p  # [B, D] contravariant velocity
         geo_corr = christoffel_contraction(z, v)
         v_corr = v - (h / 4.0) * geo_corr
         if self.V_alg > 0:

@@ -255,7 +255,9 @@ def build_latent_scatter(
     indices: np.ndarray | None = None,
     confidence: np.ndarray | None = None,
     alpha_by_confidence: bool = False,
-) -> hv.Scatter:
+    K_code: np.ndarray | None = None,
+    show_code_centers: bool = False,
+) -> hv.Points | hv.Overlay:
     """Build a single 2D scatter for one dimension pair.
 
     Parameters
@@ -327,7 +329,46 @@ def build_latent_scatter(
         opts_kw["clim"] = (0, 1)
     if alpha_by_confidence and confidence is not None:
         opts_kw["alpha"] = hv.dim("confidence")
-    return hv.Scatter(data, kdims=["x", "y"], vdims=vdims).opts(**opts_kw)
+    scatter = hv.Points(data, kdims=["x", "y"], vdims=vdims).opts(**opts_kw)
+
+    if show_code_centers and K_code is not None:
+        codes_arr = _to_numpy(K_code).astype(int)
+        center_x, center_y, center_chart, center_code = [], [], [], []
+        unique_charts = np.unique(charts)
+        for c in unique_charts:
+            c_mask = charts == c
+            for k in np.unique(codes_arr[c_mask]):
+                mask = c_mask & (codes_arr == k)
+                if mask.any():
+                    center_x.append(z[:, dim_i][mask].mean())
+                    center_y.append(z[:, dim_j][mask].mean())
+                    center_chart.append(int(c))
+                    center_code.append(int(k))
+        if center_x:
+            center_colors = [_CATEGORY10[c % len(_CATEGORY10)] for c in center_chart]
+            center_data = {
+                "x": np.array(center_x),
+                "y": np.array(center_y),
+                "chart": center_chart,
+                "code": center_code,
+                "color": center_colors,
+            }
+            center_hover = HoverTool(tooltips=[
+                ("Chart", "@chart"),
+                ("Code", "@code"),
+                (f"z{dim_i}", "@x{0.3f}"),
+                (f"z{dim_j}", "@y{0.3f}"),
+            ])
+            overlay = hv.Points(
+                center_data, kdims=["x", "y"],
+                vdims=["chart", "code", "color"],
+                label="code centers",
+            ).opts(
+                color="color", marker="diamond", size=point_size * 3,
+                alpha=0.7, tools=[center_hover],
+            )
+            return scatter * overlay
+    return scatter
 
 
 def plot_latent_2d_slices(
@@ -340,6 +381,8 @@ def plot_latent_2d_slices(
     indices: np.ndarray | None = None,
     confidence: np.ndarray | None = None,
     alpha_by_confidence: bool = False,
+    K_code: np.ndarray | None = None,
+    show_code_centers: bool = False,
 ) -> hv.Layout:
     """2D scatter panels for every pair among the first 3 latent dims.
 
@@ -373,11 +416,13 @@ def plot_latent_2d_slices(
             indices=indices,
             confidence=confidence,
             alpha_by_confidence=alpha_by_confidence,
+            K_code=K_code,
+            show_code_centers=show_code_centers,
         )
         panels.append(scatter)
 
     if not panels:
-        return hv.Layout([hv.Scatter([], kdims=["x", "y"]).opts(title="No latent dims")])
+        return hv.Layout([hv.Points([], kdims=["x", "y"]).opts(title="No latent dims")])
     return hv.Layout(panels).opts(shared_axes=False).cols(min(3, len(panels)))
 
 
@@ -404,6 +449,7 @@ def plot_latent_3d(
     show_chart_centers: bool = False,
     show_code_centers: bool = False,
     show_tree_lines: bool = False,
+    show_leaf_lines: bool = True,
 ) -> go.Figure:
     """3D scatter of z_geo[:,0:3] colored by label, chart, correct, or confidence."""
     z = _to_numpy(z_geo)
@@ -534,6 +580,7 @@ def plot_latent_3d(
             show_chart_centers=show_chart_centers,
             show_code_centers=show_code_centers,
             show_lines=show_tree_lines,
+            show_leaf_lines=show_leaf_lines,
         )
 
     fig = go.Figure(data=traces)
@@ -567,6 +614,7 @@ def _add_hierarchy_traces(
     show_chart_centers: bool = True,
     show_code_centers: bool = True,
     show_lines: bool = True,
+    show_leaf_lines: bool = True,
 ) -> None:
     """Append hierarchy center markers and tree-edge lines to *traces* (in-place).
 
@@ -640,8 +688,9 @@ def _add_hierarchy_traces(
             for k in np.unique(codes[c_mask]):
                 sym = symbol_centers[(c, k)]
                 _seg(lx, ly, lz, chart_centers[c], sym)
-                for idx in np.where(c_mask & (codes == k))[0]:
-                    _seg(lx, ly, lz, sym, np.array([x[idx], y[idx], z_ax[idx]]))
+                if show_leaf_lines:
+                    for idx in np.where(c_mask & (codes == k))[0]:
+                        _seg(lx, ly, lz, sym, np.array([x[idx], y[idx], z_ax[idx]]))
         traces.append(go.Scatter3d(
             x=lx, y=ly, z=lz, mode="lines", name="hierarchy",
             line={"color": "black", "width": line_width},
@@ -657,8 +706,9 @@ def _add_hierarchy_traces(
             for k in np.unique(codes[c_mask]):
                 sym = symbol_centers[(c, k)]
                 _seg(lx, ly, lz, chart_centers[c], sym)
-                for idx in np.where(c_mask & (codes == k))[0]:
-                    _seg(lx, ly, lz, sym, np.array([x[idx], y[idx], z_ax[idx]]))
+                if show_leaf_lines:
+                    for idx in np.where(c_mask & (codes == k))[0]:
+                        _seg(lx, ly, lz, sym, np.array([x[idx], y[idx], z_ax[idx]]))
             traces.append(go.Scatter3d(
                 x=lx, y=ly, z=lz, mode="lines", name=f"tree chart {c}",
                 line={"color": col, "width": line_width},
@@ -687,16 +737,17 @@ def _add_hierarchy_traces(
                     hoverinfo="none", showlegend=False,
                 ))
                 # symbol → data (per-symbol color)
-                sym_col = _CATEGORY10[int(k) % len(_CATEGORY10)]
-                lx, ly, lz = [], [], []
-                for idx in np.where(c_mask & (codes == k))[0]:
-                    _seg(lx, ly, lz, sym, np.array([x[idx], y[idx], z_ax[idx]]))
-                if lx:
-                    traces.append(go.Scatter3d(
-                        x=lx, y=ly, z=lz, mode="lines",
-                        line={"color": sym_col, "width": line_width},
-                        hoverinfo="none", showlegend=False,
-                    ))
+                if show_leaf_lines:
+                    sym_col = _CATEGORY10[int(k) % len(_CATEGORY10)]
+                    lx, ly, lz = [], [], []
+                    for idx in np.where(c_mask & (codes == k))[0]:
+                        _seg(lx, ly, lz, sym, np.array([x[idx], y[idx], z_ax[idx]]))
+                    if lx:
+                        traces.append(go.Scatter3d(
+                            x=lx, y=ly, z=lz, mode="lines",
+                            line={"color": sym_col, "width": line_width},
+                            hoverinfo="none", showlegend=False,
+                        ))
 
 
 def plot_prob_bars(

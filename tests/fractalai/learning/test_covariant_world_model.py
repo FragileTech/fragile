@@ -532,8 +532,8 @@ class TestRiskTensor:
         F_mat[:, rows, cols] = upper
         F_mat[:, cols, rows] = -upper
 
-        g_inv = 0.25 * torch.eye(D).unsqueeze(0).expand(B, -1, -1)  # at origin
-        T = compute_risk_tensor(force, curl_tensor=F_mat, metric_inv=g_inv)
+        lambda_inv_sq = torch.full((B, 1), 0.25)  # λ⁻² at origin
+        T = compute_risk_tensor(force, curl_tensor=F_mat, lambda_inv_sq=lambda_inv_sq)
         assert T.shape == (B, D, D)
         assert torch.isfinite(T).all()
 
@@ -605,15 +605,16 @@ class TestHyperbolicLaplacian:
     """Tests for the Laplace-Beltrami operator on the Poincare ball."""
 
     def test_output_shape(self):
-        """Laplacian should return [B, 1]."""
+        """Laplacian should return ([B, 1], [B, 1])."""
         from fragile.learning.vla.losses import hyperbolic_laplacian
 
         def V_func(z):
             return (z ** 2).sum(dim=-1, keepdim=True)
 
         z = torch.randn(B, D) * 0.3
-        lap = hyperbolic_laplacian(V_func, z)
+        lap, V_center = hyperbolic_laplacian(V_func, z)
         assert lap.shape == (B, 1)
+        assert V_center.shape == (B, 1)
 
     def test_finite(self):
         """Laplacian should be finite inside the ball."""
@@ -623,7 +624,7 @@ class TestHyperbolicLaplacian:
             return (z ** 2).sum(dim=-1, keepdim=True)
 
         z = torch.randn(B, D) * 0.3
-        lap = hyperbolic_laplacian(V_func, z)
+        lap, _ = hyperbolic_laplacian(V_func, z)
         assert torch.isfinite(lap).all(), f"Non-finite Laplacian: {lap}"
 
     def test_constant_function_zero_laplacian(self):
@@ -638,7 +639,7 @@ class TestHyperbolicLaplacian:
             return 0.0 * z.sum(dim=-1, keepdim=True) + 5.0
 
         z = torch.randn(B, D) * 0.3
-        lap = hyperbolic_laplacian(V_const, z)
+        lap, _ = hyperbolic_laplacian(V_const, z)
         assert torch.allclose(lap, torch.zeros_like(lap), atol=1e-5), (
             f"Laplacian of constant is not zero: {lap}"
         )
@@ -651,7 +652,7 @@ class TestHyperbolicLaplacian:
             return (z ** 2).sum(dim=-1, keepdim=True)
 
         z = torch.randn(B, D) * 0.2  # well inside ball
-        lap = hyperbolic_laplacian(V_quadratic, z)
+        lap, _ = hyperbolic_laplacian(V_quadratic, z)
         # Just check it's non-zero and finite (the exact value depends on correction)
         assert torch.isfinite(lap).all()
         assert not torch.allclose(lap, torch.zeros_like(lap), atol=1e-3)
@@ -666,7 +667,7 @@ class TestHyperbolicLaplacian:
             return z @ W  # [B, 1]
 
         z = torch.randn(B, D) * 0.3
-        lap = hyperbolic_laplacian(V_linear, z)
+        lap, _ = hyperbolic_laplacian(V_linear, z)
         loss = lap.sum()
         loss.backward()
         # W should get gradients (through the Hessian trace)

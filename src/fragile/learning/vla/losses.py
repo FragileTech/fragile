@@ -158,66 +158,102 @@ def compute_hodge_consistency_loss(
 def hyperbolic_laplacian(
     V_func: Callable[[torch.Tensor], torch.Tensor],
     z: torch.Tensor,
-) -> torch.Tensor:
-    """Compute Laplace-Beltrami operator Delta_G V at positions z on the Poincare ball.
+    n_probes: int = 3,
+    eps: float = 1e-3,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    r"""Compute Laplace-Beltrami operator Delta_G V on the Poincare ball.
 
-    Uses autograd to compute the Euclidean gradient and Hessian trace, then
-    applies the Poincare ball conformal correction (curvature c=1):
+    Uses **batched finite-difference Hutchinson trace estimation** with a
+    single forward pass through V_func for all perturbation points.
+    The Poincare correction term ``z . grad V`` is also computed via
+    finite differences (no autograd passes required).
 
-        Delta_G f = (1/lambda^2) [Delta_E f + (D-2) lambda (z . grad f)]
+    .. math::
+        \Delta_G f = \frac{1}{\lambda^2}
+            \bigl[\Delta_E f + (D-2)\,\lambda\,(z \cdot \nabla f)\bigr]
 
-    where lambda(z) = 2 / (1 - |z|^2).
+    where :math:`\lambda(z) = 2/(1-|z|^2)`.
+
+    **Hutchinson estimator** (Rademacher probes v_i):
+
+    .. math::
+        \mathrm{Tr}(H) \approx \frac{1}{k}\sum_{i=1}^{k}
+            \frac{V(z+\varepsilon v_i) - 2\,V(z) + V(z-\varepsilon v_i)}
+                 {\varepsilon^2}
+
+    **Directional derivative** (finite-difference):
+
+    .. math::
+        z \cdot \nabla V \approx \|z\| \,
+            \frac{V(z+\varepsilon\hat{z}) - V(z-\varepsilon\hat{z})}
+                 {2\varepsilon}
+
+    All (2k+3)*N perturbation points are evaluated in a single batched
+    V_func call. Gradients flow through the network parameters via the
+    forward pass (no ``create_graph=True`` needed).
 
     Args:
-        V_func: Callable mapping z [B, D] -> V [B, 1] (must be differentiable).
-        z: [B, D] positions (requires_grad will be set internally).
+        V_func: Callable mapping z [B, D] -> V [B, 1] (differentiable).
+        z: [B, D] positions inside the Poincare ball.
+        n_probes: Number of Rademacher probe vectors (default 3).
+        eps: Finite-difference step size (default 1e-3).
 
     Returns:
-        lap_V: [B, 1] Laplace-Beltrami of V at each position.
+        lap_G: [B, 1] Laplace-Beltrami of V at each position.
+        V_center: [B, 1] V evaluated at z (reusable by caller).
     """
-    z = z.detach().requires_grad_(True)
-    V = V_func(z)  # [B, 1]
+    N, D = z.shape
+    device = z.device
+    dtype = z.dtype
+    z_det = z.detach()
 
-    # Gradient: nabla V  [B, D]
-    (grad_V,) = torch.autograd.grad(
-        V.sum(), z, create_graph=True, allow_unused=True,
-    )
-    if grad_V is None or not grad_V.requires_grad:
-        # V is constant or linear-only w.r.t. z — Hessian trace is zero.
-        # Laplacian only has the (D-2)*lambda*(z.gradV) correction for linear V.
-        if grad_V is not None:
-            r_sq = (z ** 2).sum(dim=-1, keepdim=True)
-            one_minus_r_sq = (1.0 - r_sq).clamp(min=1e-6)
-            lambda_z = 2.0 / one_minus_r_sq
-            z_dot_grad = (z * grad_V).sum(dim=-1, keepdim=True)
-            inv_lambda_sq = (one_minus_r_sq / 2.0) ** 2
-            D = z.shape[-1]
-            return inv_lambda_sq * (D - 2) * lambda_z * z_dot_grad
-        return torch.zeros(z.shape[0], 1, device=z.device, dtype=z.dtype)
+    # --- Probe directions ---
+    probes = torch.randint(0, 2, (n_probes, N, D), device=device, dtype=dtype) * 2 - 1
 
-    # Euclidean Laplacian: Delta_E V = sum_i d^2 V / dz_i^2
-    D = z.shape[-1]
-    laplacian_E = torch.zeros(z.shape[0], 1, device=z.device, dtype=z.dtype)
-    for i in range(D):
-        grad2 = torch.autograd.grad(
-            grad_V[:, i].sum(), z, create_graph=True, allow_unused=True,
-        )[0]
-        if grad2 is not None:
-            laplacian_E[:, 0] = laplacian_E[:, 0] + grad2[:, i]
+    # Radial unit direction: z_hat = z / ||z||  (clamped for origin safety)
+    z_norm = z_det.norm(dim=-1, keepdim=True)  # [N, 1]
+    z_hat = z_det / z_norm.clamp(min=1e-8)  # [N, D]
 
-    # Poincare ball correction
-    r_sq = (z ** 2).sum(dim=-1, keepdim=True)  # [B, 1]
+    # --- Build all perturbation points in one stack ---
+    # Layout: [center, +v1, -v1, +v2, -v2, ..., +z_hat, -z_hat]
+    points = [z_det]
+    for i in range(n_probes):
+        points.append(z_det + eps * probes[i])
+        points.append(z_det - eps * probes[i])
+    points.append(z_det + eps * z_hat)
+    points.append(z_det - eps * z_hat)
+
+    z_all = torch.cat(points, dim=0)  # [(2k+3)*N, D]
+
+    # --- Single batched forward pass ---
+    V_all = V_func(z_all)  # [(2k+3)*N, 1]
+
+    # --- Split results ---
+    n_groups = 2 * n_probes + 3
+    V_split = V_all.reshape(n_groups, N, 1)
+
+    V_center = V_split[0]  # [N, 1]
+
+    # --- Hutchinson trace estimate (vectorised over probes) ---
+    V_plus = V_split[1:1 + 2 * n_probes:2]   # [k, N, 1]
+    V_minus = V_split[2:2 + 2 * n_probes:2]  # [k, N, 1]
+    trace_terms = V_plus - 2 * V_center.unsqueeze(0) + V_minus  # [k, N, 1]
+    laplacian_E = trace_terms.sum(dim=0) / (n_probes * eps ** 2)  # [N, 1]
+
+    # --- Directional derivative: z · ∇V ≈ ||z|| * (V(z+εẑ) - V(z-εẑ)) / (2ε) ---
+    V_zhat_plus = V_split[-2]   # [N, 1]
+    V_zhat_minus = V_split[-1]  # [N, 1]
+    z_dot_grad = z_norm * (V_zhat_plus - V_zhat_minus) / (2 * eps)  # [N, 1]
+
+    # --- Poincare ball correction ---
+    r_sq = (z_det ** 2).sum(dim=-1, keepdim=True)  # [N, 1]
     one_minus_r_sq = (1.0 - r_sq).clamp(min=1e-6)
-    lambda_z = 2.0 / one_minus_r_sq  # [B, 1]
+    lambda_z = 2.0 / one_minus_r_sq  # [N, 1]
+    inv_lambda_sq = (one_minus_r_sq / 2.0) ** 2  # [N, 1]
 
-    # z . grad V
-    z_dot_grad = (z * grad_V).sum(dim=-1, keepdim=True)  # [B, 1]
-
-    # Delta_G V = (1/lambda^2) [Delta_E V + (D-2) lambda (z . grad V)]
-    inv_lambda_sq = (one_minus_r_sq / 2.0) ** 2
     lap_G = inv_lambda_sq * (laplacian_E + (D - 2) * lambda_z * z_dot_grad)
 
-    return lap_G  # [B, 1]
+    return lap_G, V_center  # [N, 1], [N, 1]
 
 
 def compute_screened_poisson_loss(
@@ -259,26 +295,23 @@ def compute_screened_poisson_loss(
     # Reward density proxy: geodesic distance to target
     rho_r = hyperbolic_distance(z_flat.detach(), z_tgt_flat.detach()).unsqueeze(-1)  # [N, 1]
 
-    # Router weights for V evaluation (broadcast mean)
-    rw_expanded = router_weights.mean(dim=0, keepdim=True).expand(z_flat.shape[0], -1)  # [N, K]
+    # Router weights: single row, broadcasts to any batch size inside V_func
+    rw_row = router_weights.mean(dim=0, keepdim=True)  # [1, K]
 
-    # Define V as a function of z for autograd
+    # Define V as a function of z (handles arbitrary batch size)
     def V_func(z_in: torch.Tensor) -> torch.Tensor:
         n_in = z_in.shape[0]
-        rw_in = rw_expanded[:n_in]
+        rw_in = rw_row.expand(n_in, -1)
         ctx_x, ctx_z = potential_net.chart_tok(rw_in, z_in)
         x_q = potential_net.z_embed(z_in)
         v_feat, _ = potential_net.v_critic_attn(z_in, ctx_z, x_q, ctx_x, ctx_x)
-        return potential_net.v_out(v_feat)  # [N, 1]
+        return potential_net.v_out(v_feat)  # [n_in, 1]
 
-    # Compute Laplace-Beltrami of V (creates graph for backprop)
-    lap_V = hyperbolic_laplacian(V_func, z_flat)  # [N, 1]
-
-    # V at the same points (recompute for clean graph on V_val side)
-    V_val = V_func(z_flat.detach().requires_grad_(False))  # [N, 1]
+    # Single batched call inside hyperbolic_laplacian (returns V_center too)
+    lap_V, V_center = hyperbolic_laplacian(V_func, z_flat)  # [N, 1], [N, 1]
 
     # PDE residual: (-Delta_G + kappa^2) V - rho_r
-    residual = -lap_V + kappa ** 2 * V_val - rho_r
+    residual = -lap_V + kappa ** 2 * V_center - rho_r
 
     return (residual ** 2).mean()
 

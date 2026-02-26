@@ -121,6 +121,27 @@ def train(args):
         sys.argv = original_argv
 
 
+@run.command("vla-dashboard")
+@click.option("--port", default=5009, type=int, help="Port to run server on.")
+@click.option("--open", "open_browser", is_flag=True, help="Open browser on launch.")
+@click.option("--outputs", default="outputs/vla", help="VLA outputs directory.")
+def vla_dashboard(port, open_browser, outputs):
+    """Launch the VLA World Model dashboard."""
+    import panel as pn
+
+    from fragile.learning.vla.dashboard import create_app
+
+    click.echo("Starting VLA World Model Dashboard...")
+    click.echo(f"Open http://localhost:{port} in your browser (Ctrl+C to stop)")
+    pn.serve(
+        lambda: create_app(outputs_dir=outputs),
+        port=port,
+        show=open_browser,
+        title="VLA World Model Dashboard",
+        websocket_origin="*",
+    )
+
+
 @run.command(
     "vla-train",
     context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
