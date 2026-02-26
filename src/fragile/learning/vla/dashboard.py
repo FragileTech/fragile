@@ -450,8 +450,8 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
     seed_input = pn.widgets.IntInput(name="Random seed", value=42, step=1, width=300)
     color_by = pn.widgets.RadioButtonGroup(
         name="Color by",
-        options=["task", "chart", "episode", "radius"],
-        value="task",
+        options=["timestep", "chart", "episode", "radius"],
+        value="timestep",
         button_type="default",
     )
     point_size = pn.widgets.IntSlider(name="Point size", start=1, end=10, value=3, width=300)
@@ -666,9 +666,11 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         radii = np.linalg.norm(z_np, axis=1)
 
         # Map color_by -> labels for the scatter functions
+        timesteps = cache["timesteps"]
+        ts_sub = timesteps[idx]
         cb = color_by.value
-        if cb == "task":
-            labels_for_color = task_sub
+        if cb == "timestep":
+            labels_for_color = ts_sub
         elif cb == "chart":
             labels_for_color = K_np
         elif cb == "episode":
@@ -677,7 +679,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
             # Bin radii into 10 bins for discrete coloring
             labels_for_color = np.digitize(radii, np.linspace(0, radii.max() + 1e-8, 11)) - 1
         else:
-            labels_for_color = task_sub
+            labels_for_color = ts_sub
 
         dummy_correct = np.ones(len(labels_for_color), dtype=int)
 
@@ -689,6 +691,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
             fig3d = plot_latent_3d(
                 z_np, labels_for_color, K_chart=K_np, correct=dummy_correct,
                 color_by=scatter_color, point_size=point_size.value,
+                show_points=show_latents.value,
                 show_chart_centers=show_chart_centers.value,
                 show_code_centers=show_code_centers.value,
                 show_tree_lines=show_tree_lines.value,
@@ -717,6 +720,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
                     scatter_color, point_size.value, di, dj, indices=idx,
                     K_code=K_code_np,
                     show_code_centers=show_code_centers.value,
+                    show_points=show_latents.value,
                 )
                 scatter_panels.append(scatter)
 
@@ -995,8 +999,8 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
 
     # Refresh on widget changes
     for w in (color_by, point_size, latent_samples, seed_input,
-              show_chart_centers, show_code_centers, show_tree_lines,
-              tree_line_color, tree_line_width):
+              show_latents, show_chart_centers, show_code_centers,
+              show_tree_lines, tree_line_color, tree_line_width):
         w.param.watch(lambda _: _refresh_latent(), "value")
 
     n_samples.param.watch(lambda _: _refresh_recon(), "value")

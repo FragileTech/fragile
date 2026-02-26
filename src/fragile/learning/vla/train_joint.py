@@ -131,6 +131,25 @@ def _chart_stats_from_tensor(
     return usage, perplexity, active
 
 
+# ── Hard-routing tau annealing ────────────────────────────────────
+
+
+def _get_hard_routing_tau(args: argparse.Namespace, epoch: int, total_epochs: int) -> float:
+    """Compute annealed hard-routing temperature for the current epoch.
+
+    Linear anneal from ``args.hard_routing_tau`` to ``args.hard_routing_tau_end``
+    over ``args.hard_routing_tau_anneal_epochs`` epochs (defaults to *total_epochs*).
+    Returns constant ``args.hard_routing_tau`` when ``tau_end`` is None.
+    """
+    if args.hard_routing_tau_end is None:
+        return args.hard_routing_tau
+    anneal_epochs = args.hard_routing_tau_anneal_epochs or total_epochs
+    if anneal_epochs <= 0:
+        return args.hard_routing_tau_end
+    t = min(epoch / anneal_epochs, 1.0)
+    return args.hard_routing_tau + t * (args.hard_routing_tau_end - args.hard_routing_tau)
+
+
 # ── Encoder loss computation (same as train_unsupervised.py) ──────
 
 
@@ -153,8 +172,14 @@ def _compute_encoder_losses(
         vq_loss, indices, z_n_all, c_bar, v_local,
     ) = model.encoder(x, hard_routing=hard_routing, hard_routing_tau=hard_routing_tau)
 
+    # When hard routing is on, pass encoder weights to decoder so both use the
+    # same one-hot assignment (matching TopoEncoderPrimitives.forward).  Without
+    # this the decoder draws an independent Gumbel sample, consistency loss
+    # explodes, and training diverges.
+    router_override = enc_w if hard_routing else None
     x_recon, dec_w, aux_losses = model.decoder(
         z_geo, z_tex, chart_index=None,
+        router_weights=router_override,
         hard_routing=hard_routing, hard_routing_tau=hard_routing_tau,
     )
 
@@ -326,6 +351,8 @@ def _run_phase1(
     single_loader: DataLoader,
     args: argparse.Namespace,
     device: torch.device,
+    global_epoch_offset: int = 0,
+    total_epochs_all_phases: int = 1,
 ) -> dict[str, float]:
     """Phase 1: Train encoder + jump_op on single frames (13 losses)."""
     print("\n" + "=" * 60)
@@ -340,12 +367,14 @@ def _run_phase1(
 
     K = args.num_charts
     last_metrics: dict[str, float] = {}
-
     for epoch in tqdm(range(args.phase1_epochs), desc="Phase 1"):
         model.train()
         jump_op.train()
         acc = _init_encoder_accumulators()
         n_batches = 0
+        current_tau = _get_hard_routing_tau(
+            args, global_epoch_offset + epoch, total_epochs_all_phases,
+        )
 
         for batch in single_loader:
             x = batch["feature"].to(device)
@@ -353,7 +382,7 @@ def _run_phase1(
             total, metrics, _, _, _ = _compute_encoder_losses(
                 x, model, jump_op, args, epoch,
                 hard_routing=args.hard_routing,
-                hard_routing_tau=args.hard_routing_tau,
+                hard_routing_tau=current_tau,
             )
 
             optimizer.zero_grad()
@@ -454,6 +483,8 @@ def _run_phase2(
     seq_loader: DataLoader,
     args: argparse.Namespace,
     device: torch.device,
+    global_epoch_offset: int = 0,
+    total_epochs_all_phases: int = 1,
 ) -> dict[str, float]:
     """Phase 2: Train world model with frozen encoder."""
     print("\n" + "=" * 60)
@@ -491,6 +522,9 @@ def _run_phase2(
         world_model.train()
         acc = _init_dynamics_accumulators()
         n_batches = 0
+        current_tau = _get_hard_routing_tau(
+            args, global_epoch_offset + epoch, total_epochs_all_phases,
+        )
 
         for batch in seq_loader:
             features = batch["features"].to(device)  # [B, H, D_feat]
@@ -503,7 +537,7 @@ def _run_phase2(
                 K_flat, _, _, _, rw_flat, z_flat, *_ = model.encoder(
                     flat,
                     hard_routing=args.hard_routing,
-                    hard_routing_tau=args.hard_routing_tau,
+                    hard_routing_tau=current_tau,
                 )
                 z_all = z_flat.reshape(B, H, -1)
                 K_all = K_flat.reshape(B, H)
@@ -623,6 +657,8 @@ def _run_phase3(
     seq_loader: DataLoader,
     args: argparse.Namespace,
     device: torch.device,
+    global_epoch_offset: int = 0,
+    total_epochs_all_phases: int = 1,
 ) -> dict[str, float]:
     """Phase 3: Joint fine-tuning of encoder + world model."""
     print("\n" + "=" * 60)
@@ -665,6 +701,9 @@ def _run_phase3(
         world_model.train()
         acc = _init_joint_accumulators()
         n_batches = 0
+        current_tau = _get_hard_routing_tau(
+            args, global_epoch_offset + epoch, total_epochs_all_phases,
+        )
 
         for batch in seq_loader:
             features = batch["features"].to(device)  # [B, H, D_feat]
@@ -676,7 +715,7 @@ def _run_phase3(
                 _compute_encoder_losses(
                     features[:, 0, :], model, jump_op, args, epoch,
                     hard_routing=args.hard_routing,
-                    hard_routing_tau=args.hard_routing_tau,
+                    hard_routing_tau=current_tau,
                 )
 
             # Frames 1..H-1: batched encoding (1 encoder call)
@@ -685,7 +724,7 @@ def _run_phase3(
                 K_rest, _, _, _, rw_rest, z_rest, *_ = model.encoder(
                     rest,
                     hard_routing=args.hard_routing,
-                    hard_routing_tau=args.hard_routing_tau,
+                    hard_routing_tau=current_tau,
                 )
                 z_geo_rest = z_rest.reshape(B, H - 1, -1)
                 K_rest = K_rest.reshape(B, H - 1)
@@ -1058,9 +1097,14 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
     # ── Run phases ────────────────────────────────────────────
     last_dyn_metrics = None
     had_world_model = False
+    total_epochs_all_phases = args.phase1_epochs + args.phase2_epochs + args.phase3_epochs
 
     if args.phase1_epochs > 0:
-        _run_phase1(model, jump_op, single_loader, args, device)
+        _run_phase1(
+            model, jump_op, single_loader, args, device,
+            global_epoch_offset=0,
+            total_epochs_all_phases=total_epochs_all_phases,
+        )
 
     # Auto-measure ℓ_min from encoder if requested (--wm-min-length -1)
     if args.wm_min_length < 0 and world_model is not None and seq_loader is not None:
@@ -1073,6 +1117,8 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
         assert seq_loader is not None
         last_dyn_metrics = _run_phase2(
             model, jump_op, world_model, seq_loader, args, device,
+            global_epoch_offset=args.phase1_epochs,
+            total_epochs_all_phases=total_epochs_all_phases,
         )
         had_world_model = True
 
@@ -1081,6 +1127,8 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
         assert seq_loader is not None
         last_dyn_metrics = _run_phase3(
             model, jump_op, world_model, seq_loader, args, device,
+            global_epoch_offset=args.phase1_epochs + args.phase2_epochs,
+            total_epochs_all_phases=total_epochs_all_phases,
         )
         had_world_model = True
 
@@ -1132,7 +1180,11 @@ def main() -> None:
     p.add_argument("--hard-routing", action="store_true", default=False,
                    help="Use Gumbel-softmax hard routing (one-hot forward, ST gradients)")
     p.add_argument("--hard-routing-tau", type=float, default=1.0,
-                   help="Temperature for Gumbel-softmax hard routing")
+                   help="Starting temperature for Gumbel-softmax hard routing")
+    p.add_argument("--hard-routing-tau-end", type=float, default=None,
+                   help="Final tau after annealing (None = no annealing, use constant tau)")
+    p.add_argument("--hard-routing-tau-anneal-epochs", type=int, default=None,
+                   help="Anneal tau linearly over this many epochs (None = total epochs)")
 
     # Phase epochs (0 = skip)
     p.add_argument("--phase1-epochs", type=int, default=100)

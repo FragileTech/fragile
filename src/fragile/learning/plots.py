@@ -276,24 +276,40 @@ def build_latent_scatter(
     corr = _to_numpy(correct).astype(int)
     correct_str = np.where(corr == 1, "yes", "no")
 
-    if color_by == "confidence":
-        color_col, cmap = "confidence", "Viridis"
-    elif color_by == "chart":
-        color_col, cmap = "chart", "Category10"
-    elif color_by == "correct":
-        color_col, cmap = "correct", {0: "#e45756", 1: "#54a24b"}
+    # Convert integer labels/charts to strings so holoviews treats them as
+    # categorical (discrete colors) rather than continuous.
+    charts_str = np.array([str(v) for v in charts])
+
+    # Auto-detect: many unique labels -> continuous colormap, few -> categorical
+    n_unique_labels = len(np.unique(labs))
+    if n_unique_labels <= 20:
+        labs_str = np.array([str(v) for v in labs])
+        label_col, label_cmap, label_colorbar = "label_str", "Category10", False
     else:
-        color_col, cmap = "label", "Category10"
+        label_col, label_cmap, label_colorbar = "label", "Viridis", True
+
+    if color_by == "confidence":
+        color_col, cmap, show_colorbar = "confidence", "Viridis", True
+    elif color_by == "chart":
+        color_col, cmap, show_colorbar = "chart_str", "Category10", False
+    elif color_by == "correct":
+        color_col, cmap, show_colorbar = "correct_str", {"yes": "#54a24b", "no": "#e45756"}, False
+    else:
+        color_col, cmap, show_colorbar = label_col, label_cmap, label_colorbar
 
     data = {
         "x": z[:, dim_i].copy(),
         "y": z[:, dim_j].copy(),
         "label": labs,
         "chart": charts,
+        "chart_str": charts_str,
         "correct": corr,
         "correct_str": correct_str,
     }
-    vdims = ["label", "chart", "correct", "correct_str"]
+    vdims = ["label", "chart", "chart_str", "correct", "correct_str"]
+    if n_unique_labels <= 20:
+        data["label_str"] = labs_str
+        vdims.append("label_str")
 
     if confidence is not None:
         data["confidence"] = confidence.astype(float)
@@ -323,14 +339,21 @@ def build_latent_scatter(
         "xlabel": f"z{dim_i}",
         "ylabel": f"z{dim_j}",
         "title": f"z{dim_i} vs z{dim_j}",
-        "colorbar": True,
+        "colorbar": show_colorbar,
         "tools": [hover, TapTool()],
     }
     if color_by == "confidence" and confidence is not None:
         opts_kw["clim"] = (0, 1)
     if alpha_by_confidence and confidence is not None:
         opts_kw["alpha"] = hv.dim("confidence")
-    scatter = hv.Points(data, kdims=["x", "y"], vdims=vdims).opts(**opts_kw)
+
+    if show_points:
+        scatter = hv.Points(data, kdims=["x", "y"], vdims=vdims).opts(**opts_kw)
+    else:
+        # Invisible placeholder that preserves axes range for overlays
+        scatter = hv.Points(data, kdims=["x", "y"], vdims=vdims).opts(
+            **{**opts_kw, "alpha": 0, "size": 0},
+        )
 
     if show_code_centers and K_code is not None:
         codes_arr = _to_numpy(K_code).astype(int)
@@ -384,6 +407,7 @@ def plot_latent_2d_slices(
     alpha_by_confidence: bool = False,
     K_code: np.ndarray | None = None,
     show_code_centers: bool = False,
+    show_points: bool = True,
 ) -> hv.Layout:
     """2D scatter panels for every pair among the first 3 latent dims.
 
@@ -419,6 +443,7 @@ def plot_latent_2d_slices(
             alpha_by_confidence=alpha_by_confidence,
             K_code=K_code,
             show_code_centers=show_code_centers,
+            show_points=show_points,
         )
         panels.append(scatter)
 

@@ -61,6 +61,22 @@ def _init_accumulators() -> dict[str, float]:
     return {k: 0.0 for k in LOSS_KEYS + INFO_KEYS + ["total"]}
 
 
+def _get_hard_routing_tau(args: argparse.Namespace, epoch: int, total_epochs: int) -> float:
+    """Compute annealed hard-routing temperature for the current epoch.
+
+    Linear anneal from ``args.hard_routing_tau`` to ``args.hard_routing_tau_end``
+    over ``args.hard_routing_tau_anneal_epochs`` epochs (defaults to *total_epochs*).
+    Returns constant ``args.hard_routing_tau`` when ``tau_end`` is None.
+    """
+    if args.hard_routing_tau_end is None:
+        return args.hard_routing_tau
+    anneal_epochs = args.hard_routing_tau_anneal_epochs or total_epochs
+    if anneal_epochs <= 0:
+        return args.hard_routing_tau_end
+    t = min(epoch / anneal_epochs, 1.0)
+    return args.hard_routing_tau + t * (args.hard_routing_tau_end - args.hard_routing_tau)
+
+
 # ── Main training function ─────────────────────────────────────────
 
 
@@ -134,6 +150,7 @@ def train_unsupervised(args: argparse.Namespace) -> None:  # noqa: C901
         jump_op.train()
         acc = _init_accumulators()
         n_batches = 0
+        current_tau = _get_hard_routing_tau(args, epoch, args.epochs)
 
         for batch in loader:
             x = batch["feature"].to(device)
@@ -145,14 +162,18 @@ def train_unsupervised(args: argparse.Namespace) -> None:  # noqa: C901
             ) = model.encoder(
                 x,
                 hard_routing=args.hard_routing,
-                hard_routing_tau=args.hard_routing_tau,
+                hard_routing_tau=current_tau,
             )
 
             # ── Decoder forward (dreaming mode) ────────────
+            # When hard routing is on, pass encoder weights to decoder so both
+            # use the same one-hot assignment (avoids consistency loss explosion).
+            router_override = enc_w if args.hard_routing else None
             x_recon, dec_w, aux_losses = model.decoder(
                 z_geo, z_tex, chart_index=None,
+                router_weights=router_override,
                 hard_routing=args.hard_routing,
-                hard_routing_tau=args.hard_routing_tau,
+                hard_routing_tau=current_tau,
             )
 
             # ── Loss computation (13 terms) ────────────────
@@ -419,7 +440,11 @@ def main() -> None:
     p.add_argument("--hard-routing", action="store_true", default=False,
                    help="Use Gumbel-softmax hard routing (one-hot forward, ST gradients)")
     p.add_argument("--hard-routing-tau", type=float, default=1.0,
-                   help="Temperature for Gumbel-softmax hard routing")
+                   help="Starting temperature for Gumbel-softmax hard routing")
+    p.add_argument("--hard-routing-tau-end", type=float, default=None,
+                   help="Final tau after annealing (None = no annealing, use constant tau)")
+    p.add_argument("--hard-routing-tau-anneal-epochs", type=int, default=None,
+                   help="Anneal tau linearly over this many epochs (None = total epochs)")
 
     # ── Loss weights ───────────────────────────────────────
     p.add_argument("--w-recon", type=float, default=1.0)
