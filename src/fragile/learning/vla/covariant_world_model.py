@@ -455,10 +455,18 @@ class CovariantMomentumInit(nn.Module):
 
 
 class GeometricWorldModel(nn.Module):
-    """Action-conditioned dynamics model using geodesic Boris-BAOAB integration.
+    r"""Action-conditioned dynamics model using geodesic Boris-BAOAB integration.
 
     Drop-in replacement for the MLP-based GeometricWorldModel, using
     CovariantAttention-based sub-modules that respect Poincare geometry.
+
+    When ``min_length > 0``, three CFL-derived bounds are enforced using
+    smooth squashing maps (same :math:`\psi` from the Euclidean Gas theory):
+
+    .. math::
+        V_{\text{alg}} = \frac{\ell_{\min}}{\Delta t},\qquad
+        F_{\max} = \frac{2\gamma\,\ell_{\min}}{\Delta t},\qquad
+        \lambda_{\max} = \frac{2\,\ell_{\min}}{c_2\,\sqrt{D}\,\Delta t}
 
     Args:
         latent_dim: Dimension of the Poincare ball latent space.
@@ -475,6 +483,9 @@ class GeometricWorldModel(nn.Module):
         use_boris: Whether to enable Boris rotation for curl forces.
         use_jump: Whether to enable the Poisson jump process.
         jump_rate_hidden: Kept for API compatibility (unused).
+        min_length: Minimum resolvable geodesic length scale.
+            When > 0, derives F_max, V_alg and cf_max from CFL conditions.
+            When 0, all squashing is disabled (backward compat).
     """
 
     def __init__(
@@ -493,6 +504,7 @@ class GeometricWorldModel(nn.Module):
         use_boris: bool = True,
         use_jump: bool = True,
         jump_rate_hidden: int = 64,
+        min_length: float = 0.0,
     ) -> None:
         super().__init__()
         self.latent_dim = latent_dim
@@ -504,10 +516,23 @@ class GeometricWorldModel(nn.Module):
         self.beta_curl = beta_curl
         self.use_boris = use_boris
         self.use_jump = use_jump
+        self.min_length = min_length
 
         # Ornstein-Uhlenbeck coefficients
         self.c1 = math.exp(-gamma_friction * dt)
         self.c2 = math.sqrt(max(0.0, (1.0 - self.c1**2) * T_c))
+
+        # CFL-derived bounds from minimum length scale
+        if min_length > 0:
+            self.V_alg = min_length / dt
+            self.F_max = 2.0 * gamma_friction * min_length / dt
+            # cf_max = 2 * ℓ_min / (c2 * √D * dt); floor at 2.0 (origin value)
+            denom = max(self.c2, 1e-12) * math.sqrt(latent_dim) * dt
+            self.cf_max = max(2.0 * min_length / denom, 2.0)
+        else:
+            self.V_alg = 0.0
+            self.F_max = 0.0
+            self.cf_max = 0.0
 
         # Metric
         self.metric = ConformalMetric()
@@ -622,6 +647,12 @@ class GeometricWorldModel(nn.Module):
         u_pi = self.control_net(z, action, rw)  # [B, D] cotangent force
         kick = force - u_pi
 
+        # ψ_F: smooth force squashing (1-Lipschitz, C∞, direction-preserving)
+        if self.F_max > 0:
+            kick = self.F_max * kick / (
+                self.F_max + kick.norm(dim=-1, keepdim=True)
+            )
+
         p_minus = p - (h / 2.0) * kick
         p_plus = self._boris_rotation(p_minus, z, action)
         p = p_plus - (h / 2.0) * kick
@@ -631,11 +662,20 @@ class GeometricWorldModel(nn.Module):
         v = torch.einsum("bij,bj->bi", g_inv, p)  # contravariant velocity
         geo_corr = christoffel_contraction(z, v)
         v_corr = v - (h / 4.0) * geo_corr
+        # ψ_v: smooth velocity squashing (V_alg = ℓ_min / Δt)
+        if self.V_alg > 0:
+            v_corr = self.V_alg * v_corr / (
+                self.V_alg + v_corr.norm(dim=-1, keepdim=True)
+            )
         z = poincare_exp_map(z, (h / 2.0) * v_corr)
         z = _project_to_ball(z)
 
         # --- O step: Ornstein-Uhlenbeck thermostat ---
         cf = self.metric.conformal_factor(z)  # [B, 1]
+        if self.cf_max > 0:
+            # Smooth conformal factor cap via tanh: preserves interior values,
+            # smoothly saturates near boundary
+            cf = self.cf_max * torch.tanh(cf / self.cf_max)
         xi = torch.randn_like(p)
         p = self.c1 * p + self.c2 * cf * xi
 
@@ -644,6 +684,10 @@ class GeometricWorldModel(nn.Module):
         v = torch.einsum("bij,bj->bi", g_inv, p)
         geo_corr = christoffel_contraction(z, v)
         v_corr = v - (h / 4.0) * geo_corr
+        if self.V_alg > 0:
+            v_corr = self.V_alg * v_corr / (
+                self.V_alg + v_corr.norm(dim=-1, keepdim=True)
+            )
         z = poincare_exp_map(z, (h / 2.0) * v_corr)
         z = _project_to_ball(z)
 
@@ -651,6 +695,12 @@ class GeometricWorldModel(nn.Module):
         force2, phi_eff = self.potential_net.force_and_potential(z, rw)
         u_pi2 = self.control_net(z, action, rw)
         kick2 = force2 - u_pi2
+
+        if self.F_max > 0:
+            kick2 = self.F_max * kick2 / (
+                self.F_max + kick2.norm(dim=-1, keepdim=True)
+            )
+
         p = p - (h / 2.0) * kick2
 
         return z, p, phi_eff

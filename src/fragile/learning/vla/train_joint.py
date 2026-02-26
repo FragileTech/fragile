@@ -43,6 +43,7 @@ from fragile.learning.hyperbolic_losses import (
     compute_window_loss,
     get_jump_weight_schedule,
 )
+from fragile.learning.core.layers.gauge import hyperbolic_distance
 from fragile.learning.vla.extract_features import VLAFeatureDataset
 from fragile.learning.vla.losses import compute_phase2_loss
 from fragile.learning.vla.covariant_world_model import GeometricWorldModel
@@ -237,6 +238,69 @@ def _eval_pass(
     perplexity = float(np.exp(-np.sum(usage * np.log(usage + 1e-8))))
     mean_r = float(radii_np.mean())
     return usage, perplexity, mean_r
+
+
+# ── Minimum length scale measurement ─────────────────────────────
+
+
+@torch.no_grad()
+def _measure_min_length(
+    model: TopoEncoderPrimitives,
+    seq_loader: DataLoader,
+    device: torch.device,
+    max_batches: int = 50,
+) -> float:
+    """Measure average consecutive geodesic distance d_hyp(z_t, z_{t+1}).
+
+    This gives the *action resolution* — the typical geodesic distance
+    the latent state moves in one time step.  Used as the minimum
+    resolvable length scale ℓ_min for CFL-derived force / velocity /
+    noise bounds.
+    """
+    model.eval()
+    dists: list[torch.Tensor] = []
+    for i, batch in enumerate(seq_loader):
+        if i >= max_batches:
+            break
+        features = batch["features"].to(device)  # [B, H, D_feat]
+        B, H, D_feat = features.shape
+        flat = features.reshape(B * H, D_feat)
+        _, _, _, _, _, z_flat, *_ = model.encoder(flat)
+        z_seq = z_flat.reshape(B, H, -1)  # [B, H, D]
+        # Consecutive geodesic distances
+        for t in range(H - 1):
+            d = hyperbolic_distance(z_seq[:, t, :], z_seq[:, t + 1, :])  # [B]
+            dists.append(d)
+    all_dists = torch.cat(dists)
+    median_dist = float(all_dists.median().item())
+    mean_dist = float(all_dists.mean().item())
+    print(f"  ℓ_min measurement: median={median_dist:.4f}  mean={mean_dist:.4f}  "
+          f"(from {all_dists.numel()} pairs)")
+    return median_dist
+
+
+def _update_world_model_min_length(
+    world_model: GeometricWorldModel,
+    min_length: float,
+) -> None:
+    """Update world model CFL bounds from a measured minimum length scale."""
+    import math as _math
+
+    world_model.min_length = min_length
+    dt = world_model.dt
+    gamma = world_model.gamma
+    c2 = world_model.c2
+    D = world_model.latent_dim
+
+    world_model.V_alg = min_length / dt
+    world_model.F_max = 2.0 * gamma * min_length / dt
+    denom = max(c2, 1e-12) * _math.sqrt(D) * dt
+    world_model.cf_max = max(2.0 * min_length / denom, 2.0)
+
+    print(f"  CFL bounds from ℓ_min={min_length:.4f}:")
+    print(f"    F_max  = {world_model.F_max:.2f}  (force squashing)")
+    print(f"    V_alg  = {world_model.V_alg:.2f}  (velocity squashing)")
+    print(f"    cf_max = {world_model.cf_max:.2f}  (thermostat noise cap)")
 
 
 # ── Phase 1: Encoder warmup ──────────────────────────────────────
@@ -898,6 +962,7 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
             use_boris=args.wm_use_boris,
             use_jump=args.wm_use_jump,
             jump_rate_hidden=args.wm_jump_rate_hidden,
+            min_length=max(args.wm_min_length, 0.0),  # -1 (auto) deferred until after P1
         ).to(device)
 
     # ── Parameter breakdown ──────────────────────────────────
@@ -917,6 +982,14 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
             if nc > 0:
                 print(f"    {name:25s} {nc:>8,} params")
         print(f"  World model total: {n_wm:>7,} params")
+        if world_model.min_length > 0:
+            print(f"  CFL bounds (ℓ_min={world_model.min_length:.4f}):")
+            print(f"    F_max={world_model.F_max:.2f}  V_alg={world_model.V_alg:.2f}  "
+                  f"cf_max={world_model.cf_max:.2f}")
+        elif args.wm_min_length < 0:
+            print(f"  CFL bounds: auto-measure after Phase 1")
+        else:
+            print(f"  CFL bounds: disabled (no squashing)")
     print(f"  TOTAL: {n_total:>13,} params")
 
     # ── Resume ────────────────────────────────────────────────
@@ -938,6 +1011,12 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
 
     if args.phase1_epochs > 0:
         _run_phase1(model, jump_op, single_loader, args, device)
+
+    # Auto-measure ℓ_min from encoder if requested (--wm-min-length -1)
+    if args.wm_min_length < 0 and world_model is not None and seq_loader is not None:
+        print("\n  Auto-measuring minimum length scale from encoder...")
+        ell_min = _measure_min_length(model, seq_loader, device)
+        _update_world_model_min_length(world_model, ell_min)
 
     if args.phase2_epochs > 0:
         assert world_model is not None
@@ -1031,6 +1110,9 @@ def main() -> None:
     p.add_argument("--wm-use-jump", action="store_true", default=True)
     p.add_argument("--wm-no-jump", dest="wm_use_jump", action="store_false")
     p.add_argument("--wm-jump-rate-hidden", type=int, default=64)
+    p.add_argument("--wm-min-length", type=float, default=0.03,
+                   help="Minimum geodesic length scale (derives F_max, V_alg, cf_max; "
+                        "0=off, -1=auto-measure from encoder after Phase 1)")
     p.add_argument("--wm-d-model", type=int, default=128,
                    help="CovariantAttention width for world model")
 

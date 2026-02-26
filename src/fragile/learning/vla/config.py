@@ -45,6 +45,7 @@ class VLAConfig:
     wm_use_boris: bool = True           # enable Boris rotation
     wm_use_jump: bool = True            # enable Poisson jump process
     wm_jump_rate_hidden: int = 64       # hidden dim for jump rate predictor
+    wm_min_length: float = 0.03        # minimum geodesic length scale; derives F_max, V_alg, cf_max
 
     # --- Phase 1 loss weights (encoder) ---
     w_feature_recon: float = 1.0
