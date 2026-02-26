@@ -1180,7 +1180,8 @@ def main() -> None:
     p.add_argument("--hard-routing", action="store_true", default=False,
                    help="Use Gumbel-softmax hard routing (one-hot forward, ST gradients)")
     p.add_argument("--hard-routing-tau", type=float, default=1.0,
-                   help="Starting temperature for Gumbel-softmax hard routing")
+                   help="Starting temperature for hard routing; positive = Gumbel-softmax, "
+                        "negative = deterministic straight-through argmax (no Gumbel noise)")
     p.add_argument("--hard-routing-tau-end", type=float, default=None,
                    help="Final tau after annealing (None = no annealing, use constant tau)")
     p.add_argument("--hard-routing-tau-anneal-epochs", type=int, default=None,

@@ -261,3 +261,47 @@ def test_hard_routing_gradients_flow() -> None:
             has_grad = True
             break
     assert has_grad, "No gradients flowed to encoder parameters through hard routing"
+
+
+def test_hard_routing_straight_through_argmax() -> None:
+    """Negative tau triggers deterministic ST argmax (no Gumbel noise).
+
+    Two forward passes with the same input should produce identical one-hot
+    weights (deterministic), unlike Gumbel-softmax which is stochastic.
+    Gradients should still flow.
+    """
+    torch.manual_seed(12)
+    model = TopoEncoderPrimitives(
+        input_dim=3,
+        hidden_dim=32,
+        latent_dim=2,
+        num_charts=3,
+        codes_per_chart=5,
+    )
+    x = torch.randn(8, 3)
+
+    # Two forward passes in eval mode — deterministic ST argmax should match
+    model.eval()
+    out1 = model(x, use_hard_routing=True, hard_routing_tau=-1.0)
+    out2 = model(x, use_hard_routing=True, hard_routing_tau=-1.0)
+    model.train()
+    enc_w1, enc_w2 = out1[2], out2[2]
+
+    # Deterministic: both passes produce the same one-hot weights
+    assert torch.equal(enc_w1, enc_w2), "ST argmax should be deterministic"
+
+    # Still one-hot
+    assert torch.allclose(enc_w1.max(dim=-1).values, torch.ones(8), atol=1e-5)
+    assert torch.allclose(enc_w1.sum(dim=-1), torch.ones(8), atol=1e-5)
+
+    # Gradients flow
+    x_recon, vq_loss = out1[0], out1[1]
+    loss = torch.nn.functional.mse_loss(x_recon, x) + vq_loss
+    loss.backward()
+
+    has_grad = False
+    for p in model.encoder.parameters():
+        if p.grad is not None and p.grad.abs().sum() > 0:
+            has_grad = True
+            break
+    assert has_grad, "No gradients through ST argmax path"

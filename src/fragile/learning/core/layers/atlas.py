@@ -1522,6 +1522,14 @@ def _routing_weights(
 ) -> torch.Tensor:
     if not hard_routing:
         return F.softmax(scores, dim=-1)
+    if hard_routing_tau < 0:
+        # Negative tau → deterministic straight-through argmax (no Gumbel noise).
+        # Forward: one-hot from argmax.  Backward: gradients through softmax.
+        # This lets routing losses see the router's true preference, unlike
+        # Gumbel-softmax which masks collapse with random noise.
+        soft = F.softmax(scores, dim=-1)
+        one_hot = F.one_hot(scores.argmax(-1), scores.shape[-1]).float()
+        return one_hot + soft - soft.detach()
     tau = max(float(hard_routing_tau), 1e-6)
     return F.gumbel_softmax(scores, tau=tau, hard=True)
 

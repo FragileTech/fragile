@@ -286,7 +286,8 @@ def build_latent_scatter(
         labs_str = np.array([str(v) for v in labs])
         label_col, label_cmap, label_colorbar = "label_str", "Category10", False
     else:
-        label_col, label_cmap, label_colorbar = "label", "Viridis", True
+        # Log-scale for better color spread when distribution is skewed
+        label_col, label_cmap, label_colorbar = "label_log", "Viridis", True
 
     if color_by == "confidence":
         color_col, cmap, show_colorbar = "confidence", "Viridis", True
@@ -310,6 +311,9 @@ def build_latent_scatter(
     if n_unique_labels <= 20:
         data["label_str"] = labs_str
         vdims.append("label_str")
+    else:
+        data["label_log"] = np.log1p(labs.astype(float))
+        vdims.append("label_log")
 
     if confidence is not None:
         data["confidence"] = confidence.astype(float)
@@ -498,6 +502,10 @@ def plot_latent_3d(
 
     color_label = color_by.capitalize()
 
+    # Detect whether labels should use continuous or categorical coloring
+    n_unique_labels = len(np.unique(labs))
+    _use_continuous_labels = n_unique_labels > 20
+
     if not show_points:
         pass  # skip scatter traces
     elif color_by == "confidence" and confidence is not None:
@@ -542,6 +550,29 @@ def plot_latent_3d(
             )
         )
         color_label = "Confidence"
+    elif color_by == "label" and _use_continuous_labels:
+        # Continuous colorscale with log scaling for better spread
+        color_vals_f = np.log1p(labs.astype(float))
+        hover_text = [
+            f"z0={x[k]:.3f}<br>z1={y[k]:.3f}<br>z2={z_ax[k]:.3f}"
+            f"<br>Label={labs[k]}<br>Chart={charts[k]}"
+            f"<br>Correct={'yes' if corr[k] else 'no'}"
+            for k in range(len(x))
+        ]
+        traces.append(
+            go.Scatter3d(
+                x=x, y=y, z=z_ax, mode="markers", name="label",
+                marker={
+                    "size": point_size,
+                    "color": color_vals_f,
+                    "colorscale": "Viridis",
+                    "colorbar": {"title": "Label (log)"},
+                    "opacity": base_opacity,
+                },
+                text=hover_text, hoverinfo="text",
+            )
+        )
+        color_label = "Label"
     else:
         # Categorical traces
         if color_by == "chart":
