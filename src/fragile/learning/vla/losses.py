@@ -330,38 +330,42 @@ def compute_phase1_loss(
     z_geo: torch.Tensor,
     encoder: torch.nn.Module,
     config: VLAConfig,
-) -> tuple[torch.Tensor, dict[str, float]]:
+) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
     """Assemble Phase 1 (encoder-only) loss from all active terms.
 
     Returns:
-        total_loss: Scalar loss for backward.
+        base_loss: Scalar loss for terms that do NOT flow through z_n.
+        zn_reg_loss: Scalar loss for z_n regularization (uniformity, radial_cal).
         metrics: Dict of individual loss components for logging.
     """
     metrics: dict[str, float] = {}
 
     # Feature reconstruction (MSE)
     loss_recon = F.mse_loss(x_recon, x)
-    total = config.w_feature_recon * loss_recon
+    base_loss = config.w_feature_recon * loss_recon
     metrics["recon"] = loss_recon.item()
 
     # VQ loss (from encoder)
-    total = total + config.w_vq * vq_loss
+    base_loss = base_loss + config.w_vq * vq_loss
     metrics["vq"] = vq_loss.item()
 
     # Routing entropy (encourage sharp routing)
     loss_entropy = compute_routing_entropy(enc_router_weights)
-    total = total + config.w_entropy * loss_entropy
+    base_loss = base_loss + config.w_entropy * loss_entropy
     metrics["entropy"] = loss_entropy.item()
 
     # Diversity (prevent chart collapse)
     loss_diversity = compute_diversity_loss(enc_router_weights, config.num_charts)
-    total = total + config.w_diversity * loss_diversity
+    base_loss = base_loss + config.w_diversity * loss_diversity
     metrics["diversity"] = loss_diversity.item()
+
+    # z_n regularization terms (flow through z_geo -> z_n)
+    zn_reg_loss = torch.zeros((), device=x.device)
 
     # Hyperbolic uniformity
     if config.w_uniformity > 0:
         loss_unif = compute_hyperbolic_uniformity_loss(z_geo)
-        total = total + config.w_uniformity * loss_unif
+        zn_reg_loss = zn_reg_loss + config.w_uniformity * loss_unif
         metrics["uniformity"] = loss_unif.item()
 
     # Radial calibration
@@ -369,7 +373,7 @@ def compute_phase1_loss(
         loss_radcal = compute_radial_calibration_loss(
             z_geo, enc_router_weights, config.num_charts,
         )
-        total = total + config.w_radial_calibration * loss_radcal
+        zn_reg_loss = zn_reg_loss + config.w_radial_calibration * loss_radcal
         metrics["radial_cal"] = loss_radcal.item()
 
     # Codebook spread
@@ -378,7 +382,7 @@ def compute_phase1_loss(
         loss_spread = compute_codebook_spread_loss(
             codebook, margin=config.w_codebook_spread_margin,
         )
-        total = total + config.w_codebook_spread * loss_spread
+        base_loss = base_loss + config.w_codebook_spread * loss_spread
         metrics["codebook_spread"] = loss_spread.item()
 
     # Chart collapse penalty
@@ -386,7 +390,7 @@ def compute_phase1_loss(
         loss_chart_col = compute_chart_collapse_penalty(
             enc_router_weights, config.num_charts,
         )
-        total = total + config.w_chart_collapse * loss_chart_col
+        base_loss = base_loss + config.w_chart_collapse * loss_chart_col
         metrics["chart_collapse"] = loss_chart_col.item()
 
     # Code collapse penalty
@@ -397,7 +401,7 @@ def compute_phase1_loss(
             z_geo, codebook, enc_router_weights,
             temperature=config.w_code_collapse_temperature,
         )
-        total = total + config.w_code_collapse * loss_code_col
+        base_loss = base_loss + config.w_code_collapse * loss_code_col
         metrics["code_collapse"] = loss_code_col.item()
 
     # Window loss
@@ -406,7 +410,7 @@ def compute_phase1_loss(
             enc_router_weights, config.num_charts,
             eps_ground=config.w_window_eps_ground,
         )
-        total = total + config.w_window * loss_window
+        base_loss = base_loss + config.w_window * loss_window
         metrics["window"] = loss_window.item()
         metrics.update(window_metrics)
 
@@ -416,11 +420,12 @@ def compute_phase1_loss(
         kl = (enc_router_weights * torch.log(
             (enc_router_weights + eps) / (dec_router_weights + eps)
         )).sum(dim=-1).mean()
-        total = total + config.w_consistency * kl
+        base_loss = base_loss + config.w_consistency * kl
         metrics["consistency"] = kl.item()
 
+    total = base_loss + zn_reg_loss
     metrics["total"] = total.item()
-    return total, metrics
+    return base_loss, zn_reg_loss, metrics
 
 
 def compute_phase2_loss(
@@ -508,15 +513,19 @@ def compute_phase3_loss(
     z_targets: torch.Tensor,
     chart_targets: torch.Tensor,
     config: VLAConfig,
-) -> tuple[torch.Tensor, dict[str, float]]:
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict[str, float]]:
     """Assemble Phase 3 (joint fine-tuning) loss.
 
-    Combines scaled encoder loss and dynamics loss.
+    Combines scaled encoder loss and dynamics loss, returning split
+    components for gradient surgery.
 
     Returns:
-        total_loss, metrics dict.
+        base_enc_loss: Encoder base loss (no z_n gradient path).
+        zn_reg_loss: z_n regularization loss (uniformity, radial_cal).
+        dyn_loss: Dynamics loss from world model.
+        metrics: Dict of individual loss components for logging.
     """
-    loss_enc, enc_metrics = compute_phase1_loss(
+    base_enc, zn_reg, enc_metrics = compute_phase1_loss(
         x, x_recon, vq_loss, enc_router_weights, dec_router_weights,
         z_geo, encoder, config,
     )
@@ -524,7 +533,11 @@ def compute_phase3_loss(
         wm_output, z_targets, chart_targets, config,
     )
 
-    total = config.phase3_encoder_scale * loss_enc + config.phase3_dynamics_scale * loss_dyn
+    total = (
+        config.phase3_encoder_scale * base_enc
+        + config.phase3_zn_reg_scale * zn_reg
+        + config.phase3_dynamics_scale * loss_dyn
+    )
 
     metrics: dict[str, float] = {}
     for k, v in enc_metrics.items():
@@ -533,4 +546,4 @@ def compute_phase3_loss(
         metrics[f"dyn/{k}"] = v
     metrics["total"] = total.item()
 
-    return total, metrics
+    return base_enc, zn_reg, loss_dyn, metrics

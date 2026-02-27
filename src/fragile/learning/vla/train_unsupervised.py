@@ -111,6 +111,8 @@ def train_unsupervised(args: argparse.Namespace) -> None:  # noqa: C901
         num_charts=K,
         codes_per_chart=args.codes_per_chart,
         covariant_attn=True,
+        covariant_attn_tensorization="full",
+        soft_equiv_metric=True,
         conv_backbone=False,
         film_conditioning=True,
     ).to(device)

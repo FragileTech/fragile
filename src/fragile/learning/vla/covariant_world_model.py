@@ -19,7 +19,6 @@ from fragile.learning.core.layers.gauge import (
     CovariantAttention,
     GeodesicConfig,
     christoffel_contraction,
-    hyperbolic_distance,
     poincare_exp_map,
 )
 from fragile.learning.core.layers.primitives import SpectralLinear
@@ -367,7 +366,12 @@ class CovariantValueCurl(nn.Module):
 
 
 class CovariantChartTarget(nn.Module):
-    """Predicts target chart logits for the jump process using CovariantAttention."""
+    """Predicts target chart logits for the jump process using CovariantAttention.
+
+    Uses ChartTokenizer + ActionTokenizer → CovariantAttention → output projection,
+    matching the pattern of CovariantControlField.  This allows the module to
+    condition on the current chart weights ``rw`` via the attention mechanism.
+    """
 
     def __init__(
         self,
@@ -379,16 +383,13 @@ class CovariantChartTarget(nn.Module):
         super().__init__()
         self.num_charts = num_charts
 
-        centers = F.normalize(torch.randn(num_charts, latent_dim), dim=-1) * 0.3
-        self.chart_centers = nn.Parameter(centers)
-
         self.action_tok = ActionTokenizer(action_dim, d_model, latent_dim)
+        self.chart_tok = ChartTokenizer(num_charts, d_model, latent_dim)
 
-        self.q_gamma = nn.Parameter(
-            torch.randn(num_charts, latent_dim, latent_dim) * 0.02,
-        )
-        self.action_proj = SpectralLinear(d_model, num_charts)
-        self.metric = ConformalMetric()
+        geo_cfg = GeodesicConfig(d_model=d_model, d_latent=latent_dim, n_heads=1)
+        self.attn = CovariantAttention(geo_cfg)
+        self.out = SpectralLinear(d_model, num_charts)
+        self.z_embed = SpectralLinear(latent_dim, d_model)
 
     def forward(
         self, z: torch.Tensor, action: torch.Tensor, rw: torch.Tensor,
@@ -403,33 +404,16 @@ class CovariantChartTarget(nn.Module):
         Returns:
             logits: [B, K] chart logits.
         """
-        K = self.num_charts
+        act_x, act_z = self.action_tok(action, z)
+        chart_x, chart_z = self.chart_tok(rw, z)
 
-        # 1. Base: geodesic distance to chart centers with conformal temperature
-        # Project chart centers to stay inside the Poincare ball
-        safe_centers = _project_to_ball(self.chart_centers)  # [K, D]
-        z_expanded = z.unsqueeze(1).expand(-1, K, -1).contiguous()  # [B, K, D]
-        centers_expanded = safe_centers.unsqueeze(0).expand(
-            z.shape[0], -1, -1,
-        ).contiguous()  # [B, K, D]
-        # Flatten for hyperbolic_distance then reshape
-        dist = hyperbolic_distance(
-            z_expanded.reshape(-1, z.shape[-1]),
-            centers_expanded.reshape(-1, z.shape[-1]),
-        ).reshape(z.shape[0], K)  # [B, K]
-        tau = self.metric.temperature(z, z.shape[-1])  # [B, 1]
-        base = -dist / (tau + 1e-8)  # [B, K]
+        # Concatenate action + chart context tokens
+        ctx_x = torch.cat([act_x, chart_x], dim=1)   # [B, A+K, d_model]
+        ctx_z = torch.cat([act_z, chart_z], dim=1)    # [B, A+K, D]
 
-        # 2. Christoffel correction: quadratic in z
-        z_outer = torch.einsum("bi,bj->bij", z, z)  # [B, D, D]
-        gamma_corr = torch.einsum("bij,kij->bk", z_outer, self.q_gamma)  # [B, K]
-
-        # 3. Action contribution via tokenizer + mean pool + projection
-        act_x, _act_z = self.action_tok(action, z)  # [B, A, d_model]
-        act_pooled = act_x.mean(dim=1)  # [B, d_model]
-        act_logits = self.action_proj(act_pooled)  # [B, K]
-
-        return base + gamma_corr + act_logits
+        x_q = self.z_embed(z)
+        output, _ = self.attn(z, ctx_z, x_q, ctx_x, ctx_x)
+        return self.out(output)                         # [B, K]
 
 
 class CovariantJumpRate(nn.Module):

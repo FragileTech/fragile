@@ -137,6 +137,8 @@ def load_vla_checkpoint(ckpt_path: str) -> VLALoaded:
     enc_kwargs.setdefault("num_charts", args.get("num_charts", 8))
     enc_kwargs.setdefault("codes_per_chart", args.get("codes_per_chart", 32))
     enc_kwargs.setdefault("covariant_attn", True)
+    enc_kwargs.setdefault("covariant_attn_tensorization", "full")
+    enc_kwargs.setdefault("soft_equiv_metric", True)
     enc_kwargs.setdefault("conv_backbone", False)
 
     encoder = TopoEncoderPrimitives(film_conditioning=True, **enc_kwargs)

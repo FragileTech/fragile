@@ -127,10 +127,11 @@ def _run_phase1(
             ) = encoder(x)
 
             # Phase 1 loss
-            loss, metrics = compute_phase1_loss(
+            base_loss, zn_reg_loss, metrics = compute_phase1_loss(
                 x, x_recon, vq_loss, enc_router_weights, dec_router_weights,
                 z_geo, encoder, config,
             )
+            loss = base_loss + zn_reg_loss
 
             # Jump consistency loss (with warmup schedule)
             jump_w = get_jump_weight_schedule(
@@ -339,30 +340,75 @@ def _run_phase3(
 
             # World model rollout
             z_0 = z_all[:, 0, :]
-            rw_0 = rw_list[0]
+            rw_0 = rw_list[0].detach()
             pred_actions = actions[:, :-1, :]
             z_targets = z_all[:, 1:, :].detach()  # Detach targets for stability
             chart_targets = K_all[:, 1:].detach()
 
             wm_output = world_model(z_0, pred_actions, rw_0)
 
-            loss, metrics = compute_phase3_loss(
+            base_enc, zn_reg, dyn_loss, metrics = compute_phase3_loss(
                 features[:, 0, :], x_recon_0, vq_loss_0,
                 enc_rw_0, dec_rw_0, z_geo_0, encoder,
                 wm_output, z_targets, chart_targets, config,
             )
 
+            # Three-pass gradient surgery: isolate z_n gradients
             optimizer.zero_grad()
-            loss.backward()
+
+            sf_params = list(encoder.encoder.structure_filter.parameters())
+
+            protected_params = (
+                list(encoder.encoder.feature_extractor.parameters())
+                + list(encoder.encoder.val_proj.parameters())
+                + list(encoder.encoder.cov_router.parameters())
+                + [encoder.encoder.chart_centers]
+            )
+            if encoder.encoder.soft_equiv_layers is not None:
+                for layer in encoder.encoder.soft_equiv_layers:
+                    protected_params += list(layer.parameters())
+
+            # Pass 1: base encoder loss (recon + non-z_n terms)
+            (config.phase3_encoder_scale * base_enc).backward(retain_graph=True)
+            # Zero structure_filter grads → blocks reconstruction from z_n
+            for p in sf_params:
+                if p.grad is not None:
+                    p.grad.zero_()
+
+            # Pass 2: z_n regularization (separate scale)
+            if zn_reg.grad_fn is not None:
+                (config.phase3_zn_reg_scale * zn_reg).backward(retain_graph=True)
+
+            # Save protected params (they have encoder grads: base + zn_reg)
+            saved_grads = [
+                p.grad.clone() if p.grad is not None else None
+                for p in protected_params
+            ]
+
+            # Pass 3: dynamics loss (accumulates onto all params)
+            (config.phase3_dynamics_scale * dyn_loss).backward()
+
+            # Restore protected params (removes dynamics contribution)
+            for p, saved in zip(protected_params, saved_grads):
+                if saved is not None:
+                    p.grad = saved
+                elif p.grad is not None:
+                    p.grad.zero_()
+
+            all_params = (
+                list(encoder.parameters()) + list(jump_op.parameters())
+                + list(world_model.parameters())
+            )
             if config.grad_clip > 0:
-                nn.utils.clip_grad_norm_(
-                    list(encoder.parameters()) + list(jump_op.parameters())
-                    + list(world_model.parameters()),
-                    config.grad_clip,
-                )
+                nn.utils.clip_grad_norm_(all_params, config.grad_clip)
             optimizer.step()
 
-            epoch_loss += loss.item()
+            total = (
+                config.phase3_encoder_scale * base_enc
+                + config.phase3_zn_reg_scale * zn_reg
+                + config.phase3_dynamics_scale * dyn_loss
+            )
+            epoch_loss += total.item()
             n_batches += 1
 
         last_metrics = metrics
@@ -431,6 +477,13 @@ def train_vla(config: VLAConfig) -> dict:
         covariant_attn_denom_min=config.covariant_attn_denom_min,
         covariant_attn_use_transport=config.covariant_attn_use_transport,
         covariant_attn_transport_eps=config.covariant_attn_transport_eps,
+        soft_equiv_metric=config.soft_equiv_metric,
+        soft_equiv_bundle_size=config.soft_equiv_bundle_size or None,
+        soft_equiv_hidden_dim=config.soft_equiv_hidden_dim,
+        soft_equiv_use_spectral_norm=config.soft_equiv_use_spectral_norm,
+        soft_equiv_zero_self_mixing=config.soft_equiv_zero_self_mixing,
+        soft_equiv_soft_assign=config.soft_equiv_soft_assign,
+        soft_equiv_temperature=config.soft_equiv_temperature,
         conv_backbone=config.conv_backbone,
     )
 

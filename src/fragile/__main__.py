@@ -189,6 +189,31 @@ def vla_unsup(args):
 
 
 @run.command(
+    "dataset",
+    context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
+)
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def dataset(args):
+    """Extract SmolVLA latents and cache them for world model training.
+
+    Runs the frozen SmolVLA backbone over every frame in a LeRobot dataset
+    and saves per-episode features, actions, and states as .pt files.
+
+    Run `uv run fragile dataset -- --help` for all options.
+    """
+    import sys
+
+    from fragile.learning.vla.create_latent_dataset import main
+
+    original_argv = sys.argv
+    sys.argv = ["fragile-dataset", *args]
+    try:
+        main()
+    finally:
+        sys.argv = original_argv
+
+
+@run.command(
     "vla-joint",
     context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
 )

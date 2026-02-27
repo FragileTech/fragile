@@ -211,21 +211,26 @@ def _compute_encoder_losses(
     )
     jump_loss, _jump_info = compute_jump_consistency_loss(z_n_all, enc_w, jump_op)
 
-    total = (
+    base_loss = (
         args.w_recon * recon_loss
         + args.w_vq * vq_loss
         + args.w_entropy * entropy_loss
         + args.w_consistency * consistency_loss
         + args.w_diversity * diversity_loss
-        + args.w_uniformity * uniformity_loss
-        + args.w_radial_cal * radial_cal_loss
         + args.w_codebook_spread * cb_spread_loss
         + args.w_codebook_center * cb_center_loss
         + args.w_chart_collapse * chart_collapse_loss
         + args.w_code_collapse * code_collapse_loss
         + args.w_window * window_loss
+    )
+
+    zn_reg_loss = (
+        args.w_uniformity * uniformity_loss
+        + args.w_radial_cal * radial_cal_loss
         + current_jump_weight * jump_loss
     )
+
+    total = base_loss + zn_reg_loss
 
     metrics = {
         "recon": recon_loss.item(),
@@ -247,7 +252,7 @@ def _compute_encoder_losses(
         "jump_weight": current_jump_weight,
         "total": total.item(),
     }
-    return total, metrics, z_geo, enc_w, K_chart
+    return base_loss, zn_reg_loss, metrics, z_geo, enc_w, K_chart
 
 
 # ── Eval pass (chart usage, perplexity, mean_r) ──────────────────
@@ -384,11 +389,12 @@ def _run_phase1(
         for batch in single_loader:
             x = batch["feature"].to(device)
 
-            total, metrics, _, _, _ = _compute_encoder_losses(
+            base_loss, zn_reg_loss, metrics, _, _, _ = _compute_encoder_losses(
                 x, model, jump_op, args, epoch,
                 hard_routing=args.hard_routing,
                 hard_routing_tau=current_tau,
             )
+            total = base_loss + zn_reg_loss
 
             optimizer.zero_grad()
             total.backward()
@@ -720,7 +726,7 @@ def _run_phase3(
             B, H, D_feat = features.shape
 
             # Frame 0: full encoder losses + reuse outputs (1 encoder call)
-            enc_loss, enc_metrics_0, z_geo_0, enc_w_0, K_ch_0 = \
+            base_loss, zn_reg_loss, enc_metrics_0, z_geo_0, enc_w_0, K_ch_0 = \
                 _compute_encoder_losses(
                     features[:, 0, :], model, jump_op, args, epoch,
                     hard_routing=args.hard_routing,
@@ -745,7 +751,7 @@ def _run_phase3(
 
             # World model rollout
             z_0 = z_all[:, 0, :]
-            rw_0 = enc_w_0
+            rw_0 = enc_w_0.detach()
             pred_actions = actions[:, :-1, :]
             z_targets = z_all[:, 1:, :].detach()
             chart_targets = K_all[:, 1:].detach()
@@ -756,36 +762,55 @@ def _run_phase3(
             )
             wm_diag = _wm_diagnostics(wm_output)
 
-            # Combined loss
+            # Combined loss (for logging only)
             total = (
-                args.phase3_encoder_scale * enc_loss
+                args.phase3_encoder_scale * base_loss
+                + args.phase3_zn_reg_scale * zn_reg_loss
                 + args.phase3_dynamics_scale * dyn_loss
             )
 
             optimizer.zero_grad()
 
-            # --- Gradient surgery: block dynamics grads from chart geometry ---
-            # Protected params: cov_router (chart assignment) and
-            # chart_centers (chart positions). The world model may only
-            # adapt codebook codes, val_proj, nuisance, and its own params.
+            # --- Three-pass gradient surgery ---
+            # Goal: structure_filter gets zn_reg + dynamics (no reconstruction),
+            #        feature_extractor + val_proj + cov_router + chart_centers
+            #          get encoder only (no dynamics),
+            #        WM params get dynamics only.
+
+            sf_params = list(model.encoder.structure_filter.parameters())
+
             protected_params = (
-                list(model.encoder.cov_router.parameters())
+                list(model.encoder.feature_extractor.parameters())
+                + list(model.encoder.val_proj.parameters())
+                + list(model.encoder.cov_router.parameters())
                 + [model.encoder.chart_centers]
             )
+            if model.encoder.soft_equiv_layers is not None:
+                for layer in model.encoder.soft_equiv_layers:
+                    protected_params += list(layer.parameters())
 
-            # 1. Encoder loss backward (retain graph for dynamics pass)
-            (args.phase3_encoder_scale * enc_loss).backward(retain_graph=True)
+            # Pass 1: base encoder loss (recon + non-z_n terms)
+            (args.phase3_encoder_scale * base_loss).backward(retain_graph=True)
+            # Zero structure_filter grads → blocks reconstruction from z_n
+            for p in sf_params:
+                if p.grad is not None:
+                    p.grad.zero_()
 
-            # 2. Save protected gradients (encoder-loss-only contribution)
+            # Pass 2: z_n regularization (separate scale)
+            if zn_reg_loss.grad_fn is not None:
+                (args.phase3_zn_reg_scale * zn_reg_loss).backward(retain_graph=True)
+            # structure_filter now has ONLY reg grads
+
+            # Save protected params (they have encoder grads: base + zn_reg)
             saved_grads = [
                 p.grad.clone() if p.grad is not None else None
                 for p in protected_params
             ]
 
-            # 3. Dynamics loss backward (accumulates onto all params)
+            # Pass 3: dynamics loss (accumulates onto all params)
             (args.phase3_dynamics_scale * dyn_loss).backward()
 
-            # 4. Restore protected gradients (removes dynamics contribution)
+            # Restore protected params (removes dynamics contribution)
             for p, saved in zip(protected_params, saved_grads):
                 if saved is not None:
                     p.grad = saved
@@ -1058,6 +1083,8 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
         num_charts=K,
         codes_per_chart=args.codes_per_chart,
         covariant_attn=True,
+        covariant_attn_tensorization="full",
+        soft_equiv_metric=True,
         conv_backbone=False,
         film_conditioning=True,
     ).to(device)
@@ -1278,6 +1305,8 @@ def main() -> None:
     # Phase 3 scaling
     p.add_argument("--phase3-encoder-scale", type=float, default=0.1)
     p.add_argument("--phase3-dynamics-scale", type=float, default=1.0)
+    p.add_argument("--phase3-zn-reg-scale", type=float, default=0.1,
+                   help="Scale for z_n regularization in phase 3 (0=disable)")
 
     # Encoder loss weights (same defaults as train_unsupervised)
     p.add_argument("--w-recon", type=float, default=1.0)

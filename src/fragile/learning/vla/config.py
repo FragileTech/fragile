@@ -32,6 +32,15 @@ class VLAConfig:
     covariant_attn_transport_eps: float = 1e-3
     conv_backbone: bool = False
 
+    # --- Soft equivariant metric ---
+    soft_equiv_metric: bool = True
+    soft_equiv_bundle_size: int = 0  # 0 = use latent_dim
+    soft_equiv_hidden_dim: int = 64
+    soft_equiv_use_spectral_norm: bool = True
+    soft_equiv_zero_self_mixing: bool = False
+    soft_equiv_soft_assign: bool = True
+    soft_equiv_temperature: float = 1.0
+
     # --- World model ---
     action_dim: int = 6  # SO100: 6 joints (shoulder_pan/lift, elbow, wrist_flex/roll, gripper)
     wm_hidden_dim: int = 256
@@ -80,6 +89,7 @@ class VLAConfig:
     # --- Phase 3 joint scaling ---
     phase3_encoder_scale: float = 0.1
     phase3_dynamics_scale: float = 1.0
+    phase3_zn_reg_scale: float = 0.1
 
     # --- Training ---
     phase1_epochs: int = 100

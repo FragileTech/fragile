@@ -252,7 +252,7 @@ class AttentiveAtlasEncoder(nn.Module):
             ratio = out_norm / in_norm
             ratio_clamped = ratio.clamp(max=ratio_max)
             scale = torch.where(ratio > 0, ratio_clamped / ratio, torch.ones_like(ratio))
-            diff_out *= scale
+            diff_out = diff_out * scale
             log_ratio = torch.log(ratio.clamp(min=eps, max=ratio_max))
             log_ratio_losses.append((log_ratio**2).mean())
             transformed.append(diff_out.view(batch_size, num_codes, latent_dim))
@@ -340,7 +340,7 @@ class AttentiveAtlasEncoder(nn.Module):
             weights = F.softmax(-dist / temperature, dim=-1)
             z_q_soft = (weights.unsqueeze(-1) * codebook).sum(dim=2)
             # Straight-through soft assignment so gradients reach the metric network.
-            z_q_all += z_q_soft - z_q_soft.detach()
+            z_q_all = z_q_all + z_q_soft - z_q_soft.detach()
 
         # VQ loss using geodesic distance in the Poincaré ball.
         v_bc = v_local.unsqueeze(1)  # [B, 1, D] (kept for delta computation below)
@@ -452,15 +452,14 @@ class TopologicalDecoder(nn.Module):
             router_weights = _routing_weights(logits, hard_routing, hard_routing_tau)  # [B, N_c]
 
         # Chart-specific linear maps reconstruct local observations.
-        h_stack = torch.einsum("bl,chl->bch", z_geo, self.chart_weight)  # [B, N_c, H]
-        h_stack += self.chart_bias.unsqueeze(0)  # [B, N_c, H]
+        h_stack = torch.einsum("bl,chl->bch", z_geo, self.chart_weight) + self.chart_bias.unsqueeze(0)  # [B, N_c, H]
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
 
         x_hat = self.renderer(h_global) + self.render_skip(h_global)  # [B, D_out]
         if z_tex is not None:
             # Texture residual injects high-frequency details.
             z_tex = torch.tanh(z_tex)
-            x_hat += self.tex_residual_scale * self.tex_residual(z_tex)
+            x_hat = x_hat + self.tex_residual_scale * self.tex_residual(z_tex)
         return x_hat, router_weights
 
 
@@ -821,9 +820,7 @@ class CovariantChartRouter(nn.Module):
 
         # Optional: add feature-based corrections via gamma term
         if self.q_feat_proj is not None and features is not None:
-            q = self.q_z_proj(z)
-            q += self.q_feat_proj(features)
-            q += self._gamma_term(z)
+            q = self.q_z_proj(z) + self.q_feat_proj(features) + self._gamma_term(z)
             # Add small correction from feature projection
             keys = self._transport_queries(z, chart_tokens=chart_tokens)
             feature_scores = (keys * q.unsqueeze(1)).sum(dim=-1)
@@ -982,7 +979,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             ratio = out_norm / in_norm
             ratio_clamped = ratio.clamp(max=ratio_max)
             scale = torch.where(ratio > 0, ratio_clamped / ratio, torch.ones_like(ratio))
-            diff_out *= scale
+            diff_out = diff_out * scale
             log_ratio = torch.log(ratio.clamp(min=eps, max=ratio_max))
             log_ratio_losses.append((log_ratio**2).mean())
             transformed.append(diff_out.view(batch_size, num_codes, latent_dim))
@@ -1077,7 +1074,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             weights = F.softmax(-dist / temperature, dim=-1)
             z_q_soft = _poincare_weighted_mean_per_chart(codebook, weights)
             # Straight-through soft assignment so gradients reach the metric network.
-            z_q_all += z_q_soft - z_q_soft.detach()
+            z_q_all = z_q_all + z_q_soft - z_q_soft.detach()
 
         # VQ objective weighted by routing.
         w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
@@ -1675,7 +1672,7 @@ class _AtlasEncoderLevel(nn.Module):
             ratio = out_norm / in_norm
             ratio_clamped = ratio.clamp(max=ratio_max)
             scale = torch.where(ratio > 0, ratio_clamped / ratio, torch.ones_like(ratio))
-            diff_out *= scale
+            diff_out = diff_out * scale
             log_ratio = torch.log(ratio.clamp(min=eps, max=ratio_max))
             log_ratio_losses.append((log_ratio**2).mean())
             transformed.append(diff_out.view(batch_size, num_codes, latent_dim))
@@ -1754,7 +1751,7 @@ class _AtlasEncoderLevel(nn.Module):
             temperature = max(self.soft_equiv_temperature, 1e-6)
             weights = F.softmax(-dist / temperature, dim=-1)
             z_q_soft = (weights.unsqueeze(-1) * codebook).sum(dim=2)
-            z_q_all += z_q_soft - z_q_soft.detach()
+            z_q_all = z_q_all + z_q_soft - z_q_soft.detach()
 
         # VQ objective weighted by routing.
         w = router_weights.unsqueeze(-1).detach()
