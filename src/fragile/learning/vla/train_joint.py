@@ -365,8 +365,10 @@ def _run_phase1(
     all_params = list(model.parameters()) + list(jump_op.parameters())
     optimizer = torch.optim.Adam(all_params, lr=args.lr)
     scheduler = None
-    if args.use_scheduler:
-        scheduler = CosineAnnealingLR(optimizer, T_max=args.phase1_epochs, eta_min=1e-6)
+    if args.use_scheduler or args.phase1_cosine_lr:
+        scheduler = CosineAnnealingLR(
+            optimizer, T_max=args.phase1_epochs, eta_min=args.phase1_eta_min,
+        )
 
     K = args.num_charts
     last_metrics: dict[str, float] = {}
@@ -503,8 +505,10 @@ def _run_phase2(
 
     optimizer = torch.optim.Adam(world_model.parameters(), lr=args.lr_wm)
     scheduler = None
-    if args.use_scheduler:
-        scheduler = CosineAnnealingLR(optimizer, T_max=args.phase2_epochs, eta_min=1e-6)
+    if args.use_scheduler or args.phase2_cosine_lr:
+        scheduler = CosineAnnealingLR(
+            optimizer, T_max=args.phase2_epochs, eta_min=args.phase2_eta_min,
+        )
 
     # Build config namespace for compute_phase2_loss
     config_ns = SimpleNamespace(
@@ -680,8 +684,10 @@ def _run_phase3(
         },
     ])
     scheduler = None
-    if args.use_scheduler:
-        scheduler = CosineAnnealingLR(optimizer, T_max=args.phase3_epochs, eta_min=1e-6)
+    if args.use_scheduler or args.phase3_cosine_lr:
+        scheduler = CosineAnnealingLR(
+            optimizer, T_max=args.phase3_epochs, eta_min=args.phase3_eta_min,
+        )
 
     # Config namespace for dynamics losses
     config_ns = SimpleNamespace(
@@ -757,7 +763,35 @@ def _run_phase3(
             )
 
             optimizer.zero_grad()
-            total.backward()
+
+            # --- Gradient surgery: block dynamics grads from chart geometry ---
+            # Protected params: cov_router (chart assignment) and
+            # chart_centers (chart positions). The world model may only
+            # adapt codebook codes, val_proj, nuisance, and its own params.
+            protected_params = (
+                list(model.encoder.cov_router.parameters())
+                + [model.encoder.chart_centers]
+            )
+
+            # 1. Encoder loss backward (retain graph for dynamics pass)
+            (args.phase3_encoder_scale * enc_loss).backward(retain_graph=True)
+
+            # 2. Save protected gradients (encoder-loss-only contribution)
+            saved_grads = [
+                p.grad.clone() if p.grad is not None else None
+                for p in protected_params
+            ]
+
+            # 3. Dynamics loss backward (accumulates onto all params)
+            (args.phase3_dynamics_scale * dyn_loss).backward()
+
+            # 4. Restore protected gradients (removes dynamics contribution)
+            for p, saved in zip(protected_params, saved_grads):
+                if saved is not None:
+                    p.grad = saved
+                elif p.grad is not None:
+                    p.grad.zero_()
+
             all_params = (
                 list(model.parameters())
                 + list(jump_op.parameters())
@@ -1204,7 +1238,20 @@ def main() -> None:
     # Training
     p.add_argument("--batch-size", type=int, default=256)
     p.add_argument("--grad-clip", type=float, default=1.0)
-    p.add_argument("--use-scheduler", action="store_true")
+    p.add_argument("--use-scheduler", action="store_true",
+                   help="Enable cosine LR scheduler for all phases (legacy flag)")
+    p.add_argument("--phase1-cosine-lr", action="store_true",
+                   help="Cosine anneal LR in Phase 1")
+    p.add_argument("--phase1-eta-min", type=float, default=1e-6,
+                   help="Minimum LR for Phase 1 cosine schedule")
+    p.add_argument("--phase2-cosine-lr", action="store_true",
+                   help="Cosine anneal LR in Phase 2")
+    p.add_argument("--phase2-eta-min", type=float, default=1e-6,
+                   help="Minimum LR for Phase 2 cosine schedule")
+    p.add_argument("--phase3-cosine-lr", action="store_true",
+                   help="Cosine anneal LR in Phase 3")
+    p.add_argument("--phase3-eta-min", type=float, default=1e-6,
+                   help="Minimum LR for Phase 3 cosine schedule")
 
     # World model params
     p.add_argument("--wm-hidden-dim", type=int, default=None,

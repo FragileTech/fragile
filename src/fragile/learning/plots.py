@@ -258,6 +258,10 @@ def build_latent_scatter(
     K_code: np.ndarray | None = None,
     show_code_centers: bool = False,
     show_points: bool = True,
+    trajectory_episode_ids: np.ndarray | None = None,
+    trajectory_timesteps: np.ndarray | None = None,
+    trajectory_episode: int | None = None,
+    trajectory_color: str = "red",
 ) -> hv.Points | hv.Overlay:
     """Build a single 2D scatter for one dimension pair.
 
@@ -286,8 +290,8 @@ def build_latent_scatter(
         labs_str = np.array([str(v) for v in labs])
         label_col, label_cmap, label_colorbar = "label_str", "Category10", False
     else:
-        # Log-scale for better color spread when distribution is skewed
-        label_col, label_cmap, label_colorbar = "label_log", "Viridis", True
+        # Use a continuous numeric color scale for high-cardinality labels
+        label_col, label_cmap, label_colorbar = "label", "Viridis", True
 
     if color_by == "confidence":
         color_col, cmap, show_colorbar = "confidence", "Viridis", True
@@ -312,8 +316,7 @@ def build_latent_scatter(
         data["label_str"] = labs_str
         vdims.append("label_str")
     else:
-        data["label_log"] = np.log1p(labs.astype(float))
-        vdims.append("label_log")
+        data["label"] = labs.astype(float)
 
     if confidence is not None:
         data["confidence"] = confidence.astype(float)
@@ -359,6 +362,8 @@ def build_latent_scatter(
             **{**opts_kw, "alpha": 0, "size": 0},
         )
 
+    result = scatter
+
     if show_code_centers and K_code is not None:
         codes_arr = _to_numpy(K_code).astype(int)
         center_x, center_y, center_chart, center_code = [], [], [], []
@@ -387,7 +392,7 @@ def build_latent_scatter(
                 (f"z{dim_i}", "@x{0.3f}"),
                 (f"z{dim_j}", "@y{0.3f}"),
             ])
-            overlay = hv.Points(
+            result = result * hv.Points(
                 center_data, kdims=["x", "y"],
                 vdims=["chart", "code", "color"],
                 label="code centers",
@@ -395,8 +400,22 @@ def build_latent_scatter(
                 color="color", marker="diamond", size=point_size * 3,
                 alpha=0.7, tools=[center_hover],
             )
-            return scatter * overlay
-    return scatter
+
+    # Episode trajectory overlay
+    if (
+        trajectory_episode is not None
+        and trajectory_episode_ids is not None
+        and trajectory_timesteps is not None
+    ):
+        traj_overlay = _build_trajectory_overlay_2d(
+            z, dim_i, dim_j,
+            trajectory_episode_ids, trajectory_timesteps,
+            trajectory_episode, trajectory_color,
+        )
+        if traj_overlay is not None:
+            result = result * traj_overlay
+
+    return result
 
 
 def plot_latent_2d_slices(
@@ -480,6 +499,10 @@ def plot_latent_3d(
     show_code_centers: bool = False,
     show_tree_lines: bool = False,
     show_leaf_lines: bool = True,
+    trajectory_episode_ids: np.ndarray | None = None,
+    trajectory_timesteps: np.ndarray | None = None,
+    trajectory_episode: int | None = None,
+    trajectory_color: str = "red",
 ) -> go.Figure:
     """3D scatter of z_geo[:,0:3] colored by label, chart, correct, or confidence."""
     z = _to_numpy(z_geo)
@@ -551,8 +574,8 @@ def plot_latent_3d(
         )
         color_label = "Confidence"
     elif color_by == "label" and _use_continuous_labels:
-        # Continuous colorscale with log scaling for better spread
-        color_vals_f = np.log1p(labs.astype(float))
+        # Continuous colorscale on raw labels
+        color_vals_f = labs.astype(float)
         hover_text = [
             f"z0={x[k]:.3f}<br>z1={y[k]:.3f}<br>z2={z_ax[k]:.3f}"
             f"<br>Label={labs[k]}<br>Chart={charts[k]}"
@@ -566,7 +589,7 @@ def plot_latent_3d(
                     "size": point_size,
                     "color": color_vals_f,
                     "colorscale": "Viridis",
-                    "colorbar": {"title": "Label (log)"},
+                    "colorbar": {"title": "Label"},
                     "opacity": base_opacity,
                 },
                 text=hover_text, hoverinfo="text",
@@ -638,6 +661,18 @@ def plot_latent_3d(
             show_code_centers=show_code_centers,
             show_lines=show_tree_lines,
             show_leaf_lines=show_leaf_lines,
+        )
+
+    # Episode trajectory overlay
+    if (
+        trajectory_episode is not None
+        and trajectory_episode_ids is not None
+        and trajectory_timesteps is not None
+    ):
+        _add_trajectory_traces_3d(
+            traces, x, y, z_ax,
+            trajectory_episode_ids, trajectory_timesteps,
+            trajectory_episode, trajectory_color,
         )
 
     fig = go.Figure(data=traces)
@@ -940,6 +975,77 @@ def build_ood_trace_3d(
         marker={"size": point_size, "color": "#1f77b4", "opacity": 0.5, "symbol": "x"},
         text=hover_text, hoverinfo="text",
     )
+
+
+def _build_trajectory_overlay_2d(
+    z: np.ndarray,
+    dim_i: int,
+    dim_j: int,
+    episode_ids: np.ndarray,
+    timesteps: np.ndarray,
+    episode: int,
+    color_mode: str,
+) -> hv.Overlay | hv.Curve | hv.Segments | None:
+    """Build a 2D trajectory overlay for a single episode."""
+    mask = episode_ids == episode
+    if mask.sum() < 2:
+        return None
+    ts_ep = timesteps[mask]
+    order = np.argsort(ts_ep)
+    xs = z[mask, dim_i][order]
+    ys = z[mask, dim_j][order]
+
+    if color_mode == "viridis":
+        ts_sorted = ts_ep[order].astype(float)
+        ts_norm = (ts_sorted - ts_sorted.min()) / (ts_sorted.max() - ts_sorted.min() + 1e-8)
+        seg_data = {
+            "x0": xs[:-1], "y0": ys[:-1],
+            "x1": xs[1:], "y1": ys[1:],
+            "timestep": ts_norm[:-1],
+        }
+        return hv.Segments(
+            seg_data, kdims=["x0", "y0", "x1", "y1"], vdims=["timestep"],
+        ).opts(color="timestep", cmap="viridis", line_width=2, colorbar=False)
+    else:
+        return hv.Curve(
+            (xs, ys), label=f"ep {episode}",
+        ).opts(color="red", line_width=2)
+
+
+def _add_trajectory_traces_3d(
+    traces: list,
+    x: np.ndarray,
+    y: np.ndarray,
+    z_ax: np.ndarray,
+    episode_ids: np.ndarray,
+    timesteps: np.ndarray,
+    episode: int,
+    color_mode: str,
+) -> None:
+    """Append episode trajectory line traces to *traces* (in-place)."""
+    mask = episode_ids == episode
+    if mask.sum() < 2:
+        return
+    ts_ep = timesteps[mask]
+    order = np.argsort(ts_ep)
+    xs, ys, zs = x[mask][order], y[mask][order], z_ax[mask][order]
+
+    if color_mode == "viridis":
+        ts_sorted = ts_ep[order].astype(float)
+        ts_norm = (ts_sorted - ts_sorted.min()) / (ts_sorted.max() - ts_sorted.min() + 1e-8)
+        traces.append(go.Scatter3d(
+            x=xs, y=ys, z=zs, mode="lines",
+            line={"color": ts_norm, "colorscale": "Viridis", "width": 3},
+            name=f"Episode {episode}",
+            hoverinfo="none", showlegend=True,
+        ))
+    else:
+        traces.append(go.Scatter3d(
+            x=xs, y=ys, z=zs, mode="lines",
+            line={"color": "red", "width": 3},
+            name=f"Episode {episode}",
+            hoverinfo="none", showlegend=True,
+        ))
 
 
 def _seg(

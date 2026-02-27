@@ -166,20 +166,22 @@ def load_vla_checkpoint(ckpt_path: str) -> VLALoaded:
                 "latent_dim": enc_kwargs["latent_dim"],
                 "action_dim": args.get("action_dim", 6),
                 "num_charts": enc_kwargs["num_charts"],
-                "d_model": args.get("wm_d_model", 128),
-                "hidden_dim": args.get("wm_hidden_dim", 256),
-                "dt": args.get("wm_dt", 0.01),
-                "gamma_friction": args.get("wm_gamma_friction", 1.0),
-                "T_c": args.get("wm_T_c", 0.1),
-                "alpha_potential": args.get("wm_alpha_potential", 0.5),
-                "beta_curl": args.get("wm_beta_curl", 0.1),
-                "gamma_risk": args.get("wm_gamma_risk", 0.01),
-                "use_boris": args.get("wm_use_boris", True),
-                "use_jump": args.get("wm_use_jump", True),
-                "jump_rate_hidden": args.get("wm_jump_rate_hidden", 64),
-                "min_length": max(args.get("wm_min_length", 0.03), 0.0),
-                "risk_metric_alpha": args.get("wm_risk_metric_alpha", 0.0),
+                "d_model": args.get("wm_d_model"),
+                "hidden_dim": args.get("wm_hidden_dim"),
+                "dt": args.get("wm_dt"),
+                "gamma_friction": args.get("wm_gamma_friction"),
+                "T_c": args.get("wm_T_c"),
+                "alpha_potential": args.get("wm_alpha_potential"),
+                "beta_curl": args.get("wm_beta_curl"),
+                "gamma_risk": args.get("wm_gamma_risk"),
+                "use_boris": args.get("wm_use_boris"),
+                "use_jump": args.get("wm_use_jump"),
+                "jump_rate_hidden": args.get("wm_jump_rate_hidden"),
+                "min_length": args.get("wm_min_length"),
+                "risk_metric_alpha": args.get("wm_risk_metric_alpha"),
             }
+            # Drop None values so GeometricWorldModel defaults are used
+            wm_kwargs = {k: v for k, v in wm_kwargs.items() if v is not None}
             world_model = GeometricWorldModel(**wm_kwargs)
             world_model.load_state_dict(wm_state, strict=False)
             world_model.eval()
@@ -468,6 +470,27 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
     camera_selector = pn.widgets.Select(
         name="Camera", options=["top", "wrist"], value="top", width=300,
     )
+    alignment_mode = pn.widgets.RadioButtonGroup(
+        name="Alignment mode",
+        options=["episode", "timestep"],
+        value="episode",
+        button_type="default",
+    )
+    dynamics_granularity = pn.widgets.RadioButtonGroup(
+        name="Granularity",
+        options=["chart", "symbol"],
+        value="chart",
+        button_type="default",
+    )
+    trajectory_episode = pn.widgets.Select(
+        name="Trajectory episode", options={"None": -1}, value=-1, width=300,
+    )
+    trajectory_color = pn.widgets.RadioButtonGroup(
+        name="Trajectory color",
+        options=["red", "viridis"],
+        value="red",
+        button_type="default",
+    )
     status = pn.pane.Markdown("Click **Scan runs** to begin.", width=300)
 
     sidebar = pn.Column(
@@ -484,6 +507,10 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         point_size,
         show_latents,
         pn.layout.Divider(),
+        pn.pane.Markdown("### Trajectory"),
+        trajectory_episode,
+        trajectory_color,
+        pn.layout.Divider(),
         pn.pane.Markdown("### Hierarchy"),
         show_chart_centers,
         show_code_centers,
@@ -493,6 +520,10 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         pn.layout.Divider(),
         pn.pane.Markdown("### Images"),
         camera_selector,
+        pn.layout.Divider(),
+        pn.pane.Markdown("### Dynamics"),
+        alignment_mode,
+        dynamics_granularity,
         pn.layout.Divider(),
         status,
         width=350,
@@ -521,10 +552,11 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
     recon_pane = pn.Column(pn.pane.Markdown("*Load a checkpoint to see reconstructions.*"))
     recon_summary = pn.pane.Markdown("")
 
-    # Tab 3: Dynamics
-    dynamics_pane = pn.Column(
-        pn.pane.Markdown("*Load a checkpoint with a world model to see dynamics.*")
-    )
+    # Tab 3: Dynamics - use dedicated HoloViews panes
+    dyn_transition_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width", height=450)
+    dyn_alignment_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width", height=450)
+    dyn_trajectory_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width", height=600)
+    dyn_status = pn.pane.Markdown("*Load a checkpoint with a world model to see dynamics.*")
 
     # ---- Tabs ----
     latent_tab = pn.Column(
@@ -537,7 +569,13 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         sizing_mode="stretch_width",
     )
     recon_tab = pn.Column(recon_pane, recon_summary, sizing_mode="stretch_width")
-    dynamics_tab = pn.Column(dynamics_pane, sizing_mode="stretch_width")
+    dynamics_tab = pn.Column(
+        dyn_status,
+        dyn_transition_pane,
+        dyn_alignment_pane,
+        dyn_trajectory_pane,
+        sizing_mode="stretch_width",
+    )
 
     tabs = pn.Tabs(
         ("Latent Space", latent_tab),
@@ -688,6 +726,18 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         # Use "label" color mode since we've already set labels_for_color
         scatter_color = "label"
 
+        # Populate trajectory episode selector from available episodes
+        unique_eps = sorted(np.unique(ep_sub))
+        ep_options = {"None": -1}
+        ep_options.update({str(e): int(e) for e in unique_eps})
+        trajectory_episode.options = ep_options
+        if trajectory_episode.value not in ep_options.values():
+            trajectory_episode.value = -1
+
+        # Trajectory params
+        traj_ep = trajectory_episode.value if trajectory_episode.value != -1 else None
+        traj_color = trajectory_color.value
+
         # 3D scatter
         try:
             fig3d = plot_latent_3d(
@@ -701,6 +751,10 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
                 tree_line_width=tree_line_width.value,
                 K_code=K_code_np,
                 show_leaf_lines=False,
+                trajectory_episode_ids=ep_sub,
+                trajectory_timesteps=ts_sub,
+                trajectory_episode=traj_ep,
+                trajectory_color=traj_color,
             )
             latent_3d_pane.object = fig3d
         except Exception:
@@ -723,6 +777,10 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
                     K_code=K_code_np,
                     show_code_centers=show_code_centers.value,
                     show_points=show_latents.value,
+                    trajectory_episode_ids=ep_sub,
+                    trajectory_timesteps=ts_sub,
+                    trajectory_episode=traj_ep,
+                    trajectory_color=traj_color,
                 )
                 scatter_panels.append(scatter)
 
@@ -929,18 +987,21 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         loaded = app_state.get("loaded")
         cache = app_state.get("cache")
         if loaded is None or loaded.world_model is None:
-            dynamics_pane.clear()
-            dynamics_pane.append(
-                pn.pane.Markdown("*No world model in this checkpoint.*")
-            )
+            dyn_status.object = "*No world model in this checkpoint.*"
+            dyn_transition_pane.object = hv.Div("")
+            dyn_alignment_pane.object = hv.Div("")
+            dyn_trajectory_pane.object = hv.Div("")
             return
 
-        dynamics_pane.clear()
+        from fragile.learning.vla.visualize import (
+            hv_chart_alignment,
+            hv_chart_transitions,
+            hv_dynamics_trajectory,
+        )
 
-        # Run encoder on all cached features to get z_geo + K_chart
         features = cache["features"]
         episode_ids = cache["episode_ids"]
-        task_labels = cache["task_labels"]
+        timesteps_arr = cache["timesteps"]
 
         N = features.shape[0]
         n_sub = min(5000, N)
@@ -948,6 +1009,8 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         idx = rng.choice(N, size=n_sub, replace=False) if n_sub < N else np.arange(N)
 
         with torch.no_grad():
+            enc_out = loaded.encoder.encoder(features[idx])
+            K_code = enc_out[1]
             (
                 x_recon, vq_loss, enc_rw, dec_rw,
                 K_chart, z_geo, z_n, c_bar, aux,
@@ -955,72 +1018,85 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
 
         z_np = _to_numpy(z_geo)
         K_np = _to_numpy(K_chart).astype(int)
+        K_code_np = _to_numpy(K_code).astype(int)
         ep_sub = episode_ids[idx]
-        tl_sub = task_labels[idx]
+        ts_sub = timesteps_arr[idx]
 
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
+        # Build labels based on granularity
+        if dynamics_granularity.value == "symbol":
+            dyn_labels = np.array([f"c{k}:s{c}" for k, c in zip(K_np, K_code_np)])
+            label_name = "Symbol"
+        else:
+            dyn_labels = K_np
+            label_name = "Chart"
 
-        from fragile.learning.vla.visualize import (
-            plot_chart_task_alignment,
-            plot_chart_transitions,
-            plot_dynamics_trajectory,
-        )
-
-        # Chart transitions
+        # Chart/symbol transitions
         try:
-            fig_trans = plot_chart_transitions(K_np, ep_sub)
-            buf = io.BytesIO()
-            fig_trans.savefig(buf, format="png", dpi=100, bbox_inches="tight")
-            plt.close(fig_trans)
-            buf.seek(0)
-            dynamics_pane.append(pn.pane.Markdown("### Chart Transition Matrix"))
-            dynamics_pane.append(pn.pane.PNG(buf.getvalue(), width=500))
+            dyn_transition_pane.object = hv_chart_transitions(
+                dyn_labels, ep_sub,
+                title=f"{label_name} Transition Matrix",
+                label_name=label_name,
+            )
         except Exception:
             logger.warning("Chart transitions error: %s", traceback.format_exc())
 
-        # Chart-task alignment
+        # Chart/symbol alignment (episode or timestep)
         try:
-            fig_align = plot_chart_task_alignment(K_np, tl_sub)
-            buf = io.BytesIO()
-            fig_align.savefig(buf, format="png", dpi=100, bbox_inches="tight")
-            plt.close(fig_align)
-            buf.seek(0)
-            dynamics_pane.append(pn.pane.Markdown("### Chart-Task Alignment"))
-            dynamics_pane.append(pn.pane.PNG(buf.getvalue(), width=500))
+            mode = alignment_mode.value
+            if mode == "episode":
+                group_labels = ep_sub
+                group_name = "Episode"
+            else:  # timestep
+                n_bins = min(20, len(np.unique(ts_sub)))
+                bins = np.linspace(ts_sub.min(), ts_sub.max() + 1, n_bins + 1)
+                group_labels = np.digitize(ts_sub, bins) - 1
+                group_name = "Timestep bin"
+            dyn_alignment_pane.object = hv_chart_alignment(
+                dyn_labels, group_labels,
+                title=f"{label_name}-{group_name} Alignment",
+                label_name=label_name,
+                group_name=group_name,
+            )
         except Exception:
-            logger.warning("Chart-task alignment error: %s", traceback.format_exc())
+            logger.warning("Chart alignment error: %s", traceback.format_exc())
 
-        # Dynamics trajectory (pick first episode with enough steps)
+        # Dynamics trajectory
         try:
+            num_charts = loaded.args.get("num_charts", 16)
+            action_dim = loaded.args.get("action_dim", 6)
             unique_eps = np.unique(ep_sub)
             for ep_id in unique_eps[:3]:
                 mask = ep_sub == ep_id
                 if mask.sum() < 4:
                     continue
                 z_ep = z_np[mask]
-                # Predict one-step forward via world model
-                z_t = torch.from_numpy(z_ep[:-1]).float()
-                # Use zero actions for visualization
-                dummy_actions = torch.zeros(z_t.shape[0], loaded.args.get("action_dim", 6))
-                K_t = torch.from_numpy(K_np[mask][:-1]).long()
+                K_ep = K_np[mask]
+                # World model expects: z_0 [B,D], actions [B,H,A], router_weights [B,K]
+                z_0 = torch.from_numpy(z_ep[:-1]).float()
+                B = z_0.shape[0]
+                actions = torch.zeros(B, 1, action_dim)  # H=1 one-step prediction
+                rw_0 = torch.zeros(B, num_charts)
+                for i in range(B):
+                    rw_0[i, K_ep[i]] = 1.0  # one-hot from chart assignment
                 with torch.no_grad():
-                    wm_out = loaded.world_model(z_t, dummy_actions, K_t)
-                z_pred = _to_numpy(wm_out["z_next"])
+                    wm_out = loaded.world_model(z_0, actions, rw_0)
+                z_pred = _to_numpy(wm_out["z_trajectory"][:, 0, :])  # [B, D]
                 z_target = z_ep[1:]
 
-                fig_traj = plot_dynamics_trajectory(z_pred, z_target,
-                                                    title=f"Episode {ep_id}")
-                buf = io.BytesIO()
-                fig_traj.savefig(buf, format="png", dpi=100, bbox_inches="tight")
-                plt.close(fig_traj)
-                buf.seek(0)
-                dynamics_pane.append(pn.pane.Markdown(f"### Trajectory: Episode {ep_id}"))
-                dynamics_pane.append(pn.pane.PNG(buf.getvalue(), width=500))
-                break  # Just show one trajectory
+                dyn_trajectory_pane.object = hv_dynamics_trajectory(
+                    z_pred, z_target, title=f"Dynamics Trajectory: Episode {ep_id}",
+                )
+                break
+            else:
+                dyn_trajectory_pane.object = hv.Div("*No episode with enough steps.*")
         except Exception:
             logger.warning("Dynamics trajectory error: %s", traceback.format_exc())
+
+        dyn_status.object = (
+            f"**Dynamics** — {n_sub} samples, "
+            f"granularity={dynamics_granularity.value}, "
+            f"alignment by {alignment_mode.value}"
+        )
 
     # ---- Wire callbacks ----
     scan_btn.on_click(_on_scan)
@@ -1029,10 +1105,13 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
     # Refresh on widget changes
     for w in (color_by, point_size, latent_samples, seed_input,
               show_latents, show_chart_centers, show_code_centers,
-              show_tree_lines, tree_line_color, tree_line_width):
+              show_tree_lines, tree_line_color, tree_line_width,
+              trajectory_episode, trajectory_color):
         w.param.watch(lambda _: _refresh_latent(), "value")
 
     n_samples.param.watch(lambda _: _refresh_recon(), "value")
+    alignment_mode.param.watch(lambda _: _refresh_dynamics(), "value")
+    dynamics_granularity.param.watch(lambda _: _refresh_dynamics(), "value")
 
     # ---- Template ----
     template = pn.template.FastListTemplate(

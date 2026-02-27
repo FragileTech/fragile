@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import holoviews as hv
 import numpy as np
 import torch
 
@@ -200,6 +201,140 @@ def plot_dynamics_trajectory(
     ax.legend()
 
     return fig
+
+
+def hv_chart_transitions(
+    labels: torch.Tensor | np.ndarray,
+    episode_ids: torch.Tensor | np.ndarray,
+    title: str = "Chart Transition Matrix",
+    label_name: str = "Chart",
+) -> hv.HeatMap:
+    """HoloViews heatmap of label-to-label transition probabilities."""
+    L = np.asarray(_to_numpy(labels))
+    ep = _to_numpy(episode_ids).astype(int)
+
+    unique_labels = sorted(set(L.tolist()))
+    label_to_idx = {lab: i for i, lab in enumerate(unique_labels)}
+    n = len(unique_labels)
+
+    trans = np.zeros((n, n), dtype=int)
+    for i in range(len(L) - 1):
+        if ep[i] == ep[i + 1]:
+            trans[label_to_idx[L[i]], label_to_idx[L[i + 1]]] += 1
+
+    row_sums = trans.sum(axis=1, keepdims=True).clip(min=1)
+    trans_norm = trans / row_sums
+
+    data = [
+        (str(unique_labels[to_i]), str(unique_labels[from_i]), float(trans_norm[from_i, to_i]))
+        for from_i in range(n)
+        for to_i in range(n)
+    ]
+    to_dim = f"To {label_name}"
+    from_dim = f"From {label_name}"
+    return hv.HeatMap(data, kdims=[to_dim, from_dim], vdims=["Probability"]).opts(
+        cmap="YlOrRd",
+        colorbar=True,
+        width=450,
+        height=400,
+        tools=["hover"],
+        xlabel=to_dim,
+        ylabel=from_dim,
+        title=title,
+    )
+
+
+def hv_chart_alignment(
+    labels: torch.Tensor | np.ndarray,
+    group_labels: torch.Tensor | np.ndarray,
+    title: str = "Chart Alignment",
+    label_name: str = "Chart",
+    group_name: str = "Group",
+) -> hv.HeatMap:
+    """HoloViews heatmap of labels vs group alignment with AMI score."""
+    from sklearn.metrics import adjusted_mutual_info_score
+
+    L = np.asarray(_to_numpy(labels))
+    G = _to_numpy(group_labels).astype(int)
+
+    unique_labels = sorted(set(L.tolist()))
+    label_to_idx = {lab: i for i, lab in enumerate(unique_labels)}
+    n_labels = len(unique_labels)
+
+    n_groups = G.max() + 1
+    confusion = np.zeros((n_labels, n_groups), dtype=int)
+    for lab, g in zip(L, G):
+        confusion[label_to_idx[lab], g] += 1
+
+    ami = adjusted_mutual_info_score(L, G)
+
+    data = [
+        (str(unique_labels[li]), str(gi), int(confusion[li, gi]))
+        for li in range(n_labels)
+        for gi in range(n_groups)
+    ]
+    return hv.HeatMap(data, kdims=[group_name, label_name], vdims=["Count"]).opts(
+        cmap="Blues",
+        colorbar=True,
+        width=500,
+        height=400,
+        tools=["hover"],
+        xlabel=group_name,
+        ylabel=label_name,
+        title=f"{title}  (AMI={ami:.3f})",
+    )
+
+
+def hv_dynamics_trajectory(
+    z_pred: torch.Tensor | np.ndarray,
+    z_target: torch.Tensor | np.ndarray,
+    title: str = "Dynamics: Predicted vs Target",
+) -> hv.Overlay:
+    """HoloViews overlay of predicted vs target trajectories on the Poincaré disk."""
+    zp = _pca_2d(_to_numpy(z_pred))
+    zt = _pca_2d(_to_numpy(z_target))
+
+    # Unit circle
+    theta = np.linspace(0, 2 * np.pi, 200)
+    circle = hv.Curve(
+        (np.cos(theta), np.sin(theta)),
+        kdims=["x"],
+        vdims=["y"],
+    ).opts(color="black", line_width=0.8, alpha=0.3)
+
+    # Target trajectory
+    target_line = hv.Curve(
+        (zt[:, 0], zt[:, 1]),
+        kdims=["x"],
+        vdims=["y"],
+    ).opts(color="blue", line_width=1.5, alpha=0.7)
+    target_pts = hv.Points(
+        {"x": zt[:, 0], "y": zt[:, 1], "step": np.arange(len(zt)), "z0": zt[:, 0], "z1": zt[:, 1]},
+        kdims=["x", "y"],
+        vdims=["step", "z0", "z1"],
+    ).opts(color="blue", size=5, alpha=0.7, tools=["hover"])
+
+    # Predicted trajectory
+    pred_line = hv.Curve(
+        (zp[:, 0], zp[:, 1]),
+        kdims=["x"],
+        vdims=["y"],
+    ).opts(color="red", line_width=1.5, line_dash="dashed", alpha=0.7)
+    pred_pts = hv.Points(
+        {"x": zp[:, 0], "y": zp[:, 1], "step": np.arange(len(zp)), "z0": zp[:, 0], "z1": zp[:, 1]},
+        kdims=["x", "y"],
+        vdims=["step", "z0", "z1"],
+    ).opts(color="red", size=5, marker="square", alpha=0.7, tools=["hover"])
+
+    overlay = (circle * target_line * target_pts * pred_line * pred_pts).opts(
+        width=800,
+        height=600,
+        xlim=(-1.1, 1.1),
+        ylim=(-1.1, 1.1),
+        aspect="equal",
+        title=title,
+    )
+    return overlay
 
 
 def full_diagnostic(
