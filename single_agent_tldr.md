@@ -570,3 +570,102 @@ Computing the full Riemannian metric $G_{ij}$ ($D \times D$ tensor) is expensive
     -   *Interpretation:* The geometry "flows" slowly towards the high-risk regions, smoothing out transient noise just like Adam smooths gradient variance.
 
 **Result:** We get Riemannian Manifold Hamiltonian Monte Carlo (RMHMC) benefits for the cost of standard SGD+Momentum.
+
+## 6. Three-Phase Training Pipeline
+
+The system trains in three sequential phases, progressively coupling the encoder and world model while preventing catastrophic forgetting of the atlas representation.
+
+**Phase 1 — Atlas Encoder** (Section 0.4):
+- **Trains:** Encoder + FactorizedJumpOperator.
+- **Data:** Single-frame features.
+- **Losses:** All 13 encoder terms (reconstruction MSE, VQ, routing entropy, diversity, uniformity, radial calibration, codebook spread, chart/code collapse, window, consistency, jump).
+- **Optimizer:** Adam, $\text{lr} = 10^{-3}$.
+
+**Phase 2 — World Model** (encoder frozen):
+- **Trains:** GeometricWorldModel only; encoder frozen via `requires_grad_(False)`.
+- **Data:** Sequence pairs (features $[B, H, D]$, actions $[B, H, A]$). Encoder encodes all frames under `torch.no_grad()` to produce target latent trajectories.
+- **Rollout:** World model integrates from $z_0$ using actions$[0{:}H{-}1]$ to predict $z[1{:}H]$.
+- **Optimizer:** Adam, $\text{lr} = 10^{-3}$.
+
+**Dynamics Losses (Phase 2):**
+
+1.  **Geodesic Loss:** $d_{\mathbb{P}}(z_{\text{pred}}, z_{\text{target}})$. Mean hyperbolic distance across batch and horizon (not Euclidean MSE).
+2.  **Chart Transition:** Cross-entropy on chart logits $\ell_k$ versus encoder-assigned chart targets.
+3.  **Momentum Regularization:** Metric-aware kinetic energy $\frac{1}{2} p^T G^{-1} p$. Prevents unbounded momentum.
+4.  **Energy Conservation:** Variance of the Hamiltonian $H = \Phi_{\text{eff}} + \frac{1}{2} p^T G^{-1} p$ across the horizon. A perfectly symplectic integrator keeps $H$ constant.
+5.  **Jump Dynamics:** L1 sparsity on Poisson rates $\lambda(z, K)$. Chart jumps should be rare events.
+6.  **Screened Poisson (PDE residual):** $\|(-\Delta_G + \kappa^2) V - \rho_r\|^2$. Enforces the critic $V$ as a solution to the Helmholtz equation on the Poincaré ball. Uses batched finite-difference Hutchinson trace estimation (no second-order graphs).
+7.  **Hodge Consistency:** $\|f_{\text{harmonic}}\|^2$. Penalizes the harmonic residual; a well-structured model should explain all forces through conservative + solenoidal components.
+
+### 6.1 Phase 3: Joint Fine-Tuning with Gradient Surgery
+
+Phase 3 unfreezes the encoder and trains both encoder and world model jointly. The central challenge is preventing the encoder from drifting to produce representations that are "easy to predict" for the world model but lose atlas quality (catastrophic forgetting). This is solved through **three-pass gradient surgery** that enforces strict gradient firewalls between parameter groups.
+
+**Optimizer:** Two parameter groups with asymmetric learning rates:
+- Encoder + JumpOperator: $\text{lr} = 10^{-4}$ (10$\times$ lower than Phase 1).
+- World model: $\text{lr} = 10^{-3}$ (same as Phase 2).
+
+**Loss Assembly:**
+$$ \mathcal{L}_{\text{P3}} = \underbrace{\alpha_{\text{enc}} \cdot \mathcal{L}_{\text{base}}}_{\text{Atlas quality}} + \underbrace{\alpha_{z_n} \cdot \mathcal{L}_{z_n\text{-reg}}}_{\text{Nuisance calibration}} + \underbrace{\alpha_{\text{dyn}} \cdot \mathcal{L}_{\text{dyn}}}_{\text{Dynamics}} $$
+where $\alpha_{\text{enc}} = 0.1$, $\alpha_{z_n} = 0.1$, $\alpha_{\text{dyn}} = 1.0$. Dynamics dominates; the encoder loss acts as a regularizer to prevent drift.
+
+**Gradient Firewall Rules:**
+
+| Parameter Group | $\mathcal{L}_{\text{base}}$ (encoder) | $\mathcal{L}_{z_n\text{-reg}}$ | $\mathcal{L}_{\text{dyn}}$ (world model) |
+|---|:---:|:---:|:---:|
+| Feature extractor, val\_proj | $\checkmark$ | $\checkmark$ | $\times$ |
+| CovariantChartRouter | $\checkmark$ | $\checkmark$ | $\times$ |
+| Chart centers $c_k$ (routing) | $\checkmark$ | $\checkmark$ | $\times$ |
+| Soft-equiv layers | $\checkmark$ | $\checkmark$ | $\times$ |
+| **Codebook** (VQ centers within charts) | $\checkmark$ | $\checkmark$ | $\checkmark$ |
+| **Structure filter** ($z_n$ pathway) | $\times$ | $\checkmark$ | $\checkmark$ |
+| World model (all sub-modules) | $\times$ | $\times$ | $\checkmark$ |
+
+**Key Invariants:**
+
+-   **World model gradients flow only to codebook centers and $z_n$:** The dynamics loss $\mathcal{L}_{\text{dyn}}$ reaches only the VQ codebook entries (within charts) and the structure filter that produces $z_n$. The prerouter encoder (feature extractor, val\_proj, chart router, chart centers) is shielded — the world model cannot reshape the upstream feature representation.
+-   **Decider gradients stay out of $z_n$:** The base encoder loss $\mathcal{L}_{\text{base}}$ (reconstruction, VQ, routing, diversity) does not propagate through the structure filter. This prevents reconstruction pressure from collapsing the nuisance subspace.
+-   **$z_n$ regularization has its own path:** Uniformity and radial calibration losses flow through $z_n$ independently, ensuring the nuisance latent remains well-calibrated regardless of the other gradient streams.
+-   **Texture remains screened:** $z_{\text{tex}}$ never enters the world model forward pass (texture firewall, Section 1). No gradient path exists from $\mathcal{L}_{\text{dyn}}$ to the texture subspace.
+
+**Three-Pass Backward (Implementation):**
+
+```
+PASS 1: α_enc · L_base.backward(retain_graph=True)
+  → Gradients to: feature_extractor, val_proj, cov_router,
+                   chart_centers, codebook
+  → Zero: structure_filter.grad
+          (blocks reconstruction → z_n path)
+
+PASS 2: α_zn · L_zn_reg.backward(retain_graph=True)
+  → Gradients to: structure_filter
+          (uniformity + radial calibration for z_n)
+  → Save: protected_params.grad
+          (snapshot of encoder-only gradients)
+
+  protected_params = { feature_extractor, val_proj,
+                       cov_router, chart_centers,
+                       soft_equiv_layers }
+
+PASS 3: α_dyn · L_dyn.backward()
+  → Gradients accumulate on ALL parameters (encoder + WM)
+  → Restore: protected_params.grad = saved
+          (overwrites dynamics contribution on protected set)
+
+RESULT after optimizer.step():
+  feature_extractor, val_proj, cov_router, chart_centers:
+      → updated by L_base + L_zn_reg only
+  codebook (VQ centers within charts):
+      → updated by L_base + L_zn_reg + L_dyn
+  structure_filter (z_n):
+      → updated by L_zn_reg + L_dyn (NOT L_base)
+  world_model:
+      → updated by L_dyn only
+```
+
+**Why This Architecture:**
+
+1.  **Prevents representation drift.** The prerouter encoder cannot be reshaped by the world model. The atlas structure (chart assignment, feature extraction) remains anchored to the Phase 1 objective.
+2.  **Allows world model to refine codebook.** The VQ codebook entries are the interface between perception and dynamics. The world model can nudge codebook centers to improve predictability without corrupting the upstream encoding.
+3.  **Calibrates $z_n$ for dynamics.** The structure filter learns to produce nuisance latents that are both (a) regularized (uniform, radially calibrated) and (b) dynamically useful — the world model's gradient signal refines what "nuisance" means in the context of prediction.
+4.  **Texture remains uncontaminated.** The texture firewall (Section 1) ensures $z_{\text{tex}}$ captures appearance-only variation with zero dynamics leakage.
