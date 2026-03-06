@@ -771,78 +771,115 @@ The beautiful thing is that this was not put in by hand. The fitness symmetry em
 :::{prf:theorem} SU(2) Weak Isospin Noether Current
 :label: thm-su2-noether-current
 
-The local $\text{SU}(2)_{\text{weak}}$ gauge symmetry implies three weak isospin currents.
+The local $\text{SU}(2)_{\text{weak}}$ gauge symmetry acts on the left-handed electroweak sector
+and implies three weak isospin currents.
 
-**Current definition**: For generator $T^a = \sigma^a/2$ ($a = 1,2,3$):
-
-$$
-J_\mu^{(a)}(i,j) = \bar{\Psi}_{ij} \gamma_\mu (T^a \otimes I_{\text{div}}) \Psi_{ij}
-$$
-
-**Explicit forms**:
-
-For $a=3$ (diagonal):
+**Projector-based current definition**: For generator $T^a=\sigma^a/2$ ($a=1,2,3$) and chiral
+projector $P_L=(1-\gamma^5)/2$,
 
 $$
-J_\mu^{(3)}(i,j) = \frac{1}{2} \bar{\psi}_i \gamma_\mu \psi_i - \frac{1}{2} \bar{\psi}_j \gamma_\mu \psi_j
+J_\mu^{(a)} := \bar{\psi}\gamma_\mu T^a P_L\psi.
 $$
 
-For $a=1$ (off-diagonal, symmetric):
+Thus the physical weak current is left-acting. The right-handed current
 
 $$
-J_\mu^{(1)}(i,j) = \frac{1}{2}\left(\bar{\psi}_i \gamma_\mu \psi_j + \bar{\psi}_j \gamma_\mu \psi_i\right)
+J_{\mu,R}^{(a)} := \bar{\psi}\gamma_\mu T^a P_R\psi
 $$
 
-For $a=2$ (off-diagonal, antisymmetric):
+is retained in the implementation only as a parity-violation diagnostic; in the ideal weak-sector
+limit it vanishes because the right-handed sector is an SU(2) singlet.
+
+**Pair-basis realization**: If one restricts to a two-site cloning basis
+$\Psi_{ij,L} = (P_L\psi_i,P_L\psi_j)^\top$, then the same current is realized as
 
 $$
-J_\mu^{(2)}(i,j) = -\frac{i}{2}\left(\bar{\psi}_i \gamma_\mu \psi_j - \bar{\psi}_j \gamma_\mu \psi_i\right)
+J_\mu^{(a)}(i,j) = \bar{\Psi}_{ij,L}\gamma_\mu (T^a\otimes I_{\text{div}})\Psi_{ij,L},
 $$
+
+with explicit components
+
+$$
+J_\mu^{(3)}(i,j) = \frac{1}{2}\bar{\psi}_{i,L}\gamma_\mu\psi_{i,L}
+- \frac{1}{2}\bar{\psi}_{j,L}\gamma_\mu\psi_{j,L},
+$$
+
+$$
+J_\mu^{(1)}(i,j) = \frac{1}{2}\left(
+\bar{\psi}_{i,L}\gamma_\mu\psi_{j,L} + \bar{\psi}_{j,L}\gamma_\mu\psi_{i,L}\right),
+$$
+
+$$
+J_\mu^{(2)}(i,j) = -\frac{i}{2}\left(
+\bar{\psi}_{i,L}\gamma_\mu\psi_{j,L} - \bar{\psi}_{j,L}\gamma_\mu\psi_{i,L}\right).
+$$
+
+**Operational observables**: In the implemented electroweak dashboard, these currents are measured
+through chirality-restricted and gauge-dressed correlators such as
+$J_L^\mu=\bar\psi\gamma^\mu P_L\psi$,
+$J_{L,U(1)}^\mu$,
+$J_{L,SU(2)}^\mu$,
+the cross-chirality Yukawa bilinear $O_{LR}$,
+and the parity-violation diagnostics built from $J_L^\mu$ and $J_R^\mu$.
 
 **Conservation law** (on-shell, with covariant derivative):
 
 $$
-D^\mu J_\mu^{(a)}(i,j) := \partial^\mu J_\mu^{(a)}(i,j) + g\epsilon^{abc} A^{(b),\mu} J_\mu^{(c)}(i,j) = 0
+D^\mu J_\mu^{(a)} := \partial^\mu J_\mu^{(a)} + g\epsilon^{abc}A^{(b),\mu}J_\mu^{(c)} = 0.
 $$
 
 **Caveat**: The fitness-dependent mass $m_{\text{eff}}$ breaks exact SU(2) invariance:
 
 $$
-\partial^\mu J_\mu^{(a)} = \bar{\Psi}_{ij} [m_{\text{eff}}, T^a \otimes I] \Psi_{ij}
+\partial^\mu J_\mu^{(a)} = \bar{\psi}[m_{\text{eff}},T^aP_L]\psi.
 $$
 
-With $m_{\text{eff}} = m_0 I + \delta m\, T^3$, the commutator vanishes for $a=3$ and is $O(\delta m)$ for $a=1,2$.
-Current is exactly conserved only when $m_{\text{eff}}$ commutes with $T^a$ (constant mass).
+With $m_{\text{eff}} = m_0 I + \delta m\,T^3$, the commutator vanishes for $a=3$ and is
+$O(\delta m)$ for $a=1,2$. Current is exactly conserved only when $m_{\text{eff}}$ commutes with
+$T^a P_L$ (constant mass).
 :::
 
 :::{prf:proof}
 **Step 1. SU(2) transformation.**
 
-Infinitesimal: $\delta_a \Psi_{ij} = i\epsilon^a (T^a \otimes I_{\text{div}}) \Psi_{ij}$
+Infinitesimal left-handed weak transformation:
+
+$$
+\delta_a\psi = i\epsilon^a T^a P_L\psi.
+$$
 
 **Step 2. Noether current derivation.**
 
-From $\mathcal{L} = \bar{\Psi}(i\gamma^\mu \partial_\mu - m_{\text{eff}})\Psi$:
+From $\mathcal{L} = \bar{\psi}(i\gamma^\mu \partial_\mu - m_{\text{eff}})\psi$:
 
 $$
-J_\mu^{(a)} = \frac{\partial \mathcal{L}}{\partial(\partial_\mu \Psi)} \delta_a \Psi = \bar{\Psi}_{ij} \gamma_\mu (T^a \otimes I) \Psi_{ij}
+J_\mu^{(a)} = \frac{\partial \mathcal{L}}{\partial(\partial_\mu \psi)} \delta_a\psi
+= \bar{\psi}\gamma_\mu T^a P_L\psi.
 $$
 
-**Step 3. Conservation (formal).**
+**Step 3. Pair-basis realization.**
 
-Using Euler-Lagrange equations $(i\gamma^\mu \partial_\mu - m_{\text{eff}})\Psi = 0$:
+Restricting the field to the left-projected two-site cloning basis
+$\Psi_{ij,L}=(P_L\psi_i,P_L\psi_j)^\top$ recovers the pair-doublet formulas written above. Thus the
+pair-state picture is a concrete realization of the projector-based current once the left-handed
+projection is made explicit.
+
+**Step 4. Conservation (formal).**
+
+Using Euler-Lagrange equations $(i\gamma^\mu \partial_\mu - m_{\text{eff}})\psi = 0$:
 
 $$
-\partial^\mu J_\mu^{(a)} = (\partial^\mu \bar{\Psi}) \gamma_\mu T^a \Psi + \bar{\Psi} \gamma_\mu T^a (\partial^\mu \Psi)
+\partial^\mu J_\mu^{(a)} = (\partial^\mu \bar{\psi})\gamma_\mu T^a P_L\psi
++ \bar{\psi}\gamma_\mu T^a P_L(\partial^\mu\psi)
 $$
 
 Using equations of motion:
 
 $$
-= \bar{\Psi} [m_{\text{eff}}, T^a \otimes I] \Psi
+= \bar{\psi}[m_{\text{eff}},T^aP_L]\psi
 $$
 
-**Step 4. Symmetry breaking.**
+**Step 5. Symmetry breaking.**
 
 If $m_{\text{eff}}$ is not SU(2)-invariant, the commutator is nonzero. Current is approximately conserved when fitness variations are small. $\square$
 :::
@@ -857,6 +894,9 @@ The SU(2) current conservation is **approximate**, analogous to electroweak symm
 | Higgs VEV breaks $\text{SU}(2) \times U(1)$ | Fitness potential breaks SU(2) |
 | $W^\pm, Z$ get mass | Current conservation broken |
 | Photon remains massless | U(1) fitness current is locally conserved (global balance with sources) |
+
+In the implementation this broken symmetry is probed through left-handed and gauge-dressed current
+correlators rather than only through the older cloning-doublet notation.
 :::
 
 ### 4.3. Noether Flow Equations in Algorithmic Parameters

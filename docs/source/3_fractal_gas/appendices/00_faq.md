@@ -621,15 +621,30 @@ The emergence is **structural**: the algebraic relations of cloning match the al
 
 **Response:**
 
-The dimension-gauge correspondence ({prf:ref}`thm-sm-generation-dimension`) is the key insight:
+The volume now contains two complementary framings that should be kept distinct:
 
-1. **Dimension determines structure.** The viscous force acts on $d$ real velocity components. Isotropic coupling is invariant under $O(d)$ basis rotations; after momentum-phase complexification this lifts to $U(d)$ and yields $SU(d)$. For $d=3$, this is $SU(3)$.
+1. **Original structural framing.** The generation-dimension correspondence
+   ({prf:ref}`thm-sm-generation-dimension`) ties the $d$ velocity components to $d$ flavor
+   labels, while the same isotropic viscous sector yields the $SU(d)$ gauge/color structure after
+   momentum-phase complexification. For $d=3$, this gives the familiar three-generation,
+   $SU(3)$-color pattern.
 
-2. **Why $d=3$?** The effective dimension of human-relevant environments (3D physical space + time) constrains the latent space. Agents interacting with 3D environments naturally develop $d \approx 3$ macro-state dimensions.
+2. **Operational dashboard framing.** The currently implemented electroweak channels are organized
+   by walker-role chirality and Dirac chiral projectors
+   ({prf:ref}`thm-sm-ew-operator-layers`). This is an additional theorem about the active
+   operator pipeline, not a replacement for the original structural theorem.
 
-3. **Universality claim.** Theorem {prf:ref}`thm-sm-generation-dimension` states: any bounded-information agent in a $d$-dimensional environment has gauge group $SU(d) \times SU(2) \times U(1)$. This is not specific to the Fractal Gas—it applies to **any** system satisfying the axioms.
+3. **Why $d=3$?** The effective dimension of human-relevant environments (3D physical space +
+   time) constrains the latent space. Agents interacting with 3D environments naturally develop
+   $d \approx 3$ macro-state dimensions.
 
-4. **Not coincidence.** The match to the Standard Model is either:
+4. **Universality claim.** Theorem {prf:ref}`thm-sm-generation-dimension` states a universal
+   structural result: any bounded-information agent in a $d$-dimensional environment carries the
+   same $SU(d) \times SU(2) \times U(1)$ pattern and the same generation count $N_{\text{gen}}=d$.
+   The operational theorem {prf:ref}`thm-sm-ew-operator-layers` then specifies how the active
+   dashboard realizes electroweak observables inside that structure.
+
+5. **Not coincidence.** The match to the Standard Model is either:
    - (a) Deep: physical gauge groups emerge from information-theoretic constraints, or
    - (b) Coincidence: the algebra happens to match.
 
@@ -926,7 +941,8 @@ Every result is explicitly classified:
 | Dirac isomorphism | **Proven** | {prf:ref}`thm-sm-dirac-isomorphism` |
 | Higgs isomorphism | **Framework** | {prf:ref}`thm-sm-higgs-isomorphism` |
 | CP violation | **Framework** | {prf:ref}`thm-sm-cp-violation` |
-| Generation-dimension | **Framework** | {prf:ref}`thm-sm-generation-dimension` |
+| Generation-dimension correspondence | **Framework** | {prf:ref}`thm-sm-generation-dimension` |
+| Electroweak operator framing | **Framework** | {prf:ref}`thm-sm-ew-operator-layers` |
 
 **Status definitions:**
 - **Proven**: Complete rigorous proof in appendices or main text

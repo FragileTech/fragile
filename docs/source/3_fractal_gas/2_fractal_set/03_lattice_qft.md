@@ -729,6 +729,45 @@ $$
 **Proof**: The isomorphism is established via Expansion Adjunction ({prf:ref}`thm-expansion-adjunction`) and Lock tactics. See {prf:ref}`thm-sm-dirac-isomorphism` in {doc}`04_standard_model` for the complete proof. $\square$
 :::
 
+:::{prf:definition} Chirality Operator and Chiral Projectors
+:label: def-lqft-chiral-projectors
+
+In the physical $D=4$ Clifford realization, define the **chirality operator**
+
+$$
+\gamma^5 := i\gamma^0\gamma^1\gamma^2\gamma^3.
+$$
+
+The corresponding **chiral projectors** are
+
+$$
+P_L := \frac{1-\gamma^5}{2},
+\qquad
+P_R := \frac{1+\gamma^5}{2}.
+$$
+
+They satisfy
+
+$$
+P_L^2=P_L,\qquad P_R^2=P_R,\qquad P_LP_R=0,\qquad P_L+P_R=\mathbf{1},
+$$
+
+and therefore split any Dirac field into left- and right-handed parts:
+
+$$
+\psi=\psi_L+\psi_R,
+\qquad
+\psi_L:=P_L\psi,
+\qquad
+\psi_R:=P_R\psi.
+$$
+
+This splitting is the algebraic input used in {doc}`04_standard_model` to define the
+projector-based electroweak current operators
+$\bar\psi\gamma^\mu P_L\psi$, $\bar\psi\gamma^\mu P_R\psi$, and the cross-chirality Yukawa
+bilinears.
+:::
+
 ### 4.7. Special Case: $D = 4$ (3+1 Dimensions)
 
 Throughout this chapter, $D$ denotes the emergent spacetime dimension, while $d$ denotes the latent spatial dimension (typically $d = D - 1$). The formulas above hold for general $D$, but the physical 3+1 case is obtained by setting $D = 4$:

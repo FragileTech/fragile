@@ -22,13 +22,16 @@
 | Clifford/Dirac algebra | Antisymmetric cloning kernel | {prf:ref}`thm-sm-dirac-isomorphism` |
 | Higgs SSB mechanism | Bifurcation dynamics | {prf:ref}`thm-sm-higgs-isomorphism` |
 | SO(10) spinor $\mathbf{16}$ | Walker state representation | {prf:ref}`thm-sm-so10-isomorphism` |
-| $N_{\text{gen}} = 3$ generations | $d$-dimensional latent space | {prf:ref}`thm-sm-generation-dimension` |
+| $N_{\text{gen}} = d$ generations | $d$-dimensional latent space | {prf:ref}`thm-sm-generation-dimension` |
+| Electroweak operator framing | Chirality sectors + chiral projectors | {prf:ref}`thm-sm-ew-operator-layers` |
 | Coupling constants $g_1, g_2, g_3$ | Functions of $(\epsilon_d, \epsilon_c, \nu, d)$ | {prf:ref}`thm-sm-g1-coupling`, {prf:ref}`thm-sm-g2-coupling`, {prf:ref}`thm-sm-g3-coupling` |
 | CP violation | Selection non-commutativity | {prf:ref}`thm-sm-cp-violation` |
 | Neutrino masses | Ancestral self-coupling | {prf:ref}`thm-sm-majorana-mass` |
 
 **Key Results**:
-- **Generation-Dimension Correspondence**: $N_{\text{gen}} = d$ (latent space dimension)
+- **Generation-Dimension Correspondence**: $N_{\text{gen}} = d$ in the original structural framing
+- **Operational electroweak framing**: the current dashboard organizes observables through
+  chirality sectors and chiral projectors
 - **Coupling Functions**: $g_i = g_i(\epsilon_d, \epsilon_c, \nu, d, T, \hbar_{\text{eff}})$
 - **CP Violation**: Forced by $\epsilon_d \neq \epsilon_c$
 - **Mass Hierarchy**: Seesaw from fitness gap suppression
@@ -663,19 +666,31 @@ This is another instance of the algorithm "discovering" geometric structure rath
 The fitness potential $\Phi(x)$ produces Higgs-like symmetry breaking via supercritical pitchfork bifurcation:
 - **Potential**: $V_{\text{eff}}(r) = -\frac{(\Xi - \Xi_{\text{crit}})}{2}r^2 + \frac{\alpha}{4}r^4$ (Mexican hat)
 - **Order parameter**: Population clustering mode $r^*$
-- **Mass generation**: Spectral gap amplification in transverse directions
+- **Mass generation**: Structural spectral-gap amplification in transverse directions
 
-The structure is isomorphic to the Higgs mechanism. See {prf:ref}`thm-sm-higgs-isomorphism` for the formal statement.
+The structure is isomorphic to the Higgs mechanism. See {prf:ref}`thm-sm-higgs-isomorphism` for
+the formal statement. This scalar-sector result should not be confused with the electroweak
+dashboard's operational mass extraction, which fits chirality and projector-based correlators rather
+than the clustering order parameter directly.
 :::
 
 :::{div} feynman-prose
 The Higgs mechanism is how particles get mass in the Standard Model. Here is the intuition: imagine a ball at the top of a Mexican hat. That position is unstable—the slightest push and the ball rolls down into the brim. Once it settles in the brim, the original rotational symmetry is "broken"—the ball is sitting at one particular angle, even though all angles were equivalent before.
 
-In the Fractal Gas, we see the same mathematics in bifurcation dynamics. When the diversity stress $\Xi$ exceeds a critical value, the walker population undergoes a phase transition. Instead of spreading uniformly, walkers cluster into distinct modes. This is spontaneous symmetry breaking.
+In the Fractal Gas, we see the same mathematics in bifurcation dynamics. When the diversity stress
+$\Xi$ exceeds a critical value, the walker population undergoes a phase transition. Instead of
+spreading uniformly, walkers cluster into distinct modes. This is spontaneous symmetry breaking in
+the scalar sector.
 
-The "Mexican hat" potential $V(r) = -(\Xi - \Xi_{\text{crit}})r^2/2 + \alpha r^4/4$ emerges naturally from the fitness landscape near the bifurcation point. The order parameter $r^*$ (the clustering mode amplitude) is the Fractal Gas analogue of the Higgs vacuum expectation value. And the spectral gap amplification—how much harder it becomes to excite certain modes after symmetry breaking—corresponds directly to mass generation.
+The "Mexican hat" potential $V(r) = -(\Xi - \Xi_{\text{crit}})r^2/2 + \alpha r^4/4$ emerges
+naturally from the fitness landscape near the bifurcation point. The order parameter $r^*$ (the
+clustering mode amplitude) is the Fractal Gas analogue of the Higgs vacuum expectation value. And
+the spectral gap amplification—how much harder it becomes to excite certain modes after symmetry
+breaking—corresponds directly to mass generation in that scalar-sector isomorphism.
 
-This is not a metaphor. The mathematical structures are isomorphic.
+This is not a metaphor. The mathematical structures are isomorphic. But the current electroweak
+dashboard does not fit $W$, $Z$, photon, or fermion proxies from $r^*$ itself; it uses the
+chirality-sector and Dirac-projector operators described later in this chapter.
 :::
 
 
@@ -811,10 +826,11 @@ $$
 | $SU(d)$ strong force | Viscous coupling (O(d) redundancy, complexified to $U(d)$ with $\det=1$) | {prf:ref}`thm-sm-su3-emergence` |
 | Dirac/Clifford algebra | Antisymmetric kernel | {prf:ref}`thm-sm-dirac-isomorphism` |
 | Pauli exclusion | Algorithmic exclusion | {prf:ref}`thm-sm-exclusion-principle` |
-| Higgs SSB mechanism | Bifurcation dynamics | {prf:ref}`thm-sm-higgs-isomorphism` |
+| Higgs SSB mechanism | Bifurcation dynamics (scalar-sector structural isomorphism) | {prf:ref}`thm-sm-higgs-isomorphism` |
 | SO(10) spinor $\mathbf{16}$ | Walker state space | {prf:ref}`thm-sm-so10-isomorphism` |
 | Confinement | Localization kernel | {prf:ref}`prop-sm-area-law` |
 | $N_{\text{gen}}$ generations | $d$-dimensional latent space | {prf:ref}`thm-sm-generation-dimension` |
+| Electroweak operator framing | Chirality sectors + chiral projectors | {prf:ref}`thm-sm-ew-operator-layers` |
 | Coupling $g_1, g_2, g_d$ | $\epsilon_d, \epsilon_c, \nu$ functions | {prf:ref}`thm-sm-g1-coupling`, {prf:ref}`thm-sm-g2-coupling`, {prf:ref}`thm-sm-g3-coupling` |
 | CP violation | Selection non-commutativity | {prf:ref}`thm-sm-cp-violation` |
 | CKM matrix | Generation mixing | {prf:ref}`cor-sm-ckm-matrix` |
@@ -832,20 +848,198 @@ These correspondences are structural isomorphisms verified via Hypostructure mac
 
 This section derives from first principles the remaining structural components of the Standard Model, treating the latent space dimension $d$ as a parameter. For physical applications, one sets $d=3$.
 
+### Alternative Operational Framing: Chirality Sectors and Electroweak Operators
+
+:::{prf:definition} Walker-Role Partition
+:label: def-sm-walker-role-partition
+
+Fix a recorded frame $t$ with alive walker set $A_t$. Let $c_c(i,t)$ denote the recorded clone
+companion of walker $i$, let $F_i(t)$ be the recorded fitness, and let $\mathbf{1}_{\mathrm{clone}}(i,t)$
+be the recorded cloning indicator. Define four disjoint walker-role sectors:
+
+$$
+\Delta_t := \{i\in A_t : \mathbf{1}_{\mathrm{clone}}(i,t)=1\},
+$$
+
+$$
+\mathrm{SR}_t := \left\{i\in A_t\setminus\Delta_t : \exists j\in\Delta_t \text{ with } c_c(j,t)=i\right\},
+$$
+
+$$
+\mathrm{WR}_t := \left\{i\in A_t\setminus(\Delta_t\cup\mathrm{SR}_t) :
+F_{c_c(i,t)}(t) > F_i(t)\right\},
+$$
+
+$$
+\mathrm{P}_t := A_t\setminus(\Delta_t\cup\mathrm{SR}_t\cup\mathrm{WR}_t).
+$$
+
+The four roles are called **delta**, **strong resister**, **weak resister**, and **persister**.
+:::
+
+:::{prf:proposition} Exhaustive Chirality Partition
+:label: prop-sm-walker-role-partition
+
+For every recorded frame $t$, the subsets in {prf:ref}`def-sm-walker-role-partition` are pairwise
+disjoint and their union is exactly $A_t$.
+
+*Proof.* By construction, $\Delta_t$ contains precisely the walkers with cloning indicator $1$. The
+set $\mathrm{SR}_t$ excludes $\Delta_t$ and records the walkers targeted by at least one delta.
+Among the remaining alive walkers, either the recorded clone companion has higher fitness, which
+places the walker in $\mathrm{WR}_t$, or it does not, which places the walker in $\mathrm{P}_t$. These
+cases are mutually exclusive and cover all alive walkers. $\square$
+:::
+
+:::{prf:definition} Walker Chirality and Baseline Electroweak Observables
+:label: def-sm-walker-chirality
+
+Define the **walker-role chirality** by
+
+$$
+\chi_i(t) :=
+\begin{cases}
++1, & i\in \Delta_t\cup\mathrm{SR}_t,\\
+-1, & i\in \mathrm{WR}_t\cup\mathrm{P}_t,\\
+0, & i\notin A_t.
+\end{cases}
+$$
+
+Accordingly,
+
+$$
+L_t := \Delta_t\cup\mathrm{SR}_t,
+\qquad
+R_t := \mathrm{WR}_t\cup\mathrm{P}_t.
+$$
+
+Writing $N$ for the recorded walker count per frame, the baseline electroweak observables extracted
+from the recorded run are
+
+$$
+\chi_{\mathrm{mean}}(t) := \frac{1}{N}\sum_{i=1}^{N}\chi_i(t),
+\qquad
+f_L(t) := \frac{1}{N}\sum_{i=1}^{N}\mathbf{1}_{\{i\in L_t\}},
+$$
+
+$$
+f_{\Delta\to R}(t) := \frac{1}{|\Delta_t|}
+\sum_{i\in\Delta_t}\mathbf{1}_{\{c_c(i,t)\in R_t\}},
+$$
+
+and the complex left-right transfer observable
+
+$$
+M_{LR}(t) :=
+\frac{1}{N_{\Delta\to R}(t)}
+\sum_{\substack{i\in\Delta_t\\c_c(i,t)\in R_t}}
+\exp\!\left(i\frac{F_{c_c(i,t)}(t)-F_i(t)}{\hbar_{\mathrm{eff}}}\right),
+$$
+
+where dead walkers contribute $0$ to $\chi_i$ and therefore do not contribute to either average,
+$f_{\Delta\to R}(t)=0$ by convention when $|\Delta_t|=0$, and
+$N_{\Delta\to R}(t)=\sum_{i\in\Delta_t}\mathbf{1}_{\{c_c(i,t)\in R_t\}}$ with
+$M_{LR}(t)=0$ when $N_{\Delta\to R}(t)=0$.
+:::
+
+:::{prf:theorem} Implemented Electroweak Operator Layers
+:label: thm-sm-ew-operator-layers
+
+**Rigor Class:** F (Framework-Implementation)
+
+The electroweak matter sector used in the current Fractal Gas dashboard admits a parallel
+operator-level description by a common chirality structure together with two implemented operator
+families:
+
+1. **Walker-role chirality observables** from {prf:ref}`def-sm-walker-chirality`, namely
+   $\chi_{\mathrm{mean}}$, $f_L$, $f_{\Delta\to R}$, and $|M_{LR}|$.
+2. **Dirac-spinor electroweak operators** obtained by combining the Clifford realization
+   ({prf:ref}`thm-sm-dirac-isomorphism`) with the chiral projectors
+   ({prf:ref}`def-lqft-chiral-projectors`), giving
+   $J_L^\mu=\bar\psi\gamma^\mu P_L\psi$,
+   $J_R^\mu=\bar\psi\gamma^\mu P_R\psi$,
+   $J_V^\mu=\bar\psi\gamma^\mu\psi$,
+   $O_L=\bar\psi P_L\psi$,
+   $O_R=\bar\psi P_R\psi$,
+   and the cross-chirality Yukawa bilinears
+   $O_{LR}=\bar\psi P_L\psi$ on $L\!\to\!R$ pairs and
+   $O_{RL}=\bar\psi P_R\psi$ on $R\!\to\!L$ pairs.
+
+Gauge dressing by the U(1) and SU(2) links then produces the implemented electroweak current
+channels
+
+$$
+J_{U(1)}^\mu := U_{ij}^{(1)}\,\bar\psi_i\gamma^\mu\psi_j,
+\qquad
+J_{L,U(1)}^\mu := U_{ij}^{(1)}\,\bar\psi_i\gamma^\mu P_L\psi_j,
+$$
+
+$$
+J_{L,SU(2)}^\mu := U_{ij}^{(2)}\,\bar\psi_i\gamma^\mu P_L\psi_j,
+\qquad
+J_{R,SU(2)}^\mu := U_{ij}^{(2)}\,\bar\psi_i\gamma^\mu P_R\psi_j.
+$$
+
+Within the current dashboard, these operator families are the objects used to generate the active
+electroweak particle channels. This operational statement is parallel to, not a replacement for,
+the original generation-dimension correspondence of
+{prf:ref}`thm-sm-generation-dimension`. The older U(1)/SU(2) phase-doublet operators remain
+available as coherence diagnostics, but they are not the primary matter-sector language of the
+implemented electroweak analysis.
+
+At the implementation level, each spinor bilinear is recorded through its real part,
+$\operatorname{Re}(\bar\psi_i\Gamma P\psi_j)$ or
+$\operatorname{Re}(U_{ij}\bar\psi_i\Gamma P\psi_j)$, before correlators are formed.
+
+*Proof.*
+
+**Step 1 (Walker-role chirality).** Definition {prf:ref}`def-sm-walker-role-partition` produces the
+exhaustive partition $A_t=L_t\sqcup R_t$, and Definition {prf:ref}`def-sm-walker-chirality` turns
+that partition into scalar observables computable directly from the recorded cloning and companion
+data.
+
+**Step 2 (Projector layer).** By {prf:ref}`thm-sm-dirac-isomorphism`, the fermionic algebra admits
+a Clifford realization. Definition {prf:ref}`def-lqft-chiral-projectors` then provides $P_L$ and
+$P_R$, so the projected bilinears above are well-defined and split the Dirac sector into left- and
+right-handed components.
+
+**Step 3 (Gauge dressing).** The U(1) and SU(2) links from the diversity and cloning sectors act by
+parallel transport on these bilinears, giving the implemented dressed currents and Yukawa channels.
+The exact implementation-level formulas for the chirality observables, the spinor bilinears, and
+the active dashboard fit domain are proved later in
+{prf:ref}`prop-qft-ew-chirality-realization`,
+{prf:ref}`prop-qft-ew-spinor-realization`, and
+{prf:ref}`thm-qft-ew-active-pipeline`. Therefore this operator framing is mathematically
+well-defined and is exactly realized by the current pipeline. $\square$
+:::
+
+Operationally, the electroweak dashboard supports three layers that should not be conflated:
+walker-role chirality observables, projector-based Dirac-spinor operators, and legacy phase/doublet
+proxy channels. The first two layers describe the matter-sector observables actually used to build
+current particle channels; the third remains useful as a gauge-coherence diagnostic family.
+
 ### Generation-Dimension Correspondence
 
 :::{prf:definition} Flavor Index
 :label: def-sm-flavor-index
 
-The **flavor index** $\alpha \in \{1, \ldots, d\}$ labels the velocity component used to build the complexified viscous-force charge. For walker $i$ with velocity $v_i \in \mathbb{R}^d$, the $\alpha$-th **flavor state** is:
+The **flavor index** $\alpha \in \{1, \ldots, d\}$ labels the velocity component used to build the
+complexified viscous-force charge. For walker $i$ with velocity $v_i \in \mathbb{R}^d$, the
+$\alpha$-th **flavor state** is
 
 $$
-c_i^{(\alpha)} = \frac{F_\alpha^{(\text{visc})}(i)}{\|F^{(\text{visc})}(i)\|} \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
+c_i^{(\alpha)} = \frac{F_\alpha^{(\text{visc})}(i)}{\|F^{(\text{visc})}(i)\|} \cdot
+\exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
 $$
 
-where $F_\alpha^{(\text{visc})}(i)$ is the $\alpha$-th component of the viscous force from {prf:ref}`def-fractal-set-viscous-force`, $\|F^{(\text{visc})}(i)\| = \sqrt{\sum_\beta |F_\beta^{(\text{visc})}(i)|^2}$ (with a small $\varepsilon$-regularization if needed), $p_i^{(\alpha)} = m v_i^{(\alpha)}$, and $\ell_0$ is the characteristic length used in the momentum-phase encoding.
+where $F_\alpha^{(\text{visc})}(i)$ is the $\alpha$-th component of the viscous force from
+{prf:ref}`def-fractal-set-viscous-force`, $\|F^{(\text{visc})}(i)\| = \sqrt{\sum_\beta
+|F_\beta^{(\text{visc})}(i)|^2}$ (with a small $\varepsilon$-regularization if needed),
+$p_i^{(\alpha)} = m v_i^{(\alpha)}$, and $\ell_0$ is the characteristic length used in the
+momentum-phase encoding.
 
-The underlying velocity components are real; $SU(d)$ acts on the complexified amplitude-phase vector $\vec{c}_i$ built from those components. Each flavor index corresponds to one **generation** of fermions. The flavor sectors are labeled $\alpha = 1, \ldots, d$.
+The underlying velocity components are real; $SU(d)$ acts on the complexified amplitude-phase
+vector $\vec{c}_i$ built from those components. Each flavor index corresponds to one
+**generation** of fermions. The flavor sectors are labeled $\alpha = 1, \ldots, d$.
 :::
 
 :::{prf:theorem} Generation-Dimension Correspondence
@@ -853,7 +1047,8 @@ The underlying velocity components are real; $SU(d)$ acts on the complexified am
 
 **Rigor Class:** F (Framework-Original)
 
-For Fractal Gas in $d$-dimensional latent space $Z \subseteq \mathbb{R}^d$, the number of fermion generations equals $d$.
+For Fractal Gas in $d$-dimensional latent space $Z \subseteq \mathbb{R}^d$, the number of fermion
+generations equals $d$.
 
 **Structure**:
 - Walker phase space: $(z, v) \in Z \times T_z(Z)$ with $2d$ total degrees of freedom
@@ -864,43 +1059,62 @@ For Fractal Gas in $d$-dimensional latent space $Z \subseteq \mathbb{R}^d$, the 
 
 *Proof.*
 
-**Step 1 (Velocity components define flavor sectors):** Each velocity component $v^{(\alpha)}$ for $\alpha = 1, \ldots, d$ defines an independent degree of freedom. Under $SU(d)$ gauge transformations of the complexified viscous-force vector, the $\alpha$-th component transforms in the fundamental representation while carrying a distinct flavor index.
+**Step 1 (Velocity components define flavor sectors).** Each velocity component $v^{(\alpha)}$ for
+$\alpha = 1, \ldots, d$ defines an independent degree of freedom. Under $SU(d)$ gauge
+transformations of the complexified viscous-force vector, the $\alpha$-th component transforms in
+the fundamental representation while carrying a distinct flavor index.
 
-The flavor state ({prf:ref}`def-sm-flavor-index`) assigns to each walker a $d$-tuple of complex charges:
+The flavor state ({prf:ref}`def-sm-flavor-index`) assigns to each walker a $d$-tuple of complex
+charges:
 
 $$
 \vec{c}_i = (c_i^{(1)}, \ldots, c_i^{(d)}) \in \mathbb{C}^d
 $$
 
-Each complexified component transforms independently under $SU(d)$ but retains its flavor label $\alpha$.
+Each complexified component transforms independently under $SU(d)$ but retains its flavor label
+$\alpha$.
 
-**Step 2 (Spinor dimension counting):** The full rotation group on phase space $(z, v) \in \mathbb{R}^{2d}$ is $SO(2d)$. Its spinor representation has dimension:
+**Step 2 (Spinor dimension counting).** The full rotation group on phase space
+$(z, v) \in \mathbb{R}^{2d}$ is $SO(2d)$. Its spinor representation has dimension:
 
 $$
-\dim(\text{Spin}(2d)\ \text{spinor}) = 2^d
+\dim(\mathrm{Spin}(2d)\ \text{spinor}) = 2^d
 $$
 
-We use this only as a degrees-of-freedom count; the flavor index itself is tied to the $d$ velocity components.
+We use this only as a degrees-of-freedom count; the flavor index itself is tied to the $d$
+velocity components.
 
-**Step 3 (Sieve constraint):** By Lock tactic E1 (dimension counting), the number of independent fermionic representations must equal the number of flavor indices. The Grassmann field assignment ({prf:ref}`axm-sm-grassmann`) requires one anticommuting variable per flavor sector.
+**Step 3 (Sieve constraint).** By Lock tactic E1 (dimension counting), the number of independent
+fermionic representations must equal the number of flavor indices. The Grassmann field assignment
+({prf:ref}`axm-sm-grassmann`) requires one anticommuting variable per flavor sector.
 
-**Step 4 (Independence):** The flavor sectors are independent because:
+**Step 4 (Independence).** The flavor sectors are independent because:
 1. Each $v^{(\alpha)}$ contributes independently to the algorithmic distance
 2. The cloning kernel ({prf:ref}`def-fractal-set-cloning-potential`) treats velocity components symmetrically
 3. No mixing term couples different flavor indices in the fermionic action
 
-**Conclusion:** The number of fermion generations equals the dimension of the latent space: $N_{\text{gen}} = d$.
+**Conclusion:** The number of fermion generations equals the dimension of the latent space:
+$N_{\text{gen}} = d$.
 
 For physical applications with $d = 3$, this yields three generations. $\square$
 :::
 
 :::{div} feynman-prose
-Here's what this theorem is telling us. In the Standard Model, the three generations of fermions (electron, muon, tau and their neutrinos; up/charm/top and down/strange/bottom quarks) have always seemed like an arbitrary input. Why three? Why not two, or four, or seventeen?
+Here's what this theorem is telling us. In the Standard Model, the three generations of fermions
+(electron, muon, tau and their neutrinos; up/charm/top and down/strange/bottom quarks) have always
+seemed like an arbitrary input. Why three? Why not two, or four, or seventeen?
 
-The Generation-Dimension Correspondence says: the number of generations equals the dimension of the space in which your walkers move. In $d$-dimensional latent space, you get $d$ generations. Period.
+The Generation-Dimension Correspondence says: the number of generations equals the dimension of the
+space in which your walkers move. In $d$-dimensional latent space, you get $d$ generations. Period.
 
-This doesn't "explain" why $d=3$ in our universe—that's a choice of the physical model, not something derived. But it does explain why, given $d$ dimensions, you must have exactly $d$ generations. The structure is forced.
+This doesn't "explain" why $d=3$ in our universe; that's a choice of the physical model, not
+something derived. But it does explain why, given $d$ dimensions, you must have exactly $d$
+generations. The structure is forced.
 :::
+
+The current dashboard additionally admits the alternative operator framing of
+{prf:ref}`thm-sm-ew-operator-layers`, where electroweak observables are organized directly by
+chirality sectors and chiral projectors. Both descriptions are retained in this volume.
 
 ### Coupling Constants from Algorithm Parameters
 
@@ -1390,6 +1604,11 @@ $$
 
 where $y_f \propto \exp(-\Delta\Phi_f / \Phi_0)$ from the fitness-dependent selection strength.
 
+Here the label $f$ refers to the phenomenological flavor families being matched. This section uses
+the original generation-dimension framing of {prf:ref}`thm-sm-generation-dimension`, while the
+active dashboard simultaneously admits the alternative operator framing of
+{prf:ref}`thm-sm-ew-operator-layers`.
+
 **Step 2 (Spectral gap dependence):** The spectral gap $\lambda_{\text{gap}}$ depends on Yukawa couplings through the selection kernel. Schematically:
 
 $$
@@ -1504,7 +1723,12 @@ The derivations above complete the structural components of the Standard Model. 
 2. RG evolution to the measurement scale
 3. Comparison with experimental data
 
-**Choice of $d=3$**: The Generation-Dimension Correspondence ({prf:ref}`thm-sm-generation-dimension`) explains why $N_{\text{gen}} = d$, but does not explain why $d=3$ for the physical universe. This is an input to the model, not a derived quantity.
+**Choice of $d=3$**: The generation-dimension correspondence
+({prf:ref}`thm-sm-generation-dimension`) explains why a $d$-dimensional latent space carries
+$N_{\text{gen}}=d$ structural generation labels, while the alternative operational framing
+({prf:ref}`thm-sm-ew-operator-layers`) explains how the currently implemented dashboard organizes
+electroweak channels once a run history is given. Neither theorem explains why the physical
+universe selects $d=3$; that remains an input to the model.
 
 **Majorana mechanism verification**: The ancestral self-coupling mechanism ({prf:ref}`thm-sm-majorana-mass`) is proposed but not fully verified. A complete proof would require:
 1. Explicit construction of the Majorana bilinear on the CST
@@ -1774,7 +1998,7 @@ Here's what we've accomplished. We haven't proven that the Fractal Gas *is* the 
 1. The antisymmetric kernel algebra $\cong$ Clifford algebra (Dirac structure)
 2. The bifurcation dynamics $\cong$ Higgs mechanism (SSB structure)
 3. The walker state space $\cong$ SO(10) spinor (representation structure)
-4. The number of generations $=$ latent space dimension $d$
+4. The color-sector flavor-slot multiplicity $=$ latent space dimension $d$
 5. The coupling constants $=$ explicit functions of algorithm parameters
 6. CP violation $=$ forced by selection non-commutativity
 7. Neutrino masses $=$ emergent from ancestral self-coupling
@@ -1815,9 +2039,11 @@ The Standard Model gauge group $SU(d)_C \times SU(2)_L \times U(1)_Y$ emerges fr
 
 ### Generation Structure
 
-- **Generation-Dimension Correspondence**: $N_{\text{gen}} = d$ — {prf:ref}`thm-sm-generation-dimension`
+- **Generation-dimension correspondence**: $N_{\text{gen}} = d$ —
+  {prf:ref}`thm-sm-generation-dimension`
+- **Electroweak matter operators (alternative operational framing)**: chirality sectors +
+  chiral projectors — {prf:ref}`thm-sm-ew-operator-layers`
 - Flavor index from velocity components — {prf:ref}`def-sm-flavor-index`
-- Each latent space dimension corresponds to one fermion generation
 
 ### Coupling Constants
 
