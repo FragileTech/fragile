@@ -13,6 +13,8 @@ project:
   copyright: "2025"
   bibliography:
     - references.bib
+    - source/2_hypostructure/references.bib
+    - source/3_fractal_gas/vol_3_references.bib
 
   toc:
     - file: index.md
