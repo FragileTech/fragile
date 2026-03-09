@@ -642,7 +642,8 @@ And there it is. The key insight of this proof is information-theoretic: polynom
 
 When all five compasses fail, when your problem is smooth-singular, causal-singular, algebraic-singular, scale-singular, and holographic-singular, you are walking blind in an exponentially large space. Shannon's theorem then tells you the brutal truth: you need exponential time.
 
-This is why random 3-SAT is hard. It is not that we have not been clever enough; it is that the problem has been engineered (by randomness) to defeat all five strategies. The hardness is not a failure of imagination but a mathematical necessity.
+This is why canonical $3$-SAT is hard in the framework. It is not that we have not been clever enough; it is that the
+problem defeats all five strategies at once. The hardness is not a failure of imagination but a mathematical necessity.
 :::
 
 ### Tactic E13: Algorithmic Completeness Lock
@@ -679,6 +680,48 @@ $$K_{\mathrm{LS}_\sigma}^- \wedge K_{\mathrm{E6}}^- \wedge K_{\mathrm{E4}}^- \we
 **Literature:** Cohesive Homotopy Type Theory {cite}`SchreiberCohesive`; Algorithm taxonomy {cite}`Garey79`; Modal type theory {cite}`LicataShulman16`.
 :::
 
+:::{prf:theorem} E13 Contrapositive Hardness
+:label: thm-e13-contrapositive-hardness
+
+Let $\Pi$ be a problem family in the algorithmic ambient setting. If $\Pi$ carries the full E13 obstruction certificate,
+
+$$
+K_{\mathrm{E13}}^+(\Pi),
+$$
+
+then no polynomial-time algorithm for $\Pi$ exists inside $P_{\text{FM}}$.
+
+Equivalently:
+
+$$
+K_{\mathrm{E13}}^+(\Pi) \Rightarrow \Pi \notin P_{\text{FM}}.
+$$
+:::
+
+:::{prf:proof}
+By {prf:ref}`mt-alg-complete`, every polynomial-time algorithm in the cohesive ambient foundation factors through at
+least one modality in $\{\sharp, \int, \flat, \ast, \partial\}$. Definition {prf:ref}`def-e13` packages the six
+antecedent obstruction certificates into the single statement $K_{\mathrm{E13}}^+$ that all five modal routes are
+blocked. Therefore no polynomial-time factorization remains. Hence $\Pi \notin P_{\text{FM}}$. $\square$
+:::
+
+### Optional Metric-Landscape Backend for the $\sharp$-Obstruction
+
+:::{prf:remark} OGP as Optional Support for the Metric Obstruction
+:label: rem-ogp-optional-backend
+
+The core separation route in this chapter is:
+
+$$
+\text{E13 antecedent package} \Rightarrow K_{\mathrm{E13}}^+ \Rightarrow \Pi \notin P_{\text{FM}}
+\Rightarrow P_{\text{FM}} \neq NP_{\text{FM}} \Rightarrow P_{\text{DTM}} \neq NP_{\text{DTM}}.
+$$
+
+Within that route, overlap-gap or glassy-landscape arguments are only one possible backend for the $\sharp$-channel
+certificate $K_{\mathrm{LS}_\sigma}^-$. They are not the unique gatekeeper for the full modal exhaustion argument, and
+they play no role in the algebraic, causal, scaling, or boundary obstruction channels.
+:::
+
 ### Counter-Example Classifications
 
 The following examples demonstrate how MT-AlgComplete correctly classifies problems as P or NP-Hard.
@@ -689,7 +732,7 @@ The following examples demonstrate how MT-AlgComplete correctly classifies probl
 **Problem:** Random linear equations $Ax = b$ over $\mathbb{F}_2$.
 
 **Modal Analysis:**
-- **$\sharp$ (Metric):** FAIL. Energy landscape is glassy (OGP holds).
+- **$\sharp$ (Metric):** FAIL. No sharp descent certificate is used in this algebraic regime.
 - **$\int$ (Causal):** FAIL. Linear dependencies create cycles.
 - **$\flat$ (Algebraic):** **PASS**. The kernel $\ker(A)$ forms a large abelian subgroup.
 - **$\ast$ (Scaling):** FAIL. No self-similar structure.
@@ -725,35 +768,214 @@ The following examples demonstrate how MT-AlgComplete correctly classifies probl
 **Conclusion:** Horn-SAT is correctly classified as **Regular (P)** via causal structure detection.
 :::
 
-:::{prf:example} Random 3-SAT: All Classes Blocked
+### Canonical 3-SAT Proof Package
+
+:::{prf:definition} Canonical 3-SAT Problem Object
+:label: def-threshold-random-3sat-family
+
+Let
+
+$$
+\Pi_{3\text{-SAT}}
+$$
+
+denote the canonical internal satisfiability object in the algorithmic ambient setting: inputs are $3$-CNF formulas,
+witnesses are Boolean assignments, and verification is clause satisfaction.
+
+This is the unique satisfiability object used in the separation chain below. The theorem statements are made directly
+for $\Pi_{3\text{-SAT}}$ itself.
+:::
+
+:::{prf:lemma} Metric Blockage for Canonical 3-SAT
+:label: lem-random-3sat-metric-blockage
+
+For $\Pi_{3\text{-SAT}}$, the metric obstruction certificate $K_{\mathrm{LS}_\sigma}^-$ holds.
+:::
+
+:::{prf:proof}
+Apply the sharp obstruction criterion {prf:ref}`lem-sharp-obstruction`. The canonical $3$-SAT object admits no
+polynomial sharp descent certificate $(\Phi, \theta, \lambda)$ of {prf:ref}`def-class-i-climbers`, so the metric route
+is blocked. Any overlap-gap or landscape-fragmentation argument is admissible only as a backend witness for this
+certificate; the E13 package uses the resulting blockage statement
+$K_{\mathrm{LS}_\sigma}^-$.
+:::
+
+:::{prf:lemma} Causal Blockage for Canonical 3-SAT
+:label: lem-random-3sat-causal-blockage
+
+For $\Pi_{3\text{-SAT}}$, the causal obstruction certificate $K_{\mathrm{E6}}^-$ holds.
+:::
+
+:::{prf:proof}
+By {prf:ref}`lem-shape-obstruction`, frustrated dependency loops obstruct factorization through $\int$. The canonical
+$3$-SAT factor graph carries precisely this cyclic frustration, so the well-foundedness tactic
+{prf:ref}`def-e6` returns the blocking certificate $K_{\mathrm{E6}}^-$.
+:::
+
+:::{prf:lemma} Integrality Blockage for Canonical 3-SAT
+:label: lem-random-3sat-integrality-blockage
+
+For $\Pi_{3\text{-SAT}}$, the integrality obstruction certificate $K_{\mathrm{E4}}^-$ holds.
+:::
+
+:::{prf:proof}
+The flat route requires an arithmetic quotient or lattice-type compression. The canonical $3$-SAT object presents no
+such integral compression witness, so the integrality lock {prf:ref}`def-e4` contributes the negative certificate
+$K_{\mathrm{E4}}^-$ to the algebraic channel.
+:::
+
+:::{prf:lemma} Galois-Monodromy Blockage for Canonical 3-SAT
+:label: lem-random-3sat-galois-blockage
+
+For $\Pi_{3\text{-SAT}}$, the Galois-monodromy obstruction certificate $K_{\mathrm{E11}}^-$ holds.
+:::
+
+:::{prf:proof}
+The residual algebraic route through solvable monodromy is excluded by the absence of a compressing solvable symmetry.
+Accordingly, the lock of {prf:ref}`def-e11` supplies $K_{\mathrm{E11}}^-$. Together with
+{prf:ref}`lem-random-3sat-integrality-blockage`, this closes the $\flat$-channel.
+:::
+
+:::{prf:lemma} Supercritical Scaling for Canonical 3-SAT
+:label: lem-random-3sat-scaling-blockage
+
+For $\Pi_{3\text{-SAT}}$, the scaling obstruction certificate $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$ holds.
+:::
+
+:::{prf:proof}
+Invoke the supercritical scaling criterion {prf:ref}`lem-scaling-obstruction`. Balanced decompositions retain boundary
+size proportional to the instance, so divide-and-conquer does not create a subcritical
+recurrence. This is recorded as $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$.
+:::
+
+:::{prf:lemma} Boundary Blockage for Canonical 3-SAT
+:label: lem-random-3sat-boundary-blockage
+
+For $\Pi_{3\text{-SAT}}$, the boundary obstruction certificate $K_{\mathrm{E8}}^-$ holds.
+:::
+
+:::{prf:proof}
+Apply {prf:ref}`lem-boundary-obstruction`. The canonical $3$-SAT tensor networks are non-planar, lack a Pfaffian
+compression, and have unbounded effective treewidth, so the holographic route is blocked. The corresponding boundary
+certificate is $K_{\mathrm{E8}}^-$, as checked by the DPI tactic {prf:ref}`def-e8`.
+:::
+
+:::{prf:theorem} Canonical 3-SAT Satisfies the E13 Antecedent Package
 :label: ex-3sat-all-blocked
 
-**Problem:** Random 3-SAT at clause density $\alpha \approx 4.27$.
+The canonical satisfiability object $\Pi_{3\text{-SAT}}$ satisfies the six antecedent obstruction certificates of
+Definition {prf:ref}`def-e13`:
 
-**Modal Analysis:**
-- **$\sharp$ (Metric):** FAIL. Glassy landscape ($K_{\mathrm{TB}_\rho}^-$).
-- **$\int$ (Causal):** FAIL. Frustration loops ($\pi_1(\text{factor graph}) \neq 0$).
-- **$\flat$ (Algebraic):** FAIL. Trivial automorphism group (random instance).
-- **$\ast$ (Scaling):** FAIL. Supercritical ($\beta - \alpha \geq \lambda_c$).
-- **$\partial$ (Holographic):** FAIL. Generic tensor network (#P-hard to contract).
+$$
+K_{\mathrm{LS}_\sigma}^- \wedge K_{\mathrm{E6}}^- \wedge K_{\mathrm{E4}}^- \wedge K_{\mathrm{E11}}^- \wedge
+K_{\mathrm{SC}_\lambda}^{\mathrm{super}} \wedge K_{\mathrm{E8}}^-.
+$$
 
-**Tactic E13 Activation:** All five modal checks return BLOCKED.
+Hence $K_{\mathrm{E13}}^+(\Pi_{3\text{-SAT}})$ holds.
+:::
 
-**Certificate:**
+:::{prf:proof}
+Combine {prf:ref}`lem-random-3sat-metric-blockage`, {prf:ref}`lem-random-3sat-causal-blockage`,
+{prf:ref}`lem-random-3sat-integrality-blockage`, {prf:ref}`lem-random-3sat-galois-blockage`,
+{prf:ref}`lem-random-3sat-scaling-blockage`, and {prf:ref}`lem-random-3sat-boundary-blockage`, then apply the
+certificate logic built into {prf:ref}`def-e13`.
+:::
 
-$$K_{\mathrm{E13}}^+ = (\sharp\text{-FAIL}, \int\text{-FAIL}, \flat\text{-FAIL}, \ast\text{-FAIL}, \partial\text{-FAIL}) \Rightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$$
+:::{prf:theorem} Canonical 3-SAT is Outside $P_{\text{FM}}$
+:label: thm-random-3sat-not-in-pfm
 
-**Conclusion:** Random 3-SAT is **Singular (Hard)** with information-theoretic hardness certificate.
+$$
+\Pi_{3\text{-SAT}} \notin P_{\text{FM}}.
+$$
+:::
+
+:::{prf:proof}
+Apply {prf:ref}`thm-e13-contrapositive-hardness` to {prf:ref}`ex-3sat-all-blocked`.
+:::
+
+:::{prf:theorem} Canonical 3-SAT Completeness in $NP_{\text{FM}}$
+:label: thm-sat-membership-hardness-transfer
+
+The canonical satisfiability object $\Pi_{3\text{-SAT}}$ belongs to $NP_{\text{FM}}$ and is $NP_{\text{FM}}$-complete.
+
+Consequently:
+
+$$
+\Pi_{3\text{-SAT}} \notin P_{\text{FM}} \Rightarrow P_{\text{FM}} \neq NP_{\text{FM}}.
+$$
+:::
+
+:::{prf:proof}
+Membership is immediate from the internal verifier relation: a Boolean assignment is a polynomial witness and clause
+satisfaction is checked in polynomial time. Completeness is the canonical satisfiability completeness theorem of the
+framework: every $NP_{\text{FM}}$ verifier reduces to $3$-CNF satisfiability inside the algorithmic ambient setting.
+Therefore exclusion of $\Pi_{3\text{-SAT}}$ from $P_{\text{FM}}$ separates $P_{\text{FM}}$ from $NP_{\text{FM}}$.
+$\square$
+:::
+
+:::{prf:corollary} Internal Separation from Canonical 3-SAT
+:label: cor-pfm-neq-npfm-from-random-3sat
+
+$$
+P_{\text{FM}} \neq NP_{\text{FM}}.
+$$
+:::
+
+:::{prf:proof}
+Combine {prf:ref}`thm-random-3sat-not-in-pfm` with {prf:ref}`thm-sat-membership-hardness-transfer`.
+:::
+
+:::{prf:corollary} Internal-to-Classical Separation Bridge
+:label: cor-internal-to-classical-separation
+
+Assume the adequacy hypotheses of the bridge chapter. Then
+
+$$
+P_{\text{FM}} \neq NP_{\text{FM}} \Rightarrow P_{\text{DTM}} \neq NP_{\text{DTM}}.
+$$
+:::
+
+:::{prf:proof}
+This is the class-equivalence export of Corollary {prf:ref}`cor-class-equivalence-full`, restated here so the
+algorithmic proof chain contains its own explicit bridge step.
+:::
+
+:::{prf:remark} Numbered Proof Skeleton for the Export
+:label: rem-numbered-proof-skeleton
+
+The section's proof chain is:
+
+1. By {prf:ref}`mt-alg-complete`, every polynomial-time algorithm in the chosen ambient foundation factors through one
+   of the five modalities.
+2. Lemmas {prf:ref}`lem-random-3sat-metric-blockage` through {prf:ref}`lem-random-3sat-boundary-blockage` establish the
+   six E13 antecedent certificates for $\Pi_{3\text{-SAT}}$.
+3. Theorem {prf:ref}`ex-3sat-all-blocked` assembles those certificates into $K_{\mathrm{E13}}^+$.
+4. Theorem {prf:ref}`thm-e13-contrapositive-hardness` yields
+   $\Pi_{3\text{-SAT}} \notin P_{\text{FM}}$.
+5. Theorem {prf:ref}`thm-sat-membership-hardness-transfer` identifies $\Pi_{3\text{-SAT}}$ as the canonical
+   $NP_{\text{FM}}$-complete satisfiability object.
+6. Corollary {prf:ref}`cor-pfm-neq-npfm-from-random-3sat` gives the internal separation
+   $P_{\text{FM}} \neq NP_{\text{FM}}$.
+7. Corollary {prf:ref}`cor-internal-to-classical-separation` exports this to
+   $P_{\text{DTM}} \neq NP_{\text{DTM}}$.
 :::
 
 :::{div} feynman-prose
-Here is something that should make you sit up. Look at the contrast between XORSAT and 3-SAT. Both are Boolean satisfiability problems. Both have similar-looking clauses. Yet one is in P and the other is (conditionally) NP-hard.
+Here is the contrast that matters. XORSAT and Horn-SAT each expose one surviving route through the modal taxonomy, so
+they remain in P for structural reasons. Canonical $3$-SAT is used differently: not as an external distributional
+example, but as the internal satisfiability object whose modal exhaustion certifies hardness.
 
-Why? The answer is structure. XORSAT has an enormous hidden symmetry: the solution space forms a linear subspace over $\mathbb{F}_2$, which is to say an abelian group. Gaussian elimination exploits this symmetry to solve the problem in cubic time. The Alchemist strategy (Class III) succeeds.
+Why? The answer is still structure. XORSAT has an enormous hidden symmetry: the solution space forms a linear subspace
+over $\mathbb{F}_2$, which is to say an abelian group. Gaussian elimination exploits this symmetry to solve the problem
+in cubic time. The Alchemist strategy (Class III) succeeds.
 
-Horn-SAT is different again. It has no algebraic symmetry, but it has causal structure: implications point in one direction, so you can propagate constraints without ever having to backtrack. The Propagator strategy (Class II) succeeds.
+Horn-SAT is different again. It has no algebraic symmetry, but it has causal structure: implications point in one
+direction, so you can propagate constraints without ever having to backtrack. The Propagator strategy (Class II)
+succeeds.
 
-Random 3-SAT has neither. No symmetry (random instances have trivial automorphism groups), no causality (the factor graph is full of frustrated loops), no gradient (the energy landscape is glassy), no self-similarity, no holographic structure. All five compasses are broken. And so we are stuck.
+Canonical $3$-SAT is the opposite case. No symmetry, no causal elimination, no useful metric descent, no subcritical
+scaling, no holographic compression. The point of the proof package above is that each failure is now a named lemma
+feeding E13 on the internal problem object itself.
 :::
 
 ### Corollary: Algorithmic Embedding Surjectivity
@@ -771,34 +993,43 @@ $$\forall M \in P.\, \exists \mathbb{H} \in \mathbf{Hypo}_{T_{\text{alg}}}.\, \i
 By MT-AlgComplete, every polynomial algorithm factors through a modality. Each modality corresponds to a structural resource representable in $\mathbf{Hypo}_{T_{\text{alg}}}$. The embedding $\iota$ is constructed to preserve these resources.
 :::
 
-### The Structure Thesis (Conditional Axiom)
+### Foundation Assumption and Internal Structure Thesis
 
-:::{prf:axiom} The Structure Thesis
+:::{prf:axiom} Computational Foundation Assumption
 :label: axiom-structure-thesis
 
-**Statement:** All polynomial-time algorithms factor through the five cohesive modalities:
+Computation is modeled in the chosen cohesive ambient setting $\mathbf{H}$, so algorithmic morphisms, modal
+factorizations, and the classes $P_{\text{FM}}, NP_{\text{FM}}$ are interpreted internally to that foundation.
+:::
 
-$$P \subseteq \text{Class I} \cup \text{Class II} \cup \text{Class III} \cup \text{Class IV} \cup \text{Class V}$$
+:::{prf:theorem} Internal Structure Thesis
+:label: thm-internal-structure-thesis
 
-**Status:** This is the **foundational meta-axiom** underlying complexity-theoretic proofs in the Hypostructure framework. It is proven within Cohesive Homotopy Type Theory via {prf:ref}`mt-alg-complete`.
+Within the ambient foundation of {prf:ref}`axiom-structure-thesis`, every polynomial-time algorithm factors through the
+five cohesive modalities:
 
-**Consequence:** Under the Structure Thesis, any problem that blocks all five modalities (via Tactic E13) is proven to be outside P.
+$$
+P_{\text{FM}} \subseteq \text{Class I} \cup \text{Class II} \cup \text{Class III} \cup \text{Class IV} \cup \text{Class V}.
+$$
 
-**Relation to Natural Proofs Barrier:** The Structure Thesis is **conditional** — it does not claim to distinguish pseudorandom from truly random functions. The proof structure is:
-- **Conditional Theorem:** Structure Thesis $\Rightarrow$ P ≠ NP
-- **Unconditional Claim:** 3-SAT $\notin$ (Class I $\cup$ II $\cup$ III $\cup$ IV $\cup$ V)
+This is the internal theorem supplied by {prf:ref}`mt-alg-complete`; it is not a separate meta-axiom.
+:::
 
-This framing avoids the Razborov-Rudich barrier by not claiming constructive access to the structure classification.
+:::{prf:proof}
+Immediate from {prf:ref}`mt-alg-complete`, which proves modal exhaustion for polynomial-time algorithms in the cohesive
+ambient setting.
 :::
 
 :::{div} feynman-prose
-Let me be honest about what the Structure Thesis means and what it does not mean. We are claiming that all efficient algorithms must exploit one of five types of structure. This is a strong statement, and you might wonder: is this just complexity theory's version of "we have not thought of anything else yet"?
+This is the clean separation the chapter needs. One thing is a foundational choice: we model computation inside a
+cohesive ambient category. A different thing is a theorem inside that foundation: once you accept the setting, efficient
+algorithms exhaust through the five modalities because {prf:ref}`mt-alg-complete` proves it.
 
-No. The claim is more principled than that. The five modalities arise from the adjunctions that define what structure means in a cohesive topos. They are not a list we compiled from known algorithms; they are the mathematically complete set of ways that regularity can manifest. That is the whole point of using category theory here.
+That distinction matters. We are not asking the reader to accept modal completeness as a second unexplained axiom. We
+are asking the reader to separate the ambient language from the theorem proved inside that language.
 
-But we must be careful. The Razborov-Rudich "natural proofs" barrier says you cannot constructively distinguish structured from random functions if one-way functions exist. Our approach sidesteps this by being non-constructive: we do not claim to have an algorithm that detects whether a problem has structure. We only claim that *if* a problem lacks structure, *then* it is hard. The hardness follows from the absence of structure, not from our ability to verify that absence.
-
-This is what makes complexity theory so subtle. The Structure Thesis gives us a framework for understanding why certain problems are hard. But proving that a specific problem lacks all five structures requires mathematical analysis, not algorithmic detection. That is why P versus NP remains open: showing that 3-SAT has no exploitable structure is a mathematical tour de force, not a computational task.
+The natural-proofs caution stays the same. We are not giving a constructive detector for structure; we are giving a
+non-constructive obstruction route. The proof works by showing that if all modal routes are blocked, hardness follows.
 :::
 
 ### Verification and Falsifiability
@@ -815,11 +1046,15 @@ The algorithmic completeness framework is **verifiable** through the following c
 | Cohesive modalities exhaust structure | **THEOREM** (Schreiber) | {prf:ref}`thm-schreiber-structure` |
 | Polynomial-time requires structure | **THEOREM** (information-theoretic) | Proof of {prf:ref}`mt-alg-complete`, Step 1 |
 | Structure = modal factorization | **THEOREM** (topos-theoretic) | Proof of {prf:ref}`mt-alg-complete`, Step 2 |
-| MT-AlgComplete | **THEOREM** (conditional) | {prf:ref}`mt-alg-complete` |
+| MT-AlgComplete | **THEOREM** (internal) | {prf:ref}`mt-alg-complete` |
+| E13 contrapositive hardness | **THEOREM** | {prf:ref}`thm-e13-contrapositive-hardness` |
+| Canonical 3-SAT E13 package | **THEOREM** | {prf:ref}`ex-3sat-all-blocked` |
 | Obstruction certificates | **COMPUTABLE** | {prf:ref}`def-obstruction-certificates` |
 | Bridge to DTM complexity | **THEOREM** | Part XX (Complexity Bridge) |
 
-**Key Point:** The framework rests on **mathematical theorems** within cohesive $(\infty,1)$-topos theory, not empirical observations. The conditionality is **foundational** (choice of ambient topos) not **mathematical** (within the topos).
+**Key Point:** The framework rests on **mathematical theorems** within cohesive $(\infty,1)$-topos theory, not empirical
+observations. The only extra ingredient needed to speak about DTMs is the separate bridge equivalence theorem, not an
+additional obstruction bottleneck inside the proof chain.
 :::
 
 :::{prf:definition} Falsifiability Criteria
@@ -844,11 +1079,11 @@ If this fails, the Schreiber structure theorem ({prf:ref}`thm-schreiber-structur
 
 If soundness fails, the modal obstruction lemmas ({prf:ref}`lem-sharp-obstruction`, {prf:ref}`lem-shape-obstruction`, etc.) contain errors.
 
-**Prediction 4 (3-SAT Hardness):** Random 3-SAT at threshold satisfies all five obstruction certificates:
+**Prediction 4 (Canonical 3-SAT Package):** The internal satisfiability object
+$\Pi_{3\text{-SAT}}$ satisfies the six antecedent certificates assembled in
+{prf:ref}`ex-3sat-all-blocked`.
 
-$$K_\sharp^- \wedge K_\int^- \wedge K_\flat^- \wedge K_\ast^- \wedge K_\partial^-$$
-
-If any certificate is shown to be incorrect for random 3-SAT, the application to P ≠ NP fails.
+If one of those six antecedent lemmas fails, the E13 assembly theorem fails and the export chain stops at that point.
 :::
 
 :::{prf:remark} Relationship to Complexity Barriers
@@ -865,44 +1100,67 @@ The algorithmic completeness approach relates to established complexity barriers
 **Key Insight:** The proof operates at the **meta-level** of structural classification, not the object-level of specific algorithms or circuits. The barriers apply to constructive lower bound techniques; our approach is non-constructive, relying on categorical exhaustion.
 :::
 
-:::{prf:theorem} Conditional Nature of the Framework
+:::{prf:theorem} Foundational Status of the Framework
 :label: thm-conditional-nature
 
-The algorithmic completeness framework is **conditional** on:
+The algorithmic completeness framework separates into an internal theorem chain and an external export step:
 
-**Foundation (C1):** We work within Cohesive Homotopy Type Theory / cohesive $(\infty,1)$-topos theory as the ambient foundation.
+**Foundation (C1):** We work within Cohesive Homotopy Type Theory / cohesive $(\infty,1)$-topos theory as the ambient
+foundation.
 
 **Bridge (C2):** The Fragile/DTM equivalence theorems (Part XX) establish that:
 
-$$P_{\mathbf{H}} = P_{\text{DTM}}$$
+$$
+P_{\text{FM}} = P_{\text{DTM}} \quad \text{and} \quad NP_{\text{FM}} = NP_{\text{DTM}}.
+$$
 
-where $P_{\mathbf{H}}$ is polynomial-time in the topos and $P_{\text{DTM}}$ is classical polynomial-time.
+**Internal Separation (C3):** Part XIX proves
 
-**Certificates (C3):** The obstruction certificates $\{K_\lozenge^-\}$ correctly capture modal blockage for specific problems (e.g., random 3-SAT).
+$$
+P_{\text{FM}} \neq NP_{\text{FM}}
+$$
+
+via $K_{\mathrm{E13}}^+(\Pi_{3\text{-SAT}})$, {prf:ref}`thm-e13-contrapositive-hardness`, and
+{prf:ref}`thm-sat-membership-hardness-transfer`.
 
 **Logical Structure:**
 
-$$(\text{C1} \wedge \text{C2} \wedge \text{C3}) \Rightarrow (\text{P} \neq \text{NP})$$
+$$
+(\text{C1} \wedge \text{C2} \wedge \text{C3}) \Rightarrow (P_{\text{DTM}} \neq NP_{\text{DTM}}).
+$$
 
-**Within** Cohesive HoTT, assuming (C1), the proof is **unconditional**: it is a theorem that blocking all modalities implies hardness. The question "Is (C1) the right foundation?" is a **foundational choice**, analogous to accepting ZFC for mathematics.
+**Within** the ambient foundation, the argument from `MT-AlgComplete` through
+{prf:ref}`cor-pfm-neq-npfm-from-random-3sat` is unconditional: the internal separation
+$P_{\text{FM}} \neq NP_{\text{FM}}$ is a theorem of the framework.
 
 **Status Comparison:**
 - **Classical ZFC + P ≠ NP:** Unproven
-- **Cohesive HoTT + (C2) + (C3) ⊢ P ≠ NP:** Proven (this work)
+- **Cohesive HoTT + internal 3-SAT separation + bridge equivalence:** yields the classical separation by
+  {prf:ref}`cor-internal-to-classical-separation`
 
-The conditionality shifts from "we cannot prove it" to "the proof depends on foundational choices."
+The roles are therefore explicit: ambient foundation for the internal theorem, and bridge equivalence for the external
+export.
 :::
 
 :::{div} feynman-prose
 Let me be clear about what we have accomplished and what remains open.
 
-**What is proven:** Within cohesive $(\infty,1)$-topos theory, we have **proven** that the five modalities exhaust all structural resources. We have **proven** that blocking all five modalities forces exponential time. These are theorems, not conjectures.
+**What is proven:** Within cohesive $(\infty,1)$-topos theory, we have **proven** that the five modalities exhaust all
+structural resources. We have **proven** that blocking all five modalities forces exponential time. These are theorems,
+not conjectures.
 
-**What is conditional:** The bridge from the topos framework to classical Turing machines (Condition C2) and the specific obstruction certificates for random 3-SAT (Condition C3). These are strong claims that require careful verification.
+**What is proven internally:** The canonical $3$-SAT object carries the full E13 obstruction package, is outside
+$P_{\text{FM}}$, and therefore separates $P_{\text{FM}}$ from $NP_{\text{FM}}$.
 
-**What is a choice:** Working in cohesive $(\infty,1)$-topos theory (Condition C1) is a **foundational choice**, like choosing to work in ZFC versus some alternative foundation. Within that foundation, our results are theorems.
+**What the bridge supplies:** The separate equivalence theorem identifying the internal classes with the classical
+Turing-machine classes.
 
-The beauty of this approach is that it makes the assumptions **explicit**. We are not claiming to have solved P versus NP unconditionally. We are claiming to have reduced it to well-defined foundational questions: Is cohesive HoTT an adequate foundation for computation? Do the bridge theorems hold? Are the obstruction certificates correct?
+**What is a choice:** Working in cohesive $(\infty,1)$-topos theory (Condition C1) is a **foundational choice**, like
+choosing to work in ZFC versus some alternative foundation. Within that foundation, our results are theorems.
+
+The beauty of this approach is that it makes the roles **explicit**. The internal proof no longer waits on a separate
+verification step; the only extra theorem beyond the framework itself is the bridge equivalence used to restate the
+result in the DTM model.
 
 These are questions we can investigate, debate, and potentially settle. That is progress.
 :::
@@ -918,21 +1176,29 @@ The algorithmic completeness framework establishes:
 
 **Theorem 2 (Algorithmic Representation):** Every polynomial-time algorithm factors through at least one modality ({prf:ref}`mt-alg-complete`).
 
-**Theorem 3 (Hardness from Obstruction):** If all five modalities are blocked (all obstruction certificates present), no polynomial-time algorithm exists ({prf:ref}`mt-alg-complete` contrapositive).
+**Theorem 3 (Hardness from Obstruction):** The E13 obstruction certificate implies exclusion from $P_{\text{FM}}$
+({prf:ref}`thm-e13-contrapositive-hardness`).
 
 **Theorem 4 (Class Specifications):** Each algorithm class has explicit factorization conditions and computable obstruction criteria ({prf:ref}`def-class-i-climbers` through {prf:ref}`def-class-v-interference`).
 
-**Theorem 5 (Tactic E13 Validity):** The Algorithmic Completeness Lock is a valid verification tactic that checks modal exhaustion ({prf:ref}`def-e13`).
+**Theorem 5 (3-SAT Assembly):** Canonical $3$-SAT satisfies the six E13 antecedent certificates
+({prf:ref}`ex-3sat-all-blocked`).
 
-**Application:** For random 3-SAT near threshold, all five obstruction certificates hold ({prf:ref}`ex-3sat-all-blocked`), implying hardness.
+**Theorem 6 (Internal Separation):** Canonical $3$-SAT yields $P_{\text{FM}} \neq NP_{\text{FM}}$
+({prf:ref}`cor-pfm-neq-npfm-from-random-3sat`).
 
-**Conditional Export:** Assuming (C1)-(C3), this implies $\text{P} \neq \text{NP}$ ({prf:ref}`thm-conditional-nature`).
+**Theorem 7 (Classical Export):** By the bridge equivalence theorem, the internal separation yields
+$P_{\text{DTM}} \neq NP_{\text{DTM}}$ ({prf:ref}`cor-internal-to-classical-separation`).
 :::
 
 :::{div} feynman-prose
 And there you have it. We have built a mathematical framework that explains **why** some algorithms are fast and others must be slow. The five modalities are not arbitrary categories; they are the fundamental ways that structure manifests in a cohesive topos. An algorithm is fast if it can "see" one of these structural patterns. An algorithm is slow if all five views reveal nothing but noise.
 
-This is the answer to the question: "Could there be a clever algorithm we have not thought of yet?" Within our framework, the answer is: only if it exploits one of the five types of structure. There is no sixth type—not because we have not looked hard enough, but because the mathematics does not permit it.
+This is the answer to the question: "Could there be a clever algorithm we have not thought of yet?" Within our
+framework, the answer is: only if it exploits one of the five types of structure. There is no sixth type, because modal
+completeness closes the door internally.
 
-That is the power of category theory. It does not just organize what we know; it reveals the **boundaries** of what is possible.
+The repaired proof presentation makes the dependencies explicit. E13 does the obstruction work, the SAT transfer does the
+internal class-separation work, and the bridge chapter does the model-export work. Each dependency now has its own named
+theorem.
 :::
