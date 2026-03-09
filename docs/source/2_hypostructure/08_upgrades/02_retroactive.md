@@ -828,7 +828,10 @@ The Bridge Theorem is the final step that connects our abstract hypostructure fr
 
 We have been working in the language of hypostructures, certificates, and upgrades. But the P vs NP question is stated in terms of Turing machines and polynomial-time computation. The bridge shows these are the same thing: our algorithmic hypostructure is exactly a Turing machine in disguise, and our universal obstruction is exactly the statement that SAT is not in P.
 
-This is not a new proof of P vs NP---that remains open, of course. What we have done is translate the problem into hypostructure language, where the Sieve machinery can be applied. If the OGP hypotheses hold for random SAT instances (which is conjectured but not proven), then the universal obstruction theorem gives P vs NP. The bridge makes the implication rigorous.
+This is not a new proof of P vs NP---that remains open, of course. What we have done is isolate one specific
+OGP-based backend inside the wider hypostructure program. If the OGP hypotheses hold for a suitable SAT subfamily, then
+this selector route yields a universal metric obstruction for that backend. The bridge makes that implication rigorous,
+but the full Part VI--VIII separation program is broader and does not treat OGP as its unique gatekeeper.
 :::
 
 

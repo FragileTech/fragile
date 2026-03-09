@@ -513,7 +513,7 @@ The tactics fall into three automation classes:
 - **E12 (Algebraic Compressibility)** {prf:ref}`def-e12`: Gröbner basis computation and degree bounds. Doubly exponential worst-case, practical for structured varieties.
 
 **Requires Expert Analysis (E13):**
-- **E13 (Algorithmic Completeness)** {prf:ref}`def-e13`: Automatable for checking **if** an algorithm factors through a modality (given the algorithm). Not automatable for proving **no** algorithm exists—this requires mathematical analysis of problem structure via {prf:ref}`mt-alg-complete`.
+- **E13 (Algorithmic Completeness)** {prf:ref}`def-e13`: Automatable for checking **if** an algorithm factors through a modality (given the algorithm). Not automatable for proving **no** algorithm exists. That negative direction depends on the Part IV classification ladder together with the Part V obstruction layer: primitive audit, witness decomposition, irreducible classification, computational modal exhaustiveness, mixed-modal obstruction, and frontend compatibility ({prf:ref}`lem-primitive-step-classification`, {prf:ref}`thm-witness-decomposition`, {prf:ref}`thm-irreducible-witness-classification`, {prf:ref}`cor-computational-modal-exhaustiveness`, {prf:ref}`thm-mixed-modal-obstruction`, {prf:ref}`prop-compatibility-with-current-tactics`; compatibility label {prf:ref}`mt-alg-complete`). For the canonical separation chain, Part VI already proves the direct canonical $3$-SAT E13 antecedent package together with admissibility, Internal Cook--Levin, and $NP_{\mathrm{FM}}$-completeness ({prf:ref}`thm-canonical-3sat-admissible`, {prf:ref}`ex-3sat-all-blocked`, {prf:ref}`thm-random-3sat-not-in-pfm`, {prf:ref}`thm-internal-cook-levin-reduction`, {prf:ref}`thm-sat-membership-hardness-transfer`). Part IX adds a reusable barrier-metatheorem layer ({prf:ref}`def-barrier-datum`, {prf:ref}`thm-barrier-package-implies-e13`, {prf:ref}`cor-barrier-contrapositive-hardness`). Parts VII--VIII then package the route explicitly through the direct separation certificate and Appendix B, and also formalize the stronger audit artifacts: the proof-obligation ledger, primitive audit table, canonical backend dossiers, bridge dossiers, and minimal completion certificate ({prf:ref}`def-direct-separation-certificate`, {prf:ref}`thm-appendix-b-frontend-e13-certificate-table`, {prf:ref}`def-proof-obligation-ledger`, {prf:ref}`def-primitive-audit-table`, {prf:ref}`def-canonical-3sat-backend-dossier-package`, {prf:ref}`def-minimal-completion-certificate`).
 
 In summary: **7/13 fully automatable**, **5/13 semi-automatable** (decidable for common cases, may timeout or require manual proof for exotic structures), **1/13 requires mathematical analysis**. The framework is designed to degrade gracefully—when automation fails, the tactic returns $K^{\text{inc}}$ and routes to fallback. See [Lock Mechanism](../06_modules/03_lock.md) for detailed specifications and automation status of each tactic.
 
@@ -973,7 +973,13 @@ There are real limitations and open problems, and they are explicitly tracked by
 
 1. **Adequacy Proof (A2) for the Runtime.** The reverse bridge to DTMs assumes a polynomial-time interpreter for the Fragile evaluator. This is standard compiler verification work, but it has not been fully mechanized here.
 
-2. **Random SAT Geometry (OGP Hypotheses).** The internal P ≠ NP route depends on geometric properties of random SAT (Optimal Gradient Path, overlap-gap behavior). These are major open problems in probabilistic combinatorics and statistical physics.
+2. **Closure of the canonical 3-SAT obstruction route.** The manuscript does **not** require OGP as a universal
+   hypothesis for the whole internal separation route; OGP is only one optional backend for the $\sharp$-channel. The
+   direct problem-specific route is the current canonical $3$-SAT E13 frontend package, now explicitly packaged in the
+   direct separation certificate and Appendix B. At the stronger audit level, this can be refined by completing the
+   referee-grade primitive audit appendix and the five canonical $3$-SAT backend dossiers, especially the strengthened
+   $\flat$- and $\partial$-channels. Random-SAT geometry (OGP / overlap-gap behavior) is one possible backend for the
+   metric dossier, but it is not the unique gatekeeper for the overall argument.
 
 3. **Bad Pattern Library Completeness.** The Lock requires a dense library of bad patterns. For many domains this library is incomplete and must be extended (new E-tactics, new categorical obstructions).
 

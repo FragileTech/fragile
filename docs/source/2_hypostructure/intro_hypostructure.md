@@ -68,7 +68,21 @@ The framework establishes that polynomial-time algorithms must factor through fi
 - **Class IV (Dividers):** Exploit self-similarity/recursion ($\ast$ modality)
 - **Class V (Interference):** Exploit holographic/boundary structure ($\partial$ modality)
 
-The **Algorithmic Representation Theorem (MT-AlgComplete)** proves these five classes are exhaustive—any polynomial-time algorithm must exploit at least one of these structural resources. Blocking all five modalities (via Tactic E13) establishes information-theoretic hardness.
+The strengthened **algorithmic completeness ladder** culminates in witness decomposition, irreducible-witness
+classification, and computational modal exhaustiveness
+({prf:ref}`thm-witness-decomposition`, {prf:ref}`thm-irreducible-witness-classification`,
+{prf:ref}`cor-computational-modal-exhaustiveness`; compatibility label {prf:ref}`mt-alg-complete`). Together these say
+that any polynomial-time algorithm must factor through the five modal classes up to the allowed closure operations.
+Part V then upgrades this into a semantic obstruction calculus, and Tactic E13 supplies the current frontend package for
+that stronger obstruction layer. Part VI instantiates the framework on canonical $3$-SAT by proving admissibility and
+running the internal Cook--Levin reduction and proving the direct E13 exclusion route on the canonical internal problem
+object. Parts VII--VIII then turn the whole theorem ladder into an auditable implementation program by
+introducing the direct separation certificate, the proof-obligation ledger, backend dossiers, bridge dossiers, the
+primitive audit appendix, and the minimal completion certificate. Appendix B packages the six direct canonical frontend
+certificates, while the stronger backend dossiers refine the same route into a fully explicit semantic obstruction
+implementation.
+Part IX then adds a reusable barrier-metatheorem layer, showing how translator-stable compression barriers force modal
+obstructions and reconstructed E13 certificates independently of any SAT-specific backend picture.
 
 **P/NP Bridge to Classical Complexity:**
 Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$, allowing internal complexity separations to export to classical ZFC statements about P and NP. The framework reduces the P vs NP question to concrete geometric/topological properties of energy landscapes.
@@ -262,9 +276,9 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 
 7. **Instantaneous upgrade metatheorems.** "Blocked" barriers and failed checks can be promoted to full YES permits under structural conditions—infinite energy under drift becomes finite energy under renormalized measure, zero Hessian eigenvalue with spectral gap gives exponential convergence, no concentration with finite Morawetz implies scattering. These upgrades allow recovery of Lyapunov functions and promote Thin interfaces to full objects ([Instantaneous Upgrades](08_upgrades/01_instantaneous.md)).
 
-8. **Algorithmic completeness.** The five algorithm classes (Climbers, Propagators, Alchemists, Dividers, Interference Engines) are proven exhaustive via cohesive topos theory—polynomial-time computation requires exploiting at least one of five fundamental modalities. Blocking all five establishes information-theoretic hardness ([Algorithmic Completeness](09_mathematical/05_algorithmic.md)).
+8. **Algorithmic completeness.** The five algorithm classes (Climbers, Propagators, Alchemists, Dividers, Interference Engines) are isolated as the exhaustive modal targets for polynomial-time computation via cohesive topos theory, and the manuscript now states the exact audit artifacts required to discharge the corresponding hardness route ([Algorithmic Completeness](09_mathematical/05_algorithmic.md)).
 
-9. **P/NP bridge to classical complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$, allowing internal separations to export to classical complexity theory ([P/NP Bridge](09_mathematical/06_complexity_bridge.md)).
+9. **P/NP bridge to classical complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$, and therefore export the internal separation once the audited internal package is complete ([P/NP Bridge](09_mathematical/06_complexity_bridge.md)).
 
 10. **Meta-learning extension.** The axioms themselves can be learned as solutions to constrained optimization over defect functionals, enabling automatic discovery of regularity conditions ([Meta-Learning](10_information_processing/01_metalearning.md)).
 
@@ -296,8 +310,8 @@ This formalism is a **categorical foundation for runtime safety verification**. 
 
 *Meta-Theoretic:*
 
-11. **Algorithmic Completeness Theory.** The five algorithm classes (Climbers, Propagators, Alchemists, Dividers, Interference Engines) are proven exhaustive via Schreiber's structure theorem—polynomial-time algorithms must factor through cohesive modalities $\{\sharp, \int, \flat, \ast, \partial\}$. Tactic E13 (Algorithmic Completeness Lock) establishes hardness by blocking all five modalities ([Algorithmic Completeness](09_mathematical/05_algorithmic.md)).
-12. **P/NP Bridge to Classical Complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$ via adequacy of the Fragile runtime. Internal complexity separations export to classical ZFC statements about P and NP ([P/NP Bridge](09_mathematical/06_complexity_bridge.md)).
+11. **Algorithmic Completeness Theory.** The five algorithm classes (Climbers, Propagators, Alchemists, Dividers, Interference Engines) are isolated as the exhaustive modal targets for polynomial-time computation via Schreiber's structure theorem, and the manuscript now states explicit audit criteria under which witness decomposition, obstruction, and the E13 hardness route count as implemented ([Algorithmic Completeness](09_mathematical/05_algorithmic.md)).
+12. **P/NP Bridge to Classical Complexity.** Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$ via adequacy of the Fragile runtime. Once the internal separation package is complete, the bridge exports it to classical ZFC statements about P and NP ([P/NP Bridge](09_mathematical/06_complexity_bridge.md)).
 13. **Meta-Learning Axioms.** Learning hypostructure constraints as optimization over defect functionals ([Meta-Learning](10_information_processing/01_metalearning.md)).
 14. **Fractal Gas Model.** Scale-free dynamics for axiom discovery ([Fractal Gas](../3_fractal_gas/1_the_algorithm/02_fractal_gas_latent.md)).
 

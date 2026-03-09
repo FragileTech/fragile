@@ -3113,6 +3113,45 @@ $$
 **Proof**: The isomorphism is established via Expansion Adjunction ({prf:ref}`thm-expansion-adjunction`) and Lock tactics. See {prf:ref}`thm-sm-dirac-isomorphism` in {doc}`04_standard_model` for the complete proof. $\square$
 :::
 
+:::{prf:definition} Chirality Operator and Chiral Projectors
+:label: def-lqft-chiral-projectors
+
+In the physical $D=4$ Clifford realization, define the **chirality operator**
+
+$$
+\gamma^5 := i\gamma^0\gamma^1\gamma^2\gamma^3.
+$$
+
+The corresponding **chiral projectors** are
+
+$$
+P_L := \frac{1-\gamma^5}{2},
+\qquad
+P_R := \frac{1+\gamma^5}{2}.
+$$
+
+They satisfy
+
+$$
+P_L^2=P_L,\qquad P_R^2=P_R,\qquad P_LP_R=0,\qquad P_L+P_R=\mathbf{1},
+$$
+
+and therefore split any Dirac field into left- and right-handed parts:
+
+$$
+\psi=\psi_L+\psi_R,
+\qquad
+\psi_L:=P_L\psi,
+\qquad
+\psi_R:=P_R\psi.
+$$
+
+This splitting is the algebraic input used in {doc}`04_standard_model` to define the
+projector-based electroweak current operators
+$\bar\psi\gamma^\mu P_L\psi$, $\bar\psi\gamma^\mu P_R\psi$, and the cross-chirality Yukawa
+bilinears.
+:::
+
 :::{prf:definition} Scalar Field Action on Fractal Set
 :label: def-scalar-action
 
@@ -3785,10 +3824,11 @@ $$
 | $SU(d)$ strong force | Viscous coupling (O(d) redundancy, complexified to $U(d)$ with $\det=1$) | {prf:ref}`thm-sm-su3-emergence` |
 | Dirac/Clifford algebra | Antisymmetric kernel | {prf:ref}`thm-sm-dirac-isomorphism` |
 | Pauli exclusion | Algorithmic exclusion | {prf:ref}`thm-sm-exclusion-principle` |
-| Higgs SSB mechanism | Bifurcation dynamics | {prf:ref}`thm-sm-higgs-isomorphism` |
+| Higgs SSB mechanism | Bifurcation dynamics (scalar-sector structural isomorphism) | {prf:ref}`thm-sm-higgs-isomorphism` |
 | SO(10) spinor $\mathbf{16}$ | Walker state space | {prf:ref}`thm-sm-so10-isomorphism` |
 | Confinement | Localization kernel | {prf:ref}`prop-sm-area-law` |
 | $N_{\text{gen}}$ generations | $d$-dimensional latent space | {prf:ref}`thm-sm-generation-dimension` |
+| Electroweak operator framing | Chirality sectors + chiral projectors | {prf:ref}`thm-sm-ew-operator-layers` |
 | Coupling $g_1, g_2, g_d$ | $\epsilon_d, \epsilon_c, \nu$ functions | {prf:ref}`thm-sm-g1-coupling`, {prf:ref}`thm-sm-g2-coupling`, {prf:ref}`thm-sm-g3-coupling` |
 | CP violation | Selection non-commutativity | {prf:ref}`thm-sm-cp-violation` |
 | CKM matrix | Generation mixing | {prf:ref}`cor-sm-ckm-matrix` |
@@ -3799,18 +3839,189 @@ $$
 These correspondences are structural isomorphisms verified via Hypostructure machinery.
 :::
 
+:::{prf:definition} Walker-Role Partition
+:label: def-sm-walker-role-partition
+
+Fix a recorded frame $t$ with alive walker set $A_t$. Let $c_c(i,t)$ denote the recorded clone
+companion of walker $i$, let $F_i(t)$ be the recorded fitness, and let $\mathbf{1}_{\mathrm{clone}}(i,t)$
+be the recorded cloning indicator. Define four disjoint walker-role sectors:
+
+$$
+\Delta_t := \{i\in A_t : \mathbf{1}_{\mathrm{clone}}(i,t)=1\},
+$$
+
+$$
+\mathrm{SR}_t := \left\{i\in A_t\setminus\Delta_t : \exists j\in\Delta_t \text{ with } c_c(j,t)=i\right\},
+$$
+
+$$
+\mathrm{WR}_t := \left\{i\in A_t\setminus(\Delta_t\cup\mathrm{SR}_t) :
+F_{c_c(i,t)}(t) > F_i(t)\right\},
+$$
+
+$$
+\mathrm{P}_t := A_t\setminus(\Delta_t\cup\mathrm{SR}_t\cup\mathrm{WR}_t).
+$$
+
+The four roles are called **delta**, **strong resister**, **weak resister**, and **persister**.
+:::
+
+:::{prf:proposition} Exhaustive Chirality Partition
+:label: prop-sm-walker-role-partition
+
+For every recorded frame $t$, the subsets in {prf:ref}`def-sm-walker-role-partition` are pairwise
+disjoint and their union is exactly $A_t$.
+
+*Proof.* By construction, $\Delta_t$ contains precisely the walkers with cloning indicator $1$. The
+set $\mathrm{SR}_t$ excludes $\Delta_t$ and records the walkers targeted by at least one delta.
+Among the remaining alive walkers, either the recorded clone companion has higher fitness, which
+places the walker in $\mathrm{WR}_t$, or it does not, which places the walker in $\mathrm{P}_t$. These
+cases are mutually exclusive and cover all alive walkers. $\square$
+:::
+
+:::{prf:definition} Walker Chirality and Baseline Electroweak Observables
+:label: def-sm-walker-chirality
+
+Define the **walker-role chirality** by
+
+$$
+\chi_i(t) :=
+\begin{cases}
++1, & i\in \Delta_t\cup\mathrm{SR}_t,\\
+-1, & i\in \mathrm{WR}_t\cup\mathrm{P}_t,\\
+0, & i\notin A_t.
+\end{cases}
+$$
+
+Accordingly,
+
+$$
+L_t := \Delta_t\cup\mathrm{SR}_t,
+\qquad
+R_t := \mathrm{WR}_t\cup\mathrm{P}_t.
+$$
+
+Writing $N$ for the recorded walker count per frame, the baseline electroweak observables extracted
+from the recorded run are
+
+$$
+\chi_{\mathrm{mean}}(t) := \frac{1}{N}\sum_{i=1}^{N}\chi_i(t),
+\qquad
+f_L(t) := \frac{1}{N}\sum_{i=1}^{N}\mathbf{1}_{\{i\in L_t\}},
+$$
+
+$$
+f_{\Delta\to R}(t) := \frac{1}{|\Delta_t|}
+\sum_{i\in\Delta_t}\mathbf{1}_{\{c_c(i,t)\in R_t\}},
+$$
+
+and the complex left-right transfer observable
+
+$$
+M_{LR}(t) :=
+\frac{1}{N_{\Delta\to R}(t)}
+\sum_{\substack{i\in\Delta_t\\c_c(i,t)\in R_t}}
+\exp\!\left(i\frac{F_{c_c(i,t)}(t)-F_i(t)}{\hbar_{\mathrm{eff}}}\right),
+$$
+
+where dead walkers contribute $0$ to $\chi_i$ and therefore do not contribute to either average,
+$f_{\Delta\to R}(t)=0$ by convention when $|\Delta_t|=0$, and
+$N_{\Delta\to R}(t)=\sum_{i\in\Delta_t}\mathbf{1}_{\{c_c(i,t)\in R_t\}}$ with
+$M_{LR}(t)=0$ when $N_{\Delta\to R}(t)=0$.
+:::
+
+:::{prf:theorem} Implemented Electroweak Operator Layers
+:label: thm-sm-ew-operator-layers
+
+**Rigor Class:** F (Framework-Implementation)
+
+The electroweak matter sector used in the current Fractal Gas dashboard admits a parallel
+operator-level description by a common chirality structure together with two implemented operator
+families:
+
+1. **Walker-role chirality observables** from {prf:ref}`def-sm-walker-chirality`, namely
+   $\chi_{\mathrm{mean}}$, $f_L$, $f_{\Delta\to R}$, and $|M_{LR}|$.
+2. **Dirac-spinor electroweak operators** obtained by combining the Clifford realization
+   ({prf:ref}`thm-sm-dirac-isomorphism`) with the chiral projectors
+   ({prf:ref}`def-lqft-chiral-projectors`), giving
+   $J_L^\mu=\bar\psi\gamma^\mu P_L\psi$,
+   $J_R^\mu=\bar\psi\gamma^\mu P_R\psi$,
+   $J_V^\mu=\bar\psi\gamma^\mu\psi$,
+   $O_L=\bar\psi P_L\psi$,
+   $O_R=\bar\psi P_R\psi$,
+   and the cross-chirality Yukawa bilinears
+   $O_{LR}=\bar\psi P_L\psi$ on $L\!\to\!R$ pairs and
+   $O_{RL}=\bar\psi P_R\psi$ on $R\!\to\!L$ pairs.
+
+Gauge dressing by the U(1) and SU(2) links then produces the implemented electroweak current
+channels
+
+$$
+J_{U(1)}^\mu := U_{ij}^{(1)}\,\bar\psi_i\gamma^\mu\psi_j,
+\qquad
+J_{L,U(1)}^\mu := U_{ij}^{(1)}\,\bar\psi_i\gamma^\mu P_L\psi_j,
+$$
+
+$$
+J_{L,SU(2)}^\mu := U_{ij}^{(2)}\,\bar\psi_i\gamma^\mu P_L\psi_j,
+\qquad
+J_{R,SU(2)}^\mu := U_{ij}^{(2)}\,\bar\psi_i\gamma^\mu P_R\psi_j.
+$$
+
+Within the current dashboard, these operator families are the objects used to generate the active
+electroweak particle channels. This operational statement is parallel to, not a replacement for,
+the original generation-dimension correspondence of
+{prf:ref}`thm-sm-generation-dimension`. The older U(1)/SU(2) phase-doublet operators remain
+available as coherence diagnostics, but they are not the primary matter-sector language of the
+implemented electroweak analysis.
+
+At the implementation level, each spinor bilinear is recorded through its real part,
+$\operatorname{Re}(\bar\psi_i\Gamma P\psi_j)$ or
+$\operatorname{Re}(U_{ij}\bar\psi_i\Gamma P\psi_j)$, before correlators are formed.
+
+*Proof.*
+
+**Step 1 (Walker-role chirality).** Definition {prf:ref}`def-sm-walker-role-partition` produces the
+exhaustive partition $A_t=L_t\sqcup R_t$, and Definition {prf:ref}`def-sm-walker-chirality` turns
+that partition into scalar observables computable directly from the recorded cloning and companion
+data.
+
+**Step 2 (Projector layer).** By {prf:ref}`thm-sm-dirac-isomorphism`, the fermionic algebra admits
+a Clifford realization. Definition {prf:ref}`def-lqft-chiral-projectors` then provides $P_L$ and
+$P_R$, so the projected bilinears above are well-defined and split the Dirac sector into left- and
+right-handed components.
+
+**Step 3 (Gauge dressing).** The U(1) and SU(2) links from the diversity and cloning sectors act by
+parallel transport on these bilinears, giving the implemented dressed currents and Yukawa channels.
+The exact implementation-level formulas for the chirality observables, the spinor bilinears, and
+the active dashboard fit domain are proved later in
+{prf:ref}`prop-qft-ew-chirality-realization`,
+{prf:ref}`prop-qft-ew-spinor-realization`, and
+{prf:ref}`thm-qft-ew-active-pipeline`. Therefore this operator framing is mathematically
+well-defined and is exactly realized by the current pipeline. $\square$
+:::
+
 :::{prf:definition} Flavor Index
 :label: def-sm-flavor-index
 
-The **flavor index** $\alpha \in \{1, \ldots, d\}$ labels the velocity component used to build the complexified viscous-force charge. For walker $i$ with velocity $v_i \in \mathbb{R}^d$, the $\alpha$-th **flavor state** is:
+The **flavor index** $\alpha \in \{1, \ldots, d\}$ labels the velocity component used to build the
+complexified viscous-force charge. For walker $i$ with velocity $v_i \in \mathbb{R}^d$, the
+$\alpha$-th **flavor state** is
 
 $$
-c_i^{(\alpha)} = \frac{F_\alpha^{(\text{visc})}(i)}{\|F^{(\text{visc})}(i)\|} \cdot \exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
+c_i^{(\alpha)} = \frac{F_\alpha^{(\text{visc})}(i)}{\|F^{(\text{visc})}(i)\|} \cdot
+\exp\left(i p_i^{(\alpha)} \ell_0/\hbar_{\text{eff}}\right)
 $$
 
-where $F_\alpha^{(\text{visc})}(i)$ is the $\alpha$-th component of the viscous force from {prf:ref}`def-fractal-set-viscous-force`, $\|F^{(\text{visc})}(i)\| = \sqrt{\sum_\beta |F_\beta^{(\text{visc})}(i)|^2}$ (with a small $\varepsilon$-regularization if needed), $p_i^{(\alpha)} = m v_i^{(\alpha)}$, and $\ell_0$ is the characteristic length used in the momentum-phase encoding.
+where $F_\alpha^{(\text{visc})}(i)$ is the $\alpha$-th component of the viscous force from
+{prf:ref}`def-fractal-set-viscous-force`, $\|F^{(\text{visc})}(i)\| = \sqrt{\sum_\beta
+|F_\beta^{(\text{visc})}(i)|^2}$ (with a small $\varepsilon$-regularization if needed),
+$p_i^{(\alpha)} = m v_i^{(\alpha)}$, and $\ell_0$ is the characteristic length used in the
+momentum-phase encoding.
 
-The underlying velocity components are real; $SU(d)$ acts on the complexified amplitude-phase vector $\vec{c}_i$ built from those components. Each flavor index corresponds to one **generation** of fermions. The flavor sectors are labeled $\alpha = 1, \ldots, d$.
+The underlying velocity components are real; $SU(d)$ acts on the complexified amplitude-phase
+vector $\vec{c}_i$ built from those components. Each flavor index corresponds to one
+**generation** of fermions. The flavor sectors are labeled $\alpha = 1, \ldots, d$.
 :::
 
 :::{prf:theorem} Generation-Dimension Correspondence
@@ -3818,7 +4029,8 @@ The underlying velocity components are real; $SU(d)$ acts on the complexified am
 
 **Rigor Class:** F (Framework-Original)
 
-For Fractal Gas in $d$-dimensional latent space $Z \subseteq \mathbb{R}^d$, the number of fermion generations equals $d$.
+For Fractal Gas in $d$-dimensional latent space $Z \subseteq \mathbb{R}^d$, the number of fermion
+generations equals $d$.
 
 **Structure**:
 - Walker phase space: $(z, v) \in Z \times T_z(Z)$ with $2d$ total degrees of freedom
@@ -3829,32 +4041,42 @@ For Fractal Gas in $d$-dimensional latent space $Z \subseteq \mathbb{R}^d$, the 
 
 *Proof.*
 
-**Step 1 (Velocity components define flavor sectors):** Each velocity component $v^{(\alpha)}$ for $\alpha = 1, \ldots, d$ defines an independent degree of freedom. Under $SU(d)$ gauge transformations of the complexified viscous-force vector, the $\alpha$-th component transforms in the fundamental representation while carrying a distinct flavor index.
+**Step 1 (Velocity components define flavor sectors).** Each velocity component $v^{(\alpha)}$ for
+$\alpha = 1, \ldots, d$ defines an independent degree of freedom. Under $SU(d)$ gauge
+transformations of the complexified viscous-force vector, the $\alpha$-th component transforms in
+the fundamental representation while carrying a distinct flavor index.
 
-The flavor state ({prf:ref}`def-sm-flavor-index`) assigns to each walker a $d$-tuple of complex charges:
+The flavor state ({prf:ref}`def-sm-flavor-index`) assigns to each walker a $d$-tuple of complex
+charges:
 
 $$
 \vec{c}_i = (c_i^{(1)}, \ldots, c_i^{(d)}) \in \mathbb{C}^d
 $$
 
-Each complexified component transforms independently under $SU(d)$ but retains its flavor label $\alpha$.
+Each complexified component transforms independently under $SU(d)$ but retains its flavor label
+$\alpha$.
 
-**Step 2 (Spinor dimension counting):** The full rotation group on phase space $(z, v) \in \mathbb{R}^{2d}$ is $SO(2d)$. Its spinor representation has dimension:
+**Step 2 (Spinor dimension counting).** The full rotation group on phase space
+$(z, v) \in \mathbb{R}^{2d}$ is $SO(2d)$. Its spinor representation has dimension:
 
 $$
-\dim(\text{Spin}(2d)\ \text{spinor}) = 2^d
+\dim(\mathrm{Spin}(2d)\ \text{spinor}) = 2^d
 $$
 
-We use this only as a degrees-of-freedom count; the flavor index itself is tied to the $d$ velocity components.
+We use this only as a degrees-of-freedom count; the flavor index itself is tied to the $d$
+velocity components.
 
-**Step 3 (Sieve constraint):** By Lock tactic E1 (dimension counting), the number of independent fermionic representations must equal the number of flavor indices. The Grassmann field assignment ({prf:ref}`axm-sm-grassmann`) requires one anticommuting variable per flavor sector.
+**Step 3 (Sieve constraint).** By Lock tactic E1 (dimension counting), the number of independent
+fermionic representations must equal the number of flavor indices. The Grassmann field assignment
+({prf:ref}`axm-sm-grassmann`) requires one anticommuting variable per flavor sector.
 
-**Step 4 (Independence):** The flavor sectors are independent because:
+**Step 4 (Independence).** The flavor sectors are independent because:
 1. Each $v^{(\alpha)}$ contributes independently to the algorithmic distance
 2. The cloning kernel ({prf:ref}`def-fractal-set-cloning-potential`) treats velocity components symmetrically
 3. No mixing term couples different flavor indices in the fermionic action
 
-**Conclusion:** The number of fermion generations equals the dimension of the latent space: $N_{\text{gen}} = d$.
+**Conclusion:** The number of fermion generations equals the dimension of the latent space:
+$N_{\text{gen}} = d$.
 
 For physical applications with $d = 3$, this yields three generations. $\square$
 :::
@@ -4286,6 +4508,11 @@ $$
 $$
 
 where $y_f \propto \exp(-\Delta\Phi_f / \Phi_0)$ from the fitness-dependent selection strength.
+
+Here the label $f$ refers to the phenomenological flavor families being matched. This section uses
+the original generation-dimension framing of {prf:ref}`thm-sm-generation-dimension`, while the
+active dashboard simultaneously admits the alternative operator framing of
+{prf:ref}`thm-sm-ew-operator-layers`.
 
 **Step 2 (Spectral gap dependence):** The spectral gap $\lambda_{\text{gap}}$ depends on Yukawa couplings through the selection kernel. Schematically:
 
@@ -4946,48 +5173,72 @@ with $Q_{\text{fitness}}(t) := \sum_{i \in A_t} V_{\text{fit}}(z_i)$. Thus $Q_{\
 :::{prf:theorem} SU(2) Weak Isospin Noether Current
 :label: thm-su2-noether-current
 
-The local $\text{SU}(2)_{\text{weak}}$ gauge symmetry implies three weak isospin currents.
+The local $\text{SU}(2)_{\text{weak}}$ gauge symmetry acts on the left-handed electroweak sector
+and implies three weak isospin currents.
 
-**Current definition**: For generator $T^a = \sigma^a/2$ ($a = 1,2,3$):
-
-$$
-J_\mu^{(a)}(i,j) = \bar{\Psi}_{ij} \gamma_\mu (T^a \otimes I_{\text{div}}) \Psi_{ij}
-$$
-
-**Explicit forms**:
-
-For $a=3$ (diagonal):
+**Projector-based current definition**: For generator $T^a=\sigma^a/2$ ($a=1,2,3$) and chiral
+projector $P_L=(1-\gamma^5)/2$,
 
 $$
-J_\mu^{(3)}(i,j) = \frac{1}{2} \bar{\psi}_i \gamma_\mu \psi_i - \frac{1}{2} \bar{\psi}_j \gamma_\mu \psi_j
+J_\mu^{(a)} := \bar{\psi}\gamma_\mu T^a P_L\psi.
 $$
 
-For $a=1$ (off-diagonal, symmetric):
+Thus the physical weak current is left-acting. The right-handed current
 
 $$
-J_\mu^{(1)}(i,j) = \frac{1}{2}\left(\bar{\psi}_i \gamma_\mu \psi_j + \bar{\psi}_j \gamma_\mu \psi_i\right)
+J_{\mu,R}^{(a)} := \bar{\psi}\gamma_\mu T^a P_R\psi
 $$
 
-For $a=2$ (off-diagonal, antisymmetric):
+is retained in the implementation only as a parity-violation diagnostic; in the ideal weak-sector
+limit it vanishes because the right-handed sector is an SU(2) singlet.
+
+**Pair-basis realization**: If one restricts to a two-site cloning basis
+$\Psi_{ij,L} = (P_L\psi_i,P_L\psi_j)^\top$, then the same current is realized as
 
 $$
-J_\mu^{(2)}(i,j) = -\frac{i}{2}\left(\bar{\psi}_i \gamma_\mu \psi_j - \bar{\psi}_j \gamma_\mu \psi_i\right)
+J_\mu^{(a)}(i,j) = \bar{\Psi}_{ij,L}\gamma_\mu (T^a\otimes I_{\text{div}})\Psi_{ij,L},
 $$
+
+with explicit components
+
+$$
+J_\mu^{(3)}(i,j) = \frac{1}{2}\bar{\psi}_{i,L}\gamma_\mu\psi_{i,L}
+- \frac{1}{2}\bar{\psi}_{j,L}\gamma_\mu\psi_{j,L},
+$$
+
+$$
+J_\mu^{(1)}(i,j) = \frac{1}{2}\left(
+\bar{\psi}_{i,L}\gamma_\mu\psi_{j,L} + \bar{\psi}_{j,L}\gamma_\mu\psi_{i,L}\right),
+$$
+
+$$
+J_\mu^{(2)}(i,j) = -\frac{i}{2}\left(
+\bar{\psi}_{i,L}\gamma_\mu\psi_{j,L} - \bar{\psi}_{j,L}\gamma_\mu\psi_{i,L}\right).
+$$
+
+**Operational observables**: In the implemented electroweak dashboard, these currents are measured
+through chirality-restricted and gauge-dressed correlators such as
+$J_L^\mu=\bar\psi\gamma^\mu P_L\psi$,
+$J_{L,U(1)}^\mu$,
+$J_{L,SU(2)}^\mu$,
+the cross-chirality Yukawa bilinear $O_{LR}$,
+and the parity-violation diagnostics built from $J_L^\mu$ and $J_R^\mu$.
 
 **Conservation law** (on-shell, with covariant derivative):
 
 $$
-D^\mu J_\mu^{(a)}(i,j) := \partial^\mu J_\mu^{(a)}(i,j) + g\epsilon^{abc} A^{(b),\mu} J_\mu^{(c)}(i,j) = 0
+D^\mu J_\mu^{(a)} := \partial^\mu J_\mu^{(a)} + g\epsilon^{abc}A^{(b),\mu}J_\mu^{(c)} = 0.
 $$
 
 **Caveat**: The fitness-dependent mass $m_{\text{eff}}$ breaks exact SU(2) invariance:
 
 $$
-\partial^\mu J_\mu^{(a)} = \bar{\Psi}_{ij} [m_{\text{eff}}, T^a \otimes I] \Psi_{ij}
+\partial^\mu J_\mu^{(a)} = \bar{\psi}[m_{\text{eff}},T^aP_L]\psi.
 $$
 
-With $m_{\text{eff}} = m_0 I + \delta m\, T^3$, the commutator vanishes for $a=3$ and is $O(\delta m)$ for $a=1,2$.
-Current is exactly conserved only when $m_{\text{eff}}$ commutes with $T^a$ (constant mass).
+With $m_{\text{eff}} = m_0 I + \delta m\,T^3$, the commutator vanishes for $a=3$ and is
+$O(\delta m)$ for $a=1,2$. Current is exactly conserved only when $m_{\text{eff}}$ commutes with
+$T^a P_L$ (constant mass).
 :::
 
 :::{prf:definition} Noether Flow Equations
@@ -6494,7 +6745,966 @@ For connected correlator data $(r_i, G_i, n_i)$ where $n_i$ is the bin count:
 - `n_fit_points`: Number of points used in fit
 :::
 
+## 2_fractal_set/08_twistor_formulation.md
+
+:::{prf:definition} Two-Spinor Conventions
+:label: def-twistor-spinor-conventions
+
+Let $A,B \in \{0,1\}$ denote undotted spinor indices and let $A',B' \in \{0',1'\}$ denote dotted
+spinor indices. The antisymmetric Levi-Civita spinors satisfy
+
+$$
+\epsilon_{01} = -\epsilon_{10} = 1,
+\qquad
+\epsilon^{01} = -\epsilon^{10} = 1.
+$$
+
+Index raising and lowering are
+
+$$
+\lambda^A = \epsilon^{AB}\lambda_B,
+\qquad
+\lambda_A = \epsilon_{BA}\lambda^B,
+\qquad
+\tilde{\lambda}^{A'} = \epsilon^{A'B'}\tilde{\lambda}_{B'},
+\qquad
+\tilde{\lambda}_{A'} = \epsilon_{B'A'}\tilde{\lambda}^{B'}.
+$$
+
+For lower-index representatives we define the invariant brackets
+
+$$
+\langle \lambda \chi \rangle := \epsilon^{AB}\lambda_A \chi_B,
+\qquad
+[\tilde{\lambda} \tilde{\chi}] := \epsilon^{A'B'}\tilde{\lambda}_{A'} \tilde{\chi}_{B'}.
+$$
+
+Both brackets are antisymmetric:
+
+$$
+\langle \lambda \chi \rangle = - \langle \chi \lambda \rangle,
+\qquad
+[\tilde{\lambda} \tilde{\chi}] = -[\tilde{\chi} \tilde{\lambda}].
+$$
+:::
+
+:::{prf:definition} Sigma-Matrix Momentum Map
+:label: def-twistor-momentum-map
+
+Let $\sigma_{\mu\,AA'} = (\mathbf{1}, \sigma^1, \sigma^2, \sigma^3)$ with the usual Pauli
+matrices. For a Lorentz vector $p^\mu = (p^0, p^1, p^2, p^3)$ define the Hermitian momentum
+bispinor
+
+$$
+P_{AA'} := p^\mu \sigma_{\mu\,AA'}
+=
+\begin{pmatrix}
+p^0 + p^3 & p^1 - i p^2 \\
+p^1 + i p^2 & p^0 - p^3
+\end{pmatrix}.
+$$
+:::
+
+:::{prf:proposition} Determinant Equals the Lorentz Norm
+:label: prop-twistor-det-lorentz
+
+For the bispinor of {prf:ref}`def-twistor-momentum-map`,
+
+$$
+\det P = p_\mu p^\mu = (p^0)^2 - (p^1)^2 - (p^2)^2 - (p^3)^2.
+$$
+:::
+
+:::{prf:proposition} Rank-One Factorization Gives a Null Momentum
+:label: prop-twistor-null-factorization
+
+If
+
+$$
+P_{AA'} = \lambda_A \tilde{\lambda}_{A'},
+$$
+
+then $P$ has rank at most $1$ and hence
+
+$$
+\det P = 0.
+$$
+
+Consequently the associated Lorentz vector is null.
+:::
+
+:::{prf:definition} Twistor and Incidence Relation
+:label: def-twistor-basic
+
+A **twistor** is a vector
+
+$$
+Z^\alpha = (\mu^{A'}, \lambda_A) \in \mathbb{T} \cong \mathbb{C}^4.
+$$
+
+At a spacetime point $x^{AA'}$, the incidence relation is
+
+$$
+\mu^{A'} = i x^{AA'} \lambda_A.
+$$
+
+Thus a fixed point $x$ together with a two-spinor $\lambda_A$ determines a twistor
+$Z^\alpha(x,\lambda)$.
+:::
+
+:::{prf:definition} Infinity Twistor
+:label: def-twistor-infinity
+
+Fix the skew bilinear form $I_{\alpha\beta}$ on $\mathbb{T}$ whose contraction with two twistors
+selects the undotted spinor block:
+
+$$
+I_{\alpha\beta} Z_1^\alpha Z_2^\beta
+:= \epsilon^{AB}\lambda_{1A}\lambda_{2B}
+= \langle \lambda_1 \lambda_2 \rangle.
+$$
+
+Its conjugate $\bar{I}_{\bar{\alpha}\bar{\beta}}$ selects the dotted block:
+
+$$
+\bar{I}_{\bar{\alpha}\bar{\beta}} \bar{Z}_1^{\bar{\alpha}} \bar{Z}_2^{\bar{\beta}}
+:= \epsilon^{A'B'}\tilde{\lambda}_{1A'}\tilde{\lambda}_{2B'}
+= [\tilde{\lambda}_1 \tilde{\lambda}_2].
+$$
+:::
+
+:::{prf:definition} Two-Twistor Momentum System
+:label: def-twistor-two-system
+
+Let
+
+$$
+Z_I^\alpha = (\mu_I^{A'}, \lambda_{IA}),
+\qquad
+I \in \{1,2\},
+$$
+
+be two twistors incident with the same spacetime point $x^{AA'}$:
+
+$$
+\mu_I^{A'} = i x^{AA'} \lambda_{IA}.
+$$
+
+On the Lorentzian real slice let $\tilde{\lambda}_{IA'}$ denote the conjugate dotted spinors. The
+associated momentum bispinor is
+
+$$
+P_{AA'} := \lambda_{1A}\tilde{\lambda}_{1A'} + \lambda_{2A}\tilde{\lambda}_{2A'}.
+$$
+:::
+
+:::{prf:theorem} Twistor Mass Formula
+:label: thm-twistor-mass-formula
+
+For the two-twistor momentum bispinor of {prf:ref}`def-twistor-two-system`,
+
+$$
+\det P
+= \langle \lambda_1 \lambda_2 \rangle
+[\tilde{\lambda}_1 \tilde{\lambda}_2].
+$$
+
+Equivalently, the scalar mass of the associated timelike momentum is
+
+$$
+m^2
+:= p_\mu p^\mu
+= \langle \lambda_1 \lambda_2 \rangle
+[\tilde{\lambda}_1 \tilde{\lambda}_2].
+$$
+:::
+
+:::{prf:corollary} Reality and Positivity on the Lorentzian Slice
+:label: cor-twistor-mass-positivity
+
+If $P$ is Hermitian and future-directed timelike, then
+
+$$
+[\tilde{\lambda}_1 \tilde{\lambda}_2]
+= \overline{\langle \lambda_1 \lambda_2 \rangle}
+$$
+
+and therefore
+
+$$
+m^2 = \left| \langle \lambda_1 \lambda_2 \rangle \right|^2 \geq 0.
+$$
+:::
+
+:::{prf:proposition} Factorization-Gauge Invariance
+:label: prop-twistor-little-group
+
+Assume $P$ is future-directed and Hermitian, so that on the Lorentzian real slice one may write
+
+$$
+P = \Lambda \Lambda^\dagger,
+\qquad
+\Lambda = [\lambda_1\ \lambda_2].
+$$
+
+Let $U \in U(2)$ and define a new factorization by
+
+$$
+\Lambda' := \Lambda U.
+$$
+
+Then
+
+$$
+P = \Lambda' \Lambda'^\dagger,
+$$
+
+and the bracket transforms by
+
+$$
+\langle \lambda'_1 \lambda'_2 \rangle
+= \det(U)\,\langle \lambda_1 \lambda_2 \rangle.
+$$
+
+Consequently
+
+$$
+\left|\langle \lambda'_1 \lambda'_2 \rangle\right|^2
+=
+\left|\langle \lambda_1 \lambda_2 \rangle\right|^2.
+$$
+
+In particular the scalar mass invariant is unchanged by the choice of factorization.
+:::
+
+:::{prf:proposition} Infinity-Twistor Mass Identity
+:label: prop-twistor-infinity-mass
+
+For a two-twistor system,
+
+$$
+m^2
+=
+\bigl(I_{\alpha\beta} Z_1^\alpha Z_2^\beta\bigr)
+\bigl(\bar{I}_{\bar{\alpha}\bar{\beta}}
+\bar{Z}_1^{\bar{\alpha}}\bar{Z}_2^{\bar{\beta}}\bigr).
+$$
+:::
+
+:::{prf:remark}
+Proposition {prf:ref}`prop-twistor-infinity-mass` is the precise sense in which the infinity
+twistor makes mass visible. The twistor pair itself determines only conformal data; the infinity
+twistor chooses the scale that turns the conformal two-form into the physical scalar invariant
+$m^2$.
+:::
+
+:::{prf:definition} Source-Frame Companion Triplet
+:label: def-effective-twistor-triplet
+
+Fix a recorded source frame $t$ and a source walker $i$. Let
+
+$$
+j_t(i) := \operatorname{companions\_distance}_t(i),
+\qquad
+k_t(i) := \operatorname{companions\_clone}_t(i).
+$$
+
+The associated **source-frame companion triplet** is
+
+$$
+T_t(i) := (i, j_t(i), k_t(i)).
+$$
+
+The twistor companion channels always use both companion types. In particular they are triplet
+channels, not pair channels, and they do not depend on the mesonic `pair_selection` choice.
+:::
+
+:::{prf:definition} Effective Edge Four-Vectors and Bispinors
+:label: def-effective-twistor-edge-data
+
+Work in the physical $D=4$ specialization and retain three spatial coordinates
+$a \in \{1,2,3\}$. For an oriented companion edge $(i,j)$ at source frame $t$ define
+
+$$
+\Delta x_{ij}^a(t) := x_j^a(t) - x_i^a(t),
+\qquad
+\Delta v_{ij}^a(t) := v_j^a(t) - v_i^a(t).
+$$
+
+Let $\Delta t>0$ denote the algorithmic time step and let $\alpha > 0$ be a fixed velocity scale.
+Define the real four-vectors
+
+$$
+X_{ij}^\mu(t) := \bigl(\Delta t, \Delta x_{ij}^1(t), \Delta x_{ij}^2(t), \Delta x_{ij}^3(t)\bigr),
+$$
+
+$$
+V_{ij}^\mu(t) := \bigl(0, \Delta v_{ij}^1(t), \Delta v_{ij}^2(t), \Delta v_{ij}^3(t)\bigr),
+$$
+
+and the complex effective bispinor
+
+$$
+B_{ij,AA'}(t)
+:=
+X_{ij}^\mu(t)\sigma_{\mu\,AA'}
++ i \alpha\, V_{ij}^\mu(t)\sigma_{\mu\,AA'}.
+$$
+:::
+
+:::{prf:definition} Effective Edge Twistor
+:label: def-effective-edge-twistor
+
+Let $c_{ij}^{(0)}(t)$ and $c_{ij}^{(1)}(t)$ denote the two columns of the matrix $B_{ij}(t)$. Define
+
+$$
+n_{ij}^{(r)}(t) := \|c_{ij}^{(r)}(t)\|_2^2,
+\qquad r \in \{0,1\}.
+$$
+
+Choose the dominant column
+
+$$
+c_{ij}^{(*)}(t)
+:=
+\begin{cases}
+c_{ij}^{(0)}(t), & n_{ij}^{(0)}(t) \ge n_{ij}^{(1)}(t), \\
+c_{ij}^{(1)}(t), & n_{ij}^{(1)}(t) > n_{ij}^{(0)}(t).
+\end{cases}
+$$
+
+If $\|c_{ij}^{(*)}(t)\|_2 > \varepsilon$, define the normalized spinor
+
+$$
+\lambda_{ij,A}(t)
+:=
+\frac{c_{ij,A}^{(*)}(t)}{\|c_{ij}^{(*)}(t)\|_2},
+$$
+
+and the companion incidence spinor
+
+$$
+\mu_{ij}^{A'}(t) := X_{ij}^{AA'}(t)\lambda_{ij,A}(t).
+$$
+
+The resulting **effective edge twistor** is
+
+$$
+Z_{ij}^\alpha(t) := \bigl(\mu_{ij}^{A'}(t), \lambda_{ij,A}(t)\bigr).
+$$
+
+If the chosen column norm is at most $\varepsilon$, or if any index is out of range, or if any of
+the walkers in the edge is dead, the edge is declared invalid.
+:::
+
+:::{prf:definition} Local Twistor Companion Operators
+:label: def-effective-twistor-operators
+
+For a valid source-frame triplet $T_t(i) = (i,j_t(i),k_t(i))$, define
+
+$$
+\tau_i(t)
+:=
+I_{\alpha\beta}
+Z_{ij_t(i)}^\alpha(t)\,
+Z_{ik_t(i)}^\beta(t)
+=
+\langle \lambda_{ij_t(i)}(t), \lambda_{ik_t(i)}(t) \rangle.
+$$
+
+From $\tau_i(t)$ define three scalar local operators:
+
+$$
+\mathcal{O}_{\mathrm{S},i}(t) := \Re \tau_i(t),
+\qquad
+\mathcal{O}_{\mathrm{P},i}(t) := \Im \tau_i(t),
+\qquad
+\mathcal{O}_{\mathrm{G},i}(t) := |\tau_i(t)|^2.
+$$
+
+Next define the complex Pauli-vector bilinear
+
+$$
+W_i^a(t)
+:=
+\lambda_{ij_t(i)}(t)^\dagger \sigma^a \lambda_{ik_t(i)}(t),
+\qquad a \in \{1,2,3\}.
+$$
+
+Its real and imaginary parts define the implemented spin-one operators
+
+$$
+\mathcal{O}_{\mathrm{V},i}^a(t) := \Re W_i^a(t),
+\qquad
+\mathcal{O}_{\mathrm{A},i}^a(t) := \Im W_i^a(t).
+$$
+
+Finally define the five real spin-two-like components
+
+$$
+Q_{xy,i}(t) := \Re\!\bigl(W_i^x(t)W_i^y(t)\bigr),
+\qquad
+Q_{xz,i}(t) := \Re\!\bigl(W_i^x(t)W_i^z(t)\bigr),
+\qquad
+Q_{yz,i}(t) := \Re\!\bigl(W_i^y(t)W_i^z(t)\bigr),
+$$
+
+$$
+Q_{x^2-y^2,i}(t) := \frac{1}{\sqrt{2}}\Re\!\bigl(W_i^x(t)^2 - W_i^y(t)^2\bigr),
+$$
+
+$$
+Q_{2z^2-x^2-y^2,i}(t)
+:=
+\frac{1}{\sqrt{6}}
+\Re\!\bigl(2W_i^z(t)^2 - W_i^x(t)^2 - W_i^y(t)^2\bigr),
+$$
+
+and contract them to the scalar dashboard tensor observable
+
+$$
+\mathcal{O}_{\mathrm{T},i}(t)
+:=
+\frac{1}{5}
+\Bigl(
+Q_{xy,i}(t)+Q_{xz,i}(t)+Q_{yz,i}(t)+Q_{x^2-y^2,i}(t)+Q_{2z^2-x^2-y^2,i}(t)
+\Bigr).
+$$
+
+The labels S, P, G, V, A, and T stand respectively for scalar, pseudoscalar,
+glueball-like scalar, vector, axial-vector, and tensor-like companion operators.
+No baryon-valued twistor companion operator is implemented.
+:::
+
+:::{prf:proposition} Positivity of the Glueball-Like Operator
+:label: prop-effective-twistor-glueball-positive
+
+For every valid source-frame triplet,
+
+$$
+\mathcal{O}_{\mathrm{G},i}(t)
+=
+\mathcal{O}_{\mathrm{S},i}(t)^2
++
+\mathcal{O}_{\mathrm{P},i}(t)^2
+\ge 0.
+$$
+:::
+
+:::{prf:definition} Source-Frame Twistor Correlators
+:label: def-effective-twistor-correlators
+
+Fix one of the local operators
+$\mathcal{O}_{X,i}(t)$ with
+$X \in \{\mathrm{S}, \mathrm{P}, \mathrm{G}, \mathrm{T}\}$,
+or one of the vector-valued operators
+$\mathcal{O}_{Y,i}^a(t)$ with
+$Y \in \{\mathrm{V}, \mathrm{A}\}$. For each source time
+$t$ and source walker $i$, keep the source-frame triplet $T_t(i) = (i, j_t(i), k_t(i))$ fixed.
+For a lag $\ell \ge 0$, evaluate the sink operator at time $t+\ell$ using the same source indices:
+
+$$
+\mathcal{O}^{(\ell)}_{X,i}(t)
+:=
+\mathcal{O}_X\bigl(t+\ell; i, j_t(i), k_t(i)\bigr).
+$$
+
+Let $\mathbf{1}_{X,t,\ell}(i)$ be the indicator that both the source triplet and the corresponding
+sink evaluation are valid. Define
+
+$$
+N_X(\ell)
+:=
+\sum_{t=0}^{T-1-\ell}\sum_i \mathbf{1}_{X,t,\ell}(i).
+$$
+
+Whenever $N_X(\ell) > 0$, the raw correlator is
+
+$$
+C_X^{\mathrm{raw}}(\ell)
+:=
+\frac{1}{N_X(\ell)}
+\sum_{t=0}^{T-1-\ell}\sum_i
+\mathbf{1}_{X,t,\ell}(i)\,
+\mathcal{O}_{X,i}(t)\,
+\mathcal{O}^{(\ell)}_{X,i}(t).
+$$
+
+Let $\overline{\mathcal{O}}_X$ denote the mean of $\mathcal{O}_{X,i}(t)$ over valid source
+triplets. The connected correlator is
+
+$$
+C_X^{\mathrm{conn}}(\ell)
+:=
+\frac{1}{N_X(\ell)}
+\sum_{t=0}^{T-1-\ell}\sum_i
+\mathbf{1}_{X,t,\ell}(i)\,
+\bigl(\mathcal{O}_{X,i}(t)-\overline{\mathcal{O}}_X\bigr)
+\bigl(\mathcal{O}^{(\ell)}_{X,i}(t)-\overline{\mathcal{O}}_X\bigr).
+$$
+
+For the vector and axial-vector channels, replace the pointwise product by the Euclidean
+dot product in $\mathbb{R}^3$:
+
+$$
+C_Y^{\mathrm{raw}}(\ell)
+:=
+\frac{1}{N_Y(\ell)}
+\sum_{t=0}^{T-1-\ell}\sum_i
+\mathbf{1}_{Y,t,\ell}(i)\,
+\mathcal{O}_{Y,i}(t)\cdot\mathcal{O}^{(\ell)}_{Y,i}(t),
+$$
+
+$$
+C_Y^{\mathrm{conn}}(\ell)
+:=
+\frac{1}{N_Y(\ell)}
+\sum_{t=0}^{T-1-\ell}\sum_i
+\mathbf{1}_{Y,t,\ell}(i)\,
+\bigl(\mathcal{O}_{Y,i}(t)-\overline{\mathcal{O}}_Y\bigr)
+\cdot
+\bigl(\mathcal{O}^{(\ell)}_{Y,i}(t)-\overline{\mathcal{O}}_Y\bigr).
+$$
+:::
+
+:::{prf:proposition} The Local Twistor Operators Are Not Particle Masses
+:label: prop-effective-twistor-not-masses
+
+The pointwise quantities
+$\mathcal{O}_{\mathrm{S},i}(t)$,
+$\mathcal{O}_{\mathrm{P},i}(t)$,
+$\mathcal{O}_{\mathrm{G},i}(t)$,
+$\mathcal{O}_{\mathrm{V},i}^a(t)$,
+$\mathcal{O}_{\mathrm{A},i}^a(t)$, and
+$\mathcal{O}_{\mathrm{T},i}(t)$
+are local operator values on the companion graph. They are not particle masses.
+:::
+
+:::{prf:theorem} Spectral Meaning of the Twistor Companion Channels
+:label: thm-effective-twistor-spectral-meaning
+
+Assume the Euclidean transfer-matrix/spectral framework of {doc}`09_qft_calibration`. Let
+$\widehat{\mathcal{O}}_X(t)$ denote the frame-averaged twistor operator associated with one of the
+scalar-valued families
+$X \in \{\mathrm{S}, \mathrm{P}, \mathrm{G}, \mathrm{T}\}$,
+or let $\widehat{\mathcal{O}}_Y(t)$ denote the frame-averaged vector-valued operator associated with
+$Y \in \{\mathrm{V}, \mathrm{A}\}$. Then the connected two-point function has
+the spectral form
+
+$$
+C_X^{\mathrm{conn}}(\ell)
+=
+\sum_{n>0}
+\left|\langle n | \widehat{\mathcal{O}}_X | 0 \rangle\right|^2
+e^{-E_n \ell \Delta t}.
+$$
+
+for scalar-valued $X$, and analogously with the Euclidean dot product for $Y \in \{\mathrm{V},\mathrm{A}\}$.
+
+If at least one overlap is nonzero, then for large $\ell$
+
+$$
+C_X^{\mathrm{conn}}(\ell)
+\sim
+\left|\langle n_X | \widehat{\mathcal{O}}_X | 0 \rangle\right|^2
+e^{-E_{n_X} \ell \Delta t},
+$$
+
+where $E_{n_X}$ is the smallest energy with nonzero overlap. Therefore the plateau mass extracted
+from the twistor companion correlator is the mass of the lightest state that couples to that
+operator.
+:::
+
+:::{prf:proposition} Compatibility with On-Shell Channel Masses
+:label: prop-twistor-correlator-compatibility
+
+Let $m_\chi$ be the mass of a Fractal Set channel extracted from Euclidean correlators, possibly
+using one of the twistor companion operators above. Suppose the same channel admits an
+Osterwalder-Schrader reconstructed Lorentzian momentum $p_\chi^\mu$ satisfying
+
+$$
+p_{\chi,\mu} p_\chi^\mu = m_\chi^2.
+$$
+
+Let $P_{\chi,AA'} := p_\chi^\mu \sigma_{\mu\,AA'}$ be the associated Hermitian bispinor. Then
+
+$$
+\det P_\chi = m_\chi^2,
+$$
+
+and if
+
+$$
+P_{\chi,AA'}
+= \lambda_{1A}\tilde{\lambda}_{1A'} + \lambda_{2A}\tilde{\lambda}_{2A'}
+$$
+
+is any two-spinor factorization, then
+
+$$
+m_\chi^2
+= \langle \lambda_1 \lambda_2 \rangle
+[\tilde{\lambda}_1 \tilde{\lambda}_2].
+$$
+:::
+
+:::{prf:remark}
+This proposition is the correct division of labor.
+
+- The implemented twistor companion channels define new operator families and extract masses from
+  their Euclidean correlators.
+- The exact twistor mass formula computes a Lorentzian invariant only after a channel has been
+  reconstructed on shell as a momentum bispinor.
+
+They are compatible, but they are not the same procedure. The current code implements the first,
+not the second.
+:::
+
 ## 2_fractal_set/09_qft_calibration.md
+
+:::{prf:proposition} Current Chirality-Channel Realization
+:label: prop-qft-ew-chirality-realization
+
+**Rigor Class:** F (Implementation-Exact)
+
+Let
+
+$$
+t \in \{t_{\mathrm{start}},\dots,t_{\mathrm{end}}-1\},
+\qquad
+t_{\mathrm{start}}=\max(1,\lfloor n_{\mathrm{recorded}}\,f_{\mathrm{warm}}\rfloor),
+\qquad
+t_{\mathrm{end}}=\max(t_{\mathrm{start}}+1,\lfloor n_{\mathrm{recorded}}\,f_{\mathrm{end}}\rfloor).
+$$
+
+For each such frame, let $\chi_i(t)$, $L_t$, $R_t$, and $\Delta_t$ be the walker-role chirality
+objects of {prf:ref}`def-sm-walker-chirality`, computed from the recorded slices
+`will_clone[t-1]`, `companions_clone[t-1]`, `fitness[t-1]`, and `alive_mask[t-1]`. Then the
+implemented chirality channels in `src/fragile/physics/electroweak/electroweak_channels.py` are
+exactly
+
+$$
+\mathrm{chi\_mean}(t)=\frac{1}{N}\sum_{i=1}^{N}\chi_i(t),
+\qquad
+\mathrm{left\_fraction}(t)=\frac{1}{N}\sum_{i=1}^{N}\mathbf{1}_{\{i\in L_t\}},
+$$
+
+$$
+\mathrm{lr\_fraction}(t)=
+\frac{1}{\max(|\Delta_t|,1)}
+\sum_{i\in\Delta_t}\mathbf{1}_{\{c_c(i,t)\in R_t\}},
+$$
+
+$$
+\mathrm{lr\_coupling\_mag}(t)=
+\left|
+\frac{1}{\max(N_{\Delta\to R}(t),1)}
+\sum_{\substack{i\in\Delta_t\\c_c(i,t)\in R_t}}
+\exp\!\left(i\frac{F_{c_c(i,t)}(t)-F_i(t)}{h_{\mathrm{eff}}}\right)
+\right|,
+$$
+
+where
+
+$$
+N_{\Delta\to R}(t):=
+\sum_{i\in\Delta_t}\mathbf{1}_{\{c_c(i,t)\in R_t\}}.
+$$
+
+If `cloning_frames_only=True`, these four series are further restricted to the subfamily of frames
+with at least one cloning event.
+
+*Proof.*
+
+In `_compute_chirality_series`, the recorded tensors are sliced on
+`[t_start-1:t_end-1]` and passed to `classify_walkers_vectorized`. By construction of that helper,
+`classification.chi` is the tensor $\chi_i(t)$ with dead walkers assigned the value $0$, and
+`classification.left_handed` is the indicator of $L_t$. The assignments
+
+$$
+\texttt{series["chi_mean"]} = \texttt{classification.chi.mean(dim=1)},
+\qquad
+\texttt{series["left_fraction"]} =
+\texttt{classification.left_handed.float().mean(dim=1)}
+$$
+
+therefore produce the two averages above over the full recorded walker count $N$.
+
+Next, the code forms `comp_idx = companions_clone.clamp(0,N-1)`,
+`comp_is_right = gather(classification.right_handed, comp_idx)`, and
+`cross_mask = classification.delta & comp_is_right`. Hence `cross_mask[t,i]` is true exactly when
+$i\in\Delta_t$ and $c_c(i,t)\in R_t$. The lines
+
+$$
+\texttt{delta_count = delta_mask.float().sum(dim=1).clamp(min=1)},
+\qquad
+\texttt{cross_count = cross_mask.float().sum(dim=1)}
+$$
+
+give $\max(|\Delta_t|,1)$ and $N_{\Delta\to R}(t)$ respectively, so
+`series["lr_fraction"] = cross_count / delta_count` is exactly the stated formula with the
+zero-delta convention built in.
+
+For the phase-transfer channel, the code computes
+`phase = (comp_fitness - fitness) / h_eff`,
+`phase_exp = exp(1j * phase)`, and
+
+$$
+\texttt{lr_complex}
+=
+\frac{
+\sum_i e^{i(F_{c_c(i,t)}-F_i(t))/h_{\mathrm{eff}}}\,\mathbf{1}_{\{i\in\Delta_t,\,
+c_c(i,t)\in R_t\}}
+}{
+\max(N_{\Delta\to R}(t),1)
+}.
+$$
+
+Taking `abs()` yields the displayed $\mathrm{lr\_coupling\_mag}(t)$. Finally, if
+`cloning_frames_only=True`, the code restricts all four series to
+`frame_has_cloning = will_clone.any(dim=1)`, which is exactly the stated frame filter. $\square$
+:::
+
+:::{prf:proposition} Current Dirac-Spinor Realization
+:label: prop-qft-ew-spinor-realization
+
+**Rigor Class:** F (Implementation-Exact)
+
+Assume $d=3$ so that the color states admit the implemented map
+$c_i(t)\mapsto \psi_i(t)\in\mathbb{C}^4$. For each retained frame $t$ and walker index $i$, let
+
+$$
+j=c_d(i,t)
+$$
+
+be the recorded distance companion, let $\chi_i(t)\in\{+1,-1,0\}$ be the walker-role chirality
+computed from the clone companion data, and define the validity mask
+
+$$
+V_t(i):=
+\mathbf{1}_{\{\mathrm{color\_valid}_i(t)\}}
+\cdot
+\mathbf{1}_{\{\mathrm{color\_valid}_j(t)\}}
+\cdot
+\mathbf{1}_{\{\mathrm{alive}_i(t)\}}
+\cdot
+\mathbf{1}_{\{\mathrm{alive}_j(t)\}}
+\cdot
+\mathbf{1}_{\{j\neq i\}}.
+$$
+
+Let the pair classes be
+
+$$
+LL_t=\{i:V_t(i)=1,\ \chi_i(t)>0,\ \chi_j(t)>0\},
+\qquad
+RR_t=\{i:V_t(i)=1,\ \chi_i(t)<0,\ \chi_j(t)<0\},
+$$
+
+$$
+LR_t=\{i:V_t(i)=1,\ \chi_i(t)>0,\ \chi_j(t)<0\},
+\qquad
+RL_t=\{i:V_t(i)=1,\ \chi_i(t)<0,\ \chi_j(t)>0\}.
+$$
+
+With unit edge weights, define for any mask $M_t\subseteq\{1,\dots,N\}$ and any pair observable
+$B_t(i)$
+
+$$
+\operatorname{Avg}_{M_t}[B]
+:=
+\frac{
+\sum_{i=1}^{N}\mathbf{1}_{\{i\in M_t\}}\,B_t(i)
+}{
+\max(|M_t|,10^{-12})
+}.
+$$
+
+Further define the real bilinears
+
+$$
+B_{\Gamma,P}(i,t):=
+\operatorname{Re}\!\bigl(\psi_i(t)^\dagger\gamma^0\Gamma P\,\psi_j(t)\bigr),
+$$
+
+$$
+B_{\Gamma,P}^{U(1)}(i,t):=
+\operatorname{Re}\!\bigl(U_{ij}^{(1)}(t)\,\psi_i(t)^\dagger\gamma^0\Gamma P\,\psi_j(t)\bigr),
+\qquad
+U_{ij}^{(1)}(t)=
+\exp\!\left(i\frac{F_j(t)-F_i(t)}{h_{\mathrm{eff}}}\right),
+$$
+
+$$
+B_{\Gamma,P}^{SU(2)}(i,t):=
+\operatorname{Re}\!\bigl(U_{ij}^{(2)}(t)\,\psi_i(t)^\dagger\gamma^0\Gamma P\,\psi_j(t)\bigr),
+\qquad
+U_{ij}^{(2)}(t)=
+\exp\!\left(
+i\,
+\frac{|F_j(t)-F_i(t)|}{|F_j(t)-F_i(t)|+\epsilon_{\mathrm{clone}}}
+\cdot
+\frac{\pi}{2h_{\mathrm{eff}}}
+\right).
+$$
+
+Then the current Dirac-spinor pipeline computes exactly the operator series
+
+$$
+j_{\mathrm{vector},L}(t)=
+\operatorname{Avg}_{V_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,P_L}\right],
+\qquad
+j_{\mathrm{vector},R}(t)=
+\operatorname{Avg}_{V_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,P_R}\right],
+$$
+
+$$
+j_{\mathrm{vector},V}(t)=
+\operatorname{Avg}_{V_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,I}\right],
+\qquad
+o_{\mathrm{scalar},L}(t)=\operatorname{Avg}_{V_t}[B_{I,P_L}],
+\qquad
+o_{\mathrm{scalar},R}(t)=\operatorname{Avg}_{V_t}[B_{I,P_R}],
+$$
+
+$$
+j_{\mathrm{vector},\mathrm{walkerL}}(t)=
+\operatorname{Avg}_{LL_t\cup LR_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,I}\right],
+\qquad
+j_{\mathrm{vector},\mathrm{walkerR}}(t)=
+\operatorname{Avg}_{RR_t\cup RL_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,I}\right],
+$$
+
+$$
+j_{\mathrm{vector},L,\mathrm{walkerL}}(t)=
+\operatorname{Avg}_{LL_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,P_L}\right],
+\qquad
+j_{\mathrm{vector},R,\mathrm{walkerR}}(t)=
+\operatorname{Avg}_{RR_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,P_R}\right],
+$$
+
+$$
+o_{\mathrm{yukawa},LR}(t)=\operatorname{Avg}_{LR_t}[B_{I,P_L}],
+\qquad
+o_{\mathrm{yukawa},RL}(t)=\operatorname{Avg}_{RL_t}[B_{I,P_R}],
+$$
+
+$$
+j_{\mathrm{vector},U(1)}(t)=
+\operatorname{Avg}_{V_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,I}^{U(1)}\right],
+\qquad
+j_{\mathrm{vector},L,U(1)}(t)=
+\operatorname{Avg}_{V_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,P_L}^{U(1)}\right],
+$$
+
+$$
+j_{\mathrm{vector},L,SU(2)}(t)=
+\operatorname{Avg}_{V_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,P_L}^{SU(2)}\right],
+\qquad
+j_{\mathrm{vector},R,SU(2)}(t)=
+\operatorname{Avg}_{V_t}\!\left[\frac{1}{3}\sum_{k=1}^{3}B_{\gamma^k,P_R}^{SU(2)}\right],
+$$
+
+and the parity diagnostics
+
+$$
+\mathrm{pv}_{\mathrm{dirac}}(t)=
+\frac{j_{\mathrm{vector},L}(t)^2-j_{\mathrm{vector},R}(t)^2}
+{j_{\mathrm{vector},L}(t)^2+j_{\mathrm{vector},R}(t)^2+\varepsilon_{\mathrm{pv}}},
+$$
+
+$$
+\mathrm{pv}_{\mathrm{walker}}(t)=
+\frac{j_{\mathrm{vector},\mathrm{walkerL}}(t)^2-j_{\mathrm{vector},\mathrm{walkerR}}(t)^2}
+{j_{\mathrm{vector},\mathrm{walkerL}}(t)^2+j_{\mathrm{vector},\mathrm{walkerR}}(t)^2+\varepsilon_{\mathrm{pv}}},
+\qquad
+\varepsilon_{\mathrm{pv}}=10^{-30}.
+$$
+
+The same routine also records the pair-count diagnostics
+
+$$
+n_{\mathrm{valid}}(t)=|V_t|,
+\qquad
+n_{LL}(t)=|LL_t|,
+\qquad
+n_{RR}(t)=|RR_t|,
+\qquad
+n_{LR}(t)=|LR_t|.
+$$
+
+*Proof.*
+
+The helper `_compute_dirac_spinor_channels` first resolves the retained frame interval, computes
+color states on that interval, reads the clone companions for walker classification, and reads the
+distance companions for the spinor pairing. It then sets
+`sample_indices = [0,\dots,N-1]` and `neighbor_indices = companions_distance.unsqueeze(-1)`, so
+the pair for walker $i$ is exactly $(i,c_d(i,t))$.
+
+Inside `compute_electroweak_spinor_operators`, the validity mask is
+`valid = v_i & v_j & (first_nb != sample_indices)`, with `v_i` and `v_j` requiring both color
+validity and `alive`. This is precisely $V_t(i)$. The chirality masks `both_L`, `both_R`,
+`cross_LR`, and `cross_RL` are exactly the four sets $LL_t$, $RR_t$, $LR_t$, and $RL_t$ above.
+
+The helper `_compute_chiral_bilinear` builds the matrix
+$M=\gamma^0\Gamma$ and, when present, right-multiplies by the chiral projector $P_L$ or $P_R$.
+It evaluates $\psi_i^\dagger M\psi_j$, multiplies by the requested gauge link if present, and
+returns `bilinear.real.float()`. Hence every recorded spinor operator is the real part of the
+corresponding complex bilinear.
+
+The helper `_vector_current` sums the three spatial gamma-matrix bilinears and divides by $3$;
+`_scalar_op` uses $\Gamma=I$. Both helpers average over the requested mask through `_avg`, whose
+denominator is the masked weight sum clamped below by $10^{-12}$. In the active dashboard
+`sample_edge_weights` is not supplied, so all weights are $1$ and `_avg` becomes the stated masked
+arithmetic mean. The named assignments in the function body are exactly the displayed formulas for
+`j_vector_L`, `j_vector_R`, `j_vector_V`, `o_scalar_L`, `o_scalar_R`,
+`j_vector_walkerL`, `j_vector_walkerR`, `j_vector_L_walkerL`,
+`j_vector_R_walkerR`, `o_yukawa_LR`, `o_yukawa_RL`,
+`j_vector_u1`, `j_vector_L_u1`, `j_vector_L_su2`, and `j_vector_R_su2`.
+The `_count` helper simultaneously returns the displayed cardinalities
+`n_valid_pairs`, `n_valid_pairs_LL`, `n_valid_pairs_RR`, and `n_valid_pairs_LR`.
+
+Finally, the function squares the already averaged current series and inserts them into the two
+rational expressions defining `parity_violation_dirac` and `parity_violation_walker`, with the
+regularizer `eps_pv = 1e-30`. This proves the claim. $\square$
+:::
+
+:::{prf:theorem} Active Electroweak Mass-Fit Domain
+:label: thm-qft-ew-active-pipeline
+
+**Rigor Class:** F (Implementation-Exact)
+
+In the current dashboard pipeline, the electroweak mass fitter acts only on correlator keys
+present in `state["electroweak_correlator_output"].correlators`. Consequently, the fitted
+electroweak masses are extracted only from the user-selected legacy electroweak channels together
+with the user-selected chirality channels and, when enabled, the user-selected Dirac-spinor
+channels. No additional clustering observable or latent-dimension proxy enters the mass fit unless
+it has first been materialized as a correlator key in that pipeline result.
+
+*Proof.*
+
+The electroweak correlator tab first collects the user-selected channel names from the U(1), SU(2),
+mixed, symmetry-breaking, parity-velocity, and chirality selectors. It passes that list to
+`compute_electroweak_channels(history, channels=selected_channels, config=cfg)`, converts the
+output to a `PipelineResult`, and stores it as `state["electroweak_correlator_output"]`.
+
+If `enable_dirac_spinors=True`, the helper `_compute_dirac_spinor_channels` iterates only over the
+user-selected entries of the Dirac-spinor selector. For each selected key `ch_name` that matches a
+field of `ElectroweakSpinorOutput`, it inserts exactly two objects into the same `PipelineResult`:
+the operator time series `result.operators[ch_name]` and its FFT correlator
+`result.correlators[ch_name]`. No unselected spinor key is inserted.
+
+The electroweak mass tab then reads
+`pipeline_result = state["electroweak_correlator_output"]` and forms channel groups solely from
+`list(pipeline_result.correlators.keys())`. The widget selectors in that tab can only remove keys
+from those groups; they cannot introduce new ones. After this filtering, the code calls
+`extract_masses(pipeline_result, config)`. Therefore the fit domain is exactly the set of retained
+correlator keys already present in `pipeline_result.correlators`.
+
+In particular, the mass fitter has no direct access to any independent Higgs-clustering observable,
+to any latent-dimension label, or to any undocumented diagnostic outside the stored correlator map.
+Only realized correlator channels are fitted. $\square$
+:::
 
 :::{prf:theorem} Ratio Invariance Under Time Rescaling
 :label: thm-qft-ratio-rescale
