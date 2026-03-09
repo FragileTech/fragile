@@ -34,13 +34,14 @@ This chapter establishes the **bidirectional bridge** between the Hypostructure 
 
 **What this chapter does:**
 - repackages the Part I bridge theorems in language aimed at classical complexity theory
-- records exactly which export claims are proved outright and which depend on the certificate-completeness requirement
+- records exactly which export claims are proved outright and which remain downstream of the stronger extractor-level
+  implementation goals
 - keeps the bridge logically downstream of the internal definitions so the manuscript does not argue in circles
 
 **The Payoff, under the Part I bridge package of**
-{prf:ref}`assump-bit-cost-evaluator-discipline`,
+{prf:ref}`thm-bit-cost-evaluator-discipline`,
 {prf:ref}`thm-evaluator-adequacy`, and
-{prf:ref}`assump-costcert-completeness`:
+{prf:ref}`thm-costcert-completeness`:
 
 $$
 P_{\text{FM}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{FM}} = NP_{\text{DTM}}
@@ -136,7 +137,7 @@ where $a\in \mathsf{Prog}_{\text{FM}}$ and $p:\mathbb N\to\mathbb N$ is a polyno
    $$
    halts within at most $p(n)$ internal steps.
 2. **Bit-cost step discipline.** Each counted runtime step is a primitive operation of the concrete evaluator under the
-   bit-cost discipline isolated in {prf:ref}`assump-bit-cost-evaluator-discipline`.
+   bit-cost discipline proved in {prf:ref}`thm-bit-cost-evaluator-discipline`.
 3. **Witness extractability.** The bound and domain-validity side conditions are derivable uniformly from the code of
    $a$ and the chosen admissible presentation.
 
@@ -299,10 +300,10 @@ P_{\text{FM}}=P_{\text{DTM}}
 \qquad\text{and}\qquad
 NP_{\text{FM}}=NP_{\text{DTM}},
 $$
-it should cite the packaged Part I bridge corollary
-{prf:ref}`cor-bridge-equivalence-rigorous`, which in this manuscript is stated relative to the evaluator discipline and
-the certificate-completeness requirement {prf:ref}`assump-costcert-completeness`. Adequacy alone is the central runtime
-ingredient, but it is not the only formally tracked ingredient in the theorem ladder.
+it should cite the packaged Part I bridge corollary {prf:ref}`cor-bridge-equivalence-rigorous`, which in this
+manuscript now depends on the proved evaluator discipline and the proved semantic completeness theorem
+{prf:ref}`thm-costcert-completeness`. Adequacy remains the central runtime ingredient, but it is not the only formally
+tracked ingredient in the theorem ladder.
 :::
 
 :::{div} feynman-prose
@@ -346,7 +347,7 @@ The key point: *no primitive operation involves unbounded search or exponential 
 and explicitly constructive.
 
 In the theorem ladder of the algorithmic chapter, these obligations are formalized by
-{prf:ref}`assump-bit-cost-evaluator-discipline`, {prf:ref}`thm-finite-encodability`, and
+{prf:ref}`thm-bit-cost-evaluator-discipline`, {prf:ref}`thm-finite-encodability`, and
 {prf:ref}`thm-evaluator-adequacy`.
 :::
 
@@ -406,8 +407,6 @@ Immediate from {prf:ref}`thm-fragile-to-dtm-extraction` applied to the verifier 
 :::{prf:corollary} NP Class Equivalence
 :label: cor-np-class-equivalence
 
-Assume the Part I bridge package summarized in {prf:ref}`cor-bridge-equivalence-rigorous`.
-
 $$
 NP_{\text{FM}} = NP_{\text{DTM}}
 
@@ -436,11 +435,6 @@ The internal separation exports to the classical one. That is what these bridges
 :::{prf:corollary} Class Equivalence (Full Statement)
 :label: cor-class-equivalence-full
 
-Assume the Part I bridge package:
-- {prf:ref}`assump-bit-cost-evaluator-discipline`
-- {prf:ref}`thm-evaluator-adequacy`
-- {prf:ref}`assump-costcert-completeness`
-
 $$
 P_{\text{FM}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{FM}} = NP_{\text{DTM}}
 
@@ -455,11 +449,7 @@ $$
 **Bridge Transfer Theorem:**
 
 Assume:
-1. The Part I bridge package holds:
-   - {prf:ref}`assump-bit-cost-evaluator-discipline`
-   - {prf:ref}`thm-evaluator-adequacy`
-   - {prf:ref}`assump-costcert-completeness`
-2. The internal separation $P_{\text{FM}} \neq NP_{\text{FM}}$ is obtained in the hypostructure framework via the
+1. The internal separation $P_{\text{FM}} \neq NP_{\text{FM}}$ is obtained in the hypostructure framework via the
    direct Part VI theorem chain, with the audited internal package available as a stronger refinement, namely via:
    - the Part IV classification/exhaustiveness ladder, summarized compatibly by {prf:ref}`mt-alg-complete`
    - the Part VI canonical 3-SAT instantiation, in particular
@@ -477,11 +467,18 @@ Assume:
      {prf:ref}`def-barrier-datum`,
      {prf:ref}`thm-barrier-package-implies-e13`,
      and {prf:ref}`cor-barrier-contrapositive-hardness`
-   - the Part VIII completion layer for the primitive audit appendix and canonical $3$-SAT backend dossiers, when one
-     wants the stronger audit implementation of the same exclusion route, in particular
+   - the Part X thin-contract/factory layer, when one wants the reusable soft-interface compilation route, in
+     particular
+     {prf:ref}`def-algorithmic-thin-interface`,
+     {prf:ref}`mt-fact-algorithmic-thin-interface`,
+     and {prf:ref}`thm-sufficiency-canonical-3sat-thin-contract-package`
+   - the Parts VII--VIII completion layer for the primitive audit appendix and canonical $3$-SAT thin-contract package,
+     and optionally the stronger backend dossiers, when one wants the stronger audit implementation of the same
+     exclusion route, in particular
      {prf:ref}`thm-sufficiency-primitive-audit-appendix`,
-     {prf:ref}`def-canonical-3sat-backend-dossier-package`,
-     and {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package`
+     {prf:ref}`def-canonical-3sat-thin-contract-package`,
+     {prf:ref}`thm-sufficiency-canonical-3sat-thin-contract-package`,
+     and, if used, {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package`
 
 **Then:**
 
@@ -515,14 +512,15 @@ classical Turing-machine classes.
 
 The hypotheses break down into two types:
 
-1. **Bridge package:** evaluator discipline, evaluator adequacy, and the certificate-completeness requirement isolated in
-   the theorem ladder.
+1. **Bridge package:** evaluator discipline, evaluator adequacy, and semantic CostCert completeness isolated in the
+   theorem ladder.
 
 2. **Internal theorem content:** The admissibility and $NP_{\text{FM}}$-completeness of canonical $3$-SAT are already
    stated as theorems, and the direct exclusion route runs through the canonical E13 antecedent theorem
    {prf:ref}`ex-3sat-all-blocked` together with {prf:ref}`thm-e13-contrapositive-hardness`. Part IX adds a reusable
-   barrier-metatheorem route to the same style of hardness conclusion, and the Part VIII backend dossiers provide a
-   stronger audited semantic implementation of that route. That proof content is handled in Part XIX.
+   barrier-metatheorem route to the same style of hardness conclusion, Part X adds a thin-contract/factory route, and
+   Part VIII packages the stronger audited semantic implementation of those refinements. That proof content is handled
+   in Part XIX.
 
 By the bridge package, the manuscript simply transports the internal statement
 $P_{\text{FM}} \neq NP_{\text{FM}}$ to the DTM setting. The audit package strengthens the proof trail but is not a
@@ -553,7 +551,7 @@ bridge language.
 :::{prf:lemma} Adequacy of Fragile Runtime
 :label: lem-adequacy-fragile-runtime
 
-Assume the bit-cost evaluator discipline of {prf:ref}`assump-bit-cost-evaluator-discipline`. Then
+Under the proved evaluator discipline of {prf:ref}`thm-bit-cost-evaluator-discipline`,
 {prf:ref}`thm-finite-encodability` and {prf:ref}`thm-evaluator-adequacy` yield a universal DTM $U$ and a polynomial
 $r(m,n,t)$ such that for any Fragile program code $a$ with $|\ulcorner a\urcorner| = m$ and any encoded input $u$ with
 $|u| = n$:
@@ -587,9 +585,8 @@ Lemma {prf:ref}`lem-adequacy-fragile-runtime` supplies the evaluator-adequacy in
 - Theorem IV (NP-Extraction)
 - the reverse inclusions $P_{\text{FM}}\subseteq P_{\text{DTM}}$ and $NP_{\text{FM}}\subseteq NP_{\text{DTM}}$
 
-For the full class equalities and the export corollary, the manuscript additionally invokes the explicit
-certificate-completeness requirement {prf:ref}`assump-costcert-completeness` through
-{prf:ref}`cor-bridge-equivalence-rigorous`.
+For the full class equalities and the export corollary, the manuscript additionally invokes the proved semantic
+completeness theorem {prf:ref}`thm-costcert-completeness` through {prf:ref}`cor-bridge-equivalence-rigorous`.
 
 What this closes on the internal side is unchanged. Part XIX isolates the theorem chain:
 1. {prf:ref}`thm-canonical-3sat-admissible` places canonical $3$-SAT inside the admissible complexity framework
@@ -601,8 +598,8 @@ What this closes on the internal side is unchanged. Part XIX isolates the theore
 3. {prf:ref}`thm-internal-cook-levin-reduction` and {prf:ref}`thm-sat-membership-hardness-transfer` yield
    $P_{\text{FM}} \neq NP_{\text{FM}}$
 
-The Part IX barrier layer and the Part VIII dossier package are stronger reusable/audited routes to the same Step 2
-conclusion.
+The Part IX barrier layer, the Part X thin-contract/factory layer, and the optional Part VIII dossier package are
+stronger reusable/audited routes to the same Step 2 conclusion.
 
 With evaluator adequacy and the rest of the Part I bridge package in place, that internal theorem exports.
 :::
@@ -641,10 +638,11 @@ Fragile Framework                         Classical Complexity Theory
 2. Canonical 3-SAT satisfies              [Part XIX: direct E13 antecedent
    the direct E13 antecedent              theorem on the canonical problem
    package, explicitly packaged           object; Appendix B packages the
-   in the direct certificate              direct route; optionally
-   appendix (or, more strongly,           strengthened by backend dossiers
-   the reconstructed package via          and reconstructed E13 assembly]
-   backend dossiers)
+   in the direct certificate              direct route; Part X adds the
+   appendix (or, more strongly,           thin-contract/factory route;
+   via thin contracts and                 optionally strengthened by
+   reconstructed E13 assembly)            backend dossiers and reconstructed
+                                          E13 assembly]
 
 3. 3-SAT ∉ P_FM                           [Mixed-modal obstruction /
                                           reconstructed E13 hardness]
@@ -663,9 +661,9 @@ Fragile Framework                         Classical Complexity Theory
 
 | Hypothesis | Type | Status | Where Proven |
 |------------|------|--------|--------------|
-| Bit-cost evaluator discipline | Technical assumption | Assumed | {prf:ref}`assump-bit-cost-evaluator-discipline` |
+| Bit-cost evaluator discipline | Technical theorem | ✓ Proven | {prf:ref}`thm-bit-cost-evaluator-discipline` |
 | Finite encodability + evaluator adequacy | Technical theorem | ✓ Proven | {prf:ref}`thm-finite-encodability`, {prf:ref}`thm-evaluator-adequacy` |
-| CostCert completeness | Certificate-calculus assumption | Required for packaged bridge equivalence | {prf:ref}`assump-costcert-completeness` |
+| CostCert completeness | Semantic bridge theorem | ✓ Proven | {prf:ref}`thm-costcert-completeness` |
 | **Canonical 3-SAT admissibility** | Internal theorem | ✓ Proven | {prf:ref}`thm-canonical-3sat-admissible` |
 | **Direct separation certificate** | Internal direct-route package | ✓ Packaged | {prf:ref}`def-direct-separation-certificate`, {prf:ref}`thm-sufficiency-direct-separation-certificate` |
 | **Direct frontend E13 certificate appendix** | Internal direct-route audit artifact | ✓ Proven | {prf:ref}`thm-appendix-b-frontend-e13-certificate-table` |
@@ -736,5 +734,5 @@ classical model.
 
 **Document Status:** This chapter now tracks the same bridge package as the strengthened algorithmic chapter. Evaluator
 adequacy is proved in {prf:ref}`lem-adequacy-fragile-runtime`, full class equivalence is cited through
-{prf:ref}`cor-bridge-equivalence-rigorous`, and the remaining certificate-completeness requirement is left explicit at
-{prf:ref}`assump-costcert-completeness`. The internal separation remains established in Part XIX.
+{prf:ref}`cor-bridge-equivalence-rigorous`, and semantic CostCert completeness is now provided by
+{prf:ref}`thm-costcert-completeness`. The internal separation remains established in Part XIX.

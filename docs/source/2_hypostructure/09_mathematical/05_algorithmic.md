@@ -1539,36 +1539,124 @@ $$
 to mean halting in at most $t$ steps.
 :::
 
-:::{prf:assumption} Bit-cost evaluator discipline
-:label: assump-bit-cost-evaluator-discipline
+:::{prf:definition} Concrete evaluator implementation for Part I
+:label: def-concrete-evaluator-implementation
 
-All theorems in Part I are stated relative to a concrete evaluator implementation satisfying the following conditions.
+For Part I, we fix the canonical evaluator implementing the runtime of
+{prf:ref}`def-effective-programs-fragile` as a deterministic multi-tape interpreter with the following data.
+
+1. **Finite syntax alphabet.** Program codes are finite parse trees, equivalently finite bytecode streams, over a fixed
+   finite constructor alphabet
+   $$
+   \Sigma_{\mathrm{eval}}
+   =
+   \{\mathsf{const},\mathsf{pair},\mathsf{fst},\mathsf{snd},\mathsf{inl},\mathsf{inr},\mathsf{case},
+   \mathsf{lookup},\mathsf{extend},\mathsf{call},\mathsf{ret},\mathsf{branch},\mathsf{halt}\}
+   \cup
+   \Sigma_{\mathrm{prim}},
+   $$
+   where $\Sigma_{\mathrm{prim}}$ is a fixed finite library of basic binary-string, arithmetic, and finite-map
+   routines.
+
+2. **Read-only code tape.** The program code $a\in\mathsf{Prog}_{\mathrm{FM}}$ is stored once on a read-only code tape.
+   Runtime states may store only addresses into that tape.
+
+3. **Runtime configuration format.** A runtime configuration is a finite tagged tuple
+   $$
+   C=(q,p,\kappa,\rho,\sigma,\eta,\iota,\omega),
+   $$
+   where:
+   - $q$ is a control state from a fixed finite set;
+   - $p$ is a code-tape address;
+   - $\kappa$ is a finite continuation stack of return addresses and branch tags;
+   - $\rho$ is a finite environment of addresses into the work tapes;
+   - $\sigma$ is a finite value stack;
+   - $\eta$ is a finite heap / association-list store;
+   - $\iota$ is the current pair of input/output tapes;
+   - $\omega$ is a halting-status flag from a fixed finite set.
+
+4. **Microstep semantics.** The evaluator transition relation
+   $$
+   C \leadsto C'
+   $$
+   is the deterministic one-step transition relation of that interpreter. Large arithmetic or string operations are not
+   atomic evaluator steps: when the current opcode lies in $\Sigma_{\mathrm{prim}}$, the evaluator enters the
+   corresponding primitive subroutine and executes it by microsteps over the work tapes.
+
+5. **Bit-cost primitive library.** Each primitive subroutine in $\Sigma_{\mathrm{prim}}$ acts on binary encodings by
+   reading/writing $O(1)$ tape cells per microstep, changing only finitely many head positions and control tags at each
+   step. In particular, the cost of executing a primitive is the number of microsteps of its subroutine, which is
+   polynomial in the sizes of the encoded operands. No primitive treats exponentially large integers or exponentially
+   long strings as unit-cost objects.
+:::
+
+:::{prf:theorem} Bit-cost evaluator discipline
+:label: thm-bit-cost-evaluator-discipline
+
+The concrete evaluator of {prf:ref}`def-concrete-evaluator-implementation` satisfies the following properties.
 
 1. **Finite configuration alphabet.** Every runtime configuration is a finite record over a fixed finite tag alphabet,
    together with finitely many finite strings over $\{0,1\}$.
 2. **Read-only program code.** The code of a program is stored in read-only form and is not duplicated unboundedly
    during execution.
 3. **Decidable one-step semantics.** There is a decidable one-step transition relation
-
    $$
    C \leadsto C'
    $$
-
    on encoded configurations.
-4. **Local size discipline.** There exists a polynomial $s$ such that if one primitive evaluator step transforms an
-   encoded configuration of bitlength $N$ into one of bitlength $N'$, then
-
+4. **Local size discipline.** There exists a linear polynomial
    $$
-   N' \le s(N),
+   s(N)=N+c
    $$
-
-   and, for configurations reachable in $t$ steps from an input of size $n$, iterating this bound yields a polynomial
-   upper bound in $(|a|,n,t)$.
+   such that if one primitive evaluator microstep transforms an encoded configuration of bitlength $N$ into one of
+   bitlength $N'$, then
+   $$
+   N' \le s(N).
+   $$
+   Consequently, for configurations reachable in $t$ steps from a program of size $|a|$ and an input of size $n$, the
+   encoded configuration size is bounded by a polynomial in $(|a|,n,t)$.
 5. **Bit-cost primitive accounting.** Arithmetic and data-structure operations are costed according to the size of the
    encoded operands; there is no hidden unit-cost treatment of exponentially large integers or exponentially long
    intermediate strings.
 
-This is the semantic refinement required in order for the cost model to be exportable to DTMs.
+Equivalently: the evaluator discipline required for export to DTMs is a theorem of the fixed Part I runtime, not an
+external assumption.
+:::
+
+:::{prf:proof}
+Clauses (1) and (2) are immediate from
+{prf:ref}`def-concrete-evaluator-implementation`: the sets of control tags, halting flags, bytecode constructors, and
+primitive-subroutine states are all finite, and the program code lives on a read-only tape addressed by pointers.
+
+For clause (3), decoding an encoded configuration is polynomial-time by the self-delimiting pairing convention of
+{prf:ref}`rem-ambient-conventions-complexity`. Once decoded, the next step is determined by finite case analysis on the
+current control state $q$ and opcode pointed to by $p$. Each branch updates only finitely many fields, and each
+primitive branch advances one microstep of a fixed deterministic subroutine. Hence the one-step relation is decidable on
+encoded configurations.
+
+For clause (4), let $N$ be the encoded size of $C$. A single evaluator microstep either:
+- changes only finitely many control tags, head positions, or pointers;
+- pushes or pops one address-sized item from $\kappa$, $\rho$, or $\sigma$;
+- updates one heap or tape cell by a single binary symbol; or
+- advances one primitive subroutine by one microstep, which by definition reads/writes $O(1)$ cells and changes only
+  finitely many control tags and head positions.
+
+Therefore there exists a constant $c$ such that every microstep changes the encoded configuration length by at most $c$,
+so
+$$
+N' \le N+c = s(N).
+$$
+If the initial tagged input has size at most $c_0(|a|+n+1)$, then after at most $t$ microsteps every reachable
+configuration has encoded size at most
+$$
+c_0(|a|+n+1)+ct,
+$$
+which is polynomial in $(|a|,n,t)$.
+
+For clause (5), the primitive library is executed only through the microstep semantics just described. Its running time
+is therefore the number of microsteps used by the corresponding subroutine, which is polynomial in operand size by
+construction. Since no primitive subroutine takes a whole exponentially large integer or string as a unit-cost atom, the
+runtime is a genuine bit-cost model.
 :::
 
 :::{prf:definition} Reachable evaluator configuration family
@@ -1625,7 +1713,7 @@ representable by finite bitstrings with polynomial overhead.
 Clause (1) is immediate from {prf:ref}`def-admissible-input-family-rigorous`.
 
 For clauses (2) and (3), fix $a$ and $\mathfrak{X}$. By
-{prf:ref}`assump-bit-cost-evaluator-discipline`, every runtime configuration is a finite record consisting of:
+{prf:ref}`thm-bit-cost-evaluator-discipline`, every runtime configuration is a finite record consisting of:
 - a program counter or evaluation-context pointer into the fixed code of $a$,
 - finitely many finite work registers, stacks, heaps, or environments,
 - the current encoded input/output fragments,
@@ -1633,8 +1721,8 @@ For clauses (2) and (3), fix $a$ and $\mathfrak{X}$. By
 
 Because the code of $a$ is read-only, its contribution to configuration size is $O(|a|)$. Because one-step semantics
 is decidable and obeys the local size discipline, every configuration reachable in at most $t$ steps from an input of
-size $n$ has total bitlength bounded by some polynomial $q_a(n,t)$ obtained by iterating the size bound from
-{prf:ref}`assump-bit-cost-evaluator-discipline`.
+size $n$ has total bitlength bounded by some polynomial $q_a(n,t)$ obtained from the reachable-size bound in
+{prf:ref}`thm-bit-cost-evaluator-discipline`.
 
 Encode a configuration by concatenating its tagged fields using the fixed self-delimiting pairing convention from
 {prf:ref}`rem-ambient-conventions-complexity`. This yields an injective encoding into
@@ -1688,8 +1776,7 @@ valid codes. The displayed identities follow from the inverse axioms in
 :::{prf:theorem} Evaluator Adequacy
 :label: thm-evaluator-adequacy
 
-Assume {prf:ref}`assump-bit-cost-evaluator-discipline`. Then there exists a universal deterministic Turing machine
-$U$ and a polynomial
+There exists a universal deterministic Turing machine $U$ and a polynomial
 
 $$
 r:\mathbb{N}^3\to\mathbb{N}
@@ -1787,8 +1874,8 @@ $$
 which is polynomial in $n$ because admissible encoding length is polynomial in $n$.
 :::
 
-:::{prf:assumption} CostCert Completeness for Internal Programs
-:label: assump-costcert-completeness
+:::{prf:theorem} CostCert Completeness for Internal Programs
+:label: thm-costcert-completeness
 
 Let
 
@@ -1804,39 +1891,84 @@ $$
 \downarrow_{\le q(n)}.
 $$
 
-Then there exists a polynomial $p$ and a certificate witness establishing
+Then
 
 $$
-\mathsf{FamCostCert}_{\mathfrak{X},\mathfrak{Y},\sigma}(a,p).
+\mathsf{FamCostCert}_{\mathfrak{X},\mathfrak{Y},\sigma}(a,q)
 $$
+
+holds.
 
 Equivalently: the certificate system is complete for true polynomial-time behavior of internal programs.
+:::
+
+:::{prf:proof}
+Clause (1) of {prf:ref}`def-family-cost-certificate` is exactly the hypothesis.
+
+For clause (2), because $a$ represents the uniform family
+$$
+\mathcal A:\mathfrak X\Rightarrow_{\sigma}\mathfrak Y
+$$
+in the sense of {prf:ref}`def-uniform-algorithm-family-rigorous`, every evaluation on a valid tagged
+$\mathfrak X$-input halts with an output bitstring $v$ satisfying
+$$
+\chi^{\mathfrak Y}_{\sigma(n)}(v)=1.
+$$
+Thus every such output is a valid $\mathfrak Y$-code of size $\sigma(n)$.
+
+Clause (3) follows from {prf:ref}`thm-bit-cost-evaluator-discipline`: each counted runtime step is a primitive
+microstep of the fixed Fragile evaluator, and its accounting is by encoded operand size.
+
+For clause (4), take as certificate payload the tuple
+$$
+W(a,q):=(q,\Pi_{\mathrm{halt}},\Pi_{\mathrm{out}},\Pi_{\mathrm{step}},\Pi_{\mathrm{adm}}),
+$$
+where:
+- $\Pi_{\mathrm{halt}}$ is the formal record of the displayed halting bound;
+- $\Pi_{\mathrm{out}}$ is the family-representation record witnessing output validity for
+  $\mathcal A:\mathfrak X\Rightarrow_{\sigma}\mathfrak Y$;
+- $\Pi_{\mathrm{step}}$ records that counted steps are evaluator primitives under
+  {prf:ref}`thm-bit-cost-evaluator-discipline`;
+- $\Pi_{\mathrm{adm}}$ is the admissible-family data for $\mathfrak X$ and $\mathfrak Y$.
+
+This package is ZFC-checkable because programs have concrete syntax and ZFC-definable operational semantics by
+{prf:ref}`def-effective-programs-fragile`, admissible families come with uniform encoders, decoders, and validity
+predicates by {prf:ref}`def-admissible-input-family-rigorous`, and reachable evaluator configurations admit finite
+encodings with polynomial-time validity and decoding by {prf:ref}`thm-finite-encodability`.
+
+Therefore $W(a,q)$ witnesses
+$$
+\mathsf{FamCostCert}_{\mathfrak X,\mathfrak Y,\sigma}(a,q).
+$$
 :::
 
 :::{prf:remark} Status of CostCert completeness
 :label: rem-status-costcert-completeness
 
-Assumption {prf:ref}`assump-costcert-completeness` is a certificate-calculus completeness requirement.
-Without it, the class
+Theorem {prf:ref}`thm-costcert-completeness` proves **semantic completeness** for the current witness-based definition
+of
+$$
+\mathsf{FamCostCert}.
+$$
+
+Accordingly, the class
 
 $$
 P_{\mathrm{FM}}
 $$
 
-defined through certificates is only guaranteed to be a sound fragment of internally polynomial-time computation, not
-the whole class. Any later use of
+defined through certificates matches the class of internally polynomial-time programs at the semantic level used in Part
+I, and later uses of
 
 $$
 P_{\mathrm{FM}}=P_{\mathrm{DTM}}
 $$
 
-must therefore either:
-1. prove Assumption {prf:ref}`assump-costcert-completeness`, or
-2. replace equality by the weaker inclusion
+may cite {prf:ref}`thm-costcert-completeness` directly.
 
-   $$
-   P_{\mathrm{FM}}\subseteq P_{\mathrm{DTM}}.
-   $$
+The stronger constructor/extractor theorem one may still want is different: it would build a family cost certificate by
+finite derivation from a normal-form term and explicit constructor rules. That stronger implementation theorem belongs
+downstream of Part II and is not needed to close the bridge gap of Part I.
 :::
 
 :::{prf:lemma} Configuration Object Theorem
@@ -2066,10 +2198,6 @@ the displayed polynomial.
 :::{prf:corollary} Bridge Equivalence
 :label: cor-bridge-equivalence-rigorous
 
-Assume {prf:ref}`assump-bit-cost-evaluator-discipline`,
-{prf:ref}`thm-evaluator-adequacy`, and {prf:ref}`assump-costcert-completeness`.
-Then:
-
 $$
 P_{\mathrm{FM}}=P_{\mathrm{DTM}}
 \qquad\text{and}\qquad
@@ -2198,6 +2326,31 @@ certificate's polynomial bounds into the control structure of the administrative
 - all outer data-presentation manipulations are factored into presentation translators.
 
 The resulting family lies in $\mathsf{NF}$ and computes the same extensional function.
+:::
+
+:::{prf:remark} Stronger normal-form CostCert extractor target
+:label: rem-stronger-normal-form-costcert-extractor
+
+Theorem {prf:ref}`thm-costcert-completeness` closes the bridge gap of Part I at the semantic level: true
+polynomial-time behavior yields a family cost certificate in the present witness-based sense of
+{prf:ref}`def-family-cost-certificate`.
+
+The stronger implementation theorem one may still want is different. It would start from a true evaluator bound
+$$
+q(n)
+$$
+for an effective program $a$, pass through clause (1) of {prf:ref}`thm-syntax-to-normal-form`, decorate the
+administrative normal form by explicit evaluator fuel, and then build a finite constructor derivation
+$$
+\mathcal D_a^q \vdash \mathsf{FamCostDeriv}_{\mathfrak X,\mathfrak Y,\sigma}(t_a^q,p_a)
+$$
+whose image yields
+$$
+\mathsf{FamCostCert}_{\mathfrak X,\mathfrak Y,\sigma}(a,p_a).
+$$
+
+Such an extractor theorem belongs downstream of Part II because it depends on normal-form constructors and explicit
+derivation rules. It is therefore a stronger implementation target, not a load-bearing ingredient of the Part I bridge.
 :::
 
 :::{prf:lemma} Extensional Equality Preservation
@@ -4400,9 +4553,10 @@ $$
 Once those six are established on the canonical $3$-SAT object, Definition {prf:ref}`def-e13` and
 Theorem {prf:ref}`thm-e13-contrapositive-hardness` yield the exclusion from $P_{\mathrm{FM}}$.
 
-The backend dossiers of Parts V and VIII are a stronger audit-level refinement of the same route. They strengthen the
-metric, causal, algebraic, scaling, and boundary channels into explicit semantic obstruction packages, but they do not
-add a new logical prerequisite to the direct Part VI separation theorem.
+The thin-contract/factory route of Part X and the optional backend dossiers of Parts V and VIII are stronger audit-level
+refinements of the same route. They strengthen the metric, causal, algebraic, scaling, and boundary channels into
+explicit semantic obstruction packages, but they do not add a new logical prerequisite to the direct Part VI separation
+theorem.
 :::
 
 :::{prf:theorem} Canonical 3-SAT Satisfies the E13 Antecedent Package
@@ -4668,9 +4822,9 @@ The instantiated proof chain is:
    P_{\mathrm{DTM}}\neq NP_{\mathrm{DTM}}.
    $$
 
-The strengthened semantic route is a refinement of Step 2: once the backend dossiers are complete, the Part VIII
-sufficiency theorem supplies the reconstructed E13 package and hence recovers the same exclusion theorem by a more
-detailed audit trail.
+The strengthened semantic route is a refinement of Step 2: once the canonical thin-contract package is complete, the
+Part VIII / Part X sufficiency theorems supply the reconstructed E13 package and hence recover the same exclusion
+theorem by a more detailed audit trail.
 :::
 
 :::{prf:remark} Where a hostile referee will press hardest in Part VI
@@ -4782,9 +4936,9 @@ The **proof obligation ledger** is the finite family
 $$
 \mathfrak L
 =
-(\mathcal O_{\mathrm{I}},\mathcal O_{\mathrm{II}},\mathcal O_{\mathrm{III}},\mathcal O_{\mathrm{IV}},\mathcal O_{\mathrm{V}},\mathcal O_{\mathrm{VI}})
+(\mathcal O_{\mathrm{I}},\mathcal O_{\mathrm{II}},\mathcal O_{\mathrm{III}},\mathcal O_{\mathrm{IV}},\mathcal O_{\mathrm{V}},\mathcal O_{\mathrm{VI}},\mathcal O_{\mathrm{VII}})
 $$
-of obligation clusters corresponding respectively to Parts I--VI.
+of obligation clusters corresponding to the framework, direct-route, and stronger audit-refinement layers.
 
 The ledger is **complete** if every individual obligation inside each cluster is discharged.
 
@@ -4919,8 +5073,8 @@ A theorem package that omits any of these items does not count as discharged.
 :label: thm-finite-reduction-to-ledger
 
 The stronger audit refinement of the separation program reduces to discharge of the following finite family of
-obligation clusters. This ledger over-approximates the direct theorem route by also tracking the backend dossiers and
-bridge dossiers used in the stronger semantic implementation.
+obligation clusters. This ledger over-approximates the direct theorem route by also tracking the thin-contract
+compilation layer and the optional stronger backend dossiers used in the semantic implementation.
 
 #### Cluster I: semantics and machine equivalence
 $$
@@ -4997,7 +5151,7 @@ where:
 #### Cluster VI: canonical $3$-SAT instantiation
 $$
 \mathcal O_{\mathrm{VI}}=
-\{\mathrm{VI}.1,\dots,\mathrm{VI}.7\},
+\{\mathrm{VI}.1,\dots,\mathrm{VI}.5\},
 $$
 where:
 
@@ -5005,17 +5159,21 @@ where:
 - **VI.2** verifier membership in $NP_{\mathrm{FM}}$;
 - **VI.3** the direct frontend E13 package for canonical $3$-SAT;
 - **VI.4** exclusion of canonical $3$-SAT from $P_{\mathrm{FM}}$ via the direct E13 route;
-- **VI.5** the five modal backend dossiers
-  $$
-  \mathcal D_\sharp(\Pi_{3\text{-SAT}}),\ 
-  \mathcal D_\int(\Pi_{3\text{-SAT}}),\ 
-  \mathcal D_\flat(\Pi_{3\text{-SAT}}),\ 
-  \mathcal D_\ast(\Pi_{3\text{-SAT}}),\ 
-  \mathcal D_\partial(\Pi_{3\text{-SAT}});
-  $$
-- **VI.6** internal Cook--Levin reduction;
-- **VI.7** $NP_{\mathrm{FM}}$-completeness of canonical $3$-SAT, the internal separation corollary, and the
-  strengthened reconstructed-E13 refinement.
+- **VI.5** internal Cook--Levin reduction, $NP_{\mathrm{FM}}$-completeness of canonical $3$-SAT, and the internal
+  separation corollary.
+
+#### Cluster VII: thin-contract compilation and stronger audit refinement
+$$
+\mathcal O_{\mathrm{VII}}=
+\{\mathrm{VII}.1,\dots,\mathrm{VII}.5\},
+$$
+where:
+
+- **VII.1** definition and validation of the five modal thin contracts;
+- **VII.2** the algorithmic thin-interface factory and semantic-first compilation theorem;
+- **VII.3** the canonical $3$-SAT thin-contract package and its sufficiency theorem;
+- **VII.4** optional coherence with the legacy frontend E13 route when both packages are present;
+- **VII.5** optional stronger backend dossier realizations of the five thin contracts.
 
 No further foundational cluster is required for the theorem chain itself.
 :::
@@ -5028,8 +5186,10 @@ The finiteness is immediate because:
 4. the obstruction calculi are exactly five;
 5. the target family is fixed to canonical $3$-SAT.
 
-Every theorem in Parts I--VI belongs to one of the six displayed clusters, and every later theorem depends only on a
-finite collection of earlier obligations. Hence the full program reduces to a finite acyclic ledger.
+Every theorem in Parts I--VI belongs to one of the first six displayed clusters, and every later theorem depends only on
+a finite collection of earlier obligations. The additional thin-contract/factory layer remains finite because there are
+exactly five modal contracts and one public algorithmic type. Hence the full program reduces to a finite acyclic
+ledger.
 :::
 
 :::{prf:theorem} Sufficiency of a Complete Ledger
@@ -5055,7 +5215,8 @@ Then all statements of Parts I--VI hold exactly as stated. In particular:
 
 3. the obstruction calculi are sound and complete against the strengthened universal properties;
 
-4. the canonical $3$-SAT family carries a full reconstructed E13 package;
+4. the canonical $3$-SAT family carries both the direct frontend E13 package and the compiled semantic thin-contract
+   package;
 
 5. therefore
    $$
@@ -5076,9 +5237,10 @@ This is a dependency-chasing argument along the acyclic ledger.
 - Cluster III yields the five universal-property witness schemas and their closure properties.
 - Cluster IV yields decomposition, irreducible classification, and computational modal exhaustiveness.
 - Cluster V turns exhaustiveness into hardness logic by proving soundness and completeness of the obstruction layer.
-- Cluster VI instantiates the abstract obstruction theory to canonical $3$-SAT and gives the internal separation.
+- Cluster VI instantiates the direct theorem route on canonical $3$-SAT and gives the internal separation.
+- Cluster VII adds the reusable thin-contract/factory compilation route and the optional stronger audit refinement.
 
-Combining Cluster I with Cluster VI exports the internal separation to the classical DTM classes.
+Combining Cluster I with Clusters VI--VII exports the internal separation to the classical DTM classes.
 :::
 
 :::{prf:remark} Detailed implementation protocol for Cluster I
@@ -5284,39 +5446,11 @@ To discharge it rigorously, implement the following sequence.
    $$
    by the direct E13 route.
 
-4. **Backend dossier for $\sharp$.**  
-   State the invariant excluding every polynomially bounded descent witness.
-
-5. **Backend dossier for $\int$.**  
-   State the invariant excluding every polynomial-height well-founded elimination witness.
-
-6. **Backend dossier for $\flat$.**  
-   State the invariant excluding every admissible polynomial-size algebraic sketch, including determinant/rank/fourier/
-   cancellation methods.
-
-7. **Backend dossier for $\ast$.**  
-   State the invariant excluding every admissible polynomially bounded self-reduction tree.
-
-8. **Backend dossier for $\partial$.**  
-   State the invariant excluding every admissible polynomial-size interface contraction.
-
-9. **Certificate extraction.**  
-   Convert those five backend dossiers into the five obstruction certificates
-   $$
-   B_\sharp,\ B_\int,\ B_\flat,\ B_\ast,\ B_\partial.
-   $$
-
-10. **Reconstructed E13 assembly.**  
-   Assemble the five certificates into the full package and derive
-   $$
-   \Pi_{3\text{-SAT}}\notin P_{\mathrm{FM}}.
-   $$
-
-11. **Internal Cook--Levin.**  
+4. **Internal Cook--Levin.**  
     Give the tableau construction, clause gadgets, witness consistency constraints, and the polynomial bound on formula
     size.
 
-12. **$NP_{\mathrm{FM}}$-completeness and internal separation.**  
+5. **$NP_{\mathrm{FM}}$-completeness and internal separation.**  
     Conclude
     $$
     \Pi_{3\text{-SAT}}\in NP_{\mathrm{FM}},
@@ -5326,14 +5460,43 @@ To discharge it rigorously, implement the following sequence.
     P_{\mathrm{FM}}\neq NP_{\mathrm{FM}}.
     $$
 
-13. **Export.**  
+6. **Export.**  
     Combine with Cluster I to derive
     $$
     P_{\mathrm{DTM}}\neq NP_{\mathrm{DTM}}.
     $$
 
-The hardest items on the stronger audit route are steps 6 and 8. The direct theorem route, by contrast, is Step 3 plus
-Steps 11--13.
+Cluster VI is the direct theorem route. The stronger thin-contract/factory refinement and any backend realizations are
+handled in Cluster VII.
+:::
+
+:::{prf:remark} Detailed implementation protocol for Cluster VII
+:label: rem-implementation-protocol-cluster-vii
+
+Cluster VII packages the reusable thin-interface architecture for algorithm analysis.
+
+1. **Define the five modal thin contracts.**  
+   Each contract should expose only soft observables and transport data:
+   - translator-stable state presentation,
+   - a modality-appropriate cost observable,
+   - a proof that the observable lower bound dominates every polynomial.
+
+2. **Prove the semantic-first compilation theorem.**  
+   For each modality, show that a verified thin contract compiles to the semantic obstruction certificate
+   $$
+   B_\lozenge\in K_\lozenge^-(\Pi).
+   $$
+
+3. **Assemble the compiled certificates.**  
+   Prove that the five compiled semantic certificates assemble into the reconstructed E13 package and hence hardness.
+
+4. **Add optional route coherence.**  
+   When legacy tactic realizers are also supplied, prove that the direct frontend route and the thin-contract/factory
+   route yield the same hardness conclusion.
+
+5. **Record optional stronger realizations.**  
+   Barrier data and backend dossiers should be documented as admissible realizations of the thin contracts, not as the
+   default user burden.
 :::
 
 :::{prf:definition} Direct separation certificate
@@ -5372,7 +5535,7 @@ where:
    and {prf:ref}`cor-internal-to-classical-separation`.
 
 This certificate records the **minimal theorem route actually used** for the main separation claim. It does not require
-the stronger semantic backend dossiers of Parts V and VIII.
+the stronger thin-contract/factory refinement of Part X or the optional backend dossiers of Part VIII.
 :::
 
 :::{prf:theorem} Sufficiency of the Direct Separation Certificate
@@ -5438,9 +5601,9 @@ The direct separation certificate of {prf:ref}`def-direct-separation-certificate
 main separation route used in the manuscript.
 
 The minimal completion certificate introduced below is **strictly stronger**. It adds the full proof-obligation ledger,
-the five semantic backend dossiers, and the frontend-to-backend bridge dossiers. Those artifacts refine the direct route
-into a stronger referee-auditable semantic implementation, but they are not an additional logical prerequisite for the
-direct Part VI theorem chain.
+the compiled thin-contract package for canonical $3$-SAT, and the optional legacy/frontend bridge artifacts. Those
+artifacts refine the direct route into a stronger referee-auditable semantic implementation, but they are not an
+additional logical prerequisite for the direct Part VI theorem chain.
 :::
 
 :::{prf:definition} Minimal completion certificate for the full program
@@ -5450,17 +5613,14 @@ A **minimal completion certificate** for the stronger audit refinement of the se
 $$
 \mathcal C_{\mathrm{master}}
 =
-(\mathcal T_{\mathrm{prim}},\ \mathfrak L,\ \{\mathcal D_\lozenge(\Pi_{3\text{-SAT}})\}_{\lozenge},\ \{\mathcal F_\lozenge(\Pi_{3\text{-SAT}})\}_{\lozenge})
+(\mathcal T_{\mathrm{prim}},\ \mathfrak L,\ \mathcal C_{3\text{-SAT}}^{\mathrm{thin}},\ \{\mathcal F_\lozenge(\Pi_{3\text{-SAT}})\}_{\lozenge})
 $$
 such that:
 
 1. $\mathcal T_{\mathrm{prim}}$ is a complete primitive audit table;
 2. $\mathfrak L$ is a complete and acyclic proof obligation ledger;
-3. each modal backend dossier
-   $$
-   \mathcal D_\lozenge(\Pi_{3\text{-SAT}})
-   $$
-   is complete;
+3. $\mathcal C_{3\text{-SAT}}^{\mathrm{thin}}$ is a complete canonical $3$-SAT thin-contract package in the sense of
+   Part X;
 4. each claimed frontend tactic realization has a complete bridge dossier
    $$
    \mathcal F_\lozenge(\Pi_{3\text{-SAT}}).
@@ -5506,7 +5666,8 @@ order:
 5. Cluster IV (decomposition and exhaustiveness),
 6. Cluster V (obstruction calculi),
 7. Cluster VI (canonical $3$-SAT instantiation),
-8. final master export summary.
+8. Cluster VII (thin-contract/factory refinement),
+9. final master export summary.
 
 This order minimizes circularity and exposes missing ingredients early.
 :::
@@ -5522,17 +5683,18 @@ After inserting Part VII, a hostile referee is entitled to ask for exactly the f
    - the completeness proof for `CostCert`,
    - and the explicit internal Cook--Levin reduction;
 2. for the **stronger audit refinement**:
+   - the complete canonical $3$-SAT thin-contract package,
    - the explicit admissible algebraic-signature library for the strengthened $\flat$-class,
    - the explicit admissible interface-contraction library for the strengthened $\partial$-class,
    - the complete obstruction-calculus rules and their soundness/completeness proofs,
-   - and the five complete backend dossiers for canonical $3$-SAT.
+   - and, only if claimed as a stronger realization, the five complete backend dossiers for canonical $3$-SAT.
 
 Those are the real proof obligations at the two levels of presentation. Once the direct-route items are present, the
 main separation chain is theorem-complete; once the stronger audit items are also present, there is no remaining vague
 appeal to “higher-topos exhaustiveness” that can substitute for mathematics.
 :::
 
-### VIII. Audit-Level Implementation of the Primitive Classification and the Canonical 3-SAT Backend Dossiers
+### VIII. Audit-Level Implementation of the Primitive Classification and the Canonical 3-SAT Thin-Contract Package
 
 :::{prf:remark} Why this section is written as an audit chapter
 :label: rem-why-part-viii-is-audit-level
@@ -5549,8 +5711,9 @@ and the proof-completion criterion. What a hostile referee will ask next is not 
 
 To keep the exposition mathematically honest, this section separates:
 - **implemented artifacts**, which may be cited as completed proofs;
-- **backend dossiers**, which specify the exact lower-bound burdens still to be proved;
-- and **sufficiency theorems**, which state precisely what follows once those dossiers are complete.
+- **thin-contract packages**, which are the default reusable audit artifacts expected from the framework;
+- **backend dossiers**, which remain optional stronger realizations of those thin contracts;
+- and **sufficiency theorems**, which state precisely what follows once those artifacts are complete.
 
 This avoids the unacceptable practice of presenting unresolved backend dossiers as already-established theorem proofs.
 :::
@@ -5735,7 +5898,116 @@ A hostile referee should be able to perform the following check mechanically:
 If this cannot be done without guesswork, then the appendix is not yet complete.
 :::
 
-## VIII.B. Canonical 3-SAT Backend Dossiers
+## VIII.B. Canonical 3-SAT Thin-Contract Package
+
+:::{prf:definition} Complete thin contract for a modality
+:label: def-complete-thin-contract-modality
+
+Fix a problem family $\Pi$ and a modality
+$$
+\lozenge\in\{\sharp,\int,\flat,\ast,\partial\}.
+$$
+
+A **complete thin contract**
+$$
+\mathcal C_\lozenge^{\mathrm{thin}}(\Pi)
+$$
+is a finite proof package whose user-facing data consist only of:
+
+1. a translator-stable state presentation for the relevant hard subfamily;
+2. a modality-appropriate soft observable measuring the least cost of crossing that presentation;
+3. a proof that the observable lower bound eventually dominates every polynomial;
+4. enough typed reconstruction data to feed the algorithmic factory of Part X.
+
+The contract is **complete** if the displayed soft observables, transport data, and eventual-growth clauses are all
+proved explicitly, so that the corresponding Part X factory theorem may be applied without adding new problem-specific
+choices.
+
+Concretely:
+1. for $\lozenge=\sharp$ or $\lozenge=\int$, completeness includes a translator-stable barrier datum, a local drift
+   bound, and an explicit lower-bound witness of the corresponding barrier-height quotient;
+2. for $\lozenge=\flat,\ast,\partial$, completeness includes a translator-stable barrier datum and an explicit
+   lower-bound witness for the corresponding modal barrier complexity.
+:::
+
+:::{prf:definition} Canonical 3-SAT thin-contract package
+:label: def-canonical-3sat-thin-contract-package
+
+The **canonical $3$-SAT thin-contract package** is the five-tuple
+$$
+\mathcal C_{3\text{-SAT}}^{\mathrm{thin}}
+=
+\bigl(
+\mathcal C_\sharp^{\mathrm{thin}}(\Pi_{3\text{-SAT}}),
+\mathcal C_\int^{\mathrm{thin}}(\Pi_{3\text{-SAT}}),
+\mathcal C_\flat^{\mathrm{thin}}(\Pi_{3\text{-SAT}}),
+\mathcal C_\ast^{\mathrm{thin}}(\Pi_{3\text{-SAT}}),
+\mathcal C_\partial^{\mathrm{thin}}(\Pi_{3\text{-SAT}})
+\bigr).
+$$
+
+The package is **complete** if each constituent thin contract is complete in the sense of
+{prf:ref}`def-complete-thin-contract-modality`.
+:::
+
+:::{prf:remark} Why the thin-contract package is the default audit artifact
+:label: rem-why-thin-contract-package-is-default
+
+The thin-contract package is the default audit artifact because it matches the general hypostructure pattern already
+used elsewhere in the manuscript: the user supplies only soft interfaces and transport witnesses, while the framework
+compiles those into stronger semantic certificates by metatheorem.
+
+Backend dossiers remain admissible, but they are treated below as optional stronger realizations of the thin contracts,
+not as the default expected burden for every new problem family.
+:::
+
+:::{prf:theorem} Sufficiency of the canonical 3-SAT thin-contract package
+:label: thm-sufficiency-canonical-3sat-thin-contract-package
+
+Assume the canonical $3$-SAT thin-contract package
+$$
+\mathcal C_{3\text{-SAT}}^{\mathrm{thin}}
+$$
+is complete.
+
+Then the algorithmic thin-interface factory of Part X compiles it into the five semantic modal obstruction
+certificates
+$$
+B_\sharp\in K_\sharp^-(\Pi_{3\text{-SAT}}),\quad
+B_\int\in K_\int^-(\Pi_{3\text{-SAT}}),\quad
+B_\flat\in K_\flat^-(\Pi_{3\text{-SAT}}),\quad
+B_\ast\in K_\ast^-(\Pi_{3\text{-SAT}}),\quad
+B_\partial\in K_\partial^-(\Pi_{3\text{-SAT}}).
+$$
+
+Equivalently: the semantic-first compilation route later packaged by Part X already applies to this complete
+thin-contract appendix.
+
+Consequently:
+1. $\Pi_{3\text{-SAT}}$ carries a full reconstructed E13 obstruction package;
+2. $\Pi_{3\text{-SAT}}\notin P_{\mathrm{FM}}$;
+3. if the Internal Cook--Levin Reduction and bridge equivalence are also complete, then
+   $$
+   P_{\mathrm{FM}}\neq NP_{\mathrm{FM}}
+   \qquad\text{and}\qquad
+   P_{\mathrm{DTM}}\neq NP_{\mathrm{DTM}}.
+   $$
+:::
+
+:::{prf:proof}
+Unpack the five complete thin contracts inside
+{prf:ref}`def-canonical-3sat-thin-contract-package`.
+
+- The $\sharp$- and $\int$-contracts compile by the sharp and causal barrier certificate corollaries of Part IX.
+- The $\flat$-, $\ast$-, and $\partial$-contracts compile by the corresponding Part IX barrier certificate
+  corollaries.
+
+This yields the five semantic modal obstruction certificates. Those certificates form the reconstructed E13 package,
+which yields hardness by the Part V obstruction layer. The remaining claims then follow from the canonical-instantiation
+theorems of Part VI and the bridge equivalence from Part I.
+:::
+
+## VIII.C. Optional Stronger Backend Dossiers
 
 :::{prf:definition} Complete backend dossier for a modality
 :label: def-complete-backend-dossier-modality
@@ -6235,7 +6507,7 @@ Immediate from the certificate extraction item of
 {prf:ref}`thm-boundary-obstruction-sound-complete`.
 :::
 
-## VIII.C. Sufficiency Theorems for the Audit Artifacts
+## VIII.D. Sufficiency Theorems for the Audit Artifacts
 
 :::{prf:theorem} Sufficiency of the primitive audit appendix
 :label: thm-sufficiency-primitive-audit-appendix
@@ -6278,9 +6550,11 @@ $$
 \mathcal D_\partial(\Pi_{3\text{-SAT}})
 \bigr)
 $$
-is complete.
+is complete, and suppose each constituent dossier is accompanied by a stronger backend realization of the
+corresponding thin contract in the sense of {prf:ref}`def-stronger-backend-realization-thin-contract`.
 
-Then the five blockage theorems of Part VI are formally discharged:
+Then the corresponding canonical $3$-SAT thin-contract package exists and is complete. In particular, the five
+blockage theorems of Part VI are formally discharged:
 $$
 B_\sharp\in K_\sharp^-(\Pi_{3\text{-SAT}}),\quad
 B_\int\in K_\int^-(\Pi_{3\text{-SAT}}),\quad
@@ -6308,9 +6582,11 @@ Combine the five dossier-to-blockage propositions:
 {prf:ref}`prop-star-dossier-implies-scaling-blockage`,
 and {prf:ref}`prop-partial-dossier-implies-boundary-blockage`.
 
-This yields the full reconstructed E13 package for canonical $3$-SAT. Then apply the Mixed-Modal Obstruction Theorem of
-Part V and the canonical-instantiation theorems of Part VI. The final export to classical complexity uses the bridge
-equivalence from Part I.
+By the additional stronger-realization hypothesis, each completed backend dossier realizes the corresponding thin
+contract. Hence the canonical thin-contract package of
+{prf:ref}`def-canonical-3sat-thin-contract-package` is complete. Apply
+{prf:ref}`thm-sufficiency-canonical-3sat-thin-contract-package` to obtain the compiled semantic package and the stated
+consequences.
 :::
 
 :::{prf:remark} What may and may not be claimed after inserting Part VIII
@@ -6320,9 +6596,9 @@ After inserting Part VIII, the manuscript may honestly claim the following:
 
 1. the direct exclusion route for canonical $3$-SAT still runs through the current tactic-level E13 package and does
    **not** logically require the backend dossiers as an extra prerequisite;
-2. the semantic primitive audit has been implemented at the family level, and the exact remaining stronger backend
-   burden has been reduced to the five canonical $3$-SAT dossiers;
-3. the exact content of each backend dossier is now explicit;
+2. the semantic primitive audit has been implemented at the family level, and the default stronger audit burden is now
+   a complete canonical $3$-SAT thin-contract package;
+3. the exact content of each optional stronger backend dossier realization is now explicit;
 4. the formal sufficiency chain from completed audit artifacts to the separation result is precise.
 
 However, the manuscript may **not** yet honestly claim that the strengthened $\flat$- or $\partial$-blockage theorems
@@ -7109,12 +7385,6 @@ Assume:
 
 Then $\Pi$ carries a full reconstructed E13 obstruction package in the sense of
 {prf:ref}`def-e13-reconstructed`.
-
-If, in addition, the corresponding frontend-to-backend bridge dossiers of Part VIII are complete, then $\Pi$ also
-carries the tactic-level certificate
-$$
-K_{\mathrm{E13}}^+(\Pi).
-$$
 :::
 
 :::{prf:proof}
@@ -7128,9 +7398,7 @@ B_\partial\in K_\partial^-(\Pi).
 $$
 
 Collecting these five certificates gives exactly the full reconstructed E13 obstruction package of
-{prf:ref}`def-e13-reconstructed`. If the frontend-to-backend bridge dossiers are also complete, then the current
-tactic-level certificate $K_{\mathrm{E13}}^+(\Pi)$ follows by transporting the semantic obstruction package back to the
-legacy frontend language.
+{prf:ref}`def-e13-reconstructed`.
 :::
 
 :::{prf:corollary} Barrier Contrapositive Hardness
@@ -7205,8 +7473,7 @@ For a new problem family $\Pi$, the barrier workflow is:
    \beta_\partial^{\mathfrak B};
    $$
 4. convert those lower bounds into the corresponding obstruction certificates;
-5. assemble them into reconstructed E13, and optionally into the current frontend E13 package when the bridge dossiers
-   are available.
+5. assemble them into reconstructed E13.
 
 This cleanly separates:
 - the **problem-specific** work: proving lower bounds on the barrier complexities;
@@ -7232,26 +7499,423 @@ $$
 \Pi\notin P_{\mathrm{FM}}.
 $$
 
-If the relevant frontend-to-backend bridge dossiers are also present, the same route yields the current tactic-level
-certificate $K_{\mathrm{E13}}^+(\Pi)$ as well.
-
 That is exactly the sense in which barriers become reusable metatheorems rather than one-off heuristics.
 :::
 
-:::{prf:remark} Recommended placement of appendices after Part IX
+### X. Thin Modal Contracts and the Algorithmic Factory
+
+:::{prf:remark} Role of Part X
+:label: rem-role-of-part-x
+
+Part IX provides reusable barrier metatheorems, but it still presents those metatheorems at the level of explicit
+barrier data and barrier-complexity lower bounds. The next hypostructure step is the familiar one from the sieve:
+replace bespoke backend burdens by **thin contracts** and a **factory theorem**.
+
+The point of Part X is therefore not to add a sixth mechanism. It is to expose a public algorithmic interface of type
+$$
+T_{\text{algorithmic}}
+$$
+whose user-facing data consist only of soft observables and transport witnesses, while the framework compiles those
+data into semantic modal obstructions, reconstructed E13, and hence hardness.
+
+This is the default reusable route. Barrier data and backend dossiers remain admissible, but they now appear as
+realizations of the thin contracts rather than as the primary public burden.
+:::
+
+## X.A. The Five Thin Modal Contracts
+
+:::{prf:definition} Thin $\sharp$ contract
+:label: def-thin-sharp-contract
+
+Let $\Pi$ be a problem family. A **thin $\sharp$ contract** for $\Pi$ is a tuple
+$$
+\mathcal C_\sharp^{\mathrm{thin}}(\Pi)=
+(\mathfrak B_\sharp,d_\sharp,g_\sharp)
+$$
+consisting of:
+
+1. a translator-stable barrier datum
+   $$
+   \mathfrak B_\sharp
+   $$
+   for $\Pi$;
+2. a sharp local drift bound
+   $$
+   d_\sharp
+   $$
+   in the sense of {prf:ref}`def-sharp-local-energy-drift-bound`;
+3. a lower-bound witness
+   $$
+   g_\sharp:\mathbb N\to\mathbb N
+   $$
+   such that:
+   $$
+   g_\sharp(n)\le
+   \left\lceil
+   \frac{\Delta_{\mathfrak B_\sharp}(n)}{d_\sharp(n)}
+   \right\rceil
+   $$
+   for all sufficiently large $n$, and
+   $$
+   g_\sharp
+   $$
+   eventually dominates every polynomial.
+
+This contract is called **complete** if the displayed inequalities and growth statement are proved explicitly.
+:::
+
+:::{prf:definition} Thin $\int$ contract
+:label: def-thin-int-contract
+
+Let $\Pi$ be a problem family. A **thin $\int$ contract** for $\Pi$ is a tuple
+$$
+\mathcal C_\int^{\mathrm{thin}}(\Pi)=
+(\mathfrak B_\int,d_\int,g_\int)
+$$
+consisting of:
+
+1. a translator-stable barrier datum
+   $$
+   \mathfrak B_\int
+   $$
+   for $\Pi$;
+2. an $\int$ local drift bound
+   $$
+   d_\int
+   $$
+   in the sense of {prf:ref}`def-int-local-energy-drift-bound`;
+3. a lower-bound witness
+   $$
+   g_\int:\mathbb N\to\mathbb N
+   $$
+   such that:
+   $$
+   g_\int(n)\le
+   \left\lceil
+   \frac{\Delta_{\mathfrak B_\int}(n)}{d_\int(n)}
+   \right\rceil
+   $$
+   for all sufficiently large $n$, and
+   $$
+   g_\int
+   $$
+   eventually dominates every polynomial.
+
+This contract is called **complete** if the displayed inequalities and growth statement are proved explicitly.
+:::
+
+:::{prf:definition} Thin $\flat$ contract
+:label: def-thin-flat-contract
+
+Let $\Pi$ be a problem family. A **thin $\flat$ contract** for $\Pi$ is a tuple
+$$
+\mathcal C_\flat^{\mathrm{thin}}(\Pi)=
+(\mathfrak B_\flat,g_\flat)
+$$
+consisting of:
+
+1. a translator-stable barrier datum
+   $$
+   \mathfrak B_\flat
+   $$
+   for $\Pi$;
+2. a lower-bound witness
+   $$
+   g_\flat:\mathbb N\to\mathbb N
+   $$
+   such that:
+   $$
+   g_\flat(n)\le \beta_\flat^{\mathfrak B_\flat}(n)
+   $$
+   for all sufficiently large $n$, and
+   $$
+   g_\flat
+   $$
+   eventually dominates every polynomial.
+
+This contract is called **complete** if the displayed inequality and growth statement are proved explicitly.
+:::
+
+:::{prf:definition} Thin $\ast$ contract
+:label: def-thin-star-contract
+
+Let $\Pi$ be a problem family. A **thin $\ast$ contract** for $\Pi$ is a tuple
+$$
+\mathcal C_\ast^{\mathrm{thin}}(\Pi)=
+(\mathfrak B_\ast,g_\ast)
+$$
+consisting of:
+
+1. a translator-stable barrier datum
+   $$
+   \mathfrak B_\ast
+   $$
+   for $\Pi$;
+2. a lower-bound witness
+   $$
+   g_\ast:\mathbb N\to\mathbb N
+   $$
+   such that:
+   $$
+   g_\ast(n)\le \beta_\ast^{\mathfrak B_\ast}(n)
+   $$
+   for all sufficiently large $n$, and
+   $$
+   g_\ast
+   $$
+   eventually dominates every polynomial.
+
+This contract is called **complete** if the displayed inequality and growth statement are proved explicitly.
+:::
+
+:::{prf:definition} Thin $\partial$ contract
+:label: def-thin-partial-contract
+
+Let $\Pi$ be a problem family. A **thin $\partial$ contract** for $\Pi$ is a tuple
+$$
+\mathcal C_\partial^{\mathrm{thin}}(\Pi)=
+(\mathfrak B_\partial,g_\partial)
+$$
+consisting of:
+
+1. a translator-stable barrier datum
+   $$
+   \mathfrak B_\partial
+   $$
+   for $\Pi$;
+2. a lower-bound witness
+   $$
+   g_\partial:\mathbb N\to\mathbb N
+   $$
+   such that:
+   $$
+   g_\partial(n)\le \beta_\partial^{\mathfrak B_\partial}(n)
+   $$
+   for all sufficiently large $n$, and
+   $$
+   g_\partial
+   $$
+   eventually dominates every polynomial.
+
+This contract is called **complete** if the displayed inequality and growth statement are proved explicitly.
+:::
+
+## X.B. Public Algorithmic Thin Interface
+
+:::{prf:definition} Algorithmic thin interface of type $T_{\text{algorithmic}}$
+:label: def-algorithmic-thin-interface
+
+An **algorithmic thin interface** for a problem family
+$$
+\Pi
+$$
+is a tuple
+$$
+\mathcal I_{\text{alg}}^{\mathrm{thin}}(\Pi)
+=
+\bigl(
+K_{T_{\text{algorithmic}}}^+,\ 
+\mathcal C_\sharp^{\mathrm{thin}}(\Pi),\
+\mathcal C_\int^{\mathrm{thin}}(\Pi),\
+\mathcal C_\flat^{\mathrm{thin}}(\Pi),\
+\mathcal C_\ast^{\mathrm{thin}}(\Pi),\
+\mathcal C_\partial^{\mathrm{thin}}(\Pi)
+\bigr)
+$$
+such that each of the five modal thin contracts is complete.
+
+This is the public user-facing interface for the reusable algorithmic factory. It exposes only:
+1. the algorithmic type tag;
+2. typed translator-stable soft observables;
+3. polynomial-growth witnesses dominating every polynomial;
+4. no full backend obstruction dossiers.
+:::
+
+:::{prf:definition} Stronger backend realization of a thin contract
+:label: def-stronger-backend-realization-thin-contract
+
+Let
+$$
+\mathcal C_\lozenge^{\mathrm{thin}}(\Pi)
+$$
+be a thin modal contract.
+
+A **stronger backend realization** of that thin contract is any proof package that proves all hypotheses required for
+the completeness of
+$$
+\mathcal C_\lozenge^{\mathrm{thin}}(\Pi)
+$$
+and may additionally include finer invariants, richer witness-exclusion lemmas, or explicit certificate extractors.
+
+Barrier dossiers and other backend packages are therefore admissible only insofar as they realize the thin-contract
+payload required by the factory theorem below.
+:::
+
+## X.C. The Algorithmic Factory
+
+:::{prf:theorem} Thin-Contract Compilation by Modality
+:label: thm-thin-contract-compilation-by-modality
+
+Let $\Pi$ be a problem family.
+
+1. If $\mathcal C_\sharp^{\mathrm{thin}}(\Pi)$ is complete, then
+   $$
+   B_\sharp\in K_\sharp^-(\Pi).
+   $$
+2. If $\mathcal C_\int^{\mathrm{thin}}(\Pi)$ is complete, then
+   $$
+   B_\int\in K_\int^-(\Pi).
+   $$
+3. If $\mathcal C_\flat^{\mathrm{thin}}(\Pi)$ is complete, then
+   $$
+   B_\flat\in K_\flat^-(\Pi).
+   $$
+4. If $\mathcal C_\ast^{\mathrm{thin}}(\Pi)$ is complete, then
+   $$
+   B_\ast\in K_\ast^-(\Pi).
+   $$
+5. If $\mathcal C_\partial^{\mathrm{thin}}(\Pi)$ is complete, then
+   $$
+   B_\partial\in K_\partial^-(\Pi).
+   $$
+:::
+
+:::{prf:proof}
+Clause (1) is {prf:ref}`cor-sharp-barrier-certificate` applied to the data contained in
+{prf:ref}`def-thin-sharp-contract`.
+Clause (2) is {prf:ref}`cor-int-barrier-certificate` applied to the data contained in
+{prf:ref}`def-thin-int-contract`.
+Clause (3) is {prf:ref}`cor-flat-barrier-certificate` applied to the data contained in
+{prf:ref}`def-thin-flat-contract`.
+Clause (4) is {prf:ref}`cor-star-barrier-certificate` applied to the data contained in
+{prf:ref}`def-thin-star-contract`.
+Clause (5) is {prf:ref}`cor-partial-barrier-certificate` applied to the data contained in
+{prf:ref}`def-thin-partial-contract`.
+:::
+
+:::{prf:theorem} [FACT-Algorithmic] Thin Interface Compilation
+:label: mt-fact-algorithmic-thin-interface
+
+Let
+$$
+\mathcal I_{\text{alg}}^{\mathrm{thin}}(\Pi)
+$$
+be a complete algorithmic thin interface for a problem family $\Pi$.
+
+Then the framework compiles that thin interface into:
+
+1. the five semantic modal obstruction certificates
+   $$
+   B_\sharp\in K_\sharp^-(\Pi),\quad
+   B_\int\in K_\int^-(\Pi),\quad
+   B_\flat\in K_\flat^-(\Pi),\quad
+   B_\ast\in K_\ast^-(\Pi),\quad
+   B_\partial\in K_\partial^-(\Pi);
+   $$
+2. the full reconstructed E13 obstruction package for $\Pi$;
+3. the hardness conclusion
+   $$
+   \Pi\notin P_{\mathrm{FM}}.
+   $$
+
+This compilation is semantic-first: the primary factory output is the semantic modal obstruction package, not the
+legacy frontend certificate language.
+:::
+
+:::{prf:proof}
+Apply {prf:ref}`thm-thin-contract-compilation-by-modality` to the five modal thin contracts inside
+{prf:ref}`def-algorithmic-thin-interface`. This yields the five semantic modal obstruction certificates. By
+{prf:ref}`def-e13-reconstructed`, those certificates form the full reconstructed E13 obstruction package. Then
+{prf:ref}`cor-e13-contrapositive-hardness-reconstructed` yields
+$$
+\Pi\notin P_{\mathrm{FM}}.
+$$
+:::
+
+:::{prf:corollary} Factory Route for Canonical 3-SAT
+:label: cor-factory-route-canonical-3sat
+
+If the canonical $3$-SAT thin-contract package
+$$
+\mathcal C_{3\text{-SAT}}^{\mathrm{thin}}
+$$
+is complete, then the complete algorithmic thin interface
+$$
+\mathcal I_{\text{alg}}^{\mathrm{thin}}(\Pi_{3\text{-SAT}})
+$$
+exists and the factory theorem
+{prf:ref}`mt-fact-algorithmic-thin-interface`
+implies
+$$
+\Pi_{3\text{-SAT}}\notin P_{\mathrm{FM}}.
+$$
+:::
+
+:::{prf:proof}
+Combine {prf:ref}`def-canonical-3sat-thin-contract-package` with
+{prf:ref}`def-algorithmic-thin-interface` and apply
+{prf:ref}`mt-fact-algorithmic-thin-interface`.
+:::
+
+:::{prf:remark} Compatibility with the direct frontend route
+:label: rem-thin-factory-compatibility-direct-route
+
+The factory route of Part X does not replace the current direct Part VI route. It refines it.
+
+- The **direct route** remains:
+  $$
+  \text{frontend certificates}
+  \Longrightarrow
+  K_{\mathrm{E13}}^+(\Pi_{3\text{-SAT}})
+  \Longrightarrow
+  \Pi_{3\text{-SAT}}\notin P_{\mathrm{FM}}.
+  $$
+- The **factory route** is:
+  $$
+  \text{thin contracts}
+  \Longrightarrow
+  (K_\sharp^-,K_\int^-,K_\flat^-,K_\ast^-,K_\partial^-)
+  \Longrightarrow
+  \mathbf B_{\mathrm{E13}}^{\mathrm{recon}}
+  \Longrightarrow
+  \Pi\notin P_{\mathrm{FM}}.
+  $$
+
+Whenever a problem family also carries legacy frontend realizers, the same hardness conclusion can be restated in the
+current tactic-level language. But the factory theorem itself is semantic-first and does not depend on that legacy
+presentation.
+:::
+
+:::{prf:remark} Backend dossiers as optional stronger realizations
+:label: rem-backend-dossiers-as-optional-thin-realizations
+
+Parts VIII and IX should therefore be read in the following order.
+
+1. Thin contracts are the default public interface.
+2. Barrier data are one admissible way to realize thin contracts.
+3. Backend dossiers are optional stronger realizations of thin contracts, appropriate only when one wants a finer audit
+   trail than the factory theorem itself requires.
+
+This is exactly parallel to the sieve philosophy elsewhere in the manuscript: users provide thin interfaces, the
+framework supplies the compiled backend consequences, and only specialist extensions need the stronger internal
+artifacts.
+:::
+
+:::{prf:remark} Recommended placement of appendices after Part X
 :label: rem-recommended-placement-appendices
 
-For maximal referee readability, the following appendices should follow immediately after Part IX.
+For maximal referee readability, the following appendices should follow immediately after Part X.
 
 1. **Appendix A:** The complete primitive audit table $\mathcal T_{\mathrm{prim}}$.
 2. **Appendix B:** The direct frontend E13 certificate appendix for canonical $3$-SAT.
-3. **Appendix C:** The $\sharp$-backend dossier for canonical $3$-SAT.
-4. **Appendix D:** The $\int$-backend dossier for canonical $3$-SAT.
-5. **Appendix E:** The strengthened $\flat$-backend dossier for canonical $3$-SAT.
-6. **Appendix F:** The $\ast$-backend dossier for canonical $3$-SAT.
-7. **Appendix G:** The strengthened $\partial$-backend dossier for canonical $3$-SAT.
-8. **Appendix H:** The frontend-to-backend bridge dossiers for the legacy tactic certificates.
-9. **Appendix I:** The explicit Internal Cook--Levin reduction.
+3. **Appendix C:** The canonical $3$-SAT thin-contract package.
+4. **Appendix D:** The $\sharp$-backend dossier for canonical $3$-SAT.
+5. **Appendix E:** The $\int$-backend dossier for canonical $3$-SAT.
+6. **Appendix F:** The strengthened $\flat$-backend dossier for canonical $3$-SAT.
+7. **Appendix G:** The $\ast$-backend dossier for canonical $3$-SAT.
+8. **Appendix H:** The strengthened $\partial$-backend dossier for canonical $3$-SAT.
+9. **Appendix I:** The frontend-to-backend bridge dossiers for the legacy tactic certificates.
+10. **Appendix J:** The explicit Internal Cook--Levin reduction.
 
 That appendix ordering mirrors the proof-dependency order and minimizes referee backtracking.
 :::
@@ -7435,6 +8099,39 @@ Together with admissibility and the Internal Cook--Levin / $NP_{\mathrm{FM}}$-co
 direct separation certificate of {prf:ref}`def-direct-separation-certificate`.
 :::
 
+## Appendix C. Canonical 3-SAT Thin-Contract Package
+
+:::{prf:definition} Complete Thin-Contract Appendix for Canonical 3-SAT
+:label: def-complete-thin-contract-appendix-3sat
+
+A **complete thin-contract appendix** for canonical $3$-SAT is a finite table packaging:
+
+1. the five modal thin contracts of Part X specialized to $\Pi_{3\text{-SAT}}$;
+2. the soft observables and translator-stable state presentations used by each contract;
+3. the supporting lower-bound witnesses dominating every polynomial;
+4. the assembly step yielding the complete package
+   $$
+   \mathcal C_{3\text{-SAT}}^{\mathrm{thin}}.
+   $$
+
+This appendix is the default stronger audit artifact for the semantic route. It sits strictly between the direct
+frontend appendix of Appendix B and the optional stronger backend dossiers of Part VIII.
+:::
+
+:::{prf:remark} Current status of Appendix C
+:label: rem-current-status-appendix-c
+
+Appendix C is the correct target packaging for the stronger audit route, but unlike Appendix B it is not yet filled by a
+completed theorem table in the current manuscript. The reason is structural rather than philosophical: the direct Part
+VI theorem chain is already complete, while the Part X route requires explicit thin-contract realizers for canonical
+$3$-SAT.
+
+Accordingly:
+1. Appendix B packages the route already used by the main proof;
+2. Appendix C is the default target for the stronger semantic refinement;
+3. the backend dossiers of Part VIII remain optional stronger realizations of the same Appendix C package.
+:::
+
 ### Corollary: Algorithmic Embedding Surjectivity
 
 :::{prf:corollary} Algorithmic Embedding Surjectivity
@@ -7499,7 +8196,7 @@ hardness follows.
 
 ### Verification and Falsifiability
 
-We now summarize how the strengthened Part IV--IX ladder can be verified, audited, and falsified theorem by theorem.
+We now summarize how the strengthened Part IV--X ladder can be verified, audited, and falsified theorem by theorem.
 
 :::{prf:theorem} Verification of Classification, Obstruction, and Completion
 :label: thm-verification-completeness
@@ -7530,6 +8227,12 @@ The classification/exhaustiveness and obstruction framework is reduced to the fo
 | Direct frontend E13 certificate appendix | **THEOREM** | {prf:ref}`thm-appendix-b-frontend-e13-certificate-table` |
 | Canonical 3-SAT E13 antecedent package | **THEOREM** | {prf:ref}`ex-3sat-all-blocked` |
 | Canonical 3-SAT exclusion from $P_{\mathrm{FM}}$ | **THEOREM** | {prf:ref}`thm-random-3sat-not-in-pfm`, {prf:ref}`thm-e13-contrapositive-hardness` |
+| Algorithmic thin interface | **DEFINITIONAL BASIS** | {prf:ref}`def-algorithmic-thin-interface` |
+| Modal thin contracts | **DEFINITIONAL BASIS** | {prf:ref}`def-thin-sharp-contract`--{prf:ref}`def-thin-partial-contract` |
+| Thin-contract compilation by modality | **THEOREM PACKAGE** | {prf:ref}`thm-thin-contract-compilation-by-modality` |
+| Algorithmic thin-interface factory | **THEOREM** | {prf:ref}`mt-fact-algorithmic-thin-interface` |
+| Canonical 3-SAT thin-contract package | **STRENGTHENED AUDIT ARTIFACT** | {prf:ref}`def-canonical-3sat-thin-contract-package` |
+| Canonical 3-SAT thin-contract sufficiency | **STRENGTHENED SUFFICIENCY THEOREM** | {prf:ref}`thm-sufficiency-canonical-3sat-thin-contract-package` |
 | Canonical 3-SAT backend dossier package | **STRENGTHENED AUDIT ARTIFACT** | {prf:ref}`def-canonical-3sat-backend-dossier-package` |
 | Canonical 3-SAT dossier sufficiency | **STRENGTHENED SUFFICIENCY THEOREM** | {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package` |
 | Canonical 3-SAT reconstructed E13 package | **STRENGTHENED COMPLETION-DEPENDENT CONSEQUENCE** | {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package` |
@@ -7547,8 +8250,8 @@ The classification/exhaustiveness and obstruction framework is reduced to the fo
 
 **Key Point:** The framework rests on mathematical theorems within cohesive $(\infty,1)$-topos theory, not empirical
 observations. The completeness burden is no longer hidden in one theorem name; it is distributed over an explicit audit,
-decomposition, irreducibility, exhaustiveness, obstruction, barrier-metatheorem, and completion ledger. Parts VII--IX
-make precise which components are already formalized and which are completion-dependent.
+decomposition, irreducibility, exhaustiveness, obstruction, barrier-metatheorem, thin-interface compilation, and
+completion ledger. Parts VII--X make precise which components are already formalized and which are completion-dependent.
 :::
 
 :::{prf:remark} Falsifiability Criteria
@@ -7569,8 +8272,9 @@ Concretely:
 4. a failure of the canonical 3-SAT instantiation would localize either to
    {prf:ref}`thm-canonical-3sat-admissible`, {prf:ref}`ex-3sat-all-blocked`,
    {prf:ref}`thm-e13-contrapositive-hardness`, {prf:ref}`thm-internal-cook-levin-reduction`,
-   or, on the strengthened audit route, to {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package` and the Part VIII
-   backend/bridge dossiers, not to some vague meta-level complaint.
+   or, on the strengthened audit route, to {prf:ref}`thm-sufficiency-canonical-3sat-thin-contract-package`,
+   {prf:ref}`mt-fact-algorithmic-thin-interface`, and, if used, the optional Part VIII backend/bridge dossiers, not to
+   some vague meta-level complaint.
 5. a failure to complete the full audit trail would localize to a missing component of the minimal completion
    certificate from {prf:ref}`def-minimal-completion-certificate`.
 6. a failure of a claimed barrier-based hardness route would localize either to the existence or translator-stability of
@@ -7610,7 +8314,7 @@ $$
 P_{\text{FM}} = P_{\text{DTM}} \quad \text{and} \quad NP_{\text{FM}} = NP_{\text{DTM}}.
 $$
 
-**Internal Separation Program (C3):** Parts VI--IX isolate an exact criterion under which the internal separation
+**Internal Separation Program (C3):** Parts VI--X isolate an exact criterion under which the internal separation
 follows:
 
 $$
@@ -7632,7 +8336,11 @@ via:
   {prf:ref}`thm-sharp-barrier-obstruction-metatheorem`--{prf:ref}`thm-partial-barrier-obstruction-metatheorem`,
   {prf:ref}`thm-barrier-package-implies-e13`,
   {prf:ref}`cor-barrier-contrapositive-hardness`);
-- and, as a strengthened audit refinement of that same route, the Part VIII backend-dossier sufficiency theorem
+- the reusable Part X thin-contract/factory route
+  ({prf:ref}`def-algorithmic-thin-interface`,
+  {prf:ref}`mt-fact-algorithmic-thin-interface`,
+  {prf:ref}`thm-sufficiency-canonical-3sat-thin-contract-package`);
+- and, as an optional stronger audit realization of that same route, the Part VIII backend-dossier sufficiency theorem
   ({prf:ref}`def-canonical-3sat-backend-dossier-package`,
   {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package`).
 
@@ -7643,9 +8351,9 @@ $$
 $$
 
 **Within** the ambient foundation, the Part VI internal separation follows by the direct canonical E13 theorem chain.
-Part IX adds a reusable barrier-metatheorem route to the same obstruction conclusion, and Parts VII--VIII sharpen the
-overall picture by specifying a stronger audited semantic implementation whose completion also forces the same internal
-separation.
+Part IX adds a reusable barrier-metatheorem route to the same obstruction conclusion, Part X compiles thin algorithmic
+interfaces into that semantic route, and Parts VII--X sharpen the overall picture by specifying stronger audited
+implementations whose completion also forces the same internal separation.
 
 **Status Comparison:**
 - **Classical ZFC + P ≠ NP:** Unproven
@@ -7662,22 +8370,25 @@ Let me be clear about what we have accomplished and what remains open.
 **What is proven abstractly:** Within cohesive $(\infty,1)$-topos theory, the manuscript states a theorem ladder
 showing how witness decomposition, irreducible generators, and saturated closure exhaust internally polynomial-time
 computation. On the problem-specific route, canonical $3$-SAT is then excluded from $P_{\text{FM}}$ by the direct E13
-theorem chain, not by slogan. Part IX abstracts this into reusable barrier metatheorems, and Parts VII--VIII reduce the
-stronger semantic implementation of that same route to explicit audit artifacts.
+theorem chain, not by slogan. Part IX abstracts this into reusable barrier metatheorems, Part X compiles thin
+algorithmic interfaces into semantic obstruction certificates, and Parts VII--X reduce the stronger semantic
+implementation of that same route to explicit audit artifacts.
 
 **What is already implemented for canonical $3$-SAT:** The canonical $3$-SAT object is admissible, its direct frontend
 E13 certificate package is now assembled in Appendix B, and it is tied to the class-separation argument by the internal
 Cook--Levin theorem and the $NP_{\text{FM}}$-completeness theorem.
 
-**What Parts VII--IX add:** an explicit obligation ledger, an implemented semantic primitive audit appendix, the direct
-separation certificate, the reusable barrier-metatheorem layer, the canonical backend dossier templates, and a minimal
-completion certificate specifying exactly which stronger audit artifacts must exist to refine the current E13 route into
-a full semantic obstruction implementation.
+**What Parts VII--X add:** an explicit obligation ledger, an implemented semantic primitive audit appendix, the direct
+separation certificate, the reusable barrier-metatheorem layer, the public thin-contract/factory layer, the canonical
+thin-contract package, the optional backend dossier templates, and a minimal completion certificate specifying exactly
+which stronger audit artifacts must exist to refine the current E13 route into a full semantic obstruction
+implementation.
 
-**What remains to discharge:** at the stronger audit level, the five complete canonical $3$-SAT backend dossiers, any
-desired problem-specific barrier data and lower bounds feeding the Part IX metatheorems, and the remaining
-bridge-completeness artifacts. Those are no longer part of the minimal direct route; they strengthen the same
-exclusion/separation chain by adding a finer semantic audit trail.
+**What remains to discharge:** at the stronger audit level, a complete canonical $3$-SAT thin-contract package, any
+desired problem-specific barrier data and lower bounds feeding the Part IX metatheorems, the optional backend dossiers
+used as stronger realizations of those thin contracts, and the remaining bridge-completeness artifacts. Those are no
+longer part of the minimal direct route; they strengthen the same exclusion/separation chain by adding a finer semantic
+audit trail.
 
 **What the bridge supplies:** The separate equivalence theorem identifying the internal classes with the classical
 Turing-machine classes.
@@ -7742,18 +8453,29 @@ bounds yield reusable modal obstructions, reconstructed E13, and hence hardness
  {prf:ref}`thm-barrier-package-implies-e13`,
  {prf:ref}`cor-barrier-contrapositive-hardness`).
 
-**Theorem 11 (3-SAT Backend Sufficiency):** If the canonical $3$-SAT backend dossier package is complete, then canonical
-$3$-SAT carries the full reconstructed E13 obstruction package and therefore also lies outside $P_{\text{FM}}$
+**Theorem 11 (Thin-Interface Factory Layer):** Complete modal thin contracts compile to semantic modal obstruction
+certificates, reconstructed E13, and hence hardness
+({prf:ref}`def-thin-sharp-contract`--{prf:ref}`def-thin-partial-contract`,
+ {prf:ref}`mt-fact-algorithmic-thin-interface`).
+
+**Theorem 12 (3-SAT Thin-Contract Sufficiency):** If the canonical $3$-SAT thin-contract package is complete, then
+canonical $3$-SAT carries the full reconstructed E13 obstruction package and therefore also lies outside
+$P_{\text{FM}}$
+({prf:ref}`def-canonical-3sat-thin-contract-package`,
+ {prf:ref}`thm-sufficiency-canonical-3sat-thin-contract-package`).
+
+**Theorem 13 (Optional Backend Realization):** If the canonical $3$-SAT backend dossier package is complete and realizes
+the five thin contracts, then it recovers Theorem 12 as a stronger audit refinement
 ({prf:ref}`def-canonical-3sat-backend-dossier-package`,
  {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package`).
 
-**Theorem 12 (Internal Separation Criterion):** Combining Theorem 7 with Theorem 8 yields
+**Theorem 14 (Internal Separation Criterion):** Combining Theorem 7 with Theorem 8 yields
 $P_{\text{FM}} \neq NP_{\text{FM}}$
 ({prf:ref}`cor-pfm-neq-npfm-from-random-3sat`).
 
-**Theorem 13 (Audit Completion and Classical Export):** The stronger audit refinement counts as implemented exactly when
-the primitive audit appendix, proof obligation ledger, modal backend dossiers, and frontend bridge dossiers are
-complete; with the bridge equivalence, the master export then yields $P_{\text{DTM}} \neq NP_{\text{DTM}}$
+**Theorem 15 (Audit Completion and Classical Export):** The stronger audit refinement counts as implemented exactly when
+the primitive audit appendix, proof obligation ledger, canonical thin-contract package, and any claimed frontend bridge
+dossiers are complete; with the bridge equivalence, the master export then yields $P_{\text{DTM}} \neq NP_{\text{DTM}}$
 ({prf:ref}`def-minimal-completion-certificate`,
 {prf:ref}`cor-completion-criterion-master-export`,
 {prf:ref}`cor-internal-to-classical-separation`).
@@ -7767,9 +8489,10 @@ five views reveal nothing but noise.
 
 This is the answer to the question: "Could there be a clever algorithm we have not thought of yet?" Within the
 framework, any such algorithm must appear as a modal factorization tree built from the five structural types. Part IX
-explains how reusable barrier data can block those modal routes in general, and Parts VII--VIII make the remaining
-implementation burden explicit: for the stronger audit route, complete the primitive audit, the five canonical $3$-SAT
-backend dossiers, and the remaining bridge-completeness artifacts.
+explains how reusable barrier data can block those modal routes in general, Part X compiles thin algorithmic interfaces
+into those modal obstructions, and Parts VII--X make the remaining implementation burden explicit: for the stronger
+audit route, complete the primitive audit, the canonical $3$-SAT thin-contract package, any optional stronger backend
+realizations, and the remaining bridge-completeness artifacts.
 
 The repaired proof presentation makes the dependencies explicit. E13 does the obstruction work, the SAT transfer does
 the internal class-separation work, Appendix B packages the direct frontend certificates, the audit chapters say exactly

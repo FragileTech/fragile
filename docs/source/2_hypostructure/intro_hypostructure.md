@@ -77,12 +77,13 @@ Part V then upgrades this into a semantic obstruction calculus, and Tactic E13 s
 that stronger obstruction layer. Part VI instantiates the framework on canonical $3$-SAT by proving admissibility and
 running the internal Cook--Levin reduction and proving the direct E13 exclusion route on the canonical internal problem
 object. Parts VII--VIII then turn the whole theorem ladder into an auditable implementation program by
-introducing the direct separation certificate, the proof-obligation ledger, backend dossiers, bridge dossiers, the
-primitive audit appendix, and the minimal completion certificate. Appendix B packages the six direct canonical frontend
-certificates, while the stronger backend dossiers refine the same route into a fully explicit semantic obstruction
-implementation.
+introducing the direct separation certificate, the proof-obligation ledger, thin-contract packaging, bridge dossiers,
+the primitive audit appendix, and the minimal completion certificate. Appendix B packages the six direct canonical
+frontend certificates, while the stronger audit route is now organized around a canonical thin-contract package with
+optional backend dossier realizations.
 Part IX then adds a reusable barrier-metatheorem layer, showing how translator-stable compression barriers force modal
-obstructions and reconstructed E13 certificates independently of any SAT-specific backend picture.
+obstructions and reconstructed E13 certificates independently of any SAT-specific backend picture. Part X compiles thin
+algorithmic interfaces into those semantic modal obstructions by factory metatheorem.
 
 **P/NP Bridge to Classical Complexity:**
 Bidirectional bridge theorems establish $P_{\text{Fragile}} = P_{\text{DTM}}$ and $NP_{\text{Fragile}} = NP_{\text{DTM}}$, allowing internal complexity separations to export to classical ZFC statements about P and NP. The framework reduces the P vs NP question to concrete geometric/topological properties of energy landscapes.
