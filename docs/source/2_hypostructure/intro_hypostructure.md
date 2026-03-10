@@ -240,6 +240,7 @@ A recommended approach for understanding this framework:
 
 **Part XIX: Algorithmic Completeness**
 - [Algorithmic Completeness Theory](09_mathematical/05_algorithmic.md)
+- [Algorithmic Extensions and Audit Framework](09_mathematical/05b_algorithmic_extensions.md)
 
 **Part XX: P/NP Bridge to Classical Complexity**
 - [P/NP Complexity Bridge](09_mathematical/06_complexity_bridge.md)
