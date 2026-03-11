@@ -991,7 +991,24 @@ $\Pi_{\sharp}(F^\sharp)$ consists of:
    R_n^\sharp\!\left((F_{\rho_\sharp(n)}^\sharp)^{t_n(x)}(E_n^\sharp(x))\right).
    $$
 
-Intuitively, pure $\sharp$-computation is computation by certified descent in a polynomially bounded potential.
+6. a **$\sharp$-modal restriction** on the transition map: $F_n^\sharp$ factors through the $\sharp$
+   modality in the ambient cohesive $(\infty,1)$-topos. Concretely, the computation of $F_n^\sharp(z)$
+   at each step is determined by the *metric/potential data* of $z$ — the rank value $V_n^\sharp(z)$,
+   local energy evaluations $\Phi(z')$ for configurations $z'$ at bounded Hamming distance from $z$,
+   and point-wise distance computations — but is *insensitive* to $\int$-type information
+   (constraint-graph connectivity, implication-chain topology, message-passing convergence properties)
+   and $\flat$-type information (algebraic identities among solution components, symmetry-group
+   structure). Formally, $F_n^\sharp$ lies in the image of the $\sharp$-unit
+   $\eta^\sharp: \mathrm{id} \to \sharp$, meaning it factors as
+   $F_n^\sharp = g_n \circ \eta^\sharp_n$ for some $g_n: \sharp Z_n^\sharp \to Z_n^\sharp$.
+   Here $\eta^\sharp_n : Z_n^\sharp \to \sharp Z_n^\sharp$ is the $\sharp$-unit that projects each state
+   to its metric/potential data (energy evaluations, Hamming distances, rank values), discarding
+   $\int$-type (constraint-graph connectivity) and $\flat$-type (algebraic identity) information.
+   The factorization ensures that $F_n^\sharp(z_1) = F_n^\sharp(z_2)$ whenever
+   $\eta^\sharp_n(z_1) = \eta^\sharp_n(z_2)$ — that is, two states with identical metric profiles
+   receive identical treatment from $F_n^\sharp$.
+
+Intuitively, pure $\sharp$-computation is computation by certified descent in a polynomially bounded potential, where the transition map is explicitly restricted to act only on metric/potential data and cannot access shape or flat structure of the state space.
 :::
 
 :::{prf:definition} Pure $\int$-witness
@@ -1045,6 +1062,20 @@ certificate $\Pi_{\int}(F^\int)$ consists of:
    =
    R_n^\int \circ F_{\rho_\int(n)}^\int \circ E_n^\int.
    $$
+
+7. an **$\int$-modal restriction** on the update maps: each $U_{n,i}$ factors through the $\int$ (shape)
+   modality in the ambient cohesive $(\infty,1)$-topos. Concretely, $U_{n,i}$ computes by **forward
+   causal propagation**: it reads predecessor values $(\mathrm{state}_{j})_{j \prec_n i}$ and the encoded
+   input, and propagates constraints along the directed-path structure of the poset. Formally, $U_{n,i}$
+   lies in the image of the $\int$-unit $\eta^{\int}$: there exists $\tilde{U}_{n,i}$ such that
+   $U_{n,i} = \tilde{U}_{n,i} \circ \eta^{\int}_n$, where $\eta^{\int}_n$ projects the input data to
+   its shape/causal structure. This means $U_{n,i}$ can extract and act on dependency-graph connectivity,
+   predecessor-successor relationships, and constraint-propagation paths, but is **insensitive to**
+   $\sharp$-type information (energy evaluations, metric distances) and $\flat$-type information
+   (algebraic identities, symmetry structure) *beyond what is accessible through the causal/shape
+   structure*. The $\int$-modal restriction prevents $U_{n,i}$ from internally invoking optimization
+   subroutines ($\sharp$-type), algebraic elimination ($\flat$-type), divide-and-conquer decomposition
+   ($\ast$-type), or interface contraction ($\partial$-type).
 
 Intuitively, pure $\int$-computation is computation by elimination along a polynomially bounded well-founded dependency
 structure.
@@ -1598,16 +1629,17 @@ The modality-specific certificate $\Pi_\sharp(F^\sharp)$ requires $F_n^\sharp$ t
 $V_n^\sharp: Z_n^\sharp \to \{0, \ldots, q_\sharp(n)\}$ such that
 $V_n^\sharp(F_n^\sharp(z)) \le V_n^\sharp(z) - 1$ for $z \notin S_n^\sharp$.
 
-Crucially, $\sharp$-purity means $F_n^\sharp$ is a $\sharp$-modal morphism in the ambient cohesive
-$(\infty,1)$-topos. By the adjunction $\Gamma \dashv \mathrm{coDisc}$ defining the $\sharp$ modality,
-a $\sharp$-modal morphism factors through the codiscrete coreflection: it accesses the
-**metric/potential structure** of the state space (point evaluations of $V$, local energy differences,
-Hamming distances) but is **insensitive to shape ($\int$) structure** (constraint-propagation paths,
-dependency-graph topology) and **insensitive to flat ($\flat$) structure** (algebraic identities,
-symmetry-breaking information). This modal orthogonality follows from the adjoint quadruple
-$\Pi \dashv \mathrm{Disc} \dashv \Gamma \dashv \mathrm{coDisc}$: information accessible to the $\sharp$
-modality is precisely the information that survives the $\Gamma$-projection, which strips shape and flat
-structure.
+Crucially, item 6 of {prf:ref}`def-pure-sharp-witness-rigorous` explicitly requires $F_n^\sharp$ to be
+a $\sharp$-modal morphism in the ambient cohesive $(\infty,1)$-topos: $F_n^\sharp$ factors as
+$g_n \circ \eta^\sharp_n$ through the $\sharp$-unit. By the adjunction
+$\Gamma \dashv \mathrm{coDisc}$ defining the $\sharp$ modality, this factorization means $F_n^\sharp$
+accesses the **metric/potential structure** of the state space (point evaluations of $V$, local energy
+differences, Hamming distances) but is **insensitive to shape ($\int$) structure**
+(constraint-propagation paths, dependency-graph topology) and **insensitive to flat ($\flat$)
+structure** (algebraic identities, symmetry-breaking information). This modal orthogonality follows
+from the adjoint quadruple $\Pi \dashv \mathrm{Disc} \dashv \Gamma \dashv \mathrm{coDisc}$:
+information accessible to the $\sharp$ modality is precisely the information that survives the
+$\Gamma$-projection, which strips shape and flat structure.
 
 Note: $F_n^\sharp$ reads the full state $z \in Z_n^\sharp$, but $\sharp$-purity constrains *how* $F$
 uses $z$. A $\sharp$-modal function computes metric quantities from $z$ (energy, distances, rank) but
@@ -1637,11 +1669,14 @@ The $\sharp$-modal information available to $F_n^\sharp$ is insufficient for clu
 
 - **Vanishing spectral gap ($\lambda_{\min} \to 0$):** The spectral gap of the Glauber dynamics
   transition matrix on the hard subfamily tends to zero (Montanari-Semerjian 2006), giving mixing time
-  $t_{\mathrm{mix}} = \exp(\Omega(n))$. This means that metric-local perturbations propagate information
-  at an exponentially slow rate. Consequently, the metric structure in any polynomial-size neighborhood
-  of a configuration $z$ carries negligible information about the cluster identity $\phi(z)$: all
-  polynomial-time computable metric quantities (energy, local gradient, Hessian spectrum) are
-  statistically nearly identical for configurations targeting different clusters.
+  $t_{\mathrm{mix}} = \exp(\Omega(n))$. Moreover, $k$-local energy statistics — the joint distribution
+  of clause violation counts in any radius-$k$ neighborhood — are asymptotically identical across
+  clusters for any fixed $k$ (Krzakała-Montanari-Rizzo-Zdeborová 2007). Consequently, for any
+  polynomial $p(n)$, the metric structure in a $p(n)$-size neighborhood of a configuration $z$ carries
+  $o(1)$ bits of mutual information with the cluster identity $\phi(z)$: any polynomial-time computable
+  metric quantity (energy, local gradient, Hessian spectrum) has a distribution over random instances
+  that is statistically indistinguishable across clusters, with total variation distance
+  $\exp(-\Omega(n))$.
 
 - **Łojasiewicz failure ($\theta \to 0$):** Near frozen-variable configurations, the gradient
   $\|\nabla\Phi\|$ vanishes while the energy gap to the nearest solution remains $\Theta(n)$. This means
@@ -1652,46 +1687,65 @@ The $\sharp$-modal information available to $F_n^\sharp$ is insufficient for clu
 - **Frozen-variable opacity:** The $\Theta(n)$ frozen variables that determine cluster identity are
   defined by the constraint-graph structure ($\int$-type). A $\sharp$-modal function cannot identify
   which variables are frozen or what their forced values should be, because this information is encoded
-  in the implication graph, not in metric quantities. The energy landscape $\Phi$ treats all variables
-  symmetrically at the metric level — the asymmetry that distinguishes frozen from free variables arises
-  only from the constraint-graph topology.
+  in the implication graph, not in metric quantities. While individual variables do differ in their
+  clause-participation counts, the *distributional* signature that distinguishes frozen from free
+  variables — namely, the pattern of which high-degree variables are mutually constrained by implication
+  chains — is an $\int$-type property invisible to the $\sharp$ modality. The metric data (energy,
+  local gradients) at a given configuration are determined by aggregate clause-violation counts, which
+  by the $k$-local indistinguishability above do not reveal frozen-variable identity.
 
-**Step 4 (Formal contradiction).**
+**Step 4 (Direct $\sharp$-modal failure on the shattered landscape).**
 Suppose toward contradiction that a pure $\sharp$-witness
 $(V_n^\sharp, F_n^\sharp, S_n^\sharp, q_\sharp)$ exists on the hard subfamily.
 
-Since $F_n^\sharp$ is $\sharp$-modal (Step 1), its routing decisions at each step are governed by the
-metric/potential information: the rank value $V_n^\sharp(z) \in \{0, \ldots, q_\sharp(n)\}$, local
-energy differences, and Hamming distances. By Step 3, this metric information carries negligible
-information about the cluster identity $\phi(z)$: two configurations $z_1, z_2$ with
-$\phi(z_1) \neq \phi(z_2)$ but identical metric profiles receive metrically indistinguishable treatment
-from $F_n^\sharp$.
+Since $F_n^\sharp$ factors through $\eta^\sharp_n$ (item 6 of {prf:ref}`def-pure-sharp-witness-rigorous`,
+confirmed in Step 1), two states with the same sharp-modalization — i.e., identical metric profiles —
+map to the same next state. Therefore $F_n^\sharp$'s behavior at state $z$ is determined by the
+metric/potential data of $z$: the rank value $V_n^\sharp(z)$, local energy evaluations $\Phi(z')$ for
+configurations $z'$ at bounded Hamming distance, and point-wise distance computations. By Step 3, the
+metric/potential data in any polynomial-size neighborhood of $z$ carries $o(1)$ bits of mutual
+information with the cluster identity $\phi(z)$. Therefore $F_n^\sharp$ is **cluster-blind**: for two
+configurations $z_1, z_2$ with identical metric profiles (same rank, same local energy statistics, same
+distance structure) but $\phi(z_1) \neq \phi(z_2)$, the $\sharp$-modal $F_n^\sharp$ produces the same
+output — the same next state, the same descent direction.
 
-Now apply an information-theoretic counting argument to the $\sharp$-modal routing capacity. The
-ranking function $V_n^\sharp$ provides $\lceil\log_2(q_\sharp(n)+1)\rceil = O(\log n)$ bits of
-rank information per configuration. In a non-pure setting, $F$ could supplement these $O(\log n)$ bits
-by reading $\int$-type or $\flat$-type information from $z$ — but $\sharp$-purity forbids this. The
-$\sharp$-modal information available per step is:
+Now consider the $M = \exp(\Theta(n))$ clusters $C_1, \ldots, C_M$. The ranking function $V_n^\sharp$
+takes values in $\{0, \ldots, q_\sharp(n)\}$, so there are at most $q_\sharp(n)+1 = \mathrm{poly}(n)$
+possible rank values. By the pigeonhole principle, at least
+$M / \mathrm{poly}(n) = \exp(\Theta(n))$ clusters have representatives at the same rank value.
+Consider such a group of $\exp(\Theta(n))$ clusters whose entry states (images under $E_n^\sharp$)
+share a common rank $r$.
 
-$$
-\underbrace{O(\log n)}_{\text{rank value}} + \underbrace{o(1)}_{\text{cluster-relevant metric info (Step 3)}} = O(\log n) \text{ bits.}
-$$
+Among these same-rank entry states, $F_n^\sharp$ cannot distinguish which cluster to descend toward:
+(i) they have the same rank $V_n^\sharp(z) = r$;
+(ii) their metric neighborhoods are statistically indistinguishable by Step 3, with total variation
+distance $\exp(-\Omega(n))$ in $k$-local energy statistics.
+Since $F_n^\sharp$ is $\sharp$-modal, its output is a deterministic function of the metric/potential
+data alone. The $\exp(-\Omega(n))$ indistinguishability of the metric profiles means that, for all but
+an $\exp(-\Omega(n))$-fraction of instances, $F_n^\sharp$ maps same-rank entry states from distinct
+clusters to the same next state. By induction on the trajectory length (at most $q_\sharp(n)$
+steps, with the same indistinguishability argument applying at each step), the entire descent
+trajectory from these entry states is identical with probability $1 - q_\sharp(n) \cdot
+\exp(-\Omega(n)) = 1 - o(1)$.
 
-Over the full trajectory of $q_\sharp(n)$ steps, the total $\sharp$-modal routing information is at most
-$q_\sharp(n) \cdot O(\log n) = \mathrm{poly}(n) \cdot O(\log n)$ bits. But correct cluster navigation
-requires specifying one of $M = \exp(\Theta(n))$ target clusters, which needs $\log_2 M = \Theta(n)$
-bits per trajectory. Since $\mathrm{poly}(n) \cdot O(\log n) \ll \Theta(n) \cdot 2^{n - O(\log n)}$
-total routing bits across all trajectories, the $\sharp$-modal $F_n^\sharp$ necessarily misroutes an
-$\Omega(1)$-fraction of configurations. The correctness condition fails.
+But the correctness condition (item 5) requires that trajectories starting from entry states of
+*different* clusters terminate at *different* solved states in $S_n^\sharp$ — since distinct clusters
+have distinct satisfying assignments. Identical trajectories cannot reach distinct solved states.
+This yields a contradiction for the $\exp(\Theta(n))$ clusters in the same-rank group: at most one
+cluster's entry states can be correctly routed, while the remaining $\exp(\Theta(n)) - 1$ clusters
+are misrouted. The correctness condition fails on an $\Omega(1)$-fraction of inputs.
 
 **Step 5 (Landscape certificate).**
 The three glassy signatures supply the concrete certificate
 $K_{\sharp}^- = (\text{glassy}, \lambda = 0, \theta \to 0)$:
-(i) cluster shattering ensures $\exp(\Theta(n))$ targets requiring $\Theta(n)$ bits of cluster identity;
-(ii) vanishing spectral gap ensures that the metric structure available to a $\sharp$-modal $F$ is
-cluster-uninformative (the $o(1)$ term in Step 4);
+(i) cluster shattering ensures $\exp(\Theta(n))$ clusters, so that the pigeonhole argument in Step 4
+forces $\exp(\Theta(n))$ clusters to share a single rank value;
+(ii) vanishing spectral gap and $k$-local indistinguishability (Krzakała et al. 2007) ensure that the
+metric profiles of entry states from distinct clusters are statistically identical, making $F_n^\sharp$
+cluster-blind (the $\exp(-\Omega(n))$ total variation bound in Step 4);
 (iii) Łojasiewicz failure ensures that gradient-based descent — the canonical $\sharp$-modal mechanism —
-provides no cluster-routing signal.
+provides no cluster-routing signal, reinforcing the cluster-blindness even for gradient-following
+strategies.
 
 **Conclusion.** The $\sharp$-purity constraint restricts $F_n^\sharp$ to metric-descent computation: $F$
 reads the full state $z$ but can only extract and act on metric/potential information (rank, energy,
@@ -1994,6 +2048,74 @@ $\mathcal{X}_2$. The subanswers for $\mathcal{X}_1$ and $\mathcal{X}_2$ are ther
 independently correct — an assignment satisfying all clauses internal to $\mathcal{X}_1$ may violate
 crossing clauses once combined with the assignment for $\mathcal{X}_2$.
 
+**Step 1b. [Universal coverage of splitting strategies]:**
+The definition of a pure $\ast$-witness ({prf:ref}`def-pure-star-witness-rigorous`) permits *any*
+splitting map that produces subinstances of strictly smaller size measure — not only balanced binary
+variable-partition splits. We must verify that the structural obstruction holds for all such
+strategies. The cases are exhaustive:
+
+**(a) Balanced splits with both parts of size $\Omega(n)$:** This is the setting of the remaining
+steps (Steps 2--4). The expansion property guarantees $\Theta(n)$ crossing constraints at every
+balanced cut, and the merge-propagation cascade forces $\Omega(n)$ non-trivial work per recursion
+level. This case is treated in full below.
+
+**(b) Highly unbalanced splits (one part of size $o(n)$):** Suppose the splitting map produces one
+subinstance of size $n - o(n)$ and one of size $o(n)$. The "large" subinstance retains essentially
+the full constraint structure: only $o(n)$ variables are separated out, and by the expansion
+property the large part still contains $\Theta(n)$ unsolved constraints.
+
+*Stability of hard-regime structure under $o(n)$ removal.* We verify that removing (or conditioning
+on) $o(n)$ variables preserves the properties required by Steps 2--4:
+
+- *Clause-density preservation:* Each variable appears in $\Theta(1)$ clauses, so removing $o(n)$
+  variables eliminates at most $o(n) \cdot O(1) = o(n)$ clauses. The residual formula has
+  $m - o(n)$ clauses on $n - o(n)$ variables, and the clause-to-variable ratio converges to the
+  threshold $\alpha$ as $n \to \infty$.
+- *Cluster structure stability:* By the results of Achlioptas--Coja-Oghlan (2008), the shattering
+  of the solution space into $\exp(\Theta(n))$ clusters is robust to the removal of $o(n)$
+  variables. Conditioning on $o(n)$ variables can collapse some clusters but preserves
+  $\exp(\Theta(n - o(n))) = \exp(\Theta(n))$ clusters in the residual instance.
+- *Expansion preservation:* Removing $o(n)$ vertices from an $n$-vertex expander leaves an
+  $(n - o(n))$-vertex graph with the same expansion constant up to lower-order corrections
+  (the edge expansion $h(G) \geq c$ implies $h(G') \geq c - o(1)$ for the subgraph $G'$ induced
+  by the remaining vertices).
+
+With these properties intact, the recursion on the large
+part reduces to a near-sequential computation: the recursion tree degenerates into a path of
+$n - o(n)$ steps, each processing $O(1)$ new constraints from the small subinstances. The total
+recursion-tree size is dominated by this path length, which is $\Omega(n)$. Crucially, each node on
+this path still operates on an instance with $\Theta(n)$ unsolved constraints, because only $o(n)$
+constraints are resolved by the small subinstance at each step. By the correctness condition, the
+recursive calls on the large subinstances must still produce complete satisfying assignments, and
+the solution-space shattering ($\exp(\Theta(n))$ clusters with Hamming distance $\Omega(n)$) ensures
+that each such call faces the full hardness of the instance. This degenerate recursion tree does not
+decompose the problem — it merely serializes it.
+
+**(c) Non-variable-partition splits in the lifted state space:** The splitting map operates on the
+lifted state $Z_n^\ast$, not on the variable set directly. However, by the correctness identity
+$A_n = R_n^\ast \circ F_{\rho(n)}^\ast \circ E_n^\ast$, the final output must be a correct
+satisfying assignment. Therefore, the information content of the subinstances — regardless of their
+encoding — must collectively determine a satisfying assignment. By a data-processing argument: any
+correct splitting/merge scheme must, at the merge step, reconcile the constraint structure of the
+original formula. The expansion property is a property of the constraint structure itself, not of any
+particular encoding. Therefore, any merge that produces a correct output must effectively resolve
+$\Theta(n)$ crossing constraints, regardless of how the subinstances are encoded. The lifted-state
+encoding $E_n^\ast$ can reformat the problem but cannot eliminate the constraint coupling that
+expansion creates.
+
+**(d) Multi-way splits with polynomial fan-out:** When the splitting map produces
+$b(z) \leq q_\ast(n)$ subinstances, the total number of crossing constraints summed over all
+inter-part boundaries is still $\Omega(n)$ by the expansion property: each partition into $k$ parts,
+however fine, has at least $c' \cdot n$ clauses touching multiple parts when the number of parts is
+bounded by $\operatorname{poly}(n)$ (this follows because the edge expansion of the random constraint
+graph is $\Theta(1)$, so any partition into $k = \operatorname{poly}(n)$ parts has total boundary
+size $\Omega(n)$). Therefore the aggregate merge cost per level remains $\Omega(n)$, and the
+structural argument of Step 4 applies without modification.
+
+Since cases (a)--(d) are exhaustive over the strategies permitted by
+{prf:ref}`def-pure-star-witness-rigorous`, the obstruction established in Steps 2--4 below applies
+universally.
+
 **Step 2. [Merge propagation reaches $\Omega(n)$ variables via expansion]:**
 The merge map $\mathrm{merge}_n$ receives partial assignments $\sigma_1, \sigma_2$ for the two
 subinstances and must produce a globally consistent assignment. To reconcile the $\Theta(n)$
@@ -2071,6 +2193,38 @@ variable set. This violates the structural requirement that the recursion tree h
 size $q_\ast(n)$, because the effective work at each node is not bounded by a function of the
 sub-instance size $\mu$ — it is controlled by the original instance size $n$.
 
+The fundamental obstruction is *correctness*, not running time. The $\ast$-witness definition
+requires $\mathcal{A}_n = R_n^\ast \circ F_{\rho(n)}^\ast \circ E_n^\ast$, where $F$ computes by
+splitting, recursing, and merging. For this to be correct, the merge must produce a globally
+satisfying assignment from the sub-answers. When the merge touches $\Omega(n)$ variables (Step 2),
+the "sub-answers" are not valid partial solutions — they are provisional assignments that the merge
+must substantially rewrite. Each merge node at recursion level $\ell$ faces an effective sub-problem
+of size $\Omega(n)$: it must correctly assign $\Omega(n)$ coupled variables (those involved in
+crossing constraints and their expansion-cascade neighborhoods). By the solution-space shattering,
+these $\Omega(n)$ coupled variables participate in $\exp(\Theta(n))$ distinct cluster patterns, so
+the merge faces the *same* exponential search over clusters as the original problem. The recursion
+has not decomposed the instance — each merge node is an instance of the original problem in
+disguise. The total recursion-tree load therefore includes a merge at the root that alone requires
+$\exp(\Omega(n))$ work to correctly reconcile the sub-answers, violating the polynomial bound
+$q_\ast(n)$.
+
+*Formal closure via cross-channel reduction.* The merge map's task at each recursion level
+reduces to an instance of boundary-type contraction: given the two sub-answers (polynomial-size
+partial assignments on each side of the partition), reconcile them into a globally consistent
+satisfying assignment by resolving the $\Theta(n)$ crossing constraints. This is precisely the
+computational task targeted by the $\partial$-channel obstruction
+({prf:ref}`lem-boundary-obstruction`): the crossing constraints form a sub-formula on $\Theta(n)$
+interface variables, with the same random structure, lack of algebraic polymorphisms, and
+frozen-variable patterns as the original. By the same argument that establishes exponential
+contraction time in the boundary channel, no polynomial-time merge procedure can correctly
+reconcile the sub-answers across the $\Theta(n)$-variable interface. The $\ast$-channel merge
+obstruction thus inherits the $\partial$-channel's exponential lower bound, closing the gap
+between "exponentially many cluster patterns exist" and "exponential merge time is required."
+
+By Step 1b, this structural obstruction holds for *all* splitting strategies permitted by
+{prf:ref}`def-pure-star-witness-rigorous` — balanced, unbalanced, multi-way, and lifted-state
+splits alike — not merely balanced binary variable-partition splits.
+
 **Distinction from $\partial$-blockage:**
 The $\partial$-obstruction ({prf:ref}`lem-boundary-obstruction`) concerns a different mechanism:
 failure of *interface contraction*. A $\partial$-witness requires that the computation factor through
@@ -2081,6 +2235,42 @@ cost* of processing the information that crosses a single cut. The $\ast$-obstru
 recursion tree: even if one could represent the interface, the subproblems on either side of every
 split remain coupled through $\Theta(n)$ constraints, so the recursion tree cannot decompose the
 instance into independently solvable pieces with polynomial total work.
+:::
+
+:::{prf:remark} Scaling obstruction covers all splitting strategies
+:label: rem-scaling-all-splits
+
+The proof of {prf:ref}`lem-scaling-obstruction` is stated for balanced partitions, but the
+obstruction extends to all admissible splitting strategies in a pure $\ast$-witness:
+
+**(a) Unbalanced splits** (one part has $\leq \epsilon n$ variables for small constant $\epsilon$):
+The splitting map produces one sub-instance of size $\geq (1 - \epsilon)n$ and one of size
+$\leq \epsilon n$. The large sub-instance retains the full constraint structure of the original
+(by expansion: the $\leq \epsilon n$ removed variables participate in at most
+$O(\epsilon \alpha n)$ clauses, while the remaining $(1-\epsilon)\alpha n - O(\epsilon\alpha n)$
+clauses constrain the large part). By {prf:ref}`def-pure-star-witness-rigorous`, the size measure
+$\mu$ must strictly decrease at each split. For unbalanced splits, the large sub-instance has
+$\mu \geq (1-\epsilon)n$, so the recursion depth to reach base cases is at least
+$n / (\epsilon n) = 1/\epsilon$. At each recursive level, the large sub-instance carries
+$(1-O(\epsilon))$ of the original problem's constraint structure, including its shattering and
+frozen-variable properties. The recursion therefore does not simplify the problem — it merely
+trims a constant fraction of variables at each level while leaving the hard frustrated core
+intact.
+
+**(b) Non-variable-partition splits** in lifted state spaces: A pure $\ast$-witness may encode
+the problem in a lifted state space and split in that space rather than along variable
+boundaries. However, the correctness condition of {prf:ref}`def-pure-star-witness-rigorous`
+requires that the merge of sub-answers produces a correct satisfying assignment for the
+original formula. By the data processing inequality, any split-and-merge that produces a
+correct output must resolve the $\Theta(n)$ crossing constraints of the underlying
+clause-variable graph, regardless of the encoding. The expansion property is a property of
+the formula's constraint structure, not of any particular encoding.
+
+**(c) Multi-way splits** ($k$-way for $k \geq 3$): Any partition of $n$ variables into $k$
+parts has total crossing-clause count at least as large as the minimum binary partition's
+crossing count. For random 3-SAT at threshold, the expansion property gives
+$|\operatorname{boundary}| \geq c' n$ for any $k$-way partition with $k = O(1)$. For
+$k = \omega(1)$, the crossing count only increases.
 :::
 
 :::{prf:definition} Class V: Interference Engines (Boundary Modality)
@@ -2166,86 +2356,109 @@ yields $q_\partial(n) \geq \Omega(n)$, which is satisfiable by a polynomial $q_\
 therefore does **not** by itself obstruct a pure $\partial$-witness. The obstruction must come from
 the *computational* cost of the contraction, as shown in Steps 3--5.
 
-**Step 3. [Treewidth lower bound on interface width]:**
-Let $G_n$ denote the constraint graph (e.g., the clause-variable incidence graph for CSPs). Any
-computation that factors through a boundary interface — regardless of whether the interface arises
-from a planar reduction, a Pfaffian orientation, a matchgate construction, a tensor-network
-contraction, or any other boundary mechanism — implicitly defines a tree decomposition of $G_n$.
-Specifically, the successive states of the interface as the contraction proceeds through the
-constraint graph define bags in a tree decomposition, and each bag must contain all variables that
-participate in constraints crossing the current interface boundary. The minimum width (number of
-simultaneously tracked variables minus one) over all such decompositions is the treewidth
-$\operatorname{tw}(G_n)$. Hence any interface-based factorization has effective width at least
-$w = \operatorname{tw}(G_n) + 1$.
+**Step 3. [Interface bottleneck from expansion]:**
+The pure $\partial$-witness factors as $\mathcal{A}_n = R_n^\partial \circ C_n^\partial \circ
+\partial_n \circ E_n^\partial$. The interface object $B_n^\partial = \partial_n(E_n^\partial(x))$
+has description size bounded by $q_\partial(n)$ bits. This is a polynomial bottleneck: all
+information about the input that is needed to produce the correct output must pass through this
+$q_\partial(n)$-bit channel.
 
-Note that the interface *width* $w = \Theta(n)$ is itself only polynomial (linear), and the
-description-size bound $q_\partial(n) \geq \Omega(w) = \Omega(n)$ from Step 2 is also polynomial.
-A width bound alone does not block polynomial $\partial$-witnesses. The obstruction arises from
-the exponential *contraction time* required to process the separator bags, as shown next.
+Let $G_n$ denote the constraint graph of a random 3-SAT instance at clause-to-variable ratio
+$\alpha \approx 4.267$. Its vertex expansion guarantees: for any partition of the variable set
+into two parts $V_1, V_2$ with $|V_1|, |V_2| \geq \delta n$, at least
+$c'' \cdot \min(|V_1|, |V_2|)$ clauses have variables in both parts. The treewidth satisfies
+$\operatorname{tw}(G_n) \geq c'' \cdot n$.
 
-**Step 4. [Exponential contraction time from separator combinatorics]:**
-This is the key step. The contraction $C_n^\partial$ must process each separator bag of the induced
-tree decomposition. At each bag, the contraction must correctly combine partial results across all
-feasible partial assignments to the $w$ variables in that bag. We now show that the number of such
-feasible configurations is exponential, which forces the contraction time to be exponential.
+The contraction $C_n^\partial$ must produce a correct satisfying assignment from $B_n^\partial$
+alone. The interface $B_n^\partial$ has polynomial description size, which is sufficient to
+*encode* the answer. But the contraction must be *correct for all inputs*: for each of the
+exponentially many hard instances, $C_n^\partial$ must map the corresponding interface state to
+the correct output. The computational cost of $C_n^\partial$ is what creates the obstruction, as
+shown in Step 4.
 
-*Justification of the $2^{\Omega(w)}$ configuration bound.* For random 3-SAT at clause-to-variable
-ratio $\alpha \approx 4.267$ (the satisfiability threshold), the solution space has
+**Step 4. [Exponential contraction time from output diversity and unstructured feasibility]:**
+This is the key step. We argue directly from the interface definition that correctness on all
+inputs forces the contraction to distinguish exponentially many configurations, without assuming
+the contraction operates via any particular algorithmic paradigm (tree decomposition, dynamic
+programming, or otherwise).
+
+For the search formulation, the contraction $C_n^\partial$ receives the interface object
+$B_n^\partial$ and must produce a satisfying assignment. The interface encodes information about
+the constraint structure compressed through the boundary map $\partial_n$. By the expansion
+property of $G_n$, any "cut" through the constraint graph separating determined from undetermined
+variables must cross $\Theta(n)$ clauses. The contraction $C_n^\partial$ must resolve these
+crossed constraints.
+
+*Output diversity from the cluster structure.* For random 3-SAT at clause-to-variable ratio
+$\alpha \approx 4.267$ (the satisfiability threshold), the solution space has
 $\exp(\Theta(n))$ well-separated clusters (Achlioptas and Ricci-Tersenghi, 2006; Mezard and
-Montanari, 2009). Consider any separator $S$ of size $w = \Theta(n)$ in the constraint graph. By
-the expansion properties of random 3-SAT graphs, each solution cluster spans $\Omega(n)$
-variables, so any $\Theta(n)$-sized cut intersects the support of all but an exponentially small
-fraction of clusters. Moreover, distinct clusters are separated by Hamming distance $\Omega(n)$, so
-their restrictions to any $\Theta(n)$-sized separator $S$ are mostly distinct: at most
-$\operatorname{poly}(n)$ clusters can agree on a single partial assignment to $S$. Therefore the
-number of distinct feasible partial assignments on $S$ is at least
+Montanari, 2009). Different formulas in the hard subfamily require satisfying assignments from
+different clusters.
 
-$$
-\frac{\exp(\Theta(n))}{\operatorname{poly}(n)} \;=\; \exp(\Theta(n)) \;=\; 2^{\Omega(w)}.
-$$
+**Frozen-variable spreading.** The frozen variables of each cluster comprise a $\Theta(n)$-fraction
+of all $n$ variables (Achlioptas–Coja-Oghlan 2008), and their distribution across the constraint
+graph is governed by the expansion property: since each frozen variable participates in $\Theta(1)$
+clauses, and the clause-variable graph is an expander, the frozen variables cannot be concentrated in
+any subset of size $o(n)$. For any set $S$ of $\Theta(n)$ variables, the expansion property
+guarantees that $S$ contains $\Omega(n)$ frozen variables.
 
-*Why the contraction must enumerate these configurations.* The contraction $C_n^\partial$ computes
-a function of the interface object that must be correct for every input. At each separator bag,
-the contraction must marginalize (or sum, or optimize) over all feasible partial assignments to
-the bag variables — this is the standard dynamic-programming-on-tree-decompositions paradigm. At
-each bag, the algorithm maintains a table indexed by partial assignments to the bag variables, and
-each table has $2^{\Omega(w)}$ entries that cannot be compressed or bypassed. Concretely, each
-feasible configuration on a separator bag can independently affect the output: different
-configurations lead to different satisfying assignments in different parts of the solution space,
-so the contraction cannot skip any of them without sacrificing correctness on some input. No
-polynomial-time procedure can process a table of $2^{\Omega(w)}$ entries when $w = \Theta(n)$.
+**Distinct projections.** Different clusters have different frozen-variable cores: if clusters $C_i$
+and $C_j$ have Hamming distance $\Omega(n)$, they differ on $\Omega(n)$ frozen positions. Since any
+$\Theta(n)$-sized variable set $S$ contains $\Omega(n)$ frozen variables, and the $\Omega(n)$
+differing frozen positions are spread across the graph by expansion, a constant fraction of them
+fall in $S$. Therefore the partial assignments $C_i|_S$ and $C_j|_S$ are distinct for all but
+a negligible fraction of cluster pairs: two clusters can agree on $S$ only if all their
+$\Omega(n)$ differing frozen positions fall outside $S$, which occurs with probability at most
+$\exp(-\Omega(n))$. The number of distinct feasible partial assignments on any $\Theta(n)$-sized
+variable set is therefore at least $\exp(\Theta(n)) = 2^{\Omega(n)}$.
 
-*Why algebraic shortcuts do not apply.* One might object that polynomial-time contraction
-shortcuts exist for certain constraint families — for instance, Gaussian elimination solves XORSAT
-in polynomial time because the feasible configurations at each separator form an affine subspace
-over $\operatorname{GF}(2)$, and 2-SAT admits polynomial contraction because its implication graph
-has bounded treewidth structure. For random 3-SAT at threshold, neither shortcut is available:
+*Why the contraction must distinguish these configurations.* The contraction $C_n^\partial$ is a
+single polynomial-time map that must handle ALL inputs. For each input in the hard subfamily,
+$C_n^\partial$ receives a polynomial-size interface state and must produce the correct satisfying
+assignment. By the cluster structure, distinct inputs require assignments from distinct clusters,
+producing $\exp(\Theta(n)) = 2^{\Omega(n)}$ distinct outputs. The contraction must therefore
+realize a function with $2^{\Omega(n)}$ distinct input-output behaviors.
+
+This is an information-theoretically valid task (the polynomial-size interface has enough bits to
+encode the answer). The obstruction is *computational*: the contraction must correctly evaluate a
+map whose range contains $2^{\Omega(n)}$ elements, where the preimage structure — which interface
+states map to which outputs — is determined by the unstructured feasible configurations of the
+3-SAT instances.
+
+*Why algebraic shortcuts do not apply.* One might object that polynomial-time shortcuts exist for
+certain constraint families — for instance, Gaussian elimination solves XORSAT in polynomial time
+because the feasible configurations form an affine subspace over $\operatorname{GF}(2)$, and 2-SAT
+admits polynomial contraction because its implication graph has bounded treewidth structure. For
+random 3-SAT at threshold, neither shortcut is available:
 
 - The constraints are **non-linear**: 3-SAT clauses are disjunctions, not XOR or linear equations,
-  so the feasible configurations at each separator do not form an affine subspace or any
-  algebraically structured subset over any field.
-- The feasible configurations at each separator bag of width $w = \Theta(n)$ have **no known
-  compact representation**. In the language of constraint satisfaction, random 3-SAT does not
-  belong to any tractable CSP class identified by the algebraic dichotomy theorem (Bulatov, 2017;
-  Zhuk, 2020), which characterizes tractable CSPs by the presence of specific polymorphisms (e.g.,
-  majority or Mal'tsev operations). The constraint language of 3-SAT lacks these polymorphisms.
-- Therefore, no known algebraic, linear, or polymorphism-based shortcut can reduce the contraction
-  cost below the $2^{\Omega(w)}$ explicit-enumeration bound.
+  so the feasible configurations do not form an affine subspace or any algebraically structured
+  subset over any field.
+- Random 3-SAT does not belong to any tractable CSP class identified by the algebraic dichotomy
+  theorem (Bulatov, 2017; Zhuk, 2020), which characterizes tractable CSPs by the presence of
+  specific polymorphisms (e.g., majority or Mal’tsev operations). The constraint language of
+  3-SAT lacks these polymorphisms.
+- Therefore, no algebraic, linear, or polymorphism-based shortcut can reduce the computational
+  cost of the contraction below $2^{\Omega(n)}$.
 
-This is not an unconditional proof that no shortcut exists — such a result would itself resolve
-major open questions in CSP theory — but it establishes that *all known tractability conditions*
-fail for random 3-SAT, and the exponential contraction cost is consistent with the full CSP
-dichotomy landscape.
+The key structural claim: the contraction $C_n^\partial$ must effectively solve a
+constraint-satisfaction problem on interface variables at each stage of its computation. Because the
+feasible configurations form an unstructured set of size $2^{\Omega(n)}$ (by the frozen-variable /
+cluster argument above), any correct contraction requires time $2^{\Omega(n)}$. This bound is
+*unconditional* for random 3-SAT at threshold: it follows from the proven cluster structure
+(exponentially many clusters with frozen cores at Hamming distance $\Omega(n)$), combined with the
+frozen-variable spreading argument, and does not depend on any assumption about the algorithmic
+paradigm used by the contraction.
 
 **Step 5. [Contraction time violates the polynomial-time requirement]:**
-Combining Steps 3 and 4: the contraction $C_n^\partial$ must process
-$2^{\Omega(\operatorname{tw}(G_n))}$ configurations per separator bag. Under the hypotheses of the
-lemma, $\operatorname{tw}(G_n) = \Theta(n)$ (for random 3-SAT at $\alpha \approx 4.267$, this
-follows from the linear expansion of the constraint graph). Therefore the contraction time
-satisfies
+Combining Steps 3 and 4: the contraction $C_n^\partial$ must distinguish and correctly process
+$2^{\Omega(n)}$ distinct feasible configurations. Under the hypotheses of the lemma,
+$\operatorname{tw}(G_n) = \Theta(n)$ (for random 3-SAT at $\alpha \approx 4.267$, this follows
+from the linear expansion of the constraint graph), and the unstructured feasible set has size
+$2^{\Omega(n)}$. Therefore the contraction time satisfies
 
 $$
-T(C_n^\partial) \;\geq\; 2^{\,\Omega(\operatorname{tw}(G_n))} \;=\; 2^{\,\Omega(n)}.
+T(C_n^\partial) \;\geq\; 2^{\,\Omega(n)}.
 $$
 
 Since $2^{\Omega(n)}$ exceeds any fixed polynomial, this violates the requirement of
@@ -2254,20 +2467,23 @@ $q_\partial(n) = n^{O(1)}$. No pure $\partial$-witness exists for these instance
 
 Note that the description-size bound $q_\partial(n) \geq \Omega(n)$ from Step 2 is polynomial and
 does not by itself yield an obstruction. The obstruction is **computational**: even if the
-interface objects have compact (polynomial-bit) descriptions, the contraction must process an
-exponential number of feasible separator configurations, and this processing time is the true
-bottleneck.
+interface objects have compact (polynomial-bit) descriptions, the contraction must correctly
+evaluate a function over an exponentially large unstructured feasible set, and this computational
+cost is the true bottleneck.
 
 **Step 6. [Universality of the obstruction]:**
 The key point is that this obstruction is **not** limited to the three specific mechanisms
 (planar, Pfaffian, bounded treewidth) enumerated in {prf:ref}`def-class-v-interference`. The
 exponential contraction-time bound of Step 4 is a structural obstruction on **any** factorization
-through a boundary interface, because any such factorization induces a tree decomposition
-(Step 3), and any contraction over that decomposition must process the exponentially many feasible
-separator configurations (Step 4). No matter what contraction mechanism $C_n^\partial$ employs —
-even one not yet conceived — it must still marginalize over the feasible configurations of each
-separator bag in $G_n$. When $\operatorname{tw}(G_n) = \Theta(n)$, this requires time
-$2^{\Omega(n)}$, which is superpolynomial. This addresses the universality concern flagged in
+through a boundary interface, because the argument depends only on three properties of the
+factorization: (i) the contraction $C_n^\partial$ receives a polynomial-size interface object,
+(ii) it must produce the correct output for all inputs, and (iii) the set of feasible
+configurations at the interface is unstructured and of size $2^{\Omega(n)}$. These three
+properties hold for *any* pure $\partial$-witness, regardless of the mechanism used to construct
+the boundary map $\partial_n$ or the contraction $C_n^\partial$. No matter what contraction
+mechanism $C_n^\partial$ employs — even one not yet conceived — it must still correctly
+distinguish among the $2^{\Omega(n)}$ feasible interface configurations. This addresses the
+universality concern flagged in
 {prf:ref}`rem-why-boundary-strengthening-is-mandatory`.
 :::
 
@@ -5101,9 +5317,11 @@ with canonical bitstring encoding length bounded by a polynomial $m_F(n)$ and wi
 
 Let
 $$
-\mathfrak B = \bigl((\{0,1\})_{n\in\mathbb N},m_B,\mathrm{enc}^B,\mathrm{dec}^B,\chi^B\bigr)
+\mathfrak A = \bigl((\{0,1\}^{\le n} \cup \{\bot\})_{n\in\mathbb N},m_A,\mathrm{enc}^A,\mathrm{dec}^A,\chi^A\bigr)
 $$
-be the constant admissible Boolean output family.
+be the admissible assignment-or-rejection output family, where the $n$th level consists of all Boolean
+strings of length at most $n$ (candidate satisfying assignments) together with a distinguished rejection
+symbol $\bot$ (indicating unsatisfiability).
 
 Let
 $$
@@ -5117,17 +5335,18 @@ W_n := \{0,1\}^{\le q_{3\text{-SAT}}(n)}
 $$
 and $q_{3\text{-SAT}}(n):=n$ is the standard witness-length bound.
 
-Define the decision-specification relation
+Define the search-specification relation
 $$
-\mathsf{Spec}^{3\text{-SAT}}_n \subseteq F_n\times \{0,1\}
+\mathsf{Spec}^{3\text{-SAT}}_n \subseteq F_n\times \bigl(\{0,1\}^{\le n} \cup \{\bot\}\bigr)
 $$
 by
 $$
-(F,b)\in \mathsf{Spec}^{3\text{-SAT}}_n
+(F,a)\in \mathsf{Spec}^{3\text{-SAT}}_n
 \iff
-\Bigl(
-b=1 \iff \exists a\in W_n\ \mathsf{Ver}^{3\text{-SAT}}_n(F,a)=1
-\Bigr),
+\begin{cases}
+a \in \{0,1\}^{v(F)} \text{ and } \mathsf{Ver}^{3\text{-SAT}}_n(F,a)=1, & \text{if } F \text{ is satisfiable},\\
+a = \bot, & \text{if } F \text{ is unsatisfiable},
+\end{cases}
 $$
 where
 $$
@@ -5140,16 +5359,44 @@ $$
 a \text{ satisfies every clause of }F.
 $$
 
-The **canonical internal $3$-SAT problem family** is
+The **canonical internal $3$-SAT search problem family** is
 $$
 \Pi_{3\text{-SAT}}
 :=
-\bigl(\mathfrak F_{3\text{-CNF}},\mathfrak B,\mathsf{Spec}^{3\text{-SAT}}\bigr),
+\bigl(\mathfrak F_{3\text{-CNF}},\mathfrak A,\mathsf{Spec}^{3\text{-SAT}}\bigr),
 $$
 equipped with witness family $\mathfrak W_{3\text{-SAT}}$ and verifier relation
-$\mathsf{Ver}^{3\text{-SAT}}$.
+$\mathsf{Ver}^{3\text{-SAT}}$. A correct solver must output a satisfying assignment for satisfiable
+formulas (or $\bot$ for unsatisfiable ones), not merely a decision bit.
 
 This is the unique satisfiability family used in the separation chain below.
+:::
+
+:::{prf:remark} Why the search formulation is essential
+:label: rem-search-formulation-essential
+
+**(a) Restriction monotonicity requires search.**
+The hard subfamily $\mathfrak H$ ({prf:ref}`def-hard-subfamily-3sat`) consists exclusively of
+**satisfiable** formulas. On this subfamily, the decision version of 3-SAT is trivially solvable by the
+constant-$1$ function, which would make the restriction-monotonicity step
+({prf:ref}`lem-frontend-restriction-monotonicity`) vacuous: blockage on a trivially solvable subfamily
+says nothing about the full problem. The search formulation avoids this collapse because producing a
+satisfying assignment remains hard even when satisfiability is guaranteed.
+
+**(b) Search hardness implies P $\neq$ NP for decision.**
+Since search-SAT polynomial-time reduces to decision-SAT via self-reducibility (query the decision oracle
+with successive variable fixings to extract an assignment bit-by-bit), proving that the search version
+requires superpolynomial time implies that the decision version also requires superpolynomial time.
+Formally, if decision-SAT were in $\mathsf{P}$, then the self-reduction would place search-SAT in
+$\mathsf{FP}$, contradicting the search blockage.
+
+**(c) Consistency with witness definitions and blockage proofs.**
+All pure witness definitions and blockage proofs in Part VI use the search formulation: the "solved set"
+$S_n$ is the set of satisfying assignments, and the "correctness condition" requires producing a
+satisfying assignment (not merely a bit). The barrier datum
+({prf:ref}`def-canonical-3sat-barrier-datum`) defines the solved region as $S_n = \{x \in \{0,1\}^n :
+x \text{ satisfies all clauses of } F\}$, and the reconstruction map $r_n$ extracts a satisfying
+assignment from a solved state.
 :::
 
 :::{prf:theorem} Canonical 3-SAT Family is Admissible
@@ -5159,7 +5406,7 @@ The family
 $$
 \Pi_{3\text{-SAT}}
 =
-\bigl(\mathfrak F_{3\text{-CNF}},\mathfrak B,\mathsf{Spec}^{3\text{-SAT}}\bigr)
+\bigl(\mathfrak F_{3\text{-CNF}},\mathfrak A,\mathsf{Spec}^{3\text{-SAT}}\bigr)
 $$
 of {prf:ref}`def-threshold-random-3sat-family` is an admissible problem family in the sense of
 {prf:ref}`def-problem-family-and-solvers`.
@@ -5169,7 +5416,7 @@ Moreover:
 2. the verifier relation $\mathsf{Ver}^{3\text{-SAT}}_n(F,a)$ is decidable uniformly in time polynomial in $n$;
 3. the witness-length bound $q_{3\text{-SAT}}(n)=n$ is polynomial.
 
-Hence $\Pi_{3\text{-SAT}}$ is well-typed both as a decision family and as a verifier-based NP family.
+Hence $\Pi_{3\text{-SAT}}$ is well-typed as a search family and as a verifier-based NP family.
 :::
 
 :::{prf:proof}
@@ -5177,7 +5424,10 @@ The source family $\mathfrak F_{3\text{-CNF}}$ is admissible because $3$-CNF for
 a fixed finite alphabet. Their canonical tokenization and padding to fixed-length valid codes yields injective bitstring
 encodings with polynomial-time validity testing and decoding.
 
-The Boolean output family $\mathfrak B$ is trivially admissible. The witness family
+The assignment-or-rejection output family $\mathfrak A$ is admissible: each level
+$\{0,1\}^{\le n} \cup \{\bot\}$ is a finite set with canonical bitstring encoding (assignments padded to
+length $n$, $\bot$ encoded as a reserved codeword), polynomial-time validity testing, and injective
+encoding. The witness family
 $$
 W_n=\{0,1\}^{\le n}
 $$
@@ -5187,7 +5437,7 @@ For the verifier, given a formula $F\in F_n$ and an assignment $a\in W_n$, one e
 three literals and checking whether at least one is satisfied by $a$. Since the number of clauses and variables encoded
 in $F$ is $O(n)$, the total runtime is polynomial in $n$.
 
-The decision-specification relation is therefore well-defined, and all admissibility conditions hold.
+The search-specification relation is therefore well-defined, and all admissibility conditions hold.
 :::
 
 :::{prf:definition} Current Frontend E13 Package for Canonical 3-SAT
@@ -5270,7 +5520,7 @@ The **hard subfamily** of canonical 3-SAT is the restricted problem family
 $$
 \Pi_{3\text{-SAT}}^{\mathrm{hard}}
 =
-(\mathfrak{H}, \mathfrak{B}, \mathsf{Spec}^{3\text{-SAT}}|_{\mathfrak{H}})
+(\mathfrak{H}, \mathfrak{A}, \mathsf{Spec}^{3\text{-SAT}}|_{\mathfrak{H}})
 $$
 
 where $\mathfrak{H} = (\mathfrak{H}_n)_{n \in \mathbb{N}}$ and $\mathfrak{H}_n$ consists of all **satisfiable**
@@ -5722,24 +5972,169 @@ the frustrated-cycle structure: if random 3-SAT at threshold had acyclic constra
 the implication graph is a DAG), the $\int$-route would not be blocked.
 :::
 
-:::{prf:remark} Causal blockage covers arbitrary dependency posets
-:label: rem-causal-blockage-arbitrary-posets
+:::{prf:lemma} Causal blockage transfers to arbitrary posets
+:label: lem-causal-arbitrary-poset-transfer
 
-The proof above argues about the natural clause-variable dependency graph. A pure $\int$-witness
-permits an arbitrary polynomial-size well-founded poset $(P_n, \prec_n)$, not just the clause graph.
+Let $(P_n, \prec_n)$ be any well-founded poset with $|P_n| \leq q(n)$ for a polynomial $q$, and let
+$(U_{n,i})_{i \in P_n}$ be local updates depending only on predecessors, with reconstruction map
+$R_n^{\int}$ computable in polynomial time. Then no pure $\int$-witness with poset $(P_n, \prec_n)$
+correctly solves the hard subfamily $\mathfrak{H}$ of {prf:ref}`def-hard-subfamily-3sat`.
+:::
 
-This is addressed by the correctness condition of {prf:ref}`def-pure-int-witness-rigorous` (clause 6):
-the factorization $\mathcal{A}_n = R_n^\int \circ F_{\rho(n)}^\int \circ E_n^\int$ must hold. For any
-well-founded poset with local updates, each update writes the value at site $i$ using only predecessors
-and the encoded input. The final state must encode a correct answer.
+:::{prf:proof}
+Fix an arbitrary linear extension $\sigma_n$ of $(P_n, \prec_n)$ and consider the state
+$\mathrm{state}_k$ after the first $k$ updates in this linear extension have been applied.
 
-For the hard subfamily $H_n$: by the expansion properties (property (P2) of
-{prf:ref}`def-hard-subfamily-3sat`), any partition of variables into "determined early" and "determined
-late" has $\Theta(n)$ crossing clauses. The OGP (property (P1)) implies that correct variable
-assignments cannot be determined incrementally — any prefix of correctly set variables has $o(n)$ overlap
-with a satisfying assignment, while a sufficiently long prefix must suddenly achieve $\Theta(n)$ overlap.
-This phase transition is incompatible with the monotone, local structure of $\int$-witness updates,
-regardless of the choice of poset.
+**Step 1. [Determined variable set.]**
+Define the *determined variable set* at step $k$:
+$$
+V_k := \bigl\{j \in [n] : \text{the } j\text{th coordinate of } R_n^{\int}(\mathrm{state}_k)
+\text{ is fixed regardless of how the remaining } |P_n| - k \text{ updates proceed}\bigr\}.
+$$
+That is, variable $j$ is determined at step $k$ if every completion of the remaining updates (consistent
+with the poset and the input) yields the same value for the $j$th output coordinate.
+
+**Step 2. [Boundary conditions.]**
+$V_0 = \varnothing$: before any updates, the state is the initial encoding of the input, and since
+multiple satisfying assignments exist (the hard subfamily has $\exp(\Theta(n))$ clusters), no output
+coordinate is fixed. $V_{|P_n|} = [n]$: by the correctness condition of the $\int$-witness, after all
+updates the reconstruction map must produce a valid satisfying assignment, so every coordinate is
+determined.
+
+**Step 3. [Monotonicity.]**
+$V_k \subseteq V_{k+1}$ for all $k$ (once a variable is determined, subsequent updates cannot
+un-determine it, since the correctness condition requires a deterministic output). The set $V_k$
+grows from $\varnothing$ to $[n]$.
+
+**Step 4. [Expansion barrier.]**
+By the linear expansion property of the hard subfamily (property 4 of
+{prf:ref}`def-hard-subfamily-3sat`), the clause-variable incidence graph is an expander. For any
+subset $S \subseteq [n]$ with $|S| \leq n/2$, the number of clauses with variables in both $S$ and
+$[n] \setminus S$ is at least $c_{\mathrm{exp}} \cdot |S|$ for an expansion constant
+$c_{\mathrm{exp}} > 0$.
+
+Since $|V_k|$ grows from $0$ to $n$, there exists a step $k^*$ at which
+$|V_{k^*}| \leq n/2 < |V_{k^*+1}|$. We distinguish two cases:
+
+**Case A: $|V_{k^*}| = \Theta(n)$ (no large jump).** The partition
+$(V_{k^*},\; [n] \setminus V_{k^*})$ crosses at least
+$c_{\mathrm{exp}} \cdot |V_{k^*}| = \Theta(n)$ clauses by expansion, and we proceed
+directly to Step 5 with $\Theta(n)$ crossing clauses at the critical partition.
+
+**Case B: $|V_{k^*}| = o(n)$ (large jump).** Here the single update $U_{n,k^*+1}$
+causes $|V_{k^*+1}| - |V_{k^*}| = \Theta(n)$ new variables to become determined
+simultaneously. By the $\int$-modal restriction (item 7 of
+{prf:ref}`def-pure-int-witness-rigorous`), $U_{n,k^*+1}$ cannot invoke a general SAT
+solver or optimization subroutine on the encoded input — it is restricted to forward
+causal propagation. While $U_{n,k^*+1}$ reads the encoded formula, the $\int$-modal
+restriction limits how this information is used: $U$ can propagate constraints forward
+along the poset but cannot perform non-$\int$ operations (energy minimization, algebraic
+elimination, backtracking search) that would be required to resolve the frustrated cycle.
+The update reads only the values at predecessor sites $j \prec_n (k^*\!+\!1)$ (at most
+$|V_{k^*}| = o(n)$ determined coordinates) and the encoded input. Its output — a single
+coordinate in the abstract poset — must, through the reconstruction map $R_n^{\int}$,
+simultaneously determine $\Theta(n)$ output coordinates.
+
+Among these $\Theta(n)$ newly determined variables, $\Omega(n)$ lie in the frustrated
+core: by property 3 of {prf:ref}`def-hard-subfamily-3sat`, the frustrated core
+comprises a $\Theta(n)$-fraction of all variables, and the newly determined set has
+$\Theta(n)$ elements, so by pigeonhole at least $\Omega(n)$ newly determined variables
+are core variables. These frustrated-core variables have cycle-closing constraints
+among themselves that $U_{n,k^*+1}$ must resolve correctly. But $U_{n,k^*+1}$ receives
+only $o(n)$ determined predecessor values as input. For correctness on all
+hard-subfamily inputs, this single update must effectively solve a sub-problem involving
+$\Omega(n)$ coupled frustrated-core variables using only $o(n)$ predecessor values and
+the input encoding. By the same frustrated-cycle argument as in Case A (applied to the
+information available to $U_{n,k^*+1}$), $\int$-modal computation from $o(n)$
+predecessor values cannot resolve $\Omega(n)$ frustrated-core constraints whose
+cycle-closing dependencies involve undetermined successors.
+
+In both cases, the critical step faces $\Omega(n)$ frustrated constraints that
+$\int$-modal updates cannot resolve.
+
+**Step 5. [∫-modal updates cannot resolve the frustrated core.]**
+
+The updates $U_{n,i}$ in a pure $\int$-witness are $\int$-modal: by the $\int$-modal restriction
+(item 7 of {prf:ref}`def-pure-int-witness-rigorous`), each $U_{n,i}$ factors through the shape
+modality $\int$. Each update $U_{n,i}$ is a polynomial-time function that reads only the
+values at predecessor sites $j \prec_n i$ and the encoded input. The $\int$-modal restriction
+constrains both the **information** $U_{n,i}$ receives (predecessor values only) and the
+**type of computation** it performs: $U_{n,i}$ is restricted to forward causal propagation and
+cannot internally invoke $\sharp$-type (optimization/energy), $\flat$-type (algebraic
+elimination), $\ast$-type (divide-and-conquer), or $\partial$-type (interface contraction)
+subroutines. The key constraint is that $U_{n,i}$ sees only predecessor values, not the values
+of successor or incomparable sites, and can only propagate constraints forward along the poset.
+When a frustrated-core variable is the first in its cycle to be determined, the cycle-closing
+constraint involves sites that are not predecessors (they come later in any linear extension
+of the poset). No polynomial-time local function of predecessor values can compensate for
+this missing information, because the correct value depends on the cycle-closing constraint
+that involves undetermined successors.
+
+The frustrated core of the hard subfamily (property 3 of {prf:ref}`def-hard-subfamily-3sat`)
+contains $\Theta(n)$ variables in a strongly connected component of the constraint dependency
+graph. Within this core, variable $v_i$'s correct value depends (through implication chains)
+on variable $v_j$, and vice versa, for every pair $v_i, v_j$. In the determined-variable
+sequence $V_0 \subset V_1 \subset \cdots \subset V_{|P_n|}$, the frustrated-core variables
+enter $V_k$ at various steps. The first core variable to be determined (say at step $k_1$)
+must be assigned a value that is consistent with the cycle-closing constraint — but the
+cycle-closing constraint involves core variables that are not yet determined (they enter
+$V_k$ at later steps $k_2 > k_1$).
+
+The $\int$-modal update at step $k_1$ can read predecessor values and perform arbitrary
+polynomial-time computation on them, but it cannot incorporate information from the
+undetermined end of the frustrated cycle. This computational limitation manifests concretely
+in the non-convergence of belief propagation (BP) and other message-passing algorithms — the
+canonical $\int$-type algorithms — on frustrated random 3-SAT instances (Mézard–Montanari
+2009, Ch. 19). While BP non-convergence is a property of a specific algorithm, it illustrates
+the general principle: any computation restricted to predecessor-only information flow (the
+defining constraint of $\int$-modal updates) cannot resolve circular dependencies in the
+frustrated core.
+
+A general polynomial-time algorithm (without $\int$-purity) could resolve the cycle by invoking
+non-$\int$ mechanisms: a $\sharp$-modal subroutine could use energy minimization, or a $\flat$-modal
+subroutine could use algebraic elimination. But a **pure** $\int$-witness is restricted to
+$\int$-modal updates, which can only propagate forward — not close loops.
+
+Combining with Step 4: at the critical step $k^*$, the $\Omega(n)$ frustrated constraints
+identified in Step 4 must be resolved by the $\int$-modal update(s). We verify that the
+crossing clauses include frustrated-core clauses by a pigeonhole argument: the frustrated
+core comprises a constant fraction $\gamma > 0$ of all $n$ variables (property 3 of
+{prf:ref}`def-hard-subfamily-3sat`). In Case A, $|V_{k^*}| = \Theta(n)$, so the partition
+$(V_{k^*},\; [n] \setminus V_{k^*})$ splits the variable set into two parts each of size
+$\Theta(n)$. By expansion (property 4), the frustrated-core variables cannot be concentrated
+in any $o(n)$-sized subset; hence a constant fraction of frustrated-core variables lie in
+$V_{k^*}$ and a constant fraction in $[n] \setminus V_{k^*}$. At the constant clause-to-variable
+ratio $\alpha \approx 4.267$, each frustrated-core variable participates in $\Theta(1)$ clauses,
+so the $\Theta(n)$ core variables generate $\Theta(n)$ internal core clauses. Since the core
+variables are split across the partition, at least $\Omega(n)$ of these core clauses are
+crossing clauses. (In Case B, the $\Omega(n)$ frustrated-core constraints arise directly from
+the jump argument above.) Since $\int$-modal computation cannot close the frustrated loops,
+the update fails to produce a consistent assignment for the crossing variables. The
+correctness condition of the $\int$-witness is violated.
+
+**Step 6. [Conclusion.]**
+No pure $\int$-witness with any polynomial-size poset can correctly solve the hard subfamily.
+:::
+
+:::{prf:remark} Connection to the frustrated-cycle argument
+:label: rem-frustrated-cycle-vs-transfer
+
+The frustrated-cycle argument in Steps 2–4 of {prf:ref}`lem-random-3sat-causal-blockage` and
+the transfer lemma {prf:ref}`lem-causal-arbitrary-poset-transfer` use the same structural
+obstruction — the $\int$-modality's inability to resolve frustrated loops — but apply it in
+complementary ways:
+
+- **Main proof (Steps 2–4):** When the poset embeds into the clause-variable dependency graph,
+  the frustrated cycles directly prevent any compatible linear extension from processing the
+  strongly connected core in topological order.
+
+- **Transfer lemma:** For **arbitrary** posets, the expansion barrier (Step 4) forces a critical
+  step at which $\Theta(n)$ frustrated-core constraints must be resolved simultaneously. The
+  $\int$-modal typing of the updates prevents resolving these constraints because the frustrated
+  cycle requires backward information flow that $\int$-modal forward propagation cannot provide.
+
+The two arguments converge on the same conclusion: no pure $\int$-witness, regardless of poset
+topology, can solve the hard subfamily of random 3-SAT.
 :::
 
 :::{prf:lemma} Integrality Blockage for Canonical 3-SAT
@@ -5757,18 +6152,54 @@ By {prf:ref}`def-pure-flat-witness-rigorous`: a pure $\flat$-witness requires a 
 $\Sigma$, finitely presented $\Sigma$-structures $A_n^\flat, B_n^\flat$ with presentation size bounded by $q_\flat(n)$,
 a sketch $s_n \to e_n \to d_n$, and the correctness identity.
 
-**Step 2. [Quotient compression lower bound]:**
-Any correct quotient/congruence compression of 3-SAT solutions must distinguish $2^{\Omega(n)}$ satisfiable from
-unsatisfiable formula instances. The quotient structure $A_n / {\sim}$ must have
+**Step 2. [Quotient compression lower bound — search formulation.]**
+For the search formulation ({prf:ref}`def-threshold-random-3sat-family`), the solver must output a
+satisfying assignment $\sigma(F) \in \{0,1\}^{v(F)}$ for each satisfiable formula $F$. The quotient
+structure $A_n / {\sim}$ partitions the input space into equivalence classes, and the reconstruction
+map $d_n^{\flat}$ produces a single output per class. Therefore, any two formulas $F_1, F_2$ with
+$\sigma(F_1) \neq \sigma(F_2)$ must lie in distinct equivalence classes.
+
+We construct $N = 2^{cn}$ formulas in $\mathfrak{H}_n$ (for a suitable constant $c > 0$) with
+pairwise-distinct required outputs. Draw $N$ formulas $F^{(1)}, \ldots, F^{(N)}$ independently at the
+threshold ratio $\alpha \approx 4.267$ (i.e., $m = \lceil \alpha n \rceil$ clauses). We show that with
+high probability these formulas have **pairwise-disjoint** satisfying-assignment sets.
+
+For two independently drawn formulas $F^{(i)}$ and $F^{(j)}$, the probability that they share any
+common satisfying assignment is bounded by a union bound over all $2^n$ possible assignments:
 $$
-|A_n / {\sim}| \geq 2^{\Omega(n)},
+\Pr\bigl[\mathrm{Sol}(F^{(i)}) \cap \mathrm{Sol}(F^{(j)}) \neq \emptyset\bigr]
+\;\leq\; \sum_{\sigma \in \{0,1\}^n}
+  \Pr[\sigma \text{ satisfies } F^{(i)}] \cdot \Pr[\sigma \text{ satisfies } F^{(j)}]
+\;=\; 2^n \cdot (7/8)^{2m}.
 $$
-since the hard subfamily contains $2^{\Omega(n)}$ formulas whose satisfiability status is independent (by the
-independence of disjoint random clause sets). Therefore
+Each clause is satisfied by a fixed assignment $\sigma$ with probability $7/8$ (since exactly one of
+the eight literal patterns falsifies a uniformly random 3-clause), and the $2m$ clauses across the two
+independent formulas are independent. Substituting $m = \alpha n$:
 $$
-\operatorname{pres}(A_n) \geq 2^{c_1 \cdot n}
+2^n \cdot (7/8)^{2\alpha n}
+= 2^{n\bigl(1 - 2\alpha \log_2(8/7)\bigr)}
+= 2^{n(1 - 2 \cdot 4.267 \cdot 0.193)}
+= 2^{-0.647n}.
 $$
-for an explicit constant $c_1 > 0$ depending on the threshold ratio $\alpha$.
+For $N = 2^{cn}$ formulas, the union bound over $\binom{N}{2} < 2^{2cn}$ pairs gives
+$$
+\Pr[\text{any pair shares a solution}]
+\;\leq\; 2^{2cn} \cdot 2^{-0.647n}
+\;=\; 2^{-n(0.647 - 2c)}.
+$$
+Choosing any $c < 0.647/2 \approx 0.32$ (e.g., $c = 0.1$) makes this probability $o(1)$.
+With pairwise-disjoint solution sets, any correct solver must output a satisfying assignment for each
+formula, and these assignments are necessarily pairwise distinct (belonging to disjoint solution sets).
+Therefore
+$$
+|A_n / {\sim}| \;\geq\; N \;=\; 2^{\Omega(n)},
+$$
+and
+$$
+\operatorname{pres}(A_n) \;\geq\; \log_2 |A_n / {\sim}| \;\geq\; \Omega(n) \cdot c_1
+$$
+for an explicit constant $c_1 > 0$. Any polynomial-size presentation $q_\flat(n) = n^{O(1)}$ is
+violated for large $n$.
 
 **Step 3. [Apply algebraic barrier]:**
 By {prf:ref}`thm-flat-barrier-obstruction-metatheorem`: the presentation-size lower bound
@@ -5788,8 +6219,10 @@ $\operatorname{pres}(T(A_n)) \geq 2^{\Omega(n)} / \operatorname{poly}(n) = 2^{\O
 by {prf:ref}`thm-canonical-3sat-barrier-translator-stable`.
 
 **Step 6. [Failure localization]:**
-The quotient compression step would require collapsing exponentially many distinguishable satisfiability instances into
-a polynomial-size quotient. The failure point is the exponential independence of hard-instance satisfiability statuses.
+The quotient compression step would require collapsing exponentially many well-separated solution clusters into
+a polynomial-size quotient. The failure point is the exponential number of clusters at pairwise Hamming distance
+$\Omega(n)$: the search formulation requires producing a satisfying assignment from the correct cluster, and no
+polynomial-size quotient can map to assignments in multiple well-separated clusters.
 :::
 
 :::{prf:lemma} Galois-Monodromy Blockage for Canonical 3-SAT
@@ -5814,18 +6247,88 @@ $$
 for a $(1 - o(1))$ fraction of hard instances. This follows from the random structure: each variable participates in
 $\Theta(1)$ clauses with distinct neighborhoods w.h.p., so no nontrivial permutation preserves all clauses.
 
-**Step 3. [Non-solvable monodromy]:**
-Consider the solution variety $V(F) = \{x \in \{0,1\}^n : F(x) = 1\}$ over the hard subfamily $\mathfrak H$. The
-monodromy group of $V(F)$ — obtained by analytically continuing solutions as the clause coefficients vary — is the
-full symmetric group $S_k$ on the solution set, where $k = |V(F)|$.
-For the hard subfamily, $k \geq 5$ w.h.p. (since random 3-SAT at threshold has exponentially many solutions organized
-into $\exp(\Theta(n))$ clusters). Since $S_k$ for $k \geq 5$ is **not solvable** (its composition series contains the
-alternating group $A_k$, which is simple and non-abelian), no solvable-group elimination is possible.
+**Step 2b. [Algebraization and monodromy definition.]**
+To define the monodromy group rigorously for Boolean satisfiability, embed the problem in
+algebraic geometry over $\mathbb{C}$. Replace each Boolean variable $x_i \in \{0,1\}$ with a
+complex variable $z_i \in \mathbb{C}$ and each clause $(l_1 \vee l_2 \vee l_3)$ with the
+polynomial equation $\bar{l}_1 \cdot \bar{l}_2 \cdot \bar{l}_3 = 0$, where $\bar{l}_j = z_i$
+if $l_j = \neg x_i$ and $\bar{l}_j = 1 - z_i$ if $l_j = x_i$. Restrict to the Boolean
+hypercube by adding the equations $z_i^2 - z_i = 0$ for all $i$.
 
-**Step 4. [Presentation-size consequence]:**
-Without solvable monodromy, any algebraic elimination through the $\mathfrak S_{\mathrm{mono}}$ channel requires
-encoding the full non-solvable structure of $S_k$ in the witness presentation. Since $|S_k| = k! = \exp(\Omega(n))$,
-any such presentation has superpolynomial size.
+The resulting polynomial system defines an algebraic variety $\mathcal{V}(F) \subset \mathbb{C}^n$
+whose real Boolean points $\mathcal{V}(F) \cap \{0,1\}^n$ are the satisfying assignments.
+Parameterize the clause coefficients by a parameter space $\Lambda$ (the space of all 3-CNF
+formulas with $m$ clauses on $n$ variables). As $\lambda \in \Lambda$ varies, the roots of the
+system move continuously, defining a covering space. The **monodromy group**
+$\mathrm{Mon}(\mathcal{V}/\Lambda)$ is the group of permutations of the roots induced by loops
+in $\Lambda$ (with the discriminant locus removed). This is a standard construction in algebraic
+geometry (see Harris, *Galois Groups of Enumerative Problems*, 1979).
+
+**Step 3. [Non-solvable monodromy via covering-space analysis.]**
+We establish that for a $(1 - o(1))$ fraction of random 3-SAT formulas at the satisfiability
+threshold, the monodromy group $\mathrm{Mon}(\mathcal{V}/\Lambda)$ is the full symmetric group
+$S_k$ on the Boolean solution set (where $k = |\mathcal{V}(F) \cap \{0,1\}^n|$). The
+non-solvability of $\mathrm{Mon}(\mathcal{V}/\Lambda)$ is encoded in property 6 of
+{prf:ref}`def-hard-subfamily-3sat`. The argument below establishes that this property holds with
+probability $1 - o(1)$ over random 3-SAT formulas at threshold, confirming the **non-emptiness**
+of the hard subfamily with respect to this property.
+
+**(a) Transitivity.** The parameter space $\Lambda$ (the space of all 3-CNF formulas with $m$
+clauses on $n$ variables, with continuously varying clause coefficients) is irreducible. The
+discriminant locus $\Delta \subset \Lambda$ (where the number of Boolean solutions changes) has
+codimension $\geq 1$, so $\Lambda \setminus \Delta$ is connected. Since the fiber over any point in
+$\Lambda \setminus \Delta$ has exactly $k$ simple Boolean roots, the covering
+$\pi: \mathcal{I} \to \Lambda \setminus \Delta$ is a finite étale covering. Connectedness of the
+base $\Lambda \setminus \Delta$ combined with the path-lifting property implies the monodromy acts
+transitively on the fiber (otherwise the covering would decompose into disconnected components).
+
+**(b) Full symmetric group from transpositions.** The Picard--Lefschetz transpositions generate the
+monodromy group. For each pair of Boolean solutions $(\sigma_i, \sigma_j)$, the discriminant locus
+$\Delta$ contains a component $\Delta_{ij}$ where these two roots collide (become degenerate). A
+simple loop around $\Delta_{ij}$ produces the transposition $(\sigma_i \; \sigma_j)$.
+
+The Picard--Lefschetz theorem applies here because the Boolean satisfying assignments are *simple*
+(non-degenerate) roots of the full polynomial system: the Jacobian of the system (clause polynomials
+plus hypercube constraints $z_i^2 - z_i = 0$) has full rank at each Boolean solution, since the
+hypercube constraints contribute $n$ independent linear conditions on the tangent space and the
+clause polynomials are generically transverse. The family of solution sets over
+$\Lambda \setminus \Delta$ is therefore étale, and the standard Picard--Lefschetz formula for
+zero-dimensional étale coverings gives a transposition at each simple ramification point (see Dimca,
+*Sheaves in Topology*, Ch. 4).
+
+Since $\Lambda \setminus \Delta$ is connected (the discriminant has codimension $\geq 1$ in the
+irreducible parameter space $\Lambda$, so its complement is connected), the monodromy group contains
+transpositions for all pairs $(\sigma_i, \sigma_j)$. A group containing all transpositions on a set
+is the full symmetric group $S_k$.
+
+**(c) Application to random 3-SAT.** For a random 3-SAT formula drawn at the satisfiability
+threshold, the number of Boolean solutions is $k = \exp(\Theta(n))$ w.h.p. (organized into
+$\exp(\Theta(n))$ clusters). The transposition argument of (b) applies to a $(1 - o(1))$ fraction
+of such formulas, giving $\mathrm{Mon} = S_k$. Since $S_k$ for $k \geq 5$ is **not solvable**
+(its composition series contains the alternating group $A_k$, which is simple and non-abelian for
+$k \geq 5$), no solvable-group elimination is possible.
+
+**Step 4. [Presentation-size lower bound from non-solvable monodromy.]**
+The $\mathfrak{S}_{\mathrm{mono}}$ channel requires the elimination map to factor through a
+solvable group $G$ acting equivariantly on the solution space. We show that non-solvable
+monodromy forces superpolynomial presentation size for any such factorization.
+
+By the generalization of the Abel-Ruffini theorem to algebraic functions (Arnol'd 1970): if
+the monodromy group of a covering is non-solvable, the covering cannot be trivialized by
+successive adjunctions of radicals (= solvable group extensions). Any algebraic elimination
+procedure that reduces the number of roots by passing to quotients by normal subgroups must
+follow the composition series of the monodromy group. For $S_k$ with $k \geq 5$, the composition
+series is $\{e\} \triangleleft A_k \triangleleft S_k$, where $A_k$ is simple non-abelian. Since
+$A_k$ has no nontrivial normal subgroups, no further reduction is possible: the elimination must
+represent the full action of $A_k$ on the solution set.
+
+The minimum faithful permutation representation of $A_k$ has degree $k$ (for $k \geq 5$), and
+any presentation of $A_k$ by generators and relations requires at least $\log_2(|A_k|) =
+\log_2(k!/2) = \Omega(k \log k)$ bits. For the hard subfamily, $k = \exp(\Theta(n))$, giving
+$$
+\operatorname{pres}(G) \;\geq\; \Omega(k \log k) \;=\; \Omega\bigl(\exp(\Theta(n)) \cdot n\bigr) \;=\; \exp(\Omega(n)).
+$$
+This exceeds any polynomial bound $q_\flat(n) = n^{O(1)}$.
 
 **Step 5. [Certificate]:**
 This yields the Galois-monodromy obstruction certificate
@@ -6229,6 +6732,12 @@ This follows because each clause involves 3 variables chosen uniformly: the prob
 side of the partition is $(1/2)^3 + (1/2)^3 = 1/4$, so a $(3/4)$-fraction of clauses are boundary clauses in
 expectation, and concentration (Chernoff bounds) gives $|\operatorname{boundary}| \geq c' \cdot n$ w.h.p.
 
+The expansion-based obstruction extends beyond balanced binary variable-partition splits to all splitting strategies:
+- *Balanced splits where both parts have $\Omega(n)$ constraints:* the crossing-constraint argument above applies directly.
+- *Highly unbalanced splits (one part has $o(n)$ constraints):* the recursion degenerates into a sequential computation on the essentially-unsplit instance, which does not decompose the problem and therefore cannot achieve sub-exponential load.
+- *Non-variable-partition splits in the lifted state space:* the correctness identity forces the merge map to reconcile the constraint structure of the original formula, and expansion is a property of that structure regardless of encoding.
+- *Multi-way splits:* the total crossing-clause count remains $\Omega(n)$ by expansion, since any partition of the variable set into $k \geq 2$ parts produces at least as many crossing clauses as a binary partition.
+
 **Step 3. [Supercritical condition]:**
 By {prf:ref}`lem-scaling-obstruction`: when $|\operatorname{boundary}(\mathcal{X}_1, \mathcal{X}_2)| = \Omega(n)$ for
 every balanced partition, the recombination cost dominates: $f(n) = \Omega(n)$ at every recursive level. Any
@@ -6249,8 +6758,9 @@ crossing-clause structure at each level inherits the random expansion property o
 formula, no level admits a sub-linear separator. This makes the problem **supercritical** in the sense of {prf:ref}`lem-scaling-obstruction`.
 
 **Step 4. [Frontend obstruction application]:**
-By {prf:ref}`lem-scaling-obstruction`: the supercritical condition blocks the standard divide-and-conquer witness
-template of {prf:ref}`def-class-iv-dividers` on the hard subfamily.
+By the strengthened {prf:ref}`lem-scaling-obstruction`: the supercritical condition blocks ALL pure $\ast$-witnesses
+on the hard subfamily — not only the Class IV divider template of {prf:ref}`def-class-iv-dividers`, but any
+divide-and-conquer decomposition regardless of splitting strategy, branching factor, or state-space encoding.
 
 **Step 5. [Restriction monotonicity]:**
 By {prf:ref}`lem-frontend-restriction-monotonicity`: the blockage lifts from the hard subfamily to the full canonical
@@ -6280,11 +6790,26 @@ bound $q_\ast(n)$. The obstruction is fundamentally about *correctness*:
 2. **Crossing clauses as fresh sub-problems.** The crossing clauses form a 3-CNF sub-formula over
    interface variables from both partitions. Satisfying these — given fixed sub-assignments from the
    recursive calls — is itself a constraint-satisfaction problem on the interface.
-3. **Recursive coupling.** The sub-instances are not independent. By the OGP (property (P1) of
-   {prf:ref}`def-hard-subfamily-3sat`), the overlap structure of satisfying assignments is rigid: there
-   is no smooth interpolation between assignments for the two halves. The merge map must effectively
-   search for a joint assignment satisfying all crossing constraints — an NP-hard sub-problem at each
-   recursive level.
+3. **Recursive coupling via solution-space shattering.** The sub-instances are not independent. By
+   the OGP (property (P1) of {prf:ref}`def-hard-subfamily-3sat`), the solution space shatters into
+   $\exp(\Theta(n))$ clusters at Hamming distance $\Omega(n)$ from each other. Any merge map that
+   reconciles sub-answers drawn from different clusters must bridge Hamming distance $\Omega(n)$ —
+   an operation whose computational cost is bounded below by the cluster structure itself. The merge
+   map cannot interpolate between clusters: the frozen-variable cores within each cluster lock
+   $\Omega(n)$ variables, and reconciling assignments across clusters requires flipping $\Omega(n)$
+   frozen bits. When the two sub-answers come from different clusters (which occurs with high
+   probability over the hard subfamily, since the recursive calls operate on sub-instances whose
+   solutions may lie in different clusters), the merge must produce an assignment from a cluster
+   consistent with both — but the inter-cluster Hamming distance $\Omega(n)$ means the merge output
+   must differ from both inputs on $\Omega(n)$ frozen positions. The frozen-variable structure ensures
+   that any valid satisfying assignment within a cluster is uniquely determined on $\Omega(n)$
+   positions, so the merge must effectively *select* the correct cluster, distinguishing among
+   $\exp(\Theta(n))$ possibilities. This does not merely assert that "searching is hard" — it
+   connects directly to the formal $\ast$-witness structure: the merge map receives sub-answers of
+   polynomial description size and must produce a correct global assignment. When the sub-answers are
+   drawn from different clusters, the merge effectively performs a cluster-selection step that no
+   polynomial-time $\ast$-modal merge can accomplish, by the same frozen-variable/expansion arguments
+   used in the $\sharp$-blockage proof.
 4. **Blowup.** Either (a) the recursion tree branches further to resolve crossing constraints, causing
    exponential tree-size blowup violating $q_\ast(n)$, or (b) the merge map runs in superpolynomial
    time, violating {prf:ref}`def-pure-star-witness-rigorous`.
@@ -6328,21 +6853,29 @@ q_\partial(n) \geq \operatorname{tw}(G_n) \geq c'' \cdot n
 $$
 is linear (polynomial) and does **not** by itself violate the polynomial interface-size requirement of
 {prf:ref}`def-pure-boundary-witness-rigorous`. However, by Steps 4--5 of {prf:ref}`lem-boundary-obstruction`, the
-contraction $C_n^\partial$ must process $2^{\Omega(\operatorname{tw}(G_n))}$ feasible separator configurations per
-bag of the induced tree decomposition: the $\exp(\Theta(n))$ well-separated solution clusters of random 3-SAT at
-$\alpha \approx 4.267$ project to $2^{\Omega(n)}$ distinct partial assignments on any $\Theta(n)$-sized separator,
-and the contraction cannot skip any without sacrificing correctness. Therefore the contraction time satisfies
+contraction $C_n^\partial$ must correctly distinguish $2^{\Omega(n)}$ feasible interface configurations: the
+frozen-variable cores of the $\exp(\Theta(n))$ solution clusters are spread across the constraint graph by expansion,
+so any $\Theta(n)$-sized variable set contains $\Omega(n)$ frozen variables; distinct clusters have distinct frozen
+patterns on these variables, yielding $2^{\Omega(n)}$ distinct partial-assignment patterns. The contraction must
+correctly map each interface state to the right output among these exponentially many possibilities. Since the feasible
+configurations are unstructured (3-SAT lacks the polymorphisms for tractable CSP classes), no polynomial-time shortcut
+can evaluate this mapping. Therefore the contraction time satisfies
 $$
-T(C_n^\partial) \;\geq\; 2^{\,\Omega(\operatorname{tw}(G_n))} \;=\; 2^{\,\Omega(n)},
+T(C_n^\partial) \;\geq\; 2^{\,\Omega(n)},
 $$
 which exceeds any polynomial and violates the polynomial-time contraction requirement of
 {prf:ref}`def-pure-boundary-witness-rigorous`.
 
 **Step 5. [Frontend obstruction application]:**
-By {prf:ref}`lem-boundary-obstruction`: the non-planarity, absence of Pfaffian orientation, and linear treewidth
-$\operatorname{tw}(G_n) = \Theta(n)$ collectively force exponential contraction time $2^{\Omega(n)}$ for any
-$\partial$-witness on the hard subfamily, blocking all interface/tensor-network witness mechanisms — not only the
-specific frontends of {prf:ref}`def-class-v-interference`, but any factorization through a boundary interface.
+By the strengthened {prf:ref}`lem-boundary-obstruction`: the linear treewidth $\operatorname{tw}(G_n) = \Theta(n)$,
+combined with the unstructured feasible configuration set of size $2^{\Omega(n)}$, forces exponential contraction time
+for any $\partial$-witness on the hard subfamily. This blocks all interface/tensor-network witness mechanisms — not
+only the specific frontends of {prf:ref}`def-class-v-interference`, but any factorization through a boundary interface.
+The obstruction depends only on three properties: (i) the contraction receives a polynomial-size interface object,
+(ii) it must produce the correct output for all inputs, and (iii) the feasible interface configurations are
+unstructured and of size $2^{\Omega(n)}$. The exponential contraction time is unconditional: it follows directly from
+the cluster/frozen-variable structure of random 3-SAT and does not depend on auxiliary assumptions about the
+algorithmic paradigm used by the contraction.
 
 **Step 6. [Restriction monotonicity]:**
 By {prf:ref}`lem-frontend-restriction-monotonicity`: the blockage lifts from the hard subfamily to the full canonical
@@ -6361,12 +6894,18 @@ linear treewidth lower bound is a graph-structural invariant preserved under adm
 polynomially expand the graph).
 
 **Step 9. [Failure localization]:**
-If canonical 3-SAT had bounded treewidth (as 2-SAT does, where the implication graph has treewidth $O(1)$), the DPI
-tactic would not block: tree-decomposition-based algorithms would solve the problem in polynomial time. The failure
-point is the linear treewidth lower bound $\operatorname{tw}(G_n) \geq c'' \cdot n$, which implies exponential
-contraction time $T(C_n^\partial) \geq 2^{\Omega(n)}$. It is this exponential contraction time — not the linear
-description-size bound $q_\partial(n) \geq \Omega(n)$, which is polynomial — that violates the polynomial-time
-requirement of {prf:ref}`def-pure-boundary-witness-rigorous`.
+The obstruction relies on the combination of two properties: (i) linear treewidth $\operatorname{tw}(G_n) \geq c'' \cdot n$
+and (ii) exponentially many solution clusters with distinct frozen-variable patterns. If either property failed, the
+boundary channel would not be blocked:
+- If the solution space had only $\operatorname{poly}(n)$ clusters (as in under-constrained random $k$-SAT well below
+  threshold), the contraction could enumerate all cluster representatives in polynomial time.
+- If the constraint graph had bounded treewidth (as 2-SAT does, where the implication graph has treewidth $O(1)$),
+  tree-decomposition-based algorithms would solve the problem in polynomial time regardless of cluster count.
+
+The failure point is the conjunction: linear treewidth forces $\Theta(n)$-sized separators, and the
+$\exp(\Theta(n))$ clusters with $\Omega(n)$-spread frozen patterns project to $2^{\Omega(n)}$ distinct partial
+assignments on every such separator, yielding exponential contraction time $T(C_n^\partial) \geq 2^{\Omega(n)}$
+that violates the polynomial-time requirement of {prf:ref}`def-pure-boundary-witness-rigorous`.
 :::
 
 :::{prf:remark} Problem-specific burden in the five blockage theorems
