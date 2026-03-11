@@ -67,6 +67,12 @@ CHANNEL_COLORS: dict[str, str] = {
     "vector_dirac": "#fdd0a2",
     "axial_vector_dirac": "#f4a582",
     "tensor_dirac": "#dadaeb",
+    "scalar_twistor": "#5f0f40",
+    "pseudoscalar_twistor": "#9a031e",
+    "glueball_twistor": "#fb8b24",
+    "vector_twistor": "#0f4c5c",
+    "axial_vector_twistor": "#335c67",
+    "tensor_twistor": "#437f97",
     # Backward compat: old dirac_{channel} naming
     "dirac_scalar": "#aec7e8",
     "dirac_pseudoscalar": "#c7e9c0",

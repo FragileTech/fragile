@@ -146,6 +146,94 @@ def compute_routing_entropy(router_weights: Tensor, eps: float = 1e-6) -> Tensor
     return entropy.mean()
 
 
+def compute_router_information_metrics(
+    router_weights: Tensor,
+    eps: float = 1e-6,
+) -> dict[str, Tensor]:
+    """Compute occupancy/conditional entropies and their mutual information."""
+    mean_usage = router_weights.mean(dim=0)
+    H_K = -(mean_usage * torch.log(mean_usage + eps)).sum()
+    H_K_given_X = -(router_weights * torch.log(router_weights + eps)).sum(dim=1).mean()
+    I_XK = H_K - H_K_given_X
+    return {
+        "H_K": H_K,
+        "H_K_given_X": H_K_given_X,
+        "I_XK": I_XK,
+    }
+
+
+def compute_router_sharpness_metrics(
+    router_weights: Tensor,
+) -> dict[str, Tensor]:
+    """Summarize per-sample router sharpness from probabilities."""
+    top2 = torch.topk(router_weights, k=min(2, router_weights.shape[-1]), dim=-1).values
+    top1 = top2[:, 0]
+    if top2.shape[-1] > 1:
+        top2_prob = top2[:, 1]
+    else:
+        top2_prob = torch.zeros_like(top1)
+    gap = top1 - top2_prob
+    return {
+        "top1_prob_mean": top1.mean(),
+        "top1_prob_p10": torch.quantile(top1, 0.10),
+        "top1_prob_p90": torch.quantile(top1, 0.90),
+        "top2_prob_mean": top2_prob.mean(),
+        "top1_gap_mean": gap.mean(),
+    }
+
+
+def compute_router_score_metrics(
+    router_scores: Tensor,
+) -> dict[str, Tensor]:
+    """Summarize raw router-score geometry before softmax.
+
+    These diagnostics are useful when probabilities saturate or flatten:
+    they show whether the underlying logits still have meaningful separation.
+    """
+    top2 = torch.topk(router_scores, k=min(2, router_scores.shape[-1]), dim=-1).values
+    top1 = top2[:, 0]
+    if top2.shape[-1] > 1:
+        top2_score = top2[:, 1]
+    else:
+        top2_score = torch.zeros_like(top1)
+    gap = top1 - top2_score
+    return {
+        "score_gap_mean": gap.mean(),
+        "score_gap_p50": torch.quantile(gap, 0.50),
+        "score_gap_p90": torch.quantile(gap, 0.90),
+        "score_gap_p99": torch.quantile(gap, 0.99),
+        "score_std": router_scores.std(unbiased=False),
+        "score_mean_abs": router_scores.abs().mean(),
+    }
+
+
+def compute_router_margin_loss(
+    router_scores: Tensor,
+    margin: float = 0.05,
+) -> Tensor:
+    """Enforce a positive score gap between the winning and runner-up charts.
+
+    A hard Voronoi partition is only meaningful when the selected chart has a
+    genuine margin over its competitors. This term acts directly on router
+    scores, unlike entropy on probabilities which becomes first-order flat near
+    a uniform softmax.
+    """
+    top2 = torch.topk(router_scores, k=min(2, router_scores.shape[-1]), dim=-1).values
+    top1 = top2[:, 0]
+    if top2.shape[-1] > 1:
+        second = top2[:, 1]
+    else:
+        second = torch.zeros_like(top1)
+    gap = top1 - second
+    return F.relu(torch.as_tensor(margin, device=router_scores.device) - gap).mean()
+
+
+def compute_hard_routing_nll(router_scores: Tensor) -> Tensor:
+    """Maximize the Gibbs probability of the deterministic hard chart partition."""
+    hard_labels = router_scores.detach().argmax(dim=-1)
+    return F.cross_entropy(router_scores, hard_labels)
+
+
 def compute_diversity_loss(
     router_weights: Tensor, num_charts: int, eps: float = 1e-6
 ) -> Tensor:
@@ -163,6 +251,108 @@ def compute_diversity_loss(
     return log_K - H_K
 
 
+def _entropy_band_loss(
+    entropy: Tensor,
+    h_low: float | None,
+    h_high: float | None = None,
+) -> Tensor:
+    """Penalize entropy outside an optional target band."""
+    loss = torch.zeros_like(entropy)
+    if h_low is not None:
+        loss = loss + F.relu(torch.as_tensor(h_low, device=entropy.device) - entropy).pow(2)
+    if h_high is not None:
+        loss = loss + F.relu(entropy - torch.as_tensor(h_high, device=entropy.device)).pow(2)
+    return loss
+
+
+def compute_chart_usage_band_loss(
+    router_weights: Tensor,
+    num_charts: int,
+    h_low: float | None = None,
+    h_high: float | None = None,
+    eps: float = 1e-6,
+) -> tuple[Tensor, dict[str, float]]:
+    """Encourage healthy chart occupancy using the hard/ST router.
+
+    ``router_weights`` should be the encoder routing tensor from the forward pass.
+    Under deterministic hard routing this tensor is straight-through:
+    forward values are one-hot chart assignments while gradients flow through the
+    underlying softmax scores. That gives the intended semantics for utilization:
+    the loss sees actual chart occupancy, not diffuse soft marginals.
+    """
+    if h_low is None:
+        h_low = math.log(max(0.9 * num_charts, 1.0))
+
+    mean_usage = router_weights.mean(dim=0)
+    entropy = -(mean_usage * torch.log(mean_usage + eps)).sum()
+    loss = _entropy_band_loss(entropy, h_low=h_low, h_high=h_high)
+
+    metrics = {
+        "H_usage": entropy.item(),
+        "usage_perplexity": float(torch.exp(entropy).item()),
+        "usage_active": int((mean_usage > (1.0 / (2.0 * max(num_charts, 1)))).sum().item()),
+    }
+    return loss, metrics
+
+
+def compute_sinkhorn_balanced_chart_loss(
+    router_scores: Tensor,
+    *,
+    epsilon: float = 0.05,
+    num_iters: int = 20,
+    eps: float = 1e-8,
+) -> tuple[Tensor, dict[str, float]]:
+    """Balance chart occupancy with an entropy-regularized OT assignment target.
+
+    The returned target distribution is row-normalized from a Sinkhorn plan whose
+    row marginals are uniform over samples and whose column marginals are uniform
+    over charts. Minimizing the cross-entropy from the router scores to this
+    detached target encourages globally balanced but locally sharp assignments.
+    """
+    if router_scores.ndim != 2:
+        msg = "router_scores must have shape [B, K]."
+        raise ValueError(msg)
+    batch_size, num_charts = router_scores.shape
+    if batch_size == 0 or num_charts == 0:
+        zero = torch.tensor(0.0, device=router_scores.device)
+        return zero, {
+            "ot_target_top1_mean": 0.0,
+            "ot_plan_col_l1": 0.0,
+            "ot_plan_row_l1": 0.0,
+        }
+
+    log_r = torch.full(
+        (batch_size,), -math.log(batch_size), device=router_scores.device, dtype=router_scores.dtype,
+    )
+    log_c = torch.full(
+        (num_charts,), -math.log(num_charts), device=router_scores.device, dtype=router_scores.dtype,
+    )
+    log_kernel = router_scores / max(float(epsilon), 1e-6)
+
+    u = torch.zeros_like(log_r)
+    v = torch.zeros_like(log_c)
+    for _ in range(max(int(num_iters), 1)):
+        u = log_r - torch.logsumexp(log_kernel + v.unsqueeze(0), dim=1)
+        v = log_c - torch.logsumexp(log_kernel + u.unsqueeze(1), dim=0)
+
+    log_plan = log_kernel + u.unsqueeze(1) + v.unsqueeze(0)
+    plan = torch.exp(log_plan)
+    target = plan / plan.sum(dim=1, keepdim=True).clamp(min=eps)
+    target_detached = target.detach()
+
+    log_probs = F.log_softmax(router_scores, dim=-1)
+    loss = -(target_detached * log_probs).sum(dim=-1).mean()
+
+    row_target = 1.0 / max(batch_size, 1)
+    col_target = 1.0 / max(num_charts, 1)
+    metrics = {
+        "ot_target_top1_mean": target_detached.max(dim=-1).values.mean().item(),
+        "ot_plan_col_l1": (plan.sum(dim=0) - col_target).abs().sum().item(),
+        "ot_plan_row_l1": (plan.sum(dim=1) - row_target).abs().sum().item(),
+    }
+    return loss, metrics
+
+
 def compute_codebook_centering_loss(codebook: Tensor) -> Tensor:
     """Encourage per-chart codebook deltas to be zero-mean.
 
@@ -172,6 +362,64 @@ def compute_codebook_centering_loss(codebook: Tensor) -> Tensor:
     codebook = _project_to_ball(codebook)
     centers_tan = log_map_zero(codebook).mean(dim=1)  # [N_c, D]
     return (centers_tan**2).sum(dim=1).mean()
+
+
+def compute_chart_center_mean_loss(chart_centers: Tensor) -> Tensor:
+    """Anchor the atlas barycenter near the origin in tangent coordinates.
+
+    This regularizes the global atlas frame without forcing individual chart
+    centers to coincide. The tangent mean ``mean(log_0(c_k))`` is the natural
+    origin-centered analogue of zero-centering the per-chart codebook deltas.
+    """
+    chart_centers = _project_to_ball(chart_centers)
+    atlas_mean = log_map_zero(chart_centers).mean(dim=0)
+    return atlas_mean.pow(2).sum()
+
+
+def compute_chart_center_radius_loss(
+    chart_centers: Tensor,
+    radius_max: float,
+    *,
+    barrier_beta: float = 4.0,
+) -> Tensor:
+    """Keep chart centers inside a hyperbolic safe harbor.
+
+    ``radius_max`` is interpreted in geodesic distance from the origin, not as
+    a Euclidean ball norm. That avoids under-penalizing boundary drift.
+    """
+    if chart_centers.numel() == 0:
+        return torch.tensor(0.0, device=chart_centers.device, dtype=chart_centers.dtype)
+
+    chart_centers = _project_to_ball(chart_centers)
+    origin = torch.zeros_like(chart_centers)
+    radii = hyperbolic_distance(chart_centers, origin)
+    beta = max(float(barrier_beta), 1e-6)
+    barrier = (F.softplus(beta * (radii - radius_max)) - math.log(2.0)) / beta
+    barrier = barrier.clamp_min(0.0)
+    return barrier.pow(2).mean()
+
+
+def compute_chart_center_separation_loss(
+    chart_centers: Tensor,
+    margin: float = 1.0,
+) -> Tensor:
+    """Keep distinct chart anchors separated in hyperbolic geometry."""
+    num_charts = chart_centers.shape[0]
+    if num_charts < 2:
+        return torch.tensor(0.0, device=chart_centers.device, dtype=chart_centers.dtype)
+
+    chart_centers = _project_to_ball(chart_centers)
+    ci = chart_centers.unsqueeze(1).expand(num_charts, num_charts, -1)
+    cj = chart_centers.unsqueeze(0).expand(num_charts, num_charts, -1)
+    distances = hyperbolic_distance(
+        ci.reshape(num_charts * num_charts, -1),
+        cj.reshape(num_charts * num_charts, -1),
+    ).reshape(num_charts, num_charts)
+    mask = torch.triu(
+        torch.ones(num_charts, num_charts, device=chart_centers.device, dtype=torch.bool),
+        diagonal=1,
+    )
+    return F.relu(margin - distances[mask]).pow(2).mean()
 
 
 def compute_residual_scale_loss(z_n: Tensor, assume_tangent: bool = True) -> Tensor:
@@ -197,10 +445,10 @@ def compute_window_loss(
 
     Overhead: ~2% (entropy statistics).
     """
-    mean_usage = router_weights.mean(dim=0)
-    H_K = -(mean_usage * torch.log(mean_usage + eps)).sum()
-    H_K_given_X = -(router_weights * torch.log(router_weights + eps)).sum(dim=1).mean()
-    I_XK = H_K - H_K_given_X
+    info = compute_router_information_metrics(router_weights, eps=eps)
+    H_K = info["H_K"]
+    H_K_given_X = info["H_K_given_X"]
+    I_XK = info["I_XK"]
 
     # Penalize if I(X;K) < eps_ground (not enough information)
     loss_ground = F.relu(eps_ground - I_XK).pow(2)
@@ -211,6 +459,71 @@ def compute_window_loss(
         "I_XK": I_XK.item(),
     }
     return loss_ground, metrics
+
+
+def compute_code_usage_band_loss(
+    v_local: Tensor,
+    codebook: Tensor,
+    router_weights: Tensor,
+    *,
+    hard_code_indices: Tensor | None = None,
+    h_low: float | None = None,
+    h_high: float | None = None,
+    temperature: float = 1.0,
+    eps: float = 1e-6,
+) -> tuple[Tensor, dict[str, float]]:
+    """Encourage healthy per-chart code usage with straight-through assignments.
+
+    The chart occupancy comes from ``router_weights`` and should therefore use the
+    hard/ST encoder router. Code occupancy is formed from a straight-through code
+    assignment computed from the same distances used by the VQ path.
+    """
+    num_charts, num_codes, _dim = codebook.shape
+    if num_codes < 2:
+        zero = torch.tensor(0.0, device=v_local.device)
+        return zero, {
+            "H_code_usage": 0.0,
+            "code_usage_perplexity": 1.0,
+            "active_code_charts": 0,
+        }
+
+    if h_low is None:
+        h_low = math.log(max(0.75 * num_codes, 1.0))
+
+    v_exp = _project_to_ball(v_local).unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
+    cb_exp = _project_to_ball(codebook).unsqueeze(0)  # [1, N_c, K, D]
+    dist_sq = hyperbolic_distance(v_exp, cb_exp) ** 2  # [B, N_c, K]
+
+    soft_assign = F.softmax(-dist_sq / max(temperature, 1e-6), dim=-1)
+    hard_idx = hard_code_indices if hard_code_indices is not None else torch.argmax(soft_assign, dim=-1)
+    hard_assign = F.one_hot(hard_idx, num_classes=num_codes).to(soft_assign.dtype)
+    assign_st = hard_assign + soft_assign - soft_assign.detach()
+
+    chart_code_mass = (assign_st * router_weights.unsqueeze(-1)).sum(dim=0)  # [N_c, K]
+    chart_mass = chart_code_mass.sum(dim=-1)  # [N_c]
+    active = chart_mass > eps
+    if not active.any():
+        zero = torch.tensor(0.0, device=v_local.device)
+        return zero, {
+            "H_code_usage": 0.0,
+            "code_usage_perplexity": 1.0,
+            "active_code_charts": 0,
+        }
+
+    usage_active = chart_code_mass[active] / chart_mass[active].unsqueeze(-1).clamp(min=eps)
+    entropy = -(usage_active * torch.log(usage_active + eps)).sum(dim=-1)
+    loss_per_chart = _entropy_band_loss(entropy, h_low=h_low, h_high=h_high)
+
+    weights = chart_mass[active] / chart_mass[active].sum().clamp(min=eps)
+    loss = (weights * loss_per_chart).sum()
+
+    mean_entropy = entropy.mean()
+    metrics = {
+        "H_code_usage": mean_entropy.item(),
+        "code_usage_perplexity": float(torch.exp(mean_entropy).item()),
+        "active_code_charts": int(active.sum().item()),
+    }
+    return loss, metrics
 
 
 def compute_code_entropy_loss(
@@ -445,6 +758,10 @@ def get_jump_weight_schedule(
     """
     if epoch < warmup_end:
         return 0.0
+    if final_weight <= 0.0:
+        return 0.0
+    if ramp_end <= warmup_end:
+        return final_weight
     if epoch < ramp_end:
         progress = (epoch - warmup_end) / (ramp_end - warmup_end)
         return 0.01 + progress * (final_weight - 0.01)
@@ -600,30 +917,179 @@ def compute_radial_calibration_loss(
     z_geo: Tensor,
     router_weights: Tensor,
     num_charts: int,
+    *,
+    center_points: Tensor | None = None,
+    quality_target: Tensor | None = None,
+    quality_mix: float = 0.0,
+    quality_base_weight: float = 0.0,
+    rho_max: float = 4.0,
+    rho_band_width: float = 0.75,
+    use_hyperbolic_radius: bool = False,
     eps: float = 1e-6,
 ) -> Tensor:
-    """Calibrate radius to routing confidence.
+    """Calibrate radius to routing confidence and sample quality.
 
-    O(BD) complexity. Schedule: epoch 100+.
+    O(BD) complexity.
 
-    Confident points (low routing entropy) → near the Poincaré boundary (r≈1),
-    where a single chart unambiguously owns the region.  Uncertain points (high
-    entropy) → near the origin (r≈0), where chart boundaries meet.
+    The intended use is with chart-local latents or with ``center_points`` set
+    to the current chart-mixture barycenter so radius is earned by sample-local
+    geometry instead of by pushing the whole atlas frame outward.
 
     r_i = ||z_i||
     H_i = -sum_k(w_ik * log(w_ik + eps))    # routing entropy
     target_i = 1 - H_i / log(num_charts)     # confident → 1, uncertain → 0
-    L = mean((r_i - target_i)^2)
+    When ``quality_target`` is provided, the confident shell is gated by
+    per-sample quality so confident but inaccurate points are pulled inward.
+    ``quality_base_weight`` adds a quality-driven basal shell before confidence
+    sharpens it; this avoids the circular failure mode where zero confidence
+    implies zero radial target everywhere and the router never develops a
+    meaningful hard partition.
+    With ``use_hyperbolic_radius=True``, a band loss is used instead of exact
+    shell matching so high-quality samples can occupy a radial range rather than
+    collapsing to a single shell.
     """
     z = _project_to_ball(z_geo)
-    r = z.norm(dim=-1)  # [B]
+    confidence = compute_routing_confidence(router_weights, num_charts, eps=eps)
 
-    # Routing entropy per sample
-    H = -(router_weights * torch.log(router_weights + eps)).sum(dim=1)  # [B]
+    mix = min(max(float(quality_mix), 0.0), 1.0)
+    if quality_target is None:
+        radial_target = confidence
+    else:
+        quality = quality_target.clamp(0.0, 1.0)
+        gated_target = confidence * ((1.0 - mix) + mix * quality)
+        base_weight = min(max(float(quality_base_weight), 0.0), 1.0)
+        radial_target = (1.0 - base_weight) * gated_target + base_weight * quality
+
+    if center_points is not None:
+        centers = _project_to_ball(center_points)
+        rho = hyperbolic_distance(z, centers)
+        r = None
+    else:
+        r = z.norm(dim=-1)  # [B]
+        rho = 2.0 * torch.atanh(r.clamp(max=1.0 - eps))
+
+    if not use_hyperbolic_radius:
+        if r is None:
+            r = torch.tanh(0.5 * rho)
+        return ((r - radial_target) ** 2).mean()
+
+    rho_cap = max(float(rho_max), eps)
+    band = max(float(rho_band_width), 0.0)
+    rho_target = radial_target * rho_cap
+    rho_lo = (rho_target - band).clamp(min=0.0)
+    rho_hi = (rho_target + band).clamp(max=rho_cap)
+    return (F.relu(rho_lo - rho).pow(2) + F.relu(rho - rho_hi).pow(2)).mean()
+
+
+def compute_routing_confidence(
+    router_weights: Tensor,
+    num_charts: int,
+    *,
+    eps: float = 1e-6,
+) -> Tensor:
+    """Map routing entropy to a confidence score in [0, 1]."""
+    H = -(router_weights * torch.log(router_weights + eps)).sum(dim=1)
     log_K = math.log(max(num_charts, 2))
-    target = 1.0 - H / log_K  # [B], confident → 1, uncertain → 0
+    return (1.0 - H / log_K).clamp(0.0, 1.0)
 
-    return ((r - target) ** 2).mean()
+
+def compute_error_quality_targets(
+    per_sample_error: Tensor,
+    *,
+    alpha: float = 2.0,
+    eps: float = 1e-6,
+) -> Tensor:
+    """Turn detached per-sample errors into quality targets in [0, 1]."""
+    if per_sample_error.ndim != 1:
+        msg = "per_sample_error must have shape [B]"
+        raise ValueError(msg)
+
+    error = per_sample_error.detach()
+    mean_error = error.mean().clamp_min(eps)
+    return torch.exp(-float(alpha) * error / mean_error).clamp(0.0, 1.0)
+
+
+def compute_rank_quality_targets(
+    per_sample_error: Tensor,
+) -> Tensor:
+    """Turn per-sample errors into rank-based quality targets in [0, 1].
+
+    Lower-error samples get higher quality, but the target is based on batch
+    ordering instead of absolute scale. This is useful when we care more about
+    "better than peers" than "close to zero error".
+    """
+    if per_sample_error.ndim != 1:
+        msg = "per_sample_error must have shape [B]"
+        raise ValueError(msg)
+
+    error = per_sample_error.detach()
+    if error.numel() <= 1:
+        return torch.ones_like(error)
+
+    order = torch.argsort(error)
+    ranks = torch.empty_like(error)
+    ranks[order] = torch.arange(
+        error.numel(),
+        device=error.device,
+        dtype=error.dtype,
+    )
+    denom = max(error.numel() - 1, 1)
+    return (1.0 - ranks / float(denom)).clamp(0.0, 1.0)
+
+
+def mix_quality_targets(
+    absolute_quality: Tensor,
+    rank_quality: Tensor,
+    *,
+    rank_mix: float = 0.0,
+) -> Tensor:
+    """Blend absolute and rank-based quality targets into a single score."""
+    mix = min(max(float(rank_mix), 0.0), 1.0)
+    return ((1.0 - mix) * absolute_quality + mix * rank_quality).clamp(0.0, 1.0)
+
+
+def combine_quality_targets(
+    primary_quality: Tensor,
+    secondary_quality: Tensor,
+    *,
+    primary_weight: float = 0.7,
+) -> Tensor:
+    """Combine two quality signals with a weighted average."""
+    weight = min(max(float(primary_weight), 0.0), 1.0)
+    return (weight * primary_quality + (1.0 - weight) * secondary_quality).clamp(0.0, 1.0)
+
+
+def compute_confidence_calibration_loss(
+    router_weights: Tensor,
+    quality_target: Tensor,
+    num_charts: int,
+    *,
+    eps: float = 1e-6,
+) -> Tensor:
+    """Align router confidence with a detached per-sample quality target."""
+    confidence = compute_routing_confidence(router_weights, num_charts, eps=eps)
+    return F.smooth_l1_loss(confidence, quality_target.clamp(0.0, 1.0))
+
+
+# =============================================================================
+# NEW: Pre-squash tangent barrier
+# =============================================================================
+
+
+def compute_v_tangent_barrier_loss(
+    v_raw: Tensor,
+    *,
+    target_radius: float = 0.9,
+    max_norm: float = 0.99,
+) -> Tensor:
+    """Penalize the pre-squash tangent norm once it enters the saturated tail."""
+    if v_raw.numel() == 0:
+        return torch.tensor(0.0, device=v_raw.device, dtype=v_raw.dtype)
+
+    radius = min(max(float(target_radius), 0.0), float(max_norm) - 1e-4)
+    tangent_target = math.atanh(radius)
+    v_norm = v_raw.norm(dim=-1)
+    return F.relu(v_norm - tangent_target).pow(2).mean()
 
 
 # =============================================================================
@@ -800,10 +1266,11 @@ def compute_code_collapse_penalty(
 
     Computes soft code assignment probabilities from hyperbolic distances
     between v_local and codebook in the Poincaré ball, weighted by router.
-    Penalizes when one code dominates: max(soft_usage) - 1/K per chart.
+    Penalizes low code entropy *within each chart* instead of building one
+    global histogram over code indices shared across charts.
 
-    Unlike per_chart_code_entropy (which uses bincount → zero gradients),
-    this provides gradient signal through the codebook and encoder.
+    Unlike per_chart_code_entropy (which uses bincount -> zero gradients),
+    this stays differentiable through both the encoder outputs and the codebook.
     """
     N_c, K, _D = codebook.shape
     if K < 2:
@@ -811,22 +1278,27 @@ def compute_code_collapse_penalty(
 
     # Project both to Poincaré ball and compute hyperbolic distances [B, N_c, K]
     v_exp = _project_to_ball(v_local).unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
-    cb_exp = _project_to_ball(codebook.detach()).unsqueeze(0)  # [1, N_c, K, D]
+    cb_exp = _project_to_ball(codebook).unsqueeze(0)  # [1, N_c, K, D]
     dist_sq = hyperbolic_distance(v_exp, cb_exp) ** 2  # [B, N_c, K]
 
     # Soft code assignments per chart
     soft_assign = F.softmax(-dist_sq / max(temperature, 1e-6), dim=-1)  # [B, N_c, K]
 
-    # Weight by router (detached to avoid coupling with chart penalty)
+    # Weight by chart responsibility, but keep chart balancing separate from
+    # code balancing by detaching the router here.
     w = router_weights.detach().unsqueeze(-1)  # [B, N_c, 1]
-    weighted_assign = (soft_assign * w).sum(dim=1)  # [B, K]
+    chart_usage = (soft_assign * w).sum(dim=0)  # [N_c, K]
+    chart_mass = chart_usage.sum(dim=-1)  # [N_c]
+    active = chart_mass > eps
+    if not active.any():
+        return torch.tensor(0.0, device=v_local.device)
 
-    # Mean code usage across batch
-    mean_usage = weighted_assign.mean(dim=0)  # [K]
-    mean_usage = mean_usage / (mean_usage.sum() + eps)
+    usage_active = chart_usage[active] / chart_mass[active].unsqueeze(-1).clamp(min=eps)
+    entropy = -(usage_active * torch.log(usage_active + eps)).sum(dim=-1)
+    loss_per_chart = math.log(K) - entropy
 
-    # Penalty: max(usage) - 1/K (0 when uniform)
-    return mean_usage.max() - 1.0 / K
+    weights = chart_mass[active] / chart_mass[active].sum().clamp(min=eps)
+    return (weights * loss_per_chart).sum()
 
 
 # =============================================================================
@@ -840,10 +1312,21 @@ __all__ = [
     # KEEP losses
     "SupervisedTopologyLoss",
     "compute_routing_entropy",
+    "compute_router_information_metrics",
+    "compute_router_sharpness_metrics",
+    "compute_router_score_metrics",
+    "compute_router_margin_loss",
+    "compute_hard_routing_nll",
     "compute_diversity_loss",
+    "compute_chart_usage_band_loss",
+    "compute_sinkhorn_balanced_chart_loss",
     "compute_codebook_centering_loss",
+    "compute_chart_center_mean_loss",
+    "compute_chart_center_radius_loss",
+    "compute_chart_center_separation_loss",
     "compute_residual_scale_loss",
     "compute_window_loss",
+    "compute_code_usage_band_loss",
     "compute_code_entropy_loss",
     "compute_per_chart_code_entropy_loss",
     "compute_orthogonality_loss",
@@ -856,7 +1339,11 @@ __all__ = [
     # NEW losses
     "compute_hyperbolic_uniformity_loss",
     "compute_hyperbolic_contrastive_loss",
+    "compute_routing_confidence",
+    "compute_error_quality_targets",
     "compute_radial_calibration_loss",
+    "compute_confidence_calibration_loss",
+    "compute_v_tangent_barrier_loss",
     "compute_codebook_spread_loss",
     "compute_symbol_purity_loss",
     "compute_symbol_calibration_loss",

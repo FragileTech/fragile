@@ -231,11 +231,11 @@ including:
 - rank and determinant arguments,
 - Fourier-type transforms,
 - polynomial-identity and cancellation methods,
-- monodromy/Galois simplifications,
+- monodromy/Galois simplifications (including the vacuity of $\mathfrak S_{\mathrm{mono}}$ for Boolean systems),
 - and every other admissible polynomial-size algebraic compression over the allowed signatures.
 
 In particular, it is **not sufficient** for $\mathsf{Obs}_\flat$ to test only visible automorphism groups, only
-integrality, or only solvable monodromy.
+integrality, or only the vacuity of solvable monodromy for Boolean fibers.
 :::
 
 :::{prf:remark} Why Theorem \ref{thm-flat-obstruction-sound-complete} is the hardest algebraic repair
@@ -1813,7 +1813,7 @@ be the library of admissible algebraic signature families for the strengthened $
 3. $\mathfrak S_{\mathrm{rank}}$ covers determinant/rank/minor-based elimination;
 4. $\mathfrak S_{\mathrm{fourier}}$ covers character/Fourier transforms over effectively presented finite groups;
 5. $\mathfrak S_{\mathrm{polyid}}$ covers polynomial-identity and cancellation schemes;
-6. $\mathfrak S_{\mathrm{mono}}$ covers solvable-monodromy and related algebraic-geometry reductions.
+6. $\mathfrak S_{\mathrm{mono}}$ covers monodromy-based algebraic-geometry reductions. For Boolean systems (where $z_j^2 - z_j = 0$ forces the variety to be discrete), the monodromy of the covering over the clause-weight parameter space is trivial ($\mathrm{Mon} = \{\mathrm{id}\}$), so $\mathfrak S_{\mathrm{mono}}$ is **vacuous**: there is no monodromy structure to exploit.
 
 The strengthened $\flat$-dossier is complete only if it quantifies over **all** signatures in
 $$
@@ -1858,9 +1858,8 @@ is complete only if it contains proofs of the following statements, or strictly 
    No admissible polynomial-size algebraic cancellation or polynomial-identity sketch over
    $\mathfrak S_{\mathrm{polyid}}$ yields a correct solver family for canonical $3$-SAT.
 
-8. **No-sketch theorem for solvable-monodromy methods.**  
-   No admissible polynomial-size solvable-monodromy sketch over
-   $\mathfrak S_{\mathrm{mono}}$ yields a correct solver family for canonical $3$-SAT.
+8. **No-sketch theorem for monodromy methods (Boolean-vacuity argument).**
+   The sub-channel $\mathfrak S_{\mathrm{mono}}$ is vacuous for canonical $3$-SAT: the Boolean constraints $z_j^2 - z_j = 0$ make the algebraic variety discrete ($\{0,1\}^n$ only), so the monodromy of the discrete covering over the clause-weight parameter space is trivial ($\mathrm{Mon} = \{\mathrm{id}\}$). Any algebraic sketch that does not use monodromy structure falls into sub-channels 1--7 (already blocked). Therefore no admissible polynomial-size sketch over $\mathfrak S_{\mathrm{mono}}$ yields a correct solver family for canonical $3$-SAT.
 
 9. **Translator stability lemma.**  
    Failure of the above sketch classes is preserved under presentation translators and admissible re-encodings.
@@ -1878,7 +1877,7 @@ The dossier is **not** complete if it proves only:
 - trivial automorphism group,
 - absence of visible symmetry,
 - absence of obvious lattice compression,
-- or failure of solvable monodromy alone.
+- or vacuity of monodromy for Boolean fibers alone.
 
 Those are at most frontend sublemmas inside items (3)--(8).
 :::

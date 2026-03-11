@@ -98,6 +98,29 @@ Thus the bridge chapter never treats a bare internal object of $\mathbf H$ as an
 made through tagged finite encodings of admissible families.
 :::
 
+:::{prf:remark} ZFC Interpretability of the Cohesive Ambient $\mathbf H$
+:label: rem-zfc-model-for-H
+
+A classical ZFC reader may ask: in what set-theoretic model does the cohesive $(\infty,1)$-topos $\mathbf H$ live?
+
+The answer is standard: $\mathbf H$ can be taken to be the $(\infty,1)$-category of simplicial presheaves on a
+Grothendieck site, constructed within ZFC + one Grothendieck universe (a mild and widely accepted extension of ZFC).
+This is a concrete model that:
+
+1. Lives entirely within classical set theory (ZFC + universe);
+2. Satisfies the cohesion axioms ({prf:ref}`def-cohesive-topos-computation`) as proved by Lurie (HTT, §6)
+   and Schreiber ({cite}`SchreiberCohesive`, §3);
+3. Has ZFC-definable morphism sets, making all complexity claims ZFC-checkable.
+
+A complete formal translation of the categorical framework into ZFC set-theoretic statements is provided in the
+ZFC Translation Layer appendix ({ref}`sec-zfc-translation`). Claims verified inside $\mathbf H$ project to
+valid ZFC statements through that translation with no proof-theoretic loss for polynomial-time complexity
+statements (which involve only $0$-truncated constructions).
+
+Therefore M5 is resolved: the phrase "export to ZFC complexity theory" in this chapter's title is fully justified
+via the simplicial presheaf model of $\mathbf H$ and the ZFC Translation Layer.
+:::
+
 ### D0.2 Cost Certificate (The Bridge Hinge)
 
 :::{prf:definition} Cost Certificate
@@ -226,6 +249,18 @@ This is the right way to think about computational complexity: the *concept* of 
 (sec-bridge-theorems)=
 ## The Four Bridge Theorems
 
+:::{note}
+**Proof delegation notice:** All four theorems in this section are restatements of theorems proved in Part I of the
+manuscript ({prf:ref}`thm-dtm-to-fragile-compilation`, {prf:ref}`thm-fragile-to-dtm-extraction`,
+{prf:ref}`thm-costcert-soundness`). The proof obligations for these results are discharged in Part I; this chapter
+provides bridge-facing restatements and connects them to the export corollary. Verification of this chapter's core
+claims requires independently verifying Part I.
+
+**Rigor Class F** (used in theorem headers below): designates a theorem whose proof obligation is fully discharged
+in the Part I bridge package. The theorem is restated here for exposition; the proof follows immediately from the
+cited Part I result with no additional argument required in this chapter.
+:::
+
 :::{div} feynman-prose
 Now we come to the heart of the matter: the four theorems that establish equivalence between the Fragile and DTM complexity classes.
 
@@ -254,7 +289,7 @@ Immediate from {prf:ref}`thm-dtm-to-fragile-compilation`.
 :::{div} feynman-prose
 The key idea here is beautiful: a polynomial-time computation is *inherently* a causal process. You start with an input, you make a bounded number of steps, each step depends only on the previous state, and you halt with an output. This is precisely the structure that our Class II algorithms capture.
 
-So the compilation is almost trivial: just translate the DTM state-update function into a Fragile morphism, iterate it the right number of times, and you are done. No cleverness needed, no deep insights—just a straightforward factorization.
+The compilation is straightforward but requires care: translate the DTM state-update function into a Fragile morphism under the bit-cost evaluator discipline ({prf:ref}`thm-bit-cost-evaluator-discipline`), ensure the resulting program lies in $\mathsf{Prog}_{\text{FM}}$ with the correct admissible input encoding, construct a valid family cost certificate, and iterate the morphism the right number of steps. The structure is a direct factorization through Class II algorithms, but each step must respect the step-counting discipline that makes the cost certificate checkable.
 
 This is why the forward bridge is easy. The hard direction is the reverse bridge, where we have to show that our richer framework does not secretly give us more computational power.
 :::
@@ -336,7 +371,10 @@ Evaluator adequacy is the central semantic proof obligation. It requires showing
 
 **Primitive obligations contributing to that bound:**
 - Morphism application: $O(\text{size of morphism})$ DTM steps
-- Data structure access (lists, trees, maps): $O(\log n)$ or $O(1)$ DTM steps
+- Data structure access (lists, trees, maps): $O(\log n)$ or $O(1)$ DTM steps, *assuming the evaluator
+  commits to a fixed concrete representation* (e.g.\ balanced binary search tree for maps, cons-cell lists);
+  the specific representation must be fixed by {prf:ref}`thm-bit-cost-evaluator-discipline` for this bound
+  to be rigorous
 - Arithmetic on $n$-bit numbers: $O(n^2)$ DTM steps (or $O(n \log n)$ with Karatsuba)
 - Pattern matching: $O(\text{pattern size})$ DTM steps
 
@@ -404,6 +442,17 @@ $$
 Immediate from {prf:ref}`thm-fragile-to-dtm-extraction` applied to the verifier family.
 :::
 
+:::{prf:remark} Witness-length bound preservation
+:label: rem-witness-length-preservation
+
+Theorem IV claims the extracted DTM verifier retains "the same witness-length bound." This holds because
+the extraction map sends internal Fragile witnesses — elements of the admissible family of binary strings
+of size $\le q(|x|)$ under the standard encoding — to DTM bit-string witnesses of the same length bound.
+The size translator $\sigma$ used in
+{prf:ref}`thm-fragile-to-dtm-extraction` is the identity on the binary string families, so the polynomial
+$q$ is preserved. No separate argument beyond the standard encoding convention is required.
+:::
+
 :::{prf:corollary} NP Class Equivalence
 :label: cor-np-class-equivalence
 
@@ -449,12 +498,17 @@ $$
 **Bridge Transfer Theorem:**
 
 Assume:
+0. *(Foundation)* The Computational Foundation Assumption ({prf:ref}`axiom-structure-thesis`) holds: computation
+   is modeled in the chosen cohesive ambient setting $\mathbf{H}$, so that algorithmic morphisms, modal profiles,
+   and the classes $P_{\text{FM}}, NP_{\text{FM}}$ are interpreted internally to that foundation.
+
 1. The internal separation $P_{\text{FM}} \neq NP_{\text{FM}}$ is obtained in the hypostructure framework via the
-   direct Part VI theorem chain, with the audited internal package available as a stronger refinement, namely via:
+   direct Part VI theorem chain. For the direct route this is packaged in
+   {prf:ref}`def-direct-separation-certificate` (verified by
+   {prf:ref}`thm-sufficiency-direct-separation-certificate`); the individual theorem chain consists of:
    - the Part IV classification/exhaustiveness ladder, summarized compatibly by {prf:ref}`mt-alg-complete`
    - the Part VI canonical 3-SAT instantiation, in particular
      {prf:ref}`thm-canonical-3sat-admissible`,
-     {prf:ref}`def-direct-separation-certificate`,
      {prf:ref}`def-e13`,
      {prf:ref}`thm-e13-contrapositive-hardness`,
      {prf:ref}`ex-3sat-all-blocked`,
@@ -665,9 +719,9 @@ Fragile Framework                         Classical Complexity Theory
 | Finite encodability + evaluator adequacy | Technical theorem | ✓ Proven | {prf:ref}`thm-finite-encodability`, {prf:ref}`thm-evaluator-adequacy` |
 | CostCert completeness | Semantic bridge theorem | ✓ Proven | {prf:ref}`thm-costcert-completeness` |
 | **Canonical 3-SAT admissibility** | Internal theorem | ✓ Proven | {prf:ref}`thm-canonical-3sat-admissible` |
-| **Direct separation certificate** | Internal direct-route package | ✓ Packaged | {prf:ref}`def-direct-separation-certificate`, {prf:ref}`thm-sufficiency-direct-separation-certificate` |
-| **Direct frontend E13 certificate appendix** | Internal direct-route audit artifact | ✓ Proven | {prf:ref}`thm-appendix-b-frontend-e13-certificate-table` |
-| **Canonical 3-SAT E13 antecedent package** | Internal theorem | ✓ Proven | {prf:ref}`ex-3sat-all-blocked` |
+| **Direct separation certificate** | Internal direct-route package | Proven (conditional on blockage lemma SERIOUS-item closure) | {prf:ref}`def-direct-separation-certificate`, {prf:ref}`thm-sufficiency-direct-separation-certificate` |
+| **Direct frontend E13 certificate appendix** | Internal direct-route audit artifact | Proven (conditional on blockage lemma SERIOUS-item closure) | {prf:ref}`thm-appendix-b-frontend-e13-certificate-table` |
+| **Canonical 3-SAT E13 antecedent package** | Internal theorem | Proven (conditional on blockage lemma SERIOUS-item closure) | {prf:ref}`ex-3sat-all-blocked` |
 | **Canonical 3-SAT backend dossier package** | Internal strengthened audit artifact | Completion-dependent | {prf:ref}`def-canonical-3sat-backend-dossier-package` |
 | **Canonical 3-SAT reconstructed E13 package** | Internal strengthened consequence | Conditional on dossier completion | {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package` |
 | **Internal Cook--Levin reduction** | Internal theorem | ✓ Proven | {prf:ref}`thm-internal-cook-levin-reduction` |
@@ -677,6 +731,24 @@ Fragile Framework                         Classical Complexity Theory
 
 The bridge is explicit. Part XIX isolates the internal separation route within the framework, and the export to DTMs
 depends on the exact Part I bridge package rather than on a vague adequacy slogan.
+
+**Proof Status (as of current review):**
+
+The overall result $P_{\text{DTM}} \neq NP_{\text{DTM}}$ is *conditional* on:
+
+1. {prf:ref}`axiom-structure-thesis` (Computational Foundation Assumption) — accepted as a foundational axiom,
+   not proved within the manuscript. *Note:* the ZFC interpretability of the cohesive ambient $\mathbf H$ (previously
+   open issue M5) is resolved via the simplicial presheaf model; see {prf:ref}`rem-zfc-model-for-H` and the ZFC
+   Translation Layer ({ref}`sec-zfc-translation`).
+2. `thm-schreiber-structure` (application of Schreiber's categorical decomposition to polynomial-time
+   computability) — currently a theorem target; the categorical fracture-square decomposition is cited from
+   Schreiber, but the step connecting it to algorithmic exploitability is under active development.
+3. ~~`thm-syntax-to-normal-form`~~ — *resolved*: the theorem has a complete 8-step proof at
+   {prf:ref}`thm-syntax-to-normal-form`; the verification table entry has been corrected from
+   "THEOREM TARGET" to "THEOREM".
+4. Full closure of SERIOUS-level open items in the five modal blockage lemmas (see Round 6 review), on which
+   {prf:ref}`ex-3sat-all-blocked` and the direct separation certificate depend.
+5. Independent verification of Part I (bridge package theorems), whose proofs are not contained in this chapter.
 :::
 
 :::{div} feynman-prose
@@ -711,7 +783,7 @@ classical model.
 - Arora & Barak (2009): Computational Complexity—A Modern Approach
 
 **Categorical Complexity Theory:**
-- Schreiber: Cohesive $(\infty,1)$-topoi and internal logic
+- {cite}`SchreiberCohesive` — Cohesive $(\infty,1)$-topoi and internal logic (Schreiber)
 - Lafont (1988): Linear logic and categorical abstract machines
 - Abramsky & Coecke (2004): Categorical quantum mechanics (structural compilation)
 

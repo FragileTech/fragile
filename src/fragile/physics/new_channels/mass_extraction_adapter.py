@@ -40,6 +40,9 @@ from fragile.physics.new_channels.multiscale_strong_force import (
 from fragile.physics.new_channels.tensor_momentum_channels import (
     TensorMomentumCorrelatorOutput,
 )
+from fragile.physics.new_channels.twistor_companion_channels import (
+    TwistorCompanionCorrelatorOutput,
+)
 from fragile.physics.new_channels.vector_meson_channels import (
     VectorMesonCorrelatorOutput,
 )
@@ -59,6 +62,7 @@ ChannelOutput = (
     | MultiscaleStrongForceOutput
     | FitnessPseudoscalarOutput
     | FitnessBilinearOutput
+    | TwistorCompanionCorrelatorOutput
 )
 
 # ---------------------------------------------------------------------------
@@ -245,6 +249,33 @@ def extract_fitness_bilinear(
     return correlators, operators
 
 
+def extract_twistor_companion(
+    output: TwistorCompanionCorrelatorOutput,
+    *,
+    use_connected: bool = True,
+    prefix: str = "",
+) -> _ExtractResult:
+    """Extract all fit-ready twistor companion correlators from twistor output."""
+    corr_suffix = "connected" if use_connected else "raw"
+    correlators: dict[str, Tensor] = {
+        f"{prefix}scalar": getattr(output, f"scalar_{corr_suffix}"),
+        f"{prefix}pseudoscalar": getattr(output, f"pseudoscalar_{corr_suffix}"),
+        f"{prefix}glueball": getattr(output, f"glueball_{corr_suffix}"),
+        f"{prefix}vector": getattr(output, f"vector_{corr_suffix}"),
+        f"{prefix}axial_vector": getattr(output, f"axial_vector_{corr_suffix}"),
+        f"{prefix}tensor": getattr(output, f"tensor_{corr_suffix}"),
+    }
+    operators: dict[str, Tensor] = {
+        f"{prefix}scalar": output.operator_scalar_series,
+        f"{prefix}pseudoscalar": output.operator_pseudoscalar_series,
+        f"{prefix}glueball": output.operator_glueball_series,
+        f"{prefix}vector": output.operator_vector_series,
+        f"{prefix}axial_vector": output.operator_axial_vector_series,
+        f"{prefix}tensor": output.operator_tensor_series,
+    }
+    return correlators, operators
+
+
 # ---------------------------------------------------------------------------
 # Dispatcher mapping
 # ---------------------------------------------------------------------------
@@ -258,6 +289,7 @@ _EXTRACTORS: dict[type, callable] = {
     MultiscaleStrongForceOutput: extract_multiscale,
     FitnessPseudoscalarOutput: extract_fitness_pseudoscalar,
     FitnessBilinearOutput: extract_fitness_bilinear,
+    TwistorCompanionCorrelatorOutput: extract_twistor_companion,
 }
 
 

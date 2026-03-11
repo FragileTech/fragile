@@ -19,10 +19,10 @@ from fragile.learning.core.layers.gauge import (
     CovariantAttention,
     GeodesicConfig,
     christoffel_contraction,
+    hyperbolic_distance,
     poincare_exp_map,
 )
 from fragile.learning.core.layers.primitives import SpectralLinear
-from fragile.learning.core.layers.topology import FactorizedJumpOperator
 
 
 def compute_risk_tensor(
@@ -551,8 +551,9 @@ class GeometricWorldModel(nn.Module):
         beta_curl: Value-curl coupling strength for Lorentz/Boris forces.
         gamma_risk: Risk-stress penalty weight in the effective potential.
         use_boris: Whether to enable Boris rotation for curl forces.
-        use_jump: Whether to enable the Poisson jump process.
-        jump_rate_hidden: Kept for API compatibility (unused).
+        use_jump: Whether to enable the conditional chart jump (WFR Fisher-Rao).
+        n_refine_steps: Number of BAOAB sub-steps per horizon step (WFR W2).
+        jump_beta: Inverse temperature for Boltzmann chart selection.
         min_length: Minimum resolvable geodesic length scale.
             When > 0, derives F_max, V_alg and cf_max from CFL conditions.
             When 0, all squashing is disabled (backward compat).
@@ -573,7 +574,8 @@ class GeometricWorldModel(nn.Module):
         gamma_risk: float = 0.01,
         use_boris: bool = True,
         use_jump: bool = True,
-        jump_rate_hidden: int = 64,
+        n_refine_steps: int = 3,
+        jump_beta: float = 1.0,
         min_length: float = 0.0,
         risk_metric_alpha: float = 0.0,
     ) -> None:
@@ -587,6 +589,8 @@ class GeometricWorldModel(nn.Module):
         self.beta_curl = beta_curl
         self.use_boris = use_boris
         self.use_jump = use_jump
+        self.n_refine_steps = n_refine_steps
+        self.jump_beta = jump_beta
         self.min_length = min_length
         self.risk_metric_alpha = risk_metric_alpha
 
@@ -626,13 +630,6 @@ class GeometricWorldModel(nn.Module):
             self.curl_net = CovariantValueCurl(latent_dim, action_dim, d_model)
         else:
             self.curl_net = None
-
-        if use_jump:
-            self.jump_rate_net = CovariantJumpRate(latent_dim, num_charts, d_model)
-            self.jump_operator = FactorizedJumpOperator(num_charts, latent_dim)
-        else:
-            self.jump_rate_net = None
-            self.jump_operator = None
 
         self.chart_predictor = CovariantChartTarget(
             latent_dim, action_dim, num_charts, d_model,
@@ -827,52 +824,179 @@ class GeometricWorldModel(nn.Module):
         return z, p, phi_eff, hodge_info
 
     # -----------------------------------------------------------------
-    # Jump process
+    # WFR conditional jump (Fisher-Rao component)
     # -----------------------------------------------------------------
 
-    def _jump_step(
+    @torch.no_grad()
+    def _boltzmann_chart_logits(
+        self, z: torch.Tensor, rw: torch.Tensor,
+    ) -> torch.Tensor:
+        """Value-driven Boltzmann logits for chart selection.
+
+        logit_k = β · (V(c_k) - V(z) - d_geo(z, c_k))
+
+        Higher logits for charts with better value AND reachable by short jumps.
+
+        Runs under torch.no_grad() because Boltzmann logits are used only for
+        jump *decisions* (argmax), not for supervised loss.  The supervised
+        chart signal comes from ``chart_logits`` via CovariantChartTarget.
+        This avoids retaining the B*K computation graph through
+        CovariantPotentialNet's attention modules (the OOM root cause in
+        Phase 3 with retain_graph=True).
+
+        Args:
+            z: [B, D] current position.
+            rw: [B, K] current chart weights.
+
+        Returns:
+            logits: [B, K] chart selection logits (detached).
+        """
+        centers = self.chart_predictor.chart_tok.chart_centers  # [K, D]
+        K, D = centers.shape
+        B = z.shape[0]
+
+        # Potential at current position — only K forward passes worth of state
+        _, V_z = self.potential_net.force_and_potential(z, rw)  # [B, 1]
+
+        # Potential at each chart center — batch size K (not B*K).
+        # V(c_k) depends only on the center position and one-hot routing,
+        # so it's identical across all B samples.  Evaluate once, broadcast.
+        rw_onehot = torch.eye(K, device=z.device)  # [K, K]
+        _, V_ck = self.potential_net.force_and_potential(centers, rw_onehot)  # [K, 1]
+        V_ck = V_ck.squeeze(-1).unsqueeze(0).expand(B, -1)  # [B, K]
+
+        # Geodesic distance from z to each center
+        c_exp = centers.unsqueeze(0).expand(B, -1, -1)  # [B, K, D]
+        d_geo = hyperbolic_distance(
+            z.unsqueeze(1).expand(-1, K, -1),
+            c_exp,
+        )  # [B, K]
+
+        # Boltzmann logits: value gain minus transport cost
+        logits = self.jump_beta * (V_ck - V_z - d_geo)  # [B, K]
+        return logits
+
+    def _conditional_jump(
         self,
         z: torch.Tensor,
         p: torch.Tensor,
         action: torch.Tensor,
         rw: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-        """Poisson jump process for chart transitions.
+        """Conditional chart jump (Fisher-Rao component of WFR).
+
+        If predicted target chart differs from current chart:
+          - Teleport to target chart center
+          - Reset momentum via momentum_init at new position
+        If same chart: position and momentum continue unchanged.
 
         Args:
-            z: [B, D] position after BAOAB.
-            p: [B, D] momentum (unused but passed for API consistency).
+            z: [B, D] current position.
+            p: [B, D] current momentum.
             action: [B, A] action vector.
             rw: [B, K] current chart weights.
 
         Returns:
-            z: [B, D] possibly jumped position.
+            z: [B, D] (possibly jumped) position.
+            p: [B, D] (possibly reset) momentum.
+            chart_logits: [B, K] chart logits (for supervised CE loss).
             rw: [B, K] updated chart weights.
-            chart_logits: [B, K] chart logits.
-            jump_rate: [B, 1] Poisson rate.
-            jump_mask: [B] boolean jump events.
+            jumped: [B] boolean mask of which samples jumped.
         """
+        # Supervised chart logits (from learned CovariantChartTarget)
         chart_logits = self.chart_predictor(z, action, rw)
 
-        if self.jump_rate_net is not None and self.jump_operator is not None:
-            jump_rate = self.jump_rate_net(z, rw)  # [B, 1]
-            prob = 1.0 - torch.exp(-jump_rate * self.dt)  # [B, 1]
-            uniform = torch.rand_like(prob)
-            jump_mask = (uniform < prob).squeeze(-1)  # [B]
+        # Boltzmann logits for actual jump decision
+        boltz_logits = self._boltzmann_chart_logits(z, rw)
 
-            if jump_mask.any():
-                source_chart = rw.argmax(dim=-1)  # [B]
-                target_chart = chart_logits.argmax(dim=-1)  # [B]
+        current_chart = rw.argmax(dim=-1)           # [B]
+        target_chart = boltz_logits.argmax(dim=-1)   # [B]
+        jumped = current_chart != target_chart       # [B]
 
-                z_jumped = self.jump_operator(z, source_chart, target_chart)
-                z = torch.where(jump_mask.unsqueeze(-1), z_jumped, z)
-                z = _project_to_ball(z)
-        else:
-            jump_rate = z.new_zeros(z.shape[0], 1)
-            jump_mask = z.new_zeros(z.shape[0], dtype=torch.bool)
+        if jumped.any():
+            centers = self.chart_predictor.chart_tok.chart_centers  # [K, D]
+            target_centers = centers[target_chart]  # [B, D]
 
+            # Teleport to chart center
+            z_jumped = _project_to_ball(target_centers)
+            z = torch.where(jumped.unsqueeze(-1), z_jumped, z)
+
+            # Reset momentum at new position
+            p_new = self.momentum_init(z_jumped)
+            p = torch.where(jumped.unsqueeze(-1), p_new, p)
+
+        # Update router weights from supervised chart logits (gradient-carrying).
+        # Boltzmann logits are detached (used only for jump decisions above).
         rw = F.softmax(chart_logits, dim=-1)
-        return z, rw, chart_logits, jump_rate, jump_mask
+
+        return z, p, chart_logits, rw, jumped
+
+    # -----------------------------------------------------------------
+    # Supervised integration (geodesic diffusion training)
+    # -----------------------------------------------------------------
+
+    def supervised_integration(
+        self,
+        z_start: torch.Tensor,
+        p_start: torch.Tensor,
+        action: torch.Tensor,
+        rw: torch.Tensor,
+        n_steps: int,
+        deterministic: bool = True,
+    ) -> dict[str, torch.Tensor]:
+        """N-step BAOAB from z_start, returning intermediate z/p trajectory.
+
+        When ``deterministic=True``, the O-step noise is zeroed so the
+        integrator output is a deterministic function of (z_start, p_start,
+        action) — required for supervised training against geodesic targets.
+
+        Args:
+            z_start: [B, D] starting position.
+            p_start: [B, D] starting momentum.
+            action: [B, A] action vector (same action for all sub-steps).
+            rw: [B, K] chart routing weights.
+            n_steps: Number of BAOAB sub-steps.
+            deterministic: If True, zero O-step noise (c2=0).
+
+        Returns:
+            Dict with:
+                z_traj: [B, N+1, D]  (z_start, z_1, ..., z_N)
+                p_traj: [B, N+1, D]  (p_start, p_1, ..., p_N)
+                phi_eff: [B, N, 1]   potential at each step
+                hodge_info: dict      from last step
+        """
+        B, D = z_start.shape
+
+        # Save and optionally zero noise coefficient
+        orig_c2 = self.c2
+        if deterministic:
+            self.c2 = 0.0
+
+        z_traj = [z_start]
+        p_traj = [p_start]
+        phi_eff_list = []
+        last_hodge_info: dict[str, torch.Tensor] = {}
+
+        z = z_start
+        p = p_start
+
+        for _ in range(n_steps):
+            z, p, phi_eff, hodge_info = self._baoab_step(z, p, action, rw)
+            z_traj.append(z)
+            p_traj.append(p)
+            phi_eff_list.append(phi_eff)
+            if hodge_info:
+                last_hodge_info = hodge_info
+
+        # Restore noise coefficient
+        self.c2 = orig_c2
+
+        return {
+            "z_traj": torch.stack(z_traj, dim=1),      # [B, N+1, D]
+            "p_traj": torch.stack(p_traj, dim=1),      # [B, N+1, D]
+            "phi_eff": torch.stack(phi_eff_list, dim=1),  # [B, N, 1]
+            "hodge_info": last_hodge_info,
+        }
 
     # -----------------------------------------------------------------
     # Forward (multi-step rollout)
@@ -886,6 +1010,10 @@ class GeometricWorldModel(nn.Module):
     ) -> dict[str, torch.Tensor]:
         """Multi-step rollout through the world model.
 
+        Each horizon step consists of:
+        1. Conditional chart jump (Fisher-Rao): teleport if chart changes
+        2. N BAOAB refinement sub-steps (W2 transport): Hamiltonian flow
+
         Args:
             z_0: [B, D] initial latent position.
             actions: [B, H, A] action sequence (H = prediction horizon).
@@ -896,9 +1024,9 @@ class GeometricWorldModel(nn.Module):
                 z_trajectory: [B, H, D] predicted latent positions.
                 chart_logits: [B, H, K] predicted chart logits per step.
                 momenta: [B, H, D] momenta at each step.
-                jump_rates: [B, H, 1] Poisson rates (diagnostic).
-                jump_masks: [B, H] jump events (diagnostic).
+                jumped: [B, H] boolean jump events.
                 phi_eff: [B, H, 1] effective potential (diagnostic).
+                energy_var: scalar, Hamiltonian variance across sub-steps.
                 hodge_conservative_ratio: [B, H] ||f_cons|| / ||f_total||.
                 hodge_solenoidal_ratio: [B, H] ||f_sol|| / ||f_total||.
                 hodge_harmonic_ratio: [B, H] ||f_harm|| / ||f_total||.
@@ -908,6 +1036,7 @@ class GeometricWorldModel(nn.Module):
         device = z_0.device
         D = self.latent_dim
         K = self.num_charts
+        N = self.n_refine_steps
 
         # Initialize momentum from position
         p = self.momentum_init(z_0)  # [B, D]
@@ -919,46 +1048,65 @@ class GeometricWorldModel(nn.Module):
         z_traj = torch.zeros(B, H, D, device=device)
         chart_logits_out = torch.zeros(B, H, K, device=device)
         momenta = torch.zeros(B, H, D, device=device)
-        jump_rates = torch.zeros(B, H, 1, device=device)
-        jump_masks = torch.zeros(B, H, dtype=torch.bool, device=device)
+        jumped_out = torch.zeros(B, H, dtype=torch.bool, device=device)
         phi_eff_out = torch.zeros(B, H, 1, device=device)
         hodge_conservative = torch.zeros(B, H, device=device)
         hodge_solenoidal = torch.zeros(B, H, device=device)
         hodge_harmonic = torch.zeros(B, H, device=device)
         hodge_harmonic_forces = torch.zeros(B, H, D, device=device)
+        energy_substeps = torch.zeros(B, H, N, device=device)
 
         for t in range(H):
             action_t = actions[:, t, :]  # [B, A]
 
-            # BAOAB step with geodesic corrections + Hodge diagnostics
-            z, p, phi_eff, hodge_info = self._baoab_step(z, p, action_t, rw)
+            # Step 1: Conditional chart jump (Fisher-Rao component)
+            if self.use_jump:
+                z, p, cl, rw, jumped = self._conditional_jump(z, p, action_t, rw)
+            else:
+                cl = self.chart_predictor(z, action_t, rw)
+                rw = F.softmax(cl, dim=-1)
+                jumped = z.new_zeros(B, dtype=torch.bool)
 
-            # Hodge decomposition diagnostics
-            if hodge_info:
-                hodge_conservative[:, t] = hodge_info["conservative_ratio"]
-                hodge_solenoidal[:, t] = hodge_info["solenoidal_ratio"]
-                hodge_harmonic[:, t] = hodge_info["harmonic_ratio"]
-                hodge_harmonic_forces[:, t] = hodge_info["harmonic"]
+            # Steps 2..N+1: BAOAB refinement sub-steps (W2 transport)
+            last_hodge_info = None
+            for s in range(N):
+                z, p, phi_eff, hodge_info = self._baoab_step(z, p, action_t, rw)
 
-            # Jump process
-            z, rw, cl, jr, jm = self._jump_step(z, p, action_t, rw)
+                # Track Hamiltonian per sub-step for energy conservation
+                r_sq = (z ** 2).sum(dim=-1, keepdim=True)
+                g_inv = ((1.0 - r_sq).clamp(min=1e-6) / 2.0) ** 2
+                p_sq = (p ** 2).sum(dim=-1, keepdim=True)
+                H_s = phi_eff + 0.5 * g_inv * p_sq  # [B, 1]
+                energy_substeps[:, t, s] = H_s.squeeze(-1)
 
+                if hodge_info:
+                    last_hodge_info = hodge_info
+
+            # Store outputs (from final sub-step)
             z_traj[:, t, :] = z
             chart_logits_out[:, t, :] = cl
             momenta[:, t, :] = p
-            jump_rates[:, t, :] = jr
-            jump_masks[:, t] = jm
+            jumped_out[:, t] = jumped
             phi_eff_out[:, t, :] = phi_eff
+
+            if last_hodge_info:
+                hodge_conservative[:, t] = last_hodge_info["conservative_ratio"]
+                hodge_solenoidal[:, t] = last_hodge_info["solenoidal_ratio"]
+                hodge_harmonic[:, t] = last_hodge_info["harmonic_ratio"]
+                hodge_harmonic_forces[:, t] = last_hodge_info["harmonic"]
+
+        # Energy variance across sub-steps (for conservation loss)
+        energy_var = energy_substeps.var(dim=-1).mean()
 
         return {
             "z_trajectory": z_traj,
             "chart_logits": chart_logits_out,
             "momenta": momenta,
-            "jump_rates": jump_rates,
-            "jump_masks": jump_masks,
+            "jumped": jumped_out,
             "phi_eff": phi_eff_out,
             "potential_net": self.potential_net,
             "router_weights_final": rw,
+            "energy_var": energy_var,
             "hodge_conservative_ratio": hodge_conservative,
             "hodge_solenoidal_ratio": hodge_solenoidal,
             "hodge_harmonic_ratio": hodge_harmonic,

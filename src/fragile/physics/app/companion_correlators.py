@@ -40,6 +40,7 @@ from fragile.physics.new_channels.mass_extraction_adapter import (
     extract_fitness_bilinear,
     extract_glueball,
     extract_meson_phase,
+    extract_twistor_companion,
     extract_vector_meson,
 )
 from fragile.physics.new_channels.meson_phase_channels import (
@@ -53,8 +54,11 @@ from fragile.physics.operators.tensor_operators import _build_sigma_matrices
 from fragile.physics.new_channels.vector_meson_channels import (
     compute_vector_meson_correlator_from_color_positions,
 )
+from fragile.physics.new_channels.twistor_companion_channels import (
+    compute_twistor_companion_correlator_from_geometry,
+)
 from fragile.physics.operators.pipeline import PipelineResult
-from fragile.physics.qft_utils import resolve_3d_dims, resolve_frame_indices
+from fragile.physics.qft_utils import build_companion_pair_indices, resolve_3d_dims, resolve_frame_indices
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0_auto
 
 
@@ -78,7 +82,7 @@ class CompanionCorrelatorSection:
 # Settings
 # ---------------------------------------------------------------------------
 
-SCALAR_MODES = ("standard", "score_directed", "score_weighted", "abs2_vacsub", "dirac")
+SCALAR_MODES = ("standard", "score_directed", "score_weighted", "abs2_vacsub", "dirac", "twistor")
 PSEUDOSCALAR_MODES = (
     "standard",
     "score_weighted",
@@ -89,6 +93,7 @@ PSEUDOSCALAR_MODES = (
     "fitness_axial",
     "dirac",
     "pion_tensor",
+    "twistor",
 )
 # Meson modes whose correlator should use raw (not vacuum-subtracted) C(lag).
 _RAW_PSEUDOSCALAR_SUFFIX = "_raw"
@@ -107,16 +112,17 @@ BARYON_MODES = (
     "score_abs",
     "dirac",
 )
-VECTOR_MODES = ("standard", "score_directed", "score_gradient", "dirac")
+VECTOR_MODES = ("standard", "score_directed", "score_gradient", "dirac", "twistor")
 VECTOR_PROJECTIONS = ("full", "longitudinal", "transverse")
 GLUEBALL_MODES = (
     "re_plaquette",
     "action_re_plaquette",
     "phase_action",
     "phase_sin2",
+    "twistor",
 )
-AXIAL_VECTOR_MODES = ("dirac",)
-TENSOR_MODES = ("standard", "dirac")
+AXIAL_VECTOR_MODES = ("dirac", "twistor")
+TENSOR_MODES = ("standard", "dirac", "twistor")
 
 
 class CompanionCorrelatorSettings(param.Parameterized):
@@ -459,6 +465,18 @@ def build_companion_correlator_tab(
                 status.object = "**Error:** No channels selected."
                 return
 
+            needs_twistor = any(
+                "twistor" in selected_modes.get(family, [])
+                for family in ("scalar", "pseudoscalar", "vector", "glueball", "axial_vector", "tensor")
+            )
+            if needs_twistor and str(settings.pair_selection) != "both":
+                status.object = (
+                    "**Error:** Twistor companion operators require "
+                    "`pair_selection='both'` because they use both the distance "
+                    "and clone companions of each source walker."
+                )
+                return
+
             # ---- Shared data prep (computed ONCE) ----
             frame_indices = resolve_frame_indices(
                 history=history,
@@ -521,11 +539,19 @@ def build_companion_correlator_tab(
             needs_positions = (
                 "vector" in selected_modes
                 or ("glueball" in selected_modes and bool(settings.glueball_momentum_projection))
+                or needs_twistor
             )
             positions = None
+            velocities = None
             if needs_positions:
                 positions = torch.as_tensor(
                     history.x_before_clone[start_idx:end_idx],
+                    device=device,
+                    dtype=torch.float32,
+                )
+            if needs_twistor:
+                velocities = torch.as_tensor(
+                    history.v_before_clone[start_idx:end_idx],
                     device=device,
                     dtype=torch.float32,
                 )
@@ -569,16 +595,20 @@ def build_companion_correlator_tab(
                         dtype=torch.bool,
                         device=device,
                     )
+                    pair_indices, _pair_valid = build_companion_pair_indices(
+                        companions_distance=companions_distance,
+                        companions_clone=companions_clone,
+                        pair_selection=str(settings.pair_selection),
+                    )
                     sample_indices = torch.arange(
                         color.shape[1], device=device,
                     ).unsqueeze(0).expand(color.shape[0], -1)
-                    neighbor_indices = companions_distance.unsqueeze(-1)
 
                     _dirac_result = compute_dirac_operator_series(
                         color=color,
                         color_valid=color_valid,
                         sample_indices=sample_indices,
-                        neighbor_indices=neighbor_indices,
+                        neighbor_indices=pair_indices,
                         alive=alive_mask,
                     )
                 return _dirac_result
@@ -599,10 +629,51 @@ def build_companion_correlator_tab(
                 )
                 merged_correlators[key] = corr.squeeze(0)  # [max_lag+1]
 
+            # -- Lazy twistor computation (shared across all twistor-backed families) --
+            _twistor_result = None
+
+            def _get_twistor_result():
+                nonlocal _twistor_result
+                if _twistor_result is None:
+                    if positions is None or velocities is None:
+                        msg = "Twistor modes require position and velocity history."
+                        raise ValueError(msg)
+                    alive_mask = torch.as_tensor(
+                        history.alive_mask[start_idx - 1 : end_idx - 1],
+                        dtype=torch.bool,
+                        device=device,
+                    )
+                    _twistor_result = compute_twistor_companion_correlator_from_geometry(
+                        positions=positions,
+                        velocities=velocities,
+                        alive_mask=alive_mask,
+                        companions_distance=companions_distance,
+                        companions_clone=companions_clone,
+                        delta_t=float(getattr(history, "delta_t", 1.0)),
+                        max_lag=max_lag,
+                        use_connected=use_connected,
+                        velocity_scale=1.0,
+                        eps=eps,
+                        frame_indices=frame_indices,
+                    )
+                return _twistor_result
+
+            def _get_twistor_extract():
+                return extract_twistor_companion(
+                    _get_twistor_result(),
+                    use_connected=use_connected,
+                    prefix="",
+                )
+
             # -- Scalar: iterate over selected scalar modes --
             for mode in selected_modes.get("scalar", []):
                 if mode == _DIRAC_MODE:
                     _add_dirac_channel("scalar", "scalar_dirac")
+                    continue
+                if mode == "twistor":
+                    corrs, ops = _get_twistor_extract()
+                    merged_correlators["scalar_twistor"] = corrs["scalar"]
+                    merged_operators["scalar_twistor"] = ops["scalar"]
                     continue
                 out = _get_meson_output(mode)
                 corrs, ops = extract_meson_phase(
@@ -624,13 +695,17 @@ def build_companion_correlator_tab(
             meson_ps_modes = [
                 m for m in ps_modes
                 if m not in FITNESS_PSEUDOSCALAR_MODES and m != _DIRAC_MODE
-                and m != "pion_tensor"
+                and m not in {"pion_tensor", "twistor"}
             ]
             fitness_ps_modes = [m for m in ps_modes if m in FITNESS_PSEUDOSCALAR_MODES]
             if _DIRAC_MODE in ps_modes:
                 _add_dirac_channel("pseudoscalar", "pseudoscalar_dirac")
             if "pion_tensor" in ps_modes:
                 _add_dirac_channel("tensor_0k", "pseudoscalar_pion_tensor")
+            if "twistor" in ps_modes:
+                corrs, ops = _get_twistor_extract()
+                merged_correlators["pseudoscalar_twistor"] = corrs["pseudoscalar"]
+                merged_operators["pseudoscalar_twistor"] = ops["pseudoscalar"]
 
             for mode in meson_ps_modes:
                 is_raw = mode.endswith(_RAW_PSEUDOSCALAR_SUFFIX)
@@ -775,6 +850,11 @@ def build_companion_correlator_tab(
                 if mode == _DIRAC_MODE:
                     _add_dirac_channel("vector", "vector_dirac")
                     continue
+                if mode == "twistor":
+                    corrs, ops = _get_twistor_extract()
+                    merged_correlators["vector_twistor"] = corrs["vector"]
+                    merged_operators["vector_twistor"] = ops["vector"]
+                    continue
                 for proj in selected_projections:
                     out = compute_vector_meson_correlator_from_color_positions(
                         color=color,
@@ -807,6 +887,11 @@ def build_companion_correlator_tab(
 
             # -- Glueball: iterate over selected modes --
             for mode in selected_modes.get("glueball", []):
+                if mode == "twistor":
+                    corrs, ops = _get_twistor_extract()
+                    merged_correlators["glueball_twistor"] = corrs["glueball"]
+                    merged_operators["glueball_twistor"] = ops["glueball"]
+                    continue
                 use_momentum = bool(settings.glueball_momentum_projection)
                 momentum_axis = int(settings.glueball_momentum_axis)
                 positions_axis = None
@@ -863,6 +948,11 @@ def build_companion_correlator_tab(
             for mode in selected_modes.get("axial_vector", []):
                 if mode == _DIRAC_MODE:
                     _add_dirac_channel("axial_vector", "axial_vector_dirac")
+                    continue
+                if mode == "twistor":
+                    corrs, ops = _get_twistor_extract()
+                    merged_correlators["axial_vector_twistor"] = corrs["axial_vector"]
+                    merged_operators["axial_vector_twistor"] = ops["axial_vector"]
             if "axial_vector" in selected_modes:
                 channel_labels.append("axial_vector")
 
@@ -871,9 +961,13 @@ def build_companion_correlator_tab(
                 if mode == _DIRAC_MODE:
                     _add_dirac_channel("tensor", "tensor_dirac")
                     continue
+                if mode == "twistor":
+                    corrs, ops = _get_twistor_extract()
+                    merged_correlators["tensor_twistor"] = corrs["tensor"]
+                    merged_operators["tensor_twistor"] = ops["tensor"]
+                    continue
                 # mode == "standard": bilinear sigma_{mu,nu} tensor
                 from fragile.physics.qft_utils import _fft_correlator_batched
-                from fragile.physics.qft_utils.companions import build_companion_pair_indices
                 from fragile.physics.qft_utils.helpers import (
                     safe_gather_pairs_2d,
                     safe_gather_pairs_3d,

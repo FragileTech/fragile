@@ -82,6 +82,7 @@ class VLALoaded:
     encoder: TopoEncoderPrimitives
     jump_op: FactorizedJumpOperator
     world_model: object | None  # GeometricWorldModel or None
+    probe: object | None  # EnclosureProbe or None
     args: dict
     epoch: int
     phase: int
@@ -178,7 +179,8 @@ def load_vla_checkpoint(ckpt_path: str) -> VLALoaded:
                 "gamma_risk": args.get("wm_gamma_risk"),
                 "use_boris": args.get("wm_use_boris"),
                 "use_jump": args.get("wm_use_jump"),
-                "jump_rate_hidden": args.get("wm_jump_rate_hidden"),
+                "n_refine_steps": args.get("wm_refine_steps"),
+                "jump_beta": args.get("wm_jump_beta"),
                 "min_length": args.get("wm_min_length"),
                 "risk_metric_alpha": args.get("wm_risk_metric_alpha"),
             }
@@ -191,10 +193,32 @@ def load_vla_checkpoint(ckpt_path: str) -> VLALoaded:
             logger.warning("Could not load world model: %s", traceback.format_exc())
             world_model = None
 
+    # Enclosure probe (optional)
+    probe = None
+    probe_state = ckpt.get("probe")
+    if probe_state is not None:
+        try:
+            from fragile.learning.vla.losses import EnclosureProbe
+
+            probe = EnclosureProbe(
+                chart_dim=enc_kwargs["latent_dim"],
+                ztex_dim=enc_kwargs["latent_dim"],
+                action_dim=args.get("action_dim", 6),
+                num_charts=enc_kwargs["num_charts"],
+                codes_per_chart=enc_kwargs.get("codes_per_chart", 32),
+                hidden_dim=args.get("enclosure_probe_hidden_dim", 128),
+            )
+            probe.load_state_dict(probe_state, strict=False)
+            probe.eval()
+        except Exception:
+            logger.warning("Could not load enclosure probe: %s", traceback.format_exc())
+            probe = None
+
     return VLALoaded(
         encoder=encoder,
         jump_op=jump_op,
         world_model=world_model,
+        probe=probe,
         args=args,
         epoch=ckpt.get("epoch", -1),
         phase=ckpt.get("phase", 0),

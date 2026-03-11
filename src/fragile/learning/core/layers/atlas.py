@@ -125,6 +125,19 @@ def _project_to_ball(
     return z * scale
 
 
+def _smooth_tangent_to_ball(
+    v: torch.Tensor,
+    max_norm: float = 0.99,
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    """Map unconstrained tangent vectors smoothly into the Poincare ball."""
+    tangent_cap = math.atanh(max_norm)
+    v_norm = v.norm(dim=-1, keepdim=True).clamp(min=eps)
+    tangent_norm = tangent_cap * torch.tanh(v_norm / tangent_cap)
+    tangent = tangent_norm * (v / v_norm)
+    return exp_map_zero(tangent, eps=eps)
+
+
 def _poincare_weighted_mean(
     points: torch.Tensor,
     weights: torch.Tensor,
@@ -171,11 +184,15 @@ class AttentiveAtlasEncoder(nn.Module):
         soft_equiv_zero_self_mixing: bool = False,
         soft_equiv_soft_assign: bool = True,
         soft_equiv_temperature: float = 1.0,
+        commitment_beta: float = 0.25,
+        codebook_loss_weight: float = 1.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
         self.latent_dim = latent_dim
         self.codes_per_chart = codes_per_chart
+        self._commitment_beta = commitment_beta
+        self._codebook_loss_weight = codebook_loss_weight
 
         self.feature_extractor = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
@@ -319,15 +336,17 @@ class AttentiveAtlasEncoder(nn.Module):
         router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)  # [B, N_c]
         K_chart = torch.argmax(router_weights, dim=1)  # [B]
 
-        # Chart-center mixture is the macro coordinate; local residual is per-chart.
-        c_bar = torch.matmul(router_weights, self.chart_centers)  # [B, D]
-        v_local = v - c_bar  # [B, D]
+        # Chart-center mixture defines the macro coordinate (hyperbolic barycenter).
+        c_bar = _poincare_weighted_mean(self.chart_centers, router_weights)  # [B, D]
+        v_local = _project_to_ball(mobius_add(-c_bar, v))  # [B, D]
 
-        # Per-chart codebook lookup under the (optional) soft-equivariant metric.
-        codebook = self.codebook.unsqueeze(0)  # [1, N_c, K, D]
+        # Per-chart codebook lookup using hyperbolic geometry.
+        codebook = _project_to_ball(self.codebook)  # [N_c, K, D]
         v_exp = v_local.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
-        diff = v_exp - codebook  # [B, N_c, K, D]
-        dist = self._apply_soft_equiv_metric(diff)  # [B, N_c, K]
+        codebook_exp = codebook.unsqueeze(0)  # [1, N_c, K, D]
+        diff = mobius_add(-codebook_exp, v_exp)  # [B, N_c, K, D]
+        diff_tan = log_map_zero(diff)
+        dist = self._apply_soft_equiv_metric(diff_tan)  # [B, N_c, K]
         indices = torch.argmin(dist, dim=-1)  # [B, N_c]
         indices_stack = indices  # [B, N_c]
 
@@ -338,42 +357,43 @@ class AttentiveAtlasEncoder(nn.Module):
         if self.soft_equiv_layers is not None and self.soft_equiv_soft_assign:
             temperature = max(self.soft_equiv_temperature, 1e-6)
             weights = F.softmax(-dist / temperature, dim=-1)
-            z_q_soft = (weights.unsqueeze(-1) * codebook).sum(dim=2)
+            z_q_soft = _poincare_weighted_mean_per_chart(codebook, weights)
             # Straight-through soft assignment so gradients reach the metric network.
             z_q_all = z_q_all + z_q_soft - z_q_soft.detach()
 
-        # VQ loss using geodesic distance in the Poincaré ball.
-        v_bc = v_local.unsqueeze(1)  # [B, 1, D] (kept for delta computation below)
-        v_proj = _project_to_ball(v_bc.expand_as(z_q_all))
-        w_det = router_weights.detach()  # [B, N_c]
-        d_codebook = hyperbolic_distance(z_q_all, v_proj.detach())  # [B, N_c]
-        codebook_loss = (d_codebook ** 2 * w_det).mean(0).sum()
-        d_commit = hyperbolic_distance(z_q_all.detach(), v_proj)  # [B, N_c]
-        commitment = (d_commit ** 2 * w_det).mean(0).sum()
-        vq_loss = codebook_loss + 0.25 * commitment
+        # VQ loss using tangent-space distances in the Poincaré ball.
+        w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
+        v_bc = v_local.unsqueeze(1)  # [B, 1, D]
+        delta_commit = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))
+        commitment = (delta_commit**2 * w).mean(dim=(0, 2)).sum()  # []
+        delta_codebook = log_map_zero(mobius_add(-v_bc.detach(), z_q_all))
+        codebook_loss = (delta_codebook**2 * w).mean(dim=(0, 2)).sum()  # []
+        vq_loss = self._codebook_loss_weight * codebook_loss + self._commitment_beta * commitment
 
-        # Blend codes across charts to form the macro latent per sample.
-        z_q_blended = (z_q_all * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
+        # Blend chart codes to form macro latent (hyperbolic barycenter).
+        z_q_blended = _poincare_weighted_mean(z_q_all, router_weights)  # [B, D]
         K_code = indices_stack.gather(1, K_chart.unsqueeze(1)).squeeze(1)  # [B]
 
-        # Structure filter extracts the gauge nuisance from per-chart residuals.
-        delta = v_bc - z_q_all.detach()  # [B, N_c, D]
+        # Structure filter extracts nuisance in tangent space.
+        delta = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))  # [B, N_c, D]
         z_n_all = self.structure_filter(delta.reshape(-1, self.latent_dim))  # [B*N_c, D]
-        z_n_all_charts = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)  # [B, N_c, D]
+        z_n_all_charts_tan = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)
+        z_n_all_charts = _project_to_ball(exp_map_zero(z_n_all_charts_tan))  # [B, N_c, D]
 
         # Texture residual is what's left after nuisance subtraction.
-        z_n = (z_n_all_charts * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
-        delta_blended = v_local - z_q_blended.detach()  # [B, D]
-        z_tex = delta_blended - z_n  # [B, D]
+        z_n_tan = (z_n_all_charts_tan * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, D]
+        delta_blended = log_map_zero(mobius_add(-z_q_blended.detach(), v_local))  # [B, D]
+        z_tex = delta_blended - z_n_tan  # [B, D]
 
-        # Geometric latent = chart center + macro code + nuisance.
-        z_q_st = v_local + (z_q_blended - v_local).detach()  # [B, D]
-        z_geo = c_bar + z_q_st + z_n  # [B, D]
+        # Geometric latent = chart center + macro code + nuisance (Möbius sums).
+        delta_to_code = log_map_zero(mobius_add(-v_local, z_q_blended))
+        z_q_st = mobius_add(v_local, exp_map_zero(delta_to_code.detach()))
+        z_geo = _project_to_ball(mobius_add(c_bar, mobius_add(z_q_st, exp_map_zero(z_n_tan))))  # [B, D]
 
         return (
             K_chart,
             K_code,
-            z_n,
+            z_n_tan,
             z_tex,
             router_weights,
             z_geo,
@@ -382,6 +402,7 @@ class AttentiveAtlasEncoder(nn.Module):
             z_n_all_charts,
             c_bar,
             v_local,
+            z_q_blended,
         )
 
 
@@ -456,10 +477,9 @@ class TopologicalDecoder(nn.Module):
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
 
         x_hat = self.renderer(h_global) + self.render_skip(h_global)  # [B, D_out]
-        if z_tex is not None:
-            # Texture residual injects high-frequency details.
-            z_tex = torch.tanh(z_tex)
-            x_hat = x_hat + self.tex_residual_scale * self.tex_residual(z_tex)
+        # z_tex residual injection disabled: at inference the WM produces
+        # z_geo with no z_tex available, so using it here creates a
+        # train/test mismatch.  Layers kept for checkpoint compatibility.
         return x_hat, router_weights
 
 
@@ -739,10 +759,12 @@ class CovariantChartRouter(nn.Module):
         return queries_expanded / lambda_z.unsqueeze(1)
 
     def _temperature(self, z: torch.Tensor) -> torch.Tensor:
-        # Poincare conformal factor scales attention temperature by radius.
+        # Router energies are hyperbolic distances in the latent manifold, so
+        # their Gibbs temperature should scale with the latent geometry, not
+        # with the hidden/key projection width used for auxiliary feature terms.
         r2 = (z**2).sum(dim=-1)
         denom = (1.0 - r2).clamp(min=self.tau_denom_min)
-        tau = math.sqrt(self.key_dim) * denom / 2.0
+        tau = math.sqrt(self.latent_dim) * denom / 2.0
         return tau.clamp(min=self.tau_min)
 
     def _hyperbolic_score(self, z: torch.Tensor, chart_centers: torch.Tensor) -> torch.Tensor:
@@ -827,8 +849,14 @@ class CovariantChartRouter(nn.Module):
             tau = self._temperature(z)
             scores = scores + 0.1 * feature_scores / tau.unsqueeze(1)
 
-        # Cache soft weights for radial calibration under hard routing.
-        self._last_soft_router_weights = F.softmax(scores, dim=-1).detach()
+        # Cache both detached and live soft weights. The detached copy is safe for
+        # diagnostics, while the live copy lets training losses act on the router's
+        # actual confidence even when the forward pass uses hard routing.
+        soft_router_weights = F.softmax(scores, dim=-1)
+        self._last_soft_router_weights = soft_router_weights.detach()
+        self._last_soft_router_weights_live = soft_router_weights
+        self._last_router_scores = scores.detach()
+        self._last_router_scores_live = scores
         router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)
         K_chart = torch.argmax(router_weights, dim=1)
         return router_weights, K_chart
@@ -863,6 +891,11 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         img_channels: int = 1,
         img_size: int = 28,
         conv_channels: int = 0,
+        commitment_beta: float = 0.25,
+        codebook_loss_weight: float = 1.0,
+        dyn_codes_per_chart: int = 0,
+        dyn_commitment_beta: float = 0.25,
+        dyn_codebook_loss_weight: float = 1.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -872,6 +905,19 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         self.router_tau_min = covariant_attn_tau_min
         self.router_tau_denom_min = covariant_attn_denom_min
         self.router_transport_eps = covariant_attn_transport_eps
+        self._commitment_beta = commitment_beta
+        self._codebook_loss_weight = codebook_loss_weight
+
+        # Dynamics codebook (disabled when dyn_codes_per_chart == 0)
+        self.dyn_codes_per_chart = dyn_codes_per_chart
+        self._dyn_commitment_beta = dyn_commitment_beta
+        self._dyn_codebook_loss_weight = dyn_codebook_loss_weight
+        if dyn_codes_per_chart > 0:
+            self.codebook_dyn = nn.Parameter(
+                _spread_codebook(num_charts, dyn_codes_per_chart, latent_dim, radius=0.3)
+            )
+        else:
+            self.codebook_dyn = None
 
         bundle_size, n_bundles = _resolve_bundle_params(hidden_dim, latent_dim, bundle_size)
 
@@ -910,6 +956,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             self.scale = math.sqrt(hidden_dim)
 
         self.val_proj = SpectralLinear(hidden_dim, latent_dim, bias=True)
+        self.val_proj_scale = nn.Parameter(torch.tensor(2.0))  # learnable pre-squash scale
 
         # Quasi-uniform chart centers: Fibonacci sphere (3-D) or repulsion
         # init so every chart starts with a distinct, well-separated catchment
@@ -956,6 +1003,13 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             IsotropicBlock(latent_dim, latent_dim, bundle_size=latent_dim),
             SpectralLinear(latent_dim, latent_dim, bias=True),
         )
+        self._last_v_raw: torch.Tensor | None = None
+        self._last_v_projected: torch.Tensor | None = None
+        self._last_v_local_raw: torch.Tensor | None = None
+        self._last_z_geo_raw: torch.Tensor | None = None
+        self._last_c_bar: torch.Tensor | None = None
+        self._last_v_local: torch.Tensor | None = None
+        self._last_indices_stack: torch.Tensor | None = None
 
     def _encode_features(self, x: torch.Tensor) -> torch.Tensor:
         return self.feature_extractor(x)
@@ -1003,6 +1057,134 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             return torch.tensor(0.0, device=self.codebook.device)
         return self._last_soft_equiv_log_ratio
 
+    def _hyperbolic_vq(
+        self,
+        v_local: torch.Tensor,
+        codebook_param: torch.Tensor,
+        router_weights: torch.Tensor,
+        commitment_beta: float,
+        codebook_loss_weight: float,
+        use_soft_equiv: bool = True,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Shared VQ against any codebook.
+
+        Returns:
+            z_q_blended: [B, D] router-weighted code blend.
+            K_code: [B] winning code index for the winning chart.
+            indices: [B, N_c] nearest code per chart.
+            vq_loss: scalar VQ loss.
+            z_q_all: [B, N_c, D] nearest code per chart (full tensor).
+        """
+        codebook = _project_to_ball(codebook_param)  # [N_c, K, D]
+        v_exp = v_local.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
+        codebook_exp = codebook.unsqueeze(0)  # [1, N_c, K, D]
+        diff = mobius_add(-codebook_exp, v_exp)  # [B, N_c, K, D]
+        diff_tan = log_map_zero(diff)
+
+        if use_soft_equiv:
+            dist = self._apply_soft_equiv_metric(diff_tan)  # [B, N_c, K]
+        else:
+            dist = (diff_tan ** 2).sum(dim=-1)  # [B, N_c, K]
+
+        indices = torch.argmin(dist, dim=-1)  # [B, N_c]
+
+        indices_exp = indices.unsqueeze(-1).unsqueeze(-1)  # [B, N_c, 1, 1]
+        indices_exp = indices_exp.expand(-1, -1, 1, self.latent_dim)  # [B, N_c, 1, D]
+        z_q_all = torch.gather(codebook.expand(v_local.shape[0], -1, -1, -1), 2, indices_exp)
+        z_q_all = z_q_all.squeeze(2)  # [B, N_c, D]
+
+        if use_soft_equiv and self.soft_equiv_layers is not None and self.soft_equiv_soft_assign:
+            temperature = max(self.soft_equiv_temperature, 1e-6)
+            weights = F.softmax(-dist / temperature, dim=-1)
+            z_q_soft = _poincare_weighted_mean_per_chart(codebook, weights)
+            z_q_all = z_q_all + z_q_soft - z_q_soft.detach()
+
+        # VQ objective weighted by routing.
+        w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
+        v_bc = v_local.unsqueeze(1)  # [B, 1, D]
+        delta_commit = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))
+        commitment = (delta_commit ** 2 * w).mean(dim=(0, 2)).sum()
+        delta_codebook = log_map_zero(mobius_add(-v_bc.detach(), z_q_all))
+        codebook_loss_val = (delta_codebook ** 2 * w).mean(dim=(0, 2)).sum()
+        vq_loss = codebook_loss_weight * codebook_loss_val + commitment_beta * commitment
+
+        K_chart = torch.argmax(router_weights, dim=1)  # [B]
+        z_q_blended = _poincare_weighted_mean(z_q_all, router_weights)  # [B, D]
+        K_code = indices.gather(1, K_chart.unsqueeze(1)).squeeze(1)  # [B]
+
+        return z_q_blended, K_code, indices, vq_loss, z_q_all
+
+    def dynamics_vq(
+        self,
+        v_local: torch.Tensor,
+        router_weights: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        """VQ v_local against the dynamics codebook.
+
+        Returns:
+            z_q_dyn_blended: [B, D] router-weighted dynamics code blend.
+            K_code_dyn: [B] winning dynamics code index.
+            indices_dyn: [B, N_c] nearest dynamics code per chart.
+            vq_loss_dyn: scalar VQ loss for dynamics codebook.
+        """
+        assert self.codebook_dyn is not None, "dynamics codebook not initialized (dyn_codes_per_chart=0)"
+        return self._hyperbolic_vq(
+            v_local, self.codebook_dyn, router_weights,
+            self._dyn_commitment_beta, self._dyn_codebook_loss_weight,
+            use_soft_equiv=False,
+        )[:4]
+
+    @torch.no_grad()
+    def warmstart_chart_centers(
+        self,
+        dataloader,
+        device,
+        max_batches: int = 10,
+        radius_floor: float = 0.0,
+    ):
+        """Replace chart_centers with k-means centroids of initial v distribution."""
+        vs = []
+        for i, batch in enumerate(dataloader):
+            if i >= max_batches:
+                break
+            if isinstance(batch, dict):
+                x = batch.get("feature", batch.get("features")).to(device)
+            else:
+                x = batch[0].to(device)
+            if x.ndim == 3:  # sequence [B, T, D] → flatten
+                x = x.reshape(-1, x.shape[-1])
+            features = self._encode_features(x)
+            v = _smooth_tangent_to_ball(self.val_proj(features) * self.val_proj_scale)
+            vs.append(v.cpu())
+        vs = torch.cat(vs, dim=0)
+
+        from sklearn.cluster import KMeans
+
+        km = KMeans(n_clusters=self.num_charts, n_init=10, random_state=42)
+        km.fit(vs.numpy())
+        centroids = torch.from_numpy(km.cluster_centers_).float()
+        centroids = _project_to_ball(centroids)
+        if radius_floor > 0:
+            min_radius = min(float(radius_floor), 0.95)
+            norms = centroids.norm(dim=-1, keepdim=True)
+            fallback_dirs = _spread_directions(self.num_charts, self.latent_dim)
+            dirs = torch.where(
+                norms > 1e-6,
+                centroids / norms.clamp_min(1e-6),
+                fallback_dirs,
+            )
+            target_norms = norms.clamp(min=min_radius)
+            centroids = _project_to_ball(dirs * target_norms)
+        self.chart_centers.copy_(centroids)
+
+        counts = torch.bincount(
+            torch.from_numpy(km.labels_), minlength=self.num_charts
+        )
+        print(f"  K-means warm-start: {len(vs)} points → {self.num_charts} charts")
+        print(f"  Cluster sizes: {counts.tolist()}")
+        if radius_floor > 0:
+            print(f"  Applied chart-center radius floor: {min(float(radius_floor), 0.95):.3f}")
+
     def forward(
         self,
         x: torch.Tensor,
@@ -1020,15 +1202,16 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         torch.Tensor,
         torch.Tensor,
         torch.Tensor,
+        torch.Tensor,
     ]:
         """Forward pass through the attentive atlas."""
         # Extract features and map into chart coordinates (Poincare ball).
         features = self._encode_features(x)  # [B, H]
-        v = _project_to_ball(self.val_proj(features))  # [B, D]
+        v_raw = self.val_proj(features) * self.val_proj_scale
+        v = _smooth_tangent_to_ball(v_raw)  # [B, D]
         chart_centers = _project_to_ball(self.chart_centers)  # [N_c, D]
 
         if self.covariant_attn:
-            # Covariant router performs gauge-aware chart assignment.
             router_weights, K_chart = self.cov_router(
                 v,
                 features=features,
@@ -1036,8 +1219,10 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
                 hard_routing=hard_routing,
                 hard_routing_tau=hard_routing_tau,
             )
-            # Soft weights cached by cov_router for radial calibration.
             self._last_soft_router_weights = self.cov_router._last_soft_router_weights
+            self._last_soft_router_weights_live = self.cov_router._last_soft_router_weights_live
+            self._last_router_scores = self.cov_router._last_router_scores
+            self._last_router_scores_live = self.cov_router._last_router_scores_live
         else:
             scores = _poincare_hyperbolic_score(
                 v,
@@ -1047,49 +1232,27 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
                 tau_denom_min=self.router_tau_denom_min,
                 eps=self.router_transport_eps,
             )
-            self._last_soft_router_weights = F.softmax(scores, dim=-1).detach()
+            soft_router_weights = F.softmax(scores, dim=-1)
+            self._last_soft_router_weights = soft_router_weights.detach()
+            self._last_soft_router_weights_live = soft_router_weights
+            self._last_router_scores = scores.detach()
+            self._last_router_scores_live = scores
             router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)  # [B, N_c]
             K_chart = torch.argmax(router_weights, dim=1)  # [B]
 
-        # Chart-center mixture defines the macro coordinate (hyperbolic barycenter).
         c_bar = _poincare_weighted_mean(chart_centers, router_weights)  # [B, D]
-        v_local = _project_to_ball(mobius_add(-c_bar, v))  # [B, D]
+        v_local_raw = mobius_add(-c_bar, v)
+        v_local = _project_to_ball(v_local_raw)  # [B, D]
 
-        # Per-chart codebook lookup under optional equivariant metric.
-        codebook = _project_to_ball(self.codebook)  # [N_c, K, D]
-        v_exp = v_local.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, D]
-        codebook_exp = codebook.unsqueeze(0)  # [1, N_c, K, D]
-        diff = mobius_add(-codebook_exp, v_exp)  # [B, N_c, K, D]
-        diff_tan = log_map_zero(diff)
-        dist = self._apply_soft_equiv_metric(diff_tan)  # [B, N_c, K]
-        indices = torch.argmin(dist, dim=-1)  # [B, N_c]
-        indices_stack = indices  # [B, N_c]
-
-        indices_exp = indices.unsqueeze(-1).unsqueeze(-1)  # [B, N_c, 1, 1]
-        indices_exp = indices_exp.expand(-1, -1, 1, self.latent_dim)  # [B, N_c, 1, D]
-        z_q_all = torch.gather(codebook.expand(v.shape[0], -1, -1, -1), 2, indices_exp)
-        z_q_all = z_q_all.squeeze(2)  # [B, N_c, D]
-        if self.soft_equiv_layers is not None and self.soft_equiv_soft_assign:
-            temperature = max(self.soft_equiv_temperature, 1e-6)
-            weights = F.softmax(-dist / temperature, dim=-1)
-            z_q_soft = _poincare_weighted_mean_per_chart(codebook, weights)
-            # Straight-through soft assignment so gradients reach the metric network.
-            z_q_all = z_q_all + z_q_soft - z_q_soft.detach()
-
-        # VQ objective weighted by routing.
-        w = router_weights.unsqueeze(-1).detach()  # [B, N_c, 1]
-        v_bc = v_local.unsqueeze(1)  # [B, 1, D]
-        delta_commit = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))
-        commitment = (delta_commit**2 * w).mean(dim=(0, 2)).sum()  # []
-        delta_codebook = log_map_zero(mobius_add(-v_bc.detach(), z_q_all))
-        codebook_loss = (delta_codebook**2 * w).mean(dim=(0, 2)).sum()  # []
-        vq_loss = codebook_loss + 0.25 * commitment  # []
-
-        # Blend chart codes to form macro latent.
-        z_q_blended = _poincare_weighted_mean(z_q_all, router_weights)  # [B, D]
-        K_code = indices_stack.gather(1, K_chart.unsqueeze(1)).squeeze(1)  # [B]
+        # Per-chart codebook lookup via shared VQ helper.
+        z_q_blended, K_code, indices_stack, vq_loss, z_q_all = self._hyperbolic_vq(
+            v_local, self.codebook, router_weights,
+            self._commitment_beta, self._codebook_loss_weight,
+            use_soft_equiv=True,
+        )
 
         # Structure filter extracts nuisance; remainder is texture.
+        v_bc = v_local.unsqueeze(1)  # [B, 1, D]
         delta = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))  # [B, N_c, D]
         z_n_all = self.structure_filter(delta.reshape(-1, self.latent_dim))  # [B*N_c, D]
         z_n_all_charts_tan = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)
@@ -1103,7 +1266,18 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
         delta_to_code = log_map_zero(mobius_add(-v_local, z_q_blended))
         z_q_st = mobius_add(v_local, exp_map_zero(delta_to_code.detach()))
         z_local = mobius_add(z_q_st, exp_map_zero(z_n_tan))
-        z_geo = _project_to_ball(mobius_add(c_bar, z_local))  # [B, D]
+        z_geo_raw = mobius_add(c_bar, z_local)
+        z_geo = _project_to_ball(z_geo_raw)  # [B, D]
+
+        # Cache the chart-local latent so auxiliary losses can read the exact
+        # codebook input from this forward pass instead of reconstructing it.
+        self._last_v_raw = v_raw
+        self._last_v_projected = v
+        self._last_v_local_raw = v_local_raw
+        self._last_z_geo_raw = z_geo_raw
+        self._last_c_bar = c_bar
+        self._last_v_local = v_local
+        self._last_indices_stack = indices_stack
 
         return (
             K_chart,
@@ -1117,6 +1291,7 @@ class PrimitiveAttentiveAtlasEncoder(nn.Module):
             z_n_all_charts,
             c_bar,
             v_local,
+            z_q_blended,
         )
 
 
@@ -1315,11 +1490,11 @@ class PrimitiveTopologicalDecoder(nn.Module):
         h_global = (h_stack * router_weights.unsqueeze(-1)).sum(dim=1)  # [B, H]
 
         if self.renderer is not None:
-            # Conv mode: texture added in hidden space before conv decoder
+            # Conv mode
             h = h_global
-            if z_tex is not None:
-                z_tex = torch.tanh(z_tex)
-                h = h + self.tex_residual_scale * self.tex_residual(z_tex)
+            # z_tex residual injection disabled: at inference the WM produces
+            # z_geo with no z_tex available, creating a train/test mismatch.
+            # Layers kept for checkpoint compatibility.
             need_spatial = self.conformal_freq_gating
             x_hat = self.renderer(
                 h,
@@ -1342,13 +1517,7 @@ class PrimitiveTopologicalDecoder(nn.Module):
                 h = self.film2(h, router_weights)
             h = self.render_act2(h)
             x_hat = self.render_out(h) + self.render_skip(h_global)
-            if z_tex is not None:
-                z_tex = torch.tanh(z_tex)
-                x_hat = x_hat + self.tex_residual_scale * self.tex_residual(z_tex)
-
-        # Texture flow loss
-        if self.texture_flow is not None and z_tex is not None:
-            aux_losses["flow_loss"] = self.texture_flow.flow_loss(z_tex, z_geo)
+            # z_tex residual injection disabled (see conv mode comment above).
 
         return x_hat, router_weights, aux_losses
 
@@ -1388,6 +1557,11 @@ class TopoEncoderPrimitives(nn.Module):
         texture_flow_layers: int = 4,
         texture_flow_hidden: int = 64,
         texture_flow_clamp: float = 5.0,
+        commitment_beta: float = 0.25,
+        codebook_loss_weight: float = 1.0,
+        dyn_codes_per_chart: int = 0,
+        dyn_commitment_beta: float = 0.25,
+        dyn_codebook_loss_weight: float = 1.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
@@ -1417,6 +1591,11 @@ class TopoEncoderPrimitives(nn.Module):
             img_channels=img_channels,
             img_size=img_size,
             conv_channels=conv_channels,
+            commitment_beta=commitment_beta,
+            codebook_loss_weight=codebook_loss_weight,
+            dyn_codes_per_chart=dyn_codes_per_chart,
+            dyn_commitment_beta=dyn_commitment_beta,
+            dyn_codebook_loss_weight=dyn_codebook_loss_weight,
         )
         self.decoder = PrimitiveTopologicalDecoder(
             latent_dim=latent_dim,
@@ -1471,6 +1650,7 @@ class TopoEncoderPrimitives(nn.Module):
             _z_n_all,
             c_bar,
             _v_local,
+            _z_q_blended,
         ) = self.encoder(
             x,
             hard_routing=use_hard_routing,
@@ -1480,7 +1660,7 @@ class TopoEncoderPrimitives(nn.Module):
         router_override = enc_router_weights if use_hard_routing else None
         x_recon, dec_router_weights, aux_losses = self.decoder(
             z_geo,
-            z_tex,
+            None,  # z_tex not used by decoder (train/test mismatch)
             chart_index=None,
             router_weights=router_override,
             hard_routing=use_hard_routing,
@@ -1501,6 +1681,15 @@ class TopoEncoderPrimitives(nn.Module):
         probs = probs[probs > 0]
         entropy = -(probs * torch.log(probs)).sum()
         return math.exp(entropy.item())
+
+    def warmstart_chart_centers(self, dataloader, device, max_batches=10, radius_floor: float = 0.0):
+        """Delegate to inner encoder's warmstart_chart_centers."""
+        self.encoder.warmstart_chart_centers(
+            dataloader,
+            device,
+            max_batches=max_batches,
+            radius_floor=radius_floor,
+        )
 
 
 def _expand_list(value: int | list[int], n_levels: int, name: str) -> list[int]:
@@ -1583,12 +1772,16 @@ class _AtlasEncoderLevel(nn.Module):
         soft_equiv_zero_self_mixing: bool,
         soft_equiv_soft_assign: bool,
         soft_equiv_temperature: float,
+        commitment_beta: float = 0.25,
+        codebook_loss_weight: float = 1.0,
     ) -> None:
         super().__init__()
         self.num_charts = num_charts
         self.latent_dim = latent_dim
         self.codes_per_chart = codes_per_chart
         self.covariant_attn = covariant_attn
+        self._commitment_beta = commitment_beta
+        self._codebook_loss_weight = codebook_loss_weight
 
         if covariant_attn:
             self.cov_router = CovariantChartRouter(
@@ -1731,15 +1924,17 @@ class _AtlasEncoderLevel(nn.Module):
             router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)
             K_chart = torch.argmax(router_weights, dim=1)
 
-        # Chart-center mixture defines the macro coordinate.
-        c_bar = torch.matmul(router_weights, self.chart_centers)
-        v_local = v - c_bar
+        # Chart-center mixture defines the macro coordinate (hyperbolic barycenter).
+        c_bar = _poincare_weighted_mean(self.chart_centers, router_weights)
+        v_local = _project_to_ball(mobius_add(-c_bar, v))
 
-        # Per-chart codebook match under optional equivariant metric.
-        codebook = self.codebook.unsqueeze(0)
+        # Per-chart codebook match using hyperbolic geometry.
+        codebook = _project_to_ball(self.codebook)
         v_exp = v_local.unsqueeze(1).unsqueeze(2)
-        diff = v_exp - codebook
-        dist = self._apply_soft_equiv_metric(diff)
+        codebook_exp = codebook.unsqueeze(0)
+        diff = mobius_add(-codebook_exp, v_exp)
+        diff_tan = log_map_zero(diff)
+        dist = self._apply_soft_equiv_metric(diff_tan)
         indices = torch.argmin(dist, dim=-1)
         indices_stack = indices
 
@@ -1750,37 +1945,41 @@ class _AtlasEncoderLevel(nn.Module):
         if self.soft_equiv_layers is not None and self.soft_equiv_soft_assign:
             temperature = max(self.soft_equiv_temperature, 1e-6)
             weights = F.softmax(-dist / temperature, dim=-1)
-            z_q_soft = (weights.unsqueeze(-1) * codebook).sum(dim=2)
+            z_q_soft = _poincare_weighted_mean_per_chart(codebook, weights)
             z_q_all = z_q_all + z_q_soft - z_q_soft.detach()
 
-        # VQ objective weighted by routing.
+        # VQ objective weighted by routing (tangent-space distances).
         w = router_weights.unsqueeze(-1).detach()
         v_bc = v_local.unsqueeze(1)
-        commitment = ((v_bc - z_q_all.detach()) ** 2 * w).mean(dim=(0, 2)).sum()
-        codebook_loss = ((z_q_all - v_bc.detach()) ** 2 * w).mean(dim=(0, 2)).sum()
-        vq_loss = codebook_loss + 0.25 * commitment
+        delta_commit = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))
+        commitment = (delta_commit**2 * w).mean(dim=(0, 2)).sum()
+        delta_codebook = log_map_zero(mobius_add(-v_bc.detach(), z_q_all))
+        codebook_loss = (delta_codebook**2 * w).mean(dim=(0, 2)).sum()
+        vq_loss = self._codebook_loss_weight * codebook_loss + self._commitment_beta * commitment
 
-        # Blend chart codes to form macro latent.
-        z_q_blended = (z_q_all * router_weights.unsqueeze(-1)).sum(dim=1)
+        # Blend chart codes to form macro latent (hyperbolic barycenter).
+        z_q_blended = _poincare_weighted_mean(z_q_all, router_weights)
         K_code = indices_stack.gather(1, K_chart.unsqueeze(1)).squeeze(1)
 
-        # Structure filter extracts nuisance; remainder is texture.
-        delta = v_bc - z_q_all.detach()
+        # Structure filter extracts nuisance in tangent space.
+        delta = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))
         z_n_all = self.structure_filter(delta.reshape(-1, self.latent_dim))
-        z_n_all_charts = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)
+        z_n_all_charts_tan = z_n_all.view(v.shape[0], self.num_charts, self.latent_dim)
+        z_n_all_charts = _project_to_ball(exp_map_zero(z_n_all_charts_tan))
 
-        z_n = (z_n_all_charts * router_weights.unsqueeze(-1)).sum(dim=1)
-        delta_blended = v_local - z_q_blended.detach()
-        z_tex = delta_blended - z_n
+        z_n_tan = (z_n_all_charts_tan * router_weights.unsqueeze(-1)).sum(dim=1)
+        delta_blended = log_map_zero(mobius_add(-z_q_blended.detach(), v_local))
+        z_tex = delta_blended - z_n_tan
 
-        # Geometric latent = chart center + macro code + nuisance.
-        z_q_st = v_local + (z_q_blended - v_local).detach()
-        z_geo = c_bar + z_q_st + z_n
+        # Geometric latent = chart center + macro code + nuisance (Möbius sums).
+        delta_to_code = log_map_zero(mobius_add(-v_local, z_q_blended))
+        z_q_st = mobius_add(v_local, exp_map_zero(delta_to_code.detach()))
+        z_geo = _project_to_ball(mobius_add(c_bar, mobius_add(z_q_st, exp_map_zero(z_n_tan))))
 
         return (
             K_chart,
             K_code,
-            z_n,
+            z_n_tan,
             z_tex,
             router_weights,
             z_geo,
@@ -1789,6 +1988,7 @@ class _AtlasEncoderLevel(nn.Module):
             z_n_all_charts,
             c_bar,
             v_local,
+            z_q_blended,
         )
 
 
@@ -1982,6 +2182,7 @@ class HierarchicalAtlasStack(nn.Module):
                 z_n_all_charts,
                 c_bar,
                 _v_local,
+                _z_q_blended,
             ) = self.encoder_levels[idx](
                 level_features,
                 hard_routing=use_hard_routing,
@@ -1991,7 +2192,7 @@ class HierarchicalAtlasStack(nn.Module):
             router_override = enc_router_weights if use_hard_routing else None
             x_recon, dec_router_weights = self.decoder_levels[idx](
                 z_geo,
-                z_tex,
+                None,  # z_tex not used by decoder
                 chart_index=None,
                 router_weights=router_override,
                 hard_routing=use_hard_routing,

@@ -10,6 +10,7 @@ from fragile.physics.new_channels.mass_extraction_adapter import (
     extract_meson_phase,
     extract_multiscale,
     extract_tensor_momentum,
+    extract_twistor_companion,
     extract_vector_meson,
 )
 
@@ -24,5 +25,6 @@ __all__ = [
     "extract_meson_phase",
     "extract_multiscale",
     "extract_tensor_momentum",
+    "extract_twistor_companion",
     "extract_vector_meson",
 ]

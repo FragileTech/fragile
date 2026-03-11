@@ -122,6 +122,38 @@ def test_auto_detect_mode_suffixed_keys():
     assert "vector_standard" in by_name["vector"].correlator_keys
 
 
+def test_auto_detect_twistor_mode_suffixed_keys():
+    """Twistor companion keys should map into the standard fit channel groups."""
+    keys = [
+        "scalar_twistor",
+        "pseudoscalar_twistor",
+        "glueball_twistor",
+        "vector_twistor",
+        "axial_vector_twistor",
+        "tensor_twistor",
+    ]
+    groups = _auto_detect_channel_groups(keys)
+    by_name = {g.name: g for g in groups}
+
+    assert "scalar" in by_name
+    assert by_name["scalar"].correlator_keys == ["scalar_twistor"]
+
+    assert "pseudoscalar" in by_name
+    assert by_name["pseudoscalar"].correlator_keys == ["pseudoscalar_twistor"]
+
+    assert "glueball" in by_name
+    assert by_name["glueball"].correlator_keys == ["glueball_twistor"]
+
+    assert "vector" in by_name
+    assert by_name["vector"].correlator_keys == ["vector_twistor"]
+
+    assert "axial_vector" in by_name
+    assert by_name["axial_vector"].correlator_keys == ["axial_vector_twistor"]
+
+    assert "tensor" in by_name
+    assert by_name["tensor"].correlator_keys == ["tensor_twistor"]
+
+
 def test_auto_detect_propagator_variants():
     """Keys like scalar_standard_propagator → scalar, pseudoscalar → pseudoscalar."""
     keys = ["scalar_standard_propagator", "pseudoscalar_flux_action_propagator"]
@@ -194,3 +226,68 @@ def test_extract_masses_mode_suffixed():
     assert "vector" in result.channels
     # scalar group should have 2 variant keys
     assert len(result.channels["scalar"].variant_keys) == 2
+
+
+def test_extract_masses_twistor_mode_suffixed():
+    """Twistor companion correlators should flow through the standard fit pipeline."""
+    pr = MockPipelineResult(
+        correlators={
+            "scalar_twistor": make_synthetic_correlator(seed=10),
+            "pseudoscalar_twistor": make_synthetic_correlator(
+                mass0=0.18,
+                mass1=0.65,
+                amp0=0.9,
+                amp1=0.22,
+                seed=11,
+            ),
+            "glueball_twistor": make_synthetic_correlator(
+                mass0=0.75,
+                mass1=1.35,
+                amp0=0.55,
+                amp1=0.18,
+                seed=12,
+            ),
+            "vector_twistor": make_synthetic_correlator(
+                mass0=0.52,
+                mass1=1.05,
+                amp0=0.7,
+                amp1=0.2,
+                seed=13,
+            ),
+            "axial_vector_twistor": make_synthetic_correlator(
+                mass0=0.64,
+                mass1=1.2,
+                amp0=0.68,
+                amp1=0.19,
+                seed=14,
+            ),
+            "tensor_twistor": make_synthetic_correlator(
+                mass0=0.9,
+                mass1=1.55,
+                amp0=0.5,
+                amp1=0.15,
+                seed=15,
+            ),
+        },
+        operators={},
+    )
+
+    result = extract_masses(pr)
+
+    assert "scalar" in result.channels
+    assert result.channels["scalar"].variant_keys == ["scalar_twistor"]
+
+    assert "pseudoscalar" in result.channels
+    assert result.channels["pseudoscalar"].variant_keys == ["pseudoscalar_twistor"]
+
+    assert "glueball" in result.channels
+    assert result.channels["glueball"].variant_keys == ["glueball_twistor"]
+
+    assert "vector" in result.channels
+    assert result.channels["vector"].variant_keys == ["vector_twistor"]
+
+    assert "axial_vector" in result.channels
+    assert result.channels["axial_vector"].variant_keys == ["axial_vector_twistor"]
+
+    assert "tensor" in result.channels
+    assert result.channels["tensor"].variant_keys == ["tensor_twistor"]

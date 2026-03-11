@@ -563,6 +563,43 @@ class TestComputeDiracOperatorSeries:
         with pytest.raises(ValueError, match="d=3"):
             compute_dirac_operator_series(**agg_data)
 
+    def test_multiple_pair_branches_are_used(self, agg_data):
+        """Two companion branches should both contribute to the Dirac averages."""
+        T, N = agg_data["color"].shape[:2]
+        agg_data["neighbor_indices"] = torch.stack(
+            [
+                torch.arange(N).roll(-1).unsqueeze(0).expand(T, -1),
+                torch.arange(N).roll(-2).unsqueeze(0).expand(T, -1),
+            ],
+            dim=-1,
+        )
+
+        result = compute_dirac_operator_series(**agg_data)
+
+        assert torch.equal(
+            result.n_valid_pairs,
+            torch.full((T,), 2 * N, dtype=torch.int64),
+        )
+
+    def test_invalid_pair_branch_is_masked(self, agg_data):
+        """Out-of-range neighbor branches should be ignored without crashing."""
+        T, N = agg_data["color"].shape[:2]
+        agg_data["neighbor_indices"] = torch.stack(
+            [
+                torch.arange(N).roll(-1).unsqueeze(0).expand(T, -1),
+                torch.full((T, N), -1, dtype=torch.long),
+            ],
+            dim=-1,
+        )
+
+        result = compute_dirac_operator_series(**agg_data)
+
+        assert torch.equal(
+            result.n_valid_pairs,
+            torch.full((T,), N, dtype=torch.int64),
+        )
+        assert torch.isfinite(result.scalar).all()
+
 
 # ===========================================================================
 # Channel registry integration

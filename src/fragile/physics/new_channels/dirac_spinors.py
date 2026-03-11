@@ -371,17 +371,41 @@ def compute_dirac_operators_from_spinors(
         spinor: Dirac spinors [T, N, 4] (complex).
         spinor_valid: Validity mask [T, N] (bool).
         sample_indices: Sampled walker indices [T, S].
-        neighbor_indices: Neighbor indices [T, S, k].
+        neighbor_indices: Neighbor indices [T, S, P] or [T, S].
         alive: Alive mask [T, N] (bool).
         gamma: Gamma matrices dict from build_dirac_gamma_matrices().
-        weights: Optional per-sample weights [T, S] for Riemannian measure.
+        weights: Optional per-sample weights [T, S] or [T, S, P].
 
     Returns:
         DiracOperatorSeries with all channel time series.
     """
-    T, _N, _ = spinor.shape
+    T, N, _ = spinor.shape
     S = sample_indices.shape[1]
     device = spinor.device
+
+    if sample_indices.ndim != 2:
+        raise ValueError(
+            f"sample_indices must have shape [T, S], got {tuple(sample_indices.shape)}."
+        )
+    if neighbor_indices.ndim == 2:
+        neighbor_indices = neighbor_indices.unsqueeze(-1)
+    if neighbor_indices.ndim != 3:
+        raise ValueError(
+            f"neighbor_indices must have shape [T, S, P], got {tuple(neighbor_indices.shape)}."
+        )
+    if neighbor_indices.shape[:2] != sample_indices.shape:
+        raise ValueError(
+            "neighbor_indices must align with sample_indices in the first two dimensions, got "
+            f"{tuple(neighbor_indices.shape)} vs {tuple(sample_indices.shape)}."
+        )
+    if spinor_valid.shape != spinor.shape[:2]:
+        raise ValueError(
+            f"spinor_valid must have shape [T, N], got {tuple(spinor_valid.shape)}."
+        )
+    if alive.shape != spinor.shape[:2]:
+        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
+
+    P = neighbor_indices.shape[2]
 
     gamma0 = gamma["gamma0"].to(device)
     gamma_k = gamma["gamma_k"].to(device)
@@ -393,41 +417,48 @@ def compute_dirac_operators_from_spinors(
 
     # Gather spinors for sample pairs
     t_idx = torch.arange(T, device=device).unsqueeze(1).expand(-1, S)
-    psi_i = spinor[t_idx, sample_indices]  # [T, S, 4]
+    sample_in_range = (sample_indices >= 0) & (sample_indices < N)
+    sample_safe = sample_indices.clamp(min=0, max=max(N - 1, 0))
 
-    first_neighbor = neighbor_indices[:, :, 0]  # [T, S]
-    psi_j = spinor[t_idx, first_neighbor]  # [T, S, 4]
+    psi_i = spinor[t_idx, sample_safe].unsqueeze(2).expand(-1, -1, P, -1)  # [T, S, P, 4]
+
+    t_idx_pairs = torch.arange(T, device=device).view(T, 1, 1).expand(-1, S, P)
+    neighbor_in_range = (neighbor_indices >= 0) & (neighbor_indices < N)
+    neighbor_safe = neighbor_indices.clamp(min=0, max=max(N - 1, 0))
+    psi_j = spinor[t_idx_pairs, neighbor_safe]  # [T, S, P, 4]
 
     # Validity
     valid_i = (
-        spinor_valid[t_idx, sample_indices]
-        & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
-    )
+        sample_in_range
+        & spinor_valid[t_idx, sample_safe]
+        & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_safe]
+    ).unsqueeze(-1)
     valid_j = (
-        spinor_valid[t_idx, first_neighbor]
-        & alive[t_idx.clamp(max=alive.shape[0] - 1), first_neighbor]
+        neighbor_in_range
+        & spinor_valid[t_idx_pairs, neighbor_safe]
+        & alive[t_idx_pairs.clamp(max=alive.shape[0] - 1), neighbor_safe]
     )
-    valid_mask = valid_i & valid_j & (first_neighbor != sample_indices)
+    valid_mask = valid_i & valid_j & (neighbor_safe != sample_safe.unsqueeze(-1))
 
     # Compute bilinears
     # Scalar: ψ̄ψ = ψ†γ₀ψ (Γ = I₄)
-    op_scalar = compute_dirac_bilinear(psi_i, psi_j, gamma0, I4)  # [T, S]
+    op_scalar = compute_dirac_bilinear(psi_i, psi_j, gamma0, I4)  # [T, S, P]
 
     # Pseudoscalar: ψ̄γ₅ψ
-    op_pseudo = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma5)  # [T, S]
+    op_pseudo = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma5)  # [T, S, P]
 
     # Vector: (1/3)Σ_k ψ̄γ_k ψ
-    op_vector_k = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma_k)  # [T, S, 3]
-    op_vector = op_vector_k.mean(dim=-1)  # [T, S]
+    op_vector_k = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma_k)  # [T, S, P, 3]
+    op_vector = op_vector_k.mean(dim=-1)  # [T, S, P]
 
     # Axial vector: (1/3)Σ_k ψ̄γ₅γ_k ψ
-    op_axial_k = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma5_k)  # [T, S, 3]
-    op_axial = op_axial_k.mean(dim=-1)  # [T, S]
+    op_axial_k = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma5_k)  # [T, S, P, 3]
+    op_axial = op_axial_k.mean(dim=-1)  # [T, S, P]
 
     # Tensor: split σ_0k (parity-odd) from σ_jk (parity-even)
-    op_tensor_mn = compute_dirac_bilinear(psi_i, psi_j, gamma0, sigma_munu)  # [T, S, 6]
-    op_tensor_0k = op_tensor_mn[..., :3].mean(dim=-1)  # [T, S] σ_0k: parity-odd
-    op_tensor = op_tensor_mn[..., 3:].mean(dim=-1)     # [T, S] σ_jk: parity-even
+    op_tensor_mn = compute_dirac_bilinear(psi_i, psi_j, gamma0, sigma_munu)  # [T, S, P, 6]
+    op_tensor_0k = op_tensor_mn[..., :3].mean(dim=-1)  # [T, S, P] σ_0k: parity-odd
+    op_tensor = op_tensor_mn[..., 3:].mean(dim=-1)     # [T, S, P] σ_jk: parity-even
 
     # Mask invalid pairs
     zero = torch.zeros_like(op_scalar)
@@ -440,16 +471,35 @@ def compute_dirac_operators_from_spinors(
 
     # Weighted average over samples
     if weights is not None:
-        w = weights.to(device=device, dtype=op_scalar.dtype)
+        if weights.ndim == 2:
+            w = weights.unsqueeze(-1)
+        elif weights.ndim == 3:
+            w = weights
+        else:
+            raise ValueError(
+                f"weights must have shape [T, S] or [T, S, P], got {tuple(weights.shape)}."
+            )
+        if w.shape[:2] != sample_indices.shape:
+            raise ValueError(
+                "weights must align with sample_indices in the first two dimensions, got "
+                f"{tuple(w.shape)} vs {tuple(sample_indices.shape)}."
+            )
+        if w.shape[-1] not in {1, P}:
+            raise ValueError(
+                f"weights trailing dimension must be 1 or P={P}, got {tuple(w.shape)}."
+            )
+        if w.shape[-1] == 1 and P > 1:
+            w = w.expand(-1, -1, P)
+        w = w.to(device=device, dtype=op_scalar.dtype)
         w = torch.where(valid_mask, w, zero)
     else:
         w = valid_mask.float()
 
-    w_sum = w.sum(dim=1).clamp(min=1e-12)  # [T]
-    n_valid = valid_mask.sum(dim=1)
+    w_sum = w.sum(dim=(1, 2)).clamp(min=1e-12)  # [T]
+    n_valid = valid_mask.sum(dim=(1, 2))
 
     def _avg(op: Tensor) -> Tensor:
-        return (op * w).sum(dim=1) / w_sum
+        return (op * w).sum(dim=(1, 2)) / w_sum
 
     return DiracOperatorSeries(
         scalar=_avg(op_scalar),

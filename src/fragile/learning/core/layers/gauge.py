@@ -195,6 +195,30 @@ def poincare_exp_map(
     return mobius_add(z, w, c=c, eps=eps)
 
 
+def poincare_log_map(
+    z: torch.Tensor, y: torch.Tensor, c: float = 1.0, eps: float = 1e-5
+) -> torch.Tensor:
+    """Logarithmic map at arbitrary base point z: log_z(y).
+
+    Maps a point y to the tangent vector at z. Inverse of poincare_exp_map.
+    Formula: log_z(y) = (2 / (sqrt_c · λ_z)) · atanh(sqrt_c · ||(-z) ⊕ y||) · dir
+
+    Args:
+        z: [..., D] base point in the Poincaré ball
+        y: [..., D] target point in the Poincaré ball
+        c: curvature (c=1 for unit ball)
+        eps: numerical stability epsilon
+
+    Returns:
+        v: [..., D] tangent vector at z such that exp_z(v) ≈ y
+    """
+    diff = mobius_add(-z, y, c=c, eps=eps)
+    v0 = log_map_zero(diff, c=c, eps=eps)
+    z_sq = (z**2).sum(dim=-1, keepdim=True)
+    lambda_z = 2.0 / (1.0 - c * z_sq).clamp(min=eps)
+    return 2.0 * v0 / lambda_z
+
+
 def christoffel_contraction(
     z: torch.Tensor, v: torch.Tensor, c: float = 1.0, eps: float = 1e-5
 ) -> torch.Tensor:

@@ -21,6 +21,7 @@ from fragile.physics.new_channels.mass_extraction_adapter import (
     extract_meson_phase,
     extract_multiscale,
     extract_tensor_momentum,
+    extract_twistor_companion,
     extract_vector_meson,
 )
 from fragile.physics.new_channels.meson_phase_channels import (
@@ -31,6 +32,9 @@ from fragile.physics.new_channels.multiscale_strong_force import (
 )
 from fragile.physics.new_channels.tensor_momentum_channels import (
     TensorMomentumCorrelatorOutput,
+)
+from fragile.physics.new_channels.twistor_companion_channels import (
+    TwistorCompanionCorrelatorOutput,
 )
 from fragile.physics.new_channels.vector_meson_channels import (
     VectorMesonCorrelatorOutput,
@@ -161,6 +165,52 @@ def tensor_output() -> TensorMomentumCorrelatorOutput:
 
 
 @pytest.fixture
+def twistor_output() -> TwistorCompanionCorrelatorOutput:
+    return TwistorCompanionCorrelatorOutput(
+        scalar=torch.randn(LAG),
+        scalar_raw=torch.randn(LAG),
+        scalar_connected=torch.randn(LAG),
+        pseudoscalar=torch.randn(LAG),
+        pseudoscalar_raw=torch.randn(LAG),
+        pseudoscalar_connected=torch.randn(LAG),
+        glueball=torch.randn(LAG),
+        glueball_raw=torch.randn(LAG),
+        glueball_connected=torch.randn(LAG),
+        vector=torch.randn(LAG),
+        vector_raw=torch.randn(LAG),
+        vector_connected=torch.randn(LAG),
+        axial_vector=torch.randn(LAG),
+        axial_vector_raw=torch.randn(LAG),
+        axial_vector_connected=torch.randn(LAG),
+        tensor=torch.randn(LAG),
+        tensor_raw=torch.randn(LAG),
+        tensor_connected=torch.randn(LAG),
+        counts=torch.ones(LAG, dtype=torch.int64),
+        frame_indices=list(range(T)),
+        triplet_counts_per_frame=torch.ones(T, dtype=torch.int64),
+        mean_scalar=0.15,
+        mean_pseudoscalar=-0.05,
+        mean_glueball=0.2,
+        mean_vector=torch.randn(3),
+        mean_axial_vector=torch.randn(3),
+        mean_tensor=0.11,
+        disconnected_scalar=0.01,
+        disconnected_pseudoscalar=0.02,
+        disconnected_glueball=0.03,
+        disconnected_vector=0.04,
+        disconnected_axial_vector=0.05,
+        disconnected_tensor=0.06,
+        n_valid_source_triplets=40,
+        operator_scalar_series=torch.randn(T),
+        operator_pseudoscalar_series=torch.randn(T),
+        operator_glueball_series=torch.randn(T),
+        operator_vector_series=torch.randn(T, 3),
+        operator_axial_vector_series=torch.randn(T, 3),
+        operator_tensor_series=torch.randn(T),
+    )
+
+
+@pytest.fixture
 def multiscale_output() -> MultiscaleStrongForceOutput:
     per_scale: dict[str, list[ChannelCorrelatorResult]] = {}
     for ch in ("scalar", "pseudoscalar"):
@@ -257,7 +307,6 @@ class TestExtractTensorMomentum:
         assert set(corrs.keys()) == {"tensor"}
         assert corrs["tensor"].shape == (LAG,)
         assert ops["tensor"].shape == (T,)
-        # Verify the correlator is the contracted one at mode 0
         expected = tensor_output.momentum_contracted_correlator_connected[0]
         assert torch.equal(corrs["tensor"], expected)
 
@@ -272,6 +321,42 @@ class TestExtractTensorMomentum:
     def test_operator_is_positive(self, tensor_output):
         _, ops = extract_tensor_momentum(tensor_output)
         assert (ops["tensor"] >= 0).all()
+
+
+class TestExtractTwistorCompanion:
+    def test_connected(self, twistor_output):
+        corrs, ops = extract_twistor_companion(twistor_output, use_connected=True)
+        assert set(corrs.keys()) == {
+            "scalar",
+            "pseudoscalar",
+            "glueball",
+            "vector",
+            "axial_vector",
+            "tensor",
+        }
+        assert torch.equal(corrs["scalar"], twistor_output.scalar_connected)
+        assert torch.equal(corrs["pseudoscalar"], twistor_output.pseudoscalar_connected)
+        assert torch.equal(corrs["glueball"], twistor_output.glueball_connected)
+        assert torch.equal(corrs["vector"], twistor_output.vector_connected)
+        assert torch.equal(corrs["axial_vector"], twistor_output.axial_vector_connected)
+        assert torch.equal(corrs["tensor"], twistor_output.tensor_connected)
+        assert ops["scalar"].shape == (T,)
+        assert ops["vector"].shape == (T, 3)
+        assert ops["axial_vector"].shape == (T, 3)
+        assert ops["tensor"].shape == (T,)
+        assert ops["glueball"].shape == (T,)
+
+    def test_prefix(self, twistor_output):
+        corrs, ops = extract_twistor_companion(twistor_output, prefix="tw_")
+        assert set(corrs.keys()) == {
+            "tw_scalar",
+            "tw_pseudoscalar",
+            "tw_glueball",
+            "tw_vector",
+            "tw_axial_vector",
+            "tw_tensor",
+        }
+        assert set(ops.keys()) == set(corrs.keys())
 
 
 class TestExtractMultiscale:
@@ -331,6 +416,18 @@ class TestCollectCorrelators:
         # Multiscale separately with prefix to avoid key collision
         ms_corrs, _ms_ops = extract_multiscale(multiscale_output, prefix="ms_")
         assert "ms_scalar" in ms_corrs
+
+    def test_twistor_output(self, twistor_output):
+        result = collect_correlators(twistor_output)
+        assert set(result.correlators.keys()) == {
+            "scalar",
+            "pseudoscalar",
+            "glueball",
+            "vector",
+            "axial_vector",
+            "tensor",
+        }
+        assert set(result.operators.keys()) == set(result.correlators.keys())
 
     def test_duplicate_key_raises(self, meson_output):
         with pytest.raises(ValueError, match="Duplicate correlator key"):
