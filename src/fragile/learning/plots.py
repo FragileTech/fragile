@@ -19,6 +19,18 @@ COLORS = {
     "ae": "#54a24b",
 }
 
+SPLIT_OUTLINE_COLORS = {
+    "train": "#1f1f1f",
+    "test": "#d62728",
+    "unknown": "#7f7f7f",
+}
+
+SPLIT_MARKERS = {
+    "train": "circle",
+    "test": "diamond",
+    "unknown": "square",
+}
+
 
 def _to_numpy(t) -> np.ndarray:
     """Convert tensor/array-like to numpy."""
@@ -258,6 +270,9 @@ def build_latent_scatter(
     K_code: np.ndarray | None = None,
     show_code_centers: bool = False,
     show_points: bool = True,
+    marker_groups: np.ndarray | None = None,
+    marker_markers: dict[str, str] | None = None,
+    marker_outline_colors: dict[str, str] | None = None,
     trajectory_episode_ids: np.ndarray | None = None,
     trajectory_timesteps: np.ndarray | None = None,
     trajectory_episode: int | None = None,
@@ -401,6 +416,39 @@ def build_latent_scatter(
                 alpha=0.7, tools=[center_hover],
             )
 
+    if show_points and marker_groups is not None:
+        groups = np.asarray(marker_groups).astype(str)
+        marker_markers = marker_markers or SPLIT_MARKERS
+        marker_outline_colors = marker_outline_colors or SPLIT_OUTLINE_COLORS
+        split_hover = HoverTool(tooltips=[("Split", "@split")])
+        overlays = [result]
+        for group in np.unique(groups):
+            mask = groups == group
+            if not np.any(mask):
+                continue
+            overlays.append(
+                hv.Points(
+                    {
+                        "x": z[mask, dim_i].copy(),
+                        "y": z[mask, dim_j].copy(),
+                        "split": groups[mask],
+                    },
+                    kdims=["x", "y"],
+                    vdims=["split"],
+                    label=f"{group} split",
+                ).opts(
+                    marker=marker_markers.get(group, "circle"),
+                    size=max(point_size + 3, 5),
+                    color=marker_outline_colors.get(group, "#333333"),
+                    fill_alpha=0.0,
+                    line_alpha=0.95,
+                    line_width=1.4,
+                    alpha=1.0,
+                    tools=[split_hover, TapTool()],
+                ),
+            )
+        result = hv.Overlay(overlays)
+
     # Episode trajectory overlay
     if (
         trajectory_episode is not None
@@ -431,6 +479,9 @@ def plot_latent_2d_slices(
     K_code: np.ndarray | None = None,
     show_code_centers: bool = False,
     show_points: bool = True,
+    marker_groups: np.ndarray | None = None,
+    marker_markers: dict[str, str] | None = None,
+    marker_outline_colors: dict[str, str] | None = None,
 ) -> hv.Layout:
     """2D scatter panels for every pair among the first 3 latent dims.
 
@@ -467,6 +518,9 @@ def plot_latent_2d_slices(
             K_code=K_code,
             show_code_centers=show_code_centers,
             show_points=show_points,
+            marker_groups=marker_groups,
+            marker_markers=marker_markers,
+            marker_outline_colors=marker_outline_colors,
         )
         panels.append(scatter)
 
@@ -499,6 +553,9 @@ def plot_latent_3d(
     show_code_centers: bool = False,
     show_tree_lines: bool = False,
     show_leaf_lines: bool = True,
+    marker_groups: np.ndarray | None = None,
+    marker_markers: dict[str, str] | None = None,
+    marker_outline_colors: dict[str, str] | None = None,
     trajectory_episode_ids: np.ndarray | None = None,
     trajectory_timesteps: np.ndarray | None = None,
     trajectory_episode: int | None = None,
@@ -651,6 +708,18 @@ def plot_latent_3d(
                 )
             )
 
+    if show_points and marker_groups is not None:
+        _add_split_marker_traces_3d(
+            traces,
+            x,
+            y,
+            z_ax,
+            marker_groups,
+            point_size,
+            marker_markers=marker_markers,
+            marker_outline_colors=marker_outline_colors,
+        )
+
     # Hierarchy tree overlay
     if (show_chart_centers or show_code_centers or show_tree_lines) and K_code is not None:
         codes = _to_numpy(K_code).astype(int)
@@ -690,6 +759,48 @@ def plot_latent_3d(
         margin={"l": 0, "r": 0, "b": 0, "t": 40},
     )
     return fig
+
+
+def _add_split_marker_traces_3d(
+    traces: list,
+    x: np.ndarray,
+    y: np.ndarray,
+    z_ax: np.ndarray,
+    marker_groups: np.ndarray,
+    point_size: int,
+    *,
+    marker_markers: dict[str, str] | None = None,
+    marker_outline_colors: dict[str, str] | None = None,
+) -> None:
+    """Append split-marker overlays to a 3D latent figure."""
+    groups = np.asarray(marker_groups).astype(str)
+    marker_markers = marker_markers or SPLIT_MARKERS
+    marker_outline_colors = marker_outline_colors or SPLIT_OUTLINE_COLORS
+
+    for group in np.unique(groups):
+        mask = groups == group
+        if not np.any(mask):
+            continue
+        traces.append(
+            go.Scatter3d(
+                x=x[mask],
+                y=y[mask],
+                z=z_ax[mask],
+                mode="markers",
+                name=f"{group} split",
+                marker={
+                    "size": max(point_size + 3, 5),
+                    "symbol": marker_markers.get(group, "circle"),
+                    "color": "rgba(255,255,255,0.01)",
+                    "line": {
+                        "color": marker_outline_colors.get(group, "#333333"),
+                        "width": 3,
+                    },
+                    "opacity": 1.0,
+                },
+                hoverinfo="skip",
+            ),
+        )
 
 
 def _add_hierarchy_traces(

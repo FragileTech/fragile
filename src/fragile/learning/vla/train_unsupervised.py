@@ -164,7 +164,7 @@ def train_unsupervised(args: argparse.Namespace) -> None:  # noqa: C901
     print(f"Device: {device}")
 
     # ── Dataset ────────────────────────────────────────────────
-    dataset = VLAFeatureDataset(args.feature_cache_dir, sequence_length=1)
+    dataset = VLAFeatureDataset(args.feature_cache_dir, sequence_length=1, split="train")
     loader = DataLoader(
         dataset,
         batch_size=args.batch_size,

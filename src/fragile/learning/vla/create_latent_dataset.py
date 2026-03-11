@@ -49,6 +49,13 @@ def main() -> None:
         help="Max episodes to extract (0 = all).",
     )
     p.add_argument(
+        "--test-episodes", type=int, default=VLAConfig.held_out_test_episodes,
+        help=(
+            "How many cached episodes to reserve as held-out test data "
+            f"(default: {VLAConfig.held_out_test_episodes})."
+        ),
+    )
+    p.add_argument(
         "--device", default="auto",
         help='Device: "auto", "cuda", or "cpu".',
     )
@@ -66,6 +73,7 @@ def main() -> None:
         feature_cache_dir=args.output_dir,
         pooling=args.pooling,
         max_episodes=args.max_episodes,
+        held_out_test_episodes=args.test_episodes,
         device=device,
     )
 

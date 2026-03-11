@@ -2252,16 +2252,19 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
     seq_loader = None
 
     if args.phase1_epochs > 0:
-        single_ds = VLAFeatureDataset(args.feature_cache_dir, sequence_length=1)
+        single_ds = VLAFeatureDataset(args.feature_cache_dir, sequence_length=1, split="train")
         single_loader = DataLoader(
             single_ds, batch_size=args.batch_size, shuffle=True,
             drop_last=False, num_workers=0,
         )
         input_dim = single_ds[0]["feature"].shape[0]
-        print(f"Single-frame dataset: {len(single_ds)} frames, {len(single_loader)} batches")
+        print(
+            f"Single-frame train dataset: {len(single_ds)} frames, "
+            f"{len(single_loader)} batches",
+        )
     else:
         # Need input_dim from a probe
-        probe_ds = VLAFeatureDataset(args.feature_cache_dir, sequence_length=1)
+        probe_ds = VLAFeatureDataset(args.feature_cache_dir, sequence_length=1, split="train")
         input_dim = probe_ds[0]["feature"].shape[0]
         # Still build single_loader for diagnostics
         single_loader = DataLoader(
@@ -2272,13 +2275,19 @@ def train_joint(args: argparse.Namespace) -> None:  # noqa: C901
 
     # Build seq_loader if P2/P3 need it (Phase 1 is always single-frame)
     if args.phase2_epochs > 0 or args.phase3_epochs > 0:
-        seq_ds = VLAFeatureDataset(args.feature_cache_dir, sequence_length=args.sequence_length)
+        seq_ds = VLAFeatureDataset(
+            args.feature_cache_dir,
+            sequence_length=args.sequence_length,
+            split="train",
+        )
         seq_loader = DataLoader(
             seq_ds, batch_size=args.batch_size, shuffle=True,
             drop_last=True, num_workers=0,
         )
-        print(f"Sequence dataset: {len(seq_ds)} windows (seq_len={args.sequence_length}), "
-              f"{len(seq_loader)} batches")
+        print(
+            f"Sequence train dataset: {len(seq_ds)} windows "
+            f"(seq_len={args.sequence_length}), {len(seq_loader)} batches",
+        )
 
     print(f"Feature dim: {input_dim}")
 

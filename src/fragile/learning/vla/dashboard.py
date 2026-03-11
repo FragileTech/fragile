@@ -10,6 +10,7 @@ Usage:
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
 import io
 import json
@@ -33,6 +34,7 @@ from fragile.learning.plots import (
     plot_latent_2d_slices,
     plot_latent_3d,
 )
+from fragile.learning.vla.extract_features import load_feature_cache_metadata
 
 logger = logging.getLogger(__name__)
 
@@ -238,25 +240,21 @@ def load_feature_cache(feature_dir: str) -> dict:
         task_labels: [N] int array
         episode_ids: [N] int array
         timesteps: [N] int array
+        split_labels: [N] string array
     """
     from pathlib import Path
 
     cache = Path(feature_dir)
-    meta_path = cache / "meta.json"
-    if meta_path.exists():
-        meta = json.loads(meta_path.read_text())
-        episode_ids_list: list[int] = meta.get("episode_ids", [])
-    else:
-        episode_ids_list = sorted(
-            int(p.name.split("_")[1])
-            for p in cache.iterdir()
-            if p.is_dir() and p.name.startswith("episode_")
-        )
+    meta = load_feature_cache_metadata(cache)
+    episode_ids_list: list[int] = meta.get("episode_ids", [])
+    train_episode_ids = {int(ep_id) for ep_id in meta.get("train_episode_ids", [])}
+    test_episode_ids = {int(ep_id) for ep_id in meta.get("test_episode_ids", [])}
 
     all_features: list[torch.Tensor] = []
     all_task_labels: list[torch.Tensor] = []
     all_ep_ids: list[int] = []
     all_timesteps: list[int] = []
+    all_split_labels: list[str] = []
 
     for ep_id in episode_ids_list:
         ep_dir = cache / f"episode_{ep_id}"
@@ -276,8 +274,16 @@ def load_feature_cache(feature_dir: str) -> dict:
         else:
             all_task_labels.append(torch.zeros(T, dtype=torch.long))
 
+        if ep_id in test_episode_ids:
+            split_label = "test"
+        elif ep_id in train_episode_ids:
+            split_label = "train"
+        else:
+            split_label = "unknown"
+
         all_ep_ids.extend([ep_id] * T)
         all_timesteps.extend(range(T))
+        all_split_labels.extend([split_label] * T)
 
     if not all_features:
         return {
@@ -285,6 +291,8 @@ def load_feature_cache(feature_dir: str) -> dict:
             "task_labels": np.zeros(0, dtype=int),
             "episode_ids": np.zeros(0, dtype=int),
             "timesteps": np.zeros(0, dtype=int),
+            "split_labels": np.zeros(0, dtype=str),
+            "meta": meta,
         }
 
     return {
@@ -292,6 +300,8 @@ def load_feature_cache(feature_dir: str) -> dict:
         "task_labels": _to_numpy(torch.cat(all_task_labels, dim=0)).astype(int),
         "episode_ids": np.array(all_ep_ids, dtype=int),
         "timesteps": np.array(all_timesteps, dtype=int),
+        "split_labels": np.array(all_split_labels, dtype=str),
+        "meta": meta,
     }
 
 
@@ -416,6 +426,97 @@ def _numpy_to_png_pane(arr: np.ndarray, width: int = 150):
     return pn.pane.PNG(buf.getvalue(), width=width)
 
 
+def _symbol_seed(symbol_label: str) -> int:
+    """Deterministic integer seed derived from a symbol label."""
+    return sum(ord(ch) for ch in symbol_label)
+
+
+@torch.no_grad()
+def infer_symbol_assignments(
+    loaded: VLALoaded,
+    features: torch.Tensor,
+    *,
+    batch_size: int = 1024,
+) -> dict[str, np.ndarray]:
+    """Infer chart/code assignments for every cached feature frame."""
+    if features.shape[0] == 0:
+        return {
+            "charts": np.zeros(0, dtype=int),
+            "codes": np.zeros(0, dtype=int),
+            "labels": np.zeros(0, dtype=str),
+        }
+
+    chart_batches: list[np.ndarray] = []
+    code_batches: list[np.ndarray] = []
+    for start in range(0, features.shape[0], batch_size):
+        batch = features[start : start + batch_size]
+        enc_out = loaded.encoder.encoder(batch)
+        chart_batches.append(_to_numpy(enc_out[0]).astype(int))
+        code_batches.append(_to_numpy(enc_out[1]).astype(int))
+
+    charts = np.concatenate(chart_batches, axis=0)
+    codes = np.concatenate(code_batches, axis=0)
+    labels = np.array([f"c{chart}:s{code}" for chart, code in zip(charts, codes)], dtype=str)
+    return {"charts": charts, "codes": codes, "labels": labels}
+
+
+def build_symbol_options(symbol_labels: np.ndarray) -> dict[str, str]:
+    """Build MultiChoice options ordered by descending symbol frequency."""
+    if len(symbol_labels) == 0:
+        return {}
+
+    counts = Counter(np.asarray(symbol_labels).astype(str).tolist())
+    ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    return {f"{label} (n={count})": label for label, count in ordered}
+
+
+def _camera_example_pane(
+    provider: VLAImageProvider | None,
+    ep_id: int,
+    timestep: int,
+    camera: str,
+    *,
+    width: int = 130,
+) -> pn.Column:
+    """Build one camera pane for an example card."""
+    pane = pn.pane.Markdown("*Unavailable*", width=width)
+    if provider is not None:
+        img = provider.get_image(ep_id, timestep, camera=camera)
+        if img is not None:
+            pane = _numpy_to_png_pane(img, width=width)
+    return pn.Column(
+        pn.pane.Markdown(f"**{camera}**"),
+        pane,
+        width=width + 10,
+    )
+
+
+def _symbol_example_card(
+    provider: VLAImageProvider | None,
+    *,
+    ep_id: int,
+    timestep: int,
+    task: int,
+    split: str,
+    symbol_label: str,
+    width: int = 300,
+) -> pn.Column:
+    """Build a card with both camera views for one symbol example."""
+    return pn.Column(
+        pn.Row(
+            _camera_example_pane(provider, ep_id, timestep, "top"),
+            _camera_example_pane(provider, ep_id, timestep, "wrist"),
+            sizing_mode="fixed",
+        ),
+        pn.pane.Markdown(
+            f"`{symbol_label}` | split={split} | ep={ep_id} | t={timestep} | task={task}",
+            width=width,
+        ),
+        width=width,
+        margin=(0, 8, 12, 0),
+    )
+
+
 def _latent_bar_chart(z_vec: np.ndarray, width: int = 300, height: int = 100):
     """Horizontal bar chart of latent vector components with signed coloring."""
     z = _to_numpy(z_vec).ravel()
@@ -463,6 +564,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         "loaded": None,
         "cache": None,  # feature cache dict
         "image_provider": None,
+        "symbol_index": None,
     }
 
     # ---- Sidebar widgets ----
@@ -517,6 +619,25 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         value="red",
         button_type="default",
     )
+    symbol_selector = pn.widgets.MultiChoice(
+        name="Symbols",
+        options={},
+        value=[],
+        width=500,
+    )
+    symbol_examples_limit = pn.widgets.IntSlider(
+        name="Examples / symbol",
+        start=1,
+        end=10,
+        value=6,
+        width=250,
+    )
+    symbol_split_filter = pn.widgets.RadioButtonGroup(
+        name="Split",
+        options=["all", "train", "test"],
+        value="all",
+        button_type="default",
+    )
     status = pn.pane.Markdown("Click **Scan runs** to begin.", width=300)
 
     sidebar = pn.Column(
@@ -559,6 +680,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
     # Tab 1: Latent Space
     latent_3d_pane = pn.pane.Plotly(None, sizing_mode="stretch_width", height=600)
     latent_2d_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
+    latent_split_summary = pn.pane.Markdown("")
     usage_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
     code_time_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width")
     inspect_label = pn.pane.Markdown("*Click a point in z0 vs z1 to inspect*")
@@ -584,8 +706,16 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
     dyn_trajectory_pane = pn.pane.HoloViews(hv.Div(""), sizing_mode="stretch_width", height=600)
     dyn_status = pn.pane.Markdown("*Load a checkpoint with a world model to see dynamics.*")
 
+    # Tab 4: Symbol examples
+    symbol_examples_summary = pn.pane.Markdown("*Load a checkpoint to browse symbol examples.*")
+    symbol_examples_pane = pn.Column(
+        pn.pane.Markdown("*No symbol examples yet.*"),
+        sizing_mode="stretch_width",
+    )
+
     # ---- Tabs ----
     latent_tab = pn.Column(
+        latent_split_summary,
         latent_3d_pane,
         latent_2d_pane,
         inspect_label,
@@ -602,11 +732,18 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         dyn_trajectory_pane,
         sizing_mode="stretch_width",
     )
+    symbol_examples_tab = pn.Column(
+        pn.Row(symbol_selector, symbol_examples_limit, symbol_split_filter),
+        symbol_examples_summary,
+        symbol_examples_pane,
+        sizing_mode="stretch_width",
+    )
 
     tabs = pn.Tabs(
         ("Latent Space", latent_tab),
         ("Reconstructions", recon_tab),
         ("Dynamics", dynamics_tab),
+        ("Symbol Examples", symbol_examples_tab),
         sizing_mode="stretch_both",
     )
 
@@ -636,6 +773,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
             traceback.print_exc()
             return
         app_state["loaded"] = loaded
+        app_state["symbol_index"] = None
 
         # Find feature cache dir
         feature_dir = _find_feature_dir(info.path, outputs_dir, loaded.args)
@@ -668,9 +806,12 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         _refresh_all()
         wm_str = "with world model" if loaded.world_model is not None else "encoder only"
         n_feat = app_state["cache"]["features"].shape[0] if app_state["cache"] else 0
+        split_labels = app_state["cache"]["split_labels"] if app_state["cache"] else np.zeros(0, dtype=str)
+        n_train = int(np.sum(split_labels == "train"))
+        n_test = int(np.sum(split_labels == "test"))
         status.object = (
             f"Loaded P{loaded.phase} E{loaded.epoch} ({wm_str}). "
-            f"{n_feat} feature frames."
+            f"{n_feat} feature frames ({n_train} train / {n_test} test)."
         )
 
     def _find_feature_dir(
@@ -696,16 +837,43 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         _refresh_latent()
         _refresh_recon()
         _refresh_dynamics()
+        _refresh_symbol_examples()
+
+    def _ensure_symbol_index() -> dict[str, np.ndarray] | None:
+        loaded = app_state.get("loaded")
+        cache = app_state.get("cache")
+        if loaded is None or cache is None:
+            return None
+
+        symbol_index = app_state.get("symbol_index")
+        if symbol_index is None:
+            symbol_index = infer_symbol_assignments(loaded, cache["features"])
+            app_state["symbol_index"] = symbol_index
+
+            options = build_symbol_options(symbol_index["labels"])
+            symbol_selector.options = options
+            valid_values = set(options.values())
+            retained = [value for value in symbol_selector.value if value in valid_values]
+            if retained:
+                symbol_selector.value = retained
+            elif options:
+                symbol_selector.value = [next(iter(options.values()))]
+            else:
+                symbol_selector.value = []
+
+        return symbol_index
 
     def _refresh_latent():
         loaded = app_state.get("loaded")
         cache = app_state.get("cache")
         if loaded is None or cache is None:
+            latent_split_summary.object = ""
             return
 
         features = cache["features"]
         task_labels = cache["task_labels"]
         episode_ids = cache["episode_ids"]
+        split_labels = cache["split_labels"]
 
         N = features.shape[0]
         n_lat = min(latent_samples.value, N)
@@ -715,6 +883,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         x_sub = features[idx]
         task_sub = task_labels[idx]
         ep_sub = episode_ids[idx]
+        split_sub = split_labels[idx]
 
         # Forward pass
         with torch.no_grad():
@@ -763,6 +932,18 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         # Trajectory params
         traj_ep = trajectory_episode.value if trajectory_episode.value != -1 else None
         traj_color = trajectory_color.value
+        split_markers = {"train": "circle", "test": "diamond", "unknown": "square"}
+        split_colors = {"train": "#1f1f1f", "test": "#d62728", "unknown": "#7f7f7f"}
+
+        meta = cache["meta"]
+        total_train = int(np.sum(split_labels == "train"))
+        total_test = int(np.sum(split_labels == "test"))
+        latent_split_summary.object = (
+            f"**Markers:** train = circle, test = diamond.  "
+            f"**Frames:** {total_train} train / {total_test} test.  "
+            f"**Episodes:** {meta.get('num_train_episodes', 0)} train / "
+            f"{meta.get('num_test_episodes', 0)} test."
+        )
 
         # 3D scatter
         try:
@@ -777,6 +958,9 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
                 tree_line_width=tree_line_width.value,
                 K_code=K_code_np,
                 show_leaf_lines=False,
+                marker_groups=split_sub,
+                marker_markers=split_markers,
+                marker_outline_colors=split_colors,
                 trajectory_episode_ids=ep_sub,
                 trajectory_timesteps=ts_sub,
                 trajectory_episode=traj_ep,
@@ -803,6 +987,9 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
                     K_code=K_code_np,
                     show_code_centers=show_code_centers.value,
                     show_points=show_latents.value,
+                    marker_groups=split_sub,
+                    marker_markers=split_markers,
+                    marker_outline_colors=split_colors,
                     trajectory_episode_ids=ep_sub,
                     trajectory_timesteps=ts_sub,
                     trajectory_episode=traj_ep,
@@ -862,7 +1049,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         app_state["latent_sub"] = {
             "z_np": z_np, "K_np": K_np, "K_code_np": K_code_np,
             "task_sub": task_sub,
-            "ep_sub": ep_sub, "idx": idx, "x_sub": x_sub,
+            "ep_sub": ep_sub, "split_sub": split_sub, "idx": idx, "x_sub": x_sub,
             "x_recon": _to_numpy(x_recon), "radii": radii,
         }
 
@@ -883,6 +1070,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         chart = int(sub["K_np"][nearest])
         task = int(sub["task_sub"][nearest])
         ep = int(sub["ep_sub"][nearest])
+        split = str(sub["split_sub"][nearest])
         global_idx = int(sub["idx"][nearest])
         cache = app_state["cache"]
         ts = int(cache["timesteps"][global_idx]) if cache is not None else 0
@@ -909,6 +1097,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         # Metadata
         inspect_meta.object = (
             f"**Task:** {task}  \n"
+            f"**Split:** {split}  \n"
             f"**Episode:** {ep}  \n"
             f"**Timestep:** {ts}  \n"
             f"**Chart:** {chart}  \n"
@@ -930,6 +1119,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         task_labels = cache["task_labels"]
         episode_ids = cache["episode_ids"]
         timesteps = cache["timesteps"]
+        split_labels = cache["split_labels"]
 
         N = features.shape[0]
         n_rec = min(n_samples.value, N)
@@ -961,6 +1151,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
             ep = int(episode_ids[gi])
             ts = int(timesteps[gi])
             task = int(task_labels[gi])
+            split = str(split_labels[gi])
             chart = int(K_np[i])
             r = float(radii[i])
             mse = float(((x_np[i] - xr_np[i]) ** 2).mean())
@@ -987,7 +1178,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
 
             # Metadata
             meta = pn.pane.Markdown(
-                f"Task: {task} | Ep: {ep} | t: {ts}  \n"
+                f"Task: {task} | Split: {split} | Ep: {ep} | t: {ts}  \n"
                 f"Chart: {chart} | ||z||: {r:.3f} | MSE: {mse:.4f}"
             )
 
@@ -1124,6 +1315,102 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
             f"alignment by {alignment_mode.value}"
         )
 
+    def _refresh_symbol_examples():
+        loaded = app_state.get("loaded")
+        cache = app_state.get("cache")
+        provider = app_state.get("image_provider")
+        if loaded is None or cache is None:
+            symbol_examples_summary.object = "*Load a checkpoint to browse symbol examples.*"
+            symbol_examples_pane.clear()
+            symbol_examples_pane.append(pn.pane.Markdown("*No symbol examples yet.*"))
+            return
+
+        symbol_index = _ensure_symbol_index()
+        if symbol_index is None or len(symbol_index["labels"]) == 0:
+            symbol_examples_summary.object = "*No symbol assignments available.*"
+            symbol_examples_pane.clear()
+            symbol_examples_pane.append(pn.pane.Markdown("*No symbol assignments found.*"))
+            return
+
+        selected_symbols = list(symbol_selector.value or [])
+        if not selected_symbols and symbol_selector.options:
+            selected_symbols = [next(iter(symbol_selector.options.values()))]
+            symbol_selector.value = selected_symbols
+
+        if not selected_symbols:
+            symbol_examples_summary.object = "*Select one or more symbols to inspect examples.*"
+            symbol_examples_pane.clear()
+            symbol_examples_pane.append(
+                pn.pane.Markdown("*Select one or more symbols to inspect examples.*"),
+            )
+            return
+
+        split_filter = symbol_split_filter.value
+        split_labels = cache["split_labels"]
+        episode_ids = cache["episode_ids"]
+        timesteps = cache["timesteps"]
+        task_labels = cache["task_labels"]
+        limit = symbol_examples_limit.value
+
+        symbol_examples_summary.object = (
+            f"**Selected symbols:** {len(selected_symbols)} | "
+            f"**Examples / symbol:** {limit} | "
+            f"**Split filter:** {split_filter}"
+        )
+
+        blocks: list[object] = []
+        for symbol_label in selected_symbols:
+            total_mask = symbol_index["labels"] == symbol_label
+            filtered_mask = total_mask.copy()
+            if split_filter != "all":
+                filtered_mask &= split_labels == split_filter
+            match_idx = np.flatnonzero(filtered_mask)
+
+            if match_idx.size == 0:
+                blocks.append(
+                    pn.Column(
+                        pn.pane.Markdown(f"### `{symbol_label}`"),
+                        pn.pane.Markdown("*No matching examples for this split.*"),
+                    ),
+                )
+                continue
+
+            total_train = int(np.sum(total_mask & (split_labels == "train")))
+            total_test = int(np.sum(total_mask & (split_labels == "test")))
+            rng = np.random.RandomState(seed_input.value + _symbol_seed(symbol_label))
+            if match_idx.size > limit:
+                chosen = np.sort(rng.choice(match_idx, size=limit, replace=False))
+            else:
+                chosen = match_idx
+
+            cards = []
+            for global_idx in chosen:
+                cards.append(
+                    _symbol_example_card(
+                        provider,
+                        ep_id=int(episode_ids[global_idx]),
+                        timestep=int(timesteps[global_idx]),
+                        task=int(task_labels[global_idx]),
+                        split=str(split_labels[global_idx]),
+                        symbol_label=symbol_label,
+                    ),
+                )
+
+            blocks.append(
+                pn.Column(
+                    pn.pane.Markdown(
+                        f"### `{symbol_label}`\n"
+                        f"{match_idx.size} filtered matches | "
+                        f"train={total_train}, test={total_test}",
+                    ),
+                    pn.GridBox(*cards, ncols=2, sizing_mode="stretch_width"),
+                    sizing_mode="stretch_width",
+                ),
+            )
+
+        symbol_examples_pane.clear()
+        symbol_examples_pane.extend(blocks)
+
     # ---- Wire callbacks ----
     scan_btn.on_click(_on_scan)
     load_btn.on_click(_on_load)
@@ -1138,6 +1425,8 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
     n_samples.param.watch(lambda _: _refresh_recon(), "value")
     alignment_mode.param.watch(lambda _: _refresh_dynamics(), "value")
     dynamics_granularity.param.watch(lambda _: _refresh_dynamics(), "value")
+    for w in (symbol_selector, symbol_examples_limit, symbol_split_filter, seed_input):
+        w.param.watch(lambda _: _refresh_symbol_examples(), "value")
 
     # ---- Template ----
     template = pn.template.FastListTemplate(

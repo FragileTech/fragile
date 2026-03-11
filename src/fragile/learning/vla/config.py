@@ -16,6 +16,7 @@ class VLAConfig:
     feature_cache_dir: str = "outputs/vla/features"
     pooling: str = "mean"  # "mean" or "modality_aware"
     max_episodes: int = 0  # 0 = all
+    held_out_test_episodes: int = 5  # reserve the last N cached episodes for evaluation
 
     # --- Encoder architecture (maps to TopoEncoderPrimitives args) ---
     input_dim: int = 720  # must match feature_dim

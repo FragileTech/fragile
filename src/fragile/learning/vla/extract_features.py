@@ -11,6 +11,9 @@ from torch.utils.data import Dataset
 from .config import VLAConfig
 
 
+DEFAULT_HELD_OUT_TEST_EPISODES = 5
+
+
 # ---------------------------------------------------------------------------
 # Feature hook
 # ---------------------------------------------------------------------------
@@ -123,6 +126,86 @@ def _build_episode_index(dataset) -> dict[int, list[int]]:
     return index
 
 
+def _discover_cached_episode_ids(cache_dir: Path) -> list[int]:
+    """Discover cached episode IDs from the cache directory structure."""
+    return sorted(
+        int(p.name.split("_")[1])
+        for p in cache_dir.iterdir()
+        if p.is_dir() and p.name.startswith("episode_")
+    )
+
+
+def compute_episode_split(
+    episode_ids: list[int],
+    held_out_test_episodes: int = DEFAULT_HELD_OUT_TEST_EPISODES,
+) -> tuple[list[int], list[int]]:
+    """Split cached episodes into train and held-out test partitions.
+
+    The split is deterministic: the highest episode IDs are reserved for test.
+    We always keep at least one episode in train when episodes are available.
+    """
+    ordered = sorted(int(ep_id) for ep_id in episode_ids)
+    if not ordered:
+        return [], []
+
+    requested = max(int(held_out_test_episodes), 0)
+    max_test = max(len(ordered) - 1, 0)
+    n_test = min(requested, max_test)
+    if n_test == 0:
+        return ordered, []
+    return ordered[:-n_test], ordered[-n_test:]
+
+
+def _augment_cache_metadata(
+    meta: dict,
+    episode_ids: list[int],
+    held_out_test_episodes: int,
+) -> dict:
+    """Backfill split metadata onto an existing or newly-built cache manifest."""
+    ordered_episode_ids = sorted(int(ep_id) for ep_id in episode_ids)
+    train_episode_ids, test_episode_ids = compute_episode_split(
+        ordered_episode_ids,
+        held_out_test_episodes=held_out_test_episodes,
+    )
+    meta = dict(meta)
+    meta["episode_ids"] = ordered_episode_ids
+    meta["num_episodes"] = len(ordered_episode_ids)
+    meta["held_out_test_episodes"] = int(held_out_test_episodes)
+    meta["split_strategy"] = "last_n_episodes"
+    meta["train_episode_ids"] = train_episode_ids
+    meta["test_episode_ids"] = test_episode_ids
+    meta["num_train_episodes"] = len(train_episode_ids)
+    meta["num_test_episodes"] = len(test_episode_ids)
+    return meta
+
+
+def load_feature_cache_metadata(
+    cache_dir: str | Path,
+    *,
+    default_held_out_test_episodes: int = DEFAULT_HELD_OUT_TEST_EPISODES,
+    writeback: bool = False,
+) -> dict:
+    """Load feature-cache metadata and backfill train/test split fields when needed."""
+    cache_dir = Path(cache_dir)
+    meta_path = cache_dir / "meta.json"
+    meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
+
+    if "episode_ids" in meta:
+        episode_ids = [int(ep_id) for ep_id in meta["episode_ids"]]
+    else:
+        episode_ids = _discover_cached_episode_ids(cache_dir)
+
+    held_out_test_episodes = int(
+        meta.get("held_out_test_episodes", default_held_out_test_episodes),
+    )
+    updated = _augment_cache_metadata(meta, episode_ids, held_out_test_episodes)
+
+    if writeback and updated != meta:
+        meta_path.write_text(json.dumps(updated, indent=2))
+
+    return updated
+
+
 def extract_smolvla_features(config: VLAConfig) -> Path:
     """Extract and cache 960-dim features from a frozen SmolVLA backbone.
 
@@ -140,7 +223,15 @@ def extract_smolvla_features(config: VLAConfig) -> Path:
     cache_dir = Path(config.feature_cache_dir)
     meta_path = cache_dir / "meta.json"
     if meta_path.exists():
-        print(f"Feature cache already exists at {cache_dir}, skipping extraction.")
+        meta = load_feature_cache_metadata(
+            cache_dir,
+            default_held_out_test_episodes=config.held_out_test_episodes,
+            writeback=True,
+        )
+        print(
+            f"Feature cache already exists at {cache_dir}, skipping extraction. "
+            f"Train/test episodes: {meta['num_train_episodes']}/{meta['num_test_episodes']}",
+        )
         return cache_dir
 
     device = torch.device(config.device)
@@ -277,17 +368,22 @@ def extract_smolvla_features(config: VLAConfig) -> Path:
             print(f"  Episode {ep_id}: {len(feat_list)} frames")
 
     # Write metadata
-    meta = {
+    meta = _augment_cache_metadata(
+        {
         "model_id": config.smolvla_model_id,
         "dataset": config.dataset_name,
         "feature_dim": config.feature_dim,
         "pooling": config.pooling,
-        "num_episodes": len(episode_ids),
         "total_frames": total_frames,
-        "episode_ids": episode_ids,
-    }
+        },
+        episode_ids,
+        config.held_out_test_episodes,
+    )
     meta_path.write_text(json.dumps(meta, indent=2))
-    print(f"Saved {total_frames} frames across {len(episode_ids)} episodes → {cache_dir}")
+    print(
+        f"Saved {total_frames} frames across {len(episode_ids)} episodes "
+        f"({meta['num_train_episodes']} train / {meta['num_test_episodes']} test) → {cache_dir}",
+    )
 
     # Free GPU memory
     del policy
@@ -310,21 +406,26 @@ class VLAFeatureDataset(Dataset):
             windows respecting episode boundaries).
     """
 
-    def __init__(self, cache_dir: str | Path, sequence_length: int = 1) -> None:
+    def __init__(
+        self,
+        cache_dir: str | Path,
+        sequence_length: int = 1,
+        split: str = "all",
+    ) -> None:
         self.cache_dir = Path(cache_dir)
         self.sequence_length = sequence_length
+        self.split = split
+        self.meta = load_feature_cache_metadata(self.cache_dir)
 
-        meta_path = self.cache_dir / "meta.json"
-        if meta_path.exists():
-            meta = json.loads(meta_path.read_text())
-            self.episode_ids: list[int] = meta["episode_ids"]
+        if split == "train":
+            self.episode_ids = list(self.meta["train_episode_ids"])
+        elif split == "test":
+            self.episode_ids = list(self.meta["test_episode_ids"])
+        elif split == "all":
+            self.episode_ids = list(self.meta["episode_ids"])
         else:
-            # Discover episodes from directory structure
-            self.episode_ids = sorted(
-                int(p.name.split("_")[1])
-                for p in self.cache_dir.iterdir()
-                if p.is_dir() and p.name.startswith("episode_")
-            )
+            msg = "split must be one of {'train', 'test', 'all'}."
+            raise ValueError(msg)
 
         # Pre-load all episodes into memory for fast indexing
         self._features: list[torch.Tensor] = []  # list of [T_i, D]

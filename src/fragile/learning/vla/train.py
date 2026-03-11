@@ -831,12 +831,16 @@ def train_vla(config: VLAConfig) -> dict:
     # --- Data loaders ---
     print(f"Loading features from {config.feature_cache_dir} …")
 
-    single_ds = VLAFeatureDataset(config.feature_cache_dir, sequence_length=1)
+    single_ds = VLAFeatureDataset(config.feature_cache_dir, sequence_length=1, split="train")
     single_loader = DataLoader(
         single_ds, batch_size=config.batch_size, shuffle=True, drop_last=True,
     )
 
-    seq_ds = VLAFeatureDataset(config.feature_cache_dir, sequence_length=config.sequence_length)
+    seq_ds = VLAFeatureDataset(
+        config.feature_cache_dir,
+        sequence_length=config.sequence_length,
+        split="train",
+    )
     seq_loader = DataLoader(
         seq_ds, batch_size=config.batch_size, shuffle=True, drop_last=True,
     )
