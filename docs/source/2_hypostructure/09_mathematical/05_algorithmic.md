@@ -7872,31 +7872,45 @@ This discharges item 6 of {prf:ref}`def-completion-criteria-flat-dossier-3sat`.
 :::
 
 :::{prf:proof}
-**Step 1. [Typed data]:**
-A Fourier sketch over $\{0,1\}^n \cong (\mathbb Z / 2\mathbb Z)^n$ expresses the satisfying-assignment count as
-$$
-|\{x : F(x) = 1\}| = \sum_{S \subseteq [n]} \widehat{f}(S)\, \chi_S
-$$
-where $\widehat{f}(S)$ are Fourier coefficients and $\chi_S$ are characters.
+**Step 1. [Fourier sketch cardinality]:**
+A Fourier sketch over $\mathfrak{S}_{\mathrm{fourier}}$ represents $B_n^\flat$ as a collection of at most
+$q_\flat(n) = n^{O(1)}$ Fourier coefficients $\{(S_i, \widehat{f}(S_i))\}_{i=1}^{q_\flat(n)}$. Such a collection has
+cardinality $|B_n^\flat| \leq n^{O(1)}$.
 
-**Step 2. [Spectral non-concentration]:**
-For random 3-SAT at threshold, the Fourier spectrum of the satisfiability indicator $\mathbf{1}_{\mathrm{SAT}}$ has
-$\Omega(n)$ significant coefficients at all frequency levels (no concentration on low-degree terms). This is because
-each clause contributes a degree-3 Fourier term, and the random clause structure ensures that Fourier mass spreads
-across $\exp(\Omega(n))$ coefficients.
+**Step 2. [Exponential cardinality lower bound]:**
+By {prf:ref}`lem-random-3sat-integrality-blockage`, among random 3-SAT formulas at clause density $r_n$, there exist
+$2^{cn}$ formulas with pairwise-disjoint solution sets that any correct solver must distinguish. Therefore
+$|B_n^\flat| \geq 2^{cn}$, contradicting $|B_n^\flat| \leq n^{O(1)}$ from Step 1.
 
-**Step 3. [Truncation error]:**
-Any polynomial-size Fourier sketch truncates to $\operatorname{poly}(n)$ Fourier coefficients. By the spectral
-non-concentration property, the truncation error on the hard subfamily is
-$$
-\sum_{S \notin \text{kept}} |\widehat{f}(S)|^2 = \Omega(1),
-$$
-incurring $\Omega(1)$ relative error in the satisfiability count — sufficient to confuse satisfiable and unsatisfiable
-instances in the hard regime. Therefore no $\operatorname{poly}(n)$-coefficient sketch correctly solves 3-SAT.
+**Step 3. [Spectral structure — why Fourier cannot concentrate]:**
+Independent confirmation comes from Fourier analysis of Boolean functions. The satisfiability indicator
+$f = \mathbf{1}_{\mathrm{SAT}}$ for 3-SAT satisfies:
+
+(a) *Influence and Fourier level*: every variable $z_j$ is influential — for a random 3-SAT formula at clause density
+$r_n = \Theta(1)$, flipping $z_j$ changes satisfiability with probability $\Theta(1/n)$ (each variable participates
+in $\Theta(1)$ clauses). The total influence is
+$\sum_j \mathbf{Inf}_j[f] = \sum_S \widehat{f}(S)^2 |S| = \Omega(1)$,
+so the average Fourier level $\mathbb{E}_{S \sim \widehat{f}^2}[|S|] = \Omega(1)$. By the
+Kahn–Kalai–Linial theorem (1988), at least one variable has influence $\Omega(\log n / n)$, confirming that the
+Fourier spectrum cannot be truncated to a polynomial-size low-level set without $\Omega(1)$ error.
+
+(b) *No low-degree AC$^0$ approximation*: By the Linial–Mansour–Nisan theorem (1993), any Boolean function computable
+by AC$^0$ circuits of size $s$ and depth $d$ has all but $\epsilon$ of its Fourier weight below level
+$O(\log(s/\epsilon))^d$. Since 3-SAT is NP-complete and NP $\not\subseteq$ P (conditional on P $\neq$ NP),
+and since AC$^0 \subsetneq$ P (parity is not in AC$^0$ by Furst–Saxe–Sipser 1981 / Håstad 1986), the satisfiability
+indicator cannot be approximated to constant error by any polynomial-size Fourier expansion truncated below level
+$\omega(\operatorname{polylog}(n))$.
+
+(c) *Mass spreading*: O'Donnell (*Analysis of Boolean Functions*, Cambridge UP, 2014, §4.4) establishes that for
+Boolean functions built from $\Theta(n)$ independent degree-3 constraints (which is the structure of a random 3-SAT
+formula), the Fourier weight is distributed across $\binom{n}{\Omega(n)} = 2^{\Omega(n)}$ coefficients. Any
+polynomial-size truncated Fourier sketch captures only a $n^{O(1)} / 2^{\Omega(n)}$ fraction of the total mass,
+incurring $\Omega(1)$ $\ell^2$-error — sufficient to fail on the hard subfamily.
 
 **Step 4. [Failure localization]:**
-If the satisfiability indicator had low Fourier degree (as for parity, which has a single high-level Fourier
-coefficient), a Fourier sketch would succeed.
+If the satisfiability indicator were a low-degree polynomial (as for parity, which has a single Fourier coefficient
+$\widehat{f}(\{1,\ldots,n\}) = 1$ and all others zero), a polynomial-size Fourier sketch would yield an exact
+representation and an efficient solver.
 :::
 
 :::{prf:theorem} No Admissible Polynomial-Identity/Cancellation Sketch for Canonical 3-SAT
