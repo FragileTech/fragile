@@ -2415,7 +2415,7 @@ full strengthened $\flat$-obstruction theorem of Part V must additionally rule o
 **Step 1. [Pure $\flat$-witness structure]:**
 A pure $\flat$-witness ({prf:ref}`def-pure-flat-witness-rigorous`) requires:
 - an effective finite-sorted algebraic signature $\Sigma$ fixed independently of $n$,
-- finitely presented $\Sigma$-structures $A_n^\flat$, $B_n^\flat$ with presentation sizes bounded
+- finite $\Sigma$-structures $A_n^\flat$, $B_n^\flat$ with cardinalities bounded
   by a polynomial $q_\flat(n)$,
 - a polynomial-time algebraic elimination map $e_n^\flat : A_n^\flat \to B_n^\flat$ built from
   certified $\Sigma$-primitives (quotienting, linear elimination, rank/determinant, Fourier
@@ -2436,8 +2436,8 @@ $\mathcal{X}/G = \mathcal{X}$, no compression via visible symmetry quotienting o
 **Step 3. [Broader algebraic sketch blockage — frozen variables and monodromy rigidity]:**
 The strengthened $\flat$-class ({prf:ref}`thm-flat-universality`) encompasses all polynomial-size
 algebraic sketches, not merely symmetry quotients. We must therefore show that *no* admissible
-algebraic elimination map $e_n^\flat$ over *any* effective ring or field structure can achieve
-polynomial presentation size. The obstruction has two independent sources:
+algebraic elimination map $e_n^\flat$ over *any* effective ring or field structure can keep
+intermediate structure cardinalities polynomial. The obstruction has two independent sources:
 
 **(3a) Frozen-variable algebraic rigidity.** The solution space of random 3-SAT in the hard
 subfamily ({prf:ref}`def-hard-subfamily-3sat`) exhibits propagation rigidity: an
@@ -2445,10 +2445,11 @@ $\Omega(n)$-sized set of frozen variables whose values are determined by members
 solution cluster (property 1, solution-space shattering). Any algebraic elimination map
 $e_n^\flat$ must have its kernel/image controlled by the algebraic structure of the solution
 variety. The frozen coordinates constitute $\Omega(n)$ algebraically independent generators
-that cannot be eliminated through polynomial presentations — eliminating any frozen variable
-propagates constraints through the $\Theta(n)$-sized frustration cores (property 3), forcing
-superpolynomial intermediate presentation size in any elimination schedule. This blocks
-quotient, linear, rank/determinant, Fourier, and polynomial-identity sketch routes.
+that cannot be eliminated while keeping intermediate structures polynomially bounded in
+cardinality — eliminating any frozen variable propagates constraints through the
+$\Theta(n)$-sized frustration cores (property 3), forcing $2^{\Omega(n)}$ intermediate states
+in any elimination schedule. This blocks quotient, linear, rank/determinant, Fourier, and
+polynomial-identity sketch routes.
 
 **(3b) Boolean fiber rigidity makes the monodromy sketch vacuous.** The algebraic variety
 $V(F) = \{z \in \mathbb{C}^n : \text{clause polynomials and } z_j^2 - z_j = 0\}$ coincides
@@ -4358,8 +4359,8 @@ be a uniform family. The following are equivalent.
    $$
 
    where:
-   - $A_n$ and $B_n$ are finitely presented algebraic objects over a fixed effective finite-sorted signature,
-   - the presentation sizes of $A_n$ and $B_n$ are polynomially bounded in $n$,
+   - $A_n$ and $B_n$ are finite algebraic objects over a fixed effective finite-sorted signature,
+   - the cardinalities $|A_n|$ and $|B_n|$ are polynomially bounded in $n$,
    - $e_n$ is computed by a uniform polynomial-time algebraic elimination/cancellation procedure,
    - and
 
@@ -4373,8 +4374,8 @@ be a uniform family. The following are equivalent.
    - rank and determinant computations,
    - Fourier transforms over effectively presented finite groups,
    - polynomial-identity and cancellation arguments,
-   - and any other algebraic compression scheme whose intermediate presentations remain polynomially bounded and whose
-     arithmetic is uniformly polynomial-time.
+   - and any other algebraic compression scheme whose intermediate structures remain polynomially bounded in
+     cardinality and whose arithmetic is uniformly polynomial-time.
 
 Thus the universal property of the $\flat$-class is not merely visible symmetry quotienting, but full polynomially
 succinct algebraic elimination and cancellation.
@@ -6395,7 +6396,7 @@ correctness condition.
 
 **$\flat$-channel.** A pure $\flat$-witness on $\Pi$ provides algebraic structures $A_n^\flat, B_n^\flat$ and a sketch
 $s_n \to e_n \to d_n$ with correctness for all $x \in X_n$. The sketch operates uniformly; restricting the input
-family preserves presentation size, elimination maps, and correctness.
+family preserves structure cardinalities, elimination maps, and correctness.
 
 **$\ast$-channel.** A pure $\ast$-witness on $\Pi$ provides a splitting map, merge map, and recursion-tree structure
 with correctness for all $x \in X_n$. Restricting to $X_n'$ preserves the recursion-tree structure, the size decrease
@@ -6605,7 +6606,7 @@ the local drift bound $d_\lozenge(n) = O(1)$, the Part IX barrier metatheorems y
 $$
 \beta_\lozenge^{\mathfrak B}(n) \geq \Omega(n),
 $$
-a linear lower bound on the minimum number of steps or presentation size.
+a linear lower bound on the minimum number of steps, cardinality ($\flat$-channel), or interface size ($\partial$-channel).
 
 This linear lower bound provides useful structural information (e.g., ruling out $o(n)$-step witnesses) but does not by
 itself rule out polynomial-time witnesses with ranking bound $q(n) = n^k$ for large $k$.
@@ -6663,7 +6664,7 @@ ranking bound**:
   $q_\int(n)$.
 
 - **Algebraic channel ($\flat$):** Boolean fiber rigidity trivializes the monodromy of the solution variety,
-  making the solvable-monodromy sketch vacuous. This is a structural obstruction independent of presentation size $q_\flat(n)$.
+  making the solvable-monodromy sketch vacuous. This is a structural obstruction independent of the cardinality bound $q_\flat(n)$.
 
 - **Scaling channel ($\ast$):** Coupling through $\Theta(n)$ crossing constraints prevents polynomial
   total recursion-tree size. The supercritical expansion holds regardless of the degree of $q_\ast(n)$.
@@ -7525,14 +7526,14 @@ decimation step makes increasingly poor choices as the solution-space geometry s
 
 For every pure $\flat$-witness $(\Sigma, A_n^\flat, B_n^\flat, s_n, e_n, d_n, q_\flat)$ in the sense of
 {prf:ref}`def-pure-flat-witness-rigorous` whose elimination map $e_n^\flat$ operates via
-$\mathfrak{S}_{\mathrm{quot}}$ (quotient/congruence compression) on $\Pi_{3\text{-SAT}}$, the presentation-size
-bound $q_\flat(n)$ is violated. Equivalently, the integrality obstruction certificate $K_{\mathrm{E4}}^-$ holds.
+$\mathfrak{S}_{\mathrm{quot}}$ (quotient/congruence compression) on $\Pi_{3\text{-SAT}}$, the cardinality
+bound $|B_n^\flat| \leq q_\flat(n)$ is violated. Equivalently, the integrality obstruction certificate $K_{\mathrm{E4}}^-$ holds.
 :::
 
 :::{prf:proof}
 **Step 1. [Typed data]:**
 By {prf:ref}`def-pure-flat-witness-rigorous`: a pure $\flat$-witness requires a finite-sorted algebraic signature
-$\Sigma$, finitely presented $\Sigma$-structures $A_n^\flat, B_n^\flat$ with presentation size bounded by $q_\flat(n)$,
+$\Sigma$, finite $\Sigma$-structures $A_n^\flat, B_n^\flat$ with cardinalities bounded by $q_\flat(n)$,
 a sketch $s_n \to e_n \to d_n$, and the correctness identity.
 
 **Step 2. [Quotient compression lower bound — search formulation.]**
@@ -7614,9 +7615,10 @@ clusters, which is $2^{\Omega(n)}$. No polynomial-cardinality structure can sati
 :::{prf:lemma} Galois-Monodromy Blockage for Canonical 3-SAT
 :label: lem-random-3sat-galois-blockage
 
-For every pure $\flat$-witness whose elimination map operates via $\mathfrak{S}_{\mathrm{mono}}$
-(solvable-monodromy sketches) on $\Pi_{3\text{-SAT}}$, the presentation-size bound is violated. Equivalently, the
-Galois-monodromy obstruction certificate $K_{\mathrm{E11}}^-$ holds.
+No correct pure $\flat$-witness whose elimination map operates via $\mathfrak{S}_{\mathrm{mono}}$
+(solvable-monodromy sketches) exists for $\Pi_{3\text{-SAT}}$. Boolean fiber rigidity forces the monodromy of the
+covering to be trivial ($\mathrm{Mon} = \{\mathrm{id}\}$), making the solvable-monodromy paradigm structurally
+inapplicable. The Galois-monodromy obstruction certificate $K_{\mathrm{E11}}^-$ holds.
 :::
 
 :::{prf:proof}
@@ -7767,7 +7769,7 @@ This discharges item 3 of {prf:ref}`def-completion-criteria-flat-dossier-3sat`.
 :::{prf:proof}
 **Step 1. [Typed data]:**
 A quotient sketch identifies pairs of inputs via a definable congruence $\sim$ on the structure $A_n^\flat$, producing
-a quotient $A_n / {\sim}$ of presentation size at most $q_\flat(n)$.
+a quotient $A_n / {\sim}$ of cardinality at most $q_\flat(n)$.
 
 **Step 2. [Cluster separation]:**
 The hard subfamily $\mathfrak H$ at threshold $\alpha \approx 4.267$ has $2^{\Omega(n)}$ solution clusters at Hamming
@@ -7779,9 +7781,10 @@ clusters contain satisfying assignments with disjoint neighborhoods in the claus
 collapsing two such assignments into the same class must collapse $2^{\Omega(n)}$ independent cluster distinctions.
 Therefore
 $$
-|A_n / {\sim}| \geq 2^{\Omega(n)},
+|A_n / {\sim}| \geq 2^{\Omega(n)}.
 $$
-and hence $\operatorname{pres}(A_n) \geq 2^{\Omega(n)}$, which is superpolynomial.
+Since $A_n / {\sim}$ is a quotient of $A_n^\flat$, we have $|A_n^\flat| \geq |A_n / {\sim}| \geq 2^{\Omega(n)}$,
+which violates the cardinality bound $|A_n^\flat| \leq q_\flat(n) = n^{O(1)}$.
 
 **Step 4. [Failure localization]:**
 The failure point is the exponential cluster count: if 3-SAT at threshold had only polynomially many solution clusters
@@ -7808,9 +7811,10 @@ $\operatorname{rank}(A) = n - o(n)$ w.h.p. — the system is nearly full-rank. T
 large (by satisfiability at threshold) but has no polynomial-dimensional linear subspace structure.
 
 **Step 3. [Exponential complexity of linear representation]:**
-Any linear sketch must represent the full solution variety. Since the solution variety has dimension $n - \operatorname{rank}(A) = o(n)$
-but consists of $\exp(\Theta(n))$ isolated clusters (not a linear subspace), the linear presentation requires
-exponential size to distinguish cluster membership. Therefore $\operatorname{pres}(A_n) \geq 2^{\Omega(n)}$.
+Any linear sketch must route each solution cluster to the correct output. Since there are $2^{\Omega(n)}$
+isolated clusters (the solution variety has dimension $n - \operatorname{rank}(A) = o(n)$ but no polynomial-dimensional
+linear subspace contains all clusters), the target structure $B_n^\flat$ must store at least $2^{\Omega(n)}$
+pairwise-distinguishable states. Therefore $|B_n^\flat| \geq 2^{\Omega(n)}$, violating $|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$.
 
 **Step 4. [Failure localization]:**
 If the constraint system were genuinely linear (as in XORSAT, where $A$ is a matrix over $\mathbb F_2$ and solutions
@@ -7939,23 +7943,15 @@ This discharges item 9 of {prf:ref}`def-completion-criteria-flat-dossier-3sat`.
 :::
 
 :::{prf:proof}
-A presentation translator $T$ sends $(A_n, B_n)$ to $(T(A_n), T(B_n))$ with
-$$
-\operatorname{pres}(T(\cdot)) \leq p(\operatorname{pres}(\cdot))
-$$
-for some polynomial $p$ (by definition of presentation translator).
-
-If the original sketch over any of the six signature families requires superpolynomial presentation size — say
-$\operatorname{pres}(A_n) \geq f(n)$ where $f$ dominates every polynomial — then the translated sketch satisfies
-$$
-\operatorname{pres}(T(A_n)) \geq p^{-1}(f(n)),
-$$
-where $p^{-1}$ denotes the functional inverse of $p$. Since $p$ is a polynomial and $f$ is superpolynomial,
-$p^{-1}(f(n))$ is still superpolynomial.
+The core invariant is the solution-space cluster count $2^{\Omega(n)}$: any admissible re-encoding of 3-SAT
+formulas must still distinguish $2^{\Omega(n)}$ solution clusters (cluster structure is a property of the
+problem's solution space, not the encoding), so any correct ♭-witness requires $|B_n^\flat| \geq 2^{\Omega(n)}$
+regardless of how the structures are encoded.
 
 Concretely:
-- For quotient sketches, the cluster count $2^{\Omega(n)}$ is invariant under re-encoding (clusters are a topological
-  property of the solution space).
+- For quotient sketches, the cluster count $2^{\Omega(n)}$ is invariant under re-encoding (clusters are a
+  topological property of the solution space), so $|B_n^\flat| = |A_n^\flat/{\sim}| \geq 2^{\Omega(n)}$ holds
+  in every encoding.
 - For linear sketches, the rank structure is preserved up to polynomial factors.
 - For rank/determinant sketches, minor computations on the translated matrix correspond to polynomial combinations of
   the original minors.
@@ -8000,8 +7996,10 @@ none of the six families yields a correct polynomial-size solver.
 By {prf:ref}`lem-translator-stability-flat-3sat`, these blockages persist under all admissible re-encodings.
 
 **Step 4. [No polynomial $\flat$-witness]:**
-Combining Steps 1--3: every admissible algebraic sketch over every admissible signature family requires
-superpolynomial presentation size. Therefore no strengthened pure $\flat$-witness exists for canonical 3-SAT.
+Combining Steps 1--3: every admissible algebraic sketch over every admissible signature family either requires
+superpolynomial cardinality (sub-channels S_quot, S_lin, S_rank, S_fourier, S_polyid) or is structurally
+inapplicable (S_mono, which is vacuous due to trivial monodromy). Therefore no pure $\flat$-witness exists for
+canonical 3-SAT.
 
 **Step 5. [Certificate extraction]:**
 By completeness of $\mathsf{Obs}_\flat$ ({prf:ref}`thm-flat-obstruction-sound-complete`), the nonexistence of a pure
@@ -9863,10 +9861,15 @@ data reshaping. Each arithmetic operation computes a new value via algebraic rin
 operations on integers. We exhibit explicit pure $\flat$-witnesses.
 
 **(a) `add(x, y)` — Pure $\flat$-witness.**
-- **Algebraic structure:** $(\mathbb{Z}, +, \times)$ restricted to integers of
-  bit-length $\leq n$.
-- **Presentation:** generators $= \{x, y\}$, single relation $\mathrm{out} = x + y$.
-  Presentation size: $\operatorname{pres} = O(\log n)$ bits.
+- **Algebraic structure:** $(\mathbb{Z}, +, \times)$ restricted to integers
+  bounded by $N = n^k$ for some fixed $k$, so the domain $\{0, \ldots, N-1\}$ has
+  cardinality $N = n^k = \operatorname{poly}(n)$.
+  (Note: if inputs were instead bounded by bit-length $\leq n$, the domain
+  $\{0, \ldots, 2^n - 1\}$ would have $2^n$ elements — exponential cardinality,
+  which would violate the polynomial-cardinality requirement. The $\flat$-witness
+  framework for tractable problems bounds inputs by a polynomial $N(n)$.)
+- **Structure:** generators $= \{x, y\}$, single relation $\mathrm{out} = x + y$.
+  Domain cardinality: $|A_n^\flat| = N = \operatorname{poly}(n)$.
 - **Elimination map:** one ring-addition step. The $\flat$-modal restriction is
   satisfied: the output $x + y$ depends only on the algebraic values of $x$ and $y$
   (their integer representations), not on metric relationships (distances, orderings)
@@ -9876,19 +9879,21 @@ operations on integers. We exhibit explicit pure $\flat$-witnesses.
 - **Encoding/Reconstruction:** $E$ = identity (binary-encoded integers).
   $R$ = identity (result is already binary-encoded). Both are presentation
   translators.
-- **Polynomial bound:** $q_\flat = O(\log n)$.
+- **Polynomial bound:** $q_\flat = \operatorname{poly}(n)$ (the cardinality of
+  the domain and all intermediate structures is bounded by $N = n^k$).
 
 **(b) `sub(x, y)`, `mul(x, y)`, `div(x, y)`, `mod(x, y)` — analogous.**
-Each is a pure $\flat$-witness with the same structure as `add`:
+Each is a pure $\flat$-witness with the same structure as `add`, with inputs bounded
+by $N = n^k$ so that the domain has polynomial cardinality:
 - `sub`: relation $\mathrm{out} = x - y$ (or $\max(0, x-y)$ for saturating subtraction).
-  One ring operation. $q_\flat = O(\log n)$.
+  One ring operation. $q_\flat = \operatorname{poly}(n)$.
 - `mul`: relation $\mathrm{out} = x \times y$. One ring operation.
-  $q_\flat = O(\log n)$.
+  $q_\flat = \operatorname{poly}(n)$.
 - `div`: relation $\mathrm{out} = \lfloor x / y \rfloor$. Euclidean division is an
   algebraic operation on $\mathbb{Z}$ (it is the unique $q$ such that $x = qy + r$
-  with $0 \leq r < |y|$). $q_\flat = O(\log n)$.
+  with $0 \leq r < |y|$). $q_\flat = \operatorname{poly}(n)$.
 - `mod`: relation $\mathrm{out} = x \bmod y$. Same Euclidean-division structure.
-  $q_\flat = O(\log n)$.
+  $q_\flat = \operatorname{poly}(n)$.
 
 In each case, the output is determined solely by the algebraic values of the operands
 (their positions in the integer ring), independent of metric distances, constraint-graph
@@ -10105,9 +10110,9 @@ We verify the six rows one by one.
    size and height bound $q_\int$.
 
 4. **Algebraic row $\mathsf{FLAT}$.**
-   Every member of $\mathsf{FLAT}$ is a polynomial-size algebraic elimination/cancellation step over finitely presented
-   algebraic objects. Therefore it carries a pure $\flat$-witness in the sense of
-   {prf:ref}`def-pure-flat-witness-rigorous`, together with the presentation bound $q_\flat$.
+   Every member of $\mathsf{FLAT}$ is an algebraic elimination/cancellation step over finite
+   algebraic objects with polynomially bounded cardinality. Therefore it carries a pure $\flat$-witness in the sense of
+   {prf:ref}`def-pure-flat-witness-rigorous`, together with the cardinality bound $q_\flat$.
 
 5. **Recursive row $\mathsf{STAR}$.**
    Every member of $\mathsf{STAR}$ is a split/recurse/merge local step with strict size decrease and polynomial total
