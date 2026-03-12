@@ -7954,12 +7954,11 @@ The satisfiability indicator $\mathbf{1}_{\mathrm{SAT}}(F)$ — a function of th
 $x$ — decides whether $\mathrm{sat}_F$ has any root in $\{0,1\}^n$. Any polynomial-identity sketch for this
 decision problem must correctly distinguish the $2^{cn}$ hard formulas from Step 2 that have pairwise-disjoint
 solution sets. Over the formula-space $\{0,1\}^{3m}$ (clause-defining bits), the satisfiability indicator is
-a Boolean function of $3m = \Theta(n)$ input bits; its unique multilinear representation over $\mathbb{R}$ has
-degree at most $3m$. Since satisfiability depends essentially on all $\Theta(n)$ clause-bits (flipping any
-single clause can change satisfiability), the multilinear representation is non-constant in each of $\Theta(n)$
-variables; a polynomial that is non-constant in $\Theta(n)$ independent variables requires at least $\Theta(n)$
-nonzero monomials, so no sub-linear projection onto $n^{O(1)}$ monomials can capture the full combinatorial
-structure.
+a Boolean function of $3m = \Theta(n)$ input bits with a unique multilinear representation over $\mathbb{R}$.
+By multilinear uniqueness, any polynomial that correctly classifies all $2^{cn}$ hard instances (which differ
+in their clause-bit patterns in a structured way) must agree with the satisfiability indicator on those points;
+the cardinality argument of Steps 1–2 shows directly that no $n^{O(1)}$-monomial polynomial can produce
+$2^{cn}$ distinct correct outputs for these instances.
 
 **Step 4. [Representation complexity]:**
 The $2^{cn}$ pairwise-distinguishable instances from Step 2 require the sketch to produce $2^{cn}$ distinct
