@@ -179,12 +179,73 @@ The O(log n)/O(1) data structure access bullet in `rem-adequacy-verification` no
 | ID | Obligation | Blocking what | Priority |
 |---|---|---|---|
 | C3 | Complete proof of thm-schreiber-structure (computational application) | thm-mixed-modal-obstruction, cor-computational-modal-exhaustiveness, thm-irreducible-witness-classification, Mo2 | HIGH |
-| M2 | Close remaining Round 6 SERIOUS items: S8-S10 (♭), S12 (∂), S14 (∗) | ex-3sat-all-blocked → thm-random-3sat-not-in-pfm → P_FM ≠ NP_FM | HIGH |
+| M2 | Close remaining Round 6 SERIOUS items: S9-S10 (♭) | ex-3sat-all-blocked → thm-random-3sat-not-in-pfm → P_FM ≠ NP_FM | HIGH |
 | Mo2 | Resolved by C3 | — | — |
 
-*Closed in this pass:* M1 (thm-syntax-to-normal-form had a complete proof; stale table label fixed), M5 (ZFC Translation Layer appendix already provides the model; rem-zfc-model-for-H added to bridge chapter).
+*Closed in this pass:* M1 (thm-syntax-to-normal-form had a complete proof; stale table label fixed), M5 (ZFC Translation Layer appendix already provides the model; rem-zfc-model-for-H added to bridge chapter). S8, S12, S14 closed in Round 6.
+
+---
+
+## Round 7 Update (2026-03-12)
+
+Round 7 hostile review (05_algorithmic_round7.review.md) identified 7 FATAL and 12 SERIOUS
+issues in the main proof. F7.1 (Foundation Assumption) and F7.2 (Schreiber theorem target) were
+subsequently confirmed **RESOLVED** by the author.
+
+## Round 8 Update (2026-03-12)
+
+Round 8 is a complete from-scratch re-review (05_algorithmic_round8.review.md). It identifies
+**4 FATAL**, **16 SERIOUS**, **18 NEEDS TIGHTENING** issues. Bridge-relevant findings:
+
+### Resolved bridge issues
+
+1. **C3 (thm-schreiber-structure):** ✅ **RESOLVED.** The theorem has a complete proof
+   (lines 120-148 of 05_algorithmic.md). The computational bridge is completed by the chain
+   `thm-syntax-to-normal-form` → `lem-primitive-step-classification` →
+   `thm-appendix-a-primitive-audit-table` → `thm-witness-decomposition` →
+   `cor-computational-modal-exhaustiveness`. The verification table label "THEOREM TARGET"
+   was stale and has been corrected.
+
+2. **F7.1 (Foundation Assumption):** ✅ **RESOLVED.** Accepted as a foundational modeling
+   choice. Conditionality is properly surfaced in `rem-conditional-status-classical-export`
+   and `thm-conditional-nature`.
+
+3. **Mo2 (thm-mixed-modal-obstruction thinness):** ✅ **RESOLVED** by C3 resolution.
+
+### Remaining bridge-critical issues (from Round 8)
+
+1. **F8.2/F8.3 (∗ and ∂ witness definitions lack modal restrictions):** If the ∗ and ∂
+   channel blockages are invalid, ex-3sat-all-blocked fails, and the bridge has nothing to
+   export. Unchanged from Round 7.
+
+2. **F8.4 (workspace separation):** The non-amplification principle is proved for a fictitious
+   product state space, not for single-tape execution. Unchanged from Round 7.
+
+3. **F8.1 (coend formula):** NEW — the coend formula in thm-schreiber-structure does not
+   follow from the fracture-square proof. Must verify the downstream chain uses only what
+   is actually proved.
+
+4. **S8.7 (purity-violation pattern):** The ∗ and ∂ blockage proofs conflate task identity
+   with mechanism identity. The bridge imports these blockages without independent
+   verification.
+
+### Updated obligation table
+
+| ID | Obligation | Status | Priority |
+|---|---|---|---|
+| C3 | Complete proof of thm-schreiber-structure | ✅ RESOLVED | — |
+| M2 | Close Round 6 SERIOUS items S9-S10 | 🔴 OPEN (unchanged) | HIGH |
+| F8.2 | Add ∗-modal restriction to def-pure-star-witness-rigorous | 🔴 OPEN (= F7.3) | CRITICAL |
+| F8.3 | Tighten ∂-modal restriction | 🔴 OPEN (= F7.4) | CRITICAL |
+| F8.4 | Prove non-amplification for single-tape execution | 🔴 OPEN (= F7.7) | CRITICAL |
+| F8.1 | Fix coend formula or verify downstream uses only pullbacks | 🟡 NEW | HIGH |
+| S8.7 | Resolve purity-violation pattern for ∗/∂ channels | 🟡 OPEN (= F7.5/F7.6) | HIGH |
+| Mo2 | Resolved by C3 | ✅ RESOLVED | — |
 
 ## Open questions
 
-1. Are the Round 6 SERIOUS-level fixes (F1-F9) fully incorporated into the text of the six blockage lemmas (M2), or are they still proposed fixes in review documents only? This is the highest-priority remaining question.
-2. Is axiom-structure-thesis intended to be accepted as a non-provable foundation (like ZFC itself), or is there a plan to derive it from more primitive assumptions?
+1. Can the ∗ and ∂ witness definitions be tightened with explicit modal restrictions without
+   making them too narrow to capture known algorithms (mergesort for ∗, FKT for ∂)?
+2. Can workspace separation be proved for single-tape Turing machine execution?
+3. Can the coend formula in thm-schreiber-structure be proved from the fracture squares,
+   or should the downstream proof chain be rewritten to use only pullback decompositions?

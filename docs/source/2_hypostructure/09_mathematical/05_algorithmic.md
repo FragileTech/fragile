@@ -5817,16 +5817,26 @@ The barrier decomposition of {prf:ref}`thm-canonical-3sat-modal-barrier-decompos
 **quantitative infrastructure** supporting {prf:ref}`thm-modal-non-amplification`. It is important
 to situate this infrastructure relative to the main $\mathsf{P} \neq \mathsf{NP}$ argument:
 
-1. **Main route.** The principal $\mathsf{P} \neq \mathsf{NP}$ result routes through
-   {prf:ref}`thm-mixed-modal-obstruction`, which requires only the five qualitative blockages
-   (the obstruction sets $K_\lozenge^-$ from the blockage lemmas of Part VI). The barrier
-   decomposition is not on the critical path of the main theorem.
+1. **Role on the critical path.** The principal $\mathsf{P} \neq \mathsf{NP}$ result routes
+   through {prf:ref}`thm-mixed-modal-obstruction`, which requires the five semantic obstruction
+   propositions $\mathbb{K}_\lozenge^-(\Pi)$. Establishing these from the five blockage lemmas
+   of Part VI requires the **transfer theorem**
+   ({prf:ref}`thm-modal-barrier-obstruction-transfer`), which uses the barrier decomposition:
+   the transfer theorem shows that any irreducible $\lozenge$-component in a correct solver
+   would need to cross the $\lozenge$-sub-barrier, which the blockage lemma forbids. The
+   barrier decomposition therefore enters the critical path through
+   {prf:ref}`prop-six-certificates-cover-five-channels`. Note, however, that the structural
+   blockage arguments (pigeonhole for $\sharp$, frustrated cycles for $\int$, etc.) are the
+   primary exclusion mechanism; the barrier decomposition provides the formal bridge from
+   "no pure $\lozenge$-witness solves $\Pi$" to "no correct solver contains an irreducible
+   $\lozenge$-component."
 
-2. **Quantitative strengthening.** The barrier decomposition strengthens the proof by providing a
-   quantitative framework for understanding *why* the five blockages compose: each represents an
-   independent energy sub-barrier in a separate workspace, and the workspace-product structure
-   ensures that progress in one channel cannot subsidize another. This is the content of the
-   non-amplification principle ({prf:ref}`thm-modal-non-amplification`).
+2. **Quantitative strengthening.** Beyond its role in the transfer theorem, the barrier
+   decomposition provides an independent quantitative framework for understanding *why* the
+   five blockages compose: each represents an independent energy sub-barrier in a separate
+   workspace, and the workspace-product structure ensures that progress in one channel cannot
+   subsidize another. This is the content of the non-amplification principle
+   ({prf:ref}`thm-modal-non-amplification`).
 
 3. **Architectural role.** The decomposition connects the step-level witness decomposition
    ({prf:ref}`thm-witness-decomposition`) to the problem-level blockages: it shows that the
