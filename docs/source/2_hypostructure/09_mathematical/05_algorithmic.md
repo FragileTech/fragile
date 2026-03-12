@@ -7541,7 +7541,7 @@ For the search formulation ({prf:ref}`def-threshold-random-3sat-family`), a corr
 must output a satisfying assignment $\sigma(F) \in \{0,1\}^{v(F)}$ for each satisfiable formula $F$.
 The reconstruction map $d_n^{\flat} : B_n^{\flat} \to \{0,1\}^n$ is a function (by
 {prf:ref}`def-pure-flat-witness-rigorous`), so distinct output values require distinct elements of $B_n^{\flat}$.
-This function-injectivity property holds regardless of which algebraic sub-family governs $e_n^{\flat}$.
+This function property (any function maps distinct outputs to distinct inputs) holds regardless of which algebraic sub-family governs $e_n^{\flat}$.
 
 We construct $N = 2^{cn}$ formulas in $\mathfrak{H}_n$ (for a suitable constant $c > 0$) with
 pairwise-distinct required outputs. Draw $N$ formulas $F^{(1)}, \ldots, F^{(N)}$ independently at the
@@ -7587,13 +7587,17 @@ which violates the cardinality bound $|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$ fo
 **Step 3. [Translator stability]:**
 Translators preserve cardinality up to polynomial factor:
 $|T(B_n)| \geq 2^{\Omega(n)} / \operatorname{poly}(n) = 2^{\Omega(n)}$,
-by {prf:ref}`thm-canonical-3sat-barrier-translator-stable`.
+by {prf:ref}`lem-translator-stability-flat-3sat`.
 
 **Step 4. [Certificate]:**
 The argument of Step 2 applies to all pure $\flat$-witnesses.
-When restricted to witnesses whose elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$, this
-contributes the integrality obstruction certificate $K_{\mathrm{E4}}^-$ via the integrality lock
-{prf:ref}`def-e4`.
+When restricted to witnesses whose elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$
+(quotient/congruence compression), this contributes the integrality obstruction certificate
+$K_{\mathrm{E4}}^-$ via the integrality lock {prf:ref}`def-e4`.
+The restriction to $\mathfrak{S}_{\mathrm{quot}}$ is appropriate here because {prf:ref}`def-e4`
+requires arithmetic/integrality structure in the elimination map — a property specific to the
+quotient sub-family; other sub-families produce their own certificates (e.g., $K_{\mathrm{E11}}^-$
+for the monodromy sub-family), which are established by dedicated lemmas.
 
 **Step 5. [Failure localization]:**
 The target structure $B_n^\flat$ must encode at least $2^{cn}$ pairwise-distinct elements
@@ -8034,9 +8038,11 @@ This discharges items 10 and 11 of {prf:ref}`def-completion-criteria-flat-dossie
 
 :::{prf:proof}
 **Step 1. [Type-independent cardinality blockage]:**
-By {prf:ref}`lem-random-3sat-integrality-blockage`, there exist $2^{cn}$ canonical 3-SAT
-formulas $F_1, \ldots, F_{2^{cn}}$ (absolute constant $c > 0$) with pairwise-disjoint satisfying-assignment
-sets $\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$ for all $i \neq j$.
+By {prf:ref}`lem-random-3sat-integrality-blockage`, every correct pure $\flat$-witness requires
+$|B_n^\flat| \geq 2^{cn}$ for an absolute constant $c > 0$.
+The proof of that lemma (Step 2) establishes this via a probabilistic construction of $2^{cn}$ canonical
+3-SAT formulas $F_1, \ldots, F_{2^{cn}}$ with pairwise-disjoint satisfying-assignment sets
+$\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$ for all $i \neq j$.
 
 Any correct pure $\flat$-witness must output $d_n^\flat(b^{(i)}) \in \mathrm{Sol}(F_i)$ for each $i$, where
 $b^{(i)} = e_n^\flat(s_n^\flat(F_i)) \in B_n^\flat$.  Since $\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$,
@@ -8107,7 +8113,7 @@ compatible with this full obstruction certificate via {prf:ref}`prop-compatibili
 
 Step 5 of {prf:ref}`thm-random-3sat-algebraic-blockage-strengthened` packages the semantic
 obstruction into the formal calculus $\mathrm{Obs}_\flat$ via its completeness theorem. However,
-the semantic obstruction $K_\flat^-(\Pi_{3\text{-SAT}})$ follows directly from Steps 1–4 without
+the semantic obstruction $K_\flat^-(\Pi_{3\text{-SAT}})$ follows directly from Step 1 alone without
 appealing to completeness of $\mathrm{Obs}_\flat$.
 
 Step 1 establishes the semantic obstruction directly via the type-independent cardinality argument:
@@ -8490,7 +8496,7 @@ We verify each of the six antecedent certificates of {prf:ref}`def-e13`:
 
 - $K_{\mathrm{LS}_\sigma}^-$: by {prf:ref}`lem-random-3sat-metric-blockage` (no pure $\sharp$-witness exists);
 - $K_{\mathrm{E6}}^-$: by {prf:ref}`lem-random-3sat-causal-blockage` (no pure $\int$-witness exists);
-- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (integrality blockage for $\mathfrak{S}_{\mathrm{quot}}$ witnesses);
+- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (universal cardinality blockage; $K_{\mathrm{E4}}^-$ extracted for $\mathfrak{S}_{\mathrm{quot}}$ sub-family via {prf:ref}`def-e4`);
 - $K_{\mathrm{E11}}^-$: by {prf:ref}`lem-random-3sat-galois-blockage` (no monodromy $\flat$-sketch exists);
 - $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$: by {prf:ref}`lem-random-3sat-scaling-blockage` (no pure
   $\ast$-witness exists);
