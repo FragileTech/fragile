@@ -7526,10 +7526,7 @@ decimation step makes increasingly poor choices as the solution-space geometry s
 
 For every pure $\flat$-witness $(\Sigma, A_n^\flat, B_n^\flat, s_n, e_n, d_n, q_\flat)$ in the sense of
 {prf:ref}`def-pure-flat-witness-rigorous`, the cardinality bound $|B_n^\flat| \leq q_\flat(n)$ is violated.
-The core cardinality argument (Steps 2–3 below) is *signature-independent*: it uses only the function
-property of $d_n^\flat$ and does not depend on which algebraic sub-family $\mathfrak{S}' \subseteq
-\mathfrak{S}_\flat$ governs the elimination map $e_n^\flat$.
-When restricted to witnesses whose elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$
+In particular, when the elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$
 (quotient/congruence compression), this yields the integrality obstruction certificate $K_{\mathrm{E4}}^-$.
 :::
 
@@ -7587,30 +7584,27 @@ $$
 $$
 which violates the cardinality bound $|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$ for all large $n$.
 
-**Step 3. [Apply algebraic barrier]:**
-By {prf:ref}`thm-flat-barrier-obstruction-metatheorem`: the cardinality lower bound
-$\beta_\flat^{\mathfrak B}(n) \geq 2^{c \cdot n}$ eventually dominates every polynomial. Therefore no
-barrier-compatible pure $\flat$-witness exists, regardless of algebraic sub-family.
-
-**Step 4. [Certificate]:**
-This contributes the integrality obstruction certificate
-$$
-K_{\mathrm{E4}}^-
-$$
-via the integrality lock {prf:ref}`def-e4`.
-
-**Step 5. [Translator stability]:**
+**Step 3. [Translator stability]:**
 Translators preserve cardinality up to polynomial factor:
 $|T(B_n)| \geq 2^{\Omega(n)} / \operatorname{poly}(n) = 2^{\Omega(n)}$,
 by {prf:ref}`thm-canonical-3sat-barrier-translator-stable`.
 
-**Step 6. [Failure localization]:**
-The target structure $B_n^\flat$ must store exponentially many pairwise-distinguishable states — one per
-solution cluster — since the reconstruction map $d_n^\flat$ must route each cluster to a distinct satisfying
-assignment. The failure point is the exponential number of clusters at pairwise Hamming distance $\Omega(n)$:
-$|B_n^\flat|$ must be at least as large as the number of clusters, which is $2^{\Omega(n)}$.
-No polynomial-cardinality structure can satisfy this requirement, regardless of how the elimination map is
-implemented algebraically.
+**Step 4. [Certificate]:**
+The argument of Step 2 applies to all pure $\flat$-witnesses.
+When restricted to witnesses whose elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$, this
+contributes the integrality obstruction certificate $K_{\mathrm{E4}}^-$ via the integrality lock
+{prf:ref}`def-e4`.
+
+**Step 5. [Failure localization]:**
+The target structure $B_n^\flat$ must encode at least $2^{cn}$ pairwise-distinct elements
+(one distinct $b^{(i)} \in B_n^\flat$ per formula $F^{(i)}$ in the hard ensemble, as established in Step 2).
+Since the reconstruction map $d_n^\flat$ must produce pairwise-distinct outputs from these elements,
+and the output domain is the satisfying-assignment space, no polynomial-cardinality $B_n^\flat$ can
+accommodate this requirement. This holds for any algebraic implementation of $e_n^\flat$.
+
+*(Supplementary: barrier-metatheorem path.)* Alternatively, for barrier-compatible pure $\flat$-witnesses,
+{prf:ref}`thm-flat-barrier-obstruction-metatheorem` gives the same conclusion: the cardinality lower bound
+$\beta_\flat^{\mathfrak B}(n) \geq 2^{c \cdot n}$ eventually dominates every polynomial.
 :::
 
 :::{prf:lemma} Galois-Monodromy Blockage for Canonical 3-SAT
@@ -8040,7 +8034,7 @@ This discharges items 10 and 11 of {prf:ref}`def-completion-criteria-flat-dossie
 
 :::{prf:proof}
 **Step 1. [Type-independent cardinality blockage]:**
-By {prf:ref}`lem-random-3sat-integrality-blockage` (generalized form), there exist $2^{cn}$ canonical 3-SAT
+By {prf:ref}`lem-random-3sat-integrality-blockage`, there exist $2^{cn}$ canonical 3-SAT
 formulas $F_1, \ldots, F_{2^{cn}}$ (absolute constant $c > 0$) with pairwise-disjoint satisfying-assignment
 sets $\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$ for all $i \neq j$.
 
@@ -8119,8 +8113,10 @@ appealing to completeness of $\mathrm{Obs}_\flat$.
 Step 1 establishes the semantic obstruction directly via the type-independent cardinality argument:
 any correct pure $\flat$-witness requires $|B_n^\flat| \geq 2^{cn}$, contradicting the polynomial bound.
 This conclusion holds for *all* pure $\flat$-witnesses regardless of algebraic signature.
-Steps 2–4 provide independent structural confirmation — confirming the failure mode within each of the
-six admissible algebraic sketch families — but they are not logically required for the semantic conclusion.
+Step 2 (six no-sketch theorems) provides independent structural confirmation — confirming the failure mode
+within each of the six admissible algebraic sketch families. Step 3 (translator stability) confirms the
+blockage is invariant under admissible re-encodings. Neither is logically required for the semantic
+conclusion established by Step 1.
 
 The invocation of completeness in Step 5 provides a formal certificate within the obstruction
 calculus but is not required for the semantic conclusion. The P$\neq$NP soundness chain needs
@@ -8494,7 +8490,7 @@ We verify each of the six antecedent certificates of {prf:ref}`def-e13`:
 
 - $K_{\mathrm{LS}_\sigma}^-$: by {prf:ref}`lem-random-3sat-metric-blockage` (no pure $\sharp$-witness exists);
 - $K_{\mathrm{E6}}^-$: by {prf:ref}`lem-random-3sat-causal-blockage` (no pure $\int$-witness exists);
-- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (cardinality blockage for $\mathfrak{S}_{\mathrm{quot}}$ witnesses; the argument generalises to all pure $\flat$-witnesses);
+- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (integrality blockage for $\mathfrak{S}_{\mathrm{quot}}$ witnesses);
 - $K_{\mathrm{E11}}^-$: by {prf:ref}`lem-random-3sat-galois-blockage` (no monodromy $\flat$-sketch exists);
 - $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$: by {prf:ref}`lem-random-3sat-scaling-blockage` (no pure
   $\ast$-witness exists);
