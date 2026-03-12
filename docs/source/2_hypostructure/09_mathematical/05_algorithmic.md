@@ -7954,13 +7954,12 @@ computable by any sparse polynomial with $n^{O(1)}$ nonzero terms. Papadimitriou
 projection onto $n^{O(1)}$ monomials can capture the full combinatorial structure.
 
 **Step 4. [Representation complexity]:**
-The $2^{cn}$ pairwise-distinguishable instances from Step 2, viewed as points in $\{0,1\}^{3m}$, require a
-polynomial-identity sketch to evaluate to $2^{cn}$ distinct outputs. A polynomial with $n^{O(1)}$ stored
-coefficients can take at most $n^{O(1)}$ distinct rational values on rational inputs, but Boolean function
-theory (Berlekamp 1968; multilinear uniqueness) shows the satisfiability indicator is not $n^{O(1)}$-sparse
-over any fixed monomial basis: any basis representation that correctly classifies all $2^{cn}$ hard instances
-must have at least $2^{cn} / n^{O(1)} = 2^{\Omega(n)}$ nonzero monomials. No polynomial-identity sketch with
-$n^{O(1)}$ terms can correctly solve 3-SAT.
+The $2^{cn}$ pairwise-distinguishable instances from Step 2 require the sketch to produce $2^{cn}$ distinct
+outputs. Since the output structure $B_n^\flat$ has cardinality $|B_n^\flat| \leq n^{O(1)}$ (Step 1), by
+the pigeonhole principle at least two of the $2^{cn}$ hard instances receive the same sketch output, preventing
+correct classification. A list of $n^{O(1)}$ monomial coefficients defines an output alphabet of at most
+$n^{O(1)}$ elements — insufficient to distinguish $2^{cn}$ instances. This restates the cardinality
+contradiction of Step 2 directly in terms of the polynomial representation.
 
 **Step 5. [Failure localization]:**
 If satisfiability were a low-degree polynomial identity (degree $O(1)$) — as for 2-SAT, where a degree-2 Gröbner
