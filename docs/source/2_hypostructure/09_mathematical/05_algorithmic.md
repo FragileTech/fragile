@@ -1290,13 +1290,13 @@ admits a **pure $\flat$-witness** if it admits a pure modal witness with $\lozen
 certificate $\Pi_{\flat}(F^\flat)$ consists of:
 
 1. an effective finite-sorted algebraic signature $\Sigma$ fixed independently of $n$;
-2. a polynomial $q_\flat$ and families of finitely presented $\Sigma$-structures
+2. a polynomial $q_\flat$ and families of finite $\Sigma$-structures
 
    $$
    A_n^\flat,\ B_n^\flat
    $$
 
-   whose presentation sizes are bounded by $q_\flat(n)$;
+   whose cardinalities $|A_n^\flat|$ and $|B_n^\flat|$ are bounded by $q_\flat(n)$;
 3. a presentation translator
 
    $$
@@ -1316,7 +1316,7 @@ certificate $\Pi_{\flat}(F^\flat)$ consists of:
    $$
 
 6. a derivation showing that each $e_n^\flat$ is built from a fixed finite basis of certified polynomial-time
-   $\Sigma$-primitives, with all intermediate presentations bounded in size by $q_\flat(n)$;
+   $\Sigma$-primitives, with all intermediate finite $\Sigma$-structures having cardinality bounded by $q_\flat(n)$;
 7. the correctness identity
 
    $$
@@ -1326,13 +1326,13 @@ certificate $\Pi_{\flat}(F^\flat)$ consists of:
    $$
 
 The admissible primitive basis may include quotienting by definable congruence, linear elimination, determinant/rank
-computations over effectively presented rings or fields with certified polynomial-time arithmetic, Fourier-type
-transforms over effectively presented finite groups, and other algebraic cancellation primitives provided their
-correctness and polynomial-time bounds are part of the witness and all intermediate presentations remain polynomially
-bounded.
+computations over finite rings or fields with certified polynomial-time arithmetic, Fourier-type
+transforms over finite groups, and other algebraic cancellation primitives provided their
+correctness and polynomial-time bounds are part of the witness and all intermediate structures remain polynomially
+bounded in cardinality.
 
-Intuitively, pure $\flat$-computation is computation by polynomially succinct algebraic compression, elimination, or
-cancellation.
+Intuitively, pure $\flat$-computation is computation by polynomially bounded algebraic compression, elimination, or
+cancellation — where the algebraic structures involved have polynomial cardinality.
 :::
 
 :::{prf:definition} Pure $\ast$-witness
@@ -7571,22 +7571,24 @@ $$
 \;=\; 2^{-n(0.621 - 2c)}.
 $$
 Choosing any $c < 0.621/2 \approx 0.31$ (e.g., $c = 0.1$) makes this probability $o(1)$.
-With pairwise-disjoint solution sets, any correct solver must output a satisfying assignment for each
-formula, and these assignments are necessarily pairwise distinct (belonging to disjoint solution sets).
+With pairwise-disjoint solution sets, any correct solver must return pairwise-distinct outputs
+$\sigma^{(i)} \in \mathrm{Sol}(F^{(i)})$, so
+$$
+|A_n / {\sim}| \;\geq\; N \;=\; 2^{cn}.
+$$
+Moreover, the solver computes $\sigma^{(i)} = d_n^\flat(b^{(i)})$ where
+$b^{(i)} := e_n^\flat(s_n^\flat(F^{(i)})) \in B_n^\flat$.
+Because $d_n^\flat$ is a function, distinct outputs require distinct inputs:
+$\sigma^{(i)} \neq \sigma^{(j)}$ implies $b^{(i)} \neq b^{(j)}$.
 Therefore
 $$
-|A_n / {\sim}| \;\geq\; N \;=\; 2^{\Omega(n)},
+|B_n^\flat| \;\geq\; 2^{cn},
 $$
-and
-$$
-\operatorname{pres}(A_n) \;\geq\; \log_2 |A_n / {\sim}| \;\geq\; \Omega(n) \cdot c_1
-$$
-for an explicit constant $c_1 > 0$. Any polynomial-size presentation $q_\flat(n) = n^{O(1)}$ is
-violated for large $n$.
+which violates the cardinality bound $|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$ for all large $n$.
 
 **Step 3. [Apply algebraic barrier]:**
-By {prf:ref}`thm-flat-barrier-obstruction-metatheorem`: the presentation-size lower bound
-$\beta_\flat^{\mathfrak B}(n) \geq 2^{c_1 \cdot n}$ eventually dominates every polynomial. Therefore no
+By {prf:ref}`thm-flat-barrier-obstruction-metatheorem`: the cardinality lower bound
+$\beta_\flat^{\mathfrak B}(n) \geq 2^{c \cdot n}$ eventually dominates every polynomial. Therefore no
 barrier-compatible pure $\flat$-witness via the $\mathfrak S_{\mathrm{quot}}$ subfamily exists.
 
 **Step 4. [Certificate]:**
@@ -7597,15 +7599,16 @@ $$
 via the integrality lock {prf:ref}`def-e4`.
 
 **Step 5. [Translator stability]:**
-Translators preserve presentation size up to polynomial factor:
-$\operatorname{pres}(T(A_n)) \geq 2^{\Omega(n)} / \operatorname{poly}(n) = 2^{\Omega(n)}$,
+Translators preserve cardinality up to polynomial factor:
+$|T(B_n)| \geq 2^{\Omega(n)} / \operatorname{poly}(n) = 2^{\Omega(n)}$,
 by {prf:ref}`thm-canonical-3sat-barrier-translator-stable`.
 
 **Step 6. [Failure localization]:**
-The quotient compression step would require collapsing exponentially many well-separated solution clusters into
-a polynomial-size quotient. The failure point is the exponential number of clusters at pairwise Hamming distance
-$\Omega(n)$: the search formulation requires producing a satisfying assignment from the correct cluster, and no
-polynomial-size quotient can map to assignments in multiple well-separated clusters.
+The quotient compression step would require the target structure $B_n^\flat$ to store exponentially many
+pairwise-distinguishable states — one per solution cluster. The failure point is the exponential number of
+clusters at pairwise Hamming distance $\Omega(n)$: the reconstruction map $d_n^\flat$ must route each
+cluster to the correct satisfying assignment, so $|B_n^\flat|$ must be at least as large as the number of
+clusters, which is $2^{\Omega(n)}$. No polynomial-cardinality structure can satisfy this requirement.
 :::
 
 :::{prf:lemma} Galois-Monodromy Blockage for Canonical 3-SAT
@@ -9126,16 +9129,16 @@ $$
 to be the infimum of all integers $s$ such that there exists a barrier-compatible pure $\flat$-witness for $\Pi$ on
 $H_n$ with
 $$
-\max\{\mathrm{pres}(A_n),\mathrm{pres}(B_n)\}\le s,
+\max\{|A_n|,|B_n|\}\le s,
 $$
-where $\mathrm{pres}(-)$ denotes presentation size in the sense of the strengthened pure $\flat$-witness definition.
+where $|\cdot|$ denotes cardinality.
 
 If no such witness exists, set
 $$
 \beta_\flat^{\mathfrak B}(n):=\infty.
 $$
 
-Thus $\beta_\flat^{\mathfrak B}(n)$ is the least algebraic summary size capable of solving across the barrier.
+Thus $\beta_\flat^{\mathfrak B}(n)$ is the least algebraic structure cardinality capable of solving across the barrier.
 :::
 
 :::{prf:definition} Recursive barrier load
@@ -9415,19 +9418,19 @@ then the $\flat$-route is blocked.
 
 :::{prf:proof}
 Assume toward contradiction that a barrier-compatible pure $\flat$-witness exists.
-By definition of a strengthened pure $\flat$-witness, there is a polynomial $p$ such that for all sufficiently large
-$n$ the witness uses finitely presented algebraic objects
+By definition of a pure $\flat$-witness, there is a polynomial $p$ such that for all sufficiently large
+$n$ the witness uses finite algebraic objects
 $$
 A_n,\ B_n
 $$
-of presentation size at most $p(n)$ and solves $\Pi$ on $H_n$.
+of cardinality at most $p(n)$ and solves $\Pi$ on $H_n$.
 
 This contradicts the hypothesis that
 $$
 \beta_\flat^{\mathfrak B}(n)
 $$
 eventually exceeds every polynomial, since $\beta_\flat^{\mathfrak B}(n)$ is defined as the infimum of such
-presentation sizes.
+cardinalities.
 
 Therefore no such pure $\flat$-witness exists.
 :::

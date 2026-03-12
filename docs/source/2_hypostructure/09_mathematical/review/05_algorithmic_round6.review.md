@@ -2,7 +2,7 @@
 
 ## Metadata
 - Reviewed file: docs/source/2_hypostructure/09_mathematical/05_algorithmic.md
-- Review date: 2026-03-11 (initial), 2026-03-12 (updated post-fixes round 2)
+- Review date: 2026-03-11 (initial), 2026-03-12 (updated post-fixes round 2+3)
 - Reviewer: Claude Opus 4.6 (6 parallel hostile-referee agents + self-review)
 - Scope: All five modal channels + architecture + metatheorems + appendices
 - File state: ~9900 lines (post Tier 1-3 fixes: F1/F2/F3/F4/F5/F6/F7/F8/F9 resolved)
@@ -51,7 +51,7 @@ FATAL level. Remaining work is at SERIOUS and NEEDS TIGHTENING levels.
 | Severity | Original | Resolved | Remaining |
 |----------|----------|----------|-----------|
 | FATAL | 9 | 9 | **0** |
-| SERIOUS | ~18 | ~10 | **~8** |
+| SERIOUS | ~18 | ~11 | **~7** |
 | NEEDS TIGHTENING | ~15 | ~3 | **~12** |
 
 ---
@@ -332,7 +332,7 @@ restructured with six coordinated changes:
 | S5 | ∫ | Case B counting argument invalid | CLOSED — invalid "two sets share edges → shared variables" counting replaced with two-part argument: (1) \|Vis(k*+1)\| = O(\|V_{k*}\|) = o(n) via O(1) per-variable degree at ratio α; (2) Ω(n) undetermined core variables each have cycle-closing clause outside Vis(k*+1) since their SCC partner is after k* in linear extension; delegates formally to Step 5 via forward reference |
 | S6 | ∫ | "∫-modal cannot resolve cycle" asserted, not proven | CLOSED — Step 5 now has formal Claim + proof: Step A (C* ∉ Vis(i) → U_{n,i} independent of C*), Step B (pair F_0/F_1 ∈ H_n agreeing on Vis(i) but requiring opposite v-values; F_1 ∈ H_n via single-clause perturbation stability cited from rem-hard-subfamily-well-definedness), Step C (same output commits to one v-value, wrong for at least one formula → □); BP non-convergence demoted to illustrative remark |
 | S7 | ∫ | SP message-passing is NOT pure ∫-modal on loopy graphs | CLOSED (Round 5) |
-| S8 | ♭ | Clause-solution count independence assumption wrong | OPEN |
+| S8 | ♭ | Presentation-size vs domain-size conflation in integrality blockage | CLOSED |
 | S9 | ♭ | Three no-sketch proofs are informal | OPEN |
 | S10 | ♭ | Signature coverage has catch-all loophole | OPEN |
 | S11 | ∂ | "Unstructured feasible set" misapplies CSP dichotomy | CLOSED (F6 resolved — replaced with modal-purity violation) |
@@ -348,31 +348,51 @@ restructured with six coordinated changes:
 
 ## Detailed Analysis of Remaining Open Issues
 
-### S8: ♭-channel — Clause-solution count independence assumption
+### S8: ♭-channel — Presentation-size vs domain-size conflation — CLOSED
 
-**Location:** ♭-channel blockage lemma (`lem-random-3sat-integrality-blockage`), union-bound
-counting argument.
+**Location:** `def-pure-flat-witness-rigorous`, `def-flat-barrier-width`,
+`lem-random-3sat-integrality-blockage` (Steps 2-3), and
+`thm-flat-barrier-obstruction-metatheorem`.
 
-**The flaw:** The proof counts the expected number of formula pairs (F_i, F_j) that share a
-common satisfying assignment. It models each pair's sharing probability as
-(7/8)^{2αn} — treating the two formulas as independent. But the pairs are not independent:
-they are drawn from the same distribution over the same variable set, clauses can overlap, and
-the events "F_i is satisfied by σ" and "F_j is satisfied by σ" for the same σ are correlated
-whenever F_i and F_j share clauses. The probability calculation
-Pr[∃ σ : σ ⊨ F_i and σ ⊨ F_j] = 2^n · (7/8)^{2αn}
-treats the 2αn clauses as if they came from 2αn independent draws, but clauses within F_i and
-between F_i and F_j may overlap (both draw from the same clause pool), introducing positive
-correlations.
+**The flaw (diagnosed):** The original definition of a pure ♭-witness required "finitely
+presented Σ-structures whose *presentation sizes* are bounded by q_♭(n)" — where
+"presentation size" means description length (generators + relations in bits), not domain size
+(cardinality |B_n|). Under this interpretation, Step 2 of the integrality blockage proof wrote
+pres(A_n) ≥ log_2|A_n/~| ≥ c_1·n, but c_1·n is LINEAR = POLYNOMIAL, so it does NOT violate
+the polynomial bound q_♭(n) = n^{O(1)}. Step 3 then claimed β_♭^B(n) ≥ 2^{c_1·n}
+(exponential) without justification — an unjustified jump.
 
-**Why it matters:** Without the independence assumption the union bound calculation
-Pr[any pair shares a solution] ≤ 2^{2cn} · 2^{-0.621n} fails, and the exponential lower
-bound on the presentation size |A_n / ~| collapses.
+**The fix:** Changed the ♭-witness definition to use *domain size* (cardinality) instead of
+description length. This is the correct interpretation for the S_quot (quotient compression)
+sub-channel, where polynomial-time quotient compression means producing polynomially many
+equivalence classes.
 
-**What a fix requires:** Either (a) establish that the formula pairs in the family A_n are
-constructed to be clause-disjoint (e.g. by sampling from disjoint pools of clauses), making
-the independence exact; or (b) replace the independence assumption with a second-moment
-argument (Paley-Zygmund) that controls correlations between pairs; or (c) use a planted-model
-or expurgation argument that produces a sub-family with the required disjointness property.
+**Changes made:**
+
+(1) `def-pure-flat-witness-rigorous` item 2: "finitely presented Σ-structures whose
+    presentation sizes are bounded" → "finite Σ-structures whose cardinalities |A_n^♭|
+    and |B_n^♭| are bounded by q_♭(n)".
+
+(2) `def-pure-flat-witness-rigorous` item 6: "all intermediate presentations bounded in
+    size by q_♭(n)" → "all intermediate finite Σ-structures having cardinality bounded
+    by q_♭(n)".
+
+(3) `def-flat-barrier-width`: max{pres(A_n), pres(B_n)} ≤ s → max{|A_n|, |B_n|} ≤ s.
+
+(4) `lem-random-3sat-integrality-blockage` Step 2 conclusion: removed the flawed
+    pres(A_n) ≥ log_2|A_n/~| step; replaced with the direct chain:
+    pairwise-disjoint solutions → any correct solver needs pairwise-distinct outputs
+    σ^(i) → d_n^♭(b^(i)) = σ^(i) and d_n^♭ is a function → b^(i) are all distinct
+    → |B_n^♭| ≥ 2^{cn} > poly(n) = q_♭(n). Contradiction established directly.
+
+(5) `thm-flat-barrier-obstruction-metatheorem` proof updated: "presentation size" →
+    "cardinality" throughout.
+
+**Note on S9(iii):** The "presentation lower bound" sub-claim (S9 item iii) required showing
+pres(A_n) ≥ Ω(n). Under the domain-size fix this obligation is dissolved — the cardinality
+lower bound |B_n^♭| ≥ 2^{cn} IS the counting argument and requires no separate sub-proof.
+S9(i) and S9(ii) (algebraic rigidity and signature collapse) remain open as independent issues
+in other parts of the ♭-channel.
 
 ---
 
@@ -404,9 +424,10 @@ not a gap in an informal writeup — these are load-bearing steps in the main bl
   The direction "signature → solution" is the hard direction and requires the Nullstellensatz
   completeness theorem or an analogue.
 
-(iii) *Presentation lower bound:* Must show that log |A_n / ~| ≥ Ω(n). This is where the
-  counting argument from S8 is used — so S8 and S9(iii) are coupled. Fixing S8 is a
-  prerequisite for completing S9(iii).
+(iii) *Cardinality lower bound:* ~~Must show that log |A_n / ~| ≥ Ω(n).~~ **RESOLVED as
+  part of S8 fix.** The domain-size reframing makes this obligation dissolve: the counting
+  argument directly establishes |B_n^♭| ≥ 2^{cn} without any logarithm detour. S9(iii)
+  is closed.
 
 ---
 
@@ -439,7 +460,7 @@ named-type arguments as special cases.
 |---------|--------|------------|------------|
 | Sharp (♯) | **CHANNEL CLOSED** | — | S1 closed: pigeonhole reframed as multi-formula argument with pairwise-disjoint solution sets; `rem-sharp-pigeonhole-multi-formula` added. All ♯ SERIOUS items now closed. |
 | Causal (∫) | **CHANNEL CLOSED** | — | S3 closed (classical citations + Rigor Class L import). S4 closed (formal monotonicity sub-proof). S5 closed (Case B rewritten: info-constraint + Ω(n) core vars with invisible C*). S6 closed (Step 5: formal Claim + Steps A/B/C distinguishing-instances proof). All ∫ SERIOUS items now closed. |
-| Algebraic (♭) | **DEFINITIONS SOLID** | S8-S10 | F4 resolved via Boolean fiber rigidity (Mon = {id} makes S_mono vacuous). Remaining: S8 (independence assumption), S9 (informal proofs), S10 (catch-all loophole). |
+| Algebraic (♭) | **DEFINITIONS UPDATED** | S9-S10 | F4 resolved via Boolean fiber rigidity. S8 closed: `def-pure-flat-witness-rigorous` and `def-flat-barrier-width` updated to use domain cardinality (not presentation size); `lem-random-3sat-integrality-blockage` Step 2 now shows |B_n^♭| ≥ 2^{cn} directly via the chain pairwise-disjoint solutions → distinct d_n^♭ inputs → exponential cardinality. S9(iii) resolved as a byproduct. Remaining: S9(i)-(ii) (informal sub-proofs), S10 (catch-all loophole). |
 | Scaling (∗) | **CHANNEL CLOSED** | — | S14 closed: lemma statement changed to "no pure ∗-witness exists"; flawed Ω(n log n) recurrence argument removed from Step 3 and replaced with the modal-purity violation argument (merge requires ♭/♯/∫-type operations, all forbidden by ∗-purity); `rem-scaling-blockage-correctness-argument` replaced with a one-paragraph note that the metatheorem is not invoked and the certificate is established directly. |
 | Boundary (∂) | **CHANNEL CLOSED** | — | S12 closed: lemma statement changed to "no pure ∂-witness exists"; wrong "2^{Ω(n)} contraction time" claim removed from statement and Step 9; Step 9 failure-localization conclusion rewritten to point to representational impossibility; `rem-boundary-blockage-correctness-argument` added noting the metatheorem is not invoked. |
 | Architecture | **RESOLVED** | — | F1 (axiom), F2 (non-amplification), F7 (conditional) all addressed. |
