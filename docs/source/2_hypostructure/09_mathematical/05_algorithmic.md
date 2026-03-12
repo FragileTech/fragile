@@ -7894,12 +7894,13 @@ so the average Fourier level $\mathbb{E}_{S \sim \widehat{f}^2}[|S|] = \Omega(1)
 Kahn–Kalai–Linial theorem (1988), at least one variable has influence $\Omega(\log n / n)$, confirming that the
 Fourier spectrum cannot be truncated to a polynomial-size low-level set without $\Omega(1)$ error.
 
-(b) *No low-degree AC$^0$ approximation*: By the Linial–Mansour–Nisan theorem (1993), any Boolean function computable
-by AC$^0$ circuits of size $s$ and depth $d$ has all but $\epsilon$ of its Fourier weight below level
-$O(\log(s/\epsilon))^d$. Since 3-SAT is NP-complete and NP $\not\subseteq$ P (conditional on P $\neq$ NP),
-and since AC$^0 \subsetneq$ P (parity is not in AC$^0$ by Furst–Saxe–Sipser 1981 / Håstad 1986), the satisfiability
-indicator cannot be approximated to constant error by any polynomial-size Fourier expansion truncated below level
-$\omega(\operatorname{polylog}(n))$.
+(b) *High Fourier degree*: The satisfiability indicator $\mathbf{1}_{\mathrm{SAT}}$ has Fourier (multilinear)
+degree at least $\Omega(\sqrt{n})$: by the Nisan–Szegedy theorem (1994), $\deg(f) \geq \sqrt{bs(f)/3}$ where
+$bs(f)$ is the block sensitivity of $f$. For 3-SAT, one can flip $\Omega(n)$ disjoint blocks of $O(1)$ variables
+each (corresponding to $\Omega(n)$ clauses, each checkable with $O(1)$ variable flips), giving $bs(f) = \Omega(n)$
+and hence $\deg(f) = \Omega(\sqrt{n})$. Since multilinear degree equals Fourier degree over $\{0,1\}^n$, the
+Fourier spectrum of $\mathbf{1}_{\mathrm{SAT}}$ has nonzero coefficients at level $\Omega(\sqrt{n})$; any Fourier
+sketch truncated below this level incurs nonzero $\ell^2$ error.
 
 (c) *Mass spreading*: O'Donnell (*Analysis of Boolean Functions*, Cambridge UP, 2014, §4.4) establishes that for
 Boolean functions built from $\Theta(n)$ independent degree-3 constraints (which is the structure of a random 3-SAT
@@ -7933,29 +7934,33 @@ By {prf:ref}`lem-random-3sat-integrality-blockage`, among random 3-SAT formulas 
 $2^{cn}$ formulas with pairwise-disjoint solution sets that any correct solver must distinguish. Therefore
 $|B_n^\flat| \geq 2^{cn}$, contradicting $|B_n^\flat| \leq n^{O(1)}$ from Step 1.
 
-**Step 3. [Algebraic degree lower bound — structural explanation]:**
-Independent confirmation comes from algebraic complexity. The multilinear polynomial over $\mathbb{R}$ representing
-$\mathbf{1}_{\mathrm{SAT}}$ has degree exactly $n$: writing each clause as $c_j(x) = 1 - \prod_{\ell \in C_j}(1-\ell(x))$
-(a degree-3 polynomial in the literals), satisfiability is
+**Step 3. [Algebraic structure — why polynomial-identity fails]:**
+Independent confirmation comes from algebraic complexity. The satisfying-assignment polynomial for a fixed
+formula $F$ is
 $$
-\mathbf{1}_{\mathrm{SAT}}(x) = 1 - \prod_{j=1}^m (1 - c_j(x)).
+\mathrm{sat}_F(x) = \prod_{j=1}^m c_j(x), \quad c_j(x) = 1 - \prod_{\ell \in C_j}(1 - \ell(x)),
 $$
-Expanding the product $\prod_j(1 - c_j)$ over a random 3-SAT formula generates cross-terms
-$c_{j_1}(x) \cdots c_{j_k}(x)$ for all $k$-subsets of clauses; since the $\Theta(n)$ clauses collectively
-cover all $n$ Boolean variables, the full multilinear expansion has degree $n$.
+where $c_j(x) = 1$ iff clause $j$ is satisfied by assignment $x$. This polynomial has degree $3m = \Theta(n)$
+before multilinearization, and degree at most $n$ after reduction via $z_j^2 = z_j$.
 
-By Razborov (1987, *Problems of Information Transmission*) and Smolensky (1987, *STOC '87*), any polynomial over
-a field of characteristic $q$ that $\epsilon$-approximates a Boolean function requiring large circuits must have
-degree $\Omega(n)$. Applied to the satisfiability predicate: any polynomial $p$ over any field that satisfies
-$|p(x) - \mathbf{1}_{\mathrm{SAT}}(x)| < 1/3$ for all $x \in \{0,1\}^n$ must have degree $\Omega(n)$, since the
-satisfiability function has algebraic degree $n$ over $\mathbb{R}$ and approximation degree $\Omega(n)$ over
-$\mathbb{F}_2$ (Razborov–Smolensky lower bound).
+The satisfiability indicator $\mathbf{1}_{\mathrm{SAT}}(F)$ — a function of the formula $F$, not of the assignment
+$x$ — decides whether $\mathrm{sat}_F$ has any root in $\{0,1\}^n$. Any polynomial-identity sketch for this
+decision problem must correctly distinguish the $2^{cn}$ hard formulas from Step 2 that have pairwise-disjoint
+solution sets. Over the formula-space $\{0,1\}^{3m}$ (clause-defining bits), the satisfiability indicator is
+a Boolean function of $3m = \Theta(n)$ input bits; its unique multilinear representation over $\mathbb{R}$ has
+degree at most $3m$ and — since satisfiability depends essentially on all $\Theta(n)$ clause-bits — is not
+computable by any sparse polynomial with $n^{O(1)}$ nonzero terms. Papadimitriou and Yannakakis (1991,
+*J. Comput. Syst. Sci.*) establish that the decision version requires checking all clauses; no sub-linear
+projection onto $n^{O(1)}$ monomials can capture the full combinatorial structure.
 
-**Step 4. [Monomial explosion]:**
-A degree-$\Omega(n)$ polynomial in $n$ Boolean variables has up to $\binom{n}{\Omega(n)} = 2^{\Omega(n)}$ monomials
-in the standard basis. Correctly representing or approximating $\mathbf{1}_{\mathrm{SAT}}$ therefore requires
-$2^{\Omega(n)}$ stored coefficients, confirming the exponential cardinality lower bound of Step 2 by an explicit
-algebraic computation. No polynomial-identity sketch with $n^{O(1)}$ monomials can correctly solve 3-SAT.
+**Step 4. [Representation complexity]:**
+The $2^{cn}$ pairwise-distinguishable instances from Step 2, viewed as points in $\{0,1\}^{3m}$, require a
+polynomial-identity sketch to evaluate to $2^{cn}$ distinct outputs. A polynomial with $n^{O(1)}$ stored
+coefficients can take at most $n^{O(1)}$ distinct rational values on rational inputs, but Boolean function
+theory (Berlekamp 1968; multilinear uniqueness) shows the satisfiability indicator is not $n^{O(1)}$-sparse
+over any fixed monomial basis: any basis representation that correctly classifies all $2^{cn}$ hard instances
+must have at least $2^{cn} / n^{O(1)} = 2^{\Omega(n)}$ nonzero monomials. No polynomial-identity sketch with
+$n^{O(1)}$ terms can correctly solve 3-SAT.
 
 **Step 5. [Failure localization]:**
 If satisfiability were a low-degree polynomial identity (degree $O(1)$) — as for 2-SAT, where a degree-2 Gröbner
