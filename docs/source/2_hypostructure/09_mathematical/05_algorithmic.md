@@ -7526,10 +7526,11 @@ decimation step makes increasingly poor choices as the solution-space geometry s
 
 For every pure $\flat$-witness $(\Sigma, A_n^\flat, B_n^\flat, s_n, e_n, d_n, q_\flat)$ in the sense of
 {prf:ref}`def-pure-flat-witness-rigorous`, the cardinality bound $|B_n^\flat| \leq q_\flat(n)$ is violated.
-This argument is *signature-independent*: it applies regardless of which algebraic sub-family
-$\mathfrak{S}' \subseteq \mathfrak{S}_\flat$ governs the elimination map $e_n^\flat$.
-Equivalently, the integrality obstruction certificate $K_{\mathrm{E4}}^-$ holds (with the quotient-channel
-certificate being the canonical representative; the cardinality lower bound itself is channel-agnostic).
+The core cardinality argument (Steps 2–3 below) is *signature-independent*: it uses only the function
+property of $d_n^\flat$ and does not depend on which algebraic sub-family $\mathfrak{S}' \subseteq
+\mathfrak{S}_\flat$ governs the elimination map $e_n^\flat$.
+When restricted to witnesses whose elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$
+(quotient/congruence compression), this yields the integrality obstruction certificate $K_{\mathrm{E4}}^-$.
 :::
 
 :::{prf:proof}
@@ -7575,11 +7576,8 @@ $$
 $$
 Choosing any $c < 0.621/2 \approx 0.31$ (e.g., $c = 0.1$) makes this probability $o(1)$.
 With pairwise-disjoint solution sets, any correct solver must return pairwise-distinct outputs
-$\sigma^{(i)} \in \mathrm{Sol}(F^{(i)})$, so
-$$
-|A_n / {\sim}| \;\geq\; N \;=\; 2^{cn}.
-$$
-Moreover, the solver computes $\sigma^{(i)} = d_n^\flat(b^{(i)})$ where
+$\sigma^{(i)} \in \mathrm{Sol}(F^{(i)})$.
+The solver computes $\sigma^{(i)} = d_n^\flat(b^{(i)})$ where
 $b^{(i)} := e_n^\flat(s_n^\flat(F^{(i)})) \in B_n^\flat$.
 Because $d_n^\flat$ is a function, distinct outputs require distinct inputs:
 $\sigma^{(i)} \neq \sigma^{(j)}$ implies $b^{(i)} \neq b^{(j)}$.
@@ -7607,11 +7605,12 @@ $|T(B_n)| \geq 2^{\Omega(n)} / \operatorname{poly}(n) = 2^{\Omega(n)}$,
 by {prf:ref}`thm-canonical-3sat-barrier-translator-stable`.
 
 **Step 6. [Failure localization]:**
-The quotient compression step would require the target structure $B_n^\flat$ to store exponentially many
-pairwise-distinguishable states — one per solution cluster. The failure point is the exponential number of
-clusters at pairwise Hamming distance $\Omega(n)$: the reconstruction map $d_n^\flat$ must route each
-cluster to the correct satisfying assignment, so $|B_n^\flat|$ must be at least as large as the number of
-clusters, which is $2^{\Omega(n)}$. No polynomial-cardinality structure can satisfy this requirement.
+The target structure $B_n^\flat$ must store exponentially many pairwise-distinguishable states — one per
+solution cluster — since the reconstruction map $d_n^\flat$ must route each cluster to a distinct satisfying
+assignment. The failure point is the exponential number of clusters at pairwise Hamming distance $\Omega(n)$:
+$|B_n^\flat|$ must be at least as large as the number of clusters, which is $2^{\Omega(n)}$.
+No polynomial-cardinality structure can satisfy this requirement, regardless of how the elimination map is
+implemented algebraically.
 :::
 
 :::{prf:lemma} Galois-Monodromy Blockage for Canonical 3-SAT
@@ -8075,8 +8074,11 @@ re-encodings: any polynomial-time computable bijection on formula representation
 solution structure, so the $2^{cn}$ lower bound on $|B_n^\flat|$ is invariant.
 
 **Step 4. [No polynomial $\flat$-witness]:**
-Steps 1 and 3 together establish directly that no pure $\flat$-witness exists for canonical 3-SAT.
-The per-family confirmation of Step 2 corroborates this conclusion at each algebraic sub-channel.
+Step 1 alone establishes directly that no pure $\flat$-witness exists for canonical 3-SAT:
+the cardinality lower bound $|B_n^\flat| \geq 2^{cn}$ contradicts the polynomial upper bound from
+{prf:ref}`def-pure-flat-witness-rigorous` without further assumptions.
+Step 3 (translator stability) confirms this blockage is invariant under admissible re-encodings.
+The per-family confirmation of Step 2 corroborates the conclusion at each algebraic sub-channel.
 
 **Step 5. [Certificate extraction]:**
 By completeness of $\mathsf{Obs}_\flat$ ({prf:ref}`thm-flat-obstruction-sound-complete`), the nonexistence of a pure
@@ -8102,7 +8104,7 @@ compatible with this full obstruction certificate via {prf:ref}`prop-compatibili
 | 7 | No-sketch: polynomial-identity | {prf:ref}`thm-no-sketch-polyid-3sat` |
 | 8 | No-sketch: monodromy | {prf:ref}`thm-no-sketch-mono-3sat` |
 | 9 | Translator stability | {prf:ref}`lem-translator-stability-flat-3sat` |
-| 10 | No polynomial $\flat$-witness | Steps 1, 3, 4 above (type-independent cardinality blockage) |
+| 10 | No polynomial $\flat$-witness | Step 1 above (type-independent cardinality blockage); Step 3 confirms invariance under re-encodings |
 | 11 | Certificate extraction | Step 5 above |
 :::
 
@@ -8492,7 +8494,7 @@ We verify each of the six antecedent certificates of {prf:ref}`def-e13`:
 
 - $K_{\mathrm{LS}_\sigma}^-$: by {prf:ref}`lem-random-3sat-metric-blockage` (no pure $\sharp$-witness exists);
 - $K_{\mathrm{E6}}^-$: by {prf:ref}`lem-random-3sat-causal-blockage` (no pure $\int$-witness exists);
-- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (no quotient $\flat$-sketch exists);
+- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (cardinality blockage for $\mathfrak{S}_{\mathrm{quot}}$ witnesses; the argument generalises to all pure $\flat$-witnesses);
 - $K_{\mathrm{E11}}^-$: by {prf:ref}`lem-random-3sat-galois-blockage` (no monodromy $\flat$-sketch exists);
 - $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$: by {prf:ref}`lem-random-3sat-scaling-blockage` (no pure
   $\ast$-witness exists);
