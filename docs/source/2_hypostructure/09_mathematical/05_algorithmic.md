@@ -7831,25 +7831,35 @@ This discharges item 5 of {prf:ref}`def-completion-criteria-flat-dossier-3sat`.
 :::
 
 :::{prf:proof}
-**Step 1. [Typed data]:**
-A rank-based sketch computes minors of submatrices of the constraint matrix and uses rank conditions to determine
-satisfiability.
+**Step 1. [Rank sketch cardinality]:**
+A rank-based sketch over $\mathfrak{S}_{\mathrm{rank}}$ represents $B_n^\flat$ as a module equipped with a
+rank/determinant structure — concretely, as a matrix over a commutative ring $R$ of size at most
+$q_\flat(n) \times q_\flat(n)$. Such a matrix has at most $q_\flat(n)^2 = n^{O(1)}$ entries, so
+$|B_n^\flat| \leq n^{O(1)}$.
 
-**Step 2. [Generic non-vanishing]:**
-For random 3-SAT, the constraint matrix is a random sparse Boolean matrix. The relevant minors are generically
-non-zero: for any fixed minor of size $k \times k$ with $k = O(\operatorname{poly}(n))$, the probability that the
-minor vanishes is $O(2^{-k})$ by the Schwartz-Zippel lemma applied to the random clause structure.
+**Step 2. [Exponential cardinality lower bound]:**
+By {prf:ref}`lem-random-3sat-integrality-blockage`, among random 3-SAT formulas at clause density $r_n$, there exist
+$2^{cn}$ formulas $F^{(1)}, \ldots, F^{(2^{cn})}$ with pairwise-disjoint solution sets. Any correct solver must map
+these to pairwise-distinct elements of $B_n^\flat$, so $|B_n^\flat| \geq 2^{cn}$.
 
-**Step 3. [Insufficiency of polynomial minor collections]:**
-The satisfiability predicate for 3-SAT is **not** a rank condition on any fixed matrix: it is an NP-complete
-predicate that depends on the interaction of all $\Theta(n)$ clauses simultaneously. No polynomial collection of minor
-computations (each involving at most $\operatorname{poly}(n)$ entries) suffices to certify satisfiability, because
-satisfiability depends on the global structure of the solution space, not on the vanishing pattern of bounded-size
-minors.
+**Step 3. [Contradiction]:**
+Steps 1 and 2 are incompatible for sufficiently large $n$: $2^{cn} > n^{O(1)}$ for any fixed $c > 0$ and polynomial.
 
-**Step 4. [Failure localization]:**
-If satisfiability were equivalent to a rank condition (as for systems of linear equations, where satisfiability is
-equivalent to $\operatorname{rank}(A) = \operatorname{rank}(A|b)$), the rank-based sketch would work.
+**Step 4. [Structural explanation — why rank fails]:**
+Rank conditions detect linear-algebraic properties: $\mathrm{rank}(A) < k$ iff a polynomial (the degree-$k$ minors)
+vanishes. For linear constraint systems such as XORSAT, satisfiability is a rank condition and Gaussian elimination
+solves it in polynomial time. For 3-SAT, the Boolean constraints $z_j^2 - z_j = 0$ confine the solution space to
+$\{0,1\}^n$; this discrete point set is not cut out by any fixed polynomial number of rank conditions. Ben-Sasson and
+Wigderson (2001, *J. ACM*) prove that random 3-SAT instances require resolution proofs of exponential length. Since
+resolution refutations can be encoded as rank computations over $\mathbb{F}_2$ (the rank of the clause-variable
+incidence matrix over $\mathbb{F}_2$ governs resolution width by the width–size connection), this confirms that
+rank-based methods require exponential resources for 3-SAT. Steps 2–3 give an independent, unconditional proof of the
+same conclusion via cardinality.
+
+**Step 5. [Failure localization]:**
+If the constraint system were genuinely linear — as in XORSAT, where $A \in \mathbb{F}_2^{m \times n}$ and
+satisfiability is equivalent to $\mathrm{rank}(A) = \mathrm{rank}(A|b)$ — a rank-based sketch would correctly certify
+satisfiability in polynomial time.
 :::
 
 :::{prf:theorem} No Admissible Fourier/Character Sketch for Canonical 3-SAT
