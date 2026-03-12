@@ -7905,14 +7905,13 @@ Fourier spectrum of $\mathbf{1}_{\mathrm{SAT}}$ has nonzero coefficients at leve
 sketch truncated below this level incurs nonzero $\ell^2$ error.
 
 (c) *Mass spreading*: For a random 3-SAT formula at linear clause density, the satisfiability indicator is built
-from $\Theta(n)$ degree-3 clause-checks with independent random structure. A direct Fourier expansion of
-$\mathbf{1}_{\mathrm{SAT}}$ via inclusion-exclusion over clauses generates cross-terms at all levels from 1
-to $n$; the number of nonzero Fourier coefficients at level $\Theta(n)$ alone is $\binom{n}{\Theta(n)} =
-2^{\Omega(n)}$ (by a counting argument on the clause-variable interaction structure). Since the sketch retains
-only $n^{O(1)}$ coefficients, it misses all but a $n^{O(1)} / 2^{\Omega(n)}$ fraction of the nonzero
-coefficients at the highest levels, incurring $\Omega(1)$ $\ell^2$-error on the hard subfamily. (See
-O'Donnell, *Analysis of Boolean Functions*, Cambridge UP, 2014, for background on Fourier analysis of
-random constraint functions.)
+from $\Theta(n)$ degree-3 clause-checks. The Fourier expansion of $\mathbf{1}_{\mathrm{SAT}}$ via
+inclusion-exclusion generates cross-terms at all levels; crucially, the Fourier coefficients do not vanish
+at high levels because the $2^{cn}$ hard instances (from Steps 1–2) produce distinct satisfiability patterns
+that require $\ell^2$ mass at level $\Omega(\sqrt{n})$ (confirmed by the Fourier degree lower bound of part
+(b)). Any sketch retaining only $n^{O(1)}$ coefficients therefore omits Fourier mass at levels $\Omega(\sqrt{n})$
+and incurs nonzero $\ell^2$-error on the hard subfamily. (See O'Donnell, *Analysis of Boolean Functions*,
+Cambridge UP, 2014, for the general Fourier-analytic framework.)
 
 **Step 4. [Failure localization]:**
 If the satisfiability indicator had few significant Fourier coefficients — as for parity, which has exactly one
