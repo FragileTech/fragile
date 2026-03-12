@@ -7586,25 +7586,25 @@ $$
 which violates the cardinality bound $|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$ for all large $n$.
 
 **Step 3. [Translator stability]:**
-Translators preserve cardinality up to polynomial factor:
-$|T(B_n)| \geq 2^{\Omega(n)} / \operatorname{poly}(n) = 2^{\Omega(n)}$,
-by {prf:ref}`lem-translator-stability-flat-3sat`.
+By {prf:ref}`lem-translator-stability-flat-3sat`, any admissible re-encoding of the input formulas
+preserves the pairwise-disjoint solution structure, so the cardinality lower bound
+$|B_n^\flat| \geq 2^{cn}$ established in Step 2 remains valid under all admissible re-encodings.
 
 **Step 4. [Certificate]:**
-The argument of Step 2 applies to all pure $\flat$-witnesses.
-When restricted to witnesses whose elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$
-(quotient/congruence compression), this contributes the integrality obstruction certificate
-$K_{\mathrm{E4}}^-$ via the integrality lock {prf:ref}`def-e4`.
-The restriction to $\mathfrak{S}_{\mathrm{quot}}$ is appropriate here because {prf:ref}`def-e4`
-(the integrality obstruction tactic) requires arithmetic/integrality structure in the elimination map,
-which {prf:ref}`def-e4` associates with quotient/congruence compression maps in this framework.
-Other sub-families produce their own certificates (e.g., $K_{\mathrm{E11}}^-$ for the monodromy
-sub-family), each established by dedicated lemmas.
+The cardinality lower bound of Step 2 applies to all pure $\flat$-witnesses.
+For witnesses whose elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$
+(quotient/congruence compression), this cardinality violation satisfies the antecedent of
+the integrality obstruction tactic {prf:ref}`def-e4`, yielding the certificate $K_{\mathrm{E4}}^-$.
+Other sub-families yield their own certificates via dedicated lemmas
+(e.g., $K_{\mathrm{E11}}^-$ for the monodromy sub-family via {prf:ref}`lem-random-3sat-galois-blockage`).
 
 *Failure localization (note):* The target structure $B_n^\flat$ must encode at least $2^{cn}$
-pairwise-distinct elements — one distinct $b^{(i)} \in B_n^\flat$ per formula $F^{(i)}$, as established
-above. No polynomial-cardinality $B_n^\flat$ can accommodate this, for any algebraic implementation
-of $e_n^\flat$. The proof is complete at the end of Step 2; this note localises where the bottleneck lies.
+pairwise-distinct elements — one per formula in the hard ensemble — since $d_n^\flat$ must produce
+distinct outputs for formulas with disjoint solution sets. No polynomial-cardinality $B_n^\flat$ can
+accommodate this for any algebraic implementation of $e_n^\flat$.
+The first claim of the lemma (cardinality violation for all pure $\flat$-witnesses) is established at the
+end of Step 2; Step 4 discharges the second claim ($K_{\mathrm{E4}}^-$ for $\mathfrak{S}_{\mathrm{quot}}$
+witnesses).
 
 *(Supplementary: barrier-metatheorem path.)* Alternatively, for barrier-compatible pure $\flat$-witnesses,
 {prf:ref}`thm-flat-barrier-obstruction-metatheorem` gives the same conclusion: the cardinality lower bound
@@ -8042,7 +8042,8 @@ By {prf:ref}`lem-random-3sat-integrality-blockage`, every correct pure $\flat$-w
 $|B_n^\flat| \geq 2^{cn}$ for an absolute constant $c > 0$.
 Concretely, there exist $2^{cn}$ canonical 3-SAT formulas $F_1, \ldots, F_{2^{cn}}$ with
 pairwise-disjoint satisfying-assignment sets $\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$
-for all $i \neq j$ (probabilistic construction at clause density $\alpha = 4.2$, as in the lemma).
+for all $i \neq j$; see {prf:ref}`lem-random-3sat-integrality-blockage` for the probabilistic
+construction at clause density $\alpha = 4.2$.
 
 Any correct pure $\flat$-witness must output $d_n^\flat(b^{(i)}) \in \mathrm{Sol}(F_i)$ for each $i$, where
 $b^{(i)} = e_n^\flat(s_n^\flat(F_i)) \in B_n^\flat$.  Since $\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$,
@@ -8076,11 +8077,8 @@ This step is not logically required for the conclusion of Step 4 (which follows 
 confirms that no admissible re-encoding can circumvent the cardinality argument.
 
 **Step 4. [No polynomial $\flat$-witness]:**
-Step 1 alone establishes directly that no pure $\flat$-witness exists for canonical 3-SAT:
-the cardinality lower bound $|B_n^\flat| \geq 2^{cn}$ contradicts the polynomial upper bound from
-{prf:ref}`def-pure-flat-witness-rigorous` without further assumptions.
-Steps 2 and 3 provide corroborating confirmation — structural (per algebraic family) and encoding-invariance
-respectively — but neither is logically required for this conclusion.
+Step 1 yields the contradiction $2^{cn} \leq |B_n^\flat| \leq n^{O(1)}$, establishing that no pure
+$\flat$-witness exists. Steps 2 and 3 are corroborating; the conclusion does not depend on them.
 
 **Step 5. [Certificate extraction]:**
 By completeness of $\mathsf{Obs}_\flat$ ({prf:ref}`thm-flat-obstruction-sound-complete`), the nonexistence of a pure
@@ -8092,8 +8090,9 @@ The frontend pair $K_{\mathrm{E4}}^- \wedge K_{\mathrm{E11}}^-$ (from
 {prf:ref}`lem-random-3sat-integrality-blockage` and {prf:ref}`lem-random-3sat-galois-blockage`) is subsumed by and
 compatible with this full obstruction certificate via {prf:ref}`prop-compatibility-with-current-tactics`.
 
-**Dossier discharge summary.** The above proof chain discharges all 11 items of
-{prf:ref}`def-completion-criteria-flat-dossier-3sat`:
+**Dossier discharge summary.** Items 10–11 are discharged by steps of this proof; items 1–9 are
+discharged by the cited definitions and theorems (invoked in Steps 1–2). The table records all 11 items
+of {prf:ref}`def-completion-criteria-flat-dossier-3sat` and their discharge sources:
 
 | Item | Content | Discharged by |
 |------|---------|---------------|
@@ -8498,7 +8497,7 @@ We verify each of the six antecedent certificates of {prf:ref}`def-e13`:
 
 - $K_{\mathrm{LS}_\sigma}^-$: by {prf:ref}`lem-random-3sat-metric-blockage` (no pure $\sharp$-witness exists);
 - $K_{\mathrm{E6}}^-$: by {prf:ref}`lem-random-3sat-causal-blockage` (no pure $\int$-witness exists);
-- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (integrality blockage for the $\mathfrak{S}_{\mathrm{quot}}$ sub-family, via {prf:ref}`def-e4`);
+- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (integrality blockage for the $\mathfrak{S}_{\mathrm{quot}}$ sub-family; certificate via {prf:ref}`def-e4`);
 - $K_{\mathrm{E11}}^-$: by {prf:ref}`lem-random-3sat-galois-blockage` (no monodromy $\flat$-sketch exists);
 - $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$: by {prf:ref}`lem-random-3sat-scaling-blockage` (no pure
   $\ast$-witness exists);
