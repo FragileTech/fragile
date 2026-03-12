@@ -7968,9 +7968,11 @@ $n^{O(1)}$ elements — insufficient to distinguish $2^{cn}$ instances. This res
 contradiction of Step 2 directly in terms of the polynomial representation.
 
 **Step 5. [Failure localization]:**
-If satisfiability were a low-degree polynomial identity (degree $O(1)$) — as for 2-SAT, where a degree-2 Gröbner
-basis computation over $\mathbb{F}_2$ decides satisfiability — the polynomial-identity sketch would succeed with
-$O(n^2)$ stored terms.
+If satisfiability were expressible as a polynomial identity of bounded degree (degree $O(1)$) — as for XORSAT,
+where each clause is a linear equation over $\mathbb{F}_2$ and satisfiability reduces to checking whether a
+system of $m$ linear polynomials has a common root (decidable via degree-1 Nullstellensatz / Gaussian
+elimination with $O(n)$ stored terms) — the polynomial-identity sketch would succeed with $n^{O(1)}$ stored
+terms.
 :::
 
 :::{prf:theorem} No Admissible Solvable-Monodromy Sketch for Canonical 3-SAT
