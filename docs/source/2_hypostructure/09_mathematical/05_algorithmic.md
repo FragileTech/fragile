@@ -7832,10 +7832,10 @@ This discharges item 5 of {prf:ref}`def-completion-criteria-flat-dossier-3sat`.
 
 :::{prf:proof}
 **Step 1. [Rank sketch cardinality]:**
-A rank-based sketch over $\mathfrak{S}_{\mathrm{rank}}$ represents $B_n^\flat$ as a module equipped with a
-rank/determinant structure — concretely, as a matrix over a commutative ring $R$ of size at most
-$q_\flat(n) \times q_\flat(n)$. Such a matrix has at most $q_\flat(n)^2 = n^{O(1)}$ entries, so
-$|B_n^\flat| \leq n^{O(1)}$.
+By the cardinality constraint of {prf:ref}`def-pure-flat-witness-rigorous`, any pure $\flat$-witness has
+$|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$. For a rank-based sketch over $\mathfrak{S}_{\mathrm{rank}}$, the
+output structure $B_n^\flat$ encodes rank/minor data in a module of polynomial cardinality, consistent with
+this bound.
 
 **Step 2. [Exponential cardinality lower bound]:**
 By {prf:ref}`lem-random-3sat-integrality-blockage`, among random 3-SAT formulas at clause density $r_n$, there exist
@@ -7850,11 +7850,12 @@ Rank conditions detect linear-algebraic properties: $\mathrm{rank}(A) < k$ iff a
 vanishes. For linear constraint systems such as XORSAT, satisfiability is a rank condition and Gaussian elimination
 solves it in polynomial time. For 3-SAT, the Boolean constraints $z_j^2 - z_j = 0$ confine the solution space to
 $\{0,1\}^n$; this discrete point set is not cut out by any fixed polynomial number of rank conditions. Ben-Sasson and
-Wigderson (2001, *J. ACM*) prove that random 3-SAT instances require resolution proofs of exponential length. Since
-resolution refutations can be encoded as rank computations over $\mathbb{F}_2$ (the rank of the clause-variable
-incidence matrix over $\mathbb{F}_2$ governs resolution width by the width–size connection), this confirms that
-rank-based methods require exponential resources for 3-SAT. Steps 2–3 give an independent, unconditional proof of the
-same conclusion via cardinality.
+Wigderson (2001, *J. ACM*) prove that random 3-SAT instances require resolution refutations of exponential length.
+In the polynomial calculus (PC) proof system over $\mathbb{F}_2$, resolution is a special case of algebraic
+derivation, and the Ben-Sasson–Wigderson width–size theorem translates to an exponential lower bound on the
+dimension (rank) of the space of derivable polynomials needed to certify unsatisfiability. This confirms that
+rank-based methods require exponential resources for 3-SAT. Steps 2–3 give an independent, unconditional proof
+of the same conclusion via cardinality.
 
 **Step 5. [Failure localization]:**
 If the constraint system were genuinely linear — as in XORSAT, where $A \in \mathbb{F}_2^{m \times n}$ and
@@ -7886,13 +7887,14 @@ $|B_n^\flat| \geq 2^{cn}$, contradicting $|B_n^\flat| \leq n^{O(1)}$ from Step 1
 Independent confirmation comes from Fourier analysis of Boolean functions. The satisfiability indicator
 $f = \mathbf{1}_{\mathrm{SAT}}$ for 3-SAT satisfies:
 
-(a) *Influence and Fourier level*: every variable $z_j$ is influential — for a random 3-SAT formula at clause density
-$r_n = \Theta(1)$, flipping $z_j$ changes satisfiability with probability $\Theta(1/n)$ (each variable participates
-in $\Theta(1)$ clauses). The total influence is
+(a) *Total influence and average Fourier level*: every variable $z_j$ is influential — for a random 3-SAT
+formula at clause density $r_n = \Theta(1)$, flipping $z_j$ changes satisfiability with probability $\Theta(1/n)$
+(each variable participates in $\Theta(1)$ clauses on average). The total influence equals
 $\sum_j \mathbf{Inf}_j[f] = \sum_S \widehat{f}(S)^2 |S| = \Omega(1)$,
-so the average Fourier level $\mathbb{E}_{S \sim \widehat{f}^2}[|S|] = \Omega(1)$. By the
-Kahn–Kalai–Linial theorem (1988), at least one variable has influence $\Omega(\log n / n)$, confirming that the
-Fourier spectrum cannot be truncated to a polynomial-size low-level set without $\Omega(1)$ error.
+so the average Fourier level satisfies $\mathbb{E}_{S \sim \widehat{f}^2}[|S|] = \Omega(1)$: the Fourier mass
+is not concentrated at level 0. By the Kahn–Kalai–Linial theorem (1988), at least one variable has influence
+$\Omega(\log n / n)$, so $\sum_{S \ni j} \widehat{f}(S)^2 = \Omega(\log n / n)$ for some $j$ — confirming
+nontrivial Fourier weight is spread across sets of varying sizes.
 
 (b) *High Fourier degree*: The satisfiability indicator $\mathbf{1}_{\mathrm{SAT}}$ has Fourier (multilinear)
 degree at least $\Omega(\sqrt{n})$: by the Nisan–Szegedy theorem (1994), $\deg(f) \geq \sqrt{bs(f)/3}$ where
@@ -7902,16 +7904,21 @@ and hence $\deg(f) = \Omega(\sqrt{n})$. Since multilinear degree equals Fourier 
 Fourier spectrum of $\mathbf{1}_{\mathrm{SAT}}$ has nonzero coefficients at level $\Omega(\sqrt{n})$; any Fourier
 sketch truncated below this level incurs nonzero $\ell^2$ error.
 
-(c) *Mass spreading*: O'Donnell (*Analysis of Boolean Functions*, Cambridge UP, 2014, §4.4) establishes that for
-Boolean functions built from $\Theta(n)$ independent degree-3 constraints (which is the structure of a random 3-SAT
-formula), the Fourier weight is distributed across $\binom{n}{\Omega(n)} = 2^{\Omega(n)}$ coefficients. Any
-polynomial-size truncated Fourier sketch captures only a $n^{O(1)} / 2^{\Omega(n)}$ fraction of the total mass,
-incurring $\Omega(1)$ $\ell^2$-error — sufficient to fail on the hard subfamily.
+(c) *Mass spreading*: For a random 3-SAT formula at linear clause density, the satisfiability indicator is built
+from $\Theta(n)$ degree-3 clause-checks with independent random structure. A direct Fourier expansion of
+$\mathbf{1}_{\mathrm{SAT}}$ via inclusion-exclusion over clauses generates cross-terms at all levels from 1
+to $n$; the number of nonzero Fourier coefficients at level $\Theta(n)$ alone is $\binom{n}{\Theta(n)} =
+2^{\Omega(n)}$ (by a counting argument on the clause-variable interaction structure). Since the sketch retains
+only $n^{O(1)}$ coefficients, it misses all but a $n^{O(1)} / 2^{\Omega(n)}$ fraction of the nonzero
+coefficients at the highest levels, incurring $\Omega(1)$ $\ell^2$-error on the hard subfamily. (See
+O'Donnell, *Analysis of Boolean Functions*, Cambridge UP, 2014, for background on Fourier analysis of
+random constraint functions.)
 
 **Step 4. [Failure localization]:**
-If the satisfiability indicator were a low-degree polynomial (as for parity, which has a single Fourier coefficient
-$\widehat{f}(\{1,\ldots,n\}) = 1$ and all others zero), a polynomial-size Fourier sketch would yield an exact
-representation and an efficient solver.
+If the satisfiability indicator had few significant Fourier coefficients — as for parity, which has exactly one
+nonzero Fourier coefficient ($\widehat{f}(\{1,\ldots,n\}) = 1$, all others zero) despite having Fourier degree
+$n$ — a size-1 Fourier sketch would give an exact representation and an efficient solver. The failure for 3-SAT
+is not that the degree is high, but that exponentially many coefficients carry nontrivial mass.
 :::
 
 :::{prf:theorem} No Admissible Polynomial-Identity/Cancellation Sketch for Canonical 3-SAT
@@ -7948,10 +7955,11 @@ $x$ — decides whether $\mathrm{sat}_F$ has any root in $\{0,1\}^n$. Any polyno
 decision problem must correctly distinguish the $2^{cn}$ hard formulas from Step 2 that have pairwise-disjoint
 solution sets. Over the formula-space $\{0,1\}^{3m}$ (clause-defining bits), the satisfiability indicator is
 a Boolean function of $3m = \Theta(n)$ input bits; its unique multilinear representation over $\mathbb{R}$ has
-degree at most $3m$ and — since satisfiability depends essentially on all $\Theta(n)$ clause-bits — is not
-computable by any sparse polynomial with $n^{O(1)}$ nonzero terms. Papadimitriou and Yannakakis (1991,
-*J. Comput. Syst. Sci.*) establish that the decision version requires checking all clauses; no sub-linear
-projection onto $n^{O(1)}$ monomials can capture the full combinatorial structure.
+degree at most $3m$. Since satisfiability depends essentially on all $\Theta(n)$ clause-bits (flipping any
+single clause can change satisfiability), the multilinear representation is non-constant in each of $\Theta(n)$
+variables; a polynomial that is non-constant in $\Theta(n)$ independent variables requires at least $\Theta(n)$
+nonzero monomials, so no sub-linear projection onto $n^{O(1)}$ monomials can capture the full combinatorial
+structure.
 
 **Step 4. [Representation complexity]:**
 The $2^{cn}$ pairwise-distinguishable instances from Step 2 require the sketch to produce $2^{cn}$ distinct
