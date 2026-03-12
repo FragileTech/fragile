@@ -7525,9 +7525,11 @@ decimation step makes increasingly poor choices as the solution-space geometry s
 :label: lem-random-3sat-integrality-blockage
 
 For every pure $\flat$-witness $(\Sigma, A_n^\flat, B_n^\flat, s_n, e_n, d_n, q_\flat)$ in the sense of
-{prf:ref}`def-pure-flat-witness-rigorous` whose elimination map $e_n^\flat$ operates via
-$\mathfrak{S}_{\mathrm{quot}}$ (quotient/congruence compression) on $\Pi_{3\text{-SAT}}$, the cardinality
-bound $|B_n^\flat| \leq q_\flat(n)$ is violated. Equivalently, the integrality obstruction certificate $K_{\mathrm{E4}}^-$ holds.
+{prf:ref}`def-pure-flat-witness-rigorous`, the cardinality bound $|B_n^\flat| \leq q_\flat(n)$ is violated.
+This argument is *signature-independent*: it applies regardless of which algebraic sub-family
+$\mathfrak{S}' \subseteq \mathfrak{S}_\flat$ governs the elimination map $e_n^\flat$.
+Equivalently, the integrality obstruction certificate $K_{\mathrm{E4}}^-$ holds (with the quotient-channel
+certificate being the canonical representative; the cardinality lower bound itself is channel-agnostic).
 :::
 
 :::{prf:proof}
@@ -7536,12 +7538,12 @@ By {prf:ref}`def-pure-flat-witness-rigorous`: a pure $\flat$-witness requires a 
 $\Sigma$, finite $\Sigma$-structures $A_n^\flat, B_n^\flat$ with cardinalities bounded by $q_\flat(n)$,
 a sketch $s_n \to e_n \to d_n$, and the correctness identity.
 
-**Step 2. [Quotient compression lower bound — search formulation.]**
-For the search formulation ({prf:ref}`def-threshold-random-3sat-family`), the solver must output a
-satisfying assignment $\sigma(F) \in \{0,1\}^{v(F)}$ for each satisfiable formula $F$. The quotient
-structure $A_n / {\sim}$ partitions the input space into equivalence classes, and the reconstruction
-map $d_n^{\flat}$ produces a single output per class. Therefore, any two formulas $F_1, F_2$ with
-$\sigma(F_1) \neq \sigma(F_2)$ must lie in distinct equivalence classes.
+**Step 2. [Cardinality lower bound — search formulation.]**
+For the search formulation ({prf:ref}`def-threshold-random-3sat-family`), a correct pure $\flat$-witness
+must output a satisfying assignment $\sigma(F) \in \{0,1\}^{v(F)}$ for each satisfiable formula $F$.
+The reconstruction map $d_n^{\flat} : B_n^{\flat} \to \{0,1\}^n$ is a function (by
+{prf:ref}`def-pure-flat-witness-rigorous`), so distinct output values require distinct elements of $B_n^{\flat}$.
+This function-injectivity property holds regardless of which algebraic sub-family governs $e_n^{\flat}$.
 
 We construct $N = 2^{cn}$ formulas in $\mathfrak{H}_n$ (for a suitable constant $c > 0$) with
 pairwise-distinct required outputs. Draw $N$ formulas $F^{(1)}, \ldots, F^{(N)}$ independently at the
@@ -7590,7 +7592,7 @@ which violates the cardinality bound $|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$ fo
 **Step 3. [Apply algebraic barrier]:**
 By {prf:ref}`thm-flat-barrier-obstruction-metatheorem`: the cardinality lower bound
 $\beta_\flat^{\mathfrak B}(n) \geq 2^{c \cdot n}$ eventually dominates every polynomial. Therefore no
-barrier-compatible pure $\flat$-witness via the $\mathfrak S_{\mathrm{quot}}$ subfamily exists.
+barrier-compatible pure $\flat$-witness exists, regardless of algebraic sub-family.
 
 **Step 4. [Certificate]:**
 This contributes the integrality obstruction certificate
@@ -8039,18 +8041,23 @@ This discharges items 10 and 11 of {prf:ref}`def-completion-criteria-flat-dossie
 
 :::{prf:proof}
 **Step 1. [Type-independent cardinality blockage]:**
-By {prf:ref}`lem-random-3sat-integrality-blockage`, there exist $2^{cn}$ canonical 3-SAT formulas
-$F_1, \ldots, F_{2^{cn}}$ (for an absolute constant $c > 0$) whose satisfying-assignment sets are pairwise disjoint.
-Any correct pure $\flat$-witness $\sigma$ must encode each $F_i$ to a distinct element of $B_n^\flat$, since
-$\sigma(F_i)$ must certify a solution lying outside $\mathrm{sol}(F_j)$ for all $j \neq i$.
-Therefore $|B_n^\flat| \geq 2^{cn}$.
+By {prf:ref}`lem-random-3sat-integrality-blockage` (generalized form), there exist $2^{cn}$ canonical 3-SAT
+formulas $F_1, \ldots, F_{2^{cn}}$ (absolute constant $c > 0$) with pairwise-disjoint satisfying-assignment
+sets $\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$ for all $i \neq j$.
+
+Any correct pure $\flat$-witness must output $d_n^\flat(b^{(i)}) \in \mathrm{Sol}(F_i)$ for each $i$, where
+$b^{(i)} = e_n^\flat(s_n^\flat(F_i)) \in B_n^\flat$.  Since $\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$,
+the outputs $d_n^\flat(b^{(i)})$ are pairwise distinct.  Because $d_n^\flat$ is a function
+({prf:ref}`def-pure-flat-witness-rigorous`), distinct output values require distinct inputs:
+$b^{(i)} \neq b^{(j)}$ for all $i \neq j$.  Therefore $|B_n^\flat| \geq 2^{cn}$.
 
 By {prf:ref}`def-pure-flat-witness-rigorous`, however, $|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$.
 This is a direct contradiction for all sufficiently large $n$.
 
-This argument is *type-independent*: it applies to every pure $\flat$-witness over every algebraic signature,
-without requiring any classification of which signature families are admissible.
-Consequently, no pure $\flat$-witness exists for canonical 3-SAT.
+This argument is *type-independent*: the only properties used are (i) the 2^{cn} pairwise-disjoint-solution
+formulas (established by probabilistic construction at density $\alpha = 4.2$), (ii) the correctness identity
+of the witness, and (iii) the function property of $d_n^\flat$ — none of which depend on which algebraic
+sub-family governs $e_n^\flat$.  Consequently, no pure $\flat$-witness exists for canonical 3-SAT.
 
 **Step 2. [Structural confirmation via signature families (supplementary)]:**
 Independently, {prf:ref}`thm-signature-coverage-canonical-3sat` asserts that every admissible polynomial-size
@@ -8107,10 +8114,11 @@ obstruction into the formal calculus $\mathrm{Obs}_\flat$ via its completeness t
 the semantic obstruction $K_\flat^-(\Pi_{3\text{-SAT}})$ follows directly from Steps 1–4 without
 appealing to completeness of $\mathrm{Obs}_\flat$.
 
-Steps 1–4 establish, for each of the six admissible algebraic sketch families, that no
-polynomial-size presentation within that family can correctly solve the hard subfamily. Since
-{prf:ref}`def-pure-flat-witness-rigorous` requires the elimination map to be built from the
-admissible primitive basis, and Steps 1–4 cover all six elements, no pure $\flat$-witness exists.
+Step 1 establishes the semantic obstruction directly via the type-independent cardinality argument:
+any correct pure $\flat$-witness requires $|B_n^\flat| \geq 2^{cn}$, contradicting the polynomial bound.
+This conclusion holds for *all* pure $\flat$-witnesses regardless of algebraic signature.
+Steps 2–4 provide independent structural confirmation — confirming the failure mode within each of the
+six admissible algebraic sketch families — but they are not logically required for the semantic conclusion.
 
 The invocation of completeness in Step 5 provides a formal certificate within the obstruction
 calculus but is not required for the semantic conclusion. The P$\neq$NP soundness chain needs
