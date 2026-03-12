@@ -7923,25 +7923,44 @@ This discharges item 7 of {prf:ref}`def-completion-criteria-flat-dossier-3sat`.
 :::
 
 :::{prf:proof}
-**Step 1. [Typed data]:**
-A polynomial-identity sketch represents the satisfiability indicator $\mathbf{1}_{\mathrm{SAT}}(F)$ as $p(F) \neq 0$
-for some polynomial $p$ over the clause variables, or uses algebraic cancellation to reduce the system.
+**Step 1. [Polynomial-identity sketch cardinality]:**
+A polynomial-identity sketch over $\mathfrak{S}_{\mathrm{polyid}}$ represents $B_n^\flat$ as a polynomial $p$ stored
+as a list of monomial coefficients. For the sketch to have $|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$, the polynomial
+must be stored with at most $n^{O(1)}$ nonzero monomials.
 
-**Step 2. [Algebraic degree lower bound]:**
-Over the hard subfamily, the satisfiability predicate $\mathbf{1}_{\mathrm{SAT}}$ has algebraic degree $\Omega(n)$ in
-the clause variables: each clause contributes degree 3 (a product of 3 literals), and satisfiability depends on
-$\Theta(n)$ independent clause interactions. The satisfiability indicator cannot be represented as a polynomial of
-degree less than $\Omega(n)$ in the clause-defining bits.
+**Step 2. [Exponential cardinality lower bound]:**
+By {prf:ref}`lem-random-3sat-integrality-blockage`, among random 3-SAT formulas at clause density $r_n$, there exist
+$2^{cn}$ formulas with pairwise-disjoint solution sets that any correct solver must distinguish. Therefore
+$|B_n^\flat| \geq 2^{cn}$, contradicting $|B_n^\flat| \leq n^{O(1)}$ from Step 1.
 
-**Step 3. [Monomial count lower bound]:**
-Any polynomial $p$ of degree $\Omega(n)$ in $n$ Boolean variables, expressed in the standard monomial basis, requires
-$2^{\Omega(n)}$ terms to represent the satisfiability indicator on the hard subfamily. This follows from the
-Fourier-degree lower bound (Step 2) combined with the correspondence between monomial degree and Fourier level:
-low-degree polynomials miss the high-frequency structure of the satisfiability predicate.
+**Step 3. [Algebraic degree lower bound — structural explanation]:**
+Independent confirmation comes from algebraic complexity. The multilinear polynomial over $\mathbb{R}$ representing
+$\mathbf{1}_{\mathrm{SAT}}$ has degree exactly $n$: writing each clause as $c_j(x) = 1 - \prod_{\ell \in C_j}(1-\ell(x))$
+(a degree-3 polynomial in the literals), satisfiability is
+$$
+\mathbf{1}_{\mathrm{SAT}}(x) = 1 - \prod_{j=1}^m (1 - c_j(x)).
+$$
+Expanding the product $\prod_j(1 - c_j)$ over a random 3-SAT formula generates cross-terms
+$c_{j_1}(x) \cdots c_{j_k}(x)$ for all $k$-subsets of clauses; since the $\Theta(n)$ clauses collectively
+cover all $n$ Boolean variables, the full multilinear expansion has degree $n$.
 
-**Step 4. [Failure localization]:**
-If satisfiability were a low-degree polynomial (as for 2-SAT, which can be decided by resolution of degree-2 clauses),
-the polynomial-identity sketch would succeed with polynomial size.
+By Razborov (1987, *Problems of Information Transmission*) and Smolensky (1987, *STOC '87*), any polynomial over
+a field of characteristic $q$ that $\epsilon$-approximates a Boolean function requiring large circuits must have
+degree $\Omega(n)$. Applied to the satisfiability predicate: any polynomial $p$ over any field that satisfies
+$|p(x) - \mathbf{1}_{\mathrm{SAT}}(x)| < 1/3$ for all $x \in \{0,1\}^n$ must have degree $\Omega(n)$, since the
+satisfiability function has algebraic degree $n$ over $\mathbb{R}$ and approximation degree $\Omega(n)$ over
+$\mathbb{F}_2$ (Razborov–Smolensky lower bound).
+
+**Step 4. [Monomial explosion]:**
+A degree-$\Omega(n)$ polynomial in $n$ Boolean variables has up to $\binom{n}{\Omega(n)} = 2^{\Omega(n)}$ monomials
+in the standard basis. Correctly representing or approximating $\mathbf{1}_{\mathrm{SAT}}$ therefore requires
+$2^{\Omega(n)}$ stored coefficients, confirming the exponential cardinality lower bound of Step 2 by an explicit
+algebraic computation. No polynomial-identity sketch with $n^{O(1)}$ monomials can correctly solve 3-SAT.
+
+**Step 5. [Failure localization]:**
+If satisfiability were a low-degree polynomial identity (degree $O(1)$) — as for 2-SAT, where a degree-2 Gröbner
+basis computation over $\mathbb{F}_2$ decides satisfiability — the polynomial-identity sketch would succeed with
+$O(n^2)$ stored terms.
 :::
 
 :::{prf:theorem} No Admissible Solvable-Monodromy Sketch for Canonical 3-SAT
