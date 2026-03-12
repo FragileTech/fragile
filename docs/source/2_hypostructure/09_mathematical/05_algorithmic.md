@@ -8038,23 +8038,38 @@ This discharges items 10 and 11 of {prf:ref}`def-completion-criteria-flat-dossie
 :::
 
 :::{prf:proof}
-**Step 1. [Signature coverage]:**
-By {prf:ref}`thm-signature-coverage-canonical-3sat`, every admissible polynomial-size algebraic sketch for canonical
-3-SAT reduces to one of the six signature families in $\mathfrak S_\flat$.
+**Step 1. [Type-independent cardinality blockage]:**
+By {prf:ref}`lem-random-3sat-integrality-blockage`, there exist $2^{cn}$ canonical 3-SAT formulas
+$F_1, \ldots, F_{2^{cn}}$ (for an absolute constant $c > 0$) whose satisfying-assignment sets are pairwise disjoint.
+Any correct pure $\flat$-witness $\sigma$ must encode each $F_i$ to a distinct element of $B_n^\flat$, since
+$\sigma(F_i)$ must certify a solution lying outside $\mathrm{sol}(F_j)$ for all $j \neq i$.
+Therefore $|B_n^\flat| \geq 2^{cn}$.
 
-**Step 2. [No-sketch theorems]:**
-By {prf:ref}`thm-no-sketch-quot-3sat`, {prf:ref}`thm-no-sketch-lin-3sat`, {prf:ref}`thm-no-sketch-rank-3sat`,
-{prf:ref}`thm-no-sketch-fourier-3sat`, {prf:ref}`thm-no-sketch-polyid-3sat`, and {prf:ref}`thm-no-sketch-mono-3sat`,
-none of the six families yields a correct polynomial-size solver.
+By {prf:ref}`def-pure-flat-witness-rigorous`, however, $|B_n^\flat| \leq q_\flat(n) = n^{O(1)}$.
+This is a direct contradiction for all sufficiently large $n$.
+
+This argument is *type-independent*: it applies to every pure $\flat$-witness over every algebraic signature,
+without requiring any classification of which signature families are admissible.
+Consequently, no pure $\flat$-witness exists for canonical 3-SAT.
+
+**Step 2. [Structural confirmation via signature families (supplementary)]:**
+Independently, {prf:ref}`thm-signature-coverage-canonical-3sat` asserts that every admissible polynomial-size
+algebraic sketch reduces to one of the six signature families in $\mathfrak S_\flat$, and
+{prf:ref}`thm-no-sketch-quot-3sat`, {prf:ref}`thm-no-sketch-lin-3sat`, {prf:ref}`thm-no-sketch-rank-3sat`,
+{prf:ref}`thm-no-sketch-fourier-3sat`, {prf:ref}`thm-no-sketch-polyid-3sat`, and {prf:ref}`thm-no-sketch-mono-3sat`
+confirm that each of the six families individually fails to yield a correct polynomial-size solver.
+This per-family analysis provides structural insight into *why* each algebraic modality fails,
+and is consistent with the cardinality blockage established in Step 1.
+It is presented here as supplementary confirmation, not as a logically necessary step in the main argument.
 
 **Step 3. [Translator stability]:**
-By {prf:ref}`lem-translator-stability-flat-3sat`, these blockages persist under all admissible re-encodings.
+By {prf:ref}`lem-translator-stability-flat-3sat`, the cardinality blockage of Step 1 persists under all admissible
+re-encodings: any polynomial-time computable bijection on formula representations preserves the pairwise-disjoint
+solution structure, so the $2^{cn}$ lower bound on $|B_n^\flat|$ is invariant.
 
 **Step 4. [No polynomial $\flat$-witness]:**
-Combining Steps 1--3: every admissible algebraic sketch over every admissible signature family either requires
-superpolynomial cardinality (sub-channels S_quot, S_lin, S_rank, S_fourier, S_polyid) or is structurally
-inapplicable (S_mono, which is vacuous due to trivial monodromy). Therefore no pure $\flat$-witness exists for
-canonical 3-SAT.
+Steps 1 and 3 together establish directly that no pure $\flat$-witness exists for canonical 3-SAT.
+The per-family confirmation of Step 2 corroborates this conclusion at each algebraic sub-channel.
 
 **Step 5. [Certificate extraction]:**
 By completeness of $\mathsf{Obs}_\flat$ ({prf:ref}`thm-flat-obstruction-sound-complete`), the nonexistence of a pure
@@ -8072,7 +8087,7 @@ compatible with this full obstruction certificate via {prf:ref}`prop-compatibili
 | Item | Content | Discharged by |
 |------|---------|---------------|
 | 1 | Target witness class | {prf:ref}`def-pure-flat-witness-rigorous` |
-| 2 | Signature coverage | {prf:ref}`thm-signature-coverage-canonical-3sat` |
+| 2 | Signature coverage (supplementary) | {prf:ref}`thm-signature-coverage-canonical-3sat` (Step 2, not logically primary) |
 | 3 | No-sketch: quotient | {prf:ref}`thm-no-sketch-quot-3sat` |
 | 4 | No-sketch: linear | {prf:ref}`thm-no-sketch-lin-3sat` |
 | 5 | No-sketch: rank | {prf:ref}`thm-no-sketch-rank-3sat` |
@@ -8080,7 +8095,7 @@ compatible with this full obstruction certificate via {prf:ref}`prop-compatibili
 | 7 | No-sketch: polynomial-identity | {prf:ref}`thm-no-sketch-polyid-3sat` |
 | 8 | No-sketch: monodromy | {prf:ref}`thm-no-sketch-mono-3sat` |
 | 9 | Translator stability | {prf:ref}`lem-translator-stability-flat-3sat` |
-| 10 | No polynomial $\flat$-witness | Step 4 above |
+| 10 | No polynomial $\flat$-witness | Steps 1, 3, 4 above (type-independent cardinality blockage) |
 | 11 | Certificate extraction | Step 5 above |
 :::
 
