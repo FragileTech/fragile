@@ -2,7 +2,7 @@
 
 ## Metadata
 - Reviewed file: docs/source/2_hypostructure/09_mathematical/05_algorithmic.md
-- Review date: 2026-03-11 (initial), 2026-03-11 (updated post-fixes)
+- Review date: 2026-03-11 (initial), 2026-03-12 (updated post-fixes round 2)
 - Reviewer: Claude Opus 4.6 (6 parallel hostile-referee agents + self-review)
 - Scope: All five modal channels + architecture + metatheorems + appendices
 - File state: ~9900 lines (post Tier 1-3 fixes: F1/F2/F3/F4/F5/F6/F7/F8/F9 resolved)
@@ -51,7 +51,7 @@ FATAL level. Remaining work is at SERIOUS and NEEDS TIGHTENING levels.
 | Severity | Original | Resolved | Remaining |
 |----------|----------|----------|-----------|
 | FATAL | 9 | 9 | **0** |
-| SERIOUS | ~18 | ~8 | **~10** |
+| SERIOUS | ~18 | ~10 | **~8** |
 | NEEDS TIGHTENING | ~15 | ~3 | **~12** |
 
 ---
@@ -336,13 +336,100 @@ restructured with six coordinated changes:
 | S9 | ♭ | Three no-sketch proofs are informal | OPEN |
 | S10 | ♭ | Signature coverage has catch-all loophole | OPEN |
 | S11 | ∂ | "Unstructured feasible set" misapplies CSP dichotomy | CLOSED (F6 resolved — replaced with modal-purity violation) |
-| S12 | ∂ | Barrier metatheorem hypothesis mismatches blockage lemma | OPEN |
+| S12 | ∂ | Barrier metatheorem hypothesis mismatches blockage lemma | CLOSED |
 | S13 | ∗ | Merge-diversity conflates behavior count with complexity | CLOSED (F6 resolved — replaced with modal-purity violation) |
-| S14 | ∗ | Quantitative bound O(n log n) is polynomial, not superpolynomial | OPEN |
+| S14 | ∗ | Quantitative bound O(n log n) is polynomial, not superpolynomial | CLOSED |
 | S15 | Arch | Modal orthogonality unproven | CLOSED (proved via workspace separation in F9) |
 | S16 | Arch | Random-to-worst-case: shattering not proven at α = 4.267 exactly | OPEN |
 | S17 | Meta | Barrier state family {0,1}^n ≠ algorithm's configuration space | OPEN |
 | S18 | Meta | ♭/∗/∂ barrier metatheorems are definitional tautologies | OPEN |
+
+---
+
+## Detailed Analysis of Remaining Open Issues
+
+### S8: ♭-channel — Clause-solution count independence assumption
+
+**Location:** ♭-channel blockage lemma (`lem-random-3sat-integrality-blockage`), union-bound
+counting argument.
+
+**The flaw:** The proof counts the expected number of formula pairs (F_i, F_j) that share a
+common satisfying assignment. It models each pair's sharing probability as
+(7/8)^{2αn} — treating the two formulas as independent. But the pairs are not independent:
+they are drawn from the same distribution over the same variable set, clauses can overlap, and
+the events "F_i is satisfied by σ" and "F_j is satisfied by σ" for the same σ are correlated
+whenever F_i and F_j share clauses. The probability calculation
+Pr[∃ σ : σ ⊨ F_i and σ ⊨ F_j] = 2^n · (7/8)^{2αn}
+treats the 2αn clauses as if they came from 2αn independent draws, but clauses within F_i and
+between F_i and F_j may overlap (both draw from the same clause pool), introducing positive
+correlations.
+
+**Why it matters:** Without the independence assumption the union bound calculation
+Pr[any pair shares a solution] ≤ 2^{2cn} · 2^{-0.621n} fails, and the exponential lower
+bound on the presentation size |A_n / ~| collapses.
+
+**What a fix requires:** Either (a) establish that the formula pairs in the family A_n are
+constructed to be clause-disjoint (e.g. by sampling from disjoint pools of clauses), making
+the independence exact; or (b) replace the independence assumption with a second-moment
+argument (Paley-Zygmund) that controls correlations between pairs; or (c) use a planted-model
+or expurgation argument that produces a sub-family with the required disjointness property.
+
+---
+
+### S9: ♭-channel — Three informal "no-sketch" sub-proofs
+
+**Location:** ♭-channel blockage lemma, sub-claims for:
+(i) the algebraic-rigidity property (frozen variables cannot be eliminated by ♭-modal steps),
+(ii) the signature-collapse lemma (two formulas in A_n with the same ♭-signature must share
+    a solution), and
+(iii) the ♭-presentation lower bound (pres(A_n) ≥ Ω(n) · c_1).
+
+**The flaw:** All three sub-claims are stated without proof. The text marks them with phrases
+like "it can be shown" or "by standard arguments," but does not supply the arguments. This is
+not a gap in an informal writeup — these are load-bearing steps in the main blockage chain.
+
+**What each proof requires:**
+
+(i) *Algebraic rigidity:* Must show that a single ♭-step (one variable elimination, one
+  Gaussian row reduction, or one Nullstellensatz certificate step) cannot change the backbone
+  status of a variable. This likely follows from the fact that backbone status depends on the
+  entire solution set of a formula, which a single algebraic step changes only locally. But
+  this needs to be made precise via the algebraic structure of the restricted elimination
+  order.
+
+(ii) *Signature collapse:* Must show that if two formulas have the same ♭-signature (same
+  normal form under the ♭-equivalence relation), they share a solution. This requires defining
+  the signature precisely as an algebraic object (e.g. a Gröbner basis or a Nullstellensatz
+  refutation certificate) and proving that identical signatures imply a common feasible point.
+  The direction "signature → solution" is the hard direction and requires the Nullstellensatz
+  completeness theorem or an analogue.
+
+(iii) *Presentation lower bound:* Must show that log |A_n / ~| ≥ Ω(n). This is where the
+  counting argument from S8 is used — so S8 and S9(iii) are coupled. Fixing S8 is a
+  prerequisite for completing S9(iii).
+
+---
+
+### S10: ♭-channel — Signature coverage catch-all loophole
+
+**Location:** ♭-channel signature classification (the taxonomy of ♭-witnesses by algebraic
+operation type).
+
+**The flaw:** The classification lists named sub-types of ♭-witnesses (Gaussian elimination,
+Gröbner basis, Nullstellensatz, resolution, etc.) and then includes a catch-all category for
+"any other algebraic manipulation." The blockage argument is made separately for each named
+type. But the catch-all is never blocked — the argument only says "any witness in this category
+also fails" without providing the reasoning. This makes the coverage circular: any witness that
+defeats the named-type arguments could be swept into the catch-all without being excluded.
+
+**What a fix requires:** Either (a) remove the catch-all and prove the named types are
+exhaustive (i.e. that every ♭-modal computation is equivalent to one of the named types —
+which would require a normal-form theorem for ♭-modal computations), or (b) give a
+type-independent argument that blocks all ♭-witnesses regardless of their specific algebraic
+form (e.g. an information-theoretic argument: any ♭-modal computation on a formula of n
+variables produces at most poly(n) bits of output about the solution space, insufficient to
+distinguish the exp(Θ(n)) clusters). Option (b) is likely easier and would subsume the
+named-type arguments as special cases.
 
 ---
 
@@ -353,8 +440,8 @@ restructured with six coordinated changes:
 | Sharp (♯) | **CHANNEL CLOSED** | — | S1 closed: pigeonhole reframed as multi-formula argument with pairwise-disjoint solution sets; `rem-sharp-pigeonhole-multi-formula` added. All ♯ SERIOUS items now closed. |
 | Causal (∫) | **CHANNEL CLOSED** | — | S3 closed (classical citations + Rigor Class L import). S4 closed (formal monotonicity sub-proof). S5 closed (Case B rewritten: info-constraint + Ω(n) core vars with invisible C*). S6 closed (Step 5: formal Claim + Steps A/B/C distinguishing-instances proof). All ∫ SERIOUS items now closed. |
 | Algebraic (♭) | **DEFINITIONS SOLID** | S8-S10 | F4 resolved via Boolean fiber rigidity (Mon = {id} makes S_mono vacuous). Remaining: S8 (independence assumption), S9 (informal proofs), S10 (catch-all loophole). |
-| Scaling (∗) | **DEFINITIONS SOLID** | S14 | F6 resolved via modal-purity violation: merge requires ♭/♯/∫-type operations, all forbidden by ∗-purity. `rem-scaling-per-step-bound` establishes δ_∗(n) ≤ 1. Remaining: S14 (quantitative bound tightening). |
-| Boundary (∂) | **DEFINITIONS SOLID** | S12 | F3+F6 resolved. Modal-purity violation: contraction requires ♭-type CSP solving, forbidden by ∂-purity. `rem-boundary-per-step-bound` establishes δ_∂(n) = O(1). Remaining: S12 (barrier metatheorem hypothesis mismatch). |
+| Scaling (∗) | **CHANNEL CLOSED** | — | S14 closed: lemma statement changed to "no pure ∗-witness exists"; flawed Ω(n log n) recurrence argument removed from Step 3 and replaced with the modal-purity violation argument (merge requires ♭/♯/∫-type operations, all forbidden by ∗-purity); `rem-scaling-blockage-correctness-argument` replaced with a one-paragraph note that the metatheorem is not invoked and the certificate is established directly. |
+| Boundary (∂) | **CHANNEL CLOSED** | — | S12 closed: lemma statement changed to "no pure ∂-witness exists"; wrong "2^{Ω(n)} contraction time" claim removed from statement and Step 9; Step 9 failure-localization conclusion rewritten to point to representational impossibility; `rem-boundary-blockage-correctness-argument` added noting the metatheorem is not invoked. |
 | Architecture | **RESOLVED** | — | F1 (axiom), F2 (non-amplification), F7 (conditional) all addressed. |
 | Metatheorems | **RESOLVED** | — | F9 resolved: weakened axioms, explicit energy constructions, workspace-separation orthogonality. |
 

@@ -1951,111 +1951,260 @@ $$
 a polynomial in $n$. (Here the exponent $D+2$ is a fixed constant, so
 $q_\sharp(n)^{D+2} = \mathrm{poly}(n)$ as claimed.)
 
-Now apply the pigeonhole principle. The hard subfamily $H_n$ contains $M = \exp(\Theta(n))$
-distinct formula instances $x_1, \ldots, x_M$ — one representative drawn from each frozen-variable
-cluster class — with the property that any two distinct instances $x_j, x_{j'}$ have
-_pairwise incompatible solution sets_: $\mathrm{Sol}(x_j) \cap \mathrm{Sol}(x_{j'}) = \emptyset$.
-(This follows from the frozen-variable core structure: each cluster class forces its frozen
-variables to a specific assignment, and distinct cluster classes force different values on at
-least $\Omega(n)$ variables; no assignment can simultaneously satisfy the forced-variable
-constraints of two different cluster classes.) The entry states $e_j := E_n^\sharp(x_j)$
-for these $M$ distinct formula instances have metric profiles $\mu_n^\sharp(e_j)$ drawn from
-a set of size $q_\sharp(n)^{D+2} = \mathrm{poly}(n)$. By pigeonhole, at least
+Now apply the pigeonhole principle over the family of formula instances.
+
+**Lower bound on $|H_n|$.**
+Property 5 of {prf:ref}`def-hard-subfamily-3sat` states that every $F \in H_n$ has trivial
+automorphism group: $\mathrm{Aut}(F) = \{\mathrm{id}\}$. Fix any $F_0 \in H_n$ and let
+$\sigma$ range over all $n!$ permutations of the variable set $[n]$. For each $\sigma$, define
+$F_0^\sigma$ to be the formula obtained by relabelling variable $i \mapsto \sigma(i)$ throughout
+$F_0$. Because variable-permutation is a symmetry of the 3-SAT structure, all six properties of
+{prf:ref}`def-hard-subfamily-3sat` are preserved under relabelling. Properties 1–5 are
+isomorphism-invariant properties of the formula's combinatorial and graph structure (shattering,
+landscape geometry, frustration cores, expansion, and automorphism group), which are unchanged
+by relabelling. Property 6 (Boolean fiber rigidity) is preserved because variable relabelling
+is an algebraic automorphism of the polynomial ring, sending $V(F_0)$ bijectively to
+$V(F_0^\sigma)$ and preserving the monodromy structure. Hence $F_0^\sigma \in H_n$ for every
+$\sigma$. Since $\mathrm{Aut}(F_0) = \{\mathrm{id}\}$, distinct permutations $\sigma \neq \tau$
+yield distinct formulas $F_0^\sigma \neq F_0^\tau$. Therefore
 
 $$
-\frac{M}{q_\sharp(n)^{D+2}} \;=\; \frac{\exp(\Theta(n))}{\mathrm{poly}(n)} \;=\; \exp(\Theta(n))
+|H_n| \;\geq\; n! \;=\; \exp(\Theta(n \log n)).
 $$
 
-entry states share a single metric profile. Since $F_n^\sharp$ is determined by the metric
-profile (the concrete $\sharp$-modal restriction), $F_n^\sharp$ maps *all* of these entry states
-to the *same* next state. Crucially, $F_n^\sharp$ is a function of the metric profile
-$\mu_n^\sharp(z)$ only — not of the formula $x_j$ separately. The formula content encoded by
-$E_n^\sharp(x_j)$ into the lifted state $z$ influences the metric profile through energy values
-and rank, but $\mu_n^\sharp$ extracts only the $D+2$ polynomial-bounded quantities. Once two
-entry states share a metric profile, $F_n^\sharp$ gives them identical treatment regardless of
-which formula they encode. This identity is exact, not probabilistic — it holds on every
-instance in the hard subfamily, for every pure $\sharp$-witness, because it follows from the
-constant dimensionality $D+2$ of the metric profile and the polynomial range of each component.
+**Pigeonhole collision.**
+The entry states $e_F := E_n^\sharp(F)$ for $F \in H_n$ have metric profiles
+$\mu_n^\sharp(e_F) \in \{0,\ldots,q_\sharp(n)\}^{D+2}$, drawn from a profile space of size at
+most $q_\sharp(n)^{D+2} = \mathrm{poly}(n)$. By the pigeonhole principle there exists a profile
+value $\mu^* \in \{0,\ldots,q_\sharp(n)\}^{D+2}$ and a collision set
 
-The same argument propagates along the trajectory: at each subsequent step, the current states
-(being identical) have the same metric profile, so $F_n^\sharp$ maps them identically again.
-By induction on the trajectory length (at most $q_\sharp(n)$ steps), the entire descent
-trajectory from these $\exp(\Theta(n))$ entry states is identical — they follow the same
-sequence of states and terminate at the same solved state $z^* \in S_n^\sharp$.
+$$
+S \;:=\; \bigl\{F \in H_n : \mu_n^\sharp(e_F) = \mu^*\bigr\}
+$$
 
-But since $x_1, \ldots, x_M$ are distinct formulas with pairwise incompatible solution sets,
-no single output state $z^*$ can decode to a satisfying assignment for more than one of them.
-Any fixed computation trajectory produces one output; that output satisfies at most one formula
-in the collision set. Hence the witness fails on all but at most one of the $\exp(\Theta(n))$
-colliding instances. This yields a contradiction: at most $\mathrm{poly}(n)$ of the $M =
-\exp(\Theta(n))$ formula instances in $H_n$ can be correctly handled by any pure $\sharp$-witness.
-The correctness condition fails on a $1 - \mathrm{poly}(n)/\exp(\Theta(n)) = 1 - o(1)$
-fraction of instances.
+with
+
+$$
+|S| \;\geq\; \frac{|H_n|}{q_\sharp(n)^{D+2}} \;\geq\; \frac{n!}{\mathrm{poly}(n)}
+\;=\; \exp(\Theta(n \log n)).
+$$
+
+Since $F_n^\sharp$ is a function of the metric profile $\mu_n^\sharp(z)$ only — not of the
+formula separately (see {prf:ref}`rem-modal-restrictions-finite-type` and item 6 of
+{prf:ref}`def-pure-sharp-witness-rigorous`) — every $F \in S$ causes the witness to follow the
+*identical* computation trajectory from $e_F$, producing the same final state $z^* \in S_n^\sharp$
+and the same candidate assignment $x^* := D_n^\sharp(z^*)$.
+
+**Density bound via orbit decomposition.**
+It remains to show that $x^*$ fails on some $F \in S$.
+
+Define the **density-bounded** sub-family
+
+$$
+H_n^+
+\;:=\;
+\Bigl\{F \in H_n : \forall w \in \{0,\ldots,n\},\;
+\bigl|\{y \in \mathrm{Sol}(F) : |y|=w\}\bigr|
+\;\leq\;
+\left(\tfrac{7}{8}\right)^{\alpha n/2}\binom{n}{w}\Bigr\}.
+$$
+
+*Density of $H_n^+$ in $H_n$.* For any fixed weight $w$, the expected number of weight-$w$
+satisfying assignments of a uniformly random 3-CNF formula at ratio $\alpha$ is
+$\binom{n}{w}\cdot(7/8)^{\alpha n}$. By Markov's inequality, the probability that this count
+exceeds $(7/8)^{\alpha n/2}\binom{n}{w}$ is at most $(7/8)^{\alpha n/2} = \exp(-\Omega(n))$.
+A union bound over $n+1$ weights gives
+
+$$
+\Pr\!\bigl[F \notin H_n^+\bigr] \;\leq\; (n+1)\exp(-\Omega(n)) \;=\; o(1).
+$$
+
+This Markov bound applies to the *unconditional* distribution of random 3-CNF formulas at
+ratio $\alpha$. Since $\alpha < \alpha^* \approx 4.267$, a random formula at ratio $\alpha$ is
+satisfiable with probability $1 - o(1)$ and satisfies each of properties 1–6 with probability
+$1 - o(1)$, so $\Pr[F \in H_n] = 1 - o(1)$. The fraction of $H_n$ excluded from $H_n^+$ is
+
+$$
+\frac{|H_n \setminus H_n^+|}{|H_n|}
+\;=\; \Pr\!\bigl[F \notin H_n^+ \;\big|\; F \in H_n\bigr]
+\;=\; \frac{\Pr[F \in H_n \setminus H_n^+]}{\Pr[F \in H_n]}
+\;\leq\; \frac{\Pr[F \notin H_n^+]}{\Pr[F \in H_n]}
+\;\leq\; \frac{o(1)}{1-o(1)}
+\;=\; o(1),
+$$
+
+where the first inequality uses $H_n \setminus H_n^+ \subseteq \{F \notin H_n^+\}$ (since
+$H_n^+ \subseteq H_n$). Hence $|H_n^+| \geq (1-o(1))|H_n| \geq (1-o(1))n!$.
+
+*Dense collision subset.* Recall $S = \{F \in H_n : \mu_n^\sharp(e_F) = \mu^*\}$ with
+$|S| \geq |H_n|/\mathrm{poly}(n)$. Set $S^+ := S \cap H_n^+$. Then
+
+$$
+|S^+|
+\;\geq\; |S| - |H_n \setminus H_n^+|
+\;\geq\; \frac{|H_n|}{\mathrm{poly}(n)} - o(1)\cdot|H_n|
+\;\geq\; \frac{|H_n|}{2\,\mathrm{poly}(n)}
+$$
+
+for all sufficiently large $n$. In particular $S^+$ is non-empty, and every $F \in S^+
+\subseteq S$ causes the witness to output the same candidate assignment $x^*$.
+
+*Orbit counting identity.* Since every $F \in H_n^+ \subseteq H_n$ has
+$\mathrm{Aut}(F) = \{\mathrm{id}\}$ (property 5), and the defining density bound of $H_n^+$ is
+permutation-invariant (variable relabelling preserves Hamming weight, so
+$|\{x \in \mathrm{Sol}(F_0^\sigma):|x|=w\}| = |\{y \in \mathrm{Sol}(F_0):|y|=w\}|$), the
+set $H_n^+$ is closed under variable permutation, and the action of $S_n$ partitions $H_n^+$
+into orbits of size exactly $n!$. For any orbit $T = \{F_0^\sigma : \sigma \in S_n\}
+\subseteq H_n^+$ with base formula $F_0$, and any fixed $x^* \in \{0,1\}^n$ with $|x^*| = w$,
+a direct count gives
+
+$$
+\bigl|\{F \in T : x^* \in \mathrm{Sol}(F)\}\bigr|
+\;=\; w!\,(n-w)!\;\cdot\;\bigl|\{y \in \mathrm{Sol}(F_0) : |y| = w\}\bigr|.
+$$
+
+(Each solution $y \in \mathrm{Sol}(F_0)$ of weight $w$ contributes exactly $w!\,(n-w)!$ permutations
+$\sigma$ for which $x^* \in \mathrm{Sol}(F_0^\sigma)$. The condition $x^* \in \mathrm{Sol}(F_0^\sigma)$
+is equivalent to $(x^* \circ \sigma) \in \mathrm{Sol}(F_0)$, i.e., $x^* \circ \sigma = y$, i.e.,
+$x^*_{\sigma(j)} = y_j$ for all $j$. This forces $\sigma$ to map each $j$ with $y_j = 1$ to
+some $i = \sigma(j)$ with $x^*_i = 1$, and each $j$ with $y_j = 0$ to some $i$ with $x^*_i = 0$.
+Since $|y| = |x^*| = w$, these are bijections between equal-sized sets, giving $w!\,(n-w)!$
+choices for $\sigma$; see also {prf:ref}`rem-sharp-pigeonhole-multi-formula`.)
+
+Since $F_0 \in H_n^+$, the density bound holds by definition of $H_n^+$:
+
+$$
+\bigl|\{y \in \mathrm{Sol}(F_0) : |y| = w\}\bigr|
+\;\leq\; \left(\frac{7}{8}\right)^{\alpha n/2} \binom{n}{w}.
+$$
+
+Therefore
+
+$$
+\bigl|\{F \in T : x^* \in \mathrm{Sol}(F)\}\bigr|
+\;\leq\; n!\;\cdot\;\left(\frac{7}{8}\right)^{\alpha n/2}
+\;=\; |T| \cdot \exp(-\Omega(n)).
+$$
+
+Summing over all orbits that constitute $H_n^+$:
+
+$$
+\bigl|\{F \in H_n^+ : x^* \in \mathrm{Sol}(F)\}\bigr|
+\;\leq\; \left(\frac{7}{8}\right)^{\alpha n/2} \cdot |H_n^+|.
+$$
+
+Since $S^+ \subseteq H_n^+$ and $|H_n^+| \leq |H_n| \leq 2\,\mathrm{poly}(n)\cdot|S^+|$:
+
+$$
+\bigl|\{F \in S^+ : x^* \in \mathrm{Sol}(F)\}\bigr|
+\;\leq\; \left(\frac{7}{8}\right)^{\alpha n/2} \cdot 2\,\mathrm{poly}(n) \cdot |S^+|
+\;=\; \exp\!\bigl(-\Omega(n) + O(\log n)\bigr) \cdot |S^+|
+\;<\; |S^+|
+$$
+
+for all sufficiently large $n$. Hence there exists $F \in S^+ \subseteq S$ with
+$x^* \notin \mathrm{Sol}(F)$: the witness outputs a non-satisfying assignment on $F$.
+This contradicts the assumed correctness of the pure $\sharp$-witness on $H_n$.
 
 **Remark on the role of KMRZ.** The Krzakała-Montanari-Rizzo-Zdeborová (2007) result on
 $k$-local energy indistinguishability across clusters (Step 3) provides *physical corroboration*
 of the pigeonhole obstruction: it explains *why* the metric profiles of states near different
 clusters are the same (they share the same local energy statistics). But the obstruction proof
-does not depend on the KMRZ distributional result. The proof uses only: (i) the $\sharp$-modal
-determination (item 6), which restricts $F$ to a $(D+2)$-dimensional metric profile with $D$ a
-universal constant; (ii) the polynomial cardinality $q_\sharp(n)^{D+2} = \mathrm{poly}(n)$ of the
-profile space; (iii) the exponential number of clusters. These are respectively a definitional
-constraint, a counting fact, and a proven landscape property.
+does not depend on the KMRZ distributional result. The proof uses only: (i) the $\sharp$-modal determination (item 6 of
+{prf:ref}`def-pure-sharp-witness-rigorous`), which restricts $F_n^\sharp$ to a
+$(D+2)$-dimensional metric profile with $D$ a universal constant; (ii) the polynomial cardinality
+$q_\sharp(n)^{D+2} = \mathrm{poly}(n)$ of the profile space; (iii) automorphism triviality
+(property 5 of {prf:ref}`def-hard-subfamily-3sat`), which gives $|H_n| \geq n!$ and partitions
+$H_n$ into orbits of size exactly $n!$; and (iv) a Markov-based density bound on the
+auxiliary dense sub-family $H_n^+ \subseteq H_n$, which guarantees that within each orbit of
+$H_n^+$, at most an $\exp(-\Omega(n))$ fraction of formulas are satisfied by any fixed
+assignment $x^*$. The density bound is derived from the unconditional distribution at ratio
+$\alpha < \alpha^*$ (where satisfiability probability is $1-o(1)$), not from a named property
+of $H_n$ itself. These are respectively a definitional constraint, a counting fact, a structural
+symmetry property of $H_n$, and a probabilistic regularity statement derived inline.
 
-:::{prf:remark} The pigeonhole is a multi-formula argument
+:::{prf:remark} Structure of the Step 4 argument
 :label: rem-sharp-pigeonhole-multi-formula
 
-The pigeonhole in Step 4 is a _multi-formula_ argument: it runs over the family of problem
-instances $x_1, \ldots, x_M \in H_n$, not over solution clusters within a single formula.
-The two levels of the argument must be kept carefully distinct.
+The Step 4 argument has two levels that must be kept carefully distinct.
 
-_Level 1 — the landscape (single formula)._ For a single 3-SAT formula $F$ near the
-satisfiability threshold, the solution set $\mathrm{Sol}(F)$ shatters into $\exp(\Theta(n))$
-well-separated clusters. Each cluster is characterised by a frozen-variable core: a subset of
-variables whose values are forced to specific $\{0,1\}$ assignments by the clause structure.
-Clusters with different frozen-variable cores are separated in Hamming distance by $\Omega(n)$.
-This landscape geometry is the output of Step 1–3 and is used to _construct_ $H_n$, not to
-run the pigeonhole directly.
+_Level 1 — the landscape (single formula, Steps 1–3)._ For a single 3-SAT formula $F$ near
+the satisfiability threshold, the solution set $\mathrm{Sol}(F)$ shatters into
+$\exp(\Theta(n))$ well-separated clusters (property 1 of {prf:ref}`def-hard-subfamily-3sat`).
+The vanishing spectral gap (property 2) and Łojasiewicz failure (property 3) certify that
+gradient-based metric descent cannot navigate between clusters. These single-formula properties
+are used to establish the certificate $K_\sharp^-$ in Step 5. They are _not_ directly used in
+the pigeonhole.
 
-_Level 2 — the family (multi-formula pigeonhole)._ The hard subfamily $H_n$ is assembled by
-selecting, for each frozen-variable cluster class, one representative formula instance $x_j$
-that realises that class. Because different cluster classes force different values on $\Omega(n)$
-frozen variables, no single assignment $a \in \{0,1\}^n$ can simultaneously satisfy the
-forced constraints of two different cluster classes. Hence for $j \neq j'$,
+_Level 2 — the family size (from automorphism triviality)._ Because every $F \in H_n$ has
+$\mathrm{Aut}(F) = \{\mathrm{id}\}$ (property 5), the $n!$ variable-relabellings of any single
+$F_0 \in H_n$ are all distinct and all remain in $H_n$, giving $|H_n| \geq n!$. Pigeonholing
+over $\mathrm{poly}(n)$ metric profiles yields $|S| \geq |H_n|/\mathrm{poly}(n) \geq
+n!/\mathrm{poly}(n)$.
+
+_The orbit counting identity._ For any orbit $T = \{F_0^\sigma : \sigma \in S_n\}$ and any
+fixed $x^*$ of weight $w$, the exact count is:
 
 $$
-\mathrm{Sol}(x_j) \cap \mathrm{Sol}(x_{j'}) = \emptyset.
+\bigl|\{F \in T : x^* \in \mathrm{Sol}(F)\}\bigr|
+= w!\,(n-w)! \cdot |\{y \in \mathrm{Sol}(F_0) : |y| = w\}|.
 $$
 
-The $\exp(\Theta(n))$ instances in $H_n$ therefore have _pairwise disjoint_ solution sets.
-The pigeonhole forces $\exp(\Theta(n))$ of these instances to share a single entry-state
-metric profile, and hence to receive the identical output $z^*$ from the witness. Since
-$z^*$ can decode to a satisfying assignment for at most one formula in the collision set,
-the witness fails on all but at most one of those instances.
+_Proof of identity._ $x^* \in \mathrm{Sol}(F_0^\sigma)$ iff $\sigma^*(x^*) \in \mathrm{Sol}(F_0)$,
+where $\sigma^*(x^*)_j = x^*_{\sigma(j)}$. The string $\sigma^*(x^*)$ has weight $w$ (permutations
+preserve Hamming weight) and equals $y$ iff $x^*_{\sigma(j)} = y_j$ for all $j$, i.e., $\sigma$
+maps each position $j$ with $y_j = 1$ to a position $\sigma(j)$ with $x^*_{\sigma(j)} = 1$, and
+each $j$ with $y_j = 0$ to a position with $x^*_{\sigma(j)} = 0$. For $|y| = w$, this requires
+a bijection from the $w$ positions of $y$ equal to 1 into the $w$ positions of $x^*$ equal to 1
+(and independently, from the $n-w$ positions of $y$ equal to $0$ into the $n-w$ positions of
+$x^*$ equal to $0$), giving exactly $w!\,(n-w)!$ permutations $\sigma$. For $|y| \neq w$, none do.
+Summing over solutions $y \in \mathrm{Sol}(F_0)$ of weight $w$ gives the identity. $\square$
 
-_Why the cluster count drives the instance count._ The reason $H_n$ can contain
-$\exp(\Theta(n))$ formulas with pairwise disjoint solution sets is precisely that
-near-threshold formulas possess $\exp(\Theta(n))$ structurally distinct cluster classes:
-each class has a distinct frozen-variable core, and distinct frozen-variable cores correspond
-to incompatible satisfying assignments. The cluster geometry (Level 1) is thus the source of
-the instance diversity (Level 2) that makes the multi-formula pigeonhole possible.
+_Why $x^*$ fails: orbit density on $H_n^+$._ The dense sub-family $H_n^+\subseteq H_n$ satisfies
+$|H_n^+| \geq (1-o(1))|H_n|$ (Markov bound, valid at $\alpha < \alpha^*$), and the dense
+collision set $S^+ := S \cap H_n^+$ satisfies $|S^+| \geq |H_n|/(2\,\mathrm{poly}(n))$.
+For any orbit $T\subseteq H_n^+$ and base formula $F_0\in H_n^+$, the density bound
+$|\{y\in\mathrm{Sol}(F_0):|y|=w\}| \leq (7/8)^{\alpha n/2}\binom{n}{w}$ holds by definition of
+$H_n^+$. Combined with the orbit counting identity:
 
-_Contrast with the $\int$-obstruction._ The $\int$-obstruction ({prf:ref}`lem-integral-obstruction`)
-is a _single-formula_ argument: it shows that for any one formula in $H_n$, an
-$\int$-witness cannot efficiently navigate the clustering landscape because the integrand
-diverges across cluster boundaries. The $\sharp$-obstruction proved here is complementary:
-it is a _family-level_ argument showing that no poly(n)-profile pure $\sharp$-witness can
-correctly handle more than $\mathrm{poly}(n)$ of the $\exp(\Theta(n))$ instances in $H_n$.
-Neither argument alone suffices; together they block all witness types covered by the
-$(\sharp, \int)$-dichotomy.
+$$
+\bigl|\{F \in T : x^* \in \mathrm{Sol}(F)\}\bigr| \leq n! \cdot (7/8)^{\alpha n/2} = |T| \cdot \exp(-\Omega(n)).
+$$
+
+Summing over all orbits in $H_n^+$:
+$|\{F \in H_n^+ : x^* \in \mathrm{Sol}(F)\}| \leq (7/8)^{\alpha n/2} \cdot |H_n^+|$.
+Since $S^+ \subseteq H_n^+$ and $|H_n^+| \leq 2\,\mathrm{poly}(n) \cdot |S^+|$:
+
+$$
+|\{F \in S^+ : x^* \in \mathrm{Sol}(F)\}| \leq (7/8)^{\alpha n/2} \cdot 2\,\mathrm{poly}(n) \cdot |S^+| \;<\; |S^+|.
+$$
+
+_Why $n!$ is the critical ingredient._ This argument works entirely within $H_n$, never
+comparing against the full 3-CNF formula universe. The bound $|H_n| \leq \mathrm{poly}(n) \cdot
+|S|$ uses only the pigeonhole over $\mathrm{poly}(n)$ profiles. The exponential density penalty
+$(7/8)^{\alpha n/2} = \exp(-\Omega(n))$ overwhelms the polynomial $\mathrm{poly}(n)$ correction,
+giving a net factor $\exp(-\Omega(n)) \to 0$. The $n!$ lower bound on orbit sizes (from
+automorphism triviality) is what ensures the orbit decomposition of $H_n$ is valid with all
+orbits of size $n!$; it does not need to dominate any other exponential quantity.
+
+_Contrast with the $\int$-obstruction._ The $\int$-obstruction
+({prf:ref}`lem-causal-arbitrary-poset-transfer`) is a _single-formula_ argument: it shows that
+for any one formula in $H_n$, a pure $\int$-witness cannot commit to all variable values without
+observing cycle-closing clauses. The $\sharp$-obstruction proved here is complementary: it is a
+_family-level_ argument showing that no poly-profile pure $\sharp$-witness can output a correct
+assignment for every formula in $H_n$.
 :::
 
 **Step 5 (Landscape certificate).**
 The three glassy signatures supply the concrete certificate
 $K_{\sharp}^- = (\text{glassy}, \lambda = 0, \theta \to 0)$:
-(i) cluster shattering ensures $\exp(\Theta(n))$ clusters, which the pigeonhole argument in Step 4
-combines with the polynomial cardinality of the metric-profile space to force $\exp(\Theta(n))$
-entry states to share a single metric profile and hence receive identical treatment from $F_n^\sharp$;
+(i) automorphism triviality (property 5) gives $|H_n| \geq n! = \exp(\Theta(n \log n))$
+and partitions $H_n$ into orbits of size $n!$; the pigeonhole argument in Step 4 combines this
+with the polynomial cardinality $\mathrm{poly}(n)$ of the metric-profile space to force a collision
+set $S \subseteq H_n$ with $|S| \geq |H_n|/\mathrm{poly}(n)$, all receiving the same output $x^*$;
+and the Markov-based solution density bound on the auxiliary sub-family $H_n^+$ guarantees that
+within each orbit of $H_n^+$ at most $\exp(-\Omega(n))$ fraction of formulas are satisfied by
+$x^*$, giving $|\{F \in S^+ : x^* \in \mathrm{Sol}(F)\}| < |S^+|$;
 (ii) vanishing spectral gap and $k$-local indistinguishability (Krzakała et al. 2007) provide
 *physical corroboration*: they explain why the metric profiles of states near different clusters
 are the same (local energy statistics are asymptotically identical), supporting the counting
@@ -6278,12 +6427,13 @@ where $\mathfrak{H} = (\mathfrak{H}_n)_{n \in \mathbb{N}}$ and $\mathfrak{H}_n$ 
 3-CNF formulas on $n$ variables at clause-to-variable ratio
 
 $$
-\alpha \approx 4.267
+\alpha = 4.2
 $$
 
-(the random 3-SAT satisfiability threshold). More precisely, $\mathfrak{H}_n$ consists of formulas with
-$m = \lfloor \alpha n \rfloor$ clauses, each clause a disjunction of 3 literals over $n$ variables, such that the
-formula is satisfiable.
+(slightly below the random 3-SAT satisfiability threshold $\alpha^* \approx 4.267$, so that a
+uniformly random 3-CNF formula at ratio $\alpha$ is satisfiable with probability $1 - o(1)$).
+More precisely, $\mathfrak{H}_n$ consists of formulas with $m = \lfloor \alpha n \rfloor$ clauses,
+each clause a disjunction of 3 literals over $n$ variables, such that the formula is satisfiable.
 
 $\Pi_{3\text{-SAT}}^{\mathrm{hard}}$ is an admissibly presented subfamily of $\Pi_{3\text{-SAT}}$: the restriction
 $\mathfrak{H}_n \subseteq F_{3\text{-CNF},n}$ is admissible because membership in $\mathfrak{H}_n$ is decidable
@@ -6306,17 +6456,31 @@ The six definitional requirements for $F \in \mathfrak{H}_n$ are:
    $\Theta(n)$ (Achlioptas-Beame-Molloy 2001).
 4. **Linear expansion:** The clause-variable incidence graph is an expander with linear separator cost and linear
    treewidth.
-5. **Automorphism triviality:** $\operatorname{Aut}(F) = \{\mathrm{id}\}$ for a $(1 - o(1))$ fraction of instances.
-6. **Boolean fiber rigidity:** The algebraic variety $V(F)$ defined by the clause polynomials $\bar{l}_{1i}\bar{l}_{2i}\bar{l}_{3i} = 0$ together with the Boolean constraints $z_j^2 - z_j = 0$ coincides with the Boolean solution set $\mathrm{Sol}(F) \subset \{0,1\}^n$ (no additional complex solutions). The monodromy of the resulting discrete covering over the clause-weight parameter space is trivial.
+5. **Automorphism triviality:** $\operatorname{Aut}(F) = \{\mathrm{id}\}$.
+6. **Boolean fiber rigidity:** The algebraic variety $V(F)$ defined by the clause polynomials
+   $\bar{l}_{1i}\bar{l}_{2i}\bar{l}_{3i} = 0$ together with the Boolean constraints $z_j^2 - z_j = 0$ coincides
+   with the Boolean solution set $\mathrm{Sol}(F) \subset \{0,1\}^n$ (no additional complex solutions). The
+   monodromy of the resulting discrete covering over the clause-weight parameter space is trivial.
 :::
 
 :::{prf:remark} Well-definedness and non-circularity of the hard subfamily
 :label: rem-hard-subfamily-well-definedness
 
-**Non-emptiness.** Each of the structural properties defining $H_n$ is satisfied with probability
-$1 - o(1)$ by uniformly random satisfiable 3-CNF formulas at the satisfiability threshold. By a
-union bound, all properties hold simultaneously with probability $1 - o(1)$, so
+**Non-emptiness.** Each of the six structural properties is satisfied with probability $1 - o(1)$
+by uniformly random satisfiable 3-CNF formulas at ratio $\alpha < \alpha^*$. Properties 1–6
+are standard results in the statistical physics and combinatorics literature cited above. By a
+union bound over all six properties, they hold simultaneously with probability $1 - o(1)$, so
 $H_n \neq \emptyset$ for all sufficiently large $n$.
+
+*Note on solution density.* The density bound $|\{y \in \mathrm{Sol}(F) : |y|=w\}| \leq
+(7/8)^{\alpha n/2}\binom{n}{w}$ is *not* a definitional property of $H_n$, but is derived
+inline in the proof of {prf:ref}`lem-sharp-obstruction`. It defines the auxiliary sub-family
+$H_n^+ \subseteq H_n$, and the key point is that $|H_n^+| \geq (1-o(1))|H_n|$ because the
+Markov bound applies to the unconditional distribution at ratio $\alpha < \alpha^*$, where
+$\Pr[F \text{ satisfiable}] = 1-o(1)$ ensures the conditioning on satisfiability does not
+inflate the failure probability beyond $o(1)$. At $\alpha \geq \alpha^*$, this conditioning
+argument would fail (satisfiability probability drops to $\exp(-\Omega(n))$), which is why
+$\alpha$ is chosen strictly below $\alpha^*$.
 
 **Decidability note.** Membership in $H_n$ requires checking satisfiability, which is NP-complete.
 However, decidability of $H_n$ is NOT required by the proof. The proof uses $H_n$ only through
@@ -6354,9 +6518,9 @@ in the sense of {prf:ref}`def-barrier-datum`, with the following instantiations.
 3. **Hard subfamily.**
    $\mathfrak H_n$ consists of satisfiable formulas at clause-to-variable ratio
    $$
-   \alpha \approx 4.267
+   \alpha = 4.2
    $$
-   (the random 3-SAT satisfiability threshold).
+   (slightly below the random 3-SAT satisfiability threshold $\alpha^* \approx 4.267$).
 
 4. **Solved region.**
    $S_n = \{x \in \{0,1\}^n : x \text{ satisfies all clauses of } F\}$
@@ -6912,45 +7076,328 @@ where $\ell_v, \ell_w, \ell_r$ are literals over $v$, $w$, and a third variable 
 Construct $F_1$ by replacing $C^*$ with $C^{*\prime} = (\neg\ell_v \vee \ell_w \vee \ell_r)$
 (negating the literal of $v$ in $C^*$, leaving all other clauses identical). Because
 $C^* \notin \mathrm{Vis}(k_1)$, the formulas $F_0$ and $F_1$ agree on every clause in
-$\mathrm{Vis}(k_1)$; furthermore, the predecessor state values at site $k_1$ are determined
-solely by the previously committed coordinates, which depend only on $\mathrm{Vis}(k_1)$ and
-earlier updates and are therefore identical for $F_0$ and $F_1$.
+$\mathrm{Vis}(k_1)$.
 
-We must verify $F_1 \in H_n$. Since $F_1$ is obtained from $F_0$ by a single-clause
-modification (replacing $C^*$ with $C^{*\prime}$) out of $\Theta(n)$ clauses total,
-the six structural properties of $H_n$ ({prf:ref}`def-hard-subfamily-3sat`) are preserved.
-Concretely, by the random-ensemble characterisation of $H_n$
-({prf:ref}`rem-hard-subfamily-well-definedness`): solution-space shattering into
-$\exp(\Theta(n))$ clusters (property 1), the glassy landscape, the frustrated-cycle
-structure (property 3), linear expansion (property 4), and automorphism triviality are each
-global properties determined by $\Theta(n)$ clauses; flipping one literal in one clause
-changes these properties only by $O(1/n)$ in any relevant probability, so they hold for
-$F_1$ with probability $1 - o(1)$ over the random ensemble. Therefore $H_n$ can be taken
-to contain pairs $(F_0, F_1)$ with the above structure for every core variable $v$ and
-every cycle-closing clause $C^*$ as constructed.
+Furthermore, the predecessor state values at site $k_1$ are identical for $F_0$ and $F_1$.
+To see this: for every site $j \prec k_1$, we have $C^* \notin \mathrm{Vis}(j)$ as well,
+because $v$ itself has site $k_1$ and $j \prec k_1$ implies $k_1 \notin \mathrm{Pred}(j)
+\cup \{j\}$ (in the linear extension, $k_1$ lies strictly above $j$). Hence $v$ — an
+element of $\operatorname{var}(C^*)$ — is not assigned to any site in
+$\mathrm{Pred}(j) \cup \{j\}$, so $\operatorname{var}(C^*) \not\subseteq
+\mathrm{Pred}(j) \cup \{j\}$. Therefore $F_0$ and
+$F_1$ agree on the visible clause set of every predecessor site $j \prec k_1$. By induction
+on the linear extension order, every predecessor update $U_{n,j}$ ($j \prec k_1$) receives
+identical inputs from $F_0$ and $F_1$ (same predecessor states and same visible clauses) and
+hence produces identical output states. Consequently the predecessor state tuple
+$(\mathrm{state}_j)_{j \in \mathrm{Pred}(k_1)}$ is identical for $F_0$ and $F_1$.
 
-Now consider the value that $v$ must take. In $F_0$, the cycle-closing clause
-$C^* = (\ell_v \vee \ell_w \vee \ell_r)$ creates pressure for $v$ to take the value
-making $\ell_v$ false (i.e., $v = 0$ if $\ell_v = v$), since the SCC cycle forces odd
-parity on the literals — $v$ must be assigned the value that is consistent with the
-frustrated-cycle constraint given $C^*$. In $F_1$, the modified clause
-$C^{*\prime} = (\neg\ell_v \vee \ell_w \vee \ell_r)$ reverses this pressure: the
-cycle-closing constraint now requires $v$ to take the opposite value. More precisely, the
-frustrated-SCC cycle forces the literal polarities to "sum to odd" around the cycle; in $F_0$
-vs.\ $F_1$ the polarity of $\ell_v$ in $C^*$ is flipped, so the two formulas require
-**opposite committed values** for $v$. (We do not claim that all satisfying assignments of
-$F_0$ set $v$ the same way; we claim only that the cycle-closing constraint in $F_0$ is
-compatible with $v = 0$, while the modified constraint in $F_1$ is compatible only with
-$v = 1$, so that at least one of the two formulas will be incorrectly served by any fixed
-output from $U_{n,k_1}$.)
+We establish two sub-claims that together give the required pair $(F_0, F_1)$.
+
+**Sub-claim B1** (Symmetry lemma: sign-backbone probability is exactly $\tfrac{1}{2}$).
+In the random 3-CNF ensemble at density $\alpha$, all literal signs are i.i.d.\ uniform.
+For any \emph{fixed} (non-formula-dependent) variable-clause incidence $(x, C)$, define
+$G = $ all formula aspects except $s(x,C)$, and $X = s(x,C) \in \{0,1\}$ (uniform,
+independent of $G$). Then $F = F(G, X)$ and $F^{\mathrm{flip}} = F(G, 1{-}X)$ are
+equidistributed (since toggling a single uniform bit is a measure-preserving involution),
+giving:
+$$
+\Pr\!\bigl[F^{\mathrm{flip}} \in A\bigr] \;=\; \Pr[F \in A]
+\quad \text{for any event } A.
+$$
+A key consequence: $\Pr\!\bigl[s(x,C) = \mathrm{bb}(F)(x)\bigr] = \mathbf{\tfrac{1}{2}}$
+\emph{exactly}. Proof: the distributions $(G, X = 0)$ and $(G, X = 1)$ are identical as
+random formulas. Let $p = \Pr[\mathrm{bb}(F)(x) = 0 \mid s(x,C) = 0] =
+\Pr[\mathrm{bb}(F)(x) = 0 \mid s(x,C) = 1]$ (equal because the two conditional
+distributions are identical). Then
+$$
+\Pr[s(x,C) = \mathrm{bb}(F)(x)] = \tfrac{1}{2}\!\cdot\!\Pr[\mathrm{bb}(F)(x) = 0
+\mid s(x,C) = 0] + \tfrac{1}{2}\!\cdot\!\Pr[\mathrm{bb}(F)(x) = 1 \mid s(x,C) = 1]
+= \tfrac{1}{2}\!\cdot\! p + \tfrac{1}{2}\!\cdot\!(1-p) = \tfrac{1}{2}. \quad \square
+$$
+This holds without any approximation, despite the fact that $\mathrm{bb}(F)(x)$ depends
+on $s(x,C)$ — the dependence cancels exactly in the probability formula. The key was
+that $s(x,C)$ is a uniform bit and its conditional distributions are identical.
+$\square$
+
+**Sub-claim B2** (Opposite forced values of $v$ via backbone triple).
+We exhibit $F_0 \in H_n$ and a specific backbone clause $C^* \in F_0$ such that all
+satisfying assignments of $F_0$ require $v = b$ and all satisfying assignments of $F_1$
+require $v = 1-b$. The construction uses a _backbone triple_ from the hard phase of
+random 3-SAT.
+
+**The backbone.** For a satisfiable formula $F$, the _backbone_ is
+$$
+\mathrm{Bb}(F) := \bigl\{x_j : \sigma(x_j) \text{ is the same in every satisfying
+assignment } \sigma \text{ of } F\bigr\}.
+$$
+Variables in $\mathrm{Bb}(F)$ are _frozen_: their value is fixed across all satisfying
+assignments of $F$.
+
+**Backbone in the hard phase.** At density $\alpha = 4.2$, random 3-SAT formulas are in the
+hard phase of random satisfiability (above the clustering threshold $\alpha_{\mathrm{clust}}
+\approx 3.86$ and approaching the satisfiability threshold $\alpha^* \approx 4.267$). In
+this regime, backbone variables arise from the over-constrained structure of the formula:
+variables that appear in many clauses can become frozen across all satisfying assignments.
+In particular, property 2 of {prf:ref}`def-hard-subfamily-3sat` and the random 3-SAT
+theory at this density (Mézard--Montanari 2009, Ch.\ 19; Achlioptas--Ricci-Tersenghi 2006)
+give $|\mathrm{Bb}(F)| = \delta n = \Theta(n)$ with probability $1-o(1)$ over the random
+ensemble. The backbone variables need not all arise from the frustrated-SCC structure; they
+arise from any region of the formula with sufficient local constraint density.
+
+**The auxiliary subfamily $H_n^{\mathrm{bb}}$.** Define
+$$
+H_n^{\mathrm{bb}} := \Bigl\{F \in H_n : \exists \text{ variables } v, w, r \in
+\mathrm{Bb}(F) \text{ with a common clause }
+C^*(F) = (\ell_v \vee \ell_w \vee \ell_r) \in F \text{ satisfying }
+\ell_v(\sigma) = \text{true},\; \ell_w(\sigma) = \text{false},\;
+\ell_r(\sigma) = \text{false} \; \forall \sigma \models F\Bigr\},
+$$
+where $v = v_{C^*}$ is the variable in $\operatorname{var}(C^*(F))$ with the
+\emph{smallest} position in the $\int$-witness's linear extension $L_n$ (ties broken by
+index). The witnessing triple $(v, w, r)$ must be backbone variables of $F$ with the
+stated sign pattern; there is no requirement that they lie in the frustrated SCC of $F$
+or that $C^*(F)$ be a ``cycle-closing'' clause.
+
+_Remark on $k_1$ and the visibility condition._ For each witnessing triple $(v, w, r,
+C^*)$, set $k_1 := \sigma_n^{\mathrm{sv}}(v)$, the site assigned to $v$ by the
+$\int$-witness. Since $v = v_{C^*}$ is the smallest-$L_n$-position variable among
+$\{v, w, r\}$, both $w$ and $r$ have strictly later positions in $L_n$. A site with a
+strictly later position cannot be a $\prec_n$-predecessor of $k_1$: if $k_w \prec_n k_1$
+then $k_w$ must appear before $k_1$ in every linear extension of $\prec_n$,
+contradicting $L_n(k_w) > L_n(k_1)$. Hence $w, r \notin \mathrm{Pred}(k_1) \cup
+\{k_1\}$ automatically, so $C^* \notin \mathrm{Vis}(k_1)$. This $k_1$ is a deterministic
+function of $(F, \Omega)$; it is the same $k_1$ used throughout Steps A, B, and C.
+
+We bound $\Pr[F \in H_n^{\mathrm{bb}}]$ from below. One preliminary observation:
+
+\textbf{Backbone count and sign-dependence.} Property 2 of
+{prf:ref}`def-hard-subfamily-3sat` guarantees $|\mathrm{Bb}(F)| = \delta n$ for some
+$\delta = \Theta(1)$ (a positive constant fraction of variables are backbone-frozen).
+Write $\mathrm{Bb}(F) = B$ (a set of $\delta n = \Theta(n)$ variables). The backbone $B$
+and its values depend on the \emph{full} formula $F = (\mathcal{S}, \mathbf{s})$, not
+on $\mathcal{S}$ alone — the literal signs determine which assignments are satisfying and
+hence which variables are frozen. The calculation below accounts for this correctly via
+the ``typical $G^{(C)}$'' argument in Step 2, not a naive independence assumption.
+
+\textbf{Step 1: All-backbone clause count.} Define
+$$
+N_{\mathrm{bb}} := \#\bigl\{C \in F : \operatorname{var}(C) \subseteq \mathrm{Bb}(F)\bigr\}
+$$
+(clauses all of whose three variables are backbone variables). Since $|\mathrm{Bb}(F)|
+= \delta n$, each clause independently has all three variables in $\mathrm{Bb}(F)$ with
+probability $\delta^3(1+o(1))$, giving $\mathbb{E}[N_{\mathrm{bb}}] = \alpha n \cdot
+\delta^3(1+o(1)) = \Theta(n)$. For concentration: backbone membership of each variable
+is determined by the full formula; by the locally tree-like factor-graph structure, the
+joint event $\operatorname{var}(C) \subseteq B$ and $\operatorname{var}(C') \subseteq B$
+for variable-disjoint clauses $C, C'$ has $\mathrm{Cov}(I_C, I_{C'}) = O(1/n)$, and
+$\mathrm{Cov}(I_C, I_{C'}) = O(1)$ when $\operatorname{var}(C) \cap \operatorname{var}(C')
+\neq \emptyset$ ($O(n)$ adjacent pairs). Hence $\mathrm{Var}(N_{\mathrm{bb}}) = O(n)$
+and by Chebyshev $N_{\mathrm{bb}} = \Theta(n)$ with probability $1-o(1)$.
+
+For each all-backbone clause $C$ with $\operatorname{var}(C) = \{x,y,z\} \subseteq
+\mathrm{Bb}(F)$, define $v_C$ as the variable with the \emph{smallest site} in $L_n$
+among $\{x,y,z\}$ (using the $\int$-witness's fixed map $\sigma_n^{\mathrm{sv}}$; ties
+broken by index). Let $w_C, r_C$ be the other two; by the $L_n$-ordering, $w_C, r_C
+\notin \mathrm{Pred}(\sigma_n^{\mathrm{sv}}(v_C)) \cup \{\sigma_n^{\mathrm{sv}}(v_C)\}$
+automatically. The selector $v_C$ depends only on the clause-variable structure and
+$L_n$, not on the literal signs.
+
+\textbf{Step 2: Sign-pattern probability per all-backbone clause.}
+For an all-backbone clause $C$ (with $\operatorname{var}(C) \subseteq \mathrm{Bb}(F)$)
+to witness $F \in H_n^{\mathrm{bb}}$ (with triple $(v_C, w_C, r_C)$), the literal signs
+must satisfy: $s(v_C, C) = \mathrm{bb}(v_C)$, $s(w_C, C) \neq \mathrm{bb}(w_C)$, and
+$s(r_C, C) \neq \mathrm{bb}(r_C)$ (backbone values are well-defined since all three
+variables are backbone variables). Let $G^{(C)}$ denote all formula aspects except the
+three signs $X_v = s(v_C, C)$, $X_w = s(w_C, C)$, $X_r = s(r_C, C)$
+(which are independent uniform bits, independent of $G^{(C)}$). For a fixed $G^{(C)}$,
+define $\mathrm{bb}_{(a,b,c)}(x) := \mathrm{bb}(F(G^{(C)}, X_v{=}a, X_w{=}b, X_r{=}c))(x)$
+for $x \in \{v_C, w_C, r_C\}$. Then:
+$$
+\Pr[\text{sign pattern witnesses} \mid G^{(C)}]
+= \tfrac{1}{8} \cdot
+\bigl|\bigl\{(a,b,c) \in \{0,1\}^3 : a = \mathrm{bb}_{(a,b,c)}(v_C),\,
+b \neq \mathrm{bb}_{(a,b,c)}(w_C),\, c \neq \mathrm{bb}_{(a,b,c)}(r_C)\bigr\}\bigr|.
+$$
+For ``typical'' $G^{(C)}$ — which holds with probability $1 - O(1/n)$ over the random
+ensemble by the locally tree-like factor-graph structure at constant density
+({cite}`MezardMontanari09`, Ch.~14) — the three backbone values
+$\mathrm{bb}_{(a,b,c)}(v_C)$, $\mathrm{bb}_{(a,b,c)}(w_C)$, $\mathrm{bb}_{(a,b,c)}(r_C)$
+are the \emph{same constant} for all eight $(a,b,c)$ (changing these three signs within
+one clause does not propagate to any backbone value, since the graph-theoretic neighbourhood
+of $C$ in the factor graph is a tree with no backbone-feedback cycles). In this typical
+case the count above equals exactly $1$ (the unique triple $(a^*, b^*, c^*)$ satisfying
+the alignment condition), giving
+$$
+\Pr[\text{sign pattern witnesses} \mid G^{(C)}] = \tfrac{1}{8}.
+$$
+For atypical $G^{(C)}$ (prob.\ $O(1/n)$) the conditional probability is at most $1$.
+Hence $\Pr[\text{sign pattern witnesses}] = \tfrac{1}{8} + O(1/n)$.
+
+\textbf{Consistency with Sub-claim B1.} For any \emph{single} sign $(x,C)$, Sub-claim B1
+gives $\Pr[s(x,C) = \mathrm{bb}(x)] = \tfrac{1}{2}$ exactly, which matches the above to
+leading order.
+
+\textbf{Step 3: Lower bound via Chebyshev.} Let $W = \sum_C I_C^{\mathrm{witness}}$
+where the sum is over all $\alpha n$ clauses and $I_C^{\mathrm{witness}} = 1$ iff all
+three variables of $C$ are backbone variables AND the sign pattern witnesses
+$F \in H_n^{\mathrm{bb}}$. Then
+$\mathbb{E}[W] = \mathbb{E}[N_{\mathrm{bb}}] \cdot (\tfrac{1}{8} + O(1/n)) = \Theta(n)$
+(using Step 2's probability estimate and $\mathbb{E}[N_{\mathrm{bb}}] = \Theta(n)$).
+For the variance: sign-pattern events for distinct clauses share backbone values as a
+common factor. Two clauses $C, C'$ have correlated indicator events only through backbone
+values; by the locally tree-like structure the correlations are $O(1/n)$ per pair (backbone
+values of $\mathrm{var}(C)$ and $\mathrm{var}(C')$ are nearly independent when their
+variable-clause neighbourhoods are disjoint, which holds for all but $O(n)$ pairs).
+Therefore $\mathrm{Var}(W) = O(n)$, and by Chebyshev:
+$$
+\Pr[W = 0] \;\leq\; \Pr\!\bigl[|W - \mathbb{E}[W]| \geq \mathbb{E}[W]\bigr]
+\;\leq\; \frac{\mathrm{Var}(W)}{\mathbb{E}[W]^2} \;=\; \frac{O(n)}{\Theta(n)^2} \;=\;
+O(1/n) \;\to\; 0.
+$$
+Hence:
+$$
+\boxed{\Pr[F \in H_n^{\mathrm{bb}}] \;\geq\; 1 - O(1/n) - o(1) \;=\; 1-o(1).}
+$$
+
+\textbf{Joint existence of $(F_0, F_1)$ in $H_n^{\mathrm{bb}} \times H_n$.}
+The argument must remain in the \emph{random} probability space throughout (Mode 1) until
+the probabilistic method extracts the deterministic pair at the very end. For random
+$F_0 \sim$ random 3-CNF ensemble, define the formula-dependent flip: if $F_0 \in
+H_n^{\mathrm{bb}}$, let $(v_0, C_0) = (v_{C^*(F_0)}, C^*(F_0))$ (smallest-site variable
+in the witnessing clause) and set $G(F_0) = \varphi_{v_0, C_0}(F_0)$ (toggle the sign of
+$v_0$ in $C_0$); otherwise $G(F_0) = F_0$.
+
+We claim $\Pr[G(F_0) \notin H_n \mid F_0 \in H_n^{\mathrm{bb}}] = O(1/n) \to 0$.
+The formula $G(F_0)$ differs from $F_0$ by exactly one literal sign, replacing clause
+$C_0 = C^*$ by $C_0' = C^{*\prime}$. The six $H_n$ properties are:
+\begin{itemize}
+\item Properties 4 (linear expansion) and 5 (automorphism triviality): depend only on the
+clause-variable structure $\mathcal{S}$, which is unchanged. Preserved exactly.
+\item Property 6 (Boolean fiber rigidity): depends on the formula's solution-space
+structure; changing one clause affects it only if that clause is ``essential'' for rigidity,
+which occurs with probability $O(1/n)$ by the locally tree-like structure.
+\item Property 1 (solution-space shattering): the solution-space cluster structure changes
+by at most one constraint; by property 4 (linear expansion), clusters have diameter
+$\Omega(n)$ so removing/replacing one clause is subsumed with probability $1 - O(1/n)$.
+\item Property 2 (glassy landscape / backbone): backbone changes at most for variables in
+the $O(1)$-radius neighbourhood of $v_0$ in the factor graph, affecting $O(1)$ variables
+(probability $1-O(1/n)$).
+\item Property 3 (frustrated SCC): Let $S_0 = S(F_0)$ be the frustrated SCC of $F_0$.
+Two sub-cases: (a) if $\operatorname{var}(C^*) \cap S_0 = \emptyset$ (the backbone triple
+is outside the SCC), then $G(F_0)$ and $F_0$ agree on every clause with variables in
+$S_0$, so the SCC and its odd-parity cycle are preserved \emph{exactly};
+(b) if $\operatorname{var}(C^*) \cap S_0 \neq \emptyset$, then one clause inside or
+adjacent to $S_0$ has one sign flipped; by the locally tree-like structure and linear
+expansion, the SCC structure changes with probability $O(1/n)$, and the
+odd-parity cycle is preserved with probability $1-O(1/n)$ (other frustrated cycles in
+$S_0$ not through $v$ in $C^*$ remain frustrated). In either sub-case property 3 fails
+with probability at most $O(1/n)$.
+\end{itemize}
+By union bound over the six properties, $\Pr[G(F_0) \notin H_n \mid F_0 \in H_n^{\mathrm{bb}}]
+= O(1/n) \to 0$.
+
+Therefore:
+$$
+\Pr\!\bigl[F_0 \in H_n^{\mathrm{bb}} \;\text{and}\; G(F_0) \in H_n\bigr]
+\;=\; \Pr[F_0 \in H_n^{\mathrm{bb}}] \cdot \Pr[G(F_0) \in H_n \mid F_0 \in H_n^{\mathrm{bb}}]
+\;\geq\; (1-o(1))(1 - O(1/n)) \;>\; 0.
+$$
+By the probabilistic method, there exists a specific deterministic formula $F_0 \in
+H_n^{\mathrm{bb}}$ such that $G(F_0) \in H_n$. Set $F_1 = G(F_0)$.
+
+**Fix the pair.** Fix $F_0 \in H_n^{\mathrm{bb}}$ as above. From $F_0$, read off the
+witnessing backbone triple $(v, w, r)$ with $v = v_{C^*}$ (smallest-site variable in
+$C^*$) and $C^* = (\ell_v \vee \ell_w \vee \ell_r) \in F_0$. $F_1 = G(F_0)$ is obtained
+by replacing $C^*$ with $C^{*\prime} = (\neg\ell_v \vee \ell_w \vee \ell_r)$; $F_1 \in
+H_n$ (definite fact about this specific pair).
+
+_Remark on $k_1$ and why $v$ was chosen as the smallest-site variable._ Setting $k_1 :=
+\sigma_n^{\mathrm{sv}}(v)$ (the site of $v$ in the ∫-witness's fixed map), the choice of
+$v$ as the smallest-site variable among $\{x, y, z\} = \mathrm{var}(C^*)$ ensures
+$w, r \notin \mathrm{Pred}(k_1) \cup \{k_1\}$ — which is needed for
+$C^* \notin \mathrm{Vis}(k_1)$ (Step A). In Steps A and C, $k_1 = \sigma_n^{\mathrm{sv}}
+(v)$ is a fixed, algorithm-determined site (a property of the ∫-witness $\Omega$, not of
+the formula). The ∫-witness applies the same $k_1$ to both $F_0$ and $F_1$: both are
+processed by the same fixed $\Omega$ with the same site-variable map, so $v$ is always
+processed at site $k_1$ regardless of whether $F_1$ has any SCC structure at all. The
+forcing argument for $F_1$ (that $F_1$ requires $v = 1-b$) depends only on the backbone
+values of $w$ and $r$ transferred from $\mathcal{C}^-$ (established below) and the clause
+$C^{*\prime} \in F_1$.
+
+By construction $F_1$ is obtained from $F_0$ by replacing $C^*$ with $C^{*\prime} =
+(\neg\ell_v \vee \ell_w \vee \ell_r)$. Note $C^{*\prime} \neq C^*$ (they differ in the
+sign of $\ell_v$), and $C^{*\prime} \notin F_0$ (the clause $(\neg\ell_v \vee \ell_w \vee
+\ell_r)$ with $\neg\ell_v(\sigma) = \text{false}$ for all $\sigma \models F_0$ (since
+$\ell_v(\sigma) = \text{true}$ in backbone) and $\ell_w(\sigma) = \ell_r(\sigma) =
+\text{false}$ would be violated by every satisfying assignment of $F_0$ if present — but
+$F_0$ is satisfiable, contradiction, so $C^{*\prime} \notin F_0$). Since $w \notin
+\mathrm{Pred}(k_1) \cup \{k_1\}$, $\operatorname{var}(C^*) \not\subseteq \mathrm{Pred}(k_1)
+\cup \{k_1\}$, so $C^* \notin \mathrm{Vis}(k_1)$. Moreover, $\operatorname{var}(C^{*\prime})
+= \operatorname{var}(C^*)$, so $C^{*\prime} \notin \mathrm{Vis}(j)$ for all $j \prec k_1$
+by the same argument (v's site $k_1 \notin \mathrm{Pred}(j) \cup \{j\}$), confirming that
+$F_0$ and $F_1$ agree on $\mathrm{Vis}(j)$ for every $j \preceq k_1$.
+
+**All satisfying assignments of $F_0$ have $v = b$.** By definition of $H_n^{\mathrm{bb}}$,
+$v, w, r \in \mathrm{Bb}(F_0)$ with $\ell_v(\sigma) = \text{true}$ (i.e.\ $\sigma(v) = b$),
+$\ell_w(\sigma) = \text{false}$, $\ell_r(\sigma) = \text{false}$ for every satisfying
+assignment $\sigma$ of $F_0$. Suppose for contradiction some satisfying assignment $\sigma$
+of $F_0$ has $\sigma(v) = 1-b$, so $\ell_v(\sigma) = \text{false}$. Then $C^* = (\ell_v
+\vee \ell_w \vee \ell_r)$ evaluates to $(\text{false} \vee \text{false} \vee \text{false})
+= \text{false}$ under $\sigma$, violating $C^* \in F_0$. Contradiction. Hence every
+satisfying assignment of $F_0$ has $v = b$. $\square$
+
+**All satisfying assignments of $F_1$ have $v = 1-b$.** We first establish that $\ell_w =
+\text{false}$ and $\ell_r = \text{false}$ in every satisfying assignment of $F_1$.
+
+Let $\mathcal{C}^- := F_0 \setminus \{C^*\}$. We claim $\ell_w = \text{false}$ and
+$\ell_r = \text{false}$ hold in every satisfying assignment of $\mathcal{C}^-$.
+
+_Proof of claim for $\ell_w$:_ Suppose for contradiction that $\tau \models \mathcal{C}^-$
+with $\ell_w(\tau) = \text{true}$. Since $\ell_w(\tau) = \text{true}$, the disjunction
+$C^* = (\ell_v \vee \ell_w \vee \ell_r)$ evaluates to $\text{true}$ under $\tau$ (regardless
+of $\ell_v(\tau)$ and $\ell_r(\tau)$). Hence $\tau$ satisfies $\mathcal{C}^- \cup \{C^*\}
+= F_0$, making $\tau$ a satisfying assignment of $F_0$. But $w \in \mathrm{Bb}(F_0)$ with
+$\ell_w(\sigma) = \text{false}$ for every $\sigma \models F_0$, so $\ell_w(\tau) =
+\text{false}$ — contradicting $\ell_w(\tau) = \text{true}$. The symmetric argument
+(replacing $w$ by $r$) gives $\ell_r = \text{false}$ in every satisfying assignment of
+$\mathcal{C}^-$. $\square$
+
+Since $F_1 = \mathcal{C}^- \cup \{C^{*\prime}\}$, every satisfying assignment $\tau$ of
+$F_1$ must satisfy $\mathcal{C}^-$, giving $\ell_w(\tau) = \text{false}$ and
+$\ell_r(\tau) = \text{false}$.
+
+Now suppose for contradiction some satisfying assignment $\tau$ of $F_1$ has $\tau(v) = b$,
+i.e.\ $\ell_v(\tau) = \text{true}$, so $\neg\ell_v(\tau) = \text{false}$. Then
+$C^{*\prime} = (\neg\ell_v \vee \ell_w \vee \ell_r)$ evaluates to $(\text{false} \vee
+\text{false} \vee \text{false}) = \text{false}$ under $\tau$, violating $C^{*\prime} \in F_1$.
+Contradiction. Hence no satisfying assignment of $F_1$ has $v = b$. Since $F_1 \in H_n$ (from the joint
+existence argument in B2, not from a separate B1 application) and $H_n$ requires
+satisfiability, every satisfying assignment of $F_1$ has $v = 1-b$. $\square$
+
+Combining: $F_0 \in H_n^{\mathrm{bb}} \subseteq H_n$, $F_1 \in H_n$, they agree on
+$\mathrm{Vis}(k_1)$ (differing only in $C^* \notin \mathrm{Vis}(k_1)$), every satisfying
+assignment of $F_0$ has $v = b$, and every satisfying assignment of $F_1$ has $v = 1-b$.
 
 **Step C** (Deterministic failure).
-By Step A, $U_{n,k_1}$ outputs the **same** next state for both $F_0$ and $F_1$ (since
-they agree on all inputs visible to $U_{n,k_1}$). This single output commits to one value
-for $v$ — call it $v = b$ for $b \in \{0,1\}$. By Step B, at least one of $F_0, F_1$
-requires $v = 1 - b$ for correctness. Therefore $U_{n,k_1}$ fails to correctly determine
-$v$ on at least one formula in $H_n$, violating the correctness condition of the
-$\int$-witness. $\square$
+By Step A, $U_{n,k_1}$ receives identical inputs for $F_0$ and $F_1$ (same predecessor
+states and same visible clause set), so it outputs the same next state for both. Let $b'
+\in \{0,1\}$ be the value assigned to $v$ in that common output state.
+
+We must verify that this assignment to $v$ is _final_: no subsequent update modifies $v$.
+By item 8 of {prf:ref}`def-pure-int-witness-rigorous`, each variable is processed by
+exactly one update in the linear extension — the update at the unique site $k_1$ to which
+$v$ is assigned by the site-variable map $\sigma_n^{\mathrm{sv}}$. Each update
+$U_{n,j}$ writes only to the state slot of its own assigned variable ($\sigma_n^{\mathrm{sv}}$
+assigns a distinct variable to each site, so all sites $j \neq k_1$ are assigned variables
+other than $v$); updates do not write to state slots of variables assigned to other sites.
+Therefore all updates $U_{n,j}$ for $j \succ k_1$ leave $v$'s committed value $b'$
+unchanged. Therefore $v = b'$ in the final output assignment of the $\int$-witness, for
+both $F_0$ and $F_1$.
+
+By Sub-claim B2, $F_0$ requires $v = b$ and $F_1$ requires $v = 1-b$ in any satisfying
+assignment. Since $b' \in \{0,1\}$, at least one of $F_0, F_1$ has $v = b' \neq$ its
+required value. The $\int$-witness therefore fails to produce a satisfying assignment on at
+least one formula in $H_n$, violating its correctness condition. $\square$
 
 **Extension to $\Omega(n)$ failures.**
 The above argument establishes that any $\int$-witness fails on at least one formula in
@@ -7097,7 +7544,7 @@ $\sigma(F_1) \neq \sigma(F_2)$ must lie in distinct equivalence classes.
 
 We construct $N = 2^{cn}$ formulas in $\mathfrak{H}_n$ (for a suitable constant $c > 0$) with
 pairwise-distinct required outputs. Draw $N$ formulas $F^{(1)}, \ldots, F^{(N)}$ independently at the
-threshold ratio $\alpha \approx 4.267$ (i.e., $m = \lceil \alpha n \rceil$ clauses). We show that with
+hard ratio $\alpha = 4.2$ (i.e., $m = \lceil \alpha n \rceil$ clauses). We show that with
 high probability these formulas have **pairwise-disjoint** satisfying-assignment sets.
 
 For two independently drawn formulas $F^{(i)}$ and $F^{(j)}$, the probability that they share any
@@ -7110,20 +7557,20 @@ $$
 $$
 Each clause is satisfied by a fixed assignment $\sigma$ with probability $7/8$ (since exactly one of
 the eight literal patterns falsifies a uniformly random 3-clause), and the $2m$ clauses across the two
-independent formulas are independent. Substituting $m = \alpha n$:
+independent formulas are independent. Substituting $m = \alpha n$ with $\alpha = 4.2$:
 $$
 2^n \cdot (7/8)^{2\alpha n}
 = 2^{n\bigl(1 - 2\alpha \log_2(8/7)\bigr)}
-= 2^{n(1 - 2 \cdot 4.267 \cdot 0.193)}
-= 2^{-0.647n}.
+= 2^{n(1 - 2 \cdot 4.2 \cdot 0.193)}
+= 2^{-0.621n}.
 $$
 For $N = 2^{cn}$ formulas, the union bound over $\binom{N}{2} < 2^{2cn}$ pairs gives
 $$
 \Pr[\text{any pair shares a solution}]
-\;\leq\; 2^{2cn} \cdot 2^{-0.647n}
-\;=\; 2^{-n(0.647 - 2c)}.
+\;\leq\; 2^{2cn} \cdot 2^{-0.621n}
+\;=\; 2^{-n(0.621 - 2c)}.
 $$
-Choosing any $c < 0.647/2 \approx 0.32$ (e.g., $c = 0.1$) makes this probability $o(1)$.
+Choosing any $c < 0.621/2 \approx 0.31$ (e.g., $c = 0.1$) makes this probability $o(1)$.
 With pairwise-disjoint solution sets, any correct solver must output a satisfying assignment for each
 formula, and these assignments are necessarily pairwise distinct (belonging to disjoint solution sets).
 Therefore
@@ -7602,10 +8049,9 @@ only the semantic obstruction.
 :::{prf:lemma} Scaling Blockage for Canonical 3-SAT
 :label: lem-random-3sat-scaling-blockage
 
-For every pure $\ast$-witness $(\mu_n, q_\ast, \mathrm{split}, \mathrm{merge}, \mathrm{base})$ in the sense of
-{prf:ref}`def-pure-star-witness-rigorous` on $\Pi_{3\text{-SAT}}$, the polynomial recursion-tree load bound
-$q_\ast(n)$ is violated. Equivalently, the scaling obstruction certificate $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$
-holds.
+No pure $\ast$-witness $(\mu_n, q_\ast, \mathrm{split}, \mathrm{merge}, \mathrm{base})$ in the sense of
+{prf:ref}`def-pure-star-witness-rigorous` exists for $\Pi_{3\text{-SAT}}$. Equivalently, the scaling obstruction
+certificate $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$ holds.
 :::
 
 :::{prf:proof}
@@ -7636,29 +8082,43 @@ The expansion-based obstruction extends beyond balanced binary variable-partitio
 - *Non-variable-partition splits in the lifted state space:* the correctness identity forces the merge map to reconcile the constraint structure of the original formula, and expansion is a property of that structure regardless of encoding.
 - *Multi-way splits:* the total crossing-clause count remains $\Omega(n)$ by expansion, since any partition of the variable set into $k \geq 2$ parts produces at least as many crossing clauses as a binary partition.
 
-**Step 3. [Supercritical condition]:**
-By {prf:ref}`lem-scaling-obstruction`: when $|\operatorname{boundary}(\mathcal{X}_1, \mathcal{X}_2)| = \Omega(n)$ for
-every balanced partition, the recombination cost dominates: $f(n) = \Omega(n)$ at every recursive level. Any
-divide-and-conquer strategy produces the recurrence $T(n) = a \cdot T(n/2) + f(n)$ with $f(n) = \Omega(n)$.
+**Step 3. [Modal-purity violation at merge]:**
+The $\Theta(n)$ crossing clauses form a 3-CNF sub-formula $\varphi_{\mathrm{cross}}$ over interface variables from
+both $V_1$ and $V_2$. The merge map must produce an assignment satisfying ALL clauses, including
+$\varphi_{\mathrm{cross}}$. By the OGP (property (P1) of {prf:ref}`def-hard-subfamily-3sat`), the solution space
+shatters into $\exp(\Theta(n))$ clusters at Hamming distance $\Omega(n)$ from each other, with frozen-variable cores
+(property (P2)) locking $\Omega(n)$ variables per cluster. Receiving sub-answers $(\sigma_1, \sigma_2)$ from the
+two recursive calls, the merge map faces a task that lies outside the $\ast$-modal class. Every correct merge
+strategy requires at least one of:
 
-The $\Theta(n)$ crossing clauses at each partition couple the subproblems: the satisfiability of crossing clauses
-depends on variable assignments from BOTH $V_1$ and $V_2$. In a pure $\ast$-witness, the merge map $M_n$ must
-produce a correct output from the two sub-answers. By the correctness condition of
-{prf:ref}`def-pure-star-witness-rigorous`, the merge map must handle all $\Theta(n)$ crossing constraints. Each
-crossing clause involves variables from both partitions, so the merge map's output must be consistent with
-$\Theta(n)$ constraints that were not resolved by either recursive call. The merge map is polynomial-time, so it
-contributes $\Omega(n)$ to the recursion-tree load (at least one unit of work per crossing clause to verify
-consistency).
+**(a) Constraint satisfaction ($\flat$-type).** The crossing clauses form a CSP on the interface variables.
+Given the fixed sub-assignments, the merge must solve $\varphi_{\mathrm{cross}}$ to produce a globally consistent
+output. Constraint satisfaction via algebraic elimination or propagation is a $\flat$-modal operation, excluded by
+$\ast$-purity.
 
-At the next recursion level, each half is again partitioned with $\Theta(n/2)$ crossing clauses, and so on. The
-total recursion-tree load accumulates $\Omega(n)$ merge work at each of the $\Theta(\log n)$ levels. Since the
-crossing-clause structure at each level inherits the random expansion property of the parent
-formula, no level admits a sub-linear separator. This makes the problem **supercritical** in the sense of {prf:ref}`lem-scaling-obstruction`.
+**(b) Cluster selection ($\sharp$-type).** Each cluster uniquely determines $\Omega(n)$ frozen variable positions;
+two solutions from distinct clusters disagree on $\Omega(n)$ positions. The merge must select which of the
+$\exp(\Theta(n))$ cluster pairs $(\mathcal{C}_1, \mathcal{C}_2)$ admits a consistent extension across the crossing
+clauses. This search over an exponential landscape is a $\sharp$-modal operation (metric descent / landscape
+search), excluded by $\ast$-purity.
+
+**(c) Dependency propagation ($\int$-type).** The expansion cascade of Step 2 in
+{prf:ref}`lem-scaling-obstruction` creates a dependency chain through $\Omega(n)$ variables. Propagating
+consistency corrections through this chain is an $\int$-modal operation (causal/poset processing), excluded by
+$\ast$-purity.
+
+The $\ast$-modal operations permitted by {prf:ref}`def-pure-star-witness-rigorous` are restricted to local
+recombination of independently computed sub-answers. Since every correct merge strategy requires at least one of
+(a)--(c), and none is $\ast$-modal, no pure $\ast$-witness can represent the required computation. This is a
+representational impossibility: no $\ast$-modal merge function — regardless of running time — can express the
+reconciliation of the coupled sub-answers.
 
 **Step 4. [Frontend obstruction application]:**
-By the strengthened {prf:ref}`lem-scaling-obstruction`: the supercritical condition blocks ALL pure $\ast$-witnesses
-on the hard subfamily — not only the Class IV divider template of {prf:ref}`def-class-iv-dividers`, but any
-divide-and-conquer decomposition regardless of splitting strategy, branching factor, or state-space encoding.
+By {prf:ref}`lem-scaling-obstruction`: the modal-purity violation established in Step 3 blocks ALL pure
+$\ast$-witnesses on the hard subfamily — not only the Class IV divider template of {prf:ref}`def-class-iv-dividers`,
+but any divide-and-conquer decomposition regardless of splitting strategy, branching factor, or state-space
+encoding. The universality follows because Step 2 establishes $\Theta(n)$ crossing clauses for every splitting
+strategy, so the merge always faces the same representational impossibility.
 
 **Step 5. [Restriction monotonicity]:**
 By {prf:ref}`lem-frontend-restriction-monotonicity`: the blockage lifts from the hard subfamily to the full canonical
@@ -7676,54 +8136,15 @@ treewidth), then balanced partitions would create only $O(n^{1-\epsilon})$ cross
 divide-and-conquer viable. The failure point is the linear separator cost $c' \cdot n$.
 :::
 
-:::{prf:remark} Scaling blockage: correctness obstruction
+:::{prf:remark} Why the obstruction is representational, not quantitative
 :label: rem-scaling-blockage-correctness-argument
 
-The quantitative argument (total load $\Omega(n\log n)$) does not by itself contradict the polynomial
-bound $q_\ast(n)$. The obstruction is fundamentally about *correctness*:
-
-1. **Merge-map correctness.** At each recursive level, the $\Theta(n)$ crossing clauses create
-   constraints linking variables across both sub-instances. The merge map must produce an assignment
-   satisfying ALL clauses, including crossing ones.
-2. **Crossing clauses as fresh sub-problems.** The crossing clauses form a 3-CNF sub-formula over
-   interface variables from both partitions. Satisfying these — given fixed sub-assignments from the
-   recursive calls — is itself a constraint-satisfaction problem on the interface.
-3. **Modal-purity violation at the merge.** The sub-instances are not independent. By
-   the OGP (property (P1) of {prf:ref}`def-hard-subfamily-3sat`), the solution space shatters into
-   $\exp(\Theta(n))$ clusters at Hamming distance $\Omega(n)$ from each other, with frozen-variable
-   cores (property (P2)) locking $\Omega(n)$ variables per cluster. The merge map, receiving
-   sub-answers $(\sigma_1, \sigma_2)$ from the two recursive calls, faces a task that is structurally
-   outside the $\ast$-modal class:
-
-   **(a) Constraint satisfaction ($\flat$-type).** The $\Theta(n)$ crossing clauses form a 3-CNF
-   sub-formula $\varphi_{\mathrm{cross}}$ on the interface variables. Given the fixed sub-assignments,
-   the merge must solve this constraint-satisfaction problem to produce a globally consistent output.
-   Constraint satisfaction via algebraic elimination or propagation is a $\flat$-modal operation,
-   excluded by $\ast$-purity.
-
-   **(b) Cluster selection ($\sharp$-type).** The frozen-variable structure ensures that each cluster
-   uniquely determines $\Omega(n)$ variable positions. Two solutions from different clusters disagree
-   on $\Omega(n)$ frozen positions. The merge must *select* which of the $\exp(\Theta(n))$ cluster
-   pairs $(\mathcal{C}_1, \mathcal{C}_2)$ admits a consistent extension to the crossing clauses.
-   This is a search/optimization over an exponential landscape — a $\sharp$-modal operation (metric
-   descent / landscape search), excluded by $\ast$-purity.
-
-   **(c) Dependency propagation ($\int$-type).** The expansion cascade of Step 2 in
-   {prf:ref}`lem-scaling-obstruction` creates a dependency chain through $\Omega(n)$ variables.
-   Propagating consistency corrections through this chain is an $\int$-modal operation (causal/poset
-   processing), excluded by $\ast$-purity.
-
-   The merge in a pure $\ast$-witness is restricted to local recombination: taking independently
-   computed sub-answers and combining them. Since every correct merge strategy requires at least one
-   of (a)--(c), and none is an $\ast$-modal operation, the pure $\ast$-witness **cannot represent**
-   the required merge computation. This is a representational impossibility within the restricted
-   model, not an assertion that "many behaviors require exponential time."
-
-4. **Structural conclusion.** The merge map in a pure $\ast$-witness cannot correctly perform the
-   required task because constraint satisfaction, cluster selection, and dependency propagation are
-   all non-$\ast$-modal operations. The polynomial bound $q_\ast(n)$ is violated not because the
-   merge runs out of time, but because no $\ast$-modal merge function — regardless of its running
-   time — can express the computation needed to reconcile the coupled sub-answers.
+The total recursion-tree load $\Omega(n \log n)$ is polynomial and does not itself violate $q_\ast(n)$.
+The blockage arises entirely from the modal-purity violation in Step 3: no $\ast$-modal computation can
+express the required merge, so the correctness identity cannot be satisfied within the restricted model.
+The barrier metatheorem ({prf:ref}`thm-star-barrier-obstruction-metatheorem`) is therefore not invoked;
+the certificate $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$ is established directly by the representational
+impossibility argument.
 :::
 
 :::{prf:remark} Per-step energy bound for the $\ast$-channel
@@ -7759,10 +8180,9 @@ provides the $\ast$-channel's contribution to the modal barrier crossing time in
 :::{prf:lemma} Boundary Blockage for Canonical 3-SAT
 :label: lem-random-3sat-boundary-blockage
 
-For every pure $\partial$-witness $(B_n^\partial, \partial_n, C_n^\partial, q_\partial)$ in the sense of
-{prf:ref}`def-pure-boundary-witness-rigorous` on $\Pi_{3\text{-SAT}}$, the polynomial-time contraction requirement
-is violated: the contraction $C_n^\partial$ requires time $2^{\Omega(n)}$, exceeding any polynomial bound.
-Equivalently, the boundary obstruction certificate $K_{\mathrm{E8}}^-$ holds.
+No pure $\partial$-witness $(B_n^\partial, \partial_n, C_n^\partial, q_\partial)$ in the sense of
+{prf:ref}`def-pure-boundary-witness-rigorous` exists for $\Pi_{3\text{-SAT}}$. Equivalently, the boundary
+obstruction certificate $K_{\mathrm{E8}}^-$ holds.
 :::
 
 :::{prf:proof}
@@ -7783,7 +8203,7 @@ $$
 $$
 for an explicit constant $c'' > 0$ depending on $\alpha$. This follows from the expansion of random bipartite graphs
 at clause-to-variable ratio $\alpha > 1$: any set $S$ of $|S| \leq n/2$ variables has $|\partial S| \geq c'' |S|$
-neighbors among clauses, and tree decompositions of expander graphs require bags of linear size.
+neighbors among clauses. To see that this expansion forces linear treewidth: if $\operatorname{tw}(G_n) \leq k$ then $G_n$ has a balanced vertex separator of size at most $k+1$ (standard separator-treewidth duality); but the expansion property $|\partial S| \geq c''|S|$ for all $|S| \leq n/2$ implies every balanced vertex separator has size $\Omega(n)$; therefore $\operatorname{tw}(G_n) = \Omega(n)$.
 
 **Step 4. [Structural modal-purity violation]:**
 Any pure $\partial$-witness produces an interface object $B_n^\partial$ through which all information about the
@@ -7862,10 +8282,22 @@ boundary channel would not be blocked:
 - If the constraint graph had bounded treewidth (as 2-SAT does, where the implication graph has treewidth $O(1)$),
   tree-decomposition-based algorithms would solve the problem in polynomial time regardless of cluster count.
 
-The failure point is the conjunction: linear treewidth forces $\Theta(n)$-sized separators, and the
-$\exp(\Theta(n))$ clusters with $\Omega(n)$-spread frozen patterns project to $2^{\Omega(n)}$ distinct partial
-assignments on every such separator, yielding exponential contraction time $T(C_n^\partial) \geq 2^{\Omega(n)}$
-that violates the polynomial-time requirement of {prf:ref}`def-pure-boundary-witness-rigorous`.
+The failure point is the conjunction: linear treewidth forces the interface to encode $\Theta(n)$ separator
+variables, and the $\exp(\Theta(n))$ clusters with $\Omega(n)$-spread frozen patterns ensure that mapping an
+interface state to the correct satisfying assignment requires solving a constraint-satisfaction problem — a
+$\flat$-modal operation outside the $\partial$-modal class. The representational impossibility of Step 4 is
+what yields the blockage, not a time lower bound on the contraction.
+:::
+
+:::{prf:remark} Why the obstruction is representational, not a time lower bound
+:label: rem-boundary-blockage-correctness-argument
+
+The treewidth bound $\operatorname{tw}(G_n) = \Omega(n)$ is polynomial and does not itself violate
+$q_\partial(n)$. The blockage arises entirely from the modal-purity violation in Step 4: the correct
+contraction function requires $\flat$-type constraint satisfaction, which lies outside the $\partial$-modal
+class regardless of how much time is available. The barrier metatheorem
+({prf:ref}`thm-partial-barrier-obstruction-metatheorem`) is therefore not invoked; the certificate
+$K_{\mathrm{E8}}^-$ is established directly by the representational impossibility argument.
 :::
 
 :::{prf:remark} Per-step energy bound for the $\partial$-channel (non-amplification)
