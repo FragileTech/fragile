@@ -7526,8 +7526,8 @@ decimation step makes increasingly poor choices as the solution-space geometry s
 
 For every pure $\flat$-witness $(\Sigma, A_n^\flat, B_n^\flat, s_n, e_n, d_n, q_\flat)$ in the sense of
 {prf:ref}`def-pure-flat-witness-rigorous`, the cardinality bound $|B_n^\flat| \leq q_\flat(n)$ is violated.
-In particular, when the elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$
-(quotient/congruence compression), this yields the integrality obstruction certificate $K_{\mathrm{E4}}^-$.
+For witnesses whose elimination map operates via $\mathfrak{S}_{\mathrm{quot}}$
+(quotient/congruence compression), the cardinality violation yields the integrality obstruction certificate $K_{\mathrm{E4}}^-$.
 :::
 
 :::{prf:proof}
@@ -7539,9 +7539,10 @@ a sketch $s_n \to e_n \to d_n$, and the correctness identity.
 **Step 2. [Cardinality lower bound — search formulation.]**
 For the search formulation ({prf:ref}`def-threshold-random-3sat-family`), a correct pure $\flat$-witness
 must output a satisfying assignment $\sigma(F) \in \{0,1\}^{v(F)}$ for each satisfiable formula $F$.
-The reconstruction map $d_n^{\flat} : B_n^{\flat} \to \{0,1\}^n$ is a function (by
-{prf:ref}`def-pure-flat-witness-rigorous`), so distinct output values require distinct elements of $B_n^{\flat}$.
-This function property (any function maps distinct outputs to distinct inputs) holds regardless of which algebraic sub-family governs $e_n^{\flat}$.
+The reconstruction map $d_n^{\flat} : B_n^{\flat} \to \{0,1\}^n$ is a (deterministic) function (by
+{prf:ref}`def-pure-flat-witness-rigorous`): equal inputs produce equal outputs.
+By contrapositive, distinct outputs certify distinct inputs: $d_n^\flat(b) \neq d_n^\flat(b')$ implies $b \neq b'$.
+This holds regardless of which algebraic sub-family governs $e_n^{\flat}$.
 
 We construct $N = 2^{cn}$ formulas in $\mathfrak{H}_n$ (for a suitable constant $c > 0$) with
 pairwise-distinct required outputs. Draw $N$ formulas $F^{(1)}, \ldots, F^{(N)}$ independently at the
@@ -7595,16 +7596,15 @@ When restricted to witnesses whose elimination map operates via $\mathfrak{S}_{\
 (quotient/congruence compression), this contributes the integrality obstruction certificate
 $K_{\mathrm{E4}}^-$ via the integrality lock {prf:ref}`def-e4`.
 The restriction to $\mathfrak{S}_{\mathrm{quot}}$ is appropriate here because {prf:ref}`def-e4`
-requires arithmetic/integrality structure in the elimination map — a property specific to the
-quotient sub-family; other sub-families produce their own certificates (e.g., $K_{\mathrm{E11}}^-$
-for the monodromy sub-family), which are established by dedicated lemmas.
+(the integrality obstruction tactic) requires arithmetic/integrality structure in the elimination map,
+which {prf:ref}`def-e4` associates with quotient/congruence compression maps in this framework.
+Other sub-families produce their own certificates (e.g., $K_{\mathrm{E11}}^-$ for the monodromy
+sub-family), each established by dedicated lemmas.
 
-**Step 5. [Failure localization]:**
-The target structure $B_n^\flat$ must encode at least $2^{cn}$ pairwise-distinct elements
-(one distinct $b^{(i)} \in B_n^\flat$ per formula $F^{(i)}$ in the hard ensemble, as established in Step 2).
-Since the reconstruction map $d_n^\flat$ must produce pairwise-distinct outputs from these elements,
-and the output domain is the satisfying-assignment space, no polynomial-cardinality $B_n^\flat$ can
-accommodate this requirement. This holds for any algebraic implementation of $e_n^\flat$.
+*Failure localization (note):* The target structure $B_n^\flat$ must encode at least $2^{cn}$
+pairwise-distinct elements — one distinct $b^{(i)} \in B_n^\flat$ per formula $F^{(i)}$, as established
+above. No polynomial-cardinality $B_n^\flat$ can accommodate this, for any algebraic implementation
+of $e_n^\flat$. The proof is complete at the end of Step 2; this note localises where the bottleneck lies.
 
 *(Supplementary: barrier-metatheorem path.)* Alternatively, for barrier-compatible pure $\flat$-witnesses,
 {prf:ref}`thm-flat-barrier-obstruction-metatheorem` gives the same conclusion: the cardinality lower bound
@@ -8040,9 +8040,9 @@ This discharges items 10 and 11 of {prf:ref}`def-completion-criteria-flat-dossie
 **Step 1. [Type-independent cardinality blockage]:**
 By {prf:ref}`lem-random-3sat-integrality-blockage`, every correct pure $\flat$-witness requires
 $|B_n^\flat| \geq 2^{cn}$ for an absolute constant $c > 0$.
-The proof of that lemma (Step 2) establishes this via a probabilistic construction of $2^{cn}$ canonical
-3-SAT formulas $F_1, \ldots, F_{2^{cn}}$ with pairwise-disjoint satisfying-assignment sets
-$\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$ for all $i \neq j$.
+Concretely, there exist $2^{cn}$ canonical 3-SAT formulas $F_1, \ldots, F_{2^{cn}}$ with
+pairwise-disjoint satisfying-assignment sets $\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$
+for all $i \neq j$ (probabilistic construction at clause density $\alpha = 4.2$, as in the lemma).
 
 Any correct pure $\flat$-witness must output $d_n^\flat(b^{(i)}) \in \mathrm{Sol}(F_i)$ for each $i$, where
 $b^{(i)} = e_n^\flat(s_n^\flat(F_i)) \in B_n^\flat$.  Since $\mathrm{Sol}(F_i) \cap \mathrm{Sol}(F_j) = \emptyset$,
@@ -8068,17 +8068,19 @@ This per-family analysis provides structural insight into *why* each algebraic m
 and is consistent with the cardinality blockage established in Step 1.
 It is presented here as supplementary confirmation, not as a logically necessary step in the main argument.
 
-**Step 3. [Translator stability]:**
+**Step 3. [Translator stability (corroborating: encoding-invariance)]:**
 By {prf:ref}`lem-translator-stability-flat-3sat`, the cardinality blockage of Step 1 persists under all admissible
 re-encodings: any polynomial-time computable bijection on formula representations preserves the pairwise-disjoint
 solution structure, so the $2^{cn}$ lower bound on $|B_n^\flat|$ is invariant.
+This step is not logically required for the conclusion of Step 4 (which follows from Step 1 alone), but
+confirms that no admissible re-encoding can circumvent the cardinality argument.
 
 **Step 4. [No polynomial $\flat$-witness]:**
 Step 1 alone establishes directly that no pure $\flat$-witness exists for canonical 3-SAT:
 the cardinality lower bound $|B_n^\flat| \geq 2^{cn}$ contradicts the polynomial upper bound from
 {prf:ref}`def-pure-flat-witness-rigorous` without further assumptions.
-Step 3 (translator stability) confirms this blockage is invariant under admissible re-encodings.
-The per-family confirmation of Step 2 corroborates the conclusion at each algebraic sub-channel.
+Steps 2 and 3 provide corroborating confirmation — structural (per algebraic family) and encoding-invariance
+respectively — but neither is logically required for this conclusion.
 
 **Step 5. [Certificate extraction]:**
 By completeness of $\mathsf{Obs}_\flat$ ({prf:ref}`thm-flat-obstruction-sound-complete`), the nonexistence of a pure
@@ -8496,7 +8498,7 @@ We verify each of the six antecedent certificates of {prf:ref}`def-e13`:
 
 - $K_{\mathrm{LS}_\sigma}^-$: by {prf:ref}`lem-random-3sat-metric-blockage` (no pure $\sharp$-witness exists);
 - $K_{\mathrm{E6}}^-$: by {prf:ref}`lem-random-3sat-causal-blockage` (no pure $\int$-witness exists);
-- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (universal cardinality blockage; $K_{\mathrm{E4}}^-$ extracted for $\mathfrak{S}_{\mathrm{quot}}$ sub-family via {prf:ref}`def-e4`);
+- $K_{\mathrm{E4}}^-$: by {prf:ref}`lem-random-3sat-integrality-blockage` (integrality blockage for the $\mathfrak{S}_{\mathrm{quot}}$ sub-family, via {prf:ref}`def-e4`);
 - $K_{\mathrm{E11}}^-$: by {prf:ref}`lem-random-3sat-galois-blockage` (no monodromy $\flat$-sketch exists);
 - $K_{\mathrm{SC}_\lambda}^{\mathrm{super}}$: by {prf:ref}`lem-random-3sat-scaling-blockage` (no pure
   $\ast$-witness exists);
