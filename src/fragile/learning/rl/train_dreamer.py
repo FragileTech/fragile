@@ -19,7 +19,7 @@ from contextlib import contextmanager
 import math
 import os
 import time
-from dataclasses import asdict, fields
+from dataclasses import asdict, dataclass, fields
 
 import numpy as np
 import torch
@@ -152,6 +152,78 @@ def _make_cosine_scheduler(
     )
 
 
+def _maybe_compile_module(module: nn.Module, enabled: bool, mode: str) -> nn.Module:
+    """Optionally wrap a module with ``torch.compile`` without changing defaults."""
+    if not enabled or not hasattr(torch, "compile"):
+        return module
+    return torch.compile(module, mode=mode)
+
+
+def _unwrap_compiled_module(module: nn.Module) -> nn.Module:
+    """Return the original module behind ``torch.compile`` wrappers."""
+    return getattr(module, "_orig_mod", module)
+
+
+@dataclass
+class ObservationNormalizer:
+    """Fixed per-dimension affine observation normalization."""
+
+    mean: torch.Tensor
+    std: torch.Tensor
+    min_std: float = 1e-3
+
+    @classmethod
+    def from_episodes(
+        cls,
+        episodes: list[dict[str, np.ndarray]],
+        device: torch.device,
+        *,
+        min_std: float = 1e-3,
+    ) -> ObservationNormalizer:
+        if not episodes:
+            msg = "Need at least one episode to estimate observation normalization stats."
+            raise ValueError(msg)
+        obs = np.concatenate([episode["obs"] for episode in episodes], axis=0).astype(np.float32)
+        mean = torch.from_numpy(obs.mean(axis=0)).to(device=device)
+        std = torch.from_numpy(obs.std(axis=0)).to(device=device).clamp(min=min_std)
+        return cls(mean=mean, std=std, min_std=min_std)
+
+    @classmethod
+    def from_state_dict(
+        cls,
+        state_dict: dict[str, torch.Tensor | float],
+        device: torch.device,
+    ) -> ObservationNormalizer:
+        min_std = float(state_dict.get("min_std", 1e-3))
+        mean = torch.as_tensor(state_dict["mean"], device=device, dtype=torch.float32)
+        std = torch.as_tensor(state_dict["std"], device=device, dtype=torch.float32).clamp(
+            min=min_std,
+        )
+        return cls(mean=mean, std=std, min_std=min_std)
+
+    def state_dict(self) -> dict[str, torch.Tensor | float]:
+        return {
+            "mean": self.mean.detach().cpu(),
+            "std": self.std.detach().cpu(),
+            "min_std": float(self.min_std),
+        }
+
+    def normalize_tensor(self, obs: torch.Tensor) -> torch.Tensor:
+        mean = self.mean.to(device=obs.device, dtype=obs.dtype)
+        std = self.std.to(device=obs.device, dtype=obs.dtype)
+        return (obs - mean) / std
+
+    def denormalize_tensor(self, obs: torch.Tensor) -> torch.Tensor:
+        mean = self.mean.to(device=obs.device, dtype=obs.dtype)
+        std = self.std.to(device=obs.device, dtype=obs.dtype)
+        return obs * std + mean
+
+    def normalize_numpy(self, obs: np.ndarray) -> np.ndarray:
+        mean = self.mean.detach().cpu().numpy()
+        std = self.std.detach().cpu().numpy()
+        return ((obs - mean) / std).astype(np.float32, copy=False)
+
+
 @contextmanager
 def _freeze_modules(*modules: nn.Module):
     """Temporarily freeze module parameters while preserving input gradients."""
@@ -174,6 +246,7 @@ def _collect_episode(
     actor: GeometricActor | None,
     encoder: nn.Module,
     device: torch.device,
+    obs_normalizer: ObservationNormalizer | None = None,
     action_repeat: int = 1,
     max_steps: int = 1000,
     hard_routing: bool = True,
@@ -198,6 +271,8 @@ def _collect_episode(
         else:
             with torch.no_grad():
                 obs_t = torch.from_numpy(obs).unsqueeze(0).to(device)
+                if obs_normalizer is not None:
+                    obs_t = obs_normalizer.normalize_tensor(obs_t)
                 enc_out = encoder.encoder(
                     obs_t,
                     hard_routing=hard_routing,
@@ -240,6 +315,7 @@ def _eval_policy(
     action_repeat: int,
     num_episodes: int,
     max_steps: int,
+    obs_normalizer: ObservationNormalizer | None = None,
     hard_routing: bool = True,
     hard_routing_tau: float = 1.0,
 ) -> dict[str, float]:
@@ -254,6 +330,8 @@ def _eval_policy(
             obs = _flatten_obs(time_step)
             with torch.no_grad():
                 obs_t = torch.from_numpy(obs).unsqueeze(0).to(device)
+                if obs_normalizer is not None:
+                    obs_t = obs_normalizer.normalize_tensor(obs_t)
                 enc_out = encoder.encoder(
                     obs_t,
                     hard_routing=hard_routing,
@@ -287,6 +365,7 @@ def _collect_gas_episodes(
     model: nn.Module,
     device: torch.device,
     config: DreamerConfig,
+    obs_normalizer: ObservationNormalizer | None = None,
 ) -> tuple[list[dict[str, np.ndarray]], dict[str, float]]:
     """Collect diverse transitions using RoboticFractalGas.
 
@@ -332,6 +411,8 @@ def _collect_gas_episodes(
         if actor is not None:
             obs_t = state.observations.to(device)
             with torch.no_grad():
+                if obs_normalizer is not None:
+                    obs_t = obs_normalizer.normalize_tensor(obs_t)
                 # Chunk to avoid OOM on large walker counts
                 chunk_size = 1024
                 action_chunks = []
@@ -434,15 +515,11 @@ def _imagine(
             action_list.append(action)
 
             r_hat = reward_head(z, action, rw)  # [B, 1]
-
-            if world_model.use_jump:
-                z, p, _cl, rw, _jumped = world_model._conditional_jump(z, p, action, rw)
-            else:
-                world_model.chart_predictor(z, action, rw)
-
-            phi_eff = None
-            for _s in range(world_model.n_refine_steps):
-                z, p, phi_eff, _hodge = world_model._baoab_step(z, p, action, rw)
+            step_out = world_model._rollout_transition(z, p, action, rw, track_energy=False)
+            z = step_out["z"]
+            p = step_out["p"]
+            rw = step_out["rw"]
+            phi_eff = step_out["phi_eff"]
         else:
             # Detach states from WM graph: actor uses diagnostics only here,
             # not policy gradients through the dynamics.
@@ -453,15 +530,11 @@ def _imagine(
 
             with torch.no_grad():
                 r_hat = reward_head(z, action, rw)  # [B, 1]
-
-                if world_model.use_jump:
-                    z, p, _cl, rw, _jumped = world_model._conditional_jump(z, p, action, rw)
-                else:
-                    world_model.chart_predictor(z, action, rw)
-
-                phi_eff = None
-                for _s in range(world_model.n_refine_steps):
-                    z, p, phi_eff, _hodge = world_model._baoab_step(z, p, action, rw)
+                step_out = world_model._rollout_transition(z, p, action, rw, track_energy=False)
+                z = step_out["z"]
+                p = step_out["p"]
+                rw = step_out["rw"]
+                phi_eff = step_out["phi_eff"]
 
         z_list.append(z if pathwise else z.detach())
         rw_list.append(rw if pathwise else rw.detach())
@@ -566,16 +639,15 @@ def _per_chart_diagnostics(
     """Compute per-chart metrics from flattened encoder outputs."""
     metrics: dict[str, float] = {}
 
-    B = K_chart.shape[0]
+    K_chart = K_chart.long()
+    K_code = K_code.long()
 
-    # Chart usage histogram
-    counts = torch.zeros(num_charts, device=K_chart.device)
-    for k in range(num_charts):
-        counts[k] = (K_chart == k).float().sum()
-    fracs = counts / B
+    counts = torch.bincount(K_chart, minlength=num_charts).to(dtype=z_geo.dtype)
+    total = counts.sum().clamp(min=1.0)
+    fracs = counts / total
 
-    for k in range(num_charts):
-        metrics[f"chart/{k}/usage"] = float(fracs[k])
+    for k, frac in enumerate(fracs.tolist()):
+        metrics[f"chart/{k}/usage"] = frac
 
     # Usage entropy (higher = more balanced)
     fracs_safe = fracs.clamp(min=1e-8)
@@ -583,28 +655,28 @@ def _per_chart_diagnostics(
     metrics["chart/usage_entropy"] = float(usage_entropy)
     metrics["chart/usage_max_frac"] = float(fracs.max())
     metrics["chart/active_charts"] = float((counts > 0).sum())
-    active_symbols_total = 0.0
 
-    # Per-chart z_norm
-    z_norms = z_geo.norm(dim=-1)  # [B]
+    z_norms = z_geo.norm(dim=-1)
+    z_norm_sums = torch.bincount(K_chart, weights=z_norms, minlength=num_charts)
+    z_norm_means = z_norm_sums / counts.clamp(min=1.0)
+
+    flat_code_idx = K_chart * codes_per_chart + K_code
+    code_counts = torch.bincount(
+        flat_code_idx,
+        minlength=num_charts * codes_per_chart,
+    ).to(dtype=z_geo.dtype).reshape(num_charts, codes_per_chart)
+    code_mass = code_counts.sum(dim=-1, keepdim=True).clamp(min=1.0)
+    code_probs = code_counts / code_mass
+    code_entropy = -(code_probs * code_probs.clamp(min=1e-8).log()).sum(dim=-1)
+    code_perplexity = code_entropy.exp()
+    active_codes = (code_counts > 0).sum(dim=-1).to(dtype=z_geo.dtype)
+    active_symbols_total = float(active_codes.sum())
+
     for k in range(num_charts):
-        mask = K_chart == k
-        if mask.any():
-            metrics[f"chart/{k}/z_norm"] = float(z_norms[mask].mean())
-
-            code_counts = torch.bincount(K_code[mask], minlength=codes_per_chart).float()
-            code_probs = code_counts / code_counts.sum().clamp(min=1.0)
-            code_entropy = -(code_probs * code_probs.clamp(min=1e-8).log()).sum()
-            metrics[f"chart/{k}/code_entropy"] = float(code_entropy)
-            metrics[f"chart/{k}/code_perplexity"] = float(code_entropy.exp())
-            active_codes = float((code_counts > 0).sum())
-            metrics[f"chart/{k}/active_codes"] = active_codes
-            active_symbols_total += active_codes
-        else:
-            metrics[f"chart/{k}/z_norm"] = 0.0
-            metrics[f"chart/{k}/code_entropy"] = 0.0
-            metrics[f"chart/{k}/code_perplexity"] = 1.0
-            metrics[f"chart/{k}/active_codes"] = 0.0
+        metrics[f"chart/{k}/z_norm"] = float(z_norm_means[k])
+        metrics[f"chart/{k}/code_entropy"] = float(code_entropy[k])
+        metrics[f"chart/{k}/code_perplexity"] = float(code_perplexity[k])
+        metrics[f"chart/{k}/active_codes"] = float(active_codes[k])
 
     # Router confidence: mean of max router weight (1.0 = perfectly confident)
     metrics["chart/router_confidence"] = float(router_weights.max(dim=-1).values.mean())
@@ -622,13 +694,10 @@ def _per_chart_diagnostics(
 
 def _transition_valid_mask(dones: torch.Tensor) -> torch.Tensor:
     """Mask valid replay transitions, excluding padded steps after termination."""
-    B, T = dones.shape
-    valid = torch.ones(B, device=dones.device, dtype=dones.dtype)
-    valid_steps = []
-    for t in range(T):
-        valid_steps.append(valid)
-        valid = valid * (1.0 - dones[:, t])
-    return torch.stack(valid_steps, dim=1)
+    if dones.numel() == 0:
+        return dones
+    prefix = torch.cat([torch.ones_like(dones[:, :1]), 1.0 - dones[:, :-1]], dim=1)
+    return torch.cumprod(prefix, dim=1)
 
 
 def _masked_mean(values: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
@@ -655,7 +724,10 @@ def _discounted_return_to_go(
 def _discounted_sum(rewards: torch.Tensor, gamma: float) -> torch.Tensor:
     """Discounted cumulative reward over a fixed imagined horizon."""
     horizon = rewards.shape[1]
-    discounts = rewards.new_tensor([gamma ** t for t in range(horizon)]).unsqueeze(0)
+    if horizon == 0:
+        return rewards.sum(dim=1)
+    exponents = torch.arange(horizon, device=rewards.device, dtype=rewards.dtype)
+    discounts = torch.pow(rewards.new_full((), gamma), exponents).unsqueeze(0)
     return (rewards * discounts).sum(dim=1)
 
 
@@ -723,6 +795,8 @@ def _train_step(
     epoch: int,
     current_hard_routing: bool,
     current_tau: float,
+    obs_normalizer: ObservationNormalizer | None = None,
+    compute_diagnostics: bool = True,
 ) -> dict[str, float]:
     """One training iteration.
 
@@ -731,8 +805,10 @@ def _train_step(
     3. Actor-critic: replay-anchored value field + pathwise geometric control
     """
     metrics: dict[str, float] = {}
+    step_t0 = time.perf_counter()
 
-    obs = batch["obs"]  # [B, T+1, obs_dim]
+    obs_raw = batch["obs"]  # [B, T+1, obs_dim]
+    obs = obs_normalizer.normalize_tensor(obs_raw) if obs_normalizer is not None else obs_raw
     actions = batch["actions"][:, :-1]  # [B, T, A]
     rewards = batch["rewards"][:, :-1]  # [B, T]
     B, T, _A = actions.shape
@@ -741,6 +817,7 @@ def _train_step(
     # =====================================================================
     # 1. Encoder training (shared codebook + Markov closure)
     # =====================================================================
+    t_section = time.perf_counter()
     def _encode_sequence() -> tuple[
         torch.Tensor, torch.Tensor, dict[str, float],
         torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor,
@@ -849,29 +926,41 @@ def _train_step(
 
     for key, value in enc_metrics.items():
         metrics[f"enc/{key}"] = value
+    metrics["time/encoder"] = time.perf_counter() - t_section
 
+    t_section = time.perf_counter()
     _sync_rl_atlas(model, world_model, actor, critic)
+    metrics["time/atlas_sync"] = time.perf_counter() - t_section
 
     # Per-chart diagnostics (always computed, even if encoder frozen)
-    chart_diag = _per_chart_diagnostics(
-        K_all.reshape(-1),
-        K_code_all.reshape(-1),
-        rw_all.reshape(-1, config.num_charts),
-        z_all.reshape(-1, config.latent_dim),
-        config.num_charts,
-        config.codes_per_chart,
-    )
-    metrics.update(chart_diag)
+    if compute_diagnostics:
+        t_section = time.perf_counter()
+        chart_diag = _per_chart_diagnostics(
+            K_all.reshape(-1),
+            K_code_all.reshape(-1),
+            rw_all.reshape(-1, config.num_charts),
+            z_all.reshape(-1, config.latent_dim),
+            config.num_charts,
+            config.codes_per_chart,
+        )
+        metrics.update(chart_diag)
+        metrics["time/chart_diag"] = time.perf_counter() - t_section
 
     # =====================================================================
     # 2. World model + reward training (DETACHED encoder outputs)
     # =====================================================================
+    t_section = time.perf_counter()
     rw_all = rw_all.detach()
     z_all = z_all.detach()
 
     z_0 = z_all[:, 0]
     rw_0 = rw_all[:, 0]
     z_targets = z_all[:, 1:]  # [B, T, D]
+    z_prev = z_all[:, :-1]
+    rw_prev = rw_all[:, :-1]
+    z_prev_flat = z_prev.reshape(-1, config.latent_dim)
+    rw_prev_flat = rw_prev.reshape(-1, config.num_charts)
+    actions_flat = actions.reshape(-1, config.action_dim)
 
     optimizer_wm.zero_grad()
 
@@ -899,9 +988,9 @@ def _train_step(
 
     # Reward branch loss
     r_pred = reward_head(
-        z_all[:, :-1].reshape(-1, config.latent_dim),
-        actions.reshape(-1, config.action_dim),
-        rw_all[:, :-1].reshape(-1, config.num_charts),
+        z_prev_flat,
+        actions_flat,
+        rw_prev_flat,
     )
     L_reward = (r_pred.squeeze(-1) - rewards.reshape(-1)).pow(2).mean()
     metrics["wm/L_reward"] = float(L_reward)
@@ -935,6 +1024,7 @@ def _train_step(
     wm_grad = nn.utils.clip_grad_norm_(_optimizer_parameters(optimizer_wm), config.grad_clip)
     metrics["wm/grad_norm"] = float(wm_grad)
     optimizer_wm.step()
+    metrics["time/world_model"] = time.perf_counter() - t_section
 
     # =====================================================================
     # 3. Imagination training (actor + critic)
@@ -943,19 +1033,17 @@ def _train_step(
     replay_valid = _transition_valid_mask(replay_dones)
 
     # Critic loss
+    t_section = time.perf_counter()
     optimizer_critic.zero_grad()
-    replay_values = critic(
-        z_all[:, :-1].reshape(-1, config.latent_dim),
-        rw_all[:, :-1].reshape(-1, config.num_charts),
-    ).reshape(B, T)
+    replay_values = critic(z_prev_flat, rw_prev_flat).reshape(B, T)
     replay_rtg = _discounted_return_to_go(rewards, replay_dones, config.gamma)
     replay_gap = replay_values - replay_rtg
     L_value = _masked_mean(replay_gap.pow(2), replay_valid)
     L_poisson = compute_screened_poisson_loss(
         critic,
-        z_all[:, :-1].detach(),
+        z_prev.detach(),
         None,
-        rw_all[:, :-1].detach(),
+        rw_prev.detach(),
         reward_density=rewards.detach(),
         kappa=config.screened_poisson_kappa,
     )
@@ -967,9 +1055,11 @@ def _train_step(
     metrics["critic/L_value"] = float(L_value)
     metrics["critic/L_poisson"] = float(L_poisson)
     metrics["critic/grad_norm"] = float(critic_grad)
+    metrics["time/critic"] = time.perf_counter() - t_section
 
     # Actor loss: optimize the finite-horizon action functional through the
     # symplectic rollout, with the critic used only as a terminal boundary field.
+    t_section = time.perf_counter()
     optimizer_actor.zero_grad()
     with _freeze_modules(world_model, reward_head, critic):
         imagination = _imagine(
@@ -1009,98 +1099,123 @@ def _train_step(
     metrics["actor/objective_std"] = float(control_objective.std(unbiased=False))
     metrics["actor/discounted_reward_mean"] = float(discounted_rewards.mean())
     metrics["actor/terminal_value_mean"] = float(terminal_value.mean())
+    metrics["time/actor"] = time.perf_counter() - t_section
 
     # =====================================================================
     # Diagnostic metrics
     # =====================================================================
-    with torch.no_grad():
-        replay_next_values = critic(
-            z_all[:, 1:].reshape(-1, config.latent_dim),
-            rw_all[:, 1:].reshape(-1, config.num_charts),
-        ).reshape(B, T)
-        replay_delta = (
-            rewards + config.gamma * (1.0 - replay_dones) * replay_next_values - replay_values
-        )
-        replay_rtg = _discounted_return_to_go(rewards, replay_dones, config.gamma)
-        replay_gap = replay_values - replay_rtg
-        cal_err, cal_max, cal_bins = _value_calibration_error(
-            replay_values,
-            replay_rtg,
-            replay_valid,
-        )
-        imag_rewards_det = imag_rewards.detach()
-        imag_log_probs_det = imag_log_probs.detach()
-        imag_rw_states_det = imag_rw_states.detach()
-        imag_rw_det = imag_rw.detach()
-        imag_actions_det = imag_actions.detach()
-        discounted_rewards_det = discounted_rewards.detach()
-        boundary_value_det = boundary_value.detach()
-        control_objective_det = control_objective.detach()
+    if compute_diagnostics:
+        t_section = time.perf_counter()
+        with torch.no_grad():
+            replay_values_all = critic(
+                z_all.reshape(-1, config.latent_dim),
+                rw_all.reshape(-1, config.num_charts),
+            ).reshape(B, T + 1)
+            replay_values_diag = replay_values_all[:, :-1]
+            replay_next_values = replay_values_all[:, 1:]
+            replay_delta = (
+                rewards
+                + config.gamma * (1.0 - replay_dones) * replay_next_values
+                - replay_values_diag
+            )
+            replay_gap = replay_values_diag - replay_rtg
+            cal_err, cal_max, cal_bins = _value_calibration_error(
+                replay_values_diag,
+                replay_rtg,
+                replay_valid,
+            )
+            imag_rewards_det = imag_rewards.detach()
+            imag_log_probs_det = imag_log_probs.detach()
+            imag_rw_states_det = imag_rw_states.detach()
+            imag_rw_det = imag_rw.detach()
+            imag_actions_det = imag_actions.detach()
+            discounted_rewards_det = discounted_rewards.detach()
+            boundary_value_det = boundary_value.detach()
+            control_objective_det = control_objective.detach()
 
-        metrics["actor/entropy"] = float(-imag_log_probs_det.mean())
-        metrics["actor/log_prob_mean"] = float(imag_log_probs_det.mean())
-        metrics["actor/std_mean"] = float(actor.forward(z_0, rw_0)[1].exp().mean())
-        metrics["actor/action_abs_mean"] = float(imag_actions_det.abs().mean())
-        metrics["actor/action_sat_frac"] = float((imag_actions_det.abs() > 0.95).float().mean())
-        metrics["imagination/reward_mean"] = float(imag_rewards_det.mean())
-        metrics["imagination/reward_std"] = float(imag_rewards_det.std())
-        metrics["imagination/reward_sum_mean"] = float(imag_rewards_det.sum(dim=1).mean())
-        metrics["imagination/reward_only_return_mean"] = float(discounted_rewards_det.mean())
-        metrics["imagination/discounted_reward_mean"] = float(discounted_rewards_det.mean())
-        metrics["imagination/terminal_value_mean"] = float(terminal_value.detach().mean())
-        metrics["imagination/boundary_value_mean"] = float(boundary_value_det.mean())
-        metrics["imagination/return_mean"] = float(control_objective_det.mean())
-        metrics["imagination/return_std"] = float(control_objective_det.std(unbiased=False))
-        metrics["imagination/bootstrap0_mean"] = float(boundary_value_det.mean())
-        metrics["imagination/bootstrap_ratio"] = float(
-            boundary_value_det.abs().mean()
-            / (discounted_rewards_det.abs().mean() + 1e-8)
-        )
-        metrics["imagination/bootstrap_share"] = float(
-            (boundary_value_det.abs() / (control_objective_det.abs() + 1e-8)).mean()
-        )
-        metrics["imagination/boundary_ratio"] = float(
-            boundary_value_det.abs().mean()
-            / (discounted_rewards_det.abs().mean() + 1e-8)
-        )
-        metrics["imagination/router_entropy"] = float(
-            -(imag_rw_states_det * imag_rw_states_det.clamp(min=1e-8).log()).sum(dim=-1).mean()
-        )
-        metrics["imagination/router_drift"] = float((imag_rw_det - imag_rw_states_det).abs().mean())
-        metrics["critic/value_bias"] = float(_masked_mean(replay_gap, replay_valid))
-        metrics["critic/value_abs_err"] = float(_masked_mean(replay_gap.abs(), replay_valid))
-        metrics["critic/value_mean"] = float(_masked_mean(replay_values, replay_valid))
-        metrics["critic/phi_eff_mean"] = float(_masked_mean(replay_values, replay_valid))
-        metrics["critic/replay_bellman_mean"] = float(_masked_mean(replay_delta, replay_valid))
-        metrics["critic/replay_bellman_abs"] = float(_masked_mean(replay_delta.abs(), replay_valid))
-        bellman_centered = replay_delta - _masked_mean(replay_delta, replay_valid)
-        metrics["critic/replay_bellman_std"] = float(
-            (_masked_mean(bellman_centered.pow(2), replay_valid) + 1e-8).sqrt()
-        )
-        metrics["critic/replay_rtg_mean"] = float(_masked_mean(replay_rtg, replay_valid))
-        metrics["critic/replay_rtg_bias"] = float(_masked_mean(replay_gap, replay_valid))
-        metrics["critic/replay_rtg_abs_err"] = float(_masked_mean(replay_gap.abs(), replay_valid))
-        metrics["critic/replay_calibration_err"] = float(cal_err)
-        metrics["critic/replay_calibration_max"] = float(cal_max)
-        metrics["critic/replay_calibration_bins"] = cal_bins
-        metrics["train/replay_horizon"] = float(T)
-        metrics["train/wm_horizon"] = float(T_wm)
-        metrics["geometric/z_norm_mean"] = float(z_all.norm(dim=-1).mean())
-        metrics["geometric/z_norm_max"] = float(z_all.norm(dim=-1).max())
-        metrics["geometric/jump_frac"] = float(wm_out["jumped"].float().mean())
-        metrics["geometric/hodge_conservative"] = float(wm_out["hodge_conservative_ratio"].mean())
-        metrics["geometric/hodge_solenoidal"] = float(wm_out["hodge_solenoidal_ratio"].mean())
-        metrics["geometric/hodge_harmonic"] = float(wm_out["hodge_harmonic_ratio"].mean())
-        metrics["geometric/energy_var"] = float(wm_out["energy_var"])
-        enc_centers = _project_to_ball(model.encoder.chart_centers.detach())
-        wm_centers = _project_to_ball(world_model.potential_net.chart_tok.chart_centers.detach())
-        actor_centers = _project_to_ball(actor.chart_tok.chart_centers.detach())
-        critic_centers = _project_to_ball(critic.chart_tok.chart_centers.detach())
-        metrics["chart/wm_center_drift"] = float((enc_centers - wm_centers).norm(dim=-1).mean())
-        metrics["chart/actor_center_drift"] = float((enc_centers - actor_centers).norm(dim=-1).mean())
-        metrics["chart/critic_center_drift"] = float(
-            (enc_centers - critic_centers).norm(dim=-1).mean()
-        )
+            metrics["actor/entropy"] = float(-imag_log_probs_det.mean())
+            metrics["actor/log_prob_mean"] = float(imag_log_probs_det.mean())
+            metrics["actor/std_mean"] = float(actor.forward(z_0, rw_0)[1].exp().mean())
+            metrics["actor/action_abs_mean"] = float(imag_actions_det.abs().mean())
+            metrics["actor/action_sat_frac"] = float(
+                (imag_actions_det.abs() > 0.95).float().mean()
+            )
+            metrics["imagination/reward_mean"] = float(imag_rewards_det.mean())
+            metrics["imagination/reward_std"] = float(imag_rewards_det.std())
+            metrics["imagination/reward_sum_mean"] = float(imag_rewards_det.sum(dim=1).mean())
+            metrics["imagination/reward_only_return_mean"] = float(discounted_rewards_det.mean())
+            metrics["imagination/discounted_reward_mean"] = float(discounted_rewards_det.mean())
+            metrics["imagination/terminal_value_mean"] = float(terminal_value.detach().mean())
+            metrics["imagination/boundary_value_mean"] = float(boundary_value_det.mean())
+            metrics["imagination/return_mean"] = float(control_objective_det.mean())
+            metrics["imagination/return_std"] = float(control_objective_det.std(unbiased=False))
+            metrics["imagination/bootstrap0_mean"] = float(boundary_value_det.mean())
+            metrics["imagination/bootstrap_ratio"] = float(
+                boundary_value_det.abs().mean()
+                / (discounted_rewards_det.abs().mean() + 1e-8)
+            )
+            metrics["imagination/bootstrap_share"] = float(
+                (boundary_value_det.abs() / (control_objective_det.abs() + 1e-8)).mean()
+            )
+            metrics["imagination/boundary_ratio"] = float(
+                boundary_value_det.abs().mean()
+                / (discounted_rewards_det.abs().mean() + 1e-8)
+            )
+            metrics["imagination/router_entropy"] = float(
+                -(imag_rw_states_det * imag_rw_states_det.clamp(min=1e-8).log())
+                .sum(dim=-1)
+                .mean()
+            )
+            metrics["imagination/router_drift"] = float(
+                (imag_rw_det - imag_rw_states_det).abs().mean()
+            )
+            metrics["critic/value_bias"] = float(_masked_mean(replay_gap, replay_valid))
+            metrics["critic/value_abs_err"] = float(_masked_mean(replay_gap.abs(), replay_valid))
+            metrics["critic/value_mean"] = float(_masked_mean(replay_values_diag, replay_valid))
+            metrics["critic/phi_eff_mean"] = float(_masked_mean(replay_values_diag, replay_valid))
+            metrics["critic/replay_bellman_mean"] = float(_masked_mean(replay_delta, replay_valid))
+            metrics["critic/replay_bellman_abs"] = float(
+                _masked_mean(replay_delta.abs(), replay_valid)
+            )
+            bellman_centered = replay_delta - _masked_mean(replay_delta, replay_valid)
+            metrics["critic/replay_bellman_std"] = float(
+                (_masked_mean(bellman_centered.pow(2), replay_valid) + 1e-8).sqrt()
+            )
+            metrics["critic/replay_rtg_mean"] = float(_masked_mean(replay_rtg, replay_valid))
+            metrics["critic/replay_rtg_bias"] = float(_masked_mean(replay_gap, replay_valid))
+            metrics["critic/replay_rtg_abs_err"] = float(
+                _masked_mean(replay_gap.abs(), replay_valid)
+            )
+            metrics["critic/replay_calibration_err"] = float(cal_err)
+            metrics["critic/replay_calibration_max"] = float(cal_max)
+            metrics["critic/replay_calibration_bins"] = cal_bins
+            metrics["train/replay_horizon"] = float(T)
+            metrics["train/wm_horizon"] = float(T_wm)
+            metrics["geometric/z_norm_mean"] = float(z_all.norm(dim=-1).mean())
+            metrics["geometric/z_norm_max"] = float(z_all.norm(dim=-1).max())
+            metrics["geometric/jump_frac"] = float(wm_out["jumped"].float().mean())
+            metrics["geometric/hodge_conservative"] = float(
+                wm_out["hodge_conservative_ratio"].mean()
+            )
+            metrics["geometric/hodge_solenoidal"] = float(
+                wm_out["hodge_solenoidal_ratio"].mean()
+            )
+            metrics["geometric/hodge_harmonic"] = float(wm_out["hodge_harmonic_ratio"].mean())
+            metrics["geometric/energy_var"] = float(wm_out["energy_var"])
+            enc_centers = _project_to_ball(model.encoder.chart_centers.detach())
+            wm_centers = _project_to_ball(world_model.potential_net.chart_tok.chart_centers.detach())
+            actor_centers = _project_to_ball(actor.chart_tok.chart_centers.detach())
+            critic_centers = _project_to_ball(critic.chart_tok.chart_centers.detach())
+            metrics["chart/wm_center_drift"] = float((enc_centers - wm_centers).norm(dim=-1).mean())
+            metrics["chart/actor_center_drift"] = float(
+                (enc_centers - actor_centers).norm(dim=-1).mean()
+            )
+            metrics["chart/critic_center_drift"] = float(
+                (enc_centers - critic_centers).norm(dim=-1).mean()
+            )
+        metrics["time/diagnostics"] = time.perf_counter() - t_section
+
+    metrics["time/step"] = time.perf_counter() - step_t0
 
     return metrics
 
@@ -1115,6 +1230,7 @@ def train(config: DreamerConfig) -> None:
     device = torch.device(config.device)
     print(f"Device: {device}")
     torch.manual_seed(config.seed)
+    obs_normalizer: ObservationNormalizer | None = None
 
     # --- MLflow ---
     mlflow_enabled = False
@@ -1205,6 +1321,27 @@ def train(config: DreamerConfig) -> None:
         d_model=config.d_model,
     ).to(device)
 
+    dyn_trans_model = _maybe_compile_module(
+        dyn_trans_model,
+        enabled=config.torch_compile,
+        mode=config.torch_compile_mode,
+    )
+    actor = _maybe_compile_module(
+        actor,
+        enabled=config.torch_compile,
+        mode=config.torch_compile_mode,
+    )
+    critic = _maybe_compile_module(
+        critic,
+        enabled=config.torch_compile,
+        mode=config.torch_compile_mode,
+    )
+    reward_head = _maybe_compile_module(
+        reward_head,
+        enabled=config.torch_compile,
+        mode=config.torch_compile_mode,
+    )
+
     # --- Parameter counts ---
     def _count(m: nn.Module) -> int:
         return sum(p.numel() for p in m.parameters())
@@ -1257,6 +1394,11 @@ def train(config: DreamerConfig) -> None:
     start_epoch = 0
     if config.load_checkpoint and os.path.exists(config.load_checkpoint):
         ckpt = torch.load(config.load_checkpoint, map_location=device, weights_only=False)
+        if config.normalize_observations and ckpt.get("obs_normalizer") is not None:
+            obs_normalizer = ObservationNormalizer.from_state_dict(
+                ckpt["obs_normalizer"],
+                device=device,
+            )
         if "encoder" in ckpt:
             model.encoder.load_state_dict(ckpt["encoder"], strict=False)
         if "decoder" in ckpt:
@@ -1264,15 +1406,21 @@ def train(config: DreamerConfig) -> None:
         if "jump_op" in ckpt:
             jump_op.load_state_dict(ckpt["jump_op"], strict=False)
         if "dyn_trans_model" in ckpt:
-            dyn_trans_model.load_state_dict(ckpt["dyn_trans_model"], strict=False)
+            _unwrap_compiled_module(dyn_trans_model).load_state_dict(
+                ckpt["dyn_trans_model"],
+                strict=False,
+            )
         if "world_model" in ckpt:
-            world_model.load_state_dict(ckpt["world_model"], strict=False)
+            _unwrap_compiled_module(world_model).load_state_dict(ckpt["world_model"], strict=False)
         if "actor" in ckpt:
-            actor.load_state_dict(ckpt["actor"], strict=False)
+            _unwrap_compiled_module(actor).load_state_dict(ckpt["actor"], strict=False)
         if "critic" in ckpt:
-            critic.load_state_dict(ckpt["critic"], strict=False)
+            _unwrap_compiled_module(critic).load_state_dict(ckpt["critic"], strict=False)
         if "reward_head" in ckpt:
-            reward_head.load_state_dict(ckpt["reward_head"], strict=False)
+            _unwrap_compiled_module(reward_head).load_state_dict(
+                ckpt["reward_head"],
+                strict=False,
+            )
         if "optimizer_enc" in ckpt:
             optimizer_enc.load_state_dict(ckpt["optimizer_enc"])
         if "optimizer_wm" in ckpt:
@@ -1316,17 +1464,37 @@ def train(config: DreamerConfig) -> None:
 
     # --- Seed episodes (random policy) ---
     print(f"Collecting {config.seed_episodes} seed episodes...")
+    seed_episodes_data: list[dict[str, np.ndarray]] = []
     for i in range(config.seed_episodes):
         ep = _collect_episode(
             env, None, model, device,
+            obs_normalizer=obs_normalizer,
             action_repeat=config.action_repeat,
             max_steps=config.max_episode_steps,
             hard_routing=config.hard_routing,
             hard_routing_tau=config.hard_routing_tau,
         )
         buffer.add_episode(ep)
+        seed_episodes_data.append(ep)
         ep_r = ep["rewards"].sum()
         print(f"  Seed {i + 1}/{config.seed_episodes}: reward={ep_r:.1f}  len={len(ep['obs'])}")
+
+    if config.normalize_observations and obs_normalizer is None:
+        if not seed_episodes_data:
+            msg = "Observation normalization requires at least one seed episode or checkpoint stats."
+            raise ValueError(msg)
+        obs_normalizer = ObservationNormalizer.from_episodes(
+            seed_episodes_data,
+            device=device,
+            min_std=config.obs_norm_min_std,
+        )
+        std_cpu = obs_normalizer.std.detach().cpu()
+        print(
+            "Observation normalization: "
+            f"min_std={std_cpu.min().item():.4f}  "
+            f"mean_std={std_cpu.mean().item():.4f}  "
+            f"max_std={std_cpu.max().item():.4f}",
+        )
 
     # --- Main training loop ---
     total_env_steps = buffer.total_steps
@@ -1341,18 +1509,21 @@ def train(config: DreamerConfig) -> None:
     print("=" * 80)
 
     for epoch in range(start_epoch, config.total_epochs):
-        t0 = time.time()
+        t0 = time.perf_counter()
+        collect_time = 0.0
 
         # --- Data collection ---
         if config.use_gas:
             if epoch % config.gas_collect_every == 0:
+                collect_t0 = time.perf_counter()
                 episodes, gas_info = _collect_gas_episodes(
-                    actor, model, device, config,
+                    actor, model, device, config, obs_normalizer=obs_normalizer,
                 )
                 for ep in episodes:
                     buffer.add_episode(ep)
                 total_env_steps += config.gas_walkers * config.gas_steps * config.action_repeat
                 episode_rewards.append(gas_info["gas/max_reward"])
+                collect_time += time.perf_counter() - collect_t0
                 print(f"  GAS  episodes={gas_info['gas/n_episodes']}  "
                       f"transitions={gas_info['gas/transitions']}  "
                       f"max_rew={gas_info['gas/max_reward']:.2f}  "
@@ -1360,8 +1531,10 @@ def train(config: DreamerConfig) -> None:
                       f"clones={gas_info['gas/total_clones']:.0f}")
         else:
             if epoch % config.collect_every == 0:
+                collect_t0 = time.perf_counter()
                 ep = _collect_episode(
                     env, actor, model, device,
+                    obs_normalizer=obs_normalizer,
                     action_repeat=config.action_repeat,
                     max_steps=config.max_episode_steps,
                     hard_routing=config.hard_routing,
@@ -1371,6 +1544,7 @@ def train(config: DreamerConfig) -> None:
                 ep_reward = ep["rewards"].sum()
                 episode_rewards.append(ep_reward)
                 total_env_steps += len(ep["obs"])
+                collect_time += time.perf_counter() - collect_t0
 
         # --- Training steps (multiple updates per epoch) ---
         if not config.freeze_encoder:
@@ -1392,22 +1566,40 @@ def train(config: DreamerConfig) -> None:
         current_tau = _get_hard_routing_tau(config, epoch, config.total_epochs)
 
         metrics_accum: dict[str, list[float]] = {}
+        sample_time_total = 0.0
+        update_time_total = 0.0
         for _u in range(n_updates):
+            sample_t0 = time.perf_counter()
             batch = buffer.sample(config.batch_size, device=device)
+            sample_time_total += time.perf_counter() - sample_t0
+            step_t0 = time.perf_counter()
+            compute_diagnostics = (
+                config.diagnostics_every_updates <= 1
+                or ((_u + 1) % config.diagnostics_every_updates == 0)
+                or (_u == n_updates - 1)
+            )
 
             step_metrics = _train_step(
                 model, jump_op, dyn_trans_model, world_model, reward_head, actor, critic,
                 optimizer_enc, optimizer_wm, optimizer_actor, optimizer_critic,
                 batch, config, phase1_cfg, epoch, current_hard_routing, current_tau,
+                obs_normalizer=obs_normalizer,
+                compute_diagnostics=compute_diagnostics,
             )
+            update_time_total += time.perf_counter() - step_t0
             for k, v in step_metrics.items():
                 metrics_accum.setdefault(k, []).append(v)
 
         # Average metrics across updates
         metrics = {k: float(np.mean(v)) for k, v in metrics_accum.items()}
         metrics["train/updates"] = float(n_updates)
+        metrics["time/sample"] = sample_time_total / max(n_updates, 1)
+        metrics["time/sample_total"] = sample_time_total
+        metrics["time/update_total"] = update_time_total
+        metrics["time/collection"] = collect_time
+        metrics["time/diagnostics_interval"] = float(max(1, config.diagnostics_every_updates))
 
-        dt = time.time() - t0
+        dt = time.perf_counter() - t0
 
         # --- Logging ---
         if epoch % config.log_every == 0:
@@ -1497,6 +1689,15 @@ def train(config: DreamerConfig) -> None:
                 ("wm_H", "train/wm_horizon"),
                 ("rep_T", "train/replay_horizon"),
             ]
+            line8_keys = [
+                ("col", "time/collection"),
+                ("smp", "time/sample"),
+                ("enc_t", "time/encoder"),
+                ("wm_t", "time/world_model"),
+                ("crt_t", "time/critic"),
+                ("act_t", "time/actor"),
+                ("diag_t", "time/diagnostics"),
+            ]
 
             def _fmt(pairs):
                 return "  ".join(
@@ -1511,6 +1712,7 @@ def train(config: DreamerConfig) -> None:
             print(f"  {'':4s}  {_fmt(line5_keys)}")
             print(f"  {'':4s}  {_fmt(line6_keys)}")
             print(f"  {'':4s}  {_fmt(line7_keys)}")
+            print(f"  {'':4s}  {_fmt(line8_keys)}")
 
             # Per-chart usage line
             usage_parts = []
@@ -1553,6 +1755,7 @@ def train(config: DreamerConfig) -> None:
             actor.eval()
             eval_metrics = _eval_policy(
                 env, actor, model, device,
+                obs_normalizer=obs_normalizer,
                 action_repeat=config.action_repeat,
                 num_episodes=config.eval_episodes,
                 max_steps=config.max_episode_steps,
@@ -1574,7 +1777,7 @@ def train(config: DreamerConfig) -> None:
                     model, jump_op, dyn_trans_model, world_model, actor, critic, reward_head,
                     optimizer_enc, optimizer_wm, optimizer_actor, optimizer_critic,
                     scheduler_enc, scheduler_wm, scheduler_actor, scheduler_critic,
-                    epoch, config, eval_metrics,
+                    epoch, config, eval_metrics, obs_normalizer=obs_normalizer,
                 )
                 print(f"  New best: {best_eval_reward:.1f}")
 
@@ -1585,7 +1788,7 @@ def train(config: DreamerConfig) -> None:
                 model, jump_op, dyn_trans_model, world_model, actor, critic, reward_head,
                 optimizer_enc, optimizer_wm, optimizer_actor, optimizer_critic,
                 scheduler_enc, scheduler_wm, scheduler_actor, scheduler_critic,
-                epoch, config, metrics,
+                epoch, config, metrics, obs_normalizer=obs_normalizer,
             )
 
         if not config.freeze_encoder:
@@ -1625,6 +1828,7 @@ def _save_checkpoint(
     epoch: int,
     config: DreamerConfig,
     metrics: dict | None = None,
+    obs_normalizer: ObservationNormalizer | None = None,
 ) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     torch.save(
@@ -1634,11 +1838,19 @@ def _save_checkpoint(
             "encoder": {k: v.cpu() for k, v in model.encoder.state_dict().items()},
             "decoder": {k: v.cpu() for k, v in model.decoder.state_dict().items()},
             "jump_op": {k: v.cpu() for k, v in jump_op.state_dict().items()},
-            "dyn_trans_model": {k: v.cpu() for k, v in dyn_trans_model.state_dict().items()},
-            "world_model": {k: v.cpu() for k, v in world_model.state_dict().items()},
-            "actor": {k: v.cpu() for k, v in actor.state_dict().items()},
-            "critic": {k: v.cpu() for k, v in critic.state_dict().items()},
-            "reward_head": {k: v.cpu() for k, v in reward_head.state_dict().items()},
+            "dyn_trans_model": {
+                k: v.cpu() for k, v in _unwrap_compiled_module(dyn_trans_model).state_dict().items()
+            },
+            "world_model": {
+                k: v.cpu() for k, v in _unwrap_compiled_module(world_model).state_dict().items()
+            },
+            "actor": {k: v.cpu() for k, v in _unwrap_compiled_module(actor).state_dict().items()},
+            "critic": {
+                k: v.cpu() for k, v in _unwrap_compiled_module(critic).state_dict().items()
+            },
+            "reward_head": {
+                k: v.cpu() for k, v in _unwrap_compiled_module(reward_head).state_dict().items()
+            },
             "optimizer_enc": optimizer_enc.state_dict(),
             "optimizer_wm": optimizer_wm.state_dict(),
             "optimizer_actor": optimizer_actor.state_dict(),
@@ -1648,6 +1860,7 @@ def _save_checkpoint(
             "scheduler_actor": scheduler_actor.state_dict(),
             "scheduler_critic": scheduler_critic.state_dict(),
             "metrics": metrics or {},
+            "obs_normalizer": None if obs_normalizer is None else obs_normalizer.state_dict(),
         },
         path,
     )

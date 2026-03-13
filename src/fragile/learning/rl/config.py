@@ -123,6 +123,11 @@ class DreamerConfig:
     eval_episodes: int = 5
     checkpoint_every: int = 100
     freeze_encoder: bool = False
+    diagnostics_every_updates: int = 1
+    torch_compile: bool = False
+    torch_compile_mode: str = "reduce-overhead"
+    normalize_observations: bool = True
+    obs_norm_min_std: float = 1e-3
 
     # --- Infrastructure ---
     device: str = field(

@@ -1025,6 +1025,55 @@ class GeometricWorldModel(nn.Module):
             "hodge_info": last_hodge_info,
         }
 
+    def _rollout_transition(
+        self,
+        z: torch.Tensor,
+        p: torch.Tensor,
+        action: torch.Tensor,
+        rw: torch.Tensor,
+        *,
+        track_energy: bool = False,
+    ) -> dict[str, torch.Tensor | dict[str, torch.Tensor] | None]:
+        """Advance one horizon step with optional energy tracking."""
+        B = z.shape[0]
+        N = self.n_refine_steps
+
+        if self.use_jump:
+            z, p, chart_logits, rw, jumped = self._conditional_jump(z, p, action, rw)
+        else:
+            chart_logits = self.chart_predictor(z, action, rw)
+            jumped = z.new_zeros(B, dtype=torch.bool)
+
+        last_hodge_info: dict[str, torch.Tensor] | None = None
+        energy_substeps = None
+        if track_energy:
+            energy_substeps = z.new_zeros((B, N))
+
+        phi_eff = self.potential_net(z, rw)
+        for s in range(N):
+            z, p, phi_eff, hodge_info = self._baoab_step(z, p, action, rw)
+
+            if energy_substeps is not None:
+                r_sq = (z ** 2).sum(dim=-1, keepdim=True)
+                g_inv = ((1.0 - r_sq).clamp(min=1e-6) / 2.0) ** 2
+                p_sq = (p ** 2).sum(dim=-1, keepdim=True)
+                H_s = phi_eff + 0.5 * g_inv * p_sq
+                energy_substeps[:, s] = H_s.squeeze(-1)
+
+            if hodge_info:
+                last_hodge_info = hodge_info
+
+        return {
+            "z": z,
+            "p": p,
+            "rw": rw,
+            "chart_logits": chart_logits,
+            "jumped": jumped,
+            "phi_eff": phi_eff,
+            "hodge_info": last_hodge_info,
+            "energy_substeps": energy_substeps,
+        }
+
     # -----------------------------------------------------------------
     # Forward (multi-step rollout)
     # -----------------------------------------------------------------
@@ -1084,29 +1133,22 @@ class GeometricWorldModel(nn.Module):
         energy_substeps = torch.zeros(B, H, N, device=device)
 
         for t in range(H):
-            action_t = actions[:, t, :]  # [B, A]
-
-            # Step 1: Conditional chart jump (Fisher-Rao component)
-            if self.use_jump:
-                z, p, cl, rw, jumped = self._conditional_jump(z, p, action_t, rw)
-            else:
-                cl = self.chart_predictor(z, action_t, rw)
-                jumped = z.new_zeros(B, dtype=torch.bool)
-
-            # Steps 2..N+1: BAOAB refinement sub-steps (W2 transport)
-            last_hodge_info = None
-            for s in range(N):
-                z, p, phi_eff, hodge_info = self._baoab_step(z, p, action_t, rw)
-
-                # Track Hamiltonian per sub-step for energy conservation
-                r_sq = (z ** 2).sum(dim=-1, keepdim=True)
-                g_inv = ((1.0 - r_sq).clamp(min=1e-6) / 2.0) ** 2
-                p_sq = (p ** 2).sum(dim=-1, keepdim=True)
-                H_s = phi_eff + 0.5 * g_inv * p_sq  # [B, 1]
-                energy_substeps[:, t, s] = H_s.squeeze(-1)
-
-                if hodge_info:
-                    last_hodge_info = hodge_info
+            step_out = self._rollout_transition(
+                z,
+                p,
+                actions[:, t, :],
+                rw,
+                track_energy=True,
+            )
+            z = step_out["z"]
+            p = step_out["p"]
+            rw = step_out["rw"]
+            cl = step_out["chart_logits"]
+            jumped = step_out["jumped"]
+            phi_eff = step_out["phi_eff"]
+            last_hodge_info = step_out["hodge_info"]
+            if step_out["energy_substeps"] is not None:
+                energy_substeps[:, t, :] = step_out["energy_substeps"]
 
             # Store outputs (from final sub-step)
             z_traj[:, t, :] = z
