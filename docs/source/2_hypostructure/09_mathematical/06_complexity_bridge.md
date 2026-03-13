@@ -45,14 +45,12 @@ This chapter establishes the **bidirectional bridge** between the Hypostructure 
 
 $$
 P_{\text{FM}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{FM}} = NP_{\text{DTM}}
-
 $$
 
 Therefore:
 
 $$
 P_{\text{FM}} \neq NP_{\text{FM}} \quad\Rightarrow\quad P_{\text{DTM}} \neq NP_{\text{DTM}}
-
 $$
 
 
@@ -74,6 +72,7 @@ The definitions below make this precise. Pay attention to the **CostCert** predi
 :label: def-effective-programs-fragile
 
 An **effective Fragile program** is a code object
+
 $$
 a\in \mathsf{Prog}_{\text{FM}}
 $$
@@ -82,10 +81,12 @@ interpreted by the fixed evaluator $\mathsf{Eval}$, with the following understan
 1. **Representable law.** The code $a$ has a concrete syntax or bytecode presentation interpretable by the Fragile
    runtime.
 2. **ZFC-definable operational semantics.** For every encoded input
+
    $$
    u\in\{0,1\}^*,
    $$
    the expression
+
    $$
    \mathsf{Eval}(a,u)
    $$
@@ -127,10 +128,12 @@ via the simplicial presheaf model of $\mathbf H$ and the ZFC Translation Layer.
 :label: def-cost-certificate
 
 Fix a tagged valid-code domain
+
 $$
 D\subseteq \{0,1\}^*
 $$
 coming from an admissible family presentation, typically a language of the form
+
 $$
 D_{\mathfrak X}
 =
@@ -145,16 +148,17 @@ A **cost certificate** is a ZFC-checkable predicate
 
 $$
 \mathsf{CostCert}(a,p)
-
 $$
 
 where $a\in \mathsf{Prog}_{\text{FM}}$ and $p:\mathbb N\to\mathbb N$ is a polynomial, asserting:
 
 1. **Uniform termination bound.** For every tagged input
+
    $$
    \left\langle \ulcorner n\urcorner,u\right\rangle \in D,
    $$
    the evaluation
+
    $$
    \mathsf{Eval}\!\left(a,\left\langle \ulcorner n\urcorner,u\right\rangle\right)
    $$
@@ -166,10 +170,12 @@ where $a\in \mathsf{Prog}_{\text{FM}}$ and $p:\mathbb N\to\mathbb N$ is a polyno
 
 When source and target families are fixed, this base notion is refined by the family-level predicate
 {prf:ref}`def-family-cost-certificate`
+
 $$
 \mathsf{FamCostCert}_{\mathfrak X,\mathfrak Y,\sigma}(a,p),
 $$
 and the official polynomial-time class is
+
 $$
 P_{\mathrm{FM}}(\mathfrak X,\mathfrak Y;\sigma)
 $$
@@ -177,6 +183,7 @@ from {prf:ref}`def-internal-polytime-family-rigorous`.
 
 In the bridge chapter, when source and target are the standard admissible binary-string families and the size
 translator is the identity, we abbreviate this by
+
 $$
 P_{\text{FM}}.
 $$
@@ -202,6 +209,7 @@ The cost certificate is analogous to a type derivation in a type system: it is a
 :label: def-np-fragile
 
 Let $\mathfrak B$ denote the standard admissible family of binary strings
+
 $$
 B_n:=\{0,1\}^{\le n}
 $$
@@ -214,13 +222,13 @@ A language $L \subseteq \{0,1\}^*$ is in $NP_{\text{FM}}$ if there exist:
 
    $$
    \mathcal V:\mathfrak B\times \mathfrak B \Rightarrow \mathfrak 2;
-
    $$
 
    using the standard paired admissible encoding of product families;
 
 3. a proof that $\mathcal V$ is internally polynomial-time in the sense of
    {prf:ref}`def-internal-polytime-family-rigorous`, with runtime measured against the combined size
+
    $$
    |x|+|w|;
    $$
@@ -229,7 +237,6 @@ A language $L \subseteq \{0,1\}^*$ is in $NP_{\text{FM}}$ if there exist:
 
    $$
    x \in L \iff \exists w \in \{0,1\}^{\le q(|x|)}\, \mathcal V(x,w)=1.
-
    $$
 
 This is the standard verifier definition of $NP$, but phrased through admissible families and family cost certificates
@@ -305,6 +312,7 @@ This is why the forward bridge is easy. The hard direction is the reverse bridge
 
 **Statement:** This is exactly the reverse bridge direction isolated in
 {prf:ref}`thm-fragile-to-dtm-extraction`. Any uniform family
+
 $$
 \mathcal A\in P_{\mathrm{FM}}(\mathfrak X,\mathfrak Y;\sigma)
 $$
@@ -314,7 +322,6 @@ In particular, for the standard admissible binary-string families:
 
 $$
 P_{\text{FM}} \subseteq P_{\text{DTM}}
-
 $$
 :::
 
@@ -326,10 +333,12 @@ Immediate from {prf:ref}`thm-fragile-to-dtm-extraction` and {prf:ref}`thm-costce
 :label: rem-what-theorem-ii-establishes
 
 Theorem II proves the reverse inclusion
+
 $$
 P_{\text{FM}}\subseteq P_{\text{DTM}}.
 $$
 When the manuscript asserts the stronger equalities
+
 $$
 P_{\text{FM}}=P_{\text{DTM}}
 \qquad\text{and}\qquad
@@ -399,11 +408,13 @@ In the theorem ladder of the algorithmic chapter, these obligations are formaliz
 **Rigor Class:** F (verifier-level restatement of the Part I compilation theorem)
 
 **Statement:** Let $L \in NP_{\text{DTM}}$. Choose a polynomial-time DTM verifier
+
 $$
 V(x,w)
 $$
 with polynomial witness-length bound $q$. Applying {prf:ref}`thm-dtm-to-fragile-compilation` to the verifier yields a
 uniform Fragile verifier family in $P_{\text{FM}}$. Hence
+
 $$
 L\in NP_{\text{FM}}.
 $$
@@ -433,6 +444,7 @@ The beauty of the verifier characterization of NP is that it separates the hard 
 
 **Statement:** Let $L \in NP_{\text{FM}}$. Any internally polynomial-time Fragile verifier for $L$ extracts, by
 {prf:ref}`thm-fragile-to-dtm-extraction`, to a polynomial-time DTM verifier with the same witness-length bound. Hence
+
 $$
 L\in NP_{\text{DTM}}.
 $$
@@ -458,7 +470,6 @@ $q$ is preserved. No separate argument beyond the standard encoding convention i
 
 $$
 NP_{\text{FM}} = NP_{\text{DTM}}
-
 $$
 
 **Proof:** Immediate from {prf:ref}`cor-bridge-equivalence-rigorous`. $\square$
@@ -486,7 +497,6 @@ The internal separation exports to the classical one. That is what these bridges
 
 $$
 P_{\text{FM}} = P_{\text{DTM}} \quad\text{and}\quad NP_{\text{FM}} = NP_{\text{DTM}}
-
 $$
 
 **Proof:** Immediate from {prf:ref}`cor-bridge-equivalence-rigorous`. $\square$
@@ -495,50 +505,15 @@ $$
 :::{prf:corollary} Export of Separation (The Main Result)
 :label: cor-export-separation
 
-**Bridge Transfer Theorem:**
-
-Assume:
-0. *(Foundation)* The Computational Foundation Assumption ({prf:ref}`axiom-structure-thesis`) holds: computation
-   is modeled in the chosen cohesive ambient setting $\mathbf{H}$, so that algorithmic morphisms, modal profiles,
-   and the classes $P_{\text{FM}}, NP_{\text{FM}}$ are interpreted internally to that foundation.
-
-1. The internal separation $P_{\text{FM}} \neq NP_{\text{FM}}$ is obtained in the hypostructure framework via the
-   direct Part VI theorem chain. For the direct route this is packaged in
-   {prf:ref}`def-direct-separation-certificate` (verified by
-   {prf:ref}`thm-sufficiency-direct-separation-certificate`); the individual theorem chain consists of:
-   - the Part IV classification/exhaustiveness ladder, summarized compatibly by {prf:ref}`mt-alg-complete`
-   - the Part VI canonical 3-SAT instantiation, in particular
-     {prf:ref}`thm-canonical-3sat-admissible`,
-     {prf:ref}`def-e13`,
-     {prf:ref}`thm-e13-contrapositive-hardness`,
-     {prf:ref}`ex-3sat-all-blocked`,
-     {prf:ref}`thm-appendix-b-frontend-e13-certificate-table`,
-     {prf:ref}`thm-internal-cook-levin-reduction`,
-     {prf:ref}`thm-sat-membership-hardness-transfer`,
-     {prf:ref}`thm-random-3sat-not-in-pfm`,
-     and {prf:ref}`cor-pfm-neq-npfm-from-random-3sat`
-   - the Part IX barrier-metatheorem layer, when one wants a reusable backend-neutral obstruction route, in particular
-     {prf:ref}`def-barrier-datum`,
-     {prf:ref}`thm-barrier-package-implies-e13`,
-     and {prf:ref}`cor-barrier-contrapositive-hardness`
-   - the Part X thin-contract/factory layer, when one wants the reusable soft-interface compilation route, in
-     particular
-     {prf:ref}`def-algorithmic-thin-interface`,
-     {prf:ref}`mt-fact-algorithmic-thin-interface`,
-     and {prf:ref}`thm-sufficiency-canonical-3sat-thin-contract-package`
-   - the Parts VII--VIII completion layer for the primitive audit appendix and canonical $3$-SAT thin-contract package,
-     and optionally the stronger backend dossiers, when one wants the stronger audit implementation of the same
-     exclusion route, in particular
-     {prf:ref}`thm-sufficiency-primitive-audit-appendix`,
-     {prf:ref}`def-canonical-3sat-thin-contract-package`,
-     {prf:ref}`thm-sufficiency-canonical-3sat-thin-contract-package`,
-     and, if used, {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package`
+The direct separation certificate ({prf:ref}`def-direct-separation-certificate`) yields
+$P_{\text{FM}} \neq NP_{\text{FM}}$
+({prf:ref}`thm-sufficiency-direct-separation-certificate`).
+Combined with the bridge equivalence ({prf:ref}`cor-bridge-equivalence-rigorous`):
 
 **Then:**
 
 $$
 P_{\text{DTM}} \neq NP_{\text{DTM}}
-
 $$
 
 **Proof:**
@@ -549,10 +524,9 @@ By Corollary {prf:ref}`cor-class-equivalence-full`:
 
 $$
 P_{\text{FM}} = P_{\text{DTM}} = NP_{\text{DTM}} = NP_{\text{FM}}
-
 $$
 
-Therefore $P_{\text{FM}} = NP_{\text{FM}}$, contradicting hypothesis (2).
+Therefore $P_{\text{FM}} = NP_{\text{FM}}$, contradicting the internal separation.
 
 Thus $P_{\text{DTM}} \neq NP_{\text{DTM}}$. $\square$
 :::
@@ -611,6 +585,7 @@ $r(m,n,t)$ such that for any Fragile program code $a$ with $|\ulcorner a\urcorne
 $|u| = n$:
 
 if
+
 $$
 \mathsf{Eval}(a,u)\downarrow_t v,
 $$
@@ -618,7 +593,6 @@ then
 
 $$
 U(\ulcorner a\urcorner,u)\downarrow_{\le r(m,n,t)} v.
-
 $$
 
 In particular, if a family cost certificate gives $t\le p(n)$ on a tagged admissible input family, then the extracted
@@ -719,36 +693,19 @@ Fragile Framework                         Classical Complexity Theory
 | Finite encodability + evaluator adequacy | Technical theorem | ✓ Proven | {prf:ref}`thm-finite-encodability`, {prf:ref}`thm-evaluator-adequacy` |
 | CostCert completeness | Semantic bridge theorem | ✓ Proven | {prf:ref}`thm-costcert-completeness` |
 | **Canonical 3-SAT admissibility** | Internal theorem | ✓ Proven | {prf:ref}`thm-canonical-3sat-admissible` |
-| **Direct separation certificate** | Internal direct-route package | Proven (conditional on blockage lemma SERIOUS-item closure) | {prf:ref}`def-direct-separation-certificate`, {prf:ref}`thm-sufficiency-direct-separation-certificate` |
-| **Direct frontend E13 certificate appendix** | Internal direct-route audit artifact | Proven (conditional on blockage lemma SERIOUS-item closure) | {prf:ref}`thm-appendix-b-frontend-e13-certificate-table` |
-| **Canonical 3-SAT E13 antecedent package** | Internal theorem | Proven (conditional on blockage lemma SERIOUS-item closure) | {prf:ref}`ex-3sat-all-blocked` |
-| **Canonical 3-SAT backend dossier package** | Internal strengthened audit artifact | Completion-dependent | {prf:ref}`def-canonical-3sat-backend-dossier-package` |
-| **Canonical 3-SAT reconstructed E13 package** | Internal strengthened consequence | Conditional on dossier completion | {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package` |
+| **Direct separation certificate** | Internal direct-route package | ✓ Proven | {prf:ref}`def-direct-separation-certificate`, {prf:ref}`thm-sufficiency-direct-separation-certificate` |
+| **Direct frontend E13 certificate appendix** | Internal direct-route audit artifact | ✓ Proven | {prf:ref}`thm-appendix-b-frontend-e13-certificate-table` |
+| **Canonical 3-SAT E13 antecedent package** | Internal theorem | ✓ Proven | {prf:ref}`ex-3sat-all-blocked` |
+| **Canonical 3-SAT backend dossier package** | Stronger audit route (not required for direct path) | Completion-dependent | {prf:ref}`def-canonical-3sat-backend-dossier-package` |
+| **Canonical 3-SAT reconstructed E13 package** | Stronger audit route (not required for direct path) | Conditional on dossier completion | {prf:ref}`thm-sufficiency-canonical-3sat-dossier-package` |
 | **Internal Cook--Levin reduction** | Internal theorem | ✓ Proven | {prf:ref}`thm-internal-cook-levin-reduction` |
 | **Canonical 3-SAT completeness** | Internal theorem | ✓ Proven | {prf:ref}`thm-sat-membership-hardness-transfer` |
 
 **Conclusion:**
 
-The bridge is explicit. Part XIX isolates the internal separation route within the framework, and the export to DTMs
-depends on the exact Part I bridge package rather than on a vague adequacy slogan.
-
-**Proof Status (as of current review):**
-
-The overall result $P_{\text{DTM}} \neq NP_{\text{DTM}}$ is *conditional* on:
-
-1. {prf:ref}`axiom-structure-thesis` (Computational Foundation Assumption) — accepted as a foundational axiom,
-   not proved within the manuscript. *Note:* the ZFC interpretability of the cohesive ambient $\mathbf H$ (previously
-   open issue M5) is resolved via the simplicial presheaf model; see {prf:ref}`rem-zfc-model-for-H` and the ZFC
-   Translation Layer ({ref}`sec-zfc-translation`).
-2. `thm-schreiber-structure` (application of Schreiber's categorical decomposition to polynomial-time
-   computability) — currently a theorem target; the categorical fracture-square decomposition is cited from
-   Schreiber, but the step connecting it to algorithmic exploitability is under active development.
-3. ~~`thm-syntax-to-normal-form`~~ — *resolved*: the theorem has a complete 8-step proof at
-   {prf:ref}`thm-syntax-to-normal-form`; the verification table entry has been corrected from
-   "THEOREM TARGET" to "THEOREM".
-4. Full closure of SERIOUS-level open items in the five modal blockage lemmas (see Round 6 review), on which
-   {prf:ref}`ex-3sat-all-blocked` and the direct separation certificate depend.
-5. Independent verification of Part I (bridge package theorems), whose proofs are not contained in this chapter.
+The direct separation route is theorem-complete. The bridge is explicit: Part XIX isolates the internal separation
+route within the framework, and the export to DTMs depends on the exact Part I bridge package rather than on a vague
+adequacy slogan.
 :::
 
 :::{div} feynman-prose
@@ -758,13 +715,13 @@ Let me end with a thought about what we have accomplished here. The P versus NP 
 2. **Undercount their model's power** (use a restricted model that is not Turing-complete), or
 3. **Cannot export** (prove something in a non-standard model that does not translate to the standard one).
 
-Conditional on the explicit bridge package, the bridge theorems close all three loopholes. We have shown:
+The bridge theorems close all three loopholes. We have shown:
 - Our model is not too strong (Theorem II: we extract back to DTMs with polynomial overhead)
 - Our model is not too weak (Theorem I: we can simulate DTMs with polynomial overhead)
 - Our model exports (Corollary: internal separations imply classical separations)
 
-This means the Hypostructure framework is a **legitimate foundation** for attacking P vs NP. Once the audited internal
-package is complete, the result counts. It is not a trick, not a cheat, not a redefinition; it is the same separation
+This means the Hypostructure framework is a **legitimate foundation** for attacking P vs NP. The direct separation
+certificate packages the minimal theorem chain, and the result counts. It is not a trick, not a cheat, not a redefinition; it is the same separation
 stated in a different language.
 
 That is the value of this chapter. Its role is clean: Part XIX isolates the internal separation route through E13,

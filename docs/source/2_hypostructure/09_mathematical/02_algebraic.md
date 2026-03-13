@@ -57,7 +57,6 @@ Then there exists a contravariant functor to Chow motives:
 
 $$
 \mathcal{M}: \mathbf{SmProj}_k^{\text{op}} \to \mathbf{Mot}_k^{\text{eff}}, \quad X \mapsto h(X) = (X, \Delta_X, 0)
-
 $$
 
 satisfying:
@@ -67,7 +66,6 @@ satisfying:
 
    $$
    \text{Gr}_k^W h(X) \cong \bigoplus_{\alpha - \beta = k} h(X)_{\alpha,\beta}
-
    $$
 
    where $(\alpha, \beta)$ are the scaling exponents from $K_{\mathrm{SC}_\lambda}^+$
@@ -97,14 +95,12 @@ satisfying:
 
 $$
 \sum_{i=0}^{2n} \pi^i = \Delta_X, \quad \pi^i \circ \pi^j = \delta_{ij}\pi^i, \quad H^*(\pi^i) = H^i(X)
-
 $$
 
 *Step 4 (Frobenius action).* The flow $S_t$ induces a correspondence $\Gamma_{S_t} \subset X \times X$. For self-similar profiles with scaling data from $K_{\mathrm{SC}_\lambda}^+$:
 
 $$
 F_t^* = [\Gamma_{S_t}]^*: H^*(X) \to H^*(X), \quad F_t^*[\alpha] = t^{\alpha - \beta}[\alpha] \text{ for } \alpha \in H^{p,q}
-
 $$
 
 The exponent $\alpha - \beta = p - q$ is the Hodge weight difference.
@@ -113,7 +109,6 @@ The exponent $\alpha - \beta = p - q$ is the Hodge weight difference.
 
 $$
 W_k h(X) := \bigoplus_{\substack{i \leq k \\ \text{Frob. wt.} \leq k}} h^i(X)
-
 $$
 
 The scaling certificate $K_{\mathrm{SC}_\lambda}^+$ with exponents $(\alpha, \beta)$ gives: $\text{Gr}_k^W \cong h(X)_{\alpha - \beta = k}$. This identifies weight graded pieces with mode sectors.
@@ -122,7 +117,6 @@ The scaling certificate $K_{\mathrm{SC}_\lambda}^+$ with exponents $(\alpha, \be
 
 $$
 \#\text{Fix}(F) = \sum_{i=0}^{2n} (-1)^i \text{Tr}(F^* \mid H^i(X))
-
 $$
 
 The topological entropy satisfies $\exp(h_{\text{top}}) = \lim_{n \to \infty} |\text{Tr}((F^*)^n)|^{1/n} = \rho(F^*)$, the spectral radius.
@@ -131,7 +125,6 @@ The topological entropy satisfies $\exp(h_{\text{top}}) = \lim_{n \to \infty} |\
 
 $$
 K_{\text{motive}}^+ = \left(h(X), \{\pi^i\}_{i=0}^{2n}, W_\bullet, \{(\alpha_j, \beta_j)\}_j, \rho(F^*)\right)
-
 $$
 
 containing the motive, Künneth projectors, weight filtration, scaling exponents, and spectral radius.
@@ -171,7 +164,6 @@ The permit certificates define polynomial inequalities. The *safe region* is:
 
 $$
 S = \{x \in \mathbb{R}^n \mid g_1(x) \geq 0, \ldots, g_k(x) \geq 0\}
-
 $$
 
 where:
@@ -185,14 +177,12 @@ Let $B \subset \mathbb{R}^n$ be the *bad pattern region* (states violating safet
 
 $$
 S \cap B = \emptyset
-
 $$
 
 if and only if there exist sum-of-squares polynomials $\{p_\alpha\}_{\alpha \in \{0,1\}^k} \subset \sum \mathbb{R}[x]^2$ such that:
 
 $$
 -1 = p_0 + \sum_{i} p_i g_i + \sum_{i<j} p_{ij} g_i g_j + \cdots + p_{1\ldots k} g_1 \cdots g_k
-
 $$
 
 **Required Interface Permits:** $\mathrm{Cap}_H$ (Capacity), $\mathrm{LS}_\sigma$ (Stiffness), $\mathrm{SC}_\lambda$ (Scaling), $\mathrm{TB}_\pi$ (Topology)
@@ -218,7 +208,6 @@ The original Nullstellensatz formulation applies to equalities over $\mathbb{C}$
 
 $$
 B_i = \{x \in \mathbb{R}^n \mid h_1(x) \geq 0, \ldots, h_m(x) \geq 0, f(x) = 0\}
-
 $$
 
 representing states that lead to singularity type $i$.
@@ -231,7 +220,6 @@ representing states that lead to singularity type $i$.
 
 $$
 K_{\text{SOS}}^+ = \left(\{p_\alpha\}_\alpha, \{g_i\}_i, \text{SDP feasibility witness}\right)
-
 $$
 :::
 
@@ -292,7 +280,6 @@ Consider the tangent sheaf cohomology groups $H^i(V, T_V)$ for $i = 0, 1, 2$. Th
 
 $$
 \text{Def}_V(A) := \left\{\text{flat } \mathcal{V} \to \text{Spec}(A) \mid \mathcal{V} \times_A k \cong V\right\} / \sim
-
 $$
 
 This is the moduli problem for flat families with special fiber $V$.
@@ -301,7 +288,6 @@ This is the moduli problem for flat families with special fiber $V$.
 
 $$
 \text{KS}: T_0\text{Def}_V \xrightarrow{\cong} H^1(V, T_V)
-
 $$
 
 identifies first-order deformations with cohomology classes. This is an isomorphism by the exponential sequence.
@@ -315,7 +301,6 @@ identifies first-order deformations with cohomology classes. This is an isomorph
 
 $$
 \text{ob}: \text{Sym}^2 H^1(V, T_V) \to H^2(V, T_V)
-
 $$
 
 arises from the bracket $[-, -]: T_V \otimes T_V \to T_V$. If $H^2 = 0$, the Kuranishi space is smooth of dimension $h^1(T_V)$.
@@ -329,7 +314,6 @@ arises from the bracket $[-, -]: T_V \otimes T_V \to T_V$. If $H^2 = 0$, the Kur
 
 $$
 \dim \mathcal{M} = h^1(V, T_V) - \dim(\text{Im ob}) < \infty
-
 $$
 
 Concentration forces $h^1 < \infty$, which holds for all coherent sheaf cohomology on proper varieties.
@@ -338,7 +322,6 @@ Concentration forces $h^1 < \infty$, which holds for all coherent sheaf cohomolo
 
 $$
 K_{\text{KS}}^+ = \left((h^0, h^1, h^2), \text{ob}, \text{classification}\right)
-
 $$
 
 where classification $\in \{\text{rigid}, \text{obstructed}, \text{unobstructed-positive}\}$.
@@ -381,7 +364,6 @@ Then:
 
    $$
    [\mathcal{M}]^{\text{vir}} = 0_E^![\mathfrak{C}_{\mathcal{M}}] \in A_{\text{vdim}}(\mathcal{M}, \mathbb{Q})
-
    $$
 
    where $\mathfrak{C}_{\mathcal{M}} \subset E^{-1}|_{\mathcal{M}}$ is the intrinsic normal cone and $0_E^!$ is the refined Gysin map.
@@ -390,7 +372,6 @@ Then:
 
    $$
    \int_{[\mathcal{M}]^{\text{vir}}} \chi_A = \#^{\text{vir}}\{p \in \mathcal{M} : K_A^-(p)\}
-
    $$
 
    counts (with virtual multiplicity) points where certificate $K_A$ fails.
@@ -399,7 +380,6 @@ Then:
 
    $$
    \text{GW}_{g,n,\beta}(X; \gamma_1, \ldots, \gamma_n) = \int_{[\overline{M}_{g,n}(X,\beta)]^{\text{vir}}} \prod_{i=1}^n \text{ev}_i^*(\gamma_i)
-
    $$
 
    counts stable maps with $K_{\mathrm{Rep}}^+$ ensuring curve representability.
@@ -408,7 +388,6 @@ Then:
 
    $$
    \text{DT}_{\text{ch}}(X) = \int_{[\mathcal{M}_{\text{ch}}^{\text{st}}(X)]^{\text{vir}}} 1
-
    $$
 
    counts stable sheaves with $K_{\mathrm{Cap}_H}^+$ ensuring proper moduli.
@@ -435,20 +414,25 @@ Then:
 The certificate $K_{\mathrm{Cap}_H}^+$ ensures $\mathbb{E}^\bullet$ is a 2-term complex of finite-rank vector bundles.
 
 *Step 2 (Virtual dimension).* The virtual dimension is:
+
 $$\text{vdim}(\mathcal{M}) := \text{rk}(E^0) - \text{rk}(E^{-1}) = \chi(\mathbb{E}^\bullet)$$
 At each point $p \in \mathcal{M}$: deformations $= H^0(\mathbb{E}^\bullet|_p)$, obstructions $= H^1(\mathbb{E}^\bullet|_p)$.
 
 *Step 3 (Intrinsic normal cone).* The intrinsic normal cone $\mathfrak{C}_{\mathcal{M}} \subset h^1/h^0(\mathbb{E}^{\bullet\vee})$ is a cone stack. By Behrend-Fantechi, it embeds canonically:
+
 $$\mathfrak{C}_{\mathcal{M}} \hookrightarrow E_1 := (E^{-1})^\vee$$
 The certificate $K_{D_E}^+$ (bounded energy) ensures $\mathfrak{C}_{\mathcal{M}}$ has proper support.
 
 *Step 4 (Virtual class construction).* Define the virtual fundamental class via the refined Gysin map:
+
 $$[\mathcal{M}]^{\text{vir}} := 0_{E_1}^! [\mathfrak{C}_{\mathcal{M}}] \in A_{\text{vdim}}(\mathcal{M}, \mathbb{Q})$$
 When $\mathcal{M}$ is smooth of dimension $d > \text{vdim}$, this equals:
+
 $$[\mathcal{M}]^{\text{vir}} = e(\text{Ob}^\vee) \cap [\mathcal{M}]$$
 where $\text{Ob} = \text{coker}(T_{\mathcal{M}} \to E^0)$ is the obstruction sheaf.
 
 *Step 5 (Certificate integration).* For a certificate $K_A$ with associated section $s_A: \mathcal{M} \to \text{Ob}^\vee$, the zero locus $Z(s_A) = \{K_A^- \text{ holds}\}$ is the failure locus. Virtual intersection:
+
 $$\int_{[\mathcal{M}]^{\text{vir}}} e(s_A^*\text{Ob}^\vee) = [Z(s_A)]^{\text{vir}} \cdot [\mathcal{M}]^{\text{vir}}$$
 counts certificate violations with virtual multiplicity.
 
@@ -457,6 +441,7 @@ counts certificate violations with virtual multiplicity.
 - **DT theory:** The certificate $K_{\mathrm{Cap}_H}^+$ (capacity bound) ensures stable sheaves form a proper moduli space. DT invariants count $K_{\mathrm{Cap}_H}^+$ certificates.
 
 *Step 7 (Certificate assembly).* Construct the output certificate:
+
 $$K_{\text{virtual}}^+ = \left([\mathcal{M}]^{\text{vir}}, \text{vdim}, \mathbb{E}^\bullet, \{\text{inv}_\alpha\}_\alpha\right)$$
 with virtual class, dimension, obstruction theory, and computed invariants.
 :::
@@ -501,10 +486,12 @@ What does this have to do with the sieve? The scaling exponents from $K_{\mathrm
 Then the limiting mixed Hodge structure (MHS) satisfies:
 
 1. **Schmid ↔ Profile Exactification:** The nilpotent orbit
+
    $$F^p_t = \exp\left(\frac{\log t}{2\pi i} N\right) \cdot F^p_\infty + O(|t|^\epsilon)$$
    provides the profile map. Certificate $K_{\mathrm{TB}_\pi}^+$ ensures $F^p_\infty$ exists.
 
 2. **Weight Filtration ↔ Scaling Exponents:** The weight filtration $W_\bullet = W(N, k)$ satisfies:
+
    $$\text{Gr}^W_j H^k \neq 0 \Rightarrow \alpha_{j} = j/2$$
    where $\alpha_j$ are the scaling exponents from $K_{\mathrm{SC}_\lambda}^+$.
 
@@ -531,10 +518,12 @@ Then the limiting mixed Hodge structure (MHS) satisfies:
 :::{prf:proof}
 
 *Step 1 (Monodromy).* Let $T: H^k(X_t, \mathbb{Z}) \to H^k(X_t, \mathbb{Z})$ be the monodromy operator for a loop $\gamma$ around $0$. The certificate $K_{\mathrm{TB}_\pi}^+$ ensures $\|\nabla\Pi\|$ is bounded, which by Borel's theorem implies $T$ is quasi-unipotent:
+
 $$(T^m - I)^{k+1} = 0 \quad \text{for some } m \geq 1$$
 The bound $\|\nabla\Pi\| \leq c$ from $K_{\mathrm{TB}_\pi}^+$ controls the monodromy weight.
 
 *Step 2 (Nilpotent orbit theorem).* After finite base change $t \mapsto t^m$, assume $T$ unipotent. Define $N := \log T = \sum_{j=1}^\infty \frac{(-1)^{j+1}}{j}(T-I)^j$. By Schmid's theorem, the period map $\Phi: \Delta^* \to D$ satisfies:
+
 $$\Phi(t) = \exp\left(\frac{\log t}{2\pi i} N\right) \cdot \Phi_\infty + O(|t|^\epsilon)$$
 for some $\epsilon > 0$. The limiting Hodge filtration $F^p_\infty$ exists and is horizontal.
 
@@ -551,16 +540,19 @@ This is the Deligne weight filtration associated to $(H^k_{\lim}, N)$.
 The certificate $K_{D_E}^+$ (bounded energy) ensures the MHS has finite-dimensional graded pieces.
 
 *Step 5 (Scaling-weight correspondence).* The certificate $K_{\mathrm{SC}_\lambda}^+$ provides scaling exponents $(\alpha_i, \beta)$. For $v \in \text{Gr}^W_j H^k$:
+
 $$\|v(t)\| \sim |t|^{-j/2} \quad \text{as } t \to 0$$
 Thus $\alpha_j = j/2$. Subcriticality $\beta - \alpha_j < \lambda_c$ imposes $\alpha_j > \beta - \lambda_c$, hence $j > 2(\beta - \lambda_c)$ (weights below $2(\beta - \lambda_c)$ are excluded).
 
 *Step 6 (Clemens-Schmid sequence).* The exact sequence of mixed Hodge structures:
+
 $$\cdots \to H_k(X_0) \xrightarrow{i_*} H^k(X_t) \xrightarrow{1-T} H^k(X_t) \xrightarrow{\text{sp}} H_k(X_0) \xrightarrow{N} H_{k-2}(X_0)(-1) \to \cdots$$
 decomposes cohomology:
 - **Invariant part:** $I = \ker(1-T) = \text{Im}(i_*)$ — cycles surviving to $X_0$ (Mode C.C)
 - **Vanishing part:** $V = \text{Im}(N) \cong \text{coker}(i_*)$ — cycles disappearing at $X_0$ (Mode C.D)
 
 *Step 7 (Certificate assembly).* Construct the output certificate:
+
 $$K_{\text{MHS}}^+ = \left(F^\bullet_\infty, W_\bullet, N, T, (I, V), \{(\alpha_j, j)\}\right)$$
 containing the limiting Hodge filtration, weight filtration, monodromy data, cycle decomposition, and weight-scaling pairs.
 :::
@@ -604,10 +596,12 @@ The motivic Galois group, which conjecturally controls all the algebraic relatio
 Then:
 
 1. **Group Reconstruction:** The functor of tensor automorphisms
+
    $$G := \underline{\text{Aut}}^\otimes(\omega): \mathbf{Alg}_k \to \mathbf{Grp}, \quad R \mapsto \text{Aut}^\otimes(\omega \otimes R)$$
    is representable by an affine pro-algebraic group scheme over $k$.
 
 2. **Categorical Equivalence:** There is a canonical equivalence of tensor categories:
+
    $$\mathcal{C} \xrightarrow{\simeq} \text{Rep}_k(G), \quad V \mapsto (\omega(V), \rho_V)$$
    where $\rho_V: G \to \text{GL}(\omega(V))$ is the natural action.
 
@@ -617,6 +611,7 @@ Then:
    - Transcendental classes lie in representations with non-trivial $\mathcal{G}_{\text{mot}}$-action
 
 4. **Lock Exclusion via Galois Constraints:** For barrier $\mathcal{B}$ and safe region $S$ in $\mathcal{C}$:
+
    $$\text{Hom}_{\mathcal{C}}(\mathcal{B}, S) = \emptyset \Leftrightarrow \text{Hom}_{\text{Rep}(G)}(\rho_{\mathcal{B}}, \rho_S)^G = 0$$
    The lock condition reduces to absence of $G$-equivariant morphisms.
 
@@ -644,18 +639,22 @@ Then:
 The certificate $K_{\Gamma}^+$ provides the fiber functor $\omega: \mathcal{C} \to \mathbf{Vect}_k$.
 
 *Step 2 (Automorphism functor).* For any commutative $k$-algebra $R$, define:
+
 $$G(R) := \text{Aut}^\otimes(\omega_R) = \left\{\eta: \omega_R \xrightarrow{\sim} \omega_R \;\middle|\; \begin{array}{l} \eta_{V \otimes W} = \eta_V \otimes \eta_W \\ \eta_\mathbb{1} = \text{id}_R \end{array}\right\}$$
 where $\omega_R := \omega \otimes_k R: \mathcal{C} \to \mathbf{Mod}_R$. This defines a functor $G: \mathbf{Alg}_k \to \mathbf{Grp}$.
 
 *Step 3 (Representability).* By Deligne's theorem, $G$ is represented by an affine group scheme:
+
 $$G = \text{Spec}(\mathcal{O}(G)), \quad \mathcal{O}(G) = \varinjlim_{V \in \mathcal{C}} \text{End}(\omega(V))^*$$
 The Hopf algebra structure on $\mathcal{O}(G)$ encodes the group law. For $\mathcal{C}$ of subexponential growth, $G$ is pro-algebraic.
 
 *Step 4 (Equivalence).* The canonical functor $\Phi: \mathcal{C} \to \text{Rep}_k(G)$ defined by:
+
 $$\Phi(V) := (\omega(V), \rho_V), \quad \rho_V(g)(v) := g_V(v) \text{ for } g \in G, v \in \omega(V)$$
 is an equivalence of tensor categories. Inverse: $\Psi: \text{Rep}_k(G) \to \mathcal{C}$ via torsors.
 
 *Step 5 (Invariant subspace).* For any $V \in \mathcal{C}$, the $G$-invariant subspace is:
+
 $$\omega(V)^G := \{v \in \omega(V) : \forall g \in G(\bar{k}), \; g \cdot v = v\} = \text{Hom}_{\mathcal{C}}(\mathbb{1}, V)$$
 This is the subspace of "algebraic" or "Hodge" elements. Certificate $K_{\text{Tann}}^+$ records $\dim V^G$.
 
@@ -666,8 +665,10 @@ This is the subspace of "algebraic" or "Hodge" elements. Certificate $K_{\text{T
 - Transcendental cycles = $h(X) / h(X)^{\mathcal{G}_{\text{mot}}}$
 
 *Step 7 (Lock verification).* For the sieve lock condition with barrier $\mathcal{B}$ and safe region $S$:
+
 $$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}} \text{ iff } \text{Hom}_{\mathcal{C}}(\mathcal{B}, S) = \emptyset$$
 By the equivalence $\mathcal{C} \simeq \text{Rep}(G)$, this becomes:
+
 $$\text{Hom}_{\text{Rep}(G)}(\rho_{\mathcal{B}}, \rho_S)^G = 0$$
 The lock is verified iff no $G$-equivariant morphisms exist. This is computed via representation theory of $G$.
 :::
@@ -711,13 +712,16 @@ This is the holographic principle from physics, translated into the sieve langua
 Then the **Data Processing Inequality** provides an information-theoretic lock:
 
 1. **Information Bound:** The retrieveable information satisfies:
+
    $$I(X; Z) \leq I(X; Y) \leq C(Y)$$
    where $Y$ is the boundary channel and $C(Y)$ is its capacity.
 
 2. **Complexity Bound:** Kolmogorov complexity is bounded:
+
    $$K(\mathcal{X}) \leq \mathcal{C}_{\max} + O(1)$$
 
 3. **Lock Mechanism:** If $\mathbb{H}_{\mathrm{bad}}$ requires transmitting $I_{\mathrm{bad}} > \mathcal{C}_{\max}$:
+
    $$\text{Hom}_{\mathbf{Hypo}_T}(\mathbb{H}_{\mathrm{bad}}, \mathcal{X}) = \emptyset$$
    The singularity is excluded by channel capacity.
 
@@ -802,6 +806,7 @@ This metatheorem is the "Main Result" of the framework: it proves that **Stiff**
   - Obstruction witness: Critical symmetry group $G_{\text{crit}} \subseteq \text{Aut}(\mathcal{X})$
 
 - $K_{\text{Bridge}}$: A **Bridge Certificate** witnessing that the critical symmetry operator $\Lambda \in \text{End}_{\mathcal{A}}(\mathcal{X})$ (governing the organization of the state space) descends to the structural category:
+
   $$\Lambda \in \text{End}_{\mathcal{S}}(\mathcal{X})$$
   with action $\rho: G_{\text{crit}} \to \text{Aut}_{\mathcal{S}}(\mathcal{X})$ preserving:
   - Energy (via $K_{D_E}^+$): $\Phi(\rho(g) \cdot x) = \Phi(x)$ for all $g \in G_{\text{crit}}$
@@ -814,10 +819,12 @@ This metatheorem is the "Main Result" of the framework: it proves that **Stiff**
   - **(Quantum)** Spectral Gap: $\inf(\sigma(L_G) \setminus \{0\}) \geq \delta > 0$ for gauge-fixed linearization $L_G$ (Simon {cite}`Simon83`)
 
 Then there exists a canonical **Reconstruction Functor**:
+
 $$F_{\text{Rec}}: \mathcal{A} \to \mathcal{S}$$
 satisfying the following properties:
 
 1. **Hom Isomorphism:** For any "bad pattern" $\mathcal{H}_{\text{bad}} \in \mathcal{A}$:
+
    $$\text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) \cong \text{Hom}_{\mathcal{S}}(F_{\text{Rec}}(\mathcal{H}_{\text{bad}}), F_{\text{Rec}}(\mathcal{X}))$$
    The isomorphism is natural in $\mathcal{X}$ and preserves obstruction structure.
 
@@ -826,6 +833,7 @@ satisfying the following properties:
    - Effectiveness: $F_{\text{Rec}}$ is computable given the input certificates
 
 3. **Lock Resolution:** The inconclusive verdict at Node 17 is resolvable:
+
    $$K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}inc}} \wedge K_{\text{Bridge}} \wedge K_{\text{Rigid}} \Longrightarrow K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\text{verdict}}$$
    where verdict $\in \{\text{blk}, \text{br-wit}\}$ (blocked or breached-with-witness).
 
@@ -951,19 +959,23 @@ Given the tactic trace from $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{br\text{-}
 The key insight is that $G_{\text{crit}}$ is not arbitrary—it is precisely the group of symmetries that prevent E1-E13 from concluding. This group becomes the target for the Bridge Certificate.
 
 *Step 2 (Bridge certificate: structural symmetry).* The certificate $K_{\text{Bridge}}$ establishes that $G_{\text{crit}}$ acts not merely as analytic automorphisms, but as **structural** automorphisms:
+
 $$\rho: G_{\text{crit}} \hookrightarrow \text{Aut}_{\mathcal{S}}(\mathcal{X})$$
 
 This is verified by checking that $G_{\text{crit}}$ preserves the permit-certified data:
 
 **(a) Energy preservation (from $K_{D_E}^+$):** For all $g \in G_{\text{crit}}$ and $x \in \mathcal{X}$:
+
 $$\Phi(\rho(g) \cdot x) = \Phi(x)$$
 The energy functional certified by $D_E$ is $G_{\text{crit}}$-invariant.
 
 **(b) Stratification equivariance (from $K_{\mathrm{SC}_\lambda}^+$):** For the scaling stratification $\mathcal{X} = \bigsqcup_{k=0}^N \Sigma_k$:
+
 $$\rho(g)(\Sigma_k) = \Sigma_k \quad \text{for all } g \in G_{\text{crit}}, \; k \in \{0, \ldots, N\}$$
 The strata defined by scaling exponents are preserved.
 
 **(c) Gradient compatibility (from $K_{\mathrm{LS}_\sigma}^+$):** The Łojasiewicz gradient flow commutes with $G_{\text{crit}}$:
+
 $$\rho(g) \circ \nabla\Phi = \nabla\Phi \circ \rho(g)$$
 
 **(d) Critical operator descent:** The operator $\Lambda$ generating $G_{\text{crit}}$ lies in $\text{End}_{\mathcal{S}}(\mathcal{X})$:
@@ -980,10 +992,12 @@ The Bridge Certificate is the mathematical content of the phrase "the organizing
 - $\mathcal{S}$ is abelian and semisimple (every object decomposes into simples)
 
 By Deligne's theorem {cite}`Deligne90`, there exists an affine group scheme $G = \text{Spec}(\mathcal{O}(G))$ with:
+
 $$\mathcal{S} \simeq \text{Rep}_k(G)$$
 The group $G$ is the **motivic Galois group** when $\mathcal{S} = \mathbf{Mot}_k$ ({cite}`Andre04`; {cite}`Jannsen92`). The concentration certificate $K_{C_\mu}^+$ ensures $\dim \omega(V) < \infty$ for all $V \in \mathcal{S}$.
 
 **Case B (Parabolic — O-minimal Tameness):** The profile family $\mathcal{F}$ from $K_{C_\mu}^+$ admits a tame stratification in an o-minimal structure $\mathcal{O}$ (e.g., $\mathbb{R}_{\text{an}}$, $\mathbb{R}_{\exp}$):
+
 $$\mathcal{F} = \bigsqcup_{k=1}^N \mathcal{F}_k$$
 where each $\mathcal{F}_k$ is a $C^m$-submanifold definable in $\mathcal{O}$. By van den Dries {cite}`vandenDries98` and Wilkie {cite}`Wilkie96`, such stratifications have:
 - Finite complexity: $N < \infty$ strata (compatible with $K_{C_\mu}^+$)
@@ -992,6 +1006,7 @@ where each $\mathcal{F}_k$ is a $C^m$-submanifold definable in $\mathcal{O}$. By
 - Łojasiewicz inequality: Compatible with $K_{\mathrm{LS}_\sigma}^+$ ({cite}`Lojasiewicz65`)
 
 **Case C (Quantum — Spectral Gap):** The linearized operator $L_G$ (gauge-fixed Hamiltonian, Fokker-Planck generator, or Dirichlet form) satisfies:
+
 $$\inf(\sigma(L_G) \setminus \{0\}) \geq \delta > 0$$
 This spectral gap, established via $K_{\mathrm{LS}_\sigma}^+$ (Simon {cite}`Simon83`; {cite}`Glimm87`), ensures:
 - Isolated ground state: $\ker(L_G) = \text{span}(\psi_0)$
@@ -1001,6 +1016,7 @@ This spectral gap, established via $K_{\mathrm{LS}_\sigma}^+$ (Simon {cite}`Simo
 *Step 4 (Dictionary construction).* We construct the Reconstruction Functor $F_{\text{Rec}}: \mathcal{A} \to \mathcal{S}$ explicitly by type. The construction uses the finiteness from $K_{C_\mu}^+$ and the regularity from $K_{\mathrm{LS}_\sigma}^+$:
 
 **Type $T_{\text{alg}}$ (Algebraic):** Let $\omega: \mathcal{A} \to \mathbf{Vect}_k$ be the fiber functor (e.g., Betti cohomology $H_B$, or de Rham $H_{\text{dR}}$). Define:
+
 $$F_{\text{Rec}}^{\text{alg}}(X) := (\omega(X), \rho_X)$$
 where $\rho_X: G \to \text{GL}(\omega(X))$ is the representation induced by the Tannakian structure ({cite}`DeligneMillne82`). The functor satisfies:
 - $F_{\text{Rec}}^{\text{alg}}(\mathbb{1}) = (\mathbf{1}_k, \text{triv})$ (monoidal unit)
@@ -1008,6 +1024,7 @@ where $\rho_X: G \to \text{GL}(\omega(X))$ is the representation induced by the 
 - $\dim \omega(X) < \infty$ (from $K_{C_\mu}^+$)
 
 **Type $T_{\text{para}}$ (Parabolic):** Using the o-minimal cell decomposition from $K_{\text{Rigid}}$, define:
+
 $$F_{\text{Rec}}^{\text{para}}(X) := (\text{profile}(X), \text{stratum}(X), \text{cell}(X))$$
 where:
 - $\text{profile}(X) \in \mathcal{P}$: The limit profile from $K_{C_\mu}^+$ ({cite}`KenigMerle06`)
@@ -1017,6 +1034,7 @@ where:
 By Merle-Zaag {cite}`MerleZaag98` and Duyckaerts-Kenig-Merle {cite}`DKM19`, the profile library is finite: $|\mathcal{P}| < \infty$. The Łojasiewicz exponent from $K_{\mathrm{LS}_\sigma}^+$ determines the convergence rate to profiles.
 
 **Type $T_{\text{quant}}$ (Quantum):** Using the spectral resolution of $L_G$ from $K_{\text{Rigid}}$, define:
+
 $$F_{\text{Rec}}^{\text{quant}}(X) := (\psi_0(X), \sigma(X), \Pi_0(X))$$
 where:
 - $\psi_0(X)$: Projection onto the ground state sector ({cite}`GlimmJaffe87`)
@@ -1026,9 +1044,11 @@ where:
 The spectral gap $\delta > 0$ from $K_{\text{Rigid}}$ ensures $\Pi_0$ is finite-rank (Fröhlich-Simon-Spencer {cite}`FSS76`).
 
 *Step 5 (Hom isomorphism verification).* We prove the central isomorphism using the certificates $K_{\text{Bridge}}$ and $K_{\text{Rigid}}$:
+
 $$\Phi_{\text{Rec}}: \text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) \xrightarrow{\cong} \text{Hom}_{\mathcal{S}}(F_{\text{Rec}}(\mathcal{H}_{\text{bad}}), F_{\text{Rec}}(\mathcal{X}))$$
 
 **Injectivity:** Let $f, f' \in \text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X})$ with $F_{\text{Rec}}(f) = F_{\text{Rec}}(f')$. By $K_{\text{Bridge}}$, the critical symmetry $G_{\text{crit}}$ acts on both sides via structural automorphisms. The $G_{\text{crit}}$-equivariant structure of $F_{\text{Rec}}$ (inherited from $K_{D_E}^+$, $K_{\mathrm{SC}_\lambda}^+$, $K_{\mathrm{LS}_\sigma}^+$) implies:
+
 $$f(x) = f'(x) \quad \text{for all } x \in \mathcal{H}_{\text{bad}}$$
 using:
 - *Algebraic:* Faithfulness of $\omega$ ({cite}`Deligne90`, Prop. 2.11)
@@ -1043,6 +1063,7 @@ using:
 By the universal property of $F_{\text{Rec}}$, there exists $f \in \text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X})$ with $F_{\text{Rec}}(f) = \phi$. This lift is unique by injectivity.
 
 **Naturality:** For any morphism $g: \mathcal{X} \to \mathcal{Y}$ in $\mathcal{A}$, the diagram:
+
 $$\begin{CD}
 \text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) @>{\Phi_{\text{Rec}}}>> \text{Hom}_{\mathcal{S}}(F_{\text{Rec}}(\mathcal{H}_{\text{bad}}), F_{\text{Rec}}(\mathcal{X})) \\
 @V{g_*}VV @V{F_{\text{Rec}}(g)_*}VV \\
@@ -1055,12 +1076,14 @@ commutes by functoriality of $F_{\text{Rec}}$. This is the content of the $\math
 **Case: $\text{Hom}_{\mathcal{S}}(F_{\text{Rec}}(\mathcal{H}_{\text{bad}}), F_{\text{Rec}}(\mathcal{X})) = \emptyset$**
 
 By the isomorphism $\Phi_{\text{Rec}}$:
+
 $$\text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X}) = \emptyset$$
 The sieve issues certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{blk}}$ (VICTORY). The bad pattern cannot embed. This triggers success at Node 17.
 
 **Case: $\text{Hom}_{\mathcal{S}}(F_{\text{Rec}}(\mathcal{H}_{\text{bad}}), F_{\text{Rec}}(\mathcal{X})) \neq \emptyset$**
 
 The Reconstruction Functor provides an explicit morphism witness via the $\mathrm{Rep}$ interface:
+
 $$\phi \in \text{Hom}_{\mathcal{S}}(F_{\text{Rec}}(\mathcal{H}_{\text{bad}}), F_{\text{Rec}}(\mathcal{X})) \leadsto f := \Phi_{\text{Rec}}^{-1}(\phi) \in \text{Hom}_{\mathcal{A}}(\mathcal{H}_{\text{bad}}, \mathcal{X})$$
 The sieve issues certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ with explicit witness $f$ (FATAL if bad pattern embeds, RECOVERABLE if controllable via other permits).
 
@@ -1072,6 +1095,7 @@ The sieve issues certificate $K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\mathrm{morph}}$ 
 The inconclusive verdict is resolved: **partial progress (from $K_{D_E}^+$, $K_{C_\mu}^+$, $K_{\mathrm{SC}_\lambda}^+$, $K_{\mathrm{LS}_\sigma}^+$) + structural symmetry ($K_{\text{Bridge}}$) + rigidity ($K_{\text{Rigid}}$) = decidable answer**.
 
 *Step 7 (Certificate assembly).* Construct the output certificate incorporating all upstream permit data:
+
 $$K_{\text{Rec}}^+ = \left(F_{\text{Rec}}, \Phi_{\text{Rec}}, K_{\mathrm{Cat}_{\mathrm{Hom}}}^{\text{verdict}}, T, D_{\text{Rec}}\right)$$
 
 **Certificate Produced:** $K_{\text{Rec}}^+$ with payload:
@@ -1099,7 +1123,6 @@ The reconstruction procedure must produce one of the following outcomes:
 
 $$
 \text{Structural Reconstruction}: \mathsf{Obl}(\Gamma) \to \left(\{K^+_{\text{new}}\} \text{ enabling discharge}\right) \cup \left(\mathsf{Obl}'(\Gamma) \text{ with refined } \mathsf{missing}\right)
-
 $$
 
 This ensures reconstruction makes definite progress: either discharging obligations or producing a strictly refined $\mathsf{missing}$ specification.
@@ -1164,7 +1187,6 @@ Under the hypotheses of {prf:ref}`mt-lock-reconstruction` (with all interface pe
 
 $$
 \mathcal{A}|_{\langle\mathcal{H}_{\text{bad}}\rangle} \simeq_{\text{Hom}} \mathcal{S}|_{\langle F_{\text{Rec}}(\mathcal{H}_{\text{bad}})\rangle}
-
 $$
 
 This equivalence is the rigorous formulation of "soft implies hard" for morphisms. In particular:
@@ -1234,7 +1256,6 @@ The beautiful thing is that each step uses a different piece of the certificate 
 
   $$
   \|\nabla^2 \Phi(\eta)\| \geq \lambda > 0
-
   $$
 
   This is the **stiffness condition**: the energy landscape admits no flat directions.
@@ -1243,7 +1264,6 @@ The beautiful thing is that each step uses a different piece of the certificate 
 
   $$
   \Sigma(\eta) = \{x \in X : \eta(x) \text{ is not real-analytic}\}
-
   $$
 
   is definable in an o-minimal structure $\mathcal{O}$ expanding $\mathbb{R}$ (e.g., $\mathbb{R}_{\text{an}}$, $\mathbb{R}_{\exp}$).
@@ -1254,7 +1274,6 @@ Then $\eta$ is the fundamental class of an algebraic cycle with rational coeffic
 
 $$
 [\eta] \in \mathcal{Z}^k(X)_{\mathbb{Q}}
-
 $$
 
 The sieve issues certificate $K_{\mathrm{Alg}}^+$ with payload $(Z^{\text{alg}}, [Z^{\text{alg}}] = [\eta], \mathbb{Q})$.
@@ -1266,6 +1285,7 @@ The sieve issues certificate $K_{\mathrm{Alg}}^+$ with payload $(Z^{\text{alg}},
 **Proof (4 Steps):**
 
 *Step 1 (Exclusion of wild smooth forms via $K_{\mathrm{LS}_\sigma}^+$).* The stiffness certificate $K_{\mathrm{LS}_\sigma}^+$ excludes $C^\infty$ forms that are not real-analytic. Suppose $\eta$ were smooth but not real-analytic at some point $p \in X$. By the construction of smooth bump functions, there exists a perturbation:
+
 $$\eta_\epsilon = \eta + \epsilon \psi$$
 where $\psi$ is a smooth form with $\text{supp}(\psi) \subset U$ for an arbitrarily small neighborhood $U$ of $p$.
 
@@ -1273,7 +1293,6 @@ Because $\psi$ is localized, its interactions with the global Hodge-Riemann pair
 
 $$
 \langle \nabla^2\Phi(\eta) \cdot \psi, \psi \rangle \to 0 \quad \text{as } U \to \{p\}
-
 $$
 
 This violates the uniform spectral gap condition $\|\nabla^2\Phi\| \geq \lambda > 0$ from $K_{\mathrm{LS}_\sigma}^+$. The Łojasiewicz-Simon inequality ({cite}`Simon83`; {cite}`Lojasiewicz65`) implies the energy landscape admits no flat directions at critical points.
@@ -1286,7 +1305,6 @@ By the **Cell Decomposition Theorem** for o-minimal structures ({cite}`vandenDri
 
 $$
 \Sigma = \bigsqcup_{i=1}^N S_i
-
 $$
 
 where each $S_i$ is a $C^m$-submanifold definable in $\mathcal{O}$. The finiteness $N < \infty$ is guaranteed by o-minimality.
@@ -1295,7 +1313,6 @@ The finite energy certificate $K_{D_E}^+$ implies $\|\eta\|_{L^2}^2 < \infty$, h
 
 $$
 \mathbb{M}(\eta) = \int_X |\eta| \,dV < \infty
-
 $$
 
 By the **Federer-Fleming Closure Theorem** adapted to tame geometry ({cite}`Federer69`, §4.2; {cite}`vandenDries98`, Ch. 6), a current with:
@@ -1312,7 +1329,6 @@ On a Kähler manifold $X$, a real-analytic harmonic $(k,k)$-form with integral p
 
 $$
 \frac{i}{2\pi} \partial\bar{\partial} \log |s|^2 = [Z]
-
 $$
 
 relates $(k,k)$-currents to zero sets of holomorphic sections. This provides the bridge from analytic to holomorphic.
@@ -1321,7 +1337,6 @@ The stiffness certificate $K_{\mathrm{LS}_\sigma}^+$ implies **deformation rigid
 
 $$
 H^1(Z, \mathcal{N}_{Z/X}) = 0
-
 $$
 
 where $\mathcal{N}_{Z/X}$ is the normal bundle ({cite}`Demailly12`, §VII). The moduli space is discrete (zero-dimensional). A "stiff" form cannot deform continuously into a non-holomorphic form without breaking harmonicity or Hodge type.
@@ -1342,7 +1357,6 @@ Therefore:
 
 $$
 Z = (Z^{\text{alg}})^{\text{an}}
-
 $$
 
 for a unique algebraic subvariety $Z^{\text{alg}} \subset X$.
@@ -1351,7 +1365,6 @@ for a unique algebraic subvariety $Z^{\text{alg}} \subset X$.
 
 $$
 [\eta] = [Z^{\text{alg}}] \in H^{2k}(X, \mathbb{Q})
-
 $$
 
 The failure mode **N.A (Non-Algebraic)** is excluded.

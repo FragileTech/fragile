@@ -102,10 +102,12 @@ The deep theorem we are using says: these five views are **complete**. Every str
 Let $\mathbf{H}$ be a cohesive $(\infty,1)$-topos. Every type $\mathcal{X} \in \mathbf{H}$ decomposes via **fracture squares** into its modal components. Specifically:
 
 1. **Shape--flat fracture square.** The canonical diagram
+
 $$\mathcal{X} \simeq \int\mathcal{X} \times_{\int\flat\mathcal{X}} \flat\mathcal{X}$$
 is a homotopy pullback.
 
 2. **Flat--sharp fracture square.** The canonical diagram
+
 $$\flat\mathcal{X} \simeq \flat\mathcal{X} \times_{\flat\sharp\mathcal{X}} \sharp\mathcal{X}$$
 is a homotopy pullback (in the sense that the flat component itself decomposes into its discrete and codiscrete parts).
 
@@ -2721,6 +2723,7 @@ An algorithmic process $\mathcal{A}$ is **Class IV (Divider)** if:
 
 1. **Modal Factorization:** $\mathcal{A} \triangleright \ast$ (factors through scaling modality)
 2. **Recursive Decomposition:** The problem satisfies:
+
    $$T(n) = a \cdot T(n/b) + f(n)$$
    where $a$ = number of subproblems, $b$ = size reduction, $f(n)$ = merge cost
 3. **Subcritical Scaling:** $\log_b(a) < c$ for constant $c$ (critical exponent condition)
@@ -3393,6 +3396,7 @@ For Part I, we fix the canonical evaluator implementing the runtime of
 
 1. **Finite syntax alphabet.** Program codes are finite parse trees, equivalently finite bytecode streams, over a fixed
    finite constructor alphabet
+
    $$
    \Sigma_{\mathrm{eval}}
    =
@@ -3408,6 +3412,7 @@ For Part I, we fix the canonical evaluator implementing the runtime of
    Runtime states may store only addresses into that tape.
 
 3. **Runtime configuration format.** A runtime configuration is a finite tagged tuple
+
    $$
    C=(q,p,\kappa,\rho,\sigma,\eta,\iota,\omega),
    $$
@@ -3422,6 +3427,7 @@ For Part I, we fix the canonical evaluator implementing the runtime of
    - $\omega$ is a halting-status flag from a fixed finite set.
 
 4. **Microstep semantics.** The evaluator transition relation
+
    $$
    C \leadsto C'
    $$
@@ -3484,16 +3490,19 @@ The concrete evaluator of {prf:ref}`def-concrete-evaluator-implementation` satis
 2. **Read-only program code.** The code of a program is stored in read-only form and is not duplicated unboundedly
    during execution.
 3. **Decidable one-step semantics.** There is a decidable one-step transition relation
+
    $$
    C \leadsto C'
    $$
    on encoded configurations.
 4. **Local size discipline.** There exists a linear polynomial
+
    $$
    s(N)=N+c
    $$
    such that if one primitive evaluator microstep transforms an encoded configuration of bitlength $N$ into one of
    bitlength $N'$, then
+
    $$
    N' \le s(N).
    $$
@@ -3527,11 +3536,13 @@ For clause (4), let $N$ be the encoded size of $C$. A single evaluator microstep
 
 Therefore there exists a constant $c$ such that every microstep changes the encoded configuration length by at most $c$,
 so
+
 $$
 N' \le N+c = s(N).
 $$
 If the initial tagged input has size at most $c_0(|a|+n+1)$, then after at most $t$ microsteps every reachable
 configuration has encoded size at most
+
 $$
 c_0(|a|+n+1)+ct,
 $$
@@ -3790,11 +3801,13 @@ Equivalently: the certificate system is complete for true polynomial-time behavi
 Clause (1) of {prf:ref}`def-family-cost-certificate` is exactly the hypothesis.
 
 For clause (2), because $a$ represents the uniform family
+
 $$
 \mathcal A:\mathfrak X\Rightarrow_{\sigma}\mathfrak Y
 $$
 in the sense of {prf:ref}`def-uniform-algorithm-family-rigorous`, every evaluation on a valid tagged
 $\mathfrak X$-input halts with an output bitstring $v$ satisfying
+
 $$
 \chi^{\mathfrak Y}_{\sigma(n)}(v)=1.
 $$
@@ -3804,6 +3817,7 @@ Clause (3) follows from {prf:ref}`thm-bit-cost-evaluator-discipline`: each count
 microstep of the fixed Fragile evaluator, and its accounting is by encoded operand size.
 
 For clause (4), take as certificate payload the tuple
+
 $$
 W(a,q):=(q,\Pi_{\mathrm{halt}},\Pi_{\mathrm{out}},\Pi_{\mathrm{step}},\Pi_{\mathrm{adm}}),
 $$
@@ -3821,6 +3835,7 @@ predicates by {prf:ref}`def-admissible-input-family-rigorous`, and reachable eva
 encodings with polynomial-time validity and decoding by {prf:ref}`thm-finite-encodability`.
 
 Therefore $W(a,q)$ witnesses
+
 $$
 \mathsf{FamCostCert}_{\mathfrak X,\mathfrak Y,\sigma}(a,q).
 $$
@@ -3831,6 +3846,7 @@ $$
 
 Theorem {prf:ref}`thm-costcert-completeness` proves **semantic completeness** for the current witness-based definition
 of
+
 $$
 \mathsf{FamCostCert}.
 $$
@@ -4278,15 +4294,18 @@ polynomial-time behavior yields a family cost certificate in the present witness
 {prf:ref}`def-family-cost-certificate`.
 
 The stronger implementation theorem one may still want is different. It would start from a true evaluator bound
+
 $$
 q(n)
 $$
 for an effective program $a$, pass through clause (1) of {prf:ref}`thm-syntax-to-normal-form`, decorate the
 administrative normal form by explicit evaluator fuel, and then build a finite constructor derivation
+
 $$
 \mathcal D_a^q \vdash \mathsf{FamCostDeriv}_{\mathfrak X,\mathfrak Y,\sigma}(t_a^q,p_a)
 $$
 whose image yields
+
 $$
 \mathsf{FamCostCert}_{\mathfrak X,\mathfrak Y,\sigma}(a,p_a).
 $$
@@ -4909,6 +4928,7 @@ stronger than ambient structural decomposition statements about objects of $\mat
 :label: def-administrative-vs-progress-primitive
 
 Let
+
 $$
 F:\mathfrak X\Rightarrow_{\sigma}\mathfrak Y
 $$
@@ -4958,14 +4978,17 @@ $\lozenge\in\{\sharp,\int,\flat,\ast,\partial\}$, in the sense of the witness de
 {prf:ref}`def-pure-sharp-witness-rigorous`--{prf:ref}`def-pure-boundary-witness-rigorous`.
 
 More precisely, let
+
 $$
 p:\mathfrak U\Rightarrow_{\tau}\mathfrak V
 $$
 be a primitive progress-producing leaf. Then there exists at least one
+
 $$
 \lozenge\in\{\sharp,\int,\flat,\ast,\partial\}
 $$
 such that $p$ admits a pure $\lozenge$-witness after, if necessary, conjugation by presentation translators:
+
 $$
 p \equiv_{\mathrm{ext}} R^\lozenge \circ F^\lozenge \circ E^\lozenge.
 $$
@@ -4982,6 +5005,7 @@ are irrelevant to the present lemma.
 For each progress-producing primitive instruction $\pi$, consult the primitive audit required by
 {prf:ref}`rem-primitive-audit-finite-obligation`. By construction of that audit, $\pi$ is accompanied by:
 1. a designation of at least one modality
+
    $$
    \lozenge_\pi\in\{\sharp,\int,\flat,\ast,\partial\},
    $$
@@ -4990,6 +5014,7 @@ For each progress-producing primitive instruction $\pi$, consult the primitive a
    pure witness definitions.
 
 This yields a pure witness
+
 $$
 p \equiv_{\mathrm{ext}} R^{\lozenge_\pi}\circ F^{\lozenge_\pi}\circ E^{\lozenge_\pi}.
 $$
@@ -5002,6 +5027,7 @@ Because the instruction set is finite, this proof is a finite case analysis. The
 :label: def-modal-factorization-tree
 
 A modal factorization tree for a uniform family
+
 $$
 \mathcal A:\mathfrak X\Rightarrow_{\sigma}\mathfrak Y
 $$
@@ -5019,10 +5045,12 @@ In Part IV, the phrases modal profile and modal factorization tree are used inte
 :label: thm-witness-decomposition
 
 Every internally polynomial-time uniform family
+
 $$
 \mathcal A \in P_{\mathrm{FM}}(\mathfrak X,\mathfrak Y;\sigma)
 $$
 admits a finite modal factorization tree whose leaves are pure
+
 $$
 \sharp,\ \int,\ \flat,\ \ast,\ \partial
 $$
@@ -5037,10 +5065,12 @@ well-founded recursion.
 :::{prf:proof}
 Let $\mathcal A\in P_{\mathrm{FM}}(\mathfrak X,\mathfrak Y;\sigma)$. By {prf:ref}`thm-syntax-to-normal-form`, there
 exists a normal-form family
+
 $$
 F\in\mathsf{NF}
 $$
 such that
+
 $$
 F\equiv_{\mathrm{ext}} \mathcal A.
 $$
@@ -5066,6 +5096,7 @@ Traverse the syntax tree of $F$ inductively.
    By {prf:ref}`thm-modal-profile-closure`, together with the standard tagged-encoding treatment of sums/case analysis
    explained in its proof, the denotation of any tree obtained by combining already-classified child subtrees through
    one of these constructors remains inside
+
    $$
    \mathsf{Sat}\langle \sharp,\int,\flat,\ast,\partial\rangle.
    $$
@@ -5075,6 +5106,7 @@ Traverse the syntax tree of $F$ inductively.
    size/depth certificates; they are not literally unrolled into exponentially large trees.
 
 Proceeding inductively from the leaves to the root yields a finite modal factorization tree $T$ with
+
 $$
 \llbracket T\rrbracket \equiv_{\mathrm{ext}} F \equiv_{\mathrm{ext}} \mathcal A.
 $$
@@ -5086,6 +5118,7 @@ Therefore $\mathcal A$ admits a finite modal factorization tree.
 :label: def-witpoly-category
 
 The category
+
 $$
 \mathsf{Wit}_{\mathrm{poly}}
 $$
@@ -5093,10 +5126,12 @@ of polynomial-time progress witnesses is defined as follows.
 
 1. Objects.
    An object is an extensional equivalence class
+
    $$
    [\mathcal A]
    $$
    of a uniform family
+
    $$
    \mathcal A:\mathfrak X\Rightarrow_{\sigma}\mathfrak Y
    $$
@@ -5109,20 +5144,24 @@ of polynomial-time progress witnesses is defined as follows.
 
 2. Morphisms.
    A morphism
+
    $$
    [\mathcal A]\to[\mathcal B]
    $$
    is an equivalence class of pairs of presentation translators
+
    $$
    (P,Q)
    $$
    of compatible source and target types such that
+
    $$
    \mathcal B \equiv_{\mathrm{ext}} Q\circ \mathcal A \circ P.
    $$
 
 3. Composition.
    Composition is induced by composition of presentation translators:
+
    $$
    (P_2,Q_2)\circ(P_1,Q_1) := (P_1\circ P_2,\ Q_2\circ Q_1),
    $$
@@ -5132,10 +5171,12 @@ of polynomial-time progress witnesses is defined as follows.
    Identity morphisms are given by identity presentation translators.
 
 For each
+
 $$
 \lozenge\in\{\sharp,\int,\flat,\ast,\partial\},
 $$
 let
+
 $$
 \mathsf W_\lozenge \subseteq \mathsf{Wit}_{\mathrm{poly}}
 $$
@@ -5159,12 +5200,14 @@ Let $T$ be a modal factorization tree.
 
 Define:
 1. the pure-leaf count
+
    $$
    \lambda(T)
    $$
    to be the number of pure modal leaves of $T$;
 
 2. the nontrivial closure count
+
    $$
    \kappa(T)
    $$
@@ -5177,11 +5220,13 @@ Define:
 Translator-conjugation nodes are not counted in $\kappa(T)$.
 
 The rank of $T$ is the lexicographically ordered pair
+
 $$
 \mathrm{rk}(T):=(\lambda(T),\kappa(T)) \in \mathbb N_{>0}\times \mathbb N.
 $$
 
 If $[\mathcal A]\in \mathsf{Wit}_{\mathrm{poly}}$, define the witness rank of $[\mathcal A]$ to be
+
 $$
 \mathrm{rk}([\mathcal A])
 :=
@@ -5197,24 +5242,29 @@ for $\mathcal A$, and the lexicographic order on $\mathbb N_{>0}\times \mathbb N
 :label: def-reducible-irreducible-witness
 
 Let
+
 $$
 [\mathcal A]\in \mathsf{Wit}_{\mathrm{poly}}.
 $$
 
 We say that $[\mathcal A]$ is reducible if there exists a modal factorization tree $T$ for $\mathcal A$ with minimal
 rank
+
 $$
 \mathrm{rk}(T)=\mathrm{rk}([\mathcal A]),
 $$
 such that the root of $T$ is a nontrivial closure node, and the immediate child subtrees
+
 $$
 T_1,\dots,T_r
 $$
 denote objects
+
 $$
 [\mathcal B_1],\dots,[\mathcal B_r]\in\mathsf{Wit}_{\mathrm{poly}}
 $$
 satisfying
+
 $$
 \mathrm{rk}([\mathcal B_i]) < \mathrm{rk}([\mathcal A])
 \qquad\text{for each }i.
@@ -5230,10 +5280,12 @@ changes, as a nontrivial closure-combination of strictly simpler witness objects
 :label: thm-irreducible-witness-classification
 
 Every irreducible object of
+
 $$
 \mathsf{Wit}_{\mathrm{poly}}
 $$
 lies in one of the five pure modal subcategories
+
 $$
 \mathsf W_\sharp,\qquad
 \mathsf W_\int,\qquad
@@ -5243,6 +5295,7 @@ $$
 $$
 
 Equivalently: if
+
 $$
 [\mathcal A]\in\mathsf{Wit}_{\mathrm{poly}}
 $$
@@ -5251,6 +5304,7 @@ single pure modal leaf, together with at most translator-conjugation nodes.
 
 This is the theorem that formalizes the statement that there is no hidden sixth computational mechanism. It is strictly
 stronger than the set-theoretic equality
+
 $$
 P_{\mathrm{FM}}=\mathsf{Sat}\langle \sharp,\int,\flat,\ast,\partial\rangle,
 $$
@@ -5259,16 +5313,19 @@ because it classifies the irreducible generators of polynomial-time computation.
 
 :::{prf:proof}
 Let
+
 $$
 [\mathcal A]\in \mathsf{Wit}_{\mathrm{poly}}
 $$
 be irreducible. By {prf:ref}`thm-witness-decomposition`, choose a modal factorization tree $T$ for $\mathcal A$ whose
 rank is minimal:
+
 $$
 \mathrm{rk}(T)=\mathrm{rk}([\mathcal A])=(\lambda,\kappa).
 $$
 
 We show that necessarily
+
 $$
 (\lambda,\kappa)=(1,0).
 $$
@@ -5277,6 +5334,7 @@ Step 1: $\kappa=0$.
 
 Assume toward contradiction that $\kappa>0$. Then $T$ contains at least one nontrivial closure node. Choose one that
 is highest in the tree, i.e. closest to the root among all such nodes. Let its immediate child subtrees be
+
 $$
 T_1,\dots,T_r.
 $$
@@ -5284,10 +5342,12 @@ $$
 Each $T_i$ is a proper subtree of $T$, hence has strictly smaller rank than $T$ in the lexicographic order: either it
 has fewer pure leaves, or the same number of pure leaves and fewer nontrivial closure nodes. Therefore each denoted
 object
+
 $$
 [\mathcal B_i]:=[\llbracket T_i\rrbracket]
 $$
 satisfies
+
 $$
 \mathrm{rk}([\mathcal B_i])<\mathrm{rk}([\mathcal A]).
 $$
@@ -5308,15 +5368,18 @@ Step 3: identify the unique leaf.
 
 So $T$ consists of exactly one pure leaf, possibly wrapped by translator-conjugation nodes. By the leaf rule in
 {prf:ref}`def-modal-profile-rigorous`, that unique leaf is a pure witness of exactly one of
+
 $$
 \sharp,\ \int,\ \flat,\ \ast,\ \partial.
 $$
 
 Hence
+
 $$
 [\mathcal A]\in \mathsf W_\lozenge
 $$
 for some
+
 $$
 \lozenge\in\{\sharp,\int,\flat,\ast,\partial\}.
 $$
@@ -5339,6 +5402,7 @@ classes. This is exactly the formal content required to rule out a genuine Class
 :label: cor-computational-modal-exhaustiveness
 
 The internally polynomial-time class coincides exactly with the saturated closure of the five pure modal classes:
+
 $$
 P_{\mathrm{FM}}
 =
@@ -5351,22 +5415,26 @@ We prove both inclusions.
 
 Inclusion $\subseteq$.
 Let
+
 $$
 \mathcal A\in P_{\mathrm{FM}}(\mathfrak X,\mathfrak Y;\sigma).
 $$
 By {prf:ref}`thm-witness-decomposition`, $\mathcal A$ admits a finite modal factorization tree. By definition of
 saturated modal closure in {prf:ref}`def-saturated-modal-closure-rigorous`, this implies
+
 $$
 \mathcal A\in \mathsf{Sat}\langle \sharp,\int,\flat,\ast,\partial\rangle.
 $$
 
 Inclusion $\supseteq$.
 Conversely, let
+
 $$
 \mathcal A\in \mathsf{Sat}\langle \sharp,\int,\flat,\ast,\partial\rangle.
 $$
 By {prf:ref}`thm-modal-composition`, every finite modal profile built from pure witnesses computes an internally
 polynomial-time family. Therefore
+
 $$
 \mathcal A\in P_{\mathrm{FM}}.
 $$
@@ -5415,10 +5483,12 @@ burden is too opaque.
 :label: cor-no-hidden-mechanism
 
 Suppose there exists a uniform algorithm family
+
 $$
 \mathcal A\in P_{\mathrm{FM}}
 $$
 that does not admit any modal factorization tree in
+
 $$
 \mathsf{Sat}\langle \sharp,\int,\flat,\ast,\partial\rangle.
 $$
@@ -5443,6 +5513,7 @@ algorithm; it would refute at least one explicit theorem in the classification/e
 Assume, for contradiction, that all theorems and corollaries listed in the statement hold.
 
 Then Corollary {prf:ref}`cor-computational-modal-exhaustiveness` yields
+
 $$
 P_{\mathrm{FM}}
 =
@@ -5486,6 +5557,7 @@ properly belongs.
 :label: rem-role-of-part-v
 
 Part IV proves computational modal exhaustiveness:
+
 $$
 P_{\mathrm{FM}}
 =
@@ -5512,6 +5584,7 @@ framework to other problems. They are not in the critical path.
 :label: def-problem-family-and-solvers
 
 A **problem family** is a triple
+
 $$
 \Pi=(\mathfrak X,\mathfrak Y,\mathsf{Spec}),
 $$
@@ -5521,16 +5594,19 @@ where:
 3. for each $n\in\mathbb N$, $\mathsf{Spec}_n\subseteq X_n\times Y_n$ is a decidable correctness relation.
 
 A uniform family
+
 $$
 \mathcal A:\mathfrak X\Rightarrow \mathfrak Y
 $$
 is a **correct solver** for $\Pi$ if
+
 $$
 \forall n\in\mathbb N\ \forall x\in X_n,\qquad
 \bigl(x,\mathcal A_n(x)\bigr)\in \mathsf{Spec}_n.
 $$
 
 The class of internally polynomial-time correct solvers is denoted
+
 $$
 \mathsf{Sol}_{\mathrm{poly}}(\Pi)
 :=
@@ -5546,16 +5622,19 @@ $$
 :label: def-admissible-irreducible-modal-component
 
 Fix a problem family $\Pi$ and a modality
+
 $$
 \lozenge\in\{\sharp,\int,\flat,\ast,\partial\}.
 $$
 
 An object
+
 $$
 [\mathcal B]\in \mathsf W_\lozenge
 $$
 is called an **admissible irreducible $\lozenge$-component for $\Pi$** if there exist:
 1. a correct solver
+
    $$
    \mathcal A\in \mathsf{Sol}_{\mathrm{poly}}(\Pi),
    $$
@@ -5572,16 +5651,19 @@ $\lozenge$ that occurs inside at least one polynomial-time correct solver for $\
 :label: def-semantic-modal-obstruction
 
 For a problem family $\Pi$ and a modality
+
 $$
 \lozenge\in\{\sharp,\int,\flat,\ast,\partial\},
 $$
 the **semantic modal obstruction proposition**
+
 $$
 \mathbb K_\lozenge^-(\Pi)
 $$
 is the statement that there exists no admissible irreducible $\lozenge$-component for $\Pi$.
 
 Equivalently,
+
 $$
 \mathbb K_\lozenge^-(\Pi)
 \iff
@@ -5605,6 +5687,7 @@ $\mathbb{K}_\lozenge^-(\Pi)$ of {prf:ref}`def-semantic-modal-obstruction`.
 
 A **full E13 obstruction package** for a problem family $\Pi$ consists of proofs that all five semantic obstruction
 propositions hold:
+
 $$
 \mathbb{K}_\sharp^-(\Pi) \wedge \mathbb{K}_\int^-(\Pi) \wedge \mathbb{K}_\flat^-(\Pi) \wedge
 \mathbb{K}_\ast^-(\Pi) \wedge \mathbb{K}_\partial^-(\Pi).
@@ -5704,6 +5787,7 @@ defined on the algorithm's extended configuration space $\tilde{\mathfrak{Z}} = 
 1. **Workspace alignment:** Each $E_\lozenge(\tilde{z})$ depends only on the $\lozenge$-workspace component $\tilde{z}_\lozenge \in Z_n^\lozenge$ of the extended state $\tilde{z} \in \tilde{\mathfrak{Z}}$. That is, there exist functions $\hat{E}_\lozenge : Z_n^\lozenge \to \mathbb{R}_{\geq 0}$ such that $E_\lozenge(\tilde{z}) = \hat{E}_\lozenge(\tilde{z}_\lozenge)$.
 
 2. **Modal orthogonality:** For each $\lozenge$ and any barrier-compatible pure $\lozenge$-endomorphism $F^\lozenge$ with encoding $E^\lozenge$ and reconstruction $R^\lozenge$, the **transported endomorphism** $F^\lozenge_* := R^\lozenge \circ F^\lozenge \circ E^\lozenge$ (the full composite acting on the global state $\tilde{\mathfrak{Z}}$) preserves non-$\lozenge$ energy components:
+
    $$E_{\lozenge'}(F^\lozenge_*(\tilde{z})) = E_{\lozenge'}(\tilde{z}) \qquad \text{for all } \lozenge' \neq \lozenge$$
 
    **Clarification on the product structure.** The extended configuration space $\tilde{\mathfrak{Z}} = \prod_\lozenge Z_n^\lozenge$ is a **proof device** for tracking energy contributions, not a claim about the algorithm's physical memory layout. The actual algorithm operates on a shared tape $\{0,1\}^{O(p(n))}$. The product space $\tilde{\mathfrak{Z}}$ arises from the encoding maps $E^\lozenge$, which project the shared tape state onto modal workspaces, and the reconstruction maps $R^\lozenge$, which embed modal outputs back. Orthogonality is a property of these encoding/reconstruction-mediated *energy changes*, not of disjoint memory regions. See {prf:ref}`rem-workspace-separation-shared-state` for the full argument.
@@ -6285,6 +6369,7 @@ Therefore no irreducible $\lozenge$-leaf exists in any solver's minimal-rank tre
 :label: thm-mixed-modal-obstruction
 
 Let $\Pi$ be a problem family. Suppose that all five semantic obstruction propositions hold:
+
 $$
 \mathbb K_\sharp^-(\Pi)
 \wedge
@@ -6298,6 +6383,7 @@ $$
 $$
 
 Then
+
 $$
 \mathsf{Sol}_{\mathrm{poly}}(\Pi)=\varnothing.
 $$
@@ -6306,6 +6392,7 @@ Equivalently: if every irreducible modal route is blocked, then no polynomial-ti
 
 In particular, if $\Pi$ carries a full E13 obstruction package in the sense of
 {prf:ref}`def-e13-reconstructed`, then
+
 $$
 \mathsf{Sol}_{\mathrm{poly}}(\Pi)=\varnothing.
 $$
@@ -6313,22 +6400,26 @@ $$
 
 :::{prf:proof}
 Assume, toward contradiction, that
+
 $$
 \mathsf{Sol}_{\mathrm{poly}}(\Pi)\neq\varnothing.
 $$
 Choose
+
 $$
 \mathcal A\in \mathsf{Sol}_{\mathrm{poly}}(\Pi).
 $$
 By {prf:ref}`thm-witness-decomposition`, $\mathcal A$ admits a finite modal factorization tree. Choose one of minimal
 rank. By {prf:ref}`thm-irreducible-witness-classification`, every irreducible object occurring in that minimal-rank
 tree lies in one of the five pure modal subcategories
+
 $$
 \mathsf W_\sharp,\ \mathsf W_\int,\ \mathsf W_\flat,\ \mathsf W_\ast,\ \mathsf W_\partial.
 $$
 
 Hence at least one admissible irreducible modal component exists for $\Pi$, belonging to one of those five classes.
 This contradicts the conjunction of the five semantic obstruction propositions
+
 $$
 \mathbb K_\sharp^-(\Pi)\wedge \mathbb K_\int^-(\Pi)\wedge \mathbb K_\flat^-(\Pi)\wedge \mathbb K_\ast^-(\Pi)\wedge
 \mathbb K_\partial^-(\Pi).
@@ -6341,11 +6432,13 @@ Therefore no polynomial-time correct solver for $\Pi$ exists.
 :label: cor-e13-contrapositive-hardness-reconstructed
 
 Let $\Pi$ be a problem family. If all five semantic obstruction propositions hold:
+
 $$
 \mathbb{K}_\sharp^-(\Pi) \wedge \mathbb{K}_\int^-(\Pi) \wedge \mathbb{K}_\flat^-(\Pi) \wedge
 \mathbb{K}_\ast^-(\Pi) \wedge \mathbb{K}_\partial^-(\Pi),
 $$
 then
+
 $$
 \Pi \notin P_{\mathrm{FM}}.
 $$
@@ -6406,6 +6499,7 @@ internal $3$-SAT family:
 4. and therefore lies outside $P_{\mathrm{FM}}$.
 
 Once those steps are established, the separation chain is formal:
+
 $$
 \Pi_{3\text{-SAT}}\notin P_{\mathrm{FM}}
 \;\Longrightarrow\;
@@ -6415,6 +6509,7 @@ P_{\mathrm{DTM}}\neq NP_{\mathrm{DTM}}.
 $$
 
 The direct theorem route in this part is the current E13 antecedent package:
+
 $$
 K_{\mathrm{LS}_\sigma}^- \wedge K_{\mathrm{E6}}^- \wedge K_{\mathrm{E4}}^- \wedge K_{\mathrm{E11}}^- \wedge
 K_{\mathrm{SC}_\lambda}^{\mathrm{super}} \wedge K_{\mathrm{E8}}^-
@@ -6534,6 +6629,7 @@ a polynomial-time solver that is invisible to all five modal obstruction channel
 
 :::{prf:proof}
 Assume toward contradiction that $\Pi$ carries $K_{\mathrm{E13}}^+(\Pi)$ and that there exists
+
 $$
 \mathcal{A} \in P_{\mathrm{FM}}(\mathfrak{X}, \mathfrak{Y}; \sigma)
 $$
@@ -6620,16 +6716,19 @@ classifies problems as P or NP-hard.
 :label: def-threshold-random-3sat-family
 
 Let
+
 $$
 \mathfrak F_{3\text{-CNF}} = \bigl((F_n)_{n\in\mathbb N},m_F,\mathrm{enc}^F,\mathrm{dec}^F,\chi^F\bigr)
 $$
 be the admissible family whose $n$th level $F_n$ consists of all $3$-CNF formulas over variables
+
 $$
 x_1,\dots,x_{v(F)}
 $$
 with canonical bitstring encoding length bounded by a polynomial $m_F(n)$ and with $v(F)\le n$.
 
 Let
+
 $$
 \mathfrak A = \bigl((\{0,1\}^{\le n} \cup \{\bot\})_{n\in\mathbb N},m_A,\mathrm{enc}^A,\mathrm{dec}^A,\chi^A\bigr)
 $$
@@ -6638,22 +6737,26 @@ strings of length at most $n$ (candidate satisfying assignments) together with a
 symbol $\bot$ (indicating unsatisfiability).
 
 Let
+
 $$
 \mathfrak W_{3\text{-SAT}}
 =
 \bigl((W_n)_{n\in\mathbb N},m_W,\mathrm{enc}^W,\mathrm{dec}^W,\chi^W\bigr)
 $$
 be the admissible witness family, where
+
 $$
 W_n := \{0,1\}^{\le q_{3\text{-SAT}}(n)}
 $$
 and $q_{3\text{-SAT}}(n):=n$ is the standard witness-length bound.
 
 Define the search-specification relation
+
 $$
 \mathsf{Spec}^{3\text{-SAT}}_n \subseteq F_n\times \bigl(\{0,1\}^{\le n} \cup \{\bot\}\bigr)
 $$
 by
+
 $$
 (F,a)\in \mathsf{Spec}^{3\text{-SAT}}_n
 \iff
@@ -6663,10 +6766,12 @@ a = \bot, & \text{if } F \text{ is unsatisfiable},
 \end{cases}
 $$
 where
+
 $$
 \mathsf{Ver}^{3\text{-SAT}}_n : F_n\times W_n \to \{0,1\}
 $$
 is the clause-satisfaction verifier:
+
 $$
 \mathsf{Ver}^{3\text{-SAT}}_n(F,a)=1
 \iff
@@ -6674,6 +6779,7 @@ a \text{ satisfies every clause of }F.
 $$
 
 The **canonical internal $3$-SAT search problem family** is
+
 $$
 \Pi_{3\text{-SAT}}
 :=
@@ -6717,6 +6823,7 @@ assignment from a solved state.
 :label: thm-canonical-3sat-admissible
 
 The family
+
 $$
 \Pi_{3\text{-SAT}}
 =
@@ -6742,6 +6849,7 @@ The assignment-or-rejection output family $\mathfrak A$ is admissible: each leve
 $\{0,1\}^{\le n} \cup \{\bot\}$ is a finite set with canonical bitstring encoding (assignments padded to
 length $n$, $\bot$ encoded as a reserved codeword), polynomial-time validity testing, and injective
 encoding. The witness family
+
 $$
 W_n=\{0,1\}^{\le n}
 $$
@@ -6759,6 +6867,7 @@ The search-specification relation is therefore well-defined, and all admissibili
 
 We say that the canonical satisfiability family $\Pi_{3\text{-SAT}}$ carries the **current tactic-level E13 frontend
 package** if the six currently named frontend obstruction certificates all hold on that family:
+
 $$
 K_{\mathrm{LS}_\sigma}^- \wedge K_{\mathrm{E6}}^- \wedge K_{\mathrm{E4}}^- \wedge K_{\mathrm{E11}}^- \wedge
 K_{\mathrm{SC}_\lambda}^{\mathrm{super}} \wedge K_{\mathrm{E8}}^-.
@@ -6772,14 +6881,17 @@ internal $3$-SAT problem object.
 :label: lem-frontend-restriction-monotonicity
 
 Let
+
 $$
 \Pi'=(\mathfrak X',\mathfrak Y,\mathsf{Spec}')
 $$
 be obtained from a problem family
+
 $$
 \Pi=(\mathfrak X,\mathfrak Y,\mathsf{Spec})
 $$
 by restricting the admissible input family to an admissibly presented subfamily
+
 $$
 X_n'\subseteq X_n
 \qquad (n\in\mathbb N),
@@ -6787,6 +6899,7 @@ $$
 and restricting the specification relation accordingly.
 
 Then any current frontend witness template or tactic-level certificate for one of the five modal channels
+
 $$
 \sharp,\ \int,\ \flat,\ \ast,\ \partial
 $$
@@ -6924,6 +7037,7 @@ not need to construct elements of $H_n$ algorithmically.
 :label: def-canonical-3sat-barrier-datum
 
 The **canonical 3-SAT barrier datum** is the tuple
+
 $$
 \mathfrak B_{3\text{-SAT}}
 =
@@ -6943,6 +7057,7 @@ in the sense of {prf:ref}`def-barrier-datum`, with the following instantiations.
 
 3. **Hard subfamily.**
    $\mathfrak H_n$ consists of satisfiable formulas at clause-to-variable ratio
+
    $$
    \alpha = 4.2
    $$
@@ -6956,11 +7071,13 @@ in the sense of {prf:ref}`def-barrier-datum`, with the following instantiations.
    $r_n$ extracts the satisfying assignment from a solved state by reading the assignment bits.
 
 6. **Energy functional.**
+
    $$
    E_n(x) = \text{number of clauses of } F \text{ unsatisfied by assignment } x.
    $$
 
 7. **Thresholds.**
+
    $$
    a(n) = \lceil \alpha n / 8 \rceil + 1,
    \qquad
@@ -6992,6 +7109,7 @@ $F$ has well-defined clause structure with $m = \lfloor \alpha n \rfloor$ clause
 initial assignment $x_0(F)$ produced by the polynomial-time greedy heuristic satisfies at least a
 $(7/8)$-fraction of the $m$ clauses (since each 3-clause is satisfied by $7$ of $8$ truth assignments
 to its $3$ variables). Therefore:
+
 $$
 E_n(x_0(F)) \leq \lceil \alpha n / 8 \rceil + 1 = a(n).
 $$
@@ -7030,6 +7148,7 @@ $\Delta_{\mathfrak B}(n) = b(n) - a(n) = (c_{\mathrm{shatter}} - \alpha/8) \cdot
 
 The clause-count barrier datum $\mathfrak B_{3\text{-SAT}}$ gives a barrier height $\Delta = \Theta(n)$. Combined with
 the local drift bound $d_\lozenge(n) = O(1)$, the Part IX barrier metatheorems yield
+
 $$
 \beta_\lozenge^{\mathfrak B}(n) \geq \Omega(n),
 $$
@@ -7116,11 +7235,13 @@ The barrier datum $\mathfrak B_{3\text{-SAT}}$ is translator-stable in the sense
 
 1. Presentation translators applied to $\mathfrak B_{3\text{-SAT}}$ produce polynomial-size outputs.
 2. Energy distortion under translation is bounded by a polynomial factor: for any presentation translator $T$,
+
    $$
    E_n^T(T(x)) \leq p(E_n(x))
    $$
    for some polynomial $p$ depending only on the translator.
 3. Barrier separation ratio is preserved:
+
    $$
    \frac{\Delta_{T\mathfrak B}(n)}{\Delta_{\mathfrak B}(n)} \geq \frac{1}{p(n)}
    $$
@@ -7236,6 +7357,7 @@ $\beta_\sharp^{\mathfrak B}(n) \geq \Omega(n)$, ruling out any witness with subl
 
 **Step 6. [Certificate extraction]:**
 The metric obstruction certificate is
+
 $$
 K_{\mathrm{LS}_\sigma}^-.
 $$
@@ -7304,6 +7426,7 @@ $\beta_\int^{\mathfrak B}(n) \geq \Omega(n)$, ruling out sublinear elimination s
 
 **Step 7. [Certificate extraction]:**
 The causal obstruction certificate is
+
 $$
 K_{\mathrm{E6}}^-.
 $$
@@ -7329,6 +7452,7 @@ $\mathrm{state}_k$ after the first $k$ updates in this linear extension have bee
 
 **Step 1. [Determined variable set.]**
 Define the *determined variable set* at step $k$:
+
 $$
 V_k := \bigl\{j \in [n] : \text{the } j\text{th coordinate of } R_n^{\int}(\mathrm{state}_k)
 \text{ is fixed regardless of how the remaining } |P_n| - k \text{ updates proceed}\bigr\}.
@@ -7426,12 +7550,14 @@ simultaneously determine $\Theta(n)$ output coordinates.
 **Part 1 — Information constraint on $\mathrm{Vis}(k^*\!+\!1)$.**
 Since $U_{n,k^*+1}$ is a pure $\int$-modal update (item 8 of
 {prf:ref}`def-pure-int-witness-rigorous`), its visible clause set is
+
 $$\mathrm{Vis}(k^*\!+\!1) = \{C \in \mathcal{C}_n : \sigma_n^{\mathrm{sv}}(\operatorname{var}(C)) \subseteq \mathrm{Pred}(k^*\!+\!1) \cup \{k^*\!+\!1\}\}.$$
 The predecessor set satisfies $|\mathrm{Pred}(k^*\!+\!1)| \leq |V_{k^*}| = o(n)$, since only
 previously determined sites are predecessors. At clause-to-variable ratio $\alpha \approx 4.267$,
 each variable appears in $O(1)$ clauses in expectation (exactly $\lceil 3\alpha n / n \rceil = O(1)$
 clauses per variable), and the hard subfamily satisfies the same $O(1)$ degree bound by
 property 4 (linear expansion). Denoting this per-variable clause degree bound $d_\alpha = O(1)$,
+
 $$|\mathrm{Vis}(k^*\!+\!1)| \leq d_\alpha \cdot |\mathrm{Pred}(k^*\!+\!1)| = O(|V_{k^*}|) = o(n).$$
 Hence $U_{n,k^*+1}$ can see only $o(n)$ clauses.
 
@@ -7462,6 +7588,7 @@ $\int$-modal updates cannot resolve.
 The updates $U_{n,i}$ in a pure $\int$-witness are $\int$-modal: by the $\int$-modal restriction
 (item 8 of {prf:ref}`def-pure-int-witness-rigorous`), each $U_{n,i}$ is a deterministic function of the
 predecessor state values $(\mathrm{state}_j)_{j \in \mathrm{Pred}(i)}$ and the visible clause set
+
 $$\mathrm{Vis}(i) := \{C \in \mathcal{C}_n : \sigma_n^{\mathrm{sv}}\!(\operatorname{var}(C)) \subseteq \mathrm{Pred}(i) \cup \{i\}\},$$
 where $\sigma_n^{\mathrm{sv}}$ is the site–variable assignment map (item 7).
 $U_{n,i}$ may perform arbitrary polynomial-time computation on this visible data, but cannot access
@@ -7493,6 +7620,7 @@ deterministic function of $(\mathrm{state}_j)_{j \in \mathrm{Pred}(k_1)}$ and $\
 (item 8 of {prf:ref}`def-pure-int-witness-rigorous`), the output of $U_{n,k_1}$ is entirely
 independent of $C^*$. Formally: for any two formulas $F_0, F_1 \in H_n$ that agree on every
 clause in $\mathrm{Vis}(k_1)$ and produce the same predecessor state values at site $k_1$,
+
 $$U_{n,k_1}(F_0) = U_{n,k_1}(F_1).$$
 
 **Step B** (Distinguishing formula pair).
@@ -7528,6 +7656,7 @@ $G = $ all formula aspects except $s(x,C)$, and $X = s(x,C) \in \{0,1\}$ (unifor
 independent of $G$). Then $F = F(G, X)$ and $F^{\mathrm{flip}} = F(G, 1{-}X)$ are
 equidistributed (since toggling a single uniform bit is a measure-preserving involution),
 giving:
+
 $$
 \Pr\!\bigl[F^{\mathrm{flip}} \in A\bigr] \;=\; \Pr[F \in A]
 \quad \text{for any event } A.
@@ -7537,6 +7666,7 @@ A key consequence: $\Pr\!\bigl[s(x,C) = \mathrm{bb}(F)(x)\bigr] = \mathbf{\tfrac
 random formulas. Let $p = \Pr[\mathrm{bb}(F)(x) = 0 \mid s(x,C) = 0] =
 \Pr[\mathrm{bb}(F)(x) = 0 \mid s(x,C) = 1]$ (equal because the two conditional
 distributions are identical). Then
+
 $$
 \Pr[s(x,C) = \mathrm{bb}(F)(x)] = \tfrac{1}{2}\!\cdot\!\Pr[\mathrm{bb}(F)(x) = 0
 \mid s(x,C) = 0] + \tfrac{1}{2}\!\cdot\!\Pr[\mathrm{bb}(F)(x) = 1 \mid s(x,C) = 1]
@@ -7554,6 +7684,7 @@ require $v = 1-b$. The construction uses a _backbone triple_ from the hard phase
 random 3-SAT.
 
 **The backbone.** For a satisfiable formula $F$, the _backbone_ is
+
 $$
 \mathrm{Bb}(F) := \bigl\{x_j : \sigma(x_j) \text{ is the same in every satisfying
 assignment } \sigma \text{ of } F\bigr\}.
@@ -7573,6 +7704,7 @@ ensemble. The backbone variables need not all arise from the frustrated-SCC stru
 arise from any region of the formula with sufficient local constraint density.
 
 **The auxiliary subfamily $H_n^{\mathrm{bb}}$.** Define
+
 $$
 H_n^{\mathrm{bb}} := \Bigl\{F \in H_n : \exists \text{ variables } v, w, r \in
 \mathrm{Bb}(F) \text{ with a common clause }
@@ -7608,6 +7740,7 @@ hence which variables are frozen. The calculation below accounts for this correc
 the ``typical $G^{(C)}$'' argument in Step 2, not a naive independence assumption.
 
 \textbf{Step 1: All-backbone clause count.} Define
+
 $$
 N_{\mathrm{bb}} := \#\bigl\{C \in F : \operatorname{var}(C) \subseteq \mathrm{Bb}(F)\bigr\}
 $$
@@ -7640,6 +7773,7 @@ three signs $X_v = s(v_C, C)$, $X_w = s(w_C, C)$, $X_r = s(r_C, C)$
 (which are independent uniform bits, independent of $G^{(C)}$). For a fixed $G^{(C)}$,
 define $\mathrm{bb}_{(a,b,c)}(x) := \mathrm{bb}(F(G^{(C)}, X_v{=}a, X_w{=}b, X_r{=}c))(x)$
 for $x \in \{v_C, w_C, r_C\}$. Then:
+
 $$
 \Pr[\text{sign pattern witnesses} \mid G^{(C)}]
 = \tfrac{1}{8} \cdot
@@ -7655,6 +7789,7 @@ one clause does not propagate to any backbone value, since the graph-theoretic n
 of $C$ in the factor graph is a tree with no backbone-feedback cycles). In this typical
 case the count above equals exactly $1$ (the unique triple $(a^*, b^*, c^*)$ satisfying
 the alignment condition), giving
+
 $$
 \Pr[\text{sign pattern witnesses} \mid G^{(C)}] = \tfrac{1}{8}.
 $$
@@ -7677,12 +7812,14 @@ values; by the locally tree-like structure the correlations are $O(1/n)$ per pai
 values of $\mathrm{var}(C)$ and $\mathrm{var}(C')$ are nearly independent when their
 variable-clause neighbourhoods are disjoint, which holds for all but $O(n)$ pairs).
 Therefore $\mathrm{Var}(W) = O(n)$, and by Chebyshev:
+
 $$
 \Pr[W = 0] \;\leq\; \Pr\!\bigl[|W - \mathbb{E}[W]| \geq \mathbb{E}[W]\bigr]
 \;\leq\; \frac{\mathrm{Var}(W)}{\mathbb{E}[W]^2} \;=\; \frac{O(n)}{\Theta(n)^2} \;=\;
 O(1/n) \;\to\; 0.
 $$
 Hence:
+
 $$
 \boxed{\Pr[F \in H_n^{\mathrm{bb}}] \;\geq\; 1 - O(1/n) - o(1) \;=\; 1-o(1).}
 $$
@@ -7725,6 +7862,7 @@ By union bound over the six properties, $\Pr[G(F_0) \notin H_n \mid F_0 \in H_n^
 = O(1/n) \to 0$.
 
 Therefore:
+
 $$
 \Pr\!\bigl[F_0 \in H_n^{\mathrm{bb}} \;\text{and}\; G(F_0) \in H_n\bigr]
 \;=\; \Pr[F_0 \in H_n^{\mathrm{bb}}] \cdot \Pr[G(F_0) \in H_n \mid F_0 \in H_n^{\mathrm{bb}}]
@@ -7978,6 +8116,7 @@ high probability these formulas have **pairwise-disjoint** satisfying-assignment
 
 For two independently drawn formulas $F^{(i)}$ and $F^{(j)}$, the probability that they share any
 common satisfying assignment is bounded by a union bound over all $2^n$ possible assignments:
+
 $$
 \Pr\bigl[\mathrm{Sol}(F^{(i)}) \cap \mathrm{Sol}(F^{(j)}) \neq \emptyset\bigr]
 \;\leq\; \sum_{\sigma \in \{0,1\}^n}
@@ -7987,6 +8126,7 @@ $$
 Each clause is satisfied by a fixed assignment $\sigma$ with probability $7/8$ (since exactly one of
 the eight literal patterns falsifies a uniformly random 3-clause), and the $2m$ clauses across the two
 independent formulas are independent. Substituting $m = \alpha n$ with $\alpha = 4.2$:
+
 $$
 2^n \cdot (7/8)^{2\alpha n}
 = 2^{n\bigl(1 - 2\alpha \log_2(8/7)\bigr)}
@@ -7994,6 +8134,7 @@ $$
 = 2^{-0.621n}.
 $$
 For $N = 2^{cn}$ formulas, the union bound over $\binom{N}{2} < 2^{2cn}$ pairs gives
+
 $$
 \Pr[\text{any pair shares a solution}]
 \;\leq\; 2^{2cn} \cdot 2^{-0.621n}
@@ -8007,6 +8148,7 @@ $b^{(i)} := e_n^\flat(s_n^\flat(F^{(i)})) \in B_n^\flat$.
 Because $d_n^\flat$ is a function, distinct outputs require distinct inputs:
 $\sigma^{(i)} \neq \sigma^{(j)}$ implies $b^{(i)} \neq b^{(j)}$.
 Therefore
+
 $$
 |B_n^\flat| \;\geq\; 2^{cn},
 $$
@@ -8077,6 +8219,7 @@ equivariantly on the solution space, through which algebraic elimination proceed
 
 **Step 2. [Automorphism triviality]:**
 For random 3-SAT at the satisfiability threshold $\alpha \approx 4.267$, the formula automorphism group satisfies
+
 $$
 \operatorname{Aut}(F) = \{\mathrm{id}\}
 $$
@@ -8132,6 +8275,7 @@ For problems with non-trivial continuous solutions (e.g., finding real roots of 
 
 **Step 5. [Certificate]:**
 This yields the Galois-monodromy obstruction certificate
+
 $$
 K_{\mathrm{E11}}^-
 $$
@@ -8158,6 +8302,7 @@ removing the conditional hypothesis from the strengthened algebraic blockage the
 
 Every admissible polynomial-size algebraic sketch for canonical 3-SAT reduces to a sketch over one of the 6 signature
 families in {prf:ref}`def-algebraic-signature-library-flat`:
+
 $$
 \mathfrak S_\flat
 =
@@ -8190,6 +8335,7 @@ The admissible primitive basis (lines 789--793 of {prf:ref}`def-pure-flat-witnes
 - algebraic cancellation primitives.
 
 These correspond exactly to the six signature families:
+
 $$
 \mathfrak S_{\mathrm{quot}},\quad
 \mathfrak S_{\mathrm{lin}},\quad
@@ -8227,6 +8373,7 @@ Any quotient that identifies two satisfying assignments must also identify them 
 clusters contain satisfying assignments with disjoint neighborhoods in the clause-variable graph. Any congruence
 collapsing two such assignments into the same class must collapse $2^{\Omega(n)}$ independent cluster distinctions.
 Therefore
+
 $$
 |A_n / {\sim}| \geq 2^{\Omega(n)}.
 $$
@@ -8390,6 +8537,7 @@ $|B_n^\flat| \geq 2^{cn}$, contradicting $|B_n^\flat| \leq n^{O(1)}$ from Step 1
 **Step 3. [Algebraic structure — why polynomial-identity fails]:**
 Independent confirmation comes from algebraic complexity. The satisfying-assignment polynomial for a fixed
 formula $F$ is
+
 $$
 \mathrm{sat}_F(x) = \prod_{j=1}^m c_j(x), \quad c_j(x) = 1 - \prod_{\ell \in C_j}(1 - \ell(x)),
 $$
@@ -8471,11 +8619,13 @@ Therefore the superpolynomial lower bounds persist under all admissible re-encod
 :label: thm-random-3sat-algebraic-blockage-strengthened
 
 For $\Pi_{3\text{-SAT}}$, there exists a $\flat$-obstruction certificate
+
 $$
 B_\flat \in K_\flat^-(\Pi_{3\text{-SAT}}).
 $$
 
 Equivalently, the semantic obstruction proposition
+
 $$
 \mathbb K_\flat^-(\Pi_{3\text{-SAT}})
 $$
@@ -8531,6 +8681,7 @@ $\flat$-witness exists. Steps 2 and 3 are corroborating; the conclusion does not
 **Step 5. [Certificate extraction]:**
 By completeness of $\mathsf{Obs}_\flat$ ({prf:ref}`thm-flat-obstruction-sound-complete`), the nonexistence of a pure
 $\flat$-witness yields
+
 $$
 B_\flat \in K_\flat^-(\Pi_{3\text{-SAT}}).
 $$
@@ -8595,10 +8746,12 @@ recursion-tree load, and the correctness identity.
 **Step 2. [Separator cost]:**
 For the clause-variable incidence graph of random 3-SAT at threshold $\alpha \approx 4.267$, any balanced partition
 $V = V_1 \sqcup V_2$ with $|V_1| = |V_2| = n/2$ creates
+
 $$
 |\operatorname{boundary}(V_1, V_2)| = \Theta(n)
 $$
 crossing clauses. Named bound:
+
 $$
 |\operatorname{boundary}| \geq c' \cdot n
 \qquad\text{where}\qquad
@@ -8661,6 +8814,7 @@ family $\Pi_{3\text{-SAT}}$.
 
 **Step 6. [Certificate]:**
 The scaling obstruction certificate is
+
 $$
 K_{\mathrm{SC}_\lambda}^{\mathrm{super}}.
 $$
@@ -8738,6 +8892,7 @@ is the modal-purity violation of Step 4, which applies to *all* $\partial$-witne
 
 **Step 3. [Unbounded treewidth]:**
 The treewidth of the clause-variable incidence graph satisfies
+
 $$
 \operatorname{tw}(G_n) \geq c'' \cdot n
 $$
@@ -8749,6 +8904,7 @@ neighbors among clauses. To see that this expansion forces linear treewidth: if 
 Any pure $\partial$-witness produces an interface object $B_n^\partial$ through which all information about the
 satisfying assignment must pass. The interface contraction $C_n^\partial$ operates solely on $B_n^\partial$, so
 $B_n^\partial$ must encode enough information to reconstruct the correct output. The description-size bound
+
 $$
 q_\partial(n) \geq \operatorname{tw}(G_n) \geq c'' \cdot n
 $$
@@ -8807,6 +8963,7 @@ family $\Pi_{3\text{-SAT}}$.
 
 **Step 7. [Certificate]:**
 The boundary obstruction certificate is
+
 $$
 K_{\mathrm{E8}}^-,
 $$
@@ -8907,6 +9064,7 @@ forcing reliance on other channels.
 :label: rem-problem-specific-burden-3sat
 
 The direct proof burden in this part is exactly the six currently named frontend certificates:
+
 $$
 K_{\mathrm{LS}_\sigma}^-,
 \quad
@@ -8946,12 +9104,14 @@ theorem.
 
 The canonical satisfiability family $\Pi_{3\text{-SAT}}$ satisfies the six antecedent obstruction certificates of
 Definition {prf:ref}`def-e13`:
+
 $$
 K_{\mathrm{LS}_\sigma}^- \wedge K_{\mathrm{E6}}^- \wedge K_{\mathrm{E4}}^- \wedge K_{\mathrm{E11}}^- \wedge
 K_{\mathrm{SC}_\lambda}^{\mathrm{super}} \wedge K_{\mathrm{E8}}^-,
 $$
 
 Hence
+
 $$
 K_{\mathrm{E13}}^+(\Pi_{3\text{-SAT}}).
 $$
@@ -8996,6 +9156,7 @@ $\Pi_{3\text{-SAT}} \notin P_{\mathrm{FM}}$.
 :label: def-poly-many-one-reduction-fm
 
 Let
+
 $$
 \Pi=(\mathfrak X,\mathfrak B,\mathsf{Spec}),\qquad
 \Pi'=(\mathfrak X',\mathfrak B,\mathsf{Spec}')
@@ -9003,16 +9164,19 @@ $$
 be decision problem families with common Boolean output family $\mathfrak B$.
 
 A **polynomial many-one reduction in the Fragile model**
+
 $$
 \Pi \le_m^{\mathrm{FM}} \Pi'
 $$
 is a uniform family
+
 $$
 \rho:\mathfrak X \Rightarrow_{\sigma} \mathfrak X'
 $$
 such that:
 1. $\rho\in P_{\mathrm{FM}}(\mathfrak X,\mathfrak X';\sigma)$;
 2. for every $n$ and every $x\in X_n$,
+
    $$
    \bigl(x,1\bigr)\in \mathsf{Spec}_n
    \iff
@@ -9021,6 +9185,7 @@ such that:
    so the reduction preserves yes-instances.
 
 A problem family $\Pi'$ is **$NP_{\mathrm{FM}}$-hard** if
+
 $$
 \forall \Pi\in NP_{\mathrm{FM}},\qquad \Pi \le_m^{\mathrm{FM}} \Pi'.
 $$
@@ -9032,11 +9197,13 @@ It is **$NP_{\mathrm{FM}}$-complete** if it is both in $NP_{\mathrm{FM}}$ and $N
 :label: thm-internal-cook-levin-reduction
 
 Let
+
 $$
 L\in NP_{\mathrm{FM}}
 $$
 in the sense of {prf:ref}`def-internal-nptime-family-rigorous`.
 Then there exists a polynomial many-one reduction
+
 $$
 L \le_m^{\mathrm{FM}} \Pi_{3\text{-SAT}}.
 $$
@@ -9045,6 +9212,7 @@ More precisely, if $L$ is witnessed by:
 1. a decision specification relation $\mathsf{Spec}^{L}$ over an admissible input family $\mathfrak X$,
 2. an admissible witness family $\mathfrak W$,
 3. a verifier family
+
    $$
    \mathcal V:\mathfrak X\times \mathfrak W \Rightarrow \mathfrak B
    $$
@@ -9052,10 +9220,12 @@ More precisely, if $L$ is witnessed by:
 4. and a witness-length polynomial $q$,
 
 then there exists a uniform reduction family
+
 $$
 \rho_L:\mathfrak X \Rightarrow_{\sigma_L} \mathfrak F_{3\text{-CNF}}
 $$
 in $P_{\mathrm{FM}}$ such that for every valid instance $x$,
+
 $$
 \bigl(x,1\bigr)\in \mathsf{Spec}^{L}_{n}
 \iff
@@ -9111,6 +9281,7 @@ determined uniformly from these bounds. For any $L \in NP_{\mathrm{FM}}$ with a 
 certificate, the same reduction template produces the correct 3-CNF encoding at every input size.
 
 Therefore
+
 $$
 \rho_L \in P_{\mathrm{FM}},
 $$
@@ -9152,6 +9323,7 @@ The canonical satisfiability family $\Pi_{3\text{-SAT}}$ belongs to $NP_{\mathrm
 ({prf:ref}`def-poly-many-one-reduction-fm`).
 
 Consequently:
+
 $$
 \Pi_{3\text{-SAT}} \notin P_{\mathrm{FM}}
 \quad\Longrightarrow\quad
@@ -9166,6 +9338,7 @@ Cook--Levin Reduction ({prf:ref}`thm-internal-cook-levin-reduction`).
 :::{prf:proof}
 **Membership in $NP_{\mathrm{FM}}$.**
 Use the witness family $\mathfrak W_{3\text{-SAT}}$ of {prf:ref}`def-threshold-random-3sat-family`. The verifier
+
 $$
 \mathsf{Ver}^{3\text{-SAT}}_n(F,a)=1
 \iff
@@ -9173,6 +9346,7 @@ a \text{ satisfies every clause of }F
 $$
 runs in polynomial time by {prf:ref}`thm-canonical-3sat-admissible`, and the witness length is bounded by the
 polynomial $q_{3\text{-SAT}}(n)=n$. Therefore
+
 $$
 \Pi_{3\text{-SAT}}\in NP_{\mathrm{FM}}.
 $$
@@ -9180,6 +9354,7 @@ $$
 **$NP_{\mathrm{FM}}$-hardness.**
 Let $L\in NP_{\mathrm{FM}}$. By the Internal Cook--Levin Reduction
 {prf:ref}`thm-internal-cook-levin-reduction`, there exists a polynomial many-one reduction
+
 $$
 L \le_m^{\mathrm{FM}} \Pi_{3\text{-SAT}}.
 $$
@@ -9219,6 +9394,7 @@ $P_{\mathrm{FM}} = NP_{\mathrm{FM}}$, contradicting {prf:ref}`cor-pfm-neq-npfm-f
 :::{prf:proof}
 By {prf:ref}`cor-bridge-equivalence-rigorous` (proved in Part I from {prf:ref}`thm-dtm-to-fragile-compilation` and
 {prf:ref}`thm-fragile-to-dtm-extraction`):
+
 $$
 P_{\mathrm{FM}} = P_{\mathrm{DTM}}
 \qquad\text{and}\qquad
@@ -9230,6 +9406,7 @@ polynomial-time family into a DTM with polynomial overhead. Both directions pres
 equality of computed functions) and polynomial runtime (there exist polynomials $p_M, R$ bounding the overheads).
 
 Combined with {prf:ref}`cor-pfm-neq-npfm-from-random-3sat`:
+
 $$
 P_{\mathrm{FM}} \neq NP_{\mathrm{FM}}
 \quad\Longrightarrow\quad
@@ -9250,24 +9427,29 @@ The instantiated proof chain is:
    {prf:ref}`lem-random-3sat-scaling-blockage`,
    and {prf:ref}`lem-random-3sat-boundary-blockage`
    establish the six-term antecedent package, so that Theorem {prf:ref}`ex-3sat-all-blocked` yields
+
    $$
    K_{\mathrm{E13}}^+(\Pi_{3\text{-SAT}}).
    $$
 3. {prf:ref}`thm-random-3sat-not-in-pfm` yields
+
    $$
    \Pi_{3\text{-SAT}}\notin P_{\mathrm{FM}}.
    $$
 4. {prf:ref}`thm-sat-membership-hardness-transfer` yields
+
    $$
    \Pi_{3\text{-SAT}}\in NP_{\mathrm{FM}}
    \quad\text{and}\quad
    \Pi_{3\text{-SAT}} \text{ is }NP_{\mathrm{FM}}\text{-complete}.
    $$
 5. {prf:ref}`cor-pfm-neq-npfm-from-random-3sat` yields
+
    $$
    P_{\mathrm{FM}}\neq NP_{\mathrm{FM}}.
    $$
 6. {prf:ref}`cor-internal-to-classical-separation` exports this to
+
    $$
    P_{\mathrm{DTM}}\neq NP_{\mathrm{DTM}}.
    $$
@@ -9399,6 +9581,7 @@ See the companion document *Algorithmic Extensions* for the minimal completion c
 :label: rem-role-of-part-ix
 
 The preceding parts classify polynomial-time algorithms by modal factorization through
+
 $$
 \{\sharp,\int,\flat,\ast,\partial\}.
 $$
@@ -9426,27 +9609,33 @@ landscape model.
 :label: def-admissible-solver-trace-barrier
 
 Let
+
 $$
 \Pi=(\mathfrak X,\mathfrak Y,\mathsf{Spec})
 $$
 be a problem family, let
+
 $$
 \mathfrak Z
 $$
 be an admissible state family, let
+
 $$
 i:\mathfrak X\Rightarrow \mathfrak Z
 $$
 be a presentation translator, and let
+
 $$
 r_n:S_n\to Y_n
 $$
 be a uniformly polynomial-time reconstruction map from a decidable solved region
+
 $$
 S_n\subseteq Z_n.
 $$
 
 For a fixed $x\in X_n$, an **admissible solver trace** in $Z_n$ from $x$ to $S_n$ is a finite sequence
+
 $$
 z_0,z_1,\dots,z_t \in Z_n
 $$
@@ -9455,19 +9644,23 @@ such that:
 1. $z_0=i_n(x)$;
 2. $z_t\in S_n$;
 3. there exists a uniform endomorphism family
+
    $$
    U:\mathfrak Z\Rightarrow \mathfrak Z
    $$
    in
+
    $$
    P_{\mathrm{FM}}(\mathfrak Z)
    $$
    with
+
    $$
    z_{j+1}=U_n(z_j)
    \qquad (0\le j<t);
    $$
 4. the reconstructed output is correct:
+
    $$
    \bigl(x,r_n(z_t)\bigr)\in \mathsf{Spec}_n.
    $$
@@ -9479,12 +9672,14 @@ This is the trace notion used in the barrier separation axiom below.
 :label: def-barrier-datum
 
 Let
+
 $$
 \Pi=(\mathfrak X,\mathfrak Y,\mathsf{Spec})
 $$
 be a problem family in the sense of {prf:ref}`def-problem-family-and-solvers`.
 
 A **barrier datum** for $\Pi$ is a tuple
+
 $$
 \mathfrak B
 =
@@ -9498,12 +9693,14 @@ consisting of the following data.
    $\mathfrak Z=\bigl((Z_n),m_Z,\mathrm{enc}^Z,\mathrm{dec}^Z,\chi^Z\bigr)$ is an admissible family.
 
 2. **Input embedding.**  
+
    $$
    i:\mathfrak X\Rightarrow \mathfrak Z
    $$
    is a presentation translator.
 
 3. **Hard subfamily.**  
+
    $$
    \mathfrak H=(H_n)_{n\in\mathbb N}
    $$
@@ -9512,10 +9709,12 @@ consisting of the following data.
 
 4. **Solved region and reconstruction.**  
    For each $n$, $S_n\subseteq Z_n$ is a decidable subset together with a uniformly polynomial-time reconstruction map
+
    $$
    r_n:S_n\to Y_n
    $$
    such that every
+
    $$
    z\in S_n
    $$
@@ -9523,6 +9722,7 @@ consisting of the following data.
 
 5. **Energy functional.**  
    For each $n$, a map
+
    $$
    E_n: Z_n\to \mathbb N
    $$
@@ -9530,10 +9730,12 @@ consisting of the following data.
 
 6. **Low-energy and barrier thresholds.**  
    Functions
+
    $$
    a,b:\mathbb N\to \mathbb N
    $$
    with
+
    $$
    a(n)<b(n)
    \qquad\text{for all sufficiently large }n.
@@ -9542,6 +9744,7 @@ consisting of the following data.
 These data must satisfy:
 
 - **(B1) Low-energy source condition.**
+
   $$
   E_n(i_n(x))\le a(n)
   \qquad
@@ -9549,6 +9752,7 @@ These data must satisfy:
   $$
 
 - **(B2) Low-energy solved condition.**
+
   $$
   E_n(z)\le a(n)
   \qquad
@@ -9557,20 +9761,24 @@ These data must satisfy:
 
 - **(B3) Barrier separation condition.**
   Every admissible solver trace in the sense of {prf:ref}`def-admissible-solver-trace-barrier`, beginning at some
+
   $$
   i_n(x),\qquad x\in H_n,
   $$
   and ending in $S_n$, must contain an intermediate state $z$ with
+
   $$
   E_n(z)\ge b(n).
   $$
 
 The **barrier height** is the function
+
 $$
 \Delta_{\mathfrak B}(n):=b(n)-a(n).
 $$
 
 The sets
+
 $$
 L_n:=\{z\in Z_n:E_n(z)\le a(n)\}
 \qquad\text{and}\qquad
@@ -9593,14 +9801,17 @@ family on the chosen hard subfamily $\mathfrak H$.
 :label: def-translator-stable-barrier
 
 A barrier datum
+
 $$
 \mathfrak B=(\mathfrak Z,i,\mathfrak H,S,r,E,a,b)
 $$
 is **translator-stable** if for every presentation translator
+
 $$
 T:\mathfrak Z\Rightarrow_{\sigma}\mathfrak Z'
 $$
 there exists a barrier datum
+
 $$
 T_\ast\mathfrak B
 =
@@ -9611,6 +9822,7 @@ such that:
 1. $S'$ is a solved region for the translated state family;
 2. $a',b'$ have the same asymptotic growth class as $a,b$ up to polynomial distortion;
 3. the translated barrier height
+
    $$
    \Delta_{T_\ast\mathfrak B}(n)=b'(n)-a'(n)
    $$
@@ -9627,6 +9839,7 @@ of a genuine barrier.
 Fix a translator-stable barrier datum $\mathfrak B$ for $\Pi$.
 
 A pure modal witness
+
 $$
 W_\lozenge
 \qquad
@@ -9651,6 +9864,7 @@ a mere presentation change.
 Fix $\Pi$ and a translator-stable barrier datum $\mathfrak B$.
 
 For each $n$, define
+
 $$
 \beta_\sharp^{\mathfrak B}(n)
 $$
@@ -9658,6 +9872,7 @@ to be the infimum of all integers $q$ such that there exists a barrier-compatibl
 $H_n$ whose ranking/Lyapunov function is bounded above by $q$.
 
 If no such witness exists, set
+
 $$
 \beta_\sharp^{\mathfrak B}(n):=\infty.
 $$
@@ -9671,6 +9886,7 @@ Thus $\beta_\sharp^{\mathfrak B}(n)$ measures the least descent budget compatibl
 Fix $\Pi$ and a translator-stable barrier datum $\mathfrak B$.
 
 For each $n$, define
+
 $$
 \beta_\int^{\mathfrak B}(n)
 $$
@@ -9681,6 +9897,7 @@ Concretely, $\ell$ bounds the total number of local update stages in the linear 
 merely the height of the underlying dependency poset.
 
 If no such witness exists, set
+
 $$
 \beta_\int^{\mathfrak B}(n):=\infty.
 $$
@@ -9695,17 +9912,20 @@ barrier.
 Fix $\Pi$ and a translator-stable barrier datum $\mathfrak B$.
 
 For each $n$, define
+
 $$
 \beta_\flat^{\mathfrak B}(n)
 $$
 to be the infimum of all integers $s$ such that there exists a barrier-compatible pure $\flat$-witness for $\Pi$ on
 $H_n$ with
+
 $$
 \max\{|A_n|,|B_n|\}\le s,
 $$
 where $|\cdot|$ denotes cardinality.
 
 If no such witness exists, set
+
 $$
 \beta_\flat^{\mathfrak B}(n):=\infty.
 $$
@@ -9719,6 +9939,7 @@ Thus $\beta_\flat^{\mathfrak B}(n)$ is the least algebraic structure cardinality
 Fix $\Pi$ and a translator-stable barrier datum $\mathfrak B$.
 
 For each $n$, define
+
 $$
 \beta_\ast^{\mathfrak B}(n)
 $$
@@ -9729,6 +9950,7 @@ Here **total recursion-tree load** means the total quantity explicitly bounded i
 costs, local node costs, recursive-call costs, and merge costs over the entire recursion tree.
 
 If no such witness exists, set
+
 $$
 \beta_\ast^{\mathfrak B}(n):=\infty.
 $$
@@ -9742,6 +9964,7 @@ Thus $\beta_\ast^{\mathfrak B}(n)$ is the least recursive cost capable of solvin
 Fix $\Pi$ and a translator-stable barrier datum $\mathfrak B$.
 
 For each $n$, define
+
 $$
 \beta_\partial^{\mathfrak B}(n)
 $$
@@ -9749,6 +9972,7 @@ to be the infimum of all integers $w$ such that there exists a barrier-compatibl
 $H_n$ whose maximal interface description size is at most $w$.
 
 If no such witness exists, set
+
 $$
 \beta_\partial^{\mathfrak B}(n):=\infty.
 $$
@@ -9760,6 +9984,7 @@ Thus $\beta_\partial^{\mathfrak B}(n)$ is the least interface size capable of so
 :label: rem-how-barrier-complexities-used
 
 The five functions
+
 $$
 \beta_\sharp^{\mathfrak B},\quad
 \beta_\int^{\mathfrak B},\quad
@@ -9779,10 +10004,12 @@ polynomial witness bound for that modality.
 :label: def-sharp-local-energy-drift-bound
 
 A translator-stable barrier datum $\mathfrak B$ is said to admit a **sharp local drift bound**
+
 $$
 d_\sharp:\mathbb N\to\mathbb N
 $$
 if for every barrier-compatible pure $\sharp$-witness and every state $z$ in its lifted state space,
+
 $$
 \bigl|E_n(F_n^\sharp(z)) - E_n(z)\bigr| \le d_\sharp(n)
 $$
@@ -9797,6 +10024,7 @@ Intuitively: one $\sharp$-update cannot jump across more than $d_\sharp(n)$ unit
 Let $\Pi$ carry a translator-stable barrier datum $\mathfrak B$ and a sharp local drift bound $d_\sharp$.
 
 Then for every $n$,
+
 $$
 \beta_\sharp^{\mathfrak B}(n)
 \;\ge\;
@@ -9806,6 +10034,7 @@ $$
 $$
 
 Consequently, if
+
 $$
 \frac{\Delta_{\mathfrak B}(n)}{d_\sharp(n)}
 $$
@@ -9817,25 +10046,30 @@ subfamily $\mathfrak H$.
 Fix $n$ and suppose a barrier-compatible pure $\sharp$-witness exists with ranking bound $q$.
 
 Choose any hard input $x\in H_n$, let
+
 $$
 z_0
 $$
 be its encoded lifted state, and let
+
 $$
 z_t=(F_n^\sharp)^t(z_0)
 $$
 be the first solved state reached by the witness. By barrier compatibility, both $z_0$ and $z_t$ lie in the low-energy
 region. By barrier separation, the trace
+
 $$
 z_0,z_1,\dots,z_t
 $$
 must contain an index $j$ with
+
 $$
 E_n(z_j)\ge b(n).
 $$
 
 Since the starting energy is at most $a(n)$ and each step changes energy by at most $d_\sharp(n)$, any such crossing
 requires at least
+
 $$
 \left\lceil \frac{b(n)-a(n)}{d_\sharp(n)} \right\rceil
 =
@@ -9845,11 +10079,13 @@ steps.
 
 On the other hand, a pure $\sharp$-witness decreases its ranking function by at least $1$ on every non-solved step and
 starts from a value at most $q$. Therefore
+
 $$
 t\le q.
 $$
 
 Hence every admissible $q$ must satisfy
+
 $$
 q\ge
 \left\lceil
@@ -9867,6 +10103,7 @@ The final claim is immediate.
 
 Suppose $\Pi$ carries a translator-stable barrier datum $\mathfrak B$ and a sharp local drift bound $d_\sharp$ such
 that
+
 $$
 \left\lceil
 \frac{\Delta_{\mathfrak B}(n)}{d_\sharp(n)}
@@ -9888,10 +10125,12 @@ reformulation of the nonexistence of a pure $\sharp$-witness on the hard subfami
 :label: def-int-local-energy-drift-bound
 
 A translator-stable barrier datum $\mathfrak B$ is said to admit an **$\int$ local drift bound**
+
 $$
 d_\int:\mathbb N\to\mathbb N
 $$
 if for every barrier-compatible pure $\int$-witness and every local elimination update $U_{n,i}$,
+
 $$
 \bigl|E_n(U_{n,i}(z)) - E_n(z)\bigr| \le d_\int(n)
 $$
@@ -9904,6 +10143,7 @@ after transporting the barrier to the witness state space.
 Let $\Pi$ carry a translator-stable barrier datum $\mathfrak B$ and an $\int$ local drift bound $d_\int$.
 
 Then for every $n$,
+
 $$
 \beta_\int^{\mathfrak B}(n)
 \;\ge\;
@@ -9913,6 +10153,7 @@ $$
 $$
 
 Consequently, if
+
 $$
 \frac{\Delta_{\mathfrak B}(n)}{d_\int(n)}
 $$
@@ -9930,6 +10171,7 @@ separation the elimination trace must cross the barrier region.
 
 Each local elimination update changes energy by at most $d_\int(n)$, so any correct elimination trace crossing from
 energy at most $a(n)$ to energy at least $b(n)$ requires at least
+
 $$
 \left\lceil
 \frac{\Delta_{\mathfrak B}(n)}{d_\int(n)}
@@ -9938,6 +10180,7 @@ $$
 local update stages.
 
 But $\beta_\int^{\mathfrak B}(n)$ is defined using the least admissible elimination schedule length. Hence
+
 $$
 \ell\ge
 \left\lceil
@@ -9953,6 +10196,7 @@ $\beta_\int^{\mathfrak B}(n)$.
 
 Suppose $\Pi$ carries a translator-stable barrier datum $\mathfrak B$ and an $\int$ local drift bound $d_\int$ such
 that
+
 $$
 \left\lceil
 \frac{\Delta_{\mathfrak B}(n)}{d_\int(n)}
@@ -9978,6 +10222,7 @@ reformulation of the nonexistence of a pure $\int$-witness on the hard subfamily
 Let $\Pi$ carry a translator-stable barrier datum $\mathfrak B$.
 
 If
+
 $$
 \beta_\flat^{\mathfrak B}(n)
 $$
@@ -9992,12 +10237,14 @@ then the $\flat$-route is blocked.
 Assume toward contradiction that a barrier-compatible pure $\flat$-witness exists.
 By definition of a pure $\flat$-witness, there is a polynomial $p$ such that for all sufficiently large
 $n$ the witness uses finite algebraic objects
+
 $$
 A_n,\ B_n
 $$
 of cardinality at most $p(n)$ and solves $\Pi$ on $H_n$.
 
 This contradicts the hypothesis that
+
 $$
 \beta_\flat^{\mathfrak B}(n)
 $$
@@ -10011,6 +10258,7 @@ Therefore no such pure $\flat$-witness exists.
 :label: cor-flat-barrier-certificate
 
 If
+
 $$
 \beta_\flat^{\mathfrak B}(n)
 $$
@@ -10028,6 +10276,7 @@ Contrapositive of {prf:ref}`thm-flat-barrier-obstruction-metatheorem`.
 Let $\Pi$ carry a translator-stable barrier datum $\mathfrak B$.
 
 If
+
 $$
 \beta_\ast^{\mathfrak B}(n)
 $$
@@ -10044,6 +10293,7 @@ By definition of a pure $\ast$-witness, the total recursion-tree load is bounded
 
 But $\beta_\ast^{\mathfrak B}(n)$ is defined as the infimum of all such admissible recursion loads for
 barrier-compatible pure $\ast$-witnesses. Therefore
+
 $$
 \beta_\ast^{\mathfrak B}(n)\le p(n)
 $$
@@ -10055,6 +10305,7 @@ every polynomial.
 :label: cor-star-barrier-certificate
 
 If
+
 $$
 \beta_\ast^{\mathfrak B}(n)
 $$
@@ -10072,6 +10323,7 @@ Contrapositive of {prf:ref}`thm-star-barrier-obstruction-metatheorem`.
 Let $\Pi$ carry a translator-stable barrier datum $\mathfrak B$.
 
 If
+
 $$
 \beta_\partial^{\mathfrak B}(n)
 $$
@@ -10087,6 +10339,7 @@ Assume toward contradiction that a barrier-compatible pure $\partial$-witness ex
 By definition of a pure $\partial$-witness, the maximal interface size is bounded by some polynomial $p(n)$.
 
 But $\beta_\partial^{\mathfrak B}(n)$ is the infimum of all such admissible interface widths. Therefore
+
 $$
 \beta_\partial^{\mathfrak B}(n)\le p(n)
 $$
@@ -10098,6 +10351,7 @@ every polynomial.
 :label: cor-partial-barrier-certificate
 
 If
+
 $$
 \beta_\partial^{\mathfrak B}(n)
 $$
@@ -10117,6 +10371,7 @@ Contrapositive of {prf:ref}`thm-partial-barrier-obstruction-metatheorem`.
 Let $\Pi$ carry a translator-stable barrier datum $\mathfrak B$.
 
 A **barrier obstruction package** for $\Pi$ is the tuple
+
 $$
 \mathbf B_{\mathrm{Bar}}(\Pi,\mathfrak B)
 =
@@ -10140,6 +10395,7 @@ Assume:
 5. the boundary barrier hypothesis of {prf:ref}`cor-partial-barrier-certificate`.
 
 Then all five semantic obstruction propositions hold, and by {prf:ref}`thm-mixed-modal-obstruction`,
+
 $$
 \mathsf{Sol}_{\mathrm{poly}}(\Pi) = \varnothing.
 $$
@@ -10154,11 +10410,13 @@ $\mathbb{K}_\lozenge^-(\Pi)$. Apply {prf:ref}`thm-mixed-modal-obstruction`.
 :label: cor-barrier-contrapositive-hardness
 
 Under the hypotheses of {prf:ref}`thm-barrier-package-implies-e13`,
+
 $$
 \Pi\notin P_{\mathrm{FM}}.
 $$
 
 If the bridge equivalence
+
 $$
 P_{\mathrm{FM}}=P_{\mathrm{DTM}}
 \qquad\text{and}\qquad
@@ -10177,10 +10435,12 @@ through the previously established bridge equivalence.
 :label: cor-algorithm-audit-by-modal-barrier-profile
 
 Let
+
 $$
 \mathcal A:\mathfrak X\Rightarrow \mathfrak Y
 $$
 be a candidate uniform algorithm family for $\Pi$, and let
+
 $$
 T
 $$
@@ -10208,10 +10468,12 @@ For a new problem family $\Pi$, the barrier workflow is:
 
 1. choose a hard subfamily $\mathfrak H$;
 2. define a translator-stable barrier datum
+
    $$
    \mathfrak B=(\mathfrak Z,i,\mathfrak H,S,r,E,a,b);
    $$
 3. prove one or more lower bounds for the modal barrier complexities
+
    $$
    \beta_\sharp^{\mathfrak B},\ 
    \beta_\int^{\mathfrak B},\ 
@@ -10236,6 +10498,7 @@ bound on the barrier complexities for a given problem family. Those are the subs
 family under study.
 
 What Part IX does prove is the formal implication:
+
 $$
 \text{quantified barrier lower bound}
 \Longrightarrow
@@ -10623,6 +10886,7 @@ $\sharp$-leaf.
 :label: def-semantic-primitive-families
 
 The **semantic primitive signature** is defined to be the six-element set
+
 $$
 \mathsf{Prim}_{\mathrm{sem}}
 =
@@ -10754,10 +11018,12 @@ frontend obstruction certificates used in the direct Part VI theorem chain, toge
 1. the corresponding tactic/node names;
 2. the exact theorem proving each certificate on $\Pi_{3\text{-SAT}}$;
 3. the assembly step yielding
+
    $$
    K_{\mathrm{E13}}^+(\Pi_{3\text{-SAT}});
    $$
 4. the direct hardness step yielding
+
    $$
    \Pi_{3\text{-SAT}}\notin P_{\mathrm{FM}}.
    $$
@@ -10857,6 +11123,7 @@ This is the internal theorem supplied by {prf:ref}`cor-computational-modal-exhau
 
 :::{prf:proof}
 Immediate from {prf:ref}`cor-computational-modal-exhaustiveness`, taking the inclusion
+
 $$
 P_{\text{FM}} \subseteq \mathsf{Sat}\langle \sharp,\int,\flat,\ast,\partial\rangle.
 $$
