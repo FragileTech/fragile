@@ -759,7 +759,7 @@ def train_shared_dyn(args: argparse.Namespace) -> None:
         chart_dim=args.latent_dim,
         action_dim=args.action_dim,
         num_charts=K,
-        dyn_codes_per_chart=dyn_codes,
+        codes_per_chart=dyn_codes,
         hidden_dim=args.dyn_transition_hidden_dim,
     ).to(device)
 

@@ -1413,16 +1413,14 @@ class DiracScalarChannel(_DiracBilinearBase):
 
 
 class DiracPseudoscalarChannel(_DiracBilinearBase):
-    """Dirac pseudoscalar channel: ψ̄γ₅ψ.  J^PC = 0^-+."""
+    """Dirac pseudoscalar channel: Im[ψ̄ψ].  J^PC = 0^-+."""
 
     channel_name = "dirac_pseudoscalar"
 
     def _apply_gamma_projection(self, color_i: Tensor, color_j: Tensor) -> Tensor:
-        from .dirac_spinors import compute_dirac_bilinear
-
         psi_i, psi_j, valid = self._color_to_spinor_pair(color_i, color_j)
         g = self._get_dirac_gamma(color_i.device)
-        result = compute_dirac_bilinear(psi_i, psi_j, g["gamma0"], g["gamma5"])
+        result = torch.einsum("...a,ab,...b->...", psi_i.conj(), g["gamma0"], psi_j).imag
         return torch.where(valid, result, torch.zeros_like(result))
 
 

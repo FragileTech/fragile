@@ -100,7 +100,7 @@ class DMControlEnv:
         if hasattr(obs, "observation"):
             obs = obs.observation
         parts = []
-        for key in sorted(obs.keys()):
+        for key in obs.keys():
             val = np.asarray(obs[key], dtype=np.float64).flatten()
             parts.append(val)
         return np.concatenate(parts)

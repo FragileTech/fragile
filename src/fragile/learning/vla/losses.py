@@ -276,10 +276,11 @@ def hyperbolic_laplacian(
 
 
 def compute_screened_poisson_loss(
-    potential_net: torch.nn.Module,
+    value_net: torch.nn.Module,
     z_trajectory: torch.Tensor,
-    z_targets: torch.Tensor,
+    z_targets: torch.Tensor | None,
     router_weights: torch.Tensor,
+    reward_density: torch.Tensor | None = None,
     kappa: float = 1.0,
     max_samples: int = 64,
 ) -> torch.Tensor:
@@ -290,10 +291,14 @@ def compute_screened_poisson_loss(
     by the geodesic miss-distance to target.
 
     Args:
-        potential_net: The CovariantPotentialNet module.
+        value_net: Scalar value network on the Poincare ball. Supports either
+            the Phase 2 potential network or the standalone RL critic.
         z_trajectory: [B, H, D] predicted positions.
-        z_targets: [B, H, D] target positions.
+        z_targets: [B, H, D] target positions. Used only when
+            ``reward_density`` is not provided.
         router_weights: [B, K] chart routing weights.
+        reward_density: [B, H] or [B, H, 1] scalar source term. When given,
+            it is used directly as ``rho_r`` instead of geodesic miss-distance.
         kappa: Screening mass (controls decay length).
         max_samples: Max z samples to evaluate (limits second-order grad cost).
 
@@ -304,27 +309,58 @@ def compute_screened_poisson_loss(
 
     # Flatten and subsample for efficiency
     z_flat = z_trajectory.reshape(B * H, D)
-    z_tgt_flat = z_targets.reshape(B * H, D)
     n = z_flat.shape[0]
+    z_tgt_flat = None
+    rho_r = None
+    if reward_density is not None:
+        rho_r = reward_density.reshape(B * H, -1)
+        if rho_r.shape[1] != 1:
+            msg = "reward_density must have shape [B, H] or [B, H, 1]."
+            raise ValueError(msg)
+    elif z_targets is not None:
+        z_tgt_flat = z_targets.reshape(B * H, D)
+    else:
+        msg = "compute_screened_poisson_loss requires either z_targets or reward_density."
+        raise ValueError(msg)
+
     if n > max_samples:
         idx = torch.randperm(n, device=z_flat.device)[:max_samples]
         z_flat = z_flat[idx]
-        z_tgt_flat = z_tgt_flat[idx]
+        if z_tgt_flat is not None:
+            z_tgt_flat = z_tgt_flat[idx]
+        if rho_r is not None:
+            rho_r = rho_r[idx]
 
-    # Reward density proxy: geodesic distance to target
-    rho_r = hyperbolic_distance(z_flat.detach(), z_tgt_flat.detach()).unsqueeze(-1)  # [N, 1]
+    if rho_r is None:
+        assert z_tgt_flat is not None
+        rho_r = hyperbolic_distance(z_flat.detach(), z_tgt_flat.detach()).unsqueeze(-1)  # [N, 1]
+    else:
+        rho_r = rho_r.detach()
 
     # Router weights: single row, broadcasts to any batch size inside V_func
-    rw_row = router_weights.mean(dim=0, keepdim=True)  # [1, K]
+    if router_weights.ndim == 3:
+        rw_row = router_weights.reshape(-1, router_weights.shape[-1]).mean(dim=0, keepdim=True)
+    else:
+        rw_row = router_weights.mean(dim=0, keepdim=True)  # [1, K]
 
     # Define V as a function of z (handles arbitrary batch size)
     def V_func(z_in: torch.Tensor) -> torch.Tensor:
         n_in = z_in.shape[0]
         rw_in = rw_row.expand(n_in, -1)
-        ctx_x, ctx_z = potential_net.chart_tok(rw_in, z_in)
-        x_q = potential_net.z_embed(z_in)
-        v_feat, _ = potential_net.v_critic_attn(z_in, ctx_z, x_q, ctx_x, ctx_x)
-        return potential_net.v_out(v_feat)  # [n_in, 1]
+        if hasattr(value_net, "chart_tok") and hasattr(value_net, "z_embed"):
+            ctx_x, ctx_z = value_net.chart_tok(rw_in, z_in)
+            x_q = value_net.z_embed(z_in)
+            if hasattr(value_net, "v_critic_attn") and hasattr(value_net, "v_out"):
+                v_feat, _ = value_net.v_critic_attn(z_in, ctx_z, x_q, ctx_x, ctx_x)
+                return value_net.v_out(v_feat)  # [n_in, 1]
+            if hasattr(value_net, "attn") and hasattr(value_net, "value_head"):
+                v_feat, _ = value_net.attn(z_in, ctx_z, x_q, ctx_x, ctx_x)
+                return value_net.value_head(v_feat)  # [n_in, 1]
+
+        raise TypeError(
+            "compute_screened_poisson_loss requires a value network with "
+            "chart_tok/z_embed and either (v_critic_attn, v_out) or (attn, value_head).",
+        )
 
     # Single batched call inside hyperbolic_laplacian (returns V_center too)
     lap_V, V_center = hyperbolic_laplacian(V_func, z_flat)  # [N, 1], [N, 1]
@@ -490,10 +526,11 @@ class EnclosureProbe(nn.Module):
 
 
 class DynamicsTransitionModel(nn.Module):
-    """Coarse Markov model: P(c_dyn_{t+1} | c_bar_t, c_dyn_t, a_t).
+    """Coarse Markov model: P(c_{t+1}, k_{t+1} | c_bar_t, k_t, a_t).
 
-    Same architecture as EnclosureProbe but without GRL (trained as genuine
-    forward model, not adversary). Operates on dynamics codes.
+    Same architecture as EnclosureProbe but without GRL. The transition
+    operates over the code symbols used by the encoder, which in the
+    shared-codebook setting are the same symbols used for reconstruction.
     """
 
     def __init__(
@@ -501,13 +538,25 @@ class DynamicsTransitionModel(nn.Module):
         chart_dim: int,
         action_dim: int,
         num_charts: int,
-        dyn_codes_per_chart: int,
+        codes_per_chart: int | None = None,
+        dyn_codes_per_chart: int | None = None,
         hidden_dim: int = 128,
     ):
         super().__init__()
-        self.num_states = num_charts * dyn_codes_per_chart
-        self.dyn_codes_per_chart = dyn_codes_per_chart
-        self.code_embed = nn.Embedding(dyn_codes_per_chart, chart_dim)
+        if codes_per_chart is None:
+            if dyn_codes_per_chart is None:
+                msg = "DynamicsTransitionModel requires codes_per_chart."
+                raise ValueError(msg)
+            codes_per_chart = dyn_codes_per_chart
+        elif dyn_codes_per_chart is not None and dyn_codes_per_chart != codes_per_chart:
+            msg = "codes_per_chart and dyn_codes_per_chart must match when both are set."
+            raise ValueError(msg)
+
+        self.num_states = num_charts * codes_per_chart
+        self.codes_per_chart = codes_per_chart
+        # Backward-compatible alias for older call sites and checkpoints.
+        self.dyn_codes_per_chart = codes_per_chart
+        self.code_embed = nn.Embedding(codes_per_chart, chart_dim)
         self.mlp = nn.Sequential(
             nn.Linear(chart_dim + chart_dim + action_dim, hidden_dim),
             nn.ReLU(),
@@ -544,7 +593,7 @@ def compute_dyn_transition_loss(
     code_features_t: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, dict[str, float]]:
     """CE loss + accuracy metric for dynamics transition prediction."""
-    target = K_chart_tp1.long() * model.dyn_codes_per_chart + K_code_dyn_tp1.long()
+    target = K_chart_tp1.long() * model.codes_per_chart + K_code_dyn_tp1.long()
     logits = model(
         chart_embed_t,
         action_t,

@@ -437,6 +437,12 @@ class FractalGas:
         num_cloned = will_clone.sum().item()
         self.total_clones += num_cloned
 
+        # Clone external actions to match cloned walkers
+        if actions is not None:
+            wc_np = will_clone.cpu().numpy()
+            actions = actions.copy()
+            actions[wc_np] = actions[clone_companions[will_clone].cpu().numpy()]
+
         # 4. Apply kinetic operator (random actions, or provided actions)
         new_states_list, obs_np, step_rewards_np, dones_np, truncated_np, infos = (
             self.kinetic_op.apply(

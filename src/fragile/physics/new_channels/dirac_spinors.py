@@ -444,8 +444,8 @@ def compute_dirac_operators_from_spinors(
     # Scalar: ψ̄ψ = ψ†γ₀ψ (Γ = I₄)
     op_scalar = compute_dirac_bilinear(psi_i, psi_j, gamma0, I4)  # [T, S, P]
 
-    # Pseudoscalar: ψ̄γ₅ψ
-    op_pseudo = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma5)  # [T, S, P]
+    # Pseudoscalar: Im[ψ̄ψ] (parity-odd component of scalar bilinear)
+    op_pseudo = torch.einsum("...a,ab,...b->...", psi_i.conj(), gamma0, psi_j).imag  # [T, S, P]
 
     # Vector: (1/3)Σ_k ψ̄γ_k ψ
     op_vector_k = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma_k)  # [T, S, P, 3]

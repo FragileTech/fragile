@@ -267,8 +267,7 @@ def _apply_projection(
     if channel == "scalar":
         return (color_i.conj() * color_j).sum(dim=-1).real
     if channel == "pseudoscalar":
-        gamma5 = gamma["5"].to(color_i.device)
-        return (color_i.conj() * gamma5 * color_j).sum(dim=-1).real
+        return (color_i.conj() * color_j).sum(dim=-1).imag
     if channel == "vector":
         gamma_mu = gamma["mu"].to(color_i.device, dtype=color_i.dtype)
         result = torch.einsum("...i,mij,...j->...m", color_i.conj(), gamma_mu, color_j)

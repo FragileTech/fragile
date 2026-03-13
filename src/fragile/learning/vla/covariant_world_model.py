@@ -1091,7 +1091,6 @@ class GeometricWorldModel(nn.Module):
                 z, p, cl, rw, jumped = self._conditional_jump(z, p, action_t, rw)
             else:
                 cl = self.chart_predictor(z, action_t, rw)
-                rw = F.softmax(cl, dim=-1)
                 jumped = z.new_zeros(B, dtype=torch.bool)
 
             # Steps 2..N+1: BAOAB refinement sub-steps (W2 transport)
