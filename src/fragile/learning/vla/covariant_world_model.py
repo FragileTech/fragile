@@ -641,6 +641,33 @@ class GeometricWorldModel(nn.Module):
         # Hodge decomposition diagnostic (no learnable parameters)
         self.hodge_decomposer = HodgeDecomposer(latent_dim)
 
+    def _chart_tokenizers(self) -> list[ChartTokenizer]:
+        """Return every chart tokenizer that should share the Phase-1 atlas."""
+        return [
+            self.potential_net.chart_tok,
+            self.control_net.chart_tok,
+            self.chart_predictor.chart_tok,
+        ]
+
+    @torch.no_grad()
+    def bind_chart_centers(
+        self,
+        chart_centers: torch.Tensor,
+        freeze: bool = True,
+    ) -> None:
+        """Copy external atlas centers into every chart-conditioned submodule.
+
+        Phase 2 keeps the encoder/router atlas fixed and learns dynamics on top
+        of that geometry. The world model should therefore consume the same
+        chart centers instead of inventing its own atlas.
+        """
+        safe_centers = _project_to_ball(chart_centers.detach())
+        for tok in self._chart_tokenizers():
+            tok.chart_centers.copy_(
+                safe_centers.to(device=tok.chart_centers.device, dtype=tok.chart_centers.dtype)
+            )
+            tok.chart_centers.requires_grad_(not freeze)
+
     # -----------------------------------------------------------------
     # Boris rotation
     # -----------------------------------------------------------------

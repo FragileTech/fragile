@@ -584,6 +584,12 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         value="timestep",
         button_type="default",
     )
+    split_overlay_mode = pn.widgets.RadioButtonGroup(
+        name="Split overlay",
+        options={"Off": "off", "Shape": "shape", "Shape+Color": "shape_color"},
+        value="shape_color",
+        button_type="default",
+    )
     point_size = pn.widgets.IntSlider(name="Point size", start=1, end=10, value=3, width=300)
     show_latents = pn.widgets.Checkbox(name="Show latent points", value=True, width=300)
     show_chart_centers = pn.widgets.Checkbox(name="Show chart centers", value=False, width=300)
@@ -651,6 +657,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         latent_samples,
         seed_input,
         color_by,
+        split_overlay_mode,
         point_size,
         show_latents,
         pn.layout.Divider(),
@@ -933,13 +940,23 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
         traj_ep = trajectory_episode.value if trajectory_episode.value != -1 else None
         traj_color = trajectory_color.value
         split_markers = {"train": "circle", "test": "diamond", "unknown": "square"}
-        split_colors = {"train": "#1f1f1f", "test": "#d62728", "unknown": "#7f7f7f"}
+        split_overlay = split_overlay_mode.value
+        if split_overlay == "shape":
+            split_colors = {"train": "#1f1f1f", "test": "#1f1f1f", "unknown": "#1f1f1f"}
+            split_marker_groups = split_sub
+        elif split_overlay == "shape_color":
+            split_colors = {"train": "#1f1f1f", "test": "#d62728", "unknown": "#7f7f7f"}
+            split_marker_groups = split_sub
+        else:
+            split_colors = {"train": "#1f1f1f", "test": "#d62728", "unknown": "#7f7f7f"}
+            split_marker_groups = None
 
         meta = cache["meta"]
         total_train = int(np.sum(split_labels == "train"))
         total_test = int(np.sum(split_labels == "test"))
         latent_split_summary.object = (
-            f"**Markers:** train = circle, test = diamond.  "
+            f"**Split overlay:** {split_overlay}. "
+            f"Train = circle, test = diamond when enabled.  "
             f"**Frames:** {total_train} train / {total_test} test.  "
             f"**Episodes:** {meta.get('num_train_episodes', 0)} train / "
             f"{meta.get('num_test_episodes', 0)} test."
@@ -958,7 +975,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
                 tree_line_width=tree_line_width.value,
                 K_code=K_code_np,
                 show_leaf_lines=False,
-                marker_groups=split_sub,
+                marker_groups=split_marker_groups,
                 marker_markers=split_markers,
                 marker_outline_colors=split_colors,
                 trajectory_episode_ids=ep_sub,
@@ -987,7 +1004,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
                     K_code=K_code_np,
                     show_code_centers=show_code_centers.value,
                     show_points=show_latents.value,
-                    marker_groups=split_sub,
+                    marker_groups=split_marker_groups,
                     marker_markers=split_markers,
                     marker_outline_colors=split_colors,
                     trajectory_episode_ids=ep_sub,
@@ -1403,7 +1420,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
                         f"{match_idx.size} filtered matches | "
                         f"train={total_train}, test={total_test}",
                     ),
-                    pn.GridBox(*cards, ncols=2, sizing_mode="stretch_width"),
+                    pn.GridBox(*cards, ncols=3, sizing_mode="stretch_width"),
                     sizing_mode="stretch_width",
                 ),
             )
@@ -1416,7 +1433,7 @@ def create_app(outputs_dir: str = "outputs/vla") -> pn.template.FastListTemplate
     load_btn.on_click(_on_load)
 
     # Refresh on widget changes
-    for w in (color_by, point_size, latent_samples, seed_input,
+    for w in (color_by, split_overlay_mode, point_size, latent_samples, seed_input,
               show_latents, show_chart_centers, show_code_centers,
               show_tree_lines, tree_line_color, tree_line_width,
               trajectory_episode, trajectory_color):

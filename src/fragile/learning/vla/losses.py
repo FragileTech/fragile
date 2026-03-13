@@ -519,10 +519,17 @@ class DynamicsTransitionModel(nn.Module):
         self,
         chart_embed: torch.Tensor,
         action: torch.Tensor,
-        code_idx: torch.Tensor,
+        code_idx: torch.Tensor | None = None,
+        code_features: torch.Tensor | None = None,
     ) -> torch.Tensor:
         """Returns logits [B, num_states]."""
-        code_e = self.code_embed(code_idx)
+        if code_features is None:
+            if code_idx is None:
+                msg = "Either code_idx or code_features must be provided."
+                raise ValueError(msg)
+            code_e = self.code_embed(code_idx)
+        else:
+            code_e = code_features
         inp = torch.cat([chart_embed, code_e, action], dim=-1)
         return self.mlp(inp)
 
@@ -534,10 +541,16 @@ def compute_dyn_transition_loss(
     K_code_dyn_t: torch.Tensor,
     K_chart_tp1: torch.Tensor,
     K_code_dyn_tp1: torch.Tensor,
+    code_features_t: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, dict[str, float]]:
     """CE loss + accuracy metric for dynamics transition prediction."""
     target = K_chart_tp1.long() * model.dyn_codes_per_chart + K_code_dyn_tp1.long()
-    logits = model(chart_embed_t, action_t, K_code_dyn_t)
+    logits = model(
+        chart_embed_t,
+        action_t,
+        K_code_dyn_t,
+        code_features=code_features_t,
+    )
     loss = F.cross_entropy(logits, target)
     with torch.no_grad():
         acc = (logits.argmax(dim=-1) == target).float().mean().item()
@@ -685,6 +698,114 @@ def zeno_loss(
         return (0.5 * kl_t + 0.5 * kl_prev).mean()
     else:
         raise ValueError(f"Unknown zeno_loss mode: {mode}")
+
+
+def compute_dynamics_markov_loss(
+    atlas_encoder: torch.nn.Module,
+    dyn_trans_model: DynamicsTransitionModel | None,
+    v_local_all: torch.Tensor,
+    router_weights_all: torch.Tensor,
+    chart_embed_all: torch.Tensor,
+    chart_targets_all: torch.Tensor,
+    actions: torch.Tensor,
+    *,
+    transition_weight: float = 0.5,
+    zeno_weight: float = 0.0,
+    zeno_mode: str = "jsd",
+) -> tuple[torch.Tensor, dict[str, float], torch.Tensor | None]:
+    """Auxiliary macro-Markov losses for Phase 2/3 dynamics symbols.
+
+    The Phase 1 atlas stays frozen while a separate dynamics codebook learns
+    symbols on the same chart-local latent. The simple Markov model operates on
+    the frozen macro geometry ``c_bar_t`` plus the trainable dynamics symbol.
+    This makes the closure signal trainable without changing the Phase 1 atlas.
+
+    Returns:
+        total_loss: VQ + weighted transition CE + optional zeno smoothness.
+        metrics: Logged diagnostics for the dynamics-symbol auxiliary.
+        K_code_dyn_all: [B, H] hard dynamics-code assignments, or None.
+    """
+    zero = v_local_all.new_tensor(0.0)
+    metrics = {
+        "dyn_vq": 0.0,
+        "dyn_trans_ce": 0.0,
+        "dyn_trans_acc": 0.0,
+        "dyn_zeno": 0.0,
+        "dyn_state_flip_rate": 0.0,
+        "dyn_state_entropy": 0.0,
+        "dyn_state_max_prob": 0.0,
+        "dyn_code_flip_rate": 0.0,
+    }
+    if dyn_trans_model is None or v_local_all.shape[1] < 2:
+        return zero, metrics, None
+
+    H = v_local_all.shape[1]
+    z_q_dyn_list = []
+    vq_dyn_losses = []
+    K_code_dyn_list = []
+    for t in range(H):
+        z_q_dyn_t, K_code_dyn_t, _, vq_dyn_t = atlas_encoder.dynamics_vq(
+            v_local_all[:, t], router_weights_all[:, t],
+        )
+        z_q_dyn_list.append(z_q_dyn_t)
+        vq_dyn_losses.append(vq_dyn_t)
+        K_code_dyn_list.append(K_code_dyn_t)
+
+    vq_dyn_loss = torch.stack(vq_dyn_losses).mean()
+    z_q_dyn_all = torch.stack(z_q_dyn_list, dim=1)  # [B, H, D]
+    K_code_dyn_all = torch.stack(K_code_dyn_list, dim=1)  # [B, H]
+
+    trans_losses = []
+    trans_accs = []
+    trans_probs = []
+    for t in range(H - 1):
+        t_loss, t_diag = compute_dyn_transition_loss(
+            dyn_trans_model,
+            chart_embed_all[:, t],
+            actions[:, t],
+            K_code_dyn_all[:, t],
+            chart_targets_all[:, t + 1],
+            K_code_dyn_all[:, t + 1],
+            code_features_t=z_q_dyn_all[:, t],
+        )
+        trans_losses.append(t_loss)
+        trans_accs.append(t_diag["dyn_trans_acc"])
+        logits_t = dyn_trans_model(
+            chart_embed_all[:, t],
+            actions[:, t],
+            K_code_dyn_all[:, t],
+            code_features=z_q_dyn_all[:, t],
+        )
+        trans_probs.append(F.softmax(logits_t, dim=-1))
+
+    trans_loss = torch.stack(trans_losses).mean()
+    total = vq_dyn_loss + transition_weight * trans_loss
+
+    metrics["dyn_vq"] = vq_dyn_loss.item()
+    metrics["dyn_trans_ce"] = trans_loss.item()
+    metrics["dyn_trans_acc"] = sum(trans_accs) / len(trans_accs)
+
+    code_flips = (K_code_dyn_all[:, 1:] != K_code_dyn_all[:, :-1]).float().mean()
+    metrics["dyn_code_flip_rate"] = code_flips.item()
+
+    if len(trans_probs) > 1:
+        probs = torch.stack(trans_probs, dim=1)  # [B, H-1, S]
+        pred_states = probs.argmax(dim=-1)
+        state_entropy = -(probs * probs.clamp(min=1e-8).log()).sum(dim=-1).mean()
+        metrics["dyn_state_entropy"] = state_entropy.item()
+        metrics["dyn_state_max_prob"] = probs.max(dim=-1).values.mean().item()
+        metrics["dyn_state_flip_rate"] = (
+            (pred_states[:, 1:] != pred_states[:, :-1]).float().mean().item()
+        )
+        if zeno_weight > 0:
+            zeno_terms = []
+            for t in range(1, probs.shape[1]):
+                zeno_terms.append(zeno_loss(probs[:, t], probs[:, t - 1], mode=zeno_mode))
+            dyn_zeno = torch.stack(zeno_terms).mean()
+            total = total + zeno_weight * dyn_zeno
+            metrics["dyn_zeno"] = dyn_zeno.item()
+
+    return total, metrics, K_code_dyn_all
 
 
 # ---------------------------------------------------------------------------

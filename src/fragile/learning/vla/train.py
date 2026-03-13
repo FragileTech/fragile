@@ -24,6 +24,7 @@ from .extract_features import VLAFeatureDataset
 from .losses import (
     compute_phase1_loss, compute_phase2_loss, compute_phase3_loss,
     compute_phase2_geodesic_diffusion_loss,
+    compute_dynamics_markov_loss,
     orthogonality_loss, EnclosureProbe, compute_enclosure_loss, grl_alpha_schedule,
     zeno_loss,
     DynamicsTransitionModel, compute_dyn_transition_loss,
@@ -236,6 +237,12 @@ def _run_phase2(
     device = torch.device(config.device)
     encoder.to(device)
     world_model.to(device)
+    inner_enc = encoder.encoder if hasattr(encoder, "encoder") else encoder
+    phase1_centers = getattr(inner_enc, "chart_centers", None)
+    if phase1_centers is not None and hasattr(world_model, "bind_chart_centers"):
+        world_model.bind_chart_centers(phase1_centers, freeze=True)
+    phase2_use_jump = world_model.use_jump
+    world_model.use_jump = False
 
     # Freeze encoder
     encoder.eval()
@@ -245,7 +252,7 @@ def _run_phase2(
     # Dynamics codebook
     dyn_codes = getattr(config, 'dyn_codes_per_chart', 0)
     dyn_trans_model = None
-    inner_enc = encoder.encoder if hasattr(encoder, 'encoder') else None
+    inner_enc = encoder.encoder if hasattr(encoder, 'encoder') else encoder
     if dyn_codes > 0 and inner_enc is not None and inner_enc.codebook_dyn is not None:
         inner_enc.codebook_dyn.requires_grad_(True)
         dyn_trans_model = DynamicsTransitionModel(
@@ -265,134 +272,129 @@ def _run_phase2(
         optimizer = optim.Adam(world_model.parameters(), lr=config.lr_wm)
 
     last_metrics: dict[str, float] = {}
+    try:
+        for epoch in range(1, config.phase2_epochs + 1):
+            world_model.train()
+            if dyn_trans_model is not None:
+                dyn_trans_model.train()
+            epoch_loss = 0.0
+            n_batches = 0
+            epoch_metric_totals: dict[str, float] = {}
 
-    for epoch in range(1, config.phase2_epochs + 1):
-        world_model.train()
-        if dyn_trans_model is not None:
-            dyn_trans_model.train()
-        epoch_loss = 0.0
-        n_batches = 0
+            for batch in seq_loader:
+                features = batch["features"].to(device)  # [B, H, D_feat]
+                actions = batch["actions"].to(device)  # [B, H, A]
 
-        for batch in seq_loader:
-            features = batch["features"].to(device)  # [B, H, D_feat]
-            actions = batch["actions"].to(device)  # [B, H, A]
+                B, H, _ = features.shape
 
-            B, H, D_feat = features.shape
-
-            # Encode all frames
-            with torch.no_grad():
-                z_list = []
-                rw_list = []
-                K_list = []
-                v_local_list = []
-                c_bar_list = []
-                for t in range(H):
-                    (
-                        x_recon, vq_loss, enc_rw, dec_rw,
-                        K_chart, z_geo, z_n, c_bar, aux,
-                    ) = encoder(features[:, t, :])
-                    z_list.append(z_geo)
-                    rw_list.append(enc_rw)
-                    K_list.append(K_chart)
-                    c_bar_list.append(c_bar)
-                    # Get v_local from inner encoder for dynamics VQ
-                    if inner_enc is not None and hasattr(inner_enc, '_last_v_local'):
-                        v_local_list.append(inner_enc._last_v_local)
-
-                z_all = torch.stack(z_list, dim=1)  # [B, H, D_lat]
-                K_all = torch.stack(K_list, dim=1)  # [B, H]
-
-            # World model training
-            z_0 = z_all[:, 0, :]
-            rw_0 = rw_list[0]
-            rw_all = torch.stack(rw_list, dim=1)  # [B, H, K]
-
-            if getattr(config, "use_geodesic_diffusion", False):
-                loss, metrics = compute_phase2_geodesic_diffusion_loss(
-                    world_model, z_all, rw_all, K_all, actions, config,
-                )
-            else:
-                # Backward compat: old rollout-based training
-                pred_actions = actions[:, :-1, :]  # [B, H-1, A]
-                z_targets = z_all[:, 1:, :]  # [B, H-1, D]
-                chart_targets = K_all[:, 1:]  # [B, H-1]
-                wm_output = world_model(z_0, pred_actions, rw_0)
-                loss, metrics = compute_phase2_loss(
-                    wm_output, z_targets, chart_targets, config,
-                )
-
-            # Dynamics codebook VQ + transition loss
-            if dyn_trans_model is not None and inner_enc is not None and H > 1:
-                # Use inner encoder to get v_local (re-encode since we need it outside no_grad)
+                # Encode all frames with the frozen Phase-1 atlas.
                 with torch.no_grad():
-                    flat = features.reshape(B * H, D_feat)
-                    enc_out = inner_enc(flat)
-                    v_local_flat = enc_out[10]  # v_local at index 10
-                    rw_flat = enc_out[4]
-                    c_bar_flat = enc_out[9]
-                v_local_p2 = v_local_flat.reshape(B, H, -1).detach()
-                rw_p2 = rw_flat.reshape(B, H, -1).detach()
-                c_bar_p2 = c_bar_flat.reshape(B, H, -1).detach()
+                    z_list = []
+                    rw_list = []
+                    K_list = []
+                    v_local_list = []
+                    c_bar_list = []
+                    for t in range(H):
+                        (
+                            _x_recon, _vq_loss, enc_rw, _dec_rw,
+                            K_chart, z_geo, _z_n, c_bar, _aux,
+                        ) = encoder(features[:, t, :])
+                        z_list.append(z_geo)
+                        rw_list.append(enc_rw)
+                        K_list.append(K_chart)
+                        c_bar_list.append(c_bar)
+                        if inner_enc is not None and hasattr(inner_enc, "_last_v_local"):
+                            v_local_list.append(inner_enc._last_v_local)
 
-                vq_dyn_losses = []
-                K_code_dyn_list = []
-                for t in range(H):
-                    _, K_code_dyn_t, _, vq_dyn_t = inner_enc.dynamics_vq(
-                        v_local_p2[:, t], rw_p2[:, t],
+                    z_all = torch.stack(z_list, dim=1)  # [B, H, D_lat]
+                    K_all = torch.stack(K_list, dim=1)  # [B, H]
+                    rw_all = torch.stack(rw_list, dim=1)  # [B, H, K]
+                    c_bar_all = torch.stack(c_bar_list, dim=1)  # [B, H, D]
+                    v_local_all = (
+                        torch.stack(v_local_list, dim=1) if len(v_local_list) == H else None
                     )
-                    vq_dyn_losses.append(vq_dyn_t)
-                    K_code_dyn_list.append(K_code_dyn_t)
-                vq_dyn_loss = torch.stack(vq_dyn_losses).mean()
-                K_code_dyn_all = torch.stack(K_code_dyn_list, dim=1)
 
-                trans_losses = []
-                for t in range(H - 1):
-                    t_loss, _ = compute_dyn_transition_loss(
+                z_0 = z_all[:, 0, :]
+                rw_0 = rw_all[:, 0]
+
+                if getattr(config, "use_geodesic_diffusion", False):
+                    loss, metrics = compute_phase2_geodesic_diffusion_loss(
+                        world_model, z_all, rw_all, K_all, actions, config,
+                    )
+                else:
+                    pred_actions = actions[:, :-1, :]  # [B, H-1, A]
+                    z_targets = z_all[:, 1:, :]  # [B, H-1, D]
+                    chart_targets = K_all[:, 1:]  # [B, H-1]
+                    wm_output = world_model(z_0, pred_actions, rw_0)
+                    loss, metrics = compute_phase2_loss(
+                        wm_output, z_targets, chart_targets, config,
+                    )
+
+                if (
+                    dyn_trans_model is not None
+                    and inner_enc is not None
+                    and v_local_all is not None
+                    and H > 1
+                ):
+                    closure_weight = (
+                        getattr(config, "w_enclosure", 0.0)
+                        if getattr(config, "w_enclosure", 0.0) > 0
+                        else getattr(config, "w_dyn_transition", 0.5)
+                    )
+                    dyn_symbol_loss, dyn_symbol_metrics, _ = compute_dynamics_markov_loss(
+                        inner_enc,
                         dyn_trans_model,
-                        c_bar_p2[:, t],
-                        actions[:, t],
-                        K_code_dyn_all[:, t],
-                        K_all[:, t + 1],
-                        K_code_dyn_all[:, t + 1],
+                        v_local_all.detach(),
+                        rw_all.detach(),
+                        c_bar_all.detach(),
+                        K_all,
+                        actions,
+                        transition_weight=closure_weight,
+                        zeno_weight=getattr(config, "w_zeno", 0.0),
+                        zeno_mode=getattr(config, "zeno_mode", "jsd"),
                     )
-                    trans_losses.append(t_loss)
-                trans_loss = torch.stack(trans_losses).mean()
-                w_dyn_transition = getattr(config, 'w_dyn_transition', 0.5)
-                loss = loss + vq_dyn_loss + w_dyn_transition * trans_loss
+                    loss = loss + dyn_symbol_loss
+                    metrics.update(dyn_symbol_metrics)
 
-            optimizer.zero_grad()
-            loss.backward()
-            if config.grad_clip > 0:
-                all_params = list(world_model.parameters())
-                if dyn_trans_model is not None:
-                    all_params += [inner_enc.codebook_dyn] + list(dyn_trans_model.parameters())
-                nn.utils.clip_grad_norm_(all_params, config.grad_clip)
-            optimizer.step()
+                optimizer.zero_grad()
+                loss.backward()
+                if config.grad_clip > 0:
+                    all_params = list(world_model.parameters())
+                    if dyn_trans_model is not None:
+                        all_params += [inner_enc.codebook_dyn] + list(dyn_trans_model.parameters())
+                    nn.utils.clip_grad_norm_(all_params, config.grad_clip)
+                optimizer.step()
 
-            epoch_loss += loss.item()
-            n_batches += 1
+                batch_metrics = dict(metrics)
+                batch_metrics["total"] = loss.item()
+                epoch_loss += loss.item()
+                for key, value in batch_metrics.items():
+                    epoch_metric_totals[key] = epoch_metric_totals.get(key, 0.0) + float(value)
+                n_batches += 1
 
-        last_metrics = metrics
-        last_metrics["epoch_loss"] = epoch_loss / max(n_batches, 1)
+            last_metrics = {
+                key: value / max(n_batches, 1) for key, value in epoch_metric_totals.items()
+            }
+            last_metrics["epoch_loss"] = epoch_loss / max(n_batches, 1)
 
-        if epoch % config.log_every == 0 or epoch == config.phase2_epochs:
-            _log_metrics(last_metrics, epoch, phase=2, mlflow_enabled=mlflow_enabled)
+            if epoch % config.log_every == 0 or epoch == config.phase2_epochs:
+                _log_metrics(last_metrics, epoch, phase=2, mlflow_enabled=mlflow_enabled)
 
-        if config.save_every > 0 and epoch % config.save_every == 0:
-            ckpt_path = os.path.join(
-                config.output_dir, f"checkpoint_p2_e{epoch:04d}.pt",
-            )
-            _save_checkpoint(
-                ckpt_path, encoder, FactorizedJumpOperator(
-                    config.num_charts, config.latent_dim,
-                ), world_model,
-                {"wm": optimizer}, epoch, 2, config, last_metrics,
-                dyn_trans_model=dyn_trans_model,
-            )
-
-    # Unfreeze encoder for Phase 3
-    for p in encoder.parameters():
-        p.requires_grad_(True)
+            if config.save_every > 0 and epoch % config.save_every == 0:
+                ckpt_path = os.path.join(
+                    config.output_dir, f"checkpoint_p2_e{epoch:04d}.pt",
+                )
+                _save_checkpoint(
+                    ckpt_path, encoder, FactorizedJumpOperator(
+                        config.num_charts, config.latent_dim,
+                    ), world_model,
+                    {"wm": optimizer}, epoch, 2, config, last_metrics,
+                    dyn_trans_model=dyn_trans_model,
+                )
+    finally:
+        world_model.use_jump = phase2_use_jump
+        for p in encoder.parameters():
+            p.requires_grad_(True)
 
     return last_metrics, dyn_trans_model
 

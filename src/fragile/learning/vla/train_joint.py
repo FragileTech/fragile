@@ -53,6 +53,7 @@ from fragile.learning.vla.losses import (
     compute_phase1_loss,
     compute_phase2_loss,
     compute_phase2_geodesic_diffusion_loss,
+    compute_dynamics_markov_loss,
     orthogonality_loss,
     EnclosureProbe,
     compute_enclosure_loss,
@@ -97,6 +98,12 @@ GEODIFF_DIAG_KEYS = [
     "mean_momentum", "mean_phi_eff",
     "hodge_cons", "hodge_sol", "hodge_harm",
     "same_chart_frac", "chart_accuracy", "n_same_chart_pairs",
+]
+
+DYN_SYMBOL_KEYS = [
+    "dyn_vq", "dyn_trans_ce", "dyn_trans_acc", "dyn_zeno",
+    "dyn_state_flip_rate", "dyn_state_entropy", "dyn_state_max_prob",
+    "dyn_code_flip_rate",
 ]
 
 INFO_KEYS = [
@@ -244,7 +251,7 @@ WM_DIAG_KEYS = [
 
 def _init_dynamics_accumulators() -> dict[str, float]:
     return {k: 0.0 for k in
-            DYNAMICS_LOSS_KEYS + WM_DIAG_KEYS + GEODIFF_DIAG_KEYS
+            DYNAMICS_LOSS_KEYS + DYN_SYMBOL_KEYS + WM_DIAG_KEYS + GEODIFF_DIAG_KEYS
             + ["grad_norm", "param_norm", "update_ratio", "lr", "total"]}
 
 
@@ -282,6 +289,17 @@ def _wm_diagnostics(wm_output: dict[str, torch.Tensor]) -> dict[str, float]:
         diag["hodge_sol"] = wm_output["hodge_solenoidal_ratio"].mean().item()
         diag["hodge_harm"] = wm_output["hodge_harmonic_ratio"].mean().item()
     return diag
+
+
+def _bind_world_model_to_encoder_atlas(
+    model: TopoEncoderPrimitives,
+    world_model: GeometricWorldModel,
+) -> None:
+    """Bind the Phase-2 world model to the frozen Phase-1 chart atlas."""
+    phase1_centers = getattr(model.encoder, "chart_centers", None)
+    if phase1_centers is None:
+        return
+    world_model.bind_chart_centers(phase1_centers, freeze=True)
 
 
 def _chart_stats_from_tensor(
@@ -1286,6 +1304,13 @@ def _run_phase2(
     print("Phase 2: World model warmup (encoder frozen)")
     print("=" * 60)
 
+    _bind_world_model_to_encoder_atlas(model, world_model)
+    phase2_use_jump = world_model.use_jump
+    world_model.use_jump = False
+    if phase2_use_jump:
+        print("  Phase 2 warmup disables active world-model jumps; learning transport only.")
+    print("  Phase 2 atlas is bound to the frozen Phase 1 router/chart geometry.")
+
     # Freeze encoder
     model.eval()
     for p in model.parameters():
@@ -1342,225 +1367,235 @@ def _run_phase2(
     K = args.num_charts
     last_metrics: dict[str, float] = {}
 
-    for epoch in tqdm(range(args.phase2_epochs), desc="Phase 2"):
-        world_model.train()
-        acc = _init_dynamics_accumulators()
-        n_batches = 0
-        epoch_K_all: list[torch.Tensor] = []
-        epoch_soft_rw_all: list[torch.Tensor] = []
-        epoch_radii: list[torch.Tensor] = []
-        current_hard_routing = _use_hard_routing(
-            args, global_epoch_offset + epoch,
-        )
-        current_tau = _get_hard_routing_tau(
-            args, global_epoch_offset + epoch, total_epochs_all_phases,
-        )
+    try:
+        for epoch in tqdm(range(args.phase2_epochs), desc="Phase 2"):
+            world_model.train()
+            acc = _init_dynamics_accumulators()
+            n_batches = 0
+            epoch_K_all: list[torch.Tensor] = []
+            epoch_soft_rw_all: list[torch.Tensor] = []
+            epoch_radii: list[torch.Tensor] = []
+            current_hard_routing = _use_hard_routing(
+                args, global_epoch_offset + epoch,
+            )
+            current_tau = _get_hard_routing_tau(
+                args, global_epoch_offset + epoch, total_epochs_all_phases,
+            )
 
-        for batch in seq_loader:
-            features = batch["features"].to(device)  # [B, H, D_feat]
-            actions = batch["actions"].to(device)     # [B, H, A]
-            B, H, D_feat = features.shape
+            for batch in seq_loader:
+                features = batch["features"].to(device)  # [B, H, D_feat]
+                actions = batch["actions"].to(device)     # [B, H, A]
+                B, H, D_feat = features.shape
 
-            # Encode all frames in one batched pass (frozen encoder)
-            with torch.no_grad():
-                flat = features.reshape(B * H, D_feat)
-                K_flat, Kcode_flat, _, _, rw_flat, z_flat, _, _, _, c_bar_flat, v_local_flat, _ = model.encoder(
-                    flat,
-                    hard_routing=current_hard_routing,
-                    hard_routing_tau=current_tau,
-                )
-                z_all = z_flat.reshape(B, H, -1)
-                K_all = K_flat.reshape(B, H)
-                rw_0 = rw_flat[:B]  # router weights for first frame
-                v_local_all_p2 = v_local_flat.reshape(B, H, -1)
-                rw_all_p2_full = rw_flat.reshape(B, H, -1)
-                soft_rw_all_p2 = getattr(
-                    model.encoder, "_last_soft_router_weights", rw_flat.detach(),
-                ).reshape(B, H, -1)
-                c_bar_all_p2 = c_bar_flat.reshape(B, H, -1)
-                epoch_K_all.append(K_all.detach().cpu())
-                epoch_soft_rw_all.append(soft_rw_all_p2.detach().cpu())
-                epoch_radii.append(z_all.detach().norm(dim=-1).cpu())
-
-            z_0 = z_all[:, 0, :]
-
-            wm_output = None
-            if getattr(config_ns, "use_geodesic_diffusion", False):
-                rw_all_p2 = rw_flat.reshape(B, H, -1)
-                loss, metrics = compute_phase2_geodesic_diffusion_loss(
-                    world_model, z_all, rw_all_p2, K_all, actions, config_ns,
-                )
-            else:
-                pred_actions = actions[:, :-1, :]
-                z_targets = z_all[:, 1:, :]
-                chart_targets = K_all[:, 1:]
-                wm_output = world_model(z_0, pred_actions, rw_0)
-                loss, metrics = compute_phase2_loss(wm_output, z_targets, chart_targets, config_ns)
-            wm_diag = _wm_diagnostics(wm_output) if wm_output is not None else {k: 0.0 for k in WM_DIAG_KEYS}
-
-            # Dynamics codebook VQ + transition loss
-            if dyn_trans_model is not None and H > 1:
-                dyn_trans_model.train()
-                # v_local is detached from trunk (encoder frozen anyway)
-                v_local_det = v_local_all_p2.detach()
-                rw_det = rw_all_p2_full.detach()
-                vq_dyn_losses = []
-                K_code_dyn_list = []
-                for t in range(H):
-                    _, K_code_dyn_t, _, vq_dyn_t = model.encoder.dynamics_vq(
-                        v_local_det[:, t], rw_det[:, t],
+                # Encode all frames in one batched pass (frozen encoder/atlas)
+                with torch.no_grad():
+                    flat = features.reshape(B * H, D_feat)
+                    K_flat, _, _, _, rw_flat, z_flat, _, _, _, c_bar_flat, v_local_flat, _ = model.encoder(
+                        flat,
+                        hard_routing=current_hard_routing,
+                        hard_routing_tau=current_tau,
                     )
-                    vq_dyn_losses.append(vq_dyn_t)
-                    K_code_dyn_list.append(K_code_dyn_t)
-                vq_dyn_loss = torch.stack(vq_dyn_losses).mean()
-                K_code_dyn_all = torch.stack(K_code_dyn_list, dim=1)  # [B, H]
+                    z_all = z_flat.reshape(B, H, -1)
+                    K_all = K_flat.reshape(B, H)
+                    rw_0 = rw_flat[:B]  # router weights for first frame
+                    v_local_all_p2 = v_local_flat.reshape(B, H, -1)
+                    rw_all_p2_full = rw_flat.reshape(B, H, -1)
+                    soft_rw_all_p2 = getattr(
+                        model.encoder, "_last_soft_router_weights", rw_flat.detach(),
+                    ).reshape(B, H, -1)
+                    c_bar_all_p2 = c_bar_flat.reshape(B, H, -1)
+                    epoch_K_all.append(K_all.detach().cpu())
+                    epoch_soft_rw_all.append(soft_rw_all_p2.detach().cpu())
+                    epoch_radii.append(z_all.detach().norm(dim=-1).cpu())
 
-                # Transition loss over consecutive pairs
-                trans_losses = []
-                trans_diag_acc = []
-                for t in range(H - 1):
-                    t_loss, t_diag = compute_dyn_transition_loss(
+                z_0 = z_all[:, 0, :]
+
+                wm_output = None
+                if getattr(config_ns, "use_geodesic_diffusion", False):
+                    loss, metrics = compute_phase2_geodesic_diffusion_loss(
+                        world_model, z_all, rw_all_p2_full, K_all, actions, config_ns,
+                    )
+                else:
+                    pred_actions = actions[:, :-1, :]
+                    z_targets = z_all[:, 1:, :]
+                    chart_targets = K_all[:, 1:]
+                    wm_output = world_model(z_0, pred_actions, rw_0)
+                    loss, metrics = compute_phase2_loss(
+                        wm_output, z_targets, chart_targets, config_ns,
+                    )
+                wm_diag = (
+                    _wm_diagnostics(wm_output)
+                    if wm_output is not None
+                    else {k: 0.0 for k in WM_DIAG_KEYS}
+                )
+
+                dyn_symbol_loss = z_all.new_tensor(0.0)
+                dyn_symbol_metrics: dict[str, float] = {}
+                if dyn_trans_model is not None and H > 1:
+                    dyn_trans_model.train()
+                    closure_weight = (
+                        getattr(args, "w_enclosure", 0.0)
+                        if getattr(args, "w_enclosure", 0.0) > 0
+                        else getattr(args, "w_dyn_transition", 0.5)
+                    )
+                    dyn_symbol_loss, dyn_symbol_metrics, _ = compute_dynamics_markov_loss(
+                        model.encoder,
                         dyn_trans_model,
-                        c_bar_all_p2[:, t].detach(),
-                        actions[:, t],
-                        K_code_dyn_all[:, t],
-                        K_all[:, t + 1],
-                        K_code_dyn_all[:, t + 1],
+                        v_local_all_p2.detach(),
+                        rw_all_p2_full.detach(),
+                        c_bar_all_p2.detach(),
+                        K_all,
+                        actions,
+                        transition_weight=closure_weight,
+                        zeno_weight=getattr(args, "w_zeno", 0.0),
+                        zeno_mode=getattr(args, "zeno_mode", "jsd"),
                     )
-                    trans_losses.append(t_loss)
-                    trans_diag_acc.append(t_diag["dyn_trans_acc"])
-                trans_loss = torch.stack(trans_losses).mean()
-                w_dyn_transition = getattr(args, 'w_dyn_transition', 0.5)
-                loss = loss + vq_dyn_loss + w_dyn_transition * trans_loss
-                metrics["dyn_vq"] = vq_dyn_loss.item()
-                metrics["dyn_trans_ce"] = trans_loss.item()
-                metrics["dyn_trans_acc"] = sum(trans_diag_acc) / len(trans_diag_acc)
+                    loss = loss + dyn_symbol_loss
+                    metrics.update(dyn_symbol_metrics)
 
-            optimizer.zero_grad()
-            loss.backward()
-            all_opt_params = list(world_model.parameters())
-            if dyn_trans_model is not None:
-                all_opt_params += [model.encoder.codebook_dyn] + list(dyn_trans_model.parameters())
-            grad_norm = compute_grad_norm(all_opt_params)
-            param_norm = compute_param_norm(all_opt_params)
-            if args.grad_clip > 0:
-                torch.nn.utils.clip_grad_norm_(all_opt_params, args.grad_clip)
-            optimizer.step()
+                optimizer.zero_grad()
+                loss.backward()
+                all_opt_params = list(world_model.parameters())
+                if dyn_trans_model is not None:
+                    all_opt_params += [model.encoder.codebook_dyn] + list(dyn_trans_model.parameters())
+                grad_norm = compute_grad_norm(all_opt_params)
+                param_norm = compute_param_norm(all_opt_params)
+                if args.grad_clip > 0:
+                    torch.nn.utils.clip_grad_norm_(all_opt_params, args.grad_clip)
+                optimizer.step()
 
-            current_lr = optimizer.param_groups[0]["lr"]
-            update_ratio = (
-                current_lr * grad_norm / (param_norm + 1e-12)
-                if param_norm > 0 else 0.0
+                current_lr = optimizer.param_groups[0]["lr"]
+                update_ratio = (
+                    current_lr * grad_norm / (param_norm + 1e-12)
+                    if param_norm > 0 else 0.0
+                )
+
+                acc["total"] += metrics["total"]
+                for k in DYNAMICS_LOSS_KEYS:
+                    if k in metrics:
+                        acc[k] += metrics[k]
+                for k in DYN_SYMBOL_KEYS:
+                    if k in metrics:
+                        acc[k] += metrics[k]
+                for k in WM_DIAG_KEYS:
+                    acc[k] += wm_diag[k]
+                for k in GEODIFF_DIAG_KEYS:
+                    if k in metrics:
+                        acc[k] += metrics[k]
+                acc["grad_norm"] += grad_norm
+                acc["param_norm"] += param_norm
+                acc["update_ratio"] += update_ratio
+                acc["lr"] += current_lr
+                n_batches += 1
+
+            if scheduler is not None:
+                scheduler.step()
+
+            for k in acc:
+                acc[k] /= max(n_batches, 1)
+
+            # Chart usage from all batches in epoch
+            hard_usage, hard_perplexity, hard_active = _chart_stats_from_tensor(
+                torch.cat(epoch_K_all), K,
             )
-
-            acc["total"] += metrics["total"]
-            for k in DYNAMICS_LOSS_KEYS:
-                if k in metrics:
-                    acc[k] += metrics[k]
-            for k in WM_DIAG_KEYS:
-                acc[k] += wm_diag[k]
-            for k in GEODIFF_DIAG_KEYS:
-                if k in metrics:
-                    acc[k] += metrics[k]
-            acc["grad_norm"] += grad_norm
-            acc["param_norm"] += param_norm
-            acc["update_ratio"] += update_ratio
-            acc["lr"] += current_lr
-            n_batches += 1
-
-        if scheduler is not None:
-            scheduler.step()
-
-        for k in acc:
-            acc[k] /= max(n_batches, 1)
-
-        # Chart usage from all batches in epoch
-        hard_usage, hard_perplexity, hard_active = _chart_stats_from_tensor(
-            torch.cat(epoch_K_all), K,
-        )
-        soft_usage, soft_perplexity, soft_active = _chart_stats_from_probs(
-            torch.cat(epoch_soft_rw_all), K,
-        )
-        mean_r = torch.cat(epoch_radii).mean().item()
-
-        _use_geodiff = getattr(args, "use_geodesic_diffusion", False)
-        should_log = (epoch % args.log_every == 0) or (epoch == args.phase2_epochs - 1)
-        if should_log:
-            print(
-                f"P2 E{epoch:5d} | Loss: {acc['total']:.4f} "
-                f"| LR: {acc['lr']:.2e}"
+            soft_usage, soft_perplexity, soft_active = _chart_stats_from_probs(
+                torch.cat(epoch_soft_rw_all), K,
             )
-            print(f"  Hard usage: {np.array2string(hard_usage, precision=2, separator=', ')}")
-            print(f"  Soft usage: {np.array2string(soft_usage, precision=2, separator=', ')}")
-            if _use_geodiff:
-                print(
-                    f"  GeoDiff: pos={acc.get('position', 0):.4f} "
-                    f"endpoint={acc.get('endpoint', 0):.4f} "
-                    f"mom_target={acc.get('momentum_target', 0):.4f} "
-                    f"hodge_perp={acc.get('hodge_perp', 0):.4f} "
-                    f"geo_miss={acc.get('geo_miss', 0):.4f}"
-                )
-                print(
-                    f"  Chart: transition_ce={acc['chart_transition']:.4f} "
-                    f"accuracy={acc.get('chart_accuracy', 0):.3f} "
-                    f"same_chart%={acc.get('same_chart_frac', 0):.3f}"
-                )
-                print(
-                    f"  Energy: conservation={acc.get('energy_conservation', 0):.4f} "
-                    f"|p|={acc.get('mean_momentum', 0):.4f} "
-                    f"phi_eff={acc.get('mean_phi_eff', 0):.4f}"
-                )
-                print(
-                    f"  Hodge decomp: cons={acc.get('hodge_cons', 0):.4f} "
-                    f"sol={acc.get('hodge_sol', 0):.4f} "
-                    f"harm={acc.get('hodge_harm', 0):.4f}"
-                )
-            else:
-                print(
-                    f"  Dynamics: geo={acc['geodesic']:.4f} "
-                    f"chart={acc['chart_transition']:.4f} "
-                    f"mom_reg={acc['momentum_reg']:.4f}"
-                )
-                print(
-                    f"  Energy: conservation={acc['energy_conservation']:.4f} "
-                    f"screened_poisson={acc.get('screened_poisson', 0):.4f} "
-                    f"hodge_loss={acc.get('hodge', 0):.4f}"
-                )
-                print(
-                    f"  WM diag: |p|={acc['mean_momentum']:.4f} "
-                    f"E_var={acc['energy_var']:.4f} "
-                    f"jmp%={acc['jump_frac']:.4f} "
-                    f"phi_eff={acc['mean_phi_eff']:.4f}"
-                )
-                print(
-                    f"  Hodge decomp: cons={acc['hodge_cons']:.4f} "
-                    f"sol={acc['hodge_sol']:.4f} "
-                    f"harm={acc['hodge_harm']:.4f}"
-                )
-            print(
-                f"  Train: grad={acc['grad_norm']:.2e} "
-                f"upd_ratio={acc['update_ratio']:.2e} "
-                f"param={acc['param_norm']:.2e}"
-            )
-            print(
-                f"  Metrics: hard_perplexity={hard_perplexity:.2f}/{K} "
-                f"hard_active={hard_active}/{K} "
-                f"soft_perplexity={soft_perplexity:.2f}/{K} "
-                f"soft_active={soft_active}/{K} mean_r={mean_r:.3f}"
-            )
-            print("-" * 60)
+            mean_r = torch.cat(epoch_radii).mean().item()
 
-        should_save = (
-            (epoch > 0 and epoch % args.save_every == 0)
-            or epoch == args.phase2_epochs - 1
-        )
-        if should_save:
-            _save_checkpoint(
-                args, model, jump_op, world_model, optimizer, scheduler, epoch, 2, acc,
-                dyn_trans_model=dyn_trans_model,
-            )
+            _use_geodiff = getattr(args, "use_geodesic_diffusion", False)
+            should_log = (epoch % args.log_every == 0) or (epoch == args.phase2_epochs - 1)
+            if should_log:
+                print(
+                    f"P2 E{epoch:5d} | Loss: {acc['total']:.4f} "
+                    f"| LR: {acc['lr']:.2e}"
+                )
+                print(f"  Hard usage: {np.array2string(hard_usage, precision=2, separator=', ')}")
+                print(f"  Soft usage: {np.array2string(soft_usage, precision=2, separator=', ')}")
+                if _use_geodiff:
+                    print(
+                        f"  GeoDiff: pos={acc.get('position', 0):.4f} "
+                        f"endpoint={acc.get('endpoint', 0):.4f} "
+                        f"mom_target={acc.get('momentum_target', 0):.4f} "
+                        f"hodge_perp={acc.get('hodge_perp', 0):.4f} "
+                        f"geo_miss={acc.get('geo_miss', 0):.4f}"
+                    )
+                    print(
+                        f"  Chart: transition_ce={acc['chart_transition']:.4f} "
+                        f"accuracy={acc.get('chart_accuracy', 0):.3f} "
+                        f"same_chart%={acc.get('same_chart_frac', 0):.3f}"
+                    )
+                    print(
+                        f"  Energy: conservation={acc.get('energy_conservation', 0):.4f} "
+                        f"|p|={acc.get('mean_momentum', 0):.4f} "
+                        f"phi_eff={acc.get('mean_phi_eff', 0):.4f}"
+                    )
+                    print(
+                        f"  Hodge decomp: cons={acc.get('hodge_cons', 0):.4f} "
+                        f"sol={acc.get('hodge_sol', 0):.4f} "
+                        f"harm={acc.get('hodge_harm', 0):.4f}"
+                    )
+                else:
+                    print(
+                        f"  Dynamics: geo={acc['geodesic']:.4f} "
+                        f"chart={acc['chart_transition']:.4f} "
+                        f"mom_reg={acc['momentum_reg']:.4f}"
+                    )
+                    print(
+                        f"  Energy: conservation={acc['energy_conservation']:.4f} "
+                        f"screened_poisson={acc.get('screened_poisson', 0):.4f} "
+                        f"hodge_loss={acc.get('hodge', 0):.4f}"
+                    )
+                    print(
+                        f"  WM diag: |p|={acc['mean_momentum']:.4f} "
+                        f"E_var={acc['energy_var']:.4f} "
+                        f"jmp%={acc['jump_frac']:.4f} "
+                        f"phi_eff={acc['mean_phi_eff']:.4f}"
+                    )
+                    print(
+                        f"  Hodge decomp: cons={acc['hodge_cons']:.4f} "
+                        f"sol={acc['hodge_sol']:.4f} "
+                        f"harm={acc['hodge_harm']:.4f}"
+                    )
+                if dyn_trans_model is not None:
+                    print(
+                        f"  Macro: vq={acc.get('dyn_vq', 0):.4f} "
+                        f"closure_ce={acc.get('dyn_trans_ce', 0):.4f} "
+                        f"acc={acc.get('dyn_trans_acc', 0):.3f} "
+                        f"zeno={acc.get('dyn_zeno', 0):.4f}"
+                    )
+                    print(
+                        f"  Macro diag: state_flip={acc.get('dyn_state_flip_rate', 0):.4f} "
+                        f"state_H={acc.get('dyn_state_entropy', 0):.4f} "
+                        f"state_max={acc.get('dyn_state_max_prob', 0):.4f} "
+                        f"code_flip={acc.get('dyn_code_flip_rate', 0):.4f}"
+                    )
+                print(
+                    f"  Train: grad={acc['grad_norm']:.2e} "
+                    f"upd_ratio={acc['update_ratio']:.2e} "
+                    f"param={acc['param_norm']:.2e}"
+                )
+                print(
+                    f"  Metrics: hard_perplexity={hard_perplexity:.2f}/{K} "
+                    f"hard_active={hard_active}/{K} "
+                    f"soft_perplexity={soft_perplexity:.2f}/{K} "
+                    f"soft_active={soft_active}/{K} mean_r={mean_r:.3f}"
+                )
+                print("-" * 60)
 
-        last_metrics = acc
+            should_save = (
+                (epoch > 0 and epoch % args.save_every == 0)
+                or epoch == args.phase2_epochs - 1
+            )
+            if should_save:
+                _save_checkpoint(
+                    args, model, jump_op, world_model, optimizer, scheduler, epoch, 2, acc,
+                    dyn_trans_model=dyn_trans_model,
+                )
+
+            last_metrics = acc
+    finally:
+        world_model.use_jump = phase2_use_jump
 
     # Unfreeze encoder for Phase 3
     for p in model.parameters():
