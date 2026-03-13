@@ -71,6 +71,10 @@ parts:
           - file: source/1_agent/10_appendices/05_proofs
           - file: source/1_agent/10_appendices/06_losses
           - file: source/1_agent/10_appendices/07_architecture
+      - file: source/1_agent/11_implementation/01_encoder
+        title: "Part XI - Implementation"
+        sections:
+          - file: source/1_agent/11_implementation/02_world_model
 
   # ══════════════════════════════════════════════════════════════════════════════
   # VOLUME 2: THE HYPOSTRUCTURE FORMALISM
