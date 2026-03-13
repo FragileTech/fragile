@@ -3,10 +3,9 @@
 Trains a GeometricActor alongside a GeometricWorldModel + RewardHead
 using Dreamer-style imagination on dm_control environments.
 
-The encoder (TopoEncoderPrimitives) is trained with reconstruction +
-Phase 1 atlas losses.  WM gradients are blocked from flowing into the
-encoder — the embedding learns from reconstruction quality, chart
-structure, and codebook geometry only.
+The encoder uses the same Phase 1 reconstruction/atlas objective as
+``train_joint.py`` plus the shared-codebook Markov closure/Zeno probe.
+All RL heads consume detached latents; they never update the topoencoder.
 
 Usage:
     uv run python -m fragile.learning.rl.train_dreamer
@@ -59,7 +58,6 @@ from .actor import GeometricActor
 from .critic import GeometricCritic
 from .config import DreamerConfig
 from .replay_buffer import SequenceReplayBuffer
-from .returns import compute_lambda_returns
 from .reward_head import RewardHead
 
 try:
@@ -730,7 +728,7 @@ def _train_step(
 
     1. Encoder: shared-dynamics TopoEncoder losses + Markov closure/Zeno
     2. WM + reward: dynamics losses on DETACHED encoder outputs
-    3. Actor-critic: imagination with REINFORCE
+    3. Actor-critic: replay-anchored value field + pathwise geometric control
     """
     metrics: dict[str, float] = {}
 
@@ -738,6 +736,7 @@ def _train_step(
     actions = batch["actions"][:, :-1]  # [B, T, A]
     rewards = batch["rewards"][:, :-1]  # [B, T]
     B, T, _A = actions.shape
+    H_wm = min(T, max(1, int(config.wm_prediction_horizon), int(config.imagination_horizon)))
 
     # =====================================================================
     # 1. Encoder training (shared codebook + Markov closure)
@@ -876,10 +875,10 @@ def _train_step(
 
     optimizer_wm.zero_grad()
 
-    wm_out = world_model(z_0, actions, rw_0)
+    wm_out = world_model(z_0, actions[:, :H_wm], rw_0)
     z_pred = wm_out["z_trajectory"]  # [B, T_wm, D]
 
-    T_wm = z_pred.shape[1]
+    T_wm = min(z_pred.shape[1], H_wm)
     z_tgt_wm = z_targets[:, :T_wm]
 
     L_geo = compute_dynamics_geodesic_loss(z_pred, z_tgt_wm)
@@ -1084,6 +1083,8 @@ def _train_step(
         metrics["critic/replay_calibration_err"] = float(cal_err)
         metrics["critic/replay_calibration_max"] = float(cal_max)
         metrics["critic/replay_calibration_bins"] = cal_bins
+        metrics["train/replay_horizon"] = float(T)
+        metrics["train/wm_horizon"] = float(T_wm)
         metrics["geometric/z_norm_mean"] = float(z_all.norm(dim=-1).mean())
         metrics["geometric/z_norm_max"] = float(z_all.norm(dim=-1).max())
         metrics["geometric/jump_frac"] = float(wm_out["jumped"].float().mean())
@@ -1394,19 +1395,10 @@ def train(config: DreamerConfig) -> None:
         for _u in range(n_updates):
             batch = buffer.sample(config.batch_size, device=device)
 
-            T_avail = batch["actions"].shape[1] - 1
-            H_wm = min(config.wm_prediction_horizon, T_avail)
-            batch_trunc = {
-                "obs": batch["obs"][:, :H_wm + 1],
-                "actions": batch["actions"][:, :H_wm + 1],
-                "rewards": batch["rewards"][:, :H_wm + 1],
-                "dones": batch["dones"][:, :H_wm + 1],
-            }
-
             step_metrics = _train_step(
                 model, jump_op, dyn_trans_model, world_model, reward_head, actor, critic,
                 optimizer_enc, optimizer_wm, optimizer_actor, optimizer_critic,
-                batch_trunc, config, phase1_cfg, epoch, current_hard_routing, current_tau,
+                batch, config, phase1_cfg, epoch, current_hard_routing, current_tau,
             )
             for k, v in step_metrics.items():
                 metrics_accum.setdefault(k, []).append(v)
@@ -1502,6 +1494,8 @@ def train(config: DreamerConfig) -> None:
                 ("rtg_e", "critic/replay_rtg_abs_err"),
                 ("rtg_b", "critic/replay_rtg_bias"),
                 ("cal_e", "critic/replay_calibration_err"),
+                ("wm_H", "train/wm_horizon"),
+                ("rep_T", "train/replay_horizon"),
             ]
 
             def _fmt(pairs):
