@@ -113,9 +113,11 @@ class SequenceReplayBuffer:
         control_tan_shape, control_tan_dtype = _shape_and_dtype("controls_tan")
         control_cov_shape, control_cov_dtype = _shape_and_dtype("controls_cov")
         control_valid_shape, control_valid_dtype = _shape_and_dtype("control_valid")
-        motor_macro_shape, motor_macro_dtype = _shape_and_dtype("motor_macro_probs")
-        motor_nuisance_shape, motor_nuisance_dtype = _shape_and_dtype("motor_nuisance")
-        motor_compliance_shape, motor_compliance_dtype = _shape_and_dtype("motor_compliance")
+        action_latent_shape, action_latent_dtype = _shape_and_dtype("action_latents")
+        action_router_shape, action_router_dtype = _shape_and_dtype("action_router_weights")
+        action_chart_shape, action_chart_dtype = _shape_and_dtype("action_charts")
+        action_code_shape, action_code_dtype = _shape_and_dtype("action_codes")
+        action_code_latent_shape, action_code_latent_dtype = _shape_and_dtype("action_code_latents")
 
         action_mean_batch = None
         if action_mean_shape is not None and action_mean_dtype is not None:
@@ -152,25 +154,39 @@ class SequenceReplayBuffer:
                 dtype=control_valid_dtype,
             )
 
-        motor_macro_batch = None
-        if motor_macro_shape is not None and motor_macro_dtype is not None:
-            motor_macro_batch = np.zeros(
-                (batch_size, max_len, *motor_macro_shape),
-                dtype=motor_macro_dtype,
+        action_latent_batch = None
+        if action_latent_shape is not None and action_latent_dtype is not None:
+            action_latent_batch = np.zeros(
+                (batch_size, max_len, *action_latent_shape),
+                dtype=action_latent_dtype,
             )
 
-        motor_nuisance_batch = None
-        if motor_nuisance_shape is not None and motor_nuisance_dtype is not None:
-            motor_nuisance_batch = np.zeros(
-                (batch_size, max_len, *motor_nuisance_shape),
-                dtype=motor_nuisance_dtype,
+        action_router_batch = None
+        if action_router_shape is not None and action_router_dtype is not None:
+            action_router_batch = np.zeros(
+                (batch_size, max_len, *action_router_shape),
+                dtype=action_router_dtype,
             )
 
-        motor_compliance_batch = None
-        if motor_compliance_shape is not None and motor_compliance_dtype is not None:
-            motor_compliance_batch = np.zeros(
-                (batch_size, max_len, *motor_compliance_shape),
-                dtype=motor_compliance_dtype,
+        action_chart_batch = None
+        if action_chart_shape is not None and action_chart_dtype is not None:
+            action_chart_batch = np.zeros(
+                (batch_size, max_len, *action_chart_shape),
+                dtype=action_chart_dtype,
+            )
+
+        action_code_batch = None
+        if action_code_shape is not None and action_code_dtype is not None:
+            action_code_batch = np.zeros(
+                (batch_size, max_len, *action_code_shape),
+                dtype=action_code_dtype,
+            )
+
+        action_code_latent_batch = None
+        if action_code_latent_shape is not None and action_code_latent_dtype is not None:
+            action_code_latent_batch = np.zeros(
+                (batch_size, max_len, *action_code_latent_shape),
+                dtype=action_code_latent_dtype,
             )
 
         for row, (ep_idx, start) in enumerate(zip(ep_indices, starts, strict=False)):
@@ -196,12 +212,16 @@ class SequenceReplayBuffer:
                     "control_valid",
                     np.zeros((len(episode["dones"]),), dtype=control_valid_batch.dtype),
                 )[sl]
-            if motor_macro_batch is not None and "motor_macro_probs" in episode:
-                motor_macro_batch[row, :length] = episode["motor_macro_probs"][sl]
-            if motor_nuisance_batch is not None and "motor_nuisance" in episode:
-                motor_nuisance_batch[row, :length] = episode["motor_nuisance"][sl]
-            if motor_compliance_batch is not None and "motor_compliance" in episode:
-                motor_compliance_batch[row, :length] = episode["motor_compliance"][sl]
+            if action_latent_batch is not None and "action_latents" in episode:
+                action_latent_batch[row, :length] = episode["action_latents"][sl]
+            if action_router_batch is not None and "action_router_weights" in episode:
+                action_router_batch[row, :length] = episode["action_router_weights"][sl]
+            if action_chart_batch is not None and "action_charts" in episode:
+                action_chart_batch[row, :length] = episode["action_charts"][sl]
+            if action_code_batch is not None and "action_codes" in episode:
+                action_code_batch[row, :length] = episode["action_codes"][sl]
+            if action_code_latent_batch is not None and "action_code_latents" in episode:
+                action_code_latent_batch[row, :length] = episode["action_code_latents"][sl]
 
         batch = {
             "obs": torch.from_numpy(obs_batch).to(device=device, dtype=torch.float32),
@@ -234,18 +254,28 @@ class SequenceReplayBuffer:
                 device=device,
                 dtype=torch.float32,
             )
-        if motor_macro_batch is not None:
-            batch["motor_macro_probs"] = torch.from_numpy(motor_macro_batch).to(
+        if action_latent_batch is not None:
+            batch["action_latents"] = torch.from_numpy(action_latent_batch).to(
                 device=device,
                 dtype=torch.float32,
             )
-        if motor_nuisance_batch is not None:
-            batch["motor_nuisance"] = torch.from_numpy(motor_nuisance_batch).to(
+        if action_router_batch is not None:
+            batch["action_router_weights"] = torch.from_numpy(action_router_batch).to(
                 device=device,
                 dtype=torch.float32,
             )
-        if motor_compliance_batch is not None:
-            batch["motor_compliance"] = torch.from_numpy(motor_compliance_batch).to(
+        if action_chart_batch is not None:
+            batch["action_charts"] = torch.from_numpy(action_chart_batch).to(
+                device=device,
+                dtype=torch.long,
+            )
+        if action_code_batch is not None:
+            batch["action_codes"] = torch.from_numpy(action_code_batch).to(
+                device=device,
+                dtype=torch.long,
+            )
+        if action_code_latent_batch is not None:
+            batch["action_code_latents"] = torch.from_numpy(action_code_latent_batch).to(
                 device=device,
                 dtype=torch.float32,
             )

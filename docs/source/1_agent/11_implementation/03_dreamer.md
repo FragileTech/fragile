@@ -3,320 +3,277 @@
 
 ## TLDR
 
-- **Geometric Dreamer** is a model-based RL algorithm that trains an actor-critic on
-  *imagined* rollouts inside the Poincare ball, using the encoder
-  ({ref}`sec-shared-dynamics-encoder`) for perception and the covariant world model
-  ({ref}`sec-why-physics-for-world-model`) for imagination.
-- A **reward branch** inside `CovariantPotentialNet` predicts environment rewards from
-  latent states via action-conditioned attention, enabling the world model to simulate
-  complete experience trajectories without touching the real environment.
-- A **geometric actor** (`GeometricActor`) generates Gaussian-distributed actions conditioned
-  on the latent state and chart routing weights, with entropy regularization from the MaxEnt
-  objective ({prf:ref}`def-maxent-rl-objective-on-macrostates`).
-- The existing **critic** $V_{\text{critic}}$ inside `CovariantPotentialNet` doubles as the
-  value function, trained with $\lambda$-returns from imagined trajectories. The effective
-  potential $\Phi_{\text{eff}}$ unifies exploration drive, reward prediction, and risk
-  avoidance into a single scalar landscape.
-- A **four-phase training pipeline** extends the existing three phases: Phase 1 (encoder),
-  Phase 2 (world model), Phase 3 (joint), Phase 4 (RL). Phase 4 alternates between
-  real-environment data collection and imagination-based actor-critic updates.
+- The current implementation in `src/fragile/learning/rl/` is a **critic-induced control-field** variant of Dreamer, not the separate-actor MaxEnt variant described in older drafts.
+- Perception still comes from the shared dynamics topoencoder: observations are encoded into atlas routing weights and a geometric latent on the Poincare ball.
+- Control is produced in two stages:
+  1. the critic defines a latent control covector by differentiating the value field;
+  2. a boundary decoder maps that latent control into motor macrostate, nuisance, compliance, deterministic action mean, and execution-only motor texture.
+- Imagination uses the covariant world model plus the learned reward head to roll out **controlled counterfactual trajectories** in latent space.
+- The reward head is separate from the world model core. It decomposes reward into conservative and non-conservative pieces, but the deployed controller currently uses the **conservative-first** control law based on the critic gradient.
+- Training is not organized as a clean standalone "Phase 4 actor-critic block." Instead, each update interleaves encoder losses, boundary losses, world-model losses, critic anchoring, and a periodic actor-return improvement step inside one joint loop.
 
 ## Roadmap
 
-1. Why geometric model-based RL? The motivation from Dreamer and curved latent spaces.
-2. Architecture overview: the perception-imagination-action loop.
-3. The reward branch: predicting rewards in curved space.
-4. The geometric actor: policy on the Poincare ball.
-5. The critic as effective potential: $V_{\text{critic}} = V^{\pi}$.
-6. Imagination training: actor-critic updates from world model rollouts.
-7. Integration with DM Control: from observations to actions.
-8. The four-phase training pipeline.
-9. Diagnostics: knowing your agent is learning.
-10. Theory-to-code correspondence.
+1. Why geometric model-based RL?
+2. Architecture overview: perception, control field, boundary decoding, and imagination.
+3. Reward modeling in the current code.
+4. The deployed boundary controller.
+5. The critic as shared value field.
+6. Imagination training in the current implementation.
+7. DM Control and Fractal Gas integration.
+8. The current training pipeline.
+9. Diagnostics that matter in practice.
+10. Theory-to-code correspondence for the deployed path.
 
 
 (sec-why-geometric-mbrl)=
 ## 1. Why Geometric Model-Based RL
 
 :::{div} feynman-prose
-Let me tell you what we have built so far, and what is missing.
+Let me start with the main point, because otherwise the code can look more complicated than it really is.
 
-We have an encoder that maps observations into the Poincare ball, assigning discrete chart
-labels and continuous coordinates. We have a world model that integrates Hamiltonian dynamics
-on this curved space using Boris-BAOAB, predicting how latent states evolve under actions.
-Both are trained in a supervised pipeline: give them data, they learn to compress and predict.
+What we have built is not "Dreamer with curved decorations." The geometry is carrying real load. The latent state lives on the Poincare ball, the world model evolves that state with a Boris-BAOAB integrator, chart structure keeps local geometry explicit, and the controller acts through boundary variables rather than by pretending actions are just another Euclidean feature vector.
 
-But neither of them can *act*. The encoder perceives, the world model imagines, but nobody
-decides what to do. The agent has no policy, no value function trained on rewards, no way to
-improve its behavior from experience. It is a brain without a will.
+That already moves us away from standard RSSM-style Dreamer. But the current implementation makes one more move. Instead of training a standalone stochastic actor and then asking the critic to chase it, the deployed controller is derived from the critic itself. The critic defines a scalar value field on latent space. Its gradient gives a control covector. A separate boundary decoder translates that internal control variable into actual motor commands.
 
-Here is the key insight. The world model already contains the machinery for decision-making.
-The effective potential $\Phi_{\text{eff}}$ ({prf:ref}`def-effective-potential`) is a scalar
-landscape over the latent space. The BAOAB integrator moves particles down this landscape.
-The control field $u_\pi$ steers the dynamics with action-conditioned forces. All we need to
-do is *connect these to rewards*.
-
-The algorithm I am about to describe does exactly that. It is Dreamer --- Hafner et al.'s
-idea of training actor-critic networks on imagined trajectories --- but on a curved space
-with symplectic integration, chart routing, and Hodge-decomposed rewards. The geometry is
-not decoration. It gives us CFL-stable imagination, norm-preserving curl forces for
-non-conservative rewards, and a natural exploration drive from the hyperbolic metric.
+This is closer to the control-field story developed in the rest of Volume 1: the policy is not an arbitrary black box; it is a structured boundary realization of an internal value-driven flow. The result is a system that is more geometric than standard Dreamer, but also more conservative than the fully general theory. In particular, the current code emphasizes the exact part of the reward/cost structure and treats the non-conservative sector mainly as a learned diagnostic decomposition rather than as a first-class driver of control.
 :::
 
-:::{admonition} Researcher Bridge: Dreamer-v3 and MBPO
+(rb-current-dreamer-status)=
+:::{admonition} Researcher Bridge: Current Status vs Older Dreamer Drafts
 :class: info
-Dreamer-v3 (Hafner et al., 2023) learns a recurrent state-space model (RSSM) in Euclidean
-latent space and trains actor-critic networks purely from imagined rollouts. MBPO (Janner
-et al., 2019) uses a learned model to generate synthetic data for model-free updates.
-Geometric Dreamer differs in three ways: (1) the latent space is the Poincare ball with
-discrete chart structure, giving hierarchical representations; (2) imagination uses
-symplectic Boris-BAOAB integration with CFL stability bounds, preventing trajectory
-divergence; (3) the Hodge decomposition ({prf:ref}`thm-hodge-decomposition`) separates
-conservative from solenoidal reward components, enabling the value curl to handle
-non-conservative reward landscapes that break standard scalar critics.
+Older drafts of this chapter described a separate `GeometricActor`, MaxEnt entropy bonus, and `lambda`-return actor loss. The shipped code in `src/fragile/learning/rl/train_dreamer.py` now follows a different design:
+
+- control is induced by the critic gradient;
+- action generation is handled by `GeometricActionBoundaryDecoder`;
+- replay actions are inverted by `GeometricActionEncoder`;
+- the critic is shared with `world_model.potential_net`;
+- actor-style improvement happens through imagined discounted reward, not through a separate stochastic actor objective.
+
+This chapter documents the **current implementation** and treats the older actor-centric formulation as future or optional work rather than the deployed path.
 :::
 
 
 (sec-dreamer-architecture-overview)=
 ## 2. Architecture Overview
 
-The full perception-imagination-action loop has four stages per training iteration:
+The deployed perception-imagination-action loop has four stages:
 
 ```{mermaid}
 flowchart LR
-    subgraph Perception["Perception (Encoder)"]
-        OBS["obs [B, D_obs]"] --> FE["Feature Extractor"]
-        FE --> ENC["SharedDynAtlasEncoder"]
+    subgraph Perception["Perception"]
+        OBS["obs [B, D_obs]"] --> ENC["SharedDynTopoEncoder"]
         ENC --> Z["z_geo [B, D]"]
         ENC --> RW["rw [B, K]"]
+        ENC --> K["K_chart, K_code"]
     end
 
-    subgraph Imagination["Imagination (World Model)"]
-        Z --> IM["imagine()"]
-        RW --> IM
-        ACT --> IM
-        IM --> ZT["z_traj [B, H, D]"]
-        IM --> RT["r_hat [B, H]"]
-        IM --> PHI["phi_eff [B, H, 1]"]
+    subgraph Control["Internal Control Field"]
+        Z --> CRIT["critic = world_model.potential_net"]
+        RW --> CRIT
+        CRIT --> GRAD["dV / dz"]
+        GRAD --> CT["control_tan, control_cov"]
     end
 
-    subgraph Action["Action (Actor)"]
-        Z --> A["GeometricActor"]
-        RW --> A
-        A --> ACT["a ~ pi(.|z, rw)"]
+    subgraph Boundary["Boundary Realization"]
+        CT --> DEC["GeometricActionBoundaryDecoder"]
+        Z --> DEC
+        RW --> DEC
+        DEC --> ACT["action_mean / action"]
+        DEC --> MBOUND["motor macro / nuisance / compliance / texture"]
     end
 
-    subgraph Value["Value (Critic)"]
-        ZT --> V["V_critic in Phi_eff"]
-        RT --> LAM["lambda-returns"]
-        V --> LAM
-        LAM --> LOSS["Actor-Critic Loss"]
+    subgraph Imagination["World Model + Reward Head"]
+        Z --> WM["GeometricWorldModel"]
+        RW --> WM
+        CT --> WM
+        Z --> RH["RewardHead"]
+        RW --> RH
+        CT --> RH
+        ACT --> RH
+        WM --> ZT["z_traj, rw_traj, phi_eff"]
+        RH --> RT["reward decomposition"]
     end
 
-    ACT --> ENV["dm_control env"]
+    ACT --> ENV["dm_control or Fractal Gas collection"]
     ENV --> OBS
 ```
 
 ### Module Summary
 
 :::{div} feynman-added
-| Module | Location | Input | Output | Status |
-|--------|----------|-------|--------|--------|
-| `SharedDynAtlasEncoder` | `atlas.py` | obs features `[B, D_feat]` | `z_geo [B, D]`, `rw [B, K]` | Existing |
-| `GeometricWorldModel` | `covariant_world_model.py` | `z_0, actions, rw` | `z_traj [B, H, D]`, `phi_eff [B, H, 1]` | Existing |
-| `CovariantPotentialNet` | `covariant_world_model.py` | `z, rw` | force `[B, D]`, $\Phi_{\text{eff}}$ `[B, 1]` | Existing |
-| `CovariantPotentialNet` (reward branch) | `covariant_world_model.py` | `z, a, rw` | $\hat{r}$ `[B, 1]` | Extend existing |
-| `GeometricActor` (chart-conditioned policy) | **proposed** | `z, rw` | $\mu$ `[B, A]`, $\sigma$ `[B, A]` | New (reuses attention pattern) |
-| `_SharedFeatureExtractor` | `atlas.py` | `obs [B, D_obs]` | `features [B, hidden_dim]` | Existing |
-| `SequenceReplayBuffer` | **proposed** | `(obs, a, r, obs', done)` | mini-batches | New |
+| Module | Location | Input | Output | Role in deployed path |
+|--------|----------|-------|--------|-----------------------|
+| `SharedDynTopoEncoder` | `src/fragile/learning/vla/shared_dyn/encoder.py` | observations | `z_geo`, `rw`, `K_chart`, `K_code`, nuisance/texture internals | perception and typed latent construction |
+| `GeometricWorldModel` | `src/fragile/learning/vla/covariant_world_model.py` | `z_0`, latent control covectors, `rw_0` | latent rollout, chart logits, momenta, `phi_eff`, Hodge diagnostics | controlled geometric imagination |
+| `RewardHead` | `src/fragile/learning/rl/reward_head.py` | `z`, decoded boundary action, `rw`, latent control | conservative reward, non-conservative reward, total reward | reward modeling and decomposition |
+| `GeometricActionEncoder` | `src/fragile/learning/rl/boundary.py` | `z`, replay action, `rw` | latent control, motor macro, nuisance, compliance | inverse boundary map on replay data |
+| `GeometricActionBoundaryDecoder` | `src/fragile/learning/rl/boundary.py` | `z`, latent control, `rw` | deterministic action mean, execution action, motor texture stats | forward motor boundary map |
+| `SequenceReplayBuffer` | `src/fragile/learning/rl/replay_buffer.py` | full episodes | contiguous training subsequences | replay with boundary traces |
+| `GeometricActor` | `src/fragile/learning/rl/actor.py` | `z`, `rw` | Gaussian action distribution | present in module, not wired into `train_dreamer.py` |
 :::
+
+### Typed Latents in the RL Path
+
+The encoder still constructs the three-channel latent organization developed earlier in the book:
+
+$$
+Z_t = (K_t, z_{n,t}, z_{\mathrm{tex},t}).
+$$
+
+In the deployed RL path, however, control heads do **not** consume these variables as a fully explicit tuple. Instead:
+
+- `K_{\text{chart}}` appears operationally through routing weights `rw`;
+- `K_{\text{code}}` is retained for encoder-side diagnostics and dynamics-code closure probes;
+- `z_n` is folded into the geometric latent `z_{\mathrm{geo}}`;
+- `z_{\mathrm{tex}}` is excluded from the control heads and remains outside the decision interface.
+
+This means the current implementation preserves the **texture firewall** from the theory, while using a collapsed deployed control state `(z_{\mathrm{geo}}, rw)` rather than a fully factorized `(K, z_n)` controller.
 
 
 (sec-reward-head)=
-## 3. The Reward Branch --- Predicting Rewards in Curved Space
+## 3. The Reward Head --- Predicting Rewards in Curved Space
 
 :::{div} feynman-prose
-The world model predicts *where* the agent will be, but not *how much reward* it will
-receive there. For imagination training, we need to predict rewards from latent states.
+The world model tells you how the latent state moves. That is not enough for control. A controller also needs to know what is good and bad along that motion.
 
-You might think: just add an MLP on top of $z$. But rewards in continuous control are
-chart-dependent. A humanoid standing upright in chart 3 earns reward; the same latent
-magnitude in chart 7 (where the agent is falling) does not. The reward prediction must
-be chart-conditioned, just like every other module in the world model.
+Now, in the abstract theory, reward is not just a scalar label you stick onto a state. It is a field on the boundary and, in the most general case, it can have both exact and circulating pieces. The code mirrors that distinction, but in a very practical way. The reward head predicts a conservative scalar part and a non-conservative form-like part, then combines them into the scalar reward used by training.
 
-The good news is that we already have exactly the right machinery. `CovariantPotentialNet`
-already uses `ChartTokenizer` and `CovariantAttention` to produce scalar outputs
-($V_{\text{critic}}$, $\Psi_{\text{risk}}$). Adding a reward branch is a matter of
-one more attention head and one more output projection --- the tokenizers, embeddings,
-and `GeodesicConfig` are shared. This gives us a reward prediction that respects the
-atlas structure with minimal new code.
+This is an important detail. The current implementation has not yet promoted the full non-conservative sector into the control law itself. But it does not throw that structure away either. It learns it, measures it, and logs it. So you should think of the reward head as half model, half audit instrument: it gives the controller a scalar training signal and, at the same time, tells you how far the environment may be from the conservative idealization.
 :::
 
-Rather than building a separate module from scratch, the reward head extends the
-existing `CovariantPotentialNet` ({ref}`sec-control-field-impl`) with an
-action-conditioned branch. The `ChartTokenizer`, `z_embed`, and `GeodesicConfig`
-are shared infrastructure; only a new attention head and output projection are added:
+The reward model is implemented as a standalone `RewardHead`, not as an internal branch of `CovariantPotentialNet`. It reuses the same chart tokenizer and positional embedding as the shared value field, then conditions on:
 
-```python
-# PROPOSED: extend CovariantPotentialNet.__init__ with a reward branch
-# (inside covariant_world_model.py, after the existing risk head)
-#
-# API change: add action_dim as constructor parameter.
-# Update GeometricWorldModel.__init__ (line 621) to pass action_dim:
-#   self.potential_net = CovariantPotentialNet(
-#       latent_dim, num_charts, d_model, action_dim, ...)
+- the current latent position `z`,
+- the deterministic boundary action mean,
+- the chart routing weights `rw`,
+- the tangent latent control field.
 
-# Reward head: action-conditioned attention → scalar r_hat
-self.action_tok = ActionTokenizer(action_dim, d_model, latent_dim)   # reuse existing class
-self.reward_attn = CovariantAttention(geo_cfg)                       # same GeodesicConfig
-self.reward_out  = SpectralLinear(d_model, 1)
-```
-
-The forward pass mirrors `CovariantControlField.forward()` --- it concatenates
-action tokens and chart tokens, then attends from the position embedding:
-
-```python
-# PROPOSED: CovariantPotentialNet.predict_reward()
-def predict_reward(self, z, action, rw):
-    """Predict instantaneous reward from (z, action, rw).
-
-    Returns:
-        r_hat: [B, 1] predicted reward.
-    """
-    act_x, act_z = self.action_tok(action, z)            # [B, A, d_model], [B, A, D]
-    chart_x, chart_z = self.chart_tok(rw, z)              # [B, K, d_model], [B, K, D]
-
-    ctx_x = torch.cat([act_x, chart_x], dim=1)           # [B, A+K, d_model]
-    ctx_z = torch.cat([act_z, chart_z], dim=1)            # [B, A+K, D]
-    x_q = self.z_embed(z)
-
-    feat, _ = self.reward_attn(z, ctx_z, x_q, ctx_x, ctx_x)
-    return self.reward_out(feat)                           # [B, 1]
-```
-
-This reuses the exact same `ChartTokenizer` and `ActionTokenizer` that the control
-field already employs, and the same `GeodesicConfig` that governs all attention heads
-in the world model. No new tokenizer classes or embedding layers are needed.
-
-The reward prediction loss is simply the squared error against actual environment rewards:
+The decomposition used in code is:
 
 $$
-\mathcal{L}_{\text{reward}} = \frac{1}{BH} \sum_{b,t} \bigl(\hat{r}(z_{b,t}, a_{b,t}, \text{rw}_{b,t}) - r_{b,t}\bigr)^2
+\hat r(z, a, rw, u)
+=
+\hat r_{\mathrm{cons}}(z, a, rw, u)
+
++ \hat r_{\mathrm{noncons}}(z, a, rw, u).
 $$
 
-:::{div} feynman-prose
-Why not predict reward from the effective potential $\Phi_{\text{eff}}$ directly? Because
-$\Phi_{\text{eff}}$ is a *value function* --- it integrates future rewards, not instantaneous
-ones. The reward branch predicts the immediate step reward $r_t$, which is then used to
-construct $\lambda$-return targets for training $V_{\text{critic}}$ (inside the same
-`potential_net`) as a value function. The two branches are complementary: the reward
-branch provides the building blocks, and the critic branch assembles them into
-long-horizon predictions. Crucially, both share the same `ChartTokenizer` and positional
-embeddings, so improvements in chart conditioning benefit both simultaneously.
+Operationally:
+
+- `reward_conservative` is a scalar output head;
+- `reward_form_cov` is a learned covector-like field;
+- `reward_nonconservative` is the contraction of that field with the current control;
+- `reward_curl` is an antisymmetric diagnostic tensor used to monitor circulation.
+
+This is the currently deployed reward loss:
+
+$$
+\mathcal{L}_{\mathrm{reward}}
+=
+\frac{1}{BT}\sum_{b,t}
+\bigl(\hat r_{b,t} - r_{b,t}\bigr)^2,
+\qquad
+\mathcal{L}_{\mathrm{noncons}}
+=
+\frac{1}{BT}\sum_{b,t}\hat r_{\mathrm{noncons},b,t}^2.
+$$
+
+The second term makes the deployed controller **conservative-first**: the code learns the non-conservative residual but softly discourages it from dominating unless the data forces it to persist.
+
+:::{admonition} Implementation Note: Conservative-First Reward Geometry
+:class: feynman-added note
+The broader theory supports a full gauge-covariant control signal based on $d_A V = dV - A$. The current Dreamer implementation stops one step earlier:
+
+- it learns a decomposition consistent with that theory;
+- it uses the conservative critic gradient as the deployed control driver;
+- it logs non-conservative fractions and curl magnitudes as diagnostics.
+
+This is a deliberate approximation, not a claim that the full gauge sector has already been closed in the controller.
 :::
 
 
 (sec-geometric-actor)=
-## 4. The Geometric Actor --- Policy on the Poincare Ball
+## 4. The Boundary Controller --- Critic Gradient to Motor Flux
 
 :::{div} feynman-prose
-Now we need a policy. In standard RL, the actor maps observations to action distributions.
-Here, the actor maps *latent states on the Poincare ball* to action distributions. The
-input lives in curved space; the output lives in flat Euclidean action space (joint torques,
-velocities). The actor must bridge these two geometries.
+This is the section where the current implementation most clearly departs from the older actor-centric draft.
 
-The design is straightforward: use CovariantAttention to read chart-conditioned features
-from the latent state, then project to the mean and log-standard-deviation of a Gaussian.
-The Gaussian is squashed through tanh to respect the action bounds of dm_control
-environments (typically $[-1, 1]$).
+There is a `GeometricActor` module in the codebase. It is a sensible chart-conditioned Gaussian policy. But it is not the thing that actually drives `train_dreamer.py`. The deployed controller is more structural. First, the critic defines a scalar value field on latent space. Then the code differentiates that field with respect to latent position to obtain a control covector. Then a boundary decoder translates that internal control variable into an action that the environment can execute.
 
-This is the same squashed Gaussian trick that SAC uses, but the input representation is
-richer: the actor sees not just a latent vector, but also the chart routing weights that
-tell it which region of state space the agent occupies.
+Why do it this way? Because it keeps the connection to the rest of the theory explicit. The action is not primary. The internal control field is primary. The action is a boundary realization of that field. The decoder is therefore not just a policy head; it is an implementation of the motor boundary condition.
+
+This also explains the extra variables you see in the boundary modules. The decoder does not output only an action. It also outputs motor macro probabilities, motor nuisance coordinates, compliance matrices, and geometry-scaled texture noise. That is the code's way of keeping the motor boundary typed rather than collapsing everything into one flat action vector.
 :::
 
-The actor reuses the chart-conditioned attention pattern from `CovariantControlField`
-(`covariant_world_model.py`, line 275) but with two differences: (1) it omits the
-`ActionTokenizer` since a policy should not condition on its own output, and (2) it
-replaces the force projection with dual heads for the mean and log-standard-deviation
-of a Gaussian:
+The deployed controller has three pieces.
 
-```python
-# PROPOSED: GeometricActor — chart-conditioned policy
-class GeometricActor(nn.Module):
-    """Gaussian policy conditioned on Poincare ball state and chart routing.
+### 4.1 Critic-Induced Control Field
 
-    Uses the same ChartTokenizer, CovariantAttention, and z_embed pattern
-    as CovariantControlField, but without ActionTokenizer (the policy
-    conditions on state, not on its own actions).
-    """
-
-    def __init__(self, latent_dim, action_dim, num_charts, d_model=128):
-        super().__init__()
-        # ---- shared with CovariantControlField ----
-        self.chart_tok = ChartTokenizer(num_charts, d_model, latent_dim)
-        self.z_embed = SpectralLinear(latent_dim, d_model)
-        geo_cfg = GeodesicConfig(d_model=d_model, d_latent=latent_dim, n_heads=1)
-        self.attn = CovariantAttention(geo_cfg)
-        # ---- actor-specific output heads ----
-        self.mu_head = SpectralLinear(d_model, action_dim)
-        self.log_std_head = SpectralLinear(d_model, action_dim)
-        self.log_std_min, self.log_std_max = -5.0, 2.0
-
-    def forward(self, z, rw):
-        chart_x, chart_z = self.chart_tok(rw, z)
-        x_q = self.z_embed(z)
-        feat, _ = self.attn(z, chart_z, x_q, chart_x, chart_x)
-        mu = self.mu_head(feat)                           # [B, A]
-        log_std = self.log_std_head(feat).clamp(
-            self.log_std_min, self.log_std_max,
-        )                                                  # [B, A]
-        return mu, log_std
-
-    def sample(self, z, rw):
-        mu, log_std = self.forward(z, rw)
-        dist = torch.distributions.Normal(mu, log_std.exp())
-        x = dist.rsample()                                # reparameterized
-        action = torch.tanh(x)                             # squash to [-1, 1]
-        # Log-probability with tanh correction (SAC)
-        log_prob = dist.log_prob(x) - torch.log(1 - action.pow(2) + 1e-6)
-        log_prob = log_prob.sum(dim=-1, keepdim=True)      # [B, 1]
-        return action, log_prob
-```
-
-The novel code is the two `SpectralLinear` output heads and the omission of
-`ActionTokenizer`. The chart-conditioning path --- `ChartTokenizer`,
-`CovariantAttention`, `GeodesicConfig`, `z_embed` --- follows the identical
-pattern used by `CovariantControlField` and `CovariantPotentialNet`.
-
-### Entropy Regularization
-
-The MaxEnt objective ({prf:ref}`def-maxent-rl-objective-on-macrostates`) adds an entropy
-bonus to the return:
+Given a latent state and chart routing, the controller computes:
 
 $$
-J_{T_c}(\pi) = \mathbb{E}_\pi\Bigl[\sum_{t \ge 0} \gamma^t
-\bigl(\mathcal{R}(z_t, a_t) + T_c \mathcal{H}(\pi(\cdot \mid z_t))\bigr)\Bigr]
+u_{\mathrm{cov}} = dV,
+\qquad
+u_{\mathrm{tan}} = G^{-1} u_{\mathrm{cov}}.
 $$
 
-The cognitive temperature $T_c$ ({prf:ref}`def-cognitive-temperature`) controls the
-exploration-exploitation trade-off. In the actor loss, this appears as:
+In the current code this is obtained by differentiating the critic scalar with respect to latent position and then raising the index using the conformal metric.
+
+This is a faithful implementation of the **conservative** control law. Relative to the full theory:
 
 $$
-\mathcal{L}_{\text{actor}} = -\mathbb{E}_{z \sim \text{imagine}}\bigl[
-R_t^\lambda - T_c \log \pi(a_t \mid z_t)\bigr]
+\nabla_A V = G^{-1}(dV - A),
 $$
 
-where $R_t^\lambda$ is the $\lambda$-return target (see {ref}`sec-imagination-training`).
+the current implementation corresponds to the approximation $A = 0$ in the deployed controller.
 
-:::{admonition} Researcher Bridge: SAC and MaxEnt Control
-:class: info
-The connection between Geometric Dreamer and SAC is not superficial. The equivalence theorem
-({prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`) proves that
-MaxEnt control, exponentially tilted trajectory measures, and soft Bellman optimality are
-identical. Our actor optimizes the same objective as SAC, but in a learned hyperbolic latent
-space with chart-conditioned features rather than raw observations. The cognitive temperature
-$T_c$ plays the same role as SAC's entropy coefficient $\alpha$.
+### 4.2 Boundary Decoding
+
+The `GeometricActionBoundaryDecoder` maps the tangent control field to:
+
+- motor macro probabilities,
+- motor nuisance coordinates,
+- motor compliance matrix,
+- deterministic boundary action mean,
+- geometry-scaled execution texture.
+
+The deterministic action used for planning and for replay supervision is:
+
+$$
+a_{\mathrm{mean}}
+=
+\tanh\!\Big(
+a_{\mathrm{base}}
+M_{\mathrm{comp}}\,u_{\mathrm{nuis}}
+\Big).
+$$
+
+Here the nuisance and compliance variables are learned internal boundary variables, not direct environment observations.
+
+### 4.3 Execution-Only Motor Texture
+
+At execution time, the controller may inject motor texture:
+
+$$
+a_{\mathrm{exec}}
+=
+\tanh\!\bigl(a_{\mathrm{raw}} + \xi_{\mathrm{motor}}\bigr),
+\qquad
+\xi_{\mathrm{motor}}\sim \mathcal{N}(0,\sigma_{\mathrm{motor}}^2 G^{-1}).
+$$
+
+This preserves the theory's variance-curvature coupling in a restricted form: stochasticity scales with the inverse metric. In the current code this texture is **not** part of a MaxEnt actor loss; it is an execution-time perturbation used for deployed rollouts and data collection.
+
+:::{admonition} Status of `GeometricActor`
+:class: feynman-added note
+`src/fragile/learning/rl/actor.py` contains a chart-conditioned Gaussian actor. It is currently best understood as an experimental or future-facing module:
+
+- it matches the older MaxEnt Dreamer formulation;
+- it is exported from the RL package;
+- it is not the controller used by `train_dreamer.py`.
+
+The authoritative deployed path is the critic-gradient controller plus boundary decoder described in this section.
 :::
 
 
@@ -324,717 +281,378 @@ $T_c$ plays the same role as SAC's entropy coefficient $\alpha$.
 ## 5. The Critic as Effective Potential
 
 :::{div} feynman-prose
-Here is what I think is the most elegant part of the design. The world model already
-contains a value function. It has been there all along.
+Now we come to the central identification in the current implementation: the critic is not a separate network sitting off to the side. It is the value branch of the world model's own potential network.
 
-Look at `CovariantPotentialNet`. It computes:
+That is elegant, but it also has consequences. It means the same geometric object that shapes the latent dynamics also provides the value signal used for control. In the best case, this is exactly what the theory wants: one coherent scalar landscape, not one network for physics and another network for preferences. In the messy reality of training, it means you have to keep several roles in balance at once. The critic must remain a good scalar anchor for replay returns. It must remain compatible with the screened Poisson structure. And because the control field is derived from it, it also has to be smooth enough for action decoding and imagination.
 
-$$
-\Phi_{\text{eff}}(z) = \alpha \cdot U(z) + (1 - \alpha) \cdot V_{\text{critic}}(z, K)
-+ \gamma_{\text{risk}} \cdot \Psi_{\text{risk}}(z, K)
-$$
-
-The second term, $V_{\text{critic}}$, is a learned scalar function of the latent state
-and chart assignment. It is computed by CovariantAttention over chart tokens. The same
-attention features are projected through two *independent* heads: `v_out` produces the
-scalar $V$ and `v_force_out` produces the force vector $f_{\text{critic}}$. The force is
-a direct neural prediction, not an autograd gradient of $V$ --- the docstring says
-"without `torch.autograd.grad` (no second-order graph)". The screened Poisson PDE loss
-encourages $f_{\text{critic}} \approx -\nabla_G V_{\text{critic}}$ but this is an
-approximate consistency enforced by training, not an exact computational relationship.
-
-In the supervised pipeline (Phases 1--3), $V_{\text{critic}}$ is trained via the screened
-Poisson PDE loss with a reward-density proxy. But in Phase 4, we can train it directly
-as a *value function* using TD targets from imagined trajectories. The architecture does
-not change. The loss does.
-
-The analytic drive $U(z) = -2\,\text{artanh}(\|z\|)$ provides a *static* exploration
-incentive: states near the boundary of the Poincare ball have lower potential, so the
-dynamics naturally push toward high-information regions. This is a fixed geometric proxy
-for the full exploration gradient $\nabla_G S_c$
-({prf:ref}`def-exploration-gradient-metric-form`), which depends on the policy's path
-entropy and would require on-policy rollouts to evaluate. The static drive captures the
-geometry; the policy-dependent entropy is handled by the MaxEnt actor loss.
-The risk term $\Psi_{\text{risk}}$ penalizes states where the metric is ill-conditioned.
-Together, $\Phi_{\text{eff}}$ is a value function with built-in exploration and safety
-priors.
+So the critic here is not just "a value head." It is a shared geometric field with several simultaneous obligations. That is why the training loop keeps both replay-based anchoring and PDE-style regularization alive even during RL updates.
 :::
 
-### TD-$\lambda$ Targets from Imagination
-
-Given an imagined trajectory $\{z_0, a_0, \hat{r}_0, z_1, a_1, \hat{r}_1, \ldots, z_H\}$,
-the $\lambda$-return at step $t$ is:
+In the deployed code:
 
 $$
-R_t^\lambda = \hat{r}_t + \gamma\bigl[(1 - \lambda)\,V(z_{t+1})
-+ \lambda\,R_{t+1}^\lambda\bigr], \qquad R_H^\lambda = V(z_H)
+\texttt{critic} = \texttt{world\_model.potential\_net}.
 $$
 
-where $V(z) = \Phi_{\text{eff}}(z)$ is the effective potential evaluated at $z$. The
-recursion is computed backwards from $t = H-1$ to $t = 0$.
+The value used operationally for control is the scalar `task_value(z, rw)`. The world model continues to use the same potential network to produce conservative forces and effective potentials.
 
-The critic loss minimizes the squared error between the predicted value and the
-stop-gradient $\lambda$-return:
+The critic losses used in the current training loop are:
 
 $$
-\mathcal{L}_{\text{critic}} = \frac{1}{BH} \sum_{b,t}
-\bigl(V(z_{b,t}) - \operatorname{sg}[R_{b,t}^\lambda]\bigr)^2
+\mathcal{L}_{\mathrm{value}}
+=
+\operatorname{MSE}\!\bigl(V(z_t), R_t^{\mathrm{replay}}\bigr),
 $$
 
-:::{div} feynman-prose
-The beauty of this design is that the critic and the dynamics share the same
-CovariantAttention features. The scalar $V_{\text{critic}}$ and the force
-$f_{\text{critic}}$ are produced by separate linear projections of the same
-feature vector `v_feat`. They are not the same object --- improving $V$ does
-not automatically improve $f$ --- but they are trained in tandem on the same
-data, and the screened Poisson PDE loss pushes them toward consistency.
+with replay return-to-go targets, and
 
-This is exactly what the theory says should happen. The effective potential
-({prf:ref}`def-effective-potential`) is simultaneously the Hamiltonian that governs
-dynamics and the value function that evaluates states. The shared feature representation
-means that better chart conditioning and better positional embeddings benefit both
-the value estimate and the force prediction simultaneously, even though the final
-projections are independent.
-:::
+$$
+\mathcal{L}_{\mathrm{Poisson}}
+=
+\text{screened Poisson consistency loss}
+$$
+
+using the conservative reward density estimate from the reward head.
+
+The deployed critic objective is therefore
+
+$$
+\mathcal{L}_{\mathrm{critic}}
+=
+w_{\mathrm{screened\_poisson}}\,
+\mathcal{L}_{\mathrm{Poisson}}
++
+w_{\mathrm{critic}}\,
+\mathcal{L}_{\mathrm{value}}.
+$$
+
+This is **not** the same as the older chapter draft in which the critic was fitted only to imagined `lambda`-returns. The current implementation keeps the critic replay-anchored and PDE-regularized throughout RL training.
 
 
 (sec-imagination-training)=
-## 6. Imagination Training --- Actor-Critic in Latent Space
-
-### The Imagination Rollout
-
-The `imagine()` method extends `GeometricWorldModel` to interleave actor-generated actions
-with BAOAB integration:
-
-```python
-# PROPOSED: GeometricWorldModel.imagine()
-def imagine(self, z_0, rw_0, actor, horizon):
-    """Roll out imagined trajectory using actor for action selection.
-
-    Uses self.potential_net.predict_reward() for reward prediction —
-    no separate reward module needed.
-
-    Args:
-        z_0: [B, D] initial latent state (from encoder, detached).
-        rw_0: [B, K] initial router weights (from encoder, detached).
-        actor: GeometricActor that maps (z, rw) -> (action, log_prob).
-        horizon: Number of imagination steps.
-
-    Returns:
-        dict with z_traj [B, H, D], actions [B, H, A], rewards [B, H],
-        log_probs [B, H], phi_eff [B, H, 1].
-    """
-    z, rw = z_0, rw_0
-    p = self.momentum_init(z_0)                           # [B, D] — initialize momentum
-    z_list, a_list, r_list, lp_list, phi_list = [], [], [], [], []
-
-    for t in range(horizon):
-        # Actor generates action from current latent state
-        action, log_prob = actor.sample(z, rw)           # [B, A], [B, 1]
-
-        # Predict immediate reward (reward branch of potential_net)
-        r_hat = self.potential_net.predict_reward(z, action, rw)  # [B, 1]
-
-        # FIRST: Optional chart jump (Fisher-Rao component)
-        if self.use_jump:
-            z, p, chart_logits, rw, jumped = self._conditional_jump(z, p, action, rw)
-
-        # THEN: n_refine_steps BAOAB sub-steps (Wasserstein component)
-        for s in range(self.n_refine_steps):
-            z, p, phi_eff, hodge_info = self._baoab_step(z, p, action, rw)
-
-        z_list.append(z)
-        a_list.append(action)
-        r_list.append(r_hat.squeeze(-1))
-        lp_list.append(log_prob.squeeze(-1))
-        phi_list.append(phi_eff)
-
-    return {
-        "z_traj": torch.stack(z_list, dim=1),             # [B, H, D]
-        "actions": torch.stack(a_list, dim=1),             # [B, H, A]
-        "rewards": torch.stack(r_list, dim=1),             # [B, H]
-        "log_probs": torch.stack(lp_list, dim=1),          # [B, H]
-        "phi_eff": torch.stack(phi_list, dim=1),           # [B, H, 1]
-        "z_final": z,                                       # [B, D]
-    }
-```
+## 6. Imagination Training --- Controlled Counterfactual Rollouts
 
 :::{div} feynman-prose
-Notice what is happening here. The entire rollout is differentiable. Actions are sampled
-via the reparameterization trick (rsample), rewards are predicted by a neural network,
-and state transitions are computed by the BAOAB integrator (which uses differentiable
-exponential maps and Christoffel corrections). Gradients flow from the actor loss all the
-way back through the imagined trajectory to the actor parameters.
+The word "imagination" can be misleading here, because the rest of the book gives it a very precise thermodynamic meaning. In the boundary chapter, dreaming is the reflective-boundary regime: no sensory inflow, no motor outflow, a sealed system recirculating internally.
 
-This is the Dreamer trick: instead of estimating policy gradients from noisy real-world
-returns (which requires many samples), we compute exact gradients through a differentiable
-world model (which requires an accurate model). The tradeoff is model bias vs. sample
-efficiency. But our world model has CFL bounds
-({ref}`sec-boris-baoab`) that prevent the imagined trajectories from diverging, so the
-bias stays controlled even over long horizons.
+The function called `_imagine` in the current code is not that idealized reflective mode. It is something more operational. It starts from an encoded latent state, recomputes the critic-induced control field at every step, decodes that field into a motor action, predicts reward, and advances the world model under that control. So what it imagines is not a passive dream. It imagines a **counterfactual controlled trajectory**.
+
+That distinction matters because it keeps the terminology honest. The current implementation is doing model-based planning and policy improvement inside the latent model. It is not yet implementing the exact reflective-boundary dreaming mode from the field-theoretic chapters. Those are related ideas, but they are not identical.
 :::
 
-### The Combined Loss
+The deployed imagination rollout records:
 
-Each imagination step produces three loss signals, applied to three separate parameter
-groups:
+- policy states before action,
+- chart routing before action,
+- tangent and covariant latent controls,
+- decoded motor boundary variables,
+- deterministic boundary actions,
+- reward decomposition,
+- world-model state trajectory,
+- effective potential values.
 
-```python
-# PROPOSED: Phase 4 imagination training step (sketch)
-# NOTE: encode_batch and encode_sequence are pseudocode helpers that loop
-#       over frames, call encoder(obs_t), and collect (z_geo, rw, K).
-def imagination_step(encoder, world_model, actor, batch, config):
-    # 1. Encode real observations (no gradient to encoder in Phase 4)
-    with torch.no_grad():
-        z_0, rw_0 = encode_batch(encoder, batch["obs"][:, 0])
-
-    # 2. Imagine trajectory (reward predicted inside via potential_net.predict_reward)
-    imagination = world_model.imagine(
-        z_0.detach(), rw_0.detach(), actor, config.imagination_horizon,
-    )
-    rewards = imagination["rewards"]        # [B, H]
-    log_probs = imagination["log_probs"]    # [B, H]
-
-    # 3. Compute lambda-returns from Phi_eff (V_critic branch)
-    # NOTE: simplified sketch. The full loop (run_phase4 below) correctly
-    # separates target computation (no_grad) from prediction (with grad).
-    values = imagination["phi_eff"].squeeze(-1)  # [B, H] from BAOAB
-    returns = compute_lambda_returns(
-        rewards, values.detach(), config.gamma, config.lambda_gae,
-    )                                       # [B, H]
-
-    # 4. Critic loss (recompute values WITH gradients for backprop)
-    L_critic = (values - returns.detach()).pow(2).mean()
-
-    # 5. Actor loss (maximize returns + entropy)
-    L_actor = -(returns.detach() - config.T_c * log_probs).mean()
-
-    # 6. Reward loss (on real data, not imagination)
-    r_pred = world_model.potential_net.predict_reward(
-        z_0.detach(), batch["actions"][:, 0], rw_0.detach(),
-    )
-    L_reward = (r_pred.squeeze(-1) - batch["rewards"][:, 0]).pow(2).mean()
-
-    return L_actor, L_critic, L_reward
-```
+Schematically, for horizon $H$:
 
 $$
-\mathcal{L}_{\text{Phase 4}} = \underbrace{\mathcal{L}_{\text{actor}}}_{\text{maximize returns}}
-+ \underbrace{\mathcal{L}_{\text{critic}}}_{\text{fit value function}}
-+ \underbrace{\mathcal{L}_{\text{reward}}}_{\text{predict rewards}}
-+ \underbrace{\mathcal{L}_{\text{dynamics}}}_{\text{keep world model accurate}}
+(z_0, rw_0)
+\mapsto
+\{u_t, a_t, \hat r_t, z_{t+1}, rw_{t+1}, \Phi_{\mathrm{eff},t}\}_{t=0}^{H-1}.
 $$
 
-The dynamics loss $\mathcal{L}_{\text{dynamics}}$ is the same Phase 2 loss
-({ref}`sec-world-model-losses`) computed on real transition data, ensuring the world model
-stays grounded as the policy changes the data distribution.
+### Actor-Return Improvement
 
-### Lambda-Return Computation
+The periodic actor-style improvement step does **not** use a separate stochastic actor and does **not** use `lambda`-returns. Instead, it differentiates the discounted imagined reward through:
 
-```python
-# PROPOSED: compute_lambda_returns
-def compute_lambda_returns(rewards, values, gamma, lambda_gae):
-    """Compute GAE-style lambda-returns.
+- the critic-induced control field,
+- the boundary decoder,
+- the differentiable world model rollout.
 
-    Args:
-        rewards: [B, H] predicted rewards.
-        values: [B, H] critic values.
-        gamma: Discount factor.
-        lambda_gae: GAE lambda (0 = TD(0), 1 = Monte Carlo).
+The current objective is:
 
-    Returns:
-        returns: [B, H] lambda-return targets.
-    """
-    H = rewards.shape[1]
-    returns = torch.zeros_like(rewards)
-    last_return = values[:, -1]                           # bootstrap from final value
+$$
+\mathcal{L}_{\mathrm{actor\text{-}return}}
+=
+- w_{\mathrm{actor\_return}}
+\cdot
+\mathbb{E}\Big[\sum_{t=0}^{H-1}\gamma^t \hat r_t\Big].
+$$
 
-    for t in reversed(range(H)):
-        last_return = rewards[:, t] + gamma * (
-            (1 - lambda_gae) * values[:, t] + lambda_gae * last_return
-        )
-        returns[:, t] = last_return
+This update is applied only periodically, according to the configured warmup and update frequency.
 
-    return returns
-```
+### Boundary Value Diagnostic
+
+Although the actor-return update itself uses discounted imagined reward only, the code also computes the terminal bootstrap contribution:
+
+$$
+V_{\mathrm{boundary}}
+=
+\gamma^H V(z_H),
+$$
+
+and tracks the combined control objective
+
+$$
+J_{\mathrm{imag}}
+=
+\sum_{t=0}^{H-1}\gamma^t \hat r_t
+
++ \gamma^H V(z_H)
+$$
+
+as a diagnostic. This is useful operationally because it reveals when long-horizon control is being dominated by terminal value rather than by reward accumulated along the imagined path.
+
+:::{admonition} Terminology Note: Imagination vs Reflective Dreaming
+:class: feynman-added warning
+When this chapter says "imagination," it refers to the **implemented** `_imagine` and `_imagine_actor_return` routines in `train_dreamer.py`.
+
+- They are controlled latent rollouts.
+- They include internally generated motor actions.
+- They should be read as planning/counterfactual evaluation routines.
+
+They are therefore distinct from the stricter reflective-boundary dreaming mode introduced in {ref}`sec-wfr-boundary-conditions-waking-vs-dreaming`.
+:::
 
 
 (sec-dmcontrol-integration)=
 ## 7. Integration with DM Control
 
 :::{div} feynman-prose
-Now let me explain how to connect this to real robots --- or rather, to simulated robots
-in dm_control.
+Now let us connect all this machinery to actual data collection.
 
-The dashboard supports eleven continuous control tasks:
-cartpole, reacher, cheetah, walker, humanoid, hopper, finger, and acrobot. Each task
-provides a flat observation vector (4--67 dimensions depending on the task) and a
-continuous action space (1--21 dimensions). The observations include joint positions,
-velocities, and sometimes contact forces --- exactly the kind of structured,
-low-dimensional state information that our encoder can map directly to the Poincare ball.
+The environments are ordinary continuous-control tasks, but the rollout interface is richer than a standard actor-environment loop. The code does not store only observations, actions, rewards, and done flags. It also stores the inferred latent controls and the decoded motor-boundary variables associated with those actions. That is exactly what you should expect from a theory in which action is a boundary condition rather than a single flat number emitted by a policy head.
 
-The existing encoder expects features from a vision backbone (720 dimensions). For
-state-based control, the existing `_SharedFeatureExtractor` (`atlas.py`, line 1728)
-already handles this: it maps any `input_dim` to the encoder's hidden dimension via
-a two-layer MLP. No new module is needed --- just set `input_dim` in the encoder config.
-The rest of the pipeline --- chart routing, VQ, three-channel split --- works unchanged.
+This extra bookkeeping pays for itself during training. Replay batches can supervise the inverse boundary encoder, the forward boundary decoder, and the coupling between replay actions and critic-induced intentions, all from the same collected trajectories.
 :::
 
-### Feature Extraction for State-Based Control
+### Observation Path
 
-No new module is needed. The encoder already contains a `_SharedFeatureExtractor`
-(`atlas.py`, line 1728) that maps arbitrary `input_dim` → `hidden_dim`:
+For dm_control tasks, observations are flattened to a single vector and then passed through the encoder's built-in feature extractor and atlas pipeline. The current training script adjusts `obs_dim` at runtime to match the selected task if needed.
 
-```python
-# EXISTING: _SharedFeatureExtractor (atlas.py, lines 1728-1749)
-class _SharedFeatureExtractor(nn.Module):
-    """Shared feature extractor for hierarchical atlas stacks."""
+### Rollout Modes
 
-    def __init__(self, input_dim, hidden_dim, latent_dim, bundle_size):
-        super().__init__()
-        self.feature_extractor = nn.Sequential(
-            SpectralLinear(input_dim, hidden_dim, bias=True),
-            NormGatedGELU(...),
-            SpectralLinear(hidden_dim, hidden_dim, bias=True),
-            NormGatedGELU(...),
-        )
+The code supports three collection modes:
 
-    def forward(self, x):
-        return self.feature_extractor(x)                  # [B, hidden_dim]
-```
+- seed-episode collection with random actions;
+- online policy rollouts in dm_control;
+- Fractal Gas collection with policy-guided walkers.
 
-For dm_control, instantiate `PrimitiveAttentiveAtlasEncoder` with
-`input_dim = obs_dim` (e.g., 24 for walker) instead of the default vision-backbone
-dimension. The rest of the encoder --- chart routing, VQ, three-channel split --- works
-unchanged.
+### Replay Contents
 
-### Task Configuration
+The replay buffer stores full episodes and may include the following per-step arrays:
 
 :::{div} feynman-added
-| Task | `obs_dim` | `action_dim` | Reward Structure | Difficulty |
-|------|-----------|--------------|-----------------|------------|
-| `cartpole-balance` | 5 | 1 | Dense (upright bonus) | Easy |
-| `cartpole-swingup` | 5 | 1 | Dense (upright bonus) | Medium |
-| `reacher-easy` | 6 | 2 | Dense (distance to target) | Easy |
-| `reacher-hard` | 6 | 2 | Dense (distance to target) | Medium |
-| `cheetah-run` | 17 | 6 | Dense (forward velocity) | Medium |
-| `walker-walk` | 24 | 6 | Dense (forward + upright) | Medium |
-| `walker-stand` | 24 | 6 | Dense (upright bonus) | Easy |
-| `humanoid-walk` | 67 | 21 | Dense (forward velocity) | Hard |
-| `hopper-stand` | 15 | 4 | Dense (upright + height) | Medium |
-| `finger-spin` | 9 | 2 | Dense (angular velocity) | Medium |
-| `acrobot-swingup` | 6 | 1 | Dense (tip height) | Hard |
+| Key | Meaning |
+|-----|---------|
+| `obs` | flattened environment observations |
+| `actions` | executed actions |
+| `action_means` | deterministic boundary action means |
+| `controls` / `controls_cov` | latent control covectors |
+| `controls_tan` | latent tangent controls |
+| `control_valid` | whether the control trace is valid supervision |
+| `motor_macro_probs` | decoded motor macro distribution |
+| `motor_nuisance` | decoded motor nuisance variables |
+| `motor_compliance` | decoded compliance matrices |
+| `rewards` | environment rewards |
+| `dones` | termination flags |
 :::
 
-### Data Collection
-
-Data collection uses the existing `RoboticFractalGas` infrastructure or a simple
-random/learned policy rollout:
-
-```python
-# PROPOSED: collect_episode
-# NOTE: The actual codebase uses plangym's batch API (env.step_batch).
-#       This pseudocode shows the single-step logic for clarity.
-def collect_episode(env, actor, encoder, max_steps=1000):
-    """Collect one episode from dm_control environment via plangym.
-
-    The encoder's built-in _SharedFeatureExtractor handles obs → features.
-
-    Returns:
-        dict with obs [T, D_obs], actions [T, A], rewards [T],
-        dones [T] arrays.
-    """
-    obs_list, act_list, rew_list, done_list = [], [], [], []
-    state, obs, info = env.reset(return_state=True)       # plangym 3-tuple
-
-    for t in range(max_steps):
-        obs_t = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
-
-        with torch.no_grad():
-            enc_out = encoder(obs_t)                        # feature extraction is internal
-            z_geo, rw = enc_out[5], enc_out[4]             # [1, D], [1, K]
-            action, _ = actor.sample(z_geo, rw)             # [1, A]
-
-        action_np = action.squeeze(0).cpu().numpy()
-        # plangym returns (state, obs, reward, done, info)
-        state, next_obs, reward, done, info = env.step(state, action_np)
-
-        obs_list.append(obs)
-        act_list.append(action_np)
-        rew_list.append(reward)
-        done_list.append(done)
-
-        obs = next_obs
-        if done:
-            break
-
-    return {
-        "obs": np.stack(obs_list),
-        "actions": np.stack(act_list),
-        "rewards": np.array(rew_list),
-        "dones": np.array(done_list),
-    }
-```
-
-### Replay Buffer
-
-A simple sequence-based replay buffer stores complete episodes and samples fixed-length
-subsequences for training:
-
-```python
-# PROPOSED: SequenceReplayBuffer
-class SequenceReplayBuffer:
-    """Stores episodes and samples fixed-length subsequences."""
-
-    def __init__(self, capacity=100_000, seq_len=50):
-        self.capacity = capacity
-        self.seq_len = seq_len
-        self.episodes = []
-        self.total_steps = 0
-
-    def add_episode(self, episode):
-        self.episodes.append(episode)
-        self.total_steps += len(episode["rewards"])
-        while self.total_steps > self.capacity:
-            removed = self.episodes.pop(0)
-            self.total_steps -= len(removed["rewards"])
-
-    def sample(self, batch_size):
-        """Sample batch of subsequences [B, seq_len, ...]."""
-        # Uniform random episode, then uniform random start index
-        ...
-```
-
-:::{div} feynman-prose
-The replay buffer is intentionally simple. Dreamer-v3 showed that a FIFO buffer with
-uniform sampling works well for model-based RL --- the world model's imagination provides
-the off-policy correction implicitly. Fancy prioritized replay is unnecessary when you
-are training on *imagined* data, because the imagination distribution is controlled by
-the actor, not by the replay buffer.
-
-For the fractal gas integration, you can also fill the buffer with trajectories from
-`RoboticFractalGas` runs. The fractal gas explores the state space more broadly than
-a random policy (thanks to the distance-based fitness), providing richer initial data
-for the encoder and world model to learn from. Think of the fractal gas as a smart
-data collector and the Geometric Dreamer as the learner that extracts a policy from
-that data.
-:::
+This makes the replay buffer a training source not only for dynamics and value anchoring, but also for the boundary map itself.
 
 
 (sec-four-phase-pipeline)=
-## 8. The Four-Phase Training Pipeline
+## 8. The Current Training Pipeline
 
 ### Overview
 
-:::{div} feynman-added
-| Phase | What Trains | What Is Frozen | Data Source | Key Losses |
-|-------|------------|----------------|-------------|------------|
-| 1 | Encoder | --- | Single frames | Recon + VQ + routing |
-| 2 | World model | Encoder | Sequences | Geodesic + chart CE + energy |
-| 3 | Encoder + WM (alternating) | --- | Sequences | Joint + enclosure + Zeno |
-| 4 | Actor + critic + reward branch + WM | Encoder | Real + imagined | Actor + critic + reward + dynamics |
-:::
-
-### Phase 4: RL Training
-
-:::{div} feynman-prose
-Phase 4 is where the agent learns to *act*. Phases 1--3 gave it perception (encoder) and
-a world model (dynamics). Phase 4 adds purpose (rewards) and agency (policy).
-
-The training alternates between two loops. The **data collection loop** runs the current
-policy in the dm_control environment and stores transitions in the replay buffer. The
-**imagination loop** samples real states from the buffer, encodes them, imagines
-$H$-step rollouts using the actor and world model, and updates all networks.
-
-The world model continues training on real data during Phase 4. This is critical: as the
-policy improves, it visits new regions of state space that the world model has never seen.
-Without continued dynamics training, the imagination would diverge in these new regions,
-and the actor would learn to exploit model errors rather than earn real rewards.
-:::
-
-```python
-# PROPOSED: Phase 4 training loop (extends train.py phase structure)
-def run_phase4(encoder, world_model, actor, env, config):
-    """Phase 4: Model-based RL training.
-
-    The reward head is world_model.potential_net.predict_reward().
-    The critic is world_model.potential_net (V_critic branch).
-    """
-    # Encoder already contains _SharedFeatureExtractor — just set input_dim in config
-    buffer = SequenceReplayBuffer(
-        capacity=config.buffer_capacity,
-        seq_len=config.seq_len,
-    )
-
-    reward_fn = world_model.potential_net.predict_reward   # reward branch
-    optimizer_actor = torch.optim.Adam(actor.parameters(), lr=config.lr_actor)
-    optimizer_wm = torch.optim.Adam(                       # WM + reward + critic
-        world_model.parameters(), lr=config.lr_wm_phase4,  # (potential_net is a sub-module)
-    )
-
-    # Freeze encoder in Phase 4
-    encoder.eval()
-    for p in encoder.parameters():
-        p.requires_grad_(False)
-
-    for epoch in range(config.phase4_epochs):
-
-        # --- Data collection ---
-        if epoch % config.collect_every == 0:
-            episode = collect_episode(env, actor, encoder,
-                                      max_steps=config.max_episode_steps)
-            buffer.add_episode(episode)
-
-        # --- Model + reward training (on real data) ---
-        batch = buffer.sample(config.batch_size)
-        with torch.no_grad():
-            z_all, rw_all, K_all = encode_sequence(encoder, batch["obs"])
-
-        optimizer_wm.zero_grad()
-
-        # World model dynamics loss (keep model accurate)
-        wm_out = world_model(
-            z_all[:, 0].detach(), batch["actions"][:, :-1], rw_all[:, 0].detach(),
-        )
-        L_dynamics = compute_phase2_loss(wm_out, z_all[:, 1:], K_all[:, 1:], config)[0]
-
-        # Reward branch loss (on real transitions)
-        r_pred = reward_fn(
-            z_all[:, :-1].detach(), batch["actions"][:, :-1], rw_all[:, :-1].detach(),
-        )
-        L_reward = (r_pred.squeeze(-1) - batch["rewards"][:, :-1]).pow(2).mean()
-
-        (L_dynamics + L_reward).backward()
-        optimizer_wm.step()
-
-        # --- Imagination training ---
-        z_0 = z_all[:, 0].detach()
-        rw_0 = rw_all[:, 0].detach()
-        imagination = world_model.imagine(
-            z_0, rw_0, actor, config.imagination_horizon,
-        )
-
-        # Lambda-return targets
-        rw_expand = rw_0.unsqueeze(1).expand(
-            -1, config.imagination_horizon, -1,
-        ).reshape(-1, config.num_charts)
-        z_flat = imagination["z_traj"].reshape(-1, config.latent_dim)
-
-        with torch.no_grad():
-            _, phi_tgt = world_model.potential_net.force_and_potential(z_flat, rw_expand)
-            values_tgt = phi_tgt.reshape(-1, config.imagination_horizon)
-
-        returns = compute_lambda_returns(
-            imagination["rewards"], values_tgt,
-            config.gamma, config.lambda_gae,
-        )
-
-        # Critic loss (recompute WITH gradients for backprop through potential_net)
-        optimizer_wm.zero_grad()
-        _, phi_pred = world_model.potential_net.force_and_potential(
-            z_flat.detach(), rw_expand.detach(),
-        )
-        values_pred = phi_pred.reshape(-1, config.imagination_horizon)
-        L_critic = (values_pred - returns.detach()).pow(2).mean()
-        L_critic.backward()
-        optimizer_wm.step()
-
-        # Actor loss (maximize returns + entropy)
-        optimizer_actor.zero_grad()
-        L_actor = -(returns.detach() - config.T_c * imagination["log_probs"]).mean()
-        L_actor.backward()
-        if config.grad_clip > 0:
-            nn.utils.clip_grad_norm_(actor.parameters(), config.grad_clip)
-        optimizer_actor.step()
-```
-
-### Hyperparameter Defaults
+The present implementation should be read as a **joint Phase-4 loop** built on top of the earlier encoder and world-model machinery. It is most accurate to describe one update as four substeps:
 
 :::{div} feynman-added
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `lr_actor` | 3e-4 | Actor learning rate (separate optimizer) |
-| `lr_wm_phase4` | 1e-4 | World model + critic + reward branch (single optimizer, slower in Phase 4) |
-| `imagination_horizon` | 15 | Steps of imagination per update |
-| `gamma` | 0.99 | Discount factor |
-| `lambda_gae` | 0.95 | GAE lambda for $\lambda$-returns |
-| `T_c` | 0.1 | Cognitive temperature (entropy weight) |
-| `collect_every` | 5 | Collect new episode every N training epochs |
-| `buffer_capacity` | 100,000 | Replay buffer size (transitions) |
-| `batch_size` | 32 | Training batch size |
-| `max_episode_steps` | 1000 | Max steps per collected episode |
-| `phase4_epochs` | 10,000 | Total Phase 4 training epochs |
-| `grad_clip` | 100.0 | Gradient clipping norm |
+| Substep | What Updates | Main Signals |
+|---------|--------------|--------------|
+| Encoder | topoencoder + dynamics-code probe | reconstruction, VQ, routing, closure, Zeno |
+| Boundary | action encoder + action decoder | action reconstruction, control supervision, cycle consistency, value-intent alignment |
+| World model + reward | world model + reward head | geodesic dynamics, chart prediction, reward fit, energy, Hodge |
+| Critic / actor-return | shared value field, periodic boundary improvement | replay return anchoring, screened Poisson consistency, imagined discounted reward |
 :::
 
-:::{div} feynman-prose
-The world model learning rate is deliberately lower in Phase 4 ($10^{-4}$ vs $10^{-3}$ in
-Phase 2). The model is already well-trained from Phases 2--3; we just need to keep it
-calibrated as the policy shifts the data distribution. Too high a learning rate would
-cause catastrophic forgetting of dynamics in under-visited regions.
+### 8.1 Encoder Update
 
-The imagination horizon of 15 steps is a balance. Too short, and the actor does not see
-the long-term consequences of its actions. Too long, and compounding model errors corrupt
-the imagined returns. The CFL bounds ({ref}`sec-boris-baoab`) help here: by preventing
-individual integration steps from overshooting, they keep the cumulative error growth
-linear rather than exponential. In our experiments, 15 steps is where the marginal benefit
-of longer imagination starts to flatten.
-:::
+The encoder remains active unless `freeze_encoder=True`. Its losses still include:
+
+- Phase-1 reconstruction and atlas regularization,
+- dynamics-code closure through the shared codebook probe,
+- Zeno-style transition diagnostics.
+
+This keeps the representation trainable during RL unless the user explicitly freezes it.
+
+### 8.2 Boundary Update
+
+The boundary stage trains two complementary maps:
+
+- `GeometricActionEncoder`: replay action $\to$ latent control plus motor boundary variables,
+- `GeometricActionBoundaryDecoder`: latent control $\to$ deterministic boundary action plus typed motor boundary state.
+
+The losses combine:
+
+- action reconstruction,
+- decoder supervision from replay traces,
+- control supervision where replay controls are valid,
+- cycle consistency,
+- motor macro supervision,
+- nuisance/compliance supervision,
+- alignment with the critic-induced value intent.
+
+This is the most theory-specific part of the implementation because it is where latent control and motor execution are explicitly tied together.
+
+### 8.3 World-Model and Reward Update
+
+The world model is trained on detached encoder outputs. The current losses are:
+
+$$
+\mathcal{L}_{\mathrm{wm}}
+=
+w_{\mathrm{dynamics}}\mathcal{L}_{\mathrm{geo}}
++ w_{\mathrm{dynamics}}\mathcal{L}_{\mathrm{chart}}
++ w_{\mathrm{reward}}\mathcal{L}_{\mathrm{reward}}
++ w_{\mathrm{reward\_nonconservative}}\mathcal{L}_{\mathrm{noncons}}
++ w_{\mathrm{momentum}}\mathcal{L}_{\mathrm{momentum}}
++ w_{\mathrm{energy}}\mathcal{L}_{\mathrm{energy}}
++ w_{\mathrm{Hodge}}\mathcal{L}_{\mathrm{Hodge}}.
+$$
+
+The control input to the world model is the **latent control covector**, not the raw environment action. This is exactly the right choice for the current theory-facing implementation because it makes the world model evolve under internal control variables rather than under already-decoded actuator coordinates.
+
+### 8.4 Critic Anchoring and Periodic Actor-Return Improvement
+
+The critic is always anchored on replay return-to-go plus screened Poisson consistency. On top of that, the code periodically runs an actor-return step that backpropagates imagined discounted reward through the control field and boundary decoder.
+
+So the current Phase-4 loop is best summarized as:
+
+$$
+\text{representation update}
+\rightarrow
+\text{boundary update}
+\rightarrow
+\text{dynamics/reward update}
+\rightarrow
+\text{value anchoring}
+\rightarrow
+\text{periodic control improvement}.
+$$
+
+This is not as cleanly factorized as the older separate-actor chapter draft, but it reflects the code that is actually running.
 
 
 (sec-dreamer-diagnostics)=
 ## 9. Diagnostics --- Is Your Agent Learning?
 
 :::{div} feynman-prose
-Model-based RL has more failure modes than model-free RL. The policy can fail, the value
-function can fail, the reward model can fail, and the world model can fail. Worse, these
-failures interact: a bad world model produces bad imaginations, which produce bad policy
-gradients, which produce a bad policy, which explores badly, which starves the world model
-of good data.
+In a system like this, "is training working?" is not a single question. You have to ask at least four different questions.
 
-Here is what to watch.
+Is the representation still geometrically healthy? Is the boundary map still faithful? Is the world model still grounded on replay transitions? And is the value-driven control field actually producing useful imagined trajectories?
+
+That is why the diagnostic surface in the current code is so broad. The important thing is not to stare at every metric all the time. The important thing is to group them by failure mode and to know what each group is trying to catch.
 :::
 
-### Reward Model Accuracy
+### Representation and Atlas Health
 
-The reward prediction error on held-out real transitions is the most direct measure of
-whether the imagination is trustworthy. Track:
+- `chart/usage_entropy`, `chart/active_charts`, `chart/active_symbols`
+- per-chart code entropy and active code counts
+- `chart/router_confidence`, `chart/top2_gap`
 
-- **Mean absolute error** (MAE): $|\hat{r} - r|$. Should decrease over training.
-- **Correlation**: $\text{corr}(\hat{r}, r)$. Should approach 1.0.
-- **Error by chart**: Break down MAE per chart $K$. High error in one chart means the
-  reward head is poorly calibrated in that region.
+These tell you whether the macro register is alive and whether the atlas is collapsing.
 
-### Imagination vs. Reality Divergence
+### Boundary Health
 
-Compare world model predictions against actual transitions:
+- `boundary/L_action_recon`
+- `boundary/L_control_supervise`
+- `boundary/L_macro_supervise`
+- `boundary/L_motor_nuisance_supervise`
+- `boundary/L_motor_compliance_supervise`
+- `boundary/value_intent_cos`
+- `boundary/control_raise_err`, `boundary/control_lower_err`
+- `boundary/texture_std_mean`
 
-- **Geodesic prediction error**: $d_H(z_{\text{pred}}, z_{\text{actual}})$ averaged over
-  $H$-step rollouts. Plot as a function of horizon step $h$ --- the error should grow
-  sublinearly. If it grows exponentially, the CFL bounds are too loose.
-- **Chart agreement**: Fraction of steps where predicted and actual chart assignments
-  match. Below 70\% suggests chart boundary instability.
+These indicate whether the motor boundary map remains consistent with replay data and with the critic-induced control field.
 
-### Actor-Critic Convergence
+### World-Model Health
 
-- **Mean episode return**: The primary metric. Should increase over training.
-- **Actor entropy**: $-\mathbb{E}[\log \pi]$. Should start high (exploration) and
-  gradually decrease (exploitation), but never collapse to zero.
-- **Value estimation error**: $|V(z_t) - R_t^{\text{actual}}|$ on real trajectories.
-  Should decrease as the critic learns.
-- **Actor gradient norm**: Sudden spikes indicate unstable imagination. Apply gradient
-  clipping.
+- `wm/L_geodesic`
+- `wm/L_chart`
+- `wm/chart_acc`
+- `wm/L_reward`
+- `wm/L_reward_nonconservative`
+- `wm/L_momentum`
+- `wm/L_energy`
+- `wm/L_hodge`
 
-### Hodge Diagnostics in Phase 4
+These are the primary indicators that imagination remains grounded on real transition data.
 
-The Hodge ratios ({ref}`sec-world-model-diagnostics`) acquire new meaning in the RL
-context:
+### Critic and Imagination Health
 
-- **Conservative ratio** $\|f_{\text{cons}}\| / \|f_{\text{total}}\|$: In Phase 4, this
-  should increase as the critic $V_{\text{critic}}$ dominates the dynamics with
-  reward-aligned forces.
-- **Solenoidal ratio**: For tasks with cyclic structure (e.g., locomotion gaits), a
-  moderate solenoidal component is healthy --- the value curl captures the
-  non-conservative aspect of periodic reward landscapes.
-- **Harmonic residual**: Should remain small. A growing harmonic component suggests the
-  Hodge decomposition is not capturing the full force structure.
+- `critic/L_value`
+- `critic/L_poisson`
+- `critic/value_abs_err`
+- `critic/replay_bellman_abs`
+- `imagination/reward_mean`
+- `imagination/discounted_reward_mean`
+- `imagination/boundary_value_mean`
+- `imagination/bootstrap_share`
+- `imagination/router_drift`
 
-:::{admonition} Training Health Checklist
-:class: feynman-added tip
+These tell you whether the value field is calibrated and whether imagined rollouts are reward-dominated or merely bootstrap-dominated.
 
-1. **First 100 epochs**: Reward MAE should drop below 0.5. Episode returns may still be
-   near random. Actor entropy should be high.
+### Interpreting the Non-Conservative Sector
 
-2. **Epochs 100--1000**: Episode returns should start climbing. Value estimation error
-   should decrease. Imagination divergence at $h = 15$ should be under $0.5$ hyperbolic
-   distance.
+- `wm/reward_nonconservative_mean`
+- `wm/reward_nonconservative_frac`
+- `wm/reward_curl_norm_mean`
+- `imagination/reward_nonconservative_frac`
+- `imagination/reward_curl_norm_mean`
 
-3. **Epochs 1000--5000**: Returns should plateau near task-specific baselines. Actor
-   entropy should stabilize at a moderate level. Conservative ratio should be 0.6--0.9.
-
-4. **Warning signs**:
-   - Returns plateau at zero: reward model is inaccurate. Check $\mathcal{L}_{\text{reward}}$.
-   - Returns oscillate wildly: world model is inaccurate in regions the policy visits.
-     Increase `collect_every` to gather more real data.
-   - Actor entropy collapses: $T_c$ is too low. Increase cognitive temperature.
-   - Imagination divergence grows exponentially: CFL bounds are too loose. Increase
-     `min_length` or decrease `dt`.
-:::
+In the current code these should be read mainly as **audits** of how far the environment appears to depart from the conservative approximation used by the deployed control law.
 
 
 (sec-dreamer-theory-code)=
 ## 10. Theory-to-Code Correspondence
 
 :::{div} feynman-prose
-Let me give you the full map from theory to implementation. Every row connects a
-theoretical concept --- with its formal definition or theorem --- to the code that
-realizes it and the loss that trains it. If you understand this table, you understand
-the entire Geometric Dreamer algorithm.
+This final table is deliberately conservative. It does not list the theory as we might want the implementation to become. It lists the theory as it is actually realized by the current code.
+
+That means some rows are exact correspondences, some are faithful approximations, and some are explicitly marked as deferred. That is the right way to document a living codebase. Otherwise the text turns into wishful thinking, which is worse than being incomplete.
 :::
 
 :::{div} feynman-added
-| Theory | Reference | Code | Loss |
-|--------|-----------|------|------|
-| MaxEnt objective $J_{T_c}(\pi)$ | {prf:ref}`def-maxent-rl-objective-on-macrostates` | `GeometricActor.sample` + $\lambda$-returns | $\mathcal{L}_{\text{actor}}$ |
-| Soft Bellman fixed point | {prf:ref}`prop-soft-bellman-form-discrete-actions` | `V_critic` in `CovariantPotentialNet` | $\mathcal{L}_{\text{critic}}$ |
-| Effective potential $\Phi_{\text{eff}}$ | {prf:ref}`def-effective-potential` | `CovariantPotentialNet.force_and_potential` | TD-$\lambda$ targets |
-| Cognitive temperature $T_c$ | {prf:ref}`def-cognitive-temperature` | `config.T_c` in actor loss | Entropy bonus |
-| Equivalence theorem | {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro` | MaxEnt actor = soft Bellman critic | Unified objective |
-| Belief filtering | {ref}`sec-filtering-template-on-the-discrete-macro-register` | Encoder chart routing + VQ | Phase 1 losses |
-| Geodesic jump diffusion | {ref}`sec-the-coupled-jump-diffusion-sde` | `_baoab_step` + `_conditional_jump` | Phase 2 dynamics losses |
-| BAOAB splitting | {prf:ref}`def-baoab-splitting` | `GeometricWorldModel._baoab_step` | Energy conservation |
-| Value curl $\mathcal{F}_{ij}$ | {prf:ref}`thm-hodge-decomposition` | `CovariantValueCurl` + Boris rotation | Hodge consistency |
-| Reward 1-form $r_t = \langle \mathcal{R}, v\rangle_G$ | {prf:ref}`def-reward-1-form` | Reward branch in `CovariantPotentialNet` (contraction with velocity implicit in action-conditioned attention) | $\mathcal{L}_{\text{reward}}$ |
-| Hodge decomposition | {ref}`sec-hodge-decomposition-of-value` | `HodgeDecomposer` | $\mathcal{L}_{\text{Hodge}}$ |
-| Causal enclosure | {prf:ref}`def-causal-enclosure` | `SharedDynAtlasEncoder` + probe | Enclosure loss |
-| Coupling window | {prf:ref}`thm-information-stability-window-operational` | Chart routing stability | Chart entropy bounds |
-| Thermodynamic governor | {ref}`sec-optimizer-thermodynamic-governor` | Trust-region + varentropy brake | Optimizer stability |
-| Exploration incentive | {prf:ref}`def-exploration-gradient-metric-form` | Path-entropy gradient $\nabla_G S_c$ motivates the analytic drive $U(z) = -2\,\text{artanh}(\|z\|)$ as a static proxy | Built into $\Phi_{\text{eff}}$ |
-| WFR decomposition | {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` | BAOAB (W$_2$) + chart jumps (FR) | Geodesic + chart losses |
-| Three-channel latent | {prf:ref}`def-three-channel-latent` | $(K, z_n, z_{\text{tex}})$ in encoder | Recon + VQ + structure filter |
+| Theory | Reference | Current code | Status |
+|--------|-----------|--------------|--------|
+| Three-channel latent | {ref}`sec-the-shutter-as-a-vq-vae` | topoencoder builds `K_chart`, `K_code`, `z_n`, `z_tex`, `z_geo` | Implemented |
+| Texture firewall | {ref}`sec-the-shutter-as-a-vq-vae` | RL heads consume `z_geo` and `rw`, not `z_tex` | Implemented |
+| Covariant geometric world model | {ref}`sec-why-physics-for-world-model` | `GeometricWorldModel` with BAOAB, chart jumps, Hodge diagnostics | Implemented |
+| Motor boundary realization | {ref}`sec-the-boundary-interface-symplectic-structure` | `GeometricActionBoundaryDecoder` | Implemented |
+| Inverse boundary map | {ref}`sec-the-boundary-interface-symplectic-structure` | `GeometricActionEncoder` | Implemented |
+| Conservative control field | {prf:ref}`def-entropy-regularized-objective-functional` | critic gradient raised by metric | Implemented as conservative approximation |
+| Full gauge-covariant control $\nabla_A V$ | {ref}`sec-the-control-identity-cost-rate-along-flow` | reward head learns non-conservative residual, but controller still uses $dV$ | Deferred |
+| Reward decomposition | {prf:ref}`def-reward-1-form` | `RewardHead` predicts conservative and non-conservative pieces | Partially implemented |
+| Reflective dreaming mode | {ref}`sec-wfr-boundary-conditions-waking-vs-dreaming` | current `_imagine` performs controlled rollout with action decoding | Not yet identical |
+| Replay-grounded value anchoring | {ref}`sec-the-control-identity-cost-rate-along-flow` | replay RTG + screened Poisson critic losses | Implemented |
+| MaxEnt actor with entropy bonus | {prf:ref}`def-maxent-rl-objective-on-macrostates` | `GeometricActor` exists but is not wired into `train_dreamer.py` | Present but not deployed |
+| Variance-curvature coupling | {prf:ref}`lem-variance-curvature-correspondence` | motor texture scales with inverse metric | Implemented in execution noise |
+| WFR transport + reaction split | {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` | BAOAB substeps plus optional chart jump | Implemented |
 :::
 
-### Summary Diagram
+### Practical Summary
 
-```{mermaid}
-flowchart TB
-    subgraph Phase1["Phase 1: Encoder"]
-        OBS["Observation"] --> ENC["SharedDynAtlasEncoder"]
-        ENC --> ZGEO["z_geo, rw, K"]
-    end
+The current Dreamer implementation should be understood as:
 
-    subgraph Phase23["Phases 2-3: World Model"]
-        ZGEO --> WM["GeometricWorldModel"]
-        WM --> DYN["BAOAB dynamics"]
-        WM --> CHART["Chart prediction"]
-    end
-
-    subgraph Phase4["Phase 4: RL"]
-        ZGEO --> ACTOR["GeometricActor"]
-        ACTOR --> |"a ~ pi(.|z)"| WM
-        WM --> |"z_traj"| REWARD["potential_net.predict_reward"]
-        REWARD --> |"r_hat"| RET["Lambda-returns"]
-        WM --> |"Phi_eff"| CRITIC["V_critic"]
-        CRITIC --> RET
-        RET --> |"L_actor"| ACTOR
-        RET --> |"L_critic"| CRITIC
-    end
-
-    ENV["dm_control"] --> |"obs, reward"| Phase1
-    ACTOR --> |"action"| ENV
-```
+1. A **geometric, control-field** model-based RL system.
+2. A **boundary-aware** controller with typed motor variables.
+3. A **conservative-first** realization of the broader theory.
+4. A **jointly trained** phase-4 loop rather than a clean standalone actor-critic block.
 
 :::{div} feynman-prose
-And there it is. Four phases, each building on the last. Phase 1 gives the agent eyes.
-Phase 2 gives it a physics engine. Phase 3 aligns the two. Phase 4 gives it purpose.
+So what should you carry away from all this?
 
-The entire algorithm rests on one idea: if you can imagine the future accurately enough,
-you can learn a policy without ever making a real mistake. The Poincare ball gives the
-imagination stability (CFL bounds, norm-preserving Boris rotation). The chart structure
-gives it compositionality (local dynamics are simple, global dynamics are rich). And the
-MaxEnt objective gives it robustness (entropy regularization prevents premature
-commitment).
+Carry away the architecture, not the brand name. The current code is called Dreamer because it learns from imagined rollouts in a world model. But the important thing is how it does that. It dreams in a curved latent space. It controls through a boundary decoder. It anchors its value field on replay and PDE structure. And it keeps the non-conservative sector visible, even though the deployed controller has not yet fully internalized it.
 
-This is model-based RL the way it should be: a geometric physics engine in the agent's
-head, trained to dream, and a policy trained to make those dreams come true.
+That is the honest state of the implementation. It is already much closer to the theory than ordinary model-based RL, and it still leaves a clear path for future work: promote the full $d_A V$ control law, separate reflective dreaming from controlled planning, and deploy the explicit MaxEnt actor only when that is actually the algorithm we want to run.
 :::

@@ -24,6 +24,7 @@ class DreamerConfig:
     num_charts: int = 8
     num_action_charts: int = 0
     num_action_macros: int = 0
+    action_codes_per_chart: int = 0
     d_model: int = 128
     hidden_dim: int = 256
     codes_per_chart: int = 32
@@ -76,6 +77,7 @@ class DreamerConfig:
     w_hodge: float = 0.01
     w_screened_poisson: float = 1.0
     w_action_recon: float = 1.0
+    w_action_latent_supervise: float = 0.25
     w_control_cycle: float = 0.1
     w_control_supervise: float = 0.5
     w_value_intent_align: float = 0.25
@@ -84,11 +86,13 @@ class DreamerConfig:
     w_motor_compliance_supervise: float = 0.1
     w_actor_return: float = 1.0
     w_reward_nonconservative: float = 0.01
+    w_reward_exact_orth: float = 0.05
     screened_poisson_kappa: float = 1.0
     actor_return_horizon: int = 8
     actor_return_batch_size: int = 8
     actor_return_update_every: int = 10
     actor_return_warmup_epochs: int = 10
+    reward_curl_batch_limit: int = 64
     lr_chart_centers_scale: float = 0.1
     lr_codebook_scale: float = 0.5
     lr_dyn_transition: float = 3e-3
@@ -202,3 +206,5 @@ class DreamerConfig:
             self.num_action_charts = self.num_charts
         if self.num_action_macros <= 0:
             self.num_action_macros = self.num_action_charts
+        if self.action_codes_per_chart <= 0:
+            self.action_codes_per_chart = self.codes_per_chart
