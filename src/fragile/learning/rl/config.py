@@ -82,8 +82,13 @@ class DreamerConfig:
     w_macro_supervise: float = 0.25
     w_motor_nuisance_supervise: float = 0.1
     w_motor_compliance_supervise: float = 0.1
+    w_actor_return: float = 1.0
     w_reward_nonconservative: float = 0.01
     screened_poisson_kappa: float = 1.0
+    actor_return_horizon: int = 8
+    actor_return_batch_size: int = 8
+    actor_return_update_every: int = 10
+    actor_return_warmup_epochs: int = 10
     lr_chart_centers_scale: float = 0.1
     lr_codebook_scale: float = 0.5
     lr_dyn_transition: float = 3e-3
@@ -162,6 +167,7 @@ class DreamerConfig:
 
     # --- Schedule ---
     collect_every: int = 5
+    collect_n_env_workers: int = 1
     log_every: int = 1
     eval_every: int = 50
     eval_episodes: int = 5
@@ -170,6 +176,8 @@ class DreamerConfig:
     diagnostics_every_updates: int = 1
     torch_compile: bool = False
     torch_compile_mode: str = "reduce-overhead"
+    allow_tf32: bool = True
+    matmul_precision: str = "high"
     normalize_observations: bool = True
     obs_norm_min_std: float = 1e-3
     use_motor_texture: bool = True

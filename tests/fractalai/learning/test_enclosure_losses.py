@@ -8,7 +8,9 @@ from fragile.learning.vla.losses import (
     orthogonality_loss,
     GradientReversalLayer,
     EnclosureProbe,
+    DynamicsTransitionModel,
     compute_enclosure_loss,
+    compute_dynamics_markov_loss,
     grl_alpha_schedule,
     zeno_loss,
     geodesic_interpolation,
@@ -19,6 +21,28 @@ from fragile.learning.vla.losses import (
     compute_supervised_wm_loss,
 )
 from fragile.learning.core.layers.gauge import poincare_exp_map, hyperbolic_distance
+
+
+class _DummyAtlasEncoder(torch.nn.Module):
+    def __init__(self, num_charts: int, dyn_codes_per_chart: int, latent_dim: int) -> None:
+        super().__init__()
+        self.codebook_dyn = torch.nn.Parameter(
+            torch.randn(num_charts, dyn_codes_per_chart, latent_dim) * 0.1
+        )
+
+    def dynamics_vq(
+        self,
+        v_local: torch.Tensor,
+        router_weights: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        chart_idx = router_weights.argmax(dim=-1)
+        codebook = self.codebook_dyn[chart_idx]
+        diff = v_local.unsqueeze(1) - codebook
+        dist = (diff ** 2).sum(dim=-1)
+        code_idx = dist.argmin(dim=-1)
+        z_q = codebook[torch.arange(v_local.shape[0]), code_idx]
+        vq_loss = ((v_local - z_q.detach()) ** 2).mean() + ((v_local.detach() - z_q) ** 2).mean()
+        return z_q, code_idx, code_idx.unsqueeze(1), vq_loss
 
 
 class TestOrthogonalityLoss:
@@ -289,6 +313,57 @@ class TestZenoLoss:
         w = torch.softmax(torch.randn(B, K), dim=-1)
         with pytest.raises(ValueError, match="Unknown zeno_loss mode"):
             zeno_loss(w, w, mode="invalid")
+
+
+class TestDynamicsMarkovLoss:
+    def test_updates_dynamics_codebook(self):
+        """Transition CE should backprop into the trainable dynamics symbols."""
+        B, H, D, A, K, C = 6, 4, 5, 3, 3, 4
+        atlas_encoder = _DummyAtlasEncoder(K, C, D)
+        dyn_model = DynamicsTransitionModel(
+            chart_dim=D,
+            action_dim=A,
+            num_charts=K,
+            dyn_codes_per_chart=C,
+            hidden_dim=32,
+        )
+        v_local_all = torch.randn(B, H, D)
+        router_logits = torch.randn(B, H, K)
+        router_weights_all = F.softmax(router_logits, dim=-1)
+        chart_embed_all = torch.randn(B, H, D)
+        chart_targets_all = router_weights_all.argmax(dim=-1)
+        actions = torch.randn(B, H, A)
+
+        loss, metrics, K_code_dyn_all = compute_dynamics_markov_loss(
+            atlas_encoder,
+            dyn_model,
+            v_local_all,
+            router_weights_all,
+            chart_embed_all,
+            chart_targets_all,
+            actions,
+            transition_weight=0.7,
+            zeno_weight=0.2,
+            zeno_mode="jsd",
+        )
+
+        expected_keys = {
+            "dyn_vq",
+            "dyn_trans_ce",
+            "dyn_trans_acc",
+            "dyn_zeno",
+            "dyn_state_flip_rate",
+            "dyn_state_entropy",
+            "dyn_state_max_prob",
+            "dyn_code_flip_rate",
+        }
+        assert loss.shape == ()
+        assert expected_keys == set(metrics.keys())
+        assert K_code_dyn_all.shape == (B, H)
+
+        loss.backward()
+        assert atlas_encoder.codebook_dyn.grad is not None
+        assert atlas_encoder.codebook_dyn.grad.abs().sum() > 0
 
 
 # ---------------------------------------------------------------------------

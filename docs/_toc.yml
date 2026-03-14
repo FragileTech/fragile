@@ -75,6 +75,7 @@ parts:
         title: "Part XI - Implementation"
         sections:
           - file: source/1_agent/11_implementation/02_world_model
+          - file: source/1_agent/11_implementation/03_dreamer
 
   # ══════════════════════════════════════════════════════════════════════════════
   # VOLUME 2: THE HYPOSTRUCTURE FORMALISM

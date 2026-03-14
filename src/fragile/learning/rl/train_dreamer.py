@@ -15,7 +15,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
-from contextlib import contextmanager
+import contextlib
 import math
 import os
 import time
@@ -164,6 +164,23 @@ def _parameter_grad_norm(parameters: list[torch.nn.Parameter]) -> float:
     return float(torch.norm(torch.stack(grads), p=2))
 
 
+@contextlib.contextmanager
+def _temporary_requires_grad(
+    modules: list[tuple[nn.Module, bool]],
+) -> None:
+    """Temporarily override ``requires_grad`` for a list of modules."""
+    saved_states: list[tuple[nn.Parameter, bool]] = []
+    for module, requires_grad in modules:
+        for param in module.parameters():
+            saved_states.append((param, param.requires_grad))
+            param.requires_grad_(requires_grad)
+    try:
+        yield
+    finally:
+        for param, requires_grad in saved_states:
+            param.requires_grad_(requires_grad)
+
+
 def _make_cosine_scheduler(
     optimizer: torch.optim.Optimizer,
     total_epochs: int,
@@ -188,6 +205,14 @@ def _maybe_compile_module(module: nn.Module, enabled: bool, mode: str) -> nn.Mod
 def _unwrap_compiled_module(module: nn.Module) -> nn.Module:
     """Return the original module behind ``torch.compile`` wrappers."""
     return getattr(module, "_orig_mod", module)
+
+
+def _mark_compile_step_begin() -> None:
+    """Hint TorchInductor/CUDAGraphs that a new training step is starting."""
+    compiler = getattr(torch, "compiler", None)
+    mark_step = getattr(compiler, "cudagraph_mark_step_begin", None)
+    if callable(mark_step):
+        mark_step()
 
 
 @dataclass
@@ -250,23 +275,6 @@ class ObservationNormalizer:
         return ((obs - mean) / std).astype(np.float32, copy=False)
 
 
-@contextmanager
-def _freeze_modules(*modules: nn.Module):
-    """Temporarily freeze module parameters while preserving input gradients."""
-    requires_grad_states: list[list[bool]] = []
-    for module in modules:
-        states = [param.requires_grad for param in module.parameters()]
-        requires_grad_states.append(states)
-        for param in module.parameters():
-            param.requires_grad_(False)
-    try:
-        yield
-    finally:
-        for module, states in zip(modules, requires_grad_states, strict=False):
-            for param, requires_grad in zip(module.parameters(), states, strict=False):
-                param.requires_grad_(requires_grad)
-
-
 def _policy_action(
     critic: nn.Module,
     action_decoder: GeometricActionBoundaryDecoder,
@@ -277,44 +285,29 @@ def _policy_action(
 ) -> dict[str, torch.Tensor]:
     """Decode the critic-induced control field into a boundary action."""
     control_metric = getattr(action_decoder, "metric", None)
-    with _freeze_modules(critic):
-        control_cov, control_tan, _ = critic_control_field(
-            critic,
-            z,
-            rw,
-            metric=control_metric,
-            create_graph=False,
-        )
+    control_cov, control_tan, _ = critic_control_field(
+        critic,
+        z,
+        rw,
+        metric=control_metric,
+        create_graph=False,
+    )
     control_cov = control_cov.detach()
     control_tan = control_tan.detach()
-    boundary = action_decoder(
-        z.detach(),
-        control_tan,
-        rw.detach(),
-    )
-    if use_motor_texture:
-        boundary_exec = action_decoder.sample_execution_action(
+    with torch.inference_mode():
+        boundary = action_decoder(
             z.detach(),
             control_tan,
             rw.detach(),
-            macro_probs=boundary["macro_probs"],
-            motor_nuisance=boundary["motor_nuisance"],
-            motor_compliance=boundary["motor_compliance"],
         )
-        action = boundary_exec["action"]
-        action_mean = boundary_exec["action_mean"]
-        log_std = boundary_exec["log_std"]
-    else:
-        action_mean = action_decoder.decode(
-            z.detach(),
-            control_tan,
-            rw.detach(),
-            macro_probs=boundary["macro_probs"],
-            motor_nuisance=boundary["motor_nuisance"],
-            motor_compliance=boundary["motor_compliance"],
-        )
+        action_mean = boundary["action_mean"]
         log_std = boundary["log_std"]
-        action = action_mean
+        if use_motor_texture:
+            texture, texture_std = action_decoder.sample_motor_texture(z.detach())
+            action = torch.tanh(boundary["action_raw"] + texture)
+            log_std = torch.log(texture_std.clamp(min=1e-8))
+        else:
+            action = action_mean
     return {
         "action": action.detach(),
         "action_mean": action_mean.detach(),
@@ -325,6 +318,42 @@ def _policy_action(
         "motor_macro_idx": boundary["macro_idx"].detach(),
         "motor_nuisance": boundary["motor_nuisance"].detach(),
         "motor_compliance": boundary["motor_compliance"].detach(),
+    }
+
+
+def _build_episode_dict(
+    obs_list: list[np.ndarray],
+    act_list: list[np.ndarray],
+    rew_list: list[np.float32],
+    done_list: list[np.float32],
+    action_mean_list: list[np.ndarray],
+    control_tan_list: list[np.ndarray],
+    control_cov_list: list[np.ndarray],
+    control_valid_list: list[np.float32],
+    motor_macro_probs_list: list[np.ndarray],
+    motor_nuisance_list: list[np.ndarray],
+    motor_compliance_list: list[np.ndarray],
+) -> dict[str, np.ndarray]:
+    """Pack per-step episode traces into the replay-buffer episode format."""
+    return {
+        "obs": np.stack(obs_list),
+        "actions": np.stack(act_list + [np.zeros_like(act_list[0])]),
+        "action_means": np.stack(action_mean_list + [np.zeros_like(action_mean_list[0])]),
+        "controls": np.stack(control_cov_list + [np.zeros_like(control_cov_list[0])]),
+        "controls_tan": np.stack(control_tan_list + [np.zeros_like(control_tan_list[0])]),
+        "controls_cov": np.stack(control_cov_list + [np.zeros_like(control_cov_list[0])]),
+        "control_valid": np.array(control_valid_list + [0.0], dtype=np.float32),
+        "motor_macro_probs": np.stack(
+            motor_macro_probs_list + [np.zeros_like(motor_macro_probs_list[0])],
+        ),
+        "motor_nuisance": np.stack(
+            motor_nuisance_list + [np.zeros_like(motor_nuisance_list[0])],
+        ),
+        "motor_compliance": np.stack(
+            motor_compliance_list + [np.zeros_like(motor_compliance_list[0])],
+        ),
+        "rewards": np.array(rew_list + [0.0], dtype=np.float32),
+        "dones": np.array(done_list + [1.0], dtype=np.float32),
     }
 
 
@@ -420,26 +449,169 @@ def _collect_episode(
     # Append final observation
     obs_list.append(_flatten_obs(time_step))
 
-    return {
-        "obs": np.stack(obs_list),
-        "actions": np.stack(act_list + [np.zeros_like(act_list[0])]),
-        "action_means": np.stack(action_mean_list + [np.zeros_like(action_mean_list[0])]),
-        "controls": np.stack(control_cov_list + [np.zeros_like(control_cov_list[0])]),
-        "controls_tan": np.stack(control_tan_list + [np.zeros_like(control_tan_list[0])]),
-        "controls_cov": np.stack(control_cov_list + [np.zeros_like(control_cov_list[0])]),
-        "control_valid": np.array(control_valid_list + [0.0], dtype=np.float32),
-        "motor_macro_probs": np.stack(
-            motor_macro_probs_list + [np.zeros_like(motor_macro_probs_list[0])],
-        ),
-        "motor_nuisance": np.stack(
-            motor_nuisance_list + [np.zeros_like(motor_nuisance_list[0])],
-        ),
-        "motor_compliance": np.stack(
-            motor_compliance_list + [np.zeros_like(motor_compliance_list[0])],
-        ),
-        "rewards": np.array(rew_list + [0.0], dtype=np.float32),
-        "dones": np.array(done_list + [1.0], dtype=np.float32),
-    }
+    return _build_episode_dict(
+        obs_list,
+        act_list,
+        rew_list,
+        done_list,
+        action_mean_list,
+        control_tan_list,
+        control_cov_list,
+        control_valid_list,
+        motor_macro_probs_list,
+        motor_nuisance_list,
+        motor_compliance_list,
+    )
+
+
+def _collect_parallel_episodes(
+    env: VectorizedDMControlEnv,
+    critic: nn.Module | None,
+    action_decoder: GeometricActionBoundaryDecoder | None,
+    encoder: nn.Module,
+    device: torch.device,
+    control_dim: int,
+    num_action_macros: int,
+    *,
+    num_episodes: int,
+    obs_normalizer: ObservationNormalizer | None = None,
+    action_repeat: int = 1,
+    max_steps: int = 1000,
+    hard_routing: bool = True,
+    hard_routing_tau: float = 1.0,
+    use_motor_texture: bool = True,
+) -> list[dict[str, np.ndarray]]:
+    """Collect multiple no-gas episodes in parallel with batched policy inference."""
+    if num_episodes < 1:
+        return []
+    if num_episodes > env.n_workers:
+        msg = f"num_episodes={num_episodes} exceeds available workers={env.n_workers}"
+        raise ValueError(msg)
+
+    action_spec = env.action_space
+    action_min = np.asarray(action_spec.minimum, dtype=np.float32)
+    action_max = np.asarray(action_spec.maximum, dtype=np.float32)
+    action_shape = tuple(action_spec.shape)
+    routing_tau = _rollout_routing_tau(hard_routing, hard_routing_tau)
+    env_indices = np.arange(num_episodes, dtype=int)
+    observations = env.reset_batch(env_indices=env_indices).astype(np.float32, copy=False)
+
+    obs_lists = [[observations[i].copy()] for i in range(num_episodes)]
+    act_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
+    rew_lists: list[list[np.float32]] = [[] for _ in range(num_episodes)]
+    done_lists: list[list[np.float32]] = [[] for _ in range(num_episodes)]
+    action_mean_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
+    control_tan_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
+    control_cov_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
+    control_valid_lists: list[list[np.float32]] = [[] for _ in range(num_episodes)]
+    motor_macro_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
+    motor_nuisance_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
+    motor_compliance_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
+
+    active = np.ones(num_episodes, dtype=bool)
+    step_counts = np.zeros(num_episodes, dtype=np.int32)
+
+    while active.any():
+        active_indices = np.flatnonzero(active)
+        active_obs = observations[active_indices]
+
+        if critic is None or action_decoder is None:
+            actions = np.random.uniform(
+                action_min,
+                action_max,
+                size=(len(active_indices), *action_shape),
+            ).astype(np.float32)
+            action_means = actions.copy()
+            control_tan = np.zeros((len(active_indices), control_dim), dtype=np.float32)
+            control_cov = np.zeros((len(active_indices), control_dim), dtype=np.float32)
+            control_valid = np.zeros(len(active_indices), dtype=np.float32)
+            motor_macro_probs = np.zeros(
+                (len(active_indices), num_action_macros),
+                dtype=np.float32,
+            )
+            motor_nuisance = np.zeros((len(active_indices), control_dim), dtype=np.float32)
+            motor_compliance = np.zeros(
+                (len(active_indices), action_shape[0], action_shape[0]),
+                dtype=np.float32,
+            )
+        else:
+            obs_t = torch.from_numpy(active_obs).to(device)
+            if obs_normalizer is not None:
+                obs_t = obs_normalizer.normalize_tensor(obs_t)
+            with torch.no_grad():
+                enc_out = encoder.encoder(
+                    obs_t,
+                    hard_routing=hard_routing,
+                    hard_routing_tau=routing_tau,
+                )
+                rw = enc_out[4]
+                z = enc_out[5]
+            action_out = _policy_action(
+                critic,
+                action_decoder,
+                z,
+                rw,
+                use_motor_texture=use_motor_texture,
+            )
+            actions = action_out["action"].cpu().numpy()
+            action_means = action_out["action_mean"].cpu().numpy()
+            control_tan = action_out["control_tan"].cpu().numpy()
+            control_cov = action_out["control_cov"].cpu().numpy()
+            control_valid = np.ones(len(active_indices), dtype=np.float32)
+            motor_macro_probs = action_out["motor_macro_probs"].cpu().numpy()
+            motor_nuisance = action_out["motor_nuisance"].cpu().numpy()
+            motor_compliance = action_out["motor_compliance"].cpu().numpy()
+            actions = np.clip(actions, action_min, action_max)
+            action_means = np.clip(action_means, action_min, action_max)
+
+        next_obs, rewards, dones, _trunc, _infos = env.step_actions_batch(
+            actions.astype(np.float64, copy=False),
+            dt=np.full(len(active_indices), action_repeat, dtype=int),
+            env_indices=active_indices,
+        )
+        next_obs = next_obs.astype(np.float32, copy=False)
+
+        for row, episode_idx in enumerate(active_indices):
+            act_lists[episode_idx].append(actions[row].astype(np.float32, copy=False))
+            action_mean_lists[episode_idx].append(
+                action_means[row].astype(np.float32, copy=False),
+            )
+            control_tan_lists[episode_idx].append(control_tan[row].astype(np.float32, copy=False))
+            control_cov_lists[episode_idx].append(control_cov[row].astype(np.float32, copy=False))
+            control_valid_lists[episode_idx].append(np.float32(control_valid[row]))
+            motor_macro_lists[episode_idx].append(
+                motor_macro_probs[row].astype(np.float32, copy=False),
+            )
+            motor_nuisance_lists[episode_idx].append(
+                motor_nuisance[row].astype(np.float32, copy=False),
+            )
+            motor_compliance_lists[episode_idx].append(
+                motor_compliance[row].astype(np.float32, copy=False),
+            )
+            rew_lists[episode_idx].append(np.float32(rewards[row]))
+            done_lists[episode_idx].append(np.float32(dones[row]))
+            step_counts[episode_idx] += 1
+            observations[episode_idx] = next_obs[row]
+            obs_lists[episode_idx].append(next_obs[row].copy())
+            if dones[row] or step_counts[episode_idx] >= max_steps:
+                active[episode_idx] = False
+
+    return [
+        _build_episode_dict(
+            obs_lists[i],
+            act_lists[i],
+            rew_lists[i],
+            done_lists[i],
+            action_mean_lists[i],
+            control_tan_lists[i],
+            control_cov_lists[i],
+            control_valid_lists[i],
+            motor_macro_lists[i],
+            motor_nuisance_lists[i],
+            motor_compliance_lists[i],
+        )
+        for i in range(num_episodes)
+    ]
 
 
 def _eval_policy(
@@ -1011,6 +1183,85 @@ def _discounted_sum(rewards: torch.Tensor, gamma: float) -> torch.Tensor:
     return (rewards * discounts).sum(dim=1)
 
 
+def _should_run_actor_update(
+    config: DreamerConfig,
+    *,
+    epoch: int,
+    update_idx: int,
+) -> bool:
+    """Return whether the imagined-return actor step should run."""
+    if config.w_actor_return <= 0.0:
+        return False
+    if config.actor_return_update_every <= 0:
+        return False
+    if config.actor_return_horizon <= 0:
+        return False
+    if epoch < config.actor_return_warmup_epochs:
+        return False
+    return update_idx % config.actor_return_update_every == 0
+
+
+def _imagine_actor_return(
+    world_model: GeometricWorldModel,
+    reward_head: RewardHead,
+    critic: nn.Module,
+    action_decoder: GeometricActionBoundaryDecoder,
+    z_0: torch.Tensor,
+    rw_0: torch.Tensor,
+    horizon: int,
+    gamma: float,
+) -> dict[str, torch.Tensor]:
+    """Differentiate imagined discounted reward through the critic-induced flow."""
+    z = z_0
+    rw = rw_0
+    p = world_model.momentum_init(z_0)
+
+    reward_list: list[torch.Tensor] = []
+    action_list: list[torch.Tensor] = []
+    control_tan_list: list[torch.Tensor] = []
+
+    for _ in range(horizon):
+        control_cov, control_tan, _ = critic_control_field(
+            critic,
+            z,
+            rw,
+            metric=action_decoder.metric,
+            create_graph=True,
+            detach_input=False,
+        )
+        boundary = action_decoder(z, control_tan, rw)
+        action_mean = boundary["action_mean"]
+        reward_info = reward_head.decompose(
+            z,
+            action_mean,
+            rw,
+            control=control_tan,
+        )
+        step_out = world_model._rollout_transition(
+            z,
+            p,
+            control_cov,
+            rw,
+            track_energy=False,
+        )
+
+        reward_list.append(reward_info["reward_total"].squeeze(-1))
+        action_list.append(action_mean)
+        control_tan_list.append(control_tan)
+        z = step_out["z"]
+        p = step_out["p"]
+        rw = step_out["rw"]
+
+    rewards = torch.stack(reward_list, dim=1)
+    discounted_rewards = _discounted_sum(rewards, gamma)
+    return {
+        "rewards": rewards,
+        "discounted_rewards": discounted_rewards,
+        "actions": torch.stack(action_list, dim=1),
+        "controls_tan": torch.stack(control_tan_list, dim=1),
+    }
+
+
 def _value_calibration_error(
     values: torch.Tensor,
     targets: torch.Tensor,
@@ -1076,6 +1327,7 @@ def _train_step(
     epoch: int,
     current_hard_routing: bool,
     current_tau: float,
+    update_idx: int = 0,
     obs_normalizer: ObservationNormalizer | None = None,
     compute_diagnostics: bool = True,
 ) -> dict[str, float]:
@@ -1088,6 +1340,7 @@ def _train_step(
     """
     metrics: dict[str, float] = {}
     step_t0 = time.perf_counter()
+    _mark_compile_step_begin()
 
     obs_raw = batch["obs"]  # [B, T+1, obs_dim]
     obs = obs_normalizer.normalize_tensor(obs_raw) if obs_normalizer is not None else obs_raw
@@ -1316,7 +1569,7 @@ def _train_step(
     inferred_motor_macro_probs = inferred_boundary["macro_probs"]
     inferred_motor_nuisance = inferred_boundary["motor_nuisance"]
     inferred_motor_compliance = inferred_boundary["motor_compliance"]
-    recon_actions = action_decoder.decode(
+    recon_boundary = action_decoder(
         z_prev_flat,
         inferred_controls_tan,
         rw_prev_flat,
@@ -1324,8 +1577,9 @@ def _train_step(
         motor_nuisance=inferred_motor_nuisance,
         motor_compliance=inferred_motor_compliance,
     )
+    recon_actions = recon_boundary["action_mean"]
     cycle_boundary = action_encoder(z_prev_flat, recon_actions.detach(), rw_prev_flat)
-    target_decoded_actions = action_decoder.decode(
+    target_boundary = action_decoder(
         z_prev_flat,
         replay_controls_tan_flat,
         rw_prev_flat,
@@ -1333,14 +1587,14 @@ def _train_step(
         motor_nuisance=replay_motor_nuisance_flat,
         motor_compliance=replay_motor_compliance_flat,
     )
-    with _freeze_modules(critic):
-        value_controls_cov, value_controls_tan, _ = critic_control_field(
-            critic,
-            z_prev_flat,
-            rw_prev_flat,
-            metric=world_model.metric,
-            create_graph=False,
-        )
+    target_decoded_actions = target_boundary["action_mean"]
+    value_controls_cov, value_controls_tan, _ = critic_control_field(
+        critic,
+        z_prev_flat,
+        rw_prev_flat,
+        metric=world_model.metric,
+        create_graph=False,
+    )
     value_controls_cov = value_controls_cov.detach()
     value_controls_tan = value_controls_tan.detach()
 
@@ -1606,7 +1860,7 @@ def _train_step(
         reward_density=r_cons.detach().reshape(B, T, 1),
         kappa=config.screened_poisson_kappa,
     )
-    L_critic = L_poisson + config.w_critic * L_value
+    L_critic = config.w_screened_poisson * L_poisson + config.w_critic * L_value
     metrics["time/critic"] = time.perf_counter() - critic_t0
     metrics["critic/L_critic"] = float(L_critic)
     metrics["critic/L_value"] = float(L_value)
@@ -1633,41 +1887,137 @@ def _train_step(
     metrics["critic/grad_norm"] = float(critic_grad)
     metrics["time/world_model"] = time.perf_counter() - t_section
 
-    # Imagined control-field diagnostics
-    imagination = _imagine(
-        world_model,
-        reward_head,
-        critic,
-        action_decoder,
-        z_0.detach(),
-        rw_0.detach(),
-        config.imagination_horizon,
+    metrics["actor/L_return"] = 0.0
+    metrics["actor/return_mean"] = 0.0
+    metrics["actor/reward_mean"] = 0.0
+    metrics["actor/control_norm_mean"] = 0.0
+    metrics["actor/action_abs_mean"] = 0.0
+    metrics["actor/grad_norm_decoder"] = 0.0
+    metrics["actor/grad_norm_critic"] = 0.0
+    metrics["actor/update_applied"] = 0.0
+    metrics["actor/horizon"] = 0.0
+    metrics["actor/batch_size"] = 0.0
+    metrics["time/actor"] = 0.0
+
+    actor_update_due = _should_run_actor_update(
+        config,
+        epoch=epoch,
+        update_idx=update_idx,
     )
-    imag_z_states = imagination["z_states"]      # [B, H, D]
-    imag_rw_states = imagination["rw_states"]    # [B, H, K]
-    imag_controls_tan = imagination["controls_tan"]      # [B, H, D]
-    imag_controls_cov = imagination["controls_cov"]      # [B, H, D]
-    imag_motor_macro_probs = imagination["motor_macro_probs"]  # [B, H, M]
-    imag_motor_nuisance = imagination["motor_nuisance"]  # [B, H, D]
-    imag_motor_compliance = imagination["motor_compliance"]  # [B, H, A, A]
-    imag_rewards = imagination["rewards"]        # [B, H]
-    imag_reward_cons = imagination["reward_conservative"]  # [B, H]
-    imag_reward_noncons = imagination["reward_nonconservative"]  # [B, H]
-    imag_reward_curl = imagination["reward_curl_norm"]  # [B, H]
-    imag_log_std = imagination["action_log_std"] # [B, H, A]
-    imag_z = imagination["z_traj"]               # [B, H, D]
-    imag_rw = imagination["rw_traj"]             # [B, H, K]
-    imag_actions = imagination["actions"]        # [B, H, A]
-    discounted_rewards = _discounted_sum(imag_rewards, config.gamma)
-    terminal_value = critic_value(critic, imag_z[:, -1], imag_rw[:, -1]).squeeze(-1)
-    boundary_value = (config.gamma ** config.imagination_horizon) * terminal_value
-    control_objective = discounted_rewards + boundary_value
+    if actor_update_due:
+        t_section = time.perf_counter()
+        actor_batch_size = min(int(config.actor_return_batch_size), B)
+        if actor_batch_size > 0:
+            if actor_batch_size < B:
+                actor_idx = torch.randperm(B, device=z_0.device)[:actor_batch_size]
+                z_actor = z_0[actor_idx].detach()
+                rw_actor = rw_0[actor_idx].detach()
+            else:
+                z_actor = z_0.detach()
+                rw_actor = rw_0.detach()
+
+            world_model_actor = _unwrap_compiled_module(world_model)
+            reward_head_actor = _unwrap_compiled_module(reward_head)
+            critic_actor = _unwrap_compiled_module(critic)
+            action_encoder_actor = _unwrap_compiled_module(action_encoder)
+            action_decoder_actor = _unwrap_compiled_module(action_decoder)
+            shared_critic_actor = _shared_value_field(world_model_actor, critic_actor)
+
+            actor_modules = [
+                (world_model_actor, False),
+                (reward_head_actor, False),
+                (action_encoder_actor, False),
+                (action_decoder_actor, True),
+                (critic_actor, True),
+            ]
+            with _temporary_requires_grad(actor_modules):
+                optimizer_boundary.zero_grad()
+                if shared_critic_actor:
+                    optimizer_wm.zero_grad()
+                elif optimizer_critic is not None:
+                    optimizer_critic.zero_grad()
+
+                actor_rollout = _imagine_actor_return(
+                    world_model_actor,
+                    reward_head_actor,
+                    critic_actor,
+                    action_decoder_actor,
+                    z_actor,
+                    rw_actor,
+                    horizon=config.actor_return_horizon,
+                    gamma=config.gamma,
+                )
+                actor_return = actor_rollout["discounted_rewards"].mean()
+                L_actor = -config.w_actor_return * actor_return
+                L_actor.backward()
+
+                decoder_grad = nn.utils.clip_grad_norm_(
+                    action_decoder_actor.parameters(),
+                    config.grad_clip,
+                )
+                critic_param_list = list(critic_actor.parameters())
+                if shared_critic_actor:
+                    critic_grad_actor = float(
+                        nn.utils.clip_grad_norm_(critic_param_list, config.grad_clip),
+                    )
+                    optimizer_wm.step()
+                else:
+                    if optimizer_critic is not None:
+                        critic_grad_actor = float(
+                            nn.utils.clip_grad_norm_(critic_param_list, config.grad_clip),
+                        )
+                        optimizer_critic.step()
+                    else:
+                        critic_grad_actor = 0.0
+                optimizer_boundary.step()
+
+            metrics["actor/L_return"] = float(L_actor.detach())
+            metrics["actor/return_mean"] = float(actor_return.detach())
+            metrics["actor/reward_mean"] = float(actor_rollout["rewards"].detach().mean())
+            metrics["actor/control_norm_mean"] = float(
+                actor_rollout["controls_tan"].detach().norm(dim=-1).mean()
+            )
+            metrics["actor/action_abs_mean"] = float(actor_rollout["actions"].detach().abs().mean())
+            metrics["actor/grad_norm_decoder"] = float(decoder_grad)
+            metrics["actor/grad_norm_critic"] = float(critic_grad_actor)
+            metrics["actor/update_applied"] = 1.0
+            metrics["actor/horizon"] = float(config.actor_return_horizon)
+            metrics["actor/batch_size"] = float(actor_batch_size)
+        metrics["time/actor"] = time.perf_counter() - t_section
 
     # =====================================================================
     # Diagnostic metrics
     # =====================================================================
     if compute_diagnostics:
         t_section = time.perf_counter()
+        imagination = _imagine(
+            world_model,
+            reward_head,
+            critic,
+            action_decoder,
+            z_0.detach(),
+            rw_0.detach(),
+            config.imagination_horizon,
+        )
+        imag_z_states = imagination["z_states"]      # [B, H, D]
+        imag_rw_states = imagination["rw_states"]    # [B, H, K]
+        imag_controls_tan = imagination["controls_tan"]      # [B, H, D]
+        imag_controls_cov = imagination["controls_cov"]      # [B, H, D]
+        imag_motor_macro_probs = imagination["motor_macro_probs"]  # [B, H, M]
+        imag_motor_nuisance = imagination["motor_nuisance"]  # [B, H, D]
+        imag_motor_compliance = imagination["motor_compliance"]  # [B, H, A, A]
+        imag_rewards = imagination["rewards"]        # [B, H]
+        imag_reward_cons = imagination["reward_conservative"]  # [B, H]
+        imag_reward_noncons = imagination["reward_nonconservative"]  # [B, H]
+        imag_reward_curl = imagination["reward_curl_norm"]  # [B, H]
+        imag_log_std = imagination["action_log_std"] # [B, H, A]
+        imag_z = imagination["z_traj"]               # [B, H, D]
+        imag_rw = imagination["rw_traj"]             # [B, H, K]
+        imag_actions = imagination["actions"]        # [B, H, A]
+        discounted_rewards = _discounted_sum(imag_rewards, config.gamma)
+        terminal_value = critic_value(critic, imag_z[:, -1], imag_rw[:, -1]).squeeze(-1)
+        boundary_value = (config.gamma ** config.imagination_horizon) * terminal_value
+        control_objective = discounted_rewards + boundary_value
         with torch.no_grad():
             replay_values_all = critic_value(
                 critic,
@@ -1850,6 +2200,11 @@ def train(config: DreamerConfig) -> None:
     """Run Geometric Dreamer training."""
     device = torch.device(config.device)
     print(f"Device: {device}")
+    if config.matmul_precision:
+        torch.set_float32_matmul_precision(config.matmul_precision)
+    if device.type == "cuda":
+        torch.backends.cuda.matmul.allow_tf32 = config.allow_tf32
+        torch.backends.cudnn.allow_tf32 = config.allow_tf32
     torch.manual_seed(config.seed)
     obs_normalizer: ObservationNormalizer | None = None
 
@@ -1869,6 +2224,13 @@ def train(config: DreamerConfig) -> None:
 
     # --- Environment ---
     env = _make_env(config.domain, config.task)
+    collect_env = None
+    if not config.use_gas and config.collect_n_env_workers > 1:
+        collect_env = VectorizedDMControlEnv(
+            f"{config.domain}-{config.task}",
+            n_workers=config.collect_n_env_workers,
+            include_rgb=False,
+        )
     time_step = env.reset()
     actual_obs_dim = len(_flatten_obs(time_step))
     if actual_obs_dim != config.obs_dim:
@@ -1953,6 +2315,11 @@ def train(config: DreamerConfig) -> None:
         metric=world_model.metric,
     ).to(device)
 
+    world_model = _maybe_compile_module(
+        world_model,
+        enabled=config.torch_compile,
+        mode=config.torch_compile_mode,
+    )
     dyn_trans_model = _maybe_compile_module(
         dyn_trans_model,
         enabled=config.torch_compile,
@@ -2124,26 +2491,53 @@ def train(config: DreamerConfig) -> None:
     # --- Seed episodes (random policy) ---
     print(f"Collecting {config.seed_episodes} seed episodes...")
     seed_episodes_data: list[dict[str, np.ndarray]] = []
-    for i in range(config.seed_episodes):
-        ep = _collect_episode(
-            env,
-            None,
-            None,
-            model,
-            device,
-            config.latent_dim,
-            config.num_action_macros,
-            obs_normalizer=obs_normalizer,
-            action_repeat=config.action_repeat,
-            max_steps=config.max_episode_steps,
-            hard_routing=config.hard_routing,
-            hard_routing_tau=config.hard_routing_tau,
-            use_motor_texture=config.use_motor_texture,
+    seed_count = 0
+    while seed_count < config.seed_episodes:
+        batch_episodes = min(
+            config.seed_episodes - seed_count,
+            config.collect_n_env_workers if collect_env is not None else 1,
         )
-        buffer.add_episode(ep)
-        seed_episodes_data.append(ep)
-        ep_r = ep["rewards"].sum()
-        print(f"  Seed {i + 1}/{config.seed_episodes}: reward={ep_r:.1f}  len={len(ep['obs'])}")
+        if collect_env is not None:
+            episodes = _collect_parallel_episodes(
+                collect_env,
+                None,
+                None,
+                model,
+                device,
+                config.latent_dim,
+                config.num_action_macros,
+                num_episodes=batch_episodes,
+                obs_normalizer=obs_normalizer,
+                action_repeat=config.action_repeat,
+                max_steps=config.max_episode_steps,
+                hard_routing=config.hard_routing,
+                hard_routing_tau=config.hard_routing_tau,
+                use_motor_texture=config.use_motor_texture,
+            )
+        else:
+            episodes = [
+                _collect_episode(
+                    env,
+                    None,
+                    None,
+                    model,
+                    device,
+                    config.latent_dim,
+                    config.num_action_macros,
+                    obs_normalizer=obs_normalizer,
+                    action_repeat=config.action_repeat,
+                    max_steps=config.max_episode_steps,
+                    hard_routing=config.hard_routing,
+                    hard_routing_tau=config.hard_routing_tau,
+                    use_motor_texture=config.use_motor_texture,
+                ),
+            ]
+        for ep in episodes:
+            buffer.add_episode(ep)
+            seed_episodes_data.append(ep)
+            seed_count += 1
+            ep_r = ep["rewards"].sum()
+            print(f"  Seed {seed_count}/{config.seed_episodes}: reward={ep_r:.1f}  len={len(ep['obs'])}")
 
     if config.normalize_observations and obs_normalizer is None:
         if not seed_episodes_data:
@@ -2203,25 +2597,46 @@ def train(config: DreamerConfig) -> None:
         else:
             if epoch % config.collect_every == 0:
                 collect_t0 = time.perf_counter()
-                ep = _collect_episode(
-                    env,
-                    critic,
-                    action_decoder,
-                    model,
-                    device,
-                    config.latent_dim,
-                    config.num_action_macros,
-                    obs_normalizer=obs_normalizer,
-                    action_repeat=config.action_repeat,
-                    max_steps=config.max_episode_steps,
-                    hard_routing=config.hard_routing,
-                    hard_routing_tau=config.hard_routing_tau,
-                    use_motor_texture=config.use_motor_texture,
-                )
-                buffer.add_episode(ep)
-                ep_reward = ep["rewards"].sum()
-                episode_rewards.append(ep_reward)
-                total_env_steps += len(ep["obs"])
+                if collect_env is not None:
+                    episodes = _collect_parallel_episodes(
+                        collect_env,
+                        critic,
+                        action_decoder,
+                        model,
+                        device,
+                        config.latent_dim,
+                        config.num_action_macros,
+                        num_episodes=config.collect_n_env_workers,
+                        obs_normalizer=obs_normalizer,
+                        action_repeat=config.action_repeat,
+                        max_steps=config.max_episode_steps,
+                        hard_routing=config.hard_routing,
+                        hard_routing_tau=config.hard_routing_tau,
+                        use_motor_texture=config.use_motor_texture,
+                    )
+                else:
+                    episodes = [
+                        _collect_episode(
+                            env,
+                            critic,
+                            action_decoder,
+                            model,
+                            device,
+                            config.latent_dim,
+                            config.num_action_macros,
+                            obs_normalizer=obs_normalizer,
+                            action_repeat=config.action_repeat,
+                            max_steps=config.max_episode_steps,
+                            hard_routing=config.hard_routing,
+                            hard_routing_tau=config.hard_routing_tau,
+                            use_motor_texture=config.use_motor_texture,
+                        ),
+                    ]
+                for ep in episodes:
+                    buffer.add_episode(ep)
+                    ep_reward = ep["rewards"].sum()
+                    episode_rewards.append(ep_reward)
+                    total_env_steps += len(ep["obs"])
                 collect_time += time.perf_counter() - collect_t0
 
         # --- Training steps (multiple updates per epoch) ---
@@ -2273,6 +2688,7 @@ def train(config: DreamerConfig) -> None:
                 optimizer_critic,
                 optimizer_boundary,
                 batch, config, phase1_cfg, epoch, current_hard_routing, current_tau,
+                update_idx=epoch * max(n_updates, 1) + _u,
                 obs_normalizer=obs_normalizer,
                 compute_diagnostics=compute_diagnostics,
             )
@@ -2353,6 +2769,7 @@ def train(config: DreamerConfig) -> None:
                 ("tex", "boundary/texture_std_mean"),
                 ("im_rew", "imagination/reward_mean"),
                 ("im_ret", "imagination/return_mean"),
+                ("act_ret", "actor/return_mean"),
                 ("value", "critic/value_mean"),
                 ("wm_gn", "wm/grad_norm"),
             ]
@@ -2539,6 +2956,8 @@ def train(config: DreamerConfig) -> None:
 
     print("=" * 80)
     print("Training complete.")
+    if collect_env is not None:
+        collect_env.close()
     if mlflow_enabled and end_mlflow_run is not None:
         end_mlflow_run(enabled=True)
 

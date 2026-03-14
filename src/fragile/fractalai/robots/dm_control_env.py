@@ -293,6 +293,92 @@ class VectorizedDMControlEnv:
     def render_height(self):
         return self._envs[0].render_height
 
+    @property
+    def n_workers(self) -> int:
+        return self._n_workers
+
+    def _normalize_env_indices(self, env_indices=None) -> np.ndarray:
+        if env_indices is None:
+            return np.arange(self._n_workers, dtype=int)
+        indices = np.asarray(env_indices, dtype=int)
+        if indices.ndim != 1:
+            raise ValueError(f"env_indices must be 1D, got shape {indices.shape}")
+        if len(indices) == 0:
+            return indices
+        if indices.min() < 0 or indices.max() >= self._n_workers:
+            raise ValueError(
+                f"env_indices must be within [0, {self._n_workers}), got {indices.tolist()}",
+            )
+        return indices
+
+    # -- Parallel reset / direct stepping --------------------------------
+
+    def reset_batch(self, env_indices=None, seeds=None) -> np.ndarray:
+        """Reset selected workers in parallel and return flattened observations."""
+        indices = self._normalize_env_indices(env_indices)
+        if len(indices) == 0:
+            return np.empty((0, 0), dtype=np.float32)
+        if seeds is None:
+            seeds = [None] * len(indices)
+        elif len(seeds) != len(indices):
+            raise ValueError(
+                f"len(seeds)={len(seeds)} must match len(env_indices)={len(indices)}",
+            )
+
+        futures = [
+            self._executor.submit(self._envs[idx].reset, seed=seed)
+            for idx, seed in zip(indices, seeds)
+        ]
+        states = [future.result() for future in futures]
+        obs_dim = states[0].observation.shape[0]
+        observations = np.empty((len(indices), obs_dim), dtype=np.float32)
+        for row, state in enumerate(states):
+            observations[row] = state.observation.astype(np.float32, copy=False)
+        return observations
+
+    def step_actions_batch(self, actions, dt=None, env_indices=None):
+        """Step selected workers from their internal states without cloning."""
+        indices = self._normalize_env_indices(env_indices)
+        N = len(indices)
+        if len(actions) != N:
+            raise ValueError(f"len(actions)={len(actions)} must match len(env_indices)={N}")
+        if dt is None:
+            dt = np.ones(N, dtype=int)
+        elif len(dt) != N:
+            raise ValueError(f"len(dt)={len(dt)} must match len(env_indices)={N}")
+        if N == 0:
+            empty = np.empty((0, 0), dtype=np.float32)
+            return empty, np.zeros(0, dtype=np.float32), np.zeros(0, dtype=bool), np.zeros(
+                0,
+                dtype=bool,
+            ), []
+
+        futures = [
+            self._executor.submit(
+                self._envs[idx].step,
+                actions[row],
+                None,
+                int(dt[row]),
+                False,
+            )
+            for row, idx in enumerate(indices)
+        ]
+
+        observations = []
+        rewards = np.zeros(N, dtype=np.float32)
+        dones = np.zeros(N, dtype=bool)
+        truncateds = np.zeros(N, dtype=bool)
+        infos: list = []
+        for row, future in enumerate(futures):
+            _state, obs, reward, done, trunc, info = future.result()
+            observations.append(np.asarray(obs, dtype=np.float32))
+            rewards[row] = reward
+            dones[row] = done
+            truncateds[row] = trunc
+            infos.append(info)
+
+        return np.stack(observations), rewards, dones, truncateds, infos
+
     # -- Parallel step_batch ---------------------------------------------
 
     def step_batch(self, states, actions, dt=None, **kwargs):

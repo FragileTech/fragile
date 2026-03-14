@@ -301,16 +301,16 @@ Both `ActionTokenizer` and `ChartTokenizer` produce pairs of tensors:
 
 ```python
 # ActionTokenizer.forward (covariant_world_model.py)
-tokens_x = action.unsqueeze(-1) * self.weight.unsqueeze(0)
-          + self.pos_embed.unsqueeze(0)          # [B, A, d_model]
-tokens_z = z.unsqueeze(1).expand(-1, A, -1)      # [B, A, D]
+tokens_x = (action.unsqueeze(-1) * self.weight.unsqueeze(0)
+            + self.pos_embed.unsqueeze(0))                                  # [B, A, d_model]
+tokens_z = z.unsqueeze(1).expand(-1, self.action_dim, -1).contiguous()      # [B, A, D]
 ```
 
 ```python
 # ChartTokenizer.forward (covariant_world_model.py)
-tokens_x = rw.unsqueeze(-1) * self.chart_embeddings.unsqueeze(0)  # [B, K, d_model]
-safe_centers = _project_to_ball(self.chart_centers)                 # [K, D]
-tokens_z = safe_centers.unsqueeze(0).expand(B, -1, -1)              # [B, K, D]
+tokens_x = rw.unsqueeze(-1) * self.chart_embeddings.unsqueeze(0)            # [B, K, d_model]
+safe_centers = _project_to_ball(self.chart_centers)                          # [K, D]
+tokens_z = safe_centers.unsqueeze(0).expand(B, -1, -1).contiguous()          # [B, K, D]
 ```
 
 The `CovariantControlField` concatenates action and chart tokens into a single context set:

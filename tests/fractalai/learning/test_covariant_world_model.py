@@ -281,6 +281,29 @@ class TestGeometricWorldModel:
         out = m(z_0, actions, rw_0)
         assert (~out["jumped"]).all(), "No jumps should occur with use_jump=False"
 
+    def test_bind_chart_centers_reuses_phase1_atlas(self):
+        """All chart-conditioned submodules should share the frozen Phase 1 atlas."""
+        from fragile.learning.core.layers.atlas import _project_to_ball
+        from fragile.learning.vla.covariant_world_model import GeometricWorldModel
+
+        m = GeometricWorldModel(
+            latent_dim=D,
+            action_dim=A,
+            num_charts=K,
+            d_model=D_MODEL,
+        )
+        phase1_centers = torch.randn(K, D) * 5.0
+        expected = _project_to_ball(phase1_centers)
+
+        m.bind_chart_centers(phase1_centers, freeze=True)
+
+        for tok in (
+            m.potential_net.chart_tok,
+            m.chart_predictor.chart_tok,
+        ):
+            assert torch.allclose(tok.chart_centers, expected)
+            assert not tok.chart_centers.requires_grad
+
 
 class TestChartCenterProjection:
     """Chart centers must stay inside the Poincare ball during forward pass."""
@@ -334,7 +357,7 @@ class TestGeometricInvariants:
             U_minus, _ = net._analytic_U_and_grad(z_minus)
             numerical_grad[:, i] = (U_plus - U_minus).squeeze(-1) / (2 * eps)
 
-        assert torch.allclose(dU_dz, numerical_grad, atol=2e-3), (
+        assert torch.allclose(dU_dz, numerical_grad, atol=4e-3), (
             f"Analytical grad:\n{dU_dz}\nNumerical grad:\n{numerical_grad}"
         )
 

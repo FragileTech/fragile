@@ -340,10 +340,14 @@ def critic_control_field(
     *,
     metric: nn.Module | None = None,
     create_graph: bool = False,
+    detach_input: bool = True,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """Compute the critic-induced control in covector and tangent form."""
     metric_mod = metric if metric is not None else ConformalMetric()
-    z_in = z.detach().requires_grad_(True)
+    if detach_input:
+        z_in = z.detach().requires_grad_(True)
+    else:
+        z_in = z.requires_grad_(True)
     value = critic_value(critic, z_in, rw)
     (control_cov,) = torch.autograd.grad(
         value.sum(),
