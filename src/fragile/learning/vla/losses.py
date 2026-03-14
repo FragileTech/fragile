@@ -291,8 +291,7 @@ def compute_screened_poisson_loss(
     by the geodesic miss-distance to target.
 
     Args:
-        value_net: Scalar value network on the Poincare ball. Supports either
-            the Phase 2 potential network or the standalone RL critic.
+        value_net: Scalar value field exposing ``task_value(z, rw)``.
         z_trajectory: [B, H, D] predicted positions.
         z_targets: [B, H, D] target positions. Used only when
             ``reward_density`` is not provided.
@@ -323,9 +322,26 @@ def compute_screened_poisson_loss(
         msg = "compute_screened_poisson_loss requires either z_targets or reward_density."
         raise ValueError(msg)
 
+    if router_weights.ndim == 3:
+        rw_flat = router_weights.reshape(B * H, router_weights.shape[-1])
+    elif router_weights.ndim == 2:
+        if router_weights.shape[0] == B * H:
+            rw_flat = router_weights
+        elif router_weights.shape[0] == B:
+            rw_flat = router_weights.repeat_interleave(H, dim=0)
+        elif router_weights.shape[0] == 1:
+            rw_flat = router_weights.expand(B * H, -1)
+        else:
+            msg = "router_weights has incompatible leading dimension for z_trajectory."
+            raise ValueError(msg)
+    else:
+        msg = "router_weights must have shape [B, K] or [B, H, K]."
+        raise ValueError(msg)
+
     if n > max_samples:
         idx = torch.randperm(n, device=z_flat.device)[:max_samples]
         z_flat = z_flat[idx]
+        rw_flat = rw_flat[idx]
         if z_tgt_flat is not None:
             z_tgt_flat = z_tgt_flat[idx]
         if rho_r is not None:
@@ -337,30 +353,17 @@ def compute_screened_poisson_loss(
     else:
         rho_r = rho_r.detach()
 
-    # Router weights: single row, broadcasts to any batch size inside V_func
-    if router_weights.ndim == 3:
-        rw_row = router_weights.reshape(-1, router_weights.shape[-1]).mean(dim=0, keepdim=True)
-    else:
-        rw_row = router_weights.mean(dim=0, keepdim=True)  # [1, K]
-
-    # Define V as a function of z (handles arbitrary batch size)
+    # Define V as a function of z using the local chart mixture for each sample.
     def V_func(z_in: torch.Tensor) -> torch.Tensor:
         n_in = z_in.shape[0]
-        rw_in = rw_row.expand(n_in, -1)
-        if hasattr(value_net, "chart_tok") and hasattr(value_net, "z_embed"):
-            ctx_x, ctx_z = value_net.chart_tok(rw_in, z_in)
-            x_q = value_net.z_embed(z_in)
-            if hasattr(value_net, "v_critic_attn") and hasattr(value_net, "v_out"):
-                v_feat, _ = value_net.v_critic_attn(z_in, ctx_z, x_q, ctx_x, ctx_x)
-                return value_net.v_out(v_feat)  # [n_in, 1]
-            if hasattr(value_net, "attn") and hasattr(value_net, "value_head"):
-                v_feat, _ = value_net.attn(z_in, ctx_z, x_q, ctx_x, ctx_x)
-                return value_net.value_head(v_feat)  # [n_in, 1]
-
-        raise TypeError(
-            "compute_screened_poisson_loss requires a value network with "
-            "chart_tok/z_embed and either (v_critic_attn, v_out) or (attn, value_head).",
-        )
+        if n_in == rw_flat.shape[0]:
+            rw_in = rw_flat
+        elif n_in % rw_flat.shape[0] == 0:
+            rw_in = rw_flat.repeat(n_in // rw_flat.shape[0], 1)
+        else:
+            msg = "Local router weights do not align with collocation batch size."
+            raise ValueError(msg)
+        return value_net.task_value(z_in, rw_in)
 
     # Single batched call inside hyperbolic_laplacian (returns V_center too)
     lap_V, V_center = hyperbolic_laplacian(V_func, z_flat)  # [N, 1], [N, 1]

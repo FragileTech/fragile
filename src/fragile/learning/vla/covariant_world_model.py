@@ -207,28 +207,43 @@ class CovariantPotentialNet(nn.Module):
         dU_dz = -2.0 * z / (r * (1.0 - r ** 2))  # [B, D]
         return U, dU_dz
 
-    def forward(self, z: torch.Tensor, rw: torch.Tensor) -> torch.Tensor:
-        """Compute scalar effective potential (for energy conservation loss).
+    def _value_features(
+        self,
+        z: torch.Tensor,
+        rw: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Return shared attention features for task and risk scalars."""
+        ctx_x, ctx_z = self.chart_tok(rw, z)
+        x_q = self.z_embed(z)
+        v_feat, _ = self.v_critic_attn(z, ctx_z, x_q, ctx_x, ctx_x)
+        psi_feat, _ = self.psi_risk_attn(z, ctx_z, x_q, ctx_x, ctx_x)
+        return v_feat, psi_feat
+
+    def task_value(self, z: torch.Tensor, rw: torch.Tensor) -> torch.Tensor:
+        """Task-value scalar used by policy improvement and jump selection."""
+        v_feat, _ = self._value_features(z, rw)
+        return self.v_out(v_feat)
+
+    def effective_potential(self, z: torch.Tensor, rw: torch.Tensor) -> torch.Tensor:
+        """Effective structural potential used for energy diagnostics.
 
         Args:
             z: [B, D] position in the Poincare ball.
             rw: [B, K] router / chart weights.
 
         Returns:
-            phi: [B, 1] effective potential.
+            phi_eff: [B, 1] effective structural potential.
         """
         U, _ = self._analytic_U_and_grad(z)
-
-        ctx_x, ctx_z = self.chart_tok(rw, z)
-        x_q = self.z_embed(z)
-
-        v_feat, _ = self.v_critic_attn(z, ctx_z, x_q, ctx_x, ctx_x)
-        V = self.v_out(v_feat)  # [B, 1]
-
-        psi_feat, _ = self.psi_risk_attn(z, ctx_z, x_q, ctx_x, ctx_x)
-        Psi = self.psi_out(psi_feat)  # [B, 1]
+        v_feat, psi_feat = self._value_features(z, rw)
+        V = self.v_out(v_feat)
+        Psi = self.psi_out(psi_feat)
 
         return self.alpha * U + (1.0 - self.alpha) * V + self.gamma_risk * Psi
+
+    def forward(self, z: torch.Tensor, rw: torch.Tensor) -> torch.Tensor:
+        """Return task value for value-field uses."""
+        return self.task_value(z, rw)
 
     def force_and_potential(
         self, z: torch.Tensor, rw: torch.Tensor,
@@ -249,16 +264,9 @@ class CovariantPotentialNet(nn.Module):
         """
         U, dU_dz = self._analytic_U_and_grad(z)
 
-        ctx_x, ctx_z = self.chart_tok(rw, z)
-        x_q = self.z_embed(z)
-
-        # Critic: force + scalar from shared attention
-        v_feat, _ = self.v_critic_attn(z, ctx_z, x_q, ctx_x, ctx_x)
+        v_feat, psi_feat = self._value_features(z, rw)
         f_critic = self.v_force_out(v_feat)  # [B, D]
         V = self.v_out(v_feat)  # [B, 1]
-
-        # Risk: force + scalar from shared attention
-        psi_feat, _ = self.psi_risk_attn(z, ctx_z, x_q, ctx_x, ctx_x)
         f_risk = self.psi_force_out(psi_feat)  # [B, D]
         Psi = self.psi_out(psi_feat)  # [B, 1]
 
@@ -563,6 +571,7 @@ class GeometricWorldModel(nn.Module):
         self,
         latent_dim: int = 16,
         action_dim: int = 14,
+        control_dim: int | None = None,
         num_charts: int = 8,
         d_model: int = 128,
         hidden_dim: int = 256,
@@ -582,6 +591,7 @@ class GeometricWorldModel(nn.Module):
         super().__init__()
         self.latent_dim = latent_dim
         self.action_dim = action_dim
+        self.control_dim = control_dim if control_dim is not None else action_dim
         self.num_charts = num_charts
         self.dt = dt
         self.gamma = gamma_friction
@@ -622,17 +632,17 @@ class GeometricWorldModel(nn.Module):
             latent_dim, num_charts, d_model,
             alpha=alpha_potential, gamma_risk=gamma_risk,
         )
-        self.control_net = CovariantControlField(
-            latent_dim, action_dim, num_charts, d_model,
-        )
-
+        if self.control_dim == latent_dim:
+            self.control_lift: nn.Module = nn.Identity()
+        else:
+            self.control_lift = SpectralLinear(self.control_dim, latent_dim)
         if use_boris:
-            self.curl_net = CovariantValueCurl(latent_dim, action_dim, d_model)
+            self.curl_net = CovariantValueCurl(latent_dim, self.control_dim, d_model)
         else:
             self.curl_net = None
 
         self.chart_predictor = CovariantChartTarget(
-            latent_dim, action_dim, num_charts, d_model,
+            latent_dim, self.control_dim, num_charts, d_model,
         )
 
         # Initial momentum from position
@@ -645,7 +655,6 @@ class GeometricWorldModel(nn.Module):
         """Return every chart tokenizer that should share the Phase-1 atlas."""
         return [
             self.potential_net.chart_tok,
-            self.control_net.chart_tok,
             self.chart_predictor.chart_tok,
         ]
 
@@ -725,7 +734,7 @@ class GeometricWorldModel(nn.Module):
         self,
         z: torch.Tensor,
         p: torch.Tensor,
-        action: torch.Tensor,
+        control: torch.Tensor,
         rw: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict[str, torch.Tensor]]:
         """One geodesic Boris-BAOAB integration step.
@@ -740,7 +749,7 @@ class GeometricWorldModel(nn.Module):
         Args:
             z: [B, D] current position.
             p: [B, D] current momentum (cotangent vector).
-            action: [B, A] action vector.
+            control: [B, C] latent control covector.
             rw: [B, K] chart weights.
 
         Returns:
@@ -756,13 +765,13 @@ class GeometricWorldModel(nn.Module):
         # Direct force prediction (cotangent vector, no autograd).
         # Hamilton's equation: dp/dt = -force + u_π  (all covectors).
         force, _ = self.potential_net.force_and_potential(z, rw)
-        u_pi = self.control_net(z, action, rw)  # [B, D] cotangent force
+        u_pi = self.control_lift(control)  # [B, D] cotangent control from the value field
         kick = force - u_pi
 
         # Pre-compute curl tensor once for both Boris rotation and risk tensor
         curl_F = None
         if self.curl_net is not None:
-            curl_F = self.curl_net(z, action)
+            curl_F = self.curl_net(z, control)
 
         # Compute risk tensor for metric adaptation
         risk_T = None
@@ -780,7 +789,7 @@ class GeometricWorldModel(nn.Module):
 
         p_minus = p - (h / 2.0) * kick
         # pass pre-computed lambda_inv_sq (None in non-risk case, boris computes its own)
-        p_plus, _ = self._boris_rotation(p_minus, z, action, curl_F=curl_F, lambda_inv_sq=lis_base)
+        p_plus, _ = self._boris_rotation(p_minus, z, control, curl_F=curl_F, lambda_inv_sq=lis_base)
 
         # Hodge decomposition: solenoidal force = Boris impulse / dt
         hodge_info: dict[str, torch.Tensor] = {}
@@ -838,7 +847,7 @@ class GeometricWorldModel(nn.Module):
 
         # --- B step (second half): momentum kick ---
         force2, phi_eff = self.potential_net.force_and_potential(z, rw)
-        u_pi2 = self.control_net(z, action, rw)
+        u_pi2 = self.control_lift(control)
         kick2 = force2 - u_pi2
 
         if self.F_max > 0:
@@ -883,13 +892,13 @@ class GeometricWorldModel(nn.Module):
         B = z.shape[0]
 
         # Potential at current position — only K forward passes worth of state
-        _, V_z = self.potential_net.force_and_potential(z, rw)  # [B, 1]
+        V_z = self.potential_net.task_value(z, rw)  # [B, 1]
 
         # Potential at each chart center — batch size K (not B*K).
         # V(c_k) depends only on the center position and one-hot routing,
         # so it's identical across all B samples.  Evaluate once, broadcast.
         rw_onehot = torch.eye(K, device=z.device)  # [K, K]
-        _, V_ck = self.potential_net.force_and_potential(centers, rw_onehot)  # [K, 1]
+        V_ck = self.potential_net.task_value(centers, rw_onehot)  # [K, 1]
         V_ck = V_ck.squeeze(-1).unsqueeze(0).expand(B, -1)  # [B, K]
 
         # Geodesic distance from z to each center
@@ -907,7 +916,7 @@ class GeometricWorldModel(nn.Module):
         self,
         z: torch.Tensor,
         p: torch.Tensor,
-        action: torch.Tensor,
+        control: torch.Tensor,
         rw: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Conditional chart jump (Fisher-Rao component of WFR).
@@ -920,7 +929,7 @@ class GeometricWorldModel(nn.Module):
         Args:
             z: [B, D] current position.
             p: [B, D] current momentum.
-            action: [B, A] action vector.
+            control: [B, C] latent control covector.
             rw: [B, K] current chart weights.
 
         Returns:
@@ -931,7 +940,7 @@ class GeometricWorldModel(nn.Module):
             jumped: [B] boolean mask of which samples jumped.
         """
         # Supervised chart logits (from learned CovariantChartTarget)
-        chart_logits = self.chart_predictor(z, action, rw)
+        chart_logits = self.chart_predictor(z, control, rw)
 
         # Boltzmann logits for actual jump decision
         boltz_logits = self._boltzmann_chart_logits(z, rw)
@@ -966,7 +975,7 @@ class GeometricWorldModel(nn.Module):
         self,
         z_start: torch.Tensor,
         p_start: torch.Tensor,
-        action: torch.Tensor,
+        control: torch.Tensor,
         rw: torch.Tensor,
         n_steps: int,
         deterministic: bool = True,
@@ -975,12 +984,12 @@ class GeometricWorldModel(nn.Module):
 
         When ``deterministic=True``, the O-step noise is zeroed so the
         integrator output is a deterministic function of (z_start, p_start,
-        action) — required for supervised training against geodesic targets.
+        control) — required for supervised training against geodesic targets.
 
         Args:
             z_start: [B, D] starting position.
             p_start: [B, D] starting momentum.
-            action: [B, A] action vector (same action for all sub-steps).
+            control: [B, C] latent control covector (same control for all sub-steps).
             rw: [B, K] chart routing weights.
             n_steps: Number of BAOAB sub-steps.
             deterministic: If True, zero O-step noise (c2=0).
@@ -1008,7 +1017,7 @@ class GeometricWorldModel(nn.Module):
         p = p_start
 
         for _ in range(n_steps):
-            z, p, phi_eff, hodge_info = self._baoab_step(z, p, action, rw)
+            z, p, phi_eff, hodge_info = self._baoab_step(z, p, control, rw)
             z_traj.append(z)
             p_traj.append(p)
             phi_eff_list.append(phi_eff)
@@ -1029,19 +1038,19 @@ class GeometricWorldModel(nn.Module):
         self,
         z: torch.Tensor,
         p: torch.Tensor,
-        action: torch.Tensor,
+        control: torch.Tensor,
         rw: torch.Tensor,
         *,
         track_energy: bool = False,
     ) -> dict[str, torch.Tensor | dict[str, torch.Tensor] | None]:
-        """Advance one horizon step with optional energy tracking."""
+        """Advance one horizon step under a latent control covector."""
         B = z.shape[0]
         N = self.n_refine_steps
 
         if self.use_jump:
-            z, p, chart_logits, rw, jumped = self._conditional_jump(z, p, action, rw)
+            z, p, chart_logits, rw, jumped = self._conditional_jump(z, p, control, rw)
         else:
-            chart_logits = self.chart_predictor(z, action, rw)
+            chart_logits = self.chart_predictor(z, control, rw)
             jumped = z.new_zeros(B, dtype=torch.bool)
 
         last_hodge_info: dict[str, torch.Tensor] | None = None
@@ -1049,9 +1058,9 @@ class GeometricWorldModel(nn.Module):
         if track_energy:
             energy_substeps = z.new_zeros((B, N))
 
-        phi_eff = self.potential_net(z, rw)
+        phi_eff = self.potential_net.effective_potential(z, rw)
         for s in range(N):
-            z, p, phi_eff, hodge_info = self._baoab_step(z, p, action, rw)
+            z, p, phi_eff, hodge_info = self._baoab_step(z, p, control, rw)
 
             if energy_substeps is not None:
                 r_sq = (z ** 2).sum(dim=-1, keepdim=True)
@@ -1081,7 +1090,7 @@ class GeometricWorldModel(nn.Module):
     def forward(
         self,
         z_0: torch.Tensor,
-        actions: torch.Tensor,
+        controls: torch.Tensor,
         router_weights_0: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
         """Multi-step rollout through the world model.
@@ -1092,7 +1101,7 @@ class GeometricWorldModel(nn.Module):
 
         Args:
             z_0: [B, D] initial latent position.
-            actions: [B, H, A] action sequence (H = prediction horizon).
+            controls: [B, H, C] latent control-covector sequence.
             router_weights_0: [B, K] initial chart routing weights.
 
         Returns:
@@ -1108,7 +1117,7 @@ class GeometricWorldModel(nn.Module):
                 hodge_harmonic_ratio: [B, H] ||f_harm|| / ||f_total||.
                 hodge_harmonic_forces: [B, H, D] harmonic residual forces.
         """
-        B, H, _A = actions.shape
+        B, H, _A = controls.shape
         device = z_0.device
         D = self.latent_dim
         K = self.num_charts
@@ -1136,7 +1145,7 @@ class GeometricWorldModel(nn.Module):
             step_out = self._rollout_transition(
                 z,
                 p,
-                actions[:, t, :],
+                controls[:, t, :],
                 rw,
                 track_energy=True,
             )

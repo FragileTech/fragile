@@ -22,6 +22,8 @@ class DreamerConfig:
     action_dim: int = 6  # walker
     latent_dim: int = 16
     num_charts: int = 8
+    num_action_charts: int = 0
+    num_action_macros: int = 0
     d_model: int = 128
     hidden_dim: int = 256
     codes_per_chart: int = 32
@@ -40,6 +42,7 @@ class DreamerConfig:
     wm_alpha_potential: float = 0.5
     wm_beta_curl: float = 0.1
     wm_gamma_risk: float = 0.01
+    wm_risk_metric_alpha: float = 0.0
     wm_use_boris: bool = True
     wm_use_jump: bool = False  # disabled — encoder trains charts via recon
     wm_n_refine_steps: int = 3
@@ -67,11 +70,19 @@ class DreamerConfig:
     grad_clip: float = 100.0
     w_dynamics: float = 1.0
     w_reward: float = 1.0
-    w_critic: float = 0.5
+    w_critic: float = 0.1
     w_momentum_reg: float = 0.01
     w_energy_conservation: float = 0.01
     w_hodge: float = 0.01
-    w_screened_poisson: float = 0.1
+    w_screened_poisson: float = 1.0
+    w_action_recon: float = 1.0
+    w_control_cycle: float = 0.1
+    w_control_supervise: float = 0.5
+    w_value_intent_align: float = 0.25
+    w_macro_supervise: float = 0.25
+    w_motor_nuisance_supervise: float = 0.1
+    w_motor_compliance_supervise: float = 0.1
+    w_reward_nonconservative: float = 0.01
     screened_poisson_kappa: float = 1.0
     lr_chart_centers_scale: float = 0.1
     lr_codebook_scale: float = 0.5
@@ -95,14 +106,47 @@ class DreamerConfig:
     w_confidence_calibration: float = 0.05
     w_hard_routing_nll: float = 0.5
     w_router_margin: float = 2.0
+    router_margin_target: float = 0.1
+    chart_usage_h_low: float | None = None
+    chart_usage_h_high: float | None = None
+    chart_ot_epsilon: float = 0.05
+    chart_ot_iters: int = 20
+    chart_ot_i_target: float = 0.35
+    chart_ot_multiplier_lr: float = 1.0
+    conf_target_top1: float = 0.55
+    conf_multiplier_lr: float = 1.5
+    chart_multiplier_lr: float = 1.0
+    code_usage_gate_h: float = 0.0
+    code_usage_h_low: float | None = None
+    code_usage_h_high: float | None = None
+    code_usage_temperature: float = 1.0
+    code_usage_ramp_epochs: int = 1
+    code_multiplier_lr: float = 0.5
+    phase1_adaptive_multipliers: bool = True
+    phase1_multiplier_max: float = 8.0
+    phase1_multiplier_decay: float = 0.05
     w_v_tangent_barrier: float = 0.01
     w_codebook_spread: float = 0.05
     w_codebook_center: float = 0.02
     w_chart_center_mean: float = 0.02
     w_chart_center_radius: float = 0.05
+    chart_center_radius_max: float = 0.9
     w_chart_center_sep: float = 0.02
+    chart_center_sep_margin: float = 0.2
+    w_chart_collapse: float = 0.0
     w_code_collapse: float = 0.5
     w_perp: float = 0.01
+    w_window: float = 0.0
+    w_window_eps_ground: float = 0.1
+    w_consistency: float = 1.0
+    radial_quality_alpha: float = 0.0
+    radial_vq_alpha: float = 0.0
+    radial_quality_rank_mix: float = 0.5
+    radial_recon_quality_weight: float = 1.0
+    radial_quality_mix: float = 0.5
+    radial_quality_base_weight: float = 1.0
+    radial_calibration_rho_max: float = 0.98
+    radial_calibration_band_width: float = 0.1
     encoder_loss_scale: float = 1.0  # scale for encoder loss vs WM loss
 
     # --- Gas collection ---
@@ -128,6 +172,8 @@ class DreamerConfig:
     torch_compile_mode: str = "reduce-overhead"
     normalize_observations: bool = True
     obs_norm_min_std: float = 1e-3
+    use_motor_texture: bool = True
+    sigma_motor: float = 0.1
 
     # --- Infrastructure ---
     device: str = field(
@@ -141,3 +187,10 @@ class DreamerConfig:
     mlflow: bool = False
     mlflow_tracking_uri: str = ""
     mlflow_experiment: str = "geometric-dreamer"
+
+    def __post_init__(self) -> None:
+        """Canonicalize theory-facing atlas sizes."""
+        if self.num_action_charts <= 0:
+            self.num_action_charts = self.num_charts
+        if self.num_action_macros <= 0:
+            self.num_action_macros = self.num_action_charts

@@ -33,3 +33,7 @@ class GeometricCritic(nn.Module):
         x_q = self.z_embed(z)
         feat, _ = self.attn(z, chart_z, x_q, chart_x, chart_x)
         return self.value_head(feat)
+
+    def task_value(self, z: torch.Tensor, rw: torch.Tensor) -> torch.Tensor:
+        """Canonical theory-facing value-field interface."""
+        return self.forward(z, rw)

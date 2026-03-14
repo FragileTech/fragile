@@ -90,6 +90,13 @@ class SequenceReplayBuffer:
             max_len = max(len(self._episodes[int(ep_idx)]["obs"]) for ep_idx in ep_indices)
 
         first_episode = self._episodes[int(ep_indices[0])]
+
+        def _shape_and_dtype(key: str):
+            for episode in self._episodes:
+                if key in episode:
+                    return episode[key].shape[1:], episode[key].dtype
+            return None, None
+
         obs_batch = np.zeros(
             (batch_size, max_len, *first_episode["obs"].shape[1:]),
             dtype=first_episode["obs"].dtype,
@@ -101,6 +108,71 @@ class SequenceReplayBuffer:
         rew_batch = np.zeros((batch_size, max_len), dtype=first_episode["rewards"].dtype)
         done_batch = np.zeros((batch_size, max_len), dtype=first_episode["dones"].dtype)
 
+        action_mean_shape, action_mean_dtype = _shape_and_dtype("action_means")
+        control_shape, control_dtype = _shape_and_dtype("controls")
+        control_tan_shape, control_tan_dtype = _shape_and_dtype("controls_tan")
+        control_cov_shape, control_cov_dtype = _shape_and_dtype("controls_cov")
+        control_valid_shape, control_valid_dtype = _shape_and_dtype("control_valid")
+        motor_macro_shape, motor_macro_dtype = _shape_and_dtype("motor_macro_probs")
+        motor_nuisance_shape, motor_nuisance_dtype = _shape_and_dtype("motor_nuisance")
+        motor_compliance_shape, motor_compliance_dtype = _shape_and_dtype("motor_compliance")
+
+        action_mean_batch = None
+        if action_mean_shape is not None and action_mean_dtype is not None:
+            action_mean_batch = np.zeros(
+                (batch_size, max_len, *action_mean_shape),
+                dtype=action_mean_dtype,
+            )
+
+        control_batch = None
+        if control_shape is not None and control_dtype is not None:
+            control_batch = np.zeros(
+                (batch_size, max_len, *control_shape),
+                dtype=control_dtype,
+            )
+
+        control_tan_batch = None
+        if control_tan_shape is not None and control_tan_dtype is not None:
+            control_tan_batch = np.zeros(
+                (batch_size, max_len, *control_tan_shape),
+                dtype=control_tan_dtype,
+            )
+
+        control_cov_batch = None
+        if control_cov_shape is not None and control_cov_dtype is not None:
+            control_cov_batch = np.zeros(
+                (batch_size, max_len, *control_cov_shape),
+                dtype=control_cov_dtype,
+            )
+
+        control_valid_batch = None
+        if control_valid_shape is not None and control_valid_dtype is not None:
+            control_valid_batch = np.zeros(
+                (batch_size, max_len, *control_valid_shape),
+                dtype=control_valid_dtype,
+            )
+
+        motor_macro_batch = None
+        if motor_macro_shape is not None and motor_macro_dtype is not None:
+            motor_macro_batch = np.zeros(
+                (batch_size, max_len, *motor_macro_shape),
+                dtype=motor_macro_dtype,
+            )
+
+        motor_nuisance_batch = None
+        if motor_nuisance_shape is not None and motor_nuisance_dtype is not None:
+            motor_nuisance_batch = np.zeros(
+                (batch_size, max_len, *motor_nuisance_shape),
+                dtype=motor_nuisance_dtype,
+            )
+
+        motor_compliance_batch = None
+        if motor_compliance_shape is not None and motor_compliance_dtype is not None:
+            motor_compliance_batch = np.zeros(
+                (batch_size, max_len, *motor_compliance_shape),
+                dtype=motor_compliance_dtype,
+            )
+
         for row, (ep_idx, start) in enumerate(zip(ep_indices, starts, strict=False)):
             episode = self._episodes[int(ep_idx)]
             start_i = int(start)
@@ -111,10 +183,70 @@ class SequenceReplayBuffer:
             act_batch[row, :length] = episode["actions"][sl]
             rew_batch[row, :length] = episode["rewards"][sl]
             done_batch[row, :length] = episode["dones"][sl]
+            if action_mean_batch is not None:
+                action_mean_batch[row, :length] = episode.get("action_means", episode["actions"])[sl]
+            if control_batch is not None and "controls" in episode:
+                control_batch[row, :length] = episode["controls"][sl]
+            if control_tan_batch is not None and "controls_tan" in episode:
+                control_tan_batch[row, :length] = episode["controls_tan"][sl]
+            if control_cov_batch is not None and "controls_cov" in episode:
+                control_cov_batch[row, :length] = episode["controls_cov"][sl]
+            if control_valid_batch is not None:
+                control_valid_batch[row, :length] = episode.get(
+                    "control_valid",
+                    np.zeros((len(episode["dones"]),), dtype=control_valid_batch.dtype),
+                )[sl]
+            if motor_macro_batch is not None and "motor_macro_probs" in episode:
+                motor_macro_batch[row, :length] = episode["motor_macro_probs"][sl]
+            if motor_nuisance_batch is not None and "motor_nuisance" in episode:
+                motor_nuisance_batch[row, :length] = episode["motor_nuisance"][sl]
+            if motor_compliance_batch is not None and "motor_compliance" in episode:
+                motor_compliance_batch[row, :length] = episode["motor_compliance"][sl]
 
-        return {
+        batch = {
             "obs": torch.from_numpy(obs_batch).to(device=device, dtype=torch.float32),
             "actions": torch.from_numpy(act_batch).to(device=device, dtype=torch.float32),
             "rewards": torch.from_numpy(rew_batch).to(device=device, dtype=torch.float32),
             "dones": torch.from_numpy(done_batch).to(device=device, dtype=torch.float32),
         }
+        if action_mean_batch is not None:
+            batch["action_means"] = torch.from_numpy(action_mean_batch).to(
+                device=device,
+                dtype=torch.float32,
+            )
+        if control_batch is not None:
+            batch["controls"] = torch.from_numpy(control_batch).to(
+                device=device,
+                dtype=torch.float32,
+            )
+        if control_tan_batch is not None:
+            batch["controls_tan"] = torch.from_numpy(control_tan_batch).to(
+                device=device,
+                dtype=torch.float32,
+            )
+        if control_cov_batch is not None:
+            batch["controls_cov"] = torch.from_numpy(control_cov_batch).to(
+                device=device,
+                dtype=torch.float32,
+            )
+        if control_valid_batch is not None:
+            batch["control_valid"] = torch.from_numpy(control_valid_batch).to(
+                device=device,
+                dtype=torch.float32,
+            )
+        if motor_macro_batch is not None:
+            batch["motor_macro_probs"] = torch.from_numpy(motor_macro_batch).to(
+                device=device,
+                dtype=torch.float32,
+            )
+        if motor_nuisance_batch is not None:
+            batch["motor_nuisance"] = torch.from_numpy(motor_nuisance_batch).to(
+                device=device,
+                dtype=torch.float32,
+            )
+        if motor_compliance_batch is not None:
+            batch["motor_compliance"] = torch.from_numpy(motor_compliance_batch).to(
+                device=device,
+                dtype=torch.float32,
+            )
+        return batch
