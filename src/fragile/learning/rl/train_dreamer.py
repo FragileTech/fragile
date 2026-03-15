@@ -111,6 +111,18 @@ def _rollout_routing_tau(hard_routing: bool, hard_routing_tau: float) -> float:
     return hard_routing_tau
 
 
+def _structured_state_from_encoder_output(enc_out: tuple[torch.Tensor, ...]) -> dict[str, torch.Tensor]:
+    """Pack the encoder's `(K, z_n, z_geo)` outputs into a named state dict."""
+    return {
+        "chart_idx": enc_out[0],
+        "code_idx": enc_out[1],
+        "z_n": enc_out[2],
+        "router_weights": enc_out[4],
+        "z_geo": enc_out[5],
+        "z_q": enc_out[11],
+    }
+
+
 def _clone_prefix_inplace(
     history: np.ndarray,
     companions: np.ndarray,
@@ -310,67 +322,51 @@ def _policy_action(
     actor: GeometricActor,
     action_model: SharedDynTopoEncoder,
     closure_model: CovariantObsActionClosureModel,
-    z: torch.Tensor,
-    rw: torch.Tensor,
-    z_q: torch.Tensor,
+    obs_info: dict[str, torch.Tensor],
     *,
     use_motor_texture: bool,
     hard_routing: bool = True,
     hard_routing_tau: float = -1.0,
 ) -> dict[str, torch.Tensor]:
-    """Predict an action-manifold ``z_geo`` and decode it to an environment action."""
-    if use_motor_texture:
-        action_latent, action_latent_mean, log_std = actor.sample_latent(z, rw)
-    else:
-        action_latent_mean, log_std = actor.forward(z, rw)
-        action_latent = action_latent_mean
-    action_info = symbolize_latent_with_atlas(
-        action_model,
-        action_latent,
-        hard_routing=hard_routing,
-        hard_routing_tau=hard_routing_tau,
-    )
-    action_info_mean = symbolize_latent_with_atlas(
-        action_model,
-        action_latent_mean,
+    """Decode the deterministic action manifold and discard execution texture."""
+    del use_motor_texture
+    action_state = actor(
+        obs_info["chart_idx"],
+        obs_info["code_idx"],
+        obs_info["z_n"],
         hard_routing=hard_routing,
         hard_routing_tau=hard_routing_tau,
     )
     with torch.inference_mode():
-        action, _, _ = action_model.decoder(
-            action_info["z_geo"].detach(),
-            None,
-            router_weights=action_info["router_weights"].detach(),
-            hard_routing=hard_routing,
-            hard_routing_tau=hard_routing_tau,
-        )
         action_mean, _, _ = action_model.decoder(
-            action_info_mean["z_geo"].detach(),
+            action_state["action_z_geo"].detach(),
             None,
-            router_weights=action_info_mean["router_weights"].detach(),
+            router_weights=action_state["action_router_weights"].detach(),
             hard_routing=hard_routing,
             hard_routing_tau=hard_routing_tau,
         )
         closure_out = closure_model(
-            z.detach(),
-            rw.detach(),
-            z_q.detach(),
-            action_info["z_geo"].detach(),
-            action_info["router_weights"].detach(),
-            action_info["z_q"].detach(),
+            obs_info["chart_idx"].detach(),
+            obs_info["code_idx"].detach(),
+            obs_info["z_n"].detach(),
+            action_state["action_chart_idx"].detach(),
+            action_state["action_code_idx"].detach(),
+            action_state["action_z_n"].detach(),
         )
     return {
-        "action": action.detach(),
+        "action": action_mean.detach(),
         "action_mean": action_mean.detach(),
-        "action_latent": action_info["z_geo"].detach(),
-        "action_latent_mean": action_info_mean["z_geo"].detach(),
-        "action_router_weights": action_info["router_weights"].detach(),
-        "action_chart_idx": action_info["chart_idx"].detach(),
-        "action_code_idx": action_info["code_idx"].detach(),
-        "action_code_latent": action_info["z_q"].detach(),
+        "action_latent": action_state["action_z_geo"].detach(),
+        "action_latent_mean": action_state["action_z_geo"].detach(),
+        "action_router_weights": action_state["action_router_weights"].detach(),
+        "action_chart_idx": action_state["action_chart_idx"].detach(),
+        "action_code_idx": action_state["action_code_idx"].detach(),
+        "action_code_latent": action_state["action_z_q"].detach(),
+        "action_z_n": action_state["action_z_n"].detach(),
+        "action_chart_logits": action_state["action_chart_logits"],
+        "action_code_logits": action_state["action_code_logits"],
         "control_tan": closure_out["control_tan"].detach(),
         "control_cov": closure_out["control_cov"].detach(),
-        "log_std": log_std.detach(),
     }
 
 
@@ -428,7 +424,7 @@ def _collect_episode(
     max_steps: int = 1000,
     hard_routing: bool = True,
     hard_routing_tau: float = 1.0,
-    use_motor_texture: bool = True,
+    use_motor_texture: bool = False,
 ) -> dict[str, np.ndarray]:
     """Collect a single episode.  Uses random actions if the policy is absent."""
     obs_list, act_list, rew_list, done_list = [], [], [], []
@@ -468,16 +464,12 @@ def _collect_episode(
                     hard_routing=hard_routing,
                     hard_routing_tau=routing_tau,
                 )
-                rw = enc_out[4]   # [1, K] router weights
-                z = enc_out[5]    # [1, D] z_geo
-                z_q = enc_out[11]  # [1, D] code latent
+                obs_info = _structured_state_from_encoder_output(enc_out)
             action_out = _policy_action(
                 actor,
                 action_model,
                 closure_model,
-                z,
-                rw,
-                z_q,
+                obs_info,
                 use_motor_texture=use_motor_texture,
                 hard_routing=hard_routing,
                 hard_routing_tau=routing_tau,
@@ -552,7 +544,7 @@ def _collect_parallel_episodes(
     max_steps: int = 1000,
     hard_routing: bool = True,
     hard_routing_tau: float = 1.0,
-    use_motor_texture: bool = True,
+    use_motor_texture: bool = False,
 ) -> list[dict[str, np.ndarray]]:
     """Collect multiple no-gas episodes in parallel with batched policy inference."""
     if num_episodes < 1:
@@ -618,16 +610,12 @@ def _collect_parallel_episodes(
                     hard_routing=hard_routing,
                     hard_routing_tau=routing_tau,
                 )
-                rw = enc_out[4]
-                z = enc_out[5]
-                z_q = enc_out[11]
+                obs_info = _structured_state_from_encoder_output(enc_out)
             action_out = _policy_action(
                 actor,
                 action_model,
                 closure_model,
-                z,
-                rw,
-                z_q,
+                obs_info,
                 use_motor_texture=use_motor_texture,
                 hard_routing=hard_routing,
                 hard_routing_tau=routing_tau,
@@ -731,14 +719,12 @@ def _eval_policy(
                     hard_routing=hard_routing,
                     hard_routing_tau=routing_tau,
                 )
-                rw, z, z_q = enc_out[4], enc_out[5], enc_out[11]
+                obs_info = _structured_state_from_encoder_output(enc_out)
             action_out = _policy_action(
                 actor,
                 action_model,
                 closure_model,
-                z,
-                rw,
-                z_q,
+                obs_info,
                 use_motor_texture=False,
                 hard_routing=hard_routing,
                 hard_routing_tau=routing_tau,
@@ -849,17 +835,13 @@ def _collect_gas_episodes(
                         hard_routing=config.hard_routing,
                         hard_routing_tau=routing_tau,
                     )
-                    rw = enc_out[4]
-                    z = enc_out[5]
-                    z_q = enc_out[11]
+                    obs_info = _structured_state_from_encoder_output(enc_out)
                 action_out = _policy_action(
                     actor,
                     action_model,
                     closure_model,
-                    z,
-                    rw,
-                    z_q,
-                    use_motor_texture=config.use_motor_texture,
+                    obs_info,
+                    use_motor_texture=False,
                     hard_routing=config.hard_routing,
                     hard_routing_tau=routing_tau,
                 )
@@ -977,7 +959,6 @@ def _imagine(
         action_latents: [B, H, D]
         action_router_weights: [B, H, K_a]
         actions: [B, H, A]
-        action_log_std: [B, H, A]
         rewards: [B, H]
         reward_conservative: [B, H]
         reward_nonconservative: [B, H]
@@ -992,25 +973,24 @@ def _imagine(
     z_list, rw_list, control_tan_list, control_cov_list, action_list = [], [], [], [], []
     action_latent_list, action_router_list = [], []
     r_list, r_cons_list, r_noncons_list, r_curl_list, r_curl_valid_list = [], [], [], [], []
-    texture_list, phi_list = [], []
+    phi_list = []
 
     for _t in range(horizon):
         obs_info = symbolize_latent_with_atlas(
             obs_model,
             z,
-            hard_routing=False,
-            hard_routing_tau=1.0,
+            router_weights_override=rw,
+            hard_routing=True,
+            hard_routing_tau=-1.0,
         )
         action_out = _policy_action(
             actor,
             action_model,
             closure_model,
-            z,
-            rw,
-            obs_info["z_q"],
+            obs_info,
             use_motor_texture=False,
-            hard_routing=False,
-            hard_routing_tau=1.0,
+            hard_routing=True,
+            hard_routing_tau=-1.0,
         )
         z_state_list.append(z.detach())
         rw_state_list.append(rw.detach())
@@ -1095,7 +1075,6 @@ def _imagine(
         r_noncons_list.append(r_noncons.squeeze(-1))
         r_curl_list.append(reward_curl_norm)
         r_curl_valid_list.append(reward_curl_valid)
-        texture_list.append(action_out["log_std"])
         phi_list.append(phi_eff)
 
     return {
@@ -1114,7 +1093,6 @@ def _imagine(
         "reward_nonconservative": torch.stack(r_noncons_list, dim=1),  # [B, H]
         "reward_curl_norm": torch.stack(r_curl_list, dim=1),  # [B, H]
         "reward_curl_valid": torch.stack(r_curl_valid_list, dim=1),  # [B, H]
-        "action_log_std": torch.stack(texture_list, dim=1),  # [B, H, A]
         "phi_eff": torch.stack(phi_list, dim=1),    # [B, H, 1]
     }
 
@@ -1216,21 +1194,29 @@ def _sync_rl_atlas(
     """Keep RL consumers bound to the observation or action atlas they read from."""
     obs_centers = getattr(model.encoder, "chart_centers", None)
     action_centers = getattr(action_model.encoder, "chart_centers", None)
-    if obs_centers is None or action_centers is None:
+    obs_codebook = getattr(model.encoder, "codebook", None)
+    action_codebook = getattr(action_model.encoder, "codebook", None)
+    if (
+        obs_centers is None
+        or action_centers is None
+        or obs_codebook is None
+        or action_codebook is None
+    ):
         return
 
     obs_centers = _project_to_ball(obs_centers.detach())
     action_centers = _project_to_ball(action_centers.detach())
+    obs_codebook = _project_to_ball(obs_codebook.detach())
+    action_codebook = _project_to_ball(action_codebook.detach())
     world_model_mod = _unwrap_compiled_module(world_model)
     critic_mod = _unwrap_compiled_module(critic)
     reward_head_mod = _unwrap_compiled_module(reward_head)
 
     world_model_mod.bind_chart_centers(obs_centers, freeze=True)
-    _bind_chart_tokenizer_centers(actor.chart_tok, obs_centers)
-    _bind_chart_tokenizer_centers(closure_model.obs_chart_tok, obs_centers)
+    actor.bind_action_atlas(action_centers, action_codebook)
+    closure_model.bind_obs_atlas(obs_centers, obs_codebook)
     if hasattr(critic_mod, "chart_tok"):
         _bind_chart_tokenizer_centers(critic_mod.chart_tok, obs_centers)
-    _bind_chart_tokenizer_centers(closure_model.action_chart_tok, action_centers)
     _bind_chart_tokenizer_centers(reward_head_mod.action_chart_tok, action_centers)
 
 
@@ -1421,30 +1407,31 @@ def _imagine_actor_return(
         obs_info = symbolize_latent_with_atlas(
             obs_model,
             z,
-            hard_routing=False,
-            hard_routing_tau=1.0,
+            router_weights_override=rw,
+            hard_routing=True,
+            hard_routing_tau=-1.0,
         )
-        action_latent, _action_latent_mean, _log_std = actor.sample_latent(z, rw)
-        action_info = symbolize_latent_with_atlas(
-            action_model,
-            action_latent,
-            hard_routing=False,
-            hard_routing_tau=1.0,
+        action_state = actor(
+            obs_info["chart_idx"],
+            obs_info["code_idx"],
+            obs_info["z_n"],
+            hard_routing=True,
+            hard_routing_tau=-1.0,
         )
         action_mean, _, _ = action_model.decoder(
-            action_info["z_geo"],
+            action_state["action_z_geo"],
             None,
-            router_weights=action_info["router_weights"],
-            hard_routing=False,
-            hard_routing_tau=1.0,
+            router_weights=action_state["action_router_weights"],
+            hard_routing=True,
+            hard_routing_tau=-1.0,
         )
         closure_out = closure_model(
-            z,
-            rw,
-            obs_info["z_q"],
-            action_info["z_geo"],
-            action_info["router_weights"],
-            action_info["z_q"],
+            obs_info["chart_idx"],
+            obs_info["code_idx"],
+            obs_info["z_n"],
+            action_state["action_chart_idx"],
+            action_state["action_code_idx"],
+            action_state["action_z_n"],
         )
         control_cov = closure_out["control_cov"]
         control_tan = closure_out["control_tan"]
@@ -1461,9 +1448,9 @@ def _imagine_actor_return(
         reward_info = reward_head.decompose(
             z,
             rw,
-            action_info["z_geo"],
-            action_info["router_weights"],
-            action_info["z_q"],
+            action_state["action_z_geo"],
+            action_state["action_router_weights"],
+            action_state["action_z_q"],
             control=control_tan,
             exact_covector=exact_covector,
         )
@@ -1563,7 +1550,7 @@ def _train_step(
 
     obs_raw = batch["obs"]
     obs = obs_normalizer.normalize_tensor(obs_raw) if obs_normalizer is not None else obs_raw
-    action_seq = batch["actions"]
+    action_seq = batch.get("action_means", batch["actions"])
     actions = action_seq[:, :-1]
     rewards = batch["rewards"][:, :-1]
     replay_dones = batch["dones"][:, :-1]
@@ -1592,6 +1579,7 @@ def _train_step(
         torch.Tensor,
         torch.Tensor,
         torch.Tensor,
+        torch.Tensor,
     ]:
         (
             base_loss,
@@ -1600,7 +1588,7 @@ def _train_step(
             z_geo_flat,
             enc_w_flat,
             K_ch_flat,
-            _z_n_flat,
+            z_n_flat,
             _z_tex_flat,
             c_bar_flat,
             K_code_flat,
@@ -1624,6 +1612,7 @@ def _train_step(
             enc_w_flat.reshape(B, T + 1, -1),
             K_ch_flat.reshape(B, T + 1),
             K_code_flat.reshape(B, T + 1),
+            z_n_flat.reshape(B, T + 1, -1),
             c_bar_flat.reshape(B, T + 1, -1),
             z_q_flat.reshape(B, T + 1, -1),
             v_local_flat.reshape(B, T + 1, -1),
@@ -1641,8 +1630,9 @@ def _train_step(
             rw_all,
             K_all,
             K_code_all,
+            zn_all,
             _c_bar_all,
-            z_q_all,
+            _z_q_all,
             _v_local_all,
         ) = _encode_sequence(flat_obs, model, jump_op, phase1_cfg)
         (
@@ -1653,6 +1643,7 @@ def _train_step(
             action_rw_all,
             action_K_all,
             action_K_code_all,
+            action_zn_all,
             _action_c_bar_all,
             action_z_q_all,
             _action_v_local_all,
@@ -1660,18 +1651,19 @@ def _train_step(
 
     z_prev = z_all[:, :-1]
     rw_prev = rw_all[:, :-1]
-    z_q_prev = z_q_all[:, :-1]
+    zn_prev = zn_all[:, :-1]
     action_z_prev = action_z_all[:, :-1]
     action_rw_prev = action_rw_all[:, :-1]
     action_z_q_prev = action_z_q_all[:, :-1]
+    action_zn_prev = action_zn_all[:, :-1]
 
     closure_out = closure_model(
-        z_prev.reshape(-1, config.latent_dim),
-        rw_prev.reshape(-1, config.num_charts),
-        z_q_prev.reshape(-1, config.latent_dim),
-        action_z_prev.reshape(-1, config.latent_dim),
-        action_rw_prev.reshape(-1, config.num_action_charts),
-        action_z_q_prev.reshape(-1, config.latent_dim),
+        K_all[:, :-1].reshape(-1),
+        K_code_all[:, :-1].reshape(-1),
+        zn_prev.reshape(-1, config.latent_dim),
+        action_K_all[:, :-1].reshape(-1),
+        action_K_code_all[:, :-1].reshape(-1),
+        action_zn_prev.reshape(-1, config.latent_dim),
     )
 
     replay_valid_flat = replay_valid.reshape(-1)
@@ -1833,10 +1825,16 @@ def _train_step(
 
     z_prev_flat = z_prev.reshape(-1, config.latent_dim)
     rw_prev_flat = rw_prev.reshape(-1, config.num_charts)
+    K_prev_flat = K_all[:, :-1].reshape(-1)
+    K_code_prev_flat = K_code_all[:, :-1].reshape(-1)
+    zn_prev_flat = zn_prev.reshape(-1, config.latent_dim)
     z_next_flat = z_targets.reshape(-1, config.latent_dim)
     rw_next_flat = rw_all[:, 1:].detach().reshape(-1, config.num_charts)
     action_z_prev_flat = action_z_prev.reshape(-1, config.latent_dim)
     action_rw_prev_flat = action_rw_prev.reshape(-1, config.num_action_charts)
+    action_K_prev_flat = action_K_all[:, :-1].reshape(-1)
+    action_K_code_prev_flat = action_K_code_all[:, :-1].reshape(-1)
+    action_zn_prev_flat = action_zn_prev.reshape(-1, config.latent_dim)
     action_z_q_prev_flat = action_z_q_prev.reshape(-1, config.latent_dim)
     controls_model_tan_flat = controls_model_tan.reshape(-1, config.latent_dim)
     continuation_flat = (1.0 - replay_dones).reshape(-1, 1)
@@ -1998,15 +1996,43 @@ def _train_step(
         (actor, True),
     ]
     with _temporary_requires_grad(actor_modules):
-        actor_mean_flat, _actor_log_std_flat = actor(z_prev_flat.detach(), rw_prev_flat.detach())
-        L_actor_supervise = F.smooth_l1_loss(actor_mean_flat, action_z_prev_flat.detach())
+        actor_out = actor(
+            K_prev_flat.detach(),
+            K_code_prev_flat.detach(),
+            zn_prev_flat.detach(),
+            hard_routing=current_hard_routing,
+            hard_routing_tau=current_tau,
+        )
+        L_actor_chart = F.cross_entropy(
+            actor_out["action_chart_logits"],
+            action_K_prev_flat.detach().long(),
+        )
+        selected_code_logits = actor_out["action_code_logits"][
+            torch.arange(actor_out["action_code_logits"].shape[0], device=z_0.device),
+            action_K_prev_flat.detach().long(),
+        ]
+        L_actor_code = F.cross_entropy(
+            selected_code_logits,
+            action_K_code_prev_flat.detach().long(),
+        )
+        L_actor_zn = F.smooth_l1_loss(
+            actor_out["action_z_n"],
+            action_zn_prev_flat.detach(),
+        )
+        L_actor_supervise = L_actor_chart + L_actor_code + L_actor_zn
 
         actor_update_due = _should_run_actor_update(config, epoch=epoch, update_idx=update_idx)
-        L_actor_return = actor_mean_flat.new_zeros(())
-        actor_return = actor_mean_flat.new_zeros(())
+        L_actor_return = actor_out["action_z_n"].new_zeros(())
+        actor_return = actor_out["action_z_n"].new_zeros(())
         actor_reward_mean = 0.0
         actor_control_norm_mean = 0.0
         actor_action_abs_mean = 0.0
+        actor_chart_acc = float(
+            (actor_out["action_chart_idx"].detach() == action_K_prev_flat.detach()).float().mean()
+        )
+        actor_code_acc = float(
+            (actor_out["action_code_idx"].detach() == action_K_code_prev_flat.detach()).float().mean()
+        )
         actor_batch_size = 0
         if actor_update_due:
             actor_batch_size = min(int(config.actor_return_batch_size), B)
@@ -2046,11 +2072,16 @@ def _train_step(
     optimizer_boundary.step()
     metrics["actor/L_total"] = float(L_actor_total.detach())
     metrics["actor/L_supervise"] = float(L_actor_supervise.detach())
+    metrics["actor/L_chart"] = float(L_actor_chart.detach())
+    metrics["actor/L_code"] = float(L_actor_code.detach())
+    metrics["actor/L_zn"] = float(L_actor_zn.detach())
     metrics["actor/L_return"] = float(L_actor_return.detach())
     metrics["actor/return_mean"] = float(actor_return.detach())
     metrics["actor/reward_mean"] = actor_reward_mean
     metrics["actor/control_norm_mean"] = actor_control_norm_mean
     metrics["actor/action_abs_mean"] = actor_action_abs_mean
+    metrics["actor/chart_acc"] = actor_chart_acc
+    metrics["actor/code_acc"] = actor_code_acc
     metrics["actor/grad_norm"] = float(actor_grad)
     metrics["actor/update_applied"] = 1.0 if actor_update_due else 0.0
     metrics["actor/horizon"] = float(config.actor_return_horizon if actor_update_due else 0.0)
@@ -2083,7 +2114,6 @@ def _train_step(
         imag_reward_noncons = imagination["reward_nonconservative"]
         imag_reward_curl = imagination["reward_curl_norm"]
         imag_reward_curl_valid = imagination["reward_curl_valid"]
-        imag_log_std = imagination["action_log_std"]
         imag_z = imagination["z_traj"]
         imag_rw = imagination["rw_traj"]
         imag_actions = imagination["actions"]
@@ -2117,7 +2147,6 @@ def _train_step(
         metrics["policy/action_abs_mean"] = float(imag_actions.abs().mean())
         metrics["policy/action_latent_norm_mean"] = float(imag_action_latents.norm(dim=-1).mean())
         metrics["policy/action_router_entropy"] = float(imag_action_router_entropy.mean())
-        metrics["boundary/texture_std_mean"] = float(imag_log_std.exp().mean())
         metrics["imagination/reward_mean"] = float(imag_rewards.mean())
         metrics["imagination/reward_std"] = float(imag_rewards.std())
         metrics["imagination/reward_conservative_mean"] = float(imag_reward_cons.mean())
@@ -2175,19 +2204,13 @@ def _train_step(
                 - _project_to_ball(world_model_mod.potential_net.chart_tok.chart_centers.detach())
             ).norm(dim=-1).mean()
         )
-        metrics["chart/actor_center_drift"] = float(
-            (obs_centers - _project_to_ball(actor.chart_tok.chart_centers.detach())).norm(dim=-1).mean()
+        metrics["action_chart/actor_center_drift"] = float(
+            (action_centers - _project_to_ball(actor.action_chart_centers.detach())).norm(dim=-1).mean()
         )
         metrics["chart/closure_obs_center_drift"] = float(
-            (obs_centers - _project_to_ball(closure_model.obs_chart_tok.chart_centers.detach()))
+            (obs_centers - _project_to_ball(closure_model.obs_chart_centers.detach()))
             .norm(dim=-1)
             .mean()
-        )
-        metrics["action_chart/closure_center_drift"] = float(
-            (
-                action_centers
-                - _project_to_ball(closure_model.action_chart_tok.chart_centers.detach())
-            ).norm(dim=-1).mean()
         )
         metrics["action_chart/reward_center_drift"] = float(
             (
@@ -2212,6 +2235,11 @@ def train(config: DreamerConfig) -> None:
     """Run Geometric Dreamer training."""
     device = torch.device(config.device)
     print(f"Device: {device}")
+    if config.use_motor_texture:
+        print(
+            "Ignoring deprecated use_motor_texture flag; "
+            "Dreamer replay and policy targets are deterministic.",
+        )
     if config.matmul_precision:
         torch.set_float32_matmul_precision(config.matmul_precision)
     if device.type == "cuda":
@@ -2313,8 +2341,10 @@ def train(config: DreamerConfig) -> None:
 
     actor = GeometricActor(
         latent_dim=config.latent_dim,
-        action_latent_dim=config.latent_dim,
-        num_charts=config.num_charts,
+        num_obs_charts=config.num_charts,
+        obs_codes_per_chart=config.codes_per_chart,
+        num_action_charts=config.num_action_charts,
+        action_codes_per_chart=config.action_codes_per_chart,
         d_model=config.d_model,
     ).to(device)
     closure_model = CovariantObsActionClosureModel(
@@ -2542,7 +2572,7 @@ def train(config: DreamerConfig) -> None:
                 max_steps=config.max_episode_steps,
                 hard_routing=config.hard_routing,
                 hard_routing_tau=config.hard_routing_tau,
-                use_motor_texture=config.use_motor_texture,
+                use_motor_texture=False,
             )
         else:
             episodes = [
@@ -2560,7 +2590,7 @@ def train(config: DreamerConfig) -> None:
                     max_steps=config.max_episode_steps,
                     hard_routing=config.hard_routing,
                     hard_routing_tau=config.hard_routing_tau,
-                    use_motor_texture=config.use_motor_texture,
+                    use_motor_texture=False,
                 ),
             ]
         for ep in episodes:
@@ -2644,7 +2674,7 @@ def train(config: DreamerConfig) -> None:
                     max_steps=config.max_episode_steps,
                     hard_routing=config.hard_routing,
                     hard_routing_tau=config.hard_routing_tau,
-                    use_motor_texture=config.use_motor_texture,
+                    use_motor_texture=False,
                 )
             else:
                 episodes = [
@@ -2662,7 +2692,7 @@ def train(config: DreamerConfig) -> None:
                         max_steps=config.max_episode_steps,
                         hard_routing=config.hard_routing,
                         hard_routing_tau=config.hard_routing_tau,
-                        use_motor_texture=config.use_motor_texture,
+                        use_motor_texture=False,
                     ),
                 ]
             for ep in episodes:
@@ -2849,7 +2879,6 @@ def train(config: DreamerConfig) -> None:
                 ("ctrl", "policy/control_norm_mean"),
                 ("a_lat", "policy/action_latent_norm_mean"),
                 ("a_ent", "policy/action_router_entropy"),
-                ("tex", "boundary/texture_std_mean"),
                 ("im_rew", "imagination/reward_mean"),
                 ("im_ret", "imagination/return_mean"),
                 ("act_ret", "actor/return_mean"),
@@ -2867,7 +2896,7 @@ def train(config: DreamerConfig) -> None:
                 ("ach_ent", "action_chart/usage_entropy"),
                 ("wm_ctr", "chart/wm_center_drift"),
                 ("cl_ctr", "chart/closure_obs_center_drift"),
-                ("acl_ctr", "action_chart/closure_center_drift"),
+                ("a_ctr", "action_chart/actor_center_drift"),
             ]
             line5_keys = [
                 ("obj", "imagination/return_mean"),

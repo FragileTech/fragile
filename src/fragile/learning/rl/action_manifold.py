@@ -1,30 +1,31 @@
-"""Action-manifold helpers and covariant obs-action closure models."""
+"""Action-manifold helpers and structured obs-action closure models."""
 
 from __future__ import annotations
 
 import torch
 from torch import nn
+import torch.nn.functional as F
 
 from fragile.learning.core.layers.atlas import (
     _poincare_hyperbolic_score,
     _poincare_temperature,
     _poincare_weighted_mean,
+    _poincare_weighted_mean_per_chart,
     _project_to_ball,
     _routing_weights,
 )
 from fragile.learning.core.layers.gauge import (
     ConformalMetric,
-    CovariantAttention,
-    GeodesicConfig,
+    exp_map_zero,
+    log_map_zero,
     mobius_add,
 )
 from fragile.learning.core.layers.primitives import SpectralLinear
 from fragile.learning.rl.boundary import lower_control
-from fragile.learning.vla.covariant_world_model import ChartTokenizer
 
 
 class LatentTokenizer(nn.Module):
-    """Embed a single latent point as one covariant attention token."""
+    """Embed a single latent point as one token."""
 
     def __init__(self, latent_dim: int, d_model: int) -> None:
         super().__init__()
@@ -34,70 +35,171 @@ class LatentTokenizer(nn.Module):
         return self.embed(z).unsqueeze(1), z.unsqueeze(1)
 
 
+def _state_index(chart_idx: torch.Tensor, code_idx: torch.Tensor, codes_per_chart: int) -> torch.Tensor:
+    """Flatten `(chart, code)` into one discrete symbolic state index."""
+    return chart_idx.long() * int(codes_per_chart) + code_idx.long()
+
+
+def _straight_through_one_hot(indices: torch.Tensor, num_classes: int) -> torch.Tensor:
+    """Return straight-through hard one-hot probabilities."""
+    soft = F.softmax(torch.zeros(indices.shape[0], num_classes, device=indices.device), dim=-1)
+    hard = F.one_hot(indices, num_classes=num_classes).to(dtype=soft.dtype)
+    return hard + soft - soft.detach()
+
+
+def _extract_codebook_tensor(atlas_model: nn.Module) -> torch.Tensor:
+    """Return the projected codebook tensor for an atlas-like module."""
+    atlas = getattr(atlas_model, "encoder", atlas_model)
+    return _project_to_ball(atlas.codebook)
+
+
+def compose_structured_state_with_atlas(
+    atlas_model: nn.Module,
+    z_n: torch.Tensor,
+    *,
+    chart_weights: torch.Tensor | None = None,
+    chart_idx: torch.Tensor | None = None,
+    code_probs: torch.Tensor | None = None,
+    code_idx: torch.Tensor | None = None,
+) -> dict[str, torch.Tensor]:
+    """Compose `z_geo` from discrete symbol state and structured nuisance `z_n`.
+
+    The returned `z_geo` is an internal geometric realization of `(K, z_n)`.
+    It is not a separate policy state.
+    """
+    atlas = getattr(atlas_model, "encoder", atlas_model)
+    dtype = z_n.dtype
+    device = z_n.device
+
+    if chart_weights is None:
+        if chart_idx is None:
+            msg = "Either chart_weights or chart_idx must be provided."
+            raise ValueError(msg)
+        chart_weights = F.one_hot(chart_idx.long(), num_classes=atlas.num_charts).to(dtype=dtype)
+    chart_idx = chart_weights.argmax(dim=-1)
+
+    chart_centers = _project_to_ball(atlas.chart_centers).to(device=device, dtype=dtype)
+    codebook = _project_to_ball(atlas.codebook).to(device=device, dtype=dtype)
+
+    if code_probs is None:
+        if code_idx is None:
+            msg = "Either code_probs or code_idx must be provided."
+            raise ValueError(msg)
+        selected_code = codebook[chart_idx, code_idx.long()]
+        selected_idx = code_idx.long()
+        # Keep a per-chart view for downstream diagnostics and compatibility.
+        code_probs = F.one_hot(
+            selected_idx,
+            num_classes=codebook.shape[1],
+        ).to(dtype=dtype).unsqueeze(1).expand(-1, codebook.shape[0], -1)
+        z_q_all = _poincare_weighted_mean_per_chart(codebook, code_probs)
+        z_q = selected_code
+    else:
+        z_q_all = _poincare_weighted_mean_per_chart(codebook, code_probs)
+        z_q = _poincare_weighted_mean(z_q_all, chart_weights)
+        per_chart_code_idx = code_probs.argmax(dim=-1)
+        selected_idx = per_chart_code_idx.gather(1, chart_idx.unsqueeze(1)).squeeze(1)
+
+    c_bar = _poincare_weighted_mean(chart_centers, chart_weights)
+    z_local = mobius_add(z_q, exp_map_zero(z_n))
+    z_geo = _project_to_ball(mobius_add(c_bar, z_local))
+    return {
+        "z_geo": z_geo,
+        "router_weights": chart_weights,
+        "chart_idx": chart_idx,
+        "code_idx": selected_idx,
+        "state_idx": _state_index(chart_idx, selected_idx, codebook.shape[1]),
+        "c_bar": c_bar,
+        "z_q": z_q,
+        "z_q_all": z_q_all,
+        "z_n": z_n,
+        "code_probs": code_probs,
+    }
+
+
 def symbolize_latent_with_atlas(
     atlas_model: nn.Module,
     z_latent: torch.Tensor,
     *,
+    router_weights_override: torch.Tensor | None = None,
     hard_routing: bool = False,
     hard_routing_tau: float = 1.0,
 ) -> dict[str, torch.Tensor]:
-    """Attach atlas/chart/code metadata to a canonical continuous manifold latent.
-
-    ``z_latent`` is treated as the canonical geometric latent ``z_geo``. The
-    atlas is only used to derive chart weights, chart/code assignments, and the
-    corresponding code latent; it does not replace the continuous latent with a
-    purely symbolic reconstruction.
-    """
+    """Attach symbolic `(K_chart, K_code, z_n)` structure to a bulk latent `z_geo`."""
     atlas = getattr(atlas_model, "encoder", atlas_model)
     z_latent = _project_to_ball(z_latent)
     chart_centers = _project_to_ball(atlas.chart_centers)
 
-    cov_router = getattr(atlas, "cov_router", None)
-    if cov_router is not None:
-        router_weights, chart_idx = cov_router(
-            z_latent,
-            chart_tokens=chart_centers,
-            hard_routing=hard_routing,
-            hard_routing_tau=hard_routing_tau,
-        )
+    if router_weights_override is not None:
+        router_weights = router_weights_override.to(device=z_latent.device, dtype=z_latent.dtype)
+        router_weights = router_weights / router_weights.sum(dim=-1, keepdim=True).clamp(min=1e-8)
+        if hard_routing:
+            chart_idx = router_weights.argmax(dim=-1)
+            router_weights = F.one_hot(chart_idx, num_classes=atlas.num_charts).to(dtype=z_latent.dtype)
+        else:
+            chart_idx = router_weights.argmax(dim=-1)
     else:
-        scores = _poincare_hyperbolic_score(
-            z_latent,
-            chart_centers,
-            key_dim=atlas.latent_dim,
-            tau_min=atlas.router_tau_min,
-            tau_denom_min=atlas.router_tau_denom_min,
-            eps=atlas.router_transport_eps,
-        )
-        latent_router = getattr(atlas, "latent_router", None)
-        if latent_router is not None:
-            tau = _poincare_temperature(
+        cov_router = getattr(atlas, "cov_router", None)
+        if cov_router is not None:
+            router_weights, chart_idx = cov_router(
                 z_latent,
+                chart_tokens=chart_centers,
+                hard_routing=hard_routing,
+                hard_routing_tau=hard_routing_tau,
+            )
+        else:
+            scores = _poincare_hyperbolic_score(
+                z_latent,
+                chart_centers,
                 key_dim=atlas.latent_dim,
                 tau_min=atlas.router_tau_min,
                 tau_denom_min=atlas.router_tau_denom_min,
+                eps=atlas.router_transport_eps,
             )
-            scores = scores + 0.1 * latent_router(z_latent) / tau.unsqueeze(1)
-        router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)
-        chart_idx = router_weights.argmax(dim=-1)
+            latent_router = getattr(atlas, "latent_router", None)
+            if latent_router is not None:
+                tau = _poincare_temperature(
+                    z_latent,
+                    key_dim=atlas.latent_dim,
+                    tau_min=atlas.router_tau_min,
+                    tau_denom_min=atlas.router_tau_denom_min,
+                )
+                scores = scores + 0.1 * latent_router(z_latent) / tau.unsqueeze(1)
+            router_weights = _routing_weights(scores, hard_routing, hard_routing_tau)
+            chart_idx = router_weights.argmax(dim=-1)
 
     c_bar = _poincare_weighted_mean(chart_centers, router_weights)
     v_local = _project_to_ball(mobius_add(-c_bar, z_latent))
-    z_q, code_idx, _indices, _vq = atlas.dynamics_vq(v_local, router_weights)
+    z_q, code_idx, indices_stack, _vq, z_q_all = atlas._hyperbolic_vq(
+        v_local,
+        atlas.codebook,
+        router_weights,
+        0.0,
+        0.0,
+        use_soft_equiv=True,
+    )
+    v_bc = v_local.unsqueeze(1)
+    delta = log_map_zero(mobius_add(-z_q_all.detach(), v_bc))
+    z_n_all = atlas.structure_filter(delta.reshape(-1, atlas.latent_dim))
+    z_n_all_charts_tan = z_n_all.view(z_latent.shape[0], atlas.num_charts, atlas.latent_dim)
+    z_n_tan = (z_n_all_charts_tan * router_weights.unsqueeze(-1)).sum(dim=1)
     return {
         "z_geo": z_latent,
         "z_latent": z_latent,
         "router_weights": router_weights,
         "chart_idx": chart_idx,
         "code_idx": code_idx,
+        "state_idx": _state_index(chart_idx, code_idx, atlas.codebook.shape[1]),
         "c_bar": c_bar,
         "z_q": z_q,
         "v_local": v_local,
+        "z_n": z_n_tan,
+        "indices_stack": indices_stack,
     }
 
 
 class CovariantObsActionClosureModel(nn.Module):
-    """Shared covariant closure over observation and action manifolds."""
+    """Closure over symbolic observation/action states and continuous nuisance."""
 
     def __init__(
         self,
@@ -111,106 +213,90 @@ class CovariantObsActionClosureModel(nn.Module):
     ) -> None:
         super().__init__()
         self.metric = metric if metric is not None else ConformalMetric()
+        self.latent_dim = latent_dim
+        self.num_obs_charts = num_obs_charts
+        self.num_action_charts = num_action_charts
         self.obs_codes_per_chart = obs_codes_per_chart
         self.action_codes_per_chart = action_codes_per_chart
 
-        self.obs_chart_tok = ChartTokenizer(num_obs_charts, d_model, latent_dim)
-        self.action_chart_tok = ChartTokenizer(num_action_charts, d_model, latent_dim)
-        self.obs_lat_tok = LatentTokenizer(latent_dim, d_model)
-        self.action_lat_tok = LatentTokenizer(latent_dim, d_model)
-        self.obs_code_tok = LatentTokenizer(latent_dim, d_model)
-        self.action_code_tok = LatentTokenizer(latent_dim, d_model)
-
-        geo_cfg = GeodesicConfig(d_model=d_model, d_latent=latent_dim, n_heads=1)
-        self.attn = CovariantAttention(geo_cfg)
-        self.obs_query = SpectralLinear(latent_dim, d_model)
-        self.action_query = SpectralLinear(latent_dim, d_model)
-        self.obs_state_out = SpectralLinear(
-            d_model,
-            num_obs_charts * obs_codes_per_chart,
-        )
-        self.action_state_out = SpectralLinear(
-            d_model,
+        self.obs_state_embed = nn.Embedding(num_obs_charts * obs_codes_per_chart, d_model)
+        self.action_state_embed = nn.Embedding(
             num_action_charts * action_codes_per_chart,
+            d_model,
         )
+        self.obs_zn_embed = SpectralLinear(latent_dim, d_model)
+        self.action_zn_embed = SpectralLinear(latent_dim, d_model)
+        self.backbone = nn.Sequential(
+            nn.LayerNorm(4 * d_model),
+            nn.Linear(4 * d_model, d_model),
+            nn.GELU(),
+            nn.Linear(d_model, d_model),
+            nn.GELU(),
+        )
+        self.obs_state_out = SpectralLinear(d_model, num_obs_charts * obs_codes_per_chart)
+        self.action_state_out = SpectralLinear(d_model, num_action_charts * action_codes_per_chart)
         self.control_out = SpectralLinear(d_model, latent_dim)
 
-    def _context(
+        self.register_buffer("obs_chart_centers", torch.zeros(num_obs_charts, latent_dim))
+        self.register_buffer(
+            "obs_codebook",
+            torch.zeros(num_obs_charts, obs_codes_per_chart, latent_dim),
+        )
+
+    def bind_obs_atlas(self, chart_centers: torch.Tensor, codebook: torch.Tensor) -> None:
+        """Bind the observation atlas used to reconstruct geometric state internally."""
+        self.obs_chart_centers.copy_(_project_to_ball(chart_centers.detach()))
+        self.obs_codebook.copy_(_project_to_ball(codebook.detach()))
+
+    def _obs_geometry(
         self,
-        obs_z: torch.Tensor,
-        obs_rw: torch.Tensor,
-        obs_code_z: torch.Tensor,
-        action_z: torch.Tensor,
-        action_rw: torch.Tensor,
-        action_code_z: torch.Tensor,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        obs_chart_x, obs_chart_z = self.obs_chart_tok(obs_rw, obs_z)
-        action_chart_x, action_chart_z = self.action_chart_tok(action_rw, action_z)
-        obs_lat_x, obs_lat_z = self.obs_lat_tok(obs_z)
-        action_lat_x, action_lat_z = self.action_lat_tok(action_z)
-        obs_code_x, obs_code_z_tok = self.obs_code_tok(obs_code_z)
-        action_code_x, action_code_z_tok = self.action_code_tok(action_code_z)
-        ctx_x = torch.cat(
-            [
-                obs_lat_x,
-                obs_code_x,
-                obs_chart_x,
-                action_lat_x,
-                action_code_x,
-                action_chart_x,
-            ],
-            dim=1,
-        )
-        ctx_z = torch.cat(
-            [
-                obs_lat_z,
-                obs_code_z_tok,
-                obs_chart_z,
-                action_lat_z,
-                action_code_z_tok,
-                action_chart_z,
-            ],
-            dim=1,
-        )
-        return ctx_x, ctx_z
+        obs_chart_idx: torch.Tensor,
+        obs_code_idx: torch.Tensor,
+        obs_z_n: torch.Tensor,
+    ) -> torch.Tensor:
+        dummy_atlas = type("AtlasView", (), {})()
+        dummy_atlas.num_charts = self.num_obs_charts
+        dummy_atlas.chart_centers = self.obs_chart_centers
+        dummy_atlas.codebook = self.obs_codebook
+        return compose_structured_state_with_atlas(
+            dummy_atlas,
+            obs_z_n,
+            chart_idx=obs_chart_idx,
+            code_idx=obs_code_idx,
+        )["z_geo"]
 
     def forward(
         self,
-        obs_z: torch.Tensor,
-        obs_rw: torch.Tensor,
-        obs_code_z: torch.Tensor,
-        action_z: torch.Tensor,
-        action_rw: torch.Tensor,
-        action_code_z: torch.Tensor,
+        obs_chart_idx: torch.Tensor,
+        obs_code_idx: torch.Tensor,
+        obs_z_n: torch.Tensor,
+        action_chart_idx: torch.Tensor,
+        action_code_idx: torch.Tensor,
+        action_z_n: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
-        """Predict next symbolic states and the control induced by an action latent."""
-        ctx_x, ctx_z = self._context(
-            obs_z,
-            obs_rw,
-            obs_code_z,
-            action_z,
-            action_rw,
-            action_code_z,
+        """Predict symbolic transitions and latent control from `(K, z_n)` states."""
+        obs_state_idx = _state_index(obs_chart_idx, obs_code_idx, self.obs_codes_per_chart)
+        action_state_idx = _state_index(
+            action_chart_idx,
+            action_code_idx,
+            self.action_codes_per_chart,
         )
-        obs_feat, _ = self.attn(
-            obs_z,
-            ctx_z,
-            self.obs_query(obs_z),
-            ctx_x,
-            ctx_x,
+        feat = torch.cat(
+            [
+                self.obs_state_embed(obs_state_idx),
+                self.action_state_embed(action_state_idx),
+                self.obs_zn_embed(obs_z_n),
+                self.action_zn_embed(action_z_n),
+            ],
+            dim=-1,
         )
-        action_feat, _ = self.attn(
-            action_z,
-            ctx_z,
-            self.action_query(action_z),
-            ctx_x,
-            ctx_x,
-        )
-        control_tan = self.control_out(obs_feat)
-        control_cov = lower_control(obs_z, control_tan, metric=self.metric)
+        feat = self.backbone(feat)
+        control_tan = self.control_out(feat)
+        obs_z_geo = self._obs_geometry(obs_chart_idx, obs_code_idx, obs_z_n)
+        control_cov = lower_control(obs_z_geo, control_tan, metric=self.metric)
         return {
-            "obs_state_logits": self.obs_state_out(obs_feat),
-            "action_state_logits": self.action_state_out(action_feat),
+            "obs_state_logits": self.obs_state_out(feat),
+            "action_state_logits": self.action_state_out(feat),
             "control_tan": control_tan,
             "control_cov": control_cov,
         }

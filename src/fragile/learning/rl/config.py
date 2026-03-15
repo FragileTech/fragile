@@ -184,7 +184,9 @@ class DreamerConfig:
     matmul_precision: str = "high"
     normalize_observations: bool = True
     obs_norm_min_std: float = 1e-3
-    use_motor_texture: bool = True
+    # Deprecated compatibility flag. The Dreamer control path always discards
+    # nuisance action texture and trains on deterministic action means.
+    use_motor_texture: bool = False
     sigma_motor: float = 0.1
 
     # --- Infrastructure ---

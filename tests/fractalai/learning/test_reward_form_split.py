@@ -228,9 +228,16 @@ def test_imagination_reward_curl_batch_limit_preserves_batch_shape(z, rw, monkey
             return torch.ones(batch, z_in.shape[-1], z_in.shape[-1], device=z_in.device)
 
     def fake_symbolize_latent_with_atlas(_model, z_in: torch.Tensor, **_kwargs):
-        return {"z_q": torch.zeros_like(z_in)}
+        return {
+            "z_geo": z_in,
+            "z_n": torch.zeros_like(z_in),
+            "chart_idx": torch.zeros(z_in.shape[0], dtype=torch.long, device=z_in.device),
+            "code_idx": torch.zeros(z_in.shape[0], dtype=torch.long, device=z_in.device),
+            "z_q": torch.zeros_like(z_in),
+        }
 
-    def fake_policy_action(_actor, _action_model, _closure_model, z_in, _rw_in, _z_q, **_kwargs):
+    def fake_policy_action(_actor, _action_model, _closure_model, obs_info, **_kwargs):
+        z_in = obs_info["z_geo"]
         return {
             "control_tan": torch.ones_like(z_in),
             "control_cov": torch.ones_like(z_in),
@@ -241,7 +248,6 @@ def test_imagination_reward_curl_batch_limit_preserves_batch_shape(z, rw, monkey
             ),
             "action_mean": torch.zeros(z_in.shape[0], action_dim, device=z_in.device),
             "action_code_latent": torch.zeros_like(z_in),
-            "log_std": torch.zeros(z_in.shape[0], action_dim, device=z_in.device),
         }
 
     def fake_conservative_reward_from_value(_critic, z_curr, _rw_curr, _z_next, _rw_next, _gamma):
