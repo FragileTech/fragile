@@ -72,7 +72,7 @@ def test_reward_form_is_independent_of_control(reward_head, z, rw) -> None:
         action_z,
         action_rw,
         action_code_z,
-        control=control_a,
+        action_canonical=control_a,
     )
     info_b = reward_head.decompose(
         z,
@@ -80,7 +80,7 @@ def test_reward_form_is_independent_of_control(reward_head, z, rw) -> None:
         action_z,
         action_rw,
         action_code_z,
-        control=control_b,
+        action_canonical=control_b,
     )
 
     torch.testing.assert_close(info_a["reward_form_cov"], info_b["reward_form_cov"])
@@ -112,7 +112,7 @@ def test_exact_projection_is_enforced_by_construction(reward_head, z, rw, monkey
         action_z,
         action_rw,
         action_code_z,
-        control=control,
+        action_canonical=control,
         exact_covector=raw_form,
     )
 
@@ -187,7 +187,8 @@ def test_imagination_reward_curl_batch_limit_preserves_batch_shape(z, rw, monkey
         def momentum_init(self, z_0):
             return torch.zeros_like(z_0)
 
-        def _rollout_transition(self, z_in, p_in, control_cov, rw_in, track_energy=False):
+        def _rollout_transition(self, z_in, p_in, action_canonical, rw_in, track_energy=False):
+            del action_canonical, track_energy
             return {
                 "z": z_in + 0.05,
                 "p": p_in,
@@ -203,13 +204,24 @@ def test_imagination_reward_curl_batch_limit_preserves_batch_shape(z, rw, monkey
             action_z,
             action_rw,
             action_code_z,
-            control,
+            action_canonical,
             *,
             exact_covector=None,
             exact_covector_fn=None,
             compute_curl=False,
             curl_batch_limit=None,
         ):
+            del (
+                rw_in,
+                action_z,
+                action_rw,
+                action_code_z,
+                action_canonical,
+                exact_covector,
+                exact_covector_fn,
+                compute_curl,
+                curl_batch_limit,
+            )
             return {"reward_nonconservative": torch.ones(z_in.shape[0], 1, device=z_in.device)}
 
         def reward_curl(
@@ -224,6 +236,7 @@ def test_imagination_reward_curl_batch_limit_preserves_batch_shape(z, rw, monkey
             exact_covector_fn=None,
             max_batch=None,
         ):
+            del rw_in, action_z, action_rw, action_code_z, exact_covector, exact_covector_fn
             batch = z_in.shape[0] if max_batch is None else min(z_in.shape[0], max_batch)
             return torch.ones(batch, z_in.shape[-1], z_in.shape[-1], device=z_in.device)
 
@@ -239,8 +252,7 @@ def test_imagination_reward_curl_batch_limit_preserves_batch_shape(z, rw, monkey
     def fake_policy_action(_actor, _action_model, _closure_model, obs_info, **_kwargs):
         z_in = obs_info["z_geo"]
         return {
-            "control_tan": torch.ones_like(z_in),
-            "control_cov": torch.ones_like(z_in),
+            "action_canonical": torch.ones_like(z_in),
             "action_latent": torch.zeros_like(z_in),
             "action_router_weights": torch.softmax(
                 torch.randn(z_in.shape[0], action_charts, device=z_in.device),

@@ -1,15 +1,15 @@
-"""Boundary control modules for theory-faithful Dreamer.
+"""Auxiliary boundary-control modules for explicit control-field experiments.
 
-The bulk policy is a latent control field derived from the critic gradient.
-The boundary map translates that control into environment actions without
-relying on nuisance texture for deterministic decoding.
+The canonical-action Dreamer path in `train_dreamer.py` uses the action
+manifold directly as its motor interface. This module collects utilities for
+setups that instead work with explicit control fields and boundary maps.
 """
 
 from __future__ import annotations
 
 import torch
-import torch.nn.functional as F
 from torch import nn
+import torch.nn.functional as F
 
 from fragile.learning.core.layers.gauge import (
     ConformalMetric,

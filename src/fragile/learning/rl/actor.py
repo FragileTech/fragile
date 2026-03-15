@@ -2,8 +2,8 @@
 
 The actor consumes the observation-side symbolic state `(K, z_n)` and predicts
 the action-side symbolic state `(K^act, z_{n,act})`. A geometric latent `z_geo`
-is reconstructed internally from that structured action state only for the
-boundary decoder and world-model interfaces.
+is reconstructed internally from that structured action state for the action
+decoder and world-model interfaces.
 """
 
 from __future__ import annotations

@@ -274,7 +274,12 @@ class CovariantObsActionClosureModel(nn.Module):
         action_code_idx: torch.Tensor,
         action_z_n: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
-        """Predict symbolic transitions and latent control from `(K, z_n)` states."""
+        """Predict symbolic transitions and auxiliary control probes.
+
+        The deployed RL path uses the canonical action-manifold latent as its
+        motor-side variable. The `control_tan` / `control_cov` outputs here are
+        retained only as auxiliary probes of obs/action symbolic closure.
+        """
         obs_state_idx = _state_index(obs_chart_idx, obs_code_idx, self.obs_codes_per_chart)
         action_state_idx = _state_index(
             action_chart_idx,

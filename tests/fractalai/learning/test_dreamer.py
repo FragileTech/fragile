@@ -43,10 +43,6 @@ def _make_replay_episode(length: int) -> dict[str, np.ndarray]:
         "obs": np.random.randn(length, OBS_DIM).astype(np.float32),
         "actions": np.random.randn(length, A).astype(np.float32),
         "action_means": np.random.randn(length, A).astype(np.float32),
-        "controls": np.random.randn(length, D).astype(np.float32),
-        "controls_tan": np.random.randn(length, D).astype(np.float32),
-        "controls_cov": np.random.randn(length, D).astype(np.float32),
-        "control_valid": np.ones(length, dtype=np.float32),
         "action_latents": np.random.randn(length, D).astype(np.float32),
         "action_router_weights": router,
         "action_charts": np.random.randint(0, K, size=length, dtype=np.int64),
@@ -59,20 +55,12 @@ def _make_replay_episode(length: int) -> dict[str, np.ndarray]:
 
 def _make_training_batch(device: torch.device) -> dict[str, torch.Tensor]:
     time_dim = H_IMAGINATION + 3
-    controls_tan = torch.randn(B, time_dim, D, device=device) * 0.05
-    controls_cov = torch.randn(B, time_dim, D, device=device) * 0.05
-    control_valid = torch.ones(B, time_dim, device=device)
-    control_valid[:, -1] = 0.0
     rewards = torch.randn(B, time_dim, device=device) * 0.1
     dones = torch.zeros(B, time_dim, device=device)
     return {
         "obs": torch.randn(B, time_dim, OBS_DIM, device=device),
         "actions": torch.randn(B, time_dim, A, device=device) * 0.2,
         "action_means": torch.randn(B, time_dim, A, device=device) * 0.2,
-        "controls": controls_cov.clone(),
-        "controls_tan": controls_tan,
-        "controls_cov": controls_cov,
-        "control_valid": control_valid,
         "rewards": rewards,
         "dones": dones,
     }
@@ -123,14 +111,13 @@ def _make_constant_policy_output(
     return {
         "action": torch.full((batch, A), action_value, device=z_in.device, dtype=z_in.dtype),
         "action_mean": torch.full((batch, A), action_value, device=z_in.device, dtype=z_in.dtype),
+        "action_canonical": torch.full((batch, D), 0.15, device=z_in.device, dtype=z_in.dtype),
         "action_latent": torch.full((batch, D), 0.15, device=z_in.device, dtype=z_in.dtype),
         "action_latent_mean": torch.full((batch, D), 0.15, device=z_in.device, dtype=z_in.dtype),
         "action_router_weights": action_router,
         "action_chart_idx": torch.zeros(batch, device=z_in.device, dtype=torch.long),
         "action_code_idx": torch.full((batch,), code_idx, device=z_in.device, dtype=torch.long),
         "action_code_latent": torch.full((batch, D), 0.05, device=z_in.device, dtype=z_in.dtype),
-        "control_tan": torch.full((batch, D), 0.3, device=z_in.device, dtype=z_in.dtype),
-        "control_cov": torch.full((batch, D), 0.6, device=z_in.device, dtype=z_in.dtype),
     }
 
 
@@ -547,7 +534,7 @@ class TestRewardHead:
             action_z,
             action_rw,
             action_code_z,
-            control=control,
+            action_canonical=control,
             exact_covector=torch.randn_like(z),
         )
         assert info["reward_nonconservative"].shape == (B, 1)
@@ -562,7 +549,7 @@ class TestRewardHead:
 
 
 class TestPolicyAction:
-    def test_outputs_action_manifold_and_boundary_fields(
+    def test_outputs_action_manifold_schema(
         self,
         obs_model,
         action_model,
@@ -595,15 +582,15 @@ class TestPolicyAction:
         )
         assert out["action"].shape == (B, A)
         assert out["action_mean"].shape == (B, A)
+        assert out["action_canonical"].shape == (B, D)
         assert out["action_latent"].shape == (B, D)
         assert out["action_latent_mean"].shape == (B, D)
         assert out["action_router_weights"].shape == (B, K)
         assert out["action_chart_idx"].shape == (B,)
         assert out["action_code_idx"].shape == (B,)
         assert out["action_code_latent"].shape == (B, D)
-        assert out["control_tan"].shape == (B, D)
-        assert out["control_cov"].shape == (B, D)
         torch.testing.assert_close(out["action"], out["action_mean"])
+        torch.testing.assert_close(out["action_canonical"], out["action_latent"])
         torch.testing.assert_close(out["action_latent"], out["action_latent_mean"])
         torch.testing.assert_close(
             out["action_router_weights"].sum(dim=-1),
@@ -648,6 +635,7 @@ class TestPolicyAction:
             hard_routing=False,
             hard_routing_tau=1.0,
         )
+        torch.testing.assert_close(out["action_canonical"], actor_out["action_z_geo"])
         torch.testing.assert_close(out["action_latent"], actor_out["action_z_geo"])
         torch.testing.assert_close(out["action_router_weights"], actor_out["action_router_weights"])
         torch.testing.assert_close(out["action_code_latent"], actor_out["action_z_q"])
@@ -664,10 +652,6 @@ class TestReplayBuffer:
         batch = buffer.sample(2, device="cpu")
         assert batch["obs"].shape == (2, 4, OBS_DIM)
         assert batch["actions"].shape == (2, 4, A)
-        assert batch["controls"].shape == (2, 4, D)
-        assert batch["controls_tan"].shape == (2, 4, D)
-        assert batch["controls_cov"].shape == (2, 4, D)
-        assert batch["control_valid"].shape == (2, 4)
         assert batch["action_latents"].shape == (2, 4, D)
         assert batch["action_router_weights"].shape == (2, 4, K)
         assert batch["action_charts"].shape == (2, 4)
@@ -693,9 +677,6 @@ class TestDreamerHelpers:
         rewards = [np.float32(1.0)]
         dones = [np.float32(0.0)]
         action_means = [np.full(A, 0.5, dtype=np.float32)]
-        control_tan = [np.ones(D, dtype=np.float32)]
-        control_cov = [np.full(D, 2.0, dtype=np.float32)]
-        control_valid = [np.float32(1.0)]
         action_latents = [np.full(D, 0.1, dtype=np.float32)]
         action_router = [np.eye(K, dtype=np.float32)[0]]
         action_charts = [np.int64(2)]
@@ -708,9 +689,6 @@ class TestDreamerHelpers:
             rewards,
             dones,
             action_means,
-            control_tan,
-            control_cov,
-            control_valid,
             action_latents,
             action_router,
             action_charts,
@@ -720,10 +698,10 @@ class TestDreamerHelpers:
 
         assert episode["obs"].shape == (2, OBS_DIM)
         assert episode["actions"].shape == (2, A)
-        assert episode["controls_cov"].shape == (2, D)
+        assert episode["action_latents"].shape == (2, D)
         assert episode["action_router_weights"].shape == (2, K)
         assert episode["actions"][-1].sum() == 0.0
-        assert episode["control_valid"][-1] == 0.0
+        assert episode["action_latents"][-1].sum() == 0.0
         assert episode["rewards"][-1] == 0.0
         assert episode["dones"][-1] == 1.0
 
@@ -861,7 +839,7 @@ class TestAtlasSync:
 
 
 class TestRolloutCollection:
-    def test_collect_episode_without_policy_marks_controls_invalid(self):
+    def test_collect_episode_without_policy_zeros_canonical_action_state(self):
         from fragile.learning.rl.train_dreamer import _collect_episode
 
         env = SingleEpisodeEnv(start_obs=[0.1] * OBS_DIM, next_obs=[0.2] * OBS_DIM)
@@ -878,12 +856,9 @@ class TestRolloutCollection:
             max_steps=1,
         )
         assert episode["obs"].shape == (2, OBS_DIM)
-        assert episode["controls_cov"].shape == (2, D)
         assert episode["action_latents"].shape == (2, D)
         assert episode["action_router_weights"].shape == (2, K)
-        assert episode["control_valid"][0] == pytest.approx(0.0)
-        assert episode["control_valid"][-1] == pytest.approx(0.0)
-        assert np.allclose(episode["controls_cov"], 0.0)
+        assert np.allclose(episode["action_latents"], 0.0)
 
     def test_collect_episode_normalizes_obs_and_uses_current_schema(self, monkeypatch):
         from fragile.learning.rl import train_dreamer
@@ -925,13 +900,11 @@ class TestRolloutCollection:
 
         assert model.encoder.calls == [(True, -1.0)]
         torch.testing.assert_close(model.encoder.obs_seen[0], torch.ones(1, OBS_DIM))
-        assert episode["controls_tan"].shape == (2, D)
-        assert episode["controls_cov"].shape == (2, D)
         assert episode["action_latents"].shape == (2, D)
         assert episode["action_router_weights"].shape == (2, K)
         assert episode["action_charts"][0] == 0
         assert episode["action_codes"][0] == 1
-        assert episode["control_valid"][0] == pytest.approx(1.0)
+        assert episode["action_latents"][0, 0] == pytest.approx(0.15)
 
     def test_collect_parallel_episodes_returns_replay_compatible_schema(self, monkeypatch):
         from fragile.learning.rl import train_dreamer
@@ -969,9 +942,8 @@ class TestRolloutCollection:
         assert len(episodes) == 2
         assert episodes[0]["obs"].shape == (2, OBS_DIM)
         assert episodes[1]["obs"].shape == (3, OBS_DIM)
-        assert episodes[0]["controls_cov"].shape == (2, D)
-        assert episodes[1]["action_router_weights"].shape == (3, K)
         assert episodes[0]["action_latents"].shape == (2, D)
+        assert episodes[1]["action_router_weights"].shape == (3, K)
         assert episodes[1]["action_code_latents"].shape == (3, D)
         assert episodes[1]["dones"][-1] == pytest.approx(1.0)
         assert env.batch_calls == [[0, 1], [1]]
@@ -1126,7 +1098,6 @@ class TestGasCollection:
         assert model.encoder.calls == [(True, -1.0), (True, -1.0)]
         np.testing.assert_allclose(episodes[1]["obs"][:2], episodes[0]["obs"][:2])
         np.testing.assert_allclose(episodes[1]["actions"][:1], episodes[0]["actions"][:1])
-        np.testing.assert_allclose(episodes[1]["controls_cov"][:1], episodes[0]["controls_cov"][:1])
         np.testing.assert_allclose(
             episodes[1]["action_latents"][:1],
             episodes[0]["action_latents"][:1],
@@ -1173,8 +1144,7 @@ class TestImagination:
         assert out["rw_states"].shape == (B, H_IMAGINATION, K)
         assert out["z_traj"].shape == (B, H_IMAGINATION, D)
         assert out["rw_traj"].shape == (B, H_IMAGINATION, K)
-        assert out["controls_tan"].shape == (B, H_IMAGINATION, D)
-        assert out["controls_cov"].shape == (B, H_IMAGINATION, D)
+        assert out["action_canonicals"].shape == (B, H_IMAGINATION, D)
         assert out["action_latents"].shape == (B, H_IMAGINATION, D)
         assert out["action_router_weights"].shape == (B, H_IMAGINATION, K)
         assert out["actions"].shape == (B, H_IMAGINATION, A)
@@ -1287,7 +1257,7 @@ class TestImagination:
         for chart_idx in seen_chart_idx:
             torch.testing.assert_close(chart_idx, forced_chart_idx)
 
-    def test_actor_return_optimizes_only_nonconservative_work(self, monkeypatch):
+    def test_actor_return_optimizes_full_reward_over_canonical_actions(self, monkeypatch):
         from fragile.learning.rl import train_dreamer
 
         class FakeActor(nn.Module):
@@ -1333,28 +1303,12 @@ class TestImagination:
                 del router_weights, hard_routing, hard_routing_tau
                 return z_geo[:, :A], None, None
 
-        class FakeClosure(nn.Module):
-            def forward(
-                self,
-                obs_chart_idx,
-                obs_code_idx,
-                obs_z_n,
-                action_chart_idx,
-                action_code_idx,
-                action_z_n,
-            ):
-                del obs_chart_idx, obs_code_idx, action_chart_idx, action_code_idx
-                return {
-                    "control_tan": obs_z_n + action_z_n,
-                    "control_cov": obs_z_n + action_z_n,
-                }
-
         class FakeWorldModel:
             def momentum_init(self, z_0):
                 return torch.zeros_like(z_0)
 
-            def _rollout_transition(self, z, p, control_cov, rw, track_energy=False):
-                del control_cov, track_energy
+            def _rollout_transition(self, z, p, action_canonical, rw, track_energy=False):
+                del action_canonical, track_energy
                 return {"z": z + 0.01, "p": p, "rw": rw, "phi_eff": torch.zeros(z.shape[0], 1)}
 
         class FakeRewardHead:
@@ -1365,11 +1319,11 @@ class TestImagination:
                 action_z,
                 action_rw,
                 action_code_z,
-                control,
+                action_canonical,
                 *,
                 exact_covector=None,
             ):
-                del z, rw, action_z, action_rw, action_code_z, control, exact_covector
+                del z, rw, action_z, action_rw, action_code_z, action_canonical, exact_covector
                 return {"reward_nonconservative": torch.full((2, 1), 3.0)}
 
         class FakeCritic(nn.Module):
@@ -1397,6 +1351,16 @@ class TestImagination:
 
         monkeypatch.setattr(train_dreamer, "_value_covector_from_critic", zero_covector)
 
+        def constant_conservative_reward(_critic, z_curr, _rw_curr, _z_next, _rw_next, _gamma):
+            reward = torch.full((z_curr.shape[0], 1), 2.0, device=z_curr.device, dtype=z_curr.dtype)
+            return reward, reward, reward
+
+        monkeypatch.setattr(
+            train_dreamer,
+            "_conservative_reward_from_value",
+            constant_conservative_reward,
+        )
+
         z_0 = torch.randn(2, D) * 0.1
         rw_0 = torch.softmax(torch.randn(2, K), dim=-1)
         out = train_dreamer._imagine_actor_return(
@@ -1406,18 +1370,20 @@ class TestImagination:
             FakeCritic(),
             FakeActor(),
             FakeActionModel(),
-            FakeClosure(),
+            object(),
             z_0,
             rw_0,
             horizon=3,
             gamma=0.5,
         )
 
-        expected_objective = torch.full((2,), 3.0 * (1.0 + 0.5 + 0.25))
+        expected_objective = torch.full((2,), 5.0 * (1.0 + 0.5 + 0.25))
         torch.testing.assert_close(out["objective"], expected_objective)
+        assert out["rewards"].shape == (2, 3)
+        assert out["reward_conservative"].shape == (2, 3)
         assert out["reward_nonconservative"].shape == (2, 3)
         assert out["actions"].shape == (2, 3, A)
-        assert out["controls_tan"].shape == (2, 3, D)
+        assert out["action_canonicals"].shape == (2, 3, D)
 
 
 class TestTrainStep:

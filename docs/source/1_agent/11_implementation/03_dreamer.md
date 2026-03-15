@@ -3,27 +3,26 @@
 
 ## TLDR
 
-- The current implementation in `src/fragile/learning/rl/` is a **critic-induced control-field** variant of Dreamer, not the separate-actor MaxEnt variant described in older drafts.
-- Perception still comes from the shared dynamics topoencoder: observations are encoded into atlas routing weights and a geometric latent on the Poincare ball.
-- Control is produced in two stages:
-  1. the critic defines a latent control covector by differentiating the value field;
-  2. a boundary decoder maps that latent control into motor macrostate, nuisance, compliance, deterministic action mean, and execution-only motor texture.
-- Imagination uses the covariant world model plus the learned reward head to roll out **controlled counterfactual trajectories** in latent space.
-- The reward head is separate from the world model core. It decomposes reward into conservative and non-conservative pieces, but the deployed controller currently uses the **conservative-first** control law based on the critic gradient.
-- Training is not organized as a clean standalone "Phase 4 actor-critic block." Instead, each update interleaves encoder losses, boundary losses, world-model losses, critic anchoring, and a periodic actor-return improvement step inside one joint loop.
+- `src/fragile/learning/rl/` implements a **two-manifold Dreamer** whose motor variable is the **canonical action latent** on the action manifold.
+- Perception and action both use the same topoencoder family as `train_joint`: one latent space for observations, one for actions, both with explicit chart/code/nuisance structure and texture excluded from control.
+- `GeometricActor` maps the observation-side symbolic state to an action-side symbolic state, and the canonical motor variable is the resulting action-manifold latent `action_z_geo`.
+- The environment action is produced by decoding that canonical action latent with `action_model.decoder(...)`.
+- The world model, reward head, replay buffer, and imagination rollout are all conditioned on the canonical action latent.
+- The critic is shared with `world_model.potential_net`, but it is not the direct controller. It provides value anchoring, conservative reward decomposition, and diagnostics.
+- Auxiliary boundary-control modules remain in the repo for explicit control-field experiments, while `train_dreamer.py` is organized around the canonical action latent.
 
 ## Roadmap
 
 1. Why geometric model-based RL?
-2. Architecture overview: perception, control field, boundary decoding, and imagination.
-3. Reward modeling in the current code.
-4. The deployed boundary controller.
+2. Architecture overview: perception, canonical action construction, action realization, and imagination.
+3. Reward modeling on joint state-action latent geometry.
+4. The canonical-action controller.
 5. The critic as shared value field.
-6. Imagination training in the current implementation.
+6. Imagination training with canonical-action latent rollouts.
 7. DM Control and Fractal Gas integration.
-8. The current training pipeline.
+8. The training pipeline.
 9. Diagnostics that matter in practice.
-10. Theory-to-code correspondence for the deployed path.
+10. Theory-to-code correspondence.
 
 
 (sec-why-geometric-mbrl)=
@@ -32,32 +31,34 @@
 :::{div} feynman-prose
 Let me start with the main point, because otherwise the code can look more complicated than it really is.
 
-What we have built is not "Dreamer with curved decorations." The geometry is carrying real load. The latent state lives on the Poincare ball, the world model evolves that state with a Boris-BAOAB integrator, chart structure keeps local geometry explicit, and the controller acts through boundary variables rather than by pretending actions are just another Euclidean feature vector.
+What we have built is not "Dreamer with curved decorations." The geometry is carrying real load. The latent state lives on the Poincare ball, the world model evolves that state with a Boris-BAOAB integrator, chart structure keeps local geometry explicit, and both observations and actions are represented by typed latent atlases rather than by flat Euclidean feature vectors.
 
-That already moves us away from standard RSSM-style Dreamer. But the current implementation makes one more move. Instead of training a standalone stochastic actor and then asking the critic to chase it, the deployed controller is derived from the critic itself. The critic defines a scalar value field on latent space. Its gradient gives a control covector. A separate boundary decoder translates that internal control variable into actual motor commands.
+That already moves us away from standard RSSM-style Dreamer. But the decisive design choice is this: the controller is organized around a **canonical action latent**. The policy does not first choose a Euclidean action and then retrofit geometry around it. Instead, it predicts a structured point on the action manifold, and that latent motor state is what the rest of the RL stack treats as primary.
 
-This is closer to the control-field story developed in the rest of Volume 1: the policy is not an arbitrary black box; it is a structured boundary realization of an internal value-driven flow. The result is a system that is more geometric than standard Dreamer, but also more conservative than the fully general theory. In particular, the current code emphasizes the exact part of the reward/cost structure and treats the non-conservative sector mainly as a learned diagnostic decomposition rather than as a first-class driver of control.
+This gives the code a clean ontology. The observation manifold tells you where you are. The action manifold tells you what motor-side state you choose. The environment action is only a realization of that motor state. The result is a geometric Dreamer whose motor semantics stay explicit all the way through replay, world modeling, reward modeling, and imagination.
 :::
 
 (rb-current-dreamer-status)=
-:::{admonition} Researcher Bridge: Current Status vs Older Dreamer Drafts
+:::{admonition} Dreamer Design
 :class: info
-Older drafts of this chapter described a separate `GeometricActor`, MaxEnt entropy bonus, and `lambda`-return actor loss. The shipped code in `src/fragile/learning/rl/train_dreamer.py` now follows a different design:
+`src/fragile/learning/rl/train_dreamer.py` follows this design:
 
-- control is induced by the critic gradient;
-- action generation is handled by `GeometricActionBoundaryDecoder`;
-- replay actions are inverted by `GeometricActionEncoder`;
+- observations and actions each have their own `SharedDynTopoEncoder` manifold;
+- `GeometricActor` predicts the action-side structured state from the observation-side structured state;
+- the motor variable is the canonical action latent `action_z_geo`;
+- action generation is handled by `action_model.decoder(...)`;
+- replay stores action-manifold traces directly;
 - the critic is shared with `world_model.potential_net`;
-- actor-style improvement happens through imagined discounted reward, not through a separate stochastic actor objective.
+- actor-style improvement happens through imagined discounted reward over the canonical action latent, not through a separate stochastic MaxEnt objective.
 
-This chapter documents the **current implementation** and treats the older actor-centric formulation as future or optional work rather than the deployed path.
+Auxiliary boundary-control modules (`GeometricActionEncoder`, `GeometricActionBoundaryDecoder`, critic-gradient control helpers) remain in the package for explicit control-field experiments. The path documented in this chapter is the canonical-action-latent path in `train_dreamer.py`.
 :::
 
 
 (sec-dreamer-architecture-overview)=
 ## 2. Architecture Overview
 
-The deployed perception-imagination-action loop has four stages:
+The perception-imagination-action loop has four stages:
 
 ```{mermaid}
 flowchart LR
@@ -68,29 +69,27 @@ flowchart LR
         ENC --> K["K_chart, K_code"]
     end
 
-    subgraph Control["Internal Control Field"]
-        Z --> CRIT["critic = world_model.potential_net"]
-        RW --> CRIT
-        CRIT --> GRAD["dV / dz"]
-        GRAD --> CT["control_tan, control_cov"]
+    subgraph Action["Canonical Action Construction"]
+        K --> ACTOR["GeometricActor"]
+        ACTOR --> ASTRUCT["K_chart^act, K_code^act, z_n^act"]
+        ASTRUCT --> ACAN["a* = action_z_geo"]
     end
 
-    subgraph Boundary["Boundary Realization"]
-        CT --> DEC["GeometricActionBoundaryDecoder"]
-        Z --> DEC
-        RW --> DEC
-        DEC --> ACT["action_mean / action"]
-        DEC --> MBOUND["motor macro / nuisance / compliance / texture"]
+    subgraph Boundary["Action Realization"]
+        ACAN --> ADEC["action_model.decoder"]
+        ADEC --> ACT["action_mean / action"]
     end
 
     subgraph Imagination["World Model + Reward Head"]
         Z --> WM["GeometricWorldModel"]
         RW --> WM
-        CT --> WM
+        ACAN --> WM
         Z --> RH["RewardHead"]
         RW --> RH
-        CT --> RH
+        ACAN --> RH
         ACT --> RH
+        Z --> CRIT["critic = world_model.potential_net"]
+        RW --> CRIT
         WM --> ZT["z_traj, rw_traj, phi_eff"]
         RH --> RT["reward decomposition"]
     end
@@ -102,15 +101,16 @@ flowchart LR
 ### Module Summary
 
 :::{div} feynman-added
-| Module | Location | Input | Output | Role in deployed path |
+| Module | Location | Input | Output | Role in RL path |
 |--------|----------|-------|--------|-----------------------|
 | `SharedDynTopoEncoder` | `src/fragile/learning/vla/shared_dyn/encoder.py` | observations | `z_geo`, `rw`, `K_chart`, `K_code`, nuisance/texture internals | perception and typed latent construction |
-| `GeometricWorldModel` | `src/fragile/learning/vla/covariant_world_model.py` | `z_0`, latent control covectors, `rw_0` | latent rollout, chart logits, momenta, `phi_eff`, Hodge diagnostics | controlled geometric imagination |
-| `RewardHead` | `src/fragile/learning/rl/reward_head.py` | `z`, decoded boundary action, `rw`, latent control | conservative reward, non-conservative reward, total reward | reward modeling and decomposition |
-| `GeometricActionEncoder` | `src/fragile/learning/rl/boundary.py` | `z`, replay action, `rw` | latent control, motor macro, nuisance, compliance | inverse boundary map on replay data |
-| `GeometricActionBoundaryDecoder` | `src/fragile/learning/rl/boundary.py` | `z`, latent control, `rw` | deterministic action mean, execution action, motor texture stats | forward motor boundary map |
-| `SequenceReplayBuffer` | `src/fragile/learning/rl/replay_buffer.py` | full episodes | contiguous training subsequences | replay with boundary traces |
-| `GeometricActor` | `src/fragile/learning/rl/actor.py` | `z`, `rw` | Gaussian action distribution | present in module, not wired into `train_dreamer.py` |
+| `SharedDynTopoEncoder` | `src/fragile/learning/vla/shared_dyn/encoder.py` | actions | `z_geo`, `rw`, `K_chart`, `K_code`, nuisance/texture internals | action-manifold representation and replay supervision |
+| `GeometricActor` | `src/fragile/learning/rl/actor.py` | observation-side `(K, z_n)` | action-side `(K^{act}, z_n^{act}, z_geo^{act})` | policy over the action manifold |
+| `GeometricWorldModel` | `src/fragile/learning/vla/covariant_world_model.py` | `z_0`, canonical action latents, `rw_0` | latent rollout, chart logits, momenta, `phi_eff`, Hodge diagnostics | controlled geometric imagination |
+| `RewardHead` | `src/fragile/learning/rl/reward_head.py` | `z`, action-manifold latent, action routing/code state, `rw` | conservative reward, non-conservative reward, total reward | reward modeling and decomposition |
+| `SequenceReplayBuffer` | `src/fragile/learning/rl/replay_buffer.py` | full episodes | contiguous training subsequences | replay with action-manifold traces |
+| `GeometricActionEncoder` | `src/fragile/learning/rl/boundary.py` | `z`, replay action, `rw` | explicit-control boundary variables | available for control-field experiments |
+| `GeometricActionBoundaryDecoder` | `src/fragile/learning/rl/boundary.py` | `z`, explicit latent control, `rw` | deterministic action mean, execution action, motor texture stats | available for control-field experiments |
 :::
 
 ### Typed Latents in the RL Path
@@ -121,14 +121,19 @@ $$
 Z_t = (K_t, z_{n,t}, z_{\mathrm{tex},t}).
 $$
 
-In the deployed RL path, however, control heads do **not** consume these variables as a fully explicit tuple. Instead:
+In the RL path, these variables remain explicit on both manifolds:
 
-- `K_{\text{chart}}` appears operationally through routing weights `rw`;
-- `K_{\text{code}}` is retained for encoder-side diagnostics and dynamics-code closure probes;
-- `z_n` is folded into the geometric latent `z_{\mathrm{geo}}`;
-- `z_{\mathrm{tex}}` is excluded from the control heads and remains outside the decision interface.
+- on the observation side, the actor consumes `(K_{\text{chart}}, K_{\text{code}}, z_n)`;
+- on the action side, replay stores `(K_{\text{chart}}^{act}, K_{\text{code}}^{act}, z_n^{act}, z_{\mathrm{geo}}^{act})`;
+- `z_{\mathrm{tex}}` is excluded from the decision interface and remains outside control.
 
-This means the current implementation preserves the **texture firewall** from the theory, while using a collapsed deployed control state `(z_{\mathrm{geo}}, rw)` rather than a fully factorized `(K, z_n)` controller.
+The canonical motor variable is therefore
+
+$$
+a_t^\star := z_{\mathrm{geo},t}^{act},
+$$
+
+the geometric action latent reconstructed from the action-side structured state. This preserves the texture firewall while keeping the motor state explicitly on the action manifold.
 
 
 (sec-reward-head)=
@@ -137,36 +142,36 @@ This means the current implementation preserves the **texture firewall** from th
 :::{div} feynman-prose
 The world model tells you how the latent state moves. That is not enough for control. A controller also needs to know what is good and bad along that motion.
 
-Now, in the abstract theory, reward is not just a scalar label you stick onto a state. It is a field on the boundary and, in the most general case, it can have both exact and circulating pieces. The code mirrors that distinction, but in a very practical way. The reward head predicts a conservative scalar part and a non-conservative form-like part, then combines them into the scalar reward used by training.
+Reward is not just a scalar label you stick onto a state. It is a field on the joint state-action geometry. In this chapter, the primary motor coordinate is the canonical action latent, so the reward head evaluates the pair `(state latent, canonical action latent)` and splits reward into a conservative part and a residual non-conservative part.
 
-This is an important detail. The current implementation has not yet promoted the full non-conservative sector into the control law itself. But it does not throw that structure away either. It learns it, measures it, and logs it. So you should think of the reward head as half model, half audit instrument: it gives the controller a scalar training signal and, at the same time, tells you how far the environment may be from the conservative idealization.
+That is the key modeling choice. The action manifold carries the motor variable directly. The reward head therefore learns how reward changes along that action-manifold coordinate instead of introducing a second downstream control variable. It gives the controller a scalar training signal and, at the same time, exposes how far the environment departs from the conservative idealization.
 :::
 
 The reward model is implemented as a standalone `RewardHead`, not as an internal branch of `CovariantPotentialNet`. It reuses the same chart tokenizer and positional embedding as the shared value field, then conditions on:
 
 - the current latent position `z`,
-- the deterministic boundary action mean,
-- the chart routing weights `rw`,
-- the tangent latent control field.
+- the canonical action latent `a^\star`,
+- the action-manifold routing/code state,
+- the chart routing weights `rw`.
 
-The decomposition used in code is:
+The decomposition used in code is
 
 $$
-\hat r(z, a, rw, u)
+\hat r_t
 =
-\hat r_{\mathrm{cons}}(z, a, rw, u)
-
-+ \hat r_{\mathrm{noncons}}(z, a, rw, u).
+\hat r_{\mathrm{cons},t}
++
+\hat r_{\mathrm{noncons},t}.
 $$
 
 Operationally:
 
-- `reward_conservative` is a scalar output head;
-- `reward_form_cov` is a learned covector-like field;
-- `reward_nonconservative` is the contraction of that field with the current control;
+- `reward_conservative` is computed from the critic value difference;
+- `reward_form_cov` is a learned residual one-form-like object on the joint state-action latent;
+- `reward_nonconservative` is the contraction of that object with the canonical action latent;
 - `reward_curl` is an antisymmetric diagnostic tensor used to monitor circulation.
 
-This is the currently deployed reward loss:
+The losses are
 
 $$
 \mathcal{L}_{\mathrm{reward}}
@@ -176,104 +181,85 @@ $$
 \qquad
 \mathcal{L}_{\mathrm{noncons}}
 =
-\frac{1}{BT}\sum_{b,t}\hat r_{\mathrm{noncons},b,t}^2.
+\frac{1}{BT}\sum_{b,t}
+\bigl(\hat r_{\mathrm{noncons},b,t} - (r_{b,t} - \hat r_{\mathrm{cons},b,t})\bigr)^2.
 $$
 
-The second term makes the deployed controller **conservative-first**: the code learns the non-conservative residual but softly discourages it from dominating unless the data forces it to persist.
+So the residual head is trained to explain the part of reward left over after the conservative critic contribution, not simply to vanish.
 
-:::{admonition} Implementation Note: Conservative-First Reward Geometry
+:::{admonition} Implementation Note: Joint State-Action Reward Geometry
 :class: feynman-added note
-The broader theory supports a full gauge-covariant control signal based on $d_A V = dV - A$. The current Dreamer implementation stops one step earlier:
+The reward split used here is
 
-- it learns a decomposition consistent with that theory;
-- it uses the conservative critic gradient as the deployed control driver;
-- it logs non-conservative fractions and curl magnitudes as diagnostics.
+- a conservative component anchored by the critic value difference,
+- a residual one-form-like component on joint state-action latent geometry,
+- a contraction of that residual component with the canonical action latent,
+- diagnostic curl statistics that quantify circulation in the residual sector.
 
-This is a deliberate approximation, not a claim that the full gauge sector has already been closed in the controller.
+This keeps the theory centered on one motor variable: the canonical action latent carried by the action manifold.
 :::
 
 
 (sec-geometric-actor)=
-## 4. The Boundary Controller --- Critic Gradient to Motor Flux
+## 4. The Action Controller --- Observation Latent to Canonical Action Latent
 
 :::{div} feynman-prose
-This is the section where the current implementation most clearly departs from the older actor-centric draft.
+This is the section where the controller becomes easiest to state cleanly.
 
-There is a `GeometricActor` module in the codebase. It is a sensible chart-conditioned Gaussian policy. But it is not the thing that actually drives `train_dreamer.py`. The deployed controller is more structural. First, the critic defines a scalar value field on latent space. Then the code differentiates that field with respect to latent position to obtain a control covector. Then a boundary decoder translates that internal control variable into an action that the environment can execute.
+`GeometricActor` is what drives `train_dreamer.py`, but it should not be read as a flat Euclidean action regressor. It is a structured map from the observation manifold to the action manifold.
 
-Why do it this way? Because it keeps the connection to the rest of the theory explicit. The action is not primary. The internal control field is primary. The action is a boundary realization of that field. The decoder is therefore not just a policy head; it is an implementation of the motor boundary condition.
+Why organize it this way? Because it gives the theory one unambiguous motor object. The policy does not produce a raw environment action first and then recover some deeper latent intention afterward. It produces the action-side structured latent state, and from that state the code constructs a canonical action latent. That latent is what the rest of the stack treats as primary.
 
-This also explains the extra variables you see in the boundary modules. The decoder does not output only an action. It also outputs motor macro probabilities, motor nuisance coordinates, compliance matrices, and geometry-scaled texture noise. That is the code's way of keeping the motor boundary typed rather than collapsing everything into one flat action vector.
+So the important boundary is "action manifold to actuator coordinates." The environment action is a realization of the canonical action latent, not the fundamental policy object itself.
 :::
 
-The deployed controller has three pieces.
+The controller has three pieces.
 
-### 4.1 Critic-Induced Control Field
+### 4.1 Structured Action Prediction
 
-Given a latent state and chart routing, the controller computes:
-
-$$
-u_{\mathrm{cov}} = dV,
-\qquad
-u_{\mathrm{tan}} = G^{-1} u_{\mathrm{cov}}.
-$$
-
-In the current code this is obtained by differentiating the critic scalar with respect to latent position and then raising the index using the conformal metric.
-
-This is a faithful implementation of the **conservative** control law. Relative to the full theory:
+Given the observation-side symbolic state, `GeometricActor` predicts the action-side symbolic state:
 
 $$
-\nabla_A V = G^{-1}(dV - A),
+(K_t^{obs}, K_{code,t}^{obs}, z_{n,t}^{obs})
+\mapsto
+(K_t^{act}, K_{code,t}^{act}, z_{n,t}^{act}, z_{geo,t}^{act}).
 $$
 
-the current implementation corresponds to the approximation $A = 0$ in the deployed controller.
+This keeps chart identity, code identity, and nuisance coordinates explicit in the policy rather than collapsing everything into a single flat head.
 
-### 4.2 Boundary Decoding
+### 4.2 Canonical Action Latent
 
-The `GeometricActionBoundaryDecoder` maps the tangent control field to:
-
-- motor macro probabilities,
-- motor nuisance coordinates,
-- motor compliance matrix,
-- deterministic boundary action mean,
-- geometry-scaled execution texture.
-
-The deterministic action used for planning and for replay supervision is:
+The motor variable is
 
 $$
-a_{\mathrm{mean}}
-=
-\tanh\!\Big(
-a_{\mathrm{base}}
-M_{\mathrm{comp}}\,u_{\mathrm{nuis}}
-\Big).
+a_t^\star := z_{geo,t}^{act}.
 $$
 
-Here the nuisance and compliance variables are learned internal boundary variables, not direct environment observations.
+This is the **canonical action representation** used by the rest of the RL stack:
 
-### 4.3 Execution-Only Motor Texture
+- replay stores it,
+- the world model conditions on it,
+- the reward head contracts against it,
+- imagination rolls forward under it,
+- actor-return improvement differentiates through it.
 
-At execution time, the controller may inject motor texture:
+This is the core theoretical choice that makes the implementation coherent.
+
+### 4.3 Action Realization
+
+The environment-facing action is produced by decoding the canonical action latent with the action topoencoder decoder:
 
 $$
-a_{\mathrm{exec}}
-=
-\tanh\!\bigl(a_{\mathrm{raw}} + \xi_{\mathrm{motor}}\bigr),
-\qquad
-\xi_{\mathrm{motor}}\sim \mathcal{N}(0,\sigma_{\mathrm{motor}}^2 G^{-1}).
+a_t = D_{\mathrm{act}}(a_t^\star, rw_t^{act}).
 $$
 
-This preserves the theory's variance-curvature coupling in a restricted form: stochasticity scales with the inverse metric. In the current code this texture is **not** part of a MaxEnt actor loss; it is an execution-time perturbation used for deployed rollouts and data collection.
+Texture remains outside the control interface. The decoder used in `train_dreamer.py` is deterministic, and action noise is treated as rollout-time execution detail rather than as the primary policy object.
 
 :::{admonition} Status of `GeometricActor`
 :class: feynman-added note
-`src/fragile/learning/rl/actor.py` contains a chart-conditioned Gaussian actor. It is currently best understood as an experimental or future-facing module:
+`src/fragile/learning/rl/actor.py` is the controller used by `train_dreamer.py`.
 
-- it matches the older MaxEnt Dreamer formulation;
-- it is exported from the RL package;
-- it is not the controller used by `train_dreamer.py`.
-
-The authoritative deployed path is the critic-gradient controller plus boundary decoder described in this section.
+Auxiliary boundary-control modules in `boundary.py` remain useful for explicit control-field experiments and parallel formulations of the motor interface.
 :::
 
 
@@ -281,22 +267,22 @@ The authoritative deployed path is the critic-gradient controller plus boundary 
 ## 5. The Critic as Effective Potential
 
 :::{div} feynman-prose
-Now we come to the central identification in the current implementation: the critic is not a separate network sitting off to the side. It is the value branch of the world model's own potential network.
+Now we come to the central identification in this implementation: the critic is not a separate network sitting off to the side. It is the value branch of the world model's own potential network.
 
-That is elegant, but it also has consequences. It means the same geometric object that shapes the latent dynamics also provides the value signal used for control. In the best case, this is exactly what the theory wants: one coherent scalar landscape, not one network for physics and another network for preferences. In the messy reality of training, it means you have to keep several roles in balance at once. The critic must remain a good scalar anchor for replay returns. It must remain compatible with the screened Poisson structure. And because the control field is derived from it, it also has to be smooth enough for action decoding and imagination.
+That is elegant, but it also has consequences. It means the same geometric object that shapes the latent dynamics also provides the value signal used for reward anchoring and diagnostics. In the best case, this is exactly what the theory wants: one coherent scalar landscape, not one network for physics and another network for preferences. In the messy reality of training, it means you have to keep several roles in balance at once. The critic must remain a good scalar anchor for replay returns. It must remain compatible with the screened Poisson structure. And it must stay smooth enough to support stable conservative reward decomposition over imagined trajectories.
 
-So the critic here is not just "a value head." It is a shared geometric field with several simultaneous obligations. That is why the training loop keeps both replay-based anchoring and PDE-style regularization alive even during RL updates.
+So the critic here is not just "a value head." It is a shared geometric field with several simultaneous obligations. What it is not is the direct controller. The motor variable is the canonical action latent predicted by the actor.
 :::
 
-In the deployed code:
+In the code:
 
 $$
 \texttt{critic} = \texttt{world\_model.potential\_net}.
 $$
 
-The value used operationally for control is the scalar `task_value(z, rw)`. The world model continues to use the same potential network to produce conservative forces and effective potentials.
+The value used operationally for conservative reward decomposition and diagnostics is the scalar `task_value(z, rw)`. The world model continues to use the same potential network to produce conservative forces and effective potentials.
 
-The critic losses used in the current training loop are:
+The critic losses used in the training loop are:
 
 $$
 \mathcal{L}_{\mathrm{value}}
@@ -314,7 +300,7 @@ $$
 
 using the conservative reward density estimate from the reward head.
 
-The deployed critic objective is therefore
+The critic objective is therefore
 
 $$
 \mathcal{L}_{\mathrm{critic}}
@@ -326,27 +312,27 @@ w_{\mathrm{critic}}\,
 \mathcal{L}_{\mathrm{value}}.
 $$
 
-This is **not** the same as the older chapter draft in which the critic was fitted only to imagined `lambda`-returns. The current implementation keeps the critic replay-anchored and PDE-regularized throughout RL training.
+This keeps the critic replay-anchored and PDE-regularized throughout RL training.
 
 
 (sec-imagination-training)=
-## 6. Imagination Training --- Controlled Counterfactual Rollouts
+## 6. Imagination Training --- Canonical-Action Latent Rollouts
 
 :::{div} feynman-prose
-The word "imagination" can be misleading here, because the rest of the book gives it a very precise thermodynamic meaning. In the boundary chapter, dreaming is the reflective-boundary regime: no sensory inflow, no motor outflow, a sealed system recirculating internally.
+Imagination is the place where the whole controller is composed into one differentiable latent rollout.
 
-The function called `_imagine` in the current code is not that idealized reflective mode. It is something more operational. It starts from an encoded latent state, recomputes the critic-induced control field at every step, decodes that field into a motor action, predicts reward, and advances the world model under that control. So what it imagines is not a passive dream. It imagines a **counterfactual controlled trajectory**.
+Start from a latent state `(z_0, rw_0)`. At each step, the agent symbolizes the observation-side state, predicts an action-side structured state, constructs the canonical action latent `a_t^\star`, decodes a deterministic environment action for logging, evaluates reward, and advances the world model under that same canonical action latent. So the imagined trajectory is a controlled path on the joint state-action latent geometry.
 
-That distinction matters because it keeps the terminology honest. The current implementation is doing model-based planning and policy improvement inside the latent model. It is not yet implementing the exact reflective-boundary dreaming mode from the field-theoretic chapters. Those are related ideas, but they are not identical.
+This is what makes the theory coherent. The same motor variable appears in policy prediction, action realization, reward evaluation, and latent dynamics.
 :::
 
-The deployed imagination rollout records:
+The imagination rollout records:
 
 - policy states before action,
 - chart routing before action,
-- tangent and covariant latent controls,
-- decoded motor boundary variables,
-- deterministic boundary actions,
+- canonical action latents,
+- action-manifold latents and router weights,
+- deterministic decoded actions,
 - reward decomposition,
 - world-model state trajectory,
 - effective potential values.
@@ -356,18 +342,19 @@ Schematically, for horizon $H$:
 $$
 (z_0, rw_0)
 \mapsto
-\{u_t, a_t, \hat r_t, z_{t+1}, rw_{t+1}, \Phi_{\mathrm{eff},t}\}_{t=0}^{H-1}.
+\{a_t^\star, a_t, \hat r_t, z_{t+1}, rw_{t+1}, \Phi_{\mathrm{eff},t}\}_{t=0}^{H-1}.
 $$
 
 ### Actor-Return Improvement
 
-The periodic actor-style improvement step does **not** use a separate stochastic actor and does **not** use `lambda`-returns. Instead, it differentiates the discounted imagined reward through:
+The periodic actor-style improvement step differentiates discounted imagined reward through:
 
-- the critic-induced control field,
-- the boundary decoder,
+- `GeometricActor`,
+- the action decoder,
+- the reward head,
 - the differentiable world model rollout.
 
-The current objective is:
+The objective is:
 
 $$
 \mathcal{L}_{\mathrm{actor\text{-}return}}
@@ -379,38 +366,19 @@ $$
 
 This update is applied only periodically, according to the configured warmup and update frequency.
 
-### Boundary Value Diagnostic
+### Return Diagnostics
 
-Although the actor-return update itself uses discounted imagined reward only, the code also computes the terminal bootstrap contribution:
-
-$$
-V_{\mathrm{boundary}}
-=
-\gamma^H V(z_H),
-$$
-
-and tracks the combined control objective
+The optimization target is the discounted imagined reward above. Alongside it, the code logs three horizon summaries separately:
 
 $$
-J_{\mathrm{imag}}
-=
-\sum_{t=0}^{H-1}\gamma^t \hat r_t
-
-+ \gamma^H V(z_H)
+\sum_{t=0}^{H-1}\gamma^t \hat r_{\mathrm{cons},t},
+\qquad
+\sum_{t=0}^{H-1}\gamma^t \hat r_{\mathrm{noncons},t},
+\qquad
+V(z_H).
 $$
 
-as a diagnostic. This is useful operationally because it reveals when long-horizon control is being dominated by terminal value rather than by reward accumulated along the imagined path.
-
-:::{admonition} Terminology Note: Imagination vs Reflective Dreaming
-:class: feynman-added warning
-When this chapter says "imagination," it refers to the **implemented** `_imagine` and `_imagine_actor_return` routines in `train_dreamer.py`.
-
-- They are controlled latent rollouts.
-- They include internally generated motor actions.
-- They should be read as planning/counterfactual evaluation routines.
-
-They are therefore distinct from the stricter reflective-boundary dreaming mode introduced in {ref}`sec-wfr-boundary-conditions-waking-vs-dreaming`.
-:::
+These diagnostics tell you how much of the imagined return comes from the conservative value-backed sector, how much comes from the residual sector, and what terminal value remains at the end of the rollout.
 
 
 (sec-dmcontrol-integration)=
@@ -420,8 +388,9 @@ They are therefore distinct from the stricter reflective-boundary dreaming mode 
 Now let us connect all this machinery to actual data collection.
 
 The environments are ordinary continuous-control tasks, but the rollout interface is richer than a standard actor-environment loop. The code does not store only observations, actions, rewards, and done flags. It also stores the inferred latent controls and the decoded motor-boundary variables associated with those actions. That is exactly what you should expect from a theory in which action is a boundary condition rather than a single flat number emitted by a policy head.
+The environments are ordinary continuous-control tasks, but the rollout interface stores both the executed action and the action-manifold state that generated it. That is what you should expect from a theory in which the motor variable lives on an action manifold rather than in raw actuator coordinates.
 
-This extra bookkeeping pays for itself during training. Replay batches can supervise the inverse boundary encoder, the forward boundary decoder, and the coupling between replay actions and critic-induced intentions, all from the same collected trajectories.
+This bookkeeping pays for itself during training. Replay batches supervise the action manifold, the actor's action-side symbolic predictions, the world model, the reward head, and the critic from the same collected trajectories.
 :::
 
 ### Observation Path
@@ -438,41 +407,40 @@ The code supports three collection modes:
 
 ### Replay Contents
 
-The replay buffer stores full episodes and may include the following per-step arrays:
+The replay buffer stores full episodes and includes the following per-step arrays:
 
 :::{div} feynman-added
 | Key | Meaning |
 |-----|---------|
 | `obs` | flattened environment observations |
 | `actions` | executed actions |
-| `action_means` | deterministic boundary action means |
-| `controls` / `controls_cov` | latent control covectors |
-| `controls_tan` | latent tangent controls |
-| `control_valid` | whether the control trace is valid supervision |
-| `motor_macro_probs` | decoded motor macro distribution |
-| `motor_nuisance` | decoded motor nuisance variables |
-| `motor_compliance` | decoded compliance matrices |
+| `action_means` | deterministic decoded action means |
+| `action_latents` | canonical action latents on the action manifold |
+| `action_router_weights` | action-manifold routing weights |
+| `action_charts` | action chart indices |
+| `action_codes` | action code indices |
+| `action_code_latents` | action-manifold code latents |
 | `rewards` | environment rewards |
 | `dones` | termination flags |
 :::
 
-This makes the replay buffer a training source not only for dynamics and value anchoring, but also for the boundary map itself.
+This makes the replay buffer a training source not only for dynamics and value anchoring, but also for action-manifold supervision.
 
 
 (sec-four-phase-pipeline)=
-## 8. The Current Training Pipeline
+## 8. The Training Pipeline
 
 ### Overview
 
-The present implementation should be read as a **joint Phase-4 loop** built on top of the earlier encoder and world-model machinery. It is most accurate to describe one update as four substeps:
+One update is best read as a joint four-stage loop:
 
 :::{div} feynman-added
 | Substep | What Updates | Main Signals |
 |---------|--------------|--------------|
-| Encoder | topoencoder + dynamics-code probe | reconstruction, VQ, routing, closure, Zeno |
-| Boundary | action encoder + action decoder | action reconstruction, control supervision, cycle consistency, value-intent alignment |
-| World model + reward | world model + reward head | geodesic dynamics, chart prediction, reward fit, energy, Hodge |
-| Critic / actor-return | shared value field, periodic boundary improvement | replay return anchoring, screened Poisson consistency, imagined discounted reward |
+| Encoder + closure | observation topoencoder, action topoencoder, closure model | reconstruction, routing, quantization, symbolic closure, Zeno |
+| Atlas sync | shared atlas state across modules | chart centers, codebooks, actor/action bindings |
+| World model + reward + critic | world model, reward head, shared value field | geodesic dynamics, chart prediction, reward fit, energy, Hodge, replay return anchoring, screened Poisson consistency |
+| Actor | `GeometricActor` | action-state supervision, periodic imagined discounted reward |
 :::
 
 ### 8.1 Encoder Update
@@ -485,28 +453,15 @@ The encoder remains active unless `freeze_encoder=True`. Its losses still includ
 
 This keeps the representation trainable during RL unless the user explicitly freezes it.
 
-### 8.2 Boundary Update
+### 8.2 Atlas Synchronization
 
-The boundary stage trains two complementary maps:
+After the encoder step, the code synchronizes atlas-dependent parameters across the observation model, action model, world model, critic, actor, closure model, and reward head.
 
-- `GeometricActionEncoder`: replay action $\to$ latent control plus motor boundary variables,
-- `GeometricActionBoundaryDecoder`: latent control $\to$ deterministic boundary action plus typed motor boundary state.
+This keeps chart centers, codebooks, and action-manifold bindings consistent before the dynamics, reward, and actor updates run.
 
-The losses combine:
+### 8.3 World-Model, Reward, and Critic Update
 
-- action reconstruction,
-- decoder supervision from replay traces,
-- control supervision where replay controls are valid,
-- cycle consistency,
-- motor macro supervision,
-- nuisance/compliance supervision,
-- alignment with the critic-induced value intent.
-
-This is the most theory-specific part of the implementation because it is where latent control and motor execution are explicitly tied together.
-
-### 8.3 World-Model and Reward Update
-
-The world model is trained on detached encoder outputs. The current losses are:
+The world model is trained on detached encoder outputs. The action input is the canonical action latent encoded from replay action means by the action topoencoder. The losses are:
 
 $$
 \mathcal{L}_{\mathrm{wm}}
@@ -520,27 +475,26 @@ w_{\mathrm{dynamics}}\mathcal{L}_{\mathrm{geo}}
 + w_{\mathrm{Hodge}}\mathcal{L}_{\mathrm{Hodge}}.
 $$
 
-The control input to the world model is the **latent control covector**, not the raw environment action. This is exactly the right choice for the current theory-facing implementation because it makes the world model evolve under internal control variables rather than under already-decoded actuator coordinates.
+So the dynamics model evolves under action-manifold coordinates rather than raw actuator coordinates.
 
-### 8.4 Critic Anchoring and Periodic Actor-Return Improvement
+### 8.4 Actor Update
 
-The critic is always anchored on replay return-to-go plus screened Poisson consistency. On top of that, the code periodically runs an actor-return step that backpropagates imagined discounted reward through the control field and boundary decoder.
+The critic is anchored on replay return-to-go plus screened Poisson consistency inside the world-model stage. The actor stage combines:
 
-So the current Phase-4 loop is best summarized as:
+- supervised prediction of replay action charts, action codes, and action-side nuisance coordinates;
+- periodic imagined discounted reward through canonical-action latent rollouts.
+
+So the training loop is:
 
 $$
-\text{representation update}
+\text{representation and closure update}
 \rightarrow
-\text{boundary update}
+\text{atlas sync}
 \rightarrow
-\text{dynamics/reward update}
+\text{world model, reward, and critic update}
 \rightarrow
-\text{value anchoring}
-\rightarrow
-\text{periodic control improvement}.
+\text{actor update}.
 $$
-
-This is not as cleanly factorized as the older separate-actor chapter draft, but it reflects the code that is actually running.
 
 
 (sec-dreamer-diagnostics)=
@@ -549,9 +503,9 @@ This is not as cleanly factorized as the older separate-actor chapter draft, but
 :::{div} feynman-prose
 In a system like this, "is training working?" is not a single question. You have to ask at least four different questions.
 
-Is the representation still geometrically healthy? Is the boundary map still faithful? Is the world model still grounded on replay transitions? And is the value-driven control field actually producing useful imagined trajectories?
+Is the representation still geometrically healthy? Is the action manifold staying organized? Is the world model still grounded on replay transitions? And are imagined rollouts under the canonical action latent producing useful returns?
 
-That is why the diagnostic surface in the current code is so broad. The important thing is not to stare at every metric all the time. The important thing is to group them by failure mode and to know what each group is trying to catch.
+That is why the diagnostic surface in the code is so broad. The important thing is not to stare at every metric all the time. The important thing is to group them by failure mode and to know what each group is trying to catch.
 :::
 
 ### Representation and Atlas Health
@@ -562,18 +516,18 @@ That is why the diagnostic surface in the current code is so broad. The importan
 
 These tell you whether the macro register is alive and whether the atlas is collapsing.
 
-### Boundary Health
+### Action-Manifold and Actor Health
 
-- `boundary/L_action_recon`
-- `boundary/L_control_supervise`
-- `boundary/L_macro_supervise`
-- `boundary/L_motor_nuisance_supervise`
-- `boundary/L_motor_compliance_supervise`
-- `boundary/value_intent_cos`
-- `boundary/control_raise_err`, `boundary/control_lower_err`
-- `boundary/texture_std_mean`
+- `closure/L_total`
+- `closure/L_obs_state`, `closure/L_action_state`
+- `closure/obs_state_acc`, `closure/action_state_acc`
+- `action_chart/usage_entropy`, `action_chart/active_charts`, `action_chart/active_symbols`
+- `actor/L_chart`, `actor/L_code`, `actor/L_zn`
+- `actor/chart_acc`, `actor/code_acc`
+- `policy/action_canonical_norm_mean`
+- `policy/action_router_entropy`
 
-These indicate whether the motor boundary map remains consistent with replay data and with the critic-induced control field.
+These indicate whether the action manifold remains organized, whether symbolic obs-action closure is stable, and whether the actor is matching replay action structure.
 
 ### World-Model Health
 
@@ -596,30 +550,31 @@ These are the primary indicators that imagination remains grounded on real trans
 - `critic/replay_bellman_abs`
 - `imagination/reward_mean`
 - `imagination/discounted_reward_mean`
-- `imagination/boundary_value_mean`
-- `imagination/bootstrap_share`
+- `imagination/nonconservative_return_mean`
+- `imagination/exact_boundary_mean`
+- `imagination/terminal_value_mean`
+- `imagination/full_return_mean`
 - `imagination/router_drift`
 
-These tell you whether the value field is calibrated and whether imagined rollouts are reward-dominated or merely bootstrap-dominated.
+These tell you whether the value field is calibrated and whether imagined rollouts keep a healthy balance between residual reward, conservative reward, and terminal value.
 
 ### Interpreting the Non-Conservative Sector
 
 - `wm/reward_nonconservative_mean`
 - `wm/reward_nonconservative_frac`
 - `wm/reward_curl_norm_mean`
-- `imagination/reward_nonconservative_frac`
+- `imagination/reward_nonconservative_mean`
+- `imagination/nonconservative_return_mean`
 - `imagination/reward_curl_norm_mean`
 
-In the current code these should be read mainly as **audits** of how far the environment appears to depart from the conservative approximation used by the deployed control law.
+These should be read as audits of how far the reward geometry departs from its conservative component along the joint state-action latent trajectory.
 
 
 (sec-dreamer-theory-code)=
 ## 10. Theory-to-Code Correspondence
 
 :::{div} feynman-prose
-This final table is deliberately conservative. It does not list the theory as we might want the implementation to become. It lists the theory as it is actually realized by the current code.
-
-That means some rows are exact correspondences, some are faithful approximations, and some are explicitly marked as deferred. That is the right way to document a living codebase. Otherwise the text turns into wishful thinking, which is worse than being incomplete.
+This table states the theory directly in the same terms used by the code.
 :::
 
 :::{div} feynman-added
@@ -628,31 +583,32 @@ That means some rows are exact correspondences, some are faithful approximations
 | Three-channel latent | {ref}`sec-the-shutter-as-a-vq-vae` | topoencoder builds `K_chart`, `K_code`, `z_n`, `z_tex`, `z_geo` | Implemented |
 | Texture firewall | {ref}`sec-the-shutter-as-a-vq-vae` | RL heads consume `z_geo` and `rw`, not `z_tex` | Implemented |
 | Covariant geometric world model | {ref}`sec-why-physics-for-world-model` | `GeometricWorldModel` with BAOAB, chart jumps, Hodge diagnostics | Implemented |
-| Motor boundary realization | {ref}`sec-the-boundary-interface-symplectic-structure` | `GeometricActionBoundaryDecoder` | Implemented |
-| Inverse boundary map | {ref}`sec-the-boundary-interface-symplectic-structure` | `GeometricActionEncoder` | Implemented |
-| Conservative control field | {prf:ref}`def-entropy-regularized-objective-functional` | critic gradient raised by metric | Implemented as conservative approximation |
-| Full gauge-covariant control $\nabla_A V$ | {ref}`sec-the-control-identity-cost-rate-along-flow` | reward head learns non-conservative residual, but controller still uses $dV$ | Deferred |
-| Reward decomposition | {prf:ref}`def-reward-1-form` | `RewardHead` predicts conservative and non-conservative pieces | Partially implemented |
-| Reflective dreaming mode | {ref}`sec-wfr-boundary-conditions-waking-vs-dreaming` | current `_imagine` performs controlled rollout with action decoding | Not yet identical |
-| Replay-grounded value anchoring | {ref}`sec-the-control-identity-cost-rate-along-flow` | replay RTG + screened Poisson critic losses | Implemented |
-| MaxEnt actor with entropy bonus | {prf:ref}`def-maxent-rl-objective-on-macrostates` | `GeometricActor` exists but is not wired into `train_dreamer.py` | Present but not deployed |
+| Two-manifold RL state | {ref}`sec-the-shutter-as-a-vq-vae` | observations and actions each use a `SharedDynTopoEncoder` atlas | Implemented |
+| Canonical action latent | {ref}`sec-the-boundary-interface-symplectic-structure` | `a_t^\star = z_{geo,t}^{act}` is the motor variable shared across policy, replay, reward, and dynamics | Implemented |
+| Action realization | {ref}`sec-the-boundary-interface-symplectic-structure` | `action_model.decoder(a_t^\star, rw_t^{act})` produces deterministic environment actions | Implemented |
+| Replay-grounded action manifold | {ref}`sec-the-boundary-interface-symplectic-structure` | replay stores action latents, routing weights, chart/code indices, and code latents | Implemented |
+| Reward decomposition | {prf:ref}`def-reward-1-form` | `RewardHead` predicts conservative and residual pieces on joint state-action latent geometry | Implemented |
+| Controlled latent imagination | {ref}`sec-wfr-boundary-conditions-waking-vs-dreaming` | `_imagine` and `_imagine_actor_return` roll out the world model under canonical action latents | Implemented |
+| Replay-grounded value anchoring | {ref}`sec-the-reward-field-value-forms-and-hodge-geometry` | replay RTG + screened Poisson critic losses | Implemented |
+| Action-manifold policy | {prf:ref}`def-maxent-rl-objective-on-macrostates` | `GeometricActor` maps observation-side symbolic state to action-side symbolic state | Implemented |
+| Auxiliary explicit-control boundary modules | {ref}`sec-the-boundary-interface-symplectic-structure` | `GeometricActionEncoder`, `GeometricActionBoundaryDecoder`, and control-field helpers remain available for alternative experiments | Available |
 | Variance-curvature coupling | {prf:ref}`lem-variance-curvature-correspondence` | motor texture scales with inverse metric | Implemented in execution noise |
 | WFR transport + reaction split | {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` | BAOAB substeps plus optional chart jump | Implemented |
 :::
 
 ### Practical Summary
 
-The current Dreamer implementation should be understood as:
+This Dreamer implementation should be understood as:
 
-1. A **geometric, control-field** model-based RL system.
-2. A **boundary-aware** controller with typed motor variables.
-3. A **conservative-first** realization of the broader theory.
-4. A **jointly trained** phase-4 loop rather than a clean standalone actor-critic block.
+1. A **two-manifold** geometric model-based RL system.
+2. A **canonical-action-latent** controller.
+3. A **joint state-action reward geometry** with conservative and residual sectors.
+4. A **jointly trained** latent-world-model, value, and actor loop.
 
 :::{div} feynman-prose
 So what should you carry away from all this?
 
-Carry away the architecture, not the brand name. The current code is called Dreamer because it learns from imagined rollouts in a world model. But the important thing is how it does that. It dreams in a curved latent space. It controls through a boundary decoder. It anchors its value field on replay and PDE structure. And it keeps the non-conservative sector visible, even though the deployed controller has not yet fully internalized it.
+Carry away the architecture, not the brand name. Dreamer here means learning from imagined rollouts in a curved latent space. The observation manifold tells you where you are. The action manifold tells you what motor-side state you choose. The canonical action latent is the single motor variable shared by policy, replay, world model, reward head, and imagination. The critic anchors the conservative part of reward and the long-horizon value structure. The residual sector stays visible through the reward head and its diagnostics.
 
-That is the honest state of the implementation. It is already much closer to the theory than ordinary model-based RL, and it still leaves a clear path for future work: promote the full $d_A V$ control law, separate reflective dreaming from controlled planning, and deploy the explicit MaxEnt actor only when that is actually the algorithm we want to run.
+That is the theory realized by the code in `src/fragile/learning/rl/`.
 :::

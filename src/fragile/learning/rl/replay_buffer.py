@@ -109,10 +109,6 @@ class SequenceReplayBuffer:
         done_batch = np.zeros((batch_size, max_len), dtype=first_episode["dones"].dtype)
 
         action_mean_shape, action_mean_dtype = _shape_and_dtype("action_means")
-        control_shape, control_dtype = _shape_and_dtype("controls")
-        control_tan_shape, control_tan_dtype = _shape_and_dtype("controls_tan")
-        control_cov_shape, control_cov_dtype = _shape_and_dtype("controls_cov")
-        control_valid_shape, control_valid_dtype = _shape_and_dtype("control_valid")
         action_latent_shape, action_latent_dtype = _shape_and_dtype("action_latents")
         action_router_shape, action_router_dtype = _shape_and_dtype("action_router_weights")
         action_chart_shape, action_chart_dtype = _shape_and_dtype("action_charts")
@@ -124,34 +120,6 @@ class SequenceReplayBuffer:
             action_mean_batch = np.zeros(
                 (batch_size, max_len, *action_mean_shape),
                 dtype=action_mean_dtype,
-            )
-
-        control_batch = None
-        if control_shape is not None and control_dtype is not None:
-            control_batch = np.zeros(
-                (batch_size, max_len, *control_shape),
-                dtype=control_dtype,
-            )
-
-        control_tan_batch = None
-        if control_tan_shape is not None and control_tan_dtype is not None:
-            control_tan_batch = np.zeros(
-                (batch_size, max_len, *control_tan_shape),
-                dtype=control_tan_dtype,
-            )
-
-        control_cov_batch = None
-        if control_cov_shape is not None and control_cov_dtype is not None:
-            control_cov_batch = np.zeros(
-                (batch_size, max_len, *control_cov_shape),
-                dtype=control_cov_dtype,
-            )
-
-        control_valid_batch = None
-        if control_valid_shape is not None and control_valid_dtype is not None:
-            control_valid_batch = np.zeros(
-                (batch_size, max_len, *control_valid_shape),
-                dtype=control_valid_dtype,
             )
 
         action_latent_batch = None
@@ -201,17 +169,6 @@ class SequenceReplayBuffer:
             done_batch[row, :length] = episode["dones"][sl]
             if action_mean_batch is not None:
                 action_mean_batch[row, :length] = episode.get("action_means", episode["actions"])[sl]
-            if control_batch is not None and "controls" in episode:
-                control_batch[row, :length] = episode["controls"][sl]
-            if control_tan_batch is not None and "controls_tan" in episode:
-                control_tan_batch[row, :length] = episode["controls_tan"][sl]
-            if control_cov_batch is not None and "controls_cov" in episode:
-                control_cov_batch[row, :length] = episode["controls_cov"][sl]
-            if control_valid_batch is not None:
-                control_valid_batch[row, :length] = episode.get(
-                    "control_valid",
-                    np.zeros((len(episode["dones"]),), dtype=control_valid_batch.dtype),
-                )[sl]
             if action_latent_batch is not None and "action_latents" in episode:
                 action_latent_batch[row, :length] = episode["action_latents"][sl]
             if action_router_batch is not None and "action_router_weights" in episode:
@@ -231,26 +188,6 @@ class SequenceReplayBuffer:
         }
         if action_mean_batch is not None:
             batch["action_means"] = torch.from_numpy(action_mean_batch).to(
-                device=device,
-                dtype=torch.float32,
-            )
-        if control_batch is not None:
-            batch["controls"] = torch.from_numpy(control_batch).to(
-                device=device,
-                dtype=torch.float32,
-            )
-        if control_tan_batch is not None:
-            batch["controls_tan"] = torch.from_numpy(control_tan_batch).to(
-                device=device,
-                dtype=torch.float32,
-            )
-        if control_cov_batch is not None:
-            batch["controls_cov"] = torch.from_numpy(control_cov_batch).to(
-                device=device,
-                dtype=torch.float32,
-            )
-        if control_valid_batch is not None:
-            batch["control_valid"] = torch.from_numpy(control_valid_batch).to(
                 device=device,
                 dtype=torch.float32,
             )

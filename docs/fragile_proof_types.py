@@ -22,37 +22,54 @@ class principle_node(nodes.Admonition, nodes.Element):
     pass
 
 
+def _register_proof_type(
+    app: Sphinx,
+    proof_nodes,
+    directive_cls: type,
+    name: str,
+    node_cls: type[nodes.Element],
+) -> None:
+    proof_nodes.NODE_TYPES.setdefault(name, node_cls)
+    app.add_enumerable_node(
+        node_cls,
+        name,
+        None,
+        html=(proof_nodes.visit_enumerable_node, proof_nodes.depart_enumerable_node),
+        latex=(proof_nodes.visit_enumerable_node, proof_nodes.depart_enumerable_node),
+    )
+    app.add_directive_to_domain("prf", name, directive_cls)
+
+
 def setup(app: Sphinx):
     try:
         from sphinx_proof import nodes as proof_nodes
         from sphinx_proof.directive import ElementDirective
+        from sphinx_proof.proof_type import PROOF_TYPES
     except Exception:
         return {"version": "builtin", "parallel_read_safe": True, "parallel_write_safe": True}
 
-    from sphinx_proof.directive import DEFAULT_REALTYP_TO_COUNTERTYP
+    class MetatheoremDirective(ElementDirective):
+        name = "metatheorem"
 
-    proof_nodes.NODE_TYPES.setdefault("metatheorem", metatheorem_node)
-    proof_nodes.NODE_TYPES.setdefault("principle", principle_node)
+    class PrincipleDirective(ElementDirective):
+        name = "principle"
 
-    DEFAULT_REALTYP_TO_COUNTERTYP.setdefault("metatheorem", "metatheorem")
-    DEFAULT_REALTYP_TO_COUNTERTYP.setdefault("principle", "principle")
+    PROOF_TYPES.setdefault("metatheorem", MetatheoremDirective)
+    PROOF_TYPES.setdefault("principle", PrincipleDirective)
 
-    app.add_enumerable_node(
-        metatheorem_node,
+    _register_proof_type(
+        app,
+        proof_nodes,
+        MetatheoremDirective,
         "metatheorem",
-        None,
-        html=(proof_nodes.visit_enumerable_node, proof_nodes.depart_enumerable_node),
-        latex=(proof_nodes.visit_enumerable_node, proof_nodes.depart_enumerable_node),
+        metatheorem_node,
     )
-    app.add_enumerable_node(
-        principle_node,
+    _register_proof_type(
+        app,
+        proof_nodes,
+        PrincipleDirective,
         "principle",
-        None,
-        html=(proof_nodes.visit_enumerable_node, proof_nodes.depart_enumerable_node),
-        latex=(proof_nodes.visit_enumerable_node, proof_nodes.depart_enumerable_node),
+        principle_node,
     )
-
-    app.add_directive_to_domain("prf", "metatheorem", ElementDirective)
-    app.add_directive_to_domain("prf", "principle", ElementDirective)
 
     return {"version": "builtin", "parallel_read_safe": True, "parallel_write_safe": True}

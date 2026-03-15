@@ -1,7 +1,8 @@
 """Geometric Dreamer: Phase 4 model-based RL on the Poincare ball.
 
-Trains a critic-induced control field with a geometric world model and a
-deterministic action boundary map on dm_control environments.
+Trains a two-manifold Dreamer whose deployed motor variable is the canonical
+action latent on the action manifold, not a separately reconstructed control
+covector.
 
 The encoder uses the same Phase 1 reconstruction/atlas objective as
 ``train_joint.py`` plus the shared-codebook Markov closure/Zeno probe.
@@ -328,8 +329,8 @@ def _policy_action(
     hard_routing: bool = True,
     hard_routing_tau: float = -1.0,
 ) -> dict[str, torch.Tensor]:
-    """Decode the deterministic action manifold and discard execution texture."""
-    del use_motor_texture
+    """Decode the canonical motor-side action state and discard execution texture."""
+    del closure_model, use_motor_texture
     action_state = actor(
         obs_info["chart_idx"],
         obs_info["code_idx"],
@@ -345,17 +346,10 @@ def _policy_action(
             hard_routing=hard_routing,
             hard_routing_tau=hard_routing_tau,
         )
-        closure_out = closure_model(
-            obs_info["chart_idx"].detach(),
-            obs_info["code_idx"].detach(),
-            obs_info["z_n"].detach(),
-            action_state["action_chart_idx"].detach(),
-            action_state["action_code_idx"].detach(),
-            action_state["action_z_n"].detach(),
-        )
     return {
         "action": action_mean.detach(),
         "action_mean": action_mean.detach(),
+        "action_canonical": action_state["action_z_geo"].detach(),
         "action_latent": action_state["action_z_geo"].detach(),
         "action_latent_mean": action_state["action_z_geo"].detach(),
         "action_router_weights": action_state["action_router_weights"].detach(),
@@ -365,8 +359,6 @@ def _policy_action(
         "action_z_n": action_state["action_z_n"].detach(),
         "action_chart_logits": action_state["action_chart_logits"],
         "action_code_logits": action_state["action_code_logits"],
-        "control_tan": closure_out["control_tan"].detach(),
-        "control_cov": closure_out["control_cov"].detach(),
     }
 
 
@@ -376,9 +368,6 @@ def _build_episode_dict(
     rew_list: list[np.float32],
     done_list: list[np.float32],
     action_mean_list: list[np.ndarray],
-    control_tan_list: list[np.ndarray],
-    control_cov_list: list[np.ndarray],
-    control_valid_list: list[np.float32],
     action_latent_list: list[np.ndarray],
     action_router_weight_list: list[np.ndarray],
     action_chart_idx_list: list[np.int64],
@@ -390,10 +379,6 @@ def _build_episode_dict(
         "obs": np.stack(obs_list),
         "actions": np.stack([*act_list, np.zeros_like(act_list[0])]),
         "action_means": np.stack([*action_mean_list, np.zeros_like(action_mean_list[0])]),
-        "controls": np.stack([*control_cov_list, np.zeros_like(control_cov_list[0])]),
-        "controls_tan": np.stack([*control_tan_list, np.zeros_like(control_tan_list[0])]),
-        "controls_cov": np.stack([*control_cov_list, np.zeros_like(control_cov_list[0])]),
-        "control_valid": np.array([*control_valid_list, 0.0], dtype=np.float32),
         "action_latents": np.stack(
             [*action_latent_list, np.zeros_like(action_latent_list[0])],
         ),
@@ -428,7 +413,7 @@ def _collect_episode(
 ) -> dict[str, np.ndarray]:
     """Collect a single episode.  Uses random actions if the policy is absent."""
     obs_list, act_list, rew_list, done_list = [], [], [], []
-    action_mean_list, control_tan_list, control_cov_list, control_valid_list = [], [], [], []
+    action_mean_list = []
     action_latent_list, action_router_weight_list = [], []
     action_chart_idx_list, action_code_idx_list, action_code_latent_list = [], [], []
     time_step = env.reset()
@@ -440,15 +425,12 @@ def _collect_episode(
         obs = _flatten_obs(time_step)
         obs_list.append(obs)
 
-        if actor is None or action_model is None or closure_model is None:
+        if actor is None or action_model is None:
             action = np.random.uniform(
                 action_spec.minimum, action_spec.maximum,
                 size=action_spec.shape,
             ).astype(np.float32)
             action_mean = action.copy()
-            control_tan = np.zeros(control_dim, dtype=np.float32)
-            control_cov = np.zeros(control_dim, dtype=np.float32)
-            control_valid = 0.0
             action_latent = np.zeros(control_dim, dtype=np.float32)
             action_router_weights = np.zeros(num_action_charts, dtype=np.float32)
             action_chart_idx = np.int64(0)
@@ -476,10 +458,7 @@ def _collect_episode(
             )
             action = action_out["action"].squeeze(0).cpu().numpy()
             action_mean = action_out["action_mean"].squeeze(0).cpu().numpy()
-            control_tan = action_out["control_tan"].squeeze(0).cpu().numpy()
-            control_cov = action_out["control_cov"].squeeze(0).cpu().numpy()
-            control_valid = 1.0
-            action_latent = action_out["action_latent"].squeeze(0).cpu().numpy()
+            action_latent = action_out["action_canonical"].squeeze(0).cpu().numpy()
             action_router_weights = action_out["action_router_weights"].squeeze(0).cpu().numpy()
             action_chart_idx = np.int64(action_out["action_chart_idx"].item())
             action_code_idx = np.int64(action_out["action_code_idx"].item())
@@ -496,9 +475,6 @@ def _collect_episode(
 
         act_list.append(action)
         action_mean_list.append(action_mean)
-        control_tan_list.append(control_tan)
-        control_cov_list.append(control_cov)
-        control_valid_list.append(np.float32(control_valid))
         action_latent_list.append(action_latent)
         action_router_weight_list.append(action_router_weights)
         action_chart_idx_list.append(action_chart_idx)
@@ -517,9 +493,6 @@ def _collect_episode(
         rew_list,
         done_list,
         action_mean_list,
-        control_tan_list,
-        control_cov_list,
-        control_valid_list,
         action_latent_list,
         action_router_weight_list,
         action_chart_idx_list,
@@ -566,9 +539,6 @@ def _collect_parallel_episodes(
     rew_lists: list[list[np.float32]] = [[] for _ in range(num_episodes)]
     done_lists: list[list[np.float32]] = [[] for _ in range(num_episodes)]
     action_mean_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
-    control_tan_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
-    control_cov_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
-    control_valid_lists: list[list[np.float32]] = [[] for _ in range(num_episodes)]
     action_latent_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
     action_router_weight_lists: list[list[np.ndarray]] = [[] for _ in range(num_episodes)]
     action_chart_lists: list[list[np.int64]] = [[] for _ in range(num_episodes)]
@@ -582,16 +552,13 @@ def _collect_parallel_episodes(
         active_indices = np.flatnonzero(active)
         active_obs = observations[active_indices]
 
-        if actor is None or action_model is None or closure_model is None:
+        if actor is None or action_model is None:
             actions = np.random.uniform(
                 action_min,
                 action_max,
                 size=(len(active_indices), *action_shape),
             ).astype(np.float32)
             action_means = actions.copy()
-            control_tan = np.zeros((len(active_indices), control_dim), dtype=np.float32)
-            control_cov = np.zeros((len(active_indices), control_dim), dtype=np.float32)
-            control_valid = np.zeros(len(active_indices), dtype=np.float32)
             action_latents = np.zeros((len(active_indices), control_dim), dtype=np.float32)
             action_router_weights = np.zeros(
                 (len(active_indices), num_action_charts),
@@ -622,10 +589,7 @@ def _collect_parallel_episodes(
             )
             actions = action_out["action"].cpu().numpy()
             action_means = action_out["action_mean"].cpu().numpy()
-            control_tan = action_out["control_tan"].cpu().numpy()
-            control_cov = action_out["control_cov"].cpu().numpy()
-            control_valid = np.ones(len(active_indices), dtype=np.float32)
-            action_latents = action_out["action_latent"].cpu().numpy()
+            action_latents = action_out["action_canonical"].cpu().numpy()
             action_router_weights = action_out["action_router_weights"].cpu().numpy()
             action_chart_idx = action_out["action_chart_idx"].cpu().numpy().astype(np.int64, copy=False)
             action_code_idx = action_out["action_code_idx"].cpu().numpy().astype(np.int64, copy=False)
@@ -645,9 +609,6 @@ def _collect_parallel_episodes(
             action_mean_lists[episode_idx].append(
                 action_means[row].astype(np.float32, copy=False),
             )
-            control_tan_lists[episode_idx].append(control_tan[row].astype(np.float32, copy=False))
-            control_cov_lists[episode_idx].append(control_cov[row].astype(np.float32, copy=False))
-            control_valid_lists[episode_idx].append(np.float32(control_valid[row]))
             action_latent_lists[episode_idx].append(
                 action_latents[row].astype(np.float32, copy=False),
             )
@@ -674,9 +635,6 @@ def _collect_parallel_episodes(
             rew_lists[i],
             done_lists[i],
             action_mean_lists[i],
-            control_tan_lists[i],
-            control_cov_lists[i],
-            control_valid_lists[i],
             action_latent_lists[i],
             action_router_weight_lists[i],
             action_chart_lists[i],
@@ -792,9 +750,6 @@ def _collect_gas_episodes(
     all_obs = np.zeros((N, steps + 1, obs_dim), dtype=np.float32)
     all_actions = np.zeros((N, steps + 1, action_dim), dtype=np.float32)
     all_action_means = np.zeros((N, steps + 1, action_dim), dtype=np.float32)
-    all_controls_tan = np.zeros((N, steps + 1, config.latent_dim), dtype=np.float32)
-    all_controls_cov = np.zeros((N, steps + 1, config.latent_dim), dtype=np.float32)
-    all_control_valid = np.zeros((N, steps + 1), dtype=np.float32)
     all_action_latents = np.zeros((N, steps + 1, config.latent_dim), dtype=np.float32)
     all_action_router_weights = np.zeros(
         (N, steps + 1, config.num_action_charts),
@@ -813,15 +768,13 @@ def _collect_gas_episodes(
     for t in range(steps):
         # Compute actions from policy (or None for random)
         actions_np = None
-        if actor is not None and action_model is not None and closure_model is not None:
+        if actor is not None and action_model is not None:
             obs_t = state.observations.to(device)
             if obs_normalizer is not None:
                 obs_t = obs_normalizer.normalize_tensor(obs_t)
             chunk_size = 1024
             action_chunks = []
             action_mean_chunks = []
-            control_tan_chunks = []
-            control_cov_chunks = []
             action_latent_chunks = []
             action_router_chunks = []
             action_chart_chunks = []
@@ -847,23 +800,18 @@ def _collect_gas_episodes(
                 )
                 action_chunks.append(action_out["action"].cpu().numpy())
                 action_mean_chunks.append(action_out["action_mean"].cpu().numpy())
-                control_tan_chunks.append(action_out["control_tan"].cpu().numpy())
-                control_cov_chunks.append(action_out["control_cov"].cpu().numpy())
-                action_latent_chunks.append(action_out["action_latent"].cpu().numpy())
+                action_latent_chunks.append(action_out["action_canonical"].cpu().numpy())
                 action_router_chunks.append(action_out["action_router_weights"].cpu().numpy())
                 action_chart_chunks.append(action_out["action_chart_idx"].cpu().numpy())
                 action_code_chunks.append(action_out["action_code_idx"].cpu().numpy())
                 action_code_latent_chunks.append(action_out["action_code_latent"].cpu().numpy())
             actions_np = np.concatenate(action_chunks, axis=0)
             all_action_means[:, t] = np.concatenate(action_mean_chunks, axis=0)
-            all_controls_tan[:, t] = np.concatenate(control_tan_chunks, axis=0)
-            all_controls_cov[:, t] = np.concatenate(control_cov_chunks, axis=0)
             all_action_latents[:, t] = np.concatenate(action_latent_chunks, axis=0)
             all_action_router_weights[:, t] = np.concatenate(action_router_chunks, axis=0)
             all_action_charts[:, t] = np.concatenate(action_chart_chunks, axis=0)
             all_action_codes[:, t] = np.concatenate(action_code_chunks, axis=0)
             all_action_code_latents[:, t] = np.concatenate(action_code_latent_chunks, axis=0)
-            all_control_valid[:, t] = 1.0
             actions_np = np.clip(
                 actions_np,
                 env.action_space.minimum,
@@ -877,9 +825,6 @@ def _collect_gas_episodes(
         _clone_prefix_inplace(all_obs, companions, will_clone, t + 1)
         _clone_prefix_inplace(all_actions, companions, will_clone, t)
         _clone_prefix_inplace(all_action_means, companions, will_clone, t)
-        _clone_prefix_inplace(all_controls_tan, companions, will_clone, t)
-        _clone_prefix_inplace(all_controls_cov, companions, will_clone, t)
-        _clone_prefix_inplace(all_control_valid, companions, will_clone, t)
         _clone_prefix_inplace(all_action_latents, companions, will_clone, t)
         _clone_prefix_inplace(all_action_router_weights, companions, will_clone, t)
         _clone_prefix_inplace(all_action_charts, companions, will_clone, t)
@@ -903,10 +848,6 @@ def _collect_gas_episodes(
             "obs": all_obs[i],           # [steps+1, obs_dim]
             "actions": all_actions[i],   # [steps+1, action_dim]
             "action_means": all_action_means[i],
-            "controls": all_controls_cov[i],
-            "controls_tan": all_controls_tan[i],
-            "controls_cov": all_controls_cov[i],
-            "control_valid": all_control_valid[i],
             "action_latents": all_action_latents[i],
             "action_router_weights": all_action_router_weights[i],
             "action_charts": all_action_charts[i],
@@ -947,15 +888,14 @@ def _imagine(
     gamma: float,
     reward_curl_batch_limit: int | None = None,
 ) -> dict[str, torch.Tensor]:
-    """Roll out the critic-induced control field in latent space.
+    """Roll out the canonical action manifold in latent space.
 
     Returns:
         z_states: [B, H, D] policy states before each action
         rw_states: [B, H, K] router weights before each action
         z_traj: [B, H, D]
         rw_traj: [B, H, K]
-        controls_tan: [B, H, D]
-        controls_cov: [B, H, D]
+        action_canonicals: [B, H, D]
         action_latents: [B, H, D]
         action_router_weights: [B, H, K_a]
         actions: [B, H, A]
@@ -970,7 +910,7 @@ def _imagine(
     p = world_model.momentum_init(z_0)  # [B, D]
 
     z_state_list, rw_state_list = [], []
-    z_list, rw_list, control_tan_list, control_cov_list, action_list = [], [], [], [], []
+    z_list, rw_list, action_canonical_list, action_list = [], [], [], []
     action_latent_list, action_router_list = [], []
     r_list, r_cons_list, r_noncons_list, r_curl_list, r_curl_valid_list = [], [], [], [], []
     phi_list = []
@@ -994,8 +934,7 @@ def _imagine(
         )
         z_state_list.append(z.detach())
         rw_state_list.append(rw.detach())
-        control_tan_list.append(action_out["control_tan"])
-        control_cov_list.append(action_out["control_cov"])
+        action_canonical_list.append(action_out["action_canonical"])
         action_latent_list.append(action_out["action_latent"])
         action_router_list.append(action_out["action_router_weights"])
         action_list.append(action_out["action_mean"])
@@ -1006,7 +945,7 @@ def _imagine(
             step_out = world_model._rollout_transition(
                 z,
                 p,
-                action_out["control_cov"],
+                action_out["action_canonical"],
                 rw,
                 track_energy=False,
             )
@@ -1044,7 +983,7 @@ def _imagine(
                 action_out["action_latent"],
                 action_out["action_router_weights"],
                 action_out["action_code_latent"],
-                control=action_out["control_tan"],
+                action_canonical=action_out["action_canonical"],
                 exact_covector=exact_covector,
                 compute_curl=False,
             )
@@ -1082,9 +1021,7 @@ def _imagine(
         "rw_states": torch.stack(rw_state_list, dim=1),  # [B, H, K]
         "z_traj": torch.stack(z_list, dim=1),   # [B, H, D]
         "rw_traj": torch.stack(rw_list, dim=1),   # [B, H, K]
-        "controls": torch.stack(control_tan_list, dim=1),  # [B, H, D]
-        "controls_tan": torch.stack(control_tan_list, dim=1),  # [B, H, D]
-        "controls_cov": torch.stack(control_cov_list, dim=1),  # [B, H, D]
+        "action_canonicals": torch.stack(action_canonical_list, dim=1),  # [B, H, D]
         "action_latents": torch.stack(action_latent_list, dim=1),  # [B, H, D]
         "action_router_weights": torch.stack(action_router_list, dim=1),  # [B, H, K_a]
         "actions": torch.stack(action_list, dim=1),  # [B, H, A]
@@ -1388,20 +1325,17 @@ def _imagine_actor_return(
     horizon: int,
     gamma: float,
 ) -> dict[str, torch.Tensor]:
-    """Differentiate the actor objective through latent-action imagination.
-
-    The exact reward sector is represented by the critic value field, so the
-    actor should optimize only the non-conservative work term. The exact sector
-    is a boundary contribution fixed by the start state and should not steer the
-    policy.
-    """
+    """Differentiate the actor objective through canonical-action imagination."""
+    del closure_model
     z = z_0
     rw = rw_0
     p = world_model.momentum_init(z_0)
 
+    reward_list: list[torch.Tensor] = []
+    reward_cons_list: list[torch.Tensor] = []
     reward_noncons_list: list[torch.Tensor] = []
     action_list: list[torch.Tensor] = []
-    control_tan_list: list[torch.Tensor] = []
+    action_canonical_list: list[torch.Tensor] = []
 
     for _ in range(horizon):
         obs_info = symbolize_latent_with_atlas(
@@ -1425,25 +1359,23 @@ def _imagine_actor_return(
             hard_routing=True,
             hard_routing_tau=-1.0,
         )
-        closure_out = closure_model(
-            obs_info["chart_idx"],
-            obs_info["code_idx"],
-            obs_info["z_n"],
-            action_state["action_chart_idx"],
-            action_state["action_code_idx"],
-            action_state["action_z_n"],
-        )
-        control_cov = closure_out["control_cov"]
-        control_tan = closure_out["control_tan"]
         step_out = world_model._rollout_transition(
             z,
             p,
-            control_cov,
+            action_state["action_z_geo"],
             rw,
             track_energy=False,
         )
         z_next = step_out["z"]
         rw_next = step_out["rw"]
+        reward_conservative, _v_curr, _v_next = _conservative_reward_from_value(
+            critic,
+            z,
+            rw,
+            z_next,
+            rw_next,
+            gamma,
+        )
         exact_covector = _value_covector_from_critic(critic, z, rw)
         reward_info = reward_head.decompose(
             z,
@@ -1451,24 +1383,31 @@ def _imagine_actor_return(
             action_state["action_z_geo"],
             action_state["action_router_weights"],
             action_state["action_z_q"],
-            control=control_tan,
+            action_canonical=action_state["action_z_geo"],
             exact_covector=exact_covector,
         )
         reward_nonconservative = reward_info["reward_nonconservative"].squeeze(-1)
+        reward_total = reward_conservative.squeeze(-1) + reward_nonconservative
+        reward_list.append(reward_total)
+        reward_cons_list.append(reward_conservative.squeeze(-1))
         reward_noncons_list.append(reward_nonconservative)
         action_list.append(action_mean)
-        control_tan_list.append(control_tan)
+        action_canonical_list.append(action_state["action_z_geo"])
         z = z_next
         p = step_out["p"]
         rw = rw_next
 
+    rewards = torch.stack(reward_list, dim=1)
+    reward_conservative = torch.stack(reward_cons_list, dim=1)
     reward_nonconservative = torch.stack(reward_noncons_list, dim=1)
-    objective = _discounted_sum(reward_nonconservative, gamma)
+    objective = _discounted_sum(rewards, gamma)
     return {
+        "rewards": rewards,
+        "reward_conservative": reward_conservative,
         "reward_nonconservative": reward_nonconservative,
         "objective": objective,
         "actions": torch.stack(action_list, dim=1),
-        "controls_tan": torch.stack(control_tan_list, dim=1),
+        "action_canonicals": torch.stack(action_canonical_list, dim=1),
     }
 
 
@@ -1693,29 +1632,9 @@ def _train_step(
         mode=config.zeno_mode,
     )
 
-    replay_controls_tan = batch.get("controls_tan")
-    replay_controls_cov = batch.get("controls_cov")
-    replay_control_valid = batch.get("control_valid")
-    if replay_controls_tan is None:
-        replay_controls_tan = torch.zeros(B, T + 1, config.latent_dim, device=actions.device)
-    if replay_controls_cov is None:
-        replay_controls_cov = torch.zeros(B, T + 1, config.latent_dim, device=actions.device)
-    if replay_control_valid is None:
-        replay_control_valid = torch.zeros(B, T + 1, device=actions.device)
-    replay_controls_tan = replay_controls_tan[:, :-1]
-    replay_controls_cov = replay_controls_cov[:, :-1]
-    replay_control_valid = replay_control_valid[:, :-1]
-    replay_control_valid_flat = replay_control_valid.reshape(-1)
-    control_supervise_err = F.smooth_l1_loss(
-        closure_out["control_tan"],
-        replay_controls_tan.reshape(-1, config.latent_dim),
-        reduction="none",
-    ).mean(dim=-1)
-    L_control_supervise = _masked_mean(control_supervise_err, replay_control_valid_flat)
     L_closure = (
         config.w_dyn_transition * (L_closure_obs + L_closure_action)
         + config.w_zeno * (L_obs_zeno + L_action_zeno)
-        + config.w_control_supervise * L_control_supervise
     )
 
     L_obs_total = base_loss_obs + zn_reg_loss_obs
@@ -1746,7 +1665,6 @@ def _train_step(
     metrics["closure/L_total"] = float(L_closure)
     metrics["closure/L_obs_state"] = float(L_closure_obs)
     metrics["closure/L_action_state"] = float(L_closure_action)
-    metrics["closure/L_control_supervise"] = float(L_control_supervise)
     metrics["closure/L_obs_zeno"] = float(L_obs_zeno)
     metrics["closure/L_action_zeno"] = float(L_action_zeno)
     metrics["closure/obs_state_acc"] = float(
@@ -1798,15 +1716,11 @@ def _train_step(
     action_z_prev = action_z_all[:, :-1].detach()
     action_rw_prev = action_rw_all[:, :-1].detach()
     action_z_q_prev = action_z_q_all[:, :-1].detach()
-    predicted_controls_tan = closure_out["control_tan"].reshape(B, T, config.latent_dim).detach()
-    predicted_controls_cov = closure_out["control_cov"].reshape(B, T, config.latent_dim).detach()
-    control_mask = replay_control_valid.unsqueeze(-1).bool()
-    controls_model_tan = torch.where(control_mask, replay_controls_tan, predicted_controls_tan)
-    controls_model_cov = torch.where(control_mask, replay_controls_cov, predicted_controls_cov)
+    action_canonical_model = action_z_prev
 
     t_section = time.perf_counter()
     optimizer_wm.zero_grad()
-    wm_out = world_model(z_0, controls_model_cov[:, :H_wm], rw_0)
+    wm_out = world_model(z_0, action_canonical_model[:, :H_wm], rw_0)
     z_pred = wm_out["z_trajectory"]
     T_wm = min(z_pred.shape[1], H_wm)
     z_tgt_wm = z_targets[:, :T_wm]
@@ -1836,7 +1750,7 @@ def _train_step(
     action_K_code_prev_flat = action_K_code_all[:, :-1].reshape(-1)
     action_zn_prev_flat = action_zn_prev.reshape(-1, config.latent_dim)
     action_z_q_prev_flat = action_z_q_prev.reshape(-1, config.latent_dim)
-    controls_model_tan_flat = controls_model_tan.reshape(-1, config.latent_dim)
+    action_canonical_flat = action_canonical_model.reshape(-1, config.latent_dim)
     continuation_flat = (1.0 - replay_dones).reshape(-1, 1)
     reward_conservative_flat, value_prev_flat, _value_next_flat = _conservative_reward_from_value(
         critic,
@@ -1867,7 +1781,7 @@ def _train_step(
         action_z_prev_flat,
         action_rw_prev_flat,
         action_z_q_prev_flat,
-        control=controls_model_tan_flat,
+        action_canonical=action_canonical_flat,
         exact_covector=exact_covector,
         exact_covector_fn=exact_covector_fn,
         compute_curl=compute_diagnostics,
@@ -1899,7 +1813,7 @@ def _train_step(
     metrics["wm/L_reward"] = float(L_reward)
     metrics["wm/L_reward_nonconservative"] = float(L_reward_nonconservative)
     metrics["wm/L_reward_exact_orth"] = float(L_reward_exact_orth)
-    metrics["wm/reward_control_norm_mean"] = float(controls_model_tan_flat.norm(dim=-1).mean())
+    metrics["wm/action_canonical_norm_mean"] = float(action_canonical_flat.norm(dim=-1).mean())
     metrics["wm/reward_conservative_mean"] = float(r_cons.mean())
     metrics["wm/reward_nonconservative_mean"] = float(r_noncons.mean())
     metrics["wm/reward_residual_target_mean"] = float(reward_residual_target.mean())
@@ -2025,7 +1939,7 @@ def _train_step(
         L_actor_return = actor_out["action_z_n"].new_zeros(())
         actor_return = actor_out["action_z_n"].new_zeros(())
         actor_reward_mean = 0.0
-        actor_control_norm_mean = 0.0
+        actor_action_canonical_norm_mean = 0.0
         actor_action_abs_mean = 0.0
         actor_chart_acc = float(
             (actor_out["action_chart_idx"].detach() == action_K_prev_flat.detach()).float().mean()
@@ -2059,9 +1973,9 @@ def _train_step(
                 )
                 actor_return = actor_rollout["objective"].mean()
                 L_actor_return = -config.w_actor_return * actor_return
-                actor_reward_mean = float(actor_rollout["reward_nonconservative"].detach().mean())
-                actor_control_norm_mean = float(
-                    actor_rollout["controls_tan"].detach().norm(dim=-1).mean()
+                actor_reward_mean = float(actor_rollout["rewards"].detach().mean())
+                actor_action_canonical_norm_mean = float(
+                    actor_rollout["action_canonicals"].detach().norm(dim=-1).mean()
                 )
                 actor_action_abs_mean = float(actor_rollout["actions"].detach().abs().mean())
             else:
@@ -2078,7 +1992,7 @@ def _train_step(
     metrics["actor/L_return"] = float(L_actor_return.detach())
     metrics["actor/return_mean"] = float(actor_return.detach())
     metrics["actor/reward_mean"] = actor_reward_mean
-    metrics["actor/control_norm_mean"] = actor_control_norm_mean
+    metrics["actor/action_canonical_norm_mean"] = actor_action_canonical_norm_mean
     metrics["actor/action_abs_mean"] = actor_action_abs_mean
     metrics["actor/chart_acc"] = actor_chart_acc
     metrics["actor/code_acc"] = actor_code_acc
@@ -2105,8 +2019,7 @@ def _train_step(
             reward_curl_batch_limit=config.reward_curl_batch_limit,
         )
         imag_rw_states = imagination["rw_states"]
-        imag_controls_tan = imagination["controls_tan"]
-        imag_controls_cov = imagination["controls_cov"]
+        imag_action_canonicals = imagination["action_canonicals"]
         imag_action_latents = imagination["action_latents"]
         imag_action_router = imagination["action_router_weights"]
         imag_rewards = imagination["rewards"]
@@ -2117,11 +2030,11 @@ def _train_step(
         imag_z = imagination["z_traj"]
         imag_rw = imagination["rw_traj"]
         imag_actions = imagination["actions"]
-        discounted_rewards = _discounted_sum(imag_reward_noncons, config.gamma)
+        discounted_rewards = _discounted_sum(imag_rewards, config.gamma)
+        discounted_nonconservative = _discounted_sum(imag_reward_noncons, config.gamma)
         discounted_exact_boundary = _discounted_sum(imag_reward_cons, config.gamma)
         terminal_value = critic_value(critic, imag_z[:, -1], imag_rw[:, -1]).squeeze(-1)
-        control_objective = discounted_rewards
-        full_return = discounted_exact_boundary + discounted_rewards
+        full_return = discounted_rewards
         replay_values_all = critic_value(
             critic,
             z_all.reshape(-1, config.latent_dim),
@@ -2142,8 +2055,9 @@ def _train_step(
         imag_action_router_entropy = -(
             imag_action_router * imag_action_router.clamp(min=1e-8).log()
         ).sum(dim=-1)
-        metrics["policy/control_norm_mean"] = float(imag_controls_tan.norm(dim=-1).mean())
-        metrics["policy/control_cov_norm_mean"] = float(imag_controls_cov.norm(dim=-1).mean())
+        metrics["policy/action_canonical_norm_mean"] = float(
+            imag_action_canonicals.norm(dim=-1).mean()
+        )
         metrics["policy/action_abs_mean"] = float(imag_actions.abs().mean())
         metrics["policy/action_latent_norm_mean"] = float(imag_action_latents.norm(dim=-1).mean())
         metrics["policy/action_router_entropy"] = float(imag_action_router_entropy.mean())
@@ -2159,9 +2073,12 @@ def _train_step(
             metrics["imagination/reward_curl_norm_mean"] = 0.0
         metrics["imagination/reward_curl_eval_frac"] = float(imag_reward_curl_valid.float().mean())
         metrics["imagination/discounted_reward_mean"] = float(discounted_rewards.mean())
+        metrics["imagination/nonconservative_return_mean"] = float(
+            discounted_nonconservative.mean()
+        )
         metrics["imagination/exact_boundary_mean"] = float(discounted_exact_boundary.mean())
         metrics["imagination/terminal_value_mean"] = float(terminal_value.mean())
-        metrics["imagination/return_mean"] = float(control_objective.mean())
+        metrics["imagination/return_mean"] = float(full_return.mean())
         metrics["imagination/full_return_mean"] = float(full_return.mean())
         metrics["imagination/router_entropy"] = float(
             -(imag_rw_states * imag_rw_states.clamp(min=1e-8).log()).sum(dim=-1).mean()
@@ -2876,7 +2793,7 @@ def train(config: DreamerConfig) -> None:
                 ("act_gn", "actor/grad_norm"),
             ]
             line3_keys = [
-                ("ctrl", "policy/control_norm_mean"),
+                ("a_can", "policy/action_canonical_norm_mean"),
                 ("a_lat", "policy/action_latent_norm_mean"),
                 ("a_ent", "policy/action_router_entropy"),
                 ("im_rew", "imagination/reward_mean"),
@@ -2906,7 +2823,7 @@ def train(config: DreamerConfig) -> None:
                 ("chart_acc", "wm/chart_acc"),
                 ("rw_drift", "imagination/router_drift"),
                 ("v_err", "critic/value_abs_err"),
-                ("cov_n", "policy/control_cov_norm_mean"),
+                ("a_can", "policy/action_canonical_norm_mean"),
             ]
             line6_keys = [
                 ("col", "time/collection"),
@@ -2923,7 +2840,7 @@ def train(config: DreamerConfig) -> None:
                 ("bell_s", "critic/replay_bellman_std"),
                 ("rtg_e", "critic/replay_rtg_abs_err"),
                 ("cal_e", "critic/replay_calibration_err"),
-                ("c_sup", "closure/L_control_supervise"),
+                ("a_can", "actor/action_canonical_norm_mean"),
                 ("a_sup", "actor/L_supervise"),
                 ("upd", "actor/update_applied"),
             ]

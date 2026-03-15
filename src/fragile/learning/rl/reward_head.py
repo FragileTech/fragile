@@ -179,14 +179,19 @@ class RewardHead(nn.Module):
         action_z: torch.Tensor,
         action_rw: torch.Tensor,
         action_code_z: torch.Tensor,
-        control: torch.Tensor,
+        action_canonical: torch.Tensor,
         *,
         exact_covector: torch.Tensor | None = None,
         exact_covector_fn: Callable[[torch.Tensor], torch.Tensor] | None = None,
         compute_curl: bool = False,
         curl_batch_limit: int | None = None,
     ) -> dict[str, torch.Tensor]:
-        """Return the residual reward connection and conservative source density."""
+        """Return the residual reward connection and conservative source density.
+
+        The deployed RL path contracts the learned residual one-form with the
+        canonical motor-side action latent, without introducing a second motor
+        variable downstream of the policy.
+        """
         rho_r = self.reward_density(z, rw)
         reward_form_cov_raw = self.reward_form(
             z,
@@ -199,7 +204,7 @@ class RewardHead(nn.Module):
             reward_form_cov_raw,
             exact_covector,
         )
-        reward_nonconservative = (reward_form_cov * control).sum(dim=-1, keepdim=True)
+        reward_nonconservative = (reward_form_cov * action_canonical).sum(dim=-1, keepdim=True)
         reward_curl = (
             self.reward_curl(
                 z,
@@ -230,7 +235,7 @@ class RewardHead(nn.Module):
         action_z: torch.Tensor,
         action_rw: torch.Tensor,
         action_code_z: torch.Tensor,
-        control: torch.Tensor,
+        action_canonical: torch.Tensor,
         *,
         exact_covector: torch.Tensor | None = None,
     ) -> torch.Tensor:
@@ -242,7 +247,7 @@ class RewardHead(nn.Module):
             action_z: [B, D] action-manifold latent.
             action_rw: [B, K_a] action-manifold routing weights.
             action_code_z: [B, D] action-manifold code latent.
-            control: [B, D] tangent latent control field.
+            action_canonical: [B, D] canonical motor-side action latent.
 
         Returns:
             r_noncons: [B, 1] non-conservative reward contribution.
@@ -253,6 +258,6 @@ class RewardHead(nn.Module):
             action_z,
             action_rw,
             action_code_z,
-            control,
+            action_canonical,
             exact_covector=exact_covector,
         )["reward_nonconservative"]
