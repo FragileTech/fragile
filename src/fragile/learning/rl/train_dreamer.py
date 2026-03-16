@@ -1475,6 +1475,15 @@ def _eval_policy(
 # ---------------------------------------------------------------------------
 
 
+def _gas_death_condition(config: DreamerConfig):
+    """Return an optional task-specific GAS death condition."""
+    if not config.gas_use_death_condition:
+        return None
+    if config.domain == "walker":
+        return walker_ground_death
+    return None
+
+
 def _collect_gas_episodes(
     actor: GeometricActor | None,
     action_model: SharedDynTopoEncoder | None,
@@ -1497,7 +1506,7 @@ def _collect_gas_episodes(
         n_workers=config.gas_n_env_workers,
         include_rgb=False,
     )
-    death_cond = walker_ground_death if config.gas_use_death_condition else None
+    death_cond = _gas_death_condition(config)
     gas = RoboticFractalGas(
         env=env,
         N=config.gas_walkers,

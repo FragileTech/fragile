@@ -1816,6 +1816,18 @@ class TestRolloutCollection:
 
 
 class TestGasCollection:
+    def test_gas_death_condition_is_walker_only(self):
+        from fragile.learning.rl import train_dreamer
+        from fragile.learning.rl.config import DreamerConfig
+
+        walker_cfg = DreamerConfig(domain="walker", task="walk", gas_use_death_condition=True)
+        cartpole_cfg = DreamerConfig(domain="cartpole", task="balance", gas_use_death_condition=True)
+        disabled_cfg = DreamerConfig(domain="walker", task="walk", gas_use_death_condition=False)
+
+        assert train_dreamer._gas_death_condition(walker_cfg) is train_dreamer.walker_ground_death
+        assert train_dreamer._gas_death_condition(cartpole_cfg) is None
+        assert train_dreamer._gas_death_condition(disabled_cfg) is None
+
     def test_collect_gas_episodes_clones_current_schema_prefix(self, monkeypatch, config):
         from fragile.learning.rl import train_dreamer
 
