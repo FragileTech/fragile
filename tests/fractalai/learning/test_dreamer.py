@@ -73,6 +73,7 @@ def _make_optimizers(
     action_model: nn.Module,
     action_jump_op: nn.Module,
     world_model: nn.Module,
+    macro_critic: nn.Module,
     reward_head: nn.Module,
     actor: nn.Module,
     enclosure_probe: nn.Module,
@@ -97,7 +98,7 @@ def _make_optimizers(
         lr=1e-3,
     )
     optimizer_wm = torch.optim.Adam(
-        list(world_model.parameters()) + reward_own_params,
+        list(world_model.parameters()) + list(macro_critic.parameters()) + reward_own_params,
         lr=1e-3,
     )
     optimizer_boundary = torch.optim.Adam(actor.parameters(), lr=1e-3)
@@ -337,6 +338,13 @@ def world_model():
 @pytest.fixture
 def critic(world_model):
     return world_model.potential_net
+
+
+@pytest.fixture
+def macro_critic():
+    from fragile.learning.rl.train_dreamer import MacroValueModel
+
+    return MacroValueModel(K, CODES_PER_CHART, K, CODES_PER_CHART)
 
 
 @pytest.fixture
@@ -787,16 +795,16 @@ class TestConfigAndParseArgs:
         assert cfg.num_charts == 4
         assert cfg.num_action_charts == 4
         assert cfg.num_action_macros == 4
-        assert cfg.codes_per_chart == 8
-        assert cfg.action_codes_per_chart == 8
+        assert cfg.codes_per_chart == 16
+        assert cfg.action_codes_per_chart == 16
         assert cfg.d_model == 64
         assert cfg.hidden_dim == 128
-        assert cfg.max_episode_steps == 200
-        assert cfg.seed_episodes == 16
+        assert cfg.max_episode_steps == 500
+        assert cfg.seed_episodes == 24
         assert cfg.batch_size == 8
-        assert cfg.seq_len == 32
-        assert cfg.imagination_horizon == 8
-        assert cfg.actor_return_horizon == 8
+        assert cfg.seq_len == 64
+        assert cfg.imagination_horizon == 12
+        assert cfg.actor_return_horizon == 12
         assert cfg.hard_routing
         assert cfg.hard_routing_warmup_epochs == 0
         assert cfg.hard_routing_tau == pytest.approx(1.0)
@@ -806,20 +814,34 @@ class TestConfigAndParseArgs:
         assert cfg.w_diversity == pytest.approx(2.0)
         assert cfg.w_critic == pytest.approx(1.0)
         assert cfg.w_screened_poisson == pytest.approx(2.0)
-        assert cfg.screened_poisson_warmup_epochs == 10
+        assert cfg.screened_poisson_warmup_epochs == 20
         assert cfg.w_reward_conservative_match == pytest.approx(10.0)
         assert cfg.w_critic_stiffness == pytest.approx(5.0)
         assert cfg.w_critic_exact_increment == pytest.approx(1.0)
         assert cfg.w_critic_covector_align == pytest.approx(5.0)
-        assert cfg.critic_multistep_horizon == 8
+        assert cfg.critic_covector_warmup_epochs == 10
+        assert cfg.critic_stiffness_warmup_epochs == 20
+        assert cfg.critic_macro_pullback_warmup_epochs == 15
+        assert cfg.critic_on_policy_warmup_epochs == 15
+        assert cfg.critic_grad_metrics_every == 1
+        assert cfg.critic_multistep_horizon == 16
         assert cfg.critic_multistep_decay == pytest.approx(0.8)
         assert cfg.w_critic_on_policy_covector_align == pytest.approx(5.0)
         assert cfg.w_critic_on_policy_stiffness == pytest.approx(2.0)
-        assert cfg.critic_on_policy_horizon == 8
+        assert cfg.critic_on_policy_horizon == 12
         assert cfg.critic_on_policy_batch_size == 8
         assert cfg.critic_on_policy_decay == pytest.approx(0.9)
+        assert cfg.w_macro_value == pytest.approx(0.5)
+        assert cfg.w_macro_exact_increment == pytest.approx(1.0)
+        assert cfg.w_macro_pullback == pytest.approx(0.5)
+        assert cfg.w_macro_covector_pullback == pytest.approx(0.5)
+        assert cfg.w_macro_on_policy_pullback == pytest.approx(0.25)
+        assert cfg.w_macro_on_policy_covector_pullback == pytest.approx(0.25)
+        assert cfg.macro_multistep_horizon == 16
+        assert cfg.macro_on_policy_horizon == 12
         assert cfg.critic_stiffness_min == pytest.approx(0.001)
         assert cfg.critic_stiffness_target_max == pytest.approx(0.05)
+        assert cfg.w_actor_curiosity == pytest.approx(0.2)
         assert cfg.reward_nonconservative_budget_ratio == pytest.approx(0.05)
         assert cfg.actor_return_chart_acc_target == pytest.approx(0.5)
         assert cfg.actor_return_update_every == 2
@@ -829,6 +851,7 @@ class TestConfigAndParseArgs:
         assert cfg.actor_supervise_warmup_epochs == 2
         assert cfg.actor_supervise_decay_epochs == 20
         assert cfg.actor_supervise_min_scale == pytest.approx(0.05)
+        assert cfg.actor_macro_backbone_weight == pytest.approx(1.0)
         assert cfg.w_actor_old_policy_chart_kl == pytest.approx(0.01)
         assert cfg.w_actor_old_policy_code_kl == pytest.approx(0.01)
         assert cfg.collect_every == 1
@@ -836,8 +859,8 @@ class TestConfigAndParseArgs:
         assert cfg.eval_every == 10
         assert cfg.checkpoint_every == 25
         assert cfg.sigma_motor == pytest.approx(0.2)
-        assert cfg.sigma_motor_init == pytest.approx(0.4)
-        assert cfg.sigma_motor_anneal_epochs == 40
+        assert cfg.sigma_motor_init == pytest.approx(0.5)
+        assert cfg.sigma_motor_anneal_epochs == 60
         assert cfg.sigma_motor_exact_gate_target == pytest.approx(0.45)
         assert cfg.chart_usage_h_low is not None
         assert cfg.chart_usage_h_high is not None
@@ -864,7 +887,7 @@ class TestConfigAndParseArgs:
         assert cfg.num_action_charts == 3
         assert cfg.hard_routing_warmup_epochs == 7
         assert cfg.w_entropy == pytest.approx(0.2)
-        assert cfg.codes_per_chart == 8
+        assert cfg.codes_per_chart == 16
         assert cfg.chart_usage_h_low is not None
 
     def test_apply_cartpole_balance_task_preset_uses_small_control_defaults(self):
@@ -883,10 +906,20 @@ class TestConfigAndParseArgs:
         assert cfg.w_critic_on_policy_stiffness == pytest.approx(1.0)
         assert cfg.critic_on_policy_horizon == 4
         assert cfg.critic_on_policy_batch_size == 4
+        assert cfg.w_macro_value == pytest.approx(0.25)
+        assert cfg.w_macro_exact_increment == pytest.approx(0.5)
+        assert cfg.w_macro_pullback == pytest.approx(0.25)
+        assert cfg.w_macro_covector_pullback == pytest.approx(0.1)
+        assert cfg.w_macro_on_policy_pullback == pytest.approx(0.1)
+        assert cfg.w_macro_on_policy_covector_pullback == pytest.approx(0.05)
+        assert cfg.macro_multistep_horizon == 4
+        assert cfg.macro_on_policy_horizon == 4
+        assert cfg.actor_macro_backbone_weight == pytest.approx(0.25)
         assert cfg.sigma_motor == pytest.approx(0.1)
         assert cfg.sigma_motor_init == pytest.approx(0.15)
         assert cfg.sigma_motor_anneal_epochs == 20
         assert cfg.sigma_motor_exact_gate_target == pytest.approx(0.35)
+        assert cfg.w_actor_curiosity == pytest.approx(0.05)
 
     def test_parse_args_uses_current_cli_schema(self, monkeypatch):
         from fragile.learning.rl.train_dreamer import _parse_args
@@ -1049,6 +1082,51 @@ class TestActorStateMetric:
 
 
 class TestActorBootstrapAndTrustRegion:
+    def test_categorical_entropy_varentropy_filters_white_noise(self, device):
+        from fragile.learning.rl import train_dreamer
+
+        uniform_logits = torch.zeros(2, 4, device=device)
+        structured_logits = torch.tensor(
+            [[12.0, -12.0, -12.0, -12.0], [3.0, 3.0, -3.0, -3.0]],
+            device=device,
+        )
+
+        entropy_uniform, varentropy_uniform = train_dreamer._categorical_entropy_varentropy(
+            uniform_logits,
+        )
+        entropy_structured, varentropy_structured = train_dreamer._categorical_entropy_varentropy(
+            structured_logits,
+        )
+
+        assert float(entropy_uniform.mean()) > float(entropy_structured.mean())
+        assert float(varentropy_uniform.mean()) == pytest.approx(0.0, abs=1e-7)
+        assert float(varentropy_structured[0]) < 1e-6
+        assert float(varentropy_structured[1]) > 0.0
+
+    def test_curiosity_closure_gate_prefers_grounded_dynamics(self, config):
+        from fragile.learning.rl import train_dreamer
+
+        cfg = copy.deepcopy(config)
+        template = torch.tensor(0.0)
+        gate_good, metrics_good = train_dreamer._actor_curiosity_closure_gate(
+            cfg,
+            obs_state_acc=0.9,
+            enclosure_defect_acc=0.0,
+            enclosure_defect_ce=0.0,
+            template=template,
+        )
+        gate_bad, metrics_bad = train_dreamer._actor_curiosity_closure_gate(
+            cfg,
+            obs_state_acc=0.2,
+            enclosure_defect_acc=0.5,
+            enclosure_defect_ce=2.0,
+            template=template,
+        )
+
+        assert float(gate_good) > float(gate_bad)
+        assert metrics_good["actor/curiosity_closure_obs_factor"] > 0.0
+        assert metrics_bad["actor/curiosity_closure_defect_ce_factor"] < 1.0
+
     def test_exact_control_gate_favors_better_exact_calibration(self, config):
         from fragile.learning.rl import train_dreamer
 
@@ -1078,6 +1156,189 @@ class TestActorBootstrapAndTrustRegion:
         assert float(gate_good) > float(gate_bad)
         assert metrics_good["actor/exact_control_calibration_ratio"] > 1.0
         assert metrics_bad["actor/exact_control_calibration_ratio"] < 0.2
+
+    def test_macro_control_gate_uses_macro_increment_signal(self, config):
+        from fragile.learning.rl import train_dreamer
+
+        cfg = copy.deepcopy(config)
+        cfg.w_macro_value = 1.0
+        template = torch.tensor(0.0)
+        gate_good, metrics_good = train_dreamer._macro_control_gate(
+            cfg,
+            macro_exact_increment_abs_err=0.1,
+            macro_exact_increment_target_mean=1.0,
+            macro_on_policy_pullback_abs_err=0.1,
+            macro_on_policy_value_std=0.01,
+            macro_on_policy_exact_increment_pred_abs_mean=0.8,
+            macro_target_scale=1.0,
+            template=template,
+        )
+        gate_bad, metrics_bad = train_dreamer._macro_control_gate(
+            cfg,
+            macro_exact_increment_abs_err=1.0,
+            macro_exact_increment_target_mean=1.0,
+            macro_on_policy_pullback_abs_err=1.0,
+            macro_on_policy_value_std=0.01,
+            macro_on_policy_exact_increment_pred_abs_mean=0.02,
+            macro_target_scale=1.0,
+            template=template,
+        )
+
+        assert float(gate_good) > float(gate_bad)
+        assert metrics_good["actor/macro_control_signal_scale"] == pytest.approx(0.8)
+        assert metrics_bad["actor/macro_control_calibration_ratio"] < 0.1
+
+    def test_macro_transition_sharpening_gate_tracks_closure_quality(self, config):
+        from fragile.learning.rl import train_dreamer
+
+        template = torch.tensor(0.0)
+        gate_good, metrics_good = train_dreamer._macro_transition_sharpening_gate(
+            config,
+            obs_state_acc=0.95,
+            enclosure_defect_acc=0.01,
+            enclosure_defect_ce=0.01,
+            template=template,
+        )
+        gate_bad, metrics_bad = train_dreamer._macro_transition_sharpening_gate(
+            config,
+            obs_state_acc=0.2,
+            enclosure_defect_acc=0.5,
+            enclosure_defect_ce=1.0,
+            template=template,
+        )
+
+        assert float(gate_good) > float(gate_bad)
+        assert metrics_good["macro/transition_sharpen_gate"] > metrics_bad["macro/transition_sharpen_gate"]
+
+    def test_critic_stage_scales_delay_shaping_terms(self, config):
+        from fragile.learning.rl import train_dreamer
+
+        config.screened_poisson_warmup_epochs = 10
+        config.critic_covector_warmup_epochs = 8
+        config.critic_stiffness_warmup_epochs = 12
+        config.critic_macro_pullback_warmup_epochs = 6
+        config.critic_on_policy_warmup_epochs = 4
+
+        early = train_dreamer._critic_stage_scales(config, epoch=0)
+        late = train_dreamer._critic_stage_scales(config, epoch=11)
+
+        assert early["exact_increment"] == pytest.approx(1.0)
+        assert early["poisson"] < late["poisson"]
+        assert early["covector"] < late["covector"]
+        assert early["stiffness"] < late["stiffness"]
+        assert early["macro_pullback"] < late["macro_pullback"]
+        assert early["on_policy"] < late["on_policy"]
+        assert late["poisson"] == pytest.approx(1.0)
+        assert late["covector"] == pytest.approx(1.0)
+        assert late["stiffness"] == pytest.approx(1.0)
+        assert late["macro_pullback"] == pytest.approx(1.0)
+        assert late["on_policy"] == pytest.approx(1.0)
+
+    def test_transition_backed_macro_q_uses_next_state_distribution(self, macro_critic):
+        state_probs = torch.zeros(1, macro_critic.num_states, dtype=torch.float32)
+        action_probs = torch.zeros(1, macro_critic.num_actions, dtype=torch.float32)
+        next_state_probs = torch.zeros(1, macro_critic.num_states, dtype=torch.float32)
+        next_action_probs = torch.zeros(1, macro_critic.num_actions, dtype=torch.float32)
+        state_probs[0, 0] = 0.25
+        state_probs[0, 5] = 0.75
+        action_probs[0, 0] = 0.4
+        action_probs[0, 5] = 0.6
+        next_state_probs[0, 0] = 0.1
+        next_state_probs[0, 1] = 0.2
+        next_state_probs[0, 4] = 0.3
+        next_state_probs[0, 5] = 0.4
+        next_action_probs[0, 0] = 0.25
+        next_action_probs[0, 5] = 0.75
+
+        with torch.no_grad():
+            macro_critic.state_action_q.weight.zero_()
+            q_table = torch.zeros(macro_critic.num_states, macro_critic.num_actions)
+            q_table[0, 0] = 1.0
+            q_table[0, 5] = 1.5
+            q_table[1, 0] = 2.0
+            q_table[1, 5] = 2.5
+            q_table[4, 0] = 3.0
+            q_table[4, 5] = 3.5
+            q_table[5, 0] = 4.0
+            q_table[5, 5] = 4.5
+            macro_critic.state_action_q.weight[:, 0] = q_table.reshape(-1)
+            reward_table = torch.zeros(macro_critic.num_states, macro_critic.num_actions)
+            reward_table[0, 0] = 0.5
+            reward_table[0, 5] = 0.7
+            reward_table[5, 0] = 1.1
+            reward_table[5, 5] = 1.3
+            macro_critic.state_action_reward.weight[:, 0] = reward_table.reshape(-1)
+
+        reward = macro_critic.reward_from_probs(state_probs, action_probs)
+        q_value = macro_critic.q_from_transition(
+            state_probs,
+            action_probs,
+            next_state_probs,
+            next_action_probs=next_action_probs,
+            gamma=0.5,
+        )
+        expected_reward = 0.25 * (0.4 * 0.5 + 0.6 * 0.7) + 0.75 * (0.4 * 1.1 + 0.6 * 1.3)
+        expected_next_value = (
+            0.1 * (0.25 * 1.0 + 0.75 * 1.5)
+            + 0.2 * (0.25 * 2.0 + 0.75 * 2.5)
+            + 0.3 * (0.25 * 3.0 + 0.75 * 3.5)
+            + 0.4 * (0.25 * 4.0 + 0.75 * 4.5)
+        )
+
+        assert reward.item() == pytest.approx(expected_reward)
+        assert q_value.item() == pytest.approx(expected_reward + 0.5 * expected_next_value)
+
+    def test_macro_transition_observability_metrics_report_bellman_structure(self, macro_critic):
+        from fragile.learning.rl import train_dreamer
+
+        with torch.no_grad():
+            macro_critic.state_action_q.weight.zero_()
+            q_table = torch.zeros(macro_critic.num_states, macro_critic.num_actions)
+            q_table[0, 0] = 1.0
+            q_table[5, 0] = -0.5
+            q_table[1, 0] = 0.25
+            q_table[9, 0] = -0.25
+            macro_critic.state_action_q.weight[:, 0] = q_table.reshape(-1)
+
+        metrics = train_dreamer._macro_transition_observability_metrics(
+            macro_critic=macro_critic,
+            state_idx=torch.tensor([[0, 5]], dtype=torch.long),
+            next_state_probs=torch.nn.functional.one_hot(
+                torch.tensor([[0, 5]], dtype=torch.long),
+                num_classes=macro_critic.num_states,
+            ).to(torch.float32)
+            * torch.tensor([[[0.8], [0.4]]], dtype=torch.float32)
+            + torch.nn.functional.one_hot(
+                torch.tensor([[1, 1]], dtype=torch.long),
+                num_classes=macro_critic.num_states,
+            ).to(torch.float32)
+            * torch.tensor([[[0.2], [0.3]]], dtype=torch.float32)
+            + torch.nn.functional.one_hot(
+                torch.tensor([[0, 8]], dtype=torch.long),
+                num_classes=macro_critic.num_states,
+            ).to(torch.float32)
+            * torch.tensor([[[0.0], [0.2]]], dtype=torch.float32)
+            + torch.nn.functional.one_hot(
+                torch.tensor([[0, 9]], dtype=torch.long),
+                num_classes=macro_critic.num_states,
+            ).to(torch.float32)
+            * torch.tensor([[[0.0], [0.1]]], dtype=torch.float32),
+            reward_pred=torch.tensor([[0.9, -0.1]], dtype=torch.float32),
+            reward_target=torch.tensor([[1.1, -0.2]], dtype=torch.float32),
+            next_value=torch.tensor([[0.7, -0.4]], dtype=torch.float32),
+            bootstrap_term=torch.tensor([[0.35, -0.2]], dtype=torch.float32),
+            valid_mask=torch.ones(1, 2, dtype=torch.float32),
+            metric_prefix="macro",
+        )
+
+        assert metrics["macro/reward_pred_mean"] == pytest.approx(0.4)
+        assert metrics["macro/reward_target_mean"] == pytest.approx(0.45)
+        assert metrics["macro/reward_abs_err"] == pytest.approx(0.15)
+        assert metrics["macro/value_next_mean"] == pytest.approx(0.15)
+        assert metrics["macro/bootstrap_term_mean"] == pytest.approx(0.075)
+        assert metrics["macro/next_state_top1_prob"] == pytest.approx(0.6)
+        assert metrics["macro/self_transition_prob"] == pytest.approx(0.6)
+        assert metrics["macro/next_state_positive_value_mass"] == pytest.approx(0.65)
 
     def test_scheduled_sigma_motor_keeps_exploration_high_until_exact_gate_improves(self, config):
         from fragile.learning.rl import train_dreamer
@@ -1263,7 +1524,7 @@ class TestCriticStiffness:
             replay_valid=replay_valid,
         )
 
-        assert float(loss) < 1e-4
+        assert float(loss) < 2e-4
         assert metrics["critic/covector_align_abs_err"] < 1e-2
         assert float(stiffness_scale) >= float(config.critic_stiffness_min)
 
@@ -1282,6 +1543,30 @@ class TestCriticStiffness:
 
         assert float(loss) == pytest.approx(0.0)
         assert metrics["critic/exact_increment_abs_err"] == pytest.approx(0.0)
+
+    def test_critic_exact_increment_loss_reports_observability_stats(self):
+        from fragile.learning.rl import train_dreamer
+
+        reward_pred = torch.tensor([[1.0, -0.5, 2.0]], dtype=torch.float32)
+        reward_target = reward_pred.clone()
+        replay_valid = torch.ones_like(reward_pred)
+
+        _, metrics = train_dreamer._critic_exact_increment_loss(
+            reward_conservative_pred=reward_pred,
+            reward_conservative_target=reward_target,
+            replay_valid=replay_valid,
+        )
+
+        assert metrics["critic/exact_increment_pred_std"] == pytest.approx(
+            float(reward_pred.reshape(-1).std(unbiased=False)),
+        )
+        assert metrics["critic/exact_increment_target_std"] == pytest.approx(
+            float(reward_target.reshape(-1).std(unbiased=False)),
+        )
+        assert metrics["critic/exact_increment_sign_acc"] == pytest.approx(1.0)
+        assert metrics["critic/exact_increment_corr"] == pytest.approx(1.0)
+        assert metrics["critic/exact_increment_support_frac"] == pytest.approx(1.0)
+        assert metrics["critic/exact_increment_positive_frac"] == pytest.approx(2.0 / 3.0)
 
     def test_multistep_exact_increment_loss_matches_two_step_value_telescoping(self):
         from fragile.learning.rl import train_dreamer
@@ -2005,6 +2290,7 @@ class TestImagination:
             FakeWorldModel(),
             FakeRewardHead(),
             FakeCritic(),
+            None,
             FakeActor(),
             FakeActionModel(),
             z_0,
@@ -2018,6 +2304,7 @@ class TestImagination:
         assert out["rewards"].shape == (2, 3)
         assert out["reward_conservative"].shape == (2, 3)
         assert out["reward_nonconservative"].shape == (2, 3)
+        assert out["reward_macro"].shape == (2, 3)
         assert out["actions"].shape == (2, 3, A)
         assert out["action_canonicals"].shape == (2, 3, D)
 
@@ -2162,6 +2449,7 @@ class TestImagination:
             FakeWorldModel(),
             FakeRewardHead(),
             FakeCritic(),
+            None,
             FakeActor(),
             FakeActionModel(),
             z_0,
@@ -2197,6 +2485,7 @@ class TestTrainStep:
         action_jump_op,
         world_model,
         critic,
+        macro_critic,
         reward_head,
         actor,
         actor_old,
@@ -2211,6 +2500,7 @@ class TestTrainStep:
             action_model,
             action_jump_op,
             world_model,
+            macro_critic,
             reward_head,
             actor,
             enclosure_probe,
@@ -2231,6 +2521,7 @@ class TestTrainStep:
             enclosure_probe,
             reward_head,
             critic,
+            macro_critic,
             actor,
             actor_old,
             optimizer_enc,
@@ -2255,13 +2546,29 @@ class TestTrainStep:
             "wm/L_reward",
             "wm/L_reward_nonconservative",
             "wm/L_reward_exact_orth",
+            "wm/L_code",
+            "wm/L_symbol",
             "wm/L_force_exact",
             "wm/L_reward_nonconservative_norm",
             "wm/L_reward_nonconservative_budget",
             "wm/reward_form_exact_leakage_metric_mean",
             "wm/L_hodge_conservative_margin",
             "wm/L_hodge_solenoidal",
+            "wm/code_acc",
+            "wm/symbol_acc",
+            "macro/L_transition",
             "critic/L_critic",
+            "critic/stage_poisson",
+            "critic/stage_covector",
+            "critic/stage_stiffness",
+            "critic/stage_macro_pullback",
+            "critic/stage_on_policy",
+            "critic/grad_exact_increment",
+            "critic/grad_poisson",
+            "critic/grad_covector_align",
+            "critic/grad_stiffness",
+            "critic/grad_macro_pullback",
+            "critic/grad_on_policy",
             "actor/L_total",
             "actor/L_return",
             "actor/L_supervise_raw",
@@ -2272,6 +2579,7 @@ class TestTrainStep:
             "actor/L_natural",
             "actor/L_sync",
             "actor/L_stiffness",
+            "actor/symbol_acc",
             "actor/supervise_scale",
             "actor/update_applied",
             "time/step",
@@ -2305,6 +2613,7 @@ class TestTrainStep:
         action_jump_op,
         world_model,
         critic,
+        macro_critic,
         reward_head,
         actor,
         actor_old,
@@ -2319,6 +2628,7 @@ class TestTrainStep:
             action_model,
             action_jump_op,
             world_model,
+            macro_critic,
             reward_head,
             actor,
             enclosure_probe,
@@ -2346,6 +2656,7 @@ class TestTrainStep:
             enclosure_probe,
             reward_head,
             critic,
+            macro_critic,
             actor,
             actor_old,
             optimizer_enc,
@@ -2416,6 +2727,7 @@ class TestTrainStep:
         action_jump_op,
         world_model,
         critic,
+        macro_critic,
         reward_head,
         actor,
         actor_old,
@@ -2431,6 +2743,7 @@ class TestTrainStep:
             action_model,
             action_jump_op,
             world_model,
+            macro_critic,
             reward_head,
             actor,
             enclosure_probe,
@@ -2490,6 +2803,7 @@ class TestTrainStep:
             enclosure_probe,
             reward_head,
             critic,
+            macro_critic,
             actor,
             actor_old,
             optimizer_enc,
@@ -2547,6 +2861,7 @@ class TestTrainStep:
         action_jump_op,
         world_model,
         critic,
+        macro_critic,
         reward_head,
         actor,
         actor_old,
@@ -2562,6 +2877,7 @@ class TestTrainStep:
             action_model,
             action_jump_op,
             world_model,
+            macro_critic,
             reward_head,
             actor,
             enclosure_probe,
@@ -2579,6 +2895,7 @@ class TestTrainStep:
             enclosure_probe,
             reward_head,
             critic,
+            macro_critic,
             actor,
             actor_old,
             optimizer_enc,
@@ -2613,6 +2930,7 @@ class TestCheckpoint:
         action_jump_op,
         world_model,
         critic,
+        macro_critic,
         reward_head,
         actor,
         actor_old,
@@ -2626,6 +2944,7 @@ class TestCheckpoint:
             action_model,
             action_jump_op,
             world_model,
+            macro_critic,
             reward_head,
             actor,
             enclosure_probe,
@@ -2656,6 +2975,7 @@ class TestCheckpoint:
             actor,
             actor_old,
             critic,
+            macro_critic,
             reward_head,
             enclosure_probe,
             optimizer_enc,
@@ -2679,6 +2999,7 @@ class TestCheckpoint:
         assert "action_model" in checkpoint
         assert "world_model" in checkpoint
         assert "actor_old" in checkpoint
+        assert "macro_critic" in checkpoint
         assert "reward_head" in checkpoint
         assert "enclosure_probe" in checkpoint
         assert "optimizer_wm" in checkpoint

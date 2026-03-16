@@ -449,6 +449,7 @@ The actor loss is not just replay cloning plus return. The current implementatio
 - a persistent old-policy hyperbolic anchor `d_H(\pi_\theta, \pi_{\theta_{\mathrm{old}}})`;
 - old-policy KL penalties on chart and code logits;
 - a gauge-covariant natural objective built from the exact covector and gated residual reward form;
+- a separate epistemic curiosity potential built from world-model predictive varentropy, gated by closure and imagination trust rather than added into external reward;
 - scale-barrier, world-model sync, and stiffness penalties.
 
 So replay supervision is now a bootstrap scaffold, not the permanent trust region. The persistent trust region is the old-policy anchor in action-manifold geometry.
@@ -597,6 +598,8 @@ Operationally, the actor-return gate now factors into:
 - an exact-control gate built from exact-increment calibration and on-policy exact-field calibration.
 
 So a run can no longer receive large return-driven actor updates merely because the world model is self-consistent. The exact conservative field must also be calibrated enough to justify control.
+
+The curiosity path is deliberately separate. It does **not** rewrite the environment reward. Instead, the actor receives an additional exploration objective derived from the world model's categorical predictive varentropy over next-chart outcomes. This is filtered by closure/no-leak diagnostics and the imagination trust certificate, so the policy is encouraged to visit structurally informative states without rewarding ungrounded noise.
 
 ### 8.5 Benchmarking Loop
 
