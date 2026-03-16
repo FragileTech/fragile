@@ -1,4 +1,4 @@
-"""Action-manifold helpers and structured obs-action closure models."""
+"""Action-manifold helpers for structured latent state composition."""
 
 from __future__ import annotations
 
@@ -14,14 +14,8 @@ from fragile.learning.core.layers.atlas import (
     _project_to_ball,
     _routing_weights,
 )
-from fragile.learning.core.layers.gauge import (
-    ConformalMetric,
-    exp_map_zero,
-    log_map_zero,
-    mobius_add,
-)
+from fragile.learning.core.layers.gauge import exp_map_zero, log_map_zero, mobius_add
 from fragile.learning.core.layers.primitives import SpectralLinear
-from fragile.learning.rl.boundary import lower_control
 
 
 class LatentTokenizer(nn.Module):
@@ -196,112 +190,3 @@ def symbolize_latent_with_atlas(
         "z_n": z_n_tan,
         "indices_stack": indices_stack,
     }
-
-
-class CovariantObsActionClosureModel(nn.Module):
-    """Closure over symbolic observation/action states and continuous nuisance."""
-
-    def __init__(
-        self,
-        latent_dim: int,
-        num_obs_charts: int,
-        num_action_charts: int,
-        obs_codes_per_chart: int,
-        action_codes_per_chart: int,
-        d_model: int = 128,
-        metric: nn.Module | None = None,
-    ) -> None:
-        super().__init__()
-        self.metric = metric if metric is not None else ConformalMetric()
-        self.latent_dim = latent_dim
-        self.num_obs_charts = num_obs_charts
-        self.num_action_charts = num_action_charts
-        self.obs_codes_per_chart = obs_codes_per_chart
-        self.action_codes_per_chart = action_codes_per_chart
-
-        self.obs_state_embed = nn.Embedding(num_obs_charts * obs_codes_per_chart, d_model)
-        self.action_state_embed = nn.Embedding(
-            num_action_charts * action_codes_per_chart,
-            d_model,
-        )
-        self.obs_zn_embed = SpectralLinear(latent_dim, d_model)
-        self.action_zn_embed = SpectralLinear(latent_dim, d_model)
-        self.backbone = nn.Sequential(
-            nn.LayerNorm(4 * d_model),
-            nn.Linear(4 * d_model, d_model),
-            nn.GELU(),
-            nn.Linear(d_model, d_model),
-            nn.GELU(),
-        )
-        self.obs_state_out = SpectralLinear(d_model, num_obs_charts * obs_codes_per_chart)
-        self.action_state_out = SpectralLinear(d_model, num_action_charts * action_codes_per_chart)
-        self.control_out = SpectralLinear(d_model, latent_dim)
-
-        self.register_buffer("obs_chart_centers", torch.zeros(num_obs_charts, latent_dim))
-        self.register_buffer(
-            "obs_codebook",
-            torch.zeros(num_obs_charts, obs_codes_per_chart, latent_dim),
-        )
-
-    def bind_obs_atlas(self, chart_centers: torch.Tensor, codebook: torch.Tensor) -> None:
-        """Bind the observation atlas used to reconstruct geometric state internally."""
-        self.obs_chart_centers.copy_(_project_to_ball(chart_centers.detach()))
-        self.obs_codebook.copy_(_project_to_ball(codebook.detach()))
-
-    def _obs_geometry(
-        self,
-        obs_chart_idx: torch.Tensor,
-        obs_code_idx: torch.Tensor,
-        obs_z_n: torch.Tensor,
-    ) -> torch.Tensor:
-        dummy_atlas = type("AtlasView", (), {})()
-        dummy_atlas.num_charts = self.num_obs_charts
-        dummy_atlas.chart_centers = self.obs_chart_centers
-        dummy_atlas.codebook = self.obs_codebook
-        return compose_structured_state_with_atlas(
-            dummy_atlas,
-            obs_z_n,
-            chart_idx=obs_chart_idx,
-            code_idx=obs_code_idx,
-        )["z_geo"]
-
-    def forward(
-        self,
-        obs_chart_idx: torch.Tensor,
-        obs_code_idx: torch.Tensor,
-        obs_z_n: torch.Tensor,
-        action_chart_idx: torch.Tensor,
-        action_code_idx: torch.Tensor,
-        action_z_n: torch.Tensor,
-    ) -> dict[str, torch.Tensor]:
-        """Predict symbolic transitions and auxiliary control probes.
-
-        The deployed RL path uses the canonical action-manifold latent as its
-        motor-side variable. The `control_tan` / `control_cov` outputs here are
-        retained only as auxiliary probes of obs/action symbolic closure.
-        """
-        obs_state_idx = _state_index(obs_chart_idx, obs_code_idx, self.obs_codes_per_chart)
-        action_state_idx = _state_index(
-            action_chart_idx,
-            action_code_idx,
-            self.action_codes_per_chart,
-        )
-        feat = torch.cat(
-            [
-                self.obs_state_embed(obs_state_idx),
-                self.action_state_embed(action_state_idx),
-                self.obs_zn_embed(obs_z_n),
-                self.action_zn_embed(action_z_n),
-            ],
-            dim=-1,
-        )
-        feat = self.backbone(feat)
-        control_tan = self.control_out(feat)
-        obs_z_geo = self._obs_geometry(obs_chart_idx, obs_code_idx, obs_z_n)
-        control_cov = lower_control(obs_z_geo, control_tan, metric=self.metric)
-        return {
-            "obs_state_logits": self.obs_state_out(feat),
-            "action_state_logits": self.action_state_out(feat),
-            "control_tan": control_tan,
-            "control_cov": control_cov,
-        }

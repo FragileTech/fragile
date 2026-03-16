@@ -14,12 +14,13 @@ class DreamerConfig:
     # --- Environment ---
     domain: str = "walker"
     task: str = "walk"
+    task_preset: str = "auto"
     action_repeat: int = 2
     max_episode_steps: int = 1000
 
     # --- Architecture ---
     obs_dim: int = 24  # walker-walk: orientations(14) + height(1) + velocity(9)
-    action_dim: int = 6  # walker
+    action_dim: int = 6  # overridden from the dm_control env at runtime
     latent_dim: int = 16
     num_charts: int = 8
     num_action_charts: int = 0
@@ -78,6 +79,9 @@ class DreamerConfig:
     w_screened_poisson: float = 1.0
     w_action_recon: float = 1.0
     w_action_latent_supervise: float = 0.25
+    actor_supervise_warmup_epochs: int = 10
+    actor_supervise_decay_epochs: int = 100
+    actor_supervise_min_scale: float = 0.05
     w_control_cycle: float = 0.1
     w_control_supervise: float = 0.5
     w_value_intent_align: float = 0.25
@@ -86,12 +90,60 @@ class DreamerConfig:
     w_motor_compliance_supervise: float = 0.1
     w_actor_return: float = 1.0
     w_reward_nonconservative: float = 0.01
+    w_reward_conservative_match: float = 0.5
     w_reward_exact_orth: float = 0.05
+    w_reward_nonconservative_norm: float = 0.01
+    w_reward_nonconservative_budget: float = 0.05
+    reward_nonconservative_force_err_scale: float = 4.0
+    reward_nonconservative_budget_ratio: float = 0.25
+    reward_nonconservative_budget_floor: float = 0.01
     screened_poisson_kappa: float = 1.0
+    screened_poisson_warmup_epochs: int = 0
+    w_critic_exact_increment: float = 0.0
+    w_critic_stiffness: float = 0.0
+    w_critic_covector_align: float = 0.0
+    critic_multistep_horizon: int = 1
+    critic_multistep_decay: float = 1.0
+    w_critic_on_policy_covector_align: float = 0.0
+    w_critic_on_policy_stiffness: float = 0.0
+    critic_on_policy_horizon: int = 0
+    critic_on_policy_batch_size: int = 0
+    critic_stiffness_min: float = 0.01
+    critic_stiffness_quantile: float = 0.5
+    critic_stiffness_target_scale: float = 1.0
+    critic_stiffness_target_max: float = 0.1
     actor_return_horizon: int = 8
     actor_return_batch_size: int = 8
     actor_return_update_every: int = 10
     actor_return_warmup_epochs: int = 10
+    actor_return_trust_min: float = 0.1
+    actor_return_chart_acc_target: float = 0.25
+    actor_return_force_err_scale: float = 4.0
+    actor_return_policy_sync_scale: float = 20.0
+    actor_return_nonconservative_power: float = 2.0
+    w_actor_natural: float = 0.25
+    w_actor_geodesic: float = 0.1
+    w_actor_old_policy_chart_kl: float = 0.0
+    w_actor_old_policy_code_kl: float = 0.0
+    w_actor_scale_barrier: float = 0.1
+    w_actor_wm_sync: float = 0.1
+    w_actor_stiffness: float = 0.05
+    actor_stiffness_min: float = 0.05
+    actor_metric_fisher_scale: float = 1.0
+    actor_metric_epsilon: float = 1e-4
+    actor_trust_region_kappa: float = 0.01
+    actor_trust_region_eps: float = 1e-3
+    w_exact_force_consistency: float = 0.1
+    w_exact_task_force_consistency: float = 0.05
+    w_exact_risk_force_consistency: float = 0.05
+    w_enclosure: float = 0.1
+    w_enclosure_probe: float = 1.0
+    enclosure_hidden_dim: int = 128
+    enclosure_grl_alpha_max: float = 1.0
+    enclosure_grl_warmup_updates: int = 5000
+    w_hodge_solenoidal: float = 0.02
+    w_hodge_conservative_margin: float = 0.05
+    hodge_conservative_target: float = 0.25
     reward_curl_batch_limit: int = 64
     lr_chart_centers_scale: float = 0.1
     lr_codebook_scale: float = 0.5
@@ -184,9 +236,6 @@ class DreamerConfig:
     matmul_precision: str = "high"
     normalize_observations: bool = True
     obs_norm_min_std: float = 1e-3
-    # Deprecated compatibility flag. The Dreamer control path always discards
-    # nuisance action texture and trains on deterministic action means.
-    use_motor_texture: bool = False
     sigma_motor: float = 0.1
 
     # --- Infrastructure ---

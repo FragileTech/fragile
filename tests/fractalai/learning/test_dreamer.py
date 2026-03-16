@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import sys
 from types import SimpleNamespace
 
@@ -71,11 +72,16 @@ def _make_optimizers(
     jump_op: nn.Module,
     action_model: nn.Module,
     action_jump_op: nn.Module,
-    closure_model: nn.Module,
     world_model: nn.Module,
     reward_head: nn.Module,
     actor: nn.Module,
-) -> tuple[torch.optim.Optimizer, torch.optim.Optimizer, torch.optim.Optimizer]:
+    enclosure_probe: nn.Module,
+) -> tuple[
+    torch.optim.Optimizer,
+    torch.optim.Optimizer,
+    torch.optim.Optimizer,
+    torch.optim.Optimizer,
+]:
     reward_shared_ids = {
         *(id(param) for param in reward_head.chart_tok.parameters()),
         *(id(param) for param in reward_head.z_embed.parameters()),
@@ -87,8 +93,7 @@ def _make_optimizers(
         list(obs_model.parameters())
         + list(jump_op.parameters())
         + list(action_model.parameters())
-        + list(action_jump_op.parameters())
-        + list(closure_model.parameters()),
+        + list(action_jump_op.parameters()),
         lr=1e-3,
     )
     optimizer_wm = torch.optim.Adam(
@@ -96,7 +101,8 @@ def _make_optimizers(
         lr=1e-3,
     )
     optimizer_boundary = torch.optim.Adam(actor.parameters(), lr=1e-3)
-    return optimizer_enc, optimizer_wm, optimizer_boundary
+    optimizer_enclosure = torch.optim.Adam(enclosure_probe.parameters(), lr=1e-3)
+    return optimizer_enc, optimizer_wm, optimizer_boundary, optimizer_enclosure
 
 
 def _make_constant_policy_output(
@@ -256,6 +262,15 @@ def actor():
 
 
 @pytest.fixture
+def actor_old(actor):
+    old_actor = copy.deepcopy(actor)
+    old_actor.eval()
+    for param in old_actor.parameters():
+        param.requires_grad_(False)
+    return old_actor
+
+
+@pytest.fixture
 def standalone_critic():
     from fragile.learning.rl.critic import GeometricCritic
 
@@ -325,25 +340,25 @@ def critic(world_model):
 
 
 @pytest.fixture
-def closure_model(world_model):
-    from fragile.learning.rl.action_manifold import CovariantObsActionClosureModel
-
-    return CovariantObsActionClosureModel(
-        latent_dim=D,
-        num_obs_charts=K,
-        num_action_charts=K,
-        obs_codes_per_chart=CODES_PER_CHART,
-        action_codes_per_chart=CODES_PER_CHART,
-        d_model=D_MODEL,
-        metric=world_model.metric,
-    )
-
-
-@pytest.fixture
 def reward_head(world_model):
     from fragile.learning.rl.reward_head import RewardHead
 
     return RewardHead(world_model.potential_net, K, D_MODEL)
+
+
+@pytest.fixture
+def enclosure_probe():
+    from fragile.learning.vla.losses import EnclosureProbe
+
+    return EnclosureProbe(
+        chart_dim=D,
+        action_dim=D,
+        ztex_dim=D,
+        num_charts=K,
+        codes_per_chart=CODES_PER_CHART,
+        hidden_dim=D_MODEL,
+        alpha=1.0,
+    )
 
 
 @pytest.fixture
@@ -404,14 +419,13 @@ class TestGeometricActor:
         world_model,
         critic,
         actor,
-        closure_model,
         reward_head,
         z,
     ):
         from fragile.learning.rl.action_manifold import symbolize_latent_with_atlas
         from fragile.learning.rl.train_dreamer import _sync_rl_atlas
 
-        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, closure_model, reward_head)
+        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, reward_head)
         obs_info = symbolize_latent_with_atlas(obs_model, z, hard_routing=False, hard_routing_tau=1.0)
         out = actor(
             obs_info["chart_idx"],
@@ -433,14 +447,13 @@ class TestGeometricActor:
         world_model,
         critic,
         actor,
-        closure_model,
         reward_head,
         z,
     ):
         from fragile.learning.rl.action_manifold import symbolize_latent_with_atlas
         from fragile.learning.rl.train_dreamer import _sync_rl_atlas
 
-        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, closure_model, reward_head)
+        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, reward_head)
         actor.eval()
         obs_info = symbolize_latent_with_atlas(obs_model, z, hard_routing=False, hard_routing_tau=1.0)
         sample = actor.sample_latent(
@@ -470,14 +483,13 @@ class TestGeometricActor:
         world_model,
         critic,
         actor,
-        closure_model,
         reward_head,
         z,
     ):
         from fragile.learning.rl.action_manifold import symbolize_latent_with_atlas
         from fragile.learning.rl.train_dreamer import _sync_rl_atlas
 
-        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, closure_model, reward_head)
+        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, reward_head)
         obs_info = symbolize_latent_with_atlas(obs_model, z, hard_routing=False, hard_routing_tau=1.0)
         action_out = actor(
             obs_info["chart_idx"],
@@ -556,7 +568,6 @@ class TestPolicyAction:
         world_model,
         critic,
         actor,
-        closure_model,
         reward_head,
         z,
         rw,
@@ -564,7 +575,7 @@ class TestPolicyAction:
         from fragile.learning.rl.action_manifold import symbolize_latent_with_atlas
         from fragile.learning.rl.train_dreamer import _policy_action, _sync_rl_atlas
 
-        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, closure_model, reward_head)
+        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, reward_head)
         obs_info = symbolize_latent_with_atlas(
             obs_model,
             z,
@@ -574,9 +585,7 @@ class TestPolicyAction:
         out = _policy_action(
             actor,
             action_model,
-            closure_model,
             obs_info,
-            use_motor_texture=True,
             hard_routing=False,
             hard_routing_tau=1.0,
         )
@@ -604,14 +613,13 @@ class TestPolicyAction:
         world_model,
         critic,
         actor,
-        closure_model,
         reward_head,
         z,
     ):
         from fragile.learning.rl.action_manifold import symbolize_latent_with_atlas
         from fragile.learning.rl.train_dreamer import _policy_action, _sync_rl_atlas
 
-        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, closure_model, reward_head)
+        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, reward_head)
         actor.eval()
         obs_info = symbolize_latent_with_atlas(
             obs_model,
@@ -629,9 +637,7 @@ class TestPolicyAction:
         out = _policy_action(
             actor,
             action_model,
-            closure_model,
             obs_info,
-            use_motor_texture=False,
             hard_routing=False,
             hard_routing_tau=1.0,
         )
@@ -713,11 +719,28 @@ class TestDreamerHelpers:
         params = _optimizer_parameters(optimizer)
         assert params == [param]
 
-    def test_rollout_routing_tau_is_deterministic_for_hard_routing(self):
+    def test_rollout_routing_tau_preserves_configured_temperature(self):
         from fragile.learning.rl.train_dreamer import _rollout_routing_tau
 
-        assert _rollout_routing_tau(True, 0.7) == -1.0
-        assert _rollout_routing_tau(False, 0.7) == 0.7
+        assert _rollout_routing_tau(True, 0.7) == pytest.approx(0.7)
+        assert _rollout_routing_tau(False, 0.7) == pytest.approx(0.7)
+
+    def test_sample_collection_action_adds_thermal_noise(self, monkeypatch):
+        from fragile.learning.rl import train_dreamer
+
+        monkeypatch.setattr(
+            train_dreamer.np.random,
+            "normal",
+            lambda *_args, **kwargs: np.full(kwargs["size"], kwargs["scale"], dtype=np.float32),
+        )
+        action = train_dreamer._sample_collection_action(
+            np.array([0.1], dtype=np.float32),
+            action_min=np.array([-1.0], dtype=np.float32),
+            action_max=np.array([1.0], dtype=np.float32),
+            sigma_motor=0.2,
+        )
+
+        np.testing.assert_allclose(action, np.array([0.3], dtype=np.float32))
 
 
 class TestObservationNormalizer:
@@ -752,6 +775,105 @@ class TestConfigAndParseArgs:
         assert cfg.num_action_macros == 5
         assert cfg.action_codes_per_chart == 7
 
+    def test_apply_cartpole_task_preset_overrides_default_sized_config(self):
+        from fragile.learning.rl.config import DreamerConfig
+        from fragile.learning.rl.train_dreamer import _apply_task_preset
+
+        cfg = DreamerConfig(domain="cartpole", task="swingup")
+        preset_name, changes = _apply_task_preset(cfg)
+
+        assert preset_name == "cartpole_swingup"
+        assert cfg.latent_dim == 8
+        assert cfg.num_charts == 4
+        assert cfg.num_action_charts == 4
+        assert cfg.num_action_macros == 4
+        assert cfg.codes_per_chart == 8
+        assert cfg.action_codes_per_chart == 8
+        assert cfg.d_model == 64
+        assert cfg.hidden_dim == 128
+        assert cfg.max_episode_steps == 200
+        assert cfg.seed_episodes == 8
+        assert cfg.batch_size == 8
+        assert cfg.seq_len == 32
+        assert cfg.imagination_horizon == 8
+        assert cfg.actor_return_horizon == 8
+        assert cfg.hard_routing
+        assert cfg.hard_routing_warmup_epochs == 0
+        assert cfg.hard_routing_tau == pytest.approx(1.0)
+        assert cfg.hard_routing_tau_end == pytest.approx(1.0)
+        assert cfg.hard_routing_tau_anneal_epochs == 0
+        assert cfg.w_entropy == pytest.approx(0.05)
+        assert cfg.w_diversity == pytest.approx(2.0)
+        assert cfg.w_critic == pytest.approx(1.0)
+        assert cfg.w_screened_poisson == pytest.approx(2.0)
+        assert cfg.screened_poisson_warmup_epochs == 10
+        assert cfg.w_reward_conservative_match == pytest.approx(10.0)
+        assert cfg.w_critic_stiffness == pytest.approx(5.0)
+        assert cfg.w_critic_exact_increment == pytest.approx(1.0)
+        assert cfg.w_critic_covector_align == pytest.approx(5.0)
+        assert cfg.critic_stiffness_min == pytest.approx(0.001)
+        assert cfg.critic_stiffness_target_max == pytest.approx(0.05)
+        assert cfg.reward_nonconservative_budget_ratio == pytest.approx(0.05)
+        assert cfg.actor_return_chart_acc_target == pytest.approx(0.5)
+        assert cfg.actor_return_update_every == 2
+        assert cfg.actor_return_warmup_epochs == 2
+        assert cfg.actor_metric_fisher_scale == pytest.approx(0.01)
+        assert cfg.actor_stiffness_min == pytest.approx(0.001)
+        assert cfg.actor_supervise_warmup_epochs == 2
+        assert cfg.actor_supervise_decay_epochs == 20
+        assert cfg.actor_supervise_min_scale == pytest.approx(0.05)
+        assert cfg.w_actor_old_policy_chart_kl == pytest.approx(0.01)
+        assert cfg.w_actor_old_policy_code_kl == pytest.approx(0.01)
+        assert cfg.collect_every == 1
+        assert cfg.collect_n_env_workers == 4
+        assert cfg.eval_every == 10
+        assert cfg.checkpoint_every == 25
+        assert cfg.sigma_motor == pytest.approx(0.2)
+        assert cfg.chart_usage_h_low is not None
+        assert cfg.chart_usage_h_high is not None
+        assert "num_charts" in changes
+
+    def test_apply_cartpole_task_preset_respects_explicit_user_overrides(self):
+        from fragile.learning.rl.config import DreamerConfig
+        from fragile.learning.rl.train_dreamer import _apply_task_preset
+
+        cfg = DreamerConfig(
+            domain="cartpole",
+            task="swingup",
+            latent_dim=12,
+            num_charts=3,
+            num_action_charts=3,
+            hard_routing_warmup_epochs=7,
+            w_entropy=0.2,
+        )
+        preset_name, _changes = _apply_task_preset(cfg)
+
+        assert preset_name == "cartpole_swingup"
+        assert cfg.latent_dim == 12
+        assert cfg.num_charts == 3
+        assert cfg.num_action_charts == 3
+        assert cfg.hard_routing_warmup_epochs == 7
+        assert cfg.w_entropy == pytest.approx(0.2)
+        assert cfg.codes_per_chart == 8
+        assert cfg.chart_usage_h_low is not None
+
+    def test_apply_cartpole_balance_task_preset_uses_small_control_defaults(self):
+        from fragile.learning.rl.config import DreamerConfig
+        from fragile.learning.rl.train_dreamer import _apply_task_preset
+
+        cfg = DreamerConfig(domain="cartpole", task="balance")
+        preset_name, _changes = _apply_task_preset(cfg)
+
+        assert preset_name == "cartpole_balance"
+        assert cfg.latent_dim == 8
+        assert cfg.num_charts == 4
+        assert cfg.w_critic_exact_increment == pytest.approx(1.0)
+        assert cfg.critic_multistep_horizon == 4
+        assert cfg.w_critic_on_policy_covector_align == pytest.approx(2.0)
+        assert cfg.w_critic_on_policy_stiffness == pytest.approx(1.0)
+        assert cfg.critic_on_policy_horizon == 4
+        assert cfg.critic_on_policy_batch_size == 4
+
     def test_parse_args_uses_current_cli_schema(self, monkeypatch):
         from fragile.learning.rl.train_dreamer import _parse_args
 
@@ -775,6 +897,375 @@ class TestConfigAndParseArgs:
         assert cfg.num_charts == 6
         assert not cfg.use_gas
 
+    def test_infer_action_dim_supports_dm_control_and_vectorized_specs(self):
+        from fragile.learning.rl.train_dreamer import _infer_action_dim
+
+        class FakeDmEnv:
+            def action_spec(self):
+                return SimpleNamespace(shape=(3,))
+
+        class FakeVectorizedEnv:
+            action_space = SimpleNamespace(shape=(2, 2))
+
+        assert _infer_action_dim(FakeDmEnv()) == 3
+        assert _infer_action_dim(FakeVectorizedEnv()) == 4
+
+    def test_train_overrides_action_dim_from_environment(self, monkeypatch, tmp_path):
+        from fragile.learning.rl import train_dreamer
+        from fragile.learning.rl.config import DreamerConfig
+
+        cfg = DreamerConfig(
+            device="cpu",
+            obs_dim=OBS_DIM,
+            action_dim=6,
+            latent_dim=D,
+            num_charts=K,
+            num_action_charts=K,
+            d_model=D_MODEL,
+            hidden_dim=D_MODEL,
+            codes_per_chart=CODES_PER_CHART,
+            action_codes_per_chart=CODES_PER_CHART,
+            checkpoint_dir=str(tmp_path / "ckpt"),
+            use_gas=False,
+            collect_n_env_workers=1,
+            normalize_observations=False,
+        )
+
+        class FakeEnv:
+            def reset(self):
+                return SimpleNamespace(observation={"obs": np.zeros(OBS_DIM, dtype=np.float32)})
+
+            def action_spec(self):
+                return FakeActionSpec(action_dim=3)
+
+        created_input_dims: list[int] = []
+
+        class StopAfterActionModelError(RuntimeError):
+            pass
+
+        class FakeTopoEncoder:
+            def __init__(self, *, input_dim, **kwargs):
+                del kwargs
+                created_input_dims.append(input_dim)
+                self.encoder = SimpleNamespace()
+                self.decoder = SimpleNamespace()
+                if len(created_input_dims) == 2:
+                    raise StopAfterActionModelError()
+
+            def to(self, _device):
+                return self
+
+        class FakeJumpOp:
+            def __init__(self, **kwargs):
+                del kwargs
+
+            def to(self, _device):
+                return self
+
+        monkeypatch.setattr(train_dreamer, "_make_env", lambda _domain, _task: FakeEnv())
+        monkeypatch.setattr(train_dreamer, "SharedDynTopoEncoder", FakeTopoEncoder)
+        monkeypatch.setattr(train_dreamer, "FactorizedJumpOperator", FakeJumpOp)
+
+        with pytest.raises(StopAfterActionModelError):
+            train_dreamer.train(cfg)
+
+        assert cfg.action_dim == 3
+        assert created_input_dims == [OBS_DIM, 3]
+
+
+class TestActorStateMetric:
+    def test_scale_certification_uses_scaled_fisher_term(self, device, config, world_model):
+        from fragile.learning.rl import train_dreamer
+
+        batch = 2
+        obs_z_n = torch.zeros(batch, D, device=device, requires_grad=True)
+        zeros = torch.zeros(batch, device=device)
+        chart_logits = torch.stack(
+            [obs_z_n[:, 0], -obs_z_n[:, 0], zeros, zeros],
+            dim=-1,
+        )
+        code_base = torch.stack(
+            [obs_z_n[:, 1], -obs_z_n[:, 1], zeros, zeros],
+            dim=-1,
+        )
+        actor_out = {
+            "action_chart_logits": chart_logits,
+            "action_code_logits": code_base.unsqueeze(1).expand(-1, K, -1),
+        }
+        state_z_geo = torch.zeros(batch, D, device=device)
+        target_chart_idx = torch.zeros(batch, device=device, dtype=torch.long)
+        target_code_idx = torch.zeros(batch, device=device, dtype=torch.long)
+        exact_covector = torch.full((batch, D), 1e-3, device=device)
+
+        cfg_zero = copy.deepcopy(config)
+        cfg_zero.actor_metric_fisher_scale = 0.0
+        _, _, scale_cert_zero, _scale_trust_zero, _scale_barrier_zero, metrics_zero = (
+            train_dreamer._actor_state_metric(
+            cfg_zero,
+            metric=world_model.metric,
+            state_z_geo=state_z_geo,
+            actor_out=actor_out,
+            obs_z_n=obs_z_n,
+            target_chart_idx=target_chart_idx,
+            target_code_idx=target_code_idx,
+            exact_covector=exact_covector,
+        ))
+
+        cfg_full = copy.deepcopy(config)
+        cfg_full.actor_metric_fisher_scale = 1.0
+        _, _, scale_cert_full, _scale_trust_full, _scale_barrier_full, metrics_full = (
+            train_dreamer._actor_state_metric(
+            cfg_full,
+            metric=world_model.metric,
+            state_z_geo=state_z_geo,
+            actor_out=actor_out,
+            obs_z_n=obs_z_n,
+            target_chart_idx=target_chart_idx,
+            target_code_idx=target_code_idx,
+            exact_covector=exact_covector,
+        ))
+
+        assert scale_cert_zero
+        assert metrics_zero["actor/state_beta_pi"] == pytest.approx(0.0)
+        assert metrics_zero["actor/state_beta_pi_raw"] > 0.0
+        assert not scale_cert_full
+        assert metrics_full["actor/state_beta_pi"] == pytest.approx(
+            metrics_full["actor/state_beta_pi_raw"],
+        )
+
+
+class TestActorBootstrapAndTrustRegion:
+    def test_actor_supervise_scale_decays_with_epoch_and_return_gate(self, config):
+        from fragile.learning.rl import train_dreamer
+
+        cfg = copy.deepcopy(config)
+        cfg.actor_supervise_warmup_epochs = 2
+        cfg.actor_supervise_decay_epochs = 4
+        cfg.actor_supervise_min_scale = 0.1
+
+        scale_early, metrics_early = train_dreamer._actor_supervise_scale(
+            cfg,
+            epoch=0,
+            actor_return_gate=torch.tensor(0.0),
+        )
+        scale_mid, _metrics_mid = train_dreamer._actor_supervise_scale(
+            cfg,
+            epoch=3,
+            actor_return_gate=torch.tensor(0.0),
+        )
+        scale_gate, metrics_gate = train_dreamer._actor_supervise_scale(
+            cfg,
+            epoch=3,
+            actor_return_gate=torch.tensor(0.8),
+        )
+        scale_floor, metrics_floor = train_dreamer._actor_supervise_scale(
+            cfg,
+            epoch=20,
+            actor_return_gate=torch.tensor(1.0),
+        )
+
+        assert float(scale_early) == pytest.approx(1.0)
+        assert metrics_early["actor/supervise_scale"] == pytest.approx(1.0)
+        assert 0.1 < float(scale_mid) < 1.0
+        assert float(scale_gate) < float(scale_mid)
+        assert metrics_gate["actor/supervise_gate_scale"] == pytest.approx(0.2)
+        assert float(scale_floor) == pytest.approx(0.1)
+        assert metrics_floor["actor/supervise_scale"] == pytest.approx(0.1)
+
+    def test_old_policy_kl_losses_vanish_when_logits_match(self, device):
+        from fragile.learning.rl import train_dreamer
+
+        chart_logits = torch.tensor(
+            [[1.0, -1.0, 0.0, 0.5], [0.3, -0.2, 0.4, -0.1]],
+            device=device,
+        )
+        code_logits = torch.randn(2, K, CODES_PER_CHART, device=device)
+        actor_out = {
+            "action_chart_logits": chart_logits.clone(),
+            "action_code_logits": code_logits.clone(),
+        }
+        actor_old_out = {
+            "action_chart_logits": chart_logits.clone(),
+            "action_code_logits": code_logits.clone(),
+        }
+
+        chart_kl, code_kl = train_dreamer._actor_old_policy_kl_losses(actor_out, actor_old_out)
+
+        assert float(chart_kl) == pytest.approx(0.0, abs=1e-7)
+        assert float(code_kl) == pytest.approx(0.0, abs=1e-7)
+
+    def test_old_policy_kl_losses_increase_when_logits_change(self, device):
+        from fragile.learning.rl import train_dreamer
+
+        actor_old_out = {
+            "action_chart_logits": torch.tensor(
+                [[1.0, -1.0, 0.0, 0.5], [0.3, -0.2, 0.4, -0.1]],
+                device=device,
+            ),
+            "action_code_logits": torch.randn(2, K, CODES_PER_CHART, device=device),
+        }
+        actor_out = {
+            "action_chart_logits": actor_old_out["action_chart_logits"] * -1.5,
+            "action_code_logits": actor_old_out["action_code_logits"] * -0.5,
+        }
+
+        chart_kl, code_kl = train_dreamer._actor_old_policy_kl_losses(actor_out, actor_old_out)
+
+        assert float(chart_kl) > 0.0
+        assert float(code_kl) > 0.0
+
+
+class TestCriticStiffness:
+    def test_critic_stiffness_loss_penalizes_flat_exact_field(self, config, world_model):
+        from fragile.learning.rl import train_dreamer
+
+        z = torch.zeros(4, D, dtype=torch.float32)
+        exact_covector = torch.full((4, D), 1e-4, dtype=torch.float32, requires_grad=True)
+        replay_valid = torch.ones(2, 2, dtype=torch.float32)
+        config.critic_stiffness_min = 0.01
+
+        loss, metrics = train_dreamer._critic_stiffness_loss(
+            config,
+            metric=world_model.metric,
+            z=z,
+            exact_covector=exact_covector,
+            replay_valid=replay_valid,
+        )
+
+        assert loss.item() > 0.0
+        assert metrics["critic/exact_covector_norm_mean"] < config.critic_stiffness_min
+        assert metrics["critic/stiffness_certified"] == 0.0
+
+    def test_critic_stiffness_loss_uses_adaptive_target(self, config, world_model):
+        from fragile.learning.rl import train_dreamer
+
+        z = torch.zeros(4, D, dtype=torch.float32)
+        exact_covector = torch.full((4, D), 5e-4, dtype=torch.float32, requires_grad=True)
+        replay_valid = torch.ones(2, 2, dtype=torch.float32)
+
+        loss, metrics = train_dreamer._critic_stiffness_loss(
+            config,
+            metric=world_model.metric,
+            z=z,
+            exact_covector=exact_covector,
+            replay_valid=replay_valid,
+            stiffness_scale=torch.tensor(0.02),
+        )
+
+        assert loss.item() > 0.0
+        assert metrics["critic/stiffness_target"] == pytest.approx(0.02)
+
+    def test_critic_covector_alignment_loss_matches_constructed_transition(
+        self,
+        config,
+        world_model,
+        device,
+    ):
+        from fragile.learning.core.layers.gauge import poincare_exp_map
+        from fragile.learning.rl import train_dreamer
+
+        z = torch.zeros(4, D, device=device)
+        displacement = torch.zeros(4, D, device=device)
+        displacement[:, 0] = 0.05
+        z_next = poincare_exp_map(z, displacement)
+        exact_covector = torch.zeros(4, D, device=device)
+        exact_covector[:, 0] = -2.0
+        exact_covector.requires_grad_()
+        value_current = torch.zeros(4, 1, device=device)
+        reward_target = torch.full((2, 2), 0.1, device=device)
+        replay_valid = torch.ones(2, 2, device=device)
+        continuation = torch.ones(2, 2, 1, device=device)
+
+        loss, stiffness_scale, metrics = train_dreamer._critic_covector_alignment_loss(
+            config,
+            metric=world_model.metric,
+            z=z,
+            z_next=z_next,
+            value_current=value_current,
+            exact_covector=exact_covector,
+            reward_conservative_target=reward_target,
+            continuation=continuation,
+            gamma=config.gamma,
+            replay_valid=replay_valid,
+        )
+
+        assert float(loss) < 1e-4
+        assert metrics["critic/covector_align_abs_err"] < 1e-2
+        assert float(stiffness_scale) >= float(config.critic_stiffness_min)
+
+    def test_critic_exact_increment_loss_matches_discounted_target(self):
+        from fragile.learning.rl import train_dreamer
+
+        reward_pred = torch.tensor([[0.2, 0.4], [0.1, -0.2]], dtype=torch.float32)
+        reward_target = reward_pred.clone()
+        replay_valid = torch.ones_like(reward_pred)
+
+        loss, metrics = train_dreamer._critic_exact_increment_loss(
+            reward_conservative_pred=reward_pred,
+            reward_conservative_target=reward_target,
+            replay_valid=replay_valid,
+        )
+
+        assert float(loss) == pytest.approx(0.0)
+        assert metrics["critic/exact_increment_abs_err"] == pytest.approx(0.0)
+
+    def test_multistep_exact_increment_loss_matches_two_step_value_telescoping(self):
+        from fragile.learning.rl import train_dreamer
+
+        value_seq = torch.tensor([[1.0, 0.8, 0.5]], dtype=torch.float32)
+        reward_target = torch.tensor([[0.6, 0.55]], dtype=torch.float32)
+        continuation = torch.ones_like(reward_target)
+        valid = torch.ones_like(reward_target)
+
+        loss, metrics = train_dreamer._multistep_exact_increment_loss(
+            value_seq=value_seq,
+            reward_conservative_targets=reward_target,
+            continuation=continuation,
+            valid_mask=valid,
+            gamma=0.5,
+            horizon=2,
+            decay=1.0,
+            metric_prefix="critic",
+        )
+
+        assert float(loss) == pytest.approx(0.0, abs=1e-7)
+        assert metrics["critic/exact_increment_horizon_used"] == pytest.approx(2.0)
+
+    def test_multistep_covector_alignment_loss_matches_two_step_transition(self, config, world_model):
+        from fragile.learning.rl import train_dreamer
+
+        cfg = copy.deepcopy(config)
+        cfg.gamma = 1.0
+        z_seq = torch.zeros(1, 3, D, dtype=torch.float32)
+        z_seq[:, 1, 0] = 0.05
+        z_seq[:, 2, 0] = 0.10
+        value_seq = torch.tensor([[0.0, -0.1, -0.2]], dtype=torch.float32)
+        exact_covector_seq = torch.zeros(1, 2, D, dtype=torch.float32)
+        exact_covector_seq[:, :, 0] = -2.0
+        exact_covector_seq.requires_grad_()
+        reward_target = torch.tensor([[0.1, 0.1]], dtype=torch.float32)
+        continuation = torch.ones_like(reward_target)
+        valid = torch.ones_like(reward_target)
+
+        loss, stiffness_scale, metrics = train_dreamer._multistep_covector_alignment_loss(
+            cfg,
+            metric=world_model.metric,
+            z_seq=z_seq,
+            value_seq=value_seq,
+            exact_covector_seq=exact_covector_seq,
+            reward_conservative_targets=reward_target,
+            continuation=continuation,
+            valid_mask=valid,
+            gamma=1.0,
+            horizon=2,
+            decay=1.0,
+            metric_prefix="critic",
+        )
+
+        assert float(loss) < 1e-4
+        assert metrics["critic/covector_horizon_used"] == pytest.approx(2.0)
+        assert float(stiffness_scale) >= float(cfg.critic_stiffness_min)
+
 
 class TestAtlasSync:
     def test_sync_rl_atlas_binds_obs_and_action_atlases(
@@ -784,7 +1275,6 @@ class TestAtlasSync:
         world_model,
         standalone_critic,
         actor,
-        closure_model,
         reward_head,
     ):
         from fragile.learning.core.layers.atlas import _project_to_ball
@@ -798,7 +1288,6 @@ class TestAtlasSync:
             world_model.potential_net.chart_tok.chart_centers.zero_()
             standalone_critic.chart_tok.chart_centers.zero_()
             actor.action_chart_centers.zero_()
-            closure_model.obs_chart_centers.zero_()
             reward_head.action_chart_tok.chart_centers.zero_()
 
         _sync_rl_atlas(
@@ -807,7 +1296,6 @@ class TestAtlasSync:
             world_model,
             standalone_critic,
             actor,
-            closure_model,
             reward_head,
         )
 
@@ -826,15 +1314,10 @@ class TestAtlasSync:
             expected_action,
         )
         torch.testing.assert_close(
-            _project_to_ball(closure_model.obs_chart_centers.detach()),
-            expected_obs,
-        )
-        torch.testing.assert_close(
             _project_to_ball(reward_head.action_chart_tok.chart_centers.detach()),
             expected_action,
         )
         assert not actor.action_chart_centers.requires_grad
-        assert not closure_model.obs_chart_centers.requires_grad
         assert not reward_head.action_chart_tok.chart_centers.requires_grad
 
 
@@ -845,7 +1328,6 @@ class TestRolloutCollection:
         env = SingleEpisodeEnv(start_obs=[0.1] * OBS_DIM, next_obs=[0.2] * OBS_DIM)
         episode = _collect_episode(
             env,
-            None,
             None,
             None,
             SimpleNamespace(),
@@ -874,7 +1356,6 @@ class TestRolloutCollection:
         def fake_policy_action(
             _actor,
             _action_model,
-            _closure_model,
             obs_info,
             **_kwargs,
         ):
@@ -883,7 +1364,6 @@ class TestRolloutCollection:
         monkeypatch.setattr(train_dreamer, "_policy_action", fake_policy_action)
         episode = train_dreamer._collect_episode(
             env,
-            object(),
             object(),
             object(),
             model,
@@ -895,10 +1375,9 @@ class TestRolloutCollection:
             max_steps=1,
             hard_routing=True,
             hard_routing_tau=0.7,
-            use_motor_texture=True,
         )
 
-        assert model.encoder.calls == [(True, -1.0)]
+        assert model.encoder.calls == [(True, 0.7)]
         torch.testing.assert_close(model.encoder.obs_seen[0], torch.ones(1, OBS_DIM))
         assert episode["action_latents"].shape == (2, D)
         assert episode["action_router_weights"].shape == (2, K)
@@ -915,7 +1394,6 @@ class TestRolloutCollection:
         def fake_policy_action(
             _actor,
             _action_model,
-            _closure_model,
             obs_info,
             **_kwargs,
         ):
@@ -924,7 +1402,6 @@ class TestRolloutCollection:
         monkeypatch.setattr(train_dreamer, "_policy_action", fake_policy_action)
         episodes = train_dreamer._collect_parallel_episodes(
             env,
-            object(),
             object(),
             object(),
             model,
@@ -936,7 +1413,6 @@ class TestRolloutCollection:
             max_steps=2,
             hard_routing=True,
             hard_routing_tau=0.7,
-            use_motor_texture=True,
         )
 
         assert len(episodes) == 2
@@ -953,24 +1429,18 @@ class TestRolloutCollection:
 
         env = SingleEpisodeEnv(start_obs=[0.1] * OBS_DIM, next_obs=[0.2] * OBS_DIM)
         model = FakeEncoderModel()
-        calls: list[bool] = []
 
         def fake_policy_action(
             _actor,
             _action_model,
-            _closure_model,
             obs_info,
-            *,
-            use_motor_texture,
             **_kwargs,
         ):
-            calls.append(use_motor_texture)
             return _make_constant_policy_output(obs_info["z_geo"], action_value=0.44)
 
         monkeypatch.setattr(train_dreamer, "_policy_action", fake_policy_action)
         metrics = train_dreamer._eval_policy(
             env,
-            object(),
             object(),
             object(),
             model,
@@ -982,8 +1452,7 @@ class TestRolloutCollection:
             hard_routing_tau=0.7,
         )
 
-        assert calls == [False]
-        assert model.encoder.calls == [(True, -1.0)]
+        assert model.encoder.calls == [(True, 0.7)]
         assert metrics["eval/reward_mean"] == pytest.approx(1.0)
 
 
@@ -1072,7 +1541,6 @@ class TestGasCollection:
         def fake_policy_action(
             _actor,
             _action_model,
-            _closure_model,
             obs_info,
             **_kwargs,
         ):
@@ -1089,13 +1557,12 @@ class TestGasCollection:
         episodes, metrics = train_dreamer._collect_gas_episodes(
             object(),
             object(),
-            object(),
             model,
             torch.device("cpu"),
             gas_config,
         )
 
-        assert model.encoder.calls == [(True, -1.0), (True, -1.0)]
+        assert model.encoder.calls == [(True, 0.5), (True, 0.5)]
         np.testing.assert_allclose(episodes[1]["obs"][:2], episodes[0]["obs"][:2])
         np.testing.assert_allclose(episodes[1]["actions"][:1], episodes[0]["actions"][:1])
         np.testing.assert_allclose(
@@ -1109,6 +1576,84 @@ class TestGasCollection:
         np.testing.assert_allclose(episodes[1]["rewards"][:1], episodes[0]["rewards"][:1])
         assert metrics["gas/total_clones"] == pytest.approx(1.0)
 
+    def test_collect_gas_episodes_respects_explicit_routing_schedule(self, monkeypatch, config):
+        from fragile.learning.rl import train_dreamer
+
+        gas_config = config
+        gas_config.use_gas = True
+        gas_config.gas_walkers = 1
+        gas_config.gas_steps = 1
+        gas_config.obs_dim = 1
+        gas_config.action_dim = 1
+        gas_config.latent_dim = D
+        gas_config.num_charts = K
+        gas_config.num_action_charts = K
+
+        class FakeEnv:
+            def __init__(self, *args, **kwargs):
+                del args, kwargs
+                self.action_space = FakeActionSpec(action_dim=1)
+
+        class FakeState:
+            def __init__(self):
+                self.observations = torch.tensor([[0.25]], dtype=torch.float32)
+                self.rewards = torch.tensor([0.0], dtype=torch.float32)
+                self.step_rewards = torch.tensor([0.0], dtype=torch.float32)
+                self.dones = torch.tensor([False], dtype=torch.bool)
+
+        class FakeGas:
+            def __init__(self, env, N, **kwargs):
+                del kwargs
+                self.env = env
+                self.N = N
+                self.total_clones = 0
+                self.kinetic_op = SimpleNamespace(
+                    last_actions=np.zeros((N, 1), dtype=np.float64),
+                )
+
+            def reset(self):
+                return FakeState()
+
+            def step(self, state, actions=None):
+                del actions
+                info = {
+                    "clone_companions": torch.zeros(self.N, dtype=torch.long),
+                    "will_clone": torch.zeros(self.N, dtype=torch.bool),
+                }
+                return state, info
+
+        policy_calls: list[tuple[bool, float]] = []
+
+        def fake_policy_action(
+            _actor,
+            _action_model,
+            obs_info,
+            **kwargs,
+        ):
+            policy_calls.append((kwargs["hard_routing"], kwargs["hard_routing_tau"]))
+            out = _make_constant_policy_output(obs_info["z_geo"], action_value=0.1)
+            out["action"] = out["action"][:, :1]
+            out["action_mean"] = out["action_mean"][:, :1]
+            return out
+
+        monkeypatch.setattr(train_dreamer, "VectorizedDMControlEnv", FakeEnv)
+        monkeypatch.setattr(train_dreamer, "RoboticFractalGas", FakeGas)
+        monkeypatch.setattr(train_dreamer, "_policy_action", fake_policy_action)
+
+        model = FakeEncoderModel(latent_dim=D, num_charts=K)
+        train_dreamer._collect_gas_episodes(
+            object(),
+            object(),
+            model,
+            torch.device("cpu"),
+            gas_config,
+            hard_routing=False,
+            hard_routing_tau=0.7,
+        )
+
+        assert model.encoder.calls == [(False, 0.7)]
+        assert policy_calls == [(False, 0.7)]
+
 
 class TestImagination:
     def test_outputs_current_shapes_and_exact_split(
@@ -1118,14 +1663,13 @@ class TestImagination:
         world_model,
         critic,
         actor,
-        closure_model,
         reward_head,
         z,
         rw,
     ):
         from fragile.learning.rl.train_dreamer import _imagine, _sync_rl_atlas
 
-        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, closure_model, reward_head)
+        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, reward_head)
         out = _imagine(
             obs_model,
             world_model,
@@ -1133,7 +1677,6 @@ class TestImagination:
             critic,
             actor,
             action_model,
-            closure_model,
             z,
             rw,
             horizon=H_IMAGINATION,
@@ -1168,7 +1711,6 @@ class TestImagination:
         world_model,
         critic,
         actor,
-        closure_model,
         reward_head,
         z,
         rw,
@@ -1186,7 +1728,7 @@ class TestImagination:
             "forward",
             bad_chart_logits.__get__(world_model.chart_predictor, type(world_model.chart_predictor)),
         )
-        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, closure_model, reward_head)
+        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, reward_head)
         out = _imagine(
             obs_model,
             world_model,
@@ -1194,7 +1736,6 @@ class TestImagination:
             critic,
             actor,
             action_model,
-            closure_model,
             z,
             rw,
             horizon=H_IMAGINATION,
@@ -1211,7 +1752,6 @@ class TestImagination:
         world_model,
         critic,
         actor,
-        closure_model,
         reward_head,
         z,
     ):
@@ -1238,7 +1778,7 @@ class TestImagination:
             return original_forward(obs_chart_idx, obs_code_idx, obs_z_n, **kwargs)
 
         monkeypatch.setattr(actor, "forward", recording_forward)
-        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, closure_model, reward_head)
+        _sync_rl_atlas(obs_model, action_model, world_model, critic, actor, reward_head)
         _imagine(
             obs_model,
             world_model,
@@ -1246,7 +1786,6 @@ class TestImagination:
             critic,
             actor,
             action_model,
-            closure_model,
             z,
             forced_rw,
             horizon=H_IMAGINATION,
@@ -1309,7 +1848,15 @@ class TestImagination:
 
             def _rollout_transition(self, z, p, action_canonical, rw, track_energy=False):
                 del action_canonical, track_energy
-                return {"z": z + 0.01, "p": p, "rw": rw, "phi_eff": torch.zeros(z.shape[0], 1)}
+                chart_logits = torch.zeros(z.shape[0], K, device=z.device, dtype=z.dtype)
+                chart_logits[:, 0] = 1.0
+                return {
+                    "z": z + 0.01,
+                    "p": p,
+                    "rw": rw,
+                    "phi_eff": torch.zeros(z.shape[0], 1),
+                    "chart_logits": chart_logits,
+                }
 
         class FakeRewardHead:
             def decompose(
@@ -1322,9 +1869,24 @@ class TestImagination:
                 action_canonical,
                 *,
                 exact_covector=None,
+                compute_curl=False,
+                curl_batch_limit=None,
             ):
-                del z, rw, action_z, action_rw, action_code_z, action_canonical, exact_covector
-                return {"reward_nonconservative": torch.full((2, 1), 3.0)}
+                del (
+                    z,
+                    rw,
+                    action_z,
+                    action_rw,
+                    action_code_z,
+                    action_canonical,
+                    exact_covector,
+                    compute_curl,
+                    curl_batch_limit,
+                )
+                return {
+                    "reward_nonconservative": torch.full((2, 1), 3.0),
+                    "reward_form_cov": torch.zeros(2, D),
+                }
 
         class FakeCritic(nn.Module):
             def task_value(self, z, rw):
@@ -1364,13 +1926,13 @@ class TestImagination:
         z_0 = torch.randn(2, D) * 0.1
         rw_0 = torch.softmax(torch.randn(2, K), dim=-1)
         out = train_dreamer._imagine_actor_return(
+            None,
             object(),
             FakeWorldModel(),
             FakeRewardHead(),
             FakeCritic(),
             FakeActor(),
             FakeActionModel(),
-            object(),
             z_0,
             rw_0,
             horizon=3,
@@ -1385,6 +1947,168 @@ class TestImagination:
         assert out["actions"].shape == (2, 3, A)
         assert out["action_canonicals"].shape == (2, 3, D)
 
+    def test_actor_return_rollout_respects_explicit_routing_schedule(self, monkeypatch):
+        from fragile.learning.rl import train_dreamer
+
+        routing_calls: list[tuple[str, bool, float]] = []
+
+        class FakeActor(nn.Module):
+            def forward(
+                self,
+                obs_chart_idx,
+                obs_code_idx,
+                obs_z_n,
+                *,
+                hard_routing=False,
+                hard_routing_tau=1.0,
+            ):
+                del obs_chart_idx, obs_code_idx
+                routing_calls.append(("actor", hard_routing, hard_routing_tau))
+                batch = obs_z_n.shape[0]
+                chart_logits = torch.zeros(batch, K, device=obs_z_n.device)
+                chart_logits[:, 0] = 1.0
+                code_logits = torch.zeros(batch, K, CODES_PER_CHART, device=obs_z_n.device)
+                code_logits[:, :, 0] = 1.0
+                return {
+                    "action_chart_logits": chart_logits,
+                    "action_chart_idx": torch.zeros(batch, dtype=torch.long, device=obs_z_n.device),
+                    "action_code_logits": code_logits,
+                    "action_code_idx": torch.zeros(batch, dtype=torch.long, device=obs_z_n.device),
+                    "action_z_n": torch.full_like(obs_z_n, 0.2),
+                    "action_z_q": torch.zeros_like(obs_z_n),
+                    "action_z_geo": torch.full_like(obs_z_n, 0.2),
+                    "action_router_weights": torch.nn.functional.one_hot(
+                        torch.zeros(batch, dtype=torch.long, device=obs_z_n.device),
+                        num_classes=K,
+                    ).to(dtype=obs_z_n.dtype),
+                }
+
+        class FakeActionModel(nn.Module):
+            def decoder(
+                self,
+                z_geo,
+                _unused,
+                *,
+                router_weights,
+                hard_routing,
+                hard_routing_tau,
+            ):
+                del router_weights
+                routing_calls.append(("decoder", hard_routing, hard_routing_tau))
+                return z_geo[:, :A], None, None
+
+        class FakeWorldModel:
+            def momentum_init(self, z_0):
+                return torch.zeros_like(z_0)
+
+            def _rollout_transition(self, z, p, action_canonical, rw, track_energy=False):
+                del action_canonical, track_energy
+                chart_logits = torch.zeros(z.shape[0], K, device=z.device, dtype=z.dtype)
+                chart_logits[:, 0] = 1.0
+                return {
+                    "z": z + 0.01,
+                    "p": p,
+                    "rw": rw,
+                    "phi_eff": torch.zeros(z.shape[0], 1),
+                    "chart_logits": chart_logits,
+                }
+
+        class FakeRewardHead:
+            def decompose(
+                self,
+                z,
+                rw,
+                action_z,
+                action_rw,
+                action_code_z,
+                action_canonical,
+                *,
+                exact_covector=None,
+                compute_curl=False,
+                curl_batch_limit=None,
+            ):
+                del (
+                    z,
+                    rw,
+                    action_z,
+                    action_rw,
+                    action_code_z,
+                    action_canonical,
+                    exact_covector,
+                    compute_curl,
+                    curl_batch_limit,
+                )
+                return {
+                    "reward_nonconservative": torch.full((2, 1), 1.0),
+                    "reward_form_cov": torch.zeros(2, D),
+                }
+
+        class FakeCritic(nn.Module):
+            def task_value(self, z, rw):
+                del rw
+                return z[:, :1]
+
+        def fake_symbolize_latent_with_atlas(_atlas, z_in, **kwargs):
+            routing_calls.append(
+                ("symbolize", kwargs["hard_routing"], kwargs["hard_routing_tau"]),
+            )
+            batch = z_in.shape[0]
+            router = torch.zeros(batch, K, device=z_in.device, dtype=z_in.dtype)
+            router[:, 0] = 1.0
+            return {
+                "z_geo": z_in,
+                "router_weights": router,
+                "chart_idx": torch.zeros(batch, dtype=torch.long, device=z_in.device),
+                "code_idx": torch.zeros(batch, dtype=torch.long, device=z_in.device),
+                "z_q": torch.zeros_like(z_in),
+                "z_n": torch.zeros_like(z_in),
+            }
+
+        monkeypatch.setattr(train_dreamer, "symbolize_latent_with_atlas", fake_symbolize_latent_with_atlas)
+        monkeypatch.setattr(
+            train_dreamer,
+            "_value_covector_from_critic",
+            lambda _critic, z_in, _rw, **_kwargs: torch.zeros_like(z_in),
+        )
+        monkeypatch.setattr(
+            train_dreamer,
+            "_conservative_reward_from_value",
+            lambda _critic, z_curr, _rw_curr, _z_next, _rw_next, _gamma: (
+                torch.ones((z_curr.shape[0], 1), device=z_curr.device, dtype=z_curr.dtype),
+                torch.ones((z_curr.shape[0], 1), device=z_curr.device, dtype=z_curr.dtype),
+                torch.ones((z_curr.shape[0], 1), device=z_curr.device, dtype=z_curr.dtype),
+            ),
+        )
+
+        z_0 = torch.randn(2, D) * 0.1
+        rw_0 = torch.softmax(torch.randn(2, K), dim=-1)
+        train_dreamer._imagine_actor_return(
+            None,
+            object(),
+            FakeWorldModel(),
+            FakeRewardHead(),
+            FakeCritic(),
+            FakeActor(),
+            FakeActionModel(),
+            z_0,
+            rw_0,
+            horizon=2,
+            gamma=0.5,
+            hard_routing=False,
+            hard_routing_tau=0.7,
+        )
+
+        assert routing_calls == [
+            ("symbolize", False, 0.7),
+            ("actor", False, 0.7),
+            ("decoder", False, 0.7),
+            ("symbolize", False, 0.7),
+            ("symbolize", False, 0.7),
+            ("actor", False, 0.7),
+            ("decoder", False, 0.7),
+            ("symbolize", False, 0.7),
+        ]
+
 
 class TestTrainStep:
     def test_updates_parameters_and_reports_reward_split_metrics(
@@ -1397,24 +2121,25 @@ class TestTrainStep:
         jump_op,
         action_model,
         action_jump_op,
-        closure_model,
         world_model,
         critic,
         reward_head,
         actor,
+        actor_old,
+        enclosure_probe,
     ):
         from fragile.learning.rl.train_dreamer import _train_step
 
         batch = _make_training_batch(device)
-        optimizer_enc, optimizer_wm, optimizer_boundary = _make_optimizers(
+        optimizer_enc, optimizer_wm, optimizer_boundary, optimizer_enclosure = _make_optimizers(
             obs_model,
             jump_op,
             action_model,
             action_jump_op,
-            closure_model,
             world_model,
             reward_head,
             actor,
+            enclosure_probe,
         )
         actor_before = {name: param.detach().clone() for name, param in actor.named_parameters()}
         reward_before = {
@@ -1428,15 +2153,17 @@ class TestTrainStep:
             jump_op,
             action_model,
             action_jump_op,
-            closure_model,
             world_model,
+            enclosure_probe,
             reward_head,
             critic,
             actor,
+            actor_old,
             optimizer_enc,
             optimizer_wm,
             None,
             optimizer_boundary,
+            optimizer_enclosure,
             batch,
             config,
             phase1_cfg,
@@ -1450,13 +2177,28 @@ class TestTrainStep:
 
         expected_keys = {
             "enc/L_total",
+            "closure/L_enclosure",
             "wm/L_reward",
             "wm/L_reward_nonconservative",
             "wm/L_reward_exact_orth",
-            "wm/reward_form_exact_leakage_mean",
+            "wm/L_force_exact",
+            "wm/L_reward_nonconservative_norm",
+            "wm/L_reward_nonconservative_budget",
+            "wm/reward_form_exact_leakage_metric_mean",
+            "wm/L_hodge_conservative_margin",
+            "wm/L_hodge_solenoidal",
             "critic/L_critic",
             "actor/L_total",
             "actor/L_return",
+            "actor/L_supervise_raw",
+            "actor/L_supervise",
+            "actor/L_old_policy_geodesic",
+            "actor/L_old_policy_chart_kl",
+            "actor/L_old_policy_code_kl",
+            "actor/L_natural",
+            "actor/L_sync",
+            "actor/L_stiffness",
+            "actor/supervise_scale",
             "actor/update_applied",
             "time/step",
         }
@@ -1476,6 +2218,249 @@ class TestTrainStep:
         assert actor_changed
         assert reward_changed
 
+    def test_gates_imagined_return_when_trust_is_low(
+        self,
+        monkeypatch,
+        device,
+        config,
+        phase1_cfg,
+        action_phase1_cfg,
+        obs_model,
+        jump_op,
+        action_model,
+        action_jump_op,
+        world_model,
+        critic,
+        reward_head,
+        actor,
+        actor_old,
+        enclosure_probe,
+    ):
+        from fragile.learning.rl import train_dreamer
+
+        batch = _make_training_batch(device)
+        optimizer_enc, optimizer_wm, optimizer_boundary, optimizer_enclosure = _make_optimizers(
+            obs_model,
+            jump_op,
+            action_model,
+            action_jump_op,
+            world_model,
+            reward_head,
+            actor,
+            enclosure_probe,
+        )
+        actor_before = {name: param.detach().clone() for name, param in actor.named_parameters()}
+
+        def zero_trust(*_args, template, **_kwargs):
+            zero = template.new_zeros(())
+            return zero, {
+                "actor/return_trust": 0.0,
+                "actor/return_trust_chart": 0.0,
+                "actor/return_trust_force": 0.0,
+                "actor/return_trust_sync": 0.0,
+                "actor/return_trust_conservative_exact": 0.0,
+            }
+
+        monkeypatch.setattr(train_dreamer, "_actor_return_trust", zero_trust)
+
+        metrics = train_dreamer._train_step(
+            obs_model,
+            jump_op,
+            action_model,
+            action_jump_op,
+            world_model,
+            enclosure_probe,
+            reward_head,
+            critic,
+            actor,
+            actor_old,
+            optimizer_enc,
+            optimizer_wm,
+            None,
+            optimizer_boundary,
+            optimizer_enclosure,
+            batch,
+            config,
+            phase1_cfg,
+            action_phase1_cfg,
+            epoch=0,
+            current_hard_routing=False,
+            current_tau=1.0,
+            update_idx=0,
+            compute_diagnostics=False,
+        )
+
+        assert metrics["actor/update_applied"] == 1.0
+        assert metrics["actor/return_applied"] == 0.0
+        assert metrics["actor/L_return"] == pytest.approx(0.0)
+        assert metrics["actor/return_trust_used"] == pytest.approx(0.0)
+        actor_changed = any(
+            not torch.equal(actor_before[name], param.detach())
+            for name, param in actor.named_parameters()
+        )
+        assert actor_changed
+
+    def test_reward_preference_losses_penalize_oversized_residual(self, config, world_model):
+        from fragile.learning.rl import train_dreamer
+
+        reward_conservative = torch.tensor(
+            [[[0.8], [0.4]], [[0.6], [0.2]]],
+            dtype=torch.float32,
+        )
+        reward_nonconservative = torch.tensor(
+            [[0.7, 0.3], [0.5, 0.4]],
+            dtype=torch.float32,
+        )
+        reward_form_cov = torch.full((4, D), 0.5, dtype=torch.float32)
+        replay_valid = torch.ones(2, 2, dtype=torch.float32)
+
+        norm_loss, budget_loss, metrics = train_dreamer._reward_conservative_preference_losses(
+            config,
+            metric=world_model.metric,
+            z=torch.zeros(4, D, dtype=torch.float32),
+            reward_conservative=reward_conservative,
+            reward_nonconservative=reward_nonconservative,
+            reward_form_cov=reward_form_cov,
+            replay_valid=replay_valid,
+        )
+
+        assert norm_loss.item() > 0.0
+        assert budget_loss.item() > 0.0
+        assert metrics["wm/reward_nonconservative_frac_masked"] > 0.0
+        assert metrics["wm/reward_nonconservative_excess_mean"] > 0.0
+
+    def test_exact_hodge_diagnostics_use_rollout_momentum(
+        self,
+        monkeypatch,
+        device,
+        config,
+        phase1_cfg,
+        action_phase1_cfg,
+        obs_model,
+        jump_op,
+        action_model,
+        action_jump_op,
+        world_model,
+        critic,
+        reward_head,
+        actor,
+        actor_old,
+        enclosure_probe,
+    ):
+        from fragile.learning.rl import train_dreamer
+
+        batch = _make_training_batch(device)
+        config.w_actor_return = 0.0
+        optimizer_enc, optimizer_wm, optimizer_boundary, optimizer_enclosure = _make_optimizers(
+            obs_model,
+            jump_op,
+            action_model,
+            action_jump_op,
+            world_model,
+            reward_head,
+            actor,
+            enclosure_probe,
+        )
+
+        original_forward = world_model.forward
+
+        def marked_forward(self, z_0, action_canonicals, router_weights_0):
+            out = original_forward(z_0, action_canonicals, router_weights_0)
+            marked_momenta = out["momenta"].clone()
+            marked_momenta[:, 0, :] = 0.777
+            out["momenta"] = marked_momenta
+            return out
+
+        monkeypatch.setattr(
+            world_model,
+            "forward",
+            marked_forward.__get__(world_model, type(world_model)),
+        )
+
+        captured_p: list[torch.Tensor] = []
+
+        def fake_force_diag(_world_model, z, p, rw, action_canonical):
+            del _world_model, rw, action_canonical
+            captured_p.append(p.detach().clone())
+            zeros = z.new_zeros(z.shape[0])
+            ones = z.new_ones(z.shape[0])
+            return {
+                "direct_terms": {},
+                "exact_terms": {},
+                "hodge_direct": {
+                    "conservative_ratio": ones,
+                    "solenoidal_ratio": zeros,
+                    "harmonic_ratio": zeros,
+                },
+                "hodge_exact": {
+                    "conservative_ratio": ones,
+                    "solenoidal_ratio": zeros,
+                    "harmonic_ratio": zeros,
+                },
+                "force_err_sq": zeros,
+                "task_force_err_sq": zeros,
+                "risk_force_err_sq": zeros,
+                "force_rel_err": zeros,
+                "task_force_rel_err": zeros,
+                "risk_force_rel_err": zeros,
+            }
+
+        monkeypatch.setattr(train_dreamer, "_conservative_force_diagnostics", fake_force_diag)
+
+        train_dreamer._train_step(
+            obs_model,
+            jump_op,
+            action_model,
+            action_jump_op,
+            world_model,
+            enclosure_probe,
+            reward_head,
+            critic,
+            actor,
+            actor_old,
+            optimizer_enc,
+            optimizer_wm,
+            None,
+            optimizer_boundary,
+            optimizer_enclosure,
+            batch,
+            config,
+            phase1_cfg,
+            action_phase1_cfg,
+            epoch=0,
+            current_hard_routing=False,
+            current_tau=1.0,
+            update_idx=0,
+            compute_diagnostics=False,
+        )
+
+        assert len(captured_p) == 2
+        expected_horizon = max(config.wm_prediction_horizon, config.imagination_horizon)
+        rollout_p = captured_p[1].reshape(B, expected_horizon, D)
+        torch.testing.assert_close(
+            rollout_p[:, 1, :],
+            torch.full((B, D), 0.777, device=rollout_p.device, dtype=rollout_p.dtype),
+        )
+
+    def test_hodge_preference_losses_penalize_solenoidal_dominance(self, config):
+        from fragile.learning.rl import train_dreamer
+
+        hodge_conservative = torch.full((2, H_WM), 0.05, dtype=torch.float32)
+        hodge_solenoidal = torch.full((2, H_WM), 0.9, dtype=torch.float32)
+
+        margin_loss, sol_loss, metrics = train_dreamer._hodge_conservative_preference_losses(
+            config,
+            hodge_conservative_ratio=hodge_conservative,
+            hodge_solenoidal_ratio=hodge_solenoidal,
+        )
+
+        assert margin_loss.item() > 0.0
+        assert sol_loss.item() > 0.0
+        assert metrics["geometric/hodge_conservative_deficit"] == pytest.approx(0.2)
+        assert metrics["geometric/hodge_conservative_target"] == pytest.approx(
+            config.hodge_conservative_target,
+        )
+
     def test_frozen_encoder_keeps_encoder_weights_fixed(
         self,
         device,
@@ -1486,25 +2471,26 @@ class TestTrainStep:
         jump_op,
         action_model,
         action_jump_op,
-        closure_model,
         world_model,
         critic,
         reward_head,
         actor,
+        actor_old,
+        enclosure_probe,
     ):
         from fragile.learning.rl.train_dreamer import _train_step
 
         config.freeze_encoder = True
         batch = _make_training_batch(device)
-        optimizer_enc, optimizer_wm, optimizer_boundary = _make_optimizers(
+        optimizer_enc, optimizer_wm, optimizer_boundary, optimizer_enclosure = _make_optimizers(
             obs_model,
             jump_op,
             action_model,
             action_jump_op,
-            closure_model,
             world_model,
             reward_head,
             actor,
+            enclosure_probe,
         )
         encoder_before = {
             name: param.detach().clone() for name, param in obs_model.encoder.named_parameters()
@@ -1515,15 +2501,17 @@ class TestTrainStep:
             jump_op,
             action_model,
             action_jump_op,
-            closure_model,
             world_model,
+            enclosure_probe,
             reward_head,
             critic,
             actor,
+            actor_old,
             optimizer_enc,
             optimizer_wm,
             None,
             optimizer_boundary,
+            optimizer_enclosure,
             batch,
             config,
             phase1_cfg,
@@ -1549,28 +2537,33 @@ class TestCheckpoint:
         jump_op,
         action_model,
         action_jump_op,
-        closure_model,
         world_model,
         critic,
         reward_head,
         actor,
+        actor_old,
+        enclosure_probe,
     ):
         from fragile.learning.rl.train_dreamer import _save_checkpoint, ObservationNormalizer
 
-        optimizer_enc, optimizer_wm, optimizer_boundary = _make_optimizers(
+        optimizer_enc, optimizer_wm, optimizer_boundary, optimizer_enclosure = _make_optimizers(
             obs_model,
             jump_op,
             action_model,
             action_jump_op,
-            closure_model,
             world_model,
             reward_head,
             actor,
+            enclosure_probe,
         )
         scheduler_enc = torch.optim.lr_scheduler.LambdaLR(optimizer_enc, lr_lambda=lambda _: 1.0)
         scheduler_wm = torch.optim.lr_scheduler.LambdaLR(optimizer_wm, lr_lambda=lambda _: 1.0)
         scheduler_boundary = torch.optim.lr_scheduler.LambdaLR(
             optimizer_boundary,
+            lr_lambda=lambda _: 1.0,
+        )
+        scheduler_enclosure = torch.optim.lr_scheduler.LambdaLR(
+            optimizer_enclosure,
             lr_lambda=lambda _: 1.0,
         )
         normalizer = ObservationNormalizer(
@@ -1585,19 +2578,22 @@ class TestCheckpoint:
             jump_op,
             action_model,
             action_jump_op,
-            closure_model,
             world_model,
             actor,
+            actor_old,
             critic,
             reward_head,
+            enclosure_probe,
             optimizer_enc,
             optimizer_wm,
             optimizer_boundary,
             None,
+            optimizer_enclosure,
             scheduler_enc,
             scheduler_wm,
             scheduler_boundary,
             None,
+            scheduler_enclosure,
             epoch=3,
             config=config,
             metrics={"wm/L_reward": 1.0},
@@ -1607,10 +2603,35 @@ class TestCheckpoint:
         checkpoint = torch.load(path, map_location="cpu")
         assert checkpoint["epoch"] == 3
         assert "action_model" in checkpoint
-        assert "closure_model" in checkpoint
         assert "world_model" in checkpoint
+        assert "actor_old" in checkpoint
         assert "reward_head" in checkpoint
+        assert "enclosure_probe" in checkpoint
         assert "optimizer_wm" in checkpoint
+        assert "optimizer_enclosure" in checkpoint
         assert "scheduler_boundary" in checkpoint
+        assert "scheduler_enclosure" in checkpoint
         assert checkpoint["metrics"]["wm/L_reward"] == 1.0
         assert checkpoint["obs_normalizer"]["min_std"] == pytest.approx(1e-3)
+
+    def test_train_rejects_legacy_partial_checkpoint(self, tmp_path, config, monkeypatch):
+        from fragile.learning.rl import train_dreamer
+
+        checkpoint_path = tmp_path / "legacy.pt"
+        torch.save({"encoder": {}}, checkpoint_path)
+        config.load_checkpoint = str(checkpoint_path)
+        config.collect_n_env_workers = 1
+
+        def fake_make_env(domain, task):
+            del domain, task
+            return SingleEpisodeEnv(
+                start_obs=np.zeros(OBS_DIM, dtype=np.float32),
+                next_obs=np.zeros(OBS_DIM, dtype=np.float32),
+                reward=0.0,
+                action_dim=A,
+            )
+
+        monkeypatch.setattr(train_dreamer, "_make_env", fake_make_env)
+
+        with pytest.raises(KeyError, match="missing required keys"):
+            train_dreamer.train(config)

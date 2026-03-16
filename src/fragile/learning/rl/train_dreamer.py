@@ -5,8 +5,11 @@ action latent on the action manifold, not a separately reconstructed control
 covector.
 
 The encoder uses the same Phase 1 reconstruction/atlas objective as
-``train_joint.py`` plus the shared-codebook Markov closure/Zeno probe.
-All RL heads consume detached latents; they never update the topoencoder.
+``train_joint.py`` plus observation-world-model closure/zeno synchronization.
+The observation world model is the only learned Markov predictor; the action
+topoencoder remains an action codec and supervision anchor, not a second
+transition model. All RL heads consume detached latents; they never update the
+topoencoder directly.
 
 Usage:
     uv run python -m fragile.learning.rl.train_dreamer
@@ -17,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import copy
 from dataclasses import asdict, dataclass, fields
 import os
 import time
@@ -31,15 +35,19 @@ from fragile.fractalai.robots.dm_control_env import VectorizedDMControlEnv
 from fragile.fractalai.robots.robotic_gas import RoboticFractalGas
 from fragile.learning.core.layers import FactorizedJumpOperator
 from fragile.learning.core.layers.atlas import _project_to_ball, TopoEncoderPrimitives
+from fragile.learning.core.layers.gauge import hyperbolic_distance, poincare_log_map
 from fragile.learning.vla.config import VLAConfig
 from fragile.learning.vla.covariant_world_model import GeometricWorldModel
 from fragile.learning.vla.losses import (
     compute_dynamics_chart_loss,
     compute_dynamics_geodesic_loss,
+    compute_enclosure_loss,
     compute_energy_conservation_loss,
     compute_hodge_consistency_loss,
     compute_momentum_regularization,
     compute_screened_poisson_loss,
+    EnclosureProbe,
+    grl_alpha_schedule,
     zeno_loss,
 )
 from fragile.learning.vla.optim import build_encoder_param_groups
@@ -56,7 +64,7 @@ from fragile.learning.vla.train_joint import (
     _use_hard_routing,
 )
 
-from .action_manifold import CovariantObsActionClosureModel, symbolize_latent_with_atlas
+from .action_manifold import symbolize_latent_with_atlas
 from .actor import GeometricActor
 from .boundary import (
     critic_value,
@@ -105,11 +113,156 @@ def _flatten_obs(time_step) -> np.ndarray:
     return np.concatenate(parts)
 
 
+def _infer_action_dim(env) -> int:
+    """Infer the flattened continuous action dimension from an env or wrapper."""
+    action_spec = None
+    if hasattr(env, "action_spec"):
+        action_spec = env.action_spec()
+    elif hasattr(env, "action_space"):
+        action_spec = env.action_space
+    if action_spec is None:
+        msg = "Environment does not expose action_spec() or action_space."
+        raise AttributeError(msg)
+    shape = tuple(getattr(action_spec, "shape", ()))
+    if not shape:
+        msg = "Environment action spec does not expose a valid shape."
+        raise ValueError(msg)
+    action_dim = int(np.prod(shape))
+    if action_dim <= 0:
+        msg = f"Environment action spec has invalid flattened dimension {action_dim}."
+        raise ValueError(msg)
+    return action_dim
+
+
+def _apply_task_preset(config: DreamerConfig) -> tuple[str | None, dict[str, tuple[object, object]]]:
+    """Apply environment-specific defaults while respecting explicit user overrides."""
+    preset_name = str(getattr(config, "task_preset", "auto") or "auto").strip().lower()
+    if preset_name in {"", "none", "off", "false"}:
+        return None, {}
+    if preset_name == "auto":
+        if (config.domain, config.task) == ("cartpole", "swingup"):
+            preset_name = "cartpole_swingup"
+        elif (config.domain, config.task) == ("cartpole", "balance"):
+            preset_name = "cartpole_balance"
+        else:
+            return None, {}
+    if preset_name not in {"cartpole_swingup", "cartpole_balance"}:
+        msg = f"Unknown task preset: {config.task_preset}"
+        raise ValueError(msg)
+
+    defaults = DreamerConfig()
+    changes: dict[str, tuple[object, object]] = {}
+    old_num_charts = config.num_charts
+    old_num_action_charts = config.num_action_charts
+    old_num_action_macros = config.num_action_macros
+    old_codes_per_chart = config.codes_per_chart
+    old_action_codes_per_chart = config.action_codes_per_chart
+
+    def _maybe_override(name: str, value: object) -> None:
+        current = getattr(config, name)
+        default = getattr(defaults, name)
+        if current == default and current != value:
+            setattr(config, name, value)
+            changes[name] = (current, value)
+
+    _maybe_override("latent_dim", 8)
+    _maybe_override("num_charts", 4)
+    _maybe_override("codes_per_chart", 8)
+    _maybe_override("d_model", 64)
+    _maybe_override("hidden_dim", 128)
+    _maybe_override("max_episode_steps", 200)
+    _maybe_override("seed_episodes", 8)
+    _maybe_override("batch_size", 8)
+    _maybe_override("seq_len", 32)
+    _maybe_override("imagination_horizon", 8)
+    _maybe_override("actor_return_horizon", 8)
+    _maybe_override("hard_routing", True)
+    _maybe_override("hard_routing_warmup_epochs", 0)
+    _maybe_override("hard_routing_tau", 1.0)
+    _maybe_override("hard_routing_tau_end", 1.0)
+    _maybe_override("hard_routing_tau_anneal_epochs", 0)
+    _maybe_override("w_entropy", 0.05)
+    _maybe_override("w_diversity", 2.0)
+    _maybe_override("chart_multiplier_lr", 1.5)
+    _maybe_override("phase1_multiplier_max", 12.0)
+    _maybe_override("w_reward_nonconservative_norm", 0.1)
+    _maybe_override("w_reward_nonconservative_budget", 0.25)
+    _maybe_override("reward_nonconservative_budget_ratio", 0.05)
+    _maybe_override("reward_nonconservative_budget_floor", 0.001)
+    _maybe_override("w_reward_exact_orth", 0.1)
+    _maybe_override("w_reward_conservative_match", 10.0)
+    _maybe_override("w_screened_poisson", 2.0)
+    _maybe_override("screened_poisson_warmup_epochs", 10)
+    _maybe_override("w_critic", 1.0)
+    _maybe_override("w_critic_exact_increment", 1.0)
+    _maybe_override("w_critic_stiffness", 5.0)
+    _maybe_override("w_critic_covector_align", 5.0)
+    _maybe_override("critic_multistep_horizon", 4)
+    _maybe_override("critic_multistep_decay", 0.75)
+    _maybe_override("w_critic_on_policy_covector_align", 2.0)
+    _maybe_override("w_critic_on_policy_stiffness", 1.0)
+    _maybe_override("critic_on_policy_horizon", 4)
+    _maybe_override("critic_on_policy_batch_size", 4)
+    _maybe_override("critic_stiffness_min", 0.001)
+    _maybe_override("critic_stiffness_target_max", 0.05)
+    _maybe_override("actor_return_chart_acc_target", 0.5)
+    _maybe_override("actor_return_update_every", 2)
+    _maybe_override("actor_return_warmup_epochs", 2)
+    _maybe_override("actor_metric_fisher_scale", 0.01)
+    _maybe_override("actor_stiffness_min", 0.001)
+    _maybe_override("actor_supervise_warmup_epochs", 2)
+    _maybe_override("actor_supervise_decay_epochs", 20)
+    _maybe_override("actor_supervise_min_scale", 0.05)
+    _maybe_override("w_actor_old_policy_chart_kl", 0.01)
+    _maybe_override("w_actor_old_policy_code_kl", 0.01)
+    _maybe_override("collect_every", 1)
+    _maybe_override("collect_n_env_workers", 4)
+    _maybe_override("eval_every", 10)
+    _maybe_override("checkpoint_every", 25)
+    _maybe_override("sigma_motor", 0.2)
+
+    chart_entropy_max = float(np.log(max(config.num_charts, 1)))
+    _maybe_override("chart_usage_h_low", 0.6 * chart_entropy_max)
+    _maybe_override("chart_usage_h_high", 0.95 * chart_entropy_max)
+
+    if old_num_action_charts in {defaults.num_action_charts, old_num_charts}:
+        if config.num_action_charts != config.num_charts:
+            changes["num_action_charts"] = (config.num_action_charts, config.num_charts)
+            config.num_action_charts = config.num_charts
+    if old_num_action_macros in {defaults.num_action_macros, old_num_action_charts, old_num_charts}:
+        if config.num_action_macros != config.num_action_charts:
+            changes["num_action_macros"] = (config.num_action_macros, config.num_action_charts)
+            config.num_action_macros = config.num_action_charts
+    if old_action_codes_per_chart in {defaults.action_codes_per_chart, old_codes_per_chart}:
+        if config.action_codes_per_chart != config.codes_per_chart:
+            changes["action_codes_per_chart"] = (
+                config.action_codes_per_chart,
+                config.codes_per_chart,
+            )
+            config.action_codes_per_chart = config.codes_per_chart
+
+    return preset_name, changes
+
+
 def _rollout_routing_tau(hard_routing: bool, hard_routing_tau: float) -> float:
-    """Use deterministic routing for deployed rollouts and evaluation."""
-    if hard_routing:
-        return -1.0
+    """Preserve the configured routing temperature for rollouts and evaluation."""
+    del hard_routing
     return hard_routing_tau
+
+
+def _sample_collection_action(
+    action_mean: np.ndarray,
+    *,
+    action_min: np.ndarray,
+    action_max: np.ndarray,
+    sigma_motor: float,
+) -> np.ndarray:
+    """Sample thermal motor exploration around the deterministic action mean."""
+    action = np.clip(action_mean, action_min, action_max).astype(np.float32, copy=False)
+    if sigma_motor <= 0.0:
+        return action
+    noise = np.random.normal(loc=0.0, scale=float(sigma_motor), size=action.shape).astype(np.float32)
+    return np.clip(action + noise, action_min, action_max).astype(np.float32, copy=False)
 
 
 def _structured_state_from_encoder_output(enc_out: tuple[torch.Tensor, ...]) -> dict[str, torch.Tensor]:
@@ -322,15 +475,12 @@ class ObservationNormalizer:
 def _policy_action(
     actor: GeometricActor,
     action_model: SharedDynTopoEncoder,
-    closure_model: CovariantObsActionClosureModel,
     obs_info: dict[str, torch.Tensor],
     *,
-    use_motor_texture: bool,
     hard_routing: bool = True,
     hard_routing_tau: float = -1.0,
 ) -> dict[str, torch.Tensor]:
     """Decode the canonical motor-side action state and discard execution texture."""
-    del closure_model, use_motor_texture
     action_state = actor(
         obs_info["chart_idx"],
         obs_info["code_idx"],
@@ -399,7 +549,6 @@ def _collect_episode(
     env,
     actor: GeometricActor | None,
     action_model: SharedDynTopoEncoder | None,
-    closure_model: CovariantObsActionClosureModel | None,
     encoder: nn.Module,
     device: torch.device,
     control_dim: int,
@@ -409,7 +558,7 @@ def _collect_episode(
     max_steps: int = 1000,
     hard_routing: bool = True,
     hard_routing_tau: float = 1.0,
-    use_motor_texture: bool = False,
+    sigma_motor: float = 0.0,
 ) -> dict[str, np.ndarray]:
     """Collect a single episode.  Uses random actions if the policy is absent."""
     obs_list, act_list, rew_list, done_list = [], [], [], []
@@ -450,20 +599,22 @@ def _collect_episode(
             action_out = _policy_action(
                 actor,
                 action_model,
-                closure_model,
                 obs_info,
-                use_motor_texture=use_motor_texture,
                 hard_routing=hard_routing,
                 hard_routing_tau=routing_tau,
             )
-            action = action_out["action"].squeeze(0).cpu().numpy()
             action_mean = action_out["action_mean"].squeeze(0).cpu().numpy()
+            action = _sample_collection_action(
+                action_mean,
+                action_min=np.asarray(action_spec.minimum, dtype=np.float32),
+                action_max=np.asarray(action_spec.maximum, dtype=np.float32),
+                sigma_motor=sigma_motor,
+            )
             action_latent = action_out["action_canonical"].squeeze(0).cpu().numpy()
             action_router_weights = action_out["action_router_weights"].squeeze(0).cpu().numpy()
             action_chart_idx = np.int64(action_out["action_chart_idx"].item())
             action_code_idx = np.int64(action_out["action_code_idx"].item())
             action_code_latent = action_out["action_code_latent"].squeeze(0).cpu().numpy()
-            action = np.clip(action, action_spec.minimum, action_spec.maximum)
             action_mean = np.clip(action_mean, action_spec.minimum, action_spec.maximum)
 
         total_reward = 0.0
@@ -505,7 +656,6 @@ def _collect_parallel_episodes(
     env: VectorizedDMControlEnv,
     actor: GeometricActor | None,
     action_model: SharedDynTopoEncoder | None,
-    closure_model: CovariantObsActionClosureModel | None,
     encoder: nn.Module,
     device: torch.device,
     control_dim: int,
@@ -517,7 +667,7 @@ def _collect_parallel_episodes(
     max_steps: int = 1000,
     hard_routing: bool = True,
     hard_routing_tau: float = 1.0,
-    use_motor_texture: bool = False,
+    sigma_motor: float = 0.0,
 ) -> list[dict[str, np.ndarray]]:
     """Collect multiple no-gas episodes in parallel with batched policy inference."""
     if num_episodes < 1:
@@ -581,20 +731,22 @@ def _collect_parallel_episodes(
             action_out = _policy_action(
                 actor,
                 action_model,
-                closure_model,
                 obs_info,
-                use_motor_texture=use_motor_texture,
                 hard_routing=hard_routing,
                 hard_routing_tau=routing_tau,
             )
-            actions = action_out["action"].cpu().numpy()
             action_means = action_out["action_mean"].cpu().numpy()
+            actions = _sample_collection_action(
+                action_means,
+                action_min=action_min,
+                action_max=action_max,
+                sigma_motor=sigma_motor,
+            )
             action_latents = action_out["action_canonical"].cpu().numpy()
             action_router_weights = action_out["action_router_weights"].cpu().numpy()
             action_chart_idx = action_out["action_chart_idx"].cpu().numpy().astype(np.int64, copy=False)
             action_code_idx = action_out["action_code_idx"].cpu().numpy().astype(np.int64, copy=False)
             action_code_latents = action_out["action_code_latent"].cpu().numpy()
-            actions = np.clip(actions, action_min, action_max)
             action_means = np.clip(action_means, action_min, action_max)
 
         next_obs, rewards, dones, _trunc, _infos = env.step_actions_batch(
@@ -649,7 +801,6 @@ def _eval_policy(
     env,
     actor: GeometricActor,
     action_model: SharedDynTopoEncoder,
-    closure_model: CovariantObsActionClosureModel,
     encoder: nn.Module,
     device: torch.device,
     action_repeat: int,
@@ -681,9 +832,7 @@ def _eval_policy(
             action_out = _policy_action(
                 actor,
                 action_model,
-                closure_model,
                 obs_info,
-                use_motor_texture=False,
                 hard_routing=hard_routing,
                 hard_routing_tau=routing_tau,
             )
@@ -712,11 +861,14 @@ def _eval_policy(
 def _collect_gas_episodes(
     actor: GeometricActor | None,
     action_model: SharedDynTopoEncoder | None,
-    closure_model: CovariantObsActionClosureModel | None,
     model: nn.Module,
     device: torch.device,
     config: DreamerConfig,
     obs_normalizer: ObservationNormalizer | None = None,
+    *,
+    hard_routing: bool | None = None,
+    hard_routing_tau: float | None = None,
+    sigma_motor: float = 0.0,
 ) -> tuple[list[dict[str, np.ndarray]], dict[str, float]]:
     """Collect diverse transitions using RoboticFractalGas.
 
@@ -739,6 +891,11 @@ def _collect_gas_episodes(
         device=config.device,
         death_condition=death_cond,
     )
+
+    if hard_routing is None:
+        hard_routing = config.hard_routing
+    if hard_routing_tau is None:
+        hard_routing_tau = config.hard_routing_tau
 
     state = gas.reset()
     N = config.gas_walkers
@@ -763,7 +920,7 @@ def _collect_gas_episodes(
 
     all_obs[:, 0] = state.observations.cpu().numpy()
     all_dones[:, 0] = state.dones.cpu().float().numpy()
-    routing_tau = _rollout_routing_tau(config.hard_routing, config.hard_routing_tau)
+    routing_tau = _rollout_routing_tau(hard_routing, hard_routing_tau)
 
     for t in range(steps):
         # Compute actions from policy (or None for random)
@@ -785,21 +942,27 @@ def _collect_gas_episodes(
                 with torch.no_grad():
                     enc_out = model.encoder(
                         obs_chunk,
-                        hard_routing=config.hard_routing,
+                        hard_routing=hard_routing,
                         hard_routing_tau=routing_tau,
                     )
                     obs_info = _structured_state_from_encoder_output(enc_out)
                 action_out = _policy_action(
                     actor,
                     action_model,
-                    closure_model,
                     obs_info,
-                    use_motor_texture=False,
-                    hard_routing=config.hard_routing,
+                    hard_routing=hard_routing,
                     hard_routing_tau=routing_tau,
                 )
-                action_chunks.append(action_out["action"].cpu().numpy())
-                action_mean_chunks.append(action_out["action_mean"].cpu().numpy())
+                action_mean = action_out["action_mean"].cpu().numpy()
+                action_mean_chunks.append(action_mean)
+                action_chunks.append(
+                    _sample_collection_action(
+                        action_mean,
+                        action_min=np.asarray(env.action_space.minimum, dtype=np.float32),
+                        action_max=np.asarray(env.action_space.maximum, dtype=np.float32),
+                        sigma_motor=sigma_motor,
+                    ),
+                )
                 action_latent_chunks.append(action_out["action_canonical"].cpu().numpy())
                 action_router_chunks.append(action_out["action_router_weights"].cpu().numpy())
                 action_chart_chunks.append(action_out["action_chart_idx"].cpu().numpy())
@@ -881,11 +1044,13 @@ def _imagine(
     critic: nn.Module,
     actor: GeometricActor,
     action_model: SharedDynTopoEncoder,
-    closure_model: CovariantObsActionClosureModel,
     z_0: torch.Tensor,
     rw_0: torch.Tensor,
     horizon: int,
     gamma: float,
+    *,
+    hard_routing: bool = True,
+    hard_routing_tau: float = -1.0,
     reward_curl_batch_limit: int | None = None,
 ) -> dict[str, torch.Tensor]:
     """Roll out the canonical action manifold in latent space.
@@ -908,11 +1073,14 @@ def _imagine(
     """
     z, rw = z_0, rw_0
     p = world_model.momentum_init(z_0)  # [B, D]
+    routing_tau = _rollout_routing_tau(hard_routing, hard_routing_tau)
 
     z_state_list, rw_state_list = [], []
     z_list, rw_list, action_canonical_list, action_list = [], [], [], []
     action_latent_list, action_router_list = [], []
     r_list, r_cons_list, r_noncons_list, r_curl_list, r_curl_valid_list = [], [], [], [], []
+    policy_chart_acc_list, policy_router_sync_list = [], []
+    force_rel_err_list, hodge_cons_exact_list = [], []
     phi_list = []
 
     for _t in range(horizon):
@@ -920,17 +1088,15 @@ def _imagine(
             obs_model,
             z,
             router_weights_override=rw,
-            hard_routing=True,
-            hard_routing_tau=-1.0,
+            hard_routing=hard_routing,
+            hard_routing_tau=routing_tau,
         )
         action_out = _policy_action(
             actor,
             action_model,
-            closure_model,
             obs_info,
-            use_motor_texture=False,
-            hard_routing=True,
-            hard_routing_tau=-1.0,
+            hard_routing=hard_routing,
+            hard_routing_tau=routing_tau,
         )
         z_state_list.append(z.detach())
         rw_state_list.append(rw.detach())
@@ -940,6 +1106,13 @@ def _imagine(
         action_list.append(action_out["action_mean"])
         z_curr = z
         rw_curr = rw
+        force_diag = _conservative_force_diagnostics(
+            world_model,
+            z.detach(),
+            p.detach(),
+            rw.detach(),
+            action_out["action_canonical"].detach(),
+        )
 
         with torch.no_grad():
             step_out = world_model._rollout_transition(
@@ -964,6 +1137,20 @@ def _imagine(
             z = z_next
             p = p_next
             rw = rw_next
+            next_obs_info = symbolize_latent_with_atlas(
+                obs_model,
+                z_next,
+                router_weights_override=rw_next,
+                hard_routing=hard_routing,
+                hard_routing_tau=routing_tau,
+            )
+            chart_target = next_obs_info["chart_idx"].long()
+            policy_chart_acc_list.append(
+                (step_out["chart_logits"].argmax(dim=-1) == chart_target).float(),
+            )
+            policy_router_sync_list.append(
+                (rw_next - next_obs_info["router_weights"]).abs().mean(dim=-1),
+            )
         exact_covector = _value_covector_from_critic(critic, z_curr, rw_curr)
         rw_curr_detached = rw_curr.detach()
 
@@ -1014,6 +1201,8 @@ def _imagine(
         r_noncons_list.append(r_noncons.squeeze(-1))
         r_curl_list.append(reward_curl_norm)
         r_curl_valid_list.append(reward_curl_valid)
+        force_rel_err_list.append(force_diag["force_rel_err"])
+        hodge_cons_exact_list.append(force_diag["hodge_exact"]["conservative_ratio"])
         phi_list.append(phi_eff)
 
     return {
@@ -1030,6 +1219,10 @@ def _imagine(
         "reward_nonconservative": torch.stack(r_noncons_list, dim=1),  # [B, H]
         "reward_curl_norm": torch.stack(r_curl_list, dim=1),  # [B, H]
         "reward_curl_valid": torch.stack(r_curl_valid_list, dim=1),  # [B, H]
+        "policy_chart_acc": torch.stack(policy_chart_acc_list, dim=1),  # [B, H]
+        "policy_router_sync": torch.stack(policy_router_sync_list, dim=1),  # [B, H]
+        "policy_force_rel_err": torch.stack(force_rel_err_list, dim=1),  # [B, H]
+        "policy_hodge_conservative_exact": torch.stack(hodge_cons_exact_list, dim=1),  # [B, H]
         "phi_eff": torch.stack(phi_list, dim=1),    # [B, H, 1]
     }
 
@@ -1125,8 +1318,8 @@ def _sync_rl_atlas(
     world_model: GeometricWorldModel,
     critic: nn.Module,
     actor: GeometricActor,
-    closure_model: CovariantObsActionClosureModel,
     reward_head: RewardHead,
+    actor_old: GeometricActor | None = None,
 ) -> None:
     """Keep RL consumers bound to the observation or action atlas they read from."""
     obs_centers = getattr(model.encoder, "chart_centers", None)
@@ -1151,7 +1344,8 @@ def _sync_rl_atlas(
 
     world_model_mod.bind_chart_centers(obs_centers, freeze=True)
     actor.bind_action_atlas(action_centers, action_codebook)
-    closure_model.bind_obs_atlas(obs_centers, obs_codebook)
+    if actor_old is not None:
+        actor_old.bind_action_atlas(action_centers, action_codebook)
     if hasattr(critic_mod, "chart_tok"):
         _bind_chart_tokenizer_centers(critic_mod.chart_tok, obs_centers)
     _bind_chart_tokenizer_centers(reward_head_mod.action_chart_tok, action_centers)
@@ -1243,13 +1437,15 @@ def _phase1_controller_metrics(
                 entropies.append(metrics.get(f"{prefix}/{chart_idx}/code_entropy", 0.0))
         return entropies
 
+    active_code_entropies = _active_code_entropies(chart_prefix, num_charts)
+
     return {
         "soft_top1_prob_mean": float(metrics.get(f"{enc_prefix}/top1_prob_mean", 0.0)),
         "soft_I_XK": float(metrics.get(f"{enc_prefix}/I_XK", 0.0)),
         "hard_entropy": float(metrics.get(f"{chart_prefix}/usage_entropy", 0.0)),
         "code_entropy_mean_active": (
-            float(np.mean(_active_code_entropies(chart_prefix, num_charts)))
-            if num_charts > 0
+            float(np.mean(active_code_entropies))
+            if active_code_entropies
             else 0.0
         ),
     }
@@ -1267,6 +1463,377 @@ def _masked_mean(values: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
     """Mean over entries where ``mask`` is one."""
     denom = mask.sum().clamp(min=1.0)
     return (values * mask).sum() / denom
+
+
+def _reward_nonconservative_gate(
+    config: DreamerConfig,
+    *,
+    exact_covector_norm_mean: torch.Tensor,
+    force_rel_err_mean: torch.Tensor,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    """Gate residual reward until the exact field is non-flat and force-consistent."""
+    stiffness_scale = max(float(config.critic_stiffness_min), 1e-8)
+    stiffness_factor = (exact_covector_norm_mean / stiffness_scale).clamp(0.0, 1.0)
+    force_factor = torch.exp(
+        -float(config.reward_nonconservative_force_err_scale) * force_rel_err_mean.clamp(min=0.0),
+    )
+    gate = (stiffness_factor * force_factor).clamp(0.0, 1.0)
+    metrics = {
+        "wm/reward_nonconservative_gate": float(gate.detach()),
+        "wm/reward_nonconservative_gate_stiffness": float(stiffness_factor.detach()),
+        "wm/reward_nonconservative_gate_force": float(force_factor.detach()),
+    }
+    return gate, metrics
+
+
+def _metric_inverse_scale(metric: nn.Module, z: torch.Tensor) -> torch.Tensor:
+    """Return the inverse conformal metric scale ``lambda(z)^{-2}``."""
+    cf = metric.conformal_factor(z)
+    epsilon = getattr(metric, "epsilon", 1e-8)
+    return 1.0 / (cf.pow(2) + epsilon)
+
+
+def _metric_covector_norm_sq(
+    metric: nn.Module,
+    z: torch.Tensor,
+    covector: torch.Tensor,
+) -> torch.Tensor:
+    """Covector norm under the inverse conformal metric."""
+    return _metric_inverse_scale(metric, z).squeeze(-1) * covector.pow(2).sum(dim=-1)
+
+
+def _metric_covector_pair(
+    metric: nn.Module,
+    z: torch.Tensor,
+    left: torch.Tensor,
+    right: torch.Tensor,
+) -> torch.Tensor:
+    """Pair two covectors under the inverse conformal metric."""
+    return _metric_inverse_scale(metric, z).squeeze(-1) * (left * right).sum(dim=-1)
+
+
+def _metric_vector_norm_sq(
+    metric: nn.Module,
+    z: torch.Tensor,
+    vector: torch.Tensor,
+) -> torch.Tensor:
+    """Vector norm under the conformal metric."""
+    return vector.pow(2).sum(dim=-1) / _metric_inverse_scale(metric, z).squeeze(-1).clamp_min(1e-8)
+
+
+def _masked_quantile(values: torch.Tensor, mask: torch.Tensor, quantile: float) -> torch.Tensor:
+    """Quantile over masked values with a safe fallback for empty masks."""
+    valid = values[mask.reshape(-1).bool()]
+    if valid.numel() == 0:
+        return values.new_zeros(())
+    if valid.numel() == 1:
+        return valid[0]
+    q = float(np.clip(quantile, 0.0, 1.0))
+    return torch.quantile(valid, q)
+
+
+def _linear_warmup_scale(epoch: int, warmup_epochs: int) -> float:
+    """Linear warmup from zero to one over ``warmup_epochs`` epochs."""
+    if warmup_epochs <= 0:
+        return 1.0
+    return min(max((epoch + 1) / warmup_epochs, 0.0), 1.0)
+
+
+def _conservative_force_diagnostics(
+    world_model: GeometricWorldModel,
+    z: torch.Tensor,
+    p: torch.Tensor,
+    rw: torch.Tensor,
+    action_canonical: torch.Tensor,
+) -> dict[str, torch.Tensor]:
+    """Compare the direct conservative field to the exact scalar-gradient field."""
+    if not hasattr(world_model, "potential_net"):
+        zeros = z.new_zeros(z.shape[0])
+        ones = z.new_ones(z.shape[0])
+        return {
+            "direct_terms": {},
+            "exact_terms": {},
+            "hodge_direct": {
+                "conservative_ratio": ones,
+                "solenoidal_ratio": zeros,
+                "harmonic_ratio": zeros,
+            },
+            "hodge_exact": {
+                "conservative_ratio": ones,
+                "solenoidal_ratio": zeros,
+                "harmonic_ratio": zeros,
+            },
+            "force_err_sq": zeros,
+            "task_force_err_sq": zeros,
+            "risk_force_err_sq": zeros,
+            "force_rel_err": zeros,
+            "task_force_rel_err": zeros,
+            "risk_force_rel_err": zeros,
+        }
+    potential_net = world_model.potential_net
+    direct_terms = potential_net.force_terms(z, rw)
+    exact_terms = potential_net.exact_force_terms(z, rw)
+    u_pi = world_model.control_lift(action_canonical)
+    direct_kick = direct_terms["force"] - u_pi
+    exact_kick = exact_terms["force"] - u_pi
+    if world_model.F_max > 0:
+        direct_kick = world_model.F_max * direct_kick / (
+            world_model.F_max + direct_kick.norm(dim=-1, keepdim=True)
+        )
+        exact_kick = world_model.F_max * exact_kick / (
+            world_model.F_max + exact_kick.norm(dim=-1, keepdim=True)
+        )
+    curl_F = None
+    if world_model.curl_net is not None:
+        curl_F = world_model.curl_net(z, action_canonical)
+    p_minus_direct = p - (world_model.dt / 2.0) * direct_kick
+    p_plus_direct, _ = world_model._boris_rotation(
+        p_minus_direct,
+        z,
+        action_canonical,
+        curl_F=curl_F,
+    )
+    p_minus_exact = p - (world_model.dt / 2.0) * exact_kick
+    p_plus_exact, _ = world_model._boris_rotation(
+        p_minus_exact,
+        z,
+        action_canonical,
+        curl_F=curl_F,
+    )
+    f_sol_direct = (p_plus_direct - p_minus_direct) / max(world_model.dt, 1e-8)
+    f_sol_exact = (p_plus_exact - p_minus_exact) / max(world_model.dt, 1e-8)
+    hodge_direct = world_model.hodge_decomposer(
+        direct_terms["force"] + f_sol_direct,
+        direct_terms["force"],
+        f_sol_direct,
+    )
+    hodge_exact = world_model.hodge_decomposer(
+        exact_terms["force"] + f_sol_exact,
+        exact_terms["force"],
+        f_sol_exact,
+    )
+    total_err_sq = _metric_covector_norm_sq(
+        world_model.metric,
+        z,
+        direct_terms["force"] - exact_terms["force"],
+    )
+    task_err_sq = _metric_covector_norm_sq(
+        world_model.metric,
+        z,
+        direct_terms["task_force"] - exact_terms["task_force"],
+    )
+    risk_err_sq = _metric_covector_norm_sq(
+        world_model.metric,
+        z,
+        direct_terms["risk_force"] - exact_terms["risk_force"],
+    )
+    total_exact_sq = _metric_covector_norm_sq(world_model.metric, z, exact_terms["force"]).clamp_min(1e-8)
+    task_exact_sq = _metric_covector_norm_sq(
+        world_model.metric,
+        z,
+        exact_terms["task_force"],
+    ).clamp_min(1e-8)
+    risk_exact_sq = _metric_covector_norm_sq(
+        world_model.metric,
+        z,
+        exact_terms["risk_force"],
+    ).clamp_min(1e-8)
+    return {
+        "direct_terms": direct_terms,
+        "exact_terms": exact_terms,
+        "hodge_direct": hodge_direct,
+        "hodge_exact": hodge_exact,
+        "force_err_sq": total_err_sq,
+        "task_force_err_sq": task_err_sq,
+        "risk_force_err_sq": risk_err_sq,
+        "force_rel_err": (total_err_sq.sqrt() / total_exact_sq.sqrt()).detach(),
+        "task_force_rel_err": (task_err_sq.sqrt() / task_exact_sq.sqrt()).detach(),
+        "risk_force_rel_err": (risk_err_sq.sqrt() / risk_exact_sq.sqrt()).detach(),
+    }
+
+
+def _reward_conservative_preference_losses(
+    config: DreamerConfig,
+    *,
+    metric: nn.Module,
+    z: torch.Tensor,
+    reward_conservative: torch.Tensor,
+    reward_nonconservative: torch.Tensor,
+    reward_form_cov: torch.Tensor,
+    replay_valid: torch.Tensor,
+) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
+    """Bias the reward split toward the exact sector before using the residual."""
+    reward_cons_mag = reward_conservative.detach().squeeze(-1).abs()
+    reward_noncons_mag = reward_nonconservative.abs()
+    budget = (
+        float(config.reward_nonconservative_budget_floor)
+        + float(config.reward_nonconservative_budget_ratio) * reward_cons_mag
+    )
+    reward_residual_excess = (reward_noncons_mag - budget).clamp(min=0.0)
+    reward_form_norm_sq = _metric_covector_norm_sq(metric, z, reward_form_cov)
+    L_reward_nonconservative_norm = _masked_mean(
+        reward_form_norm_sq,
+        replay_valid.reshape(-1),
+    )
+    L_reward_nonconservative_budget = _masked_mean(
+        reward_residual_excess.pow(2),
+        replay_valid,
+    )
+    residual_frac = _masked_mean(
+        reward_noncons_mag / (reward_noncons_mag + reward_cons_mag + 1e-8),
+        replay_valid,
+    )
+    metrics = {
+        "wm/L_reward_nonconservative_norm": float(L_reward_nonconservative_norm),
+        "wm/L_reward_nonconservative_budget": float(L_reward_nonconservative_budget),
+        "wm/reward_nonconservative_budget_mean": float(_masked_mean(budget, replay_valid)),
+        "wm/reward_nonconservative_excess_mean": float(
+            _masked_mean(reward_residual_excess, replay_valid),
+        ),
+        "wm/reward_nonconservative_frac_masked": float(residual_frac),
+    }
+    return L_reward_nonconservative_norm, L_reward_nonconservative_budget, metrics
+
+
+def _critic_stiffness_loss(
+    config: DreamerConfig,
+    *,
+    metric: nn.Module,
+    z: torch.Tensor,
+    exact_covector: torch.Tensor,
+    replay_valid: torch.Tensor,
+    stiffness_scale: torch.Tensor | float | None = None,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    """Keep the conservative critic field steep enough to drive control."""
+    exact_covector_norm = _metric_covector_norm_sq(metric, z, exact_covector).sqrt()
+    exact_covector_norm_mean = _masked_mean(exact_covector_norm, replay_valid.reshape(-1))
+    if stiffness_scale is None:
+        stiffness_scale_t = exact_covector_norm_mean.new_tensor(
+            max(float(config.critic_stiffness_min), 1e-8),
+        )
+    else:
+        stiffness_scale_t = torch.as_tensor(
+            stiffness_scale,
+            device=exact_covector_norm_mean.device,
+            dtype=exact_covector_norm_mean.dtype,
+        ).clamp_min(max(float(config.critic_stiffness_min), 1e-8))
+    stiffness_deficit = (
+        (stiffness_scale_t - exact_covector_norm).clamp(min=0.0) / stiffness_scale_t
+    )
+    L_critic_stiffness = _masked_mean(stiffness_deficit.pow(2), replay_valid.reshape(-1))
+    metrics = {
+        "critic/L_stiffness": float(L_critic_stiffness.detach()),
+        "critic/exact_covector_norm_mean": float(exact_covector_norm_mean.detach()),
+        "critic/stiffness_target": float(stiffness_scale_t.detach()),
+        "critic/stiffness_deficit_mean": float(
+            _masked_mean(stiffness_deficit, replay_valid.reshape(-1)).detach(),
+        ),
+        "critic/stiffness_certified": (
+            1.0
+            if float(exact_covector_norm_mean.detach()) >= float(stiffness_scale_t.detach())
+            else 0.0
+        ),
+    }
+    return L_critic_stiffness, metrics
+
+
+def _critic_covector_alignment_loss(
+    config: DreamerConfig,
+    *,
+    metric: nn.Module,
+    z: torch.Tensor,
+    z_next: torch.Tensor,
+    value_current: torch.Tensor,
+    exact_covector: torch.Tensor,
+    reward_conservative_target: torch.Tensor,
+    continuation: torch.Tensor,
+    gamma: float,
+    replay_valid: torch.Tensor,
+) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
+    """Align ``dV`` with the discounted local exact increment along replay geodesics."""
+    displacement = poincare_log_map(z.detach(), z_next.detach())
+    local_value_delta = (exact_covector * displacement).sum(dim=-1)
+    continuation_scale = float(gamma) * continuation.reshape(-1)
+    value_current_flat = value_current.reshape(-1)
+    predicted_reward = value_current_flat - continuation_scale * (
+        value_current_flat + local_value_delta
+    )
+    target_reward = reward_conservative_target.reshape(-1)
+    replay_valid_flat = replay_valid.reshape(-1)
+    L_critic_covector_align = _masked_mean(
+        (predicted_reward - target_reward).pow(2),
+        replay_valid_flat,
+    )
+    displacement_norm = _metric_vector_norm_sq(metric, z.detach(), displacement).sqrt()
+    reward_scale = target_reward.detach().abs() / (displacement_norm.detach() + 1e-8)
+    stiffness_scale = (
+        float(config.critic_stiffness_target_scale)
+        * _masked_quantile(reward_scale, replay_valid_flat, float(config.critic_stiffness_quantile))
+    ).clamp_min(max(float(config.critic_stiffness_min), 1e-8))
+    stiffness_max = float(config.critic_stiffness_target_max)
+    if stiffness_max > 0.0:
+        stiffness_scale = stiffness_scale.clamp(max=stiffness_max)
+    metrics = {
+        "critic/L_covector_align": float(L_critic_covector_align.detach()),
+        "critic/covector_align_abs_err": float(
+            _masked_mean((predicted_reward - target_reward).abs(), replay_valid_flat).detach(),
+        ),
+        "critic/covector_predicted_reward_mean": float(
+            _masked_mean(predicted_reward, replay_valid_flat).detach(),
+        ),
+        "critic/covector_target_reward_mean": float(
+            _masked_mean(target_reward, replay_valid_flat).detach(),
+        ),
+        "critic/displacement_norm_mean": float(
+            _masked_mean(displacement_norm, replay_valid_flat).detach(),
+        ),
+        "critic/stiffness_target_adaptive": float(stiffness_scale.detach()),
+    }
+    return L_critic_covector_align, stiffness_scale.detach(), metrics
+
+
+def _critic_exact_increment_loss(
+    *,
+    reward_conservative_pred: torch.Tensor,
+    reward_conservative_target: torch.Tensor,
+    replay_valid: torch.Tensor,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    """Supervise the exact discounted value increment ``V_t - γ V_{t+1}`` directly."""
+    pred = reward_conservative_pred.reshape(-1)
+    target = reward_conservative_target.reshape(-1)
+    replay_valid_flat = replay_valid.reshape(-1)
+    loss = _masked_mean((pred - target).pow(2), replay_valid_flat)
+    metrics = {
+        "critic/L_exact_increment": float(loss.detach()),
+        "critic/exact_increment_abs_err": float(
+            _masked_mean((pred - target).abs(), replay_valid_flat).detach(),
+        ),
+        "critic/exact_increment_pred_mean": float(_masked_mean(pred, replay_valid_flat).detach()),
+        "critic/exact_increment_target_mean": float(
+            _masked_mean(target, replay_valid_flat).detach(),
+        ),
+    }
+    return loss, metrics
+
+
+def _hodge_conservative_preference_losses(
+    config: DreamerConfig,
+    *,
+    hodge_conservative_ratio: torch.Tensor,
+    hodge_solenoidal_ratio: torch.Tensor,
+) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
+    """Bias dynamics toward conservative explanation once harmonic residue is small."""
+    conservative_target = float(config.hodge_conservative_target)
+    conservative_deficit = (conservative_target - hodge_conservative_ratio).clamp(min=0.0)
+    L_hodge_conservative_margin = conservative_deficit.pow(2).mean()
+    L_hodge_solenoidal = hodge_solenoidal_ratio.pow(2).mean()
+    metrics = {
+        "wm/L_hodge_conservative_margin": float(L_hodge_conservative_margin),
+        "wm/L_hodge_solenoidal": float(L_hodge_solenoidal),
+        "geometric/hodge_conservative_deficit": float(conservative_deficit.mean()),
+        "geometric/hodge_conservative_target": conservative_target,
+    }
+    return L_hodge_conservative_margin, L_hodge_solenoidal, metrics
 
 
 def _discounted_return_to_go(
@@ -1294,6 +1861,546 @@ def _discounted_sum(rewards: torch.Tensor, gamma: float) -> torch.Tensor:
     return (rewards * discounts).sum(dim=1)
 
 
+def _multistep_discounted_targets(
+    one_step_targets: torch.Tensor,
+    continuation: torch.Tensor,
+    valid_mask: torch.Tensor,
+    gamma: float,
+    horizon: int,
+) -> list[tuple[int, torch.Tensor, torch.Tensor, torch.Tensor]]:
+    """Build discounted k-step targets and masks from one-step conservative targets."""
+    _, T = one_step_targets.shape
+    max_horizon = max(1, min(int(horizon), T))
+    discounted_targets = one_step_targets
+    continuation_prod = continuation
+    valid_prod = valid_mask
+    gamma_power = float(gamma)
+    outputs: list[tuple[int, torch.Tensor, torch.Tensor, torch.Tensor]] = []
+    for step in range(1, max_horizon + 1):
+        seq_len = T - step + 1
+        outputs.append(
+            (
+                step,
+                discounted_targets[:, :seq_len],
+                continuation_prod[:, :seq_len],
+                valid_prod[:, :seq_len],
+            ),
+        )
+        if step == max_horizon:
+            break
+        discounted_targets = (
+            discounted_targets[:, :-1]
+            + gamma_power * continuation_prod[:, :-1] * one_step_targets[:, step:]
+        )
+        continuation_prod = continuation_prod[:, :-1] * continuation[:, step:]
+        valid_prod = valid_prod[:, :-1] * valid_mask[:, step:]
+        gamma_power *= float(gamma)
+    return outputs
+
+
+def _multistep_exact_increment_loss(
+    *,
+    value_seq: torch.Tensor,
+    reward_conservative_targets: torch.Tensor,
+    continuation: torch.Tensor,
+    valid_mask: torch.Tensor,
+    gamma: float,
+    horizon: int,
+    decay: float,
+    metric_prefix: str,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    """Supervise exact discounted value increments over multiple horizons."""
+    losses: list[torch.Tensor] = []
+    weights: list[float] = []
+    abs_err_terms: list[torch.Tensor] = []
+    pred_mean_terms: list[torch.Tensor] = []
+    target_mean_terms: list[torch.Tensor] = []
+    horizon_weights_sum = 0.0
+    target_sequences = _multistep_discounted_targets(
+        reward_conservative_targets,
+        continuation,
+        valid_mask,
+        gamma,
+        horizon,
+    )
+    for step, target_k, continuation_k, valid_k in target_sequences:
+        seq_len = target_k.shape[1]
+        pred_k = value_seq[:, :seq_len] - (
+            float(gamma) ** step
+        ) * continuation_k * value_seq[:, step : step + seq_len]
+        weight = float(decay) ** (step - 1)
+        losses.append(weight * _masked_mean((pred_k - target_k).pow(2), valid_k))
+        weights.append(weight)
+        abs_err_terms.append(weight * _masked_mean((pred_k - target_k).abs(), valid_k))
+        pred_mean_terms.append(weight * _masked_mean(pred_k, valid_k))
+        target_mean_terms.append(weight * _masked_mean(target_k, valid_k))
+        horizon_weights_sum += weight
+    if not losses:
+        zero = value_seq.new_zeros(())
+        metrics = {
+            f"{metric_prefix}/L_exact_increment": 0.0,
+            f"{metric_prefix}/exact_increment_abs_err": 0.0,
+            f"{metric_prefix}/exact_increment_pred_mean": 0.0,
+            f"{metric_prefix}/exact_increment_target_mean": 0.0,
+            f"{metric_prefix}/exact_increment_horizon_used": 0.0,
+        }
+        return zero, metrics
+    total_weight = max(horizon_weights_sum, 1e-8)
+    loss = torch.stack(losses).sum() / total_weight
+    metrics = {
+        f"{metric_prefix}/L_exact_increment": float(loss.detach()),
+        f"{metric_prefix}/exact_increment_abs_err": float(
+            (torch.stack(abs_err_terms).sum() / total_weight).detach(),
+        ),
+        f"{metric_prefix}/exact_increment_pred_mean": float(
+            (torch.stack(pred_mean_terms).sum() / total_weight).detach(),
+        ),
+        f"{metric_prefix}/exact_increment_target_mean": float(
+            (torch.stack(target_mean_terms).sum() / total_weight).detach(),
+        ),
+        f"{metric_prefix}/exact_increment_horizon_used": float(len(losses)),
+    }
+    return loss, metrics
+
+
+def _multistep_covector_alignment_loss(
+    config: DreamerConfig,
+    *,
+    metric: nn.Module,
+    z_seq: torch.Tensor,
+    value_seq: torch.Tensor,
+    exact_covector_seq: torch.Tensor,
+    continuation: torch.Tensor,
+    valid_mask: torch.Tensor,
+    gamma: float,
+    horizon: int,
+    decay: float,
+    metric_prefix: str,
+    reward_conservative_targets: torch.Tensor | None = None,
+) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
+    """Align ``dV`` with multi-step exact increments along replay or policy geodesics."""
+    B, T_plus_1, latent_dim = z_seq.shape
+    del B, latent_dim
+    T = T_plus_1 - 1
+    max_horizon = max(1, min(int(horizon), T))
+    if reward_conservative_targets is not None:
+        target_sequences = _multistep_discounted_targets(
+            reward_conservative_targets,
+            continuation,
+            valid_mask,
+            gamma,
+            max_horizon,
+        )
+    else:
+        target_sequences = []
+        continuation_prod = continuation
+        valid_prod = valid_mask
+        for step in range(1, max_horizon + 1):
+            seq_len = T - step + 1
+            target_k = (
+                value_seq[:, :seq_len]
+                - (float(gamma) ** step)
+                * continuation_prod[:, :seq_len]
+                * value_seq[:, step : step + seq_len]
+            ).detach()
+            target_sequences.append(
+                (
+                    step,
+                    target_k,
+                    continuation_prod[:, :seq_len],
+                    valid_prod[:, :seq_len],
+                ),
+            )
+            if step == max_horizon:
+                break
+            continuation_prod = continuation_prod[:, :-1] * continuation[:, step:]
+            valid_prod = valid_prod[:, :-1] * valid_mask[:, step:]
+
+    losses: list[torch.Tensor] = []
+    abs_err_terms: list[torch.Tensor] = []
+    pred_mean_terms: list[torch.Tensor] = []
+    target_mean_terms: list[torch.Tensor] = []
+    disp_mean_terms: list[torch.Tensor] = []
+    stiffness_samples: list[torch.Tensor] = []
+    stiffness_masks: list[torch.Tensor] = []
+    total_weight = 0.0
+
+    for step, target_k, continuation_k, valid_k in target_sequences:
+        seq_len = target_k.shape[1]
+        z_curr = z_seq[:, :seq_len].reshape(-1, z_seq.shape[-1])
+        z_future = z_seq[:, step : step + seq_len].reshape(-1, z_seq.shape[-1])
+        displacement = poincare_log_map(z_curr.detach(), z_future.detach()).reshape(
+            target_k.shape[0],
+            seq_len,
+            -1,
+        )
+        local_value_delta = (exact_covector_seq[:, :seq_len] * displacement).sum(dim=-1)
+        predicted_k = value_seq[:, :seq_len] - (
+            float(gamma) ** step
+        ) * continuation_k * (value_seq[:, :seq_len] + local_value_delta)
+        weight = float(decay) ** (step - 1)
+        losses.append(weight * _masked_mean((predicted_k - target_k).pow(2), valid_k))
+        abs_err_terms.append(weight * _masked_mean((predicted_k - target_k).abs(), valid_k))
+        pred_mean_terms.append(weight * _masked_mean(predicted_k, valid_k))
+        target_mean_terms.append(weight * _masked_mean(target_k, valid_k))
+        displacement_norm = _metric_vector_norm_sq(
+            metric,
+            z_curr.detach(),
+            displacement.reshape(-1, displacement.shape[-1]),
+        ).sqrt().reshape_as(target_k)
+        disp_mean_terms.append(weight * _masked_mean(displacement_norm, valid_k))
+        stiffness_samples.append((target_k.detach().abs() / (displacement_norm.detach() + 1e-8)).reshape(-1))
+        stiffness_masks.append(valid_k.reshape(-1))
+        total_weight += weight
+
+    if not losses:
+        zero = value_seq.new_zeros(())
+        metrics = {
+            f"{metric_prefix}/L_covector_align": 0.0,
+            f"{metric_prefix}/covector_align_abs_err": 0.0,
+            f"{metric_prefix}/covector_predicted_reward_mean": 0.0,
+            f"{metric_prefix}/covector_target_reward_mean": 0.0,
+            f"{metric_prefix}/displacement_norm_mean": 0.0,
+            f"{metric_prefix}/stiffness_target_adaptive": float(config.critic_stiffness_min),
+            f"{metric_prefix}/covector_horizon_used": 0.0,
+        }
+        return zero, value_seq.new_tensor(float(config.critic_stiffness_min)), metrics
+
+    total_weight = max(total_weight, 1e-8)
+    loss = torch.stack(losses).sum() / total_weight
+    reward_scale = torch.cat(stiffness_samples)
+    reward_scale_mask = torch.cat(stiffness_masks)
+    stiffness_scale = (
+        float(config.critic_stiffness_target_scale)
+        * _masked_quantile(
+            reward_scale,
+            reward_scale_mask,
+            float(config.critic_stiffness_quantile),
+        )
+    ).clamp_min(max(float(config.critic_stiffness_min), 1e-8))
+    stiffness_max = float(config.critic_stiffness_target_max)
+    if stiffness_max > 0.0:
+        stiffness_scale = stiffness_scale.clamp(max=stiffness_max)
+    metrics = {
+        f"{metric_prefix}/L_covector_align": float(loss.detach()),
+        f"{metric_prefix}/covector_align_abs_err": float(
+            (torch.stack(abs_err_terms).sum() / total_weight).detach(),
+        ),
+        f"{metric_prefix}/covector_predicted_reward_mean": float(
+            (torch.stack(pred_mean_terms).sum() / total_weight).detach(),
+        ),
+        f"{metric_prefix}/covector_target_reward_mean": float(
+            (torch.stack(target_mean_terms).sum() / total_weight).detach(),
+        ),
+        f"{metric_prefix}/displacement_norm_mean": float(
+            (torch.stack(disp_mean_terms).sum() / total_weight).detach(),
+        ),
+        f"{metric_prefix}/stiffness_target_adaptive": float(stiffness_scale.detach()),
+        f"{metric_prefix}/covector_horizon_used": float(len(losses)),
+    }
+    return loss, stiffness_scale.detach(), metrics
+
+
+def _collect_policy_state_rollout(
+    obs_model: TopoEncoderPrimitives,
+    world_model: GeometricWorldModel,
+    actor: GeometricActor,
+    action_model: SharedDynTopoEncoder,
+    z_0: torch.Tensor,
+    rw_0: torch.Tensor,
+    horizon: int,
+    *,
+    hard_routing: bool,
+    hard_routing_tau: float,
+) -> dict[str, torch.Tensor]:
+    """Roll out policy-visited latent states without reward diagnostics."""
+    z = z_0
+    rw = rw_0
+    p = world_model.momentum_init(z_0)
+    z_seq = [z.detach()]
+    rw_seq = [rw.detach()]
+    routing_tau = _rollout_routing_tau(hard_routing, hard_routing_tau)
+    with torch.no_grad():
+        for _ in range(horizon):
+            obs_info = symbolize_latent_with_atlas(
+                obs_model,
+                z,
+                router_weights_override=rw,
+                hard_routing=hard_routing,
+                hard_routing_tau=routing_tau,
+            )
+            action_out = _policy_action(
+                actor,
+                action_model,
+                obs_info,
+                hard_routing=hard_routing,
+                hard_routing_tau=routing_tau,
+            )
+            step_out = world_model._rollout_transition(
+                z,
+                p,
+                action_out["action_canonical"],
+                rw,
+                track_energy=False,
+            )
+            z = step_out["z"]
+            p = step_out["p"]
+            rw = step_out["rw"]
+            z_seq.append(z.detach())
+            rw_seq.append(rw.detach())
+    return {
+        "z_seq": torch.stack(z_seq, dim=1),
+        "rw_seq": torch.stack(rw_seq, dim=1),
+    }
+
+
+def _actor_return_trust(
+    config: DreamerConfig,
+    *,
+    chart_acc: float,
+    force_rel_err: float,
+    policy_sync_err: float,
+    hodge_conservative: float,
+    template: torch.Tensor,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    """Certify how much imagined return the actor is allowed to trust."""
+    chance = 1.0 / max(int(config.num_charts), 1)
+    chart_target = max(float(config.actor_return_chart_acc_target), chance + 1e-6)
+    chart_acc_t = template.new_tensor(chart_acc)
+    force_rel_err_t = template.new_tensor(force_rel_err)
+    policy_sync_err_t = template.new_tensor(policy_sync_err)
+    hodge_conservative_t = template.new_tensor(hodge_conservative)
+
+    chart_factor = ((chart_acc_t - chance) / (chart_target - chance)).clamp(0.0, 1.0)
+    force_factor = torch.exp(
+        -float(config.actor_return_force_err_scale) * force_rel_err_t.clamp(min=0.0),
+    )
+    policy_sync_factor = torch.exp(
+        -float(config.actor_return_policy_sync_scale) * policy_sync_err_t.clamp(min=0.0),
+    )
+    conservative_factor = hodge_conservative_t.clamp(0.0, 1.0)
+    trust = (chart_factor * force_factor * policy_sync_factor * conservative_factor).clamp(0.0, 1.0)
+    trust_metrics = {
+        "actor/return_trust": float(trust.detach()),
+        "actor/return_trust_chart": float(chart_factor.detach()),
+        "actor/return_trust_force": float(force_factor.detach()),
+        "actor/return_trust_sync": float(policy_sync_factor.detach()),
+        "actor/return_trust_conservative_exact": float(conservative_factor.detach()),
+    }
+    return trust, trust_metrics
+
+
+def _actor_supervise_scale(
+    config: DreamerConfig,
+    *,
+    epoch: int,
+    actor_return_gate: torch.Tensor,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    """Schedule replay-action supervision as a bootstrap term, not a permanent target."""
+    gate = actor_return_gate.detach().clamp(0.0, 1.0)
+    min_scale = float(np.clip(config.actor_supervise_min_scale, 0.0, 1.0))
+    warmup_epochs = max(int(config.actor_supervise_warmup_epochs), 0)
+    decay_epochs = max(int(config.actor_supervise_decay_epochs), 0)
+    if epoch < warmup_epochs:
+        warmup_scale = 1.0
+    elif decay_epochs <= 0:
+        warmup_scale = min_scale
+    else:
+        decay_progress = min(max((epoch - warmup_epochs + 1) / decay_epochs, 0.0), 1.0)
+        warmup_scale = 1.0 - (1.0 - min_scale) * decay_progress
+    gate_scale = float(1.0 - gate)
+    scale = max(min_scale, warmup_scale * gate_scale)
+    scale_t = gate.new_tensor(scale)
+    metrics = {
+        "actor/supervise_scale": float(scale_t.detach()),
+        "actor/supervise_warmup_scale": float(warmup_scale),
+        "actor/supervise_gate_scale": gate_scale,
+    }
+    return scale_t, metrics
+
+
+def _actor_old_policy_kl_losses(
+    actor_out: dict[str, torch.Tensor],
+    actor_old_out: dict[str, torch.Tensor],
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Penalize large discrete policy changes relative to the previous actor."""
+    old_chart_probs = F.softmax(actor_old_out["action_chart_logits"].detach(), dim=-1)
+    new_chart_log_probs = F.log_softmax(actor_out["action_chart_logits"], dim=-1)
+    L_chart_kl = F.kl_div(new_chart_log_probs, old_chart_probs, reduction="batchmean")
+
+    old_code_probs = F.softmax(actor_old_out["action_code_logits"].detach(), dim=-1)
+    new_code_log_probs = F.log_softmax(actor_out["action_code_logits"], dim=-1)
+    code_kl_per_chart = (
+        old_code_probs * (old_code_probs.clamp_min(1e-8).log() - new_code_log_probs)
+    ).sum(dim=-1)
+    L_code_kl = (old_chart_probs * code_kl_per_chart).sum(dim=-1).mean()
+    return L_chart_kl, L_code_kl
+
+
+def _actor_state_metric(
+    config: DreamerConfig,
+    *,
+    metric: nn.Module,
+    state_z_geo: torch.Tensor,
+    actor_out: dict[str, torch.Tensor],
+    obs_z_n: torch.Tensor,
+    target_chart_idx: torch.Tensor,
+    target_code_idx: torch.Tensor,
+    exact_covector: torch.Tensor,
+) -> tuple[torch.Tensor, torch.Tensor, bool, torch.Tensor, torch.Tensor, dict[str, float]]:
+    """Build the diagonal state-space metric proxy used by the actor update."""
+    sample_idx = torch.arange(obs_z_n.shape[0], device=obs_z_n.device)
+    chart_log_probs = F.log_softmax(actor_out["action_chart_logits"], dim=-1)
+    chart_logp = chart_log_probs[sample_idx, target_chart_idx.long()]
+    code_logits = actor_out["action_code_logits"][sample_idx, target_chart_idx.long()]
+    code_log_probs = F.log_softmax(code_logits, dim=-1)
+    code_logp = code_log_probs[sample_idx, target_code_idx.long()]
+    log_prob = chart_logp + code_logp
+    state_score = torch.autograd.grad(
+        log_prob.sum(),
+        obs_z_n,
+        retain_graph=True,
+        create_graph=False,
+    )[0]
+    metric_scale = _metric_inverse_scale(metric, state_z_geo.detach()).mean()
+    fisher_diag = metric_scale * state_score.detach().pow(2).mean(dim=0)
+    fisher_scale = max(float(config.actor_metric_fisher_scale), 0.0)
+    fisher_diag_scaled = fisher_scale * fisher_diag
+    value_diag = metric_scale * exact_covector.detach().pow(2).mean(dim=0)
+    metric_diag = value_diag + fisher_diag_scaled + float(config.actor_metric_epsilon)
+    metric_inv = metric_diag.reciprocal()
+    alpha = value_diag.mean().sqrt()
+    beta_pi_raw = fisher_diag.mean().sqrt()
+    beta_pi = fisher_diag_scaled.mean().sqrt()
+    scale_barrier = ((beta_pi - alpha).clamp(min=0.0) / (beta_pi + 1e-8))
+    scale_trust = torch.exp(-scale_barrier)
+    scale_certified = bool(float(alpha.detach()) > float(beta_pi.detach()))
+    metrics = {
+        "actor/state_alpha": float(alpha.detach()),
+        "actor/state_beta_pi": float(beta_pi.detach()),
+        "actor/state_beta_pi_raw": float(beta_pi_raw.detach()),
+        "actor/state_scale_barrier": float(scale_barrier.detach()),
+        "actor/state_scale_trust": float(scale_trust.detach()),
+        "actor/state_metric_mean": float(metric_diag.mean().detach()),
+        "actor/state_metric_inv_mean": float(metric_inv.mean().detach()),
+        "actor/state_scale_certified": 1.0 if scale_certified else 0.0,
+    }
+    return (
+        metric_diag.detach(),
+        metric_inv.detach(),
+        scale_certified,
+        scale_trust.detach(),
+        scale_barrier.detach(),
+        metrics,
+    )
+
+
+def _relative_trust_region_scale(
+    optimizer: torch.optim.Optimizer,
+    parameters: list[torch.nn.Parameter],
+    *,
+    kappa: float,
+    epsilon_theta: float,
+) -> tuple[float, float, float, float]:
+    """Apply the parameter-space Mach limit to the current gradients."""
+    grads = [param for param in parameters if param.grad is not None]
+    if not grads or kappa <= 0.0:
+        return 1.0, 0.0, 0.0, 0.0
+    grad_norm_t = torch.norm(torch.stack([param.grad.detach().norm() for param in grads]), p=2)
+    param_norm_t = torch.norm(torch.stack([param.detach().norm() for param in grads]), p=2)
+    base_lr = float(optimizer.param_groups[0]["lr"]) if optimizer.param_groups else 0.0
+    step_norm_t = grad_norm_t * base_lr
+    max_step_t = float(kappa) * (param_norm_t + float(epsilon_theta))
+    scale = min(1.0, float((max_step_t / (step_norm_t + 1e-12)).detach()))
+    if scale < 1.0:
+        for param in grads:
+            param.grad.mul_(scale)
+    return scale, float(param_norm_t.detach()), float(step_norm_t.detach()), float(max_step_t.detach())
+
+
+def _world_model_closure_losses(
+    config: DreamerConfig,
+    world_model: GeometricWorldModel,
+    enclosure_probe: EnclosureProbe,
+    z_0: torch.Tensor,
+    rw_0: torch.Tensor,
+    chart_embed_t: torch.Tensor,
+    z_tex_t: torch.Tensor,
+    action_canonicals: torch.Tensor,
+    code_t: torch.Tensor,
+    target_charts: torch.Tensor,
+    target_codes: torch.Tensor,
+    update_idx: int,
+    *,
+    zeno_mode: str,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, dict[str, float]]:
+    """Measure closure and router smoothness from the observation Markov model."""
+    zero = z_0.new_zeros(())
+    if action_canonicals.shape[1] == 0 or target_charts.shape[1] == 0:
+        return zero, zero, zero, zero, {
+            "closure/obs_state_acc": 0.0,
+            "closure/chart_entropy": 0.0,
+            "closure/enclosure_acc_full": 0.0,
+            "closure/enclosure_acc_base": 0.0,
+            "closure/enclosure_defect_acc": 0.0,
+            "closure/enclosure_defect_ce": 0.0,
+            "closure/grl_alpha": 0.0,
+        }
+
+    wm_out = world_model(z_0, action_canonicals, rw_0)
+    chart_logits_all = wm_out["chart_logits"]
+    T_sync = min(chart_logits_all.shape[1], target_charts.shape[1])
+    if T_sync == 0:
+        return zero, zero, zero, zero, {
+            "closure/obs_state_acc": 0.0,
+            "closure/chart_entropy": 0.0,
+            "closure/enclosure_acc_full": 0.0,
+            "closure/enclosure_acc_base": 0.0,
+            "closure/enclosure_defect_acc": 0.0,
+            "closure/enclosure_defect_ce": 0.0,
+            "closure/grl_alpha": 0.0,
+        }
+
+    chart_logits = chart_logits_all[:, :T_sync]
+    target = target_charts[:, :T_sync].detach()
+    chart_probs = F.softmax(chart_logits, dim=-1)
+    prev_rw = torch.cat([rw_0.unsqueeze(1), chart_probs[:, :-1]], dim=1)
+    L_closure_obs = compute_dynamics_chart_loss(chart_logits, target)
+    L_obs_zeno = zeno_loss(
+        chart_probs.reshape(-1, chart_probs.shape[-1]),
+        prev_rw.reshape(-1, prev_rw.shape[-1]),
+        mode=zeno_mode,
+    )
+    grl_alpha = grl_alpha_schedule(
+        update_idx,
+        warmup_steps=config.enclosure_grl_warmup_updates,
+        max_alpha=config.enclosure_grl_alpha_max,
+    )
+    enclosure_probe.grl.alpha.copy_(enclosure_probe.grl.alpha.new_tensor(grl_alpha))
+    L_enclosure, L_enclosure_probe, enclosure_metrics = compute_enclosure_loss(
+        enclosure_probe,
+        chart_embed_t[:, :T_sync].reshape(-1, chart_embed_t.shape[-1]),
+        action_canonicals[:, :T_sync].reshape(-1, action_canonicals.shape[-1]),
+        z_tex_t[:, :T_sync].reshape(-1, z_tex_t.shape[-1]),
+        target_charts[:, :T_sync].reshape(-1),
+        K_code_t=code_t[:, :T_sync].reshape(-1),
+        K_code_tp1=target_codes[:, :T_sync].reshape(-1),
+        codes_per_chart=config.codes_per_chart,
+    )
+    metrics = {
+        "closure/obs_state_acc": float((chart_logits.argmax(dim=-1) == target).float().mean()),
+        "closure/chart_entropy": float(
+            -(chart_probs * chart_probs.clamp(min=1e-8).log()).sum(dim=-1).mean(),
+        ),
+        "closure/enclosure_acc_full": enclosure_metrics["acc_full"],
+        "closure/enclosure_acc_base": enclosure_metrics["acc_base"],
+        "closure/enclosure_defect_acc": enclosure_metrics["defect_acc"],
+        "closure/enclosure_defect_ce": enclosure_metrics["defect_ce"],
+        "closure/grl_alpha": grl_alpha,
+    }
+    return L_closure_obs, L_obs_zeno, L_enclosure, L_enclosure_probe, metrics
+
+
 def _should_run_actor_update(
     config: DreamerConfig,
     *,
@@ -1313,51 +2420,77 @@ def _should_run_actor_update(
 
 
 def _imagine_actor_return(
+    config: DreamerConfig | None,
     obs_model: TopoEncoderPrimitives,
     world_model: GeometricWorldModel,
     reward_head: RewardHead,
     critic: nn.Module,
     actor: GeometricActor,
     action_model: SharedDynTopoEncoder,
-    closure_model: CovariantObsActionClosureModel,
     z_0: torch.Tensor,
     rw_0: torch.Tensor,
     horizon: int,
     gamma: float,
+    *,
+    hard_routing: bool = True,
+    hard_routing_tau: float = -1.0,
+    reward_curl_batch_limit: int | None = None,
 ) -> dict[str, torch.Tensor]:
     """Differentiate the actor objective through canonical-action imagination."""
-    del closure_model
     z = z_0
     rw = rw_0
     p = world_model.momentum_init(z_0)
+    routing_tau = _rollout_routing_tau(hard_routing, hard_routing_tau)
 
+    z_state_list: list[torch.Tensor] = []
+    z_traj_list: list[torch.Tensor] = []
     reward_list: list[torch.Tensor] = []
     reward_cons_list: list[torch.Tensor] = []
     reward_noncons_list: list[torch.Tensor] = []
+    reward_form_cov_list: list[torch.Tensor] = []
+    exact_covector_list: list[torch.Tensor] = []
     action_list: list[torch.Tensor] = []
     action_canonical_list: list[torch.Tensor] = []
+    rw_state_list: list[torch.Tensor] = []
+    rw_traj_list: list[torch.Tensor] = []
+    chart_acc_list: list[torch.Tensor] = []
+    chart_ce_list: list[torch.Tensor] = []
+    router_sync_list: list[torch.Tensor] = []
+    force_rel_err_list: list[torch.Tensor] = []
+    hodge_cons_list: list[torch.Tensor] = []
+    reward_noncons_gate_list: list[torch.Tensor] = []
+    policy_sync_loss_list: list[torch.Tensor] = []
 
     for _ in range(horizon):
         obs_info = symbolize_latent_with_atlas(
             obs_model,
             z,
             router_weights_override=rw,
-            hard_routing=True,
-            hard_routing_tau=-1.0,
+            hard_routing=hard_routing,
+            hard_routing_tau=routing_tau,
         )
         action_state = actor(
             obs_info["chart_idx"],
             obs_info["code_idx"],
             obs_info["z_n"],
-            hard_routing=True,
-            hard_routing_tau=-1.0,
+            hard_routing=hard_routing,
+            hard_routing_tau=routing_tau,
         )
         action_mean, _, _ = action_model.decoder(
             action_state["action_z_geo"],
             None,
             router_weights=action_state["action_router_weights"],
-            hard_routing=True,
-            hard_routing_tau=-1.0,
+            hard_routing=hard_routing,
+            hard_routing_tau=routing_tau,
+        )
+        z_state_list.append(z)
+        rw_state_list.append(rw.detach())
+        force_diag = _conservative_force_diagnostics(
+            world_model,
+            z.detach(),
+            p.detach(),
+            rw.detach(),
+            action_state["action_z_geo"].detach(),
         )
         step_out = world_model._rollout_transition(
             z,
@@ -1385,29 +2518,81 @@ def _imagine_actor_return(
             action_state["action_z_q"],
             action_canonical=action_state["action_z_geo"],
             exact_covector=exact_covector,
+            compute_curl=False,
+            curl_batch_limit=reward_curl_batch_limit,
         )
-        reward_nonconservative = reward_info["reward_nonconservative"].squeeze(-1)
+        reward_nonconservative_raw = reward_info["reward_nonconservative"].squeeze(-1)
+        reward_nonconservative_gate = reward_nonconservative_raw.new_ones(())
+        if config is not None:
+            reward_nonconservative_gate, _ = _reward_nonconservative_gate(
+                config,
+                exact_covector_norm_mean=_metric_covector_norm_sq(
+                    world_model.metric,
+                    z.detach(),
+                    exact_covector.detach(),
+                ).sqrt().mean(),
+                force_rel_err_mean=force_diag["force_rel_err"].mean(),
+            )
+        reward_nonconservative = reward_nonconservative_gate.detach() * reward_nonconservative_raw
         reward_total = reward_conservative.squeeze(-1) + reward_nonconservative
+        next_obs_info = symbolize_latent_with_atlas(
+            obs_model,
+            z_next.detach(),
+            router_weights_override=rw_next.detach(),
+            hard_routing=hard_routing,
+            hard_routing_tau=routing_tau,
+        )
+        chart_target = next_obs_info["chart_idx"].detach().long()
+        chart_logits = step_out["chart_logits"]
+        chart_acc_list.append((chart_logits.argmax(dim=-1) == chart_target).float())
+        chart_ce_list.append(F.cross_entropy(chart_logits, chart_target, reduction="none"))
+        router_sync = (rw_next.detach() - next_obs_info["router_weights"].detach()).abs().mean(dim=-1)
+        router_sync_list.append(router_sync)
+        force_rel_err_list.append(force_diag["force_rel_err"])
+        hodge_cons_list.append(force_diag["hodge_exact"]["conservative_ratio"])
+        reward_noncons_gate_list.append(reward_nonconservative_gate.expand_as(reward_nonconservative))
+        policy_sync_loss_list.append(chart_ce_list[-1] + router_sync)
         reward_list.append(reward_total)
         reward_cons_list.append(reward_conservative.squeeze(-1))
         reward_noncons_list.append(reward_nonconservative)
+        reward_form_cov_list.append(reward_info["reward_form_cov"])
+        exact_covector_list.append(exact_covector)
         action_list.append(action_mean)
         action_canonical_list.append(action_state["action_z_geo"])
         z = z_next
         p = step_out["p"]
         rw = rw_next
+        z_traj_list.append(z)
+        rw_traj_list.append(rw.detach())
 
     rewards = torch.stack(reward_list, dim=1)
     reward_conservative = torch.stack(reward_cons_list, dim=1)
     reward_nonconservative = torch.stack(reward_noncons_list, dim=1)
-    objective = _discounted_sum(rewards, gamma)
+    objective_conservative = _discounted_sum(reward_conservative, gamma)
+    objective_nonconservative = _discounted_sum(reward_nonconservative, gamma)
+    objective = objective_conservative + objective_nonconservative
     return {
+        "z_states": torch.stack(z_state_list, dim=1),
+        "z_traj": torch.stack(z_traj_list, dim=1),
         "rewards": rewards,
         "reward_conservative": reward_conservative,
         "reward_nonconservative": reward_nonconservative,
+        "reward_form_cov": torch.stack(reward_form_cov_list, dim=1),
+        "exact_covector": torch.stack(exact_covector_list, dim=1),
         "objective": objective,
+        "objective_conservative": objective_conservative,
+        "objective_nonconservative": objective_nonconservative,
         "actions": torch.stack(action_list, dim=1),
         "action_canonicals": torch.stack(action_canonical_list, dim=1),
+        "rw_states": torch.stack(rw_state_list, dim=1),
+        "rw_traj": torch.stack(rw_traj_list, dim=1),
+        "policy_chart_acc": torch.stack(chart_acc_list, dim=1),
+        "policy_chart_ce": torch.stack(chart_ce_list, dim=1),
+        "policy_router_sync": torch.stack(router_sync_list, dim=1),
+        "policy_force_rel_err": torch.stack(force_rel_err_list, dim=1),
+        "policy_hodge_conservative_exact": torch.stack(hodge_cons_list, dim=1),
+        "policy_reward_nonconservative_gate": torch.stack(reward_noncons_gate_list, dim=1),
+        "policy_sync_loss": torch.stack(policy_sync_loss_list, dim=1),
     }
 
 
@@ -1462,15 +2647,17 @@ def _train_step(
     jump_op: FactorizedJumpOperator,
     action_model: TopoEncoderPrimitives,
     action_jump_op: FactorizedJumpOperator,
-    closure_model: CovariantObsActionClosureModel,
     world_model: GeometricWorldModel,
+    enclosure_probe: EnclosureProbe,
     reward_head: RewardHead,
     critic: nn.Module,
     actor: GeometricActor,
+    actor_old: GeometricActor,
     optimizer_enc: torch.optim.Optimizer,
     optimizer_wm: torch.optim.Optimizer,
     optimizer_critic: torch.optim.Optimizer | None,
     optimizer_boundary: torch.optim.Optimizer,
+    optimizer_enclosure: torch.optim.Optimizer,
     batch: dict[str, torch.Tensor],
     config: DreamerConfig,
     phase1_cfg: VLAConfig,
@@ -1519,6 +2706,7 @@ def _train_step(
         torch.Tensor,
         torch.Tensor,
         torch.Tensor,
+        torch.Tensor,
     ]:
         (
             base_loss,
@@ -1552,12 +2740,14 @@ def _train_step(
             K_ch_flat.reshape(B, T + 1),
             K_code_flat.reshape(B, T + 1),
             z_n_flat.reshape(B, T + 1, -1),
+            _z_tex_flat.reshape(B, T + 1, -1),
             c_bar_flat.reshape(B, T + 1, -1),
             z_q_flat.reshape(B, T + 1, -1),
             v_local_flat.reshape(B, T + 1, -1),
         )
 
     optimizer_enc.zero_grad()
+    optimizer_enclosure.zero_grad()
 
     encode_context = torch.no_grad() if config.freeze_encoder else contextlib.nullcontext()
     with encode_context:
@@ -1570,6 +2760,7 @@ def _train_step(
             K_all,
             K_code_all,
             zn_all,
+            z_tex_all,
             _c_bar_all,
             _z_q_all,
             _v_local_all,
@@ -1583,6 +2774,7 @@ def _train_step(
             action_K_all,
             action_K_code_all,
             action_zn_all,
+            _action_z_tex_all,
             _action_c_bar_all,
             action_z_q_all,
             _action_v_local_all,
@@ -1596,45 +2788,34 @@ def _train_step(
     action_z_q_prev = action_z_q_all[:, :-1]
     action_zn_prev = action_zn_all[:, :-1]
 
-    closure_out = closure_model(
-        K_all[:, :-1].reshape(-1),
-        K_code_all[:, :-1].reshape(-1),
-        zn_prev.reshape(-1, config.latent_dim),
-        action_K_all[:, :-1].reshape(-1),
-        action_K_code_all[:, :-1].reshape(-1),
-        action_zn_prev.reshape(-1, config.latent_dim),
-    )
-
-    replay_valid_flat = replay_valid.reshape(-1)
-    action_next_valid = (replay_valid * (1.0 - replay_dones)).reshape(-1)
-    obs_targets_flat = (
-        K_all[:, 1:].long() * config.codes_per_chart + K_code_all[:, 1:].long()
-    ).reshape(-1)
-    action_targets_flat = (
-        action_K_all[:, 1:].long() * config.action_codes_per_chart
-        + action_K_code_all[:, 1:].long()
-    ).reshape(-1)
-
-    obs_log_probs = F.log_softmax(closure_out["obs_state_logits"], dim=-1)
-    action_log_probs = F.log_softmax(closure_out["action_state_logits"], dim=-1)
-    obs_ce = -obs_log_probs.gather(1, obs_targets_flat.unsqueeze(1)).squeeze(1)
-    action_ce = -action_log_probs.gather(1, action_targets_flat.unsqueeze(1)).squeeze(1)
-    L_closure_obs = _masked_mean(obs_ce, replay_valid_flat)
-    L_closure_action = _masked_mean(action_ce, action_next_valid)
-    L_obs_zeno = zeno_loss(
-        rw_all[:, 1:].reshape(-1, config.num_charts),
-        rw_all[:, :-1].reshape(-1, config.num_charts),
-        mode=config.zeno_mode,
-    )
-    L_action_zeno = zeno_loss(
-        action_rw_all[:, 1:].reshape(-1, config.num_action_charts),
-        action_rw_all[:, :-1].reshape(-1, config.num_action_charts),
-        mode=config.zeno_mode,
-    )
-
+    H_closure = min(int(config.wm_prediction_horizon), T)
+    world_model_mod = _unwrap_compiled_module(world_model)
+    with _temporary_requires_grad([(world_model_mod, False)]):
+        (
+            L_closure_obs,
+            L_obs_zeno,
+            L_enclosure,
+            L_enclosure_probe,
+            closure_metrics,
+        ) = _world_model_closure_losses(
+            config,
+            world_model,
+            enclosure_probe,
+            z_all[:, 0],
+            rw_all[:, 0],
+            _c_bar_all[:, :-1],
+            z_tex_all[:, :-1],
+            action_z_all[:, :-1][:, :H_closure],
+            K_code_all[:, :-1],
+            K_all[:, 1 : H_closure + 1],
+            K_code_all[:, 1 : H_closure + 1],
+            update_idx,
+            zeno_mode=config.zeno_mode,
+        )
     L_closure = (
-        config.w_dyn_transition * (L_closure_obs + L_closure_action)
-        + config.w_zeno * (L_obs_zeno + L_action_zeno)
+        config.w_dyn_transition * L_closure_obs
+        + config.w_zeno * L_obs_zeno
+        + config.w_enclosure * L_enclosure
     )
 
     L_obs_total = base_loss_obs + zn_reg_loss_obs
@@ -1643,13 +2824,21 @@ def _train_step(
         L_enc_total = config.encoder_loss_scale * L_closure
     else:
         L_enc_total = config.encoder_loss_scale * (L_obs_total + L_action_total + L_closure)
-    L_enc_total.backward()
-    enc_grad = nn.utils.clip_grad_norm_(_optimizer_parameters(optimizer_enc), config.grad_clip)
-    optimizer_enc.step()
+    probe_loss_total = config.w_enclosure_probe * L_enclosure_probe
+    if L_enc_total.requires_grad or probe_loss_total.requires_grad:
+        (L_enc_total + probe_loss_total).backward()
+        enc_grad = nn.utils.clip_grad_norm_(_optimizer_parameters(optimizer_enc), config.grad_clip)
+        optimizer_enc.step()
+        enclosure_grad = nn.utils.clip_grad_norm_(
+            _optimizer_parameters(optimizer_enclosure),
+            config.grad_clip,
+        )
+        optimizer_enclosure.step()
+    else:
+        enc_grad = 0.0
+        enclosure_grad = 0.0
     metrics["enc/grad_norm"] = float(enc_grad)
-    metrics["closure/grad_norm"] = float(
-        _parameter_grad_norm(list(closure_model.parameters())),
-    )
+    metrics["closure/probe_grad_norm"] = float(enclosure_grad)
     if not config.freeze_encoder:
         for key, value in _phase1_grad_breakdown(model).items():
             metrics[f"enc/{key}"] = value
@@ -1664,25 +2853,20 @@ def _train_step(
     metrics["enc_action/L_total"] = float(config.encoder_loss_scale * L_action_total)
     metrics["closure/L_total"] = float(L_closure)
     metrics["closure/L_obs_state"] = float(L_closure_obs)
-    metrics["closure/L_action_state"] = float(L_closure_action)
     metrics["closure/L_obs_zeno"] = float(L_obs_zeno)
-    metrics["closure/L_action_zeno"] = float(L_action_zeno)
-    metrics["closure/obs_state_acc"] = float(
-        ((closure_out["obs_state_logits"].argmax(dim=-1) == obs_targets_flat).float() * replay_valid_flat)
-        .sum()
-        / replay_valid_flat.sum().clamp(min=1.0)
-    )
-    metrics["closure/action_state_acc"] = float(
-        (
-            (closure_out["action_state_logits"].argmax(dim=-1) == action_targets_flat).float()
-            * action_next_valid
-        ).sum()
-        / action_next_valid.sum().clamp(min=1.0)
-    )
+    metrics["closure/L_enclosure"] = float(L_enclosure)
+    metrics["closure/L_enclosure_probe"] = float(L_enclosure_probe)
+    metrics["closure/obs_state_acc"] = closure_metrics["closure/obs_state_acc"]
+    metrics["closure/chart_entropy"] = closure_metrics["closure/chart_entropy"]
+    metrics["closure/enclosure_acc_full"] = closure_metrics["closure/enclosure_acc_full"]
+    metrics["closure/enclosure_acc_base"] = closure_metrics["closure/enclosure_acc_base"]
+    metrics["closure/enclosure_defect_acc"] = closure_metrics["closure/enclosure_defect_acc"]
+    metrics["closure/enclosure_defect_ce"] = closure_metrics["closure/enclosure_defect_ce"]
+    metrics["closure/grl_alpha"] = closure_metrics["closure/grl_alpha"]
     metrics["time/encoder"] = time.perf_counter() - t_section
 
     t_section = time.perf_counter()
-    _sync_rl_atlas(model, action_model, world_model, critic, actor, closure_model, reward_head)
+    _sync_rl_atlas(model, action_model, world_model, critic, actor, reward_head, actor_old)
     metrics["time/atlas_sync"] = time.perf_counter() - t_section
 
     if compute_diagnostics:
@@ -1752,6 +2936,7 @@ def _train_step(
     action_z_q_prev_flat = action_z_q_prev.reshape(-1, config.latent_dim)
     action_canonical_flat = action_canonical_model.reshape(-1, config.latent_dim)
     continuation_flat = (1.0 - replay_dones).reshape(-1, 1)
+    continuation_seq = (1.0 - replay_dones).detach()
     reward_conservative_flat, value_prev_flat, _value_next_flat = _conservative_reward_from_value(
         critic,
         z_prev_flat,
@@ -1787,18 +2972,73 @@ def _train_step(
         compute_curl=compute_diagnostics,
         curl_batch_limit=config.reward_curl_batch_limit,
     )
+    z_prev_flat_critic = z_prev_flat.detach()
+    z_next_flat_critic = z_next_flat.detach()
+    rw_prev_flat_critic = rw_prev_flat.detach()
+    z_all_critic = z_all.detach()
+    rw_all_critic = rw_all.detach()
+    exact_covector_train = None
+    if config.w_critic_stiffness > 0.0 or config.w_critic_covector_align > 0.0:
+        exact_covector_train = _value_covector_from_critic(
+            critic,
+            z_prev_flat_critic,
+            rw_prev_flat_critic,
+            create_graph=True,
+            detach=False,
+        )
+    force_consistency_diag = _conservative_force_diagnostics(
+        world_model_mod,
+        z_prev_flat.detach(),
+        world_model_mod.momentum_init(z_prev_flat.detach()).detach(),
+        rw_prev_flat.detach(),
+        action_canonical_flat.detach(),
+    )
+    rollout_rw_hodge = torch.cat([rw_0.unsqueeze(1), chart_probs[:, :-1].detach()], dim=1)
+    rollout_z_hodge = torch.cat([z_0.unsqueeze(1), z_pred[:, :-1].detach()], dim=1)
+    rollout_p0_hodge = world_model_mod.momentum_init(z_0.detach()).detach()
+    rollout_p_hodge = torch.cat([rollout_p0_hodge.unsqueeze(1), wm_out["momenta"][:, :-1].detach()], dim=1)
+    rollout_force_diag = _conservative_force_diagnostics(
+        world_model_mod,
+        rollout_z_hodge.reshape(-1, config.latent_dim),
+        rollout_p_hodge.reshape(-1, config.latent_dim),
+        rollout_rw_hodge.reshape(-1, config.num_charts),
+        action_canonical_model[:, :T_wm].detach().reshape(-1, config.latent_dim),
+    )
     r_noncons_flat = reward_info["reward_nonconservative"]
     r_pred = (reward_conservative_flat + r_noncons_flat).reshape(B, T)
     r_cons = reward_conservative_flat.reshape(B, T, 1)
     r_noncons = r_noncons_flat.reshape(B, T)
-    reward_residual_target = rewards - r_cons.detach().squeeze(-1)
     rho_r = reward_info["reward_density"].reshape(B, T, 1)
     reward_form_cov = reward_info["reward_form_cov"]
     reward_form_cov_raw = reward_info["reward_form_cov_raw"]
     reward_form_exact_component = reward_info["reward_form_exact_component"]
+    exact_covector_norm = _metric_covector_norm_sq(
+        world_model_mod.metric,
+        z_prev_flat.detach(),
+        exact_covector,
+    ).sqrt()
+    exact_covector_norm_mean = _masked_mean(exact_covector_norm, replay_valid.reshape(-1))
+    force_rel_err_mean = _masked_mean(
+        force_consistency_diag["force_rel_err"],
+        replay_valid.reshape(-1),
+    )
+    reward_nonconservative_gate, reward_nonconservative_gate_metrics = _reward_nonconservative_gate(
+        config,
+        exact_covector_norm_mean=exact_covector_norm_mean,
+        force_rel_err_mean=force_rel_err_mean,
+    )
+    r_noncons_effective = reward_nonconservative_gate.detach() * r_noncons
+    reward_residual_target = reward_nonconservative_gate.detach() * (
+        rewards - r_cons.detach().squeeze(-1)
+    )
+    replay_cons_target = rewards - r_noncons_effective.detach()
     L_reward = _masked_mean((r_pred - rewards).pow(2), replay_valid)
     L_reward_nonconservative = _masked_mean(
         (r_noncons - reward_residual_target).pow(2),
+        replay_valid,
+    )
+    L_reward_conservative_match = _masked_mean(
+        (r_cons.squeeze(-1) - replay_cons_target.detach()).pow(2),
         replay_valid,
     )
     reward_form_dot_exact = (reward_form_cov_raw * exact_covector).sum(dim=-1)
@@ -1810,24 +3050,78 @@ def _train_step(
         reward_form_norm_sq * exact_covector_norm_sq + 1e-8
     )
     L_reward_exact_orth = _masked_mean(reward_exact_cos2, replay_valid.reshape(-1))
+    (
+        L_reward_nonconservative_norm,
+        L_reward_nonconservative_budget,
+        reward_preference_metrics,
+    ) = _reward_conservative_preference_losses(
+        config,
+        metric=world_model_mod.metric,
+        z=z_prev_flat.detach(),
+        reward_conservative=r_cons,
+        reward_nonconservative=r_noncons,
+        reward_form_cov=reward_form_cov,
+        replay_valid=replay_valid,
+    )
+    L_force_exact = _masked_mean(
+        force_consistency_diag["force_err_sq"],
+        replay_valid.reshape(-1),
+    )
+    L_force_task_exact = _masked_mean(
+        force_consistency_diag["task_force_err_sq"],
+        replay_valid.reshape(-1),
+    )
+    L_force_risk_exact = _masked_mean(
+        force_consistency_diag["risk_force_err_sq"],
+        replay_valid.reshape(-1),
+    )
     metrics["wm/L_reward"] = float(L_reward)
     metrics["wm/L_reward_nonconservative"] = float(L_reward_nonconservative)
+    metrics["wm/L_reward_conservative_match"] = float(L_reward_conservative_match)
     metrics["wm/L_reward_exact_orth"] = float(L_reward_exact_orth)
+    metrics["wm/L_force_exact"] = float(L_force_exact)
+    metrics["wm/L_force_task_exact"] = float(L_force_task_exact)
+    metrics["wm/L_force_risk_exact"] = float(L_force_risk_exact)
+    metrics.update(reward_preference_metrics)
+    metrics.update(reward_nonconservative_gate_metrics)
+    metrics["wm/reward_nonconservative_frac_masked"] = float(
+        _masked_mean(
+            r_noncons_effective.abs()
+            / (r_noncons_effective.abs() + r_cons.detach().squeeze(-1).abs() + 1e-8),
+            replay_valid,
+        ),
+    )
     metrics["wm/action_canonical_norm_mean"] = float(action_canonical_flat.norm(dim=-1).mean())
     metrics["wm/reward_conservative_mean"] = float(r_cons.mean())
     metrics["wm/reward_nonconservative_mean"] = float(r_noncons.mean())
+    metrics["wm/reward_nonconservative_effective_mean"] = float(r_noncons_effective.mean())
     metrics["wm/reward_residual_target_mean"] = float(reward_residual_target.mean())
     metrics["wm/reward_exact_cos2_mean"] = float(_masked_mean(reward_exact_cos2, replay_valid.reshape(-1)))
     metrics["wm/reward_nonconservative_frac"] = float(
-        r_noncons.abs().mean() / (r_pred.abs().mean() + 1e-8)
+        r_noncons_effective.abs().mean() / (r_pred.abs().mean() + 1e-8)
     )
     metrics["wm/reward_density_mean"] = float(rho_r.mean())
-    metrics["wm/reward_form_norm_mean"] = float(reward_form_cov.norm(dim=-1).mean())
-    metrics["wm/reward_form_raw_norm_mean"] = float(reward_form_cov_raw.norm(dim=-1).mean())
-    metrics["wm/reward_form_exact_leakage_mean"] = float(
-        reward_form_exact_component.norm(dim=-1).mean()
+    metrics["wm/reward_form_metric_norm_mean"] = float(
+        _metric_covector_norm_sq(world_model_mod.metric, z_prev_flat.detach(), reward_form_cov).sqrt().mean()
     )
-    metrics["wm/reward_exact_covector_norm_mean"] = float(exact_covector.norm(dim=-1).mean())
+    metrics["wm/reward_form_raw_metric_norm_mean"] = float(
+        _metric_covector_norm_sq(
+            world_model_mod.metric,
+            z_prev_flat.detach(),
+            reward_form_cov_raw,
+        ).sqrt().mean()
+    )
+    metrics["wm/reward_form_exact_leakage_metric_mean"] = float(
+        _metric_covector_norm_sq(
+            world_model_mod.metric,
+            z_prev_flat.detach(),
+            reward_form_exact_component,
+        ).sqrt().mean()
+    )
+    metrics["wm/reward_exact_covector_norm_mean"] = float(exact_covector_norm_mean)
+    metrics["wm/force_exact_rel_mean"] = float(force_rel_err_mean)
+    metrics["wm/force_task_exact_rel_mean"] = float(force_consistency_diag["task_force_rel_err"].mean())
+    metrics["wm/force_risk_exact_rel_mean"] = float(force_consistency_diag["risk_force_rel_err"].mean())
     if reward_info["reward_curl"].numel() > 0:
         metrics["wm/reward_curl_norm_mean"] = float(
             torch.linalg.norm(reward_info["reward_curl"], dim=(-2, -1)).mean()
@@ -1845,25 +3139,46 @@ def _train_step(
             wm_out["z_trajectory"],
         )
     )
+    hodge_conservative_ratio = wm_out["hodge_conservative_ratio"].mean()
+    hodge_solenoidal_ratio = wm_out["hodge_solenoidal_ratio"].mean()
+    hodge_harmonic_ratio = wm_out["hodge_harmonic_ratio"].mean()
     L_hodge = compute_hodge_consistency_loss(wm_out["hodge_harmonic_forces"])
+    (
+        L_hodge_conservative_margin,
+        L_hodge_solenoidal,
+        hodge_preference_metrics,
+    ) = _hodge_conservative_preference_losses(
+        config,
+        hodge_conservative_ratio=wm_out["hodge_conservative_ratio"],
+        hodge_solenoidal_ratio=wm_out["hodge_solenoidal_ratio"],
+    )
     metrics["wm/L_momentum"] = float(L_momentum)
     metrics["wm/L_energy"] = float(L_energy)
     metrics["wm/L_hodge"] = float(L_hodge)
+    metrics.update(hodge_preference_metrics)
     L_wm_core = (
         config.w_dynamics * (L_geo + L_chart)
         + config.w_reward * L_reward
+        + config.w_reward_conservative_match * L_reward_conservative_match
         + config.w_reward_nonconservative * L_reward_nonconservative
         + config.w_reward_exact_orth * L_reward_exact_orth
+        + config.w_exact_force_consistency * L_force_exact
+        + config.w_exact_task_force_consistency * L_force_task_exact
+        + config.w_exact_risk_force_consistency * L_force_risk_exact
+        + config.w_reward_nonconservative_norm * L_reward_nonconservative_norm
+        + config.w_reward_nonconservative_budget * L_reward_nonconservative_budget
         + config.w_momentum_reg * L_momentum
         + config.w_energy_conservation * L_energy
         + config.w_hodge * L_hodge
+        + config.w_hodge_conservative_margin * L_hodge_conservative_margin
+        + config.w_hodge_solenoidal * L_hodge_solenoidal
     )
 
     critic_t0 = time.perf_counter()
     replay_values = value_prev_flat.reshape(B, T)
-    replay_cons_target = rewards - r_noncons.detach()
     replay_rtg = _discounted_return_to_go(replay_cons_target, replay_dones, config.gamma)
     replay_gap = replay_values - replay_rtg
+    value_abs_err = _masked_mean(replay_gap.abs(), replay_valid)
     L_value = _masked_mean(replay_gap.pow(2), replay_valid)
     L_poisson = compute_screened_poisson_loss(
         critic,
@@ -1873,11 +3188,268 @@ def _train_step(
         reward_density=rho_r,
         kappa=config.screened_poisson_kappa,
     )
-    L_critic = config.w_screened_poisson * L_poisson + config.w_critic * L_value
+    poisson_warmup = _linear_warmup_scale(epoch, int(config.screened_poisson_warmup_epochs))
+    poisson_weight = config.w_screened_poisson * poisson_warmup
+    critic_multistep_horizon = max(int(config.critic_multistep_horizon), 1)
+    critic_multistep_decay = max(float(config.critic_multistep_decay), 0.0)
+    replay_value_seq = None
+    L_critic_exact_increment = replay_gap.new_zeros(())
+    if config.w_critic_exact_increment > 0.0 and critic_multistep_horizon > 1:
+        replay_value_seq = critic_value(
+            critic,
+            z_all_critic.reshape(-1, config.latent_dim),
+            rw_all_critic.reshape(-1, config.num_charts),
+        ).reshape(B, T + 1)
+        L_critic_exact_increment, critic_exact_increment_metrics = _multistep_exact_increment_loss(
+            value_seq=replay_value_seq,
+            reward_conservative_targets=replay_cons_target,
+            continuation=continuation_seq,
+            valid_mask=replay_valid,
+            gamma=config.gamma,
+            horizon=critic_multistep_horizon,
+            decay=critic_multistep_decay,
+            metric_prefix="critic",
+        )
+    else:
+        L_critic_exact_increment, critic_exact_increment_metrics = _critic_exact_increment_loss(
+            reward_conservative_pred=reward_conservative_flat.squeeze(-1),
+            reward_conservative_target=replay_cons_target,
+            replay_valid=replay_valid,
+        )
+    metrics.update(critic_exact_increment_metrics)
+    L_critic_covector_align = replay_gap.new_zeros(())
+    L_critic_stiffness = replay_gap.new_zeros(())
+    L_critic_covector_align_on_policy = replay_gap.new_zeros(())
+    L_critic_stiffness_on_policy = replay_gap.new_zeros(())
+    metrics["critic/on_policy/L_covector_align"] = 0.0
+    metrics["critic/on_policy/L_stiffness"] = 0.0
+    metrics["critic/on_policy/covector_align_abs_err"] = 0.0
+    metrics["critic/on_policy/covector_predicted_reward_mean"] = 0.0
+    metrics["critic/on_policy/covector_target_reward_mean"] = 0.0
+    metrics["critic/on_policy/displacement_norm_mean"] = 0.0
+    metrics["critic/on_policy/stiffness_target_adaptive"] = float(config.critic_stiffness_min)
+    metrics["critic/on_policy/covector_horizon_used"] = 0.0
+    metrics["critic/on_policy/exact_covector_norm_mean"] = 0.0
+    metrics["critic/on_policy/stiffness_target"] = float(config.critic_stiffness_min)
+    metrics["critic/on_policy/stiffness_certified"] = 0.0
+    metrics["critic/on_policy/batch_size"] = 0.0
+    if exact_covector_train is not None:
+        exact_covector_train_seq = exact_covector_train.reshape(B, T, config.latent_dim)
+        if critic_multistep_horizon > 1:
+            if replay_value_seq is None:
+                replay_value_seq = critic_value(
+                    critic,
+                    z_all_critic.reshape(-1, config.latent_dim),
+                    rw_all_critic.reshape(-1, config.num_charts),
+                ).reshape(B, T + 1)
+            (
+                L_critic_covector_align,
+                critic_stiffness_target,
+                critic_covector_metrics,
+            ) = _multistep_covector_alignment_loss(
+                config,
+                metric=world_model_mod.metric,
+                z_seq=z_all_critic,
+                value_seq=replay_value_seq,
+                exact_covector_seq=exact_covector_train_seq,
+                reward_conservative_targets=replay_cons_target,
+                continuation=continuation_seq,
+                valid_mask=replay_valid,
+                gamma=config.gamma,
+                horizon=critic_multistep_horizon,
+                decay=critic_multistep_decay,
+                metric_prefix="critic",
+            )
+        else:
+            (
+                L_critic_covector_align,
+                critic_stiffness_target,
+                critic_covector_metrics,
+            ) = _critic_covector_alignment_loss(
+                config,
+                metric=world_model_mod.metric,
+                z=z_prev_flat_critic,
+                z_next=z_next_flat_critic,
+                value_current=replay_values.reshape(-1, 1),
+                exact_covector=exact_covector_train,
+                reward_conservative_target=replay_cons_target,
+                continuation=continuation_flat,
+                gamma=config.gamma,
+                replay_valid=replay_valid,
+            )
+        metrics.update(critic_covector_metrics)
+        L_critic_stiffness, critic_stiffness_metrics = _critic_stiffness_loss(
+            config,
+            metric=world_model_mod.metric,
+            z=z_prev_flat_critic,
+            exact_covector=exact_covector_train,
+            replay_valid=replay_valid,
+            stiffness_scale=critic_stiffness_target,
+        )
+        metrics.update(critic_stiffness_metrics)
+        critic_on_policy_horizon = min(
+            max(int(config.critic_on_policy_horizon), 0),
+            max(int(config.actor_return_horizon), int(config.imagination_horizon)),
+        )
+        if (
+            critic_on_policy_horizon > 0
+            and (
+                config.w_critic_on_policy_covector_align > 0.0
+                or config.w_critic_on_policy_stiffness > 0.0
+            )
+        ):
+            critic_on_policy_batch = (
+                min(B, int(config.critic_on_policy_batch_size))
+                if int(config.critic_on_policy_batch_size) > 0
+                else B
+            )
+            if critic_on_policy_batch > 0:
+                if critic_on_policy_batch < B:
+                    critic_policy_idx = torch.randperm(B, device=z_0.device)[:critic_on_policy_batch]
+                    z_policy_0 = z_0.detach()[critic_policy_idx]
+                    rw_policy_0 = rw_0.detach()[critic_policy_idx]
+                else:
+                    z_policy_0 = z_0.detach()
+                    rw_policy_0 = rw_0.detach()
+                actor_eval_modules = [
+                    (actor, False),
+                    (action_model, False),
+                    (_unwrap_compiled_module(world_model), False),
+                ]
+                with _temporary_requires_grad(actor_eval_modules):
+                    policy_rollout = _collect_policy_state_rollout(
+                        model,
+                        world_model_mod,
+                        actor,
+                        action_model,
+                        z_policy_0,
+                        rw_policy_0,
+                        critic_on_policy_horizon,
+                        hard_routing=current_hard_routing,
+                        hard_routing_tau=current_tau,
+                    )
+                policy_z_seq = policy_rollout["z_seq"]
+                policy_rw_seq = policy_rollout["rw_seq"]
+                policy_values_seq = critic_value(
+                    critic,
+                    policy_z_seq.reshape(-1, config.latent_dim),
+                    policy_rw_seq.reshape(-1, config.num_charts),
+                ).reshape(policy_z_seq.shape[0], policy_z_seq.shape[1])
+                policy_exact_covector = _value_covector_from_critic(
+                    critic,
+                    policy_z_seq[:, :-1].reshape(-1, config.latent_dim),
+                    policy_rw_seq[:, :-1].reshape(-1, config.num_charts),
+                    create_graph=True,
+                    detach=False,
+                ).reshape(policy_z_seq.shape[0], critic_on_policy_horizon, config.latent_dim)
+                policy_valid = torch.ones(
+                    policy_z_seq.shape[0],
+                    critic_on_policy_horizon,
+                    device=policy_z_seq.device,
+                    dtype=policy_z_seq.dtype,
+                )
+                (
+                    L_critic_covector_align_on_policy,
+                    critic_on_policy_stiffness_target,
+                    critic_on_policy_metrics,
+                ) = _multistep_covector_alignment_loss(
+                    config,
+                    metric=world_model_mod.metric,
+                    z_seq=policy_z_seq,
+                    value_seq=policy_values_seq,
+                    exact_covector_seq=policy_exact_covector,
+                    reward_conservative_targets=None,
+                    continuation=policy_valid,
+                    valid_mask=policy_valid,
+                    gamma=config.gamma,
+                    horizon=critic_on_policy_horizon,
+                    decay=critic_multistep_decay,
+                    metric_prefix="critic/on_policy",
+                )
+                metrics.update(critic_on_policy_metrics)
+                (
+                    L_critic_stiffness_on_policy,
+                    critic_on_policy_stiffness_metrics,
+                ) = _critic_stiffness_loss(
+                    config,
+                    metric=world_model_mod.metric,
+                    z=policy_z_seq[:, :-1].reshape(-1, config.latent_dim),
+                    exact_covector=policy_exact_covector.reshape(-1, config.latent_dim),
+                    replay_valid=policy_valid,
+                    stiffness_scale=critic_on_policy_stiffness_target,
+                )
+                metrics["critic/on_policy/L_stiffness"] = float(
+                    L_critic_stiffness_on_policy.detach(),
+                )
+                metrics["critic/on_policy/exact_covector_norm_mean"] = critic_on_policy_stiffness_metrics[
+                    "critic/exact_covector_norm_mean"
+                ]
+                metrics["critic/on_policy/stiffness_target"] = critic_on_policy_stiffness_metrics[
+                    "critic/stiffness_target"
+                ]
+                metrics["critic/on_policy/stiffness_certified"] = critic_on_policy_stiffness_metrics[
+                    "critic/stiffness_certified"
+                ]
+                metrics["critic/on_policy/batch_size"] = float(critic_on_policy_batch)
+    else:
+        critic_exact_covector_norm_mean = float(
+            _metric_covector_norm_sq(world_model_mod.metric, z_prev_flat.detach(), exact_covector)
+            .sqrt()
+            .mean(),
+        )
+        metrics["critic/L_covector_align"] = 0.0
+        metrics["critic/covector_align_abs_err"] = 0.0
+        metrics["critic/covector_predicted_reward_mean"] = 0.0
+        metrics["critic/covector_target_reward_mean"] = 0.0
+        metrics["critic/displacement_norm_mean"] = 0.0
+        metrics["critic/stiffness_target_adaptive"] = float(config.critic_stiffness_min)
+        metrics["critic/L_stiffness"] = 0.0
+        metrics["critic/exact_covector_norm_mean"] = critic_exact_covector_norm_mean
+        metrics["critic/stiffness_target"] = float(config.critic_stiffness_min)
+        metrics["critic/stiffness_certified"] = (
+            1.0
+            if critic_exact_covector_norm_mean >= float(config.critic_stiffness_min)
+            else 0.0
+        )
+        metrics["critic/on_policy/L_covector_align"] = 0.0
+        metrics["critic/on_policy/L_stiffness"] = 0.0
+        metrics["critic/on_policy/covector_align_abs_err"] = 0.0
+        metrics["critic/on_policy/covector_predicted_reward_mean"] = 0.0
+        metrics["critic/on_policy/covector_target_reward_mean"] = 0.0
+        metrics["critic/on_policy/displacement_norm_mean"] = 0.0
+        metrics["critic/on_policy/stiffness_target_adaptive"] = float(config.critic_stiffness_min)
+        metrics["critic/on_policy/covector_horizon_used"] = 0.0
+        metrics["critic/on_policy/exact_covector_norm_mean"] = 0.0
+        metrics["critic/on_policy/stiffness_target"] = float(config.critic_stiffness_min)
+        metrics["critic/on_policy/stiffness_certified"] = 0.0
+        metrics["critic/on_policy/batch_size"] = 0.0
+    L_critic = (
+        poisson_weight * L_poisson
+        + config.w_critic * L_value
+        + config.w_critic_exact_increment * L_critic_exact_increment
+        + config.w_critic_covector_align * L_critic_covector_align
+        + config.w_critic_stiffness * L_critic_stiffness
+        + config.w_critic_on_policy_covector_align * L_critic_covector_align_on_policy
+        + config.w_critic_on_policy_stiffness * L_critic_stiffness_on_policy
+    )
     metrics["time/critic"] = time.perf_counter() - critic_t0
     metrics["critic/L_critic"] = float(L_critic)
     metrics["critic/L_value"] = float(L_value)
     metrics["critic/L_poisson"] = float(L_poisson)
+    metrics["critic/poisson_weight"] = float(poisson_weight)
+    metrics["critic/value_abs_err"] = float(value_abs_err.detach())
+    metrics["geometric/hodge_conservative_direct"] = float(hodge_conservative_ratio.detach())
+    metrics["geometric/hodge_solenoidal_direct"] = float(hodge_solenoidal_ratio.detach())
+    metrics["geometric/hodge_harmonic_direct"] = float(hodge_harmonic_ratio.detach())
+    metrics["geometric/hodge_conservative_exact"] = float(
+        rollout_force_diag["hodge_exact"]["conservative_ratio"].mean(),
+    )
+    metrics["geometric/hodge_solenoidal_exact"] = float(
+        rollout_force_diag["hodge_exact"]["solenoidal_ratio"].mean(),
+    )
+    metrics["geometric/hodge_harmonic_exact"] = float(
+        rollout_force_diag["hodge_exact"]["harmonic_ratio"].mean(),
+    )
 
     if shared_critic:
         (L_wm_core + L_critic).backward()
@@ -1906,23 +3478,32 @@ def _train_step(
         (_unwrap_compiled_module(reward_head), False),
         (_unwrap_compiled_module(critic), False),
         (action_model, False),
-        (closure_model, False),
         (actor, True),
     ]
     with _temporary_requires_grad(actor_modules):
+        actor_obs_z = zn_prev_flat.detach().clone().requires_grad_(True)
         actor_out = actor(
             K_prev_flat.detach(),
             K_code_prev_flat.detach(),
-            zn_prev_flat.detach(),
+            actor_obs_z,
             hard_routing=current_hard_routing,
             hard_routing_tau=current_tau,
         )
+        with torch.no_grad():
+            actor_old_out = actor_old(
+                K_prev_flat.detach(),
+                K_code_prev_flat.detach(),
+                zn_prev_flat.detach(),
+                hard_routing=current_hard_routing,
+                hard_routing_tau=current_tau,
+            )
         L_actor_chart = F.cross_entropy(
             actor_out["action_chart_logits"],
             action_K_prev_flat.detach().long(),
         )
+        sample_idx = torch.arange(actor_out["action_code_logits"].shape[0], device=actor_obs_z.device)
         selected_code_logits = actor_out["action_code_logits"][
-            torch.arange(actor_out["action_code_logits"].shape[0], device=z_0.device),
+            sample_idx,
             action_K_prev_flat.detach().long(),
         ]
         L_actor_code = F.cross_entropy(
@@ -1933,14 +3514,73 @@ def _train_step(
             actor_out["action_z_n"],
             action_zn_prev_flat.detach(),
         )
-        L_actor_supervise = L_actor_chart + L_actor_code + L_actor_zn
+        L_actor_supervise_raw = L_actor_chart + L_actor_code + L_actor_zn
+        (
+            _actor_metric_diag,
+            actor_metric_inv,
+            _actor_scale_certified,
+            actor_scale_trust,
+            actor_scale_barrier,
+            actor_metric_metrics,
+        ) = (
+            _actor_state_metric(
+                config,
+                metric=world_model_mod.metric,
+                state_z_geo=z_prev_flat.detach(),
+                actor_out=actor_out,
+                obs_z_n=actor_obs_z,
+                target_chart_idx=action_K_prev_flat.detach(),
+                target_code_idx=action_K_code_prev_flat.detach(),
+                exact_covector=exact_covector,
+            )
+        )
+        metrics.update(actor_metric_metrics)
+        L_actor_old_policy_geodesic = hyperbolic_distance(
+            actor_out["action_z_geo"],
+            actor_old_out["action_z_geo"].detach(),
+        ).mean()
+        actor_old_policy_geodesic_dist = hyperbolic_distance(
+            actor_out["action_z_geo"].detach(),
+            actor_old_out["action_z_geo"].detach(),
+        ).mean()
+        actor_old_policy_chart_kl, actor_old_policy_code_kl = _actor_old_policy_kl_losses(
+            actor_out,
+            actor_old_out,
+        )
+        L_actor_old_policy_chart_kl = (
+            config.w_actor_old_policy_chart_kl * actor_old_policy_chart_kl
+        )
+        L_actor_old_policy_code_kl = (
+            config.w_actor_old_policy_code_kl * actor_old_policy_code_kl
+        )
 
         actor_update_due = _should_run_actor_update(config, epoch=epoch, update_idx=update_idx)
         L_actor_return = actor_out["action_z_n"].new_zeros(())
+        L_actor_natural = actor_out["action_z_n"].new_zeros(())
+        L_actor_scale = actor_out["action_z_n"].new_zeros(())
+        L_actor_sync = actor_out["action_z_n"].new_zeros(())
+        L_actor_stiffness = actor_out["action_z_n"].new_zeros(())
         actor_return = actor_out["action_z_n"].new_zeros(())
+        actor_return_conservative = actor_out["action_z_n"].new_zeros(())
+        actor_return_nonconservative = actor_out["action_z_n"].new_zeros(())
+        actor_return_trust = actor_out["action_z_n"].new_zeros(())
+        actor_return_gate = actor_out["action_z_n"].new_zeros(())
+        actor_supervise_scale = actor_out["action_z_n"].new_ones(())
+        actor_natural_objective = actor_out["action_z_n"].new_zeros(())
+        actor_gauge_norm = actor_out["action_z_n"].new_zeros(())
+        actor_stiffness_trust = actor_out["action_z_n"].new_zeros(())
         actor_reward_mean = 0.0
         actor_action_canonical_norm_mean = 0.0
         actor_action_abs_mean = 0.0
+        actor_router_drift = 0.0
+        actor_policy_sync_mean = 0.0
+        actor_policy_chart_ce = 0.0
+        actor_policy_chart_acc = 0.0
+        actor_policy_force_rel_err = 0.0
+        actor_policy_hodge_cons_exact = 0.0
+        actor_policy_reward_noncons_gate = 0.0
+        actor_return_applied = False
+        actor_stiffness_certified = False
         actor_chart_acc = float(
             (actor_out["action_chart_idx"].detach() == action_K_prev_flat.detach()).float().mean()
         )
@@ -1948,31 +3588,116 @@ def _train_step(
             (actor_out["action_code_idx"].detach() == action_K_code_prev_flat.detach()).float().mean()
         )
         actor_batch_size = 0
+        metrics["actor/return_trust"] = 0.0
+        metrics["actor/return_trust_chart"] = 0.0
+        metrics["actor/return_trust_force"] = 0.0
+        metrics["actor/return_trust_sync"] = 0.0
+        metrics["actor/return_trust_conservative_exact"] = 0.0
         if actor_update_due:
             actor_batch_size = min(int(config.actor_return_batch_size), B)
             if actor_batch_size > 0:
                 if actor_batch_size < B:
-                    actor_idx = torch.randperm(B, device=z_0.device)[:actor_batch_size]
+                    actor_idx = torch.randperm(B, device=z_all.device)[:actor_batch_size]
                     z_actor = z_0[actor_idx]
                     rw_actor = rw_0[actor_idx]
                 else:
                     z_actor = z_0
                     rw_actor = rw_0
                 actor_rollout = _imagine_actor_return(
+                    config,
                     model,
                     _unwrap_compiled_module(world_model),
                     _unwrap_compiled_module(reward_head),
                     critic,
                     actor,
                     action_model,
-                    closure_model,
                     z_actor,
                     rw_actor,
                     horizon=config.actor_return_horizon,
                     gamma=config.gamma,
+                    hard_routing=current_hard_routing,
+                    hard_routing_tau=current_tau,
+                    reward_curl_batch_limit=config.reward_curl_batch_limit,
                 )
-                actor_return = actor_rollout["objective"].mean()
-                L_actor_return = -config.w_actor_return * actor_return
+                actor_return_conservative = actor_rollout["objective_conservative"].mean()
+                actor_return_nonconservative = actor_rollout["objective_nonconservative"].mean()
+                actor_router_drift = float(
+                    (
+                        actor_rollout["rw_traj"].detach() - actor_rollout["rw_states"].detach()
+                    ).abs().mean()
+                )
+                actor_policy_chart_acc = float(actor_rollout["policy_chart_acc"].detach().mean())
+                actor_policy_chart_ce = float(actor_rollout["policy_chart_ce"].detach().mean())
+                actor_policy_sync_mean = float(actor_rollout["policy_router_sync"].detach().mean())
+                actor_policy_force_rel_err = float(
+                    actor_rollout["policy_force_rel_err"].detach().mean(),
+                )
+                actor_policy_hodge_cons_exact = float(
+                    actor_rollout["policy_hodge_conservative_exact"].detach().mean(),
+                )
+                actor_policy_reward_noncons_gate = float(
+                    actor_rollout["policy_reward_nonconservative_gate"].detach().mean(),
+                )
+                actor_return_trust, trust_metrics = _actor_return_trust(
+                    config,
+                    chart_acc=actor_policy_chart_acc,
+                    force_rel_err=actor_policy_force_rel_err,
+                    policy_sync_err=actor_policy_sync_mean,
+                    hodge_conservative=actor_policy_hodge_cons_exact,
+                    template=actor_return_conservative,
+                )
+                metrics.update(trust_metrics)
+                nonconservative_weight = actor_return_trust.pow(
+                    config.actor_return_nonconservative_power,
+                )
+                actor_return = (
+                    actor_return_conservative
+                    + nonconservative_weight * actor_return_nonconservative
+                )
+                rollout_velocity = (
+                    actor_rollout["z_traj"].reshape(-1, config.latent_dim)
+                    - actor_rollout["z_states"].reshape(-1, config.latent_dim)
+                )
+                rollout_exact_covector = actor_rollout["exact_covector"].reshape(-1, config.latent_dim)
+                rollout_reward_form_cov = actor_rollout["reward_form_cov"].reshape(
+                    -1,
+                    config.latent_dim,
+                )
+                rollout_state_z = actor_rollout["z_states"].reshape(-1, config.latent_dim)
+                gauge_covector = rollout_exact_covector - nonconservative_weight * rollout_reward_form_cov
+                actor_natural_objective = -(
+                    (gauge_covector * rollout_velocity) * actor_metric_inv.unsqueeze(0)
+                ).sum(dim=-1).mean()
+                actor_gauge_norm = _metric_covector_norm_sq(
+                    world_model_mod.metric,
+                    rollout_state_z.detach(),
+                    gauge_covector,
+                ).sqrt().mean()
+                L_actor_sync = config.w_actor_wm_sync * actor_rollout["policy_sync_loss"].mean()
+                actor_stiffness_scale = max(float(config.actor_stiffness_min), 1e-8)
+                actor_stiffness_deficit = (
+                    (actor_stiffness_scale - actor_gauge_norm).clamp(min=0.0)
+                    / actor_stiffness_scale
+                )
+                actor_stiffness_trust = torch.exp(-actor_stiffness_deficit)
+                L_actor_stiffness = config.w_actor_stiffness * (
+                    actor_stiffness_deficit.pow(2)
+                )
+                L_actor_scale = config.w_actor_scale_barrier * actor_scale_barrier.pow(2)
+                actor_stiffness_certified = (
+                    float(actor_gauge_norm.detach()) >= actor_stiffness_scale
+                )
+                if float(actor_return_trust.detach()) >= config.actor_return_trust_min:
+                    actor_return_gate = (
+                        actor_return_trust * actor_scale_trust * actor_stiffness_trust
+                    ).clamp(0.0, 1.0)
+                    L_actor_return = (
+                        -config.w_actor_return * actor_return_gate * actor_return
+                    )
+                    L_actor_natural = (
+                        -config.w_actor_natural * actor_return_gate * actor_natural_objective
+                    )
+                    actor_return_applied = float(actor_return_gate.detach()) > 0.0
                 actor_reward_mean = float(actor_rollout["rewards"].detach().mean())
                 actor_action_canonical_norm_mean = float(
                     actor_rollout["action_canonicals"].detach().norm(dim=-1).mean()
@@ -1980,26 +3705,92 @@ def _train_step(
                 actor_action_abs_mean = float(actor_rollout["actions"].detach().abs().mean())
             else:
                 actor_update_due = False
-        L_actor_total = config.w_action_latent_supervise * L_actor_supervise + L_actor_return
+        actor_supervise_scale, actor_supervise_metrics = _actor_supervise_scale(
+            config,
+            epoch=epoch,
+            actor_return_gate=actor_return_gate,
+        )
+        metrics.update(actor_supervise_metrics)
+        L_actor_supervise = (
+            config.w_action_latent_supervise * actor_supervise_scale * L_actor_supervise_raw
+        )
+        L_actor_total = (
+            L_actor_supervise
+            + config.w_actor_geodesic * L_actor_old_policy_geodesic
+            + L_actor_old_policy_chart_kl
+            + L_actor_old_policy_code_kl
+            + L_actor_scale
+            + L_actor_sync
+            + L_actor_stiffness
+            + L_actor_natural
+            + L_actor_return
+        )
         L_actor_total.backward()
+    actor_params = _optimizer_parameters(optimizer_boundary)
+    actor_trust_region_scale, actor_param_norm, actor_step_norm, actor_max_step = (
+        _relative_trust_region_scale(
+            optimizer_boundary,
+            actor_params,
+            kappa=config.actor_trust_region_kappa,
+            epsilon_theta=config.actor_trust_region_eps,
+        )
+    )
     actor_grad = nn.utils.clip_grad_norm_(actor.parameters(), config.grad_clip)
     optimizer_boundary.step()
+    actor_old.load_state_dict(actor.state_dict())
     metrics["actor/L_total"] = float(L_actor_total.detach())
+    metrics["actor/L_supervise_raw"] = float(L_actor_supervise_raw.detach())
     metrics["actor/L_supervise"] = float(L_actor_supervise.detach())
+    metrics["actor/L_old_policy_geodesic"] = float(L_actor_old_policy_geodesic.detach())
+    metrics["actor/L_old_policy_chart_kl"] = float(L_actor_old_policy_chart_kl.detach())
+    metrics["actor/L_old_policy_code_kl"] = float(L_actor_old_policy_code_kl.detach())
+    metrics["actor/L_scale"] = float(L_actor_scale.detach())
+    metrics["actor/L_natural"] = float(L_actor_natural.detach())
+    metrics["actor/L_sync"] = float(L_actor_sync.detach())
+    metrics["actor/L_stiffness"] = float(L_actor_stiffness.detach())
     metrics["actor/L_chart"] = float(L_actor_chart.detach())
     metrics["actor/L_code"] = float(L_actor_code.detach())
     metrics["actor/L_zn"] = float(L_actor_zn.detach())
     metrics["actor/L_return"] = float(L_actor_return.detach())
     metrics["actor/return_mean"] = float(actor_return.detach())
+    metrics["actor/return_conservative_mean"] = float(actor_return_conservative.detach())
+    metrics["actor/return_nonconservative_mean"] = float(actor_return_nonconservative.detach())
+    metrics["actor/natural_objective_mean"] = float(actor_natural_objective.detach())
+    metrics["actor/gauge_covector_norm_mean"] = float(actor_gauge_norm.detach())
+    metrics["actor/old_policy_geodesic_mean"] = float(actor_old_policy_geodesic_dist.detach())
+    metrics["actor/old_policy_chart_kl"] = float(actor_old_policy_chart_kl.detach())
+    metrics["actor/old_policy_code_kl"] = float(actor_old_policy_code_kl.detach())
     metrics["actor/reward_mean"] = actor_reward_mean
     metrics["actor/action_canonical_norm_mean"] = actor_action_canonical_norm_mean
     metrics["actor/action_abs_mean"] = actor_action_abs_mean
     metrics["actor/chart_acc"] = actor_chart_acc
     metrics["actor/code_acc"] = actor_code_acc
+    metrics["actor/policy_chart_acc"] = actor_policy_chart_acc
+    metrics["actor/policy_chart_ce"] = actor_policy_chart_ce
+    metrics["actor/policy_router_sync_mean"] = actor_policy_sync_mean
+    metrics["actor/policy_force_rel_err_mean"] = actor_policy_force_rel_err
+    metrics["actor/policy_hodge_conservative_exact_mean"] = actor_policy_hodge_cons_exact
+    metrics["actor/policy_reward_nonconservative_gate_mean"] = actor_policy_reward_noncons_gate
     metrics["actor/grad_norm"] = float(actor_grad)
-    metrics["actor/update_applied"] = 1.0 if actor_update_due else 0.0
+    metrics["actor/trust_region_scale"] = actor_trust_region_scale
+    metrics["actor/param_norm"] = actor_param_norm
+    metrics["actor/step_norm"] = actor_step_norm
+    metrics["actor/max_step_norm"] = actor_max_step
+    metrics["actor/update_due"] = 1.0 if actor_update_due else 0.0
+    metrics["actor/update_applied"] = 1.0
+    metrics["actor/return_applied"] = 1.0 if actor_return_applied else 0.0
     metrics["actor/horizon"] = float(config.actor_return_horizon if actor_update_due else 0.0)
     metrics["actor/batch_size"] = float(actor_batch_size)
+    metrics["actor/router_drift"] = actor_router_drift
+    metrics["actor/return_trust_min"] = float(config.actor_return_trust_min)
+    metrics["actor/return_trust_used"] = float(actor_return_trust.detach())
+    metrics["actor/return_gate"] = float(actor_return_gate.detach())
+    metrics["actor/regime_bc_weight"] = float(
+        (config.w_action_latent_supervise * actor_supervise_scale).detach(),
+    )
+    metrics["actor/regime_rl_weight"] = float(actor_return_gate.detach())
+    metrics["actor/stiffness_trust"] = float(actor_stiffness_trust.detach())
+    metrics["actor/stiffness_certified"] = 1.0 if actor_stiffness_certified else 0.0
     metrics["time/actor"] = time.perf_counter() - t_section
 
     if compute_diagnostics:
@@ -2011,12 +3802,13 @@ def _train_step(
             critic,
             actor,
             action_model,
-            closure_model,
             z_0,
             rw_0,
             config.imagination_horizon,
             config.gamma,
             reward_curl_batch_limit=config.reward_curl_batch_limit,
+            hard_routing=current_hard_routing,
+            hard_routing_tau=current_tau,
         )
         imag_rw_states = imagination["rw_states"]
         imag_action_canonicals = imagination["action_canonicals"]
@@ -2062,7 +3854,7 @@ def _train_step(
         metrics["policy/action_latent_norm_mean"] = float(imag_action_latents.norm(dim=-1).mean())
         metrics["policy/action_router_entropy"] = float(imag_action_router_entropy.mean())
         metrics["imagination/reward_mean"] = float(imag_rewards.mean())
-        metrics["imagination/reward_std"] = float(imag_rewards.std())
+        metrics["imagination/reward_std"] = float(imag_rewards.std(unbiased=False))
         metrics["imagination/reward_conservative_mean"] = float(imag_reward_cons.mean())
         metrics["imagination/reward_nonconservative_mean"] = float(imag_reward_noncons.mean())
         if imag_reward_curl_valid.any():
@@ -2084,8 +3876,17 @@ def _train_step(
             -(imag_rw_states * imag_rw_states.clamp(min=1e-8).log()).sum(dim=-1).mean()
         )
         metrics["imagination/router_drift"] = float((imag_rw - imag_rw_states).abs().mean())
+        metrics["imagination/policy_chart_acc"] = float(imagination["policy_chart_acc"].mean())
+        metrics["imagination/policy_router_sync_mean"] = float(
+            imagination["policy_router_sync"].mean(),
+        )
+        metrics["imagination/policy_force_rel_err_mean"] = float(
+            imagination["policy_force_rel_err"].mean(),
+        )
+        metrics["imagination/hodge_conservative_exact_mean"] = float(
+            imagination["policy_hodge_conservative_exact"].mean(),
+        )
         metrics["critic/value_bias"] = float(_masked_mean(replay_gap, replay_valid))
-        metrics["critic/value_abs_err"] = float(_masked_mean(replay_gap.abs(), replay_valid))
         metrics["critic/value_mean"] = float(_masked_mean(replay_values_diag, replay_valid))
         metrics["critic/replay_bellman_abs"] = float(_masked_mean(replay_delta.abs(), replay_valid))
         bellman_centered = replay_delta - _masked_mean(replay_delta, replay_valid)
@@ -2102,13 +3903,6 @@ def _train_step(
         metrics["geometric/z_norm_max"] = float(z_all.norm(dim=-1).max())
         metrics["geometric/action_z_norm_mean"] = float(action_z_all.norm(dim=-1).mean())
         metrics["geometric/jump_frac"] = float(wm_out["jumped"].float().mean())
-        metrics["geometric/hodge_conservative"] = float(
-            wm_out["hodge_conservative_ratio"].mean()
-        )
-        metrics["geometric/hodge_solenoidal"] = float(
-            wm_out["hodge_solenoidal_ratio"].mean()
-        )
-        metrics["geometric/hodge_harmonic"] = float(wm_out["hodge_harmonic_ratio"].mean())
         metrics["geometric/energy_var"] = float(wm_out["energy_var"])
 
         obs_centers = _project_to_ball(model.encoder.chart_centers.detach())
@@ -2123,11 +3917,6 @@ def _train_step(
         )
         metrics["action_chart/actor_center_drift"] = float(
             (action_centers - _project_to_ball(actor.action_chart_centers.detach())).norm(dim=-1).mean()
-        )
-        metrics["chart/closure_obs_center_drift"] = float(
-            (obs_centers - _project_to_ball(closure_model.obs_chart_centers.detach()))
-            .norm(dim=-1)
-            .mean()
         )
         metrics["action_chart/reward_center_drift"] = float(
             (
@@ -2152,11 +3941,6 @@ def train(config: DreamerConfig) -> None:
     """Run Geometric Dreamer training."""
     device = torch.device(config.device)
     print(f"Device: {device}")
-    if config.use_motor_texture:
-        print(
-            "Ignoring deprecated use_motor_texture flag; "
-            "Dreamer replay and policy targets are deterministic.",
-        )
     if config.matmul_precision:
         torch.set_float32_matmul_precision(config.matmul_precision)
     if device.type == "cuda":
@@ -2164,6 +3948,14 @@ def train(config: DreamerConfig) -> None:
         torch.backends.cudnn.allow_tf32 = config.allow_tf32
     torch.manual_seed(config.seed)
     obs_normalizer: ObservationNormalizer | None = None
+
+    applied_preset, preset_changes = _apply_task_preset(config)
+    if applied_preset is not None and preset_changes:
+        change_items = ", ".join(
+            f"{name}={old}->{new}"
+            for name, (old, new) in sorted(preset_changes.items())
+        )
+        print(f"Applied task preset {applied_preset}: {change_items}")
 
     # --- MLflow ---
     mlflow_enabled = False
@@ -2190,9 +3982,13 @@ def train(config: DreamerConfig) -> None:
         )
     time_step = env.reset()
     actual_obs_dim = len(_flatten_obs(time_step))
+    actual_action_dim = _infer_action_dim(env)
     if actual_obs_dim != config.obs_dim:
         print(f"Overriding obs_dim: {config.obs_dim} -> {actual_obs_dim}")
         config.obs_dim = actual_obs_dim
+    if actual_action_dim != config.action_dim:
+        print(f"Overriding action_dim: {config.action_dim} -> {actual_action_dim}")
+        config.action_dim = actual_action_dim
 
     print(f"Environment: {config.domain}-{config.task}  "
           f"obs_dim={config.obs_dim}  action_dim={config.action_dim}")
@@ -2264,21 +4060,25 @@ def train(config: DreamerConfig) -> None:
         action_codes_per_chart=config.action_codes_per_chart,
         d_model=config.d_model,
     ).to(device)
-    closure_model = CovariantObsActionClosureModel(
-        latent_dim=config.latent_dim,
-        num_action_charts=config.num_action_charts,
-        num_obs_charts=config.num_charts,
-        obs_codes_per_chart=config.codes_per_chart,
-        action_codes_per_chart=config.action_codes_per_chart,
-        d_model=config.d_model,
-        metric=world_model.metric,
-    ).to(device)
+    actor_old = copy.deepcopy(actor).to(device)
+    actor_old.eval()
+    for param in actor_old.parameters():
+        param.requires_grad_(False)
     critic = world_model.potential_net
 
     reward_head = RewardHead(
         potential_net=world_model.potential_net,
         num_action_charts=config.num_action_charts,
         d_model=config.d_model,
+    ).to(device)
+    enclosure_probe = EnclosureProbe(
+        chart_dim=config.latent_dim,
+        action_dim=config.latent_dim,
+        ztex_dim=config.latent_dim,
+        num_charts=config.num_charts,
+        codes_per_chart=config.codes_per_chart,
+        hidden_dim=config.enclosure_hidden_dim,
+        alpha=config.enclosure_grl_alpha_max,
     ).to(device)
 
     world_model = _maybe_compile_module(
@@ -2304,8 +4104,8 @@ def train(config: DreamerConfig) -> None:
     print(f"Act dec:     {_count(action_model.decoder):,} params")
     print(f"Act jump:    {_count(action_jump_op):,} params")
     print(f"World model: {_count(world_model):,} params")
-    print(f"Closure:     {_count(closure_model):,} params")
     print(f"Actor:       {_count(actor):,} params")
+    print(f"Enclosure:   {_count(enclosure_probe):,} params")
     if shared_critic:
         print(f"Value field: shared in world model ({_count(critic):,} params)")
     else:
@@ -2328,12 +4128,6 @@ def train(config: DreamerConfig) -> None:
             lr_chart_centers_scale=config.lr_chart_centers_scale,
             lr_codebook_scale=config.lr_codebook_scale,
         ),
-    )
-    encoder_groups.append(
-        {
-            "params": list(closure_model.parameters()),
-            "lr": config.lr_dyn_transition,
-        },
     )
     optimizer_enc = torch.optim.Adam(encoder_groups)
 
@@ -2358,10 +4152,19 @@ def train(config: DreamerConfig) -> None:
         actor.parameters(),
         lr=config.lr_actor,
     )
+    optimizer_enclosure = torch.optim.Adam(
+        enclosure_probe.parameters(),
+        lr=config.lr_wm,
+    )
     scheduler_enc = _make_cosine_scheduler(optimizer_enc, config.total_epochs, config.lr_min)
     scheduler_wm = _make_cosine_scheduler(optimizer_wm, config.total_epochs, config.lr_min)
     scheduler_boundary = _make_cosine_scheduler(
         optimizer_boundary,
+        config.total_epochs,
+        config.lr_min,
+    )
+    scheduler_enclosure = _make_cosine_scheduler(
+        optimizer_enclosure,
         config.total_epochs,
         config.lr_min,
     )
@@ -2391,52 +4194,70 @@ def train(config: DreamerConfig) -> None:
     start_epoch = 0
     if config.load_checkpoint and os.path.exists(config.load_checkpoint):
         ckpt = torch.load(config.load_checkpoint, map_location=device, weights_only=False)
+        required_keys = [
+            "encoder",
+            "decoder",
+            "jump_op",
+            "action_model",
+            "action_jump_op",
+            "world_model",
+            "actor",
+            "actor_old",
+            "reward_head",
+            "enclosure_probe",
+            "optimizer_enc",
+            "optimizer_wm",
+            "optimizer_boundary",
+            "optimizer_enclosure",
+            "scheduler_enc",
+            "scheduler_wm",
+            "scheduler_boundary",
+            "scheduler_enclosure",
+        ]
+        if not shared_critic:
+            required_keys.extend(["critic", "optimizer_critic", "scheduler_critic"])
+        missing_keys = [key for key in required_keys if key not in ckpt]
+        if missing_keys:
+            missing = ", ".join(sorted(missing_keys))
+            msg = (
+                f"Checkpoint {config.load_checkpoint} is missing required keys: {missing}. "
+                "Dreamer checkpoint loading is strict and does not support legacy partial state."
+            )
+            raise KeyError(msg)
         if config.normalize_observations and ckpt.get("obs_normalizer") is not None:
             obs_normalizer = ObservationNormalizer.from_state_dict(
                 ckpt["obs_normalizer"],
                 device=device,
             )
-        if "encoder" in ckpt:
-            model.encoder.load_state_dict(ckpt["encoder"], strict=False)
-        if "decoder" in ckpt:
-            model.decoder.load_state_dict(ckpt["decoder"], strict=False)
-        if "jump_op" in ckpt:
-            jump_op.load_state_dict(ckpt["jump_op"], strict=False)
-        if "action_model" in ckpt:
-            action_model.load_state_dict(ckpt["action_model"], strict=False)
-        if "action_jump_op" in ckpt:
-            action_jump_op.load_state_dict(ckpt["action_jump_op"], strict=False)
-        if "closure_model" in ckpt:
-            closure_model.load_state_dict(ckpt["closure_model"], strict=False)
-        if "world_model" in ckpt:
-            _unwrap_compiled_module(world_model).load_state_dict(ckpt["world_model"], strict=False)
-        if "actor" in ckpt:
-            actor.load_state_dict(ckpt["actor"], strict=False)
-        if "critic" in ckpt and not shared_critic:
-            _unwrap_compiled_module(critic).load_state_dict(ckpt["critic"], strict=False)
-        if "reward_head" in ckpt:
-            _unwrap_compiled_module(reward_head).load_state_dict(
-                ckpt["reward_head"],
-                strict=False,
-            )
-        if "optimizer_enc" in ckpt:
-            optimizer_enc.load_state_dict(ckpt["optimizer_enc"])
-        if "optimizer_wm" in ckpt:
-            optimizer_wm.load_state_dict(ckpt["optimizer_wm"])
-        if "optimizer_boundary" in ckpt:
-            optimizer_boundary.load_state_dict(ckpt["optimizer_boundary"])
-        if optimizer_critic is not None and "optimizer_critic" in ckpt:
+        model.encoder.load_state_dict(ckpt["encoder"])
+        model.decoder.load_state_dict(ckpt["decoder"])
+        jump_op.load_state_dict(ckpt["jump_op"])
+        action_model.load_state_dict(ckpt["action_model"])
+        action_jump_op.load_state_dict(ckpt["action_jump_op"])
+        _unwrap_compiled_module(world_model).load_state_dict(ckpt["world_model"])
+        actor.load_state_dict(ckpt["actor"])
+        actor_old.load_state_dict(ckpt["actor_old"])
+        if not shared_critic:
+            _unwrap_compiled_module(critic).load_state_dict(ckpt["critic"])
+        _unwrap_compiled_module(reward_head).load_state_dict(ckpt["reward_head"])
+        enclosure_probe.load_state_dict(ckpt["enclosure_probe"])
+        optimizer_enc.load_state_dict(ckpt["optimizer_enc"])
+        optimizer_wm.load_state_dict(ckpt["optimizer_wm"])
+        optimizer_boundary.load_state_dict(ckpt["optimizer_boundary"])
+        optimizer_enclosure.load_state_dict(ckpt["optimizer_enclosure"])
+        if optimizer_critic is not None:
             optimizer_critic.load_state_dict(ckpt["optimizer_critic"])
-        if "scheduler_enc" in ckpt:
-            scheduler_enc.load_state_dict(ckpt["scheduler_enc"])
-        if "scheduler_wm" in ckpt:
-            scheduler_wm.load_state_dict(ckpt["scheduler_wm"])
-        if "scheduler_boundary" in ckpt:
-            scheduler_boundary.load_state_dict(ckpt["scheduler_boundary"])
-        if scheduler_critic is not None and "scheduler_critic" in ckpt:
+        scheduler_enc.load_state_dict(ckpt["scheduler_enc"])
+        scheduler_wm.load_state_dict(ckpt["scheduler_wm"])
+        scheduler_boundary.load_state_dict(ckpt["scheduler_boundary"])
+        scheduler_enclosure.load_state_dict(ckpt["scheduler_enclosure"])
+        if scheduler_critic is not None:
             scheduler_critic.load_state_dict(ckpt["scheduler_critic"])
         start_epoch = ckpt.get("epoch", 0)
         print(f"Loaded checkpoint from {config.load_checkpoint} (epoch {start_epoch})")
+    actor_old.eval()
+    for param in actor_old.parameters():
+        param.requires_grad_(False)
 
     if config.freeze_encoder:
         model.encoder.eval()
@@ -2455,7 +4276,7 @@ def train(config: DreamerConfig) -> None:
             p.requires_grad_(False)
         print("Observation and action topoencoders frozen.")
 
-    _sync_rl_atlas(model, action_model, world_model, critic, actor, closure_model, reward_head)
+        _sync_rl_atlas(model, action_model, world_model, critic, actor, reward_head, actor_old)
     print("Bound RL chart centers to encoder atlas.")
 
     # --- Replay buffer ---
@@ -2478,7 +4299,6 @@ def train(config: DreamerConfig) -> None:
                 collect_env,
                 None,
                 None,
-                None,
                 model,
                 device,
                 config.latent_dim,
@@ -2489,13 +4309,11 @@ def train(config: DreamerConfig) -> None:
                 max_steps=config.max_episode_steps,
                 hard_routing=config.hard_routing,
                 hard_routing_tau=config.hard_routing_tau,
-                use_motor_texture=False,
             )
         else:
             episodes = [
                 _collect_episode(
                     env,
-                    None,
                     None,
                     None,
                     model,
@@ -2507,7 +4325,6 @@ def train(config: DreamerConfig) -> None:
                     max_steps=config.max_episode_steps,
                     hard_routing=config.hard_routing,
                     hard_routing_tau=config.hard_routing_tau,
-                    use_motor_texture=False,
                 ),
             ]
         for ep in episodes:
@@ -2549,6 +4366,8 @@ def train(config: DreamerConfig) -> None:
     for epoch in range(start_epoch, config.total_epochs):
         t0 = time.perf_counter()
         collect_time = 0.0
+        current_hard_routing = _use_hard_routing(config, epoch)
+        current_tau = _get_hard_routing_tau(config, epoch, config.total_epochs)
 
         # --- Data collection ---
         if config.use_gas:
@@ -2557,11 +4376,13 @@ def train(config: DreamerConfig) -> None:
                 episodes, gas_info = _collect_gas_episodes(
                     actor,
                     action_model,
-                    closure_model,
                     model,
                     device,
                     config,
                     obs_normalizer=obs_normalizer,
+                    hard_routing=current_hard_routing,
+                    hard_routing_tau=current_tau,
+                    sigma_motor=config.sigma_motor,
                 )
                 for ep in episodes:
                     buffer.add_episode(ep)
@@ -2580,7 +4401,6 @@ def train(config: DreamerConfig) -> None:
                     collect_env,
                     actor,
                     action_model,
-                    closure_model,
                     model,
                     device,
                     config.latent_dim,
@@ -2589,9 +4409,9 @@ def train(config: DreamerConfig) -> None:
                     obs_normalizer=obs_normalizer,
                     action_repeat=config.action_repeat,
                     max_steps=config.max_episode_steps,
-                    hard_routing=config.hard_routing,
-                    hard_routing_tau=config.hard_routing_tau,
-                    use_motor_texture=False,
+                    hard_routing=current_hard_routing,
+                    hard_routing_tau=current_tau,
+                    sigma_motor=config.sigma_motor,
                 )
             else:
                 episodes = [
@@ -2599,7 +4419,6 @@ def train(config: DreamerConfig) -> None:
                         env,
                         actor,
                         action_model,
-                        closure_model,
                         model,
                         device,
                         config.latent_dim,
@@ -2607,9 +4426,9 @@ def train(config: DreamerConfig) -> None:
                         obs_normalizer=obs_normalizer,
                         action_repeat=config.action_repeat,
                         max_steps=config.max_episode_steps,
-                        hard_routing=config.hard_routing,
-                        hard_routing_tau=config.hard_routing_tau,
-                        use_motor_texture=False,
+                        hard_routing=current_hard_routing,
+                        hard_routing_tau=current_tau,
+                        sigma_motor=config.sigma_motor,
                     ),
                 ]
             for ep in episodes:
@@ -2625,7 +4444,6 @@ def train(config: DreamerConfig) -> None:
             jump_op.train()
             action_model.train()
             action_jump_op.train()
-        closure_model.train()
         world_model.train()
         actor.train()
         critic.train()
@@ -2637,8 +4455,6 @@ def train(config: DreamerConfig) -> None:
         else:
             n_updates = max(1, buffer.total_steps // tokens_per_batch)
 
-        current_hard_routing = _use_hard_routing(config, epoch)
-        current_tau = _get_hard_routing_tau(config, epoch, config.total_epochs)
         phase1_cfg = _phase1_config(config, phase1_state_obs)
         action_phase1_cfg = _phase1_config(
             config,
@@ -2667,15 +4483,17 @@ def train(config: DreamerConfig) -> None:
                 jump_op,
                 action_model,
                 action_jump_op,
-                closure_model,
                 world_model,
+                enclosure_probe,
                 reward_head,
                 critic,
                 actor,
+                actor_old,
                 optimizer_enc,
                 optimizer_wm,
                 optimizer_critic,
                 optimizer_boundary,
+                optimizer_enclosure,
                 batch,
                 config,
                 phase1_cfg,
@@ -2786,7 +4604,8 @@ def train(config: DreamerConfig) -> None:
                 ("a_recon", "enc_action/recon"),
                 ("a_vq", "enc_action/vq"),
                 ("cl_obs", "closure/L_obs_state"),
-                ("cl_act", "closure/L_action_state"),
+                ("cl_z", "closure/L_obs_zeno"),
+                ("cl_en", "closure/L_enclosure"),
                 ("code_H", "enc/H_code_usage"),
                 ("act_H", "action_chart/usage_entropy"),
                 ("enc_gn", "enc/grad_norm"),
@@ -2806,13 +4625,12 @@ def train(config: DreamerConfig) -> None:
                 ("z_norm", "geometric/z_norm_mean"),
                 ("az_norm", "geometric/action_z_norm_mean"),
                 ("jump", "geometric/jump_frac"),
-                ("cons", "geometric/hodge_conservative"),
-                ("sol", "geometric/hodge_solenoidal"),
+                ("cons", "geometric/hodge_conservative_exact"),
+                ("sol", "geometric/hodge_solenoidal_exact"),
                 ("e_var", "geometric/energy_var"),
                 ("ch_ent", "chart/usage_entropy"),
                 ("ach_ent", "action_chart/usage_entropy"),
                 ("wm_ctr", "chart/wm_center_drift"),
-                ("cl_ctr", "chart/closure_obs_center_drift"),
                 ("a_ctr", "action_chart/actor_center_drift"),
             ]
             line5_keys = [
@@ -2821,8 +4639,8 @@ def train(config: DreamerConfig) -> None:
                 ("term", "imagination/terminal_value_mean"),
                 ("exbd", "imagination/exact_boundary_mean"),
                 ("chart_acc", "wm/chart_acc"),
-                ("rw_drift", "imagination/router_drift"),
-                ("v_err", "critic/value_abs_err"),
+                ("rw_sync", "imagination/policy_router_sync_mean"),
+                ("f_err", "imagination/policy_force_rel_err_mean"),
                 ("a_can", "policy/action_canonical_norm_mean"),
             ]
             line6_keys = [
@@ -2835,14 +4653,28 @@ def train(config: DreamerConfig) -> None:
                 ("diag_t", "time/diagnostics"),
             ]
             line7_keys = [
-                ("wm_ctr", "chart/wm_center_drift"),
+                ("rfrac", "wm/reward_nonconservative_frac_masked"),
                 ("bell", "critic/replay_bellman_abs"),
                 ("bell_s", "critic/replay_bellman_std"),
                 ("rtg_e", "critic/replay_rtg_abs_err"),
                 ("cal_e", "critic/replay_calibration_err"),
-                ("a_can", "actor/action_canonical_norm_mean"),
+                ("trust", "actor/return_trust_used"),
+                ("sync", "actor/L_sync"),
                 ("a_sup", "actor/L_supervise"),
-                ("upd", "actor/update_applied"),
+                ("a_bc", "actor/supervise_scale"),
+                ("a_rl", "actor/return_gate"),
+                ("a_opg", "actor/L_old_policy_geodesic"),
+                ("ret_upd", "actor/return_applied"),
+            ]
+            line8_keys = [
+                ("c_cov", "critic/exact_covector_norm_mean"),
+                ("c_stf", "critic/stiffness_certified"),
+                ("a_al", "actor/state_alpha"),
+                ("a_be", "actor/state_beta_pi"),
+                ("a_br", "actor/state_beta_pi_raw"),
+                ("a_sc", "actor/state_scale_trust"),
+                ("a_stf", "actor/stiffness_trust"),
+                ("a_gau", "actor/gauge_covector_norm_mean"),
             ]
 
             def _fmt(pairs):
@@ -2858,6 +4690,7 @@ def train(config: DreamerConfig) -> None:
             print(f"  {'':4s}  {_fmt(line5_keys)}")
             print(f"  {'':4s}  {_fmt(line6_keys)}")
             print(f"  {'':4s}  {_fmt(line7_keys)}")
+            print(f"  {'':4s}  {_fmt(line8_keys)}")
 
             # Per-chart usage line
             usage_parts = []
@@ -2927,22 +4760,20 @@ def train(config: DreamerConfig) -> None:
         if epoch % config.eval_every == 0 and epoch > 0:
             model.encoder.eval()
             action_model.eval()
-            closure_model.eval()
             actor.eval()
             critic.eval()
             eval_metrics = _eval_policy(
                 env,
                 actor,
                 action_model,
-                closure_model,
                 model,
                 device,
                 obs_normalizer=obs_normalizer,
                 action_repeat=config.action_repeat,
                 num_episodes=config.eval_episodes,
                 max_steps=config.max_episode_steps,
-                hard_routing=config.hard_routing,
-                hard_routing_tau=config.hard_routing_tau,
+                hard_routing=current_hard_routing,
+                hard_routing_tau=current_tau,
             )
             print(f"  EVAL  reward={eval_metrics['eval/reward_mean']:.1f} "
                   f"+/- {eval_metrics['eval/reward_std']:.1f}  "
@@ -2960,19 +4791,22 @@ def train(config: DreamerConfig) -> None:
                     jump_op,
                     action_model,
                     action_jump_op,
-                    closure_model,
                     world_model,
                     actor,
+                    actor_old,
                     critic,
                     reward_head,
+                    enclosure_probe,
                     optimizer_enc,
                     optimizer_wm,
                     optimizer_boundary,
                     optimizer_critic,
+                    optimizer_enclosure,
                     scheduler_enc,
                     scheduler_wm,
                     scheduler_boundary,
                     scheduler_critic,
+                    scheduler_enclosure,
                     epoch, config, eval_metrics, obs_normalizer=obs_normalizer,
                 )
                 print(f"  New best: {best_eval_reward:.1f}")
@@ -2985,19 +4819,22 @@ def train(config: DreamerConfig) -> None:
                 jump_op,
                 action_model,
                 action_jump_op,
-                closure_model,
                 world_model,
                 actor,
+                actor_old,
                 critic,
                 reward_head,
+                enclosure_probe,
                 optimizer_enc,
                 optimizer_wm,
                 optimizer_boundary,
                 optimizer_critic,
+                optimizer_enclosure,
                 scheduler_enc,
                 scheduler_wm,
                 scheduler_boundary,
                 scheduler_critic,
+                scheduler_enclosure,
                 epoch, config, metrics, obs_normalizer=obs_normalizer,
             )
 
@@ -3005,6 +4842,7 @@ def train(config: DreamerConfig) -> None:
             scheduler_enc.step()
         scheduler_wm.step()
         scheduler_boundary.step()
+        scheduler_enclosure.step()
         if scheduler_critic is not None:
             scheduler_critic.step()
 
@@ -3027,19 +4865,22 @@ def _save_checkpoint(
     jump_op: nn.Module,
     action_model: nn.Module,
     action_jump_op: nn.Module,
-    closure_model: nn.Module,
     world_model: nn.Module,
     actor: nn.Module,
+    actor_old: nn.Module,
     critic: nn.Module,
     reward_head: nn.Module,
+    enclosure_probe: nn.Module,
     optimizer_enc: torch.optim.Optimizer,
     optimizer_wm: torch.optim.Optimizer,
     optimizer_boundary: torch.optim.Optimizer,
     optimizer_critic: torch.optim.Optimizer | None,
+    optimizer_enclosure: torch.optim.Optimizer,
     scheduler_enc: torch.optim.lr_scheduler.LRScheduler,
     scheduler_wm: torch.optim.lr_scheduler.LRScheduler,
     scheduler_boundary: torch.optim.lr_scheduler.LRScheduler,
     scheduler_critic: torch.optim.lr_scheduler.LRScheduler | None,
+    scheduler_enclosure: torch.optim.lr_scheduler.LRScheduler,
     epoch: int,
     config: DreamerConfig,
     metrics: dict | None = None,
@@ -3058,14 +4899,14 @@ def _save_checkpoint(
         "action_jump_op": {
             k: v.cpu() for k, v in _unwrap_compiled_module(action_jump_op).state_dict().items()
         },
-        "closure_model": {
-            k: v.cpu() for k, v in _unwrap_compiled_module(closure_model).state_dict().items()
-        },
         "world_model": {
             k: v.cpu() for k, v in _unwrap_compiled_module(world_model).state_dict().items()
         },
         "actor": {
             k: v.cpu() for k, v in _unwrap_compiled_module(actor).state_dict().items()
+        },
+        "actor_old": {
+            k: v.cpu() for k, v in _unwrap_compiled_module(actor_old).state_dict().items()
         },
         "critic": {
             k: v.cpu() for k, v in _unwrap_compiled_module(critic).state_dict().items()
@@ -3073,12 +4914,17 @@ def _save_checkpoint(
         "reward_head": {
             k: v.cpu() for k, v in _unwrap_compiled_module(reward_head).state_dict().items()
         },
+        "enclosure_probe": {
+            k: v.cpu() for k, v in _unwrap_compiled_module(enclosure_probe).state_dict().items()
+        },
         "optimizer_enc": optimizer_enc.state_dict(),
         "optimizer_wm": optimizer_wm.state_dict(),
         "optimizer_boundary": optimizer_boundary.state_dict(),
+        "optimizer_enclosure": optimizer_enclosure.state_dict(),
         "scheduler_enc": scheduler_enc.state_dict(),
         "scheduler_wm": scheduler_wm.state_dict(),
         "scheduler_boundary": scheduler_boundary.state_dict(),
+        "scheduler_enclosure": scheduler_enclosure.state_dict(),
         "metrics": metrics or {},
         "obs_normalizer": None if obs_normalizer is None else obs_normalizer.state_dict(),
     }

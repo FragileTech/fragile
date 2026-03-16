@@ -224,6 +224,76 @@ class CovariantPotentialNet(nn.Module):
         v_feat, _ = self._value_features(z, rw)
         return self.v_out(v_feat)
 
+    def force_terms(
+        self,
+        z: torch.Tensor,
+        rw: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        """Return the direct-force decomposition used by BAOAB."""
+        U, dU_dz = self._analytic_U_and_grad(z)
+        v_feat, psi_feat = self._value_features(z, rw)
+        task_force_raw = self.v_force_out(v_feat)
+        task_value = self.v_out(v_feat)
+        risk_force_raw = self.psi_force_out(psi_feat)
+        risk_value = self.psi_out(psi_feat)
+        analytic_force = self.alpha * dU_dz
+        task_force = (1.0 - self.alpha) * task_force_raw
+        risk_force = self.gamma_risk * risk_force_raw
+        return {
+            "analytic_potential": U,
+            "analytic_force": analytic_force,
+            "task_value": task_value,
+            "task_force_raw": task_force_raw,
+            "task_force": task_force,
+            "risk_value": risk_value,
+            "risk_force_raw": risk_force_raw,
+            "risk_force": risk_force,
+            "force": analytic_force + task_force + risk_force,
+            "phi": self.alpha * U + (1.0 - self.alpha) * task_value + self.gamma_risk * risk_value,
+        }
+
+    def exact_force_terms(
+        self,
+        z: torch.Tensor,
+        rw: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        """Return the exact scalar-gradient conservative field for certification."""
+        z_req = z.detach().requires_grad_(True)
+        rw_detached = rw.detach()
+        U, dU_dz = self._analytic_U_and_grad(z_req)
+        v_feat, psi_feat = self._value_features(z_req, rw_detached)
+        task_value = self.v_out(v_feat)
+        risk_value = self.psi_out(psi_feat)
+        task_force_raw = torch.autograd.grad(
+            task_value.sum(),
+            z_req,
+            retain_graph=True,
+            create_graph=False,
+        )[0]
+        risk_force_raw = torch.autograd.grad(
+            risk_value.sum(),
+            z_req,
+            retain_graph=False,
+            create_graph=False,
+        )[0]
+        analytic_force = self.alpha * dU_dz
+        task_force = (1.0 - self.alpha) * task_force_raw
+        risk_force = self.gamma_risk * risk_force_raw
+        return {
+            "analytic_potential": U.detach(),
+            "analytic_force": analytic_force.detach(),
+            "task_value": task_value.detach(),
+            "task_force_raw": task_force_raw.detach(),
+            "task_force": task_force.detach(),
+            "risk_value": risk_value.detach(),
+            "risk_force_raw": risk_force_raw.detach(),
+            "risk_force": risk_force.detach(),
+            "force": (analytic_force + task_force + risk_force).detach(),
+            "phi": (
+                self.alpha * U + (1.0 - self.alpha) * task_value + self.gamma_risk * risk_value
+            ).detach(),
+        }
+
     def effective_potential(self, z: torch.Tensor, rw: torch.Tensor) -> torch.Tensor:
         """Effective structural potential used for energy diagnostics.
 
@@ -262,22 +332,8 @@ class CovariantPotentialNet(nn.Module):
             force: [B, D] conservative force (cotangent vector).
             phi: [B, 1] scalar effective potential.
         """
-        U, dU_dz = self._analytic_U_and_grad(z)
-
-        v_feat, psi_feat = self._value_features(z, rw)
-        f_critic = self.v_force_out(v_feat)  # [B, D]
-        V = self.v_out(v_feat)  # [B, 1]
-        f_risk = self.psi_force_out(psi_feat)  # [B, D]
-        Psi = self.psi_out(psi_feat)  # [B, 1]
-
-        force = (
-            self.alpha * dU_dz
-            + (1.0 - self.alpha) * f_critic
-            + self.gamma_risk * f_risk
-        )
-        phi = self.alpha * U + (1.0 - self.alpha) * V + self.gamma_risk * Psi
-
-        return force, phi
+        force_info = self.force_terms(z, rw)
+        return force_info["force"], force_info["phi"]
 
 
 class CovariantControlField(nn.Module):

@@ -189,11 +189,14 @@ def test_imagination_reward_curl_batch_limit_preserves_batch_shape(z, rw, monkey
 
         def _rollout_transition(self, z_in, p_in, action_canonical, rw_in, track_energy=False):
             del action_canonical, track_energy
+            chart_logits = torch.zeros(z_in.shape[0], K, device=z_in.device, dtype=z_in.dtype)
+            chart_logits[:, 0] = 1.0
             return {
                 "z": z_in + 0.05,
                 "p": p_in,
                 "rw": rw_in,
                 "phi_eff": torch.ones(z_in.shape[0], 1, device=z_in.device, dtype=z_in.dtype),
+                "chart_logits": chart_logits,
             }
 
     class DummyRewardHead:
@@ -241,15 +244,18 @@ def test_imagination_reward_curl_batch_limit_preserves_batch_shape(z, rw, monkey
             return torch.ones(batch, z_in.shape[-1], z_in.shape[-1], device=z_in.device)
 
     def fake_symbolize_latent_with_atlas(_model, z_in: torch.Tensor, **_kwargs):
+        router = torch.zeros(z_in.shape[0], K, device=z_in.device, dtype=z_in.dtype)
+        router[:, 0] = 1.0
         return {
             "z_geo": z_in,
             "z_n": torch.zeros_like(z_in),
+            "router_weights": router,
             "chart_idx": torch.zeros(z_in.shape[0], dtype=torch.long, device=z_in.device),
             "code_idx": torch.zeros(z_in.shape[0], dtype=torch.long, device=z_in.device),
             "z_q": torch.zeros_like(z_in),
         }
 
-    def fake_policy_action(_actor, _action_model, _closure_model, obs_info, **_kwargs):
+    def fake_policy_action(_actor, _action_model, obs_info, **_kwargs):
         z_in = obs_info["z_geo"]
         return {
             "action_canonical": torch.ones_like(z_in),
@@ -294,7 +300,6 @@ def test_imagination_reward_curl_batch_limit_preserves_batch_shape(z, rw, monkey
         object(),
         DummyWorldModel(),
         DummyRewardHead(),
-        object(),
         object(),
         object(),
         object(),

@@ -8,7 +8,10 @@
 - `GeometricActor` maps the observation-side symbolic state to an action-side symbolic state, and the canonical motor variable is the resulting action-manifold latent `action_z_geo`.
 - The environment action is produced by decoding that canonical action latent with `action_model.decoder(...)`.
 - The world model, reward head, replay buffer, and imagination rollout are all conditioned on the canonical action latent.
-- The critic is shared with `world_model.potential_net`, but it is not the direct controller. It provides value anchoring, conservative reward decomposition, and diagnostics.
+- The critic is shared with `world_model.potential_net`, but it is not the direct controller. It provides value anchoring, exact-field certification, conservative reward decomposition, and diagnostics.
+- The residual reward sector is trained conservatively: it is budgeted, norm-penalized, orthogonalized against the exact field, and gated until the exact conservative field is non-flat and force-consistent.
+- RL closure in `train_dreamer.py` is no longer a separate closure model. It is measured from the observation Markov model plus an `EnclosureProbe` adversary that tests texture leakage.
+- Actor improvement is trust-gated and conservative-first, with replay-action supervision used only as a bootstrap term and an old-policy hyperbolic anchor providing the persistent trust region.
 - Auxiliary boundary-control modules remain in the repo for explicit control-field experiments, while `train_dreamer.py` is organized around the canonical action latent.
 
 ## Roadmap
@@ -49,7 +52,10 @@ This gives the code a clean ontology. The observation manifold tells you where y
 - action generation is handled by `action_model.decoder(...)`;
 - replay stores action-manifold traces directly;
 - the critic is shared with `world_model.potential_net`;
-- actor-style improvement happens through imagined discounted reward over the canonical action latent, not through a separate stochastic MaxEnt objective.
+- actor-style improvement happens through trust-gated imagined discounted reward over the canonical action latent, with conservative-first weighting of the residual sector;
+- replay-action supervision is scheduled as a bootstrap term and hands off to RL updates once the return gate opens;
+- old-policy trust is enforced with hyperbolic geodesic and discrete KL penalties, not by permanently cloning replay actions;
+- RL closure/no-leak diagnostics are computed with the observation world model plus an `EnclosureProbe`, not with a separate closure dynamics model.
 
 Auxiliary boundary-control modules (`GeometricActionEncoder`, `GeometricActionBoundaryDecoder`, critic-gradient control helpers) remain in the package for explicit control-field experiments. The path documented in this chapter is the canonical-action-latent path in `train_dreamer.py`.
 :::
@@ -107,7 +113,7 @@ flowchart LR
 | `SharedDynTopoEncoder` | `src/fragile/learning/vla/shared_dyn/encoder.py` | actions | `z_geo`, `rw`, `K_chart`, `K_code`, nuisance/texture internals | action-manifold representation and replay supervision |
 | `GeometricActor` | `src/fragile/learning/rl/actor.py` | observation-side `(K, z_n)` | action-side `(K^{act}, z_n^{act}, z_geo^{act})` | policy over the action manifold |
 | `GeometricWorldModel` | `src/fragile/learning/vla/covariant_world_model.py` | `z_0`, canonical action latents, `rw_0` | latent rollout, chart logits, momenta, `phi_eff`, Hodge diagnostics | controlled geometric imagination |
-| `RewardHead` | `src/fragile/learning/rl/reward_head.py` | `z`, action-manifold latent, action routing/code state, `rw` | conservative reward, non-conservative reward, total reward | reward modeling and decomposition |
+| `RewardHead` | `src/fragile/learning/rl/reward_head.py` | `z`, action-manifold latent, action routing/code state, `rw` | residual reward form, residual scalar reward, reward density, curl diagnostics | reward modeling and decomposition |
 | `SequenceReplayBuffer` | `src/fragile/learning/rl/replay_buffer.py` | full episodes | contiguous training subsequences | replay with action-manifold traces |
 | `GeometricActionEncoder` | `src/fragile/learning/rl/boundary.py` | `z`, replay action, `rw` | explicit-control boundary variables | available for control-field experiments |
 | `GeometricActionBoundaryDecoder` | `src/fragile/learning/rl/boundary.py` | `z`, explicit latent control, `rw` | deterministic action mean, execution action, motor texture stats | available for control-field experiments |
@@ -166,10 +172,10 @@ $$
 
 Operationally:
 
-- `reward_conservative` is computed from the critic value difference;
-- `reward_form_cov` is a learned residual one-form-like object on the joint state-action latent;
-- `reward_nonconservative` is the contraction of that object with the canonical action latent;
-- `reward_curl` is an antisymmetric diagnostic tensor used to monitor circulation.
+- the shared value field provides the exact conservative scalar signal used for replay targets and imagined conservative return;
+- `RewardHead` predicts `reward_density`, `reward_form_cov`, `reward_nonconservative`, and `reward_curl`;
+- `reward_nonconservative` is the contraction of the residual one-form with the canonical action latent;
+- the trainer constructs the conservative replay target as `rewards - gated_residual`, so the residual sector is treated as leftover structure rather than as equal-capacity free fit.
 
 The losses are
 
@@ -182,19 +188,29 @@ $$
 \mathcal{L}_{\mathrm{noncons}}
 =
 \frac{1}{BT}\sum_{b,t}
-\bigl(\hat r_{\mathrm{noncons},b,t} - (r_{b,t} - \hat r_{\mathrm{cons},b,t})\bigr)^2.
+\bigl(\hat r_{\mathrm{noncons},b,t} - g_t (r_{b,t} - \hat r_{\mathrm{cons},b,t})\bigr)^2,
 $$
 
-So the residual head is trained to explain the part of reward left over after the conservative critic contribution, not simply to vanish.
+with a scalar gate $g_t \in [0,1]$ that depends on exact-field stiffness and exact-vs-direct force consistency. In addition, the trainer uses
+
+$$
+\mathcal{L}_{\mathrm{cons\text{-}match}}
+=
+\frac{1}{BT}\sum_{b,t}
+\bigl(\hat r_{\mathrm{cons},b,t} - (r_{b,t} - g_t \hat r_{\mathrm{noncons},b,t})\bigr)^2,
+$$
+
+plus residual norm, residual budget, and exact-orthogonality penalties. So the residual head is trained to explain only the part of reward that the exact sector fails to explain *and* only once the exact sector is certified as usable.
 
 :::{admonition} Implementation Note: Joint State-Action Reward Geometry
 :class: feynman-added note
 The reward split used here is
 
-- a conservative component anchored by the critic value difference,
+- a conservative component anchored by the shared scalar value field,
 - a residual one-form-like component on joint state-action latent geometry,
 - a contraction of that residual component with the canonical action latent,
-- diagnostic curl statistics that quantify circulation in the residual sector.
+- diagnostic curl statistics that quantify circulation in the residual sector,
+- an on-policy residual gate that suppresses the non-conservative sector until the exact field is stiff enough and the direct conservative force matches the exact scalar-gradient field.
 
 This keeps the theory centered on one motor variable: the canonical action latent carried by the action manifold.
 :::
@@ -295,24 +311,63 @@ with replay return-to-go targets, and
 $$
 \mathcal{L}_{\mathrm{Poisson}}
 =
-\text{screened Poisson consistency loss}
+\text{screened Poisson consistency loss},
 $$
 
-using the conservative reward density estimate from the reward head.
+using the conservative reward density estimate from the reward head, together with
+
+$$
+\mathcal{L}_{\mathrm{exact\text{-}increment}}
+=
+\operatorname{MSE}\!\bigl(
+\hat r_{\mathrm{cons},t},
+r^{\mathrm{cons,target}}_t
+\bigr),
+$$
+
+$$
+\mathcal{L}_{\mathrm{covector}}
+=
+\operatorname{MSE}\!\bigl(
+\text{discounted local exact increment from } dV,
+r^{\mathrm{cons,target}}_t
+\bigr),
+$$
+
+and an adaptive stiffness penalty that keeps the exact covector from collapsing to the zero field on small-reward tasks.
 
 The critic objective is therefore
 
 $$
 \mathcal{L}_{\mathrm{critic}}
 =
-w_{\mathrm{screened\_poisson}}\,
+w_{\mathrm{screened\_poisson}}(t)\,
 \mathcal{L}_{\mathrm{Poisson}}
 +
 w_{\mathrm{critic}}\,
-\mathcal{L}_{\mathrm{value}}.
+\mathcal{L}_{\mathrm{value}}
++
+w_{\mathrm{critic\_exact\_increment}}\,
+\mathcal{L}_{\mathrm{exact\text{-}increment}}
++
+w_{\mathrm{critic\_covector\_align}}\,
+\mathcal{L}_{\mathrm{covector}}
++
+w_{\mathrm{critic\_stiffness}}\,
+\mathcal{L}_{\mathrm{stiffness}}.
 $$
 
-This keeps the critic replay-anchored and PDE-regularized throughout RL training.
+Here `w_screened_poisson(t)` is linearly warmed up, so the PDE term shapes an already nontrivial value field instead of dominating an almost-flat field from the start.
+
+:::{admonition} Implementation Note: Exact vs Direct Conservative Fields
+:class: feynman-added note
+The trainer now distinguishes two conservative objects:
+
+- an **exact** conservative field obtained from the scalar heads inside `world_model.potential_net`;
+- a **direct** conservative field used by the fast dynamics rollout.
+
+Force-consistency losses distill the exact field into the direct field, and diagnostics log exact and direct Hodge ratios separately. The trust gate and conservative certification use the exact field, not the raw direct-force surrogate.
+:::
 
 
 (sec-imagination-training)=
@@ -354,17 +409,48 @@ The periodic actor-style improvement step differentiates discounted imagined rew
 - the reward head,
 - the differentiable world model rollout.
 
-The objective is:
+The imagined-return step is conservative-first. The rollout logs separate discounted exact-sector and residual-sector returns, and the residual contribution is weighted by a trust-derived power law:
+
+$$
+\hat J_{\mathrm{actor}}
+=
+\hat J_{\mathrm{cons}}
++
+\tau_{\mathrm{return}}^{\,p}\,
+\hat J_{\mathrm{noncons}},
+$$
+
+and the return term in the loss is
 
 $$
 \mathcal{L}_{\mathrm{actor\text{-}return}}
 =
-- w_{\mathrm{actor\_return}}
-\cdot
-\mathbb{E}\Big[\sum_{t=0}^{H-1}\gamma^t \hat r_t\Big].
+- w_{\mathrm{actor\_return}}\,
+g_{\mathrm{actor}}\,
+\hat J_{\mathrm{actor}},
 $$
 
-This update is applied only periodically, according to the configured warmup and update frequency.
+where the gate $g_{\mathrm{actor}}$ combines:
+
+- chart-prediction accuracy under the current policy rollout,
+- exact-vs-direct force consistency,
+- world-model / policy routing synchronization,
+- exact Hodge conservative ratio,
+- actor-scale trust and actor-stiffness trust.
+
+This update is applied only periodically, according to the configured warmup and update frequency, and only if the trust gate is nonzero.
+
+### Actor Trust Region and Bootstrap Schedule
+
+The actor loss is not just replay cloning plus return. The current implementation combines:
+
+- a replay-action supervision term whose scale decays after warmup and is further suppressed by the return gate;
+- a persistent old-policy hyperbolic anchor `d_H(\pi_\theta, \pi_{\theta_{\mathrm{old}}})`;
+- old-policy KL penalties on chart and code logits;
+- a gauge-covariant natural objective built from the exact covector and gated residual reward form;
+- scale-barrier, world-model sync, and stiffness penalties.
+
+So replay supervision is now a bootstrap scaffold, not the permanent trust region. The persistent trust region is the old-policy anchor in action-manifold geometry.
 
 ### Return Diagnostics
 
@@ -395,14 +481,16 @@ This bookkeeping pays for itself during training. Replay batches supervise the a
 
 ### Observation Path
 
-For dm_control tasks, observations are flattened to a single vector and then passed through the encoder's built-in feature extractor and atlas pipeline. The current training script adjusts `obs_dim` at runtime to match the selected task if needed.
+For dm_control tasks, observations are flattened to a single vector and then passed through the encoder's built-in feature extractor and atlas pipeline. The current training script adjusts both `obs_dim` and `action_dim` at runtime to match the selected task if needed. `DMControlEnv` wraps `dm_control.suite.load(domain, task)` behind a `domain-task` string interface, flattens the observation dict, and exposes a gym-like action-space adapter.
+
+The trainer also supports environment-specific presets through `task_preset`. At the moment, `task_preset=auto` recognizes `cartpole-swingup` and applies a smaller exact-heavy configuration while still respecting explicit user overrides.
 
 ### Rollout Modes
 
 The code supports three collection modes:
 
 - seed-episode collection with random actions;
-- online policy rollouts in dm_control;
+- online policy rollouts in dm_control, with deterministic decoded `action_means` plus execution noise at collection time;
 - Fractal Gas collection with policy-guided walkers.
 
 ### Replay Contents
@@ -437,10 +525,10 @@ One update is best read as a joint four-stage loop:
 :::{div} feynman-added
 | Substep | What Updates | Main Signals |
 |---------|--------------|--------------|
-| Encoder + closure | observation topoencoder, action topoencoder, closure model | reconstruction, routing, quantization, symbolic closure, Zeno |
+| Encoder + closure | observation topoencoder, action topoencoder, `EnclosureProbe` | reconstruction, routing, quantization, symbolic closure, Zeno, no-leak |
 | Atlas sync | shared atlas state across modules | chart centers, codebooks, actor/action bindings |
-| World model + reward + critic | world model, reward head, shared value field | geodesic dynamics, chart prediction, reward fit, energy, Hodge, replay return anchoring, screened Poisson consistency |
-| Actor | `GeometricActor` | action-state supervision, periodic imagined discounted reward |
+| World model + reward + critic | world model, reward head, shared value field | geodesic dynamics, chart prediction, conservative-first reward fit, exact/direct force consistency, energy, Hodge, replay return anchoring, screened Poisson consistency |
+| Actor | `GeometricActor`, `actor_old` snapshot | bootstrap replay supervision, old-policy trust region, trust-gated imagined return, gauge-covariant natural improvement |
 :::
 
 ### 8.1 Encoder Update
@@ -449,13 +537,14 @@ The encoder remains active unless `freeze_encoder=True`. Its losses still includ
 
 - Phase-1 reconstruction and atlas regularization,
 - dynamics-code closure through the shared codebook probe,
-- Zeno-style transition diagnostics.
+- Zeno-style transition diagnostics,
+- adversarial no-leak closure pressure through `EnclosureProbe`.
 
 This keeps the representation trainable during RL unless the user explicitly freezes it.
 
 ### 8.2 Atlas Synchronization
 
-After the encoder step, the code synchronizes atlas-dependent parameters across the observation model, action model, world model, critic, actor, closure model, and reward head.
+After the encoder step, the code synchronizes atlas-dependent parameters across the observation model, action model, world model, critic, actor, `actor_old`, and reward head.
 
 This keeps chart centers, codebooks, and action-manifold bindings consistent before the dynamics, reward, and actor updates run.
 
@@ -469,20 +558,31 @@ $$
 w_{\mathrm{dynamics}}\mathcal{L}_{\mathrm{geo}}
 + w_{\mathrm{dynamics}}\mathcal{L}_{\mathrm{chart}}
 + w_{\mathrm{reward}}\mathcal{L}_{\mathrm{reward}}
++ w_{\mathrm{reward\_conservative\_match}}\mathcal{L}_{\mathrm{cons\text{-}match}}
 + w_{\mathrm{reward\_nonconservative}}\mathcal{L}_{\mathrm{noncons}}
++ w_{\mathrm{reward\_exact\_orth}}\mathcal{L}_{\mathrm{exact\text{-}orth}}
++ w_{\mathrm{exact\_force\_consistency}}\mathcal{L}_{\mathrm{force\text{-}exact}}
++ w_{\mathrm{exact\_task\_force\_consistency}}\mathcal{L}_{\mathrm{task\text{-}force\text{-}exact}}
++ w_{\mathrm{exact\_risk\_force\_consistency}}\mathcal{L}_{\mathrm{risk\text{-}force\text{-}exact}}
++ w_{\mathrm{reward\_nonconservative\_norm}}\mathcal{L}_{\mathrm{residual\text{-}norm}}
++ w_{\mathrm{reward\_nonconservative\_budget}}\mathcal{L}_{\mathrm{residual\text{-}budget}}
 + w_{\mathrm{momentum}}\mathcal{L}_{\mathrm{momentum}}
 + w_{\mathrm{energy}}\mathcal{L}_{\mathrm{energy}}
-+ w_{\mathrm{Hodge}}\mathcal{L}_{\mathrm{Hodge}}.
++ w_{\mathrm{Hodge}}\mathcal{L}_{\mathrm{Hodge}}
++ w_{\mathrm{hodge\_conservative\_margin}}\mathcal{L}_{\mathrm{Hodge\text{-}cons}}
++ w_{\mathrm{hodge\_solenoidal}}\mathcal{L}_{\mathrm{Hodge\text{-}sol}}.
 $$
 
-So the dynamics model evolves under action-manifold coordinates rather than raw actuator coordinates.
+with exact/direct conservative-field consistency losses and conservative-preference penalties added on top of the original dynamics/reward terms. So the dynamics model evolves under action-manifold coordinates rather than raw actuator coordinates, and the reward split is explicitly biased toward the exact field before the residual sector is allowed to explain replay reward.
 
 ### 8.4 Actor Update
 
-The critic is anchored on replay return-to-go plus screened Poisson consistency inside the world-model stage. The actor stage combines:
+The critic is anchored on replay return-to-go, exact conservative increments, covector alignment, adaptive stiffness, and screened Poisson consistency inside the world-model stage. The actor stage combines:
 
-- supervised prediction of replay action charts, action codes, and action-side nuisance coordinates;
-- periodic imagined discounted reward through canonical-action latent rollouts.
+- supervised prediction of replay action charts, action codes, and action-side nuisance coordinates, but with a scheduled bootstrap scale;
+- a persistent old-policy hyperbolic anchor plus chart/code KL trust terms;
+- periodic trust-gated imagined discounted reward through canonical-action latent rollouts;
+- a gauge-covariant natural objective and world-model synchronization penalties.
 
 So the training loop is:
 
@@ -519,15 +619,21 @@ These tell you whether the macro register is alive and whether the atlas is coll
 ### Action-Manifold and Actor Health
 
 - `closure/L_total`
-- `closure/L_obs_state`, `closure/L_action_state`
-- `closure/obs_state_acc`, `closure/action_state_acc`
-- `action_chart/usage_entropy`, `action_chart/active_charts`, `action_chart/active_symbols`
+- `closure/L_obs_state`
+- `closure/obs_state_acc`
+- `closure/enclosure_acc_full`, `closure/enclosure_acc_base`
+- `closure/enclosure_defect_acc`, `closure/enclosure_defect_ce`
 - `actor/L_chart`, `actor/L_code`, `actor/L_zn`
+- `actor/L_supervise_raw`, `actor/L_supervise`, `actor/supervise_scale`
+- `actor/L_old_policy_geodesic`, `actor/L_old_policy_chart_kl`, `actor/L_old_policy_code_kl`
 - `actor/chart_acc`, `actor/code_acc`
+- `actor/return_trust_used`, `actor/return_gate`, `actor/return_applied`
+- `actor/regime_bc_weight`, `actor/regime_rl_weight`
+- `actor/state_alpha`, `actor/state_beta_pi`, `actor/stiffness_trust`
 - `policy/action_canonical_norm_mean`
 - `policy/action_router_entropy`
 
-These indicate whether the action manifold remains organized, whether symbolic obs-action closure is stable, and whether the actor is matching replay action structure.
+These indicate whether the action manifold remains organized, whether symbolic obs-action closure is stable, whether texture leakage is being removed, and whether the actor has actually handed off from replay bootstrap to trust-certified RL updates.
 
 ### World-Model Health
 
@@ -536,17 +642,29 @@ These indicate whether the action manifold remains organized, whether symbolic o
 - `wm/chart_acc`
 - `wm/L_reward`
 - `wm/L_reward_nonconservative`
+- `wm/L_reward_conservative_match`
+- `wm/L_reward_exact_orth`
+- `wm/L_force_exact`
+- `wm/reward_nonconservative_gate`
+- `wm/force_exact_rel_mean`
 - `wm/L_momentum`
 - `wm/L_energy`
 - `wm/L_hodge`
+- `geometric/hodge_conservative_direct`
+- `geometric/hodge_conservative_exact`
 
-These are the primary indicators that imagination remains grounded on real transition data.
+These are the primary indicators that imagination remains grounded on real transition data and that the direct rollout field is staying close to the exact scalar-gradient conservative field.
 
 ### Critic and Imagination Health
 
 - `critic/L_value`
 - `critic/L_poisson`
+- `critic/L_exact_increment`
+- `critic/L_covector_align`
+- `critic/L_stiffness`
 - `critic/value_abs_err`
+- `critic/exact_covector_norm_mean`
+- `critic/stiffness_target`
 - `critic/replay_bellman_abs`
 - `imagination/reward_mean`
 - `imagination/discounted_reward_mean`
@@ -587,10 +705,13 @@ This table states the theory directly in the same terms used by the code.
 | Canonical action latent | {ref}`sec-the-boundary-interface-symplectic-structure` | `a_t^\star = z_{geo,t}^{act}` is the motor variable shared across policy, replay, reward, and dynamics | Implemented |
 | Action realization | {ref}`sec-the-boundary-interface-symplectic-structure` | `action_model.decoder(a_t^\star, rw_t^{act})` produces deterministic environment actions | Implemented |
 | Replay-grounded action manifold | {ref}`sec-the-boundary-interface-symplectic-structure` | replay stores action latents, routing weights, chart/code indices, and code latents | Implemented |
-| Reward decomposition | {prf:ref}`def-reward-1-form` | `RewardHead` predicts conservative and residual pieces on joint state-action latent geometry | Implemented |
+| Reward decomposition | {prf:ref}`def-reward-1-form` | `RewardHead` predicts conservative and residual pieces on joint state-action latent geometry, with conservative-first replay targets and residual gating | Implemented |
 | Controlled latent imagination | {ref}`sec-wfr-boundary-conditions-waking-vs-dreaming` | `_imagine` and `_imagine_actor_return` roll out the world model under canonical action latents | Implemented |
-| Replay-grounded value anchoring | {ref}`sec-the-reward-field-value-forms-and-hodge-geometry` | replay RTG + screened Poisson critic losses | Implemented |
+| Replay-grounded value anchoring | {ref}`sec-the-reward-field-value-forms-and-hodge-geometry` | replay RTG + screened Poisson + exact increment + covector alignment + adaptive stiffness | Implemented |
 | Action-manifold policy | {prf:ref}`def-maxent-rl-objective-on-macrostates` | `GeometricActor` maps observation-side symbolic state to action-side symbolic state | Implemented |
+| Exact-field certification | {ref}`sec-the-reward-field-value-forms-and-hodge-geometry` | exact scalar-gradient conservative field is certified separately from the fast direct rollout field, with force-consistency losses between them | Implemented |
+| Causal enclosure / no-leak | {prf:ref}`def-causal-enclosure` | RL path uses `EnclosureProbe` to test and suppress texture leakage under the observation Markov model | Implemented |
+| Policy trust region | {ref}`Link <rb-barriers-trust-regions>` | old-policy hyperbolic geodesic anchor, old-policy chart/code KL, and parameter-space Mach limit | Implemented |
 | Auxiliary explicit-control boundary modules | {ref}`sec-the-boundary-interface-symplectic-structure` | `GeometricActionEncoder`, `GeometricActionBoundaryDecoder`, and control-field helpers remain available for alternative experiments | Available |
 | Variance-curvature coupling | {prf:ref}`lem-variance-curvature-correspondence` | motor texture scales with inverse metric | Implemented in execution noise |
 | WFR transport + reaction split | {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` | BAOAB substeps plus optional chart jump | Implemented |

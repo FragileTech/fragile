@@ -5,11 +5,10 @@ from __future__ import annotations
 from typing import Callable
 
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 
 from fragile.learning.core.layers.gauge import (
-    ConformalMetric,
     hyperbolic_distance,
     poincare_exp_map,
     poincare_log_map,
@@ -20,24 +19,24 @@ from fragile.learning.hyperbolic_losses import (
     compute_chart_center_radius_loss,
     compute_chart_center_separation_loss,
     compute_chart_usage_band_loss,
-    compute_confidence_calibration_loss,
     compute_code_usage_band_loss,
     compute_codebook_centering_loss,
     compute_codebook_spread_loss,
+    compute_confidence_calibration_loss,
     compute_error_quality_targets,
     compute_hard_routing_nll,
     compute_hyperbolic_uniformity_loss,
-    compute_rank_quality_targets,
     compute_radial_calibration_loss,
-    compute_routing_confidence,
-    mix_quality_targets,
-    compute_v_tangent_barrier_loss,
+    compute_rank_quality_targets,
     compute_router_information_metrics,
     compute_router_margin_loss,
     compute_router_sharpness_metrics,
+    compute_routing_confidence,
     compute_routing_entropy,
     compute_sinkhorn_balanced_chart_loss,
+    compute_v_tangent_barrier_loss,
     compute_window_loss,
+    mix_quality_targets,
 )
 
 from .config import VLAConfig
@@ -139,7 +138,6 @@ def compute_energy_conservation_loss(
     Returns:
         Scalar loss (variance of H across horizon).
     """
-    B, H, D = z_trajectory.shape
     # Kinetic energy: ½ |p|^2 * ((1 - |z|^2) / 2)^2  (diagonal inverse metric)
     r_sq = (z_trajectory ** 2).sum(dim=-1, keepdim=True)  # [B, H, 1]
     g_inv_factor = ((1.0 - r_sq).clamp(min=1e-6) / 2.0) ** 2  # [B, H, 1]
@@ -403,15 +401,14 @@ def orthogonality_loss(zn: torch.Tensor, ztex: torch.Tensor) -> torch.Tensor:
         zn_n = F.normalize(zn, dim=-1)
         ztex_n = F.normalize(ztex, dim=-1)
         return ((zn_n * ztex_n).sum(dim=-1) ** 2).mean()
-    else:
-        B = zn.shape[0]
-        zn_c = zn - zn.mean(dim=0, keepdim=True)
-        ztex_c = ztex - ztex.mean(dim=0, keepdim=True)
-        # Normalize columns so the cross-correlation is scale-invariant
-        zn_c = F.normalize(zn_c, dim=0)
-        ztex_c = F.normalize(ztex_c, dim=0)
-        C = zn_c.T @ ztex_c  # [D1, D2], entries in [-1, 1]
-        return (C ** 2).mean()
+
+    zn_c = zn - zn.mean(dim=0, keepdim=True)
+    ztex_c = ztex - ztex.mean(dim=0, keepdim=True)
+    # Normalize columns so the cross-correlation is scale-invariant
+    zn_c = F.normalize(zn_c, dim=0)
+    ztex_c = F.normalize(ztex_c, dim=0)
+    C = zn_c.T @ ztex_c  # [D1, D2], entries in [-1, 1]
+    return (C ** 2).mean()
 
 
 class GradientReversalFunction(torch.autograd.Function):
@@ -474,13 +471,8 @@ class EnclosureProbe(nn.Module):
         codes_per_chart: int = 32,
         hidden_dim: int = 128,
         alpha: float = 1.0,
-        # Legacy alias — ignored if ztex_dim is provided explicitly.
-        zn_dim: int | None = None,
     ):
         super().__init__()
-        # Accept legacy zn_dim kwarg for checkpoint compat.
-        if zn_dim is not None and ztex_dim == 16:
-            ztex_dim = zn_dim
         self.grl = GradientReversalLayer(alpha=alpha)
         self.num_states = num_charts * codes_per_chart
         self.codes_per_chart = codes_per_chart
@@ -618,8 +610,6 @@ def compute_enclosure_loss(
     K_code_t: torch.Tensor | None = None,
     K_code_tp1: torch.Tensor | None = None,
     codes_per_chart: int | None = None,
-    # Legacy alias so old call-sites using zn_t= still work.
-    zn_t: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
     """Compute enclosure probe losses and diagnostics.
 
@@ -636,7 +626,6 @@ def compute_enclosure_loss(
         K_code_t: [B] current VQ code index (defaults to zeros).
         K_code_tp1: [B] next VQ code index (defaults to zeros).
         codes_per_chart: Number of VQ codes per chart.
-        zn_t: Deprecated alias for ztex_t (backward compat).
 
     Returns:
         loss_encoder: CE on full probe (GRL reverses gradient into encoder).
@@ -644,10 +633,6 @@ def compute_enclosure_loss(
         diagnostics: dict with acc_full, acc_base, defect_acc, defect_ce,
                      ce_full, ce_base.
     """
-    # Legacy compat: accept zn_t= if ztex_t is not provided.
-    if ztex_t is None and zn_t is not None:
-        ztex_t = zn_t
-
     B = K_chart_tp1.shape[0]
     device = K_chart_tp1.device
 
@@ -743,13 +728,12 @@ def zeno_loss(
     if mode == "kl":
         kl = (w_t_safe * (w_t_safe.log() - w_prev_safe.log())).sum(dim=-1)
         return kl.mean()
-    elif mode == "jsd":
+    if mode == "jsd":
         m = 0.5 * (w_t_safe + w_prev_safe)
         kl_t = (w_t_safe * (w_t_safe.log() - m.log())).sum(dim=-1)
         kl_prev = (w_prev_safe * (w_prev_safe.log() - m.log())).sum(dim=-1)
         return (0.5 * kl_t + 0.5 * kl_prev).mean()
-    else:
-        raise ValueError(f"Unknown zeno_loss mode: {mode}")
+    raise ValueError(f"Unknown zeno_loss mode: {mode}")
 
 
 def compute_dynamics_markov_loss(
@@ -970,7 +954,7 @@ def compute_supervised_wm_loss(
     rw: torch.Tensor,
     N: int,
     dt: float,
-    config: "VLAConfig",
+    config: VLAConfig,
 ) -> tuple[torch.Tensor, dict[str, float]]:
     """Supervised geodesic diffusion loss for one consecutive pair.
 
@@ -1075,7 +1059,7 @@ def compute_phase2_geodesic_diffusion_loss(
     rw_all: torch.Tensor,
     K_all: torch.Tensor,
     actions: torch.Tensor,
-    config: "VLAConfig",
+    config: VLAConfig,
 ) -> tuple[torch.Tensor, dict[str, float]]:
     """Geodesic diffusion loss over consecutive pairs in a sequence.
 
@@ -1094,10 +1078,9 @@ def compute_phase2_geodesic_diffusion_loss(
         total_loss: Scalar loss.
         metrics: Dict of aggregated loss components.
     """
-    B, H, D = z_all.shape
+    B, H, _ = z_all.shape
     N = getattr(config, "wm_diffusion_substeps", 8)
     dt = getattr(config, "wm_dt", 0.01)
-    device = z_all.device
 
     total_loss = z_all.new_tensor(0.0)
     chart_ce_total = z_all.new_tensor(0.0)
