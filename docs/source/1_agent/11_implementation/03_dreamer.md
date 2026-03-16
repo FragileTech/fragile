@@ -436,7 +436,8 @@ where the gate $g_{\mathrm{actor}}$ combines:
 - exact-vs-direct force consistency,
 - world-model / policy routing synchronization,
 - exact Hodge conservative ratio,
-- actor-scale trust and actor-stiffness trust.
+- actor-scale trust and actor-stiffness trust,
+- an exact-control calibration gate built from replay exact-increment error, on-policy covector-alignment error, and on-policy exact-field calibration ratio.
 
 This update is applied only periodically, according to the configured warmup and update frequency, and only if the trust gate is nonzero.
 
@@ -483,7 +484,10 @@ This bookkeeping pays for itself during training. Replay batches supervise the a
 
 For dm_control tasks, observations are flattened to a single vector and then passed through the encoder's built-in feature extractor and atlas pipeline. The current training script adjusts both `obs_dim` and `action_dim` at runtime to match the selected task if needed. `DMControlEnv` wraps `dm_control.suite.load(domain, task)` behind a `domain-task` string interface, flattens the observation dict, and exposes a gym-like action-space adapter.
 
-The trainer also supports environment-specific presets through `task_preset`. At the moment, `task_preset=auto` recognizes `cartpole-swingup` and applies a smaller exact-heavy configuration while still respecting explicit user overrides.
+The trainer also supports environment-specific presets through `task_preset`. At the moment, `task_preset=auto` recognizes both `cartpole-swingup` and `cartpole-balance`. Both presets use the smaller exact-heavy control stack, but they now diverge in two important ways:
+
+- `cartpole-balance` keeps a shorter on-policy exact-supervision horizon and a lower motor temperature because the task already has dense stabilizing signal;
+- `cartpole-swingup` uses stronger on-policy exact supervision, more seed data, and a hotter motor-noise schedule so the policy visits useful swing-up trajectories before the exact field is expected to certify control.
 
 ### Rollout Modes
 
@@ -492,6 +496,8 @@ The code supports three collection modes:
 - seed-episode collection with random actions;
 - online policy rollouts in dm_control, with deterministic decoded `action_means` plus execution noise at collection time;
 - Fractal Gas collection with policy-guided walkers.
+
+That execution noise is no longer a single fixed `sigma_motor` knob. The trainer supports a scheduleable motor temperature with epoch annealing and exact-field-aware cooling, so swing-up tasks can keep exploration high until the exact control gate starts to certify the conservative field.
 
 ### Replay Contents
 
@@ -577,12 +583,33 @@ with exact/direct conservative-field consistency losses and conservative-prefere
 
 ### 8.4 Actor Update
 
-The critic is anchored on replay return-to-go, exact conservative increments, covector alignment, adaptive stiffness, and screened Poisson consistency inside the world-model stage. The actor stage combines:
+The critic is anchored on replay return-to-go, exact conservative increments, multi-step covector alignment, adaptive stiffness, and screened Poisson consistency inside the world-model stage. The same exact-field calibration is also applied on policy-visited imagined rollouts. The actor stage combines:
 
 - supervised prediction of replay action charts, action codes, and action-side nuisance coordinates, but with a scheduled bootstrap scale;
 - a persistent old-policy hyperbolic anchor plus chart/code KL trust terms;
 - periodic trust-gated imagined discounted reward through canonical-action latent rollouts;
 - a gauge-covariant natural objective and world-model synchronization penalties.
+
+Operationally, the actor-return gate now factors into:
+
+- a general imagination trust certificate,
+- actor scale and stiffness trust,
+- an exact-control gate built from exact-increment calibration and on-policy exact-field calibration.
+
+So a run can no longer receive large return-driven actor updates merely because the world model is self-consistent. The exact conservative field must also be calibrated enough to justify control.
+
+### 8.5 Benchmarking Loop
+
+The repository now includes a small control benchmark harness in `src/experiments/benchmark_dreamer_control.py`. It launches short Dreamer runs over a small task/seed set, then summarizes:
+
+- best and final eval reward,
+- final `rew_20`,
+- exact and on-policy exact covector norms,
+- exact-increment error,
+- return trust, return gate, and exact-control gate,
+- exact conservative Hodge ratio and policy force error.
+
+This is intentionally not a giant sweep system. It is a compact evidence loop for validating whether theory-facing changes improve control across tasks rather than in a single cherry-picked log.
 
 So the training loop is:
 

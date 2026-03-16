@@ -792,7 +792,7 @@ class TestConfigAndParseArgs:
         assert cfg.d_model == 64
         assert cfg.hidden_dim == 128
         assert cfg.max_episode_steps == 200
-        assert cfg.seed_episodes == 8
+        assert cfg.seed_episodes == 16
         assert cfg.batch_size == 8
         assert cfg.seq_len == 32
         assert cfg.imagination_horizon == 8
@@ -811,6 +811,13 @@ class TestConfigAndParseArgs:
         assert cfg.w_critic_stiffness == pytest.approx(5.0)
         assert cfg.w_critic_exact_increment == pytest.approx(1.0)
         assert cfg.w_critic_covector_align == pytest.approx(5.0)
+        assert cfg.critic_multistep_horizon == 8
+        assert cfg.critic_multistep_decay == pytest.approx(0.8)
+        assert cfg.w_critic_on_policy_covector_align == pytest.approx(5.0)
+        assert cfg.w_critic_on_policy_stiffness == pytest.approx(2.0)
+        assert cfg.critic_on_policy_horizon == 8
+        assert cfg.critic_on_policy_batch_size == 8
+        assert cfg.critic_on_policy_decay == pytest.approx(0.9)
         assert cfg.critic_stiffness_min == pytest.approx(0.001)
         assert cfg.critic_stiffness_target_max == pytest.approx(0.05)
         assert cfg.reward_nonconservative_budget_ratio == pytest.approx(0.05)
@@ -829,6 +836,9 @@ class TestConfigAndParseArgs:
         assert cfg.eval_every == 10
         assert cfg.checkpoint_every == 25
         assert cfg.sigma_motor == pytest.approx(0.2)
+        assert cfg.sigma_motor_init == pytest.approx(0.4)
+        assert cfg.sigma_motor_anneal_epochs == 40
+        assert cfg.sigma_motor_exact_gate_target == pytest.approx(0.45)
         assert cfg.chart_usage_h_low is not None
         assert cfg.chart_usage_h_high is not None
         assert "num_charts" in changes
@@ -873,6 +883,10 @@ class TestConfigAndParseArgs:
         assert cfg.w_critic_on_policy_stiffness == pytest.approx(1.0)
         assert cfg.critic_on_policy_horizon == 4
         assert cfg.critic_on_policy_batch_size == 4
+        assert cfg.sigma_motor == pytest.approx(0.1)
+        assert cfg.sigma_motor_init == pytest.approx(0.15)
+        assert cfg.sigma_motor_anneal_epochs == 20
+        assert cfg.sigma_motor_exact_gate_target == pytest.approx(0.35)
 
     def test_parse_args_uses_current_cli_schema(self, monkeypatch):
         from fragile.learning.rl.train_dreamer import _parse_args
@@ -1035,6 +1049,66 @@ class TestActorStateMetric:
 
 
 class TestActorBootstrapAndTrustRegion:
+    def test_exact_control_gate_favors_better_exact_calibration(self, config):
+        from fragile.learning.rl import train_dreamer
+
+        cfg = copy.deepcopy(config)
+        template = torch.tensor(0.0)
+        gate_good, metrics_good = train_dreamer._exact_control_gate(
+            cfg,
+            exact_increment_abs_err=0.1,
+            exact_increment_target_mean=1.0,
+            on_policy_covector_align_abs_err=0.1,
+            on_policy_covector_target_mean=1.0,
+            on_policy_exact_covector_norm_mean=0.02,
+            on_policy_stiffness_target=0.01,
+            template=template,
+        )
+        gate_bad, metrics_bad = train_dreamer._exact_control_gate(
+            cfg,
+            exact_increment_abs_err=1.0,
+            exact_increment_target_mean=1.0,
+            on_policy_covector_align_abs_err=1.0,
+            on_policy_covector_target_mean=1.0,
+            on_policy_exact_covector_norm_mean=0.001,
+            on_policy_stiffness_target=0.01,
+            template=template,
+        )
+
+        assert float(gate_good) > float(gate_bad)
+        assert metrics_good["actor/exact_control_calibration_ratio"] > 1.0
+        assert metrics_bad["actor/exact_control_calibration_ratio"] < 0.2
+
+    def test_scheduled_sigma_motor_keeps_exploration_high_until_exact_gate_improves(self, config):
+        from fragile.learning.rl import train_dreamer
+
+        cfg = copy.deepcopy(config)
+        cfg.sigma_motor = 0.1
+        cfg.sigma_motor_init = 0.4
+        cfg.sigma_motor_anneal_epochs = 10
+        cfg.sigma_motor_exact_gate_target = 0.5
+
+        sigma_early, _metrics_early = train_dreamer._scheduled_sigma_motor(
+            cfg,
+            epoch=0,
+            exact_control_gate=0.0,
+        )
+        sigma_mid, _metrics_mid = train_dreamer._scheduled_sigma_motor(
+            cfg,
+            epoch=8,
+            exact_control_gate=0.1,
+        )
+        sigma_ready, metrics_ready = train_dreamer._scheduled_sigma_motor(
+            cfg,
+            epoch=8,
+            exact_control_gate=0.8,
+        )
+
+        assert sigma_early == pytest.approx(0.4)
+        assert sigma_mid > sigma_ready
+        assert metrics_ready["policy/sigma_motor_exact_progress"] == pytest.approx(1.0)
+        assert sigma_ready < sigma_early
+
     def test_actor_supervise_scale_decays_with_epoch_and_return_gate(self, config):
         from fragile.learning.rl import train_dreamer
 
@@ -2613,6 +2687,44 @@ class TestCheckpoint:
         assert "scheduler_enclosure" in checkpoint
         assert checkpoint["metrics"]["wm/L_reward"] == 1.0
         assert checkpoint["obs_normalizer"]["min_std"] == pytest.approx(1e-3)
+
+    def test_benchmark_summary_reads_log_and_checkpoints(self, tmp_path):
+        from experiments.benchmark_dreamer_control import _summarize_run
+
+        run_dir = tmp_path / "run"
+        run_dir.mkdir()
+        (run_dir / "train.log").write_text(
+            "E0009 [37upd]  ep_rew=1.0000  rew_20=2.5000\n"
+            "  EVAL  reward=3.5 +/- 0.4  len=200\n",
+        )
+        torch.save(
+            {"metrics": {"eval/reward_mean": 4.2, "eval/reward_std": 0.2}},
+            run_dir / "best.pt",
+        )
+        torch.save(
+            {
+                "metrics": {
+                    "critic/exact_covector_norm_mean": 0.03,
+                    "critic/on_policy/exact_covector_norm_mean": 0.02,
+                    "critic/exact_increment_abs_err": 0.7,
+                    "critic/on_policy/calibration_ratio": 1.5,
+                    "actor/return_trust_used": 0.4,
+                    "actor/return_gate": 0.2,
+                    "actor/exact_control_gate": 0.3,
+                    "actor/policy_hodge_conservative_exact_mean": 0.9,
+                    "actor/policy_force_rel_err_mean": 0.05,
+                },
+            },
+            run_dir / "epoch_00010.pt",
+        )
+
+        summary = _summarize_run(run_dir)
+
+        assert summary["best_eval_reward"] == pytest.approx(4.2)
+        assert summary["final_eval_reward"] == pytest.approx(3.5)
+        assert summary["final_rew20"] == pytest.approx(2.5)
+        assert summary["final_exact_covector_norm"] == pytest.approx(0.03)
+        assert summary["final_exact_control_gate"] == pytest.approx(0.3)
 
     def test_train_rejects_legacy_partial_checkpoint(self, tmp_path, config, monkeypatch):
         from fragile.learning.rl import train_dreamer

@@ -171,7 +171,6 @@ def _apply_task_preset(config: DreamerConfig) -> tuple[str | None, dict[str, tup
     _maybe_override("d_model", 64)
     _maybe_override("hidden_dim", 128)
     _maybe_override("max_episode_steps", 200)
-    _maybe_override("seed_episodes", 8)
     _maybe_override("batch_size", 8)
     _maybe_override("seq_len", 32)
     _maybe_override("imagination_horizon", 8)
@@ -197,12 +196,6 @@ def _apply_task_preset(config: DreamerConfig) -> tuple[str | None, dict[str, tup
     _maybe_override("w_critic_exact_increment", 1.0)
     _maybe_override("w_critic_stiffness", 5.0)
     _maybe_override("w_critic_covector_align", 5.0)
-    _maybe_override("critic_multistep_horizon", 4)
-    _maybe_override("critic_multistep_decay", 0.75)
-    _maybe_override("w_critic_on_policy_covector_align", 2.0)
-    _maybe_override("w_critic_on_policy_stiffness", 1.0)
-    _maybe_override("critic_on_policy_horizon", 4)
-    _maybe_override("critic_on_policy_batch_size", 4)
     _maybe_override("critic_stiffness_min", 0.001)
     _maybe_override("critic_stiffness_target_max", 0.05)
     _maybe_override("actor_return_chart_acc_target", 0.5)
@@ -219,7 +212,36 @@ def _apply_task_preset(config: DreamerConfig) -> tuple[str | None, dict[str, tup
     _maybe_override("collect_n_env_workers", 4)
     _maybe_override("eval_every", 10)
     _maybe_override("checkpoint_every", 25)
-    _maybe_override("sigma_motor", 0.2)
+    _maybe_override("actor_return_exact_increment_rel_scale", 1.0)
+    _maybe_override("actor_return_exact_covector_rel_scale", 1.0)
+    _maybe_override("actor_return_exact_control_power", 1.0)
+    _maybe_override("critic_on_policy_decay", 1.0)
+
+    if preset_name == "cartpole_balance":
+        _maybe_override("seed_episodes", 8)
+        _maybe_override("critic_multistep_horizon", 4)
+        _maybe_override("critic_multistep_decay", 0.75)
+        _maybe_override("w_critic_on_policy_covector_align", 2.0)
+        _maybe_override("w_critic_on_policy_stiffness", 1.0)
+        _maybe_override("critic_on_policy_horizon", 4)
+        _maybe_override("critic_on_policy_batch_size", 4)
+        _maybe_override("sigma_motor", 0.1)
+        _maybe_override("sigma_motor_init", 0.15)
+        _maybe_override("sigma_motor_anneal_epochs", 20)
+        _maybe_override("sigma_motor_exact_gate_target", 0.35)
+    else:
+        _maybe_override("seed_episodes", 16)
+        _maybe_override("critic_multistep_horizon", 8)
+        _maybe_override("critic_multistep_decay", 0.8)
+        _maybe_override("w_critic_on_policy_covector_align", 5.0)
+        _maybe_override("w_critic_on_policy_stiffness", 2.0)
+        _maybe_override("critic_on_policy_horizon", 8)
+        _maybe_override("critic_on_policy_batch_size", 8)
+        _maybe_override("critic_on_policy_decay", 0.9)
+        _maybe_override("sigma_motor", 0.2)
+        _maybe_override("sigma_motor_init", 0.4)
+        _maybe_override("sigma_motor_anneal_epochs", 40)
+        _maybe_override("sigma_motor_exact_gate_target", 0.45)
 
     chart_entropy_max = float(np.log(max(config.num_charts, 1)))
     _maybe_override("chart_usage_h_low", 0.6 * chart_entropy_max)
@@ -2190,6 +2212,53 @@ def _actor_return_trust(
     return trust, trust_metrics
 
 
+def _exact_control_gate(
+    config: DreamerConfig,
+    *,
+    exact_increment_abs_err: float,
+    exact_increment_target_mean: float,
+    on_policy_covector_align_abs_err: float,
+    on_policy_covector_target_mean: float,
+    on_policy_exact_covector_norm_mean: float,
+    on_policy_stiffness_target: float,
+    template: torch.Tensor,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    """Certify whether the exact conservative field is calibrated enough to drive control."""
+    exact_increment_rel = exact_increment_abs_err / max(abs(exact_increment_target_mean), 1e-6)
+    on_policy_covector_rel = on_policy_covector_align_abs_err / max(
+        abs(on_policy_covector_target_mean),
+        1e-6,
+    )
+    calibration_ratio = on_policy_exact_covector_norm_mean / max(on_policy_stiffness_target, 1e-6)
+
+    exact_increment_rel_t = template.new_tensor(exact_increment_rel)
+    on_policy_covector_rel_t = template.new_tensor(on_policy_covector_rel)
+    calibration_ratio_t = template.new_tensor(calibration_ratio)
+
+    exact_increment_factor = torch.exp(
+        -float(config.actor_return_exact_increment_rel_scale)
+        * exact_increment_rel_t.clamp(min=0.0),
+    )
+    on_policy_covector_factor = torch.exp(
+        -float(config.actor_return_exact_covector_rel_scale)
+        * on_policy_covector_rel_t.clamp(min=0.0),
+    )
+    calibration_factor = calibration_ratio_t.clamp(0.0, 1.0)
+    exact_control_gate = (
+        exact_increment_factor * on_policy_covector_factor * calibration_factor
+    ).clamp(0.0, 1.0)
+    metrics = {
+        "actor/exact_control_gate": float(exact_control_gate.detach()),
+        "actor/exact_control_increment_rel": float(exact_increment_rel_t.detach()),
+        "actor/exact_control_covector_rel": float(on_policy_covector_rel_t.detach()),
+        "actor/exact_control_calibration_ratio": float(calibration_ratio_t.detach()),
+        "actor/exact_control_increment_factor": float(exact_increment_factor.detach()),
+        "actor/exact_control_covector_factor": float(on_policy_covector_factor.detach()),
+        "actor/exact_control_calibration_factor": float(calibration_factor.detach()),
+    }
+    return exact_control_gate, metrics
+
+
 def _actor_supervise_scale(
     config: DreamerConfig,
     *,
@@ -2217,6 +2286,31 @@ def _actor_supervise_scale(
         "actor/supervise_gate_scale": gate_scale,
     }
     return scale_t, metrics
+
+
+def _scheduled_sigma_motor(
+    config: DreamerConfig,
+    *,
+    epoch: int,
+    exact_control_gate: float,
+) -> tuple[float, dict[str, float]]:
+    """Schedule thermal motor exploration with optional exact-field-aware cooling."""
+    sigma_final = max(float(config.sigma_motor), 0.0)
+    sigma_init = float(config.sigma_motor_init) if float(config.sigma_motor_init) > 0.0 else sigma_final
+    anneal_epochs = max(int(config.sigma_motor_anneal_epochs), 0)
+    epoch_progress = 1.0 if anneal_epochs <= 0 else min(max((epoch + 1) / anneal_epochs, 0.0), 1.0)
+    exact_target = max(float(config.sigma_motor_exact_gate_target), 0.0)
+    exact_progress = 1.0 if exact_target <= 0.0 else min(max(exact_control_gate / exact_target, 0.0), 1.0)
+    cooling_progress = min(epoch_progress, exact_progress)
+    sigma = sigma_init + (sigma_final - sigma_init) * cooling_progress
+    metrics = {
+        "policy/sigma_motor": float(sigma),
+        "policy/sigma_motor_init": float(sigma_init),
+        "policy/sigma_motor_final": float(sigma_final),
+        "policy/sigma_motor_epoch_progress": float(epoch_progress),
+        "policy/sigma_motor_exact_progress": float(exact_progress),
+    }
+    return float(sigma), metrics
 
 
 def _actor_old_policy_kl_losses(
@@ -3232,6 +3326,7 @@ def _train_step(
     metrics["critic/on_policy/exact_covector_norm_mean"] = 0.0
     metrics["critic/on_policy/stiffness_target"] = float(config.critic_stiffness_min)
     metrics["critic/on_policy/stiffness_certified"] = 0.0
+    metrics["critic/on_policy/calibration_ratio"] = 0.0
     metrics["critic/on_policy/batch_size"] = 0.0
     if exact_covector_train is not None:
         exact_covector_train_seq = exact_covector_train.reshape(B, T, config.latent_dim)
@@ -3287,6 +3382,10 @@ def _train_step(
             stiffness_scale=critic_stiffness_target,
         )
         metrics.update(critic_stiffness_metrics)
+        metrics["critic/calibration_ratio"] = float(
+            critic_stiffness_metrics["critic/exact_covector_norm_mean"]
+            / max(critic_stiffness_metrics["critic/stiffness_target"], 1e-6),
+        )
         critic_on_policy_horizon = min(
             max(int(config.critic_on_policy_horizon), 0),
             max(int(config.actor_return_horizon), int(config.imagination_horizon)),
@@ -3363,7 +3462,7 @@ def _train_step(
                     valid_mask=policy_valid,
                     gamma=config.gamma,
                     horizon=critic_on_policy_horizon,
-                    decay=critic_multistep_decay,
+                    decay=max(float(config.critic_on_policy_decay), 0.0),
                     metric_prefix="critic/on_policy",
                 )
                 metrics.update(critic_on_policy_metrics)
@@ -3390,6 +3489,10 @@ def _train_step(
                 metrics["critic/on_policy/stiffness_certified"] = critic_on_policy_stiffness_metrics[
                     "critic/stiffness_certified"
                 ]
+                metrics["critic/on_policy/calibration_ratio"] = float(
+                    critic_on_policy_stiffness_metrics["critic/exact_covector_norm_mean"]
+                    / max(critic_on_policy_stiffness_metrics["critic/stiffness_target"], 1e-6),
+                )
                 metrics["critic/on_policy/batch_size"] = float(critic_on_policy_batch)
     else:
         critic_exact_covector_norm_mean = float(
@@ -3411,6 +3514,9 @@ def _train_step(
             if critic_exact_covector_norm_mean >= float(config.critic_stiffness_min)
             else 0.0
         )
+        metrics["critic/calibration_ratio"] = float(
+            critic_exact_covector_norm_mean / max(float(config.critic_stiffness_min), 1e-6),
+        )
         metrics["critic/on_policy/L_covector_align"] = 0.0
         metrics["critic/on_policy/L_stiffness"] = 0.0
         metrics["critic/on_policy/covector_align_abs_err"] = 0.0
@@ -3422,6 +3528,7 @@ def _train_step(
         metrics["critic/on_policy/exact_covector_norm_mean"] = 0.0
         metrics["critic/on_policy/stiffness_target"] = float(config.critic_stiffness_min)
         metrics["critic/on_policy/stiffness_certified"] = 0.0
+        metrics["critic/on_policy/calibration_ratio"] = 0.0
         metrics["critic/on_policy/batch_size"] = 0.0
     L_critic = (
         poisson_weight * L_poisson
@@ -3565,6 +3672,7 @@ def _train_step(
         actor_return_nonconservative = actor_out["action_z_n"].new_zeros(())
         actor_return_trust = actor_out["action_z_n"].new_zeros(())
         actor_return_gate = actor_out["action_z_n"].new_zeros(())
+        actor_exact_control_gate = actor_out["action_z_n"].new_zeros(())
         actor_supervise_scale = actor_out["action_z_n"].new_ones(())
         actor_natural_objective = actor_out["action_z_n"].new_zeros(())
         actor_gauge_norm = actor_out["action_z_n"].new_zeros(())
@@ -3593,6 +3701,13 @@ def _train_step(
         metrics["actor/return_trust_force"] = 0.0
         metrics["actor/return_trust_sync"] = 0.0
         metrics["actor/return_trust_conservative_exact"] = 0.0
+        metrics["actor/exact_control_gate"] = 0.0
+        metrics["actor/exact_control_increment_rel"] = 0.0
+        metrics["actor/exact_control_covector_rel"] = 0.0
+        metrics["actor/exact_control_calibration_ratio"] = 0.0
+        metrics["actor/exact_control_increment_factor"] = 0.0
+        metrics["actor/exact_control_covector_factor"] = 0.0
+        metrics["actor/exact_control_calibration_factor"] = 0.0
         if actor_update_due:
             actor_batch_size = min(int(config.actor_return_batch_size), B)
             if actor_batch_size > 0:
@@ -3647,7 +3762,23 @@ def _train_step(
                     template=actor_return_conservative,
                 )
                 metrics.update(trust_metrics)
-                nonconservative_weight = actor_return_trust.pow(
+                actor_exact_control_gate, exact_control_metrics = _exact_control_gate(
+                    config,
+                    exact_increment_abs_err=metrics["critic/exact_increment_abs_err"],
+                    exact_increment_target_mean=metrics["critic/exact_increment_target_mean"],
+                    on_policy_covector_align_abs_err=metrics["critic/on_policy/covector_align_abs_err"],
+                    on_policy_covector_target_mean=metrics["critic/on_policy/covector_target_reward_mean"],
+                    on_policy_exact_covector_norm_mean=metrics[
+                        "critic/on_policy/exact_covector_norm_mean"
+                    ],
+                    on_policy_stiffness_target=metrics["critic/on_policy/stiffness_target"],
+                    template=actor_return_conservative,
+                )
+                metrics.update(exact_control_metrics)
+                conservative_control_gate = (
+                    actor_return_trust * actor_exact_control_gate
+                ).clamp(0.0, 1.0)
+                nonconservative_weight = conservative_control_gate.pow(
                     config.actor_return_nonconservative_power,
                 )
                 actor_return = (
@@ -3689,13 +3820,17 @@ def _train_step(
                 )
                 if float(actor_return_trust.detach()) >= config.actor_return_trust_min:
                     actor_return_gate = (
-                        actor_return_trust * actor_scale_trust * actor_stiffness_trust
+                        conservative_control_gate
+                        * actor_scale_trust
+                        * actor_stiffness_trust
                     ).clamp(0.0, 1.0)
                     L_actor_return = (
                         -config.w_actor_return * actor_return_gate * actor_return
                     )
                     L_actor_natural = (
-                        -config.w_actor_natural * actor_return_gate * actor_natural_objective
+                        -config.w_actor_natural
+                        * actor_return_gate.pow(config.actor_return_exact_control_power)
+                        * actor_natural_objective
                     )
                     actor_return_applied = float(actor_return_gate.detach()) > 0.0
                 actor_reward_mean = float(actor_rollout["rewards"].detach().mean())
@@ -4355,6 +4490,7 @@ def train(config: DreamerConfig) -> None:
     total_env_steps = buffer.total_steps
     episode_rewards: list[float] = []
     best_eval_reward = -float("inf")
+    last_exact_control_gate = 0.0
 
     _tpb = config.batch_size * max(config.seq_len, 1)
     _est_upd = config.updates_per_epoch if config.updates_per_epoch > 0 else max(1, buffer.total_steps // _tpb)
@@ -4368,6 +4504,11 @@ def train(config: DreamerConfig) -> None:
         collect_time = 0.0
         current_hard_routing = _use_hard_routing(config, epoch)
         current_tau = _get_hard_routing_tau(config, epoch, config.total_epochs)
+        current_sigma_motor, sigma_metrics = _scheduled_sigma_motor(
+            config,
+            epoch=epoch,
+            exact_control_gate=last_exact_control_gate,
+        )
 
         # --- Data collection ---
         if config.use_gas:
@@ -4382,7 +4523,7 @@ def train(config: DreamerConfig) -> None:
                     obs_normalizer=obs_normalizer,
                     hard_routing=current_hard_routing,
                     hard_routing_tau=current_tau,
-                    sigma_motor=config.sigma_motor,
+                    sigma_motor=current_sigma_motor,
                 )
                 for ep in episodes:
                     buffer.add_episode(ep)
@@ -4411,7 +4552,7 @@ def train(config: DreamerConfig) -> None:
                     max_steps=config.max_episode_steps,
                     hard_routing=current_hard_routing,
                     hard_routing_tau=current_tau,
-                    sigma_motor=config.sigma_motor,
+                    sigma_motor=current_sigma_motor,
                 )
             else:
                 episodes = [
@@ -4428,7 +4569,7 @@ def train(config: DreamerConfig) -> None:
                         max_steps=config.max_episode_steps,
                         hard_routing=current_hard_routing,
                         hard_routing_tau=current_tau,
-                        sigma_motor=config.sigma_motor,
+                        sigma_motor=current_sigma_motor,
                     ),
                 ]
             for ep in episodes:
@@ -4511,6 +4652,7 @@ def train(config: DreamerConfig) -> None:
 
         # Average metrics across updates
         metrics = {k: float(np.mean(v)) for k, v in metrics_accum.items()}
+        metrics.update(sigma_metrics)
         metrics["train/updates"] = float(n_updates)
         metrics["time/sample"] = sample_time_total / max(n_updates, 1)
         metrics["time/sample_total"] = sample_time_total
@@ -4561,6 +4703,7 @@ def train(config: DreamerConfig) -> None:
         metrics["phase1/code_usage_scale"] = 0.5 * (
             current_scales_obs["code_usage_scale"] + current_scales_action["code_usage_scale"]
         )
+        last_exact_control_gate = float(metrics.get("actor/exact_control_gate", 0.0))
 
         dt = time.perf_counter() - t0
 
@@ -4644,6 +4787,7 @@ def train(config: DreamerConfig) -> None:
                 ("a_can", "policy/action_canonical_norm_mean"),
             ]
             line6_keys = [
+                ("sig", "policy/sigma_motor"),
                 ("col", "time/collection"),
                 ("smp", "time/sample"),
                 ("enc_t", "time/encoder"),
@@ -4668,12 +4812,14 @@ def train(config: DreamerConfig) -> None:
             ]
             line8_keys = [
                 ("c_cov", "critic/exact_covector_norm_mean"),
+                ("c_cal", "critic/calibration_ratio"),
                 ("c_stf", "critic/stiffness_certified"),
                 ("a_al", "actor/state_alpha"),
                 ("a_be", "actor/state_beta_pi"),
                 ("a_br", "actor/state_beta_pi_raw"),
                 ("a_sc", "actor/state_scale_trust"),
                 ("a_stf", "actor/stiffness_trust"),
+                ("xgate", "actor/exact_control_gate"),
                 ("a_gau", "actor/gauge_covector_norm_mean"),
             ]
 

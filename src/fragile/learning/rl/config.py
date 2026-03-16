@@ -108,6 +108,7 @@ class DreamerConfig:
     w_critic_on_policy_stiffness: float = 0.0
     critic_on_policy_horizon: int = 0
     critic_on_policy_batch_size: int = 0
+    critic_on_policy_decay: float = 1.0
     critic_stiffness_min: float = 0.01
     critic_stiffness_quantile: float = 0.5
     critic_stiffness_target_scale: float = 1.0
@@ -121,6 +122,9 @@ class DreamerConfig:
     actor_return_force_err_scale: float = 4.0
     actor_return_policy_sync_scale: float = 20.0
     actor_return_nonconservative_power: float = 2.0
+    actor_return_exact_increment_rel_scale: float = 1.0
+    actor_return_exact_covector_rel_scale: float = 1.0
+    actor_return_exact_control_power: float = 1.0
     w_actor_natural: float = 0.25
     w_actor_geodesic: float = 0.1
     w_actor_old_policy_chart_kl: float = 0.0
@@ -237,6 +241,9 @@ class DreamerConfig:
     normalize_observations: bool = True
     obs_norm_min_std: float = 1e-3
     sigma_motor: float = 0.1
+    sigma_motor_init: float = 0.0
+    sigma_motor_anneal_epochs: int = 0
+    sigma_motor_exact_gate_target: float = 0.0
 
     # --- Infrastructure ---
     device: str = field(
