@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  6 APR 2026 23:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  6 APR 2026 23:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -565,7 +565,7 @@ ine 88.
 [2]
 
 [3]
-Overfull \hbox (54.92473pt too wide) detected at line 267
+Overfull \hbox (54.92473pt too wide) detected at line 272
 \OML/cmm/m/it/10.95 e[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 n[] \OMS/cmsy/m/
 n/10.95 ! \OML/cmm/m/it/10.95 n[]\OT1/cmr/m/n/10.95 ) := (\OML/cmm/m/it/10.95 n
 [] \OMS/cmsy/m/n/10.95 ! \OML/cmm/m/it/10.95 n[]\OT1/cmr/m/n/10.95 )\OML/cmm/m/
@@ -580,7 +580,7 @@ mm/m/it/10.95 n[]\OT1/cmr/m/n/10.95 ) := (\OML/cmm/m/it/10.95 n[] \OMS/cmsy/m/n
 
 
 [4]
-Overfull \hbox (38.43376pt too wide) detected at line 316
+Overfull \hbox (38.43376pt too wide) detected at line 323
 [] \OT1/cmr/m/n/10.95 := \OMS/cmsy/m/n/10.95 ff\OML/cmm/m/it/10.95 u; v\OMS/cms
 y/m/n/10.95 g \OT1/cmr/m/n/10.95 : (\OML/cmm/m/it/10.95 u \OMS/cmsy/m/n/10.95 !
  \OML/cmm/m/it/10.95 v\OT1/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/
@@ -598,19 +598,19 @@ cmm/m/it/10.95 u; v\OMS/cmsy/m/n/10.95 g \OT1/cmr/m/n/10.95 : (\OML/cmm/m/it/10
 
 [5]
 
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 469.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 469.
+
+
+
 [6]
 
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 477.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 477.
-
-
-
 [7]
-LaTeX Font Info:    Trying to load font information for U+euf on input line 576
+LaTeX Font Info:    Trying to load font information for U+euf on input line 604
 .
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
 File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
@@ -621,43 +621,45 @@ File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
 )
 
 LaTeX Warning: Citation `gellmann1962symmetries' on page 8 undefined on input l
-ine 576.
+ine 604.
 
 
 LaTeX Warning: Citation `gellmann1962symmetries' on page 8 undefined on input l
-ine 590.
+ine 618.
 
 
 
 [8]
 
-LaTeX Warning: Citation `rothe2012lattice' on page 9 undefined on input line 64
-5.
+LaTeX Warning: Citation `rothe2012lattice' on page 9 undefined on input line 67
+9.
 
 
-LaTeX Warning: Citation `rothe2012lattice' on page 9 undefined on input line 68
-3.
+LaTeX Warning: Citation `rothe2012lattice' on page 9 undefined on input line 71
+7.
 
 
 
 [9]
 
 LaTeX Warning: Citation `wilson1974confinement' on page 10 undefined on input l
-ine 771.
+ine 805.
 
 
-LaTeX Warning: Citation `creutz1983quarks' on page 10 undefined on input line 7
-71.
+LaTeX Warning: Citation `creutz1983quarks' on page 10 undefined on input line 8
+05.
 
 
 
 [10]
 
 LaTeX Warning: Citation `montvay1994quantum' on page 11 undefined on input line
- 822.
+ 856.
 
 
-Overfull \hbox (38.50456pt too wide) detected at line 888
+
+[11]
+Overfull \hbox (38.50456pt too wide) detected at line 922
 \OMS/cmsy/m/n/10.95 Q \OT1/cmr/m/n/10.95 = []\OML/cmm/m/it/10.95 T; \OMS/cmsy/m
 /n/10.95 fA\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OMS/cm
 sy/m/n/10.95 g\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 fP[]g\OML/cmm/m/it/10.9
@@ -673,31 +675,31 @@ T1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 g[]\OML/cmm/m/it/10.95 ; S[]; S[]; S[][]
  []
 
 
-
-[11]
-
 LaTeX Warning: Citation `wilson1974confinement' on page 12 undefined on input l
-ine 917.
-
-
-LaTeX Warning: Citation `creutz1983quarks' on page 12 undefined on input line 9
-41.
-
-
-LaTeX Warning: Citation `rothe2012lattice' on page 12 undefined on input line 9
-41.
+ine 951.
 
 
 
 [12]
 
-LaTeX Warning: Citation `montvay1994quantum' on page 13 undefined on input line
- 979.
+LaTeX Warning: Citation `creutz1983quarks' on page 13 undefined on input line 9
+75.
 
+
+LaTeX Warning: Citation `rothe2012lattice' on page 13 undefined on input line 9
+75.
+
+
+LaTeX Warning: Citation `montvay1994quantum' on page 13 undefined on input line
+ 1013.
+
+
+
+[13]
 No file 03_lattice_qft.bbl.
 
 
-[13] (./03_lattice_qft.aux)
+[14] (./03_lattice_qft.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -713,13 +715,13 @@ Package rerunfilecheck Info: File `03_lattice_qft.out' has not changed.
 (rerunfilecheck)             Checksum: FB66D606F01A6ADEC7E0A131611F46AD;2419.
  ) 
 Here is how much of TeX's memory you used:
- 13861 strings out of 473197
- 215537 string characters out of 5718606
- 674100 words of memory out of 5000000
+ 13862 strings out of 473197
+ 215541 string characters out of 5718606
+ 673167 words of memory out of 5000000
  36629 multiletter control sequences out of 15000+600000
- 585899 words of font info for 218 fonts, out of 8000000 for 9000
+ 586004 words of font info for 218 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,1030b,755s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,79p,1030b,625s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texl
@@ -739,10 +741,10 @@ xmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/symbols/msam7.pfb></usr/share/texlive/texmf
 -dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-
 dist/fonts/type1/public/rsfs/rsfs10.pfb>
-Output written on 03_lattice_qft.pdf (13 pages, 309717 bytes).
+Output written on 03_lattice_qft.pdf (14 pages, 311081 bytes).
 PDF statistics:
- 337 PDF objects out of 1000 (max. 8388607)
- 279 compressed objects within 3 object streams
- 80 named destinations out of 1000 (max. 500000)
+ 341 PDF objects out of 1000 (max. 8388607)
+ 282 compressed objects within 3 object streams
+ 81 named destinations out of 1000 (max. 500000)
  41065 words of extra memory for PDF output out of 42996 (max. 10000000)
 

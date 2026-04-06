@@ -484,7 +484,7 @@ For $x=n_{i,t}\in\mcN$ and each coordinate $\alpha\in\{1,2,3\}$, define
 
 \begin{theorem}[Emergent local $SU(3)$ color symmetry]
 \label{thm:viscous-su3-local}
-For any map $\Omega:\mcN\to O(3)$ and each node $x\in\mcN$,
+For any map $\Omega:\mcN\to O(3)$ and each node $x\in\mcN$, define
 \[
 \mathbf c_x^\Omega:=\Omega(x)\mathbf c_x.
 \]
@@ -492,19 +492,26 @@ Because $\Omega(x)$ is real orthogonal, $\|\mathbf c_x^\Omega\|=\|\mathbf c_x\|$
 $x\in\mcN$.
 Hence the color data carry a local $O(3)$ redundancy, which embeds as real
 unitaries into $U(3)$.
-Imposing $\det\Omega(x)=1$ for every node yields a local $SU(3)$ redundancy
-on the color triplet bundle used below.
+Imposing $\det\Omega(x)=1$ for every node yields a local $SO(3)$ subgroup
+$SO(3)\subset SU(3)$ on each node.
+The full local $SU(3)$ bundle symmetry used below is then defined explicitly by
+$\Omega:\mcN\to SU(3)$ in Definition~\ref{def:gauge}.
 \begin{proof}
 \[
 \mathbf c_x^\Omega
-=\frac{\Omega(x)\mathbf F^{\mathrm{visc}}(x)\odot
-\exp\!\left(i\mu_p\,\mathbf v(x)\,\ell_0/\hbar_{\mathrm{eff}}\right)}
-{\sqrt{\|\mathbf F^{\mathrm{visc}}(x)\|^2+\epsilon_c^2}}
+=\frac{\Omega(x)\tilde{\mathbf c}_x}
+{\sqrt{\tilde{\mathbf c}_x^\dagger\tilde{\mathbf c}_x+\epsilon_c^2}}
+=\Omega(x)\mathbf c_x.
 \]
-where $\odot$ denotes elementwise multiplication.
-By definition this equals $\Omega(x)\mathbf c_x$.
-Since $\Omega(x)$ is orthogonal, $\|\Omega(x)\mathbf F^{\mathrm{visc}}(x)\|
-=\|\mathbf F^{\mathrm{visc}}(x)\|$.
+Since $\Omega(x)$ is orthogonal,
+\[
+\|\mathbf c_x^\Omega\|^2
+=\frac{\tilde{\mathbf c}_x^\dagger\Omega(x)^\dagger\Omega(x)\tilde{\mathbf c}_x}
+{\tilde{\mathbf c}_x^\dagger\tilde{\mathbf c}_x+\epsilon_c^2}
+=\frac{\tilde{\mathbf c}_x^\dagger\tilde{\mathbf c}_x+\epsilon_c^2}
+{\tilde{\mathbf c}_x^\dagger\tilde{\mathbf c}_x+\epsilon_c^2}
+=\|\mathbf c_x\|^2.
+\]
 Therefore the normalization denominator is unchanged and
 $\|\mathbf c_x^\Omega\|=\|\mathbf c_x\|$.
 \end{proof}

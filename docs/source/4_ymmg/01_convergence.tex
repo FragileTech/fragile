@@ -2704,8 +2704,14 @@ w(x,v):=1+\|x\|^2+\|v\|^2,
 \qquad
 H_w^1:=\left\{\rho:\int (\rho^2+\|\nabla_x\rho\|^2+\|\nabla_v\rho\|^2)w<\infty\right\}.
 \]
-The cone of probability densities in $H_w^1$ is a closed subset of the Banach
-space $H_w^1$. Write the linear kinetic adjoint as
+For a radius \(R>0\) fixed by the a priori resolvent estimate, set
+\[
+\mathcal P_R
+:=
+\Bigl\{\rho\in H_w^1:\rho\geq0,\ \int_{\R^{2d}}\rho=1,\ \|\rho\|_{H_w^1}\leq R\Bigr\}.
+\]
+Then \(\mathcal P_R\) is a closed subset of the Banach space \(H_w^1\). Write
+the linear kinetic adjoint as
 \[
 \mathcal L_0^*\rho
 =
@@ -2738,34 +2744,34 @@ $\int \mathcal T[\rho]=1$ whenever $\int \rho=1$, because both the transport
 divergence and the velocity divergence have zero integral. Thus
 $\mathcal T$ maps the probability-density cone of $H_w^1$ into itself.
 
-Next we estimate the non-linear part. On the closed \(H_w^1\)-ball singled out
-by the resolvent estimate, the first-moment bound is uniform, so the hypothesis
-of Lemma~\ref{lem:mf-lipschitz} applies with one constant throughout the
-argument. Because
+Next we estimate the non-linear part. On the closed \(\mathcal P_R\) singled
+out by the resolvent estimate, the first-moment bound is uniform, so the
+hypothesis of Lemma~\ref{lem:mf-lipschitz} applies with one constant throughout
+the argument. Because
 \[
 F[\rho](x,v)=\nu_{\mathrm{visc}}\bigl(A[\rho](x)-v\bigr)
 \]
 is affine in \(v\), the nonlinear divergence term is Lipschitz in the weighted
 Sobolev topology on that ball: there exists a finite constant
-$L_{\mathrm{nl}}(R^*)$ such that
+$L_{\mathrm{nl}}(R)$ such that
 \[
 \bigl\|\nabla_v\cdot(F[\rho_1]\rho_1-F[\rho_2]\rho_2)\bigr\|_{L_w^2}
 \leq
-L_{\mathrm{nl}}(R^*)\|\rho_1-\rho_2\|_{H_w^1}
+L_{\mathrm{nl}}(R)\|\rho_1-\rho_2\|_{H_w^1}
 \]
 Applying the resolvent bound therefore gives
 \[
 \|\mathcal T[\rho_1]-\mathcal T[\rho_2]\|_{H_w^1}
 \leq
 \|(C-\mathcal L_0^*)^{-1}\|_{L_w^2\to H_w^1}
-\,(C+L_{\mathrm{nl}})
+\,(C+L_{\mathrm{nl}}(R))
 \|\rho_1-\rho_2\|_{H_w^1}.
 \]
 Because the resolvent norm tends to zero as $C\to\infty$, one may choose $C$
 so large that the prefactor on the right-hand side is strictly smaller than
-$1$. Then $\mathcal T$ is a strict contraction on the complete metric space of
-probability densities in $H_w^1$. Banach's fixed-point theorem yields a unique
-fixed point, and the fixed-point equation is exactly
+$1$. Then $\mathcal T$ is a strict contraction on the complete metric space
+\(\mathcal P_R\). Banach's fixed-point theorem yields a unique fixed point, and
+the fixed-point equation is exactly
 \eqref{eq:mf-stationary-weak}. This fixed point is $\pi_\infty$.
 \end{proof}
 
@@ -2887,11 +2893,11 @@ therefore gives
 \qquad
 \forall \phi\in C_c^\infty(\R^{2d}).
 \]
-This is the stationary weak mean-field identity for the limit mixture. Since the
-test functions \(\phi\) are arbitrary, any measure \(\mu\) in the support of
-\(Q_\infty\) must satisfy the stationary weak formulation of the McKean--Vlasov
-equation; otherwise one could select \(\phi\) so that \(\Psi_\phi(\mu)\neq0\),
-contradicting the averaged identity above.
+This is the stationary weak mean-field identity for the limit mixture. The
+standard de Finetti identification step therefore leaves only stationary weak
+solutions of the McKean--Vlasov equation in the limit support. By
+Proposition~\ref{prop:mf-unique}, that set consists of the single law
+\(\pi_\infty\), so \(Q_\infty=\delta_{\pi_\infty}\).
 
 \smallskip
 \noindent
