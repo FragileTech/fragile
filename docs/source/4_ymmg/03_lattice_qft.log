@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  6 APR 2026 23:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  6 APR 2026 23:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -544,23 +544,9 @@ File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 
 
 
-LaTeX Warning: Citation `wilson1974confinement' on page 1 undefined on input li
-ne 62.
-
-
-
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-
-LaTeX Warning: Citation `creutz1983quarks' on page 2 undefined on input line 76
-.
-
-
-LaTeX Warning: Citation `gellmann1962symmetries' on page 2 undefined on input l
-ine 88.
-
-
 
 [2]
 
@@ -610,7 +596,7 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 [6]
 
 [7]
-LaTeX Font Info:    Trying to load font information for U+euf on input line 597
+LaTeX Font Info:    Trying to load font information for U+euf on input line 604
 .
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
 File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
@@ -620,44 +606,14 @@ File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
 
 )
 
-LaTeX Warning: Citation `gellmann1962symmetries' on page 8 undefined on input l
-ine 597.
-
-
-LaTeX Warning: Citation `gellmann1962symmetries' on page 8 undefined on input l
-ine 611.
-
-
-
 [8]
-
-LaTeX Warning: Citation `rothe2012lattice' on page 9 undefined on input line 67
-2.
-
-
-LaTeX Warning: Citation `rothe2012lattice' on page 9 undefined on input line 71
-0.
-
-
 
 [9]
 
-LaTeX Warning: Citation `wilson1974confinement' on page 10 undefined on input l
-ine 798.
-
-
-LaTeX Warning: Citation `creutz1983quarks' on page 10 undefined on input line 7
-98.
-
-
-
 [10]
 
-LaTeX Warning: Citation `montvay1994quantum' on page 11 undefined on input line
- 849.
-
-
-Overfull \hbox (38.50456pt too wide) detected at line 915
+[11]
+Overfull \hbox (38.50456pt too wide) detected at line 922
 \OMS/cmsy/m/n/10.95 Q \OT1/cmr/m/n/10.95 = []\OML/cmm/m/it/10.95 T; \OMS/cmsy/m
 /n/10.95 fA\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OMS/cm
 sy/m/n/10.95 g\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 fP[]g\OML/cmm/m/it/10.9
@@ -674,47 +630,24 @@ T1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 g[]\OML/cmm/m/it/10.95 ; S[]; S[]; S[][]
 
 
 
-[11]
-
-LaTeX Warning: Citation `wilson1974confinement' on page 12 undefined on input l
-ine 944.
-
-
-LaTeX Warning: Citation `creutz1983quarks' on page 12 undefined on input line 9
-68.
-
-
-LaTeX Warning: Citation `rothe2012lattice' on page 12 undefined on input line 9
-68.
-
-
-
 [12]
 
-LaTeX Warning: Citation `montvay1994quantum' on page 13 undefined on input line
- 1006.
+[13] (./03_lattice_qft.bbl)
 
-No file 03_lattice_qft.bbl.
-
-
-[13] (./03_lattice_qft.aux)
+[14] (./03_lattice_qft.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
 Package rerunfilecheck Info: File `03_lattice_qft.out' has not changed.
 (rerunfilecheck)             Checksum: FB66D606F01A6ADEC7E0A131611F46AD;2419.
  ) 
 Here is how much of TeX's memory you used:
- 13862 strings out of 473197
- 215495 string characters out of 5718606
- 673167 words of memory out of 5000000
- 36629 multiletter control sequences out of 15000+600000
- 586064 words of font info for 219 fonts, out of 8000000 for 9000
+ 13880 strings out of 473197
+ 215878 string characters out of 5718606
+ 673371 words of memory out of 5000000
+ 36639 multiletter control sequences out of 15000+600000
+ 586004 words of font info for 218 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,10n,79p,1011b,625s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
@@ -736,10 +669,10 @@ xmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/symbols/msam7.pfb></usr/share/texlive/texmf
 -dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-
 dist/fonts/type1/public/rsfs/rsfs10.pfb>
-Output written on 03_lattice_qft.pdf (13 pages, 310505 bytes).
+Output written on 03_lattice_qft.pdf (14 pages, 313095 bytes).
 PDF statistics:
- 336 PDF objects out of 1000 (max. 8388607)
- 278 compressed objects within 3 object streams
- 80 named destinations out of 1000 (max. 500000)
+ 363 PDF objects out of 1000 (max. 8388607)
+ 303 compressed objects within 4 object streams
+ 87 named destinations out of 1000 (max. 500000)
  41065 words of extra memory for PDF output out of 42996 (max. 10000000)
 

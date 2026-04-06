@@ -1,0 +1,13 @@
+# Fdb version 4
+["pdflatex"] 1775512566.39719 "02_axioms.tex" "02_axioms.pdf" "02_axioms" 1775512566.67762 2
+  "/etc/texmf/web2c/texmf.cnf" 1775461942.93881 475 c0e671620eb5563b2130f56340a5fde8 ""
+  "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1741904018 41538 c016915c1d51223b6dbbfe27341748a8 ""
+  "/usr/share/texmf/web2c/texmf.cnf" 1741904018 41538 c016915c1d51223b6dbbfe27341748a8 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775462000 3347157 e3d55367a58d5fdfabed5b8302e4b102 ""
+  "02_axioms.aux" 1775512558.39651 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "02_axioms.tex" 1775460397.3126 0 d41d8cd98f00b204e9800998ecf8427e ""
+  (generated)
+  "02_axioms.aux"
+  "02_axioms.log"
+  "02_axioms.pdf"
+  (rewritten before read)

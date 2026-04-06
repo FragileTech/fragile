@@ -1,4 +1,4 @@
-.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow physics-code
+.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow physics-code latex
 
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
@@ -63,6 +63,9 @@ physics-code:
 		echo "" >> physics_code.md; \
 	done
 	@echo "✓ physics_code.md generated"
+
+latex:
+	@cd docs/source/4_ymmg && latexmk -pdf -interaction=nonstopmode *.tex
 
 claude:
 	CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --dangerously-skip-permissions

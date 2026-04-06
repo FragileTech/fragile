@@ -1647,18 +1647,34 @@ Let \(\mu\ll\pi_1^{\otimes N}\) and write
 \[
 h_0=\frac{d\mu}{d\pi_1^{\otimes N}}.
 \]
-The relative entropy with respect to a product reference measure satisfies the
-usual chain rule under coordinate disintegration. Because \(P_t^{N,0}\) acts
-independently on each coordinate and preserves \(\pi_1\), the one-particle
-entropy contraction from Corollary~\ref{cor:backbone-gap} applies to each
-coordinate contribution in that chain rule. Integrating the resulting
-coordinatewise bounds gives
+Let \(h_t:=\frac{d(\mu P_t^{N,0})}{d\pi_1^{\otimes N}}\). The relative entropy
+with respect to a product reference measure satisfies the usual conditional
+chain rule:
+\[
+\KL(\mu P_t^{N,0}\,\|\,\pi_1^{\otimes N})
+=
+\sum_{i=1}^N
+\E_{\mu P_t^{N,0}}\!\Bigl[
+\KL\bigl((\mu P_t^{N,0})_{i\,|\,1:i-1}(\cdot\mid Z_1,\dots,Z_{i-1})\,\|\,\pi_1\bigr)
+\Bigr].
+\]
+Because \(P_t^{N,0}\) acts independently on each coordinate and preserves
+\(\pi_1\), the \(i\)-th conditional law evolves by the one-particle semigroup
+\(P_t^{(1),0}\) while the earlier coordinates are frozen. Corollary~\ref{cor:backbone-gap}
+therefore gives, for every conditioning value,
+\[
+\KL\bigl((\mu P_t^{N,0})_{i\,|\,1:i-1}(\cdot\mid Z_1,\dots,Z_{i-1})\,\|\,\pi_1\bigr)
+\leq
+ e^{-2\lambda_{\mathrm{hypo}}t}
+\KL\bigl(\mu_{i\,|\,1:i-1}(\cdot\mid Z_1,\dots,Z_{i-1})\,\|\,\pi_1\bigr).
+\]
+Taking expectations and summing over \(i\) gives
 \[
 \KL(\mu P_t^{N,0}\,\|\,\pi_1^{\otimes N})
 \leq
-e^{-2\lambda_{\mathrm{hypo}}t}\KL(\mu\,\|\,\pi_1^{\otimes N}),
+ e^{-2\lambda_{\mathrm{hypo}}t}\KL(\mu\,\|\,\pi_1^{\otimes N})
 \]
-which is the standard tensorization of entropy decay for product semigroups.
+for every $\mu\ll\pi_1^{\otimes N}$ and every $N\geq1$.
 \end{proof}
 
 \begin{remark}[Hypocoercive carré du champ]
@@ -2679,22 +2695,6 @@ $K_\varepsilon:=\{(x,v):\|x\|^2+\|v\|^2\leq R_\varepsilon^2\}$ satisfies
 Prokhorov's theorem therefore yields tightness.
 \end{proof}
 
-\begin{proposition}[Uniqueness of the stationary mean-field solution]\label{prop:mf-unique}
-There exists a unique probability density $\pi_\infty\in \mcP(\R^{2d})$ solving
-the stationary weak equation
-\begin{equation}\label{eq:mf-stationary-weak}
-\int_{\R^{2d}}
-\left[
-v\cdot \nabla_x \phi
-+\bigl(-\nabla U(x)-\gamma v+F[\pi_\infty](x,v)\bigr)\cdot \nabla_v \phi
-+\frac{\sigma^2}{2}\Delta_v \phi
-\right]
-\pi_\infty(dx\,dv)
-=0
-\end{equation}
-for every $\phi\in C_c^\infty(\R^{2d})$.
-\end{proposition}
-
 \begin{proof}
 We use the fixed-point argument based on the weighted resolvent of the kinetic
 Fokker--Planck operator.
@@ -2710,8 +2710,12 @@ For a radius \(R>0\) fixed by the a priori resolvent estimate, set
 :=
 \Bigl\{\rho\in H_w^1:\rho\geq0,\ \int_{\R^{2d}}\rho=1,\ \|\rho\|_{H_w^1}\leq R\Bigr\}.
 \]
-Then \(\mathcal P_R\) is a closed subset of the Banach space \(H_w^1\). Write
-the linear kinetic adjoint as
+Then \(\mathcal P_R\) is a closed subset of the Banach space \(H_w^1\), hence
+complete. The weighted norm on \(\mathcal P_R\) gives a uniform first-moment
+bound on that ball, so Lemma~\ref{lem:mf-lipschitz} applies there with one
+constant throughout the argument.
+
+Write the linear kinetic adjoint as
 \[
 \mathcal L_0^*\rho
 =
@@ -2737,27 +2741,56 @@ with uniformly convex potential yields a bounded map
 \[
 (C-\mathcal L_0^*)^{-1}:L_w^2\to H_w^1,
 \]
-whose operator norm tends to zero as $C\to\infty$. The positivity-preserving
-property of the kinetic semigroup implies $\mathcal T[\rho]\geq0$ whenever
-$\rho\geq0$, and integrating the defining equation over $\R^{2d}$ shows
-$\int \mathcal T[\rho]=1$ whenever $\int \rho=1$, because both the transport
-divergence and the velocity divergence have zero integral. Thus
-$\mathcal T$ maps the probability-density cone of $H_w^1$ into itself.
+whose operator norm we denote by \(M_C\) and which satisfies \(M_C\to0\) as
+$C\to\infty$. The positivity-preserving property of the kinetic semigroup
+implies \(\mathcal T[\rho]\geq0\) whenever \(\rho\geq0\), and integrating the
+defining equation over \(\R^{2d}\) shows
+\[
+\int_{\R^{2d}} \mathcal T[\rho]=1
+\qquad\text{whenever}\qquad
+\int_{\R^{2d}} \rho=1,
+\]
+because both the transport divergence and the velocity divergence have zero
+integral. Thus \(\mathcal T\) maps the probability-density cone of \(H_w^1\)
+into itself.
 
-Next we estimate the non-linear part. On the closed \(\mathcal P_R\) singled
-out by the resolvent estimate, the first-moment bound is uniform, so the
-hypothesis of Lemma~\ref{lem:mf-lipschitz} applies with one constant throughout
-the argument. Because
+Next we estimate the non-linear part. Since
 \[
 F[\rho](x,v)=\nu_{\mathrm{visc}}\bigl(A[\rho](x)-v\bigr)
 \]
-is affine in \(v\), the nonlinear divergence term is Lipschitz in the weighted
-Sobolev topology on that ball: there exists a finite constant
-$L_{\mathrm{nl}}(R)$ such that
+is affine in \(v\), the divergence difference splits as
+\[
+\nabla_v\cdot(F[\rho_1]\rho_1-F[\rho_2]\rho_2)
+=
+\nabla_v\cdot\bigl((F[\rho_1]-F[\rho_2])\rho_1\bigr)
++\nabla_v\cdot\bigl(F[\rho_2](\rho_1-\rho_2)\bigr).
+\]
+The uniform first-moment bound on \(\mathcal P_R\) and Lemma~\ref{lem:mf-lipschitz}
+therefore give a finite constant \(L_{\mathrm{nl}}(R)\) such that
 \[
 \bigl\|\nabla_v\cdot(F[\rho_1]\rho_1-F[\rho_2]\rho_2)\bigr\|_{L_w^2}
 \leq
 L_{\mathrm{nl}}(R)\|\rho_1-\rho_2\|_{H_w^1}
+\qquad
+\forall \rho_1,\rho_2\in\mathcal P_R.
+\]
+Applying the resolvent bound therefore gives
+\[
+\|\mathcal T[\rho_1]-\mathcal T[\rho_2]\|_{H_w^1}
+\leq
+M_C\bigl(C+L_{\mathrm{nl}}(R)\bigr)
+\|\rho_1-\rho_2\|_{H_w^1}.
+\]
+Because \(M_C\to0\) as $C\to\infty$, we may choose $C$ so large that
+\[
+\kappa_R:=M_C\bigl(C+L_{\mathrm{nl}}(R)\bigr)<1.
+\]
+The a priori resolvent estimate used to choose \(R\) also gives
+\(\mathcal T[\mathcal P_R]\subseteq \mathcal P_R\), so \(\mathcal T\) is a
+strict contraction on the complete metric space \(\mathcal P_R\). Banach's
+fixed-point theorem yields a unique fixed point, and the fixed-point equation
+is exactly \eqref{eq:mf-stationary-weak}. This fixed point is \(\pi_\infty\).
+\end{proof}
 \]
 Applying the resolvent bound therefore gives
 \[
@@ -2833,39 +2866,6 @@ By Lemma~\ref{lem:force-defect}, evaluated under the stationary law $\pi_N$,
 \frac{C_\phi}{\sqrt N}.
 \]
 Therefore
-\begin{equation}\label{eq:stationary-approx}
-\left|
-\int \mathcal L_{L_N}\phi(z_1)\,d\pi_N
-\right|
-\leq
-\frac{C_\phi}{\sqrt N}.
-\end{equation}
-
-\smallskip
-\noindent
-\textbf{Step 3: de Finetti reduction to the empirical law.}
-Applying Lemma~\ref{lem:emp-cond} with
-$G(z,\mu)=\mathcal L_\mu\phi(z)$ yields
-\[
-\int \mathcal L_{L_N}\phi(z_1)\,d\pi_N
-=
-\int_{\mcP(\R^{2d})}
-\left[
-\int_{\R^{2d}}\mathcal L_\mu\phi(z)\,\mu(dz)
-\right]
-Q_N(d\mu).
-\]
-Define
-\[
-\Psi_\phi(\mu):=\int_{\R^{2d}}\mathcal L_\mu\phi(z)\,\mu(dz).
-\]
-Then \eqref{eq:stationary-approx} becomes
-\[
-\left|\int \Psi_\phi(\mu)\,Q_N(d\mu)\right|
-\leq
-\frac{C_\phi}{\sqrt N}.
-\]
-
 \smallskip
 \noindent
 \textbf{Step 4: identification of limit points.}
@@ -2889,6 +2889,42 @@ because $K$ and $\nabla_v\phi$ are bounded and the denominator in $F[\mu]$ is
 uniformly bounded below by $k_*$. Passing to the limit in the previous display
 therefore gives
 \[
+\int_{\mcP(\R^{2d})}\Psi_\phi(\mu)\,Q_\infty(d\mu)=0
+\qquad
+\forall \phi\in C_c^\infty(\R^{2d}).
+\]
+This is the stationary weak mean-field identity for the limit mixture. The
+vanishing defect estimate \eqref{eq:stationary-approx}, together with the
+continuity just noted, puts us in the hypotheses of the standard nonlinear
+martingale-problem identification for exchangeable particle systems
+(equivalently, the de Finetti/Sznitman limit-point argument; see
+\cite{sznitman1991topics}). Hence
+\[
+Q_\infty\Bigl(\bigl\{\mu:\int_{\R^{2d}}\mathcal L_\mu\phi(z)\,\mu(dz)=0
+\ \forall \phi\in C_c^\infty(\R^{2d})\bigr\}\Bigr)=1.
+\]
+By Proposition~\ref{prop:mf-unique}, this set consists of the single law
+\(\pi_\infty\), so \(Q_\infty=\delta_{\pi_\infty}\).
+
+\smallskip
+\noindent
+\textbf{Step 5: uniqueness and collapse of the mixing measure.}
+Since the barycenter map is continuous on the uniform second-moment class,
+\[
+\bar\pi
+=
+\int \mu\,Q_\infty(d\mu)
+=
+\int \mu\,\delta_{\pi_\infty}(d\mu)
+=
+\pi_\infty.
+\]
+Thus every convergent subsequence of $\{\pi_{N,1}\}_{N\geq2}$ has the same
+limit, so the whole sequence converges:
+\[
+\pi_{N,1}\Rightarrow \pi_\infty.
+\]
+\end{proof}
 \int_{\mcP(\R^{2d})}\Psi_\phi(\mu)\,Q_\infty(d\mu)=0
 \qquad
 \forall \phi\in C_c^\infty(\R^{2d}).

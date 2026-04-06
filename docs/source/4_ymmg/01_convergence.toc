@@ -14,4 +14,4 @@
 \contentsline {section}{\numberline {8}Stationary Mean-Field Limit and Mean-Field LSI}{31}{section.8}%
 \contentsline {subsection}{\numberline {8.1}Exchangeability and finite de Finetti reduction}{31}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}Tightness, identification, and the stationary thermodynamic limit}{33}{subsection.8.2}%
-\contentsline {section}{\numberline {9}Discussion}{37}{section.9}%
+\contentsline {section}{\numberline {9}Discussion}{38}{section.9}%
