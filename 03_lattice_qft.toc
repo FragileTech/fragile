@@ -1,7 +1,14 @@
-\contentsline {section}{\numberline {1}Imported facts and notation}{1}{}%
-\contentsline {section}{\numberline {2}Recorded run and interaction complex}{2}{}%
-\contentsline {section}{\numberline {3}Viscous force from interaction edges}{4}{}%
-\contentsline {section}{\numberline {4}Color triplets and $SU(3)$ edge transport}{5}{}%
-\contentsline {section}{\numberline {5}Holonomy and gauge invariance}{6}{}%
-\contentsline {section}{\numberline {6}Matter sector on the same complex}{8}{}%
-\contentsline {section}{\numberline {7}Finite lattice-QFT data package}{8}{}%
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {paragraph}{Organization.}{2}{section*.2}%
+\contentsline {section}{\numberline {2}Notation and setup}{2}{section.2}%
+\contentsline {section}{\numberline {3}Recorded run and interaction complex}{4}{section.3}%
+\contentsline {section}{\numberline {4}Viscous force from interaction edges}{6}{section.4}%
+\contentsline {section}{\numberline {5}Color triplets and $SU(3)$ edge transport}{7}{section.5}%
+\contentsline {section}{\numberline {6}Holonomy and gauge invariance}{9}{section.6}%
+\contentsline {section}{\numberline {7}Matter sector on the same complex}{10}{section.7}%
+\contentsline {section}{\numberline {8}Finite lattice-QFT data package}{11}{section.8}%
+\contentsline {section}{\numberline {9}Discussion}{12}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Relationship to standard lattice QCD}{12}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Continuum limit}{12}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Quantization and partition function}{13}{subsection.9.3}%
+\contentsline {section}{\numberline {10}Conclusions}{13}{section.10}%

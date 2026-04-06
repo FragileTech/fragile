@@ -225,6 +225,46 @@ S(x,v):=(x,\psi(v)).
 \]
 \end{definition}
 
+\begin{definition}[BAOAB observation chain]\label{def:baoab}
+Fix a time step \(\Delta t>0\). The algorithmic update used at observation
+times is the BAOAB Strang splitting of the kinetic core:
+\[
+Z_{n+1}^{\mathrm{pre}}
+=
+\Phi_B^{\Delta t/2}\circ \Phi_A^{\Delta t/2}\circ \Phi_O^{\Delta t}
+\circ \Phi_A^{\Delta t/2}\circ \Phi_B^{\Delta t/2}(Z_n),
+\]
+where \(Z_n=(X_n,V_n)\) and the substeps are the explicit maps
+\[
+\Phi_B^h(X,V)
+:=
+\bigl(X,\,V+h\,G(X,V)\bigr),
+\qquad
+\Phi_A^h(X,V)
+:=
+\bigl(X+hV,\,V\bigr).
+\]
+Here \(G(X,V)=(G_1(X,V),\dots,G_N(X,V))\) with
+\[
+G_i(X,V):=-\nabla U(X_i)+F_i(X,V).
+\]
+The Ornstein--Uhlenbeck substep is
+\[
+\Phi_O^h(X,V)
+:=
+\left(X,\,e^{-\gamma h}V+\sqrt{\frac{\sigma^2}{2\gamma}\bigl(1-e^{-2\gamma h}\bigr)}\,\Xi\right),
+\]
+where \(\Xi\sim\mathcal N(0,I)\) is an independent standard Gaussian vector.
+The viscous force \(F_i\) is the row-normalized coupling from
+\eqref{eq:finite-visc}. The observed state is then postprocessed
+componentwise by
+\[
+Z_{n+1}=S(Z_{n+1}^{\mathrm{pre}})=(X_{n+1}^{\mathrm{pre}},\psi(V_{n+1}^{\mathrm{pre}})).
+\]
+This is the same BAOAB ordering used in the implementation and in the
+convergence-program notes already present elsewhere in the repository.
+\end{definition}
+
 \section{Structural Bounds: Confinement, Viscosity, and Squashing}
 
 \begin{lemma}[Smooth bounded cap]\label{lem:squash}
@@ -281,7 +321,6 @@ The speed cap is obvious from
 \leq V_{\mathrm{alg}}.
 \]
 \qedhere
-\]
 \end{proof}
 
 \begin{lemma}[Uniform bound on the finite-particle viscous force]\label{lem:visc-bound}
@@ -372,8 +411,9 @@ which is non-positive.
 
 \begin{lemma}[Lipschitz control of the mean-field alignment field]\label{lem:mf-lipschitz}
 Let $\mu,\nu\in\mcP(\R^{2d})$ have finite first moments. There exists a constant
-$L_{\mathrm{mf}}<\infty$, depending only on
-$\nu_{\mathrm{visc}},k_*,k^*,\ell_{\mathrm{visc}}$, such that
+$L_{\mathrm{mf}}<\infty$, depending on
+$\nu_{\mathrm{visc}},k_*,k^*,\ell_{\mathrm{visc}}$ and on a fixed first-moment
+bound for the measure class under consideration, such that
 \[
 \|F[\mu](x,v)-F[\nu](x',v')\|
 \leq
@@ -471,10 +511,14 @@ Fix $N$ and write the drift as
 \[
 b_N(X,V)=\bigl(V,-\nabla U(X)-\gamma V+F(X,V)\bigr).
 \]
-Because the kernel $K$ is $C^\infty$ and strictly positive, every weight
-$\omega_{ij}(X)$ is smooth in $X$. Hence $b_N$ is locally Lipschitz on
-$(\R^{2d})^N$. We therefore obtain a unique strong solution up to the explosion
-time. To rule out explosion, define
+Because the kernel $K$ is smooth and strictly positive, every denominator
+\[
+d_i(X)=\sum_{k\neq i}K(x_i,x_k)
+\]
+is bounded below by \((N-1)k_*\), so each normalized weight \(\omega_{ij}(X)\)
+is smooth in \(X\). Hence \(b_N\) is locally Lipschitz on \((\R^{2d})^N\), and
+standard SDE theory gives a unique strong solution up to the explosion time. To
+rule out explosion, define
 \[
 \mathcal E_N(X,V):=\frac1N\sum_{i=1}^N \bigl(\|X_i\|^2+\|V_i\|^2\bigr).
 \]
@@ -524,14 +568,14 @@ Consequently
 C_0+C_1\,\E\mathcal E_N(t)
 \]
 with constants depending only on
-$(m_U,L_U,\gamma,\sigma,\nu_{\mathrm{visc}},k_*,k^*)$ and not on $N$. By
-Gr\"onwall's lemma, $\sup_{t\leq T}\E\mathcal E_N(t)<\infty$ on every finite
+$(m_U,L_U,\gamma,\sigma,\nu_{\mathrm{visc}},k_*,k^*)$ and not on $N$. Gr\"onwall's
+lemma then gives $\sup_{t\leq T}\E\mathcal E_N(t)<\infty$ on every finite
 interval, which excludes explosion. Hence the strong solution is global.
 
-For the McKean--Vlasov equation, Lemma~\ref{lem:mf-lipschitz} yields Lipschitz
-dependence of the drift on $(x,v,\mu)$ in the $W_1$ topology, while the force
-has at most linear growth in $(x,v)$ under a finite second moment assumption on
-$\mu$. A Picard iteration on the nonlinear SDE
+For the McKean--Vlasov equation, Lemma~\ref{lem:mf-lipschitz} gives the local
+Lipschitz dependence of the drift on \((x,v,\mu)\) on moment-bounded classes,
+while the force has at most linear growth in \((x,v)\) under a finite second
+moment assumption on \(\mu\). A Picard iteration on the nonlinear SDE
 \[
 d\bar X_t=\bar V_t\,dt,
 \qquad
@@ -540,7 +584,7 @@ d\bar V_t=
 +\sigma\,dW_t
 \]
 combined with the same Lyapunov estimate as above yields a unique global strong
-solution with law $f_t\in C([0,\infty);\mcP_2(\R^{2d}))$.
+solution with law \(f_t\in C([0,\infty);\mcP_2(\R^{2d}))\).
 \end{proof}
 
 \begin{proposition}[Quadratic moment bounds]\label{prop:moments}
@@ -562,23 +606,26 @@ for every $N\geq2$, and
 \end{proposition}
 
 \begin{proof}
-The finite-particle estimate is exactly the differential inequality derived in
-the proof of Proposition~\ref{prop:wp}. For the mean-field equation, apply
-It\^o's formula to $\|\bar X_t\|^2+\|\bar V_t\|^2$ along the nonlinear SDE.
-Since
+For the finite-particle system, the estimate from Proposition~\ref{prop:wp}
+already gives a closed differential inequality for the averaged quadratic
+energy, so the uniform bound follows by taking expectations and applying
+Gr\"onwall's lemma.
+
+For the mean-field equation, apply It\^o's formula to
+\(\|\bar X_t\|^2+\|\bar V_t\|^2\) along the nonlinear SDE. Since
 \[
 \|F[f_t](x,v)\|
 \leq
 \frac{\nu_{\mathrm{visc}}k^*}{k_*}
 \left(\int \|q\|\,f_t(dy,dq)+\|v\|\right),
 \]
-Young's inequality yields
+Young's inequality gives
 \[
 \frac{d}{dt}\E\bigl[\|\bar X_t\|^2+\|\bar V_t\|^2\bigr]
 \leq
 C_0+C_1\E\bigl[\|\bar X_t\|^2+\|\bar V_t\|^2\bigr].
 \]
-Another application of Gr\"onwall's lemma finishes the proof.
+Applying Gr\"onwall's lemma yields the claimed bound.
 \end{proof}
 
 \section{Detailed Backbone and Viscous Derivations}
@@ -1331,16 +1378,25 @@ A(X)\Sigma_X+\Sigma_X A(X)^\top=\sigma^2 I_{Nd};
 \end{proposition}
 
 \begin{proof}
-For fixed $X$, the SDE is an Ornstein--Uhlenbeck process with constant drift
-matrix $A(X)$ and constant forcing $-b(X)$. Since
-Lemma~\ref{lem:weighted-sym}(iv) yields
-$\mathrm{Re}\,\mathrm{spec}(A(X))\subset[\gamma,\infty)$, the process is stable
-and has a unique stationary Gaussian law with mean $m_X=-A(X)^{-1}b(X)$ and
-covariance solving \eqref{eq:lyap}.
+For fixed \(X\), the velocity equation is a linear Ornstein--Uhlenbeck process
+with constant drift matrix \(A(X)\) and constant forcing \(-b(X)\). By
+Lemma~\ref{lem:weighted-sym}(iv), the spectrum of \(A(X)\) lies in
+\([\gamma,\infty)\), so the linear system is exponentially stable. The unique
+stationary law is therefore Gaussian with mean
+\[
+m_X=-A(X)^{-1}b(X),
+\]
+and the covariance \(\Sigma_X\) is the unique positive semidefinite solution of
+\eqref{eq:lyap}.
 
-To bound the covariance, write $H(X):=D(X)^{1/2}\otimes I_d$ and
-$A(X)=H(X)^{-1}\widetilde A(X)H(X)$ with $\widetilde A(X)$ symmetric positive
-definite. The covariance admits the integral representation
+To bound the covariance, write \(H(X):=D(X)^{1/2}\otimes I_d\) and
+\[
+A(X)=H(X)^{-1}\widetilde A(X)H(X),
+\qquad
+\widetilde A(X)=\gamma I_{Nd}+\nu_{\mathrm{visc}}\widetilde L(X)\otimes I_d.
+\]
+Since \(\widetilde A(X)\) is symmetric positive definite, the covariance admits
+the standard OU representation
 \[
 \Sigma_X
 =
@@ -1353,7 +1409,7 @@ Substituting the similarity transform gives
 \sigma^2 H^{-1}\left[\int_0^\infty
 e^{-\widetilde A t}H^2e^{-\widetilde A t}\,dt\right]H^{-1}.
 \]
-For any $u\in\R^{Nd}$ with $\|u\|=1$, set $w=H^{-1}u$. Then
+For any \(u\in\R^{Nd}\) with \(\|u\|=1\), set \(w=H^{-1}u\). Then
 \begin{align*}
 u^\top \Sigma_X u
 &=
@@ -1382,7 +1438,8 @@ we have
 \leq
 \frac{k^*}{k_*}.
 \]
-Taking the supremum over unit vectors $u$ proves the covariance bound.
+Taking the supremum over unit vectors \(u\) proves the stated bound on
+\(\lambda_{\max}(\Sigma_X)\).
 \end{proof}
 
 \begin{corollary}[Conditional Gaussian Poincar\'e inequality]\label{cor:conditional-poincare}
@@ -1397,8 +1454,12 @@ $g:\R^{Nd}\to \R$,
 \end{corollary}
 
 \begin{proof}
-The Poincar\'e constant of a Gaussian law is the largest eigenvalue of its
-covariance matrix. Apply Proposition~\ref{prop:gaussian}.
+For a centered Gaussian law \(\mathcal N(m,\Sigma)\), the sharp Poincar\'e
+constant is \(\lambda_{\max}(\Sigma)\). Since translating by the mean does not
+change the variance or the gradient term, the same constant applies to
+\(\mathcal N(m_X,\Sigma_X)\). Proposition~\ref{prop:gaussian} bounds
+\(\lambda_{\max}(\Sigma_X)\) by \(\frac{k^*}{k_*}\frac{\sigma^2}{2\gamma}\), so
+the stated inequality follows.
 \end{proof}
 
 \begin{lemma}[Derivative bounds for the normalized weights]\label{lem:weight-deriv}
@@ -1556,7 +1617,7 @@ C_\omega \frac1N\sum_{j=1}^N \|V_j\|^2.
 Collecting terms yields \eqref{eq:force-x-deriv}.
 \end{proof}
 
-\section{Finite-Particle Hypocoercivity and $N$-Uniform LSI}
+\section{Finite-Particle Hypocoercivity and N-Uniform LSI}
 
 \subsection{Backbone gap and viscous perturbation}
 
@@ -1577,11 +1638,27 @@ for every $\mu\ll\pi_1^{\otimes N}$ and every $N\geq1$.
 \end{proposition}
 
 \begin{proof}
-The uncoupled semigroup factorizes:
-$P_t^{N,0}=(P_t^{(1),0})^{\otimes N}$.
-Relative entropy is additive on product measures, so the one-particle estimate
-from Corollary~\ref{cor:backbone-gap} yields the same decay rate on
-$\pi_1^{\otimes N}$.
+The uncoupled generator is the sum of the \(N\) one-particle generators, so the
+semigroup factorizes as
+\[
+P_t^{N,0}=(P_t^{(1),0})^{\otimes N}.
+\]
+Let \(\mu\ll\pi_1^{\otimes N}\) and write
+\[
+h_0=\frac{d\mu}{d\pi_1^{\otimes N}}.
+\]
+The relative entropy with respect to a product reference measure satisfies the
+usual chain rule under coordinate disintegration. Because \(P_t^{N,0}\) acts
+independently on each coordinate and preserves \(\pi_1\), the one-particle
+entropy contraction from Corollary~\ref{cor:backbone-gap} applies to each
+coordinate contribution in that chain rule. Integrating the resulting
+coordinatewise bounds gives
+\[
+\KL(\mu P_t^{N,0}\,\|\,\pi_1^{\otimes N})
+\leq
+e^{-2\lambda_{\mathrm{hypo}}t}\KL(\mu\,\|\,\pi_1^{\otimes N}),
+\]
+which is the standard tensorization of entropy decay for product semigroups.
 \end{proof}
 
 \begin{remark}[Hypocoercive carré du champ]
@@ -1809,13 +1886,19 @@ Under the assumptions of Theorem~\ref{thm:finite-lsi},
 \end{corollary}
 
 \begin{proof}
-Pinsker's inequality gives
+Pinsker's inequality says that for any probability measures \(\alpha,\beta\),
+\[
+\|\alpha-\beta\|_{\TV}\le \sqrt{2\,\KL(\alpha\|\beta)}.
+\]
+Apply this with \(\alpha=\mu P_t^N\) and \(\beta=\pi_N\), then use
+\eqref{eq:kl-finite}:
 \[
 \|\mu P_t^N-\pi_N\|_{\TV}
-\leq
-\sqrt{2\,\KL(\mu P_t^N\,\|\,\pi_N)}.
+\le
+\sqrt{2\,\KL(\mu P_t^N\|\pi_N)}
+\le
+\sqrt{2}\,e^{-\lambda_* t}\,\KL(\mu\|\pi_N)^{1/2}.
 \]
-Apply \eqref{eq:kl-finite} and take square roots.
 \end{proof}
 
 \subsection{The squashed observation chain}
@@ -1835,9 +1918,23 @@ W_p(S_\#\mu,S_\#\nu)\leq W_p(\mu,\nu).
 \end{proposition}
 
 \begin{proof}
-Total variation contracts under measurable pushforwards. The Wasserstein
-contraction follows from Lemma~\ref{lem:squash}, since the observation map is
-$1$-Lipschitz in velocity and the identity in position.
+For total variation, if \(A\) is measurable in the target space then
+\[
+(S_\#\mu)(A)-(S_\#\nu)(A)=\mu(S^{-1}A)-\nu(S^{-1}A),
+\]
+so taking the supremum over measurable sets immediately yields
+\(\|S_\#\mu-S_\#\nu\|_{\TV}\le \|\mu-\nu\|_{\TV}\).
+
+For Wasserstein distances, let \(\pi\) be any coupling of \(\mu\) and \(\nu\).
+Then \((S,S)_\#\pi\) is a coupling of \(S_\#\mu\) and \(S_\#\nu\), and
+Lemma~\ref{lem:squash} gives
+\[
+\|(X,\psi(V))-(X',\psi(V'))\|
+\le
+\|(X,V)-(X',V')\|.
+\]
+Integrating this inequality against \(\pi\) and taking the infimum over
+couplings proves the Wasserstein contraction.
 \end{proof}
 
 \begin{remark}
@@ -1871,9 +1968,19 @@ $\|v_i\|\leq V_{\mathrm{alg}}$.
 \end{corollary}
 
 \begin{proof}
-Apply Corollary~\ref{cor:tv-finite} at time $m\tau$ and then push forward by
-$S$ using Proposition~\ref{prop:squash-transfer}. The velocity bound is exactly
-the definition of $\psi$.
+Let \(P_{m\tau}^N\) denote the continuous-time evolution over \(m\tau\). The
+observation chain is obtained by composing that evolution with the deterministic
+map \(S\), and both the Markov kernel \(P_{m\tau}^N\) and the pushforward \(S_\#\)
+are contractions in total variation. Therefore
+\[
+\|\mu Q_\tau^{N,m}-S_\#\pi_N\|_{\TV}
+\le
+\|\mu P_{m\tau}^N-\pi_N\|_{\TV}.
+\]
+Now apply Corollary~\ref{cor:tv-finite} at time \(m\tau\) to get the displayed
+bound. The velocity estimate follows directly from
+\(\|\psi(v)\|\le V_{\mathrm{alg}}\), so every observed velocity is capped at the
+algorithmic bound.
 \end{proof}
 
 \section{Mean-Field Equation and Propagation of Chaos}
@@ -2478,12 +2585,16 @@ If $\pi_{N,1}$ denotes the first marginal of $\pi_N$, then
 \end{corollary}
 
 \begin{proof}
-Apply Theorem~\ref{thm:definetti} with $k=1$. Since
-$1(1-1)/(2N)=0$, the total-variation distance is zero:
+Apply Theorem~\ref{thm:definetti} with \(k=1\). Since
+\[
+\frac{1(1-1)}{2N}=0,
+\]
+the total-variation distance is zero:
 \[
 d_{\TV}\!\left(\pi_{N,1},\int \mu\,Q_N(d\mu)\right)=0.
 \]
-Hence the two measures coincide.
+Two probability measures at total-variation distance zero are equal, so the
+first marginal is exactly the barycenter of \(Q_N\).
 \end{proof}
 
 \begin{lemma}[Conditioning on the empirical measure]\label{lem:emp-cond}
@@ -2497,20 +2608,20 @@ exchangeable law $\pi_N$,
 \end{lemma}
 
 \begin{proof}
-Exchangeability gives
+By exchangeability, each index \(i\) has the same law as index \(1\), so
 \[
 \E_{\pi_N}[G((X_1,V_1),L_N)]
 =
 \frac1N\sum_{i=1}^N \E_{\pi_N}[G((X_i,V_i),L_N)].
 \]
 Inside the expectation, the empirical average is exactly the integral against
-$L_N$:
+the empirical measure:
 \[
 \frac1N\sum_{i=1}^N G((X_i,V_i),L_N)
 =
 \int_{\R^{2d}} G(z,L_N)\,L_N(dz).
 \]
-Taking expectations proves the identity.
+Taking expectations of both sides gives the claimed identity.
 \end{proof}
 
 \subsection{Tightness, identification, and the stationary thermodynamic limit}
@@ -2627,23 +2738,21 @@ $\int \mathcal T[\rho]=1$ whenever $\int \rho=1$, because both the transport
 divergence and the velocity divergence have zero integral. Thus
 $\mathcal T$ maps the probability-density cone of $H_w^1$ into itself.
 
-Next we estimate the non-linear part. Lemma~\ref{lem:mf-lipschitz}, together
-with the weighted Sobolev embedding
-$H_w^1(\R^{2d})\hookrightarrow \mcP_1(\R^{2d})$ on bounded balls,
-controls the mean-field force in terms of the underlying density:
+Next we estimate the non-linear part. On the closed \(H_w^1\)-ball singled out
+by the resolvent estimate, the first-moment bound is uniform, so the hypothesis
+of Lemma~\ref{lem:mf-lipschitz} applies with one constant throughout the
+argument. Because
 \[
-\|F[\rho_1]-F[\rho_2]\|_{L^\infty}
-\leq
-L_F\|\rho_1-\rho_2\|_{H_w^1}.
+F[\rho](x,v)=\nu_{\mathrm{visc}}\bigl(A[\rho](x)-v\bigr)
 \]
-Since $F[\rho](x,v)=\nu_{\mathrm{visc}}(A[\rho](x)-v)$ is affine in $v$ and
-globally bounded in $x$ on bounded $H_w^1$-balls, one obtains
+is affine in \(v\), the nonlinear divergence term is Lipschitz in the weighted
+Sobolev topology on that ball: there exists a finite constant
+$L_{\mathrm{nl}}(R^*)$ such that
 \[
 \bigl\|\nabla_v\cdot(F[\rho_1]\rho_1-F[\rho_2]\rho_2)\bigr\|_{L_w^2}
 \leq
-L_{\mathrm{nl}}\|\rho_1-\rho_2\|_{H_w^1}
+L_{\mathrm{nl}}(R^*)\|\rho_1-\rho_2\|_{H_w^1}
 \]
-for some finite constant $L_{\mathrm{nl}}$.
 Applying the resolvent bound therefore gives
 \[
 \|\mathcal T[\rho_1]-\mathcal T[\rho_2]\|_{H_w^1}
@@ -2778,12 +2887,11 @@ therefore gives
 \qquad
 \forall \phi\in C_c^\infty(\R^{2d}).
 \]
-This identification mechanism is the stationary mean-field limit argument for
-the kinetic core: the finite de Finetti reduction converts the discrete empirical
-interaction into the mean-field weak formulation. The strong law of large
-numbers under the product fibers $\mu^{\otimes N}$ and the continuity of the
-interaction functional imply that $Q_\infty$ is concentrated on stationary weak
-solutions of the McKean--Vlasov equation.
+This is the stationary weak mean-field identity for the limit mixture. Since the
+test functions \(\phi\) are arbitrary, any measure \(\mu\) in the support of
+\(Q_\infty\) must satisfy the stationary weak formulation of the McKean--Vlasov
+equation; otherwise one could select \(\phi\) so that \(\Psi_\phi(\mu)\neq0\),
+contradicting the averaged identity above.
 
 \smallskip
 \noindent
@@ -2855,54 +2963,47 @@ $C_{\mathrm{LSI}}$ as in \eqref{eq:lsi-finite}.
 \end{theorem}
 
 \begin{proof}
-Fix $g\in C_c^\infty(\R^{2d})$ and lift it to $(\R^{2d})^N$ by
+Fix \(g\in C_c^\infty(\R^{2d})\) and extend it to \((\R^{2d})^N\) by
 \[
 G_N(z_1,\dots,z_N):=g(z_1).
 \]
-Applying the finite-particle LSI \eqref{eq:lsi-finite} gives
+Applying the finite-particle inequality \eqref{eq:lsi-finite} to \(G_N\) gives
 \[
 \Ent_{\pi_N}(G_N^2)
-\leq
-C_{\mathrm{LSI}}
-\int \Gamma_{\mathrm{hypo}}^N(G_N,G_N)\,d\pi_N.
+\le
+C_{\mathrm{LSI}}\int \Gamma_{\mathrm{hypo}}^N(G_N,G_N)\,d\pi_N.
 \]
-Because $G_N$ depends only on the first coordinate,
+Because \(G_N\) depends only on the first particle,
 \[
-\Ent_{\pi_N}(G_N^2)=\Ent_{\pi_{N,1}}(g^2)
-\]
-and
-\[
+\Ent_{\pi_N}(G_N^2)=\Ent_{\pi_{N,1}}(g^2),
+\qquad
 \Gamma_{\mathrm{hypo}}^N(G_N,G_N)(z_1,\dots,z_N)
 =
 \Gamma_{\mathrm{hypo}}^\infty(g,g)(z_1).
 \]
-Hence
+Therefore
 \[
 \Ent_{\pi_{N,1}}(g^2)
-\leq
-C_{\mathrm{LSI}}
-\int_{\R^{2d}} \Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_{N,1}.
+\le
+C_{\mathrm{LSI}}\int_{\R^{2d}}\Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_{N,1}.
 \]
-Theorem~\ref{thm:stationary-poc} gives $\pi_{N,1}\Rightarrow\pi_\infty$. Since
-$g$ is smooth and compactly supported, both $g^2$ and $g^2\log g^2$ are bounded
-and continuous, and so is $\Gamma_{\mathrm{hypo}}^\infty(g,g)$. Therefore
+Theorem~\ref{thm:stationary-poc} gives \(\pi_{N,1}\Rightarrow\pi_\infty\). Since
+\(g\) is smooth and compactly supported, the functions \(g^2\),
+\(g^2\log g^2\), and \(\Gamma_{\mathrm{hypo}}^\infty(g,g)\) are bounded and
+continuous on \(\R^{2d}\) (with the convention \(0\log 0=0\)). Weak convergence
+therefore implies
 \[
-\int g^2\,d\pi_{N,1}\to \int g^2\,d\pi_\infty,
+\Ent_{\pi_{N,1}}(g^2)\to \Ent_{\pi_\infty}(g^2),
 \qquad
-\int g^2\log g^2\,d\pi_{N,1}\to \int g^2\log g^2\,d\pi_\infty,
-\]
-and
-\[
 \int \Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_{N,1}
 \to
 \int \Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_\infty.
 \]
-Passing to the limit in the finite-$N$ inequality yields
+Passing to the limit in the finite-\(N\) inequality yields
 \[
 \Ent_{\pi_\infty}(g^2)
-\leq
-C_{\mathrm{LSI}}
-\int \Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_\infty,
+\le
+C_{\mathrm{LSI}}\int \Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_\infty,
 \]
 which is the desired mean-field logarithmic Sobolev inequality.
 \end{proof}
