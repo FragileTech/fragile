@@ -1,7 +1,7 @@
 \contentsline {section}{\numberline {1}Imported facts and notation}{1}{}%
 \contentsline {section}{\numberline {2}Recorded run and interaction complex}{2}{}%
-\contentsline {section}{\numberline {3}Viscous force from interaction edges}{3}{}%
-\contentsline {section}{\numberline {4}Color triplets and $SU(3)$ edge transport}{4}{}%
-\contentsline {section}{\numberline {5}Holonomy and gauge invariance}{5}{}%
-\contentsline {section}{\numberline {6}Matter sector on the same complex}{6}{}%
-\contentsline {section}{\numberline {7}Finite lattice-QFT data package}{7}{}%
+\contentsline {section}{\numberline {3}Viscous force from interaction edges}{4}{}%
+\contentsline {section}{\numberline {4}Color triplets and $SU(3)$ edge transport}{5}{}%
+\contentsline {section}{\numberline {5}Holonomy and gauge invariance}{6}{}%
+\contentsline {section}{\numberline {6}Matter sector on the same complex}{8}{}%
+\contentsline {section}{\numberline {7}Finite lattice-QFT data package}{8}{}%

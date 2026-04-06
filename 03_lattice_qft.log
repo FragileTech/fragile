@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  6 APR 2026 13:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  6 APR 2026 13:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -391,54 +391,46 @@ Package microtype Info: Loading generic protrusion settings for font family
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 
 [2]
-
-[3]
-
-[4]
-LaTeX Font Info:    Trying to load font information for U+euf on input line 322
-.
- (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
-File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
-)
-(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-euf.cfg
-File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
-
-)
-
-[5]
-
-[6]
-Overfull \hbox (41.08241pt too wide) detected at line 496
-\OMS/cmsy/m/n/10.95 Q \OT1/cmr/m/n/10.95 = []\OML/cmm/m/it/10.95 T; \OMS/cmsy/m
-/n/10.95 fA\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OMS/cm
-sy/m/n/10.95 g\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 fP[]g\OML/cmm/m/it/10.9
-5 ; \OMS/cmsy/m/n/10.95 N\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 E\OML/cmm/m/
-it/10.95 ; \OMS/cmsy/m/n/10.95 T\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 f\OML
-/cmm/m/it/10.95 x[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 
-)\OML/cmm/m/it/10.95 ; v[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n
-/10.95 )\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 ^^H[](\OML/cmm/m/it/10.95 t\OT
-1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 g[]\OML/cmm/m/it/10.95 ; K[]; ^^W[]; \U/ms
-b/m/n/10.95 ~[]\OML/cmm/m/it/10.95 ; m; `[]; ^^O[]; g[]; ^^L; ^^Q; \OMS/cmsy/m/
-n/10.95 f\OML/cmm/m/it/10.95 U[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 e\OT1/c
-mr/m/n/10.95 )\OMS/cmsy/m/n/10.95 g[]\OML/cmm/m/it/10.95 ; S[]; S[]; S[][]
+Overfull \hbox (38.43376pt too wide) detected at line 185
+[] \OT1/cmr/m/n/10.95 := \OMS/cmsy/m/n/10.95 ff\OML/cmm/m/it/10.95 u; v\OMS/cms
+y/m/n/10.95 g \OT1/cmr/m/n/10.95 : (\OML/cmm/m/it/10.95 u \OMS/cmsy/m/n/10.95 !
+ \OML/cmm/m/it/10.95 v\OT1/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/
+10.95 E[]\OMS/cmsy/m/n/10.95 g\OML/cmm/m/it/10.95 ;  [] \OT1/cmr/m/n/10.95 := \
+OMS/cmsy/m/n/10.95 ff\OML/cmm/m/it/10.95 u; v\OMS/cmsy/m/n/10.95 g \OT1/cmr/m/n
+/10.95 : (\OML/cmm/m/it/10.95 u \OMS/cmsy/m/n/10.95 ! \OML/cmm/m/it/10.95 v\OT1
+/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 E[]\OMS/cmsy/m/n/10.
+95 g\OML/cmm/m/it/10.95 ;  [] \OT1/cmr/m/n/10.95 := \OMS/cmsy/m/n/10.95 ff\OML/
+cmm/m/it/10.95 u; v\OMS/cmsy/m/n/10.95 g \OT1/cmr/m/n/10.95 : (\OML/cmm/m/it/10
+.95 u \OMS/cmsy/m/n/10.95 ! \OML/cmm/m/it/10.95 v\OT1/cmr/m/n/10.95 ) \OMS/cmsy
+/m/n/10.95 2 \OML/cmm/m/it/10.95 E[]\OMS/cmsy/m/n/10.95 g\OML/cmm/m/it/10.95 ;
  []
 
 
 
-[7] (./03_lattice_qft.aux)
+[3]
+
+[4]
+
+[5]
+
+[6]
+
+[7]
+
+[8] (./03_lattice_qft.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 6927 strings out of 473197
- 108094 string characters out of 5718606
- 560472 words of memory out of 5000000
- 29950 multiletter control sequences out of 15000+600000
- 583670 words of font info for 181 fonts, out of 8000000 for 9000
+ 6915 strings out of 473197
+ 107728 string characters out of 5718606
+ 560607 words of memory out of 5000000
+ 29938 multiletter control sequences out of 15000+600000
+ 583298 words of font info for 182 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 63i,10n,70p,1030b,290s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 63i,10n,70p,1030b,288s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texl
@@ -455,15 +447,14 @@ fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/euler/eufm10.pfb></usr/share/texlive/texmf-dist/fo
-nts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fon
-ts/type1/public/amsfonts/symbols/msam7.pfb></usr/share/texlive/texmf-dist/fonts
-/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/rsfs/rsfs10.pfb>
-Output written on 03_lattice_qft.pdf (7 pages, 272336 bytes).
+/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/symbols/msam7.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fon
+ts/type1/public/rsfs/rsfs10.pfb>
+Output written on 03_lattice_qft.pdf (8 pages, 275067 bytes).
 PDF statistics:
- 138 PDF objects out of 1000 (max. 8388607)
- 84 compressed objects within 1 object stream
+ 136 PDF objects out of 1000 (max. 8388607)
+ 83 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  41985 words of extra memory for PDF output out of 42996 (max. 10000000)
 

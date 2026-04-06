@@ -55,6 +55,9 @@ From the kernel assumption in \texttt{01\_convergence.tex}, the kernel satisfies
 \kappa_*:=\inf_{x,y}K_\rho(x,y)=\kappa_0,\qquad
 \kappa^*:=\sup_{x,y}K_\rho(x,y)=1+\kappa_0<\infty.
 \]
+No other assumptions from the kinetic convergence proof are imported.
+\medskip
+
 A recorded trajectory is available at discrete times
 \[
 \Tset=\{0,1,\dots,T\},\quad T\in\N,
@@ -66,6 +69,45 @@ x_i(t),\,v_i(t)\in\R^3,\qquad \Phi_i(t)\in\R,\qquad i\in\mathcal A(t),\ t\in\Tse
 At each timestep $t$, $\mathcal P_t\subseteq \mathcal A(t)\times\mathcal A(t)\setminus\{(i,i):i\in\mathcal A(t)\}$
 is finite and records the ordered interaction companions used by the algorithm at $t$.
 \end{definition}
+
+\begin{lemma}[Kernel orthogonal symmetry]
+\label{lem:kernel-orth}
+For every orthogonal matrix $O\in O(3)$ and all $x,y\in\R^3$,
+\[
+K_\rho(Ox,Oy)=K_\rho(x,y).
+\]
+\end{lemma}
+\begin{proof}
+By definition,
+\[
+\|Ox-Oy\|^2=\|x-y\|^2,
+\]
+so the Gaussian factor is invariant under simultaneous orthogonal transformation.
+\end{proof}
+
+\begin{lemma}[Orthogonal covariance]
+\label{lem:orthogonal}
+Let $O\in O(3)$ and define transformed data $x_i'(t)=Ox_i(t)$, $v_i'(t)=Ov_i(t)$.
+Then for each node $x=n_{i,t}$,
+\[
+\mathbf F^{\mathrm{visc}}(x;\text{transformed data})=O\,\mathbf F^{\mathrm{visc}}(x;\text{original data}).
+\]
+\end{lemma}
+\begin{proof}
+Lemma~\ref{lem:kernel-orth} gives $K_\rho(Ox_i,Ox_j)=K_\rho(x_i,x_j)$, hence
+\[
+\deg_{\mathrm{IG}}'(i,t)=\deg_{\mathrm{IG}}(i,t),
+\qquad
+\omega_{ij}^{\mathrm{IG}\prime}(t)=\omega_{ij}^{\mathrm{IG}}(t).
+\]
+For each $e=(n_{i,t}\to n_{j,t})$,
+\[
+\mathbf F^{\mathrm{visc}}{}'(e)
+=\nu_{\mathrm{visc}}\,\omega^{\mathrm{IG}}_{ij}(t)(Ov_j-Ov_i)
+=O\,\mathbf F^{\mathrm{visc}}(e).
+\]
+Summing outgoing IG edges at a fixed source node preserves left multiplication by $O$.
+\end{proof}
 
 \section{Recorded run and interaction complex}
 \label{sec:run}
@@ -136,16 +178,50 @@ Set
 \mcT:=\{\triangle_{ij,t}\mid (i,j)\in\mathcal P_t,\ t=0,\dots,T-1\},\qquad
 \mathcal F:=(\mcN,\mcE,\mcT).
 \]
+\[
+\bar E_{\mathrm{CST}}:=\{\{u,v\}:(u\to v)\in E_{\mathrm{CST}}\},\quad
+\bar E_{\mathrm{IG}}:=\{\{u,v\}:(u\to v)\in E_{\mathrm{IG}}\},\quad
+\bar E_{\mathrm{IA}}:=\{\{u,v\}:(u\to v)\in E_{\mathrm{IA}}\},
+\]
+\[
+\bar E:=\bar E_{\mathrm{CST}}\cup\bar E_{\mathrm{IG}}\cup\bar E_{\mathrm{IA}},\qquad
+\mathcal F_{\mathrm{und}}:=(\mcN,\bar E,\mcT).
+\]
 \end{definition}
+
+\begin{proposition}[Directed 2-complex structure]
+\label{prop:complex}
+All faces and boundary edges of $\mathcal F_{\mathrm{und}}$ are finite.
+For each oriented edge $e=(u\to v)\in\mcE$ define \(\partial_1e=v-u\), and for each triangle \(\triangle_{ij,t}\) define
+\[
+\partial_2\triangle_{ij,t}
+=e_{\mathrm{CST}}(n_{i,t}\to n_{i,t+1})
++e_{\mathrm{IA}}(n_{i,t+1}\to n_{j,t})
+-e_{\mathrm{IG}}(n_{i,t}\to n_{j,t}).
+\]
+For each $t<T$ with $(i,j)\in\mathcal P_t$,
+\[
+\partial P_{ij,t}=\partial\triangle_{ij,t}+\partial\triangle_{ji,t},
+\]
+where the IG contributions cancel by opposite orientations.
+\end{proposition}
+\begin{proof}
+Each face and boundary edge is explicitly built from finite sets in Definitions~\ref{def:run}--\ref{def:triangles}.
+\(\partial_2\) is the oriented boundary formula in Definition~\ref{def:triangles}.
+In the sum defining \(\partial P_{ij,t}\), each of the two interaction triangles contributes an IG edge with opposite sign; they cancel.
+\end{proof}
 
 \begin{proposition}[Finiteness and cardinality]
 \label{prop:finiteness}
 All sets in Definitions~\ref{def:run}--\ref{def:triangles} are finite.
+\[
+E_{\mathrm{IG}}^{<T}:=\{(n_{i,t}\to n_{j,t}):\,(i,j)\in\mathcal P_t,\ t\in\{0,\dots,T-1\}\}
+\]
 For $m_t:=|\mathcal P_t|$,
 \[
 |E_{\mathrm{CST}}|=\sum_{t=0}^{T-1}|\mathcal A(t)|,\qquad
-|E_{\mathrm{IG}}|=\sum_{t=0}^{T} m_t,\qquad
-|E_{\mathrm{IA}}|=|\mcT|=\sum_{t=0}^{T-1}m_t.
+|E_{\mathrm{IG}}^{<T}|=|\mcT|=|E_{\mathrm{IA}}|=\sum_{t=0}^{T-1}m_t,\qquad
+|E_{\mathrm{IG}}|=\sum_{t=0}^{T}m_t.
 \]
 For each $t<T$ with $(i,j)\in\mathcal P_t$,
 \[
@@ -224,26 +300,23 @@ By Definition of $E_{\mathrm{IG}}$, the summands are exactly the ordered compani
 with source $n_{i,t}=x$. This is the same index set used in Definition~\ref{def:forces}.
 \end{proof}
 
-\begin{lemma}[Orthogonal covariance]
-\label{lem:orthogonal}
-Let $O\in O(3)$ and define transformed data $x_i'(t)=Ox_i(t)$, $v_i'(t)=Ov_i(t)$.
-Then for each node $x=n_{i,t}$,
+\begin{proposition}[Orthogonal basis covariance]
+\label{thm:viscous-su3}
+Let $O\in O(3)$ and consider transformed data
 \[
-\mathbf F^{\mathrm{visc}}(x;\text{transformed data})=O\,\mathbf F^{\mathrm{visc}}(x;\text{original data}).
+x_i'(t)=Ox_i(t),\qquad v_i'(t)=Ov_i(t).
 \]
-\end{lemma}
+For every node $x\in\mcN$,
+\[
+\mathbf F^{\mathrm{visc}}(x;\text{transformed data})=O\,\mathbf F^{\mathrm{visc}}(x;\text{data}).
+\]
+Real matrices satisfy $O^\dagger=O^\top$, hence $O\in U(3)$, so orthogonal force-frame
+changes embed in unitary changes of complexified color index.
+\end{proposition}
 \begin{proof}
-Kernel values depend only on $\|x_i-x_j\|$, so
-\[
-K_\rho(Ox_i,Ox_j)=K_\rho(x_i,x_j).
-\]
-Therefore $\omega^{\mathrm{IG}}_{ij}(t)$ is unchanged by orthogonal rotation.
-For each $e=(n_{i,t}\to n_{j,t})$,
-\[
-\mathbf F^{\mathrm{visc}}{}'(e)
-=\nu_{\mathrm{visc}}\omega^{\mathrm{IG}}_{ij}(t)(Ov_j-Ov_i)=O\,\mathbf F^{\mathrm{visc}}(e).
-\]
-Summing over outgoing IG edges at $x$ preserves left multiplication by $O$.
+From Lemma~\ref{lem:orthogonal}, the kernel-based force coefficients are unchanged by
+orthogonal rotation of $(x,v)$. Real entries give $O^\dagger=O^\top$, so $O^\dagger O=I$ and
+$O$ acts unitarily on $\C^3$.
 \end{proof}
 
 \section{Color triplets and $SU(3)$ edge transport}
@@ -251,11 +324,11 @@ Summing over outgoing IG edges at $x$ preserves left multiplication by $O$.
 
 \begin{definition}[Normalized color vectors]
 \label{def:colors}
-Fix constants $g_3>0,\ \ell_0>0,\ \hbar_{\mathrm{eff}}>0,\ m>0,\ \epsilon_c>0$.
+Fix constants $g_3>0,\ \ell_0>0,\ \hbar_{\mathrm{eff}}>0,\ \mu_p>0,\ \epsilon_c>0$.
 For $x=n_{i,t}\in\mcN$, define
 \[
 \tilde c_x^{(\alpha)}:=(\mathbf F^{\mathrm{visc}}(x))_\alpha
-\exp\!\left(i\frac{m\,v_i^{(\alpha)}(t)\ell_0}{\hbar_{\mathrm{eff}}}\right),\quad \alpha=1,2,3,
+\exp\!\left(i\frac{\mu_p\,v_i^{(\alpha)}(t)\ell_0}{\hbar_{\mathrm{eff}}}\right),\quad \alpha=1,2,3,
 \]
 \[
 \mathbf c_x:=\frac{\tilde{\mathbf c}_x}{\sqrt{\tilde{\mathbf c}_x^\dagger\tilde{\mathbf c}_x+\epsilon_c^2}}\in\C^3.
@@ -274,6 +347,30 @@ so $\mathbf c_x$ is well defined and bounded.
 \begin{proof}
 By construction $\epsilon_c>0$, so $\tilde{\mathbf c}_x^\dagger\tilde{\mathbf c}_x+\epsilon_c^2>0$.
 Therefore the formula is well defined and gives the stated ratio.
+\end{proof}
+\begin{proposition}[Local $SU(3)$ gauge reparametrization]
+\label{prop:su3-redundancy}
+Let $\mathbf c_x$ be defined in Definition~\ref{def:colors} and let
+\[
+\Omega:\mcN\to SU(3)
+\]
+be arbitrary.
+Define transformed data by
+\[
+\mathbf c_x^\Omega:=\Omega(x)\mathbf c_x,\qquad
+U_3^\Omega(e):=\Omega(t(e))\,U_3(e)\,\Omega(s(e))^{-1},\quad e=(s(e)\to t(e))\in\mcE.
+\]
+For every $x\in\mcN$ and every $e\in\mcE$,
+\[
+(\mathbf c_x^\Omega)^\dagger\mathbf c_x^\Omega=\mathbf c_x^\dagger\mathbf c_x,\qquad
+U_3^\Omega(e)\in SU(3).
+\]
+This is the local $SU(3)$ color redundancy of the viscous interaction complex.
+\end{proposition}
+\begin{proof}
+For the norm, $\Omega(x)^\dagger\Omega(x)=I$.
+Proposition~\ref{prop:su3-edge} gives $U_3(e)\in SU(3)$, and $SU(3)$ is closed under
+conjugation by elements of $SU(3)$.
 \end{proof}
 
 \begin{definition}[Gell--Mann generators]
@@ -340,7 +437,7 @@ For every $e\in\mcE$, $U_3(e)\in SU(3)$ and $U_3(e^{-1})=U_3(e)^{-1}$.
 \begin{proof}
 Each coefficient $\Re(\mathbf c_x^\dagger\lambda_a\mathbf c_y)$ is real.
 By Lemma~\ref{lem:hermitian-span}, $\Theta_e$ is Hermitian and trace free, so
-\(\Theta_e\) is Hermitian and trace free, so \(i\Theta_e\) is skew-Hermitian and trace free.
+\(i\Theta_e\) is skew-Hermitian and trace free.
 Hence \(\exp(i\Theta_e)\) is unitary.
 Because $\tr\Theta_e=0$, $\det U_3(e)=\exp(i\tr\Theta_e)=1$.
 The relation for inverse edges is forced by the convention $U_3(e^{-1}):=U_3(e)^{-1}$.
@@ -498,7 +595,7 @@ in Sections~\ref{sec:run}--\ref{sec:matter}, the finite tuple
 \begin{aligned}
 T,\{\mathcal A(t)\},\{\mathcal P_t\},\mcN,\mcE,\mcT,\\
 \{x_i(t),v_i(t),\Phi_i(t)\}_{i,t},K_\rho,\nu_{\mathrm{visc}},
-\hbar_{\mathrm{eff}},m,\ell_0,\epsilon_c,g_3,\beta,\eta,\\
+	\hbar_{\mathrm{eff}},\mu_p,\ell_0,\epsilon_c,g_3,\beta,\eta,\\
 \{U_3(e)\}_{e\in\mcE},S_{\mathrm W},S_{\mathrm F},S_\phi
 \end{aligned}
 \Bigr)

@@ -258,12 +258,28 @@ D\psi(v)
 The radial eigenvalue is
 $V_{\mathrm{alg}}^2/(V_{\mathrm{alg}}+r)^2\leq1$ and each tangential eigenvalue
 is $V_{\mathrm{alg}}/(V_{\mathrm{alg}}+r)\leq1$. Therefore
-$\|D\psi(v)\|_{\mathrm{op}}\leq1$ for every $v\neq0$. Continuity at the origin
-and the mean-value theorem yield the Lipschitz bound. The speed cap is obvious
-from
+\[
+\|D\psi(v)\|_{\mathrm{op}}\leq1\qquad (v\neq0).
+\]
+Any \(u\in\R^d\) decomposes as \(u=\alpha v/r+u_\perp\) with \(u_\perp\perp v\),
+so
+\[
+\|D\psi(v)u\|
+\leq
+\frac{V_{\mathrm{alg}}^2}{(V_{\mathrm{alg}}+r)^2}|\alpha|+\frac{V_{\mathrm{alg}}}{V_{\mathrm{alg}}+r}\|u_\perp\|
+\leq\|u\|.
+\]
+Hence \(\psi\) is \(1\)-Lipschitz on \(\R^d\setminus\{0\}\) by the mean-value theorem
+on line segments. At the origin,
+\[
+\lim_{v\to0}\|D\psi(v)\|_{\mathrm{op}}=1,
+\]
+so the same Lipschitz bound extends continuously to \(v=0\).
+The speed cap is obvious from
 \[
 \|\psi(v)\|=\frac{V_{\mathrm{alg}}\|v\|}{V_{\mathrm{alg}}+\|v\|}
 \leq V_{\mathrm{alg}}.
+\]
 \qedhere
 \]
 \end{proof}
@@ -374,25 +390,67 @@ A[\mu](x):=\frac{1}{m_\mu(x)}\iint K(x,y)q\,\mu(dy,dq),
 \qquad
 F[\mu](x,v)=\nu_{\mathrm{visc}}\bigl(A[\mu](x)-v\bigr).
 \]
-Because $m_\mu(x)\geq k_*$ and $K$ is bounded and Lipschitz, the map
-$x\mapsto A[\mu](x)$ is globally Lipschitz with constant bounded by a multiple of
-$k_*^{-2}\|\nabla K\|_\infty\int(1+\|q\|)\mu(dy,dq)$. The same lower bound
-controls differences of reciprocals:
+To estimate the denominator, use the coupling characterization of $W_1$ and the
+global Lipschitz bound on $K$:
 \[
-|m_\mu(x)^{-1}-m_\nu(x')^{-1}|
+|m_\mu(x)-m_\nu(x')|
+\leq
+\iint |K(x,y)-K(x',y')|\,\pi(dy,dq,dy',dq')
+\leq
+C_K\bigl(\|x-x'\|+W_1(\mu,\nu)\bigr),
+\]
+for any coupling $\pi\in\Pi(\mu,\nu)$ and some constant $C_K$ depending only on
+$L_K$. Since $m_\mu,m_\nu\geq k_*$, the reciprocal map satisfies
+\[
+\bigl|m_\mu(x)^{-1}-m_\nu(x')^{-1}\bigr|
 \leq
 k_*^{-2}|m_\mu(x)-m_\nu(x')|.
 \]
-The Kantorovich--Rubinstein duality bounds both
-$|m_\mu(x)-m_\nu(x')|$ and
-$\bigl\|\int K(x,\cdot)q\,d\mu-\int K(x',\cdot)q\,d\nu\bigr\|$
-by a constant times $\|x-x'\|+W_1(\mu,\nu)$. The estimate for
-$F[\mu](x,v)-F[\nu](x',v')$ then follows from the decomposition
+For the numerator, fix a coupling $\pi\in\Pi(\mu,\nu)$ and write
+\[
+J_\mu(x):=\iint K(x,y)q\,\mu(dy,dq).
+\]
+Then
+\[
+\|J_\mu(x)-J_\nu(x')\|
+\leq
+\iint \|K(x,y)q-K(x',y')q'\|\,d\pi.
+\]
+On any class of laws with a fixed first-moment bound in the velocity variable,
+the integrand is controlled by a constant times
+\(\|x-x'\|+\|y-y'\|+\|q-q'\|\), so
+\[
+\|J_\mu(x)-J_\nu(x')\|
+\leq
+C_J\bigl(\|x-x'\|+W_1(\mu,\nu)\bigr),
+\]
+with \(C_J\) depending only on the kernel bounds and the moment bound for the
+class under consideration. Combining the numerator and denominator estimates,
+and using
+\[
+A[\mu](x)-A[\nu](x')
+=
+\frac{J_\mu(x)-J_\nu(x')}{m_\mu(x)}
++J_\nu(x')\bigl(m_\mu(x)^{-1}-m_\nu(x')^{-1}\bigr),
+\]
+gives
+\[
+\|A[\mu](x)-A[\nu](x')\|
+\leq
+C\bigl(\|x-x'\|+W_1(\mu,\nu)\bigr).
+\]
+Finally,
 \[
 F[\mu](x,v)-F[\nu](x',v')
 =
 \nu_{\mathrm{visc}}\bigl(A[\mu](x)-A[\nu](x')\bigr)
--\nu_{\mathrm{visc}}(v-v').
+-\nu_{\mathrm{visc}}(v-v'),
+\]
+so
+\[
+\|F[\mu](x,v)-F[\nu](x',v')\|
+\leq
+L_{\mathrm{mf}}\bigl(\|x-x'\|+\|v-v'\|+W_1(\mu,\nu)\bigr).
 \qedhere
 \]
 \end{proof}
@@ -989,6 +1047,11 @@ because $\varepsilon\leq1$. Hence
 by the choice of $\varepsilon$. Therefore $K$ is positive definite and
 \[
 Y^\top K Y\geq \lambda_{\min}(K)(\mathcal B+\mathcal D)
+\]
+where
+\[
+\lambda_{\min}(K)
+=\frac{\gamma(1+2a)+2b-\sqrt{\bigl(\gamma(1+2a)-2b\bigr)^2+\Xi^2}}{2}.
 \]
 with
 \[
@@ -1630,13 +1693,14 @@ needed for the velocity-direction coercivity in the hypocoercive closure.
 The only new commutators relative to the backbone come from the derivatives of
 the normalized weights. Lemma~\ref{lem:weight-deriv} shows that the derivatives
 of $\omega_{ij}(X)$ are bounded by constants depending only on
-$k_*,k^*$, and $L_K$, uniformly in $N$. Consequently, when one differentiates
-the interacting generator with respect to $x$, every extra term produced by the
-viscous alignment field is bounded by
+$(k_*,k^*,L_K)$, uniformly in $N$. By Lemma~\ref{lem:force-deriv}, there is a
+constant $C_{\mathrm{visc}}<\infty$, depending only on the same kernel data and
+$\nu_{\mathrm{visc}}$, such that each commutator identity in
+Proposition~\ref{prop:abcd} picks up an additional remainder term bounded by
 \[
 C_{\mathrm{visc}}\sqrt{\mathcal B_N[h]\mathcal D_N[h]}
 \]
-for an $N$-independent constant $C_{\mathrm{visc}}$.
+for every $N$.
 
 \smallskip
 \noindent
