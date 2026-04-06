@@ -1,4 +1,4 @@
-.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow
+.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow physics-code
 
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
@@ -49,6 +49,20 @@ prompt:
 
 mlflow:
 	uv run mlflow server --host 127.0.0.1 --port 5000
+
+physics-code:
+	@echo "# Physics Code" > physics_code.md
+	@echo "" >> physics_code.md
+	@find src/fragile/physics -name '*.py' | sort | while read f; do \
+		echo "## $$f" >> physics_code.md; \
+		echo "" >> physics_code.md; \
+		echo '```python' >> physics_code.md; \
+		cat "$$f" >> physics_code.md; \
+		echo "" >> physics_code.md; \
+		echo '```' >> physics_code.md; \
+		echo "" >> physics_code.md; \
+	done
+	@echo "✓ physics_code.md generated"
 
 claude:
 	CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --dangerously-skip-permissions
