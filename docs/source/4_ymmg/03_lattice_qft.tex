@@ -118,7 +118,7 @@ D_\mu=\partial_\mu-ig_3 A_\mu^a\lambda_a/2.
 \]
 We then add temporal worldline links and define canonical elementary plaquettes
 from one time step and one persistent interaction link. This restores the local
-2-cell geometry needed for a genuine Yang--Mills continuum limit without
+2-cell geometry needed for the mean-field Wilson action without
 reintroducing any extra edge nomenclature.
 
 This paper supplies all the formal definitions and proofs required for a
@@ -802,8 +802,9 @@ S_{\mathrm W}:=\beta\sum_{P\in\mathcal C_\square}\left(1-\frac13\Re\tr U_3(P)\ri
 The normalization $1-\frac{1}{3}\Re\tr U_3(P)$ vanishes when $U_3(P)=I$ and is
 non-negative for all $U_3(P)\in SU(3)$, since
 $|\tr U|/3\le1$ by the triangle inequality applied to the three eigenvalues of $U$.
-In the small-loop regime, Theorem~\ref{thm:small-loop-expansion} identifies the
-leading-order term with a Yang--Mills curvature density.
+In the $N\to\infty$ thermodynamic limit, Theorem~\ref{thm:mf-wilson} shows that
+the sum of these plaquette terms converges to the mean-field Wilson action
+$S_{\mathrm W}^\infty$ defined on the stationary measure $\pi_\infty$.
 \end{remark}
 
 \begin{proposition}[Gauge invariance of Wilson action]
@@ -1340,36 +1341,33 @@ space, and Theorem~\ref{thm:plaquette-measure-limit} is then the corresponding
 plaquette-level corollary.
 \end{remark}
 
-\begin{proposition}[Why geometric refinement is additional]
+\begin{proposition}[Graph rule is not determined by particle paths]
 \label{prop:refinement-additional}
-The stationary mean-field convergence results above do not by themselves imply
-the geometric refinement hypotheses of Definition~\ref{def:refinement}.
-More precisely, the quantities
+The stationary mean-field convergence results above do not determine the companion
+graph rule $\mathcal P_t^{(N)}$.
+More precisely, the plaquette geometry quantities
 \[
-a_N,\qquad
 \{A_P^{(N)}\}_{P\in\mathcal C_\square^{(N)}},\qquad
 |\mathcal C_\square^{(N)}|,
 \qquad
 \sum_{P\in\mathcal C_\square^{(N)}}
 \Sigma_P^{(N),\mu\nu}\Sigma_P^{(N),\rho\sigma}\,\delta_{z_P^{(N)}}
 \]
-depend on the companion graph rule $\mathcal P_t^{(N)}$ and are not determined
-by the empirical particle path laws alone.
-Consequently, no theorem based only on one-time or path-space propagation of
-chaos can force Definition~\ref{def:refinement}; a separate local graph
-construction or an equivalent geometric sampling hypothesis is necessary.
+depend on $\mathcal P_t^{(N)}$ and are not determined by the empirical particle
+path laws alone.
+Consequently, the mean-field plaquette measure $d\Gamma_\square^\infty$ of
+Definition~\ref{def:mf-plaquette-measure} inherits its structure from the
+label-invariant pair rule $\chi_t$, which must be specified as part of the
+model definition.
 \end{proposition}
 \begin{proof}
 In Definition~\ref{def:run}, the recorded companion sets
 $\{\mathcal P_t^{(N)}\}_{t\in\Tset}$ are part of the lattice input.
 Keeping the same particle trajectories fixed while changing the label-invariant
 companion rule changes the link set $\mcE^{(N)}$, the plaquette family
-$\mathcal C_\square^{(N)}$, the maximal edge length $a_N$, and the associated
-area bivectors and plaquette counts.
+$\mathcal C_\square^{(N)}$, and the associated area bivectors and plaquette counts.
 The empirical one-time and path measures of the particles are unaffected by such
-a change.
-Therefore those mean-field limits do not determine the geometric quantities in
-Definition~\ref{def:refinement}.
+a change, hence the plaquette geometry is not determined by propagation of chaos alone.
 \end{proof}
 
 \subsection{Mean-Field Yang-Mills Action}
