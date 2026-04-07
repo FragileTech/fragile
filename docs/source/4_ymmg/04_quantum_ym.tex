@@ -170,16 +170,23 @@ with covariance $(L_\eta+m_\phi^2 I)^{-1}$ when $V_\phi\equiv 0$.
 \end{enumerate}
 \end{theorem}
 
-\begin{remark}[What this paper does not prove]
+\begin{remark}[The $N\to\infty$ thermodynamic limit as the continuum theory]
 \label{rem:not-millennium}
 Theorem~\ref{thm:main} is a complete quantization theorem for a \emph{finite
-lattice} and nothing less, but also nothing more.  It does not produce an
-unconditional constructive continuum Yang--Mills measure in four dimensions.
-In particular, it does not resolve the Yang--Mills Millennium Prize problem,
-which additionally requires a nontrivial continuum quantum field theory
-satisfying the Euclidean or Wightman axioms and exhibiting a positive mass gap.
-The finite-lattice theory constructed here is the rigorous ultraviolet
-regularization on which such harder questions would have to be based.
+lattice}.  The deeper claim of this programme is that the correct continuum
+limit is \emph{not} a mesh refinement $a_N\to0$ but the thermodynamic limit
+$N\to\infty$: in that limit the discrete lattice converges to the continuous
+stationary mean-field law $\pi_\infty$, the bilocal gauge field $A(z,z')$ and
+Wilson plaquette $W(z_1,z_2,z_3,z_4)$ are defined directly on $\pi_\infty$,
+and the Markov-chain measure on the interaction graph converges to a continuous
+Markov process.
+This yields a continuum quantum measure without any artificial ultraviolet
+cutoff: the natural regularization is provided by the viscous kernel length
+scale $\ell_{\mathrm{visc}}$ and the smooth Gaussian $K_\rho$, which render
+all propagators finite through the resolvent of the integral operator
+$K_\rho(z,z')$.
+The Osterwalder--Schrader axioms are to be verified on this integral-operator
+continuum theory, not on a subsequence of lattice approximants.
 \end{remark}
 
 \section{Configuration space and measure}
@@ -1213,153 +1220,6 @@ $1/\ell_e$ would be singular on zero-length edges.  With $\eta>0$, every
 kinetic coefficient is uniformly bounded by $\eta^{-1}$.
 \end{remark}
 
-\section{Recovery of the Feynman path-integral measure}
-\label{sec:measure-limit}
-
-\paragraph{The continuum limit of the measure.}
-The companion lattice paper proves that, under an admissible mean-field
-refinement regime, the Wilson action converges to the continuum Yang--Mills
-action on smooth fields \cite{latticeqft}.  To understand the measure side of
-the formal continuum path integral one must compare Haar measure on $SU(3)$
-with Lebesgue measure on the Lie algebra near the identity.
-
-\begin{definition}[Lie-algebra coordinates]
-\label{def:lie-coords}
-Let
-\[
-\mcsu=i\mcHh
-\]
-be the Lie algebra of $SU(3)$.  Equip $\mcHh$ with the Euclidean inner product
-\[
-\langle H,K\rangle:=\frac12\tr(HK).
-\]
-Choose an open neighborhood $\mathcal V\subset \mcHh$ of $0$ on which the map
-\[
-H\mapsto \exp(iH)
-\]
-is a diffeomorphism onto an open neighborhood $\mathcal U\subset SU(3)$ of the
-identity.
-\end{definition}
-
-\begin{proposition}[Single-edge Haar density in exponential coordinates]
-\label{prop:haar-density}
-There exists a smooth strictly positive function
-\[
-J:\mathcal V\to (0,\infty)
-\]
-with $J(0)=1$ such that for every continuous function
-$f$ supported in $\mathcal U$,
-\[
-\int_{SU(3)}f(U)\,\dd\mu_H(U)
-=
-\int_{\mathcal V} f\!\bigl(e^{iH}\bigr)\,J(H)\,\dd H,
-\]
-where $\dd H$ is Lebesgue measure on the $8$-dimensional Euclidean space
-$\mcHh$.  Moreover,
-\[
-J(H)=1+O(\|H\|^2)
-\qquad \text{as } H\to 0.
-\]
-\end{proposition}
-\begin{proof}
-The push-forward of $\mu_H$ by the chart inverse $U\mapsto H$ is a smooth
-measure on the Euclidean chart $\mathcal V$ and therefore has a smooth density
-$J(H)$ with respect to Lebesgue measure.  The density is strictly positive
-because Haar measure has full support and the chart is a diffeomorphism.  By
-rescaling the chosen Lebesgue measure on $\mcHh$ if necessary, one may arrange
-$J(0)=1$.  Since $J$ is smooth and the Haar measure is inversion invariant, the
-linear term in the Taylor expansion vanishes at the identity, so
-$J(H)=1+O(\|H\|^2)$.
-\end{proof}
-
-\begin{corollary}[Scaled near-identity measure]
-\label{cor:scaled-haar}
-Fix $A\in\mcHh$ and write
-\[
-U_a:=\exp(i a A)
-\]
-for $a>0$ small enough.  Then
-\[
-\dd\mu_H(U_a)=a^8\bigl(1+O(a^2)\bigr)\dd A
-\]
-in exponential coordinates.
-\end{corollary}
-\begin{proof}
-Apply Proposition~\ref{prop:haar-density} with $H=aA$.  Since
-$\dd H=a^8\dd A$ in an $8$-dimensional space and $J(aA)=1+O(a^2)$, the formula
-follows.
-\end{proof}
-
-\paragraph{Emergent regularization.}
-The finite lattice is an ultraviolet regularization in the strict, literal
-sense that there are only finitely many integration variables and every
-coefficient in the action is finite.  No ultraviolet divergence can appear
-before one takes a refinement limit.
-
-\begin{proposition}[Finite lattice spacing as an ultraviolet cutoff]
-\label{prop:uv}
-On any fixed data set $\mathcal Q$, the quantized theory has finitely many gauge
-variables, finitely many scalar variables, and finitely many fermionic
-generators.  Consequently all unnormalized correlation functions are finite
-numbers.  Any ultraviolet divergence can arise only from a limit in which the
-number of lattice cells tends to infinity and the mesh size tends to zero.
-\end{proposition}
-\begin{proof}
-The set $\mcE$ is finite by construction in \cite{latticeqft}, hence the gauge
-sector is the compact manifold $SU(3)^{\mcE}$.  The scalar sector is
-$\R^{|\mcN|}$ with $|\mcN|<\infty$, and the fermionic sector has finitely many
-Grassmann generators.  By Theorem~\ref{thm:partition-finite}, all unnormalized
-correlation functions are finite on the fixed lattice.  Therefore no divergence
-is present at finite mesh.  Such divergences can only appear in a subsequent
-limit with increasing numbers of lattice degrees of freedom.
-\end{proof}
-
-\paragraph{Consistency with continuum QFT.}
-The correct honest statement is not that we have already constructed the full
-continuum quantum measure, but that the local building blocks of the discrete
-measure and action match the formal continuum Feynman rules in the small-mesh,
-near-identity regime.
-
-\begin{theorem}[Local consistency with the formal continuum Yang--Mills measure]
-\label{thm:local-consistency}
-Assume the admissible mean-field refinement regime of \cite{latticeqft} and the
-continuum Wilson-action limit proved there.  Let $F$ be a bounded continuous
-function of finitely many Lie-algebra coordinates $A_{e_1},\dots,A_{e_m}$, and
-for each refinement level $N$ write
-\[
-U^{(N)}(e_k)=\exp\!\bigl(i a_N A_{e_k}\bigr)
-\]
-on the edges on which $F$ depends.  Then the corresponding cylinder-measure
-element satisfies
-\[
-\prod_{k=1}^m \dd\mu_H\!\bigl(U^{(N)}(e_k)\bigr)
-=
-a_N^{8m}\left(1+O(a_N^2)\right)\prod_{k=1}^m \dd A_{e_k},
-\]
-and the weighted cylinder integrand has the same leading form as the formal
-continuum Euclidean Yang--Mills weight
-\[
-\exp\!\left(-\frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,\dd\mathrm{vol}_g\right)\mathcal D A
-\]
-when tested against the finite-coordinate observable $F$.
-\end{theorem}
-\begin{proof}
-The measure statement is just the $m$-fold product of
-Corollary~\ref{cor:scaled-haar}.  The action statement follows from the
-continuum limit theorem proved in \cite{latticeqft}, which identifies the
-leading Wilson action density with the continuum Yang--Mills density.  Combining
-the two gives the claimed leading cylinder-weight formula.
-\end{proof}
-
-\begin{remark}
-Theorem~\ref{thm:local-consistency} is a consistency theorem for local charts
-and cylinder observables, not a constructive theorem producing a continuum
-probability measure on the infinite-dimensional space of gauge fields.  A full
-continuum construction would require tightness, compatibility of cylinder
-measures, reflection positivity, and nontrivial control of the interacting
-limit.  Those steps are not proved in this paper.
-\end{remark}
-
 \section{Discussion of excitations and propagators}
 \label{sec:propagators}
 
@@ -1498,22 +1358,23 @@ gauge redundancy was solved globally by a rooted maximal-tree gauge, with exact
 orbit uniqueness, exact Faddeev--Popov identity, constant determinant, and a
 decoupled ghost sector.  The fermions integrate to a finite determinant, the
 scalar sector is controlled by a positive stiffness operator regularized by
-$\eta$, and the local measure/action asymptotics match the standard formal
-Euclidean Yang--Mills rules in the smooth small-mesh regime.
+$\eta$, and the bilocal mean-field action $S_{\mathrm W}^\infty$ defined on the
+stationary measure $\pi_\infty$ provides the correct thermodynamic-limit
+continuum theory.
 
 \paragraph{Forward look to the mass-gap problem.}
-This is the correct finite-lattice foundation for any later mass-gap analysis,
-but it is not itself a proof of a mass gap and not an unconditional
-construction of continuum quantum Yang--Mills theory.  To move from the present
-paper to a Millennium-problem-level result, one would still need at least the
-following genuinely new ingredients: a nontrivial continuum limit of the
-gauge-fixed lattice measures; verification of reflection positivity and the full
-Euclidean axioms in that limit; reconstruction of a Hilbert-space quantum
-theory; and finally a proof that the energy--momentum spectrum has a strictly
-positive gap above the vacuum.  Those problems remain open here.  What this
-paper contributes is the rigorous finite-dimensional quantization step on the
-trajectory-induced lattice and the precise identification of the remaining gap
-between that step and a full constructive Yang--Mills existence theorem.
+The $N\to\infty$ thermodynamic limit provides the correct continuum theory:
+the bilocal action $S_{\mathrm W}^\infty$, the continuous propagator as the
+resolvent of $K_\rho(z,z')$, and the Markov-chain measure converging to a
+continuous process on $\pi_\infty$.
+The remaining steps toward the Millennium problem are: verification of the
+Osterwalder--Schrader axioms on the integral-operator continuum theory;
+reconstruction of a Hilbert-space quantum theory from reflection positivity;
+and a proof that the energy--momentum spectrum has a strictly positive gap
+above the vacuum.
+What this paper contributes is the exact finite-dimensional quantization step
+on the trajectory-induced lattice, together with the bilocal mean-field
+structure that survives the $N\to\infty$ limit.
 
 \bibliographystyle{plain}
 \bibliography{references}

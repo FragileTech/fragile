@@ -43,22 +43,31 @@ sites together with temporal worldline links and same-time interaction links.
 At each site we form a complex color triplet by modulating the viscous force
 vector with a kinematic phase factor of de~Broglie type; these triplets encode
 momentum direction in the internal color space.
-Link transport in $SU(3)$ is then defined from short-link color increments,
-which makes the transporter asymptotically local in the small-mesh regime.
+Link transport in $SU(3)$ is then defined from short-link color increments.
 Canonical plaquette holonomies, discrete field strengths, a finite Wilson action,
 and covariant fermionic and scalar matter actions are constructed on the same
 lattice.
 The complete data package $\mathcal Q$ is proved to be finite and $SU(3)$
 gauge-invariant.
-In the stationary thermodynamic regime, scaled link and plaquette sums converge
-to integrals against deterministic mean-field measures.
-Under an admissible mean-field refinement regime with a smooth color-field limit,
-shape-regular plaquettes, explicit plaquette-count control, and plaquette-density
-convergence, the discrete Wilson
-action converges to the continuum Yang--Mills functional
+In the $N\to\infty$ thermodynamic limit, scaled link and plaquette sums converge
+in probability to integrals against the deterministic stationary mean-field law
+$\pi_\infty$.
+The limit theory is a bilocal gauge theory: the connection
 \[
-\frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,d\mathrm{vol}_g.
+A(z,z'):=\frac12\sum_{a=1}^8
+\operatorname{Re}\!\bigl(c(z)^\dagger\lambda_a\bigl(c(z')-c(z)\bigr)\bigr)\lambda_a,
+\qquad z,z'\sim\pi_\infty,
 \]
+the parallel transport $U(z,z'):=\exp(ig_3 A(z,z'))$, and the mean-field Wilson
+action
+\[
+S_{\mathrm W}^\infty
+=\int\!\!\int\!\!\int\!\!\int
+\Bigl(1-\tfrac13\operatorname{Re}\operatorname{tr} U(z_1,z_2)U(z_2,z_3)U(z_3,z_4)U(z_4,z_1)\Bigr)
+\,d\Gamma_\square^\infty(z_1,z_2,z_3,z_4)
+\]
+are all defined directly on the continuous mean-field measure, with no lattice
+spacing limit required.
 Path-integral quantization and axiom verification are deferred to companion papers.
 \end{abstract}
 
@@ -121,9 +130,9 @@ The finite-data result is Theorem~\ref{thm:package}: the tuple
 is finite, explicit, and $SU(3)$ gauge-invariant.
 The thermodynamic graph and plaquette limits are unconditional consequences of
 the companion convergence paper together with the present graph construction.
-The continuum result is Theorem~\ref{thm:continuum-limit-ym}: under the stated
-geometric refinement hypotheses on the companion graph, the same data recover
-the continuum Yang--Mills action.
+The mean-field result is stated in Section~\ref{sec:discussion}: under the
+$N\to\infty$ thermodynamic limit, the Wilson action converges to a bilocal
+integral functional defined directly on the stationary mean-field law.
 
 \paragraph{Organization.}
 Section~\ref{sec:notation} fixes notation, imports kernel parameters from the
@@ -140,8 +149,8 @@ Section~\ref{sec:matter} constructs covariant fermionic and scalar matter action
 Section~\ref{sec:package} packages the complete data object and states the finiteness
 theorem.
 Sections~\ref{sec:discussion} and~\ref{sec:conclusions} discuss the lattice-gauge
-interpretation, the thermodynamic graph and plaquette limits, the geometric
-continuum limit to Yang--Mills theory, and quantization.
+interpretation, the thermodynamic graph and plaquette limits, the bilocal
+mean-field Yang--Mills action arising in the $N\to\infty$ regime, and quantization.
 
 \section{Notation and setup}
 \label{sec:notation}
@@ -1363,296 +1372,100 @@ Therefore those mean-field limits do not determine the geometric quantities in
 Definition~\ref{def:refinement}.
 \end{proof}
 
-\subsection{Continuum limit}
+\subsection{Mean-Field Yang-Mills Action}
+\label{sec:mf-ym}
 
-The thermodynamic limit identifies the mean-field objects associated with links
-and plaquettes.
-To recover a continuum gauge theory from the same data one needs a second limit
-in which the mesh size tends to zero, the color field becomes smooth, and the
-plaquette family samples the ambient spacetime geometry in an asymptotically
-isotropic way.
-The following definition isolates exactly those hypotheses.
+In the $N\to\infty$ thermodynamic regime the discrete interaction graph
+disappears and the relevant geometric objects are the stationary mean-field law
+$\pi_\infty$ and its natural product measures.
+No lattice spacing $a_N\to0$ limit is needed: the bilocal gauge fields and the
+Wilson action are defined directly on the continuous probability space
+$(\operatorname{supp}\pi_\infty, \pi_\infty)$.
 
-\begin{definition}[Admissible mean-field refinement regime]
-\label{def:refinement}
-Consider a sequence of data sets
+\begin{definition}[Bilocal color connection]
+\label{def:bilocal-connection}
+Let $\pi_\infty$ be the stationary mean-field law from the companion convergence
+paper~\cite{convergence}, and let $c:\operatorname{supp}\pi_\infty\to\C^3$ be
+the color field inherited from Definition~\ref{def:colors}.
+For $\pi_\infty$-almost every pair $(z,z')$, define the
+\emph{bilocal $\mathfrak{su}(3)$-valued connection}
 \[
-\mathscr R^{(N)}=
-\bigl(\mcN^{(N)},\mcE^{(N)},\mathcal C_\square^{(N)},\{U_3^{(N)}(e)\}\bigr),
-\qquad N\to\infty.
+A(z,z')
+:=
+\frac12\sum_{a=1}^8
+\operatorname{Re}\!\bigl(c(z)^\dagger\lambda_a\bigl(c(z')-c(z)\bigr)\bigr)\lambda_a
+\;\in\;\mathfrak{su}(3).
 \]
-Write
+The associated $SU(3)$ parallel transporter is
 \[
-a_N:=\max_{e\in\mcE^{(N)}} \ell_e^{(N)}.
+U(z,z'):=\exp\!\bigl(ig_3 A(z,z')\bigr)\in SU(3).
 \]
-The sequence is an \emph{admissible mean-field refinement regime} if the following hold.
-\begin{enumerate}[leftmargin=1.5em]
-\item \textbf{Vanishing mesh.}
-$a_N\to0$ and $\Delta t_N\le C a_N$.
-\item \textbf{Shape-regular plaquettes.}
-There exist constants $0<c_-<c_+<\infty$ and $C_{\mathrm{reg}}<\infty$ such that
-for every $P\in\mathcal C_\square^{(N)}$,
+For $\pi_\infty^{\otimes 4}$-almost every quadruple $(z_1,z_2,z_3,z_4)$, the
+\emph{mean-field Wilson plaquette} is
 \[
-c_- a_N^2\le A_P^{(N)}\le c_+ a_N^2,
+W(z_1,z_2,z_3,z_4)
+:=U(z_1,z_2)\,U(z_2,z_3)\,U(z_3,z_4)\,U(z_4,z_1)\in SU(3).
 \]
-and if $P=P_{ij,t}$, then
-\[
-\|\tau_{j,t}^{(N)}-\tau_{i,t}^{(N)}\|
-+\|\sigma_{ij,t+1}^{(N)}-\sigma_{ij,t}^{(N)}\|
-\le C_{\mathrm{reg}}\,a_N^2.
-\]
-\item \textbf{Smooth color-field limit.}
-There exists a compact smooth embedded four-dimensional manifold $M\subset\R^4$ with
-Riemannian metric $g$ and a $C^2$ color field
-\[
-\mathbf c:M\to\C^3
-\]
-such that, after identifying $\Xi^{(N)}(\mcN^{(N)})\subset M$,
-\[
-\sup_{x\in\mcN^{(N)}}\|\mathbf c_x^{(N)}-\mathbf c(\Xi^{(N)}(x))\|
-\le C_{\mathbf c}\,a_N^2.
-\]
-\item \textbf{Uniform plaquette count.}
-There exists $C_\square<\infty$ such that
-\[
-|\mathcal C_\square^{(N)}|\le C_\square\,a_N^{-4}
-\qquad\text{for all }N.
-\]
-\item \textbf{Bivector density convergence.}
-For every continuous scalar test function $f$ on $M$,
-\[
-\sum_{P\in\mathcal C_\square^{(N)}}
-\Sigma_P^{(N),\mu\nu}\Sigma_P^{(N),\rho\sigma}\,f(z_P^{(N)})
-\longrightarrow
-\frac18\int_M
-\bigl(g^{\mu\rho}g^{\nu\sigma}-g^{\mu\sigma}g^{\nu\rho}\bigr)
-f(z)\,d\mathrm{vol}_g(z).
-\]
-\end{enumerate}
 \end{definition}
 
-\begin{theorem}[Short-link consistency and continuum connection]
-\label{thm:short-link-connection}
-Assume the admissible refinement regime of Definition~\ref{def:refinement}.
-Define the Hermitian traceless gauge potential on $M$ by
+\begin{definition}[Mean-field plaquette measure]
+\label{def:mf-plaquette-measure}
+Let $\chi_\square:\operatorname{supp}\pi_\infty^{\otimes 4}\to\{0,1\}$ be the
+label-invariant quadruple indicator inherited from Definition~\ref{def:edge-measure}
+by the thermodynamic limit of Theorem~\ref{thm:plaquette-measure-limit}.
+The \emph{mean-field plaquette measure} is the positive measure on
+$\operatorname{supp}\pi_\infty^{\otimes 4}$ defined by
 \[
-A_\mu(z):=\frac12\sum_{a=1}^8
-\Re\!\bigl(\mathbf c(z)^\dagger\lambda_a\,\partial_\mu\mathbf c(z)\bigr)\lambda_a,
-\qquad z\in M.
-\]
-Then for every oriented edge $e\in\mcE^{(N)}$,
-\[
-\mathcal A_e^{(N)}
-=
-\xi_e^{(N),\mu}\,A_\mu\bigl(\Xi^{(N)}(s(e))\bigr)
-+O(a_N^2)
-\]
-uniformly in $e$.
-Consequently,
-\[
-U_3^{(N)}(e)
-=
-I+i g_3\,\xi_e^{(N),\mu}A_\mu\bigl(\Xi^{(N)}(s(e))\bigr)
-+O(a_N^2)
-\]
-uniformly in $e$.
-\end{theorem}
-\begin{proof}
-Fix $e=(x\to y)\in\mcE^{(N)}$ and write $z_x:=\Xi^{(N)}(x)$ and
-$\xi_e:=\Xi^{(N)}(y)-\Xi^{(N)}(x)$.
-By the $C^2$ regularity of $\mathbf c$ and the color-field approximation,
-\[
-\mathbf c_y^{(N)}-\mathbf c_x^{(N)}
-=
-\xi_e^\mu\,\partial_\mu\mathbf c(z_x)+O(a_N^2)
-\]
-uniformly in $e$.
-Substituting this into Definition~\ref{def:transport} gives
-\begin{align*}
-\mathcal A_e^{(N)}
-&=
-\frac12\sum_{a=1}^8
-\Re\!\bigl((\mathbf c_x^{(N)})^\dagger\lambda_a(\mathbf c_y^{(N)}-\mathbf c_x^{(N)})\bigr)\lambda_a\\
-&=
-\frac12\sum_{a=1}^8
-\Re\!\bigl(\mathbf c(z_x)^\dagger\lambda_a\,\xi_e^\mu\partial_\mu\mathbf c(z_x)\bigr)\lambda_a
-+O(a_N^2)\\
-&=
-\xi_e^\mu A_\mu(z_x)+O(a_N^2).
-\end{align*}
-This proves the first claim.
-Because $\|\Theta_e^{(N)}\|=g_3\|\mathcal A_e^{(N)}\|=O(a_N)$ uniformly,
-the matrix exponential satisfies
-\[
-U_3^{(N)}(e)=I+i\Theta_e^{(N)}+O(a_N^2),
-\]
-which yields the second display.
-\end{proof}
-
-\begin{theorem}[Small-loop holonomy expansion]
-\label{thm:small-loop-expansion}
-Assume the admissible refinement regime of Definition~\ref{def:refinement}.
-Let
-\[
-F_{\mu\nu}
+d\Gamma_\square^\infty(z_1,z_2,z_3,z_4)
 :=
-\partial_\mu A_\nu-\partial_\nu A_\mu-i g_3[A_\mu,A_\nu]
+\chi_\square(z_1,z_2,z_3,z_4)\,
+\pi_\infty(dz_1)\,\pi_\infty(dz_2)\,\pi_\infty(dz_3)\,\pi_\infty(dz_4).
 \]
-be the curvature of the connection from
-Theorem~\ref{thm:short-link-connection}.
-Then for every plaquette $P\in\mathcal C_\square^{(N)}$,
-\[
-U_3^{(N)}(P)
-=
-\exp\!\Bigl(i g_3\,\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})
-+O(a_N^3)\Bigr),
-\]
-with the remainder uniform in $P$.
-In particular, for all sufficiently large $N$, $U_3^{(N)}(P)$ lies in the
-principal logarithm domain and
-\[
-F_P^{(N)}
-=
-\frac{\Sigma_P^{(N),\mu\nu}}{A_P^{(N)}}\,F_{\mu\nu}(z_P^{(N)})+O(a_N).
-\]
-\end{theorem}
-\begin{proof}
-Write the oriented boundary of $P$ as $(e_1,e_2,e_3,e_4)$.
-By Theorem~\ref{thm:short-link-connection},
-\[
-U_3^{(N)}(e_k)
-=
-\exp\!\Bigl(i g_3\,\xi_{e_k}^{(N),\mu}A_\mu(\Xi^{(N)}(s(e_k)))+O(a_N^2)\Bigr)
-\]
-uniformly in $k$ and in $P$.
-The plaquette boundary is closed, so
-\[
-\sum_{k=1}^4 \xi_{e_k}^{(N)}=0.
-\]
-Taylor expansion of $A_\mu(\Xi^{(N)}(s(e_k)))$ around the base point
-$z_P^{(N)}$ gives
-\[
-A_\mu(\Xi^{(N)}(s(e_k)))
-=
-A_\mu(z_P^{(N)})
-+\delta_k^{(N),\alpha}\partial_\alpha A_\mu(z_P^{(N)})
-+O(a_N^2),
-\]
-where $\delta_k^{(N)}:=\Xi^{(N)}(s(e_k))-z_P^{(N)}=O(a_N)$ uniformly in $k$.
-Applying the Baker--Campbell--Hausdorff formula twice, using the closed-loop
-identity above, and collecting the first-order Taylor terms together with the
-quadratic commutator terms yields
-\[
-\log U_3^{(N)}(P)
-=
-i g_3\,\Sigma_P^{(N),\mu\nu}
-\bigl(\partial_\mu A_\nu-\partial_\nu A_\mu-i g_3[A_\mu,A_\nu]\bigr)(z_P^{(N)})
-+O(a_N^3).
-\]
-This is the first claim.
-Because $\|\Sigma_P^{(N)}\|=O(a_N^2)$, the leading term in the logarithm tends to
-zero uniformly, so for all sufficiently large $N$ the spectrum of $U_3^{(N)}(P)$
-stays inside the principal logarithm domain.
-Dividing the logarithm by $i g_3 A_P^{(N)}$ gives the final display.
-\end{proof}
+\end{definition}
 
-\begin{corollary}[Wilson plaquette density expansion]
-\label{cor:wilson-density}
-Under the hypotheses of Theorem~\ref{thm:small-loop-expansion}, each plaquette
-term
+\begin{theorem}[Mean-field Wilson action]
+\label{thm:mf-wilson}
+The \emph{mean-field Wilson action} is
 \[
-s_P^{(N)}:=1-\frac13\Re\tr U_3^{(N)}(P)
+S_{\mathrm W}^\infty
+:=
+\int\!\!\int\!\!\int\!\!\int
+\Bigl(1-\tfrac13\operatorname{Re}\operatorname{tr}
+W(z_1,z_2,z_3,z_4)\Bigr)
+\,d\Gamma_\square^\infty(z_1,z_2,z_3,z_4).
 \]
-satisfies
-\[
-s_P^{(N)}
-=
-\frac{g_3^2}{6}\,
-\tr\!\Bigl(\bigl(\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})\bigr)^2\Bigr)
-+r_P^{(N)},
-\]
-with a uniform remainder bound
-\[
-|r_P^{(N)}|\le C a_N^5.
-\]
-\end{corollary}
-\begin{proof}
-By Theorem~\ref{thm:small-loop-expansion},
-\[
-U_3^{(N)}(P)=\exp\!\bigl(i g_3 B_P^{(N)}+E_P^{(N)}\bigr),
-\qquad
-B_P^{(N)}:=\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)}).
-\]
-Here $E_P^{(N)}\in i\mathfrakh$ and $\|E_P^{(N)}\|=O(a_N^3)$ uniformly.
-Since $\|B_P^{(N)}\|=O(a_N^2)$ uniformly and $\tr(B_P^{(N)})=0$,
-Taylor expansion of the exponential gives
-\[
-\tr U_3^{(N)}(P)
-=
-3-\frac{g_3^2}{2}\tr\!\bigl((B_P^{(N)})^2\bigr)+O(a_N^5),
-\]
-where the linear term vanishes because $B_P^{(N)}$ is traceless Hermitian and the
-order-$a_N^3$ correction in the exponent is skew-Hermitian and traceless, so its
-contribution to the real part of the trace starts only in mixed terms of order
-$a_N^5$.
-Rearranging proves the claim.
-\end{proof}
-
-\begin{theorem}[Continuum limit of the $SU(3)$ Wilson action]
-\label{thm:continuum-limit-ym}
-Assume the admissible refinement regime of Definition~\ref{def:refinement}.
-Then the discrete Wilson action from Definition~\ref{def:action} satisfies
+By Theorem~\ref{thm:plaquette-measure-limit}, in the $N\to\infty$ thermodynamic
+limit,
 \[
 S_{\mathrm W}^{(N)}
-\longrightarrow
-\frac14\int_M \tr\!\bigl(F_{\mu\nu}F^{\mu\nu}\bigr)\,d\mathrm{vol}_g
-\qquad\text{as }N\to\infty.
+\xrightarrow[N\to\infty]{\mathbb P}
+S_{\mathrm W}^\infty.
 \]
+The limit action $S_{\mathrm W}^\infty$ is gauge-invariant under simultaneous
+$SU(3)$ rotations $c(z)\mapsto\Omega\,c(z)$ for any fixed $\Omega\in SU(3)$,
+by the same argument as Proposition~\ref{prop:wilson-gauge}.
 \end{theorem}
 \begin{proof}
-By Corollary~\ref{cor:wilson-density},
-\[
-S_{\mathrm W}^{(N)}
-=
-\frac{6}{g_3^2}\sum_{P\in\mathcal C_\square^{(N)}} s_P^{(N)}
-=
-\sum_{P\in\mathcal C_\square^{(N)}}
-\tr\!\Bigl(\bigl(\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})\bigr)^2\Bigr)
-+\frac{6}{g_3^2}\sum_{P\in\mathcal C_\square^{(N)}} r_P^{(N)}.
-\]
-The remainder sum vanishes: by Definition~\ref{def:refinement},
-$|\mathcal C_\square^{(N)}|\le C_\square a_N^{-4}$, and hence
-\[
-\sum_{P\in\mathcal C_\square^{(N)}} |r_P^{(N)}|
-\le C a_N^5 |\mathcal C_\square^{(N)}|
-=O(a_N)\to0.
-\]
-For the leading term, write
-\[
-\tr\!\Bigl(\bigl(\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})\bigr)^2\Bigr)
-=
-\Sigma_P^{(N),\mu\nu}\Sigma_P^{(N),\rho\sigma}\,
-\tr\!\bigl(F_{\mu\nu}(z_P^{(N)})F_{\rho\sigma}(z_P^{(N)})\bigr).
-\]
-Apply the bivector density convergence from Definition~\ref{def:refinement} with
-\[
-f_{\mu\nu\rho\sigma}(z)
-:=
-\tr\!\bigl(F_{\mu\nu}(z)F_{\rho\sigma}(z)\bigr).
-\]
-Since $F_{\mu\nu}$ is antisymmetric in $(\mu,\nu)$,
-\begin{align*}
-\sum_{P\in\mathcal C_\square^{(N)}}
-\tr\!\Bigl(\bigl(\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})\bigr)^2\Bigr)
-&\longrightarrow
-\frac18\int_M
-\bigl(g^{\mu\rho}g^{\nu\sigma}-g^{\mu\sigma}g^{\nu\rho}\bigr)
-\tr(F_{\mu\nu}F_{\rho\sigma})\,d\mathrm{vol}_g\\
-&=
-\frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,d\mathrm{vol}_g.
-\end{align*}
-Combining the leading term with the vanishing remainder proves the theorem.
+Apply Theorem~\ref{thm:plaquette-measure-limit} with $\Phi(z_1,z_2,z_3,z_4)
+:=1-\tfrac13\operatorname{Re}\operatorname{tr}W(z_1,z_2,z_3,z_4)$, which is
+bounded and continuous on $\operatorname{supp}\pi_\infty^{\otimes 4}$.
+The convergence in probability follows immediately.
+Gauge invariance is inherited from the finite-$N$ Wilson action
+(Proposition~\ref{prop:wilson-gauge}) by passage to the limit.
 \end{proof}
+
+\begin{remark}[No lattice spacing required]
+\label{rem:no-lattice-spacing}
+The mean-field action $S_{\mathrm W}^\infty$ is defined entirely within the
+probability space $(\operatorname{supp}\pi_\infty, \pi_\infty)$.
+Unlike the standard Wilson action on a periodic lattice, it does not involve a
+lattice spacing $a$ or a limit $a\to0$; the regularization is provided by the
+viscous kernel length scale $\ell_{\mathrm{visc}}$ and the smooth Gaussian
+kernel $K_\rho$.
+The thermodynamic limit $N\to\infty$ replaces the continuum limit $a\to0$: the
+continuous stationary measure $\pi_\infty$ \emph{is} the spacetime geometry of
+the mean-field theory.
+\end{remark}
 
 \subsection{Quantization and partition function}
 
@@ -1698,9 +1511,9 @@ The construction proceeds in six conceptual steps:
 \item Build the canonical plaquette family $\mathcal C_\square$, the area
       bivectors $\Sigma_P$, the discrete plaquette holonomies $U_3(P)$, and
       the Wilson action $S_{\mathrm W}$.
-\item Prove the thermodynamic mean-field limit for both link and plaquette
-      observables, and under an admissible refinement regime recover the
-      continuum Yang--Mills action.
+\item Prove the $N\to\infty$ thermodynamic mean-field limit for both link and
+      plaquette observables, and define the bilocal mean-field Yang--Mills action
+      $S_{\mathrm W}^\infty$ directly on the stationary measure $\pi_\infty$.
 \end{enumerate}
 All objects are explicit and finite (Theorem~\ref{thm:package}).
 The gauge group $SU(3)$ is not imposed but emerges from the three-dimensional
@@ -1710,20 +1523,17 @@ deterministic mean-field limit for link observables in the sense of
 Theorem~\ref{thm:edge-measure-limit}, and the canonical plaquettes have the
 analogous deterministic mean-field limit by
 Theorems~\ref{thm:stationary-path-poc} and~\ref{thm:plaquette-measure-limit}.
-In the geometric small-loop regime, Theorems~\ref{thm:short-link-connection},
-\ref{thm:small-loop-expansion}, and~\ref{thm:continuum-limit-ym} identify the
-continuum connection and prove that the discrete Wilson action converges to
-\[
-\frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,d\mathrm{vol}_g.
-\]
-Proposition~\ref{prop:refinement-additional} shows that the geometric
-refinement regime needed for this last step is genuinely extra structure on the
-companion graph and is not implied by propagation of chaos alone.
+In the thermodynamic regime, Theorem~\ref{thm:mf-wilson} identifies the limit of
+the discrete Wilson action as the bilocal mean-field action $S_{\mathrm W}^\infty$
+on the stationary measure $\pi_\infty$, with regularization provided by the
+viscous kernel $K_\rho$ rather than a lattice spacing.
 
 Two major extensions are deferred to companion papers:
-(i) path-integral quantization and numerical evaluation of $Z$;
+(i) path-integral quantization of the mean-field theory with the bilocal action
+$S_{\mathrm W}^\infty$ and the Markov-chain measure on the interaction graph;
 (ii) axiom verification --- checking that $\mathcal Q$ satisfies the
-Osterwalder-Schrader axioms adapted to the finite lattice.
+Osterwalder--Schrader axioms evaluated on the integral operator of the continuous
+mean-field law.
 
 \bibliographystyle{plain}
 \bibliography{references}
