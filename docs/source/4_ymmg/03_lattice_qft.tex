@@ -26,6 +26,7 @@
 \newcommand{\mcL}{\mathcal L}
 \newcommand{\one}{\mathbf 1}
 \newcommand{\tr}{\operatorname{tr}}
+\newcommand{\mathfrakh}{\mathfrak h_3}
 
 \title{Finite $SU(3)$ Lattice Gauge Theory\\
 from Particle Trajectories}
@@ -51,8 +52,9 @@ The complete data package $\mathcal Q$ is proved to be finite and $SU(3)$
 gauge-invariant.
 In the stationary thermodynamic regime, scaled link and plaquette sums converge
 to integrals against deterministic mean-field measures.
-Under an admissible mean-field refinement regime with a $C^2$ color-field limit,
-shape-regular plaquettes, and plaquette-density convergence, the discrete Wilson
+Under an admissible mean-field refinement regime with a smooth color-field limit,
+shape-regular plaquettes, explicit plaquette-count control, and plaquette-density
+convergence, the discrete Wilson
 action converges to the continuum Yang--Mills functional
 \[
 \frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,d\mathrm{vol}_g.
@@ -117,8 +119,11 @@ The finite-data result is Theorem~\ref{thm:package}: the tuple
 \mathcal Q = (\text{lattice},\,\{U_3(e)\},\,S_\mathrm W,\,S_\mathrm F,\,S_\phi)
 \]
 is finite, explicit, and $SU(3)$ gauge-invariant.
+The thermodynamic graph and plaquette limits are unconditional consequences of
+the companion convergence paper together with the present graph construction.
 The continuum result is Theorem~\ref{thm:continuum-limit-ym}: under the stated
-refinement hypotheses, the same data recover the continuum Yang--Mills action.
+geometric refinement hypotheses on the companion graph, the same data recover
+the continuum Yang--Mills action.
 
 \paragraph{Organization.}
 Section~\ref{sec:notation} fixes notation, imports kernel parameters from the
@@ -552,6 +557,11 @@ The eight Gell-Mann matrices $\lambda_a\in\C^{3\times3}$, $a=1,\dots,8$, are
 Each $\lambda_a$ is Hermitian and $\operatorname{tr}\lambda_a=0$.
 The generators $\{i\lambda_a/2\}_{a=1}^8$ form a basis of the Lie algebra
 $\mathfrak{su}(3)$ of traceless skew-Hermitian matrices.
+We write
+\[
+\mathfrakh:=\{H\in\C^{3\times3}:H^\dagger=H,\ \tr H=0\}
+\]
+for the corresponding Hermitian generator space, so that $i\mathfrakh=\mathfrak{su}(3)$.
 \end{definition}
 
 \begin{lemma}[Gell-Mann orthogonality]
@@ -584,7 +594,7 @@ For each oriented link $e=(x\to y)\in\mcE$ define the algebra element
 \[
 \mathcal A_e:=\frac12\sum_{a=1}^8
 \Re\!\bigl(\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x)\bigr)\lambda_a
-\in\{H\in\C^{3\times3}:H^\dagger=H,\ \tr H=0\},
+\in\mathfrakh,
 \qquad
 \Theta_e:=g_3\,\mathcal A_e.
 \]
@@ -642,7 +652,7 @@ $P\exp(ig_3\int A_\mu\,dx^\mu)$.
 For every $e\in\mcE$, $U_3(e)\in SU(3)$ and $U_3(e^{-1})=U_3(e)^{-1}$.
 \end{proposition}
 \begin{proof}
-Each coefficient $\Re(\mathbf c_x^\dagger\lambda_a\mathbf c_y)$ is real.
+Each coefficient $\Re(\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x))$ is real.
 By Lemma~\ref{lem:hermitian-span}, $\Theta_e$ is Hermitian and traceless, so
 $i\Theta_e$ is skew-Hermitian and traceless.
 Hence $U_3(e)=\exp(i\Theta_e)$ is unitary.
@@ -653,8 +663,9 @@ The inverse relation $U_3(e^{-1})=U_3(e)^{-1}$ is imposed by convention.
 \end{proof}
 
 \begin{remark}
-There are no oriented self-loops in $\mcE$ because $(i,i)\notin\mathcal P_t$,
-so source and target are distinct by definition.
+There are no oriented self-loops in $\mcE$.
+Interaction links exclude $(i,i)$ by definition, and temporal links connect
+distinct times $t$ and $t+1$.
 If one formally assigns the link transport formula to a self-loop, it still lands in
 $SU(3)$ because $\mathcal A_e$ is Hermitian and traceless.
 \end{remark}
@@ -765,7 +776,7 @@ U_3(n_{j,t}\to n_{i,t}).
 Whenever $A_P>0$ and $U_3(P)$ lies in the principal logarithm domain, define the
 discrete plaquette field strength by
 \[
-F_P:=\frac{1}{i g_3 A_P}\log U_3(P)\in\mathfrak{su}(3).
+F_P:=\frac{1}{i g_3 A_P}\log U_3(P)\in\mathfrakh.
 \]
 \end{definition}
 
@@ -791,7 +802,7 @@ leading-order term with a Yang--Mills curvature density.
 For any gauge map $\Omega$, $S_{\mathrm W}^\Omega=S_{\mathrm W}$.
 \end{proposition}
 \begin{proof}
-Each loop trace $\Re\tr U_3(C)$ is invariant under gauge transformation by
+Each plaquette trace $\Re\tr U_3(P)$ is invariant under gauge transformation by
 Proposition~\ref{prop:gauge-invariance}.
 The sum and the constant term are unchanged, so $S_{\mathrm W}^\Omega=S_{\mathrm W}$.
 \end{proof}
@@ -1116,11 +1127,152 @@ and the empirical plaquette measure by
 \]
 \end{definition}
 
+\begin{definition}[Stationary mean-field path law]
+\label{def:stationary-path-law}
+For every finite horizon $S>0$, let $\Pi_{[0,S]}^\infty$ be the law on
+$C([0,S];\R^6)$ of the unique McKean--Vlasov solution with initial law
+$\pi_\infty$.
+Because $\pi_\infty$ is stationary, $\Pi_{[0,S]}^\infty$ is stationary under
+time shifts.
+For each integer $0\le t<S$, define the adjacent-time mean-field law by
+\[
+\Lambda_t^\infty
+:=
+(\operatorname{ev}_{t,t+1})_\#\Pi_{[0,S]}^\infty,
+\qquad
+\operatorname{ev}_{t,t+1}(\gamma):=\bigl(\gamma(t),\gamma(t+1)\bigr).
+\]
+\end{definition}
+
+\begin{theorem}[Stationary path-space propagation of chaos]
+\label{thm:stationary-path-poc}
+For every finite horizon $S>0$, let $\widehat P_{[0,S]}^N$ be the law on
+$C([0,S];(\R^6)^N)$ of the $N$-particle kinetic system started from its
+invariant law $\pi_N$, and define the empirical path measure
+\[
+\mathfrak M_{[0,S]}^N
+:=
+\frac1N\sum_{i=1}^N \delta_{Z_i^N(\cdot)}
+\in \mathcal P\bigl(C([0,S];\R^6)\bigr).
+\]
+Then
+\[
+\mathfrak M_{[0,S]}^N
+\xrightarrow[N\to\infty]{\mathbb P}
+\Pi_{[0,S]}^\infty
+\qquad
+\text{in }\mathcal P\bigl(C([0,S];\R^6)\bigr).
+\]
+Equivalently, for every bounded continuous path functional
+$\Psi:C([0,S];\R^6)\to\R$,
+\[
+\frac1N\sum_{i=1}^N \Psi\!\bigl(Z_i^N(\cdot)\bigr)
+\xrightarrow[N\to\infty]{\mathbb P}
+\int_{C([0,S];\R^6)} \Psi(\gamma)\,\Pi_{[0,S]}^\infty(d\gamma).
+\]
+In particular, for every integer $0\le t<S$,
+\[
+M_t^N
+=(\operatorname{ev}_{t,t+1})_\# \mathfrak M_{[0,S]}^N
+\xrightarrow[N\to\infty]{\mathbb P}
+\Lambda_t^\infty .
+\]
+\end{theorem}
+\begin{proof}
+Write $E:=C([0,S];\R^6)$.
+Because the invariant law $\pi_N$ is exchangeable and the $N$-particle
+dynamics are permutation-equivariant, the stationary path law
+$\widehat P_{[0,S]}^N$ on $E^N$ is exchangeable.
+Applying the same finite de~Finetti reduction used in the companion
+convergence paper, now on the Polish space $E$, yields a mixing measure
+$\widehat Q_N\in\mathcal P(\mathcal P(E))$ with canonical choice
+\[
+\widehat Q_N=\mathrm{Law}(\mathfrak M_{[0,S]}^N),
+\]
+whose fixed-$k$ path marginals are asymptotically mixtures of product path laws.
+
+The one-particle path marginals are tight on $E$.
+Stationarity gives the same uniform second-moment bounds at every time as in
+the companion convergence paper, and the underdamped Langevin coefficients have
+at most linear growth with Brownian noise only in velocity.
+Standard Kolmogorov estimates therefore give tightness of
+$\mathrm{Law}(Z_1^N(\cdot))$ on $E$, hence tightness of $\{\widehat Q_N\}_{N\ge2}$ on
+$\mathcal P(\mathcal P(E))$.
+Let $\widehat Q_\infty$ be any subsequential limit.
+
+We identify the support of $\widehat Q_\infty$ by the nonlinear martingale
+problem.
+Fix $\phi\in C_c^\infty(\R^6)$, times $0\le u\le v\le S$, and a bounded
+continuous functional $G$ depending only on the path segment on $[0,u]$.
+For a measure $\mu\in\mathcal P(\R^6)$, write
+\[
+\mathcal L_\mu \phi(x,v)
+:=
+v\cdot\nabla_x\phi(x,v)
++\bigl(-\nabla U(x)-\gamma v+F[\mu](x,v)\bigr)\cdot\nabla_v\phi(x,v)
++\frac{\sigma^2}{2}\Delta_v\phi(x,v).
+\]
+For the finite-$N$ system,
+\[
+\phi(Z_i^N(v))-\phi(Z_i^N(u))
+-\int_u^v
+\Bigl[
+\mathcal L_{\mathfrak M_{[0,S],s}^N}\phi(Z_i^N(s))
++\bigl(F_i^N(s)-F[\mathfrak M_{[0,S],s}^N](Z_i^N(s))\bigr)
+\cdot\nabla_v\phi(Z_i^N(s))
+\Bigr]\,ds
+\]
+is a martingale.
+Averaging over $i$ and multiplying by $G(Z_i^N|_{[0,u]})$ gives zero
+expectation.
+Here
+\[
+\mathfrak M_{[0,S],s}^N:=(\operatorname{ev}_s)_\#\mathfrak M_{[0,S]}^N
+=
+\frac1N\sum_{j=1}^N \delta_{Z_j^N(s)}.
+\]
+The force-defect estimate from the companion convergence paper, integrated over
+$s\in[u,v]$, shows that the second term inside the time integral contributes
+only $O(N^{-1/2})$.
+Passing to the limit and using continuity of $\mu\mapsto F[\mu]$ on
+moment-bounded classes, every path law $\eta$ in the support of
+$\widehat Q_\infty$ satisfies
+\[
+\int_E
+G(\gamma|_{[0,u]})
+\Bigl[
+\phi(\gamma(v))-\phi(\gamma(u))
+-\int_u^v \mathcal L_{\eta_s}\phi(\gamma(s))\,ds
+\Bigr]
+\eta(d\gamma)
+=
+0,
+\]
+where $\eta_s:=(\operatorname{ev}_s)_\#\eta$.
+Thus $\widehat Q_\infty$-almost every $\eta$ solves the McKean--Vlasov
+martingale problem on $[0,S]$.
+
+Because each $\widehat P_{[0,S]}^N$ is stationary in time, every
+$\eta\in\operatorname{supp}\widehat Q_\infty$ is also stationary.
+Its time-$0$ marginal is the limit of the first marginals $\pi_{N,1}$ and
+therefore equals $\pi_\infty$ by the stationary propagation-of-chaos theorem of
+the companion paper.
+The McKean--Vlasov SDE is well posed for every initial law with finite second
+moment, so there is a unique path law with initial law $\pi_\infty$.
+Since $\pi_\infty$ is stationary, that unique law is exactly
+$\Pi_{[0,S]}^\infty$.
+Hence $\widehat Q_\infty=\delta_{\Pi_{[0,S]}^\infty}$.
+Every subsequence has the same limit, so
+\[
+\mathrm{Law}(\mathfrak M_{[0,S]}^N)\Rightarrow \delta_{\Pi_{[0,S]}^\infty},
+\]
+which is equivalent to the stated convergence in probability.
+The final claim follows by the continuous mapping theorem for the evaluation map
+$\operatorname{ev}_{t,t+1}$.
+\end{proof}
+
 \begin{theorem}[Stationary thermodynamic limit of plaquette observables]
 \label{thm:plaquette-measure-limit}
-Assume that, under the invariant law of the $N$-particle system, the adjacent-time
-empirical path measure $M_t^N$ converges in law to a deterministic mean-field
-path law $\Lambda_t^\infty$ on $\R^{12}$ as $N\to\infty$.
 Let $\Phi:(\R^{12})^2\to\R$ be bounded and continuous, and assume that
 $\chi_{\square,t}\Phi$ is continuous at
 $(\Lambda_t^\infty\otimes\Lambda_t^\infty)$-almost every pair.
@@ -1150,7 +1302,8 @@ By Definition~\ref{def:plaquette-measure},
 \end{align*}
 where $|R_{\square,t}^N|\le \|\Psi_{\square,t}\|_\infty/N$.
 Hence $R_{\square,t}^N\to0$ in probability.
-Because $M_t^N$ converges in law to the deterministic measure $\Lambda_t^\infty$,
+Because $M_t^N$ converges in probability to the deterministic measure
+$\Lambda_t^\infty$ by Theorem~\ref{thm:stationary-path-poc},
 the product measure $M_t^N\otimes M_t^N$ converges in law to
 $\Lambda_t^\infty\otimes\Lambda_t^\infty$.
 The boundedness and almost-everywhere continuity of $\Psi_{\square,t}$ then yield
@@ -1171,7 +1324,44 @@ same for the canonical plaquettes used by the Wilson action.
 No external discretization of the limiting law is introduced: the dynamic graph
 and its elementary 2-cells are carried directly to the mean-field regime by the
 same label-invariant graph rule.
+The companion convergence paper proves the one-time stationary propagation of
+chaos used in Theorem~\ref{thm:edge-measure-limit}; the present
+Theorem~\ref{thm:stationary-path-poc} upgrades that control to stationary path
+space, and Theorem~\ref{thm:plaquette-measure-limit} is then the corresponding
+plaquette-level corollary.
 \end{remark}
+
+\begin{proposition}[Why geometric refinement is additional]
+\label{prop:refinement-additional}
+The stationary mean-field convergence results above do not by themselves imply
+the geometric refinement hypotheses of Definition~\ref{def:refinement}.
+More precisely, the quantities
+\[
+a_N,\qquad
+\{A_P^{(N)}\}_{P\in\mathcal C_\square^{(N)}},\qquad
+|\mathcal C_\square^{(N)}|,
+\qquad
+\sum_{P\in\mathcal C_\square^{(N)}}
+\Sigma_P^{(N),\mu\nu}\Sigma_P^{(N),\rho\sigma}\,\delta_{z_P^{(N)}}
+\]
+depend on the companion graph rule $\mathcal P_t^{(N)}$ and are not determined
+by the empirical particle path laws alone.
+Consequently, no theorem based only on one-time or path-space propagation of
+chaos can force Definition~\ref{def:refinement}; a separate local graph
+construction or an equivalent geometric sampling hypothesis is necessary.
+\end{proposition}
+\begin{proof}
+In Definition~\ref{def:run}, the recorded companion sets
+$\{\mathcal P_t^{(N)}\}_{t\in\Tset}$ are part of the lattice input.
+Keeping the same particle trajectories fixed while changing the label-invariant
+companion rule changes the link set $\mcE^{(N)}$, the plaquette family
+$\mathcal C_\square^{(N)}$, the maximal edge length $a_N$, and the associated
+area bivectors and plaquette counts.
+The empirical one-time and path measures of the particles are unaffected by such
+a change.
+Therefore those mean-field limits do not determine the geometric quantities in
+Definition~\ref{def:refinement}.
+\end{proof}
 
 \subsection{Continuum limit}
 
@@ -1212,7 +1402,7 @@ and if $P=P_{ij,t}$, then
 \le C_{\mathrm{reg}}\,a_N^2.
 \]
 \item \textbf{Smooth color-field limit.}
-There exists a smooth embedded four-dimensional manifold $M\subset\R^4$ with
+There exists a compact smooth embedded four-dimensional manifold $M\subset\R^4$ with
 Riemannian metric $g$ and a $C^2$ color field
 \[
 \mathbf c:M\to\C^3
@@ -1222,8 +1412,14 @@ such that, after identifying $\Xi^{(N)}(\mcN^{(N)})\subset M$,
 \sup_{x\in\mcN^{(N)}}\|\mathbf c_x^{(N)}-\mathbf c(\Xi^{(N)}(x))\|
 \le C_{\mathbf c}\,a_N^2.
 \]
+\item \textbf{Uniform plaquette count.}
+There exists $C_\square<\infty$ such that
+\[
+|\mathcal C_\square^{(N)}|\le C_\square\,a_N^{-4}
+\qquad\text{for all }N.
+\]
 \item \textbf{Bivector density convergence.}
-For every compactly supported continuous scalar test function $f$ on $M$,
+For every continuous scalar test function $f$ on $M$,
 \[
 \sum_{P\in\mathcal C_\square^{(N)}}
 \Sigma_P^{(N),\mu\nu}\Sigma_P^{(N),\rho\sigma}\,f(z_P^{(N)})
@@ -1238,7 +1434,7 @@ f(z)\,d\mathrm{vol}_g(z).
 \begin{theorem}[Short-link consistency and continuum connection]
 \label{thm:short-link-connection}
 Assume the admissible refinement regime of Definition~\ref{def:refinement}.
-Define the Hermitian $\mathfrak{su}(3)$-valued connection on $M$ by
+Define the Hermitian traceless gauge potential on $M$ by
 \[
 A_\mu(z):=\frac12\sum_{a=1}^8
 \Re\!\bigl(\mathbf c(z)^\dagger\lambda_a\,\partial_\mu\mathbf c(z)\bigr)\lambda_a,
@@ -1326,15 +1522,26 @@ By Theorem~\ref{thm:short-link-connection},
 \[
 U_3^{(N)}(e_k)
 =
-\exp\!\Bigl(i g_3\,\xi_{e_k}^{(N),\mu}A_\mu(z_P^{(N)})+O(a_N^2)\Bigr)
+\exp\!\Bigl(i g_3\,\xi_{e_k}^{(N),\mu}A_\mu(\Xi^{(N)}(s(e_k)))+O(a_N^2)\Bigr)
 \]
 uniformly in $k$ and in $P$.
 The plaquette boundary is closed, so
 \[
 \sum_{k=1}^4 \xi_{e_k}^{(N)}=0.
 \]
-Applying the Baker--Campbell--Hausdorff formula twice and using the
-shape-regularity bounds from Definition~\ref{def:refinement} yields
+Taylor expansion of $A_\mu(\Xi^{(N)}(s(e_k)))$ around the base point
+$z_P^{(N)}$ gives
+\[
+A_\mu(\Xi^{(N)}(s(e_k)))
+=
+A_\mu(z_P^{(N)})
++\delta_k^{(N),\alpha}\partial_\alpha A_\mu(z_P^{(N)})
++O(a_N^2),
+\]
+where $\delta_k^{(N)}:=\Xi^{(N)}(s(e_k))-z_P^{(N)}=O(a_N)$ uniformly in $k$.
+Applying the Baker--Campbell--Hausdorff formula twice, using the closed-loop
+identity above, and collecting the first-order Taylor terms together with the
+quadratic commutator terms yields
 \[
 \log U_3^{(N)}(P)
 =
@@ -1372,10 +1579,11 @@ with a uniform remainder bound
 \begin{proof}
 By Theorem~\ref{thm:small-loop-expansion},
 \[
-U_3^{(N)}(P)=\exp\!\bigl(i g_3 B_P^{(N)}+O(a_N^3)\bigr),
+U_3^{(N)}(P)=\exp\!\bigl(i g_3 B_P^{(N)}+E_P^{(N)}\bigr),
 \qquad
 B_P^{(N)}:=\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)}).
 \]
+Here $E_P^{(N)}\in i\mathfrakh$ and $\|E_P^{(N)}\|=O(a_N^3)$ uniformly.
 Since $\|B_P^{(N)}\|=O(a_N^2)$ uniformly and $\tr(B_P^{(N)})=0$,
 Taylor expansion of the exponential gives
 \[
@@ -1384,8 +1592,9 @@ Taylor expansion of the exponential gives
 3-\frac{g_3^2}{2}\tr\!\bigl((B_P^{(N)})^2\bigr)+O(a_N^5),
 \]
 where the linear term vanishes because $B_P^{(N)}$ is traceless Hermitian and the
-order-$a_N^3$ correction in the exponent contributes only at order $a_N^5$ to
-the real part of the trace.
+order-$a_N^3$ correction in the exponent is skew-Hermitian and traceless, so its
+contribution to the real part of the trace starts only in mixed terms of order
+$a_N^5$.
 Rearranging proves the claim.
 \end{proof}
 
@@ -1412,7 +1621,7 @@ S_{\mathrm W}^{(N)}
 +\frac{6}{g_3^2}\sum_{P\in\mathcal C_\square^{(N)}} r_P^{(N)}.
 \]
 The remainder sum vanishes: by Definition~\ref{def:refinement},
-$A_P^{(N)}\asymp a_N^2$, so $|\mathcal C_\square^{(N)}|=O(a_N^{-4})$, and hence
+$|\mathcal C_\square^{(N)}|\le C_\square a_N^{-4}$, and hence
 \[
 \sum_{P\in\mathcal C_\square^{(N)}} |r_P^{(N)}|
 \le C a_N^5 |\mathcal C_\square^{(N)}|
@@ -1485,7 +1694,7 @@ The construction proceeds in six conceptual steps:
 \item Define the $SU(3)$ link transport $U_3(e)=\exp(i\Theta_e)$ by projecting
       the short-link color increment
       $\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x)$ onto the Lie
-      algebra $\mathfrak{su}(3)$ via the Gell-Mann basis.
+      generator space $\mathfrakh$ via the Gell-Mann basis.
 \item Build the canonical plaquette family $\mathcal C_\square$, the area
       bivectors $\Sigma_P$, the discrete plaquette holonomies $U_3(P)$, and
       the Wilson action $S_{\mathrm W}$.
@@ -1497,16 +1706,19 @@ All objects are explicit and finite (Theorem~\ref{thm:package}).
 The gauge group $SU(3)$ is not imposed but emerges from the three-dimensional
 viscous dynamics together with the Gell-Mann projection.
 In the stationary thermodynamic regime, the same interaction graph has a
-deterministic mean-field limit in the sense of
-Theorems~\ref{thm:edge-measure-limit} and~\ref{thm:plaquette-measure-limit}, so
-scaled link and plaquette sums become mean-field interaction integrals without
-changing the graph rule.
+deterministic mean-field limit for link observables in the sense of
+Theorem~\ref{thm:edge-measure-limit}, and the canonical plaquettes have the
+analogous deterministic mean-field limit by
+Theorems~\ref{thm:stationary-path-poc} and~\ref{thm:plaquette-measure-limit}.
 In the geometric small-loop regime, Theorems~\ref{thm:short-link-connection},
 \ref{thm:small-loop-expansion}, and~\ref{thm:continuum-limit-ym} identify the
 continuum connection and prove that the discrete Wilson action converges to
 \[
 \frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,d\mathrm{vol}_g.
 \]
+Proposition~\ref{prop:refinement-additional} shows that the geometric
+refinement regime needed for this last step is genuinely extra structure on the
+companion graph and is not implied by propagation of chaos alone.
 
 Two major extensions are deferred to companion papers:
 (i) path-integral quantization and numerical evaluation of $Z$;

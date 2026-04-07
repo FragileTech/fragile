@@ -1,0 +1,1521 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools,mathrsfs,bm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\allowdisplaybreaks
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\mcN}{\mathcal N}
+\newcommand{\mcE}{\mathcal E}
+\newcommand{\mcT}{\mathcal T}
+\newcommand{\mcG}{\mathcal G}
+\newcommand{\mcU}{\mathscr U}
+\newcommand{\mcCaux}{\mathscr C}
+\newcommand{\mcS}{\mathscr S}
+\newcommand{\mcX}{\mathscr X}
+\newcommand{\mcF}{\mathcal F}
+\newcommand{\mcO}{\mathcal O}
+\newcommand{\bbB}{\mathbb B}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Ree}{\operatorname{Re}}
+\newcommand{\dd}{\,\mathrm d}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\Span}{\operatorname{span}}
+\newcommand{\Ad}{\operatorname{Ad}}
+\newcommand{\indeg}{\operatorname{indeg}}
+\newcommand{\outdeg}{\operatorname{outdeg}}
+\newcommand{\Vol}{\operatorname{Vol}}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\mcHh}{\mathfrak h_3}
+\newcommand{\mcsu}{\mathfrak{su}(3)}
+
+\title{From the Data Package $\mathcal Q$ to a Gauge-Fixed Path Integral\\
+for the Trajectory-Induced $SU(3)$ Lattice Theory}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The companion lattice paper constructs from discrete particle trajectories a
+finite $SU(3)$ lattice gauge theory data package
+\[
+\mathcal Q=(\mcN,\mcE,\mathcal C_\square,\{U_3(e)\}_{e\in\mcE},S_{\mathrm W},S_{\mathrm F},S_\phi)
+\]
+with explicit worldline links, interaction links, Wilson plaquettes, and matter
+actions \cite{convergence,latticeqft}.  The present paper performs the next
+mathematical step: it replaces the data-induced background links by independent
+integration variables and builds the exact finite-dimensional Euclidean path
+integral attached to the same lattice.  We define the full configuration space,
+the product Haar--Berezin--Lebesgue measure, the partition function, and the
+vacuum expectation map.  We prove that the resulting finite-lattice theory is
+well defined whenever the scalar local potential is bounded below.  We then
+solve the gauge-redundancy problem exactly by a rooted maximal-tree gauge: every
+gauge orbit meets the gauge slice once and only once, the Faddeev--Popov
+determinant is identically $1$, and the ghost sector is a decoupled finite
+Berezin integral.  The fermionic sector integrates to a finite fermion
+determinant, and the scalar sector is shown to be integrable with an exact
+Gaussian formula in the free case.
+
+The paper also explains the continuum meaning of the discrete measure.  On each
+edge, Haar measure is shown to be smooth in exponential coordinates and to agree
+to second order with Lebesgue measure on the Lie algebra.  Combined with the
+continuum Wilson-action limit from the companion lattice paper, this yields a
+precise consistency statement: the discrete theory is a genuine ultraviolet
+regularization whose near-identity local measure and local action density match
+the formal Euclidean Yang--Mills path-integral rules.  What is \emph{not} proved
+here is just as important: this paper does not establish an unconditional
+constructive continuum $4$-dimensional Yang--Mills measure, does not verify the
+Osterwalder--Schrader axioms in the continuum, and does not prove a mass gap.
+Those are strictly stronger problems than the finite-lattice quantization solved
+in this paper.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction and motivation}
+\label{sec:introduction}
+
+\paragraph{From data to dynamics.}
+The paper \emph{Finite $SU(3)$ Lattice Gauge Theory from Particle
+Trajectories} constructs from the recorded run data of the viscous particle
+system a finite spacetime lattice
+\[
+\mathcal L=(\mcN,\mcE)
+\]
+whose site set $\mcN$ consists of trajectory records $n_{i,t}$, whose edge set
+$\mcE$ consists of temporal worldline links and same-time interaction links,
+and whose canonical plaquette family $\mathcal C_\square$ is built from
+persistent interaction pairs across adjacent times \cite{latticeqft}.  On that
+lattice the same paper defines explicit link transporters $U_3(e)\in SU(3)$,
+the Wilson action $S_{\mathrm W}$, and matter actions $S_{\mathrm F}$ and
+$S_\phi$.  These objects form the finite data package $\mathcal Q$.  Up to that
+stage, however, the link variables are still deterministic functions of the
+particle record.  A quantum theory requires a different mathematical object:
+instead of one distinguished configuration, it requires an ensemble weighted by
+an action and summed over all admissible gauge fields and matter fields.  The
+present paper performs that passage from one explicit background configuration
+to a finite-dimensional path integral on the same lattice.
+
+\paragraph{The quantization objective.}
+The basic quantization step is conceptually simple and mathematically precise.
+The background transporters $U_3(e)$ derived in \cite{latticeqft} are replaced
+by independent variables
+\[
+U(e)\in SU(3),\qquad e\in\mcE,
+\]
+and the site colors $\mathbf c_x$ are retained, when desired, as auxiliary
+fluctuating variables in the unit ball of $\C^3$.  Because the companion paper
+derives no autonomous color-field energy beyond the induced links, the
+auxiliary color sector will be normalized and dynamically inert in the
+quantization performed here.  All dynamical content therefore sits in the gauge
+links, fermions, and scalars.  The goal is to define a mathematically complete
+finite partition function, remove gauge redundancy exactly, identify the
+fermion determinant and scalar measure, and clarify in what sense the resulting
+finite theory does and does not recover continuum Euclidean Yang--Mills
+quantization.
+
+\begin{theorem}[Main finite-lattice quantization result]
+\label{thm:main}
+Fix the lattice data $(\mcN,\mcE,\mathcal C_\square)$ from \cite{latticeqft},
+the coupling $g_3>0$, masses $m_F>0$ and $m_\phi>0$, the distance
+regularization $\eta>0$, and a continuous scalar local potential
+$V_\phi:\R\to\R$ satisfying
+\[
+V_\phi(s)\ge -C_\phi
+\qquad \text{for all } s\in\R
+\]
+for some constant $C_\phi<\infty$.  Then:
+\begin{enumerate}[leftmargin=1.5em]
+\item the promoted field manifold
+\[
+\mcX_\mathcal L:=SU(3)^{\mcE}\times \bbB^{\mcN}\times \Lambda_{\mathrm F}\times \R^{\mcN}
+\]
+admits a canonical product measure obtained from normalized Haar measure on
+$SU(3)$, normalized Lebesgue measure on the color ball $\bbB\subset\C^3$,
+finite Berezin measure in the fermionic directions, and Lebesgue measure in the
+scalar directions;
+\item the partition function
+\[
+Z=\int_{\mcX_\mathcal L}\exp\!\bigl(-S_{\mathrm W}(U)-S_{\mathrm F}(U,\bar\psi,\psi)-S_\phi(\phi)\bigr)\,\dd\mu
+\]
+exists as a finite complex number;
+\item for any rooted spanning forest $\mcT$ of the underlying undirected graph,
+every rooted gauge orbit meets the maximal-tree gauge slice exactly once, the
+Faddeev--Popov determinant is identically $1$, and the gauge-fixed partition
+function is an ordinary finite-dimensional integral over the cotree links;
+\item integrating out the fermions yields the exact fermion determinant
+$\det M_{\mathrm F}(U)$, while the scalar integral is finite and is Gaussian
+with covariance $(L_\eta+m_\phi^2 I)^{-1}$ when $V_\phi\equiv 0$.
+\end{enumerate}
+\end{theorem}
+
+\begin{remark}[What this paper does not prove]
+\label{rem:not-millennium}
+Theorem~\ref{thm:main} is a complete quantization theorem for a \emph{finite
+lattice} and nothing less, but also nothing more.  It does not produce an
+unconditional constructive continuum Yang--Mills measure in four dimensions.
+In particular, it does not resolve the Yang--Mills Millennium Prize problem,
+which additionally requires a nontrivial continuum quantum field theory
+satisfying the Euclidean or Wightman axioms and exhibiting a positive mass gap.
+The finite-lattice theory constructed here is the rigorous ultraviolet
+regularization on which such harder questions would have to be based.
+\end{remark}
+
+\section{Configuration space and measure}
+\label{sec:config}
+
+\subsection{Imported lattice data}
+
+We summarize only the pieces of the companion paper \cite{latticeqft} that are
+required for quantization.
+
+\begin{definition}[Imported lattice package]
+\label{def:imported-package}
+The previous paper supplies:
+\begin{enumerate}[leftmargin=1.5em]
+\item a finite site set $\mcN=\{n_{i,t}\}$ and a finite oriented edge set
+$\mcE=E_{\mathrm{time}}\cup E_{\mathrm{int}}$;
+\item for every plaquette $P\in\mathcal C_\square$, an oriented boundary
+\[
+\partial P=(e_1,e_2,e_3,e_4),\qquad e_k\in\mcE,
+\]
+with the ordered plaquette holonomy
+\[
+U(P):=U(e_1)U(e_2)U(e_3)U(e_4);
+\]
+\item the Wilson action
+\[
+S_{\mathrm W}(U):=\beta\sum_{P\in\mathcal C_\square}
+\left(1-\frac13\Ree\,\tr U(P)\right),
+\qquad
+\beta:=\frac{6}{g_3^2};
+\]
+\item the matter actions
+\[
+S_{\mathrm F}(U,\bar\psi,\psi)
+:=
+\sum_{e\in\mcE}\bar\psi_{t(e)}
+\left(\psi_{t(e)}-U(e)\psi_{s(e)}\right)
++m_F\sum_{x\in\mcN}\bar\psi_x\psi_x,
+\]
+\[
+S_\phi(\phi)
+:=
+\frac12\sum_{e=(x\to y)\in\mcE}\frac{(\phi_y-\phi_x)^2}{\ell_e+\eta}
++\sum_{x\in\mcN}\left(\frac{m_\phi^2}{2}\phi_x^2+V_\phi(\phi_x)\right),
+\]
+where $\ell_e$ is the spacetime length of edge $e$ and $\eta>0$ is the
+distance regularization from \cite{latticeqft}.
+\end{enumerate}
+\end{definition}
+
+\begin{remark}
+The actions above are identical in form to those in \cite{latticeqft}; the only
+change is interpretive.  In the companion paper the link variables were
+constructed from the particle data.  In the present paper they are promoted to
+independent coordinates on $SU(3)^{\mcE}$.
+\end{remark}
+
+\subsection{Field manifold}
+
+\begin{definition}[Gauge-link manifold]
+\label{def:gauge-manifold}
+Let
+\[
+\mcU:=SU(3)^{\mcE}
+=\{U:\mcE\to SU(3)\}.
+\]
+Because $\mcE$ is finite and $SU(3)$ is a compact smooth Lie group of real
+dimension $8$, $\mcU$ is a compact smooth manifold of real dimension
+$8|\mcE|$.
+\end{definition}
+
+\begin{definition}[Auxiliary color manifold]
+\label{def:color-manifold}
+Let
+\[
+\bbB:=\{z\in\C^3:\|z\|<1\},
+\qquad
+\mcCaux:=\bbB^{\mcN}.
+\]
+This is the product of the open unit balls suggested by the color normalization
+bound $\|\mathbf c_x\|<1$ proved in \cite{latticeqft}.  Since no independent
+color action was supplied in the companion paper, this sector will be assigned
+a normalized product measure and decouples from the dynamical integrals below.
+\end{definition}
+
+\begin{definition}[Matter field domains]
+\label{def:matter-domains}
+Let
+\[
+\mcS:=\R^{\mcN}
+\]
+be the scalar field space.  For the fermionic sector, write
+\[
+V_{\mathrm F}:=\bigoplus_{x\in\mcN}\C_x^3
+\]
+and let $\Lambda_{\mathrm F}$ be the Grassmann algebra generated by
+\[
+\{\psi_{x,\alpha},\bar\psi_{x,\alpha}:x\in\mcN,\ \alpha=1,2,3\}.
+\]
+The full promoted field manifold is
+\[
+\mcX_\mathcal L:=\mcU\times\mcCaux\times \Lambda_{\mathrm F}\times\mcS.
+\]
+\end{definition}
+
+\begin{remark}
+Only the gauge and scalar sectors are manifolds in the ordinary sense.  The
+fermionic sector is finite-dimensional Grassmann algebra, so integration in
+those variables is algebraic rather than measure theoretic.  This is standard
+for finite lattice fermions \cite{montvay1994quantum,rothe2012lattice}.
+\end{remark}
+
+\subsection{Measures}
+
+\begin{definition}[Normalized Haar measure]
+\label{def:haar}
+Let $\mu_H$ denote the unique normalized Haar probability measure on $SU(3)$,
+so that
+\[
+\mu_H(SU(3))=1
+\]
+and for every Borel set $A\subseteq SU(3)$ and every $g\in SU(3)$,
+\[
+\mu_H(gA)=\mu_H(Ag)=\mu_H(A).
+\]
+The gauge-link measure on $\mcU$ is the product probability measure
+\[
+\dd\mu_{\mcU}(U):=\prod_{e\in\mcE}\dd\mu_H(U(e)).
+\]
+\end{definition}
+
+\begin{definition}[Auxiliary color measure]
+\label{def:color-measure}
+Let $\nu_{\bbB}$ be normalized Lebesgue measure on $\bbB\subset\C^3\cong\R^6$.
+The color measure on $\mcCaux$ is
+\[
+\dd\nu_{\mcCaux}(c):=\prod_{x\in\mcN}\dd\nu_{\bbB}(c_x).
+\]
+By normalization, $\nu_{\mcCaux}(\mcCaux)=1$.
+\end{definition}
+
+\begin{definition}[Berezin and scalar measures]
+\label{def:berezin}
+The Berezin measure is
+\[
+\dd\mu_{\mathrm F}:=
+\prod_{x\in\mcN}\prod_{\alpha=1}^3
+\dd\bar\psi_{x,\alpha}\,\dd\psi_{x,\alpha},
+\]
+with the convention
+\[
+\int \dd\bar\psi\,\dd\psi\ e^{-\bar\psi\psi}=1.
+\]
+The scalar measure on $\mcS$ is ordinary Lebesgue measure
+\[
+\dd\phi:=\prod_{x\in\mcN}\dd\phi_x.
+\]
+\end{definition}
+
+\begin{definition}[Total finite-lattice measure]
+\label{def:total-measure}
+The total measure symbol on $\mcX_\mathcal L$ is
+\[
+\dd\mu:=
+\dd\mu_{\mcU}(U)\,\dd\nu_{\mcCaux}(c)\,\dd\mu_{\mathrm F}\,\dd\phi.
+\]
+When the integrand does not depend on $c$, the auxiliary color sector
+contributes the unit factor
+\[
+\int_{\mcCaux}\dd\nu_{\mcCaux}(c)=1.
+\]
+\end{definition}
+
+\begin{proposition}[Well-posedness of the finite measure factors]
+\label{prop:measure-wellposed}
+Each factor in Definition~\ref{def:total-measure} is well defined.  In
+particular, $\mu_{\mcU}$ is a Borel probability measure on a compact manifold,
+$\nu_{\mcCaux}$ is a Borel probability measure on a bounded open subset of
+$\R^{6|\mcN|}$, $\mu_{\mathrm F}$ is a finite Berezin integration rule on a
+finite Grassmann algebra, and $\phi\mapsto S_\phi(\phi)$ is a measurable
+function on $\R^{|\mcN|}$.
+\end{proposition}
+\begin{proof}
+The product group $SU(3)^{\mcE}$ is compact because $\mcE$ is finite and
+$SU(3)$ is compact, hence the product Haar measure exists.  The set
+$\mcCaux=\bbB^{\mcN}$ is a bounded open subset of a finite-dimensional Euclidean
+space, so the normalized Lebesgue measure exists.  The fermionic sector has
+finitely many generators, hence finite Berezin integration is an algebraic
+operation.  Finally $S_\phi$ is a finite sum of continuous functions of
+$\phi$, because each coefficient $(\ell_e+\eta)^{-1}$ is finite and positive.
+\end{proof}
+
+\section{Construction of the partition function}
+\label{sec:partition}
+
+\paragraph{The total Euclidean action.}
+The quantized action on $\mcX_\mathcal L$ is the same algebraic expression as
+in the companion lattice paper, but now interpreted on the promoted field
+space:
+\[
+S(U,\bar\psi,\psi,\phi)
+:=
+S_{\mathrm W}(U)+S_{\mathrm F}(U,\bar\psi,\psi)+S_\phi(\phi).
+\]
+The auxiliary color variable $c\in\mcCaux$ does not enter this action and is
+therefore normalized away.  No hidden continuum limit is taken at this stage.
+Every term is a finite sum over the fixed finite index sets $\mcN$, $\mcE$, and
+$\mathcal C_\square$.
+
+\paragraph{The master partition function.}
+The central object of the paper is the finite-lattice partition function
+\begin{equation}
+\label{eq:partition-function}
+Z
+:=
+\int_{\mcX_\mathcal L}
+\exp\!\bigl(-S(U,\bar\psi,\psi,\phi)\bigr)\,\dd\mu.
+\end{equation}
+Because the color sector is normalized and decoupled,
+\[
+Z
+=
+\int_{\mcU\times\Lambda_{\mathrm F}\times\mcS}
+\exp\!\bigl(-S_{\mathrm W}(U)-S_{\mathrm F}(U,\bar\psi,\psi)-S_\phi(\phi)\bigr)
+\dd\mu_{\mcU}(U)\,\dd\mu_{\mathrm F}\,\dd\phi.
+\]
+
+\paragraph{Normalization and expectation values.}
+For any bounded gauge-invariant observable $\mcO$ whose fermionic degree is
+even, the vacuum expectation is defined by
+\begin{equation}
+\label{eq:expectation}
+\langle \mcO\rangle
+:=
+\frac{1}{Z}
+\int_{\mcX_\mathcal L}
+\mcO(U,c,\bar\psi,\psi,\phi)\,
+e^{-S(U,\bar\psi,\psi,\phi)}\,\dd\mu,
+\end{equation}
+provided $Z\neq 0$.  The nonvanishing of $Z$ is model dependent and cannot be
+asserted for arbitrary finite complex fermion determinants.  What can always be
+proved is finiteness of the numerator and denominator as complex numbers, which
+is sufficient for all formal manipulations before division by $Z$.
+
+\begin{theorem}[Existence and finiteness of the partition function]
+\label{thm:partition-finite}
+Under the hypotheses of Theorem~\ref{thm:main}, the partition function
+\eqref{eq:partition-function} is a finite complex number.  Moreover, for every
+bounded measurable observable $\mcO$ depending polynomially on the Grassmann
+variables, the unnormalized expectation
+\[
+\int_{\mcX_\mathcal L}\mcO\,e^{-S}\,\dd\mu
+\]
+is finite.
+\end{theorem}
+\begin{proof}
+Integrate the fermions first.  Section~\ref{sec:matter-integration} will show
+that
+\[
+\int_{\Lambda_{\mathrm F}}e^{-S_{\mathrm F}(U,\bar\psi,\psi)}\,\dd\mu_{\mathrm F}
+=\det M_{\mathrm F}(U),
+\]
+where $M_{\mathrm F}(U)$ is a finite complex matrix depending continuously on
+$U$.  Since $\mcU$ is compact, the function $U\mapsto \det M_{\mathrm F}(U)$ is
+bounded:
+\[
+\sup_{U\in\mcU}|\det M_{\mathrm F}(U)|<\infty.
+\]
+The Wilson term satisfies $S_{\mathrm W}(U)\ge 0$ for every $U$, because each
+summand $1-\frac13\Ree\,\tr U(P)$ is nonnegative.  Hence
+\[
+|e^{-S_{\mathrm W}(U)}|\le 1.
+\]
+For the scalar sector,
+\[
+S_\phi(\phi)
+\ge
+\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2
++\sum_{x\in\mcN}V_\phi(\phi_x)
+\ge
+\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2-C_\phi|\mcN|,
+\]
+because the edge term is nonnegative and $V_\phi\ge -C_\phi$ by assumption.
+Therefore
+\[
+e^{-S_\phi(\phi)}
+\le
+e^{C_\phi|\mcN|}\exp\!\left(-\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2\right),
+\]
+and the right-hand side is integrable on $\R^{|\mcN|}$.
+Putting the bounds together,
+\[
+|Z|
+\le
+\sup_{U\in\mcU}|\det M_{\mathrm F}(U)|
+\cdot e^{C_\phi|\mcN|}
+\int_{\R^{|\mcN|}}
+e^{-\frac{m_\phi^2}{2}\sum_x\phi_x^2}\,\dd\phi
+<\infty.
+\]
+The same domination argument works after multiplying by any bounded observable
+that is polynomial in the finitely many Grassmann generators, because Berezin
+integration of such a polynomial again yields a bounded continuous function of
+$U$.
+\end{proof}
+
+\section{Gauge redundancy and orbit analysis}
+\label{sec:orbits}
+
+\paragraph{The gauge orbit problem.}
+The finite lattice theory has a local gauge symmetry at every site.  This means
+that the coordinates $(U,\psi,\bar\psi,c)$ on field space are not physical
+coordinates: many different tuples encode the same gauge state.  The redundancy
+is continuous, because the gauge group is a product of copies of the compact Lie
+group $SU(3)$.
+
+\begin{definition}[Local gauge group]
+\label{def:gauge-group}
+The lattice gauge group is
+\[
+\mcG:=SU(3)^{\mcN}
+=\{\Omega:\mcN\to SU(3)\}.
+\]
+Its action on the promoted fields is
+\[
+U^\Omega(e):=\Omega(t(e))\,U(e)\,\Omega(s(e))^{-1},
+\]
+\[
+\psi_x^\Omega:=\Omega(x)\psi_x,\qquad
+\bar\psi_x^\Omega:=\bar\psi_x\Omega(x)^{-1},\qquad
+c_x^\Omega:=\Omega(x)c_x,\qquad
+\phi_x^\Omega:=\phi_x.
+\]
+\end{definition}
+
+\begin{proposition}[Gauge invariance of action and measure]
+\label{prop:gauge-measure}
+For every $\Omega\in\mcG$,
+\[
+S_{\mathrm W}(U^\Omega)=S_{\mathrm W}(U),\qquad
+S_{\mathrm F}(U^\Omega,\bar\psi^\Omega,\psi^\Omega)=S_{\mathrm F}(U,\bar\psi,\psi),
+\qquad
+S_\phi(\phi^\Omega)=S_\phi(\phi).
+\]
+Moreover, $\mu_{\mcU}$, $\nu_{\mcCaux}$, and $\mu_{\mathrm F}$ are invariant
+under the corresponding gauge transformations.  Consequently the total weighted
+measure $e^{-S}\dd\mu$ is gauge invariant.
+\end{proposition}
+\begin{proof}
+Gauge invariance of $S_{\mathrm W}$ and of the matter actions was already
+proved in \cite{latticeqft}; the same algebra applies here because only the
+interpretation of the variables has changed.  Haar invariance of $\mu_{\mcU}$
+follows edgewise from left and right invariance of Haar measure on $SU(3)$.
+The normalized Lebesgue measure on the ball $\bbB\subset\C^3$ is invariant
+under the unitary action of $SU(3)$ because the action preserves Euclidean
+norms and Jacobian $1$.  Berezin measure is invariant under the linear change of
+variables $(\psi,\bar\psi)\mapsto(\Omega\psi,\bar\psi\Omega^{-1})$ because the
+Jacobians $\det\Omega$ and $\det\Omega^{-1}$ cancel and $\det\Omega=1$ in
+$SU(3)$.
+\end{proof}
+
+\begin{definition}[Gauge orbit and stabilizer]
+\label{def:orbit}
+For a field configuration
+\[
+\Phi:=(U,c,\bar\psi,\psi,\phi)\in\mcX_\mathcal L
+\]
+its gauge orbit is
+\[
+\mcO(\Phi):=\{\Phi^\Omega:\Omega\in\mcG\},
+\]
+and its stabilizer is
+\[
+\mathrm{Stab}(\Phi):=\{\Omega\in\mcG:\Phi^\Omega=\Phi\}.
+\]
+\end{definition}
+
+\paragraph{Symmetry redundancy versus physical degrees of freedom.}
+The physical configuration space is not $\mcX_\mathcal L$ itself but the orbit
+space $\mcX_\mathcal L/\mcG$.  On a finite graph one can count the redundant and
+nonredundant link degrees explicitly.  This count is most transparent after
+choosing a spanning forest.
+
+\begin{definition}[Underlying undirected graph and component count]
+\label{def:components}
+Let $|\mathcal L|$ be the undirected graph obtained from $(\mcN,\mcE)$ by
+forgetting orientation and identifying parallel opposite orientations when both
+are present.  Let $b_0(|\mathcal L|)$ be the number of connected components of
+$|\mathcal L|$.
+\end{definition}
+
+\begin{proposition}[Dimension count for gauge redundancy]
+\label{prop:dimension-count}
+Assume the underlying undirected graph $|\mathcal L|$ has
+$b_0:=b_0(|\mathcal L|)$ connected components.  Then:
+\begin{enumerate}[leftmargin=1.5em]
+\item the gauge-link manifold has real dimension $8|\mcE|$;
+\item the rooted gauge group obtained by fixing one vertex per connected
+component has real dimension $8(|\mcN|-b_0)$;
+\item after maximal-tree gauge fixing, the number of remaining independent gauge
+link coordinates is
+\[
+8\bigl(|\mcE|-|\mcN|+b_0\bigr),
+\]
+which is $8$ times the cycle rank of the graph.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+Item (1) is immediate from $\dim SU(3)=8$.  For item (2), each unfixed site
+contributes one copy of $SU(3)$.  For item (3), every spanning forest on a
+graph with $|\mcN|$ vertices and $b_0$ connected components has
+$|\mcN|-b_0$ edges, so removing exactly those tree-edge coordinates leaves
+$|\mcE|-|\mcN|+b_0$ cotree edges.  Each cotree edge carries $8$ real parameters.
+\end{proof}
+
+\begin{remark}
+The compactness of $SU(3)$ means that the gauge-group probability measure is
+finite when normalized.  Thus on a finite lattice the problem with gauge
+redundancy is not an \emph{infinite numerical volume divergence}; the problem is
+that the parametrization is many-to-one and therefore obscures the physical
+degrees of freedom.  Gauge fixing removes this redundancy exactly.
+\end{remark}
+
+\section{Gauge fixing and the Faddeev--Popov procedure}
+\label{sec:gauge-fixing}
+
+\paragraph{Selecting the gauge condition.}
+For a finite graph the cleanest globally valid gauge choice is a rooted
+maximal-tree gauge.  Unlike lattice Landau gauge, it has no Gribov ambiguity:
+every rooted orbit intersects the gauge slice exactly once.
+
+\begin{definition}[Rooted spanning forest]
+\label{def:tree}
+Choose one root vertex in each connected component of $|\mathcal L|$ and let
+$R\subseteq\mcN$ be the set of roots.  A \emph{rooted spanning forest}
+$\mcT\subseteq\mcE$ is an oriented set of edges such that:
+\begin{enumerate}[leftmargin=1.5em]
+\item after forgetting orientation, $\mcT$ is a spanning forest of $|\mathcal L|$;
+\item every edge of $\mcT$ is oriented away from its component root;
+\item every nonroot vertex $x\in\mcN\setminus R$ has a unique parent edge
+\[
+e_x=(p(x)\to x)\in\mcT.
+\]
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Rooted gauge group and maximal-tree gauge slice]
+\label{def:rooted-gauge}
+The rooted gauge group is
+\[
+\mcG_*:=\{\Omega\in\mcG:\Omega(r)=I\ \text{for every root } r\in R\}.
+\]
+The maximal-tree gauge slice is
+\[
+\Sigma_{\mcT}:=\{U\in\mcU:U(e)=I\ \text{for every } e\in\mcT\}.
+\]
+\end{definition}
+
+\begin{theorem}[Global rooted maximal-tree gauge]
+\label{thm:tree-gauge}
+For every $U\in\mcU$ there exists a unique $\Omega_U\in\mcG_*$ such that
+\[
+U^{\Omega_U}\in\Sigma_{\mcT}.
+\]
+Equivalently, every rooted gauge orbit in $\mcU$ intersects $\Sigma_{\mcT}$
+exactly once.
+\end{theorem}
+\begin{proof}
+Existence is recursive along each tree component.  Set $\Omega_U(r)=I$ at every
+root.  Suppose $\Omega_U(p(x))$ is already defined for the parent of a nonroot
+vertex $x$.  The condition
+\[
+U^{\Omega_U}(e_x)=I
+\]
+for the parent edge $e_x=(p(x)\to x)$ is
+\[
+\Omega_U(x)\,U(e_x)\,\Omega_U(p(x))^{-1}=I,
+\]
+hence
+\[
+\Omega_U(x)=\Omega_U(p(x))\,U(e_x)^{-1}.
+\]
+Because every nonroot vertex has a unique parent and every component contains a
+unique path from the root to any vertex, this recursion defines $\Omega_U$
+uniquely on all vertices.  By construction $\Omega_U\in\mcG_*$ and
+$U^{\Omega_U}(e)=I$ for all $e\in\mcT$, so $U^{\Omega_U}\in\Sigma_{\mcT}$.
+
+For uniqueness, let $\Omega_1,\Omega_2\in\mcG_*$ satisfy
+$U^{\Omega_1},U^{\Omega_2}\in\Sigma_{\mcT}$.  Set
+$\Gamma:=\Omega_2^{-1}\Omega_1\in\mcG_*$.  Then for every tree edge
+$e=(x\to y)\in\mcT$,
+\[
+I
+=
+\bigl(U^{\Omega_1}\bigr)(e)
+=
+\Gamma(y)\,\bigl(U^{\Omega_2}\bigr)(e)\,\Gamma(x)^{-1}
+=
+\Gamma(y)\Gamma(x)^{-1}.
+\]
+Thus $\Gamma(y)=\Gamma(x)$ on every tree edge.  Since $\Gamma(r)=I$ on every
+root and every vertex is connected to a root by a unique tree path, induction
+along the tree gives $\Gamma(x)=I$ for all $x$.  Hence $\Omega_1=\Omega_2$.
+\end{proof}
+
+\paragraph{The Faddeev--Popov identity.}
+Because the gauge slice is global and unique, the Faddeev--Popov formula is
+particularly simple.
+
+\begin{definition}[Delta distribution on the tree gauge slice]
+\label{def:delta-tree}
+Let $\delta_I$ be the Dirac distribution at the identity of $SU(3)$, defined by
+\[
+\int_{SU(3)}f(V)\,\delta_I(V)\,\dd\mu_H(V)=f(I)
+\]
+for continuous $f$.  Define the tree-gauge delta distribution by
+\[
+\delta_{\mcT}(U):=\prod_{e\in\mcT}\delta_I\!\bigl(U(e)\bigr).
+\]
+\end{definition}
+
+\begin{theorem}[Exact Faddeev--Popov identity in maximal-tree gauge]
+\label{thm:fp-identity}
+For every $U\in\mcU$,
+\[
+1=\int_{\mcG_*}\delta_{\mcT}(U^\Omega)\,\dd\mu_{\mcG_*}(\Omega),
+\]
+where $\mu_{\mcG_*}$ is product normalized Haar measure on $\mcG_*$.  Hence for
+every gauge-invariant integrable functional $F$ on $\mcU$,
+\[
+\int_{\mcU}F(U)\,\dd\mu_{\mcU}(U)
+=
+\int_{\mcU}F(U)\,\delta_{\mcT}(U)\,\dd\mu_{\mcU}(U).
+\]
+\end{theorem}
+\begin{proof}
+Fix $U\in\mcU$.  By Theorem~\ref{thm:tree-gauge}, there is exactly one
+$\Omega_U\in\mcG_*$ such that $U^{\Omega_U}\in\Sigma_{\mcT}$.
+Therefore the integrand $\delta_{\mcT}(U^\Omega)$ vanishes for all
+$\Omega\neq \Omega_U$ and contributes $1$ at $\Omega=\Omega_U$ by definition of
+the delta distribution, so the integral equals $1$.
+
+For the second identity, insert the first into the integral of $F$:
+\[
+\int_{\mcU}F(U)\,\dd\mu_{\mcU}(U)
+=
+\int_{\mcU}\int_{\mcG_*}
+F(U)\,\delta_{\mcT}(U^\Omega)\,\dd\mu_{\mcG_*}(\Omega)\,\dd\mu_{\mcU}(U).
+\]
+Use Fubini's theorem and then change variables $U\mapsto U^{\Omega^{-1}}$.
+Haar invariance implies $\dd\mu_{\mcU}(U^{\Omega^{-1}})=\dd\mu_{\mcU}(U)$, and
+gauge invariance of $F$ gives $F(U^{\Omega^{-1}})=F(U)$.  Thus
+\[
+\int_{\mcU}F(U)\,\dd\mu_{\mcU}(U)
+=
+\int_{\mcU}F(U)\,\delta_{\mcT}(U)\,\dd\mu_{\mcU}(U)
+\int_{\mcG_*}\dd\mu_{\mcG_*}(\Omega).
+\]
+The last factor equals $1$ because $\mu_{\mcG_*}$ is normalized.
+\end{proof}
+
+\paragraph{The Faddeev--Popov determinant.}
+The determinant can be computed directly from infinitesimal gauge variations.
+In maximal-tree gauge it is constant.
+
+\begin{definition}[Infinitesimal gauge parameters]
+\label{def:inf-gauge}
+Let
+\[
+T^a:=\frac{\lambda_a}{2},\qquad a=1,\dots,8,
+\]
+where $\lambda_a$ are the Gell-Mann matrices.  For each site $x\in\mcN$ let
+\[
+\omega_x=\sum_{a=1}^8\omega_x^a T^a\in\mcHh,
+\]
+and define the infinitesimal rooted gauge transformation
+\[
+\Omega_\varepsilon(x):=\exp(i\varepsilon\,\omega_x),
+\qquad \omega_r=0\ \text{for every }r\in R.
+\]
+\end{definition}
+
+\begin{proposition}[Linearized gauge map on the tree]
+\label{prop:linearized-fp}
+Let $U\in\Sigma_{\mcT}$, so $U(e)=I$ for all $e\in\mcT$.  For a tree edge
+$e=(x\to y)\in\mcT$,
+\[
+\left.\frac{\dd}{\dd\varepsilon}\right|_{\varepsilon=0}
+U^{\Omega_\varepsilon}(e)
+=
+i(\omega_y-\omega_x).
+\]
+In the basis $\{T^a\}_{a=1}^8$, the linearized Faddeev--Popov operator is
+\[
+M_{\mathrm{FP}}^{(\mcT)} = B_{\mcT}\otimes I_8,
+\]
+where $B_{\mcT}$ is the rooted incidence matrix of the spanning forest.
+\end{proposition}
+\begin{proof}
+Differentiate
+\[
+U^{\Omega_\varepsilon}(e)
+=
+\Omega_\varepsilon(y)\,U(e)\,\Omega_\varepsilon(x)^{-1}
+\]
+at $\varepsilon=0$.  Since $U(e)=I$ on the slice,
+\[
+\left.\frac{\dd}{\dd\varepsilon}\right|_{\varepsilon=0}
+U^{\Omega_\varepsilon}(e)
+=
+i\omega_y - i\omega_x.
+\]
+Writing each $\omega_x$ in the Gell-Mann basis shows that the eight color
+components decouple and each is acted on by the same incidence matrix
+$B_{\mcT}$.
+\end{proof}
+
+\begin{proposition}[The Faddeev--Popov determinant is identically one]
+\label{prop:fp-one}
+With the rooted maximal-tree gauge choice,
+\[
+\Delta_{\mathrm{FP}}^{(\mcT)}=\det M_{\mathrm{FP}}^{(\mcT)}=1.
+\]
+\end{proposition}
+\begin{proof}
+Order the nonroot vertices so that every parent precedes every child.  Index
+the rows of $B_{\mcT}$ by the tree edges $e_x=(p(x)\to x)$ and the columns by
+the nonroot vertices $x$.  Then the row corresponding to $e_x$ has entry
+$+1$ in column $x$, entry $-1$ in column $p(x)$ if $p(x)$ is nonroot, and zero
+in all columns associated with vertices not on the path from the root to $x$.
+By the chosen ordering this matrix is triangular with diagonal entries all equal
+to $1$.  Hence
+\[
+\det B_{\mcT}=1.
+\]
+Therefore
+\[
+\det M_{\mathrm{FP}}^{(\mcT)}
+=
+\det(B_{\mcT}\otimes I_8)
+=
+(\det B_{\mcT})^8
+=
+1.
+\]
+\end{proof}
+
+\begin{corollary}[Gauge-fixed partition function]
+\label{cor:gauge-fixed-z}
+The partition function may be written as
+\[
+Z=
+\int_{\mcU\times\Lambda_{\mathrm F}\times\mcS}
+\delta_{\mcT}(U)\,
+e^{-S_{\mathrm W}(U)-S_{\mathrm F}(U,\bar\psi,\psi)-S_\phi(\phi)}
+\dd\mu_{\mcU}(U)\,\dd\mu_{\mathrm F}\,\dd\phi.
+\]
+After integrating out the constrained tree links, this becomes an ordinary
+integral over the cotree edge variables
+\[
+\mcE_{\mathrm{co}}:=\mcE\setminus\mcT.
+\]
+\end{corollary}
+\begin{proof}
+Apply Theorem~\ref{thm:fp-identity} to the gauge-invariant integrand
+obtained after combining the matter variables with
+Proposition~\ref{prop:gauge-measure}.  Since $\delta_{\mcT}(U)$ forces
+$U(e)=I$ on all tree edges, integrating over those edges contributes the unit
+factor
+\[
+\int_{SU(3)}\delta_I(V)\,\dd\mu_H(V)=1
+\]
+edge by edge.
+\end{proof}
+
+\section{Ghost fields and the effective action}
+\label{sec:ghosts}
+
+\paragraph{Introducing ghost fields.}
+Although the Faddeev--Popov determinant is trivial in rooted maximal-tree
+gauge, it is still useful to represent it as a finite Berezin integral, because
+this makes the gauge-fixing algebra parallel to the standard continuum
+formalism.
+
+\begin{definition}[Ghost and antighost fields]
+\label{def:ghosts}
+For each nonroot vertex $x\in\mcN\setminus R$, let
+\[
+c_x=\sum_{a=1}^8 c_x^a T^a
+\]
+be an anticommuting $\mcHh$-valued ghost field.  For each tree edge
+$e\in\mcT$, let
+\[
+\bar c_e=\sum_{a=1}^8 \bar c_e^a T^a
+\]
+be an anticommuting $\mcHh$-valued antighost field.  Their Berezin measure is
+\[
+\dd\mu_{\mathrm{gh}}
+:=
+\prod_{e\in\mcT}\prod_{a=1}^8 \dd\bar c_e^a
+\prod_{x\in\mcN\setminus R}\prod_{a=1}^8 \dd c_x^a.
+\]
+\end{definition}
+
+\begin{definition}[Ghost action in maximal-tree gauge]
+\label{def:ghost-action}
+Define
+\[
+S_{\mathrm{ghost}}^{(\mcT)}(\bar c,c)
+:=
+\sum_{e=(x\to y)\in\mcT}\tr\!\bigl(\bar c_e(c_y-c_x)\bigr),
+\]
+with the convention $c_r:=0$ for root vertices $r\in R$.
+\end{definition}
+
+\begin{proposition}[Ghost representation of the Faddeev--Popov determinant]
+\label{prop:ghost-det}
+The ghost integral reproduces the Faddeev--Popov determinant:
+\[
+\int e^{-S_{\mathrm{ghost}}^{(\mcT)}(\bar c,c)}\,\dd\mu_{\mathrm{gh}}
+=\Delta_{\mathrm{FP}}^{(\mcT)}=1.
+\]
+\end{proposition}
+\begin{proof}
+Expand the ghost fields in the basis $\{T^a\}_{a=1}^8$.  Then the action
+factorizes over color indices:
+\[
+S_{\mathrm{ghost}}^{(\mcT)}(\bar c,c)
+=
+\sum_{a=1}^8\sum_{e=(x\to y)\in\mcT}
+\bar c_e^a(c_y^a-c_x^a).
+\]
+This is precisely the quadratic Berezin form associated with the matrix
+$B_{\mcT}\otimes I_8$, so the standard finite-dimensional Berezin identity gives
+\[
+\int e^{-S_{\mathrm{ghost}}^{(\mcT)}}\,\dd\mu_{\mathrm{gh}}
+=
+\det(B_{\mcT}\otimes I_8).
+\]
+Proposition~\ref{prop:fp-one} gives the value $1$.
+\end{proof}
+
+\paragraph{The effective quantized action.}
+To display the standard BRST structure it is convenient to introduce auxiliary
+bosonic Nakanishi--Lautrup fields $b_e\in\mcHh$ for $e\in\mcT$.
+
+\begin{definition}[BRST differential and gauge-fixing fermion]
+\label{def:brst}
+Let $s$ act on the full field algebra by
+\[
+s\,U(e)=i c_{t(e)}U(e)-iU(e)c_{s(e)},
+\qquad
+s\,\psi_x=i c_x\psi_x,
+\qquad
+s\,\bar\psi_x=-i\bar\psi_x c_x,
+\]
+\[
+s\,\phi_x=0,
+\qquad
+s\,c_x=-i c_x^2,
+\qquad
+s\,\bar c_e=b_e,
+\qquad
+s\,b_e=0.
+\]
+Define the gauge-fixing fermion
+\[
+\Psi_{\mcT}
+:=
+\sum_{e\in\mcT}
+\tr\!\left(\bar c_e\Bigl(U(e)-I+\frac{\alpha}{2}b_e\Bigr)\right),
+\qquad \alpha\ge 0.
+\]
+\end{definition}
+
+\begin{lemma}[Nilpotency of the BRST differential]
+\label{lem:brst}
+The operator $s$ satisfies $s^2=0$ on generators and therefore on the whole
+field algebra.
+\end{lemma}
+\begin{proof}
+For $\phi_x$ and $b_e$ the claim is immediate.  For $\bar c_e$,
+$s^2\bar c_e=s b_e=0$.  For $c_x$,
+\[
+s^2 c_x = -i\,s(c_x^2) = -i\bigl((s c_x)c_x-c_x(s c_x)\bigr)
+=-i\bigl((-ic_x^2)c_x-c_x(-ic_x^2)\bigr)=0.
+\]
+For $\psi_x$,
+\[
+s^2\psi_x=i(s c_x)\psi_x-i c_x(s\psi_x)
+=i(-ic_x^2)\psi_x-i c_x(i c_x\psi_x)=0,
+\]
+and similarly for $\bar\psi_x$.  Finally, for a link variable $U(e)$,
+\begin{align*}
+s^2 U(e)
+&=
+i(s c_{t(e)})U(e)+i c_{t(e)}sU(e)-i sU(e)c_{s(e)}-iU(e)s c_{s(e)}\\
+&=
+c_{t(e)}^2U(e)-c_{t(e)}^2U(e)+U(e)c_{s(e)}^2-U(e)c_{s(e)}^2=0.
+\end{align*}
+\end{proof}
+
+\begin{proposition}[BRST-exact gauge fixing]
+\label{prop:brst-exact}
+The gauge-fixing and ghost terms are
+\[
+S_{\mathrm{gf+gh}}^{(\mcT)}:=s\Psi_{\mcT}.
+\]
+Explicitly,
+\[
+S_{\mathrm{gf+gh}}^{(\mcT)}
+=
+\sum_{e\in\mcT}\tr\!\left(
+b_e(U(e)-I)+\frac{\alpha}{2}b_e^2
+\bar c_e\bigl(c_{t(e)}U(e)-U(e)c_{s(e)}\bigr)
+\right).
+\]
+Consequently the effective action
+\[
+S_{\mathrm{eff}}
+:=
+S_{\mathrm W}+S_{\mathrm F}+S_\phi+S_{\mathrm{gf+gh}}^{(\mcT)}
+\]
+is BRST invariant:
+\[
+sS_{\mathrm{eff}}=0.
+\]
+\end{proposition}
+\begin{proof}
+Apply $s$ to $\Psi_{\mcT}$ and use Definition~\ref{def:brst}.  Since the
+fields $b_e$ commute with everything and the ghosts anticommute, one obtains
+the displayed formula.  Gauge invariance of
+$S_{\mathrm W}+S_{\mathrm F}+S_\phi$ implies $s(S_{\mathrm W}+S_{\mathrm F}+S_\phi)=0$,
+because $s$ is the infinitesimal gauge differential with ghost parameter $c$.
+Then
+\[
+sS_{\mathrm{eff}}
+=
+s(S_{\mathrm W}+S_{\mathrm F}+S_\phi)+s^2\Psi_{\mcT}=0
+\]
+by Lemma~\ref{lem:brst}.
+\end{proof}
+
+\begin{remark}
+At $\alpha=0$ the $b$-integration imposes the sharp gauge condition $U(e)=I$ on
+tree edges.  Since the Faddeev--Popov determinant is constant, the ghost sector
+decouples after gauge fixing.  The BRST presentation is therefore exact but
+algebraically simpler than in continuum gauges where the determinant depends on
+the gauge field.
+\end{remark}
+
+\section{Matter sector integration}
+\label{sec:matter-integration}
+
+\paragraph{Fermionic Berezin integration.}
+On a finite lattice the fermion integral is exact and elementary once the
+quadratic form is written in matrix notation.
+
+\begin{definition}[Fermion matrix]
+\label{def:fermion-matrix}
+Order the site-color basis vectors by pairs $(x,\alpha)$ with
+$x\in\mcN$ and $\alpha\in\{1,2,3\}$.  Define the matrix
+$M_{\mathrm F}(U)\in\C^{3|\mcN|\times 3|\mcN|}$ by
+\[
+\bigl(M_{\mathrm F}(U)\bigr)_{(y,\alpha),(x,\beta)}
+:=
+\left(m_F+\indeg(y)\right)\delta_{xy}\delta_{\alpha\beta}
+-\sum_{\substack{e\in\mcE\\ s(e)=x,\ t(e)=y}} U(e)_{\alpha\beta},
+\]
+where
+\[
+\indeg(y):=\#\{e\in\mcE:t(e)=y\}.
+\]
+\end{definition}
+
+\begin{lemma}[Quadratic form identity]
+\label{lem:fermion-quadratic}
+With $M_{\mathrm F}(U)$ from Definition~\ref{def:fermion-matrix},
+\[
+S_{\mathrm F}(U,\bar\psi,\psi)
+=
+\sum_{x,y\in\mcN}\sum_{\alpha,\beta=1}^3
+\bar\psi_{y,\alpha}\,
+\bigl(M_{\mathrm F}(U)\bigr)_{(y,\alpha),(x,\beta)}\,
+\psi_{x,\beta}.
+\]
+\end{lemma}
+\begin{proof}
+Expand the edge sum in Definition~\ref{def:imported-package}:
+\[
+\sum_{e\in\mcE}\bar\psi_{t(e)}\psi_{t(e)}
+=
+\sum_{y\in\mcN}\indeg(y)\,\bar\psi_y\psi_y.
+\]
+The remaining transported terms contribute the off-diagonal blocks
+$-\sum_{e:s(e)=x,t(e)=y}U(e)$.  Adding the mass term gives the stated matrix.
+\end{proof}
+
+\begin{theorem}[Fermion determinant]
+\label{thm:fermion-det}
+For every gauge field $U\in\mcU$,
+\[
+\int_{\Lambda_{\mathrm F}}
+e^{-S_{\mathrm F}(U,\bar\psi,\psi)}\,\dd\mu_{\mathrm F}
+=
+\det M_{\mathrm F}(U).
+\]
+Consequently
+\[
+Z
+=
+\int_{\mcU\times\mcS}
+e^{-S_{\mathrm W}(U)-S_\phi(\phi)}\det M_{\mathrm F}(U)\,
+\dd\mu_{\mcU}(U)\,\dd\phi.
+\]
+\end{theorem}
+\begin{proof}
+By Lemma~\ref{lem:fermion-quadratic}, the exponent is the standard quadratic
+Berezin form $\bar\Psi M_{\mathrm F}(U)\Psi$ in finitely many Grassmann
+variables.  The finite-dimensional Berezin integral identity therefore gives
+\[
+\int e^{-\bar\Psi M\Psi}\,\dd\bar\Psi\,\dd\Psi=\det M
+\]
+for any finite matrix $M$.  Applying this with $M=M_{\mathrm F}(U)$ yields the
+first claim.  Substituting the result into the definition of $Z$ gives the
+second claim.
+\end{proof}
+
+\begin{remark}[Virtual loops and graph support]
+\label{rem:fermion-loops}
+The determinant $\det M_{\mathrm F}(U)$ is a finite polynomial in the link
+matrices and encodes the usual closed virtual-fermion loops.  Because the link
+set $\mcE$ consists of the worldline and interaction edges from the trajectory
+data, only loops in that explicit graph contribute.  The interaction-graph
+weights $\omega_{ij}^{\mathrm{link}}(t)$ from \cite{latticeqft} influence these
+virtual loops through the dependence of the original data-induced background
+links on the viscous force and its weights.
+\end{remark}
+
+\paragraph{Scalar kinetic fluctuations.}
+The scalar action is purely bosonic, real valued, and bounded below as soon as
+the local potential is bounded below.  The regularization $\eta>0$ excludes
+edge-length singularities.
+
+\begin{definition}[Scalar stiffness operator]
+\label{def:scalar-operator}
+Define the symmetric quadratic form
+\[
+Q_\eta(\phi)
+:=
+\frac12\sum_{e=(x\to y)\in\mcE}\frac{(\phi_y-\phi_x)^2}{\ell_e+\eta}.
+\]
+There is a unique symmetric matrix $L_\eta\in\R^{|\mcN|\times|\mcN|}$ such that
+\[
+Q_\eta(\phi)=\frac12\,\phi^\top L_\eta \phi.
+\]
+\end{definition}
+
+\begin{lemma}[Positivity and bounded coefficients]
+\label{lem:scalar-positive}
+The operator $L_\eta$ is positive semidefinite.  Moreover every edge weight
+\[
+w_e:=\frac{1}{\ell_e+\eta}
+\]
+satisfies
+\[
+0<w_e\le \eta^{-1}.
+\]
+\end{lemma}
+\begin{proof}
+Each summand in $Q_\eta(\phi)$ is nonnegative, so $Q_\eta(\phi)\ge 0$ for every
+$\phi$, hence $L_\eta$ is positive semidefinite.  Since $\ell_e\ge 0$ and
+$\eta>0$,
+\[
+\ell_e+\eta\ge \eta,
+\]
+which implies the upper bound on $w_e$.
+\end{proof}
+
+\begin{theorem}[Scalar integrability]
+\label{thm:scalar-integrable}
+Assume $V_\phi$ is continuous and bounded below by $-C_\phi$.  Then
+\[
+Z_\phi
+:=
+\int_{\mcS}e^{-S_\phi(\phi)}\,\dd\phi
+\]
+is finite.  If in addition $V_\phi\equiv 0$, then
+\[
+Z_\phi
+=
+(2\pi)^{|\mcN|/2}
+\det(L_\eta+m_\phi^2 I)^{-1/2}.
+\]
+\end{theorem}
+\begin{proof}
+By Definition~\ref{def:scalar-operator},
+\[
+S_\phi(\phi)=\frac12\phi^\top L_\eta\phi
++\frac{m_\phi^2}{2}\phi^\top\phi
++\sum_{x\in\mcN}V_\phi(\phi_x).
+\]
+Lemma~\ref{lem:scalar-positive} implies the first quadratic term is
+nonnegative, while the lower bound on $V_\phi$ gives
+\[
+S_\phi(\phi)\ge \frac{m_\phi^2}{2}\phi^\top\phi-C_\phi|\mcN|.
+\]
+Thus
+\[
+e^{-S_\phi(\phi)}
+\le
+e^{C_\phi|\mcN|}e^{-\frac12 m_\phi^2 \phi^\top\phi},
+\]
+and the right-hand side is integrable on $\R^{|\mcN|}$.
+
+If $V_\phi\equiv 0$, then
+\[
+S_\phi(\phi)=\frac12\phi^\top (L_\eta+m_\phi^2 I)\phi.
+\]
+Since $L_\eta$ is positive semidefinite and $m_\phi^2 I$ is strictly positive,
+the matrix $L_\eta+m_\phi^2 I$ is positive definite.  The standard Gaussian
+integral formula gives the displayed determinant expression.
+\end{proof}
+
+\begin{remark}[Role of $\eta$]
+\label{rem:eta}
+The parameter $\eta>0$ is not a perturbative convenience; it is the exact
+mechanism that prevents the scalar kinetic coefficients from diverging when two
+sites become spacetime-coincident.  Without $\eta$, the coefficient
+$1/\ell_e$ would be singular on zero-length edges.  With $\eta>0$, every
+kinetic coefficient is uniformly bounded by $\eta^{-1}$.
+\end{remark}
+
+\section{Recovery of the Feynman path-integral measure}
+\label{sec:measure-limit}
+
+\paragraph{The continuum limit of the measure.}
+The companion lattice paper proves that, under an admissible mean-field
+refinement regime, the Wilson action converges to the continuum Yang--Mills
+action on smooth fields \cite{latticeqft}.  To understand the measure side of
+the formal continuum path integral one must compare Haar measure on $SU(3)$
+with Lebesgue measure on the Lie algebra near the identity.
+
+\begin{definition}[Lie-algebra coordinates]
+\label{def:lie-coords}
+Let
+\[
+\mcsu=i\mcHh
+\]
+be the Lie algebra of $SU(3)$.  Equip $\mcHh$ with the Euclidean inner product
+\[
+\langle H,K\rangle:=\frac12\tr(HK).
+\]
+Choose an open neighborhood $\mathcal V\subset \mcHh$ of $0$ on which the map
+\[
+H\mapsto \exp(iH)
+\]
+is a diffeomorphism onto an open neighborhood $\mathcal U\subset SU(3)$ of the
+identity.
+\end{definition}
+
+\begin{proposition}[Single-edge Haar density in exponential coordinates]
+\label{prop:haar-density}
+There exists a smooth strictly positive function
+\[
+J:\mathcal V\to (0,\infty)
+\]
+with $J(0)=1$ such that for every continuous function
+$f$ supported in $\mathcal U$,
+\[
+\int_{SU(3)}f(U)\,\dd\mu_H(U)
+=
+\int_{\mathcal V} f\!\bigl(e^{iH}\bigr)\,J(H)\,\dd H,
+\]
+where $\dd H$ is Lebesgue measure on the $8$-dimensional Euclidean space
+$\mcHh$.  Moreover,
+\[
+J(H)=1+O(\|H\|^2)
+\qquad \text{as } H\to 0.
+\]
+\end{proposition}
+\begin{proof}
+The push-forward of $\mu_H$ by the chart inverse $U\mapsto H$ is a smooth
+measure on the Euclidean chart $\mathcal V$ and therefore has a smooth density
+$J(H)$ with respect to Lebesgue measure.  The density is strictly positive
+because Haar measure has full support and the chart is a diffeomorphism.  By
+rescaling the chosen Lebesgue measure on $\mcHh$ if necessary, one may arrange
+$J(0)=1$.  Since $J$ is smooth and the Haar measure is inversion invariant, the
+linear term in the Taylor expansion vanishes at the identity, so
+$J(H)=1+O(\|H\|^2)$.
+\end{proof}
+
+\begin{corollary}[Scaled near-identity measure]
+\label{cor:scaled-haar}
+Fix $A\in\mcHh$ and write
+\[
+U_a:=\exp(i a A)
+\]
+for $a>0$ small enough.  Then
+\[
+\dd\mu_H(U_a)=a^8\bigl(1+O(a^2)\bigr)\dd A
+\]
+in exponential coordinates.
+\end{corollary}
+\begin{proof}
+Apply Proposition~\ref{prop:haar-density} with $H=aA$.  Since
+$\dd H=a^8\dd A$ in an $8$-dimensional space and $J(aA)=1+O(a^2)$, the formula
+follows.
+\end{proof}
+
+\paragraph{Emergent regularization.}
+The finite lattice is an ultraviolet regularization in the strict, literal
+sense that there are only finitely many integration variables and every
+coefficient in the action is finite.  No ultraviolet divergence can appear
+before one takes a refinement limit.
+
+\begin{proposition}[Finite lattice spacing as an ultraviolet cutoff]
+\label{prop:uv}
+On any fixed data set $\mathcal Q$, the quantized theory has finitely many gauge
+variables, finitely many scalar variables, and finitely many fermionic
+generators.  Consequently all unnormalized correlation functions are finite
+numbers.  Any ultraviolet divergence can arise only from a limit in which the
+number of lattice cells tends to infinity and the mesh size tends to zero.
+\end{proposition}
+\begin{proof}
+The set $\mcE$ is finite by construction in \cite{latticeqft}, hence the gauge
+sector is the compact manifold $SU(3)^{\mcE}$.  The scalar sector is
+$\R^{|\mcN|}$ with $|\mcN|<\infty$, and the fermionic sector has finitely many
+Grassmann generators.  By Theorem~\ref{thm:partition-finite}, all unnormalized
+correlation functions are finite on the fixed lattice.  Therefore no divergence
+is present at finite mesh.  Such divergences can only appear in a subsequent
+limit with increasing numbers of lattice degrees of freedom.
+\end{proof}
+
+\paragraph{Consistency with continuum QFT.}
+The correct honest statement is not that we have already constructed the full
+continuum quantum measure, but that the local building blocks of the discrete
+measure and action match the formal continuum Feynman rules in the small-mesh,
+near-identity regime.
+
+\begin{theorem}[Local consistency with the formal continuum Yang--Mills measure]
+\label{thm:local-consistency}
+Assume the admissible mean-field refinement regime of \cite{latticeqft} and the
+continuum Wilson-action limit proved there.  Let $F$ be a bounded continuous
+function of finitely many Lie-algebra coordinates $A_{e_1},\dots,A_{e_m}$, and
+for each refinement level $N$ write
+\[
+U^{(N)}(e_k)=\exp\!\bigl(i a_N A_{e_k}\bigr)
+\]
+on the edges on which $F$ depends.  Then the corresponding cylinder-measure
+element satisfies
+\[
+\prod_{k=1}^m \dd\mu_H\!\bigl(U^{(N)}(e_k)\bigr)
+=
+a_N^{8m}\left(1+O(a_N^2)\right)\prod_{k=1}^m \dd A_{e_k},
+\]
+and the weighted cylinder integrand has the same leading form as the formal
+continuum Euclidean Yang--Mills weight
+\[
+\exp\!\left(-\frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,\dd\mathrm{vol}_g\right)\mathcal D A
+\]
+when tested against the finite-coordinate observable $F$.
+\end{theorem}
+\begin{proof}
+The measure statement is just the $m$-fold product of
+Corollary~\ref{cor:scaled-haar}.  The action statement follows from the
+continuum limit theorem proved in \cite{latticeqft}, which identifies the
+leading Wilson action density with the continuum Yang--Mills density.  Combining
+the two gives the claimed leading cylinder-weight formula.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:local-consistency} is a consistency theorem for local charts
+and cylinder observables, not a constructive theorem producing a continuum
+probability measure on the infinite-dimensional space of gauge fields.  A full
+continuum construction would require tightness, compatibility of cylinder
+measures, reflection positivity, and nontrivial control of the interacting
+limit.  Those steps are not proved in this paper.
+\end{remark}
+
+\section{Discussion of excitations and propagators}
+\label{sec:propagators}
+
+\paragraph{The propagator on the interaction graph.}
+Because the theory is finite, all correlation functions can be defined by
+source differentiation exactly.  Their graph-theoretic support is determined by
+the explicit trajectory-induced lattice.
+
+\begin{definition}[Generating functional]
+\label{def:generating}
+Introduce scalar sources $J=(J_x)_{x\in\mcN}$ and fermionic sources
+$\eta=(\eta_x)_{x\in\mcN}$, $\bar\eta=(\bar\eta_x)_{x\in\mcN}$.  The generating
+functional is
+\[
+Z[J,\eta,\bar\eta]
+:=
+\int
+\exp\!\left(
+-S
++\sum_{x\in\mcN}J_x\phi_x
++\sum_{x\in\mcN}\bar\eta_x\psi_x
++\sum_{x\in\mcN}\bar\psi_x\eta_x
+\right)\dd\mu.
+\]
+\end{definition}
+
+\begin{definition}[Two-point functions]
+\label{def:twopoint}
+Whenever $Z[0,0,0]\neq 0$, the scalar and fermion two-point functions are
+\[
+G_\phi(x,y):=\langle \phi_x\phi_y\rangle,
+\qquad
+S_F(x,y)_{\alpha\beta}:=\langle \psi_{x,\alpha}\bar\psi_{y,\beta}\rangle.
+\]
+\end{definition}
+
+\begin{proposition}[Background-field propagators]
+\label{prop:background-prop}
+Fix a gauge field $U$.
+\begin{enumerate}[leftmargin=1.5em]
+\item If $V_\phi\equiv 0$, then the scalar background covariance is
+\[
+G_\phi^{(U)}=(L_\eta+m_\phi^2 I)^{-1}.
+\]
+\item If $M_{\mathrm F}(U)$ is invertible, then the fermion background
+covariance is
+\[
+S_F^{(U)}=M_{\mathrm F}(U)^{-1}.
+\]
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+The scalar claim is the standard Gaussian covariance formula from
+Theorem~\ref{thm:scalar-integrable}.  The fermion claim follows from
+differentiating the Berezin generating functional
+\[
+\int e^{-\bar\Psi M_{\mathrm F}(U)\Psi+\bar\eta\Psi+\bar\Psi\eta}\,\dd\bar\Psi\,\dd\Psi
+=
+\det M_{\mathrm F}(U)\,
+e^{\bar\eta M_{\mathrm F}(U)^{-1}\eta}.
+\]
+\end{proof}
+
+\begin{proposition}[Large-mass hopping expansion]
+\label{prop:hopping}
+Assume $M_{\mathrm F}(U)=D-H(U)$ where
+\[
+D:=\diag\bigl(m_F+\indeg(x)\bigr)_{x\in\mcN}\otimes I_3
+\]
+and suppose
+\[
+\|D^{-1}H(U)\|<1
+\]
+in operator norm.  Then
+\[
+M_{\mathrm F}(U)^{-1}
+=
+\sum_{n=0}^\infty (D^{-1}H(U))^n D^{-1},
+\]
+and the $(x,y)$ matrix element is a convergent sum over directed paths
+$\gamma:y\rightsquigarrow x$ in $\mcE$.  Therefore the support of the fermion
+propagator is controlled by the explicit interaction/worldline graph, and the
+same-time path combinatorics are inherited from the interaction data
+$\mathcal P_t$ and hence from the stochastic weights
+$\omega_{ij}^{\mathrm{link}}(t)$ used in \cite{latticeqft}.
+\end{proposition}
+\begin{proof}
+The Neumann series for $(I-D^{-1}H)^{-1}$ converges in operator norm under the
+assumed bound.  Each power $(D^{-1}H)^n$ is a sum over length-$n$ compositions
+of off-diagonal hopping operators, hence over directed paths of length $n$ in
+the graph.  The only same-time edges available for those paths are the
+interaction edges determined by the data sets $\mathcal P_t$, which were
+constructed from the weights $\omega_{ij}^{\mathrm{link}}(t)$.
+\end{proof}
+
+\paragraph{Wilson loops and the area law.}
+The Wilson loop remains the basic gauge-invariant probe of confinement.
+
+\begin{definition}[Wilson loop expectation]
+\label{def:wilson-loop-exp}
+For an oriented closed loop $\gamma$ in the lattice,
+\[
+W(\gamma):=\tr\!\left(\prod_{e\subset \gamma}U(e)\right),
+\qquad
+\langle W(\gamma)\rangle := Z^{-1}\int W(\gamma)e^{-S}\,\dd\mu,
+\]
+whenever $Z\neq 0$.
+\end{definition}
+
+\begin{remark}[Area-law criterion]
+\label{rem:area-law}
+If a family of loops $\gamma$ admits spanning surfaces $\Sigma_\gamma$ in the
+embedded spacetime geometry and one can prove
+\[
+|\langle W(\gamma)\rangle|
+\le
+C\,e^{-\sigma\,\mathrm{Area}(\Sigma_\gamma)}
+\]
+with $\sigma>0$ independent of the loop size, then one has the usual Euclidean
+area-law signature of confinement \cite{wilson1974confinement}.  The present
+paper does \emph{not} establish such a bound; it merely provides the exact
+finite-lattice measure in which the question is well posed.
+\end{remark}
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+\paragraph{Summary of the quantum data package.}
+Starting from the finite lattice data package $\mathcal Q$ built in
+\cite{latticeqft}, this paper has completed the exact finite-dimensional
+quantization step.  The link variables were promoted from data-derived
+transporters to independent $SU(3)$ variables, the full configuration space and
+product measure were defined, and the partition function was proved finite under
+the minimal scalar lower-bound assumption needed for scalar integrability.  The
+gauge redundancy was solved globally by a rooted maximal-tree gauge, with exact
+orbit uniqueness, exact Faddeev--Popov identity, constant determinant, and a
+decoupled ghost sector.  The fermions integrate to a finite determinant, the
+scalar sector is controlled by a positive stiffness operator regularized by
+$\eta$, and the local measure/action asymptotics match the standard formal
+Euclidean Yang--Mills rules in the smooth small-mesh regime.
+
+\paragraph{Forward look to the mass-gap problem.}
+This is the correct finite-lattice foundation for any later mass-gap analysis,
+but it is not itself a proof of a mass gap and not an unconditional
+construction of continuum quantum Yang--Mills theory.  To move from the present
+paper to a Millennium-problem-level result, one would still need at least the
+following genuinely new ingredients: a nontrivial continuum limit of the
+gauge-fixed lattice measures; verification of reflection positivity and the full
+Euclidean axioms in that limit; reconstruction of a Hilbert-space quantum
+theory; and finally a proof that the energy--momentum spectrum has a strictly
+positive gap above the vacuum.  Those problems remain open here.  What this
+paper contributes is the rigorous finite-dimensional quantization step on the
+trajectory-induced lattice and the precise identification of the remaining gap
+between that step and a full constructive Yang--Mills existence theorem.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
