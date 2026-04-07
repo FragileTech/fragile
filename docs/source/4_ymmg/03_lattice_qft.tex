@@ -38,18 +38,26 @@ from Particle Trajectories}
 We construct a finite, explicit $SU(3)$ lattice gauge theory from the discrete
 trajectory data of a finite particle system.
 Starting from a recorded trajectory data set, we extract a finite lattice of
-sites and oriented links connecting same-time interaction pairs.
+sites together with temporal worldline links and same-time interaction links.
 At each site we form a complex color triplet by modulating the viscous force
 vector with a kinematic phase factor of de~Broglie type; these triplets encode
 momentum direction in the internal color space.
-Link-to-link parallel transport in $SU(3)$ is then defined by transporting
-color frames induced by the color triplets across oriented links.
-Wilson loop traces, a finite Wilson action built from elementary loops, and
-covariant fermionic and scalar matter actions are constructed on the same lattice.
+Link transport in $SU(3)$ is then defined from short-link color increments,
+which makes the transporter asymptotically local in the small-mesh regime.
+Canonical plaquette holonomies, discrete field strengths, a finite Wilson action,
+and covariant fermionic and scalar matter actions are constructed on the same
+lattice.
 The complete data package $\mathcal Q$ is proved to be finite and $SU(3)$
 gauge-invariant.
-Continuum limit, path-integral quantization, and axiom verification are
-deferred to companion papers.
+In the stationary thermodynamic regime, scaled link and plaquette sums converge
+to integrals against deterministic mean-field measures.
+Under an admissible mean-field refinement regime with a $C^2$ color-field limit,
+shape-regular plaquettes, and plaquette-density convergence, the discrete Wilson
+action converges to the continuum Yang--Mills functional
+\[
+\frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,d\mathrm{vol}_g.
+\]
+Path-integral quantization and axiom verification are deferred to companion papers.
 \end{abstract}
 
 \tableofcontents
@@ -85,43 +93,50 @@ throughout this paper.
 By complexifying the viscous force with a kinematic phase factor analogous to the
 de~Broglie phase $e^{ip\ell/\hbar}$, each site acquires a complex
 color triplet~$\mathbf c_x\in\C^3$.
-The color triplets at two neighboring sites define link data from which we
-build an \(SU(3)\) parallel transport \(U_3(e)\) for every link \(e\) by a local
-frame construction.
+The color triplets at two neighboring sites define a short-link color increment
+from which we build an \(SU(3)\) parallel transport \(U_3(e)\) for every link \(e\).
 No additional input is required: the gauge group, the link variables, and
 the coupling strength all emerge from the dynamics of the viscous particle system.
 
-In detail, we first build a deterministic \(SU(3)\) frame at each site from the
-color triplet, then define \(U_3\) as the frame transition between source and
-target sites.
-The same data can be decomposed in the Gell-Mann basis after taking the matrix
-logarithm. The coupling parameter \(g_3>0\) is placed to match the usual
-continuum normalization in $D_\mu=\partial_\mu-ig_3 A_\mu^a\lambda_a/2$.
+In detail, we first build a complex color triplet at each site, then project the
+short-link color increment onto the Gell-Mann basis to obtain a Hermitian
+traceless edge generator. The coupling parameter \(g_3>0\) is placed to match
+the usual continuum normalization in
+\[
+D_\mu=\partial_\mu-ig_3 A_\mu^a\lambda_a/2.
+\]
+We then add temporal worldline links and define canonical elementary plaquettes
+from one time step and one persistent interaction link. This restores the local
+2-cell geometry needed for a genuine Yang--Mills continuum limit without
+reintroducing any extra edge nomenclature.
 
 This paper supplies all the formal definitions and proofs required for a
 subsequent axiom-verification paper.
-The main result is Theorem~\ref{thm:package}: the tuple
+The finite-data result is Theorem~\ref{thm:package}: the tuple
 \[
 \mathcal Q = (\text{lattice},\,\{U_3(e)\},\,S_\mathrm W,\,S_\mathrm F,\,S_\phi)
 \]
 is finite, explicit, and $SU(3)$ gauge-invariant.
+The continuum result is Theorem~\ref{thm:continuum-limit-ym}: under the stated
+refinement hypotheses, the same data recover the continuum Yang--Mills action.
 
 \paragraph{Organization.}
 Section~\ref{sec:notation} fixes notation, imports kernel parameters from the
 companion convergence paper, and tabulates all scalar parameters used throughout.
 Section~\ref{sec:run} constructs the finite lattice $\mathcal L=(\mcN,\mcE)$
-from the recorded data.
+from the recorded data, including worldline and interaction links.
 Section~\ref{sec:forces} defines the viscous force on sites and links and proves
 its covariance under orthogonal transformations.
 Section~\ref{sec:su3} introduces color triplets, the Gell-Mann basis, and the
 $SU(3)$ link transport.
-Section~\ref{sec:holonomy} defines path holonomies, Wilson loop traces, and
-the Wilson action and proves gauge invariance.
+Section~\ref{sec:holonomy} defines path holonomies, canonical plaquettes,
+discrete field strengths, the Wilson action, and proves gauge invariance.
 Section~\ref{sec:matter} constructs covariant fermionic and scalar matter actions.
 Section~\ref{sec:package} packages the complete data object and states the finiteness
 theorem.
 Sections~\ref{sec:discussion} and~\ref{sec:conclusions} discuss the lattice-gauge
-interpretation, the continuum limit, and quantization.
+interpretation, the thermodynamic graph and plaquette limits, the geometric
+continuum limit to Yang--Mills theory, and quantization.
 
 \section{Notation and setup}
 \label{sec:notation}
@@ -177,6 +192,7 @@ Symbol & Role & Constraint \\
 $\ell_{\mathrm{visc}}$ & Viscous kernel length scale & $>0$ \\
 $\kappa_0$ & Kernel floor (regularization) & $>0$ \\
 $\nu_{\mathrm{visc}}$ & Viscous coupling strength & $\ge0$ \\
+$\Delta t$ & Physical time spacing between recorded slices & $>0$ \\
 $g_3$ & Gauge coupling constant & $>0$ \\
 $\ell_0$ & Length unit for de~Broglie phase & $>0$ \\
 $\hbar_{\mathrm{eff}}$ & Effective action quantum & $>0$ \\
@@ -246,31 +262,50 @@ For each pair $(i,t)\in\mathcal I\times\Tset$ define a lattice site $n_{i,t}$ an
 \[
 \mcN:=\{n_{i,t}\mid i\in\mathcal I,\ t\in\Tset\}.
 \]
-Define spatial and velocity projections
+Define physical time, spatial, velocity, and spacetime projections by
+\[
+\mathbf t(n_{i,t}) := t\,\Delta t,
+\]
 \[
 \mathbf x(n_{i,t})=x_i(t),\qquad \mathbf v(n_{i,t})=v_i(t).
 \]
-Both maps are well-defined by definition of $\mcN$.
+\[
+\Xi(n_{i,t}):=\bigl(\mathbf t(n_{i,t}),\mathbf x(n_{i,t})\bigr)\in\R^4.
+\]
+All maps are well-defined by definition of $\mcN$.
 \end{definition}
 
 \begin{definition}[Oriented links]
 \label{def:links}
-Define the oriented link set by
+Define the interaction and temporal link sets by
 \[
-E_{\mathrm{link}}:=\{(n_{i,t}\to n_{j,t}):\,(i,j)\in\mathcal P_t,\ t\in\Tset\}.
+E_{\mathrm{int}}:=\{(n_{i,t}\to n_{j,t}):\,(i,j)\in\mathcal P_t,\ t\in\Tset\},
+\]
+\[
+E_{\mathrm{time}}:=\{(n_{i,t}\to n_{i,t+1}):\,i\in\mathcal I,\ 0\le t<T\}.
 \]
 For convenience, write
 \[
-e_{\mathrm{link}}(n_{i,t}\to n_{j,t}) := (n_{i,t}\to n_{j,t}).
+e_{\mathrm{int}}(n_{i,t}\to n_{j,t}) := (n_{i,t}\to n_{j,t}),
+\qquad
+e_{\mathrm{time}}(n_{i,t}\to n_{i,t+1}) := (n_{i,t}\to n_{i,t+1}).
 \]
-By construction all source and target sites of $E_{\mathrm{link}}$ lie in $\mcN$
-because $\mcN$ is defined for all $(i,t)\in\mathcal I\times\Tset$.
+By construction all source and target sites of $E_{\mathrm{int}}$ and
+$E_{\mathrm{time}}$ lie in $\mcN$ because $\mcN$ is defined for all
+$(i,t)\in\mathcal I\times\Tset$.
 Set
 \[
-\mcE:=E_{\mathrm{link}}.
+\mcE:=E_{\mathrm{int}}\cup E_{\mathrm{time}}.
 \]
 The lattice is $\mathcal L:=(\mcN,\mcE)$.
-For $e=(u\to v)\in\mcE$, write $s(e):=u$ and $t(e):=v$, and define $e^{-1}:=(t(e)\to s(e))$.
+For $e=(u\to v)\in\mcE$, write $s(e):=u$ and $t(e):=v$, define the
+spacetime displacement
+\[
+\xi_e:=\Xi(t(e))-\Xi(s(e))\in\R^4,
+\qquad
+\ell_e:=\|\xi_e\|,
+\]
+and define $e^{-1}:=(t(e)\to s(e))$.
 \end{definition}
 
 \begin{proposition}[Finiteness and cardinality]
@@ -278,16 +313,22 @@ For $e=(u\to v)\in\mcE$, write $s(e):=u$ and $t(e):=v$, and define $e^{-1}:=(t(e
 All sets in Definitions~\ref{def:run} and~\ref{def:links} are finite.
 With $m_t:=|\mathcal P_t|$,
 \[
-|E_{\mathrm{link}}|=\sum_{t=0}^{T}m_t.
+|E_{\mathrm{int}}|=\sum_{t=0}^{T}m_t,
+\qquad
+|E_{\mathrm{time}}|=NT,
+\qquad
+|\mcE|=NT+\sum_{t=0}^{T}m_t.
 \]
 \end{proposition}
 \begin{proof}
 Finiteness follows from finiteness of $\Tset$ and all $\mathcal P_t$.
 The cardinality identity holds by one-to-one correspondence: each
-$(i,j,t)\in\bigcup_{t=0}^{T}\mathcal P_t\times\{t\}$ contributes one link.
+$(i,j,t)\in\bigcup_{t=0}^{T}\mathcal P_t\times\{t\}$ contributes one interaction
+link and each $(i,t)\in\mathcal I\times\{0,\dots,T-1\}$ contributes one temporal
+link.
 \end{proof}
 
-\section{Viscous force from links}
+\section{Viscous force from interaction links}
 \label{sec:forces}
 
 \begin{definition}[Link degree and pairwise force coefficients]
@@ -307,13 +348,13 @@ For each $(i,t)$ define the raw link degree and normalized weights
 
 \begin{definition}[Viscous pair force and site force]
 \label{def:forces}
-For each link $e=(n_{i,t}\to n_{j,t})\in E_{\mathrm{link}}$ define
+For each interaction link $e=(n_{i,t}\to n_{j,t})\in E_{\mathrm{int}}$ define
 \[
 \mathbf F^{\mathrm{visc}}(e):=\nu_{\mathrm{visc}}\omega^{\mathrm{link}}_{ij}(t)\,(v_j(t)-v_i(t))\in\R^3.
 \]
 For $x=n_{i,t}\in\mcN$ define
 \[
-\mathbf F^{\mathrm{visc}}(x):=\sum_{\substack{e\in E_{\mathrm{link}}\\ s(e)=x}}\mathbf F^{\mathrm{visc}}(e).
+\mathbf F^{\mathrm{visc}}(x):=\sum_{\substack{e\in E_{\mathrm{int}}\\ s(e)=x}}\mathbf F^{\mathrm{visc}}(e).
 \]
 If the sum is over an empty set, it is $0$.
 \end{definition}
@@ -340,11 +381,12 @@ If $\deg_{\mathrm{link}}(i,t)=0$, every summand is $0$ by convention.
 \label{lem:reconstruction}
 For every $x=n_{i,t}\in\mcN$,
 \[
-\mathbf F^{\mathrm{visc}}(x)=\sum_{\substack{e\in E_{\mathrm{link}}\\ s(e)=x}}\mathbf F^{\mathrm{visc}}(e).
+\mathbf F^{\mathrm{visc}}(x)=\sum_{\substack{e\in E_{\mathrm{int}}\\ s(e)=x}}\mathbf F^{\mathrm{visc}}(e).
 \]
 \end{lemma}
 \begin{proof}
-By Definition~\ref{def:links}, the links with source $n_{i,t}$ in $E_{\mathrm{link}}$
+By Definition~\ref{def:links}, the interaction links with source $n_{i,t}$ in
+$E_{\mathrm{int}}$
 are exactly $\{(n_{i,t}\to n_{j,t}):(i,j)\in\mathcal P_t\}$, which is the same
 index set used in Definition~\ref{def:forces}.
 \end{proof}
@@ -429,25 +471,31 @@ phase of the $\alpha$-th color component.
 Nodes moving in different directions therefore carry genuinely different
 internal phases, even if they experience the same force magnitude.
 This momentum-phase coupling ensures that the resulting parallel transport
-$U_3(e)$ depends not only on the force correlation between sites but also
-on their relative kinematic state.
+$U_3(e)$ depends not only on the local force profile but also on how the color
+triplet changes from one site to the next along the oriented edge.
 
 The regularization $\epsilon_c>0$ ensures that $\mathbf c_x$ is well-defined
 even when the viscous force vanishes, e.g.\ for an isolated particle or when
 $\nu_{\mathrm{visc}}=0$.
-If $\mathbf c_x=0$, then $\Re(\mathbf c_x^\dagger\lambda_a\mathbf c_y)=0$
+If $\mathbf c_x=0$, then
+\[
+\Re\!\bigl(\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x)\bigr)=0
+\]
 for all outgoing links from $x$, hence $U_3(x\to y)=I$ for all such links.
-The same holds when $\mathbf c_y=0$. Nodes with trivial force therefore
-couple trivially through this link transport.
+Thus nodes with trivial source color couple trivially through this link
+transport. When $\mathbf c_y=0$ and $\mathbf c_x\neq0$, the link need not be
+trivial: it records the local decay of the color field along the edge.
 
 The normalization satisfies $\|\mathbf c_x\|^2<1$ for all $x$ (Lemma~\ref{lem:color-norm}).
 Combined with $|\lambda_a|_\mathrm{op}\le 2$ for all Gell-Mann generators,
 this gives the operator bound
 \[
 \|\Theta_e\|_{\mathrm{op}}
-\le \frac{g_3}{2}\sum_{a=1}^8 |\Re(\mathbf c_x^\dagger\lambda_a\mathbf c_y)|\,\|\lambda_a\|_{\mathrm{op}}
-\le \frac{g_3}{2}\cdot 8\cdot \|\mathbf c_x\|\,\|\mathbf c_y\|\cdot 2
-< 8g_3,
+\le \frac{g_3}{2}\sum_{a=1}^8
+\bigl|\Re\!\bigl(\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x)\bigr)\bigr|
+\|\lambda_a\|_{\mathrm{op}}
+\le \frac{g_3}{2}\cdot 8\cdot \|\mathbf c_x\|\,\|\mathbf c_y-\mathbf c_x\|\cdot 2
+< 16g_3,
 \]
 so the gauge coupling strength is controlled uniformly over all links and runs.
 \end{remark}
@@ -534,7 +582,9 @@ Real linear combinations preserve both properties.
 \label{def:transport}
 For each oriented link $e=(x\to y)\in\mcE$ define the algebra element
 \[
-\mathcal A_e:=\frac12\sum_{a=1}^8 \Re\!\bigl(\mathbf c_x^\dagger\lambda_a\mathbf c_y\bigr)\lambda_a\in\{H\in\C^{3\times3}:H^\dagger=H,\ \tr H=0\},
+\mathcal A_e:=\frac12\sum_{a=1}^8
+\Re\!\bigl(\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x)\bigr)\lambda_a
+\in\{H\in\C^{3\times3}:H^\dagger=H,\ \tr H=0\},
 \qquad
 \Theta_e:=g_3\,\mathcal A_e.
 \]
@@ -549,33 +599,39 @@ U_3(e):=\exp(i\Theta_e)\in SU(3),
 \label{rem:transport-justification}
 The formula
 \[
-\mathcal A_e=\frac12\sum_a\Re\!\bigl(\mathbf c_x^\dagger\lambda_a\mathbf c_y\bigr)\lambda_a
+\mathcal A_e=\frac12\sum_a
+\Re\!\bigl(\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x)\bigr)\lambda_a
 \]
-is the orthogonal projection of the color bilinear $\mathbf c_x\mathbf c_y^\dagger$
-onto the Hermitian traceless subspace spanned by $\{\lambda_a\}_{a=1}^8$.
-To see this, recall that $\mathfrak{su}(3)$ carries the Killing-normalized inner
+is the orthogonal projection of the discrete color increment
+$\mathbf c_y-\mathbf c_x$ against the source color vector onto the Hermitian
+traceless subspace spanned by $\{\lambda_a\}_{a=1}^8$.
+To see this, recall that the Hermitian traceless matrices carry the inner
 product $\langle A,B\rangle=\frac{1}{2}\tr(AB)$, under which $\{\lambda_a\}$ is
 an orthogonal basis with $\langle\lambda_a,\lambda_b\rangle=\delta_{ab}$ by
 Lemma~\ref{lem:gellmann}.
-The Hermitian part of any matrix $M$ is $(M+M^\dagger)/2$.
-The $a$-th component of the projection of $\mathbf c_x\mathbf c_y^\dagger$ is
+The $a$-th component of the projected discrete derivative is
 \[
-\bigl\langle\lambda_a,\tfrac12(\mathbf c_x\mathbf c_y^\dagger+\mathbf c_y\mathbf c_x^\dagger)\bigr\rangle
-=\frac12\tr\!\bigl(\lambda_a(\mathbf c_x\mathbf c_y^\dagger+\mathbf c_y\mathbf c_x^\dagger)\bigr)
-=\Re\!\bigl(\mathbf c_y^\dagger\lambda_a\mathbf c_x\bigr)
-=\Re\!\bigl(\mathbf c_x^\dagger\lambda_a\mathbf c_y\bigr)^*,
+\bigl\langle \lambda_a,\tfrac12\bigl(\mathbf c_x(\mathbf c_y-\mathbf c_x)^\dagger
++(\mathbf c_y-\mathbf c_x)\mathbf c_x^\dagger\bigr)\bigr\rangle
+=\frac12\tr\!\Bigl(\lambda_a\bigl(\mathbf c_x(\mathbf c_y-\mathbf c_x)^\dagger
++(\mathbf c_y-\mathbf c_x)\mathbf c_x^\dagger\bigr)\Bigr)
+=\Re\!\bigl(\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x)\bigr),
 \]
-where the last equality uses the Hermitian property $\lambda_a^\dagger=\lambda_a$.
-Since the resulting coefficients are real, taking $\Re(\cdot)$ is consistent,
-and $\mathcal A_e$ is exactly this projection. The coupling is $\Theta_e=g_3\mathcal A_e$.
+where we used $\lambda_a^\dagger=\lambda_a$.
+Since the resulting coefficients are real, $\mathcal A_e$ is exactly this
+projection. The coupling is $\Theta_e=g_3\mathcal A_e$.
 
 The factor $g_3/2$ is chosen to match the continuum covariant derivative
 $D_\mu=\partial_\mu-ig_3 A_\mu^a\lambda_a/2$:
-in the weak-coupling limit $g_3\to0$ the transport linearizes to
+if the color field varies smoothly and the edge displacement is small, then
+$\mathbf c_y-\mathbf c_x$ is first order in the edge length, so the transport
+linearizes to
 \[
 U_3(e)=I+i\Theta_e+O(g_3^2)
 =I+ig_3\,\mathcal A_e+O(g_3^2)
-=I+\frac{ig_3}{2}\sum_a\Re(\mathbf c_x^\dagger\lambda_a\mathbf c_y)\lambda_a+O(g_3^2),
+=I+\frac{ig_3}{2}\sum_a
+\Re\!\bigl(\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x)\bigr)\lambda_a
++O(g_3^2),
 \]
 which is the first-order approximation to a continuum parallel transporter
 $P\exp(ig_3\int A_\mu\,dx^\mu)$.
@@ -656,23 +712,78 @@ Trace cyclicity then gives
 $\tr(U_3^\Omega(\gamma))=\tr(\Omega(v_0)^{-1}\Omega(v_0)\,U_3(\gamma))=\tr(U_3(\gamma))$.
 \end{proof}
 
+\begin{definition}[Canonical elementary plaquettes]
+\label{def:plaquettes}
+For each time slice $0\le t<T$ and each ordered pair
+$(i,j)\in\mathcal P_t\cap\mathcal P_{t+1}$, define the elementary plaquette
+\[
+P_{ij,t}:=(n_{i,t}\to n_{i,t+1}\to n_{j,t+1}\to n_{j,t}\to n_{i,t}).
+\]
+Its boundary consists of one forward temporal link for particle $i$, one forward
+interaction link at time $t+1$, one backward temporal link for particle $j$,
+and one backward interaction link at time $t$.
+Set
+\[
+\mathcal C_\square:=\{P_{ij,t}:\ (i,j)\in\mathcal P_t\cap\mathcal P_{t+1},\ 0\le t<T\}.
+\]
+\end{definition}
+
+\begin{definition}[Plaquette geometry]
+\label{def:plaquette-geometry}
+For $P=P_{ij,t}\in\mathcal C_\square$, define the base point
+\[
+z_P:=\Xi(n_{i,t})\in\R^4,
+\]
+the temporal and interaction edge displacements at the base point
+\[
+\tau_{i,t}:=\Xi(n_{i,t+1})-\Xi(n_{i,t})\in\R^4,
+\qquad
+\sigma_{ij,t}:=\Xi(n_{j,t})-\Xi(n_{i,t})\in\R^4,
+\]
+and the oriented area bivector
+\[
+\Sigma_P^{\mu\nu}:=\tau_{i,t}^\mu\sigma_{ij,t}^\nu-\tau_{i,t}^\nu\sigma_{ij,t}^\mu.
+\]
+Its area is
+\[
+A_P:=|\Sigma_P|:=\left(\frac12\sum_{\mu,\nu=0}^3
+\Sigma_P^{\mu\nu}\Sigma_P^{\mu\nu}\right)^{1/2}.
+\]
+\end{definition}
+
+\begin{definition}[Plaquette holonomy and discrete field strength]
+\label{def:plaquette-field-strength}
+For $P=P_{ij,t}\in\mathcal C_\square$, define the plaquette holonomy by the
+ordered product
+\[
+U_3(P):=
+U_3(n_{i,t}\to n_{i,t+1})\,
+U_3(n_{i,t+1}\to n_{j,t+1})\,
+U_3(n_{j,t+1}\to n_{j,t})\,
+U_3(n_{j,t}\to n_{i,t}).
+\]
+Whenever $A_P>0$ and $U_3(P)$ lies in the principal logarithm domain, define the
+discrete plaquette field strength by
+\[
+F_P:=\frac{1}{i g_3 A_P}\log U_3(P)\in\mathfrak{su}(3).
+\]
+\end{definition}
+
 \begin{definition}[Wilson action]
 \label{def:action}
-Let $\mathcal C_\square$ be any finite collection of closed loops in the
-lattice $\mathcal L$ selected as elementary loops,
-and set $\beta:=6/g_3^2$.
-The Wilson loop action is
+Set $\beta:=6/g_3^2$.
+The Wilson plaquette action is
 \[
-S_{\mathrm W}:=\beta\sum_{C\in\mathcal C_\square}\left(1-\frac13\Re\tr U_3(C)\right).
+S_{\mathrm W}:=\beta\sum_{P\in\mathcal C_\square}\left(1-\frac13\Re\tr U_3(P)\right).
 \]
 \end{definition}
 
 \begin{remark}
-The normalization $1-\frac{1}{3}\Re\tr U_3(C)$ vanishes when $U_3(C)=I$ and is
-non-negative for all $U_3(C)\in SU(3)$, since
+The normalization $1-\frac{1}{3}\Re\tr U_3(P)$ vanishes when $U_3(P)=I$ and is
+non-negative for all $U_3(P)\in SU(3)$, since
 $|\tr U|/3\le1$ by the triangle inequality applied to the three eigenvalues of $U$.
-In the weak-coupling limit $g_3\to0$, each loop term linearizes around the
-identity in the usual way.
+In the small-loop regime, Theorem~\ref{thm:small-loop-expansion} identifies the
+leading-order term with a Yang--Mills curvature density.
 \end{remark}
 
 \begin{proposition}[Gauge invariance of Wilson action]
@@ -693,7 +804,11 @@ The sum and the constant term are unchanged, so $S_{\mathrm W}^\Omega=S_{\mathrm
 For each site $x\in\mcN$ choose a fermionic spinor $\psi_x\in\C^3$,
 its conjugate $\bar\psi_x\in(\C^3)^\dagger$, and a real scalar $\phi_x\in\R$.
 Fix $m_F>0,\ m_\phi>0$, and a local potential $V_\phi:\R\to\R$.
-For $e=(x\to y)\in\mcE$ set $\ell_{xy}:=\|\mathbf x(y)-\mathbf x(x)\|+\eta$ with $\eta>0$.
+For $e=(x\to y)\in\mcE$ set
+\[
+\ell_{xy}:=\|\Xi(y)-\Xi(x)\|+\eta=\ell_e+\eta
+\]
+with $\eta>0$.
 The covariant fermionic action is
 \[
 S_{\mathrm F}:=\sum_{e\in\mcE}\bar\psi_{t(e)}\left(\psi_{t(e)}-U_3(e)\psi_{s(e)}\right)
@@ -719,15 +834,17 @@ the continuum normalization $(\nabla_\mu\phi)^2$.
 In the continuum, the square of a derivative has dimensions $[\phi]^2/[\text{length}]^2$,
 so a finite difference $(\phi_y-\phi_x)^2$ must be divided by $\|\mathbf x(y)-\mathbf x(x)\|$
 (one power of length rather than two) for a first-order finite-difference scheme.
-Specifically, if $\phi_{t(e)}-\phi_{s(e)}\approx (\nabla\phi)\cdot(\mathbf x(y)-\mathbf x(x))$
-with $|\mathbf x(y)-\mathbf x(x)|\approx\ell_{xy}$, then
+In the spacetime lattice used here, the relevant finite-difference length is the
+four-dimensional edge norm $\|\Xi(y)-\Xi(x)\|$.
+Specifically, if $\phi_{t(e)}-\phi_{s(e)}\approx (\partial_\mu\phi)\,\xi_e^\mu$
+with $\|\Xi(y)-\Xi(x)\|\approx\ell_{xy}$, then
 $(\phi_{t(e)}-\phi_{s(e)})^2/\ell_{xy}\approx \ell_{xy}\,|\nabla\phi|^2$,
 and summing over a regular lattice with spacing $a=\ell_{xy}$ recovers
 $a^d\,|\nabla\phi|^2$ as in the usual scalar lattice action.
 
 The parameter $\eta>0$ prevents division by zero for coincident site positions
-(self-loops, or particles occupying the same point at the same time).
-In practice $\eta\ll\ell_{\mathrm{visc}}$ so that $\ell_{xy}\approx\|\mathbf x(y)-\mathbf x(x)\|$
+(self-loops, or particles occupying the same spacetime point).
+In practice $\eta\ll\ell_{\mathrm{visc}}$ so that $\ell_{xy}\approx\|\Xi(y)-\Xi(x)\|$
 for all non-coincident links.
 \end{remark}
 
@@ -769,26 +886,33 @@ in Sections~\ref{sec:run}--\ref{sec:matter}, the tuple
 \[
 \mathcal Q=
 \Bigl(
-T,\{\mathcal A(t)\},\{\mathcal P_t\},\mcN,\mcE,\mathcal C_\square,
+T,\Delta t,\{\mathcal A(t)\},\{\mathcal P_t\},\mcN,E_{\mathrm{int}},E_{\mathrm{time}},\mcE,\mathcal C_\square,
 \{x_i(t),v_i(t),\Phi_i(t)\}_{i,t},K_\rho,\nu_{\mathrm{visc}},
 \hbar_{\mathrm{eff}},\mu_p,\ell_0,\epsilon_c,g_3,\beta,\eta,
+\{\Xi(x)\}_{x\in\mcN},\{\Sigma_P,A_P,U_3(P)\}_{P\in\mathcal C_\square},
 \{U_3(e)\}_{e\in\mcE},S_{\mathrm W},S_{\mathrm F},S_\phi
 \Bigr)
 \]
 is finite and explicit.
 It carries:
 \begin{enumerate}[leftmargin=1.5em]
-\item a finite lattice $(\mcN,\mcE)$;
-\item a finite cycle family $\mathcal C_\square$ for the Wilson action;
+\item a finite spacetime lattice $(\mcN,\mcE)$ with interaction and temporal links;
+\item a finite canonical plaquette family $\mathcal C_\square$ for the Wilson action;
+\item explicit plaquette geometry $(z_P,\Sigma_P,A_P)$ and plaquette holonomies $U_3(P)$;
 \item $SU(3)$ parallel transport maps $\{U_3(e)\}_{e\in\mcE}$;
-\item gauge-invariant Wilson loop traces and Wilson action $S_{\mathrm W}$;
+\item gauge-invariant Wilson plaquette traces and Wilson action $S_{\mathrm W}$;
 \item gauge-covariant fermionic and scalar matter actions $S_{\mathrm F}$, $S_\phi$.
 \end{enumerate}
 All objects required for a subsequent axiom-verification paper are present.
 \end{theorem}
 \begin{proof}
 Finiteness of $(\mcN,\mcE)$ is Proposition~\ref{prop:finiteness}.
-Finiteness of $\mathcal C_\square$ is part of Definition~\ref{def:action}.
+Finiteness of $\mathcal C_\square$ follows from Definition~\ref{def:plaquettes}
+because it is indexed by the finite set of triples $(i,j,t)$ with
+$0\le t<T$ and $(i,j)\in\mathcal P_t\cap\mathcal P_{t+1}$.
+The spacetime embedding, area bivectors, and plaquette holonomies are finite
+families because they are explicit algebraic functions of $\mcN$ and
+$\mathcal C_\square$.
 Finiteness of $\{U_3(e)\}$ follows because $\mcE$ is finite and each $U_3(e)$
 is defined by a finite matrix exponential.
 The actions $S_{\mathrm W}$, $S_{\mathrm F}$, $S_\phi$ are finite sums over
@@ -805,34 +929,521 @@ Proposition~\ref{prop:matter-gauge}.
 
 The lattice $(\mcN,\mcE)$ is finite and data dependent.
 The site set is a finite subset of spacetime determined by the particle data,
-and the link set encodes pairwise viscous interactions.
+while the link set contains both temporal worldline links and same-time
+interaction links.
 The link variables $U_3(e)$ are not independent: they are
 \emph{derived} from the trajectory data via the color construction of
 Definitions~\ref{def:colors}--\ref{def:transport}.
 The gauge group, the coupling strength $g_3$, and the parallel transport
 all emerge from the viscous dynamics rather than being postulated.
 
-The Wilson loop action and the matter actions are written in the usual
-site-link language and are manifestly gauge invariant.
-Any observable built from the link variables can therefore be evaluated on
-the finite lattice without further modification.
+The Wilson action is written on the canonical plaquette family
+$\mathcal C_\square$ from Definition~\ref{def:plaquettes}, and the matter
+actions use the same spacetime links.
+All gauge-sector observables are therefore evaluated on explicit elementary
+2-cells rather than on an arbitrary loop family.
+
+\subsection{Thermodynamic limit of graph observables}
+
+The convergence paper proves exchangeability of the invariant laws, a finite
+de~Finetti representation for the empirical measure, collapse of the mixing
+measure to the unique stationary mean-field law $\pi_\infty$, and the same
+$N$-uniform logarithmic Sobolev constant in the limit~\cite{convergence}.
+These results are exactly the input needed to pass the discrete interaction
+graph itself to the stationary mean-field regime.
+
+\begin{definition}[Pairwise link rule and empirical edge measure]
+\label{def:edge-measure}
+Fix a recorded time slice $t\in\Tset$ and, for the $N$-particle system, write
+\[
+Z_i^N(t):=(X_i^N(t),V_i^N(t))\in\R^6,
+\qquad
+L_t^N:=\frac1N\sum_{i=1}^N \delta_{Z_i^N(t)}.
+\]
+Assume that the same-time link set $\mathcal P_t^N$ is generated by the same
+label-invariant pair rule for every $N$, in the sense that there exists a
+bounded measurable indicator
+\[
+\chi_t:\R^6\times\R^6\to\{0,1\}
+\]
+such that
+\[
+\mathbf 1_{\{(i,j)\in\mathcal P_t^N\}}
+=
+\chi_t(Z_i^N(t),Z_j^N(t))
+\qquad
+(i\ne j).
+\]
+Define the empirical edge measure by
+\[
+\Gamma_t^N
+:=
+\frac1{N^2}\sum_{i\ne j}
+\mathbf 1_{\{(i,j)\in\mathcal P_t^N\}}
+\delta_{(Z_i^N(t),Z_j^N(t))}.
+\]
+\end{definition}
+
+\begin{theorem}[Stationary thermodynamic limit of the interaction graph]
+\label{thm:edge-measure-limit}
+Assume the stationary thermodynamic limit from the companion convergence paper:
+under the invariant law of the $N$-particle system, the random empirical
+measure $L_t^N$ converges in law to the deterministic stationary mean-field law
+$\pi_\infty$ as $N\to\infty$.
+Let $\Phi:\R^6\times\R^6\to\R$ be bounded and continuous, and assume that
+$\chi_t\Phi$ is continuous at $(\pi_\infty\otimes\pi_\infty)$-almost every pair.
+Then
+\[
+\int_{\R^6\times\R^6}\Phi\,d\Gamma_t^N
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint_{\R^6\times\R^6}
+\chi_t(z,z')\,\Phi(z,z')\,\pi_\infty(dz)\,\pi_\infty(dz').
+\]
+Equivalently,
+\[
+\frac1{N^2}\sum_{(i,j)\in\mathcal P_t^N}\Phi(Z_i^N(t),Z_j^N(t))
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint_{\R^6\times\R^6}
+\chi_t(z,z')\,\Phi(z,z')\,\pi_\infty(dz)\,\pi_\infty(dz').
+\]
+If the number of recorded slices $T+1$ is fixed, then the same convergence
+holds after summing over $t\in\Tset$.
+\end{theorem}
+\begin{proof}
+Write
+\[
+\Psi_t(z,z'):=\chi_t(z,z')\,\Phi(z,z').
+\]
+By Definition~\ref{def:edge-measure},
+\begin{align*}
+\int \Phi\,d\Gamma_t^N
+&=
+\frac1{N^2}\sum_{i\ne j}\Psi_t(Z_i^N(t),Z_j^N(t))\\
+&=
+\frac1{N^2}\sum_{i,j}\Psi_t(Z_i^N(t),Z_j^N(t))
+-\frac1{N^2}\sum_{i=1}^N \Psi_t(Z_i^N(t),Z_i^N(t))\\
+&=
+\iint_{\R^6\times\R^6}\Psi_t(z,z')\,L_t^N(dz)\,L_t^N(dz')
+-R_t^N,
+\end{align*}
+where
+\[
+|R_t^N|\le \frac{\|\Psi_t\|_\infty}{N}.
+\]
+Hence $R_t^N\to0$ in probability.
+
+Because $L_t^N$ converges in law to the deterministic measure $\pi_\infty$,
+the product measure $L_t^N\otimes L_t^N$ converges in law to
+$\pi_\infty\otimes\pi_\infty$ by the continuous mapping theorem.
+The boundedness and almost-everywhere continuity assumption on $\Psi_t$ then give
+\[
+\iint \Psi_t(z,z')\,L_t^N(dz)\,L_t^N(dz')
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint \Psi_t(z,z')\,\pi_\infty(dz)\,\pi_\infty(dz').
+\]
+Combining the last two displays proves the first claim.
+The displayed sum over $(i,j)\in\mathcal P_t^N$ is exactly the same quantity
+written in index notation, so the equivalent form follows.
+If $T+1$ is fixed, summing the convergences over finitely many times preserves
+convergence in probability.
+\end{proof}
+
+\begin{corollary}[Thermodynamic limit of weighted link sums]
+\label{cor:weighted-edge-limit}
+Let
+\[
+W_t:\R^6\times\R^6\times \mathcal P(\R^6)\to\R
+\]
+be bounded, and assume that $W_t$ is jointly continuous at every point
+$(z,z',\pi_\infty)$ for which $\chi_t(z,z')=1$.
+Then for every bounded continuous $\Phi$,
+\[
+\frac1{N^2}\sum_{(i,j)\in\mathcal P_t^N}
+W_t(Z_i^N(t),Z_j^N(t);L_t^N)\,\Phi(Z_i^N(t),Z_j^N(t))
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint
+\chi_t(z,z')\,W_t(z,z';\pi_\infty)\,\Phi(z,z')\,
+\pi_\infty(dz)\,\pi_\infty(dz').
+\]
+\end{corollary}
+\begin{proof}
+Set
+\[
+\Psi_t^N(z,z')
+:=
+\chi_t(z,z')\,W_t(z,z';L_t^N)\,\Phi(z,z'),
+\qquad
+\Psi_t^\infty(z,z')
+:=
+\chi_t(z,z')\,W_t(z,z';\pi_\infty)\,\Phi(z,z').
+\]
+Since $L_t^N\to\pi_\infty$ in law and the limit is deterministic,
+$W_t(z,z';L_t^N)\to W_t(z,z';\pi_\infty)$ in probability for each continuity
+point $(z,z',\pi_\infty)$.
+Boundedness then lets us pass to the limit in the same decomposition used in
+Theorem~\ref{thm:edge-measure-limit}, with $\Psi_t^N$ in place of $\Psi_t$.
+The diagonal contribution is still $O(N^{-1})$, so the result follows.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:edge-measure-limit} is the thermodynamic step needed to replace
+discrete interaction-link sums by mean-field integrals without introducing any
+external discretization of the limiting law.
+To pass the Wilson action itself to the thermodynamic limit one also needs a
+plaquette-level statement, because the canonical plaquettes depend on two
+adjacent time slices.
+\end{remark}
+
+\begin{definition}[Adjacent-time empirical path and plaquette measures]
+\label{def:plaquette-measure}
+Fix $0\le t<T$ and write
+\[
+\widetilde Z_i^N(t):=\bigl(Z_i^N(t),Z_i^N(t+1)\bigr)\in\R^{12},
+\qquad
+M_t^N:=\frac1N\sum_{i=1}^N \delta_{\widetilde Z_i^N(t)}.
+\]
+Define the persistent-plaquette indicator by
+\[
+\chi_{\square,t}\bigl((z_0,z_1),(w_0,w_1)\bigr):=\chi_t(z_0,w_0)\,\chi_{t+1}(z_1,w_1),
+\]
+and the empirical plaquette measure by
+\[
+\Gamma_{\square,t}^N
+:=
+\frac1{N^2}\sum_{i\ne j}
+\chi_{\square,t}\bigl(\widetilde Z_i^N(t),\widetilde Z_j^N(t)\bigr)\,
+\delta_{\bigl(\widetilde Z_i^N(t),\widetilde Z_j^N(t)\bigr)}.
+\]
+\end{definition}
+
+\begin{theorem}[Stationary thermodynamic limit of plaquette observables]
+\label{thm:plaquette-measure-limit}
+Assume that, under the invariant law of the $N$-particle system, the adjacent-time
+empirical path measure $M_t^N$ converges in law to a deterministic mean-field
+path law $\Lambda_t^\infty$ on $\R^{12}$ as $N\to\infty$.
+Let $\Phi:(\R^{12})^2\to\R$ be bounded and continuous, and assume that
+$\chi_{\square,t}\Phi$ is continuous at
+$(\Lambda_t^\infty\otimes\Lambda_t^\infty)$-almost every pair.
+Then
+\[
+\int_{(\R^{12})^2}\Phi\,d\Gamma_{\square,t}^N
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint_{(\R^{12})^2}
+\chi_{\square,t}(\zeta,\zeta')\,\Phi(\zeta,\zeta')\,
+\Lambda_t^\infty(d\zeta)\,\Lambda_t^\infty(d\zeta').
+\]
+\end{theorem}
+\begin{proof}
+Set
+\[
+\Psi_{\square,t}(\zeta,\zeta'):=\chi_{\square,t}(\zeta,\zeta')\,\Phi(\zeta,\zeta').
+\]
+By Definition~\ref{def:plaquette-measure},
+\begin{align*}
+\int \Phi\,d\Gamma_{\square,t}^N
+&=
+\frac1{N^2}\sum_{i\ne j}
+\Psi_{\square,t}\bigl(\widetilde Z_i^N(t),\widetilde Z_j^N(t)\bigr)\\
+&=
+\iint \Psi_{\square,t}(\zeta,\zeta')\,M_t^N(d\zeta)\,M_t^N(d\zeta')
+\;-\;R_{\square,t}^N,
+\end{align*}
+where $|R_{\square,t}^N|\le \|\Psi_{\square,t}\|_\infty/N$.
+Hence $R_{\square,t}^N\to0$ in probability.
+Because $M_t^N$ converges in law to the deterministic measure $\Lambda_t^\infty$,
+the product measure $M_t^N\otimes M_t^N$ converges in law to
+$\Lambda_t^\infty\otimes\Lambda_t^\infty$.
+The boundedness and almost-everywhere continuity of $\Psi_{\square,t}$ then yield
+\[
+\iint \Psi_{\square,t}(\zeta,\zeta')\,M_t^N(d\zeta)\,M_t^N(d\zeta')
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint \Psi_{\square,t}(\zeta,\zeta')\,
+\Lambda_t^\infty(d\zeta)\,\Lambda_t^\infty(d\zeta').
+\]
+Combining the last two displays proves the theorem.
+\end{proof}
+
+\begin{remark}
+Theorems~\ref{thm:edge-measure-limit} and~\ref{thm:plaquette-measure-limit}
+are the thermodynamic statements needed for the gauge sector.
+The first passes link observables to the mean-field limit; the second does the
+same for the canonical plaquettes used by the Wilson action.
+No external discretization of the limiting law is introduced: the dynamic graph
+and its elementary 2-cells are carried directly to the mean-field regime by the
+same label-invariant graph rule.
+\end{remark}
 
 \subsection{Continuum limit}
 
-In a continuum limit one takes the lattice spacing $a\to0$ while tuning $g_3$
-to keep physical masses fixed.
-An analogous program for the lattice would require:
+The thermodynamic limit identifies the mean-field objects associated with links
+and plaquettes.
+To recover a continuum gauge theory from the same data one needs a second limit
+in which the mesh size tends to zero, the color field becomes smooth, and the
+plaquette family samples the ambient spacetime geometry in an asymptotically
+isotropic way.
+The following definition isolates exactly those hypotheses.
+
+\begin{definition}[Admissible mean-field refinement regime]
+\label{def:refinement}
+Consider a sequence of data sets
+\[
+\mathscr R^{(N)}=
+\bigl(\mcN^{(N)},\mcE^{(N)},\mathcal C_\square^{(N)},\{U_3^{(N)}(e)\}\bigr),
+\qquad N\to\infty.
+\]
+Write
+\[
+a_N:=\max_{e\in\mcE^{(N)}} \ell_e^{(N)}.
+\]
+The sequence is an \emph{admissible mean-field refinement regime} if the following hold.
 \begin{enumerate}[leftmargin=1.5em]
-\item a sequence of runs with increasing $T$ and $N$ such that the empirical
-      spatial density $N/V$ diverges and the time step $\Delta t\to0$;
-\item a rescaling of the coupling $g_3\sim a(\log a)^{-1}$ and the de~Broglie
-      parameters with the effective lattice spacing $a\sim\ell_{\mathrm{visc}}/N^{1/3}$;
-\item convergence of the empirical measure $\frac{1}{N}\sum_i\delta_{x_i(t)}$
-      to a smooth spatial density as $N\to\infty$, as supplied by the kinetic
-      convergence program in the companion paper.
+\item \textbf{Vanishing mesh.}
+$a_N\to0$ and $\Delta t_N\le C a_N$.
+\item \textbf{Shape-regular plaquettes.}
+There exist constants $0<c_-<c_+<\infty$ and $C_{\mathrm{reg}}<\infty$ such that
+for every $P\in\mathcal C_\square^{(N)}$,
+\[
+c_- a_N^2\le A_P^{(N)}\le c_+ a_N^2,
+\]
+and if $P=P_{ij,t}$, then
+\[
+\|\tau_{j,t}^{(N)}-\tau_{i,t}^{(N)}\|
++\|\sigma_{ij,t+1}^{(N)}-\sigma_{ij,t}^{(N)}\|
+\le C_{\mathrm{reg}}\,a_N^2.
+\]
+\item \textbf{Smooth color-field limit.}
+There exists a smooth embedded four-dimensional manifold $M\subset\R^4$ with
+Riemannian metric $g$ and a $C^2$ color field
+\[
+\mathbf c:M\to\C^3
+\]
+such that, after identifying $\Xi^{(N)}(\mcN^{(N)})\subset M$,
+\[
+\sup_{x\in\mcN^{(N)}}\|\mathbf c_x^{(N)}-\mathbf c(\Xi^{(N)}(x))\|
+\le C_{\mathbf c}\,a_N^2.
+\]
+\item \textbf{Bivector density convergence.}
+For every compactly supported continuous scalar test function $f$ on $M$,
+\[
+\sum_{P\in\mathcal C_\square^{(N)}}
+\Sigma_P^{(N),\mu\nu}\Sigma_P^{(N),\rho\sigma}\,f(z_P^{(N)})
+\longrightarrow
+\frac18\int_M
+\bigl(g^{\mu\rho}g^{\nu\sigma}-g^{\mu\sigma}g^{\nu\rho}\bigr)
+f(z)\,d\mathrm{vol}_g(z).
+\]
 \end{enumerate}
-This program requires results from the kinetic convergence theory developed in
-the companion paper and is outside the present scope.
+\end{definition}
+
+\begin{theorem}[Short-link consistency and continuum connection]
+\label{thm:short-link-connection}
+Assume the admissible refinement regime of Definition~\ref{def:refinement}.
+Define the Hermitian $\mathfrak{su}(3)$-valued connection on $M$ by
+\[
+A_\mu(z):=\frac12\sum_{a=1}^8
+\Re\!\bigl(\mathbf c(z)^\dagger\lambda_a\,\partial_\mu\mathbf c(z)\bigr)\lambda_a,
+\qquad z\in M.
+\]
+Then for every oriented edge $e\in\mcE^{(N)}$,
+\[
+\mathcal A_e^{(N)}
+=
+\xi_e^{(N),\mu}\,A_\mu\bigl(\Xi^{(N)}(s(e))\bigr)
++O(a_N^2)
+\]
+uniformly in $e$.
+Consequently,
+\[
+U_3^{(N)}(e)
+=
+I+i g_3\,\xi_e^{(N),\mu}A_\mu\bigl(\Xi^{(N)}(s(e))\bigr)
++O(a_N^2)
+\]
+uniformly in $e$.
+\end{theorem}
+\begin{proof}
+Fix $e=(x\to y)\in\mcE^{(N)}$ and write $z_x:=\Xi^{(N)}(x)$ and
+$\xi_e:=\Xi^{(N)}(y)-\Xi^{(N)}(x)$.
+By the $C^2$ regularity of $\mathbf c$ and the color-field approximation,
+\[
+\mathbf c_y^{(N)}-\mathbf c_x^{(N)}
+=
+\xi_e^\mu\,\partial_\mu\mathbf c(z_x)+O(a_N^2)
+\]
+uniformly in $e$.
+Substituting this into Definition~\ref{def:transport} gives
+\begin{align*}
+\mathcal A_e^{(N)}
+&=
+\frac12\sum_{a=1}^8
+\Re\!\bigl((\mathbf c_x^{(N)})^\dagger\lambda_a(\mathbf c_y^{(N)}-\mathbf c_x^{(N)})\bigr)\lambda_a\\
+&=
+\frac12\sum_{a=1}^8
+\Re\!\bigl(\mathbf c(z_x)^\dagger\lambda_a\,\xi_e^\mu\partial_\mu\mathbf c(z_x)\bigr)\lambda_a
++O(a_N^2)\\
+&=
+\xi_e^\mu A_\mu(z_x)+O(a_N^2).
+\end{align*}
+This proves the first claim.
+Because $\|\Theta_e^{(N)}\|=g_3\|\mathcal A_e^{(N)}\|=O(a_N)$ uniformly,
+the matrix exponential satisfies
+\[
+U_3^{(N)}(e)=I+i\Theta_e^{(N)}+O(a_N^2),
+\]
+which yields the second display.
+\end{proof}
+
+\begin{theorem}[Small-loop holonomy expansion]
+\label{thm:small-loop-expansion}
+Assume the admissible refinement regime of Definition~\ref{def:refinement}.
+Let
+\[
+F_{\mu\nu}
+:=
+\partial_\mu A_\nu-\partial_\nu A_\mu-i g_3[A_\mu,A_\nu]
+\]
+be the curvature of the connection from
+Theorem~\ref{thm:short-link-connection}.
+Then for every plaquette $P\in\mathcal C_\square^{(N)}$,
+\[
+U_3^{(N)}(P)
+=
+\exp\!\Bigl(i g_3\,\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})
++O(a_N^3)\Bigr),
+\]
+with the remainder uniform in $P$.
+In particular, for all sufficiently large $N$, $U_3^{(N)}(P)$ lies in the
+principal logarithm domain and
+\[
+F_P^{(N)}
+=
+\frac{\Sigma_P^{(N),\mu\nu}}{A_P^{(N)}}\,F_{\mu\nu}(z_P^{(N)})+O(a_N).
+\]
+\end{theorem}
+\begin{proof}
+Write the oriented boundary of $P$ as $(e_1,e_2,e_3,e_4)$.
+By Theorem~\ref{thm:short-link-connection},
+\[
+U_3^{(N)}(e_k)
+=
+\exp\!\Bigl(i g_3\,\xi_{e_k}^{(N),\mu}A_\mu(z_P^{(N)})+O(a_N^2)\Bigr)
+\]
+uniformly in $k$ and in $P$.
+The plaquette boundary is closed, so
+\[
+\sum_{k=1}^4 \xi_{e_k}^{(N)}=0.
+\]
+Applying the Baker--Campbell--Hausdorff formula twice and using the
+shape-regularity bounds from Definition~\ref{def:refinement} yields
+\[
+\log U_3^{(N)}(P)
+=
+i g_3\,\Sigma_P^{(N),\mu\nu}
+\bigl(\partial_\mu A_\nu-\partial_\nu A_\mu-i g_3[A_\mu,A_\nu]\bigr)(z_P^{(N)})
++O(a_N^3).
+\]
+This is the first claim.
+Because $\|\Sigma_P^{(N)}\|=O(a_N^2)$, the leading term in the logarithm tends to
+zero uniformly, so for all sufficiently large $N$ the spectrum of $U_3^{(N)}(P)$
+stays inside the principal logarithm domain.
+Dividing the logarithm by $i g_3 A_P^{(N)}$ gives the final display.
+\end{proof}
+
+\begin{corollary}[Wilson plaquette density expansion]
+\label{cor:wilson-density}
+Under the hypotheses of Theorem~\ref{thm:small-loop-expansion}, each plaquette
+term
+\[
+s_P^{(N)}:=1-\frac13\Re\tr U_3^{(N)}(P)
+\]
+satisfies
+\[
+s_P^{(N)}
+=
+\frac{g_3^2}{6}\,
+\tr\!\Bigl(\bigl(\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})\bigr)^2\Bigr)
++r_P^{(N)},
+\]
+with a uniform remainder bound
+\[
+|r_P^{(N)}|\le C a_N^5.
+\]
+\end{corollary}
+\begin{proof}
+By Theorem~\ref{thm:small-loop-expansion},
+\[
+U_3^{(N)}(P)=\exp\!\bigl(i g_3 B_P^{(N)}+O(a_N^3)\bigr),
+\qquad
+B_P^{(N)}:=\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)}).
+\]
+Since $\|B_P^{(N)}\|=O(a_N^2)$ uniformly and $\tr(B_P^{(N)})=0$,
+Taylor expansion of the exponential gives
+\[
+\tr U_3^{(N)}(P)
+=
+3-\frac{g_3^2}{2}\tr\!\bigl((B_P^{(N)})^2\bigr)+O(a_N^5),
+\]
+where the linear term vanishes because $B_P^{(N)}$ is traceless Hermitian and the
+order-$a_N^3$ correction in the exponent contributes only at order $a_N^5$ to
+the real part of the trace.
+Rearranging proves the claim.
+\end{proof}
+
+\begin{theorem}[Continuum limit of the $SU(3)$ Wilson action]
+\label{thm:continuum-limit-ym}
+Assume the admissible refinement regime of Definition~\ref{def:refinement}.
+Then the discrete Wilson action from Definition~\ref{def:action} satisfies
+\[
+S_{\mathrm W}^{(N)}
+\longrightarrow
+\frac14\int_M \tr\!\bigl(F_{\mu\nu}F^{\mu\nu}\bigr)\,d\mathrm{vol}_g
+\qquad\text{as }N\to\infty.
+\]
+\end{theorem}
+\begin{proof}
+By Corollary~\ref{cor:wilson-density},
+\[
+S_{\mathrm W}^{(N)}
+=
+\frac{6}{g_3^2}\sum_{P\in\mathcal C_\square^{(N)}} s_P^{(N)}
+=
+\sum_{P\in\mathcal C_\square^{(N)}}
+\tr\!\Bigl(\bigl(\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})\bigr)^2\Bigr)
++\frac{6}{g_3^2}\sum_{P\in\mathcal C_\square^{(N)}} r_P^{(N)}.
+\]
+The remainder sum vanishes: by Definition~\ref{def:refinement},
+$A_P^{(N)}\asymp a_N^2$, so $|\mathcal C_\square^{(N)}|=O(a_N^{-4})$, and hence
+\[
+\sum_{P\in\mathcal C_\square^{(N)}} |r_P^{(N)}|
+\le C a_N^5 |\mathcal C_\square^{(N)}|
+=O(a_N)\to0.
+\]
+For the leading term, write
+\[
+\tr\!\Bigl(\bigl(\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})\bigr)^2\Bigr)
+=
+\Sigma_P^{(N),\mu\nu}\Sigma_P^{(N),\rho\sigma}\,
+\tr\!\bigl(F_{\mu\nu}(z_P^{(N)})F_{\rho\sigma}(z_P^{(N)})\bigr).
+\]
+Apply the bivector density convergence from Definition~\ref{def:refinement} with
+\[
+f_{\mu\nu\rho\sigma}(z)
+:=
+\tr\!\bigl(F_{\mu\nu}(z)F_{\rho\sigma}(z)\bigr).
+\]
+Since $F_{\mu\nu}$ is antisymmetric in $(\mu,\nu)$,
+\begin{align*}
+\sum_{P\in\mathcal C_\square^{(N)}}
+\tr\!\Bigl(\bigl(\Sigma_P^{(N),\mu\nu}F_{\mu\nu}(z_P^{(N)})\bigr)^2\Bigr)
+&\longrightarrow
+\frac18\int_M
+\bigl(g^{\mu\rho}g^{\nu\sigma}-g^{\mu\sigma}g^{\nu\rho}\bigr)
+\tr(F_{\mu\nu}F_{\rho\sigma})\,d\mathrm{vol}_g\\
+&=
+\frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,d\mathrm{vol}_g.
+\end{align*}
+Combining the leading term with the vanishing remainder proves the theorem.
+\end{proof}
 
 \subsection{Quantization and partition function}
 
@@ -845,10 +1456,12 @@ The path integral over these fields,
 Z=\int \Bigl[\prod_{x\in\mcN}d\psi_x\,d\bar\psi_x\,d\phi_x\Bigr]
 \exp\!\bigl(-S_{\mathrm W}-S_{\mathrm F}-S_\phi\bigr),
 \]
-is a finite-dimensional ordinary integral over
-the gauge sector $SU(3)^{|\mcN|}$, finite-dimensional fermionic Grassmann variables,
-and the scalar sector $\R^{|\mcN|}$.
-Gauge-fixing via Faddeev--Popov is straightforward in the finite setting.
+is a finite-dimensional ordinary integral over finite-dimensional fermionic
+Grassmann variables and the scalar sector $\R^{|\mcN|}$, evaluated in the
+background of the explicit finite link configuration $\{U_3(e)\}_{e\in\mcE}$.
+If one wishes to promote the link variables themselves to dynamical integration
+variables, gauge-fixing via Faddeev--Popov is straightforward in the finite
+setting.
 The resulting $Z$ is well-defined without any ultraviolet regularization;
 all divergences that would appear in a continuum QFT are absent because the
 lattice is finite.
@@ -861,27 +1474,43 @@ expectations is a natural next step.
 We have constructed a complete, finite, and $SU(3)$ gauge-invariant lattice QFT
 data package $\mathcal Q$ from the discrete trajectory data of a viscous
 multi-particle system.
-The construction proceeds in five conceptual steps:
+The construction proceeds in six conceptual steps:
 \begin{enumerate}[leftmargin=1.5em]
-\item Build the lattice $(\mcN,\mcE)$ from the spacetime sites and links of the run.
+\item Build the spacetime lattice $(\mcN,\mcE)$ from the recorded sites,
+      worldline links, and same-time interaction links.
 \item Compute the row-normalized viscous force $\mathbf F^{\mathrm{visc}}(x)$
-      at each site from the link weights.
+      at each site from the interaction-link weights.
 \item Form complex color vectors $\mathbf c_x\in\C^3$ by modulating each force
       component with a de~Broglie kinematic phase and normalizing.
 \item Define the $SU(3)$ link transport $U_3(e)=\exp(i\Theta_e)$ by projecting
-      the bilinear color overlap $\mathbf c_x^\dagger\lambda_a\mathbf c_y$ onto
-      the Lie algebra $\mathfrak{su}(3)$ via the Gell-Mann basis.
-\item Construct the Wilson loop action $S_{\mathrm W}$ and the covariant
-      matter actions $S_{\mathrm F}$, $S_\phi$ on the same lattice.
+      the short-link color increment
+      $\mathbf c_x^\dagger\lambda_a(\mathbf c_y-\mathbf c_x)$ onto the Lie
+      algebra $\mathfrak{su}(3)$ via the Gell-Mann basis.
+\item Build the canonical plaquette family $\mathcal C_\square$, the area
+      bivectors $\Sigma_P$, the discrete plaquette holonomies $U_3(P)$, and
+      the Wilson action $S_{\mathrm W}$.
+\item Prove the thermodynamic mean-field limit for both link and plaquette
+      observables, and under an admissible refinement regime recover the
+      continuum Yang--Mills action.
 \end{enumerate}
 All objects are explicit and finite (Theorem~\ref{thm:package}).
 The gauge group $SU(3)$ is not imposed but emerges from the three-dimensional
 viscous dynamics together with the Gell-Mann projection.
+In the stationary thermodynamic regime, the same interaction graph has a
+deterministic mean-field limit in the sense of
+Theorems~\ref{thm:edge-measure-limit} and~\ref{thm:plaquette-measure-limit}, so
+scaled link and plaquette sums become mean-field interaction integrals without
+changing the graph rule.
+In the geometric small-loop regime, Theorems~\ref{thm:short-link-connection},
+\ref{thm:small-loop-expansion}, and~\ref{thm:continuum-limit-ym} identify the
+continuum connection and prove that the discrete Wilson action converges to
+\[
+\frac14\int_M \tr(F_{\mu\nu}F^{\mu\nu})\,d\mathrm{vol}_g.
+\]
 
-Three major extensions are deferred to companion papers:
-(i) the formal continuum limit as run data becomes dense;
-(ii) path-integral quantization and numerical evaluation of $Z$;
-(iii) axiom verification --- checking that $\mathcal Q$ satisfies the
+Two major extensions are deferred to companion papers:
+(i) path-integral quantization and numerical evaluation of $Z$;
+(ii) axiom verification --- checking that $\mathcal Q$ satisfies the
 Osterwalder-Schrader axioms adapted to the finite lattice.
 
 \bibliographystyle{plain}
