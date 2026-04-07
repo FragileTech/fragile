@@ -1,0 +1,34 @@
+\contentsline {section}{\numberline {1}Introduction and motivation}{2}{section.1}%
+\contentsline {paragraph}{From data to dynamics.}{2}{section*.2}%
+\contentsline {paragraph}{The quantization objective.}{2}{section*.3}%
+\contentsline {section}{\numberline {2}Configuration space and measure}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Imported lattice data}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Field manifold}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Measures}{5}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Construction of the partition function}{6}{section.3}%
+\contentsline {paragraph}{The total Euclidean action.}{6}{section*.4}%
+\contentsline {paragraph}{The master partition function.}{6}{section*.5}%
+\contentsline {paragraph}{Normalization and expectation values.}{6}{section*.6}%
+\contentsline {section}{\numberline {4}Gauge redundancy and orbit analysis}{7}{section.4}%
+\contentsline {paragraph}{The gauge orbit problem.}{7}{section*.7}%
+\contentsline {paragraph}{Symmetry redundancy versus physical degrees of freedom.}{8}{section*.8}%
+\contentsline {section}{\numberline {5}Gauge fixing and the Faddeev--Popov procedure}{8}{section.5}%
+\contentsline {paragraph}{Selecting the gauge condition.}{8}{section*.9}%
+\contentsline {paragraph}{The Faddeev--Popov identity.}{9}{section*.10}%
+\contentsline {paragraph}{The Faddeev--Popov determinant.}{10}{section*.11}%
+\contentsline {section}{\numberline {6}Ghost fields and the effective action}{11}{section.6}%
+\contentsline {paragraph}{Introducing ghost fields.}{11}{section*.12}%
+\contentsline {paragraph}{The effective quantized action.}{12}{section*.13}%
+\contentsline {section}{\numberline {7}Matter sector integration}{13}{section.7}%
+\contentsline {paragraph}{Fermionic Berezin integration.}{13}{section*.14}%
+\contentsline {paragraph}{Scalar kinetic fluctuations.}{15}{section*.15}%
+\contentsline {section}{\numberline {8}Recovery of the Feynman path-integral measure}{16}{section.8}%
+\contentsline {paragraph}{The continuum limit of the measure.}{16}{section*.16}%
+\contentsline {paragraph}{Emergent regularization.}{17}{section*.17}%
+\contentsline {paragraph}{Consistency with continuum QFT.}{17}{section*.18}%
+\contentsline {section}{\numberline {9}Discussion of excitations and propagators}{18}{section.9}%
+\contentsline {paragraph}{The propagator on the interaction graph.}{18}{section*.19}%
+\contentsline {paragraph}{Wilson loops and the area law.}{19}{section*.20}%
+\contentsline {section}{\numberline {10}Conclusion}{19}{section.10}%
+\contentsline {paragraph}{Summary of the quantum data package.}{19}{section*.21}%
+\contentsline {paragraph}{Forward look to the mass-gap problem.}{19}{section*.22}%
