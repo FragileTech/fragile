@@ -49,8 +49,8 @@
 \newcommand{\mcHh}{\mathfrak h_3}
 \newcommand{\mcsu}{\mathfrak{su}(3)}
 
-\title{From the Data Package $\mathcal Q$ to a Gauge-Fixed Path Integral\\
-for the Trajectory-Induced $SU(3)$ Lattice Theory}
+\title{From the Deterministic Regulator Data to a Gauge-Fixed Path Integral\\
+for the Finite $SU(3)$ Yang--Mills Lattice Theory}
 \author{}
 \date{}
 
@@ -58,26 +58,29 @@ for the Trajectory-Induced $SU(3)$ Lattice Theory}
 \maketitle
 
 \begin{abstract}
-The companion lattice paper constructs from discrete particle trajectories a
-finite $SU(3)$ lattice gauge theory data package
+The deterministic regulator paper constructs, for each regulator size \(N\), the
+gauge-geometric part of a finite regularized \(SU(3)\) data package
 \[
-\mathcal Q=(\mcN,\mcE,\mathcal C_\square,\{U_3(e)\}_{e\in\mcE},S_{\mathrm W},S_{\mathrm F},S_\phi)
+\mathcal Q^{(N)}=
+(\mcN^{(N)},\mcE^{(N)},\mathcal C_\square^{(N)},
+\{U_3^{(N)}(e)\}_{e\in\mcE^{(N)}},
+S_{\mathrm W}^{(N)})
 \]
-with explicit worldline links, interaction links, Wilson plaquettes, and matter
-actions \cite{convergence,latticeqft}.  The present paper performs the next
-mathematical step: it replaces the data-induced background links by independent
+whose regulator geometry, sampled links, and Wilson action are fixed in
+\cite{continuumqft}.  The present paper completes the finite-dimensional data
+package by adjoining the explicit fermionic and scalar actions written below,
+and performs the
+quantization step: it replaces the sampled background links by independent
 integration variables and builds the exact finite-dimensional Euclidean path
-integral attached to the same lattice.  We define the full configuration space,
-the product Haar--Berezin--Lebesgue measure, the partition function, and the
-vacuum expectation map.  We prove that the resulting finite-lattice theory is
-well defined for the free massive scalar witness sector fixed in the companion
-lattice paper.  We then
-solve the gauge-redundancy problem exactly by a rooted maximal-tree gauge: every
-gauge orbit meets the gauge slice once and only once, the Faddeev--Popov
-determinant is identically $1$, and the ghost sector is a decoupled finite
-Berezin integral.  The fermionic sector integrates to a finite fermion
-determinant, and the scalar sector is shown to be exactly Gaussian with an
-explicit lattice covariance.
+integral on that same regulator lattice.  We define the full configuration
+space, the product Haar--Berezin--Lebesgue measure, the partition function, and
+the vacuum expectation map.  We prove that the resulting finite-lattice theory
+is well defined for the free massive scalar sector used in this paper.  We then solve the gauge-redundancy problem exactly by
+a rooted maximal-tree gauge: every gauge orbit meets the gauge slice once and
+only once, the Faddeev--Popov determinant is identically $1$, and the ghost
+sector is a decoupled finite Berezin integral.  The fermionic sector integrates
+to an exact finite fermion determinant, and the scalar sector is shown to be
+exactly Gaussian with an explicit lattice covariance.
 
 The paper also establishes the Lie-algebraic structure of the discrete measure.
 On each edge, Haar measure is smooth in exponential coordinates and agrees to
@@ -88,16 +91,16 @@ thermodynamic limit
 \pi_{N,1}\Rightarrow \pi_\infty,
 \]
 already proved in the companion convergence paper.  The convergence paper
-\cite{convergence} proves this stationary mean-field limit, while the companion
-lattice paper \cite{latticeqft} identifies the bilocal thermodynamic gauge
-observables and the mean-field Wilson action $S_{\mathrm W}^\infty$ on
+\cite{convergence} proves this stationary mean-field limit, while
+\cite{continuumqft} identifies the deterministic finite Wilson data and the
+continuum functional \(S_{\mathrm{YM}}^{\mathrm{cont}}\) on
 $\pi_\infty$.  The same convergence paper also proves the mean-field
 logarithmic Sobolev inequality on $\pi_\infty$; by tensorization, the same
-constant controls the finite product measures $\pi_\infty^{\otimes k}$ on
-which the bilocal link and plaquette observables of \cite{latticeqft} are
-defined.  The present paper supplies the exact fixed-$N$ quantization, the
-local coordinate structure of its gauge measure, and the explicit thermodynamic
-transfer of that equilibrium stiffness to the quantized mean-field observables.
+constant controls the finite product measures $\pi_\infty^{\otimes k}$ that
+support the thermodynamic observables.  The present paper supplies the exact
+fixed-$N$ quantization, the local coordinate structure of its gauge measure,
+and the explicit thermodynamic transfer of that equilibrium stiffness to the
+quantized finite-lattice observables.
 \end{abstract}
 
 \tableofcontents
@@ -106,29 +109,30 @@ transfer of that equilibrium stiffness to the quantized mean-field observables.
 \label{sec:introduction}
 
 \paragraph{From data to dynamics.}
-The paper \emph{Finite $SU(3)$ Lattice Gauge Theory from Particle
-Trajectories} constructs from the recorded run data of the viscous particle
-system a finite spacetime lattice
+The companion finite-regulator paper \emph{Local Continuum Yang--Mills Limit
+from Particle Trajectories} constructs, for each regulator size, a finite
+deterministic spacetime lattice
 \[
 \mathcal L=(\mcN,\mcE)
 \]
-whose site set $\mcN$ consists of trajectory records $n_{i,t}$, whose edge set
-$\mcE$ consists of temporal worldline links and same-time interaction links,
-and whose canonical plaquette family $\mathcal C_\square$ is built from
-persistent interaction pairs across adjacent times \cite{latticeqft}.  On that
-lattice the same paper defines explicit link transporters $U_3(e)\in SU(3)$,
-the Wilson action $S_{\mathrm W}$, and matter actions $S_{\mathrm F}$ and
-$S_\phi$.  These objects form the finite data package $\mathcal Q$.  Up to that
-stage, however, the link variables are still deterministic functions of the
-particle record.  A quantum theory requires a different mathematical object:
-instead of one distinguished configuration, it requires an ensemble weighted by
-an action and summed over all admissible gauge fields and matter fields.  The
-present paper performs that passage from one explicit background configuration
-to a finite-dimensional path integral on the same lattice.
+whose site set and edge set form a deterministic coordinate graph, and whose
+canonical plaquette family $\mathcal C_\square$ is the corresponding
+plaquette set from \cite{continuumqft}.  On that lattice the same paper defines
+sampled link transporters $U_3^{(N)}(e)\in SU(3)$ and the Wilson action
+$S_{\mathrm W}$.  In the present paper we place on the same regulator graph the
+finite matter actions $S_{\mathrm F}$ and $S_\phi$ defined in
+Definition~\ref{def:imported-package}.  Together these objects form the finite
+data package $\mathcal Q^{(N)}$.  Up to that stage, however,
+the link variables are deterministic functions of the continuum-seeded profile.
+A quantum theory requires a different mathematical object: instead of one
+distinguished configuration, it requires an ensemble weighted by an action and
+summed over all admissible gauge fields and matter fields.  The present paper
+performs that passage from one explicit background configuration to a
+finite-dimensional path integral on the same regulator lattice.
 
 \paragraph{The quantization objective.}
 The basic quantization step is conceptually simple and mathematically precise.
-The background transporters $U_3(e)$ derived in \cite{latticeqft} are replaced
+The background transporters $U_3^{(N)}(e)$ derived in \cite{continuumqft} are replaced
 by independent variables
 \[
 U(e)\in SU(3),\qquad e\in\mcE,
@@ -146,7 +150,7 @@ quantization.
 
 \begin{theorem}[Main finite-lattice quantization result]
 \label{thm:main}
-Fix the lattice data $(\mcN,\mcE,\mathcal C_\square)$ from \cite{latticeqft},
+Fix the lattice data $(\mcN,\mcE,\mathcal C_\square)$ from \cite{continuumqft},
 the coupling $g_3>0$, masses $m_F>0$ and $m_\phi>0$, and the distance
 regularization $\eta>0$.  Then:
 \begin{enumerate}[leftmargin=1.5em]
@@ -180,7 +184,8 @@ lattice}.  The proofs below use only the finite graph
 \[
 (\mcN,\mcE,\mathcal C_\square)
 \]
-and the finite-dimensional actions imported from \cite{latticeqft}.  The
+and the finite-dimensional gauge and matter actions fixed in the present
+construction.  The
 measure-theoretic statements therefore concern exact finite-dimensional
 integrals, while the Lie-algebraic discussion in later sections concerns only
 local coordinate descriptions of Haar measure near the identity.  In the
@@ -190,12 +195,13 @@ weak convergence
 \[
 \pi_{N,1}\Rightarrow \pi_\infty,
 \]
-while \cite{latticeqft} formulates the corresponding bilocal gauge theory and
-mean-field Wilson action $S_{\mathrm W}^\infty$ on $\pi_\infty$.
+while \cite{continuumqft} formulates the corresponding regulator finite action
+and continuum limit picture on $\pi_\infty$.
 The same mean-field law carries the logarithmic Sobolev inequality proved in
 \cite{convergence}, and Proposition~\ref{prop:thermo-lsi-transfer} below makes
 explicit how that stiffness transfers to the finite product measures
-$\pi_\infty^{\otimes k}$ supporting the thermodynamic gauge observables.
+$\pi_\infty^{\otimes k}$ supporting the thermodynamic finite-lattice
+observables.
 \end{remark}
 
 \section{Configuration space and measure}
@@ -203,15 +209,21 @@ $\pi_\infty^{\otimes k}$ supporting the thermodynamic gauge observables.
 
 \subsection{Imported lattice data}
 
-We summarize only the pieces of the companion paper \cite{latticeqft} that are
-required for quantization.
+We summarize only the regulator-gauge ingredients from \cite{continuumqft} and
+the explicit matter conventions adopted in this paper that are required for
+quantization.
 
 \begin{definition}[Imported lattice package]
 \label{def:imported-package}
-The previous paper supplies:
+For each regulator size \(N\), the deterministic regulator construction
+supplies the finite regulator graph and Wilson sector
+\[
+(\mcN,\mcE,\mathcal C_\square)=
+(\mcN^{(N)},\mcE^{(N)},\mathcal C_\square^{(N)})
+\]
+and we equip that graph with the following finite ingredients:
 \begin{enumerate}[leftmargin=1.5em]
-\item a finite site set $\mcN=\{n_{i,t}\}$ and a finite oriented edge set
-$\mcE=E_{\mathrm{time}}\cup E_{\mathrm{int}}$;
+\item finite site and oriented edge sets $\mcN,\mcE$;
 \item for every plaquette $P\in\mathcal C_\square$, an oriented boundary
 \[
 \partial P=(e_1,e_2,e_3,e_4),\qquad e_k\in\mcE,
@@ -241,16 +253,17 @@ S_\phi(\phi)
 \frac12\sum_{e=(x\to y)\in\mcE}\frac{(\phi_y-\phi_x)^2}{\ell_e+\eta}
 +\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2,
 \]
-where $\ell_e$ is the spacetime length of edge $e$ and $\eta>0$ is the
-distance regularization from \cite{latticeqft}.
+where $\ell_e$ is the fixed edge length induced by the regulator geometry and
+$\eta>0$ is the distance regularization.
 \end{enumerate}
 \end{definition}
 
 \begin{remark}
-The actions above are identical in form to those in \cite{latticeqft}; the only
-change is interpretive.  In the companion paper the link variables were
-constructed from the particle data.  In the present paper they are promoted to
-independent coordinates on $SU(3)^{\mcE}$.
+The gauge sector above is exactly the regulator Wilson sector of
+\cite{continuumqft}.  The only change made there is interpretive: the sampled
+background links are promoted to independent coordinates on $SU(3)^{\mcE}$.
+The fermionic and scalar terms are then fixed explicitly on that same finite
+graph by the displayed formulas in Definition~\ref{def:imported-package}.
 \end{remark}
 
 \subsection{Field manifold}
@@ -276,7 +289,7 @@ Let
 \mcCaux:=\bbB^{\mcN}.
 \]
 This is the product of the open unit balls suggested by the color normalization
-bound $\|\mathbf c_x\|<1$ proved in \cite{latticeqft}.  Since no independent
+bound $\|\mathbf c_x\|<1$ proved in \cite{continuumqft}.  Since no independent
 color action was supplied in the companion paper, this sector will be assigned
 a normalized product measure and decouples from the dynamical integrals below.
 \end{definition}
@@ -541,9 +554,17 @@ under the corresponding gauge transformations.  Consequently the total weighted
 measure $e^{-S}\dd\mu$ is gauge invariant.
 \end{proposition}
 \begin{proof}
-Gauge invariance of $S_{\mathrm W}$ and of the matter actions was already
-proved in \cite{latticeqft}; the same algebra applies here because only the
-interpretation of the variables has changed.  Haar invariance of $\mu_{\mcU}$
+Gauge invariance of $S_{\mathrm W}$ was proved in \cite{continuumqft}.  For the
+matter sector, one checks directly from the displayed formulas that
+$S_{\mathrm F}$ is invariant under
+\[
+\psi_x\mapsto\Omega(x)\psi_x,\qquad
+\bar\psi_x\mapsto\bar\psi_x\Omega(x)^{-1},
+\]
+because the gauge factors cancel pointwise in each edge term and in each mass
+term, while $S_\phi$ is invariant because the scalar field is gauge neutral.
+The same algebra is the one used throughout the finite-dimensional argument.
+Haar invariance of $\mu_{\mcU}$
 follows edgewise from left and right invariance of Haar measure on $SU(3)$.
 The normalized Lebesgue measure on the ball $\bbB\subset\C^3$ is invariant
 under the unitary action of $SU(3)$ because the action preserves Euclidean
@@ -1156,11 +1177,11 @@ second claim.
 \label{rem:fermion-loops}
 The determinant $\det M_{\mathrm F}(U)$ is a finite polynomial in the link
 matrices and encodes the usual closed virtual-fermion loops.  Because the link
-set $\mcE$ consists of the worldline and interaction edges from the trajectory
-data, only loops in that explicit graph contribute.  The same-time part of that
-graph is determined by the interaction data $\mathcal P_t$, which in the
-trajectory construction of \cite{latticeqft} was built from the normalized
-weights $\omega_{ij}^{\mathrm{link}}(t)$.
+set $\mcE$ is the finite edge set from the deterministic regulator package
+\cite{continuumqft}, only loops on this explicit graph contribute.  The
+path support is therefore inherited entirely from that regulator incidence
+structure, with no additional construction-specific combinatorics appearing in this
+finite-dimensional determinant expansion.
 \end{remark}
 
 \paragraph{Scalar kinetic fluctuations.}
@@ -1378,8 +1399,8 @@ is uniform.
 \begin{remark}[Thermodynamic role of the local chart]
 The local coordinate description of Haar measure is a fixed-$N$ statement on a
 single edge.  In the broader thermodynamic programme it supplies the local
-measure model for the bilocal gauge observables that appear in the
-$N\to\infty$ limit described in \cite{convergence,latticeqft}.
+measure model for the finite-lattice link and plaquette observables that appear in
+the $N\to\infty$ limit described in \cite{convergence,continuumqft}.
 \end{remark}
 
 \begin{proposition}[Transfer of the mean-field LSI to thermodynamic observables]
@@ -1391,9 +1412,9 @@ $ac>b^2$ and a constant $C_{\mathrm{LSI}}<\infty$ such that
 \Ent_{\pi_\infty}(g^2)
 \le
 C_{\mathrm{LSI}}
-\int_{\R^6}\Gamma_{\mathrm{hypo}}^\infty(g,g)\,\dd\pi_\infty
+\int_{\R^8}\Gamma_{\mathrm{hypo}}^\infty(g,g)\,\dd\pi_\infty
 \]
-for every smooth compactly supported $g:\R^6\to\R$, where
+for every smooth compactly supported $g:\R^8\to\R$, where
 \[
 \Gamma_{\mathrm{hypo}}^\infty(g,g)
 :=
@@ -1412,16 +1433,16 @@ and define
 \sum_{j=1}^k \Gamma_{\mathrm{hypo},j}^\infty(F,F),
 \]
 where $\Gamma_{\mathrm{hypo},j}^\infty$ acts on the $j$-th variable
-$z_j=(x_j,v_j)\in\R^6$.  Then
+$z_j=(x_j,v_j)\in\R^8$.  Then
 \[
 \Ent_{\Pi_k^\infty}(F^2)
 \le
 C_{\mathrm{LSI}}
-\int_{(\R^6)^k}\Gamma_{\mathrm{hypo}}^{(k)}(F,F)\,\dd\Pi_k^\infty
+\int_{(\R^8)^k}\Gamma_{\mathrm{hypo}}^{(k)}(F,F)\,\dd\Pi_k^\infty
 \]
-for every smooth compactly supported $F:(\R^6)^k\to\R$.
-In particular, the bilocal link observables and plaquette observables of
-\cite{latticeqft}, which are evaluated on $\pi_\infty^{\otimes2}$ and
+for every smooth compactly supported $F:(\R^8)^k\to\R$.
+In particular, the finite-lattice link observables and plaquette observables of
+\cite{continuumqft}, which are evaluated on $\pi_\infty^{\otimes2}$ and
 $\pi_\infty^{\otimes4}$, are supported on equilibrium product measures
 carrying the same logarithmic Sobolev constant $C_{\mathrm{LSI}}$.
 \end{proposition}
@@ -1431,13 +1452,13 @@ logarithmic Sobolev inequality proved in \cite{convergence}.
 
 Assume the claim has been proved for $k-1$, and write
 \[
-z=(z',z_k)\in (\R^6)^{k-1}\times\R^6.
+z=(z',z_k)\in (\R^8)^{k-1}\times\R^8.
 \]
-For a smooth compactly supported $F:(\R^6)^k\to\R$, set
+For a smooth compactly supported $F:(\R^8)^k\to\R$, set
 \[
 F_{z_k}(z'):=F(z',z_k),
 \qquad
-m(z_k):=\int_{(\R^6)^{k-1}} F(z',z_k)^2\,\dd\Pi_{k-1}^\infty(z'),
+m(z_k):=\int_{(\R^8)^{k-1}} F(z',z_k)^2\,\dd\Pi_{k-1}^\infty(z'),
 \qquad
 G(z_k):=m(z_k)^{1/2}.
 \]
@@ -1445,16 +1466,16 @@ The entropy chain rule for product measures gives
 \[
 \Ent_{\Pi_k^\infty}(F^2)
 =
-\int_{\R^6}\Ent_{\Pi_{k-1}^\infty}(F_{z_k}^2)\,\dd\pi_\infty(z_k)
+\int_{\R^8}\Ent_{\Pi_{k-1}^\infty}(F_{z_k}^2)\,\dd\pi_\infty(z_k)
 +\Ent_{\pi_\infty}(G^2).
 \]
 Applying the induction hypothesis to the first term yields
 \[
-\int_{\R^6}\Ent_{\Pi_{k-1}^\infty}(F_{z_k}^2)\,\dd\pi_\infty(z_k)
+\int_{\R^8}\Ent_{\Pi_{k-1}^\infty}(F_{z_k}^2)\,\dd\pi_\infty(z_k)
 \le
 C_{\mathrm{LSI}}
 \sum_{j=1}^{k-1}
-\int_{(\R^6)^k}\Gamma_{\mathrm{hypo},j}^\infty(F,F)\,\dd\Pi_k^\infty.
+\int_{(\R^8)^k}\Gamma_{\mathrm{hypo},j}^\infty(F,F)\,\dd\Pi_k^\infty.
 \]
 
 For the second term, regularize the square root by
@@ -1463,12 +1484,12 @@ G_\varepsilon(z_k):=(m(z_k)+\varepsilon)^{1/2},
 \qquad \varepsilon>0.
 \]
 Because $F$ is smooth and compactly supported, the function $m$ is smooth and
-bounded, hence $G_\varepsilon$ is smooth and bounded on $\R^6$.  Let
+bounded, hence $G_\varepsilon$ is smooth and bounded on $\R^8$.  Let
 \[
 M:=
 \begin{pmatrix}
-cI_3 & bI_3\\
-bI_3 & aI_3
+cI_4 & bI_4\\
+bI_4 & aI_4
 \end{pmatrix},
 \]
 so that
@@ -1486,7 +1507,7 @@ $m(z_k)>0$,
 \nabla_{z_k}G_\varepsilon(z_k)
 =
 \frac{1}{G_\varepsilon(z_k)}
-\int_{(\R^6)^{k-1}}F(z',z_k)\,\nabla_{z_k}F(z',z_k)\,\dd\Pi_{k-1}^\infty(z').
+\int_{(\R^8)^{k-1}}F(z',z_k)\,\nabla_{z_k}F(z',z_k)\,\dd\Pi_{k-1}^\infty(z').
 \]
 Therefore
 \begin{align*}
@@ -1507,7 +1528,7 @@ M\,\nabla_{z_k}F\right\rangle
 \right)\\
 &=
 m(z_k)
-\int_{(\R^6)^{k-1}}
+\int_{(\R^8)^{k-1}}
 \Gamma_{\mathrm{hypo},k}^\infty(F,F)(z',z_k)\,
 \dd\Pi_{k-1}^\infty(z').
 \end{align*}
@@ -1516,16 +1537,18 @@ Hence
 \Gamma_{\mathrm{hypo}}^\infty(G_\varepsilon,G_\varepsilon)(z_k)
 \le
 \frac{m(z_k)}{m(z_k)+\varepsilon}
-\int_{(\R^6)^{k-1}}
+\int_{(\R^8)^{k-1}}
 \Gamma_{\mathrm{hypo},k}^\infty(F,F)(z',z_k)\,
 \dd\Pi_{k-1}^\infty(z')
 \le
-\int_{(\R^6)^{k-1}}
+\]
+\[
+\int_{(\R^8)^{k-1}}
 \Gamma_{\mathrm{hypo},k}^\infty(F,F)(z',z_k)\,
 \dd\Pi_{k-1}^\infty(z').
 \]
 To invoke the one-particle inequality from \cite{convergence}, choose
-$\chi_R\in C_c^\infty(\R^6)$ such that
+$\chi_R\in C_c^\infty(\R^8)$ such that
 \[
 0\le \chi_R\le 1,\qquad
 \chi_R\equiv 1\text{ on }B_R,\qquad
@@ -1534,14 +1557,14 @@ $\chi_R\in C_c^\infty(\R^6)$ such that
 \]
 Set
 \[
-H_{\varepsilon,R}:=\chi_R G_\varepsilon\in C_c^\infty(\R^6).
+H_{\varepsilon,R}:=\chi_R G_\varepsilon\in C_c^\infty(\R^8).
 \]
 Applying the one-particle inequality to $H_{\varepsilon,R}$ gives
 \[
 \Ent_{\pi_\infty}(H_{\varepsilon,R}^2)
 \le
 C_{\mathrm{LSI}}
-\int_{\R^6}\Gamma_{\mathrm{hypo}}^\infty(H_{\varepsilon,R},H_{\varepsilon,R})\,
+\int_{\R^8}\Gamma_{\mathrm{hypo}}^\infty(H_{\varepsilon,R},H_{\varepsilon,R})\,
 \dd\pi_\infty.
 \]
 Since $G_\varepsilon$ is bounded and $\chi_R\to 1$ pointwise, dominated
@@ -1578,14 +1601,14 @@ to the limit $R\to\infty$ yields
 \Ent_{\pi_\infty}(G_\varepsilon^2)
 \le
 C_{\mathrm{LSI}}
-\int_{\R^6}\Gamma_{\mathrm{hypo}}^\infty(G_\varepsilon,G_\varepsilon)\,\dd\pi_\infty.
+\int_{\R^8}\Gamma_{\mathrm{hypo}}^\infty(G_\varepsilon,G_\varepsilon)\,\dd\pi_\infty.
 \]
 Integrating the previous pointwise estimate then gives
 \[
 \Ent_{\pi_\infty}(G_\varepsilon^2)
 \le
 C_{\mathrm{LSI}}
-\int_{(\R^6)^k}\Gamma_{\mathrm{hypo},k}^\infty(F,F)\,\dd\Pi_k^\infty.
+\int_{(\R^8)^k}\Gamma_{\mathrm{hypo},k}^\infty(F,F)\,\dd\Pi_k^\infty.
 \]
 Since $G_\varepsilon^2=m+\varepsilon$ decreases pointwise to $G^2=m$ as
 $\varepsilon\downarrow0$, and $m$ is bounded while $t\mapsto t\log t$ is
@@ -1597,9 +1620,9 @@ Combining the bounds for the two entropy terms proves the claim for $k$.
 \end{proof}
 
 \begin{remark}[Indicator-weighted thermodynamic observables]
-The thermodynamic link and plaquette observables of \cite{latticeqft} are
+The thermodynamic link and plaquette observables of \cite{continuumqft} are
 integrated against bounded indicators $\chi_t$ and $\chi_\square$ on the
-product spaces $(\R^6)^2$ and $(\R^6)^4$.  Since
+product spaces $(\R^8)^2$ and $(\R^8)^4$.  Since
 \[
 0\le \chi_t,\chi_\square\le 1,
 \]
@@ -1612,10 +1635,10 @@ measure hypothesis is needed at that step.
 \section{Discussion of excitations and propagators}
 \label{sec:propagators}
 
-\paragraph{The propagator on the interaction graph.}
+\paragraph{The propagator on the finite regulator graph.}
 Because the theory is finite, all correlation functions can be defined by
 source differentiation exactly.  Their graph-theoretic support is determined by
-the explicit trajectory-induced lattice.
+the finite regulator edge graph.
 
 \begin{definition}[Generating functional]
 \label{def:generating}
@@ -1753,10 +1776,9 @@ M_{\mathrm F}(U)^{-1}
 \]
 and the $(x,y)$ matrix element is a convergent sum over directed paths
 $\gamma:y\rightsquigarrow x$ in $\mcE$.  Therefore the support of the fermion
-propagator is controlled by the explicit interaction/worldline graph, and the
-same-time path combinatorics are inherited from the interaction data
-$\mathcal P_t$ and hence from the stochastic weights
-$\omega_{ij}^{\mathrm{link}}(t)$ used in \cite{latticeqft}.
+propagator is controlled by the finite regulator graph, and its
+combinatorics are inherited from the deterministic regulator incidence of the
+companion data in \cite{continuumqft}.
 \end{proposition}
 \begin{proof}
 By Proposition~\ref{prop:fermion-invertible},
@@ -1774,9 +1796,8 @@ Multiplying on the right by $D^{-1}$ yields the displayed formula for
 $M_{\mathrm F}(U)^{-1}$.
 Each power $(D^{-1}H(U))^n$ is a sum over length-$n$ compositions
 of off-diagonal hopping operators, hence over directed paths of length $n$ in
-the graph.  The only same-time edges available for those paths are the
-interaction edges determined by the data sets $\mathcal P_t$, which were
-constructed from the weights $\omega_{ij}^{\mathrm{link}}(t)$.
+the graph.  The only admissible steps for those paths are edges in $\mcE$, as
+determined by the finite regulator data from \cite{continuumqft}.
 \end{proof}
 
 \paragraph{Wilson loops and the area law.}
@@ -1812,19 +1833,19 @@ finite-lattice measure in which the question is well posed.
 \label{sec:conclusion}
 
 \paragraph{Summary of the quantum data package.}
-Starting from the finite lattice data package $\mathcal Q$ built in
-\cite{latticeqft}, this paper has completed the exact finite-dimensional
-quantization step.  The link variables were promoted from data-derived
-transporters to independent $SU(3)$ variables, the full configuration space and
-product measure were defined, and the partition function was proved finite for
-the free massive scalar witness sector imported from \cite{latticeqft}.  The
-gauge redundancy was solved globally by a rooted maximal-tree gauge, with exact
-orbit uniqueness, exact Faddeev--Popov identity, constant determinant, and a
-decoupled ghost sector.  The fermions integrate to a finite determinant, the
-scalar sector is an exact Gaussian field with stiffness operator
-$L_\eta+m_\phi^2I$, and the bilocal mean-field action $S_{\mathrm W}^\infty$
-defined on the stationary measure $\pi_\infty$ provides the correct
-thermodynamic-limit continuum theory.
+Starting from the deterministic regulator gauge package of \cite{continuumqft},
+this paper has completed the exact finite-dimensional quantization step.  The
+link variables were promoted from data-derived transporters to independent
+$SU(3)$ variables, the full configuration space and product measure were
+defined, and the partition function was proved finite for the free massive
+scalar sector used here.  The gauge redundancy was solved globally by a rooted
+maximal-tree gauge, with exact orbit uniqueness, exact Faddeev--Popov identity,
+constant determinant, and a decoupled ghost sector.  The fermions integrate to
+a finite determinant, the scalar sector is an exact Gaussian field with
+stiffness operator $L_\eta+m_\phi^2I$, and the continuum action
+$S_{\mathrm{YM}}^{\mathrm{cont}}$ (in the stationary formulation of
+\cite{continuumqft}) is the finite-lattice thermodynamic continuum-limit
+object on $\pi_\infty$.
 
 \paragraph{Forward look to the thermodynamic theory.}
 The $N\to\infty$ thermodynamic limit developed in the companion papers places
@@ -1833,12 +1854,12 @@ mean-field setting: \cite{convergence} proves
 \[
 \pi_{N,1}\Rightarrow \pi_\infty,
 \]
-while \cite{latticeqft} identifies the bilocal action
-$S_{\mathrm W}^\infty$ and the associated thermodynamic gauge observables on
+while \cite{continuumqft} identifies the continuum limit action
+$S_{\mathrm{YM}}^{\mathrm{cont}}$ and associated thermodynamic observables on
 $\pi_\infty$.  The present paper supplies the exact finite-dimensional
-quantization step on the trajectory-induced lattice, together with the local
-Haar-coordinate analysis and the explicit gauge fixing needed to pass from the
-data package $\mathcal Q$ to its quantum ensemble.
+quantization step on the deterministic regulator lattice, together with the
+local Haar-coordinate analysis and the explicit gauge fixing needed to pass from
+data package $\mathcal Q^{(N)}$ to its quantum ensemble.
 
 \bibliographystyle{plain}
 \bibliography{references}

@@ -12,21 +12,21 @@
 \contentsline {section}{\numberline {4}Gauge redundancy and orbit analysis}{7}{section.4}%
 \contentsline {paragraph}{The gauge orbit problem.}{7}{section*.7}%
 \contentsline {paragraph}{Symmetry redundancy versus physical degrees of freedom.}{8}{section*.8}%
-\contentsline {section}{\numberline {5}Gauge fixing and the Faddeev--Popov procedure}{8}{section.5}%
-\contentsline {paragraph}{Selecting the gauge condition.}{8}{section*.9}%
-\contentsline {paragraph}{The Faddeev--Popov identity.}{9}{section*.10}%
-\contentsline {paragraph}{The Faddeev--Popov determinant.}{10}{section*.11}%
+\contentsline {section}{\numberline {5}Gauge fixing and the Faddeev--Popov procedure}{9}{section.5}%
+\contentsline {paragraph}{Selecting the gauge condition.}{9}{section*.9}%
+\contentsline {paragraph}{The Faddeev--Popov identity.}{10}{section*.10}%
+\contentsline {paragraph}{The Faddeev--Popov determinant.}{11}{section*.11}%
 \contentsline {section}{\numberline {6}Ghost fields and the effective action}{12}{section.6}%
 \contentsline {paragraph}{Introducing ghost fields.}{12}{section*.12}%
 \contentsline {paragraph}{The effective quantized action.}{13}{section*.13}%
-\contentsline {section}{\numberline {7}Matter sector integration}{14}{section.7}%
-\contentsline {paragraph}{Fermionic Berezin integration.}{14}{section*.14}%
-\contentsline {paragraph}{Scalar kinetic fluctuations.}{15}{section*.15}%
-\contentsline {section}{\numberline {8}Lie-algebra coordinates and local measure structure}{16}{section.8}%
-\contentsline {paragraph}{Local exponential coordinates.}{16}{section*.16}%
-\contentsline {section}{\numberline {9}Discussion of excitations and propagators}{20}{section.9}%
-\contentsline {paragraph}{The propagator on the interaction graph.}{20}{section*.17}%
-\contentsline {paragraph}{Wilson loops and the area law.}{22}{section*.18}%
-\contentsline {section}{\numberline {10}Conclusion}{22}{section.10}%
-\contentsline {paragraph}{Summary of the quantum data package.}{22}{section*.19}%
-\contentsline {paragraph}{Forward look to the thermodynamic theory.}{22}{section*.20}%
+\contentsline {section}{\numberline {7}Matter sector integration}{15}{section.7}%
+\contentsline {paragraph}{Fermionic Berezin integration.}{15}{section*.14}%
+\contentsline {paragraph}{Scalar kinetic fluctuations.}{16}{section*.15}%
+\contentsline {section}{\numberline {8}Lie-algebra coordinates and local measure structure}{17}{section.8}%
+\contentsline {paragraph}{Local exponential coordinates.}{17}{section*.16}%
+\contentsline {section}{\numberline {9}Discussion of excitations and propagators}{21}{section.9}%
+\contentsline {paragraph}{The propagator on the finite regulator graph.}{21}{section*.17}%
+\contentsline {paragraph}{Wilson loops and the area law.}{23}{section*.18}%
+\contentsline {section}{\numberline {10}Conclusion}{23}{section.10}%
+\contentsline {paragraph}{Summary of the quantum data package.}{23}{section*.19}%
+\contentsline {paragraph}{Forward look to the thermodynamic theory.}{23}{section*.20}%

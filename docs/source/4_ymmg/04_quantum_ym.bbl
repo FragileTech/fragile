@@ -1,14 +1,14 @@
 \begin{thebibliography}{1}
 
+\bibitem{continuumqft}
+Local continuum yang--mills limit from particle trajectories.
+\newblock Manuscript, 2026.
+\newblock Source file: \url{docs/source/4_ymmg/03b_continuum_yang_mills.tex}.
+
 \bibitem{convergence}
 Convergence, hypocoercivity, and mean-field limit for the kinetic core.
 \newblock Manuscript, 2026.
 \newblock Source file: \url{docs/source/4_ymmg/01_convergence.tex}.
-
-\bibitem{latticeqft}
-Finite $su(3)$ lattice gauge theory from particle trajectories.
-\newblock Manuscript, 2026.
-\newblock Source file: \url{docs/source/4_ymmg/03_lattice_qft.tex}.
 
 \bibitem{montvay1994quantum}
 Istv{\'a}n Montvay and Gernot M{\"u}nster.

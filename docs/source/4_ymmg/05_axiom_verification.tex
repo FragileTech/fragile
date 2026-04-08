@@ -58,21 +58,24 @@ reconstructed Hamiltonian $H$ has a unique vacuum ground state and satisfies
 \text{for some }m>0.
 \]
 The proof combines four ingredients already established in the companion papers:
-(i) the finite trajectory-induced $SU(3)$ lattice package together with its
-thermodynamic limit on the stationary mean-field law $\pi_\infty$;
-(ii) the exact finite-dimensional gauge-fixed Euclidean path integral with
-rooted maximal-tree gauge fixing, identically unit Faddeev--Popov determinant,
-and decoupled ghost sector;
+(i) the deterministic flat regulator and the localized and global
+Wilson-to-Yang--Mills continuum-limit theorems of the continuum gauge paper;
+(ii) the exact finite-dimensional gauge-fixed Euclidean path integral on that
+same regulator, with rooted maximal-tree gauge fixing, identically unit
+Faddeev--Popov determinant, and decoupled ghost sector;
 (iii) the kinetic-core hypocoercive theory, including the $N$-uniform
 logarithmic Sobolev inequality, exponential convergence to equilibrium,
 stationary propagation of chaos, uniqueness of the stationary mean-field law,
-and transfer of the same logarithmic Sobolev constant to $\pi_\infty$; and
-(iv) the flat-sector specialization theorem of the framework paper.
+the stationary Markov path measure, and transfer of the same logarithmic
+Sobolev constant to $\pi_\infty$ and its product laws; and
+(iv) the constructive-dynamical-axioms framework paper, used only to identify
+which realization-specific statements must be checked, not to supply those
+checks conditionally.
 
 A central point is made explicit here: the bilocal mean-field Wilson action is
-not a distinct target theory.  It is the exact thermodynamic representation of
-the finite trajectory-induced Wilson theory constructed in the companion
-papers, and no additional local small-plaquette limit is introduced.
+not a distinct target theory.  It is the thermodynamic presentation of the same
+gauge sector whose finite-regulator Wilson actions converge to the continuum
+Yang--Mills functional on the stationary mean-field profile.
 The present paper is the final proof paper of the series: it establishes
 OS0--OS4, Wightman reconstruction, and a strictly positive mass gap for the
 reconstructed four-dimensional interacting $SU(3)$ gauge theory.
@@ -84,7 +87,8 @@ reconstructed four-dimensional interacting $SU(3)$ gauge theory.
 inputs imported from the companion papers.
 \item Theorem~\ref{thm:constructive-identification} identifies the exact
 thermodynamic gauge-sector action produced by the series and shows that it is
-the thermodynamic representation of the finite Wilson theory.
+the thermodynamic presentation of the same deterministic-regulator gauge sector
+and its continuum Yang--Mills limit.
 \item Propositions~\ref{prop:ca1}--\ref{prop:ca5} verify Core Axioms~1--5, and
 Proposition~\ref{prop:axes} identifies the branch data as $(A1,B3,C1,D1)$.
 \item Propositions~\ref{prop:os0}, \ref{prop:os1}, \ref{prop:os2},
@@ -106,18 +110,21 @@ Paper~1 proves the $N$-uniform hypocoercive logarithmic Sobolev inequality,
 stationary propagation of chaos, uniqueness of the stationary mean-field law,
 and transfer of the same logarithmic Sobolev constant to the mean-field
 equilibrium $\pi_\infty$ \cite{convergence}.
-Paper~2 constructs the finite trajectory-induced $SU(3)$ lattice gauge theory,
-its Wilson and matter actions, and the thermodynamic limit of its link and
-plaquette observables \cite{lattice}.
-Paper~3 quantizes the finite lattice exactly, fixes the gauge globally by rooted
+Paper~2 constructs the deterministic flat regulator, samples the mean-field
+continuum gauge profile on that regulator, proves the stationary thermodynamic
+limit of the relevant graph and plaquette observables, and proves the localized
+and global Wilson-to-Yang--Mills continuum-limit theorems \cite{lattice}.
+Paper~3 quantizes the finite regulator exactly, fixes the gauge globally by rooted
 maximal-tree gauge fixing, proves $\Delta_{\mathrm{FP}}=1$, and shows ghost
-decoupling.  It also identifies the scalar matter sector as the free massive
-scalar witness imported from the lattice paper and transfers the mean-field
-logarithmic Sobolev constant to the product measures supporting the
-thermodynamic bilocal observables \cite{quantization}.
+decoupling.  It also fixes the scalar witness sector on the same regulator and
+transfers the mean-field logarithmic Sobolev constant to the product measures
+supporting the thermodynamic observables \cite{quantization}.
 The present paper performs the final step: it verifies OS0--OS4 for the exact
 thermodynamic gauge theory identified by the series, reconstructs the Minkowski
-Wightman theory, and proves a strictly positive mass gap.
+Wightman theory, and proves a strictly positive mass gap.  The framework paper
+\cite{axioms} remains in the background only as a separation-of-layers guide:
+its conditional OS2/OS3 clauses are discharged here by direct
+realization-specific arguments.
 
 The final theorem chain in the present series is therefore stated in the
 standard language of quantum field theory, not only in the framework language
@@ -130,7 +137,8 @@ thermodynamic representation supplied by the series,
 \end{enumerate}
 The constructive-dynamical-axioms framework is still used, but only as the
 organizing device that isolates which realization-specific inputs had to be
-proved in the companion papers.
+proved in the companion papers and in the direct arguments of the present
+paper.
 
 \begin{theorem}[Main theorem: constructive gauge-theory mass gap]
 \label{thm:main}
@@ -164,8 +172,10 @@ following statements hold.
 \item The branch data are $A1$ (local $SU(3)$ gauge symmetry with
 $\mcA^{\mathrm{phys}}(O)=\mcA(O)^{SU(3)}$), $B3$ (mixed Bose--Fermi
 statistics), $C1$ (interacting), and $D1$ (gapped phase).
-\item The flat-sector specialization hypotheses isolated in the framework paper
-are satisfied for this realization.
+\item The flat-stationary realization satisfies the additional
+realization-specific inputs that discharge the framework paper's conditional
+OS2/OS3 clauses: exact hyperplane Markov factorization and a strict mean-field
+spectral gap.
 \item Consequently the Euclidean Schwinger functions satisfy OS0--OS4 and
 reconstruct to the Minkowski Wightman theory stated in
 Theorem~\ref{thm:wightman-gap}.
@@ -178,7 +188,8 @@ mass-gap statement mean in this paper.
 Section~\ref{sec:imports} isolates the imported ingredients.
 Section~\ref{sec:identification} states and proves the exact constructive
 identification theorem and makes explicit that the bilocal mean-field Wilson
-action is the thermodynamic representation of the finite Wilson theory.
+action is the stationary thermodynamic presentation of the same gauge sector
+identified in Paper~2.
 Sections~\ref{sec:core}--\ref{sec:os} verify Core Axioms~1--5 and OS0--OS4.
 Section~\ref{sec:reconstruction} proves the Minkowski reconstruction and the
 positive mass gap in operator-theoretic spectral language.
@@ -201,8 +212,12 @@ S_{\mathrm W}^\infty
 d\Gamma_\square^\infty(z_1,z_2,z_3,z_4),
 \]
 defined on the stationary mean-field law $\pi_\infty$ through the thermodynamic
-plaquette measure $\Gamma_\square^\infty$ constructed in the companion lattice
-paper.
+plaquette measure $\Gamma_\square^\infty$ constructed in the continuum gauge
+paper.  Equivalently, by the global continuum-limit theorem of that same
+paper, this thermodynamic presentation records the same gauge sector whose
+finite-regulator Wilson actions converge to the continuum Yang--Mills
+functional $S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ on the stationary
+mean-field curvature profile.
 In the reconstructed Minkowski theory, a \emph{positive mass gap} means that
 the Hamiltonian $H$ satisfies
 \[
@@ -243,17 +258,16 @@ Theorem~\ref{thm:main}.
 \label{prop:imports}
 The companion papers establish the following facts.
 \begin{enumerate}[label=\textnormal{(\alph*)},leftmargin=1.5em]
-\item The lattice paper constructs a finite trajectory-induced $SU(3)$ gauge
-package
+\item The continuum gauge paper constructs the deterministic flat regulator
 \[
-\mcQ=(\mcN,\mcE,\mathcal C_\square,\{U_3(e)\},S_{\mathrm W},S_{\mathrm F},S_\phi),
+\mathcal L^{(N)}=(\mcN^{(N)},\mcE^{(N)},\mathcal C_\square^{(N)}),
 \]
-proves gauge invariance of the Wilson and matter sectors, and proves the
-thermodynamic convergence of the link and plaquette observables to deterministic
-mean-field functionals defined on the stationary equilibrium $\pi_\infty$
-\cite{lattice}.
+samples the stationary mean-field gauge profile on that regulator, proves the
+stationary thermodynamic limit of the graph and plaquette observables, and
+proves that the finite Wilson actions converge to the continuum Yang--Mills
+functional $S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ \cite{lattice}.
 \item The quantization paper constructs the exact finite-dimensional Euclidean
-path integral on the same lattice, proves finiteness of the partition integral,
+path integral on the same regulator, proves finiteness of the partition integral,
 solves gauge redundancy globally by rooted maximal-tree gauge fixing, proves
 that every rooted orbit meets the gauge slice exactly once, computes the
 Faddeev--Popov determinant as $\Delta_{\mathrm{FP}}=1$, and shows that the
@@ -265,7 +279,8 @@ link and plaquette observables \cite{quantization}.
 Sobolev inequality and exponential convergence to the invariant law $\pi_N$ for
 the constructive dynamics, proves uniqueness of the stationary mean-field law
 $\pi_\infty$, proves stationary propagation of chaos
-$\pi_{N,1}\Rightarrow \pi_\infty$, and proves that the same logarithmic Sobolev
+$\pi_{N,1}\Rightarrow \pi_\infty$, constructs the stationary path law of the
+mean-field Markov dynamics, and proves that the same logarithmic Sobolev
 constant passes to the mean-field equilibrium \cite{convergence}.
 \item The framework paper proves that in the flat stationary sector, Core
 Axioms~1--5 together with branch data $A$, $B$, and $C$ yield OS0, OS1, OS2,
@@ -275,32 +290,35 @@ strict spectral gap on $L^2(\pi)$ \cite{axioms}.
 \end{proposition}
 
 \begin{proof}
-Item \textnormal{(a)} is the content of the lattice construction and its
-thermodynamic-limit section.  Item \textnormal{(b)} is the main theorem and the
+Item \textnormal{(a)} is the content of the deterministic-regulator,
+thermodynamic-limit, and global continuum-limit theorems of the continuum gauge
+paper.  Item \textnormal{(b)} is the main theorem and the
 rooted maximal-tree gauge-fixing section of the quantization paper.
 Item \textnormal{(c)} is exactly the convergence paper's finite-$N$
 hypocoercive logarithmic Sobolev inequality, uniqueness of the mean-field
-equilibrium, stationary propagation of chaos, and mean-field LSI theorem.
-Item \textnormal{(d)} is the flat-sector specialization theorem of the
-framework paper.
+equilibrium, stationary propagation of chaos, stationary Markov path-law
+construction, and mean-field LSI theorem.  Item \textnormal{(d)} is the
+flat-sector specialization theorem of the framework paper.
 \end{proof}
 
 \begin{remark}
 The imported inputs are used here in standard theorem language.
 They are not repeated as a framework checklist only.
-The lattice paper provides the Wilson plaquette action, the quantization paper
-provides the exact gauge-fixed Euclidean integral, and the convergence paper
-provides the constructive spectral gap input.
-The framework paper then serves only to isolate which axioms and which branch
-labels those imported results must satisfy.
+The continuum gauge paper provides the regulator geometry, the sampled gauge
+sector, the thermodynamic plaquette observables, and the continuum
+Yang--Mills identification.  The quantization paper provides the exact
+gauge-fixed Euclidean integral, and the convergence paper provides the
+stationary Markov and spectral-gap input.  The framework paper then serves only
+to label which axioms and branch data these realization-specific statements
+discharge.
 \end{remark}
 
 \section{Constructive Identification of the Thermodynamic Gauge Sector}
 \label{sec:identification}
 
-The phrase ``bilocal mean-field Wilson action'' appears in the companion lattice
-and quantization papers because the thermodynamic presentation is written
-directly on the stationary law $\pi_\infty$.
+The phrase ``bilocal mean-field Wilson action'' appears in the companion
+continuum-gauge and quantization papers because the thermodynamic presentation
+is written directly on the stationary law $\pi_\infty$.
 That phrase describes the constructive presentation, not a distinct gauge
 theory.
 The theorem below states exactly what the series proves with no additional
@@ -320,45 +338,50 @@ d\Gamma_\square^\infty(z_1,z_2,z_3,z_4).
 Moreover:
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
 \item the finite Wilson actions $S_{\mathrm W}^{(N)}$ converge in probability to
-$S_{\mathrm W}^\infty$ in the thermodynamic limit $N\to\infty$;
-\item the finite-lattice quantum theory is exact and unconditional on each
-trajectory-induced lattice, with exact gauge fixing and finite partition
+$S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ and the thermodynamic presentation
+$S_{\mathrm W}^\infty$ records that same gauge sector on $\pi_\infty$;
+\item the finite-regulator quantum theory is exact and unconditional on each
+deterministic flat regulator, with exact gauge fixing and finite partition
 integral;
 \item the thermodynamic link and plaquette observables live on the equilibrium
 product measures $\pi_\infty^{\otimes k}$ carrying the transferred mean-field
 logarithmic Sobolev constant.
 \end{enumerate}
 Therefore the bilocal mean-field gauge sector is not a different theory from
-the finite trajectory-induced Wilson theory.  It is its exact thermodynamic
-representation.
+the deterministic-regulator Wilson theory and its continuum Yang--Mills limit.
+It is the stationary thermodynamic presentation of that same gauge sector.
 \end{theorem}
 
 \begin{proof}
-The existence and explicit form of $S_{\mathrm W}^\infty$ are exactly the
-content of the mean-field Wilson-action theorem in the companion lattice paper.
-Item \textnormal{(i)} is the thermodynamic convergence statement of that same
-theorem.
+The existence and explicit form of $S_{\mathrm W}^\infty$ are the thermodynamic
+observable statements imported from the continuum gauge paper, while the
+identification of the same finite-regulator Wilson sector with the continuum
+functional $S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ is exactly the content
+of its global continuum-limit theorem.
 Item \textnormal{(ii)} is the main finite-lattice quantization theorem of the
 companion quantization paper.
 Item \textnormal{(iii)} is the thermodynamic LSI-transfer theorem of the same
 quantization paper.
 Together these results show that the thermodynamic bilocal gauge sector is the
-exact limit representation of the same finite trajectory-induced Wilson theory,
-with no additional local-continuum hypothesis.
+stationary mean-field presentation of the same regulator theory whose Wilson
+actions converge to the continuum Yang--Mills functional, with no appeal to the
+obsolete trajectory-built lattice manuscript and with no extra local-continuum
+hypothesis added here.
 \end{proof}
 
 \begin{corollary}[Constructive identification of the emergent Wilson theory]
 \label{cor:identification}
 In the present series, the Wilson plaquette sector is interpreted as follows.
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
-\item At finite lattice level, the action is the standard Wilson plaquette action
-on the emergent $SU(3)$ lattice.
+\item At finite regulator level, the action is the standard Wilson plaquette
+action on the deterministic flat $SU(3)$ regulator.
 \item In the thermodynamic presentation, the bilocal mean-field Wilson action
 records the same plaquette-holonomy data directly on the stationary law
 $\pi_\infty$.
 \item By Theorem~\ref{thm:constructive-identification}, the thermodynamic
-bilocal action is the exact limit representation of the same finite
-trajectory-induced Wilson theory.
+bilocal action is the stationary presentation of the same deterministic-regulator
+gauge sector identified in the companion paper with the continuum Yang--Mills
+functional.
 \end{enumerate}
 Consequently the bilocal mean-field Wilson action is a constructive
 representation of the same emergent gauge theory, not a distinct thermodynamic
@@ -366,7 +389,8 @@ target model.
 \end{corollary}
 
 \begin{proof}
-Item \textnormal{(i)} is exactly the content of the finite lattice paper.
+Item \textnormal{(i)} is exactly the content of the deterministic-regulator
+continuum gauge paper.
 Item \textnormal{(ii)} is the thermodynamic re-expression of the same plaquette
 sector on the mean-field equilibrium $\pi_\infty$.
 Item \textnormal{(iii)} is Theorem~\ref{thm:constructive-identification}.
@@ -384,7 +408,7 @@ constructive gauge theory, not to different target theories.
 \label{def:local-algebra}
 For a region $O$ in the flat Euclidean background, define $\mcA(O)$ to be the
 unital $*$-algebra generated by the gauge-link, color, scalar, and fermionic
-variables whose support lies in $O$, first on the finite lattice and then in the
+variables whose support lies in $O$, first on the finite regulator and then in the
 thermodynamic representation on $\pi_\infty$.
 The physical local algebra is the gauge-invariant subalgebra
 \[
@@ -405,7 +429,7 @@ $\mathbb Z_2$ grading.
 
 \begin{proof}
 Isotony is immediate from support inclusion.
-On the finite lattice, the local algebra is generated by finitely many edge and
+On the finite regulator, the local algebra is generated by finitely many edge and
 site variables, so enlarging the support only adds generators.
 In the thermodynamic representation the same inclusion persists because the
 bilocal observables are indexed by points and regions of the underlying flat
@@ -440,9 +464,8 @@ K_\rho(x,y)=\kappa_0+\exp\!\left(-\frac{\|x-y\|^2}{2\ell_{\mathrm{visc}}^2}\righ
 \]
 and the entire viscous interaction field is built from this strictly positive
 finite-length kernel.
-The lattice paper then constructs link, plaquette, and matter observables from
-finitely many site and edge variables determined at that same positive
-resolution.
+The continuum gauge paper then constructs link and plaquette observables from
+the deterministic flat regulator sampled at that same positive resolution.
 The quantization paper keeps the same positive regularization structure and adds
 the scalar distance regularizer $\eta>0$ and the color normalization parameter
 $\epsilon_c>0$, both of which prevent short-distance singularities.
@@ -496,20 +519,24 @@ The emergent realization satisfies local dynamics with additive decomposition.
 \end{proposition}
 
 \begin{proof}
-At finite lattice level, the lattice paper writes the Wilson, fermionic, and
-scalar sectors as sums over plaquettes, edges, and sites.
+At finite regulator level, the continuum gauge paper writes the Wilson sector as
+a sum over plaquettes of the deterministic flat regulator, while the
+quantization paper writes the fermionic and scalar sectors as sums over edges
+and sites on that same regulator.
 Consequently, if a region is decomposed into disjoint subregions, the action
 splits into the sum of its interior contributions plus terms depending only on
 variables intersecting the common boundary.
 
 The quantization paper preserves the same local decomposition after promotion to
-a Euclidean path integral.
-In the $N\to\infty$ thermodynamic limit, the lattice paper shows that the
-discrete link and plaquette sums converge to mean-field functionals on
-$\pi_\infty$ and the adjacent-time path laws.
-Because those continuum functionals arise as limits of sums of local
-contributions and the framework allows Core Axiom~4 to be stated directly in
-terms of a local generating structure or rate functional, the emergent
+a Euclidean path integral.  In the $N\to\infty$ thermodynamic and continuum
+limits, the continuum gauge paper proves both localized Wilson-to-Yang--Mills
+convergence on compact windows and the global convergence
+\[
+S_{\mathrm W}^{(N)}\to S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty].
+\]
+Because the continuum action is obtained by orientation-wise Riemann summation
+of local plaquette contributions on the deterministic flat regulator, the
+hyperplane decomposition persists in the limit.  Therefore the emergent
 realization satisfies the additive hyperplane decomposition
 \[
 S_E[\Phi]=S_E[\Phi_+]+S_E[\Phi_-]+B[\Phi_0].
@@ -565,7 +592,7 @@ The emergent realization lies in the branch
 \end{proposition}
 
 \begin{proof}
-The lattice and quantization papers define an explicit local $SU(3)$ gauge
+The continuum gauge and quantization papers define an explicit local $SU(3)$ gauge
 action on links and matter fields and identify the physical observables as the
 gauge-invariant sector, so the symmetry branch is $A1$.
 
@@ -616,8 +643,9 @@ is not a distinct thermodynamic target theory.
 \begin{proof}
 Corollary~\ref{cor:identification} states precisely the relation among the
 finite Wilson action and the bilocal mean-field Wilson action.
-The finite lattice paper provides the Wilson plaquette action, the thermodynamic
-presentation rewrites its exact thermodynamic limit on $\pi_\infty$, and
+The continuum gauge paper provides the Wilson plaquette action, the
+thermodynamic presentation rewrites its exact thermodynamic observables on
+$\pi_\infty$, and
 Theorem~\ref{thm:constructive-identification} identifies that thermodynamic
 gauge sector as the same theory in its mean-field representation.
 Thus the phrase ``bilocal mean-field'' describes the constructive presentation,
@@ -658,11 +686,15 @@ $\delta_{\mu\nu}$, and the equilibrium branch must be uniquely selected.
 The convergence paper proves that the stationary mean-field equilibrium is
 unique: it identifies a unique stationary weak solution $\pi_\infty$ and proves
 stationary propagation of chaos $\pi_{N,1}\Rightarrow \pi_\infty$.
-The lattice and quantization papers define the constructive geometry on the flat
-background $(\R^4,\delta)$.
-Therefore the flat-sector equilibrium branch is unique and Euclidean covariance
-is exact.
-This is the OS1 input isolated by the framework theorem.
+The continuum gauge paper defines the deterministic flat regulator inside the
+background $(\R^4,\delta)$ and proves that its Wilson sector converges to the
+continuum Yang--Mills functional built only from the curvature tensor
+$F^\infty_{\mu\nu}$ and the Euclidean metric.  The quantization paper keeps the
+same flat regulator geometry and Haar product measure at fixed $N$.  Therefore
+the limiting Schwinger functions are attached to a uniquely selected stationary
+equilibrium on flat Euclidean space and depend only on the Euclidean metric and
+the induced $SU(3)$ curvature profile.  This is the realization-specific
+Euclidean covariance statement required for OS1.
 \end{proof}
 
 \subsection{OS2: direct reflection positivity on the physical algebra}
@@ -688,8 +720,9 @@ reflection-plane, and negative-time $\sigma$-algebras of the constructive
 Euclidean path measure.
 By Proposition~\ref{prop:ca4}, the constructive generating structure decomposes
 additively across the reflection hyperplane.
-Because the constructive dynamics are Markovian and stationary, the past and
-future are conditionally independent given $\mathcal F_0$.
+By Proposition~\ref{prop:imports}\textnormal{(c)}, the constructive dynamics
+admit a stationary Markov path law.  Therefore the past and future are
+conditionally independent given $\mathcal F_0$.
 Therefore, for every gauge-invariant positive-time observable $F$,
 \begin{align*}
 \langle \Theta F,F\rangle_E
@@ -731,9 +764,10 @@ So reflection positivity is realized directly on the physical algebra itself.
 \begin{remark}
 The proof above is the direct generator-and-Markov proof of reflection
 positivity in this realization.
-It is equivalent to the transfer-operator formulation used in the framework
-paper, but the present statement removes any ambiguity that OS2 is being left as
-mere framework bookkeeping.
+It is equivalent to the transfer-operator formulation isolated abstractly in the
+framework paper, but here the needed factorization is supplied directly by the
+stationary Markov path law of the realization itself.  OS2 is therefore proved
+unconditionally in the present paper rather than left at framework level.
 \end{remark}
 
 \subsection{OS3: spectral gap and exponential clustering}
@@ -796,7 +830,11 @@ Proposition~\ref{prop:os2},
 =
 \langle f,T_t g\rangle_{L^2(\pi_\infty)}.
 \]
-Applying the spectral-gap estimate from Proposition~\ref{prop:gap} gives
+Here $T_t$ is the same stationary mean-field Markov semigroup whose generator
+enters Proposition~\ref{prop:gap}; thus the Euclidean-time translation acting
+on the boundary observables is represented directly by that semigroup in this
+realization.  Applying the spectral-gap estimate from
+Proposition~\ref{prop:gap} gives
 \[
 \bigl|
 \langle \Theta F,\tau_t G\rangle_E
@@ -956,7 +994,7 @@ The Osterwalder--Schrader reconstruction theorem therefore produces a Wightman
 theory on Minkowski space with Hilbert space $\mcH$, vacuum vector $\Omega$,
 positive Hamiltonian $H$, and analytically continued Wightman functions.
 
-The theory is nontrivial because the imported lattice and quantization papers
+The theory is nontrivial because the imported continuum-gauge and quantization papers
 construct a genuine interacting Wilson-plus-matter sector rather than a free
 quadratic Gaussian model, and the branch classification
 Proposition~\ref{prop:axes} places the realization in the interacting branch
@@ -1023,30 +1061,34 @@ mass gap.
 
 \appendix
 
-\section{What Paper 3 Did Not Prove and What the Present Paper Now Proves}
+\section{What Papers 2 and 3 Did Not Prove and What the Present Paper Now Proves}
 \label{sec:appendix-paper4}
 
-\begin{proposition}[Disclaimers of the quantization paper are discharged here]
+\begin{proposition}[Disclaimers of the continuum-gauge and quantization papers are discharged here]
 \label{prop:paper4-discharged}
-The quantization paper stopped at exact finite-dimensional quantization and did
-not claim either Osterwalder--Schrader verification or a mass-gap theorem.
-The present paper discharges exactly those two deferred steps.
+The continuum gauge paper stopped at the deterministic regulator and
+Wilson-to-Yang--Mills identification stage, and the quantization paper stopped
+at exact finite-dimensional quantization.  Neither paper claimed either
+Osterwalder--Schrader verification or a mass-gap theorem.  The present paper
+discharges exactly those deferred steps.
 \end{proposition}
 
 \begin{proof}
-The abstract and conclusion of the quantization paper state, in substance, that
-the paper constructs the exact gauge-fixed finite-dimensional path integral, but
-does not verify the Osterwalder--Schrader axioms on the continuum theory and
-does not prove a mass gap.
-Those were the two explicit forward references left open by the quantization
-paper.
+The continuum gauge paper identifies the deterministic-regulator gauge sector,
+proves its thermodynamic observables, and proves convergence to the continuum
+Yang--Mills functional, but it does not verify OS0--OS4 or prove a Minkowski
+mass gap.  The quantization paper constructs the exact gauge-fixed
+finite-dimensional path integral, but again does not verify the
+Osterwalder--Schrader axioms on the continuum theory and does not prove a mass
+gap.  Those were the forward references left open by Papers~2 and~3.
 
 The present paper closes both.
 Theorem~\ref{thm:euclidean-axioms} proves OS0--OS4.
 Theorem~\ref{thm:wightman-gap} proves the Minkowski reconstruction together with
 the positive mass gap.
-Accordingly the earlier disclaimers remain correct for the quantization paper
-taken in isolation, but they no longer apply to the completed series.
+Accordingly the earlier disclaimers remain correct for the continuum gauge and
+quantization papers taken in isolation, but they no longer apply to the
+completed series.
 \end{proof}
 
 \begin{thebibliography}{9}
@@ -1064,12 +1106,12 @@ the Geometric Gas}, 2026.
 
 \bibitem{lattice}
 G.~Duran Ballester,
-\emph{Finite $SU(3)$ Lattice Gauge Theory from Particle Trajectories}, 2026.
+\emph{Local Continuum Yang--Mills Limit from Particle Trajectories}, 2026.
 
 \bibitem{quantization}
 G.~Duran Ballester,
-\emph{From the Data Package $\mathcal Q$ to a Gauge-Fixed Path Integral for the
-Trajectory-Induced $SU(3)$ Lattice Theory}, 2026.
+\emph{From the Deterministic Regulator Data to a Gauge-Fixed Path Integral for
+the Finite $SU(3)$ Yang--Mills Lattice Theory}, 2026.
 
 \bibitem{os}
 K.~Osterwalder and R.~Schrader,

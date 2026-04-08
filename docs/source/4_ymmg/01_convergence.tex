@@ -52,7 +52,7 @@ model tractable: the viscous force is uniformly bounded on velocity-capped
 states, and it is dissipative on relative kinetic energy. We then formulate the
 finite-particle hypocoercive entropy estimate that yields an $N$-uniform
 logarithmic Sobolev inequality and exponential convergence in relative entropy
-and total variation. Finally we derive the McKean--Vlasov limit for the viscous
+and total variation. Finally we derive the McKean-Vlasov limit for the viscous
 alignment field, prove quantitative propagation of chaos in relative entropy,
 and pass the $N$-uniform logarithmic Sobolev inequality to the mean-field
 equilibrium. The paper is self-contained in the sense that all assumptions,
@@ -94,7 +94,7 @@ obtaining $N$-uniform entropy and total-variation convergence. The final
 sections pass to the mean-field equation, prove a quantitative propagation of
 chaos estimate, and deduce a mean-field logarithmic Sobolev inequality. The
 analysis uses only tools from Langevin dynamics, hypocoercivity,
-Harris-type ergodic theory, and McKean--Vlasov limits
+Harris-type ergodic theory, and McKean-Vlasov limits
 \cite{roberts1996exponential,meyn2012markov,villani2009hypocoercivity,sznitman1991topics}.
 
 \section{The Kinetic Geometric Gas Core}
@@ -128,10 +128,10 @@ for some $\alpha_U>0$ and $\beta_U<\infty$.
 \end{assumption}
 
 \begin{remark}
-Assumption~\ref{ass:potential}(i)--(ii) places the paper in the classical
+Assumption~\ref{ass:potential} for items $i$ and $ii$ places the paper in the classical
 uniformly convex Langevin regime. In this regime the Gibbs measure
 \eqref{eq:gibbs} satisfies a logarithmic Sobolev inequality by the
-Bakry--\'Emery criterion, and the modified-entropy computation below yields an
+Bakry-\'Emery criterion, and the modified-entropy computation below yields an
 explicit hypocoercive decay rate for the kinetic backbone; see
 \cite{bakry1985diffusions,villani2009hypocoercivity}.
 \end{remark}
@@ -248,7 +248,7 @@ Here \(G(X,V)=(G_1(X,V),\dots,G_N(X,V))\) with
 \[
 G_i(X,V):=-\nabla U(X_i)+F_i(X,V).
 \]
-The Ornstein--Uhlenbeck substep is
+The Ornstein-Uhlenbeck substep is
 \[
 \Phi_O^h(X,V)
 :=
@@ -496,13 +496,13 @@ L_{\mathrm{mf}}\bigl(\|x-x'\|+\|v-v'\|+W_1(\mu,\nu)\bigr).
 \end{proof}
 
 \begin{proposition}[Finite- and infinite-dimensional well posedness]\label{prop:wp}
-Under Assumptions~\ref{ass:potential} and \ref{ass:kernel},
+Under Assumptions~\ref{ass:potential} and~\ref{ass:kernel},
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
 \item for every $N\geq2$ the SDE
 \eqref{eq:finite-x}--\eqref{eq:finite-v} has a unique global strong solution;
 \item for every initial law $f_0\in\mcP(\R^{2d})$ with finite second moment, the
-McKean--Vlasov equation \eqref{eq:mf-pde} has a unique global solution
-$t\mapsto f_t$ in $C([0,\infty);\mcP_2(\R^{2d}))$.
+McKean-Vlasov equation \eqref{eq:mf-pde} has a unique global solution
+$t\mapsto f_t$ in $C(\R_+,\mcP_2(\R^{2d}))$.
 \end{enumerate}
 \end{proposition}
 
@@ -572,7 +572,7 @@ $(m_U,L_U,\gamma,\sigma,\nu_{\mathrm{visc}},k_*,k^*)$ and not on $N$. Gr\"onwall
 lemma then gives $\sup_{t\leq T}\E\mathcal E_N(t)<\infty$ on every finite
 interval, which excludes explosion. Hence the strong solution is global.
 
-For the McKean--Vlasov equation, Lemma~\ref{lem:mf-lipschitz} gives the local
+For the McKean-Vlasov equation, Lemma~\ref{lem:mf-lipschitz} gives the local
 Lipschitz dependence of the drift on \((x,v,\mu)\) on moment-bounded classes,
 while the force has at most linear growth in \((x,v)\) under a finite second
 moment assumption on \(\mu\). A Picard iteration on the nonlinear SDE
@@ -584,7 +584,7 @@ d\bar V_t=
 +\sigma\,dW_t
 \]
 combined with the same Lyapunov estimate as above yields a unique global strong
-solution with law \(f_t\in C([0,\infty);\mcP_2(\R^{2d}))\).
+solution with law \(f_t\in C(\R_+,\mcP_2(\R^{2d}))\).
 \end{proof}
 
 \begin{proposition}[Quadratic moment bounds]\label{prop:moments}
@@ -612,7 +612,7 @@ energy, so the uniform bound follows by taking expectations and applying
 Gr\"onwall's lemma.
 
 For the mean-field equation, apply It\^o's formula to
-\(\|\bar X_t\|^2+\|\bar V_t\|^2\) along the nonlinear SDE. Since
+\(\|\bar X_t\|^2+\|\bar V_t\|^2\) along the nonlinear SDE.\@ Since
 \[
 \|F[f_t](x,v)\|
 \leq
@@ -647,7 +647,7 @@ Under the smooth confining assumptions on $U$, this is the invariant density of
 the one-particle underdamped Langevin diffusion.
 
 \begin{definition}[Relative density and hypocoercive functionals]\label{def:functionals}
-Let $f_t$ solve the uncoupled one-particle Fokker--Planck equation
+Let $f_t$ solve the uncoupled one-particle Fokker-Planck equation
 \[
 \partial_t f_t
 +v\cdot \nabla_x f_t
@@ -723,7 +723,7 @@ L_0 h
 +\frac{\sigma^2}{2}\Delta_v(h\rho_*)
 \right].
 \]
-We first expand the diffusion--friction part. Using
+We first expand the diffusion-friction part. Using
 \[
 \nabla_v \rho_*=-\frac{v}{T}\rho_*,
 \qquad
@@ -869,7 +869,7 @@ Then:
 Set $\ell_t:=\log h_t$.
 
 For \eqref{eq:A-ode}, the anti-symmetric part drops out by
-Proposition~\ref{prop:generator}(ii), so
+Proposition~\ref{prop:generator}, item $ii$, so
 \[
 \frac{d}{dt}\mathcal A[h_t]
 =
@@ -922,14 +922,14 @@ For the symmetric piece, use
 L_{\mathrm{sym}}=\gamma T\nabla_v^*\nabla_v,
 \]
 where $\nabla_v^*$ is the $L^2(\rho_*)$ adjoint of $\nabla_v$. A direct
-Bakry--\'Emery computation yields
+Bakry-\'Emery computation yields
 \[
 -2\gamma T^2\int h_t\|\nabla_v^2\log h_t\|_{\mathrm{HS}}^2\,d\rho_*\leq0,
 \]
 and the first-order contribution is exactly $-2\gamma \mathcal B[h_t]$.
 
 For the anti-symmetric piece, integrate by parts using
-Proposition~\ref{prop:generator}(ii):
+Proposition~\ref{prop:generator}, item $ii$:
 \begin{align*}
 &2T\int \nabla_v\ell_t\cdot \nabla_vL_{\mathrm{anti}}h_t\,d\rho_*
 -T\int L_{\mathrm{anti}} h_t\,|\nabla_v\ell_t|^2\,d\rho_*\\
@@ -981,7 +981,7 @@ Applying \eqref{eq:comm-v}--\eqref{eq:comm-x} gives
 -\mathcal D[h_t]-\gamma \mathcal C[h_t]
 +T\int h_t\langle \nabla_x\log h_t,(\nabla^2U)\nabla_v\log h_t\rangle\,d\rho_*.
 \]
-Using the operator bound on $\nabla^2 U$ and Cauchy--Schwarz,
+Using the operator bound on $\nabla^2 U$ and Cauchy-Schwarz,
 \[
 \left|
 T\int h_t\langle \nabla_x\log h_t,(\nabla^2U)\nabla_v\log h_t\rangle\,d\rho_*
@@ -1003,7 +1003,7 @@ the same differentiation yields
 +\mathcal R_D(t),
 \]
 with $\mathcal R_D(t)\leq0$ from the symmetric part, because $L_{\mathrm{sym}}$
-acts only in velocity. Invoking \eqref{eq:comm-x} and Cauchy--Schwarz yields
+acts only in velocity. Invoking \eqref{eq:comm-x} and Cauchy-Schwarz yields
 \eqref{eq:D-ode}.
 \end{proof}
 
@@ -1142,13 +1142,13 @@ The Hessian of $W$ is block diagonal:
 0 & I_d
 \end{pmatrix}.
 \]
-Assumption~\ref{ass:potential}(ii) therefore implies
+Assumption~\ref{ass:potential}, item $ii$, therefore implies
 \[
 \nabla^2 W(x,v)\succeq m_* I_{2d}
 \qquad
 \forall (x,v)\in\R^{2d}.
 \]
-The Bakry--\'Emery criterion applied to the probability measure
+The Bakry-\'Emery criterion applied to the probability measure
 $Z_*^{-1}e^{-W/T}dx\,dv$ yields
 \[
 \Ent_{\rho_*}(g^2)\leq \frac{2T}{m_*}\int |\nabla g|^2\,d\rho_*
@@ -1189,7 +1189,7 @@ Let $h_t=d(\mu P_t^{(1),0})/d\pi_1$. Proposition~\ref{prop:gibbs-lsi} yields
 \[
 \mathcal A[h]\leq \frac{1}{2m_*}\bigl(\mathcal B[h]+\mathcal D[h]\bigr).
 \]
-By Cauchy--Schwarz,
+By Cauchy-Schwarz,
 \[
 2|\mathcal C[h]|
 \leq
@@ -1222,7 +1222,7 @@ Since $\mathcal A[h_t]\leq \Phi[h_t]$ and
 \left(1+\frac{a+c+2b}{2m_*}\right)\bigl(\mathcal B[h_0]+\mathcal D[h_0]\bigr),
 \]
 the same differential inequality applied from time $s$ onward and integrated
-over $[s,\infty)$ gives
+for all $s\geq0$, integrating from $s$ to $\infty$ gives
 \[
 \mathcal A[h_s]
 =
@@ -1378,9 +1378,9 @@ A(X)\Sigma_X+\Sigma_X A(X)^\top=\sigma^2 I_{Nd};
 \end{proposition}
 
 \begin{proof}
-For fixed \(X\), the velocity equation is a linear Ornstein--Uhlenbeck process
+For fixed \(X\), the velocity equation is a linear Ornstein-Uhlenbeck process
 with constant drift matrix \(A(X)\) and constant forcing \(-b(X)\). By
-Lemma~\ref{lem:weighted-sym}(iv), the spectrum of \(A(X)\) lies in
+Lemma~\ref{lem:weighted-sym}, item $iv$, the spectrum of \(A(X)\) lies in
 \([\gamma,\infty)\), so the linear system is exponentially stable. The unique
 stationary law is therefore Gaussian with mean
 \[
@@ -1485,7 +1485,7 @@ and for $m\notin\{i,j\}$,
 \[
 \|\nabla_{x_m}\omega_{ij}(X)\|
 \leq
-\frac{k^*L_K}{(N-1)k_*^2}.
+\frac{k^*L_K}{(N-1)^2k_*^2}.
 \]
 In particular,
 \[
@@ -1590,7 +1590,7 @@ By Lemma~\ref{lem:weight-deriv},
 \[
 \sup_{N\geq2}\sup_X \max_{i,m} A_{im}(X)\leq C_\omega
 \]
-for some finite constant $C_\omega$. Using Cauchy--Schwarz in the discrete sum,
+for some finite constant $C_\omega$. Using Cauchy-Schwarz in the discrete sum,
 \begin{align*}
 \|\nabla_{x_m}F_i(X,V)\|^2
 &\leq
@@ -1601,14 +1601,22 @@ for some finite constant $C_\omega$. Using Cauchy--Schwarz in the discrete sum,
 \nu_{\mathrm{visc}}^2 C_\omega
 \left(\sum_{j\neq i}\|\nabla_{x_m}\omega_{ij}\|\,(2\|V_j\|^2+2\|V_i\|^2)\right).
 \end{align*}
-Summing over $m$ and using again the $N$-uniform derivative bounds from
-Lemma~\ref{lem:weight-deriv} gives
+Summing over $m$, and using the explicit derivative bounds from
+Lemma~\ref{lem:weight-deriv}, we have for every $j\neq i$
+\[
+\sum_{m=1}^N\|\nabla_{x_m}\omega_{ij}(X)\|
+\leq
+\frac{C_\omega}{N},
+\]
+because only the terms $m\in\{i,j\}$ are of order $(N-1)^{-1}$ while the
+remaining $(N-2)$ terms are of order $(N-1)^{-2}$.
+Summing over $j\neq i$, this yields
 \[
 \sum_{m=1}^N\sum_{j\neq i}\|\nabla_{x_m}\omega_{ij}(X)\|
 \leq
-C_\omega,
+C_\omega.
 \]
-and, because each $\|\nabla_{x_m}\omega_{ij}\|$ is of order $(N-1)^{-1}$,
+Then, by the same bound,
 \[
 \sum_{m=1}^N\sum_{j\neq i}\|\nabla_{x_m}\omega_{ij}(X)\|\,\|V_j\|^2
 \leq
@@ -1831,7 +1839,7 @@ that
 \[
 \Phi_N[h]\geq \Ent_{\pi_N}(h)+\alpha_0\bigl(\mathcal B_N[h]+\mathcal D_N[h]\bigr).
 \]
-Integrating the previous two displays over $[0,\infty)$ gives
+Integrating the previous two displays over time from $0$ to $\infty$ gives
 \[
 \Ent_{\pi_N}(h_0)
 =
@@ -2001,7 +2009,7 @@ algorithmic bound.
 
 \section{Mean-Field Equation and Propagation of Chaos}
 
-\subsection{The McKean--Vlasov limit}
+\subsection{The McKean-Vlasov limit}
 
 We now compare the finite-particle law to the nonlinear mean-field equation
 \eqref{eq:mf-pde}. The key fact is that the interaction field from
@@ -2108,7 +2116,7 @@ Averaging over $i$ proves the claim.
 
 \begin{lemma}[Monte Carlo fluctuation of the mean-field force]\label{lem:mc-force}
 Let $(\bar X_i(t),\bar V_i(t))_{i=1}^N$ be i.i.d.\ copies of the nonlinear
-McKean--Vlasov process with common law $f_t$, and let
+McKean-Vlasov process with common law $f_t$, and let
 \[
 \bar\mu_t^N:=\frac1N\sum_{j=1}^N \delta_{(\bar X_j(t),\bar V_j(t))}
 \]
@@ -2153,7 +2161,7 @@ Because $D_N(x)\geq k_*$ and $m_t(x)\geq k_*$,
 \right\|
 \leq
 \frac{\|N_N-n_t\|}{k_*}
-\frac{\|n_t\|}{k_*^2}|D_N-m_t|.
++\frac{\|n_t\|}{k_*^2}|D_N-m_t|.
 \]
 Conditionally on $(\bar X_1,\bar V_1)=(x,v)$, the variables
 \[
@@ -2207,13 +2215,13 @@ Proposition~\ref{prop:moments} yields the claim.
 
 \begin{theorem}[Strong propagation of chaos]\label{thm:poc-strong}
 Let $(\bar X_i,\bar V_i)_{i=1}^N$ be i.i.d.\ solutions of the nonlinear
-McKean--Vlasov SDE with initial law $f_0$, driven by the same Brownian motions
+McKean-Vlasov SDE with initial law $f_0$, driven by the same Brownian motions
 as the particle system \eqref{eq:finite-x}--\eqref{eq:finite-v}, and started
 from the same initial data:
 \[
 (X_i(0),V_i(0))=(\bar X_i(0),\bar V_i(0))
 \qquad
-\text{a.s. for every }i.
+\text{a.s.\ for every }i.
 \]
 Set
 \[
@@ -2360,7 +2368,7 @@ d\bar V_i=
 \]
 The interacting system differs only in the velocity drift. Since the diffusion
 matrix is constant in the velocity variables, Girsanov's theorem applies. The
-Radon--Nikod\'ym derivative of $P_{[0,T]}^N$ with respect to $Q_{[0,T]}^N$ is
+Radon-Nikod\'ym derivative of $P_{[0,T]}^N$ with respect to $Q_{[0,T]}^N$ is
 \[
 \frac{dP_{[0,T]}^N}{dQ_{[0,T]}^N}
 =
@@ -2587,7 +2595,7 @@ For the canonical choice, define the empirical-measure map
 \mathfrak L_N(z_1,\dots,z_N):=\frac1N\sum_{i=1}^N \delta_{z_i},
 \]
 and set $Q_N:=(\mathfrak L_N)_\#\pi_N$. This is exactly the law of $L_N$ under
-$\pi_N$, and the same Diaconis--Freedman theorem gives the stated bound for
+$\pi_N$, and the same Diaconis-Freedman theorem gives the stated bound for
 this canonical mixing measure.
 \end{proof}
 
@@ -2649,8 +2657,9 @@ $\mcP(\R^{2d})$.
 
 \begin{proof}
 The finite-particle ergodic construction underlying the invariant measures
-$\pi_N$ provides an $N$-uniform Foster--Lyapunov bound for a quadratic phase
-function. Concretely, there exists a function $V_N:(\R^{2d})^N\to[1,\infty)$ of
+$\pi_N$ provides an $N$-uniform Foster-Lyapunov bound for a quadratic phase
+function. Concretely, there exists a function $V_N:(\R^{2d})^N\to\R_+$ with
+$V_N\geq1$, of
 the form
 \[
 V_N(X,V)\asymp 1+\frac1N\sum_{i=1}^N \bigl(\|X_i\|^2+\|V_i\|^2\bigr),
@@ -2716,7 +2725,7 @@ v\cdot \nabla_x \phi
 
 \begin{proof}
 We use the fixed-point argument based on the weighted resolvent of the kinetic
-Fokker--Planck operator.
+Fokker-Planck operator.
 Let
 \[
 w(x,v):=1+\|x\|^2+\|v\|^2,
@@ -2755,7 +2764,7 @@ Define the solution operator
 :=
 (C-\mathcal L_0^*)^{-1}\bigl(C\rho-\nabla_v\cdot(F[\rho]\rho)\bigr).
 \]
-Standard weighted resolvent theory for the underdamped Fokker--Planck operator
+Standard weighted resolvent theory for the underdamped Fokker-Planck operator
 with uniformly convex potential yields a bounded map
 \[
 (C-\mathcal L_0^*)^{-1}:L_w^2\to H_w^1,
@@ -2822,7 +2831,7 @@ Proposition~\ref{prop:mf-unique}. Equivalently,
 \end{theorem}
 
 \begin{proof}
-We now carry out the tightness--identification--uniqueness program in full.
+We now carry out the tightness, identification, and uniqueness program in full.
 
 \smallskip
 \noindent
@@ -2898,7 +2907,7 @@ Indeed,
 \int_{\R^{2d}}(\|x\|^2+\|v\|^2)\,\pi_{N,1}(dx\,dv)
 \leq C_2,
 \]
-so the same Markov--Prokhorov argument applies on the second level.
+so the same Markov-Prokhorov argument applies on the second level.
 For compactly supported $\phi$, the map $\Psi_\phi$ is continuous on
 $\mcP(\R^{2d})$ under weak convergence together with uniform second moments,
 because $K$ and $\nabla_v\phi$ are bounded and the denominator in $F[\mu]$ is
