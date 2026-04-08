@@ -1,0 +1,19 @@
+\contentsline {section}{\numberline {1}Purpose}{2}{section.1}%
+\contentsline {section}{\numberline {2}Where the old route takes the lattice spacing to zero}{2}{section.2}%
+\contentsline {section}{\numberline {3}Trajectory-induced QFT lattice}{3}{section.3}%
+\contentsline {section}{\numberline {4}Finite gauge data on the QFT lattice}{4}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Companion weights and site colors}{4}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Link variables and parallel transport}{6}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Plaquette field strength and Wilson action}{7}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Gauge invariance}{8}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Translation dictionary from the old route}{9}{section.5}%
+\contentsline {section}{\numberline {6}Hypothesis package for the local continuum route}{9}{section.6}%
+\contentsline {section}{\numberline {7}Translated continuum-limit theorem}{11}{section.7}%
+\contentsline {paragraph}{Step 1: Small-field expansion.}{12}{section*.2}%
+\contentsline {paragraph}{Step 2: Plaquette area control.}{12}{section*.3}%
+\contentsline {paragraph}{Step 3: Riemann-sum convergence.}{12}{section*.4}%
+\contentsline {paragraph}{Step 4: Remainder control.}{13}{section*.5}%
+\contentsline {paragraph}{Step 5: Coupling identification.}{13}{section*.6}%
+\contentsline {section}{\numberline {8}Discharge plan}{13}{section.8}%
+\contentsline {section}{\numberline {9}How this paper substitutes the current lattice paper}{15}{section.9}%
+\contentsline {section}{\numberline {10}Final checklist}{15}{section.10}%

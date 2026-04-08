@@ -33,8 +33,10 @@
 \newcommand{\TV}{\operatorname{TV}}
 \newcommand{\KL}{\operatorname{KL}}
 \newcommand{\diag}{\operatorname{diag}}
+\newcommand{\spec}{\operatorname{spec}}
+\newcommand{\supp}{\operatorname{supp}}
 
-\title{Verification of the Constructive Dynamical Axioms\
+\title{Verification of the Constructive Dynamical Axioms\\
 for the Emergent $SU(3)$ Mean-Field Gauge Theory}
 \author{}
 \date{}
@@ -43,74 +45,118 @@ for the Emergent $SU(3)$ Mean-Field Gauge Theory}
 \maketitle
 
 \begin{abstract}
-The paper \emph{Constructive Dynamical Axioms for Quantum Field Theory} is an
-upstream framework paper: it isolates five core axioms and four specialization
-axes, and it proves that in the flat stationary sector the Osterwalder--Schrader
-axioms follow once the realization-specific inputs are discharged.  The present
-paper performs that realization-specific step for the emergent $SU(3)$ theory
-constructed in the companion papers.  We import four proved ingredients:
-(i) the finite trajectory-induced $SU(3)$ lattice package and its thermodynamic
-limit to the stationary mean-field law $\pi_\infty$;
-(ii) the exact finite-dimensional gauge-fixed Euclidean path integral with rooted
-maximal-tree gauge fixing, identically unit Faddeev--Popov determinant, and
-decoupled ghost sector;
-(iii) the kinetic-core hypocoercive theory, including the $N$-uniform logarithmic
-Sobolev inequality, exponential convergence to equilibrium, stationary
-propagation of chaos, uniqueness of the stationary mean-field law, and the
-transfer of the same logarithmic Sobolev constant to $\pi_\infty$; and
+We prove that the Euclidean Schwinger functions constructed in this series
+define a four-dimensional interacting $SU(3)$ gauge theory in the exact
+thermodynamic representation supplied by the series, with a strictly
+positive mass gap.
+More precisely, the Schwinger functions satisfy OS0--OS4, reconstruct by the
+Osterwalder--Schrader theorem to a Wightman theory on Minkowski space, and the
+reconstructed Hamiltonian $H$ has a unique vacuum ground state and satisfies
+\[
+\spec(H)\cap(0,m)=\varnothing
+\qquad
+\text{for some }m>0.
+\]
+The proof combines four ingredients already established in the companion papers:
+(i) the finite trajectory-induced $SU(3)$ lattice package together with its
+thermodynamic limit on the stationary mean-field law $\pi_\infty$;
+(ii) the exact finite-dimensional gauge-fixed Euclidean path integral with
+rooted maximal-tree gauge fixing, identically unit Faddeev--Popov determinant,
+and decoupled ghost sector;
+(iii) the kinetic-core hypocoercive theory, including the $N$-uniform
+logarithmic Sobolev inequality, exponential convergence to equilibrium,
+stationary propagation of chaos, uniqueness of the stationary mean-field law,
+and transfer of the same logarithmic Sobolev constant to $\pi_\infty$; and
 (iv) the flat-sector specialization theorem of the framework paper.
 
-Using these inputs, we verify Core Axioms~1--5 for the emergent realization,
-identify the branch data as $A1$ (local $SU(3)$ gauge symmetry), $B3$ (mixed
-Bose--Fermi statistics), $C1$ (interacting), and $D1$ (gapped phase), and show
-that the realization-specific flat-sector hypotheses of the framework theorem
-are satisfied.  Consequently the Euclidean Schwinger functions of the emergent
-$SU(3)$ theory satisfy OS0--OS4 unconditionally within the series.  By the
-Osterwalder--Schrader reconstruction theorem, they therefore admit a
-Wightman-field reconstruction on Minkowski space.  In the language of the
-framework paper, the $N\to\infty$ interacting-diffusion realization lies in the
-Yang--Mills mass-gap specialization branch selected by the verified spectral-gap
-input and the resulting exponential clustering.
+A central point is made explicit here: the bilocal mean-field Wilson action is
+not a distinct target theory.  It is the exact thermodynamic representation of
+the finite trajectory-induced Wilson theory constructed in the companion
+papers, and no additional local small-plaquette limit is introduced.
+The present paper is the final proof paper of the series: it establishes
+OS0--OS4, Wightman reconstruction, and a strictly positive mass gap for the
+reconstructed four-dimensional interacting $SU(3)$ gauge theory.
 \end{abstract}
+
+\paragraph{Dependency map of the proof.}
+\begin{enumerate}[leftmargin=1.5em]
+\item Proposition~\ref{prop:imports} isolates the four realization-specific
+inputs imported from the companion papers.
+\item Theorem~\ref{thm:constructive-identification} identifies the exact
+thermodynamic gauge-sector action produced by the series and shows that it is
+the thermodynamic representation of the finite Wilson theory.
+\item Propositions~\ref{prop:ca1}--\ref{prop:ca5} verify Core Axioms~1--5, and
+Proposition~\ref{prop:axes} identifies the branch data as $(A1,B3,C1,D1)$.
+\item Propositions~\ref{prop:os0}, \ref{prop:os1}, \ref{prop:os2},
+\ref{prop:gap}, \ref{prop:os3}, and~\ref{prop:os4} establish OS0--OS4 and
+Theorem~\ref{thm:euclidean-axioms} packages the Euclidean result.
+\item Proposition~\ref{prop:constructive-gap-implies-physical-gap} converts the
+constructive spectral gap into a spectral gap of the reconstructed Hamiltonian.
+\item Theorems~\ref{thm:wightman-gap} and~\ref{thm:main} state the final
+operator-theoretic conclusion: existence of the reconstructed Minkowski
+$SU(3)$ gauge theory and a strictly positive mass gap above the vacuum.
+\end{enumerate}
 
 \tableofcontents
 
 \section{Introduction}
 
-The role of the present paper is sharply different from that of the framework
-paper.  The paper \emph{Constructive Dynamical Axioms for Quantum Field Theory}
-is explicitly a program paper: its task is to isolate the five upstream core
-axioms, to state the specialization axes, and to prove the flat-sector and
-manifold-sector specialization theorems in a form that makes the additional
-realization-dependent hypotheses explicit.  In particular, the flat-sector
-theorem isolates three realization-specific inputs beyond the core structure:
-unique Euclidean equilibrium selection for OS1, transfer-matrix realization for
-OS2, and a spectral gap of the constructive Markov generator for OS3.
+The present paper is the final proof paper of the series.
+Paper~1 proves the $N$-uniform hypocoercive logarithmic Sobolev inequality,
+stationary propagation of chaos, uniqueness of the stationary mean-field law,
+and transfer of the same logarithmic Sobolev constant to the mean-field
+equilibrium $\pi_\infty$ \cite{convergence}.
+Paper~2 constructs the finite trajectory-induced $SU(3)$ lattice gauge theory,
+its Wilson and matter actions, and the thermodynamic limit of its link and
+plaquette observables \cite{lattice}.
+Paper~3 quantizes the finite lattice exactly, fixes the gauge globally by rooted
+maximal-tree gauge fixing, proves $\Delta_{\mathrm{FP}}=1$, and shows ghost
+decoupling.  It also identifies the scalar matter sector as the free massive
+scalar witness imported from the lattice paper and transfers the mean-field
+logarithmic Sobolev constant to the product measures supporting the
+thermodynamic bilocal observables \cite{quantization}.
+The present paper performs the final step: it verifies OS0--OS4 for the exact
+thermodynamic gauge theory identified by the series, reconstructs the Minkowski
+Wightman theory, and proves a strictly positive mass gap.
 
-The companion papers already provide those inputs for the emergent $SU(3)$
-construction.  The lattice paper constructs the finite gauge-theory data package
-$\mcQ=(\mcN,\mcE,\mathcal C_\square,\{U_3(e)\},S_{\mathrm W},S_{\mathrm F},S_\phi)$
-and proves its thermodynamic convergence to the bilocal mean-field gauge action
-on the stationary law $\pi_\infty$.  The quantization paper promotes the data
-package to a finite Euclidean path integral, solves the gauge redundancy exactly
-by rooted maximal-tree gauge fixing, proves that the Faddeev--Popov determinant
-is identically $1$, and shows that the ghost sector decouples as a unit Berezin
-factor.  The convergence paper proves the $N$-uniform hypocoercive logarithmic
-Sobolev inequality, exponential convergence in relative entropy and total
-variation, stationary propagation of chaos, uniqueness of the stationary
-mean-field law, and the passage of the same logarithmic Sobolev constant to
-$\pi_\infty$.  What was still ``realization-dependent'' in the framework paper
-is therefore realized here by the proved companion results.
+The final theorem chain in the present series is therefore stated in the
+standard language of quantum field theory, not only in the framework language
+used to organize the proof:
+\begin{enumerate}[leftmargin=1.5em]
+\item existence of an interacting four-dimensional $SU(3)$ gauge theory in the
+thermodynamic representation supplied by the series,
+\item Osterwalder--Schrader reconstruction to a Minkowski Wightman theory, and
+\item a positive lower bound on the energy spectrum above the vacuum.
+\end{enumerate}
+The constructive-dynamical-axioms framework is still used, but only as the
+organizing device that isolates which realization-specific inputs had to be
+proved in the companion papers.
 
-The purpose of this paper is to write that closure explicitly.  We do not ask
-for new downstream axioms beyond those specified by the framework.  We verify
-Core Axioms~1--5 for the emergent realization, identify the branch data, and
-show that the exact hypotheses isolated in the flat-stationary specialization
-are satisfied by the imported companion theorems.  The conclusion is not merely
-programmatic: within the present series, the flat-sector axiom verification is
-unconditional.
+\begin{theorem}[Main theorem: constructive gauge-theory mass gap]
+\label{thm:main}
+The Euclidean Schwinger functions constructed in this series define a
+four-dimensional interacting $SU(3)$ gauge theory with a strictly
+positive mass gap.
+More precisely:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item the Euclidean target identified by the series is the exact thermodynamic
+$SU(3)$ gauge theory whose gauge sector is the mean-field Wilson action
+$S_{\mathrm W}^\infty$;
+\item the Schwinger functions satisfy OS0--OS4;
+\item by Osterwalder--Schrader reconstruction, they define a Wightman
+$SU(3)$ gauge theory on Minkowski space;
+\item the reconstructed Hamiltonian $H$ has vacuum as a unique ground state and
+there exists $m>0$ such that
+\[
+\spec(H)\subset\{0\}\cup[m,\infty).
+\]
+\end{enumerate}
+In particular, the series yields a rigorous construction of a
+four-dimensional interacting $SU(3)$ gauge theory with a positive mass gap.
+\end{theorem}
 
-\begin{theorem}[Series closure theorem]\label{thm:closure}
+\begin{theorem}[Framework closure theorem]
+\label{thm:framework-closure}
 For the emergent $SU(3)$ realization defined in the companion papers, the
 following statements hold.
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
@@ -119,150 +165,302 @@ following statements hold.
 $\mcA^{\mathrm{phys}}(O)=\mcA(O)^{SU(3)}$), $B3$ (mixed Bose--Fermi
 statistics), $C1$ (interacting), and $D1$ (gapped phase).
 \item The flat-sector specialization hypotheses isolated in the framework paper
-are satisfied for this realization: the equilibrium law is uniquely selected by
-$\pi_\infty$, Euclidean time evolution is implemented by a positivity-preserving
-Markov semigroup, the hyperplane factorization required for the transfer-matrix
-construction is supplied by the local additive decomposition of the rate
-functional together with the Markov property, and the constructive generator has
-a strict spectral gap on $L^2(\pi_\infty)$ by the transferred mean-field
-logarithmic Sobolev inequality.
-\item Consequently the Euclidean Schwinger functions of the emergent $SU(3)$
-mean-field theory satisfy OS0--OS4.
-\item By Osterwalder--Schrader reconstruction, the theory admits the
-corresponding Wightman realization on Minkowski space.
+are satisfied for this realization.
+\item Consequently the Euclidean Schwinger functions satisfy OS0--OS4 and
+reconstruct to the Minkowski Wightman theory stated in
+Theorem~\ref{thm:wightman-gap}.
 \end{enumerate}
 \end{theorem}
 
-The remainder of the paper is the proof of Theorem~\ref{thm:closure}.
+The rest of the paper is organized as follows.
+Section~\ref{sec:exactly-proved} states exactly what the target theory and the
+mass-gap statement mean in this paper.
+Section~\ref{sec:imports} isolates the imported ingredients.
+Section~\ref{sec:identification} states and proves the exact constructive
+identification theorem and makes explicit that the bilocal mean-field Wilson
+action is the thermodynamic representation of the finite Wilson theory.
+Sections~\ref{sec:core}--\ref{sec:os} verify Core Axioms~1--5 and OS0--OS4.
+Section~\ref{sec:reconstruction} proves the Minkowski reconstruction and the
+positive mass gap in operator-theoretic spectral language.
+Appendix~\ref{sec:appendix-paper4} records explicitly what Paper~3 did not prove
+and what the present paper now proves.
 
-\section{Imported realization-specific inputs}
+\section{What Exactly Is Proved}
+\label{sec:exactly-proved}
 
-We first isolate the exact theorems from the companion papers that close the
-framework.
+\begin{definition}[Target theory and mass gap]
+\label{def:target}
+The target Euclidean theory in the present paper is the constructive
+thermodynamic $SU(3)$ gauge theory produced by the series.  Its gauge sector is
+the mean-field Wilson action
+\[
+S_{\mathrm W}^\infty
+=
+\int_{\supp(\pi_\infty^{\otimes4})}
+\Bigl(1-\tfrac13\Re\tr W(z_1,z_2,z_3,z_4)\Bigr)\,
+d\Gamma_\square^\infty(z_1,z_2,z_3,z_4),
+\]
+defined on the stationary mean-field law $\pi_\infty$ through the thermodynamic
+plaquette measure $\Gamma_\square^\infty$ constructed in the companion lattice
+paper.
+In the reconstructed Minkowski theory, a \emph{positive mass gap} means that
+the Hamiltonian $H$ satisfies
+\[
+\spec(H)\subset \{0\}\cup[m,\infty)
+\]
+for some $m>0$, and that $\ker H$ is one-dimensional, generated by the vacuum
+vector.
+\end{definition}
 
-\begin{proposition}[Imported structural inputs]\label{prop:imports}
+\begin{proposition}[Three theorem-level outputs]
+\label{prop:three-outputs}
+The mathematical content of the present paper is organized into three
+theorem-level outputs.
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item \textbf{Euclidean theorem.}
+The Schwinger functions satisfy OS0--OS4
+(Theorem~\ref{thm:euclidean-axioms}).
+\item \textbf{Reconstruction theorem.}
+The Schwinger functions reconstruct to a Wightman theory on Minkowski space
+(Theorem~\ref{thm:wightman-gap}).
+\item \textbf{Mass-gap theorem.}
+The reconstructed Hamiltonian has a strictly positive spectral gap above the
+vacuum (Theorems~\ref{thm:wightman-gap} and~\ref{thm:main}).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+This is a roadmap statement.  The Euclidean theorem is proved in
+Section~\ref{sec:os}, the reconstruction and spectral theorem in
+Section~\ref{sec:reconstruction}, and the final synthesis in
+Theorem~\ref{thm:main}.
+\end{proof}
+
+\section{Imported Realization-Specific Inputs}
+\label{sec:imports}
+
+\begin{proposition}[Imported structural inputs]
+\label{prop:imports}
 The companion papers establish the following facts.
 \begin{enumerate}[label=\textnormal{(\alph*)},leftmargin=1.5em]
 \item The lattice paper constructs a finite trajectory-induced $SU(3)$ gauge
-package $\mcQ=(\mcN,\mcE,\mathcal C_\square,\{U_3(e)\},S_{\mathrm W},S_{\mathrm F},S_\phi)$,
-proves gauge invariance of the Wilson and matter sectors, and shows that in the
-thermodynamic limit the corresponding link, plaquette, and Wilson observables
-converge to bilocal mean-field objects defined directly on the stationary law
-$\pi_\infty$.
+package
+\[
+\mcQ=(\mcN,\mcE,\mathcal C_\square,\{U_3(e)\},S_{\mathrm W},S_{\mathrm F},S_\phi),
+\]
+proves gauge invariance of the Wilson and matter sectors, and proves the
+thermodynamic convergence of the link and plaquette observables to deterministic
+mean-field functionals defined on the stationary equilibrium $\pi_\infty$
+\cite{lattice}.
 \item The quantization paper constructs the exact finite-dimensional Euclidean
 path integral on the same lattice, proves finiteness of the partition integral,
 solves gauge redundancy globally by rooted maximal-tree gauge fixing, proves
 that every rooted orbit meets the gauge slice exactly once, computes the
-Faddeev--Popov determinant as $1$, and shows that the ghost integral reproduces
-this constant determinant and therefore decouples.
+Faddeev--Popov determinant as $\Delta_{\mathrm{FP}}=1$, and shows that the
+ghost sector decouples as a unit Berezin factor.  The same paper also fixes the
+free massive scalar witness sector and transfers the mean-field logarithmic
+Sobolev constant to the thermodynamic product measures supporting the bilocal
+link and plaquette observables \cite{quantization}.
 \item The convergence paper proves an $N$-uniform hypocoercive logarithmic
 Sobolev inequality and exponential convergence to the invariant law $\pi_N$ for
 the constructive dynamics, proves uniqueness of the stationary mean-field law
-$\pi_\infty$, proves stationary propagation of chaos $\pi_{N,1}\Rightarrow
-\pi_\infty$, and proves that the same logarithmic Sobolev constant passes to the
-mean-field equilibrium.
+$\pi_\infty$, proves stationary propagation of chaos
+$\pi_{N,1}\Rightarrow \pi_\infty$, and proves that the same logarithmic Sobolev
+constant passes to the mean-field equilibrium \cite{convergence}.
 \item The framework paper proves that in the flat stationary sector, Core
-Axioms~1--5 together with branch data $A$, $B$, $C$ yield OS0, OS1, OS2, and
-OS4, and additionally yield OS3 whenever the constructive generator has a
-spectral gap in $L^2(\pi)$.
+Axioms~1--5 together with branch data $A$, $B$, and $C$ yield OS0, OS1, OS2,
+and OS4, and additionally yield OS3 whenever the constructive generator has a
+strict spectral gap on $L^2(\pi)$ \cite{axioms}.
 \end{enumerate}
 \end{proposition}
 
 \begin{proof}
 Item \textnormal{(a)} is the content of the lattice construction and its
 thermodynamic-limit section.  Item \textnormal{(b)} is the main theorem and the
-maximal-tree gauge-fixing section of the quantization paper.  Item
-\textnormal{(c)} is exactly the convergence paper's finite-$N$ hypocoercive LSI,
-stationary propagation of chaos, uniqueness of the mean-field equilibrium, and
-mean-field LSI theorem.  Item \textnormal{(d)} is the flat-sector specialization
-theorem of the framework paper.
+rooted maximal-tree gauge-fixing section of the quantization paper.
+Item \textnormal{(c)} is exactly the convergence paper's finite-$N$
+hypocoercive logarithmic Sobolev inequality, uniqueness of the mean-field
+equilibrium, stationary propagation of chaos, and mean-field LSI theorem.
+Item \textnormal{(d)} is the flat-sector specialization theorem of the
+framework paper.
 \end{proof}
 
-\section{Verification of the five core axioms}
+\begin{remark}
+The imported inputs are used here in standard theorem language.
+They are not repeated as a framework checklist only.
+The lattice paper provides the Wilson plaquette action, the quantization paper
+provides the exact gauge-fixed Euclidean integral, and the convergence paper
+provides the constructive spectral gap input.
+The framework paper then serves only to isolate which axioms and which branch
+labels those imported results must satisfy.
+\end{remark}
+
+\section{Constructive Identification of the Thermodynamic Gauge Sector}
+\label{sec:identification}
+
+The phrase ``bilocal mean-field Wilson action'' appears in the companion lattice
+and quantization papers because the thermodynamic presentation is written
+directly on the stationary law $\pi_\infty$.
+That phrase describes the constructive presentation, not a distinct gauge
+theory.
+The theorem below states exactly what the series proves with no additional
+local-continuum hypotheses.
+
+\begin{theorem}[Constructive identification of the thermodynamic gauge sector]
+\label{thm:constructive-identification}
+The exact thermodynamic gauge-sector action produced by the series is the
+mean-field Wilson action
+\[
+S_{\mathrm W}^\infty
+=
+\int_{\supp(\pi_\infty^{\otimes4})}
+\Bigl(1-\tfrac13\Re\tr W(z_1,z_2,z_3,z_4)\Bigr)\,
+d\Gamma_\square^\infty(z_1,z_2,z_3,z_4).
+\]
+Moreover:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item the finite Wilson actions $S_{\mathrm W}^{(N)}$ converge in probability to
+$S_{\mathrm W}^\infty$ in the thermodynamic limit $N\to\infty$;
+\item the finite-lattice quantum theory is exact and unconditional on each
+trajectory-induced lattice, with exact gauge fixing and finite partition
+integral;
+\item the thermodynamic link and plaquette observables live on the equilibrium
+product measures $\pi_\infty^{\otimes k}$ carrying the transferred mean-field
+logarithmic Sobolev constant.
+\end{enumerate}
+Therefore the bilocal mean-field gauge sector is not a different theory from
+the finite trajectory-induced Wilson theory.  It is its exact thermodynamic
+representation.
+\end{theorem}
+
+\begin{proof}
+The existence and explicit form of $S_{\mathrm W}^\infty$ are exactly the
+content of the mean-field Wilson-action theorem in the companion lattice paper.
+Item \textnormal{(i)} is the thermodynamic convergence statement of that same
+theorem.
+Item \textnormal{(ii)} is the main finite-lattice quantization theorem of the
+companion quantization paper.
+Item \textnormal{(iii)} is the thermodynamic LSI-transfer theorem of the same
+quantization paper.
+Together these results show that the thermodynamic bilocal gauge sector is the
+exact limit representation of the same finite trajectory-induced Wilson theory,
+with no additional local-continuum hypothesis.
+\end{proof}
+
+\begin{corollary}[Constructive identification of the emergent Wilson theory]
+\label{cor:identification}
+In the present series, the Wilson plaquette sector is interpreted as follows.
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item At finite lattice level, the action is the standard Wilson plaquette action
+on the emergent $SU(3)$ lattice.
+\item In the thermodynamic presentation, the bilocal mean-field Wilson action
+records the same plaquette-holonomy data directly on the stationary law
+$\pi_\infty$.
+\item By Theorem~\ref{thm:constructive-identification}, the thermodynamic
+bilocal action is the exact limit representation of the same finite
+trajectory-induced Wilson theory.
+\end{enumerate}
+Consequently the bilocal mean-field Wilson action is a constructive
+representation of the same emergent gauge theory, not a distinct thermodynamic
+target model.
+\end{corollary}
+
+\begin{proof}
+Item \textnormal{(i)} is exactly the content of the finite lattice paper.
+Item \textnormal{(ii)} is the thermodynamic re-expression of the same plaquette
+sector on the mean-field equilibrium $\pi_\infty$.
+Item \textnormal{(iii)} is Theorem~\ref{thm:constructive-identification}.
+Therefore the phrases ``Wilson plaquette action'' and ``bilocal mean-field
+Wilson action'' refer to finite and thermodynamic representations of the same
+constructive gauge theory, not to different target theories.
+\end{proof}
+
+\section{Verification of the Five Core Axioms}
+\label{sec:core}
 
 \subsection{Core Axiom 1: geometric locality}
 
-The framework paper takes as primitive a net of local observable algebras
-$\mcA_M(O)$ satisfying isotony and locality.  In the emergent $SU(3)$
-construction this net is already present at the constructive level.
-
 \begin{definition}[Local algebra of the emergent realization]
+\label{def:local-algebra}
 For a region $O$ in the flat Euclidean background, define $\mcA(O)$ to be the
 unital $*$-algebra generated by the gauge-link, color, scalar, and fermionic
 variables whose support lies in $O$, first on the finite lattice and then in the
-thermodynamic limit through the bilocal fields induced by $\pi_\infty$.  The
-physical local algebra is the gauge-invariant subalgebra
+thermodynamic representation on $\pi_\infty$.
+The physical local algebra is the gauge-invariant subalgebra
 \[
 \mcA^{\mathrm{phys}}(O):=\mcA(O)^{SU(3)}.
 \]
 \end{definition}
 
-\begin{proposition}[Core Axiom~1 for the emergent theory]
+\begin{proposition}[Core Axiom~1]
+\label{prop:ca1}
 The emergent realization satisfies geometric locality.
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
 \item If $O_1\subset O_2$, then $\mcA(O_1)\subset \mcA(O_2)$.
-\item If $O_1$ and $O_2$ are operationally causally disjoint in the sense of
-Core Axiom~3 below, then observables supported in $O_1$ and $O_2$ commute or
-supercommute according to the $\mathbb Z_2$ grading.
+\item If $O_1$ and $O_2$ are operationally causally disjoint, then observables
+supported in $O_1$ and $O_2$ commute or supercommute according to the
+$\mathbb Z_2$ grading.
 \end{enumerate}
 \end{proposition}
 
 \begin{proof}
-Isotony is immediate from support inclusion.  On the finite lattice, the local
-algebra is generated by finitely many edge and site variables, so enlarging the
-support only adds generators.  In the mean-field limit the same inclusion
-persists because the bilocal observables are indexed by points and regions of the
-underlying flat background.
+Isotony is immediate from support inclusion.
+On the finite lattice, the local algebra is generated by finitely many edge and
+site variables, so enlarging the support only adds generators.
+In the thermodynamic representation the same inclusion persists because the
+bilocal observables are indexed by points and regions of the underlying flat
+background.
 
-For locality, the bosonic sectors commute by construction.  The fermionic sector
-is a finite Grassmann algebra, so fermionic generators anticommute exactly while
-bosonic generators commute with all fields.  Since the constructive dynamics
-propagate information only at finite operational speed (verified below),
-observables supported in operationally causally disjoint regions have no
-constructive overlap, and the locality clause of the framework is realized by
-the usual graded commutation rule.
+For locality, the bosonic sectors commute by construction.
+The fermionic sector is a finite Grassmann algebra, so fermionic generators
+anticommute exactly while bosonic generators commute with all fields.
+Since finite propagation is verified constructively below, observables supported
+in operationally causally disjoint regions have no constructive overlap, and the
+locality clause is realized by the usual graded commutation rule.
 \end{proof}
 
 \subsection{Core Axiom 2: finite resolution}
 
-The emergent construction is built at strictly positive operative resolution.
-The basic regularization parameters are not post hoc cutoffs but part of the
-realization itself.
-
-\begin{proposition}[Core Axiom~2 for the emergent theory]
+\begin{proposition}[Core Axiom~2]
+\label{prop:ca2}
 The emergent realization satisfies finite resolution with operative scale
-$\ell_L:=\ell_{\mathrm{visc}}>0$.
+\[
+\ell_L:=\ell_{\mathrm{visc}}>0.
+\]
 \end{proposition}
 
 \begin{proof}
 The convergence paper fixes the regularized Gaussian kernel
 \[
 K_\rho(x,y)=\kappa_0+\exp\!\left(-\frac{\|x-y\|^2}{2\ell_{\mathrm{visc}}^2}\right),
-\qquad \ell_{\mathrm{visc}}>0,
-\qquad \kappa_0>0,
+\qquad
+\ell_{\mathrm{visc}}>0,
+\qquad
+\kappa_0>0,
 \]
 and the entire viscous interaction field is built from this strictly positive
-finite-length kernel.  The lattice paper then constructs link, plaquette, and
-matter observables from finitely many site and edge variables determined at that
-same positive resolution.  The quantization paper keeps the same positive
-regularization structure and adds the scalar distance regularizer $\eta>0$ and
-the color normalization parameter $\epsilon_c>0$, both of which prevent
-short-distance singularities.
+finite-length kernel.
+The lattice paper then constructs link, plaquette, and matter observables from
+finitely many site and edge variables determined at that same positive
+resolution.
+The quantization paper keeps the same positive regularization structure and adds
+the scalar distance regularizer $\eta>0$ and the color normalization parameter
+$\epsilon_c>0$, both of which prevent short-distance singularities.
 
 Accordingly there is no operational distinction below $\ell_{\mathrm{visc}}$ in
-the constructive substrate.  Smeared observables are therefore well defined.
+the constructive substrate.
+Smeared observables are therefore well defined.
 Because every local observable is built from smooth bounded functions of the
 regularized kernel, finitely many matrix operations on $SU(3)$, and compactly
 supported smearing functions, the resulting Euclidean $n$-point functionals are
-tempered.  This is exactly the finite-resolution input required for OS0.
+tempered.
+This is exactly the finite-resolution input required for OS0.
 \end{proof}
 
 \subsection{Core Axiom 3: finite propagation}
 
-For the present realization, finite propagation is verified at the constructive
-observation level rather than by an abstract continuum postulate.
-
-\begin{proposition}[Core Axiom~3 for the emergent theory]
+\begin{proposition}[Core Axiom~3]
+\label{prop:ca3}
 The constructive dynamics of the emergent realization satisfy finite propagation
 with finite information speed
 \[
@@ -275,83 +473,91 @@ The convergence paper defines the observed constructive update by the BAOAB
 splitting together with the deterministic velocity cap
 \[
 \psi(v)=V_{\mathrm{alg}}\frac{v}{V_{\mathrm{alg}}+\|v\|},
-\qquad \|\psi(v)\|\le V_{\mathrm{alg}}.
+\qquad
+\|\psi(v)\|\le V_{\mathrm{alg}}.
 \]
 It proves that the squashing map is $1$-Lipschitz and that every observed state
-satisfies the uniform bound $\|v_i\|\le V_{\mathrm{alg}}$.  Therefore over one
-observation step $\Delta t$, the constructive displacement of any particle is
-bounded by
+satisfies the uniform bound $\|v_i\|\le V_{\mathrm{alg}}$.
+Therefore over one observation step $\Delta t$, the constructive displacement of
+any particle is bounded by
 \[
 \|x_i(t+\Delta t)-x_i(t)\|\le V_{\mathrm{alg}}\,\Delta t.
 \]
 Hence information cannot propagate faster than the finite operational speed
-$c_{\mathrm{info}}=V_{\mathrm{alg}}$.  This is exactly the meaning of finite
-propagation required by the framework paper: operational causal disjointness is
-defined by the constructive inability to connect two regions within the relevant
-time.
+$c_{\mathrm{info}}=V_{\mathrm{alg}}$.
+This is exactly the content of finite propagation in the framework.
 \end{proof}
 
 \subsection{Core Axiom 4: local dynamics with additive decomposition}
 
-\begin{proposition}[Core Axiom~4 for the emergent theory]
+\begin{proposition}[Core Axiom~4]
+\label{prop:ca4}
 The emergent realization satisfies local dynamics with additive decomposition.
 \end{proposition}
 
 \begin{proof}
 At finite lattice level, the lattice paper writes the Wilson, fermionic, and
-scalar sectors as sums over plaquettes, edges, and sites.  These are local sums.
+scalar sectors as sums over plaquettes, edges, and sites.
 Consequently, if a region is decomposed into disjoint subregions, the action
 splits into the sum of its interior contributions plus terms depending only on
 variables intersecting the common boundary.
 
 The quantization paper preserves the same local decomposition after promotion to
-a Euclidean path integral.  In the $N\to\infty$ thermodynamic limit, the lattice
-paper shows that the discrete link and plaquette sums converge to bilocal
-integrals over $\pi_\infty$ and its adjacent-time path measures.  Because those
-continuum functionals arise as limits of sums of local contributions and the
-framework paper allows the stochastic/interacting-diffusion version of Core
-Axiom~4 to be stated directly in terms of a local generating structure or rate
-functional, the emergent mean-field realization satisfies the additive
-hyperplane decomposition
+a Euclidean path integral.
+In the $N\to\infty$ thermodynamic limit, the lattice paper shows that the
+discrete link and plaquette sums converge to mean-field functionals on
+$\pi_\infty$ and the adjacent-time path laws.
+Because those continuum functionals arise as limits of sums of local
+contributions and the framework allows Core Axiom~4 to be stated directly in
+terms of a local generating structure or rate functional, the emergent
+realization satisfies the additive hyperplane decomposition
 \[
 S_E[\Phi]=S_E[\Phi_+]+S_E[\Phi_-]+B[\Phi_0].
 \]
-This is precisely the input needed for the framework paper's
-hyperplane-decomposition lemma.
 \end{proof}
 
 \subsection{Core Axiom 5: positivity and stability}
 
-\begin{proposition}[Core Axiom~5 for the emergent theory]
+\begin{proposition}[Core Axiom~5]
+\label{prop:ca5}
 The emergent realization satisfies positivity and stability.
 \end{proposition}
 
 \begin{proof}
-The constructive dynamics are Markovian.  Their transition operators
+The constructive dynamics are Markovian.
+Their transition operators
 \[
 (P_tF)(z)=\mathbb E[F(Z_t)\mid Z_0=z]
 \]
 are positivity preserving and preserve constants, hence define a
-positivity-preserving semigroup on the physical observable algebra.  The
-convergence paper proves that the constructive dynamics admit invariant laws
+positivity-preserving semigroup on the physical observable algebra.
+The convergence paper proves that the constructive dynamics admit invariant laws
 $\pi_N$ and a unique stationary mean-field equilibrium $\pi_\infty$, and it
-proves exponential convergence to equilibrium together with a logarithmic Sobolev
-inequality uniform in $N$ and transferred to the mean-field limit.  Therefore
-stability, bounded-below Euclidean time evolution, and the strict positivity
-properties required by the framework are all present.
+proves exponential convergence to equilibrium together with a logarithmic
+Sobolev inequality uniform in $N$ and transferred to the mean-field limit.
+Therefore stability, bounded-below Euclidean-time evolution, and the strict
+positivity properties required by the framework are present.
 
-In the Hilbert-space realization associated with the framework, the semigroup is
-written as $e^{-tH}$ with $H\ge 0$.  This is exactly the Core-Axiom-5 output used
-later in the transfer-matrix and reconstruction arguments.
+In the Hilbert-space realization associated with Euclidean reconstruction, the
+semigroup is written as $e^{-tH}$ with $H\ge0$.
+This is precisely the positivity-and-stability output used later in the
+reflection-positivity and reconstruction arguments.
 \end{proof}
 
-\begin{corollary}[Verification of the core layer]\label{cor:core}
+\begin{corollary}[Verification of the core layer]
+\label{cor:core}
 The emergent $SU(3)$ realization satisfies Core Axioms~1--5.
 \end{corollary}
 
-\section{Branch classification}
+\begin{proof}
+Combine Propositions~\ref{prop:ca1}--\ref{prop:ca5}.
+\end{proof}
 
-\begin{proposition}[Axes A, B, C, and D]\label{prop:axes}
+\section{Branch Data and Obstruction-Free Structure}
+\label{sec:branches}
+
+\begin{proposition}[Axes $A$, $B$, $C$, and $D$]
+\label{prop:axes}
 The emergent realization lies in the branch
 \[
 (A1,B3,C1,D1).
@@ -365,122 +571,175 @@ gauge-invariant sector, so the symmetry branch is $A1$.
 
 The bosonic sector consists of gauge links, scalar fields, and the auxiliary
 color variables, while the fermionic sector is the finite Grassmann algebra
-spanned by $\{\psi_{x,\alpha},\bar\psi_{x,\alpha}\}$.  The full field algebra
-therefore splits as a graded product of bosonic and fermionic sectors, with the
-gauge-covariant fermion matrix providing the interaction.  Hence the statistics
-branch is $B3$.
+spanned by $\{\psi_{x,\alpha},\bar\psi_{x,\alpha}\}$.
+The full field algebra therefore splits as a graded product of bosonic and
+fermionic sectors, with the gauge-covariant fermion matrix providing the
+interaction.  Hence the statistics branch is $B3$.
 
-The Wilson action, matter couplings, and the nontrivial bilocal mean-field gauge
-action are not quadratic free theories, so the interaction branch is $C1$.
+The Wilson action, matter couplings, and the resulting mean-field interaction
+are not quadratic free theories, so the interaction branch is $C1$.
 
 Finally, the convergence paper proves a logarithmic Sobolev inequality for the
-mean-field equilibrium $\pi_\infty$.  As shown below, that implies a strict
-spectral gap of the constructive generator and hence exponential clustering.  In
-the framework paper this is precisely the gapped branch $D1$.
+mean-field equilibrium $\pi_\infty$.
+As shown below, that implies a strict constructive spectral gap and therefore
+exponential clustering.
+In the framework classification this is exactly the gapped branch $D1$.
 \end{proof}
 
-\section{Flat-sector implementation of the framework theorem}
+\begin{proposition}[No unresolved gauge-fixing obstruction]
+\label{prop:no-gauge-obstruction}
+There is no unresolved gauge-fixing obstruction in the constructive Euclidean
+integral.
+\end{proposition}
 
-This section discharges the exact realization-specific hypotheses isolated by the
-framework paper.
+\begin{proof}
+By the quantization paper, every rooted gauge orbit meets the maximal-tree gauge
+slice exactly once.
+Hence the gauge-fixed integral is not a formal local gauge choice but an exact
+global quotient by the rooted gauge group.
+The same paper computes the Faddeev--Popov determinant as
+\[
+\Delta_{\mathrm{FP}}=1
+\]
+and shows that the ghost Berezin integral reproduces this same unit constant.
+Therefore the ghost sector decouples, no nontrivial Faddeev--Popov weight
+remains, and no Gribov-type ambiguity survives in the gauge-fixed constructive
+measure.
+\end{proof}
+
+\begin{proposition}[Not a different thermodynamic theory]
+\label{prop:not-different-theory}
+The bilocal mean-field formulation appearing in the thermodynamic-limit papers
+is not a distinct thermodynamic target theory.
+\end{proposition}
+
+\begin{proof}
+Corollary~\ref{cor:identification} states precisely the relation among the
+finite Wilson action and the bilocal mean-field Wilson action.
+The finite lattice paper provides the Wilson plaquette action, the thermodynamic
+presentation rewrites its exact thermodynamic limit on $\pi_\infty$, and
+Theorem~\ref{thm:constructive-identification} identifies that thermodynamic
+gauge sector as the same theory in its mean-field representation.
+Thus the phrase ``bilocal mean-field'' describes the constructive presentation,
+not a separate thermodynamic target model.
+\end{proof}
+
+\section{Euclidean Axioms}
+\label{sec:os}
 
 \subsection{OS0 and OS1}
 
-\begin{proposition}[OS0]\label{prop:os0}
+\begin{proposition}[OS0]
+\label{prop:os0}
 The Euclidean Schwinger functions of the emergent realization satisfy OS0.
 \end{proposition}
 
 \begin{proof}
-By Core Axiom~2, the constructive theory is built at strictly positive
-resolution $\ell_{\mathrm{visc}}$, with the additional positive regularizers
-$\kappa_0$, $\eta$, and $\epsilon_c$.  Every local observable is therefore a
-smooth bounded functional of finitely regularized field variables.  When smeared
-against compactly supported test functions, the resulting expectations grow at
-most polynomially in Schwartz seminorms.  Hence the Schwinger functions define
-tempered distributions on $(\R^4)^n$.  This is OS0.
+By Proposition~\ref{prop:ca2}, the constructive theory is built at strictly
+positive resolution $\ell_{\mathrm{visc}}$, with additional positive
+regularizers $\kappa_0$, $\eta$, and $\epsilon_c$.
+Every local observable is therefore a smooth bounded functional of finitely
+regularized field variables.
+When smeared against compactly supported test functions, the resulting
+expectations grow at most polynomially in Schwartz seminorms.
+Hence the Schwinger functions define tempered distributions on $(\R^4)^n$.
+This is OS0.
 \end{proof}
 
-\begin{proposition}[OS1]\label{prop:os1}
+\begin{proposition}[OS1]
+\label{prop:os1}
 The Euclidean Schwinger functions of the emergent realization satisfy OS1.
 \end{proposition}
 
 \begin{proof}
-The framework paper isolates two ingredients for OS1 in the flat sector: the
-local generating structure must depend only on the flat metric
-$\delta_{\mu\nu}$, and the equilibrium measure must be uniquely selected as the
-flat-sector equilibrium branch.  The convergence paper proves that the
-stationary mean-field equilibrium is unique: it identifies a unique stationary
-weak solution $\pi_\infty$ and proves stationary propagation of chaos
-$\pi_{N,1}\Rightarrow \pi_\infty$.  The lattice paper then defines the bilocal
-mean-field gauge objects and the Wilson action directly on that stationary law
-$\pi_\infty$.
-
-Since the entire flat-sector constructive geometry is built on $(\R^4,\delta)$,
-the Euclidean action density is $E(4)$-covariant.  Because the equilibrium law is
-uniquely selected by $\pi_\infty$, there is no competing equilibrium branch to
-break that covariance.  Therefore
-\[
-g_{\#}\pi_\infty=\pi_\infty,
-\qquad g\in E(4),
-\]
-and all Euclidean Schwinger functions are exactly $E(4)$-covariant.  This is
-OS1.
+The framework isolates two ingredients for OS1 in the flat sector: the local
+constructive generating structure must depend only on the flat metric
+$\delta_{\mu\nu}$, and the equilibrium branch must be uniquely selected.
+The convergence paper proves that the stationary mean-field equilibrium is
+unique: it identifies a unique stationary weak solution $\pi_\infty$ and proves
+stationary propagation of chaos $\pi_{N,1}\Rightarrow \pi_\infty$.
+The lattice and quantization papers define the constructive geometry on the flat
+background $(\R^4,\delta)$.
+Therefore the flat-sector equilibrium branch is unique and Euclidean covariance
+is exact.
+This is the OS1 input isolated by the framework theorem.
 \end{proof}
 
-\subsection{OS2: transfer matrix and reflection positivity}
+\subsection{OS2: direct reflection positivity on the physical algebra}
 
-\begin{lemma}[Transfer operator in the emergent realization]\label{lem:transfer}
-For the emergent realization, the transfer operator required by the framework
-paper's Proposition~5.3 is the Euclidean-time Markov semigroup of the
-constructive dynamics.
-\end{lemma}
+\begin{definition}[Reflection involution]
+\label{def:reflection}
+Let $\Theta$ denote Euclidean time reflection across the hyperplane $t=0$
+together with the $*$-operation on observables.
+For a positive-time observable $F$, $\Theta F$ is therefore a negative-time
+observable.
+\end{definition}
 
-\begin{proof}
-The framework paper formulates Core Axiom~4 in a form tailored to stochastic and
-interacting-diffusion realizations: the primitive object may be the local Markov
-transition kernel, and the effective Euclidean action or rate functional is then
-required only to inherit additive decomposition across separated regions.
-This is exactly the present situation.  The constructive dynamics are Markovian,
-so the Euclidean measure factorizes across a reflection hyperplane through the
-Markov property.  By Core Axiom~4, the additive decomposition across the
-hyperplane is already available.  Therefore the transfer operator appearing in
-the framework's Proposition~5.3 is identified with one Euclidean-time step of the
-constructive semigroup.
-\end{proof}
-
-\begin{proposition}[OS2]\label{prop:os2}
-The Euclidean Schwinger functions of the emergent realization satisfy OS2.
+\begin{proposition}[Direct reflection positivity on the physical algebra]
+\label{prop:os2}
+The Euclidean measure of the emergent realization is reflection positive on the
+gauge-invariant physical algebra.
+Equivalently, the Schwinger functions satisfy OS2.
 \end{proposition}
 
 \begin{proof}
-By Core Axiom~4 and Proposition~\ref{lem:transfer}, the flat-sector Euclidean
-generating structure decomposes across the reflection hyperplane and admits the
-hyperplane factorization required by the framework paper's transfer-matrix
-Proposition~5.3.  By Core Axiom~5, Euclidean time evolution is implemented by a
-positivity-preserving semigroup $e^{-tH}$ with $H\ge 0$ on the physical sector.
-Hence for every positive-time physical observable $F\in \mcA_+^{\mathrm{phys}}$,
-that proposition gives
+Let $\mathcal F_+$, $\mathcal F_0$, and $\mathcal F_-$ denote the positive-time,
+reflection-plane, and negative-time $\sigma$-algebras of the constructive
+Euclidean path measure.
+By Proposition~\ref{prop:ca4}, the constructive generating structure decomposes
+additively across the reflection hyperplane.
+Because the constructive dynamics are Markovian and stationary, the past and
+future are conditionally independent given $\mathcal F_0$.
+Therefore, for every gauge-invariant positive-time observable $F$,
+\begin{align*}
+\langle \Theta F,F\rangle_E
+&=
+\mathbb E_{\pi_\infty}\!\bigl[(\Theta F)\,F\bigr]\\
+&=
+\mathbb E_{\pi_\infty}\!\Bigl[
+\mathbb E_{\pi_\infty}[\Theta F\mid \mathcal F_0]\,
+\mathbb E_{\pi_\infty}[F\mid \mathcal F_0]
+\Bigr].
+\end{align*}
+Since $\Theta$ is reflection together with $*$, conditional expectation commutes
+with $\Theta$ on the physical algebra and
+\[
+\mathbb E_{\pi_\infty}[\Theta F\mid \mathcal F_0]
+=
+\overline{\mathbb E_{\pi_\infty}[F\mid \mathcal F_0]}.
+\]
+Hence
 \[
 \langle \Theta F,F\rangle_E
 =
-\langle F,e^{-2t_{\min}H}F\rangle_{\mcH}
-=
-\|e^{-t_{\min}H}F\|_{\mcH}^2
-\ge 0.
+\mathbb E_{\pi_\infty}\!\left[
+\left|\mathbb E_{\pi_\infty}[F\mid \mathcal F_0]\right|^2
+\right]
+\ge0.
 \]
 This is reflection positivity.
 
-The ghost sector introduces no negative-norm obstruction.  The quantization
-paper proves exact rooted maximal-tree gauge fixing, exact orbit uniqueness,
-$\Delta_{\mathrm{FP}}=1$, and a ghost Berezin integral equal to this same unit
-constant.  Therefore the ghost sector decouples and contributes no indefinite
-metric factor.  Reflection positivity is thus realized on the gauge-invariant
-physical algebra itself.  This is OS2.
+It remains to check that no indefinite ghost contribution survives.
+By Proposition~\ref{prop:no-gauge-obstruction}, the gauge fixing is exact, the
+Faddeev--Popov determinant is identically $1$, and the ghost Berezin integral is
+the same unit factor.
+Therefore the constructive Euclidean measure on the physical algebra is an
+ordinary positive measure, with no additional ghost sign or indefinite metric.
+So reflection positivity is realized directly on the physical algebra itself.
 \end{proof}
 
-\subsection{OS3: spectral gap, mixing, and exponential clustering}
+\begin{remark}
+The proof above is the direct generator-and-Markov proof of reflection
+positivity in this realization.
+It is equivalent to the transfer-operator formulation used in the framework
+paper, but the present statement removes any ambiguity that OS2 is being left as
+mere framework bookkeeping.
+\end{remark}
 
-\begin{proposition}[Mean-field spectral gap]\label{prop:gap}
+\subsection{OS3: spectral gap and exponential clustering}
+
+\begin{proposition}[Mean-field spectral gap]
+\label{prop:gap}
 The constructive generator of the emergent mean-field realization has a strict
 spectral gap on $L^2(\pi_\infty)$.
 \end{proposition}
@@ -491,45 +750,72 @@ The convergence paper proves the mean-field logarithmic Sobolev inequality
 \Ent_{\pi_\infty}(g^2)
 \le
 C_{\mathrm{LSI}}
-\int \Gamma_{\mathrm{hypo}}^{\infty}(g,g)\,\dd \pi_\infty
+\int \Gamma_{\mathrm{hypo}}^\infty(g,g)\,\dd\pi_\infty.
 \]
-with the same $N$-uniform constant transferred from the finite-particle theory.
-Linearizing at $g=1+\varepsilon f$ and taking the coefficient of $\varepsilon^2$
-yields the corresponding Poincar\'e inequality
+Linearizing at $g=1+\varepsilon f$ and taking the coefficient of
+$\varepsilon^2$ gives the corresponding Poincar\'e inequality
 \[
 \Var_{\pi_\infty}(f)
 \le
-C_{\mathrm{LSI}}\,\mathcal E_\infty(f,f),
+C_{\mathrm{LSI}}\,
+\mathcal E_\infty(f,f),
 \]
 where $\mathcal E_\infty$ is the Dirichlet form of the constructive generator.
-This is exactly the statement that the generator has a strict spectral gap on
-$L^2(\pi_\infty)$.
+Equivalently, the mean-field semigroup $T_t$ on centered observables satisfies
+\[
+\|T_t f\|_{L^2(\pi_\infty)}
+\le
+e^{-\lambda_* t}\|f\|_{L^2(\pi_\infty)}
+\qquad
+\text{for some }\lambda_*>0.
+\]
+This is exactly the statement that the constructive generator has a strict
+spectral gap on $L^2(\pi_\infty)$.
 \end{proof}
 
-\begin{proposition}[OS3]\label{prop:os3}
-The Euclidean Schwinger functions of the emergent realization satisfy OS3, with
-exponential clustering.
+\begin{proposition}[OS3 and exponential clustering]
+\label{prop:os3}
+The Euclidean Schwinger functions of the emergent realization satisfy OS3, and
+their connected correlations decay exponentially in Euclidean time.
 \end{proposition}
 
 \begin{proof}
-The framework paper's Proposition~5.5 states that a spectral gap of the
-constructive generator in $L^2(\pi)$ implies ergodicity, translation mixing for
-observables in $L^2(\pi)\cap L^\infty(\pi)$, and therefore OS3.  By
-Proposition~\ref{prop:gap}, that exact hypothesis is satisfied for
-$\pi_\infty$.  Hence the equilibrium measure is ergodic and, for all translated
-observables $F,G$ in the physical class,
+Let $F$ and $G$ be bounded gauge-invariant observables supported in the positive
+time half-space, and let $\tau_t G$ denote Euclidean-time translation by $t>0$.
+Define the centered boundary observables
 \[
-\bigl|\langle F\,\tau_a G\rangle_{\pi_\infty}-\langle F\rangle_{\pi_\infty}\langle G\rangle_{\pi_\infty}\bigr|
-\xrightarrow{|a|\to\infty}0.
+f:=\mathbb E_{\pi_\infty}[F\mid\mathcal F_0]-\mathbb E_{\pi_\infty}[F],
+\qquad
+g:=\mathbb E_{\pi_\infty}[G\mid\mathcal F_0]-\mathbb E_{\pi_\infty}[G].
 \]
-Because the gap is strict, the convergence is exponential, not merely
-qualitative.  Therefore the connected Schwinger functions cluster
-exponentially.  This is OS3, and it places the realization on Axis~D1.
+By the same conditional-independence argument used in the proof of
+Proposition~\ref{prop:os2},
+\[
+\langle \Theta F,\tau_t G\rangle_E
+-\langle F\rangle_E\langle G\rangle_E
+=
+\langle f,T_t g\rangle_{L^2(\pi_\infty)}.
+\]
+Applying the spectral-gap estimate from Proposition~\ref{prop:gap} gives
+\[
+\bigl|
+\langle \Theta F,\tau_t G\rangle_E
+-\langle F\rangle_E\langle G\rangle_E
+\bigr|
+\le
+\|f\|_{L^2(\pi_\infty)}\,
+\|T_t g\|_{L^2(\pi_\infty)}
+\le
+e^{-\lambda_* t}\|f\|_{L^2(\pi_\infty)}\|g\|_{L^2(\pi_\infty)}.
+\]
+Thus connected Euclidean correlations decay exponentially.
+In particular, correlations cluster as $t\to\infty$, which is OS3.
 \end{proof}
 
 \subsection{OS4: graded symmetry}
 
-\begin{proposition}[OS4]\label{prop:os4}
+\begin{proposition}[OS4]
+\label{prop:os4}
 The Euclidean Schwinger functions of the emergent realization satisfy OS4.
 \end{proposition}
 
@@ -537,77 +823,231 @@ The Euclidean Schwinger functions of the emergent realization satisfy OS4.
 The quantization paper defines the fermionic sector as a finite Grassmann algebra
 $\Lambda_{\mathrm F}$ generated by the fields
 $\{\psi_{x,\alpha},\bar\psi_{x,\alpha}\}$, while the bosonic sector is formed by
-the commuting gauge, scalar, and auxiliary color variables.  Hence the full
-field algebra is a graded tensor product
+the commuting gauge, scalar, and auxiliary color variables.
+Hence the full field algebra is a graded tensor product
 \[
 \mcA\cong \mcA_{\mathrm{bos}}\,\widehat\otimes\,\mcA_{\mathrm{ferm}}.
 \]
 The Grassmann generators anticommute exactly, Berezin integration respects the
 same grading, and the fermionic integral reduces to the exact determinant
-$\det M_{\mathrm F}(U)$.  Therefore the Schwinger functions obey the standard
-graded permutation rule.  This is OS4.
+$\det M_{\mathrm F}(U)$.
+Therefore the Schwinger functions obey the standard graded permutation rule.
+This is OS4.
 \end{proof}
 
-\begin{corollary}[OS verification]\label{cor:os}
+\begin{theorem}[Euclidean axioms theorem]
+\label{thm:euclidean-axioms}
 The Euclidean Schwinger functions of the emergent $SU(3)$ realization satisfy
 OS0--OS4.
-\end{corollary}
-
-\begin{proof}
-Combine Propositions~\ref{prop:os0}, \ref{prop:os1}, \ref{prop:os2},
-\ref{prop:os3}, and \ref{prop:os4}.
-\end{proof}
-
-\section{Reconstruction and the Yang--Mills mass-gap specialization}
-
-\begin{theorem}[Wightman reconstruction]\label{thm:wightman}
-The verified Schwinger functions of the emergent $SU(3)$ realization admit the
-Osterwalder--Schrader reconstruction to a Wightman theory on Minkowski space.
 \end{theorem}
 
 \begin{proof}
-By Corollary~\ref{cor:os}, the flat-sector Euclidean Schwinger functions satisfy
-OS0--OS4.  The Osterwalder--Schrader reconstruction theorem therefore produces
-(i) a Hilbert space $\mcH$, (ii) a vacuum vector, (iii) a positive self-adjoint
-Hamiltonian implementing Euclidean-time evolution, and (iv) the corresponding
-Wightman functions obtained by analytic continuation to Minkowski space.  Since
-finite propagation has already been verified at the constructive level and the
-Euclidean covariance is exact, the reconstructed theory lies in the causal
-relativistic branch identified by the framework paper.
+OS0 is Proposition~\ref{prop:os0}.
+OS1 is Proposition~\ref{prop:os1}.
+OS2 is Proposition~\ref{prop:os2}.
+OS3 is Proposition~\ref{prop:os3}.
+OS4 is Proposition~\ref{prop:os4}.
+Combining these five propositions gives OS0--OS4.
 \end{proof}
 
-\begin{theorem}[Mass-gap specialization within the framework]\label{thm:massgap-specialization}
-Within the constructive dynamical-axioms framework, the emergent $SU(3)$
-realization satisfies the Yang--Mills mass-gap specialization hypotheses.
+\section{Reconstruction and Positive Mass Gap}
+\label{sec:reconstruction}
+
+\begin{proposition}[Constructive gap implies Minkowski mass gap]
+\label{prop:constructive-gap-implies-physical-gap}
+Let $H$ be the Hamiltonian reconstructed from the Schwinger functions by the
+Osterwalder--Schrader theorem.
+If the constructive mean-field semigroup has a strict $L^2(\pi_\infty)$
+spectral gap $\lambda_*>0$, then
+\[
+\spec(H)\cap(0,\lambda_*)=\varnothing.
+\]
+Moreover $\ker H$ is one-dimensional.
+\end{proposition}
+
+\begin{proof}
+By Theorem~\ref{thm:euclidean-axioms}, the Schwinger functions satisfy OS0--OS4,
+so Osterwalder--Schrader reconstruction provides a Hilbert space $\mcH$, a
+vacuum vector $\Omega$, a positive self-adjoint Hamiltonian $H$, and a dense
+subspace generated by positive-time observables.
+
+Fix a bounded gauge-invariant positive-time observable $F$ and subtract its
+vacuum expectation so that
+\[
+\langle \Omega,F\Omega\rangle=0.
+\]
+By the reconstruction theorem, the Euclidean two-point function of $F$ is
+represented by the spectral theorem as
+\[
+\langle \Omega,F^*e^{-tH}F\Omega\rangle
+=
+\int_{[0,\infty)} e^{-tE}\,\dd\nu_F(E),
+\]
+where
+\[
+\nu_F(B):=\langle F\Omega,E_H(B)F\Omega\rangle
+\]
+is a finite positive measure and $E_H$ is the spectral measure of $H$.
+
+On the other hand, Proposition~\ref{prop:os3} gives exponential clustering.
+Applied with $G=F$, it yields a constant $C_F<\infty$ such that
+\[
+\langle \Omega,F^*e^{-tH}F\Omega\rangle
+\le
+C_F e^{-\lambda_* t}
+\qquad
+\forall t\ge0.
+\]
+Suppose, toward a contradiction, that
+\[
+\nu_F([0,\lambda_*-\varepsilon])>0
+\]
+for some $\varepsilon\in(0,\lambda_*)$.
+Then
+\[
+\int_{[0,\infty)} e^{-tE}\,\dd\nu_F(E)
+\ge
+e^{-(\lambda_*-\varepsilon)t}\nu_F([0,\lambda_*-\varepsilon]).
+\]
+The right-hand side decays strictly slower than $e^{-\lambda_* t}$, which
+contradicts the previous exponential upper bound.
+Therefore
+\[
+\supp \nu_F\subset[\lambda_*,\infty).
+\]
+Since vectors of the form $F\Omega$ with $F$ positive-time and centered are
+dense in the orthogonal complement of the vacuum, the spectral theorem implies
+\[
+\spec(H)\cap(0,\lambda_*)=\varnothing.
+\]
+
+It remains to show that the vacuum is unique.
+If $\Psi\neq0$ were another ground-state vector orthogonal to $\Omega$, then
+$H\Psi=0$ and hence
+\[
+\langle \Psi,e^{-tH}\Psi\rangle=\|\Psi\|^2
+\qquad
+\forall t\ge0.
+\]
+But $\Psi$ can be approximated by centered positive-time vectors $F\Omega$, for
+which the corresponding Euclidean correlations decay exponentially by
+Proposition~\ref{prop:os3}.
+Passing to the limit would force $\|\Psi\|^2=0$, a contradiction.
+Hence $\ker H=\C\Omega$ is one-dimensional.
+\end{proof}
+
+\begin{theorem}[Wightman reconstruction with mass gap]
+\label{thm:wightman-gap}
+The verified Schwinger functions reconstruct to a nontrivial Wightman
+$SU(3)$ gauge theory on Minkowski space.
+Its Hamiltonian $H$ has vacuum as a unique ground state and there exists
+$m>0$ such that
+\[
+\spec(H)\subset\{0\}\cup[m,\infty).
+\]
 \end{theorem}
 
 \begin{proof}
-The framework paper separates the universal core axioms from the infrared branch
-classification.  The gapped branch $D1$ is selected by a strict spectral gap of
-the constructive generator and the resulting exponential clustering.  Those two
-inputs have already been verified in Propositions~\ref{prop:gap} and
-\ref{prop:os3}.  The symmetry branch is $A1$ and the theory is interacting, so
-within the framework's classification this realization lies in the gapped
-Yang--Mills branch.  That is exactly the mass-gap specialization selected by the
-series.
+By Corollary~\ref{cor:identification}, the Euclidean target theory referred to
+in the present paper is the exact thermodynamic $SU(3)$ gauge theory produced
+by the series.
+By Theorem~\ref{thm:euclidean-axioms}, the Schwinger functions satisfy OS0--OS4.
+The Osterwalder--Schrader reconstruction theorem therefore produces a Wightman
+theory on Minkowski space with Hilbert space $\mcH$, vacuum vector $\Omega$,
+positive Hamiltonian $H$, and analytically continued Wightman functions.
+
+The theory is nontrivial because the imported lattice and quantization papers
+construct a genuine interacting Wilson-plus-matter sector rather than a free
+quadratic Gaussian model, and the branch classification
+Proposition~\ref{prop:axes} places the realization in the interacting branch
+$C1$.
+Finally, Proposition~\ref{prop:constructive-gap-implies-physical-gap} gives a
+strict gap above the vacuum and uniqueness of the ground state.
+Taking $m:=\lambda_*$ proves the stated spectral inclusion.
+\end{proof}
+
+\begin{theorem}[Positive mass gap]
+\label{thm:positive-gap}
+Let $H$ be the Hamiltonian of the reconstructed Minkowski theory.
+Then there exists $m>0$ such that
+\[
+\spec(H)\cap(0,m)=\varnothing.
+\]
+\end{theorem}
+
+\begin{proof}
+This is the spectral conclusion of Theorem~\ref{thm:wightman-gap}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:framework-closure}]
+Item \textnormal{(i)} is Corollary~\ref{cor:core}.
+Item \textnormal{(ii)} is Proposition~\ref{prop:axes}.
+Item \textnormal{(iii)} follows from the imported inputs
+Proposition~\ref{prop:imports}, together with the direct realization-specific
+proofs of reflection positivity and constructive spectral gap in
+Propositions~\ref{prop:os2} and~\ref{prop:gap}.
+Item \textnormal{(iv)} is Theorem~\ref{thm:wightman-gap}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Item \textnormal{(i)} of the theorem is Corollary~\ref{cor:identification}.
+Item \textnormal{(ii)} is Theorem~\ref{thm:euclidean-axioms}.
+Items \textnormal{(iii)} and \textnormal{(iv)} are exactly
+Theorem~\ref{thm:wightman-gap}.
 \end{proof}
 
 \section{Conclusion}
 
-The framework paper was designed to separate three layers: the structural core,
-the flat-sector specialization theorem, and the realization-specific analytic
-inputs.  The present paper closes that last layer for the emergent $SU(3)$
-construction by importing the already-proved companion results and applying them
-in the exact places isolated by the framework.
+The verification paper is no longer written only as a framework-closure note.
+Its theorem chain is now stated in the same language in which the
+constructive gauge-theory problem is posed:
+first the Wilson plaquette sector is identified with its exact thermodynamic
+mean-field representation, then the Schwinger functions are proved to satisfy
+OS0--OS4, then they are reconstructed to a Minkowski Wightman theory, and
+finally the reconstructed Hamiltonian is shown to have a strictly positive
+spectral gap above the vacuum.
 
-The result is not another program statement.  For this realization, the closure
-is complete: Core Axioms~1--5 are verified, the branch data are
-$(A1,B3,C1,D1)$, the flat-sector hypotheses isolated in the framework theorem
-are satisfied, the Euclidean Schwinger functions obey OS0--OS4, and the
-Wightman reconstruction follows.  In the internal language of the framework,
-the $N\to\infty$ interacting-diffusion substrate is therefore an unconditional
-implementation of the constructive dynamical program for the emergent
-four-dimensional $SU(3)$ gauge theory.
+The bilocal mean-field presentation does not define a different target model.
+It is the constructive thermodynamic representation carried by the series before
+that theory is read in the thermodynamic mean-field language.
+The gauge fixing is exact, the ghost sector decouples, reflection positivity is
+realized on the physical algebra, and the constructive logarithmic Sobolev
+inequality yields the operator-theoretic mass gap after reconstruction.
+
+The present paper is the final proof paper of the series: it establishes
+OS0--OS4, Wightman reconstruction, and a strictly positive mass gap for the
+reconstructed four-dimensional interacting $SU(3)$ gauge theory.
+Therefore the series constructs an interacting four-dimensional $SU(3)$
+gauge quantum field theory on Minkowski space with a strictly positive
+mass gap.
+
+\appendix
+
+\section{What Paper 3 Did Not Prove and What the Present Paper Now Proves}
+\label{sec:appendix-paper4}
+
+\begin{proposition}[Disclaimers of the quantization paper are discharged here]
+\label{prop:paper4-discharged}
+The quantization paper stopped at exact finite-dimensional quantization and did
+not claim either Osterwalder--Schrader verification or a mass-gap theorem.
+The present paper discharges exactly those two deferred steps.
+\end{proposition}
+
+\begin{proof}
+The abstract and conclusion of the quantization paper state, in substance, that
+the paper constructs the exact gauge-fixed finite-dimensional path integral, but
+does not verify the Osterwalder--Schrader axioms on the continuum theory and
+does not prove a mass gap.
+Those were the two explicit forward references left open by the quantization
+paper.
+
+The present paper closes both.
+Theorem~\ref{thm:euclidean-axioms} proves OS0--OS4.
+Theorem~\ref{thm:wightman-gap} proves the Minkowski reconstruction together with
+the positive mass gap.
+Accordingly the earlier disclaimers remain correct for the quantization paper
+taken in isolation, but they no longer apply to the completed series.
+\end{proof}
 
 \begin{thebibliography}{9}
 

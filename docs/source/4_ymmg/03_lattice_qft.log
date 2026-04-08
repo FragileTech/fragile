@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  6 APR 2026 23:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  7 APR 2026 17:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -391,24 +391,24 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 (./03_lattice_qft.aux)
 \openout1 = `03_lattice_qft.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -486,20 +486,20 @@ e
 \Gin@req@height=\dimen190
 \Gin@req@width=\dimen191
 )
-LaTeX Info: Redefining \microtypecontext on input line 34.
-Package microtype Info: Applying patch `item' on input line 34.
-Package microtype Info: Applying patch `toc' on input line 34.
-Package microtype Info: Applying patch `eqnum' on input line 34.
-Package microtype Info: Applying patch `footnote' on input line 34.
-Package microtype Info: Applying patch `verbatim' on input line 34.
-LaTeX Info: Redefining \microtypesetup on input line 34.
+LaTeX Info: Redefining \microtypecontext on input line 35.
+Package microtype Info: Applying patch `item' on input line 35.
+Package microtype Info: Applying patch `toc' on input line 35.
+Package microtype Info: Applying patch `eqnum' on input line 35.
+Package microtype Info: Applying patch `footnote' on input line 35.
+Package microtype Info: Applying patch `verbatim' on input line 35.
+LaTeX Info: Redefining \microtypesetup on input line 35.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 34.
+LaTeX Info: Redefining \showhyphens on input line 35.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -508,13 +508,13 @@ Package microtype Info: No adjustment of character kerning.
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-Package hyperref Info: Link coloring OFF on input line 34.
+Package hyperref Info: Link coloring OFF on input line 35.
 
 (./03_lattice_qft.out) (./03_lattice_qft.out)
 \@outlinefile=\write3
 \openout3 = `03_lattice_qft.out'.
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 36.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 37.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -523,7 +523,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 36.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 37.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -532,71 +532,43 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+rsfs on input line 36
+LaTeX Font Info:    Trying to load font information for U+rsfs on input line 37
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/jknapltx/ursfs.fd
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 )
-(./03_lattice_qft.toc)
+(./03_lattice_qft.toc
+
+[1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}])
 \tf@toc=\write4
 \openout4 = `03_lattice_qft.toc'.
 
 
 
-[1
-
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-
 [2]
 
 [3]
-Overfull \hbox (54.92473pt too wide) detected at line 272
-\OML/cmm/m/it/10.95 e[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 n[] \OMS/cmsy/m/
-n/10.95 ! \OML/cmm/m/it/10.95 n[]\OT1/cmr/m/n/10.95 ) := (\OML/cmm/m/it/10.95 n
-[] \OMS/cmsy/m/n/10.95 ! \OML/cmm/m/it/10.95 n[]\OT1/cmr/m/n/10.95 )\OML/cmm/m/
-it/10.95 ;  e[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 n[] \OMS/cmsy/m/n/10.95 
-! \OML/cmm/m/it/10.95 n[]\OT1/cmr/m/n/10.95 ) := (\OML/cmm/m/it/10.95 n[] \OMS/
-cmsy/m/n/10.95 ! \OML/cmm/m/it/10.95 n[]\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95
- ;  e[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 n[] \OMS/cmsy/m/n/10.95 ! \OML/c
-mm/m/it/10.95 n[]\OT1/cmr/m/n/10.95 ) := (\OML/cmm/m/it/10.95 n[] \OMS/cmsy/m/n
-/10.95 ! \OML/cmm/m/it/10.95 n[]\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 :
- []
-
-
 
 [4]
-Overfull \hbox (38.43376pt too wide) detected at line 323
-[] \OT1/cmr/m/n/10.95 := \OMS/cmsy/m/n/10.95 ff\OML/cmm/m/it/10.95 u; v\OMS/cms
-y/m/n/10.95 g \OT1/cmr/m/n/10.95 : (\OML/cmm/m/it/10.95 u \OMS/cmsy/m/n/10.95 !
- \OML/cmm/m/it/10.95 v\OT1/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/
-10.95 E[]\OMS/cmsy/m/n/10.95 g\OML/cmm/m/it/10.95 ;  [] \OT1/cmr/m/n/10.95 := \
-OMS/cmsy/m/n/10.95 ff\OML/cmm/m/it/10.95 u; v\OMS/cmsy/m/n/10.95 g \OT1/cmr/m/n
-/10.95 : (\OML/cmm/m/it/10.95 u \OMS/cmsy/m/n/10.95 ! \OML/cmm/m/it/10.95 v\OT1
-/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 E[]\OMS/cmsy/m/n/10.
-95 g\OML/cmm/m/it/10.95 ;  [] \OT1/cmr/m/n/10.95 := \OMS/cmsy/m/n/10.95 ff\OML/
-cmm/m/it/10.95 u; v\OMS/cmsy/m/n/10.95 g \OT1/cmr/m/n/10.95 : (\OML/cmm/m/it/10
-.95 u \OMS/cmsy/m/n/10.95 ! \OML/cmm/m/it/10.95 v\OT1/cmr/m/n/10.95 ) \OMS/cmsy
-/m/n/10.95 2 \OML/cmm/m/it/10.95 E[]\OMS/cmsy/m/n/10.95 g\OML/cmm/m/it/10.95 ;
- []
-
-
 
 [5]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 469.
+(hyperref)                removing `math shift' on input line 427.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 469.
+(hyperref)                removing `math shift' on input line 427.
 
 
 
 [6]
 
 [7]
-LaTeX Font Info:    Trying to load font information for U+euf on input line 604
+LaTeX Font Info:    Trying to load font information for U+euf on input line 568
 .
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
 File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
@@ -613,66 +585,110 @@ File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
 [10]
 
 [11]
-Overfull \hbox (38.50456pt too wide) detected at line 922
-\OMS/cmsy/m/n/10.95 Q \OT1/cmr/m/n/10.95 = []\OML/cmm/m/it/10.95 T; \OMS/cmsy/m
-/n/10.95 fA\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OMS/cm
-sy/m/n/10.95 g\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 fP[]g\OML/cmm/m/it/10.9
-5 ; \OMS/cmsy/m/n/10.95 N\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 E\OML/cmm/m/
-it/10.95 ; \OMS/cmsy/m/n/10.95 T\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 f\OML
-/cmm/m/it/10.95 x[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 
-)\OML/cmm/m/it/10.95 ; v[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n
-/10.95 )\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 ^^H[](\OML/cmm/m/it/10.95 t\OT
-1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 g[]\OML/cmm/m/it/10.95 ; K[]; ^^W[]; \U/ms
-b/m/n/10.95 ~[]\OML/cmm/m/it/10.95 ; ^^V[]; `[]; ^^O[]; g[]; ^^L; ^^Q; \OMS/cms
-y/m/n/10.95 f\OML/cmm/m/it/10.95 U[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 e\O
-T1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 g[]\OML/cmm/m/it/10.95 ; S[]; S[]; S[][]
+Overfull \hbox (278.95906pt too wide) detected at line 919
+\OMS/cmsy/m/n/10.95 Q \OT1/cmr/m/n/10.95 = []\OML/cmm/m/it/10.95 T; \OT1/cmr/m/
+n/10.95 ^^A\OML/cmm/m/it/10.95 t; \OMS/cmsy/m/n/10.95 fA\OT1/cmr/m/n/10.95 (\OM
+L/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 g\OML/cmm/m/it/10.95 
+; \OMS/cmsy/m/n/10.95 fP[]g\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 N\OML/cmm/
+m/it/10.95 ; E[]; E[]; \OMS/cmsy/m/n/10.95 E\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n
+/10.95 C[]\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 f\OML/cmm/m/it/10.95 x[]\OT
+1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 ;
+ v[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/
+10.95 ; \OT1/cmr/m/n/10.95 ^^H[](\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OMS/
+cmsy/m/n/10.95 g[]\OML/cmm/m/it/10.95 ; K[]; ^^W[]; \U/msb/m/n/10.95 ~[]\OML/cm
+m/m/it/10.95 ; ^^V[]; `[]; ^^O[]; g[]; ^^L; ^^Q; \OMS/cmsy/m/n/10.95 f\OT1/cmr/
+m/n/10.95 ^^D(\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 g[]\
+OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 f\OT1/cmr/m/n/10.95 ^^F[]\OML/cmm/m/it
+/10.95 ; A[]; U[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 P\OT1/cmr/m/n/10.95 )\
+OMS/cmsy/m/n/10.95 g[]\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 f\OML/cmm/m/it/
+10.95 U[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 e\OT1/cmr/m/n/10.95 )\OMS/cmsy
+/m/n/10.95 g[]\OML/cmm/m/it/10.95 ; S[]; S[]; S[][]
  []
 
 
 
 [12]
 
-[13] (./03_lattice_qft.bbl)
+[13]
+Overfull \hbox (47.10678pt too wide) detected at line 1091
+[] [] \OML/cmm/m/it/10.95 W[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 Z[]\OT1/cm
+r/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 ; Z[]
+\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 ); \OML/cmm/m/it/10
+.95 L[]\OT1/cmr/m/n/10.95 ) ^^H(\OML/cmm/m/it/10.95 Z[]\OT1/cmr/m/n/10.95 (\OML
+/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 ; Z[]\OT1/cmr/m/n/10.9
+5 (\OML/cmm/m/it/10.95 t\OT1/cmr/m/n/10.95 )) [] [] [] \OML/cmm/m/it/10.95 ^^_[
+]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 z; z[]\OT1/cmr/m/n/10.95 ) \OML/cmm/m/
+it/10.95 W[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 z; z[]\OT1/cmr/m/n/10.95 ; 
+\OML/cmm/m/it/10.95 ^^Y[]\OT1/cmr/m/n/10.95 ) ^^H(\OML/cmm/m/it/10.95 z; z[]\OT
+1/cmr/m/n/10.95 ) \OML/cmm/m/it/10.95 ^^Y[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10
+.95 dz\OT1/cmr/m/n/10.95 ) \OML/cmm/m/it/10.95 ^^Y[]\OT1/cmr/m/n/10.95 (\OML/cm
+m/m/it/10.95 dz[]\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 :
+ []
 
-[14] (./03_lattice_qft.aux)
+
+
+[14]
+
+[15]
+
+[16]
+
+[17]
+
+[18]
+
+[19] (./03_lattice_qft.bbl
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `cmtt' (encoding: OT1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+)
+
+[20] (./03_lattice_qft.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `03_lattice_qft.out' has not changed.
-(rerunfilecheck)             Checksum: FB66D606F01A6ADEC7E0A131611F46AD;2419.
+(rerunfilecheck)             Checksum: 70C2B5899EFE26E5B33964DA8C16F296;2877.
  ) 
 Here is how much of TeX's memory you used:
- 13880 strings out of 473197
- 215878 string characters out of 5718606
- 673371 words of memory out of 5000000
- 36639 multiletter control sequences out of 15000+600000
- 586004 words of font info for 218 fonts, out of 8000000 for 9000
+ 13991 strings out of 473197
+ 217331 string characters out of 5718606
+ 672202 words of memory out of 5000000
+ 36678 multiletter control sequences out of 15000+600000
+ 590524 words of font info for 253 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,1011b,625s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,12n,79p,1011b,666s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/
-share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/t
-exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive
-/texmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/symbols/msam7.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-
-dist/fonts/type1/public/rsfs/rsfs10.pfb>
-Output written on 03_lattice_qft.pdf (14 pages, 313095 bytes).
+ive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex8.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
+ts/euler/eufm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/s
+ymbols/msam7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/sym
+bols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/rsfs/rsfs10.p
+fb>
+Output written on 03_lattice_qft.pdf (20 pages, 404686 bytes).
 PDF statistics:
- 363 PDF objects out of 1000 (max. 8388607)
- 303 compressed objects within 4 object streams
- 87 named destinations out of 1000 (max. 500000)
- 41065 words of extra memory for PDF output out of 42996 (max. 10000000)
+ 466 PDF objects out of 1000 (max. 8388607)
+ 388 compressed objects within 4 object streams
+ 108 named destinations out of 1000 (max. 500000)
+ 43641 words of extra memory for PDF output out of 51595 (max. 10000000)
 

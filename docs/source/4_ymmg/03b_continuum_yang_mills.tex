@@ -1,0 +1,3279 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools,mathrsfs,bm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\allowdisplaybreaks
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Tset}{\{0,1,\dots,T\}}
+\newcommand{\Law}{\mathrm{Law}}
+\newcommand{\E}{\mathbb E}
+\newcommand{\KL}{\mathrm{KL}}
+\newcommand{\Ent}{\mathrm{Ent}}
+\newcommand{\TV}{\mathrm{TV}}
+\newcommand{\mcN}{\mathcal N}
+\newcommand{\mcE}{\mathcal E}
+\newcommand{\mcL}{\mathcal L}
+\newcommand{\mcQ}{\mathcal Q}
+\newcommand{\mcC}{\mathcal C}
+\newcommand{\mcP}{\mathcal P}
+\newcommand{\mcK}{\mathcal K}
+\newcommand{\dd}{\,\mathrm d}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\fraksu}{\mathfrak{su}(3)}
+\newcommand{\mathfrakh}{\mathfrak h_3}
+
+\title{Local Continuum Yang--Mills Limit\\
+from Particle Trajectories}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This article presents the local continuum-limit argument for the
+trajectory-induced \(SU(3)\) lattice gauge construction in the notation of the
+\(4\_ymmg\) series.
+The analytic input from particle dynamics is taken from
+\texttt{01\_convergence}.
+The finite QFT lattice, the $SU(3)$ link variables, the plaquette holonomies,
+the discrete field strengths, and the Wilson action are restated here from
+first principles.
+The continuum section then follows the explicit five-step route:
+the flat refinement regime $a_N=\max\{\tau_N,\rho_N\}\downarrow0$, the
+small-plaquette Wilson expansion, the area and counting control, the weighted
+Riemann-sum limit, the global remainder estimate, and the coupling
+identification that yields the Euclidean Yang--Mills action on $\R^4$.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+This article studies the local continuum limit of the trajectory-induced
+\(SU(3)\) lattice gauge construction associated with the recorded particle
+system.
+The finite QFT lattice and its gauge data are given by
+\[
+\mcL^{(N)}=(\mcN^{(N)},\mcE^{(N)}),\qquad
+\Xi^{(N)}:\mcN^{(N)}\to\R^4,\qquad
+\mcC_\square^{(N)},
+\]
+together with the finite link variables $U_3^{(N)}(e)$, plaquette holonomies
+$U_3^{(N)}(P)$, discrete field strengths
+$F_P^{(N)}=(ig_3A_P^{(N)})^{-1}\log U_3^{(N)}(P)$, and Wilson action
+$S_{\mathrm W}^{(N)}$.
+The continuum argument is organized in five steps:
+\begin{enumerate}[leftmargin=1.5em]
+\item identify the lattice spacing by $a_N=\max\{\tau_N,\rho_N\}$;
+\item expand the plaquette Wilson density for small plaquettes;
+\item control plaquette areas and plaquette counts;
+\item pass the weighted plaquette sum to a Riemann integral;
+\item identify the $SU(3)$ normalization of the continuum action.
+\end{enumerate}
+
+\section{Particle-system preliminaries}
+
+\begin{definition}[Trajectory notation for bridge quantities]
+\label{def:bridge-notation}
+For each family index $N$, and each observation time
+$t\in\{0,\dots,T\}$, define
+\[
+Z^{(N)}(t):=(X_1^{(N)}(t),V_1^{(N)}(t),\dots,X_N^{(N)}(t),V_N^{(N)}(t))
+\in(\R^6)^N,
+\]
+and
+\[
+\mu_t^N:=\frac1N\sum_{i=1}^N\delta_{(X_i^{(N)}(t),V_i^{(N)}(t))},
+\qquad
+\rho_t^N:=\Law(Z^{(N)}(t)),
+\qquad
+\rho_{t,1}^N:=\text{first marginal of }\rho_t^N.
+\]
+Let \((\bar X_i,\bar V_i)\) be an exchangeable nonlinear mean-field family with
+common one-particle law \(f_t\), and empirical average
+\[
+\bar\mu_t^N:=\frac1N\sum_{i=1}^N\delta_{(\bar X_i(t),\bar V_i(t))}.
+\]
+Finite invariant and mean-field stationary laws are denoted
+\[
+\pi_N\in\mcP((\R^6)^N),\quad
+\pi_{N,1}\in\mcP(\R^6),\quad
+\pi_\infty\in\mcP(\R^6).
+\]
+\end{definition}
+
+\begin{assumption}[Kinetic-core input translated from 01]
+\label{ass:01-core}
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item\textbf{Dimension and confining core.}
+The position and velocity variables are in $d=3$.
+The confining potential \(U\in C^2(\R^3)\) is globally regular and strongly
+coercive:
+\[
+\|\nabla U(x)-\nabla U(y)\|\le L_U\|x-y\|,\qquad
+\langle\nabla U(x)-\nabla U(y),x-y\rangle\ge L_*\|x-y\|^2,\qquad
+\langle x,\nabla U(x)\rangle\ge m_U\|x\|^2-\beta_U.
+\]
+\item\textbf{Regularized viscous kernel and companion rule.}
+For each \(N\) the interaction scale \(\rho_N>0\) defines
+\[
+K_{\rho_N}(x,y):=\kappa_0+\exp\!\left(-\frac{\|x-y\|^2}{2\rho_N^2}\right),
+\qquad
+K_{\rho_N}(x,y)\ge\kappa_0>0.
+\]
+\item\textbf{Core drift and noise scales.}
+The finite-particle kinetic backbone has damping \(\gamma>0\), noise strength
+\(\sigma>0\), and viscous coupling \(\nu_{\mathrm{visc}}\ge0\), with Brownian forcing and dissipative drift as in the kinetic core of \texttt{01\_convergence}.
+\item\textbf{Velocity observation.}
+The velocity-squashing map is
+\[
+\psi(v):=\frac{V_{\mathrm{alg}}}{V_{\mathrm{alg}}+\|v\|}\,v,\qquad V_{\mathrm{alg}}>0.
+\]
+\end{enumerate}
+\end{assumption}
+
+\paragraph{Bridge assumptions}
+\begin{assumption}[Particle-to-mean-field transfer and compactness]
+\label{ass:bridge-backbone}
+Let $\{\mcQ^{(N)}\}_{N\ge N_0}$ be the sequence of trajectory systems from this
+paper, with empirical laws $\rho_t^N$ on $(\R^3\times\R^3)^N$ and mean-field
+law $f_t$ on $\R^3\times\R^3$.
+The following constants $L_U,L_*,\gamma,\sigma,\nu_{\mathrm{visc}},C_T,C_{\mathrm{LSI}},
+C_{\mathrm{tail}}>0$ and random variables are fixed from the outset.
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item \textbf{Confinement and kernel structure.}
+The confining potential and interaction kernel obey strong regularity and confining
+bounds:
+\[
+U\in C^2,\qquad \|\nabla U(x)-\nabla U(y)\|\le L_U\|x-y\|,\qquad
+\langle \nabla U(x)-\nabla U(y),x-y\rangle\ge L_*\|x-y\|^2,
+\]
+and
+\[
+K_{\rho}(x,y)=\kappa_0+\exp\!\left(-\frac{\|x-y\|^2}{2\rho^2}\right),
+\qquad
+K_{\rho}(x,y)\ge \kappa_0>0.
+\]
+\item \textbf{Finite-time concentration / chaos.}
+For every finite horizon $T>0$ and every bounded-Lipschitz observable
+$\Phi$, there is $C_T<\infty$ such that
+\[
+\KL(\rho_t^N\|f_t^{\otimes N})\le C_T,\qquad
+d_{\TV}(\rho_{t,1}^N,f_t)\le\frac{C_T}{\sqrt N},
+\qquad 0\le t\le T,
+\]
+and the first-particle Wasserstein transport estimate
+\[
+\sup_{t\in[0,T]}\E\|X_1^{(N)}(t)-\bar X_1(t)\|^2+\E\|V_1^{(N)}(t)-\bar V_1(t)\|^2
+\le \frac{C_T}{N}
+\]
+holds for the finite/mean-field coupling.
+\item \textbf{Finite-particle functional inequalities.}
+Each finite-$N$ invariant law $\pi_N$ satisfies a uniform hypocoercive logarithmic
+Sobolev inequality
+\[
+\Ent_{\pi_N}(g^2)\le C_{\mathrm{LSI}}
+\int\Gamma_{\mathrm{hypo}}^N(g,g)\,d\pi_N
+\]
+for smooth cylinder functions $g$, yielding one-particle tv transport
+\[
+d_{\TV}(\pi_{N,1},\pi_\infty)\to0,\qquad
+\sup_N\int(\|x\|^2+\|v\|^2)\,\pi_{N,1}(dx\,dv)<\infty.
+\]
+\item \textbf{Stationary compactness and wall-to-infinity tail control.}
+For every bounded continuous observable $\Phi:\R^6\to\R$ and every recentering
+sequence $a_R\in\R^3$ with $\|a_R\|\to\infty$,
+\[
+\lim_{R\to\infty}\lim_{N\to\infty}
+\int\Phi(x-a_R,v)\,\pi_{N,1}^{a_R}(dx\,dv)
+=
+\int\Phi(x,v)\,\pi_{\infty}^0(dx\,dv),
+\]
+where $\pi_{N,1}^{a_R}$ and $\pi_\infty^{a_R}$ are finite-$N$ and mean-field stationary
+laws under translated confining envelopes.
+\end{enumerate}
+\end{assumption}
+
+\begin{theorem}[Bridge package from 01\_convergence]
+\label{thm:bridge-from-01}
+Assumption~\ref{ass:01-core} yields all four items of
+Assumption~\ref{ass:bridge-backbone}, with explicit estimates as follows:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item Finite-time chaos and finite-time coupling:
+for every finite horizon $T>0$ there is $C_T<\infty$ such that
+\[
+\KL(\rho_t^N\|f_t^{\otimes N})
+\leq
+C_T,
+\qquad
+d_{\TV}(\rho_{t,1}^N,f_t)\leq \frac{C_T}{\sqrt N},
+\qquad
+\sup_{t\in[0,T]}\E\!\left(\|X_1^{(N)}(t)-\bar X_1(t)\|^2+\|V_1^{(N)}(t)-\bar V_1(t)\|^2\right)
+\leq
+\frac{C_T}{N}.
+\]
+\item Finite-$N$ hypocoercive regularization:
+there are $\lambda_*>0$, $C_{\mathrm{LSI}}<\infty$ and $C_{\TV}<\infty$, all
+independent of $N$, such that
+\[
+\Ent_{\pi_N}(g^2)\le C_{\mathrm{LSI}}\int \Gamma_{\mathrm{hypo}}^N(g,g)\,d\pi_N,
+\qquad
+\KL(\mu P_t^N\|\pi_N)\le e^{-2\lambda_* t}\KL(\mu\|\pi_N),
+\]
+there is also the TV contraction
+\[
+d_{\TV}(\mu P_t^N,\pi_N)\le \sqrt2\,e^{-\lambda_* t}\KL(\mu\|\pi_N)^{1/2}
+\]
+for all $\mu\ll\pi_N$, and by deterministic observation post-composition the same
+rate applies at observation times $t=m\tau_N$.
+\item Stationary compactness:
+there are constants $C_2<\infty$, $N_0<\infty$ such that
+\[
+\sup_{N\ge N_0}\int_{\R^6}(\|x\|^2+\|v\|^2)\,\pi_{N,1}(dx\,dv)\le C_2,
+\]
+and
+\[
+\pi_{N,1}\Rightarrow\pi_\infty
+\]
+in $\mcP(\R^6)$ as $N\to\infty$.
+\item Recentered limit and mean-field regularity:
+for every bounded $\Phi:\R^6\to\R$ and every recentering sequence
+$a_R\in\R^3$, $\|a_R\|\to\infty$,
+\[
+\lim_{R\to\infty}\lim_{N\to\infty}
+\int_{\R^6}\Phi(x-a_R,v)\,\pi_{N,1}^{a_R}(dx\,dv)
+\to
+\int_{\R^6}\Phi(x,v)\,\pi_\infty^0(dx\,dv),
+\]
+and $\pi_\infty$ satisfies the mean-field inequality
+\[
+\Ent_{\pi_\infty}(g^2)
+\le
+C_{\mathrm{LSI}}\int_{\R^6}\Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_\infty.
+\]
+\end{enumerate}
+
+\end{theorem}
+
+\subsection{Thermodynamic transport of graph and plaquette observables}
+
+The next results transfer empirical trajectory information to the interaction
+graph and its elementary plaquettes.
+
+\begin{definition}[One-particle state and empirical stationary measure]
+\label{def:one-particle-state}
+For each \(N\), particle index \(i\), and time slice \(t\in\Tset\), define the
+one-particle phase-space state
+\[
+Y_i^{(N)}(t):=\bigl(X_i^{(N)}(t),V_i^{(N)}(t)\bigr)\in\R^6,
+\]
+and the empirical same-time measure
+\[
+L_t^{(N)}
+:=
+\frac1N\sum_{i=1}^N \delta_{Y_i^{(N)}(t)}.
+\]
+In the notation of Definition~\ref{def:bridge-notation}, \(L_t^{(N)}=\mu_t^N\).
+For the path-space statements below, we use the same symbol
+\[
+Y_i^{(N)}(s)\in\R^6,\qquad s\in[0,S],
+\]
+for the continuous-time kinetic path of particle \(i\) under the
+\(N\)-particle dynamics from \texttt{01\_convergence}, started from the
+invariant law \(\pi_N\).
+The recorded discrete data are the observed values of this path at the
+integer-indexed sampling times.
+\end{definition}
+
+\begin{corollary}[Empirical-measure collapse at stationarity]
+\label{cor:stationary-empirical-collapse}
+Under Assumption~\ref{ass:01-core}, for every fixed recorded time \(t\in\Tset\),
+the empirical measure \(L_t^{(N)}\) converges in probability to the unique
+stationary mean-field law \(\pi_\infty\):
+\[
+L_t^{(N)}
+\xrightarrow[N\to\infty]{\mathbb P}
+\pi_\infty
+\qquad\text{in }\mcP(\R^6).
+\]
+\end{corollary}
+
+\begin{proof}
+At \(t=0\), this is exactly the collapse of the de Finetti mixing law proved in
+the proof of the stationary mean-field limit theorem imported from
+\texttt{01\_convergence}: with the canonical choice
+\[
+Q_N:=\Law\!\left(\frac1N\sum_{i=1}^N\delta_{Y_i^{(N)}(0)}\right),
+\]
+the tightness--identification--uniqueness argument shows \(Q_N\Rightarrow
+\delta_{\pi_\infty}\).
+Equivalently,
+\[
+\frac1N\sum_{i=1}^N\delta_{Y_i^{(N)}(0)}
+\xrightarrow[N\to\infty]{\mathbb P}\pi_\infty.
+\]
+Because the system is started from its invariant law \(\pi_N\), the law of
+\(L_t^{(N)}\) does not depend on \(t\), so the same convergence holds for every
+fixed recorded slice \(t\in\Tset\).
+\end{proof}
+
+\begin{definition}[Label-invariant pair rule and empirical edge measure]
+\label{def:edge-measure}
+Fix a recorded time slice \(t\in\Tset\).
+Assume that the same-time companion relation is generated by a label-invariant
+pair rule, in the sense that there exists a bounded measurable indicator
+\[
+\chi_t:\R^6\times\R^6\to\{0,1\}
+\]
+such that for all \(N\) and all \(i\neq j\),
+\[
+\one_{\{(i,j)\in\mcP_t^{(N)}\}}
+=
+\chi_t\!\bigl(Y_i^{(N)}(t),Y_j^{(N)}(t)\bigr).
+\]
+Define the empirical edge measure by
+\[
+\Gamma_t^{(N)}
+:=
+\frac1{N^2}\sum_{i\neq j}
+\one_{\{(i,j)\in\mcP_t^{(N)}\}}
+\delta_{\bigl(Y_i^{(N)}(t),Y_j^{(N)}(t)\bigr)}.
+\]
+\end{definition}
+
+\begin{theorem}[Stationary thermodynamic limit of the interaction graph]
+\label{thm:edge-measure-limit}
+Assume Definition~\ref{def:edge-measure}.
+Let \(\Phi:\R^6\times\R^6\to\R\) be bounded and continuous, and assume that
+\(\chi_t\Phi\) is continuous at \((\pi_\infty\otimes\pi_\infty)\)-almost every
+pair.
+Then
+\[
+\int_{\R^6\times\R^6}\Phi\,d\Gamma_t^{(N)}
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint_{\R^6\times\R^6}
+\chi_t(z,z')\,\Phi(z,z')\,\pi_\infty(dz)\,\pi_\infty(dz').
+\]
+Equivalently,
+\[
+\frac1{N^2}\sum_{(i,j)\in\mcP_t^{(N)}}
+\Phi\!\bigl(Y_i^{(N)}(t),Y_j^{(N)}(t)\bigr)
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint_{\R^6\times\R^6}
+\chi_t(z,z')\,\Phi(z,z')\,\pi_\infty(dz)\,\pi_\infty(dz').
+\]
+If the number of recorded slices \(T+1\) is fixed, the same convergence holds
+after summing over finitely many \(t\in\Tset\).
+\end{theorem}
+
+\begin{proof}
+Write
+\[
+\Psi_t(z,z'):=\chi_t(z,z')\,\Phi(z,z').
+\]
+By Definition~\ref{def:edge-measure},
+\begin{align*}
+\int \Phi\,d\Gamma_t^{(N)}
+&=
+\frac1{N^2}\sum_{i\neq j}\Psi_t\!\bigl(Y_i^{(N)}(t),Y_j^{(N)}(t)\bigr)\\
+&=
+\frac1{N^2}\sum_{i,j}\Psi_t\!\bigl(Y_i^{(N)}(t),Y_j^{(N)}(t)\bigr)
+-\frac1{N^2}\sum_{i=1}^N\Psi_t\!\bigl(Y_i^{(N)}(t),Y_i^{(N)}(t)\bigr)\\
+&=
+\iint_{\R^6\times\R^6}\Psi_t(z,z')\,L_t^{(N)}(dz)\,L_t^{(N)}(dz')
+-R_t^{(N)},
+\end{align*}
+where
+\[
+|R_t^{(N)}|
+\le
+\frac{\|\Psi_t\|_\infty}{N}.
+\]
+Hence \(R_t^{(N)}\to0\) in probability.
+
+By Corollary~\ref{cor:stationary-empirical-collapse},
+\[
+L_t^{(N)}\xrightarrow{\mathbb P}\pi_\infty.
+\]
+Since the limit is deterministic, the product measure
+\(L_t^{(N)}\otimes L_t^{(N)}\) converges in probability to
+\(\pi_\infty\otimes\pi_\infty\).
+The boundedness and almost-everywhere continuity of \(\Psi_t\) then imply
+\[
+\iint \Psi_t(z,z')\,L_t^{(N)}(dz)\,L_t^{(N)}(dz')
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint \Psi_t(z,z')\,\pi_\infty(dz)\,\pi_\infty(dz').
+\]
+Combining the last two displays proves the first claim.
+The second is the same identity written in index notation.
+If \(T+1\) is fixed, summing over finitely many times preserves convergence in
+probability.
+\end{proof}
+
+\begin{definition}[Adjacent-time empirical path and plaquette measures]
+\label{def:plaquette-measure}
+Fix \(0\le t<T\) and define
+\[
+\widetilde Y_i^{(N)}(t)
+:=
+\bigl(Y_i^{(N)}(t),Y_i^{(N)}(t+1)\bigr)\in\R^{12},
+\qquad
+M_t^{(N)}
+:=
+\frac1N\sum_{i=1}^N \delta_{\widetilde Y_i^{(N)}(t)}.
+\]
+Define the persistent-plaquette indicator by
+\[
+\chi_{\square,t}\bigl((z_0,z_1),(w_0,w_1)\bigr)
+:=
+\chi_t(z_0,w_0)\,\chi_{t+1}(z_1,w_1),
+\]
+and the empirical plaquette measure by
+\[
+\Gamma_{\square,t}^{(N)}
+:=
+\frac1{N^2}\sum_{i\neq j}
+\chi_{\square,t}\!\bigl(\widetilde Y_i^{(N)}(t),\widetilde Y_j^{(N)}(t)\bigr)\,
+\delta_{\bigl(\widetilde Y_i^{(N)}(t),\widetilde Y_j^{(N)}(t)\bigr)}.
+\]
+\end{definition}
+
+\begin{definition}[Stationary mean-field path law]
+\label{def:stationary-path-law}
+For every finite horizon \(S>0\), let \(\Pi_{[0,S]}^\infty\) be the law on
+\(C([0,S];\R^6)\) of the unique McKean--Vlasov solution with initial law
+\(\pi_\infty\).
+Because \(\pi_\infty\) is stationary, \(\Pi_{[0,S]}^\infty\) is stationary under
+time shifts.
+For each integer \(0\le t<S\), define the adjacent-time mean-field law by
+\[
+\Lambda_t^\infty
+:=
+(\operatorname{ev}_{t,t+1})_\#\Pi_{[0,S]}^\infty,
+\qquad
+\operatorname{ev}_{t,t+1}(\gamma):=\bigl(\gamma(t),\gamma(t+1)\bigr).
+\]
+\end{definition}
+
+\begin{theorem}[Stationary path-space propagation of chaos]
+\label{thm:stationary-path-poc}
+For every finite horizon \(S>0\), let \(\widehat P_{[0,S]}^{(N)}\) be the law on
+\(C([0,S];(\R^6)^N)\) of the \(N\)-particle kinetic system started from its
+invariant law \(\pi_N\), and define the empirical path measure
+\[
+\mathfrak M_{[0,S]}^{(N)}
+:=
+\frac1N\sum_{i=1}^N \delta_{Y_i^{(N)}(\cdot)}
+\in\mcP\bigl(C([0,S];\R^6)\bigr).
+\]
+Then
+\[
+\mathfrak M_{[0,S]}^{(N)}
+\xrightarrow[N\to\infty]{\mathbb P}
+\Pi_{[0,S]}^\infty
+\qquad
+\text{in }\mcP\bigl(C([0,S];\R^6)\bigr).
+\]
+Equivalently, for every bounded continuous path functional
+\(\Psi:C([0,S];\R^6)\to\R\),
+\[
+\frac1N\sum_{i=1}^N \Psi\!\bigl(Y_i^{(N)}(\cdot)\bigr)
+\xrightarrow[N\to\infty]{\mathbb P}
+\int_{C([0,S];\R^6)}\Psi(\gamma)\,\Pi_{[0,S]}^\infty(d\gamma).
+\]
+In particular, for each integer \(0\le t<S\),
+\[
+M_t^{(N)}
+=(\operatorname{ev}_{t,t+1})_\# \mathfrak M_{[0,S]}^{(N)}
+\xrightarrow[N\to\infty]{\mathbb P}
+\Lambda_t^\infty.
+\]
+\end{theorem}
+
+\begin{proof}
+Write \(E:=C([0,S];\R^6)\).
+Because the invariant law \(\pi_N\) is exchangeable and the \(N\)-particle
+dynamics are permutation-equivariant, the stationary path law
+\(\widehat P_{[0,S]}^{(N)}\) on \(E^N\) is exchangeable.
+Applying the same finite de Finetti reduction used in
+\texttt{01\_convergence}, now on the Polish space \(E\), yields a mixing measure
+\[
+\widehat Q_N:=\Law\!\bigl(\mathfrak M_{[0,S]}^{(N)}\bigr)
+\in\mcP(\mcP(E)),
+\]
+whose fixed-\(k\) path marginals are asymptotically mixtures of product path
+laws.
+
+The one-particle path marginals are tight on \(E\).
+Indeed, stationarity gives the same uniform second-moment bounds at every time
+as in the bridge package from \texttt{01\_convergence}, while the underdamped
+Langevin coefficients have at most linear growth and Brownian noise only in the
+velocity variable.
+Standard Kolmogorov estimates therefore give tightness of
+\(\Law(Y_1^{(N)}(\cdot))\) on \(E\), hence tightness of the second-level laws
+\(\{\widehat Q_N\}_{N\ge2}\).
+Let \(\widehat Q_\infty\) be any subsequential limit.
+
+We identify the support of \(\widehat Q_\infty\) by the nonlinear martingale
+problem.
+Fix \(\phi\in C_c^\infty(\R^6)\), times \(0\le u\le v\le S\), and a bounded
+continuous functional \(G\) depending only on the path segment on \([0,u]\).
+For \(\mu\in\mcP(\R^6)\), write
+\[
+\mathcal L_\mu \phi(x,v)
+:=
+v\cdot\nabla_x\phi(x,v)
++\bigl(-\nabla U(x)-\gamma v+F[\mu](x,v)\bigr)\cdot\nabla_v\phi(x,v)
++\frac{\sigma^2}{2}\Delta_v\phi(x,v),
+\]
+where \(F[\mu]\) is the mean-field viscous field from
+\texttt{01\_convergence}.
+For the finite-\(N\) system,
+\[
+\phi(Y_i^{(N)}(v))-\phi(Y_i^{(N)}(u))
+-\int_u^v
+\Bigl[
+\mathcal L_{\mathfrak M_{[0,S],s}^{(N)}}\phi\bigl(Y_i^{(N)}(s)\bigr)
++\bigl(F_i^{(N)}(s)-F[\mathfrak M_{[0,S],s}^{(N)}]\bigl(Y_i^{(N)}(s)\bigr)\bigr)
+\cdot\nabla_v\phi\bigl(Y_i^{(N)}(s)\bigr)
+\Bigr]\,ds
+\]
+is a martingale, where
+\[
+\mathfrak M_{[0,S],s}^{(N)}
+:=
+(\operatorname{ev}_s)_\#\mathfrak M_{[0,S]}^{(N)}
+=
+\frac1N\sum_{j=1}^N \delta_{Y_j^{(N)}(s)}.
+\]
+Averaging over \(i\) and multiplying by \(G(Y_i^{(N)}|_{[0,u]})\) gives zero
+expectation.
+The force-defect estimate from \texttt{01\_convergence}, integrated on
+\([u,v]\), shows that the defect term contributes only \(O(N^{-1/2})\) in
+expectation.
+Passing to the limit and using continuity of \(\mu\mapsto F[\mu]\) on
+uniformly moment-bounded classes, every path law \(\eta\) in the support of
+\(\widehat Q_\infty\) satisfies
+\[
+\int_E
+G(\gamma|_{[0,u]})
+\Bigl[
+\phi(\gamma(v))-\phi(\gamma(u))
+-\int_u^v \mathcal L_{\eta_s}\phi(\gamma(s))\,ds
+\Bigr]
+\eta(d\gamma)
+=
+0,
+\]
+where \(\eta_s:=(\operatorname{ev}_s)_\#\eta\).
+Thus \(\widehat Q_\infty\)-almost every \(\eta\) solves the McKean--Vlasov
+martingale problem on \([0,S]\).
+
+Because each \(\widehat P_{[0,S]}^{(N)}\) is stationary in time, every
+\(\eta\in\operatorname{supp}\widehat Q_\infty\) is also stationary.
+Its time-zero marginal is the limit of the first marginals \(\pi_{N,1}\), hence
+equals \(\pi_\infty\) by the stationary propagation-of-chaos theorem imported
+from \texttt{01\_convergence}.
+The McKean--Vlasov SDE is well posed for every initial law with finite second
+moment, so there is a unique path law with initial law \(\pi_\infty\); because
+\(\pi_\infty\) is stationary, that unique law is exactly
+\(\Pi_{[0,S]}^\infty\).
+Hence
+\[
+\widehat Q_\infty=\delta_{\Pi_{[0,S]}^\infty}.
+\]
+Every subsequence has the same limit, so
+\[
+\Law\!\bigl(\mathfrak M_{[0,S]}^{(N)}\bigr)
+\Rightarrow
+\delta_{\Pi_{[0,S]}^\infty},
+\]
+which is equivalent to the stated convergence in probability.
+The final claim follows from the continuous mapping theorem for the evaluation
+map \(\operatorname{ev}_{t,t+1}\).
+\end{proof}
+
+\begin{theorem}[Stationary thermodynamic limit of plaquette observables]
+\label{thm:plaquette-measure-limit}
+Let \(\Phi:(\R^{12})^2\to\R\) be bounded and continuous, and assume that
+\(\chi_{\square,t}\Phi\) is continuous at
+\((\Lambda_t^\infty\otimes\Lambda_t^\infty)\)-almost every pair.
+Then
+\[
+\int_{(\R^{12})^2}\Phi\,d\Gamma_{\square,t}^{(N)}
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint_{(\R^{12})^2}
+\chi_{\square,t}(\zeta,\zeta')\,\Phi(\zeta,\zeta')\,
+\Lambda_t^\infty(d\zeta)\,\Lambda_t^\infty(d\zeta').
+\]
+\end{theorem}
+
+\begin{proof}
+Set
+\[
+\Psi_{\square,t}(\zeta,\zeta')
+:=
+\chi_{\square,t}(\zeta,\zeta')\,\Phi(\zeta,\zeta').
+\]
+By Definition~\ref{def:plaquette-measure},
+\begin{align*}
+\int \Phi\,d\Gamma_{\square,t}^{(N)}
+&=
+\frac1{N^2}\sum_{i\neq j}
+\Psi_{\square,t}\!\bigl(\widetilde Y_i^{(N)}(t),\widetilde Y_j^{(N)}(t)\bigr)\\
+&=
+\iint \Psi_{\square,t}(\zeta,\zeta')\,M_t^{(N)}(d\zeta)\,M_t^{(N)}(d\zeta')
+\;-\;R_{\square,t}^{(N)},
+\end{align*}
+where
+\[
+|R_{\square,t}^{(N)}|
+\le
+\frac{\|\Psi_{\square,t}\|_\infty}{N}.
+\]
+Hence \(R_{\square,t}^{(N)}\to0\) in probability.
+Because
+\[
+M_t^{(N)}
+\xrightarrow[N\to\infty]{\mathbb P}
+\Lambda_t^\infty
+\]
+by Theorem~\ref{thm:stationary-path-poc}, the product measure
+\(M_t^{(N)}\otimes M_t^{(N)}\) converges in probability to
+\(\Lambda_t^\infty\otimes\Lambda_t^\infty\).
+The boundedness and almost-everywhere continuity of \(\Psi_{\square,t}\) then
+yield
+\[
+\iint \Psi_{\square,t}(\zeta,\zeta')\,M_t^{(N)}(d\zeta)\,M_t^{(N)}(d\zeta')
+\xrightarrow[N\to\infty]{\mathbb P}
+\iint \Psi_{\square,t}(\zeta,\zeta')\,
+\Lambda_t^\infty(d\zeta)\,\Lambda_t^\infty(d\zeta').
+\]
+Combining the last two displays proves the theorem.
+\end{proof}
+
+\begin{proposition}[Companion graph rule is additional model data]
+\label{prop:graph-rule-additional}
+The stationary mean-field convergence results above do not determine the
+companion graph rule.
+More precisely, the plaquette geometry quantities
+\[
+\{A_P^{(N)}\}_{P\in\mcC_\square^{(N)}},
+\qquad
+|\mcC_\square^{(N)}|,
+\qquad
+\sum_{P\in\mcC_\square^{(N)}}
+\Sigma_P^{(N),\mu\nu}\Sigma_P^{(N),\rho\sigma}\,\delta_{x_P^{(N)}}
+\]
+depend on the companion sets \(\mcP_t^{(N)}\) and are not determined by the
+empirical particle path laws alone.
+Consequently, the plaquette geometry used by the continuum theorem requires the
+graph rule as part of the model definition.
+\end{proposition}
+
+\begin{proof}
+In Definition~\ref{def:trajectory-data}, the recorded companion sets
+\(\{\mcP_t^{(N)}\}_{t\in\Tset}\) are part of the lattice input.
+Keeping the same particle trajectories fixed while changing the label-invariant
+pair rule changes the interaction edge set, the plaquette family
+\(\mcC_\square^{(N)}\), and the associated area bivectors and plaquette counts.
+The empirical one-time and path measures of the particles are unaffected by
+such a change.
+Hence the plaquette geometry is not determined by propagation of chaos alone.
+\end{proof}
+
+\begin{proposition}[Reduction of the local continuum theorem]
+\label{prop:import-frontier}
+The proof of Theorem~\ref{thm:continuum-wilson} uses the graph and plaquette
+transport results of this section together with the following data:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item the choice of companion graph rule and hence the recorded
+companion sets \(\mcP_t^{(N)}\);
+\item the flat local geometry package of
+Definition~\ref{def:flat-local-geometry};
+\item the local continuum field realization of
+Definition~\ref{def:trajectory-principal-log};
+\item the flat-volume Riemann calibration of
+Definition~\ref{def:trajectory-riemann-axiom}.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Theorems~\ref{thm:edge-measure-limit},
+\ref{thm:stationary-path-poc}, and
+\ref{thm:plaquette-measure-limit} provide the transport of graph and plaquette
+observables.
+Proposition~\ref{prop:graph-rule-additional} shows that the graph rule itself is
+independent model data rather than a consequence of propagation of chaos.
+The remainder of the proof uses the finite geometric area and counting
+estimates, the principal-log curvature approximation, and the weighted Riemann
+convergence, namely
+Definitions~\ref{def:flat-local-geometry},
+\ref{def:trajectory-principal-log}, and
+\ref{def:trajectory-riemann-axiom}, together with the choice of
+\(\mcP_t^{(N)}\).
+\end{proof}
+
+\subsection{Reduction to spacetime color closure}
+
+\begin{proposition}[Reduction to curvature identification]
+\label{thm:broad-framework-reduction}
+Let the trajectory data, reconstruction map, and finite lattice realization be
+those of Definition~\ref{def:trajectory-data},
+Definition~\ref{def:trajectory-reconstruction}, and
+Assumption~\ref{ass:fg-trajectory-realization}.
+Let the graph and plaquette transport results be those of
+Theorems~\ref{thm:edge-measure-limit},
+\ref{thm:stationary-path-poc}, and
+\ref{thm:plaquette-measure-limit}.
+Let the local geometric and weighted-measure packages be those fixed in
+Definition~\ref{def:flat-local-geometry},
+Corollary~\ref{cor:flat-geometry-consequence}, and
+Definition~\ref{def:trajectory-riemann-axiom}.
+Then the verification of Definition~\ref{def:trajectory-principal-log} reduces
+to Theorem~\ref{thm:curvature-identification}.
+\end{proposition}
+
+\begin{proof}
+The finite reconstruction and thermodynamic transport ingredients are given by
+Definition~\ref{def:trajectory-reconstruction},
+Proposition~\ref{prop:trajectory-to-finite-data},
+Theorems~\ref{thm:edge-measure-limit},
+\ref{thm:stationary-path-poc}, and
+\ref{thm:plaquette-measure-limit}.
+The geometric count bound required for the tail estimate is precisely
+Corollary~\ref{cor:flat-geometry-consequence}.
+Once Theorem~\ref{thm:curvature-identification} supplies the global
+principal-log expansion and the decay-at-infinity conclusion for the continuum
+curvature energy density, Proposition~\ref{prop:effective-compactness-bridge}
+discharges the decay-at-infinity clause in
+Definition~\ref{def:trajectory-principal-log}.
+\end{proof}
+
+\begin{definition}[Continuum color field and induced gauge curvature]
+\label{def:continuum-color-field}
+Let
+\[
+c:\R^4\to\C^3
+\]
+be a differentiable color field. Its induced continuum connection is the
+\(\mathfrakh\)-valued one-form
+\[
+A_\mu[c](x)
+:=
+\frac12\sum_{a=1}^8
+\Re\!\bigl(c(x)^\dagger\lambda_a\,\partial_\mu c(x)\bigr)\lambda_a,
+\qquad
+0\le \mu\le 3,
+\]
+and its induced continuum curvature is
+\[
+F_{\mu\nu}[c]
+:=
+\partial_\mu A_\nu[c]-\partial_\nu A_\mu[c]
++ig_3[A_\mu[c],A_\nu[c]].
+\]
+The associated Yang--Mills energy density is
+\[
+e_{F[c]}(x)
+:=
+\tr\!\bigl(F_{\mu\nu}[c](x)F_{\mu\nu}[c](x)\bigr).
+\]
+\end{definition}
+
+\begin{definition}[Mesoscopic recovery and \(H^1_{\mathrm{loc}}\) compactness]
+\label{def:discrete-color-compactness}
+A sequence of continuum fields
+\[
+c^{(N)}:\R^4\to\C^3
+\]
+is called an interpolating color family for the discrete site colors if
+\[
+c^{(N)}\bigl(\Xi^{(N)}(x)\bigr)=\mathbf c_x^{(N)}
+\qquad
+\forall x\in\mcN^{(N)}.
+\]
+The discrete color family satisfies the mesoscopic recovery and
+\(H^1_{\mathrm{loc}}\)-compactness package if there exist:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item
+an exponent \(\alpha\in(0,1]\),
+\item
+a constant \(C_{\mathrm{cmp}}<\infty\),
+\item
+an interpolating color family \(c^{(N)}\),
+\item
+a limit field \(c\in C^2_{\mathrm{loc}}(\R^4;\C^3)\),
+\item
+a mesoscopic recovery scale \(r_N\downarrow0\) such that
+\[
+\frac{a_N}{r_N}\to0,
+\qquad
+\frac{a_N}{r_N^2}\to0,
+\]
+\item
+an index \(N_0\in\N\),
+\end{enumerate}
+such that:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\alph*)}]
+\item
+for every compact \(\mcK\subset\R^4\),
+\[
+\sup_{N\ge N_0}
+\Bigl(
+\|c^{(N)}\|_{L^\infty(\mcK)}
++\|\nabla c^{(N)}\|_{L^\infty(\mcK)}
++\|\nabla^2 c^{(N)}\|_{L^\infty(\mcK)}
+\Bigr)
+\le C_{\mathrm{cmp},\mcK},
+\]
+\item
+for every compact \(\mcK\subset\R^4\),
+\[
+\sup_{N\ge N_0}\|c^{(N)}\|_{H^1(\mcK)}\le C_{\mathrm{cmp},\mcK},
+\]
+and
+\[
+c^{(N)}\rightharpoonup c\quad\text{weakly in }H^1(\mcK),
+\qquad
+c^{(N)}\to c\quad\text{strongly in }L^2(\mcK),
+\]
+as \(N\to\infty\),
+\item
+for every compact \(\mcK\subset\R^4\),
+\[
+\|c^{(N)}-c\|_{C^2(\mcK)}\le C_{\mathrm{cmp},\mcK}a_N^\alpha
+\qquad
+\forall N\ge N_0.
+\]
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Mesoscopic recovery compactness implies curvature identification]
+\label{thm:curvature-identification}
+Let the trajectory data be those of Definition~\ref{def:trajectory-data}.
+Let the finite lattice reconstruction be that of
+Definition~\ref{def:trajectory-reconstruction} and
+Assumption~\ref{ass:fg-trajectory-realization}.
+Let the finite gauge data be those of
+Definitions~\ref{def:companion-weights},
+\ref{def:node-force},
+\ref{def:mesoscopic-color-averaging},
+\ref{def:site-colors}, and
+\ref{def:edge-transport}.
+Let the refinement family satisfy the flat local geometry package of
+Definition~\ref{def:flat-local-geometry}.
+Let the discrete color family satisfy
+Definition~\ref{def:discrete-color-compactness}, with interpolants
+\((c^{(N)})_{N\ge N_0}\) and limit \(c\). Write
+\[
+A_\mu^{(N)}:=A_\mu[c^{(N)}],\qquad
+F_{\mu\nu}^{(N)}:=F_{\mu\nu}[c^{(N)}],
+\]
+\[
+A_\mu:=A_\mu[c],\qquad
+F_{\mu\nu}:=F_{\mu\nu}[c],\qquad
+e_F:=e_{F[c]}.
+\]
+Suppose moreover that
+\[
+e_F\in C_0(\R^4)\cap L^1(\R^4).
+\]
+For the mean-field sampled site-color regularization of
+Definition~\ref{def:site-colors}, the compactness hypothesis is furnished by
+Proposition~\ref{prop:mf-sampled-colors-compact}.
+Then there exist an exponent \(\eta>0\) and a constant \(C_{\log}<\infty\)
+such that the principal logarithm
+\[
+\Theta_P^{(N)}:=-\,i\,\log\bigl(U_3^{(N)}(P)\bigr)\in\mathfrakh
+\]
+is well-defined for every sufficiently large \(N\) and every
+\(P\in\mcC_\square^{(N)}\), and
+\[
+\bigl\|
+\Theta_P^{(N)}-g_3F_{\mu\nu}\bigl(x_P^{(N)}\bigr)\Sigma_P^{(N),\mu\nu}
+\bigr\|
+\le
+C_{\log}\,a_N^{2+\eta}
+\qquad
+\forall P\in\mcC_\square^{(N)}.
+\]
+Moreover, \(e_F\in C_0(\R^4)\cap L^1(\R^4)\). In particular,
+\[
+\lim_{R\to\infty}\sup_{|x|\ge R} e_F(x)=0,
+\qquad
+\lim_{R\to\infty}\int_{|x|>R} e_F(x)\,\dd x=0.
+\]
+\end{theorem}
+\begin{proof}
+By Definition~\ref{def:discrete-color-compactness}, the local
+\(H^1\)-bounds and \(L^2_{\mathrm{loc}}\)-compactness provide the compactness
+seed for the recovered color family, while the local \(C^2\)-convergence is
+the regularity-upgrade clause that promotes the mesoscopic recovery fields to a
+classical continuum color field. In particular,
+for every compact \(\mcK\subset\R^4\),
+\[
+\|c^{(N)}-c\|_{C^2(\mcK)}\le C_{\mathrm{cmp},\mcK}a_N^\alpha.
+\]
+Hence \(c\in C^2_{\mathrm{loc}}(\R^4;\C^3)\), each interpolant
+\(c^{(N)}\) has a locally bounded \(C^2\)-norm, and the defining
+formulas in Definition~\ref{def:continuum-color-field} give, on every compact
+\(\mcK\subset\R^4\),
+\[
+\|A^{(N)}-A\|_{C^1(\mcK)}+\|F^{(N)}-F\|_{C^0(\mcK)}
+\le C_{A,\mcK} a_N^\alpha
+\]
+for some constant \(C_{A,\mcK}<\infty\) depending only on \(C_{\mathrm{cmp},\mcK}\),
+the Gell-Mann basis, and \(g_3\).
+
+Let \(e=(x\to y)\in\mcE^{(N)}\), and write
+\[
+\xi_x:=\Xi^{(N)}(x),\qquad
+\xi_y:=\Xi^{(N)}(y),\qquad
+\Delta_e:=\xi_y-\xi_x.
+\]
+Since \(c^{(N)}\) interpolates the site colors,
+\[
+\mathbf c_x^{(N)}=c^{(N)}(\xi_x),
+\qquad
+\mathbf c_y^{(N)}=c^{(N)}(\xi_y).
+\]
+Taylor expansion of \(c^{(N)}\) at \(\xi_x\), using the uniform
+\(L^\infty\)-bound on \(\nabla^2 c^{(N)}\), gives
+\[
+c^{(N)}(\xi_y)-c^{(N)}(\xi_x)
+=
+\partial_\mu c^{(N)}(\xi_x)\,\Delta_e^\mu + O(a_N^2)
+\]
+uniformly in \(e\). Substituting this into
+Definition~\ref{def:edge-transport}, the bilinearity of the edge-generator
+formula yields
+\[
+\mathcal A_e^{(N)}
+=
+A_\mu^{(N)}(\xi_x)\,\Delta_e^\mu + O(a_N^2)
+\]
+uniformly in \(e\).
+
+The global \(L^\infty\)-bound on \(\nabla c^{(N)}\), together with
+Definition~\ref{def:flat-local-geometry}, implies \(\|\Delta_e\|=O(a_N)\) for
+every edge and therefore
+\[
+\|\mathcal A_e^{(N)}\|\le C a_N
+\]
+with \(C\) independent of \(e\). For a plaquette \(P\in\mcC_\square^{(N)}\),
+each of its four edge generators is thus \(O(a_N)\), so the four-fold holonomy
+product is \(I+O(a_N^2)\) uniformly in \(P\). Hence the principal logarithm is
+defined for every plaquette once \(N\) is large enough.
+
+Let
+\[
+P=
+\bigl(
+x_0\to x_1\to x_2\to x_3\to x_0
+\bigr)\in\mcC_\square^{(N)},
+\]
+and write \(\Delta_r:=\Xi^{(N)}(x_r)-\Xi^{(N)}(x_{r-1})\) for the oriented edge
+increments. By the edge expansion already proved,
+\[
+ig_3\mathcal A_{(x_{r-1}\to x_r)}^{(N)}
+=
+ig_3A_\mu^{(N)}\!\bigl(\Xi^{(N)}(x_{r-1})\bigr)\Delta_r^\mu
+\;+\;O(a_N^2)
+\]
+uniformly in \(r\) and \(P\). The classical four-edge
+Baker--Campbell--Hausdorff expansion for a small plaquette, together with the
+global \(C^{1,\alpha}\)-bound on \(A^{(N)}\), yields
+\[
+\Theta_P^{(N)}
+=
+g_3F_{\mu\nu}^{(N)}\bigl(x_P^{(N)}\bigr)\Sigma_P^{(N),\mu\nu}
+\;+\;O(a_N^{2+\alpha})
+\]
+uniformly in \(P\). Therefore
+\[
+\bigl\|
+\Theta_P^{(N)}-g_3F_{\mu\nu}\bigl(x_P^{(N)}\bigr)\Sigma_P^{(N),\mu\nu}
+\bigr\|
+\le
+\bigl\|
+g_3\bigl(F_{\mu\nu}^{(N)}-F_{\mu\nu}\bigr)\bigl(x_P^{(N)}\bigr)\Sigma_P^{(N),\mu\nu}
+\bigr\|
++O(a_N^{2+\alpha}).
+\]
+Using \(\|F^{(N)}-F\|_{C^0(\R^4)}\le C_Aa_N^\alpha\) and
+\(|\Sigma_P^{(N)}|\le C_\Sigma a_N^2\) from
+Corollary~\ref{cor:flat-geometry-consequence}, the first term on the right is
+\(O(a_N^{2+\alpha})\). Hence the stated estimate holds globally with
+\(\eta:=\alpha\).
+
+The decay-at-infinity and integrability conclusion is exactly the additional
+hypothesis on \(e_F\).
+\end{proof}
+
+\begin{proposition}[Effective compactness from curvature identification]
+\label{prop:effective-compactness-bridge}
+Let the plaquette count bound be that of
+Corollary~\ref{cor:flat-geometry-consequence}.
+Let moreover there exist an exponent \(\eta>0\), a constant
+\(C_{\log}<\infty\), and a continuous curvature field
+\(F_{\mu\nu}:\R^4\to\fraksu\). Define
+\[
+e_F(x)
+:=
+\sum_{\mu<\nu}\sum_{a=1}^8
+\bigl(F_{\mu\nu}^{(a)}(x)\bigr)^2.
+\]
+Suppose \(e_F\in C_0(\R^4)\) and that for every sufficiently large \(N\) and
+every plaquette \(P\in\mcC_\square^{(N)}\), the principal logarithm
+\[
+\Theta_P^{(N)}:=-\,i\,\log\bigl(U_3^{(N)}(P)\bigr)\in\mathfrakh
+\]
+is well-defined and obeys
+\[
+\bigl\|
+\Theta_P^{(N)}-g_3F_{\mu\nu}\bigl(x_P^{(N)}\bigr)\Sigma_P^{(N),\mu\nu}
+\bigr\|
+\le
+C_{\log}\,a_N^{2+\eta},
+\]
+where \(x\mapsto e_F(x)\) is the continuum Yang--Mills energy density.
+Then for every \(\varepsilon>0\) there exists a compact set
+\(K_\varepsilon\subset\R^4\) such that
+\[
+\limsup_{N\to\infty}
+\sum_{\substack{P\in\mcC_\square^{(N)}\\ x_P^{(N)}\notin K_\varepsilon}}
+\left(
+1-\frac13\Re\tr U_3^{(N)}(P)
+\right)
+\le \varepsilon.
+\]
+In particular the decay-at-infinity clause in
+Definition~\ref{def:trajectory-principal-log} follows.
+\end{proposition}
+
+\begin{proof}
+Because \(\mathfrakh\) is finite-dimensional, fix a Euclidean norm
+\(\|\cdot\|_{\mathfrakh}\) on \(\mathfrakh\).
+For \(H\in\mathfrakh\) with eigenvalues \(\lambda_1,\lambda_2,\lambda_3\in\R\),
+\[
+1-\frac13\Re\tr(e^{iH})
+=
+1-\frac13\sum_{m=1}^3\cos(\lambda_m)
+\le
+\frac16\sum_{m=1}^3\lambda_m^2
+\le
+C_{\exp}\,\|H\|_{\mathfrak h}^2
+\]
+for a constant \(C_{\exp}<\infty\) depending only on the chosen norm.
+Hence
+\[
+\;1-\frac13\Re\tr U_3^{(N)}(P)
+\le
+C_{\exp}\,\|\Theta_P^{(N)}\|_{\mathfrak h}^2
+\]
+for every plaquette \(P\).
+By the elementary inequality \(\|A+B\|^2\le2\|A\|^2+2\|B\|^2\),
+\[
+\|\Theta_P^{(N)}\|_{\mathfrak h}^2
+\le
+\;
+2g_3^2\,
+\bigl\|F_{\mu\nu}(x_P^{(N)})\Sigma_P^{(N),\mu\nu}\bigr\|_{\mathfrak h}^2
++
+2C_{\log}^2\,a_N^{4+2\eta}.
+\]
+Choose \(C_F<\infty\) so that
+\[
+\|H\|_{\mathfrak h}^2
+\le
+C_F\sum_{a=1}^8 h_a^2
+\qquad
+\text{whenever }
+H=\frac12\sum_{a=1}^8 h_a\lambda_a.
+\]
+Using Cauchy--Schwarz in the bivector indices and the identity
+\(
+\sum_{\mu<\nu}|\Sigma_P^{(N),\mu\nu}|^2=(A_P^{(N)})^2
+\),
+we obtain
+\[
+\bigl\|F_{\mu\nu}(x_P^{(N)})\Sigma_P^{(N),\mu\nu}\bigr\|_{\mathfrak h}^2
+\le
+C_F\,(A_P^{(N)})^2\,e_F(x_P^{(N)}).
+\]
+Combining the last three displays yields
+\[
+1-\frac13\Re\tr U_3^{(N)}(P)
+\le
+C_1\,(A_P^{(N)})^2\,e_F(x_P^{(N)})
++
+C_2\,a_N^{4+2\eta}
+\]
+for constants \(C_1,C_2<\infty\) independent of \(N\) and \(P\).
+
+By Corollary~\ref{cor:flat-geometry-consequence},
+\[
+\sum_{P\in\mcC_\square^{(N)}}(A_P^{(N)})^2
+\le
+|\mcC_\square^{(N)}|\,\max_{P}(A_P^{(N)})^2
+\le
+\widetilde C_A C_A^2
+\]
+for all sufficiently large \(N\).
+Let \(\varepsilon>0\).
+Because \(e_F\in C_0(\R^4)\), there exists a compact set
+\(K_\varepsilon\subset\R^4\) such that
+\[
+\sup_{x\notin K_\varepsilon} e_F(x)
+\le
+\frac{\varepsilon}{2C_1\widetilde C_A C_A^2}.
+\]
+Therefore, for all sufficiently large \(N\),
+\[
+\sum_{\substack{P\in\mcC_\square^{(N)}\\ x_P^{(N)}\notin K_\varepsilon}}
+\left(
+1-\frac13\Re\tr U_3^{(N)}(P)
+\right)
+\le
+\;
+C_1
+\sup_{x\notin K_\varepsilon}e_F(x)
+\sum_{P\in\mcC_\square^{(N)}}(A_P^{(N)})^2
++
+C_2|\mcC_\square^{(N)}|a_N^{4+2\eta}
+\le
+\frac{\varepsilon}{2}
++
+C_2\widetilde C_A a_N^{2\eta}.
+\]
+Passing to the upper limit as \(N\to\infty\) gives
+\[
+\limsup_{N\to\infty}
+\sum_{\substack{P\in\mcC_\square^{(N)}\\ x_P^{(N)}\notin K_\varepsilon}}
+\left(
+1-\frac13\Re\tr U_3^{(N)}(P)
+\right)
+\le
+\frac{\varepsilon}{2}
+\]
+because \(\eta>0\).
+This proves the claim.
+\end{proof}
+
+\subsection{From kinetic trajectories to the finite QFT lattice}
+
+\begin{definition}[Trajectory-to-lattice reconstruction map]
+\label{def:trajectory-reconstruction}
+For each \(N\), define
+\[
+\mathscr R^{(N)}:\Bigl(\{X_i^{(N)}(t),V_i^{(N)}(t)\}_{i,t},
+\{\mcP_t^{(N)}\}_{t=0}^T,\tau_N,\rho_N\Bigr)
+\longmapsto
+\Bigl(\mcN^{(N)},\mcE^{(N)},\mcC_\square^{(N)}\Bigr),
+\]
+where \(\mcN^{(N)}\), \(\mcE^{(N)}\), and \(\mcC_\square^{(N)}\) are the finite structures of
+Definitions \ref{def:qft-nodes}, \ref{def:qft-edges}, and
+\ref{def:qft-plaquettes}.
+\end{definition}
+
+\begin{assumption}[Fractal Set trajectory realization]
+\label{ass:fg-trajectory-realization}
+Assume the trajectory family of Definition~\ref{def:trajectory-data} is given, and fix for each
+\(N\) the map \(\mathscr R^{(N)}\) of Definition~\ref{def:trajectory-reconstruction}.
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item Reconstruction fidelity:
+for every \(N\), \(i\), and \(t\), the map \(\mathscr R^{(N)}\) recovers
+\((X_i^{(N)}(t),V_i^{(N)}(t))\) from the corresponding walker-time node
+\((n_{i,t}^{(N)})\), and conversely the node list recovers the trajectory record.
+\item Temporal and interaction edge definitions:
+for each \(t\), the temporal edges are exactly \(e^{\mathrm{temp}}_{i,t}\) from
+\ref{def:qft-edges} and interaction edges are exactly \(e^{\mathrm{int}}_{ij,t}\)
+from \(\mcP_t^{(N)}\).
+\item Finite plaquettes are the canonical four-step loops from two consecutive
+interaction pairs as in Definition~\ref{def:qft-plaquettes}; no additional
+geometric objects are introduced.
+\item Geometric scaling admissibility:
+for each \(N\) and all admissible indices/edges there are constants
+\(c_\sigma,C_\sigma,\eta,C_{\mathrm v},D_{\max},C_{\mathrm{mesh}}\) and \(N_0\)
+such that Definition~\ref{def:flat-local-geometry} holds.
+\item Trajectory regularity:
+the family satisfies Definition~\ref{def:trajectory-principal-log} and
+Definition~\ref{def:trajectory-riemann-axiom} with a common small parameter
+\(a_N:=\max\{\tau_N,\rho_N\}\).
+\end{enumerate}
+\end{assumption}
+
+\begin{proposition}[Canonical identification with the 03b finite objects]
+\label{prop:trajectory-to-finite-data}
+Under Assumption~\ref{ass:fg-trajectory-realization}, the finite objects used in this file are the
+canonical projections of \(\mathscr R^{(N)}\):
+\begin{itemize}[leftmargin=1.5em]
+\item nodes are \(\mcN^{(N)}=\{n_{i,t}^{(N)}:1\le i\le N,\ 0\le t\le T\}\),
+\item temporal edges are \(e_{i,t}^{\mathrm{temp}}\),
+\item interaction edges are \(e_{ij,t}^{\mathrm{int}}\),
+\item companion pairs are $\mcP_t^{(N)}$,
+\item plaquette family is
+\(\mcC_\square^{(N)}=\{P_{ij,t}^{(N)}:(i,j)\in\mcP_t^{(N)}\cap\mcP_{t+1}^{(N)}\}\),
+and each plaquette geometry is given exactly by
+Definitions~\ref{def:qft-plaquettes} and~\ref{def:qft-plaquette-geometry}.
+\end{itemize}
+\textbf{No extra primitives.}
+The construction is purely finite and introduces no extra dynamics beyond
+the trajectory record \(\{X_i^{(N)}(t),V_i^{(N)}(t),\mcP_t^{(N)}\}_{i,t,N}\).
+\end{proposition}
+
+\begin{proof}
+Each item is the image of the corresponding coordinate projection of
+\[
+\mathscr R^{(N)}\!\bigl(\{X_i^{(N)}(t),V_i^{(N)}(t)\}_{i,t},
+\{\mcP_t^{(N)}\}_{t=0}^T,\tau_N,\rho_N\bigr),
+\]
+using the formulas in Definitions~\ref{def:qft-nodes},
+\ref{def:qft-edges}, and~\ref{def:qft-plaquettes}.
+\end{proof}
+
+\begin{lemma}[Finite-route hypotheses are generated from trajectory realization]
+\label{lem:trajectory-bridge}
+Under Assumptions~\ref{ass:fg-trajectory-realization} and~\ref{ass:mesh-scaling},
+the hypotheses of Theorem~\ref{thm:continuum-wilson} are explicit finite data:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\arabic*)}]
+\item Item~(i): flat-refinement geometry and \(a_N\downarrow0\) follow from
+Definition~\ref{def:flat-local-geometry}, item~(iv) of
+Assumption~\ref{ass:fg-trajectory-realization}, and
+Assumption~\ref{ass:mesh-scaling}.
+\item Item~(ii): local small-field regime is obtained from
+Definition~\ref{def:trajectory-principal-log} by Lemma~\ref{lem:discharge-small-field}.
+\item Item~(iii): weighted Riemann convergence is obtained from
+Definition~\ref{def:trajectory-riemann-axiom} by Lemma~\ref{lem:discharge-riemann}.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+Item~(i) is immediate from the explicit reconstruction in
+Proposition~\ref{prop:trajectory-to-finite-data}.
+Items~(ii) and~(iii) are exactly the two discharge lemmas.
+\end{proof}
+
+\begin{remark}[Trajectory regularity import note]
+The two non-geometric continuum inputs in
+Theorem~\ref{thm:continuum-wilson} are therefore not ad hoc redefinitions:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\arabic*)}]
+\item Definition~\ref{def:trajectory-principal-log} is the finite-scale naming of the trajectory regularity package imported above,
+\item Definition~\ref{def:trajectory-riemann-axiom} is the finite-scale naming of the weighted plaquette empirical convergence required by the same finite-route.
+\end{enumerate}
+\end{remark}
+
+\begin{assumption}[Refinement-sequence admissibility]
+\label{ass:mesh-scaling}
+Let $(\tau_N,\rho_N)_{N\ge N_0}$ be the refinement scales with
+$a_N=\max\{\tau_N,\rho_N\}\downarrow0$ and a mesh constant $C_{\mathrm{mesh}}$ such that
+\[
+N\le C_{\mathrm{mesh}}a_N^{-4}
+\]
+for $N\ge N_0$.
+\end{assumption}
+
+\begin{lemma}[Canonical admissible mesh normalization]
+\label{lem:canonical-mesh-normalization}
+For any positive scales \((\tau_N,\rho_N)\), define
+\[
+\tau'_N:=\min\{\tau_N,N^{-1/4}\},\qquad
+\rho'_N:=\min\{\rho_N,N^{-1/4}\},\qquad
+a'_N:=\max\{\tau'_N,\rho'_N\}.
+\]
+Then \(a'_N\downarrow0\) and
+\[
+N\le (a'_N)^{-4}\qquad(N\ge1).
+\]
+Hence, without changing the trajectory reconstruction \(\mathscr R^{(N)}\), one can
+choose the admissible scaling \((\tau'_N,\rho'_N)\) that satisfies
+Assumption~\ref{ass:mesh-scaling} with \(C_{\mathrm{mesh}}=1\).
+\end{lemma}
+
+\begin{proof}
+Since \(a'_N\le N^{-1/4}\) and \(N^{-1/4}\to0\), we have \(a'_N\downarrow0\).
+Moreover \(a'_N\le N^{-1/4}\) implies \((a'_N)^{-4}\ge N\), i.e.
+\(N\le(a'_N)^{-4}\).
+The combinatorial objects \(\mcN^{(N)}\), \(\mcE^{(N)}\), and \(\mcC_\square^{(N)}\)
+are unchanged under this replacement; only the numerical scales and the embedding time axis
+used for \(a_N\) are rescaled.
+\end{proof}
+
+\section{Where the lattice spacing goes to zero}
+
+The finite continuum route uses two primitive geometric scales:
+\begin{itemize}[leftmargin=1.5em]
+\item a temporal step $\tau$ on worldline links;
+\item a spatial or localization scale $\rho$ on interaction links.
+\end{itemize}
+
+In the gauge-sector continuum analysis those two scales are bundled into a
+common small parameter
+\[
+a:=\max\{\rho,\tau\},
+\]
+and the continuum limit is the simultaneous regime
+\[
+\rho\to0,\qquad \tau\to0,\qquad a\to0.
+\]
+
+The purpose of this section is to rewrite that finite regime in the notation of
+the $4\_ymmg$ papers, where the particle number $N$ already indexes the family
+of finite systems.
+
+\begin{definition}[Flat refinement family]
+\label{def:refinement-family}
+A \emph{flat refinement family} is a sequence of finite trajectory data sets
+\[
+\mcQ^{(N)}
+=
+\bigl(
+\mcL^{(N)},
+\Xi^{(N)},
+\{U_3^{(N)}(e)\}_{e\in\mcE^{(N)}},
+\mcC_\square^{(N)}
+\bigr)_{N\ge N_0}
+\]
+together with positive scales $\tau_N,\rho_N$ such that
+\[
+a_N:=\max\{\tau_N,\rho_N\}\downarrow0
+\qquad\text{as }N\to\infty.
+\]
+The quantity $a_N$ is the continuum-limit lattice spacing in the new notation.
+\end{definition}
+
+\begin{remark}
+This is the same $\rho,\tau\to0$ route rewritten with the particle index $N$
+as the external family parameter.
+Nothing essentially new is introduced here:
+the only change is that the small parameter is now denoted by $a_N$ rather than
+by $a$.
+\end{remark}
+
+\section{Trajectory-induced QFT lattice}
+
+We now restate the finite QFT lattice directly in this paper.
+This removes the need to cite any external document for the geometric lattice
+construction on which the continuum route is built.
+
+\begin{definition}[Finite parameters]
+\label{def:finite-parameters}
+Fix once and for all the positive parameters
+\[
+\kappa_0>0,\qquad
+\nu_{\mathrm{visc}}\ge0,\qquad
+g_3>0,\qquad
+\ell_0>0,\qquad
+\hbar_{\mathrm{eff}}>0,\qquad
+\mu_p>0,\qquad
+\epsilon_c>0.
+\]
+For each $N$, the temporal scale $\tau_N>0$ and interaction scale $\rho_N>0$
+are the same quantities that appear in
+Definition~\ref{def:refinement-family}.
+The regularized Gaussian interaction kernel at level $N$ is
+\[
+K_{\rho_N}(x,y)
+:=
+\kappa_0+\exp\!\left(-\frac{|x-y|^2}{2\rho_N^2}\right),
+\qquad
+x,y\in\R^3.
+\]
+\end{definition}
+
+\begin{remark}
+The parameters in Definition~\ref{def:finite-parameters} are the kernel and
+color parameters used in the finite lattice gauge construction.
+\end{remark}
+
+\begin{definition}[Recorded trajectory data]
+\label{def:trajectory-data}
+Fix $N\ge2$ and a finite observation horizon $T\in\N$.
+For each particle index $i\in\{1,\dots,N\}$ and each time slice
+$t\in\{0,\dots,T\}$, let
+\[
+X_i^{(N)}(t)\in\R^3,
+\qquad
+V_i^{(N)}(t)\in\R^3
+\]
+be the recorded position and velocity of particle $i$ at time $t$.
+For each $t$, let
+\[
+\mcP_t^{(N)}\subset\{(i,j):1\le i,j\le N,\ i\neq j\}
+\]
+be the ordered companion relation at time slice $t$.
+The finite trajectory record is
+\[
+\mcQ^{(N)}
+:=
+\Bigl(
+\{X_i^{(N)}(t),V_i^{(N)}(t)\}_{1\le i\le N,\ 0\le t\le T},
+\{\mcP_t^{(N)}\}_{t=0}^{T}
+\Bigr).
+\]
+\end{definition}
+
+\begin{definition}[Spatial projection]
+\label{def:spatial-projection}
+For \(y=(y^0,y^1,y^2,y^3)\in\R^4\), define
+\[
+\Pi_{\mathrm{sp}}y:=(y^1,y^2,y^3)\in\R^3.
+\]
+\end{definition}
+
+\begin{definition}[Node set and flat spacetime embedding]
+\label{def:qft-nodes}
+For each particle-time pair $(i,t)$, define a node
+\[
+n_{i,t}^{(N)}.
+\]
+The node set is
+\[
+\mcN^{(N)}
+:=
+\{n_{i,t}^{(N)}:1\le i\le N,\ 0\le t\le T\}.
+\]
+The flat spacetime embedding is
+\[
+\Xi^{(N)}:\mcN^{(N)}\to\R^4,
+\qquad
+\Xi^{(N)}\bigl(n_{i,t}^{(N)}\bigr)
+:=
+\bigl(t\tau_N,X_i^{(N)}(t)\bigr).
+\]
+\end{definition}
+
+\begin{definition}[Directed edge set]
+\label{def:qft-edges}
+The temporal links are
+\[
+e_{i,t}^{\mathrm{temp}}
+:=
+\bigl(n_{i,t}^{(N)}\to n_{i,t+1}^{(N)}\bigr),
+\qquad
+1\le i\le N,\ 0\le t<T.
+\]
+The interaction links are
+\[
+e_{ij,t}^{\mathrm{int}}
+:=
+\bigl(n_{i,t}^{(N)}\to n_{j,t}^{(N)}\bigr),
+\qquad
+(i,j)\in\mcP_t^{(N)},\ 0\le t\le T.
+\]
+The full directed edge set is
+\[
+\mcE^{(N)}
+:=
+\Bigl\{e_{i,t}^{\mathrm{temp}}:1\le i\le N,\ 0\le t<T\Bigr\}
+\cup
+\Bigl\{e_{ij,t}^{\mathrm{int}}:(i,j)\in\mcP_t^{(N)},\ 0\le t\le T\Bigr\},
+\]
+and the finite QFT lattice is
+\[
+\mcL^{(N)}:=(\mcN^{(N)},\mcE^{(N)}).
+\]
+\end{definition}
+
+\begin{definition}[Canonical plaquettes]
+\label{def:qft-plaquettes}
+For each time slice $0\le t<T$ and each ordered pair
+\[
+(i,j)\in\mcP_t^{(N)}\cap\mcP_{t+1}^{(N)},
+\]
+define the canonical elementary plaquette
+\[
+P_{ij,t}^{(N)}
+:=
+\bigl(
+n_{i,t}^{(N)}
+\to
+n_{i,t+1}^{(N)}
+\to
+n_{j,t+1}^{(N)}
+\to
+n_{j,t}^{(N)}
+\to
+n_{i,t}^{(N)}
+\bigr).
+\]
+The family of all canonical plaquettes is
+\[
+\mcC_\square^{(N)}
+:=
+\Bigl\{
+P_{ij,t}^{(N)}
+:
+(i,j)\in\mcP_t^{(N)}\cap\mcP_{t+1}^{(N)},\ 0\le t<T
+\Bigr\}.
+\]
+\end{definition}
+
+\begin{definition}[Plaquette geometry]
+\label{def:qft-plaquette-geometry}
+For $P=P_{ij,t}^{(N)}\in\mcC_\square^{(N)}$, define the base point
+\[
+x_P^{(N)}
+:=
+\Xi^{(N)}\bigl(n_{i,t}^{(N)}\bigr)\in\R^4,
+\]
+the temporal displacement
+\[
+\tau_{i,t}^{(N)}
+:=
+\Xi^{(N)}\bigl(n_{i,t+1}^{(N)}\bigr)
+-
+\Xi^{(N)}\bigl(n_{i,t}^{(N)}\bigr),
+\]
+the interaction displacement
+\[
+\sigma_{ij,t}^{(N)}
+:=
+\Xi^{(N)}\bigl(n_{j,t}^{(N)}\bigr)
+-
+\Xi^{(N)}\bigl(n_{i,t}^{(N)}\bigr),
+\]
+the oriented area bivector
+\[
+\Sigma_P^{(N),\mu\nu}
+:=
+\tau_{i,t}^{(N),\mu}\sigma_{ij,t}^{(N),\nu}
+-
+\tau_{i,t}^{(N),\nu}\sigma_{ij,t}^{(N),\mu},
+\]
+and the plaquette area
+\[
+A_P^{(N)}
+:=
+\Bigl(
+\frac12
+\sum_{\mu,\nu=0}^3
+\Sigma_P^{(N),\mu\nu}\Sigma_P^{(N),\mu\nu}
+\Bigr)^{1/2}.
+\]
+\end{definition}
+
+\begin{remark}
+Definitions~\ref{def:qft-nodes}--\ref{def:qft-plaquette-geometry} specify the
+finite QFT lattice used below.
+\end{remark}
+
+\subsection{Flat-refinement geometric package}
+
+\begin{definition}[Flat local trajectory geometry]
+\label{def:flat-local-geometry}
+Let $\mcN^{(N)}$, $\mcP_t^{(N)}$, $\tau_{i,t}^{(N)}$, and
+ $\sigma_{ij,t}^{(N)}$ be as in
+Definitions~\ref{def:qft-nodes}, \ref{def:qft-edges},
+and~\ref{def:qft-plaquette-geometry}.
+The family is said to have flat local trajectory geometry if there are constants
+\[
+c_\sigma,C_\sigma,\eta,C_{\mathrm v},D_{\max},C_{\mathrm{mesh}}
+\in(0,\infty),
+\qquad
+N_0\in\N,
+\]
+with $\eta<c_\sigma$, such that for every $N\ge N_0$:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item \textbf{Temporal edge control.}
+For every particle-time pair $(i,t)$,
+\[
+\Pi_{\mathrm{sp}}\tau_{i,t}^{(N)}
+:=
+X_i^{(N)}(t+1)-X_i^{(N)}(t),
+\qquad
+\left\|\Pi_{\mathrm{sp}}\tau_{i,t}^{(N)}\right\|
+\le
+C_{\mathrm v}\tau_N.
+\]
+\item \textbf{Interaction length scale.}
+For every interaction edge $(i,j)\in\mcP_t^{(N)}$,
+\[
+c_\sigma \rho_N
+\le
+\left\|\sigma_{ij,t}^{(N)}\right\|
+\le
+C_\sigma \rho_N.
+\]
+\item \textbf{Transversality.}
+For every $(i,j)\in\mcP_t^{(N)}$,
+\[
+\left|\left\langle
+\Pi_{\mathrm{sp}}\tau_{i,t}^{(N)},\sigma_{ij,t}^{(N)}
+\right\rangle\right|
+\le
+\eta\,\tau_N\rho_N.
+\]
+\item \textbf{Uniform interaction degree.}
+For every $i,t$,
+\[
+\deg_t^{(N)}(i)
+:=
+\#\{j:(i,j)\in\mcP_t^{(N)}\}
+\le
+D_{\max}.
+\]
+\item \textbf{Flat lattice density.}
+\[
+N\le C_{\mathrm{mesh}}\,a_N^{-4}.
+\]
+\end{enumerate}
+\par
+This package is the complete finite geometric input required in this file.
+\end{definition}
+
+\begin{lemma}[Plaquette area bounds from local trajectory geometry]
+\label{lem:plaquette-area-from-local-geometry}
+Assume Definition~\ref{def:flat-local-geometry}.
+Then there exist constants
+\[
+c_A:=\sqrt{c_\sigma^2-\eta^2},
+\qquad
+C_A:=\sqrt{1+C_{\mathrm v}^2}\,C_\sigma
+\]
+such that for all sufficiently large $N$ and every
+$P=P_{ij,t}^{(N)}\in\mcC_\square^{(N)}$,
+\[
+c_A\,\rho_N\tau_N
+\le
+A_P^{(N)}
+\le
+C_A\,\rho_N\tau_N.
+\]
+In particular \(A_P^{(N)}=O(a_N^2)\).
+\end{lemma}
+\begin{proof}
+For any such $P$, write
+\[
+\tau:=\tau_{i,t}^{(N)}=(\tau_N,\Pi_{\mathrm{sp}}\tau_{i,t}^{(N)}),
+\qquad
+\sigma:=\sigma_{ij,t}^{(N)}=(0,\sigma_{ij,t}^{(N)}).
+\]
+Then by the standard Euclidean identity for wedge norms,
+\[
+\left(A_P^{(N)}\right)^2
+=\|\tau\|^2\|\sigma\|^2-\langle\tau,\sigma\rangle^2.
+\]
+The time component of $\sigma$ is zero and $\tau^0=\tau_N$, so
+\[
+\|\tau\|^2
+=\tau_N^2+\left\|\Pi_{\mathrm{sp}}\tau\right\|^2
+\le
+(1+C_{\mathrm v}^2)\tau_N^2,
+\]
+\[
+\left|\langle\tau,\sigma\rangle\right|
+=
+\left|\left\langle\Pi_{\mathrm{sp}}\tau,\sigma_{ij,t}^{(N)}\right\rangle\right|
+\le
+\eta\tau_N\rho_N,
+\]
+and
+\[
+\|\sigma\|\le C_\sigma \rho_N.
+\]
+Hence
+\[
+\left(A_P^{(N)}\right)^2
+\le
+(1+C_{\mathrm v}^2)C_\sigma^2\tau_N^2\rho_N^2
+=C_A^2\rho_N^2\tau_N^2.
+\]
+For the lower bound, use
+\(\|\tau\|^2\ge\tau_N^2\) and
+\(c_\sigma \rho_N\le\|\sigma\|\le C_\sigma\rho_N\):
+\[
+\left(A_P^{(N)}\right)^2
+\ge
+\tau_N^2\|\sigma\|^2-\eta^2\tau_N^2\rho_N^2
+\ge
+(c_\sigma^2-\eta^2)\tau_N^2\rho_N^2
+=c_A^2\tau_N^2\rho_N^2.
+\]
+Since $\eta<c_\sigma$, $c_A>0$ and the claim follows on taking square roots.
+\end{proof}
+
+\begin{lemma}[Plaquette complexity from local trajectory geometry]
+\label{lem:plaquette-complexity-from-local-geometry}
+Definition~\ref{def:flat-local-geometry} implies
+\[
+\widetilde C_A:=T\,D_{\max}\,C_{\mathrm{mesh}}
+\]
+such that for every $N\ge N_0$,
+\[
+|\mcC_\square^{(N)}|
+\le
+\widetilde C_A\,a_N^{-4}.
+\]
+\end{lemma}
+\begin{proof}
+For each $t$, every canonical plaquette corresponds to an ordered pair in
+$\mcP_t^{(N)}\cap\mcP_{t+1}^{(N)}$, hence
+\[
+|\mcC_\square^{(N)}|
+\le
+\sum_{t=0}^{T-1}|\mcP_t^{(N)}\cap\mcP_{t+1}^{(N)}|
+\le
+\sum_{t=0}^{T-1}|\mcP_t^{(N)}|.
+\]
+For each $t$,
+\[
+|\mcP_t^{(N)}|
+=\sum_{i=1}^N\deg_t^{(N)}(i)
+\le
+ND_{\max}.
+\]
+By $N\le C_{\mathrm{mesh}}a_N^{-4}$, we get
+\[
+|\mcC_\square^{(N)}|
+\le
+T D_{\max}C_{\mathrm{mesh}}\,a_N^{-4}
+=\widetilde C_A\,a_N^{-4}.
+\]
+\end{proof}
+
+\begin{corollary}[Flat-refinement geometry]
+\label{cor:flat-geometry-consequence}
+Definition~\ref{def:flat-local-geometry} implies there are constants
+$c_A,C_A,\widetilde C_A\in(0,\infty)$ such that for every sufficiently large
+$N$,
+\[
+c_A\,\rho_N\tau_N\le A_P^{(N)}\le C_A\,\rho_N\tau_N
+\quad\forall P\in\mcC_\square^{(N)},
+\qquad
+|\mcC_\square^{(N)}|\le \widetilde C_A\,a_N^{-4}.
+\]
+\end{corollary}
+
+\begin{definition}[Plaquette Riemann-weighted empirical measure]
+\label{def:plaquette-riemann-measure}
+For each observable $\varphi\in C_c(\R^4)$ define
+\[
+\mu_\square^{(N)}(\varphi)
+:=
+\sum_{P\in\mcC_\square^{(N)}}
+\bigl(A_P^{(N)}\bigr)^2
+\varphi\bigl(x_P^{(N)}\bigr).
+\]
+\end{definition}
+
+\begin{remark}
+This geometric package is now made explicit from the local trajectory structure in
+Definition~\ref{def:flat-local-geometry}.
+Lemmas~\ref{lem:plaquette-area-from-local-geometry} and
+\ref{lem:plaquette-complexity-from-local-geometry} discharge the flat geometry
+input by providing the two required estimates.
+\end{remark}
+
+\section{Finite gauge data on the QFT lattice}
+
+\subsection{Companion weights and site colors}
+
+\begin{definition}[Companion weights]
+\label{def:companion-weights}
+For each node $n_{i,t}^{(N)}\in\mcN^{(N)}$, define the raw interaction degree
+\[
+\deg_{\mathrm{link}}^{(N)}(i,t)
+:=
+\sum_{(i,j)\in\mcP_t^{(N)}}
+K_{\rho_N}\!\bigl(X_i^{(N)}(t),X_j^{(N)}(t)\bigr),
+\]
+and the normalized companion weights
+\[
+\omega_{ij}^{(N)}(t)
+:=
+\begin{cases}
+\dfrac{
+K_{\rho_N}\!\bigl(X_i^{(N)}(t),X_j^{(N)}(t)\bigr)}
+{\deg_{\mathrm{link}}^{(N)}(i,t)},
+&
+(i,j)\in\mcP_t^{(N)}\ \text{and}\ \deg_{\mathrm{link}}^{(N)}(i,t)>0,
+\\[0.8em]
+0,
+&
+\text{otherwise.}
+\end{cases}
+\]
+\end{definition}
+
+\begin{lemma}[Normalization of the companion weights]
+\label{lem:weight-normalization}
+For every $N$, particle index $i$, and time slice $t$,
+\[
+\omega_{ij}^{(N)}(t)\ge0
+\qquad\text{for all }j,
+\]
+and
+\[
+\sum_{j:(i,j)\in\mcP_t^{(N)}}\omega_{ij}^{(N)}(t)
+=
+\one_{\{\deg_{\mathrm{link}}^{(N)}(i,t)>0\}}.
+\]
+\end{lemma}
+
+\begin{proof}
+Nonnegativity follows from $K_{\rho_N}\ge\kappa_0>0$.
+If $\deg_{\mathrm{link}}^{(N)}(i,t)>0$, then by direct summation of the
+definition,
+\[
+\sum_{j:(i,j)\in\mcP_t^{(N)}}\omega_{ij}^{(N)}(t)
+=
+\frac{1}{\deg_{\mathrm{link}}^{(N)}(i,t)}
+\sum_{j:(i,j)\in\mcP_t^{(N)}}
+K_{\rho_N}\!\bigl(X_i^{(N)}(t),X_j^{(N)}(t)\bigr)
+=1.
+\]
+If $\deg_{\mathrm{link}}^{(N)}(i,t)=0$, each summand is zero by definition.
+\end{proof}
+
+\begin{definition}[Viscous force on interaction links and nodes]
+\label{def:node-force}
+For each interaction link
+\[
+e_{ij,t}^{\mathrm{int}}
+=
+\bigl(n_{i,t}^{(N)}\to n_{j,t}^{(N)}\bigr)\in\mcE^{(N)},
+\]
+define the pair force
+\[
+\mathbf F_{\mathrm{link}}^{(N)}(e_{ij,t}^{\mathrm{int}})
+:=
+\nu_{\mathrm{visc}}\,
+\omega_{ij}^{(N)}(t)\,
+\bigl(V_j^{(N)}(t)-V_i^{(N)}(t)\bigr)\in\R^3.
+\]
+The site force at $x=n_{i,t}^{(N)}$ is the outgoing interaction sum
+\[
+\mathbf F_{\mathrm{visc}}^{(N)}(x)
+:=
+\sum_{\substack{(i,j)\in\mcP_t^{(N)}}}
+\mathbf F_{\mathrm{link}}^{(N)}(e_{ij,t}^{\mathrm{int}}).
+\]
+\end{definition}
+
+\begin{definition}[Mesoscopic same-time recovery scale and averages]
+\label{def:mesoscopic-color-averaging}
+Fix a nonnegative radial mollifier
+\[
+\eta\in C_c^\infty(\R^3),
+\qquad
+\int_{\R^3}\eta(z)\,\dd z=1,
+\qquad
+\eta(0)>0.
+\]
+Let \((r_N)_{N\ge N_0}\) be a recovery scale with
+\[
+r_N\downarrow0,
+\qquad
+\frac{a_N}{r_N}\to0.
+\]
+Define the rescaled kernel
+\[
+\eta_{r_N}(z):=r_N^{-3}\eta(z/r_N).
+\]
+For each site \(x=n_{i,t}^{(N)}\), define the same-time normalization factor
+\[
+Z_x^{(N)}
+:=
+\sum_{k=1}^N
+\eta_{r_N}\!\bigl(X_k^{(N)}(t)-X_i^{(N)}(t)\bigr).
+\]
+Since the self-term \(k=i\) contributes \(\eta_{r_N}(0)>0\), one has
+\[
+Z_x^{(N)}>0
+\qquad
+\forall x\in\mcN^{(N)}.
+\]
+Define the mesoscopic averaged viscous force
+\[
+\overline{\mathbf F}_{\mathrm{visc}}^{(N)}(x)
+:=
+\frac{1}{Z_x^{(N)}}
+\sum_{k=1}^N
+\eta_{r_N}\!\bigl(X_k^{(N)}(t)-X_i^{(N)}(t)\bigr)\,
+\mathbf F_{\mathrm{visc}}^{(N)}\!\bigl(n_{k,t}^{(N)}\bigr),
+\]
+and for each component \(\alpha\in\{1,2,3\}\), define the same-time phase
+average
+\[
+\overline M_x^{(N),\alpha}
+:=
+\frac{1}{Z_x^{(N)}}
+\sum_{k=1}^N
+\eta_{r_N}\!\bigl(X_k^{(N)}(t)-X_i^{(N)}(t)\bigr)\,
+\exp\!\left(
+i\frac{\mu_p\,V_k^{(N),\alpha}(t)\,\ell_0}{\hbar_{\mathrm{eff}}}
+\right).
+\]
+Define the mesoscopic raw color observable
+\[
+\overline{\tilde c}_x^{(N),\alpha}
+:=
+\frac{1}{Z_x^{(N)}}
+\sum_{k=1}^N
+\eta_{r_N}\!\bigl(X_k^{(N)}(t)-X_i^{(N)}(t)\bigr)\,
+\bigl(\mathbf F_{\mathrm{visc}}^{(N)}(n_{k,t}^{(N)})\bigr)_\alpha\,
+\exp\!\left(
+i\frac{\mu_p\,V_k^{(N),\alpha}(t)\,\ell_0}{\hbar_{\mathrm{eff}}}
+\right).
+\]
+\end{definition}
+
+\begin{definition}[Color triplets]
+\label{def:site-colors}
+Let \(\tilde{\mathbf c}_\infty\) and \(\mathbf c_\infty\) be the stationary
+mean-field color profiles of Definition~\ref{def:stationary-mf-color}. For each
+site \(x=n_{i,t}^{(N)}\), define
+\[
+\tilde{\mathbf c}_x^{(N)}
+:=
+\tilde{\mathbf c}_\infty\!\bigl(X_i^{(N)}(t)\bigr)\in\C^3,
+\qquad
+\mathbf c_x^{(N)}
+:=
+\mathbf c_\infty\!\bigl(X_i^{(N)}(t)\bigr)\in\C^3.
+\]
+Equivalently, for each component \(\alpha\in\{1,2,3\}\),
+\[
+\tilde c_x^{(N),\alpha}
+:=
+\tilde c_\infty^\alpha\!\bigl(X_i^{(N)}(t)\bigr),
+\qquad
+c_x^{(N),\alpha}
+:=
+c_\infty^\alpha\!\bigl(X_i^{(N)}(t)\bigr).
+\]
+\end{definition}
+
+\begin{remark}[Deterministic mean-field color regularization]
+\label{rem:deterministic-mf-color-regularization}
+The rigorous continuum construction uses the stationary mean-field color
+profile as the finite site-color regularization. The mesoscopic averages from
+Definition~\ref{def:mesoscopic-color-averaging} remain useful for comparison
+with raw trajectory observables, but they are not needed to define the finite
+gauge theory carried into the continuum limit.
+\end{remark}
+
+\begin{definition}[Auxiliary mesoscopic raw color observable]
+\label{def:aux-mesoscopic-raw-color}
+For each site $x=n_{i,t}^{(N)}$ and each component
+$\alpha\in\{1,2,3\}$, define the auxiliary mesoscopically recovered raw color component
+\[
+\tilde c_{x,\mathrm{meso}}^{(N),\alpha}
+:=
+\overline{\tilde c}_x^{(N),\alpha},
+\]
+the auxiliary raw color vector
+\[
+\tilde{\mathbf c}_{x,\mathrm{meso}}^{(N)}
+:=
+\bigl(
+\tilde c_{x,\mathrm{meso}}^{(N),1},
+\tilde c_{x,\mathrm{meso}}^{(N),2},
+\tilde c_{x,\mathrm{meso}}^{(N),3}
+\bigr)\in\C^3,
+\]
+\end{definition}
+
+\begin{remark}[Auxiliary mesoscopic comparison fields]
+\label{rem:mesoscopic-color-regularization}
+Definition~\ref{def:site-colors} gives the finite color regularization used in
+the rest of this chapter. The averaging in
+Definition~\ref{def:mesoscopic-color-averaging} is performed only inside a fixed
+time slice \(t\); no temporal averaging is introduced. These mesoscopic fields
+are retained only as auxiliary comparison observables for the raw trajectory
+data.
+\end{remark}
+
+\begin{definition}[Stationary mean-field color profile]
+\label{def:stationary-mf-color}
+Let \(\pi_\infty\) be the unique stationary mean-field law from
+Proposition~\ref{prop:mf-unique}, and write \(\rho_\infty(x,v)\) for its
+density. Define the stationary kernel mass
+\[
+m_\infty(x)
+:=
+\iint_{\R^6} K(x,y)\,\rho_\infty(y,q)\,\dd y\,\dd q,
+\]
+the stationary alignment velocity
+\[
+A_\infty(x)
+:=
+\frac{1}{m_\infty(x)}
+\iint_{\R^6} K(x,y)\,q\,\rho_\infty(y,q)\,\dd y\,\dd q,
+\]
+and the stationary raw color moments
+\[
+\mathcal N_\alpha(x)
+:=
+\int_{\R^3}
+\nu_{\mathrm{visc}}\bigl(A_\infty(x)-v\bigr)_\alpha
+\exp\!\left(
+i\frac{\mu_p\,\psi(v)_\alpha\,\ell_0}{\hbar_{\mathrm{eff}}}
+\right)
+\rho_\infty(x,v)\,\dd v,
+\qquad
+\alpha\in\{1,2,3\}.
+\]
+Let
+\[
+\rho_{\infty,x}(x):=\int_{\R^3}\rho_\infty(x,v)\,\dd v,
+\qquad
+\tilde c_\infty^\alpha(x):=
+\frac{\mathcal N_\alpha(x)}{\rho_{\infty,x}(x)},
+\]
+\[
+\tilde{\mathbf c}_\infty(x)
+:=
+\bigl(\tilde c_\infty^1(x),\tilde c_\infty^2(x),\tilde c_\infty^3(x)\bigr)\in\C^3,
+\qquad
+\mathbf c_\infty(x)
+:=
+\frac{\tilde{\mathbf c}_\infty(x)}
+{\sqrt{\tilde{\mathbf c}_\infty(x)^\dagger\tilde{\mathbf c}_\infty(x)+\epsilon_c^2}}.
+\]
+\end{definition}
+
+\begin{proposition}[Smoothness of the stationary mean-field color profile]
+\label{prop:stationary-mf-color-smooth}
+The stationary density \(\rho_\infty\) is \(C^\infty\) and strictly positive on
+\(\R^6\). Consequently
+\[
+A_\infty\in C^\infty(\R^3;\R^3),
+\qquad
+\mathbf c_\infty\in C^\infty(\R^3;\C^3).
+\]
+\end{proposition}
+
+\begin{proof}
+Proposition~\ref{prop:mf-unique} provides a stationary weak solution of the
+kinetic Fokker--Planck equation with smooth coefficients. The diffusion vector
+fields are the velocity derivatives \(\partial_{v_1},\partial_{v_2},\partial_{v_3}\),
+and their commutators with the transport field generate the spatial derivatives
+\(\partial_{x_1},\partial_{x_2},\partial_{x_3}\). Hörmander hypoellipticity
+therefore applies, so the stationary weak solution admits a smooth density
+\(\rho_\infty\). The associated hypoelliptic heat kernel is strictly positive,
+and invariance forces the stationary density to be strictly positive as well.
+
+Since \(K\) and \(\psi\) are smooth and \(\rho_\infty\) has finite moments by
+the stationary estimates of `01_convergence`, differentiation under the
+integral sign is legitimate in the displayed formulas for \(m_\infty\),
+\(A_\infty\), and \(\mathcal N_\alpha\). The strict positivity of the kernel
+floor gives \(m_\infty(x)\ge k_*>0\), and positivity of \(\rho_{\infty,x}\)
+gives a smooth denominator in the definition of \(\tilde c_\infty^\alpha\).
+The final normalization with
+\(\epsilon_c>0\) preserves smoothness.
+\end{proof}
+
+\begin{proposition}[Mean-field sampled site colors satisfy the compactness package]
+\label{prop:mf-sampled-colors-compact}
+Let the site colors be those of Definition~\ref{def:site-colors}. Then
+Definition~\ref{def:discrete-color-compactness} holds with
+\[
+c^{(N)}(s,x):=\mathbf c_\infty(x)
+\qquad
+\forall (s,x)\in\R^4,
+\]
+limit field \(c:=\mathbf c_\infty\), and any recovery scale \(r_N\downarrow0\)
+such that
+\[
+\frac{a_N}{r_N}\to0,
+\qquad
+\frac{a_N}{r_N^2}\to0.
+\]
+\end{proposition}
+
+\begin{proof}
+By Definition~\ref{def:site-colors},
+\[
+c^{(N)}\bigl(\Xi^{(N)}(n_{i,t}^{(N)})\bigr)
+=
+\mathbf c_\infty\!\bigl(X_i^{(N)}(t)\bigr)
+=
+\mathbf c_{n_{i,t}^{(N)}}^{(N)},
+\]
+so \(c^{(N)}\) is an interpolating color family. By
+Proposition~\ref{prop:stationary-mf-color-smooth}, the field
+\(\mathbf c_\infty\) is \(C^\infty\) on \(\R^3\), hence time-independent
+\(C^2_{\mathrm{loc}}\) on \(\R^4\). Therefore, for every compact
+\(\mcK\subset\R^4\),
+\[
+\sup_{N\ge N_0}
+\Bigl(
+\|c^{(N)}\|_{L^\infty(\mcK)}
++\|\nabla c^{(N)}\|_{L^\infty(\mcK)}
++\|\nabla^2 c^{(N)}\|_{L^\infty(\mcK)}
+\Bigr)
+<\infty,
+\]
+\[
+\sup_{N\ge N_0}\|c^{(N)}\|_{H^1(\mcK)}<\infty,
+\qquad
+c^{(N)}\rightharpoonup c \text{ in }H^1(\mcK),
+\qquad
+c^{(N)}\to c \text{ in }L^2(\mcK),
+\]
+and
+\[
+\|c^{(N)}-c\|_{C^2(\mcK)}=0
+\qquad
+\forall N.
+\]
+The recovery-scale conditions are built into the statement. Hence every clause
+of Definition~\ref{def:discrete-color-compactness} is satisfied.
+\end{proof}
+
+\begin{definition}[Recovered spacetime color field]
+\label{def:recovered-color-field}
+For each time slice \(0\le t\le T\) and each spatial point \(x\in\R^3\), define
+the same-time recovery denominator
+\[
+D_t^{(N)}(x)
+:=
+\sum_{k=1}^N \eta_{r_N}\!\bigl(x-X_k^{(N)}(t)\bigr),
+\]
+and the same-time recovered color field
+\[
+\widehat{\mathbf c}_t^{(N)}(x)
+:=
+\begin{cases}
+\dfrac{
+\sum_{k=1}^N
+\eta_{r_N}\!\bigl(x-X_k^{(N)}(t)\bigr)\,
+\mathbf c_{n_{k,t}^{(N)}}^{(N)}
+}{
+D_t^{(N)}(x)
+},
+&
+D_t^{(N)}(x)>0,
+\\[1em]
+0,
+&
+D_t^{(N)}(x)=0.
+\end{cases}
+\]
+For \(s\in[t\tau_N,(t+1)\tau_N]\), define the affine time interpolation
+\[
+\theta_t^{(N)}(s):=\frac{s-t\tau_N}{\tau_N},
+\]
+\[
+\widehat{\mathbf c}^{(N)}(s,x)
+:=
+\bigl(1-\theta_t^{(N)}(s)\bigr)\widehat{\mathbf c}_t^{(N)}(x)
++
+\theta_t^{(N)}(s)\widehat{\mathbf c}_{t+1}^{(N)}(x).
+\]
+\end{definition}
+
+\begin{definition}[Canonical mesoscopic interpolating color field]
+\label{def:canonical-mesoscopic-interpolant}
+For each time slice \(0\le t\le T\), spatial point \(x\in\R^3\), and
+component \(\alpha\in\{1,2,3\}\), define
+\[
+\widetilde c_{t,\mathrm{raw}}^{(N),\alpha}(x)
+:=
+\begin{cases}
+\dfrac{
+\sum_{k=1}^N
+\eta_{r_N}\!\bigl(x-X_k^{(N)}(t)\bigr)\,
+\bigl(\mathbf F_{\mathrm{visc}}^{(N)}(n_{k,t}^{(N)})\bigr)_\alpha
+\exp\!\left(
+i\frac{\mu_p\,V_k^{(N),\alpha}(t)\,\ell_0}{\hbar_{\mathrm{eff}}}
+\right)
+}{
+D_t^{(N)}(x)
+},
+&
+D_t^{(N)}(x)>0,
+\\[1em]
+0,
+&
+D_t^{(N)}(x)=0,
+\end{cases}
+\]
+\[
+\widetilde{\mathbf c}_{t,\mathrm{raw}}^{(N)}(x)
+:=
+\bigl(
+\widetilde c_{t,\mathrm{raw}}^{(N),1}(x),
+\widetilde c_{t,\mathrm{raw}}^{(N),2}(x),
+\widetilde c_{t,\mathrm{raw}}^{(N),3}(x)
+\bigr),
+\]
+\[
+\mathbf c_t^{(N)}(x)
+:=
+\frac{\widetilde{\mathbf c}_{t,\mathrm{raw}}^{(N)}(x)}
+{\sqrt{
+\bigl(\widetilde{\mathbf c}_{t,\mathrm{raw}}^{(N)}(x)\bigr)^\dagger
+\widetilde{\mathbf c}_{t,\mathrm{raw}}^{(N)}(x)
+\epsilon_c^2}},
+\]
+and for \(s\in[t\tau_N,(t+1)\tau_N]\),
+\[
+\mathbf c^{(N)}(s,x)
+:=
+\bigl(1-\theta_t^{(N)}(s)\bigr)\mathbf c_t^{(N)}(x)
++
+\theta_t^{(N)}(s)\mathbf c_{t+1}^{(N)}(x).
+\]
+At the node centers one has exact interpolation:
+\[
+\mathbf c_t^{(N)}\!\bigl(X_i^{(N)}(t)\bigr)
+=
+\mathbf c_{n_{i,t}^{(N)}}^{(N)}.
+\]
+\end{definition}
+
+\begin{proposition}[Uniform boundedness and local \(L^2\) control of recovered colors]
+\label{prop:mesoscopic-l2}
+Let \(\widehat{\mathbf c}^{(N)}\) be the recovered spacetime color field of
+Definition~\ref{def:recovered-color-field}. Then
+\[
+\|\widehat{\mathbf c}^{(N)}\|_{L^\infty(\R^4)}\le 1
+\qquad
+\forall N\ge N_0.
+\]
+Consequently, for every compact set \(\mcK\subset\R^4\),
+\[
+\sup_{N\ge N_0}\|\widehat{\mathbf c}^{(N)}\|_{L^2(\mcK)}
+\le |\mcK|^{1/2}.
+\]
+\end{proposition}
+
+\begin{proof}
+By Lemma~\ref{lem:color-normalization},
+\[
+\|\mathbf c_x^{(N)}\|<1
+\qquad
+\forall x\in\mcN^{(N)}.
+\]
+Fix \(t\) and \(x\in\R^3\). If \(D_t^{(N)}(x)=0\), then
+\(\widehat{\mathbf c}_t^{(N)}(x)=0\). If \(D_t^{(N)}(x)>0\), then
+\(\widehat{\mathbf c}_t^{(N)}(x)\) is a convex combination of the site colors
+\(\mathbf c_{n_{k,t}^{(N)}}^{(N)}\), because the weights
+\[
+\frac{\eta_{r_N}(x-X_k^{(N)}(t))}{D_t^{(N)}(x)}
+\]
+are nonnegative and sum to \(1\). Therefore
+\[
+\|\widehat{\mathbf c}_t^{(N)}(x)\|
+\le
+\sup_{k}\|\mathbf c_{n_{k,t}^{(N)}}^{(N)}\|
+\le 1.
+\]
+The spacetime field \(\widehat{\mathbf c}^{(N)}\) is an affine interpolation
+between two vectors of norm at most \(1\), so
+\[
+\|\widehat{\mathbf c}^{(N)}(s,x)\|\le 1
+\qquad
+\forall (s,x)\in\R^4.
+\]
+Integrating this pointwise bound over a compact set \(\mcK\subset\R^4\) gives
+the \(L^2\)-estimate.
+\end{proof}
+
+\begin{proposition}[Derivative identities and \(H^1_{\mathrm{loc}}\) reduction]
+\label{prop:mesoscopic-h1-reduction}
+Let \(\widehat{\mathbf c}^{(N)}\) be as in
+Definition~\ref{def:recovered-color-field}. Then for every time slice
+\(0\le t\le T\) and every \(x\in\R^3\) with \(D_t^{(N)}(x)>0\),
+\[
+\nabla_x\widehat{\mathbf c}_t^{(N)}(x)
+=
+\frac{
+\sum_{k=1}^N
+\nabla\eta_{r_N}\!\bigl(x-X_k^{(N)}(t)\bigr)\,
+\bigl(
+\mathbf c_{n_{k,t}^{(N)}}^{(N)}
+-\widehat{\mathbf c}_t^{(N)}(x)
+\bigr)
+}{
+D_t^{(N)}(x)
+}.
+\]
+Moreover, for \(s\in(t\tau_N,(t+1)\tau_N)\),
+\[
+\partial_s\widehat{\mathbf c}^{(N)}(s,x)
+=
+\frac{
+\widehat{\mathbf c}_{t+1}^{(N)}(x)-\widehat{\mathbf c}_t^{(N)}(x)
+}{
+\tau_N
+}.
+\]
+Let \(\mcK\subset\R^4\) be compact, and write
+\[
+\mcK_t^{(N)}
+:=
+\{x\in\R^3:(t\tau_N,x)\in\mcK\}.
+\]
+If for every compact \(\mcK\subset\R^4\) there exists
+\(C_\mcK<\infty\), independent of \(N\), such that
+\[
+\sum_{t=0}^{T-1}\tau_N
+\int_{\mcK_t^{(N)}}
+\bigl|\nabla_x\widehat{\mathbf c}_t^{(N)}(x)\bigr|^2\,\dd x
+\le C_\mcK,
+\]
+and
+\[
+\sum_{t=0}^{T-1}\tau_N^{-1}
+\int_{\mcK_t^{(N)}}
+\bigl|
+\widehat{\mathbf c}_{t+1}^{(N)}(x)-\widehat{\mathbf c}_t^{(N)}(x)
+\bigr|^2\,\dd x
+\le C_\mcK,
+\]
+then
+\[
+\sup_{N\ge N_0}\|\widehat{\mathbf c}^{(N)}\|_{H^1(\mcK)}<\infty.
+\]
+Hence every compact set \(\mcK\subset\R^4\) admits a subsequence along which
+\(\widehat{\mathbf c}^{(N)}\) converges weakly in \(H^1(\mcK)\) and strongly in
+\(L^2(\mcK)\).
+\end{proposition}
+
+\begin{proof}
+Differentiate the quotient defining \(\widehat{\mathbf c}_t^{(N)}\). Since
+\[
+\nabla_x D_t^{(N)}(x)
+=
+\sum_{k=1}^N
+\nabla\eta_{r_N}\!\bigl(x-X_k^{(N)}(t)\bigr),
+\]
+the quotient rule gives
+\begin{align*}
+\nabla_x\widehat{\mathbf c}_t^{(N)}(x)
+&=
+\frac{
+\sum_{k=1}^N
+\nabla\eta_{r_N}\!\bigl(x-X_k^{(N)}(t)\bigr)\,
+\mathbf c_{n_{k,t}^{(N)}}^{(N)}
+}{
+D_t^{(N)}(x)
+}
+-
+\frac{
+\nabla_x D_t^{(N)}(x)
+}{
+D_t^{(N)}(x)
+}\widehat{\mathbf c}_t^{(N)}(x)\\
+&=
+\frac{
+\sum_{k=1}^N
+\nabla\eta_{r_N}\!\bigl(x-X_k^{(N)}(t)\bigr)\,
+\bigl(
+\mathbf c_{n_{k,t}^{(N)}}^{(N)}
+-\widehat{\mathbf c}_t^{(N)}(x)
+\bigr)
+}{
+D_t^{(N)}(x)
+},
+\end{align*}
+which is the stated identity.
+
+The time derivative follows directly from the affine interpolation formula on
+each interval \((t\tau_N,(t+1)\tau_N)\).
+
+The displayed spatial and temporal estimates are precisely the square-integrable
+gradient bounds needed for the \(H^1(\mcK)\)-norm of
+\(\widehat{\mathbf c}^{(N)}\). Combining them with
+Proposition~\ref{prop:mesoscopic-l2} yields the uniform \(H^1(\mcK)\)-bound.
+Weak \(H^1\)-compactness follows from Banach--Alaoglu, and strong
+\(L^2\)-compactness follows from the Rellich theorem on each compact set.
+\end{proof}
+
+\begin{remark}[What remains to close the mesoscopic route]
+\label{rem:mesoscopic-gap}
+Proposition~\ref{prop:mesoscopic-l2} is unconditional. The rigorous continuum
+construction no longer depends on the mesoscopic route, because
+Proposition~\ref{prop:mf-sampled-colors-compact} discharges the compactness
+package directly for the mean-field sampled site-color regularization. The
+remaining genuinely new theorem for the auxiliary mesoscopic comparison route is
+the pair of estimates in
+Proposition~\ref{prop:mesoscopic-h1-reduction}: a mesoscopic spatial oscillation
+bound controlling \(\nabla_x\widehat{\mathbf c}_t^{(N)}\), and a one-step time
+increment estimate controlling \(\partial_s\widehat{\mathbf c}^{(N)}\).
+\end{remark}
+
+\begin{lemma}[Color normalization]
+\label{lem:color-normalization}
+For every site $x\in\mcN^{(N)}$,
+\[
+\bigl(\mathbf c_x^{(N)}\bigr)^\dagger\mathbf c_x^{(N)}
+=
+\frac{
+\bigl(\tilde{\mathbf c}_x^{(N)}\bigr)^\dagger\tilde{\mathbf c}_x^{(N)}}
+{
+\bigl(\tilde{\mathbf c}_x^{(N)}\bigr)^\dagger\tilde{\mathbf c}_x^{(N)}
++\epsilon_c^2}
+\in[0,1).
+\]
+In particular, the normalized color vector is well-defined and obeys
+\[
+\|\mathbf c_x^{(N)}\|<1.
+\]
+\end{lemma}
+
+\begin{proof}
+The denominator is strictly positive because $\epsilon_c>0$.
+The displayed identity is immediate from the definition.
+Since $r/(r+\epsilon_c^2)\in[0,1)$ for every $r\ge0$, the claim follows.
+\end{proof}
+
+\subsection{Link variables and parallel transport}
+
+\begin{definition}[Gell-Mann basis and Hermitian generator space]
+\label{def:gellmann}
+The Gell-Mann matrices are
+\[
+\lambda_1=\begin{pmatrix}0&1&0\\1&0&0\\0&0&0\end{pmatrix},\quad
+\lambda_2=\begin{pmatrix}0&-i&0\\ i&0&0\\0&0&0\end{pmatrix},\quad
+\lambda_3=\begin{pmatrix}1&0&0\\0&-1&0\\0&0&0\end{pmatrix},
+\]
+\[
+\lambda_4=\begin{pmatrix}0&0&1\\0&0&0\\1&0&0\end{pmatrix},\quad
+\lambda_5=\begin{pmatrix}0&0&-i\\0&0&0\\ i&0&0\end{pmatrix},\quad
+\lambda_6=\begin{pmatrix}0&0&0\\0&0&1\\0&1&0\end{pmatrix},
+\]
+\[
+\lambda_7=\begin{pmatrix}0&0&0\\0&0&-i\\0&i&0\end{pmatrix},\quad
+\lambda_8=\frac{1}{\sqrt3}
+\begin{pmatrix}1&0&0\\0&1&0\\0&0&-2\end{pmatrix}.
+\]
+Each $\lambda_a$ is Hermitian and traceless, and
+\[
+\tr(\lambda_a\lambda_b)=2\delta_{ab}.
+\]
+We write
+\[
+\mathfrakh
+:=
+\{H\in\C^{3\times3}:H^\dagger=H,\ \tr H=0\}
+\]
+for the Hermitian traceless generator space.
+The Lie algebra $\fraksu$ is identified with $i\mathfrakh$ in the usual
+physics convention.
+\end{definition}
+
+\begin{definition}[Edge generators and link transports]
+\label{def:edge-transport}
+For each oriented edge $e=(x\to y)\in\mcE^{(N)}$, define
+\[
+\mathcal A_e^{(N)}
+:=
+\frac12\sum_{a=1}^8
+\Re\!\bigl(
+(\mathbf c_x^{(N)})^\dagger \lambda_a(\mathbf c_y^{(N)}-\mathbf c_x^{(N)})
+\bigr)\lambda_a
+\in\mathfrakh,
+\]
+\[
+\Theta_e^{(N)}:=g_3\,\mathcal A_e^{(N)}\in\mathfrakh,
+\]
+and
+\[
+U_3^{(N)}(e):=\exp\!\bigl(i\Theta_e^{(N)}\bigr)\in SU(3).
+\]
+For the reversed orientation, set
+\[
+U_3^{(N)}(e^{-1}):=\bigl(U_3^{(N)}(e)\bigr)^{-1}.
+\]
+\end{definition}
+
+\begin{lemma}[Link transport lies in $SU(3)$]
+\label{lem:su3-link}
+For every oriented edge $e\in\mcE^{(N)}$, the matrix $U_3^{(N)}(e)$ belongs to
+$SU(3)$.
+\end{lemma}
+
+\begin{proof}
+Each coefficient
+\[
+\Re\!\bigl(
+(\mathbf c_x^{(N)})^\dagger \lambda_a(\mathbf c_y^{(N)}-\mathbf c_x^{(N)})
+\bigr)
+\]
+is real, and each $\lambda_a$ is Hermitian and traceless.
+Hence $\Theta_e^{(N)}$ is Hermitian and traceless.
+Therefore $i\Theta_e^{(N)}$ is skew-Hermitian and traceless, so
+\[
+U_3^{(N)}(e)=\exp\!\bigl(i\Theta_e^{(N)}\bigr)
+\]
+is unitary with determinant
+\[
+\det U_3^{(N)}(e)=\exp\!\bigl(i\tr \Theta_e^{(N)}\bigr)=1.
+\]
+\end{proof}
+
+\subsection{Plaquette field strength and Wilson action}
+
+\begin{definition}[Gauge maps and transformed links]
+\label{def:gauge-map}
+A gauge map at level $N$ is a function
+\[
+\Omega^{(N)}:\mcN^{(N)}\to SU(3).
+\]
+Its action on site colors and links is
+\[
+\mathbf c_x^{(N),\Omega}
+:=
+\Omega^{(N)}(x)\,\mathbf c_x^{(N)},
+\]
+\[
+U_3^{(N),\Omega}(x\to y)
+:=
+\Omega^{(N)}(y)\,U_3^{(N)}(x\to y)\,\bigl(\Omega^{(N)}(x)\bigr)^{-1}.
+\]
+\end{definition}
+
+\begin{definition}[Plaquette holonomy, discrete field strength, and Wilson action]
+\label{def:finite-wilson-data}
+For $P=P_{ij,t}^{(N)}\in\mcC_\square^{(N)}$, define the plaquette holonomy
+\[
+U_3^{(N)}(P)
+:=
+U_3^{(N)}\bigl(n_{i,t}^{(N)}\to n_{i,t+1}^{(N)}\bigr)
+U_3^{(N)}\bigl(n_{i,t+1}^{(N)}\to n_{j,t+1}^{(N)}\bigr)
+U_3^{(N)}\bigl(n_{j,t+1}^{(N)}\to n_{j,t}^{(N)}\bigr)
+U_3^{(N)}\bigl(n_{j,t}^{(N)}\to n_{i,t}^{(N)}\bigr).
+\]
+Whenever $A_P^{(N)}>0$ and $U_3^{(N)}(P)$ lies in the principal logarithm
+domain, define the discrete field strength
+\[
+F_P^{(N)}
+:=
+\frac{1}{ig_3A_P^{(N)}}\log U_3^{(N)}(P)\in\mathfrakh.
+\]
+The Wilson action is
+\[
+S_{\mathrm W}^{(N)}
+:=
+\frac{6}{g_3^2}
+\sum_{P\in\mcC_\square^{(N)}}
+\left(
+1-\frac13\Re\tr U_3^{(N)}(P)
+\right).
+\]
+\end{definition}
+
+\begin{proposition}[Exact plaquette exponential identity and Wilson expansion]
+\label{prop:plaquette-wilson-expansion}
+Let $P\in\mcC_\square^{(N)}$ be such that $A_P^{(N)}>0$ and
+$U_3^{(N)}(P)$ lies in the principal logarithm domain.
+Then
+\[
+U_3^{(N)}(P)=\exp\!\bigl(i g_3 A_P^{(N)}F_P^{(N)}\bigr).
+\]
+If in addition
+\[
+\|g_3A_P^{(N)}F_P^{(N)}\|_{\mathrm{op}}\le \delta
+\]
+for some fixed $\delta>0$, then there exists a constant $C_\delta<\infty$,
+depending only on $\delta$ and the matrix norm convention, such that
+\[
+1-\frac13\Re\tr U_3^{(N)}(P)
+=
+\frac{g_3^2(A_P^{(N)})^2}{6}\,
+\tr\!\bigl((F_P^{(N)})^2\bigr)
++R_P^{(N)},
+\]
+with
+\[
+|R_P^{(N)}|
+\le
+C_\delta\,g_3^3(A_P^{(N)})^3\|F_P^{(N)}\|_{\mathrm{op}}^3.
+\]
+\end{proposition}
+
+\begin{proof}
+By Definition~\ref{def:finite-wilson-data},
+\[
+F_P^{(N)}
+=
+\frac{1}{ig_3A_P^{(N)}}\log U_3^{(N)}(P),
+\]
+so multiplication by $ig_3A_P^{(N)}$ gives
+\[
+\log U_3^{(N)}(P)=ig_3A_P^{(N)}F_P^{(N)}.
+\]
+Exponentiating both sides yields the exact identity
+\[
+U_3^{(N)}(P)=\exp\!\bigl(i g_3 A_P^{(N)}F_P^{(N)}\bigr).
+\]
+
+Set
+\[
+X_P^{(N)}:=ig_3A_P^{(N)}F_P^{(N)}.
+\]
+Because $F_P^{(N)}\in\mathfrakh$, the matrix $X_P^{(N)}$ is skew-Hermitian and
+traceless.
+The exponential series gives
+\[
+e^{X_P^{(N)}}
+=
+I+X_P^{(N)}+\frac12(X_P^{(N)})^2+\mathcal R_P^{(N)},
+\]
+where the third-order remainder satisfies the standard matrix bound
+\[
+\|\mathcal R_P^{(N)}\|_{\mathrm{op}}
+\le
+C_\delta\|X_P^{(N)}\|_{\mathrm{op}}^3
+\]
+whenever $\|X_P^{(N)}\|_{\mathrm{op}}\le\delta$.
+Taking traces and using $\tr X_P^{(N)}=0$, we obtain
+\[
+\tr U_3^{(N)}(P)
+=
+3+\frac12\tr\!\bigl((X_P^{(N)})^2\bigr)+\tr\mathcal R_P^{(N)}.
+\]
+Since $(ig_3A_P^{(N)})^2=-g_3^2(A_P^{(N)})^2$,
+\[
+\tr\!\bigl((X_P^{(N)})^2\bigr)
+=
+-g_3^2(A_P^{(N)})^2\tr\!\bigl((F_P^{(N)})^2\bigr).
+\]
+Therefore
+\[
+\Re\tr U_3^{(N)}(P)
+=
+3-\frac{g_3^2(A_P^{(N)})^2}{2}\tr\!\bigl((F_P^{(N)})^2\bigr)
++\Re\tr\mathcal R_P^{(N)}.
+\]
+Subtracting from $1$ after division by $3$ gives
+\[
+1-\frac13\Re\tr U_3^{(N)}(P)
+=
+\frac{g_3^2(A_P^{(N)})^2}{6}\tr\!\bigl((F_P^{(N)})^2\bigr)
+-\frac13\Re\tr\mathcal R_P^{(N)}.
+\]
+It remains to estimate the last term.
+In fixed dimension, $|\tr Y|\le 3\|Y\|_{\mathrm{op}}$ for every
+$3\times3$ matrix $Y$, so
+\[
+\left|-\frac13\Re\tr\mathcal R_P^{(N)}\right|
+\le
+\|\mathcal R_P^{(N)}\|_{\mathrm{op}}
+\le
+C_\delta\|X_P^{(N)}\|_{\mathrm{op}}^3.
+\]
+Since $\|X_P^{(N)}\|_{\mathrm{op}}=g_3A_P^{(N)}\|F_P^{(N)}\|_{\mathrm{op}}$, the
+claimed bound follows.
+\end{proof}
+
+\subsection{Gauge invariance}
+
+\begin{proposition}[Finite gauge invariance of plaquette traces]
+\label{prop:finite-gauge-invariance}
+For every plaquette $P\in\mcC_\square^{(N)}$ and every gauge map
+$\Omega^{(N)}$,
+\[
+\tr U_3^{(N),\Omega}(P)=\tr U_3^{(N)}(P).
+\]
+Consequently,
+\[
+S_{\mathrm W}^{(N),\Omega}=S_{\mathrm W}^{(N)}.
+\]
+\end{proposition}
+
+\begin{proof}
+Write the plaquette as the closed four-step loop
+\[
+v_0\to v_1\to v_2\to v_3\to v_4=v_0.
+\]
+Under the gauge action from Definition~\ref{def:gauge-map},
+\[
+U_3^{(N),\Omega}(P)
+=
+\prod_{k=1}^4
+\Omega^{(N)}(v_k)\,U_3^{(N)}(v_{k-1}\to v_k)\,
+\bigl(\Omega^{(N)}(v_{k-1})\bigr)^{-1}.
+\]
+All consecutive inner factors telescope, leaving
+\[
+U_3^{(N),\Omega}(P)
+=
+\Omega^{(N)}(v_0)\,U_3^{(N)}(P)\,\bigl(\Omega^{(N)}(v_0)\bigr)^{-1}.
+\]
+Trace cyclicity gives the first claim, and summing over all plaquettes gives
+the Wilson-action invariance.
+\end{proof}
+
+
+\begin{definition}[Compact-local big-$O$ notation]
+\label{def:compact-big-o}
+Let $\mcK\subset\R^4$ be compact and let $m\ge0$.
+For a sequence of scalar, vector, or matrix-valued functions $R_N$ defined on
+$\mcK$, we write
+\[
+R_N=O_\mcK(a_N^m)
+\]
+if there exists a constant $C_\mcK<\infty$, independent of $N$, such that
+\[
+\sup_{x\in\mcK}|R_N(x)|\le C_\mcK a_N^m
+\]
+for all sufficiently large $N$.
+For quantities attached to plaquettes or edges with base point or midpoint in
+$\mcK$, the same notation means a uniform bound over those plaquettes or edges.
+\end{definition}
+
+\subsection{Local continuum hypotheses}
+
+\begin{definition}[Trajectory principal-log curvature axiom]
+\label{def:trajectory-principal-log}
+The trajectory family satisfies the local principal-log curvature axiom if there
+exist
+\[
+F_{\mu\nu}\in C^\alpha_{\mathrm{loc}}(\R^4;\mathfrakh),\qquad \alpha>0,
+\]
+such that the continuum Yang--Mills energy density
+\[
+e_F(x):=\tr\!\bigl(F_{\mu\nu}(x)F_{\mu\nu}(x)\bigr)
+\]
+belongs to \(C_0(\R^4)\cap L^1(\R^4)\),
+and for each compact
+\(\mcK\subset\R^4\) constants \(\delta_{\mcK}\in(0,\pi)\), \(N_{\mcK}\in\N\), and
+\(C_{\mcK}<\infty\), such that for all \(N\ge N_{\mcK}\) and every
+\(P\in\mcC_\square^{(N)}\) with \(x_P^{(N)}\in\mcK\),
+\[
+\|g_3A_P^{(N)}F_P^{(N)}\|_{\mathrm{op}}\le \delta_{\mcK},
+\qquad
+\left|\tr\!\bigl(F_P^{(N)}F_P^{(N)}\bigr)
+-\tr\!\bigl(F_{\mu\nu}(x_P^{(N)})F_{\mu\nu}(x_P^{(N)})\bigr)\right|
+\le C_{\mcK}a_N^\alpha.
+\]
+Furthermore, for every \(\varepsilon>0\) there exists a compact set
+\(K_\varepsilon\subset\R^4\) such that
+\[
+\limsup_{N\to\infty}\sum_{\substack{P\in\mcC_\square^{(N)}\\x_P^{(N)}\notin K_\varepsilon}}
+\left(1-\frac13\Re\tr U_3^{(N)}(P)\right)\le\varepsilon.
+\]
+\end{definition}
+
+\begin{definition}[Trajectory Riemann mesh axiom]
+\label{def:trajectory-riemann-axiom}
+The weighted plaquette empirical measures from Definition~\ref{def:plaquette-riemann-measure}
+converge against compactly supported observables:
+\[
+\forall \varphi\in C_c(\R^4):\qquad
+\mu_\square^{(N)}(\varphi)\to\int_{\R^4}\varphi(x)\,\dd x.
+\]
+\end{definition}
+
+\begin{lemma}[Principal-log axiom implies local small-field regime]
+\label{lem:discharge-small-field}
+Assume Definition~\ref{def:trajectory-principal-log}.
+Then the trajectory family is in the local small-field regime
+of Definition~\ref{def:local-small-field-regime} with the same curvature
+field \(F_{\mu\nu}\) and the same decay-at-infinity family
+\((K_\varepsilon)_{\varepsilon>0}\).
+\begin{proof}
+Let \(F_{\mu\nu}\), \(e_F\), the family \((K_\varepsilon)_{\varepsilon>0}\),
+and the constants \(\delta_{\mcK}\), \(N_{\mcK}\), \(C_{\mcK}\) be those from
+Definition~\ref{def:trajectory-principal-log}.
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item The energy-density line in both definitions is identical.
+\item For each compact \(\mcK\), the principal-log assumption provides
+\(\delta_{\mcK}\in(0,\pi)\), \(N_{\mcK}\in\N\), and \(C_{\mcK}<\infty\) such that for
+every \(P\in\mcC_\square^{(N)}\) with \(x_P^{(N)}\in\mcK\), \(N\ge N_{\mcK}\),
+\[
+\|g_3A_P^{(N)}F_P^{(N)}\|_{\mathrm{op}}\le\delta_{\mcK},
+\qquad
+\left|\tr\!\bigl(F_P^{(N)}F_P^{(N)}\bigr)
+-\tr\!\bigl(F_{\mu\nu}(x_P^{(N)})F_{\mu\nu}(x_P^{(N)})\bigr)\right|
+\le C_{\mcK}a_N^\alpha.
+\]
+Taking \(\delta_{\mcK}\), \(N_{\mcK}\), and \(C_{\mcK}\) in Definition~\ref{def:local-small-field-regime}
+as the same constants yields the first two clauses of
+Definition~\ref{def:local-small-field-regime}.
+\item Since \(\mcK\subset\R^4\) is compact and \(F_{\mu\nu}\in\mathfrakh\) is continuous on compact sets, there is
+\[
+M_{\mcK}:=\sup_{x\in\mcK}\bigl|\tr(F_{\mu\nu}(x)F_{\mu\nu}(x))\bigr|<\infty.
+\]
+Hence for \(N\ge N_{\mcK}\), \(x_P^{(N)}\in\mcK\),
+\[
+\bigl|\tr(F_P^{(N)}F_P^{(N)})\bigr|
+\le M_{\mcK}+C_{\mcK}a_N^\alpha
+\le 2M_{\mcK}
+\]
+for all sufficiently large \(N\) (since \(a_N\to0\)). Because
+\(F_P^{(N)}\in\mathfrak h_3\) is Hermitian, \(\|F_P^{(N)}\|_{\mathrm{op}}^2
+\le \bigl|\tr\!\bigl(F_P^{(N)}F_P^{(N)}\bigr)\bigr|\), so
+\[
+\sup_{\substack{P\in\mcC_\square^{(N)}\\x_P^{(N)}\in\mcK}}
+\|F_P^{(N)}\|_{\mathrm{op}}
+\le \sqrt{2M_{\mcK}}<\infty.
+\]
+This is the boundedness-on-compacts consequence used in Step~4 of
+Theorem~\ref{thm:continuum-wilson}.
+\item The decay-at-infinity condition in
+Definition~\ref{def:trajectory-principal-log} is identical to the third clause
+in
+Definition~\ref{def:local-small-field-regime}.
+\end{enumerate}
+\end{proof}
+\end{lemma}
+
+\begin{lemma}[Riemann mesh axiom implies weighted Riemann condition]
+\label{lem:discharge-riemann}
+Assume Definition~\ref{def:trajectory-riemann-axiom}.
+Then Definition~\ref{def:riemann-condition} holds.
+\end{lemma}
+\begin{proof}
+By Definition~\ref{def:plaquette-riemann-measure}, for every
+\(\varphi\in C_c(\R^4)\),
+\[
+\mu_\square^{(N)}(\varphi)
+=\sum_{P\in\mcC_\square^{(N)}}(A_P^{(N)})^2\varphi(x_P^{(N)}).
+\]
+Thus the convergence hypothesis in Definition~\ref{def:trajectory-riemann-axiom} is
+exactly Definition~\ref{def:riemann-condition}.
+\end{proof}
+
+\begin{proposition}[Finite hypotheses are fully internal]
+\label{prop:discharge-local}
+Assumptions~(ii) and (iii) of Theorem~\ref{thm:continuum-wilson} are
+fully internal to this file by Lemmas~\ref{lem:discharge-small-field} and
+\ref{lem:discharge-riemann}, using Definitions
+\ref{def:trajectory-principal-log} and~\ref{def:trajectory-riemann-axiom}.
+\end{proposition}
+
+\begin{definition}[Local small-field regime on compacts]
+\label{def:local-small-field-regime}
+The trajectory family is in the local small-field regime if there exist a curvature
+field \(F_{\mu\nu}\in C^\alpha_{\mathrm{loc}}(\R^4;\mathfrakh)\), \(\alpha>0\), such that
+\[
+e_F(x):=\tr\!\bigl(F_{\mu\nu}(x)F_{\mu\nu}(x)\bigr)\in C_0(\R^4)\cap L^1(\R^4),
+\]
+and such that for every compact \(\mcK\subset\R^4\), there are constants
+\(\delta_{\mcK}>0\) and \(N_{\mcK}\in\N\) with the property that for all
+\(N\ge N_{\mcK}\) and all \(P\in\mcC_\square^{(N)}\) with \(x_P^{(N)}\in\mcK\):
+\[
+\|g_3A_P^{(N)}F_P^{(N)}\|_{\mathrm{op}}\le\delta_{\mcK},
+\]
+\[
+\tr\!\bigl(F_P^{(N)}F_P^{(N)}\bigr)
+=
+\tr\!\bigl(F_{\mu\nu}(x_P^{(N)})F_{\mu\nu}(x_P^{(N)})\bigr)+O_{\mcK}(a_N^\alpha).
+\]
+Furthermore, for every \(\varepsilon>0\) there exists a compact set
+\(K_\varepsilon\subset\R^4\) such that
+\[
+\limsup_{N\to\infty}\sum_{\substack{P\in\mcC_\square^{(N)}\\x_P^{(N)}\notin K_\varepsilon}}
+\left(1-\frac13\Re\tr U_3^{(N)}(P)\right)\le\varepsilon.
+\]
+\end{definition}
+
+\begin{definition}[Weighted plaquette Riemann condition]
+\label{def:riemann-condition}
+The family of plaquette-weighted empirical measures from
+Definition~\ref{def:plaquette-riemann-measure} converges to Lebesgue volume:
+\[
+\forall \varphi\in C_c(\R^4):\qquad
+\mu_\square^{(N)}(\varphi)\to \int_{\R^4}\varphi(x)\,\dd x.
+\]
+\end{definition}
+
+\begin{remark}
+\label{rem:old-route-local}
+The local analytic hypotheses above are used in
+Propositions~\ref{lem:discharge-small-field},
+\ref{lem:discharge-riemann}, and~\ref{prop:discharge-local}.
+\end{remark}
+
+\section{Translation dictionary for the continuum route}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+Source document & $4\_ymmg$ translation \\
+\midrule
+temporal spacing $\tau$ & temporal scale $\tau_N$ \\
+localization spacing $\rho$ & interaction scale $\rho_N$ \\
+common lattice spacing $a$ & $a_N:=\max\{\tau_N,\rho_N\}$ \\
+plaquette $P$ & canonical plaquette $P_{ij,t}^{(N)}\in\mcC_\square^{(N)}$ \\
+plaquette area $A_P$ & $A_P^{(N)}=|\Sigma_P^{(N)}|$ \\
+holonomy $U_P$ & $U_3^{(N)}(P)$ \\
+field strength $F_P$ & $F_P^{(N)}=(ig_3A_P^{(N)})^{-1}\log U_3^{(N)}(P)$ \\
+Wilson action $S_{\mathrm{YM}}^{\mathrm{disc}}$ & $S_{\mathrm W}^{(N)}$ \\
+continuum action $\frac14\int F^2$ & local $SU(3)$ Yang--Mills action on $\R^4$ \\
+\bottomrule
+\end{tabular}
+\caption{Dictionary from the finite continuum strategy to the present notation.}
+\label{tab:dictionary}
+\end{table}
+
+\section{Translated continuum-limit theorem}
+
+All finite lattice objects are already defined in this file, and all external
+theorem inputs are explicit in the bridge section above.
+
+\begin{definition}[Flat-branch continuum curvature]
+\label{def:continuum-curvature}
+Let
+\[
+F_{\mu\nu}:\R^4\to\mathfrakh
+\]
+be an antisymmetric matrix-valued two-form on the flat Euclidean background,
+expanded in the Gell-Mann basis as
+\[
+\;
+F_{\mu\nu}(x)=\frac12\sum_{a=1}^8 F_{\mu\nu}^a(x)\lambda_a.
+\]
+\end{definition}
+\begin{theorem}[Continuum limit of trajectory-induced Yang--Mills action]
+\label{thm:continuum-wilson}
+Assume the following three hypotheses:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\arabic*)}]
+\item
+Flat-refinement geometry:
+\[
+\rho_N\downarrow0,\qquad
+\tau_N\downarrow0,\qquad
+a_N:=\max\{\rho_N,\tau_N\}\downarrow0,
+\]
+and Definition~\ref{def:flat-local-geometry}.
+\item
+\textbf{Local small-field regime on compacts:}
+Definition~\ref{def:local-small-field-regime}.
+\par
+By Lemma~\ref{lem:discharge-small-field}, this hypothesis is implied by
+Definition~\ref{def:trajectory-principal-log}.
+\item
+Weighted plaquette Riemann convergence:
+Definition~\ref{def:riemann-condition}.
+\par
+By Lemma~\ref{lem:discharge-riemann}, this hypothesis is implied by
+Definition~\ref{def:trajectory-riemann-axiom}.
+\end{enumerate}
+Assumptions~\ref{ass:bridge-backbone} supplies compactness and uniformity support
+for the compact-set quantifiers used in the steps below.
+Assume also that the continuum and lattice couplings are identified by
+\[
+g_{\mathrm{phys}}=g_3.
+\]
+Set the finite Wilson prefactor to the standard four-dimensional $SU(3)$ value
+\[
+\beta_N:=\frac{6}{g_3^2},
+\]
+and define
+\[
+S_{\mathrm{YM}}^{\mathrm{disc},(N)}
+:=
+\beta_N\sum_{P\in\mcC_\square^{(N)}}
+\left(
+1-\frac13\Re\tr U_3^{(N)}(P)
+\right).
+\]
+Then
+\[
+S_{\mathrm{YM}}^{\mathrm{disc},(N)}
+\longrightarrow
+\frac14\int_{\R^4}\sum_{a=1}^8
+F_{\mu\nu}^a(x)F_{\mu\nu}^a(x)\,\dd x
+=
+S_{\mathrm{YM}}^{\mathrm{cont}}[F].
+\]
+\end{theorem}
+\begin{remark}[How this maps to the finite-size continuum route]
+The finite-size assumptions above are the in-file form of the three steps used in this route:
+\begin{itemize}[leftmargin=1.5em]
+\item The small-field and curvature-approximation structure is the content of the
+step~2 hypotheses.
+\item The Riemann-type convergence is the Step~3 hypothesis.
+\item The concentration and finite-size concentration inputs used there are exactly
+the bridge consequences of
+\emph{Theorem [Relative entropy on path space and at fixed time]}
+(\texttt{thm:poc}),
+\emph{Theorem [Strong propagation of chaos]} (\texttt{thm:poc-strong}),
+\emph{Theorem [$N$-uniform hypocoercive LSI for the kinetic core]}
+(\texttt{thm:finite-lsi}),
+and
+\emph{Corollary [Exponential convergence in total variation]} (\texttt{cor:tv-finite}).
+\end{itemize}
+\end{remark}
+\begin{proof}
+The proof is an explicit five-step argument in present notation.
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\arabic*)}]
+\item Step~1 uses Definition~\ref{def:finite-wilson-data},
+Proposition~\ref{prop:plaquette-wilson-expansion}, and item~(ii) for the
+principal-log bound on compacts.
+\item Step~2 uses item~(i) and Corollary~\ref{cor:flat-geometry-consequence} to control plaquette size and number.
+\item Step~3 uses item~(iii), item~(ii), and Definition~\ref{def:plaquette-riemann-measure}
+to pass weighted plaquette sums to Riemann integrals.
+\item Step~4 combines item~(i), Corollary~\ref{cor:flat-geometry-consequence}, and item~(ii) with the cubic
+remainder of
+Proposition~\ref{prop:plaquette-wilson-expansion}.
+\item Step~5 uses the continuum decomposition
+Definition~\ref{def:continuum-curvature} and
+\ref{def:gellmann}.
+\end{enumerate}
+
+\paragraph{Step 1: Small-field expansion on each plaquette.}
+For each plaquette \(P\in\mcC_\square^{(N)}\), define
+\[
+\;s_P^{(N)}
+:=
+1-\frac13\Re\tr U_3^{(N)}(P).
+\]
+Let
+\[
+e_F(x):=\tr\!\bigl(F_{\mu\nu}(x)F_{\mu\nu}(x)\bigr)\in C_0(\R^4)\cap L^1(\R^4).
+\]
+Fix \(\varepsilon>0\). By item~(ii), there exists a compact set
+\(K_\varepsilon\subset\R^4\) such that
+\[
+\limsup_{N\to\infty}
+\sum_{\substack{P\in\mcC_\square^{(N)}\\x_P^{(N)}\notin K_\varepsilon}}
+s_P^{(N)}
+\le \varepsilon.
+\]
+Enlarging \(K_\varepsilon\) if necessary, we may also require
+\[
+\int_{\R^4\setminus K_\varepsilon}|e_F(x)|\,\dd x\le\varepsilon.
+\]
+Choose \(\chi_\varepsilon\in C_c(\R^4;[0,1])\) such that
+\[
+\chi_\varepsilon\equiv1\ \text{on }K_\varepsilon.
+\]
+On the compact support \(\supp\chi_\varepsilon\), item~(ii) provides
+\(\delta_\varepsilon\in(0,\pi)\), \(N_\varepsilon\in\N\), and
+\(C_\varepsilon<\infty\) such that for all \(N\ge N_\varepsilon\) and all
+\(P\in\mcC_\square^{(N)}\) with \(x_P^{(N)}\in\supp\chi_\varepsilon\),
+\(U_3^{(N)}(P)\) lies in the principal logarithm domain and
+\[
+s_P^{(N)}
+=
+\frac{g_3^2(A_P^{(N)})^2}{6}\,
+\tr\!\bigl(F_P^{(N)}F_P^{(N)}\bigr)
++R_P^{(N)},
+\]
+with
+\[
+|R_P^{(N)}|
+\le
+\frac13\,C_{\delta_\varepsilon}g_3^3(A_P^{(N)})^3\|F_P^{(N)}\|_{\mathrm{op}}^3
+\]
+for some \(C_{\delta_\varepsilon}\) depending only on \(\delta_\varepsilon\).
+Using item~(ii),
+\[
+\tr\!\bigl(F_P^{(N)}F_P^{(N)}\bigr)
+=
+\tr\!\bigl(F_{\mu\nu}(x_P^{(N)})F_{\mu\nu}(x_P^{(N)})\bigr)
++O_{\supp\chi_\varepsilon}(a_N^\alpha)
+\]
+uniformly in \(P\).
+\paragraph{Step 2: Plaquette area and counting control.}
+Corollary~\ref{cor:flat-geometry-consequence} gives
+\[
+c_A\rho_N\tau_N\le A_P^{(N)}\le C_A\rho_N\tau_N\le C_A a_N^2
+\]
+uniformly in \(P\), and hence \(A_P^{(N)}=O(a_N^2)\).
+It also gives
+\[
+|\mcC_\square^{(N)}|=O(a_N^{-4}).
+\]
+\paragraph{Step 3: Riemann-sum convergence.}
+Define
+\[
+\varphi_\varepsilon(x):=\chi_\varepsilon(x)e_F(x)\in C_c(\R^4).
+\]
+By item~(iii),
+\[
+\mu_\square^{(N)}(\varphi_\varepsilon)\to
+\int_{\R^4}\varphi_\varepsilon(x)\,\dd x.
+\]
+Using Step~1 gives
+\[
+\sum_{\substack{P\in\mcC_\square^{(N)}\\x_P^{(N)}\in\supp\chi_\varepsilon}}
+\chi_\varepsilon(x_P^{(N)})(A_P^{(N)})^2\tr\!\bigl(F_P^{(N)}F_P^{(N)}\bigr)
+-
+\mu_\square^{(N)}(\varphi_\varepsilon)
+=
+\sum_{\substack{P\in\mcC_\square^{(N)}\\x_P^{(N)}\in\supp\chi_\varepsilon}}
+\chi_\varepsilon(x_P^{(N)})(A_P^{(N)})^2O_{\supp\chi_\varepsilon}(a_N^\alpha).
+\]
+Taking absolute values and applying
+Corollary~\ref{cor:flat-geometry-consequence} gives
+\[
+\left|
+\sum_{\substack{P\in\mcC_\square^{(N)}\\x_P^{(N)}\in\supp\chi_\varepsilon}}
+\chi_\varepsilon(x_P^{(N)})(A_P^{(N)})^2O_{\supp\chi_\varepsilon}(a_N^\alpha)
+\right|
+\le
+\widetilde C_{\varepsilon}a_N^\alpha
+\sum_{\substack{P\in\mcC_\square^{(N)}\\x_P^{(N)}\in\supp\chi_\varepsilon}}
+(A_P^{(N)})^2
+\le
+\widetilde C_{\varepsilon}C_A^2a_N^\alpha\to0.
+\]
+Hence
+\[
+\sum_{P\in\mcC_\square^{(N)}}
+\chi_\varepsilon(x_P^{(N)})(A_P^{(N)})^2\tr\!\bigl(F_P^{(N)}F_P^{(N)}\bigr)
+\longrightarrow
+\int_{\R^4}\chi_\varepsilon(x)e_F(x)\,\dd x.
+\]
+\paragraph{Step 4: Global remainder control.}
+On \(x_P^{(N)}\in\supp\chi_\varepsilon\),
+\[
+|R_P^{(N)}|=O(a_N^6),
+\]
+because \(A_P^{(N)}=O(a_N^2)\) by item~(i) and \(\|F_P^{(N)}\|_{\mathrm{op}}\) is
+uniformly bounded on \(\supp\chi_\varepsilon\) by item~(ii).
+Using \( |\mcC_\square^{(N)}|=O(a_N^{-4})\),
+\[
+\left|
+\sum_{P\in\mcC_\square^{(N)}}
+\chi_\varepsilon(x_P^{(N)})R_P^{(N)}
+\right|
+\le
+C\,a_N^{-4}\cdot a_N^6
+=
+O(a_N^2)\to0.
+\]
+\paragraph{Step 5: Coupling identification.}
+Define the cutoff-weighted Wilson sum
+\[
+S_{\varepsilon}^{(N)}
+:=
+\beta_N\sum_{P\in\mcC_\square^{(N)}}
+\chi_\varepsilon(x_P^{(N)})\,s_P^{(N)}.
+\]
+By Step~1,
+\[
+S_{\varepsilon}^{(N)}
+=
+\sum_{P\in\mcC_\square^{(N)}}
+\chi_\varepsilon(x_P^{(N)})(A_P^{(N)})^2\tr\!\bigl(F_P^{(N)}F_P^{(N)}\bigr)
+\;+\;
+\frac{6}{g_3^2}
+\sum_{P\in\mcC_\square^{(N)}}
+\chi_\varepsilon(x_P^{(N)})R_P^{(N)}.
+\]
+Hence Steps~3 and~4 imply
+\[
+S_{\varepsilon}^{(N)}
+\longrightarrow
+\int_{\R^4}\chi_\varepsilon(x)e_F(x)\,\dd x.
+\]
+Since \(0\le 1-\chi_\varepsilon\le 1\) and \(\chi_\varepsilon\equiv1\) on
+\(K_\varepsilon\),
+\[
+0\le
+S_{\mathrm{YM}}^{\mathrm{disc},(N)}-S_{\varepsilon}^{(N)}
+=
+\beta_N\sum_{P\in\mcC_\square^{(N)}}
+\bigl(1-\chi_\varepsilon(x_P^{(N)})\bigr)s_P^{(N)}
+\le
+\beta_N
+\sum_{\substack{P\in\mcC_\square^{(N)}\\x_P^{(N)}\notin K_\varepsilon}}
+s_P^{(N)}.
+\]
+Therefore,
+\[
+\limsup_{N\to\infty}
+\bigl|
+S_{\mathrm{YM}}^{\mathrm{disc},(N)}-S_{\varepsilon}^{(N)}
+\bigr|
+\le
+\beta_N\,\varepsilon
+=
+\frac{6}{g_3^2}\varepsilon.
+\]
+The choice of \(K_\varepsilon\) also gives
+\[
+\left|
+\int_{\R^4}e_F(x)\,\dd x
+-
+\int_{\R^4}\chi_\varepsilon(x)e_F(x)\,\dd x
+\right|
+\le
+\int_{\R^4\setminus K_\varepsilon}|e_F(x)|\,\dd x
+\le \varepsilon.
+\]
+Combining the last three displays,
+\[
+\limsup_{N\to\infty}
+\left|
+S_{\mathrm{YM}}^{\mathrm{disc},(N)}
+-
+\int_{\R^4}e_F(x)\,\dd x
+\right|
+\le
+\left(1+\frac{6}{g_3^2}\right)\varepsilon.
+\]
+Since \(\varepsilon>0\) was arbitrary,
+\[
+S_{\mathrm{YM}}^{\mathrm{disc},(N)}
+\longrightarrow
+\int_{\R^4}\tr\!\bigl(F_{\mu\nu}(x)F_{\mu\nu}(x)\bigr)\,\dd x.
+\]
+Definition~\ref{def:continuum-curvature} and
+\[
+F_{\mu\nu}(x)=\frac12\sum_{a=1}^8F_{\mu\nu}^a(x)\lambda_a
+\]
+plus Definition~\ref{def:gellmann} give
+\[
+\tr(F_{\mu\nu}F_{\mu\nu})
+=\frac12\sum_{a=1}^8F_{\mu\nu}^aF_{\mu\nu}^a.
+\]
+Hence
+\[
+\int_{\R^4}\tr\!\bigl(F_{\mu\nu}F_{\mu\nu}\bigr)\,\dd x
+=
+\frac14\int_{\R^4}\sum_{a=1}^8
+F_{\mu\nu}^aF_{\mu\nu}^a\,\dd x
+=S_{\mathrm{YM}}^{\mathrm{cont}}[F].
+\]
+This is exactly the stated limit.
+\end{proof}
+
+\begin{definition}[Continuum Yang--Mills action in the present convention]
+\label{def:ym-action}
+For the curvature field of Definition~\ref{def:continuum-curvature}, define
+\[
+S_{\mathrm{YM}}^{\mathrm{cont}}[F]
+:=
+\frac14\int_{\R^4}\sum_{a=1}^8
+F_{\mu\nu}^a(x)F_{\mu\nu}^a(x)\,\dd x.
+\]
+Equivalently, because
+\[
+\tr\!\bigl(F_{\mu\nu}(x)F_{\mu\nu}(x)\bigr)
+=
+\frac12\sum_{a=1}^8 F_{\mu\nu}^a(x)F_{\mu\nu}^a(x),
+\]
+one has
+\[
+S_{\mathrm{YM}}^{\mathrm{cont}}[F]
+=
+\frac12\int_{\R^4}
+\tr\!\bigl(F_{\mu\nu}(x)F_{\mu\nu}(x)\bigr)\,\dd x.
+\]
+\end{definition}
+
+
+\end{document}

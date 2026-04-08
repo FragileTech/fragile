@@ -45,6 +45,7 @@
 \newcommand{\outdeg}{\operatorname{outdeg}}
 \newcommand{\Vol}{\operatorname{Vol}}
 \newcommand{\Id}{\mathrm{Id}}
+\newcommand{\Ent}{\operatorname{Ent}}
 \newcommand{\mcHh}{\mathfrak h_3}
 \newcommand{\mcsu}{\mathfrak{su}(3)}
 
@@ -69,29 +70,34 @@ integration variables and builds the exact finite-dimensional Euclidean path
 integral attached to the same lattice.  We define the full configuration space,
 the product Haar--Berezin--Lebesgue measure, the partition function, and the
 vacuum expectation map.  We prove that the resulting finite-lattice theory is
-well defined whenever the scalar local potential is bounded below.  We then
+well defined for the free massive scalar witness sector fixed in the companion
+lattice paper.  We then
 solve the gauge-redundancy problem exactly by a rooted maximal-tree gauge: every
 gauge orbit meets the gauge slice once and only once, the Faddeev--Popov
 determinant is identically $1$, and the ghost sector is a decoupled finite
 Berezin integral.  The fermionic sector integrates to a finite fermion
-determinant, and the scalar sector is shown to be integrable with an exact
-Gaussian formula in the free case.
+determinant, and the scalar sector is shown to be exactly Gaussian with an
+explicit lattice covariance.
 
 The paper also establishes the Lie-algebraic structure of the discrete measure.
 On each edge, Haar measure is smooth in exponential coordinates and agrees to
 second order with Lebesgue measure on the Lie algebra.
-The correct continuum limit of this programme is the $N\to\infty$ thermodynamic
-limit, not a mesh refinement $a_N\to0$: in that limit the discrete lattice
-converges to the stationary mean-field law $\pi_\infty$, the bilocal gauge
-field $A(z,z')$ and mean-field Wilson action $S_{\mathrm W}^\infty$ are defined
-directly on $\pi_\infty$, and the natural ultraviolet regularization is provided
-by the viscous kernel length scale $\ell_{\mathrm{visc}}$ rather than a lattice
-spacing.
-What this paper does not prove is equally important: it does not verify the
-Osterwalder--Schrader axioms on the integral-operator continuum theory and does
-not prove a mass gap.
-Those are strictly harder problems that require the full $N\to\infty$ continuum
-structure developed in the companion papers.
+The asymptotic regime relevant to this programme is the stationary
+thermodynamic limit
+\[
+\pi_{N,1}\Rightarrow \pi_\infty,
+\]
+already proved in the companion convergence paper.  The convergence paper
+\cite{convergence} proves this stationary mean-field limit, while the companion
+lattice paper \cite{latticeqft} identifies the bilocal thermodynamic gauge
+observables and the mean-field Wilson action $S_{\mathrm W}^\infty$ on
+$\pi_\infty$.  The same convergence paper also proves the mean-field
+logarithmic Sobolev inequality on $\pi_\infty$; by tensorization, the same
+constant controls the finite product measures $\pi_\infty^{\otimes k}$ on
+which the bilocal link and plaquette observables of \cite{latticeqft} are
+defined.  The present paper supplies the exact fixed-$N$ quantization, the
+local coordinate structure of its gauge measure, and the explicit thermodynamic
+transfer of that equilibrium stiffness to the quantized mean-field observables.
 \end{abstract}
 
 \tableofcontents
@@ -141,14 +147,8 @@ quantization.
 \begin{theorem}[Main finite-lattice quantization result]
 \label{thm:main}
 Fix the lattice data $(\mcN,\mcE,\mathcal C_\square)$ from \cite{latticeqft},
-the coupling $g_3>0$, masses $m_F>0$ and $m_\phi>0$, the distance
-regularization $\eta>0$, and a continuous scalar local potential
-$V_\phi:\R\to\R$ satisfying
-\[
-V_\phi(s)\ge -C_\phi
-\qquad \text{for all } s\in\R
-\]
-for some constant $C_\phi<\infty$.  Then:
+the coupling $g_3>0$, masses $m_F>0$ and $m_\phi>0$, and the distance
+regularization $\eta>0$.  Then:
 \begin{enumerate}[leftmargin=1.5em]
 \item the promoted field manifold
 \[
@@ -168,28 +168,34 @@ every rooted gauge orbit meets the maximal-tree gauge slice exactly once, the
 Faddeev--Popov determinant is identically $1$, and the gauge-fixed partition
 function is an ordinary finite-dimensional integral over the cotree links;
 \item integrating out the fermions yields the exact fermion determinant
-$\det M_{\mathrm F}(U)$, while the scalar integral is finite and is Gaussian
-with covariance $(L_\eta+m_\phi^2 I)^{-1}$ when $V_\phi\equiv 0$.
+$\det M_{\mathrm F}(U)$, while the scalar integral is exactly Gaussian with
+covariance $(L_\eta+m_\phi^2 I)^{-1}$.
 \end{enumerate}
 \end{theorem}
 
-\begin{remark}[The $N\to\infty$ thermodynamic limit as the continuum theory]
-\label{rem:not-millennium}
+\begin{remark}[Scope of the paper]
+\label{rem:scope}
 Theorem~\ref{thm:main} is a complete quantization theorem for a \emph{finite
-lattice}.  The deeper claim of this programme is that the correct continuum
-limit is \emph{not} a mesh refinement $a_N\to0$ but the thermodynamic limit
-$N\to\infty$: in that limit the discrete lattice converges to the continuous
-stationary mean-field law $\pi_\infty$, the bilocal gauge field $A(z,z')$ and
-Wilson plaquette $W(z_1,z_2,z_3,z_4)$ are defined directly on $\pi_\infty$,
-and the Markov-chain measure on the interaction graph converges to a continuous
-Markov process.
-This yields a continuum quantum measure without any artificial ultraviolet
-cutoff: the natural regularization is provided by the viscous kernel length
-scale $\ell_{\mathrm{visc}}$ and the smooth Gaussian $K_\rho$, which render
-all propagators finite through the resolvent of the integral operator
-$K_\rho(z,z')$.
-The Osterwalder--Schrader axioms are to be verified on this integral-operator
-continuum theory, not on a subsequence of lattice approximants.
+lattice}.  The proofs below use only the finite graph
+\[
+(\mcN,\mcE,\mathcal C_\square)
+\]
+and the finite-dimensional actions imported from \cite{latticeqft}.  The
+measure-theoretic statements therefore concern exact finite-dimensional
+integrals, while the Lie-algebraic discussion in later sections concerns only
+local coordinate descriptions of Haar measure near the identity.  In the
+broader series, these finite-$N$ quantizations are then passed to the
+stationary thermodynamic limit.  More precisely, \cite{convergence} proves the
+weak convergence
+\[
+\pi_{N,1}\Rightarrow \pi_\infty,
+\]
+while \cite{latticeqft} formulates the corresponding bilocal gauge theory and
+mean-field Wilson action $S_{\mathrm W}^\infty$ on $\pi_\infty$.
+The same mean-field law carries the logarithmic Sobolev inequality proved in
+\cite{convergence}, and Proposition~\ref{prop:thermo-lsi-transfer} below makes
+explicit how that stiffness transfers to the finite product measures
+$\pi_\infty^{\otimes k}$ supporting the thermodynamic gauge observables.
 \end{remark}
 
 \section{Configuration space and measure}
@@ -233,7 +239,7 @@ S_{\mathrm F}(U,\bar\psi,\psi)
 S_\phi(\phi)
 :=
 \frac12\sum_{e=(x\to y)\in\mcE}\frac{(\phi_y-\phi_x)^2}{\ell_e+\eta}
-+\sum_{x\in\mcN}\left(\frac{m_\phi^2}{2}\phi_x^2+V_\phi(\phi_x)\right),
++\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2,
 \]
 where $\ell_e$ is the spacetime length of edge $e$ and $\eta>0$ is the
 distance regularization from \cite{latticeqft}.
@@ -395,7 +401,7 @@ S(U,\bar\psi,\psi,\phi)
 S_{\mathrm W}(U)+S_{\mathrm F}(U,\bar\psi,\psi)+S_\phi(\phi).
 \]
 The auxiliary color variable $c\in\mcCaux$ does not enter this action and is
-therefore normalized away.  No hidden continuum limit is taken at this stage.
+therefore normalized away.  No additional asymptotic limit is taken at this stage.
 Every term is a finite sum over the fixed finite index sets $\mcN$, $\mcE$, and
 $\mathcal C_\square$.
 
@@ -467,17 +473,14 @@ For the scalar sector,
 \[
 S_\phi(\phi)
 \ge
-\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2
-+\sum_{x\in\mcN}V_\phi(\phi_x)
-\ge
-\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2-C_\phi|\mcN|,
+\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2,
 \]
-because the edge term is nonnegative and $V_\phi\ge -C_\phi$ by assumption.
+because the edge term is nonnegative.
 Therefore
 \[
 e^{-S_\phi(\phi)}
 \le
-e^{C_\phi|\mcN|}\exp\!\left(-\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2\right),
+\exp\!\left(-\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2\right),
 \]
 and the right-hand side is integrable on $\R^{|\mcN|}$.
 Putting the bounds together,
@@ -485,7 +488,6 @@ Putting the bounds together,
 |Z|
 \le
 \sup_{U\in\mcU}|\det M_{\mathrm F}(U)|
-\cdot e^{C_\phi|\mcN|}
 \int_{\R^{|\mcN|}}
 e^{-\frac{m_\phi^2}{2}\sum_x\phi_x^2}\,\dd\phi
 <\infty.
@@ -726,11 +728,35 @@ every gauge-invariant integrable functional $F$ on $\mcU$,
 \]
 \end{theorem}
 \begin{proof}
-Fix $U\in\mcU$.  By Theorem~\ref{thm:tree-gauge}, there is exactly one
-$\Omega_U\in\mcG_*$ such that $U^{\Omega_U}\in\Sigma_{\mcT}$.
-Therefore the integrand $\delta_{\mcT}(U^\Omega)$ vanishes for all
-$\Omega\neq \Omega_U$ and contributes $1$ at $\Omega=\Omega_U$ by definition of
-the delta distribution, so the integral equals $1$.
+Fix $U\in\mcU$.  We prove the first identity by induction on the number of
+nonroot vertices.
+If the rooted forest has no nonroot vertices, then $\mcT=\varnothing$ and
+$\delta_{\mcT}\equiv 1$, so the claim is immediate.
+Assume now that $\mcT$ has at least one edge and choose a leaf
+$x\in\mcN\setminus R$.
+Because $x$ has no children, the only factor in $\delta_{\mcT}(U^\Omega)$ that
+depends on $\Omega(x)$ is the factor associated with the parent edge
+$e_x=(p(x)\to x)$:
+\[
+\delta_I\!\bigl(U^\Omega(e_x)\bigr)
+=
+\delta_I\!\bigl(\Omega(x)U(e_x)\Omega(p(x))^{-1}\bigr).
+\]
+For fixed values of all other gauge variables, set
+$g_x:=U(e_x)\Omega(p(x))^{-1}\in SU(3)$.  Then left invariance of Haar measure
+gives
+\[
+\int_{SU(3)}\delta_I\!\bigl(\Omega(x)g_x\bigr)\,\dd\mu_H(\Omega(x))
+=
+\int_{SU(3)}\delta_I(V)\,\dd\mu_H(V)=1.
+\]
+Thus integrating over the leaf variable contributes exactly the unit factor and
+removes the leaf edge from the product.
+Deleting the leaf and repeating the same argument inductively over the smaller
+rooted forest proves
+\[
+\int_{\mcG_*}\delta_{\mcT}(U^\Omega)\,\dd\mu_{\mcG_*}(\Omega)=1.
+\]
 
 For the second identity, insert the first into the integral of $F$:
 \[
@@ -777,10 +803,10 @@ and define the infinitesimal rooted gauge transformation
 Let $U\in\Sigma_{\mcT}$, so $U(e)=I$ for all $e\in\mcT$.  For a tree edge
 $e=(x\to y)\in\mcT$,
 \[
-\left.\frac{\dd}{\dd\varepsilon}\right|_{\varepsilon=0}
+-i\left.\frac{\dd}{\dd\varepsilon}\right|_{\varepsilon=0}
 U^{\Omega_\varepsilon}(e)
 =
-i(\omega_y-\omega_x).
+\omega_y-\omega_x.
 \]
 In the basis $\{T^a\}_{a=1}^8$, the linearized Faddeev--Popov operator is
 \[
@@ -797,10 +823,10 @@ U^{\Omega_\varepsilon}(e)
 \]
 at $\varepsilon=0$.  Since $U(e)=I$ on the slice,
 \[
-\left.\frac{\dd}{\dd\varepsilon}\right|_{\varepsilon=0}
+-i\left.\frac{\dd}{\dd\varepsilon}\right|_{\varepsilon=0}
 U^{\Omega_\varepsilon}(e)
 =
-i\omega_y - i\omega_x.
+\omega_y-\omega_x.
 \]
 Writing each $\omega_x$ in the Gell-Mann basis shows that the eight color
 components decouple and each is acted on by the same incidence matrix
@@ -892,6 +918,10 @@ be an anticommuting $\mcHh$-valued antighost field.  Their Berezin measure is
 \prod_{e\in\mcT}\prod_{a=1}^8 \dd\bar c_e^a
 \prod_{x\in\mcN\setminus R}\prod_{a=1}^8 \dd c_x^a.
 \]
+For every root vertex $r\in R$, set
+\[
+c_r:=0.
+\]
 \end{definition}
 
 \begin{definition}[Ghost action in maximal-tree gauge]
@@ -900,7 +930,7 @@ Define
 \[
 S_{\mathrm{ghost}}^{(\mcT)}(\bar c,c)
 :=
-\sum_{e=(x\to y)\in\mcT}\tr\!\bigl(\bar c_e(c_y-c_x)\bigr),
+2\sum_{e=(x\to y)\in\mcT}\tr\!\bigl(\bar c_e(c_y-c_x)\bigr),
 \]
 with the convention $c_r:=0$ for root vertices $r\in R$.
 \end{definition}
@@ -922,6 +952,7 @@ S_{\mathrm{ghost}}^{(\mcT)}(\bar c,c)
 \sum_{a=1}^8\sum_{e=(x\to y)\in\mcT}
 \bar c_e^a(c_y^a-c_x^a).
 \]
+Here we used $\tr(T^aT^b)=\frac12\delta_{ab}$.
 This is precisely the quadratic Berezin form associated with the matrix
 $B_{\mcT}\otimes I_8$, so the standard finite-dimensional Berezin identity gives
 \[
@@ -955,12 +986,14 @@ s\,\bar c_e=b_e,
 \qquad
 s\,b_e=0.
 \]
+Here the rooted ghost convention from Definition~\ref{def:ghosts} is in force,
+so $c_r=0$ for every root $r\in R$.
 Define the gauge-fixing fermion
 \[
 \Psi_{\mcT}
 :=
 \sum_{e\in\mcT}
-\tr\!\left(\bar c_e\Bigl(U(e)-I+\frac{\alpha}{2}b_e\Bigr)\right),
+2\tr\!\left(\bar c_e\Bigl(-i\bigl(U(e)-I\bigr)+\frac{\alpha}{2}b_e\Bigr)\right),
 \qquad \alpha\ge 0.
 \]
 \end{definition}
@@ -1002,9 +1035,9 @@ Explicitly,
 \[
 S_{\mathrm{gf+gh}}^{(\mcT)}
 =
-\sum_{e\in\mcT}\tr\!\left(
-b_e(U(e)-I)+\frac{\alpha}{2}b_e^2
-\bar c_e\bigl(c_{t(e)}U(e)-U(e)c_{s(e)}\bigr)
+\sum_{e\in\mcT}2\tr\!\left(
+-i\,b_e\bigl(U(e)-I\bigr)+\frac{\alpha}{2}b_e^2
++\bar c_e\bigl(c_{t(e)}U(e)-U(e)c_{s(e)}\bigr)
 \right).
 \]
 Consequently the effective action
@@ -1034,11 +1067,12 @@ by Lemma~\ref{lem:brst}.
 \end{proof}
 
 \begin{remark}
-At $\alpha=0$ the $b$-integration imposes the sharp gauge condition $U(e)=I$ on
-tree edges.  Since the Faddeev--Popov determinant is constant, the ghost sector
-decouples after gauge fixing.  The BRST presentation is therefore exact but
-algebraically simpler than in continuum gauges where the determinant depends on
-the gauge field.
+On the maximal-tree gauge slice $U(e)=I$ for $e\in\mcT$, the ghost term in
+$S_{\mathrm{gf+gh}}^{(\mcT)}$ reduces exactly to
+$S_{\mathrm{ghost}}^{(\mcT)}$ from Definition~\ref{def:ghost-action}.  Since
+the Faddeev--Popov determinant is constant, the ghost sector decouples after
+gauge fixing.  The BRST presentation is therefore an algebraic repackaging of
+the same finite gauge-fixing data.
 \end{remark}
 
 \section{Matter sector integration}
@@ -1123,16 +1157,16 @@ second claim.
 The determinant $\det M_{\mathrm F}(U)$ is a finite polynomial in the link
 matrices and encodes the usual closed virtual-fermion loops.  Because the link
 set $\mcE$ consists of the worldline and interaction edges from the trajectory
-data, only loops in that explicit graph contribute.  The interaction-graph
-weights $\omega_{ij}^{\mathrm{link}}(t)$ from \cite{latticeqft} influence these
-virtual loops through the dependence of the original data-induced background
-links on the viscous force and its weights.
+data, only loops in that explicit graph contribute.  The same-time part of that
+graph is determined by the interaction data $\mathcal P_t$, which in the
+trajectory construction of \cite{latticeqft} was built from the normalized
+weights $\omega_{ij}^{\mathrm{link}}(t)$.
 \end{remark}
 
 \paragraph{Scalar kinetic fluctuations.}
-The scalar action is purely bosonic, real valued, and bounded below as soon as
-the local potential is bounded below.  The regularization $\eta>0$ excludes
-edge-length singularities.
+The scalar action is purely bosonic, real valued, and free massive.  The
+regularization $\eta>0$ excludes edge-length singularities in the kinetic
+coefficients.
 
 \begin{definition}[Scalar stiffness operator]
 \label{def:scalar-operator}
@@ -1171,13 +1205,12 @@ which implies the upper bound on $w_e$.
 
 \begin{theorem}[Scalar integrability]
 \label{thm:scalar-integrable}
-Assume $V_\phi$ is continuous and bounded below by $-C_\phi$.  Then
 \[
 Z_\phi
 :=
 \int_{\mcS}e^{-S_\phi(\phi)}\,\dd\phi
 \]
-is finite.  If in addition $V_\phi\equiv 0$, then
+is finite, and
 \[
 Z_\phi
 =
@@ -1189,29 +1222,47 @@ Z_\phi
 By Definition~\ref{def:scalar-operator},
 \[
 S_\phi(\phi)=\frac12\phi^\top L_\eta\phi
-+\frac{m_\phi^2}{2}\phi^\top\phi
-+\sum_{x\in\mcN}V_\phi(\phi_x).
-\]
-Lemma~\ref{lem:scalar-positive} implies the first quadratic term is
-nonnegative, while the lower bound on $V_\phi$ gives
-\[
-S_\phi(\phi)\ge \frac{m_\phi^2}{2}\phi^\top\phi-C_\phi|\mcN|.
-\]
-Thus
-\[
-e^{-S_\phi(\phi)}
-\le
-e^{C_\phi|\mcN|}e^{-\frac12 m_\phi^2 \phi^\top\phi},
-\]
-and the right-hand side is integrable on $\R^{|\mcN|}$.
-
-If $V_\phi\equiv 0$, then
-\[
-S_\phi(\phi)=\frac12\phi^\top (L_\eta+m_\phi^2 I)\phi.
++\frac{m_\phi^2}{2}\phi^\top\phi.
 \]
 Since $L_\eta$ is positive semidefinite and $m_\phi^2 I$ is strictly positive,
 the matrix $L_\eta+m_\phi^2 I$ is positive definite.  The standard Gaussian
 integral formula gives the displayed determinant expression.
+\end{proof}
+
+\begin{proposition}[Scalar source integral]
+\label{prop:scalar-source}
+For every source vector $J=(J_x)_{x\in\mcN}\in\R^{|\mcN|}$,
+\[
+Z_\phi[J]
+:=
+\int_{\mcS}\exp\!\left(-S_\phi(\phi)+\sum_{x\in\mcN}J_x\phi_x\right)\dd\phi
+\]
+is finite and satisfies
+\[
+Z_\phi[J]
+=
+Z_\phi[0]\,
+\exp\!\left(\frac12\,J^\top (L_\eta+m_\phi^2 I)^{-1}J\right).
+\]
+In particular, all scalar polynomial moments are finite.
+\end{proposition}
+\begin{proof}
+Write
+\[
+K_\phi:=L_\eta+m_\phi^2 I.
+\]
+By Theorem~\ref{thm:scalar-integrable}, the matrix $K_\phi$ is positive
+definite.  Completing the square gives
+\[
+\frac12\phi^\top K_\phi\phi-J^\top\phi
+=
+\frac12(\phi-K_\phi^{-1}J)^\top K_\phi(\phi-K_\phi^{-1}J)
+-\frac12 J^\top K_\phi^{-1}J.
+\]
+Substituting this identity into the integral and translating the integration
+variable by $K_\phi^{-1}J$ yields the stated formula.  Differentiating the
+right-hand side with respect to the source components proves finiteness of all
+scalar polynomial moments.
 \end{proof}
 
 \begin{remark}[Role of $\eta$]
@@ -1221,6 +1272,341 @@ mechanism that prevents the scalar kinetic coefficients from diverging when two
 sites become spacetime-coincident.  Without $\eta$, the coefficient
 $1/\ell_e$ would be singular on zero-length edges.  With $\eta>0$, every
 kinetic coefficient is uniformly bounded by $\eta^{-1}$.
+\end{remark}
+
+\section{Lie-algebra coordinates and local measure structure}
+\label{sec:local-measure}
+
+\paragraph{Local exponential coordinates.}
+The finite-lattice path integral is defined globally by Haar measure on each
+copy of $SU(3)$.  To compare that measure with the usual Lie-algebra variables
+used in perturbation theory and in local small-field expansions, one works in
+an exponential chart around the identity.
+
+\begin{definition}[Symmetric exponential chart]
+\label{def:exp-chart}
+Let $\mcHh$ be the Hermitian traceless $3\times 3$ matrices with inner product
+\[
+\langle H,K\rangle:=\frac12\tr(HK).
+\]
+Choose an open neighborhood $\mathcal V\subset\mcHh$ of $0$ such that:
+\begin{enumerate}[leftmargin=1.5em]
+\item $\mathcal V$ is symmetric: $H\in\mathcal V$ implies $-H\in\mathcal V$;
+\item the map
+\[
+\exp_i:\mathcal V\to SU(3),
+\qquad
+\exp_i(H):=e^{iH},
+\]
+is a diffeomorphism onto an open neighborhood $\mathcal U$ of the identity.
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Single-edge Haar density in exponential coordinates]
+\label{prop:haar-density}
+Let $\mu_H$ be normalized Haar measure on $SU(3)$ and let
+$\mathcal V,\mathcal U$ be as in Definition~\ref{def:exp-chart}.  Then there
+exists a smooth strictly positive function
+\[
+J:\mathcal V\to(0,\infty)
+\]
+such that for every continuous function $f$ supported in $\mathcal U$,
+\[
+\int_{SU(3)} f(U)\,\dd\mu_H(U)
+=
+\int_{\mathcal V} f\!\bigl(e^{iH}\bigr)\,J(H)\,\dd H,
+\]
+where $\dd H$ is Lebesgue measure on the $8$-dimensional Euclidean space
+$\mcHh$.  After fixing the normalization of $\dd H$ so that $J(0)=1$, the
+density is even and satisfies
+\[
+J(H)=1+O(\|H\|^2)
+\qquad\text{as }H\to 0.
+\]
+\end{proposition}
+\begin{proof}
+Push forward $\mu_H|_{\mathcal U}$ by the inverse chart
+$\log_i:=\exp_i^{-1}:\mathcal U\to\mathcal V$.
+Because $\exp_i$ is a diffeomorphism, the pushforward is a smooth measure on
+the Euclidean open set $\mathcal V$, so it has a smooth strictly positive
+density $J(H)$ with respect to Lebesgue measure.
+Since Lebesgue measure on $\mcHh$ is unique only up to a positive constant,
+we may normalize it so that $J(0)=1$.
+
+The inversion map on $SU(3)$ sends $e^{iH}$ to $e^{-iH}$, and Haar measure is
+invariant under inversion.  Because $\mathcal V$ is symmetric, this implies
+\[
+J(H)=J(-H)
+\qquad\text{for all }H\in\mathcal V.
+\]
+Hence the first-order term in the Taylor expansion of $J$ at the origin
+vanishes, and smoothness gives
+\[
+J(H)=J(0)+O(\|H\|^2)=1+O(\|H\|^2).
+\]
+\end{proof}
+
+\begin{corollary}[Second-order matching with Lebesgue measure]
+\label{cor:haar-second-order}
+In the chart of Definition~\ref{def:exp-chart},
+\[
+\dd\mu_H\!\bigl(e^{iH}\bigr)=\bigl(1+O(\|H\|^2)\bigr)\dd H
+\qquad\text{as }H\to 0.
+\]
+Equivalently, for every bounded set $B\subset\mcHh$ and every $a>0$ small
+enough,
+\[
+\dd\mu_H\!\bigl(e^{i aA}\bigr)
+=
+a^8\bigl(1+O(a^2)\bigr)\dd A
+\]
+uniformly for $A\in B$.
+\end{corollary}
+\begin{proof}
+The first statement is a restatement of Proposition~\ref{prop:haar-density}.
+For the second, substitute $H=aA$.  Since $\mcHh$ has real dimension $8$,
+\[
+\dd H=a^8\,\dd A,
+\]
+and for $A$ in a fixed bounded set the estimate
+\[
+J(aA)=1+O(a^2\|A\|^2)=1+O(a^2)
+\]
+is uniform.
+\end{proof}
+
+\begin{remark}[Thermodynamic role of the local chart]
+The local coordinate description of Haar measure is a fixed-$N$ statement on a
+single edge.  In the broader thermodynamic programme it supplies the local
+measure model for the bilocal gauge observables that appear in the
+$N\to\infty$ limit described in \cite{convergence,latticeqft}.
+\end{remark}
+
+\begin{proposition}[Transfer of the mean-field LSI to thermodynamic observables]
+\label{prop:thermo-lsi-transfer}
+Let $\pi_\infty$ be the stationary mean-field law from \cite{convergence}.
+Assume, as proved there, that there exist constants $a,b,c\in\R$ with
+$ac>b^2$ and a constant $C_{\mathrm{LSI}}<\infty$ such that
+\[
+\Ent_{\pi_\infty}(g^2)
+\le
+C_{\mathrm{LSI}}
+\int_{\R^6}\Gamma_{\mathrm{hypo}}^\infty(g,g)\,\dd\pi_\infty
+\]
+for every smooth compactly supported $g:\R^6\to\R$, where
+\[
+\Gamma_{\mathrm{hypo}}^\infty(g,g)
+:=
+a\|\nabla_v g\|^2
++2b\,\nabla_x g\cdot\nabla_v g
++c\|\nabla_x g\|^2.
+\]
+For each $k\ge1$, let
+\[
+\Pi_k^\infty:=\pi_\infty^{\otimes k},
+\]
+and define
+\[
+\Gamma_{\mathrm{hypo}}^{(k)}(F,F)
+:=
+\sum_{j=1}^k \Gamma_{\mathrm{hypo},j}^\infty(F,F),
+\]
+where $\Gamma_{\mathrm{hypo},j}^\infty$ acts on the $j$-th variable
+$z_j=(x_j,v_j)\in\R^6$.  Then
+\[
+\Ent_{\Pi_k^\infty}(F^2)
+\le
+C_{\mathrm{LSI}}
+\int_{(\R^6)^k}\Gamma_{\mathrm{hypo}}^{(k)}(F,F)\,\dd\Pi_k^\infty
+\]
+for every smooth compactly supported $F:(\R^6)^k\to\R$.
+In particular, the bilocal link observables and plaquette observables of
+\cite{latticeqft}, which are evaluated on $\pi_\infty^{\otimes2}$ and
+$\pi_\infty^{\otimes4}$, are supported on equilibrium product measures
+carrying the same logarithmic Sobolev constant $C_{\mathrm{LSI}}$.
+\end{proposition}
+\begin{proof}
+We argue by induction on $k$.  The case $k=1$ is exactly the mean-field
+logarithmic Sobolev inequality proved in \cite{convergence}.
+
+Assume the claim has been proved for $k-1$, and write
+\[
+z=(z',z_k)\in (\R^6)^{k-1}\times\R^6.
+\]
+For a smooth compactly supported $F:(\R^6)^k\to\R$, set
+\[
+F_{z_k}(z'):=F(z',z_k),
+\qquad
+m(z_k):=\int_{(\R^6)^{k-1}} F(z',z_k)^2\,\dd\Pi_{k-1}^\infty(z'),
+\qquad
+G(z_k):=m(z_k)^{1/2}.
+\]
+The entropy chain rule for product measures gives
+\[
+\Ent_{\Pi_k^\infty}(F^2)
+=
+\int_{\R^6}\Ent_{\Pi_{k-1}^\infty}(F_{z_k}^2)\,\dd\pi_\infty(z_k)
++\Ent_{\pi_\infty}(G^2).
+\]
+Applying the induction hypothesis to the first term yields
+\[
+\int_{\R^6}\Ent_{\Pi_{k-1}^\infty}(F_{z_k}^2)\,\dd\pi_\infty(z_k)
+\le
+C_{\mathrm{LSI}}
+\sum_{j=1}^{k-1}
+\int_{(\R^6)^k}\Gamma_{\mathrm{hypo},j}^\infty(F,F)\,\dd\Pi_k^\infty.
+\]
+
+For the second term, regularize the square root by
+\[
+G_\varepsilon(z_k):=(m(z_k)+\varepsilon)^{1/2},
+\qquad \varepsilon>0.
+\]
+Because $F$ is smooth and compactly supported, the function $m$ is smooth and
+bounded, hence $G_\varepsilon$ is smooth and bounded on $\R^6$.  Let
+\[
+M:=
+\begin{pmatrix}
+cI_3 & bI_3\\
+bI_3 & aI_3
+\end{pmatrix},
+\]
+so that
+\[
+\Gamma_{\mathrm{hypo},k}^\infty(F,F)
+=
+\left\langle \nabla_{z_k}F,\,
+M\,\nabla_{z_k}F\right\rangle,
+\qquad
+\nabla_{z_k}:=(\nabla_{x_k},\nabla_{v_k}).
+\]
+Because $ac>b^2$, the matrix $M$ is positive definite.  On the set where
+$m(z_k)>0$,
+\[
+\nabla_{z_k}G_\varepsilon(z_k)
+=
+\frac{1}{G_\varepsilon(z_k)}
+\int_{(\R^6)^{k-1}}F(z',z_k)\,\nabla_{z_k}F(z',z_k)\,\dd\Pi_{k-1}^\infty(z').
+\]
+Therefore
+\begin{align*}
+G_\varepsilon(z_k)^2\,\Gamma_{\mathrm{hypo}}^\infty(G_\varepsilon,G_\varepsilon)
+&=
+\left\langle
+\int F\,\nabla_{z_k}F\,\dd\Pi_{k-1}^\infty,\,
+M
+\int F\,\nabla_{z_k}F\,\dd\Pi_{k-1}^\infty
+\right\rangle\\
+&\le
+\left(\int F^2\,\dd\Pi_{k-1}^\infty\right)
+\left(
+\int
+\left\langle \nabla_{z_k}F,\,
+M\,\nabla_{z_k}F\right\rangle
+\dd\Pi_{k-1}^\infty
+\right)\\
+&=
+m(z_k)
+\int_{(\R^6)^{k-1}}
+\Gamma_{\mathrm{hypo},k}^\infty(F,F)(z',z_k)\,
+\dd\Pi_{k-1}^\infty(z').
+\end{align*}
+Hence
+\[
+\Gamma_{\mathrm{hypo}}^\infty(G_\varepsilon,G_\varepsilon)(z_k)
+\le
+\frac{m(z_k)}{m(z_k)+\varepsilon}
+\int_{(\R^6)^{k-1}}
+\Gamma_{\mathrm{hypo},k}^\infty(F,F)(z',z_k)\,
+\dd\Pi_{k-1}^\infty(z')
+\le
+\int_{(\R^6)^{k-1}}
+\Gamma_{\mathrm{hypo},k}^\infty(F,F)(z',z_k)\,
+\dd\Pi_{k-1}^\infty(z').
+\]
+To invoke the one-particle inequality from \cite{convergence}, choose
+$\chi_R\in C_c^\infty(\R^6)$ such that
+\[
+0\le \chi_R\le 1,\qquad
+\chi_R\equiv 1\text{ on }B_R,\qquad
+\operatorname{supp}\chi_R\subset B_{2R},\qquad
+\|\nabla \chi_R\|_\infty\le \frac{C_\chi}{R}.
+\]
+Set
+\[
+H_{\varepsilon,R}:=\chi_R G_\varepsilon\in C_c^\infty(\R^6).
+\]
+Applying the one-particle inequality to $H_{\varepsilon,R}$ gives
+\[
+\Ent_{\pi_\infty}(H_{\varepsilon,R}^2)
+\le
+C_{\mathrm{LSI}}
+\int_{\R^6}\Gamma_{\mathrm{hypo}}^\infty(H_{\varepsilon,R},H_{\varepsilon,R})\,
+\dd\pi_\infty.
+\]
+Since $G_\varepsilon$ is bounded and $\chi_R\to 1$ pointwise, dominated
+convergence gives
+\[
+\Ent_{\pi_\infty}(H_{\varepsilon,R}^2)\to \Ent_{\pi_\infty}(G_\varepsilon^2)
+\qquad\text{as }R\to\infty.
+\]
+Moreover,
+\[
+\nabla H_{\varepsilon,R}
+=
+\chi_R\nabla G_\varepsilon+G_\varepsilon\nabla\chi_R,
+\]
+so positivity of $M$ implies
+\[
+\Gamma_{\mathrm{hypo}}^\infty(H_{\varepsilon,R},H_{\varepsilon,R})
+\le
+2\chi_R^2\Gamma_{\mathrm{hypo}}^\infty(G_\varepsilon,G_\varepsilon)
++
+2G_\varepsilon^2\Gamma_{\mathrm{hypo}}^\infty(\chi_R,\chi_R).
+\]
+Because $a,b,c$ are fixed, there exists a constant $C_M<\infty$ such that
+\[
+\Gamma_{\mathrm{hypo}}^\infty(\chi_R,\chi_R)
+\le
+\frac{C_M}{R^2}\one_{B_{2R}\setminus B_R}.
+\]
+Hence the second term converges to $0$ in $L^1(\pi_\infty)$, while the first
+term converges by dominated convergence, using the pointwise bound above by the
+$\Pi_{k-1}^\infty$-average of $\Gamma_{\mathrm{hypo},k}^\infty(F,F)$.  Passing
+to the limit $R\to\infty$ yields
+\[
+\Ent_{\pi_\infty}(G_\varepsilon^2)
+\le
+C_{\mathrm{LSI}}
+\int_{\R^6}\Gamma_{\mathrm{hypo}}^\infty(G_\varepsilon,G_\varepsilon)\,\dd\pi_\infty.
+\]
+Integrating the previous pointwise estimate then gives
+\[
+\Ent_{\pi_\infty}(G_\varepsilon^2)
+\le
+C_{\mathrm{LSI}}
+\int_{(\R^6)^k}\Gamma_{\mathrm{hypo},k}^\infty(F,F)\,\dd\Pi_k^\infty.
+\]
+Since $G_\varepsilon^2=m+\varepsilon$ decreases pointwise to $G^2=m$ as
+$\varepsilon\downarrow0$, and $m$ is bounded while $t\mapsto t\log t$ is
+continuous on $[0,\infty)$, dominated convergence yields
+\[
+\Ent_{\pi_\infty}(G_\varepsilon^2)\to \Ent_{\pi_\infty}(G^2).
+\]
+Combining the bounds for the two entropy terms proves the claim for $k$.
+\end{proof}
+
+\begin{remark}[Indicator-weighted thermodynamic observables]
+The thermodynamic link and plaquette observables of \cite{latticeqft} are
+integrated against bounded indicators $\chi_t$ and $\chi_\square$ on the
+product spaces $(\R^6)^2$ and $(\R^6)^4$.  Since
+\[
+0\le \chi_t,\chi_\square\le 1,
+\]
+their integrability and entropy control are inherited from the supporting
+product measures $\pi_\infty^{\otimes2}$ and $\pi_\infty^{\otimes4}$ of
+Proposition~\ref{prop:thermo-lsi-transfer}; no additional thermodynamic scalar
+measure hypothesis is needed at that step.
 \end{remark}
 
 \section{Discussion of excitations and propagators}
@@ -1263,11 +1649,11 @@ S_F(x,y)_{\alpha\beta}:=\langle \psi_{x,\alpha}\bar\psi_{y,\beta}\rangle.
 \label{prop:background-prop}
 Fix a gauge field $U$.
 \begin{enumerate}[leftmargin=1.5em]
-\item If $V_\phi\equiv 0$, then the scalar background covariance is
+\item The scalar background covariance is
 \[
 G_\phi^{(U)}=(L_\eta+m_\phi^2 I)^{-1}.
 \]
-\item If $M_{\mathrm F}(U)$ is invertible, then the fermion background
+\item The fermion background
 covariance is
 \[
 S_F^{(U)}=M_{\mathrm F}(U)^{-1}.
@@ -1276,8 +1662,10 @@ S_F^{(U)}=M_{\mathrm F}(U)^{-1}.
 \end{proposition}
 \begin{proof}
 The scalar claim is the standard Gaussian covariance formula from
-Theorem~\ref{thm:scalar-integrable}.  The fermion claim follows from
-differentiating the Berezin generating functional
+Theorem~\ref{thm:scalar-integrable}.  By
+Proposition~\ref{prop:fermion-invertible}, the matrix $M_{\mathrm F}(U)$ is
+invertible for every $U$.  The fermion claim then follows from differentiating
+the Berezin generating functional
 \[
 \int e^{-\bar\Psi M_{\mathrm F}(U)\Psi+\bar\eta\Psi+\bar\Psi\eta}\,\dd\bar\Psi\,\dd\Psi
 =
@@ -1286,17 +1674,78 @@ e^{\bar\eta M_{\mathrm F}(U)^{-1}\eta}.
 \]
 \end{proof}
 
-\begin{proposition}[Large-mass hopping expansion]
+\begin{proposition}[Unconditional fermion invertibility]
+\label{prop:fermion-invertible}
+For every gauge field $U\in\mcU$, the matrix $M_{\mathrm F}(U)$ is invertible.
+More precisely, if
+\[
+M_{\mathrm F}(U)=D-H(U),
+\qquad
+D:=\diag\bigl(m_F+\indeg(x)\bigr)_{x\in\mcN}\otimes I_3,
+\]
+then
+\[
+\|D^{-1}H(U)\|_{\infty,2\to\infty,2}
+\le
+\max_{y\in\mcN}\frac{\indeg(y)}{m_F+\indeg(y)}
+<1,
+\]
+where
+\[
+\|\xi\|_{\infty,2}:=\max_{x\in\mcN}\|\xi_x\|_2
+\qquad
+\text{for }
+\xi=(\xi_x)_{x\in\mcN}\in\bigoplus_{x\in\mcN}\C_x^3.
+\]
+\end{proposition}
+\begin{proof}
+For $\xi=(\xi_x)_{x\in\mcN}$, the $y$-block of $H(U)\xi$ is
+\[
+\bigl(H(U)\xi\bigr)_y
+=
+\sum_{\substack{e\in\mcE\\ t(e)=y}}U(e)\,\xi_{s(e)}.
+\]
+Since each $U(e)\in SU(3)$ is unitary,
+\[
+\|U(e)\xi_{s(e)}\|_2=\|\xi_{s(e)}\|_2.
+\]
+Therefore
+\[
+\bigl\|\bigl(H(U)\xi\bigr)_y\bigr\|_2
+\le
+\sum_{\substack{e\in\mcE\\ t(e)=y}}\|\xi_{s(e)}\|_2
+\le
+\indeg(y)\,\|\xi\|_{\infty,2}.
+\]
+Multiplying by $D^{-1}$ gives
+\[
+\bigl\|\bigl(D^{-1}H(U)\xi\bigr)_y\bigr\|_2
+\le
+\frac{\indeg(y)}{m_F+\indeg(y)}\,\|\xi\|_{\infty,2}.
+\]
+Taking the maximum over $y$ yields the stated bound.
+Because $m_F>0$, every fraction $\indeg(y)/(m_F+\indeg(y))$ is strictly less
+than $1$.  Hence $\|D^{-1}H(U)\|_{\infty,2\to\infty,2}<1$, so the Neumann
+series for $(I-D^{-1}H(U))^{-1}$ converges.
+Since
+\[
+M_{\mathrm F}(U)=D\bigl(I-D^{-1}H(U)\bigr)
+\]
+and $D$ is invertible, $M_{\mathrm F}(U)$ is invertible.
+\end{proof}
+
+\begin{proposition}[Fermion hopping expansion]
 \label{prop:hopping}
-Assume $M_{\mathrm F}(U)=D-H(U)$ where
+Let
+\[
+M_{\mathrm F}(U)=D-H(U),
+\]
+where
 \[
 D:=\diag\bigl(m_F+\indeg(x)\bigr)_{x\in\mcN}\otimes I_3
 \]
-and suppose
-\[
-\|D^{-1}H(U)\|<1
-\]
-in operator norm.  Then
+and $H(U)$ is the off-diagonal hopping part from
+Proposition~\ref{prop:fermion-invertible}.  Then
 \[
 M_{\mathrm F}(U)^{-1}
 =
@@ -1310,8 +1759,20 @@ $\mathcal P_t$ and hence from the stochastic weights
 $\omega_{ij}^{\mathrm{link}}(t)$ used in \cite{latticeqft}.
 \end{proposition}
 \begin{proof}
-The Neumann series for $(I-D^{-1}H)^{-1}$ converges in operator norm under the
-assumed bound.  Each power $(D^{-1}H)^n$ is a sum over length-$n$ compositions
+By Proposition~\ref{prop:fermion-invertible},
+\[
+\|D^{-1}H(U)\|_{\infty,2\to\infty,2}<1.
+\]
+Hence the Neumann series for $(I-D^{-1}H(U))^{-1}$ converges in that operator
+norm, giving
+\[
+\bigl(I-D^{-1}H(U)\bigr)^{-1}
+=
+\sum_{n=0}^\infty (D^{-1}H(U))^n.
+\]
+Multiplying on the right by $D^{-1}$ yields the displayed formula for
+$M_{\mathrm F}(U)^{-1}$.
+Each power $(D^{-1}H(U))^n$ is a sum over length-$n$ compositions
 of off-diagonal hopping operators, hence over directed paths of length $n$ in
 the graph.  The only same-time edges available for those paths are the
 interaction edges determined by the data sets $\mathcal P_t$, which were
@@ -1355,29 +1816,29 @@ Starting from the finite lattice data package $\mathcal Q$ built in
 \cite{latticeqft}, this paper has completed the exact finite-dimensional
 quantization step.  The link variables were promoted from data-derived
 transporters to independent $SU(3)$ variables, the full configuration space and
-product measure were defined, and the partition function was proved finite under
-the minimal scalar lower-bound assumption needed for scalar integrability.  The
+product measure were defined, and the partition function was proved finite for
+the free massive scalar witness sector imported from \cite{latticeqft}.  The
 gauge redundancy was solved globally by a rooted maximal-tree gauge, with exact
 orbit uniqueness, exact Faddeev--Popov identity, constant determinant, and a
 decoupled ghost sector.  The fermions integrate to a finite determinant, the
-scalar sector is controlled by a positive stiffness operator regularized by
-$\eta$, and the bilocal mean-field action $S_{\mathrm W}^\infty$ defined on the
-stationary measure $\pi_\infty$ provides the correct thermodynamic-limit
-continuum theory.
+scalar sector is an exact Gaussian field with stiffness operator
+$L_\eta+m_\phi^2I$, and the bilocal mean-field action $S_{\mathrm W}^\infty$
+defined on the stationary measure $\pi_\infty$ provides the correct
+thermodynamic-limit continuum theory.
 
-\paragraph{Forward look to the mass-gap problem.}
-The $N\to\infty$ thermodynamic limit provides the correct continuum theory:
-the bilocal action $S_{\mathrm W}^\infty$, the continuous propagator as the
-resolvent of $K_\rho(z,z')$, and the Markov-chain measure converging to a
-continuous process on $\pi_\infty$.
-The remaining steps toward the Millennium problem are: verification of the
-Osterwalder--Schrader axioms on the integral-operator continuum theory;
-reconstruction of a Hilbert-space quantum theory from reflection positivity;
-and a proof that the energy--momentum spectrum has a strictly positive gap
-above the vacuum.
-What this paper contributes is the exact finite-dimensional quantization step
-on the trajectory-induced lattice, together with the bilocal mean-field
-structure that survives the $N\to\infty$ limit.
+\paragraph{Forward look to the thermodynamic theory.}
+The $N\to\infty$ thermodynamic limit developed in the companion papers places
+the fixed-$N$ partition functions constructed here into the stationary
+mean-field setting: \cite{convergence} proves
+\[
+\pi_{N,1}\Rightarrow \pi_\infty,
+\]
+while \cite{latticeqft} identifies the bilocal action
+$S_{\mathrm W}^\infty$ and the associated thermodynamic gauge observables on
+$\pi_\infty$.  The present paper supplies the exact finite-dimensional
+quantization step on the trajectory-induced lattice, together with the local
+Haar-coordinate analysis and the explicit gauge fixing needed to pass from the
+data package $\mathcal Q$ to its quantum ensemble.
 
 \bibliographystyle{plain}
 \bibliography{references}

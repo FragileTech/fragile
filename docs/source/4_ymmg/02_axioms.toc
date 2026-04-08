@@ -1,0 +1,50 @@
+\contentsline {section}{\numberline {1}Introduction}{4}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Problem Statement}{4}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Main Idea}{4}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Nature of This Paper}{5}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Main Theorems}{5}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Relation to Recent Constructive QFT}{6}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Roadmap}{6}{subsection.1.6}%
+\contentsline {section}{\numberline {2}The Standard Frameworks and Their Upstream Sources}{7}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Wightman Axioms}{7}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Osterwalder--Schrader Axioms}{7}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Haag--Kastler / Locally Covariant AQFT}{9}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Summary: What the Core Axioms Provide}{10}{subsection.2.4}%
+\contentsline {section}{\numberline {3}The Five Core Axioms}{11}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Geometric Setting}{11}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Why a Hierarchical Axiom System}{11}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Core Axiom 1: Geometric Locality}{12}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Core Axiom 2: Finite Resolution}{12}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Core Axiom 3: Finite Propagation}{12}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Core Axiom 4: Local Dynamics with Additive Decomposition}{13}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Core Axiom 5: Positivity and Stability}{14}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}Finite Resolution and Scaling}{14}{subsection.3.8}%
+\contentsline {section}{\numberline {4}The Specialization Axes}{14}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Axis A: Internal Symmetry}{14}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Axis B: Statistics}{15}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Axis C: Interaction Type}{15}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Axis D: Spectral Type}{15}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Dependency Diagram and Classification Table}{16}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Specialization Theorems}{16}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Flat Stationary Sector}{16}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Hyperplane Decomposition and Transfer Matrix}{16}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}The Upstream Dynamical Chain for OS3}{18}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Derivation of OS0--OS4}{18}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}General Manifold Specialization}{19}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Compatibility, Non-Redundancy, and Separating Examples}{20}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Compatibility}{20}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Non-Redundancy of the Specialization Axes}{20}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Core Separating Examples}{20}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Constructiveness, Renormalization, and Scaling}{21}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Why ``Constructive''}{21}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}What the Axioms Prove and What They Do Not}{21}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Renormalization Group Within the Framework}{21}{subsection.7.3}%
+\contentsline {section}{\numberline {8}Supersymmetry, Topological Theories, and the Boundary of Scope}{22}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Supersymmetry Fits the Framework Cleanly}{22}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Pure TQFTs Mark a Genuine Scope Boundary}{22}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Topological Sectors Inside Dynamical Theories}{22}{subsection.8.3}%
+\contentsline {section}{\numberline {9}Discussion and Outlook}{23}{section.9}%
+\contentsline {subsection}{\numberline {9.1}What Is New}{23}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}What Is Not Claimed}{23}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Further Refinements}{23}{subsection.9.3}%
+\contentsline {section}{\numberline {10}Conclusion}{24}{section.10}%

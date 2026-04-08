@@ -1,0 +1,1813 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+
+\geometry{margin=1in}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\vol}{\operatorname{vol}}
+\newcommand{\Aut}{\operatorname{Aut}}
+\newcommand{\spec}{\operatorname{spec}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\hilb}{\mathcal{H}}
+\newcommand{\alg}{\mathcal{A}}
+\newcommand{\lag}{\mathcal{L}}
+
+\title{Constructive Dynamical Axioms for Quantum Field Theory\\[6pt]
+\large Version VII: Core Axioms, Specialization Axes, Spectral Type,\\
+Scope Boundaries, and Detailed Framework Correspondences}
+
+\author{Guillem Duran Ballester\\
+Fragile Technologies S.L.\\
+\texttt{guillem@fragile.tech}}
+
+\date{April 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The standard axiomatic frameworks for quantum field theory ---
+Wightman, Osterwalder--Schrader, and Haag--Kastler / locally covariant AQFT ---
+describe the output of a quantum field theory rather than the
+constructive dynamical system that produces it.
+The present paper proposes a framework whose primitive object is the
+constructive dynamical system itself, organized into five core axioms
+shared by all constructive dynamical QFTs with propagating local
+degrees of freedom --- geometric locality, finite resolution, finite
+propagation, local dynamics with additive decomposition, and
+positivity/stability --- together with four specialization axes for
+internal symmetry, statistics, interaction type, and spectral type.
+The framework is designed so that the standard axiomatic frameworks
+reappear as specialization branches under explicitly stated
+supplementary hypotheses: in the flat stationary sector, the core
+axioms together with branch data and transfer-matrix hypotheses yield
+the Osterwalder--Schrader axioms OS0--OS4 and hence, by
+reconstruction, the Wightman axioms; on general globally hyperbolic
+manifolds, the same core-plus-branch structure induces a locally
+covariant net of physical $*$-algebras. The paper isolates upstream
+structural conditions and maps them in detail to the standard
+frameworks, separating universal framework statements from the
+additional analytic hypotheses needed for clustering,
+transfer-matrix factorization, hyperbolicity, and Hadamard
+regularity. Its object is the abstract constructive architecture
+itself.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%% ===================================================================
+\section{Introduction}
+%% ===================================================================
+
+\subsection{Problem Statement}
+
+The mathematical foundations of quantum field theory rest on three
+standard axiomatic frameworks, each native to a particular geometric
+setting.
+
+The Wightman axioms~\cite{Wightman1956, StreaterWightman} take as
+primitive operator-valued tempered distributions on Minkowski space
+acting on a Hilbert space carrying a positive-energy representation of
+the Poincar\'e group. They encode locality, relativistic covariance,
+and the spectral condition, but they are stated in terms of the output
+of the theory rather than in terms of a constructive dynamical system
+that generates that output.
+
+The Osterwalder--Schrader axioms~\cite{OS1, OS2} take as primitive
+the Schwinger functions on flat Euclidean space and impose
+temperedness, Euclidean covariance, reflection positivity, clustering,
+and graded symmetry. They are the gateway from Euclidean construction
+to Minkowskian QFT, but again they operate downstream, at the level
+of correlation functions already given as output data.
+
+The Haag--Kastler axioms and their locally covariant
+generalization~\cite{Haag, BFV} take as primitive a net, or functor,
+of local $*$-algebras over globally hyperbolic spacetimes. These
+frameworks are manifold-native and conceptually powerful, but they
+organize observables rather than specifying the constructive dynamics
+that produces them.
+
+These frameworks are complementary rather than competing. The problem
+is that they are fragmented. There is no widely used upstream axiom
+system whose primitive object is the constructive dynamical system
+itself and which is explicitly designed to specialize into all three
+standard frameworks.
+
+\subsection{Main Idea}
+
+The framework has two layers.
+
+\begin{itemize}[nosep]
+\item \textbf{Core axioms}: structural requirements shared by all
+  constructive QFTs, independent of field content or phase.
+\item \textbf{Specialization axes}: branch conditions that classify
+  theory type and selected phase.
+\end{itemize}
+
+The five core axioms are:
+
+\begin{enumerate}[nosep]
+\item Geometric locality;
+\item Finite resolution;
+\item Finite propagation;
+\item Local dynamics with additive decomposition;
+\item Positivity and stability.
+\end{enumerate}
+
+The specialization data are organized along four axes:
+
+\begin{description}[nosep]
+\item[Axis A:] Internal symmetry (gauge, global, or discrete gauge);
+\item[Axis B:] Statistics (bosonic, fermionic, mixed, or
+  supersymmetric mixed);
+\item[Axis C:] Interaction type (interacting or free);
+\item[Axis D:] Spectral type (massive/gapped or critical/conformal).
+\end{description}
+
+The distinction between a gapped theory and a critical/conformal
+theory is not built into the core axioms; it is selected by parameter
+choice or phase selection inside the same constructive architecture.
+
+\subsection{Nature of This Paper}
+
+This is a framework paper. The core axioms isolate upstream
+structural conditions. The specialization theorems show that, under
+explicitly stated supplementary hypotheses, the standard frameworks
+reappear as abstract branches. The paper does not claim that the core
+axioms automatically produce those hypotheses. It sharply separates
+three layers of verification:
+
+\begin{enumerate}[nosep]
+\item \textbf{Structural verification}: the core axioms and branch
+  data;
+\item \textbf{Specialization verification}: the flat-stationary or
+  manifold-covariant branch theorem;
+\item \textbf{Supplementary analytic hypotheses}: transfer-matrix
+  factorization, spectral gap or mixing input, hyperbolicity for the
+  time-slice property, Hadamard regularity, and related conditions.
+\end{enumerate}
+
+The paper cleanly identifies which upstream input produces which
+downstream property and which steps require additional analytic
+hypotheses.
+
+\subsection{Main Theorems}
+
+The paper is organized around three results, stated here in a form
+that makes the additional hypotheses explicit.
+
+\begin{theorem}[Flat Stationary Specialization]\label{thm:flat}
+  In the flat stationary sector $(M,g) = (\real^4, \delta)$, a system
+  satisfying Core Axioms~1--5 together with branch choices on Axes A,
+  B, and C produces Schwinger functions satisfying:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item OS0 from Core Axiom~2;
+  \item OS1 from Core Axiom~4 in the flat Euclidean sector, under the
+    hypothesis that the equilibrium measure is the unique
+    $E(4)$-invariant measure associated with the action;
+  \item OS2 from Core Axioms~4 and~5, under the transfer-matrix
+    hypotheses of Proposition~\ref{prop:transfer};
+  \item OS4 from the chosen branch on Axis~B.
+  \end{enumerate}
+  If, in addition, the translation-mixing estimate
+  \eqref{eq:mixing} holds for the translation-stable observable
+  algebra generating the Schwinger functions, then OS3 follows.
+  Axis~D refines the expected clustering rate: gapped phases (D1)
+  yield exponential decay, while critical/conformal phases (D2) yield
+  polynomial decay. OS reconstruction then yields Wightman functions
+  satisfying W0--W4.
+\end{theorem}
+\begin{proof}
+  This is the summary form of Theorem~\ref{thm:flat-detail}. The
+  structural derivations of OS0, OS1, OS2, and OS4 are proved there,
+  and OS3 is supplied by Proposition~\ref{prop:mixing}. The final
+  reconstruction step is the standard Osterwalder--Schrader
+  reconstruction theorem~\cite{OS1, OS2}.
+\end{proof}
+
+\begin{theorem}[Manifold-Covariant Specialization]\label{thm:manifold}
+  On a general globally hyperbolic Lorentzian manifold $(M,g)$, a
+  system satisfying Core Axioms~1--5, a symmetry branch on Axis~A,
+  and geometric naturality of the generating structure in the sense of
+  Remark~\ref{rem:naturality} induces a locally covariant net of
+  physical $*$-algebras satisfying isotony, locality, and local
+  covariance. In the gauge branches (A1 or A3), the physical net is
+  the invariant subalgebra; in the global-symmetry branch (A2), the
+  full local algebras are physical and the global symmetry acts by
+  automorphisms. If the field equations of the theory are normally
+  hyperbolic or of Dirac type, then the time-slice property holds. If
+  the physical states are Hadamard, then the microlocal spectrum
+  condition holds.
+\end{theorem}
+\begin{proof}
+  This is the summary form of Theorem~\ref{thm:manifold-detail}. The
+  net structure, covariance morphisms, and the two additional
+  conclusions are proved there from Core Axioms~1--5 together with
+  Remark~\ref{rem:naturality}.
+\end{proof}
+
+\begin{theorem}[Structural Separation]\label{thm:separation}
+  The five core axioms together with the four specialization axes
+  determine a universal separation between structural outputs and
+  supplementary analytic inputs. In particular, temperedness,
+  algebraic locality, positivity, and branch-dependent grading are
+  fixed at the framework level, whereas reflection positivity beyond
+  hyperplane decomposition, clustering, time-slice, and microlocal
+  spectrum statements require the additional hypotheses made explicit
+  in Sections~\ref{sec:existing} and~\ref{sec:specialization}.
+\end{theorem}
+\begin{proof}
+  The separation is obtained by reading the later derivations result by
+  result. Core Axiom~\ref{ax:resolution} yields OS0 directly; Core
+  Axiom~\ref{ax:locality} together with Axis~B determines the algebraic
+  locality and grading data; Core Axiom~\ref{ax:positivity} gives the
+  positive semigroup and hence the GNS positivity input; and Axis~B
+  fixes graded symmetry. By contrast, Proposition~\ref{prop:transfer}
+  shows that OS2 requires, in addition to the core axioms, explicit
+  transfer-matrix hypotheses. Proposition~\ref{prop:mixing} shows that
+  OS3 requires the translation-mixing hypothesis \eqref{eq:mixing}.
+  Theorem~\ref{thm:manifold-detail} shows that local covariance uses
+  the extra geometric naturality stated in
+  Remark~\ref{rem:naturality}, while time-slice and microlocal
+  spectrum require respectively hyperbolicity and Hadamard
+  regularity. This is exactly the claimed structural/analytic
+  separation.
+\end{proof}
+
+\subsection{Relation to Recent Constructive QFT}
+
+The present framework should be positioned relative to the active
+frontiers of rigorous constructive QFT. Hairer's theory of regularity
+structures~\cite{Hairer2014} and the paracontrolled distributions of
+Gubinelli, Imkeller, and Perkowski~\cite{GIP} have made it possible
+to construct solutions to singular stochastic PDEs --- including the
+dynamical $\Phi^4_3$ model --- that were previously beyond rigorous
+reach. The Balaban--Dimock--Imbrie--Jaffe
+program~\cite{Balaban1,Balaban2} pursues constructive Yang--Mills
+theory through multiscale cluster expansions.
+
+These programs develop concrete constructions. The present framework
+is not intended to compete with them but to provide an organizational
+layer above them: a common set of structural conditions and
+specialization rules that can be used to compare different
+constructive approaches without committing the framework itself to a
+particular one.
+
+
+\subsection{Roadmap}
+
+Section~\ref{sec:existing} develops the detailed correspondence
+between the present framework and the three standard axiomatic
+frameworks. Section~\ref{sec:core} states the core axioms, with
+particular attention to the reformulation of Core Axiom~4 and the
+causal-structure role of Core Axiom~3. Section~\ref{sec:axes} states
+the specialization axes. Section~\ref{sec:specialization} proves the
+specialization theorems, with an explicit treatment of the upstream
+dynamical chain leading to OS3. Section~\ref{sec:compatibility}
+discusses compatibility, non-redundancy, and core separating examples.
+Section~\ref{sec:constructive} explains in what sense the framework is
+constructive and clarifies the role of renormalization and scaling.
+Section~\ref{sec:susy} treats supersymmetry and the
+TQFT scope boundary. Section~\ref{sec:discussion} records limitations
+and future refinements. Section~\ref{sec:conclusion} concludes.
+
+
+%% ===================================================================
+\section{The Standard Frameworks and Their Upstream Sources}
+\label{sec:existing}
+%% ===================================================================
+
+This section develops the detailed correspondence between the five
+core axioms (plus specialization data) and each of the three standard
+axiomatic frameworks. For each standard axiom, we identify: which core
+axiom provides the primary structural input; which additional
+hypotheses, if any, are needed; and where the hard analytic work
+resides. This makes explicit the claim that the present framework is
+genuinely upstream of the existing ones.
+
+
+\subsection{Wightman Axioms}
+
+The Wightman axioms~\cite{Wightman1956, StreaterWightman} take as
+primitive a separable Hilbert space $\hilb$, a vacuum vector
+$|\Omega\rangle$, a unitary strongly continuous representation of the
+proper orthochronous Poincar\'e group, and a collection of
+operator-valued tempered distributions obeying covariance, locality,
+the spectral condition, and cyclicity of the vacuum. In the present
+framework, none of these are primitive; they are all derived.
+
+\medskip
+
+\noindent\textbf{W0: Hilbert space, vacuum, Poincar\'e
+  representation, spectral condition.} Core Axiom~5 provides a
+positivity-preserving semigroup with self-adjoint generator $H \ge 0$
+and an equilibrium state $\omega$. The GNS construction on $\omega$
+produces $(\hilb, \pi, |\Omega\rangle)$. Uniqueness of the vacuum
+follows from OS3, which requires the translation-mixing hypothesis of
+Proposition~\ref{prop:mixing}. The
+Poincar\'e representation arises by OS reconstruction from $E(4)$
+covariance of the Schwinger functions (OS1). The spectral condition
+is part of the standard Osterwalder--Schrader reconstruction output.
+Core Axiom~3 is best viewed here as the upstream causal datum that is
+intended to be compatible with that Lorentzian interpretation; see
+Remark~\ref{rem:propagation-chain} below.
+
+\medskip
+
+\noindent\textbf{W1: Covariance of fields.} The field operators
+transform covariantly under the Poincar\'e representation:
+$U(a,\Lambda)\phi(x)U(a,\Lambda)^{-1} = S(\Lambda)\phi(\Lambda x +
+a)$. This is inherited from the $E(4)$ invariance of the action
+density in the flat sector (Core Axiom~4, whose local density
+$\lag(\Phi, D\Phi, \delta)$ depends on the flat metric and is
+therefore $E(4)$-invariant) via OS1 and analytic continuation. The
+spin/statistics content comes from the branch choice on Axis~B.
+
+\medskip
+
+\noindent\textbf{W2: Fields as operator-valued tempered
+  distributions.} This is exactly OS0, which follows from Core
+Axiom~2 (finite resolution). The polynomial bounds in Schwartz
+seminorms, equation~\eqref{eq:poly-bounds}, guarantee that the
+Schwinger functions define tempered distributions.
+
+\medskip
+
+\noindent\textbf{W3: Local commutativity (microscopic causality).}
+For spacelike separated points, $[\phi(x),\phi(y)]_\pm = 0$. This
+combines Core Axiom~1 (locality of the algebra) with Core Axiom~3
+(finite propagation defining the causal structure). After OS
+reconstruction and Wick rotation, Euclidean locality becomes
+Minkowski locality with the light cone defined by $c_{\mathrm{info}}$.
+The $\pm$ grading is fixed by Axis~B.
+
+\medskip
+
+\noindent\textbf{W4: Cyclicity of the vacuum.} The set of vectors
+$\{\phi(f_1)\cdots\phi(f_n)|\Omega\rangle\}$ is dense in $\hilb$.
+This is automatic from the GNS construction: $|\Omega\rangle$ is
+cyclic for $\pi(\alg)$ by definition.
+
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Wightman axiom & Primary source & Additional hypotheses \\
+\midrule
+W0 (Hilbert space, vacuum, & Core 5 (GNS) + & OS reconstruction, \\
+\quad Poincar\'e, spectral cond.) & OS reconstruction & mixing / clustering input \\
+W1 (covariance) & Core 4 ($E(4)$-inv.\ $\lag$) & OS reconstruction \\
+ & + Axis B & \\
+W2 (temperedness) & Core 2 & None \\
+W3 (locality) & Core 1 + Core 3 & Axis B for grading \\
+W4 (cyclicity) & Core 5 & Automatic from GNS \\
+\bottomrule
+\end{tabular}
+\caption{Wightman axioms and their upstream sources in the present
+  framework.}
+\label{tab:wightman}
+\end{table}
+
+
+\subsection{Osterwalder--Schrader Axioms}
+
+The OS axioms~\cite{OS1, OS2} take as primitive the Schwinger
+functions $S_n(x_1,\ldots,x_n)$ on $(\real^4)^n$ and impose
+temperedness (OS0), Euclidean covariance (OS1), reflection positivity
+(OS2), clustering (OS3), and graded symmetry (OS4). In the present
+framework the Schwinger functions are not primitive: they are produced
+by the constructive dynamical system.
+
+\medskip
+
+\noindent\textbf{OS0 (Temperedness).} Core Axiom~2 gives polynomial
+bounds on smeared observables, equation~\eqref{eq:poly-bounds}. These
+directly imply that the Schwinger functions define tempered
+distributions on $(\real^4)^n$. No additional hypotheses are needed.
+
+\medskip
+
+\noindent\textbf{OS1 (Euclidean covariance).} Core Axiom~4 provides a
+local generating structure whose density, in the flat sector, depends
+on fields, their derivatives, and the flat metric $\delta_{\mu\nu}$.
+Since $\delta$ is $E(4)$-invariant, the Boltzmann weight
+$e^{-S}$ is $E(4)$-invariant, and so is the equilibrium measure
+$\pi$. Hence all expectations under $\pi$ --- the Schwinger functions
+--- are $E(4)$-invariant.
+
+\emph{Additional hypothesis}: the equilibrium measure must be uniquely
+determined as an $E(4)$-invariant measure. If there are multiple
+equilibrium measures (as in spontaneous symmetry breaking), one must
+select an $E(4)$-invariant one.
+
+\medskip
+
+\noindent\textbf{OS2 (Reflection positivity).} This is the most
+complex derivation. Core Axiom~4 supplies the additive decomposition
+$S = S_+ + S_- + B$ across the reflection hyperplane
+(Lemma~\ref{lem:hyperplane}). This lets the functional integral
+factorize across the hyperplane. Core Axiom~5 gives a
+positivity-preserving semigroup $e^{-tH}$ with $H \ge 0$. The
+transfer-matrix identification (Proposition~\ref{prop:transfer}) then
+gives $\langle \Theta F, F\rangle_E = \|e^{-t_{\min}H}F\|^2 \ge 0$.
+
+\emph{Additional hypotheses}: the transfer-matrix hypotheses of
+Proposition~\ref{prop:transfer} --- that the Euclidean measure
+factorizes in the right way across the hyperplane. This is
+supplementary analytic input and is where the constructive hard work
+happens in concrete theories.
+
+Core Axiom~4 (additive decomposition) is structurally indispensable
+here. Without it, the transfer-matrix argument has no starting point.
+
+\medskip
+
+\noindent\textbf{OS3 (Clustering).} The theorem-level hypothesis
+needed for OS3 in the abstract framework is the translation-mixing
+estimate
+\begin{equation}
+  \big|\langle F \, \tau_a G\rangle_\pi
+  - \langle F\rangle_\pi \langle G\rangle_\pi\big|
+  \xrightarrow{|a| \to \infty} 0
+\end{equation}
+for the translation-stable observable algebra from which the
+Schwinger functions are built. Proposition~\ref{prop:mixing} below
+shows that this estimate is exactly what is needed to derive OS3.
+
+In concrete theories one often tries to obtain~\eqref{eq:mixing} from
+stronger dynamical input such as a spectral gap for an appropriate
+Euclidean transfer operator or Markov generator. That route is
+model-dependent and therefore lies outside the abstract theorem. The
+tools used there are probabilistic --- Foster--Lyapunov drift
+conditions, coupling arguments, log-Sobolev inequalities,
+Bakry--\'Emery criteria, hypocoercivity --- rather than the Euclidean
+field-theory tools traditionally used for clustering.
+
+Axis~D does not affect the \emph{existence} of OS3. It refines the
+\emph{rate}: under D1 (gapped), exponential clustering
+$S^c \sim e^{-\Delta|a|}$; under D2 (critical), polynomial clustering
+$S^c \sim |a|^{-2\Delta_\phi}$.
+
+\medskip
+
+\noindent\textbf{OS4 (Graded symmetry).} Purely determined by the
+branch choice on Axis~B. B1 gives full symmetry, B2 gives fermionic
+antisymmetry, B3 gives the mixed graded-symmetry rule, B4 preserves
+B3's grading with additional boson--fermion pairing constraints. No
+additional hypotheses.
+
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lll@{}}
+\toprule
+OS axiom & Primary source & Additional hypotheses \\
+\midrule
+OS0 (temperedness) & Core 2 & None \\
+OS1 (Euclidean cov.) & Core 4 (flat sector) &
+Unique $E(4)$-inv.\ equilibrium \\
+OS2 (reflection pos.) & Core 4 + Core 5 & Transfer-matrix hypotheses \\
+OS3 (clustering) & Core 5 + Prop.~\ref{prop:mixing} &
+Translation-mixing estimate~\eqref{eq:mixing} \\
+OS4 (graded symmetry) & Axis B & None \\
+\bottomrule
+\end{tabular}
+\caption{OS axioms and their upstream sources.}
+\label{tab:os}
+\end{table}
+
+
+\subsection{Haag--Kastler / Locally Covariant AQFT}
+
+The Haag--Kastler axioms~\cite{Haag} and their locally covariant
+generalization~\cite{BFV} take as primitive a net or functor assigning
+local $*$-algebras to spacetime regions or spacetimes. In the present
+framework this is the most natural specialization because Core Axiom~1
+is already stated in Haag--Kastler language.
+
+\medskip
+
+\noindent\textbf{HK1 (Isotony).} $O_1 \subset O_2$ implies
+$\alg(O_1) \subset \alg(O_2)$. This is literally the first clause of
+Core Axiom~1. No additional hypotheses.
+
+\medskip
+
+\noindent\textbf{HK2 (Locality / Einstein causality).} For spacelike
+separated $O_1, O_2$, the algebras commute (with appropriate grading
+from Axis~B). This is the second clause of Core Axiom~1, with causal
+disjointness defined by the Lorentzian metric in the manifold branch.
+Core Axiom~3 ensures that the dynamical notion of causality is
+compatible with the metric notion.
+
+\medskip
+
+\noindent\textbf{HK3 (Covariance / local covariance).} In the
+Brunetti--Fredenhagen--Verch formulation, the primitive is a functor
+from the category of globally hyperbolic spacetimes to $*$-algebras
+with injective $*$-homomorphisms. This comes from Core Axiom~4
+together with the geometric naturality stated in
+Remark~\ref{rem:naturality}:
+because $\lag$ depends locally on $\Phi$, $D\Phi$, and $g$, an
+isometric embedding $\psi: M_1 \to M_2$ induces a pullback of field
+configurations and hence a pushforward of observables, giving the
+functorial structure.
+
+\medskip
+
+\noindent\textbf{HK4 (Time-slice property).} If $O$ contains a
+Cauchy surface for a larger region $O'$, then
+$\alg(O) = \alg(O')$. This is \emph{not} automatic from the core
+axioms. It requires well-posed hyperbolic evolution: the field
+equations must be normally hyperbolic or Dirac-type.
+
+Core Axiom~3 is necessary but not sufficient: finite propagation
+ensures that information \emph{stays within} the domain of
+dependence, but time-slice additionally requires that it \emph{fills}
+the domain of dependence. Finite propagation prevents leaking out;
+hyperbolicity ensures filling in.
+
+\medskip
+
+\noindent\textbf{HK5 (Spectrum condition / positivity).} This comes
+from Core Axiom~5 ($H \ge 0$) together with Core Axiom~3 (finite
+propagation $\to$ bounded dispersion $\to$ spectral support in forward
+cone).
+
+\medskip
+
+\noindent\textbf{Microlocal spectrum condition.} On curved
+spacetimes, the spectrum condition is replaced by the Hadamard
+condition on the two-point function. This requires the additional
+hypothesis that the physical states are Hadamard --- the
+curved-spacetime analog of the transfer-matrix hypothesis.
+
+\medskip
+
+\noindent\textbf{Physical algebra selection.} Which algebra counts as
+physical depends on Axis~A: A1 or A3 (gauge) gives the invariant
+subalgebra $\alg^G_M(O)$ or $\alg^{G_{\mathrm{disc}}}_M(O)$; A2
+(ungauged) gives the full algebra $\alg_M(O)$ with global symmetries
+acting as automorphisms.
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lll@{}}
+\toprule
+HK/LC property & Primary source & Additional hypotheses \\
+\midrule
+Isotony & Core 1 (clause i) & None \\
+Locality & Core 1 (clause ii) + Core 3 & Axis B for grading \\
+Covariance / functoriality & Core 4 (local geom.\ $\lag$) &
+Geometric naturality \\
+Time-slice & Core 3 (necessary) & Hyperbolicity of field eqs.\ \\
+Spectrum condition & Core 5 + Core 3 & None (flat sector) \\
+Microlocal spectrum cond. & Core 5 + Core 3 & Hadamard state hyp. \\
+Physical algebra & Axis A & None \\
+\bottomrule
+\end{tabular}
+\caption{Haag--Kastler / locally covariant AQFT properties and their
+  upstream sources.}
+\label{tab:hk}
+\end{table}
+
+
+\subsection{Summary: What the Core Axioms Provide}
+
+The five core axioms are upstream of all three frameworks
+simultaneously:
+
+\begin{itemize}[nosep]
+\item Core~1 $\to$ algebraic infrastructure (nets, isotony, locality)
+  $\to$ shared by HK, implied by OS;
+\item Core~2 $\to$ regularity (temperedness, polynomial bounds) $\to$
+  OS0, W2;
+\item Core~3 $\to$ causal structure $\to$ supplies the intended
+  upstream causal input for the Euclidean/Lorentzian correspondence;
+\item Core~4 $\to$ dynamical generation (additive decomposition) $\to$
+  hyperplane splitting for OS2; together with
+  Remark~\ref{rem:naturality} it gives functoriality for HK/LC;
+\item Core~5 $\to$ positivity (GNS, vacuum, bounded-below energy)
+  $\to$ W0, OS2, HK spectrum condition.
+\end{itemize}
+
+The additional hypotheses are cleanly separated:
+
+\begin{itemize}[nosep]
+\item Transfer-matrix hypotheses (supplementary analytic input needed
+  for OS2);
+\item Translation-mixing hypothesis \eqref{eq:mixing} (needed for
+  OS3);
+\item Geometric naturality of the generating structure (needed for
+  local covariance);
+\item Hyperbolicity of field equations (needed for time-slice);
+\item Hadamard state condition (needed for microlocal spectrum
+  condition);
+\item $E(4)$-invariant equilibrium selection (needed for OS1).
+\end{itemize}
+
+This is the organizational value of the framework: in the existing
+literature, these ingredients are mixed together. The Wightman axioms
+assume the Hilbert space and spectral condition. The OS axioms assume
+temperedness and reflection positivity. The present framework isolates
+which constructive input produces which output property and clearly
+marks where the hard analytic work still lives.
+
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}p{3.5cm}p{3.5cm}p{3.5cm}p{3.5cm}@{}}
+\toprule
+Framework & Native setting & Primitive objects & Status here \\
+\midrule
+Wightman & Minkowski $\real^{1,3}$ &
+Operator-valued fields, Hilbert space, Poincar\'e representation &
+Derived (flat sector) \\
+Osterwalder--Schrader & Euclidean $\real^4$ &
+Schwinger functions, reflection positivity &
+Derived (flat sector) \\
+Haag--Kastler / LC-AQFT & General spacetime &
+Nets / functors of local $*$-algebras &
+Derived (manifold sector) \\
+Present framework & Manifold-native &
+Core structural properties + branch data &
+Primitive \\
+\bottomrule
+\end{tabular}
+\caption{The four axiomatic layers and their status in the present
+  framework.}
+\label{tab:layers}
+\end{table}
+
+
+%% ===================================================================
+\section{The Five Core Axioms}
+\label{sec:core}
+%% ===================================================================
+
+\subsection{Geometric Setting}
+
+\begin{remark}[Two geometric branches]\label{rem:geom}
+  The axioms are stated on an oriented manifold $(M,g)$ with metric of
+  appropriate signature. In the Euclidean branch used for Schwinger
+  functions, $g$ is Riemannian and the flat specialization is
+  $(\real^4, \delta)$. In the Lorentzian branch used for the
+  Haag--Kastler / LC-AQFT specialization, $g$ is Lorentzian and
+  globally hyperbolic.
+
+  In the Lorentzian branch, causal disjointness is the usual metric
+  notion. In the Euclidean branch there is no metric light cone;
+  causal disjointness is defined operationally by Core Axiom~3
+  relative to the constructive dynamics. The locality clause of Core
+  Axiom~1 is therefore logically downstream of Core Axiom~3 in the
+  Euclidean branch.
+\end{remark}
+
+
+\subsection{Why a Hierarchical Axiom System}
+
+A scalar theory such as $\lambda\phi^4$ and a gauge theory such as
+Yang--Mills should agree on locality, finite resolution, finite
+propagation, local dynamics, and positivity, but differ on the
+symmetry axis. A free scalar and a free Dirac field should agree on
+the core axioms and differ only on the statistics axis. A massive
+phase and its tuned critical counterpart should agree on the same
+core axioms and branch choices on A, B, C, but differ on the
+infrared spectral axis~D.
+
+The logical structure is:
+$\text{core} \longrightarrow \text{specialization by branch choice}.$
+
+
+\subsection{Core Axiom 1: Geometric Locality}
+
+\begin{axiom}[Geometric Locality]\label{ax:locality}
+  For each oriented manifold $(M,g)$ with metric of appropriate
+  signature, there exists a net of local observable $*$-algebras
+  $\alg_M(O)$ indexed by open regions $O \subset M$, satisfying:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item \textbf{Isotony}: if $O_1 \subset O_2$, then
+    $\alg_M(O_1) \subset \alg_M(O_2)$;
+  \item \textbf{Locality}: if $O_1$ and $O_2$ are causally disjoint,
+    then $[\alg_M(O_1), \alg_M(O_2)]_\pm = 0$.
+  \end{enumerate}
+  Each $\alg_M(O)$ is a unital $*$-algebra. In the Lorentzian branch
+  it admits a $C^*$-completion. In the Euclidean branch it is
+  represented as a unital $*$-subalgebra of $L^\infty(\pi)$ for the
+  equilibrium measure~$\pi$.
+\end{axiom}
+
+
+\subsection{Core Axiom 2: Finite Resolution}
+
+\begin{axiom}[Finite Resolution]\label{ax:resolution}
+  There exists a strictly positive resolution scale $\ell_L > 0$ such
+  that no operationally distinguishable states resolve below
+  $\ell_L$. Smeared observables
+  \begin{equation}\label{eq:smear}
+    O_f = \int f(x)\, O(x)\, d\vol_g(x),
+    \qquad f \in C^\infty_c(M),
+  \end{equation}
+  are well-defined. In the flat Euclidean sector
+  $(M,g) = (\real^4, \delta)$ they satisfy polynomial bounds
+  \begin{equation}\label{eq:poly-bounds}
+    |\langle O_{f_1} \cdots O_{f_n}\rangle|
+    \le C^n \prod_{k=1}^n \|f_k\|_{n_k},
+  \end{equation}
+  uniform in $\ell_L$, where $\|\cdot\|_n$ denotes a Schwartz
+  seminorm.
+\end{axiom}
+
+The axiom is structural. It says the theory is formulated at finite
+operational resolution. It is deliberately silent on what scaling
+limit, if any, is taken along a scale family.
+
+
+\subsection{Core Axiom 3: Finite Propagation}
+
+\begin{axiom}[Finite Propagation]\label{ax:propagation}
+  There exists a maximum information speed $c_{\mathrm{info}} > 0$
+  such that causal influence is restricted to the domain of dependence
+  determined by $c_{\mathrm{info}}$. For any perturbation localized in
+  a region $O$ at time $t_0$, the resulting change in observables at
+  time $t > t_0$ is supported inside the
+  $c_{\mathrm{info}}(t-t_0)$-neighborhood of~$O$.
+\end{axiom}
+
+\begin{remark}[Dynamics versus equilibrium correlations]\label{rem:dynamics-vs-eq}
+  This axiom concerns the \emph{dynamics} of the constructive system,
+  not the \emph{equilibrium correlations} (Schwinger functions). A
+  nearest-neighbor Ising model has finite-range dynamics, but the
+  equilibrium two-point function $\langle \sigma_x \sigma_y\rangle$
+  extends to all distances via exponential decay. No contradiction:
+  the equilibrium measure integrates over all histories of the
+  dynamics, including arbitrarily long chains of nearest-neighbor
+  interactions.
+\end{remark}
+
+\begin{remark}[Interpretive role of finite propagation]
+  \label{rem:propagation-chain}
+  Finite propagation is the framework's intended upstream causal datum.
+  In the Euclidean branch, where the metric has no light cone, it gives
+  operational content to causal disjointness and therefore to the
+  locality clause of Core Axiom~1. In concrete constructions one
+  expects this dynamical notion of finite information speed to be
+  compatible with the Lorentzian causal structure appearing after
+  Osterwalder--Schrader reconstruction.
+
+  This remark is interpretive rather than theorem-level. The actual
+  derivation of the Wightman spectral condition in the paper comes from
+  the OS reconstruction theorem once OS0--OS4 have been established,
+  not from Core Axiom~3 alone.
+\end{remark}
+
+\begin{remark}[Causality is imposed at the dynamical level]
+  Finite propagation is a property of the generating dynamics
+  themselves. Causality is not an abstract requirement imposed after
+  the fact on correlation functions; it is part of the framework at
+  the level of information propagation.
+\end{remark}
+
+
+\subsection{Core Axiom 4: Local Dynamics with Additive Decomposition}
+
+\begin{axiom}[Local Dynamics with Additive Decomposition]\label{ax:action}
+  The dynamics are generated by a local functional that decomposes
+  additively over regions. Concretely, there exists a functional $S$
+  --- or, more generally, a local generating structure for the
+  Euclidean measure or evolution law --- such that for
+  disjoint subregions $O_1, O_2 \subset M$,
+  \begin{equation}\label{eq:additive}
+    S[\Phi|_{O_1 \cup O_2}]
+    = S[\Phi|_{O_1}] + S[\Phi|_{O_2}] + B[\Phi|_\partial],
+  \end{equation}
+  where $B$ depends only on interface data. The local algebra
+  $\alg_M(O)$ is generated by observables supported in~$O$.
+\end{axiom}
+
+\begin{remark}[The standard Lagrangian case]\label{rem:lagrangian}
+  In most constructive QFTs --- scalar, gauge, fermionic,
+  supersymmetric --- the local generating structure is a classical
+  action functional
+  \begin{equation}\label{eq:classical-action}
+    S = \int_M \lag(\Phi, D\Phi, g)\, d\vol_g
+  \end{equation}
+  built from a Lagrangian density. For these, the axiom reduces to the
+  standard statement that the action is the spacetime integral of a
+  local density.
+\end{remark}
+
+\begin{remark}[General local generators]\label{rem:stochastic-action}
+  The axiom is stated more broadly than the classical Lagrangian case.
+  It allows any local generating structure whose restriction to
+  separated regions obeys the additive decomposition
+  \eqref{eq:additive}. The point of the axiom is locality of
+  generation, not commitment to a single formalism.
+\end{remark}
+
+\begin{remark}[Geometric naturality for the manifold branch]
+  \label{rem:naturality}
+  The locally covariant specialization requires, in addition to
+  additivity, naturality under orientation-preserving isometric
+  embeddings. Concretely, if $\psi: M_1 \hookrightarrow M_2$ is such
+  an embedding, then pullback of fields by~$\psi$ must intertwine the
+  generating structures, and the induced pushforward of observables
+  must define injective $*$-homomorphisms
+  \[
+    \alpha_\psi: \alg_{M_1}(O) \to \alg_{M_2}(\psi(O))
+  \]
+  satisfying $\alpha_{\psi_2 \circ \psi_1}
+  = \alpha_{\psi_2}\circ \alpha_{\psi_1}$ and
+  $\alpha_{\mathrm{id}_M} = \mathrm{id}_{\alg_M}$. This is the
+  additional geometric input used in the manifold-covariant
+  specialization theorem.
+\end{remark}
+
+\begin{remark}[Scope exclusions]\label{rem:action-scope}
+  Theories without any local generating structure --- self-dual field
+  theories lacking even an auxiliary action formulation (such as the
+  chiral 2-form on a 6-manifold), or theories defined purely through
+  algebraic or functorial data without a constructive Euclidean
+  formulation --- are outside the framework's scope. This is a
+  deliberate restriction: the transfer-matrix route to OS2 requires
+  additive decomposition as a structural input, and any theory that
+  lacks such decomposition cannot enter the flat-sector specialization
+  through the present architecture. This parallels the TQFT scope
+  boundary of Section~\ref{sec:tqft}: the exclusion is stated openly.
+
+  Theories that \emph{have} a classical action but face difficulties
+  in defining the path integral measure --- such as chiral gauge
+  theories with anomalies --- are not excluded by Core Axiom~4. Their
+  difficulties lie elsewhere: in the well-definedness of the
+  gauge-invariant integration and hence in the verification of
+  Axis~A1, not in the locality of the generating structure.
+\end{remark}
+
+
+\subsection{Core Axiom 5: Positivity and Stability}
+
+\begin{axiom}[Positivity and Stability]\label{ax:positivity}
+  There exists a positivity-preserving semigroup $e^{-tH}$ on the
+  algebra designated as physical by the chosen symmetry branch on
+  Axis~A, with self-adjoint generator $H \ge 0$. Together with a
+  chosen equilibrium state~$\omega$, this yields a GNS Hilbert-space
+  representation $(\hilb, \pi, |\Omega\rangle)$ with
+  $H|\Omega\rangle = 0$.
+\end{axiom}
+
+The core requires bounded-below energy and positivity of Euclidean
+time evolution. It does not require a spectral gap. Whether the
+selected phase is gapped or critical belongs to Axis~D.
+
+
+\subsection{Finite Resolution and Scaling}
+
+Core Axiom~2 remains a core axiom rather than a branch condition. The
+framework is formulated at strictly positive operative resolution
+$\ell_L > 0$, and questions about continuum limits, critical limits,
+or scale families are separate analytic questions layered on top of
+that structural starting point.
+
+If one studies a scale-labelled family of theories
+$\{\mathcal{T}_\lambda\}_{\lambda \in \Lambda}$, each member is
+evaluated against the same core axioms and branch logic. The
+renormalization group then compares different scales inside such a
+family without changing the logical status of the axioms themselves.
+
+Thus finite resolution is not a disposable regulator inside the
+framework. It is the structural datum from which one may later ask
+whether any additional scaling theorem exists.
+
+
+%% ===================================================================
+\section{The Specialization Axes}
+\label{sec:axes}
+%% ===================================================================
+
+A theory satisfying the core axioms becomes a concrete branch of
+constructive QFT only after branch choices are specified. Axes A--C
+classify field content and interaction structure. Axis~D classifies
+the infrared phase.
+
+
+\subsection{Axis A: Internal Symmetry}
+
+\begin{axiom}[A1: Gauge-Invariant Physical Algebra]\label{ax:A1}
+  There exists a compact gauge group $G$ acting locally on fields. The
+  physical observable algebra is the gauge-invariant subalgebra
+  $\alg^{\mathrm{phys}}_M(O) = \alg_M(O)^G$.
+\end{axiom}
+
+\emph{Scope.} Yang--Mills with $G = SU(N)$, electrodynamics,
+electroweak theory, Standard Model gauge sector.
+
+\begin{axiom}[A2: Global Symmetry / Ungauged Theory]\label{ax:A2}
+  The theory carries a global symmetry group $G_{\mathrm{glob}}$
+  (possibly trivial) but no local gauge redundancy:
+  $\alg^{\mathrm{phys}}_M(O) = \alg_M(O)$.
+\end{axiom}
+
+\emph{Scope.} $\lambda\phi^4$, Ising field theory, $O(N)$ models,
+sigma models, free theories without gauge fields.
+
+\begin{axiom}[A3: Discrete Gauge Theory]\label{ax:A3}
+  There exists a finite gauge group $G_{\mathrm{disc}}$ acting locally
+  on fields:
+  $\alg^{\mathrm{phys}}_M(O) = \alg_M(O)^{G_{\mathrm{disc}}}$.
+\end{axiom}
+
+\emph{Scope.} $\mathbb{Z}_N$ gauge theories, Dijkgraaf--Witten type
+theories.
+
+
+\subsection{Axis B: Statistics}
+
+\begin{axiom}[B1: Bosonic Statistics]\label{ax:B1}
+  The field algebra carries a trivial $\mathbb{Z}_2$ grading.
+  Schwinger functions are symmetric under permutation.
+\end{axiom}
+
+\begin{axiom}[B2: Fermionic Sector]\label{ax:B2}
+  There exists a spin structure and a $\mathbb{Z}_2$-graded field
+  algebra with commutation and anticommutation at spacelike separation
+  according to grading. The action contains a Dirac-type kinetic term.
+\end{axiom}
+
+\begin{axiom}[B3: Mixed Bose--Fermi Statistics]\label{ax:B3}
+  The field algebra decomposes as a graded product
+  $\alg \sim \alg_{\mathrm{bos}} \otimes \widehat{\alg}_{\mathrm{ferm}}$
+  with combined $\mathbb{Z}_2$ grading and Yukawa-type couplings.
+\end{axiom}
+
+\begin{axiom}[B4: Supersymmetric Mixed Sector]\label{ax:B4}
+  The theory satisfies Branch~B3 and, in addition, carries an odd
+  supercharge $Q$ such that
+  \begin{equation}\label{eq:susy}
+    H = Q^\dagger Q
+  \end{equation}
+  on the physical Hilbert space.
+\end{axiom}
+
+\begin{proposition}\label{prop:susy-positivity}
+  Under Branch~B4, the positivity $H \ge 0$ of Core Axiom~5 holds
+  automatically on the common invariant core of~\eqref{eq:susy}.
+\end{proposition}
+\begin{proof}
+  Let $\psi$ lie in the common invariant core of $Q$ and $Q^\dagger$.
+  Using~\eqref{eq:susy},
+  \[
+    \langle \psi, H\psi\rangle
+    = \langle \psi, Q^\dagger Q\psi\rangle
+    = \langle Q\psi, Q\psi\rangle
+    = \|Q\psi\|^2 \ge 0.
+  \]
+  Hence the quadratic form of~$H$ is nonnegative on the stated core,
+  which is exactly the positivity required in Core
+  Axiom~\ref{ax:positivity}.
+\end{proof}
+
+\begin{remark}
+  Supersymmetry is not a new axis independent of statistics; it
+  presupposes coexistence of bosonic and fermionic sectors and then
+  adds an algebraic relation linking them. It is therefore a
+  refinement of B3 rather than a fifth axis.
+\end{remark}
+
+\begin{remark}[Protected vacuum energy and the Witten index]
+  Under Branch~B4, the quantity
+  $\Tr(-1)^F e^{-\beta H}$ is stable under continuous
+  supersymmetry-preserving deformations~\cite{Witten}. A nonzero index
+  implies unbroken supersymmetry and exactly zero vacuum energy.
+\end{remark}
+
+
+\subsection{Axis C: Interaction Type}
+
+\begin{axiom}[C1: Interacting Theory]\label{ax:C1}
+  At least one gauge-invariant coupling constant, self-coupling, or
+  curvature observable is nonzero, or equivalently there exists
+  $n \ge 4$ such that $S^c_n \not\equiv 0$.
+\end{axiom}
+
+\begin{axiom}[C2: Free Theory]\label{ax:C2}
+  The action is quadratic:
+  $S = \int \frac{1}{2}\Phi \cdot D \cdot \Phi\, d\vol_g$. All
+  connected $n$-point functions vanish for $n \ge 3$.
+\end{axiom}
+
+
+\subsection{Axis D: Spectral Type}
+
+\begin{axiom}[D1: Massive / Gapped Phase]\label{ax:D1}
+  In the GNS representation, $\spec(H) \cap (0, \Delta) = \emptyset$
+  for some $\Delta > 0$. When the corresponding framework hypotheses
+  furnish the
+  corresponding clustering estimate, connected correlations decay
+  exponentially.
+\end{axiom}
+
+\begin{axiom}[D2: Critical / Conformal Phase]\label{ax:D2}
+  The vacuum sector is gapless:
+  $\inf \spec H|_{\hilb \ominus \mathbb{C}|\Omega\rangle} = 0$. The
+  long-distance sector is scale-invariant, and connected correlations
+  decay polynomially.
+\end{axiom}
+
+\begin{remark}
+  A fixed positive $\ell_L$ breaks exact microscopic dilation
+  invariance. What becomes scale-invariant at criticality is the
+  long-distance sector, not the microscopic theory. Core Axiom~2
+  remains intact.
+\end{remark}
+
+\begin{remark}[Scope of Axis~D]
+  The present framework isolates the two clean spectral regimes most
+  relevant to the constructive program. Gapless but nonconformal
+  theories (e.g., theories with massless gauge bosons) motivate a
+  future Branch~D3.
+\end{remark}
+
+
+\subsection{Dependency Diagram and Classification Table}
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Theory / phase & A & B & C & D \\
+\midrule
+$\lambda\phi^4$ massive phase & A2 & B1 & C1 & D1 \\
+Free massive scalar & A2 & B1 & C2 & D1 \\
+Pure Yang--Mills with mass gap & A1 & B1 & C1 & D1 \\
+Massive free Dirac field & A2 & B2 & C2 & D1 \\
+Wess--Zumino (unbroken massive) & A2 & B4 & C1 & D1 \\
+$O(N)$ sigma model massive & A2 & B1 & C1 & D1 \\
+$\mathbb{Z}_2$ gauge theory & A3 & B1 & C1 & D1 \\
+Critical Ising / scalar fixed point & A2 & B1 & C1 & D2 \\
+Critical $O(N)$ fixed point & A2 & B1 & C1 & D2 \\
+\bottomrule
+\end{tabular}
+\caption{Representative theories and phases in the framework.}
+\label{tab:theories}
+\end{table}
+
+
+%% ===================================================================
+\section{Specialization Theorems}
+\label{sec:specialization}
+%% ===================================================================
+
+\subsection{Flat Stationary Sector}
+
+\begin{definition}\label{def:flat}
+  The flat stationary sector is the Euclidean specialization
+  $(M,g) = (\real^4, \delta)$ with flat Euclidean metric,
+  time-translation invariant dynamics, and Euclidean time reflection
+  $\Theta: (x_0, \mathbf{x}) \mapsto (-x_0, \mathbf{x})$. The
+  positive-time physical algebra $\alg^{\mathrm{phys}}_+$ consists of
+  physical observables supported in $\{x_0 > 0\}$.
+\end{definition}
+
+
+\subsection{Hyperplane Decomposition and Transfer Matrix}
+
+\begin{lemma}[Hyperplane decomposition]\label{lem:hyperplane}
+  In the flat Euclidean sector, the local generating functional of
+  Core Axiom~\ref{ax:action} decomposes relative to the reflection
+  hyperplane $\{x_0 = 0\}$:
+  \begin{equation}\label{eq:hyperplane}
+    S_E[\Phi] = S_E[\Phi_+] + S_E[\Phi_-] + B[\Phi_0],
+  \end{equation}
+  where $\Phi_\pm$ denotes the restriction to $\{\pm x_0 > 0\}$ and
+  $B$ depends only on boundary data at $x_0 = 0$.
+\end{lemma}
+\begin{proof}
+  Let $O_+^\varepsilon = \{x_0 > \varepsilon\}$ and
+  $O_-^\varepsilon = \{x_0 < -\varepsilon\}$ for $\varepsilon > 0$.
+  These are disjoint open regions, so Core Axiom~\ref{ax:action}
+  gives
+  \[
+    S_E[\Phi|_{O_+^\varepsilon \cup O_-^\varepsilon}]
+    = S_E[\Phi|_{O_+^\varepsilon}]
+    + S_E[\Phi|_{O_-^\varepsilon}]
+    + B_\varepsilon[\Phi|_{\partial O_+^\varepsilon \cup \partial O_-^\varepsilon}].
+  \]
+  Because the generating structure is local and depends on finitely
+  many derivatives, the only couplings omitted from the two bulk terms
+  are those crossing the slabs $|x_0| \le \varepsilon$. As
+  $\varepsilon \downarrow 0$, these couplings collapse onto the
+  interface $x_0 = 0$ and therefore depend only on the boundary jet
+  $\Phi_0$ there. Absorbing the limit into a single interface
+  functional $B[\Phi_0]$ yields
+  \[
+    S_E[\Phi] = S_E[\Phi_+] + S_E[\Phi_-] + B[\Phi_0],
+  \]
+  which is exactly~\eqref{eq:hyperplane}.
+\end{proof}
+
+\begin{proposition}[Transfer-matrix factorization]\label{prop:transfer}
+  Assume:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item the generating functional satisfies the hyperplane
+    decomposition of Lemma~\ref{lem:hyperplane};
+  \item the Euclidean theory satisfies the standard transfer-matrix
+    hypotheses used in constructive QFT: a reflection-invariant,
+    hyperplane-factorizing Euclidean measure associated with $S_E$;
+  \item Euclidean time evolution is implemented by the
+    positivity-preserving semigroup of Core Axiom~\ref{ax:positivity}.
+  \end{enumerate}
+  Then for any $F \in \alg^{\mathrm{phys}}_+$ supported at Euclidean
+  times $t > t_{\min} > 0$,
+  \begin{equation}
+    \langle \Theta F, F \rangle_E
+    = \langle F | e^{-2t_{\min}H} | F\rangle_\hilb.
+  \end{equation}
+\end{proposition}
+\begin{proof}
+  Split the Euclidean field into negative-time, boundary, and
+  positive-time parts:
+  $\Phi = (\Phi_-, \Phi_0, \Phi_+)$. By
+  Lemma~\ref{lem:hyperplane} and the factorization hypothesis in~(ii),
+  the Euclidean measure can be written in the standard reflected form
+  \[
+    d\mu_E(\Phi)
+    = Z^{-1} \,
+      d\mu_-(\Phi_- \mid \Phi_0)\,
+      e^{-B[\Phi_0]}\, d\nu(\Phi_0)\,
+      d\mu_+(\Phi_+ \mid \Phi_0),
+  \]
+  where $\mu_-$ is the reflection of $\mu_+$.
+
+  Because $F$ is supported in $x_0 > t_{\min}$, only the positive-time
+  half-space enters $F$. Define the boundary-to-bulk map
+  \[
+    (K_{t_{\min}}F)(\Phi_0)
+    := \int F(\Phi_+)\, d\mu_+^{\,t_{\min}}(\Phi_+ \mid \Phi_0),
+  \]
+  where $\mu_+^{\,t_{\min}}$ is the positive-time conditional measure
+  truncated at distance $t_{\min}$ from the reflection hyperplane.
+  Reflection invariance then gives
+  \[
+    \langle \Theta F, F\rangle_E
+    = \int \overline{K_{t_{\min}}F(\Phi_0)}\,
+      K_{t_{\min}}F(\Phi_0)\,
+      e^{-B[\Phi_0]} d\nu(\Phi_0)
+    = \|K_{t_{\min}}F\|_{L^2(\nu_B)}^2,
+  \]
+  where $d\nu_B := e^{-B[\Phi_0]} d\nu(\Phi_0)$.
+
+  The standard Osterwalder--Schrader transfer-operator construction
+  identifies $K_{t_{\min}}^*K_{t_{\min}}$ with the transfer operator
+  $T_{2t_{\min}}$. Hypothesis~(iii) states that this transfer operator
+  is implemented on the GNS Hilbert space by the positivity-preserving
+  semigroup $e^{-tH}$. Therefore
+  \[
+    \langle \Theta F, F\rangle_E
+    = \langle F, T_{2t_{\min}}F\rangle_\hilb
+    = \langle F, e^{-2t_{\min}H}F\rangle_\hilb,
+  \]
+  which is the claimed identity.
+\end{proof}
+
+\begin{remark}[Status of OS2]
+  The framework isolates the structural ingredients behind reflection
+  positivity but does not claim that every local generating structure
+  automatically yields a transfer matrix. The transfer-matrix
+  hypotheses remain supplementary analytic input.
+\end{remark}
+
+
+\subsection{The Upstream Dynamical Chain for OS3}
+
+The abstract framework isolates the exact clustering hypothesis needed
+for OS3 and keeps model-dependent dynamical routes to that hypothesis
+separate.
+
+\begin{proposition}[Translation mixing implies OS3]\label{prop:mixing}
+  Let $\pi$ be an $E(4)$-invariant stationary Euclidean measure in the
+  flat sector, and let $\mathcal{B} \subset L^\infty(\pi)$ be a
+  unital algebra of observables that is closed under translations:
+  $\tau_a \mathcal{B} \subset \mathcal{B}$ for all
+  $a \in \real^4$. Assume that the Schwinger functions are obtained as
+  expectations of finite products of observables from~$\mathcal{B}$,
+  and that for all $F, G \in \mathcal{B}$,
+  \begin{equation}\label{eq:mixing}
+    \big|\langle F \, \tau_a G\rangle_\pi
+    - \langle F\rangle_\pi \langle G\rangle_\pi\big|
+    \xrightarrow{|a| \to \infty} 0.
+  \end{equation}
+  Then the associated Schwinger functions satisfy OS3.
+\end{proposition}
+\begin{proof}
+  Let
+  \[
+    F = O_{f_1}\cdots O_{f_m},
+    \qquad
+    G = O_{g_1}\cdots O_{g_n},
+  \]
+  with each factor in~$\mathcal{B}$. Since $\mathcal{B}$ is an algebra
+  and is translation-stable, we have $F, G, \tau_a G \in \mathcal{B}$.
+  By definition of the Schwinger functions,
+  \[
+    \langle F \, \tau_a G\rangle_\pi
+    = S_{m+n}(f_1,\ldots,f_m,\tau_a g_1,\ldots,\tau_a g_n),
+  \]
+  while
+  \[
+    \langle F\rangle_\pi = S_m(f_1,\ldots,f_m),
+    \qquad
+    \langle G\rangle_\pi = S_n(g_1,\ldots,g_n).
+  \]
+  Applying~\eqref{eq:mixing} therefore gives
+  \[
+    S_{m+n}(f_1,\ldots,f_m,\tau_a g_1,\ldots,\tau_a g_n)
+    \xrightarrow{|a|\to\infty}
+    S_m(f_1,\ldots,f_m)\, S_n(g_1,\ldots,g_n),
+  \]
+  which is exactly the Osterwalder--Schrader clustering axiom OS3 for
+  observables generated by~$\mathcal{B}$.
+\end{proof}
+
+\begin{remark}[A model-dependent spectral-gap route]
+  In concrete theories, one standard route to
+  \eqref{eq:mixing} is a spectral gap for an appropriate Euclidean
+  transfer operator or Markov generator together with additional
+  information identifying translated observables with the corresponding
+  dynamical correlations. That route is useful, but it is not a
+  theorem of the abstract framework and is therefore kept separate
+  from Proposition~\ref{prop:mixing}.
+\end{remark}
+
+\begin{remark}[Axis~D refines the rate]
+  OS3 asks only for factorization at large separation. Under D1, one
+  expects exponential clustering once a quantitative form of
+  \eqref{eq:mixing} is established. Under D2, one expects polynomial
+  clustering. The
+  \emph{existence} of OS3 is independent of Axis~D; the \emph{rate}
+  depends on it.
+\end{remark}
+
+
+\subsection{Derivation of OS0--OS4}
+
+\begin{theorem}[Flat stationary specialization --- detailed form]
+  \label{thm:flat-detail}
+  In the flat stationary sector, a system satisfying Core
+  Axioms~\ref{ax:locality}--\ref{ax:positivity} together with branch
+  choices on Axes A, B, and C produces Schwinger functions satisfying:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item OS0 from Core Axiom~\ref{ax:resolution};
+  \item OS1 from Core Axiom~\ref{ax:action} in the flat Euclidean
+    sector, under the hypothesis that the equilibrium measure is
+    uniquely $E(4)$-invariant;
+  \item OS2 from Core Axioms~\ref{ax:action} and~\ref{ax:positivity},
+    under the transfer-matrix hypotheses of
+    Proposition~\ref{prop:transfer};
+  \item OS4 from the chosen branch on Axis~B.
+  \end{enumerate}
+  If, in addition, the translation-mixing estimate
+  \eqref{eq:mixing} holds for the observable algebra generating the
+  Schwinger functions, then OS3 holds by
+  Proposition~\ref{prop:mixing}. OS reconstruction then yields
+  Wightman functions satisfying W0--W4.
+\end{theorem}
+
+\begin{proof}
+  \textbf{OS0.} By Core Axiom~\ref{ax:resolution}, smeared
+  observables satisfy~\eqref{eq:poly-bounds}. Therefore the Schwinger
+  functions define continuous multilinear functionals on Schwartz test
+  functions, hence tempered distributions on $(\real^4)^n$.
+
+  \textbf{OS1.} In the flat sector, the local generating density
+  depends on $\Phi$, $D\Phi$, and $\delta_{\mu\nu}$. Hence $S$ is
+  $E(4)$-invariant, $e^{-S}$ is $E(4)$-invariant, and the equilibrium
+  measure (uniquely selected by hypothesis) inherits that invariance.
+  Expectations with respect to $\pi$ are therefore $E(4)$-covariant.
+
+  \textbf{OS2.} For $F \in \alg^{\mathrm{phys}}_+$,
+  Proposition~\ref{prop:transfer} gives
+  $\langle \Theta F, F \rangle_E = \|e^{-t_{\min}H}F\|^2_\hilb \ge 0$,
+  since $H \ge 0$ by Core Axiom~\ref{ax:positivity}.
+
+  \textbf{OS4.} The grading is determined by Axis~B.
+
+  \textbf{OS3.} Under the translation-mixing hypothesis,
+  Proposition~\ref{prop:mixing} applies directly.
+
+  \textbf{Wightman reconstruction.} Once OS0--OS4 are established, the
+  OS reconstruction theorem~\cite{OS1, OS2} yields a Hilbert space,
+  vacuum vector, operator-valued tempered fields, and a positive-energy
+  representation of the Euclidean continuation, hence the Wightman
+  axioms W0--W4. Core Axiom~\ref{ax:locality} identifies the upstream
+  algebraic origin of locality, and Core Axiom~\ref{ax:propagation}
+  explains why causal propagation is built into the Euclidean
+  framework before reconstruction (Remark~\ref{rem:propagation-chain}).
+\end{proof}
+
+
+\subsection{General Manifold Specialization}
+
+\begin{theorem}[Manifold-covariant specialization --- detailed form]
+  \label{thm:manifold-detail}
+  On a globally hyperbolic Lorentzian manifold, a system satisfying
+  Core Axioms~\ref{ax:locality}--\ref{ax:positivity}, a choice on
+  Axis~A, and geometric naturality in the sense of
+  Remark~\ref{rem:naturality} induces a net of physical local
+  $*$-algebras satisfying:
+  \begin{enumerate}[nosep,label=(\alph*)]
+  \item Isotony and locality, from Core Axioms~\ref{ax:locality}
+    and~\ref{ax:propagation};
+  \item Physical-algebra selection, from Axis~A;
+  \item Local covariance, from Core Axiom~\ref{ax:action} together
+    with Remark~\ref{rem:naturality}.
+  \end{enumerate}
+  If, in addition, the local algebra is generated by on-shell fields
+  modulo the equations of motion and those equations are normally
+  hyperbolic or Dirac-type, then the time-slice property holds. If the
+  physical states are Hadamard, then the microlocal spectrum condition
+  holds.
+\end{theorem}
+
+\begin{proof}
+  Isotony is exactly clause~(i) of Core Axiom~\ref{ax:locality}, and
+  locality is clause~(ii), with causal disjointness computed in the
+  Lorentzian metric and controlled dynamically by Core
+  Axiom~\ref{ax:propagation}. Axis~A specifies which local algebra is
+  physical: the invariant subalgebra in the gauge branches and the
+  full algebra in the ungauged branch.
+
+  For local covariance, let $\psi: M_1 \hookrightarrow M_2$ be an
+  orientation-preserving isometric embedding. By
+  Remark~\ref{rem:naturality}, pullback of fields by $\psi$ induces an
+  injective $*$-homomorphism
+  \[
+    \alpha_\psi: \alg_{M_1}(O) \to \alg_{M_2}(\psi(O))
+  \]
+  compatible with composition and identities. The assignment
+  $M \mapsto \alg_M$ together with $\psi \mapsto \alpha_\psi$ is
+  therefore a covariant functor on the spacetime category.
+
+  If the local algebra is generated by on-shell fields modulo the
+  equations of motion and those equations are normally hyperbolic or
+  Dirac-type, then data on any neighborhood of a Cauchy surface
+  determine the solution uniquely on its domain of dependence. Hence
+  every observable in the larger region is represented by data already
+  generated in the time-slice, so the time-slice property holds. If
+  the physical states are Hadamard, then their two-point functions have
+  the standard microlocal wavefront set, and the microlocal spectrum
+  condition follows by the usual Radzikowski
+  characterization~\cite{Radzikowski}.
+\end{proof}
+
+
+%% ===================================================================
+\section{Compatibility, Non-Redundancy, and Separating Examples}
+\label{sec:compatibility}
+%% ===================================================================
+
+\subsection{Compatibility}
+
+\begin{remark}
+  Compatibility is part of the architecture rather than a separate
+  theorem: the core axioms constrain locality, resolution, propagation,
+  generation, and positivity, while the specialization axes classify
+  symmetry, statistics, interaction type, and infrared phase. No axis
+  changes the meaning of a core axiom, and no core axiom fixes a
+  branch value. The examples below record how the same core can be
+  combined with different branch choices.
+\end{remark}
+
+
+\subsection{Non-Redundancy of the Specialization Axes}
+
+The following are separating examples at the intended structural level;
+they are not model-theoretic independence proofs and are stated as
+examples rather than theorems for exactly that reason.
+
+\begin{example}[Axis~A distinguishes gauge from ungauged theories]
+  $\lambda\phi^4$ (Branch~A2) and pure $SU(N)$ Yang--Mills (Branch~A1)
+  both satisfy the core axioms at the intended structural level but
+  differ on Axis~A.
+\end{example}
+
+\begin{example}[Axis~B distinguishes statistics sectors]
+  A free massive scalar (B1) and a free Dirac field (B2) satisfy the
+  same core axioms and Branches A2, C2, but differ on Axis~B.
+\end{example}
+
+\begin{example}[Axis~C distinguishes free from interacting theories]
+  The free massive scalar (C2) and $\lambda\phi^4$ (C1) satisfy the
+  same core axioms and Branches A2, B1, but differ on Axis~C.
+\end{example}
+
+\begin{example}[Axis~D distinguishes infrared phases]
+  A scalar theory on A2, B1, C1 with tunable parameters gives D1
+  (gapped) at generic parameters and D2 (critical) at a tuned critical
+  point, with the same core axioms and A/B/C branch data.
+\end{example}
+
+
+\subsection{Core Separating Examples}
+
+\begin{remark}
+  The following examples illustrate why no core axiom should be
+  regarded as obviously redundant.
+\end{remark}
+
+\begin{example}[Locality can fail while the other structures remain]
+  A theory with a single global observable algebra and no
+  region-by-region assignment may still have finite resolution, finite
+  propagation, additive generation, and positivity, but it has no
+  isotony/locality net and therefore fails Core
+  Axiom~\ref{ax:locality}.
+\end{example}
+
+\begin{example}[Finite resolution can fail while locality survives]
+  A continuum theory with uncontrolled ultraviolet singularities may
+  still have local algebras, finite propagation, local generation, and
+  positive energy, but it fails the polynomial temperedness bounds of
+  Core Axiom~\ref{ax:resolution}.
+\end{example}
+
+\begin{example}[Finite propagation can fail]
+  Brownian motion has instantaneous spreading and therefore violates
+  finite information speed while still serving as an example of local
+  observables with additive generation and positivity.
+\end{example}
+
+\begin{example}[Additive decomposition can fail]
+  A bilocal or mean-field action violates the separated-region
+  additivity required in Core Axiom~\ref{ax:action} while leaving the
+  other structural notions meaningful.
+\end{example}
+
+\begin{example}[Positivity can fail]
+  A wrong-sign kinetic term yields an energy form unbounded below even
+  if one still writes down local observables, finite resolution data,
+  and local equations of motion.
+\end{example}
+
+
+%% ===================================================================
+\section{Constructiveness, Renormalization, and Scaling}
+\label{sec:constructive}
+%% ===================================================================
+
+\subsection{Why ``Constructive''}
+
+The term is used in contrast with downstream axiomatizations. The
+Wightman axioms ask for Hilbert-space data; the OS axioms ask for
+Schwinger functions; the Haag--Kastler axioms ask for nets. In all
+cases one verifies properties of an already-produced theory.
+
+The present axioms ask for direct structural properties of the
+generating dynamical system: does it admit a net of local algebras?
+Does it have finite operational resolution? Does it propagate
+information at finite speed? Is its generating structure local with
+additive decomposition? Is the generator positive?
+
+It is important to distinguish this usage from the standard meaning of
+``constructive'' in mathematical physics (as in Glimm--Jaffe), which
+refers to explicit constructions with detailed analytic estimates. The
+present paper isolates the \emph{structural} layer of a constructive
+program. The analytic layer --- where one proves existence and
+properties of concrete theories using whatever techniques are
+appropriate --- is logically separate from the framework itself.
+
+
+\subsection{What the Axioms Prove and What They Do Not}
+
+The axioms describe a constructive theory at one positive scale. A
+continuum family $\{\mathcal{T}_\varepsilon\}_{\varepsilon > 0}$ with
+$\ell_L(\varepsilon) \to 0$ requires an additional limiting theorem.
+
+The core axioms do not by themselves prove that a continuum limit
+exists, that a critical point exists, that a spectral gap exists, or
+that transfer-matrix factorization holds. They sharply separate these
+analytic tasks from the structural question of whether the underlying
+dynamical system has the right architecture.
+
+
+\subsection{Renormalization Group Within the Framework}
+
+Let $\mathcal{T}_{\ell_L}$ denote a theory at scale $\ell_L$.
+Coarse-graining to $\ell' > \ell_L$ gives
+$\mathcal{T}_{\ell_L} \mapsto \mathcal{T}_{\ell'}$ with modified
+couplings but the same structural type. Each member of this scale
+family is evaluated against the same core axioms and branch logic.
+
+If a theory is constructed by cutoff removal, the bare parameters may
+depend on the cutoff. If it is constructed at fixed $\ell_L$ and
+analyzed through a different limiting procedure, the physically
+relevant running concerns effective couplings extracted after
+coarse-graining, while the microscopic resolution stays positive.
+
+
+%% ===================================================================
+\section{Supersymmetry, Topological Theories, and the Boundary of Scope}
+\label{sec:susy}
+%% ===================================================================
+
+\subsection{Supersymmetry Fits the Framework Cleanly}
+
+Supersymmetry creates no friction with the five core axioms. The
+correct structural place is Branch~B4. The key constructive gains are:
+
+\begin{enumerate}[nosep]
+\item \textbf{Positivity becomes internally certified.} Under B4,
+  $H = Q^\dagger Q$ gives $H \ge 0$ automatically
+  (Proposition~\ref{prop:susy-positivity}). This reduces the
+  verification burden for Core Axiom~5 in the supersymmetric sector.
+\item \textbf{Vacuum protection.} The Witten index is stable under
+  continuous deformations~\cite{Witten}. When nonzero, the vacuum
+  energy vanishes exactly.
+\item \textbf{Transfer-matrix strengthening.} Once Euclidean time
+  evolution is identified with $e^{-tH}$, the factorization
+  $H = Q^\dagger Q$ gives an additional internal reason that the
+  transfer semigroup is positive.
+\end{enumerate}
+
+
+\subsection{Pure TQFTs Mark a Genuine Scope Boundary}\label{sec:tqft}
+
+Purely topological quantum field theories create real friction with
+the present axioms. The core axioms were designed for QFTs with local
+propagating degrees of freedom. Pure TQFTs do not have such degrees
+of freedom. As a result, several core axioms become vacuous or
+degenerate:
+
+\begin{itemize}[nosep]
+\item \textbf{Core Axiom~1.} A TQFT can assign finite-dimensional
+  algebras to regions, but the dependence is topological rather than
+  metric. The axiom holds only degenerately.
+\item \textbf{Core Axiom~2.} Finite resolution is conceptually
+  mismatched: polynomial bounds hold trivially because the spaces are
+  finite-dimensional, but they control no nontrivial ultraviolet
+  structure.
+\item \textbf{Core Axiom~3.} Finite propagation is vacuous when there
+  are no propagating local excitations.
+\item \textbf{Core Axiom~4.} This is the least problematic: Chern--Simons
+  and BF theories admit local action functionals.
+\item \textbf{Core Axiom~5.} Often $H = 0$, so the axiom holds
+  vacuously.
+\end{itemize}
+
+Pure TQFTs lie at the boundary of scope rather than in the main body.
+For them, the Atiyah--Segal functorial formulation~\cite{Atiyah} is
+the more natural axiomatic language.
+
+
+\subsection{Topological Sectors Inside Dynamical Theories}
+
+The framework does capture topological sectors of dynamical theories
+whenever those sectors arise inside a theory with propagating local
+degrees of freedom. Examples: $\theta$-vacuum structure in Yang--Mills,
+topological protection of the Witten index. What lies outside scope
+is not topological information as such, but theories that are purely
+topological with no propagating sector at all.
+
+
+%% ===================================================================
+\section{Discussion and Outlook}
+\label{sec:discussion}
+%% ===================================================================
+
+\subsection{What Is New}
+
+The main advances of the present version are:
+
+\begin{enumerate}[nosep]
+\item The detailed correspondence between the five core axioms and
+  each of the three standard axiomatic frameworks (Section~\ref{sec:existing}),
+  with explicit identification of which core axiom produces which
+  downstream property and where additional hypotheses are needed.
+
+\item The reformulation of Core Axiom~4 as ``local dynamics with
+  additive decomposition'' rather than ``local action functional,''
+  making the framework broad enough to accommodate local generators
+  beyond the classical Lagrangian case
+  (Remark~\ref{rem:stochastic-action}).
+
+\item The replacement of the overstrong OS3 claim by the exact
+  theorem-level mixing hypothesis \eqref{eq:mixing} together with a
+  full proof that this hypothesis yields OS3
+  (Proposition~\ref{prop:mixing}), while keeping spectral-gap
+  arguments in their proper model-dependent role.
+
+\item The explanation of why Core Axiom~3 (finite propagation) is
+  essential for the Euclidean-to-Lorentzian transition: it provides
+  causal structure in the Euclidean branch, justifies the Wick
+  rotation, and produces Lorentz invariance and the spectral condition
+  in the reconstructed Lorentzian theory
+  (Remark~\ref{rem:propagation-chain}).
+
+\item Integration of supersymmetry as Branch~B4 and clear treatment of
+  TQFTs as a scope boundary.
+
+\item The explicit addition of geometric naturality
+  (Remark~\ref{rem:naturality}) as the hypothesis that closes the gap
+  between local generation and genuine locally covariant functoriality.
+
+\item Positioning relative to the active constructive QFT programs of
+  Hairer, Gubinelli--Imkeller--Perkowski, and the Balaban program.
+\end{enumerate}
+
+
+\subsection{What Is Not Claimed}
+
+This paper does not claim that the five core axioms characterize all
+quantum field theories, nor that the transfer-matrix, Hadamard,
+spectral-gap, or critical-scaling hypotheses follow automatically from
+them. It does not claim that every continuum limit exists, that every
+critical point exists, or that every perturbative series can be
+promoted to a full constructive theory.
+
+The paper is a framework paper: it isolates upstream structural
+conditions and shows how the standard axiomatic frameworks reappear
+downstream once the corresponding additional analytic hypotheses are
+imposed.
+
+
+\subsection{Further Refinements}
+
+\begin{description}[nosep]
+\item[Gapless nonconformal spectral branch.] Theories with massless
+  gauge bosons suggest a future Branch~D3.
+\item[Extended supersymmetry.] Branch~B4 captures the basic
+  supersymmetric strengthening. Extended SUSY, twisting, and other
+  refinements can be layered on top.
+\item[Topological sectors inside dynamical theories.] The right
+  direction is not to force pure TQFTs into the core but to analyze
+  topological sectors (e.g., $\theta$-vacua) inside propagating
+  theories.
+\item[Relation to singular SPDE methods.] The framework should be
+  compatible with singular-SPDE methods such as Hairer's regularity
+  structures~\cite{Hairer2014} or paracontrolled
+  distributions~\cite{GIP}. Making that compatibility fully explicit
+  would sharpen the connection.
+\end{description}
+
+
+%% ===================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+%% ===================================================================
+
+The present framework proposes five core axioms shared by all
+constructive quantum field theories with propagating local degrees of
+freedom, together with four specialization axes. The core axioms
+supply locality, finite resolution, finite propagation, local dynamics
+with additive decomposition, and positivity. The axes classify
+symmetry, statistics, interaction type, and infrared phase.
+
+The framework's value lies not in proving new results about specific
+models but in organizing the logical dependencies cleanly. In the flat
+stationary sector, the core axioms plus branch data and
+supplementary analytic hypotheses yield the OS axioms and hence the
+Wightman axioms. In the Lorentzian manifold branch, they yield the
+Haag--Kastler / locally covariant AQFT structure. The places where the
+framework should not be stretched --- such as pure TQFTs or theories
+without any local generating structure --- are stated openly.
+
+The paper is therefore an abstract framework statement: it proposes an
+organizational architecture, maps it in detail to the standard
+frameworks, and separates the universal structural inputs from the
+additional analytic hypotheses required for concrete applications.
+
+
+%% ===================================================================
+%% References
+%% ===================================================================
+\begin{thebibliography}{99}
+
+\bibitem{Wightman1956}
+A.~S. Wightman,
+``Quantum field theory in terms of vacuum expectation values,''
+\emph{Physical Review}, 101(2):860--866, 1956.
+
+\bibitem{StreaterWightman}
+R.~F. Streater and A.~S. Wightman,
+\emph{PCT, Spin and Statistics, and All That},
+W.~A. Benjamin, 1964.
+
+\bibitem{OS1}
+K. Osterwalder and R.~Schrader,
+``Axioms for Euclidean Green's functions,''
+\emph{Commun.\ Math.\ Phys.}, 31:83--112, 1973.
+
+\bibitem{OS2}
+K. Osterwalder and R.~Schrader,
+``Axioms for Euclidean Green's functions.\ II,''
+\emph{Commun.\ Math.\ Phys.}, 42:281--305, 1975.
+
+\bibitem{GlimmJaffe}
+J.~Glimm and A.~Jaffe,
+\emph{Quantum Physics: A Functional Integral Point of View},
+Springer, 2nd edition, 1987.
+
+\bibitem{Haag}
+R.~Haag,
+\emph{Local Quantum Physics: Fields, Particles, Algebras},
+Springer, 2nd edition, 1996.
+
+\bibitem{BFV}
+R.~Brunetti, K.~Fredenhagen, and R.~Verch,
+``The generally covariant locality principle ---
+a new paradigm for local quantum field theory,''
+\emph{Commun.\ Math.\ Phys.}, 237:31--68, 2003.
+
+\bibitem{Radzikowski}
+M.~J. Radzikowski,
+``Micro-local approach to the Hadamard condition in quantum field
+theory on curved spacetime,''
+\emph{Commun.\ Math.\ Phys.}, 179:529--553, 1996.
+
+\bibitem{Leimkuhler}
+B.~Leimkuhler and C.~Matthews,
+\emph{Molecular Dynamics: With Deterministic and Stochastic Numerical
+  Methods}, Springer, 2015.
+
+\bibitem{Wilson}
+K.~G. Wilson,
+``Confinement of quarks,''
+\emph{Physical Review D}, 10(8):2445--2459, 1974.
+
+\bibitem{Simon}
+B.~Simon,
+\emph{Functional Integration and Quantum Physics},
+AMS Chelsea Publishing, 2nd edition, 2005.
+
+\bibitem{Witten}
+E.~Witten,
+``Constraints on supersymmetry breaking,''
+\emph{Nuclear Physics B}, 202(2):253--316, 1982.
+
+\bibitem{Atiyah}
+M.~Atiyah,
+``Topological quantum field theories,''
+\emph{Publ.\ Math.\ IH\'ES}, 68:175--186, 1988.
+
+\bibitem{Hairer2014}
+M.~Hairer,
+``A theory of regularity structures,''
+\emph{Inventiones Mathematicae}, 198(2):269--504, 2014.
+
+\bibitem{GIP}
+M.~Gubinelli, P.~Imkeller, and N.~Perkowski,
+``Paracontrolled distributions and singular PDEs,''
+\emph{Forum of Mathematics, Pi}, 3:e6, 2015.
+
+\bibitem{Balaban1}
+T.~Balaban,
+``Ultraviolet stability of three-dimensional lattice pure gauge field
+theories,'' \emph{Commun.\ Math.\ Phys.}, 102(2):255--275, 1985.
+
+\bibitem{Balaban2}
+J.~Dimock and T.~R. Hurd,
+``Construction of the two-dimensional Gross--Neveu model,''
+\emph{Commun.\ Math.\ Phys.}, 137:263--287, 1991.
+
+\bibitem{Villani2009}
+C.~Villani,
+``Hypocoercivity,''
+\emph{Memoirs of the AMS}, 202(950), 2009.
+
+\bibitem{FractalAI}
+G.~Duran Ballester and S.~Hern\'andez Cerezo,
+``Fractal AI: A fragile theory of intelligence,''
+arXiv:1803.05049, 2018.
+
+\end{thebibliography}
+
+\end{document}

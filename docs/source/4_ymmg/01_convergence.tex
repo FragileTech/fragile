@@ -2695,6 +2695,25 @@ $K_\varepsilon:=\{(x,v):\|x\|^2+\|v\|^2\leq R_\varepsilon^2\}$ satisfies
 Prokhorov's theorem therefore yields tightness.
 \end{proof}
 
+\begin{proposition}[Unique stationary mean-field law]\label{prop:mf-unique}
+There exists a unique stationary probability law \(\pi_\infty\in\mcP(\R^{2d})\)
+for the mean-field equation \eqref{eq:mf-pde}. Equivalently,
+\(\pi_\infty\) is the unique probability law such that
+\begin{equation}\label{eq:mf-stationary-weak}
+\int_{\R^{2d}} \mathcal L_{\pi_\infty}\phi(z)\,\pi_\infty(dz)=0
+\qquad
+\forall \phi\in C_c^\infty(\R^{2d}),
+\end{equation}
+where
+\[
+\mathcal L_\mu \phi(x,v)
+:=
+v\cdot \nabla_x \phi
++\bigl(-\nabla U(x)-\gamma v+F[\mu](x,v)\bigr)\cdot \nabla_v \phi
++\frac{\sigma^2}{2}\Delta_v \phi.
+\]
+\end{proposition}
+
 \begin{proof}
 We use the fixed-point argument based on the weighted resolvent of the kinetic
 Fokker--Planck operator.
@@ -2791,22 +2810,6 @@ strict contraction on the complete metric space \(\mathcal P_R\). Banach's
 fixed-point theorem yields a unique fixed point, and the fixed-point equation
 is exactly \eqref{eq:mf-stationary-weak}. This fixed point is \(\pi_\infty\).
 \end{proof}
-\]
-Applying the resolvent bound therefore gives
-\[
-\|\mathcal T[\rho_1]-\mathcal T[\rho_2]\|_{H_w^1}
-\leq
-\|(C-\mathcal L_0^*)^{-1}\|_{L_w^2\to H_w^1}
-\,(C+L_{\mathrm{nl}}(R))
-\|\rho_1-\rho_2\|_{H_w^1}.
-\]
-Because the resolvent norm tends to zero as $C\to\infty$, one may choose $C$
-so large that the prefactor on the right-hand side is strictly smaller than
-$1$. Then $\mathcal T$ is a strict contraction on the complete metric space
-\(\mathcal P_R\). Banach's fixed-point theorem yields a unique fixed point, and
-the fixed-point equation is exactly
-\eqref{eq:mf-stationary-weak}. This fixed point is $\pi_\infty$.
-\end{proof}
 
 \begin{theorem}[Stationary propagation of chaos]\label{thm:stationary-poc}
 The sequence of first marginals $\pi_{N,1}$ converges weakly to the unique
@@ -2865,7 +2868,20 @@ By Lemma~\ref{lem:force-defect}, evaluated under the stationary law $\pi_N$,
 \leq
 \frac{C_\phi}{\sqrt N}.
 \]
-Therefore
+\[
+\Psi_\phi(\mu)
+:=
+\int_{\R^{2d}} \mathcal L_\mu\phi(z)\,\mu(dz).
+\]
+By Corollary~\ref{cor:barycenter} and Lemma~\ref{lem:emp-cond},
+\begin{equation}\label{eq:stationary-approx}
+\left|
+\E_{\pi_N}\!\left[\Psi_\phi(L_N)\right]
+\right|
+\leq
+\frac{C_\phi}{\sqrt N}.
+\end{equation}
+
 \smallskip
 \noindent
 \textbf{Step 4: identification of limit points.}
@@ -2921,39 +2937,6 @@ Since the barycenter map is continuous on the uniform second-moment class,
 \]
 Thus every convergent subsequence of $\{\pi_{N,1}\}_{N\geq2}$ has the same
 limit, so the whole sequence converges:
-\[
-\pi_{N,1}\Rightarrow \pi_\infty.
-\]
-\end{proof}
-\int_{\mcP(\R^{2d})}\Psi_\phi(\mu)\,Q_\infty(d\mu)=0
-\qquad
-\forall \phi\in C_c^\infty(\R^{2d}).
-\]
-This is the stationary weak mean-field identity for the limit mixture. The
-standard de Finetti identification step therefore leaves only stationary weak
-solutions of the McKean--Vlasov equation in the limit support. By
-Proposition~\ref{prop:mf-unique}, that set consists of the single law
-\(\pi_\infty\), so \(Q_\infty=\delta_{\pi_\infty}\).
-
-\smallskip
-\noindent
-\textbf{Step 5: uniqueness and collapse of the mixing measure.}
-By Proposition~\ref{prop:mf-unique}, the stationary weak solution is unique;
-its law is $\pi_\infty$. Hence
-\[
-Q_\infty=\delta_{\pi_\infty}.
-\]
-Using the barycentric identity from Corollary~\ref{cor:barycenter},
-\[
-\pi_{N_k,1}
-=
-\int \mu\,Q_{N_k}(d\mu)
-\Rightarrow
-\int \mu\,\delta_{\pi_\infty}(d\mu)
-=
-\pi_\infty.
-\]
-Every subsequence has the same limit, so the whole sequence converges:
 \[
 \pi_{N,1}\Rightarrow \pi_\infty.
 \]
@@ -3048,6 +3031,230 @@ Passing to the limit in the finite-\(N\) inequality yields
 C_{\mathrm{LSI}}\int \Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_\infty,
 \]
 which is the desired mean-field logarithmic Sobolev inequality.
+\end{proof}
+
+\subsection{Translated confinement and the wall-to-infinity limit}
+
+\begin{definition}[Translated confining family]\label{def:translated-family}
+Fix a reference potential \(U_*:\R^d\to\R\) satisfying
+Assumption~\ref{ass:potential}. For each translation vector \(a\in\R^d\), define
+\[
+U_a(x):=U_*(x-a).
+\]
+Let \(P_t^{N,a}\), \(Q_\tau^{N,a}\), \(\pi_N^a\), and \(\pi_\infty^a\) denote,
+respectively, the continuous finite-particle semigroup, the squashed observation
+chain, the invariant law, and the stationary mean-field law for the kinetic core
+with confining potential \(U_a\).
+
+Define the translation maps
+\[
+t_a(x,v):=(x+a,v)\in\R^{2d},
+\]
+\[
+T_a^N(x_1,v_1,\dots,x_N,v_N)
+:=
+\bigl(x_1+a,v_1,\dots,x_N+a,v_N\bigr)\in(\R^{2d})^N.
+\]
+\end{definition}
+
+\begin{theorem}[Translation covariance of the confining family]\label{thm:translated-family}
+For every \(a\in\R^d\), the translated family from
+Definition~\ref{def:translated-family} satisfies the following exact covariance
+relations.
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item If \((X_i^0(t),V_i^0(t))_{i=1}^N\) solves
+\eqref{eq:finite-x}--\eqref{eq:finite-v} with potential \(U_*\), then
+\[
+X_i^a(t):=X_i^0(t)+a,
+\qquad
+V_i^a(t):=V_i^0(t)
+\]
+solves the same system with potential \(U_a\), driven by the same Brownian
+motions.
+\item The continuous semigroups and squashed observation chains satisfy
+\[
+P_t^{N,a}(F\circ T_a^N)=(P_t^{N,0}F)\circ T_a^N,
+\qquad
+Q_\tau^{N,a}(F\circ T_a^N)=(Q_\tau^{N,0}F)\circ T_a^N
+\]
+for every bounded measurable \(F\).
+\item The invariant laws satisfy
+\[
+T_{a\#}^N\pi_N^0=\pi_N^a.
+\]
+\item If \(f_t^0\) solves the mean-field equation \eqref{eq:mf-pde} with
+potential \(U_*\), then
+\[
+f_t^a:=t_{a\#}f_t^0
+\]
+solves the translated mean-field equation with potential \(U_a\). In particular,
+\[
+t_{a\#}\pi_\infty^0=\pi_\infty^a.
+\]
+\item The constants in the finite-\(N\) hypocoercive logarithmic Sobolev
+inequality \eqref{eq:lsi-finite}, the entropy contraction
+\eqref{eq:kl-finite}, and the mean-field logarithmic Sobolev inequality from
+Theorem~\ref{thm:mf-lsi} are the same for every \(a\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The kernel is translation invariant:
+\[
+K(x_i+a,x_j+a)=K(x_i,x_j).
+\]
+Hence
+\[
+d_i(X+a\mathbf 1)=d_i(X),
+\qquad
+\omega_{ij}(X+a\mathbf 1)=\omega_{ij}(X),
+\]
+and therefore the viscous force is translation covariant:
+\[
+F_i(X+a\mathbf 1,V)=F_i(X,V).
+\]
+The confining drift transforms as
+\[
+\nabla U_a(x+a)=\nabla U_*(x).
+\]
+Substituting these identities into \eqref{eq:finite-x}--\eqref{eq:finite-v}
+shows that if \((X_i^0,V_i^0)\) solves the reference system, then
+\((X_i^0+a,V_i^0)\) solves the translated system. This proves
+\textnormal{(i)}.
+
+For \textnormal{(ii)}, let \(Z_t^{N,0}\) be the reference process and
+\(Z_t^{N,a}:=T_a^N Z_t^{N,0}\). By \textnormal{(i)}, \(Z_t^{N,a}\) has the law of
+the translated process started from \(T_a^N z\) whenever \(Z_t^{N,0}\) starts
+from \(z\). Therefore
+\[
+P_t^{N,a}(F\circ T_a^N)(z)
+=
+\E_z\!\bigl[F(T_a^N Z_t^{N,a})\bigr]
+=
+\E_{T_a^N z}\!\bigl[F(Z_t^{N,0})\bigr]
+=
+(P_t^{N,0}F)(T_a^N z).
+\]
+The observation map \(S(x,v)=(x,\psi(v))\) commutes with translations in the
+position variables:
+\[
+S\circ T_a^N=T_a^N\circ S.
+\]
+Hence the same covariance relation holds for the observed chain \(Q_\tau^{N,a}\).
+
+For \textnormal{(iii)}, let \(\mu:=T_{a\#}^N\pi_N^0\). Then for every bounded
+measurable \(F\),
+\[
+\int P_t^{N,a}F\,d\mu
+=
+\int P_t^{N,a}F(T_a^N z)\,\pi_N^0(dz)
+=
+\int P_t^{N,0}(F\circ T_a^N)(z)\,\pi_N^0(dz)
+=
+\int F(T_a^N z)\,\pi_N^0(dz)
+=
+\int F\,d\mu,
+\]
+where the third equality uses invariance of \(\pi_N^0\) under \(P_t^{N,0}\).
+Thus \(\mu\) is invariant for the translated dynamics. By the uniqueness part of
+Theorem~\ref{thm:finite-lsi}, \(\mu=\pi_N^a\).
+
+For \textnormal{(iv)}, let \(f_t^0\) be a weak solution of \eqref{eq:mf-pde}
+with potential \(U_*\), and define \(f_t^a=t_{a\#}f_t^0\). Because \(K\) is
+translation invariant, the normalized kernel mass transforms by
+\[
+m_{f_t^a}(x+a)=m_{f_t^0}(x),
+\]
+and therefore
+\[
+F[f_t^a](x+a,v)=F[f_t^0](x,v).
+\]
+Writing the translated mean-field SDE with potential \(U_a\),
+\[
+d\bar X_t^a=\bar V_t^a\,dt,
+\qquad
+d\bar V_t^a=
+\bigl(-\nabla U_a(\bar X_t^a)-\gamma \bar V_t^a+F[f_t^a](\bar X_t^a,\bar V_t^a)\bigr)\,dt
++\sigma\,dW_t,
+\]
+and setting \((\bar X_t^a,\bar V_t^a):=(\bar X_t^0+a,\bar V_t^0)\) gives exactly
+the reference SDE with potential \(U_*\). Hence \(f_t^a=t_{a\#}f_t^0\) is the
+translated mean-field solution. Applying this to the unique stationary law from
+Theorem~\ref{thm:stationary-poc} yields \(t_{a\#}\pi_\infty^0=\pi_\infty^a\).
+
+For \textnormal{(v)}, the pointwise derivatives are unchanged by translation in
+the position variables. Consequently, for every smooth \(g\),
+\[
+\Gamma_{\mathrm{hypo}}^N(g\circ T_a^N,g\circ T_a^N)
+=
+\Gamma_{\mathrm{hypo}}^N(g,g)\circ T_a^N,
+\]
+and similarly for the mean-field carré du champ
+\(\Gamma_{\mathrm{hypo}}^\infty\).
+Using the pushforward identities from \textnormal{(iii)} and \textnormal{(iv)},
+\[
+\Ent_{\pi_N^a}(g^2)
+=
+\Ent_{\pi_N^0}\bigl((g\circ T_a^N)^2\bigr),
+\qquad
+\int \Gamma_{\mathrm{hypo}}^N(g,g)\,d\pi_N^a
+=
+\int \Gamma_{\mathrm{hypo}}^N(g\circ T_a^N,g\circ T_a^N)\,d\pi_N^0,
+\]
+and likewise
+\[
+\Ent_{\pi_\infty^a}(g^2)
+=
+\Ent_{\pi_\infty^0}\bigl((g\circ t_a)^2\bigr),
+\qquad
+\int \Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_\infty^a
+=
+\int \Gamma_{\mathrm{hypo}}^\infty(g\circ t_a,g\circ t_a)\,d\pi_\infty^0.
+\]
+Therefore the finite-\(N\) and mean-field logarithmic Sobolev inequalities for
+the translated family are identical to those of the reference family, with the
+same constants. The entropy contraction constants are the same because the
+semigroup covariance in \textnormal{(ii)} conjugates the translated dynamics to
+the reference dynamics.
+\end{proof}
+
+\begin{corollary}[Thermodynamic limit followed by wall-to-infinity recentering]\label{cor:wall-infinity}
+Let \((a_R)_{R\ge1}\subset\R^d\) satisfy \(\|a_R\|\to\infty\). For each \(R\),
+consider the translated confining potential \(U_{a_R}\). Then for every bounded
+continuous observable \(\Phi:\R^{2d}\to\R\),
+\[
+\int_{\R^{2d}} \Phi(x-a_R,v)\,\pi_{N,1}^{a_R}(dx,dv)
+=
+\int_{\R^{2d}} \Phi(x,v)\,\pi_{N,1}^0(dx,dv)
+\]
+for every \(N\), and
+\[
+\int_{\R^{2d}} \Phi(x-a_R,v)\,\pi_\infty^{a_R}(dx,dv)
+=
+\int_{\R^{2d}} \Phi(x,v)\,\pi_\infty^0(dx,dv)
+\]
+for every \(R\). Consequently the two limits commute:
+\[
+\lim_{R\to\infty}\lim_{N\to\infty}
+\int \Phi(x-a_R,v)\,\pi_{N,1}^{a_R}(dx,dv)
+=
+\lim_{N\to\infty}\lim_{R\to\infty}
+\int \Phi(x-a_R,v)\,\pi_{N,1}^{a_R}(dx,dv)
+=
+\int \Phi(x,v)\,\pi_\infty^0(dx,dv).
+\]
+\end{corollary}
+
+\begin{proof}
+The first identity is exactly the pushforward relation
+\((t_{-a_R})_\#\pi_{N,1}^{a_R}=\pi_{N,1}^0\), which follows from
+Theorem~\ref{thm:translated-family}\textnormal{(iii)} by taking first marginals.
+The second identity is
+\((t_{-a_R})_\#\pi_\infty^{a_R}=\pi_\infty^0\), which is
+Theorem~\ref{thm:translated-family}\textnormal{(iv)}.
+The commutation of the \(N\to\infty\) and \(R\to\infty\) limits is then
+immediate, because after recentering the integral is independent of \(R\), and
+the \(N\to\infty\) limit is Theorem~\ref{thm:stationary-poc}.
 \end{proof}
 
 \section{Discussion}

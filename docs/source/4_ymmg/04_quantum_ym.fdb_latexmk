@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex 04_quantum_ym"] 1775550482.18437 "04_quantum_ym.aux" "04_quantum_ym.bbl" "04_quantum_ym" 1775550483.22875 0
+["bibtex 04_quantum_ym"] 1775574852.67253 "04_quantum_ym.aux" "04_quantum_ym.bbl" "04_quantum_ym" 1775574853.77855 0
   "./references.bib" 1775550474.62366 4197 a6213843cad2a541dae536b6e11636ab ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "04_quantum_ym.aux" 1775550482.95457 10348 9b6d6d2e0bdb27ba285ecabc13b8a160 "pdflatex"
+  "04_quantum_ym.aux" 1775574853.50175 10507 6275664366c24b8894f126b89bbf959b "pdflatex"
   (generated)
   "04_quantum_ym.bbl"
   "04_quantum_ym.blg"
   (rewritten before read)
-["pdflatex"] 1775550482.28647 "04_quantum_ym.tex" "04_quantum_ym.pdf" "04_quantum_ym" 1775550483.22891 0
+["pdflatex"] 1775574852.78451 "04_quantum_ym.tex" "04_quantum_ym.pdf" "04_quantum_ym" 1775574853.77872 0
   "/etc/texmf/web2c/texmf.cnf" 1775461942.93881 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1246382020 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -153,11 +153,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1741904018 41538 c016915c1d51223b6dbbfe27341748a8 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775461957 5467255 9a64d1b40e0b893fc5588ecce9d8accf ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775462000 3347157 e3d55367a58d5fdfabed5b8302e4b102 ""
-  "04_quantum_ym.aux" 1775550482.95457 10348 9b6d6d2e0bdb27ba285ecabc13b8a160 "pdflatex"
-  "04_quantum_ym.bbl" 1775550482.28258 989 216ba61251a115f726dbc1e0a9ce05e8 "bibtex 04_quantum_ym"
-  "04_quantum_ym.out" 1775550482.95557 2600 7baf725a232632216f10aab82bb1fb5e "pdflatex"
-  "04_quantum_ym.tex" 1775550465.34275 52225 6ee9a7ac0a52c1d60f4d05f0b3b76b8b ""
-  "04_quantum_ym.toc" 1775550482.95557 2749 7ccc9c2b5c4b0ed4ee24a564f8e477af "pdflatex"
+  "04_quantum_ym.aux" 1775574853.50175 10507 6275664366c24b8894f126b89bbf959b "pdflatex"
+  "04_quantum_ym.bbl" 1775574852.78076 989 216ba61251a115f726dbc1e0a9ce05e8 "bibtex 04_quantum_ym"
+  "04_quantum_ym.out" 1775574853.50275 2630 313ec48c1e14845f20c6043931dc269d "pdflatex"
+  "04_quantum_ym.tex" 1775574841.82086 59970 497f644f36554aa364a124f5afe9a102 ""
+  "04_quantum_ym.toc" 1775574853.50275 2607 4884df602311d2fa03a3dd016e0f2138 "pdflatex"
   (generated)
   "04_quantum_ym.aux"
   "04_quantum_ym.log"

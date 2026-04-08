@@ -1,14 +1,16 @@
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
-\contentsline {paragraph}{Organization.}{2}{section*.2}%
-\contentsline {section}{\numberline {2}Notation and setup}{2}{section.2}%
-\contentsline {section}{\numberline {3}Recorded run and interaction complex}{4}{section.3}%
-\contentsline {section}{\numberline {4}Viscous force from interaction edges}{6}{section.4}%
-\contentsline {section}{\numberline {5}Color triplets and $SU(3)$ edge transport}{7}{section.5}%
+\contentsline {paragraph}{Organization.}{3}{section*.2}%
+\contentsline {section}{\numberline {2}Notation and setup}{3}{section.2}%
+\contentsline {section}{\numberline {3}Recorded run and lattice}{4}{section.3}%
+\contentsline {section}{\numberline {4}Viscous force from interaction links}{5}{section.4}%
+\contentsline {section}{\numberline {5}Color triplets and $SU(3)$ link transport}{6}{section.5}%
 \contentsline {section}{\numberline {6}Holonomy and gauge invariance}{9}{section.6}%
-\contentsline {section}{\numberline {7}Matter sector on the same complex}{11}{section.7}%
+\contentsline {section}{\numberline {7}Matter sector on the same lattice}{11}{section.7}%
 \contentsline {section}{\numberline {8}Finite lattice-QFT data package}{12}{section.8}%
 \contentsline {section}{\numberline {9}Discussion}{12}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Relationship to standard lattice QCD}{12}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Continuum limit}{13}{subsection.9.2}%
-\contentsline {subsection}{\numberline {9.3}Quantization and partition function}{13}{subsection.9.3}%
-\contentsline {section}{\numberline {10}Conclusions}{13}{section.10}%
+\contentsline {subsection}{\numberline {9.1}Lattice-gauge interpretation}{12}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Thermodynamic limit of graph observables}{13}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Mean-Field Yang-Mills Action}{17}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}LSI-induced scalar witness sector}{18}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}Quantization and partition function}{19}{subsection.9.5}%
+\contentsline {section}{\numberline {10}Conclusions}{19}{section.10}%

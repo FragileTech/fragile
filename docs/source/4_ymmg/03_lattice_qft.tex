@@ -67,7 +67,7 @@ S_{\mathrm W}^\infty
 \,d\Gamma_\square^\infty(z_1,z_2,z_3,z_4)
 \]
 are all defined directly on the continuous mean-field measure, with no lattice
-spacing limit required.
+re-discretization required.
 Path-integral quantization and axiom verification are deferred to companion papers.
 \end{abstract}
 
@@ -214,7 +214,7 @@ $\mu_p$ & Momentum coupling to phase & $>0$ \\
 $\epsilon_c$ & Color regularization & $>0$ \\
 $\eta$ & Distance regularization in scalar action & $>0$ \\
 $m_F$ & Fermion mass & $>0$ \\
-$m_\phi$ & Scalar mass & $>0$ \\
+$m_\phi$ & Scalar witness mass & $>0$ \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -824,7 +824,8 @@ The sum and the constant term are unchanged, so $S_{\mathrm W}^\Omega=S_{\mathrm
 \label{def:matter}
 For each site $x\in\mcN$ choose a fermionic spinor $\psi_x\in\C^3$,
 its conjugate $\bar\psi_x\in(\C^3)^\dagger$, and a real scalar $\phi_x\in\R$.
-Fix $m_F>0,\ m_\phi>0$, and a local potential $V_\phi:\R\to\R$.
+Fix $m_F>0$, and let $m_\phi>0$ be the scalar witness mass from
+Definition~\ref{def:scalar-mass}.
 For $e=(x\to y)\in\mcE$ set
 \[
 \ell_{xy}:=\|\Xi(y)-\Xi(x)\|+\eta=\ell_e+\eta
@@ -838,7 +839,7 @@ S_{\mathrm F}:=\sum_{e\in\mcE}\bar\psi_{t(e)}\left(\psi_{t(e)}-U_3(e)\psi_{s(e)}
 and the covariant scalar action is
 \[
 S_\phi:=\frac12\sum_{e\in\mcE}\frac{(\phi_{t(e)}-\phi_{s(e)})^2}{\ell_{xy}}
-+\sum_{x\in\mcN}\Bigl(\frac{m_\phi^2}{2}\phi_x^2+V_\phi(\phi_x)\Bigr).
++\frac{m_\phi^2}{2}\sum_{x\in\mcN}\phi_x^2.
 \]
 The gauge group acts on matter fields by
 \[
@@ -895,6 +896,8 @@ so $S_\phi^\Omega=S_\phi$.
 The same finite link set $\mcE$ supports both matter sectors.
 The fermionic term couples oriented transport through $U_3(e)$, while the
 scalar term uses the same link differences as a discrete kinetic energy.
+The scalar sector is the free massive witness field canonically tied below to
+the stationary mean-field stiffness scale of the companion convergence paper.
 \end{remark}
 
 \section{Finite lattice-QFT data package}
@@ -1376,8 +1379,8 @@ a change, hence the plaquette geometry is not determined by propagation of chaos
 In the $N\to\infty$ thermodynamic regime the discrete interaction graph
 disappears and the relevant geometric objects are the stationary mean-field law
 $\pi_\infty$ and its natural product measures.
-No lattice spacing $a_N\to0$ limit is needed: the bilocal gauge fields and the
-Wilson action are defined directly on the continuous probability space
+The bilocal gauge fields and the Wilson action are defined directly on the
+continuous probability space
 $(\operatorname{supp}\pi_\infty, \pi_\infty)$.
 
 \begin{definition}[Bilocal color connection]
@@ -1452,17 +1455,92 @@ Gauge invariance is inherited from the finite-$N$ Wilson action
 (Proposition~\ref{prop:wilson-gauge}) by passage to the limit.
 \end{proof}
 
-\begin{remark}[No lattice spacing required]
+\begin{remark}[Thermodynamic regularization]
 \label{rem:no-lattice-spacing}
 The mean-field action $S_{\mathrm W}^\infty$ is defined entirely within the
 probability space $(\operatorname{supp}\pi_\infty, \pi_\infty)$.
-Unlike the standard Wilson action on a periodic lattice, it does not involve a
-lattice spacing $a$ or a limit $a\to0$; the regularization is provided by the
-viscous kernel length scale $\ell_{\mathrm{visc}}$ and the smooth Gaussian
-kernel $K_\rho$.
-The thermodynamic limit $N\to\infty$ replaces the continuum limit $a\to0$: the
-continuous stationary measure $\pi_\infty$ \emph{is} the spacetime geometry of
-the mean-field theory.
+Its regularization is provided by the viscous kernel length scale
+$\ell_{\mathrm{visc}}$ and the smooth Gaussian kernel $K_\rho$.
+The asymptotic regime is the thermodynamic limit $N\to\infty$:
+the continuous stationary measure $\pi_\infty$ \emph{is} the spacetime geometry
+of the mean-field theory.
+\end{remark}
+
+\subsection{LSI-induced scalar witness sector}
+
+The gauge sector has a genuine thermodynamic limit on $\pi_\infty$.
+For the scalar sector used in the quantization paper, we now make the same
+thermodynamic input explicit and fix a canonical free massive witness field.
+
+\begin{definition}[Mean-field scalar witness observable]
+\label{def:scalar-witness}
+Let $\pi_\infty$ be the stationary mean-field law from the companion
+convergence paper~\cite{convergence}.  Define the scalar witness observable by
+\[
+\sigma_\phi(z):=\|F[\pi_\infty](z)\|,
+\qquad
+z=(x,v)\in\R^6,
+\]
+where $F[\pi_\infty](x,v)=\nu_{\mathrm{visc}}(A[\pi_\infty](x)-v)$ is the
+mean-field viscous drift from the convergence paper.
+\end{definition}
+
+\begin{proposition}[Thermodynamic control of the scalar witness]
+\label{prop:scalar-witness}
+The observable $\sigma_\phi$ is globally Lipschitz on $\R^6$ and belongs to
+$L^2(\pi_\infty)$.  More precisely, if $L_{\mathrm{mf}}$ is the finite constant
+supplied by the mean-field alignment-field Lipschitz estimate of
+\cite{convergence}, evaluated on the
+single-law class $\{\pi_\infty\}$, then
+\[
+|\sigma_\phi(z)-\sigma_\phi(z')|
+\le
+L_{\mathrm{mf}}\|z-z'\|
+\qquad
+\forall z,z'\in\R^6.
+\]
+\end{proposition}
+\begin{proof}
+For any $z,z'\in\R^6$,
+\[
+|\sigma_\phi(z)-\sigma_\phi(z')|
+\le
+\|F[\pi_\infty](z)-F[\pi_\infty](z')\|.
+\]
+Applying the mean-field alignment-field Lipschitz estimate of \cite{convergence} with
+$\mu=\nu=\pi_\infty$ gives the stated Lipschitz bound.
+
+To prove square integrability, fix $z_0=(0,0)\in\R^6$.  The Lipschitz estimate
+implies
+\[
+\sigma_\phi(z)\le \sigma_\phi(z_0)+L_{\mathrm{mf}}\|z-z_0\|
+\le
+\sigma_\phi(z_0)+L_{\mathrm{mf}}\|z\|.
+\]
+The stationary propagation-of-chaos theorem of~\cite{convergence}, together
+with the uniform second-moment estimate proved there for the stationary
+marginals, implies that $\pi_\infty$ has finite second moment on $\R^6$.
+Therefore $\sigma_\phi\in L^2(\pi_\infty)$.
+\end{proof}
+
+\begin{definition}[Scalar witness mass]
+\label{def:scalar-mass}
+Let $C_{\mathrm{LSI}}<\infty$ be the mean-field logarithmic Sobolev constant of
+the companion convergence paper~\cite{convergence},
+and let $L_{\mathrm{mf}}$ be as in Proposition~\ref{prop:scalar-witness}.
+Define the scalar witness mass by
+\[
+m_\phi:=\bigl(1+C_{\mathrm{LSI}}L_{\mathrm{mf}}^2\bigr)^{-1/2}>0.
+\]
+\end{definition}
+
+\begin{remark}[Interpretation of the scalar witness sector]
+\label{rem:scalar-witness}
+The scalar matter field in Definition~\ref{def:matter} is therefore not an
+arbitrary local-potential sector.  It is the canonical free massive scalar
+witness attached to the thermodynamic stiffness scale already certified by the
+mean-field LSI on $\pi_\infty$.  No additional scalar local potential is
+introduced anywhere in the series.
 \end{remark}
 
 \subsection{Quantization and partition function}
@@ -1479,6 +1557,8 @@ Z=\int \Bigl[\prod_{x\in\mcN}d\psi_x\,d\bar\psi_x\,d\phi_x\Bigr]
 is a finite-dimensional ordinary integral over finite-dimensional fermionic
 Grassmann variables and the scalar sector $\R^{|\mcN|}$, evaluated in the
 background of the explicit finite link configuration $\{U_3(e)\}_{e\in\mcE}$.
+Because the scalar action is free massive with $m_\phi>0$, the scalar sector is
+already Gaussian and therefore finite before any further gauge promotion.
 If one wishes to promote the link variables themselves to dynamical integration
 variables, gauge-fixing via Faddeev--Popov is straightforward in the finite
 setting.
@@ -1524,7 +1604,7 @@ Theorems~\ref{thm:stationary-path-poc} and~\ref{thm:plaquette-measure-limit}.
 In the thermodynamic regime, Theorem~\ref{thm:mf-wilson} identifies the limit of
 the discrete Wilson action as the bilocal mean-field action $S_{\mathrm W}^\infty$
 on the stationary measure $\pi_\infty$, with regularization provided by the
-viscous kernel $K_\rho$ rather than a lattice spacing.
+viscous kernel $K_\rho$.
 
 Two major extensions are deferred to companion papers:
 (i) path-integral quantization of the mean-field theory with the bilocal action
