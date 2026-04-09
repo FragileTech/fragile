@@ -1,20 +1,26 @@
 \contentsline {paragraph}{Dependency map of the proof.}{1}{section*.1}%
-\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
 \contentsline {section}{\numberline {2}What Exactly Is Proved}{4}{section.2}%
-\contentsline {section}{\numberline {3}Imported Realization-Specific Inputs}{4}{section.3}%
-\contentsline {section}{\numberline {4}Constructive Identification of the Thermodynamic Gauge Sector}{5}{section.4}%
-\contentsline {section}{\numberline {5}Verification of the Five Core Axioms}{6}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Core Axiom 1: geometric locality}{6}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Core Axiom 2: finite resolution}{7}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Core Axiom 3: finite propagation}{7}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Core Axiom 4: local dynamics with additive decomposition}{7}{subsection.5.4}%
-\contentsline {subsection}{\numberline {5.5}Core Axiom 5: positivity and stability}{8}{subsection.5.5}%
-\contentsline {section}{\numberline {6}Branch Data and Obstruction-Free Structure}{8}{section.6}%
-\contentsline {section}{\numberline {7}Euclidean Axioms}{9}{section.7}%
-\contentsline {subsection}{\numberline {7.1}OS0 and OS1}{9}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}OS2: direct reflection positivity on the physical algebra}{10}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}OS3: spectral gap and exponential clustering}{10}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}OS4: graded symmetry}{11}{subsection.7.4}%
-\contentsline {section}{\numberline {8}Reconstruction and Positive Mass Gap}{12}{section.8}%
-\contentsline {section}{\numberline {9}Conclusion}{13}{section.9}%
-\contentsline {section}{\numberline {A}What Paper 3 Did Not Prove and What the Present Paper Now Proves}{14}{appendix.A}%
+\contentsline {section}{\numberline {3}Imported Realization-Specific Inputs}{5}{section.3}%
+\contentsline {section}{\numberline {4}Constructive Identification of the Gauge Sector}{6}{section.4}%
+\contentsline {section}{\numberline {5}Verification of the Five Core Axioms}{7}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Core Axiom 1: geometric locality}{7}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Core Axiom 2: finite resolution}{8}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Core Axiom 3: finite propagation}{9}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Core Axiom 4: local dynamics with additive decomposition}{9}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Core Axiom 5: positivity and stability}{11}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Branch Data and Obstruction-Free Structure}{11}{section.6}%
+\contentsline {section}{\numberline {7}Euclidean Axioms}{13}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Thermodynamic Euclidean Probability Space}{13}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Hyperplane Factorization and Transfer Structure}{15}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}OS0 and OS1}{16}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}OS2: direct reflection positivity on the physical algebra}{16}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}OS3: spectral gap and exponential clustering}{17}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}OS4: bosonic symmetry}{19}{subsection.7.6}%
+\contentsline {section}{\numberline {8}API Verification Against the Framework Library}{19}{section.8}%
+\contentsline {section}{\numberline {9}Standalone Verification of OS0--OS4}{23}{section.9}%
+\contentsline {section}{\numberline {10}Reconstruction and Positive Mass Gap}{24}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Traditional OS Reconstruction}{24}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Rigorous Nontriviality}{27}{subsection.10.2}%
+\contentsline {section}{\numberline {11}Conclusion}{32}{section.11}%
+\contentsline {section}{\numberline {A}Distribution of Results Across the Series}{32}{appendix.A}%

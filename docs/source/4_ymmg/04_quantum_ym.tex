@@ -67,15 +67,16 @@ gauge-geometric part of a finite regularized \(SU(3)\) data package
 S_{\mathrm W}^{(N)})
 \]
 whose regulator geometry, sampled links, and Wilson action are fixed in
-\cite{continuumqft}.  The present paper completes the finite-dimensional data
-package by adjoining the explicit fermionic and scalar actions written below,
-and performs the
+\cite{continuumqft}.  The paper completes the finite-dimensional data
+package by adjoining the explicit fermionic and scalar actions written below and
+performs the
 quantization step: it replaces the sampled background links by independent
 integration variables and builds the exact finite-dimensional Euclidean path
 integral on that same regulator lattice.  We define the full configuration
 space, the product Haar--Berezin--Lebesgue measure, the partition function, and
 the vacuum expectation map.  We prove that the resulting finite-lattice theory
-is well defined for the free massive scalar sector used in this paper.  We then solve the gauge-redundancy problem exactly by
+is well defined for the free massive scalar sector used in this paper.  We then
+solve the gauge-redundancy problem exactly by
 a rooted maximal-tree gauge: every gauge orbit meets the gauge slice once and
 only once, the Faddeev--Popov determinant is identically $1$, and the ghost
 sector is a decoupled finite Berezin integral.  The fermionic sector integrates
@@ -97,10 +98,15 @@ continuum functional \(S_{\mathrm{YM}}^{\mathrm{cont}}\) on
 $\pi_\infty$.  The same convergence paper also proves the mean-field
 logarithmic Sobolev inequality on $\pi_\infty$; by tensorization, the same
 constant controls the finite product measures $\pi_\infty^{\otimes k}$ that
-support the thermodynamic observables.  The present paper supplies the exact
-fixed-$N$ quantization, the local coordinate structure of its gauge measure,
-and the explicit thermodynamic transfer of that equilibrium stiffness to the
-quantized finite-lattice observables.
+support the thermodynamic observables.  The paper supplies the exact
+fixed-$N$ quantization, isolates a canonical continuum-indexed class of local
+gauge-invariant plaquette observables together with its finite-regulator
+approximation map, identifies the corresponding exact finite unnormalized
+Euclidean functionals, and singles out a distinguished localized Wilson sector
+whose sampled deterministic continuum limit is already identified in
+\cite{continuumqft}.  The transferred equilibrium stiffness continues to
+control the product measures supporting the thermodynamic plaquette
+presentation.
 \end{abstract}
 
 \tableofcontents
@@ -119,14 +125,14 @@ whose site set and edge set form a deterministic coordinate graph, and whose
 canonical plaquette family $\mathcal C_\square$ is the corresponding
 plaquette set from \cite{continuumqft}.  On that lattice the same paper defines
 sampled link transporters $U_3^{(N)}(e)\in SU(3)$ and the Wilson action
-$S_{\mathrm W}$.  In the present paper we place on the same regulator graph the
+$S_{\mathrm W}$.  The paper places on the same regulator graph the
 finite matter actions $S_{\mathrm F}$ and $S_\phi$ defined in
 Definition~\ref{def:imported-package}.  Together these objects form the finite
 data package $\mathcal Q^{(N)}$.  Up to that stage, however,
 the link variables are deterministic functions of the continuum-seeded profile.
 A quantum theory requires a different mathematical object: instead of one
 distinguished configuration, it requires an ensemble weighted by an action and
-summed over all admissible gauge fields and matter fields.  The present paper
+summed over all admissible gauge fields and matter fields.  The paper
 performs that passage from one explicit background configuration to a
 finite-dimensional path integral on the same regulator lattice.
 
@@ -145,8 +151,8 @@ quantization performed here.  All dynamical content therefore sits in the gauge
 links, fermions, and scalars.  The goal is to define a mathematically complete
 finite partition function, remove gauge redundancy exactly, identify the
 fermion determinant and scalar measure, and clarify in what sense the resulting
-finite theory does and does not recover continuum Euclidean Yang--Mills
-quantization.
+finite theory organizes the canonical local gauge-invariant observables used in
+the thermodynamic continuum programme.
 
 \begin{theorem}[Main finite-lattice quantization result]
 \label{thm:main}
@@ -201,8 +207,216 @@ The same mean-field law carries the logarithmic Sobolev inequality proved in
 \cite{convergence}, and Proposition~\ref{prop:thermo-lsi-transfer} below makes
 explicit how that stiffness transfers to the finite product measures
 $\pi_\infty^{\otimes k}$ supporting the thermodynamic finite-lattice
-observables.
+observables.  The continuum-indexed observable class used for that
+thermodynamic presentation is fixed next.  In addition, the paper records the
+distinguished localized Wilson sector whose sampled deterministic
+representatives are exactly the localized Wilson functionals of
+\cite{continuumqft}; this is the direct bridge from the exact finite regulator
+theory constructed here to the continuum Yang--Mills functional identified in
+that companion paper.
 \end{remark}
+
+\begin{definition}[Continuum-indexed local gauge-invariant plaquette algebra]
+\label{def:continuum-plaquette-algebra}
+Fix an orientation \(0\le \mu<\nu\le 3\), a compactly supported test function
+\(\chi\in C_c(\R^4)\), and a bounded continuous class function
+\(\Phi:SU(3)\to\C\), i.e.
+\[
+\Phi(VUV^{-1})=\Phi(U)
+\qquad
+\forall\,U,V\in SU(3).
+\]
+The corresponding continuum-indexed local gauge-invariant plaquette observable
+is denoted by
+\[
+\mathcal O_{\chi,\mu\nu,\Phi}.
+\]
+Let \(\mathfrak A_{\mathrm{loc}}^{\mathrm{g.i.}}\) be the unital algebra
+generated by finite linear combinations and finite products of such symbols.
+\end{definition}
+
+\begin{definition}[Canonical finite-regulator approximation map]
+\label{def:continuum-plaquette-embedding}
+For each regulator size \(N\), use the deterministic flat regulator data of
+\cite{continuumqft}: the lattice spacing \(a_N\), the plaquette family
+\(\mathcal C_\square\), and the plaquette base-point map
+\[
+P\mapsto x_P\in\R^4.
+\]
+For each orientation \(0\le\mu<\nu\le3\), let
+\(\mathcal C_{\square,\mu\nu}\subset\mathcal C_\square\) be the coordinate
+plaquettes of type \((\mu,\nu)\).  Define
+\[
+\iota_N\bigl(\mathcal O_{\chi,\mu\nu,\Phi}\bigr)(U)
+:=
+\sum_{P\in\mathcal C_{\square,\mu\nu}}
+a_N^4\,\chi(x_P)\,\Phi\bigl(U(P)\bigr).
+\]
+Extend \(\iota_N\) linearly and multiplicatively to all of
+\(\mathfrak A_{\mathrm{loc}}^{\mathrm{g.i.}}\).
+\end{definition}
+
+\begin{proposition}[Locality and boundedness of the canonical gauge-invariant observables]
+\label{prop:continuum-plaquette-package}
+The observable package of
+Definitions~\ref{def:continuum-plaquette-algebra}
+and~\ref{def:continuum-plaquette-embedding} has the following properties.
+\begin{enumerate}[leftmargin=1.5em]
+\item For every \(O\in\mathfrak A_{\mathrm{loc}}^{\mathrm{g.i.}}\),
+\(\iota_N(O)\) is gauge invariant on the finite regulator lattice.
+\item If \(O\) is generated by test functions \(\chi_1,\dots,\chi_m\), then
+\(\iota_N(O)\) depends only on plaquettes whose base points lie in the compact
+set \(\bigcup_{j=1}^m\supp\chi_j\), and hence only on the link variables
+meeting that compact window.
+\item For each generator \(\mathcal O_{\chi,\mu\nu,\Phi}\), there exists
+\(C_{\chi,\Phi}<\infty\), independent of \(N\), such that
+\[
+\sup_{U\in\mcU}
+\left|
+\iota_N\bigl(\mathcal O_{\chi,\mu\nu,\Phi}\bigr)(U)
+\right|
+\le
+C_{\chi,\Phi}.
+\]
+\item For every \(O\in\mathfrak A_{\mathrm{loc}}^{\mathrm{g.i.}}\), the
+unnormalized Euclidean functional
+\[
+\int_{\mcX_\mathcal L}\iota_N(O)\,e^{-S}\,\dd\mu
+\]
+is finite.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+For a closed plaquette \(P\), a local gauge transformation
+\(\Omega\) sends \(U(P)\) to \(\Omega(x_P)U(P)\Omega(x_P)^{-1}\), so gauge
+invariance of each generator follows from the class-function property of
+\(\Phi\).  Finite products and linear combinations preserve gauge invariance.
+
+The locality statement is immediate from the definition of \(\iota_N\): only
+plaquettes with base point \(x_P\in\supp\chi_j\) can contribute to the generator
+associated with \(\chi_j\), and finite products involve only the union of the
+corresponding compact supports.
+
+Because \(\Phi\) is bounded and \(\chi\) is compactly supported, the
+deterministic regulator geometry from \cite{continuumqft} implies that the
+number of contributing \((\mu,\nu)\)-plaquettes is \(O(a_N^{-4})\) on every
+fixed compact window, while each term carries the weight \(a_N^4\).  Hence the
+sum is uniformly bounded in \(N\) and \(U\).
+
+Finally, \(\iota_N(O)\) is bounded on the bosonic configuration space, so
+finiteness of the displayed Euclidean functional is exactly the
+unnormalized-integrability statement of
+Theorem~\ref{thm:partition-finite}.
+\end{proof}
+
+\begin{corollary}[Nontrivial local gauge-invariant probe]
+\label{cor:continuum-plaquette-nontrivial}
+The algebra \(\mathfrak A_{\mathrm{loc}}^{\mathrm{g.i.}}\) is nontrivial.
+\end{corollary}
+
+\begin{proof}
+Take any nonzero \(\chi\in C_c(\R^4)\), any \(0\le\mu<\nu\le3\), and
+\[
+\Phi(U):=1-\frac13\Ree\,\tr U.
+\]
+This \(\Phi\) is a bounded continuous class function on \(SU(3)\), and it is
+not constant.  Therefore, for every regulator level \(N\) for which
+\(\supp\chi\) contains at least one \((\mu,\nu)\)-plaquette base point,
+the representative
+\(\iota_N(\mathcal O_{\chi,\mu\nu,\Phi})\) is a nonconstant gauge-invariant
+observable on the finite regulator.
+\end{proof}
+
+\begin{definition}[Distinguished localized Wilson family]
+\label{def:wilson-density-generators}
+For \(\chi\in C_c(\R^4)\), let \(\mathcal W_\chi\) denote the corresponding
+continuum-indexed localized Wilson symbol.  Its canonical finite-regulator
+representative is the gauge-invariant plaquette sum
+\[
+\jmath_N(\mathcal W_\chi)(U)
+:=
+\frac{6}{g_3^2}
+\sum_{0\le\mu<\nu\le3}\sum_{P\in\mathcal C_{\square,\mu\nu}}
+\chi(x_P)\left(1-\frac13\Ree\,\tr U(P)\right).
+\]
+\end{definition}
+
+\begin{theorem}[Canonical Wilson generators recover the sampled deterministic local continuum limit]
+\label{thm:wilson-generator-limit}
+Let \(\chi\in C_c(\R^4)\).  For every regulator size \(N\),
+\[
+\jmath_N(\mathcal W_\chi)(U)
+=
+\frac{6}{g_3^2}
+\sum_{0\le\mu<\nu\le3}\sum_{P\in\mathcal C_{\square,\mu\nu}}
+\chi(x_P)\left(1-\frac13\Ree\,\tr U(P)\right).
+\]
+In particular, when the gauge field \(U\) is specialized to the deterministic
+sampled plaquette holonomies \(U_3^{(N)}(P)\) of \cite{continuumqft}, one has
+\[
+\jmath_N(\mathcal W_\chi)(U_3^{(N)})
+=
+S_{\mathrm W,\chi}^{(N)},
+\]
+the localized Wilson functional of the companion continuum-gauge paper.
+Consequently, the local continuum-limit theorem of \cite{continuumqft} gives
+\[
+\jmath_N(\mathcal W_\chi)(U_3^{(N)})
+\longrightarrow
+S_{\mathrm{YM},\chi}^{\mathrm{cont}}[F^\infty]
+\]
+along every admissible deterministic flat regulator family of that paper.
+\end{theorem}
+
+\begin{proof}
+The displayed formula is exactly Definition~\ref{def:wilson-density-generators}.
+Specializing to the sampled deterministic
+plaquette holonomies of \cite{continuumqft} identifies the right-hand side with
+the localized Wilson functional \(S_{\mathrm W,\chi}^{(N)}\).  The convergence
+statement is therefore precisely the local continuum-limit theorem proved in
+that paper.
+\end{proof}
+
+\begin{corollary}[Regulator-independence of the distinguished Wilson sector in the sampled deterministic presentation]
+\label{cor:wilson-generator-independence}
+Within the admissible deterministic flat regulator class of \cite{continuumqft},
+the limit of \(\jmath_N(\mathcal W_\chi)(U_3^{(N)})\) depends only on
+\(\chi\) and the continuum curvature profile \(F^\infty\), not on the chosen
+admissible regulator exhaustion.
+\end{corollary}
+
+\begin{proof}
+Theorem~\ref{thm:wilson-generator-limit} identifies every admissible-sequence
+limit with the same explicit continuum quantity
+\[
+S_{\mathrm{YM},\chi}^{\mathrm{cont}}[F^\infty].
+\]
+Hence the limit is independent of the particular admissible deterministic flat
+regulator family.
+\end{proof}
+
+\begin{corollary}[Sampled deterministic continuum Wilson functional on the distinguished local sector]
+\label{cor:continuum-wilson-functional}
+The assignment
+\[
+\omega_{\mathrm W}^\infty(\mathcal W_\chi)
+:=
+S_{\mathrm{YM},\chi}^{\mathrm{cont}}[F^\infty]
+\]
+defines a linear gauge-invariant continuum functional on the linear span of the
+symbols \(\{\mathcal W_\chi:\chi\in C_c(\R^4)\}\) associated with the sampled
+deterministic holonomy family of \cite{continuumqft}, and the
+deterministic finite-regulator representatives
+\(\jmath_N(\mathcal W_\chi)(U_3^{(N)})\) converge to that functional along every
+admissible deterministic flat regulator family.
+\end{corollary}
+
+\begin{proof}
+Linearity in \(\chi\) is immediate from the definition of
+\(S_{\mathrm{YM},\chi}^{\mathrm{cont}}[F^\infty]\).  The convergence statement
+is exactly Theorem~\ref{thm:wilson-generator-limit}.
+\end{proof}
 
 \section{Configuration space and measure}
 \label{sec:config}
@@ -263,7 +477,7 @@ The gauge sector above is exactly the regulator Wilson sector of
 \cite{continuumqft}.  The only change made there is interpretive: the sampled
 background links are promoted to independent coordinates on $SU(3)^{\mcE}$.
 The fermionic and scalar terms are then fixed explicitly on that same finite
-graph by the displayed formulas in Definition~\ref{def:imported-package}.
+graph by the formulas displayed in Definition~\ref{def:imported-package}.
 \end{remark}
 
 \subsection{Field manifold}
@@ -419,7 +633,7 @@ Every term is a finite sum over the fixed finite index sets $\mcN$, $\mcE$, and
 $\mathcal C_\square$.
 
 \paragraph{The master partition function.}
-The central object of the paper is the finite-lattice partition function
+The central object is the finite-lattice partition function
 \begin{equation}
 \label{eq:partition-function}
 Z
@@ -436,17 +650,26 @@ Z
 \dd\mu_{\mcU}(U)\,\dd\mu_{\mathrm F}\,\dd\phi.
 \]
 
-\paragraph{Normalization and expectation values.}
+\paragraph{Unnormalized Euclidean functionals.}
 For any bounded gauge-invariant observable $\mcO$ whose fermionic degree is
-even, the vacuum expectation is defined by
+even, define the unnormalized Euclidean functional by
+\begin{equation}
+\label{eq:unnormalized-expectation}
+\widetilde\omega_N(\mcO)
+:=
+\int_{\mcX_\mathcal L}
+\mcO(U,c,\bar\psi,\psi,\phi)\,
+e^{-S(U,\bar\psi,\psi,\phi)}\,\dd\mu.
+\end{equation}
+
+\paragraph{Normalization and expectation values.}
+When $Z\neq 0$, the normalized vacuum expectation is defined by
 \begin{equation}
 \label{eq:expectation}
 \langle \mcO\rangle
 :=
 \frac{1}{Z}
-\int_{\mcX_\mathcal L}
-\mcO(U,c,\bar\psi,\psi,\phi)\,
-e^{-S(U,\bar\psi,\psi,\phi)}\,\dd\mu,
+\widetilde\omega_N(\mcO),
 \end{equation}
 provided $Z\neq 0$.  The nonvanishing of $Z$ is model dependent and cannot be
 asserted for arbitrary finite complex fermion determinants.  What can always be
@@ -555,7 +778,7 @@ measure $e^{-S}\dd\mu$ is gauge invariant.
 \end{proposition}
 \begin{proof}
 Gauge invariance of $S_{\mathrm W}$ was proved in \cite{continuumqft}.  For the
-matter sector, one checks directly from the displayed formulas that
+matter sector, a direct calculation from the defining formulas shows that
 $S_{\mathrm F}$ is invariant under
 \[
 \psi_x\mapsto\Omega(x)\psi_x,\qquad
@@ -563,7 +786,6 @@ $S_{\mathrm F}$ is invariant under
 \]
 because the gauge factors cancel pointwise in each edge term and in each mass
 term, while $S_\phi$ is invariant because the scalar field is gauge neutral.
-The same algebra is the one used throughout the finite-dimensional argument.
 Haar invariance of $\mu_{\mcU}$
 follows edgewise from left and right invariance of Haar measure on $SU(3)$.
 The normalized Lebesgue measure on the ball $\bbB\subset\C^3$ is invariant
@@ -919,7 +1141,11 @@ edge by edge.
 Although the Faddeev--Popov determinant is trivial in rooted maximal-tree
 gauge, it is still useful to represent it as a finite Berezin integral, because
 this makes the gauge-fixing algebra parallel to the standard continuum
-formalism.
+formalism.  The continuum-indexed gauge-invariant observable package fixed in
+Definitions~\ref{def:continuum-plaquette-algebra}
+and~\ref{def:continuum-plaquette-embedding} is independent of these auxiliary
+variables; the present section records the exact finite-dimensional algebraic
+repackaging of the same gauge-fixed measure.
 
 \begin{definition}[Ghost and antighost fields]
 \label{def:ghosts}
@@ -1628,8 +1854,20 @@ product spaces $(\R^8)^2$ and $(\R^8)^4$.  Since
 \]
 their integrability and entropy control are inherited from the supporting
 product measures $\pi_\infty^{\otimes2}$ and $\pi_\infty^{\otimes4}$ of
-Proposition~\ref{prop:thermo-lsi-transfer}; no additional thermodynamic scalar
-measure hypothesis is needed at that step.
+Proposition~\ref{prop:thermo-lsi-transfer}; no additional hypothesis is
+required at this stage.
+\end{remark}
+
+\begin{remark}[Compatibility with thermodynamic product measures]
+\label{rem:thermo-observable-class}
+Let \(O\in\mathfrak A_{\mathrm{loc}}^{\mathrm{g.i.}}\) be a product of \(m\)
+generators from Definition~\ref{def:continuum-plaquette-algebra}.  In the
+thermodynamic plaquette presentation of \cite{continuumqft}, an \(m\)-fold
+product of single-plaquette gauge-invariant observables is naturally evaluated
+on a \(4m\)-point equilibrium product space.  Proposition~\ref{prop:thermo-lsi-transfer}
+therefore applies to the supporting product measure \(\pi_\infty^{\otimes 4m}\),
+with the same logarithmic Sobolev inequality constant \(C_{\mathrm{LSI}}\) as
+for \(\pi_\infty\).
 \end{remark}
 
 \section{Discussion of excitations and propagators}
@@ -1695,6 +1933,143 @@ the Berezin generating functional
 \det M_{\mathrm F}(U)\,
 e^{\bar\eta M_{\mathrm F}(U)^{-1}\eta}.
 \]
+\end{proof}
+
+\begin{corollary}[Exact finite Euclidean functionals on the canonical local gauge-invariant sectors]
+\label{cor:finite-euclidean-local-sectors}
+For every regulator size \(N\), every
+\(O\in\mathfrak A_{\mathrm{loc}}^{\mathrm{g.i.}}\), and every
+\(\chi\in C_c(\R^4)\), the unnormalized Euclidean insertions
+\[
+\widetilde\omega_N\bigl(\iota_N(O)\bigr)
+\qquad\text{and}\qquad
+\widetilde\omega_N\bigl(\jmath_N(\mathcal W_\chi)\bigr)
+\]
+are finite complex numbers.
+\end{corollary}
+
+\begin{proof}
+By Proposition~\ref{prop:continuum-plaquette-package}, each
+\(\iota_N(O)\) is a bounded gauge-invariant bosonic observable.  By
+Definition~\ref{def:wilson-density-generators}, each
+\(\jmath_N(\mathcal W_\chi)\) is a finite linear combination of bounded
+plaquette class functions, hence is again a bounded gauge-invariant bosonic
+observable.  The finiteness of both unnormalized Euclidean functionals is
+therefore an immediate application of Theorem~\ref{thm:partition-finite}.
+\end{proof}
+
+\begin{theorem}[Exact finite bosonic reduction of gauge-invariant insertions]
+\label{thm:bosonic-reduction}
+Fix a rooted spanning forest \(\mcT\) as in
+Theorem~\ref{thm:tree-gauge}.  Let \(\mcO:\mcU\to\C\) be a bounded measurable
+gauge-invariant observable, viewed as an observable on
+\(\mcX_{\mathcal L}\) by ignoring the color, fermion, and scalar variables.
+Then the unnormalized Euclidean functional satisfies
+\[
+\widetilde\omega_N(\mcO)
+=
+Z_\phi
+\int_{\mcU}
+\mcO(U)\,e^{-S_{\mathrm W}(U)}\det M_{\mathrm F}(U)\,
+\dd\mu_{\mcU}(U),
+\]
+where
+\[
+Z_\phi=(2\pi)^{|\mcN|/2}\det(L_\eta+m_\phi^2 I)^{-1/2}.
+\]
+Moreover, equivalently,
+\[
+\widetilde\omega_N(\mcO)
+=
+Z_\phi
+\int_{\mcU}
+\delta_{\mcT}(U)\,\mcO(U)\,e^{-S_{\mathrm W}(U)}\det M_{\mathrm F}(U)\,
+\dd\mu_{\mcU}(U),
+\]
+and after integrating out the constrained tree links this becomes an ordinary
+finite-dimensional integral over the cotree edge variables
+\(\mcE_{\mathrm{co}}=\mcE\setminus\mcT\).
+\end{theorem}
+
+\begin{proof}
+Because the color sector is normalized and decoupled from the action, the
+color integration contributes the unit factor.  Since \(\mcO\) depends only on
+the gauge field, \eqref{eq:unnormalized-expectation} gives
+\[
+\widetilde\omega_N(\mcO)
+=
+\int_{\mcU\times\Lambda_{\mathrm F}\times\mcS}
+\mcO(U)\,e^{-S_{\mathrm W}(U)-S_{\mathrm F}(U,\bar\psi,\psi)-S_\phi(\phi)}
+\dd\mu_{\mcU}(U)\,\dd\mu_{\mathrm F}\,\dd\phi.
+\]
+Apply Theorem~\ref{thm:fermion-det} to integrate out the fermions:
+\[
+\widetilde\omega_N(\mcO)
+=
+\int_{\mcU\times\mcS}
+\mcO(U)\,e^{-S_{\mathrm W}(U)-S_\phi(\phi)}\det M_{\mathrm F}(U)\,
+\dd\mu_{\mcU}(U)\,\dd\phi.
+\]
+Now apply Theorem~\ref{thm:scalar-integrable}.  Since the scalar action is
+independent of \(U\), the scalar integral factors out as \(Z_\phi\), yielding
+\[
+\widetilde\omega_N(\mcO)
+=
+Z_\phi
+\int_{\mcU}
+\mcO(U)\,e^{-S_{\mathrm W}(U)}\det M_{\mathrm F}(U)\,
+\dd\mu_{\mcU}(U).
+\]
+
+By Proposition~\ref{prop:gauge-measure}, the original finite action and product
+measure are gauge invariant.  Since \(\mcO\) is gauge invariant, the full
+integrand before the fermion and scalar integrations is gauge invariant.  Hence
+the gauge-fixed representation from Corollary~\ref{cor:gauge-fixed-z} applies,
+and because the Faddeev--Popov determinant is identically \(1\) by
+Theorem~\ref{thm:fp-identity}, one obtains
+\[
+\widetilde\omega_N(\mcO)
+=
+Z_\phi
+\int_{\mcU}
+\delta_{\mcT}(U)\,\mcO(U)\,e^{-S_{\mathrm W}(U)}\det M_{\mathrm F}(U)\,
+\dd\mu_{\mcU}(U).
+\]
+The final statement is exactly the last sentence of
+Corollary~\ref{cor:gauge-fixed-z}.
+\end{proof}
+
+\begin{corollary}[Exact finite bosonic reduction on the canonical local gauge-invariant sectors]
+\label{cor:bosonic-reduction-local-sectors}
+For every regulator size \(N\), every
+\(O\in\mathfrak A_{\mathrm{loc}}^{\mathrm{g.i.}}\), and every
+\(\chi\in C_c(\R^4)\),
+\begin{align*}
+\widetilde\omega_N\bigl(\iota_N(O)\bigr)
+&=
+Z_\phi
+\int_{\mcU}
+\delta_{\mcT}(U)\,\iota_N(O)(U)\,e^{-S_{\mathrm W}(U)}\det M_{\mathrm F}(U)\,
+\dd\mu_{\mcU}(U),\\
+\widetilde\omega_N\bigl(\jmath_N(\mathcal W_\chi)\bigr)
+&=
+Z_\phi
+\int_{\mcU}
+\delta_{\mcT}(U)\,\jmath_N(\mathcal W_\chi)(U)\,e^{-S_{\mathrm W}(U)}
+\det M_{\mathrm F}(U)\,\dd\mu_{\mcU}(U).
+\end{align*}
+In each case, after integrating out the constrained tree links, the right-hand
+side is an ordinary finite-dimensional integral over the cotree edge variables.
+\end{corollary}
+
+\begin{proof}
+By Proposition~\ref{prop:continuum-plaquette-package},
+\(\iota_N(O)\) is gauge invariant for every
+\(O\in\mathfrak A_{\mathrm{loc}}^{\mathrm{g.i.}}\).  By
+Definition~\ref{def:wilson-density-generators},
+\(\jmath_N(\mathcal W_\chi)\) is a finite linear combination of gauge-invariant
+plaquette class functions and is therefore gauge invariant.  Apply
+Theorem~\ref{thm:bosonic-reduction} to each observable.
 \end{proof}
 
 \begin{proposition}[Unconditional fermion invertibility]
@@ -1800,6 +2175,238 @@ the graph.  The only admissible steps for those paths are edges in $\mcE$, as
 determined by the finite regulator data from \cite{continuumqft}.
 \end{proof}
 
+\begin{theorem}[Absolutely convergent fermion loop expansion and exact effective gauge action]
+\label{thm:fermion-loop-expansion}
+For every gauge field \(U\in\mcU\), define
+\[
+K(U):=D^{-1}H(U),
+\qquad
+q_*:=\max_{y\in\mcN}\frac{\indeg(y)}{m_F+\indeg(y)}<1.
+\]
+Then the following hold.
+\begin{enumerate}[leftmargin=1.5em]
+\item The spectrum of \(K(U)\) lies in the closed disk \(\{z\in\C:|z|\le q_*\}\).
+\item The principal matrix logarithm of \(I-K(U)\) is well defined and satisfies
+\[
+\Log\!\bigl(I-K(U)\bigr)
+=
+-\sum_{n=1}^\infty \frac{K(U)^n}{n},
+\]
+with absolute convergence in the operator norm
+\(\|\cdot\|_{\infty,2\to\infty,2}\).
+\item The fermion determinant admits the exact logarithmic expansion
+\[
+\log\det M_{\mathrm F}(U)
+=
+\log\det D
+-\sum_{n=1}^\infty \frac1n\,\Tr\!\bigl(K(U)^n\bigr).
+\]
+\item For each \(n\ge1\), let \(\mathcal L_n^{\mathrm{cl}}\) be the finite set
+of closed based directed walks
+\[
+\ell=(e_1,\dots,e_n)
+\]
+in \(\mcE\), meaning
+\[
+t(e_j)=s(e_{j+1})\quad(1\le j\le n-1),
+\qquad
+t(e_n)=s(e_1).
+\]
+For \(\ell\in\mathcal L_n^{\mathrm{cl}}\), define
+\[
+w(\ell):=\prod_{j=1}^n \frac{1}{m_F+\indeg(t(e_j))},
+\qquad
+U(\ell):=U(e_n)\cdots U(e_1).
+\]
+Then
+\[
+\Tr\!\bigl(K(U)^n\bigr)
+=
+\sum_{\ell\in\mathcal L_n^{\mathrm{cl}}}
+w(\ell)\,\tr\!\bigl(U(\ell)\bigr).
+\]
+In particular, each \(\Tr(K(U)^n)\) is gauge invariant.
+\item The series is uniformly absolutely summable in the sense that
+\[
+\left|\Tr\!\bigl(K(U)^n\bigr)\right|
+\le
+3|\mcN|\,q_*^n,
+\]
+and therefore, for every \(L\ge0\),
+\[
+\sum_{n=L+1}^\infty \frac1n
+\left|\Tr\!\bigl(K(U)^n\bigr)\right|
+\le
+\frac{3|\mcN|}{1-q_*}\,q_*^{L+1}.
+\]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{prop:fermion-invertible},
+\[
+\|K(U)\|_{\infty,2\to\infty,2}
+\le q_*<1.
+\]
+Hence the spectral radius satisfies
+\[
+\rho(K(U))\le \|K(U)\|_{\infty,2\to\infty,2}\le q_*,
+\]
+which proves the first claim.
+
+Because \(\|K(U)\|_{\infty,2\to\infty,2}<1\), the scalar power series
+\[
+-\sum_{n=1}^\infty \frac{z^n}{n}
+\]
+for \(\log(1-z)\) converges absolutely on the closed disk
+\(|z|\le q_*\).  Therefore the matrix series
+\[
+L(U):=-\sum_{n=1}^\infty \frac{K(U)^n}{n}
+\]
+converges absolutely in \(\|\cdot\|_{\infty,2\to\infty,2}\).  Since
+\(\sigma(K(U))\subset\{|z|\le q_*\}\), the spectrum of \(I-K(U)\) is contained
+in the disk \(\{w:|w-1|\le q_*\}\), which avoids the nonpositive real axis
+because \(q_*<1\).  Thus the principal matrix logarithm is defined, and by the
+holomorphic functional calculus for the principal branch,
+\[
+\Log\!\bigl(I-K(U)\bigr)=L(U).
+\]
+This proves the second claim.
+
+Since
+\[
+M_{\mathrm F}(U)=D\bigl(I-K(U)\bigr),
+\]
+we have
+\[
+\det M_{\mathrm F}(U)=\det D\cdot \det\!\bigl(I-K(U)\bigr).
+\]
+The matrix \(D\) is diagonal with strictly positive real entries, so
+\(\log\det D\) is the ordinary real logarithm.  In finite dimension,
+\[
+\det\!\bigl(I-K(U)\bigr)
+=
+\exp\!\Bigl(\Tr \Log\!\bigl(I-K(U)\bigr)\Bigr).
+\]
+Taking logarithms and inserting the series from the second claim yields
+\[
+\log\det M_{\mathrm F}(U)
+=
+\log\det D+\Tr \Log\!\bigl(I-K(U)\bigr)
+=
+\log\det D-\sum_{n=1}^\infty \frac1n\,\Tr\!\bigl(K(U)^n\bigr),
+\]
+which proves the third claim.
+
+To identify the trace terms, note that for \(\xi=(\xi_x)_{x\in\mcN}\),
+\[
+\bigl(K(U)\xi\bigr)_y
+=
+\frac{1}{m_F+\indeg(y)}
+\sum_{\substack{e\in\mcE\\ t(e)=y}}U(e)\,\xi_{s(e)}.
+\]
+Iterating this identity shows that the \((x,x)\)-block of \(K(U)^n\) is the
+sum over all directed length-\(n\) paths
+\[
+x=x_0\xrightarrow{e_1}x_1\xrightarrow{e_2}\cdots\xrightarrow{e_n}x_n=x
+\]
+of the matrices
+\[
+\left(\prod_{j=1}^n \frac{1}{m_F+\indeg(x_j)}\right)
+U(e_n)\cdots U(e_1).
+\]
+Taking the \(3\times3\) trace of the diagonal block and then summing over
+\(x\in\mcN\) gives
+\[
+\Tr\!\bigl(K(U)^n\bigr)
+=
+\sum_{\ell\in\mathcal L_n^{\mathrm{cl}}}
+w(\ell)\,\tr\!\bigl(U(\ell)\bigr),
+\]
+where \(\mathcal L_n^{\mathrm{cl}}\) is precisely the set of closed based
+directed walks of length \(n\).  This proves the displayed loop expansion.
+
+Under a gauge transformation \(U(e)\mapsto \Omega(t(e))U(e)\Omega(s(e))^{-1}\),
+the product along a closed walk transforms by conjugation:
+\[
+U(\ell)\mapsto \Omega(s(e_1))\,U(\ell)\,\Omega(s(e_1))^{-1}.
+\]
+Hence \(\tr(U(\ell))\) is gauge invariant, and therefore so is
+\(\Tr(K(U)^n)\).
+
+Finally, for any matrix \(A\) on \(\bigoplus_{x\in\mcN}\C_x^3\),
+\[
+|\Tr A|
+\le
+\sum_{x\in\mcN} |\tr A_{xx}|
+\le
+3|\mcN|\,\|A\|_{\infty,2\to\infty,2}.
+\]
+Applying this with \(A=K(U)^n\) gives
+\[
+\left|\Tr\!\bigl(K(U)^n\bigr)\right|
+\le
+3|\mcN|\,\|K(U)\|_{\infty,2\to\infty,2}^n
+\le
+3|\mcN|\,q_*^n.
+\]
+Therefore
+\[
+\sum_{n=L+1}^\infty \frac1n
+\left|\Tr\!\bigl(K(U)^n\bigr)\right|
+\le
+3|\mcN|\sum_{n=L+1}^\infty q_*^n
+=
+\frac{3|\mcN|}{1-q_*}\,q_*^{L+1},
+\]
+which proves the last claim.
+\end{proof}
+
+\begin{corollary}[Exact loop-effective bosonic action]
+\label{cor:loop-effective-bosonic-action}
+Define the exact fermionic effective gauge action by
+\[
+S_{\mathrm{eff},F}(U)
+:=
+\sum_{n=1}^\infty \frac1n\,\Tr\!\bigl(K(U)^n\bigr),
+\qquad
+K(U)=D^{-1}H(U).
+\]
+Then the series converges absolutely for every \(U\in\mcU\), each partial sum
+is gauge invariant, and
+\[
+\det M_{\mathrm F}(U)
+=
+\det D\,e^{-S_{\mathrm{eff},F}(U)}.
+\]
+Consequently, for every bounded measurable gauge-invariant observable
+\(\mcO:\mcU\to\C\),
+\[
+\widetilde\omega_N(\mcO)
+=
+Z_\phi\,\det D
+\int_{\mcU}
+\delta_{\mcT}(U)\,\mcO(U)\,
+e^{-S_{\mathrm W}(U)-S_{\mathrm{eff},F}(U)}\,
+\dd\mu_{\mcU}(U).
+\]
+\end{corollary}
+
+\begin{proof}
+Absolute convergence and gauge invariance follow directly from
+Theorem~\ref{thm:fermion-loop-expansion}.  The determinant identity is the
+exponential form of the logarithmic expansion proved there:
+\[
+\log\det M_{\mathrm F}(U)=\log\det D-S_{\mathrm{eff},F}(U).
+\]
+Exponentiating gives
+\[
+\det M_{\mathrm F}(U)=\det D\,e^{-S_{\mathrm{eff},F}(U)}.
+\]
+Substituting this identity into Theorem~\ref{thm:bosonic-reduction} yields the
+stated bosonic reduction formula.
+\end{proof}
+
 \paragraph{Wilson loops and the area law.}
 The Wilson loop remains the basic gauge-invariant probe of confinement.
 
@@ -1844,8 +2451,9 @@ constant determinant, and a decoupled ghost sector.  The fermions integrate to
 a finite determinant, the scalar sector is an exact Gaussian field with
 stiffness operator $L_\eta+m_\phi^2I$, and the continuum action
 $S_{\mathrm{YM}}^{\mathrm{cont}}$ (in the stationary formulation of
-\cite{continuumqft}) is the finite-lattice thermodynamic continuum-limit
-object on $\pi_\infty$.
+\cite{continuumqft}) is paired here with a canonical continuum-indexed class of
+local gauge-invariant plaquette observables and its finite-regulator
+approximation map.
 
 \paragraph{Forward look to the thermodynamic theory.}
 The $N\to\infty$ thermodynamic limit developed in the companion papers places
@@ -1856,10 +2464,14 @@ mean-field setting: \cite{convergence} proves
 \]
 while \cite{continuumqft} identifies the continuum limit action
 $S_{\mathrm{YM}}^{\mathrm{cont}}$ and associated thermodynamic observables on
-$\pi_\infty$.  The present paper supplies the exact finite-dimensional
+$\pi_\infty$.  The paper supplies the exact finite-dimensional
 quantization step on the deterministic regulator lattice, together with the
 local Haar-coordinate analysis and the explicit gauge fixing needed to pass from
-data package $\mathcal Q^{(N)}$ to its quantum ensemble.
+data package $\mathcal Q^{(N)}$ to its quantum ensemble.  In addition, it fixes
+the continuum-indexed gauge-invariant observable class that is local on each
+finite regulator, uniformly bounded on compact windows, nontrivial, and carried
+in the thermodynamic presentation by the equilibrium product measures
+\(\pi_\infty^{\otimes k}\) with the transferred logarithmic Sobolev control.
 
 \bibliographystyle{plain}
 \bibliography{references}

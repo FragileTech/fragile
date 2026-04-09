@@ -54,7 +54,7 @@ The standard axiomatic frameworks for quantum field theory ---
 Wightman, Osterwalder--Schrader, and Haag--Kastler / locally covariant AQFT ---
 describe the output of a quantum field theory rather than the
 constructive dynamical system that produces it.
-The present paper proposes a framework whose primitive object is the
+The paper proposes a framework whose primitive object is the
 constructive dynamical system itself, organized into five core axioms
 shared by all constructive dynamical QFTs with propagating local
 degrees of freedom --- geometric locality, finite resolution, finite
@@ -258,6 +258,281 @@ that makes the additional hypotheses explicit.
   regularity. This is exactly the claimed structural/analytic
   separation.
 \end{proof}
+
+\subsection{Verification Interface and Frozen Hypothesis Packages}
+\label{sec:verification-interface}
+
+To make the framework reusable in downstream realization papers, the
+flat-sector verification route is packaged here as a theorem library
+with named hypothesis bundles. The point is not to change the
+logical architecture already established above, but to freeze it into
+a citation-ready interface: one verifies a structural package, then a
+small number of named supplementary packages, and then invokes a
+single theorem. Downstream realization papers should therefore be read
+in three blocks:
+\begin{enumerate}[nosep,label=(\roman*)]
+\item \textbf{Implementation data:} the concrete realization tuple
+  (state space, symmetry maps, observable algebras, transfer maps,
+  semigroup data);
+\item \textbf{Verified laws:} the package obligations
+  \(H_{\mathrm{struct}}\), RP, CL, MG, TS, H;
+\item \textbf{Returned outputs:} OS0--OS4, W0--W4, and the gap
+  conclusion allowed by the master interface theorem.
+\end{enumerate}
+
+\begin{definition}[Structural flat package]\label{def:hstruct}
+  The \emph{structural flat package} $H_{\mathrm{struct}}$ consists of:
+  \begin{enumerate}[nosep,label=(S\arabic*)]
+  \item Core Axioms~1--5 in the flat stationary sector
+    $(\real^4,\delta)$;
+  \item a branch choice on Axes~A, B, and C;
+  \item a chosen $E(4)$-invariant equilibrium state in the sense used
+    for OS1;
+  \item the positive-time physical algebra and its centered subspace
+    as specified in Definition~\ref{def:flat}.
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}[Structural manifold package]\label{def:hman}
+  The \emph{structural manifold package} $H_{\mathrm{man}}$ consists of:
+  \begin{enumerate}[nosep,label=(M\arabic*)]
+  \item Core Axioms~1--5 on a globally hyperbolic Lorentzian manifold;
+  \item a choice on Axis~A fixing the physical algebra;
+  \item geometric naturality in the sense of
+    Remark~\ref{rem:naturality}.
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}[Frozen supplementary packages]\label{def:packages}
+  In the flat stationary sector, the reusable supplementary packages
+  are the following.
+
+  \medskip
+
+  \noindent\textbf{Package RP (reflection positivity / transfer).}
+  RP consists of the hypotheses of
+  Proposition~\ref{prop:transfer}:
+  \begin{enumerate}[nosep,label=(RP\arabic*)]
+  \item hyperplane decomposition as in
+    Lemma~\ref{lem:hyperplane};
+  \item a reflection-invariant hyperplane-factorizing Euclidean
+    measure associated with the generating functional;
+  \item implementation of Euclidean time evolution by the
+    positivity-preserving semigroup of Core
+    Axiom~\ref{ax:positivity}.
+  \end{enumerate}
+
+  \medskip
+
+  \noindent\textbf{Package CL (clustering).}
+  CL consists of:
+  \begin{enumerate}[nosep,label=(CL\arabic*)]
+  \item a unital translation-stable observable algebra
+    $\mathcal{B}^{\mathrm{phys}}$ from which the Schwinger functions
+    are generated;
+  \item the translation-mixing estimate~\eqref{eq:mixing} on
+    $\mathcal{B}^{\mathrm{phys}}$.
+  \end{enumerate}
+
+  \medskip
+
+  \noindent\textbf{Package MG (mass-gap transfer).}
+  MG consists of:
+  \begin{enumerate}[nosep,label=(MG\arabic*)]
+  \item a linear subspace
+    $\mathcal{C}^{\mathrm{phys},0}_+ \subset
+    \alg^{\mathrm{phys},0}_+$ of centered positive-time observables
+    whose OS images are well-defined in the reconstructed Hilbert
+    space;
+  \item a semigroup estimate on that class:
+    there exist $\lambda_* > 0$ and $C_{\mathrm{MG}} \ge 1$ such that
+    for all $F \in \mathcal{C}^{\mathrm{phys},0}_+$ and $t \ge 0$,
+    \[
+      \|e^{-tH}\widehat{F}\|_\hilb
+      \le C_{\mathrm{MG}} e^{-\lambda_* t}\|\widehat{F}\|_\hilb;
+    \]
+  \item density of the OS images
+    $\{\widehat{F}: F \in \mathcal{C}^{\mathrm{phys},0}_+\}$ in
+    $\Omega^\perp$;
+  \item compatibility of the class with the reconstructed physical
+    sector, so that the above estimate is a statement about the same
+    Hamiltonian that appears in OS reconstruction.
+  \end{enumerate}
+
+  \medskip
+
+  \noindent\textbf{Package TS (time-slice).}
+  Relative to the structural manifold package $H_{\mathrm{man}}$,
+  TS consists of:
+  \begin{enumerate}[nosep,label=(TS\arabic*)]
+  \item the local algebra is generated by on-shell fields modulo the
+    equations of motion;
+  \item normal hyperbolicity or Dirac-type hyperbolicity of those
+    equations.
+  \end{enumerate}
+
+  \medskip
+
+  \noindent\textbf{Package H (Hadamard / microlocal spectrum).}
+  Relative to the structural manifold package $H_{\mathrm{man}}$,
+  H consists of:
+  \begin{enumerate}[nosep,label=(H\arabic*)]
+  \item the requirement that the physical states under consideration
+    are Hadamard.
+  \end{enumerate}
+\end{definition}
+
+\begin{remark}[Package schemas are local contracts]
+  Definitions~\ref{def:hstruct}--\ref{def:packages} should be read as typed
+  schemas rather than as narrative summaries. A downstream realization
+  implements the framework by:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item specifying concrete data for each slot consumed by a package;
+  \item verifying the corresponding law clauses item-by-item;
+  \item invoking the master interface theorem only after those clauses
+    have been checked.
+  \end{enumerate}
+  In particular, package names such as RP, CL, and MG are abbreviations for
+  explicit finite lists of obligations, not black-box citations.
+\end{remark}
+
+\begin{remark}[Imported standard results versus framework results]
+  The verification API separates three layers.
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item \textbf{Framework results proved here:}
+    Proposition~\ref{prop:transfer},
+    Proposition~\ref{prop:mixing},
+    Theorem~\ref{thm:gap-to-mixing},
+    Proposition~\ref{prop:positive-time-density},
+    Proposition~\ref{prop:physical-separation}, and
+    Theorem~\ref{thm:recon-gap}.
+  \item \textbf{Imported standard results:} the classical
+    Osterwalder--Schrader reconstruction theorem once OS0--OS4 are
+    verified, the spectral theorem for the reconstructed Hamiltonian,
+    and the standard hyperbolic/Hadamard implications in the manifold
+    branch.
+  \item \textbf{Realization-specific work:} verification that a given
+    model satisfies the packages RP, CL, MG, TS, and H.
+  \end{enumerate}
+\end{remark}
+
+\begin{theorem}[Master verification interface]\label{thm:verification-interface}
+  Assume the structural flat package $H_{\mathrm{struct}}$ of
+  Definition~\ref{def:hstruct}.
+  \begin{enumerate}[nosep,label=(\alph*)]
+  \item If Package RP holds, the interface returns OS2.
+  \item If Package CL holds, the interface returns OS3.
+  \item If both Package RP and Package CL hold, the interface returns
+    OS0--OS4, hence the standard Osterwalder--Schrader reconstruction
+    theorem yields Wightman functions satisfying W0--W4.
+  \item If, in addition, Package MG holds, the interface returns the reconstructed
+    Hamiltonian satisfies
+    \[
+      \spec(H)\cap (0,\lambda_*) = \varnothing.
+    \]
+  \end{enumerate}
+\end{theorem}
+\begin{proof}
+  Under $H_{\mathrm{struct}}$, OS0, OS1, and OS4 are supplied by
+  Theorem~\ref{thm:flat-detail}. Package RP is exactly the hypothesis
+  set of Proposition~\ref{prop:transfer}, which proves OS2. Package CL
+  is exactly the hypothesis set of Proposition~\ref{prop:mixing},
+  which proves OS3. Once OS0--OS4 are available, the standard
+  Osterwalder--Schrader reconstruction theorem yields W0--W4. The
+  mass-gap conclusion is Theorem~\ref{thm:recon-gap}.
+\end{proof}
+
+\begin{remark}[Return type of the flat verification interface]
+  Theorem~\ref{thm:verification-interface} should be read as returning a
+  structured output object, not merely a yes/no verdict. Once a realization
+  has supplied implementation data and verified the package laws, the interface
+  returns:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item Schwinger functionals satisfying the requested OS clauses;
+  \item when OS0--OS4 are all available, the standard reconstructed Hilbert
+    space, vacuum vector, and positive Hamiltonian from classical
+    Osterwalder--Schrader reconstruction;
+  \item when Package MG is also available, the spectral-gap conclusion for that
+    same reconstructed Hamiltonian.
+  \end{enumerate}
+  Downstream realization papers may therefore treat the framework theorem as a
+  contract that consumes verified package data and returns mathematically typed
+  outputs.
+\end{remark}
+
+\begin{theorem}[Master manifold verification interface]
+  \label{thm:verification-interface-manifold}
+  Assume the structural manifold package $H_{\mathrm{man}}$ of
+  Definition~\ref{def:hman}.
+  \begin{enumerate}[nosep,label=(\alph*)]
+  \item Isotony, locality, physical-algebra selection, and local
+    covariance follow.
+  \item If, in addition, Package TS holds, then the time-slice
+    property holds.
+  \item If, in addition, Package H holds, then the microlocal spectrum
+    condition holds for the physical states under consideration.
+  \end{enumerate}
+\end{theorem}
+\begin{proof}
+  This is Theorem~\ref{thm:manifold-detail} rewritten in package form
+  relative to $H_{\mathrm{man}}$.
+\end{proof}
+
+\begin{corollary}[Gauge-invariant sector interface]\label{cor:gauge-interface}
+  In the gauge branches A1 or A3, the preceding interface applies
+  after replacing the ambient observable algebra by the
+  gauge-invariant physical algebra
+  $\alg^{\mathrm{phys}}_M(O) = \alg_M(O)^G$ or
+  $\alg^{\mathrm{phys}}_M(O) = \alg_M(O)^{G_{\mathrm{disc}}}$.
+  If that gauge-invariant sector satisfies Packages RP and CL, then
+  OS0--OS4 and W0--W4 hold on the gauge-invariant reconstructed
+  sector. If, further, Package MG holds there, then the reconstructed
+  gauge-invariant Hamiltonian has no spectrum in $(0,\lambda_*)$.
+\end{corollary}
+\begin{proof}
+  Axis~A fixes the physical algebra. All statements in
+  Theorem~\ref{thm:verification-interface} are formulated directly on
+  that physical algebra, so the gauge-invariant specialization is
+  immediate.
+\end{proof}
+
+\begin{remark}[Dependency diagram with theorem labels]
+  The framework's verification flow can be read as the diagram
+  \[
+    H_{\mathrm{struct}}
+    \overset{\text{Theorem~\ref{thm:flat-detail}}}{\Longrightarrow}
+    \mathrm{OS0},\mathrm{OS1},\mathrm{OS4},
+    \qquad
+    H_{\mathrm{struct}} + \mathrm{RP}
+    \overset{\text{Proposition~\ref{prop:transfer}}}{\Longrightarrow}
+    \mathrm{OS2},
+  \]
+  \[
+    H_{\mathrm{struct}} + \mathrm{CL}
+    \overset{\text{Proposition~\ref{prop:mixing}}}{\Longrightarrow}
+    \mathrm{OS3},
+    \qquad
+    H_{\mathrm{struct}} + \mathrm{RP} + \mathrm{CL}
+    \overset{\text{Theorem~\ref{thm:verification-interface}}}{\Longrightarrow}
+    \mathrm{OS0\text{--}OS4} \Rightarrow \mathrm{W0\text{--}W4},
+  \]
+  \[
+    H_{\mathrm{struct}} + \mathrm{RP} + \mathrm{CL} + \mathrm{MG}
+    \overset{\text{Theorem~\ref{thm:recon-gap}}}{\Longrightarrow}
+    \spec(H)\cap (0,\lambda_*) = \varnothing,
+  \]
+  \[
+    H_{\mathrm{man}}
+    \overset{\text{Theorem~\ref{thm:verification-interface-manifold}}}{\Longrightarrow}
+    \mathrm{HK/LC},
+    \qquad
+    +\,\mathrm{TS} \Rightarrow \mathrm{time\text{-}slice},
+    \quad
+    +\,\mathrm{H} \Rightarrow \mathrm{microlocal\ spectrum}.
+  \]
+  This is the theorem-level checklist that later realization papers
+  are meant to discharge.
+\end{remark}
 
 \subsection{Relation to Recent Constructive QFT}
 
@@ -667,6 +942,38 @@ Primitive \\
 \caption{The four axiomatic layers and their status in the present
   framework.}
 \label{tab:layers}
+\end{table}
+
+\subsection{Verification Input/Output Table}
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}p{2.2cm}p{3.3cm}p{3.1cm}p{2.6cm}p{2.2cm}@{}}
+\toprule
+Target & Structural input & Supplementary package(s) &
+Imported standard step & Output \\
+\midrule
+OS & Core Axioms~1--5, Axes~A/B/C, flat sector &
+RP for OS2, CL for OS3, $E(4)$-invariant equilibrium for OS1 &
+None & OS0--OS4 \\
+Wightman & Verified OS package above &
+No new package beyond RP+CL &
+OS reconstruction & W0--W4 \\
+HK / LC-AQFT & Core Axioms~1--5, Axis~A, naturality &
+TS for time-slice, H for microlocal spectrum &
+Standard hyperbolic and Hadamard machinery &
+Isotony, locality, covariance, optional time-slice and microlocal spectrum \\
+Mass gap & Verified OS package above, centered positive-time physical algebra &
+MG &
+Spectral theorem for reconstructed $H$ &
+$\spec(H)\cap(0,\lambda_*)=\varnothing$ \\
+\bottomrule
+\end{tabular}
+\caption{Input/output table for the reusable theorem API. Structural
+  inputs are distinguished from supplementary analytic packages and
+  from imported standard results.}
+\label{tab:verification-io}
 \end{table}
 
 
@@ -1095,8 +1402,33 @@ Critical $O(N)$ fixed point & A2 & B1 & C1 & D2 \\
   $(M,g) = (\real^4, \delta)$ with flat Euclidean metric,
   time-translation invariant dynamics, and Euclidean time reflection
   $\Theta: (x_0, \mathbf{x}) \mapsto (-x_0, \mathbf{x})$. The
-  positive-time physical algebra $\alg^{\mathrm{phys}}_+$ consists of
-  physical observables supported in $\{x_0 > 0\}$.
+  positive-time physical algebra $\alg^{\mathrm{phys}}_+$ is the norm
+  closure of bounded physical observables supported in
+  $\{x_0 \ge \varepsilon\}$ for some $\varepsilon > 0$:
+  \[
+    \alg^{\mathrm{phys}}_+
+    := \overline{\bigcup_{\varepsilon>0}
+    \alg^{\mathrm{phys}}(\{x_0\ge \varepsilon\})}^{\|\cdot\|_\infty}.
+  \]
+  In the gauge branches, ``physical'' means gauge-invariant at the
+  definition level; in the ungauged branch it means the full local
+  algebra.
+
+  The centered positive-time physical algebra is
+  \[
+    \alg^{\mathrm{phys},0}_+
+    := \{F \in \alg^{\mathrm{phys}}_+:
+    \langle F\rangle_\pi = 0\}.
+  \]
+  Reflection maps $\alg^{\mathrm{phys}}_+$ anti-linearly onto the
+  corresponding negative-time algebra, spatial translations preserve
+  $\alg^{\mathrm{phys}}_+$, and positive Euclidean time translations
+  preserve $\alg^{\mathrm{phys}}_+$.
+
+  Unbounded smeared fields are not included in the definition of
+  $\alg^{\mathrm{phys}}_+$ itself; they are handled after
+  reconstruction as operators affiliated with the reconstructed
+  Hilbert-space representation.
 \end{definition}
 
 
@@ -1259,23 +1591,87 @@ separate.
   observables generated by~$\mathcal{B}$.
 \end{proof}
 
-\begin{remark}[A model-dependent spectral-gap route]
-  In concrete theories, one standard route to
-  \eqref{eq:mixing} is a spectral gap for an appropriate Euclidean
-  transfer operator or Markov generator together with additional
-  information identifying translated observables with the corresponding
-  dynamical correlations. That route is useful, but it is not a
-  theorem of the abstract framework and is therefore kept separate
-  from Proposition~\ref{prop:mixing}.
-\end{remark}
+\begin{theorem}[Spectral gap route to time-direction mixing]\label{thm:gap-to-mixing}
+  Let the hypotheses of Proposition~\ref{prop:transfer} hold, and let
+  $\mathcal{C}^{\mathrm{phys},0}_+ \subset \alg^{\mathrm{phys},0}_+$
+  be a centered class of positive-time observables such that:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item for all $F,G \in \mathcal{C}^{\mathrm{phys},0}_+$ and all
+    $t \ge 0$, Euclidean time translation by $t$ is represented by
+    \[
+      \langle F\,\tau_{t e_0} G\rangle_\pi
+      - \langle F\rangle_\pi \langle G\rangle_\pi
+      = \langle \widehat{F}, e^{-tH}\widehat{G}\rangle_\hilb;
+    \]
+  \item the reconstructed Hamiltonian has a spectral gap $\lambda>0$
+    on $\Omega^\perp$, equivalently
+    \[
+      \|e^{-tH}P_{\Omega^\perp}\|
+      \le e^{-\lambda t}
+      \qquad (t \ge 0);
+    \]
+  \item the Schwinger functions are generated by a translation-stable
+    algebra containing $\mathcal{C}^{\mathrm{phys},0}_+$.
+  \end{enumerate}
+  Then the connected correlations satisfy exponential mixing along the
+  Euclidean time direction:
+  \[
+    \big|\langle F\,\tau_{t e_0}G\rangle_\pi
+    - \langle F\rangle_\pi \langle G\rangle_\pi\big|
+    \le e^{-\lambda t}\|\widehat{F}\|_\hilb \|\widehat{G}\|_\hilb.
+  \]
+\end{theorem}
+\begin{proof}
+  Since $F$ and $G$ are centered, $\widehat{F},\widehat{G}\in
+  \Omega^\perp$. By hypothesis~(i),
+  \[
+    \langle F\,\tau_{t e_0} G\rangle_\pi
+    - \langle F\rangle_\pi \langle G\rangle_\pi
+    = \langle \widehat{F}, e^{-tH}P_{\Omega^\perp}\widehat{G}\rangle_\hilb.
+  \]
+  Cauchy--Schwarz and hypothesis~(ii) give
+  \[
+    \big|\langle F\,\tau_{t e_0}G\rangle_\pi
+    - \langle F\rangle_\pi \langle G\rangle_\pi\big|
+    \le \|\widehat{F}\|_\hilb
+    \|e^{-tH}P_{\Omega^\perp}\widehat{G}\|_\hilb
+    \le e^{-\lambda t}\|\widehat{F}\|_\hilb \|\widehat{G}\|_\hilb.
+  \]
+  This is the required exponential mixing estimate in the time
+  direction.
+\end{proof}
+
+\begin{corollary}[Gap route to Package CL]\label{cor:gap-to-cl}
+  In addition to the hypotheses of Theorem~\ref{thm:gap-to-mixing},
+  assume there is an $E(4)$-stable generating algebra
+  $\mathcal{B}^{\mathrm{phys}}$ such that every pair
+  $F,G \in \mathcal{B}^{\mathrm{phys}}$ can, after an $E(4)$ rotation
+  of coordinates, be represented by elements of
+  $\mathcal{C}^{\mathrm{phys},0}_+$ to which
+  Theorem~\ref{thm:gap-to-mixing} applies. Then
+  $\mathcal{B}^{\mathrm{phys}}$ satisfies the translation-mixing
+  estimate~\eqref{eq:mixing}. Hence Package CL holds, and
+  Proposition~\ref{prop:mixing} yields OS3.
+\end{corollary}
+\begin{proof}
+  By assumption, each large-translation correlation in
+  $\mathcal{B}^{\mathrm{phys}}$ can be rotated into the time-direction
+  situation covered by Theorem~\ref{thm:gap-to-mixing}. The
+  $E(4)$-invariance of the equilibrium state transports the resulting
+  estimate back to the original configuration, yielding
+  \eqref{eq:mixing}.
+\end{proof}
 
 \begin{remark}[Axis~D refines the rate]
-  OS3 asks only for factorization at large separation. Under D1, one
-  expects exponential clustering once a quantitative form of
-  \eqref{eq:mixing} is established. Under D2, one expects polynomial
-  clustering. The
-  \emph{existence} of OS3 is independent of Axis~D; the \emph{rate}
-  depends on it.
+  Axis~D now enters the theorem library in a precise way. Under D1,
+  Theorem~\ref{thm:gap-to-mixing} together with
+  Corollary~\ref{cor:gap-to-cl} is the canonical route to
+  exponential clustering once a spectral gap is verified on a
+  sufficiently rich observable class. Under D2,
+  one expects a different package replacing the exponential estimate
+  of Theorem~\ref{thm:gap-to-mixing} by a polynomial decay estimate.
+  Thus Axis~D does not change the logical place where OS3 is proved;
+  it changes the quantitative package that realizes Package~CL.
 \end{remark}
 
 
@@ -1335,6 +1731,119 @@ separate.
   framework before reconstruction (Remark~\ref{rem:propagation-chain}).
 \end{proof}
 
+\subsection{Density, Separation, and Mass-Gap Transfer}
+
+\begin{proposition}[Positive-time density after reconstruction]
+  \label{prop:positive-time-density}
+  Assume a reflection-positive Euclidean theory for which the standard
+  OS reconstruction has been carried out and suppose that the OS
+  images $\{\widehat{F}: F \in \alg^{\mathrm{phys}}_+\}$ are dense in
+  $\hilb$. Then the images of centered positive-time observables
+  $\{\widehat{F}: F \in \alg^{\mathrm{phys},0}_+\}$ are dense in
+  $\Omega^\perp$.
+\end{proposition}
+\begin{proof}
+  Let $\psi \in \Omega^\perp$ and $\varepsilon>0$. By density of
+  $\{\widehat{F}: F \in \alg^{\mathrm{phys}}_+\}$ in $\hilb$, choose
+  $F \in \alg^{\mathrm{phys}}_+$ with
+  $\|\psi-\widehat{F}\|_\hilb<\varepsilon$. Set
+  \[
+    F_0 := F - \langle F\rangle_\pi \mathbf{1}.
+  \]
+  Then $F_0 \in \alg^{\mathrm{phys},0}_+$ and
+  \[
+    \widehat{F_0}
+    = \widehat{F} - \langle \Omega,\widehat{F}\rangle_\hilb\,\Omega.
+  \]
+  Since $\psi \perp \Omega$, orthogonal projection onto
+  $\Omega^\perp$ cannot increase the distance to~$\psi$, so
+  \[
+    \|\psi-\widehat{F_0}\|_\hilb
+    = \|P_{\Omega^\perp}(\psi-\widehat{F})\|_\hilb
+    \le \|\psi-\widehat{F}\|_\hilb
+    < \varepsilon.
+  \]
+  Therefore the images of centered positive-time observables are dense
+  in $\Omega^\perp$.
+\end{proof}
+
+\begin{proposition}[Spectral separation by the physical algebra]
+  \label{prop:physical-separation}
+  Assume the set
+  $\{\widehat{F}: F \in \alg^{\mathrm{phys},0}_+\}$ is dense in
+  $\Omega^\perp$.
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item For every nonzero vector $\psi \in \Omega^\perp$, there exists
+    $F \in \alg^{\mathrm{phys},0}_+$ such that
+    $\langle \psi,\widehat{F}\rangle_\hilb \neq 0$.
+  \item If $P_I$ is a nonzero spectral projection of
+    $H|_{\Omega^\perp}$ for a Borel set $I \subset (0,\infty)$, then
+    there exists $F \in \alg^{\mathrm{phys},0}_+$ such that
+    $P_I\widehat{F} \neq 0$.
+  \end{enumerate}
+\end{proposition}
+\begin{proof}
+  If (i) failed for some nonzero $\psi \in \Omega^\perp$, then
+  $\psi$ would be orthogonal to a dense subset of $\Omega^\perp$ and
+  hence to all of $\Omega^\perp$, contradicting $\psi\neq 0$. For
+  (ii), choose any nonzero $\psi$ in the range of $P_I$ and apply
+  (i). If $P_I\widehat{F}=0$ for every $F$, then
+  $\langle \psi,\widehat{F}\rangle_\hilb
+  = \langle P_I\psi,\widehat{F}\rangle_\hilb = 0$ for every $F$,
+  again contradicting (i).
+\end{proof}
+
+\begin{theorem}[OS reconstruction plus gap transfer implies Minkowski mass gap]
+  \label{thm:recon-gap}
+  Assume:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item OS0--OS4 hold, so the standard OS reconstruction yields a
+    Hilbert space $\hilb$, vacuum vector $\Omega$, and self-adjoint
+    Hamiltonian $H \ge 0$;
+  \item Package MG of Definition~\ref{def:packages} holds.
+  \end{enumerate}
+  Then
+  \[
+    \spec(H)\cap (0,\lambda_*) = \varnothing.
+  \]
+\end{theorem}
+\begin{proof}
+  By MG2, for every
+  $F \in \mathcal{C}^{\mathrm{phys},0}_+$ and $t\ge 0$,
+  \[
+    \|e^{-tH}\widehat{F}\|_\hilb
+    \le C_{\mathrm{MG}} e^{-\lambda_* t}\|\widehat{F}\|_\hilb.
+  \]
+  Since $e^{-tH}$ is bounded and MG3 gives density of
+  $\{\widehat{F}:F\in \mathcal{C}^{\mathrm{phys},0}_+\}$ in
+  $\Omega^\perp$, the same estimate extends by continuity to every
+  $\psi \in \Omega^\perp$:
+  \[
+    \|e^{-tH}\psi\|_\hilb
+    \le C_{\mathrm{MG}} e^{-\lambda_* t}\|\psi\|_\hilb.
+  \]
+  Suppose, for contradiction, that
+  $\spec(H)\cap(0,\lambda_*)\neq\varnothing$. Then there exists
+  $\mu<\lambda_*$ and a nonzero spectral projection
+  $P_{[0,\mu]}$ on $\Omega^\perp$. By
+  Proposition~\ref{prop:physical-separation}, or directly from MG3,
+  choose nonzero $\psi \in \operatorname{Ran}P_{[0,\mu]}$.
+  The spectral theorem gives
+  \[
+    \|e^{-tH}\psi\|_\hilb^2
+    = \int_{[0,\mu]} e^{-2tE}\, d\|P_E\psi\|^2
+    \ge e^{-2\mu t}\|\psi\|_\hilb^2.
+  \]
+  Combining this with the upper bound above yields
+  \[
+    e^{(\lambda_*-\mu)t}\|\psi\|_\hilb
+    \le C_{\mathrm{MG}}\|\psi\|_\hilb
+    \qquad (t\ge 0),
+  \]
+  which is impossible as $t\to\infty$ because $\lambda_*-\mu>0$ and
+  $\psi\neq 0$. Therefore no spectrum can lie in $(0,\lambda_*)$.
+\end{proof}
+
 
 \subsection{General Manifold Specialization}
 
@@ -1388,6 +1897,56 @@ separate.
   the standard microlocal wavefront set, and the microlocal spectrum
   condition follows by the usual Radzikowski
   characterization~\cite{Radzikowski}.
+\end{proof}
+
+\subsection{How To Use the Framework in a Realization Paper}
+\label{sec:use-framework}
+
+The intended use in a model-verification paper is the following
+checklist.
+
+\begin{enumerate}
+\item Verify the structural flat package $H_{\mathrm{struct}}$ of
+  Definition~\ref{def:hstruct}: Core Axioms~1--5, branch choices, the
+  flat stationary specialization, the chosen equilibrium state, and
+  the physical positive-time algebra of Definition~\ref{def:flat}.
+\item Verify Package RP if OS2 is needed. This unlocks
+  Proposition~\ref{prop:transfer} and therefore OS2.
+\item Verify either Package CL directly, or verify the spectral-gap
+  hypotheses of Theorem~\ref{thm:gap-to-mixing} and deduce
+  Package~CL. This unlocks Proposition~\ref{prop:mixing} and therefore
+  OS3.
+\item Invoke Theorem~\ref{thm:verification-interface} to conclude
+  OS0--OS4 and then W0--W4 by standard OS reconstruction.
+\item If a Minkowski mass-gap statement is desired, verify the
+  density/separation statements via
+  Propositions~\ref{prop:positive-time-density} and
+  \ref{prop:physical-separation}, package the quantitative estimate as
+  Package MG, and invoke Theorem~\ref{thm:recon-gap}.
+\item In the Lorentzian branch, verify naturality first, then Package
+  TS for time-slice and Package~H for the microlocal spectrum
+  condition, and invoke Theorem~\ref{thm:manifold-detail}.
+\end{enumerate}
+
+\begin{corollary}[Verification schema for realization papers]
+  A realization paper may be organized as:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item structural verification of $H_{\mathrm{struct}}$;
+  \item verification of RP;
+  \item verification of CL directly or via
+    Theorem~\ref{thm:gap-to-mixing};
+  \item invocation of
+    Theorem~\ref{thm:verification-interface};
+  \item optional verification of MG and invocation of
+    Theorem~\ref{thm:recon-gap}.
+  \end{enumerate}
+  In the gauge branches, the same schema is carried out on the
+  gauge-invariant physical sector using
+  Corollary~\ref{cor:gauge-interface}.
+\end{corollary}
+\begin{proof}
+  This is a direct restatement of the theorem library established in
+  this section.
 \end{proof}
 
 
@@ -1491,7 +2050,7 @@ Wightman axioms ask for Hilbert-space data; the OS axioms ask for
 Schwinger functions; the Haag--Kastler axioms ask for nets. In all
 cases one verifies properties of an already-produced theory.
 
-The present axioms ask for direct structural properties of the
+These axioms ask for direct structural properties of the
 generating dynamical system: does it admit a net of local algebras?
 Does it have finite operational resolution? Does it propagate
 information at finite speed? Is its generating structure local with
@@ -1500,13 +2059,13 @@ additive decomposition? Is the generator positive?
 It is important to distinguish this usage from the standard meaning of
 ``constructive'' in mathematical physics (as in Glimm--Jaffe), which
 refers to explicit constructions with detailed analytic estimates. The
-present paper isolates the \emph{structural} layer of a constructive
+paper isolates the \emph{structural} layer of a constructive
 program. The analytic layer --- where one proves existence and
 properties of concrete theories using whatever techniques are
 appropriate --- is logically separate from the framework itself.
 
 
-\subsection{What the Axioms Prove and What They Do Not}
+\subsection{Analytic hypotheses beyond the axioms}
 
 The axioms describe a constructive theory at one positive scale. A
 continuum family $\{\mathcal{T}_\varepsilon\}_{\varepsilon > 0}$ with
@@ -1603,9 +2162,9 @@ topological with no propagating sector at all.
 \label{sec:discussion}
 %% ===================================================================
 
-\subsection{What Is New}
+\subsection{Summary of Advances}
 
-The main advances of the present version are:
+The main advances of the framework are:
 
 \begin{enumerate}[nosep]
 \item The detailed correspondence between the five core axioms and

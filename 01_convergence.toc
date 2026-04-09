@@ -1,18 +1,21 @@
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
 \contentsline {section}{\numberline {2}The Kinetic Geometric Gas Core}{2}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Standing assumptions}{2}{subsection.2.1}%
-\contentsline {section}{\numberline {3}Structural Bounds: Confinement, Viscosity, and Squashing}{4}{section.3}%
+\contentsline {section}{\numberline {3}Structural Bounds: Confinement, Viscosity, and Squashing}{5}{section.3}%
 \contentsline {section}{\numberline {4}Detailed Backbone and Viscous Derivations}{9}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Weighted generator calculus for the uncoupled kinetic backbone}{9}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Matrix analysis for the viscous velocity block}{15}{subsection.4.2}%
-\contentsline {section}{\numberline {5}Finite-Particle Hypocoercivity and N-Uniform LSI}{20}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Backbone gap and viscous perturbation}{20}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}The squashed observation chain}{23}{subsection.5.2}%
-\contentsline {section}{\numberline {6}Entropy and Total-Variation Convergence}{23}{section.6}%
-\contentsline {section}{\numberline {7}Mean-Field Equation and Propagation of Chaos}{24}{section.7}%
-\contentsline {subsection}{\numberline {7.1}The McKean-Vlasov limit}{24}{subsection.7.1}%
-\contentsline {section}{\numberline {8}Stationary Mean-Field Limit and Mean-Field LSI}{30}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Exchangeability and finite de Finetti reduction}{30}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Tightness, identification, and the stationary thermodynamic limit}{32}{subsection.8.2}%
-\contentsline {subsection}{\numberline {8.3}Translated confinement and the wall-to-infinity limit}{36}{subsection.8.3}%
-\contentsline {section}{\numberline {9}Discussion}{39}{section.9}%
+\contentsline {subsection}{\numberline {4.2}Matrix analysis for the viscous velocity block}{16}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Finite-Particle Hypocoercivity and N-Uniform LSI}{21}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Backbone gap and viscous perturbation}{21}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Quadratic perturbative closure in the small-viscosity regime}{23}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}The squashed observation chain}{35}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Entropy and Total-Variation Convergence}{35}{section.6}%
+\contentsline {section}{\numberline {7}Mean-Field Equation and Propagation of Chaos}{36}{section.7}%
+\contentsline {subsection}{\numberline {7.1}The McKean-Vlasov limit}{36}{subsection.7.1}%
+\contentsline {section}{\numberline {8}Stationary Mean-Field Limit and Mean-Field LSI}{42}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Finite-particle invariant laws via Harris theory}{42}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Exchangeability and finite de Finetti reduction}{44}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Tightness, identification, and the stationary thermodynamic limit}{46}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Linear stationary problem and nonlinear alignment fixed point}{46}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Translated confinement and the wall-to-infinity limit}{54}{subsection.8.5}%
+\contentsline {section}{\numberline {9}Discussion}{56}{section.9}%

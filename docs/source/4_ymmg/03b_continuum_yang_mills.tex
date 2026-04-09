@@ -21,6 +21,7 @@
 \newcommand{\R}{\mathbb R}
 \newcommand{\C}{\mathbb C}
 \newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
 \newcommand{\Tset}{\{0,1,\dots,T\}}
 \newcommand{\Law}{\mathrm{Law}}
 \newcommand{\E}{\mathbb E}
@@ -126,11 +127,11 @@ Finite invariant and mean-field stationary laws are denoted
 The position and velocity variables are in $d=4$.
 The confining potential \(U\in C^2(\R^4)\) is globally regular and strongly
 coercive:
-\[
-\|\nabla U(x)-\nabla U(y)\|\le L_U\|x-y\|,\qquad
-\langle\nabla U(x)-\nabla U(y),x-y\rangle\ge L_*\|x-y\|^2,\qquad
-\langle x,\nabla U(x)\rangle\ge m_U\|x\|^2-\beta_U.
-\]
+\begin{align*}
+\|\nabla U(x)-\nabla U(y)\|&\le L_U\|x-y\|,\\
+\langle\nabla U(x)-\nabla U(y),x-y\rangle&\ge L_*\|x-y\|^2,\\
+\langle x,\nabla U(x)\rangle&\ge m_U\|x\|^2-\beta_U.
+\end{align*}
 \item\textbf{Regularized viscous kernel and companion rule.}
 For each \(N\) the interaction scale \(\rho_N>0\) defines
 \[
@@ -218,17 +219,16 @@ Assumption~\ref{ass:bridge-backbone}, with explicit estimates as follows:
 \begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
 \item Finite-time chaos and finite-time coupling:
 for every finite horizon $T>0$ there is $C_T<\infty$ such that
-\[
-\KL(\rho_t^N\|f_t^{\otimes N})
-\leq
-C_T,
-\qquad
-d_{\TV}(\rho_{t,1}^N,f_t)\leq \frac{C_T}{\sqrt N},
-\qquad
-\sup_{t\in[0,T]}\E\!\left(\|X_1^{(N)}(t)-\bar X_1(t)\|^2+\|V_1^{(N)}(t)-\bar V_1(t)\|^2\right)
-\leq
-\frac{C_T}{N}.
-\]
+\begin{align*}
+\KL(\rho_t^N\|f_t^{\otimes N})&\leq C_T,\\
+d_{\TV}(\rho_{t,1}^N,f_t)&\leq \frac{C_T}{\sqrt N},\\
+\sup_{t\in[0,T]}
+\E\!\left(
+\|X_1^{(N)}(t)-\bar X_1(t)\|^2
++\|V_1^{(N)}(t)-\bar V_1(t)\|^2
+\right)
+&\leq \frac{C_T}{N}.
+\end{align*}
 \item Finite-$N$ hypocoercive regularization:
 there are $\lambda_*>0$, $C_{\mathrm{LSI}}<\infty$ and $C_{\TV}<\infty$, all
 independent of $N$, such that
@@ -274,6 +274,95 @@ C_{\mathrm{LSI}}\int_{\R^8}\Gamma_{\mathrm{hypo}}^\infty(g,g)\,d\pi_\infty.
 
 \end{theorem}
 
+\subsection{Imported labeled results from 01\_convergence}
+
+The arguments below use several results from \texttt{01\_convergence} by name.
+For later reference, we record the imported statements under the labels used
+later in the file.
+
+\begin{theorem}[Imported finite de Finetti theorem on Polish path space]
+\label{thm:definetti}
+Let \(E\) be a Polish space and let \(P^{(N)}\in\mcP(E^N)\) be exchangeable.
+Then for every \(k\le N\) there exists a mixing law
+\[
+Q_N\in\mcP(\mcP(E))
+\]
+such that the \(k\)-particle marginal satisfies
+\[
+d_{\TV}\!\left(
+P^{(N)}_k,\;
+\int_{\mcP(E)}\eta^{\otimes k}\,Q_N(d\eta)
+\right)
+\le
+\frac{k(k-1)}{2N}.
+\]
+In \texttt{01\_convergence} this is the Diaconis--Freedman finite de Finetti
+theorem applied on standard Borel state spaces.
+\end{theorem}
+
+\begin{proposition}[Imported finite-dimensional quadratic moment bounds]
+\label{prop:moments}
+Under Assumption~\ref{ass:01-core}, the \(N\)-particle kinetic system of
+\texttt{01\_convergence} has uniform finite-dimensional moment bounds on every
+finite time horizon. In particular, for every \(S>0\) there exists
+\(C_S<\infty\), independent of \(N\), such that
+\[
+\sup_{0\le t\le S}\E\bigl[\|X_1^{(N)}(t)\|^2+\|V_1^{(N)}(t)\|^2\bigr]
+\le C_S,
+\]
+and the corresponding fourth-moment increment bounds needed for
+Kolmogorov--Chentsov tightness hold on \(C([0,S];\R^8)\).
+\end{proposition}
+
+\begin{lemma}[Imported continuity of the mean-field force on moment classes]
+\label{lem:mf-lipschitz}
+Let \(F[\mu]\) denote the McKean--Vlasov viscous force field from
+\texttt{01\_convergence}. On every class of probability measures on \(\R^8\)
+with uniformly bounded second moments, the map
+\[
+\mu\longmapsto F[\mu]
+\]
+is continuous in the topology used in the mean-field well-posedness argument;
+in particular it is stable under the weak convergence and moment bounds used in
+the path-space propagation-of-chaos proof below.
+\end{lemma}
+
+\begin{proposition}[Imported McKean--Vlasov well-posedness]
+\label{prop:wp}
+Under Assumption~\ref{ass:01-core}, the McKean--Vlasov equation of
+\texttt{01\_convergence} is well posed on \(\mcP_2(\R^8)\). In particular:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item for every initial law in \(\mcP_2(\R^8)\) there exists a weak solution on
+every finite horizon;
+\item that weak solution is unique in law.
+\end{enumerate}
+\end{proposition}
+
+\begin{proposition}[Imported stationary mean-field existence and uniqueness]
+\label{prop:mf-unique}
+Under Assumption~\ref{ass:01-core}, there exists a unique stationary
+McKean--Vlasov law
+\[
+\pi_\infty\in\mcP(\R^8)
+\]
+with finite second moments. Writing \(\rho_\infty\) for its density and
+\(\mathcal L_\mu\) for the mean-field kinetic generator
+\[
+\mathcal L_\mu \phi(x,v)
+:=
+v\cdot\nabla_x\phi(x,v)
++\bigl(-\nabla U(x)-\gamma v+F[\mu](x,v)\bigr)\cdot\nabla_v\phi(x,v)
++\frac{\sigma^2}{2}\Delta_v\phi(x,v),
+\]
+the stationary law satisfies the weak stationary equation
+\begin{equation}
+\label{eq:mf-stationary-weak}
+\int_{\R^8}\mathcal L_{\pi_\infty}\phi(x,v)\,\pi_\infty(dx\,dv)=0
+\qquad
+\text{for every }\phi\in C_c^\infty(\R^8).
+\end{equation}
+\end{proposition}
+
 \subsection{Thermodynamic transport of graph and plaquette observables}
 
 The next results transfer empirical trajectory information to the interaction
@@ -298,8 +387,8 @@ For the path-space statements below, we use the same symbol
 Y_i^{(N)}(s)\in\R^8,\qquad s\in[0,S],
 \]
 for the continuous-time kinetic path of particle \(i\) under the
-\(N\)-particle dynamics from \texttt{01\_convergence}, started from the
-invariant law \(\pi_N\).
+\(N\)-particle dynamics of \texttt{01\_convergence}, started from the invariant
+law \(\pi_N\).
 The recorded discrete data are the observed values of this path at the
 integer-indexed sampling times.
 \end{definition}
@@ -668,15 +757,17 @@ v\cdot\nabla_x\phi(x,v)
 where \(F[\mu]\) is the mean-field viscous field from
 \texttt{01\_convergence}.
 For the finite-\(N\) system,
-\[
+\begin{multline*}
 \phi(Y_i^{(N)}(v))-\phi(Y_i^{(N)}(u))
 -\int_u^v
 \Bigl[
-\mathcal L_{\mathfrak M_{[0,S],s}^{(N)}}\phi\bigl(Y_i^{(N)}(s)\bigr)
-+\bigl(F_i^{(N)}(s)-F[\mathfrak M_{[0,S],s}^{(N)}]\bigl(Y_i^{(N)}(s)\bigr)\bigr)
+\mathcal L_{\mathfrak M_{[0,S],s}^{(N)}}\phi\bigl(Y_i^{(N)}(s)\bigr)\\
++\bigl(
+F_i^{(N)}(s)-F[\mathfrak M_{[0,S],s}^{(N)}]\bigl(Y_i^{(N)}(s)\bigr)
+\bigr)
 \cdot\nabla_v\phi\bigl(Y_i^{(N)}(s)\bigr)
 \Bigr]\,ds
-\]
+\end{multline*}
 is a martingale, where
 \[
 \mathfrak M_{[0,S],s}^{(N)}
@@ -841,6 +932,17 @@ F_{\mu\nu}[c]
 +ig_3[A_\mu[c],A_\nu[c]].
 \]
 \end{definition}
+
+\begin{remark}[Convention used in this paper]
+\label{rem:hermitian-convention}
+The formulas in this paper are written in the Hermitian generator convention:
+\(A_\mu[c]\) and \(F_{\mu\nu}[c]\) take values in the Hermitian traceless space
+\(\mathfrakh\), and the corresponding \(SU(3)\) transports are written as
+exponentials \(\exp(iH)\) with \(H\in\mathfrakh\).
+Proposition~\ref{prop:su3-convention-bridge} below translates these objects to
+the standard anti-Hermitian \(\mathfrak{su}(3)\) convention used in the usual
+statement of pure \(SU(3)\) Yang--Mills theory.
+\end{remark}
 
 \section{Deterministic regulator scales}
 
@@ -1215,7 +1317,7 @@ Since this holds for each \(j\), the vector identity follows. The identity for
 \(j_\infty\) is Fubini's theorem.
 \end{proof}
 
-\begin{proof}
+\begin{proof}[Proof of Proposition~\ref{prop:stationary-mf-color-smooth}]
 Proposition~\ref{prop:mf-unique} provides a stationary weak solution of the
 kinetic Fokker--Planck equation with smooth coefficients. The diffusion vector
 fields are the velocity derivatives \(\partial_{v_0},\dots,\partial_{v_3}\),
@@ -1587,6 +1689,117 @@ S_{\mathrm W}^{(N)}
 \right).
 \]
 \end{definition}
+
+\begin{proposition}[Bridge from the Hermitian convention to the standard
+\(\mathfrak{su}(3)\) convention]
+\label{prop:su3-convention-bridge}
+The continuum and lattice objects of this paper are exactly the standard
+\(SU(3)\) Yang--Mills objects after the usual identification
+\[
+\fraksu=i\mathfrakh.
+\]
+More precisely:
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item For every differentiable color field \(c:\R^4\to\C^3\), define the
+anti-Hermitian connection and curvature by
+\[
+\mathcal A_\mu[c]:=iA_\mu[c]\in\fraksu,
+\qquad
+\mathcal F_{\mu\nu}[c]:=iF_{\mu\nu}[c]\in\fraksu.
+\]
+Then
+\[
+\mathcal F_{\mu\nu}[c]
+=
+\partial_\mu\mathcal A_\nu[c]-\partial_\nu\mathcal A_\mu[c]
++g_3[\mathcal A_\mu[c],\mathcal A_\nu[c]],
+\]
+which is the standard anti-Hermitian \(SU(3)\) curvature formula.
+\item For the stationary continuum field \(F^\infty\) of this paper, the local
+and global Yang--Mills densities agree with the standard anti-Hermitian
+normalization:
+\[
+\tr\!\bigl((F_{\mu\nu}^\infty(x))^2\bigr)
+=
+-\tr\!\bigl((\mathcal F_{\mu\nu}^\infty(x))^2\bigr),
+\qquad
+\mathcal F_{\mu\nu}^\infty:=iF_{\mu\nu}^\infty,
+\]
+so the continuum functional \(S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]\) is
+exactly the usual positive \(SU(3)\) Yang--Mills action written in the
+anti-Hermitian convention.
+\item For every lattice edge and plaquette, if
+\[
+\mathcal A_e^{(N)}:=i\Theta_e^{(N)}\in\fraksu,
+\qquad
+\mathcal F_P^{(N)}:=iF_P^{(N)}\in\fraksu,
+\]
+then
+\[
+U_3^{(N)}(e)=\exp(\mathcal A_e^{(N)}),
+\qquad
+U_3^{(N)}(P)=\exp\!\bigl(g_3A_P^{(N)}\mathcal F_P^{(N)}\bigr),
+\]
+so the Wilson link and plaquette variables are unchanged by passing from the
+Hermitian convention to the standard anti-Hermitian \(\fraksu\) convention.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+For \textnormal{(i)}, \(\mathcal A_\mu[c]=iA_\mu[c]\) is skew-Hermitian and
+traceless because \(A_\mu[c]\in\mathfrakh\); the same holds for
+\(\mathcal F_{\mu\nu}[c]=iF_{\mu\nu}[c]\). Using
+\[
+[\mathcal A_\mu[c],\mathcal A_\nu[c]]
+=[iA_\mu[c],iA_\nu[c]]
+=-[A_\mu[c],A_\nu[c]],
+\]
+one computes
+\begin{align*}
+\partial_\mu\mathcal A_\nu[c]-\partial_\nu\mathcal A_\mu[c]
++g_3[\mathcal A_\mu[c],\mathcal A_\nu[c]]
+&=
+i\partial_\mu A_\nu[c]-i\partial_\nu A_\mu[c]-g_3[A_\mu[c],A_\nu[c]]\\
+&=
+i\Bigl(\partial_\mu A_\nu[c]-\partial_\nu A_\mu[c]
++ig_3[A_\mu[c],A_\nu[c]]\Bigr)\\
+&=
+iF_{\mu\nu}[c]
+=
+\mathcal F_{\mu\nu}[c].
+\end{align*}
+
+For \textnormal{(ii)}, \(\mathcal F_{\mu\nu}^\infty=iF_{\mu\nu}^\infty\) gives
+\[
+(\mathcal F_{\mu\nu}^\infty)^2
+=
+- (F_{\mu\nu}^\infty)^2,
+\]
+hence
+\[
+-\tr\!\bigl((\mathcal F_{\mu\nu}^\infty)^2\bigr)
+=
+\tr\!\bigl((F_{\mu\nu}^\infty)^2\bigr).
+\]
+Therefore the continuum functional defined later in
+Definitions~\ref{def:ym-action} and~\ref{def:global-ym-action} is exactly the
+usual positive Yang--Mills action in anti-Hermitian \(\fraksu\) variables.
+
+For \textnormal{(iii)}, Definition~\ref{def:edge-transport} gives
+\(U_3^{(N)}(e)=\exp(i\Theta_e^{(N)})\), so with
+\(\mathcal A_e^{(N)}:=i\Theta_e^{(N)}\) we get
+\[
+U_3^{(N)}(e)=\exp(\mathcal A_e^{(N)}).
+\]
+Likewise Proposition~\ref{prop:plaquette-wilson-expansion} gives
+\[
+U_3^{(N)}(P)=\exp\!\bigl(i g_3A_P^{(N)}F_P^{(N)}\bigr)
+=
+\exp\!\bigl(g_3A_P^{(N)}\mathcal F_P^{(N)}\bigr),
+\]
+with \(\mathcal F_P^{(N)}:=iF_P^{(N)}\in\fraksu\). Thus the group-valued Wilson
+transport variables are the same objects under either convention.
+\end{proof}
 
 \begin{proposition}[Exact plaquette exponential identity and Wilson expansion]
 \label{prop:plaquette-wilson-expansion}
@@ -2145,6 +2358,107 @@ S_{\mathrm W}^{(N)}
 S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty].
 \]
 \end{proof}
+
+\section{Exported theorem package for downstream papers}
+
+\begin{theorem}[Export package of Paper 2]
+\label{thm:paper2-export}
+The results exported to later papers in the series are the
+following.
+\begin{enumerate}[leftmargin=1.5em,label=\textnormal{(\roman*)}]
+\item \textbf{Deterministic flat regulator package.}
+Definitions~\ref{def:refinement-family}, \ref{def:finite-parameters},
+\ref{def:qft-nodes}, and \ref{def:qft-plaquette-geometry} construct the
+deterministic flat \(SU(3)\) regulator family
+\[
+\mathcal L^{(N)}=(\mcN^{(N)},\mcE^{(N)},\mcC_\square^{(N)})
+\]
+used in the continuum-limit argument.
+\item \textbf{Sampled lattice gauge sector.}
+Definitions~\ref{def:edge-transport} and \ref{def:finite-wilson-data},
+together with Proposition~\ref{prop:su3-convention-bridge}, construct the
+link variables \(U_3^{(N)}(e)\in SU(3)\), plaquette holonomies
+\(U_3^{(N)}(P)\in SU(3)\), and discrete field strengths
+\(F_P^{(N)}\in\mathfrakh\) / \(\mathcal F_P^{(N)}\in\fraksu\).
+\item \textbf{Smooth continuum gauge field.}
+Definition~\ref{def:continuum-color-field},
+Proposition~\ref{prop:stationary-mf-color-smooth},
+Proposition~\ref{prop:continuum-connection-regularity}, and
+Proposition~\ref{prop:su3-convention-bridge} construct the stationary continuum
+connection and curvature
+\[
+A^\infty,\ F^\infty \in C^\infty(\R^4;\mathfrakh),
+\qquad
+\mathcal A^\infty,\ \mathcal F^\infty \in C^\infty(\R^4;\fraksu),
+\]
+with the Hermitian and standard anti-Hermitian \(SU(3)\) conventions identified
+explicitly.
+\item \textbf{Local Wilson-to-Yang--Mills limit.}
+Theorem~\ref{thm:continuum-wilson} proves that for every
+\(\chi\in C_c(\R^4)\), the localized Wilson functional converges to the
+localized continuum Yang--Mills functional
+\[
+S_{\mathrm W,\chi}^{(N)}
+\longrightarrow
+S_{\mathrm{YM},\chi}^{\mathrm{cont}}[F^\infty].
+\]
+\item \textbf{Global cutoff-free limit.}
+Theorem~\ref{thm:global-continuum-wilson} proves that the full Wilson action on
+the deterministic flat regulator converges to the global continuum Yang--Mills
+functional
+\[
+S_{\mathrm W}^{(N)}
+\longrightarrow
+S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty].
+\]
+\end{enumerate}
+Accordingly, downstream papers may cite this paper as establishing the
+deterministic flat regulator, the sampled \(SU(3)\) link/plaquette sector, the
+smooth continuum curvature profile, and the local and global Wilson-to-Yang--Mills
+continuum-limit theorems.
+\end{theorem}
+
+\begin{proof}
+Item \textnormal{(i)} is exactly the collection of labeled deterministic
+regulator constructions
+Definitions~\ref{def:refinement-family}, \ref{def:finite-parameters},
+\ref{def:qft-nodes}, and~\ref{def:qft-plaquette-geometry}. Item
+\textnormal{(ii)} is exactly the sampled lattice gauge package of
+Definitions~\ref{def:edge-transport} and~\ref{def:finite-wilson-data} together
+with Proposition~\ref{prop:su3-convention-bridge}. Item \textnormal{(iii)} is
+the smooth continuum gauge package of
+Definition~\ref{def:continuum-color-field},
+Propositions~\ref{prop:stationary-mf-color-smooth},
+\ref{prop:continuum-connection-regularity}, and
+\ref{prop:su3-convention-bridge}. Item \textnormal{(iv)} is
+Theorem~\ref{thm:continuum-wilson}, and item \textnormal{(v)} is
+Theorem~\ref{thm:global-continuum-wilson}. The closing sentence is only a
+summary of these theorem-level outputs.
+\end{proof}
+
+\begin{remark}[How later papers use this export package]
+Paper~3 imports the stationary continuum-indexed gauge observables built from
+the deterministic flat regulator and the corresponding continuum
+Yang--Mills functional. Paper~5 imports from this paper exactly the
+regulator geometry, sampled \(SU(3)\) gauge sector, smooth continuum curvature,
+and local/global Wilson-to-Yang--Mills limit recorded in
+Theorem~\ref{thm:paper2-export}.
+\end{remark}
+
+\begin{thebibliography}{9}
+
+\bibitem{billingsley1999convergence}
+P.~Billingsley,
+\emph{Convergence of Probability Measures},
+2nd ed.,
+Wiley, New York, 1999.
+
+\bibitem{diaconis1980finite}
+P.~Diaconis and D.~Freedman,
+``Finite exchangeable sequences,''
+\emph{The Annals of Probability} \textbf{8} (1980), no.~4, 745--764.
+
+\end{thebibliography}
 
 
 \end{document}

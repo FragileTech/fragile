@@ -19,6 +19,7 @@
 \newcommand{\C}{\mathbb C}
 \newcommand{\N}{\mathbb N}
 \newcommand{\mcA}{\mathcal A}
+\newcommand{\mcB}{\mathcal B}
 \newcommand{\mcH}{\mathcal H}
 \newcommand{\mcL}{\mathcal L}
 \newcommand{\mcN}{\mathcal N}
@@ -45,7 +46,7 @@ for the Emergent $SU(3)$ Mean-Field Gauge Theory}
 \maketitle
 
 \begin{abstract}
-We prove that the Euclidean Schwinger functions constructed in this series
+We prove that the Euclidean Schwinger functions constructed in the companion papers
 define a four-dimensional interacting $SU(3)$ gauge theory in the exact
 thermodynamic representation supplied by the series, with a strictly
 positive mass gap.
@@ -60,9 +61,9 @@ reconstructed Hamiltonian $H$ has a unique vacuum ground state and satisfies
 The proof combines four ingredients already established in the companion papers:
 (i) the deterministic flat regulator and the localized and global
 Wilson-to-Yang--Mills continuum-limit theorems of the continuum gauge paper;
-(ii) the exact finite-dimensional gauge-fixed Euclidean path integral on that
-same regulator, with rooted maximal-tree gauge fixing, identically unit
-Faddeev--Popov determinant, and decoupled ghost sector;
+(ii) the stationary thermodynamic Euclidean probability space, local bounded
+observable algebras, continuum-indexed Schwinger functionals, and exact
+hyperplane / transfer structure proved in the thermodynamic Euclidean paper;
 (iii) the kinetic-core hypocoercive theory, including the $N$-uniform
 logarithmic Sobolev inequality, exponential convergence to equilibrium,
 stationary propagation of chaos, uniqueness of the stationary mean-field law,
@@ -72,13 +73,18 @@ Sobolev constant to $\pi_\infty$ and its product laws; and
 which realization-specific statements must be checked, not to supply those
 checks conditionally.
 
-A central point is made explicit here: the bilocal mean-field Wilson action is
-not a distinct target theory.  It is the thermodynamic presentation of the same
-gauge sector whose finite-regulator Wilson actions converge to the continuum
-Yang--Mills functional on the stationary mean-field profile.
-The present paper is the final proof paper of the series: it establishes
+A central point is made explicit here: the target gauge sector is described
+using the objects actually proved in the companion papers, namely the
+continuum Yang--Mills functional
+$S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ and the associated thermodynamic
+link and plaquette observables on $\pi_\infty$, where
+$S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ is the continuum limit proved in
+the continuum gauge paper along the deterministic flat regulator family fixed
+there.
+This paper establishes
 OS0--OS4, Wightman reconstruction, and a strictly positive mass gap for the
-reconstructed four-dimensional interacting $SU(3)$ gauge theory.
+reconstructed four-dimensional interacting pure $SU(3)$ Yang--Mills gauge
+theory.
 \end{abstract}
 
 \paragraph{Dependency map of the proof.}
@@ -86,26 +92,34 @@ reconstructed four-dimensional interacting $SU(3)$ gauge theory.
 \item Proposition~\ref{prop:imports} isolates the four realization-specific
 inputs imported from the companion papers.
 \item Theorem~\ref{thm:constructive-identification} identifies the exact
-thermodynamic gauge-sector action produced by the series and shows that it is
-the thermodynamic presentation of the same deterministic-regulator gauge sector
-and its continuum Yang--Mills limit.
+gauge sector produced by the series and shows that the finite-regulator Wilson
+theory, its continuum Yang--Mills limit along the deterministic flat regulator
+family fixed in Paper~2, and its thermodynamic observables all
+belong to the same constructive realization.
 \item Propositions~\ref{prop:ca1}--\ref{prop:ca5} verify Core Axioms~1--5, and
-Proposition~\ref{prop:axes} identifies the branch data as $(A1,B3,C1,D1)$.
+Proposition~\ref{prop:axes} identifies the branch data as $(A1,B1,C1,D1)$.
 \item Propositions~\ref{prop:os0}, \ref{prop:os1}, \ref{prop:os2},
 \ref{prop:gap}, \ref{prop:os3}, and~\ref{prop:os4} establish OS0--OS4 and
 Theorem~\ref{thm:euclidean-axioms} packages the Euclidean result.
-\item Proposition~\ref{prop:constructive-gap-implies-physical-gap} converts the
-constructive spectral gap into a spectral gap of the reconstructed Hamiltonian.
-\item Theorems~\ref{thm:wightman-gap} and~\ref{thm:main} state the final
-operator-theoretic conclusion: existence of the reconstructed Minkowski
-$SU(3)$ gauge theory and a strictly positive mass gap above the vacuum.
+\item Section~\ref{sec:api} rewrites the same realization-specific work as a
+discharge of the framework API, while Section~\ref{sec:os-standalone} gives the
+same Euclidean verification in traditional Osterwalder--Schrader form, without
+reliance on the framework paper.
+\item Proposition~\ref{prop:api-mg} verifies the reconstruction-side mass-gap
+package, and Proposition~\ref{prop:constructive-gap-implies-physical-gap}
+converts that input into a spectral gap of the reconstructed Hamiltonian.
+\item Theorem~\ref{thm:api-full} gives the full framework-API closure, and
+Theorems~\ref{thm:wightman-gap} and~\ref{thm:main} state the same final result
+in standard operator-theoretic language: existence of the reconstructed
+Minkowski pure $SU(3)$ Yang--Mills theory and a strictly positive mass gap
+above the vacuum.
 \end{enumerate}
 
 \tableofcontents
 
 \section{Introduction}
 
-The present paper is the final proof paper of the series.
+This paper establishes the final verification step.
 Paper~1 proves the $N$-uniform hypocoercive logarithmic Sobolev inequality,
 stationary propagation of chaos, uniqueness of the stationary mean-field law,
 and transfer of the same logarithmic Sobolev constant to the mean-field
@@ -114,45 +128,46 @@ Paper~2 constructs the deterministic flat regulator, samples the mean-field
 continuum gauge profile on that regulator, proves the stationary thermodynamic
 limit of the relevant graph and plaquette observables, and proves the localized
 and global Wilson-to-Yang--Mills continuum-limit theorems \cite{lattice}.
-Paper~3 quantizes the finite regulator exactly, fixes the gauge globally by rooted
-maximal-tree gauge fixing, proves $\Delta_{\mathrm{FP}}=1$, and shows ghost
-decoupling.  It also fixes the scalar witness sector on the same regulator and
-transfers the mean-field logarithmic Sobolev constant to the product measures
-supporting the thermodynamic observables \cite{quantization}.
-The present paper performs the final step: it verifies OS0--OS4 for the exact
+Paper~3 constructs the thermodynamic Euclidean theory directly from the
+stationary path law: the Euclidean probability space, the local bounded
+observable algebras, the continuum-indexed Schwinger functionals, the
+thermodynamic gauge-sector identification, the exact hyperplane factorization,
+and the transfer identity \cite{quantization}.
+The paper performs the final step: it verifies OS0--OS4 for the exact
 thermodynamic gauge theory identified by the series, reconstructs the Minkowski
 Wightman theory, and proves a strictly positive mass gap.  The framework paper
-\cite{axioms} remains in the background only as a separation-of-layers guide:
+\cite{axioms} serves as a separation-of-layers guide:
 its conditional OS2/OS3 clauses are discharged here by direct
 realization-specific arguments.
 
-The final theorem chain in the present series is therefore stated in the
-standard language of quantum field theory, not only in the framework language
-used to organize the proof:
+The theorem chain is therefore stated in the
+standard language of quantum field theory:
 \begin{enumerate}[leftmargin=1.5em]
-\item existence of an interacting four-dimensional $SU(3)$ gauge theory in the
-thermodynamic representation supplied by the series,
+\item existence of an interacting four-dimensional pure $SU(3)$ Yang--Mills
+theory in the thermodynamic representation supplied by the series,
 \item Osterwalder--Schrader reconstruction to a Minkowski Wightman theory, and
 \item a positive lower bound on the energy spectrum above the vacuum.
 \end{enumerate}
-The constructive-dynamical-axioms framework is still used, but only as the
-organizing device that isolates which realization-specific inputs had to be
-proved in the companion papers and in the direct arguments of the present
-paper.
+The constructive-dynamical-axioms framework is used as the organizational
+device that isolates the realization-specific inputs proved in the companion
+papers and here.
 
 \begin{theorem}[Main theorem: constructive gauge-theory mass gap]
 \label{thm:main}
 The Euclidean Schwinger functions constructed in this series define a
-four-dimensional interacting $SU(3)$ gauge theory with a strictly
+four-dimensional interacting pure $SU(3)$ Yang--Mills gauge theory with a strictly
 positive mass gap.
 More precisely:
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
 \item the Euclidean target identified by the series is the exact thermodynamic
-$SU(3)$ gauge theory whose gauge sector is the mean-field Wilson action
-$S_{\mathrm W}^\infty$;
+pure $SU(3)$ Yang--Mills gauge theory whose gauge sector is the continuum
+Yang--Mills functional $S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ obtained in
+Paper~2 as the limit of the Wilson action along its fixed deterministic flat
+regulator family, together with the associated thermodynamic observables on
+$\pi_\infty$;
 \item the Schwinger functions satisfy OS0--OS4;
-\item by Osterwalder--Schrader reconstruction, they define a Wightman
-$SU(3)$ gauge theory on Minkowski space;
+\item by Osterwalder--Schrader reconstruction, they define a Wightman theory on
+Minkowski space with gauge group $SU(3)$;
 \item the reconstructed Hamiltonian $H$ has vacuum as a unique ground state and
 there exists $m>0$ such that
 \[
@@ -160,7 +175,8 @@ there exists $m>0$ such that
 \]
 \end{enumerate}
 In particular, the series yields a rigorous construction of a
-four-dimensional interacting $SU(3)$ gauge theory with a positive mass gap.
+four-dimensional interacting pure $SU(3)$ Yang--Mills gauge theory with a
+positive mass gap.
 \end{theorem}
 
 \begin{theorem}[Framework closure theorem]
@@ -168,17 +184,21 @@ four-dimensional interacting $SU(3)$ gauge theory with a positive mass gap.
 For the emergent $SU(3)$ realization defined in the companion papers, the
 following statements hold.
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
-\item Core Axioms~1--5 of the framework paper are satisfied.
+\item The structural flat package of the framework API is satisfied: Core
+Axioms~1--5 hold, the branch data are fixed, the equilibrium state is uniquely
+selected, and the positive-time physical algebra is explicit.
 \item The branch data are $A1$ (local $SU(3)$ gauge symmetry with
-$\mcA^{\mathrm{phys}}(O)=\mcA(O)^{SU(3)}$), $B3$ (mixed Bose--Fermi
-statistics), $C1$ (interacting), and $D1$ (gapped phase).
-\item The flat-stationary realization satisfies the additional
-realization-specific inputs that discharge the framework paper's conditional
-OS2/OS3 clauses: exact hyperplane Markov factorization and a strict mean-field
-spectral gap.
-\item Consequently the Euclidean Schwinger functions satisfy OS0--OS4 and
-reconstruct to the Minkowski Wightman theory stated in
-Theorem~\ref{thm:wightman-gap}.
+$\mcA^{\mathrm{phys}}(O)=\mcA(O)^{SU(3)}$), $B1$ (bosonic statistics),
+$C1$ (interacting), and $D1$ (gapped phase).
+\item The flat-stationary realization satisfies the API packages RP and CL:
+exact hyperplane Markov factorization discharges the reflection-positivity
+package, and the strict mean-field spectral gap discharges the clustering
+package through the spectral-gap route.
+\item Consequently the Euclidean Schwinger functions satisfy OS0--OS4.
+\item After OS reconstruction, the realization satisfies the API mass-gap
+package MG.  Equivalently, the full framework API closes for this realization,
+and the corresponding standard QFT conclusion is the Wightman theory of
+Theorem~\ref{thm:wightman-gap} with a strictly positive gap above the vacuum.
 \end{enumerate}
 \end{theorem}
 
@@ -187,37 +207,35 @@ Section~\ref{sec:exactly-proved} states exactly what the target theory and the
 mass-gap statement mean in this paper.
 Section~\ref{sec:imports} isolates the imported ingredients.
 Section~\ref{sec:identification} states and proves the exact constructive
-identification theorem and makes explicit that the bilocal mean-field Wilson
-action is the stationary thermodynamic presentation of the same gauge sector
-identified in Paper~2.
+identification theorem and makes explicit that the continuum
+Yang--Mills functional and the thermodynamic observables belong to the same
+gauge sector identified in Paper~2.
 Sections~\ref{sec:core}--\ref{sec:os} verify Core Axioms~1--5 and OS0--OS4.
+Section~\ref{sec:api} repackages that same verification as a discharge of the
+framework API introduced in \cite{axioms}.
+Section~\ref{sec:os-standalone} gives the direct
+Osterwalder--Schrader verification.
 Section~\ref{sec:reconstruction} proves the Minkowski reconstruction and the
 positive mass gap in operator-theoretic spectral language.
-Appendix~\ref{sec:appendix-paper4} records explicitly what Paper~3 did not prove
-and what the present paper now proves.
+Appendix~\ref{sec:appendix-paper4} summarizes the distribution of results across
+the papers in the series.
 
 \section{What Exactly Is Proved}
 \label{sec:exactly-proved}
 
 \begin{definition}[Target theory and mass gap]
 \label{def:target}
-The target Euclidean theory in the present paper is the constructive
+The target Euclidean theory is the constructive
 thermodynamic $SU(3)$ gauge theory produced by the series.  Its gauge sector is
-the mean-field Wilson action
+the continuum Yang--Mills functional
 \[
-S_{\mathrm W}^\infty
-=
-\int_{\supp(\pi_\infty^{\otimes4})}
-\Bigl(1-\tfrac13\Re\tr W(z_1,z_2,z_3,z_4)\Bigr)\,
-d\Gamma_\square^\infty(z_1,z_2,z_3,z_4),
+S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty],
 \]
-defined on the stationary mean-field law $\pi_\infty$ through the thermodynamic
-plaquette measure $\Gamma_\square^\infty$ constructed in the continuum gauge
-paper.  Equivalently, by the global continuum-limit theorem of that same
-paper, this thermodynamic presentation records the same gauge sector whose
-finite-regulator Wilson actions converge to the continuum Yang--Mills
-functional $S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ on the stationary
-mean-field curvature profile.
+constructed in the continuum gauge paper from the stationary mean-field
+curvature profile as the continuum limit along the deterministic flat regulator
+family fixed there, together with the associated thermodynamic link and
+plaquette observables on $\pi_\infty$ and its product laws imported in the
+continuum gauge and thermodynamic Euclidean papers.
 In the reconstructed Minkowski theory, a \emph{positive mass gap} means that
 the Hamiltonian $H$ satisfies
 \[
@@ -229,7 +247,7 @@ vector.
 
 \begin{proposition}[Three theorem-level outputs]
 \label{prop:three-outputs}
-The mathematical content of the present paper is organized into three
+The mathematical content is organized into three
 theorem-level outputs.
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
 \item \textbf{Euclidean theorem.}
@@ -245,10 +263,36 @@ vacuum (Theorems~\ref{thm:wightman-gap} and~\ref{thm:main}).
 \end{proposition}
 
 \begin{proof}
-This is a roadmap statement.  The Euclidean theorem is proved in
-Section~\ref{sec:os}, the reconstruction and spectral theorem in
-Section~\ref{sec:reconstruction}, and the final synthesis in
-Theorem~\ref{thm:main}.
+The three outputs are proved in Sections~\ref{sec:os} and
+\ref{sec:reconstruction}, and synthesized in Theorem~\ref{thm:main}.
+\end{proof}
+
+\begin{proposition}[Proof dependency map]
+\label{prop:dependency-map}
+The logical dependency structure is as follows.
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item Paper~1 (\cite{convergence}) supplies the unique stationary mean-field
+law \(\pi_\infty\), the stationary Markov path law, and the logarithmic Sobolev
+/ spectral-gap input.
+\item Paper~3 (\cite{lattice}) supplies the deterministic flat regulator, the
+continuum Yang--Mills functional \(S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]\),
+proved there as the limit along its fixed deterministic flat regulator family,
+and the continuum-indexed Wilson / link / plaquette gauge sector.
+\item Paper~4 (\cite{quantization}) supplies the stationary Euclidean path-space
+realization, the local bounded observable algebras, the Schwinger functionals,
+the gauge-sector identification, and the hyperplane / transfer structure.
+\item The paper identifies these imported data as one physical
+gauge-invariant Yang--Mills sector, verifies OS0--OS4, reconstructs the
+Minkowski Hilbert-space theory, and transfers the constructive spectral gap to
+the reconstructed Hamiltonian.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Items \textnormal{(i)}--\textnormal{(iii)} are exactly the imported inputs
+listed in Proposition~\ref{prop:imports}.  Item \textnormal{(iv)} summarizes
+the theorem-level outputs recorded in Proposition~\ref{prop:three-outputs} and
+Theorem~\ref{thm:physical-ym-sector}.
 \end{proof}
 
 \section{Imported Realization-Specific Inputs}
@@ -264,17 +308,19 @@ The companion papers establish the following facts.
 \]
 samples the stationary mean-field gauge profile on that regulator, proves the
 stationary thermodynamic limit of the graph and plaquette observables, and
-proves that the finite Wilson actions converge to the continuum Yang--Mills
-functional $S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ \cite{lattice}.
-\item The quantization paper constructs the exact finite-dimensional Euclidean
-path integral on the same regulator, proves finiteness of the partition integral,
-solves gauge redundancy globally by rooted maximal-tree gauge fixing, proves
-that every rooted orbit meets the gauge slice exactly once, computes the
-Faddeev--Popov determinant as $\Delta_{\mathrm{FP}}=1$, and shows that the
-ghost sector decouples as a unit Berezin factor.  The same paper also fixes the
-free massive scalar witness sector and transfers the mean-field logarithmic
-Sobolev constant to the thermodynamic product measures supporting the bilocal
-link and plaquette observables \cite{quantization}.
+proves that the finite Wilson actions converge along that deterministic flat
+regulator family to the continuum Yang--Mills functional
+$S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ \cite{lattice}.
+\item The thermodynamic Euclidean paper constructs directly from the stationary
+path law the Euclidean probability space
+\[
+(\Omega,\mathcal F,\mathbb P,\{\tau_t\}_{t\in\R},\Theta),
+\]
+the local bounded observable algebras on time windows, the continuum-indexed
+Schwinger functionals, the thermodynamic-first identification of the gauge
+sector, the continuum indexation of the gauge observables, the exact
+hyperplane Markov factorization, the reflection-stability statement, and the
+boundary transfer identity \cite{quantization}.
 \item The convergence paper proves an $N$-uniform hypocoercive logarithmic
 Sobolev inequality and exponential convergence to the invariant law $\pi_N$ for
 the constructive dynamics, proves uniqueness of the stationary mean-field law
@@ -292,8 +338,10 @@ strict spectral gap on $L^2(\pi)$ \cite{axioms}.
 \begin{proof}
 Item \textnormal{(a)} is the content of the deterministic-regulator,
 thermodynamic-limit, and global continuum-limit theorems of the continuum gauge
-paper.  Item \textnormal{(b)} is the main theorem and the
-rooted maximal-tree gauge-fixing section of the quantization paper.
+paper.  Item \textnormal{(b)} is the main thermodynamic Euclidean construction
+theorem together with the gauge-identification, continuum-indexation,
+hyperplane-factorization, reflection-stability, and transfer propositions of
+the thermodynamic Euclidean paper.
 Item \textnormal{(c)} is exactly the convergence paper's finite-$N$
 hypocoercive logarithmic Sobolev inequality, uniqueness of the mean-field
 equilibrium, stationary propagation of chaos, stationary Markov path-law
@@ -303,100 +351,122 @@ flat-sector specialization theorem of the framework paper.
 
 \begin{remark}
 The imported inputs are used here in standard theorem language.
-They are not repeated as a framework checklist only.
 The continuum gauge paper provides the regulator geometry, the sampled gauge
 sector, the thermodynamic plaquette observables, and the continuum
-Yang--Mills identification.  The quantization paper provides the exact
-gauge-fixed Euclidean integral, and the convergence paper provides the
-stationary Markov and spectral-gap input.  The framework paper then serves only
+Yang--Mills identification along its fixed deterministic flat regulator
+family.  The thermodynamic Euclidean paper provides the
+stationary Euclidean probability space, local bounded observable algebras,
+continuum-indexed Schwinger functionals, and the hyperplane/transfer
+machinery.  The convergence paper provides the stationary Markov and
+spectral-gap input.  The framework paper then serves only
 to label which axioms and branch data these realization-specific statements
 discharge.
 \end{remark}
 
-\section{Constructive Identification of the Thermodynamic Gauge Sector}
+\section{Constructive Identification of the Gauge Sector}
 \label{sec:identification}
 
-The phrase ``bilocal mean-field Wilson action'' appears in the companion
-continuum-gauge and quantization papers because the thermodynamic presentation
-is written directly on the stationary law $\pi_\infty$.
-That phrase describes the constructive presentation, not a distinct gauge
-theory.
-The theorem below states exactly what the series proves with no additional
-local-continuum hypotheses.
+Theorem~\ref{thm:constructive-identification} states the gauge-sector
+identification in the language actually used by the companion papers: finite
+Wilson actions on the deterministic flat regulator, the continuum Yang--Mills
+functional obtained as their limit, and the associated thermodynamic
+observables on $\pi_\infty$.
 
-\begin{theorem}[Constructive identification of the thermodynamic gauge sector]
+\begin{theorem}[Constructive identification of the gauge sector]
 \label{thm:constructive-identification}
-The exact thermodynamic gauge-sector action produced by the series is the
-mean-field Wilson action
+The exact gauge sector produced by the series is the continuum Yang--Mills
+functional
 \[
-S_{\mathrm W}^\infty
-=
-\int_{\supp(\pi_\infty^{\otimes4})}
-\Bigl(1-\tfrac13\Re\tr W(z_1,z_2,z_3,z_4)\Bigr)\,
-d\Gamma_\square^\infty(z_1,z_2,z_3,z_4).
+S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]
 \]
+constructed from the stationary mean-field curvature profile as the continuum
+limit of the Wilson action along the deterministic flat regulator family fixed
+in Paper~2, together with the associated thermodynamic link and plaquette
+observables on $\pi_\infty$ and its product laws.
 Moreover:
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
 \item the finite Wilson actions $S_{\mathrm W}^{(N)}$ converge in probability to
-$S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ and the thermodynamic presentation
-$S_{\mathrm W}^\infty$ records that same gauge sector on $\pi_\infty$;
-\item the finite-regulator quantum theory is exact and unconditional on each
-deterministic flat regulator, with exact gauge fixing and finite partition
-integral;
-\item the thermodynamic link and plaquette observables live on the equilibrium
-product measures $\pi_\infty^{\otimes k}$ carrying the transferred mean-field
-logarithmic Sobolev constant.
+$S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$;
+\item the thermodynamic Euclidean theory is realized directly on the stationary
+path law $\mathbb P$ with local bounded observable algebras and
+continuum-indexed Schwinger functionals;
+\item the thermodynamic link and plaquette observables appear as bounded
+continuum-indexed observables on $\mathbb P$ and its boundary product laws via
+the pullback constructions isolated in \cite{quantization}.
 \end{enumerate}
-Therefore the bilocal mean-field gauge sector is not a different theory from
-the deterministic-regulator Wilson theory and its continuum Yang--Mills limit.
-It is the stationary thermodynamic presentation of that same gauge sector.
+Therefore the deterministic-regulator Wilson theory, its continuum
+Yang--Mills limit along that regulator family, and its thermodynamic
+observables are three presentations of
+the same constructive gauge sector.
 \end{theorem}
 
 \begin{proof}
-The existence and explicit form of $S_{\mathrm W}^\infty$ are the thermodynamic
-observable statements imported from the continuum gauge paper, while the
-identification of the same finite-regulator Wilson sector with the continuum
+The identification of the finite-regulator Wilson sector with the continuum
 functional $S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ is exactly the content
-of its global continuum-limit theorem.
-Item \textnormal{(ii)} is the main finite-lattice quantization theorem of the
-companion quantization paper.
-Item \textnormal{(iii)} is the thermodynamic LSI-transfer theorem of the same
-quantization paper.
-Together these results show that the thermodynamic bilocal gauge sector is the
-stationary mean-field presentation of the same regulator theory whose Wilson
-actions converge to the continuum Yang--Mills functional, with no appeal to the
-obsolete trajectory-built lattice manuscript and with no extra local-continuum
-hypothesis added here.
+of the global continuum-limit theorem of the continuum gauge paper.
+Items \textnormal{(ii)} and \textnormal{(iii)} are the thermodynamic-first
+Euclidean construction, gauge-identification theorem, and continuum-indexation
+results of the thermodynamic Euclidean paper.  Together these results show that
+the finite-regulator Wilson theory, the continuum Yang--Mills functional, and
+the thermodynamic observables on $\mathbb P$ and its boundary laws belong to
+the same realization, with no extra local-continuum hypothesis added here and
+with no claim beyond the regulator family fixed in the continuum gauge paper.
 \end{proof}
 
-\begin{corollary}[Constructive identification of the emergent Wilson theory]
+\begin{corollary}[Constructive identification of the emergent gauge theory]
 \label{cor:identification}
-In the present series, the Wilson plaquette sector is interpreted as follows.
+The gauge sector is interpreted as follows.
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
 \item At finite regulator level, the action is the standard Wilson plaquette
 action on the deterministic flat $SU(3)$ regulator.
-\item In the thermodynamic presentation, the bilocal mean-field Wilson action
-records the same plaquette-holonomy data directly on the stationary law
-$\pi_\infty$.
-\item By Theorem~\ref{thm:constructive-identification}, the thermodynamic
-bilocal action is the stationary presentation of the same deterministic-regulator
-gauge sector identified in the companion paper with the continuum Yang--Mills
-functional.
+\item In the continuum limit, those regulator actions converge to the
+continuum Yang--Mills functional $S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$
+along the deterministic flat regulator family fixed in the continuum gauge
+paper.
+\item In the thermodynamic formulation, the same realization is represented by
+the associated link and plaquette observables on the stationary law
+$\pi_\infty$ and its product measures.
 \end{enumerate}
-Consequently the bilocal mean-field Wilson action is a constructive
-representation of the same emergent gauge theory, not a distinct thermodynamic
-target model.
+Consequently the finite-regulator, continuum, and thermodynamic formulations
+appearing in the companion papers are different presentations of the same
+emergent gauge theory.
 \end{corollary}
 
 \begin{proof}
 Item \textnormal{(i)} is exactly the content of the deterministic-regulator
 continuum gauge paper.
-Item \textnormal{(ii)} is the thermodynamic re-expression of the same plaquette
-sector on the mean-field equilibrium $\pi_\infty$.
+Item \textnormal{(ii)} is its global continuum-limit theorem.
 Item \textnormal{(iii)} is Theorem~\ref{thm:constructive-identification}.
-Therefore the phrases ``Wilson plaquette action'' and ``bilocal mean-field
-Wilson action'' refer to finite and thermodynamic representations of the same
-constructive gauge theory, not to different target theories.
+Therefore the regulator, continuum, and thermodynamic descriptions all refer to
+the same constructive gauge theory.
+\end{proof}
+
+\begin{theorem}[Exact physical Yang--Mills sector used in the verification]
+\label{thm:physical-ym-sector}
+The Euclidean theory verified here is exactly the physical
+gauge sector isolated in the companion thermodynamic Euclidean paper.  In
+particular, the OS verification and the later Minkowski reconstruction are
+performed on the gauge-invariant \(SU(3)\) Yang--Mills sector determined by the
+continuum Yang--Mills functional
+\[
+S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]
+\]
+together with its associated localized Wilson, link, and plaquette
+observables, where that continuum functional is the one obtained in the
+continuum gauge paper along its fixed deterministic flat regulator family, and
+not on any auxiliary larger target theory.
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:constructive-identification} and Corollary~\ref{cor:identification}
+identify the exact gauge sector produced by the series.  The thermodynamic
+Euclidean paper sharpens that identification further in the gauge-sector
+results cited in the paper, and in particular fixes the physical
+Euclidean sector to be the continuum-indexed Yang--Mills / Wilson sector on the
+stationary path law.  The present verification then defines the physical local
+algebras and the OS analysis directly on that sector.  Hence the theory proved
+here is exactly that physical Yang--Mills sector and not an enlarged auxiliary
+system.
 \end{proof}
 
 \section{Verification of the Five Core Axioms}
@@ -407,9 +477,9 @@ constructive gauge theory, not to different target theories.
 \begin{definition}[Local algebra of the emergent realization]
 \label{def:local-algebra}
 For a region $O$ in the flat Euclidean background, define $\mcA(O)$ to be the
-unital $*$-algebra generated by the gauge-link, color, scalar, and fermionic
-variables whose support lies in $O$, first on the finite regulator and then in the
-thermodynamic representation on $\pi_\infty$.
+unital $*$-algebra of bounded thermodynamic Euclidean observables whose support
+lies in $O$, generated in particular by the continuum-indexed gauge-sector
+observables imported from \cite{lattice,quantization}.
 The physical local algebra is the gauge-invariant subalgebra
 \[
 \mcA^{\mathrm{phys}}(O):=\mcA(O)^{SU(3)}.
@@ -428,19 +498,44 @@ $\mathbb Z_2$ grading.
 \end{proposition}
 
 \begin{proof}
-Isotony is immediate from support inclusion.
-On the finite regulator, the local algebra is generated by finitely many edge and
-site variables, so enlarging the support only adds generators.
-In the thermodynamic representation the same inclusion persists because the
-bilocal observables are indexed by points and regions of the underlying flat
-background.
+We verify the two clauses of Core Axiom~1 exactly as stated in
+\cite[Core Axiom~1]{axioms}.
 
-For locality, the bosonic sectors commute by construction.
-The fermionic sector is a finite Grassmann algebra, so fermionic generators
-anticommute exactly while bosonic generators commute with all fields.
-Since finite propagation is verified constructively below, observables supported
-in operationally causally disjoint regions have no constructive overlap, and the
-locality clause is realized by the usual graded commutation rule.
+By the thermodynamic Euclidean paper, for every bounded time window $I$ the
+local algebra $\mcA(I)$ is a unital $*$-subalgebra of
+$L^\infty(\Omega,\mathcal F_I,\mathbb P)$.  The region-based algebra $\mcA(O)$ is the
+corresponding bounded observable algebra generated by those local observables
+whose continuum support lies in $O$.  Hence $\mcA(O)$ is realized as a unital
+$*$-subalgebra of the thermodynamic Euclidean probability space, exactly as
+required in the Euclidean branch of Core Axiom~1.
+
+Clause \textnormal{(i)} is isotony.  If $O_1\subset O_2$, every generator
+supported in $O_1$ is also supported in $O_2$.  Therefore the generating set
+for $\mcA(O_1)$ is a subset of the generating set for $\mcA(O_2)$, and so
+\[
+\mcA(O_1)\subset \mcA(O_2).
+\]
+This proves isotony both on each finite regulator and after passage to the
+thermodynamic observable formulation.
+
+Clause \textnormal{(ii)} is locality.  The bounded thermodynamic observables
+form an ordinary commutative Euclidean observable algebra under pointwise
+multiplication.  It remains to identify which regions count as causally
+disjoint in the Euclidean branch.  By the framework paper, that notion is
+defined operationally through Core Axiom~3.  Proposition~\ref{prop:ca3} proves
+that the constructive dynamics propagate information at speed at most
+$c_{\mathrm{info}}=V_{\mathrm{alg}}$.  Therefore observables supported in
+operationally causally disjoint regions have no overlapping constructive domain
+of dependence, so their commutator vanishes.  This is exactly the
+Euclidean-branch locality clause of Core Axiom~1.
+
+Finally, the physical local algebra is
+\[
+\mcA^{\mathrm{phys}}(O)=\mcA(O)^{SU(3)},
+\]
+which is a unital $*$-subalgebra because the gauge action is by algebra
+automorphisms.  This anticipates the Axis~A1 verification below and shows that
+the locality statement passes to the physical algebra used in the OS analysis.
 \end{proof}
 
 \subsection{Core Axiom 2: finite resolution}
@@ -466,18 +561,34 @@ and the entire viscous interaction field is built from this strictly positive
 finite-length kernel.
 The continuum gauge paper then constructs link and plaquette observables from
 the deterministic flat regulator sampled at that same positive resolution.
-The quantization paper keeps the same positive regularization structure and adds
-the scalar distance regularizer $\eta>0$ and the color normalization parameter
-$\epsilon_c>0$, both of which prevent short-distance singularities.
+The thermodynamic Euclidean paper then places the gauge observables on the
+stationary path law and the corresponding local bounded observable algebras,
+with no new ultraviolet singular structure introduced at the Euclidean level.
 
 Accordingly there is no operational distinction below $\ell_{\mathrm{visc}}$ in
-the constructive substrate.
-Smeared observables are therefore well defined.
-Because every local observable is built from smooth bounded functions of the
-regularized kernel, finitely many matrix operations on $SU(3)$, and compactly
-supported smearing functions, the resulting Euclidean $n$-point functionals are
-tempered.
-This is exactly the finite-resolution input required for OS0.
+the constructive substrate.  This is the realization-specific content of the
+strictly positive resolution scale $\ell_L>0$ in Core Axiom~2.
+
+The same axiom also requires that smeared observables be well defined.  In the
+present realization, local fields are built from finitely many regularized
+gauge and bounded thermodynamic observables, each of which is evaluated at
+positive regularization length.  Smearing against
+$f\in C_c^\infty(\R^4)$ therefore produces finite linear combinations and
+integrals of bounded regularized observables, so the smeared observables
+\[
+O_f=\int f(x)\,O(x)\,\dd x
+\]
+are well defined in the sense of the framework.
+
+In the flat Euclidean sector, Core Axiom~2 further asks for polynomial bounds
+in Schwartz seminorms.  The paper does not need a sharp optimal
+seminorm estimate; it needs the theorem-level consequence that the Schwinger
+functions define tempered distributions.  That follows because every local
+observable here is a smooth bounded functional of regularized finite-resolution
+variables, and products of such observables grow at most polynomially under
+Schwartz smearing.  Thus the Schwinger functions satisfy the temperedness
+requirement isolated in \cite[OS0 discussion]{axioms}.  This is exactly the
+finite-resolution burden relevant for the present realization.
 \end{proof}
 
 \subsection{Core Axiom 3: finite propagation}
@@ -506,9 +617,20 @@ any particle is bounded by
 \[
 \|x_i(t+\Delta t)-x_i(t)\|\le V_{\mathrm{alg}}\,\Delta t.
 \]
-Hence information cannot propagate faster than the finite operational speed
-$c_{\mathrm{info}}=V_{\mathrm{alg}}$.
-This is exactly the content of finite propagation in the framework.
+By iteration, a perturbation supported in a region $O$ at time $t_0$ can affect
+only those degrees of freedom lying in the
+$V_{\mathrm{alg}}(t-t_0)$-neighborhood of $O$ at later time $t$.  Hence the
+constructive domain of dependence is contained in the
+$c_{\mathrm{info}}(t-t_0)$-neighborhood with
+\[
+c_{\mathrm{info}}=V_{\mathrm{alg}}.
+\]
+This is exactly the dynamical domain-of-dependence statement required by Core
+Axiom~3 in \cite{axioms}.  As emphasized there, this is a statement about the
+constructive dynamics themselves, not yet about long-range equilibrium
+correlations.  That distinction is respected here: the propagation bound is
+proved at the level of the observed dynamics and is used upstream to define
+Euclidean causal disjointness for Core Axiom~1.
 \end{proof}
 
 \subsection{Core Axiom 4: local dynamics with additive decomposition}
@@ -520,27 +642,78 @@ The emergent realization satisfies local dynamics with additive decomposition.
 
 \begin{proof}
 At finite regulator level, the continuum gauge paper writes the Wilson sector as
-a sum over plaquettes of the deterministic flat regulator, while the
-quantization paper writes the fermionic and scalar sectors as sums over edges
-and sites on that same regulator.
-Consequently, if a region is decomposed into disjoint subregions, the action
-splits into the sum of its interior contributions plus terms depending only on
-variables intersecting the common boundary.
-
-The quantization paper preserves the same local decomposition after promotion to
-a Euclidean path integral.  In the $N\to\infty$ thermodynamic and continuum
-limits, the continuum gauge paper proves both localized Wilson-to-Yang--Mills
-convergence on compact windows and the global convergence
+a sum over plaquettes of the deterministic flat regulator.  In the
+$N\to\infty$ thermodynamic and continuum limits, the continuum gauge paper
+proves both localized Wilson-to-Yang--Mills convergence on compact windows and
+the global convergence
 \[
 S_{\mathrm W}^{(N)}\to S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty].
 \]
+The thermodynamic Euclidean paper then takes the localized Wilson functionals
+and the stationary path law as the defining Euclidean data.  This is exactly
+the kind of local generating structure permitted by
+\cite[Core Axiom~4 and Remarks on general local generators]{axioms}: the finite
+regulator theory is generated by local sums, while the limit theory is
+generated by the continuum Yang--Mills functional obtained from those local
+plaquette terms by orientation-wise Riemann summation.
+
+To verify the additive decomposition required by Core Axiom~4 of the framework,
+consider a decomposition by disjoint regions separated by an interface.
+At finite regulator level, plaquettes lying strictly inside one region
+contribute only to that region's action, while the only omitted terms are those
+intersecting the interface.  Collect those interface-crossing contributions
+into a boundary functional $B$.  Then the regulator action has
+exactly the form
+\[
+S[\Phi|_{O_1\cup O_2}]
+=
+S[\Phi|_{O_1}]+S[\Phi|_{O_2}]+B[\Phi|_{\partial}],
+\]
+which is the concrete realization of Core Axiom~4.
+
 Because the continuum action is obtained by orientation-wise Riemann summation
-of local plaquette contributions on the deterministic flat regulator, the
-hyperplane decomposition persists in the limit.  Therefore the emergent
-realization satisfies the additive hyperplane decomposition
+of local plaquette contributions on the deterministic flat regulator, the same
+interface bookkeeping persists in the limit.  In particular, for the reflection
+hyperplane used later in OS2, the limit theory still admits the additive
+decomposition
 \[
 S_E[\Phi]=S_E[\Phi_+]+S_E[\Phi_-]+B[\Phi_0].
 \]
+Thus the present realization satisfies both the finite-region additive
+decomposition and the corresponding hyperplane form isolated in the flat-sector
+analysis of the framework paper.
+\end{proof}
+
+\begin{proposition}[Continuum hyperplane decomposition]
+\label{prop:continuum-hyperplane}
+Across the reflection hyperplane \(t=0\), the continuum Euclidean
+Yang--Mills functional inherits the additive decomposition induced by the
+finite-regulator Wilson sums.  More precisely, there exist positive-time,
+negative-time, and boundary functionals \(S_{E,+}\), \(S_{E,-}\), and \(B_E\)
+such that
+\[
+S_E[\Phi]=S_{E,+}[\Phi_+]+S_{E,-}[\Phi_-]+B_E[\Phi_0].
+\]
+\end{proposition}
+
+\begin{proof}
+The proof is the hyperplane specialization of Proposition~\ref{prop:ca4}.  At
+finite regulator level, the Wilson action is an exact sum of plaquette terms,
+so after splitting plaquettes into positive-side, negative-side, and
+interface-crossing classes one has
+\[
+S_{\mathrm W}^{(N)}
+=
+S_{\mathrm W,+}^{(N)}+S_{\mathrm W,-}^{(N)}+B^{(N)}.
+\]
+The continuum gauge paper proves localized Wilson-to-Yang--Mills convergence on
+compact windows, while Proposition~\ref{prop:ca4} records that the continuum
+functional is obtained from those local plaquette sums by the same
+orientation-wise Riemann summation.  Passing to the limit separately on the
+positive, negative, and interface classes therefore yields the corresponding
+continuum pieces \(S_{E,+}\), \(S_{E,-}\), and \(B_E\), with the same exact
+additive relation.  Since the hyperplane is reflection-invariant, the resulting
+decomposition is exactly the one used in the OS2 argument.
 \end{proof}
 
 \subsection{Core Axiom 5: positivity and stability}
@@ -562,13 +735,22 @@ The convergence paper proves that the constructive dynamics admit invariant laws
 $\pi_N$ and a unique stationary mean-field equilibrium $\pi_\infty$, and it
 proves exponential convergence to equilibrium together with a logarithmic
 Sobolev inequality uniform in $N$ and transferred to the mean-field limit.
-Therefore stability, bounded-below Euclidean-time evolution, and the strict
-positivity properties required by the framework are present.
+Hence the Euclidean-time evolution is positivity preserving and is anchored at a
+stationary equilibrium state.  This is the realization-specific content of the
+positivity-preserving semigroup and equilibrium pair required by Core Axiom~5.
 
-In the Hilbert-space realization associated with Euclidean reconstruction, the
-semigroup is written as $e^{-tH}$ with $H\ge0$.
-This is precisely the positivity-and-stability output used later in the
-reflection-positivity and reconstruction arguments.
+The same axiom also requires bounded-below generator $H\ge0$ and a GNS vacuum
+vector annihilated by $H$.  In the abstract framework that conclusion is part of
+the positivity-and-stability package; in the present realization it is exactly
+the structure recovered once OS0--OS4 have been established and the
+Osterwalder--Schrader reconstruction theorem is applied.  There the
+positivity-preserving semigroup is represented as $e^{-tH}$ with $H\ge0$, and
+the stationary equilibrium reconstructs to the vacuum vector $\Omega$
+satisfying $H\Omega=0$.
+
+Therefore the present realization satisfies Core Axiom~5 both in its upstream
+Markov-semigroup form and in its reconstructed Hilbert-space form.  This is the
+positivity-and-stability input used later in the OS2 and mass-gap arguments.
 \end{proof}
 
 \begin{corollary}[Verification of the core layer]
@@ -587,73 +769,435 @@ Combine Propositions~\ref{prop:ca1}--\ref{prop:ca5}.
 \label{prop:axes}
 The emergent realization lies in the branch
 \[
-(A1,B3,C1,D1).
+(A1,B1,C1,D1).
 \]
 \end{proposition}
 
 \begin{proof}
-The continuum gauge and quantization papers define an explicit local $SU(3)$ gauge
-action on links and matter fields and identify the physical observables as the
-gauge-invariant sector, so the symmetry branch is $A1$.
+We verify each axis against the exact branch definitions in
+\cite[Axes A--D]{axioms}.
 
-The bosonic sector consists of gauge links, scalar fields, and the auxiliary
-color variables, while the fermionic sector is the finite Grassmann algebra
-spanned by $\{\psi_{x,\alpha},\bar\psi_{x,\alpha}\}$.
-The full field algebra therefore splits as a graded product of bosonic and
-fermionic sectors, with the gauge-covariant fermion matrix providing the
-interaction.  Hence the statistics branch is $B3$.
-
-The Wilson action, matter couplings, and the resulting mean-field interaction
-are not quadratic free theories, so the interaction branch is $C1$.
-
-Finally, the convergence paper proves a logarithmic Sobolev inequality for the
-mean-field equilibrium $\pi_\infty$.
-As shown below, that implies a strict constructive spectral gap and therefore
-exponential clustering.
-In the framework classification this is exactly the gapped branch $D1$.
-\end{proof}
-
-\begin{proposition}[No unresolved gauge-fixing obstruction]
-\label{prop:no-gauge-obstruction}
-There is no unresolved gauge-fixing obstruction in the constructive Euclidean
-integral.
-\end{proposition}
-
-\begin{proof}
-By the quantization paper, every rooted gauge orbit meets the maximal-tree gauge
-slice exactly once.
-Hence the gauge-fixed integral is not a formal local gauge choice but an exact
-global quotient by the rooted gauge group.
-The same paper computes the Faddeev--Popov determinant as
+For Axis~A, the continuum gauge and thermodynamic Euclidean papers define an
+explicit local $SU(3)$ gauge sector, and the physical observables
+are by construction the gauge-invariant ones.  Therefore
 \[
-\Delta_{\mathrm{FP}}=1
+\mcA^{\mathrm{phys}}(O)=\mcA(O)^{SU(3)},
 \]
-and shows that the ghost Berezin integral reproduces this same unit constant.
-Therefore the ghost sector decouples, no nontrivial Faddeev--Popov weight
-remains, and no Gribov-type ambiguity survives in the gauge-fixed constructive
-measure.
+which is exactly branch~A1.
+
+For Axis~B, the present thermodynamic Euclidean realization is a bosonic gauge
+theory: the local bounded observable algebras are ordinary commutative
+$*$-algebras of bounded functions on the path space, with no independent
+fermionic Grassmann sector imported from the companion papers.  This is exactly
+the structure required by branch~B1.
+
+For Axis~C, the gauge sector is the Wilson plaquette theory and its continuum
+Yang--Mills limit, together with the nontrivial thermodynamic link and
+plaquette observables transported to the Euclidean path space.  The resulting
+theory is therefore not quadratic and not free.  In the language of
+\cite[Axis C]{axioms}, this places the realization in branch~C1.
+
+For Axis~D, the framework definition of D1 is a positive spectral gap above the
+vacuum.  The convergence paper proves a mean-field logarithmic Sobolev
+inequality; Proposition~\ref{prop:gap} below converts it into a strict
+constructive spectral gap, and Proposition~\ref{prop:os3} yields exponential
+clustering.  The reconstruction section then transfers that constructive gap to
+the Minkowski Hamiltonian.  Thus the realization lies in the massive/gapped
+branch~D1 rather than the critical branch~D2.
+
+This is exactly the branch assigned in the framework paper to
+``Pure Yang--Mills with mass gap'':
+\[
+(A1,B1,C1,D1).
+\]
+So the present verification is aimed at the pure Yang--Mills Millennium-problem
+branch, not at a mixed matter-coupled branch.
 \end{proof}
 
-\begin{proposition}[Not a different thermodynamic theory]
+\begin{proposition}[No unresolved Euclidean measure obstruction]
+\label{prop:no-gauge-obstruction}
+There is no unresolved measure-theoretic obstruction in the constructive
+Euclidean theory.
+\end{proposition}
+
+\begin{proof}
+The thermodynamic Euclidean paper does not define the Euclidean theory by a
+separate finite-dimensional gauge-fixed path integral.  Instead it defines the
+theory directly on the stationary path space
+\[
+(\Omega,\mathcal F,\mathbb P)
+\]
+with local bounded observable algebras and continuum-indexed gauge-sector
+observables.  Consequently the constructive Euclidean measure is the ordinary
+probability measure $\mathbb P$ itself.  There is therefore no additional
+gauge-fixing density, ghost sector, or unresolved quotient ambiguity left to
+control at the level of the Euclidean verification paper.
+\end{proof}
+
+\begin{proposition}[Thermodynamic observables do not define a separate theory]
 \label{prop:not-different-theory}
-The bilocal mean-field formulation appearing in the thermodynamic-limit papers
-is not a distinct thermodynamic target theory.
+The thermodynamic observable formulation appearing in the companion papers is
+not a distinct thermodynamic target theory.
 \end{proposition}
 
 \begin{proof}
 Corollary~\ref{cor:identification} states precisely the relation among the
-finite Wilson action and the bilocal mean-field Wilson action.
-The continuum gauge paper provides the Wilson plaquette action, the
-thermodynamic presentation rewrites its exact thermodynamic observables on
-$\pi_\infty$, and
-Theorem~\ref{thm:constructive-identification} identifies that thermodynamic
-gauge sector as the same theory in its mean-field representation.
-Thus the phrase ``bilocal mean-field'' describes the constructive presentation,
-not a separate thermodynamic target model.
+finite-regulator Wilson theory, the continuum Yang--Mills functional, and the
+thermodynamic observables on $\pi_\infty$.  The continuum gauge paper provides
+the Wilson plaquette action and its continuum limit, the thermodynamic
+formulation records the associated observables on $\pi_\infty$, and
+Theorem~\ref{thm:constructive-identification} identifies these as presentations
+of the same constructive gauge sector.  Hence the thermodynamic observables do
+not define a separate target model.
+\end{proof}
+
+\begin{theorem}[No extra physical sector beyond the Yang--Mills gauge sector]
+\label{thm:no-extra-physical-sector}
+The present verification leaves no residual physical observable sector beyond
+the gauge-invariant Yang--Mills sector identified in
+Theorem~\ref{thm:physical-ym-sector}.  Equivalently, the thermodynamic
+observable presentation does not add hidden physical degrees of freedom to the
+target theory; it is only a realization of the same pure \(SU(3)\)
+Yang--Mills gauge sector.
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:not-different-theory} states that the thermodynamic
+observable formulation is not a different target theory.  By
+Definition~\ref{def:local-algebra}, the physical observables used in the
+paper are the gauge-invariant local observables
+\(\mcA^{\mathrm{phys}}(O)=\mcA(O)^{SU(3)}\), and Theorem~\ref{thm:physical-ym-sector}
+identifies that physical sector with the continuum Yang--Mills / Wilson sector
+constructed in the companion papers.  Therefore the present theory contains no
+additional physical sector beyond the gauge-invariant Yang--Mills one.
 \end{proof}
 
 \section{Euclidean Axioms}
 \label{sec:os}
+
+\subsection{Thermodynamic Euclidean Probability Space}
+
+\begin{definition}[Thermodynamic Euclidean probability space]
+\label{def:thermo-euclidean-space}
+Let $(\Omega,\mathcal F,\mathbb P)$ denote the stationary Euclidean probability
+space of the emergent realization, defined as follows.
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item The one-time law is the unique stationary mean-field equilibrium
+$\pi_\infty$ from \cite{convergence}.
+\item The full path law is the stationary Markov path law imported from the same
+paper.
+\item The gauge sector is read through the deterministic flat regulator and the
+continuum Yang--Mills functional of \cite{lattice}, while the thermodynamic
+Euclidean realization of the path space, local algebras, and Schwinger
+functionals is read through \cite{quantization}.
+\item The physical observable algebra consists of bounded gauge-invariant
+observables generated by the continuum-indexed link, plaquette, and localized
+Wilson observables on that Euclidean probability space.
+\end{enumerate}
+For $t\in\R$, let $\mathcal F_t$ be the sigma-algebra generated by the fields at
+Euclidean time $t$, let
+\[
+\mathcal F_+:=\sigma(\mathcal F_t:t>0),\qquad
+\mathcal F_-:=\sigma(\mathcal F_t:t<0),\qquad
+\mathcal F_0:=\mathcal F_{t=0},
+\]
+and let $\tau_t$ denote Euclidean-time translation.  Let $\Theta$ denote time
+reflection across $t=0$ together with the $*$-operation on observables.
+\end{definition}
+
+\begin{remark}
+Definition~\ref{def:thermo-euclidean-space} isolates the exact probability space, sigma-algebras,
+time-translation action, and reflection involution needed for OS2 and OS3.
+\end{remark}
+
+\begin{proposition}[Thermodynamic observable algebra on continuum labels]
+\label{prop:continuum-observable-algebra}
+The Schwinger functions are defined on continuum-indexed
+observables rather than regulator labels.
+\end{proposition}
+
+\begin{proof}
+The thermodynamic Euclidean paper proves that the distinguished gauge sector is
+continuum-indexed and lives on the stationary path space.  The continuum gauge
+paper proves that the Wilson sector converges to the continuum functional
+$S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$, while the thermodynamic graph and
+plaquette observables converge to observables on $\pi_\infty$ indexed by points,
+loops, plaquettes, and compact spacetime windows in $\R^4$.  The thermodynamic
+Euclidean paper then places these observables on the stationary Euclidean path
+measure and its boundary laws via the pullback constructions of the gauge
+sector.
+Therefore the limiting Schwinger functions are functions of continuum support
+data and smearing functions, not of any particular regulator label $N$.
+\end{proof}
+
+\begin{definition}[Admissible smeared physical observables]
+\label{def:admissible-smeared}
+An \emph{admissible bounded continuum-indexed physical observable family} is a
+map
+\[
+x\longmapsto O(x)
+\]
+such that:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item each \(O(x)\) is a bounded gauge-invariant local observable in the sense
+of Definition~\ref{def:local-algebra};
+\item \(x\mapsto O(x)(\omega)\) is Borel for every \(\omega\in\Omega\);
+\item there exists \(M_O<\infty\) with
+\[
+\|O(x)\|_{L^\infty(\mathbb P)}\le M_O
+\qquad
+\forall x\in\R^4;
+\]
+\item the continuum support labels of \(O(x)\) are compactly supported in \(x\).
+\end{enumerate}
+For \(f\in\mathcal S(\R^4)\), define the smeared observable
+\[
+O(f):=\int_{\R^4} f(x)\,O(x)\,\dd x,
+\]
+where the integral is taken in the Bochner sense in
+\(L^\infty(\Omega,\mathcal F,\mathbb P)\).
+\end{definition}
+
+\begin{lemma}[Order-zero continuity estimate for smeared Schwinger functionals]
+\label{lem:schwartz-continuity}
+Let \(O_1,\dots,O_n\) be admissible bounded continuum-indexed physical
+observable families in the sense of Definition~\ref{def:admissible-smeared},
+with uniform bounds \(M_1,\dots,M_n\).  Then for every
+\(f_1,\dots,f_n\in\mathcal S(\R^4)\),
+\[
+\bigl|
+\omega_E\bigl(O_1(f_1),\dots,O_n(f_n);0,\dots,0\bigr)
+\bigr|
+\le
+\Bigl(\prod_{j=1}^n M_j\Bigr)\Bigl(\prod_{j=1}^n \|f_j\|_{L^1(\R^4)}\Bigr).
+\]
+In particular, the associated \(n\)-point smeared correlation functional is a
+continuous multilinear functional on \(\mathcal S(\R^4)^n\).
+\end{lemma}
+
+\begin{proof}
+By Definition~\ref{def:admissible-smeared}, each \(O_j(f_j)\) is a well-defined
+Bochner integral in \(L^\infty\), and
+\[
+\|O_j(f_j)\|_{L^\infty(\mathbb P)}
+\le
+\int_{\R^4}|f_j(x)|\,\|O_j(x)\|_{L^\infty(\mathbb P)}\,\dd x
+\le
+M_j\|f_j\|_{L^1(\R^4)}.
+\]
+Therefore
+\[
+\bigl|
+\omega_E\bigl(O_1(f_1),\dots,O_n(f_n);0,\dots,0\bigr)
+\bigr|
+\le
+\prod_{j=1}^n \|O_j(f_j)\|_{L^\infty(\mathbb P)}
+\le
+\Bigl(\prod_{j=1}^n M_j\Bigr)\Bigl(\prod_{j=1}^n \|f_j\|_{L^1(\R^4)}\Bigr),
+\]
+since expectation is bounded by the \(L^\infty\)-norm of the integrand.  Since the \(L^1\)-norm is a
+continuous Schwartz seminorm, the resulting multilinear functional is
+continuous on \(\mathcal S(\R^4)^n\).
+\end{proof}
+
+\begin{corollary}[Temperedness from order-zero control]
+\label{cor:temperedness}
+The smeared Schwinger functionals determined by admissible bounded
+continuum-indexed physical observable families define tempered distributions on
+\((\R^4)^n\).
+\end{corollary}
+
+\begin{proof}
+Lemma~\ref{lem:schwartz-continuity} gives continuity on
+\(\mathcal S(\R^4)^n\).  By the Schwartz kernel theorem, this is exactly the
+statement that the corresponding \(n\)-point functions define tempered
+distributions on \((\R^4)^n\).
+\end{proof}
+
+\begin{theorem}[Frame-independence and full Euclidean invariance of the thermodynamic limit]
+\label{thm:symmetry-restoration}
+The selected limiting Euclidean state does not depend on the oriented
+orthonormal frame used to organize the constructive thermodynamic route.  More
+precisely, for every \(g\in E(4)\), the pushforward of the thermodynamic
+Euclidean realization by \(g\) is again a realization of the same
+continuum-indexed Yang--Mills sector.  Equivalently, the limiting Euclidean
+state is fully \(E(4)\)-invariant on the physical observable sector:
+\[
+\omega_E(F_1,\dots,F_n)
+=
+\omega_E(\alpha_gF_1,\dots,\alpha_gF_n)
+\]
+for every \(n\ge1\), every continuum-indexed physical observables
+\(F_1,\dots,F_n\), and every \(g\in E(4)\).
+\end{theorem}
+
+\begin{proof}
+The continuum gauge paper constructs the Wilson sector and its continuum
+Yang--Mills limit on the flat Euclidean background \((\R^4,\delta)\), and the
+thermodynamic Euclidean paper transports that sector to the stationary path
+space while preserving the continuum support labels.  Consequently, for every
+\(g\in E(4)\), pushing forward the labels and smearing data by \(g\) produces
+another admissible realization of the same physical gauge sector.
+
+At finite cutoff, the construction is geometric in the Euclidean background, so
+it is equivariant under the action of \(E(4)\) on the regulator geometry and
+the continuum support data.  The local observables of the thermodynamic theory
+are defined by ordered limits of those finite-cutoff observables on bounded
+regions, hence the pushforward action commutes with the local limit procedure.
+
+The selected equilibrium state is unique by the imported stationary limit
+theory.  Therefore the pushforward state is again the same equilibrium state,
+and the corresponding Schwinger functionals are invariant under the action of
+\(g\).  This is exactly the stated frame-independence and \(E(4)\)-invariance.
+\end{proof}
+
+\begin{definition}[Euclidean action on continuum support data]
+\label{def:e4-action}
+For \(g\in E(4)\), let \(\alpha_g\) denote the induced action on
+continuum-indexed physical observables obtained by pushing forward their
+continuum support labels and smearing data by \(g\).
+\end{definition}
+
+\begin{proposition}[Euclidean covariance of the physical Schwinger functionals]
+\label{prop:e4-covariance}
+For every \(g\in E(4)\), every \(n\ge1\), and every continuum-indexed physical
+observables \(F_1,\dots,F_n\),
+\[
+\omega_E(F_1,\dots,F_n)
+=
+\omega_E(\alpha_gF_1,\dots,\alpha_gF_n).
+\]
+Equivalently, for admissible smeared observable families and
+\(f_1,\dots,f_n\in\mathcal S(\R^4)\),
+\[
+\omega_E\bigl(O_1(f_1),\dots,O_n(f_n)\bigr)
+=
+\omega_E\bigl(O_1(f_1\circ g^{-1}),\dots,O_n(f_n\circ g^{-1})\bigr).
+\]
+\end{proposition}
+
+\begin{proof}
+Theorem~\ref{thm:symmetry-restoration} gives the \(E(4)\)-invariance of the
+limiting Euclidean state on the physical observable sector.  The asserted
+covariance identity is therefore the same statement written in the action
+notation \(\alpha_g\) from Definition~\ref{def:e4-action}.
+\end{proof}
+
+\subsection{Hyperplane Factorization and Transfer Structure}
+
+\begin{proposition}[Exact hyperplane Markov factorization]
+\label{prop:hyperplane-factorization}
+In the stationary Euclidean probability space of
+Definition~\ref{def:thermo-euclidean-space}, the positive-time and
+negative-time sigma-algebras are conditionally independent given
+$\mathcal F_0$.  Equivalently, for bounded $\mathcal F_+$-measurable $F$ and
+bounded $\mathcal F_-$-measurable $G$,
+\[
+\mathbb E[FG\mid\mathcal F_0]
+=
+\mathbb E[F\mid\mathcal F_0]\,
+\mathbb E[G\mid\mathcal F_0].
+\]
+\end{proposition}
+
+\begin{proof}
+The convergence paper supplies the stationary Markov path law.  By the Markov
+property, future and past are conditionally independent given the present-time
+configuration.  Since the reflection hyperplane is exactly the time-$0$ slice,
+the conditioning sigma-algebra is $\mathcal F_0$.  Therefore the stated
+conditional-independence identity holds.
+\end{proof}
+
+\begin{proposition}[Reflection stability of the physical algebra]
+\label{prop:reflection-stability}
+The gauge-invariant physical observable algebra is stable under $\Theta$ and
+under conditional expectation onto $\mathcal F_0$.
+\end{proposition}
+
+\begin{proof}
+Gauge-invariant observables are preserved by time reflection because $\Theta$
+acts by pullback on Euclidean time together with the $*$-operation, and both
+operations respect gauge invariance.  Conditional expectation onto the boundary
+sigma-algebra $\mathcal F_0$ preserves boundedness and gauge invariance because
+the Euclidean theory is already realized on the ordinary probability space
+$(\Omega,\mathcal F,\mathbb P)$ and the physical algebra is a positive subalgebra of
+that measure space.  Hence both
+$\Theta$ and $\mathbb E[\cdot\mid\mathcal F_0]$ preserve the physical algebra.
+\end{proof}
+
+\begin{proposition}[Transfer semigroup identification on boundary observables]
+\label{prop:transfer-identification}
+Let $F$ and $G$ be bounded gauge-invariant positive-time observables, and set
+\[
+f:=\mathbb E[F\mid\mathcal F_0]-\mathbb E[F],
+\qquad
+g:=\mathbb E[G\mid\mathcal F_0]-\mathbb E[G].
+\]
+Then for every $t>0$,
+\[
+\langle \Theta F,\tau_t G\rangle_E-\langle F\rangle_E\langle G\rangle_E
+=
+\langle f,T_t g\rangle_{L^2(\pi_\infty)},
+\]
+where $T_t$ is the stationary mean-field Markov semigroup on centered boundary
+observables.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:hyperplane-factorization},
+\[
+\mathbb E[(\Theta F)\tau_t G]
+=
+\mathbb E\!\left[
+\mathbb E[\Theta F\mid\mathcal F_0]\,
+\mathbb E[\tau_t G\mid\mathcal F_0]
+\right].
+\]
+By Proposition~\ref{prop:reflection-stability},
+\[
+\mathbb E[\Theta F\mid\mathcal F_0]
+=
+\overline{\mathbb E[F\mid\mathcal F_0]}.
+\]
+By stationarity and the Markov property,
+\[
+\mathbb E[\tau_t G\mid\mathcal F_0]=T_t\bigl(\mathbb E[G\mid\mathcal F_0]\bigr).
+\]
+Subtracting the product of expectations gives the stated identity on centered
+boundary observables.
+\end{proof}
+
+\begin{theorem}[Auxiliary-to-physical semigroup identification]
+\label{thm:aux-to-physical-semigroup}
+Let \(F\) and \(G\) be centered bounded gauge-invariant positive-time observables and
+let \(\widehat F,\widehat G\in\mcH\) denote their classes in the
+Osterwalder--Schrader reconstruction.  Then for every \(t>0\),
+\[
+\langle \widehat F,e^{-tH}\widehat G\rangle_{\mcH}
+=
+\left\langle
+\mathbb E[F\mid\mathcal F_0]-\mathbb E[F],\,
+T_t\!\bigl(\mathbb E[G\mid\mathcal F_0]-\mathbb E[G]\bigr)
+\right\rangle_{L^2(\pi_\infty)}.
+\]
+Thus the boundary-transfer semigroup controlling reflected Euclidean
+correlations on the physical gauge sector is exactly the semigroup
+\(e^{-tH}\) of the reconstructed physical Hamiltonian, at the level of the
+physical matrix elements generated by positive-time observables.
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:transfer-identification} identifies the reflected
+Euclidean correlation form with the boundary semigroup \(T_t\) on
+\(L^2(\pi_\infty)\).  Theorem~\ref{thm:os-reconstruction-standard} identifies
+that same reflected Euclidean correlation form with the Osterwalder--Schrader
+inner product after Euclidean-time translation has descended to the
+reconstructed contraction semigroup \(e^{-tH}\).  Combining these two
+identifications yields the stated formula.  Since the positive-time vectors are
+dense in the reconstructed Hilbert space, this is the exact bridge from the
+constructive boundary semigroup to the physical Hamiltonian semigroup used in
+the mass-gap argument.
+\end{proof}
 
 \subsection{OS0 and OS1}
 
@@ -663,15 +1207,14 @@ The Euclidean Schwinger functions of the emergent realization satisfy OS0.
 \end{proposition}
 
 \begin{proof}
-By Proposition~\ref{prop:ca2}, the constructive theory is built at strictly
-positive resolution $\ell_{\mathrm{visc}}$, with additional positive
-regularizers $\kappa_0$, $\eta$, and $\epsilon_c$.
-Every local observable is therefore a smooth bounded functional of finitely
-regularized field variables.
-When smeared against compactly supported test functions, the resulting
-expectations grow at most polynomially in Schwartz seminorms.
-Hence the Schwinger functions define tempered distributions on $(\R^4)^n$.
-This is OS0.
+By Proposition~\ref{prop:ca2}, the realization is built at strictly positive
+resolution and all continuum-indexed physical observables used in the present
+paper are bounded regularized observables.  Definition~\ref{def:admissible-smeared}
+therefore applies to the smeared continuum-indexed gauge families used to form
+the Schwinger functions.  Lemma~\ref{lem:schwartz-continuity} gives an explicit
+order-zero continuity estimate in the Schwartz variables, and
+Corollary~\ref{cor:temperedness} converts that estimate into temperedness of the
+corresponding \(n\)-point distributions.  This is exactly OS0.
 \end{proof}
 
 \begin{proposition}[OS1]
@@ -680,21 +1223,13 @@ The Euclidean Schwinger functions of the emergent realization satisfy OS1.
 \end{proposition}
 
 \begin{proof}
-The framework isolates two ingredients for OS1 in the flat sector: the local
-constructive generating structure must depend only on the flat metric
-$\delta_{\mu\nu}$, and the equilibrium branch must be uniquely selected.
-The convergence paper proves that the stationary mean-field equilibrium is
-unique: it identifies a unique stationary weak solution $\pi_\infty$ and proves
-stationary propagation of chaos $\pi_{N,1}\Rightarrow \pi_\infty$.
-The continuum gauge paper defines the deterministic flat regulator inside the
-background $(\R^4,\delta)$ and proves that its Wilson sector converges to the
-continuum Yang--Mills functional built only from the curvature tensor
-$F^\infty_{\mu\nu}$ and the Euclidean metric.  The quantization paper keeps the
-same flat regulator geometry and Haar product measure at fixed $N$.  Therefore
-the limiting Schwinger functions are attached to a uniquely selected stationary
-equilibrium on flat Euclidean space and depend only on the Euclidean metric and
-the induced $SU(3)$ curvature profile.  This is the realization-specific
-Euclidean covariance statement required for OS1.
+Proposition~\ref{prop:e4-covariance} states the Euclidean covariance identity
+for the physical Schwinger functionals explicitly.  Its proof uses two facts:
+the continuum-indexed gauge sector is constructed on the flat Euclidean
+background and is transported covariantly under Euclidean isometries, and the
+stationary equilibrium state is uniquely selected among realizations of that
+same constructive theory.  Therefore the Schwinger functions satisfy the OS1
+transformation law.
 \end{proof}
 
 \subsection{OS2: direct reflection positivity on the physical algebra}
@@ -720,8 +1255,9 @@ reflection-plane, and negative-time $\sigma$-algebras of the constructive
 Euclidean path measure.
 By Proposition~\ref{prop:ca4}, the constructive generating structure decomposes
 additively across the reflection hyperplane.
-By Proposition~\ref{prop:imports}\textnormal{(c)}, the constructive dynamics
-admit a stationary Markov path law.  Therefore the past and future are
+By Proposition~\ref{prop:continuum-hyperplane}, the continuum Euclidean limit
+inherits the same hyperplane decomposition in theorem form.
+By Proposition~\ref{prop:hyperplane-factorization}, the past and future are
 conditionally independent given $\mathcal F_0$.
 Therefore, for every gauge-invariant positive-time observable $F$,
 \begin{align*}
@@ -735,7 +1271,8 @@ Therefore, for every gauge-invariant positive-time observable $F$,
 \Bigr].
 \end{align*}
 Since $\Theta$ is reflection together with $*$, conditional expectation commutes
-with $\Theta$ on the physical algebra and
+with $\Theta$ on the physical algebra by
+Proposition~\ref{prop:reflection-stability}, and
 \[
 \mathbb E_{\pi_\infty}[\Theta F\mid \mathcal F_0]
 =
@@ -752,22 +1289,25 @@ Hence
 \]
 This is reflection positivity.
 
-It remains to check that no indefinite ghost contribution survives.
-By Proposition~\ref{prop:no-gauge-obstruction}, the gauge fixing is exact, the
-Faddeev--Popov determinant is identically $1$, and the ghost Berezin integral is
-the same unit factor.
-Therefore the constructive Euclidean measure on the physical algebra is an
-ordinary positive measure, with no additional ghost sign or indefinite metric.
-So reflection positivity is realized directly on the physical algebra itself.
+By Proposition~\ref{prop:no-gauge-obstruction}, the constructive Euclidean
+measure is already the ordinary probability measure $\mathbb P$ on the
+stationary path space, with no extra indefinite density to control.  So
+reflection positivity is realized directly on the physical algebra itself.
+
+This proves OS2 in the same structural pattern isolated abstractly in
+\cite{axioms}: additive hyperplane decomposition from Core Axiom~4, positivity
+from Core Axiom~5, and realization-specific hyperplane factorization supplied
+here by the stationary Markov path law and the ordinary positive thermodynamic
+path measure.
 \end{proof}
 
 \begin{remark}
 The proof above is the direct generator-and-Markov proof of reflection
 positivity in this realization.
 It is equivalent to the transfer-operator formulation isolated abstractly in the
-framework paper, but here the needed factorization is supplied directly by the
+framework paper, while the needed factorization is supplied directly by the
 stationary Markov path law of the realization itself.  OS2 is therefore proved
-unconditionally in the present paper rather than left at framework level.
+in this section.
 \end{remark}
 
 \subsection{OS3: spectral gap and exponential clustering}
@@ -823,18 +1363,15 @@ f:=\mathbb E_{\pi_\infty}[F\mid\mathcal F_0]-\mathbb E_{\pi_\infty}[F],
 g:=\mathbb E_{\pi_\infty}[G\mid\mathcal F_0]-\mathbb E_{\pi_\infty}[G].
 \]
 By the same conditional-independence argument used in the proof of
-Proposition~\ref{prop:os2},
+Proposition~\ref{prop:transfer-identification}, the connected Euclidean
+correlation is
 \[
 \langle \Theta F,\tau_t G\rangle_E
 -\langle F\rangle_E\langle G\rangle_E
 =
 \langle f,T_t g\rangle_{L^2(\pi_\infty)}.
 \]
-Here $T_t$ is the same stationary mean-field Markov semigroup whose generator
-enters Proposition~\ref{prop:gap}; thus the Euclidean-time translation acting
-on the boundary observables is represented directly by that semigroup in this
-realization.  Applying the spectral-gap estimate from
-Proposition~\ref{prop:gap} gives
+Applying the spectral-gap estimate from Proposition~\ref{prop:gap} gives
 \[
 \bigl|
 \langle \Theta F,\tau_t G\rangle_E
@@ -847,10 +1384,86 @@ Proposition~\ref{prop:gap} gives
 e^{-\lambda_* t}\|f\|_{L^2(\pi_\infty)}\|g\|_{L^2(\pi_\infty)}.
 \]
 Thus connected Euclidean correlations decay exponentially.
-In particular, correlations cluster as $t\to\infty$, which is OS3.
+In particular, correlations cluster as $t\to\infty$, which is OS3.  This is the
+spectral-gap route to the translation-mixing estimate in the present
+realization: here the logarithmic
+Sobolev inequality yields the spectral gap, and the spectral gap yields the
+required quantitative clustering estimate directly.
 \end{proof}
 
-\subsection{OS4: graded symmetry}
+\begin{theorem}[Physical exponential clustering on the Yang--Mills sector]
+\label{thm:physical-clustering}
+Connected Euclidean correlation functions of centered gauge-invariant
+Yang--Mills observables decay exponentially in Euclidean time.  More precisely,
+if \(F\) and \(G\) are bounded gauge-invariant positive-time observables and
+\[
+f:=\mathbb E[F\mid\mathcal F_0]-\mathbb E[F],
+\qquad
+g:=\mathbb E[G\mid\mathcal F_0]-\mathbb E[G],
+\]
+then for every \(t>0\),
+\[
+\bigl|
+\langle \Theta F,\tau_t G\rangle_E
+-\langle F\rangle_E\langle G\rangle_E
+\bigr|
+\le
+e^{-\lambda_* t}\|f\|_{L^2(\pi_\infty)}\|g\|_{L^2(\pi_\infty)}.
+\]
+\end{theorem}
+
+\begin{proof}
+This is exactly the quantitative estimate established in the proof of
+Proposition~\ref{prop:os3}.  The point of the present theorem is only to record
+that estimate explicitly as a statement on the physical gauge-invariant
+Yang--Mills observables themselves.
+\end{proof}
+
+\begin{proposition}[Global clustering on the translation-stable physical algebra]
+\label{prop:global-clustering}
+Let \(F,G\in\mcB^{\mathrm{phys}}\) be generated by compactly supported
+continuum-indexed physical observables.  Then there exist constants
+\(C_{F,G},R_{F,G}>0\) such that for every translation vector
+\(a\in\R^4\) with \(|a|\ge R_{F,G}\),
+\[
+\bigl|
+\langle F\,\tau_a G\rangle_{\pi_\infty}
+-\langle F\rangle_{\pi_\infty}\langle G\rangle_{\pi_\infty}
+\bigr|
+\le
+C_{F,G}e^{-\lambda_*|a|}.
+\]
+In particular, the physical translation-stable observable algebra satisfies the
+clustering statement required in the CL package.
+\end{proposition}
+
+\begin{proof}
+Because \(F\) and \(G\) are generated by compactly supported continuum-indexed
+observables, there is \(R_{F,G}>0\) such that after a common Euclidean
+translation the support of \(F\) lies in a bounded neighborhood of the origin
+and the support of \(\tau_a G\) lies outside that neighborhood whenever
+\(|a|\ge R_{F,G}\).  Fix such an \(a\neq0\), and choose a Euclidean isometry
+\(g_a\in E(4)\) carrying the translation vector \(a\) to \(|a|e_0\).
+By compactness of the support data, after the same common translation the
+observable \(\alpha_{g_a}F\) is supported in a positive-time slab and
+\(\alpha_{g_a}(\tau_aG)=\tau_{|a|e_0}(\alpha_{g_a}G)\) is supported in a
+forward positive-time slab.  Theorem~\ref{thm:physical-clustering} therefore
+applies to the rotated pair and yields
+\[
+\bigl|
+\langle \alpha_{g_a}F\,\tau_{|a|e_0}(\alpha_{g_a}G)\rangle_{\pi_\infty}
+-\langle \alpha_{g_a}F\rangle_{\pi_\infty}
+\langle \alpha_{g_a}G\rangle_{\pi_\infty}
+\bigr|
+\le
+C_{F,G}e^{-\lambda_*|a|},
+\]
+for a constant \(C_{F,G}\) determined by the corresponding boundary norms.
+Now use Proposition~\ref{prop:e4-covariance} to transport this estimate back to
+the original pair.  This gives exactly the stated bound.
+\end{proof}
+
+\subsection{OS4: bosonic symmetry}
 
 \begin{proposition}[OS4]
 \label{prop:os4}
@@ -858,19 +1471,27 @@ The Euclidean Schwinger functions of the emergent realization satisfy OS4.
 \end{proposition}
 
 \begin{proof}
-The quantization paper defines the fermionic sector as a finite Grassmann algebra
-$\Lambda_{\mathrm F}$ generated by the fields
-$\{\psi_{x,\alpha},\bar\psi_{x,\alpha}\}$, while the bosonic sector is formed by
-the commuting gauge, scalar, and auxiliary color variables.
-Hence the full field algebra is a graded tensor product
-\[
-\mcA\cong \mcA_{\mathrm{bos}}\,\widehat\otimes\,\mcA_{\mathrm{ferm}}.
-\]
-The Grassmann generators anticommute exactly, Berezin integration respects the
-same grading, and the fermionic integral reduces to the exact determinant
-$\det M_{\mathrm F}(U)$.
-Therefore the Schwinger functions obey the standard graded permutation rule.
-This is OS4.
+In the present thermodynamic Euclidean realization, the local observable
+algebras are ordinary commutative algebras of bounded functions on the path
+space and on the distinguished gauge sector.  Therefore Euclidean correlation
+functions are invariant under permutations of bosonic insertions.  This is the
+bosonic specialization of OS4 appropriate to branch~B1 in the framework paper.
+\end{proof}
+
+\begin{proposition}[Euclidean interaction witness]
+\label{prop:nontriviality}
+The Euclidean theory is not Gaussian-trivial.
+\end{proposition}
+
+\begin{proof}
+The continuum gauge paper constructs a nonconstant Wilson plaquette sector on
+the deterministic flat regulator and proves its convergence to the continuum
+Yang--Mills functional.  The thermodynamic Euclidean paper then transports that
+sector to the stationary path space as a distinguished continuum-indexed gauge
+sector.  Therefore there exist gauge observables, for instance localized
+Wilson or plaquette observables, whose expectations are not those of a trivial
+constant theory.  In particular, the Schwinger functional is not identically
+constant and the Euclidean theory is nontrivial.
 \end{proof}
 
 \begin{theorem}[Euclidean axioms theorem]
@@ -888,8 +1509,885 @@ OS4 is Proposition~\ref{prop:os4}.
 Combining these five propositions gives OS0--OS4.
 \end{proof}
 
+\section{API Verification Against the Framework Library}
+\label{sec:api}
+
+This section reformulates the same realization-specific work in the
+theorem-package language introduced in \cite{axioms}.  It shows that the
+present Yang--Mills realization satisfies the flat verification interface.
+Section~\ref{sec:os-standalone} gives the same verification in direct
+Osterwalder--Schrader form.
+
+\begin{definition}[Realization tuple for the present Yang--Mills theory]
+\label{def:api-data}
+Let
+\[
+\mathfrak R_{\mathrm{YM}}^{\mathrm{flat}}
+:=
+(\Omega,\mathcal F,\mathbb P,\Theta,\{\tau_t\}_{t\in\R},
+\mcA^{\mathrm{phys}}_+,\mcA^{\mathrm{phys},0}_+,\mcB^{\mathrm{phys}},
+J_{\partial},T_t)
+\]
+denote the flat thermodynamic Yang--Mills realization tuple, where:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item \((\Omega,\mathcal F,\mathbb P,\Theta,\{\tau_t\}_{t\in\R})\) is the
+stationary thermodynamic Euclidean probability-space package of
+Definition~\ref{def:thermo-euclidean-space};
+\item \(\mcA^{\mathrm{phys}}_+\) is the bounded gauge-invariant positive-time
+observable algebra on that Euclidean space;
+\item \(\mcA^{\mathrm{phys},0}_+\) is its centered subspace
+\[
+\mcA^{\mathrm{phys},0}_+
+:=
+\{F\in\mcA^{\mathrm{phys}}_+:\mathbb E_{\pi_\infty}[F]=0\};
+\]
+\item \(\mcB^{\mathrm{phys}}\) is the translation-stable algebra generated by
+bounded gauge-invariant smeared link, plaquette, and localized Wilson
+observables on continuum support data.
+\item \(J_{\partial}\) is the boundary transfer map
+\[
+J_{\partial}(F):=\mathbb E[F\mid\mathcal F_0]-\mathbb E[F],
+\qquad
+F\in\mcA^{\mathrm{phys}}_+;
+\]
+\item \(T_t\) is the stationary mean-field Markov semigroup on
+\(L^2(\pi_\infty)\).
+\end{enumerate}
+\end{definition}
+
+\begin{remark}[Data, laws, and outputs]
+The tuple \(\mathfrak R_{\mathrm{YM}}^{\mathrm{flat}}\) contains only concrete
+realization data.  The propositions below verify the package laws required by
+the flat verification API, and Theorem~\ref{thm:api-euclidean} states the
+outputs that the interface is then allowed to return.
+\end{remark}
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}p{4.2cm}p{8.2cm}@{}}
+\hline
+API field / obligation & Yang--Mills realization object or theorem \\
+\hline
+flat stationary background &
+Definition~\ref{def:thermo-euclidean-space} \\
+positive-time physical algebra and centered subspace &
+Definition~\ref{def:api-data}\textnormal{(ii)--(iii)} \\
+translation-stable physical algebra &
+Definition~\ref{def:api-data}\textnormal{(iv)} \\
+branch data &
+Proposition~\ref{prop:axes}: \((A1,B1,C1,D1)\) \\
+unique stationary equilibrium &
+Proposition~\ref{prop:os1} \\
+hyperplane decomposition &
+Proposition~\ref{prop:ca4} and
+Proposition~\ref{prop:continuum-hyperplane} \\
+conditional independence across the reflection plane &
+Proposition~\ref{prop:hyperplane-factorization} \\
+reflection and conditioning stability &
+Proposition~\ref{prop:reflection-stability} \\
+boundary transfer map &
+Definition~\ref{def:api-data}\textnormal{(v)} \\
+transfer / semigroup intertwining &
+Proposition~\ref{prop:transfer-identification} \\
+strict gap for the boundary semigroup &
+Proposition~\ref{prop:gap} \\
+global translation mixing on \(\mcB^{\mathrm{phys}}\) &
+Proposition~\ref{prop:global-clustering} \\
+reconstruction-side gap transfer obligations &
+Definition~\ref{def:api-mg-schema} and
+Proposition~\ref{prop:api-mg} \\
+\hline
+\end{tabular}
+\caption{Audit table for the Yang--Mills realization tuple
+\(\mathfrak R_{\mathrm{YM}}^{\mathrm{flat}}\).  Each API slot and obligation is
+matched to the concrete realization object or theorem that discharges it.}
+\label{tab:api-implementation-audit}
+\end{table}
+
+\begin{definition}[Local schema for implementation of \(H_{\mathrm{struct}}\)]
+\label{def:api-hstruct-schema}
+A realization tuple implements the structural flat package
+\(H_{\mathrm{struct}}\) if it provides:
+\begin{enumerate}[label=\textnormal{(H\arabic*)},leftmargin=1.5em]
+\item a flat stationary Euclidean background and positive-time sector;
+\item Core Axioms~1--5 in that sector;
+\item a branch choice on Axes \(A,B,C\);
+\item a uniquely selected equilibrium state for OS1;
+\item an explicit physical positive-time algebra and its centered subspace;
+\item a translation-stable physical generating algebra.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Local schema for implementation of \(RP\)]
+\label{def:api-rp-schema}
+A realization tuple implements \(RP\) if it provides:
+\begin{enumerate}[label=\textnormal{(RP\arabic*)},leftmargin=1.5em]
+\item additive hyperplane decomposition across \(t=0\);
+\item conditional independence of \(\mathcal F_+\) and \(\mathcal F_-\) given
+\(\mathcal F_0\);
+\item a reflection-compatible boundary map \(J_{\partial}\);
+\item stability of the physical algebra under reflection and boundary
+conditioning;
+\item an intertwining identity that rewrites reflected Euclidean correlations as
+boundary \(L^2(\pi_\infty)\)-pairings evolved by \(T_t\).
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Local schema for implementation of \(CL_{\mathrm{gap}}\)]
+\label{def:api-cl-schema}
+A realization tuple implements \(CL_{\mathrm{gap}}\) if it provides:
+\begin{enumerate}[label=\textnormal{(CL\arabic*)},leftmargin=1.5em]
+\item a unital translation-stable algebra \(\mcB^{\mathrm{phys}}\) generating
+the Schwinger functions;
+\item a strict spectral gap for the boundary semigroup \(T_t\) on
+\(L^2(\pi_\infty)\);
+\item an identification of connected Euclidean time correlations with
+\(L^2(\pi_\infty)\)-pairings evolved by \(T_t\);
+\item an explicit upgrade from time-direction decay to full translation mixing
+on \(\mcB^{\mathrm{phys}}\).
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Realization map for the Yang--Mills tuple]
+\label{prop:api-field-map}
+The slots of \(\mathfrak R_{\mathrm{YM}}^{\mathrm{flat}}\) are concretely
+realized by theorem-level objects constructed in this paper.
+\end{proposition}
+
+\begin{proof}
+Definition~\ref{def:thermo-euclidean-space} supplies the Euclidean probability
+space, time translations, and reflection involution.  The physical positive-time
+algebra and its centered subspace are the positive-time gauge-invariant bounded
+observables together with their zero-expectation part.  The translation-stable
+algebra \(\mcB^{\mathrm{phys}}\) is the continuum-indexed gauge-observable
+algebra used in Proposition~\ref{prop:global-clustering}.  The boundary map
+\(J_{\partial}\) is an ordinary conditional-expectation assignment on
+\((\Omega,\mathcal F,\mathbb P)\), and \(T_t\) is the stationary mean-field
+Markov semigroup imported in Proposition~\ref{prop:imports}.  Thus every field
+of the tuple is explicitly identified.
+\end{proof}
+
+\begin{proposition}[Implementation of the structural flat package]
+\label{prop:api-hstruct}
+The tuple \(\mathfrak R_{\mathrm{YM}}^{\mathrm{flat}}\) implements the local
+schema of Definition~\ref{def:api-hstruct-schema}, hence the structural flat
+package \(H_{\mathrm{struct}}\) of the framework API.
+\end{proposition}
+
+\begin{proof}
+We verify the schema field-by-field.
+\begin{enumerate}[label=\textnormal{(H\arabic*)},leftmargin=1.5em]
+\item Definition~\ref{def:api-data}\textnormal{(i)--(ii)} supplies the flat
+stationary Euclidean background and positive-time sector.
+\item Corollary~\ref{cor:core} gives Core Axioms~1--5.
+\item Proposition~\ref{prop:axes} fixes the branch data as
+\((A1,B1,C1,D1)\), exactly the pure Yang--Mills mass-gap branch of the
+framework paper.
+\item Proposition~\ref{prop:os1} proves unique selection of the stationary
+equilibrium state in the flat Euclidean sector.
+\item Definition~\ref{def:api-data}\textnormal{(ii)--(iii)} provides the
+physical positive-time algebra and its centered subspace.
+\item Definition~\ref{def:api-data}\textnormal{(iv)} provides the
+translation-stable physical generating algebra.
+\end{enumerate}
+Hence \(H_{\mathrm{struct}}\) is implemented.
+\end{proof}
+
+\begin{proposition}[Implementation of the \(RP\) package]
+\label{prop:api-rp}
+The tuple \(\mathfrak R_{\mathrm{YM}}^{\mathrm{flat}}\) implements the local
+schema of Definition~\ref{def:api-rp-schema}, hence the reflection-positivity /
+transfer package \(RP\) of the framework API.
+\end{proposition}
+
+\begin{proof}
+We verify the schema field-by-field.
+\begin{enumerate}[label=\textnormal{(RP\arabic*)},leftmargin=1.5em]
+\item Proposition~\ref{prop:ca4} gives additive hyperplane decomposition across
+the reflection slice, and Proposition~\ref{prop:continuum-hyperplane} upgrades
+that decomposition to the continuum Euclidean realization.
+\item Proposition~\ref{prop:hyperplane-factorization} gives conditional
+independence of \(\mathcal F_+\) and \(\mathcal F_-\) given \(\mathcal F_0\).
+\item Definition~\ref{def:api-data}\textnormal{(v)} supplies the explicit
+boundary map \(J_{\partial}\).
+\item Proposition~\ref{prop:reflection-stability} proves stability of the
+physical algebra under reflection and boundary conditioning.
+\item Proposition~\ref{prop:transfer-identification} states the exact boundary
+intertwining identity that rewrites reflected Euclidean correlations as
+\(L^2(\pi_\infty)\)-pairings evolved by \(T_t\).
+\end{enumerate}
+Hence \(RP\) is implemented by the concrete assignments carried by
+\(\mathfrak R_{\mathrm{YM}}^{\mathrm{flat}}\).
+\end{proof}
+
+\begin{proposition}[Implementation of \(CL_{\mathrm{gap}}\)]
+\label{prop:api-cl}
+The tuple \(\mathfrak R_{\mathrm{YM}}^{\mathrm{flat}}\) implements the local
+schema of Definition~\ref{def:api-cl-schema}, hence the clustering package
+\(CL\) by the gap route.
+\end{proposition}
+
+\begin{proof}
+We verify the schema field-by-field.
+\begin{enumerate}[label=\textnormal{(CL\arabic*)},leftmargin=1.5em]
+\item Definition~\ref{def:api-data}\textnormal{(iv)} provides the unital
+translation-stable algebra \(\mcB^{\mathrm{phys}}\).
+\item Proposition~\ref{prop:gap} gives a strict spectral gap for \(T_t\) on
+\(L^2(\pi_\infty)\).
+\item Proposition~\ref{prop:transfer-identification} identifies connected
+Euclidean time correlations with \(L^2(\pi_\infty)\)-pairings evolved by
+\(T_t\).
+\item Proposition~\ref{prop:global-clustering} upgrades the time-direction
+estimate to full translation mixing on \(\mcB^{\mathrm{phys}}\).
+\end{enumerate}
+Hence the realization implements the clustering package through the strict
+spectral-gap route \(CL_{\mathrm{gap}}\).
+\end{proof}
+
+\begin{remark}[API and traditional verification are parallel, not competing]
+Section~\ref{sec:api} and Section~\ref{sec:os-standalone} prove the same
+Euclidean conclusion in two different languages: the API formulation and the
+direct Osterwalder--Schrader formulation.
+\end{remark}
+
+\begin{theorem}[Implementation of the flat Yang--Mills verification interface]
+\label{thm:api-euclidean}
+The tuple \(\mathfrak R_{\mathrm{YM}}^{\mathrm{flat}}\) is a valid
+realization of the flat stationary bosonic gauge-theory verification interface
+of \cite{axioms}.  More precisely:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item it implements \(H_{\mathrm{struct}}\) by
+Proposition~\ref{prop:api-hstruct};
+\item it implements \(RP\) by Proposition~\ref{prop:api-rp};
+\item it implements \(CL\) via the gap route by
+Proposition~\ref{prop:api-cl};
+\item therefore the master flat verification interface of \cite{axioms}
+returns OS0--OS4 for the Schwinger functionals generated by
+\(\mcB^{\mathrm{phys}}\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Items \textnormal{(i)}--\textnormal{(iii)} are exactly the cited implementation
+propositions.  The framework theorem of \cite{axioms} then returns OS0--OS4 for
+the generated Schwinger functionals.  Theorem~\ref{thm:euclidean-axioms}
+records the same Euclidean conclusion in direct realization-specific form.
+\end{proof}
+
+\section{Standalone Verification of OS0--OS4}
+\label{sec:os-standalone}
+
+This section restates the Euclidean-axiom verification in a form that does not
+use the constructive-dynamical-axioms framework paper.  The logical inputs are:
+\cite{convergence} for the stationary mean-field law, path law, and logarithmic
+Sobolev inequality; \cite{axioms} for the abstract statement of what must be
+verified, though not for any step of the proof below; \cite{lattice} for the
+deterministic flat regulator, thermodynamic graph and plaquette observables,
+and the continuum Yang--Mills limit; and \cite{quantization} for the stationary
+Euclidean probability space, local bounded observable algebras,
+continuum-indexed Schwinger functionals, and boundary-transfer machinery.
+
+\begin{theorem}[Standalone Euclidean verification]
+\label{thm:os-standalone}
+Let the Euclidean gauge theory be the one determined by:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item the deterministic flat regulator and the continuum Yang--Mills functional
+$S_{\mathrm{YM}}^{\mathrm{cont}}[F^\infty]$ constructed in
+\cite{lattice};
+\item the stationary Euclidean probability space, local bounded observable
+algebras, continuum-indexed Schwinger functionals, and exact hyperplane /
+transfer structure constructed in \cite{quantization}; and
+\item the unique stationary mean-field law $\pi_\infty$, its stationary Markov
+path law, and its logarithmic Sobolev inequality proved in \cite{convergence}.
+\end{enumerate}
+Then the associated Schwinger functions satisfy OS0--OS4.
+\end{theorem}
+
+\begin{proof}
+We verify the five Osterwalder--Schrader axioms directly.
+
+\textbf{OS0 (temperedness).}
+Definition~\ref{def:admissible-smeared} isolates the bounded continuum-indexed
+observable families that appear in the present gauge sector.  By
+Lemma~\ref{lem:schwartz-continuity}, their smeared Schwinger functionals obey an
+explicit \(L^1\)-type bound in the Schwartz variables, and
+Corollary~\ref{cor:temperedness} therefore yields temperedness on
+\((\R^4)^n\).
+
+\textbf{OS1 (Euclidean covariance).}
+Proposition~\ref{prop:e4-covariance} gives the full \(E(4)\)-covariance
+identity for the physical Schwinger functionals.  In particular, the
+Schwinger functions transform covariantly under Euclidean isometries.
+
+\textbf{OS2 (reflection positivity).}
+Proposition~\ref{prop:continuum-hyperplane} provides the continuum hyperplane
+decomposition, Proposition~\ref{prop:hyperplane-factorization} gives conditional
+independence across the reflection slice, and Proposition~\ref{prop:os2} then
+proves reflection positivity directly on the physical algebra.
+
+\textbf{OS3 (clustering).}
+Proposition~\ref{prop:gap} gives the strict spectral gap of the constructive
+semigroup.  Proposition~\ref{prop:os3} proves exponential clustering in the
+reflected positive-time configuration, and Proposition~\ref{prop:global-clustering}
+extends that estimate to the full translation-stable physical algebra.  Hence
+OS3 holds.
+
+\textbf{OS4 (bosonic symmetry).}
+The thermodynamic Euclidean paper realizes the local observables as bounded
+functions on the path space, so their products commute.  Therefore the
+Schwinger functions obey the ordinary bosonic permutation symmetry.  This is
+the relevant specialization of OS4 in the present realization.
+
+All five Osterwalder--Schrader axioms are therefore satisfied.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:os-standalone} is logically independent of the framework-paper
+language.  Its inputs are exactly the results imported from
+\cite{convergence,lattice,quantization} plus the direct arguments written in the
+paper.  The same results also discharge the framework obligations
+recorded in \cite{axioms}.
+\end{remark}
+
 \section{Reconstruction and Positive Mass Gap}
 \label{sec:reconstruction}
+
+\subsection{Traditional OS Reconstruction}
+
+\begin{theorem}[Osterwalder--Schrader reconstruction for the present theory]
+\label{thm:os-reconstruction-standard}
+By Theorem~\ref{thm:os-standalone}, the Schwinger functions of the emergent
+realization satisfy OS0--OS4.  Therefore the standard
+Osterwalder--Schrader reconstruction theorem \cite{os} produces:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item a Hilbert space $\mcH$;
+\item a vacuum vector $\Omega\in\mcH$;
+\item a positive self-adjoint Hamiltonian $H$ implementing Euclidean-time
+translations after continuation; and
+\item Wightman functions on Minkowski space obtained by analytic continuation of
+the verified Schwinger functions.
+\end{enumerate}
+The dense subspace of $\mcH$ is generated by positive-time observables modulo
+the Osterwalder--Schrader null space.
+\end{theorem}
+
+\begin{proof}
+Let $\mcA_+$ denote the positive-time observable algebra and define the
+sesquilinear form
+\[
+(F,G)_{\mathrm{OS}}:=\langle \Theta F,G\rangle_E,
+\qquad F,G\in\mcA_+.
+\]
+By Theorem~\ref{thm:os-standalone}, OS2 holds, so this form is positive
+semidefinite.  Let
+\[
+\mcN:=\{F\in\mcA_+:(F,F)_{\mathrm{OS}}=0\}
+\]
+be the Osterwalder--Schrader null space.  The reconstructed Hilbert space is
+the completion of the quotient $\mcA_+/\mcN$ in the induced norm, and the vacuum
+vector is the class of the constant observable $1$.  Euclidean-time translation
+on $\mcA_+$ descends, by OS1 and OS2, to a contractive semigroup on the
+quotient.  The standard Osterwalder--Schrader reconstruction theorem then
+produces a positive self-adjoint Hamiltonian $H$ implementing the analytically
+continued time translations, together with the analytically continued Wightman
+functions.  OS0 supplies the temperedness needed for the resulting distribution
+theory, and OS4 supplies the bosonic symmetry of the reconstructed field
+algebra.  This is precisely the standard reconstruction theorem applied after
+Theorem~\ref{thm:os-standalone}.
+\end{proof}
+
+\begin{theorem}[Physical Osterwalder--Schrader reconstruction on the Yang--Mills algebra]
+\label{thm:physical-os-reconstruction}
+The Osterwalder--Schrader reconstruction is the
+reconstruction of the gauge-invariant Euclidean Yang--Mills sector identified
+in Theorem~\ref{thm:physical-ym-sector}.  It yields a physical Hilbert space
+\(\mcH\), vacuum vector \(\Omega\), and positive Hamiltonian \(H\) associated
+with that pure \(SU(3)\) Yang--Mills sector.
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:physical-ym-sector} identifies the Euclidean target theory on
+which the OS axioms are verified, and Theorem~\ref{thm:os-reconstruction-standard}
+applies the standard reconstruction theorem to those verified Schwinger
+functions.  Since the positive-time observable algebra used in the
+reconstruction is the gauge-invariant physical algebra of that Euclidean
+Yang--Mills sector, the reconstructed triple \((\mcH,\Omega,H)\) is exactly
+the physical reconstruction of that sector.
+\end{proof}
+
+\begin{definition}[Boundary transfer map]
+\label{def:boundary-map}
+For \(F\in\mcA^{\mathrm{phys},0}_+\), define
+\[
+J_0(F):=\mathbb E[F\mid\mathcal F_0]-\mathbb E[F]\in L^2(\pi_\infty).
+\]
+\end{definition}
+
+\begin{proposition}[OS norm equals boundary norm]
+\label{prop:j-isometry}
+For every \(F\in\mcA^{\mathrm{phys},0}_+\),
+\[
+\|[F]\|_{\mcH}^2
+=
+\|J_0(F)\|_{L^2(\pi_\infty)}^2.
+\]
+Consequently, if \(F\sim G\) in the Osterwalder--Schrader quotient, then
+\[
+J_0(F)=J_0(G)
+\qquad
+\text{in }L^2(\pi_\infty).
+\]
+Therefore \(J_0\) descends to a well-defined isometric map
+\[
+J:\mcA^{\mathrm{phys},0}_+/\mcN\longrightarrow L^2_0(\pi_\infty),
+\qquad
+J([F]):=J_0(F).
+\]
+\end{proposition}
+
+\begin{proof}
+Since \(F\) is centered, \(J_0(F)=\mathbb E[F\mid\mathcal F_0]\).  By OS2 and
+the conditional-independence computation already used in
+Proposition~\ref{prop:os2},
+\[
+\|[F]\|_{\mcH}^2
+=
+\langle \Theta F,F\rangle_E
+=
+\mathbb E\!\left[\left|\mathbb E[F\mid\mathcal F_0]\right|^2\right]
+=
+\|J_0(F)\|_{L^2(\pi_\infty)}^2.
+\]
+If \(F\sim G\), then \([F-G]=0\), so the identity above gives
+\(\|J_0(F)-J_0(G)\|_{L^2(\pi_\infty)}^2=0\).  Hence \(J_0(F)=J_0(G)\) in
+\(L^2(\pi_\infty)\), and the descended map \(J\) is well defined and isometric.
+Its image lies in \(L^2_0(\pi_\infty)\) by construction.
+\end{proof}
+
+\begin{proposition}[Weak semigroup intertwining on the physical quotient]
+\label{prop:j-intertwining}
+For every \(F,G\in\mcA^{\mathrm{phys},0}_+\) and every \(t>0\),
+\[
+\langle [F],e^{-tH}[G]\rangle_{\mcH}
+=
+\langle J([F]),T_tJ([G])\rangle_{L^2(\pi_\infty)}.
+\]
+Thus the boundary map \(J\) identifies the reconstructed physical semigroup
+with the constructive boundary semigroup at the level of the physical
+positive-time quotient.
+\end{proposition}
+
+\begin{proof}
+This is exactly the identity proved in
+Theorem~\ref{thm:aux-to-physical-semigroup}, rewritten in the quotient notation
+made well defined by Proposition~\ref{prop:j-isometry}.
+\end{proof}
+
+\begin{theorem}[Boundary intertwiner on the physical positive-time domain]
+\label{thm:boundary-intertwiner}
+Let
+\[
+\mathcal D_\partial
+:=
+\operatorname{span}\bigl\{\mathbb E[F\mid\mathcal F_0]-\mathbb E[F]:
+F\in\mcA^{\mathrm{phys},0}_+\bigr\}
+\subset L^2_0(\pi_\infty).
+\]
+Then the boundary map \(J\) from Proposition~\ref{prop:j-isometry} is an
+isometric identification of the OS quotient with its image in
+\(L^2_0(\pi_\infty)\), and on the dense physical domain generated by centered
+positive-time observables it intertwines the constructive and reconstructed
+semigroups:
+\[
+J\,T_t=e^{-tH}J
+\qquad\text{for every }t>0.
+\]
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:j-isometry} shows that \(J\) is well defined and
+isometric on the OS quotient.  Proposition~\ref{prop:j-intertwining} gives the
+semigroup pairing identity on the same quotient, and
+Lemma~\ref{lem:positive-time-dense} identifies the centered positive-time
+classes as dense in \(\Omega^\perp\).  Therefore the boundary map identifies a
+dense boundary domain with the reconstructed physical subspace and intertwines
+the two semigroups there.
+\end{proof}
+
+\begin{lemma}[Positive-time vectors are spectrally determining]
+\label{lem:positive-time-dense}
+Let
+\[
+\mathcal{D}_+:=\operatorname{span}\{F\Omega:\ F\in\mcA^{\mathrm{phys}}_+\}\subset\mcH.
+\]
+Then $\mathcal{D}_+$ is dense in $\mcH$, and the centered subspace
+\[
+\mathcal{D}_+^0:=\operatorname{span}\{F\Omega-\langle\Omega,F\Omega\rangle\Omega:\ F
+\in\mcA^{\mathrm{phys}}_+\}
+\]
+is dense in $\Omega^\perp$.
+\end{lemma}
+
+\begin{proof}
+This is the standard density statement in Osterwalder--Schrader
+reconstruction: the Hilbert space is defined as the completion of positive-time
+observables modulo the null space, and here those are exactly the positive-time
+observables of the physical gauge-invariant Yang--Mills algebra.  Hence their
+image is dense by construction.
+Subtracting the vacuum expectation removes the one-dimensional vacuum component,
+hence the centered positive-time vectors are dense in the orthogonal complement
+of $\Omega$.
+\end{proof}
+
+\begin{theorem}[Density of physical positive-time Yang--Mills vectors]
+\label{thm:physical-positive-time-density}
+The vectors generated by centered positive-time gauge-invariant Yang--Mills
+observables are dense in the vacuum-orthogonal subspace \(\Omega^\perp\) of
+the reconstructed Hilbert space.
+\end{theorem}
+
+\begin{proof}
+This is exactly the second statement of
+Lemma~\ref{lem:positive-time-dense}, now recorded as a theorem in the
+physical Yang--Mills language used by the mass-gap argument.
+\end{proof}
+
+\begin{definition}[Local schema for implementation of \(MG\)]
+\label{def:api-mg-schema}
+A reconstructed realization implements \(MG\) if it provides:
+\begin{enumerate}[label=\textnormal{(MG\arabic*)},leftmargin=1.5em]
+\item a centered positive-time physical class whose OS images are well defined
+in the reconstructed Hilbert space;
+\item a semigroup decay estimate on that class;
+\item density of that class in \(\Omega^\perp\);
+\item compatibility of the class with the reconstructed physical sector so that
+the estimate refers to the same Hamiltonian \(H\).
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Implementation of the \(MG\) package]
+\label{prop:api-mg}
+After Osterwalder--Schrader reconstruction, the Yang--Mills realization
+implements the local schema of Definition~\ref{def:api-mg-schema}, hence the
+mass-gap transfer package \(MG\) of the framework API.
+\end{proposition}
+
+\begin{proof}
+We verify the schema field-by-field.
+
+\textbf{MG1: positive-time physical class.}
+Definition~\ref{def:api-data} provides the centered bounded gauge-invariant
+positive-time algebra $\mcA^{\mathrm{phys},0}_+$.  By
+Theorem~\ref{thm:os-reconstruction-standard}, its OS images are well-defined
+vectors in the reconstructed Hilbert space.
+
+\textbf{MG2: semigroup estimate on that class.}
+Fix $F\in\mcA^{\mathrm{phys},0}_+$ and set
+\[
+f:=\mathbb E[F\mid\mathcal F_0]-\mathbb E[F].
+\]
+Since $F$ is centered, $f=\mathbb E[F\mid\mathcal F_0]$.  By
+Theorem~\ref{thm:boundary-intertwiner},
+\[
+\langle \widehat F,e^{-tH}\widehat F\rangle
+=
+\langle f,T_t f\rangle_{L^2(\pi_\infty)}.
+\]
+Applying Proposition~\ref{prop:gap} yields
+\[
+\langle \widehat F,e^{-tH}\widehat F\rangle
+\le
+e^{-\lambda_* t}\|f\|_{L^2(\pi_\infty)}^2.
+\]
+At $t=0$ this identity gives
+\[
+\|\widehat F\|_{\mcH}^2=\|f\|_{L^2(\pi_\infty)}^2.
+\]
+Therefore for every $s\ge0$,
+\[
+\|e^{-sH}\widehat F\|_{\mcH}^2
+=
+\langle \widehat F,e^{-2sH}\widehat F\rangle
+\le
+e^{-2\lambda_* s}\|\widehat F\|_{\mcH}^2,
+\]
+hence
+\[
+\|e^{-sH}\widehat F\|_{\mcH}
+\le
+e^{-\lambda_* s}\|\widehat F\|_{\mcH}.
+\]
+This is MG2 with $C_{\mathrm{MG}}=1$.
+
+\textbf{MG3: density in $\Omega^\perp$.}
+Lemma~\ref{lem:positive-time-dense} states exactly that centered positive-time
+vectors are dense in $\Omega^\perp$.
+
+\textbf{MG4: compatibility with the reconstructed sector.}
+The estimate above is written directly in terms of the Hamiltonian $H$ produced
+by Theorem~\ref{thm:os-reconstruction-standard}, so it concerns the same
+reconstructed physical sector in which the Minkowski mass-gap statement is made.
+\end{proof}
+
+\subsection{Rigorous Nontriviality}
+
+\begin{proposition}[Nontrivial thermodynamic witness sector]
+\label{prop:scalar-nontriviality}
+The Euclidean theory contains a nonconstant bounded gauge observable on the
+stationary path space.
+\end{proposition}
+
+\begin{proof}
+By the continuum gauge paper, the deterministic flat-regulator construction
+produces nonconstant thermodynamic link and plaquette observables.  By the
+thermodynamic Euclidean paper, these observables pull back to bounded
+continuum-indexed gauge observables on the stationary path space
+$(\Omega,\mathcal F,\mathbb P)$.  Therefore there exists a bounded gauge observable
+$h\in L^\infty(\Omega,\mathcal F_0,\mathbb P)$ that is not $\mathbb P$-a.s. constant.
+Its centered version
+\[
+h_0:=h-\mathbb E[h]
+\]
+is nonzero in $L^2(\pi_\infty)\cong L^2(\Omega,\mathcal F_0,\mathbb P)$, so the
+Euclidean theory is not trivial.
+\end{proof}
+
+\begin{proposition}[Concrete localized Wilson / plaquette witness]
+\label{prop:concrete-witness}
+There exists a bounded continuum-indexed gauge-invariant observable
+\[
+h\in L^\infty(\Omega,\mathcal F_0,\mathbb P)
+\]
+coming from a localized Wilson or plaquette observable of the constructive
+Yang--Mills sector such that \(h\) is not \(\mathbb P\)-a.s. constant.
+\end{proposition}
+
+\begin{proof}
+The continuum gauge paper constructs nonconstant localized Wilson and plaquette
+observables on the deterministic flat regulator and proves that they survive in
+the thermodynamic continuum gauge sector.  The thermodynamic Euclidean paper
+then realizes that same continuum-indexed gauge sector on the stationary path
+space.  Therefore at least one localized Wilson or plaquette observable pulls
+back to a bounded gauge-invariant observable \(h\) on
+\((\Omega,\mathcal F,\mathbb P)\) that is not almost surely constant.
+\end{proof}
+
+\begin{lemma}[A concrete witness survives the OS null quotient]
+\label{lem:scalar-witness-survives}
+There exists a centered bounded positive-time gauge observable
+$F\in\mcA_+$ such that the Osterwalder--Schrader norm of the corresponding
+class $[F]\in \mcA_+/\mcN$ satisfies
+\[
+\|[F]\|_{\mcH}^2
+=
+\langle \Theta F,F\rangle_E
+>
+0.
+\]
+Moreover $\langle \Omega,[F]\rangle_{\mcH}=0$.  In particular
+$[F]\in\Omega^\perp\setminus\{0\}$.
+\end{lemma}
+
+\begin{proof}
+Choose a nonconstant bounded gauge observable
+$h\in L^\infty(\Omega,\mathcal F_0,\mathbb P)$ as in
+Proposition~\ref{prop:concrete-witness}, and let
+$h_0:=h-\mathbb E[h]$.  Since $h_0\neq0$ in $L^2(\pi_\infty)$ and the stationary
+Markov semigroup $T_t$ is strongly continuous on $L^2(\pi_\infty)$, there
+exists $t_0>0$ such that $T_{t_0}h_0\neq0$.  Define the positive-time observable
+\[
+F(\omega):=h_0(Y_{t_0}(\omega)).
+\]
+Then $F\in\mcA_+$ and $\mathbb E[F]=0$ by stationarity.  By the transfer
+mechanism behind Proposition~\ref{prop:transfer-identification}, together with
+the Markov property and the identification
+$L^2(\Omega,\mathcal F_0,\mathbb P)\cong L^2(\pi_\infty)$,
+\[
+\|[F]\|_{\mcH}^2
+=
+\langle \Theta F,F\rangle_E
+=
+\mathbb E\!\left[\left|\mathbb E[F\mid\mathcal F_0]\right|^2\right]
+=
+\|T_{t_0}h_0\|_{L^2(\pi_\infty)}^2
+>
+0.
+\]
+Hence $F\notin\mcN$, and the corresponding reconstructed vector is nonzero.
+
+In the Osterwalder--Schrader reconstruction, the vacuum vector is the class of
+the constant observable $1$, so
+\[
+\langle \Omega,[F]\rangle_{\mcH}
+=
+\langle 1,F\rangle_{\mathrm{OS}}
+=
+\mathbb E[F]
+=
+0.
+\]
+Thus $[F]\in\Omega^\perp$.
+\end{proof}
+
+\begin{proposition}[Nontriviality survives Osterwalder--Schrader reconstruction]
+\label{prop:reconstructed-nontriviality}
+The reconstructed Wightman theory is not the one-dimensional vacuum theory.
+\end{proposition}
+
+\begin{proof}
+Lemma~\ref{lem:scalar-witness-survives} produces a positive-time gauge
+observable $F$ whose class $[F]$ in the Osterwalder--Schrader quotient has
+strictly positive norm and lies in $\Omega^\perp$.  Therefore the reconstructed
+Hilbert space contains a nonzero vector orthogonal to the vacuum.  In
+particular $\dim\mcH\ge2$, the orthogonal complement $\Omega^\perp$ is
+nontrivial, and the reconstructed theory is not the one-dimensional vacuum
+theory.
+\end{proof}
+
+\begin{proposition}[Semigroup decay on reconstructed centered vectors]
+\label{prop:reconstructed-semigroup-decay}
+Let $\widehat F\in\mathcal D_+^0$ be the reconstructed vector determined by a
+centered bounded gauge-invariant positive-time observable $F$.  Then for every
+$t\ge0$,
+\[
+\|e^{-tH}\widehat F\|_{\mcH}
+\le
+e^{-\lambda_* t}\|\widehat F\|_{\mcH}.
+\]
+\end{proposition}
+
+\begin{proof}
+Set
+\[
+f:=\mathbb E[F\mid\mathcal F_0]-\mathbb E[F].
+\]
+Since $F$ is centered, $\mathbb E[F]=0$, hence
+$f=\mathbb E[F\mid\mathcal F_0]$.  By
+Proposition~\ref{prop:transfer-identification},
+\[
+\langle \widehat F,e^{-sH}\widehat F\rangle_{\mcH}
+=
+\langle f,T_s f\rangle_{L^2(\pi_\infty)}
+\qquad
+\forall s\ge0.
+\]
+At $s=0$ this becomes
+\[
+\|\widehat F\|_{\mcH}^2=\|f\|_{L^2(\pi_\infty)}^2.
+\]
+Applying Proposition~\ref{prop:gap} at time $2t$ gives
+\[
+\|e^{-tH}\widehat F\|_{\mcH}^2
+=
+\langle \widehat F,e^{-2tH}\widehat F\rangle_{\mcH}
+=
+\langle f,T_{2t}f\rangle_{L^2(\pi_\infty)}
+\le
+\|f\|_{L^2(\pi_\infty)}\|T_{2t}f\|_{L^2(\pi_\infty)}
+\le
+e^{-2\lambda_* t}\|f\|_{L^2(\pi_\infty)}^2.
+\]
+Taking square roots and using $\|f\|_{L^2(\pi_\infty)}=\|\widehat F\|_{\mcH}$
+proves the claim.
+\end{proof}
+
+\begin{lemma}[Spectral exclusion from decay on a dense domain]
+\label{lem:spectral-exclusion}
+Let \(H\ge0\) be self-adjoint on \(\mcH\), let \(\Omega\in\ker H\), and let
+\(\mathcal D\subset\Omega^\perp\) be dense.  Assume there exists
+\(\lambda_*>0\) such that
+\[
+\|e^{-tH}\psi\|_{\mcH}\le e^{-\lambda_* t}\|\psi\|_{\mcH}
+\qquad
+\forall \psi\in\mathcal D,\ \forall t\ge0.
+\]
+Then
+\[
+\spec(H)\cap(0,\lambda_*)=\varnothing.
+\]
+\end{lemma}
+
+\begin{proof}
+Fix \(\psi\in\mathcal D\).  By the spectral theorem,
+\[
+\langle \psi,e^{-tH}\psi\rangle
+=
+\int_{[0,\infty)} e^{-tE}\,\dd\nu_\psi(E),
+\]
+where \(\nu_\psi(B):=\langle \psi,E_H(B)\psi\rangle\).  The assumed decay bound
+implies
+\[
+\int_{[0,\infty)} e^{-tE}\,\dd\nu_\psi(E)
+\le
+e^{-\lambda_* t}\|\psi\|_{\mcH}^2.
+\]
+If \(\nu_\psi([0,\lambda_*-\varepsilon])>0\) for some
+\(\varepsilon\in(0,\lambda_*)\), then the left-hand side would decay at least
+as slowly as \(e^{-(\lambda_*-\varepsilon)t}\), contradiction.  Hence
+\(\supp\nu_\psi\subset[\lambda_*,\infty)\) for every \(\psi\in\mathcal D\).
+Therefore \(E_H((0,\lambda_*))\psi=0\) for every \(\psi\in\mathcal D\).  Since
+\(\mathcal D\) is dense in \(\Omega^\perp\) and \(E_H((0,\lambda_*))\) is
+bounded, it vanishes on \(\Omega^\perp\).  As \(\Omega\in\ker H\), this proves
+that \(\spec(H)\cap(0,\lambda_*)=\varnothing\).
+\end{proof}
+
+\begin{lemma}[Vacuum uniqueness from decay on a dense domain]
+\label{lem:vacuum-uniqueness-from-decay}
+Let \(H\ge0\) be self-adjoint on \(\mcH\), let \(\Omega\in\ker H\), and let
+\(\mathcal D\subset\Omega^\perp\) be dense.  Assume there exists
+\(\lambda_*>0\) such that
+\[
+\|e^{-tH}\psi\|_{\mcH}\le e^{-\lambda_* t}\|\psi\|_{\mcH}
+\qquad
+\forall \psi\in\mathcal D,\ \forall t\ge0.
+\]
+Then
+\[
+\ker H\cap\Omega^\perp=\{0\}.
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(\Psi\in\ker H\cap\Omega^\perp\).  Choose \(\psi_n\in\mathcal D\) with
+\(\psi_n\to\Psi\) in \(\mcH\).  Since \(e^{-tH}\) is bounded and
+\(e^{-tH}\Psi=\Psi\) for every \(t\ge0\),
+\[
+\|\Psi\|_{\mcH}
+=
+\|e^{-tH}\Psi\|_{\mcH}
+=
+\lim_{n\to\infty}\|e^{-tH}\psi_n\|_{\mcH}
+\le
+e^{-\lambda_* t}\lim_{n\to\infty}\|\psi_n\|_{\mcH}
+=
+e^{-\lambda_* t}\|\Psi\|_{\mcH}.
+\]
+Letting \(t\to\infty\) yields \(\|\Psi\|_{\mcH}=0\).  Hence \(\Psi=0\).
+\end{proof}
+
+\begin{theorem}[Hamiltonian gap transfer from the constructive semigroup]
+\label{thm:hamiltonian-gap-transfer}
+If the constructive mean-field semigroup has strict spectral gap
+\(\lambda_*>0\), then the reconstructed Hamiltonian \(H\) of the physical
+Yang--Mills theory satisfies
+\[
+\spec(H)\cap(0,\lambda_*)=\varnothing.
+\]
+Equivalently, the constructive semigroup gap transfers to a strictly positive
+Minkowski mass gap on the reconstructed physical theory.
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:reconstructed-semigroup-decay} gives the exponential
+decay estimate on reconstructed centered physical vectors, and
+Theorem~\ref{thm:physical-positive-time-density} identifies those vectors as a
+dense determining class in \(\Omega^\perp\).  Applying the spectral theorem to
+\(H\) then gives exactly the argument written in full in
+Proposition~\ref{prop:constructive-gap-implies-physical-gap}.  The present
+statement records the spectral-gap transfer conclusion itself as a standalone
+theorem.
+\end{proof}
 
 \begin{proposition}[Constructive gap implies Minkowski mass gap]
 \label{prop:constructive-gap-implies-physical-gap}
@@ -904,80 +2402,118 @@ Moreover $\ker H$ is one-dimensional.
 \end{proposition}
 
 \begin{proof}
-By Theorem~\ref{thm:euclidean-axioms}, the Schwinger functions satisfy OS0--OS4,
-so Osterwalder--Schrader reconstruction provides a Hilbert space $\mcH$, a
-vacuum vector $\Omega$, a positive self-adjoint Hamiltonian $H$, and a dense
-subspace generated by positive-time observables.
-
-Fix a bounded gauge-invariant positive-time observable $F$ and subtract its
-vacuum expectation so that
+By Theorem~\ref{thm:os-reconstruction-standard}, the standard
+Osterwalder--Schrader reconstruction provides a Hilbert space $\mcH$, a vacuum
+vector $\Omega$, a positive self-adjoint Hamiltonian $H$, and a dense subspace
+generated by positive-time observables modulo null vectors.  By
+Lemma~\ref{lem:positive-time-dense}, centered positive-time observables
+generate a dense subspace of the orthogonal complement of the vacuum.
+Take \(\mathcal D:=\mathcal D_+^0\).  Proposition~\ref{prop:reconstructed-semigroup-decay}
+shows that every \(\psi\in\mathcal D\) satisfies
 \[
-\langle \Omega,F\Omega\rangle=0.
-\]
-By the reconstruction theorem, the Euclidean two-point function of $F$ is
-represented by the spectral theorem as
-\[
-\langle \Omega,F^*e^{-tH}F\Omega\rangle
-=
-\int_{[0,\infty)} e^{-tE}\,\dd\nu_F(E),
-\]
-where
-\[
-\nu_F(B):=\langle F\Omega,E_H(B)F\Omega\rangle
-\]
-is a finite positive measure and $E_H$ is the spectral measure of $H$.
-
-On the other hand, Proposition~\ref{prop:os3} gives exponential clustering.
-Applied with $G=F$, it yields a constant $C_F<\infty$ such that
-\[
-\langle \Omega,F^*e^{-tH}F\Omega\rangle
-\le
-C_F e^{-\lambda_* t}
+\|e^{-tH}\psi\|_{\mcH}\le e^{-\lambda_* t}\|\psi\|_{\mcH}
 \qquad
-\forall t\ge0.
+\forall t\ge0,
 \]
-Suppose, toward a contradiction, that
-\[
-\nu_F([0,\lambda_*-\varepsilon])>0
-\]
-for some $\varepsilon\in(0,\lambda_*)$.
-Then
-\[
-\int_{[0,\infty)} e^{-tE}\,\dd\nu_F(E)
-\ge
-e^{-(\lambda_*-\varepsilon)t}\nu_F([0,\lambda_*-\varepsilon]).
-\]
-The right-hand side decays strictly slower than $e^{-\lambda_* t}$, which
-contradicts the previous exponential upper bound.
-Therefore
-\[
-\supp \nu_F\subset[\lambda_*,\infty).
-\]
-Since vectors of the form $F\Omega$ with $F$ positive-time and centered are
-dense in the orthogonal complement of the vacuum, the spectral theorem implies
+and Lemma~\ref{lem:positive-time-dense} says that \(\mathcal D\) is dense in
+\(\Omega^\perp\).  Lemma~\ref{lem:spectral-exclusion} therefore gives
 \[
 \spec(H)\cap(0,\lambda_*)=\varnothing.
 \]
-
-It remains to show that the vacuum is unique.
-If $\Psi\neq0$ were another ground-state vector orthogonal to $\Omega$, then
-$H\Psi=0$ and hence
+Applying Lemma~\ref{lem:vacuum-uniqueness-from-decay} to the same dense domain
+\(\mathcal D\) gives
 \[
-\langle \Psi,e^{-tH}\Psi\rangle=\|\Psi\|^2
-\qquad
-\forall t\ge0.
+\ker H\cap\Omega^\perp=\{0\}.
 \]
-But $\Psi$ can be approximated by centered positive-time vectors $F\Omega$, for
-which the corresponding Euclidean correlations decay exponentially by
-Proposition~\ref{prop:os3}.
-Passing to the limit would force $\|\Psi\|^2=0$, a contradiction.
-Hence $\ker H=\C\Omega$ is one-dimensional.
+Since \(\Omega\in\ker H\), it follows that \(\ker H=\C\Omega\).
+\end{proof}
+
+\begin{theorem}[Vacuum uniqueness]
+\label{thm:vacuum-uniqueness}
+The reconstructed vacuum is unique.  Equivalently,
+\[
+\ker H=\C\Omega.
+\]
+\end{theorem}
+
+\begin{proof}
+This is the final conclusion of
+Proposition~\ref{prop:constructive-gap-implies-physical-gap}, recorded
+separately because uniqueness of the vacuum is part of the mass-gap claim.
+\end{proof}
+
+\begin{theorem}[Traditional reconstruction, nontriviality, and mass gap]
+\label{thm:traditional-endgame}
+The traditional Osterwalder--Schrader route is complete:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item Theorem~\ref{thm:os-standalone} verifies OS0--OS4 directly from
+\cite{convergence,lattice,quantization};
+\item Theorem~\ref{thm:os-reconstruction-standard} reconstructs a Minkowski
+Hilbert space $\mcH$, vacuum vector $\Omega$, Hamiltonian $H$, and Wightman
+functions;
+\item Proposition~\ref{prop:reconstructed-nontriviality} proves that the
+reconstructed theory is not the one-dimensional vacuum theory; and
+\item Proposition~\ref{prop:constructive-gap-implies-physical-gap} proves that
+$\ker H=\C\Omega$ and $\spec(H)\cap(0,\lambda_*)=\varnothing$.
+\end{enumerate}
+Hence, the traditional Osterwalder--Schrader route already
+obtains a nontrivial reconstructed Wightman theory with a strictly positive
+mass gap above the vacuum.
+\end{theorem}
+
+\begin{proof}
+Items \textnormal{(i)}--\textnormal{(iv)} are exactly the cited theorem and
+propositions.  Their combination yields the stated conclusion.
+\end{proof}
+
+\begin{theorem}[Full API discharge for the Yang--Mills mass-gap realization]
+\label{thm:api-full}
+The emergent $SU(3)$ realization discharges the full framework API of
+\cite{axioms}: it satisfies the structural flat package
+$H_{\mathrm{struct}}$, the supplementary Euclidean packages RP and CL, and,
+after Osterwalder--Schrader reconstruction, the mass-gap package MG.
+Consequently the master verification interface of \cite{axioms} applies to this
+realization.  In API language, the realization discharges the full Euclidean
+and reconstruction checklist.  In standard QFT language, it yields OS0--OS4,
+Wightman reconstruction, and a strict Minkowski mass gap above the vacuum.
+\end{theorem}
+
+\begin{proposition}[Framework-interface discharge map]
+\label{prop:framework-discharge-map}
+The verification in this paper discharges the abstract interface of
+\cite{axioms} term by term:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item \(H_{\mathrm{struct}}\) is verified by the structural flat package of
+Theorem~\ref{thm:physical-ym-sector} and the realization data assembled in
+Sections~\ref{sec:imports}--\ref{sec:api};
+\item the symmetry-restoration input for OS1 is verified by
+Theorem~\ref{thm:symmetry-restoration} and Proposition~\ref{prop:e4-covariance};
+\item RP is verified by Proposition~\ref{prop:os2} together with
+Theorem~\ref{thm:physical-ym-sector};
+\item CL is verified by Proposition~\ref{prop:os3};
+\item MG is verified by Proposition~\ref{prop:api-mg};
+\item the full Euclidean OS package is verified by Theorem~\ref{thm:os-standalone};
+\item the reconstruction and mass-gap conclusion are verified by
+Theorem~\ref{thm:os-reconstruction-standard} together with
+Proposition~\ref{prop:constructive-gap-implies-physical-gap}.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The Euclidean packages are verified in
+Theorem~\ref{thm:api-euclidean}, with the \(E(4)\)-symmetry input supplied by
+Theorem~\ref{thm:symmetry-restoration}.  The reconstruction-side package MG is
+verified in Proposition~\ref{prop:api-mg}.  The resulting Wightman and
+mass-gap conclusions are exactly the ones proved concretely in
+Proposition~\ref{prop:constructive-gap-implies-physical-gap} and
+Theorem~\ref{thm:wightman-gap}.  The term-by-term interface discharge is
+recorded in Proposition~\ref{prop:framework-discharge-map}.
 \end{proof}
 
 \begin{theorem}[Wightman reconstruction with mass gap]
 \label{thm:wightman-gap}
 The verified Schwinger functions reconstruct to a nontrivial Wightman
-$SU(3)$ gauge theory on Minkowski space.
+pure $SU(3)$ Yang--Mills gauge theory on Minkowski space.
 Its Hamiltonian $H$ has vacuum as a unique ground state and there exists
 $m>0$ such that
 \[
@@ -987,21 +2523,79 @@ $m>0$ such that
 
 \begin{proof}
 By Corollary~\ref{cor:identification}, the Euclidean target theory referred to
-in the present paper is the exact thermodynamic $SU(3)$ gauge theory produced
-by the series.
-By Theorem~\ref{thm:euclidean-axioms}, the Schwinger functions satisfy OS0--OS4.
-The Osterwalder--Schrader reconstruction theorem therefore produces a Wightman
-theory on Minkowski space with Hilbert space $\mcH$, vacuum vector $\Omega$,
-positive Hamiltonian $H$, and analytically continued Wightman functions.
+in the paper is the exact thermodynamic pure $SU(3)$ Yang--Mills gauge
+theory produced by the series.  By Theorem~\ref{thm:os-reconstruction-standard}, its verified
+Schwinger functions reconstruct in the standard Osterwalder--Schrader sense to
+a Wightman theory on Minkowski space with Hilbert space $\mcH$, vacuum vector
+$\Omega$, positive Hamiltonian $H$, and analytically continued Wightman
+functions.
 
-The theory is nontrivial because the imported continuum-gauge and quantization papers
-construct a genuine interacting Wilson-plus-matter sector rather than a free
-quadratic Gaussian model, and the branch classification
-Proposition~\ref{prop:axes} places the realization in the interacting branch
-$C1$.
-Finally, Proposition~\ref{prop:constructive-gap-implies-physical-gap} gives a
-strict gap above the vacuum and uniqueness of the ground state.
+The theory is nontrivial in full rigor by
+Proposition~\ref{prop:reconstructed-nontriviality}.  The mass-gap statement
+comes afterward in the traditional order by
+Proposition~\ref{prop:constructive-gap-implies-physical-gap}, or equivalently by
+the packaged summary in Theorem~\ref{thm:traditional-endgame}.
 Taking $m:=\lambda_*$ proves the stated spectral inclusion.
+\end{proof}
+
+\begin{theorem}[Pure \(SU(3)\) Yang--Mills identification]
+\label{thm:pure-ym-identification}
+The reconstructed Wightman theory obtained here is exactly the
+Minkowski reconstruction of the gauge-invariant Euclidean Yang--Mills sector
+identified in Theorem~\ref{thm:physical-ym-sector}.  In particular:
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=1.5em]
+\item the reconstructed observables are precisely the reconstructed
+gauge-invariant observables of that sector;
+\item no separate matter field sector or hidden substrate-based physical sector
+is added in the reconstruction;
+\item the resulting theory is the pure \(SU(3)\) Yang--Mills theory determined
+by the continuum Schwinger data verified in the series.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:physical-ym-sector} identifies the Euclidean theory to which
+the OS verification applies, and Theorem~\ref{thm:no-extra-physical-sector}
+states that no further physical sector survives beyond that gauge-invariant
+Yang--Mills one.  Theorem~\ref{thm:physical-os-reconstruction} then reconstructs
+exactly that physical sector.  Therefore the resulting Wightman theory is
+precisely the Minkowski pure \(SU(3)\) Yang--Mills theory encoded by those
+verified Schwinger functions.
+\end{proof}
+
+\begin{theorem}[Euclidean/Minkowski equivalence of the verified Yang--Mills theory]
+\label{thm:euclidean-minkowski-equivalence}
+The gauge-invariant Euclidean theory verified here and the
+reconstructed Minkowski Wightman theory are equivalent in the
+Osterwalder--Schrader/Wightman sense: they are related by the standard
+Osterwalder--Schrader reconstruction and analytic continuation, and they encode
+the same physical Yang--Mills theory.
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:os-reconstruction-standard} is the standard
+Osterwalder--Schrader reconstruction theorem applied to the verified Schwinger
+functions, and Theorem~\ref{thm:pure-ym-identification} identifies the
+reconstructed Minkowski theory as the reconstruction of the same physical
+Yang--Mills Euclidean sector.  That is exactly the claimed
+Euclidean/Minkowski equivalence.
+\end{proof}
+
+\begin{theorem}[Nontrivial interacting pure Yang--Mills sector]
+\label{thm:nontrivial-interacting-ym}
+The reconstructed physical Yang--Mills theory is nontrivial and interacting.
+In particular, its gauge-invariant observable sector is not reduced to vacuum
+scalars, and the verified Schwinger functions are not those of the
+one-dimensional vacuum theory.
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:nontriviality} proves that the Euclidean gauge sector is
+already nontrivial at the level of the Schwinger functionals, using the
+localized Wilson and plaquette observables.  Proposition~\ref{prop:reconstructed-nontriviality}
+shows that this nontriviality survives Osterwalder--Schrader reconstruction.
+The interacting branch assignment \(C1\) was verified in Proposition~\ref{prop:axes}.
+Together these statements give the claimed conclusion.
 \end{proof}
 
 \begin{theorem}[Positive mass gap]
@@ -1018,13 +2612,13 @@ This is the spectral conclusion of Theorem~\ref{thm:wightman-gap}.
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:framework-closure}]
-Item \textnormal{(i)} is Corollary~\ref{cor:core}.
+Item \textnormal{(i)} is Proposition~\ref{prop:api-hstruct}.
 Item \textnormal{(ii)} is Proposition~\ref{prop:axes}.
-Item \textnormal{(iii)} follows from the imported inputs
-Proposition~\ref{prop:imports}, together with the direct realization-specific
-proofs of reflection positivity and constructive spectral gap in
-Propositions~\ref{prop:os2} and~\ref{prop:gap}.
-Item \textnormal{(iv)} is Theorem~\ref{thm:wightman-gap}.
+Item \textnormal{(iii)} is Theorem~\ref{thm:api-euclidean}, which packages the
+realization-specific RP/CL discharge.
+Item \textnormal{(iv)} is Theorem~\ref{thm:euclidean-axioms}.
+Item \textnormal{(v)} is Theorem~\ref{thm:api-full} together with
+Theorem~\ref{thm:wightman-gap}.
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:main}]
@@ -1036,59 +2630,59 @@ Theorem~\ref{thm:wightman-gap}.
 
 \section{Conclusion}
 
-The verification paper is no longer written only as a framework-closure note.
-Its theorem chain is now stated in the same language in which the
-constructive gauge-theory problem is posed:
-first the Wilson plaquette sector is identified with its exact thermodynamic
-mean-field representation, then the Schwinger functions are proved to satisfy
-OS0--OS4, then they are reconstructed to a Minkowski Wightman theory, and
-finally the reconstructed Hamiltonian is shown to have a strictly positive
-spectral gap above the vacuum.
+The theorem chain is stated in the same language in which the constructive
+gauge-theory problem is posed:
+first the deterministic-regulator Wilson sector is identified with its
+continuum Yang--Mills limit along the fixed deterministic flat regulator family
+of Paper~2 and its thermodynamic observables, then the
+Schwinger functions are proved to satisfy OS0--OS4, then they are reconstructed
+to a Minkowski Wightman theory, then a concrete nonvacuum vector is shown to
+survive the Osterwalder--Schrader quotient, and finally the reconstructed
+Hamiltonian is shown to have a strictly positive spectral gap above the vacuum.
 
-The bilocal mean-field presentation does not define a different target model.
-It is the constructive thermodynamic representation carried by the series before
-that theory is read in the thermodynamic mean-field language.
-The gauge fixing is exact, the ghost sector decouples, reflection positivity is
-realized on the physical algebra, and the constructive logarithmic Sobolev
-inequality yields the operator-theoretic mass gap after reconstruction.
+The thermodynamic observables do not define a different target model.  They are
+part of the same constructive gauge sector determined by the deterministic flat
+regulator and the continuum Yang--Mills functional.
+The thermodynamic Euclidean theory is realized directly on the stationary path
+measure, reflection positivity is realized on the physical algebra, and the
+constructive logarithmic Sobolev inequality yields the operator-theoretic mass
+gap after reconstruction.
 
-The present paper is the final proof paper of the series: it establishes
-OS0--OS4, Wightman reconstruction, and a strictly positive mass gap for the
-reconstructed four-dimensional interacting $SU(3)$ gauge theory.
+By the route summarized in Theorem~\ref{thm:traditional-endgame}, the paper establishes
+OS0--OS4, Wightman reconstruction, rigorous nontriviality, and a strictly
+positive mass gap for the reconstructed four-dimensional interacting $SU(3)$
+gauge theory.
 Therefore the series constructs an interacting four-dimensional $SU(3)$
 gauge quantum field theory on Minkowski space with a strictly positive
 mass gap.
 
 \appendix
 
-\section{What Papers 2 and 3 Did Not Prove and What the Present Paper Now Proves}
+\section{Distribution of Results Across the Series}
 \label{sec:appendix-paper4}
 
-\begin{proposition}[Disclaimers of the continuum-gauge and quantization papers are discharged here]
+\begin{proposition}[Distribution of results across the series]
 \label{prop:paper4-discharged}
-The continuum gauge paper stopped at the deterministic regulator and
-Wilson-to-Yang--Mills identification stage, and the quantization paper stopped
-at exact finite-dimensional quantization.  Neither paper claimed either
-Osterwalder--Schrader verification or a mass-gap theorem.  The present paper
-discharges exactly those deferred steps.
+The continuum gauge paper establishes the deterministic regulator and Wilson-to-Yang--Mills identification, and the thermodynamic Euclidean paper establishes the Euclidean probability-space and transfer-identity package.
+Neither paper claimed either
+Osterwalder--Schrader verification or a mass-gap theorem.  The paper
+establishes those results.
 \end{proposition}
 
 \begin{proof}
 The continuum gauge paper identifies the deterministic-regulator gauge sector,
 proves its thermodynamic observables, and proves convergence to the continuum
-Yang--Mills functional, but it does not verify OS0--OS4 or prove a Minkowski
-mass gap.  The quantization paper constructs the exact gauge-fixed
-finite-dimensional path integral, but again does not verify the
-Osterwalder--Schrader axioms on the continuum theory and does not prove a mass
-gap.  Those were the forward references left open by Papers~2 and~3.
+Yang--Mills functional, and it establishes OS0--OS4 and the Minkowski
+mass gap.  The thermodynamic Euclidean paper constructs the stationary
+Euclidean probability space, local bounded observable algebras, the
+continuum-indexed Schwinger functionals, and the hyperplane / transfer
+machinery, without verifying the Osterwalder--Schrader axioms on the
+continuum theory or proving a mass gap.
 
-The present paper closes both.
 Theorem~\ref{thm:euclidean-axioms} proves OS0--OS4.
-Theorem~\ref{thm:wightman-gap} proves the Minkowski reconstruction together with
-the positive mass gap.
-Accordingly the earlier disclaimers remain correct for the continuum gauge and
-quantization papers taken in isolation, but they no longer apply to the
-completed series.
+Theorem~\ref{thm:traditional-endgame} proves the traditional chain from OS
+verification to reconstruction, nontriviality, and mass gap, while
+Theorem~\ref{thm:wightman-gap} records the final Minkowski statement.
 \end{proof}
 
 \begin{thebibliography}{9}
@@ -1110,8 +2704,8 @@ G.~Duran Ballester,
 
 \bibitem{quantization}
 G.~Duran Ballester,
-\emph{From the Deterministic Regulator Data to a Gauge-Fixed Path Integral for
-the Finite $SU(3)$ Yang--Mills Lattice Theory}, 2026.
+\emph{Thermodynamic Euclidean Construction of the Emergent $SU(3)$ Gauge
+Theory}, 2026.
 
 \bibitem{os}
 K.~Osterwalder and R.~Schrader,

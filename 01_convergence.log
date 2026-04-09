@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  8 APR 2026 22:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  9 APR 2026 14:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -517,41 +517,43 @@ LaTeX Font Info:    Trying to load font information for U+rsfs on input line 43
 (/usr/share/texlive/texmf-dist/tex/latex/jknapltx/ursfs.fd
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 )
-(./01_convergence.toc)
+(./01_convergence.toc
+
+[1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}])
 \tf@toc=\write4
 \openout4 = `01_convergence.toc'.
 
 
 
-[1
-
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-
 LaTeX Warning: Citation `roberts1996exponential' on page 2 undefined on input l
-ine 98.
+ine 101.
 
 
-LaTeX Warning: Citation `meyn2012markov' on page 2 undefined on input line 98.
+LaTeX Warning: Citation `meyn2012markov' on page 2 undefined on input line 101.
+
 
 
 LaTeX Warning: Citation `villani2009hypocoercivity' on page 2 undefined on inpu
-t line 98.
+t line 101.
 
 
 LaTeX Warning: Citation `sznitman1991topics' on page 2 undefined on input line 
-98.
-
-
-LaTeX Warning: Citation `bakry1985diffusions' on page 2 undefined on input line
- 136.
-
-
-LaTeX Warning: Citation `villani2009hypocoercivity' on page 2 undefined on inpu
-t line 136.
+101.
 
 
 
 [2{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
+
+LaTeX Warning: Citation `bakry1985diffusions' on page 3 undefined on input line
+ 139.
+
+
+LaTeX Warning: Citation `villani2009hypocoercivity' on page 3 undefined on inpu
+t line 139.
+
+
 
 [3]
 
@@ -587,23 +589,14 @@ t line 136.
 
 [19]
 
-LaTeX Warning: Citation `villani2009hypocoercivity' on page 20 undefined on inp
-ut line 1711.
-
-
-
 [20]
 
+LaTeX Warning: Citation `villani2009hypocoercivity' on page 21 undefined on inp
+ut line 1714.
+
+
+
 [21]
-
-LaTeX Warning: Citation `roberts1996exponential' on page 22 undefined on input 
-line 1895.
-
-
-LaTeX Warning: Citation `meyn2012markov' on page 22 undefined on input line 189
-5.
-
-
 
 [22]
 
@@ -620,21 +613,17 @@ LaTeX Warning: Citation `meyn2012markov' on page 22 undefined on input line 189
 [28]
 
 [29]
-
-[30]
-
-LaTeX Warning: Citation `diaconis1980finite' on page 31 undefined on input line
- 2582.
-
-LaTeX Font Info:    Trying to load font information for U+euf on input line 259
-3.
-(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
+LaTeX Font Info:    Trying to load font information for U+euf on input line 253
+2.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
 File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
 )
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-euf.cfg
 File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
 
 )
+
+[30]
 
 [31]
 
@@ -644,15 +633,99 @@ File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
 
 [34]
 
-LaTeX Warning: Citation `sznitman1991topics' on page 35 undefined on input line
- 2926.
-
-
-
 [35]
 
 [36]
-Overfull \hbox (7.69717pt too wide) detected at line 3166
+
+[37]
+
+[38]
+
+[39]
+
+[40]
+
+[41]
+
+[42]
+
+[43]
+
+LaTeX Warning: Citation `meyn2012markov' on page 44 undefined on input line 368
+6.
+
+
+LaTeX Warning: Citation `roberts1996exponential' on page 44 undefined on input 
+line 3686.
+
+
+
+[44]
+
+LaTeX Warning: Citation `diaconis1980finite' on page 45 undefined on input line
+ 3770.
+
+
+
+[45]
+
+[46]
+
+[47]
+
+[48]
+
+[49]
+
+[50]
+
+LaTeX Warning: Citation `sznitman1991topics' on page 51 undefined on input line
+ 4326.
+
+
+
+[51]
+
+LaTeX Warning: Citation `huang2026logsobolev' on page 52 undefined on input lin
+e 4407.
+
+
+LaTeX Warning: Citation `huang2026logsobolev' on page 52 undefined on input lin
+e 4411.
+
+
+LaTeX Warning: Citation `huang2026logsobolev' on page 52 undefined on input lin
+e 4413.
+
+
+LaTeX Warning: Citation `huang2026logsobolev' on page 52 undefined on input lin
+e 4424.
+
+
+LaTeX Warning: Citation `huang2026logsobolev' on page 52 undefined on input lin
+e 4445.
+
+
+LaTeX Warning: Citation `huang2026logsobolev' on page 52 undefined on input lin
+e 4466.
+
+
+
+[52]
+
+LaTeX Warning: Citation `huang2026logsobolev' on page 53 undefined on input lin
+e 4469.
+
+
+LaTeX Warning: Citation `huang2026logsobolev' on page 53 undefined on input lin
+e 4505.
+
+
+
+[53]
+
+[54]
+Overfull \hbox (7.69717pt too wide) detected at line 4670
 [] \OML/cmm/m/it/10.95 P[]F d^^V \OT1/cmr/m/n/10.95 = [] \OML/cmm/m/it/10.95 P[
 ]F\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 T[]z\OT1/cmr/m/n/10.95 ) \OML/cmm/m/i
 t/10.95 ^^Y[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 dz\OT1/cmr/m/n/10.95 ) = [
@@ -667,8 +740,8 @@ V;
 
 
 
-[37]
-Overfull \hbox (18.37459pt too wide) detected at line 3254
+[55]
+Overfull \hbox (18.37459pt too wide) detected at line 4758
 [] [] [] \OT1/cmr/m/n/10.95 ^^H(\OML/cmm/m/it/10.95 x \OMS/cmsy/m/n/10.95 ^^@ \
 OML/cmm/m/it/10.95 a[]; v\OT1/cmr/m/n/10.95 ) \OML/cmm/m/it/10.95 ^^Y[]\OT1/cmr
 /m/n/10.95 (\OML/cmm/m/it/10.95 dx; dv\OT1/cmr/m/n/10.95 ) = [] [] [] ^^H(\OML/
@@ -680,16 +753,15 @@ n/10.95 )\OML/cmm/m/it/10.95 :
  []
 
 
-
-[38]
-
-LaTeX Warning: Citation `leimkuhler2015molecular' on page 39 undefined on input
- line 3300.
+LaTeX Warning: Citation `leimkuhler2015molecular' on page 56 undefined on input
+ line 4804.
 
 No file 01_convergence.bbl.
 
 
-[39] (./01_convergence.aux)
+[56]
+
+[57] (./01_convergence.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -699,16 +771,16 @@ L3 programming layer <2025-01-18>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `01_convergence.out' has not changed.
-(rerunfilecheck)             Checksum: 5C714231EB6B602B61C43160739CF59D;4661.
+(rerunfilecheck)             Checksum: D2F21758C5F086CAA899B88F3B4B7FDB;5734.
  ) 
 Here is how much of TeX's memory you used:
- 13952 strings out of 473197
- 216102 string characters out of 5718606
- 665663 words of memory out of 5000000
- 36614 multiletter control sequences out of 15000+600000
- 584818 words of font info for 221 fonts, out of 8000000 for 9000
+ 14113 strings out of 473197
+ 218327 string characters out of 5718606
+ 671530 words of memory out of 5000000
+ 36666 multiletter control sequences out of 15000+600000
+ 585910 words of font info for 235 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,12n,79p,1030b,759s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,12n,79p,1030b,779s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texl
@@ -725,13 +797,14 @@ usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/sha
 re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texl
 ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/te
 xmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-
-dist/fonts/type1/public/rsfs/rsfs10.pfb></usr/share/texmf/fonts/type1/public/cm
--super/sfrm1095.pfb>
-Output written on 01_convergence.pdf (39 pages, 420894 bytes).
+-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-
+dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/rsfs/rsfs10.pfb></usr/share/texmf/fonts/type1/public/cm-
+super/sfrm1095.pfb>
+Output written on 01_convergence.pdf (57 pages, 505558 bytes).
 PDF statistics:
- 656 PDF objects out of 1000 (max. 8388607)
- 569 compressed objects within 6 object streams
- 168 named destinations out of 1000 (max. 500000)
- 43153 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 909 PDF objects out of 1000 (max. 8388607)
+ 800 compressed objects within 8 object streams
+ 249 named destinations out of 1000 (max. 500000)
+ 43177 words of extra memory for PDF output out of 51595 (max. 10000000)
 
