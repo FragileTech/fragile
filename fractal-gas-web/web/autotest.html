@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>fractal gas autotest</title></head>
+<body>
+<pre id="result">RUNNING</pre>
+<script type="module">
+// Headless smoke test of the full wasm pipeline: fetches a ROM served next
+// to this page as test-rom.nes, initializes the swarm in the worker, runs
+// 10 iterations and reports the outcome in #result.
+//   google-chrome --headless=new --virtual-time-budget=60000 \
+//     --dump-dom http://localhost:8000/web/autotest.html | grep -A3 result
+const out = document.getElementById("result");
+const report = (text) => {
+  out.textContent = text;
+  // Beacon the result so a headless run shows it in the server request log.
+  fetch("autotest-result-" + encodeURIComponent(text)).catch(() => {});
+};
+const fail = (msg) => report("FAIL " + msg);
+
+try {
+  if (!crossOriginIsolated) throw new Error("not crossOriginIsolated");
+  const rom = await (await fetch("test-rom.nes")).arrayBuffer();
+  if (rom.byteLength < 16) throw new Error("test-rom.nes missing");
+
+  const worker = new Worker("worker.js", { type: "module" });
+  const steps = [];
+  let frameBytes = 0;
+  worker.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === "error") return fail(msg.message);
+    if (msg.type === "ready") return worker.postMessage({ type: "start" });
+    if (msg.type === "step") {
+      steps.push(msg.stats);
+      if (msg.frame) frameBytes = msg.frame.byteLength;
+      if (steps.length >= 10) {
+        worker.postMessage({ type: "pause" });
+        const last = steps[steps.length - 1];
+        const finite = Number.isFinite(last.meanReward) &&
+                       Number.isFinite(last.meanVirtualReward);
+        const ok = finite && last.iteration === 10 &&
+                   frameBytes === 256 * 240 * 4;
+        report((ok ? "OK" : "FAIL") +
+          ` iter=${last.iteration} maxReward=${last.maxReward.toFixed(1)}` +
+          ` alive=${last.aliveCount} frameBytes=${frameBytes}` +
+          ` crossOriginIsolated=${crossOriginIsolated}`);
+      }
+    }
+  };
+  worker.onerror = (e) => fail("worker: " + e.message);
+  worker.postMessage(
+    { type: "init", rom, params: {
+        n: 24, distCoef: 1.0, rewardCoef: 1.0, useCumulativeReward: true,
+        dtMin: 1, dtMax: 4, nElite: 2, seed: 7, nThreads: 4, obsMode: 0,
+        world: 1, stage: 1, console: 0, game: 0 } },
+    [rom],
+  );
+} catch (err) {
+  fail(String(err));
+}
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  9 APR 2026 12:41
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  9 APR 2026 16:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -563,9 +563,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 [6]
 
 [7]
-
-[8]
-LaTeX Font Info:    Trying to load font information for U+euf on input line 650
+LaTeX Font Info:    Trying to load font information for U+euf on input line 635
 .
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
 File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
@@ -574,6 +572,8 @@ File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
 File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
 
 )
+
+[8]
 
 [9]
 
@@ -625,13 +625,13 @@ d.
 (rerunfilecheck)             Checksum: C01B53CC9962CDA8F3AC63E3E734C399;3480.
  ) 
 Here is how much of TeX's memory you used:
- 13916 strings out of 473197
- 216694 string characters out of 5718606
- 668875 words of memory out of 5000000
+ 13912 strings out of 473197
+ 216662 string characters out of 5718606
+ 667875 words of memory out of 5000000
  36620 multiletter control sequences out of 15000+600000
- 580316 words of font info for 195 fonts, out of 8000000 for 9000
+ 580157 words of font info for 193 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,79p,1040b,802s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,14n,79p,1040b,775s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb></usr/share/te
@@ -653,7 +653,7 @@ f-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist
 nts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fon
 ts/type1/public/amsfonts/symbols/msam7.pfb></usr/share/texlive/texmf-dist/fonts
 /type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on 03b_continuum_yang_mills.pdf (29 pages, 406622 bytes).
+Output written on 03b_continuum_yang_mills.pdf (29 pages, 404284 bytes).
 PDF statistics:
  555 PDF objects out of 1000 (max. 8388607)
  475 compressed objects within 5 object streams

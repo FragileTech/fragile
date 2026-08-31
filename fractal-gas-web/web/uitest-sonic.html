@@ -1,0 +1,9 @@
+<!DOCTYPE html><html><body><script>
+try {
+  localStorage.setItem("fgSidebarCollapsed", "0");
+  localStorage.setItem("fgPlotsCollapsed", "1");
+} catch (e) {}
+// Select Sonic and auto-start once ready, then let it run for the shot.
+sessionStorage.setItem("fgAutorunSonic", "1");
+location.replace("./#autorun-sonic");
+</script></body></html>

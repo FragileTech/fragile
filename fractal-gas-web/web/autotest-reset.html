@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>reset autotest</title></head>
+<body>
+<pre id="result">RUNNING</pre>
+<script type="module">
+// Exercises the reset path: init -> run 5 steps -> reset -> run 5 steps.
+const out = document.getElementById("result");
+const report = (text) => {
+  out.textContent = text;
+  fetch("autotest-result-" + encodeURIComponent(text)).catch(() => {});
+};
+try {
+  if (!crossOriginIsolated) throw new Error("not crossOriginIsolated");
+  const rom = await (await fetch("test-rom.nes")).arrayBuffer();
+  const worker = new Worker("worker.js", { type: "module" });
+  let phase = "first";
+  const iters = { first: [], second: [] };
+  worker.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === "error") return report("FAIL " + msg.message);
+    if (msg.type === "ready") return worker.postMessage({ type: "start" });
+    if (msg.type === "resetDone") {
+      phase = "second";
+      return worker.postMessage({ type: "start" });
+    }
+    if (msg.type === "step") {
+      iters[phase].push(msg.stats.iteration);
+      if (iters[phase].length === 5) {
+        worker.postMessage({ type: "pause" });
+        if (phase === "first") {
+          worker.postMessage({ type: "reset" });
+        } else {
+          // A step already in flight when pause lands may append an extra
+          // iteration to the first phase - that's fine. What matters is
+          // that both phases start counting from 1.
+          const ok =
+            iters.first.slice(0, 5).join(",") === "1,2,3,4,5" &&
+            iters.second.slice(0, 5).join(",") === "1,2,3,4,5";
+          report((ok ? "RESET-OK" : "RESET-FAIL") +
+            ` first=[${iters.first}] second=[${iters.second}]`);
+        }
+      }
+    }
+  };
+  worker.onerror = (e) => report("FAIL worker: " + e.message);
+  worker.postMessage(
+    { type: "init", rom, params: {
+        n: 16, distCoef: 1.0, rewardCoef: 1.0, useCumulativeReward: true,
+        dtMin: 1, dtMax: 4, nElite: 2, seed: 7, nThreads: 4, obsMode: 0,
+        world: 1, stage: 1, console: 0, game: 0 } },
+    [rom],
+  );
+} catch (err) {
+  report("FAIL " + String(err));
+}
+</script>
+</body>
+</html>

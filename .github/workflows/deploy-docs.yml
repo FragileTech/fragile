@@ -1,4 +1,4 @@
-name: Deploy Docs to GitHub Pages
+name: Deploy Pages (wasm demo + docs)
 
 on:
   push:
@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -42,15 +42,63 @@ jobs:
       - name: Build JupyterBook
         run: jupyter-book build docs/
 
-      - name: Setup Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: docs-html
           path: docs/_build/html
+
+  # The fractal gas wasm demo (NES / Atari / Genesis swarm) served at the
+  # site root. COOP/COEP on GitHub Pages is provided client-side by
+  # web/coi-serviceworker.min.js (Pages cannot set response headers).
+  build-wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with emulator submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 6.0.8
+          actions-cache-folder: emsdk-cache
+
+      - name: Build zlib port
+        run: embuilder build zlib
+
+      - name: Build wasm
+        working-directory: fractal-gas-web
+        run: |
+          emcmake cmake -B build-wasm
+          cmake --build build-wasm -j"$(nproc)"
+
+      - name: Bundle ROMs
+        working-directory: fractal-gas-web
+        run: |
+          # NES: Super Mario Bros test ROM shipped by the nes-py submodule.
+          cp third_party/nes-py/nes_py/tests/games/super-mario-bros-1.nes web/test-rom.nes
+          # Atari: every ALE-supported game, straight from the ale-py wheel.
+          pip install ale-py
+          python -c "
+          import pathlib, shutil, ale_py
+          src = pathlib.Path(ale_py.__file__).parent / 'roms'
+          dst = pathlib.Path('web/roms/atari')
+          dst.mkdir(parents=True, exist_ok=True)
+          roms = sorted(src.glob('*.bin'))
+          for rom in roms:
+              shutil.copy(rom, dst / rom.name)
+          print(f'copied {len(roms)} roms')
+          "
+          # Airstriker rom is copied to web/ by the wasm build itself;
+          # Sonic is copyrighted and never bundled.
+
+      - name: Upload web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-web
+          path: fractal-gas-web/web
 
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -58,8 +106,28 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build-docs, build-wasm]
     steps:
+      - name: Download web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-web
+          path: site
+
+      - name: Download docs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-html
+          path: site/docs
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

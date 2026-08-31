@@ -33,8 +33,8 @@
 \newcommand{\mcV}{\mathcal{V}}
 \newcommand{\one}{\mathbf{1}}
 
-\title{Convergence, Hypocoercivity, and Mean-Field Limit\\
-for the Kinetic Core of the Geometric Gas}
+\title{Finite-Time and Stationary Mean-Field Analysis\\
+for an Underdamped Diffusion with Row-Normalized Alignment}
 \author{}
 \date{}
 
@@ -42,32 +42,36 @@ for the Kinetic Core of the Geometric Gas}
 \maketitle
 
 \begin{abstract}
-This paper isolates the pure kinetic backbone of the geometric gas: a confining
-underdamped Langevin dynamics on $\R^d$, augmented by a row-normalized viscous
-velocity alignment force and followed, at observation times, by a smooth
-velocity squashing map. The cloning operator, companion sampling, fitness
-potential, and state-dependent anisotropic diffusion are deliberately omitted.
-Within this kinetic-only setting we prove the two structural facts that make the
-model tractable: the viscous force is uniformly bounded on velocity-capped
-states, and it is dissipative on relative kinetic energy. We then formulate the
-finite-particle hypocoercive entropy estimate in a small-viscosity regime that
-yields an $N$-uniform
-logarithmic Sobolev inequality and exponential convergence in relative entropy
-and total variation. Finally we derive the McKean-Vlasov limit for the viscous
-alignment field, prove quantitative propagation of chaos in relative entropy,
-and pass the same small-viscosity $N$-uniform logarithmic Sobolev inequality to the mean-field
-equilibrium. The paper is self-contained in the sense that all assumptions,
-definitions, and theorems used below are stated explicitly in this document.
+We study an underdamped Langevin system on $\R^d$ with strong confinement and a
+row-normalized viscous alignment force. The central analytic difficulty is that
+the interaction is normalized by a state-dependent denominator, while the
+velocity drift remains nonlinear and nonlocal at the mean-field level. We first
+prove the structural estimates that make the model tractable: the normalized
+alignment force is uniformly bounded, dissipative on relative kinetic
+disagreement, and stable under differentiation. We then establish finite-$N$
+and McKean--Vlasov well-posedness, quantitative finite-time mean-field
+approximation on compact time intervals, and stationary thermodynamic
+compactness of the finite-particle invariant laws. In a perturbative
+small-viscosity regime we prove uniqueness of the stationary mean-field law and
+a stationary mean-field logarithmic Sobolev inequality. The result is a
+comprehensive finite-time and stationary mean-field analysis for an underdamped
+diffusion with row-normalized alignment.
 \end{abstract}
 
 \tableofcontents
 
 \section{Introduction}
 
-The purpose of this paper is to extract and organize the convergence theory of
-the kinetic part of the geometric gas in a form that does not depend on the
-cloning stage or on the adaptive diffusion geometry. The model studied here is
-the following.
+We study a confining underdamped diffusion with row-normalized velocity
+alignment. The model couples transport in position with Langevin friction and
+noise in velocity, together with a nonlocal alignment drift whose normalization
+depends on the current spatial configuration. The normalization is the main
+analytic feature of the problem: it improves stability by averaging local
+velocity disagreement, but it also introduces a state-dependent denominator
+that must be controlled uniformly in both the particle system and the
+McKean--Vlasov limit.
+
+The model studied here is the following.
 
 \begin{itemize}[leftmargin=1.5em]
 \item The position variable evolves by transport: $\dot x = v$.
@@ -79,28 +83,122 @@ map $\psi$ to cap the observed speed without destroying the previously obtained
 probabilistic estimates.
 \end{itemize}
 
-Two themes drive the analysis.
+Three pillars organize the analysis.
 
 \begin{enumerate}[leftmargin=1.5em]
-\item The \emph{backbone hypocoercive mechanism} comes from underdamped
-Langevin dynamics with confinement and friction.
-\item The \emph{new viscous term} is harmless at the level of stability because
-its action is bounded and dissipative on relative velocity disagreements.
+\item \emph{Structural control of the normalized alignment force.}
+The row-normalized viscous alignment is uniformly bounded, dissipative on
+relative kinetic disagreement, and perturbative relative to the hypocoercive
+backbone.
+\item \emph{Finite-time mean-field approximation.}
+The finite-$N$ and McKean--Vlasov dynamics are globally well posed, and the
+normalized interaction remains compatible with quantitative propagation of
+chaos on compact time intervals.
+\item \emph{Stationary thermodynamic limit and perturbative stationary
+regularity.}
+Finite-particle invariant laws satisfy Harris-type compactness estimates; their
+stationary limit is identified with the unique stationary McKean--Vlasov law in
+a perturbative small-viscosity regime; and the stationary mean-field law
+satisfies a stationary mean-field logarithmic Sobolev inequality in the
+perturbative small-viscosity regime.
 \end{enumerate}
 
-The paper therefore proceeds in two layers. First we prove the structural
-lemmas for the viscous operator and the velocity squashing map. Then we graft
-those facts onto the hypocoercive framework for the kinetic backbone,
-obtaining $N$-uniform entropy and total-variation convergence in a
-small-viscosity regime. The final
-sections pass to the mean-field equation, prove a quantitative propagation of
-chaos estimate, and deduce a mean-field logarithmic Sobolev inequality in the
-same regime. The
-analysis uses only tools from Langevin dynamics, hypocoercivity,
-Harris-type ergodic theory, and McKean-Vlasov limits
+The paper is organized accordingly. Section~2 introduces the model and records
+the observation-level squashing map. Section~3 develops the structural bounds
+for the normalized alignment force. Section~4 establishes the one-particle
+hypocoercive backbone, and Section~5 upgrades that structure to the tensorized
+reference setting used later in the particle and stationary arguments.
+Section~6 proves the quantitative finite-time mean-field limit by synchronous
+coupling and path-space entropy. Section~7 develops the stationary theory:
+finite-particle invariant laws are constructed by Harris theory, stationary
+subsequential limits are identified, uniqueness is proved in a perturbative
+small-viscosity regime, and the perturbative stationary mean-field LSI is
+obtained by transfer from the frozen linear generator. The analysis uses only
+tools from Langevin dynamics,
+hypocoercivity, Harris-type ergodic theory, and McKean--Vlasov limits
 \cite{roberts1996exponential,meyn2012markov,villani2009hypocoercivity,sznitman1991topics}.
 
-\section{The Kinetic Geometric Gas Core}
+\subsection*{Main Contributions}
+
+\begin{enumerate}[leftmargin=1.5em]
+\item We prove uniform structural estimates for the row-normalized alignment
+force: boundedness, dissipativity, derivative control, and frozen-position
+Gaussian coercivity.
+\item We establish finite-time quantitative propagation of chaos, both in a
+strong synchronous-coupling form and in an information-theoretic path-space
+relative entropy form.
+\item We prove stationary thermodynamic compactness and identify every
+stationary subsequential limit as a stationary McKean--Vlasov law.
+\item In a perturbative small-viscosity regime we prove uniqueness of the
+stationary mean-field law and a stationary mean-field logarithmic Sobolev
+inequality.
+\end{enumerate}
+
+\subsection*{Main Theorem Bundle}
+
+Under Assumptions~\ref{ass:potential} and~\ref{ass:kernel}, the paper proves
+the following theorem families.
+\begin{enumerate}[leftmargin=1.5em]
+\item The finite-$N$ system and the McKean--Vlasov equation are globally well
+posed and propagate quadratic moments.
+\item On every compact time interval, the empirical law converges
+quantitatively to the nonlinear law, both in strong synchronous coupling and in
+path-space relative entropy.
+\item Finite-particle invariant laws exist for every \(N\), and every
+stationary subsequential limit is a stationary McKean--Vlasov law.
+\item In the perturbative small-viscosity regime, the stationary
+McKean--Vlasov law is unique and satisfies a perturbative stationary
+mean-field LSI.
+\end{enumerate}
+
+\subsection*{Dependency Roadmap}
+
+The table below records the main logical dependencies of the theorem chain and
+isolates the only results that require the perturbative small-viscosity regime.
+
+\begin{center}
+\footnotesize
+\begin{tabular}{|p{0.27\textwidth}|p{0.41\textwidth}|p{0.16\textwidth}|}
+\hline
+\textbf{Result} & \textbf{Main Inputs} & \textbf{Perturbative small-viscosity regime?} \\
+\hline
+Finite-$N$ well-posedness and moments & Proposition~\ref{prop:wp}, Proposition~\ref{prop:moments}, structural force bounds & no \\
+\hline
+McKean--Vlasov well-posedness and stability & Lemma~\ref{lem:mf-lipschitz}, Proposition~\ref{prop:wp}, Corollary~\ref{cor:mf-stability} & no \\
+\hline
+Strong propagation of chaos & Lemma~\ref{lem:force-defect}, Lemma~\ref{lem:mc-force}, Corollary~\ref{cor:mf-stability}, Theorem~\ref{thm:poc-strong} & no \\
+\hline
+Stationary subsequential limit & Theorem~\ref{thm:finite-harris}, Theorem~\ref{thm:exchangeable}, Theorem~\ref{thm:tight}, Theorem~\ref{thm:stationary-poc} & no \\
+\hline
+Uniqueness of the stationary mean-field law & Proposition~\ref{prop:linear-mf-stationary}, Lemma~\ref{lem:mf-map-ball}, Lemma~\ref{lem:mf-map-contraction}, Proposition~\ref{prop:mf-unique} & yes \\
+\hline
+Perturbative stationary mean-field LSI & Definition~\ref{def:mf-lsi-coeffs}, Proposition~\ref{prop:hkr-applicability}, Theorem~\ref{thm:mf-lsi} & yes \\
+\hline
+\end{tabular}
+\normalsize
+\end{center}
+
+\subsection*{Perturbative Small-Viscosity Regime}
+
+Only the stationary uniqueness theorem and the perturbative stationary
+mean-field LSI require the perturbative small-viscosity regime.
+All finite-time results, as well as the existence of finite-particle invariant
+laws and the stationary subsequential compactness theory, are unconditional
+under the standing assumptions. The threshold \(\nu_*\) is introduced where the
+alignment-map contraction is proved; it depends only on the structural
+parameters of the model and on the contraction constants appearing in
+Lemma~\ref{lem:mf-map-contraction} and
+Proposition~\ref{prop:hkr-applicability}.
+
+\begin{remark}[Scope of the assumptions]
+The standing assumptions are chosen to give a clean finite-time and stationary
+theory with explicit hypocoercive and Harris-type inputs. In particular, the
+uniform convexity of \(U\) is used to obtain both the backbone entropy gap and
+the stationary compactness estimates. Optimization of assumptions is not
+pursued here.
+\end{remark}
+
+\section{Model and Main Assumptions}
 
 \subsection{Standing assumptions}
 
@@ -131,7 +229,8 @@ for some $\alpha_U>0$ and $\beta_U<\infty$.
 \end{assumption}
 
 \begin{remark}
-Assumption~\ref{ass:potential} for items $i$ and $ii$ places the paper in the classical
+Assumption~\ref{ass:potential} for items \textnormal{(i)} and \textnormal{(ii)}
+places the paper in the classical
 uniformly convex Langevin regime. In this regime the Gibbs measure
 \eqref{eq:gibbs} satisfies a logarithmic Sobolev inequality by the
 Bakry-\'Emery criterion, and the modified-entropy computation below yields an
@@ -166,7 +265,7 @@ Then $\omega_{ij}\geq0$ and $\sum_{j\neq i}\omega_{ij}=1$.
 
 \begin{definition}[Finite-$N$ kinetic core]\label{def:finiteN}
 Fix $\gamma>0$, $\sigma>0$, and $\nu_{\mathrm{visc}}\geq0$. For $i=1,\dots,N$,
-the finite-particle kinetic geometric gas core is the It\^o SDE
+the finite-particle system is the It\^o SDE
 \begin{align}
 dX_i(t) &= V_i(t)\,dt,\label{eq:finite-x}\\
 dV_i(t) &=
@@ -264,9 +363,56 @@ componentwise by
 \[
 Z_{n+1}=S(Z_{n+1}^{\mathrm{pre}})=(X_{n+1}^{\mathrm{pre}},\psi(V_{n+1}^{\mathrm{pre}})).
 \]
-This is the same BAOAB ordering used in the implementation and in the
-convergence-program notes already present elsewhere in the repository.
+This is the BAOAB ordering used in the implementation.
 \end{definition}
+
+\begin{remark}[Status of the squashing map]
+The smooth squashing map is an observation-level operation, not part of the
+continuous-time diffusion that drives the finite-time and stationary mean-field
+analysis. It is recorded here because it preserves the probabilistic bounds
+needed when passing from the continuous kinetic dynamics to observed states.
+None of the main finite-time or stationary mean-field theorems depends on the
+squashing map.
+\end{remark}
+
+\subsection*{Notation Guide}
+
+\begin{center}
+\footnotesize
+\begin{tabular}{|p{0.22\textwidth}|p{0.66\textwidth}|}
+\hline
+\textbf{Notation} & \textbf{Meaning} \\
+\hline
+\(K\), \(k_*\), \(k^*\) & regularized Gaussian kernel and its uniform lower/upper bounds \\
+\hline
+\(d_i(X)\), \(\omega_{ij}(X)\) & row-normalization denominator and normalized alignment weights \\
+\hline
+\(F_i(X,V)\), \(F[f](x,v)\) & finite-particle and mean-field viscous alignment drifts \\
+\hline
+\(P_t^N\), \(P_t^{(1),0}\) & finite-particle semigroup and one-particle uncoupled backbone semigroup \\
+\hline
+\(Q_\tau^N\) & observed BAOAB chain with postprocessed velocities \\
+\hline
+\(\rho_t^N\), \(f_t\) & law of the finite-particle system and solution of the McKean--Vlasov equation \\
+\hline
+\(\pi_N\), \(\pi_\infty\) & finite-particle invariant law and stationary mean-field law \\
+\hline
+\(\Gamma_{\mathrm{hypo}}^N\), \(\Gamma_{\mathrm{hypo}}^\infty\) & hypocoercive carré du champ at particle and mean-field levels \\
+\hline
+\(P_{[0,T]}^N\), \(Q_{[0,T]}^N\) & path-space laws of the interacting and independent nonlinear systems \\
+\hline
+\end{tabular}
+\normalsize
+\end{center}
+
+\paragraph{Section roadmap.}
+Section~3 proves the structural estimates for the row-normalized alignment
+force. Section~4 establishes the one-particle hypocoercive backbone.
+Section~5 upgrades that backbone estimate to the tensorized reference
+structure. Section~6 proves the finite-time mean-field limit in strong coupling
+and path-space relative entropy. Section~7 then proves the stationary
+thermodynamic limit, uniqueness in the perturbative small-viscosity regime, and
+the perturbative stationary mean-field LSI.
 
 \section{Structural Bounds: Confinement, Viscosity, and Squashing}
 
@@ -413,10 +559,15 @@ which is non-positive.
 \end{proof}
 
 \begin{lemma}[Lipschitz control of the mean-field alignment field]\label{lem:mf-lipschitz}
-Let $\mu,\nu\in\mcP(\R^{2d})$ have finite first moments. There exists a constant
-$L_{\mathrm{mf}}<\infty$, depending on
-$\nu_{\mathrm{visc}},k_*,k^*,\ell_{\mathrm{visc}}$ and on a fixed first-moment
-bound for the measure class under consideration, such that
+Fix \(M_2<\infty\). Let \(\mu,\nu\in\mcP(\R^{2d})\) satisfy
+\[
+\int_{\R^{2d}}(\|x\|^2+\|v\|^2)\,\mu(dx,dv)\le M_2,
+\qquad
+\int_{\R^{2d}}(\|x\|^2+\|v\|^2)\,\nu(dx,dv)\le M_2.
+\]
+Then there exists a constant
+\(L_{\mathrm{mf}}=L_{\mathrm{mf}}(M_2,\nu_{\mathrm{visc}},k_*,k^*,\ell_{\mathrm{visc}})<\infty\)
+such that
 \[
 \|F[\mu](x,v)-F[\nu](x',v')\|
 \leq
@@ -459,16 +610,17 @@ Then
 \leq
 \iint \|K(x,y)q-K(x',y')q'\|\,d\pi.
 \]
-On any class of laws with a fixed first-moment bound in the velocity variable,
-the integrand is controlled by a constant times
+By Cauchy--Schwarz, the second-moment hypothesis implies a uniform first-moment
+bound in the velocity variable on the class under consideration. Therefore the
+integrand is controlled by a constant times
 \(\|x-x'\|+\|y-y'\|+\|q-q'\|\), so
 \[
 \|J_\mu(x)-J_\nu(x')\|
 \leq
 C_J\bigl(\|x-x'\|+W_1(\mu,\nu)\bigr),
 \]
-with \(C_J\) depending only on the kernel bounds and the moment bound for the
-class under consideration. Combining the numerator and denominator estimates,
+with \(C_J\) depending only on the kernel bounds and \(M_2\). Combining the
+numerator and denominator estimates,
 and using
 \[
 A[\mu](x)-A[\nu](x')
@@ -631,7 +783,64 @@ C_0+C_1\E\bigl[\|\bar X_t\|^2+\|\bar V_t\|^2\bigr].
 Applying Gr\"onwall's lemma yields the claimed bound.
 \end{proof}
 
-\section{Detailed Backbone and Viscous Derivations}
+\begin{corollary}[Mean-field stability in \(W_2\)]\label{cor:mf-stability}
+Let \(f_t\) and \(g_t\) be two solutions of \eqref{eq:mf-pde} on \([0,T]\),
+with initial laws \(f_0,g_0\in\mcP_2(\R^{2d})\). Then there exists
+\(C_T<\infty\), depending only on the model parameters and on the initial
+second moments, such that
+\[
+W_2(f_t,g_t)^2
+\le
+e^{C_T t}W_2(f_0,g_0)^2
+\qquad
+\forall t\in[0,T].
+\]
+\end{corollary}
+
+\begin{proof}
+Let \((\bar X_t,\bar V_t)\) and \((\bar Y_t,\bar W_t)\) solve the two nonlinear
+SDEs driven by the same Brownian motion, with an optimal \(W_2\)-coupling at
+time \(0\). Set
+\[
+\Delta X_t:=\bar X_t-\bar Y_t,
+\qquad
+\Delta V_t:=\bar V_t-\bar W_t.
+\]
+Applying It\^o's formula to \(\|\Delta X_t\|^2+\|\Delta V_t\|^2\) gives
+\begin{align*}
+\frac{d}{dt}\E\bigl[\|\Delta X_t\|^2+\|\Delta V_t\|^2\bigr]
+&=
+2\E\langle \Delta X_t,\Delta V_t\rangle
+-2\gamma \E\|\Delta V_t\|^2\\
+&\qquad
+-2\E\langle \Delta V_t,\nabla U(\bar X_t)-\nabla U(\bar Y_t)\rangle\\
+&\qquad
++2\E\langle \Delta V_t,F[f_t](\bar X_t,\bar V_t)-F[g_t](\bar Y_t,\bar W_t)\rangle.
+\end{align*}
+Young's inequality controls the transport and confinement terms, while
+Lemma~\ref{lem:mf-lipschitz} and Proposition~\ref{prop:moments} yield
+\[
+\|F[f_t](\bar X_t,\bar V_t)-F[g_t](\bar Y_t,\bar W_t)\|
+\le
+L_T\bigl(\|\Delta X_t\|+\|\Delta V_t\|+W_2(f_t,g_t)\bigr),
+\]
+for a constant \(L_T<\infty\) depending only on \(T\), the model parameters,
+and the propagated second moments. Since the chosen coupling gives
+\[
+W_2(f_t,g_t)^2
+\le
+\E\bigl[\|\Delta X_t\|^2+\|\Delta V_t\|^2\bigr],
+\]
+another Young inequality yields
+\[
+\frac{d}{dt}\E\bigl[\|\Delta X_t\|^2+\|\Delta V_t\|^2\bigr]
+\le
+C_T\,\E\bigl[\|\Delta X_t\|^2+\|\Delta V_t\|^2\bigr].
+\]
+Gr\"onwall's lemma gives the claim.
+\end{proof}
+
+\section{The Hypocoercive Backbone}
 
 \subsection{Weighted generator calculus for the uncoupled kinetic backbone}
 
@@ -1174,6 +1383,43 @@ we obtain
 which is \eqref{eq:gibbs-lsi}.
 \end{proof}
 
+\begin{lemma}[Equivalence of the modified entropy]\label{lem:phi-equiv}
+Let \(\Phi\) be the modified entropy functional from \eqref{eq:Phi}, with the
+coefficients \(a,b,c\) from Theorem~\ref{thm:backbone-detailed}. Then there
+exists a constant \(C_\Phi<\infty\), depending only on
+\((m_U,L_U,\gamma,\sigma)\), such that
+\[
+\mathcal A[h]\le \Phi[h]
+\le
+C_\Phi\bigl(\mathcal B[h]+\mathcal D[h]\bigr)
+\]
+for every smooth density \(h\) with \(\int h\,d\pi_1=1\).
+\end{lemma}
+
+\begin{proof}
+Proposition~\ref{prop:gibbs-lsi} yields
+\[
+\mathcal A[h]\le \frac{1}{2m_*}\bigl(\mathcal B[h]+\mathcal D[h]\bigr).
+\]
+By Cauchy--Schwarz,
+\[
+2|\mathcal C[h]|\le \mathcal B[h]+\mathcal D[h].
+\]
+Since
+\[
+\Phi[h]=\mathcal A[h]+a\mathcal B[h]+2b\mathcal C[h]+c\mathcal D[h],
+\]
+we obtain
+\[
+\Phi[h]
+\le
+\left(\frac{1}{2m_*}+a+b+c\right)\bigl(\mathcal B[h]+\mathcal D[h]\bigr).
+\]
+The lower bound \(\mathcal A[h]\le \Phi[h]\) is immediate from the definition
+of \(\Phi\) and the positivity of the quadratic form chosen in
+Theorem~\ref{thm:backbone-detailed}.
+\end{proof}
+
 \begin{corollary}[One-particle backbone entropy contraction]\label{cor:backbone-gap}
 Let $P_t^{(1),0}$ be the semigroup of the uncoupled one-particle kinetic
 backbone and let $\pi_1=\rho_*$. There exists a constant
@@ -1188,23 +1434,11 @@ for every probability measure $\mu\ll\pi_1$ and every $t\geq0$.
 \end{corollary}
 
 \begin{proof}
-Let $h_t=d(\mu P_t^{(1),0})/d\pi_1$. Proposition~\ref{prop:gibbs-lsi} yields
+Let $h_t=d(\mu P_t^{(1),0})/d\pi_1$. By Lemma~\ref{lem:phi-equiv},
 \[
-\mathcal A[h]\leq \frac{1}{2m_*}\bigl(\mathcal B[h]+\mathcal D[h]\bigr).
-\]
-By Cauchy-Schwarz,
-\[
-2|\mathcal C[h]|
-\leq
-\mathcal B[h]+\mathcal D[h].
-\]
-Therefore the quadratic part of $\Phi$ satisfies
-\[
-\Phi[h]
-\leq
-\left(\frac{1}{2m_*}+a+b+c\right)\bigl(\mathcal B[h]+\mathcal D[h]\bigr)
-=:
-C_\Phi\bigl(\mathcal B[h]+\mathcal D[h]\bigr).
+\mathcal A[h_t]\le \Phi[h_t]
+\qquad\text{and}\qquad
+\Phi[h_t]\le C_\Phi\bigl(\mathcal B[h_t]+\mathcal D[h_t]\bigr).
 \]
 Theorem~\ref{thm:backbone-detailed} gives
 \[
@@ -1218,14 +1452,8 @@ Hence
 \[
 \Phi[h_t]\leq e^{-(\lambda_{\mathrm{back}}/C_\Phi)t}\Phi[h_0].
 \]
-Since $\mathcal A[h_t]\leq \Phi[h_t]$ and
-\[
-\Phi[h_0]
-\leq
-\left(1+\frac{a+c+2b}{2m_*}\right)\bigl(\mathcal B[h_0]+\mathcal D[h_0]\bigr),
-\]
-the same differential inequality applied from time $s$ onward and integrated
-for all $s\geq0$, integrating from $s$ to $\infty$ gives
+Applying the same differential inequality from time \(s\) onward and
+integrating from \(s\) to \(\infty\) gives
 \[
 \mathcal A[h_s]
 =
@@ -1628,9 +1856,15 @@ C_\omega \frac1N\sum_{j=1}^N \|V_j\|^2.
 Collecting terms yields \eqref{eq:force-x-deriv}.
 \end{proof}
 
-\section{Finite-Particle Hypocoercivity and N-Uniform LSI}
+\section{Backbone Tensorization}
 
-\subsection{Backbone gap and viscous perturbation}
+\subsection{Tensorized backbone gap}
+
+This section upgrades the one-particle hypocoercive estimate from
+Section~4 to the product reference structure used later in both the
+finite-time and stationary arguments. It is preparatory: the tensorized
+backbone provides the canonical uncoupled comparison object, while the main
+mean-field results are proved in the sections that follow.
 
 For the kinetic backbone ($\nu_{\mathrm{visc}}=0$), the invariant law is
 $\pi_1^{\otimes N}$ and the gap from
@@ -1710,1280 +1944,18 @@ C_{\mathrm{hypo}}
 \int \Gamma_{\mathrm{hypo}}^N(g,g)\,\dd \pi_1^{\otimes N}.
 \]
 We now explain why the viscous alignment does not destroy this structure; the
-underlying modified-entropy mechanism is the one introduced in
-\cite{villani2009hypocoercivity}.
+same hypocoercive coefficients will be reused later in the stationary
+mean-field logarithmic Sobolev inequality, whose modified-entropy mechanism
+goes back to \cite{villani2009hypocoercivity}.
 \end{remark}
 
-The fully interacting closure is most naturally formulated as a perturbative
-statement around the tensorized backbone. For the mean-field goals of this
-paper, it is enough to work in a quantitative small-viscosity regime, so the
-finite-particle logarithmic Sobolev inequality is recorded below only under a
-smallness condition on $\nu_{\mathrm{visc}}$.
 
-\begin{definition}[Finite-particle entropy and Fisher functionals]\label{def:functionals-N}
-Let $\Pi_N$ be a smooth probability measure on $(\R^{2d})^N$, and let
-$h:(\R^{2d})^N\to(0,\infty)$ satisfy $\int h\,d\Pi_N=1$. Writing
-$X=(x_1,\dots,x_N)$ and $V=(v_1,\dots,v_N)$, define
-\begin{align*}
-\mathcal A_N[h]
-&:=
-\int h\log h\,d\Pi_N,\\
-\mathcal B_N[h]
-&:=
-T\int h\,|\nabla_V\log h|^2\,d\Pi_N,\\
-\mathcal C_N[h]
-&:=
-T\int h\,\langle \nabla_X\log h,\nabla_V\log h\rangle\,d\Pi_N,\\
-\mathcal D_N[h]
-&:=
-T\int h\,|\nabla_X\log h|^2\,d\Pi_N.
-\end{align*}
-Here $\nabla_X$ and $\nabla_V$ denote the full gradients in the $Nd$ position
-and velocity variables.
-\end{definition}
+The remainder of the paper is devoted to the mean-field stationary theory:
+finite-particle Harris estimates and stationary compactness, identification of
+the stationary McKean--Vlasov limit, and a stationary mean-field logarithmic
+Sobolev inequality in fixed dimension.
 
-\begin{lemma}[Entropy production relative to an invariant law]\label{lem:entropy-prod-N}
-Assume that $\pi_N$ is an invariant law for the finite-particle semigroup
-$P_t^N$, and let
-\[
-h_t:=\frac{d(\mu P_t^N)}{d\pi_N}.
-\]
-Then
-\[
-\frac{d}{dt}\Ent_{\pi_N}(h_t)
-=
--\gamma \mathcal B_N[h_t].
-\]
-\end{lemma}
-
-\begin{proof}
-Write the generator of the interacting diffusion in the form
-\[
-\mathcal L_N\phi
-=
-b_N\cdot \nabla_{X,V}\phi+\gamma T\Delta_V\phi,
-\qquad
-T=\frac{\sigma^2}{2\gamma},
-\]
-where $b_N$ is the full first-order drift. Since $f_t:=h_t\pi_N$ solves the
-forward equation $\partial_t f_t=\mathcal L_N^*f_t$, we have
-\[
-\frac{d}{dt}\Ent_{\pi_N}(h_t)
-=
-\int (1+\log h_t)\,\mathcal L_N^*(h_t\pi_N)\,dX\,dV
-=
-\int h_t\,\mathcal L_N(\log h_t)\,d\pi_N.
-\]
-Because the second-order part of $\mathcal L_N$ acts only in $V$,
-\[
-\mathcal L_N(\log h_t)
-=
-\frac{\mathcal L_N h_t}{h_t}
--\gamma T|\nabla_V\log h_t|^2.
-\]
-Therefore
-\[
-\frac{d}{dt}\Ent_{\pi_N}(h_t)
-=
-\int \mathcal L_N h_t\,d\pi_N
--\gamma T\int h_t|\nabla_V\log h_t|^2\,d\pi_N.
-\]
-The first term vanishes by invariance of $\pi_N$:
-\[
-\int \mathcal L_N h_t\,d\pi_N=0.
-\]
-Using the definition of $\mathcal B_N$ gives the claim.
-\end{proof}
-
-\subsection{Quadratic perturbative closure in the small-viscosity regime}
-
-The finite-particle LSI is proved by treating the viscous alignment as a small
-first-order perturbation of the tensorized backbone dynamics. The right
-perturbative object is the density ratio of the full invariant law \(\pi_N\)
-with respect to the backbone product law \(\pi_{N,0}:=\pi_1^{\otimes N}\):
-\[
-q_N:=\frac{d\pi_N}{d\pi_{N,0}},
-\qquad
-\psi_N:=\log q_N.
-\]
-The aim of this subsection is to reduce the full interacting modified-entropy
-estimate to a quadratic weighted stationary-corrector problem and a small set of
-form bounds. This is the smallest perturbative package that still preserves the
-spatially varying kernel structure used later in the mean-field and continuum
-constructions.
-
-\begin{definition}[Small-viscosity / large-friction regime]\label{def:small-visc-regime}
-Throughout this subsection we keep the kinetic temperature
-\[
-T:=\frac{\sigma^2}{2\gamma}
-\]
-fixed, and we work in a regime
-\[
-\gamma\ge \gamma_0,
-\qquad
-0\le \nu_{\mathrm{visc}}\le \nu_*(\gamma),
-\]
-where \(\gamma_0>0\) and the threshold function \(\nu_*(\gamma)\) will be
-chosen from the perturbative closure estimate. All constants below are allowed
-to depend on \((T,\gamma,L_U,k_*,k^*,L_K)\), but they are always independent of
-\(N\).
-\end{definition}
-
-\begin{definition}[Quadratic weighted perturbative spaces]\label{def:weighted-spaces-N}
-For \(N\geq2\), define the quadratic weight
-\[
-\widetilde W_N(X,V)
-:=
-1+\frac1N\sum_{i=1}^N \bigl(\|x_i\|^2+\|v_i\|^2\bigr).
-\]
-For smooth \(f:(\R^{2d})^N\to\R\), set
-\begin{align*}
-\|f\|_{\mathcal X_N}^2
-&:=
-\int
-\bigl(
-f^2+\|\nabla_V f\|^2+\|\nabla_X f\|^2
-\bigr)\,\widetilde W_N\,d\pi_{N,0},\\
-\|f\|_{\mathcal Y_N}^2
-&:=
-\|f\|_{\mathcal X_N}^2
-+
-\int
-\bigl(
-\|\nabla_{VV}^2 f\|^2+\|\nabla_{XV}^2 f\|^2
-\bigr)\,\widetilde W_N\,d\pi_{N,0}.
-\end{align*}
-\end{definition}
-
-\begin{lemma}[Relative-generator decomposition and stationary corrector equation]\label{lem:relative-generator-decomp}
-Define the backward first-order viscous perturbation on observables by
-\[
-\mathcal V_N f
-:=
-\sum_{i=1}^N
-\left(
-\sum_{j\neq i}\omega_{ij}(X)(v_j-v_i)
-\right)\cdot \nabla_{v_i}f,
-\]
-so that
-\[
-\mathcal L_N=\mathcal L_{N,0}+\nu_{\mathrm{visc}}\mathcal V_N.
-\]
-Define also the forward perturbation relative to \(\pi_{N,0}\) by
-\[
-\mathscr V_N^\dagger f
-:=
-\pi_{N,0}^{-1}\mathcal V_N^*(\pi_{N,0}f).
-\]
-Let \(\pi_N\) be an invariant law of the full diffusion and let
-\[
-\mathscr K_N f
-:=
-\pi_N^{-1}\mathcal L_N^*(\pi_N f),
-\qquad
-\mathscr K_{N,0}f
-:=
-\pi_{N,0}^{-1}\mathcal L_{N,0}^*(\pi_{N,0}f).
-\]
-Then, for every smooth \(f\),
-\[
-\mathscr K_N f
-=
-\mathscr K_{N,0}f
-+\nu_{\mathrm{visc}}\mathcal V_N f
-+2\gamma T\,\nabla_V\psi_N\cdot \nabla_V f.
-\]
-Moreover, the stationary density ratio \(q_N=d\pi_N/d\pi_{N,0}\) satisfies
-\[
-\mathscr K_{N,0}q_N+\nu_{\mathrm{visc}}\mathscr V_N^\dagger q_N=0.
-\]
-\end{lemma}
-
-\begin{proof}
-Write the generator in the standard form
-\[
-\mathcal L_N\phi
-=
-b_N\cdot \nabla_{X,V}\phi+\gamma T\Delta_V\phi,
-\]
-where
-\[
-b_N(X,V)
-=
-b_{N,0}(X,V)+\nu_{\mathrm{visc}}\widehat F_N(X,V),
-\]
-and \(\widehat F_N\) is the vector field underlying \(\mathcal V_N\). For a
-smooth positive density \(\mu\), the diffusion product rule gives
-\[
-\mu^{-1}\mathcal L_N^*(\mu f)
-=
-\mathcal L_N f+2\gamma T\,\nabla_V\log \mu\cdot \nabla_V f
-+f\,\mu^{-1}\mathcal L_N^*\mu.
-\]
-Applying this with \(\mu=\pi_N\) and using \(\mathcal L_N^*\pi_N=0\) yields
-\[
-\mathscr K_N f
-=
-\mathcal L_N f+2\gamma T\,\nabla_V\log \pi_N\cdot \nabla_V f.
-\]
-Applying the same identity with \(\mu=\pi_{N,0}\) and
-\(\mathcal L_{N,0}^*\pi_{N,0}=0\) gives
-\[
-\mathscr K_{N,0} f
-=
-\mathcal L_{N,0} f+2\gamma T\,\nabla_V\log \pi_{N,0}\cdot \nabla_V f.
-\]
-Subtracting the two displays and using
-\(\pi_N=q_N\pi_{N,0}\), hence
-\(\nabla_V\log \pi_N-\nabla_V\log \pi_{N,0}=\nabla_V\psi_N\), proves
-\[
-\mathscr K_N f
-=
-\mathscr K_{N,0}f+\nu_{\mathrm{visc}}\mathcal V_N f
-+2\gamma T\,\nabla_V\psi_N\cdot \nabla_V f.
-\]
-For the stationary corrector equation, start from
-\[
-0=\mathcal L_N^*(q_N\pi_{N,0})
-=\mathcal L_{N,0}^*(q_N\pi_{N,0})
-+\nu_{\mathrm{visc}}\mathcal V_N^*(q_N\pi_{N,0}).
-\]
-Dividing by \(\pi_{N,0}\) gives
-\[
-\mathscr K_{N,0}q_N+\nu_{\mathrm{visc}}\pi_{N,0}^{-1}\mathcal V_N^*(\pi_{N,0}q_N)=0,
-\]
-which is exactly
-\[
-\mathscr K_{N,0}q_N+\nu_{\mathrm{visc}}\mathscr V_N^\dagger q_N=0.
-\]
-\end{proof}
-
-\begin{theorem}[Uniform quadratic weighted backbone resolvent]\label{lem:weighted-backbone-resolvent}
-There exists a constant \(C_{\mathrm{res}}<\infty\), independent of \(N\), such
-that for every \(g\in \mathcal X_N\) with \(\int g\,d\pi_{N,0}=0\), the Poisson
-equation
-\[
--\mathscr K_{N,0}\phi=g,
-\qquad
-\int \phi\,d\pi_{N,0}=0,
-\]
-admits a unique solution \(\phi\in \mathcal Y_N\) satisfying
-\[
-\|\phi\|_{\mathcal Y_N}
-\leq
-C_{\mathrm{res}}\|g\|_{\mathcal X_N}.
-\]
-Moreover, one may take \(C_{\mathrm{res}}\) uniform for all
-\(\gamma\ge \gamma_0\).
-\end{theorem}
-
-\begin{proof}
-Write the one-particle backbone generator in relative form as
-\[
-\mathscr K_{1,0}f
-:=
-\pi_1^{-1}(\mathcal L_{1,0})^*(\pi_1 f),
-\]
-and let \(S_t:=P_t^{(1),0}\) be the one-particle semigroup from
-Corollary~\ref{cor:backbone-gap}. Introduce the one-particle quadratic weight
-\[
-w(x,v):=1+\|x\|^2+\|v\|^2,
-\]
-and let \(\mathcal X_1\) and \(\mathcal Y_1\) denote the obvious one-particle
-versions of the norms from Definition~\ref{def:weighted-spaces-N}.
-
-\smallskip
-\noindent
-\textbf{Step 1: one-particle linearized hypocoercive decay.}
-Let \(u_t:=S_t f\), where \(f\in \mathcal X_1\) is centered. For
-\(\varepsilon>0\) small, the perturbation
-\[
-h_t^{(\varepsilon)}:=1+\varepsilon u_t
-\]
-solves the same relative equation \(\partial_t h=L_0 h\) as in
-Definition~\ref{def:functionals}. Expanding the functionals of
-Definition~\ref{def:functionals} at \(h=1\) gives
-\begin{align*}
-\mathcal A[1+\varepsilon u]
-&=
-\frac{\varepsilon^2}{2}\|u\|_{L^2(\pi_1)}^2+O(\varepsilon^3),\\
-\mathcal B[1+\varepsilon u]
-&=
-\varepsilon^2 T\|\nabla_v u\|_{L^2(\pi_1)}^2+O(\varepsilon^3),\\
-\mathcal C[1+\varepsilon u]
-&=
-\varepsilon^2 T\langle \nabla_x u,\nabla_v u\rangle_{L^2(\pi_1)}+O(\varepsilon^3),\\
-\mathcal D[1+\varepsilon u]
-&=
-\varepsilon^2 T\|\nabla_x u\|_{L^2(\pi_1)}^2+O(\varepsilon^3).
-\end{align*}
-Dividing the differential inequalities of Proposition~\ref{prop:abcd} and
-Theorem~\ref{thm:backbone-detailed} by \(\varepsilon^2\) and letting
-\(\varepsilon\downarrow0\) yields the linearized modified energy
-\[
-\mathscr E[u]
-:=
-\frac12\|u\|_{L^2(\pi_1)}^2
-+aT\|\nabla_v u\|_{L^2(\pi_1)}^2
-+2bT\langle \nabla_x u,\nabla_v u\rangle_{L^2(\pi_1)}
-+cT\|\nabla_x u\|_{L^2(\pi_1)}^2,
-\]
-with the same coefficients \(a,b,c\) as in
-Theorem~\ref{thm:backbone-detailed}, and constants
-\(C_{\mathrm{lin}},\eta_{\mathrm{lin}}>0\), depending only on
-\((T,\gamma,L_U,m_U)\), such that
-\begin{equation}\label{eq:linearized-backbone-decay}
-\mathscr E[u_t]
-\le
-e^{-\eta_{\mathrm{lin}}t}\mathscr E[f],
-\qquad
-\|u_t\|_{L^2(\pi_1)}^2+\|\nabla_x u_t\|_{L^2(\pi_1)}^2+\|\nabla_v u_t\|_{L^2(\pi_1)}^2
-\le
-C_{\mathrm{lin}}e^{-\eta_{\mathrm{lin}}t}\|f\|_{\mathcal X_1}^2.
-\end{equation}
-
-\smallskip
-\noindent
-\textbf{Step 2: one-particle quadratic Lyapunov weight.}
-Choose \(\theta>0\) small and define
-\[
-W_\theta(x,v):=1+\|x\|^2+2\theta\,x\cdot v+\theta^2\|v\|^2.
-\]
-For \(\theta\) sufficiently small, \(W_\theta\) is equivalent to \(w\):
-\[
-c_\theta w\le W_\theta\le C_\theta w.
-\]
-Let
-\[
-G_0\phi
-:=
-v\cdot \nabla_x\phi
-+(-\nabla U(x)-\gamma v)\cdot \nabla_v\phi
-+\gamma T\Delta_v\phi
-\]
-be the one-particle observable generator dual to \(\mathscr K_{1,0}\) in the
-weighted integration-by-parts identity used below. A direct calculation gives
-\[
-G_0 W_\theta
-=
-2x\cdot v
-+2\theta\|v\|^2
-+2\theta x\cdot(-\nabla U-\gamma v)
-+2\theta v\cdot(-\nabla U-\gamma v)
-+2\gamma T\theta^2 d.
-\]
-Using Assumption~\ref{ass:potential}, item \(iii\), together with Young's
-inequality and the smallness of \(\theta\), this implies
-\begin{equation}\label{eq:backbone-weight-drift}
-G_0 W_\theta
-\le
--c_\theta W_\theta+C_\theta
-\end{equation}
-for constants \(c_\theta,C_\theta>0\) depending only on
-\((T,\gamma,\alpha_U,\beta_U)\).
-
-\smallskip
-\noindent
-\textbf{Step 3: one-particle weighted Poisson estimate.}
-Define
-\[
-R_1 f:=\int_0^\infty S_t f\,dt.
-\]
-Because \(f\) is centered and \eqref{eq:linearized-backbone-decay} gives
-exponential decay in \(L^2(\pi_1)\), the integral converges in the unweighted
-\(H^1\)-norm and satisfies
-\[
--\mathscr K_{1,0}R_1 f=f.
-\]
-Set \(\phi:=R_1 f\). Testing the Poisson equation against \(W_\theta \phi\)
-gives
-\[
-\int W_\theta \phi f\,d\pi_1
-=
--\int W_\theta \phi\,\mathscr K_{1,0}\phi\,d\pi_1.
-\]
-We now compute the right-hand side exactly. For the symmetric part,
-\begin{align*}
--\int W_\theta \phi\,L_{\mathrm{sym}}\phi\,d\pi_1
-&=
-\gamma T\int \nabla_v(W_\theta\phi)\cdot \nabla_v\phi\,d\pi_1\\
-&=
-\gamma T\int W_\theta\|\nabla_v\phi\|^2\,d\pi_1
-+
-\gamma T\int \phi\,\nabla_vW_\theta\cdot \nabla_v\phi\,d\pi_1\\
-&=
-\gamma T\int W_\theta\|\nabla_v\phi\|^2\,d\pi_1
--\frac12\int \phi^2\,L_{\mathrm{sym}}W_\theta\,d\pi_1.
-\end{align*}
-For the anti-symmetric part,
-\[
--\int W_\theta \phi\,L_{\mathrm{anti}}\phi\,d\pi_1
-=
-\frac12\int \phi^2\,L_{\mathrm{anti}}W_\theta\,d\pi_1,
-\]
-because \(L_{\mathrm{anti}}\) is anti-symmetric in \(L^2(\pi_1)\). Since
-\[
--L_{\mathrm{sym}}W_\theta+L_{\mathrm{anti}}W_\theta=-G_0W_\theta,
-\]
-the two contributions combine into the exact identity
-\begin{equation}\label{eq:weighted-poisson-identity}
-\int W_\theta \phi f\,d\pi_1
-=
-\gamma T\int W_\theta\|\nabla_v\phi\|^2\,d\pi_1
--\frac12\int (G_0W_\theta)\phi^2\,d\pi_1.
-\end{equation}
-Invoking \eqref{eq:backbone-weight-drift} in
-\eqref{eq:weighted-poisson-identity} yields
-\[
-\gamma T\int W_\theta\|\nabla_v\phi\|^2\,d\pi_1
-+\frac{c_\theta}{2}\int W_\theta\phi^2\,d\pi_1
-\le
-\int W_\theta |\phi|\,|f|\,d\pi_1
-+\frac{C_\theta}{2}\|\phi\|_{L^2(\pi_1)}^2.
-\]
-Using Young's inequality and then integrating
-\eqref{eq:linearized-backbone-decay} over \([0,\infty)\), we obtain
-\begin{equation}\label{eq:unweighted-resolvent-h1}
-\|\phi\|_{L^2(\pi_1)}
-+\|\nabla_x\phi\|_{L^2(\pi_1)}
-+\|\nabla_v\phi\|_{L^2(\pi_1)}
-\le
-C\|f\|_{\mathcal X_1}
-\end{equation}
-and therefore
-\begin{equation}\label{eq:weighted-phi-v}
-\int W_\theta\bigl(\phi^2+\|\nabla_v\phi\|^2\bigr)\,d\pi_1
-\le
-C\|f\|_{\mathcal X_1}^2.
-\end{equation}
-Next, differentiating the Poisson equation and using the commutators from
-Proposition~\ref{prop:comm} yields
-\begin{align}
--\mathscr K_{1,0}(\nabla_v\phi)+\gamma \nabla_v\phi+\nabla_x\phi
-&=
-\nabla_v f,
-\label{eq:resolvent-v-eq}\\
--\mathscr K_{1,0}(\nabla_x\phi)-(\nabla^2U)\nabla_v\phi
-&=
-\nabla_x f.
-\label{eq:resolvent-x-eq}
-\end{align}
-For \(g_v:=\nabla_v\phi\), test \eqref{eq:resolvent-v-eq} componentwise against
-\(W_\theta g_v\). Repeating the integration-by-parts argument from
-\eqref{eq:weighted-poisson-identity} gives
-\begin{align}
-\gamma T\int W_\theta\|\nabla_v g_v\|^2\,d\pi_1
-+\gamma\int W_\theta\|g_v\|^2\,d\pi_1
--\frac12\int (G_0W_\theta)\|g_v\|^2\,d\pi_1
-\nonumber\\
-\le
-\int W_\theta\|\nabla_v f\|\,\|g_v\|\,d\pi_1
-+\int W_\theta\|g_x\|\,\|g_v\|\,d\pi_1,
-\label{eq:weighted-gv}
-\end{align}
-where \(g_x:=\nabla_x\phi\). Using \eqref{eq:backbone-weight-drift},
-\eqref{eq:unweighted-resolvent-h1}, and Young's inequality, we obtain
-\begin{equation}\label{eq:weighted-gv-bound}
-\int W_\theta\bigl(\|g_v\|^2+\|\nabla_v g_v\|^2\bigr)\,d\pi_1
-\le
-C\|f\|_{\mathcal X_1}^2
-+C\int W_\theta\|g_x\|^2\,d\pi_1.
-\end{equation}
-For \(g_x:=\nabla_x\phi\), test \eqref{eq:resolvent-x-eq} against
-\(W_\theta g_x\). The same computation yields
-\begin{align}
-\gamma T\int W_\theta\|\nabla_v g_x\|^2\,d\pi_1
--\frac12\int (G_0W_\theta)\|g_x\|^2\,d\pi_1
-\nonumber\\
-\le
-\int W_\theta\|\nabla_x f\|\,\|g_x\|\,d\pi_1
-+\int W_\theta\|(\nabla^2U)g_v\|\,\|g_x\|\,d\pi_1.
-\label{eq:weighted-gx}
-\end{align}
-Since \(\|\nabla^2U\|_{\mathrm{op}}\le L_U\), another Young inequality gives
-\begin{equation}\label{eq:weighted-gx-bound}
-\int W_\theta\bigl(\|g_x\|^2+\|\nabla_v g_x\|^2\bigr)\,d\pi_1
-\le
-C\|f\|_{\mathcal X_1}^2
-+C\int W_\theta\|g_v\|^2\,d\pi_1.
-\end{equation}
-Combining \eqref{eq:weighted-gv-bound} and \eqref{eq:weighted-gx-bound} and
-absorbing the lower-order terms into the left-hand side yields
-\begin{equation}\label{eq:weighted-first-second}
-\int W_\theta
-\bigl(
-\|\nabla_v\phi\|^2+\|\nabla_x\phi\|^2
-+\|\nabla_{VV}^2\phi\|^2+\|\nabla_{XV}^2\phi\|^2
-\bigr)\,d\pi_1
-\le
-C\|f\|_{\mathcal X_1}^2.
-\end{equation}
-Combining the weighted \(L^2\), first-derivative, and \(VV/XV\)-Hessian bounds,
-namely \eqref{eq:weighted-phi-v} and \eqref{eq:weighted-first-second}, and
-using the equivalence \(W_\theta\asymp w\), proves
-\begin{equation}\label{eq:one-particle-resolvent}
-\|R_1 f\|_{\mathcal Y_1}
-\le
-C_1\|f\|_{\mathcal X_1}.
-\end{equation}
-Since the parameters remain in a fixed regime \(\gamma\ge\gamma_0\), the
-constant \(C_1\) is uniform there.
-
-\smallskip
-\noindent
-\textbf{Step 4: tensorized semigroup representation.}
-For the uncoupled \(N\)-particle backbone,
-\[
-\mathscr K_{N,0}=\sum_{i=1}^N \mathscr K_{1,0}^{(i)},
-\qquad
-P_t^{N,0}=S_t^{\otimes N},
-\]
-where \(\mathscr K_{1,0}^{(i)}\) acts on the \(i\)-th coordinate only. Let
-\[
-\phi:=\int_0^\infty P_t^{N,0}g\,dt.
-\]
-Because \(g\) is centered and Proposition~\ref{prop:tensor} gives exponential
-decay of the tensorized backbone semigroup to equilibrium, the integral
-converges in \(L^2(\pi_{N,0})\), \(\phi\) is centered, and the standard
-semigroup identity yields
-\[
--\mathscr K_{N,0}\phi=g.
-\]
-
-\smallskip
-\noindent
-\textbf{Step 5: tensorization of the weighted estimate.}
-The product structure of \(\pi_{N,0}=\pi_1^{\otimes N}\) and the averaged weight
-\[
-\widetilde W_N(X,V)=1+\frac1N\sum_{i=1}^N w(x_i,v_i)
-\]
-allow the one-particle estimate \eqref{eq:one-particle-resolvent} to be applied
-coordinatewise. First derivatives in the \(i\)-th coordinate commute with the
-semigroup in all other coordinates, and the same is true for the \(VV\) and
-\(XV\) second derivatives appearing in \(\mathcal Y_N\). Therefore, by Fubini,
-Minkowski, and the fact that the semigroup factorizes,
-\[
-\|\phi\|_{\mathcal Y_N}
-\le
-C_1\|g\|_{\mathcal X_N},
-\]
-with the same constant \(C_1\) as in the one-particle estimate. The averaging
-by \(1/N\) in \(\widetilde W_N\) is exactly what prevents any growth in \(N\).
-
-\smallskip
-\noindent
-\textbf{Step 6: uniqueness.}
-If \(\phi_1\) and \(\phi_2\) are centered solutions, then
-\(\psi:=\phi_1-\phi_2\) satisfies \(\mathscr K_{N,0}\psi=0\). Hence
-\(P_t^{N,0}\psi=\psi\) for all \(t\ge0\). By ergodicity of the tensorized
-backbone semigroup, the only invariant \(L^2(\pi_{N,0})\) functions are
-constants, so the centering condition forces \(\psi=0\).
-
-Thus \(\phi\) is the unique centered solution and the resolvent estimate holds
-with \(C_{\mathrm{res}}:=C_1\), uniformly in \(N\).
-\end{proof}
-
-\begin{lemma}[Boundedness of the viscous adjoint perturbation]\label{lem:viscous-adjoint-bounded}
-Define
-\[
-\mathscr V_N^\dagger f
-:=
-\pi_{N,0}^{-1}\mathcal V_N^*(\pi_{N,0}f).
-\]
-There exists \(C_{\mathrm V}<\infty\), independent of \(N\), such that
-\[
-\|\mathscr V_N^\dagger f\|_{\mathcal X_N}
-\leq
-C_{\mathrm V}\|f\|_{\mathcal Y_N}
-\qquad
-\forall f\in \mathcal Y_N.
-\]
-\end{lemma}
-
-\begin{proof}
-Writing \(\mathscr V_N^\dagger\) out explicitly gives first-order terms
-involving \(F_i\), \(\nabla_{v_i}\cdot F_i\), and the Gaussian score
-\(\nabla_{v_i}\log \pi_{N,0}=-v_i/T\). The force bounds from
-Lemma~\ref{lem:visc-bound}, Lemma~\ref{lem:visc-diss}, and
-Lemma~\ref{lem:force-deriv} show that each coefficient is uniformly bounded in
-\(N\) by the structural constants and at most linear in \(V\), while the
-quadratic weight \(\widetilde W_N\) absorbs the resulting growth. This yields
-the stated
-\(\mathcal Y_N\to\mathcal X_N\) bound.
-\end{proof}
-
-\begin{proposition}[Stationary corrector fixed point]\label{prop:stationary-corrector}
-Let \(q_N=d\pi_N/d\pi_{N,0}\). Then \(q_N\) satisfies
-\[
-q_N-1
-=
--\nu_{\mathrm{visc}}
-\mathscr K_{N,0}^{-1}\Pi_0\!\left(\mathscr V_N^\dagger q_N\right),
-\qquad
-\Pi_0 g:=g-\int g\,d\pi_{N,0}.
-\]
-If
-\[
-\nu_{\mathrm{visc}}C_{\mathrm{res}}C_{\mathrm V}<1,
-\]
-then this equation has a unique solution in \(\mathcal Y_N\), it satisfies
-\[
-\int q_N\,d\pi_{N,0}=1,
-\qquad
-q_N>0
-\quad
-\pi_{N,0}\text{-a.e.},
-\]
-and
-\[
-\|q_N-1\|_{\mathcal Y_N}
-\leq
-\frac{\nu_{\mathrm{visc}}C_{\mathrm{res}}C_{\mathrm V}}
-{1-\nu_{\mathrm{visc}}C_{\mathrm{res}}C_{\mathrm V}}.
-\]
-\end{proposition}
-
-\begin{proof}
-The stationary equation
-\[
-\mathscr K_{N,0}q_N+\nu_{\mathrm{visc}}\mathscr V_N^\dagger q_N=0
-\]
-is the second assertion of Lemma~\ref{lem:relative-generator-decomp}. Subtract
-the \(\pi_{N,0}\)-mean, invert \(\mathscr K_{N,0}\) on centered functions by
-Lemma~\ref{lem:weighted-backbone-resolvent}, and apply
-Lemma~\ref{lem:viscous-adjoint-bounded}. The smallness condition makes the
-fixed-point map a contraction on \(\mathcal Y_N\). The normalization and
-positivity are inherited from the definition \(q_N=d\pi_N/d\pi_{N,0}\).
-\end{proof}
-
-\begin{lemma}[Quadratic entropy-Lyapunov control]\label{lem:quad-entropy-lyapunov}
-There exists \(C_W<\infty\), independent of \(N\), such that for every smooth
-\(h>0\) with \(\int h\,d\pi_N=1\),
-\[
-\int \widetilde W_N\,h\,d\pi_N
-\leq
-C_W\Bigl(1+\mathcal A_N[h]+\mathcal B_N[h]+\mathcal D_N[h]\Bigr).
-\]
-\end{lemma}
-
-\begin{proof}
-Let \(V_N\) be the finite-particle Lyapunov function from
-Theorem~\ref{thm:finite-harris}, so that
-\begin{equation}\label{eq:quad-lyap-equiv}
-V_N(X,V)\asymp \widetilde W_N(X,V)
-\end{equation}
-and
-\begin{equation}\label{eq:quad-lyap-drift}
-\mathcal L_N V_N\le -\lambda_V V_N+C_V
-\end{equation}
-with constants independent of \(N\). By the explicit quadratic cross-term
-construction recalled in the proof of Theorem~\ref{thm:finite-harris}, one may
-choose \(V_N\) in the form
-\[
-V_N(X,V)
-=
-1+\eta_1\frac1N U_N(X)
-+\eta_2\frac1N\|V\|^2
-+\eta_3\frac1N\langle X,V\rangle,
-\]
-hence
-\begin{equation}\label{eq:quad-lyap-grad}
-\|\nabla_V V_N(X,V)\|^2\le C_\nabla V_N(X,V)
-\end{equation}
-for some \(C_\nabla<\infty\), independent of \(N\).
-
-Fix \(\eta>0\) so small that
-\[
-\gamma T\,\eta C_\nabla\le \frac{\lambda_V}{2}.
-\]
-Let \(\vartheta_R\in C^\infty([0,\infty))\) be increasing and concave, with
-\[
-\vartheta_R(s)=s\quad (0\le s\le R),
-\qquad
-0\le \vartheta_R'(s)\le 1,
-\qquad
-\vartheta_R''(s)\le 0,
-\]
-and \(\vartheta_R\) constant on \([R+1,\infty)\). Set
-\[
-\Phi_R:=e^{\eta \vartheta_R(V_N)}.
-\]
-Since \(\Phi_R\) is smooth and bounded, invariance of \(\pi_N\) gives
-\[
-\int \mathcal L_N\Phi_R\,d\pi_N=0.
-\]
-Using the chain rule and the fact that diffusion acts only in velocity,
-\[
-\mathcal L_N\Phi_R
-=
-\eta \vartheta_R'(V_N)\Phi_R\,\mathcal L_N V_N
-+\gamma T\Phi_R\Bigl(
-\eta \vartheta_R''(V_N)+\eta^2(\vartheta_R'(V_N))^2
-\Bigr)\|\nabla_V V_N\|^2.
-\]
-Because \(\vartheta_R''\le0\) and \(0\le \vartheta_R'\le1\), combining
-\eqref{eq:quad-lyap-drift} and \eqref{eq:quad-lyap-grad} yields
-\[
-\mathcal L_N\Phi_R
-\le
-\Phi_R\Bigl(
--\eta\lambda_V V_N+\eta C_V+\gamma T\eta^2 C_\nabla V_N
-\Bigr)
-\le
-\Phi_R\Bigl(
--\frac{\eta\lambda_V}{2}V_N+\eta C_V
-\Bigr).
-\]
-Since the function
-\[
-s\mapsto e^{\eta s}\Bigl(-\frac{\eta\lambda_V}{2}s+\eta C_V\Bigr)
-\]
-tends to \(-\infty\) as \(s\to\infty\), there exists \(C_\eta<\infty\) such
-that
-\[
-e^{\eta s}\Bigl(-\frac{\eta\lambda_V}{2}s+\eta C_V\Bigr)
-\le
--\frac{\eta\lambda_V}{4}s\,e^{\eta s}+C_\eta
-\qquad
-\forall s\ge0.
-\]
-Using \(\vartheta_R(s)\le s\), we therefore obtain
-\[
-\mathcal L_N\Phi_R
-\le
--\frac{\eta\lambda_V}{4}V_N\,\Phi_R+C_\eta.
-\]
-Integrating against \(\pi_N\) gives
-\[
-\frac{\eta\lambda_V}{4}\int V_N\,\Phi_R\,d\pi_N
-\le
-C_\eta.
-\]
-Letting \(R\to\infty\) and using monotone convergence yields
-\begin{equation}\label{eq:exp-lyap-moment}
-\int V_N e^{\eta V_N}\,d\pi_N<\infty.
-\end{equation}
-In particular,
-\[
-\int e^{\eta V_N}\,d\pi_N<\infty.
-\]
-By \eqref{eq:quad-lyap-equiv}, after possibly decreasing \(\eta\), there exists
-\(\eta_*>0\) and \(C_*>0\), independent of \(N\), such that
-\begin{equation}\label{eq:exp-weight-moment}
-\int e^{\eta_*\widetilde W_N}\,d\pi_N\le C_*.
-\end{equation}
-
-Now apply the entropy variational inequality to the probability measure
-\(h\,d\pi_N\) and the observable \(\eta_*\widetilde W_N\):
-\[
-\int \eta_*\widetilde W_N\,h\,d\pi_N
-\le
-\mathcal A_N[h]+\log\int e^{\eta_*\widetilde W_N}\,d\pi_N.
-\]
-Using \eqref{eq:exp-weight-moment} gives
-\[
-\int \widetilde W_N\,h\,d\pi_N
-\le
-\eta_*^{-1}\mathcal A_N[h]+\eta_*^{-1}\log C_*.
-\]
-Since \(\mathcal B_N[h]\) and \(\mathcal D_N[h]\) are non-negative, this is
-stronger than the stated estimate.
-\end{proof}
-
-\begin{lemma}[Velocity-score form bound]\label{lem:psi-v-form}
-There exists \(C_{\mathrm{sc}}<\infty\), independent of \(N\), such that for
-every smooth \(h>0\) with \(\int h\,d\pi_N=1\),
-\[
-\int h\,\|\nabla_V\psi_N\|^2\,d\pi_N
-\leq
-C_{\mathrm{sc}}\nu_{\mathrm{visc}}^2
-\Bigl(1+\mathcal A_N[h]+\mathcal B_N[h]+\mathcal D_N[h]\Bigr).
-\]
-\end{lemma}
-
-\begin{lemma}[Velocity-Hessian form bound]\label{lem:psi-vv-form}
-There exists \(C_{\mathrm{vv}}<\infty\), independent of \(N\), such that for
-every smooth \(h>0\) with \(\int h\,d\pi_N=1\),
-\[
-\left|
-\int h\,
-\nabla_{VV}^2\psi_N[\nabla_V\log h,\nabla_V\log h]\,d\pi_N
-\right|
-\leq
-C_{\mathrm{vv}}\nu_{\mathrm{visc}}\,\mathcal B_N[h].
-\]
-\end{lemma}
-
-\begin{lemma}[Mixed Hessian form bound]\label{lem:psi-xv-form}
-There exists \(C_{\mathrm{xv}}<\infty\), independent of \(N\), such that for
-every smooth \(h>0\) with \(\int h\,d\pi_N=1\),
-\[
-\left|
-\int h\,
-\nabla_{XV}^2\psi_N[\nabla_X\log h,\nabla_V\log h]\,d\pi_N
-\right|
-\leq
-C_{\mathrm{xv}}\nu_{\mathrm{visc}}
-\bigl(\mathcal B_N[h]+\mathcal D_N[h]\bigr).
-\]
-\end{lemma}
-
-\begin{proposition}[Explicit viscous commutator remainder bounds]\label{prop:viscous-commutator-remainders}
-Let \(\mathfrak R_B^{\mathrm{visc}}[h]\),
-\(\mathfrak R_C^{\mathrm{visc}}[h]\), and
-\(\mathfrak R_D^{\mathrm{visc}}[h]\) denote the remainders generated by the
-explicit perturbation \(\nu_{\mathrm{visc}}\mathcal V_N\) when differentiating
-\(\mathcal B_N[h]\), \(\mathcal C_N[h]\), and \(\mathcal D_N[h]\). Then there
-exists \(C_{\mathrm{visc}}<\infty\), independent of \(N\), such that
-\[
-|\mathfrak R_B^{\mathrm{visc}}[h]|
-+
-|\mathfrak R_C^{\mathrm{visc}}[h]|
-+
-|\mathfrak R_D^{\mathrm{visc}}[h]|
-\leq
-C_{\mathrm{visc}}\nu_{\mathrm{visc}}
-\bigl(\mathcal B_N[h]+\mathcal D_N[h]\bigr).
-\]
-\end{proposition}
-
-\begin{proof}
-Differentiate the explicit perturbation \(\nu_{\mathrm{visc}}\mathcal V_N\)
-through the definitions of \(\mathcal B_N\), \(\mathcal C_N\), and
-\(\mathcal D_N\). The coefficients that appear are the velocity and position
-derivatives of the finite-particle viscous force. Lemma~\ref{lem:force-deriv}
-gives the uniform bounds
-\[
-\|\nabla_V F_i\|\lesssim \nu_{\mathrm{visc}},
-\qquad
-\sum_{m=1}^N \|\nabla_{x_m}F_i\|^2
-\lesssim
-\nu_{\mathrm{visc}}^2
-\Bigl(|v_i|^2+\frac1N\sum_{j=1}^N |v_j|^2\Bigr),
-\]
-and the quadratic moments are controlled by the quadratic Lyapunov structure
-already available for the invariant law. Cauchy-Schwarz and Young therefore
-yield the stated form bound.
-\end{proof}
-
-\begin{proposition}[Stationary-score remainder bounds]\label{prop:score-commutator-remainders}
-Let \(\mathfrak R_B^{\mathrm{sc}}[h]\),
-\(\mathfrak R_C^{\mathrm{sc}}[h]\), and
-\(\mathfrak R_D^{\mathrm{sc}}[h]\) denote the remainders generated by the extra
-drift \(2\gamma T\,\nabla_V\psi_N\cdot\nabla_V\) in the relative generator.
-Then there exists \(C_{\mathrm{sc,form}}<\infty\), independent of \(N\), such
-that
-\[
-|\mathfrak R_B^{\mathrm{sc}}[h]|
-+
-|\mathfrak R_C^{\mathrm{sc}}[h]|
-+
-|\mathfrak R_D^{\mathrm{sc}}[h]|
-\leq
-C_{\mathrm{sc,form}}\nu_{\mathrm{visc}}
-\bigl(\mathcal B_N[h]+\mathcal D_N[h]\bigr).
-\]
-\end{proposition}
-
-\begin{proof}
-The score drift contributes only terms containing
-\(\nabla_V\psi_N\), \(\nabla_{VV}^2\psi_N\), or \(\nabla_{XV}^2\psi_N\) paired
-with \(\nabla_V\log h\) and \(\nabla_X\log h\). The zeroth-order pieces are
-controlled by Lemma~\ref{lem:psi-v-form} together with
-Lemma~\ref{lem:quad-entropy-lyapunov}; the quadratic \(VV\) and mixed \(XV\)
-pieces are controlled by Lemma~\ref{lem:psi-vv-form} and
-Lemma~\ref{lem:psi-xv-form}. Summing the resulting estimates gives the claim.
-\end{proof}
-
-\begin{proposition}[Relative commutator ODEs]\label{prop:relative-commutator-odes}
-Let \(h_t=d(\mu P_t^N)/d\pi_N\). Then
-\begin{align*}
-\frac{d}{dt}\mathcal A_N[h_t]
-&= 
--\gamma \mathcal B_N[h_t],\\
-\frac{d}{dt}\mathcal B_N[h_t]
-&\leq
--2\gamma \mathcal B_N[h_t]-2\mathcal C_N[h_t]
-+\mathfrak R_B^{\mathrm{visc}}[h_t]+\mathfrak R_B^{\mathrm{sc}}[h_t],\\
-\frac{d}{dt}\mathcal C_N[h_t]
-&\leq
--\mathcal D_N[h_t]-\gamma \mathcal C_N[h_t]
-+L_U\sqrt{\mathcal B_N[h_t]\mathcal D_N[h_t]}
-+\mathfrak R_C^{\mathrm{visc}}[h_t]+\mathfrak R_C^{\mathrm{sc}}[h_t],\\
-\frac{d}{dt}\mathcal D_N[h_t]
-&\leq
-\mathfrak R_D^{\mathrm{visc}}[h_t]+\mathfrak R_D^{\mathrm{sc}}[h_t].
-\end{align*}
-\end{proposition}
-
-\begin{proof}
-Lemma~\ref{lem:relative-generator-decomp} decomposes the relative generator into
-the backbone part, the explicit viscous perturbation, and the additional score
-drift \(2\gamma T\,\nabla_V\psi_N\cdot\nabla_V\). The backbone contribution is
-exactly the one from Section~4 and yields
-\[
-\frac{d}{dt}\mathcal A_N[h_t]=-\gamma \mathcal B_N[h_t],
-\]
-together with the coercive terms
-\(-2\gamma\mathcal B_N[h_t]-2\mathcal C_N[h_t]\) in the
-\(\mathcal B_N\)-equation and
-\(-\mathcal D_N[h_t]-\gamma\mathcal C_N[h_t]
-+L_U\sqrt{\mathcal B_N[h_t]\mathcal D_N[h_t]}\) in the
-\(\mathcal C_N\)-equation. The explicit perturbation
-\(\nu_{\mathrm{visc}}\mathcal V_N\) contributes the remainders handled in
-Proposition~\ref{prop:viscous-commutator-remainders}, while the score drift
-contributes the remainders handled in
-Proposition~\ref{prop:score-commutator-remainders}. Summing those pieces gives
-the stated system.
-\end{proof}
-
-\begin{theorem}[Small-viscosity relative hypocoercive closure]\label{thm:small-visc-relative-closure}
-There exist constants \(\gamma_0>0\), \(C_{\mathrm{pert}}<\infty\),
-\(\nu_*>0\), and \(\lambda_*>0\), depending only on
-\((T,L_U,k_*,k^*,L_K)\) and independent of \(N\), such that for every
-\(\gamma\ge\gamma_0\), every \(N\geq2\), every
-\(0\leq \nu_{\mathrm{visc}}\leq \nu_*\), and every
-\[
-h_t=\frac{d(\mu P_t^N)}{d\pi_N},
-\]
-one has
-\[
-\frac{d}{dt}\Phi_N[h_t]
-\leq
--\bigl(\lambda_{\mathrm{back}}-C_{\mathrm{pert}}\nu_{\mathrm{visc}}\bigr)
-\bigl(\mathcal B_N[h_t]+\mathcal D_N[h_t]\bigr).
-\]
-In particular, for \(0\leq \nu_{\mathrm{visc}}\leq \nu_*\),
-\[
-\frac{d}{dt}\Phi_N[h_t]
-\leq
--\lambda_*\bigl(\mathcal B_N[h_t]+\mathcal D_N[h_t]\bigr).
-\]
-\end{theorem}
-
-\begin{proof}
-Insert the differential inequalities from
-Proposition~\ref{prop:relative-commutator-odes} into the derivative of the
-modified entropy
-\[
-\Phi_N[h]
-=
-\mathcal A_N[h]+a\mathcal B_N[h]+2b\mathcal C_N[h]+c\mathcal D_N[h],
-\]
-with the same coefficients \(a,b,c\) as in
-Theorem~\ref{thm:backbone-detailed}. The backbone terms reproduce the matrix
-coercivity argument from Section~4 and yield
-\(-\lambda_{\mathrm{back}}(\mathcal B_N+\mathcal D_N)\), while
-Proposition~\ref{prop:viscous-commutator-remainders} and
-Proposition~\ref{prop:score-commutator-remainders} contribute only
-\(+C_{\mathrm{pert}}\nu_{\mathrm{visc}}(\mathcal B_N+\mathcal D_N)\) after
-renaming the sum of constants. Choosing
-\[
-\nu_*:=\frac{\lambda_{\mathrm{back}}}{2C_{\mathrm{pert}}},
-\qquad
-\lambda_*:=\frac{\lambda_{\mathrm{back}}}{2},
-\]
-gives the conclusion.
-\end{proof}
-
-\begin{remark}
-The point of the quadratic package is that it asks only for form bounds needed
-by the modified entropy. It does \emph{not} require \(N\)-uniform
-\(L^\infty\)-control of \(\nabla\psi_N\) in the full \(Nd\)-dimensional space,
-which is substantially stronger than what the closure argument actually uses.
-\(\widetilde W_N\) is chosen to match the quadratic Lyapunov control already
-available from the Harris theorem, so the perturbative closure and the
-stationary compactness arguments now work at the same moment level.
-\end{remark}
-
-\begin{theorem}[Small-viscosity $N$-uniform hypocoercive LSI for the kinetic core]\label{thm:finite-lsi}
-There exist thresholds \(\gamma_0>0\) and \(\nu_*>0\), depending only on
-\((T,L_U,k_*,k^*,\ell_{\mathrm{visc}})\), such that the following holds. If
-\[
-\gamma\ge \gamma_0,
-\]
-and if
-\[
-0\leq \nu_{\mathrm{visc}}\leq \nu_*,
-\]
-and if the full interacting diffusion
-\eqref{eq:finite-x}--\eqref{eq:finite-v} admits a unique invariant law $\pi_N$,
-then there exist constants $\lambda_*>0$ and $C_{\mathrm{LSI}}<\infty$,
-depending only on the backbone parameters, the kernel bounds, and the chosen
-threshold $\nu_*$, but \emph{independent of $N$} and uniform for
-$\nu_{\mathrm{visc}}\in[0,\nu_*]$, such that for every $N\geq2$:
-\begin{align}
-\Ent_{\pi_N}(g^2)
-&\leq
-C_{\mathrm{LSI}}
-\int \Gamma_{\mathrm{hypo}}^N(g,g)\,\dd\pi_N,
-\label{eq:lsi-finite}\\
-\KL(\mu P_t^N\,\|\,\pi_N)
-&\leq
-e^{-2\lambda_* t}\KL(\mu\,\|\,\pi_N)
-\qquad
-\forall \mu\ll\pi_N.
-\label{eq:kl-finite}
-\end{align}
-\end{theorem}
-
-\begin{proof}[Perturbative reduction]
-We isolate the backbone estimate and the single additional perturbative input
-required for the interacting system.
-
-\smallskip
-\noindent
-\textbf{Step 1: backbone hypocoercivity.}
-For $\nu_{\mathrm{visc}}=0$, Proposition~\ref{prop:tensor} yields the tensorized
-entropy gap. The more explicit weighted computation is recorded in
-Theorem~\ref{thm:backbone-detailed}: the transport commutator is controlled by
-the Hessian bound $M=L_U$, and the modified entropy functional
-\[
-\Phi_N[h]
-=
-\mathcal A_N[h]+a\mathcal B_N[h]+2b\mathcal C_N[h]+c\mathcal D_N[h]
-\]
-decays with a rate depending only on $(\gamma,L_U,\sigma)$ and not on $N$.
-Denote this backbone rate by $\lambda_{\mathrm{back}}>0$.
-
-\smallskip
-\noindent
-\textbf{Step 2: perturbative closure estimate.}
-Write the full generator as
-\[
-\mathcal L_N=\mathcal L_{N,0}+\nu_{\mathrm{visc}}\mathcal V_N,
-\]
-where $\mathcal L_{N,0}$ is the tensorized backbone generator and
-$\mathcal V_N$ is the row-normalized viscous alignment drift. The small-viscosity
-route reduces the full theorem to the estimate that there exists a constant
-$C_{\mathrm{pert}}<\infty$, depending only on
-$(\gamma,\sigma,L_U,k_*,k^*,\ell_{\mathrm{visc}})$ and independent of $N$, such
-that for
-\[
-h_t=\frac{d(\mu P_t^N)}{d\pi_N}
-\]
-the modified entropy obeys
-\begin{equation}\label{eq:small-visc-closure}
-\frac{d}{dt}\Phi_N[h_t]
-\leq
--\bigl(\lambda_{\mathrm{back}}-C_{\mathrm{pert}}\nu_{\mathrm{visc}}\bigr)
-\bigl(\mathcal B_N[h_t]+\mathcal D_N[h_t]\bigr).
-\end{equation}
-This is exactly the perturbative form of the statement that the viscous force is
-a small first-order correction to the backbone commutator calculus, and
-Theorem~\ref{thm:small-visc-relative-closure} proves this estimate in the
-quadratic perturbative regime.
-
-\smallskip
-\noindent
-\textbf{Step 3: choice of the viscosity threshold.}
-Choose
-\[
-\nu_*:=\frac{\lambda_{\mathrm{back}}}{2C_{\mathrm{pert}}}.
-\]
-Then for every $\nu_{\mathrm{visc}}\in[0,\nu_*]$ one has
-\[
-\lambda_{\mathrm{back}}-C_{\mathrm{pert}}\nu_{\mathrm{visc}}
-\geq
-\frac{\lambda_{\mathrm{back}}}{2}
-=:\lambda_*,
-\]
-so \eqref{eq:small-visc-closure} yields
-\[
-\frac{d}{dt}\Phi_N[h_t]
-\leq
--\lambda_*\bigl(\mathcal B_N[h_t]+\mathcal D_N[h_t]\bigr).
-\]
-
-\smallskip
-\noindent
-\textbf{Step 4: from modified entropy to logarithmic Sobolev.}
-Once the previous display is available, the rest of the proof is unchanged. Let
-$h_t=d(\mu P_t^N)/d\pi_N$. The entropy production identity is
-\[
-\frac{d}{dt}\Ent_{\pi_N}(h_t)
-=
--\gamma \mathcal B_N[h_t].
-\]
-by Lemma~\ref{lem:entropy-prod-N}. Since the quadratic form in
-$(\mathcal B_N,\mathcal C_N,\mathcal D_N)$ is
-positive definite, there exists $\alpha_0>0$, depending only on $(a,b,c)$, such
-that
-\[
-\Phi_N[h]\geq \Ent_{\pi_N}(h)+\alpha_0\bigl(\mathcal B_N[h]+\mathcal D_N[h]\bigr).
-\]
-Integrating the previous two displays over time from $0$ to $\infty$ gives
-\[
-\Ent_{\pi_N}(h_0)
-=
-\gamma\int_0^\infty \mathcal B_N[h_t]\,dt
-\leq
-\frac{\gamma}{\alpha_0\lambda_*}\Phi_N[h_0].
-\]
-It remains to control $\Phi_N[h_0]$ by the hypocoercive carré du champ. Write
-$h_0=g^2/\int g^2\,d\pi_N$. Then
-\[
-\mathcal B_N[h_0]
-=
-4T\int |\nabla_v g|^2\,d\pi_N,
-\qquad
-\mathcal D_N[h_0]
-=
-4T\int |\nabla_x g|^2\,d\pi_N,
-\]
-and
-\[
-|\mathcal C_N[h_0]|
-\leq
-4T\left(\int |\nabla_x g|^2\,d\pi_N\right)^{1/2}
-\left(\int |\nabla_v g|^2\,d\pi_N\right)^{1/2}.
-\]
-The conditional Gaussian Poincar\'e inequality from
-Corollary~\ref{cor:conditional-poincare} gives the microscopic coercivity in
-velocity, while the confining potential and the transport commutator provide the
-macroscopic coercivity in position. Combining these estimates with the previous
-display yields
-\[
-\Phi_N[h_0]
-\leq
-C_0\int \Gamma_{\mathrm{hypo}}^N(g,g)\,d\pi_N
-\]
-for an $N$-independent constant $C_0$. Therefore
-\[
-\Ent_{\pi_N}(g^2)
-\leq
-\frac{\gamma C_0}{\alpha_0\lambda_*}
-\int \Gamma_{\mathrm{hypo}}^N(g,g)\,d\pi_N.
-\]
-This is \eqref{eq:lsi-finite} with
-$C_{\mathrm{LSI}}=\gamma C_0/(\alpha_0\lambda_*)$. The exponential entropy
-decay \eqref{eq:kl-finite} is the time-dependent counterpart of the same
-interacting modified-entropy estimate: one runs the differential inequality for
-$\Phi_N[h_t]$ along the semigroup together with
-Lemma~\ref{lem:entropy-prod-N}, exactly as in the backbone argument.
-\end{proof}
-
-\begin{remark}
-Under the smooth coercive hypotheses stated here, the existence and uniqueness
-of the invariant law $\pi_N$ assumed in Theorem~\ref{thm:finite-lsi} is
-internalized later in Theorem~\ref{thm:finite-harris} by the same
-Lyapunov/minorization/Harris package used in Volume~3. The genuinely new
-technical input for the small-viscosity route is the perturbative estimate
-\eqref{eq:small-visc-closure}; all subsequent LSI, KL, and mean-field
-consequences are formal corollaries of that bound.
-\end{remark}
-
-\begin{corollary}[Exponential convergence in total variation]\label{cor:tv-finite}
-Under the assumptions of Theorem~\ref{thm:finite-lsi},
-\[
-\|\mu P_t^N-\pi_N\|_{\TV}
-\leq
-\sqrt{2}\,e^{-\lambda_* t}\,
-\KL(\mu\,\|\,\pi_N)^{1/2}
-\qquad
-\forall \mu\ll\pi_N.
-\]
-\end{corollary}
-
-\begin{proof}
-Pinsker's inequality says that for any probability measures \(\alpha,\beta\),
-\[
-\|\alpha-\beta\|_{\TV}\le \sqrt{2\,\KL(\alpha\|\beta)}.
-\]
-Apply this with \(\alpha=\mu P_t^N\) and \(\beta=\pi_N\), then use
-\eqref{eq:kl-finite}:
-\[
-\|\mu P_t^N-\pi_N\|_{\TV}
-\le
-\sqrt{2\,\KL(\mu P_t^N\|\pi_N)}
-\le
-\sqrt{2}\,e^{-\lambda_* t}\,\KL(\mu\|\pi_N)^{1/2}.
-\]
-\end{proof}
-
-\subsection{The squashed observation chain}
-
-\begin{proposition}[The squashing step cannot enlarge probabilistic distances]\label{prop:squash-transfer}
-Let $Q_\tau^N$ be the time-$\tau$ observation operator obtained by evolving the
-continuous diffusion for time $\tau$ and then applying the deterministic map
-$S(X,V)=(X,\psi(V))$ componentwise. Then for every pair of probability measures
-$\mu,\nu$ on $(\R^{2d})^N$,
-\[
-\|S_\#\mu-S_\#\nu\|_{\TV}\leq \|\mu-\nu\|_{\TV}.
-\]
-If $W_p$ denotes any Wasserstein distance with $1\leq p<\infty$, then
-\[
-W_p(S_\#\mu,S_\#\nu)\leq W_p(\mu,\nu).
-\]
-\end{proposition}
-
-\begin{proof}
-For total variation, if \(A\) is measurable in the target space then
-\[
-(S_\#\mu)(A)-(S_\#\nu)(A)=\mu(S^{-1}A)-\nu(S^{-1}A),
-\]
-so taking the supremum over measurable sets immediately yields
-\(\|S_\#\mu-S_\#\nu\|_{\TV}\le \|\mu-\nu\|_{\TV}\).
-
-For Wasserstein distances, let \(\pi\) be any coupling of \(\mu\) and \(\nu\).
-Then \((S,S)_\#\pi\) is a coupling of \(S_\#\mu\) and \(S_\#\nu\), and
-Lemma~\ref{lem:squash} gives
-\[
-\|(X,\psi(V))-(X',\psi(V'))\|
-\le
-\|(X,V)-(X',V')\|.
-\]
-Integrating this inequality against \(\pi\) and taking the infimum over
-couplings proves the Wasserstein contraction.
-\end{proof}
-
-\begin{remark}
-Proposition~\ref{prop:squash-transfer} is the precise reason one can carry out
-the convergence proofs at the level of the unsquashed continuous SDE and only
-afterwards impose the algorithmic speed cap. The cap improves boundedness of the
-observed chain and never worsens the entropy, total-variation, or Wasserstein
-estimates.
-\end{remark}
-
-\section{Entropy and Total-Variation Convergence}
-
-The finite-particle entropy estimate controls the continuous interacting kinetic
-core. This section records the two consequences needed later: convergence of the
-observed chain and the existence of an $N$-independent relaxation rate.
-
-\begin{corollary}[Observed kinetic chain]\label{cor:observed}
-Let $Q_\tau^N$ be the squashed observation chain from
-Proposition~\ref{prop:squash-transfer}. If the continuous kinetic core satisfies
-\eqref{eq:kl-finite}, then for every initial law $\mu\ll\pi_N$,
-\[
-\|\mu Q_\tau^{N,m}-S_\#\pi_N\|_{\TV}
-\leq
-\sqrt{2}\,e^{-\lambda_* m\tau}\,
-\KL(\mu\,\|\,\pi_N)^{1/2}
-\qquad
-\forall m\in\mathbb{N}.
-\]
-At all observation times the velocities also obey the deterministic bound
-$\|v_i\|\leq V_{\mathrm{alg}}$.
-\end{corollary}
-
-\begin{proof}
-Let \(P_{m\tau}^N\) denote the continuous-time evolution over \(m\tau\). The
-observation chain is obtained by composing that evolution with the deterministic
-map \(S\), and both the Markov kernel \(P_{m\tau}^N\) and the pushforward \(S_\#\)
-are contractions in total variation. Therefore
-\[
-\|\mu Q_\tau^{N,m}-S_\#\pi_N\|_{\TV}
-\le
-\|\mu P_{m\tau}^N-\pi_N\|_{\TV}.
-\]
-Now apply Corollary~\ref{cor:tv-finite} at time \(m\tau\) to get the displayed
-bound. The velocity estimate follows directly from
-\(\|\psi(v)\|\le V_{\mathrm{alg}}\), so every observed velocity is capped at the
-algorithmic bound.
-\end{proof}
-
-\section{Mean-Field Equation and Propagation of Chaos}
+\section{Finite-Time Mean-Field Approximation}
 
 \subsection{The McKean-Vlasov limit}
 
@@ -3015,6 +1987,16 @@ F_i^N(t)-F[\mu_t^N](X_i(t),V_i(t))
 \frac{C_T}{N}.
 \]
 \end{lemma}
+
+\begin{remark}[Where the normalization matters]
+The state-dependent denominator is the main model-specific issue in the
+finite-time mean-field analysis. The strict kernel floor \(k_*>0\) prevents any
+singularity in the normalization, while the self-interaction defect enters only
+through the difference between \(\sum_{k\neq i}K(X_i,X_k)\) and
+\(\sum_{k=1}^N K(X_i,X_k)\). This is exactly why the normalized interaction
+still produces an \(O(N^{-1})\) force defect and remains compatible with the
+quantitative propagation-of-chaos bounds proved below.
+\end{remark}
 
 \begin{proof}
 Fix $i$ and abbreviate $X_i=X_i(t)$, $V_i=V_i(t)$. By definition,
@@ -3435,6 +2417,16 @@ data processing, since evaluation at time $t$ is a measurable map from path
 space to $(\R^{2d})^N$.
 \end{proof}
 
+\begin{remark}
+The path-space entropy bound \eqref{eq:path-kl} is extensive but uniform in
+$N$: over every finite horizon the full interacting law differs from the
+independent nonlinear reference law by only $O(1)$ relative entropy on path
+space. It therefore complements the strong synchronous-coupling estimate of
+Theorem~\ref{thm:poc-strong} by giving an information-theoretic formulation of
+the finite-time mean-field limit that automatically controls every fixed-time
+marginal through data processing.
+\end{remark}
+
 \begin{corollary}[One-particle total-variation error]\label{cor:poc-tv}
 Let $\rho_{t,1}^N$ be the first marginal of $\rho_t^N$. Under the assumptions
 of Theorem~\ref{thm:poc},
@@ -3476,13 +2468,66 @@ $\rho_t^N$, we obtain
 Now use \eqref{eq:hn} and Pinsker's inequality.
 \end{proof}
 
-\section{Stationary Mean-Field Limit and Mean-Field LSI}
+\begin{corollary}[Fixed-\(k\) marginal convergence on compact time intervals]\label{cor:poc-k}
+Fix \(k\ge1\). Let \(\rho_{t,k}^N\) be the \(k\)-particle marginal of
+\(\rho_t^N\). Under the assumptions of Theorem~\ref{thm:poc}, for every finite
+horizon \(T>0\) there exists \(C_{T,k}<\infty\), independent of \(N\), such
+that
+\[
+\KL\bigl(\rho_{t,k}^N\,\|\,f_t^{\otimes k}\bigr)\le \frac{C_{T,k}}{N},
+\qquad
+\|\rho_{t,k}^N-f_t^{\otimes k}\|_{\TV}\le \sqrt{\frac{2C_{T,k}}{N}}
+\qquad
+\forall t\in[0,T].
+\]
+One may take \(C_{T,k}=k\,C_T\), where \(C_T\) is the constant from
+Theorem~\ref{thm:poc}.
+\end{corollary}
+
+\begin{proof}
+The same chain-rule argument used in Corollary~\ref{cor:poc-tv} gives, for
+every exchangeable probability measure \(P^N\) on \((\R^{2d})^N\) and every
+product measure \(Q^{\otimes N}\),
+\[
+\KL(P_k^N\,\|\,Q^{\otimes k})
+\le
+\sum_{i=1}^k \KL(P_i^N\,\|\,Q).
+\]
+By exchangeability, each one-particle marginal equals \(P_1^N\), so
+\[
+\KL(P_k^N\,\|\,Q^{\otimes k})
+\le
+k\,\KL(P_1^N\,\|\,Q)
+\le
+\frac{k}{N}\KL(P^N\,\|\,Q^{\otimes N}).
+\]
+Apply this with \(P^N=\rho_t^N\) and \(Q=f_t\), and use \eqref{eq:hn} to obtain
+\[
+\KL(\rho_{t,k}^N\,\|\,f_t^{\otimes k})\le \frac{kC_T}{N}.
+\]
+Pinsker's inequality then gives the total-variation estimate.
+\end{proof}
+
+\section{Stationary Thermodynamic Limit and Stationary Functional Inequalities}
+
+The stationary analysis proceeds in a fixed order. We first construct the
+finite-$N$ invariant laws by Harris theory. We then use exchangeability and
+de Finetti reduction to obtain tightness of the stationary one-particle
+marginals and identify every subsequential limit as a stationary
+McKean--Vlasov law. In the perturbative small-viscosity regime we prove uniqueness of that
+stationary mean-field law, which upgrades subsequential convergence to the full
+stationary propagation-of-chaos statement. Finally, we transfer a perturbative
+logarithmic Sobolev inequality from the frozen linear generator to the unique
+stationary mean-field law, yielding the perturbative stationary mean-field LSI.
+
+Exchangeability is the bridge from finite-particle invariant laws to de Finetti
+reduction and stationary thermodynamic identification.
 
 \subsection{Finite-particle invariant laws via Harris theory}
 
 The stationary arguments below require the finite-particle invariant laws to be
 constructed inside the present document. We therefore record the same
-Lyapunov/minorization/Harris package used in the Volume~3 convergence program,
+Lyapunov/minorization/Harris package used in Volume~3,
 now specialized to the continuous kinetic diffusion
 \eqref{eq:finite-x}--\eqref{eq:finite-v}.
 
@@ -4231,7 +3276,8 @@ Proposition~\ref{prop:mf-unique}. Equivalently,
 \end{theorem}
 
 \begin{proof}
-We now carry out the tightness, identification, and uniqueness program in full.
+We prove tightness, identify every subsequential limit, and use uniqueness of
+the stationary mean-field law to conclude convergence.
 
 \smallskip
 \noindent
@@ -4389,7 +3435,8 @@ c:=\varepsilon^2.
 \]
 These are exactly the coefficients from
 Theorem~\ref{thm:backbone-detailed}, recorded here so that the mean-field
-statement is self-contained.
+functional-inequality statement can be read independently of the preceding
+backbone section.
 \end{definition}
 
 \begin{proposition}[Applicability of Huang--Kopfer--Ren to the frozen mean-field generator]\label{prop:hkr-applicability}
@@ -4470,7 +3517,7 @@ Thus all hypotheses of \cite[Theorem~3.5]{huang2026logsobolev} are satisfied
 for the invariant law of \(\mathcal L^{a_\infty}\), namely \(\pi_\infty\).
 \end{proof}
 
-\begin{theorem}[Mean-field logarithmic Sobolev inequality in the small-viscosity regime]\label{thm:mf-lsi}
+\begin{theorem}[Perturbative stationary mean-field LSI]\label{thm:mf-lsi}
 Let
 \[
 \Gamma_{\mathrm{hypo}}^\infty(g,g)
@@ -4499,6 +3546,14 @@ for every smooth compactly supported \(g\), for some constant
 \end{theorem}
 
 \begin{proof}
+At this stage the stationary mean-field law \(\pi_\infty\) has already been
+constructed and shown to be unique in the perturbative small-viscosity regime
+by Proposition~\ref{prop:mf-unique}. The remaining task is therefore to verify
+that the frozen generator associated with \(\pi_\infty\) satisfies the
+hypotheses of the imported frozen-measure logarithmic Sobolev criterion.
+Proposition~\ref{prop:hkr-applicability} provides exactly that verification in
+the present notation.
+
 Proposition~\ref{prop:hkr-applicability} shows that the frozen-field kinetic
 generator associated with \(\pi_\infty\) satisfies the exact hypotheses of
 Huang--Kopfer--Ren's frozen-measure logarithmic Sobolev theorem
@@ -4543,10 +3598,41 @@ Combining the two inequalities gives
 \int_{\R^{2d}}\Gamma_{\mathrm{hypo}}^\infty(g,g)\,\dd\pi_\infty.
 \]
 Renaming \(C_{\mathrm E}/\lambda_\Gamma\) as \(C_{\mathrm{LSI}}\) proves the
-claimed mean-field logarithmic Sobolev inequality.
+claimed perturbative stationary mean-field LSI.
 \end{proof}
 
-\subsection{Translated confinement and the wall-to-infinity limit}
+\section{Conclusion}
+
+The main line of the paper establishes a comprehensive finite-time and stationary
+mean-field analysis for an underdamped diffusion with row-normalized alignment.
+Unconditionally under the standing assumptions, we prove global well-posedness
+for the particle system and the McKean--Vlasov equation, propagation of
+quadratic moments, a quantitative finite-time mean-field limit, and the
+existence of finite-particle invariant laws together with stationary
+thermodynamic compactness.
+
+The perturbative small-viscosity regime enters only in the stationary
+uniqueness and functional-inequality stage. In that regime, the alignment-map
+contraction yields uniqueness of the stationary McKean--Vlasov law, and the
+frozen-generator criterion yields a stationary mean-field logarithmic Sobolev
+inequality.
+
+The main analytic novelty is the treatment of the row-normalized denominator.
+The strict kernel floor prevents singular normalization, the self-interaction
+defect is of order \(N^{-1}\), and this makes the normalized alignment
+compatible with both quantitative finite-time propagation of chaos and the
+stationary thermodynamic limit.
+
+The appendix records translation-covariance and recentering statements for
+translated confining families. Those results are independent of the main
+finite-time and stationary mean-field theory and may be read separately.
+
+\appendix
+
+\section{Translated Confinement and the Wall-to-Infinity Limit}
+
+This appendix records auxiliary covariance and recentering statements that are
+independent of the main finite-time and stationary mean-field results.
 
 \begin{definition}[Translated confining family]\label{def:translated-family}
 Fix a reference potential \(U_*:\R^d\to\R\) satisfying
@@ -4604,10 +3690,10 @@ solves the translated mean-field equation with potential \(U_a\). In particular,
 \[
 t_{a\#}\pi_\infty^0=\pi_\infty^a.
 \]
-\item The constants in the finite-\(N\) hypocoercive logarithmic Sobolev
-inequality \eqref{eq:lsi-finite}, the entropy contraction
-\eqref{eq:kl-finite}, and the mean-field logarithmic Sobolev inequality from
-Theorem~\ref{thm:mf-lsi} are the same for every \(a\).
+\item The constants appearing in the stationary mean-field logarithmic Sobolev
+inequality from Theorem~\ref{thm:mf-lsi}, as well as the stationary moment and
+compactness bounds used in the thermodynamic limit, are the same for every
+\(a\).
 \end{enumerate}
 \end{theorem}
 
@@ -4769,39 +3855,6 @@ The commutation of the \(N\to\infty\) and \(R\to\infty\) limits is then
 immediate, because after recentering the integral is independent of \(R\), and
 the \(N\to\infty\) limit is Theorem~\ref{thm:stationary-poc}.
 \end{proof}
-
-\section{Discussion}
-
-The preceding analysis separates three logically distinct ingredients.
-
-\begin{enumerate}[leftmargin=1.5em]
-\item The kinetic backbone supplies the hypocoercive entropy gap.
-\item The row-normalized viscous coupling is an $N$-uniform, dissipative
-perturbation on relative velocities.
-\item The velocity squashing map is a deterministic observation-level
-post-processing step that preserves all probability metrics relevant to the
-convergence theory.
-\end{enumerate}
-
-This decomposition is exactly what makes the kinetic core easier than the full
-fractal gas. Once cloning and adaptive diffusion are removed, the only genuinely
-new interaction is the viscous velocity alignment, and its role is stabilizing
-rather than destabilizing.
-
-Two further extensions are recorded separately.
-
-\begin{itemize}[leftmargin=1.5em]
-\item The adaptive geometric extension, in which isotropic noise is replaced by
-state-dependent anisotropic diffusion.
-\item The full algorithmic operator, in which the kinetic stage is coupled to
-cloning, companion selection, and the fitness potential.
-\end{itemize}
-
-Those additions require a separate perturbative argument. The paper is
-the clean kinetic backbone on which such extensions are built. At the numerical
-level, the continuous kinetic stage can be paired with splitting
-integrators for Langevin dynamics, while the smooth cap is applied only at
-observation times \cite{leimkuhler2015molecular}.
 
 \bibliographystyle{plain}
 \bibliography{references}

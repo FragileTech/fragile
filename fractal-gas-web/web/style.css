@@ -1,0 +1,318 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #14161c;
+  color: #d8dbe2;
+  font-size: 14px;
+}
+
+header {
+  padding: 12px 20px;
+  background: #1b1e27;
+  border-bottom: 1px solid #2c3040;
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+h1 { margin: 0; font-size: 20px; }
+.subtitle { font-weight: normal; font-size: 13px; color: #8a90a2; }
+
+.status { color: #8a90a2; font-size: 13px; }
+.status.error { color: #ff7b72; }
+.status.ok { color: #7ee787; }
+
+main {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  align-items: flex-start;
+}
+
+#sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  transition: width 0.15s ease;
+}
+#sidebar.collapsed {
+  width: 28px;
+  overflow: hidden;
+}
+#sidebar.collapsed section { display: none; }
+
+.panel-toggle {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: #1b1e27;
+  color: #8a90a2;
+  border: 1px solid #2c3040;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.panel-toggle:hover { color: #d8dbe2; border-color: #3a4054; }
+#sidebar-toggle { align-self: flex-end; }
+#sidebar.collapsed #sidebar-toggle { align-self: center; }
+
+#sidebar section {
+  background: #1b1e27;
+  border: 1px solid #2c3040;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+#sidebar h2 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a90a2;
+}
+
+label { display: block; margin-bottom: 8px; color: #b6bac6; }
+label input[type="number"] {
+  width: 100%;
+  margin-top: 3px;
+  background: #12141a;
+  color: #d8dbe2;
+  border: 1px solid #2c3040;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+label input[type="range"] { width: 100%; margin-top: 3px; }
+label select,
+#atari-game {
+  width: 100%;
+  margin-top: 3px;
+  background: #12141a;
+  color: #d8dbe2;
+  border: 1px solid #2c3040;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+.level-row { display: flex; gap: 8px; }
+.level-row label { flex: 1; }
+label.checkbox { display: flex; align-items: center; gap: 6px; }
+label.checkbox input { margin: 0; }
+
+.hint { font-size: 11.5px; color: #6b7183; margin: 6px 0 0; }
+
+.toggle-group { display: flex; gap: 4px; }
+.toggle-group button {
+  flex: 1;
+  padding: 6px 0;
+  background: #12141a;
+  color: #8a90a2;
+  border: 1px solid #2c3040;
+  border-radius: 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.toggle-group button.active {
+  background: #2d5fbd;
+  color: #fff;
+  border-color: #2d5fbd;
+}
+.toggle-group button:hover:not(.active) { color: #d8dbe2; }
+
+.buttons { display: flex; gap: 8px; }
+.buttons button {
+  flex: 1;
+  padding: 8px 0;
+  background: #2d5fbd;
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.buttons button:disabled { background: #2c3040; color: #6b7183; cursor: default; }
+.buttons button:hover:not(:disabled) { background: #3a70d4; }
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 4px 12px;
+  font-variant-numeric: tabular-nums;
+}
+.stat-grid div:nth-child(odd) { color: #8a90a2; }
+
+#content {
+  flex: 1;
+  /* Contain the level-wide map canvas: without this the flex item grows to
+     its content and the map viewport never overflows/scrolls. */
+  min-width: 0;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+#screen-panel {
+  background: #1b1e27;
+  border: 1px solid #2c3040;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+#screen-panel h2 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a90a2;
+}
+
+#screen-wrap { position: relative; display: inline-block; }
+
+#run-ended {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(10, 11, 15, 0.78);
+  border-radius: 4px;
+  text-align: center;
+}
+#run-ended[hidden] { display: none; }
+.run-ended-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #ff7b72;
+}
+.run-ended-detail { color: #b6bac6; font-size: 13px; padding: 0 20px; }
+
+#screen {
+  width: 512px;
+  height: auto;
+  image-rendering: pixelated;
+  background: #000;
+  border-radius: 4px;
+  max-width: 100%;
+}
+
+#plots-panel {
+  flex-shrink: 0;
+  display: flex;
+  width: 480px;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  max-height: 100vh;
+}
+#plots-panel.collapsed { width: 34px; }
+#plots-panel.collapsed #plots { display: none; }
+#plots-panel.collapsed #plots-header h2 { display: none; }
+#plots-panel.collapsed #plots-resizer { display: none; }
+
+#plots-resizer {
+  width: 6px;
+  cursor: col-resize;
+  flex-shrink: 0;
+  border-radius: 3px;
+  background: transparent;
+}
+#plots-resizer:hover,
+#plots-resizer.dragging { background: #3a4054; }
+
+#plots-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+#plots-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#plots-header h2 {
+  margin: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a90a2;
+}
+
+#plots {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.plot {
+  width: 100%;
+  background: #1b1e27;
+  border: 1px solid #2c3040;
+  border-radius: 8px;
+}
+
+#map-panel {
+  flex-basis: 100%;
+  /* Keep the flex item from growing to the (level-wide) canvas inside the
+     scroll viewport — without this the wrapper never overflows. */
+  min-width: 0;
+  max-width: 100%;
+  background: #1b1e27;
+  border: 1px solid #2c3040;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+#map-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+#map-panel h2 {
+  margin: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a90a2;
+  flex: 1;
+}
+#map-zoom { display: flex; gap: 4px; }
+#map-zoom button { width: auto; min-width: 24px; padding: 0 6px; }
+#map-zoom[hidden] { display: none; }
+/* Vertically resizable map viewport: drag the corner handle to zoom the
+   map (aspect-true); it scrolls when the level overflows. Flex + auto
+   margins center a smaller-than-viewport canvas (letterbox) while still
+   scrolling correctly when zoomed past the viewport. */
+#map-resize {
+  resize: vertical;
+  overflow: auto;
+  min-height: 40px;
+  background: #000;
+  border-radius: 4px;
+  display: flex;
+}
+#level-map {
+  display: block;
+  margin: auto;
+  flex-shrink: 0;
+}
+.map-credit { font-size: 11px; color: #6b7183; margin: 8px 0 0; }
+.map-credit a { color: #8a90a2; }
+
+footer {
+  padding: 10px 20px 20px;
+  color: #6b7183;
+  font-size: 12px;
+}

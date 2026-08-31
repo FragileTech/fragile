@@ -1,4 +1,4 @@
-.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow physics-code latex
+.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow videogames web robots physics physics-code latex
 
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
@@ -49,6 +49,22 @@ prompt:
 
 mlflow:
 	uv run mlflow server --host 127.0.0.1 --port 5000
+
+videogames:
+	uv run fragile videogames $(ARGS)
+
+# Serve the wasm fractal-gas swarm demo with the COOP/COEP headers wasm
+# threads need. Open http://localhost:$(WEB_PORT)/web/ once it is up.
+WEB_PORT ?= 8000
+web:
+	@echo "Serving fractal gas web demo at http://localhost:$(WEB_PORT)/web/"
+	cd fractal-gas-web && python3 serve.py $(WEB_PORT)
+
+robots:
+	uv run fragile robots $(ARGS)
+
+physics:
+	uv run fragile physics $(ARGS)
 
 physics-code:
 	@echo "# Physics Code" > physics_code.md

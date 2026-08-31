@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>all-dead autotest</title></head>
+<body>
+<pre id="result">RUNNING</pre>
+<script type="module">
+// Provoke a swarm wipe (tiny swarm, level 1-2 pits) and check the worker
+// stops the run and reports allDead.
+const out = document.getElementById("result");
+const report = (text) => {
+  out.textContent = text;
+  fetch("autotest-result-" + encodeURIComponent(text)).catch(() => {});
+};
+try {
+  const rom = await (await fetch("test-rom.nes")).arrayBuffer();
+  const worker = new Worker("worker.js", { type: "module" });
+  let steps = 0;
+  let stepsAfterDead = 0;
+  let deadIteration = 0;
+  worker.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === "error") return report("FAIL " + msg.message);
+    if (msg.type === "ready") return worker.postMessage({ type: "start" });
+    if (msg.type === "step") {
+      steps = msg.stats.iteration;
+      if (deadIteration > 0) stepsAfterDead++;
+      if (steps > 800) report("INCONCLUSIVE no wipe within 800 iters");
+      return;
+    }
+    if (msg.type === "allDead") {
+      deadIteration = msg.iteration;
+      // Give the worker a moment: no further steps may arrive.
+      setTimeout(() => {
+        const ok = deadIteration > 0 && stepsAfterDead === 0;
+        report((ok ? "ALLDEAD-OK" : "ALLDEAD-FAIL") +
+          ` deadIter=${deadIteration} stepsAfter=${stepsAfterDead}`);
+      }, 2000);
+    }
+  };
+  worker.onerror = (e) => report("FAIL worker: " + e.message);
+  worker.postMessage(
+    { type: "init", rom, params: {
+        n: 4, distCoef: 0.5, rewardCoef: 1.0, useCumulativeReward: true,
+        dtMin: 1, dtMax: 4, nElite: 0, seed: 1, nThreads: 4, obsMode: 3,
+        world: 1, stage: 2, console: 0, game: 0 } },
+    [rom],
+  );
+} catch (err) {
+  report("FAIL " + String(err));
+}
+</script>
+</body>
+</html>

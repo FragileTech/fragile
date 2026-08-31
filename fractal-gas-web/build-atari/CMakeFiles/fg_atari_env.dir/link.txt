@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfg_atari_env.a CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o
+/usr/bin/ranlib libfg_atari_env.a

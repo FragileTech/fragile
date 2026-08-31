@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fractal Gas &mdash; NES Demo</title>
+  <!-- COOP/COEP via service worker for hosts that can't set headers
+       (GitHub Pages); no-op when the server already sets them. -->
+  <script src="coi-serviceworker.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Fractal Gas <span class="subtitle">Mario &middot; Atari &middot; Sonic &mdash; C++ / WebAssembly</span></h1>
+    <div id="status" class="status">Loading&hellip;</div>
+  </header>
+
+  <main>
+    <aside id="sidebar">
+      <button id="sidebar-toggle" class="panel-toggle" type="button"
+              title="Collapse controls">&laquo;</button>
+      <section>
+        <h2>Console</h2>
+        <div class="toggle-group" id="console-select">
+          <button type="button" data-console="0" class="active">Mario</button>
+          <button type="button" data-console="1">Atari</button>
+          <button type="button" data-console="2">Sonic</button>
+        </div>
+        <p class="hint">All three run with bundled ROMs and pthread-parallel
+        emulation. Atari defaults to Ms. Pac-Man; pick another game from its
+        list.</p>
+      </section>
+
+      <section id="atari-section" hidden>
+        <h2>Atari game</h2>
+        <select id="atari-game"></select>
+        <p class="hint">All ALE-supported games are bundled; switching the
+        game restarts the run.</p>
+      </section>
+
+      <section id="sonic-section" hidden>
+        <h2>Sonic start level</h2>
+        <div class="level-row">
+          <label>Zone
+            <select id="param-zone">
+              <option value="0">Green Hill</option>
+              <option value="2">Marble</option>
+              <option value="4">Spring Yard</option>
+              <option value="1">Labyrinth</option>
+              <option value="3">Star Light</option>
+              <option value="5">Scrap Brain</option>
+            </select>
+          </label>
+          <label>Act
+            <select id="param-act">
+              <option>1</option><option>2</option><option>3</option>
+            </select>
+          </label>
+        </div>
+        <div id="sonic-rom-row" hidden>
+          <label>Sonic ROM (.md)
+            <input type="file" id="genesis-rom-input" accept=".md,.bin,.gen,.smd">
+          </label>
+        </div>
+        <p class="hint">Loads web/sonic.rom automatically. The run boots the
+        game and starts in the selected level; changing it restarts the
+        run.</p>
+      </section>
+
+      <section id="level-section">
+        <h2>Start level</h2>
+        <div class="level-row">
+          <label>World
+            <select id="param-world">
+              <option>1</option><option>2</option><option>3</option>
+              <option>4</option><option>5</option><option>6</option>
+              <option>7</option><option>8</option>
+            </select>
+          </label>
+          <label>Stage
+            <select id="param-stage">
+              <option>1</option><option>2</option><option>3</option>
+              <option>4</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">The Super Mario Bros ROM (test-rom.nes) loads
+        automatically and the run starts in the selected level. Changing it
+        restarts the run.</p>
+      </section>
+
+      <section>
+        <h2>Observation</h2>
+        <div class="toggle-group" id="obs-mode">
+          <button type="button" data-mode="0">RAM</button>
+          <button type="button" data-mode="1">RGB</button>
+          <button type="button" data-mode="2">Gray</button>
+          <button type="button" data-mode="3" class="active">Coords</button>
+        </div>
+        <p class="hint">What walker distances are measured on: the 2KB CPU
+        RAM, the RGB/grayscale screen, or a fast tuple (x, y, world, stage,
+        time, velocities, sub-area, power-up). Changing it restarts the
+        run.</p>
+      </section>
+
+      <section>
+        <h2>Swarm</h2>
+        <label>Walkers (N)
+          <input type="number" id="param-n" value="48" min="4" max="256" step="1">
+        </label>
+        <label>Seed
+          <input type="number" id="param-seed" value="7" min="0" step="1">
+        </label>
+        <label>Elite walkers
+          <input type="number" id="param-elite" value="2" min="0" max="16" step="1">
+        </label>
+        <p class="hint">Changing these restarts the run.</p>
+      </section>
+
+      <section>
+        <h2>Fitness</h2>
+        <label>Distance coef <span id="dist-coef-value">1.0</span>
+          <input type="range" id="param-dist-coef" value="1" min="0" max="3" step="0.05">
+        </label>
+        <label>Reward coef <span id="reward-coef-value">1.0</span>
+          <input type="range" id="param-reward-coef" value="1" min="0" max="3" step="0.05">
+        </label>
+      </section>
+
+      <section>
+        <h2>Kinetics</h2>
+        <label>dt min
+          <input type="number" id="param-dt-min" value="6" min="1" max="120" step="1">
+        </label>
+        <label>dt max
+          <input type="number" id="param-dt-max" value="30" min="1" max="120" step="1">
+        </label>
+        <p class="hint">Frames each walker holds its action (~60 fps: 6 =
+        0.1s, 30 = 0.5s), drawn uniformly per step.</p>
+      </section>
+
+      <section class="buttons">
+        <button id="btn-start" disabled>Start</button>
+        <button id="btn-pause" disabled>Pause</button>
+        <button id="btn-reset" disabled>Reset</button>
+      </section>
+
+      <section>
+        <h2>Stats</h2>
+        <div class="stat-grid">
+          <div>Iteration</div><div id="stat-iteration">&ndash;</div>
+          <div>World</div><div id="stat-world">&ndash;</div>
+          <div>Max reward</div><div id="stat-max-reward">&ndash;</div>
+          <div>Mean reward</div><div id="stat-mean-reward">&ndash;</div>
+          <div>Alive</div><div id="stat-alive">&ndash;</div>
+          <div>Iterations/s</div><div id="stat-ips">&ndash;</div>
+          <div>Env frames</div><div id="stat-frames">&ndash;</div>
+        </div>
+      </section>
+    </aside>
+
+    <section id="content">
+      <div id="screen-panel">
+        <h2>Best walker</h2>
+        <div id="screen-wrap">
+          <canvas id="screen" width="256" height="240"></canvas>
+          <div id="run-ended" hidden>
+            <div class="run-ended-title">RUN ENDED</div>
+            <div class="run-ended-detail" id="run-ended-detail"></div>
+          </div>
+        </div>
+      </div>
+      <div id="map-panel">
+        <div id="map-header">
+          <h2>Level map &mdash; swarm</h2>
+          <div id="map-zoom" hidden>
+            <button id="map-zoom-out" class="panel-toggle" type="button"
+                    title="Zoom out">&minus;</button>
+            <button id="map-zoom-fit" class="panel-toggle" type="button"
+                    title="Fit to panel">fit</button>
+            <button id="map-zoom-in" class="panel-toggle" type="button"
+                    title="Zoom in">+</button>
+          </div>
+        </div>
+        <div id="map-resize">
+          <canvas id="level-map"></canvas>
+        </div>
+        <p class="map-credit">Magenta dots: alive walkers &middot; grey: dead
+        &middot; gold ring: best walker. Level maps from
+        <a href="https://ian-albert.com/games/super_mario_bros_maps/" target="_blank" rel="noreferrer">ian-albert.com</a>.</p>
+      </div>
+    </section>
+
+    <aside id="plots-panel">
+      <div id="plots-resizer" title="Drag to resize"></div>
+      <div id="plots-body">
+        <div id="plots-header">
+          <button id="plots-toggle" class="panel-toggle" type="button"
+                  title="Collapse plots">&raquo;</button>
+          <h2>Plots</h2>
+        </div>
+        <div id="plots">
+          <canvas class="plot" id="plot-reward" width="460" height="150"></canvas>
+          <canvas class="plot" id="plot-vr" width="460" height="150"></canvas>
+          <canvas class="plot" id="plot-clones" width="460" height="150"></canvas>
+          <canvas class="plot" id="plot-alive" width="460" height="150"></canvas>
+          <canvas class="plot" id="plot-dt" width="460" height="150"></canvas>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    Fractal gas algorithm (FragileTech) ported to C++, driving the nes-py
+    NES core, the ALE Atari core, and the Genesis Plus GX core, all compiled
+    to WebAssembly and stepped in parallel.
+  </footer>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

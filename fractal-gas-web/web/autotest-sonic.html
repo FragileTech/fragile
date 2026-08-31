@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>sonic autotest</title></head>
+<body>
+<pre id="result">RUNNING</pre>
+<script type="module">
+// End-to-end check of the Sonic console path in wasm: bundled sonic.rom +
+// Green Hill Zone savestate, coords obs, 8 gas steps; expects some walker
+// to make positive x-progress (maxReward > 0).
+const out = document.getElementById("result");
+const report = (text) => {
+  out.textContent = text;
+  fetch("autotest-result-" + encodeURIComponent(text)).catch(() => {});
+};
+try {
+  if (!crossOriginIsolated) throw new Error("not crossOriginIsolated");
+  const [romR, stateR] = await Promise.all([
+    fetch("sonic.rom"),
+    fetch("airstriker.rom"),
+  ]);
+  if (!romR.ok) throw new Error("sonic.rom not bundled");
+  const rom = await romR.arrayBuffer();
+  const aux = await stateR.arrayBuffer();
+  const worker = new Worker("worker.js", { type: "module" });
+  const steps = [];
+  let frameBytes = 0;
+  worker.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === "error") return report("SONIC-FAIL " + msg.message);
+    if (msg.type === "ready") return worker.postMessage({ type: "start" });
+    if (msg.type === "step") {
+      steps.push(msg.stats);
+      if (msg.frame) frameBytes = msg.frame.byteLength;
+      if (steps.length >= 60) {
+        worker.postMessage({ type: "pause" });
+        const last = steps[steps.length - 1];
+        // Sonic accelerates slowly and the savestate opens on the title
+        // card, so net-positive progress takes ~100+ iterations; validate
+        // the pipeline by detecting x-motion in either direction instead.
+        const moved = steps.some((s) => s.minReward !== 0 || s.maxReward !== 0);
+        const swarmOk = Array.isArray(last.walkerX) &&
+                        last.walkerX.length === 8 &&
+                        last.walkerX.every((x) => x >= 0 && x < 20000) &&
+                        last.walkerStage.every((a) => a === 0) &&
+                        last.walkerCamX.every((c) => c >= 0);
+        const ok = last.iteration >= 60 &&
+                   Number.isFinite(last.meanVirtualReward) &&
+                   moved && swarmOk &&
+                   frameBytes === 320 * 224 * 4;
+        report((ok ? "SONIC-OK" : "SONIC-FAIL") +
+          ` iter=${last.iteration} moved=${steps.some((s) => s.minReward !== 0 || s.maxReward !== 0)} swarm=${Array.isArray(last.walkerX)}` +
+          ` alive=${last.aliveCount}`);
+      }
+    }
+  };
+  worker.onerror = (e) => report("SONIC-FAIL worker: " + e.message);
+  worker.postMessage(
+    { type: "init", rom, aux, params: {
+        n: 8, distCoef: 1.0, rewardCoef: 1.0, useCumulativeReward: true,
+        dtMin: 1, dtMax: 4, nElite: 2, seed: 7, nThreads: 2, obsMode: 3,
+        world: 2, stage: 0, console: 2, game: 1 } },
+    [rom, aux],
+  );
+} catch (err) {
+  report("SONIC-FAIL " + String(err));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/fg_cli.dir/link.d CMakeFiles/fg_cli.dir/native/main.cpp.o -o fg_cli  libfractal_gas_core.a libnes_core.a

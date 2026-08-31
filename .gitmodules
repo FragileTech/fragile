@@ -1,0 +1,9 @@
+[submodule "fractal-gas-web/third_party/nes-py"]
+	path = fractal-gas-web/third_party/nes-py
+	url = https://github.com/FragileTech/nes-py
+[submodule "fractal-gas-web/third_party/ale"]
+	path = fractal-gas-web/third_party/ale
+	url = https://github.com/Farama-Foundation/Arcade-Learning-Environment
+[submodule "fractal-gas-web/third_party/stable-retro"]
+	path = fractal-gas-web/third_party/stable-retro
+	url = https://github.com/Farama-Foundation/stable-retro

@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/fg_tests.dir/link.d CMakeFiles/fg_tests.dir/tests/test_main.cpp.o CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.o CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o -o fg_tests  libfractal_gas_core.a libnes_core.a

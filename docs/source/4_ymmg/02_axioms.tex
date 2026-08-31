@@ -35,9 +35,10 @@
 \newcommand{\hilb}{\mathcal{H}}
 \newcommand{\alg}{\mathcal{A}}
 \newcommand{\lag}{\mathcal{L}}
+\newcommand{\status}[1]{\textnormal{\textbf{Status:} #1.}\ }
 
 \title{Constructive Dynamical Axioms for Quantum Field Theory\\[6pt]
-\large Version VII: Core Axioms, Specialization Axes, Spectral Type,\\
+\large Version VII: Primitive Data, Admissibility, Interface Theorems,\\
 Scope Boundaries, and Detailed Framework Correspondences}
 
 \author{Guillem Duran Ballester\\
@@ -120,13 +121,17 @@ standard frameworks.
 
 \subsection{Main Idea}
 
-The framework has two layers.
+The framework has four logical layers.
 
 \begin{itemize}[nosep]
-\item \textbf{Core axioms}: structural requirements shared by all
-  constructive QFTs, independent of field content or phase.
+\item \textbf{Primitive data}: the typed mathematical object on which
+  the framework is built;
+\item \textbf{Core axioms}: universal structural constraints on that
+  object, independent of field content or phase;
 \item \textbf{Specialization axes}: branch conditions that classify
-  theory type and selected phase.
+  theory type and selected phase;
+\item \textbf{Supplementary packages}: additional analytic hypotheses
+  used only when a particular downstream interface theorem is invoked.
 \end{itemize}
 
 The five core axioms are:
@@ -153,6 +158,131 @@ The distinction between a gapped theory and a critical/conformal
 theory is not built into the core axioms; it is selected by parameter
 choice or phase selection inside the same constructive architecture.
 
+\subsection{Primitive Object and Admissibility}
+
+The framework is strongest when the reader can identify a single
+primitive mathematical object, a finite verification protocol for that
+object, and a precise criterion for what it means for a concrete
+theory to fit the framework.
+
+At the logical level, the framework is organized as follows: a
+constructive dynamical system is the raw mathematical object; the core
+axioms and supplementary packages are predicates on that object; the
+specialization axes record branch data for that object; and the
+downstream outputs are derived only after the relevant predicates have
+been verified.
+
+\begin{definition}[Constructive dynamical system]
+  \label{def:cds}
+  A \emph{constructive dynamical system} in the sense of this paper is
+  a typed tuple
+  \[
+    \mathfrak{Q}
+    = (M,g,\mathfrak{O},\mathfrak{A},\mathfrak{S},\omega,\{T_t\}_{t\ge0},
+    \sigma_A,\sigma_B,\sigma_C,\sigma_D),
+  \]
+  where:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item $(M,g)$ is an oriented manifold with metric of appropriate
+    signature;
+  \item $\mathfrak{O}$ denotes the region-indexed observable
+    assignment from a designated region poset
+    \(\mathrm{Reg}(M)\) of open spacetime regions to unital
+    \( * \)-algebras, \(O \mapsto \alg_M(O)\);
+  \item $\mathfrak{A}$ denotes the local generating structure
+    attached to field configurations on \(M\): for example an action
+    functional, a Euclidean generator, a stochastic generator, or an
+    equivalent local dynamical datum whose restriction to separated
+    regions is meaningful;
+  \item $\mathfrak{S}$ denotes the support/resolution data needed to
+    define smeared observables and locality at scale \(\ell_L\); in
+    particular, it includes the class of admissible test functions or
+    smearing data and the associated support notion at finite
+    resolution;
+  \item \(\omega\) is a chosen equilibrium or stationary state on the
+    algebra selected as physical;
+  \item \(\{T_t\}_{t\ge0}\) is the positivity-preserving semigroup
+    used in Core Axiom~\ref{ax:positivity}, understood as a
+    one-parameter semigroup of endomorphisms or operators on the
+    physical sector with the continuity required for that axiom to be
+    meaningful;
+  \item \(\sigma_A,\sigma_B,\sigma_C,\sigma_D\) are the branch choices
+    on Axes A--D.
+  \end{enumerate}
+  The primitive data are \((M,g,\mathfrak{O},\mathfrak{A},
+  \mathfrak{S},\omega,\{T_t\}_{t\ge0})\). The branch data are
+  \((\sigma_A,\sigma_B,\sigma_C,\sigma_D)\). Supplementary hypotheses
+  are not part of the primitive tuple; they are additional verified
+  properties of \(\mathfrak{Q}\) used only for selected interface
+  theorems. Derived outputs --- such as Schwinger hierarchies,
+  reconstructed Hilbert-space data, or locally covariant nets --- are
+  not primitive data.
+\end{definition}
+
+\begin{definition}[Admissible realization]
+  \label{def:admissible-realization}
+  An \emph{admissible realization} of the framework is a constructive
+  dynamical system \(\mathfrak{Q}\) together with proofs that:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item Core Axioms~1--5 hold for its primitive data;
+  \item branch values on Axes~A--D are specified;
+  \item any supplementary package invoked later is verified
+    clause-by-clause.
+  \end{enumerate}
+  A proof that a concrete theory fits the framework therefore means a
+  proof that it defines an admissible realization in this sense,
+  together with a record of which downstream interface theorems are
+  then licensed.
+\end{definition}
+
+\begin{definition}[Interface theorem]
+  \label{def:interface-theorem}
+  An \emph{interface theorem} is a theorem that identifies a
+  sufficient hypothesis package inside the present framework for
+  invoking a standard reconstruction or specialization result from an
+  established axiomatic formalism. Interface theorems are bridge
+  statements: they do not claim that the core axioms alone imply every
+  downstream property, only that once the listed package is verified,
+  the corresponding downstream conclusion is available.
+\end{definition}
+
+\begin{definition}[Framework equivalence]
+  \label{def:framework-equivalence}
+  Two admissible realizations \(\mathfrak{Q}\) and
+  \(\mathfrak{Q}'\) are \emph{framework-equivalent relative to a
+  specified downstream interface} if they induce isomorphic output
+  data for that interface: for example the same physical local net up
+  to net isomorphism in the AQFT route, or the same Schwinger
+  hierarchy and reconstructed Hilbert-space theory up to the natural
+  notion of unitary
+  equivalence.
+\end{definition}
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}p{2.7cm}p{6.0cm}p{4.4cm}@{}}
+\toprule
+Layer & Content & Role \\
+\midrule
+Primitive data & manifold, metric, local observable assignment,
+local generating structure, resolution/support data, equilibrium
+state, semigroup & starting object \\
+Core axioms & locality, resolution, propagation, additive local
+generation, positivity & universal structural constraints \\
+Branch choices & symmetry, statistics, interaction type, spectral
+type & classify theory type / phase \\
+Supplementary packages & transfer, clustering, hyperbolicity,
+Hadamard, gap-transfer data & enable selected interface theorems \\
+Derived outputs & OS, Wightman, HK / LC-AQFT consequences, gap
+statements & downstream specializations \\
+\bottomrule
+\end{tabular}
+\caption{Formal separation of primitive data, universal axioms, branch
+  data, supplementary packages, and derived outputs.}
+\label{tab:framework-layers}
+\end{table}
+
 \subsection{Nature of This Paper}
 
 This is a framework paper. The core axioms isolate upstream
@@ -176,12 +306,39 @@ The paper cleanly identifies which upstream input produces which
 downstream property and which steps require additional analytic
 hypotheses.
 
+\medskip
+
+\noindent\textbf{Status legend.}
+Results in the paper are marked, when relevant, as one of the
+following: internal framework theorem, interface theorem, conditional
+framework proposition or theorem, scope boundary proposition,
+interpretive remark, or imported standard theorem/result.
+
+\medskip
+
+\noindent\textbf{What this framework is.}
+It is an abstract verification architecture, a dependency-separating
+framework for constructive QFT input data, and a specialization
+interface linking those data to OS, Wightman, and locally covariant
+AQFT outputs.
+
+\noindent\textbf{What this framework is not.}
+It is not a claim that Core Axioms~1--5 alone imply all standard
+axioms, not a model-construction paper, not a classification theorem
+for all QFTs, and not a replacement for the concrete analytic work
+required in realization papers.
+
+The framework is fully upstream of OS/Wightman outputs, but only
+partially upstream of AQFT, since a local observable assignment is
+part of the primitive data.
+
 \subsection{Main Theorems}
 
 The paper is organized around three results, stated here in a form
 that makes the additional hypotheses explicit.
 
 \begin{theorem}[Flat Stationary Specialization]\label{thm:flat}
+  \status{Interface theorem}
   In the flat stationary sector $(M,g) = (\real^4, \delta)$, a system
   satisfying Core Axioms~1--5 together with branch choices on Axes A,
   B, and C produces Schwinger functions satisfying:
@@ -211,6 +368,7 @@ that makes the additional hypotheses explicit.
 \end{proof}
 
 \begin{theorem}[Manifold-Covariant Specialization]\label{thm:manifold}
+  \status{Interface theorem}
   On a general globally hyperbolic Lorentzian manifold $(M,g)$, a
   system satisfying Core Axioms~1--5, a symmetry branch on Axis~A,
   and geometric naturality of the generating structure in the sense of
@@ -232,6 +390,7 @@ that makes the additional hypotheses explicit.
 \end{proof}
 
 \begin{theorem}[Structural Separation]\label{thm:separation}
+  \status{Internal framework theorem}
   The five core axioms together with the four specialization axes
   determine a universal separation between structural outputs and
   supplementary analytic inputs. In particular, temperedness,
@@ -259,6 +418,118 @@ that makes the additional hypotheses explicit.
   separation.
 \end{proof}
 
+\begin{theorem}[Dependency map / specialization calculus]
+  \label{thm:dependency-map}
+  \status{Internal framework theorem}
+  For each downstream property
+  \[
+    P \in \{
+    \mathrm{OS0},\mathrm{OS1},\mathrm{OS2},\mathrm{OS3},\mathrm{OS4},
+    \mathrm{W0\text{--}W4},
+    \mathrm{HK\ isotony},
+    \mathrm{HK\ locality},
+    \mathrm{local\ covariance},
+    \mathrm{time\text{-}slice},
+    \mathrm{microlocal\ spectrum}
+    \},
+  \]
+  the framework specifies a sufficient hypothesis set \(H(P)\)
+  consisting of core axioms, branch choices, and supplementary
+  packages. No stronger universal claim is made. In particular:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item \(H(\mathrm{OS0}) = \{\text{Core 2}\}\);
+  \item \(H(\mathrm{OS1}) = \{\text{Core 4 in the flat sector},
+    E(4)\text{-invariant equilibrium selection}\}\);
+  \item \(H(\mathrm{OS2}) = \{\text{Core 4},\text{Core 5},\mathrm{RP}\}\);
+  \item \(H(\mathrm{OS3}) = \{\mathrm{CL}\}\), or a stronger package
+    implying CL such as the gap-transfer route of
+    Theorem~\ref{thm:gap-to-mixing};
+  \item \(H(\mathrm{OS4}) = \{\text{Axis B}\}\);
+  \item \(H(\mathrm{W0\text{--}W4}) = \{\mathrm{OS0\text{--}OS4}\}\)
+    together with the imported OS reconstruction theorem;
+  \item \(H(\mathrm{HK\ isotony}) = \{\text{Core 1(i)}\}\),
+    \(H(\mathrm{HK\ locality}) = \{\text{Core 1(ii)},\text{Core 3},
+    \text{Axis B grading as needed}\}\);
+  \item \(H(\mathrm{local\ covariance}) = \{\text{Core 4},
+    \text{naturality}\}\);
+  \item \(H(\mathrm{time\text{-}slice}) = \{\text{Core 1--5},
+    \text{Axis A},\text{naturality},\mathrm{TS}\}\);
+  \item \(H(\mathrm{microlocal\ spectrum}) = \{\text{Core 1--5},
+    \text{Axis A},\text{naturality},\mathrm{H}\}\).
+  \end{enumerate}
+\end{theorem}
+\begin{proof}
+  The entries are exactly the rows of the dependency ledger recorded
+  in Table~\ref{tab:dependency-ledger}. Each row cites the theorem or
+  proposition establishing the corresponding route, together with any
+  imported standard result. The point of the statement is logical
+  discipline: every downstream conclusion is tied to an explicit
+  sufficient package, and the framework makes no universal claim
+  beyond those packages.
+\end{proof}
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}p{2.2cm}p{3.0cm}p{2.4cm}p{2.7cm}p{2.6cm}@{}}
+\toprule
+Property & Core input & Branch input & Supplementary package & Imported step \\
+\midrule
+OS0 & Core 2 & None & None & None \\
+OS1 & Core 4 in flat sector & None & \(E(4)\)-invariant equilibrium selection & None \\
+OS2 & Core 4, Core 5 & Physical algebra via Axis A & RP & None \\
+OS3 & None beyond realization context & None & CL, or stronger package implying CL & None \\
+OS4 & None & Axis B & None & None \\
+W0--W4 & Through verified OS route & Axis B grading as inherited & RP + CL through OS route & OS reconstruction \\
+HK isotony & Core 1(i) & None & None & None \\
+HK locality & Core 1(ii), Core 3 & Axis B grading as needed & None & None \\
+Local covariance & Core 4 & Axis A for physical sector & Naturality & None \\
+Time-slice & Structural manifold route & Axis A & TS & Standard hyperbolic machinery \\
+Microlocal spectrum & Structural manifold route & Axis A & H & Standard Hadamard machinery \\
+\bottomrule
+\end{tabular}
+\caption{Dependency ledger for downstream properties. The table records
+  the map \(D(P)\) from each downstream property \(P\) to the package
+  used in its proof.}
+\label{tab:dependency-ledger}
+\end{table}
+
+\subsection{Verification Protocol}
+
+An admissible realization is verified by a finite checklist.
+
+\begin{enumerate}
+\item Specify the primitive data of the constructive dynamical system
+  \(\mathfrak{Q}\) in the sense of Definition~\ref{def:cds}.
+\item Verify Core Axioms~1--5.
+\item Fix the branch choices on Axes~A--D.
+\item Verify any supplementary package needed for the desired
+  downstream route.
+\item Invoke the relevant interface theorem.
+\item Record exactly which outputs have been licensed and which have
+  not.
+\end{enumerate}
+
+\subsection{Minimal Claims and Explicit Non-Claims}
+
+The framework makes deliberately limited theorem-level claims.
+
+\begin{itemize}[nosep]
+\item \textbf{Minimal claim.} The paper isolates sufficient
+  structural and supplementary hypotheses for OS, Wightman, and
+  locally covariant AQFT specialization.
+\item \textbf{Not claimed.} Core Axioms~1--5 alone imply OS2, OS3,
+  time-slice, or the microlocal spectrum condition.
+\item \textbf{Minimal claim.} Axis~D records phase information at the
+  framework level.
+\item \textbf{Not claimed.} The framework classifies all gapless
+  phases or all conformal limits.
+\item \textbf{Minimal claim.} The verification packages form a finite,
+  reusable theorem interface.
+\item \textbf{Not claimed.} Verification of those packages is
+  automatic in concrete models.
+\end{itemize}
+
 \subsection{Verification Interface and Frozen Hypothesis Packages}
 \label{sec:verification-interface}
 
@@ -277,8 +548,14 @@ in three blocks:
 \item \textbf{Verified laws:} the package obligations
   \(H_{\mathrm{struct}}\), RP, CL, MG, TS, H;
 \item \textbf{Returned outputs:} OS0--OS4, W0--W4, and the gap
-  conclusion allowed by the master interface theorem.
+  conclusion allowed by the verification interface.
 \end{enumerate}
+
+Each named package
+\(H_{\mathrm{struct}}, H_{\mathrm{man}}, \mathrm{RP}, \mathrm{CL},
+\mathrm{MG}, \mathrm{TS}, \mathrm{H}\) is therefore a finite list of
+proof obligations. A realization paper proves those obligations and
+then invokes the corresponding interface theorem.
 
 \begin{definition}[Structural flat package]\label{def:hstruct}
   The \emph{structural flat package} $H_{\mathrm{struct}}$ consists of:
@@ -386,12 +663,12 @@ in three blocks:
   Definitions~\ref{def:hstruct}--\ref{def:packages} should be read as typed
   schemas rather than as narrative summaries. A downstream realization
   implements the framework by:
-  \begin{enumerate}[nosep,label=(\roman*)]
-  \item specifying concrete data for each slot consumed by a package;
-  \item verifying the corresponding law clauses item-by-item;
-  \item invoking the master interface theorem only after those clauses
-    have been checked.
-  \end{enumerate}
+\begin{enumerate}[nosep,label=(\roman*)]
+\item specifying concrete data for each slot consumed by a package;
+\item verifying the corresponding law clauses item-by-item;
+\item invoking the relevant verification interface only after those clauses
+  have been checked.
+\end{enumerate}
   In particular, package names such as RP, CL, and MG are abbreviations for
   explicit finite lists of obligations, not black-box citations.
 \end{remark}
@@ -417,6 +694,7 @@ in three blocks:
 \end{remark}
 
 \begin{theorem}[Master verification interface]\label{thm:verification-interface}
+  \status{Interface theorem}
   Assume the structural flat package $H_{\mathrm{struct}}$ of
   Definition~\ref{def:hstruct}.
   \begin{enumerate}[nosep,label=(\alph*)]
@@ -462,6 +740,7 @@ in three blocks:
 
 \begin{theorem}[Master manifold verification interface]
   \label{thm:verification-interface-manifold}
+  \status{Interface theorem}
   Assume the structural manifold package $H_{\mathrm{man}}$ of
   Definition~\ref{def:hman}.
   \begin{enumerate}[nosep,label=(\alph*)]
@@ -564,12 +843,13 @@ causal-structure role of Core Axiom~3. Section~\ref{sec:axes} states
 the specialization axes. Section~\ref{sec:specialization} proves the
 specialization theorems, with an explicit treatment of the upstream
 dynamical chain leading to OS3. Section~\ref{sec:compatibility}
-discusses compatibility, non-redundancy, and core separating examples.
-Section~\ref{sec:constructive} explains in what sense the framework is
-constructive and clarifies the role of renormalization and scaling.
-Section~\ref{sec:susy} treats supersymmetry and the
-TQFT scope boundary. Section~\ref{sec:discussion} records limitations
-and future refinements. Section~\ref{sec:conclusion} concludes.
+records internal consistency conditions, dependency separation, and
+scope-boundary propositions. Section~\ref{sec:constructive} explains
+in what sense the framework is constructive and clarifies the role of
+renormalization and scaling. Section~\ref{sec:susy} treats
+supersymmetry and the TQFT scope boundary.
+Section~\ref{sec:discussion} records limitations and future
+refinements. Section~\ref{sec:conclusion} concludes.
 
 
 %% ===================================================================
@@ -786,7 +1066,11 @@ The Haag--Kastler axioms~\cite{Haag} and their locally covariant
 generalization~\cite{BFV} take as primitive a net or functor assigning
 local $*$-algebras to spacetime regions or spacetimes. In the present
 framework this is the most natural specialization because Core Axiom~1
-is already stated in Haag--Kastler language.
+is already stated in Haag--Kastler language. The framework is
+therefore fully upstream of the OS/Wightman route but only partially
+upstream of AQFT: the local net is primitive at the framework level,
+while covariance, time-slice, and microlocal spectrum remain derived
+specializations.
 
 \medskip
 
@@ -1033,6 +1317,17 @@ $\text{core} \longrightarrow \text{specialization by branch choice}.$
   represented as a unital $*$-subalgebra of $L^\infty(\pi)$ for the
   equilibrium measure~$\pi$.
 \end{axiom}
+
+\begin{remark}[Upstream status of Core Axiom~1]
+  Because Core Axiom~\ref{ax:locality} assumes a local net of
+  observable algebras, the framework is not upstream of AQFT in the
+  same sense in which it is upstream of OS or Wightman. The paper is
+  explicit about this asymmetry: the framework is fully upstream of
+  correlation-function and Hilbert-space axiomatizations, but only
+  partially upstream of net-based axiomatizations. What it organizes
+  upstream of AQFT is the constructive dynamical content attached to a
+  local net, not the bare existence of the net itself.
+\end{remark}
 
 
 \subsection{Core Axiom 2: Finite Resolution}
@@ -1370,22 +1665,21 @@ theories.
 \begin{table}[ht]
 \centering
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}p{3.4cm}p{1.3cm}p{1.3cm}p{1.3cm}p{3.8cm}@{}}
 \toprule
-Theory / phase & A & B & C & D \\
+Framework branch & A & B & C & D \\
 \midrule
-$\lambda\phi^4$ massive phase & A2 & B1 & C1 & D1 \\
-Free massive scalar & A2 & B1 & C2 & D1 \\
-Pure Yang--Mills with mass gap & A1 & B1 & C1 & D1 \\
-Massive free Dirac field & A2 & B2 & C2 & D1 \\
-Wess--Zumino (unbroken massive) & A2 & B4 & C1 & D1 \\
-$O(N)$ sigma model massive & A2 & B1 & C1 & D1 \\
-$\mathbb{Z}_2$ gauge theory & A3 & B1 & C1 & D1 \\
-Critical Ising / scalar fixed point & A2 & B1 & C1 & D2 \\
-Critical $O(N)$ fixed point & A2 & B1 & C1 & D2 \\
+Gauge-bosonic interacting gapped branch & A1 & B1 & C1 & D1 \\
+Ungauged bosonic free gapped branch & A2 & B1 & C2 & D1 \\
+Ungauged fermionic free gapped branch & A2 & B2 & C2 & D1 \\
+Mixed interacting supersymmetric gapped branch & A2 & B4 & C1 & D1 \\
+Discrete-gauge bosonic interacting gapped branch & A3 & B1 & C1 & D1 \\
+Ungauged bosonic interacting critical branch & A2 & B1 & C1 & D2 \\
+Ungauged mixed interacting critical branch & A2 & B3 & C1 & D2 \\
 \bottomrule
 \end{tabular}
-\caption{Representative theories and phases in the framework.}
+\caption{Abstract branch classes in the framework. The table records
+  logical branch combinations rather than worked models.}
 \label{tab:theories}
 \end{table}
 
@@ -1469,6 +1763,7 @@ Critical $O(N)$ fixed point & A2 & B1 & C1 & D2 \\
 \end{proof}
 
 \begin{proposition}[Transfer-matrix factorization]\label{prop:transfer}
+  \status{Internal framework proposition}
   Assume:
   \begin{enumerate}[nosep,label=(\roman*)]
   \item the generating functional satisfies the hyperplane
@@ -1547,6 +1842,7 @@ for OS3 and keeps model-dependent dynamical routes to that hypothesis
 separate.
 
 \begin{proposition}[Translation mixing implies OS3]\label{prop:mixing}
+  \status{Internal framework proposition}
   Let $\pi$ be an $E(4)$-invariant stationary Euclidean measure in the
   flat sector, and let $\mathcal{B} \subset L^\infty(\pi)$ be a
   unital algebra of observables that is closed under translations:
@@ -1592,6 +1888,7 @@ separate.
 \end{proof}
 
 \begin{theorem}[Spectral gap route to time-direction mixing]\label{thm:gap-to-mixing}
+  \status{Conditional framework theorem}
   Let the hypotheses of Proposition~\ref{prop:transfer} hold, and let
   $\mathcal{C}^{\mathrm{phys},0}_+ \subset \alg^{\mathrm{phys},0}_+$
   be a centered class of positive-time observables such that:
@@ -1677,8 +1974,38 @@ separate.
 
 \subsection{Derivation of OS0--OS4}
 
+\begin{lemma}[Polynomial seminorm bounds imply temperedness]
+  \label{lem:seminorms-tempered}
+  \status{Internal framework lemma}
+  If multilinear observables satisfy the polynomial Schwartz-seminorm
+  bounds of Core Axiom~\ref{ax:resolution}, then the corresponding
+  Schwinger functionals extend uniquely to tempered distributions on
+  \((\real^4)^n\).
+\end{lemma}
+\begin{proof}
+  The bounds~\eqref{eq:poly-bounds} state continuity with respect to a
+  finite product of Schwartz seminorms. By the defining topology of
+  the Schwartz space, such a continuous multilinear functional is
+  exactly a tempered distribution on the corresponding product space.
+\end{proof}
+
+\begin{lemma}[Axis~B fixes the symmetry type]
+  \label{lem:axis-b-symmetry}
+  \status{Internal framework lemma}
+  The branch choice on Axis~B determines the permutation symmetry type
+  of the Schwinger hierarchy: symmetric in Branch~B1, antisymmetric in
+  Branch~B2, graded in Branches~B3 and~B4.
+\end{lemma}
+\begin{proof}
+  This is immediate from the branch definitions in
+  Axioms~\ref{ax:B1}--\ref{ax:B4}. The branch data specify the field
+  grading convention, and the Schwinger hierarchy inherits that
+  symmetry type by construction.
+\end{proof}
+
 \begin{theorem}[Flat stationary specialization --- detailed form]
   \label{thm:flat-detail}
+  \status{Interface theorem}
   In the flat stationary sector, a system satisfying Core
   Axioms~\ref{ax:locality}--\ref{ax:positivity} together with branch
   choices on Axes A, B, and C produces Schwinger functions satisfying:
@@ -1701,9 +2028,8 @@ separate.
 
 \begin{proof}
   \textbf{OS0.} By Core Axiom~\ref{ax:resolution}, smeared
-  observables satisfy~\eqref{eq:poly-bounds}. Therefore the Schwinger
-  functions define continuous multilinear functionals on Schwartz test
-  functions, hence tempered distributions on $(\real^4)^n$.
+  observables satisfy~\eqref{eq:poly-bounds}. Therefore
+  Lemma~\ref{lem:seminorms-tempered} applies.
 
   \textbf{OS1.} In the flat sector, the local generating density
   depends on $\Phi$, $D\Phi$, and $\delta_{\mu\nu}$. Hence $S$ is
@@ -1716,7 +2042,8 @@ separate.
   $\langle \Theta F, F \rangle_E = \|e^{-t_{\min}H}F\|^2_\hilb \ge 0$,
   since $H \ge 0$ by Core Axiom~\ref{ax:positivity}.
 
-  \textbf{OS4.} The grading is determined by Axis~B.
+  \textbf{OS4.} The grading is determined by Axis~B via
+  Lemma~\ref{lem:axis-b-symmetry}.
 
   \textbf{OS3.} Under the translation-mixing hypothesis,
   Proposition~\ref{prop:mixing} applies directly.
@@ -1735,6 +2062,7 @@ separate.
 
 \begin{proposition}[Positive-time density after reconstruction]
   \label{prop:positive-time-density}
+  \status{Conditional framework proposition}
   Assume a reflection-positive Euclidean theory for which the standard
   OS reconstruction has been carried out and suppose that the OS
   images $\{\widehat{F}: F \in \alg^{\mathrm{phys}}_+\}$ are dense in
@@ -1769,6 +2097,7 @@ separate.
 
 \begin{proposition}[Spectral separation by the physical algebra]
   \label{prop:physical-separation}
+  \status{Conditional framework proposition}
   Assume the set
   $\{\widehat{F}: F \in \alg^{\mathrm{phys},0}_+\}$ is dense in
   $\Omega^\perp$.
@@ -1795,6 +2124,7 @@ separate.
 
 \begin{theorem}[OS reconstruction plus gap transfer implies Minkowski mass gap]
   \label{thm:recon-gap}
+  \status{Conditional corollary from standard machinery}
   Assume:
   \begin{enumerate}[nosep,label=(\roman*)]
   \item OS0--OS4 hold, so the standard OS reconstruction yields a
@@ -1849,6 +2179,7 @@ separate.
 
 \begin{theorem}[Manifold-covariant specialization --- detailed form]
   \label{thm:manifold-detail}
+  \status{Interface theorem}
   On a globally hyperbolic Lorentzian manifold, a system satisfying
   Core Axioms~\ref{ax:locality}--\ref{ax:positivity}, a choice on
   Axis~A, and geometric naturality in the sense of
@@ -1905,6 +2236,37 @@ separate.
 The intended use in a model-verification paper is the following
 checklist.
 
+\begin{theorem}[Framework checklist]
+  \label{thm:framework-checklist}
+  \status{Interface theorem}
+  To place a candidate theory inside the present architecture and
+  derive a selected downstream formalism, it is sufficient to verify
+  the corresponding finite checklist:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item for the OS/Wightman route: admissible realization of the flat
+    structural package \(H_{\mathrm{struct}}\), plus RP for OS2, plus
+    CL for OS3; then
+    Theorem~\ref{thm:verification-interface} yields OS0--OS4 and the
+    imported OS reconstruction theorem yields W0--W4;
+  \item for the mass-gap route: the preceding OS/Wightman checklist,
+    plus MG; then Theorem~\ref{thm:recon-gap} yields
+    \(\spec(H)\cap(0,\lambda_*)=\varnothing\);
+  \item for the manifold/AQFT route: admissible realization of the
+    manifold structural package \(H_{\mathrm{man}}\); then
+    Theorem~\ref{thm:verification-interface-manifold} yields isotony,
+    locality, physical-algebra selection, and local covariance; adding
+    TS yields time-slice, and adding H yields the microlocal spectrum
+    condition.
+  \end{enumerate}
+\end{theorem}
+\begin{proof}
+  This is a compact restatement of
+  Theorems~\ref{thm:verification-interface},
+  \ref{thm:verification-interface-manifold}, and
+  \ref{thm:recon-gap}, together with the imported
+  Osterwalder--Schrader reconstruction step.
+\end{proof}
+
 \begin{enumerate}
 \item Verify the structural flat package $H_{\mathrm{struct}}$ of
   Definition~\ref{def:hstruct}: Core Axioms~1--5, branch choices, the
@@ -1951,91 +2313,137 @@ checklist.
 
 
 %% ===================================================================
-\section{Compatibility, Non-Redundancy, and Separating Examples}
+\section{Compatibility, Dependency Separation, and Scope Boundaries}
 \label{sec:compatibility}
 %% ===================================================================
 
-\subsection{Compatibility}
+\subsection{Internal Consistency Conditions}
 
-\begin{remark}
-  Compatibility is part of the architecture rather than a separate
-  theorem: the core axioms constrain locality, resolution, propagation,
-  generation, and positivity, while the specialization axes classify
-  symmetry, statistics, interaction type, and infrared phase. No axis
-  changes the meaning of a core axiom, and no core axiom fixes a
-  branch value. The examples below record how the same core can be
-  combined with different branch choices.
-\end{remark}
+\begin{proposition}[Internal consistency of the framework]
+  \label{prop:internal-consistency}
+  \status{Internal framework theorem}
+  The framework data split consistently into core axioms, branch
+  choices, and supplementary packages in the following sense:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item Core Axiom~\ref{ax:propagation} is compatible with the
+    Euclidean operational causality used to define disjointness in the
+    flat sector;
+  \item Core Axiom~\ref{ax:action} is compatible with branch-dependent
+    statistics on Axis~B because additivity is a statement about the
+    local generating structure, not about the grading convention;
+  \item Core Axiom~\ref{ax:positivity} is compatible with gauge
+    reduction on Axis~A because the positivity semigroup is required
+    only on the algebra designated as physical by the chosen symmetry
+    branch;
+  \item Axis~D is compatible with the core because gaplessness or
+    gappedness is phase data about the spectrum of the already-chosen
+    physical Hamiltonian, not an additional universal axiom.
+  \end{enumerate}
+\end{proposition}
+\begin{proof}
+  Item~(i) is the content of Remark~\ref{rem:geom} together with
+  Remark~\ref{rem:propagation-chain}: in the Euclidean branch, causal
+  disjointness is defined operationally from the constructive
+  propagation law. Item~(ii) follows because the additive decomposition
+  of Core Axiom~\ref{ax:action} concerns how local generators split
+  across interfaces, while Axis~B concerns the symmetry type of field
+  interchange. Item~(iii) is built directly into
+  Core Axiom~\ref{ax:positivity}, which refers to the algebra selected
+  as physical by Axis~A. Item~(iv) is exactly the role assigned to
+  Axis~D in Section~\ref{sec:axes}: it records infrared phase data
+  after the core dynamics have been fixed.
+\end{proof}
 
+\subsection{Dependency Separation}
 
-\subsection{Non-Redundancy of the Specialization Axes}
+\begin{proposition}[Dependency separation]
+  \label{prop:dependency-separation}
+  \status{Internal framework theorem}
+  The main downstream properties use genuinely different subsets of
+  framework assumptions. In particular:
+  \begin{enumerate}[nosep,label=(\roman*)]
+  \item OS0 uses Core Axiom~\ref{ax:resolution} but not the transfer
+    package RP;
+  \item OS2 uses Core Axioms~\ref{ax:action} and
+    \ref{ax:positivity} together with RP, but not the clustering
+    package CL;
+  \item OS3 uses CL, or a stronger package implying CL, but not the
+    transfer package RP;
+  \item local covariance uses naturality and does not follow from the
+    flat-sector OS route;
+  \item time-slice uses TS and does not follow from finite propagation
+    alone;
+  \item the microlocal spectrum condition uses H and is not a direct
+    consequence of positivity alone.
+  \end{enumerate}
+\end{proposition}
+\begin{proof}
+  This is a theorem-level restatement of the derivation graph already
+  encoded in Theorem~\ref{thm:dependency-map}. Each clause follows by
+  inspection of the corresponding theorem or proposition proving the
+  stated downstream property. The point is non-collapse of the
+  dependency graph: the framework is not a single undifferentiated list
+  of assumptions.
+\end{proof}
 
-The following are separating examples at the intended structural level;
-they are not model-theoretic independence proofs and are stated as
-examples rather than theorems for exactly that reason.
+\subsection{Scope Boundary Propositions}
 
-\begin{example}[Axis~A distinguishes gauge from ungauged theories]
-  $\lambda\phi^4$ (Branch~A2) and pure $SU(N)$ Yang--Mills (Branch~A1)
-  both satisfy the core axioms at the intended structural level but
-  differ on Axis~A.
-\end{example}
+\begin{proposition}[Flat-sector scope boundary]
+  \label{prop:scope-flat}
+  \status{Scope boundary proposition}
+  Any candidate theory lacking a local generating structure with
+  additive regional decomposition lies outside the flat-sector OS2
+  route of the present framework.
+\end{proposition}
+\begin{proof}
+  The flat-sector route to OS2 passes through
+  Lemma~\ref{lem:hyperplane} and Proposition~\ref{prop:transfer}, both
+  of which use Core Axiom~\ref{ax:action}. Without additive local
+  generation there is no hyperplane decomposition and therefore no
+  entry point for the transfer-matrix package RP.
+\end{proof}
 
-\begin{example}[Axis~B distinguishes statistics sectors]
-  A free massive scalar (B1) and a free Dirac field (B2) satisfy the
-  same core axioms and Branches A2, C2, but differ on Axis~B.
-\end{example}
+\begin{proposition}[Covariance scope boundary]
+  \label{prop:scope-covariance}
+  \status{Scope boundary proposition}
+  Any candidate theory lacking the naturality data of
+  Remark~\ref{rem:naturality} lies outside the manifold-covariant
+  route to locally covariant AQFT.
+\end{proposition}
+\begin{proof}
+  Local covariance in Theorem~\ref{thm:manifold-detail} is proved by
+  constructing the morphisms \(\alpha_\psi\) associated with isometric
+  embeddings. Without that naturality data the functorial statement is
+  simply not licensed.
+\end{proof}
 
-\begin{example}[Axis~C distinguishes free from interacting theories]
-  The free massive scalar (C2) and $\lambda\phi^4$ (C1) satisfy the
-  same core axioms and Branches A2, B1, but differ on Axis~C.
-\end{example}
+\begin{proposition}[Positivity scope boundary]
+  \label{prop:scope-positivity}
+  \status{Scope boundary proposition}
+  Any candidate theory lacking a positivity-preserving semigroup on
+  the physical algebra lies outside the positivity route leading to
+  reflection positivity, GNS positivity, and the associated spectral
+  conclusions.
+\end{proposition}
+\begin{proof}
+  Core Axiom~\ref{ax:positivity} is the framework source for the
+  semigroup \(e^{-tH}\) with \(H\ge0\). Proposition~\ref{prop:transfer}
+  and the later gap-transfer statements all consume this data
+  explicitly. If it is absent, those routes are unavailable.
+\end{proof}
 
-\begin{example}[Axis~D distinguishes infrared phases]
-  A scalar theory on A2, B1, C1 with tunable parameters gives D1
-  (gapped) at generic parameters and D2 (critical) at a tuned critical
-  point, with the same core axioms and A/B/C branch data.
-\end{example}
-
-
-\subsection{Core Separating Examples}
-
-\begin{remark}
-  The following examples illustrate why no core axiom should be
-  regarded as obviously redundant.
-\end{remark}
-
-\begin{example}[Locality can fail while the other structures remain]
-  A theory with a single global observable algebra and no
-  region-by-region assignment may still have finite resolution, finite
-  propagation, additive generation, and positivity, but it has no
-  isotony/locality net and therefore fails Core
-  Axiom~\ref{ax:locality}.
-\end{example}
-
-\begin{example}[Finite resolution can fail while locality survives]
-  A continuum theory with uncontrolled ultraviolet singularities may
-  still have local algebras, finite propagation, local generation, and
-  positive energy, but it fails the polynomial temperedness bounds of
-  Core Axiom~\ref{ax:resolution}.
-\end{example}
-
-\begin{example}[Finite propagation can fail]
-  Brownian motion has instantaneous spreading and therefore violates
-  finite information speed while still serving as an example of local
-  observables with additive generation and positivity.
-\end{example}
-
-\begin{example}[Additive decomposition can fail]
-  A bilocal or mean-field action violates the separated-region
-  additivity required in Core Axiom~\ref{ax:action} while leaving the
-  other structural notions meaningful.
-\end{example}
-
-\begin{example}[Positivity can fail]
-  A wrong-sign kinetic term yields an energy form unbounded below even
-  if one still writes down local observables, finite resolution data,
-  and local equations of motion.
-\end{example}
+\begin{proposition}[Microlocal scope boundary]
+  \label{prop:scope-microlocal}
+  \status{Scope boundary proposition}
+  Any candidate theory lacking the required state regularity package H
+  lies outside the microlocal-spectrum route of the present framework.
+\end{proposition}
+\begin{proof}
+  The manifold branch proves the microlocal spectrum condition only
+  under the Hadamard hypothesis packaged as H in
+  Definition~\ref{def:packages}. The framework therefore records the
+  exclusion explicitly rather than suggesting a stronger claim.
+\end{proof}
 
 
 %% ===================================================================
@@ -2185,10 +2593,11 @@ The main advances of the framework are:
   arguments in their proper model-dependent role.
 
 \item The explanation of why Core Axiom~3 (finite propagation) is
-  essential for the Euclidean-to-Lorentzian transition: it provides
-  causal structure in the Euclidean branch, justifies the Wick
-  rotation, and produces Lorentz invariance and the spectral condition
-  in the reconstructed Lorentzian theory
+  essential for the Euclidean-to-Lorentzian interpretation: it
+  supplies the framework's upstream causal datum in the Euclidean
+  branch and clarifies how locality is to be read before
+  reconstruction, while the actual spectral condition remains an
+  imported output of the Osterwalder--Schrader route
   (Remark~\ref{rem:propagation-chain}).
 
 \item Integration of supersymmetry as Branch~B4 and clear treatment of
@@ -2261,8 +2670,9 @@ without any local generating structure --- are stated openly.
 
 The paper is therefore an abstract framework statement: it proposes an
 organizational architecture, maps it in detail to the standard
-frameworks, and separates the universal structural inputs from the
-additional analytic hypotheses required for concrete applications.
+frameworks, and separates primitive data, universal structural inputs,
+branch choices, supplementary packages, and imported standard
+machinery for concrete applications.
 
 
 %% ===================================================================

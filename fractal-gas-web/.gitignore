@@ -1,0 +1,13 @@
+build/
+build-wasm/
+web/fractal_gas.js
+web/fractal_gas.wasm
+web/test-rom.nes
+web/airstriker.rom
+web/airstriker.state
+web/roms/
+web/sonic.state
+web/sonic.rom
+web/gpgx.so
+web/retro_shim.js
+web/retro_shim.wasm

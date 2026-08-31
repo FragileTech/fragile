@@ -1,0 +1,14 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/guillem/fragile/fractal-gas-web/build-retro/cmake_install.cmake",
+		"/home/guillem/fragile/fractal-gas-web/build-retro/ale-build/cmake_install.cmake",
+		"/home/guillem/fragile/fractal-gas-web/build-retro/ale-build/src/ale/cmake_install.cmake",
+		"/home/guillem/fragile/fractal-gas-web/build-retro/ale-build/src/ale/common/cmake_install.cmake",
+		"/home/guillem/fragile/fractal-gas-web/build-retro/ale-build/src/ale/emucore/cmake_install.cmake",
+		"/home/guillem/fragile/fractal-gas-web/build-retro/ale-build/src/ale/environment/cmake_install.cmake",
+		"/home/guillem/fragile/fractal-gas-web/build-retro/ale-build/src/ale/games/cmake_install.cmake",
+		"/home/guillem/fragile/fractal-gas-web/build-retro/ale-build/src/ale/games/supported/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

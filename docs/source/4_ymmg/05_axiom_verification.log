@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  9 APR 2026 11:34
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2025/dev/Debian) (preloaded format=pdflatex 2026.4.6)  9 APR 2026 16:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -561,8 +561,10 @@ File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 [17]
 
 [18]
-LaTeX Font Info:    Trying to load font information for U+euf on input line 148
-6.
+
+[19]
+LaTeX Font Info:    Trying to load font information for U+euf on input line 152
+5.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
 File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
 )
@@ -570,19 +572,17 @@ File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
 File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
 
 )
-
-[19]
-Underfull \hbox (badness 10000) in paragraph at lines 1533--1533
+Underfull \hbox (badness 10000) in paragraph at lines 1572--1572
 []\OT1/cmr/m/n/10.95 (+20) flat sta-tion-ary back-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1543--1543
+Underfull \hbox (badness 10000) in paragraph at lines 1582--1582
 []\OT1/cmr/m/n/10.95 (+20) hyperplane de-com-po-si-
  []
 
 
-Underfull \hbox (badness 4416) in paragraph at lines 1558--1558
+Underfull \hbox (badness 4416) in paragraph at lines 1597--1597
 []\OT1/cmr/m/n/10.95 (+20) reconstruction-side gap
  []
 
@@ -607,8 +607,8 @@ Underfull \hbox (badness 4416) in paragraph at lines 1558--1558
 [28]
 
 [29]
-Overfull \hbox (10.78003pt too wide) in paragraph at lines 2377--2378
-[]\OT1/cmr/bx/n/10.95 (-20) Theorem 10.20 \OT1/cmr/m/n/10.95 (-20) (Tra-di-tion
+Overfull \hbox (10.78003pt too wide) in paragraph at lines 2447--2448
+[]\OT1/cmr/bx/n/10.95 (-20) Theorem 10.21 \OT1/cmr/m/n/10.95 (-20) (Tra-di-tion
 al re-con-struc-tion, non-triv-i-al-ity, and mass gap)\OT1/cmr/bx/n/10.95 (-20)
  . \OT1/cmr/m/it/10.95 (-20) The tra-di-tional Osterwalder--
  []
@@ -621,7 +621,9 @@ al re-con-struc-tion, non-triv-i-al-ity, and mass gap)\OT1/cmr/bx/n/10.95 (-20)
 
 [32]
 
-[33] (./05_axiom_verification.aux)
+[33]
+
+[34] (./05_axiom_verification.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -630,13 +632,13 @@ Package rerunfilecheck Info: File `05_axiom_verification.out' has not changed.
 (rerunfilecheck)             Checksum: D064E54ADACC25951D076284DDD66B17;5739.
  ) 
 Here is how much of TeX's memory you used:
- 14134 strings out of 473197
- 218469 string characters out of 5718606
- 670318 words of memory out of 5000000
- 36642 multiletter control sequences out of 15000+600000
- 590166 words of font info for 263 fonts, out of 8000000 for 9000
+ 14150 strings out of 473197
+ 218662 string characters out of 5718606
+ 669578 words of memory out of 5000000
+ 36645 multiletter control sequences out of 15000+600000
+ 590151 words of font info for 264 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,13n,79p,1018b,772s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,13n,79p,1018b,784s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb></usr/share/te
@@ -657,10 +659,10 @@ onts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/public/amsfonts/euler/eufm10.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /public/amsfonts/symbols/msbm10.pfb>
-Output written on 05_axiom_verification.pdf (33 pages, 400660 bytes).
+Output written on 05_axiom_verification.pdf (34 pages, 405450 bytes).
 PDF statistics:
- 898 PDF objects out of 1000 (max. 8388607)
- 812 compressed objects within 9 object streams
- 258 named destinations out of 1000 (max. 500000)
+ 934 PDF objects out of 1000 (max. 8388607)
+ 847 compressed objects within 9 object streams
+ 269 named destinations out of 1000 (max. 500000)
  45257 words of extra memory for PDF output out of 51595 (max. 10000000)
 

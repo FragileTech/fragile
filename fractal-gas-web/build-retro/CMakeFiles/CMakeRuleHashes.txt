@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+db2af71326bcac7dbf005f4c7069c296 CMakeFiles/fg_retro_core_so
+9cdb577964d1864c8194242cc37df3dd gpgx-core/genesis_plus_gx_libretro.so

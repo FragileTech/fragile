@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>genesis autotest</title></head>
+<body>
+<pre id="result">RUNNING</pre>
+<script type="module">
+// End-to-end check of the Genesis (Airstriker) console path in wasm:
+// bundled ROM + savestate, single statically-linked core, 5 gas steps.
+const out = document.getElementById("result");
+const report = (text) => {
+  out.textContent = text;
+  fetch("autotest-result-" + encodeURIComponent(text)).catch(() => {});
+};
+try {
+  if (!crossOriginIsolated) throw new Error("not crossOriginIsolated");
+  const [romR, stateR] = await Promise.all([
+    fetch("airstriker.rom"),
+    fetch("airstriker.rom"),
+  ]);
+  const rom = await romR.arrayBuffer();
+  const aux = await stateR.arrayBuffer();
+  const worker = new Worker("worker.js", { type: "module" });
+  const steps = [];
+  let frameBytes = 0;
+  let frameW = 0;
+  worker.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === "error") return report("GENESIS-FAIL " + msg.message);
+    if (msg.type === "ready") return worker.postMessage({ type: "start" });
+    if (msg.type === "step") {
+      steps.push(msg.stats);
+      if (msg.frame) {
+        frameBytes = msg.frame.byteLength;
+        frameW = msg.frameWidth;
+      }
+      if (steps.length >= 60) {
+        worker.postMessage({ type: "pause" });
+        const last = steps[steps.length - 1];
+        const ok = last.iteration >= 60 &&
+                   Number.isFinite(last.meanVirtualReward) &&
+                   frameW === 320 && frameBytes === 320 * 224 * 4 &&
+                   last.world === undefined;  // NES-only stat absent
+        report((ok ? "GENESIS-OK" : "GENESIS-FAIL") +
+          ` iter=${last.iteration} alive=${last.aliveCount}` +
+          ` maxReward=${Math.max(...steps.map((x) => x.maxReward))} bytes=${frameBytes}`);
+      }
+    }
+  };
+  worker.onerror = (e) => report("GENESIS-FAIL worker: " + e.message);
+  worker.postMessage(
+    { type: "init", rom, aux, params: {
+        n: 8, distCoef: 1.0, rewardCoef: 1.0, useCumulativeReward: true,
+        dtMin: 1, dtMax: 4, nElite: 2, seed: 7, nThreads: 4, obsMode: 3,
+        world: 1, stage: 1, console: 2, game: 0 } },
+    [rom, aux],
+  );
+} catch (err) {
+  report("GENESIS-FAIL " + String(err));
+}
+</script>
+</body>
+</html>
