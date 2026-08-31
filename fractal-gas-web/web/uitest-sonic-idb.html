@@ -1,0 +1,22 @@
+<!DOCTYPE html><html><body><script>
+// Simulates a return visit on a host that doesn't bundle sonic.rom:
+// primes IndexedDB with the ROM (as the upload handler would), then loads
+// the app, which must auto-load it without showing the upload row.
+(async () => {
+  const buf = await (await fetch("sonic-test-copy.rom")).arrayBuffer();
+  await new Promise((resolve, reject) => {
+    const req = indexedDB.open("fg-roms", 1);
+    req.onupgradeneeded = () => req.result.createObjectStore("roms");
+    req.onsuccess = () => {
+      const tx = req.result.transaction("roms", "readwrite");
+      tx.objectStore("roms").put(buf, "sonic");
+      tx.oncomplete = resolve;
+      tx.onerror = reject;
+    };
+    req.onerror = reject;
+  });
+  try { localStorage.setItem("fgPlotsCollapsed", "1"); } catch (e) {}
+  sessionStorage.setItem("fgAutorunSonic", "1");
+  location.replace("./#autorun-sonic");
+})();
+</script></body></html>

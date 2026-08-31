@@ -417,6 +417,62 @@ const genesisGame = 1; // Genesis game: Sonic
 let atariGame = "ms_pacman"; // ALE rom id, served from web/roms/atari/
 let sonicRomBuffer = null; // user-supplied
 
+// The Sonic ROM is copyrighted, so hosted deployments (GitHub Pages) don't
+// ship it. Instead a visitor's one-time upload is persisted in IndexedDB and
+// auto-loaded on every later visit — no repeated upload prompt.
+const ROM_DB = "fg-roms";
+const ROM_STORE = "roms";
+function romDbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(ROM_DB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(ROM_STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function romDbGet(key) {
+  try {
+    const db = await romDbOpen();
+    return await new Promise((resolve) => {
+      const req = db.transaction(ROM_STORE).objectStore(ROM_STORE).get(key);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => resolve(null);
+    });
+  } catch (e) {
+    return null;
+  }
+}
+async function romDbPut(key, buf) {
+  try {
+    const db = await romDbOpen();
+    db.transaction(ROM_STORE, "readwrite").objectStore(ROM_STORE)
+      .put(buf, key);
+  } catch (e) { /* private mode etc. — upload still works per-visit */ }
+}
+
+// Password-encrypted ROM (public deploy). The deployment ships only the
+// ciphertext (web/sonic.rom.enc); the password lives solely in the user's
+// head and the ROM is decrypted here in the browser with WebCrypto. Blob
+// layout, matching tools/encrypt-rom.mjs: salt(16) | iv(12) | AES-256-GCM
+// ciphertext-with-tag. Key = PBKDF2-SHA256(password, salt, 250k).
+const ROM_PBKDF2_ITERS = 250000;
+async function decryptRom(encBuf, password) {
+  const data = new Uint8Array(encBuf);
+  const salt = data.slice(0, 16);
+  const iv = data.slice(16, 28);
+  const ct = data.slice(28);
+  const keyMat = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(password), "PBKDF2", false,
+    ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt, iterations: ROM_PBKDF2_ITERS, hash: "SHA-256" },
+    keyMat, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  // Throws on a wrong password (GCM tag mismatch).
+  return await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct);
+}
+// Cached ciphertext so the unlock button doesn't refetch it.
+let sonicEncBuffer = null;
+
 let ipsWindow = [];
 
 function setStatus(text, cls) {
@@ -649,16 +705,35 @@ async function loadConsoleAssets() {
       // The core ships as web/retro_shim.{js,wasm}; each core worker
       // fetches it itself, and the game boots from power-on into the
       // selected zone/act.
+      if (!sonicRomBuffer) {
+        // Server-bundled copy first (local dev), then the visitor's own
+        // ROM persisted in IndexedDB from an earlier visit.
+        const rom = await fetch("sonic.rom").catch(() => null);
+        if (rom && rom.ok) {
+          sonicRomBuffer = await rom.arrayBuffer();
+        } else {
+          sonicRomBuffer = await romDbGet("sonic");
+        }
+      }
       if (sonicRomBuffer) {
         romBuffer = sonicRomBuffer.slice(0);
       } else {
-        const rom = await fetch("sonic.rom");
-        if (!rom.ok) {
-          $("sonic-rom-row").hidden = false;
-          setStatus("Pick a Sonic The Hedgehog (Genesis) ROM to start");
-          return;
+        // No plaintext ROM available. Prefer the password-encrypted blob if
+        // the deploy ships one; otherwise fall back to a one-time upload.
+        if (!sonicEncBuffer) {
+          const enc = await fetch("sonic.rom.enc").catch(() => null);
+          if (enc && enc.ok) sonicEncBuffer = await enc.arrayBuffer();
         }
-        romBuffer = await rom.arrayBuffer();
+        if (sonicEncBuffer) {
+          $("sonic-pass-row").hidden = false;
+          $("sonic-rom-row").hidden = false;  // upload still allowed
+          setStatus("Enter the password to unlock Sonic (or upload a ROM)");
+        } else {
+          $("sonic-rom-row").hidden = false;
+          setStatus("Pick a Sonic The Hedgehog (Genesis) ROM to start " +
+                    "(kept in your browser for future visits)");
+        }
+        return;
       }
     } else {
       const resp = await fetch(`roms/atari/${atariGame}.bin`);
@@ -869,7 +944,39 @@ $("genesis-rom-input").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
   sonicRomBuffer = await file.arrayBuffer();
+  romDbPut("sonic", sonicRomBuffer);
+  $("sonic-rom-row").hidden = true;
+  $("sonic-pass-row").hidden = true;
   if (consoleId === 2) loadConsoleAssets();
+});
+
+async function unlockSonic() {
+  const pass = $("sonic-pass-input").value;
+  if (!pass) return;
+  const hint = $("sonic-pass-hint");
+  try {
+    if (!sonicEncBuffer) {
+      const enc = await fetch("sonic.rom.enc");
+      if (!enc.ok) throw new Error("encrypted ROM not found");
+      sonicEncBuffer = await enc.arrayBuffer();
+    }
+    hint.textContent = "Decrypting…";
+    sonicRomBuffer = await decryptRom(sonicEncBuffer, pass);
+    // Cache the decrypted ROM so this browser skips the prompt next time.
+    romDbPut("sonic", sonicRomBuffer);
+    $("sonic-pass-input").value = "";
+    $("sonic-pass-row").hidden = true;
+    $("sonic-rom-row").hidden = true;
+    if (consoleId === 2) loadConsoleAssets();
+  } catch (err) {
+    // GCM tag mismatch => wrong password; anything else is a fetch problem.
+    hint.textContent = "Wrong password — try again.";
+    sonicRomBuffer = null;
+  }
+}
+$("sonic-pass-unlock").addEventListener("click", unlockSonic);
+$("sonic-pass-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") unlockSonic();
 });
 
 // Sonic start-level selectors: structural change -> restart the run.

@@ -57,14 +57,25 @@
             </select>
           </label>
         </div>
+        <div id="sonic-pass-row" hidden>
+          <label>Unlock password
+            <input type="password" id="sonic-pass-input"
+                   autocomplete="off" placeholder="password">
+          </label>
+          <button id="sonic-pass-unlock" type="button">Unlock &amp; play</button>
+          <p class="hint" id="sonic-pass-hint">An encrypted ROM is bundled;
+          enter the password to decrypt it in your browser.</p>
+        </div>
         <div id="sonic-rom-row" hidden>
           <label>Sonic ROM (.md)
             <input type="file" id="genesis-rom-input" accept=".md,.bin,.gen,.smd">
           </label>
         </div>
-        <p class="hint">Loads web/sonic.rom automatically. The run boots the
-        game and starts in the selected level; changing it restarts the
-        run.</p>
+        <p class="hint">Loads web/sonic.rom automatically when the server
+        bundles it; on a public deploy an encrypted ROM is decrypted with
+        your password (or upload your own once &mdash; kept in this browser).
+        The run boots the game and starts in the selected level; changing it
+        restarts the run.</p>
       </section>
 
       <section id="level-section">
