@@ -38097,10 +38097,10 @@ $$
 **Non-Local Fitness Potential:**
 
 $$
-V_{\mathrm{fit}}[\mu_t, \rho](x) = \int V_{\mathrm{fit}}[\delta_x, \rho](x') \mu_t(dx', dv')
+V_{\mathrm{fit}}[\mu_t, \rho](x) = \int V_{\mathrm{fit}}[\delta_{x'}, \rho](x) \,\mu_t(dx', dv')
 $$
 
-where the ρ-localization is now with respect to the continuous measure $\mu_t$.
+where the ρ-localization is now with respect to the continuous measure $\mu_t(dx', dv')$.
 
 **Regularized Diffusion Tensor:**
 
@@ -38119,7 +38119,7 @@ $$
 C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) = O(C_{\mathrm{LSI}}(\rho))
 $$
 
-where the implied constant is independent of $\rho$ and depends only on the fitness regularity and parameter choices.
+for fixed $\rho>0$, with the implied constant depending on the fitness regularity and parameter choices.
 
 **Explicit Bound:**
 

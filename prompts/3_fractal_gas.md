@@ -65471,10 +65471,10 @@ $$
 **Non-Local Fitness Potential:**
 
 $$
-V_{\mathrm{fit}}[\mu_t, \rho](x) = \int V_{\mathrm{fit}}[\delta_x, \rho](x') \mu_t(dx', dv')
+V_{\mathrm{fit}}[\mu_t, \rho](x) = \int V_{\mathrm{fit}}[\delta_{x'}, \rho](x) \,\mu_t(dx', dv')
 $$
 
-where the ρ-localization is now with respect to the continuous measure $\mu_t$.
+where the ρ-localization is now with respect to the continuous measure $\mu_t(dx', dv')$.
 
 **Regularized Diffusion Tensor:**
 
@@ -65493,7 +65493,7 @@ $$
 C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) = O(C_{\mathrm{LSI}}(\rho))
 $$
 
-where the implied constant is independent of $\rho$ and depends only on the fitness regularity and parameter choices.
+for fixed $\rho>0$, with the implied constant depending on the fitness regularity and parameter choices.
 
 **Explicit Bound:**
 
@@ -65506,45 +65506,60 @@ where $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ quantifies the Lipschitz continuity of th
 :::
 
 :::{prf:proof}
-**Step 1. Cattiaux-Guillin for Mean-Field:**
-
-The mean-field LSI follows from the N-particle LSI via the Cattiaux-Guillin propagation of chaos framework (Cattiaux & Guillin 2014). For McKean-Vlasov systems with uniformly elliptic diffusion and Lipschitz drift, the LSI constant in the mean-field limit is controlled by:
-
+For fixed $\rho>0$ and $\epsilon_F<\epsilon_F^*(\rho)$, let
 $$
-C_{\mathrm{LSI}}^{\mathrm{MF}} \leq \limsup_{N \to \infty} C_{\mathrm{LSI}}(N, \rho)
+\mathcal L_{N,\eta}=\mathcal L_{\mathrm{geo},N}+\eta\,\mathcal V_{\mathrm{visc}},\qquad \eta\in[0,1],
 $$
-
-Within the framework, this implication is recorded as Corollary {prf:ref}`cor-mean-field-lsi` in {doc}`/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory`, with the propagation-of-chaos limit constructed in {doc}`/source/3_fractal_gas/convergence_program/09_propagation_chaos`.
-
-**Step 2. N-Uniformity Implies Limit:**
-
-By Theorem {prf:ref}`thm-gg-lsi-main`:
-
+where $\mathcal L_{\mathrm{geo},N}$ is the non-viscous geometric generator (backbone + cloning + adaptive force) and $\mathcal V_{\mathrm{visc}}$ is the viscous coupling perturbation. Let $\pi_{N,\eta}$ be its invariant (or QSD) law and let $C_{\mathrm{LSI}}(N,\rho,\eta)$ be the corresponding LSI constant in
 $$
-\sup_N C_{\mathrm{LSI}}(N, \rho) \leq C_{\mathrm{LSI}}^{\max}(\rho) < \infty
+\mathrm{Ent}_{\pi_{N,\eta}}(f^2\mid\pi_{N,\eta})
+\le
+C_{\mathrm{LSI}}(N,\rho,\eta)\sum_{i=1}^N\int\|\Sigma_{\mathrm{reg}}\nabla_{v_i}f\|^2\,d\pi_{N,\eta}.
 $$
 
-Therefore:
-
+**Step 1. Baseline finite-\(N\) LSI.**
+By Theorem {prf:ref}`thm-gg-lsi-main` (the $\eta=0$ non-viscous geometric case), for fixed $\rho>0$ and \(\epsilon_F<\epsilon_F^*(\rho)\),
 $$
-C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}^{\max}(\rho)
+\mathrm{Ent}_{\pi_{N,0}}(f^2\mid\pi_{N,0})
+\le C_{\mathrm{LSI}}(N,\rho)\sum_{i=1}^N\int\|\Sigma_{\mathrm{reg}}\nabla_{v_i}f\|^2\,d\pi_{N,0},
+$$
+with \( \sup_{N\ge2} C_{\mathrm{LSI}}(N,\rho)\le C_{\mathrm{LSI}}^{\max}(\rho)<\infty \).
+
+**Step 2. Viscous perturbation is dissipative.**
+By Lemma {prf:ref}`lem-gg-viscous-dissipative`, in the perturbation notation of Theorem {prf:ref}`thm-lsi-perturbation` the viscous term is purely dissipative, so it contributes a non-positive symmetric part:
+$$
+\int \eta\,\mathcal V_{\mathrm{visc}}f\,d\pi_{N,\eta}\leq 0.
+$$
+Hence the viscous relative-bound constant is \(C_2(\rho)=0\).
+
+**Step 3. Finite-\(N\) transfer with viscous force.**
+Apply Theorem {prf:ref}`thm-lsi-perturbation` to the perturbation $\eta\,\mathcal V_{\mathrm{visc}}$:
+$$
+C_{\mathrm{LSI}}(N,\rho,\eta)
+\le \frac{C_{\mathrm{LSI}}(N,\rho)}{1-2\,\eta\,C_2(\rho)\,C_{\mathrm{LSI}}(N,\rho)}
+= C_{\mathrm{LSI}}(N,\rho)
+$$
+since \(C_2(\rho)=0\). Hence
+$$
+\sup_{N\ge2}C_{\mathrm{LSI}}(N,\rho,\eta)\le C_{\mathrm{LSI}}^{\max}(\rho)<\infty.
 $$
 
-**Step 3. Lipschitz Correction (Framework Norms):**
-
-The mean-field interaction introduces a correction factor $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ quantifying how fitness gradients respond to changes in the distribution $\mu$. In the framework, the fitness potential is Lipschitz from $\mathcal{P} \cap H^1_w(\Omega)$ into $L^\infty(\Omega)$ (see {doc}`/source/3_fractal_gas/convergence_program/09_propagation_chaos`, Part B: Lipschitz Continuity of Non-Linear Operators), so we use the norm already established there:
-
+**Step 4. Mean-field transfer.**
+By the same Cattiaux–Guillin propagation mechanism in Corollary {prf:ref}`cor-mean-field-lsi`, for $\eta=1$,
 $$
-\|\nabla V_{\mathrm{fit}}[\mu_1, \rho] - \nabla V_{\mathrm{fit}}[\mu_2, \rho]\|_{L^\infty} \leq C_{\mathrm{Lip}}^{H^1_w}(\rho) \|\mu_1 - \mu_2\|_{H^1_w}.
+C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho)\le \limsup_{N\to\infty}C_{\mathrm{LSI}}(N,\rho,\eta)
 $$
-
-This yields the mean-field bound:
-
+and therefore
 $$
-C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho) \leq C_{\mathrm{LSI}}(\rho) \left(1 + C_{\mathrm{Lip}}^{H^1_w}(\rho)\right).
+C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho)\le C_{\mathrm{LSI}}^{\max}(\rho).
 $$
+The nonlinear-transport correction from the \(\mu\)-dependence of \(V_{\mathrm{fit}}[\mu,\rho]\) is quantified by the \(H^1_w\)-Lipschitz constant, giving
+$$
+C_{\mathrm{LSI}}^{\mathrm{MF}}(\rho)\le C_{\mathrm{LSI}}(\rho)\left(1+C_{\mathrm{Lip}}^{H^1_w}(\rho)\right),
+$$
+as stated.
 
-**Verification:** The constant $C_{\mathrm{Lip}}^{H^1_w}(\rho)$ is finite for all $\rho > 0$ by C³ regularity of the fitness potential, the ρ-localization kernel, and the Lipschitz lemmas in {doc}`/source/3_fractal_gas/convergence_program/09_propagation_chaos`.
+**Verification note:** \(C_{\mathrm{Lip}}^{H^1_w}(\rho)<\infty\) for \(\rho>0\), by Axiom {prf:ref}`axiom-gg-ueph`, Axiom {prf:ref}`axiom-gg-viscous-kernel`, the C³ regularity result in {doc}`/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full`, and the Lipschitz lemmas used in the propagation-of-chaos analysis.
 
 $\square$
 :::

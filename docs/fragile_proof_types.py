@@ -57,6 +57,17 @@ def setup(app: Sphinx):
     PROOF_TYPES.setdefault("metatheorem", MetatheoremDirective)
     PROOF_TYPES.setdefault("principle", PrincipleDirective)
 
+    # sphinx_proof >= 0.4 resolves each directive's counter type through
+    # DEFAULT_REALTYP_TO_COUNTERTYP with an eager dict index, so custom types
+    # must be added to that mapping or ElementDirective.run raises KeyError.
+    try:
+        from sphinx_proof import directive as proof_directive
+
+        proof_directive.DEFAULT_REALTYP_TO_COUNTERTYP.setdefault("metatheorem", "metatheorem")
+        proof_directive.DEFAULT_REALTYP_TO_COUNTERTYP.setdefault("principle", "principle")
+    except (ImportError, AttributeError):
+        pass  # older sphinx_proof without the mapping
+
     _register_proof_type(
         app,
         proof_nodes,
