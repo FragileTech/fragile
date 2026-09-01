@@ -80,6 +80,19 @@ inline constexpr float kSonicScoreCoef = 0.5f;     // boss hits (100/hit),
                                                    // badniks, monitors, tally
 inline constexpr float kSonicLifeBonus = 1000.0f;  // per gained life (1-ups,
                                                    // 100-ring bonus)
+/// Paid per boss hit point removed. Bosses take 8 hits, so a full kill is
+/// worth 16000 — dominating everything else the arena offers. While a boss
+/// object is loaded the per-frame x-progress term is DISABLED: boss arenas
+/// lock the camera, so "move right" is noise there and previously kept
+/// walkers glued to the right wall instead of fighting.
+inline constexpr float kSonicBossHitBonus = 2000.0f;
+
+/// Sonic 1 boss object ids (per the Sonic 1 disassembly): GHZ Obj3D,
+/// MZ Obj73, SYZ Obj75, LZ Obj77, SLZ Obj7A, FZ Eggman Obj85. Each keeps
+/// its remaining hit points in the object's collision_property byte
+/// (obj+0x21), set to 8 on spawn and decremented per hit.
+inline constexpr uint8_t kSonicBossIds[6] = {0x3D, 0x73, 0x75,
+                                             0x77, 0x7A, 0x85};
 
 /// Reward carry appended to every state blob so per-step deltas survive
 /// walkers hopping between core instances. Airstriker uses score_last;
@@ -92,7 +105,8 @@ struct RetroCarry {
   int32_t progress_last = 0;  // zone*3 + act
   int32_t b_held_last = 0;    // B held at the end of the previous step
                               // (Sonic jump-edge handling)
-  int32_t reserved_ = 0;      // keeps sizeof free of tail padding
+  int32_t boss_hits_last = -1;  // boss hit points at the previous frame;
+                                // -1 = no boss loaded (Sonic only)
 };
 inline constexpr size_t kRetroCarryBytes = sizeof(RetroCarry);
 static_assert(sizeof(RetroCarry) == sizeof(int64_t) + 6 * sizeof(int32_t),
@@ -146,6 +160,22 @@ inline SonicVars retro_read_sonic(const RetroCore& core) {
   v.cam_x = static_cast<int32_t>(retro_read_be_u16(ram, 0xF700));
   v.cam_y = static_cast<int32_t>(retro_read_be_u16(ram, 0xF704));
   return v;
+}
+
+/// Scan Sonic 1's object RAM ($FFD000-$FFEFFF, 0x40-byte slots; slot 0 is
+/// Sonic himself) for a loaded boss object. Returns its remaining hit
+/// points (collision_property, obj+0x21), or -1 when no boss is loaded.
+inline int32_t retro_sonic_boss_hits(const RetroCore& core) {
+  const uint8_t* ram = core.work_ram();
+  for (size_t slot = 0xD040; slot < 0xF000; slot += 0x40) {
+    const uint8_t id = retro_read_u8(ram, slot);
+    for (const uint8_t boss_id : kSonicBossIds) {
+      if (id == boss_id) {
+        return static_cast<int32_t>(retro_read_u8(ram, slot + 0x21));
+      }
+    }
+  }
+  return -1;
 }
 
 struct AirstrikerVars {
@@ -250,7 +280,10 @@ inline void retro_fill_obs(RetroGame game, int32_t mode, const RetroCore& core,
 ///   fire bit toggles across dt frames (autofire) — still a pure function
 ///   of (state, action, dt).
 ///   Sonic (contest-style, mirrors the Mario port's design): reward =
-///   per-frame x-progress with a +-32px glitch guard, plus delta-shaped
+///   per-frame x-progress with a +-32px glitch guard (suppressed while a
+///   boss object is loaded — boss arenas lock the camera, so rightward
+///   drift is noise there; damaging the boss pays kSonicBossHitBonus per
+///   hit point removed instead), plus delta-shaped
 ///   bonuses (see the kSonic* coefficients): a one-time act-completion
 ///   bonus paid outside the clip (Mario flagpole-style), signed ring
 ///   deltas (a hit dumps all rings -> proportional damage penalty, which
@@ -291,10 +324,22 @@ inline float retro_step_frames(RetroGame game, RetroCore& core, int32_t action,
 
     if (game == RetroGame::kSonic) {
       const SonicVars v = retro_read_sonic(core);
+      const int32_t boss_hits = retro_sonic_boss_hits(core);
+      const bool boss_loaded = boss_hits >= 0;
+
       int32_t dx = v.x - carry.x_last;
       carry.x_last = v.x;
       if (dx < -32 || dx > 32) dx = 0;
-      total_reward += static_cast<float>(dx);
+      if (!boss_loaded) total_reward += static_cast<float>(dx);
+
+      // Boss damage: pay per hit point removed. Skip the frame the boss
+      // spawns (last == -1) so its initial 8 HP isn't misread as a delta.
+      if (boss_loaded && carry.boss_hits_last > boss_hits &&
+          carry.boss_hits_last >= 0) {
+        total_reward += kSonicBossHitBonus *
+                        static_cast<float>(carry.boss_hits_last - boss_hits);
+      }
+      carry.boss_hits_last = boss_hits;
 
       const int32_t progress = v.zone * 3 + v.act;
       const bool act_changed = progress != carry.progress_last;
@@ -348,6 +393,7 @@ inline RetroCarry retro_init_carry(RetroGame game, const RetroCore& core) {
     carry.lives_last = v.lives;
     carry.rings_last = v.rings;
     carry.progress_last = v.zone * 3 + v.act;
+    carry.boss_hits_last = retro_sonic_boss_hits(core);
   } else {
     carry.score_last = retro_read_airstriker(core).score;
   }

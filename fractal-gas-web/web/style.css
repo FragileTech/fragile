@@ -174,6 +174,25 @@ label.checkbox input { margin: 0; }
 
 #screen-wrap { position: relative; display: inline-block; }
 
+/* Run controls + stats: fills the gap between the best walker and the
+   plots panel, above the full-width level map. */
+#run-panel {
+  flex: 1;
+  min-width: 200px;
+  align-self: stretch;
+  background: #1b1e27;
+  border: 1px solid #2c3040;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+#run-panel h2 {
+  margin: 14px 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a90a2;
+}
+
 #run-ended {
   position: absolute;
   inset: 0;
