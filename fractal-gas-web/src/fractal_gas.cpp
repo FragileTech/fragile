@@ -127,6 +127,29 @@ StepInfo FractalGas::step() {
   kinetic_op_->apply(env_, state_after_clone.states, nullptr, *rng_, new_states,
                      observations, step_rewards, dones, truncated);
 
+  // 4b. All-dead revive: when no walker survived the step, un-done the
+  // recoverable ("soft") deaths — e.g. an Atari life loss with lives left —
+  // so the swarm continues from the post-life-loss states. With any walker
+  // still alive, soft-dead walkers stay dead and clone away as usual, so
+  // losing a life is a death signal and reviving is the last resort.
+  int32_t num_revived = 0;
+  if (env_.has_recoverable_dones()) {
+    bool any_alive = false;
+    for (int32_t i = 0; i < n && !any_alive; ++i) {
+      any_alive = !dones[static_cast<size_t>(i)] &&
+                  !truncated[static_cast<size_t>(i)];
+    }
+    if (!any_alive) {
+      for (int32_t i = 0; i < n; ++i) {
+        const auto ui = static_cast<size_t>(i);
+        if (dones[ui] && !truncated[ui] && env_.done_is_recoverable(i)) {
+          dones[ui] = 0;
+          ++num_revived;
+        }
+      }
+    }
+  }
+
   // 5-7. Build the new WalkerState with updated cumulative rewards.
   WalkerState new_state;
   new_state.N = n;
@@ -155,6 +178,7 @@ StepInfo FractalGas::step() {
   StepInfo info;
   info.iteration = iteration_count_;
   info.num_cloned = num_cloned;
+  info.num_revived = num_revived;
   info.alive_count = state_.alive_count();
 
   double reward_sum = 0.0;

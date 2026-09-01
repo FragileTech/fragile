@@ -87,6 +87,24 @@ inline constexpr float kSonicLifeBonus = 1000.0f;  // per gained life (1-ups,
 /// walkers glued to the right wall instead of fighting.
 inline constexpr float kSonicBossHitBonus = 2000.0f;
 
+/// Exploration bonus (the Mario kAreaBonus idea scaled to a 2-D grid): the
+/// act is covered by a coarse cell grid and entering a cell not yet visited
+/// by this walker's lineage pays kSonicCellBonus once. The visited bitmask
+/// lives in the carry, so a clone inherits its parent's map knowledge and
+/// cannot re-farm cells the parent already earned; it is cleared on act
+/// change (like Mario's per-stage mask). This is what makes backtracking
+/// viable: levels like Marble 1 require going back/down, which the signed
+/// x-progress term alone strictly punishes. Budget: a fresh 64px cell pays
+/// ~8x the dx earned crossing it, discovery events are rare and lumpy, and
+/// the fitness uses cumulative reward — so under asymmetric_rescale a
+/// frontier walker stays clone-attractive long after the find. A single
+/// step's discovery (usually 1-2 cells) still stays below the act bonus.
+inline constexpr float kSonicCellBonus = 500.0f;
+inline constexpr int32_t kSonicCellShift = 6;  // 64px cells
+inline constexpr int32_t kSonicGridW = 256;    // covers x in [0, 16384)
+inline constexpr int32_t kSonicGridH = 32;     // covers y in [0, 2048)
+inline constexpr int32_t kSonicVisitedWords = kSonicGridW * kSonicGridH / 64;
+
 /// Sonic 1 boss object ids (per the Sonic 1 disassembly): GHZ Obj3D,
 /// MZ Obj73, SYZ Obj75, LZ Obj77, SLZ Obj7A, FZ Eggman Obj85. Each keeps
 /// its remaining hit points in the object's collision_property byte
@@ -107,10 +125,33 @@ struct RetroCarry {
                               // (Sonic jump-edge handling)
   int32_t boss_hits_last = -1;  // boss hit points at the previous frame;
                                 // -1 = no boss loaded (Sonic only)
+  uint64_t visited[kSonicVisitedWords] = {};  // per-act visited-cell bitmask
+                                              // (Sonic only, see
+                                              // kSonicCellBonus)
 };
 inline constexpr size_t kRetroCarryBytes = sizeof(RetroCarry);
-static_assert(sizeof(RetroCarry) == sizeof(int64_t) + 6 * sizeof(int32_t),
+static_assert(sizeof(RetroCarry) == sizeof(int64_t) + 6 * sizeof(int32_t) +
+                                        sizeof(uint64_t) * kSonicVisitedWords,
               "RetroCarry must be trivially copyable with no padding");
+
+/// Mark the cell containing (x, y) as visited; returns true when the cell
+/// was NEW. Coordinates outside the grid clamp to the border cells, so a
+/// glitched position can at worst pay one border cell, never index out of
+/// bounds.
+inline bool retro_sonic_visit_cell(RetroCarry& carry, int32_t x, int32_t y) {
+  int32_t cx = x >> kSonicCellShift;
+  int32_t cy = y >> kSonicCellShift;
+  if (cx < 0) cx = 0;
+  if (cx > kSonicGridW - 1) cx = kSonicGridW - 1;
+  if (cy < 0) cy = 0;
+  if (cy > kSonicGridH - 1) cy = kSonicGridH - 1;
+  const int32_t bit = cy * kSonicGridW + cx;
+  uint64_t& word = carry.visited[bit >> 6];
+  const uint64_t mask = uint64_t(1) << (bit & 63);
+  if (word & mask) return false;
+  word |= mask;
+  return true;
+}
 
 // -- work-RAM readers ---------------------------------------------------------
 // Genesis Plus GX exposes work RAM as native-endian 16-bit words (logical
@@ -285,7 +326,9 @@ inline void retro_fill_obs(RetroGame game, int32_t mode, const RetroCore& core,
 ///   drift is noise there; damaging the boss pays kSonicBossHitBonus per
 ///   hit point removed instead), plus delta-shaped
 ///   bonuses (see the kSonic* coefficients): a one-time act-completion
-///   bonus paid outside the clip (Mario flagpole-style), signed ring
+///   bonus paid outside the clip (Mario flagpole-style), a one-time
+///   exploration bonus per newly visited map cell (kSonicCellBonus — pays
+///   for the backtracking detours acts like Marble 1 require), signed ring
 ///   deltas (a hit dumps all rings -> proportional damage penalty, which
 ///   also makes shields/invincibility instrumentally valuable), a small
 ///   score-delta term (boss hits, badniks, monitors, end-of-act tally),
@@ -346,6 +389,17 @@ inline float retro_step_frames(RetroGame game, RetroCore& core, int32_t action,
       if (progress > carry.progress_last) total_reward += kSonicActBonus;
       carry.progress_last = progress;
 
+      // Exploration: pay once per newly visited map cell (see
+      // kSonicCellBonus). On act change the mask resets and the spawn cell
+      // is marked silently — arriving somewhere new via the signpost is
+      // paid by kSonicActBonus, not double-counted as discovery.
+      if (act_changed) {
+        std::memset(carry.visited, 0, sizeof(carry.visited));
+        retro_sonic_visit_cell(carry, v.x, v.y);
+      } else if (retro_sonic_visit_cell(carry, v.x, v.y)) {
+        total_reward += kSonicCellBonus;
+      }
+
       // Rings reset to 0 when the next act loads — resync silently there;
       // everywhere else the signed delta pays collection / punishes hits.
       if (!act_changed) {
@@ -394,6 +448,7 @@ inline RetroCarry retro_init_carry(RetroGame game, const RetroCore& core) {
     carry.rings_last = v.rings;
     carry.progress_last = v.zone * 3 + v.act;
     carry.boss_hits_last = retro_sonic_boss_hits(core);
+    retro_sonic_visit_cell(carry, v.x, v.y);  // spawn cell is not a discovery
   } else {
     carry.score_last = retro_read_airstriker(core).score;
   }

@@ -49,6 +49,15 @@ class BatchEnv {
   virtual bool has_display_score() const { return false; }
   virtual float display_score(int32_t /*walker_index*/) const { return 0.0f; }
 
+  /// Optional: marks a walker's done as a recoverable "soft death" (e.g. an
+  /// Atari life loss with the game still playable). Cached per walker during
+  /// step_batch. FractalGas revives soft-dead walkers only when the whole
+  /// swarm is dead; hard game-overs stay dead.
+  virtual bool has_recoverable_dones() const { return false; }
+  virtual bool done_is_recoverable(int32_t /*walker_index*/) const {
+    return false;
+  }
+
   /// Render an RGBA frame (frame_width*frame_height*4 bytes) for a state
   /// blob. May leave `rgba` empty when the env has no visual output.
   virtual void render_frame(const std::vector<char>& state,

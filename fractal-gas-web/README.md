@@ -95,7 +95,10 @@ sidebar:
   x-progress with a glitch guard plus delta-shaped bonuses (all env-side,
   see the kSonic* constants in src/retro_game_logic.hpp): +5000 one-time
   act-completion bonus (Mario flagpole-style, so the signpost beats any
-  wandering and the tally screen isn't a reward valley), signed ring deltas
+  wandering and the tally screen isn't a reward valley), +500 per newly
+  visited 64px map cell (a per-walker visited bitmask carried in the state
+  blob — clones inherit it — cleared on act change; pays for the
+  backtracking detours acts like Marble 1 require), signed ring deltas
   x3 (collection pays; a hit dumps all rings, an automatic damage penalty
   that makes shields/invincibility valuable), score deltas x0.5 (boss hits,
   badniks, monitors, end-of-act time+ring tally), and +1000 per gained

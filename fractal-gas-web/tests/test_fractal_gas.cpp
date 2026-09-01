@@ -119,6 +119,119 @@ TEST_CASE(same_seed_is_deterministic) {
   CHECK(a == b);
 }
 
+// Mock for the all-dead revive: every walker dies once its step counter
+// (s[2], incremented by 1 per step regardless of action) reaches
+// kDeathStep, so the whole swarm dies in the same iteration. `mode` picks
+// whether those deaths are recoverable (soft, like an Atari life loss),
+// hard, or per-walker (even indices soft-die every step while odd ones
+// stay alive).
+class RecoverableMockEnv final : public BatchEnv {
+ public:
+  enum class Mode { kAllSoft, kAllHard, kEvenSoft };
+  static constexpr int32_t kObsDim = MockEnv::kObsDim;
+  static constexpr float kDeathStep = 3.0f;
+
+  explicit RecoverableMockEnv(Mode mode) : mode_(mode) {}
+
+  int32_t n_actions() const override { return 4; }
+  int32_t obs_dim() const override { return kObsDim; }
+
+  void reset(std::vector<char>& state, std::vector<float>& obs) override {
+    inner_.reset(state, obs);
+  }
+
+  void step_batch(const std::vector<std::vector<char>>& states,
+                  const std::vector<int32_t>& actions,
+                  const std::vector<int32_t>& dt,
+                  std::vector<std::vector<char>>& new_states,
+                  std::vector<float>& observations, std::vector<float>& rewards,
+                  std::vector<uint8_t>& dones,
+                  std::vector<uint8_t>& truncated) override {
+    inner_.step_batch(states, actions, dt, new_states, observations, rewards,
+                      dones, truncated);
+    recoverable_.assign(states.size(), 0);
+    for (size_t i = 0; i < states.size(); ++i) {
+      const float steps = observations[i * kObsDim + 2];
+      const bool dies = mode_ == Mode::kEvenSoft ? (i % 2 == 0)
+                                                 : steps >= kDeathStep;
+      dones[i] = dies ? 1 : 0;
+      if (dies && mode_ != Mode::kAllHard) recoverable_[i] = 1;
+    }
+  }
+
+  bool has_recoverable_dones() const override { return true; }
+  bool done_is_recoverable(int32_t i) const override {
+    return recoverable_[static_cast<size_t>(i)] != 0;
+  }
+
+  void render_frame(const std::vector<char>&,
+                    std::vector<uint8_t>& rgba) override {
+    rgba.clear();
+  }
+  int32_t frame_width() const override { return 0; }
+  int32_t frame_height() const override { return 0; }
+
+ private:
+  Mode mode_;
+  MockEnv inner_;
+  std::vector<uint8_t> recoverable_;
+};
+
+TEST_CASE(all_dead_soft_walkers_are_revived) {
+  RecoverableMockEnv env(RecoverableMockEnv::Mode::kAllSoft);
+  FractalGasParams params;
+  params.N = 16;
+  params.seed = 7;
+
+  FractalGas gas(env, params);
+  gas.reset();
+  bool saw_revive = false;
+  for (int it = 0; it < 10; ++it) {
+    const StepInfo info = gas.step();
+    // Recoverable deaths never leave the swarm empty.
+    CHECK(info.alive_count == params.N);
+    if (info.num_revived > 0) {
+      saw_revive = true;
+      CHECK(info.num_revived == params.N);
+    }
+  }
+  CHECK(saw_revive);
+}
+
+TEST_CASE(all_dead_hard_walkers_stay_dead) {
+  RecoverableMockEnv env(RecoverableMockEnv::Mode::kAllHard);
+  FractalGasParams params;
+  params.N = 16;
+  params.seed = 7;
+
+  FractalGas gas(env, params);
+  gas.reset();
+  bool died_out = false;
+  for (int it = 0; it < 10 && !died_out; ++it) {
+    const StepInfo info = gas.step();
+    CHECK(info.num_revived == 0);
+    died_out = info.alive_count == 0;
+  }
+  CHECK(died_out);
+}
+
+TEST_CASE(soft_deaths_stay_dead_while_others_live) {
+  RecoverableMockEnv env(RecoverableMockEnv::Mode::kEvenSoft);
+  FractalGasParams params;
+  params.N = 16;
+  params.seed = 7;
+
+  FractalGas gas(env, params);
+  gas.reset();
+  for (int it = 0; it < 10; ++it) {
+    const StepInfo info = gas.step();
+    // With half the swarm alive, soft-dead walkers are NOT revived — they
+    // must clone away as usual (the death signal stays intact).
+    CHECK(info.num_revived == 0);
+    CHECK(info.alive_count == params.N / 2);
+  }
+}
+
 TEST_CASE(elite_max_reward_never_decreases) {
   MockEnv env;
   FractalGasParams params;

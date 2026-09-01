@@ -67,6 +67,13 @@ class AtariEnv final : public BatchEnv {
   bool has_display_score() const override { return true; }
   float display_score(int32_t walker_index) const override;
 
+  /// A life loss with lives remaining is a recoverable death: the walker's
+  /// done fires (so the swarm avoids losing lives) but FractalGas may revive
+  /// it when every walker is dead. Games without a life counter (ALE
+  /// lives() == 0) never soft-die.
+  bool has_recoverable_dones() const override { return true; }
+  bool done_is_recoverable(int32_t walker_index) const override;
+
   void render_frame(const std::vector<char>& state,
                     std::vector<uint8_t>& rgba) override;
   int32_t frame_width() const override { return screen_w_; }
@@ -78,7 +85,8 @@ class AtariEnv final : public BatchEnv {
  private:
   void step_one(int slot, const std::vector<char>& blob, int32_t action,
                 int32_t dt, std::vector<char>& new_blob, float* obs_row,
-                float& reward, uint8_t& done, uint8_t& trunc, float& display);
+                float& reward, uint8_t& done, uint8_t& trunc, float& display,
+                uint8_t& recoverable);
   void fill_obs(int slot, float* obs_row);
   std::vector<char> blob_from(ale::ALEInterface& a, float episode_return);
   void restore_blob(ale::ALEInterface& a, const std::vector<char>& blob);
@@ -93,6 +101,7 @@ class AtariEnv final : public BatchEnv {
   int32_t screen_h_ = 0;
   std::vector<std::vector<unsigned char>> scratch_;  // per-slot pixel buffer
   std::vector<float> display_cache_;                 // per walker
+  std::vector<uint8_t> recoverable_cache_;           // per walker
 
   // First reset() caches the post-reset_game() state; later resets return
   // the cache (same pattern as NesMarioEnv).

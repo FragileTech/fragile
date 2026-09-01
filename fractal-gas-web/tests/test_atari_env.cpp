@@ -127,6 +127,53 @@ TEST_CASE(atari_render_frame_produces_rgba) {
   CHECK(sum > 0);  // screen not all black
 }
 
+// Needs a ROM with a life counter (the suggested breakout.bin has 5 lives).
+// Holding FIRE launches the ball with the paddle parked, so lives drain one
+// by one: each loss must fire done with done_is_recoverable() true (game
+// still playable), stepping the post-loss blob must not immediately re-fire
+// done, and only the final life reaches the non-recoverable game over.
+TEST_CASE(atari_life_loss_is_recoverable_death) {
+  if (skip_if_no_rom("atari_life_loss_is_recoverable_death")) return;
+  AtariEnv env(rom_path(), 1);
+  std::vector<char> state;
+  std::vector<float> init_obs;
+  env.reset(state, init_obs);
+
+  const int32_t fire = env.n_actions() > 1 ? 1 : 0;
+  std::vector<std::vector<char>> states = {state};
+  std::vector<std::vector<char>> new_states(1);
+  std::vector<float> obs(static_cast<size_t>(env.obs_dim()));
+  std::vector<float> rewards(1);
+  std::vector<uint8_t> dones(1), truncated(1);
+  const std::vector<int32_t> actions = {fire};
+  const std::vector<int32_t> dt = {4};
+
+  int soft_deaths = 0;
+  bool hard_death = false;
+  bool just_soft_died = false;
+  for (int step = 0; step < 20000 && !hard_death; ++step) {
+    env.step_batch(states, actions, dt, new_states, obs, rewards, dones,
+                   truncated);
+    if (just_soft_died) {
+      // The revived walker's blob carries the reduced lives count, so the
+      // step after a life loss must not re-fire done.
+      CHECK(dones[0] == 0);
+      just_soft_died = false;
+    }
+    if (dones[0]) {
+      if (env.done_is_recoverable(0)) {
+        ++soft_deaths;
+        just_soft_died = true;  // keep stepping the post-loss blob = revive
+      } else {
+        hard_death = true;
+      }
+    }
+    states[0] = new_states[0];
+  }
+  CHECK(soft_deaths >= 1);  // lives before the last are recoverable deaths
+  CHECK(hard_death);        // the final life ends in a real game over
+}
+
 TEST_CASE(atari_full_gas_smoke) {
   if (skip_if_no_rom("atari_full_gas_smoke")) return;
   AtariEnv env(rom_path(), 4);

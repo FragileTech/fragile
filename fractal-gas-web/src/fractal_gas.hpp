@@ -33,6 +33,7 @@ struct FractalGasParams {
 struct StepInfo {
   int32_t iteration = 0;
   int32_t num_cloned = 0;
+  int32_t num_revived = 0;
   int32_t alive_count = 0;
   float mean_reward = 0.0f;
   float max_reward = 0.0f;

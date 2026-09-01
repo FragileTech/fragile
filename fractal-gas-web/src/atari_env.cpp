@@ -152,10 +152,13 @@ void AtariEnv::reset(std::vector<char>& state, std::vector<float>& obs) {
 void AtariEnv::step_one(int slot, const std::vector<char>& blob, int32_t action,
                         int32_t dt, std::vector<char>& new_blob, float* obs_row,
                         float& reward, uint8_t& done, uint8_t& trunc,
-                        float& display) {
+                        float& display, uint8_t& recoverable) {
   ale::ALEInterface& a = *emulators_[static_cast<size_t>(slot)];
   restore_blob(a, blob);
   float episode_return = read_carry(blob);
+  // The lives counter travels inside the ALEState blob (RomSettings state is
+  // serialized), so this is the walker's own count. 0 = no life counter.
+  const int lives_start = a.lives();
 
   const ale::Action ale_action =
       static_cast<ale::Action>(action_set_[static_cast<size_t>(action)]);
@@ -165,14 +168,20 @@ void AtariEnv::step_one(int slot, const std::vector<char>& blob, int32_t action,
     if (a.game_over(/*with_truncation=*/true)) {
       break;  // plangym stops frame-skipping when the episode terminates
     }
+    if (lives_start > 0 && a.lives() < lives_start) {
+      break;  // stop at the life loss so one step never eats two lives
+    }
   }
   episode_return += total_reward;
 
   fill_obs(slot, obs_row);
   new_blob = blob_from(a, episode_return);
   reward = total_reward;
-  done = a.game_over(/*with_truncation=*/false) ? 1 : 0;
+  const bool game_over = a.game_over(/*with_truncation=*/false);
+  const bool life_lost = lives_start > 0 && a.lives() < lives_start;
+  done = (game_over || life_lost) ? 1 : 0;
   trunc = a.game_truncated() ? 1 : 0;
+  recoverable = (life_lost && !game_over && !trunc) ? 1 : 0;
   display = episode_return;
 }
 
@@ -187,13 +196,19 @@ void AtariEnv::step_batch(const std::vector<std::vector<char>>& states,
   const auto n = static_cast<int32_t>(states.size());
   const auto d = static_cast<size_t>(obs_dim());
   display_cache_.resize(static_cast<size_t>(n));
+  recoverable_cache_.assign(static_cast<size_t>(n), 0);
   float* obs_base = observations.data();
   pool_.parallel_for(n, [&](int32_t i, int slot) {
     const auto ui = static_cast<size_t>(i);
     step_one(slot, states[ui], actions[ui], dt[ui], new_states[ui],
              obs_base + ui * d, rewards[ui], dones[ui], truncated[ui],
-             display_cache_[ui]);
+             display_cache_[ui], recoverable_cache_[ui]);
   });
+}
+
+bool AtariEnv::done_is_recoverable(int32_t walker_index) const {
+  const auto ui = static_cast<size_t>(walker_index);
+  return ui < recoverable_cache_.size() && recoverable_cache_[ui] != 0;
 }
 
 float AtariEnv::display_score(int32_t walker_index) const {

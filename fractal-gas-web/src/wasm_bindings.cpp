@@ -136,6 +136,7 @@ emscripten::val fg_step() {
   emscripten::val out = emscripten::val::object();
   out.set("iteration", info.iteration);
   out.set("numCloned", info.num_cloned);
+  out.set("numRevived", info.num_revived);
   out.set("aliveCount", info.alive_count);
   out.set("meanReward", info.mean_reward);
   out.set("maxReward", info.max_reward);

@@ -37,6 +37,7 @@ try {
         const last = steps[steps.length - 1];
         const ok = last.iteration >= 5 &&
                    Number.isFinite(last.meanVirtualReward) &&
+                   Number.isFinite(last.numRevived) &&
                    frameW > 0 && frameBytes === frameW * frameH * 4 &&
                    last.world === undefined;  // NES-only stat absent
         report((ok ? "ATARI-OK" : "ATARI-FAIL") +
