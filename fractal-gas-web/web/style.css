@@ -9,11 +9,11 @@ body {
 }
 
 header {
-  padding: 12px 20px;
+  padding: 10px 20px;
   background: #1b1e27;
   border-bottom: 1px solid #2c3040;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 20px;
   flex-wrap: wrap;
 }
@@ -21,7 +21,51 @@ header {
 h1 { margin: 0; font-size: 20px; }
 .subtitle { font-weight: normal; font-size: 13px; color: #8a90a2; }
 
-.status { color: #8a90a2; font-size: 13px; }
+/* Game/level pickers in the top bar: compact inline groups. */
+#header-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+#header-controls section[hidden] { display: none; }
+#header-controls section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #12141a;
+  border: 1px solid #2c3040;
+  border-radius: 8px;
+  padding: 5px 10px;
+}
+#header-controls h2 {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a90a2;
+  white-space: nowrap;
+}
+#header-controls label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  white-space: nowrap;
+}
+#header-controls select,
+#header-controls #atari-game {
+  width: auto;
+  margin-top: 0;
+}
+#header-controls .toggle-group button {
+  flex: 0 0 auto;
+  padding: 5px 12px;
+}
+#header-controls .level-row label { flex: 0 0 auto; }
+#header-controls .hint { max-width: 260px; margin: 0; }
+
+.status { color: #8a90a2; font-size: 13px; margin-left: auto; }
 .status.error { color: #ff7b72; }
 .status.ok { color: #7ee787; }
 

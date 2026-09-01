@@ -12,34 +12,29 @@
 <body>
   <header>
     <h1>Fractal Gas <span class="subtitle">Mario &middot; Atari &middot; Sonic &mdash; C++ / WebAssembly</span></h1>
-    <div id="status" class="status">Loading&hellip;</div>
-  </header>
-
-  <main>
-    <aside id="sidebar">
-      <button id="sidebar-toggle" class="panel-toggle" type="button"
-              title="Collapse controls">&laquo;</button>
-      <section>
-        <h2>Console</h2>
+    <div id="header-controls">
+      <section title="All three run with bundled ROMs and pthread-parallel
+emulation. Atari defaults to Ms. Pac-Man; pick another game from its list.">
         <div class="toggle-group" id="console-select">
           <button type="button" data-console="0" class="active">Mario</button>
           <button type="button" data-console="1">Atari</button>
           <button type="button" data-console="2">Sonic</button>
         </div>
-        <p class="hint">All three run with bundled ROMs and pthread-parallel
-        emulation. Atari defaults to Ms. Pac-Man; pick another game from its
-        list.</p>
       </section>
 
-      <section id="atari-section" hidden>
-        <h2>Atari game</h2>
+      <section id="atari-section" hidden
+               title="All ALE-supported games are bundled; switching the game
+restarts the run.">
+        <h2>Game</h2>
         <select id="atari-game"></select>
-        <p class="hint">All ALE-supported games are bundled; switching the
-        game restarts the run.</p>
       </section>
 
-      <section id="sonic-section" hidden>
-        <h2>Sonic start level</h2>
+      <section id="sonic-section" hidden
+               title="Loads web/sonic.rom automatically when the server bundles
+it; on a public deploy an encrypted ROM is decrypted with your password (or
+upload your own once &mdash; kept in this browser). The run boots the game and
+starts in the selected level; changing it restarts the run.">
+        <h2>Start level</h2>
         <div class="level-row">
           <label>Zone
             <select id="param-zone">
@@ -71,14 +66,12 @@
             <input type="file" id="genesis-rom-input" accept=".md,.bin,.gen,.smd">
           </label>
         </div>
-        <p class="hint">Loads web/sonic.rom automatically when the server
-        bundles it; on a public deploy an encrypted ROM is decrypted with
-        your password (or upload your own once &mdash; kept in this browser).
-        The run boots the game and starts in the selected level; changing it
-        restarts the run.</p>
       </section>
 
-      <section id="level-section">
+      <section id="level-section"
+               title="The Super Mario Bros ROM (test-rom.nes) loads
+automatically and the run starts in the selected level. Changing it restarts
+the run.">
         <h2>Start level</h2>
         <div class="level-row">
           <label>World
@@ -95,11 +88,15 @@
             </select>
           </label>
         </div>
-        <p class="hint">The Super Mario Bros ROM (test-rom.nes) loads
-        automatically and the run starts in the selected level. Changing it
-        restarts the run.</p>
       </section>
+    </div>
+    <div id="status" class="status">Loading&hellip;</div>
+  </header>
 
+  <main>
+    <aside id="sidebar">
+      <button id="sidebar-toggle" class="panel-toggle" type="button"
+              title="Collapse controls">&laquo;</button>
       <section>
         <h2>Observation</h2>
         <div class="toggle-group" id="obs-mode">
