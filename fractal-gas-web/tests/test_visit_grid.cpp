@@ -119,3 +119,47 @@ TEST_CASE(visit_grid_decay_erases_and_clips) {
   capped.reset();
   CHECK(capped.cell(VisitKey{0, 0, 0}) == 0.0f);
 }
+
+TEST_CASE(visit_grid_export_blocks_matches_block_sums) {
+  std::mt19937 gen(7);
+  std::uniform_int_distribution<int> row(0, kH - 1);
+  std::uniform_int_distribution<int> col(0, kW - 1);
+  const int planes[3] = {0, 257, 8};  // incl. a Mario-style plane (1-1)
+  VisitGrid grid(kBlock, 0.05f);
+  DenseGrid dense{0.05f};
+  // Use plane indices 0..2 in the dense reference, mapped to the real ids.
+  for (int step = 0; step < 120; ++step) {
+    std::vector<VisitKey> keys, dense_keys;
+    for (int b = 0; b < 1 + (step % 5); ++b) {
+      const int p = step % 3;
+      const int x = col(gen), y = row(gen);
+      keys.push_back(VisitKey{planes[p], x, y});
+      dense_keys.push_back(VisitKey{p, x, y});
+    }
+    grid.update(keys);
+    dense.update(dense_keys);
+  }
+  std::vector<int32_t> keys;
+  std::vector<float> sums;
+  grid.export_blocks(keys, sums);
+  CHECK(keys.size() == 3 * sums.size());
+  CHECK(sums.size() == grid.n_blocks());
+  size_t dense_blocks = 0;
+  for (int p = 0; p < 3; ++p)
+    for (int by = 0; by < kH / kBlock; ++by)
+      for (int bx = 0; bx < kW / kBlock; ++bx)
+        if (dense.block_sum(VisitKey{p, bx * kBlock, by * kBlock}) != 0.0f) ++dense_blocks;
+  CHECK(sums.size() == dense_blocks);
+  for (size_t i = 0; i < sums.size(); ++i) {
+    CHECK(sums[i] > 0.0f);
+    const int32_t plane = keys[3 * i], bx = keys[3 * i + 1], by = keys[3 * i + 2];
+    int p = -1;
+    for (int k = 0; k < 3; ++k) if (planes[k] == plane) p = k;
+    CHECK(p >= 0);
+    std::vector<float> one;
+    grid.block_sums({VisitKey{plane, bx * kBlock, by * kBlock}}, one);
+    CHECK(one[0] == sums[i]);
+    const float expect = dense.block_sum(VisitKey{p, bx * kBlock, by * kBlock});
+    CHECK(std::fabs(sums[i] - expect) <= std::fabs(expect) * 1.2e-7f);
+  }
+}

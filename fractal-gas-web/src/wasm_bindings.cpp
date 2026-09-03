@@ -45,6 +45,8 @@ std::vector<uint8_t> g_frame;
 std::vector<int32_t> g_wx, g_wy, g_ww, g_ws, g_parent;
 std::vector<uint8_t> g_alive, g_leaf;
 std::vector<int32_t> g_tcx, g_tcy, g_tz, g_ta;
+std::vector<int32_t> g_vkeys;
+std::vector<float> g_vsums;
 
 struct FgParams {
   int n = 32;         // Wave: N walkers; Graph: start walkers = min leaves
@@ -333,6 +335,27 @@ emscripten::val fg_render_walker_frame(int i) {
       emscripten::typed_memory_view(g_frame.size(), g_frame.data()));
 }
 
+/// Graph mode with visit counting active (Coords on a game with a map).
+bool fg_counting_visits() {
+  auto* tree = dynamic_cast<fg::FractalTree*>(g_algo.get());
+  return tree != nullptr && tree->counting_visits();
+}
+
+/// The Graph's visit-count grid for the map heatmap: every nonzero 5x5
+/// block as {count, keys: Int32Array [plane, bx, by] * count, sums:
+/// Float32Array, blockSize}. Null when visits are not counted.
+emscripten::val fg_get_visit_blocks() {
+  auto* tree = dynamic_cast<fg::FractalTree*>(g_algo.get());
+  if (tree == nullptr || !tree->counting_visits()) return emscripten::val::null();
+  tree->visits().export_blocks(g_vkeys, g_vsums);
+  emscripten::val out = emscripten::val::object();
+  out.set("count", static_cast<int>(g_vsums.size()));
+  out.set("blockSize", tree->visits().block_size());
+  out.set("keys", copy_array(g_vkeys));
+  out.set("sums", copy_array(g_vsums));
+  return out;
+}
+
 int fg_frame_width() { return g_env ? g_env->frame_width() : 0; }
 int fg_frame_height() { return g_env ? g_env->frame_height() : 0; }
 int fg_n_actions() { return g_env ? g_env->n_actions() : 0; }
@@ -423,6 +446,8 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
   emscripten::function("getBestFrame", &fg_get_best_frame);
   emscripten::function("renderWalkerFrame", &fg_render_walker_frame);
   emscripten::function("getWalkerTiles", &fg_get_walker_tiles);
+  emscripten::function("countingVisits", &fg_counting_visits);
+  emscripten::function("getVisitBlocks", &fg_get_visit_blocks);
   emscripten::function("frameWidth", &fg_frame_width);
   emscripten::function("frameHeight", &fg_frame_height);
   emscripten::function("nActions", &fg_n_actions);

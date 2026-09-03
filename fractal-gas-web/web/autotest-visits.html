@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>visits autotest</title></head>
+<body>
+<pre id="result">RUNNING</pre>
+<script type="module">
+// End-to-end check of the Graph's visit-count export used by the map
+// heatmap: Mario, Graph algorithm, Coords observation. The worker must
+// report counting visits, and once the overlay is requested every step
+// must carry nonzero 5x5 blocks of world 1-1 within the level bounds.
+const out = document.getElementById("result");
+const report = (text) => {
+  out.textContent = text;
+  fetch("autotest-result-" + encodeURIComponent(text)).catch(() => {});
+};
+try {
+  if (!crossOriginIsolated) throw new Error("not crossOriginIsolated");
+  const romR = await fetch("test-rom.nes");
+  if (!romR.ok) throw new Error("test-rom.nes not found");
+  const rom = await romR.arrayBuffer();
+  const worker = new Worker("worker.js", { type: "module" });
+  let counting = null;
+  let steps = 0;
+  let withVisits = 0;
+  let lastVisits = null;
+  worker.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === "error") return report("VISITS-FAIL " + msg.message);
+    if (msg.type === "ready") {
+      counting = msg.countingVisits;
+      worker.postMessage({ type: "setVisitOverlay", on: true });
+      return worker.postMessage({ type: "start" });
+    }
+    if (msg.type === "visits" && msg.visits) lastVisits = msg.visits;
+    if (msg.type === "step") {
+      steps++;
+      if (msg.visits) { withVisits++; lastVisits = msg.visits; }
+      if (steps >= 25) {
+        worker.postMessage({ type: "pause" });
+        const v = lastVisits;
+        let ok = counting === true && withVisits >= 20 && v && v.count > 0 &&
+                 v.keys.length === 3 * v.count && v.sums.length === v.count &&
+                 v.blockSize === 5;
+        let maxSum = 0;
+        for (let i = 0; ok && i < v.count; i++) {
+          const plane = v.keys[3 * i], bx = v.keys[3 * i + 1], by = v.keys[3 * i + 2];
+          ok = ok && v.sums[i] > 0 && plane === 257 && bx * 5 < 3400 && by * 5 < 240;
+          maxSum = Math.max(maxSum, v.sums[i]);
+        }
+        report((ok ? "VISITS-OK" : "VISITS-FAIL") +
+          ` counting=${counting} steps=${steps} withVisits=${withVisits}` +
+          ` blocks=${v ? v.count : 0} maxSum=${maxSum.toFixed(2)}`);
+      }
+    }
+  };
+  worker.onerror = (e) => report("VISITS-FAIL worker: " + e.message);
+  worker.postMessage(
+    { type: "init", rom, params: {
+        n: 8, distCoef: 1.0, rewardCoef: 1.0, useCumulativeReward: true,
+        dtMin: 1, dtMax: 4, nElite: 0, seed: 7, nThreads: 4, obsMode: 3,
+        world: 1, stage: 1, console: 0, game: 0,
+        algorithm: 1, maxWalkers: 200, eraseCoef: 0.05 } },
+    [rom],
+  );
+} catch (err) {
+  report("VISITS-FAIL " + String(err));
+}
+</script>
+</body>
+</html>

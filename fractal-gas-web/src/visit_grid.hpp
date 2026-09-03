@@ -56,6 +56,13 @@ class VisitGrid {
   void block_sums(const std::vector<VisitKey>& keys,
                   std::vector<float>& out) const;
 
+  /// Every stored (nonzero) block for display: keys = [plane, bx, by]
+  /// triples (block coordinates: cell / block_size), sums = the block sum
+  /// (the aggregate_visits value shown by the old demo's heatmap). Order
+  /// unspecified.
+  void export_blocks(std::vector<int32_t>& keys, std::vector<float>& sums) const;
+  size_t n_blocks() const { return blocks_.size(); }
+
   /// Current value of one cell (0 when absent). For tests.
   float cell(const VisitKey& key) const;
   /// Number of stored cells with a non-zero value. For tests.
@@ -65,6 +72,7 @@ class VisitGrid {
   using Block = std::vector<float>;  // block_ * block_ cells, row-major (y, x)
 
   static uint64_t block_id(const VisitKey& key, int32_t block);
+  static void decode_block_id(uint64_t id, int32_t& plane, int32_t& bx, int32_t& by);
   size_t cell_offset(const VisitKey& key) const;
 
   int32_t block_;

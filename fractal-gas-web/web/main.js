@@ -105,6 +105,12 @@ const SONIC_FIT_MAX_SCALE = 3;
 const SONIC_ZOOM_STEP = 1.5;
 const SONIC_ZOOM_MAX = 16;
 let mapZoom = 1;
+// "Visits" heatmap (Graph mode): the user's wish (persisted), whether the
+// running tree counts visits (from the worker's ready message), and the
+// latest exported blocks {count, keys: [plane, bx, by]*count, sums}.
+let visitsMode = false;
+let visitsAvailable = false;
+let lastVisits = null;
 const fogCanvases = new Map(); // "zone-act" -> {canvas, ctx}
 
 function getFogCanvas(zone, act, needW, needH) {
@@ -268,6 +274,99 @@ function drawSwarmOverlay(project, cssHeight, guideLine) {
   return b;
 }
 
+// ---------------------------------------------------------------------------
+// "Visits" heatmap: the Graph's visit-count reward drawn over the greyscale
+// map like the old Montezuma demo (5x5-pixel block sums, "fire" colormap,
+// alpha 0.7, never-visited blocks transparent). visitsView() gates the
+// greyscale base; the heat itself needs data.
+// ---------------------------------------------------------------------------
+const VISIT_BLOCK = 5;
+const VISIT_HEAT_ALPHA = 0.7;
+const VISIT_HEAT_FLOOR = 0.15;  // faintest visited block reads as dark red
+const FIRE_STOPS = [
+  [0.0, [0, 0, 0]], [0.2, [110, 0, 0]], [0.4, [200, 40, 0]],
+  [0.6, [240, 120, 0]], [0.8, [255, 200, 40]], [1.0, [255, 255, 255]],
+];
+const FIRE_LUT = (() => {
+  const lut = [];
+  for (let i = 0; i < 256; i++) {
+    const t = i / 255;
+    let k = 0;
+    while (k < FIRE_STOPS.length - 2 && t > FIRE_STOPS[k + 1][0]) k++;
+    const [t0, c0] = FIRE_STOPS[k];
+    const [t1, c1] = FIRE_STOPS[k + 1];
+    const u = (t - t0) / (t1 - t0);
+    const c = c0.map((v, j) => Math.round(v + (c1[j] - v) * u));
+    lut.push(`rgb(${c[0]}, ${c[1]}, ${c[2]})`);
+  }
+  return lut;
+})();
+// ctx.filter is missing on old Safari: fall back to a "saturation" blend.
+const CANVAS_FILTER_OK = (() => {
+  mapCtx.filter = "grayscale(1)";
+  const ok = mapCtx.filter === "grayscale(1)";
+  mapCtx.filter = "none";
+  return ok;
+})();
+
+function visitsView() {
+  return visitsMode && visitsAvailable && algorithm === 1;
+}
+
+// Draw the base image through `draw()`, in greyscale when the visits view
+// is on.
+function drawBaseImage(draw, cssWidth, cssHeight) {
+  if (!visitsView()) {
+    draw();
+    return;
+  }
+  if (CANVAS_FILTER_OK) {
+    mapCtx.filter = "grayscale(1)";
+    draw();
+    mapCtx.filter = "none";
+    return;
+  }
+  draw();
+  mapCtx.globalCompositeOperation = "saturation";
+  mapCtx.fillStyle = "#808080";
+  mapCtx.fillRect(0, 0, cssWidth, cssHeight);
+  mapCtx.globalCompositeOperation = "source-over";
+}
+
+// `blockRect(plane, bx, by)` -> {x, y, w, h} in css px on the current map,
+// or null when the block is not on the displayed level. Colours are
+// normalized by the largest displayed block each frame (auto-range, like
+// the demo's colormap).
+function drawVisitHeat(blockRect) {
+  if (!visitsView() || !lastVisits || !lastVisits.count) return;
+  const { count, keys, sums } = lastVisits;
+  const rects = new Array(count);
+  let maxSum = 0;
+  for (let i = 0; i < count; i++) {
+    const r = blockRect(keys[3 * i], keys[3 * i + 1], keys[3 * i + 2]);
+    rects[i] = r;
+    if (r && sums[i] > maxSum) maxSum = sums[i];
+  }
+  if (maxSum <= 0) return;
+  // Bin by colour so each bucket is one fill call.
+  const BUCKETS = 64;
+  const buckets = Array.from({ length: BUCKETS }, () => []);
+  for (let i = 0; i < count; i++) {
+    if (!rects[i]) continue;
+    const t = VISIT_HEAT_FLOOR + (1 - VISIT_HEAT_FLOOR) * (sums[i] / maxSum);
+    buckets[Math.min(BUCKETS - 1, Math.floor(t * BUCKETS))].push(rects[i]);
+  }
+  mapCtx.globalAlpha = VISIT_HEAT_ALPHA;
+  for (let k = 0; k < BUCKETS; k++) {
+    if (!buckets[k].length) continue;
+    mapCtx.fillStyle = FIRE_LUT[Math.min(255, Math.round((k + 0.5) / BUCKETS * 255))];
+    mapCtx.beginPath();
+    for (const r of buckets[k]) mapCtx.rect(r.x, r.y, r.w, r.h);
+    mapCtx.fill();
+  }
+  mapCtx.globalAlpha = 1;
+}
+
 function drawMap() {
   if (consoleId === 1) return;
   if (consoleId === 2) return drawSonicMap();
@@ -307,7 +406,18 @@ function drawMap() {
   mapCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
   mapCtx.clearRect(0, 0, cssWidth, cssHeight);
   if (entry.ok) {
-    mapCtx.drawImage(entry.img, 0, 0, cssWidth, cssHeight);
+    drawBaseImage(() => mapCtx.drawImage(entry.img, 0, 0, cssWidth, cssHeight),
+                  cssWidth, cssHeight);
+    // Visit planes are world*256 + stage; blocks sit at (bx*5, by*5) in the
+    // same level-x / screen-y space as the walker dots.
+    const plane = world * 256 + stage;
+    drawVisitHeat((p, bx, by) => {
+      if (p !== plane) return null;
+      const y = marioMapY(by * VISIT_BLOCK, imgH);
+      if (y >= imgH) return null;
+      return { x: bx * VISIT_BLOCK * scale, y: y * scale,
+               w: VISIT_BLOCK * scale, h: VISIT_BLOCK * scale };
+    });
   } else {
     mapCtx.fillStyle = "#12141a";
     mapCtx.fillRect(0, 0, cssWidth, cssHeight);
@@ -393,8 +503,19 @@ function drawSonicMap() {
   mapCtx.imageSmoothingQuality = "high";
   mapCtx.fillStyle = "#0a0b0f";
   mapCtx.fillRect(0, 0, cssWidth, cssHeight);
-  mapCtx.drawImage(entry.canvas, srcX, srcY, srcW, srcH,
-                   0, 0, cssWidth, cssHeight);
+  drawBaseImage(() => mapCtx.drawImage(entry.canvas, srcX, srcY, srcW, srcH,
+                                       0, 0, cssWidth, cssHeight),
+                cssWidth, cssHeight);
+  // Visit planes are zone*16 + act; blocks are 5 level px = 5/8 fog px.
+  const plane = zone * 16 + act;
+  const blockFog = VISIT_BLOCK / FOG_SCALE;
+  drawVisitHeat((p, bx, by) => {
+    if (p !== plane) return null;
+    const fx = bx * blockFog - srcX;
+    const fy = by * blockFog - srcY;
+    if (fx < -blockFog || fy < -blockFog || fx >= srcW || fy >= srcH) return null;
+    return { x: fx * scale, y: fy * scale, w: blockFog * scale, h: blockFog * scale };
+  });
   if (!lastSwarm) return;
 
   const { xs, ys, ws, ss } = lastSwarm;
@@ -499,7 +620,18 @@ function drawPyramidMap() {
   mapCtx.imageSmoothingEnabled = scale < 1;
   mapCtx.fillStyle = "#0a0b0f";
   mapCtx.fillRect(0, 0, cssWidth, cssHeight);
-  mapCtx.drawImage(entry.canvas, 0, 0, cssWidth, cssHeight);
+  drawBaseImage(() => mapCtx.drawImage(entry.canvas, 0, 0, cssWidth, cssHeight),
+                cssWidth, cssHeight);
+  // Visit planes are rooms (not keyed by temple level, like the reference
+  // reward); blocks are 5x5 in-room pixels, normalized over the whole
+  // pyramid.
+  drawVisitHeat((p, bx, by) => {
+    const cell = ROOM_CELL.get(p);
+    if (!cell) return null;
+    return { x: (cell.col * ROOM + bx * VISIT_BLOCK) * scale,
+             y: (cell.row * ROOM + by * VISIT_BLOCK) * scale,
+             w: VISIT_BLOCK * scale, h: VISIT_BLOCK * scale };
+  });
   if (!lastSwarm) return;
 
   const { xs, ys, ws, ss, bestIdx } = lastSwarm;
@@ -780,6 +912,9 @@ function ensureWorker() {
             ? `capped to ${msg.maxWalkers} by the browser's wasm memory`
             : `effective cap ${msg.maxWalkers}`;
         }
+        visitsAvailable = !!msg.countingVisits;
+        lastVisits = null;
+        updateVisitsUi();
         clearPlots();
         clearFog();
         clearPyramid();
@@ -795,6 +930,7 @@ function ensureWorker() {
         clearPlots();
         clearPyramid();
         lastSwarm = null;
+        lastVisits = null;
         drawMap();
         screenCtx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
         $("run-ended").hidden = true;
@@ -803,6 +939,10 @@ function ensureWorker() {
         break;
       case "step":
         onStep(msg);
+        break;
+      case "visits":
+        lastVisits = msg.visits;
+        drawMap();
         break;
       case "allDead": {
         running = false;
@@ -869,6 +1009,7 @@ function onStep(msg) {
     if (consoleId === 3 && msg.roomFrames && msg.roomFrames.length) {
       applyRoomFrames(msg.roomFrames);
     }
+    if (msg.visits) lastVisits = msg.visits;
     drawMap();
   }
 
@@ -958,8 +1099,7 @@ async function loadConsoleAssets() {
   mapZoom = 1;
   $("param-max-walkers").value = MAX_WALKERS_DEFAULT[consoleId] ?? 4000;
   applyAlgoUi();
-  $("map-title").innerHTML = consoleId === 3
-    ? "Pyramid map &mdash; swarm" : "Level map &mdash; swarm";
+  updateVisitsUi();
   document.querySelector(".map-credit").innerHTML = consoleId === 2
     ? "Fog of war: the map is revealed by the swarm as it explores. " +
       "Magenta dots: alive walkers &middot; grey: dead &middot; gold ring: best walker."
@@ -1071,6 +1211,8 @@ function applyAlgoUi() {
   const visits = graph && obsMode === 3 && consoleId !== 1;
   $("param-erase-row").hidden = !visits;
   $("graph-visits-hint").hidden = !graph || visits;
+  $("map-visits").hidden = !visits;
+  updateVisitsUi();
   for (const el of document.querySelectorAll(".graph-stat, .graph-plot")) el.hidden = !graph;
   if (!graph) $("max-walkers-hint").textContent = "";
 }
@@ -1087,6 +1229,26 @@ for (const btn of $("algo-select").querySelectorAll("button")) {
     if (romBuffer) initRun();
   });
 }
+
+// Map "visits" heatmap toggle (Graph + Coords): persisted wish; the worker
+// only ships the visit blocks while the view is on.
+function updateVisitsUi() {
+  const on = visitsView();
+  $("map-visits").classList.toggle("active", visitsMode);
+  $("map-visits-legend").hidden = !on;
+  const title = consoleId === 3 ? "Pyramid map" : "Level map";
+  $("map-title").innerHTML = `${title} &mdash; ${on ? "visits" : "swarm"}`;
+  if (initialized && worker) {
+    worker.postMessage({ type: "setVisitOverlay", on });
+  }
+}
+$("map-visits").addEventListener("click", () => {
+  visitsMode = !visitsMode;
+  try { localStorage.setItem("fgMapVisits", visitsMode ? "1" : "0"); } catch {}
+  updateVisitsUi();
+  drawMap();
+});
+try { visitsMode = localStorage.getItem("fgMapVisits") === "1"; } catch {}
 
 // Observation mode toggles: structural change -> restart the run.
 function setObsMode(mode) {

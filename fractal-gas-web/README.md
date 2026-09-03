@@ -70,6 +70,12 @@ The demo runs two swarm algorithms behind one interface
   input becomes "start walkers = min leaves", Elite is hidden, and Max
   walkers / Erase coef appear. Maps draw the graph: thin lines join each
   node to its parent, small squares are interior nodes, dots are leaves.
+  The map panel's **visits** button (Graph + Coords) shows the visit-count
+  reward like the old demo did: the level in greyscale with the 5x5-block
+  visit sums (exported by `VisitGrid::export_blocks`, `getVisitBlocks` in
+  the bindings) overlaid as a "fire" colormap at alpha 0.7, auto-ranged
+  to the largest displayed block, never-visited blocks transparent, the
+  walkers on top; `web/autotest-visits.html` checks the export.
 
   RNG draw order per iteration (replayable, `FractalTreeSampler`):
   companions for the distance term, companions for the clone term, the

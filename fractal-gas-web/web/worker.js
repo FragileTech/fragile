@@ -6,6 +6,15 @@ let running = false;
 let stepScheduled = false;
 let currentConsole = 0;
 let currentGame = 0;
+// Map "visits" heatmap: ship the Graph's visit-count blocks with each step
+// only while the UI shows them (the flag outlives init, so the toggle
+// survives restarts).
+let visitOverlay = false;
+
+function visitBlocks() {
+  if (!visitOverlay || !fg || !fg.countingVisits()) return null;
+  return fg.getVisitBlocks();
+}
 
 async function loadModule() {
   if (fg) return fg;
@@ -138,10 +147,12 @@ function stepOnce() {
     if (tiles) walkerTiles = new Uint8Array(tiles).buffer;
   }
   const roomFrames = isMontezuma() ? captureRooms(stats) : [];
+  const visits = visitBlocks();
   const transfers = [];
   if (frame) transfers.push(frame);
   if (walkerTiles) transfers.push(walkerTiles);
   for (const rf of roomFrames) transfers.push(rf.rgba);
+  if (visits) transfers.push(visits.keys.buffer, visits.sums.buffer);
   post(
     "step",
     {
@@ -149,6 +160,7 @@ function stepOnce() {
       frame,
       walkerTiles,
       roomFrames,
+      visits,
       frameWidth: fg.frameWidth(),
       frameHeight: fg.frameHeight(),
     },
@@ -204,7 +216,8 @@ self.onmessage = async (event) => {
           if (msg.rewardWeights) fg.setRewardWeights(msg.rewardWeights);
           // Graph mode: the effective population cap after the wasm memory
           // clamp (may be below the requested max walkers).
-          post("ready", { algorithm: fg.algorithm(), maxWalkers: fg.maxWalkers() });
+          post("ready", { algorithm: fg.algorithm(), maxWalkers: fg.maxWalkers(),
+                          countingVisits: fg.countingVisits() });
         } else {
           post("error", { message: fg.lastError() });
         }
@@ -233,6 +246,13 @@ self.onmessage = async (event) => {
       case "setRewardWeights":
         if (fg) fg.setRewardWeights(msg.weights);
         break;
+      case "setVisitOverlay": {
+        visitOverlay = !!msg.on;
+        // Show the current grid right away (e.g. toggled while paused).
+        const visits = visitBlocks();
+        if (visits) post("visits", { visits }, [visits.keys.buffer, visits.sums.buffer]);
+        break;
+      }
       case "setParams":
         // embind requires every FgParams field; the farm fields are only
         // meaningful at init, so zeros suffice here.

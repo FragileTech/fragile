@@ -18,6 +18,33 @@ uint64_t VisitGrid::block_id(const VisitKey& key, int32_t block) {
   return (plane << 40) | ((by & 0xFFFFFu) << 20) | (bx & 0xFFFFFu);
 }
 
+void VisitGrid::decode_block_id(uint64_t id, int32_t& plane, int32_t& bx,
+                                int32_t& by) {
+  plane = static_cast<int32_t>(static_cast<uint32_t>(id >> 40));
+  by = static_cast<int32_t>((id >> 20) & 0xFFFFFu);
+  bx = static_cast<int32_t>(id & 0xFFFFFu);
+}
+
+void VisitGrid::export_blocks(std::vector<int32_t>& keys,
+                              std::vector<float>& sums) const {
+  keys.clear();
+  sums.clear();
+  keys.reserve(blocks_.size() * 3);
+  sums.reserve(blocks_.size());
+  for (const auto& kv : blocks_) {
+    double sum = 0.0;
+    for (const float v : kv.second) sum += static_cast<double>(v);
+    const float s = static_cast<float>(sum);
+    if (s == 0.0f) continue;
+    int32_t plane = 0, bx = 0, by = 0;
+    decode_block_id(kv.first, plane, bx, by);
+    keys.push_back(plane);
+    keys.push_back(bx);
+    keys.push_back(by);
+    sums.push_back(s);
+  }
+}
+
 size_t VisitGrid::cell_offset(const VisitKey& key) const {
   const int32_t cx = std::max(key.x, 0) % block_;
   const int32_t cy = std::max(key.y, 0) % block_;

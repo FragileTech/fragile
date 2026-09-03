@@ -214,6 +214,9 @@ Changes apply to rewards earned from now on: reward already banked by the walker
       </div>
       <div id="map-panel">
         <div id="map-header">
+          <button id="map-visits" class="panel-toggle" type="button" hidden
+                  title="Show the Graph's visit counts as a heatmap over the greyscale map"
+                  data-help="Graph + Coords only: switches the map to the accumulated visit counts the Graph's reward uses (5x5-pixel blocks, decayed by the erase coef), drawn as a fire colormap over the greyscale level like the original Montezuma demo. Dark red = rarely visited, yellow/white = most visited; never-visited blocks are transparent. Walkers stay on top.">visits</button>
           <h2 id="map-title" data-help="Where every walker is in the level. Magenta = alive, grey = dead, gold ring = best walker. In Graph mode the thin lines join every node to its parent (the graph of visited states), leaves are the bigger dots. Mario draws on a full-level map; Sonic reveals the map as walkers explore it (fog of war); Montezuma shows the temple's 24-room pyramid, each room's picture captured the first time a walker enters it. Drag the bottom edge of the map to change its size.">Level map &mdash; swarm</h2>
           <div id="map-zoom" hidden>
             <button id="map-zoom-out" class="panel-toggle" type="button"
@@ -227,6 +230,9 @@ Changes apply to rewards earned from now on: reward already banked by the walker
         <div id="map-resize">
           <canvas id="level-map"></canvas>
         </div>
+        <p class="map-legend" id="map-visits-legend" hidden><span class="fire-bar"></span>
+        few visits &rarr; many (5x5 px blocks, decayed by the erase coef;
+        greyscale = level, magenta / gold = walkers)</p>
         <p class="map-credit">Magenta dots: alive walkers &middot; grey: dead
         &middot; gold ring: best walker. Level maps from
         <a href="https://ian-albert.com/games/super_mario_bros_maps/" target="_blank" rel="noreferrer">ian-albert.com</a>.</p>
