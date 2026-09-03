@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>graph autotest</title></head>
+<body>
+<pre id="result">RUNNING</pre>
+<script type="module">
+// End-to-end check of the Graph algorithm (FractalTree) in wasm on the NES
+// Mario ROM: the tree must grow from the start walkers, ship per-walker
+// parent/leaf arrays sized to the live population, and keep the root at 0.
+const out = document.getElementById("result");
+const report = (text) => {
+  out.textContent = text;
+  fetch("autotest-result-" + encodeURIComponent(text)).catch(() => {});
+};
+try {
+  if (!crossOriginIsolated) throw new Error("not crossOriginIsolated");
+  const romR = await fetch("test-rom.nes");
+  if (!romR.ok) throw new Error("test-rom.nes not found");
+  const rom = await romR.arrayBuffer();
+  const worker = new Worker("worker.js", { type: "module" });
+  const steps = [];
+  let maxWalkers = 0;
+  worker.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === "error") return report("GRAPH-FAIL " + msg.message);
+    if (msg.type === "ready") {
+      maxWalkers = msg.maxWalkers;
+      return worker.postMessage({ type: "start" });
+    }
+    if (msg.type === "step") {
+      steps.push(msg.stats);
+      if (steps.length >= 25) {
+        worker.postMessage({ type: "pause" });
+        const first = steps[0];
+        const last = steps[steps.length - 1];
+        const n = last.walkerCount;
+        const arraysOk = last.walkerParent.length === n &&
+                         last.walkerLeaf.length === n &&
+                         last.walkerX.length === n && last.walkerAlive.length === n;
+        let parentsOk = last.walkerParent[0] === 0;
+        for (let i = 0; i < n; i++) {
+          parentsOk = parentsOk && last.walkerParent[i] >= 0 && last.walkerParent[i] < n;
+        }
+        const ok = last.algorithm === 1 && last.iteration >= 25 &&
+                   maxWalkers === 200 && n >= 8 && n > first.walkerCount &&
+                   n <= 200 && arraysOk && parentsOk && last.nLeaves >= 1 &&
+                   last.numStepped <= n && Number.isFinite(last.meanVirtualReward) &&
+                   last.world !== undefined;
+        report((ok ? "GRAPH-OK" : "GRAPH-FAIL") +
+          ` iter=${last.iteration} walkers=${first.walkerCount}->${n}` +
+          ` leaves=${last.nLeaves} stepped=${last.numStepped}` +
+          ` alive=${last.aliveCount} maxWalkers=${maxWalkers} world=${last.world}-${last.level}`);
+      }
+    }
+  };
+  worker.onerror = (e) => report("GRAPH-FAIL worker: " + e.message);
+  worker.postMessage(
+    { type: "init", rom, params: {
+        n: 8, distCoef: 1.0, rewardCoef: 1.0, useCumulativeReward: true,
+        dtMin: 1, dtMax: 4, nElite: 0, seed: 7, nThreads: 4, obsMode: 3,
+        world: 1, stage: 1, console: 0, game: 0,
+        algorithm: 1, maxWalkers: 200, eraseCoef: 0.05 } },
+    [rom],
+  );
+} catch (err) {
+  report("GRAPH-FAIL " + String(err));
+}
+</script>
+</body>
+</html>

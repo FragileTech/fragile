@@ -11,6 +11,28 @@ namespace fg {
 
 class ThreadPool;
 
+/// Per-walker game information an env can expose after step_batch, indexed
+/// by BATCH position (like display_score). Consumed by the algorithms for
+/// the showcase ranking, the map overlays in the web UI and the tree's
+/// visit-count reward. Fields a game does not have stay 0.
+struct WalkerInfo {
+  float score = 0.0f;      // showcase ranking (== display_score)
+  int32_t x = 0;           // map position: Mario level x / Montezuma in-room px / Sonic level x
+  int32_t y = 0;           // Mario screen y / Montezuma in-room py / Sonic level y
+  int32_t world = 0;       // Mario world (1-based) / Montezuma room / Sonic zone
+  int32_t stage = 0;       // Mario stage (1-based) / Montezuma level / Sonic act
+  int32_t cam_x = 0;       // Sonic camera (fog-of-war tiles)
+  int32_t cam_y = 0;
+  int32_t lives = 0;       // Montezuma extras
+  int32_t inventory = 0;
+  // Visit-count key for the tree algorithm (valid iff has_visit_key): a
+  // plane id (level / room) and an integer cell position inside it.
+  bool has_visit_key = false;
+  int32_t visit_plane = 0;
+  int32_t visit_x = 0;
+  int32_t visit_y = 0;
+};
+
 class BatchEnv {
  public:
   virtual ~BatchEnv() = default;
@@ -57,6 +79,18 @@ class BatchEnv {
   virtual bool done_is_recoverable(int32_t /*walker_index*/) const {
     return false;
   }
+
+  /// Optional per-walker info of batch position i of the LAST step_batch
+  /// (see WalkerInfo). Algorithms that step only a subset of their walkers
+  /// copy it per walker right after the batch.
+  virtual bool has_walker_info() const { return false; }
+  virtual const WalkerInfo& walker_info(int32_t /*batch_index*/) const {
+    static const WalkerInfo kEmpty{};
+    return kEmpty;
+  }
+  /// True when walker_info() fills the visit-count key in the env's CURRENT
+  /// observation mode (the demo counts visits only on Coords tuples).
+  virtual bool has_visit_key() const { return false; }
 
   /// Render an RGBA frame (frame_width*frame_height*4 bytes) for a state
   /// blob. May leave `rgba` empty when the env has no visual output.

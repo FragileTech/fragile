@@ -248,6 +248,9 @@ StepInfo FractalGas::step() {
     }
   }
   info.best_walker_idx = best_idx;
+  info.n_walkers = n;
+  info.n_leaves = n;
+  info.num_stepped = n;
   if (params_.record_frames) {
     env_.render_frame(state_.states[static_cast<size_t>(best_idx)], best_frame_);
   }

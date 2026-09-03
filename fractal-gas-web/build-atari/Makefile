@@ -410,6 +410,30 @@ src/fractal_gas.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.s
 .PHONY : src/fractal_gas.cpp.s
 
+src/fractal_tree.o: src/fractal_tree.cpp.o
+.PHONY : src/fractal_tree.o
+
+# target to build an object file
+src/fractal_tree.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/fractal_tree.cpp.o
+.PHONY : src/fractal_tree.cpp.o
+
+src/fractal_tree.i: src/fractal_tree.cpp.i
+.PHONY : src/fractal_tree.i
+
+# target to preprocess a source file
+src/fractal_tree.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/fractal_tree.cpp.i
+.PHONY : src/fractal_tree.cpp.i
+
+src/fractal_tree.s: src/fractal_tree.cpp.s
+.PHONY : src/fractal_tree.s
+
+# target to generate assembly for a file
+src/fractal_tree.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/fractal_tree.cpp.s
+.PHONY : src/fractal_tree.cpp.s
+
 src/mario_reward.o: src/mario_reward.cpp.o
 .PHONY : src/mario_reward.o
 
@@ -554,6 +578,30 @@ src/thread_pool.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.s
 .PHONY : src/thread_pool.cpp.s
 
+src/visit_grid.o: src/visit_grid.cpp.o
+.PHONY : src/visit_grid.o
+
+# target to build an object file
+src/visit_grid.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/visit_grid.cpp.o
+.PHONY : src/visit_grid.cpp.o
+
+src/visit_grid.i: src/visit_grid.cpp.i
+.PHONY : src/visit_grid.i
+
+# target to preprocess a source file
+src/visit_grid.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/visit_grid.cpp.i
+.PHONY : src/visit_grid.cpp.i
+
+src/visit_grid.s: src/visit_grid.cpp.s
+.PHONY : src/visit_grid.s
+
+# target to generate assembly for a file
+src/visit_grid.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/visit_grid.cpp.s
+.PHONY : src/visit_grid.cpp.s
+
 src/walker_state.o: src/walker_state.cpp.o
 .PHONY : src/walker_state.o
 
@@ -649,6 +697,30 @@ tests/test_fractal_gas.s: tests/test_fractal_gas.cpp.s
 tests/test_fractal_gas.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.s
 .PHONY : tests/test_fractal_gas.cpp.s
+
+tests/test_fractal_tree.o: tests/test_fractal_tree.cpp.o
+.PHONY : tests/test_fractal_tree.o
+
+# target to build an object file
+tests/test_fractal_tree.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o
+.PHONY : tests/test_fractal_tree.cpp.o
+
+tests/test_fractal_tree.i: tests/test_fractal_tree.cpp.i
+.PHONY : tests/test_fractal_tree.i
+
+# target to preprocess a source file
+tests/test_fractal_tree.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.i
+.PHONY : tests/test_fractal_tree.cpp.i
+
+tests/test_fractal_tree.s: tests/test_fractal_tree.cpp.s
+.PHONY : tests/test_fractal_tree.s
+
+# target to generate assembly for a file
+tests/test_fractal_tree.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.s
+.PHONY : tests/test_fractal_tree.cpp.s
 
 tests/test_main.o: tests/test_main.cpp.o
 .PHONY : tests/test_main.o
@@ -775,6 +847,30 @@ tests/test_tensor_ops.s: tests/test_tensor_ops.cpp.s
 tests/test_tensor_ops.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.s
 .PHONY : tests/test_tensor_ops.cpp.s
+
+tests/test_visit_grid.o: tests/test_visit_grid.cpp.o
+.PHONY : tests/test_visit_grid.o
+
+# target to build an object file
+tests/test_visit_grid.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o
+.PHONY : tests/test_visit_grid.cpp.o
+
+tests/test_visit_grid.i: tests/test_visit_grid.cpp.i
+.PHONY : tests/test_visit_grid.i
+
+# target to preprocess a source file
+tests/test_visit_grid.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.i
+.PHONY : tests/test_visit_grid.cpp.i
+
+tests/test_visit_grid.s: tests/test_visit_grid.cpp.s
+.PHONY : tests/test_visit_grid.s
+
+# target to generate assembly for a file
+tests/test_visit_grid.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.s
+.PHONY : tests/test_visit_grid.cpp.s
 
 third_party/nes-py/nes_py/nes/src/cartridge.o: third_party/nes-py/nes_py/nes/src/cartridge.cpp.o
 .PHONY : third_party/nes-py/nes_py/nes/src/cartridge.o
@@ -1076,6 +1172,9 @@ help:
 	@echo "... src/fractal_gas.o"
 	@echo "... src/fractal_gas.i"
 	@echo "... src/fractal_gas.s"
+	@echo "... src/fractal_tree.o"
+	@echo "... src/fractal_tree.i"
+	@echo "... src/fractal_tree.s"
 	@echo "... src/mario_reward.o"
 	@echo "... src/mario_reward.i"
 	@echo "... src/mario_reward.s"
@@ -1094,6 +1193,9 @@ help:
 	@echo "... src/thread_pool.o"
 	@echo "... src/thread_pool.i"
 	@echo "... src/thread_pool.s"
+	@echo "... src/visit_grid.o"
+	@echo "... src/visit_grid.i"
+	@echo "... src/visit_grid.s"
 	@echo "... src/walker_state.o"
 	@echo "... src/walker_state.i"
 	@echo "... src/walker_state.s"
@@ -1106,6 +1208,9 @@ help:
 	@echo "... tests/test_fractal_gas.o"
 	@echo "... tests/test_fractal_gas.i"
 	@echo "... tests/test_fractal_gas.s"
+	@echo "... tests/test_fractal_tree.o"
+	@echo "... tests/test_fractal_tree.i"
+	@echo "... tests/test_fractal_tree.s"
 	@echo "... tests/test_main.o"
 	@echo "... tests/test_main.i"
 	@echo "... tests/test_main.s"
@@ -1121,6 +1226,9 @@ help:
 	@echo "... tests/test_tensor_ops.o"
 	@echo "... tests/test_tensor_ops.i"
 	@echo "... tests/test_tensor_ops.s"
+	@echo "... tests/test_visit_grid.o"
+	@echo "... tests/test_visit_grid.i"
+	@echo "... tests/test_visit_grid.s"
 	@echo "... third_party/nes-py/nes_py/nes/src/cartridge.o"
 	@echo "... third_party/nes-py/nes_py/nes/src/cartridge.i"
 	@echo "... third_party/nes-py/nes_py/nes/src/cartridge.s"

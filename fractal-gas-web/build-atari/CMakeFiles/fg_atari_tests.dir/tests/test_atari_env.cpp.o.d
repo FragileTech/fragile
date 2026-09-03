@@ -228,5 +228,6 @@ CMakeFiles/fg_atari_tests.dir/tests/test_atari_env.cpp.o: \
  /usr/include/c++/15/bits/stl_numeric.h \
  /usr/include/c++/15/pstl/glue_numeric_defs.h \
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
  /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp

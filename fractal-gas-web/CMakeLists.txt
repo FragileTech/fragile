@@ -33,6 +33,8 @@ add_library(fractal_gas_core STATIC
   src/nes_env.cpp
   src/thread_pool.cpp
   src/fractal_gas.cpp
+  src/fractal_tree.cpp
+  src/visit_grid.cpp
 )
 target_include_directories(fractal_gas_core PUBLIC src)
 target_link_libraries(fractal_gas_core PUBLIC nes_core)
@@ -191,6 +193,8 @@ else()
     tests/test_fractal_gas.cpp
     tests/test_nes_env.cpp
     tests/test_montezuma_logic.cpp
+    tests/test_visit_grid.cpp
+    tests/test_fractal_tree.cpp
   )
   target_include_directories(fg_tests PRIVATE tests)
   target_link_libraries(fg_tests PRIVATE fractal_gas_core)

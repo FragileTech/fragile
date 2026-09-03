@@ -209,6 +209,7 @@ CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: \
  /usr/include/c++/15/pstl/glue_numeric_defs.h \
  /home/guillem/fragile/fractal-gas-web/src/env.hpp \
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
  /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
  /usr/include/c++/15/bits/algorithmfwd.h \

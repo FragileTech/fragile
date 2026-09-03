@@ -210,6 +210,7 @@ CMakeFiles/fg_retro_tests.dir/tests/test_retro_env.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/retro_env.hpp
  /home/guillem/fragile/fractal-gas-web/src/retro_game_logic.hpp
  /home/guillem/fragile/fractal-gas-web/src/rng.hpp
+ /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp
  /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp
  /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp

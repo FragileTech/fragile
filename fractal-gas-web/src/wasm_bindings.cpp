@@ -4,15 +4,19 @@
 //
 // Three consoles are supported end-to-end:
 //   0 = NES / Super Mario Bros  (nes-py core, pthread-parallel)
-//   1 = Atari 2600              (ALE core, pthread-parallel)
+//   1 = Atari 2600              (ALE core, pthread-parallel; game 1 =
+//       Montezuma's Revenge with dedicated logic)
 //   2 = Sega Genesis (Genesis Plus GX statically linked into a shim module
 //       instantiated once per plain Web Worker — RetroFarmEnv dispatches
 //       walker steps to N such workers in parallel via shared memory)
+// and two algorithms (src/swarm_algorithm.hpp):
+//   0 = "Wave"  FractalGas   1 = "Graph" FractalTree
 #ifdef __EMSCRIPTEN__
 
 #include <emscripten/bind.h>
 #include <emscripten/val.h>
 
+#include <algorithm>
 #include <cstdio>
 #include <fstream>
 #include <memory>
@@ -20,20 +24,30 @@
 
 #include "atari_env.hpp"
 #include "fractal_gas.hpp"
+#include "fractal_tree.hpp"
 #include "nes_env.hpp"
 #include "retro_farm_env.hpp"
+#include "swarm_algorithm.hpp"
 
 namespace {
 
 std::unique_ptr<fg::BatchEnv> g_env;
 fg::NesMarioEnv* g_nes = nullptr;  // non-owning; set when console == 0
 fg::AtariEnv* g_atari = nullptr;   // non-owning; set when console == 1
-std::unique_ptr<fg::FractalGas> g_gas;
+std::unique_ptr<fg::SwarmAlgorithm> g_algo;
+int g_algorithm = 0;
+int g_max_walkers = 0;  // effective Graph cap after the memory clamp
 std::string g_last_error;
 std::vector<uint8_t> g_frame;
 
+// Scratch buffers for the per-walker arrays (copied to plain JS typed
+// arrays before they are returned, so JS never aliases wasm memory).
+std::vector<int32_t> g_wx, g_wy, g_ww, g_ws, g_parent;
+std::vector<uint8_t> g_alive, g_leaf;
+std::vector<int32_t> g_tcx, g_tcy, g_tz, g_ta;
+
 struct FgParams {
-  int n = 32;
+  int n = 32;         // Wave: N walkers; Graph: start walkers = min leaves
   float distCoef = 1.0f;
   float rewardCoef = 1.0f;
   bool useCumulativeReward = true;
@@ -48,6 +62,9 @@ struct FgParams {
   int console = 0;   // 0=NES, 1=Atari, 2=Genesis
   int game = 0;      // Genesis: 0=Airstriker, 1=Sonic; Atari: 0=generic,
                      // 1=Montezuma's Revenge (dedicated RAM logic + map)
+  int algorithm = 0;   // 0=Wave (FractalGas), 1=Graph (FractalTree)
+  int maxWalkers = 0;  // Graph: population cap, 0 = console default
+  float eraseCoef = 0.05f;  // Graph: visit-count decay
   // Genesis core-worker farm, pre-spawned by worker.js (nested workers need
   // the JS event loop, which fg_init blocks): region base pointer, worker
   // count, and the blob size the workers reported.
@@ -70,6 +87,43 @@ fg::FractalGasParams to_gas_params(const FgParams& p) {
   return params;
 }
 
+/// Graph population cap: the requested / console-default max walkers,
+/// clamped to what the fixed 512 MB wasm heap can hold (each walker keeps a
+/// full emulator state blob plus its observation row).
+int clamp_max_walkers(const FgParams& p) {
+  const int defaults[3] = {4000, 20000, 150};  // NES, Atari, Genesis
+  const int console = p.console < 0 || p.console > 2 ? 0 : p.console;
+  int requested = p.maxWalkers > 0 ? p.maxWalkers : defaults[console];
+  std::vector<char> state;
+  std::vector<float> obs;
+  g_env->reset(state, obs);  // cached by every env, so this is free later
+  const double per_walker =
+      static_cast<double>(state.size()) + static_cast<double>(obs.size()) * 4.0 + 256.0;
+  const double heap = 512.0 * 1024 * 1024;
+  double reserve = 160.0 * 1024 * 1024;  // module, emulator instances, frames
+  if (console == 2) reserve += static_cast<double>(p.farmWorkers) * 3.7 * 1024 * 1024;
+  const double budget = heap - reserve;
+  const int cap = static_cast<int>(std::max(1.0, budget / per_walker));
+  requested = std::min(requested, cap);
+  return std::max(requested, std::max(p.n, 1));
+}
+
+fg::FractalTreeParams to_tree_params(const FgParams& p) {
+  fg::FractalTreeParams params;
+  params.start_walkers = std::max(p.n, 1);
+  params.min_leafs = std::max(p.n, 1);
+  params.max_walkers = clamp_max_walkers(p);
+  params.dist_coef = p.distCoef;
+  params.reward_coef = p.rewardCoef;
+  params.dt_min = p.dtMin;
+  params.dt_max = p.dtMax;
+  params.count_visits = true;  // effective only with a visit key (Coords)
+  params.erase_coef = p.eraseCoef;
+  params.record_frames = true;
+  params.seed = static_cast<uint64_t>(p.seed);
+  return params;
+}
+
 void write_bytes(const char* path, emscripten::val data) {
   const std::vector<uint8_t> bytes =
       emscripten::convertJSArrayToNumberVector<uint8_t>(data);
@@ -82,7 +136,7 @@ void write_bytes(const char* path, emscripten::val data) {
 /// aux: Uint8Array of the gpgx.so side module (Genesis only; else empty).
 bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
   try {
-    g_gas.reset();
+    g_algo.reset();
     g_env.reset();
     g_nes = nullptr;
     g_atari = nullptr;
@@ -121,13 +175,21 @@ bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
       }
     }
 
-    g_gas = std::make_unique<fg::FractalGas>(*g_env, to_gas_params(p));
-    g_gas->reset();
+    g_algorithm = p.algorithm == 1 ? 1 : 0;
+    if (g_algorithm == 1) {
+      const fg::FractalTreeParams tp = to_tree_params(p);
+      g_max_walkers = tp.max_walkers;
+      g_algo = std::make_unique<fg::FractalTree>(*g_env, tp);
+    } else {
+      g_max_walkers = p.n;
+      g_algo = std::make_unique<fg::FractalGas>(*g_env, to_gas_params(p));
+    }
+    g_algo->reset();
     g_last_error.clear();
     return true;
   } catch (const std::exception& e) {
     g_last_error = e.what();
-    g_gas.reset();
+    g_algo.reset();
     g_env.reset();
     g_nes = nullptr;
     g_atari = nullptr;
@@ -136,10 +198,19 @@ bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
 }
 
 std::string fg_last_error() { return g_last_error; }
+int fg_algorithm() { return g_algorithm; }
+int fg_max_walkers() { return g_max_walkers; }
+
+template <typename T>
+emscripten::val copy_array(const std::vector<T>& v) {
+  // A fresh, non-shared typed array (slice of a view into wasm memory).
+  return emscripten::val(emscripten::typed_memory_view(v.size(), v.data()))
+      .template call<emscripten::val>("slice");
+}
 
 emscripten::val fg_step() {
-  if (!g_gas) return emscripten::val::null();
-  const fg::StepInfo info = g_gas->step();
+  if (!g_algo) return emscripten::val::null();
+  const fg::StepInfo info = g_algo->step();
   emscripten::val out = emscripten::val::object();
   out.set("iteration", info.iteration);
   out.set("numCloned", info.num_cloned);
@@ -153,101 +224,83 @@ emscripten::val fg_step() {
   out.set("minVirtualReward", info.min_virtual_reward);
   out.set("meanDt", info.mean_dt);
   out.set("bestWalkerIdx", info.best_walker_idx);
-  out.set("totalSteps", static_cast<double>(g_gas->total_steps()));
-  out.set("totalClones", static_cast<double>(g_gas->total_clones()));
-  if (g_nes) {
-    // World/level of the displayed walker (1-indexed), NES only.
-    out.set("world", g_nes->walker_world(info.best_walker_idx));
-    out.set("level", g_nes->walker_stage(info.best_walker_idx));
-    // Per-walker swarm data for the level-map overlay: level x (world
-    // pixels), on-screen y-pixel, world/stage and alive flag.
-    const int32_t n = g_gas->params().N;
-    const std::vector<uint8_t>& dones = g_gas->state().dones;
-    emscripten::val xs = emscripten::val::array();
-    emscripten::val ys = emscripten::val::array();
-    emscripten::val ws = emscripten::val::array();
-    emscripten::val ss = emscripten::val::array();
-    emscripten::val alive = emscripten::val::array();
+  out.set("totalSteps", static_cast<double>(g_algo->total_steps()));
+  out.set("totalClones", static_cast<double>(g_algo->total_clones()));
+  out.set("walkerCount", info.n_walkers);
+  out.set("nLeaves", info.n_leaves);
+  out.set("numStepped", info.num_stepped);
+  out.set("algorithm", g_algorithm);
+
+  const int32_t n = g_algo->n_walkers();
+  if (g_algo->has_walker_info() && n > 0) {
+    // Per-walker swarm data for the map overlays, valid by WALKER index for
+    // both algorithms: position, level ids, alive flag, and the tree
+    // structure (parent index, leaf flag; the wave reports parent = self).
+    const auto un = static_cast<size_t>(n);
+    g_wx.resize(un); g_wy.resize(un); g_ww.resize(un); g_ws.resize(un);
+    g_parent.resize(un); g_alive.resize(un); g_leaf.resize(un);
     for (int32_t i = 0; i < n; ++i) {
-      xs.set(i, g_nes->walker_x(i));
-      ys.set(i, g_nes->walker_y(i));
-      ws.set(i, g_nes->walker_world(i));
-      ss.set(i, g_nes->walker_stage(i));
-      alive.set(i, static_cast<size_t>(i) < dones.size() && !dones[i]);
+      const fg::WalkerInfo& wi = g_algo->walker_info(i);
+      const auto ui = static_cast<size_t>(i);
+      g_wx[ui] = wi.x;
+      g_wy[ui] = wi.y;
+      g_ww[ui] = wi.world;
+      g_ws[ui] = wi.stage;
+      g_parent[ui] = g_algo->walker_parent(i);
+      g_alive[ui] = g_algo->walker_alive(i) ? 1 : 0;
+      g_leaf[ui] = g_algo->walker_is_leaf(i) ? 1 : 0;
     }
-    out.set("walkerX", xs);
-    out.set("walkerY", ys);
-    out.set("walkerWorld", ws);
-    out.set("walkerStage", ss);
-    out.set("walkerAlive", alive);
-  } else if (g_atari && g_atari->game() == fg::AtariGame::kMontezuma) {
-    // Montezuma pyramid swarm map: per-walker in-room pixel position of
-    // Panama Joe (inside the HUD-cropped 160x160 room image), walkerWorld =
-    // room number, walkerStage = level (0-based). Generic Atari games emit
-    // nothing (no map).
-    const int32_t n = g_gas->params().N;
-    const std::vector<uint8_t>& dones = g_gas->state().dones;
-    emscripten::val xs = emscripten::val::array();
-    emscripten::val ys = emscripten::val::array();
-    emscripten::val ws = emscripten::val::array();
-    emscripten::val ss = emscripten::val::array();
-    emscripten::val alive = emscripten::val::array();
-    for (int32_t i = 0; i < n; ++i) {
-      xs.set(i, g_atari->walker_x(i));
-      ys.set(i, g_atari->walker_y(i));
-      ws.set(i, g_atari->walker_room(i));
-      ss.set(i, g_atari->walker_level(i));
-      alive.set(i, static_cast<size_t>(i) < dones.size() && !dones[i]);
+    out.set("walkerX", copy_array(g_wx));
+    out.set("walkerY", copy_array(g_wy));
+    out.set("walkerWorld", copy_array(g_ww));
+    out.set("walkerStage", copy_array(g_ws));
+    out.set("walkerParent", copy_array(g_parent));
+    out.set("walkerAlive", copy_array(g_alive));
+    out.set("walkerLeaf", copy_array(g_leaf));
+    if (dynamic_cast<fg::RetroFarmEnv*>(g_env.get()) != nullptr) {
+      // Per-walker camera (Sonic), kept for callers that pair it by walker.
+      g_tcx.resize(un); g_tcy.resize(un);
+      for (int32_t i = 0; i < n; ++i) {
+        const fg::WalkerInfo& wi = g_algo->walker_info(i);
+        g_tcx[static_cast<size_t>(i)] = wi.cam_x;
+        g_tcy[static_cast<size_t>(i)] = wi.cam_y;
+      }
+      out.set("walkerCamX", copy_array(g_tcx));
+      out.set("walkerCamY", copy_array(g_tcy));
     }
-    out.set("walkerX", xs);
-    out.set("walkerY", ys);
-    out.set("walkerWorld", ws);
-    out.set("walkerStage", ss);
-    out.set("walkerAlive", alive);
-    out.set("world", g_atari->walker_room(info.best_walker_idx));
-    out.set("level", g_atari->walker_level(info.best_walker_idx));
-    out.set("lives", g_atari->walker_lives(info.best_walker_idx));
-    out.set("inventory", g_atari->walker_inventory(info.best_walker_idx));
-  } else if (auto* farm = dynamic_cast<fg::RetroFarmEnv*>(g_env.get())) {
-    // Sonic fog-of-war swarm map: per-walker position/level/camera arrays
-    // (same field names as the NES branch where shared; walkerWorld = zone,
-    // walkerStage = act, both 0-based internal ids).
-    const int32_t n = farm->walker_count();
-    const std::vector<uint8_t>& dones = g_gas->state().dones;
-    emscripten::val xs = emscripten::val::array();
-    emscripten::val ys = emscripten::val::array();
-    emscripten::val ws = emscripten::val::array();
-    emscripten::val ss = emscripten::val::array();
-    emscripten::val cxs = emscripten::val::array();
-    emscripten::val cys = emscripten::val::array();
-    emscripten::val alive = emscripten::val::array();
-    for (int32_t i = 0; i < n; ++i) {
-      xs.set(i, farm->walker_x(i));
-      ys.set(i, farm->walker_y(i));
-      ws.set(i, farm->walker_zone(i));
-      ss.set(i, farm->walker_act(i));
-      cxs.set(i, farm->walker_cam_x(i));
-      cys.set(i, farm->walker_cam_y(i));
-      alive.set(i, static_cast<size_t>(i) < dones.size() && !dones[i]);
+    const fg::WalkerInfo& best = g_algo->walker_info(info.best_walker_idx);
+    out.set("world", best.world);
+    out.set("level", best.stage);
+    if (g_atari) {
+      out.set("lives", best.lives);
+      out.set("inventory", best.inventory);
     }
-    out.set("walkerX", xs);
-    out.set("walkerY", ys);
-    out.set("walkerWorld", ws);
-    out.set("walkerStage", ss);
-    out.set("walkerCamX", cxs);
-    out.set("walkerCamY", cys);
-    out.set("walkerAlive", alive);
-    if (n > 0) {
-      const int32_t best = g_gas->get_best_walker().first;
-      out.set("world", farm->walker_zone(best));
-      out.set("level", farm->walker_act(best));
+  }
+  if (auto* farm = dynamic_cast<fg::RetroFarmEnv*>(g_env.get())) {
+    // Sonic fog-of-war tiles are indexed by BATCH position of the last
+    // step (a subset of the walkers in Graph mode): ship the camera and
+    // level of each tile alongside so the UI can pair them.
+    const int32_t t = farm->walker_count();
+    const auto ut = static_cast<size_t>(t);
+    g_tcx.resize(ut); g_tcy.resize(ut); g_tz.resize(ut); g_ta.resize(ut);
+    for (int32_t j = 0; j < t; ++j) {
+      const auto uj = static_cast<size_t>(j);
+      g_tcx[uj] = farm->walker_cam_x(j);
+      g_tcy[uj] = farm->walker_cam_y(j);
+      g_tz[uj] = farm->walker_zone(j);
+      g_ta[uj] = farm->walker_act(j);
     }
+    out.set("tileCount", t);
+    out.set("tileCamX", copy_array(g_tcx));
+    out.set("tileCamY", copy_array(g_tcy));
+    out.set("tileZone", copy_array(g_tz));
+    out.set("tileAct", copy_array(g_ta));
   }
   return out;
 }
 
-/// Fog-of-war tiles: N x 40x28 RGB bytes from the last Genesis step (view
-/// into wasm memory — copy on the JS side before using across steps).
+/// Fog-of-war tiles: tileCount x 40x28 RGB bytes from the last Genesis step
+/// (view into wasm memory — copy on the JS side before using across steps).
 emscripten::val fg_get_walker_tiles() {
   auto* farm = dynamic_cast<fg::RetroFarmEnv*>(g_env.get());
   if (!farm || farm->walker_tiles_size() == 0) return emscripten::val::null();
@@ -255,11 +308,11 @@ emscripten::val fg_get_walker_tiles() {
       farm->walker_tiles_size(), farm->walker_tiles()));
 }
 
-/// RGBA bytes of the best walker's frame (view into wasm memory — copy on
-/// the JS side before transferring).
+/// RGBA bytes of the showcased walker's frame (view into wasm memory — copy
+/// on the JS side before transferring).
 emscripten::val fg_get_best_frame() {
-  if (!g_gas) return emscripten::val::null();
-  g_frame = g_gas->best_frame();
+  if (!g_algo) return emscripten::val::null();
+  g_frame = g_algo->best_frame();
   if (g_frame.empty()) return emscripten::val::null();
   return emscripten::val(
       emscripten::typed_memory_view(g_frame.size(), g_frame.data()));
@@ -267,14 +320,14 @@ emscripten::val fg_get_best_frame() {
 
 /// RGBA frame of walker i's CURRENT state (view into wasm memory — copy on
 /// the JS side before transferring). Used by the Montezuma pyramid map to
-/// capture a room image the first time a walker enters it.
+/// capture a room image the first time a walker enters it. Null for a tree
+/// slot that has no state yet.
 emscripten::val fg_render_walker_frame(int i) {
-  if (!g_gas || !g_env) return emscripten::val::null();
-  const std::vector<std::vector<char>>& states = g_gas->state().states;
-  if (i < 0 || static_cast<size_t>(i) >= states.size()) {
-    return emscripten::val::null();
-  }
-  g_env->render_frame(states[static_cast<size_t>(i)], g_frame);
+  if (!g_algo || !g_env) return emscripten::val::null();
+  if (i < 0 || i >= g_algo->n_walkers()) return emscripten::val::null();
+  const std::vector<char>& state = g_algo->walker_state(i);
+  if (state.empty()) return emscripten::val::null();
+  g_env->render_frame(state, g_frame);
   if (g_frame.empty()) return emscripten::val::null();
   return emscripten::val(
       emscripten::typed_memory_view(g_frame.size(), g_frame.data()));
@@ -284,19 +337,20 @@ int fg_frame_width() { return g_env ? g_env->frame_width() : 0; }
 int fg_frame_height() { return g_env ? g_env->frame_height() : 0; }
 int fg_n_actions() { return g_env ? g_env->n_actions() : 0; }
 
-/// Live-tunable parameters. Changing N/seed/console/obsMode/level requires
-/// fg_init again.
+/// Live-tunable parameters. Changing N/seed/console/obsMode/level/algorithm
+/// requires fg_init again.
 void fg_set_params(const FgParams& p) {
-  if (!g_gas) return;
-  g_gas->set_dist_coef(p.distCoef);
-  g_gas->set_reward_coef(p.rewardCoef);
-  g_gas->set_use_cumulative_reward(p.useCumulativeReward);
-  g_gas->set_dt_range(p.dtMin, p.dtMax);
-  g_gas->set_n_elite(p.nElite);
+  if (!g_algo) return;
+  g_algo->set_dist_coef(p.distCoef);
+  g_algo->set_reward_coef(p.rewardCoef);
+  g_algo->set_use_cumulative_reward(p.useCumulativeReward);
+  g_algo->set_dt_range(p.dtMin, p.dtMax);
+  g_algo->set_n_elite(p.nElite);
+  g_algo->set_erase_coef(p.eraseCoef);
 }
 
 void fg_reset() {
-  if (g_gas) g_gas->reset();
+  if (g_algo) g_algo->reset();
 }
 
 /// Live-tunable reward term weights, as a JS array of numbers in the
@@ -336,8 +390,6 @@ void fg_set_reward_weights(emscripten::val weights) {
   }
 }
 
-
-
 }  // namespace
 
 EMSCRIPTEN_BINDINGS(fractal_gas) {
@@ -356,12 +408,17 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
       .field("stage", &FgParams::stage)
       .field("console", &FgParams::console)
       .field("game", &FgParams::game)
+      .field("algorithm", &FgParams::algorithm)
+      .field("maxWalkers", &FgParams::maxWalkers)
+      .field("eraseCoef", &FgParams::eraseCoef)
       .field("farmPtr", &FgParams::farmPtr)
       .field("farmWorkers", &FgParams::farmWorkers)
       .field("farmBlobLen", &FgParams::farmBlobLen);
 
   emscripten::function("init", &fg_init);
   emscripten::function("lastError", &fg_last_error);
+  emscripten::function("algorithm", &fg_algorithm);
+  emscripten::function("maxWalkers", &fg_max_walkers);
   emscripten::function("step", &fg_step);
   emscripten::function("getBestFrame", &fg_get_best_frame);
   emscripten::function("renderWalkerFrame", &fg_render_walker_frame);

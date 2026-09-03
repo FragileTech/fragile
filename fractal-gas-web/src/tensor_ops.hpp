@@ -5,6 +5,7 @@
 #define FRACTAL_GAS_TENSOR_OPS_HPP
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 #include "rng.hpp"
@@ -18,6 +19,23 @@ namespace fg {
 ///   return where(standard > 0, log(1 + standard) + 1, exp(standard))
 /// A single-element tensor has std == NaN in torch, so it also maps to ones.
 std::vector<float> asymmetric_rescale(const std::vector<float>& x);
+
+/// Python reference (cb9f3296 fractalai.py::relativize(x, std, mean)) with
+/// externally supplied statistics (the tree normalizes with leaf-only
+/// mean/std):
+///   if std == 0 or isnan or isinf: return ones_like(x)
+///   standard = (x - mean) / std
+///   return where(standard > 0, log(1 + standard) + 1, exp(standard))
+/// asymmetric_rescale(x) == relativize_with_stats(x, mean(x), std(x)).
+std::vector<float> relativize_with_stats(const std::vector<float>& x,
+                                         double mean, double stdv);
+
+/// Mean and Bessel-corrected std (torch .mean()/.std()) over the elements
+/// where mask != 0. Fewer than two selected elements give std = NaN (and
+/// mean = NaN when none), matching torch, so relativize_with_stats falls
+/// back to ones.
+std::pair<double, double> mean_std_masked(const std::vector<float>& x,
+                                          const std::vector<uint8_t>& mask);
 
 class ThreadPool;
 

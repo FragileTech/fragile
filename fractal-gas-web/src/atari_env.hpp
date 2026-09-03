@@ -97,6 +97,17 @@ class AtariEnv final : public BatchEnv {
   int32_t walker_lives(int32_t walker_index) const;
   int32_t walker_inventory(int32_t walker_index) const;
 
+  /// Generic per-walker info (Montezuma only; generic games have none).
+  /// Visit key: plane = room (like the reference, not keyed by temple
+  /// level), cell = in-room pixel of Panama Joe. Coords mode only.
+  bool has_walker_info() const override {
+    return game_ == AtariGame::kMontezuma;
+  }
+  const WalkerInfo& walker_info(int32_t batch_index) const override;
+  bool has_visit_key() const override {
+    return game_ == AtariGame::kMontezuma && obs_mode_ == AtariObsMode::kCoords;
+  }
+
   /// A life loss with lives remaining is a recoverable death: the walker's
   /// done fires (so the swarm avoids losing lives) but FractalGas may revive
   /// it when every walker is dead. Games without a life counter (ALE
@@ -147,6 +158,7 @@ class AtariEnv final : public BatchEnv {
   int32_t screen_h_ = 0;
   std::vector<std::vector<unsigned char>> scratch_;  // per-slot pixel buffer
   std::vector<DisplayInfo> display_cache_;           // per walker
+  std::vector<WalkerInfo> info_cache_;               // per walker
   std::vector<uint8_t> recoverable_cache_;           // per walker
 
   // First reset() caches the post-reset_game() state; later resets return

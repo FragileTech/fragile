@@ -85,6 +85,12 @@ class NesMarioEnv final : public BatchEnv {
   int32_t walker_x(int32_t walker_index) const;
   int32_t walker_y(int32_t walker_index) const;
 
+  /// Generic per-walker info (SwarmAlgorithm / map overlays / tree visit
+  /// key: plane = world*256 + stage, cell = (level x, screen y)).
+  bool has_walker_info() const override { return true; }
+  const WalkerInfo& walker_info(int32_t batch_index) const override;
+  bool has_visit_key() const override { return obs_mode_ == ObsMode::kCoords; }
+
   void render_frame(const std::vector<char>& state,
                     std::vector<uint8_t>& rgba) override;
   int32_t frame_width() const override;
@@ -117,6 +123,7 @@ class NesMarioEnv final : public BatchEnv {
   ThreadPool pool_;
   std::vector<std::unique_ptr<NES::Emulator>> emulators_;  // one per pool slot
   std::vector<DisplayInfo> display_cache_;                 // per walker
+  std::vector<WalkerInfo> info_cache_;                     // per walker
 
   // First reset() boots the game and caches the initial state; later resets
   // return the cache (nes-py's _backup()/_restore() pattern). Re-booting on

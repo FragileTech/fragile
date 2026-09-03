@@ -208,6 +208,7 @@ CMakeFiles/fg_retro_tests.dir/tests/test_retro_env.cpp.o: /home/guillem/fragile/
   /home/guillem/fragile/fractal-gas-web/src/retro_env.hpp \
   /home/guillem/fragile/fractal-gas-web/src/retro_game_logic.hpp \
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
   /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
   /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp \
@@ -796,6 +797,8 @@ libfg_retro_env.a:
 
 /usr/include/c++/15/bits/alloc_traits.h:
 
+/home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp:
+
 /usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o:
 
 /usr/include/c++/15/bits/range_access.h:
@@ -992,6 +995,10 @@ CMakeFiles/fg_retro_tests.dir/tests/test_main.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/types/time_t.h:
 
+/usr/include/linux/sched/types.h:
+
+/usr/include/c++/15/bits/nested_exception.h:
+
 /usr/include/c++/15/ext/alloc_traits.h:
 
 /usr/include/c++/15/condition_variable:
@@ -1091,10 +1098,6 @@ CMakeFiles/fg_retro_tests.dir/tests/test_main.cpp.o:
 /usr/include/c++/15/backward/auto_ptr.h:
 
 /usr/include/c++/15/bits/chrono.h:
-
-/usr/include/c++/15/bits/nested_exception.h:
-
-/usr/include/linux/sched/types.h:
 
 /usr/include/c++/15/bits/parse_numbers.h:
 

@@ -124,6 +124,8 @@ main {
 }
 
 label { display: block; margin-bottom: 8px; color: #b6bac6; }
+label[hidden], .plot-wrap[hidden], .stat-grid div[hidden], p.hint[hidden] { display: none; }
+#max-walkers-hint { display: block; margin-top: 2px; }
 label input[type="number"] {
   width: 100%;
   margin-top: 3px;

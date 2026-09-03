@@ -176,7 +176,9 @@ self.onmessage = async (event) => {
       case "init": {
         running = false;
         await loadModule();
-        const params = { ...msg.params };
+        // embind requires every FgParams field; default the algorithm
+        // fields so callers that predate them (autotest pages) still work.
+        const params = { algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, ...msg.params };
         currentConsole = params.console;
         currentGame = params.game;
         capturedRooms = new Set();
@@ -200,7 +202,9 @@ self.onmessage = async (event) => {
         const ok = fg.init(new Uint8Array(msg.rom), aux, params);
         if (ok) {
           if (msg.rewardWeights) fg.setRewardWeights(msg.rewardWeights);
-          post("ready", {});
+          // Graph mode: the effective population cap after the wasm memory
+          // clamp (may be below the requested max walkers).
+          post("ready", { algorithm: fg.algorithm(), maxWalkers: fg.maxWalkers() });
         } else {
           post("error", { message: fg.lastError() });
         }
@@ -234,6 +238,7 @@ self.onmessage = async (event) => {
         // meaningful at init, so zeros suffice here.
         if (fg) {
           fg.setParams({ farmPtr: 0, farmWorkers: 0, farmBlobLen: 0,
+                         algorithm: 0, maxWalkers: 0, eraseCoef: 0.05,
                          ...msg.params });
         }
         break;

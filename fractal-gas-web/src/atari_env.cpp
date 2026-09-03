@@ -232,13 +232,34 @@ void AtariEnv::step_batch(const std::vector<std::vector<char>>& states,
   const auto d = static_cast<size_t>(obs_dim());
   display_cache_.resize(static_cast<size_t>(n));
   recoverable_cache_.assign(static_cast<size_t>(n), 0);
+  info_cache_.resize(static_cast<size_t>(n));
   float* obs_base = observations.data();
   pool_.parallel_for(n, [&](int32_t i, int slot) {
     const auto ui = static_cast<size_t>(i);
     step_one(slot, states[ui], actions[ui], dt[ui], new_states[ui],
              obs_base + ui * d, rewards[ui], dones[ui], truncated[ui],
              display_cache_[ui], recoverable_cache_[ui]);
+    const DisplayInfo& di = display_cache_[ui];
+    WalkerInfo& wi = info_cache_[ui];
+    wi = WalkerInfo{};
+    wi.score = di.score;
+    wi.x = di.x;
+    wi.y = di.y;
+    wi.world = di.room;
+    wi.stage = di.level;
+    wi.lives = di.lives;
+    wi.inventory = di.inventory;
+    wi.has_visit_key = has_visit_key();
+    wi.visit_plane = di.room;
+    wi.visit_x = di.x;
+    wi.visit_y = di.y;
   });
+}
+
+const WalkerInfo& AtariEnv::walker_info(int32_t batch_index) const {
+  static const WalkerInfo kEmpty{};
+  const auto ui = static_cast<size_t>(batch_index);
+  return ui < info_cache_.size() ? info_cache_[ui] : kEmpty;
 }
 
 bool AtariEnv::done_is_recoverable(int32_t walker_index) const {

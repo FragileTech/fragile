@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <limits>
 
 #include "thread_pool.hpp"
 
@@ -35,31 +36,48 @@ double l2_squared(const float* a, const float* b, size_t d) {
 
 }  // namespace
 
-std::vector<float> asymmetric_rescale(const std::vector<float>& x) {
+std::vector<float> relativize_with_stats(const std::vector<float>& x,
+                                         double mean, double stdv) {
   const size_t n = x.size();
   std::vector<float> out(n, 1.0f);
-  // torch: std of a single element (or empty) is NaN -> all-ones branch.
-  if (n < 2) return out;
-
-  double mean = 0.0;
-  for (const float v : x) mean += static_cast<double>(v);
-  mean /= static_cast<double>(n);
-
-  double var = 0.0;
-  for (const float v : x) {
-    const double d = static_cast<double>(v) - mean;
-    var += d * d;
-  }
-  var /= static_cast<double>(n - 1);  // Bessel correction, matching torch .std()
-  const double stdv = std::sqrt(var);
-
-  if (stdv == 0.0 || !std::isfinite(stdv)) return out;
-
+  if (stdv == 0.0 || !std::isfinite(stdv) || !std::isfinite(mean)) return out;
   for (size_t i = 0; i < n; ++i) {
     const double s = (static_cast<double>(x[i]) - mean) / stdv;
     out[i] = static_cast<float>(s > 0.0 ? std::log1p(s) + 1.0 : std::exp(s));
   }
   return out;
+}
+
+std::pair<double, double> mean_std_masked(const std::vector<float>& x,
+                                          const std::vector<uint8_t>& mask) {
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+  size_t count = 0;
+  double mean = 0.0;
+  for (size_t i = 0; i < x.size(); ++i) {
+    if (!mask[i]) continue;
+    mean += static_cast<double>(x[i]);
+    ++count;
+  }
+  if (count == 0) return {nan, nan};
+  mean /= static_cast<double>(count);
+  // torch: std of a single element is NaN.
+  if (count < 2) return {mean, nan};
+  double var = 0.0;
+  for (size_t i = 0; i < x.size(); ++i) {
+    if (!mask[i]) continue;
+    const double d = static_cast<double>(x[i]) - mean;
+    var += d * d;
+  }
+  var /= static_cast<double>(count - 1);  // Bessel correction, matching torch .std()
+  return {mean, std::sqrt(var)};
+}
+
+std::vector<float> asymmetric_rescale(const std::vector<float>& x) {
+  // torch: std of a single element (or empty) is NaN -> all-ones branch.
+  if (x.size() < 2) return std::vector<float>(x.size(), 1.0f);
+  const std::vector<uint8_t> all(x.size(), 1);
+  const auto stats = mean_std_masked(x, all);
+  return relativize_with_stats(x, stats.first, stats.second);
 }
 
 std::vector<float> l2_norm_companions(const std::vector<float>& observations,

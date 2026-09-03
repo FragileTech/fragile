@@ -71,6 +71,12 @@ class RetroFarmEnv final : public BatchEnv {
   const uint8_t* walker_tiles() const { return tiles_.data(); }
   size_t walker_tiles_size() const { return tiles_.size(); }
 
+  /// Generic per-walker info (visit key: plane = zone*16 + act, cell =
+  /// level x/y; Coords mode only).
+  bool has_walker_info() const override { return true; }
+  const WalkerInfo& walker_info(int32_t batch_index) const override;
+  bool has_visit_key() const override { return obs_mode_ == 3; }
+
   void render_frame(const std::vector<char>& state,
                     std::vector<uint8_t>& rgba) override;
   int32_t frame_width() const override { return kRetroFrameWidth; }
@@ -134,6 +140,7 @@ class RetroFarmEnv final : public BatchEnv {
 
   std::vector<float> display_cache_;
   std::vector<int32_t> pos_cache_;  // 6 ints per walker (see accessors)
+  std::vector<WalkerInfo> info_cache_;
   std::vector<uint8_t> tiles_;      // kTileBytes per walker
 
   std::vector<char> initial_state_;

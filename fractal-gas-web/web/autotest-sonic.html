@@ -38,7 +38,7 @@ try {
         // card, so net-positive progress takes ~100+ iterations; validate
         // the pipeline by detecting x-motion in either direction instead.
         const moved = steps.some((s) => s.minReward !== 0 || s.maxReward !== 0);
-        const swarmOk = Array.isArray(last.walkerX) &&
+        const swarmOk = (Array.isArray(last.walkerX) || ArrayBuffer.isView(last.walkerX)) &&
                         last.walkerX.length === 8 &&
                         last.walkerX.every((x) => x >= 0 && x < 20000) &&
                         last.walkerStage.every((a) => a === 0) &&
@@ -48,7 +48,7 @@ try {
                    moved && swarmOk &&
                    frameBytes === 320 * 224 * 4;
         report((ok ? "SONIC-OK" : "SONIC-FAIL") +
-          ` iter=${last.iteration} moved=${steps.some((s) => s.minReward !== 0 || s.maxReward !== 0)} swarm=${Array.isArray(last.walkerX)}` +
+          ` iter=${last.iteration} moved=${steps.some((s) => s.minReward !== 0 || s.maxReward !== 0)} swarm=${(Array.isArray(last.walkerX) || ArrayBuffer.isView(last.walkerX))}` +
           ` alive=${last.aliveCount}`);
       }
     }

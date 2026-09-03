@@ -209,6 +209,7 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o: \
  /usr/include/c++/15/pstl/glue_numeric_defs.h \
  /home/guillem/fragile/fractal-gas-web/src/env.hpp \
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
  /home/guillem/fragile/fractal-gas-web/tests/mock_env.hpp \
  /usr/include/c++/15/cstring /usr/include/string.h /usr/include/strings.h \

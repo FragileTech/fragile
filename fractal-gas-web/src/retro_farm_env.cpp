@@ -103,6 +103,7 @@ void RetroFarmEnv::step_batch(const std::vector<std::vector<char>>& states,
   const size_t d = static_cast<size_t>(obs_dim());
   display_cache_.resize(static_cast<size_t>(n));
   pos_cache_.resize(static_cast<size_t>(n) * 6);
+  info_cache_.resize(static_cast<size_t>(n));
   tiles_.resize(static_cast<size_t>(n) * kTileBytes);
   float* obs_base = observations.data();
 
@@ -140,8 +141,27 @@ void RetroFarmEnv::step_batch(const std::vector<std::vector<char>>& states,
       std::memcpy(tiles_.data() + ui * kTileBytes, tile_area(slot),
                   kTileBytes);
       truncated[ui] = 0;
+      WalkerInfo& wi = info_cache_[ui];
+      wi = WalkerInfo{};
+      wi.score = display_bits;
+      wi.x = pos_cache_[ui * 6 + 0];
+      wi.y = pos_cache_[ui * 6 + 1];
+      wi.world = pos_cache_[ui * 6 + 2];
+      wi.stage = pos_cache_[ui * 6 + 3];
+      wi.cam_x = pos_cache_[ui * 6 + 4];
+      wi.cam_y = pos_cache_[ui * 6 + 5];
+      wi.has_visit_key = has_visit_key();
+      wi.visit_plane = wi.world * 16 + wi.stage;
+      wi.visit_x = wi.x < 0 ? 0 : wi.x;
+      wi.visit_y = wi.y < 0 ? 0 : wi.y;
     }
   }
+}
+
+const WalkerInfo& RetroFarmEnv::walker_info(int32_t batch_index) const {
+  static const WalkerInfo kEmpty{};
+  const auto ui = static_cast<size_t>(batch_index);
+  return ui < info_cache_.size() ? info_cache_[ui] : kEmpty;
 }
 
 float RetroFarmEnv::display_score(int32_t walker_index) const {

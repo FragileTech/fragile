@@ -104,6 +104,16 @@ the run.">
       <button id="sidebar-toggle" class="panel-toggle" type="button"
               title="Collapse controls">&laquo;</button>
       <section>
+        <h2 data-help="Which swarm algorithm runs. Wave (default): a fixed swarm of N walkers; every iteration every walker steps, and walkers with a low virtual reward clone onto walkers with a high one (the fractal gas). Graph: the tree variant used by the old Montezuma demo: every visited state stays as a node of a graph, only the leaves that decide to clone copy a companion's state (recording it as their parent) and step from there; the graph grows so that at least the chosen number of leaves exist, up to Max walkers, and in Coords mode a visit-count reward pushes the leaves towards rarely visited places. Changing it restarts the run.">Algorithm</h2>
+        <div class="toggle-group" id="algo-select">
+          <button type="button" data-algo="0" class="active">Wave</button>
+          <button type="button" data-algo="1">Graph</button>
+        </div>
+        <p class="hint" id="algo-hint">Wave: a fixed swarm, every walker
+        steps. Graph: a growing tree of states, only cloning leaves step.</p>
+      </section>
+
+      <section>
         <h2 data-help="What each walker 'looks like' to the algorithm. Distances between walkers are measured on this, so it decides what counts as 'far apart', i.e. worth exploring.
 RAM: the console's raw memory. RGB / Gray: the screen pixels. Coords: a small hand-picked tuple (Mario: position, level, time, speed, power-up; Sonic: position, speed, act; Montezuma: pyramid-global position, room, x, y, level, inventory, lives), the fastest and usually the best choice. On generic Atari games, Coords is the same as RAM.
 Changing it restarts the run.">Observation</h2>
@@ -120,15 +130,24 @@ Changing it restarts the run.">Observation</h2>
 
       <section>
         <h2>Swarm</h2>
-        <label data-help="Number of game copies run in parallel. Each walker is one candidate trajectory; the swarm explores by cloning good walkers over bad ones. More walkers explore more broadly per iteration, but each iteration is slower. Restarts the run.">Walkers (N)
-          <input type="number" id="param-n" value="48" min="4" max="256" step="1">
+        <label data-help="Wave: number of game copies run in parallel; each walker is one candidate trajectory, and the swarm explores by cloning good walkers over bad ones. Graph: the number of walkers the tree starts with and the minimum number of leaves it keeps (new leaves are added whenever fewer remain). More walkers explore more broadly per iteration, but each iteration is slower. Restarts the run."><span id="param-n-label">Walkers (N)</span>
+          <input type="number" id="param-n" value="48" min="2" max="1024" step="1">
+        </label>
+        <label id="param-max-walkers-row" hidden data-help="Graph only: the largest number of nodes the tree may hold (every node keeps a full emulator state, so the browser's memory caps it; the effective cap is shown below). Restarts the run.">Max walkers
+          <input type="number" id="param-max-walkers" value="4000" min="2" max="100000" step="1">
+          <span class="hint" id="max-walkers-hint"></span>
         </label>
         <label data-help="Random seed for action choices, frame skips and clone decisions. The same seed and settings replay the same run. Restarts the run.">Seed
           <input type="number" id="param-seed" value="7" min="0" step="1">
         </label>
-        <label data-help="How many best-ever walkers (by cumulative reward) are kept in a buffer and re-injected into the swarm every iteration, so the best progress found so far is never lost. 0 disables it. Applies live.">Elite walkers
+        <label id="param-elite-row" data-help="Wave only: how many best-ever walkers (by cumulative reward) are kept in a buffer and re-injected into the swarm every iteration, so the best progress found so far is never lost. 0 disables it. Applies live. (The Graph keeps its best walker frozen instead.)">Elite walkers
           <input type="number" id="param-elite" value="2" min="0" max="16" step="1">
         </label>
+        <label id="param-erase-row" hidden data-help="Graph only, Coords observation: how much every visit-count cell decays per iteration. The Graph's virtual reward multiplies in a term that favours walkers standing in rarely visited 5x5-pixel cells of the map (counted per level / room); a higher erase coefficient forgets old visits faster. 0 never forgets. Applies live.">Erase coef <span id="erase-coef-value">0.05</span>
+          <input type="range" id="param-erase-coef" value="0.05" min="0" max="1" step="0.01">
+        </label>
+        <p class="hint" id="graph-visits-hint" hidden>Visit counting needs the
+        Coords observation on Mario, Sonic or Montezuma.</p>
         <p class="hint">Changing these restarts the run.</p>
       </section>
 
@@ -188,13 +207,14 @@ Changes apply to rewards earned from now on: reward already banked by the walker
           <div data-help="Highest cumulative reward in the swarm (the best walker's score so far).">Max reward</div><div id="stat-max-reward">&ndash;</div>
           <div data-help="Average cumulative reward over all walkers.">Mean reward</div><div id="stat-mean-reward">&ndash;</div>
           <div data-help="Alive walkers / total walkers right now. Dead walkers are respawned by cloning a live one on the next iteration.">Alive</div><div id="stat-alive">&ndash;</div>
+          <div class="graph-stat" hidden data-help="Graph only: nodes in the tree / leaves among them (leaves are the walkers that can still clone and step) / walkers that stepped the game this iteration.">Nodes</div><div class="graph-stat" id="stat-tree" hidden>&ndash;</div>
           <div data-help="Iterations completed per second (3-second sliding average). Depends on N, dt and your CPU core count.">Iterations/s</div><div id="stat-ips">&ndash;</div>
           <div data-help="Total emulated game frames so far, roughly iterations x N x mean dt.">Env frames</div><div id="stat-frames">&ndash;</div>
         </div>
       </div>
       <div id="map-panel">
         <div id="map-header">
-          <h2 id="map-title" data-help="Where every walker is in the level. Magenta = alive, grey = dead, gold ring = best walker. Mario draws on a full-level map; Sonic reveals the map as walkers explore it (fog of war); Montezuma shows the temple's 24-room pyramid, each room's picture captured the first time a walker enters it. Drag the bottom edge of the map to change its size.">Level map &mdash; swarm</h2>
+          <h2 id="map-title" data-help="Where every walker is in the level. Magenta = alive, grey = dead, gold ring = best walker. In Graph mode the thin lines join every node to its parent (the graph of visited states), leaves are the bigger dots. Mario draws on a full-level map; Sonic reveals the map as walkers explore it (fog of war); Montezuma shows the temple's 24-room pyramid, each room's picture captured the first time a walker enters it. Drag the bottom edge of the map to change its size.">Level map &mdash; swarm</h2>
           <div id="map-zoom" hidden>
             <button id="map-zoom-out" class="panel-toggle" type="button"
                     title="Zoom out">&minus;</button>
@@ -237,6 +257,9 @@ Mario: distance travelled right, minus time and death penalties. Atari: game sco
           </div>
           <div class="plot-wrap" data-help="Average number of frames walkers held their action this iteration; it sits between dt min and dt max. Env frames is roughly iterations x N x mean dt.">
             <canvas class="plot" id="plot-dt" width="460" height="150"></canvas>
+          </div>
+          <div class="plot-wrap graph-plot" hidden data-help="Graph only: size of the tree over time: total nodes, leaves, and how many walkers stepped the game this iteration.">
+            <canvas class="plot" id="plot-tree" width="460" height="150"></canvas>
           </div>
         </div>
       </div>

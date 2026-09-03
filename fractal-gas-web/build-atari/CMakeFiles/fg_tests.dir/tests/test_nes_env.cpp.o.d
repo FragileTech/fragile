@@ -210,6 +210,7 @@ CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o: \
  /usr/include/c++/15/pstl/glue_numeric_defs.h \
  /home/guillem/fragile/fractal-gas-web/src/env.hpp \
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
  /home/guillem/fragile/fractal-gas-web/src/mario_reward.hpp \
  /home/guillem/fragile/fractal-gas-web/src/nes_env.hpp \

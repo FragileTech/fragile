@@ -38,6 +38,14 @@ const plots = {
     title: "Mean frame skip (dt)",
     series: [{ name: "mean dt", color: "#79c0ff" }],
   }),
+  tree: new LinePlot($("plot-tree"), {
+    title: "Graph size",
+    series: [
+      { name: "nodes", color: "#79c0ff" },
+      { name: "leaves", color: "#7ee787" },
+      { name: "stepped", color: "#ffa657" },
+    ],
+  }),
 };
 
 // ---------------------------------------------------------------------------
@@ -149,13 +157,17 @@ const fogTileScratch = document.createElement("canvas");
 fogTileScratch.width = TILE_W;
 fogTileScratch.height = TILE_H;
 const fogTileScratchCtx = fogTileScratch.getContext("2d");
-function applyFogTiles(swarm, tilesBuf) {
+// `tiles` describes the tiles of the LAST env batch (in Graph mode only the
+// walkers that stepped), each with its own camera/level, so they never need
+// to line up with the per-walker arrays.
+function applyFogTiles(tilesInfo, tilesBuf) {
   const tiles = new Uint8Array(tilesBuf);
   const rgba = fogTileImage.data;
-  for (let i = 0; i < swarm.xs.length; i++) {
-    const camX = Math.floor(swarm.camXs[i] / FOG_SCALE);
-    const camY = Math.floor(swarm.camYs[i] / FOG_SCALE);
-    const entry = getFogCanvas(swarm.ws[i], swarm.ss[i],
+  const count = Math.min(tilesInfo.count, Math.floor(tiles.length / (TILE_W * TILE_H * 3)));
+  for (let i = 0; i < count; i++) {
+    const camX = Math.floor(tilesInfo.camXs[i] / FOG_SCALE);
+    const camY = Math.floor(tilesInfo.camYs[i] / FOG_SCALE);
+    const entry = getFogCanvas(tilesInfo.ws[i], tilesInfo.ss[i],
                                camX + TILE_W, camY + TILE_H);
     const base = i * TILE_W * TILE_H * 3;
     for (let px = 0; px < TILE_W * TILE_H; px++) {
@@ -191,6 +203,69 @@ const MARIO_FEET_OFFSET = 32;
 function marioMapY(ramY, imgH) {
   return Math.min(
     Math.max(ramY + MARIO_FEET_OFFSET - MAP_Y_CROP - 4, 0), imgH);
+}
+
+// ---------------------------------------------------------------------------
+// Swarm overlay shared by the three maps. `project(i)` maps walker i to css
+// pixels on the current map, or returns null when it is not on the displayed
+// level. In Graph mode every node is joined to its parent by a thin line
+// (the graph of visited states) and interior nodes are drawn smaller than
+// the leaves; the wave has parent = self and every walker is a "leaf".
+// ---------------------------------------------------------------------------
+function drawSwarmOverlay(project, cssHeight, guideLine) {
+  const { xs, parents, leaf, alive, bestIdx } = lastSwarm;
+  const n = xs.length;
+  const pts = new Array(n);
+  for (let i = 0; i < n; i++) pts[i] = project(i);
+  if (parents) {
+    mapCtx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const p = parents[i];
+      if (p === i || !pts[i] || !pts[p]) continue;
+      mapCtx.moveTo(pts[p].x, pts[p].y);
+      mapCtx.lineTo(pts[i].x, pts[i].y);
+    }
+    mapCtx.strokeStyle = "rgba(255, 255, 255, 0.22)";
+    mapCtx.lineWidth = 0.75;
+    mapCtx.stroke();
+  }
+  for (let i = 0; i < n; i++) {
+    if (i === bestIdx || !pts[i]) continue;
+    const isLeaf = !leaf || leaf[i];
+    if (!isLeaf) {
+      // Interior node of the graph: a small faint square.
+      mapCtx.fillStyle = alive[i] ? "rgba(224, 64, 251, 0.45)" : "rgba(139, 148, 158, 0.35)";
+      mapCtx.fillRect(pts[i].x - 1, pts[i].y - 1, 2, 2);
+      continue;
+    }
+    mapCtx.beginPath();
+    mapCtx.arc(pts[i].x, pts[i].y, 3, 0, 2 * Math.PI);
+    // Magenta reads on both the sky and the ground tiles of every level.
+    mapCtx.fillStyle = alive[i] ? "rgba(224, 64, 251, 0.75)" : "rgba(139, 148, 158, 0.5)";
+    mapCtx.fill();
+    mapCtx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+    mapCtx.lineWidth = 0.75;
+    mapCtx.stroke();
+  }
+  // Best walker: gold-ringed dot (+ optional full-height guide line), last.
+  const b = pts[bestIdx];
+  if (!b) return null;
+  if (guideLine) {
+    mapCtx.strokeStyle = "rgba(255, 210, 31, 0.35)";
+    mapCtx.lineWidth = 1.5;
+    mapCtx.beginPath();
+    mapCtx.moveTo(b.x, 0);
+    mapCtx.lineTo(b.x, cssHeight);
+    mapCtx.stroke();
+  }
+  mapCtx.beginPath();
+  mapCtx.arc(b.x, b.y, 4, 0, 2 * Math.PI);
+  mapCtx.fillStyle = "#ff5252";
+  mapCtx.fill();
+  mapCtx.strokeStyle = "#ffd21f";
+  mapCtx.lineWidth = 2;
+  mapCtx.stroke();
+  return b;
 }
 
 function drawMap() {
@@ -245,44 +320,18 @@ function drawMap() {
   }
   if (!lastSwarm) return;
 
-  const { xs, ys, ws, ss, alive, bestIdx } = lastSwarm;
-  for (let i = 0; i < xs.length; i++) {
-    if (i === bestIdx || ws[i] !== world || ss[i] !== stage) continue;
-    const x = xs[i] * scale;
-    const y = marioMapY(ys[i], imgH) * scale;
-    mapCtx.beginPath();
-    mapCtx.arc(x, y, 3, 0, 2 * Math.PI);
-    // Magenta reads on both the sky and the ground tiles of every level.
-    mapCtx.fillStyle = alive[i] ? "rgba(224, 64, 251, 0.75)" : "rgba(139, 148, 158, 0.5)";
-    mapCtx.fill();
-    mapCtx.strokeStyle = "rgba(255, 255, 255, 0.7)";
-    mapCtx.lineWidth = 0.75;
-    mapCtx.stroke();
-  }
-  // Best walker: gold-ringed dot + full-height guide line, drawn last.
-  if (ws[bestIdx] === world && ss[bestIdx] === stage) {
-    const x = xs[bestIdx] * scale;
-    const y = marioMapY(ys[bestIdx], imgH) * scale;
-    mapCtx.strokeStyle = "rgba(255, 210, 31, 0.35)";
-    mapCtx.lineWidth = 1.5;
-    mapCtx.beginPath();
-    mapCtx.moveTo(x, 0);
-    mapCtx.lineTo(x, cssHeight);
-    mapCtx.stroke();
-    mapCtx.beginPath();
-    mapCtx.arc(x, y, 4, 0, 2 * Math.PI);
-    mapCtx.fillStyle = "#ff5252";
-    mapCtx.fill();
-    mapCtx.strokeStyle = "#ffd21f";
-    mapCtx.lineWidth = 2;
-    mapCtx.stroke();
-
+  const { xs, ys, ws, ss } = lastSwarm;
+  const best = drawSwarmOverlay((i) => {
+    if (ws[i] !== world || ss[i] !== stage) return null;
+    return { x: xs[i] * scale, y: marioMapY(ys[i], imgH) * scale };
+  }, cssHeight, true);
+  if (best) {
     // Auto-follow: keep the marker centered when the map overflows, unless
     // the user scrolled by hand within the grace period.
     if (cssWidth > panelWidth &&
         performance.now() - mapUserScrolledAt > MAP_FOLLOW_GRACE_MS) {
       const target = Math.round(
-        Math.min(Math.max(x - panelWidth / 2, 0), cssWidth - panelWidth));
+        Math.min(Math.max(best.x - panelWidth / 2, 0), cssWidth - panelWidth));
       mapExpectedScroll = target;
       mapResize.scrollLeft = target;
     }
@@ -348,36 +397,12 @@ function drawSonicMap() {
                    0, 0, cssWidth, cssHeight);
   if (!lastSwarm) return;
 
-  const { xs, ys, ws, ss, alive, bestIdx } = lastSwarm;
-  for (let i = 0; i < xs.length; i++) {
-    if (i === bestIdx || ws[i] !== zone || ss[i] !== act) continue;
-    const x = (xs[i] / FOG_SCALE - srcX) * scale;
-    const y = (ys[i] / FOG_SCALE - srcY) * scale;
-    mapCtx.beginPath();
-    mapCtx.arc(x, y, 3, 0, 2 * Math.PI);
-    mapCtx.fillStyle = alive[i] ? "rgba(224, 64, 251, 0.75)" : "rgba(139, 148, 158, 0.5)";
-    mapCtx.fill();
-    mapCtx.strokeStyle = "rgba(255, 255, 255, 0.7)";
-    mapCtx.lineWidth = 0.75;
-    mapCtx.stroke();
-  }
-  if (ws[bestIdx] === zone && ss[bestIdx] === act) {
-    const x = (xs[bestIdx] / FOG_SCALE - srcX) * scale;
-    const y = (ys[bestIdx] / FOG_SCALE - srcY) * scale;
-    mapCtx.strokeStyle = "rgba(255, 210, 31, 0.35)";
-    mapCtx.lineWidth = 1.5;
-    mapCtx.beginPath();
-    mapCtx.moveTo(x, 0);
-    mapCtx.lineTo(x, cssHeight);
-    mapCtx.stroke();
-    mapCtx.beginPath();
-    mapCtx.arc(x, y, 4, 0, 2 * Math.PI);
-    mapCtx.fillStyle = "#ff5252";
-    mapCtx.fill();
-    mapCtx.strokeStyle = "#ffd21f";
-    mapCtx.lineWidth = 2;
-    mapCtx.stroke();
-  }
+  const { xs, ys, ws, ss } = lastSwarm;
+  drawSwarmOverlay((i) => {
+    if (ws[i] !== zone || ss[i] !== act) return null;
+    return { x: (xs[i] / FOG_SCALE - srcX) * scale,
+             y: (ys[i] / FOG_SCALE - srcY) * scale };
+  }, cssHeight, true);
 }
 
 // ---------------------------------------------------------------------------
@@ -477,43 +502,23 @@ function drawPyramidMap() {
   mapCtx.drawImage(entry.canvas, 0, 0, cssWidth, cssHeight);
   if (!lastSwarm) return;
 
-  const { xs, ys, ws, ss, alive, bestIdx } = lastSwarm;
+  const { xs, ys, ws, ss, bestIdx } = lastSwarm;
   const project = (i) => {
+    if (ss[i] !== level) return null;
     const cell = ROOM_CELL.get(ws[i]);
     if (!cell) return null;
     return { x: (cell.col * ROOM + xs[i]) * scale,
              y: (cell.row * ROOM + ys[i]) * scale };
   };
-  for (let i = 0; i < xs.length; i++) {
-    if (i === bestIdx || ss[i] !== level) continue;
-    const p = project(i);
-    if (!p) continue;
-    mapCtx.beginPath();
-    mapCtx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
-    mapCtx.fillStyle = alive[i] ? "rgba(224, 64, 251, 0.75)" : "rgba(139, 148, 158, 0.5)";
-    mapCtx.fill();
-    mapCtx.strokeStyle = "rgba(255, 255, 255, 0.7)";
-    mapCtx.lineWidth = 0.75;
-    mapCtx.stroke();
+  // Highlight the best walker's room, then the overlay on top.
+  const bestCell = ss[bestIdx] === level ? ROOM_CELL.get(ws[bestIdx]) : null;
+  if (bestCell) {
+    mapCtx.strokeStyle = "rgba(255, 210, 31, 0.5)";
+    mapCtx.lineWidth = 1.5;
+    mapCtx.strokeRect(bestCell.col * ROOM * scale + 0.75, bestCell.row * ROOM * scale + 0.75,
+                      ROOM * scale - 1.5, ROOM * scale - 1.5);
   }
-  if (ss[bestIdx] === level) {
-    const p = project(bestIdx);
-    if (p) {
-      // Highlight the best walker's room and mark the walker itself.
-      const cell = ROOM_CELL.get(ws[bestIdx]);
-      mapCtx.strokeStyle = "rgba(255, 210, 31, 0.5)";
-      mapCtx.lineWidth = 1.5;
-      mapCtx.strokeRect(cell.col * ROOM * scale + 0.75, cell.row * ROOM * scale + 0.75,
-                        ROOM * scale - 1.5, ROOM * scale - 1.5);
-      mapCtx.beginPath();
-      mapCtx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
-      mapCtx.fillStyle = "#ff5252";
-      mapCtx.fill();
-      mapCtx.strokeStyle = "#ffd21f";
-      mapCtx.lineWidth = 2;
-      mapCtx.stroke();
-    }
-  }
+  drawSwarmOverlay(project, cssHeight, false);
 }
 
 // +/- zoom buttons (Sonic fog map, Montezuma pyramid): multiply the fit
@@ -556,6 +561,12 @@ let obsMode = OBS_DEFAULTS[0]; // 0=RAM, 1=RGB, 2=Gray, 3=Coords
 // 3=Montezuma's Revenge (C++ sees Atari console 1 with game 1).
 let consoleId = 0;
 const genesisGame = 1; // Genesis game: Sonic
+// Swarm algorithm: 0 = Wave (FractalGas, fixed swarm), 1 = Graph
+// (FractalTree, growing tree of states). Structural: restarts the run.
+let algorithm = 0;
+// Graph population cap defaults per UI console (every node keeps a full
+// emulator state: Genesis blobs are MB-sized).
+const MAX_WALKERS_DEFAULT = { 0: 4000, 1: 20000, 2: 150, 3: 20000 };
 const MONTEZUMA_GAME = 1; // Atari game id with dedicated logic (wasm_bindings)
 let atariGame = "ms_pacman"; // ALE rom id, served from web/roms/atari/
 
@@ -735,6 +746,9 @@ function readParams() {
     // Montezuma is the Atari console with the dedicated game id.
     console: consoleId === 3 ? 1 : consoleId,
     game: consoleId === 3 ? MONTEZUMA_GAME : (consoleId === 2 ? genesisGame : 0),
+    algorithm,
+    maxWalkers: parseInt($("param-max-walkers").value, 10) || 0,
+    eraseCoef: parseFloat($("param-erase-coef").value),
   };
 }
 
@@ -758,6 +772,14 @@ function ensureWorker() {
       case "ready":
         initialized = true;
         running = false;
+        $("stat-world").textContent = "\u2013";
+        $("stat-tree").textContent = "\u2013";
+        if (msg.algorithm === 1 && msg.maxWalkers) {
+          const asked = parseInt($("param-max-walkers").value, 10) || 0;
+          $("max-walkers-hint").textContent = msg.maxWalkers < asked
+            ? `capped to ${msg.maxWalkers} by the browser's wasm memory`
+            : `effective cap ${msg.maxWalkers}`;
+        }
         clearPlots();
         clearFog();
         clearPyramid();
@@ -832,15 +854,17 @@ function onStep(msg) {
       ys: s.walkerY,
       ws: s.walkerWorld,
       ss: s.walkerStage,
-      camXs: s.walkerCamX,
-      camYs: s.walkerCamY,
+      // Graph structure (Wave: parent = self, every walker a leaf).
+      parents: s.algorithm === 1 ? s.walkerParent : null,
+      leaf: s.algorithm === 1 ? s.walkerLeaf : null,
       alive: s.walkerAlive,
       bestIdx: s.bestWalkerIdx,
       world: s.world,
       level: s.level,
     };
-    if (consoleId === 2 && msg.walkerTiles) {
-      applyFogTiles(lastSwarm, msg.walkerTiles);
+    if (consoleId === 2 && msg.walkerTiles && s.tileCount) {
+      applyFogTiles({ count: s.tileCount, camXs: s.tileCamX, camYs: s.tileCamY,
+                      ws: s.tileZone, ss: s.tileAct }, msg.walkerTiles);
     }
     if (consoleId === 3 && msg.roomFrames && msg.roomFrames.length) {
       applyRoomFrames(msg.roomFrames);
@@ -848,12 +872,17 @@ function onStep(msg) {
     drawMap();
   }
 
-  const n = parseInt($("param-n").value, 10) || 48;
+  // Live population: the Graph grows, so never trust the input box.
+  const n = s.walkerCount || parseInt($("param-n").value, 10) || 48;
   plots.reward.append([s.maxReward, s.meanReward]);
   plots.vr.append([s.maxVirtualReward, s.meanVirtualReward]);
   plots.clones.append([(100 * s.numCloned) / n]);
   plots.alive.append([s.aliveCount]);
   plots.dt.append([s.meanDt]);
+  if (s.algorithm === 1) {
+    plots.tree.append([s.walkerCount, s.nLeaves, s.numStepped]);
+    $("stat-tree").textContent = `${s.walkerCount} / ${s.nLeaves} / ${s.numStepped}`;
+  }
 
   $("stat-iteration").textContent = s.iteration;
   if (s.world !== undefined) {
@@ -927,6 +956,8 @@ async function loadConsoleAssets() {
   showRewardPanel($("reward-terms-section"), consoleId);
   $("map-zoom").hidden = consoleId !== 2 && consoleId !== 3;  // built maps only
   mapZoom = 1;
+  $("param-max-walkers").value = MAX_WALKERS_DEFAULT[consoleId] ?? 4000;
+  applyAlgoUi();
   $("map-title").innerHTML = consoleId === 3
     ? "Pyramid map &mdash; swarm" : "Level map &mdash; swarm";
   document.querySelector(".map-credit").innerHTML = consoleId === 2
@@ -939,6 +970,8 @@ async function loadConsoleAssets() {
     : 'Magenta dots: alive walkers &middot; grey: dead &middot; gold ring: ' +
       'best walker. Level maps from <a href="https://ian-albert.com/games/' +
       'super_mario_bros_maps/" target="_blank" rel="noreferrer">ian-albert.com</a>.';
+  document.querySelector(".map-credit").innerHTML +=
+    " In Graph mode thin lines join every node to its parent; small squares are interior nodes.";
   lastSwarm = null;
   mapSizedForKey = null;
   if (consoleId === 0 || consoleId === 3) drawMap();
@@ -1013,8 +1046,44 @@ for (const id of ["param-dt-min", "param-dt-max", "param-elite"]) {
     if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
   });
 }
-for (const id of ["param-n", "param-seed"]) {
+for (const id of ["param-n", "param-seed", "param-max-walkers"]) {
   $(id).addEventListener("change", () => {
+    if (romBuffer) initRun();
+  });
+}
+$("param-erase-coef").addEventListener("input", () => {
+  $("erase-coef-value").textContent = parseFloat($("param-erase-coef").value).toFixed(2);
+  if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
+});
+
+// Algorithm toggle (Wave / Graph): structural change -> restart the run.
+// The Graph reinterprets N as its start walkers / minimum leaves, has no
+// elite buffer, and adds a population cap and (in Coords mode on a game
+// with a map) the visit-count erase coefficient.
+function applyAlgoUi() {
+  const graph = algorithm === 1;
+  for (const b of $("algo-select").querySelectorAll("button")) {
+    b.classList.toggle("active", parseInt(b.dataset.algo, 10) === algorithm);
+  }
+  $("param-n-label").textContent = graph ? "Leaves (start = min leaves)" : "Walkers (N)";
+  $("param-elite-row").hidden = graph;
+  $("param-max-walkers-row").hidden = !graph;
+  const visits = graph && obsMode === 3 && consoleId !== 1;
+  $("param-erase-row").hidden = !visits;
+  $("graph-visits-hint").hidden = !graph || visits;
+  for (const el of document.querySelectorAll(".graph-stat, .graph-plot")) el.hidden = !graph;
+  if (!graph) $("max-walkers-hint").textContent = "";
+}
+function setAlgorithm(algo) {
+  algorithm = algo;
+  $("param-max-walkers").value = MAX_WALKERS_DEFAULT[consoleId] ?? 4000;
+  applyAlgoUi();
+}
+for (const btn of $("algo-select").querySelectorAll("button")) {
+  btn.addEventListener("click", () => {
+    const algo = parseInt(btn.dataset.algo, 10);
+    if (algo === algorithm) return;
+    setAlgorithm(algo);
     if (romBuffer) initRun();
   });
 }
@@ -1025,6 +1094,7 @@ function setObsMode(mode) {
   for (const b of $("obs-mode").querySelectorAll("button")) {
     b.classList.toggle("active", parseInt(b.dataset.mode, 10) === mode);
   }
+  applyAlgoUi();
 }
 for (const btn of $("obs-mode").querySelectorAll("button")) {
   btn.addEventListener("click", () => {

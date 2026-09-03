@@ -17,8 +17,13 @@ runs a swarm of walkers playing Super Mario Bros entirely in the browser.
   reward, header-only), `wasm_bindings` (embind surface).
 - `third_party/nes-py/` — git submodule; its C++ core is compiled directly by
   our CMake (the Python/SCons parts are unused).
-- `tests/` — dependency-free test harness; the key test replays a recorded
-  run of the Python reference implementation draw-for-draw.
+- `swarm_algorithm` (the interface both algorithms implement),
+  `fractal_tree` + `visit_grid` (the "Graph" tree algorithm, see
+  "Algorithms").
+- `tests/` — dependency-free test harness; the key tests replay recorded
+  runs of the Python reference implementations draw-for-draw (wave:
+  `tests/fixtures/generate_fixtures.py`; graph:
+  `tests/fixtures/generate_tree_fixtures.py` on the vendored cb9f3296 code).
 - `native/main.cpp` — CLI to run the gas on a ROM and measure throughput.
 - `web/` — the frontend (no dependencies): sidebar controls, canvas of the
   best walker, live plots (reward, virtual reward, clone %, alive, dt),
@@ -30,6 +35,65 @@ runs a swarm of walkers playing Super Mario Bros entirely in the browser.
   level at a glance. Sonic builds its map from walker tiles (fog of war)
   and Montezuma shows the temple pyramid with each room's picture captured
   as the swarm discovers it (see "Consoles").
+
+## Algorithms
+
+The demo runs two swarm algorithms behind one interface
+(`src/swarm_algorithm.hpp`), selected by the sidebar's **Algorithm** toggle
+(also `fg_cli --algo wave|graph`):
+
+- **Wave** (default) — `fg::FractalGas`, the fractal gas: a fixed population
+  of N walkers, every walker steps each iteration, low-fitness walkers clone
+  onto high-fitness ones, elite buffer. Reference: `src/fragile/fractalai/`
+  (`fractal_gas.py`, `videogames/cloning.py`, `videogames/kinetic.py`).
+- **Graph** — `fg::FractalTree`, the tree variant used by the old Montezuma
+  demo, ported line by line from git commit **cb9f3296**
+  (`src/fragile/core.py` FractalTree, `videogames.py` MontezumaTree,
+  `fractalai.py`, `actions.py`), vendored verbatim under
+  `tests/fixtures/reference_cb9f3296/`. Every visited state stays as a node:
+  per iteration, companions are drawn among the alive walkers, the virtual
+  reward is `relativize(distance)^dist_coef * relativize(cum_reward, leaf
+  mean/std)^reward_coef * other`, the clone decision is
+  `(vr[compa] - vr) / vr > rand`, walkers chosen as clone sources are
+  protected, dead walkers always clone, and only the **leaves** that clone
+  copy their companion's state, record it as their parent and step the
+  environment; interior nodes are frozen and the best walker never clones.
+  The population grows so that at least `min_leafs` leaves exist (fresh
+  nodes are dead children of the root until they clone), capped at
+  `max_walkers`. `other` is the visit-count reward of `MontezumaTree`:
+  a float32 grid per plane (Montezuma room, Mario world/stage, Sonic
+  zone/act) counting the cells walkers stand in, `+1` once per distinct cell
+  per batch, decayed by `erase_coef` and clipped to `[0, 1000]` every
+  update, summed over 5x5 blocks and relativized with leaf statistics —
+  active only in **Coords** observation mode on games with a map (generic
+  Atari games and RAM/RGB/Gray modes use `other = 1`). The UI's Walkers
+  input becomes "start walkers = min leaves", Elite is hidden, and Max
+  walkers / Erase coef appear. Maps draw the graph: thin lines join each
+  node to its parent, small squares are interior nodes, dots are leaves.
+
+  RNG draw order per iteration (replayable, `FractalTreeSampler`):
+  companions for the distance term, companions for the clone term, the
+  uniforms, then the actions and dt of the stepped walkers (actions first;
+  dt is uniform in `[dt_min, dt_max]` inclusive, the reference's
+  `UniformDtSampler(1, 5)` being `{1..4}`). `reset()` draws the start
+  actions before the env reset, then the dt, and steps every walker once;
+  walker 0 keeps the reset state as the root (dead, like the reference)
+  but takes the stepped observation.
+
+  Documented deviations from the reference: `total_steps` counts the
+  walkers that really stepped (the reference also counts the preallocated
+  `will_clone` flags of freshly added slots), `max_walkers` is a hard cap
+  (the reference preallocates that many rows and would index past them),
+  and a walker that gathered an empty state (only when every walker is
+  dead, where the reference crashes on a `None` state) is dropped from the
+  batch. Fidelity is checked by `tests/test_fractal_tree.cpp`, which
+  replays draws recorded from the historical code by
+  `tests/fixtures/generate_tree_fixtures.py` (a plain run and a
+  visit-counting run) and requires identical parents, masks, growth,
+  rewards, virtual rewards, visit rewards and final visit cells;
+  `tests/test_visit_grid.cpp` checks the sparse visit grid bit-for-bit
+  against a dense float32 transcription. `web/autotest-graph.html` is the
+  browser smoke test.
 
 ## Fidelity notes
 

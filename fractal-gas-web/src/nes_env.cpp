@@ -297,13 +297,32 @@ void NesMarioEnv::step_batch(const std::vector<std::vector<char>>& states,
   const auto n = static_cast<int32_t>(states.size());
   const auto d = static_cast<size_t>(obs_dim());
   display_cache_.resize(static_cast<size_t>(n));
+  info_cache_.resize(static_cast<size_t>(n));
   float* obs_base = observations.data();
   pool_.parallel_for(n, [&](int32_t i, int slot) {
     const auto ui = static_cast<size_t>(i);
     step_one(slot, states[ui], actions[ui], dt[ui], new_states[ui],
              obs_base + ui * d, rewards[ui], dones[ui], display_cache_[ui]);
     truncated[ui] = 0;  // the NES env never truncates
+    const DisplayInfo& di = display_cache_[ui];
+    WalkerInfo& wi = info_cache_[ui];
+    wi = WalkerInfo{};
+    wi.score = di.score;
+    wi.x = di.x;
+    wi.y = di.y;
+    wi.world = di.world + 1;
+    wi.stage = di.stage + 1;
+    wi.has_visit_key = has_visit_key();
+    wi.visit_plane = wi.world * 256 + wi.stage;
+    wi.visit_x = di.x < 0 ? 0 : di.x;
+    wi.visit_y = di.y;
   });
+}
+
+const WalkerInfo& NesMarioEnv::walker_info(int32_t batch_index) const {
+  static const WalkerInfo kEmpty{};
+  const auto ui = static_cast<size_t>(batch_index);
+  return ui < info_cache_.size() ? info_cache_[ui] : kEmpty;
 }
 
 float NesMarioEnv::display_score(int32_t walker_index) const {
