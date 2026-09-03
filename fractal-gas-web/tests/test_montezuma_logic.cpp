@@ -156,3 +156,20 @@ TEST_CASE(montezuma_room_bonus_skips_dying_and_resets_on_level_change) {
   CHECK(montezuma_step_reward(v, 0.0f, carry, w) == 0.0f);
   CHECK(carry.visited_rooms == (1u << 4));
 }
+
+TEST_CASE(montezuma_death_room_is_room_8_and_pays_no_bonus) {
+  CHECK(kMontezumaDeathRoom == 8);
+  CHECK(montezuma_in_death_room(8));
+  CHECK(!montezuma_in_death_room(7));
+  CHECK(!montezuma_in_death_room(9));
+  MontezumaRewardWeights w;
+  AtariCarry carry;
+  // Walking into room 8 is a death, so the lineage earns no room bonus and
+  // the room is not marked as visited.
+  const MontezumaVars v = montezuma_read(fake_ram(8, 50, 200).data());
+  CHECK(montezuma_step_reward(v, 0.0f, carry, w) == 0.0f);
+  CHECK(carry.visited_rooms == 0);
+  // Its neighbour room 9 still pays.
+  const MontezumaVars v9 = montezuma_read(fake_ram(9, 50, 200).data());
+  CHECK(montezuma_step_reward(v9, 0.0f, carry, w) == w.room);
+}

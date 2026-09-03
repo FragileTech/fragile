@@ -5,12 +5,14 @@ CMakeFiles/fg_cli.dir/native/main.cpp.o: /home/guillem/fragile/fractal-gas-web/n
   /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
   /home/guillem/fragile/fractal-gas-web/src/env.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal_gas.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal_tree.hpp \
   /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
   /home/guillem/fragile/fractal-gas-web/src/mario_reward.hpp \
   /home/guillem/fragile/fractal-gas-web/src/nes_env.hpp \
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
   /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
   /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/bitsperlong.h \
@@ -365,6 +367,10 @@ CMakeFiles/fg_cli.dir/native/main.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+
 /usr/include/c++/15/functional:
 
 /usr/include/c++/15/ext/numeric_traits.h:
@@ -489,6 +495,18 @@ CMakeFiles/fg_cli.dir/native/main.cpp.o:
 
 /usr/include/c++/15/bits/ptr_traits.h:
 
+/usr/include/c++/15/ext/alloc_traits.h:
+
+/usr/include/c++/15/condition_variable:
+
+/usr/include/c++/15/bits/predefined_ops.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio.h:
+
+/usr/include/c++/15/bits/postypes.h:
+
+/usr/include/x86_64-linux-gnu/asm/posix_types.h:
+
 /usr/include/c++/15/bits/random.h:
 
 /usr/include/c++/15/ext/aligned_buffer.h:
@@ -499,10 +517,6 @@ CMakeFiles/fg_cli.dir/native/main.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
 
-/usr/include/c++/15/bits/shared_ptr.h:
-
-/usr/include/c++/15/bits/chrono.h:
-
 /usr/include/c++/15/ctime:
 
 /usr/include/c++/15/bits/allocated_ptr.h:
@@ -511,9 +525,9 @@ CMakeFiles/fg_cli.dir/native/main.cpp.o:
 
 /usr/include/c++/15/bits/alloc_traits.h:
 
-/usr/include/c++/15/bits/stringfwd.h:
+/usr/include/c++/15/bits/exception_defines.h:
 
-/usr/include/c++/15/bits/erase_if.h:
+/usr/include/c++/15/backward/auto_ptr.h:
 
 /usr/include/c++/15/bits/std_abs.h:
 
@@ -525,12 +539,6 @@ CMakeFiles/fg_cli.dir/native/main.cpp.o:
 
 /usr/include/c++/15/tuple:
 
-/usr/include/c++/15/backward/auto_ptr.h:
-
-/usr/include/c++/15/bits/exception_defines.h:
-
-/usr/include/c++/15/bits/predefined_ops.h:
-
 /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/asm-generic/bitsperlong.h:
@@ -541,14 +549,6 @@ CMakeFiles/fg_cli.dir/native/main.cpp.o:
 
 /home/guillem/fragile/fractal-gas-web/src/rng.hpp:
 
-/usr/include/c++/15/iosfwd:
-
-/usr/include/x86_64-linux-gnu/c++/15/bits/gthr-default.h:
-
-/usr/include/c++/15/limits:
-
-/usr/include/c++/15/initializer_list:
-
 libfractal_gas_core.a:
 
 /usr/lib/x86_64-linux-gnu/libm.so:
@@ -558,6 +558,24 @@ libfractal_gas_core.a:
 /usr/include/c++/15/bits/memoryfwd.h:
 
 /usr/include/c++/15/tr1/beta_function.tcc:
+
+/usr/include/c++/15/bits/align.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+
+/usr/include/alloca.h:
+
+/usr/include/c++/15/bits/shared_ptr.h:
+
+/usr/include/c++/15/bits/erase_if.h:
+
+/usr/include/c++/15/bits/stringfwd.h:
+
+/usr/include/c++/15/bits/chrono.h:
+
+/usr/include/c++/15/bits/nested_exception.h:
+
+/usr/include/linux/sched/types.h:
 
 /usr/include/c++/15/ext/concurrence.h:
 
@@ -579,36 +597,6 @@ libfractal_gas_core.a:
 
 /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp:
 
-/usr/include/c++/15/ext/alloc_traits.h:
-
-/usr/include/c++/15/condition_variable:
-
-/usr/include/linux/sched/types.h:
-
-/usr/include/c++/15/bits/nested_exception.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so:
-
-/lib64/ld-linux-x86-64.so.2:
-
-/home/guillem/fragile/fractal-gas-web/src/mario_reward.hpp:
-
-/usr/include/c++/15/bits/std_mutex.h:
-
-/usr/include/c++/15/bits/node_handle.h:
-
-/usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h:
-
-/usr/include/c++/15/pstl/glue_memory_defs.h:
-
-/home/guillem/fragile/fractal-gas-web/src/nes_env.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
-
-/usr/include/c++/15/numeric:
-
 /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp:
 
 /usr/include/asm-generic/posix_types.h:
@@ -619,11 +607,27 @@ libfractal_gas_core.a:
 
 /usr/include/pthread.h:
 
-/usr/include/c++/15/bits/align.h:
+/home/guillem/fragile/fractal-gas-web/native/main.cpp:
 
-/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+/usr/include/x86_64-linux-gnu/bits/select-decl.h:
 
-/usr/include/alloca.h:
+/usr/include/c++/15/bits/atomic_lockfree_defines.h:
+
+/usr/include/x86_64-linux-gnu/c++/15/bits/opt_random.h:
+
+/usr/include/c++/15/bits/memory_resource.h:
+
+/home/guillem/fragile/fractal-gas-web/src/nes_env.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
+
+/usr/include/c++/15/numeric:
+
+/usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so:
+
+/lib64/ld-linux-x86-64.so.2:
+
+/home/guillem/fragile/fractal-gas-web/src/mario_reward.hpp:
 
 /usr/include/c++/15/bits/hashtable_policy.h:
 
@@ -635,15 +639,17 @@ libfractal_gas_core.a:
 
 /usr/include/c++/15/bits/basic_string.tcc:
 
-/home/guillem/fragile/fractal-gas-web/native/main.cpp:
+/usr/include/c++/15/bits/std_mutex.h:
 
-/usr/include/x86_64-linux-gnu/bits/select-decl.h:
+/usr/include/c++/15/bits/node_handle.h:
 
-/usr/include/c++/15/bits/atomic_lockfree_defines.h:
+/usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h:
 
-/usr/include/x86_64-linux-gnu/c++/15/bits/opt_random.h:
+/usr/include/c++/15/pstl/glue_memory_defs.h:
 
-/usr/include/c++/15/bits/memory_resource.h:
+/home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp:
+
+/usr/include/c++/15/bits/hashtable.h:
 
 /usr/include/c++/15/bits/shared_ptr_atomic.h:
 
@@ -661,11 +667,11 @@ libfractal_gas_core.a:
 
 /home/guillem/fragile/fractal-gas-web/src/env.hpp:
 
+/usr/include/c++/15/initializer_list:
+
 /usr/include/x86_64-linux-gnu/bits/mathcalls-macros.h:
 
 /usr/include/x86_64-linux-gnu/bits/iscanonical.h:
-
-/usr/include/c++/15/bits/hashtable.h:
 
 /usr/include/c++/15/bits/invoke.h:
 
@@ -681,11 +687,11 @@ libfractal_gas_core.a:
 
 /usr/include/x86_64-linux-gnu/bits/errno.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdio.h:
+/usr/include/c++/15/iosfwd:
 
-/usr/include/c++/15/bits/postypes.h:
+/usr/include/x86_64-linux-gnu/c++/15/bits/gthr-default.h:
 
-/usr/include/x86_64-linux-gnu/asm/posix_types.h:
+/usr/include/c++/15/limits:
 
 /usr/include/c++/15/bits/charconv.h:
 
@@ -694,6 +700,8 @@ libfractal_gas_core.a:
 /usr/include/linux/errno.h:
 
 /usr/include/c++/15/new:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal_tree.hpp:
 
 /usr/include/c++/15/thread:
 
@@ -773,9 +781,9 @@ libnes_core.a:
 
 /usr/include/locale.h:
 
-/usr/include/c++/15/debug/assertions.h:
-
 /usr/include/c++/15/bits/std_thread.h:
+
+/usr/include/c++/15/debug/assertions.h:
 
 /usr/include/x86_64-linux-gnu/asm/bitsperlong.h:
 
@@ -916,5 +924,3 @@ libnes_core.a:
 /usr/include/asm-generic/errno.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:

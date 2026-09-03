@@ -222,7 +222,8 @@ stay dark. Same resizable viewport and dot overlay as the Mario map.
   bitmask in the state blob (`AtariCarry`, clones inherit it, reset on the
   next temple level), not paid during the death animation; both terms are
   live sliders. Death = ALE life loss (recoverable when lives remain, like
-  every Atari game). The **pyramid map** panel is BUILT by the swarm like
+  every Atari game) or entering room 8, the level-1 dead end (a hard death,
+  plangym's `death_room_8`). The **pyramid map** panel is BUILT by the swarm like
   Sonic's: the first time any walker stands in a `(level, room)` the worker
   renders that walker's frame (`renderWalkerFrame`), crops the 50-row HUD
   to the 160x160 room image and ships it; the UI pastes it on the room's

@@ -197,9 +197,11 @@ void AtariEnv::step_one(int slot, const std::vector<char>& blob, int32_t action,
 
   float step_reward = total_reward;
   display = DisplayInfo{};
+  bool death_room = false;
   if (game_ == AtariGame::kMontezuma) {
     const MontezumaVars v = montezuma_read(a.getRAM().array());
     step_reward = montezuma_step_reward(v, total_reward, carry, reward_weights_);
+    death_room = montezuma_in_death_room(v.room);
     display.room = v.room;
     display.x = montezuma_room_px(v.x);
     display.y = montezuma_room_py(v.y);
@@ -214,9 +216,11 @@ void AtariEnv::step_one(int slot, const std::vector<char>& blob, int32_t action,
   reward = step_reward;
   const bool game_over = a.game_over(/*with_truncation=*/false);
   const bool life_lost = lives_start > 0 && a.lives() < lives_start;
-  done = (game_over || life_lost) ? 1 : 0;
+  // Montezuma's death room is a hard (non-recoverable) death: reviving a
+  // walker there would just keep it dead.
+  done = (game_over || life_lost || death_room) ? 1 : 0;
   trunc = a.game_truncated() ? 1 : 0;
-  recoverable = (life_lost && !game_over && !trunc) ? 1 : 0;
+  recoverable = (life_lost && !game_over && !trunc && !death_room) ? 1 : 0;
   display.score = carry.episode_return;
 }
 

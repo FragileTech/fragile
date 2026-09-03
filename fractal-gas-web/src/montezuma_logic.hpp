@@ -43,6 +43,15 @@ constexpr int32_t kMontezumaRoomW = 160;  // room image width (frame width)
 constexpr int32_t kMontezumaRoomH = 160;  // frame rows 50..209 (HUD cropped)
 constexpr int32_t kMontezumaHudRows = 50;
 
+/// Room 8 (level 1, left of room 9) is a dead end the swarm must not spend
+/// its budget in: entering it counts as a death, like plangym's
+/// death_room_8 option in the old Montezuma demo.
+constexpr int32_t kMontezumaDeathRoom = 8;
+
+inline bool montezuma_in_death_room(int32_t room) {
+  return room == kMontezumaDeathRoom;
+}
+
 constexpr int kMontezumaPyramid[kMontezumaPyramidRows][kMontezumaPyramidCols] = {
     {-1, -1, -1, 0, 1, 2, -1, -1, -1},
     {-1, -1, 3, 4, 5, 6, 7, -1, -1},
@@ -155,8 +164,9 @@ struct AtariCarry {
 
 /// Shaped step reward: score delta plus a bonus the first time this lineage
 /// enters a pyramid room on the current level. Not paid during the death
-/// animation (the respawn does not "enter" the room again) and the bitmask
-/// resets when the level changes.
+/// animation (the respawn does not "enter" the room again), nor for the
+/// death room (entering it is a death), and the bitmask resets when the
+/// level changes.
 inline float montezuma_step_reward(const MontezumaVars& v, float ale_reward,
                                    AtariCarry& carry,
                                    const MontezumaRewardWeights& w) {
@@ -165,7 +175,8 @@ inline float montezuma_step_reward(const MontezumaVars& v, float ale_reward,
     carry.level_last = v.level;
     carry.visited_rooms = 0;
   }
-  if (v.dying == 0 && v.room >= 0 && v.room < kMontezumaRooms) {
+  if (v.dying == 0 && v.room >= 0 && v.room < kMontezumaRooms &&
+      !montezuma_in_death_room(v.room)) {
     const uint32_t bit = 1u << static_cast<uint32_t>(v.room);
     if ((carry.visited_rooms & bit) == 0) {
       carry.visited_rooms |= bit;

@@ -252,7 +252,7 @@ Mario: distance travelled right, minus time and death penalties. Atari: game sco
           <div class="plot-wrap" data-help="Share of walkers that copied another walker's state this iteration (dead walkers always clone). High = the swarm is collapsing onto a few good walkers; low = walkers are spread out and mostly exploring on their own.">
             <canvas class="plot" id="plot-clones" width="460" height="150"></canvas>
           </div>
-          <div class="plot-wrap" data-help="Walkers that did not die this iteration (Mario: died or fell; Atari / Sonic / Montezuma: lost a life). Dead walkers are respawned by cloning a live one, so the count usually recovers next step. If all die at once the run ends.">
+          <div class="plot-wrap" data-help="Walkers that did not die this iteration (Mario: died or fell; Atari / Sonic: lost a life; Montezuma: lost a life or entered the dead-end room 8). Dead walkers are respawned by cloning a live one, so the count usually recovers next step. If all die at once the run ends.">
             <canvas class="plot" id="plot-alive" width="460" height="150"></canvas>
           </div>
           <div class="plot-wrap" data-help="Average number of frames walkers held their action this iteration; it sits between dt min and dt max. Env frames is roughly iterations x N x mean dt.">
