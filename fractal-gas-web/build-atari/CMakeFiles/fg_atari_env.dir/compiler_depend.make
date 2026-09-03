@@ -5,6 +5,7 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o: /home/guillem/fragile/fractal-g
   ale-build/src/ale/version.hpp \
   /home/guillem/fragile/fractal-gas-web/src/atari_env.hpp \
   /home/guillem/fragile/fractal-gas-web/src/env.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/montezuma_logic.hpp \
   /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
   /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/ale_interface.hpp \
   /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/common/ColourPalette.hpp \
@@ -455,6 +456,10 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o: /home/guillem/fragile/fractal-g
 
 /usr/include/x86_64-linux-gnu/bits/select2.h:
 
+/usr/include/x86_64-linux-gnu/bits/time.h:
+
+/usr/include/x86_64-linux-gnu/bits/select.h:
+
 /home/guillem/fragile/fractal-gas-web/src/atari_env.cpp:
 
 /usr/include/c++/15/clocale:
@@ -470,6 +475,8 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o: /home/guillem/fragile/fractal-g
 /usr/include/c++/15/bits/quoted_string.h:
 
 /usr/include/c++/15/ext/numeric_traits.h:
+
+/home/guillem/fragile/fractal-gas-web/src/montezuma_logic.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/stdio.h:
 
@@ -559,18 +566,6 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o: /home/guillem/fragile/fractal-g
 
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Deserializer.hxx:
 
-/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
-
-/usr/include/c++/15/bits/stl_iterator_base_funcs.h:
-
-/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/environment/stella_environment.hpp:
-
-/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/environment/ale_screen.hpp:
-
-/usr/include/c++/15/ext/atomicity.h:
-
-/usr/include/c++/15/bits/char_traits.h:
-
 /usr/include/c++/15/bits/ostream.h:
 
 /usr/include/c++/15/bits/stringfwd.h:
@@ -579,9 +574,13 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o: /home/guillem/fragile/fractal-g
 
 /usr/include/c++/15/bits/alloc_traits.h:
 
-/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/environment/ale_ram.hpp:
+/usr/include/c++/15/bits/cxxabi_init_exception.h:
 
-/usr/include/asm-generic/errno-base.h:
+/usr/include/c++/15/bits/basic_string.h:
+
+/usr/include/c++/15/bits/cpp_type_traits.h:
+
+/usr/include/c++/15/streambuf:
 
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Settings.hxx:
 
@@ -601,14 +600,6 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o: /home/guillem/fragile/fractal-g
 
 /usr/include/asm-generic/errno.h:
 
-/usr/include/c++/15/bits/cxxabi_init_exception.h:
-
-/usr/include/c++/15/bits/basic_string.h:
-
-/usr/include/c++/15/bits/cpp_type_traits.h:
-
-/usr/include/c++/15/streambuf:
-
 /usr/include/c++/15/bits/sstream.tcc:
 
 /usr/include/c++/15/bits/atomic_base.h:
@@ -626,6 +617,28 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o: /home/guillem/fragile/fractal-g
 /usr/include/x86_64-linux-gnu/c++/15/bits/ctype_inline.h:
 
 /usr/include/c++/15/bits/move.h:
+
+/usr/include/c++/15/bits/stl_algo.h:
+
+/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Sound.hxx:
+
+/usr/include/c++/15/bits/shared_ptr_atomic.h:
+
+/usr/include/c++/15/compare:
+
+/usr/include/c++/15/bits/cxxabi_forced.h:
+
+/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Props.hxx:
+
+/usr/include/c++/15/map:
+
+/usr/include/c++/15/bits/stl_iterator.h:
+
+/usr/include/c++/15/memory:
+
+/usr/include/c++/15/vector:
+
+/usr/include/alloca.h:
 
 /usr/include/c++/15/initializer_list:
 
@@ -655,9 +668,29 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o: /home/guillem/fragile/fractal-g
 
 /usr/include/sched.h:
 
-/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Sound.hxx:
+ale-build/src/ale/version.hpp:
 
-/usr/include/c++/15/bits/stl_algo.h:
+/usr/include/pthread.h:
+
+/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/common/Log.hpp:
+
+/usr/include/c++/15/bits/locale_classes.tcc:
+
+/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Cart.hxx:
+
+/usr/include/c++/15/bits/basic_ios.tcc:
+
+/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/environment/stella_environment.hpp:
+
+/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/environment/ale_screen.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
+
+/usr/include/c++/15/bits/stl_iterator_base_funcs.h:
+
+/usr/include/c++/15/ext/atomicity.h:
+
+/usr/include/c++/15/bits/char_traits.h:
 
 /usr/include/linux/sched/types.h:
 
@@ -671,45 +704,17 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o: /home/guillem/fragile/fractal-g
 
 /usr/include/c++/15/bits/stl_raw_storage_iter.h:
 
+/usr/include/asm-generic/errno-base.h:
+
 /usr/include/c++/15/iosfwd:
 
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/common/Constants.h:
 
-/usr/include/alloca.h:
-
 /usr/include/c++/15/array:
-
-/usr/include/c++/15/tuple:
 
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/common/ColourPalette.hpp:
 
-ale-build/src/ale/version.hpp:
-
-/usr/include/pthread.h:
-
-/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/common/Log.hpp:
-
-/usr/include/c++/15/bits/locale_classes.tcc:
-
-/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Cart.hxx:
-
-/usr/include/c++/15/bits/stl_iterator.h:
-
-/usr/include/c++/15/memory:
-
-/usr/include/c++/15/vector:
-
-/usr/include/c++/15/bits/basic_ios.tcc:
-
-/usr/include/c++/15/bits/shared_ptr_atomic.h:
-
-/usr/include/c++/15/compare:
-
-/usr/include/c++/15/bits/cxxabi_forced.h:
-
-/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Props.hxx:
-
-/usr/include/c++/15/map:
+/usr/include/c++/15/tuple:
 
 /usr/include/c++/15/bits/ptr_traits.h:
 
@@ -736,6 +741,8 @@ ale-build/src/ale/version.hpp:
 /usr/include/c++/15/bits/stl_heap.h:
 
 /usr/include/c++/15/backward/auto_ptr.h:
+
+/home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/environment/ale_ram.hpp:
 
 /usr/include/c++/15/bits/ostream.tcc:
 
@@ -935,9 +942,9 @@ ale-build/src/ale/version.hpp:
 
 /usr/include/endian.h:
 
-/usr/include/c++/15/bits/fs_fwd.h:
-
 /usr/include/c++/15/cstddef:
+
+/usr/include/c++/15/bits/fs_fwd.h:
 
 /usr/include/errno.h:
 
@@ -1006,7 +1013,3 @@ ale-build/src/ale/version.hpp:
 /usr/include/c++/15/bits/atomic_lockfree_defines.h:
 
 /usr/include/x86_64-linux-gnu/bits/select-decl.h:
-
-/usr/include/x86_64-linux-gnu/bits/time.h:
-
-/usr/include/x86_64-linux-gnu/bits/select.h:

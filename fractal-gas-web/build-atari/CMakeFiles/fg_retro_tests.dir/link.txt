@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/fg_retro_tests.dir/link.d CMakeFiles/fg_retro_tests.dir/tests/test_main.cpp.o CMakeFiles/fg_retro_tests.dir/tests/test_retro_env.cpp.o -o fg_retro_tests  libfg_retro_env.a libfractal_gas_core.a libnes_core.a /usr/lib/x86_64-linux-gnu/libz.so -ldl

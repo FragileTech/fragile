@@ -7,6 +7,7 @@ fg_tests: \
   CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o \
   CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o \
   CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o \
+  CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o \
   libfractal_gas_core.a \
   libnes_core.a \
   /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so \
@@ -52,6 +53,8 @@ CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o:
 CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o:
 
 CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o:
+
+CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o:
 
 libfractal_gas_core.a:
 

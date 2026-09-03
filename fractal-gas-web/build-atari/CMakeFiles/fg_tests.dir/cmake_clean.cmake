@@ -6,6 +6,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o.d"
   "CMakeFiles/fg_tests.dir/tests/test_main.cpp.o"
   "CMakeFiles/fg_tests.dir/tests/test_main.cpp.o.d"
+  "CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o"
+  "CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o.d"
   "CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o"
   "CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o.d"
   "CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.o"

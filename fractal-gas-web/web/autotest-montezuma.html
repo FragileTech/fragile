@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>montezuma autotest</title></head>
+<body>
+<pre id="result">RUNNING</pre>
+<script type="module">
+// End-to-end check of Montezuma's Revenge in wasm: Atari console with the
+// dedicated game logic (params.game = 1), Coords observation, per-walker
+// room/x/y arrays and the room images the worker captures for the pyramid
+// map. Needs roms/atari/montezuma_revenge.bin served next to the page.
+const out = document.getElementById("result");
+const report = (text) => {
+  out.textContent = text;
+  fetch("autotest-result-" + encodeURIComponent(text)).catch(() => {});
+};
+try {
+  if (!crossOriginIsolated) throw new Error("not crossOriginIsolated");
+  const romR = await fetch("roms/atari/montezuma_revenge.bin");
+  if (!romR.ok) throw new Error("roms/atari/montezuma_revenge.bin not bundled");
+  const rom = await romR.arrayBuffer();
+  const worker = new Worker("worker.js", { type: "module" });
+  const steps = [];
+  const rooms = new Map();  // room -> bytes of the captured image
+  let sawRoom1 = false;
+  let frameW = 0;
+  let frameH = 0;
+  worker.onmessage = (event) => {
+    const msg = event.data;
+    if (msg.type === "error") return report("MONTEZUMA-FAIL " + msg.message);
+    if (msg.type === "ready") return worker.postMessage({ type: "start" });
+    if (msg.type === "step") {
+      steps.push(msg.stats);
+      if (msg.frame) { frameW = msg.frameWidth; frameH = msg.frameHeight; }
+      if (msg.stats.world === 1) sawRoom1 = true;
+      for (const rf of msg.roomFrames || []) {
+        rooms.set(`${rf.level}:${rf.room}`, rf.rgba.byteLength);
+      }
+      if (steps.length >= 30) {
+        worker.postMessage({ type: "pause" });
+        const last = steps[steps.length - 1];
+        const n = last.walkerX ? last.walkerX.length : 0;
+        const room1 = rooms.get("0:1");
+        const ok = last.iteration >= 30 &&
+                   Number.isFinite(last.meanVirtualReward) &&
+                   frameW === 160 && frameH === 210 &&
+                   n === 16 &&
+                   last.walkerWorld.length === n && last.walkerStage.length === n &&
+                   last.walkerY.length === n && last.walkerAlive.length === n &&
+                   last.walkerX.every((x) => x >= 0 && x < 160) &&
+                   last.walkerY.every((y) => y >= 0 && y < 160) &&
+                   sawRoom1 && last.lives !== undefined &&
+                   room1 === 160 * 160 * 4;
+        report((ok ? "MONTEZUMA-OK" : "MONTEZUMA-FAIL") +
+          ` iter=${last.iteration} alive=${last.aliveCount}` +
+          ` frame=${frameW}x${frameH} walkers=${n} room=${last.world}` +
+          ` rooms=[${[...rooms.keys()].join(",")}] room1bytes=${room1}`);
+      }
+    }
+  };
+  worker.onerror = (e) => report("MONTEZUMA-FAIL worker: " + e.message);
+  worker.postMessage(
+    { type: "init", rom, params: {
+        n: 16, distCoef: 1.0, rewardCoef: 1.0, useCumulativeReward: true,
+        dtMin: 6, dtMax: 30, nElite: 2, seed: 7, nThreads: 4, obsMode: 3,
+        world: 1, stage: 1, console: 1, game: 1 },
+      rewardWeights: [1, 500] },
+    [rom],
+  );
+} catch (err) {
+  report("MONTEZUMA-FAIL " + String(err));
+}
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ let fg = null;
 let running = false;
 let stepScheduled = false;
 let currentConsole = 0;
+let currentGame = 0;
 
 async function loadModule() {
   if (fg) return fg;
@@ -72,6 +73,54 @@ function post(type, payload, transfer) {
   self.postMessage({ type, ...payload }, transfer ?? []);
 }
 
+// --- Montezuma room capture ---------------------------------------------------
+// The pyramid map is BUILT by the swarm: the first time any walker stands in
+// a (level, room) pair, its frame is rendered, the 50-row HUD cropped away,
+// and the 160x160 room image shipped to the UI. A room-transition frame is
+// black and is skipped (retried on the next step). Layout constants mirror
+// src/montezuma_logic.hpp.
+const MZ_HUD_ROWS = 50;
+const MZ_ROOM_W = 160;
+const MZ_ROOM_H = 160;
+const MZ_MAX_CAPTURES_PER_STEP = 3;
+const MZ_MIN_LIT_FRACTION = 0.05;
+let capturedRooms = new Set();
+
+function isMontezuma() {
+  return currentConsole === 1 && currentGame === 1;
+}
+
+function captureRooms(stats) {
+  if (!stats || !stats.walkerWorld) return [];
+  const frameW = fg.frameWidth();
+  const frameH = fg.frameHeight();
+  if (frameW !== MZ_ROOM_W || frameH < MZ_HUD_ROWS + MZ_ROOM_H) return [];
+  const frames = [];
+  const rooms = stats.walkerWorld;
+  const levels = stats.walkerStage;
+  const alive = stats.walkerAlive;
+  for (let i = 0; i < rooms.length && frames.length < MZ_MAX_CAPTURES_PER_STEP; i++) {
+    if (!alive[i]) continue;
+    const key = `${levels[i]}:${rooms[i]}`;
+    if (capturedRooms.has(key)) continue;
+    const view = fg.renderWalkerFrame(i);
+    if (!view) continue;
+    const start = MZ_HUD_ROWS * frameW * 4;
+    const room = new Uint8ClampedArray(view.buffer, view.byteOffset + start,
+                                       MZ_ROOM_W * MZ_ROOM_H * 4).slice();
+    // Black (transition) frames carry no room image yet: try again later.
+    let lit = 0;
+    for (let p = 0; p < room.length; p += 4) {
+      if (room[p] | room[p + 1] | room[p + 2]) lit++;
+    }
+    if (lit < MZ_MIN_LIT_FRACTION * MZ_ROOM_W * MZ_ROOM_H) continue;
+    capturedRooms.add(key);
+    frames.push({ level: levels[i], room: rooms[i],
+                  width: MZ_ROOM_W, height: MZ_ROOM_H, rgba: room.buffer });
+  }
+  return frames;
+}
+
 function stepOnce() {
   stepScheduled = false;
   if (!running || !fg) return;
@@ -88,15 +137,18 @@ function stepOnce() {
     const tiles = fg.getWalkerTiles();
     if (tiles) walkerTiles = new Uint8Array(tiles).buffer;
   }
+  const roomFrames = isMontezuma() ? captureRooms(stats) : [];
   const transfers = [];
   if (frame) transfers.push(frame);
   if (walkerTiles) transfers.push(walkerTiles);
+  for (const rf of roomFrames) transfers.push(rf.rgba);
   post(
     "step",
     {
       stats,
       frame,
       walkerTiles,
+      roomFrames,
       frameWidth: fg.frameWidth(),
       frameHeight: fg.frameHeight(),
     },
@@ -126,6 +178,8 @@ self.onmessage = async (event) => {
         await loadModule();
         const params = { ...msg.params };
         currentConsole = params.console;
+        currentGame = params.game;
+        capturedRooms = new Set();
         if (params.console === 2) {
           // Pre-spawn the Genesis core-worker farm (see above).
           const n = Math.min(Math.max(params.nThreads, 1), 8);
@@ -168,6 +222,7 @@ self.onmessage = async (event) => {
         running = false;
         if (fg) {
           fg.reset();
+          capturedRooms = new Set();
           post("resetDone", {});
         }
         break;

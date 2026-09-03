@@ -15,9 +15,15 @@ struct MarioCarry {
   int32_t x_last = 0;
   int32_t time_last = 0;
   int32_t flag_last = 0;   // was the flag grabbed on the previous frame?
-  int32_t area_last = -1;  // sub-area byte (ram[0x0760]) on the previous frame
+  int32_t area_last = -1;  // area pointer (ram[0x0750]) on the previous frame
   int32_t stage_last = -1;    // (world << 8) | stage on the previous frame
-  int32_t visited_areas = 0;  // bitmask of sub-areas seen this stage
+  int32_t visited_areas = 0;  // bitmask of areas seen this stage
+  // Shortcut progress (see mario_frame_update): x of the last settled frame
+  // in the current area, and the area/x a pipe was taken from, so that
+  // returning to that area pays the level distance the pipe skipped.
+  int32_t area_x = 0;
+  int32_t return_area = -1;
+  int32_t return_x = 0;
 };
 
 /// One-time bonus for grabbing the flagpole, applied OUTSIDE the +-15 frame
@@ -80,8 +86,18 @@ int32_t mario_time(const uint8_t* ram);
 ///     per frame) counts as +1 progress per tick instead of a -1 time
 ///     penalty; otherwise it forms a ~-333 reward barrier that cloning
 ///     refuses to cross and the swarm stalls at the castle door.
-///   - Entering a sub-area (ram[0x0760] change) not yet visited this stage
-///     pays kAreaBonus once, outside the clip — see kAreaBonus above.
+///   - Entering an area (ram[0x0750] area pointer change) not yet visited
+///     this stage pays kAreaBonus once, outside the clip — see kAreaBonus.
+///   - Shortcut progress: taking a pipe into a side room and coming back
+///     out further along the level pays x_weight * (exit x - entry x), i.e.
+///     exactly what walking the skipped stretch would have paid. Without it
+///     the |dx| > 5 glitch guard zeroes the forward jump on exit and a
+///     shortcut earns nothing, so the swarm has no reason to take it. It
+///     is potential-based (signed, keyed on the level x coordinate), so a
+///     pipe leading backwards pays the negative and nothing can be farmed.
+///     Area loads reset x to 0 with player_state 0x00 and place the player
+///     (0x07) on the frame the area pointer flips, so the entry x is the
+///     last settled x before the load and the exit x is read on the flip.
 ///   - Pipe/area transition animations (player_state 0x02/0x03/0x07) pay
 ///     +1 per frame so the zero-reward animation is not a fitness wall for
 ///     a converged swarm.

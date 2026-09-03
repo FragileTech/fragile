@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfg_retro_env.a CMakeFiles/fg_retro_env.dir/src/retro_core.cpp.o CMakeFiles/fg_retro_env.dir/src/retro_env.cpp.o
+/usr/bin/ranlib libfg_retro_env.a

@@ -12,7 +12,9 @@ runs a swarm of walkers playing Super Mario Bros entirely in the browser.
   random_alive_compas), `cloning` (FractalCloningOperator), `kinetic`
   (RandomActionOperator), `walker_state`, `fractal_gas` (the step loop +
   elite buffer), `nes_env` (per-thread emulator pool + Mario RAM reward),
-  `thread_pool`, `wasm_bindings` (embind surface).
+  `thread_pool`, `atari_env` (ALE emulator pool) + `montezuma_logic`
+  (Montezuma's Revenge RAM map, pyramid layout, coords tuple and shaped
+  reward, header-only), `wasm_bindings` (embind surface).
 - `third_party/nes-py/` — git submodule; its C++ core is compiled directly by
   our CMake (the Python/SCons parts are unused).
 - `tests/` — dependency-free test harness; the key test replays a recorded
@@ -25,7 +27,9 @@ runs a swarm of walkers playing Super Mario Bros entirely in the browser.
   1 world px, from ian-albert.com) with every walker's RAM x/y overlaid as
   a dot (per-walker `walkerX/Y/World/Stage/Alive` arrays in the step stats)
   and the best walker highlighted — the whole gas spreading through the
-  level at a glance.
+  level at a glance. Sonic builds its map from walker tiles (fog of war)
+  and Montezuma shows the temple pyramid with each room's picture captured
+  as the swarm discovers it (see "Consoles").
 
 ## Fidelity notes
 
@@ -83,8 +87,8 @@ cmake --build build-wasm -j            # outputs web/fractal_gas.{js,wasm}
 
 ## Consoles
 
-The web demo runs three consoles end-to-end in wasm, selectable in the
-sidebar:
+The web demo runs four game setups end-to-end in wasm, selectable in the
+top bar:
 
 - **NES / Super Mario Bros** (nes-py core, pthread-parallel) — the default.
 - **Atari 2600** (ALE core, pthread-parallel; rewards/termination come from
@@ -139,6 +143,49 @@ frame downsampled 8x) plus the camera position (Sonic 1 RAM v_screenposx/y
 @ $FFF700/$FFF704); the UI stitches tiles into a per-level canvas at 1/8
 scale, so the level image emerges as the gas explores and unexplored areas
 stay dark. Same resizable viewport and dot overlay as the Mario map.
+
+- **Montezuma's Revenge** (the Atari/ALE core with dedicated game logic,
+  `src/montezuma_logic.hpp`; the C++ side is Atari console 1 with
+  `game = 1`). The RAM map: room `ram[3]`, x `ram[42]`, y `ram[43]`
+  (grows upward), level `ram[57]`, lives `ram[58]`, inventory bitmask
+  `ram[65]`, death timer `ram[55]`. Its Coords tuple is
+  `[global_x, global_y, room, x, y, level, inventory, lives]` where
+  `global_x/y` place the walker on the 9x4 room grid of the temple
+  (`cell * 160 + in-room pixel`), so walkers in adjacent rooms are a
+  room-width apart in distance space instead of one unit. Reward = ALE's
+  score delta plus a one-off **new-room bonus** (default +500) the first
+  time a walker's lineage enters one of the 24 rooms — a per-walker
+  bitmask in the state blob (`AtariCarry`, clones inherit it, reset on the
+  next temple level), not paid during the death animation; both terms are
+  live sliders. Death = ALE life loss (recoverable when lives remain, like
+  every Atari game). The **pyramid map** panel is BUILT by the swarm like
+  Sonic's: the first time any walker stands in a `(level, room)` the worker
+  renders that walker's frame (`renderWalkerFrame`), crops the 50-row HUD
+  to the 160x160 room image and ships it; the UI pastes it on the room's
+  cell (unexplored rooms show their number) and overlays every walker at
+  its in-room position — the projection `(x + 3, 263 - y)` was calibrated
+  against Panama Joe's face pixels. `web/autotest-montezuma.html` is the
+  headless smoke test.
+
+**ROM vault — one password for every game**: the ROMs are copyrighted, so
+the deployment ships only password-encrypted blobs under `web/roms-enc/`
+(committed): `mario.nes.enc`, `sonic.rom.enc`, `atari/<game>.bin.enc` for
+the whole Atari picker (Montezuma included) and a `manifest.json`. Build
+them from the plaintext ROMs next to the page (all gitignored:
+`web/test-rom.nes`, `web/sonic.rom`, `web/roms/atari/*.bin`) with
+
+```bash
+FG_ROM_PASSWORD='...' node tools/encrypt-rom.mjs --check web/roms-enc/sonic.rom.enc  # reuse the current password?
+FG_ROM_PASSWORD='...' node tools/encrypt-rom.mjs --all
+```
+
+Blob layout: `salt(16) | iv(12) | AES-256-GCM ciphertext+tag`, key =
+PBKDF2-SHA256(password, salt, 250k); `--all` uses ONE salt for the whole
+vault so the browser derives the key once. In the browser each ROM is
+loaded plaintext-first (local dev needs no password), then from the
+IndexedDB cache, then decrypted with the password, which is asked once and
+remembered (memory + IndexedDB) so every other game and later visits unlock
+silently; Sonic additionally accepts a one-time upload of your own ROM.
 
 ## Run the demo
 

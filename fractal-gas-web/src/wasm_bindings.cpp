@@ -27,6 +27,7 @@ namespace {
 
 std::unique_ptr<fg::BatchEnv> g_env;
 fg::NesMarioEnv* g_nes = nullptr;  // non-owning; set when console == 0
+fg::AtariEnv* g_atari = nullptr;   // non-owning; set when console == 1
 std::unique_ptr<fg::FractalGas> g_gas;
 std::string g_last_error;
 std::vector<uint8_t> g_frame;
@@ -45,7 +46,8 @@ struct FgParams {
   int world = 1;     // NES start level: world 1-8
   int stage = 1;     // NES start level: stage 1-4
   int console = 0;   // 0=NES, 1=Atari, 2=Genesis
-  int game = 0;      // Genesis only: 0=Airstriker, 1=Sonic
+  int game = 0;      // Genesis: 0=Airstriker, 1=Sonic; Atari: 0=generic,
+                     // 1=Montezuma's Revenge (dedicated RAM logic + map)
   // Genesis core-worker farm, pre-spawned by worker.js (nested workers need
   // the JS event loop, which fg_init blocks): region base pointer, worker
   // count, and the blob size the workers reported.
@@ -83,6 +85,7 @@ bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
     g_gas.reset();
     g_env.reset();
     g_nes = nullptr;
+    g_atari = nullptr;
 
     const int threads = p.nThreads < 1 ? 1 : (p.nThreads > 8 ? 8 : p.nThreads);
     const int mode_int = p.obsMode < 0 || p.obsMode > 3 ? 0 : p.obsMode;
@@ -90,8 +93,11 @@ bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
     switch (p.console) {
       case 1: {  // Atari 2600 via ALE
         write_bytes("/rom.bin", rom);
-        g_env = std::make_unique<fg::AtariEnv>(
-            "/rom.bin", threads, static_cast<fg::AtariObsMode>(mode_int));
+        auto atari = std::make_unique<fg::AtariEnv>(
+            "/rom.bin", threads, static_cast<fg::AtariObsMode>(mode_int),
+            p.game == 1 ? fg::AtariGame::kMontezuma : fg::AtariGame::kGeneric);
+        g_atari = atari.get();
+        g_env = std::move(atari);
         break;
       }
       case 2: {  // Sega Genesis via per-worker shim modules (parallel)
@@ -124,6 +130,7 @@ bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
     g_gas.reset();
     g_env.reset();
     g_nes = nullptr;
+    g_atari = nullptr;
     return false;
   }
 }
@@ -173,6 +180,34 @@ emscripten::val fg_step() {
     out.set("walkerWorld", ws);
     out.set("walkerStage", ss);
     out.set("walkerAlive", alive);
+  } else if (g_atari && g_atari->game() == fg::AtariGame::kMontezuma) {
+    // Montezuma pyramid swarm map: per-walker in-room pixel position of
+    // Panama Joe (inside the HUD-cropped 160x160 room image), walkerWorld =
+    // room number, walkerStage = level (0-based). Generic Atari games emit
+    // nothing (no map).
+    const int32_t n = g_gas->params().N;
+    const std::vector<uint8_t>& dones = g_gas->state().dones;
+    emscripten::val xs = emscripten::val::array();
+    emscripten::val ys = emscripten::val::array();
+    emscripten::val ws = emscripten::val::array();
+    emscripten::val ss = emscripten::val::array();
+    emscripten::val alive = emscripten::val::array();
+    for (int32_t i = 0; i < n; ++i) {
+      xs.set(i, g_atari->walker_x(i));
+      ys.set(i, g_atari->walker_y(i));
+      ws.set(i, g_atari->walker_room(i));
+      ss.set(i, g_atari->walker_level(i));
+      alive.set(i, static_cast<size_t>(i) < dones.size() && !dones[i]);
+    }
+    out.set("walkerX", xs);
+    out.set("walkerY", ys);
+    out.set("walkerWorld", ws);
+    out.set("walkerStage", ss);
+    out.set("walkerAlive", alive);
+    out.set("world", g_atari->walker_room(info.best_walker_idx));
+    out.set("level", g_atari->walker_level(info.best_walker_idx));
+    out.set("lives", g_atari->walker_lives(info.best_walker_idx));
+    out.set("inventory", g_atari->walker_inventory(info.best_walker_idx));
   } else if (auto* farm = dynamic_cast<fg::RetroFarmEnv*>(g_env.get())) {
     // Sonic fog-of-war swarm map: per-walker position/level/camera arrays
     // (same field names as the NES branch where shared; walkerWorld = zone,
@@ -230,6 +265,21 @@ emscripten::val fg_get_best_frame() {
       emscripten::typed_memory_view(g_frame.size(), g_frame.data()));
 }
 
+/// RGBA frame of walker i's CURRENT state (view into wasm memory — copy on
+/// the JS side before transferring). Used by the Montezuma pyramid map to
+/// capture a room image the first time a walker enters it.
+emscripten::val fg_render_walker_frame(int i) {
+  if (!g_gas || !g_env) return emscripten::val::null();
+  const std::vector<std::vector<char>>& states = g_gas->state().states;
+  if (i < 0 || static_cast<size_t>(i) >= states.size()) {
+    return emscripten::val::null();
+  }
+  g_env->render_frame(states[static_cast<size_t>(i)], g_frame);
+  if (g_frame.empty()) return emscripten::val::null();
+  return emscripten::val(
+      emscripten::typed_memory_view(g_frame.size(), g_frame.data()));
+}
+
 int fg_frame_width() { return g_env ? g_env->frame_width() : 0; }
 int fg_frame_height() { return g_env ? g_env->frame_height() : 0; }
 int fg_n_actions() { return g_env ? g_env->n_actions() : 0; }
@@ -251,7 +301,8 @@ void fg_reset() {
 
 /// Live-tunable reward term weights, as a JS array of numbers in the
 /// console's field order: Mario [x, time, death, clip, flag, area]; Sonic
-/// [dx, rings, score, cell, life, boss, act]. Ignored for Atari (raw score).
+/// [dx, rings, score, cell, life, boss, act]; Montezuma [score, room].
+/// Ignored for generic Atari games (raw score).
 void fg_set_reward_weights(emscripten::val weights) {
   if (!g_env) return;
   const int len = weights["length"].as<int>();
@@ -277,6 +328,11 @@ void fg_set_reward_weights(emscripten::val weights) {
     w.boss = at(5, w.boss);
     w.act = at(6, w.act);
     farm->set_reward_weights(w);
+  } else if (g_atari && g_atari->game() == fg::AtariGame::kMontezuma) {
+    fg::MontezumaRewardWeights w;
+    w.score = at(0, w.score);
+    w.room = at(1, w.room);
+    g_atari->set_reward_weights(w);
   }
 }
 
@@ -308,6 +364,7 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
   emscripten::function("lastError", &fg_last_error);
   emscripten::function("step", &fg_step);
   emscripten::function("getBestFrame", &fg_get_best_frame);
+  emscripten::function("renderWalkerFrame", &fg_render_walker_frame);
   emscripten::function("getWalkerTiles", &fg_get_walker_tiles);
   emscripten::function("frameWidth", &fg_frame_width);
   emscripten::function("frameHeight", &fg_frame_height);

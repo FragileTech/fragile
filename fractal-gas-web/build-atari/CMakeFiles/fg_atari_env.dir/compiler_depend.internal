@@ -6,6 +6,7 @@ CMakeFiles/fg_atari_env.dir/src/atari_env.cpp.o
  /home/guillem/fragile/fractal-gas-web/build-atari/ale-build/src/ale/version.hpp
  /home/guillem/fragile/fractal-gas-web/src/atari_env.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
+ /home/guillem/fragile/fractal-gas-web/src/montezuma_logic.hpp
  /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp
  /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/ale_interface.hpp
  /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/common/ColourPalette.hpp

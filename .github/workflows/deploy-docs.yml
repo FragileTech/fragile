@@ -77,22 +77,13 @@ jobs:
       - name: Bundle ROMs
         working-directory: fractal-gas-web
         run: |
-          # NES: Super Mario Bros test ROM shipped by the nes-py submodule.
-          cp third_party/nes-py/nes_py/tests/games/super-mario-bros-1.nes web/test-rom.nes
-          # Atari: every ALE-supported game, straight from the ale-py wheel.
-          pip install ale-py
-          python -c "
-          import pathlib, shutil, ale_py
-          src = pathlib.Path(ale_py.__file__).parent / 'roms'
-          dst = pathlib.Path('web/roms/atari')
-          dst.mkdir(parents=True, exist_ok=True)
-          roms = sorted(src.glob('*.bin'))
-          for rom in roms:
-              shutil.copy(rom, dst / rom.name)
-          print(f'copied {len(roms)} roms')
-          "
-          # Airstriker rom is copied to web/ by the wasm build itself;
-          # Sonic is copyrighted and never bundled.
+          # Every ROM ships ENCRYPTED: web/roms-enc/** is committed (built
+          # with `FG_ROM_PASSWORD=... node tools/encrypt-rom.mjs --all`, one
+          # password for Mario, Sonic, Montezuma and the Atari picker) and
+          # decrypted in the visitor's browser. No plaintext ROM is copied
+          # into the artifact — that would bypass the password gate.
+          ls -l web/roms-enc web/roms-enc/atari | head -20
+          # Airstriker rom is copied to web/ by the wasm build itself.
 
       - name: Upload web artifact
         uses: actions/upload-artifact@v4

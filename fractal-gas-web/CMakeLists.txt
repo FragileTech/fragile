@@ -190,6 +190,7 @@ else()
     tests/test_cloning.cpp
     tests/test_fractal_gas.cpp
     tests/test_nes_env.cpp
+    tests/test_montezuma_logic.cpp
   )
   target_include_directories(fg_tests PRIVATE tests)
   target_link_libraries(fg_tests PRIVATE fractal_gas_core)

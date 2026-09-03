@@ -224,6 +224,45 @@ fg_atari_tests/fast:
 .PHONY : fg_atari_tests/fast
 
 #=============================================================================
+# Target rules for targets named fg_retro_core_so
+
+# Build rule for target.
+fg_retro_core_so: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fg_retro_core_so
+.PHONY : fg_retro_core_so
+
+# fast build rule for target.
+fg_retro_core_so/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_core_so.dir/build.make CMakeFiles/fg_retro_core_so.dir/build
+.PHONY : fg_retro_core_so/fast
+
+#=============================================================================
+# Target rules for targets named fg_retro_env
+
+# Build rule for target.
+fg_retro_env: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fg_retro_env
+.PHONY : fg_retro_env
+
+# fast build rule for target.
+fg_retro_env/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/build
+.PHONY : fg_retro_env/fast
+
+#=============================================================================
+# Target rules for targets named fg_retro_tests
+
+# Build rule for target.
+fg_retro_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fg_retro_tests
+.PHONY : fg_retro_tests
+
+# fast build rule for target.
+fg_retro_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/build
+.PHONY : fg_retro_tests/fast
+
+#=============================================================================
 # Target rules for targets named fg_cli
 
 # Build rule for target.
@@ -419,6 +458,54 @@ src/nes_env.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.s
 .PHONY : src/nes_env.cpp.s
 
+src/retro_core.o: src/retro_core.cpp.o
+.PHONY : src/retro_core.o
+
+# target to build an object file
+src/retro_core.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/src/retro_core.cpp.o
+.PHONY : src/retro_core.cpp.o
+
+src/retro_core.i: src/retro_core.cpp.i
+.PHONY : src/retro_core.i
+
+# target to preprocess a source file
+src/retro_core.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/src/retro_core.cpp.i
+.PHONY : src/retro_core.cpp.i
+
+src/retro_core.s: src/retro_core.cpp.s
+.PHONY : src/retro_core.s
+
+# target to generate assembly for a file
+src/retro_core.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/src/retro_core.cpp.s
+.PHONY : src/retro_core.cpp.s
+
+src/retro_env.o: src/retro_env.cpp.o
+.PHONY : src/retro_env.o
+
+# target to build an object file
+src/retro_env.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/src/retro_env.cpp.o
+.PHONY : src/retro_env.cpp.o
+
+src/retro_env.i: src/retro_env.cpp.i
+.PHONY : src/retro_env.i
+
+# target to preprocess a source file
+src/retro_env.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/src/retro_env.cpp.i
+.PHONY : src/retro_env.cpp.i
+
+src/retro_env.s: src/retro_env.cpp.s
+.PHONY : src/retro_env.s
+
+# target to generate assembly for a file
+src/retro_env.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/src/retro_env.cpp.s
+.PHONY : src/retro_env.cpp.s
+
 src/tensor_ops.o: src/tensor_ops.cpp.o
 .PHONY : src/tensor_ops.o
 
@@ -569,6 +656,7 @@ tests/test_main.o: tests/test_main.cpp.o
 # target to build an object file
 tests/test_main.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_atari_tests.dir/build.make CMakeFiles/fg_atari_tests.dir/tests/test_main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/tests/test_main.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_main.cpp.o
 .PHONY : tests/test_main.cpp.o
 
@@ -578,6 +666,7 @@ tests/test_main.i: tests/test_main.cpp.i
 # target to preprocess a source file
 tests/test_main.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_atari_tests.dir/build.make CMakeFiles/fg_atari_tests.dir/tests/test_main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/tests/test_main.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_main.cpp.i
 .PHONY : tests/test_main.cpp.i
 
@@ -587,8 +676,33 @@ tests/test_main.s: tests/test_main.cpp.s
 # target to generate assembly for a file
 tests/test_main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_atari_tests.dir/build.make CMakeFiles/fg_atari_tests.dir/tests/test_main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/tests/test_main.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_main.cpp.s
 .PHONY : tests/test_main.cpp.s
+
+tests/test_montezuma_logic.o: tests/test_montezuma_logic.cpp.o
+.PHONY : tests/test_montezuma_logic.o
+
+# target to build an object file
+tests/test_montezuma_logic.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o
+.PHONY : tests/test_montezuma_logic.cpp.o
+
+tests/test_montezuma_logic.i: tests/test_montezuma_logic.cpp.i
+.PHONY : tests/test_montezuma_logic.i
+
+# target to preprocess a source file
+tests/test_montezuma_logic.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.i
+.PHONY : tests/test_montezuma_logic.cpp.i
+
+tests/test_montezuma_logic.s: tests/test_montezuma_logic.cpp.s
+.PHONY : tests/test_montezuma_logic.s
+
+# target to generate assembly for a file
+tests/test_montezuma_logic.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.s
+.PHONY : tests/test_montezuma_logic.cpp.s
 
 tests/test_nes_env.o: tests/test_nes_env.cpp.o
 .PHONY : tests/test_nes_env.o
@@ -613,6 +727,30 @@ tests/test_nes_env.s: tests/test_nes_env.cpp.s
 tests/test_nes_env.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_tests.dir/build.make CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.s
 .PHONY : tests/test_nes_env.cpp.s
+
+tests/test_retro_env.o: tests/test_retro_env.cpp.o
+.PHONY : tests/test_retro_env.o
+
+# target to build an object file
+tests/test_retro_env.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/tests/test_retro_env.cpp.o
+.PHONY : tests/test_retro_env.cpp.o
+
+tests/test_retro_env.i: tests/test_retro_env.cpp.i
+.PHONY : tests/test_retro_env.i
+
+# target to preprocess a source file
+tests/test_retro_env.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/tests/test_retro_env.cpp.i
+.PHONY : tests/test_retro_env.cpp.i
+
+tests/test_retro_env.s: tests/test_retro_env.cpp.s
+.PHONY : tests/test_retro_env.s
+
+# target to generate assembly for a file
+tests/test_retro_env.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/tests/test_retro_env.cpp.s
+.PHONY : tests/test_retro_env.cpp.s
 
 tests/test_tensor_ops.o: tests/test_tensor_ops.cpp.o
 .PHONY : tests/test_tensor_ops.o
@@ -915,11 +1053,14 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... test"
+	@echo "... fg_retro_core_so"
 	@echo "... ale"
 	@echo "... ale-lib"
 	@echo "... fg_atari_env"
 	@echo "... fg_atari_tests"
 	@echo "... fg_cli"
+	@echo "... fg_retro_env"
+	@echo "... fg_retro_tests"
 	@echo "... fg_tests"
 	@echo "... fractal_gas_core"
 	@echo "... nes_core"
@@ -941,6 +1082,12 @@ help:
 	@echo "... src/nes_env.o"
 	@echo "... src/nes_env.i"
 	@echo "... src/nes_env.s"
+	@echo "... src/retro_core.o"
+	@echo "... src/retro_core.i"
+	@echo "... src/retro_core.s"
+	@echo "... src/retro_env.o"
+	@echo "... src/retro_env.i"
+	@echo "... src/retro_env.s"
 	@echo "... src/tensor_ops.o"
 	@echo "... src/tensor_ops.i"
 	@echo "... src/tensor_ops.s"
@@ -962,9 +1109,15 @@ help:
 	@echo "... tests/test_main.o"
 	@echo "... tests/test_main.i"
 	@echo "... tests/test_main.s"
+	@echo "... tests/test_montezuma_logic.o"
+	@echo "... tests/test_montezuma_logic.i"
+	@echo "... tests/test_montezuma_logic.s"
 	@echo "... tests/test_nes_env.o"
 	@echo "... tests/test_nes_env.i"
 	@echo "... tests/test_nes_env.s"
+	@echo "... tests/test_retro_env.o"
+	@echo "... tests/test_retro_env.i"
+	@echo "... tests/test_retro_env.s"
 	@echo "... tests/test_tensor_ops.o"
 	@echo "... tests/test_tensor_ops.i"
 	@echo "... tests/test_tensor_ops.s"

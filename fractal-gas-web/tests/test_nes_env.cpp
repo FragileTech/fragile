@@ -85,6 +85,52 @@ TEST_CASE(mario_reward_weights_scale_terms) {
   CHECK_CLOSE(mario_frame_update(ram.data(), c8, wd).reward, -40.0f, 1e-6f);
 }
 
+TEST_CASE(mario_shortcut_progress_pays_skipped_distance) {
+  // Mirror the recorded 1-1 bonus-pipe trace: surface area 194 at x=918,
+  // load placeholder (x=0, state 0x00), placed in room 165 at x=24 (state
+  // 0x07), walk to x=208, placeholder again, placed back in 194 at x=2616.
+  auto frame = [](int32_t x, int32_t area, uint8_t ps) {
+    std::vector<uint8_t> ram = fake_ram(x);
+    ram[0x750] = static_cast<uint8_t>(area);
+    ram[0x0E] = ps;
+    return ram;
+  };
+  MarioCarry carry;
+  auto run = [&](std::vector<uint8_t> ram) {
+    return mario_frame_update(ram.data(), carry).reward;
+  };
+  (void)run(frame(900, 194, 0x08));  // first frame: x jumps from 0, settles next
+  CHECK_CLOSE(run(frame(905, 194, 0x08)), 5.0f, 1e-6f);
+  (void)run(frame(910, 194, 0x08));
+  (void)run(frame(915, 194, 0x08));
+  (void)run(frame(918, 194, 0x03));  // going down the pipe (x settles here)
+  CHECK_CLOSE(run(frame(0, 194, 0x00)), 0.0f, 1e-6f);    // load placeholder
+  // Placed in the new area: area bonus + the +1 transition-animation frame.
+  CHECK_CLOSE(run(frame(24, 165, 0x07)), kAreaBonus + 1.0f, 1e-6f);
+  CHECK(carry.return_area == 194);
+  CHECK(carry.return_x == 918);
+  (void)run(frame(28, 165, 0x08));
+  (void)run(frame(208, 165, 0x02));  // (jump zeroed) entering the exit pipe
+  (void)run(frame(208, 165, 0x02));  // settles the room x
+  CHECK_CLOSE(run(frame(0, 165, 0x00)), 0.0f, 1e-6f);
+  // Back in 194 at 2616: pays the skipped 2616 - 918 px (+1 transition
+  // frame), no area bonus (194 already visited), no glitch-guarded x reward.
+  CHECK_CLOSE(run(frame(2616, 194, 0x07)), 2616.0f - 918.0f + 1.0f, 1e-3f);
+  CHECK(carry.return_area == -1);
+  // The x weight scales the shortcut payout.
+  MarioCarry c2;
+  MarioRewardWeights w;
+  w.x = 0.5f;
+  for (int32_t x : {96, 100, 100}) {
+    std::vector<uint8_t> r0 = frame(x, 194, 0x08);
+    (void)mario_frame_update(r0.data(), c2, w);
+  }
+  std::vector<uint8_t> r1 = frame(30, 165, 0x07);
+  (void)mario_frame_update(r1.data(), c2, w);
+  std::vector<uint8_t> r2 = frame(500, 194, 0x07);
+  CHECK_CLOSE(mario_frame_update(r2.data(), c2, w).reward, 0.5f * 400.0f + 1.0f, 1e-3f);
+}
+
 TEST_CASE(nes_reset_reaches_playable_state) {
   if (skip_if_no_rom("nes_reset_reaches_playable_state")) return;
   NesMarioEnv env(rom_path(), 2);

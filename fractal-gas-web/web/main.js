@@ -96,7 +96,7 @@ const TILE_W = 40, TILE_H = 28;
 const SONIC_FIT_MAX_SCALE = 3;
 const SONIC_ZOOM_STEP = 1.5;
 const SONIC_ZOOM_MAX = 16;
-let sonicMapZoom = 1;
+let mapZoom = 1;
 const fogCanvases = new Map(); // "zone-act" -> {canvas, ctx}
 
 function getFogCanvas(zone, act, needW, needH) {
@@ -196,6 +196,7 @@ function marioMapY(ramY, imgH) {
 function drawMap() {
   if (consoleId === 1) return;
   if (consoleId === 2) return drawSonicMap();
+  if (consoleId === 3) return drawPyramidMap();
   // Displayed level: the best walker's current level, or the selected start
   // level before the run produces stats (so the big picture shows up front).
   const world = lastSwarm ? lastSwarm.world : parseInt($("param-world").value, 10) || 1;
@@ -329,7 +330,7 @@ function drawSonicMap() {
   // map isn't blown up into mush, then multiplied by the +/- zoom. When
   // zoomed past the viewport the wrapper scrolls both ways.
   const fitScale = Math.min(vpW / srcW, vpH / srcH, SONIC_FIT_MAX_SCALE);
-  const scale = fitScale * sonicMapZoom;
+  const scale = fitScale * mapZoom;
   const cssWidth = Math.max(1, Math.round(srcW * scale));
   const cssHeight = Math.max(1, Math.round(srcH * scale));
   mapCanvas.width = Math.round(cssWidth * dpr);
@@ -379,24 +380,161 @@ function drawSonicMap() {
   }
 }
 
-// +/- zoom buttons (Sonic fog map): multiply the fit scale, keeping the
-// point at the middle of the viewport in place across the zoom change.
-function setSonicZoom(zoom) {
+// ---------------------------------------------------------------------------
+// Montezuma pyramid map: the level-1 temple is 24 rooms on a 9x4 grid (same
+// PYRAMID table as src/montezuma_logic.hpp). Like the Sonic fog map, it is
+// BUILT by the swarm: the worker ships each room's 160x160 image (HUD
+// cropped) the first time a walker stands in it, and every walker's in-room
+// position is overlaid on the room's cell. Unvisited rooms stay dark.
+// ---------------------------------------------------------------------------
+const PYRAMID = [
+  [-1, -1, -1, 0, 1, 2, -1, -1, -1],
+  [-1, -1, 3, 4, 5, 6, 7, -1, -1],
+  [-1, 8, 9, 10, 11, 12, 13, 14, -1],
+  [15, 16, 17, 18, 19, 20, 21, 22, 23],
+];
+const ROOM = 160;
+const PYRAMID_W = PYRAMID[0].length * ROOM;  // 1440
+const PYRAMID_H = PYRAMID.length * ROOM;     // 640
+const ROOM_CELL = new Map(); // room -> {col, row}
+for (let r = 0; r < PYRAMID.length; r++) {
+  for (let c = 0; c < PYRAMID[r].length; c++) {
+    if (PYRAMID[r][c] >= 0) ROOM_CELL.set(PYRAMID[r][c], { col: c, row: r });
+  }
+}
+const pyramidLevels = new Map(); // level -> {canvas, ctx, rooms: Set}
+
+function getPyramidCanvas(level) {
+  let entry = pyramidLevels.get(level);
+  if (entry) return entry;
+  const canvas = document.createElement("canvas");
+  canvas.width = PYRAMID_W;
+  canvas.height = PYRAMID_H;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#0a0b0f";
+  ctx.fillRect(0, 0, PYRAMID_W, PYRAMID_H);
+  // Unexplored rooms: a faint outline and the room number, so the shape of
+  // the pyramid is visible before the swarm reveals it.
+  for (const [room, { col, row }] of ROOM_CELL) {
+    ctx.fillStyle = "#12141a";
+    ctx.fillRect(col * ROOM + 1, row * ROOM + 1, ROOM - 2, ROOM - 2);
+    ctx.strokeStyle = "#2c3040";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(col * ROOM + 0.5, row * ROOM + 0.5, ROOM - 1, ROOM - 1);
+    ctx.fillStyle = "#3a3f52";
+    ctx.font = "bold 28px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(String(room), col * ROOM + ROOM / 2, row * ROOM + ROOM / 2);
+  }
+  entry = { canvas, ctx, rooms: new Set() };
+  pyramidLevels.set(level, entry);
+  return entry;
+}
+
+function applyRoomFrames(frames) {
+  for (const f of frames) {
+    const cell = ROOM_CELL.get(f.room);
+    if (!cell) continue;  // rooms beyond the level-1 pyramid are not drawn
+    const entry = getPyramidCanvas(f.level);
+    const image = new ImageData(new Uint8ClampedArray(f.rgba), f.width, f.height);
+    entry.ctx.putImageData(image, cell.col * ROOM, cell.row * ROOM);
+    entry.rooms.add(f.room);
+  }
+}
+
+function clearPyramid() {
+  pyramidLevels.clear();
+}
+
+// Montezuma branch of drawMap: the displayed level's pyramid (best walker's
+// level, or level 0 pre-run) aspect-fit into the viewport times the +/-
+// zoom, with the walker-dot overlay on each room's cell.
+function drawPyramidMap() {
+  const level = lastSwarm ? lastSwarm.level : 0;
+  const entry = getPyramidCanvas(level);
+  const vpW = mapResize.clientWidth || 900;
+  const dpr = window.devicePixelRatio || 1;
+  // Default viewport height: the full pyramid at panel width.
+  if (mapSizedForKey !== `pyramid-${level}`) {
+    mapSizedForKey = `pyramid-${level}`;
+    mapResize.style.height = Math.round(vpW * PYRAMID_H / PYRAMID_W) + "px";
+  }
+  const vpH = mapResize.clientHeight || 280;
+  const fitScale = Math.min(vpW / PYRAMID_W, vpH / PYRAMID_H);
+  const scale = fitScale * mapZoom;
+  const cssWidth = Math.max(1, Math.round(PYRAMID_W * scale));
+  const cssHeight = Math.max(1, Math.round(PYRAMID_H * scale));
+  mapCanvas.width = Math.round(cssWidth * dpr);
+  mapCanvas.height = Math.round(cssHeight * dpr);
+  mapCanvas.style.width = cssWidth + "px";
+  mapCanvas.style.height = cssHeight + "px";
+  mapCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // Pixel art: keep the room images crisp when scaled.
+  mapCtx.imageSmoothingEnabled = scale < 1;
+  mapCtx.fillStyle = "#0a0b0f";
+  mapCtx.fillRect(0, 0, cssWidth, cssHeight);
+  mapCtx.drawImage(entry.canvas, 0, 0, cssWidth, cssHeight);
+  if (!lastSwarm) return;
+
+  const { xs, ys, ws, ss, alive, bestIdx } = lastSwarm;
+  const project = (i) => {
+    const cell = ROOM_CELL.get(ws[i]);
+    if (!cell) return null;
+    return { x: (cell.col * ROOM + xs[i]) * scale,
+             y: (cell.row * ROOM + ys[i]) * scale };
+  };
+  for (let i = 0; i < xs.length; i++) {
+    if (i === bestIdx || ss[i] !== level) continue;
+    const p = project(i);
+    if (!p) continue;
+    mapCtx.beginPath();
+    mapCtx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+    mapCtx.fillStyle = alive[i] ? "rgba(224, 64, 251, 0.75)" : "rgba(139, 148, 158, 0.5)";
+    mapCtx.fill();
+    mapCtx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+    mapCtx.lineWidth = 0.75;
+    mapCtx.stroke();
+  }
+  if (ss[bestIdx] === level) {
+    const p = project(bestIdx);
+    if (p) {
+      // Highlight the best walker's room and mark the walker itself.
+      const cell = ROOM_CELL.get(ws[bestIdx]);
+      mapCtx.strokeStyle = "rgba(255, 210, 31, 0.5)";
+      mapCtx.lineWidth = 1.5;
+      mapCtx.strokeRect(cell.col * ROOM * scale + 0.75, cell.row * ROOM * scale + 0.75,
+                        ROOM * scale - 1.5, ROOM * scale - 1.5);
+      mapCtx.beginPath();
+      mapCtx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+      mapCtx.fillStyle = "#ff5252";
+      mapCtx.fill();
+      mapCtx.strokeStyle = "#ffd21f";
+      mapCtx.lineWidth = 2;
+      mapCtx.stroke();
+    }
+  }
+}
+
+// +/- zoom buttons (Sonic fog map, Montezuma pyramid): multiply the fit
+// scale, keeping the point at the middle of the viewport in place across
+// the zoom change.
+function setMapZoom(zoom) {
   zoom = Math.min(SONIC_ZOOM_MAX, Math.max(1, zoom));
-  const ratio = zoom / sonicMapZoom;
+  const ratio = zoom / mapZoom;
   const cx = mapResize.scrollLeft + mapResize.clientWidth / 2;
   const cy = mapResize.scrollTop + mapResize.clientHeight / 2;
-  sonicMapZoom = zoom;
+  mapZoom = zoom;
   drawMap();
   mapResize.scrollLeft = cx * ratio - mapResize.clientWidth / 2;
   mapResize.scrollTop = cy * ratio - mapResize.clientHeight / 2;
 }
 $("map-zoom-in").addEventListener("click",
-  () => setSonicZoom(sonicMapZoom * SONIC_ZOOM_STEP));
+  () => setMapZoom(mapZoom * SONIC_ZOOM_STEP));
 $("map-zoom-out").addEventListener("click",
-  () => setSonicZoom(sonicMapZoom / SONIC_ZOOM_STEP));
+  () => setMapZoom(mapZoom / SONIC_ZOOM_STEP));
 $("map-zoom-fit").addEventListener("click", () => {
-  sonicMapZoom = 1;
+  mapZoom = 1;
   drawMap();
 });
 
@@ -409,19 +547,26 @@ let romBuffer = null;
 let auxBuffer = null; // Genesis savestate
 let initialized = false;
 let running = false;
-// Per-console observation defaults: the fast Coords tuples for Mario and
-// Sonic; Atari has no coords tuple (its mode 3 aliases the 128-byte RAM),
-// so it defaults to RAM.
-const OBS_DEFAULTS = { 0: 3, 1: 0, 2: 3 };
+// Per-console observation defaults: the fast Coords tuples for Mario, Sonic
+// and Montezuma; generic Atari has no coords tuple (its mode 3 aliases the
+// 128-byte RAM), so it defaults to RAM.
+const OBS_DEFAULTS = { 0: 3, 1: 0, 2: 3, 3: 3 };
 let obsMode = OBS_DEFAULTS[0]; // 0=RAM, 1=RGB, 2=Gray, 3=Coords
-let consoleId = 0; // 0=NES Mario, 1=Atari, 2=Genesis
+// UI console ids: 0=NES Mario, 1=Atari (any ALE game), 2=Genesis Sonic,
+// 3=Montezuma's Revenge (C++ sees Atari console 1 with game 1).
+let consoleId = 0;
 const genesisGame = 1; // Genesis game: Sonic
+const MONTEZUMA_GAME = 1; // Atari game id with dedicated logic (wasm_bindings)
 let atariGame = "ms_pacman"; // ALE rom id, served from web/roms/atari/
-let sonicRomBuffer = null; // user-supplied
 
-// The Sonic ROM is copyrighted, so hosted deployments (GitHub Pages) don't
-// ship it. Instead a visitor's one-time upload is persisted in IndexedDB and
-// auto-loaded on every later visit — no repeated upload prompt.
+// ROM vault. The ROMs are copyrighted, so hosted deployments (GitHub Pages)
+// ship them only as password-encrypted blobs under web/roms-enc/ (built by
+// tools/encrypt-rom.mjs --all with ONE password for every game). Loading
+// order per ROM: a plaintext copy served next to the page (local dev, all
+// gitignored) -> this browser's IndexedDB cache (decrypted or uploaded on an
+// earlier visit) -> the encrypted blob, decrypted with the password (kept
+// in memory and in IndexedDB after the first unlock, so every other game
+// then unlocks silently) -> for Sonic only, a one-time upload.
 const ROM_DB = "fg-roms";
 const ROM_STORE = "roms";
 function romDbOpen() {
@@ -451,29 +596,102 @@ async function romDbPut(key, buf) {
       .put(buf, key);
   } catch (e) { /* private mode etc. — upload still works per-visit */ }
 }
+async function romDbDelete(key) {
+  try {
+    const db = await romDbOpen();
+    db.transaction(ROM_STORE, "readwrite").objectStore(ROM_STORE).delete(key);
+  } catch (e) { /* ignore */ }
+}
 
-// Password-encrypted ROM (public deploy). The deployment ships only the
-// ciphertext (web/sonic.rom.enc); the password lives solely in the user's
+// Password-encrypted ROM blobs. The password lives solely in the user's
 // head and the ROM is decrypted here in the browser with WebCrypto. Blob
 // layout, matching tools/encrypt-rom.mjs: salt(16) | iv(12) | AES-256-GCM
-// ciphertext-with-tag. Key = PBKDF2-SHA256(password, salt, 250k).
+// ciphertext-with-tag. Key = PBKDF2-SHA256(password, salt, 250k). The vault
+// shares one salt across every ROM, so the (slow) key derivation runs once
+// per session: derived keys are cached by salt.
 const ROM_PBKDF2_ITERS = 250000;
+const romKeyCache = new Map(); // salt hex -> CryptoKey
+async function deriveRomKey(password, salt) {
+  const hex = Array.from(salt, (b) => b.toString(16).padStart(2, "0")).join("");
+  const cacheKey = `${hex}:${password}`;
+  let key = romKeyCache.get(cacheKey);
+  if (key) return key;
+  const keyMat = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(password), "PBKDF2", false,
+    ["deriveKey"]);
+  key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt, iterations: ROM_PBKDF2_ITERS, hash: "SHA-256" },
+    keyMat, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  romKeyCache.set(cacheKey, key);
+  return key;
+}
 async function decryptRom(encBuf, password) {
   const data = new Uint8Array(encBuf);
   const salt = data.slice(0, 16);
   const iv = data.slice(16, 28);
   const ct = data.slice(28);
-  const keyMat = await crypto.subtle.importKey(
-    "raw", new TextEncoder().encode(password), "PBKDF2", false,
-    ["deriveKey"]);
-  const key = await crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt, iterations: ROM_PBKDF2_ITERS, hash: "SHA-256" },
-    keyMat, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  const key = await deriveRomKey(password, salt);
   // Throws on a wrong password (GCM tag mismatch).
   return await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct);
 }
-// Cached ciphertext so the unlock button doesn't refetch it.
-let sonicEncBuffer = null;
+
+const ROM_ENC_DIR = "roms-enc";
+const ROM_PASSWORD_KEY = "__password";
+// id -> {plain, enc, name}. Atari games are "atari:<ale id>".
+function romSpec(id) {
+  if (id === "mario") {
+    return { plain: "test-rom.nes", enc: `${ROM_ENC_DIR}/mario.nes.enc`,
+             name: "Super Mario Bros" };
+  }
+  if (id === "sonic") {
+    return { plain: "sonic.rom", enc: `${ROM_ENC_DIR}/sonic.rom.enc`,
+             name: "Sonic The Hedgehog" };
+  }
+  if (id.startsWith("atari:")) {
+    const game = id.slice("atari:".length);
+    return { plain: `roms/atari/${game}.bin`,
+             enc: `${ROM_ENC_DIR}/atari/${game}.bin.enc`,
+             name: atariGameName(game) };
+  }
+  throw new Error(`unknown ROM ${id}`);
+}
+const romCache = new Map(); // id -> ArrayBuffer for this page load
+let romPassword = null;     // in memory after the first successful unlock
+let pendingRom = null;      // {id, enc} waiting for the password
+async function fetchBuffer(path) {
+  const resp = await fetch(path).catch(() => null);
+  return resp && resp.ok ? await resp.arrayBuffer() : null;
+}
+// Resolves to {buf} or {buf: null, reason: "locked" | "missing"}. "locked"
+// means an encrypted copy exists and the unlock prompt should be shown.
+async function loadRom(id) {
+  if (romCache.has(id)) return { buf: romCache.get(id) };
+  const spec = romSpec(id);
+  let buf = await fetchBuffer(spec.plain);
+  if (!buf) buf = await romDbGet(id);
+  if (!buf) {
+    const enc = await fetchBuffer(spec.enc);
+    if (!enc) return { buf: null, reason: "missing" };
+    const pass = romPassword ?? await romDbGet(ROM_PASSWORD_KEY);
+    if (typeof pass === "string" && pass) {
+      try {
+        buf = await decryptRom(enc, pass);
+        romPassword = pass;
+        romDbPut(id, buf);
+      } catch (e) {
+        // Stored password no longer matches the deployed vault: forget it.
+        romPassword = null;
+        romDbDelete(ROM_PASSWORD_KEY);
+      }
+    }
+    if (!buf) {
+      pendingRom = { id, enc };
+      return { buf: null, reason: "locked" };
+    }
+  }
+  romCache.set(id, buf);
+  return { buf };
+}
 
 let ipsWindow = [];
 
@@ -514,8 +732,9 @@ function readParams() {
     nThreads: Math.min(Math.max((navigator.hardwareConcurrency || 4) - 1, 1), 8),
     obsMode,
     ...levelParams(),
-    console: consoleId,
-    game: genesisGame,
+    // Montezuma is the Atari console with the dedicated game id.
+    console: consoleId === 3 ? 1 : consoleId,
+    game: consoleId === 3 ? MONTEZUMA_GAME : (consoleId === 2 ? genesisGame : 0),
   };
 }
 
@@ -541,6 +760,7 @@ function ensureWorker() {
         running = false;
         clearPlots();
         clearFog();
+        clearPyramid();
         lastSwarm = null;
         mapSizedForKey = null;
         drawMap();
@@ -551,6 +771,7 @@ function ensureWorker() {
       case "resetDone":
         running = false;
         clearPlots();
+        clearPyramid();
         lastSwarm = null;
         drawMap();
         screenCtx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
@@ -621,6 +842,9 @@ function onStep(msg) {
     if (consoleId === 2 && msg.walkerTiles) {
       applyFogTiles(lastSwarm, msg.walkerTiles);
     }
+    if (consoleId === 3 && msg.roomFrames && msg.roomFrames.length) {
+      applyRoomFrames(msg.roomFrames);
+    }
     drawMap();
   }
 
@@ -637,6 +861,9 @@ function onStep(msg) {
       const zoneNames = ["GHZ", "LZ", "MZ", "SLZ", "SYZ", "SBZ"];
       $("stat-world").textContent =
         `${zoneNames[s.world] ?? s.world} ${s.level + 1}`;
+    } else if (consoleId === 3) {
+      $("stat-world").textContent =
+        `Room ${s.world} \u00b7 L${s.level + 1} \u00b7 ${s.lives} lives`;
     } else {
       $("stat-world").textContent = `${s.world}-${s.level}`;
     }
@@ -679,74 +906,69 @@ function initRun() {
   );
 }
 
-// Per-console assets: NES and Genesis ship bundled files; Atari needs a
-// user-supplied ROM.
+// Per-console assets: pick the console's ROM from the vault and start.
+const CONSOLE_ROM = {
+  0: () => "mario",
+  1: () => `atari:${atariGame}`,
+  2: () => "sonic",
+  3: () => "atari:montezuma_revenge",
+};
+let loadToken = 0; // drops the result of a superseded load (fast switching)
 async function loadConsoleAssets() {
+  const token = ++loadToken;
   romBuffer = null;
   auxBuffer = null;
   $("level-section").hidden = consoleId !== 0;
   $("atari-section").hidden = consoleId !== 1;
   $("sonic-section").hidden = consoleId !== 2;
-  $("map-panel").hidden = consoleId === 1;  // maps for Mario + Sonic
+  $("sonic-rom-row").hidden = true;
+  $("rom-unlock-section").hidden = true;
+  $("map-panel").hidden = consoleId === 1;  // maps for Mario, Sonic, Montezuma
   showRewardPanel($("reward-terms-section"), consoleId);
-  $("map-zoom").hidden = consoleId !== 2;   // +/- zoom is fog-map only
-  sonicMapZoom = 1;
+  $("map-zoom").hidden = consoleId !== 2 && consoleId !== 3;  // built maps only
+  mapZoom = 1;
+  $("map-title").innerHTML = consoleId === 3
+    ? "Pyramid map &mdash; swarm" : "Level map &mdash; swarm";
   document.querySelector(".map-credit").innerHTML = consoleId === 2
     ? "Fog of war: the map is revealed by the swarm as it explores. " +
       "Magenta dots: alive walkers &middot; grey: dead &middot; gold ring: best walker."
+    : consoleId === 3
+    ? "The temple's 24 rooms are revealed as walkers enter them (room " +
+      "numbers mark the unexplored ones). Magenta dots: alive walkers " +
+      "&middot; grey: dead &middot; gold ring and frame: best walker and its room."
     : 'Magenta dots: alive walkers &middot; grey: dead &middot; gold ring: ' +
       'best walker. Level maps from <a href="https://ian-albert.com/games/' +
       'super_mario_bros_maps/" target="_blank" rel="noreferrer">ian-albert.com</a>.';
   lastSwarm = null;
-  if (consoleId === 0) drawMap();
+  mapSizedForKey = null;
+  if (consoleId === 0 || consoleId === 3) drawMap();
   try {
-    if (consoleId === 0) {
-      const resp = await fetch("test-rom.nes");
-      if (!resp.ok) throw new Error("test-rom.nes not found");
-      romBuffer = await resp.arrayBuffer();
-    } else if (consoleId === 2) {
-      // Sonic: bundled ROM (web/sonic.rom, gitignored) or user-supplied.
-      // The core ships as web/retro_shim.{js,wasm}; each core worker
-      // fetches it itself, and the game boots from power-on into the
-      // selected zone/act.
-      if (!sonicRomBuffer) {
-        // Server-bundled copy first (local dev), then the visitor's own
-        // ROM persisted in IndexedDB from an earlier visit.
-        const rom = await fetch("sonic.rom").catch(() => null);
-        if (rom && rom.ok) {
-          sonicRomBuffer = await rom.arrayBuffer();
-        } else {
-          sonicRomBuffer = await romDbGet("sonic");
-        }
-      }
-      if (sonicRomBuffer) {
-        romBuffer = sonicRomBuffer.slice(0);
+    const id = CONSOLE_ROM[consoleId]();
+    const spec = romSpec(id);
+    const { buf, reason } = await loadRom(id);
+    if (token !== loadToken) return;
+    if (!buf) {
+      if (reason === "locked") {
+        $("rom-unlock-section").hidden = false;
+        $("rom-pass-hint").textContent =
+          `${spec.name} is bundled encrypted; one password unlocks every game.`;
+        if (consoleId === 2) $("sonic-rom-row").hidden = false;  // upload still allowed
+        setStatus(`Enter the ROM password to unlock ${spec.name}` +
+                  (consoleId === 2 ? " (or upload a ROM)" : ""));
+        $("rom-pass-input").focus();
+      } else if (consoleId === 2) {
+        $("sonic-rom-row").hidden = false;
+        setStatus("Pick a Sonic The Hedgehog (Genesis) ROM to start " +
+                  "(kept in your browser for future visits)");
       } else {
-        // No plaintext ROM available. Prefer the password-encrypted blob if
-        // the deploy ships one; otherwise fall back to a one-time upload.
-        if (!sonicEncBuffer) {
-          const enc = await fetch("sonic.rom.enc").catch(() => null);
-          if (enc && enc.ok) sonicEncBuffer = await enc.arrayBuffer();
-        }
-        if (sonicEncBuffer) {
-          $("sonic-pass-row").hidden = false;
-          $("sonic-rom-row").hidden = false;  // upload still allowed
-          setStatus("Enter the password to unlock Sonic (or upload a ROM)");
-        } else {
-          $("sonic-rom-row").hidden = false;
-          setStatus("Pick a Sonic The Hedgehog (Genesis) ROM to start " +
-                    "(kept in your browser for future visits)");
-        }
-        return;
+        throw new Error(`${spec.plain} not found (and no encrypted copy at ${spec.enc})`);
       }
-    } else {
-      const resp = await fetch(`roms/atari/${atariGame}.bin`);
-      if (!resp.ok) throw new Error(`roms/atari/${atariGame}.bin not found`);
-      romBuffer = await resp.arrayBuffer();
+      return;
     }
+    romBuffer = buf;
     initRun();
   } catch (err) {
-    setStatus(String(err), "error");
+    if (token === loadToken) setStatus(String(err), "error");
   }
 }
 
@@ -917,7 +1139,8 @@ for (const btn of $("console-select").querySelectorAll("button")) {
   });
 }
 
-// Atari game picker: every ALE-supported rom bundled under web/roms/atari/.
+// Atari game picker: every ALE-supported rom bundled under web/roms/atari/
+// (Montezuma's Revenge also has its own console button with dedicated logic).
 const ATARI_GAMES = [
   "adventure", "air_raid", "alien", "amidar", "assault", "asterix",
   "asteroids", "atlantis", "atlantis2", "backgammon", "bank_heist",
@@ -942,11 +1165,14 @@ const ATARI_GAMES = [
   "word_zapper", "yars_revenge", "zaxxon",
 ];
 
+function atariGameName(id) {
+  return id.split("_").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+}
 const atariSelect = $("atari-game");
 for (const id of ATARI_GAMES) {
   const opt = document.createElement("option");
   opt.value = id;
-  opt.textContent = id.split("_").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+  opt.textContent = atariGameName(id);
   opt.selected = id === atariGame;
   atariSelect.appendChild(opt);
 }
@@ -958,40 +1184,42 @@ atariSelect.addEventListener("change", () => {
 $("genesis-rom-input").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
-  sonicRomBuffer = await file.arrayBuffer();
-  romDbPut("sonic", sonicRomBuffer);
+  const buf = await file.arrayBuffer();
+  romCache.set("sonic", buf);
+  romDbPut("sonic", buf);
   $("sonic-rom-row").hidden = true;
-  $("sonic-pass-row").hidden = true;
+  $("rom-unlock-section").hidden = true;
   if (consoleId === 2) loadConsoleAssets();
 });
 
-async function unlockSonic() {
-  const pass = $("sonic-pass-input").value;
-  if (!pass) return;
-  const hint = $("sonic-pass-hint");
+// One password for the whole vault: decrypt the ROM that is waiting, then
+// remember the password (memory + IndexedDB) so every other game unlocks
+// without asking again.
+async function unlockRoms() {
+  const pass = $("rom-pass-input").value;
+  if (!pass || !pendingRom) return;
+  const hint = $("rom-pass-hint");
   try {
-    if (!sonicEncBuffer) {
-      const enc = await fetch("sonic.rom.enc");
-      if (!enc.ok) throw new Error("encrypted ROM not found");
-      sonicEncBuffer = await enc.arrayBuffer();
-    }
-    hint.textContent = "Decrypting…";
-    sonicRomBuffer = await decryptRom(sonicEncBuffer, pass);
-    // Cache the decrypted ROM so this browser skips the prompt next time.
-    romDbPut("sonic", sonicRomBuffer);
-    $("sonic-pass-input").value = "";
-    $("sonic-pass-row").hidden = true;
+    hint.textContent = "Decrypting\u2026";
+    const buf = await decryptRom(pendingRom.enc, pass);
+    romPassword = pass;
+    romDbPut(ROM_PASSWORD_KEY, pass);
+    romCache.set(pendingRom.id, buf);
+    romDbPut(pendingRom.id, buf);
+    pendingRom = null;
+    $("rom-pass-input").value = "";
+    $("rom-unlock-section").hidden = true;
     $("sonic-rom-row").hidden = true;
-    if (consoleId === 2) loadConsoleAssets();
+    loadConsoleAssets();
   } catch (err) {
-    // GCM tag mismatch => wrong password; anything else is a fetch problem.
-    hint.textContent = "Wrong password — try again.";
-    sonicRomBuffer = null;
+    // GCM tag mismatch => wrong password.
+    hint.textContent = "Wrong password \u2014 try again.";
+    romPassword = null;
   }
 }
-$("sonic-pass-unlock").addEventListener("click", unlockSonic);
-$("sonic-pass-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") unlockSonic();
+$("rom-pass-unlock").addEventListener("click", unlockRoms);
+$("rom-pass-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") unlockRoms();
 });
 
 // Sonic start-level selectors: structural change -> restart the run.

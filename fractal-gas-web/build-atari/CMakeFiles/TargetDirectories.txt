@@ -2,6 +2,9 @@
 /home/guillem/fragile/fractal-gas-web/build-atari/CMakeFiles/fractal_gas_core.dir
 /home/guillem/fragile/fractal-gas-web/build-atari/CMakeFiles/fg_atari_env.dir
 /home/guillem/fragile/fractal-gas-web/build-atari/CMakeFiles/fg_atari_tests.dir
+/home/guillem/fragile/fractal-gas-web/build-atari/CMakeFiles/fg_retro_core_so.dir
+/home/guillem/fragile/fractal-gas-web/build-atari/CMakeFiles/fg_retro_env.dir
+/home/guillem/fragile/fractal-gas-web/build-atari/CMakeFiles/fg_retro_tests.dir
 /home/guillem/fragile/fractal-gas-web/build-atari/CMakeFiles/fg_cli.dir
 /home/guillem/fragile/fractal-gas-web/build-atari/CMakeFiles/fg_tests.dir
 /home/guillem/fragile/fractal-gas-web/build-atari/CMakeFiles/test.dir

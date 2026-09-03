@@ -26,7 +26,7 @@ const uint8_t kMarioActionMasks[12] = {
 namespace {
 
 constexpr size_t kCarryBytes = sizeof(MarioCarry);
-static_assert(sizeof(MarioCarry) == 6 * sizeof(int32_t),
+static_assert(sizeof(MarioCarry) == 9 * sizeof(int32_t),
               "MarioCarry must be trivially copyable with no padding");
 constexpr uint8_t kStartButton = 0x08;  // smb_env.py _frame_advance(8)
 

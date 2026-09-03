@@ -8,6 +8,7 @@ CMakeFiles/fg_atari_tests.dir/tests/test_atari_env.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal_gas.hpp
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp
+ /home/guillem/fragile/fractal-gas-web/src/montezuma_logic.hpp
  /home/guillem/fragile/fractal-gas-web/src/rng.hpp
  /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp

@@ -23,7 +23,8 @@ MarioFrameResult mario_frame_update(const uint8_t* ram, MarioCarry& carry,
   const int32_t x = mario_x_position(ram);
   int32_t x_reward = x - carry.x_last;
   carry.x_last = x;
-  if (x_reward < -5 || x_reward > 5) x_reward = 0;
+  const bool x_jumped = x_reward < -5 || x_reward > 5;
+  if (x_jumped) x_reward = 0;
 
   // _time_penalty: _reward = time - time_last; time_last = time;
   //                if _reward > 0: return 0
@@ -62,24 +63,44 @@ MarioFrameResult mario_frame_update(const uint8_t* ram, MarioCarry& carry,
   carry.flag_last = flag_get ? 1 : 0;
   if (flag_grabbed) reward += w.flag;
 
-  // Deviation from smb_env.py (see header): one-time bonus for entering a
-  // sub-area not visited before in this stage (pipes, warps, bonus rooms).
-  // ram[0x0760] = sub-area byte; the visited bitmask resets on stage/world
-  // change (a new stage is fresh exploration).
-  const int32_t area = ram[0x760];
+  // Deviation from smb_env.py (see header): one-time bonus for entering an
+  // area not visited before in this stage (pipes, warps, bonus rooms).
+  // ram[0x0750] = area pointer, which changes on every area load (unlike
+  // ram[0x0760], which stays put for pipe bonus rooms); the visited bitmask
+  // resets on stage/world change (a new stage is fresh exploration).
+  const int32_t area = ram[0x750];
   const int32_t stage_key = (static_cast<int32_t>(ram[0x75F]) << 8) |
                             static_cast<int32_t>(ram[0x75C]);
   if (stage_key != carry.stage_last) {
     carry.stage_last = stage_key;
     carry.visited_areas = 0;
+    carry.return_area = -1;
   }
   const int32_t area_bit = 1 << (area & 31);
-  if (area != carry.area_last && !(carry.visited_areas & area_bit) &&
-      carry.area_last >= 0) {
+  const bool area_changed = area != carry.area_last && carry.area_last >= 0;
+  if (area_changed && !(carry.visited_areas & area_bit)) {
     reward += w.area;
   }
   carry.visited_areas |= area_bit;
+
+  // Deviation from smb_env.py (see header): shortcut progress. The area
+  // pointer flips on the frame the player is placed in the new area, so x
+  // is already in the new area's coordinates here, while carry.area_x is
+  // the last settled x in the area we came from (the load's x = 0 /
+  // player_state 0x00 placeholder frames are excluded below).
+  if (area_changed) {
+    if (area == carry.return_area) {
+      reward += w.x * static_cast<float>(x - carry.return_x);
+      carry.return_area = -1;
+    } else {
+      carry.return_area = carry.area_last;
+      carry.return_x = carry.area_x;
+    }
+  }
   carry.area_last = area;
+  const bool loading = player_state == 0x00 || player_state == 0x07;
+  if (!x_jumped && !loading) carry.area_x = x;
+  if (is_dying || is_dead) carry.return_area = -1;
 
   // Deviation from smb_env.py (see header): +1 per frame while a pipe/area
   // transition animation plays (player_state 0x02 = entering sideways pipe,

@@ -1,7 +1,9 @@
 // "Reward terms" sidebar panel: one live slider per term of the shaped
-// Mario / Sonic rewards (src/mario_reward.cpp, src/retro_game_logic.hpp).
-// The weights are sent to C++ as a plain float array in the order below,
-// which must match MarioRewardWeights / SonicRewardWeights field order.
+// Mario / Sonic / Montezuma rewards (src/mario_reward.cpp,
+// src/retro_game_logic.hpp, src/montezuma_logic.hpp). The weights are sent
+// to C++ as a plain float array in the order below, which must match the
+// MarioRewardWeights / SonicRewardWeights / MontezumaRewardWeights field
+// order. Keys are UI console ids (main.js).
 
 const LIVE = " Applies live to rewards earned from now on.";
 
@@ -9,7 +11,7 @@ export const REWARD_TERMS = {
   // console 0: Super Mario Bros
   0: [
     { key: "x", label: "X progress", def: 1, min: 0, max: 5, step: 0.1,
-      help: "Reward per pixel Mario moves right each frame (negative when moving left). The main driving force of the swarm." + LIVE },
+      help: "Reward per pixel Mario moves right each frame (negative when moving left). Also scales the shortcut payout: coming out of a pipe further along the level pays the distance skipped. The main driving force of the swarm." + LIVE },
     { key: "time", label: "Time penalty", def: 1, min: 0, max: 5, step: 0.1,
       help: "Penalty per unit the in-game clock loses. Pushes walkers to hurry; 0 removes any time pressure." + LIVE },
     { key: "death", label: "Death penalty", def: 25, min: 0, max: 100, step: 1,
@@ -19,7 +21,7 @@ export const REWARD_TERMS = {
     { key: "flag", label: "Flag bonus", def: 500, min: 0, max: 2000, step: 10,
       help: "One-off bonus for grabbing the end-of-level flagpole. Makes finishing the level the most valuable event." + LIVE },
     { key: "area", label: "Area bonus", def: 100, min: 0, max: 500, step: 5,
-      help: "One-off bonus for entering a sub-area (pipe, warp, bonus room) not visited before in this stage. Pays for detours that move Mario left or down." + LIVE },
+      help: "One-off bonus for entering an area (pipe bonus room, warp, intro sub-area) not visited before in this stage. Pays for the detour of stopping to enter a pipe." + LIVE },
   ],
   // console 2: Sonic the Hedgehog (Genesis)
   2: [
@@ -37,6 +39,13 @@ export const REWARD_TERMS = {
       help: "Bonus per hit point removed from a boss (bosses take 8 hits)." + LIVE },
     { key: "act", label: "Act clear bonus", def: 5000, min: 0, max: 20000, step: 100,
       help: "One-off bonus for reaching the next act or zone. Keeps finishing the level the dominant goal." + LIVE },
+  ],
+  // console 3: Montezuma's Revenge (Atari, src/montezuma_logic.hpp)
+  3: [
+    { key: "score", label: "Game score", def: 1, min: 0, max: 5, step: 0.1,
+      help: "Multiplier on the in-game score (keys, doors, jewels, enemies). Sparse: the first points only come with the first key." + LIVE },
+    { key: "room", label: "New-room bonus", def: 500, min: 0, max: 2000, step: 10,
+      help: "One-off bonus the first time a walker's lineage enters one of the 24 rooms of the temple level (the bitmask resets on the next level). Not paid while dying. 0 leaves exploration entirely to the distance term." + LIVE },
   ],
 };
 

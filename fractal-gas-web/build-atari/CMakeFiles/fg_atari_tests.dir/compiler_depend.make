@@ -7,6 +7,7 @@ CMakeFiles/fg_atari_tests.dir/tests/test_atari_env.cpp.o: /home/guillem/fragile/
   /home/guillem/fragile/fractal-gas-web/src/env.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal_gas.hpp \
   /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/montezuma_logic.hpp \
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
   /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
@@ -550,6 +551,8 @@ CMakeFiles/fg_atari_tests.dir/tests/test_main.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
 
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
 /lib/x86_64-linux-gnu/libc.so.6:
 
 /usr/include/c++/15/memory:
@@ -676,13 +679,13 @@ libfg_atari_env.a:
 
 /usr/include/c++/15/bits/range_access.h:
 
-/usr/include/c++/15/bits/std_mutex.h:
+/usr/include/c++/15/debug/debug.h:
 
-/usr/include/c++/15/bits/node_handle.h:
+/usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so:
 
-/usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h:
+/usr/include/c++/15/bits/stl_construct.h:
 
-/usr/include/c++/15/pstl/glue_memory_defs.h:
+/usr/include/c++/15/bits/ptr_traits.h:
 
 /usr/include/c++/15/bits/random.h:
 
@@ -693,8 +696,6 @@ libfg_atari_env.a:
 /usr/include/c++/15/bits/atomic_base.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar.h:
 
 /usr/include/c++/15/bits/shared_ptr.h:
 
@@ -716,8 +717,6 @@ libfg_atari_env.a:
 
 /usr/include/c++/15/typeinfo:
 
-/usr/include/c++/15/debug/debug.h:
-
 /usr/lib/gcc/x86_64-linux-gnu/15/libgcc.a:
 
 /usr/include/c++/15/array:
@@ -730,11 +729,7 @@ libfg_atari_env.a:
 
 /usr/include/c++/15/bits/predefined_ops.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so:
-
-/usr/include/c++/15/bits/stl_construct.h:
-
-/usr/include/c++/15/bits/ptr_traits.h:
+/home/guillem/fragile/fractal-gas-web/src/montezuma_logic.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
@@ -745,10 +740,6 @@ libfg_atari_env.a:
 /usr/include/asm-generic/errno-base.h:
 
 /home/guillem/fragile/fractal-gas-web/src/rng.hpp:
-
-/usr/include/c++/15/tr1/poly_laguerre.tcc:
-
-/usr/include/c++/15/bits/charconv.h:
 
 /usr/include/c++/15/initializer_list:
 
@@ -786,12 +777,6 @@ libfractal_gas_core.a:
 
 /usr/include/alloca.h:
 
-/usr/include/c++/15/bits/hashtable_policy.h:
-
-/usr/include/c++/15/ext/string_conversions.h:
-
-/usr/include/c++/15/cmath:
-
 /usr/include/c++/15/bits/stl_iterator_base_types.h:
 
 /usr/include/stdc-predef.h:
@@ -818,15 +803,35 @@ libfractal_gas_core.a:
 
 /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
 
-/usr/include/c++/15/bits/basic_string.tcc:
+/usr/include/c++/15/bits/unique_lock.h:
 
-/home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp:
+/usr/include/c++/15/bits/ostream_insert.h:
+
+/usr/include/x86_64-linux-gnu/bits/errno.h:
 
 /usr/include/x86_64-linux-gnu/c++/15/bits/opt_random.h:
 
 /usr/include/c++/15/bits/memory_resource.h:
 
 /usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+
+/usr/include/c++/15/bits/hashtable_policy.h:
+
+/usr/include/c++/15/ext/string_conversions.h:
+
+/usr/include/c++/15/cmath:
+
+/home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp:
+
+/usr/include/c++/15/bits/basic_string.tcc:
+
+/usr/include/c++/15/bits/std_mutex.h:
+
+/usr/include/c++/15/bits/node_handle.h:
+
+/usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h:
+
+/usr/include/c++/15/pstl/glue_memory_defs.h:
 
 /usr/include/c++/15/bits/shared_ptr_atomic.h:
 
@@ -876,17 +881,15 @@ libfractal_gas_core.a:
 
 /usr/include/c++/15/bits/move.h:
 
-/usr/include/c++/15/bits/unique_lock.h:
-
-/usr/include/c++/15/bits/ostream_insert.h:
-
-/usr/include/x86_64-linux-gnu/bits/errno.h:
-
 /usr/include/x86_64-linux-gnu/bits/stdio.h:
 
 /usr/include/c++/15/bits/postypes.h:
 
 /usr/include/x86_64-linux-gnu/asm/posix_types.h:
+
+/usr/include/c++/15/bits/charconv.h:
+
+/usr/include/c++/15/tr1/poly_laguerre.tcc:
 
 /usr/include/linux/errno.h:
 
