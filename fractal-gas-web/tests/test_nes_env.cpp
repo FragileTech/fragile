@@ -23,7 +23,67 @@ bool skip_if_no_rom(const char* test_name) {
   return false;
 }
 
+// Synthetic 2KB RAM with Mario at x, a running clock and a healthy player.
+std::vector<uint8_t> fake_ram(int32_t x, int32_t time = 400) {
+  std::vector<uint8_t> ram(0x800, 0);
+  ram[0x6D] = static_cast<uint8_t>(x >> 8);
+  ram[0x86] = static_cast<uint8_t>(x & 0xFF);
+  ram[0x7F8] = static_cast<uint8_t>(time / 100);
+  ram[0x7F9] = static_cast<uint8_t>((time / 10) % 10);
+  ram[0x7FA] = static_cast<uint8_t>(time % 10);
+  ram[0x0E] = 0x08;   // player_state: normal
+  ram[0xB5] = 1;      // y_viewport: on screen
+  ram[0x75A] = 2;     // lives
+  return ram;
+}
+
 }  // namespace
+
+TEST_CASE(mario_reward_weights_scale_terms) {
+  MarioCarry carry;
+  std::vector<uint8_t> ram = fake_ram(100);
+  (void)mario_frame_update(ram.data(), carry);  // prime the carry
+
+  // 3 px of progress at default weights pays 3.
+  ram = fake_ram(103);
+  MarioCarry c1 = carry;
+  CHECK_CLOSE(mario_frame_update(ram.data(), c1).reward, 3.0f, 1e-6f);
+
+  // Doubling the x weight doubles it; zeroing it removes it.
+  MarioRewardWeights w2;
+  w2.x = 2.0f;
+  MarioCarry c2 = carry;
+  CHECK_CLOSE(mario_frame_update(ram.data(), c2, w2).reward, 6.0f, 1e-6f);
+  MarioRewardWeights w0;
+  w0.x = 0.0f;
+  MarioCarry c3 = carry;
+  CHECK_CLOSE(mario_frame_update(ram.data(), c3, w0).reward, 0.0f, 1e-6f);
+
+  // A clock tick costs `time`; time weight 0 ignores it.
+  ram = fake_ram(100, 399);
+  MarioCarry c4 = carry;
+  CHECK_CLOSE(mario_frame_update(ram.data(), c4).reward, -1.0f, 1e-6f);
+  MarioRewardWeights wt;
+  wt.time = 0.0f;
+  MarioCarry c5 = carry;
+  CHECK_CLOSE(mario_frame_update(ram.data(), c5, wt).reward, 0.0f, 1e-6f);
+
+  // Dying: -25 clipped to -15 by default; a wider clip exposes the full
+  // penalty and a custom death weight applies.
+  ram = fake_ram(100);
+  ram[0x0E] = 0x06;
+  MarioCarry c6 = carry;
+  const MarioFrameResult dead = mario_frame_update(ram.data(), c6);
+  CHECK_CLOSE(dead.reward, -15.0f, 1e-6f);
+  CHECK(dead.done);
+  MarioRewardWeights wd;
+  wd.clip = 100.0f;
+  MarioCarry c7 = carry;
+  CHECK_CLOSE(mario_frame_update(ram.data(), c7, wd).reward, -25.0f, 1e-6f);
+  wd.death = 40.0f;
+  MarioCarry c8 = carry;
+  CHECK_CLOSE(mario_frame_update(ram.data(), c8, wd).reward, -40.0f, 1e-6f);
+}
 
 TEST_CASE(nes_reset_reaches_playable_state) {
   if (skip_if_no_rom("nes_reset_reaches_playable_state")) return;

@@ -105,6 +105,21 @@ inline constexpr int32_t kSonicGridW = 256;    // covers x in [0, 16384)
 inline constexpr int32_t kSonicGridH = 32;     // covers y in [0, 2048)
 inline constexpr int32_t kSonicVisitedWords = kSonicGridW * kSonicGridH / 64;
 
+/// Live-tunable weights of the Sonic reward terms (the web demo's "Reward
+/// terms" panel). Defaults reproduce the constants above exactly. Field
+/// order matches the wire order used by shim_set_sonic_weights and the
+/// RetroFarmEnv header words.
+struct SonicRewardWeights {
+  float dx = 1.0f;                    // per pixel of x progress
+  float rings = kSonicRingCoef;
+  float score = kSonicScoreCoef;
+  float cell = kSonicCellBonus;
+  float life = kSonicLifeBonus;
+  float boss = kSonicBossHitBonus;
+  float act = kSonicActBonus;
+};
+inline constexpr int32_t kSonicRewardWeightCount = 7;
+
 /// Sonic 1 boss object ids (per the Sonic 1 disassembly): GHZ Obj3D,
 /// MZ Obj73, SYZ Obj75, LZ Obj77, SLZ Obj7A, FZ Eggman Obj85. Each keeps
 /// its remaining hit points in the object's collision_property byte
@@ -343,7 +358,8 @@ inline void retro_fill_obs(RetroGame game, int32_t mode, const RetroCore& core,
 ///   behavior wasted the whole draw.)
 inline float retro_step_frames(RetroGame game, RetroCore& core, int32_t action,
                                int32_t dt, RetroCarry& carry, bool& done,
-                               float& display) {
+                               float& display,
+                               const SonicRewardWeights& w = {}) {
   const bool sonic = game == RetroGame::kSonic;
   const uint32_t buttons = (sonic ? kSonicActionMasks : kRetroActionMasks)[
       action >= 0 && action < kRetroNumActions ? action : 0];
@@ -373,20 +389,20 @@ inline float retro_step_frames(RetroGame game, RetroCore& core, int32_t action,
       int32_t dx = v.x - carry.x_last;
       carry.x_last = v.x;
       if (dx < -32 || dx > 32) dx = 0;
-      if (!boss_loaded) total_reward += static_cast<float>(dx);
+      if (!boss_loaded) total_reward += w.dx * static_cast<float>(dx);
 
       // Boss damage: pay per hit point removed. Skip the frame the boss
       // spawns (last == -1) so its initial 8 HP isn't misread as a delta.
       if (boss_loaded && carry.boss_hits_last > boss_hits &&
           carry.boss_hits_last >= 0) {
-        total_reward += kSonicBossHitBonus *
+        total_reward += w.boss *
                         static_cast<float>(carry.boss_hits_last - boss_hits);
       }
       carry.boss_hits_last = boss_hits;
 
       const int32_t progress = v.zone * 3 + v.act;
       const bool act_changed = progress != carry.progress_last;
-      if (progress > carry.progress_last) total_reward += kSonicActBonus;
+      if (progress > carry.progress_last) total_reward += w.act;
       carry.progress_last = progress;
 
       // Exploration: pay once per newly visited map cell (see
@@ -397,24 +413,24 @@ inline float retro_step_frames(RetroGame game, RetroCore& core, int32_t action,
         std::memset(carry.visited, 0, sizeof(carry.visited));
         retro_sonic_visit_cell(carry, v.x, v.y);
       } else if (retro_sonic_visit_cell(carry, v.x, v.y)) {
-        total_reward += kSonicCellBonus;
+        total_reward += w.cell;
       }
 
       // Rings reset to 0 when the next act loads — resync silently there;
       // everywhere else the signed delta pays collection / punishes hits.
       if (!act_changed) {
         total_reward +=
-            kSonicRingCoef * static_cast<float>(v.rings - carry.rings_last);
+            w.rings * static_cast<float>(v.rings - carry.rings_last);
       }
       carry.rings_last = v.rings;
 
       total_reward +=
-          kSonicScoreCoef * static_cast<float>(v.score - carry.score_last);
+          w.score * static_cast<float>(v.score - carry.score_last);
       carry.score_last = v.score;
 
       if (v.lives > carry.lives_last) {
         total_reward +=
-            kSonicLifeBonus * static_cast<float>(v.lives - carry.lives_last);
+            w.life * static_cast<float>(v.lives - carry.lives_last);
       }
       if (v.lives < carry.lives_last || v.lives == 0) done = true;
       carry.lives_last = v.lives;

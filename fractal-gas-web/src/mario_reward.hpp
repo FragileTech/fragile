@@ -36,6 +36,17 @@ struct MarioFrameResult {
   bool done = false;
 };
 
+/// Live-tunable weights of the reward terms (the web demo's "Reward terms"
+/// panel). Defaults reproduce the constants documented below exactly.
+struct MarioRewardWeights {
+  float x = 1.0f;         // per pixel of x progress
+  float time = 1.0f;      // per clock unit lost
+  float death = 25.0f;    // penalty on dying (inside the clip)
+  float clip = 15.0f;     // |x + time + death| per-frame clip
+  float flag = kFlagBonus;
+  float area = kAreaBonus;
+};
+
 /// smb_env.py: ram[0x6d] * 0x100 + ram[0x86]
 int32_t mario_x_position(const uint8_t* ram);
 
@@ -74,7 +85,8 @@ int32_t mario_time(const uint8_t* ram);
 ///   - Pipe/area transition animations (player_state 0x02/0x03/0x07) pay
 ///     +1 per frame so the zero-reward animation is not a fitness wall for
 ///     a converged swarm.
-MarioFrameResult mario_frame_update(const uint8_t* ram, MarioCarry& carry);
+MarioFrameResult mario_frame_update(const uint8_t* ram, MarioCarry& carry,
+                                    const MarioRewardWeights& w = {});
 
 }  // namespace fg
 

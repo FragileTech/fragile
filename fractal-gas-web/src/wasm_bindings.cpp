@@ -249,6 +249,37 @@ void fg_reset() {
   if (g_gas) g_gas->reset();
 }
 
+/// Live-tunable reward term weights, as a JS array of numbers in the
+/// console's field order: Mario [x, time, death, clip, flag, area]; Sonic
+/// [dx, rings, score, cell, life, boss, act]. Ignored for Atari (raw score).
+void fg_set_reward_weights(emscripten::val weights) {
+  if (!g_env) return;
+  const int len = weights["length"].as<int>();
+  auto at = [&](int i, float fallback) {
+    return i < len ? weights[i].as<float>() : fallback;
+  };
+  if (g_nes) {
+    fg::MarioRewardWeights w;
+    w.x = at(0, w.x);
+    w.time = at(1, w.time);
+    w.death = at(2, w.death);
+    w.clip = at(3, w.clip);
+    w.flag = at(4, w.flag);
+    w.area = at(5, w.area);
+    g_nes->set_reward_weights(w);
+  } else if (auto* farm = dynamic_cast<fg::RetroFarmEnv*>(g_env.get())) {
+    fg::SonicRewardWeights w;
+    w.dx = at(0, w.dx);
+    w.rings = at(1, w.rings);
+    w.score = at(2, w.score);
+    w.cell = at(3, w.cell);
+    w.life = at(4, w.life);
+    w.boss = at(5, w.boss);
+    w.act = at(6, w.act);
+    farm->set_reward_weights(w);
+  }
+}
+
 
 
 }  // namespace
@@ -282,6 +313,7 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
   emscripten::function("frameHeight", &fg_frame_height);
   emscripten::function("nActions", &fg_n_actions);
   emscripten::function("setParams", &fg_set_params);
+  emscripten::function("setRewardWeights", &fg_set_reward_weights);
   emscripten::function("reset", &fg_reset);
 }
 

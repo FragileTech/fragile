@@ -78,9 +78,14 @@ class RetroFarmEnv final : public BatchEnv {
 
   int workers() const { return n_workers_; }
 
+  /// Live-tunable Sonic reward term weights: written into every slot's
+  /// header words; each core worker picks them up on its next STEP job.
+  void set_reward_weights(const SonicRewardWeights& w);
+  const SonicRewardWeights& reward_weights() const { return reward_weights_; }
+
  private:
   // Region layout (bytes from region base). Header words are int32/float32.
-  static constexpr size_t kHeaderBytes = 64;
+  static constexpr size_t kHeaderBytes = 128;
   static constexpr size_t kBlobCap = 0x200000;   // 2MB >= STATE_SIZE + carry
   static constexpr size_t kObsCap = 0x100000;    // 1MB >= RGB obs floats
   static constexpr size_t kRgbaCap = 0x80000;    // 512KB >= 320*224*4
@@ -93,7 +98,10 @@ class RetroFarmEnv final : public BatchEnv {
                kBlobLen = 5, kReward = 6, kDisplay = 7,
                // Fog-of-war swarm map: player position, level, camera.
                kX = 8, kY = 9, kZone = 10, kAct = 11, kCamX = 12,
-               kCamY = 13 };
+               kCamY = 13,
+               // Reward term weights: count, then kSonicRewardWeightCount
+               // float32 words (SonicRewardWeights field order).
+               kWeightCount = 16, kWeights = 17 };
   // Ctrl commands (worker stores 0 back when done, negative on error).
   enum : int32_t { kCmdStep = 1, kCmdBoot = 2, kCmdRender = 3 };
 
@@ -122,6 +130,7 @@ class RetroFarmEnv final : public BatchEnv {
   int n_workers_;
   uint8_t* regions_ = nullptr;
   size_t blob_len_ = 0;  // serialize size + carry, reported by the workers
+  SonicRewardWeights reward_weights_;
 
   std::vector<float> display_cache_;
   std::vector<int32_t> pos_cache_;  // 6 ints per walker (see accessors)

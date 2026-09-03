@@ -260,7 +260,8 @@ void NesMarioEnv::step_one(int slot, const std::vector<char>& blob,
   bool is_done = false;
   for (int32_t f = 0; f < dt; ++f) {
     emu.step();
-    const MarioFrameResult r = mario_frame_update(emu.get_memory_buffer(), carry);
+    const MarioFrameResult r =
+        mario_frame_update(emu.get_memory_buffer(), carry, reward_weights_);
     total_reward += r.reward;
     if (r.done) {
       is_done = true;

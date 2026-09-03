@@ -2,6 +2,8 @@
 // stat readouts and the five plots (mirroring the Panel dashboard panes).
 
 import { LinePlot } from "./plots.js";
+import { initHelp } from "./help.js";
+import { buildRewardPanel, readRewardWeights, showRewardPanel } from "./reward_terms.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -671,7 +673,8 @@ function initRun() {
   const rom = romBuffer.slice(0);
   const aux = auxBuffer ? auxBuffer.slice(0) : new ArrayBuffer(0);
   ensureWorker().postMessage(
-    { type: "init", rom, aux, params: readParams() },
+    { type: "init", rom, aux, params: readParams(),
+      rewardWeights: readRewardWeights(consoleId) },
     [rom, aux],
   );
 }
@@ -685,6 +688,7 @@ async function loadConsoleAssets() {
   $("atari-section").hidden = consoleId !== 1;
   $("sonic-section").hidden = consoleId !== 2;
   $("map-panel").hidden = consoleId === 1;  // maps for Mario + Sonic
+  showRewardPanel($("reward-terms-section"), consoleId);
   $("map-zoom").hidden = consoleId !== 2;   // +/- zoom is fog-map only
   sonicMapZoom = 1;
   document.querySelector(".map-credit").innerHTML = consoleId === 2
@@ -809,7 +813,18 @@ for (const btn of $("obs-mode").querySelectorAll("button")) {
   });
 }
 
+// Reward term weights: live-tunable like the fitness coefficients. Built
+// before initHelp() so the generated labels get their help icons.
+buildRewardPanel($("reward-terms-section"), (termConsole) => {
+  if (initialized && termConsole === consoleId) {
+    worker.postMessage({ type: "setRewardWeights",
+                         weights: readRewardWeights(consoleId) });
+  }
+});
+showRewardPanel($("reward-terms-section"), consoleId);
+
 updateButtons();
+initHelp();
 
 
 // --- Panel UX: collapsible sidebar, resizable/minimizable plots panel -------

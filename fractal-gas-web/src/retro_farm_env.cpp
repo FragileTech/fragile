@@ -37,6 +37,21 @@ RetroFarmEnv::RetroFarmEnv(uintptr_t regions_ptr, int n_workers,
       throw std::runtime_error("RetroFarmEnv: core worker not ready");
     }
   }
+  set_reward_weights(reward_weights_);
+}
+
+void RetroFarmEnv::set_reward_weights(const SonicRewardWeights& w) {
+  static_assert(sizeof(SonicRewardWeights) ==
+                    kSonicRewardWeightCount * sizeof(float),
+                "SonicRewardWeights must be a plain float array");
+  reward_weights_ = w;
+  for (int slot = 0; slot < n_workers_; ++slot) {
+    int32_t* h = header(slot);
+    // Slots are idle between step_batch calls, so plain stores suffice; the
+    // worker reads the words under its own Atomics.load of the ctrl word.
+    std::memcpy(h + kWeights, &w, sizeof(w));
+    atomic_store_i32(h + kWeightCount, kSonicRewardWeightCount);
+  }
 }
 
 void RetroFarmEnv::post_command(int slot, int32_t cmd) {

@@ -16,7 +16,8 @@ int32_t mario_time(const uint8_t* ram) {
          static_cast<int32_t>(ram[0x7FA]);
 }
 
-MarioFrameResult mario_frame_update(const uint8_t* ram, MarioCarry& carry) {
+MarioFrameResult mario_frame_update(const uint8_t* ram, MarioCarry& carry,
+                                    const MarioRewardWeights& w) {
   // _x_reward: _reward = x - x_last; x_last = x;
   //            if _reward < -5 or _reward > 5: return 0
   const int32_t x = mario_x_position(ram);
@@ -48,17 +49,18 @@ MarioFrameResult mario_frame_update(const uint8_t* ram, MarioCarry& carry) {
     time_penalty = -time_penalty;
   }
 
-  const int32_t death_penalty = (is_dying || is_dead) ? -25 : 0;
+  const float death_penalty = (is_dying || is_dead) ? -w.death : 0.0f;
 
   float reward = std::min(
-      15.0f, std::max(-15.0f, static_cast<float>(x_reward + time_penalty +
-                                                 death_penalty)));
+      w.clip, std::max(-w.clip, w.x * static_cast<float>(x_reward) +
+                                    w.time * static_cast<float>(time_penalty) +
+                                    death_penalty));
 
   // Deviation from smb_env.py (see header): one-time flag bonus outside the
   // clip, and flag_get does not end the episode.
   const bool flag_grabbed = flag_get && !carry.flag_last;
   carry.flag_last = flag_get ? 1 : 0;
-  if (flag_grabbed) reward += kFlagBonus;
+  if (flag_grabbed) reward += w.flag;
 
   // Deviation from smb_env.py (see header): one-time bonus for entering a
   // sub-area not visited before in this stage (pipes, warps, bonus rooms).
@@ -74,7 +76,7 @@ MarioFrameResult mario_frame_update(const uint8_t* ram, MarioCarry& carry) {
   const int32_t area_bit = 1 << (area & 31);
   if (area != carry.area_last && !(carry.visited_areas & area_bit) &&
       carry.area_last >= 0) {
-    reward += kAreaBonus;
+    reward += w.area;
   }
   carry.visited_areas |= area_bit;
   carry.area_last = area;

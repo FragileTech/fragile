@@ -21,7 +21,7 @@ async function loadModule() {
 // pre-spawned farm (region pointer, worker count, blob size) is handed to
 // C++ through the params. The job protocol afterwards is pure Atomics and
 // needs no event loop. Layout constants mirror RetroFarmEnv.
-const FARM_HEADER = 64;
+const FARM_HEADER = 128;
 const FARM_BLOB_CAP = 0x200000;
 const FARM_OBS_CAP = 0x100000;
 const FARM_RGBA_CAP = 0x80000;
@@ -145,6 +145,7 @@ self.onmessage = async (event) => {
         const aux = msg.aux ? new Uint8Array(msg.aux) : new Uint8Array(0);
         const ok = fg.init(new Uint8Array(msg.rom), aux, params);
         if (ok) {
+          if (msg.rewardWeights) fg.setRewardWeights(msg.rewardWeights);
           post("ready", {});
         } else {
           post("error", { message: fg.lastError() });
@@ -169,6 +170,9 @@ self.onmessage = async (event) => {
           fg.reset();
           post("resetDone", {});
         }
+        break;
+      case "setRewardWeights":
+        if (fg) fg.setRewardWeights(msg.weights);
         break;
       case "setParams":
         // embind requires every FgParams field; the farm fields are only

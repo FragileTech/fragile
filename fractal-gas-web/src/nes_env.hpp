@@ -56,6 +56,10 @@ class NesMarioEnv final : public BatchEnv {
   int32_t obs_dim() const override;
   ObsMode obs_mode() const { return obs_mode_; }
 
+  /// Live-tunable reward term weights (web demo). Call between steps.
+  void set_reward_weights(const MarioRewardWeights& w) { reward_weights_ = w; }
+  const MarioRewardWeights& reward_weights() const { return reward_weights_; }
+
   void reset(std::vector<char>& state, std::vector<float>& obs) override;
 
   void step_batch(const std::vector<std::vector<char>>& states,
@@ -107,6 +111,7 @@ class NesMarioEnv final : public BatchEnv {
 
   std::string rom_path_;
   ObsMode obs_mode_;
+  MarioRewardWeights reward_weights_;
   int32_t start_world_;
   int32_t start_stage_;
   ThreadPool pool_;

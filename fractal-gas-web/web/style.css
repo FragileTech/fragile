@@ -151,7 +151,7 @@ label.checkbox input { margin: 0; }
 
 .hint { font-size: 11.5px; color: #6b7183; margin: 6px 0 0; }
 
-.toggle-group { display: flex; gap: 4px; }
+.toggle-group { display: flex; gap: 4px; align-items: center; }
 .toggle-group button {
   flex: 1;
   padding: 6px 0;
@@ -379,3 +379,79 @@ footer {
   color: #6b7183;
   font-size: 12px;
 }
+
+/* Help icons + shared tooltip (help.js): every [data-help] caption gets a
+   small "?" that shows its explanation on hover/focus, pinned on click. */
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  margin-left: 6px;
+  padding: 0;
+  vertical-align: middle;
+  background: #12141a;
+  color: #8a90a2;
+  border: 1px solid #2c3040;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: help;
+  flex-shrink: 0;
+}
+.help-icon:hover,
+.help-icon:focus-visible { color: #d8dbe2; border-color: #3a4054; outline: none; }
+label .help-icon { margin-left: 4px; }
+.stat-grid .help-icon { margin-left: 4px; }
+h2 .help-icon { position: relative; top: -1px; }
+
+#tooltip {
+  position: fixed;
+  z-index: 1000;
+  max-width: 320px;
+  padding: 8px 11px;
+  background: #1b1e27;
+  border: 1px solid #3a4054;
+  border-radius: 6px;
+  color: #d8dbe2;
+  font-size: 12.5px;
+  line-height: 1.45;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: normal;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+#tooltip.pinned { pointer-events: auto; }
+#tooltip[hidden] { display: none; }
+#tooltip p { margin: 0; }
+#tooltip p + p { margin-top: 6px; }
+
+.plot-wrap { position: relative; }
+.plot-wrap .plot { display: block; }
+.plot-wrap .help-icon {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  margin: 0;
+}
+
+/* Reward terms panel (reward_terms.js): per-console slider groups. */
+.reward-terms[hidden] { display: none; }
+#reward-terms-section[hidden] { display: none; }
+.reward-terms .term-value { color: #d8dbe2; }
+.term-defaults {
+  margin-top: 4px;
+  padding: 4px 10px;
+  background: #12141a;
+  color: #8a90a2;
+  border: 1px solid #2c3040;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.term-defaults:hover { color: #d8dbe2; border-color: #3a4054; }

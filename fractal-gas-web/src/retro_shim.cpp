@@ -29,6 +29,7 @@ int32_t g_obs_mode = 0;
 int32_t g_zone = 0;  // Sonic start level (internal zone id / 0-based act)
 int32_t g_act = 0;
 size_t g_serialize_size = 0;
+fg::SonicRewardWeights g_weights;
 std::string g_error;
 
 }  // namespace
@@ -142,7 +143,8 @@ int shim_step(uint8_t* blob_inout, int action, int dt, float* obs_out,
     bool done = false;
     float display = 0.0f;
     const float reward = fg::retro_step_frames(g_game, *g_core, action, dt,
-                                               carry, done, display);
+                                               carry, done, display,
+                                               g_weights);
 
     fg::retro_fill_obs(g_game, g_obs_mode, *g_core, obs_out);
     if (!g_core->serialize(blob_inout, g_serialize_size)) {
@@ -169,6 +171,20 @@ int shim_step(uint8_t* blob_inout, int action, int dt, float* obs_out,
     g_error = e.what();
     return -1;
   }
+}
+
+/// Live-tunable Sonic reward term weights (see SonicRewardWeights; same
+/// field order). Applies to every subsequent shim_step.
+EMSCRIPTEN_KEEPALIVE
+void shim_set_sonic_weights(float dx, float rings, float score, float cell,
+                            float life, float boss, float act) {
+  g_weights.dx = dx;
+  g_weights.rings = rings;
+  g_weights.score = score;
+  g_weights.cell = cell;
+  g_weights.life = life;
+  g_weights.boss = boss;
+  g_weights.act = act;
 }
 
 /// RGBA frame (320x224x4) of the given blob's state. Display-only.

@@ -17,8 +17,13 @@ self.onmessage = async (e) => {
   const CTRL = W, STATUS = W + 1, ACTION = W + 2, DT = W + 3, DONE = W + 4,
         BLOBLEN = W + 5, REWARD = W + 6, DISPLAY = W + 7;
   // Data areas (byte offsets).
-  const HEADER = 64, BLOB_CAP = 0x200000, OBS_CAP = 0x100000,
+  const HEADER = 128, BLOB_CAP = 0x200000, OBS_CAP = 0x100000,
         RGBA_CAP = 0x80000;
+  // Live reward term weights (RetroFarmEnv::set_reward_weights): a count
+  // word then float32 words in SonicRewardWeights order, re-read on every
+  // STEP so a change made between steps applies to the next one.
+  const WEIGHT_COUNT = W + 16, WEIGHTS = W + 17, MAX_WEIGHTS = 7;
+  const weightsCache = new Float32Array(MAX_WEIGHTS).fill(NaN);
   const BLOB = regionOffset + HEADER;
   const OBS = BLOB + BLOB_CAP;
   const RGBA = OBS + OBS_CAP;
@@ -78,6 +83,15 @@ self.onmessage = async (e) => {
       let rc = 0;
       try {
         if (cmd === 1) {  // STEP
+          const nWeights = Math.min(Atomics.load(i32, WEIGHT_COUNT), MAX_WEIGHTS);
+          if (nWeights > 0) {
+            let changed = false;
+            for (let k = 0; k < nWeights; k++) {
+              const v = f32[WEIGHTS + k];
+              if (v !== weightsCache[k]) { weightsCache[k] = v; changed = true; }
+            }
+            if (changed) shim._shim_set_sonic_weights(...weightsCache.subarray(0, nWeights));
+          }
           copyBlobIn();
           rc = shim._shim_step(sBlob, Atomics.load(i32, ACTION),
                                Atomics.load(i32, DT), sObs, sReward, sDone,
