@@ -105,6 +105,26 @@ const SONIC_FIT_MAX_SCALE = 3;
 const SONIC_ZOOM_STEP = 1.5;
 const SONIC_ZOOM_MAX = 16;
 let mapZoom = 1;
+// Mobile GPUs cap textures at 4096 (older) or 8192 device pixels; a zoomed
+// map at a high devicePixelRatio easily exceeds that, and Chrome/Skia then
+// tiles the canvas — on some phones that misplaces the dots and paths
+// relative to the image (dots one cell off, filled triangles). Keep the
+// backing store within a safe size by lowering the effective pixel ratio
+// instead; everything is drawn in css pixels, so only sharpness at extreme
+// zoom is affected.
+const MAX_CANVAS_DEVICE_PX = 4096;
+// Size the map canvas for a css-pixel drawing space of (cssWidth, cssHeight)
+// and set the transform; returns the effective pixel ratio used.
+function setupMapCanvas(cssWidth, cssHeight) {
+  const dpr = Math.min(window.devicePixelRatio || 1,
+                       MAX_CANVAS_DEVICE_PX / Math.max(cssWidth, cssHeight, 1));
+  mapCanvas.width = Math.max(1, Math.round(cssWidth * dpr));
+  mapCanvas.height = Math.max(1, Math.round(cssHeight * dpr));
+  mapCanvas.style.width = cssWidth + "px";
+  mapCanvas.style.height = cssHeight + "px";
+  mapCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return dpr;
+}
 // "Visits" heatmap (Graph mode): the user's wish (persisted), whether the
 // running tree counts visits (from the worker's ready message), and the
 // latest exported blocks {count, keys: [plane, bx, by]*count, sums}.
@@ -385,7 +405,6 @@ function drawMap() {
   const entry = getMapImage(world, stage);
 
   const panelWidth = mapResize.clientWidth || 900;
-  const dpr = window.devicePixelRatio || 1;
   const imgW = entry.ok ? entry.img.naturalWidth : 3400;
   const imgH = entry.ok ? entry.img.naturalHeight : 224;
 
@@ -404,13 +423,8 @@ function drawMap() {
   const cssHeight = mapResize.clientHeight || 150;
   const scale = cssHeight / imgH;
   const cssWidth = Math.max(1, Math.round(imgW * scale));
-  mapCanvas.width = Math.round(cssWidth * dpr);
-  mapCanvas.height = Math.round(cssHeight * dpr);
-  mapCanvas.style.width = cssWidth + "px";
-  mapCanvas.style.height = cssHeight + "px";
-
   // Draw in css-pixel space so dots/lines keep fixed on-screen sizes.
-  mapCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  setupMapCanvas(cssWidth, cssHeight);
   mapCtx.clearRect(0, 0, cssWidth, cssHeight);
   if (entry.ok) {
     drawBaseImage(() => mapCtx.drawImage(entry.img, 0, 0, cssWidth, cssHeight),
@@ -482,7 +496,6 @@ function drawSonicMap() {
   }
 
   const vpW = mapResize.clientWidth || 900;
-  const dpr = window.devicePixelRatio || 1;
   // Default viewport height per level; a manual drag of the resize handle
   // sticks afterwards.
   if (mapSizedForKey !== `sonic-${zone}-${act}`) {
@@ -498,11 +511,7 @@ function drawSonicMap() {
   const scale = fitScale * mapZoom;
   const cssWidth = Math.max(1, Math.round(srcW * scale));
   const cssHeight = Math.max(1, Math.round(srcH * scale));
-  mapCanvas.width = Math.round(cssWidth * dpr);
-  mapCanvas.height = Math.round(cssHeight * dpr);
-  mapCanvas.style.width = cssWidth + "px";
-  mapCanvas.style.height = cssHeight + "px";
-  mapCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  setupMapCanvas(cssWidth, cssHeight);
   // The fog tiles are 8x-downsampled frames: smooth interpolation reads far
   // better than nearest-neighbour blocks when scaled up.
   mapCtx.imageSmoothingEnabled = true;
@@ -609,7 +618,6 @@ function drawPyramidMap() {
   const level = lastSwarm ? lastSwarm.level : 0;
   const entry = getPyramidCanvas(level);
   const vpW = mapResize.clientWidth || 900;
-  const dpr = window.devicePixelRatio || 1;
   // Default viewport height: the full pyramid at panel width.
   if (mapSizedForKey !== `pyramid-${level}`) {
     mapSizedForKey = `pyramid-${level}`;
@@ -620,11 +628,7 @@ function drawPyramidMap() {
   const scale = fitScale * mapZoom;
   const cssWidth = Math.max(1, Math.round(PYRAMID_W * scale));
   const cssHeight = Math.max(1, Math.round(PYRAMID_H * scale));
-  mapCanvas.width = Math.round(cssWidth * dpr);
-  mapCanvas.height = Math.round(cssHeight * dpr);
-  mapCanvas.style.width = cssWidth + "px";
-  mapCanvas.style.height = cssHeight + "px";
-  mapCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  setupMapCanvas(cssWidth, cssHeight);
   // Pixel art: keep the room images crisp when scaled.
   mapCtx.imageSmoothingEnabled = scale < 1;
   mapCtx.fillStyle = "#0a0b0f";
