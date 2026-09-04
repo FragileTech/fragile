@@ -79,6 +79,9 @@ class SwarmAlgorithm {
 
   virtual int64_t total_steps() const = 0;
   virtual int64_t total_clones() const = 0;
+  /// Emulated game frames since reset: the sum over every walker step of the
+  /// frames the env actually ran (a step stops early on death).
+  virtual int64_t total_frames() const = 0;
   virtual int32_t iteration_count() const = 0;
 
   // Live-tunable parameters. Each algorithm ignores the ones it lacks.

@@ -185,8 +185,10 @@ void AtariEnv::step_one(int slot, const std::vector<char>& blob, int32_t action,
   const ale::Action ale_action =
       static_cast<ale::Action>(action_set_[static_cast<size_t>(action)]);
   float total_reward = 0.0f;
+  int32_t frames = 0;
   for (int32_t f = 0; f < dt; ++f) {
     total_reward += static_cast<float>(a.act(ale_action));
+    ++frames;
     if (a.game_over(/*with_truncation=*/true)) {
       break;  // plangym stops frame-skipping when the episode terminates
     }
@@ -197,6 +199,7 @@ void AtariEnv::step_one(int slot, const std::vector<char>& blob, int32_t action,
 
   float step_reward = total_reward;
   display = DisplayInfo{};
+  display.frames = frames;
   bool death_room = false;
   if (game_ == AtariGame::kMontezuma) {
     const MontezumaVars v = montezuma_read(a.getRAM().array());

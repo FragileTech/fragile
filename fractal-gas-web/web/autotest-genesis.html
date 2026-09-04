@@ -39,7 +39,7 @@ try {
         const ok = last.iteration >= 60 &&
                    Number.isFinite(last.meanVirtualReward) &&
                    frameW === 320 && frameBytes === 320 * 224 * 4 &&
-                   last.world === undefined;  // NES-only stat absent
+                   Number.isFinite(last.totalFrames) && last.totalFrames > 0;
         report((ok ? "GENESIS-OK" : "GENESIS-FAIL") +
           ` iter=${last.iteration} alive=${last.aliveCount}` +
           ` maxReward=${Math.max(...steps.map((x) => x.maxReward))} bytes=${frameBytes}`);

@@ -92,6 +92,11 @@ class BatchEnv {
   /// observation mode (the demo counts visits only on Coords tuples).
   virtual bool has_visit_key() const { return false; }
 
+  /// Frames actually emulated for batch position i of the LAST step_batch
+  /// (envs stop a step early on death / game over), or -1 when the env does
+  /// not track it and the requested dt should be assumed.
+  virtual int32_t frames_stepped(int32_t /*batch_index*/) const { return -1; }
+
   /// Render an RGBA frame (frame_width*frame_height*4 bytes) for a state
   /// blob. May leave `rgba` empty when the env has no visual output.
   virtual void render_frame(const std::vector<char>& state,

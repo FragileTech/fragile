@@ -112,6 +112,7 @@ class FractalGas final : public SwarmAlgorithm {
 
   int64_t total_steps() const override { return total_steps_; }
   int64_t total_clones() const override { return total_clones_; }
+  int64_t total_frames() const override { return total_frames_; }
   int32_t iteration_count() const override { return iteration_count_; }
 
   // SwarmAlgorithm population access. The env's batch cache is valid by
@@ -153,6 +154,7 @@ class FractalGas final : public SwarmAlgorithm {
 
   int64_t total_steps_ = 0;
   int64_t total_clones_ = 0;
+  int64_t total_frames_ = 0;
   int32_t iteration_count_ = 0;
 };
 

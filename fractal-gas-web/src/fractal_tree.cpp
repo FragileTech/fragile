@@ -127,6 +127,7 @@ void FractalTree::reset() {
   state_ = TreeState{};
   total_steps_ = 0;
   total_clones_ = 0;
+  total_frames_ = 0;
   iteration_ = 0;
   best_frame_.clear();
   visits_.reset();
@@ -179,6 +180,8 @@ void FractalTree::reset() {
   }
   for (int32_t i = 0; i < n; ++i) {
     state_.dt[static_cast<size_t>(i)] = dt[static_cast<size_t>(i)];
+    const int32_t f = env_.frames_stepped(i);
+    total_frames_ += f >= 0 ? f : dt[static_cast<size_t>(i)];
   }
   (void)d;
 
@@ -393,6 +396,8 @@ StepInfo FractalTree::step() {
       state_.states[ui] = std::move(new_states[uj]);
       state_.actions[ui] = actions[uj];
       state_.dt[ui] = dt[uj];
+      const int32_t f = env_.frames_stepped(j);
+      total_frames_ += f >= 0 ? f : dt[uj];
     }
     copy_info_from_env(stepping);
     if (count_visits_) {

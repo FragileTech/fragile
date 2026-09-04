@@ -93,6 +93,7 @@ void FractalGas::reset() {
 
   total_steps_ = 0;
   total_clones_ = 0;
+  total_frames_ = 0;
   iteration_count_ = 0;
   has_elite_ = false;
   elite_walkers_ = WalkerState{};
@@ -216,6 +217,10 @@ StepInfo FractalGas::step() {
   state_ = std::move(new_state);
 
   total_steps_ += n;
+  for (int32_t i = 0; i < n; ++i) {
+    const int32_t f = env_.frames_stepped(i);
+    total_frames_ += f >= 0 ? f : state_.dt[static_cast<size_t>(i)];
+  }
   ++iteration_count_;
 
   // Collect info.

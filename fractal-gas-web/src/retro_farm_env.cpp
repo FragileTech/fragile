@@ -104,6 +104,7 @@ void RetroFarmEnv::step_batch(const std::vector<std::vector<char>>& states,
   display_cache_.resize(static_cast<size_t>(n));
   pos_cache_.resize(static_cast<size_t>(n) * 6);
   info_cache_.resize(static_cast<size_t>(n));
+  frames_cache_.assign(static_cast<size_t>(n), -1);
   tiles_.resize(static_cast<size_t>(n) * kTileBytes);
   float* obs_base = observations.data();
 
@@ -132,6 +133,7 @@ void RetroFarmEnv::step_batch(const std::vector<std::vector<char>>& states,
       std::memcpy(&reward_bits, h + kReward, sizeof(float));
       rewards[ui] = reward_bits;
       dones[ui] = atomic_load_i32(h + kDone) ? 1 : 0;
+      frames_cache_[ui] = atomic_load_i32(h + kFrames);
       float display_bits;
       std::memcpy(&display_bits, h + kDisplay, sizeof(float));
       display_cache_[ui] = display_bits;

@@ -417,3 +417,27 @@ TEST_CASE(tree_visit_coef_scales_the_visit_term) {
   CHECK(vr_after(1.0f, true) != vr_after(2.0f, true));
   CHECK(vr_after(1.0f, true) != vr_after(0.0f, true));
 }
+
+TEST_CASE(tree_total_frames_counts_stepped_walkers_only) {
+  MockEnv env;
+  FractalTreeParams params;
+  params.start_walkers = 6;
+  params.min_leafs = 6;
+  params.max_walkers = 40;
+  params.seed = 8;
+  FractalTree tree(env, params);
+  tree.reset();
+  // reset() steps every start walker once.
+  int64_t expected = 0;
+  for (int32_t i = 0; i < tree.n_walkers(); ++i) expected += tree.state().dt[static_cast<size_t>(i)];
+  CHECK(tree.total_frames() == expected);
+  for (int it = 0; it < 12; ++it) {
+    tree.step();
+    const TreeState& s = tree.state();
+    for (int32_t i = 0; i < s.n; ++i) {
+      if (s.will_clone[static_cast<size_t>(i)]) expected += s.dt[static_cast<size_t>(i)];
+    }
+    CHECK(tree.total_frames() == expected);
+  }
+  CHECK(tree.total_frames() > tree.total_steps());  // dt >= 1, mostly > 1
+}

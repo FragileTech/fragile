@@ -258,8 +258,10 @@ void NesMarioEnv::step_one(int slot, const std::vector<char>& blob,
   *emu.get_controller(0) = kMarioActionMasks[action];
   float total_reward = 0.0f;
   bool is_done = false;
+  int32_t frames = 0;
   for (int32_t f = 0; f < dt; ++f) {
     emu.step();
+    ++frames;
     const MarioFrameResult r =
         mario_frame_update(emu.get_memory_buffer(), carry, reward_weights_);
     total_reward += r.reward;
@@ -268,6 +270,7 @@ void NesMarioEnv::step_one(int slot, const std::vector<char>& blob,
       break;  // plangym stops frame-skipping when the episode terminates
     }
   }
+  display.frames = frames;
 
   fill_obs(emu, obs_row);
   new_blob = dump_with_carry(emu, carry);
@@ -317,6 +320,11 @@ void NesMarioEnv::step_batch(const std::vector<std::vector<char>>& states,
     wi.visit_x = di.x < 0 ? 0 : di.x;
     wi.visit_y = di.y;
   });
+}
+
+int32_t NesMarioEnv::frames_stepped(int32_t batch_index) const {
+  const auto ui = static_cast<size_t>(batch_index);
+  return ui < display_cache_.size() ? display_cache_[ui].frames : -1;
 }
 
 const WalkerInfo& NesMarioEnv::walker_info(int32_t batch_index) const {

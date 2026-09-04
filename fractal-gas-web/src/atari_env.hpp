@@ -107,6 +107,10 @@ class AtariEnv final : public BatchEnv {
   bool has_visit_key() const override {
     return game_ == AtariGame::kMontezuma && obs_mode_ == AtariObsMode::kCoords;
   }
+  int32_t frames_stepped(int32_t batch_index) const override {
+    const auto ui = static_cast<size_t>(batch_index);
+    return ui < display_cache_.size() ? display_cache_[ui].frames : -1;
+  }
 
   /// A life loss with lives remaining is a recoverable death: the walker's
   /// done fires (so the swarm avoids losing lives) but FractalGas may revive
@@ -136,6 +140,7 @@ class AtariEnv final : public BatchEnv {
     int32_t level = 0;
     int32_t lives = 0;
     int32_t inventory = 0;
+    int32_t frames = 0;  // frames emulated by the step (dt, or fewer on a life loss)
   };
 
   void step_one(int slot, const std::vector<char>& blob, int32_t action,

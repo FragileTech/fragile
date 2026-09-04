@@ -165,6 +165,7 @@ class FractalTree final : public SwarmAlgorithm {
   const std::vector<uint8_t>& best_frame() const override { return best_frame_; }
   int64_t total_steps() const override { return total_steps_; }
   int64_t total_clones() const override { return total_clones_; }
+  int64_t total_frames() const override { return total_frames_; }
   int32_t iteration_count() const override { return iteration_; }
 
   void set_dist_coef(float v) override { params_.dist_coef = v; }
@@ -210,6 +211,7 @@ class FractalTree final : public SwarmAlgorithm {
 
   int64_t total_steps_ = 0;
   int64_t total_clones_ = 0;
+  int64_t total_frames_ = 0;
   int32_t iteration_ = 0;
 };
 

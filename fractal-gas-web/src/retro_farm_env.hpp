@@ -76,6 +76,10 @@ class RetroFarmEnv final : public BatchEnv {
   bool has_walker_info() const override { return true; }
   const WalkerInfo& walker_info(int32_t batch_index) const override;
   bool has_visit_key() const override { return obs_mode_ == 3; }
+  int32_t frames_stepped(int32_t batch_index) const override {
+    const auto ui = static_cast<size_t>(batch_index);
+    return ui < frames_cache_.size() ? frames_cache_[ui] : -1;
+  }
 
   void render_frame(const std::vector<char>& state,
                     std::vector<uint8_t>& rgba) override;
@@ -105,6 +109,8 @@ class RetroFarmEnv final : public BatchEnv {
                // Fog-of-war swarm map: player position, level, camera.
                kX = 8, kY = 9, kZone = 10, kAct = 11, kCamX = 12,
                kCamY = 13,
+               // Frames the core really emulated in the last STEP job.
+               kFrames = 14,
                // Reward term weights: count, then kSonicRewardWeightCount
                // float32 words (SonicRewardWeights field order).
                kWeightCount = 16, kWeights = 17 };
@@ -141,6 +147,7 @@ class RetroFarmEnv final : public BatchEnv {
   std::vector<float> display_cache_;
   std::vector<int32_t> pos_cache_;  // 6 ints per walker (see accessors)
   std::vector<WalkerInfo> info_cache_;
+  std::vector<int32_t> frames_cache_;
   std::vector<uint8_t> tiles_;      // kTileBytes per walker
 
   std::vector<char> initial_state_;

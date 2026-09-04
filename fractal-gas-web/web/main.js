@@ -927,8 +927,10 @@ function ensureWorker() {
       case "ready":
         initialized = true;
         running = false;
-        $("stat-world").textContent = "\u2013";
-        $("stat-tree").textContent = "\u2013";
+        for (const id of ["stat-world", "stat-tree", "stat-iteration", "stat-max-reward",
+                          "stat-mean-reward", "stat-alive", "stat-ips", "stat-frames"]) {
+          $(id).textContent = "\u2013";
+        }
         if (msg.algorithm === 1 && msg.maxWalkers) {
           const asked = parseInt($("param-max-walkers").value, 10) || 0;
           $("max-walkers-hint").textContent = msg.maxWalkers < asked
@@ -1064,7 +1066,8 @@ function onStep(msg) {
   $("stat-max-reward").textContent = s.maxReward.toFixed(1);
   $("stat-mean-reward").textContent = s.meanReward.toFixed(1);
   $("stat-alive").textContent = `${s.aliveCount} / ${n}`;
-  $("stat-frames").textContent = Math.round(s.totalSteps * s.meanDt).toLocaleString();
+  // Exact count from the algorithm (frames the envs really emulated).
+  $("stat-frames").textContent = (s.totalFrames ?? Math.round(s.totalSteps * s.meanDt)).toLocaleString();
 
   const now = performance.now();
   ipsWindow.push(now);

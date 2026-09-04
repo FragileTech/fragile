@@ -30,6 +30,7 @@ self.onmessage = async (e) => {
   const TILE = RGBA + RGBA_CAP;
   const RGBA_LEN = 320 * 224 * 4;
   const POS_WORDS = 6;          // header words kX..kCamY at W+8..W+13
+  const FRAMES = W + 14;        // header word kFrames: frames really emulated
   const TILE_LEN = 40 * 28 * 3; // fog-of-war tile
 
   const fail = (msg) => {
@@ -62,6 +63,7 @@ self.onmessage = async (e) => {
     const sDisplay = shim._malloc(4);
     const sRgba = shim._malloc(RGBA_LEN);
     const sPos = shim._malloc(POS_WORDS * 4);
+    const sFrames = shim._malloc(4);
     const sTile = shim._malloc(TILE_LEN);
 
     Atomics.store(i32, BLOBLEN, blobLen);
@@ -95,12 +97,13 @@ self.onmessage = async (e) => {
           copyBlobIn();
           rc = shim._shim_step(sBlob, Atomics.load(i32, ACTION),
                                Atomics.load(i32, DT), sObs, sReward, sDone,
-                               sDisplay, sPos, sTile);
+                               sDisplay, sPos, sTile, sFrames);
           if (rc === 0) {
             copyBlobOut();
             copyObsOut();
             f32[REWARD] = shim.HEAPF32[sReward >> 2];
             Atomics.store(i32, DONE, shim.HEAP32[sDone >> 2]);
+            Atomics.store(i32, FRAMES, shim.HEAP32[sFrames >> 2]);
             f32[DISPLAY] = shim.HEAPF32[sDisplay >> 2];
             for (let k = 0; k < POS_WORDS; k++) {
               Atomics.store(i32, W + 8 + k, shim.HEAP32[(sPos >> 2) + k]);

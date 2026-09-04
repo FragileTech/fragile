@@ -162,9 +162,10 @@ int main(int argc, char** argv) {
     const auto best = algo->get_best_walker();
     std::printf("\nBest walker %d with cumulative reward %.1f (%d walkers)\n",
                 best.first, best.second, algo->n_walkers());
-    std::printf("%d iterations in %.2fs = %.1f it/s (%.0f env frames/s)\n",
+    std::printf("%d iterations in %.2fs = %.1f it/s (%lld env frames, %.0f frames/s)\n",
                 iters, secs, iters / secs,
-                static_cast<double>(algo->total_steps()) * 2.5 / secs);
+                static_cast<long long>(algo->total_frames()),
+                static_cast<double>(algo->total_frames()) / secs);
     return 0;
   } catch (const std::exception& e) {
     std::fprintf(stderr, "Error: %s\n", e.what());

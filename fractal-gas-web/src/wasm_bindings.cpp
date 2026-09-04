@@ -239,6 +239,7 @@ emscripten::val fg_step() {
   out.set("bestWalkerIdx", info.best_walker_idx);
   out.set("totalSteps", static_cast<double>(g_algo->total_steps()));
   out.set("totalClones", static_cast<double>(g_algo->total_clones()));
+  out.set("totalFrames", static_cast<double>(g_algo->total_frames()));
   out.set("walkerCount", info.n_walkers);
   out.set("nLeaves", info.n_leaves);
   out.set("numStepped", info.num_stepped);

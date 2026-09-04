@@ -90,6 +90,7 @@ class NesMarioEnv final : public BatchEnv {
   bool has_walker_info() const override { return true; }
   const WalkerInfo& walker_info(int32_t batch_index) const override;
   bool has_visit_key() const override { return obs_mode_ == ObsMode::kCoords; }
+  int32_t frames_stepped(int32_t batch_index) const override;
 
   void render_frame(const std::vector<char>& state,
                     std::vector<uint8_t>& rgba) override;
@@ -106,6 +107,7 @@ class NesMarioEnv final : public BatchEnv {
     uint8_t stage = 0;
     int32_t x = 0;   // level x-position in world pixels
     uint8_t y = 0;   // player y-pixel on screen (ram[0x3B8])
+    int32_t frames = 0;  // frames emulated by the step (dt, or fewer on death)
   };
 
   void step_one(int slot, const std::vector<char>& blob, int32_t action,

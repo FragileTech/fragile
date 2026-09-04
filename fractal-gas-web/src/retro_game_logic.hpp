@@ -356,10 +356,13 @@ inline void retro_fill_obs(RetroGame game, int32_t mode, const RetroCore& core,
 ///   chain jumps instead of merging into one long hold. (The one-frame
 ///   release slightly caps an in-flight ascent — acceptable; the old
 ///   behavior wasted the whole draw.)
+/// `frames_run` (optional) receives the number of frames actually emulated
+/// (dt, or fewer when the step stops early on death / act completion).
 inline float retro_step_frames(RetroGame game, RetroCore& core, int32_t action,
                                int32_t dt, RetroCarry& carry, bool& done,
                                float& display,
-                               const SonicRewardWeights& w = {}) {
+                               const SonicRewardWeights& w = {},
+                               int32_t* frames_run = nullptr) {
   const bool sonic = game == RetroGame::kSonic;
   const uint32_t buttons = (sonic ? kSonicActionMasks : kRetroActionMasks)[
       action >= 0 && action < kRetroNumActions ? action : 0];
@@ -371,6 +374,7 @@ inline float retro_step_frames(RetroGame game, RetroCore& core, int32_t action,
   float total_reward = 0.0f;
   done = false;
   display = 0.0f;
+  if (frames_run != nullptr) *frames_run = 0;
 
   for (int32_t f = 0; f < dt; ++f) {
     uint32_t frame_buttons = buttons;
@@ -380,6 +384,7 @@ inline float retro_step_frames(RetroGame game, RetroCore& core, int32_t action,
       if ((buttons & kPadB) && (f % 2)) frame_buttons &= ~uint32_t(kPadB);
     }
     core.run_frame(frame_buttons);
+    if (frames_run != nullptr) *frames_run = f + 1;
 
     if (game == RetroGame::kSonic) {
       const SonicVars v = retro_read_sonic(core);

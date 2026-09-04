@@ -132,7 +132,7 @@ static void downsample_tile(const fg::RetroCore& core, uint8_t* tile_out) {
 EMSCRIPTEN_KEEPALIVE
 int shim_step(uint8_t* blob_inout, int action, int dt, float* obs_out,
               float* reward_out, int* done_out, float* display_out,
-              int* pos_out, uint8_t* tile_out) {
+              int* pos_out, uint8_t* tile_out, int* frames_out) {
   try {
     if (!g_core->unserialize(blob_inout, g_serialize_size)) {
       throw std::runtime_error("retro_unserialize failed");
@@ -142,9 +142,11 @@ int shim_step(uint8_t* blob_inout, int action, int dt, float* obs_out,
 
     bool done = false;
     float display = 0.0f;
+    int32_t frames = 0;
     const float reward = fg::retro_step_frames(g_game, *g_core, action, dt,
                                                carry, done, display,
-                                               g_weights);
+                                               g_weights, &frames);
+    if (frames_out != nullptr) *frames_out = frames;
 
     fg::retro_fill_obs(g_game, g_obs_mode, *g_core, obs_out);
     if (!g_core->serialize(blob_inout, g_serialize_size)) {

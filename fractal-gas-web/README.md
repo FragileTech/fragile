@@ -120,6 +120,13 @@ The demo runs two swarm algorithms behind one interface
   against a dense float32 transcription. `web/autotest-graph.html` is the
   browser smoke test.
 
+**Env frames**: the "Env frames" stat is an exact count. Every env reports
+how many frames it really emulated per walker step (`frames_stepped`; NES,
+ALE and the Genesis shim stop a step early on death / life loss, the shim
+returning the count through its shared-memory header), and both algorithms
+accumulate it (`total_frames`), so the number only ever grows — the old
+`total_steps x mean dt` estimate wobbled with each iteration's random dt.
+
 ## Fidelity notes
 
 The algorithm is translated line-for-line, including: Bessel-corrected std in

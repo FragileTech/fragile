@@ -332,3 +332,57 @@ TEST_CASE(wave_visit_coef_scales_the_visit_term) {
   CHECK(vr_after(0.0f, true) == vr_after(1.0f, false));
   CHECK(vr_after(1.0f, true) != vr_after(2.0f, true));
 }
+
+namespace {
+/// MockEnv wrapper that reports it ran one frame fewer than requested for
+/// odd walkers (like a death mid-step).
+class EarlyStopMockEnv final : public BatchEnv {
+ public:
+  int32_t n_actions() const override { return inner_.n_actions(); }
+  int32_t obs_dim() const override { return inner_.obs_dim(); }
+  void reset(std::vector<char>& state, std::vector<float>& obs) override { inner_.reset(state, obs); }
+  void step_batch(const std::vector<std::vector<char>>& states,
+                  const std::vector<int32_t>& actions, const std::vector<int32_t>& dt,
+                  std::vector<std::vector<char>>& new_states, std::vector<float>& observations,
+                  std::vector<float>& rewards, std::vector<uint8_t>& dones,
+                  std::vector<uint8_t>& truncated) override {
+    inner_.step_batch(states, actions, dt, new_states, observations, rewards, dones, truncated);
+    frames_.resize(states.size());
+    for (size_t i = 0; i < states.size(); ++i) frames_[i] = (i % 2) ? dt[i] - 1 : dt[i];
+  }
+  int32_t frames_stepped(int32_t i) const override { return frames_[static_cast<size_t>(i)]; }
+  void render_frame(const std::vector<char>&, std::vector<uint8_t>& rgba) override { rgba.clear(); }
+  int32_t frame_width() const override { return 0; }
+  int32_t frame_height() const override { return 0; }
+ private:
+  MockEnv inner_;
+  std::vector<int32_t> frames_;
+};
+}  // namespace
+
+TEST_CASE(wave_total_frames_counts_emulated_frames) {
+  MockEnv env;
+  FractalGasParams params;
+  params.N = 8;
+  params.seed = 3;
+  FractalGas gas(env, params);
+  gas.reset();
+  CHECK(gas.total_frames() == 0);
+  int64_t expected = 0;
+  for (int it = 0; it < 6; ++it) {
+    gas.step();
+    for (const int32_t d : gas.state().dt) expected += d;  // MockEnv never stops early
+    CHECK(gas.total_frames() == expected);
+  }
+  EarlyStopMockEnv early;
+  FractalGas gas2(early, params);
+  gas2.reset();
+  int64_t expected2 = 0;
+  for (int it = 0; it < 6; ++it) {
+    gas2.step();
+    const auto& dt = gas2.state().dt;
+    for (size_t i = 0; i < dt.size(); ++i) expected2 += (i % 2) ? dt[i] - 1 : dt[i];
+    CHECK(gas2.total_frames() == expected2);
+  }
+  CHECK(gas2.total_frames() < gas.total_frames() || params.N == 0);
+}
