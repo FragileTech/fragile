@@ -341,10 +341,12 @@ function drawBaseImage(draw, cssWidth, cssHeight) {
 function drawVisitHeat(blockRect) {
   if (!visitsView() || !lastVisits || !lastVisits.count) return;
   const { count, keys, sums } = lastVisits;
+  const B = lastVisits.blockSize || VISIT_BLOCK;
+  $("visits-legend-block").textContent = `${B}x${B}`;
   const rects = new Array(count);
   let maxSum = 0;
   for (let i = 0; i < count; i++) {
-    const r = blockRect(keys[3 * i], keys[3 * i + 1], keys[3 * i + 2]);
+    const r = blockRect(keys[3 * i], keys[3 * i + 1], keys[3 * i + 2], B);
     rects[i] = r;
     if (r && sums[i] > maxSum) maxSum = sums[i];
   }
@@ -416,12 +418,11 @@ function drawMap() {
     // Visit planes are world*256 + stage; blocks sit at (bx*5, by*5) in the
     // same level-x / screen-y space as the walker dots.
     const plane = world * 256 + stage;
-    drawVisitHeat((p, bx, by) => {
+    drawVisitHeat((p, bx, by, B) => {
       if (p !== plane) return null;
-      const y = marioMapY(by * VISIT_BLOCK, imgH);
+      const y = marioMapY(by * B, imgH);
       if (y >= imgH) return null;
-      return { x: bx * VISIT_BLOCK * scale, y: y * scale,
-               w: VISIT_BLOCK * scale, h: VISIT_BLOCK * scale };
+      return { x: bx * B * scale, y: y * scale, w: B * scale, h: B * scale };
     });
   } else {
     mapCtx.fillStyle = "#12141a";
@@ -513,9 +514,9 @@ function drawSonicMap() {
                 cssWidth, cssHeight);
   // Visit planes are zone*16 + act; blocks are 5 level px = 5/8 fog px.
   const plane = zone * 16 + act;
-  const blockFog = VISIT_BLOCK / FOG_SCALE;
-  drawVisitHeat((p, bx, by) => {
+  drawVisitHeat((p, bx, by, B) => {
     if (p !== plane) return null;
+    const blockFog = B / FOG_SCALE;
     const fx = bx * blockFog - srcX;
     const fy = by * blockFog - srcY;
     if (fx < -blockFog || fy < -blockFog || fx >= srcW || fy >= srcH) return null;
@@ -630,12 +631,15 @@ function drawPyramidMap() {
   // Visit planes are rooms (not keyed by temple level, like the reference
   // reward); blocks are 5x5 in-room pixels, normalized over the whole
   // pyramid.
-  drawVisitHeat((p, bx, by) => {
+  drawVisitHeat((p, bx, by, B) => {
     const cell = ROOM_CELL.get(p);
     if (!cell) return null;
-    return { x: (cell.col * ROOM + bx * VISIT_BLOCK) * scale,
-             y: (cell.row * ROOM + by * VISIT_BLOCK) * scale,
-             w: VISIT_BLOCK * scale, h: VISIT_BLOCK * scale };
+    // Blocks are clipped to the room so a coarse window never spills over.
+    const w = Math.min(B, ROOM - bx * B), h = Math.min(B, ROOM - by * B);
+    if (w <= 0 || h <= 0) return null;
+    return { x: (cell.col * ROOM + bx * B) * scale,
+             y: (cell.row * ROOM + by * B) * scale,
+             w: w * scale, h: h * scale };
   });
   if (!lastSwarm) return;
 
@@ -886,6 +890,7 @@ function readParams() {
     algorithm,
     maxWalkers: parseInt($("param-max-walkers").value, 10) || 0,
     eraseCoef: parseFloat($("param-erase-coef").value),
+    aggBlock: parseInt($("param-agg-block").value, 10) || 5,
   };
 }
 
@@ -1200,6 +1205,11 @@ $("param-erase-coef").addEventListener("input", () => {
   $("erase-coef-value").textContent = parseFloat($("param-erase-coef").value).toFixed(2);
   if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
 });
+// Visit pooling window: live (the per-pixel counts are kept); the heatmap
+// re-bins with the next step's blocks.
+$("param-agg-block").addEventListener("change", () => {
+  if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
+});
 
 // Algorithm toggle (Wave / Graph): structural change -> restart the run.
 // The Graph reinterprets N as its start walkers / minimum leaves, has no
@@ -1215,6 +1225,7 @@ function applyAlgoUi() {
   $("param-max-walkers-row").hidden = !graph;
   const visits = graph && obsMode === 3 && consoleId !== 1;
   $("param-erase-row").hidden = !visits;
+  $("param-agg-row").hidden = !visits;
   $("graph-visits-hint").hidden = !graph || visits;
   $("map-visits").hidden = !visits;
   updateVisitsUi();

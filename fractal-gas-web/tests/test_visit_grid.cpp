@@ -163,3 +163,52 @@ TEST_CASE(visit_grid_export_blocks_matches_block_sums) {
     CHECK(std::fabs(sums[i] - expect) <= std::fabs(expect) * 1.2e-7f);
   }
 }
+
+TEST_CASE(visit_grid_pooling_size_is_live_and_storage_is_per_pixel) {
+  VisitGrid grid(5, 0.0f);
+  // Two hits in the first 5x5 block and one in the block to its right; a
+  // hit far away on the same plane; one on another plane.
+  grid.update({VisitKey{0, 1, 1}, VisitKey{0, 3, 4}, VisitKey{0, 7, 2},
+               VisitKey{0, 40, 40}, VisitKey{3, 1, 1}});
+  const size_t cells = grid.nonzero_cells();
+  CHECK(cells == 5);
+  std::vector<float> s;
+  grid.block_sums({VisitKey{0, 0, 0}, VisitKey{0, 6, 0}}, s);
+  CHECK(s[0] == 2.0f && s[1] == 1.0f);
+
+  // B = 1: the block sum IS the pixel value.
+  grid.set_block_size(1);
+  grid.block_sums({VisitKey{0, 1, 1}, VisitKey{0, 2, 1}, VisitKey{0, 7, 2}}, s);
+  CHECK(s[0] == 1.0f && s[1] == 0.0f && s[2] == 1.0f);
+  // B = 10: the four 5-blocks merge; (40, 40) is block (4, 4).
+  grid.set_block_size(10);
+  grid.block_sums({VisitKey{0, 0, 0}, VisitKey{0, 9, 9}, VisitKey{0, 40, 40}, VisitKey{3, 0, 0}}, s);
+  CHECK(s[0] == 3.0f && s[1] == 3.0f && s[2] == 1.0f && s[3] == 1.0f);
+  // A window spanning several storage tiles (kTile = 32) sums across them.
+  grid.set_block_size(64);
+  grid.block_sums({VisitKey{0, 0, 0}}, s);
+  CHECK(s[0] == 4.0f);
+  // Changing the pooling never touched the stored counters.
+  CHECK(grid.nonzero_cells() == cells);
+  CHECK(grid.cell(VisitKey{0, 1, 1}) == 1.0f);
+
+  // Export re-bins at the current size.
+  std::vector<int32_t> keys;
+  std::vector<float> sums;
+  grid.set_block_size(10);
+  grid.export_blocks(keys, sums);
+  CHECK(sums.size() == 3);  // plane 0 blocks (0,0) and (4,4); plane 3 block (0,0)
+  CHECK(grid.n_blocks() == 3);
+  grid.set_block_size(1);
+  grid.export_blocks(keys, sums);
+  CHECK(sums.size() == 5);
+  // Partial edge blocks: B = 7 on a 160-wide room puts x = 158 in block 22.
+  grid.set_block_size(7);
+  grid.update({VisitKey{1, 158, 3}});
+  grid.export_blocks(keys, sums);
+  bool found = false;
+  for (size_t i = 0; i < sums.size(); ++i) {
+    if (keys[3 * i] == 1) found = (keys[3 * i + 1] == 22 && keys[3 * i + 2] == 0 && sums[i] == 1.0f);
+  }
+  CHECK(found);
+}

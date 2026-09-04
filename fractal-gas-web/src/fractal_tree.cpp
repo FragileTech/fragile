@@ -131,6 +131,7 @@ void FractalTree::reset() {
   best_frame_.clear();
   visits_.reset();
   visits_.set_erase_coef(params_.erase_coef);
+  visits_.set_block_size(params_.agg_block_size);
 
   const int32_t n = std::min(params_.start_walkers, params_.max_walkers);
   // reset(): start_action = sample_actions(start_walkers) BEFORE the env

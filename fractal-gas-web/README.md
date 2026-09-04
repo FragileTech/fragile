@@ -75,7 +75,13 @@ The demo runs two swarm algorithms behind one interface
   visit sums (exported by `VisitGrid::export_blocks`, `getVisitBlocks` in
   the bindings) overlaid as a "fire" colormap at alpha 0.7, auto-ranged
   to the largest displayed block, never-visited blocks transparent, the
-  walkers on top; `web/autotest-visits.html` checks the export.
+  walkers on top; `web/autotest-visits.html` checks the export. The
+  pooling window is the **Visit pooling (px)** input (default 5, the
+  reference's block size): counts are stored per pixel in 32x32 tiles and
+  only summed over `B x B` blocks when the reward and the heatmap read
+  them, so the size changes live mid-run without losing history (1 =
+  per-pixel novelty, 160 = one cell per Montezuma room). The reference
+  required grid sizes divisible by the block; edge blocks may be partial here.
 
   RNG draw order per iteration (replayable, `FractalTreeSampler`):
   companions for the distance term, companions for the clone term, the

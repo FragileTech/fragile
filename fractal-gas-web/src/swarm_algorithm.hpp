@@ -82,6 +82,8 @@ class SwarmAlgorithm {
   virtual void set_use_cumulative_reward(bool /*v*/) {}
   virtual void set_n_elite(int32_t /*k*/) {}
   virtual void set_erase_coef(float /*v*/) {}
+  /// Graph: pooling window (pixels per side) of the visit-count reward.
+  virtual void set_agg_block_size(int32_t /*b*/) {}
 };
 
 }  // namespace fg

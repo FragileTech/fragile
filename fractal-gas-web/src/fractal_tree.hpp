@@ -173,6 +173,12 @@ class FractalTree final : public SwarmAlgorithm {
     params_.erase_coef = v;
     visits_.set_erase_coef(v);
   }
+  /// Live: the per-pixel counters are kept, only the reward's pooling
+  /// window changes from the next iteration on.
+  void set_agg_block_size(int32_t b) override {
+    params_.agg_block_size = b < 1 ? 1 : b;
+    visits_.set_block_size(params_.agg_block_size);
+  }
 
  private:
   int32_t best_index() const;  // first argmax of cum_rewards

@@ -23,6 +23,7 @@ try {
   let steps = 0;
   let withVisits = 0;
   let lastVisits = null;
+  let blocks5 = 0;
   worker.onmessage = (event) => {
     const msg = event.data;
     if (msg.type === "error") return report("VISITS-FAIL " + msg.message);
@@ -35,21 +36,30 @@ try {
     if (msg.type === "step") {
       steps++;
       if (msg.visits) { withVisits++; lastVisits = msg.visits; }
+      if (steps === 15) {
+        // Live pooling change: the next steps must re-bin into 10x10 blocks.
+        blocks5 = lastVisits ? lastVisits.count : 0;
+        worker.postMessage({ type: "setParams", params: {
+          n: 8, distCoef: 1.0, rewardCoef: 1.0, useCumulativeReward: true,
+          dtMin: 1, dtMax: 4, nElite: 0, seed: 7, nThreads: 4, obsMode: 3,
+          world: 1, stage: 1, console: 0, game: 0, algorithm: 1, maxWalkers: 200,
+          eraseCoef: 0.05, aggBlock: 10 } });
+      }
       if (steps >= 25) {
         worker.postMessage({ type: "pause" });
         const v = lastVisits;
         let ok = counting === true && withVisits >= 20 && v && v.count > 0 &&
                  v.keys.length === 3 * v.count && v.sums.length === v.count &&
-                 v.blockSize === 5;
+                 v.blockSize === 10 && blocks5 > 0;
         let maxSum = 0;
         for (let i = 0; ok && i < v.count; i++) {
           const plane = v.keys[3 * i], bx = v.keys[3 * i + 1], by = v.keys[3 * i + 2];
-          ok = ok && v.sums[i] > 0 && plane === 257 && bx * 5 < 3400 && by * 5 < 240;
+          ok = ok && v.sums[i] > 0 && plane === 257 && bx * 10 < 3400 && by * 10 < 240;
           maxSum = Math.max(maxSum, v.sums[i]);
         }
         report((ok ? "VISITS-OK" : "VISITS-FAIL") +
           ` counting=${counting} steps=${steps} withVisits=${withVisits}` +
-          ` blocks=${v ? v.count : 0} maxSum=${maxSum.toFixed(2)}`);
+          ` blocks5=${blocks5} blocks10=${v ? v.count : 0} blockSize=${v ? v.blockSize : 0} maxSum=${maxSum.toFixed(2)}`);
       }
     }
   };

@@ -67,6 +67,7 @@ struct FgParams {
   int algorithm = 0;   // 0=Wave (FractalGas), 1=Graph (FractalTree)
   int maxWalkers = 0;  // Graph: population cap, 0 = console default
   float eraseCoef = 0.05f;  // Graph: visit-count decay
+  int aggBlock = 5;         // Graph: visit-count pooling window (px), live
   // Genesis core-worker farm, pre-spawned by worker.js (nested workers need
   // the JS event loop, which fg_init blocks): region base pointer, worker
   // count, and the blob size the workers reported.
@@ -121,6 +122,7 @@ fg::FractalTreeParams to_tree_params(const FgParams& p) {
   params.dt_max = p.dtMax;
   params.count_visits = true;  // effective only with a visit key (Coords)
   params.erase_coef = p.eraseCoef;
+  params.agg_block_size = p.aggBlock < 1 ? 1 : p.aggBlock;
   params.record_frames = true;
   params.seed = static_cast<uint64_t>(p.seed);
   return params;
@@ -370,6 +372,7 @@ void fg_set_params(const FgParams& p) {
   g_algo->set_dt_range(p.dtMin, p.dtMax);
   g_algo->set_n_elite(p.nElite);
   g_algo->set_erase_coef(p.eraseCoef);
+  g_algo->set_agg_block_size(p.aggBlock < 1 ? 1 : p.aggBlock);
 }
 
 void fg_reset() {
@@ -434,6 +437,7 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
       .field("algorithm", &FgParams::algorithm)
       .field("maxWalkers", &FgParams::maxWalkers)
       .field("eraseCoef", &FgParams::eraseCoef)
+      .field("aggBlock", &FgParams::aggBlock)
       .field("farmPtr", &FgParams::farmPtr)
       .field("farmWorkers", &FgParams::farmWorkers)
       .field("farmBlobLen", &FgParams::farmBlobLen);

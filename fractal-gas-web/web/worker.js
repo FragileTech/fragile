@@ -190,7 +190,8 @@ self.onmessage = async (event) => {
         await loadModule();
         // embind requires every FgParams field; default the algorithm
         // fields so callers that predate them (autotest pages) still work.
-        const params = { algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, ...msg.params };
+        const params = { algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
+                         ...msg.params };
         currentConsole = params.console;
         currentGame = params.game;
         capturedRooms = new Set();
@@ -258,7 +259,7 @@ self.onmessage = async (event) => {
         // meaningful at init, so zeros suffice here.
         if (fg) {
           fg.setParams({ farmPtr: 0, farmWorkers: 0, farmBlobLen: 0,
-                         algorithm: 0, maxWalkers: 0, eraseCoef: 0.05,
+                         algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
                          ...msg.params });
         }
         break;
