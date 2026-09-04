@@ -69,6 +69,7 @@ struct FgParams {
   float eraseCoef = 0.05f;  // Graph: visit-count decay
   int aggBlock = 5;         // Graph: visit-count pooling window (px), live
   bool visitReward = true;  // visit-count term in the reward (ablation), live
+  float visitCoef = 1.0f;   // exponent on the visit-count term, live
   // Genesis core-worker farm, pre-spawned by worker.js (nested workers need
   // the JS event loop, which fg_init blocks): region base pointer, worker
   // count, and the blob size the workers reported.
@@ -90,6 +91,7 @@ fg::FractalGasParams to_gas_params(const FgParams& p) {
   params.seed = static_cast<uint64_t>(p.seed);
   params.count_visits = true;  // effective only with a visit key (Coords)
   params.visit_reward = p.visitReward;
+  params.visit_coef = p.visitCoef;
   params.erase_coef = p.eraseCoef;
   params.agg_block_size = p.aggBlock < 1 ? 1 : p.aggBlock;
   return params;
@@ -129,6 +131,7 @@ fg::FractalTreeParams to_tree_params(const FgParams& p) {
   params.erase_coef = p.eraseCoef;
   params.agg_block_size = p.aggBlock < 1 ? 1 : p.aggBlock;
   params.visit_reward = p.visitReward;
+  params.visit_coef = p.visitCoef;
   params.record_frames = true;
   params.seed = static_cast<uint64_t>(p.seed);
   return params;
@@ -381,6 +384,7 @@ void fg_set_params(const FgParams& p) {
   g_algo->set_erase_coef(p.eraseCoef);
   g_algo->set_agg_block_size(p.aggBlock < 1 ? 1 : p.aggBlock);
   g_algo->set_visit_reward(p.visitReward);
+  g_algo->set_visit_coef(p.visitCoef);
 }
 
 void fg_reset() {
@@ -447,6 +451,7 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
       .field("eraseCoef", &FgParams::eraseCoef)
       .field("aggBlock", &FgParams::aggBlock)
       .field("visitReward", &FgParams::visitReward)
+      .field("visitCoef", &FgParams::visitCoef)
       .field("farmPtr", &FgParams::farmPtr)
       .field("farmWorkers", &FgParams::farmWorkers)
       .field("farmBlobLen", &FgParams::farmBlobLen);

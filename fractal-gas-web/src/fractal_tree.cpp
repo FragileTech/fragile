@@ -241,6 +241,14 @@ StepInfo FractalTree::step() {
     }
     const auto stats = mean_std_masked(visits_val, state_.is_leaf);
     other = relativize_with_stats(visits_val, stats.first, stats.second);
+    // vr = distance^dist_coef * reward^reward_coef * other^visit_coef; the
+    // reference multiplies `other` directly (exponent 1, kept exact).
+    if (params_.visit_coef != 1.0f) {
+      for (float& o : other) {
+        o = static_cast<float>(std::pow(static_cast<double>(o),
+                                        static_cast<double>(params_.visit_coef)));
+      }
+    }
   }
 
   for (int32_t i = 0; i < n; ++i) {

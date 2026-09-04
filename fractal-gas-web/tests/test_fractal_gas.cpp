@@ -314,3 +314,21 @@ TEST_CASE(wave_visit_term_switches_live) {
     CHECK(s.infos[static_cast<size_t>(i)].visit_x == static_cast<int32_t>(s.observations[static_cast<size_t>(i) * 3]));
   }
 }
+
+TEST_CASE(wave_visit_coef_scales_the_visit_term) {
+  auto vr_after = [](float coef, bool on) {
+    VisitMockEnv env;
+    FractalGasParams params;
+    params.N = 12;
+    params.seed = 21;
+    params.use_cumulative_reward = true;
+    params.visit_reward = on;
+    params.visit_coef = coef;
+    FractalGas gas(env, params);
+    gas.reset();
+    for (int it = 0; it < 6; ++it) gas.step();
+    return gas.state().virtual_rewards;
+  };
+  CHECK(vr_after(0.0f, true) == vr_after(1.0f, false));
+  CHECK(vr_after(1.0f, true) != vr_after(2.0f, true));
+}

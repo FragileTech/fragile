@@ -3,6 +3,7 @@
 #include "tensor_ops.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <numeric>
 
@@ -126,7 +127,9 @@ StepInfo FractalGas::step() {
     for (float& s : sums) s = -s;
     const std::vector<float> other = asymmetric_rescale(sums);
     for (int32_t i = 0; i < n; ++i) {
-      virtual_rewards[static_cast<size_t>(i)] *= other[static_cast<size_t>(i)];
+      const double o = static_cast<double>(other[static_cast<size_t>(i)]);
+      virtual_rewards[static_cast<size_t>(i)] *= static_cast<float>(
+          params_.visit_coef == 1.0f ? o : std::pow(o, static_cast<double>(params_.visit_coef)));
     }
   }
 

@@ -36,6 +36,7 @@ struct FractalGasParams {
   // applied only when visit_reward is on (default OFF: plain fractal gas).
   bool count_visits = true;
   bool visit_reward = false;
+  float visit_coef = 1.0f;  // exponent on the visit term
   float erase_coef = 0.05f;
   int32_t agg_block_size = 5;
 };
@@ -80,6 +81,7 @@ class FractalGas final : public SwarmAlgorithm {
     visits_.set_block_size(params_.agg_block_size);
   }
   void set_visit_reward(bool on) override { params_.visit_reward = on; }
+  void set_visit_coef(float c) override { params_.visit_coef = c; }
   bool counting_visits() const override { return count_visits_; }
   const VisitGrid* visit_grid() const override { return &visits_; }
   bool visit_reward_on() const { return params_.visit_reward; }

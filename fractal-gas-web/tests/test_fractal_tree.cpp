@@ -395,3 +395,25 @@ TEST_CASE(tree_visit_reward_switch_is_live_and_keeps_counting) {
   }
   CHECK(any_non_one);
 }
+
+TEST_CASE(tree_visit_coef_scales_the_visit_term) {
+  auto vr_after = [](float coef, bool on) {
+    VisitMockEnv env;
+    FractalTreeParams params;
+    params.start_walkers = 6;
+    params.min_leafs = 6;
+    params.max_walkers = 40;
+    params.seed = 13;
+    params.visit_reward = on;
+    params.visit_coef = coef;
+    FractalTree tree(env, params);
+    tree.reset();
+    for (int it = 0; it < 6; ++it) tree.step();
+    return tree.state().virtual_rewards;
+  };
+  // Exponent 0 removes the term exactly like the switch does.
+  CHECK(vr_after(0.0f, true) == vr_after(1.0f, false));
+  // Exponent 1 is the reference product; 2 changes the dynamics.
+  CHECK(vr_after(1.0f, true) != vr_after(2.0f, true));
+  CHECK(vr_after(1.0f, true) != vr_after(0.0f, true));
+}

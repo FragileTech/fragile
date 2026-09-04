@@ -93,6 +93,8 @@ class SwarmAlgorithm {
   /// Graph: whether the visit-count term multiplies into the virtual reward
   /// (ablation switch; counting itself continues).
   virtual void set_visit_reward(bool /*on*/) {}
+  /// Exponent of the visit-count term (1 = the reference's plain product).
+  virtual void set_visit_coef(float /*c*/) {}
 };
 
 }  // namespace fg

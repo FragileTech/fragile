@@ -83,20 +83,56 @@ function post(type, payload, transfer) {
 }
 
 // --- Montezuma room capture ---------------------------------------------------
-// The pyramid map is BUILT by the swarm: the first time any walker stands in
-// a (level, room) pair, its frame is rendered, the 50-row HUD cropped away,
-// and the 160x160 room image shipped to the UI. A room-transition frame is
-// black and is skipped (retried on the next step). Layout constants mirror
-// src/montezuma_logic.hpp.
+// The pyramid map is BUILT by the swarm: when an alive walker stands in a
+// (level, room) pair, its frame is rendered, the 50-row HUD cropped away, and
+// the 160x160 room image shipped to the UI. Two pitfalls of a naive "first
+// frame wins" capture, both fixed here:
+//   - Room transitions show a black (or solid blue 0,28,136) screen: a frame
+//     counts only if it has at least a sprite's worth of lit pixels and is not
+//     the blue fill. The level-1 lower rooms are DARK (no torch) and show only
+//     sprites, so a fraction-of-the-room threshold would never accept them.
+//   - The game cycles the whole room palette for ~1 s when an item is picked
+//     up (and while dying): a frame taken then would freeze pink/purple walls
+//     into the map. Rooms are therefore re-captured every MZ_RECAPTURE_STEPS
+//     iterations while a walker is in them, and the UI only gets a frame when
+//     it has MORE black background than the one it already shows — a real
+//     Atari room is mostly black, a palette flash is not.
+// Layout constants mirror src/montezuma_logic.hpp.
 const MZ_HUD_ROWS = 50;
 const MZ_ROOM_W = 160;
 const MZ_ROOM_H = 160;
 const MZ_MAX_CAPTURES_PER_STEP = 3;
-const MZ_MIN_LIT_FRACTION = 0.05;
-let capturedRooms = new Set();
+const MZ_MIN_LIT_PIXELS = 40;          // Panama Joe alone is ~150 lit pixels
+const MZ_TRANSITION_FILL_FRACTION = 0.9;  // the blue between-room screen
+const MZ_RECAPTURE_STEPS = 30;
+// key "level:room" -> { black: pixels of the frame shown, seen: iteration
+// of the last evaluation }
+let roomCaptures = new Map();
 
 function isMontezuma() {
   return currentConsole === 1 && currentGame === 1;
+}
+
+// Crop the HUD and classify the room image: null when it is a transition
+// screen, else { rgba, black } (black = count of black pixels).
+function evaluateRoomFrame(view, frameW) {
+  const start = MZ_HUD_ROWS * frameW * 4;
+  const room = new Uint8ClampedArray(view.buffer, view.byteOffset + start,
+                                     MZ_ROOM_W * MZ_ROOM_H * 4).slice();
+  let lit = 0, black = 0, blue = 0;
+  for (let p = 0; p < room.length; p += 4) {
+    const r = room[p], g = room[p + 1], b = room[p + 2];
+    if (r | g | b) {
+      lit++;
+      if (r === 0 && g === 28 && b === 136) blue++;
+    } else {
+      black++;
+    }
+  }
+  const total = MZ_ROOM_W * MZ_ROOM_H;
+  if (lit < MZ_MIN_LIT_PIXELS) return null;                    // black transition
+  if (blue > MZ_TRANSITION_FILL_FRACTION * total) return null;  // blue transition
+  return { rgba: room.buffer, black };
 }
 
 function captureRooms(stats) {
@@ -108,24 +144,28 @@ function captureRooms(stats) {
   const rooms = stats.walkerWorld;
   const levels = stats.walkerStage;
   const alive = stats.walkerAlive;
+  const iteration = stats.iteration || 0;
+  const tried = new Set();  // one render per room per step
   for (let i = 0; i < rooms.length && frames.length < MZ_MAX_CAPTURES_PER_STEP; i++) {
     if (!alive[i]) continue;
     const key = `${levels[i]}:${rooms[i]}`;
-    if (capturedRooms.has(key)) continue;
+    if (tried.has(key)) continue;
+    const prev = roomCaptures.get(key);
+    if (prev && iteration - prev.seen < MZ_RECAPTURE_STEPS) continue;
+    tried.add(key);
     const view = fg.renderWalkerFrame(i);
     if (!view) continue;
-    const start = MZ_HUD_ROWS * frameW * 4;
-    const room = new Uint8ClampedArray(view.buffer, view.byteOffset + start,
-                                       MZ_ROOM_W * MZ_ROOM_H * 4).slice();
-    // Black (transition) frames carry no room image yet: try again later.
-    let lit = 0;
-    for (let p = 0; p < room.length; p += 4) {
-      if (room[p] | room[p + 1] | room[p + 2]) lit++;
+    const evaluated = evaluateRoomFrame(view, frameW);
+    if (!evaluated) continue;  // transition screen: try again next step
+    if (prev && evaluated.black <= prev.black) {
+      // Not better than the image shown (e.g. a palette flash): keep the old
+      // one, check again later.
+      prev.seen = iteration;
+      continue;
     }
-    if (lit < MZ_MIN_LIT_FRACTION * MZ_ROOM_W * MZ_ROOM_H) continue;
-    capturedRooms.add(key);
+    roomCaptures.set(key, { black: evaluated.black, seen: iteration });
     frames.push({ level: levels[i], room: rooms[i],
-                  width: MZ_ROOM_W, height: MZ_ROOM_H, rgba: room.buffer });
+                  width: MZ_ROOM_W, height: MZ_ROOM_H, rgba: evaluated.rgba });
   }
   return frames;
 }
@@ -191,10 +231,11 @@ self.onmessage = async (event) => {
         // embind requires every FgParams field; default the algorithm
         // fields so callers that predate them (autotest pages) still work.
         const params = { algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
-                         visitReward: (msg.params.algorithm ?? 0) === 1, ...msg.params };
+                         visitReward: (msg.params.algorithm ?? 0) === 1, visitCoef: 1.0,
+                         ...msg.params };
         currentConsole = params.console;
         currentGame = params.game;
-        capturedRooms = new Set();
+        roomCaptures = new Map();
         if (params.console === 2) {
           // Pre-spawn the Genesis core-worker farm (see above).
           const n = Math.min(Math.max(params.nThreads, 1), 8);
@@ -240,7 +281,7 @@ self.onmessage = async (event) => {
         running = false;
         if (fg) {
           fg.reset();
-          capturedRooms = new Set();
+          roomCaptures = new Map();
           post("resetDone", {});
         }
         break;
@@ -260,7 +301,8 @@ self.onmessage = async (event) => {
         if (fg) {
           fg.setParams({ farmPtr: 0, farmWorkers: 0, farmBlobLen: 0,
                          algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
-                         visitReward: (msg.params.algorithm ?? 0) === 1, ...msg.params });
+                         visitReward: (msg.params.algorithm ?? 0) === 1, visitCoef: 1.0,
+                         ...msg.params });
         }
         break;
       default:

@@ -170,6 +170,9 @@ These two exponents set the exploration / exploitation balance and apply live.">
         <label data-help="Exponent on the cumulative-reward term. Higher favours walkers that have scored more (more exploitation, the swarm concentrates on the best). 0 ignores reward entirely. Applies live.">Reward coef <span id="reward-coef-value">1.0</span>
           <input type="range" id="param-reward-coef" value="1" min="0" max="3" step="0.05">
         </label>
+        <label id="param-visit-coef-row" hidden data-help="Exponent on the visit-count term (Coords observation on Mario, Sonic or Montezuma, with the Visit reward switch on): virtual reward = distance^dist x reward^reward x visits^visit. 1 is the original demo's plain product; higher values push harder towards rarely visited cells, 0 ignores the term (same as switching it off). Applies live.">Visit coef <span id="visit-coef-value">1.0</span>
+          <input type="range" id="param-visit-coef" value="1" min="0" max="3" step="0.05">
+        </label>
       </section>
 
       <section id="reward-terms-section">

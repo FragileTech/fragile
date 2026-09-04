@@ -69,6 +69,7 @@ struct FractalTreeParams {
   float eps = 1e-8f;
   bool count_visits = true;    // effective only when env.has_visit_key()
   bool visit_reward = true;    // ablation: multiply the visit term into vr
+  float visit_coef = 1.0f;     // exponent on the visit term (reference: 1)
   float erase_coef = 0.05f;
   int32_t agg_block_size = 5;
   bool record_frames = false;
@@ -187,6 +188,7 @@ class FractalTree final : public SwarmAlgorithm {
   /// available and switching back on has the full history. (The reference's
   /// count_visits=False disabled both; here counting is tied to the env.)
   void set_visit_reward(bool on) override { params_.visit_reward = on; }
+  void set_visit_coef(float c) override { params_.visit_coef = c; }
 
  private:
   int32_t best_index() const;  // first argmax of cum_rewards

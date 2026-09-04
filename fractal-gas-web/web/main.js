@@ -584,6 +584,9 @@ function getPyramidCanvas(level) {
   return entry;
 }
 
+// Room images may arrive more than once for a room (the worker re-captures
+// and sends a frame only when it beats the shown one); the newest replaces
+// the cell.
 function applyRoomFrames(frames) {
   for (const f of frames) {
     const cell = ROOM_CELL.get(f.room);
@@ -896,6 +899,7 @@ function readParams() {
     eraseCoef: parseFloat($("param-erase-coef").value),
     aggBlock: parseInt($("param-agg-block").value, 10) || 5,
     visitReward,
+    visitCoef: parseFloat($("param-visit-coef").value),
   };
 }
 
@@ -1189,10 +1193,11 @@ $("btn-reset").addEventListener("click", () => {
 });
 
 // Live-tunable parameters -> setParams; structural ones -> re-init.
-for (const id of ["param-dist-coef", "param-reward-coef"]) {
+for (const id of ["param-dist-coef", "param-reward-coef", "param-visit-coef"]) {
   $(id).addEventListener("input", () => {
     $("dist-coef-value").textContent = parseFloat($("param-dist-coef").value).toFixed(2);
     $("reward-coef-value").textContent = parseFloat($("param-reward-coef").value).toFixed(2);
+    $("visit-coef-value").textContent = parseFloat($("param-visit-coef").value).toFixed(2);
     if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
   });
 }
@@ -1243,6 +1248,7 @@ function applyAlgoUi() {
   $("param-erase-row").hidden = !visits;
   $("param-agg-row").hidden = !visits;
   $("param-visit-reward-row").hidden = !visits;
+  $("param-visit-coef-row").hidden = !visits;
   $("graph-visits-hint").hidden = !graph || visits;
   $("map-visits").hidden = !visits;
   updateVisitsUi();

@@ -92,7 +92,9 @@ The demo runs two swarm algorithms behind one interface
   default Wave is the plain fractal gas): when on, the wave multiplies
   `relativize(-block_sum)` over all walkers into its virtual reward, the
   per-walker visit keys travelling with the walkers through cloning and
-  elite injection (`WalkerState::infos`).
+  elite injection (`WalkerState::infos`). The **Visit coef** slider in the
+  Fitness section is the exponent of the term for both algorithms
+  (`visit_coef`, live; 1 = the reference's plain product, 0 = term off).
 
   RNG draw order per iteration (replayable, `FractalTreeSampler`):
   companions for the distance term, companions for the clone term, the
