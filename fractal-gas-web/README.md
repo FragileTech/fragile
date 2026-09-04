@@ -82,6 +82,17 @@ The demo runs two swarm algorithms behind one interface
   them, so the size changes live mid-run without losing history (1 =
   per-pixel novelty, 160 = one cell per Montezuma room). The reference
   required grid sizes divisible by the block; edge blocks may be partial here.
+  The **Visit reward** On/Off switch (same section, `visitReward` in the
+  bindings, live) is the ablation control: Off sets the term to 1 so cloning
+  is driven by distance and cumulative reward alone, while visits keep being
+  counted, so the heatmap stays available and switching back on keeps the
+  history (the reference's `count_visits=False` disabled both). The same
+  switch, pooling size, erase coefficient and heatmap are available to the
+  **Wave** as well (`FractalGasParams::visit_reward`, default OFF so the
+  default Wave is the plain fractal gas): when on, the wave multiplies
+  `relativize(-block_sum)` over all walkers into its virtual reward, the
+  per-walker visit keys travelling with the walkers through cloning and
+  elite injection (`WalkerState::infos`).
 
   RNG draw order per iteration (replayable, `FractalTreeSampler`):
   companions for the distance term, companions for the clone term, the

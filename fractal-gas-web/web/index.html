@@ -143,10 +143,17 @@ Changing it restarts the run.">Observation</h2>
         <label id="param-elite-row" data-help="Wave only: how many best-ever walkers (by cumulative reward) are kept in a buffer and re-injected into the swarm every iteration, so the best progress found so far is never lost. 0 disables it. Applies live. (The Graph keeps its best walker frozen instead.)">Elite walkers
           <input type="number" id="param-elite" value="2" min="0" max="16" step="1">
         </label>
-        <label id="param-erase-row" hidden data-help="Graph only, Coords observation: how much every visit-count cell decays per iteration. The Graph's virtual reward multiplies in a term that favours walkers standing in rarely visited 5x5-pixel cells of the map (counted per level / room); a higher erase coefficient forgets old visits faster. 0 never forgets. Applies live.">Erase coef <span id="erase-coef-value">0.05</span>
+        <label id="param-erase-row" hidden data-help="Coords observation on Mario, Sonic or Montezuma: how much every visit-count cell decays per iteration. The visit-reward term that favours walkers standing in rarely visited 5x5-pixel cells of the map (counted per level / room); a higher erase coefficient forgets old visits faster. 0 never forgets. Applies live.">Erase coef <span id="erase-coef-value">0.05</span>
           <input type="range" id="param-erase-coef" value="0.05" min="0" max="1" step="0.01">
         </label>
-        <label id="param-agg-row" hidden data-help="Graph only, Coords observation: side, in pixels, of the square window the visit counts are sum-pooled over before entering the reward (and the visits heatmap). 1 = per-pixel novelty; large values (160 on Montezuma) make a whole room one cell. Counts are always kept per pixel, so this applies live without losing history.">Visit pooling (px)
+        <div id="param-visit-reward-row" hidden>
+          <h2 data-help="Coords observation on Mario, Sonic or Montezuma: ablation switch for the visit-count term of the virtual reward, available to both algorithms (Graph: on by default, the original Montezuma demo's reward; Wave: off by default, the plain fractal gas). On: walkers standing in rarely visited cells get a higher virtual reward. Off: the term is 1, so cloning is driven by distance and cumulative reward alone. Visits keep being counted either way, so the heatmap stays available and switching back on keeps the history. Applies live.">Visit reward</h2>
+          <div class="toggle-group" id="visit-reward-select">
+            <button type="button" data-on="1">On</button>
+            <button type="button" data-on="0" class="active">Off</button>
+          </div>
+        </div>
+        <label id="param-agg-row" hidden data-help="Coords observation on Mario, Sonic or Montezuma: side, in pixels, of the square window the visit counts are sum-pooled over before entering the reward (and the visits heatmap). 1 = per-pixel novelty; large values (160 on Montezuma) make a whole room one cell. Counts are always kept per pixel, so this applies live without losing history.">Visit pooling (px)
           <input type="number" id="param-agg-block" value="5" min="1" max="1024" step="1">
         </label>
         <p class="hint" id="graph-visits-hint" hidden>Visit counting needs the

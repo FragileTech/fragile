@@ -68,6 +68,7 @@ struct FgParams {
   int maxWalkers = 0;  // Graph: population cap, 0 = console default
   float eraseCoef = 0.05f;  // Graph: visit-count decay
   int aggBlock = 5;         // Graph: visit-count pooling window (px), live
+  bool visitReward = true;  // visit-count term in the reward (ablation), live
   // Genesis core-worker farm, pre-spawned by worker.js (nested workers need
   // the JS event loop, which fg_init blocks): region base pointer, worker
   // count, and the blob size the workers reported.
@@ -87,6 +88,10 @@ fg::FractalGasParams to_gas_params(const FgParams& p) {
   params.n_elite = p.nElite;
   params.record_frames = true;
   params.seed = static_cast<uint64_t>(p.seed);
+  params.count_visits = true;  // effective only with a visit key (Coords)
+  params.visit_reward = p.visitReward;
+  params.erase_coef = p.eraseCoef;
+  params.agg_block_size = p.aggBlock < 1 ? 1 : p.aggBlock;
   return params;
 }
 
@@ -123,6 +128,7 @@ fg::FractalTreeParams to_tree_params(const FgParams& p) {
   params.count_visits = true;  // effective only with a visit key (Coords)
   params.erase_coef = p.eraseCoef;
   params.agg_block_size = p.aggBlock < 1 ? 1 : p.aggBlock;
+  params.visit_reward = p.visitReward;
   params.record_frames = true;
   params.seed = static_cast<uint64_t>(p.seed);
   return params;
@@ -337,22 +343,23 @@ emscripten::val fg_render_walker_frame(int i) {
       emscripten::typed_memory_view(g_frame.size(), g_frame.data()));
 }
 
-/// Graph mode with visit counting active (Coords on a game with a map).
+/// Visit counting active (Coords on a game with a map), either algorithm.
 bool fg_counting_visits() {
-  auto* tree = dynamic_cast<fg::FractalTree*>(g_algo.get());
-  return tree != nullptr && tree->counting_visits();
+  return g_algo != nullptr && g_algo->counting_visits();
 }
 
 /// The Graph's visit-count grid for the map heatmap: every nonzero 5x5
 /// block as {count, keys: Int32Array [plane, bx, by] * count, sums:
 /// Float32Array, blockSize}. Null when visits are not counted.
 emscripten::val fg_get_visit_blocks() {
-  auto* tree = dynamic_cast<fg::FractalTree*>(g_algo.get());
-  if (tree == nullptr || !tree->counting_visits()) return emscripten::val::null();
-  tree->visits().export_blocks(g_vkeys, g_vsums);
+  if (!fg_counting_visits() || g_algo->visit_grid() == nullptr) {
+    return emscripten::val::null();
+  }
+  const fg::VisitGrid& grid = *g_algo->visit_grid();
+  grid.export_blocks(g_vkeys, g_vsums);
   emscripten::val out = emscripten::val::object();
   out.set("count", static_cast<int>(g_vsums.size()));
-  out.set("blockSize", tree->visits().block_size());
+  out.set("blockSize", grid.block_size());
   out.set("keys", copy_array(g_vkeys));
   out.set("sums", copy_array(g_vsums));
   return out;
@@ -373,6 +380,7 @@ void fg_set_params(const FgParams& p) {
   g_algo->set_n_elite(p.nElite);
   g_algo->set_erase_coef(p.eraseCoef);
   g_algo->set_agg_block_size(p.aggBlock < 1 ? 1 : p.aggBlock);
+  g_algo->set_visit_reward(p.visitReward);
 }
 
 void fg_reset() {
@@ -438,6 +446,7 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
       .field("maxWalkers", &FgParams::maxWalkers)
       .field("eraseCoef", &FgParams::eraseCoef)
       .field("aggBlock", &FgParams::aggBlock)
+      .field("visitReward", &FgParams::visitReward)
       .field("farmPtr", &FgParams::farmPtr)
       .field("farmWorkers", &FgParams::farmWorkers)
       .field("farmBlobLen", &FgParams::farmBlobLen);

@@ -3,6 +3,7 @@
 #include "fractal_gas.hpp"
 #include "mock_env.hpp"
 #include "test_framework.hpp"
+#include "visit_mock_env.hpp"
 #include "fixtures/fixtures_generated.hpp"
 
 using namespace fg;
@@ -246,5 +247,70 @@ TEST_CASE(elite_max_reward_never_decreases) {
     const StepInfo info = gas.step();
     CHECK(info.max_reward >= best - 1e-6f);
     best = std::max(best, info.max_reward);
+  }
+}
+
+namespace {
+std::vector<float> wave_vr_after(bool visit_reward, bool count_visits, int iters) {
+  VisitMockEnv env;
+  FractalGasParams params;
+  params.N = 12;
+  params.seed = 21;
+  params.n_elite = 2;
+  params.use_cumulative_reward = true;
+  params.count_visits = count_visits;
+  params.visit_reward = visit_reward;
+  FractalGas gas(env, params);
+  gas.reset();
+  for (int it = 0; it < iters; ++it) gas.step();
+  return gas.state().virtual_rewards;
+}
+}  // namespace
+
+TEST_CASE(wave_visit_term_is_off_by_default_but_counting_runs) {
+  VisitMockEnv env;
+  FractalGasParams params;
+  params.N = 12;
+  params.seed = 21;
+  FractalGas gas(env, params);
+  CHECK(!gas.visit_reward_on());
+  CHECK(gas.counting_visits());  // the env has a visit key -> heatmap data
+  CHECK(gas.visit_grid() != nullptr);
+  gas.reset();
+  CHECK(gas.visit_grid()->nonzero_cells() == 0);
+  for (int it = 0; it < 5; ++it) gas.step();
+  CHECK(gas.visit_grid()->nonzero_cells() > 0);
+  // Infos travel with the walkers and are walker-indexed.
+  CHECK(gas.state().has_infos);
+  CHECK(gas.walker_info(3).visit_plane == gas.state().infos[3].visit_plane);
+  // With the term off the dynamics equal a run that never counts at all.
+  CHECK(wave_vr_after(false, true, 6) == wave_vr_after(false, false, 6));
+  // With the term on they differ (same seed, same draws).
+  CHECK(wave_vr_after(true, true, 6) != wave_vr_after(false, true, 6));
+}
+
+TEST_CASE(wave_visit_term_switches_live) {
+  VisitMockEnv env;
+  FractalGasParams params;
+  params.N = 12;
+  params.seed = 4;
+  params.visit_reward = true;
+  FractalGas gas(env, params);
+  gas.reset();
+  for (int it = 0; it < 4; ++it) gas.step();
+  gas.set_visit_reward(false);
+  CHECK(!gas.visit_reward_on());
+  gas.set_agg_block_size(20);
+  CHECK(gas.visit_grid()->block_size() == 20);
+  gas.set_erase_coef(0.2f);
+  CHECK(gas.visit_grid()->erase_coef() == 0.2f);
+  const size_t before = gas.visit_grid()->nonzero_cells();
+  for (int it = 0; it < 4; ++it) gas.step();
+  CHECK(gas.visit_grid()->nonzero_cells() > 0);  // still counting
+  (void)before;
+  // Elite injection keeps the info consistent with the injected walker.
+  const WalkerState& s = gas.state();
+  for (int32_t i = 0; i < s.N; ++i) {
+    CHECK(s.infos[static_cast<size_t>(i)].visit_x == static_cast<int32_t>(s.observations[static_cast<size_t>(i) * 3]));
   }
 }

@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "env.hpp"
+
 namespace fg {
 
 struct WalkerState {
@@ -24,6 +26,11 @@ struct WalkerState {
   std::vector<int32_t> dt;                // [N]
   std::vector<float> virtual_rewards;     // [N], valid iff has_virtual_rewards
   bool has_virtual_rewards = false;
+  // Per-walker game info copied from the env after each step (valid iff
+  // has_infos). Travels with the walker through clone/inject/extract, so
+  // it stays walker-indexed even after elite injection.
+  std::vector<WalkerInfo> infos;          // [N]
+  bool has_infos = false;
 
   bool alive(int32_t i) const {
     return !(dones[static_cast<size_t>(i)] || truncated[static_cast<size_t>(i)]);

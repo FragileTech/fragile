@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "env.hpp"
+#include "visit_grid.hpp"
 
 namespace fg {
 
@@ -71,6 +72,11 @@ class SwarmAlgorithm {
   /// recorded).
   virtual const std::vector<uint8_t>& best_frame() const = 0;
 
+  /// Visit-count grid (per-pixel occupancy), when the algorithm counts
+  /// visits in the current setup (Coords mode on a game with a map).
+  virtual bool counting_visits() const { return false; }
+  virtual const VisitGrid* visit_grid() const { return nullptr; }
+
   virtual int64_t total_steps() const = 0;
   virtual int64_t total_clones() const = 0;
   virtual int32_t iteration_count() const = 0;
@@ -84,6 +90,9 @@ class SwarmAlgorithm {
   virtual void set_erase_coef(float /*v*/) {}
   /// Graph: pooling window (pixels per side) of the visit-count reward.
   virtual void set_agg_block_size(int32_t /*b*/) {}
+  /// Graph: whether the visit-count term multiplies into the virtual reward
+  /// (ablation switch; counting itself continues).
+  virtual void set_visit_reward(bool /*on*/) {}
 };
 
 }  // namespace fg

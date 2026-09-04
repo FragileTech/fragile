@@ -191,7 +191,7 @@ self.onmessage = async (event) => {
         // embind requires every FgParams field; default the algorithm
         // fields so callers that predate them (autotest pages) still work.
         const params = { algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
-                         ...msg.params };
+                         visitReward: (msg.params.algorithm ?? 0) === 1, ...msg.params };
         currentConsole = params.console;
         currentGame = params.game;
         capturedRooms = new Set();
@@ -260,7 +260,7 @@ self.onmessage = async (event) => {
         if (fg) {
           fg.setParams({ farmPtr: 0, farmWorkers: 0, farmBlobLen: 0,
                          algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
-                         ...msg.params });
+                         visitReward: (msg.params.algorithm ?? 0) === 1, ...msg.params });
         }
         break;
       default:

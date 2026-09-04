@@ -124,7 +124,9 @@ main {
 }
 
 label { display: block; margin-bottom: 8px; color: #b6bac6; }
-label[hidden], .plot-wrap[hidden], .stat-grid div[hidden], p.hint[hidden] { display: none; }
+label[hidden], .plot-wrap[hidden], .stat-grid div[hidden], p.hint[hidden],
+#param-visit-reward-row[hidden] { display: none; }
+#param-visit-reward-row h2 { margin-top: 8px; }
 #max-walkers-hint { display: block; margin-top: 2px; }
 label input[type="number"] {
   width: 100%;

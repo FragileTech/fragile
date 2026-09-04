@@ -311,7 +311,7 @@ const CANVAS_FILTER_OK = (() => {
 })();
 
 function visitsView() {
-  return visitsMode && visitsAvailable && algorithm === 1;
+  return visitsMode && visitsAvailable;
 }
 
 // Draw the base image through `draw()`, in greyscale when the visits view
@@ -705,6 +705,10 @@ const genesisGame = 1; // Genesis game: Sonic
 // Swarm algorithm: 0 = Wave (FractalGas, fixed swarm), 1 = Graph
 // (FractalTree, growing tree of states). Structural: restarts the run.
 let algorithm = 0;
+// Visit-count term of the virtual reward (Coords on a game with a map):
+// on by default for the Graph (the Montezuma demo's reward), off for the
+// Wave (plain fractal gas); switchable live for ablations.
+let visitReward = false;
 // Graph population cap defaults per UI console (every node keeps a full
 // emulator state: Genesis blobs are MB-sized).
 const MAX_WALKERS_DEFAULT = { 0: 4000, 1: 20000, 2: 150, 3: 20000 };
@@ -891,6 +895,7 @@ function readParams() {
     maxWalkers: parseInt($("param-max-walkers").value, 10) || 0,
     eraseCoef: parseFloat($("param-erase-coef").value),
     aggBlock: parseInt($("param-agg-block").value, 10) || 5,
+    visitReward,
   };
 }
 
@@ -1205,6 +1210,15 @@ $("param-erase-coef").addEventListener("input", () => {
   $("erase-coef-value").textContent = parseFloat($("param-erase-coef").value).toFixed(2);
   if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
 });
+// Visit-reward ablation switch: live, no restart (counting continues).
+for (const btn of $("visit-reward-select").querySelectorAll("button")) {
+  btn.addEventListener("click", () => {
+    const on = btn.dataset.on === "1";
+    if (on === visitReward) return;
+    setVisitRewardUi(on);
+    if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
+  });
+}
 // Visit pooling window: live (the per-pixel counts are kept); the heatmap
 // re-bins with the next step's blocks.
 $("param-agg-block").addEventListener("change", () => {
@@ -1223,18 +1237,28 @@ function applyAlgoUi() {
   $("param-n-label").textContent = graph ? "Leaves (start = min leaves)" : "Walkers (N)";
   $("param-elite-row").hidden = graph;
   $("param-max-walkers-row").hidden = !graph;
-  const visits = graph && obsMode === 3 && consoleId !== 1;
+  // Visit counting is available to both algorithms in Coords mode on a
+  // game with a map; the Graph uses the term by default, the Wave not.
+  const visits = obsMode === 3 && consoleId !== 1;
   $("param-erase-row").hidden = !visits;
   $("param-agg-row").hidden = !visits;
+  $("param-visit-reward-row").hidden = !visits;
   $("graph-visits-hint").hidden = !graph || visits;
   $("map-visits").hidden = !visits;
   updateVisitsUi();
   for (const el of document.querySelectorAll(".graph-stat, .graph-plot")) el.hidden = !graph;
   if (!graph) $("max-walkers-hint").textContent = "";
 }
+function setVisitRewardUi(on) {
+  visitReward = on;
+  for (const b of $("visit-reward-select").querySelectorAll("button")) {
+    b.classList.toggle("active", (b.dataset.on === "1") === on);
+  }
+}
 function setAlgorithm(algo) {
   algorithm = algo;
   $("param-max-walkers").value = MAX_WALKERS_DEFAULT[consoleId] ?? 4000;
+  setVisitRewardUi(algo === 1);  // Graph: on (the demo's reward); Wave: off
   applyAlgoUi();
 }
 for (const btn of $("algo-select").querySelectorAll("button")) {
@@ -1251,10 +1275,10 @@ for (const btn of $("algo-select").querySelectorAll("button")) {
 function updateVisitsUi() {
   const on = visitsView();
   $("map-visits").classList.toggle("active", visitsMode);
-  $("map-visits-legend").hidden = !on && !(visitsMode && algorithm === 1 && initialized);
-  // The swarm must report that it counts visits (Graph + Coords, fresh
-  // module); otherwise say so instead of silently showing the plain map.
-  $("map-visits-note").hidden = !(visitsMode && algorithm === 1 && initialized && !visitsAvailable);
+  $("map-visits-legend").hidden = !on && !(visitsMode && initialized);
+  // The swarm must report that it counts visits (Coords on a game with a
+  // map, fresh module); otherwise say so instead of the plain map.
+  $("map-visits-note").hidden = !(visitsMode && initialized && !visitsAvailable);
   const title = consoleId === 3 ? "Pyramid map" : "Level map";
   $("map-title").innerHTML = `${title} &mdash; ${on ? "visits" : "swarm"}`;
   if (initialized && worker) {

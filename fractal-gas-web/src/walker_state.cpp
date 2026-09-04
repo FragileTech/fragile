@@ -39,6 +39,8 @@ WalkerState WalkerState::clone(const std::vector<int32_t>& companions,
   if (has_virtual_rewards) {
     out.virtual_rewards = gather_clone(virtual_rewards, companions, will_clone);
   }
+  out.has_infos = has_infos;
+  if (has_infos) out.infos = gather_clone(infos, companions, will_clone);
   return out;
 }
 
@@ -59,6 +61,7 @@ void WalkerState::inject(const WalkerState& source, int32_t count) {
     if (has_virtual_rewards && source.has_virtual_rewards) {
       virtual_rewards[ui] = source.virtual_rewards[ui];
     }
+    if (has_infos && source.has_infos) infos[ui] = source.infos[ui];
   }
 }
 
@@ -79,6 +82,8 @@ WalkerState WalkerState::extract(const WalkerState& s,
   out.dt.resize(indices.size());
   out.has_virtual_rewards = s.has_virtual_rewards;
   if (s.has_virtual_rewards) out.virtual_rewards.resize(indices.size());
+  out.has_infos = s.has_infos;
+  if (s.has_infos) out.infos.resize(indices.size());
 
   for (size_t i = 0; i < indices.size(); ++i) {
     const auto j = static_cast<size_t>(indices[i]);
@@ -91,6 +96,7 @@ WalkerState WalkerState::extract(const WalkerState& s,
     out.actions[i] = s.actions[j];
     out.dt[i] = s.dt[j];
     if (s.has_virtual_rewards) out.virtual_rewards[i] = s.virtual_rewards[j];
+    if (s.has_infos) out.infos[i] = s.infos[j];
   }
   return out;
 }
@@ -117,6 +123,8 @@ WalkerState WalkerState::concat(const WalkerState& a, const WalkerState& b) {
   if (out.has_virtual_rewards) {
     cat(out.virtual_rewards, a.virtual_rewards, b.virtual_rewards);
   }
+  out.has_infos = a.has_infos && b.has_infos;
+  if (out.has_infos) cat(out.infos, a.infos, b.infos);
   return out;
 }
 

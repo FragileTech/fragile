@@ -68,6 +68,7 @@ struct FractalTreeParams {
   int32_t dt_max = 4;  // UniformDtSampler(1, 5) draws {1, 2, 3, 4}
   float eps = 1e-8f;
   bool count_visits = true;    // effective only when env.has_visit_key()
+  bool visit_reward = true;    // ablation: multiply the visit term into vr
   float erase_coef = 0.05f;
   int32_t agg_block_size = 5;
   bool record_frames = false;
@@ -131,7 +132,9 @@ class FractalTree final : public SwarmAlgorithm {
   const FractalTreeParams& params() const { return params_; }
   const TreeState& state() const { return state_; }
   const VisitGrid& visits() const { return visits_; }
-  bool counting_visits() const { return count_visits_; }
+  bool counting_visits() const override { return count_visits_; }
+  const VisitGrid* visit_grid() const override { return &visits_; }
+  bool visit_reward_on() const { return params_.visit_reward; }
 
   void reset() override;
   StepInfo step() override;
@@ -179,6 +182,11 @@ class FractalTree final : public SwarmAlgorithm {
     params_.agg_block_size = b < 1 ? 1 : b;
     visits_.set_block_size(params_.agg_block_size);
   }
+  /// Live ablation switch: with the term off `other = 1` from the next
+  /// iteration on, but the grid keeps counting so the heatmap stays
+  /// available and switching back on has the full history. (The reference's
+  /// count_visits=False disabled both; here counting is tied to the env.)
+  void set_visit_reward(bool on) override { params_.visit_reward = on; }
 
  private:
   int32_t best_index() const;  // first argmax of cum_rewards

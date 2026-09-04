@@ -27,6 +27,17 @@ struct FractalGasParams {
   int32_t n_elite = 0;
   bool record_frames = false;
   uint64_t seed = 0;
+  // Optional visit-count term (the tree's MontezumaTree reward, see
+  // src/visit_grid.hpp), multiplied into the virtual reward:
+  //   vr = distance_norm^dist_coef * reward_norm^reward_coef * other
+  // with other = relativize(-block_sum) over ALL walkers (the wave has no
+  // leaves). Counting happens whenever the env exposes a visit key (Coords
+  // on Mario / Sonic / Montezuma) so the heatmap is available; the term is
+  // applied only when visit_reward is on (default OFF: plain fractal gas).
+  bool count_visits = true;
+  bool visit_reward = false;
+  float erase_coef = 0.05f;
+  int32_t agg_block_size = 5;
 };
 
 class FractalGas final : public SwarmAlgorithm {
@@ -60,6 +71,19 @@ class FractalGas final : public SwarmAlgorithm {
     kinetic_op_->dt_min = lo;
     kinetic_op_->dt_max = hi;
   }
+  void set_erase_coef(float v) override {
+    params_.erase_coef = v;
+    visits_.set_erase_coef(v);
+  }
+  void set_agg_block_size(int32_t b) override {
+    params_.agg_block_size = b < 1 ? 1 : b;
+    visits_.set_block_size(params_.agg_block_size);
+  }
+  void set_visit_reward(bool on) override { params_.visit_reward = on; }
+  bool counting_visits() const override { return count_visits_; }
+  const VisitGrid* visit_grid() const override { return &visits_; }
+  bool visit_reward_on() const { return params_.visit_reward; }
+
   void set_n_elite(int32_t k) override {
     params_.n_elite = k;
     if (k <= 0) {
@@ -99,7 +123,12 @@ class FractalGas final : public SwarmAlgorithm {
     return state_.rewards[static_cast<size_t>(i)];
   }
   bool has_walker_info() const override { return env_.has_walker_info(); }
+  /// The state's own copy when present (walker-indexed, survives elite
+  /// injection); the env's batch cache otherwise.
   const WalkerInfo& walker_info(int32_t i) const override {
+    if (state_.has_infos && static_cast<size_t>(i) < state_.infos.size()) {
+      return state_.infos[static_cast<size_t>(i)];
+    }
     return env_.walker_info(i);
   }
 
@@ -117,6 +146,8 @@ class FractalGas final : public SwarmAlgorithm {
   bool has_elite_ = false;
 
   std::vector<uint8_t> best_frame_;
+  VisitGrid visits_;
+  bool count_visits_ = false;
 
   int64_t total_steps_ = 0;
   int64_t total_clones_ = 0;

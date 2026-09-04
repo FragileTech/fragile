@@ -226,7 +226,7 @@ StepInfo FractalTree::step() {
       state_.cum_rewards, reward_stats.first, reward_stats.second);
 
   std::vector<float> other(static_cast<size_t>(n), 1.0f);
-  if (count_visits_) {
+  if (count_visits_ && params_.visit_reward) {
     // MontezumaTree.calculate_other_reward(): minus the 5x5 block visit
     // count of every walker's cell, relativized with leaf-only statistics.
     std::vector<int32_t> all(static_cast<size_t>(n));

@@ -356,3 +356,42 @@ TEST_CASE(tree_all_dead_does_not_step_empty_states) {
     CHECK(info.n_walkers <= params.max_walkers);
   }
 }
+
+TEST_CASE(tree_visit_reward_switch_is_live_and_keeps_counting) {
+  VisitMockEnv env;
+  FractalTreeParams params;
+  params.start_walkers = 6;
+  params.min_leafs = 6;
+  params.max_walkers = 40;
+  params.seed = 9;
+  FractalTree tree(env, params);
+  tree.reset();
+  CHECK(tree.counting_visits() && tree.visit_reward_on());
+  for (int it = 0; it < 5; ++it) tree.step();
+  // With the term on, the walkers' other_rewards are not all one.
+  bool any_non_one = false;
+  for (int32_t i = 0; i < tree.n_walkers(); ++i) {
+    any_non_one = any_non_one || tree.state().other_rewards[static_cast<size_t>(i)] != 1.0f;
+  }
+  CHECK(any_non_one);
+  const size_t cells_before = tree.visits().nonzero_cells();
+  // Off: the term is exactly one for every walker, and the grid still grows.
+  tree.set_visit_reward(false);
+  CHECK(!tree.visit_reward_on());
+  for (int it = 0; it < 5; ++it) {
+    tree.step();
+    for (int32_t i = 0; i < tree.n_walkers(); ++i) {
+      CHECK(tree.state().other_rewards[static_cast<size_t>(i)] == 1.0f);
+    }
+  }
+  CHECK(tree.visits().nonzero_cells() >= cells_before / 2);  // decays but keeps counting
+  CHECK(tree.visits().nonzero_cells() > 0);
+  // Back on: the term returns using the accumulated history.
+  tree.set_visit_reward(true);
+  tree.step();
+  any_non_one = false;
+  for (int32_t i = 0; i < tree.n_walkers(); ++i) {
+    any_non_one = any_non_one || tree.state().other_rewards[static_cast<size_t>(i)] != 1.0f;
+  }
+  CHECK(any_non_one);
+}

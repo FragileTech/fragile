@@ -1,5 +1,7 @@
 #include "fractal_gas.hpp"
 
+#include "tensor_ops.hpp"
+
 #include <algorithm>
 #include <limits>
 #include <numeric>
@@ -32,7 +34,10 @@ FractalGas::FractalGas(BatchEnv& env, FractalGasParams params,
                        std::unique_ptr<Rng> rng,
                        std::unique_ptr<FractalCloningOperator> clone_op,
                        std::unique_ptr<RandomActionOperator> kinetic_op)
-    : env_(env), params_(params) {
+    : env_(env),
+      params_(params),
+      visits_(params.agg_block_size, params.erase_coef) {
+  count_visits_ = params_.count_visits && env_.has_visit_key();
   rng_ = rng ? std::move(rng) : std::make_unique<Mt19937Rng>(params_.seed);
   if (clone_op) {
     clone_op_ = std::move(clone_op);
@@ -79,6 +84,11 @@ void FractalGas::reset() {
   state_.dt.assign(static_cast<size_t>(n), 1);
   state_.has_virtual_rewards = false;
   state_.virtual_rewards.clear();
+  state_.has_infos = false;
+  state_.infos.clear();
+  visits_.reset();
+  visits_.set_erase_coef(params_.erase_coef);
+  visits_.set_block_size(params_.agg_block_size);
 
   total_steps_ = 0;
   total_clones_ = 0;
@@ -103,6 +113,22 @@ StepInfo FractalGas::step() {
       state_.observations, n, state_.obs_dim, state_.rewards,
       state_.step_rewards, alive, *rng_);
   std::vector<float>& virtual_rewards = fitness_result.first;
+  // Optional visit-count term (see FractalGasParams): relativize(-visits)
+  // over all walkers, multiplied into the fitness like the tree does.
+  if (count_visits_ && params_.visit_reward && state_.has_infos) {
+    std::vector<VisitKey> keys(static_cast<size_t>(n));
+    for (int32_t i = 0; i < n; ++i) {
+      const WalkerInfo& wi = state_.infos[static_cast<size_t>(i)];
+      keys[static_cast<size_t>(i)] = VisitKey{wi.visit_plane, wi.visit_x, wi.visit_y};
+    }
+    std::vector<float> sums;
+    visits_.block_sums(keys, sums);
+    for (float& s : sums) s = -s;
+    const std::vector<float> other = asymmetric_rescale(sums);
+    for (int32_t i = 0; i < n; ++i) {
+      virtual_rewards[static_cast<size_t>(i)] *= other[static_cast<size_t>(i)];
+    }
+  }
 
   // 2. Decide cloning (second independent companion draw).
   auto decision = clone_op_->decide_cloning(virtual_rewards, alive, *rng_);
@@ -168,6 +194,21 @@ StepInfo FractalGas::step() {
   new_state.dt = kinetic_op_->last_dt;
   new_state.virtual_rewards = virtual_rewards;
   new_state.has_virtual_rewards = true;
+  // Per-walker info from the env (batch index == walker index here), kept
+  // in the state so it follows the walker through cloning and elites.
+  if (env_.has_walker_info()) {
+    new_state.infos.resize(static_cast<size_t>(n));
+    for (int32_t i = 0; i < n; ++i) new_state.infos[static_cast<size_t>(i)] = env_.walker_info(i);
+    new_state.has_infos = true;
+    if (count_visits_) {
+      std::vector<VisitKey> keys(static_cast<size_t>(n));
+      for (int32_t i = 0; i < n; ++i) {
+        const WalkerInfo& wi = new_state.infos[static_cast<size_t>(i)];
+        keys[static_cast<size_t>(i)] = VisitKey{wi.visit_plane, wi.visit_x, wi.visit_y};
+      }
+      visits_.update(keys);
+    }
+  }
 
   state_ = std::move(new_state);
 
