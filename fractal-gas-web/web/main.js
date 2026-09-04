@@ -283,6 +283,7 @@ function drawSwarmOverlay(project, cssHeight, guideLine) {
 const VISIT_BLOCK = 5;
 const VISIT_HEAT_ALPHA = 0.7;
 const VISIT_HEAT_FLOOR = 0.15;  // faintest visited block reads as dark red
+const VISIT_MIN_PX = 2;         // blocks never shrink below this on screen
 const FIRE_STOPS = [
   [0.0, [0, 0, 0]], [0.2, [110, 0, 0]], [0.4, [200, 40, 0]],
   [0.6, [240, 120, 0]], [0.8, [255, 200, 40]], [1.0, [255, 255, 255]],
@@ -361,7 +362,11 @@ function drawVisitHeat(blockRect) {
     if (!buckets[k].length) continue;
     mapCtx.fillStyle = FIRE_LUT[Math.min(255, Math.round((k + 0.5) / BUCKETS * 255))];
     mapCtx.beginPath();
-    for (const r of buckets[k]) mapCtx.rect(r.x, r.y, r.w, r.h);
+    for (const r of buckets[k]) {
+      // Keep blocks visible at the fit zoom (a 5 px block can be < 1 css px).
+      const w = Math.max(r.w, VISIT_MIN_PX), h = Math.max(r.h, VISIT_MIN_PX);
+      mapCtx.rect(r.x - (w - r.w) / 2, r.y - (h - r.h) / 2, w, h);
+    }
     mapCtx.fill();
   }
   mapCtx.globalAlpha = 1;
@@ -1235,7 +1240,10 @@ for (const btn of $("algo-select").querySelectorAll("button")) {
 function updateVisitsUi() {
   const on = visitsView();
   $("map-visits").classList.toggle("active", visitsMode);
-  $("map-visits-legend").hidden = !on;
+  $("map-visits-legend").hidden = !on && !(visitsMode && algorithm === 1 && initialized);
+  // The swarm must report that it counts visits (Graph + Coords, fresh
+  // module); otherwise say so instead of silently showing the plain map.
+  $("map-visits-note").hidden = !(visitsMode && algorithm === 1 && initialized && !visitsAvailable);
   const title = consoleId === 3 ? "Pyramid map" : "Level map";
   $("map-title").innerHTML = `${title} &mdash; ${on ? "visits" : "swarm"}`;
   if (initialized && worker) {
