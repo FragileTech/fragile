@@ -210,6 +210,7 @@ CMakeFiles/fg_retro_tests.dir/tests/test_retro_env.cpp.o: /home/guillem/fragile/
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
   /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
   /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
   /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp \
   /usr/include/alloca.h \
@@ -1086,6 +1087,8 @@ CMakeFiles/fg_retro_tests.dir/tests/test_main.cpp.o:
 /usr/include/c++/15/bits/basic_string.tcc:
 
 /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 

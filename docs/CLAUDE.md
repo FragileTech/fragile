@@ -4,7 +4,7 @@
 
 **Fragile** is a theoretical framework that derives cognitive architecture from first principles of bounded rationality. It connects information theory, control theory, differential geometry, and gauge theory to explain how agents with finite resources can act intelligently under uncertainty.
 
-### Document Structure (10 Parts)
+### Volume 1 Structure (10 Parts)
 
 | Part | Folder | Theme |
 |------|--------|-------|
@@ -28,6 +28,20 @@
 - **Gauge Fields**: Opportunity ($B_\mu$), Error ($W_\mu$), Binding ($G_\mu$) fields from agent symmetries
 
 ---
+
+## Book Organization and Mathematical Revisions
+
+The published book has two volumes: Fragile Mechanics (`source/1_agent`) and
+Fractal Gas (`source/2_fractal_gas`). The TOC defines the publication set and
+reading order; research archives and migration records are excluded from exports.
+Fractal Gas develops algorithms, finite-particle convergence, mean-field limits,
+entropy and regularity, continuum constructions, fields, and experiments.
+
+Mathematical revisions explicitly requested by the user may replace or remove
+prose and formal claims. In that case the additive-only Feynman rules below do
+not prevent the authorized rewrite. Use the Feynman educator for explanatory
+prose, keep complete formal proofs visible in Expert Mode, and state all analytic
+hypotheses and remaining conjectures explicitly.
 
 ## Agent Instructions
 

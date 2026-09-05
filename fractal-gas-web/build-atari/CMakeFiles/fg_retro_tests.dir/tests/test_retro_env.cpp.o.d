@@ -214,6 +214,14 @@ CMakeFiles/fg_retro_tests.dir/tests/test_retro_env.cpp.o: \
  /home/guillem/fragile/fractal-gas-web/src/env.hpp \
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
+ /usr/include/c++/15/unordered_map \
+ /usr/include/c++/15/bits/unordered_map.h \
+ /usr/include/c++/15/bits/hashtable.h \
+ /usr/include/c++/15/bits/hashtable_policy.h \
+ /usr/include/c++/15/bits/enable_special_members.h \
+ /usr/include/c++/15/bits/node_handle.h \
+ /usr/include/c++/15/bits/erase_if.h \
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
  /home/guillem/fragile/fractal-gas-web/src/retro_core.hpp \
  /home/guillem/fragile/fractal-gas-web/src/retro_env.hpp \
@@ -224,14 +232,7 @@ CMakeFiles/fg_retro_tests.dir/tests/test_retro_env.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/15/bits/error_constants.h \
  /usr/include/c++/15/bits/std_mutex.h \
  /usr/include/c++/15/bits/unique_lock.h /usr/include/c++/15/functional \
- /usr/include/c++/15/bits/std_function.h \
- /usr/include/c++/15/unordered_map \
- /usr/include/c++/15/bits/unordered_map.h \
- /usr/include/c++/15/bits/hashtable.h \
- /usr/include/c++/15/bits/hashtable_policy.h \
- /usr/include/c++/15/bits/enable_special_members.h \
- /usr/include/c++/15/bits/node_handle.h \
- /usr/include/c++/15/bits/erase_if.h /usr/include/c++/15/array \
+ /usr/include/c++/15/bits/std_function.h /usr/include/c++/15/array \
  /usr/include/c++/15/compare /usr/include/c++/15/mutex \
  /usr/include/c++/15/thread /usr/include/c++/15/bits/std_thread.h \
  /usr/include/c++/15/bits/this_thread_sleep.h \

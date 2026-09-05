@@ -210,7 +210,16 @@ CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: \
  /home/guillem/fragile/fractal-gas-web/src/env.hpp \
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
+ /usr/include/c++/15/unordered_map \
+ /usr/include/c++/15/bits/unordered_map.h \
+ /usr/include/c++/15/bits/hashtable.h \
+ /usr/include/c++/15/bits/hashtable_policy.h \
+ /usr/include/c++/15/bits/enable_special_members.h \
+ /usr/include/c++/15/bits/node_handle.h \
+ /usr/include/c++/15/bits/erase_if.h \
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
  /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
  /usr/include/c++/15/bits/algorithmfwd.h \
  /usr/include/c++/15/bits/stl_heap.h \

@@ -223,10 +223,12 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o: /home/guillem/fragile/frac
   /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
   /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
   /home/guillem/fragile/fractal-gas-web/tests/fixtures/fixtures_generated.hpp \
   /home/guillem/fragile/fractal-gas-web/tests/mock_env.hpp \
   /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp \
+  /home/guillem/fragile/fractal-gas-web/tests/visit_mock_env.hpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/bitsperlong.h \
   /usr/include/asm-generic/errno-base.h \
@@ -1177,6 +1179,7 @@ CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o: /home/guillem/fragile/fractal-
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
   /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
   /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
   /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp \
   /usr/include/alloca.h \
@@ -1965,11 +1968,7 @@ CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o:
 
 /home/guillem/fragile/fractal-gas-web/tests/test_main.cpp:
 
-/home/guillem/fragile/fractal-gas-web/tests/visit_mock_env.hpp:
-
 /home/guillem/fragile/fractal-gas-web/tests/fixtures/fixtures_tree_generated.hpp:
-
-/home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp:
 
 /usr/include/c++/15/thread:
 
@@ -2002,6 +2001,10 @@ CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o:
 /usr/include/x86_64-linux-gnu/asm/posix_types_64.h:
 
 /usr/include/x86_64-linux-gnu/asm/posix_types.h:
+
+/usr/include/x86_64-linux-gnu/bits/setjmp.h:
+
+/usr/include/time.h:
 
 /usr/include/locale.h:
 
@@ -2068,6 +2071,10 @@ libfractal_gas_core.a:
 /usr/include/c++/15/iosfwd:
 
 /usr/include/c++/15/initializer_list:
+
+/usr/include/strings.h:
+
+/usr/include/c++/15/bits/exception.h:
 
 /usr/include/c++/15/functional:
 
@@ -2437,10 +2444,6 @@ CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
 
-/usr/include/c++/15/bits/exception.h:
-
-/usr/include/strings.h:
-
 /usr/include/x86_64-linux-gnu/bits/time64.h:
 
 /usr/include/math.h:
@@ -2535,6 +2538,10 @@ CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.o:
 
 /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp:
 
+/home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp:
+
+/home/guillem/fragile/fractal-gas-web/tests/visit_mock_env.hpp:
+
 /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/asm-generic/types.h:
@@ -2574,7 +2581,3 @@ CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.o:
 /usr/include/linux/stddef.h:
 
 /usr/include/sched.h:
-
-/usr/include/x86_64-linux-gnu/bits/setjmp.h:
-
-/usr/include/time.h:

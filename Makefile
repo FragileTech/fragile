@@ -1,4 +1,4 @@
-.PHONY: style check test tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow videogames web robots physics physics-code latex
+.PHONY: style check test docs serve tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow videogames web robots physics physics-code latex
 
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
@@ -46,6 +46,16 @@ prompt:
 	@echo "Preparing prompt downloads for docs..."
 	@python3 docs/build_prompt_downloads.py
 	@echo "✓ Prompts generated in prompts/"
+
+# Build the Jupyter Book from the repository root.
+docs:
+	$(MAKE) prompt
+	uv run --with-requirements docs/requirements.txt jupyter-book build docs/
+
+# Build the Jupyter Book and serve it at http://localhost:$(DOCS_PORT)/.
+DOCS_PORT ?= 8000
+serve: docs
+	uv run --with-requirements docs/requirements.txt python3 -m http.server $(DOCS_PORT) --directory docs/_build/html
 
 mlflow:
 	uv run mlflow server --host 127.0.0.1 --port 5000

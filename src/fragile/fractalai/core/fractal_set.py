@@ -7,9 +7,9 @@ This implementation stores an array-backed directed 2-complex with three edge ty
 
 Auxiliary clone edges are stored separately to represent cloning jitter at t+0.5.
 Vector data is stored as raw psi_* tensors for later spinor construction; node
-attributes remain scalar-only per the Volume 3 specification.
+attributes remain scalar-only per the Volume 2 specification.
 
-Reference: docs/source/3_fractal_gas/2_fractal_set/01_fractal_set.md
+Reference: docs/source/2_fractal_gas/2_fractal_set/01_fractal_set.md
 """
 
 from __future__ import annotations

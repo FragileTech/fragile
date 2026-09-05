@@ -1,0 +1,457 @@
+{
+  "axiom-confining-complete": {
+    "note": "Recovered quadratic confinement proof for the spatial Gibbs law; no automatic identification with the clone QSD.",
+    "status": "consolidated",
+    "target": "thm-nonconvex-main"
+  },
+  "axiom-confining-recap": {
+    "note": "Recovered quadratic confinement proof for the spatial Gibbs law; no automatic identification with the clone QSD.",
+    "status": "consolidated",
+    "target": "thm-nonconvex-main"
+  },
+  "axiom-qsd-log-concave": {
+    "note": "Specified joint-law structural criteria replace automatic log-concavity/LSI claims.",
+    "status": "consolidated",
+    "target": "cor-n-uniform-lsi"
+  },
+  "axiom-qsd-log-concave-recap": {
+    "note": "Specified joint-law structural criteria replace automatic log-concavity/LSI claims.",
+    "status": "consolidated",
+    "target": "cor-n-uniform-lsi"
+  },
+  "cor-acoustic-limit-explicit": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "cor-acoustic-limit-explicit"
+  },
+  "cor-adaptive-lsi": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "cor-adaptive-lsi"
+  },
+  "cor-n-particle-hypocoercive": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "cor-n-particle-hypocoercive"
+  },
+  "cor-n-particle-kinetic-lsi": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "cor-n-particle-kinetic-lsi"
+  },
+  "cor-n-uniform-curvature": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "cor-n-uniform-curvature"
+  },
+  "cor-n-uniform-lsi": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "cor-n-uniform-lsi"
+  },
+  "cor-quantitative-lsi-final": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "cor-quantitative-lsi-final"
+  },
+  "def-discrete-dirichlet": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "def-discrete-dirichlet"
+  },
+  "def-discrete-lsi": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "def-discrete-lsi"
+  },
+  "def-entropy-transport-lyapunov": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "def-entropy-transport-lyapunov"
+  },
+  "def-gibbs-kinetic": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "def-gibbs-kinetic"
+  },
+  "def-hypo-carre-du-champ": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "def-hypo-carre-du-champ"
+  },
+  "def-hypocoercive-metric": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "def-hypocoercive-metric"
+  },
+  "def-log-concavity-condition": {
+    "note": "Specified joint-law structural criteria replace automatic log-concavity/LSI claims.",
+    "status": "consolidated",
+    "target": "cor-n-uniform-lsi"
+  },
+  "def-lsi-continuous": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "def-lsi-continuous"
+  },
+  "def-relative-entropy": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "def-relative-entropy"
+  },
+  "def-status-metric": {
+    "note": "Discrete status entropy requires its own form; a status metric does not supply spatial Fisher control.",
+    "status": "consolidated",
+    "target": "prop-kl-status-entropy"
+  },
+  "ex-fl-no-lsi": {
+    "note": "Wasserstein convergence alone is insufficient for KL; no universal theorem substituted.",
+    "status": "consolidated",
+    "target": "rem-kl-tv-comparison"
+  },
+  "lem-cloning-conditional-independence": {
+    "note": "Full cloning derivative estimate must concern the actual joint update; conditional independence of moving/coupled states is unavailable.",
+    "status": "consolidated",
+    "target": "rem-kl-full-law-estimates"
+  },
+  "lem-cloning-contraction-standalone": {
+    "note": "Retains exact contraction algebra when entropy and transport inequalities have actually been established; removes false W2-to-KL step.",
+    "status": "consolidated",
+    "target": "thm-entropy-transport-contraction"
+  },
+  "lem-cloning-fisher-info": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "lem-cloning-fisher-info"
+  },
+  "lem-cloning-gamma2-bound": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "lem-cloning-gamma2-bound"
+  },
+  "lem-cloning-wasserstein-contraction": {
+    "note": "Retains exact contraction algebra when entropy and transport inequalities have actually been established; removes false W2-to-KL step.",
+    "status": "consolidated",
+    "target": "thm-entropy-transport-contraction"
+  },
+  "lem-discrete-lsi-from-curvature": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "lem-discrete-lsi-from-curvature"
+  },
+  "lem-entropy-transport-dissipation": {
+    "note": "Retains exact contraction algebra when entropy and transport inequalities have actually been established; removes false W2-to-KL step.",
+    "status": "consolidated",
+    "target": "thm-entropy-transport-contraction"
+  },
+  "lem-gamma2-decomposition": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "lem-gamma2-decomposition"
+  },
+  "lem-hypocoercive-dissipation": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "lem-hypocoercive-dissipation"
+  },
+  "lem-kinetic-evolution-bounds": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "lem-kinetic-evolution-bounds"
+  },
+  "lem-kinetic-gamma2-bound": {
+    "note": "Corrected positive definite metric and complete mixed-Fisher derivative.",
+    "status": "consolidated",
+    "target": "lem-hypocoercive-dissipation"
+  },
+  "lem-kinetic-lsi-established": {
+    "note": "Consolidated complete Gibbs reference LSI proof.",
+    "status": "consolidated",
+    "target": "thm-kinetic-lsi"
+  },
+  "lem-kinetic-lsi-hypocoercive": {
+    "note": "Corrected positive definite metric and complete mixed-Fisher derivative.",
+    "status": "consolidated",
+    "target": "lem-hypocoercive-dissipation"
+  },
+  "lem-log-concave-yang-mills": {
+    "note": "Specified joint-law structural criteria replace automatic log-concavity/LSI claims.",
+    "status": "consolidated",
+    "target": "cor-n-uniform-lsi"
+  },
+  "lem-mean-field-cloning-sketch": {
+    "note": "Correct capped-rate pair energy dissipation replaces invalid unrestricted sinh identity and energy-variance/KL comparison.",
+    "status": "consolidated",
+    "target": "lem-meanfield-cloning-dissipation-hybrid"
+  },
+  "lem-meanfield-cloning-dissipation-hybrid": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "lem-meanfield-cloning-dissipation-hybrid"
+  },
+  "lem-sinh-bound-global": {
+    "note": "Correct capped-rate pair energy dissipation replaces invalid unrestricted sinh identity and energy-variance/KL comparison.",
+    "status": "consolidated",
+    "target": "lem-meanfield-cloning-dissipation-hybrid"
+  },
+  "lem-softmax-lipschitz-status": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "lem-softmax-lipschitz-status"
+  },
+  "prop-hypocoercivity-piecewise": {
+    "note": "Corrected positive definite metric and complete mixed-Fisher derivative.",
+    "status": "consolidated",
+    "target": "lem-hypocoercive-dissipation"
+  },
+  "rem-cloning-sublinear": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "rem-cloning-sublinear"
+  },
+  "rem-important-millennium-prize": {
+    "note": "Removed physics digression unsupported by the entropy argument.",
+    "status": "removed",
+    "target": null
+  },
+  "rem-kl-tv-comparison": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "rem-kl-tv-comparison"
+  },
+  "rem-note-entropy-transport-innovation": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "rem-note-entropy-transport-innovation"
+  },
+  "rem-note-hwi-bridge": {
+    "note": "Genuine displacement interpolation; no mixture-as-geodesic claim.",
+    "status": "consolidated",
+    "target": "thm-hwi-inequality"
+  },
+  "rem-note-kinetic-non-reversibility": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "rem-note-kinetic-non-reversibility"
+  },
+  "rem-note-log-concavity-motivation": {
+    "note": "Specified joint-law structural criteria replace automatic log-concavity/LSI claims.",
+    "status": "consolidated",
+    "target": "cor-n-uniform-lsi"
+  },
+  "rem-observation-composition-failure": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "rem-observation-composition-failure"
+  },
+  "sec-fg-kl-conv-conclusion-hybrid": {
+    "note": "Consolidated dependency overview.",
+    "status": "consolidated",
+    "target": "sec-fg-kl-conv-references-1"
+  },
+  "sec-fg-kl-conv-conclusion-mean-field": {
+    "note": "Consolidated dependency overview.",
+    "status": "consolidated",
+    "target": "sec-fg-kl-conv-references-1"
+  },
+  "sec-fg-kl-conv-main-result-hybrid": {
+    "note": "Consolidated dependency overview.",
+    "status": "consolidated",
+    "target": "sec-fg-kl-conv-references-1"
+  },
+  "sec-fg-kl-conv-main-result-standalone": {
+    "note": "Consolidated dependency overview.",
+    "status": "consolidated",
+    "target": "sec-fg-kl-conv-references-1"
+  },
+  "sec-fg-kl-conv-references-1": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "sec-fg-kl-conv-references-1"
+  },
+  "sec-fg-kl-conv-references-2": {
+    "note": "Consolidated dependency overview.",
+    "status": "consolidated",
+    "target": "sec-fg-kl-conv-references-1"
+  },
+  "thm-bakry-emery": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-bakry-emery"
+  },
+  "thm-bakry-emery-classical": {
+    "note": "Consolidated curvature-to-LSI proof.",
+    "status": "consolidated",
+    "target": "thm-bakry-emery"
+  },
+  "thm-cloning-entropy-contraction": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-cloning-entropy-contraction"
+  },
+  "thm-composition-reference": {
+    "note": "Retains exact contraction algebra when entropy and transport inequalities have actually been established; removes false W2-to-KL step.",
+    "status": "consolidated",
+    "target": "thm-entropy-transport-contraction"
+  },
+  "thm-composition-standalone": {
+    "note": "Retains exact contraction algebra when entropy and transport inequalities have actually been established; removes false W2-to-KL step.",
+    "status": "consolidated",
+    "target": "thm-entropy-transport-contraction"
+  },
+  "thm-discrete-lsi-constant": {
+    "note": "One-step entropy contraction for the actual kernel; no imported continuous-time constant.",
+    "status": "consolidated",
+    "target": "thm-lsi-implies-kl-convergence"
+  },
+  "thm-discrete-lsi-hybrid": {
+    "note": "One-step entropy contraction for the actual kernel; no imported continuous-time constant.",
+    "status": "consolidated",
+    "target": "thm-lsi-implies-kl-convergence"
+  },
+  "thm-dobrushin-contraction": {
+    "note": "Discrete status entropy requires its own form; a status metric does not supply spatial Fisher control.",
+    "status": "consolidated",
+    "target": "prop-kl-status-entropy"
+  },
+  "thm-dobrushin-established": {
+    "note": "Discrete status entropy requires its own form; a status metric does not supply spatial Fisher control.",
+    "status": "consolidated",
+    "target": "prop-kl-status-entropy"
+  },
+  "thm-entropy-bound-debruijn": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-entropy-bound-debruijn"
+  },
+  "thm-entropy-transport-contraction": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-entropy-transport-contraction"
+  },
+  "thm-exp-convergence-hybrid": {
+    "note": "Precise actual-law convergence implication with complete dissipation, normalization, and uniformity requirements.",
+    "status": "consolidated",
+    "target": "thm-kl-convergence-euclidean"
+  },
+  "thm-exp-convergence-standalone": {
+    "note": "Precise actual-law convergence implication with complete dissipation, normalization, and uniformity requirements.",
+    "status": "consolidated",
+    "target": "thm-kl-convergence-euclidean"
+  },
+  "thm-exponential-convergence-status": {
+    "note": "Discrete status entropy requires its own form; a status metric does not supply spatial Fisher control.",
+    "status": "consolidated",
+    "target": "prop-kl-status-entropy"
+  },
+  "thm-fl-established": {
+    "note": "General QSD existence is supplied by chapters 06/11, not inferred from LSI; removed duplicate imported recap.",
+    "status": "removed",
+    "target": null
+  },
+  "thm-fl-recap": {
+    "note": "General QSD existence is supplied by chapters 06/11, not inferred from LSI; removed duplicate imported recap.",
+    "status": "removed",
+    "target": null
+  },
+  "thm-hwi-inequality": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-hwi-inequality"
+  },
+  "thm-hypo-curvature-bound": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-hypo-curvature-bound"
+  },
+  "thm-kinetic-lsi": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-kinetic-lsi"
+  },
+  "thm-kinetic-lsi-reference": {
+    "note": "Consolidated complete Gibbs reference LSI proof.",
+    "status": "consolidated",
+    "target": "thm-kinetic-lsi"
+  },
+  "thm-kinetic-lsi-standalone": {
+    "note": "Consolidated complete Gibbs reference LSI proof.",
+    "status": "consolidated",
+    "target": "thm-kinetic-lsi"
+  },
+  "thm-kl-convergence-euclidean": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-kl-convergence-euclidean"
+  },
+  "thm-lsi-implies-kl-convergence": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-lsi-implies-kl-convergence"
+  },
+  "thm-lsi-perturbation": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-lsi-perturbation"
+  },
+  "thm-lsi-target": {
+    "note": "Specified joint-law structural criteria replace automatic log-concavity/LSI claims.",
+    "status": "consolidated",
+    "target": "cor-n-uniform-lsi"
+  },
+  "thm-main-kl-convergence": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-main-kl-convergence"
+  },
+  "thm-main-kl-final": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-main-kl-final"
+  },
+  "thm-main-lsi-composition": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-main-lsi-composition"
+  },
+  "thm-meanfield-kl-convergence-hybrid": {
+    "note": "Precise actual-law convergence implication with complete dissipation, normalization, and uniformity requirements.",
+    "status": "consolidated",
+    "target": "thm-kl-convergence-euclidean"
+  },
+  "thm-meanfield-lsi-standalone": {
+    "note": "LSI passes to fixed marginal limits; stationarity and mean-field identification are separate analytic results.",
+    "status": "consolidated",
+    "target": "cor-kl-lsi-mean-field-limit"
+  },
+  "thm-nonconvex-informal": {
+    "note": "Recovered quadratic confinement proof for the spatial Gibbs law; no automatic identification with the clone QSD.",
+    "status": "consolidated",
+    "target": "thm-nonconvex-main"
+  },
+  "thm-nonconvex-main": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-nonconvex-main"
+  },
+  "thm-tensorization": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-tensorization"
+  },
+  "thm-unconditional-lsi": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-unconditional-lsi"
+  },
+  "thm-villani-hypocoercivity": {
+    "note": "Read the revised statement; scope and proof may be corrected.",
+    "status": "retained",
+    "target": "thm-villani-hypocoercivity"
+  },
+  "thm-villani-hypocoercivity-recap": {
+    "note": "Consolidated corrected kinetic entropy proof with modified initial functional.",
+    "status": "consolidated",
+    "target": "thm-villani-hypocoercivity"
+  }
+}

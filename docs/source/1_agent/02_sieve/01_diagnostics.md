@@ -164,7 +164,9 @@ The Fragile Agent takes a different approach. Instead of one entangled system, w
 Think of a well-designed software system with clear APIs. Each module can be tested independently. When integration fails, you know exactly which contract was violated. The monolithic alternative might train faster in good conditions, but it gives you no diagnostic tools when things go wrong.
 :::
 
-In the Hypostructure framework, **Thin Interfaces** are defined as minimal couplings between components. Instead of monolithic end-to-end training, we enforce structural contracts (the checks) via **Defect Functionals** ($\mathcal{L}_{\text{check}}$).
+:::{prf:definition} Component interfaces and diagnostic losses
+A **thin interface** specifies the minimal coupling between components and the conditions that coupling must satisfy. The corresponding **defect functionals** ($\mathcal{L}_{\text{check}}$) measure departures from these conditions and provide the diagnostic losses used to enforce the interface checks during training.
+:::
 
 *   **Principle:** Components (VQ-VAE, WM, Critic, Policy) should be **autonomous** but **aligned**.
 *   **Mechanism:** Each component minimizes its own objective *subject to* the cybernetic constraints imposed by the others.

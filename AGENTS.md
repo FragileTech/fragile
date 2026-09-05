@@ -17,18 +17,19 @@
 
 ## Theory-Driven Development Focus
 - New deep learning algorithms should follow `docs/source/1_agent` and integrate with `src/fragile/core/` (layers, losses, optimizers), keeping notation and units aligned with the book.
-- Production-grade Fractal Gas work extends `src/fragile/fractalai/` (especially `core/` modules like `euclidean_gas.py`, `cloning.py`, `kinetic_operator.py`, `fractal_set.py`, `history.py`) and should stay faithful to `docs/source/3_fractal_gas`.
+- Production-grade Fractal Gas work extends `src/fragile/fractalai/` (especially `core/` modules like `euclidean_gas.py`, `cloning.py`, `kinetic_operator.py`, `fractal_set.py`, `history.py`) and should stay faithful to `docs/source/2_fractal_gas`.
 
 ## Current Implementation Principles
 - Favor vectorized Torch ops with standard shapes: swarm state `[N, d]`, history arrays `[n_recorded, N, ...]`.
 - Keep algorithm components modular (companion selection, fitness, cloning, kinetics) and configured via `param`/`PanelModel`.
-- Preserve trace structures: `RunHistory` (Pydantic) for serialized runs and `FractalSet` for CST/IG/IA graph construction with scalar node attributes per Volume 3.
+- Preserve trace structures: `RunHistory` (Pydantic) for serialized runs and `FractalSet` for CST/IG/IA graph construction with scalar node attributes per Volume 2.
 
-## Volume 3 Proof Standards
-- When editing `docs/source/3_fractal_gas`, ground claims in Volume 3 metatheorems and appendices; cite internal theorems/permits explicitly.
-- Avoid generic textbook lattice arguments or external documents unless the user requests them; prefer Fractal Set/QSD constructions.
-- Do not introduce new assumptions or change the algorithm; if a claim relies on a permit/certificate, point to where it is certified (for example `docs/source/3_fractal_gas/1_the_algorithm/02_fractal_gas_latent.md`).
-- For unbounded spaces, use the established confining envelope or Safe Harbor results instead of adding compactness assumptions.
+## Volume 2 Proof Standards
+- Ground Fractal Gas claims in explicit analytic hypotheses, local lemmas, and established mathematical literature. Verify the hypotheses of every cited theorem.
+- Keep the algorithm fixed. Distinguish finite-particle killed chains, their quasi-stationary laws, conservative invariant measures, mean-field limits, and continuum models.
+- State additional analytic conditions in theorem statements. Label unresolved results as conjectures and propagate those conditions to every dependent result.
+- Keep complete proofs in the main chapters. Formal definitions, hypotheses, and proofs must remain visible in Expert Mode.
+- For unbounded spaces, establish moment and tail bounds through the confining envelope or proved Safe Harbor estimates; do not replace confinement by compact support.
 
 ## Documentation Workflow & Style
 - The Jupyter Book lives in `docs/source/`; follow `docs/CLAUDE.md` for heading/label conventions, Feynman prose rules, admonition classes, notation, and cross-references.

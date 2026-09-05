@@ -782,116 +782,188 @@ This objection conflates two distinct issues. The derivation is **not circular**
 
 *Remark (What would be circular).* A truly circular derivation would be: "Define $\ell_L^2 := A/(4I)$, then observe $I = A/(4\ell_L^2)$." This is **not** what happens. The 1/4 emerges from the curvature normalization $K = -1$, which is a geometric fact independent of capacity constraints.
 
-## D.12 Foundational Rigor and the Hypostructure Formalism
+(sec-appendix-d-foundational-rigor)=
+## D.12 Foundational Rigor and Analytic Conditions
 
-:::{admonition} Theoretical Dependency Warning
-:class: warning
-
-The answers in this section rely on the **Hypostructure formalism** developed in the companion document **Hypopermits (companion document)**. This formalism is original research and has **not been peer-reviewed**. The claimed gap closures should be treated as **conjectural** pending external validation.
+:::{div} feynman-prose
+The questions below concern six interfaces in the architecture. Several have
+direct analytic treatments elsewhere in Volume I: the measure formulation of
+beliefs, descent estimates for the optimizer, the strategic Jacobian, and the
+normalization of information bounds. We use those results with their stated
+hypotheses. Where a proposed application needs an additional estimate, we
+identify the quantity that remains to be controlled.
 :::
 
 (sec-appendix-d-vq-wfr-disconnect)=
-### D.12.1 Gap 1: VQ vs. WFR Measure-Theoretical Disconnect
+### D.12.1 VQ and WFR on a Shared State Space
 
 **Objection:** *The specification requires both Vector-Quantized (VQ) discrete tokens and Wasserstein-Fisher-Rao (WFR) continuous dynamics. These live on different mathematical spaces: discrete codebooks vs. probability measures on Riemannian manifolds. How can these be reconciled?*
 
-**Response:**
+:::{div} feynman-prose
+A token and a distribution over tokens describe different things. A codebook
+specifies possible represented states; weights on those states specify a belief.
+This is the measure formulation used in
+{doc}`WFR geometry <../05_geometry/02_wfr_geometry>`.
+:::
 
-The **Expansion Adjunction** (Theorem **Thm: Expansion Adjunction**) provides a canonical functor $\mathcal{F}: \mathbf{Thin}_T \to \mathbf{Hypo}_T$ from discrete "thin" data to continuous structures.
+:::{prf:definition} Atomic Belief on a Specified Codebook
+:label: def-faq-atomic-codebook-belief
 
-1. **Left adjoint structure.** The functor $\mathcal{F}$ is a left adjoint to the forgetful functor $U$, meaning: $\mathcal{F} \dashv U$. This universal property guarantees that VQ codebooks lift *uniquely* to WFR measures.
+Let $e_1,\ldots,e_m$ be distinct points of the specified latent metric space
+$\mathcal Z$. For weights $p_k\geq0$ with $\sum_kp_k=1$, define
 
-2. **Gradient extension.** Discrete gradients (finite differences on the codebook graph) extend canonically to continuous WFR gradients. The adjunction ensures no information is lost in this lift.
+$$
+\rho_p=\sum_{k=1}^m p_k\delta_{e_k}\in\mathcal P(\mathcal Z).
+$$
 
-3. **Categorical preservation.** The lifting preserves all categorical structure: composition of morphisms, colimits (merging charts), and limits (refining charts). The VQ and WFR views are *the same object* seen at different resolutions.
+The weights are recovered by $\rho_p(\{e_k\})=p_k$. A hard VQ assignment is the
+special case with one weight equal to one.
+:::
+
+:::{div} feynman-prose
+This construction places discrete beliefs in the space of measures used by
+{prf:ref}`def-the-wfr-action`. Its transport term moves mass in the specified
+geometry; its reaction term changes local weights. Restricting the admissible
+paths to zero transport gives the reaction calculation described in
+{ref}`Transport vs. Reaction Components <sec-transport-vs-reaction-components>`.
+
+The embedding, metric, and reaction scale are data of the construction. A
+particular quantizer or graph update approximates a continuous evolution only
+when its consistency and convergence are established. The atomic representation
+itself does not identify a graph gradient with a continuous WFR gradient.
+:::
 
 (sec-appendix-d-governor-stability)=
-### D.12.2 Gap 2: Governor Stability ("Who Watches the Watchmen")
+### D.12.2 Governor Stability
 
 **Objection:** *If the Governor monitors the agent for safety violations, what monitors the Governor? Infinite regress threatens.*
 
-**Response:**
+:::{div} feynman-prose
+The Governor and optimizer form a coupled update that can be analyzed directly.
+Volume I already gives a concrete result:
+{prf:ref}`thm-preconditioned-descent` proves descent for an $L$-smooth objective
+with a uniformly positive definite, bounded preconditioner and the stated
+step-size bound. {prf:ref}`lem-trust-region-scaling` proves that the prescribed
+rescaling preserves that descent. The optimizer chapter also proves bounds for
+noise gating and smoothing of learning rates.
 
-The monitoring hierarchy terminates at a **Lawvere fixed point**, avoiding infinite regress.
+The combined result, {prf:ref}`thm-optimizer-conditional-stability`, uses
+assumptions A1–A5 in
+{doc}`joint optimization <../03_architecture/03_optimization>`. These include
+smoothness, spectral bounds, centered gradient noise with bounded second moment,
+timescale separation, and the specified ordering of parameter groups. They are
+conditions to verify for the actual Governor outputs and optimizer updates.
 
-1. **Epistemic fixed point.** The **Epistemic Fixed Point Metatheorem** (**MT: Epistemic Fixed Point**) establishes that an optimal Bayesian learner converges to the true theory $[T^*]$. The Governor's self-model is such a fixed point of the epistemic update operator.
-
-2. **ZFC reflection.** The **Fundamental Theorem of Set-Theoretic Reflection** (**Thm: ZFC Bridge Fundamental**) translates categorical certificates to classical ZFC statements. External auditors can verify the Governor's fixed point using standard mathematics—no category theory required for the audit.
-
-3. **Diagonal blocking.** Gödel-style diagonal arguments (the Governor lying about itself) are blocked by the categorical structure: the internal logic of the cohesive topos admits Boolean sub-topoi where self-reference is well-founded.
+This is a finite mathematical question about the coupled system. A runtime
+monitor measures whether its specified diagnostic holds. Descent of an objective
+and preservation of a safe state set are distinct conclusions; the latter needs
+an invariance argument that also accounts for measurement error, delay, and the
+allowed disturbances. The {doc}`Governor chapter <../07_cognition/02_governor>`
+provides the training Lyapunov formulation and monitoring architecture.
+:::
 
 (sec-appendix-d-strategic-omniscience)=
-### D.12.3 Gap 3: Strategic Omniscience (Game Tensor)
+### D.12.3 Strategic Information and the Game Tensor
 
 **Objection:** *The Game Tensor ({ref}`Section 29.4 <sec-the-game-tensor-deriving-adversarial-geometry>`) encodes strategic interactions, but requires knowing opponent policies—which may be uncomputable or strategically hidden.*
 
-**Response:**
+:::{div} feynman-prose
+The existing {ref}`Game Tensor derivation <proof-game-tensor-derivation>` uses
+a local best-response model. Its strategic Jacobian is obtained by
+differentiating the opponent's first-order optimality condition. The implicit
+function theorem applies where that condition is differentiable and the
+opponent's own-state Hessian is nonsingular. A strict local maximum identifies
+the resulting stationary branch as a local best response. These are explicit
+hypotheses about the modeled interaction.
 
-The **cobordism interface** avoids requiring opponent policy knowledge.
+An observation-based policy can operate on the agent's available history without
+access to an opponent's internal state. Computing the modeled Game Tensor,
+however, still requires the value derivatives or estimates used in that local
+model. The analytic derivative formula does not estimate those quantities from
+observations by itself.
 
-:::{prf:axiom} The Bridge Principle
-:label: ax-the-bridge-principle
-
-An agent commits to a **response function** $\sigma: \mathcal{O} \to \mathcal{A}$ mapping observations to actions, not a fixed policy $\pi: \mathcal{S} \to \mathcal{A}$ over states. The response function:
-
-1. Is computable given bounded observations
-2. Does not require access to opponent internal states or policies
-3. Defines the agent's strategic interface at the boundary $\partial\mathcal{X}$
-
-*Consequence:* Strategic interactions reduce to boundary conditions on the response function, eliminating the need for opponent omniscience.
+For an empirical application, state the opponent model, observation delay,
+estimation errors, and domain on which the response approximation is valid.
+A worst-case analysis additionally needs a specified uncertainty set that
+contains the behaviors being covered. See the
+{doc}`multi-agent chapter <../08_multiagent/01_gauge_theory>` for the retarded
+interaction model and its diagnostics.
 :::
 
-1. **Response functions, not policies.** The **Bridge Principle** (Axiom {prf:ref}`ax-the-bridge-principle`) requires the agent to commit to a *response function* $\sigma: \mathcal{O} \to \mathcal{A}$ mapping observations to actions, not a fixed policy. This is computable given bounded observations.
-
-2. **Type-safe boundaries.** The categorical definition (**Def: Categorical Hypostructure**) provides a cobordism structure: the agent's state stack $\mathcal{X}$ has a boundary $\partial\mathcal{X}$ where strategic interactions occur. Type-safety across this boundary is enforced categorically.
-
-3. **Opponents as boundary conditions.** Unknown opponents are modeled as boundary conditions on $\partial\mathcal{X}$, not as internal states. The agent optimizes against the *worst-case* boundary compatible with observations—a minimax strategy that requires no omniscience.
-
 (sec-appendix-d-hessian-texture-inverse)=
-### D.12.4 Gap 4: Hessian-Texture Inverse Problem
+### D.12.4 The Hessian–Texture Inverse Problem
 
 **Objection:** *Extracting ontological structure from Hessian texture ({ref}`Section 30.3 <sec-the-fission-criterion>`) requires inverting a potentially ill-posed operator. Noise or degeneracy could render the inversion unstable.*
 
-**Response:**
+:::{div} feynman-prose
+The ontology analysis includes a local expansion of the chart potential and a
+stability calculation for its stationary branches; see the
+{ref}`bifurcation proof <proof-thm-supercritical-pitchfork-bifurcation>`. That
+calculation describes the specified potential near the expansion point. It does
+not reconstruct a unique texture representation from a measured Hessian.
 
-The **O-minimal Tameness Theorem** (**MT: O-minimal Tame Smoothing**) guarantees stable inversion.
+An inverse claim first needs a forward map, the observations supplied to it, and
+the equivalences regarded as representing the same object. Even a scalar
+potential is determined by its Hessian only up to an affine term unless further
+data are supplied. For a square finite-dimensional $C^1$ forward map, a
+nonsingular derivative gives a local inverse; quantitative stability requires
+control of that derivative and the neighborhood on which the inverse exists.
 
-1. **Definable families.** Loss landscapes arising from neural networks with analytic activations belong to *definable families* in an o-minimal structure (typically $\mathbb{R}_{\text{an,exp}}$). These families have bounded complexity by definability.
+A general identifiable, stable Hessian-to-texture map is not supplied by the
+local bifurcation argument. A proposed reconstruction must establish those
+conditions or state its regularization bias and error. The
+{doc}`ontology chapter <../07_cognition/04_ontology>` supplies the stress,
+fission, and fusion quantities that such a reconstruction would need to match.
+:::
 
-2. **Finite fibers.** The Hessian-to-texture map $H \mapsto z_{\text{tex}}$ has *finite fibers*: each texture corresponds to finitely many Hessians (up to symmetry). This is a consequence of o-minimality: definable maps have finite fibers generically.
-
-3. **Stratified inverses.** The stratification theorem provides stable local inverses on each stratum. Degeneracies (where the fiber is larger) lie on lower-dimensional strata, which have measure zero under generic perturbations.
-
-(sec-appendix-d-dimensional-scaling-hypo)=
-### D.12.5 Gap 5: Dimensional Scaling of 1/4 Coefficient
+(sec-appendix-d-dimensional-scaling)=
+### D.12.5 Dimensional Scaling of the Information Bound
 
 **Objection:** *The Area Law coefficient $\nu_D$ is dimension-dependent (see {ref}`D.11.3 <sec-appendix-d-universality-quarter-coefficient>`), but the holographic correspondence assumes a fixed coefficient.*
 
-**Response:**
+:::{div} feynman-prose
+The coefficient must be carried through the calculation at the chosen dimension.
+{prf:ref}`def-holographic-coefficient` specifies it using the unit-sphere boundary
+measure and the stated normalization. Its value is $1/4$ at $D=2$; this value
+cannot be substituted for the coefficient at every dimension.
 
-The **RCD Dissipation Link** (**Thm: RCD Dissipation Link**) provides dimension-independent bounds.
+The existing {prf:ref}`thm-a-microstate-count-area-law` uses boundary cell counting
+and channel capacity under the counting model stated in the derivation. When
+applying that argument, retain its boundary measure, distinguishability scale,
+cell assumptions, and dimension. Extending it to another geometry requires
+corresponding estimates for those quantities. A curvature bound alone leaves
+that normalization and counting problem to be specified.
 
-1. **RCD spaces.** The latent manifold $(\mathcal{Z}, d, \mathfrak{m})$ satisfies the **Riemannian Curvature-Dimension** condition $\mathrm{RCD}(K, N)$ for some curvature bound $K$ and dimension bound $N$. This generalizes Ricci curvature to metric-measure spaces.
-
-2. **Absorbed coefficients.** The dimension-dependent Holographic Coefficient $\nu_D$ is absorbed into the RCD parameters $(K, N)$. The capacity bound holds uniformly for any $\mathrm{RCD}(K, N)$ space, with the coefficient determined by $(K, N)$.
-
-3. **Explicit values.** Definition {prf:ref}`def-holographic-coefficient` provides the formula: $\nu_D = (D-1)\pi^{(D-2)/2} / (4\Gamma(D/2))$. For $D = 2$, this recovers $\nu_2 = 1/4$.
+See {doc}`the information bound <../06_fields/03_info_bound>` and
+{doc}`its derivations <01_derivations>` for the formulas and their assumptions.
+:::
 
 (sec-appendix-d-reflective-dream-leakage)=
-### D.12.6 Gap 6: Reflective Dream Leakage
+### D.12.6 Reflective Dream Leakage
 
 **Objection:** *Dreams (offline model consolidation) may produce beliefs that violate physical constraints. If these leak into online behavior, the agent may act on impossible world-models.*
 
-**Response:**
+:::{div} feynman-prose
+The deliberation analysis provides an allocation rule:
+{prf:ref}`thm-deliberation-optimality-condition` balances marginal value gain
+against marginal metabolic cost at an interior optimum.
+{prf:ref}`thm-fast-slow-phase-transition` applies that objective with the specified
+convexity and marginal-gain assumptions. These results address how much
+computation to allocate.
 
-Thermodynamic gating prevents dream leakage.
+A belief can have finite entropy while making an incorrect prediction. An
+entropy-change cost therefore does not establish that dream content satisfies
+environment constraints. The transfer to action needs the observation and
+boundary checks used by the actual controller, together with a specified
+treatment of failed checks.
 
-1. **Metabolic cost.** The **Generalized Landauer Bound** ({prf:ref}`thm-generalized-landauer-bound`) states: $\dot{\mathcal{M}}(s) \ge T_c |dH/ds|$. Dream updates that change belief entropy $H$ cost metabolic energy $\dot{\mathcal{M}}$. Physically impossible beliefs require infinite entropy change, hence infinite metabolic cost.
-
-2. **Dual horizon gating.** The **Dual Horizon Action** (Axiom {prf:ref}`ax-dual-horizon-action`) separates online (wake) and offline (dream) dynamics. The horizons are coupled only through a thermodynamically gated interface.
-
-3. **Phase transition.** The **Fast/Slow Phase Transition** ({prf:ref}`thm-fast-slow-phase-transition`) determines when dream content transfers to online behavior. If the reflexive flux $\Gamma(0)$ exceeds the metabolic flux $\dot{\mathcal{M}}(0)$, the system remains in "fast" (reflexive) mode and dreams do not leak. Transfer to "slow" (deliberative) mode requires sustained metabolic investment, filtering out thermodynamically forbidden dreams.
-
+The {ref}`waking and dreaming boundary formulation <sec-wfr-boundary-conditions-waking-vs-dreaming>`
+separates the two operating settings. The
+{doc}`Dreamer implementation <../11_implementation/03_dreamer>` describes the
+rollout, replay, and action path. A guarantee about accepted model updates needs
+an error or invariance bound for that path; the metabolic stopping calculation
+alone addresses a different quantity.
+:::
 
 
 (sec-appendix-d-quantum-foundations-and-physical-limits)=

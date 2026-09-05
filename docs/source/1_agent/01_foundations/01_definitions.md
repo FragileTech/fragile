@@ -47,11 +47,17 @@ Standard RL frames the agent as a policy that maximizes return in a POMDP. Here 
 :::
 
 :::{div} feynman-prose
-This document presents the **Fragile** interpretation of the Hypostructure: a deployed agent is a persistent **controller under partial observability** whose competence is bounded by (i) finite sensing/communication bandwidth, (ii) finite internal memory/representation capacity, and (iii) finite compute for inference and planning.
+This chapter defines the **Fragile Agent** as a controller under partial
+observability. Its internal state $Z_t$ is updated using the observable interface
+signals $B_t$ and its own actions. The environment is specified by the
+input-output law $P_{\partial}$. Sensing bandwidth, memory, and computation place
+constraints on what the controller can represent and do.
 
-The framework is stated strictly in **information theory, optimization, and control**: discrete/continuous latent state construction (representation), stability constraints (Lyapunov-style), and capacity/sufficiency conditions (information bottlenecks).
-
-This is the native language of **Safe RL**, **Robust Control**, and **Embodied AI**.
+These definitions give the later analysis concrete quantities to study:
+information retained in the latent representation, changes under the control
+update, and the cost of inference and planning. Information theory, optimization,
+and control provide the estimates used to analyze those quantities. The state,
+interface, and environment law are defined below.
 :::
 
 (sec-definitions-interaction-under-partial-observability)=

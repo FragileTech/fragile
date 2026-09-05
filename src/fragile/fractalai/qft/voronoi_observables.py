@@ -1101,7 +1101,7 @@ def compute_curvature_proxies(
 
     Reference:
         Plan: /home/guillem/.claude/plans/cryptic-percolating-creek.md
-        Theory: docs/source/3_fractal_gas/3_fitness_manifold/03_curvature_gravity.md
+        Theory: docs/source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity.md
     """
     volumes = voronoi_data["volumes"]
     voronoi_data["neighbor_lists"]
@@ -1275,7 +1275,7 @@ def compute_voronoi_diffusion_tensor(
 
     Reference:
         Plan: /home/guillem/.claude/plans/cryptic-percolating-creek.md § Bonus
-        Theory: docs/source/3_fractal_gas/3_fitness_manifold/02_scutoid_spacetime.md
+        Theory: docs/source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime.md
     """
     volumes = voronoi_data["volumes"]
     voronoi_data["neighbor_lists"]

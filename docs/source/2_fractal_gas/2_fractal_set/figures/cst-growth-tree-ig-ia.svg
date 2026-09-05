@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 540" role="img" aria-label="CST forest with same-time IG edges, effect-to-cause IA edges, and one interaction triangle">
+  <defs>
+    <style>
+      .title { font: 600 18px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .label { font: 500 14px "IBM Plex Sans", Arial, sans-serif; fill: #1f2933; }
+      .small { font: 12px "IBM Plex Sans", Arial, sans-serif; fill: #334e68; }
+      .node { fill: #f5f7fa; stroke: #1f2933; stroke-width: 1.6; }
+      .axis { stroke: #333333; stroke-width: 2; }
+      .grid { stroke: #cbd2d9; stroke-width: 1; stroke-dasharray: 6 6; }
+      .cst { stroke: #2e86ab; stroke-width: 2.4; marker-end: url(#arrow-cst); }
+      .ig { stroke: #f6ae2d; stroke-width: 2.4; marker-end: url(#arrow-ig); }
+      .ia { stroke: #2a9d8f; stroke-width: 2.4; stroke-dasharray: 6 4; marker-end: url(#arrow-ia); }
+      .tri { fill: #e8f4f2; stroke: #2a9d8f; stroke-width: 1.4; opacity: 0.7; }
+      .legend-box { fill: #ffffff; stroke: #cbd2d9; stroke-width: 1; }
+    </style>
+    <marker id="arrow-cst" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e86ab" />
+    </marker>
+    <marker id="arrow-ig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f6ae2d" />
+    </marker>
+    <marker id="arrow-ia" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2a9d8f" />
+    </marker>
+  </defs>
+
+  <rect width="980" height="540" fill="#ffffff" />
+  <text class="title" x="32" y="34">CST paths with IG and IA edges</text>
+
+  <line class="axis" x1="80" y1="470" x2="80" y2="70" />
+  <path d="M80 60 L70 78 L90 78 Z" fill="#333333" />
+  <text class="label" x="20" y="60">t (future)</text>
+
+  <line class="grid" x1="110" y1="430" x2="620" y2="430" />
+  <line class="grid" x1="110" y1="320" x2="620" y2="320" />
+  <line class="grid" x1="110" y1="210" x2="620" y2="210" />
+  <line class="grid" x1="110" y1="100" x2="620" y2="100" />
+
+  <text class="label" x="40" y="436">t0</text>
+  <text class="label" x="40" y="326">t1</text>
+  <text class="label" x="40" y="216">t2</text>
+  <text class="label" x="40" y="106">t3</text>
+
+  <!-- Four non-branching CST paths. -->
+  <line class="cst" x1="180" y1="430" x2="180" y2="320" />
+  <line class="cst" x1="180" y1="320" x2="180" y2="210" />
+  <line class="cst" x1="180" y1="210" x2="180" y2="100" />
+  <line class="cst" x1="300" y1="430" x2="300" y2="320" />
+  <line class="cst" x1="300" y1="320" x2="300" y2="210" />
+  <line class="cst" x1="300" y1="210" x2="300" y2="100" />
+  <line class="cst" x1="420" y1="430" x2="420" y2="320" />
+  <line class="cst" x1="420" y1="320" x2="420" y2="210" />
+  <line class="cst" x1="420" y1="210" x2="420" y2="100" />
+  <line class="cst" x1="540" y1="430" x2="540" y2="320" />
+  <line class="cst" x1="540" y1="320" x2="540" y2="210" />
+  <line class="cst" x1="540" y1="210" x2="540" y2="100" />
+
+  <!-- Same-time influence and effect-to-cause attribution. -->
+  <polygon class="tri" points="300,320 420,320 300,210" />
+  <line class="ig" x1="300" y1="320" x2="420" y2="320" />
+  <line class="ig" x1="180" y1="210" x2="300" y2="210" />
+  <line class="ig" x1="420" y1="100" x2="540" y2="100" />
+  <line class="ia" x1="300" y1="210" x2="420" y2="320" />
+  <line class="ia" x1="420" y1="100" x2="540" y2="210" />
+
+  <circle class="node" cx="180" cy="430" r="10" />
+  <circle class="node" cx="300" cy="430" r="10" />
+  <circle class="node" cx="420" cy="430" r="10" />
+  <circle class="node" cx="540" cy="430" r="10" />
+  <circle class="node" cx="180" cy="320" r="10" />
+  <circle class="node" cx="300" cy="320" r="10" />
+  <circle class="node" cx="420" cy="320" r="10" />
+  <circle class="node" cx="540" cy="320" r="10" />
+  <circle class="node" cx="180" cy="210" r="10" />
+  <circle class="node" cx="300" cy="210" r="10" />
+  <circle class="node" cx="420" cy="210" r="10" />
+  <circle class="node" cx="540" cy="210" r="10" />
+  <circle class="node" cx="180" cy="100" r="10" />
+  <circle class="node" cx="300" cy="100" r="10" />
+  <circle class="node" cx="420" cy="100" r="10" />
+  <circle class="node" cx="540" cy="100" r="10" />
+
+  <text class="small" x="168" y="456">p</text>
+  <text class="small" x="288" y="456">i</text>
+  <text class="small" x="408" y="456">j</text>
+  <text class="small" x="528" y="456">k</text>
+  <text class="small" x="330" y="288">triangle (i,j,t1)</text>
+
+  <rect x="650" y="120" width="300" height="280" rx="10" class="legend-box" />
+  <text x="670" y="145" class="label">Legend</text>
+  <line x1="670" y1="170" x2="730" y2="170" class="cst" />
+  <text x="742" y="174" class="small">CST: same walker ID</text>
+  <line x1="670" y1="198" x2="730" y2="198" class="ig" />
+  <text x="742" y="202" class="small">IG: same-time influence</text>
+  <line x1="670" y1="226" x2="730" y2="226" class="ia" />
+  <text x="742" y="230" class="small">IA: effect to cause</text>
+  <rect x="670" y="250" width="20" height="12" class="tri" />
+  <text x="702" y="260" class="small">recorded interaction triangle</text>
+  <text x="670" y="300" class="small">CST is a forest of paths;</text>
+  <text x="670" y="318" class="small">paths may terminate at death.</text>
+  <text x="670" y="336" class="small">clone ancestry is separate.</text>
+</svg>

@@ -332,7 +332,7 @@ This tier implements a **Riemannian / information-geometric** view, replacing Eu
 
 ```python
 def compute_natural_gradient_loss(
-    regulator: HypostructureRegulator,  # Agent with policy and critic
+    regulator: DiagnosticRegulator,  # Agent with policy and critic
     state: torch.Tensor,                # z_t (latent state)
     policy_action: torch.Tensor,        # a_t from Policy(z_t)
     next_state: torch.Tensor,           # z_{t+1}
@@ -385,7 +385,7 @@ def compute_natural_gradient_loss(
 
 ```python
 def compute_control_theory_loss(
-    regulator: HypostructureRegulator,  # Agent with policy and critic
+    regulator: DiagnosticRegulator,  # Agent with policy and critic
     states: torch.Tensor,               # z_t (latent state)
     next_states: torch.Tensor,          # z_{t+1}
     lambda_lyapunov: float = 1.0,
@@ -1074,7 +1074,7 @@ def compute_separation_loss(
 
 ```python
 class HypoUniversal(nn.Module):
-    """Universal Hypostructure Network with Atlas Architecture.
+    """Multi-chart latent network with atlas architecture.
 
     This implements a multi-chart latent space where:
     - Router (Axiom TB): Learns chart assignments via soft attention

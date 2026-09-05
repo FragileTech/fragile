@@ -42,5 +42,5 @@
   <text x="126" y="168" class="label">CST</text>
   <text x="285" y="190" class="label">IA</text>
 
-  <text x="52" y="284" class="small">One triangle records: influence (IG), evolution (CST), attribution (IA).</text>
+  <text x="52" y="284" class="small">One triangle records influence (IG), evolution (CST), and IA effect -&gt; cause.</text>
 </svg>

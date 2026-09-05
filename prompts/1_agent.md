@@ -1,3 +1,21 @@
+## intro_agent.md
+
+:::{prf:theorem} The RL Degeneracy Theorem
+:label: thm-rl-degeneracy
+
+Standard Reinforcement Learning is recovered from the Fragile Agent framework under the joint limit:
+
+$$
+\text{Standard RL} = \lim_{\substack{G \to I \\ |\mathcal{K}| \to \infty \\ \Xi_{\text{crit}} \to \infty}} \text{Fragile Agent}
+$$
+where:
+1. **Flat Geometry** ($G \to I$): The state-space metric becomes Euclidean, eliminating coordinate-invariant updates
+2. **Infinite Capacity** ($|\mathcal{K}| \to \infty$): No information bottleneck, continuous state space without quantization
+3. **No Safety Constraints** ($\Xi_{\text{crit}} \to \infty$): The Sieve is disabled, all actions permitted
+
+*Proof.* Each of the 37 Connection boxes below demonstrates a specific reduction. The composite limit follows from the independence of the five degeneracy conditions. $\square$
+:::
+
 ## 01_foundations/01_definitions.md
 
 :::{prf:definition} Bounded-Rationality Controller
@@ -355,6 +373,12 @@ Sieve Nodes 13-16 (Boundary/Overload/Starve/Align) can be interpreted as monitor
 *   **Mode B.E (Injection):** Occurs when interface inflow exceeds the effective capacity of the manifold (Levin capacity), breaking the assumed operating regime.
 *   **Mode B.D (Starvation):** Occurs when interface inflow is too weak, causing the internal information volume to decay (catastrophic forgetting).
 
+:::
+
+## 02_sieve/01_diagnostics.md
+
+:::{prf:definition} Component interfaces and diagnostic losses
+A **thin interface** specifies the minimal coupling between components and the conditions that coupling must satisfy. The corresponding **defect functionals** ($\mathcal{L}_{\text{check}}$) measure departures from these conditions and provide the diagnostic losses used to enforce the interface checks during training.
 :::
 
 ## 03_architecture/01_compute_tiers.md
@@ -13329,7 +13353,7 @@ At kink points where $(Wz + b)_i = 0$, the term $\frac{\partial f_i}{\partial z_
 - Riemannian geometry for geodesic equations (smooth metric tensor)
 - Symplectic integrator theory (Lipschitz gradients for Boris-BAOAB)
 
-See Section 5.2 (WFR stress-energy tensor) and Part II, Hypostructure, Section 9 (Mathematical Prerequisites) for differential geometry foundations.
+See {doc}`../05_geometry/02_wfr_geometry` for the WFR metric and {doc}`../10_appendices/03_wfr_tensor` for the variational stress-energy calculation.
 
 $\square$
 :::
@@ -18819,16 +18843,18 @@ Similarly, the microstate counting here is analogous to Strominger-Vafa, while t
 
 ## 10_appendices/04_faq.md
 
-:::{prf:axiom} The Bridge Principle
-:label: ax-the-bridge-principle
+:::{prf:definition} Atomic Belief on a Specified Codebook
+:label: def-faq-atomic-codebook-belief
 
-An agent commits to a **response function** $\sigma: \mathcal{O} \to \mathcal{A}$ mapping observations to actions, not a fixed policy $\pi: \mathcal{S} \to \mathcal{A}$ over states. The response function:
+Let $e_1,\ldots,e_m$ be distinct points of the specified latent metric space
+$\mathcal Z$. For weights $p_k\geq0$ with $\sum_kp_k=1$, define
 
-1. Is computable given bounded observations
-2. Does not require access to opponent internal states or policies
-3. Defines the agent's strategic interface at the boundary $\partial\mathcal{X}$
+$$
+\rho_p=\sum_{k=1}^m p_k\delta_{e_k}\in\mathcal P(\mathcal Z).
+$$
 
-*Consequence:* Strategic interactions reduce to boundary conditions on the response function, eliminating the need for opponent omniscience.
+The weights are recovered by $\rho_p(\{e_k\})=p_k$. A hard VQ assignment is the
+special case with one weight equal to one.
 :::
 
 ## 10_appendices/05_proofs.md
@@ -20059,18 +20085,6 @@ The **ground state** (lowest eigenvalue $\lambda_1$) corresponds to:
 
 Higher modes ($n > 1$) are metastable—small perturbations can cause transitions to lower modes. The stable Nash equilibrium corresponds to the ground state of the coupled system. $\square$
 
-:::
-
-:::{prf:definition} Strategic Jacobian
-:label: def-strategic-jacobian
-
-The **Strategic Jacobian** $\mathcal{J}_{ji} \in \mathbb{R}^{d \times d}$ is the derivative of agent $j$'s best response with respect to agent $i$'s position:
-
-$$
-\mathcal{J}_{ji} := \frac{\partial BR_j(z^{(-j)})}{\partial z^{(i)}} = \frac{\partial z^{(j)*}}{\partial z^{(i)}}\bigg|_{BR}
-
-$$
-where $z^{(j)*} = BR_j(z^{(-j)})$.
 :::
 
 :::{prf:proof}
@@ -22660,22 +22674,4 @@ class CovariantAttentionLayer(nn.Module):
 5. Decoder → action $Y$
 
 **Source:** {ref}`Section 06 <sec-universal-geometric-network>`, line 2445. See also {ref}`Section 05 <sec-covariant-cross-attention-architecture>` for full derivation.
-:::
-
-## intro_agent.md
-
-:::{prf:theorem} The RL Degeneracy Theorem
-:label: thm-rl-degeneracy
-
-Standard Reinforcement Learning is recovered from the Fragile Agent framework under the joint limit:
-
-$$
-\text{Standard RL} = \lim_{\substack{G \to I \\ |\mathcal{K}| \to \infty \\ \Xi_{\text{crit}} \to \infty}} \text{Fragile Agent}
-$$
-where:
-1. **Flat Geometry** ($G \to I$): The state-space metric becomes Euclidean, eliminating coordinate-invariant updates
-2. **Infinite Capacity** ($|\mathcal{K}| \to \infty$): No information bottleneck, continuous state space without quantization
-3. **No Safety Constraints** ($\Xi_{\text{crit}} \to \infty$): The Sieve is disabled, all actions permitted
-
-*Proof.* Each of the 37 Connection boxes below demonstrates a specific reduction. The composite limit follows from the independence of the five degeneracy conditions. $\square$
 :::

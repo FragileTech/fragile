@@ -1,33 +1,160 @@
-# MyST configuration for Fragile documentation
-# https://mystmd.org/guide/frontmatter
-
+# MyST navigation mirrors the published Jupyter Book in _toc.yml.
 version: 1
-
 project:
-  title: Fragile Mechanics
+  title: Lectures on Algorithmic Geometrodynamics
   subtitle: On Geometry, Thermodynamics, and Bounded Intelligence
   authors:
-    - name: Guillem Duran-Ballester
-      # Spanish naming convention: "Duran Ballester" is the complete surname
-      # (paternal: Duran, maternal: Ballester). Index under "D" for Duran.
-  copyright: "2025"
+  - name: Guillem Duran-Ballester
+  copyright: '2025'
   bibliography:
-    - references.bib
-    - source/2_hypostructure/references.bib
-    - source/3_fractal_gas/vol_3_references.bib
-
+  - references.bib
+  - source/2_fractal_gas/references.bib
   toc:
-    - file: index.md
-      title: Home
-    - title: Chapters
+  - file: intro.md
+  - title: Vol. 1 · Fragile Mechanics
+    children:
+    - file: source/1_agent/intro_agent.md
+      title: Overview
+    - file: source/1_agent/01_foundations/01_definitions.md
+      title: Part I - Foundations
       children:
-        - file: source/info_sm.md
-          title: "Chapter 34: The Standard Model of Cognition"
-        - file: source/harvesting_loop.md
-          title: "Chapter 36: The Metabolic Transducer"
-        - file: source/language.md
-          title: "Chapter 37: The Inter-Subjective Metric"
-
+      - file: source/1_agent/01_foundations/02_control_loop.md
+    - file: source/1_agent/02_sieve/01_diagnostics.md
+      title: Part II - The Sieve (Runtime Safety)
+      children:
+      - file: source/1_agent/02_sieve/02_limits_barriers.md
+      - file: source/1_agent/02_sieve/03_failures_interventions.md
+      - file: source/1_agent/02_sieve/04_approximations.md
+    - file: source/1_agent/03_architecture/00_architecture_at_a_glance.md
+      title: Part III - Implementation Architecture
+      children:
+      - file: source/1_agent/03_architecture/01_compute_tiers.md
+      - file: source/1_agent/03_architecture/02_disentangled_vae.md
+      - file: source/1_agent/03_architecture/03_optimization.md
+    - file: source/1_agent/04_control/01_exploration.md
+      title: Part IV - Control & Belief
+      children:
+      - file: source/1_agent/04_control/02_belief_dynamics.md
+      - file: source/1_agent/04_control/03_coupling_window.md
+    - file: source/1_agent/05_geometry/01_metric_law.md
+      title: Part V - Geometric Dynamics
+      children:
+      - file: source/1_agent/05_geometry/02_wfr_geometry.md
+      - file: source/1_agent/05_geometry/03_holographic_gen.md
+      - file: source/1_agent/05_geometry/04_equations_motion.md
+    - file: source/1_agent/06_fields/01_boundary_interface.md
+      title: Part VI - Holography & Field Theory
+      children:
+      - file: source/1_agent/06_fields/02_reward_field.md
+      - file: source/1_agent/06_fields/03_info_bound.md
+    - file: source/1_agent/07_cognition/01_supervised_topo.md
+      title: Part VII - Cognitive Extensions
+      children:
+      - file: source/1_agent/07_cognition/02_governor.md
+      - file: source/1_agent/07_cognition/03_memory_retrieval.md
+      - file: source/1_agent/07_cognition/04_ontology.md
+      - file: source/1_agent/07_cognition/05_metabolism.md
+      - file: source/1_agent/07_cognition/06_causality.md
+      - file: source/1_agent/07_cognition/07_metabolic_transducer.md
+      - file: source/1_agent/07_cognition/08_intersubjective_metric.md
+      - file: source/1_agent/07_cognition/09_retrieval_attention.md
+    - file: source/1_agent/08_multiagent/01_gauge_theory.md
+      title: Part VIII - Multi-Agent Gauge Theory
+      children:
+      - file: source/1_agent/08_multiagent/02_standard_model.md
+      - file: source/1_agent/08_multiagent/03_parameter_sieve.md
+      - file: source/1_agent/08_multiagent/04_dnn_blocks.md
+      - file: source/1_agent/08_multiagent/05_architecture.md
+      - file: source/1_agent/08_multiagent/06_full_net.md
+    - file: source/1_agent/09_economics/01_pomw.md
+      title: Part IX - Economics
+    - file: source/1_agent/10_appendices/01_derivations.md
+      title: Appendices
+      children:
+      - file: source/1_agent/10_appendices/02_parameters.md
+      - file: source/1_agent/10_appendices/03_wfr_tensor.md
+      - file: source/1_agent/10_appendices/04_faq.md
+      - file: source/1_agent/10_appendices/05_proofs.md
+      - file: source/1_agent/10_appendices/06_losses.md
+      - file: source/1_agent/10_appendices/07_architecture.md
+    - file: source/1_agent/11_implementation/01_encoder.md
+      title: Part XI - Implementation
+      children:
+      - file: source/1_agent/11_implementation/02_world_model.md
+      - file: source/1_agent/11_implementation/03_dreamer.md
+  - title: Vol. 2 · Fractal Gas
+    children:
+    - file: source/2_fractal_gas/intro_fractal_gas.md
+      title: Overview
+    - file: source/2_fractal_gas/parts/01_foundations.md
+      title: Part I — Algorithms and Foundations
+      children:
+      - file: source/2_fractal_gas/1_the_algorithm/01_algorithm_intuition.md
+      - file: source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md
+      - file: source/2_fractal_gas/convergence_program/02_euclidean_gas.md
+      - file: source/2_fractal_gas/convergence_program/04_single_particle.md
+      - file: source/2_fractal_gas/1_the_algorithm/02_fractal_gas_latent.md
+    - file: source/2_fractal_gas/parts/02_convergence.md
+      title: Part II — Finite-Particle Convergence
+      children:
+      - file: source/2_fractal_gas/convergence_program/03_cloning.md
+      - file: source/2_fractal_gas/convergence_program/04_wasserstein_contraction.md
+      - file: source/2_fractal_gas/convergence_program/05_kinetic_contraction.md
+      - file: source/2_fractal_gas/convergence_program/06_convergence.md
+    - file: source/2_fractal_gas/parts/03_mean_field.md
+      title: Part III — Mean-Field Limits and Equilibrium
+      children:
+      - file: source/2_fractal_gas/convergence_program/08_mean_field.md
+      - file: source/2_fractal_gas/convergence_program/09_propagation_chaos.md
+      - file: source/2_fractal_gas/convergence_program/07_discrete_qsd.md
+      - file: source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md
+    - file: source/2_fractal_gas/parts/04_entropy_regularity.md
+      title: Part IV — Entropy, Regularity, and Bounds
+      children:
+      - file: source/2_fractal_gas/convergence_program/10_kl_hypocoercive.md
+      - file: source/2_fractal_gas/convergence_program/11_hk_convergence.md
+      - file: source/2_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md
+      - file: source/2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md
+      - file: source/2_fractal_gas/convergence_program/15_kl_convergence.md
+      - file: source/2_fractal_gas/convergence_program/17_geometric_gas.md
+      - file: source/2_fractal_gas/convergence_program/13_quantitative_error_bounds.md
+      - file: source/2_fractal_gas/1_the_algorithm/03_parameter_constraints.md
+    - file: source/2_fractal_gas/parts/05_continuum.md
+      title: Part V — Fractal Set and Continuum Limits
+      children:
+      - file: source/2_fractal_gas/2_fractal_set/01_fractal_set.md
+      - file: source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry.md
+      - file: source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime.md
+      - file: source/2_fractal_gas/convergence_program/16_continuum_discharge.md
+      - file: source/2_fractal_gas/2_fractal_set/02_causal_set_theory.md
+    - file: source/2_fractal_gas/parts/06_fields.md
+      title: Part VI — Fields and Emergent Physics
+      children:
+      - file: source/2_fractal_gas/2_fractal_set/03_lattice_qft.md
+      - file: source/2_fractal_gas/2_fractal_set/04_standard_model.md
+      - file: source/2_fractal_gas/2_fractal_set/05_yang_mills_noether.md
+      - file: source/2_fractal_gas/2_fractal_set/08_twistor_formulation.md
+      - file: source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity.md
+      - file: source/2_fractal_gas/3_fitness_manifold/04_field_equations.md
+      - file: source/2_fractal_gas/3_fitness_manifold/05_holography.md
+      - file: source/2_fractal_gas/3_fitness_manifold/06_cosmology.md
+    - file: source/2_fractal_gas/parts/07_experiments.md
+      title: Part VII — Computation and Experiments
+      children:
+      - file: source/2_fractal_gas/3_fitness_manifold/09_measurement.md
+      - file: source/2_fractal_gas/3_fitness_manifold/07_computational_proxies.md
+      - file: source/2_fractal_gas/3_fitness_manifold/08_voronoi_wilson_loops.md
+      - file: source/2_fractal_gas/2_fractal_set/06_empirical_validation.md
+      - file: source/2_fractal_gas/2_fractal_set/08_qft_calibration_notebook.ipynb
+      - file: source/2_fractal_gas/2_fractal_set/07_qft_calibration_report.md
+      - file: source/2_fractal_gas/2_fractal_set/09_qft_calibration.md
+    - file: source/2_fractal_gas/parts/08_reference.md
+      title: Reference Material
+      children:
+      - file: source/2_fractal_gas/reference/faq.md
+      - file: source/2_fractal_gas/reference/literature.md
+    - file: conclusions.md
+      title: Conclusion
 site:
   title: Fragile Documentation
   template: book-theme

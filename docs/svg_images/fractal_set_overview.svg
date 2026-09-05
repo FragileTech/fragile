@@ -69,4 +69,6 @@
 
   <rect x="660" y="200" width="20" height="12" class="tri" />
   <text x="688" y="210" class="small">Interaction triangle (one influence event)</text>
+  <text x="660" y="236" class="small">CST paths preserve walker IDs;</text>
+  <text x="660" y="252" class="small">clone ancestry is stored separately</text>
 </svg>

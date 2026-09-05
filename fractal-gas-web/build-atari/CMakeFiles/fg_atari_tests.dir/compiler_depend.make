@@ -11,6 +11,7 @@ CMakeFiles/fg_atari_tests.dir/tests/test_atari_env.cpp.o: /home/guillem/fragile/
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
   /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
   /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
   /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp \
   /usr/include/alloca.h \
@@ -556,11 +557,9 @@ CMakeFiles/fg_atari_tests.dir/tests/test_main.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/waitstatus.h:
 
-/usr/include/x86_64-linux-gnu/c++/15/bits/gthr-default.h:
+/usr/lib/x86_64-linux-gnu/crtn.o:
 
-/usr/include/c++/15/limits:
-
-/usr/include/c++/15/iosfwd:
+/usr/include/x86_64-linux-gnu/bits/waitflags.h:
 
 /usr/include/c++/15/functional:
 
@@ -700,6 +699,12 @@ libfg_atari_env.a:
 
 /home/guillem/fragile/fractal-gas-web/src/montezuma_logic.hpp:
 
+/usr/include/x86_64-linux-gnu/bits/stdio.h:
+
+/usr/include/c++/15/bits/postypes.h:
+
+/usr/include/x86_64-linux-gnu/asm/posix_types.h:
+
 /usr/include/c++/15/bits/random.h:
 
 /usr/include/c++/15/ext/aligned_buffer.h:
@@ -754,6 +759,12 @@ libfg_atari_env.a:
 
 /home/guillem/fragile/fractal-gas-web/src/rng.hpp:
 
+/usr/include/c++/15/iosfwd:
+
+/usr/include/x86_64-linux-gnu/c++/15/bits/gthr-default.h:
+
+/usr/include/c++/15/limits:
+
 /usr/include/c++/15/initializer_list:
 
 /usr/include/c++/15/bits/exception.h:
@@ -768,10 +779,6 @@ libfractal_gas_core.a:
 
 /usr/include/c++/15/tr1/beta_function.tcc:
 
-/usr/include/c++/15/bits/std_function.h:
-
-/home/guillem/fragile/fractal-gas-web/src/atari_env.hpp:
-
 /usr/include/c++/15/bits/align.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
@@ -779,6 +786,10 @@ libfractal_gas_core.a:
 /usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
 
 /usr/include/alloca.h:
+
+/usr/include/c++/15/bits/std_function.h:
+
+/home/guillem/fragile/fractal-gas-web/src/atari_env.hpp:
 
 /usr/include/c++/15/bits/stl_iterator_base_types.h:
 
@@ -825,6 +836,10 @@ libfractal_gas_core.a:
 /usr/include/c++/15/bit:
 
 /usr/include/pthread.h:
+
+/home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp:
+
+/usr/include/c++/15/bits/hashtable.h:
 
 /usr/include/c++/15/bits/hashtable_policy.h:
 
@@ -874,8 +889,6 @@ libfractal_gas_core.a:
 
 /usr/include/x86_64-linux-gnu/bits/iscanonical.h:
 
-/usr/include/c++/15/bits/hashtable.h:
-
 /usr/include/c++/15/bits/invoke.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
@@ -883,12 +896,6 @@ libfractal_gas_core.a:
 /usr/include/c++/15/bits/parse_numbers.h:
 
 /usr/include/c++/15/bits/move.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio.h:
-
-/usr/include/c++/15/bits/postypes.h:
-
-/usr/include/x86_64-linux-gnu/asm/posix_types.h:
 
 /usr/include/c++/15/bits/charconv.h:
 
@@ -968,9 +975,9 @@ libnes_core.a:
 
 /usr/include/locale.h:
 
-/usr/include/c++/15/debug/assertions.h:
-
 /usr/include/c++/15/bits/std_thread.h:
+
+/usr/include/c++/15/debug/assertions.h:
 
 /usr/include/x86_64-linux-gnu/asm/bitsperlong.h:
 
@@ -1109,7 +1116,3 @@ CMakeFiles/fg_atari_tests.dir/tests/test_atari_env.cpp.o:
 /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
 
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
-
-/usr/lib/x86_64-linux-gnu/crtn.o:
-
-/usr/include/x86_64-linux-gnu/bits/waitflags.h:

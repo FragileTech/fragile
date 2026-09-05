@@ -209,6 +209,8 @@ CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: /home/guillem/fragile/fra
   /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
   /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/bitsperlong.h \
@@ -236,12 +238,16 @@ CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: /home/guillem/fragile/fra
   /usr/include/c++/15/bits/cpp_type_traits.h \
   /usr/include/c++/15/bits/cxxabi_forced.h \
   /usr/include/c++/15/bits/cxxabi_init_exception.h \
+  /usr/include/c++/15/bits/enable_special_members.h \
+  /usr/include/c++/15/bits/erase_if.h \
   /usr/include/c++/15/bits/exception.h \
   /usr/include/c++/15/bits/exception_defines.h \
   /usr/include/c++/15/bits/exception_ptr.h \
   /usr/include/c++/15/bits/functexcept.h \
   /usr/include/c++/15/bits/functional_hash.h \
   /usr/include/c++/15/bits/hash_bytes.h \
+  /usr/include/c++/15/bits/hashtable.h \
+  /usr/include/c++/15/bits/hashtable_policy.h \
   /usr/include/c++/15/bits/invoke.h \
   /usr/include/c++/15/bits/localefwd.h \
   /usr/include/c++/15/bits/memory_resource.h \
@@ -249,6 +255,7 @@ CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: /home/guillem/fragile/fra
   /usr/include/c++/15/bits/move.h \
   /usr/include/c++/15/bits/nested_exception.h \
   /usr/include/c++/15/bits/new_allocator.h \
+  /usr/include/c++/15/bits/node_handle.h \
   /usr/include/c++/15/bits/ostream_insert.h \
   /usr/include/c++/15/bits/postypes.h \
   /usr/include/c++/15/bits/predefined_ops.h \
@@ -283,6 +290,7 @@ CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: /home/guillem/fragile/fra
   /usr/include/c++/15/bits/stringfwd.h \
   /usr/include/c++/15/bits/uniform_int_dist.h \
   /usr/include/c++/15/bits/unique_ptr.h \
+  /usr/include/c++/15/bits/unordered_map.h \
   /usr/include/c++/15/bits/uses_allocator.h \
   /usr/include/c++/15/bits/uses_allocator_args.h \
   /usr/include/c++/15/bits/utility.h \
@@ -337,6 +345,7 @@ CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: /home/guillem/fragile/fra
   /usr/include/c++/15/tuple \
   /usr/include/c++/15/type_traits \
   /usr/include/c++/15/typeinfo \
+  /usr/include/c++/15/unordered_map \
   /usr/include/c++/15/utility \
   /usr/include/c++/15/vector \
   /usr/include/ctype.h \
@@ -1582,7 +1591,6 @@ CMakeFiles/fractal_gas_core.dir/src/visit_grid.cpp.o: /home/guillem/fragile/frac
   /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
   /usr/include/alloca.h \
   /usr/include/c++/15/algorithm \
-  /usr/include/c++/15/array \
   /usr/include/c++/15/backward/binders.h \
   /usr/include/c++/15/bit \
   /usr/include/c++/15/bits/algorithmfwd.h \
@@ -1621,6 +1629,7 @@ CMakeFiles/fractal_gas_core.dir/src/visit_grid.cpp.o: /home/guillem/fragile/frac
   /usr/include/c++/15/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/15/bits/stl_iterator_base_types.h \
   /usr/include/c++/15/bits/stl_pair.h \
+  /usr/include/c++/15/bits/stl_relops.h \
   /usr/include/c++/15/bits/stl_tempbuf.h \
   /usr/include/c++/15/bits/stl_uninitialized.h \
   /usr/include/c++/15/bits/stl_vector.h \
@@ -1631,7 +1640,6 @@ CMakeFiles/fractal_gas_core.dir/src/visit_grid.cpp.o: /home/guillem/fragile/frac
   /usr/include/c++/15/bits/utility.h \
   /usr/include/c++/15/bits/vector.tcc \
   /usr/include/c++/15/bits/version.h \
-  /usr/include/c++/15/compare \
   /usr/include/c++/15/concepts \
   /usr/include/c++/15/cstddef \
   /usr/include/c++/15/cstdint \
@@ -1650,6 +1658,7 @@ CMakeFiles/fractal_gas_core.dir/src/visit_grid.cpp.o: /home/guillem/fragile/frac
   /usr/include/c++/15/tuple \
   /usr/include/c++/15/type_traits \
   /usr/include/c++/15/unordered_map \
+  /usr/include/c++/15/utility \
   /usr/include/c++/15/vector \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
@@ -1711,6 +1720,7 @@ CMakeFiles/fractal_gas_core.dir/src/visit_grid.cpp.o: /home/guillem/fragile/frac
   /usr/lib/gcc/x86_64-linux-gnu/15/include/stdint.h
 
 CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fractal-gas-web/src/walker_state.cpp \
+  /home/guillem/fragile/fractal-gas-web/src/env.hpp \
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
   /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
@@ -1974,8 +1984,6 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 
 /usr/include/x86_64-linux-gnu/c++/15/bits/error_constants.h:
 
-/usr/include/c++/15/unordered_map:
-
 /usr/include/c++/15/stdexcept:
 
 /usr/include/c++/15/ratio:
@@ -1994,19 +2002,11 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 
 /usr/include/c++/15/bits/parse_numbers.h:
 
-/usr/include/c++/15/bits/node_handle.h:
-
-/usr/include/c++/15/bits/hashtable.h:
-
-/usr/include/c++/15/bits/enable_special_members.h:
-
 /home/guillem/fragile/fractal-gas-web/third_party/nes-py/nes_py/nes/include/common.hpp:
 
 /usr/include/c++/15/bits/chrono.h:
 
 /usr/include/c++/15/array:
-
-/home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp:
 
 /usr/include/c++/15/thread:
 
@@ -2022,6 +2022,12 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 
 /usr/include/x86_64-linux-gnu/c++/15/bits/atomic_word.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
+
+/usr/include/x86_64-linux-gnu/bits/sched.h:
+
 /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
@@ -2035,10 +2041,6 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 /usr/include/c++/15/bits/ostream_insert.h:
 
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
-
-/usr/include/c++/15/bits/unordered_map.h:
-
-/usr/include/x86_64-linux-gnu/bits/endian.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs.h:
 
@@ -2216,6 +2218,10 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 
 /usr/include/c++/15/tr1/hypergeometric.tcc:
 
+/usr/include/x86_64-linux-gnu/bits/time.h:
+
+/usr/include/x86_64-linux-gnu/bits/select.h:
+
 /usr/include/c++/15/bits/hashtable_policy.h:
 
 /usr/include/c++/15/ext/string_conversions.h:
@@ -2233,8 +2239,6 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
 
 /usr/include/c++/15/fstream:
 
@@ -2255,6 +2259,10 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
 
 /usr/include/c++/15/numeric:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+
+/usr/include/asm-generic/errno.h:
 
 /usr/include/c++/15/bits/concept_check.h:
 
@@ -2285,6 +2293,8 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 /usr/include/c++/15/compare:
 
 /usr/include/c++/15/bits/cxxabi_forced.h:
+
+/usr/include/c++/15/bits/enable_special_members.h:
 
 /usr/include/c++/15/ext/atomicity.h:
 
@@ -2418,6 +2428,10 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 
 /usr/include/x86_64-linux-gnu/bits/stdio2.h:
 
+/usr/include/x86_64-linux-gnu/bits/timex.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/FILE.h:
 
 /usr/include/c++/15/bits/new_allocator.h:
@@ -2456,6 +2470,12 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 
 /usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
@@ -2490,6 +2510,8 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 
 /usr/include/x86_64-linux-gnu/c++/15/bits/c++allocator.h:
 
+/usr/include/c++/15/bits/hashtable.h:
+
 /usr/include/c++/15/bits/uses_allocator_args.h:
 
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
@@ -2516,11 +2538,19 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 
 /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp:
 
+/home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp:
+
 /usr/include/asm-generic/types.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/c++/15/bits/node_handle.h:
+
+/usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h:
+
+/usr/include/c++/15/pstl/glue_memory_defs.h:
 
 /usr/include/c++/15/bits/shared_ptr_atomic.h:
 
@@ -2540,15 +2570,13 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 
 /usr/include/c++/15/bits/stl_tempbuf.h:
 
+/usr/include/x86_64-linux-gnu/bits/endian.h:
+
+/usr/include/c++/15/bits/unordered_map.h:
+
 /usr/include/c++/15/exception:
 
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/timex.h:
-
-/usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h:
-
-/usr/include/c++/15/pstl/glue_memory_defs.h:
+/usr/include/c++/15/unordered_map:
 
 /usr/include/c++/15/bits/nested_exception.h:
 
@@ -2571,21 +2599,3 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fr
 /usr/include/x86_64-linux-gnu/asm/posix_types_64.h:
 
 /usr/include/x86_64-linux-gnu/bits/cpu-set.h:
-
-/usr/include/x86_64-linux-gnu/bits/sched.h:
-
-/usr/include/x86_64-linux-gnu/bits/select.h:
-
-/usr/include/x86_64-linux-gnu/bits/time.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
-
-/usr/include/asm-generic/errno.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:

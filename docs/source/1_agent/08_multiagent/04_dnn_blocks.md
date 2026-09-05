@@ -517,7 +517,7 @@ At kink points where $(Wz + b)_i = 0$, the term $\frac{\partial f_i}{\partial z_
 - Riemannian geometry for geodesic equations (smooth metric tensor)
 - Symplectic integrator theory (Lipschitz gradients for Boris-BAOAB)
 
-See Section 5.2 (WFR stress-energy tensor) and Part II, Hypostructure, Section 9 (Mathematical Prerequisites) for differential geometry foundations.
+See {doc}`../05_geometry/02_wfr_geometry` for the WFR metric and {doc}`../10_appendices/03_wfr_tensor` for the variational stress-energy calculation.
 
 $\square$
 :::

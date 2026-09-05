@@ -63,6 +63,7 @@ CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: \
  /usr/lib/gcc/x86_64-linux-gnu/15/include/stddef.h \
  /usr/include/c++/15/bits/uses_allocator.h \
  /usr/include/c++/15/bits/uses_allocator_args.h /usr/include/c++/15/tuple \
+ /home/guillem/fragile/fractal-gas-web/src/env.hpp \
  /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
  /usr/include/c++/15/utility /usr/include/c++/15/bits/stl_relops.h \
  /home/guillem/fragile/fractal-gas-web/src/rng.hpp \

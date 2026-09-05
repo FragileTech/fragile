@@ -8,8 +8,11 @@ By default, prf:proof blocks are excluded. Use --include-proofs to include them.
 from __future__ import annotations
 
 import argparse
+import operator
 from pathlib import Path
 import re
+
+from book_manifest import markdown_source, published_documents
 
 
 DIRECTIVE_OPEN_RE = re.compile(r"^\s*:{2,}\s*\{(?P<name>[^}]+)\}.*$")
@@ -46,7 +49,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--include-all",
         action="store_true",
-        help="Include all top-level subdirectories under source, not just numeric volumes.",
+        help="Include published nonnumeric source groups as well as numbered volumes.",
     )
     parser.add_argument(
         "--include-file-headings",
@@ -57,43 +60,85 @@ def parse_args() -> argparse.Namespace:
 
 
 def volume_dirs(source_dir: Path, include_all: bool) -> list[Path]:
+    """Return only volumes containing published documents, in TOC order."""
+    source_dir = source_dir.resolve()
     volumes = []
-    for child in sorted(source_dir.iterdir()):
-        if not child.is_dir():
+    for document in published_documents(source_dir.parent):
+        if not document.is_relative_to(source_dir):
             continue
-        if include_all or VOLUME_DIR_RE.match(child.name):
-            volumes.append(child)
+        volume = source_dir / document.relative_to(source_dir).parts[0]
+        if volume.is_dir() and (include_all or VOLUME_DIR_RE.match(volume.name)):
+            if volume not in volumes:
+                volumes.append(volume)
     return volumes
 
 
 def extract_prf_blocks(text: str, include_proofs: bool) -> list[str]:
+    """Extract formal blocks once, preserving order and handling nested proofs.
+
+    Code fences are opaque. Nested proofs are removed from their enclosing
+    theorem when proofs are excluded, rather than leaking through its body.
+    """
     lines = text.splitlines()
-    blocks: list[str] = []
-    stack: list[tuple[int, bool, str]] = []
-
-    for idx, line in enumerate(lines):
-        open_match = DIRECTIVE_OPEN_RE.match(line)
-        if open_match:
-            name = open_match.group("name").strip()
-            is_prf = False
-            kind = ""
-            if name.startswith("prf:"):
-                is_prf = True
-                kind = name.split(":", 1)[1].strip()
-            stack.append((idx, is_prf, kind))
+    opening = re.compile(r"^\s*(:{3,}|`{3,}|~{3,})\s*\{([^}]+)\}")
+    fence = re.compile(r"^\s*(:{3,}|`{3,}|~{3,})\s*$")
+    code_open = re.compile(r"^\s*(`{3,}|~{3,})")
+    stack = []
+    nodes = []
+    for index, line in enumerate(lines):
+        close = fence.match(line)
+        if (
+            stack
+            and close
+            and close[1][0] == stack[-1]["fence"][0]
+            and len(close[1]) >= len(stack[-1]["fence"])
+        ):
+            node = stack.pop()
+            node["end"] = index + 1
+            nodes.append(node)
             continue
-
-        if DIRECTIVE_CLOSE_RE.match(line):
-            if not stack:
-                continue
-            start_idx, is_prf, kind = stack.pop()
-            if not is_prf:
-                continue
-            if kind.lower() == "proof" and not include_proofs:
-                continue
-            blocks.append("\n".join(lines[start_idx : idx + 1]))
-
-    return blocks
+        if stack and stack[-1]["code"]:
+            continue
+        match = opening.match(line)
+        if match:
+            stack.append({
+                "start": index,
+                "fence": match[1],
+                "name": match[2],
+                "code": match[2] in {"code", "code-block", "code-cell", "math", "mermaid", "raw"},
+            })
+        elif code_open.match(line):
+            stack.append({
+                "start": index,
+                "fence": code_open.match(line)[1],
+                "name": "code",
+                "code": True,
+            })
+    formal = sorted(
+        (n for n in nodes if n["name"].startswith("prf:")), key=operator.itemgetter("start")
+    )
+    result = []
+    for node in formal:
+        if any(other["start"] < node["start"] < other["end"] for other in formal):
+            continue
+        if not include_proofs and node["name"] == "prf:proof":
+            continue
+        excluded = set()
+        if not include_proofs:
+            for child in formal:
+                if child["name"] == "prf:proof" and node["start"] < child["start"] < node["end"]:
+                    excluded.update(range(child["start"], child["end"]))
+        if not include_proofs:
+            for i in range(node["start"] + 1, node["end"] - 1):
+                if re.match(
+                    r"^\s*(?:\*{1,2})?Proof[.:]?(?:\*{1,2})?(?:\s|$)", lines[i], re.IGNORECASE
+                ):
+                    excluded.update(range(i, node["end"] - 1))
+                    break
+        result.append(
+            "\n".join(lines[i] for i in range(node["start"], node["end"]) if i not in excluded)
+        )
+    return result
 
 
 def build_volume_output(
@@ -101,25 +146,22 @@ def build_volume_output(
     include_proofs: bool,
     include_file_headings: bool,
 ) -> tuple[str, int, int]:
-    parts: list[str] = []
-    block_count = 0
-    file_count = 0
-
-    for md_file in sorted(volume_dir.rglob("*.md")):
-        content = md_file.read_text(encoding="utf-8")
-        blocks = extract_prf_blocks(content, include_proofs=include_proofs)
+    volume_dir = volume_dir.resolve()
+    parts = []
+    block_count = file_count = 0
+    for document in published_documents(volume_dir.parent.parent):
+        if not document.is_relative_to(volume_dir):
+            continue
+        blocks = extract_prf_blocks(markdown_source(document), include_proofs)
         if not blocks:
             continue
         file_count += 1
         if include_file_headings:
-            parts.append(f"## {md_file.relative_to(volume_dir)}")
+            parts.append(f"## {document.relative_to(volume_dir)}")
         parts.extend(blocks)
         block_count += len(blocks)
-
     output = "\n\n".join(parts).rstrip()
-    if output:
-        output += "\n"
-    return output, block_count, file_count
+    return output + ("\n" if output else ""), block_count, file_count
 
 
 def main() -> None:

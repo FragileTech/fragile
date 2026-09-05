@@ -1,103 +1,341 @@
 (sec-conclusion)=
 # Conclusion
 
-This work presents a unified theory of bounded intelligence built from first principles. The three volumes form a coherent whole: **Volume I** provides the engineering specification for agents with finite resources, **Volume II** supplies the categorical mathematics certifying that specification, and **Volume III** instantiates the computational engine that runs inside it. The unifying thread is **gauge symmetry**—local indifference to coordinate choice—which emerges independently in each volume from different first principles.
+:::{div} feynman-prose
+*Lectures on Algorithmic Geometrodynamics* studies two connected problems:
+how to organize an agent with limited information and computation, and how to
+analyze a population of interacting searchers. **Volume I, Fragile Mechanics**,
+develops representation, belief dynamics, control, and runtime diagnostics.
+**Volume II, The Fractal Gas**, develops particle algorithms, their analytic
+foundations, and geometric constructions from their histories.
 
----
+The common method connects explicit constructions to quantitative estimates.
+For the particle model, complete proofs cover composed Lyapunov control,
+finite-particle relaxation, mean-field evolution, population-uniform functional
+inequalities, regularity, and geometric observables. These results supply
+specific inputs to the field and measurement chapters. An agent's learned
+representation, a swarm's conditional law, and a continuum field are connected
+by the estimates stated for each construction.
+:::
 
-## Volume I: Fragile Mechanics
+(sec-conclusion-fragile-mechanics)=
+## Volume I: Representations and control
 
-Volume I answers the question: *How do you build an AI agent that remains stable, interpretable, and safe under partial observability and finite capacity?*
+:::{div} feynman-prose
+The agent architecture makes several choices explicit. Its latent decomposition
+separates control-relevant state, structured nuisance, and reconstruction detail.
+Its world model and belief dynamics describe prediction and observation updates.
+Its critic and policy connect these representations to action. The runtime Sieve
+organizes diagnostics and interventions around stability, capacity, grounding,
+and interaction between agents.
 
-The {prf:ref}`def-bounded-rationality-controller` is the organizing principle. An agent with finite channel capacity $C$ between world and actions must compress its representation, and this compression induces geometric structure on state space. The key architectural choices are:
+This organization gives a reader concrete places to inspect a failure. Poor
+reconstruction, an unstable belief update, and an action unsupported by current
+observations call for different measurements. A diagnostic has to be evaluated
+against the condition it measures and the intervention that follows it.
 
-1. **Decomposed latent space.** The state $Z_t = (K_t, Z_{n,t}, Z_{\mathrm{tex},t})$ separates macro-state (control-relevant symbols), nuisance (structured but auditable), and texture (reconstruction-only detail). This split enables explicit information constraints via $I(X;K)$, $H(K)$, and closure cross-entropy.
+The geometric chapters provide mathematical descriptions of transport,
+probability reweighting, and sensitivity in the state space. Boundary and field
+formulations develop these descriptions further. Their assumptions determine
+which conclusions apply to a particular architecture. Implementation and
+measurement are needed to establish how that architecture behaves on a task.
+:::
 
-2. **The Sieve.** Sixty diagnostic nodes organized by failure mode—stability, capacity, grounding, multi-agent coupling, ontology expansion—replace soft penalty-based safety with hard topological contracts. Failures are caught loudly, not silently.
+The {doc}`Volume I introduction <source/1_agent/intro_agent>` connects these
+components to the chapter sequence. Direct entry points include the
+{doc}`architecture overview <source/1_agent/03_architecture/00_architecture_at_a_glance>`,
+{doc}`runtime diagnostics <source/1_agent/02_sieve/01_diagnostics>`, and
+{doc}`Wasserstein–Fisher–Rao geometry <source/1_agent/05_geometry/02_wfr_geometry>`.
 
-3. **Geometric dynamics.** The critic induces a Fisher/Hessian sensitivity geometry; the policy becomes a regulated flow on a curved manifold. The Capacity-Constrained Metric Law ({prf:ref}`thm-capacity-constrained-metric-law`) derives curvature from information-theoretic constraints, not from physics. The Wasserstein-Fisher-Rao metric ({prf:ref}`def-the-wfr-action`) unifies transport (continuous motion within charts) and reaction (discrete jumps between charts) in a single variational principle.
+(sec-conclusion-fractal-gas)=
+## Volume II: An explicit particle model
 
-4. **Field-theoretic layer.** Sensors impose Dirichlet boundary conditions, motors impose Neumann conditions, and rewards appear as source terms. The critic solves the screened Poisson equation; the policy is a symmetry-breaking kick. The Causal Information Bound establishes an area law for representational capacity.
+:::{div} feynman-prose
+For the Fractal Gas, the starting point is a transition rule. Walkers select
+companions, compute fitness, clone, and undergo kinetic motion. The state
+space, boundary rule, update order, and noise law determine the process.
 
-5. **Standard Model of Cognition.** Three gauge fields emerge from three invariance principles: the opportunity field $B_\mu$ from utility phase freedom, the error field $W_\mu^a$ from sensor-motor chirality, and the binding field $G_\mu^a$ from feature basis freedom. The gauge group $G_{\mathrm{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ is not a metaphor—it is a theorem.
+The analysis follows the effects of those operations. A comparison matrix
+combines the component drift estimates into a Lyapunov function for a full
+step. A separate transition-kernel argument then gives relaxation. At the
+population level, the gain–loss equation preserves positivity, and a
+quantified contraction margin gives a unique stationary density.
 
-6. **Economics.** The Proof of Useful Work consensus ({prf:ref}`thm-cognitive-equivalency`) replaces hash mining with gradient computation. Verification complexity reduces from $O(N)$ to $O(\sqrt{N})$ via the holographic bound ({prf:ref}`thm-holographic-verification`), and attackers are isolated via geometric damping ({prf:ref}`thm-adversarial-geometric-damping`) rather than voting.
+There is also a direct route from a functional inequality to an observable
+error. An LSI controls the full position–velocity gradient; its Poincaré
+consequence controls empirical averages. The entropy calculation then
+tracks how kinetic transport, diffusion, cloning, and survival normalization
+change the law. These are complete calculations that can be used when
+their stated structural conditions hold.
+:::
 
----
+:::{prf:remark} Established analytical results
+:label: rem-conclusion-analytical-results
 
-## Volume II: The Hypostructure Formalism
+The principal quantitative results available to subsequent constructions are:
 
-Volume II answers the question: *How do you prove that a system cannot fail, by showing failure modes are topologically excluded?*
+1. **Full-step control and relaxation.**
+   {prf:ref}`thm-synergistic-rate-derivation` constructs positive Lyapunov
+   weights when the nonnegative comparison matrix has spectral radius
+   below one. Under their respective full-kernel hypotheses,
+   {prf:ref}`thm-convergence-conservative-harris` and
+   {prf:ref}`thm-main-convergence` prove existence, uniqueness, and
+   geometric relaxation to an invariant law or a QSD.
 
-The {prf:ref}`def-categorical-hypostructure` packages all constraints into a single categorical object $\mathbb{H} = (\mathcal{X}, \nabla, \Phi, \tau, \partial)$: state stack, dynamics, energy, truncation, and boundary. Working in a cohesive $(\infty,1)$-topos with shape/flat/sharp modalities enables gauge-theoretic analysis and abstraction beyond classical set theory. The key results are:
+2. **Positive mean-field evolution and global attraction.**
+   The specified gain–loss model has a unique global positive mild
+   solution under {prf:ref}`thm-chaos-mild-wellposedness`.
+   If its kinetic semigroup contracts zero-mass differences by
+   $Ke^{-at}$ and the reaction has Lipschitz constant $L_{\mathcal R}$,
+   the margin $b=a-KL_{\mathcal R}>0$ gives
 
-1. **Five axioms.** Conservation (D, Rec), Duality (C, SC), Symmetry (LS, GC), Topology (TB, Cap), and Boundary constitute a complete set of constraints for global regularity. All axioms manifest the unifying principle: self-consistency under evolution.
+   $$
+   \|\mathcal S_t\rho-\rho_*\|_1
+   \leq Ke^{-bt}\|\rho-\rho_*\|_1
+   $$
 
-2. **Trichotomy Metatheorem** ({prf:ref}`mt-krnl-trichotomy`). Every system state is exactly one of: VICTORY (globally regular), Mode (classified failure), or Surgery (repairable). There is no fourth option. This transforms runtime monitoring from heuristic checking into logical proof.
+   for the unique stationary density, by
+   {prf:ref}`thm-uniqueness-uniqueness-stationary-solution`.
+   The finite-time and stationary particle limits retain their
+   consistency and concentration hypotheses.
 
-3. **Factory Metatheorems.** Domain experts specify *what* to check; the framework generates correct-by-construction verifiers that handle *how*. The Sieve becomes a proof architecture with typed certificates (YES/NO/INC) at every node.
+3. **Population-uniform full-gradient LSI.**
+   {prf:ref}`cor-n-uniform-lsi` proves four structural routes:
+   tensorized kinetic references, uniformly bounded whole-law
+   log-density tilts, uniform joint curvature, and contractive
+   additive-noise invariant flows. For the identified law $\pi_N$,
 
-4. **Upgrade Theorems.** Blocked barrier certificates can be promoted to full YES under structural conditions—infinite energy under drift becomes finite under renormalization; zero Hessian plus spectral gap yields exponential convergence.
+   $$
+   \operatorname{Ent}_{\pi_N}(f^2)
+   \leq2C_*\int\sum_i
+       (|\nabla_{x_i}f|^2+|\nabla_{v_i}f|^2)\,d\pi_N,
+   $$
 
-5. **Algorithmic Completeness and P/NP Bridge.** Polynomial-time algorithms must exploit one of five fundamental modalities (metric structure, causality, algebraic symmetry, self-similarity, holography). Blocking all five establishes hardness. The Master Export Theorem ({prf:ref}`thm-master-export`) provides bidirectional translation between internal complexity separations and classical ZFC statements about P and NP.
+   with $C_*$ independent of $N$. The kinetic references include
+   the proved nonconvex confinement regime. Laws with discrete
+   alive/dead strata additionally use
+   {prf:ref}`prop-kl-status-entropy`.
 
----
+4. **Hypocoercive entropy convergence.**
+   {prf:ref}`thm-villani-hypocoercivity` proves the kinetic
+   commutator and modified-Fisher estimate, including its nonconvex
+   product corollary. For the complete normalized evolution,
+   {prf:ref}`thm-kl-convergence-euclidean` gives rate
 
-## Volume III: The Fractal Gas
+   $$
+   r_N=\frac{\delta_N}{C_N/2+g_{+,N}}
+   $$
 
-Volume III answers the question: *How do you efficiently explore and sample using parallel particle dynamics with provable guarantees?*
+   from an actual-law LSI constant $C_N$, an upper modified-Fisher
+   matrix bound $g_{+,N}$, and the full dissipation estimate
+   $\dot\Phi\leq-\delta_N I$. A uniform positive dissipation margin
+   and uniform constants give a population-uniform rate.
 
-The Fractal Gas is a population-based optimization algorithm: walkers in latent space with state $(z, v, s)$ (position, velocity, alive/dead), soft companion selection via Gaussian kernel, dual-channel fitness balancing exploitation and exploration, and momentum-conserving cloning. The key results are:
+5. **Regularity of the specified companion laws.**
+   {prf:ref}`thm-main-complete-cinf-geometric-gas-full` proves
+   smoothness on fixed alive, candidate, and branch strata for the
+   sampled fitness, expected-measurement surrogate, and expected
+   sampled fitness separately. Fixed positive scales and
+   regularizers, bounded pair distances, and population-uniform
+   analytic reward bounds give
 
-1. **Provable convergence.** The main contraction theorem ({prf:ref}`thm-alg-sieve-wasserstein-contraction`) establishes Wasserstein contractivity. The algorithm satisfies all 17 Hypostructure nodes with zero inconclusive certificates under mild parameter assumptions.
+   $$
+   \|D^nF\|\leq C B^n n!,
+   $$
 
-2. **Scaling limits.** Three timescales connect: discrete algorithm $\to$ scaling limit $\to$ WFR continuum PDE. Selection-mutation dynamics are self-similar across all scales. The mean-field limit ({prf:ref}`thm-mean-field-limit-informal`) connects finite swarms to deterministic density evolution with error $\lesssim e^{-\kappa_W T}/\sqrt{N}$.
+   with $C,B$ independent of population size and the differentiated
+   walker. The theorem also gives its unbounded-family route through
+   uniform normalized derivative and joint-law majorants. The
+   sequential greedy companion law uses its actual full-history
+   calculation.
 
-3. **Revival guarantee.** Dead walkers always resurrect; the population never goes extinct. The quasi-stationary distribution ensures walkers explore under survival constraint, and cloning resurrects from QSD ({prf:ref}`thm-hk-convergence-main-assembly`).
+6. **Empirical errors.** Write
+   $L_Nf=N^{-1}\sum_i f(Z_i)$ and
+   $H_N=D_{\mathrm{KL}}(\pi_N\|\rho^{\otimes N})$. For $|f|\leq B$,
+   {prf:ref}`thm-mixing-variance-corrected` gives
 
-4. **Standard Model from walker interactions.** The gauge group $SU(3)_C \times SU(2)_L \times U(1)_Y$ ({prf:ref}`cor-sm-gauge-group`) emerges from viscous coupling between walkers: color link variables encode viscous force amplitude and momentum phase, gluon fields arise from coherent neighbor sums, and confinement follows from the localization kernel.
+   $$
+   \mathbb E_{\pi_N}|L_Nf-\rho f|^2
+   \leq\frac{4B^2}{N}\left(H_N+\frac12\log2\right).
+   $$
 
----
+   Under the full-gradient LSI, a fixed $L$-Lipschitz observable has
+   $\operatorname{Var}_{\pi_N}(L_Nf)\leq C_*L^2/N$ by
+   {prf:ref}`cor-quantitative-lsi-final`. The joint-law hypotheses,
+   rather than exchangeability alone, supply these bounds.
+:::
 
-## The Unifying Thread
+:::{div} feynman-prose
+When extinction is possible, the target QSD describes runs conditioned on
+survival. A conservative invariant law answers a different question.
+The invariant law of a Doob-transformed surviving process is the
+eigenfunction-weighted QSD. Keeping these laws identified lets us apply
+the right density estimate, LSI, and sampling weight.
+:::
 
-Gauge symmetry appears in each volume, derived from different first principles:
+The {doc}`Volume II introduction <source/2_fractal_gas/intro_fractal_gas>` gives
+the dependency map, beginning with
+{doc}`algorithms and foundations <source/2_fractal_gas/parts/01_foundations>` and
+{doc}`finite-particle convergence <source/2_fractal_gas/parts/02_convergence>`.
 
-| Volume | Gauge Group | Source | Meaning |
-|--------|-------------|--------|---------|
-| **I** | $SU(N_f)_C \times SU(2)_L \times U(1)_Y$ | Agent-environment interface invariances | Local indifference to coordinate choice in cognition |
-| **II** | Modality structure in cohesive topos | Categorical foundations of verification | Topological invariance under proof transformation |
-| **III** | $SU(3)_C \times SU(2)_L \times U(1)_Y$ | Viscous coupling between walkers | Algorithmic symmetry from pairwise interactions |
+(sec-conclusion-distinct-limits)=
+## Keeping the limits separate
 
-The convergence is not coincidence. **Local indifference**—freedom to choose coordinates without changing the physics—is the organizing principle of intelligence, proof, and computation.
+:::{div} feynman-prose
+Running a swarm longer, increasing its population, and refining a geometric
+construction change different things. A result about one of these operations
+cannot be transferred to another without checking what happens to the estimates.
 
-Standard reinforcement learning is the degenerate limit of this framework when:
-- Geometry flattens ($G \to I$)
-- Capacity unbounds ($|\mathcal{K}| \to \infty$)
-- Safety is disabled ($\Xi_{\text{crit}} \to \infty$)
-- Energy is ignored ($T_c \to 0$)
-- Consensus becomes voting (not geometric damping)
+For example, permutation symmetry says that relabeling the walkers leaves their
+joint law unchanged. The walkers can still be correlated. Obtaining a
+deterministic mean-field limit requires control of those correlations and of the
+nonlinear empirical quantities in the update. Likewise, a smooth limiting density
+supplies only some of the information needed to identify a continuum geometric
+operator.
+:::
 
-This establishes a complete hierarchy: Fragile is the general theory; standard RL, information bottleneck, safe RL, multi-agent games, and proof-of-work are all special cases obtained by taking appropriate limits.
+::::{div} feynman-added
+| Question | Object being studied | Required control |
+|---|---|---|
+| How does a fixed swarm relax? | The full finite-particle law, conditioned on survival when appropriate | Drift, accessibility, mixing, and survival estimates for that process |
+| What happens as the population grows? | Marginals and empirical measures | Uniform bounds, correlation control, and identification of limiting interactions |
+| What does a refined geometric construction approach? | Discrete operators, energies, and observables | Geometry, sampling, regularity, normalization, and compatible scale limits |
+::::
 
----
+:::{div} feynman-prose
+A quantitative rate must travel with its measured quantity and its assumptions.
+A bound for a fixed observable, one for a marginal distribution, and one for an
+empirical measure in Wasserstein distance answer different questions. The
+constants may depend on dimension, time, population size, or regularization.
+Tracking that dependence is part of interpreting the result.
+:::
 
-## Looking Forward
+These issues are developed in
+{doc}`mean-field limits and equilibrium <source/2_fractal_gas/parts/03_mean_field>`
+and {doc}`entropy, regularity, and bounds <source/2_fractal_gas/parts/04_entropy_regularity>`.
 
-Several directions remain open:
+(sec-conclusion-geometry-fields)=
+## Geometry and physical interpretation
 
-- **Empirical validation.** The theoretical framework is complete; systematic benchmarks against standard RL baselines on vision-based control tasks are needed.
-- **Hardware co-design.** The Sieve's diagnostic structure suggests hardware accelerators with built-in safety monitors. The holographic bound suggests information-efficient chip architectures.
-- **Biological interpretation.** The Standard Model of Cognition makes specific predictions about neural gauge fields. Experimental neuroscience may test whether brains implement analogous structures.
-- **Economic deployment.** Proof of Useful Work provides a path from cryptocurrency to useful computation. Implementation on existing blockchain infrastructure is technically feasible.
-- **Categorical extensions.** The Hypostructure formalism admits natural generalizations to higher categories, potentially connecting to homotopy type theory and formal verification.
+:::{div} feynman-prose
+The Fractal Set turns a run into a record of sites, trajectories, cloning
+events, and interactions. Some results are exact on that finite record:
+the causal graph has its stated order properties, and the selected
+matrix-valued edge variables have exact gauge-transformation laws.
 
----
+Other constructions begin with a spatial metric field. Its inverse
+covariance gives a ruler; Gram determinants give the areas and volumes
+of chosen cells. For a smooth Hessian metric, curvature has an explicit
+formula in third derivatives. The cancellation that produces this
+formula is part of the calculation, not a physical interpretation.
 
-## Appendices
+A continuum measurement then needs two approximations: the sampled
+objects must cover the chosen geometry, and the discrete operator or
+transport must approximate its continuous counterpart. The regularity,
+sampling, and connection-error estimates specify how these
+approximations are controlled.
+:::
 
-Full derivations and parameter tables are organized by volume:
+:::{prf:remark} Exact constructions and proved geometric limits
+:label: rem-conclusion-geometric-results
 
-- **Volume I:** {ref}`Appendix A <sec-appendix-a-full-derivations>` (derivations), {ref}`Appendix B <sec-appendix-b-units-parameters-and-coefficients>` (parameters), WFR tensor computations, FAQ, and formal proofs.
-- **Volume II:** ZFC foundations, mathematical notation, and FAQ.
-- **Volume III:** Mathematical appendices covering the Fragile Gas framework, Euclidean specialization, cloning mechanics, Wasserstein contraction, kinetic contraction, convergence analysis, quasi-stationary distributions, mean-field limits, propagation of chaos, and quantitative error bounds.
+Finite gauge covariance and Wilson-action invariance are proved in
+{prf:ref}`prop-lqft-finite-gauge-covariance` and
+{prf:ref}`thm-wilson-action-gauge-invariance`. The chosen exterior-algebra
+representation satisfies the canonical anticommutation relations of
+{prf:ref}`thm-cloning-antisymmetry-lqft`. These identities retain the
+specified edge variables and representations.
+
+Metric inversion and clipping have the explicit bounds of
+{prf:ref}`thm-uniform-ellipticity-latent` and
+{prf:ref}`prop-lipschitz-diffusion-latent`. The Hessian-curvature
+identity is {prf:ref}`lem-curvature-hessian-cancellation`.
+Consistent plaquette transport recovers curvature under
+{prf:ref}`thm-riemann-scutoid`; reconstructed volume evolution uses
+the differentiated consistency and flux conditions of
+{prf:ref}`thm-discrete-raychaudhuri`.
+
+The Gaussian boundary energy has the weighted-perimeter limit of
+{prf:ref}`thm-gamma-convergence`. In its specified periodic geometry,
+positive regular sampling density, finite-perimeter set, and complete
+unthresholded Gaussian graph, independent samples in $d>1$ with
+$\varepsilon_N=\ell N^{-1/d}$ satisfy the normalized
+$N^{(d-1)/d}$ cut limit of {prf:ref}`thm-ig-cut-scaling`.
+The same limit holds in probability for dependent joint laws with
+$D_{\mathrm{KL}}(\pi_N\|\rho^{\otimes N})=o(\log N)$ by
+{prf:ref}`cor-holo-dependent-cut-limit`. A uniformly bounded total
+entropy is therefore sufficient.
+
+The complete continuum statement is
+{prf:ref}`cor-continuum-consistency-conditional`, with its geometry,
+sampling, regularity, normalization, and scaling hypotheses. Interpreting
+a boundary count as quantum entropy, selecting a physical gauge
+representation, or imposing an Einstein-type field equation adds the
+corresponding identification. These additions are specified in the
+chapters that use them.
+:::
+
+:::{div} feynman-prose
+Numerical comparisons test the resulting observables. They require the
+actual recorded quantity, its estimator, uncertainty, and calibration
+choices. If one measured mass fixes the unit, agreement at that point is
+an input. The other quantities can then be assessed using the fixed scale.
+
+The analytical results help with that assessment. Joint-law bounds
+control empirical error; finite-step calculations identify discretization
+effects; the exact gauge and role identities tell us which transformations
+and operational definitions the measured quantities obey.
+:::
+
+The relevant sequence is
+{doc}`Fractal Set and continuum limits <source/2_fractal_gas/parts/05_continuum>`,
+{doc}`fields and emergent physics <source/2_fractal_gas/parts/06_fields>`, and
+{doc}`computation and experiments <source/2_fractal_gas/parts/07_experiments>`.
+
+(sec-conclusion-further-work)=
+## Questions for further work
+
+:::{div} feynman-prose
+Several questions connect the analysis to further mathematical and computational
+work:
+
+- **Adaptive models.** Extend the established derivative and contraction
+  estimates to jointly learned representations and changing rewards, with
+  an explicit update schedule and uniform control of the additional terms.
+- **Quantitative approximation.** Use the proved observable and discretization
+  estimates to select population sizes and time steps, then sharpen the
+  constants for the measured regime. Stationary estimates retain their
+  mixing and limit-interchange conditions.
+- **Continuum hypotheses.** Verify the remaining geometric reconstruction,
+  connection-consistency, and physical identification conditions for a
+  specified implementation, using the proved coverage and concentration
+  estimates where they apply.
+- **Implementation and experiments.** Match the implemented update to its
+  mathematical specification. Compare observables across repeated runs and
+  parameter regimes, reporting sampling dependence and calibration inputs.
+
+The volumes meet at these questions. An agent can supply the space and score in
+which a swarm searches; the swarm can supply candidate trajectories and
+measurements. An analysis of the combined system must account for the updates on
+both sides of that interaction.
+:::
+
+(sec-conclusion-reading-resources)=
+## Returning to the details
+
+For the agent architecture, use the
+{doc}`Volume I introduction <source/1_agent/intro_agent>`,
+{doc}`derivations <source/1_agent/10_appendices/01_derivations>`,
+{doc}`parameter reference <source/1_agent/10_appendices/02_parameters>`, and
+{doc}`FAQ <source/1_agent/10_appendices/04_faq>`.
+For the particle model, use the
+{doc}`Volume II introduction <source/2_fractal_gas/intro_fractal_gas>` and its
+{doc}`reference material <source/2_fractal_gas/parts/08_reference>`.
+
+:::{div} feynman-prose
+Choose the object you want to understand and follow one complete argument about
+it. Write down the update, locate the assumptions, and identify the quantity the
+result controls. Then compare that quantity with what the implementation
+measures. This connects a mathematical statement to a calculation that can be
+inspected and repeated.
+:::

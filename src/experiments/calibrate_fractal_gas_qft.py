@@ -2,7 +2,7 @@
 Calibrate Fractal Gas QFT parameters from measured Standard Model constants.
 
 This script converts measured couplings (alpha_em, sin^2(theta_W), alpha_s)
-into algorithmic parameters using the Volume 3 Fractal Set formulas. QSD
+into algorithmic parameters using the Volume 2 Fractal Set formulas. QSD
 normalizations must be supplied from simulations (or left as order-one defaults).
 
 Usage:

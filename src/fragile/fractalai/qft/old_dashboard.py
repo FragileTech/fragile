@@ -10517,7 +10517,7 @@ configuration to analyze (recorded step or index; blank = last recorded slice).
                 ),
                 pn.pane.Markdown(
                     "_Electroweak channels are proxy observables built from U(1)/SU(2) phases "
-                    "defined in `docs/source/3_fractal_gas/2_fractal_set/04_standard_model.md`._"
+                    "defined in `docs/source/2_fractal_gas/2_fractal_set/04_standard_model.md`._"
                 ),
                 pn.layout.Divider(),
                 electroweak_summary,
