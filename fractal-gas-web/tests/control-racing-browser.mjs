@@ -16,7 +16,11 @@ page.on("console", (m) => {
 });
 page.setDefaultTimeout(120000);
 const ready = () =>
-  page.waitForFunction(() => !document.getElementById("run").disabled, undefined, { polling: 100 });
+  page.waitForFunction(
+    () => !document.getElementById("run").disabled,
+    undefined,
+    { polling: 100 },
+  );
 async function graphicsReady() {
   await page.waitForFunction(() => {
     const gl = document.getElementById("world").getContext("webgl2");
@@ -182,24 +186,29 @@ try {
           scene.circuit.sources[0].url,
         );
       } else assert.equal(await preview.locator("a").count(), 0);
-      await page.locator("#manual").check();
-      await page.locator("#world").click();
-      await page.keyboard.down("w");
-      await page.waitForFunction(
-        () =>
-          Number(document.getElementById("tick").textContent.slice(5)) >= 12,
-      );
-      await page.keyboard.up("w");
-      await page.locator("#manual").uncheck();
+      // Driving is independent of viewport size; exercise it once per circuit.
+      if (viewport.width === 1536) {
+        await page.locator("#manual").check();
+        await page.locator("#world").click();
+        await page.keyboard.down("w");
+        await page.waitForFunction(
+          () =>
+            Number(document.getElementById("tick").textContent.slice(5)) >= 12,
+        );
+        await page.keyboard.up("w");
+        await page.locator("#manual").uncheck();
+      }
       assert.equal(
         await page.evaluate(
           () => document.documentElement.scrollWidth > innerWidth,
         ),
         false,
       );
-      await capture(`${id}-${viewport.width}`);
+      // Keep every layout assertion, with representative tablet screenshots.
+      if (viewport.width === 1536 || id === "racing-roots" || id === "racing")
+        await capture(`${id}-${viewport.width}`);
       console.log(
-        `Checked ${id}: selection, preview, manual control and ${viewport.width}px layout.`,
+        `Checked ${id}: selection, preview and ${viewport.width}px layout${viewport.width === 1536 ? ", manual control" : ""}.`,
       );
     }
   }

@@ -54,16 +54,16 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Test the interactive laboratory
         timeout-minutes: 15
-        run: |
-          python3 fractal-gas-web/tools/serve-control.py > /tmp/control-server.log 2>&1 &
-          control_server_pid=$!
-          trap 'kill "$control_server_pid"; wait "$control_server_pid" || true' EXIT
-          for attempt in $(seq 1 30); do curl -sf http://127.0.0.1:8080/lab/ > /dev/null && break; sleep 1; done
-          curl --fail --silent --show-error http://127.0.0.1:8080/lab/ > /dev/null
-          node fractal-gas-web/tests/control-browser.mjs
-          node fractal-gas-web/tests/control-replay-browser.mjs
-          node fractal-gas-web/tests/control-experiments-browser.mjs
-          node fractal-gas-web/tests/control-racing-browser.mjs
+        run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-browser.mjs
+      - name: Test laboratory replay
+        timeout-minutes: 15
+        run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-replay-browser.mjs
+      - name: Test laboratory experiments
+        timeout-minutes: 15
+        run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-experiments-browser.mjs
+      - name: Test laboratory racing
+        timeout-minutes: 15
+        run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-racing-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -71,3 +71,4 @@ jobs:
           path: |
             /tmp/fractal-control-browser
             /tmp/fractal-control-racing
+            /tmp/control-server.log
