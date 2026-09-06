@@ -3,7 +3,7 @@ import * as T from "../vendor/three.module.js";
 export const stylePalette = {
   futuristic: {
     background: 0x0c1422,
-    floor: 0x15212e,
+    floor: 0x465563,
     wall: 0x324151,
     accent: 0x75dceb,
     energy: 0x9f82ff,
@@ -12,7 +12,7 @@ export const stylePalette = {
   },
   steampunk: {
     background: 0x211a15,
-    floor: 0x302820,
+    floor: 0x595148,
     wall: 0x4a3c2d,
     accent: 0xe2b56b,
     energy: 0xb8652b,

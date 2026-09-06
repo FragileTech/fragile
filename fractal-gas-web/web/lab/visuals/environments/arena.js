@@ -30,6 +30,7 @@ export function arenaEnvironment(scene) {
       roughness: 0.75,
     }),
   );
+  floor.name = "Playable arena floor";
   floor.position.z = -0.05;
   group.add(floor);
   const grid = new T.GridHelper(
