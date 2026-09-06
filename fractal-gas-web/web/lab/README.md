@@ -168,11 +168,28 @@ The files under `scenarios/` are editable examples:
 | Preset | Bodies controlled | Task |
 | --- | ---: | --- |
 | Asteroid harvesting | 1 | Hook polygon ore and deliver it to a base under local gravity |
-| Ants & drops | 48 | Joint 144-dimensional control and seeded food respawning |
+| Ants & drops | 1–128 (default 48) | Choose harvesters or drones; three action channels per vehicle and seeded drop respawning |
 | Tandem flight | 2 | Sequential checkpoint loop and formation penalty |
 | Collaborative mining | 2 | Two elastic tethers carrying the same heavy asteroid |
 | Mining rocket / thinking graphs | 1 | Tethered search, risk and tree diagnostics |
 | Violet Circuit / kart racing | 1 | Ordered checkpoints around a closed circuit, with lap progress and manual driving |
+
+### Ants & drops
+
+Choose **Vehicle type** (Harvesters or Drones) and **Vehicle count** beneath the
+environment selector. The default is 48 harvesters; counts from 1 to 128 are
+supported. These are vehicles in the live world, distinct from the planner's
+population of candidate worlds. Each vehicle uses its archetype's physics and model.
+
+Changing either control rebuilds the original preset, clears the run and editor
+history, and leaves it paused. Reset retains the current scene. Your fleet selection
+persists when switching presets within the same tab; exported scenes and recordings
+store the actual bodies and restore them without regenerating the fleet.
+
+There are 24 drop slots. Each collected drop returns at a seeded random playable
+position after three **simulation seconds**, indefinitely—even after the entire
+pool has been collected. Pausing also pauses the timer; slow planning can make three
+simulation seconds take longer than three wall-clock seconds.
 
 ### Violet Circuit
 
@@ -537,6 +554,12 @@ Blender-authored vehicles can be rotated beside their concept sheets and downloa
 as GLB models or editable `.blend` sources. Each collection also supplies recovery
 docks, checkpoints and reactors. Small or crowded views use simplified geometry;
 close views reveal the detailed models. Native scene hulls still define collisions.
+
+The workshop's **Artwork and prompts** link opens the
+[paired concept library](concepts/index.html): sixteen additional futuristic and
+steampunk sheets for drops, towable rocks, gravity wells, docks, checkpoints,
+arena and racing scenery, and capture/motion effects. Original PNG downloads and
+complete prompts accompany the sheets for future Blender asset work.
 
 `visuals/assets.js` caches the authored models, and `visual-style.js` coordinates
 style transitions across renderers. `visuals/vehicles.js` and `models.js` retain

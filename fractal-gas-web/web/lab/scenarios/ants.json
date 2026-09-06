@@ -1,7 +1,7 @@
 {
   "version": 1,
   "name": "Ants & drops",
-  "description": "Forty-eight bodies. One joint continuous action space.",
+  "description": "48 harvesters. Collect drops that return at random positions after 3 simulation seconds.",
   "task": "forage",
   "size": [
     64,
@@ -16,724 +16,388 @@
   },
   "bodies": [
     {
+      "agent_type": "harvester",
       "position": [
-        7,
-        7
+        8,
+        4
       ],
-      "angle": -3,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -3
     },
     {
+      "agent_type": "harvester",
       "position": [
-        14,
-        7
+        20,
+        4
       ],
-      "angle": -2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        21,
-        7
+        32,
+        4
       ],
-      "angle": -1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        28,
-        7
+        44,
+        4
       ],
-      "angle": 0,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 0
     },
     {
-      "position": [
-        35,
-        7
-      ],
-      "angle": 1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
-      "position": [
-        42,
-        7
-      ],
-      "angle": 2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
-      "position": [
-        49,
-        7
-      ],
-      "angle": -3,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
+      "agent_type": "harvester",
       "position": [
         56,
-        7
+        4
       ],
-      "angle": -2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        7,
-        13
+        8,
+        8
       ],
-      "angle": -1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        14,
-        13
+        20,
+        8
       ],
-      "angle": 0,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -3
     },
     {
+      "agent_type": "harvester",
       "position": [
-        21,
-        13
+        32,
+        8
       ],
-      "angle": 1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        28,
-        13
+        44,
+        8
       ],
-      "angle": 2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -1
     },
     {
-      "position": [
-        35,
-        13
-      ],
-      "angle": -3,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
-      "position": [
-        42,
-        13
-      ],
-      "angle": -2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
-      "position": [
-        49,
-        13
-      ],
-      "angle": -1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
+      "agent_type": "harvester",
       "position": [
         56,
-        13
+        8
       ],
-      "angle": 0,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 0
     },
     {
+      "agent_type": "harvester",
       "position": [
-        7,
-        19
+        8,
+        12
       ],
-      "angle": 1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        14,
-        19
+        20,
+        12
       ],
-      "angle": 2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 2
     },
     {
-      "position": [
-        21,
-        19
-      ],
-      "angle": -3,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
+      "agent_type": "harvester",
       "position": [
         28,
-        19
+        12
       ],
-      "angle": -2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -3
     },
     {
+      "agent_type": "harvester",
       "position": [
-        35,
-        19
+        40,
+        12
       ],
-      "angle": -1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        42,
-        19
+        52,
+        12
       ],
-      "angle": 0,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        49,
-        19
+        4,
+        16
       ],
-      "angle": 1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 0
     },
     {
+      "agent_type": "harvester",
       "position": [
-        56,
-        19
+        16,
+        16
       ],
-      "angle": 2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        7,
-        25
+        36,
+        16
       ],
-      "angle": -3,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        14,
-        25
+        48,
+        16
       ],
-      "angle": -2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -3
     },
     {
+      "agent_type": "harvester",
       "position": [
-        21,
-        25
+        60,
+        16
       ],
-      "angle": -1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        28,
-        25
+        12,
+        20
       ],
-      "angle": 0,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        35,
-        25
+        24,
+        20
       ],
-      "angle": 1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 0
     },
     {
+      "agent_type": "harvester",
       "position": [
-        42,
-        25
+        44,
+        20
       ],
-      "angle": 2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 1
     },
     {
-      "position": [
-        49,
-        25
-      ],
-      "angle": -3,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
+      "agent_type": "harvester",
       "position": [
         56,
-        25
+        20
       ],
-      "angle": -2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        7,
-        31
+        8,
+        24
       ],
-      "angle": -1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -3
     },
     {
+      "agent_type": "harvester",
       "position": [
-        14,
-        31
+        20,
+        24
       ],
-      "angle": 0,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        21,
-        31
+        40,
+        24
       ],
-      "angle": 1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        28,
-        31
+        52,
+        24
       ],
-      "angle": 2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 0
     },
     {
+      "agent_type": "harvester",
       "position": [
-        35,
-        31
+        4,
+        28
       ],
-      "angle": -3,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        42,
-        31
+        16,
+        28
       ],
-      "angle": -2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        49,
-        31
+        36,
+        28
       ],
-      "angle": -1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -3
     },
     {
+      "agent_type": "harvester",
+      "position": [
+        48,
+        28
+      ],
+      "angle": -2
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        60,
+        28
+      ],
+      "angle": -1
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        12,
+        32
+      ],
+      "angle": 0
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        24,
+        32
+      ],
+      "angle": 1
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        36,
+        32
+      ],
+      "angle": 2
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        44,
+        32
+      ],
+      "angle": -3
+    },
+    {
+      "agent_type": "harvester",
       "position": [
         56,
-        31
+        32
       ],
-      "angle": 0,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -2
     },
     {
+      "agent_type": "harvester",
       "position": [
-        7,
-        37
+        8,
+        36
       ],
-      "angle": 1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        14,
-        37
+        20,
+        36
       ],
-      "angle": 2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 0
     },
     {
+      "agent_type": "harvester",
       "position": [
-        21,
-        37
+        32,
+        36
       ],
-      "angle": -3,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 1
     },
     {
+      "agent_type": "harvester",
       "position": [
-        28,
-        37
+        44,
+        36
       ],
-      "angle": -2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": 2
     },
     {
-      "position": [
-        35,
-        37
-      ],
-      "angle": -1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
-      "position": [
-        42,
-        37
-      ],
-      "angle": 0,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
-      "position": [
-        49,
-        37
-      ],
-      "angle": 1,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
-    },
-    {
+      "agent_type": "harvester",
       "position": [
         56,
-        37
+        36
       ],
-      "angle": 2,
-      "radius": 0.65,
-      "mass": 1,
-      "controlled": true,
-      "thrust": 16,
-      "torque": 3,
-      "angular_drag": 3,
-      "drag": 0.2,
-      "agent_type": "kart"
+      "angle": -3
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        8,
+        40
+      ],
+      "angle": -2
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        20,
+        40
+      ],
+      "angle": -1
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        32,
+        40
+      ],
+      "angle": 0
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        44,
+        40
+      ],
+      "angle": 1
+    },
+    {
+      "agent_type": "harvester",
+      "position": [
+        56,
+        40
+      ],
+      "angle": 2
     }
   ],
   "boundary": [

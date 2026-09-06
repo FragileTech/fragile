@@ -1,0 +1,129 @@
+{
+  "date": "2026-09-06",
+  "renderer": {
+    "status": "passed",
+    "checks": 106,
+    "performance": [
+      {
+        "scene": "harvest",
+        "style": "steampunk",
+        "medianFrameMs": 23.46,
+        "draws": 25,
+        "triangles": 3819
+      },
+      {
+        "scene": "harvest",
+        "style": "futuristic",
+        "medianFrameMs": 27.8,
+        "draws": 25,
+        "triangles": 3907
+      },
+      {
+        "scene": "ants",
+        "style": "steampunk",
+        "medianFrameMs": 22.82,
+        "draws": 76,
+        "triangles": 116172
+      },
+      {
+        "scene": "ants",
+        "style": "futuristic",
+        "medianFrameMs": 19.88,
+        "draws": 84,
+        "triangles": 117708
+      },
+      {
+        "scene": "tandem",
+        "style": "steampunk",
+        "medianFrameMs": 22.61,
+        "draws": 41,
+        "triangles": 6665
+      },
+      {
+        "scene": "tandem",
+        "style": "futuristic",
+        "medianFrameMs": 20.81,
+        "draws": 42,
+        "triangles": 7577
+      },
+      {
+        "scene": "mining",
+        "style": "steampunk",
+        "medianFrameMs": 23.19,
+        "draws": 38,
+        "triangles": 4977
+      },
+      {
+        "scene": "mining",
+        "style": "futuristic",
+        "medianFrameMs": 20.78,
+        "draws": 38,
+        "triangles": 5153
+      },
+      {
+        "scene": "rocket",
+        "style": "steampunk",
+        "medianFrameMs": 21.83,
+        "draws": 30,
+        "triangles": 3879
+      },
+      {
+        "scene": "rocket",
+        "style": "futuristic",
+        "medianFrameMs": 21.1,
+        "draws": 30,
+        "triangles": 3967
+      },
+      {
+        "scene": "racing",
+        "style": "steampunk",
+        "medianFrameMs": 18.33,
+        "draws": 30,
+        "triangles": 11758
+      },
+      {
+        "scene": "racing",
+        "style": "futuristic",
+        "medianFrameMs": 17.39,
+        "draws": 34,
+        "triangles": 11790
+      },
+      {
+        "scene": "64 mixed vehicles",
+        "style": "steampunk",
+        "medianFrameMs": 22.9,
+        "draws": 132,
+        "triangles": 154834
+      },
+      {
+        "scene": "64 mixed vehicles",
+        "style": "futuristic",
+        "medianFrameMs": 20.06,
+        "draws": 135,
+        "triangles": 144018
+      }
+    ]
+  },
+  "responsive": {
+    "status": "passed",
+    "checks": [
+      "../ futuristic: selector visible, no horizontal overflow at 390px",
+      "../ steampunk: selector visible, no horizontal overflow at 390px",
+      "../ futuristic: selector visible, no horizontal overflow at 1440px",
+      "../ steampunk: selector visible, no horizontal overflow at 1440px",
+      "../asset-gallery.html futuristic: selector visible, no horizontal overflow at 390px",
+      "../asset-gallery.html steampunk: selector visible, no horizontal overflow at 390px",
+      "../asset-gallery.html futuristic: selector visible, no horizontal overflow at 1440px",
+      "../asset-gallery.html steampunk: selector visible, no horizontal overflow at 1440px",
+      "../concepts/ futuristic: no horizontal overflow at 390px",
+      "../concepts/ steampunk: no horizontal overflow at 390px",
+      "../concepts/ futuristic: no horizontal overflow at 1440px",
+      "../concepts/ steampunk: no horizontal overflow at 1440px"
+    ]
+  },
+  "notes": [
+    "Performance measured in the local Codex browser with concurrent authoring work; values are machine-dependent.",
+    "Renderer checks exercise native state and replay with real textures, two viewports, context restoration and fetch failure/retry.",
+    "All npm test:lab suites and build:lab passed. Vehicle previews inspected in hero, side and top views."
+  ]
+}

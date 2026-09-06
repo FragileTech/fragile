@@ -43,7 +43,8 @@ try {
       .locator(".brand-logo")
       .evaluate((e) => e.complete && e.naturalWidth > 0),
   );
-  assert.equal(await page.locator("#scenario option").count(), 6);
+  assert.equal(await page.locator("#scenario option").count(), 11);
+  assert.equal(await page.locator("#circuit-preview").isVisible(), false);
   await page.evaluate(() => {
     for (const [id, value] of Object.entries({
       walkers: 24,
@@ -114,6 +115,78 @@ try {
     ),
     false,
   );
+  assert.deepEqual(errors, []);
+  // Every library entry loads its own preview, checkpoint count and clean state.
+  for (const viewport of [
+    { width: 1536, height: 1050 },
+    { width: 768, height: 1024 },
+  ]) {
+    await page.setViewportSize(viewport);
+    let lastOutline;
+    for (const id of [
+      "racing-roots",
+      "racing-fearless",
+      "racing-sepang",
+      "racing-original",
+      "racing-obstacle-field",
+      "racing",
+    ]) {
+      await page.locator("#scenario").selectOption(id);
+      await ready();
+      const scene = await (
+        await page.request.get(new URL(`scenarios/${id}.json`, base).href)
+      ).json();
+      const preview = page.locator("#circuit-preview");
+      assert.equal(await preview.isVisible(), true);
+      assert.equal(
+        await preview.locator("strong").textContent(),
+        scene.circuit.name,
+      );
+      assert.equal(
+        await preview.locator(".circuit-difficulty").textContent(),
+        scene.circuit.difficulty,
+      );
+      assert.match(
+        await page.locator("#score-note").textContent(),
+        new RegExp(`1/${scene.gates.length}`),
+      );
+      assert.equal(await page.locator("#score").textContent(), "0");
+      const outline = await preview
+        .locator("svg > path")
+        .first()
+        .getAttribute("d");
+      assert.notEqual(outline, lastOutline);
+      lastOutline = outline;
+      if (scene.circuit.sources.length) {
+        assert.equal(
+          await preview.locator("a").getAttribute("href"),
+          scene.circuit.sources[0].url,
+        );
+      } else assert.equal(await preview.locator("a").count(), 0);
+      await page.locator("#manual").check();
+      await page.locator("#world").click();
+      await page.keyboard.down("w");
+      await page.waitForFunction(
+        () =>
+          Number(document.getElementById("tick").textContent.slice(5)) >= 12,
+      );
+      await page.keyboard.up("w");
+      await page.locator("#manual").uncheck();
+      assert.equal(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > innerWidth,
+        ),
+        false,
+      );
+      await page.screenshot({
+        path: `${output}/${id}-${viewport.width}.png`,
+        fullPage: true,
+      });
+    }
+  }
+  await page.locator("#scenario").selectOption("harvest");
+  await ready();
+  assert.equal(await page.locator("#circuit-preview").isVisible(), false);
   assert.deepEqual(errors, []);
   console.log(
     "Browser passed: docs branding, racing preset, all planners, keyboard driving, circuit/kart rendering, lap readout, replay and tablet layout.",

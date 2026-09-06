@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><title>Style selector responsive checks</title>
+  <style>
+    body {
+      font: 14px monospace;
+      background: #171b20;
+      color: white;
+    }
+    iframe {
+      display: block;
+      border: 0;
+      margin: 16px 0;
+    }
+  </style>
+  <h1>Style selector responsive checks</h1>
+  <pre id="result">Running…</pre>
+  <script type="module">
+    const result = document.querySelector("#result"),
+      checks = [];
+    try {
+      for (const path of ["../", "../asset-gallery.html", "../concepts/"]) {
+        for (const width of [390, 1440]) {
+          const view = document.createElement("iframe");
+          view.width = width;
+          view.height = 844;
+          const ready = new Promise((resolve) => (view.onload = resolve));
+          view.src = path;
+          document.body.append(view);
+          await ready;
+          const doc = view.contentDocument;
+          for (const style of ["futuristic", "steampunk"]) {
+            doc.documentElement.dataset.visualStyle = style;
+            await new Promise(requestAnimationFrame);
+            const selector = doc.querySelector(".style-switch"),
+              box = selector?.getBoundingClientRect();
+            if (box && (box.left < 0 || box.right > width || box.height === 0))
+              throw new Error(
+                `${path} ${style} selector clipped at ${width}px`,
+              );
+            if (doc.documentElement.scrollWidth > width)
+              throw new Error(
+                `${path} ${style} horizontal overflow at ${width}px: ` +
+                  JSON.stringify(
+                    [...doc.querySelectorAll("body *")]
+                      .map((e) => ({
+                        tag: e.tagName,
+                        id: e.id,
+                        cls: e.className,
+                        right: e.getBoundingClientRect().right,
+                      }))
+                      .filter((e) => e.right > width)
+                      .slice(0, 12),
+                  ),
+              );
+            checks.push(
+              `${path} ${style}: ${selector ? "selector visible, " : ""}no horizontal overflow at ${width}px`,
+            );
+          }
+          view.remove();
+        }
+      }
+      result.textContent = JSON.stringify(
+        { status: "passed", checks },
+        null,
+        2,
+      );
+    } catch (error) {
+      result.textContent = JSON.stringify(
+        { status: "failed", checks, error: error.message },
+        null,
+        2,
+      );
+    }
+  </script>
+</html>

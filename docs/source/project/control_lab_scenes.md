@@ -18,8 +18,9 @@ its motion. The original {doc}`control_laboratory` provides further technical re
 ## Choose an experiment
 
 :::{div} feynman-prose
-Use **Environment** to load one of six scenes. Loading a preset starts a fresh world
-and clears the editor's undo history. The **SCORE** panel shows a task counter, which
+Use **Environment** to load one of eleven scenes, including six kart circuits.
+Loading a preset starts a fresh world and clears the editor's undo history.
+The **SCORE** panel shows a task counter, which
 is different from the accumulated reward that the controller optimizes. Reward can
 include progress, collisions, and formation penalties as well as completed objectives.
 :::
@@ -28,31 +29,81 @@ include progress, collisions, and formation penalties as well as completed objec
 | Environment | What to try | Main score |
 |---|---|---|
 | **Asteroid harvesting** | Guide the tug, acquire cargo with its automatic tether, and bring ore into the delivery base. | Cargo deliveries |
-| **Ants & drops** | Coordinate 48 controlled bodies collecting food; pickups respawn. | Food collected |
+| **Ants & drops** | Coordinate 1–128 harvesters or drones collecting food; defaults to 48 harvesters. | Food collected |
 | **Tandem flight** | Guide a pair through ordered checkpoint zones while maintaining formation. | Gates crossed |
 | **Collaborative mining** | Move a heavy shared load with two thrusters and their tethers. | Cargo deliveries |
 | **Thinking graphs** | Use the harvesting task to inspect alternative futures, cloning, and ancestry. | Cargo deliveries |
-| **Violet Circuit · kart racing** | Drive the kart through 16 checkpoint zones in order. | Laps completed; next checkpoint |
+| **Violet Circuit · kart racing** | Easy: learn the controls on the broad original lab circuit; 16 checkpoints. | Laps completed; next checkpoint |
+| **Roots Oval · kart racing** | Easy: practise braking and steering on the historical oval; 50 checkpoints. | Laps completed; next checkpoint |
+| **Fearless Circuit · kart racing** | Medium: connect bends and negotiate a deep hairpin; 130 checkpoints. | Laps completed; next checkpoint |
+| **Sepang Kart · kart racing** | Hard: tackle the historical go-kart layout's close hairpins; 151 checkpoints. | Laps completed; next checkpoint |
+| **Original Obstacle Circuit · kart racing** | Hard: steer around bollards and edge intrusions; 133 checkpoints. | Laps completed; next checkpoint |
+| **Fearless Obstacle Field · kart racing** | Hard: thread the islands before returning to linked hairpins; 128 checkpoints. | Laps completed; next checkpoint |
 :::
 
-### Drive Violet Circuit
+### Configure Ants & Drops
 
 :::{div} feynman-prose
-Select **Violet Circuit · kart racing**, enable **Keyboard control**, and click the
-world so that a number field is no longer receiving keystrokes. Hold **W** to accelerate,
+Choose **Ants & drops**, then use **Vehicle type** and **Vehicle count** beneath
+**Environment**. Choose either **Harvesters** or **Drones** for the whole group and
+enter a whole-number count from 1 to 128. The default is 48 harvesters. Each type
+uses its own physics and visual model, with three action channels per vehicle.
+The count determines how many vehicles move in the arena; **Walkers** determines
+how many possible futures the planner considers.
+
+Changing either vehicle setting rebuilds the original preset, clears the current
+run and editor history, and leaves the world paused. **Reset** retains the current
+scene and vehicle configuration. Switching to another environment and back retains
+your vehicle selections within the tab session.
+
+The arena has 24 pickup slots. Collect a drop and that slot returns after three
+simulation seconds at a seeded random playable position. This repeats indefinitely:
+an empty arena can mean that all 24 slots are waiting to return. Pausing the world
+also pauses their timers.
+:::
+
+### Choose a kart circuit
+
+:::{div} feynman-prose
+Start with Violet Circuit or Roots Oval to get a feel for steering. Then try Fearless
+Circuit: a corner now sets up the next one, so entering too quickly can leave you
+poorly placed for the following bend. The Hard circuits add close hairpins or
+obstacles that leave less room to recover. Every circuit uses the same kart physics;
+the difficulty labels describe the route you must drive.
+
+The preview beneath **Environment** shows the active scene's outline, difficulty,
+racing direction, and checkpoint count. Historical circuits also link to a reference
+video. Look at that outline before driving: a long straight followed by a tight bend
+calls for a different approach from an open oval. Selecting another circuit starts
+a fresh run and updates the checkpoint count. Imported scenes and replay archives
+keep their own geometry, so the preview follows the scene you actually loaded.
+
+The five historical layouts were reconstructed from Sergio Hernandez's kart videos,
+with proportions traced by hand and scaled uniformly. Their distances are simulation
+units, not surveyed track measurements. Sepang Kart uses the go-kart layout shown in
+the videos, not the Formula One circuit. Labyrinths, caves, and non-racing arenas are
+outside this circuit collection.
+:::
+
+### Drive a circuit
+
+:::{div} feynman-prose
+Select a kart circuit, enable **Keyboard control**, and click the world so that a
+number field is no longer receiving keystrokes. Hold **W** to accelerate,
 use **A/D** to steer, **S** for reverse throttle, and **Space** to brake. Use **Follow
 agent** for a close view, and **2D / 3D** to change the camera angle. Select a controller
 and press **Run experiment** when you want the planner to drive.
 
 The gold checkpoint is the next target. A checkpoint counts when the kart's centre
 enters its circular zone; passing through a decorative arch is not a separate timing
-measurement. After all 16 zones, the lap counter increases and the target returns to
-checkpoint 1. Waiting at the finish or visiting a later checkpoint first does not
-complete a lap. The zones do not impose a crossing direction. In ordinary live play,
-completing a lap does not stop the world; the preset's experiment success criterion
-is 16 gates, meaning one lap. See {doc}`control_lab_experiments` for episode limits.
+measurement. After all zones in the selected circuit, the lap counter increases and
+the target returns to checkpoint 1. Waiting at the finish or visiting a later
+checkpoint first does not complete a lap. The zones do not impose a crossing direction. In ordinary live play,
+completing a lap does not stop the world; each preset's experiment success criterion
+is its checkpoint count, meaning one lap (16 gates for Violet Circuit).
+See {doc}`control_lab_experiments` for episode limits.
 
-The walls are collidable but nonlethal in this preset. The asphalt, painted guide,
+The walls are collidable but nonlethal in these kart presets. The asphalt, painted guide,
 curbs, and gantry help you see the course; native boundary and hole polygons define
 its physical limits. Replaying a world restores the gate counter, lap display, and
 highlighted target along with the kart's movement.

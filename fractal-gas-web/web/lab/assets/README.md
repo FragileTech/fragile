@@ -79,6 +79,17 @@ viewports, deterministic replay, 64 mixed vehicles, context recovery, and a miss
 GLB followed by retry. It prints frame-time and draw-count measurements; these are
 observations on the current browser and machine, not portable performance promises.
 
+The [saved validation report](validation.json) contains 106 renderer assertions and
+twelve layout checks at 390 and 1440 CSS pixels. Re-run
+[`tests/style-responsive.html`](../tests/style-responsive.html) to inspect the
+masthead selector and horizontal overflow in the lab, workshop and concept library. The
+[vehicle render collection](previews/collections.jpg) shows the final hero views;
+each vehicle's side and top views sit beside its hero PNG in `previews/{style}/`.
+
+For later world modeling, the [concept library](../concepts/index.html) adds
+sixteen paired sheets for resources, ore, gravity wells, docks, gates, scenery and
+effects, together with the exact generation prompts.
+
 ## Legacy procedural exports
 
 These original GLB models were created for this repository from authored geometry

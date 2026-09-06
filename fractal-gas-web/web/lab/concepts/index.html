@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Concept library · Fragile Tech</title>
+    <link rel="icon" href="../branding/favicon.png" />
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+      body {
+        overflow: auto;
+      }
+      .masthead {
+        height: auto;
+        min-height: 78px;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      main {
+        display: block;
+        width: 100%;
+        max-width: 1600px;
+        margin: auto;
+        padding: 42px clamp(16px, 4vw, 64px) 64px;
+      }
+      h1 {
+        font-size: clamp(30px, 4vw, 54px);
+        letter-spacing: -1px;
+        margin: 0 0 16px;
+      }
+      .intro {
+        max-width: 760px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+      .contents {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 28px 0 40px;
+      }
+      .contents a,
+      .download {
+        font: 11px var(--mono);
+        color: var(--accent);
+        text-underline-offset: 4px;
+      }
+      .contents a {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+      }
+      section {
+        padding-top: 16px;
+        margin-bottom: 42px;
+        scroll-margin-top: 20px;
+      }
+      h2 {
+        font-size: 24px;
+        letter-spacing: -0.5px;
+      }
+      .sheet-pair {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+      figure {
+        margin: 0;
+        padding: 12px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+      }
+      figcaption {
+        font: 11px var(--mono);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 2px 0 12px;
+      }
+      figure img {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: #ddd7cb;
+      }
+      .download {
+        display: inline-block;
+        margin-top: 14px;
+      }
+      .vehicle-links {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .vehicle-links a {
+        color: var(--accent);
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+      @media (max-width: 780px) {
+        .sheet-pair {
+          grid-template-columns: 1fr;
+        }
+        main {
+          padding-top: 28px;
+        }
+        .masthead nav {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="brand" href="../"
+        ><img
+          class="brand-logo"
+          src="../branding/logo.png"
+          width="48"
+          height="48"
+          alt=""
+        /><span
+          >fragile.tech<span class="brand-sub">Concept library</span></span
+        ></a
+      >
+      <nav aria-label="Concept library navigation">
+        <a href="../">Back to the lab</a
+        ><a href="../asset-gallery.html">Vehicle workshop</a
+        ><a href="./world-prompts.json">Generation prompts</a>
+      </nav>
+    </header>
+    <main>
+      <h1>Two worlds. One laboratory.</h1>
+      <p class="intro">
+        Sixteen world-asset concept sheets for the futuristic and steampunk
+        collections: resources, machinery, modular scenery and motion effects.
+        Open any sheet for the original full-resolution artwork. These new
+        sheets guide future 3D world assets; the vehicle models are already
+        available in the workshop.
+      </p>
+      <nav class="contents" aria-label="Asset families">
+        <a href="#collectible-drops">Collectible drops</a
+        ><a href="#ore-rocks">Towable ore rocks</a
+        ><a href="#gravity-well">Gravity well</a
+        ><a href="#recovery-dock">Recovery dock</a
+        ><a href="#checkpoints">Checkpoints</a
+        ><a href="#arena-scenery">Arena scenery</a
+        ><a href="#racing-scenery">Racing scenery</a
+        ><a href="#capture-effects">Capture and motion</a
+        ><a href="#vehicles">Vehicle artwork</a>
+      </nav>
+      <section id="collectible-drops">
+        <h2>Collectible drops</h2>
+        <div class="sheet-pair">
+          <figure>
+            <figcaption>Futuristic</figcaption>
+            <a
+              href="./futuristic/world/collectible-drops.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./futuristic/world/collectible-drops.png"
+                alt="futuristic Collectible drops concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./futuristic/world/collectible-drops.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+          <figure>
+            <figcaption>Steampunk</figcaption>
+            <a
+              href="./steampunk/world/collectible-drops.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./steampunk/world/collectible-drops.png"
+                alt="steampunk Collectible drops concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./steampunk/world/collectible-drops.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+        </div>
+      </section>
+      <section id="ore-rocks">
+        <h2>Towable ore rocks</h2>
+        <div class="sheet-pair">
+          <figure>
+            <figcaption>Futuristic</figcaption>
+            <a
+              href="./futuristic/world/ore-rocks.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./futuristic/world/ore-rocks.png"
+                alt="futuristic Towable ore rocks concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./futuristic/world/ore-rocks.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+          <figure>
+            <figcaption>Steampunk</figcaption>
+            <a
+              href="./steampunk/world/ore-rocks.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./steampunk/world/ore-rocks.png"
+                alt="steampunk Towable ore rocks concept sheet with reference views and material details" /></a
+            ><a class="download" href="./steampunk/world/ore-rocks.png" download
+              >Download original PNG</a
+            >
+          </figure>
+        </div>
+      </section>
+      <section id="gravity-well">
+        <h2>Gravity well</h2>
+        <div class="sheet-pair">
+          <figure>
+            <figcaption>Futuristic</figcaption>
+            <a
+              href="./futuristic/world/gravity-well.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./futuristic/world/gravity-well.png"
+                alt="futuristic Gravity well concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./futuristic/world/gravity-well.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+          <figure>
+            <figcaption>Steampunk</figcaption>
+            <a
+              href="./steampunk/world/gravity-well.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./steampunk/world/gravity-well.png"
+                alt="steampunk Gravity well concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./steampunk/world/gravity-well.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+        </div>
+      </section>
+      <section id="recovery-dock">
+        <h2>Recovery dock</h2>
+        <div class="sheet-pair">
+          <figure>
+            <figcaption>Futuristic</figcaption>
+            <a
+              href="./futuristic/world/recovery-dock.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./futuristic/world/recovery-dock.png"
+                alt="futuristic Recovery dock concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./futuristic/world/recovery-dock.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+          <figure>
+            <figcaption>Steampunk</figcaption>
+            <a
+              href="./steampunk/world/recovery-dock.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./steampunk/world/recovery-dock.png"
+                alt="steampunk Recovery dock concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./steampunk/world/recovery-dock.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+        </div>
+      </section>
+      <section id="checkpoints">
+        <h2>Checkpoints</h2>
+        <div class="sheet-pair">
+          <figure>
+            <figcaption>Futuristic</figcaption>
+            <a
+              href="./futuristic/world/checkpoints.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./futuristic/world/checkpoints.png"
+                alt="futuristic Checkpoints concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./futuristic/world/checkpoints.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+          <figure>
+            <figcaption>Steampunk</figcaption>
+            <a
+              href="./steampunk/world/checkpoints.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./steampunk/world/checkpoints.png"
+                alt="steampunk Checkpoints concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./steampunk/world/checkpoints.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+        </div>
+      </section>
+      <section id="arena-scenery">
+        <h2>Arena scenery</h2>
+        <div class="sheet-pair">
+          <figure>
+            <figcaption>Futuristic</figcaption>
+            <a
+              href="./futuristic/world/arena-scenery.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./futuristic/world/arena-scenery.png"
+                alt="futuristic Arena scenery concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./futuristic/world/arena-scenery.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+          <figure>
+            <figcaption>Steampunk</figcaption>
+            <a
+              href="./steampunk/world/arena-scenery.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./steampunk/world/arena-scenery.png"
+                alt="steampunk Arena scenery concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./steampunk/world/arena-scenery.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+        </div>
+      </section>
+      <section id="racing-scenery">
+        <h2>Racing scenery</h2>
+        <div class="sheet-pair">
+          <figure>
+            <figcaption>Futuristic</figcaption>
+            <a
+              href="./futuristic/world/racing-scenery.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./futuristic/world/racing-scenery.png"
+                alt="futuristic Racing scenery concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./futuristic/world/racing-scenery.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+          <figure>
+            <figcaption>Steampunk</figcaption>
+            <a
+              href="./steampunk/world/racing-scenery.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./steampunk/world/racing-scenery.png"
+                alt="steampunk Racing scenery concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./steampunk/world/racing-scenery.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+        </div>
+      </section>
+      <section id="capture-effects">
+        <h2>Capture and motion</h2>
+        <div class="sheet-pair">
+          <figure>
+            <figcaption>Futuristic</figcaption>
+            <a
+              href="./futuristic/world/capture-effects.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./futuristic/world/capture-effects.png"
+                alt="futuristic Capture and motion concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./futuristic/world/capture-effects.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+          <figure>
+            <figcaption>Steampunk</figcaption>
+            <a
+              href="./steampunk/world/capture-effects.png"
+              target="_blank"
+              rel="noopener"
+              ><img
+                loading="lazy"
+                width="1536"
+                height="1024"
+                src="./steampunk/world/capture-effects.png"
+                alt="steampunk Capture and motion concept sheet with reference views and material details" /></a
+            ><a
+              class="download"
+              href="./steampunk/world/capture-effects.png"
+              download
+              >Download original PNG</a
+            >
+          </figure>
+        </div>
+      </section>
+      <section id="vehicles">
+        <h2>Vehicle artwork and Blender models</h2>
+        <p class="intro">
+          The eight original vehicle sheets, editable Blender sources, detailed
+          and simplified GLBs, and comparison renders are available here.
+        </p>
+        <div class="vehicle-links">
+          <a href="../asset-gallery.html">Interactive vehicle workshop</a
+          ><a href="./README.md">All artwork and prompts</a
+          ><a href="../assets/README.md">Blender regeneration guide</a
+          ><a href="../assets/previews/collections.jpg"
+            >Vehicle render collection</a
+          >
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

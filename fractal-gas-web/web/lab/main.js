@@ -1,8 +1,14 @@
 import { treePoseDim, treeWidth } from "./actions.js";
+import {
+  configureAntsScene,
+  antsOptionsFromScene,
+  DEFAULT_ANTS_OPTIONS,
+} from "./ants-scene.js";
 import { bytesOf } from "./motion.js";
 import { ExperimentPanel } from "./experiment-panel.js";
 import { ControllerSettings } from "./controller-settings.js";
 import { scenePresentation, sceneReadout } from "./scene-presentation.js";
+import { renderCircuitPreview } from "./circuit-preview.js";
 import { StoragePanel } from "./storage-panel.js";
 import { PhysicsInspector } from "./physics-inspector.js";
 import { ReplayPanel } from "./replay-panel.js";
@@ -16,6 +22,8 @@ const $ = (id) => document.getElementById(id),
   copy = (value) => structuredClone(value);
 const renderer = new LabRenderer($("world"));
 installStyleControls();
+let antsOptions = { ...DEFAULT_ANTS_OPTIONS },
+  presetRequest = 0;
 let worker,
   currentScene,
   currentInfo,
@@ -245,6 +253,14 @@ function stop() {
   $("run").textContent = "▶ Run experiment";
 }
 function loadScene(scene, autoStep = false) {
+  ++presetRequest;
+  const loadedAntsOptions = antsOptionsFromScene(scene);
+  $("ants-controls").hidden = !loadedAntsOptions;
+  if (loadedAntsOptions) {
+    antsOptions = loadedAntsOptions;
+    $("ants-vehicle-type").value = antsOptions.agentType;
+    $("ants-vehicle-count").value = antsOptions.count;
+  }
   if (worker) {
     worker.postMessage({ type: "close" });
     const previous = worker;
@@ -265,6 +281,7 @@ function loadScene(scene, autoStep = false) {
   $("run-state").textContent = "LOADING";
   $("description").textContent =
     scene.description || "Custom continuous-control experiment.";
+  renderCircuitPreview($("circuit-preview"), scene);
   $("scene-title").textContent = (
     scene.name || "Custom experiment"
   ).toUpperCase();
@@ -512,25 +529,48 @@ function upload(accept, callback) {
   $("file").click();
 }
 async function preset() {
+  const request = ++presetRequest,
+    scenario = $("scenario").value;
+  let applying = false;
   stop();
   ready = false;
   $("run").disabled = $("step").disabled = true;
   try {
-    const response = await fetch(`./scenarios/${$("scenario").value}.json`);
+    const response = await fetch(`./scenarios/${scenario}.json`);
     if (!response.ok) throw new Error("Unable to load scenario");
-    const scene = await response.json();
+    const template = await response.json();
+    if (request !== presetRequest) return;
+    const scene =
+      scenario === "ants"
+        ? configureAntsScene(template, antsOptions)
+        : template;
     $("toy").textContent = String($("scenario").selectedIndex + 1).padStart(
       2,
       "0",
     );
     editor.clearHistory();
+    applying = true;
     loadScene(scene, !initialized);
     initialized = true;
   } catch (e) {
+    if (!applying && request !== presetRequest) return;
     error(e);
   }
 }
 $("scenario").onchange = preset;
+for (const id of ["ants-vehicle-type", "ants-vehicle-count"])
+  $(id).onchange = () => {
+    if (!$("ants-vehicle-count").checkValidity()) {
+      $("ants-vehicle-count").reportValidity();
+      return;
+    }
+    antsOptions = {
+      agentType: $("ants-vehicle-type").value,
+      count: +$("ants-vehicle-count").value,
+    };
+    $("scenario").value = "ants";
+    preset();
+  };
 $("run").onclick = () => {
   replay.playback.live();
   running = !running;
@@ -695,6 +735,10 @@ installManualControl({
     worker.postMessage({ type: "manual", action, frames: 2 });
   },
 });
+
+// Static controls are annotated in the HTML; controller and scene-editor
+// controls call initHelp again when they replace their dynamic fields.
+initHelp();
 
 async function loadPresets() {
   try {

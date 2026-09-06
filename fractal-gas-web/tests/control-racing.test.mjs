@@ -11,6 +11,8 @@ import {
   registerSceneMetric,
 } from "../web/lab/scene-presentation.js";
 import { MotionRecording, WorldCapture, bytesOf } from "../web/lab/motion.js";
+import { circuitPreview } from "../web/lab/circuit-preview.js";
+import { kartDriver } from "./helpers/kart-driver.mjs";
 const scene = JSON.parse(
   await readFile(
     new URL("../web/lab/scenarios/racing.json", import.meta.url),
@@ -147,4 +149,136 @@ test("lab branding is copied exactly from the documentation", async () => {
       await readFile(new URL(`../web/lab/branding/${name}`, import.meta.url)),
       await readFile(new URL(`../../docs/${name}`, import.meta.url)),
     );
+});
+
+const catalog = JSON.parse(
+  await readFile(
+    new URL("../web/lab/scenario-catalog.json", import.meta.url),
+    "utf8",
+  ),
+);
+const circuits = await Promise.all(
+  catalog
+    .filter((entry) => entry.id.startsWith("racing"))
+    .map(async ({ id }) =>
+      JSON.parse(
+        await readFile(
+          new URL(`../web/lab/scenarios/${id}.json`, import.meta.url),
+          "utf8",
+        ),
+      ),
+    ),
+);
+
+test("circuit catalog is ordered by difficulty and keeps common kart physics", () => {
+  assert.equal(circuits.length, 6);
+  assert.deepEqual(
+    circuits.map((s) => s.circuit.difficulty),
+    ["Easy", "Easy", "Medium", "Hard", "Hard", "Hard"],
+  );
+  assert.equal(circuits[0].circuit.id, "racing");
+  for (const s of circuits) {
+    assert.deepEqual(s.agent_types.racing_kart, scene.agent_types.racing_kart);
+    assert.deepEqual(s.physics, scene.physics);
+    assert.equal(s.presentation.score.divisor, s.gates.length);
+    assert.equal(s.presentation.progress.cycle, s.gates.length);
+    assert.equal(s.evaluation.target, s.gates.length);
+    assert.equal(
+      new Set(s.circuit.sources.map((source) => source.url)).size,
+      s.circuit.sources.length,
+    );
+  }
+});
+
+for (const circuit of circuits) {
+  test(`${circuit.circuit.name}: two physical laps, ordered gates and exact replay`, () => {
+    const e = new NativeEngine(module, circuit);
+    try {
+      e.reset(7);
+      const initial = e.snapshot();
+      // The start line and an unrelated checkpoint cannot complete a lap.
+      for (const position of [
+        circuit.environment.start.position,
+        circuit.gates[5].position,
+      ]) {
+        const rows = e.states();
+        rows.set(position, 8);
+        e.restoreRows(rows);
+        e.step(e.neutralAction(), 1);
+        assert.equal(e.metrics()[7], 0);
+        e.restore(initial);
+      }
+      const drive = kartDriver(circuit);
+      const recording = new MotionRecording(
+        e.info,
+        initial,
+        circuit.physics.dt,
+      );
+      const capture = new WorldCapture(e, ({ packet, label }) =>
+        recording.append(packet, label),
+      );
+      capture.capture(e.neutralAction(), 0, "Start grid");
+      let contacts = 0;
+      for (
+        let i = 0;
+        i < 12000 && e.metrics()[7] < circuit.gates.length * 2;
+        i++
+      ) {
+        capture.step(drive(e), 3, i + 1);
+        contacts += e.metrics()[2];
+      }
+      assert.equal(
+        contacts,
+        0,
+        "Lap completion must not depend on bouncing off barriers",
+      );
+      assert.equal(e.metrics()[7], circuit.gates.length * 2);
+      assert.equal(sceneReadout(circuit, e.metrics()).score, 2);
+      const final = e.snapshot();
+      for (const index of [
+        0,
+        Math.floor(recording.length / 2),
+        recording.length - 1,
+      ]) {
+        e.restoreRows(recording.rows(index));
+        assert.deepEqual(bytesOf(e.states()), bytesOf(recording.rows(index)));
+        const rows = recording.rows(index);
+        assert.equal(
+          e.metrics()[7],
+          new Uint32Array(rows.buffer, rows.byteOffset)[e.info[6]],
+        );
+      }
+      assert.deepEqual(e.snapshot(), final);
+      const action = drive(e);
+      e.step(action, 6);
+      const future = e.snapshot();
+      e.restore(final);
+      e.step(action, 6);
+      assert.deepEqual(e.snapshot(), future);
+      const env = createEnvironment(circuit);
+      assert.equal(env.group.name, circuit.circuit.name);
+      env.update(e.states(), e.info);
+      assert.ok(env.group.getObjectByName("Asphalt racing surface"));
+      env.group.traverse((o) => {
+        o.geometry?.dispose();
+        o.material?.dispose();
+      });
+    } finally {
+      e.dispose();
+    }
+  });
+}
+
+test("preview follows custom geometry and rejects unsafe reference links", () => {
+  assert.equal(circuitPreview({}), null);
+  const custom = structuredClone(circuits[3]);
+  const preset = circuitPreview(custom);
+  custom.boundary[0][0] += 0.25;
+  assert.notEqual(circuitPreview(custom).path, preset.path);
+  delete custom.circuit;
+  assert.equal(circuitPreview(custom).difficulty, "Unrated");
+  custom.circuit = { sources: [{ url: "javascript:alert(1)" }] };
+  assert.equal(circuitPreview(custom).source, undefined);
+  custom.boundary[0][0] = NaN;
+  assert.equal(circuitPreview(custom), null);
 });

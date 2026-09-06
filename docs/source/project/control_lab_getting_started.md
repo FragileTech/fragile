@@ -174,7 +174,7 @@ success criterion specifies exactly what counts as a successful trial.
 | Environment | Controlled bodies | What to try and watch |
 |---|---:|---|
 | **Asteroid harvesting** | 1 | Hook ore and deliver it to a base; watch local gravity and tether motion. |
-| **Ants & drops** | 48 | Collect food that respawns from seeded randomness; the joint action has 144 channels. |
+| **Ants & drops** | 1–128 (default 48) | Choose harvesters or drones beneath **Environment**; each vehicle adds three action channels. Collected drops return after three simulation seconds at seeded random positions. |
 | **Tandem flight** | 2 | Visit ordered checkpoints while maintaining a formation; observe the cost of poor coordination. |
 | **Collaborative mining** | 2 | Move a shared heavy asteroid with two elastic tethers; both rockets affect the same load. |
 | **Thinking graphs** | 1 | Inspect tethered rocket search, cloning, ancestry, and short continuation risk. |

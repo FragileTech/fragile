@@ -73,7 +73,9 @@
   display: block;
   border: 1px solid var(--line);
 }
-.workshop-reference img[hidden] { display: none; }
+.workshop-reference img[hidden] {
+  display: none;
+}
 @media (max-width: 780px) {
   .workshop-main {
     display: block;

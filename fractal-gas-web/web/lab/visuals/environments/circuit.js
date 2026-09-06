@@ -71,7 +71,7 @@ function checkedPoints(points) {
 export function circuitEnvironment(scene, { style = "futuristic" } = {}) {
   const spec = scene.environment,
     group = new T.Group();
-  group.name = "Violet Circuit";
+  group.name = scene.circuit?.name || scene.name || "Custom circuit";
   if (
     !checkedPoints(scene.boundary) ||
     !(scene.holes || []).every(checkedPoints) ||

@@ -97,10 +97,11 @@ function prepare(style) {
       const concept = `./concepts/${style}/${select.value}.png`;
       const reference = document.getElementById("concept-image");
       reference.hidden = true;
-      reference.onload = () => { reference.hidden = false; };
+      reference.onload = () => {
+        reference.hidden = false;
+      };
       reference.src = concept;
-      reference.alt =
-        `${style} ${name} concept sheet`;
+      reference.alt = `${style} ${name} concept sheet`;
       document.getElementById("concept-link").href = concept;
       document.getElementById("download-glb").href =
         `./assets/${style}/${select.value}-high.glb`;

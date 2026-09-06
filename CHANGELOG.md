@@ -3,6 +3,10 @@
 Unreleased
 ----------
 
+* Add sixteen futuristic and steampunk world-asset concept sheets, a paired visual library with original downloads and generation prompts, and narrow-screen style-control checks.
+
+* Add configurable Ants & Drops fleets of 1–128 harvesters or drones, with clear starting positions and verified continuous seeded drop replenishment and replay.
+
 * Add eight concept-based Blender vehicle models with detailed and crowd LODs, matching scene props, a persistent futuristic/steampunk lab selector, and a model workshop with Blender/GLB downloads; preserve live state and replay while switching styles.
 
 * Automatically install or activate Emscripten for `make control-web`, isolate local documentation dependencies, and serve the portal, books, and simulator together with working local routes and a fast `make docs-serve` preview.

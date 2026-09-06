@@ -75,6 +75,19 @@
             disabled
           ></select
         ></label>
+        <div id="ants-controls" hidden>
+          <div class="fields-two">
+            <label class="field" data-help="Choose the vehicle model and physics for the whole group. Changing this rebuilds Ants & Drops and clears the current run."
+              >Vehicle type<select id="ants-vehicle-type">
+                <option value="harvester">Harvesters</option>
+                <option value="drone">Drones</option>
+              </select></label>
+            <label class="field" data-help="Number of vehicles in the live world, from 1 to 128. This differs from the planner population of candidate worlds. Changing it rebuilds the preset and clears the current run."
+              >Vehicle count<input id="ants-vehicle-count" type="number" min="1" max="128" step="1" value="48" required /></label>
+          </div>
+          <p class="scenario-description">Changing vehicles restarts the preset paused.</p>
+        </div>
+        <section id="circuit-preview" class="circuit-preview" aria-label="Selected circuit" hidden></section>
         <p class="scenario-description" id="description">
           Recover the ore. Every branch is a possible future.
         </p>

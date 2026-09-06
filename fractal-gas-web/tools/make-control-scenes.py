@@ -59,7 +59,7 @@ def save(key, name, description, task, lethal_walls=True, **data):
     scene["agent_types"] = json.loads((DEST.parent / "agent-catalog.json").read_text())
     for body in scene["bodies"]:
         if body.get("controlled"):
-            body["agent_type"] = "kart" if task == "forage" else "rocket"
+            body.setdefault("agent_type", "kart" if task == "forage" else "rocket")
     (DEST / f"{key}.json").write_text(json.dumps(scene, indent=2) + "\n")
 
 
@@ -98,13 +98,27 @@ save(
     gravity=[{"position": [46, 22], "strength": 28, "softening": 3}],
     tethers=[{"a": 0, "b": -1, "automatic": True, "hook_range": 2.8, "rest_length": 2.5}],
 )
+# Four-metre grid, excluding the central pillar with 1.5 metres of clearance.
+ants_positions = [
+    [x, y]
+    for y in range(4, 41, 4)
+    for x in range(4, 61, 4)
+    if math.hypot(max(29 - x, 0, x - 33), max(17 - y, 0, y - 28)) >= 1.5
+]
 save(
     "ants",
     "Ants & drops",
-    "Forty-eight bodies. One joint continuous action space.",
+    "48 harvesters. Collect drops that return at random positions after 3 simulation seconds.",
     "forage",
     lethal_walls=False,
-    bodies=[ship(7 + 7 * (i % 8), 7 + 6 * (i // 8), (i % 6) - 3) for i in range(48)],
+    bodies=[
+        {
+            "agent_type": "harvester",
+            "position": ants_positions[int((i + 0.5) * len(ants_positions) / 48)],
+            "angle": (i % 6) - 3,
+        }
+        for i in range(48)
+    ],
     boundary=[[2, 2], [62, 2], [62, 42], [2, 42]],
     holes=[[[29, 17], [33, 17], [33, 28], [29, 28]]],
     pickups=[

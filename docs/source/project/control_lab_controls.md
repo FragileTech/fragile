@@ -30,6 +30,8 @@ and resets leave the new world paused.
 | Control | Operation | What to expect |
 |---|---|---|
 | **Environment** | Load a preset from the scene catalog. | Rebuilds physics and clears the current in-memory history. |
+| **Vehicle type** | Choose **Harvesters** or **Drones** in Ants & Drops. | Rebuilds the original preset with one type for all vehicles, clears run and editor history, and leaves the world paused. Defaults to **Harvesters**. |
+| **Vehicle count** | Set the Ants & Drops vehicle count to a whole number from 1 to 128. | Defaults to 48. Applies the same rebuild as **Vehicle type**; invalid entries leave the scene intact. |
 | **Run experiment** | Repeatedly plan and execute actions using the selected clock. | Button becomes **Pause experiment**. |
 | **Pause experiment** | Stop further execution. | The displayed state remains available for inspection and export. |
 | **Step** | Plan once, then execute **Action frames** physics frames. | Pauses continuous running; always waits for this plan, including with the real-time clock selected. |
@@ -38,6 +40,11 @@ and resets leave the new world paused.
 :::
 
 :::{div} feynman-prose
+The Ants & Drops vehicle controls appear beneath **Environment**. Their selections
+persist when switching presets within the tab session, and **Reset** retains the
+current scene. **Vehicle count** counts physical vehicles; **Walkers** counts
+planner candidates, each representing a possible future for the whole group.
+
 **Advance Wave population** is an inspection tool for the native Fractal Gas search.
 Its first click initializes a population from the current world; later clicks
 advance that same population. It runs native FMC even when another controller is

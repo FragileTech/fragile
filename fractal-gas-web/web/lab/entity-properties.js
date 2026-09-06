@@ -1,3 +1,5 @@
+import { initHelp } from "../help.js";
+
 // The numeric editor recursively exposes extension parameters as well as common
 // physical quantities. Unknown parameters remain editable through scene JSON.
 const units = {
@@ -78,6 +80,7 @@ export class EntityProperties {
           walk(child, [...path, key]);
     };
     walk(entity);
+    initHelp(this.container);
   }
   apply(entity) {
     const out = structuredClone(entity);
@@ -120,5 +123,6 @@ export function actionSliders(container, channels) {
     label.append(output, input);
     container.append(label);
   });
+  initHelp(container);
   return action;
 }

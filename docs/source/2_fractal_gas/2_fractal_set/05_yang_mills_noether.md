@@ -8881,9 +8881,13 @@ The positions, stage labels, units, and recorded times are retained in the
 complete record and its header. This section uses the four-position-coordinate
 convention: $x^0$ and $\tau$ are separate stored coordinates.
 
-For a recorded face $P=(n_0,n_1,n_2,n_3)$, recover
-$x_P=\frac14\sum_{a=0}^3x_{n_a}$ and its ordered holonomy $U_P$
-from those same records. Fix the representation dimension $r$ and the
+For a face $P=(n_0,\ldots,n_{\ell_P-1})$ in the configured recorded
+face family, recover $x_P=\ell_P^{-1}\sum_{a=0}^{\ell_P-1}x_{n_a}$
+and its ordered holonomy $U_P$ from those same records. The boundary
+length is three for an interaction triangle and four for a derived outer
+plaquette. The configured family is retained throughout the calculation;
+its triangle and outer-plaquette readouts are distinguished explicitly in
+{prf:ref}`prop-ym-native-scalar-face-evaluation`. Fix the representation dimension $r$ and the
 coefficients of the Wilson readout already specified in
 {prf:ref}`def-wilson-action-ym`. Its localized observable has the exact
 finite-measure representation
@@ -8993,7 +8997,7 @@ $(\mathsf T_g\phi)(f)=\phi(f\circ g)$, inserting $g^{-1}$ gives its
 last line. Composition of the maps on measures proves their group law;
 inverse composition in the observable definition proves the stated
 observable group law. The barycenter transforms as
-$\frac14\sum_a(Qx_{n_a}+b)=Qx_P+b$.
+$\ell_P^{-1}\sum_a(Qx_{n_a}+b)=Qx_P+b$.
 The ordered face factors stay attached to their transported edges, so
 the trace weight is unchanged. These transformations are therefore
 computed from the existing embedded face observable, without introducing
@@ -9056,12 +9060,12 @@ tests, a finite word
 
 $$
 F=\sum_{a=1}^m c_a\prod_{b=1}^{d_a}
-   [v_{ab}\chi_{ab}u_{\gamma_{ab}}f_{ab}(x_{ab})]
+   [m_{ab}\chi_{ab}u_{\gamma_{ab}}f_{ab}(x_{ab})]
 $$
 
 obeys $|F|\le M_F:=\sum_a|c_a|\prod_b\|f_{ab}\|_\infty$.
 Using a Wilson defect in place of a normalized trace multiplies the
-corresponding factor bound by two. Here $v_{ab}$ and $\chi_{ab}$ are
+corresponding factor bound by two. Here $m_{ab}$ and $\chi_{ab}$ are
 the actual validity and full-support masks. The same bound holds for
 the reflected word, without an invariance assumption on the law. Hence
 
@@ -9078,11 +9082,15 @@ subsequence. This assertion concerns the retained word coordinates.
 Identification with a continuous physical field readout additionally requires
 its geometric continuity estimates.
 
-For the localized Wilson sum with its actual coefficients, define instead
+For the localized Wilson sum in {ref}`(YM.Z82) <eq-fg-ym-z82>`,
+write $m_P\in\{0,1\}$ for the validity mask when its realized faces
+are indexed by the configured face slots. Thus its weight is precisely
+$m_P\beta_Ps_P$; summing only over valid realized faces suppresses
+$m_P$. This introduces no extra volume factor. Define
 
 $$
 H_{N,h}(K)=\sum_{P:x_P\in K}
- v_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2,
+ m_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2,
 \qquad U_P=e^{iX_P},\quad X_P=X_P^*.
 $$
 
@@ -9104,13 +9112,14 @@ $A_P^2\operatorname{Tr}F_P^2$ to $H_{N,h}$. With approximate curvature
 coordinates, the additional quadratic error is bounded by
 
 $$
-\sum_{P:x_P\in K}v_P\frac{\beta_P}{2}
+\sum_{P:x_P\in K}m_P\frac{\beta_P}{2}
  \eta_P(\|X_P\|_{\mathrm{op}}+\|g_3A_PF_P\|_{\mathrm{op}}),
 \qquad \|X_P-g_3A_PF_P\|_{\mathrm{op}}\le\eta_P.
 $$
 
-These sums retain their face count, geometric weights, coefficients, and
-validity masks.
+These sums retain the original face count, coefficients, and validity
+masks. The normalized geometric weights in {ref}`(YM.Z3) <eq-fg-ym-z3>`
+enter the separate readout calculated below.
 :::
 
 :::{prf:proof}
@@ -9131,8 +9140,8 @@ convergence passes their expectations. This also retains the reflected
 products on the same further subsequence.
 
 For each eigenvalue $x$ of $X_P$, $0\le1-\cos x\le x^2/2$.
-Summation proves $v_P\beta_Ps_P\le
-v_P\beta_P\operatorname{Tr}X_P^2/(2r)$ and the localized bound.
+Summation proves $m_P\beta_Ps_P\le
+m_P\beta_P\operatorname{Tr}X_P^2/(2r)$ and the localized bound.
 A product of two words of degrees at most $d$ is bounded by a fixed
 constant times $(1+H)^{2d}$. The stated $(2d+\epsilon)$ moment then
 bounds its $1+\epsilon/(2d)$ moment when $d>0$; constants need no
@@ -9155,7 +9164,7 @@ $D_P=\max_{v,w\in P}|x_v-x_w|$. Then
 $$
 |\Phi^{\mathrm{bar},+}(f)-\Phi^+(f)|
 \le\|f\|_\infty
-\sum_{P:x_P\in K}v_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2
+\sum_{P:x_P\in K}m_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2
  \mathbf1_{\{\min_{v\in P}x_v^0\le0<x_P^0\}}.
 $$
 
@@ -9164,7 +9173,7 @@ For every $\rho>0$, the right-hand side is at most
 $$
 \|f\|_\infty\left[
  H_{N,h}(K\cap\{0<x^0\le\rho\})
- +\sum_{P:x_P\in K}v_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2
+ +\sum_{P:x_P\in K}m_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2
                        \mathbf1_{\{D_P>\rho\}}\right].
 $$
 
@@ -9241,7 +9250,7 @@ When $x_i$ is the face barycenter, this is bounded by the normalized
 weighted cut-layer and large-face terms from the geometric splitting in
 {prf:ref}`lem-ym-physical-cut-face-error`, with
 $p_i a_i C_b$ in place of
-$v_P\beta_P\operatorname{Tr}X_P^2/(2r)$. No localization convention
+$m_P\beta_P\operatorname{Tr}X_P^2/(2r)$. No localization convention
 is changed in the asserted convergence.
 :::
 
@@ -9286,6 +9295,155 @@ normalized geometric weights, including their validity masks. The
 unnormalized face-action sum in {ref}`(YM.Z87) <eq-fg-ym-z87>` remains
 a different recorded observable and retains the weighted moment estimate
 in {prf:ref}`lem-ym-bounded-recorded-gauge-words`.
+:::
+
+:::{prf:lemma} Weighted reconstruction error for full-face reflected words
+:label: lem-ym-physical-reflected-reconstruction-error
+
+Use the actual normalized readouts and selected law of
+{prf:ref}`thm-ym-native-normalized-gauge-hierarchy`. Compare a readout
+and its reconstruction on the retained face-slot correspondence:
+
+$$
+\Psi^+(f)=\sum_i p_i a_i\chi_i^+ b_i f(x_i),\qquad
+\widehat\Psi^+(f)=
+ \sum_i\widehat p_i\widehat a_i\widehat\chi_i^+
+                         \widehat b_i f(\widehat x_i).
+$$
+
+Here $b_i,\widehat b_i$ denote the gauge marks, with absolute values
+at most $C$; the geometric cell volumes entering $p_i,\widehat p_i$
+retain their definition in {ref}`(YM.Z3) <eq-fg-ym-z3>`.
+The indicators $a_i,\widehat a_i$ include the corresponding gauge and
+face validity. The two support masks test all vertices of their respective
+faces. The positions $x_i,\widehat x_i$ are their barycenters.
+Let $f\in C_c^\infty(\{x^0>0\})$, $K=\operatorname{supp}f$, and
+$\delta=\operatorname{dist}(K,\{x^0=0\})>0$.
+
+On a frame where both normalizations are nonzero, retain the metric and
+retessellation bound from {prf:ref}`thm-ym-same-record-metric-field`:
+
+$$
+\sum_i|\widehat p_i-p_i|\le q^2-1+2t.
+$$
+
+For a corresponding face, let $r_i$ be the largest displacement between
+its corresponding vertices and $D_i$ its original diameter. On slots
+where only one face is valid, extend the unavailable mark and geometry
+by their counterparts; the validity indicators retain this discrepancy.
+All terms below are evaluated on this same record. Put
+
+$$
+\begin{gathered}
+\eta=\sum_i p_i|\widehat b_i-b_i|,\qquad
+\rho=\sum_i p_i r_i,\qquad
+\zeta=\sum_i p_i|\widehat a_i-a_i|,\\
+\Lambda_\delta(K)=
+ \sum_i p_i a_i\mathbf1_{\{x_i\in K,\ D_i\ge\delta/2\}}.
+\end{gathered}
+$$
+
+Then the full-face reconstruction error is bounded by
+
+$$
+\begin{aligned}
+|\widehat\Psi^+(f)-\Psi^+(f)|\le e_f^+
+:=\min\Bigl\{2C\|f\|_\infty,\;&
+ \|f\|_\infty\eta
+ +C\bigl(\|\nabla f\|_\infty+2\|f\|_\infty/\delta\bigr)\rho\\
+&+C\|f\|_\infty
+       (q^2-1+2t+\zeta+\Lambda_\delta(K))\Bigr\}.
+\end{aligned}
+$$
+
+If exactly one normalization is zero, use $e_f^+=2C\|f\|_\infty$;
+if both are zero, use $e_f^+=0$. Applying the same calculation to the
+reflected records defines $e_f^-$. Both errors are integrated under the
+original selected law; reflection invariance is unnecessary.
+
+For any fixed finite polynomial family $F_i$ in these readouts, let $M_i$
+bound both $F_i$ and its reconstructed and reflected versions. The product
+estimate {ref}`(YM.Z5) <eq-fg-ym-z5>` gives errors $e_i^\pm$ for those
+words by summing the individual factor errors times the bounds of the
+other factors, and then summing with the absolute polynomial coefficients.
+Write $\varepsilon_i^\pm=\mathbb E e_i^\pm$. The actual reflected
+matrices satisfy
+
+$$
+\begin{aligned}
+|\widehat Q_{ij}-Q_{ij}|
+ &\le M_j\varepsilon_i^-+M_i\varepsilon_j^+,\\
+\|\widehat Q-Q\|_{\mathrm{op}}
+ &\le\|M\|_2
+       \bigl(\|\varepsilon^-\|_2+\|\varepsilon^+\|_2\bigr).
+\end{aligned}
+$$
+
+Thus the existing metric, retessellation, mark, vertex, validity, and
+weighted large-face estimates imply convergence of these same reflected
+matrices whenever their displayed errors tend to zero, with the
+probability of a mismatched empty-frame normalization also tending to
+zero. The statement applies along the common native subsequence and
+retains its selected probability law and full-face support convention.
+:::
+
+:::{prf:proof}
+Insert the intermediate sum with original weights and reconstructed
+integrands. The weight difference contributes at most
+$C\|f\|_\infty(q^2-1+2t)$. At a slot, the difference of the mark and
+test factors is bounded by
+
+$$
+|\widehat b_i f(\widehat x_i)-b_i f(x_i)|
+\le\|f\|_\infty|\widehat b_i-b_i|
+ +C\|\nabla f\|_\infty r_i,
+$$
+
+because the barycenter displacement is at most $r_i$. The difference of
+validity and support factors contributes at most
+
+$$
+C|f(x_i)|\bigl(
+ |\widehat a_i-a_i|+a_i|\widehat\chi_i^+-\chi_i^+|\bigr).
+$$
+
+Suppose $x_i\in K$ and $r_i<\delta/2$. If the original face is positive
+and the reconstructed face is not, one original vertex has time coordinate
+at most $r_i$, whereas $x_i^0\ge\delta$. Hence
+$D_i\ge\delta-r_i>\delta/2$. If the original face is not positive and
+the reconstructed face is, an original vertex has time coordinate at most
+zero, giving $D_i\ge\delta$. Consequently
+
+$$
+\mathbf1_{\{x_i\in K\}}
+ |\widehat\chi_i^+-\chi_i^+|
+\le\mathbf1_{\{x_i\in K,\ D_i\ge\delta/2\}}
+   +\mathbf1_{\{r_i\ge\delta/2\}}.
+$$
+
+Multiply by $p_i a_i$ and sum. The second sum is at most $2\rho/\delta$.
+This proves the stated error; boundedness supplies its cap. Reflection
+preserves distances and exchanges the two full-face masks, proving the
+negative-side estimate under the same law.
+
+Apply the existing telescoping product estimate to obtain the word errors.
+Then insert one intermediate product in each reflected matrix entry:
+
+$$
+|\overline{\widehat F_i^-}\widehat F_j^+
+       -\overline{F_i^-}F_j^+|
+\le M_j e_i^-+M_i e_j^+.
+$$
+
+Expectation proves the entry bound. For unit vectors $u,v$, the sum of
+these bounds against $|u_i||v_j|$ is at most
+$\|\varepsilon^-\|_2\|M\|_2+
+\|M\|_2\|\varepsilon^+\|_2$, proving the operator bound.
+All primitive errors are bounded independently of the number of faces.
+Their convergence in probability to zero therefore gives convergence of
+their expectations; the finite polynomial estimates give the same
+conclusion for every stated word. No sign of either matrix is assumed
+in this reconstruction estimate.
 :::
 
 :::{prf:proposition} Physical reflected correlations of the recorded Wilson readouts
@@ -9446,6 +9604,105 @@ $\sigma$-hierarchy. Formula {ref}`(YM.Z87) <eq-fg-ym-z87>` is the
 physical $x^0$-reflection calculation under the original execution law.
 The comparison in {ref}`(YM.Z76) <eq-fg-ym-z76>` must evaluate these
 same entries. No sampling-time adjoint is used in the present calculation.
+:::
+
+:::{prf:proposition} Scalar triangle and outer-plaquette laws in the raw record
+:label: prop-ym-native-scalar-face-evaluation
+
+Use the current raw-array record identified in
+{prf:ref}`rem-fractal-set-history-codec`, in the real-arithmetic readout
+convention, and its scalar connection in
+{prf:ref}`def-fractal-set-gauge-connection`. In
+`src/fragile/fractalai/core/fractal_set.py`, the CST and IA builders store
+$\phi_{\mathrm{CST}}=\phi_{\mathrm{IA}}=0$, while the IG builder stores
+
+$$
+\theta_{ij}=-\frac{V_j-V_i}{\hbar_{\mathrm{eff}}}.
+$$
+
+Here $V_i,V_j$ are the recorded fitness values and
+$\hbar_{\mathrm{eff}}\ne0$ is the configured phase scale. Thus the
+recorded scalar transports are exactly
+
+$$
+U_{\mathrm{CST}}^{(1)}=U_{\mathrm{IA}}^{(1)}=1,
+\qquad U_{\mathrm{IG},ij}^{(1)}=e^{i\theta_{ij}}.
+$$
+
+The interaction triangle of
+{prf:ref}`def-fractal-set-wilson-loop` consequently has
+
+$$
+W_\triangle^{(1)}=e^{-i\theta_{ij}},\qquad
+s_\triangle^{(1)}
+=1-\cos\left(\frac{V_j-V_i}{\hbar_{\mathrm{eff}}}\right).
+$$
+
+The function `_compute_wilson_loops` in
+`src/fragile/fractalai/qft/analysis.py` averages these triangle cosine
+readouts. Its use of the opposite sign for $\theta_{ij}$ gives the same
+cosine because the other two stored phases are zero. For this scalar
+triangle channel, $s_\triangle^{(1)}>0$ precisely when
+$(V_j-V_i)/\hbar_{\mathrm{eff}}\notin2\pi\mathbb Z$.
+
+In contrast, every valid outer plaquette of
+{prf:ref}`def-fractal-set-plaquette` has
+
+$$
+W_P^{(1)}=1,\qquad s_P^{(1)}=0.
+$$
+
+In particular, for the scalar outer-plaquette specialization of the
+physical Wilson-defect readout in
+{prf:ref}`prop-ym-recorded-physical-transformations`,
+
+$$
+\Phi^{(1)}(f)=\sum_P\beta_Ps_P^{(1)}f(x_P)=0
+$$
+
+on every execution. The same is true with any of its full-face support
+or validity masks. Its complete finite and limiting gauge hierarchy is
+therefore evaluated at the zero field. For any finite family of bounded
+future cylinders in this scalar defect field, the actual physical
+reflected matrix is explicitly
+
+$$
+Q_{ij}=\overline{F_i(0)}F_j(0),\qquad
+\sum_{i,j}\overline{c_i}c_jQ_{ij}
+=\left|\sum_i c_iF_i(0)\right|^2\ge0.
+$$
+
+This is the exact factorization through the existing constant vector
+$1\in L^2(P)$: $BF=F(0)1$. It holds for the execution law, each
+survival-conditioned QSD window, and the stationary Doob law, with their
+original normalizations. Its OS quotient contains only the vacuum class.
+The statement evaluates the scalar outer-plaquette defect algebra; it
+supplies no identification of the separate SU(2) transport matrices or
+SU(3) color contractions with that algebra.
+:::
+
+:::{prf:proof}
+Exponentiate the stored scalar phases and substitute them into the existing
+oriented triangle formula. This proves the triangle identity and its
+nonzero criterion. Substitution into the implemented diagnostic gives
+$\cos(\theta_{ij})=\cos(-\theta_{ij})$, proving the stated correspondence
+for that diagnostic.
+
+The boundary of an outer plaquette consists of two CST and two IA edges.
+Each scalar transport is one, including inverse orientations, so their
+product is one. Equivalently, the IG factors cancel in the ordered
+factorization of {prf:ref}`prop-fractal-set-wilson-factorization`.
+This uses the complete scalar holonomies before taking their real parts;
+multiplying two triangle cosine diagnostics would give a different value.
+It follows pointwise that every outer-plaquette defect vanishes.
+
+Every localized defect field and every reflected version are consequently
+zero on the same recorded history. Insert this value into each cylinder
+and integrate against the selected probability law to obtain the displayed
+matrix. The normalization of that law gives $\|1\|_{L^2(P)}=1$, proving
+the factorization. Every centered cylinder is zero, so the OS quotient of
+this algebra is exactly its vacuum span. These identities pass to every
+subsequence without a moment or boundary estimate.
 :::
 
 :::{prf:remark} Cross-plane dependence of companion and fitness normalization
@@ -9794,9 +10051,9 @@ such a quotient is used; the complete record in
 
 Fix a finite recorded cutoff and its selected QSD history law $P$ from
 {prf:ref}`prop-ym-qsd-history-identification`. Use the nonnegative Wilson
-face weights $w_P=v_P\beta_Ps_P$ of
-{prf:ref}`prop-ym-native-physical-reflection-calculation`, including the
-recorded validity masks. Suppose one nonnegative compactly supported smooth
+weights $w_P=m_P\beta_Ps_P$ on the configured face slots of
+{prf:ref}`prop-ym-native-physical-reflection-calculation`, with
+$m_P$ their recorded validity mask. Suppose one nonnegative compactly supported smooth
 test $f$ has
 
 $$
@@ -10784,10 +11041,19 @@ four-dimensional relativistic Yang--Mills identification. A use of the
 already cited OS reconstruction theorem keeps those exact spacetime and
 field-domain requirements for the same hierarchy.
 
+For the scalar phase record implemented by the raw-array codec,
+{prf:ref}`prop-ym-native-scalar-face-evaluation` evaluates the outer-plaquette
+defect hierarchy exactly: it is zero, with a positive reflected form and
+only the vacuum class. Its potentially nonzero triangle cosine diagnostic
+is a different observable.
+
 For the existing normalized geometric gauge readouts,
 {prf:ref}`thm-ym-native-normalized-gauge-hierarchy` now places all finite
-words and reflected products on a common native subsequence. The
-unnormalized face-action sums retain the separate weighted-moment estimate
+words and reflected products on a common native subsequence.
+{prf:ref}`lem-ym-physical-reflected-reconstruction-error` bounds the
+change in every finite reflected matrix under the recorded reconstruction,
+including full-face support errors. The unnormalized face-action sums
+retain the separate weighted-moment estimate
 in {prf:ref}`lem-ym-bounded-recorded-gauge-words`.
 {prf:ref}`lem-ym-native-qsd-translation` transports the QSD, its survival
 weights, and both components of its regulator/gauge disintegration.

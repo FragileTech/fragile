@@ -1,0 +1,273 @@
+{
+  "channel": "https://www.youtube.com/@SergioHernandezCerezo/videos",
+  "reviewed_on": "2026-09-06",
+  "method": "Channel title inventory; opening-frame comparison for numbered racing videos and the two later lap videos. Not a frame-by-frame audit of every compilation. Other uploads concern fractals, Atari, mining, pathfinding, or compilations. Repeated controller, grip, and collection variants share circuit geometry.",
+  "videos": [
+    {
+      "video": "SEZoDMsjwpo",
+      "title": "Kart simulation 01: Algorithm drives a car using \"Entropic intelligence\"",
+      "url": "https://www.youtube.com/watch?v=SEZoDMsjwpo",
+      "circuit": "racing-original",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "Lmnah2pPcMk",
+      "title": "Kart simulation 02: Avoiding obstacles",
+      "url": "https://www.youtube.com/watch?v=Lmnah2pPcMk",
+      "circuit": "racing-original",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "a7JxjwaCvDU",
+      "title": "Kart simulation 03: Sepang with Miss Daisy.",
+      "url": "https://www.youtube.com/watch?v=a7JxjwaCvDU",
+      "circuit": "racing-sepang",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "XE8raxj07gA",
+      "title": "Kart simulation 04: Afraid of dying? Fearless racing!",
+      "url": "https://www.youtube.com/watch?v=XE8raxj07gA",
+      "circuit": "racing-fearless",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "rO9e95UIDiI",
+      "title": "Kart simulation 05: Sepang at full throttle.",
+      "url": "https://www.youtube.com/watch?v=rO9e95UIDiI",
+      "circuit": "racing-sepang",
+      "review": "Title identifies Sepang; geometry reference is video 03"
+    },
+    {
+      "video": "Kf0giaPwAxg",
+      "title": "Kart simulation 06: Playing on a Labrynth.",
+      "url": "https://www.youtube.com/watch?v=Kf0giaPwAxg",
+      "excluded": "Labyrinth",
+      "review": "Title/description"
+    },
+    {
+      "video": "L98TV18d49I",
+      "title": "Kart simulation 07: Thinking time matters.",
+      "url": "https://www.youtube.com/watch?v=L98TV18d49I",
+      "circuit": "racing-fearless",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "7fztcBUZBa8",
+      "title": "Kart simulation 08: Starring Fernando Alonso!",
+      "url": "https://www.youtube.com/watch?v=7fztcBUZBa8",
+      "circuit": "racing-fearless",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "un0tK7fDfiA",
+      "title": "Kart simulation 09: Red is King!",
+      "url": "https://www.youtube.com/watch?v=un0tK7fDfiA",
+      "circuit": "racing-fearless",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "soCCxcDWYZ4",
+      "title": "Kart simulation 10: Bouncing karts!",
+      "url": "https://www.youtube.com/watch?v=soCCxcDWYZ4",
+      "circuit": "racing-fearless",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "lsaD9y0Jd1E",
+      "title": "Kart simulation 11: Human vs Machine",
+      "url": "https://www.youtube.com/watch?v=lsaD9y0Jd1E",
+      "circuit": "racing-fearless",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "7vrzshkoCZU",
+      "title": "Kart simulation 12: The suicide driver",
+      "url": "https://www.youtube.com/watch?v=7vrzshkoCZU",
+      "circuit": "racing-fearless",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "A5EeIxZ07nM",
+      "title": "Kart simulation 13: Back to the roots",
+      "url": "https://www.youtube.com/watch?v=A5EeIxZ07nM",
+      "circuit": "racing-roots",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "X-qwUjhKPLQ",
+      "title": "Kart simulation 14: Using count as entropy the right way",
+      "url": "https://www.youtube.com/watch?v=X-qwUjhKPLQ",
+      "circuit": "racing-obstacle-field",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "HDM4QVNQX98",
+      "title": "Kart simulation 15: Log vs Raced",
+      "url": "https://www.youtube.com/watch?v=HDM4QVNQX98",
+      "circuit": "racing-obstacle-field",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "2dsb55e6scI",
+      "title": "Kart simulation 16: Fast decisions on hard situations",
+      "url": "https://www.youtube.com/watch?v=2dsb55e6scI",
+      "circuit": "racing-original",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "JnvIf-sCTUA",
+      "title": "Kart simulation 17: Sweet motivations",
+      "url": "https://www.youtube.com/watch?v=JnvIf-sCTUA",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Opening-frame and description comparison"
+    },
+    {
+      "video": "CPZe3YXo9Ec",
+      "title": "Kart simulation 18: Garbage collectors",
+      "url": "https://www.youtube.com/watch?v=CPZe3YXo9Ec",
+      "circuit": "racing-obstacle-field",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "XD9Fumzf57Y",
+      "title": "Kart simulation 19: Ants and drops",
+      "url": "https://www.youtube.com/watch?v=XD9Fumzf57Y",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Opening-frame and description comparison"
+    },
+    {
+      "video": "5V0_RYv5ruk",
+      "title": "Kart simulation 20: Driving a rocket inside a cave",
+      "url": "https://www.youtube.com/watch?v=5V0_RYv5ruk",
+      "excluded": "Rocket cave",
+      "review": "Title/description"
+    },
+    {
+      "video": "6Jh02PmWJyk",
+      "title": "Kart simulation 21: No more suicides",
+      "url": "https://www.youtube.com/watch?v=6Jh02PmWJyk",
+      "circuit": "racing-roots",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "bVlP_uB4mEo",
+      "title": "Kart simulation 22: Intelligence level 7",
+      "url": "https://www.youtube.com/watch?v=bVlP_uB4mEo",
+      "circuit": "racing-original",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "EZHR3IlpPyM",
+      "title": "Kart simulation 23: Fear of dying is good.",
+      "url": "https://www.youtube.com/watch?v=EZHR3IlpPyM",
+      "circuit": "racing-original",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "wPyfAxyiGF0",
+      "title": "Kart simulation 24: The right fear formulae?",
+      "url": "https://www.youtube.com/watch?v=wPyfAxyiGF0",
+      "circuit": "racing-obstacle-field",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "_pZxw9yPAdo",
+      "title": "Kart simulation 25: Dancing with the danger",
+      "url": "https://www.youtube.com/watch?v=_pZxw9yPAdo",
+      "circuit": "racing-original",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "Z7CBMtexyzk",
+      "title": "Kart simulation 26: The perfect combo of goals!",
+      "url": "https://www.youtube.com/watch?v=Z7CBMtexyzk",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Opening-frame and description comparison"
+    },
+    {
+      "video": "OWBUUX-4a1U",
+      "title": "Kart simulation 27: This is War!",
+      "url": "https://www.youtube.com/watch?v=OWBUUX-4a1U",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Opening-frame and description comparison"
+    },
+    {
+      "video": "11F3xo-ki0o",
+      "title": "Kart simulation 28: Harmony and cooperation",
+      "url": "https://www.youtube.com/watch?v=11F3xo-ki0o",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Opening-frame and description comparison"
+    },
+    {
+      "video": "n1Vq9v8Aq74",
+      "title": "Kart simulation 29: Follow my orders!",
+      "url": "https://www.youtube.com/watch?v=n1Vq9v8Aq74",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Opening-frame and description comparison"
+    },
+    {
+      "video": "lpO0L0uIxEQ",
+      "title": "Kart simulation 30: Evolution of intelligent agents",
+      "url": "https://www.youtube.com/watch?v=lpO0L0uIxEQ",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Opening-frame and description comparison"
+    },
+    {
+      "video": "vWws_itsW8o",
+      "title": "Kart simulation 31: Emotional intelligence",
+      "url": "https://www.youtube.com/watch?v=vWws_itsW8o",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Opening-frame and description comparison"
+    },
+    {
+      "video": "wjRW2XN-xuo",
+      "title": "Kart simulation 32: Light saber fighting",
+      "url": "https://www.youtube.com/watch?v=wjRW2XN-xuo",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Opening-frame and description comparison"
+    },
+    {
+      "video": "Z_OaplvK_6I",
+      "title": "Kart simulation 33: Energy cowboys",
+      "url": "https://www.youtube.com/watch?v=Z_OaplvK_6I",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Title/description"
+    },
+    {
+      "video": "EYcq0uFPo5I",
+      "title": "Kart simulator 34: Natural killers",
+      "url": "https://www.youtube.com/watch?v=EYcq0uFPo5I",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Title/description"
+    },
+    {
+      "video": "V10frcEv90o",
+      "title": "Kart simulation 35: Asteroid field",
+      "url": "https://www.youtube.com/watch?v=V10frcEv90o",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Title/description"
+    },
+    {
+      "video": "oYnYVSb1Ads",
+      "title": "Kart simulation 36: Uncertainty",
+      "url": "https://www.youtube.com/watch?v=oYnYVSb1Ads",
+      "excluded": "Non-racing arena / flying-agent experiment",
+      "review": "Title/description"
+    },
+    {
+      "video": "XnM2lKpiAto",
+      "title": "Almost perfect lap",
+      "url": "https://www.youtube.com/watch?v=XnM2lKpiAto",
+      "circuit": "racing-obstacle-field",
+      "review": "Opening-frame layout comparison"
+    },
+    {
+      "video": "s4VFHIouuKY",
+      "title": "Fractal AI: An almost Perfect Lap!",
+      "url": "https://www.youtube.com/watch?v=s4VFHIouuKY",
+      "circuit": "racing-obstacle-field",
+      "review": "Opening-frame layout comparison"
+    }
+  ]
+}

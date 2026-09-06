@@ -1,4 +1,30 @@
-# Vehicle concept art
+# Laboratory concept art
+
+Browse the [visual concept library](./index.html) for sixteen additional world-asset
+sheets, paired by style. Each includes variants, construction studies or effect
+sequences suitable for later Blender authoring. The original PNGs are preserved.
+These new world sheets are concept references; their detailed designs have not
+yet been converted into additional runtime models.
+
+| World asset family | Futuristic | Steampunk |
+| --- | --- | --- |
+| Collectible drops | [Sheet](futuristic/world/collectible-drops.png) | [Sheet](steampunk/world/collectible-drops.png) |
+| Towable ore rocks | [Sheet](futuristic/world/ore-rocks.png) | [Sheet](steampunk/world/ore-rocks.png) |
+| Gravity well | [Sheet](futuristic/world/gravity-well.png) | [Sheet](steampunk/world/gravity-well.png) |
+| Recovery dock | [Sheet](futuristic/world/recovery-dock.png) | [Sheet](steampunk/world/recovery-dock.png) |
+| Checkpoints | [Sheet](futuristic/world/checkpoints.png) | [Sheet](steampunk/world/checkpoints.png) |
+| Arena scenery | [Sheet](futuristic/world/arena-scenery.png) | [Sheet](steampunk/world/arena-scenery.png) |
+| Racing scenery | [Sheet](futuristic/world/racing-scenery.png) | [Sheet](steampunk/world/racing-scenery.png) |
+| Capture and motion | [Sheet](futuristic/world/capture-effects.png) | [Sheet](steampunk/world/capture-effects.png) |
+
+The complete sixteen prompts are in [world-prompts.json](world-prompts.json).
+They were generated with the built-in ImageGen tool on September 6, 2026. To
+regenerate, submit each `images[].prompt` separately, preserve the original output,
+and save the selected PNG as `{style}/world/{id}.png`. Generated labels and views
+are design guidance, not exact engineering measurements. Pickups and effects do
+not introduce new simulation mechanics.
+
+## Vehicle concept art
 
 Two complete design directions for the Fractal Gas laboratory. Each original PNG
 contains a hero view and smaller reference views. Click a sheet to open the full image.
