@@ -1,15 +1,17 @@
 .PHONY: style check test docs serve tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow videogames web robots physics physics-code latex control-native control-web control-lab control-test
 
 CONTROL_PORT ?= 8080
+# Let callers select CMake and resolve its executable through the shell.
+CMAKE ?= $(shell command -v cmake)
 control-native:
 	uv run python -m fragile.fractalai.control.build
 
 # Activate the Emscripten SDK first. Both browser variants use the same sources.
 control-web:
-	emcmake cmake -S fractal-gas-web -B fractal-gas-web/build-control-wasm -DFG_CONTROL_ONLY=ON -DCMAKE_BUILD_TYPE=Release
-	cmake --build fractal-gas-web/build-control-wasm --parallel 4
-	emcmake cmake -S fractal-gas-web -B fractal-gas-web/build-control-threaded -DFG_CONTROL_ONLY=ON -DFG_CONTROL_THREADS=ON -DCMAKE_BUILD_TYPE=Release
-	cmake --build fractal-gas-web/build-control-threaded --parallel 4
+	emcmake "$(CMAKE)" -S fractal-gas-web -B fractal-gas-web/build-control-wasm -DFG_CONTROL_ONLY=ON -DCMAKE_BUILD_TYPE=Release
+	"$(CMAKE)" --build fractal-gas-web/build-control-wasm --parallel 4
+	emcmake "$(CMAKE)" -S fractal-gas-web -B fractal-gas-web/build-control-threaded -DFG_CONTROL_ONLY=ON -DFG_CONTROL_THREADS=ON -DCMAKE_BUILD_TYPE=Release
+	"$(CMAKE)" --build fractal-gas-web/build-control-threaded --parallel 4
 	npm --prefix fractal-gas-web ci --ignore-scripts
 	npm --prefix fractal-gas-web run build:lab
 

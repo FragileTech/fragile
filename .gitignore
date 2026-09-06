@@ -28,6 +28,8 @@ eggs
 lib
 lib64
 parts
+!docs/source/2_fractal_gas/parts/
+!docs/source/2_fractal_gas/parts/*.md
 pip-wheel-metadata/
 pyvenv*/
 sdist

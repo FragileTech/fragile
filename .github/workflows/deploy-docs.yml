@@ -85,35 +85,61 @@ jobs:
           ls -l web/roms-enc web/roms-enc/atari | head -20
           # Airstriker rom is copied to web/ by the wasm build itself.
 
-      - name: Set up Node for the control laboratory
+      - name: Upload arcade artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-web
+          path: |
+            fractal-gas-web/web
+            !fractal-gas-web/web/lab/**
+          if-no-files-found: error
+
+  # Build the lab explicitly, without emulator submodules or incidental outputs
+  # from the arcade's CMake build. Both native adapters must ship together.
+  build-lab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
           cache-dependency-path: fractal-gas-web/package-lock.json
 
-      - name: Build parallel control laboratory and original assets
-        working-directory: fractal-gas-web
-        run: |
-          emcmake cmake -B build-control-threaded -DFG_CONTROL_ONLY=ON -DFG_CONTROL_THREADS=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build build-control-threaded -j"$(nproc)"
-          npm ci --ignore-scripts
-          npm run build:lab
-          npm run test:lab
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 6.0.8
+          actions-cache-folder: emsdk-cache
 
-      - name: Upload web artifact
+      - name: Build both lab engines and assets
+        run: make control-web
+
+      - name: Test lab state and recording contracts
+        run: npm --prefix fractal-gas-web run test:lab
+
+      - name: Install browser for Pages smoke test
+        working-directory: fractal-gas-web
+        run: npx playwright install --with-deps chromium
+
+      - name: Test a Pages-style project URL without isolation headers
+        run: node fractal-gas-web/tests/control-pages-browser.mjs
+
+      - name: Upload lab artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wasm-web
-          path: fractal-gas-web/web
+          name: control-lab
+          path: fractal-gas-web/web/lab
+          if-no-files-found: error
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: [build-docs, build-wasm]
+    needs: [build-docs, build-wasm, build-lab]
     steps:
       - name: Download web artifact
         uses: actions/download-artifact@v4
@@ -126,6 +152,28 @@ jobs:
         with:
           name: docs-html
           path: site/docs
+
+      - name: Download lab artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: control-lab
+          path: site/lab
+
+      - name: Verify complete Pages bundle
+        run: |
+          test -s site/index.html
+          test -s site/docs/index.html
+          test -s site/coi-serviceworker.min.js
+          test -s site/lab/index.html
+          test -s site/lab/engine/control.mjs
+          test -s site/lab/engine/control.wasm
+          test -s site/lab/engine/control-threaded.mjs
+          test -s site/lab/engine/control-threaded.wasm
+          test -s site/lab/vendor/three.module.js
+          test -s site/lab/vendor/three.core.js
+          test -s site/lab/scenarios/racing.json
+          test -s site/lab/branding/logo.png
+          touch site/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

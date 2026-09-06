@@ -20,6 +20,20 @@ is used only for rendering.
 
 ## Run the laboratory
 
+On GitHub Pages the lab is published at `/fragile/lab/`, alongside the arcade
+at `/fragile/` and the book at `/fragile/docs/`. The Pages workflow builds the
+lab as a separate artifact containing both engine variants, renderer modules,
+scenes, and assets. It tests the project URL with an ordinary static server:
+the service worker supplies isolation for threaded planning, with a serial
+fallback when service workers are unavailable. Manual workflow runs on `main`
+can also deploy the complete site.
+
+Run that deployment smoke test after building the browser targets:
+
+```sh
+node fractal-gas-web/tests/control-pages-browser.mjs
+```
+
 From the repository root:
 
 ```sh
