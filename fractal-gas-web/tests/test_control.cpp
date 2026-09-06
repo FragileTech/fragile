@@ -471,7 +471,8 @@ TEST_CASE(control_mining_heavy_load_and_replenishment) {
   CHECK(team_distance > 1.5f * solo_distance);
   // Repeated deliveries reuse the one cargo slot immediately and replay exactly.
   frames = 1;
-  for (int delivery = 1; delivery <= 5; ++delivery) {
+  int quadrants[4] = {};
+  for (int delivery = 1; delivery <= 256; ++delivery) {
     position(a.row(0), l, 2, s->bases[0].position);
     position(a.row(0), l, 0, {9, 10});
     position(a.row(0), l, 1, {9, 15});
@@ -482,10 +483,42 @@ TEST_CASE(control_mining_heavy_load_and_replenishment) {
     CHECK(std::memcmp(b.row(0), replay.row(0), l.words * sizeof(float)) == 0);
     CHECK(word(b.row(0), 4) == uint32_t(delivery));
     CHECK(word(b.row(0), l.flags + 2) == active_flag);
-    CHECK_CLOSE(length(position(b.row(0), l, 2) - s->bodies[2].position), 0, 1e-6);
+    const Vec2 spawned = position(b.row(0), l, 2);
+    CHECK(s->inside(spawned));
+    CHECK(length(spawned - s->bodies[2].position) > .01f);
+    ++quadrants[(spawned.x >= s->size.x / 2) + 2 * (spawned.y >= s->size.y / 2)];
+    for (const auto& edge : s->edges)
+      CHECK(length(spawned - closest(spawned, edge.a, edge.b)) > s->bodies[2].radius);
+    for (const auto& base : s->bases)
+      CHECK(length(spawned - base.position) > s->bodies[2].radius + base.radius);
+    for (size_t rocket = 0; rocket < 2; ++rocket)
+      CHECK(length(spawned - position(b.row(0), l, rocket)) >
+            s->bodies[2].radius + s->bodies[rocket].radius);
     CHECK_CLOSE(length(velocity(b.row(0), l, 2)), 0, 1e-6);
-    CHECK(word(b.row(0), l.joints) == 0);
-    CHECK(word(b.row(0), l.joints + 2) == 0);
+    CHECK_CLOSE(angle(b.row(0), l, 2), s->bodies[2].angle, 1e-6);
+    CHECK_CLOSE(omega(b.row(0), l, 2), 0, 1e-6);
+    for (size_t tether = 0; tether < s->tethers.size(); ++tether)
+      if (word(b.row(0), l.joints + 2 * tether))
+        CHECK(length(spawned - position(b.row(0), l, s->tethers[tether].a)) <
+              s->tethers[tether].hook_range);
     std::memcpy(a.row(0), b.row(0), l.words * sizeof(float));
   }
+  for (int count : quadrants) CHECK(count > 10);
+}
+
+TEST_CASE(control_cargo_respawn_with_no_free_location_is_bounded) {
+  auto s = Scene::compile(
+      R"({"size":[20,20],"bodies":[{"position":[2,2],"controlled":true},{"position":[10,10],"cargo":true,"respawn":true}],"bases":[{"position":[10,10],"radius":100}]})");
+  Physics p(s);
+  StateBatch a(1, *s), b(1, *s), replay(1, *s);
+  a.reset(*s, 7);
+  float action[2] = {};
+  int32_t frames = 10;
+  StepResult result;
+  p.step(a, nullptr, action, &frames, b, &result);
+  p.step(a, nullptr, action, &frames, replay, &result);
+  CHECK(word(b.row(0), 0) == 10);
+  CHECK(word(b.row(0), 4) == 1);
+  CHECK(word(b.row(0), s->layout.flags + 1) == delivered_flag);
+  CHECK(std::memcmp(b.row(0), replay.row(0), s->layout.words * sizeof(float)) == 0);
 }

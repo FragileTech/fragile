@@ -114,13 +114,20 @@ a reacquired connection need not have the original 3.5 m rest length. There is n
 manual “grab” key: steer close enough and advance physics.
 
 When the cargo center enters the base, the delivery counter increases and the
-cargo's connections detach. Because this rock has `respawn: true`, it immediately
-returns to its configured starting position and angle with zero linear and angular
-velocity. The same cargo body is reused; another rock is not added. The rockets
-remain where they are. Their automatic tethers must find the respawned rock again,
-and can do so immediately if they are already close enough. Otherwise, the next
-job is to return and reacquire it. A successful first delivery thus changes the
-starting geometry for the next haul.
+cargo's connections detach. Because this rock has `respawn: true`, it normally
+respawns immediately at a randomly sampled collision-free position across the
+entire playable map, outside delivery bases and with clearance from walls, holes, and active
+bodies. It keeps its configured initial angle and has zero linear and angular
+velocity. The same cargo body is reused; another rock is not added. Seeded replay
+reproduces the respawn positions. The rockets remain where they are. Their
+automatic tethers must find the respawned rock again, and can do so immediately
+if they are already close enough. Otherwise, the next job is to travel to the
+rock and reacquire it. Each delivery changes the starting geometry for the next
+haul.
+
+If none of 256 sampled positions is clear, the rock stays delivered and inactive
+until the next frame's placement attempts. Waiting for space does not count as
+another delivery.
 :::
 
 (sec-lab-mining-manual)=

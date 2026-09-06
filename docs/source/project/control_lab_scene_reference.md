@@ -190,7 +190,7 @@ to this complete array, starting at zero, including passive bodies.
 | `friction` | `0.3`; `[0, 2]` | Contact friction coefficient. |
 | `controlled` | Boolean `false` | Compile action channels for this body. |
 | `cargo` | Boolean `false` | Eligible for delivery and automatic cargo hooking. |
-| `respawn` | Boolean `false` | Immediately restore delivered cargo at its configured starting pose. |
+| `respawn` | Boolean `false` | Respawn delivered cargo at a random clear position throughout the playable map. |
 | `actuator` | Vector actuator if omitted | Applied only to controlled bodies; options below. |
 | `visual` | Optional object | Appearance metadata; does not replace the physical hull. |
 :::
@@ -205,11 +205,14 @@ custom hull sensibly around `[0, 0]`; the compiler does not recenter it for you.
 Winding is normalized, but a concave hull is rejected. Increasing `visual.scale`
 only enlarges the drawing. Change `radius` or `vertices` to enlarge collisions.
 
-On cargo delivery, `respawn: false` makes the cargo inactive. With `true`, it returns
-immediately to its configured `position` and `angle`, with zero linear and angular
+On cargo delivery, `respawn: false` makes the cargo inactive. With `true`, the same
+cargo body normally respawns immediately at a seeded random clear position
+throughout the playable map, outside bases and with clearance from walls, holes,
+and active bodies. It retains its configured `angle`, with zero linear and angular
 velocity. This deliberately does not restore its initial `velocity` or `omega`.
-Tethers targeting that cargo detach. Keep its starting position outside every base,
-or it can deliver again on subsequent frames without a journey.
+Tethers targeting that cargo detach. If 256 placement attempts find no clear
+position, the cargo stays delivered and inactive and retries on the next frame,
+without counting another delivery.
 :::
 
 ### Type definitions and inheritance
@@ -362,7 +365,8 @@ a frame. Collection starts a cooldown of `max(dt, respawn_seconds)`. At the end,
 the slot moves to a seeded random playable position; after up to 64 unsuccessful
 placement attempts it uses the configured initial position. The timer-expiration
 frame does not also collect the newly respawned slot. These are simulation timers:
-pausing pauses them. Cargo `respawn` uses immediate restoration instead.
+pausing pauses them. Cargo `respawn` has no cooldown; it attempts placement on
+delivery and retries on subsequent frames if necessary.
 :::
 
 ### Vehicle storage and unloading refineries
@@ -724,7 +728,7 @@ geometry; it does not guarantee a useful objective or numerical stability.
 | Invalid score divisor/progress cycle | Use a finite positive divisor and positive integer cycle. |
 | Invalid episode success criterion | Set a supported evaluation metric and finite positive target. |
 | Numerical-limit error after compilation | Return to a stable revision; reduce excessive force or stiffness, increase mass where appropriate, or use a smaller step and test manually. |
-| Score advances while nothing moves | Check overlapping/one-gate routes and respawning cargo initially inside a base. |
+| Score advances while nothing moves | Check overlapping/one-gate routes; cargo initially inside a base also counts as a delivery. |
 :::
 
 :::{div} feynman-prose

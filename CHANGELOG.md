@@ -3,6 +3,8 @@
 Unreleased
 ----------
 
+* Respawn delivered mining rocks at seeded random clear positions throughout the playable map, avoiding walls, holes, active bodies, and delivery bases while preserving exact replay.
+
 * Give each control-browser suite its own CI timeout and preview-server lifecycle, retain server diagnostics, and avoid repeating racing physics and every screenshot on tablet.
 
 * Restore missing racing-guide screenshots and fix the Pages smoke test for the five-vehicle Ants default; use smaller planning budgets and retain large-fleet coverage in native tests.

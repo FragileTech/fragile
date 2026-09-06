@@ -7,6 +7,48 @@
 
 namespace fg::control {
 namespace {
+bool respawn_cargo(const Scene& s, float* r, size_t b) {
+  const auto& l = s.layout;
+  const auto& body = s.bodies[b];
+  uint64_t seed = rng_state(r);
+  // Rejection sampling covers the entire map. Bound work per frame; an
+  // overcrowded scene keeps the delivered slot inactive and retries next frame.
+  for (int attempt = 0; attempt < 256; ++attempt) {
+    Vec2 p{random01(seed) * s.size.x, random01(seed) * s.size.y};
+    if (!s.inside(p)) continue;
+    bool clear = true;
+    for (const auto& edge : s.edges)
+      if (length2(p - closest(p, edge.a, edge.b)) <= body.radius * body.radius) {
+        clear = false;
+        break;
+      }
+    if (!clear) continue;
+    for (const auto& base : s.bases)
+      if (length2(p - base.position) <= std::pow(body.radius + base.radius, 2)) {
+        clear = false;
+        break;
+      }
+    if (!clear) continue;
+    for (size_t other = 0; other < s.bodies.size(); ++other)
+      if (other != b && (word(r, l.flags + other) & active_flag) &&
+          length2(p - position(r, l, other)) <=
+              std::pow(body.radius + s.bodies[other].radius, 2)) {
+        clear = false;
+        break;
+      }
+    if (!clear) continue;
+    rng_state(r, seed);
+    position(r, l, b, p);
+    velocity(r, l, b, {});
+    angle(r, l, b) = body.angle;
+    omega(r, l, b) = 0;
+    word(r, l.flags + b, active_flag);
+    return true;
+  }
+  rng_state(r, seed);
+  return false;
+}
+
 struct Shape {
   Vec2 center;
   float radius = 0;
@@ -590,8 +632,11 @@ void Physics::mechanics(float* r, StepResult& result) {
         result.reward += s.gate_reward;
       }
     }
-  for (size_t b = 0; b < s.bodies.size(); ++b)
-    if (s.bodies[b].cargo && (word(r, l.flags + b) & active_flag))
+  for (size_t b = 0; b < s.bodies.size(); ++b) {
+    if (!s.bodies[b].cargo) continue;
+    if (s.bodies[b].respawn && word(r, l.flags + b) == delivered_flag)
+      respawn_cargo(s, r, b);
+    if (word(r, l.flags + b) & active_flag)
       for (const auto& base : s.bases)
         if (length2(position(r, l, b) - base.position) <
             base.radius * base.radius) {
@@ -601,16 +646,10 @@ void Physics::mechanics(float* r, StepResult& result) {
           for (size_t t = 0; t < s.tethers.size(); ++t)
             if (word(r, l.joints + 2 * t) == b + 1)
               word(r, l.joints + 2 * t, 0);
-          if (s.bodies[b].respawn) {
-            const auto& body = s.bodies[b];
-            position(r, l, b, body.position);
-            velocity(r, l, b, {});
-            angle(r, l, b) = body.angle;
-            omega(r, l, b) = 0;
-            word(r, l.flags + b, active_flag);
-          }
+          if (s.bodies[b].respawn) respawn_cargo(s, r, b);
           break;
         }
+  }
   for (size_t t = 0; t < s.tethers.size(); ++t) {
     const auto& def = s.tethers[t];
     if (!def.automatic || word(r, l.joints + 2 * t)) continue;
