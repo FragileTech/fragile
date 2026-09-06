@@ -1,0 +1,14 @@
+[mcp_servers.blender]
+command = "/home/guillem/.local/bin/uvx"
+args = [
+  "--with",
+  "mcp<2",
+  "--from",
+  "git+https://projects.blender.org/lab/blender_mcp.git@4309a39646e644261624bfcd2bca669b343b7621#subdirectory=mcp",
+  "blender-mcp",
+]
+enabled = true
+required = false
+startup_timeout_sec = 60
+tool_timeout_sec = 300
+default_tools_approval_mode = "prompt"
