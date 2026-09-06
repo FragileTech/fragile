@@ -1,0 +1,427 @@
+{
+  "viewport": {
+    "width": 1536,
+    "height": 1100
+  },
+  "style": "futuristic",
+  "captures": {
+    "harvest-overview": {
+      "note": "Shipped task at its initial state; FMC 128/16/6, seed 7, one thread.",
+      "view": "angled",
+      "title": "ASTEROID HARVESTING",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "harvest-detail": {
+      "note": "Top-down task view after one completed decision; paths describe planning, not task completion.",
+      "view": "top-down",
+      "title": "ASTEROID HARVESTING",
+      "tick": "TICK 000006",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "ants-overview": {
+      "note": "Shipped task at its initial state; FMC 128/16/6, seed 7, one thread.",
+      "view": "angled",
+      "title": "ANTS & DROPS",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "ants",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "ants-detail": {
+      "note": "Four drones after one decision; the original default is 48 harvesters.",
+      "view": "top-down",
+      "title": "ANTS & DROPS",
+      "tick": "TICK 000006",
+      "settings": {
+        "scenario": "ants",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "tandem-overview": {
+      "note": "Shipped task at its initial state; FMC 128/16/6, seed 7, one thread.",
+      "view": "angled",
+      "title": "TANDEM FLIGHT",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "tandem",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "tandem-detail": {
+      "note": "Top-down task view after one completed decision; paths describe planning, not task completion.",
+      "view": "top-down",
+      "title": "TANDEM FLIGHT",
+      "tick": "TICK 000006",
+      "settings": {
+        "scenario": "tandem",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "mining-overview": {
+      "note": "Shipped task at its initial state; FMC 128/16/6, seed 7, one thread.",
+      "view": "angled",
+      "title": "COLLABORATIVE MINING",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "mining",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "mining-detail": {
+      "note": "Top-down task view after one completed decision; paths describe planning, not task completion.",
+      "view": "top-down",
+      "title": "COLLABORATIVE MINING",
+      "tick": "TICK 000006",
+      "settings": {
+        "scenario": "mining",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "rocket-overview": {
+      "note": "Shipped task at its initial state; FMC 128/16/6, seed 7, one thread.",
+      "view": "angled",
+      "title": "MINING ROCKET · THINKING GRAPHS",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "rocket",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "rocket-detail": {
+      "note": "Top-down task view after one completed decision; paths describe planning, not task completion.",
+      "view": "top-down",
+      "title": "MINING ROCKET · THINKING GRAPHS",
+      "tick": "TICK 000006",
+      "settings": {
+        "scenario": "rocket",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "2"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "rocket-replay": {
+      "note": "Replay branch restores a selected search branch; compare with executed world replay.",
+      "view": "top-down",
+      "title": "MINING ROCKET · THINKING GRAPHS",
+      "tick": "TICK 000096",
+      "settings": {
+        "scenario": "rocket",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "2"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "racing-overview": {
+      "note": "Shipped task at its initial state; FMC 128/16/6, seed 7, one thread.",
+      "view": "angled",
+      "title": "VIOLET CIRCUIT · KART RACING",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "racing",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "racing-detail": {
+      "note": "Top-down task view after one completed decision; paths describe planning, not task completion.",
+      "view": "top-down",
+      "title": "VIOLET CIRCUIT · KART RACING",
+      "tick": "TICK 000006",
+      "settings": {
+        "scenario": "racing",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "editor-overview": {
+      "note": "Foraging workshop starter with scene editor open in top-down view.",
+      "view": "top-down",
+      "title": "FORAGING WORKSHOP — STARTER",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": true,
+      "selection": "None"
+    },
+    "editor-properties": {
+      "note": "Mass 2 kg and drag 0.4 entered for the selected drone, before Apply properties.",
+      "view": "top-down",
+      "title": "FORAGING WORKSHOP — STARTER",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": true,
+      "selection": "bodies / 0"
+    },
+    "editor-multiselect": {
+      "note": "Two pickup entities selected with Shift-click; entity fields show the last selection.",
+      "view": "top-down",
+      "title": "FORAGING WORKSHOP — STARTER",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": true,
+      "selection": "pickups / 1 · 2 selected"
+    },
+    "editor-tether": {
+      "note": "Cargo workshop after connecting the tug and cargo using the two-click tether tool.",
+      "view": "top-down",
+      "title": "CARGO WORKSHOP — STARTER",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": true,
+      "selection": "None"
+    },
+    "editor-polygon": {
+      "note": "A rectangular hole compiled from four vertices; its wall excludes the interior from playable space.",
+      "view": "top-down",
+      "title": "CARGO WORKSHOP — STARTER",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": true,
+      "selection": "None"
+    },
+    "editor-template": {
+      "note": "The selected tug can be saved as the scene-local workshop_tug agent type.",
+      "view": "top-down",
+      "title": "CARGO WORKSHOP — STARTER",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": true,
+      "selection": "bodies / 0"
+    },
+    "editor-actuators": {
+      "note": "Kart throttle set to 0.50, steering and brake neutral; Apply action advances one physics frame.",
+      "view": "top-down",
+      "title": "KART WORKSHOP — FINISHED",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": true,
+      "selection": "bodies / 0"
+    },
+    "editor-json": {
+      "note": "Complete scene JSON for the downloadable finished kart workshop.",
+      "view": "top-down",
+      "title": "KART WORKSHOP — FINISHED",
+      "tick": "TICK 000001",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": true,
+      "selection": "bodies / 0"
+    },
+    "editor-error": {
+      "note": "A missing comma is reported in the JSON dialog; correct the text before compiling again.",
+      "view": "top-down",
+      "title": "KART WORKSHOP — FINISHED",
+      "tick": "TICK 000001",
+      "settings": {
+        "scenario": "harvest",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": true,
+      "selection": "bodies / 0"
+    }
+  }
+}

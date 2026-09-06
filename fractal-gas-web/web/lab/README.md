@@ -5,8 +5,10 @@ Read the [published laboratory user guide](https://fragiletech.github.io/fragile
 The guide's source pages are also available in the repository:
 
 - [Getting started](../../../docs/source/project/control_lab_getting_started.md): build, first run, keyboard driving, and troubleshooting.
+- [Task tutorials](../../../docs/source/project/control_lab_tasks.md): illustrated walkthroughs for all six tasks, including every racing circuit.
 - [Controls and planners](../../../docs/source/project/control_lab_controls.md): every planning setting, clock, view, and telemetry field.
-- [Environments and scene editing](../../../docs/source/project/control_lab_scenes.md): presets, editing tools, templates, and manual actions.
+- [Scene editor tutorial](../../../docs/source/project/control_lab_scenes.md): three illustrated workshops, every editing control, templates, and manual actions.
+- [Scene JSON reference](../../../docs/source/project/control_lab_scene_reference.md): field meanings, units, defaults, limits, and downloadable examples.
 - [Replay, recordings, and checkpoints](../../../docs/source/project/control_lab_replay.md): replay workflows, save formats, and device storage.
 - [Experiments and diagnostics](../../../docs/source/project/control_lab_experiments.md): benchmarks, fork comparisons, and performance measurements.
 - [Engine architecture and extensions](../../../docs/source/project/control_lab_architecture.md): state ownership, Python batches, and extension contracts.
@@ -168,7 +170,7 @@ The files under `scenarios/` are editable examples:
 | Preset | Bodies controlled | Task |
 | --- | ---: | --- |
 | Asteroid harvesting | 1 | Hook polygon ore and deliver it to a base under local gravity |
-| Ants & drops | 1–128 (default 48) | Choose harvesters or drones; three action channels per vehicle and seeded drop respawning |
+| Ants & drops | 1–128 (default 5) | Choose harvesters or drones; three action channels per vehicle and seeded drop respawning |
 | Tandem flight | 2 | Sequential checkpoint loop and formation penalty |
 | Collaborative mining | 2 | Two elastic tethers carrying the same heavy asteroid |
 | Mining rocket / thinking graphs | 1 | Tethered search, risk and tree diagnostics |
@@ -177,7 +179,7 @@ The files under `scenarios/` are editable examples:
 ### Ants & drops
 
 Choose **Vehicle type** (Harvesters or Drones) and **Vehicle count** beneath the
-environment selector. The default is 48 harvesters; counts from 1 to 128 are
+environment selector. The default is 5 harvesters; counts from 1 to 128 are
 supported. These are vehicles in the live world, distinct from the planner's
 population of candidate worlds. Each vehicle uses its archetype's physics and model.
 
@@ -676,3 +678,38 @@ tests require separately supplied ROMs.
 frame with four substeps in a sparse contact scene. Results and measured machine
 details are in [`benchmarks/README.md`](benchmarks/README.md); rerun on your
 target hardware before choosing a real-time budget.
+
+### Ants & Drops cargo and refineries
+
+Both fleet types hold five drops. Pickups earn `rewards.pickup`; filling a tank
+earns `cargo.full_reward` (defaults to the pickup reward). Full vehicles return
+to the marked refinery and unload over two simulation seconds, earning
+`rewards.delivery` proportionally across one full load. Leaving pauses discharge;
+collection stays locked until empty. Partial loads cannot start unloading.
+
+```json
+{
+  "cargo": { "capacity": 5, "unload_seconds": 2, "full_reward": 10 },
+  "refineries": [{ "position": [12, 36], "radius": 6 }],
+  "rewards": { "pickup": 10, "delivery": 100 }
+}
+```
+
+`cargo` is optional; scenes without it preserve unlimited pickup mechanics.
+Capacity is an integer from 1 to 10000; unloading time is 0.01–10000 seconds.
+Cargo-enabled scenes require at least one refinery. Vehicles can unload together.
+The refinery tool edits zones; cargo settings are edited through the scene JSON.
+Place refinery machinery behind its apron: it extends north from `y + radius`
+to approximately `y + 1.7 × radius`. The preset uses the north arena boundary
+to keep vehicles outside that machinery. Custom scenes must supply appropriate
+boundaries if refinery machinery lies inside the arena.
+
+Native info field 15 is the optional cargo offset (zero when disabled). Four
+float32 words per controlled body store load, return-phase latch, delivered
+units, and full-cycle count. They follow actuator/extension state and are copied
+by the existing snapshot, gather, checkpoint and recording mechanisms. Existing
+info fields and metric indices retain their meanings; completed loads use the
+delivery counter. Cargo observations add normalized load, return phase and the
+normalized vector to the nearest refinery. Motion recordings accept the appended
+layout and record full, unloading/resumed, and empty events. Legacy recordings
+without cargo retain their original layout.

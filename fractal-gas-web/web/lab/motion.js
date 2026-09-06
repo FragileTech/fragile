@@ -9,7 +9,7 @@ export class MotionRecording {
   constructor(info, root, dt = 1 / 60) {
     if (
       !Array.isArray(info) ||
-      ![12, 13, 15].includes(info.length) ||
+      ![12, 13, 15, 16].includes(info.length) ||
       !info.every(Number.isInteger) ||
       info[0] !== 1 ||
       info[1] < 1 ||
@@ -22,7 +22,12 @@ export class MotionRecording {
       info[6] !== info[5] + info[1] ||
       info[7] !== info[6] + info[2] ||
       info[8] !== info[7] + 2 * info[9] ||
-      info[4] !== info[8] + 3 * info[10] + (info[14] ?? 0) ||
+      info[4] !==
+        info[8] +
+          3 * info[10] +
+          (info[14] ?? 0) +
+          (info[15] ? 4 * info[2] : 0) ||
+      (info[15] && info[15] !== info[8] + 3 * info[10] + (info[14] ?? 0)) ||
       info[4] > 100000 ||
       info[3] !== Math.ceil(info[4] / 16) * 16 ||
       !Number.isFinite(dt) ||
@@ -105,6 +110,37 @@ export class MotionRecording {
         ])
           if (bits[word] > this.lastCounters[word])
             this.addEvent(frame, name, "world");
+      if (this.info[15]) {
+        const previous =
+          frame > 0
+            ? this.frame(frame - 1).state
+            : new Float32Array(
+                this.root.buffer,
+                this.root.byteOffset + 32,
+                this.words,
+              );
+        for (let c = 0; c < this.info[2]; c++) {
+          const at = this.info[15] + c * 4;
+          if (row.state[at + 3] > previous[at + 3])
+            this.addEvent(frame, `Vehicle ${c + 1}: tank full`, "world");
+          if (row.state[at + 2] > previous[at + 2]) {
+            const before =
+              frame > 1
+                ? this.frame(frame - 2).state
+                : frame === 1
+                  ? new Float32Array(
+                      this.root.buffer,
+                      this.root.byteOffset + 32,
+                      this.words,
+                    )
+                  : null;
+            if (!before || previous[at + 2] === before[at + 2])
+              this.addEvent(frame, `Vehicle ${c + 1}: unloading`, "world");
+            if (row.state[at] === 0)
+              this.addEvent(frame, `Vehicle ${c + 1}: tank empty`, "world");
+          }
+        }
+      }
       this.lastCounters = bits.slice(0, 8);
     }
   }

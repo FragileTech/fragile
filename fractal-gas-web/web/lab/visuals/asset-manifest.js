@@ -12,7 +12,7 @@ export const assetManifest = Object.freeze(
       style,
       Object.freeze(
         Object.fromEntries(
-          [...vehicleModels, ...worldModels].map((model) => [
+          [...vehicleModels, "refinery", ...worldModels].map((model) => [
             model,
             Object.freeze(
               Object.fromEntries(

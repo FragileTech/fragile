@@ -3,10 +3,28 @@ root: source/project/control_laboratory
 chapters:
 - file: source/project/control_lab_getting_started
   title: Getting started
+- file: source/project/control_lab_tasks
+  title: Task tutorials
+  sections:
+  - file: source/project/control_lab_task_harvest
+    title: Asteroid harvesting
+  - file: source/project/control_lab_task_ants
+    title: Ants & drops
+  - file: source/project/control_lab_task_tandem
+    title: Tandem flight
+  - file: source/project/control_lab_task_mining
+    title: Collaborative mining
+  - file: source/project/control_lab_task_rocket
+    title: Thinking graphs
+  - file: source/project/control_lab_task_racing
+    title: Racing — all six circuits
 - file: source/project/control_lab_controls
   title: Controls and planners
 - file: source/project/control_lab_scenes
-  title: Environments and scene editing
+  title: Scene editor tutorial
+  sections:
+  - file: source/project/control_lab_scene_reference
+    title: Scene JSON reference
 - file: source/project/control_lab_replay
   title: Replay, recordings, and checkpoints
 - file: source/project/control_lab_experiments

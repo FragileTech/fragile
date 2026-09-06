@@ -117,7 +117,8 @@ fg::control::WaveConfig config(const char* text, const Scene& s) {
   size_t estimated =
       size_t(c.walkers) * (s.layout.stride * 8 + s.channels.size() * 4 * 6 +
                            (s.bodies.size() * 7 + s.controlled.size() +
-                            s.tethers.size() * 2 + s.extension_observations) *
+                            s.tethers.size() * 2 + s.extension_observations +
+                            (s.cargo_capacity > 0 ? s.controlled.size() * 4 : 0)) *
                                4);
   if (estimated > 512 * 1024 * 1024)
     throw std::invalid_argument(
@@ -195,6 +196,8 @@ FGC_EXPORT int fgc_info(void* p, int field) {
         return int(l.auxiliary);
       case 14:
         return int(l.auxiliary_words);
+      case 15:
+        return int(l.cargo);
       default:
         throw std::invalid_argument("Unknown info field");
     }

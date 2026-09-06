@@ -51,6 +51,20 @@ for (const style of ["futuristic", "steampunk"]) {
                 : 50000),
         );
         const root = await geometryOnly(bytes, json);
+        if (model === "rocket") {
+          const glazing = json.materials.find((material) =>
+            material.name.includes("glazing"),
+          );
+          assert(glazing, "rocket glazing material is present");
+          assert.equal(
+            glazing.alphaMode || "OPAQUE",
+            lod === "high" ? "BLEND" : "OPAQUE",
+          );
+          assert(
+            !glazing.extensions?.KHR_materials_transmission,
+            "glazing needs no refraction pass",
+          );
+        }
         root.updateMatrixWorld(true);
         const bounds = new T.Box3();
         root.traverse((part) => {
@@ -83,6 +97,34 @@ for (const style of ["futuristic", "steampunk"]) {
           assert.equal(
             motions.filter((m) => m === "wheel").length,
             model === "kart" ? 4 : 7,
+          );
+          // Mirroring a Y-axis wheel must not invert its outward tread normals.
+          let outward = 0,
+            treadSamples = 0;
+          root.traverse((mesh) => {
+            if (
+              !mesh.isMesh ||
+              mesh.parent?.userData.motion !== "wheel" ||
+              !mesh.material.name.startsWith("Tire rubber")
+            )
+              return;
+            const { position, normal } = mesh.geometry.attributes;
+            const radius = mesh.parent.userData.wheelRadius;
+            for (let i = 0; i < position.count; i++) {
+              const x = position.getX(i),
+                z = position.getZ(i);
+              const nx = normal.getX(i),
+                nz = normal.getZ(i);
+              if (Math.hypot(x, z) < radius * 0.9 || Math.hypot(nx, nz) < 0.3)
+                continue;
+              treadSamples++;
+              if (x * nx + z * nz > 0) outward++;
+            }
+          });
+          assert(treadSamples > 0, "wheel tread geometry is present");
+          assert(
+            outward / treadSamples > 0.85,
+            "wheel tread normals face outward",
           );
         }
         if (model === "drone")

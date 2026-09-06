@@ -117,6 +117,7 @@ const editor = createSceneEditor({
   download,
   upload,
   slug,
+  onSelection: () => updateCargoReadout(),
   onWorldClick(point) {
     const tree = record.entries[selectedRecord]?.tree;
     if (!tree || !renderer.layers.tree) return;
@@ -453,6 +454,29 @@ function loadScene(scene, autoStep = false) {
     recordingLast: importPending?.lastRows,
   });
 }
+function updateCargoReadout(
+  label = scenePresentation(currentScene).score.label,
+) {
+  if (currentInfo?.[15] && currentState) {
+    const ids = [
+      ...new Set((currentChannels || []).map((channel) => channel.body)),
+    ];
+    const selected =
+      editor.selection?.key === "bodies" ? editor.selection.i : ids[0];
+    const c = ids.indexOf(selected),
+      at = currentInfo[15] + Math.max(0, c) * 4;
+    let delivered = 0;
+    for (let i = 0; i < ids.length; i++)
+      delivered += currentState[currentInfo[15] + 4 * i + 2];
+    $("score-note").textContent =
+      `${label} · ${delivered.toFixed(1)} units delivered · ${new Uint32Array(currentState.buffer, currentState.byteOffset)[4]} loads`;
+    $("cargo-status").hidden = false;
+    $("cargo-status").textContent =
+      c < 0
+        ? "Select a collecting vehicle"
+        : `Vehicle ${selected + 1} · Cargo ${currentState[at].toFixed(1)} / ${currentScene.cargo.capacity ?? 5} · ${currentState[at + 1] ? "Return / unload" : "Collecting"}`;
+  } else $("cargo-status").hidden = true;
+}
 function updateFrame(data) {
   const m = data.metrics,
     dt = currentScene.physics?.dt || 1 / 60;
@@ -461,6 +485,7 @@ function updateFrame(data) {
   const readout = sceneReadout(currentScene, m);
   $("score").textContent = String(readout.score);
   $("score-note").textContent = readout.label;
+  updateCargoReadout(readout.label);
   $("footer-stats").textContent =
     `${currentInfo?.[1] || 0} BODIES · ${currentInfo?.[12] ?? (currentInfo?.[2] || 0) * 2} ACTION DIMENSIONS · ${data.missed} MISSED DEADLINES`;
   if (m[3] > 0 && running) {

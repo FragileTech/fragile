@@ -39,6 +39,8 @@ struct TetherDef {
 };
 struct Layout {
   uint32_t bodies = 0, controlled = 0, tethers = 0, pickups = 0;
+  uint32_t cargo = 0;
+  float cargo_capacity = 0;
   uint32_t flags = 0, gates = 0, joints = 0, food = 0, auxiliary = 0,
            auxiliary_words = 0, words = 0, stride = 0;
   Layout() = default;
@@ -64,7 +66,8 @@ struct Scene {
   std::vector<std::vector<Vec2>> boundaries;
   std::vector<Edge> edges;
   std::vector<Gravity> gravity;
-  std::vector<Zone> bases, gates, pickups;
+  std::vector<Zone> bases, gates, pickups, refineries;
+  float cargo_capacity = 0, unload_seconds = 2, full_reward = 10;
   std::vector<TetherDef> tethers;
   Vec2 size{64, 44};
   float dt = 1.f / 60.f;

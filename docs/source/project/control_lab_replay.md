@@ -1,9 +1,6 @@
 (sec-control-lab-replay)=
 # Record, replay, and continue experiments
 
-Use the book's **Full** reading mode for this practical guide. **Expert** mode
-hides its explanatory instructions and tables.
-
 :::{div} feynman-prose
 There are two different histories to inspect. The kart followed one physical
 trajectory, but the planner considered many trajectories before choosing it.

@@ -221,6 +221,16 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
   zones(root["bases"], s->bases);
   zones(root["gates"], s->gates);
   zones(root["pickups"], s->pickups);
+  zones(root["refineries"], s->refineries);
+  if (root["cargo"].kind != Json::Null) {
+    if (root["cargo"].kind != Json::Object)
+      throw std::invalid_argument("cargo must be an object");
+    s->cargo_capacity = float(integer(root["cargo"]["capacity"], 5, 1, 10000));
+    s->unload_seconds = number(root["cargo"]["unload_seconds"], 2, .01f, 10000);
+    s->full_reward = number(root["cargo"]["full_reward"], s->pickup_reward, 0, 10000);
+    if (s->refineries.empty())
+      throw std::invalid_argument("Cargo collection requires a refinery zone");
+  }
   if (s->pickups.size() > 4096)
     throw std::invalid_argument("Too many pickup slots");
   for (const auto& j : root["gravity"].items())
@@ -257,6 +267,13 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
   }
   s->layout = Layout(s->bodies.size(), s->controlled.size(), s->tethers.size(),
                      s->pickups.size(), auxiliary_words);
+  if (s->cargo_capacity > 0) {
+    s->layout.cargo = s->layout.words;
+    s->layout.cargo_capacity = s->cargo_capacity;
+    // Per controlled vehicle: load, return phase, delivered units, full cycles.
+    s->layout.words += 4 * uint32_t(s->controlled.size());
+    s->layout.stride = (s->layout.words + 15) & ~15u;
+  }
   if (s->layout.words > 100000)
     throw std::invalid_argument("Scene state exceeds 100000 float32 words");
   s->fingerprint = 14695981039346656037ULL;

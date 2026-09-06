@@ -23,15 +23,18 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const frame = () => new Promise(requestAnimationFrame);
 async function measure(renderer) {
   for (let i = 0; i < 3; i++) await frame();
-  const times = [];
+  const times = [],
+    cpuTimes = [];
   let last = performance.now();
   for (let i = 0; i < 15; i++) {
     await frame();
     const now = performance.now();
     times.push(now - last);
+    cpuTimes.push(renderer.performance.cpuMs);
     last = now;
   }
   times.sort((a, b) => a - b);
+  cpuTimes.sort((a, b) => a - b);
   const geometry = [];
   renderer.world.traverseVisible((object) => {
     if (object.isMesh)
@@ -46,6 +49,8 @@ async function measure(renderer) {
   });
   return {
     medianFrameMs: +times[7].toFixed(2),
+    medianRenderCpuMs: +cpuTimes[7].toFixed(2),
+    pageVisibility: document.visibilityState,
     draws: renderer.performance.calls,
     triangles: renderer.performance.triangles,
     largestGeometry: geometry
@@ -70,6 +75,22 @@ try {
           envelope = part.userData.collisionEnvelope;
       });
       check(same(envelope, spec.size), `${style}/${kind}: shared envelope`);
+      let decoded = true;
+      model.traverse((part) => {
+        for (const key of ["map", "normalMap", "roughnessMap", "emissiveMap"])
+          if (part.material?.[key]) {
+            const image = part.material[key].image;
+            decoded &&=
+              image?.width > 0 &&
+              image.width <= 2048 &&
+              image?.height > 0 &&
+              image.height <= 2048;
+          }
+      });
+      check(
+        decoded,
+        `${style}/${kind}: embedded textures decoded within budget`,
+      );
     }
   for (const style of ["futuristic", "steampunk"]) {
     for (const model of ["rocket", "kart", "drone", "harvester"]) {
@@ -136,6 +157,21 @@ try {
         `${id}: authored asset active`,
       );
       performanceRows.push({ scene: id, style, ...(await measure(a)) });
+      if (id === "harvest") {
+        const ores = a.bodyLayer.lods.filter((entry) => entry.span != null);
+        a.bodyLayer.updateLod({ top: 100, bottom: -100 }, 400);
+        check(
+          ores.length > 0 &&
+            ores.every((entry) => entry.low.visible && !entry.high.visible),
+          `${style}: distant ore uses simplified geometry`,
+        );
+        a.bodyLayer.updateLod({ top: 1, bottom: -1 }, 900);
+        check(
+          ores.every((entry) => entry.high.visible && !entry.low.visible),
+          `${style}: close ore uses detailed geometry`,
+        );
+        a.bodyLayer.updateLod(a.camera, a.canvas.clientHeight);
+      }
     }
     const pose = () => {
       const parts = a.bodyLayer.animations[a.controlled[0]];
@@ -196,6 +232,32 @@ try {
       style,
       ...(await measure(a)),
     });
+    const overview = a.bodyLayer.instances.reduce(
+      (n, { mesh }) => n + mesh.count,
+      0,
+    );
+    const snapshot = [...engine.snapshot()];
+    a.focus(0);
+    a.bodyLayer.updateLod(a.camera, a.canvas.clientHeight);
+    const focused = a.bodyLayer.instances.reduce(
+      (n, { mesh }) => n + mesh.count,
+      0,
+    );
+    check(
+      focused > 0 && focused < overview,
+      `${style}: off-screen crowd instances are omitted`,
+    );
+    check(
+      same(snapshot, [...engine.snapshot()]),
+      `${style}: crowd culling preserves native state`,
+    );
+    performanceRows.push({
+      scene: "64 mixed vehicles / close view",
+      style,
+      ...(await measure(a)),
+    });
+    a.focus(null);
+    a.bodyLayer.updateLod(a.camera, a.canvas.clientHeight);
   }
   b.dispose();
   b = null;

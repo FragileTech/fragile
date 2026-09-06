@@ -239,48 +239,44 @@ class WorldBuilder(lab.Builder):
 
     def rock(self, radius=1, seed=1, pos=(0, 0, 0), parent=None, smooth=False):
         seed += 13 if self.steam else 0
-        n, rows = (10, 5) if self.low else (20, 10)
-        v = []
-        for j in range(rows + 1):
-            phi = math.pi * j / rows
-            for i in range(n):
-                a = TAU * i / n
-                r = radius * (
-                    0.87
-                    + 0.09 * math.sin(a * 3 + phi * 7 + seed)
-                    + 0.045 * math.cos(a * 7 - phi * 5)
-                )
-                v.append((
-                    r * math.sin(phi) * math.cos(a),
-                    r * math.sin(phi) * math.sin(a),
-                    max(0, r * math.cos(phi) * 0.85 + radius * 0.65),
-                ))
-        faces = []
-        for j in range(rows):
-            for i in range(n):
-                a = j * n + i
-                b = j * n + (i + 1) % n
-                c = b + n
-                d = a + n
-                faces.extend([(a, c, b), (a, d, c)])
-        o = self.mesh("Fractured mineral stone", v, faces, "stone", parent)
+        # An icosphere distributes facets evenly and avoids the UV-sphere's polar spikes.
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2 if self.low else 4, radius=1)
+        o = bpy.context.object
+        o.name = "Fractured mineral stone"
+        o.parent = parent or self.root
         o.location = pos
-        for f in o.data.polygons:
-            f.use_smooth = smooth
-            indices = [o.data.loops[li].vertex_index for li in f.loop_indices]
-            uv = [[(index % n) / n, (index // n) / rows] for index in indices]
+        o.data.materials.append(self.mats["stone"])
+        directions = [v.co.normalized().copy() for v in o.data.vertices]
+        for vertex, direction in zip(o.data.vertices, directions):
+            x, y, z = direction
+            r = radius * (
+                0.87
+                + 0.10 * math.sin(x * 5 + seed) * math.cos(y * 6 + z * 4)
+                + 0.05 * math.sin(x * 13 + z * 7 + seed)
+            )
+            vertex.co = (x * r, y * r, max(0, z * r * 0.85 + radius * 0.65))
+        o.data.update()
+        layer = o.data.uv_layers.new()
+        for face in o.data.polygons:
+            face.use_smooth = smooth
+            uv = []
+            for index in face.vertices:
+                direction = directions[index]
+                uv.append([
+                    math.atan2(direction.y, direction.x) / TAU + 0.5,
+                    math.acos(max(-1, min(1, direction.z))) / math.pi,
+                ])
             if max(p[0] for p in uv) - min(p[0] for p in uv) > 0.5:
-                for p in uv:
-                    if p[0] < 0.5:
-                        p[0] += 1
-            # Every pole triangle needs its own midpoint U, avoiding stretched stars.
-            for p in uv:
-                if p[1] in [0, 1]:
-                    others = [q[0] for q in uv if q[1] not in [0, 1]]
+                for point in uv:
+                    if point[0] < 0.5:
+                        point[0] += 1
+            for point in uv:
+                if point[1] < 1e-6 or point[1] > 1 - 1e-6:
+                    others = [q[0] for q in uv if 1e-6 < q[1] < 1 - 1e-6]
                     if others:
-                        p[0] = sum(others) / len(others)
-            for li, point in zip(f.loop_indices, uv):
-                o.data.uv_layers.active.data[li].uv = point
+                        point[0] = sum(others) / len(others)
+            for index, point in zip(face.loop_indices, uv):
+                layer.data[index].uv = point
         return o
 
     def gear(self, pos, r=0.18, axis="z", parent=None):

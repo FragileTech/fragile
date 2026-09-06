@@ -39,7 +39,10 @@ export class BodyLayer {
     this.animations = [];
     this.instances = [];
     this.lods = [];
-    this.zero = new T.Matrix4().makeScale(0, 0, 0);
+    this.frustum = new T.Frustum();
+    this.viewProjection = new T.Matrix4();
+    this.sphere = new T.Sphere();
+    this.inView = [];
     const templates = new Map(),
       groups = new Map();
     const crowd = this.bodies.filter((b) => b.controlled).length > 16;
@@ -161,24 +164,52 @@ export class BodyLayer {
       }),
     );
     if (this.instances.length) {
-      for (const b of this.controlled) this.models[b].updateMatrixWorld(true);
-      for (const { mesh, bodies, part } of this.instances) {
-        bodies.forEach((b, i) => {
-          const model = this.models[b],
-            child = this.parts[b][part];
-          mesh.setMatrixAt(
-            i,
-            bits[this.info[5] + b] & 1 && visibleInModel(child, model)
-              ? child.matrixWorld
-              : this.zero,
-          );
-        });
-        mesh.instanceMatrix.needsUpdate = true;
-      }
+      this.instanceState = bits;
+      this.updateInstances();
       for (const b of this.controlled) this.models[b].visible = false;
     }
   }
+  updateInstances() {
+    if (!this.instanceState) return;
+    for (const b of this.controlled) this.models[b].updateMatrixWorld(true);
+    for (const { mesh, bodies, part } of this.instances) {
+      let count = 0;
+      for (const b of bodies) {
+        const model = this.models[b],
+          child = this.parts[b][part];
+        if (
+          this.instanceState[this.info[5] + b] & 1 &&
+          this.inView[b] !== false &&
+          visibleInModel(child, model)
+        )
+          mesh.setMatrixAt(count++, child.matrixWorld);
+      }
+      mesh.count = count;
+      mesh.visible = count > 0;
+      mesh.instanceMatrix.needsUpdate = true;
+    }
+  }
   updateLod(camera, viewportHeight) {
+    if (this.instances.length && camera.isCamera) {
+      camera.updateMatrixWorld();
+      this.frustum.setFromProjectionMatrix(
+        this.viewProjection.multiplyMatrices(
+          camera.projectionMatrix,
+          camera.matrixWorldInverse,
+        ),
+      );
+      let changed = false;
+      for (const b of this.controlled) {
+        const model = this.models[b];
+        this.sphere.center.copy(model.position);
+        this.sphere.center.z += 0.5 * model.scale.x;
+        this.sphere.radius = 2 * model.scale.x;
+        const visible = this.frustum.intersectsSphere(this.sphere);
+        changed ||= this.inView[b] !== visible;
+        this.inView[b] = visible;
+      }
+      if (changed) this.updateInstances();
+    }
     const pixelsPerUnit = viewportHeight / (camera.top - camera.bottom);
     for (const entry of this.lods) {
       entry.current = chooseLod(

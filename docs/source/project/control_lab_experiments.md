@@ -1,8 +1,6 @@
 (sec-control-lab-experiments)=
 # Experiments, comparisons, and performance
 
-Choose **Full** in the book's Full/Expert toggle to display this operating guide.
-
 :::{div} feynman-prose
 A convincing-looking trajectory is a useful observation, but a controller comparison
 needs a repeatable question. Which world, which seeds, what counts as success, and
@@ -11,7 +9,7 @@ alongside the outcomes so you can inspect the comparison rather than trust its l
 
 Use {doc}`control_lab_getting_started` to launch the lab,
 {doc}`control_lab_controls` to understand planner parameters, and
-{doc}`control_lab_scenes` to choose the task. This page covers repeated trials,
+{doc}`control_lab_tasks` to choose a task tutorial. This page covers repeated trials,
 two futures from one world, and measurements of physics and state movement.
 :::
 
@@ -50,9 +48,12 @@ Keep this distinction in mind when comparing their timing with the live planner.
 :::{div} feynman-prose
 When opening the dialog for a different scene object, the panel adopts that scene's
 `evaluation.metric` and `evaluation.target` if the metric exists in the selector.
-Violet Circuit supplies `gates` and 16. The other supplied presets do not declare
-an evaluation default, so the panel retains its previous selection; on first use
-that is one cargo delivery. Always check the goal after switching tasks.
+All six Racing circuits supply `gates` with a target equal to their checkpoint
+count; Violet Circuit supplies 16. The nonracing stock presets do not declare an
+evaluation default, so the panel retains its previous explicit goal; on first use
+that is one cargo delivery. Always check the goal after switching tasks. This UI
+behavior differs from the `runEpisode` API: when no goal is supplied and the scene
+has no evaluation, the API uses survival for the episode's frame limit.
 
 Variant settings are assembled in this order: current live planner settings, then
 the dialog's controller/population/lookahead/action-duration fields and
@@ -90,12 +91,15 @@ the world to be nonterminal when its goal threshold is met.
 |---|---|
 | **Cargo deliveries** / `deliveries` | World delivery counter. |
 | **Food pickups** / `pickups` | World pickup counter. |
-| **Gates crossed** / `gates` | World gate counter. In Violet Circuit, 16 sequential checkpoint zones make one lap; this is zone entry, not directional timing-line detection. |
+| **Gates crossed** / `gates` | World gate counter. Each Racing circuit declares a goal equal to its checkpoint count; Violet Circuit has 16. Checkpoints count zone entry, not directional timing-line detection. |
 | **Frames survived** / `survival` | Frames executed within this trial; units are frames, not seconds. |
 | **Accumulated reward** / `reward` | Sum of the world's per-frame rewards during this trial. |
 :::
 
 :::{div} feynman-prose
+See {doc}`control_lab_task_racing` for all six circuit layouts, their checkpoint
+counts, and a walkthrough of the one-lap experiment goal.
+
 Delivery, pickup, and gate thresholds use absolute world counters. A fork whose root
 already has 16 gates succeeds immediately under target 16, without completing
 another lap. Raise the target to the desired total before comparing continuations.

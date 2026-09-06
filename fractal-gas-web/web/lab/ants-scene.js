@@ -1,4 +1,4 @@
-export const DEFAULT_ANTS_OPTIONS = { agentType: "harvester", count: 48 };
+export const DEFAULT_ANTS_OPTIONS = { agentType: "harvester", count: 5 };
 export const MAX_ANTS_VEHICLES = 128;
 
 function inside(point, ring) {
@@ -68,7 +68,7 @@ export function configureAntsScene(template, { agentType, count }) {
     angle: (i % 6) - 3,
   }));
   const label = count === 1 ? agentType : `${agentType}s`;
-  scene.description = `${count} ${label}. Collect drops that return at random positions after 3 simulation seconds.`;
+  scene.description = `${count} ${label}. Fill 5-drop tanks and unload at the refinery over 2 simulation seconds. Drops return after 3 seconds.`;
   scene.respawn_seconds = 3;
   return scene;
 }

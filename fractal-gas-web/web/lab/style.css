@@ -621,6 +621,7 @@ details .field {
   pointer-events: none;
 }
 #status {
+  pointer-events: none;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -1280,3 +1281,5 @@ dialog .control-heading {
     margin: 0;
   }
 }
+
+#cargo-status { position: absolute; bottom: 3.2rem; left: 1rem; z-index: 3; padding: .45rem .7rem; background: #111a25e8; color: #f1d8a1; border: 1px solid #86734c; font: 12px monospace; pointer-events: none; }

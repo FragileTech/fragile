@@ -187,7 +187,7 @@ jobs:
           test -s site/docs/lab/searchindex.js
           test -s site/docs/source/1_agent/intro_agent.html
           test -s site/docs/_static/prompts/1_agent-with-proofs.md
-          for guide in control_laboratory control_lab_getting_started control_lab_controls control_lab_scenes control_lab_replay control_lab_experiments control_lab_architecture; do
+          for guide in control_laboratory control_lab_getting_started control_lab_tasks control_lab_task_harvest control_lab_task_ants control_lab_task_tandem control_lab_task_mining control_lab_task_rocket control_lab_task_racing control_lab_controls control_lab_scenes control_lab_scene_reference control_lab_replay control_lab_experiments control_lab_architecture; do
             test -s "site/docs/lab/source/project/$guide.html"
             test -s "site/docs/source/project/$guide.html"
           done

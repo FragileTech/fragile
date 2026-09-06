@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "name": "Foraging workshop \u2014 starter",
+  "task": "forage",
+  "size": [
+    40,
+    30
+  ],
+  "physics": {
+    "dt": 0.016666666666666666,
+    "substeps": 4,
+    "solver_iterations": 8,
+    "lethal_walls": false,
+    "lethal_bodies": false
+  },
+  "agent_types": {
+    "workshop_drone": {
+      "label": "Workshop Drone",
+      "physics": {
+        "controlled": true,
+        "radius": 0.65,
+        "mass": 1,
+        "thrust": 12,
+        "torque": 3,
+        "drag": 0.2,
+        "angular_drag": 3,
+        "actuator": {
+          "kind": "holonomic"
+        }
+      },
+      "visual": {
+        "model": "drone",
+        "color": "#b794e8",
+        "scale": 1
+      }
+    }
+  },
+  "bodies": [
+    {
+      "agent_type": "workshop_drone",
+      "position": [
+        8,
+        8
+      ],
+      "angle": 0
+    }
+  ],
+  "pickups": [
+    {
+      "position": [
+        16,
+        8
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        24,
+        8
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        24,
+        18
+      ],
+      "radius": 0.4
+    }
+  ],
+  "respawn_seconds": 3,
+  "evaluation": {
+    "metric": "pickups",
+    "target": 3
+  }
+}

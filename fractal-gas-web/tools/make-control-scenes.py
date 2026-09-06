@@ -108,16 +108,16 @@ ants_positions = [
 save(
     "ants",
     "Ants & drops",
-    "48 harvesters. Collect drops that return at random positions after 3 simulation seconds.",
+    "5 harvesters. Fill 5-drop tanks and unload at the refinery over 2 simulation seconds. Drops return after 3 seconds.",
     "forage",
     lethal_walls=False,
     bodies=[
         {
             "agent_type": "harvester",
-            "position": ants_positions[int((i + 0.5) * len(ants_positions) / 48)],
+            "position": ants_positions[int((i + 0.5) * len(ants_positions) / 5)],
             "angle": (i % 6) - 3,
         }
-        for i in range(48)
+        for i in range(5)
     ],
     boundary=[[2, 2], [62, 2], [62, 42], [2, 42]],
     holes=[[[29, 17], [33, 17], [33, 28], [29, 28]]],
@@ -125,6 +125,8 @@ save(
         {"position": [6 + (i * 13) % 52, 5 + (i * 17) % 33], "radius": 0.4} for i in range(24)
     ],
     respawn_seconds=3,
+    cargo={"capacity": 5, "unload_seconds": 2},
+    refineries=[{"position": [12, 36], "radius": 6}],
 )
 save(
     "tandem",

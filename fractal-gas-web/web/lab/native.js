@@ -23,7 +23,7 @@ export class NativeEngine {
       module._fgc_create(p, worlds, threads),
     );
     if (!this.h) throw new Error(module.UTF8ToString(module._fgc_error()));
-    this.info = Array.from({ length: 15 }, (_, i) =>
+    this.info = Array.from({ length: 16 }, (_, i) =>
       module._fgc_info(this.h, i),
     );
     [this.worlds, this.bodies, this.controlled, this.stride, this.words] =

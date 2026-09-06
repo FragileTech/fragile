@@ -83,6 +83,16 @@ void StateBatch::validate_row(const float* r) const {
   for (size_t i = layout.food; i < layout.words; ++i)
     if (!std::isfinite(r[i]))
       throw std::invalid_argument("Non-finite pickup state");
+  if (layout.cargo_capacity > 0)
+    for (size_t c = 0; c < layout.controlled; ++c) {
+      const float* cargo = r + layout.cargo + 4 * c;
+      if (cargo[0] < 0 || cargo[0] > layout.cargo_capacity ||
+          (cargo[1] != 0 && cargo[1] != 1) || cargo[2] < 0 || cargo[3] < 0 ||
+          std::floor(cargo[3]) != cargo[3] ||
+          (cargo[1] == 1 && cargo[0] == 0) ||
+          (cargo[1] == 0 && (cargo[0] >= layout.cargo_capacity || std::floor(cargo[0]) != cargo[0])))
+        throw std::invalid_argument("Invalid cargo state");
+    }
   if (word(r, 7) > 1) throw std::invalid_argument("Invalid terminal state");
 }
 void StateBatch::serialize(uint8_t* out, size_t capacity) const {

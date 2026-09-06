@@ -17,6 +17,7 @@ export function createSceneEditor({
   upload,
   slug,
   onWorldClick,
+  onSelection,
 }) {
   const $ = (id) => document.getElementById(id),
     copy = (value) => structuredClone(value);
@@ -71,7 +72,14 @@ export function createSceneEditor({
   function nearest(point) {
     let best,
       distance = Infinity;
-    for (const key of ["bodies", "pickups", "bases", "gates", "gravity"])
+    for (const key of [
+      "bodies",
+      "pickups",
+      "bases",
+      "gates",
+      "gravity",
+      "refineries",
+    ])
       for (const [i, entity] of (currentScene[key] || []).entries()) {
         const pos =
           key === "bodies" && getState()
@@ -94,6 +102,7 @@ export function createSceneEditor({
       : "";
     properties.show(resolvedSelection());
     renderer.selectMany(selections.map((s) => s.pos));
+    onSelection?.();
   }
   $("world").addEventListener("pointerdown", (event) => {
     if (!isReady() || event.button !== 0 || event.altKey) return;

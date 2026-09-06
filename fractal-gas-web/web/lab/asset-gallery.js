@@ -52,6 +52,7 @@ const requested = new URLSearchParams(location.search).get("asset");
 if ([...select.options].some((option) => option.value === requested))
   select.value = requested;
 const descriptions = {
+  refinery: "Shared unloading apron, receiving hopper, twin processing tanks and transfer machinery. Full vehicles discharge gradually over two simulation seconds.",
   rocket:
     "Twin engine pods, a closed canopy, swept stabilizers, and independent animated exhausts.",
   kart: "Four exposed wheels, front steering, an open cockpit, and a chassis built around its power unit.",
@@ -79,9 +80,9 @@ function poseCamera() {
     .copy(center)
     .add(
       new T.Vector3(
-        4 * Math.cos(angle) * Math.sin(turn),
-        -4 * Math.cos(angle) * Math.cos(turn),
-        4 * Math.sin(angle),
+        modelSpan * 1.5 * Math.cos(angle) * Math.sin(turn),
+        -modelSpan * 1.5 * Math.cos(angle) * Math.cos(turn),
+        modelSpan * 1.5 * Math.sin(angle),
       ),
     );
   camera.lookAt(center);

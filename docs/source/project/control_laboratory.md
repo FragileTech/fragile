@@ -5,7 +5,10 @@
 The laboratory runs custom C++ physics in Python and in the browser through WebAssembly.
 Its central operation is copying a complete possible world, advancing the copy, and
 comparing what happened. The browser adds a cyberpunk view, scene editing, and recorded
-world playback and search paths. Its Fragile Tech logo, favicon, and purple accent match
+world playback and search paths. The illustrated {doc}`task tutorials <control_lab_tasks>`
+show what to do in each environment, and the {doc}`editor course <control_lab_scenes>`
+takes you from moving an object to building and saving your own experiment.
+Its Fragile Tech logo, favicon, and purple accent match
 the book. Physics remains two-dimensional when the camera shows
 a three-dimensional view. See {ref}`the extension contracts <sec-control-extension-contracts>`
 for where new actuation, sensors, rewards, and controllers belong.
@@ -23,10 +26,16 @@ beneath **Continuous-control laboratory** in the Lab guide navigation:
 
 - {doc}`control_lab_getting_started`: build and open the lab, understand worlds and
   walkers, run the six presets, drive the kart, and choose up to 64 threads.
+- {doc}`control_lab_tasks`: choose an illustrated, step-by-step tutorial for Asteroid
+  harvesting, Ants & drops, Tandem flight, Collaborative mining, Thinking graphs, or
+  Racing, including all six racing circuits.
 - {doc}`control_lab_controls`: use the controller settings, clocks, observation
   layers, camera, and measured diagnostics.
-- {doc}`control_lab_scenes`: create and edit environments, agents, geometry,
-  tethers, physical properties, and reusable types.
+- {doc}`control_lab_scenes`: follow illustrated foraging, cargo-delivery, and kart
+  editor exercises with downloadable starter and finished scenes; learn selection,
+  placement, properties, reusable types, Undo/Redo, and import/export.
+- {doc}`control_lab_scene_reference`: look up scene JSON fields, defaults, units,
+  limits, and interactions when editing physics, actuators, rewards, or presentation.
 - {doc}`control_lab_replay`: record movement and thinking traces, restore a world,
   resume a planner checkpoint, and save recordings on the device or in files.
 - {doc}`control_lab_experiments`: compare controllers over explicit seeds and
@@ -34,9 +43,12 @@ beneath **Continuous-control laboratory** in the Lab guide navigation:
 - {doc}`control_lab_architecture`: follow the engine and controller interfaces,
   packed-state lifecycle, and extension contracts when implementing new features.
 
-For a first session, read Getting started, then Controls, then Replay. Follow with
-Scenes when you want a new task, Experiments when you want evidence about a
-controller, and Architecture when you want to extend the implementation. The
+For a first session, read Getting started, then choose a task tutorial and follow its
+first-run instructions. Keep Controls nearby to understand the settings you change,
+and use Replay to save and inspect the result. Next, work through the editor exercises
+to change the experiment itself; consult the Scene JSON reference for individual
+options. Read Experiments when you want evidence about a controller, and Architecture
+when you want to extend the implementation. The
 reference material below supplies additional API examples and technical detail.
 
 The Lab guide always shows its practical explanations and examples; it does not use
@@ -725,7 +737,7 @@ paths, the future-state cloud, tethers, and collision geometry independently.
 :::{div} feynman-added
 | Preset | Experiment |
 |---|---|
-| Ants & drops | Joint control of 1–128 harvesters or drones, defaulting to 48 harvesters. Each of the 24 pickups returns at a seeded random playable position three simulation seconds after collection, indefinitely. |
+| Ants & drops | Joint control of 1–128 harvesters or drones, defaulting to 5 harvesters. Each of the 24 pickups returns at a seeded random playable position three simulation seconds after collection, indefinitely. |
 | Asteroid harvesting | Attach cargo and deliver it through an arena with obstacles and gravity. |
 | Tandem flight | Coordinate two bodies through sequential gates with a formation reward. |
 | Collaborative mining | Haul one heavy rock: slow with one rocket, faster with two; delivery immediately replenishes it. |

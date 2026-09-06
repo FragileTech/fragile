@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "name": "Cargo workshop \u2014 starter",
+  "task": "harvest",
+  "size": [
+    40,
+    30
+  ],
+  "physics": {
+    "dt": 0.016666666666666666,
+    "substeps": 4,
+    "solver_iterations": 8,
+    "lethal_walls": false,
+    "lethal_bodies": false
+  },
+  "agent_types": {
+    "workshop_rocket": {
+      "label": "Workshop Rocket",
+      "physics": {
+        "controlled": true,
+        "radius": 0.65,
+        "mass": 1,
+        "thrust": 16,
+        "torque": 3,
+        "drag": 0.2,
+        "angular_drag": 3,
+        "actuator": {
+          "kind": "vector"
+        }
+      },
+      "visual": {
+        "model": "rocket",
+        "color": "#b794e8",
+        "scale": 1
+      }
+    }
+  },
+  "bodies": [
+    {
+      "agent_type": "workshop_rocket",
+      "position": [
+        8,
+        15
+      ],
+      "angle": 0
+    },
+    {
+      "position": [
+        13,
+        15
+      ],
+      "mass": 3,
+      "cargo": true,
+      "vertices": [
+        [
+          1,
+          0
+        ],
+        [
+          0.5,
+          0.86
+        ],
+        [
+          -0.5,
+          0.86
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -0.5,
+          -0.86
+        ],
+        [
+          0.5,
+          -0.86
+        ]
+      ]
+    }
+  ],
+  "bases": [
+    {
+      "position": [
+        32,
+        15
+      ],
+      "radius": 3
+    }
+  ],
+  "evaluation": {
+    "metric": "deliveries",
+    "target": 1
+  }
+}

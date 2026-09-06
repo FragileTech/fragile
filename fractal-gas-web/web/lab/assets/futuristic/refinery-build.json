@@ -1,0 +1,22 @@
+{
+  "model": "refinery",
+  "style": "futuristic",
+  "apron": [
+    12,
+    12
+  ],
+  "machinery_y": [
+    6,
+    10.2
+  ],
+  "high": {
+    "sourceTriangles": 10196,
+    "drawMeshes": 6,
+    "bytes": 1818088
+  },
+  "low": {
+    "sourceTriangles": 1588,
+    "drawMeshes": 6,
+    "bytes": 1250272
+  }
+}

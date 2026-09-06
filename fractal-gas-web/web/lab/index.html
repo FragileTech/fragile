@@ -83,7 +83,7 @@
                 <option value="drone">Drones</option>
               </select></label>
             <label class="field" data-help="Number of vehicles in the live world, from 1 to 128. This differs from the planner population of candidate worlds. Changing it rebuilds the preset and clears the current run."
-              >Vehicle count<input id="ants-vehicle-count" type="number" min="1" max="128" step="1" value="48" required /></label>
+              >Vehicle count<input id="ants-vehicle-count" type="number" min="1" max="128" step="1" value="5" required /></label>
           </div>
           <p class="scenario-description">Changing vehicles restarts the preset paused.</p>
         </div>
@@ -239,6 +239,7 @@
           </div>
         </div>
         <div id="viewport">
+          <div id="cargo-status" role="status" hidden></div>
           <canvas
             id="world"
             aria-label="Interactive three-dimensional control simulation"
@@ -393,6 +394,7 @@
             <option value="cargo">Asteroid</option>
             <option value="pickups">Food pickup</option>
             <option value="bases">Delivery base</option>
+            <option value="refineries">Unloading refinery</option>
             <option value="gates">Checkpoint gate</option>
             <option value="gravity">Gravity well</option>
             <option value="tether">Tether · click source, then cargo</option>

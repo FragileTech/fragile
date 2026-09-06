@@ -1,3 +1,4 @@
+import { CargoVisuals } from "./cargo.js";
 import * as T from "../vendor/three.module.js";
 import { assetModel } from "./assets.js";
 import { worldCatalog } from "./world-catalog.js";
@@ -26,6 +27,9 @@ export class WorldInstances {
     this.entries = [];
     this.templates = new Map();
     this.batches = [];
+    this.frustum = new T.Frustum();
+    this.viewProjection = new T.Matrix4();
+    this.bounds = new T.Sphere();
   }
   add(kind, position, size = worldCatalog[kind]?.size, angle = 0) {
     if (!this.templates.has(kind)) {
@@ -94,30 +98,42 @@ export class WorldInstances {
     return this;
   }
   update() {
-    const matrix = new T.Matrix4(),
-      zero = new T.Matrix4().makeScale(0, 0, 0);
+    const matrix = new T.Matrix4();
     for (const e of this.entries) e.updateMatrix();
     for (const { mesh, entries, matrix: local, lod } of this.batches) {
-      entries.forEach((e, i) =>
-        mesh.setMatrixAt(
-          i,
-          e.visible && e.userData.lod === lod
-            ? matrix.multiplyMatrices(e.matrix, local)
-            : zero,
-        ),
-      );
+      let count = 0;
+      for (const e of entries)
+        if (e.visible && e.userData.inView !== false && e.userData.lod === lod)
+          mesh.setMatrixAt(count++, matrix.multiplyMatrices(e.matrix, local));
+      // Zero-scale matrices still execute every vertex. Submit only visible entries.
+      mesh.count = count;
       mesh.instanceMatrix.needsUpdate = true;
-      mesh.visible = entries.some((e) => e.visible && e.userData.lod === lod);
+      mesh.visible = count > 0;
     }
   }
   updateLod(camera, height) {
     const pixels = height / (camera.top - camera.bottom);
+    camera.updateMatrixWorld();
+    this.parent.updateWorldMatrix(true, false);
+    this.frustum.setFromProjectionMatrix(
+      this.viewProjection.multiplyMatrices(
+        camera.projectionMatrix,
+        camera.matrixWorldInverse,
+      ),
+    );
     let changed = false;
     for (const entry of this.entries) {
       const size = Math.max(...entry.userData.size) * pixels;
       const old = entry.userData.lod;
       entry.userData.lod = size > 120 ? "high" : size < 90 ? "low" : old;
       changed ||= old !== entry.userData.lod;
+      this.bounds.center.copy(entry.position);
+      this.bounds.center.z += entry.userData.size[2] / 2;
+      this.bounds.radius = Math.hypot(...entry.userData.size) / 2;
+      this.bounds.applyMatrix4(this.parent.matrixWorld);
+      const inView = this.frustum.intersectsSphere(this.bounds);
+      changed ||= entry.userData.inView !== inView;
+      entry.userData.inView = inView;
     }
     if (changed) this.update();
   }
@@ -177,6 +193,7 @@ export class WorldDynamics {
     this.bodyLayer = bodyLayer;
     this.group = new T.Group();
     parent.add(this.group);
+    this.cargo = new CargoVisuals(scene, info, bodyLayer, this.group, style);
     this.pickupBatch = new WorldInstances(style, this.group);
     const variants = [
       "drop-crystal",
@@ -235,6 +252,7 @@ export class WorldDynamics {
   }
   update(state, action) {
     const { info, scene, bodyLayer } = this;
+    this.cargo.update(state);
     const bits = new Uint32Array(state.buffer, state.byteOffset, state.length),
       n = bodyLayer.models.length;
     const time = bits[0] * (scene.physics?.dt || 1 / 60);

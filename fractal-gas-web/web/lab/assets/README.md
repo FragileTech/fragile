@@ -35,12 +35,16 @@ panel, roughness, normal and emissive mineral maps; service fittings remain edit
 The refinement pass adds coil suspension and hydraulic hoses, layered nose parts,
 engine radiator vanes, optical fasteners, pressure distributors, conveyor cleats,
 and dock heat exchangers. Static fittings merge into existing material batches.
+The steampunk kart has narrow, open wire-spoked wheels and a rear seat hoop;
+the futuristic kart retains wide tires, its angular cage and autonomous sensor.
 Ore uses outward-facing normals, seam-corrected spherical UVs, branching mineral
 fractures, and embedded capture sockets. Mineral maps are 1024 pixels in detailed
 packs and 512 pixels in simplified packs. Extra vehicle machinery is detailed-only.
 
 Repeated rails, kerbs and pickups are instanced per mesh/material. Detailed geometry
 appears above 120 projected pixels and simplified geometry below 90, with hysteresis.
+Per-instance frustum culling compacts visible entries into the submitted batch;
+off-screen high-detail geometry does not consume vertex work at close zoom.
 The asset cache owns shared GPU resources. Authored materials bypass palette remapping.
 Towable ore also changes LOD when zooming, preserving its native asymmetric hull origin.
 Flat ground and road surfaces retain the exact scene polygons and use the kit's PBR
@@ -73,6 +77,8 @@ Blender authoring process for the complete pack and preview run; rendering a who
 collection can exceed a single bridge request's timeout. User scenes are preserved.
 
 Family reference renders are `previews/{style}/world-{family}.png`.
+After rendering, run `python3 tools/blender/make_contact_sheets.py` (Pillow required)
+to regenerate the paired vehicle and world overview images.
 `world-build.json` records geometry counts, pack sizes and shared dimensions.
 Run `npm run test:lab`: the world suite validates every asset, embedded resources,
 triangle limits, shared bounds, different structural geometry and deterministic poses.
@@ -104,13 +110,36 @@ no third-party mesh or texture downloads are needed. Small wear, seams and rivet
 are baked into the maps; larger fittings remain editable geometry. The repository's
 MIT license applies.
 
+The vehicle fidelity pass is implemented in
+[`vehicle_refinement.py`](../../../tools/blender/vehicle_refinement.py):
+
+| Vehicle | Futuristic refinement | Steampunk refinement |
+| --- | --- | --- |
+| Rocket | Broad shoulder chines, layered engine armor, swept dorsal fin | Round tapered fuselage, arched canopy frames, stepped pressure-pod intakes |
+| Kart | Continuous cockpit armor, rounded autonomous sensor, shallow road tread | Rounded bonnet, radiator grille, padded bucket seat and rounded rear hoop |
+| Drone | Armor bridges integrated with open rotor ducts, layered avionics and multiple optical lenses | Brass-edged diamond panels, rotor crowns, pressure dome and return manifold |
+| Harvester | Articulated intake casing, armored wheel arches, processing conduits and pitched cab roof | Intake cheek plates, conveyor sprockets, cab mullions and irregular ore cargo |
+
+The main silhouette changes appear in both LODs. Service details remain detailed-only,
+and a shared 512-pixel metal roughness map (128 in the crowd LOD) adds surface variation
+without introducing material batches. Closed-shell normals are repaired before export,
+including mirrored armor and Y-axis wheel geometry. The visual assets retain the same
+native collision hulls and simulation controls.
+Rocket close-up models use dark tinted alpha glazing without a refraction pass;
+their crowd LOD keeps opaque glazing. Futuristic drone armor uses the concept's
+graphite finish and a lower hull; the steampunk diamond panels form its outer shell.
+
 ### Regeneration
 
 Use the installed Blender MCP's `execute_blender_code` tool to run the following,
 substituting the absolute checkout path for `SCRIPT`:
 
 ```python
+import sys
+from pathlib import Path
+
 SCRIPT = "/path/to/fragile/fractal-gas-web/tools/blender/build_lab_assets.py"
+sys.path.insert(0, str(Path(SCRIPT).parent))
 namespace = {"__file__": SCRIPT, "__name__": "lab_assets"}
 exec(compile(open(SCRIPT).read(), SCRIPT, "exec"), namespace)
 result = namespace["build_asset"]("steampunk", "harvester", render=True)
@@ -165,6 +194,8 @@ asset and layout checks, including layouts at 390 and 1440 CSS pixels. The earli
 masthead selector and horizontal overflow in the lab, workshop and concept library. The
 [vehicle render collection](previews/collections.jpg) shows the final hero views;
 each vehicle's side and top views sit beside its hero PNG in `previews/{style}/`.
+The [vehicle refinement review](VEHICLE_REVIEW.md) lists the final export budgets,
+concept changes and fixed-crowd renderer measurements.
 
 The [world render collection](previews/world-collections.jpg) compares all eight
 world families in both styles. The [concept library](../concepts/index.html)
@@ -198,3 +229,21 @@ Three.js is a rendering dependency under its own MIT license, copied into
 Nested parts retain their motion tags in GLB extras. The runtime registry animates
 these tags from simulation state; exports contain geometry, materials and tags,
 not baked keyframe animation.
+
+## Unloading refinery
+
+The separate `refinery-high.glb` and `refinery-low.glb` assets in each style
+implement the [refinery concepts](../concepts/refinery-prompts.json), generated
+with built-in imagegen before Blender authoring. Sources are
+`sources/{style}/refinery.blend`; hero, side and top previews are
+`previews/{style}/refinery-{view}.png`. Regenerate only this asset with:
+
+```bash
+blender --background --python tools/blender/build_refinery_assets.py
+```
+
+Both models have a 12×12 traversable apron centered at the origin and processing
+machinery north of y=6. Runtime scale is refinery radius / 6. The preset positions
+machinery beyond the arena boundary. The high/low budgets are 50,000/6,000
+triangles, with packed materials and Z-up axes. The workshop offers both styles,
+concept sheets, GLB downloads, and editable Blender sources.

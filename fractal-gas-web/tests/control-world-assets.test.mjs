@@ -5,9 +5,42 @@ import * as T from "../web/lab/vendor/three.module.js";
 import { glbJson, geometryOnly } from "./helpers/asset-glb.mjs";
 import { worldCatalog } from "../web/lab/visuals/world-catalog.js";
 import { assetManifest } from "../web/lab/visuals/asset-manifest.js";
-import { animateWorld } from "../web/lab/visuals/world.js";
+import { animateWorld, WorldInstances } from "../web/lab/visuals/world.js";
+import { disposeGroup } from "../web/lab/visuals/resources.js";
 
 const decoded = {};
+test("world instancing culls and compacts entries as the camera moves", () => {
+  const parent = new T.Group();
+  const batch = new WorldInstances("futuristic", parent);
+  batch.add("drop-crystal", [0, 0, 0]);
+  const distant = batch.add("drop-crystal", [100, 0, 0]);
+  batch.build();
+  const camera = new T.OrthographicCamera(-5, 5, 5, -5, 0.1, 30);
+  camera.position.set(0, 0, 10);
+  camera.lookAt(0, 0, 0);
+  batch.updateLod(camera, 500);
+  assert.equal(
+    batch.batches
+      .filter((b) => b.mesh.visible)
+      .reduce((n, b) => n + b.mesh.count, 0),
+    1,
+  );
+  camera.position.x = 100;
+  camera.lookAt(100, 0, 0);
+  batch.updateLod(camera, 500);
+  const matrix = new T.Matrix4();
+  const visible = batch.batches.find((b) => b.mesh.visible).mesh;
+  visible.getMatrixAt(0, matrix);
+  assert.equal(
+    matrix.elements[12],
+    100,
+    "Visible instances are packed into the first slot",
+  );
+  distant.visible = false;
+  batch.update();
+  assert(batch.batches.every((b) => b.mesh.count === 0 && !b.mesh.visible));
+  disposeGroup(parent);
+});
 for (const style of ["futuristic", "steampunk"]) {
   decoded[style] = {};
   for (const lod of ["high", "low"]) {

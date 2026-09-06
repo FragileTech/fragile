@@ -1,0 +1,22 @@
+{
+  "model": "refinery",
+  "style": "steampunk",
+  "apron": [
+    12,
+    12
+  ],
+  "machinery_y": [
+    6,
+    10.2
+  ],
+  "high": {
+    "sourceTriangles": 10864,
+    "drawMeshes": 8,
+    "bytes": 1716476
+  },
+  "low": {
+    "sourceTriangles": 1808,
+    "drawMeshes": 8,
+    "bytes": 1121700
+  }
+}

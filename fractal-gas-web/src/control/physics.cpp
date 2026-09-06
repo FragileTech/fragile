@@ -470,7 +470,11 @@ float Physics::potential(const float* r) const {
     if (!s.gates.empty())
       best =
           length(p - s.gates[word(r, l.gates + c) % s.gates.size()].position);
-    else if (!s.pickups.empty()) {
+    else if (s.cargo_capacity > 0 && r[l.cargo + 4 * c + 1] > 0) {
+      best = 1e6f;
+      for (const auto& zone : s.refineries)
+        best = std::min(best, std::max(0.f, length(p - zone.position) - zone.radius));
+    } else if (!s.pickups.empty()) {
       best = 1e6f;
       for (size_t i = 0; i < s.pickups.size(); ++i)
         if (r[l.food + 3 * i + 2] <= 0)
@@ -511,6 +515,27 @@ float Physics::potential(const float* r) const {
 void Physics::mechanics(float* r, StepResult& result) {
   const auto& s = *scene;
   const auto& l = s.layout;
+  // Discharge only loads that were already full at the start of this frame.
+  // The return phase stays latched through interruptions until completely empty.
+  if (s.cargo_capacity > 0)
+    for (size_t c = 0; c < s.controlled.size(); ++c) {
+      float* cargo = r + l.cargo + 4 * c;
+      if (cargo[1] == 0) continue;
+      for (const auto& zone : s.refineries)
+        if (length2(position(r, l, s.controlled[c]) - zone.position) <=
+            zone.radius * zone.radius) {
+          float amount = std::min(cargo[0], s.cargo_capacity * s.dt / s.unload_seconds);
+          if (cargo[0] - amount < s.cargo_capacity * 1e-6f) amount = cargo[0];
+          cargo[0] -= amount;
+          cargo[2] += amount;
+          result.reward += s.delivery_reward * (amount / s.cargo_capacity);
+          if (cargo[0] == 0) {
+            cargo[1] = 0;
+            word(r, 4, word(r, 4) + 1);
+          }
+          break;
+        }
+    }
   for (size_t i = 0; i < s.pickups.size(); ++i) {
     float* f = r + l.food + 3 * i;
     if (f[2] > 0) {
@@ -532,14 +557,26 @@ void Physics::mechanics(float* r, StepResult& result) {
       }
       continue;
     }
-    for (int b : s.controlled)
+    for (size_t c = 0; c < s.controlled.size(); ++c) {
+      int b = s.controlled[c];
+      float* cargo = s.cargo_capacity > 0 ? r + l.cargo + 4 * c : nullptr;
+      if (cargo && (cargo[1] > 0 || cargo[0] >= s.cargo_capacity)) continue;
       if (length2(position(r, l, b) - Vec2{f[0], f[1]}) <
           std::pow(s.bodies[b].radius + s.pickups[i].radius, 2)) {
         f[2] = std::max(s.dt, s.respawn_seconds);
         word(r, 5, word(r, 5) + 1);
         result.reward += s.pickup_reward;
+        if (cargo) {
+          cargo[0] += 1;
+          if (cargo[0] >= s.cargo_capacity) {
+            cargo[1] = 1;
+            cargo[3] += 1;
+            result.reward += s.full_reward;
+          }
+        }
         break;
       }
+    }
   }
   for (size_t c = 0; c < s.controlled.size(); ++c)
     if (!s.gates.empty()) {
@@ -623,7 +660,8 @@ void Physics::step_world(float* r, const float* actions, int frames,
 }
 size_t Physics::observation_dim() const {
   return scene->bodies.size() * 7 + scene->controlled.size() +
-         scene->tethers.size() * 2 + scene->extension_observations;
+         scene->tethers.size() * 2 + scene->extension_observations +
+         (scene->cargo_capacity > 0 ? scene->controlled.size() * 4 : 0);
 }
 void Physics::observe(const float* r, float* out) const {
   const auto& s = *scene;
@@ -647,6 +685,20 @@ void Physics::observe(const float* r, float* out) const {
     out[at++] = float(word(r, l.joints + 2 * t));
     out[at++] = r[l.joints + 2 * t + 1] / scale;
   }
+  if (s.cargo_capacity > 0)
+    for (size_t c = 0; c < s.controlled.size(); ++c) {
+      const float* cargo = r + l.cargo + 4 * c;
+      out[at++] = cargo[0] / s.cargo_capacity;
+      out[at++] = cargo[1];
+      Vec2 delta{};
+      float best = 1e30f;
+      for (const auto& zone : s.refineries) {
+        Vec2 candidate = zone.position - position(r, l, s.controlled[c]);
+        if (length2(candidate) < best) { best = length2(candidate); delta = candidate; }
+      }
+      out[at++] = delta.x / scale;
+      out[at++] = delta.y / scale;
+    }
   for (const auto& extension : s.extensions)
     if (extension.observe) {
       extension.observe(s, extension, r, out + at);

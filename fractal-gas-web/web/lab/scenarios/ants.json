@@ -1,7 +1,7 @@
 {
   "version": 1,
   "name": "Ants & drops",
-  "description": "48 harvesters. Collect drops that return at random positions after 3 simulation seconds.",
+  "description": "5 harvesters. Fill 5-drop tanks and unload at the refinery over 2 simulation seconds. Drops return after 3 seconds.",
   "task": "forage",
   "size": [
     64,
@@ -18,114 +18,10 @@
     {
       "agent_type": "harvester",
       "position": [
-        8,
+        60,
         4
       ],
       "angle": -3
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        20,
-        4
-      ],
-      "angle": -2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        32,
-        4
-      ],
-      "angle": -1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        44,
-        4
-      ],
-      "angle": 0
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        56,
-        4
-      ],
-      "angle": 1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        8,
-        8
-      ],
-      "angle": 2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        20,
-        8
-      ],
-      "angle": -3
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        32,
-        8
-      ],
-      "angle": -2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        44,
-        8
-      ],
-      "angle": -1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        56,
-        8
-      ],
-      "angle": 0
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        8,
-        12
-      ],
-      "angle": 1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        20,
-        12
-      ],
-      "angle": 2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        28,
-        12
-      ],
-      "angle": -3
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        40,
-        12
-      ],
-      "angle": -2
     },
     {
       "agent_type": "harvester",
@@ -133,149 +29,13 @@
         52,
         12
       ],
-      "angle": -1
+      "angle": -2
     },
     {
       "agent_type": "harvester",
       "position": [
         4,
-        16
-      ],
-      "angle": 0
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        16,
-        16
-      ],
-      "angle": 1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        36,
-        16
-      ],
-      "angle": 2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        48,
-        16
-      ],
-      "angle": -3
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        60,
-        16
-      ],
-      "angle": -2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        12,
-        20
-      ],
-      "angle": -1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        24,
-        20
-      ],
-      "angle": 0
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        44,
-        20
-      ],
-      "angle": 1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        56,
-        20
-      ],
-      "angle": 2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        8,
         24
-      ],
-      "angle": -3
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        20,
-        24
-      ],
-      "angle": -2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        40,
-        24
-      ],
-      "angle": -1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        52,
-        24
-      ],
-      "angle": 0
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        4,
-        28
-      ],
-      "angle": 1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        16,
-        28
-      ],
-      "angle": 2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        36,
-        28
-      ],
-      "angle": -3
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        48,
-        28
-      ],
-      "angle": -2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        60,
-        28
       ],
       "angle": -1
     },
@@ -290,114 +50,10 @@
     {
       "agent_type": "harvester",
       "position": [
-        24,
-        32
-      ],
-      "angle": 1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        36,
-        32
-      ],
-      "angle": 2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        44,
-        32
-      ],
-      "angle": -3
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        56,
-        32
-      ],
-      "angle": -2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        8,
-        36
-      ],
-      "angle": -1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        20,
-        36
-      ],
-      "angle": 0
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        32,
-        36
-      ],
-      "angle": 1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        44,
-        36
-      ],
-      "angle": 2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        56,
-        36
-      ],
-      "angle": -3
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        8,
-        40
-      ],
-      "angle": -2
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        20,
-        40
-      ],
-      "angle": -1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        32,
-        40
-      ],
-      "angle": 0
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        44,
+        4,
         40
       ],
       "angle": 1
-    },
-    {
-      "agent_type": "harvester",
-      "position": [
-        56,
-        40
-      ],
-      "angle": 2
     }
   ],
   "boundary": [
@@ -730,5 +386,18 @@
         "color": "#b88a43"
       }
     }
-  }
+  },
+  "cargo": {
+    "capacity": 5,
+    "unload_seconds": 2
+  },
+  "refineries": [
+    {
+      "position": [
+        12,
+        36
+      ],
+      "radius": 6
+    }
+  ]
 }

@@ -1,8 +1,6 @@
 (sec-control-lab-controls)=
 # Controls, planners, and diagnostics
 
-Choose **Full** in the book's Full/Expert toggle to display this operating guide.
-
 :::{div} feynman-prose
 The laboratory has one executed world and a collection of possible futures. **Step**
 asks the controller to examine those futures, choose an action, and apply it to the
@@ -31,7 +29,7 @@ and resets leave the new world paused.
 |---|---|---|
 | **Environment** | Load a preset from the scene catalog. | Rebuilds physics and clears the current in-memory history. |
 | **Vehicle type** | Choose **Harvesters** or **Drones** in Ants & Drops. | Rebuilds the original preset with one type for all vehicles, clears run and editor history, and leaves the world paused. Defaults to **Harvesters**. |
-| **Vehicle count** | Set the Ants & Drops vehicle count to a whole number from 1 to 128. | Defaults to 48. Applies the same rebuild as **Vehicle type**; invalid entries leave the scene intact. |
+| **Vehicle count** | Set the Ants & Drops vehicle count to a whole number from 1 to 128. | Defaults to 5. Applies the same rebuild as **Vehicle type**; invalid entries leave the scene intact. |
 | **Run experiment** | Repeatedly plan and execute actions using the selected clock. | Button becomes **Pause experiment**. |
 | **Pause experiment** | Stop further execution. | The displayed state remains available for inspection and export. |
 | **Step** | Plan once, then execute **Action frames** physics frames. | Pauses continuous running; always waits for this plan, including with the real-time clock selected. |

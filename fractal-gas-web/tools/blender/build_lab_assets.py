@@ -1,5 +1,8 @@
 """Original concept-matched lab assets. Run in Blender, including through its MCP.
 
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(SCRIPT).parent))
     exec(compile(open(SCRIPT).read(), SCRIPT, 'exec'))
     build_asset('steampunk', 'rocket')
 
@@ -15,6 +18,7 @@ from pathlib import Path
 import bpy
 from mathutils import Vector
 import numpy as np
+from vehicle_refinement import refine_vehicle, repair_vehicle_normals
 
 
 ROOT = Path(__file__).resolve().parents[2] / "web/lab/assets"
@@ -388,7 +392,21 @@ class Builder:
                 )
                 pivot = self.empty(f"Wheel {axle} {side}", parent=steer, motion="wheel")
                 pivot["wheelRadius"] = radius
-                self.cyl("Rubber tire", (0, 0, 0), radius, tire_width, "rubber", "y", parent=pivot)
+                wire_wheel = self.steam and self.kind == "kart"
+                if wire_wheel:
+                    self.ring(
+                        "Narrow open-center tire",
+                        (0, 0, 0),
+                        radius * 0.86,
+                        radius * 0.14,
+                        "rubber",
+                        "y",
+                        pivot,
+                    )
+                else:
+                    self.cyl(
+                        "Rubber tire", (0, 0, 0), radius, tire_width, "rubber", "y", parent=pivot
+                    )
                 self.ring(
                     "Rounded tire shoulder",
                     (0, side * tire_width * 0.39, 0),
@@ -401,7 +419,7 @@ class Builder:
                 self.cyl(
                     "Wheel hub",
                     (0, side * (tire_width / 2 + 0.015), 0),
-                    radius * 0.30,
+                    radius * (0.17 if wire_wheel else 0.30),
                     0.08,
                     "trim",
                     "y",
@@ -410,34 +428,40 @@ class Builder:
                 self.ring(
                     "Wheel rim",
                     (0, side * (tire_width / 2 + 0.025), 0),
-                    radius * 0.65,
+                    radius * (0.75 if wire_wheel else 0.65),
                     radius * 0.055,
                     "trim",
                     "y",
                     pivot,
                 )
-                count = 6 if self.low else (10 if self.steam else 7)
+                count = (
+                    8
+                    if self.low and wire_wheel
+                    else 6
+                    if self.low
+                    else (16 if wire_wheel else 10 if self.steam else 7)
+                )
                 for j in range(count):
                     a = j * TAU / count
                     self.pipe(
                         "Radial wheel spoke",
                         [
                             (
-                                math.cos(a) * radius * 0.25,
+                                math.cos(a) * radius * (0.15 if wire_wheel else 0.25),
                                 side * tire_width * 0.52,
-                                math.sin(a) * radius * 0.25,
+                                math.sin(a) * radius * (0.15 if wire_wheel else 0.25),
                             ),
                             (
-                                math.cos(a) * radius * 0.63,
+                                math.cos(a) * radius * (0.74 if wire_wheel else 0.63),
                                 side * tire_width * 0.52,
-                                math.sin(a) * radius * 0.63,
+                                math.sin(a) * radius * (0.74 if wire_wheel else 0.63),
                             ),
                         ],
-                        radius * 0.035,
+                        radius * (0.018 if wire_wheel else 0.035),
                         "trim",
                         pivot,
                     )
-                if not self.low:
+                if not self.low and not wire_wheel:
                     for j in range(24):
                         a = j * TAU / 24
                         tread = self.box(
@@ -615,18 +639,16 @@ class Builder:
     def kart(self):
         self.box("Chassis rails", (-0.15, 0, 0.25), (2.75, 0.80, 0.16))
         self.wheels(
-            [0.94, -1.02], 0.72, 0.48 if self.steam else 0.43, 0.19 if self.steam else 0.32
+            [0.94, -1.02], 0.72, 0.48 if self.steam else 0.43, 0.14 if self.steam else 0.32
         )
         self.loft(
             "Riveted bonnet" if self.steam else "Armored wedge nose",
             [(0.03, 0.37, 0.34, 0.70), (0.9, 0.31, 0.24, 0.56), (1.55, 0.24, 0.20, 0.32)],
             "dark" if self.steam else "plate",
         )
-        self.plate(
+        self.loft(
             "Bonnet center accent",
-            [(0.09, -0.1), (1.48, -0.075), (1.48, 0.075), (0.09, 0.1)],
-            0.60 if self.steam else 0.54,
-            0.018,
+            [(0.09, 0.10, 0.691, 0.709), (0.9, 0.075, 0.565, 0.583), (1.48, 0.075, 0.343, 0.361)],
             "plate" if self.steam else "dark",
         )
         self.box("Seat cushion", (-0.48, 0, 0.40), (0.55, 0.51, 0.15), "seat")
@@ -634,8 +656,15 @@ class Builder:
         seat.rotation_euler.y = -0.18
         for s in [-1, 1]:
             self.pipe(
-                "Roll cage",
+                "Rear seat hoop" if self.steam else "Roll cage",
                 [
+                    (-0.67, s * 0.32, 0.40),
+                    (-0.84, s * 0.32, 1.13),
+                    (-1.00, s * 0.32, 1.20),
+                    (-1.12, s * 0.32, 0.40),
+                ]
+                if self.steam
+                else [
                     (0.17, s * 0.40, 0.35),
                     (-0.48, s * 0.42, 1.20),
                     (-0.99, s * 0.42, 1.17),
@@ -665,7 +694,14 @@ class Builder:
                     0.018,
                     "light",
                 )
-        self.pipe("Roll cage crossbar", [(-0.48, -0.42, 1.20), (-0.48, 0.42, 1.20)], 0.04, "trim")
+        if self.steam:
+            self.pipe(
+                "Rear hoop crossbar", [(-1.00, -0.32, 1.20), (-1.00, 0.32, 1.20)], 0.032, "trim"
+            )
+        else:
+            self.pipe(
+                "Roll cage crossbar", [(-0.48, -0.42, 1.20), (-0.48, 0.42, 1.20)], 0.04, "trim"
+            )
         self.pipe("Steering column", [(0.3, 0, 0.40), (-0.04, 0, 0.78)], 0.03, "trim")
         steering = self.ring("Steering wheel", (-0.04, 0, 0.78), 0.17, 0.022, "rubber", "x")
         steering.rotation_euler.y = -0.4
@@ -951,9 +987,14 @@ class Builder:
         else:
             self.prop()
         bpy.context.view_layer.update()
+        if self.kind in {"rocket", "kart", "drone", "harvester"}:
+            refine_vehicle(self)
+            bpy.context.view_layer.update()
         if not self.low:
             self.concept_details()
             self.surface_details()
+        if self.kind in {"rocket", "kart", "drone", "harvester"}:
+            repair_vehicle_normals(self)
         bpy.context.view_layer.update()
         # All meshes and motion origins share a uniform authoring-to-lab scale.
         coords = [
@@ -1105,9 +1146,9 @@ class Builder:
                         self.pipe(
                             "Nose inset light guide",
                             [
-                                (1.43, s * 0.20, 0.36),
-                                (0.84, s * 0.30, 0.56),
-                                (0.18, s * 0.36, 0.71),
+                                (1.43, s * 0.15, 0.374),
+                                (0.84, s * 0.19, 0.58),
+                                (0.18, s * 0.225, 0.686),
                             ],
                             0.012,
                             "light",

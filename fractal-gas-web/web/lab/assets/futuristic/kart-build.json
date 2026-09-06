@@ -1,13 +1,13 @@
 {
   "high": {
-    "sourceTriangles": 10950,
-    "drawMeshes": 19,
-    "bytes": 1864868
+    "sourceTriangles": 23620,
+    "drawMeshes": 20,
+    "bytes": 2860656
   },
   "low": {
-    "sourceTriangles": 2348,
+    "sourceTriangles": 2636,
     "drawMeshes": 19,
-    "bytes": 1318036
+    "bytes": 1330496
   },
   "style": "futuristic",
   "model": "kart"

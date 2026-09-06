@@ -275,6 +275,32 @@ export class LabRenderer {
           group,
         );
       }
+    for (const def of scene.refineries || []) {
+      const refinery = new T.Group();
+      const scale = (def.radius || 6) / 6;
+      for (const lod of ["high", "low"]) {
+        const model = assetModel(style, "refinery", lod);
+        if (model) {
+          model.name = `refinery-${lod}`;
+          model.visible = lod === "low";
+          refinery.add(model);
+        }
+      }
+      const pad = zoneModel(6, stylePalette[style].energy);
+      pad.position.z = 0.1;
+      refinery.add(pad);
+      refinery.scale.setScalar(scale);
+      refinery.position.set(...def.position, 0);
+      refinery.userData.refinery = true;
+      group.add(refinery);
+      this.label(
+        "REFINERY / UNLOAD",
+        [def.position[0], def.position[1] - def.radius - 0.8, 0.2],
+        stylePalette[style].energy,
+        5,
+        group,
+      );
+    }
     for (const def of scene.gravity || []) {
       const model = prop("reactor", style);
       model.position.set(...def.position, 0);
@@ -429,6 +455,20 @@ export class LabRenderer {
       this.canvas.clientHeight,
     );
     this.bodyLayer.updateLod(this.camera, this.canvas.clientHeight);
+    this.static.traverse((object) => {
+      if (!object.userData.refinery) return;
+      const pixels =
+        ((12 * object.scale.x * this.canvas.clientHeight) /
+          (this.camera.top - this.camera.bottom)) *
+        this.camera.zoom;
+      const high = object.getObjectByName("refinery-high"),
+        low = object.getObjectByName("refinery-low");
+      if (high && low) {
+        if (pixels > 120) high.visible = true;
+        else if (pixels < 90) high.visible = false;
+        low.visible = !high.visible;
+      }
+    });
     this.scenery.updateLod?.(this.camera, this.canvas.clientHeight);
     for (const reactor of this.reactors)
       animateWorld(reactor, this.simulationTime);

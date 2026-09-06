@@ -98,12 +98,27 @@ def test_theory_and_lab_have_independent_publication_trees():
     assert names == [
         "source/project/control_laboratory",
         "source/project/control_lab_getting_started",
+        "source/project/control_lab_tasks",
         "source/project/control_lab_controls",
         "source/project/control_lab_scenes",
         "source/project/control_lab_replay",
         "source/project/control_lab_experiments",
         "source/project/control_lab_architecture",
     ]
+    chapters = {chapter["file"]: chapter for chapter in lab_toc["chapters"]}
+    task_pages = chapters["source/project/control_lab_tasks"]["sections"]
+    catalog = json.loads(
+        (DOCS.parent / "fractal-gas-web/web/lab/scenario-catalog.json").read_text()
+    )
+    assert [page["file"] for page in task_pages] == [
+        f"source/project/control_lab_task_{task['id']}" for task in catalog
+    ]
+    reference_pages = chapters["source/project/control_lab_scenes"]["sections"]
+    assert [page["file"] for page in reference_pages] == [
+        "source/project/control_lab_scene_reference"
+    ]
+    for name in names + [page["file"] for page in task_pages + reference_pages]:
+        assert (DOCS / f"{name}.md").is_file()
 
 
 def test_documentation_assembly_scopes_sites_and_preserves_old_urls(tmp_path):

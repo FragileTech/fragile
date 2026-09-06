@@ -17,6 +17,8 @@ const template = JSON.parse(
 );
 
 test("Ants configuration validates input and leaves the template intact", () => {
+  assert.equal(DEFAULT_ANTS_OPTIONS.count, 5);
+  assert.equal(template.bodies.length, 5);
   const before = structuredClone(template);
   for (const count of [0, -1, 1.5, 129, NaN, Infinity, "48", undefined])
     assert.throws(
@@ -95,6 +97,7 @@ test("A fully collected pool repeatedly respawns after three seconds and replays
   for (const agentType of ["harvester", "drone"])
     for (const seed of [17, 29]) {
       const scene = configureAntsScene(template, { agentType, count: 1 });
+      delete scene.cargo; // Explicit legacy unlimited-forage coverage.
       scene.bodies[0].position = [10, 10];
       scene.pickups.forEach((drop) => {
         drop.position = [10, 10];

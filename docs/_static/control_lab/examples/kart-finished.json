@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "name": "Kart workshop \u2014 finished",
+  "task": "navigation",
+  "size": [
+    40,
+    30
+  ],
+  "physics": {
+    "dt": 0.016666666666666666,
+    "substeps": 4,
+    "solver_iterations": 8,
+    "lethal_walls": false,
+    "lethal_bodies": false
+  },
+  "agent_types": {
+    "workshop_kart": {
+      "label": "Workshop Kart",
+      "physics": {
+        "controlled": true,
+        "radius": 0.65,
+        "mass": 1,
+        "thrust": 12,
+        "torque": 3,
+        "drag": 0.7,
+        "angular_drag": 3,
+        "actuator": {
+          "kind": "kart",
+          "wheelbase": 1,
+          "steering_limit": 0.5,
+          "lateral_grip": 14,
+          "yaw_response": 8,
+          "brake_deceleration": 18
+        }
+      },
+      "visual": {
+        "model": "kart",
+        "color": "#b794e8",
+        "scale": 1
+      }
+    }
+  },
+  "bodies": [
+    {
+      "agent_type": "workshop_kart",
+      "position": [
+        8,
+        12
+      ],
+      "angle": 0
+    }
+  ],
+  "gates": [
+    {
+      "position": [
+        24,
+        12
+      ],
+      "radius": 2
+    },
+    {
+      "position": [
+        24,
+        22
+      ],
+      "radius": 2
+    },
+    {
+      "position": [
+        8,
+        22
+      ],
+      "radius": 2
+    },
+    {
+      "position": [
+        8,
+        12
+      ],
+      "radius": 2
+    }
+  ],
+  "evaluation": {
+    "metric": "gates",
+    "target": 4
+  },
+  "presentation": {
+    "task_label": "Kart workshop",
+    "score": {
+      "metric": "gates",
+      "label": "Gates crossed"
+    }
+  }
+}

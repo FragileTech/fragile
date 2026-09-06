@@ -83,6 +83,8 @@ outputs/
 # MLflow tracking
 mlruns/
 examples/
+!docs/_static/control_lab/examples/
+!docs/_static/control_lab/examples/*.json
 
 # TLDR rendering temp files
 temp_diagrams/
