@@ -1,0 +1,100 @@
+{
+    "rocket": {
+        "label": "Kestrel \u00b7 vector rocket",
+        "physics": {
+            "controlled": true,
+            "radius": 0.65,
+            "mass": 1,
+            "thrust": 16,
+            "torque": 3,
+            "angular_drag": 3,
+            "drag": 0.2,
+            "actuator": {
+                "kind": "vector"
+            }
+        },
+        "visual": {
+            "model": "rocket"
+        }
+    },
+    "kart": {
+        "label": "Mite \u00b7 electric kart",
+        "extends": "rocket",
+        "physics": {
+            "drag": 0.7,
+            "angular_drag": 4,
+            "actuator": {
+                "kind": "kart",
+                "wheelbase": 0.9,
+                "steering_limit": 0.6,
+                "lateral_grip": 14,
+                "brake_deceleration": 18
+            }
+        },
+        "visual": {
+            "model": "kart"
+        }
+    },
+    "drone": {
+        "label": "Wisp \u00b7 survey drone",
+        "extends": "rocket",
+        "physics": {
+            "mass": 0.7,
+            "thrust": 11,
+            "torque": 2,
+            "drag": 0.35,
+            "actuator": {
+                "kind": "holonomic"
+            }
+        },
+        "visual": {
+            "model": "drone",
+            "color": "#ffce70"
+        }
+    },
+    "thruster_tug": {
+        "extends": "rocket",
+        "label": "Kestrel \u00b7 independent thrusters",
+        "physics": {
+            "actuator": {
+                "kind": "thrusters",
+                "thrusters": [
+                    {
+                        "position": [
+                            -0.3,
+                            -0.35
+                        ],
+                        "direction": [
+                            1,
+                            0
+                        ],
+                        "force": 8
+                    },
+                    {
+                        "position": [
+                            -0.3,
+                            0.35
+                        ],
+                        "direction": [
+                            1,
+                            0
+                        ],
+                        "force": 8
+                    },
+                    {
+                        "position": [
+                            0,
+                            0
+                        ],
+                        "direction": [
+                            0,
+                            1
+                        ],
+                        "force": 4,
+                        "reversible": true
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,8 @@
+[
+  { "id": "harvest", "label": "Asteroid harvesting" },
+  { "id": "ants", "label": "Ants & drops" },
+  { "id": "tandem", "label": "Tandem flight" },
+  { "id": "mining", "label": "Collaborative mining" },
+  { "id": "rocket", "label": "Thinking graphs" },
+  { "id": "racing", "label": "Violet Circuit · kart racing" }
+]

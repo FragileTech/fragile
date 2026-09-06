@@ -6,6 +6,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
+enable_testing()
+option(FG_CONTROL_ONLY "Build the standalone continuous-control laboratory" OFF)
+option(FG_CONTROL_THREADS "Enable pthreads in the laboratory WebAssembly build" OFF)
+add_subdirectory(control)
+if(FG_CONTROL_ONLY)
+  return()
+endif()
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
 
 # ---------------------------------------------------------------------------
 # nes-py C++ NES emulator core (git submodule). Built from source directly
@@ -33,6 +43,7 @@ add_library(fractal_gas_core STATIC
   src/nes_env.cpp
   src/thread_pool.cpp
   src/fractal_gas.cpp
+  src/exploration_tree.cpp
   src/fractal_tree.cpp
   src/visit_grid.cpp
 )

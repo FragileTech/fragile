@@ -1,0 +1,387 @@
+{
+  "version": 1,
+  "name": "Collaborative mining",
+  "description": "Two thrusters, shared momentum, one heavy load.",
+  "task": "harvest",
+  "size": [
+    64,
+    44
+  ],
+  "physics": {
+    "dt": 0.016666666666666666,
+    "substeps": 4,
+    "solver_iterations": 8,
+    "lethal_walls": true,
+    "lethal_bodies": false
+  },
+  "boundary": [
+    [
+      2,
+      8
+    ],
+    [
+      10,
+      2
+    ],
+    [
+      29,
+      2
+    ],
+    [
+      33,
+      6
+    ],
+    [
+      53,
+      3
+    ],
+    [
+      62,
+      12
+    ],
+    [
+      60,
+      28
+    ],
+    [
+      53,
+      41
+    ],
+    [
+      36,
+      41
+    ],
+    [
+      30,
+      37
+    ],
+    [
+      12,
+      41
+    ],
+    [
+      3,
+      32
+    ],
+    [
+      5,
+      21
+    ]
+  ],
+  "holes": [
+    [
+      [
+        27,
+        17
+      ],
+      [
+        33,
+        15
+      ],
+      [
+        38,
+        20
+      ],
+      [
+        36,
+        26
+      ],
+      [
+        29,
+        28
+      ],
+      [
+        25,
+        23
+      ]
+    ]
+  ],
+  "bodies": [
+    {
+      "position": [
+        19,
+        10
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "rocket"
+    },
+    {
+      "position": [
+        19,
+        15
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "rocket"
+    },
+    {
+      "position": [
+        22,
+        12.5
+      ],
+      "mass": 6,
+      "cargo": true,
+      "drag": 0.08,
+      "vertices": [
+        [
+          1.4,
+          0.0
+        ],
+        [
+          0.87289,
+          1.09456
+        ],
+        [
+          -0.31153,
+          1.3649
+        ],
+        [
+          -1.26136,
+          0.60744
+        ],
+        [
+          -1.26136,
+          -0.60744
+        ],
+        [
+          -0.31153,
+          -1.3649
+        ],
+        [
+          0.87289,
+          -1.09456
+        ]
+      ]
+    },
+    {
+      "position": [
+        45,
+        30
+      ],
+      "mass": 5,
+      "cargo": true,
+      "drag": 0.08,
+      "vertices": [
+        [
+          1.5,
+          0.0
+        ],
+        [
+          0.93523,
+          1.17275
+        ],
+        [
+          -0.33378,
+          1.46239
+        ],
+        [
+          -1.35145,
+          0.65083
+        ],
+        [
+          -1.35145,
+          -0.65083
+        ],
+        [
+          -0.33378,
+          -1.46239
+        ],
+        [
+          0.93523,
+          -1.17275
+        ]
+      ]
+    },
+    {
+      "position": [
+        48,
+        12
+      ],
+      "mass": 3,
+      "cargo": true,
+      "drag": 0.08,
+      "vertices": [
+        [
+          1.1,
+          0.0
+        ],
+        [
+          0.68584,
+          0.86001
+        ],
+        [
+          -0.24477,
+          1.07242
+        ],
+        [
+          -0.99107,
+          0.47727
+        ],
+        [
+          -0.99107,
+          -0.47727
+        ],
+        [
+          -0.24477,
+          -1.07242
+        ],
+        [
+          0.68584,
+          -0.86001
+        ]
+      ]
+    }
+  ],
+  "bases": [
+    {
+      "position": [
+        12,
+        12
+      ],
+      "radius": 3
+    }
+  ],
+  "gravity": [
+    {
+      "position": [
+        47,
+        22
+      ],
+      "strength": 18,
+      "softening": 4
+    }
+  ],
+  "tethers": [
+    {
+      "a": 0,
+      "b": 2,
+      "automatic": true,
+      "hook_range": 3.5,
+      "rest_length": 3.5,
+      "stiffness": 35,
+      "damping": 8
+    },
+    {
+      "a": 1,
+      "b": 2,
+      "automatic": true,
+      "hook_range": 3.5,
+      "rest_length": 3.5,
+      "stiffness": 35,
+      "damping": 8
+    }
+  ],
+  "agent_types": {
+    "rocket": {
+      "label": "Kestrel \u00b7 vector rocket",
+      "physics": {
+        "controlled": true,
+        "radius": 0.65,
+        "mass": 1,
+        "thrust": 16,
+        "torque": 3,
+        "angular_drag": 3,
+        "drag": 0.2,
+        "actuator": {
+          "kind": "vector"
+        }
+      },
+      "visual": {
+        "model": "rocket"
+      }
+    },
+    "kart": {
+      "label": "Mite \u00b7 electric kart",
+      "extends": "rocket",
+      "physics": {
+        "drag": 0.7,
+        "angular_drag": 4,
+        "actuator": {
+          "kind": "kart",
+          "wheelbase": 0.9,
+          "steering_limit": 0.6,
+          "lateral_grip": 14,
+          "brake_deceleration": 18
+        }
+      },
+      "visual": {
+        "model": "kart"
+      }
+    },
+    "drone": {
+      "label": "Wisp \u00b7 survey drone",
+      "extends": "rocket",
+      "physics": {
+        "mass": 0.7,
+        "thrust": 11,
+        "torque": 2,
+        "drag": 0.35,
+        "actuator": {
+          "kind": "holonomic"
+        }
+      },
+      "visual": {
+        "model": "drone",
+        "color": "#ffce70"
+      }
+    },
+    "thruster_tug": {
+      "extends": "rocket",
+      "label": "Kestrel \u00b7 independent thrusters",
+      "physics": {
+        "actuator": {
+          "kind": "thrusters",
+          "thrusters": [
+            {
+              "position": [
+                -0.3,
+                -0.35
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "force": 8
+            },
+            {
+              "position": [
+                -0.3,
+                0.35
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "force": 8
+            },
+            {
+              "position": [
+                0,
+                0
+              ],
+              "direction": [
+                0,
+                1
+              ],
+              "force": 4,
+              "reversible": true
+            }
+          ]
+        }
+      }
+    }
+  }
+}

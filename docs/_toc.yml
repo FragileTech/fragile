@@ -138,6 +138,21 @@ parts:
     - file: source/2_fractal_gas/2_fractal_set/08_qft_calibration_notebook
     - file: source/2_fractal_gas/2_fractal_set/07_qft_calibration_report
     - file: source/2_fractal_gas/2_fractal_set/09_qft_calibration
+    - file: source/project/control_laboratory
+      title: Continuous-control laboratory
+      sections:
+      - file: source/project/control_lab_getting_started
+        title: Getting started
+      - file: source/project/control_lab_controls
+        title: Controls and planners
+      - file: source/project/control_lab_scenes
+        title: Environments and scene editing
+      - file: source/project/control_lab_replay
+        title: Replay, recordings, and checkpoints
+      - file: source/project/control_lab_experiments
+        title: Experiments and diagnostics
+      - file: source/project/control_lab_architecture
+        title: Engine architecture and extensions
   - file: source/2_fractal_gas/parts/08_reference
     title: Reference Material
     sections:

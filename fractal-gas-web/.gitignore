@@ -11,3 +11,7 @@ web/sonic.rom
 web/gpgx.so
 web/retro_shim.js
 web/retro_shim.wasm
+node_modules/
+build-control*/
+web/lab/engine/
+web/lab/vendor/

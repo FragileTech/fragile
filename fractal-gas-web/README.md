@@ -1,5 +1,16 @@
 # fractal-gas-web
 
+The new [continuous-control laboratory](web/lab/README.md) runs a custom C++
+physics engine in the browser and Python. It supports packed state batches,
+joint continuous actions, Wave/FMC, extensible agent types, editable scenes,
+complete world-motion replay and exploration history.
+From the repository root, run `make control-native`, `make control-web`
+(with Emscripten activated), then `make control-lab` and open
+`http://127.0.0.1:8080/lab/`.
+
+Start with the [laboratory user guide](../docs/source/project/control_lab_getting_started.md)
+for walkthroughs of the controls, scene editor, replay, experiments, and extension APIs.
+
 A faithful C++ port of the fractal gas algorithm
 (`src/fragile/fractalai/fractal_gas.py` + `videogames/cloning.py` +
 `videogames/kinetic.py`) driving the [nes-py](https://github.com/FragileTech/nes-py)

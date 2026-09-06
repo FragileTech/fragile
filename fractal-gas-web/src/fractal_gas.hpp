@@ -10,6 +10,7 @@
 
 #include "cloning.hpp"
 #include "env.hpp"
+#include "exploration_tree.hpp"
 #include "kinetic.hpp"
 #include "rng.hpp"
 #include "swarm_algorithm.hpp"
@@ -39,6 +40,7 @@ struct FractalGasParams {
   float visit_coef = 1.0f;  // exponent on the visit term
   float erase_coef = 0.05f;
   int32_t agg_block_size = 5;
+  RecordingMode recording = RecordingMode::Off;
 };
 
 class FractalGas final : public SwarmAlgorithm {
@@ -52,6 +54,7 @@ class FractalGas final : public SwarmAlgorithm {
 
   const FractalGasParams& params() const { return params_; }
   const WalkerState& state() const { return state_; }
+  const ExplorationTree& exploration_tree() const { return exploration_tree_; }
 
   // Live-tunable parameters (used by the web demo's sidebar).
   void set_dist_coef(float v) override {
@@ -146,6 +149,7 @@ class FractalGas final : public SwarmAlgorithm {
 
   WalkerState state_;
   WalkerState elite_walkers_;
+  ExplorationTree exploration_tree_;
   bool has_elite_ = false;
 
   std::vector<uint8_t> best_frame_;

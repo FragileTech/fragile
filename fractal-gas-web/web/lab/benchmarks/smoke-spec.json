@@ -1,0 +1,49 @@
+{
+  "seeds": [7, 11, 19],
+  "maxFrames": 120,
+  "goal": {
+    "metric": "survival",
+    "target": 120
+  },
+  "variants": [
+    {
+      "algorithm": "fmc",
+      "walkers": 32,
+      "horizon": 8,
+      "frames": 4,
+      "elites": 2,
+      "recording": 0
+    },
+    {
+      "algorithm": "cem",
+      "walkers": 32,
+      "horizon": 8,
+      "frames": 4,
+      "search_iterations": 3,
+      "recording": 0
+    },
+    {
+      "algorithm": "icem",
+      "walkers": 32,
+      "horizon": 8,
+      "frames": 4,
+      "search_iterations": 3,
+      "recording": 0
+    },
+    {
+      "algorithm": "mppi",
+      "walkers": 32,
+      "horizon": 8,
+      "frames": 4,
+      "search_iterations": 3,
+      "recording": 0
+    },
+    {
+      "algorithm": "random",
+      "walkers": 1,
+      "horizon": 1,
+      "frames": 4,
+      "recording": 0
+    }
+  ]
+}

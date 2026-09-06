@@ -85,6 +85,22 @@ jobs:
           ls -l web/roms-enc web/roms-enc/atari | head -20
           # Airstriker rom is copied to web/ by the wasm build itself.
 
+      - name: Set up Node for the control laboratory
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: fractal-gas-web/package-lock.json
+
+      - name: Build parallel control laboratory and original assets
+        working-directory: fractal-gas-web
+        run: |
+          emcmake cmake -B build-control-threaded -DFG_CONTROL_ONLY=ON -DFG_CONTROL_THREADS=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-control-threaded -j"$(nproc)"
+          npm ci --ignore-scripts
+          npm run build:lab
+          npm run test:lab
+
       - name: Upload web artifact
         uses: actions/upload-artifact@v4
         with:

@@ -1,4 +1,4 @@
 # Authors
 
 * Guillem Duran Ballester - fragile.tech
-* OpenAI - openai.com
+* OpenAI - openai.com (including the continuous-control engine and laboratory)

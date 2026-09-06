@@ -9,6 +9,9 @@
 
 #include <cstdint>
 #include <random>
+#include <sstream>
+#include <locale>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -45,6 +48,14 @@ class Mt19937Rng final : public Rng {
  public:
   explicit Mt19937Rng(uint64_t seed) : gen_(seed) {}
 
+  std::string checkpoint() const {
+    std::ostringstream out;out.imbue(std::locale::classic());out<<gen_;return out.str();
+  }
+  void restore(const std::string& state) {
+    std::istringstream in(state);in.imbue(std::locale::classic());
+    std::mt19937_64 next;if(!(in>>next))throw std::invalid_argument("Invalid planner RNG state");
+    in>>std::ws;if(!in.eof())throw std::invalid_argument("Trailing planner RNG data");gen_=next;
+  }
   float uniform01() override {
     return static_cast<float>(std::generate_canonical<double, 53>(gen_));
   }

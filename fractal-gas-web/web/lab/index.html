@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#18131f" />
+    <title>Fragile Tech · Fractal Gas laboratory</title>
+    <link rel="icon" type="image/png" href="./branding/favicon.png" />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="../coi-serviceworker.min.js"></script>
+    <script type="module" src="./main.js"></script>
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="brand" href="../" aria-label="Fragile Tech home">
+        <img
+          class="brand-logo"
+          src="./branding/logo.png"
+          alt=""
+          width="48"
+          height="48"
+        />
+        <span
+          >fragile.tech<span class="brand-sub"
+            >Fractal Gas laboratory</span
+          ></span
+        >
+      </a>
+      <nav aria-label="Laboratory navigation">
+        <span class="nav-active">Control laboratory</span
+        ><a href="../">Arcade</a><a href="./README.md">Engine notes ↗</a>
+      </nav>
+      <span class="connection"
+        ><i></i><span id="backend">INITIALIZING ENGINE</span></span
+      >
+    </header>
+    <main>
+      <aside class="controls">
+        <div class="section-number">EXPERIMENT / <span id="toy">01</span></div>
+        <h1>Possible <br />futures.</h1>
+        <p class="intro">
+          A continuous-control laboratory<br />for Fractal Gas.
+        </p>
+        <label class="field"
+          >Environment<select
+            id="scenario"
+            aria-label="Environment"
+            disabled
+          ></select
+        ></label>
+        <p class="scenario-description" id="description">
+          Recover the ore. Every branch is a possible future.
+        </p>
+        <div class="run-controls">
+          <button id="run" class="primary" disabled>▶ Run experiment</button
+          ><button id="step" title="Plan and commit one action" disabled>
+            Step</button
+          ><button id="reset" title="Reset the scene with the same seed">
+            ↺
+          </button>
+        </div>
+        <label class="check keyboard-toggle">
+          <input type="checkbox" id="manual" /> Keyboard control
+        </label>
+        <p class="keyboard-hint">
+          Click the world to focus. W/S drive, A/D steer, Space brakes.
+        </p>
+        <div class="control-heading">
+          CONTROLLER <span id="controller-label">FMC</span>
+        </div>
+        <label class="field">Controller<select id="algorithm"></select></label>
+        <label class="field"
+          >Clock<select id="clock">
+            <option value="reproducible">
+              Reproducible · wait for planning
+            </option>
+            <option value="realtime">Real time · fixed simulation clock</option>
+          </select></label
+        >
+        <div class="fields-two">
+          <label class="field"
+            >Walkers<input
+              id="walkers"
+              type="number"
+              min="1"
+              max="8192"
+              value="128" /></label
+          ><label class="field"
+            >Horizon<input
+              id="horizon"
+              type="number"
+              min="1"
+              max="4096"
+              value="16" /></label
+          ><label class="field"
+            >Action frames<input
+              id="frames"
+              type="number"
+              min="1"
+              max="60"
+              value="6" /></label
+          ><label class="field"
+            >Seed<input
+              id="seed"
+              type="number"
+              min="0"
+              max="4294967295"
+              value="7"
+          /></label>
+        </div>
+        <details>
+          <summary>Planner settings</summary>
+          <div id="algorithm-settings" class="fields-two"></div>
+          <div class="fields-two">
+            <label class="field"
+              >Distance weight<input
+                id="distance"
+                type="number"
+                min="0"
+                max="10"
+                step="0.1"
+                value="1" /></label
+            ><label class="field"
+              >Reward weight<input
+                id="reward"
+                type="number"
+                min="0"
+                max="10"
+                step="0.1"
+                value="1" /></label
+            ><label class="field"
+              >Action noise<input
+                id="noise"
+                type="number"
+                min="0"
+                max="10"
+                step="0.05"
+                value="0.2" /></label
+            ><label class="field"
+              >Elites<input
+                id="elites"
+                type="number"
+                min="0"
+                max="128"
+                value="0" /></label
+            ><label class="field"
+              >Worker threads<input
+                id="threads"
+                type="number"
+                min="1"
+                max="64"
+                value="4"
+            /></label>
+          </div>
+          <label class="check"
+            ><input id="inertial" type="checkbox" checked /> Perturb inherited
+            actions</label
+          ><button id="wave">Advance Wave population</button>
+        </details>
+        <div class="control-heading">OBSERVATION LAYERS <span>LIVE</span></div>
+        <label class="check"
+          ><input id="layer-tree" type="checkbox" checked /> Rollout paths
+          <span class="swatch green"></span></label
+        ><label class="check"
+          ><input id="layer-cloud" type="checkbox" checked /> Future-state cloud
+          <span class="swatch cyan"></span></label
+        ><label class="check"
+          ><input id="layer-tethers" type="checkbox" checked />
+          Tethers & formation
+          <span class="swatch violet"></span></label
+        ><label class="check"
+          ><input id="layer-geometry" type="checkbox" /> Collision geometry
+          <span class="swatch gold"></span
+        ></label>
+        <div class="controls-footer">
+          <span id="state-size">— BYTES / WORLD</span
+          ><span>STATE NATIVE · C++</span>
+        </div>
+      </aside>
+      <section class="stage" aria-label="Simulation viewport">
+        <div class="stage-toolbar">
+          <div>
+            <span class="live-dot"></span
+            ><span id="scene-title">ASTEROID HARVESTING</span
+            ><span class="tag" id="run-state">LOADING</span>
+          </div>
+          <div class="view-buttons">
+            <button id="view" title="Switch between top and angled views">
+              2D / 3D</button
+            ><button id="clean" title="Toggle all diagnostic layers">
+              Clean view</button
+            ><button id="focus">Follow agent</button
+            ><button id="experiments">Experiments</button
+            ><button id="edit">Edit scene</button>
+          </div>
+        </div>
+        <div id="viewport">
+          <canvas
+            id="world"
+            aria-label="Interactive three-dimensional control simulation"
+          ></canvas>
+          <div class="viewport-label">
+            <span class="eyebrow">FRAGILE TECH / CONTROL LABORATORY</span
+            ><strong id="viewport-task">ORE RECOVERY</strong
+            ><span id="viewport-note"
+              >Joint control · inertial dynamics · exact state replay</span
+            >
+          </div>
+          <div id="status" role="status" aria-live="polite">
+            Compiling possible futures…
+          </div>
+          <div class="compass"><span>Y</span><i></i><span>X</span></div>
+          <div class="legend">
+            <span><i class="green"></i>High reward</span
+            ><span><i class="rose"></i>Collision</span
+            ><span><i class="violet"></i>Tethered / alternative</span>
+          </div>
+          <div class="viewport-hint" id="hint">
+            SCROLL TO ZOOM · 2D / 3D TO CHANGE VIEW
+          </div>
+        </div>
+        <div class="telemetry">
+          <div>
+            <span>SIMULATION</span
+            ><strong id="time">0.00 <small>s</small></strong
+            ><em id="tick">TICK 000000</em>
+          </div>
+          <div>
+            <span>DEAD RATIO</span><strong id="dead">—</strong
+            ><em>PLANNING POPULATION</em>
+          </div>
+          <div>
+            <span>SELECTED-ACTION RISK</span><strong id="risk">—</strong
+            ><em id="risk-note">16 INDEPENDENT CONTINUATIONS</em>
+          </div>
+          <div>
+            <span>EVAPORATED</span><strong id="pruned">0</strong
+            ><em id="clone">0% CLONED</em>
+          </div>
+          <div>
+            <span>AI BUDGET USED</span><strong id="used">—</strong
+            ><em id="latency">WAITING FOR A PLAN</em>
+          </div>
+          <div>
+            <span>SCORE</span><strong id="score">0</strong
+            ><em id="score-note">CARGO DELIVERIES</em>
+          </div>
+        </div>
+        <div class="motion-panel">
+          <div class="motion-heading">
+            <span class="eyebrow">WORLD REPLAY</span
+            ><span id="motion-segment">Recording executed world</span
+            ><span id="motion-position">No world frames</span>
+          </div>
+          <div class="motion-controls">
+            <button id="motion-play" disabled>▶ Play world</button>
+            <input
+              id="motion-timeline"
+              type="range"
+              min="0"
+              max="0"
+              value="0"
+              aria-label="Recorded world frame"
+              disabled
+            />
+            <select id="motion-speed" aria-label="Replay speed">
+              <option value="0.25">¼×</option>
+              <option value="0.5">½×</option>
+              <option value="1" selected>1×</option>
+              <option value="2">2×</option>
+              <option value="4">4×</option>
+            </select>
+            <button id="motion-live" disabled>Back to live</button
+            ><button id="motion-resume" disabled>Continue here</button>
+          </div>
+        </div>
+        <div class="history-bar">
+          <div>
+            <span class="eyebrow">EXPLORATION RECORD</span
+            ><span id="record-count">No decisions recorded</span>
+          </div>
+          <label
+            >Tree<select id="recording">
+              <option value="1">Pruned</option>
+              <option value="2">Full</option>
+              <option value="0">Off</option>
+            </select></label
+          ><label class="check"
+            ><input type="checkbox" id="archive-all" /> Keep all
+            decisions</label
+          ><button id="export-run">Export run ↓</button
+          ><button id="import-run">Open run ↑</button>
+        </div>
+        <div class="replay-bar">
+          <input
+            id="timeline"
+            aria-label="Recorded decision"
+            type="range"
+            min="0"
+            max="0"
+            value="0"
+          /><label
+            >Node<input id="node" type="number" min="1" value="1" /></label
+          ><button id="replay">Replay branch</button
+          ><button id="save-state">Save state</button
+          ><button id="load-state">Load state</button>
+        </div>
+        <section class="storage-controls" aria-label="Recording storage">
+          <label class="check"
+            ><input id="persistent-recording" type="checkbox" /> Store long runs
+            on this device · applies on reset</label
+          >
+          <button id="flush-run">Save recording</button
+          ><button id="open-library">Saved runs</button>
+          <button id="save-checkpoint">Save planner checkpoint</button
+          ><button id="load-checkpoint">Load checkpoint</button>
+          <select id="motion-events" aria-label="Replay event">
+            <option>Jump to event…</option>
+          </select>
+          <input
+            id="event-note"
+            aria-label="Event note"
+            placeholder="Event note"
+            maxlength="120"
+          /><button id="add-event">Add marker</button>
+          <label class="check"
+            ><input type="checkbox" id="inspect-physics" /> Physics
+            inspector</label
+          >
+          <output id="performance-readout">Renderer preparing…</output>
+          <output id="physics-readout" hidden></output>
+        </section>
+      </section>
+      <aside id="editor" class="editor" hidden>
+        <div class="control-heading">
+          SCENE EDITOR
+          <button id="close-editor" aria-label="Close editor">×</button>
+        </div>
+        <p>
+          Shift-click to select several entities. Drag to move the selection.
+          Middle/right-drag to pan. Changes rebuild the scene and reset its
+          state.
+        </p>
+        <label class="field"
+          >Tool<select id="tool">
+            <option value="select">Select & move</option>
+            <option value="bodies">Agent</option>
+            <option value="cargo">Asteroid</option>
+            <option value="pickups">Food pickup</option>
+            <option value="bases">Delivery base</option>
+            <option value="gates">Checkpoint gate</option>
+            <option value="gravity">Gravity well</option>
+            <option value="tether">Tether · click source, then cargo</option>
+            <option value="holes">Draw hole / pillar</option>
+            <option value="boundary">Draw outer boundary</option>
+          </select></label
+        >
+        <label class="field">Agent type<select id="agent-type"></select></label>
+        <button id="finish-polygon">Finish polygon</button>
+        <div class="fields-two">
+          <button id="undo">Undo</button><button id="redo">Redo</button>
+        </div>
+        <label class="field"
+          >Selected entity <span id="selection-name">None</span
+          ><textarea
+            id="entity"
+            rows="12"
+            spellcheck="false"
+            placeholder="Select an entity to edit its physical parameters."
+          ></textarea>
+        </label>
+        <div class="fields-two">
+          <button id="apply-entity">Apply entity</button
+          ><button id="delete-entity">Delete</button>
+        </div>
+        <div id="entity-properties" class="property-grid"></div>
+        <button id="apply-properties">Apply properties</button>
+        <button id="duplicate-entities">Duplicate selection</button>
+        <label class="field"
+          >Template name<input id="template-name" placeholder="My agent type"
+        /></label>
+        <button id="save-template">Save selection as agent type</button>
+        <details>
+          <summary>Actuator channels</summary>
+          <div id="action-channels"></div>
+          <button id="apply-action">Apply action · 1 frame</button>
+        </details>
+        <button id="edit-json">Edit complete scene JSON</button>
+        <div class="fields-two">
+          <button id="export-scene">Export JSON ↓</button
+          ><button id="import-scene">Import JSON ↑</button>
+        </div>
+        <p>
+          Keyboard control applies to the selected agent (or the first agent).
+          W/S drive, A/D steer, Q/E strafe, Space brakes. Channel sliders
+          support every actuator.
+        </p>
+      </aside>
+    </main>
+    <footer>
+      <span>Fragile Tech · Fractal Gas</span
+      ><span id="footer-stats">ONE ENGINE · MANY POSSIBLE FUTURES</span
+      ><span>LOCAL COMPUTE · NO ACCOUNT REQUIRED</span>
+    </footer>
+    <dialog id="json-dialog">
+      <form method="dialog">
+        <div class="control-heading">
+          SCENE CONFIGURATION
+          <button aria-label="Close JSON editor">×</button>
+        </div>
+        <textarea
+          id="scene-json"
+          spellcheck="false"
+          aria-label="Complete scene JSON"
+        ></textarea>
+        <p id="json-error" role="alert"></p>
+        <button type="button" id="apply-json" class="primary">
+          Compile scene
+        </button>
+      </form>
+    </dialog>
+    <dialog id="storage-dialog">
+      <div class="control-heading">
+        SAVED RUNS<button id="close-storage" aria-label="Close saved runs">
+          ×
+        </button>
+      </div>
+      <p>
+        Compressed world frames and planner records are stored in this browser.
+        Export a file to keep a portable copy.
+      </p>
+      <div id="stored-runs"></div>
+    </dialog>
+    <dialog id="experiment-dialog" class="wide-dialog">
+      <div class="dialog-heading">
+        <h2>Experiments</h2>
+        <button id="close-experiments" aria-label="Close experiments">×</button>
+      </div>
+      <p>
+        Evaluate controllers on fixed seeds, or fork the selected world into two
+        independent outcomes.
+      </p>
+      <div class="experiment-fields">
+        <label>Variant A<select id="variant-a"></select></label
+        ><label>Variant B<select id="variant-b"></select></label>
+        <label>Seeds<input id="benchmark-seeds" value="7,11,19" /></label
+        ><label
+          >Episode limit · frames<input
+            id="benchmark-frames"
+            type="number"
+            min="1"
+            max="36000"
+            value="240"
+        /></label>
+        <label
+          >Population<input
+            id="benchmark-walkers"
+            type="number"
+            min="1"
+            max="8192"
+            value="32" /></label
+        ><label
+          >Lookahead · actions<input
+            id="benchmark-horizon"
+            type="number"
+            min="1"
+            max="4096"
+            value="8"
+        /></label>
+        <label
+          >Action duration · frames<input
+            id="benchmark-action-frames"
+            type="number"
+            min="1"
+            max="4096"
+            value="4"
+        /></label>
+        <label
+          >Success metric<select id="benchmark-goal">
+            <option value="deliveries">Cargo deliveries</option>
+            <option value="pickups">Food pickups</option>
+            <option value="gates">Gates crossed</option>
+            <option value="survival">Frames survived</option>
+            <option value="reward">Accumulated reward</option>
+          </select></label
+        >
+        <label
+          >Success target<input
+            id="benchmark-target"
+            type="number"
+            min="0.01"
+            value="1"
+        /></label>
+      </div>
+      <div class="fields-two">
+        <label class="field"
+          >Variant A parameter overrides (JSON)<textarea
+            id="variant-settings-a"
+            rows="2"
+            spellcheck="false"
+          >
+{}</textarea
+          ></label
+        ><label class="field"
+          >Variant B parameter overrides (JSON)<textarea
+            id="variant-settings-b"
+            rows="2"
+            spellcheck="false"
+          >
+{}</textarea
+          >
+        </label>
+      </div>
+      <div class="button-row">
+        <label class="check"
+          ><input id="benchmark-all-scenes" type="checkbox" /> All preset
+          scenes</label
+        >
+        <button id="run-benchmark">Run benchmark</button
+        ><button id="compare-branches">Fork and compare</button
+        ><button id="cancel-experiment" disabled>Cancel</button
+        ><button id="export-experiment">Export experiment</button>
+      </div>
+      <p id="experiment-status" role="status">
+        Choose a success criterion that matches the experiment.
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Controller</th>
+              <th>Episodes</th>
+              <th>Success</th>
+              <th>Contacts</th>
+              <th>Completion · s</th>
+              <th>∫u²dt</th>
+              <th>Planning · ms</th>
+              <th>Simulated world-frames</th>
+            </tr>
+          </thead>
+          <tbody id="benchmark-results"></tbody>
+        </table>
+      </div>
+      <section id="comparison-section" hidden>
+        <div id="comparison-worlds"></div>
+        <div class="button-row">
+          <button id="comparison-play">Play both</button
+          ><input
+            id="comparison-timeline"
+            type="range"
+            min="0"
+            max="0"
+            value="0"
+            aria-label="Comparison frame"
+          />
+        </div>
+      </section>
+      <details>
+        <summary>Performance probe</summary>
+        <p>
+          Measure physics and state movement in an independent 256-world batch.
+        </p>
+        <button id="profile-batch">Measure batch throughput</button>
+        <p id="batch-profile">No measurements yet.</p>
+      </details>
+    </dialog>
+    <input type="file" id="file" hidden />
+  </body>
+</html>

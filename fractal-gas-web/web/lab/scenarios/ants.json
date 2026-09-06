@@ -1,0 +1,1048 @@
+{
+  "version": 1,
+  "name": "Ants & drops",
+  "description": "Forty-eight bodies. One joint continuous action space.",
+  "task": "forage",
+  "size": [
+    64,
+    44
+  ],
+  "physics": {
+    "dt": 0.016666666666666666,
+    "substeps": 4,
+    "solver_iterations": 8,
+    "lethal_walls": false,
+    "lethal_bodies": false
+  },
+  "bodies": [
+    {
+      "position": [
+        7,
+        7
+      ],
+      "angle": -3,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        14,
+        7
+      ],
+      "angle": -2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        21,
+        7
+      ],
+      "angle": -1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        28,
+        7
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        35,
+        7
+      ],
+      "angle": 1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        42,
+        7
+      ],
+      "angle": 2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        49,
+        7
+      ],
+      "angle": -3,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        56,
+        7
+      ],
+      "angle": -2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        7,
+        13
+      ],
+      "angle": -1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        14,
+        13
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        21,
+        13
+      ],
+      "angle": 1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        28,
+        13
+      ],
+      "angle": 2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        35,
+        13
+      ],
+      "angle": -3,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        42,
+        13
+      ],
+      "angle": -2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        49,
+        13
+      ],
+      "angle": -1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        56,
+        13
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        7,
+        19
+      ],
+      "angle": 1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        14,
+        19
+      ],
+      "angle": 2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        21,
+        19
+      ],
+      "angle": -3,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        28,
+        19
+      ],
+      "angle": -2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        35,
+        19
+      ],
+      "angle": -1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        42,
+        19
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        49,
+        19
+      ],
+      "angle": 1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        56,
+        19
+      ],
+      "angle": 2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        7,
+        25
+      ],
+      "angle": -3,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        14,
+        25
+      ],
+      "angle": -2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        21,
+        25
+      ],
+      "angle": -1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        28,
+        25
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        35,
+        25
+      ],
+      "angle": 1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        42,
+        25
+      ],
+      "angle": 2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        49,
+        25
+      ],
+      "angle": -3,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        56,
+        25
+      ],
+      "angle": -2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        7,
+        31
+      ],
+      "angle": -1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        14,
+        31
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        21,
+        31
+      ],
+      "angle": 1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        28,
+        31
+      ],
+      "angle": 2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        35,
+        31
+      ],
+      "angle": -3,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        42,
+        31
+      ],
+      "angle": -2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        49,
+        31
+      ],
+      "angle": -1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        56,
+        31
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        7,
+        37
+      ],
+      "angle": 1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        14,
+        37
+      ],
+      "angle": 2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        21,
+        37
+      ],
+      "angle": -3,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        28,
+        37
+      ],
+      "angle": -2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        35,
+        37
+      ],
+      "angle": -1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        42,
+        37
+      ],
+      "angle": 0,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        49,
+        37
+      ],
+      "angle": 1,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    },
+    {
+      "position": [
+        56,
+        37
+      ],
+      "angle": 2,
+      "radius": 0.65,
+      "mass": 1,
+      "controlled": true,
+      "thrust": 16,
+      "torque": 3,
+      "angular_drag": 3,
+      "drag": 0.2,
+      "agent_type": "kart"
+    }
+  ],
+  "boundary": [
+    [
+      2,
+      2
+    ],
+    [
+      62,
+      2
+    ],
+    [
+      62,
+      42
+    ],
+    [
+      2,
+      42
+    ]
+  ],
+  "holes": [
+    [
+      [
+        29,
+        17
+      ],
+      [
+        33,
+        17
+      ],
+      [
+        33,
+        28
+      ],
+      [
+        29,
+        28
+      ]
+    ]
+  ],
+  "pickups": [
+    {
+      "position": [
+        6,
+        5
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        19,
+        22
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        32,
+        6
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        45,
+        23
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        6,
+        7
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        19,
+        24
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        32,
+        8
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        45,
+        25
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        6,
+        9
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        19,
+        26
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        32,
+        10
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        45,
+        27
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        6,
+        11
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        19,
+        28
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        32,
+        12
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        45,
+        29
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        6,
+        13
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        19,
+        30
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        32,
+        14
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        45,
+        31
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        6,
+        15
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        19,
+        32
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        32,
+        16
+      ],
+      "radius": 0.4
+    },
+    {
+      "position": [
+        45,
+        33
+      ],
+      "radius": 0.4
+    }
+  ],
+  "respawn_seconds": 3,
+  "agent_types": {
+    "rocket": {
+      "label": "Kestrel \u00b7 vector rocket",
+      "physics": {
+        "controlled": true,
+        "radius": 0.65,
+        "mass": 1,
+        "thrust": 16,
+        "torque": 3,
+        "angular_drag": 3,
+        "drag": 0.2,
+        "actuator": {
+          "kind": "vector"
+        }
+      },
+      "visual": {
+        "model": "rocket"
+      }
+    },
+    "kart": {
+      "label": "Mite \u00b7 electric kart",
+      "extends": "rocket",
+      "physics": {
+        "drag": 0.7,
+        "angular_drag": 4,
+        "actuator": {
+          "kind": "kart",
+          "wheelbase": 0.9,
+          "steering_limit": 0.6,
+          "lateral_grip": 14,
+          "brake_deceleration": 18
+        }
+      },
+      "visual": {
+        "model": "kart"
+      }
+    },
+    "drone": {
+      "label": "Wisp \u00b7 survey drone",
+      "extends": "rocket",
+      "physics": {
+        "mass": 0.7,
+        "thrust": 11,
+        "torque": 2,
+        "drag": 0.35,
+        "actuator": {
+          "kind": "holonomic"
+        }
+      },
+      "visual": {
+        "model": "drone",
+        "color": "#ffce70"
+      }
+    },
+    "thruster_tug": {
+      "extends": "rocket",
+      "label": "Kestrel \u00b7 independent thrusters",
+      "physics": {
+        "actuator": {
+          "kind": "thrusters",
+          "thrusters": [
+            {
+              "position": [
+                -0.3,
+                -0.35
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "force": 8
+            },
+            {
+              "position": [
+                -0.3,
+                0.35
+              ],
+              "direction": [
+                1,
+                0
+              ],
+              "force": 8
+            },
+            {
+              "position": [
+                0,
+                0
+              ],
+              "direction": [
+                0,
+                1
+              ],
+              "force": 4,
+              "reversible": true
+            }
+          ]
+        }
+      }
+    }
+  }
+}

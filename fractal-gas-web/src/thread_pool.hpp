@@ -50,7 +50,7 @@ class ThreadPool {
   std::condition_variable cv_done_;
   const std::function<void(int32_t, int)>* job_fn_ = nullptr;
   int32_t job_n_ = 0;
-  int32_t completed_items_ = 0;
+  int completed_slots_ = 0;
   uint64_t generation_ = 0;
   bool shutdown_ = false;
 };

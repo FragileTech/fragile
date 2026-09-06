@@ -4,8 +4,19 @@ namespace fg {
 
 ThreadPool::ThreadPool(int n_slots) : n_slots_(n_slots < 1 ? 1 : n_slots) {
   workers_.reserve(static_cast<size_t>(n_slots_ - 1));
-  for (int slot = 1; slot < n_slots_; ++slot) {
-    workers_.emplace_back([this, slot] { worker_loop(slot); });
+  try {
+    for (int slot = 1; slot < n_slots_; ++slot) {
+      workers_.emplace_back([this, slot] { worker_loop(slot); });
+    }
+  } catch (...) {
+    // A partial pool must be joined before std::thread destructors run.
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      shutdown_ = true;
+    }
+    cv_start_.notify_all();
+    for (auto& w : workers_) w.join();
+    throw;
   }
 }
 
@@ -30,27 +41,22 @@ void ThreadPool::parallel_for(int32_t n,
     std::lock_guard<std::mutex> lock(mutex_);
     job_fn_ = &fn;
     job_n_ = n;
-    completed_items_ = 0;
+    completed_slots_ = 0;
     ++generation_;
   }
   cv_start_.notify_all();
 
   // The caller participates as slot 0, running its static block.
-  int32_t done_here = 0;
   const auto range = block_range(n, 0);
   for (int32_t i = range.first; i < range.second; ++i) {
     fn(i, 0);
-    ++done_here;
   }
 
   std::unique_lock<std::mutex> lock(mutex_);
-  completed_items_ += done_here;
-  if (completed_items_ == job_n_) {
-    job_fn_ = nullptr;
-  } else {
-    cv_done_.wait(lock, [this] { return completed_items_ == job_n_; });
-    job_fn_ = nullptr;
-  }
+  ++completed_slots_;
+  // Empty partitions must also finish before job_fn_ can expire or be reused.
+  cv_done_.wait(lock, [this] { return completed_slots_ == n_slots_; });
+  job_fn_ = nullptr;
 }
 
 std::pair<int32_t, int32_t> ThreadPool::block_range(int32_t n, int slot) const {
@@ -76,17 +82,15 @@ void ThreadPool::worker_loop(int slot) {
       n = job_n_;
     }
 
-    int32_t done_here = 0;
     const auto range = block_range(n, slot);
     for (int32_t i = range.first; i < range.second; ++i) {
       (*fn)(i, slot);
-      ++done_here;
     }
 
     {
       std::lock_guard<std::mutex> lock(mutex_);
-      completed_items_ += done_here;
-      if (completed_items_ == job_n_) cv_done_.notify_one();
+      ++completed_slots_;
+      if (completed_slots_ == n_slots_) cv_done_.notify_one();
     }
   }
 }

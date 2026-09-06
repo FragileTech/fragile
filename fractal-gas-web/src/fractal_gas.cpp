@@ -98,10 +98,18 @@ void FractalGas::reset() {
   has_elite_ = false;
   elite_walkers_ = WalkerState{};
   best_frame_.clear();
+  exploration_tree_.reset(params_.recording, 1, static_cast<size_t>(d));
+  if (params_.recording != RecordingMode::Off) {
+    float action = 0;
+    uint32_t root = exploration_tree_.append(0, 0, &action, init_obs.data(), 0, 0, 0, 0);
+    exploration_tree_.root_snapshot.assign(init_state.begin(), init_state.end());
+    state_.lineage.assign(static_cast<size_t>(n), root);
+  }
 }
 
 StepInfo FractalGas::step() {
   const int32_t n = state_.N;
+  exploration_tree_.reserve(static_cast<size_t>(n));
 
   // 0. Inject elites into the first n_elite positions.
   if (params_.n_elite > 0 && has_elite_) {
@@ -214,6 +222,17 @@ StepInfo FractalGas::step() {
     }
   }
 
+  if (params_.recording != RecordingMode::Off) {
+    new_state.lineage.resize(static_cast<size_t>(n));
+    for (int32_t i = 0; i < n; ++i) {
+      float action = static_cast<float>(new_state.actions[i]);
+      new_state.lineage[i] = exploration_tree_.append(
+          state_after_clone.lineage[i], new_state.dt[i], &action,
+          new_state.observations.data() + static_cast<size_t>(i) * new_state.obs_dim,
+          new_state.rewards[i], new_state.step_rewards[i], virtual_rewards[i],
+          new_state.alive(i) ? 0 : 1);
+    }
+  }
   state_ = std::move(new_state);
 
   total_steps_ += n;
@@ -304,6 +323,11 @@ StepInfo FractalGas::step() {
     env_.render_frame(state_.states[static_cast<size_t>(best_idx)], best_frame_);
   }
 
+  if (params_.recording == RecordingMode::Pruned) {
+    auto pins = state_.lineage;
+    pins.insert(pins.end(), elite_walkers_.lineage.begin(), elite_walkers_.lineage.end());
+    exploration_tree_.prune(pins);
+  }
   return info;
 }
 

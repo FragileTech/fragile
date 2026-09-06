@@ -120,6 +120,26 @@ TEST_CASE(same_seed_is_deterministic) {
   CHECK(a == b);
 }
 
+TEST_CASE(wave_optional_tree_preserves_elite_and_clone_ancestry) {
+  MockEnv env;
+  for (auto recording : {RecordingMode::Full, RecordingMode::Pruned}) {
+    FractalGasParams params; params.N = 16; params.n_elite = 3; params.seed = 33;
+    params.recording = recording;
+    FractalGas gas(env, params); gas.reset();
+    for (int i = 0; i < 6; ++i) gas.step();
+    const auto& tree = gas.exploration_tree();
+    for (int i = 0; i < gas.state().N; ++i) {
+      float expected[3] = {0, 0, 0};
+      for (uint32_t id : tree.branch(gas.state().lineage[i])) {
+        const auto& node = tree.node(id); if (!node.parent) continue;
+        expected[0] += (tree.action(id)[0] + 1) * node.frames;
+        expected[1] += .5f * node.frames; expected[2] += 1;
+      }
+      CHECK(std::memcmp(expected, gas.state().states[i].data(), sizeof(expected)) == 0);
+    }
+  }
+}
+
 // Mock for the all-dead revive: every walker dies once its step counter
 // (s[2], incremented by 1 per step regardless of action) reaches
 // kDeathStep, so the whole swarm dies in the same iteration. `mode` picks

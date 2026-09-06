@@ -31,6 +31,8 @@ struct WalkerState {
   // it stays walker-indexed even after elite injection.
   std::vector<WalkerInfo> infos;          // [N]
   bool has_infos = false;
+  // Optional exploration IDs follow the same gather/inject semantics as state.
+  std::vector<uint32_t> lineage;
 
   bool alive(int32_t i) const {
     return !(dones[static_cast<size_t>(i)] || truncated[static_cast<size_t>(i)]);
