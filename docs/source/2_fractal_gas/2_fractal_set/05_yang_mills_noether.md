@@ -6604,27 +6604,144 @@ therefore applies there. Unitary transport preserves the joint spectral
 projections and the dimension of the invariant subspace.
 :::
 
-:::{prf:lemma} Causal dependence criterion for recorded interventions
+:::{prf:lemma} Recorded interventions and operational no-signaling
 :label: lem-no-signaling-fg
 
-In a finite acyclic update graph, suppose every updated variable is a
-measurable function of its parent variables and its assigned exogenous noise.
-If an intervention changes none of the variables or noises in the ancestral
-set of an observable, its value is unchanged under the common-noise coupling.
-Its law is therefore unchanged. Relativistic no-signaling follows from this
-criterion when all actual dependencies are contained in the prescribed
-Lorentzian causal cones.
+In a finite acyclic update graph, every updated variable is a measurable
+function of its parent variables and its assigned exogenous noise. If an
+intervention changes none of the variables or noises in the ancestral set
+of an observable, its value is unchanged under the common-noise coupling,
+and hence its law is unchanged. This is a sufficient no-signaling test.
+
+For the operational test, use the already defined local kinetic source of
+{prf:ref}`thm-ym-metric-force-sources`, with its test $f$ supported in the
+sender's specified region. The sender chooses its parameter $\lambda$.
+The initial law and all fitness, companion, cloning, collision, and kinetic
+rules other than the specified Gaussian source stay fixed as functions of
+the current state. In particular this intervention gives the sender no
+independent control of the global fitness array or of realized clone choices.
+Let $D_B$ be the receiver's existing recorded observable descriptor and let
+$\mathbb U$ be the unsourced native law. The existing complete source
+likelihood is
+
+$$
+L_\lambda=\exp(\lambda M_f-\lambda^2E_f/2),\qquad
+\mathbb E_{\mathbb U}L_\lambda=1.
+$$
+
+By {prf:ref}`thm-sm-path-descriptor-density`, the receiver marginal is
+unchanged for this intervention precisely when
+
+$$
+\mathbb E_{\mathbb U}[L_\lambda\mid D_B]=1
+\quad\text{almost surely}.
+$$
+
+No-signaling for this source family requires this identity for every
+admissible message value $\lambda$. It concerns the receiver's marginal
+law; equality of individual receiver realizations is sufficient but is
+not required. Thus stochastic cross-region dependence alone neither proves
+nor disproves operational signaling.
+
+For the selected law prescribed upstream, write
+$\ell=1$ or the same fixed survival indicator as in
+{prf:ref}`thm-ym-metric-force-sources`, and
+$d\mathbb P^\ell=\ell\,d\mathbb U/\mathbb U(\ell)$.
+Where the selected sourced law is defined, its receiver density relative
+to the unsourced selected receiver law is exactly
+
+$$
+\frac{\mathbb E_{\mathbb P^\ell}[L_\lambda\mid D_B]}
+     {\mathbb E_{\mathbb P^\ell}L_\lambda}.
+$$
+
+Consequently the selected-law test is equality of its numerator and
+denominator. This retains the actual survival normalization. For every
+bounded receiver observable $O(D_B)$, the existing source derivative gives
+
+$$
+\left.\frac d{d\lambda}\right|_{0}
+\mathbb E_{\mathbb P^\ell_\lambda}O
+=\operatorname{Cov}_{\mathbb P^\ell}(O,M_f).
+$$
+
+Vanishing of these first derivatives is necessary for no-signaling;
+the full likelihood identity tests finite messages.
+
+There is an exact application to a single sourced O stage. Condition on its
+complete pre-O history $\mathcal F_k$. Let $A$ be the predictable set of
+slots on which the source is nonzero. A receiver descriptor measurable in
+$\mathcal F_k$ and the O-stage Gaussian draws at slots outside $A$ has
+unchanged conditional law under this one-stage source. This includes
+receiver O-stage readouts before any later update mixes the slots. The
+statement holds with the original pre-O companion and cloning records
+retained, irrespective of their correlations.
 :::
 
 :::{prf:proof}
-Order the ancestral vertices topologically. Source values and noises agree.
-If the parent values of the next vertex agree, the common update function
-and noise give the same value there. Induction proves equality at the
-observable. All dependencies enter this induction: companion selection,
-fitness statistics, cloning, and kinetic interactions as well as genealogy.
-A Gaussian companion kernel with full support has dependencies beyond an
-arbitrary finite spatial radius, so its support cannot be discarded in
-asserting the cone hypothesis.
+For the ancestral statement, order the ancestral vertices topologically.
+Source values and noises agree. If the parents of the next vertex agree,
+the same update function and noise give the same value there. Induction
+proves equality at the observable. This uses all actual dependencies,
+including companion selection, fitness statistics, cloning, and kinetics.
+
+For a bounded measurable receiver test $b$, the already established
+likelihood and descriptor identities give
+
+$$
+\mathbb E_{\mathbb U_\lambda}b(D_B)
+=\mathbb E_{\mathbb U}[L_\lambda b(D_B)]
+=\mathbb E_{\mathbb U}
+ [\mathbb E_{\mathbb U}(L_\lambda\mid D_B)b(D_B)].
+$$
+
+Equality with the unsourced expectation for all such $b$ is precisely
+that the displayed conditional density is one. Equality for every message
+value makes the receiver distribution independent of the chosen message.
+Conversely, a failure of this density identity distinguishes the two
+receiver distributions. This is a distributional test and does not require
+the receiver to recover or control individual clone events.
+
+For survival selection, changing the native law and then applying the
+same selection gives
+
+$$
+\mathbb E_{\mathbb P^\ell_\lambda}b(D_B)
+=\frac{\mathbb E_{\mathbb P^\ell}[L_\lambda b(D_B)]}
+       {\mathbb E_{\mathbb P^\ell}L_\lambda}.
+$$
+
+Conditioning the numerator proves its receiver density. Differentiating
+at zero uses $L_0=1$ and $L'_0=M_f$; the source exponential-moment bounds
+in {prf:ref}`thm-ym-metric-force-sources` justify the derivative for bounded
+$b$ and the fixed positive-probability selection. The quotient derivative
+is the stated covariance. Unselected no-signaling and no-signaling after
+global survival selection are therefore evaluated with their respective
+normalizations.
+
+At the single O stage the source likelihood factor is
+
+$$
+L_{k,\lambda}
+=\prod_{i\in A}
+ \exp\bigl(\lambda u_{ki}\cdot\xi_{ki}
+                  -\lambda^2|u_{ki}|^2/2\bigr).
+$$
+
+The $u_{ki}$ and $A$ are fixed conditional on $\mathcal F_k$.
+Conditional independence of the Gaussian draws and their exponential
+normalization give
+
+$$
+\mathbb E[L_{k,\lambda}\mid
+ \mathcal F_k,(\xi_{kj})_{j\notin A}]=1.
+$$
+
+Apply the tower identity to any specified receiver descriptor measurable
+in these variables. This proves the claimed exact marginal invariance.
+For later receiver readouts the complete likelihood identity already
+includes the intervening fitness and cloning updates; their rules remain
+fixed, while their state arguments follow the perturbed execution.
 :::
 
 :::{prf:theorem} Positive energy and the full spectrum condition

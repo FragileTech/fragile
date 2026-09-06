@@ -3,6 +3,7 @@
 from io import StringIO
 import json
 from pathlib import Path
+import re
 import sys
 from types import SimpleNamespace
 
@@ -23,6 +24,20 @@ from assemble_docs import (
 from book_manifest import published_documents
 from collect_prf_directives import build_volume_output, extract_prf_blocks, volume_dirs
 from fragile_redirects import redirect_html, write_redirects
+
+
+def test_lab_tutorial_figures_exist():
+    """Catch missing tutorial captures before the expensive Sphinx builds."""
+    figures = []
+    for source in (DOCS / "source/project").glob("control_lab*.md"):
+        for target in re.findall(r"^:+\{figure\}\s+(\S+)", source.read_text(), re.MULTILINE):
+            if "://" in target:
+                continue
+            asset = source.parent / target
+            assert asset.is_file(), f"{source.name}: missing figure {target}"
+            assert asset.stat().st_size > 0, f"{source.name}: empty figure {target}"
+            figures.append(asset)
+    assert figures, "Lab guides should include tutorial figures"
 
 
 def test_assembled_head_initializes_scripts_once_without_changing_article_scripts():

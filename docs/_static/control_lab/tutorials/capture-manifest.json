@@ -422,6 +422,120 @@
       },
       "editor": true,
       "selection": "bodies / 0"
+    },
+    "track-racing": {
+      "note": "Circuit at reset with the real track preview, checkpoint count, and physical layout.",
+      "view": "top-down",
+      "title": "VIOLET CIRCUIT · KART RACING",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "racing",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "track-racing-roots": {
+      "note": "Circuit at reset with the real track preview, checkpoint count, and physical layout.",
+      "view": "top-down",
+      "title": "ROOTS OVAL · KART RACING",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "racing",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "track-racing-fearless": {
+      "note": "Circuit at reset with the real track preview, checkpoint count, and physical layout.",
+      "view": "top-down",
+      "title": "FEARLESS CIRCUIT · KART RACING",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "racing",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "track-racing-sepang": {
+      "note": "Circuit at reset with the real track preview, checkpoint count, and physical layout.",
+      "view": "top-down",
+      "title": "SEPANG KART · KART RACING",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "racing",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "track-racing-original": {
+      "note": "Circuit at reset with the real track preview, checkpoint count, and physical layout.",
+      "view": "top-down",
+      "title": "ORIGINAL OBSTACLE CIRCUIT · KART RACING",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "racing",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
+    },
+    "track-racing-obstacle-field": {
+      "note": "Circuit at reset with the real track preview, checkpoint count, and physical layout.",
+      "view": "top-down",
+      "title": "FEARLESS OBSTACLE FIELD · KART RACING",
+      "tick": "TICK 000000",
+      "settings": {
+        "scenario": "racing",
+        "algorithm": "fmc",
+        "clock": "reproducible",
+        "walkers": "128",
+        "horizon": "16",
+        "frames": "6",
+        "seed": "7",
+        "threads": "1",
+        "recording": "1"
+      },
+      "editor": false,
+      "selection": "None"
     }
   }
 }

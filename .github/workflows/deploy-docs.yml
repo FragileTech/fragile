@@ -39,6 +39,9 @@ jobs:
       - name: Generate prompt downloads
         run: make prompt
 
+      - name: Check documentation sources and routes
+        run: python -m pytest --confcutdir=tests/docs -q tests/docs/
+
       - name: Build Theory documentation
         run: jupyter-book build docs/ --config "$GITHUB_WORKSPACE/docs/_config.yml" --toc "$GITHUB_WORKSPACE/docs/_toc.yml" --path-output docs/_build/theory-site
 
@@ -50,8 +53,6 @@ jobs:
 
       - name: Test documentation routes and redirects
         run: |
-          # Docs tests do not use the package-wide simulation/doctest fixtures.
-          python -m pytest --confcutdir=tests/docs -q tests/docs/
           test -s docs/_build/html/index.html
           test -s docs/_build/html/theory/index.html
           test -s docs/_build/html/lab/index.html

@@ -88,6 +88,18 @@ try {
           .locator(".brand-logo")
           .evaluate((i) => i.complete && i.naturalWidth > 0),
       );
+      // Exercise real planning in both backends with a small smoke-test budget.
+      // Keep the six action frames so tick and replay assertions stay meaningful.
+      for (const [id, value] of [
+        ["walkers", "8"],
+        ["horizon", "2"],
+      ]) {
+        await page.locator(`#${id}`).fill(value);
+        await page.locator(`#${id}`).press("Tab");
+        await page.waitForFunction(
+          () => !document.getElementById("run").disabled,
+        );
+      }
       await page.locator("#scenario").selectOption("racing");
       await page.waitForFunction(
         () => !document.getElementById("run").disabled,
@@ -199,17 +211,18 @@ async function checkAntsControls(page) {
     );
   assert.equal(await page.locator("#ants-controls").isVisible(), false);
   await page.locator("#scenario").selectOption("ants");
-  await ready(48, "harvesters");
+  await ready(5, "harvesters");
   console.log("Ants & Drops: default fleet loaded");
   assert.equal(await page.locator("#ants-controls").isVisible(), true);
   assert.equal(
     await page.locator("#ants-vehicle-type").inputValue(),
     "harvester",
   );
-  assert.equal(await page.locator("#ants-vehicle-count").inputValue(), "48");
+  assert.equal(await page.locator("#ants-vehicle-count").inputValue(), "5");
   const count = page.locator("#ants-vehicle-count");
   // Keep validation checks cheap on headless software renderers after verifying
-  // the default fleet. Large-fleet rendering is checked separately below.
+  // the default fleet. Native tests cover both vehicle types at the 128 limit.
+  assert.equal(await count.getAttribute("max"), "128");
   await count.fill("1");
   await count.press("Tab");
   await ready(1, "harvester");
@@ -231,17 +244,13 @@ async function checkAntsControls(page) {
   await page.locator("#ants-vehicle-type").selectOption("drone");
   console.log("Ants & Drops: loading one drone");
   await ready(1, "drone");
-  await count.fill("128");
-  console.log("Ants & Drops: loading 128 drones");
-  await count.press("Tab");
-  await ready(128, "drones");
-  assert.match(
-    await page.locator("#footer-stats").textContent(),
-    /384 ACTION DIMENSIONS/,
-  );
   await count.fill("3");
   await count.press("Tab");
   await ready(3, "drones");
+  assert.match(
+    await page.locator("#footer-stats").textContent(),
+    /9 ACTION DIMENSIONS/,
+  );
   console.log("Ants & Drops: count limits and vehicle switching passed");
   await page.locator("#step").click();
   await page.waitForFunction(
