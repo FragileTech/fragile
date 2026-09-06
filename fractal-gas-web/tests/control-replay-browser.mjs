@@ -171,7 +171,12 @@ try {
     await page.locator("#scene-json").fill(JSON.stringify(scene));
     await page.locator("#apply-json").click();
     await ready();
-    assert.equal(await page.locator("#agent-type option").count(), 5);
+    assert.deepEqual(
+        await page.locator("#agent-type option").evaluateAll((options) =>
+            options.map((option) => option.value).sort(),
+        ),
+        Object.keys(scene.agent_types).sort(),
+    );
     await page.locator("#close-editor").click();
     await graphicsReady();
     await page.screenshot({
