@@ -42,7 +42,6 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: fractal-gas-web/package-lock.json
-      - uses: astral-sh/setup-uv@v6
       - uses: mymindstorm/setup-emsdk@v14
         with:
           version: 6.0.8
@@ -54,9 +53,13 @@ jobs:
         working-directory: fractal-gas-web
         run: npx playwright install --with-deps chromium
       - name: Test the interactive laboratory
+        timeout-minutes: 15
         run: |
-          uv run --no-project python fractal-gas-web/tools/serve-control.py > /tmp/control-server.log 2>&1 &
+          python3 fractal-gas-web/tools/serve-control.py > /tmp/control-server.log 2>&1 &
+          control_server_pid=$!
+          trap 'kill "$control_server_pid"; wait "$control_server_pid" || true' EXIT
           for attempt in $(seq 1 30); do curl -sf http://127.0.0.1:8080/lab/ > /dev/null && break; sleep 1; done
+          curl --fail --silent --show-error http://127.0.0.1:8080/lab/ > /dev/null
           node fractal-gas-web/tests/control-browser.mjs
           node fractal-gas-web/tests/control-replay-browser.mjs
           node fractal-gas-web/tests/control-experiments-browser.mjs

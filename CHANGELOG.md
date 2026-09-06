@@ -3,7 +3,7 @@
 Unreleased
 ----------
 
-* Run control-engine Python integration checks in an isolated environment with the existing gas's complete import dependencies.
+* Run control-engine Python integration checks in an isolated environment with the existing gas's complete import dependencies, and stop the browser test server before CI cleanup to avoid a package-cache lock hang.
 
 * Build and verify a separate GitHub Pages lab artifact with both WebAssembly engines, test project-path service-worker isolation and serial fallback, restore missing book navigation sources, and fix control CI build/dependency failures.
 
