@@ -48,9 +48,10 @@ Use `uv run` directly (no Hatch) to invoke tooling:
 - `uv run ruff check .` runs ruff check; `uv run ruff format --diff .` shows format diff only.
 - `uv run ruff check --fix-only --unsafe-fixes . && uv run ruff format .` applies ruff fixes + formatting.
 - `uv run mypy --install-types --non-interactive src/fragile tests` runs mypy.
-- `uv run jupyter-book build docs/` builds the Jupyter Book (ensure `make prompt` and copies into `docs/source/project/` are up to date).
-- `uv run python3 -m http.server --directory docs/_build/html` serves the built docs.
-- `uv run jupyter-book config sphinx docs/ --overwrite && uv run sphinx-build -b html docs/ docs/_build/html` builds with Sphinx directly.
+- `make docs` builds the `/docs/` portal, the two-volume Theory site, and the independent Lab guide (ensure project-file copies into `docs/source/project/` are up to date).
+- `make docs-theory` and `make docs-lab` build the two documentation sites independently.
+- `uv run python3 -m http.server --directory docs/_build/html` serves the assembled documentation portal.
+- `uv run jupyter-book config sphinx docs/ --overwrite && uv run sphinx-build -b html docs/ docs/_build/theory-direct` builds the Theory source with Sphinx directly.
 - `uv run linkchecker --config .linkcheckerrc --ignore-url=/reference --ignore-url=None site` runs link validation.
 
 ## Coding Style & Naming Conventions

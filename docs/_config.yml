@@ -54,7 +54,7 @@ html:
   use_multitoc_numbering    : true   # Continuous numbering across parts/chapters
   extra_footer              : ""  # Will be displayed underneath the footer.
   home_page_in_navbar       : true  # Whether to include your home page in the left Navigation Bar
-  baseurl                   : ""  # The base URL where your book will be hosted. Used for creating image previews and social links. e.g.: https://mypage.com/mybook/
+  baseurl                   : "https://fragiletech.github.io/fragile/docs/theory/"  # Canonical URL for the two-volume lectures.
   analytics:
     google_analytics_id     : ""  # A GA id that can be used to track book views.
     plausible_analytics_url : https://plausible.io/js/script.js
@@ -141,9 +141,7 @@ sphinx:
     # autosectionlabel configuration - prefix with document name to avoid duplicate labels
     autosectionlabel_prefix_document: true
     autosectionlabel_maxdepth: 3  # Only create labels for H1-H3, skip deeper levels
-    # Expert mode toggle - load custom JavaScript and CSS
-    html_js_files:
-      - expert-mode.js
-      - prompt-downloads.js
-    html_css_files:
-      - custom.css
+    # Theory-only scripts live outside the shared static directory so the
+    # independent Lab build does not load Expert Mode or prompt downloads.
+    html_static_path:
+      - _static_theory

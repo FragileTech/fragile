@@ -8,7 +8,7 @@ From the repository root, run `make control-native`, `make control-web`
 (with Emscripten activated), then `make control-lab` and open
 `http://127.0.0.1:8080/lab/`.
 
-Start with the [laboratory user guide](../docs/source/project/control_lab_getting_started.md)
+Start with the [published laboratory user guide](https://fragiletech.github.io/fragile/docs/lab/)
 for walkthroughs of the controls, scene editor, replay, experiments, and extension APIs.
 
 A faithful C++ port of the fractal gas algorithm

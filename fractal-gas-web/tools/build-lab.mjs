@@ -1,5 +1,7 @@
 import { mkdir, copyFile } from "node:fs/promises";
+import { syncAgentCatalog } from "./sync-agent-catalog.mjs";
 const root = new URL("../", import.meta.url);
+await syncAgentCatalog();
 // Keep the laboratory identity synchronized with the documentation assets.
 await mkdir(new URL("web/lab/branding/", root), { recursive: true });
 for (const name of ["logo.png", "favicon.png"])

@@ -17,8 +17,9 @@ for where new actuation, sensors, rewards, and controllers belong.
 :::{div} feynman-prose
 Start by making one decision and watching what moves. Then learn which settings
 change the search, save an interesting trajectory, and compare alternatives from
-the same starting world. The following pages are listed beneath
-**Continuous-control laboratory** in the book navigation:
+the same starting world. This is the independent Lab guide, so its navigation stays
+focused on operating and extending the laboratory. The following pages are listed
+beneath **Continuous-control laboratory** in the Lab guide navigation:
 
 - {doc}`control_lab_getting_started`: build and open the lab, understand worlds and
   walkers, run the six presets, drive the kart, and choose up to 64 threads.
@@ -38,11 +39,14 @@ Scenes when you want a new task, Experiments when you want evidence about a
 controller, and Architecture when you want to extend the implementation. The
 reference material below supplies additional API examples and technical detail.
 
-Use **Full** reading mode to see the practical explanations and examples. From the
-repository root, `make docs` builds the Jupyter Book; `make serve` builds it and
-serves the generated pages at [http://localhost:8000/](http://localhost:8000/).
-`DOCS_PORT=8001 make serve` chooses another book port. The separate `make control-lab`
-server runs the laboratory application; it does not serve the generated book pages.
+The Lab guide always shows its practical explanations and examples; it does not use
+the Theory site's Full/Expert reading switch. From the repository root, `make docs`
+builds the documentation portal together with the separate Theory and Lab sites.
+`make serve` builds the same assembled documentation tree and serves its root at
+[http://localhost:8000/](http://localhost:8000/), where you can choose either site.
+`DOCS_PORT=8001 make serve` chooses another documentation port. The separate
+`make control-lab` server runs the laboratory application; it does not serve the
+generated documentation pages.
 :::
 
 (sec-control-laboratory-build)=
@@ -93,8 +97,8 @@ to use the serial module. More threads do not guarantee faster decisions: the av
 hardware and the amount of work in each batch determine whether parallelism pays off.
 
 `npm run build:lab` also copies `docs/logo.png` and `docs/favicon.png` into
-`fractal-gas-web/web/lab/branding/` through `tools/build-lab.mjs`. Update the book's
-source assets and rebuild to keep the two interfaces aligned.
+`fractal-gas-web/web/lab/branding/` through `tools/build-lab.mjs`. Update the shared
+documentation source assets and rebuild to keep the two interfaces aligned.
 :::
 
 (sec-control-laboratory-worlds)=

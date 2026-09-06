@@ -34,6 +34,11 @@ mathematical arguments.
 - {doc}`Volume I: Fragile Mechanics <source/1_agent/intro_agent>`
 - {doc}`Volume II: The Fractal Gas <source/2_fractal_gas/intro_fractal_gas>`
 
+:::{div} feynman-prose
+The hands-on <a href="../lab/">Control Laboratory guide</a> is a separate documentation site
+with its own navigation. It accompanies the lectures; it is not a third volume.
+:::
+
 (sec-what-is-ag)=
 ## What this book studies
 

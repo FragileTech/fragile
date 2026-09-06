@@ -1,5 +1,6 @@
 import * as T from "../vendor/three.module.js";
 import { shipModel, kartModel, droneModel } from "./vehicles.js";
+import { harvesterModel } from "./harvester.js";
 import { metal, glow } from "./primitives.js";
 
 // Register a factory once. Factories return a Three Group; hierarchy is unrestricted.
@@ -88,6 +89,7 @@ registerAgentModel("kit", (color, { parts = [] }) => {
 registerAgentModel("rocket", shipModel);
 registerAgentModel("kart", kartModel);
 registerAgentModel("drone", droneModel);
+registerAgentModel("harvester", harvesterModel);
 
 export function animatedParts(model) {
   const parts = [];

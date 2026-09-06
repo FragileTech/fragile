@@ -1,0 +1,15 @@
+format: jb-book
+root: source/project/control_laboratory
+chapters:
+- file: source/project/control_lab_getting_started
+  title: Getting started
+- file: source/project/control_lab_controls
+  title: Controls and planners
+- file: source/project/control_lab_scenes
+  title: Environments and scene editing
+- file: source/project/control_lab_replay
+  title: Replay, recordings, and checkpoints
+- file: source/project/control_lab_experiments
+  title: Experiments and diagnostics
+- file: source/project/control_lab_architecture
+  title: Engine architecture and extensions

@@ -34,13 +34,29 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r docs/requirements.txt
+          pip install -r docs/requirements.txt pytest
 
       - name: Generate prompt downloads
         run: make prompt
 
-      - name: Build JupyterBook
-        run: jupyter-book build docs/
+      - name: Build Theory documentation
+        run: jupyter-book build docs/ --config "$GITHUB_WORKSPACE/docs/_config.yml" --toc "$GITHUB_WORKSPACE/docs/_toc.yml" --path-output docs/_build/theory-site
+
+      - name: Build Lab documentation
+        run: jupyter-book build docs/ --config "$GITHUB_WORKSPACE/docs/_config_lab.yml" --toc "$GITHUB_WORKSPACE/docs/_toc_lab.yml" --path-output docs/_build/lab-site
+
+      - name: Assemble documentation portal
+        run: python docs/assemble_docs.py
+
+      - name: Test documentation routes and redirects
+        run: |
+          python -m pytest -q tests/docs/test_book_tools.py
+          test -s docs/_build/html/index.html
+          test -s docs/_build/html/theory/index.html
+          test -s docs/_build/html/lab/index.html
+          test -s docs/_build/html/source/1_agent/intro_agent.html
+          test -s docs/_build/html/source/project/control_laboratory.html
+          test -s docs/_build/html/_static/prompts/1_agent-with-proofs.md
 
       - name: Upload docs artifact
         uses: actions/upload-artifact@v4
@@ -163,7 +179,15 @@ jobs:
         run: |
           test -s site/index.html
           test -s site/docs/index.html
+          test -s site/docs/theory/index.html
+          test -s site/docs/theory/intro.html
+          test -s site/docs/theory/searchindex.js
+          test -s site/docs/lab/index.html
+          test -s site/docs/lab/searchindex.js
+          test -s site/docs/source/1_agent/intro_agent.html
+          test -s site/docs/_static/prompts/1_agent-with-proofs.md
           for guide in control_laboratory control_lab_getting_started control_lab_controls control_lab_scenes control_lab_replay control_lab_experiments control_lab_architecture; do
+            test -s "site/docs/lab/source/project/$guide.html"
             test -s "site/docs/source/project/$guide.html"
           done
           test -s site/coi-serviceworker.min.js

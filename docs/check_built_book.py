@@ -76,7 +76,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     book = args.book.resolve()
-    output = (args.output or book / "_build/html").resolve()
+    output = (args.output or book / "_build/html/theory").resolve()
     errors = validate_html(book, output)
     for error in errors:
         print(error)

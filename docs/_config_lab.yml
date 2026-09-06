@@ -1,0 +1,61 @@
+#######################################################################################
+# Independent Jupyter Book configuration for the control-laboratory guide.
+#######################################################################################
+
+title                       : "Fractal Gas Control Laboratory"
+author                      : "Guillem Duran-Ballester"
+copyright                   : "2025"
+logo                        : "logo.png"
+exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints", ".venv", "node_modules", "index.md.bak", "extract_sections.py", "archive/**", "migrations/**"]
+only_build_toc_files        : true
+
+execute:
+  execute_notebooks         : off
+  cache                     : ""
+  timeout                   : 30
+  run_in_temp               : false
+  allow_errors              : false
+  stderr_output             : show
+
+parse:
+  myst_enable_extensions:
+    - amsmath
+    - colon_fence
+    - deflist
+    - dollarmath
+    - html_admonition
+    - html_image
+    - linkify
+    - replacements
+    - smartquotes
+    - substitution
+    - tasklist
+  myst_url_schemes: [mailto, http, https]
+  myst_dmath_double_inline: true
+
+html:
+  favicon                   : "favicon.png"
+  use_edit_page_button      : false
+  use_repository_button    : false
+  use_issues_button         : false
+  use_multitoc_numbering    : false
+  extra_footer              : ""
+  home_page_in_navbar       : true
+  baseurl                   : "https://fragiletech.github.io/fragile/docs/lab/"
+  comments:
+    hypothesis              : false
+    utterances              : false
+  announcement              : ""
+
+repository:
+  url                       : "https://github.com/FragileTech/fragile"
+  path_to_book              : ""
+  branch                    : "main"
+
+sphinx:
+  extra_extensions:
+    - sphinx.ext.autosectionlabel
+  recursive_update          : false
+  config:
+    autosectionlabel_prefix_document: true
+    autosectionlabel_maxdepth: 3

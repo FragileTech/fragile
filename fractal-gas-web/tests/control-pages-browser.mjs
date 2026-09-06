@@ -73,6 +73,13 @@ try {
         serviceWorkers === "allow",
       );
       assert.equal(new URL(page.url()).pathname, `${prefix}lab/`);
+      assert.equal(
+        new URL(
+          await page.getByRole("link", { name: /User guide/ }).getAttribute("href"),
+          page.url(),
+        ).pathname,
+        `${prefix}docs/lab/`,
+      );
       assert(
         await page
           .locator(".brand-logo")
@@ -94,6 +101,19 @@ try {
       console.log(
         `Pages project URL: ${serviceWorkers === "allow" ? "service-worker isolation and threaded planning" : "serial fallback"} passed`,
       );
+
+      const arcade = await context.newPage();
+      await arcade.goto(`http://127.0.0.1:${server.address().port}${prefix}`);
+      assert.equal(
+        new URL(
+          await arcade
+            .getByRole("link", { name: /Lab user guide/ })
+            .getAttribute("href"),
+          arcade.url(),
+        ).pathname,
+        `${prefix}docs/lab/`,
+      );
+      await arcade.close();
     } catch (error) {
       console.error(
         "Pages smoke test failed:",

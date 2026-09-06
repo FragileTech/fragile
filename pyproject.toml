@@ -367,19 +367,18 @@ PYTHONUNBUFFERED = "1"
 [tool.hatch.envs.docs.scripts]
 features = ["docs"]
 build = [
-    "make prompt",
     "cp AUTHORS.md docs/source/project/",
     "cp CHANGELOG.md docs/source/project/",
     "cp CONTRIBUTING.md docs/source/project/",
     "cp README.md docs/source/project/",
-    "jupyter-book build docs/",
+    "make docs",
 ]
 validate = "linkchecker --config .linkcheckerrc --ignore-url=/reference --ignore-url=None site"
 build-check = ["build"] #, "validate"]
 serve = "python3 -m http.server --directory docs/_build/html {args}"
 sphinx = [
     "jupyter-book config sphinx docs/ --overwrite",
-    "sphinx-build -b html docs/ docs/_build/html",
+    "sphinx-build -b html docs/ docs/_build/theory-direct",
 ]
 docs = ["build", "serve"]
 # Lint environment

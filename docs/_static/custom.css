@@ -349,12 +349,31 @@ html[data-theme="dark"] .expert-mode-switch input:checked + .expert-mode-slider 
 }
 
 @media (max-width: 700px) {
+    html,
+    body {
+        /* The theme parks both sidebar drawers just outside the viewport. */
+        overflow-x: clip;
+    }
+
     .prompt-download-button span {
         display: none;
     }
 
     .prompt-download-button {
         padding: 0.35rem 0.5rem;
+    }
+
+    /* Keep wide examples and parameter tables inside the mobile article. */
+    .bd-article table.table {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .bd-article :not(pre) > code.docutils.literal {
+        overflow-wrap: anywhere;
+        word-break: break-word;
     }
 }
 

@@ -1,4 +1,4 @@
-.PHONY: style check test docs serve tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow videogames web robots physics physics-code latex control-native control-web control-lab control-test
+.PHONY: style check test docs docs-theory docs-lab serve tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow videogames web robots physics physics-code latex control-native control-web control-lab control-test
 
 CONTROL_PORT ?= 8080
 # Let callers select CMake and resolve its executable through the shell.
@@ -69,12 +69,22 @@ prompt:
 	@python3 docs/build_prompt_downloads.py
 	@echo "✓ Prompts generated in prompts/"
 
-# Build the Jupyter Book from the repository root.
-docs:
+# Build the two-volume lectures without the independent laboratory guide.
+docs-theory:
 	$(MAKE) prompt
-	uv run --with-requirements docs/requirements.txt jupyter-book build docs/
+	rm -rf docs/_build/theory-site
+	uv run --with-requirements docs/requirements.txt jupyter-book build docs/ --config $(abspath docs/_config.yml) --toc $(abspath docs/_toc.yml) --path-output docs/_build/theory-site
 
-# Build the Jupyter Book and serve it at http://localhost:$(DOCS_PORT)/.
+# Build the independent control-laboratory guide.
+docs-lab:
+	rm -rf docs/_build/lab-site
+	uv run --with-requirements docs/requirements.txt jupyter-book build docs/ --config $(abspath docs/_config_lab.yml) --toc $(abspath docs/_toc_lab.yml) --path-output docs/_build/lab-site
+
+# Assemble the portal and both independently searchable documentation sites.
+docs: docs-theory docs-lab
+	uv run python docs/assemble_docs.py
+
+# Build all documentation and serve the portal at http://localhost:$(DOCS_PORT)/.
 DOCS_PORT ?= 8000
 serve: docs
 	uv run --with-requirements docs/requirements.txt python3 -m http.server $(DOCS_PORT) --directory docs/_build/html

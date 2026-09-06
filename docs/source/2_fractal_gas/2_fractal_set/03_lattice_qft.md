@@ -9,15 +9,22 @@ inputs from which we calculate color overlaps, determinants, and companion
 doublet contractions. We can describe a configuration through these invariant
 coordinates: the full collection identifies its internal symmetry orbit
 exactly. Passing the recorded law through the same map preserves every
-integrable correlation of these observables. This is the direct field route
-defined below, and it requires no Dirac matrices.
+integrable correlation of these observables. Retaining the complete record
+also lets us compute conditional expectations with the actual update kernel.
+The field representation then carries the recorded evolution as well as the
+measurements.
 
 The reconstruction theorems identify the inputs; the LSI estimates control
 the resulting observables through their reconstruction maps. Each result
-keeps its specified measure and domain. We also construct independent link,
-scalar, and exterior-algebra models on the graph. Their explicit actions and
-integration rules let us study further field representations and compare
-them with the direct recorded law.
+keeps its specified measure and domain. On centered record modes, exterior
+products faithfully represent alternating insertions into replica
+observables. The recorded transition propagates these modes and determines
+a completely positive evolution of their CAR operators, with explicit
+covariance calculations. The equilibrium energy supplies a separate
+self-adjoint Hamiltonian and a gap controlled by the LSI constant. Its
+relation to the recorded evolution is tested at the one-mode level.
+Independent link, scalar, and finite Grassmann actions provide further
+models with their own integration rules.
 :::
 
 :::{prf:definition} Data and conventions for the field constructions
@@ -426,9 +433,14 @@ between complete simulations. The theorem concerns these replica observables
 and their sector-changing operators, and does not identify the walkers within
 one simulation with fermionic particles.
 
-This recorded-process construction specifies its state and dynamics directly.
-The finite edge action has its separately specified integration rule. Dirac
-matrices are unnecessary for either exterior-algebra construction.
+The word calculation below extends this correspondence to finite sequences
+of insertions, contractions, and recorded transitions. Alternating insertion
+has a faithful exterior algebra; stochastic replacement retains its positive
+probability-kernel composition. The same recorded transition also gives a
+completely positive evolution of the CAR algebra, including when the
+algorithmic dynamics is irreversible. The equilibrium energy supplies a
+separate self-adjoint Hamiltonian. Comparing those evolutions requires
+matching their laws and their one-mode operators.
 :::
 
 ### Exact consequences of the score
@@ -515,12 +527,42 @@ opposite sign. If the fitnesses agree, both scores are zero. $\square$
 
 ### Exterior algebra and finite actions
 
-:::{prf:assumption} Chosen Grassmann field representation
+:::{div} feynman-prose
+Start with linearly independent recorded modes. The exterior symbols remember
+which modes have been inserted and their order; exchanging two insertions
+reverses the sign. The replica construction below realizes this multiplication
+faithfully, so distinct exterior combinations remain distinct operations.
+
+The bar in the integration formula needs care. It labels a coordinate in
+the algebraic dual, which transforms oppositely to a mode under a basis
+change. It is another exterior symbol. The Hilbert-space adjoint of creation
+instead removes a mode by contraction with the recorded inner product.
+That contraction produces the scalar term in the mixed CAR. Barred
+multiplication and adjoint contraction therefore have different product
+rules, both specified explicitly below.
+:::
+
+:::{prf:definition} Exterior symbols of recorded modes and their dual
 :label: post-grassmann
 
-To define an auxiliary fermionic field model, assign independent Grassmann
-generators $\psi_i,\bar\psi_i$ to the selected vertex and internal indices.
-They obey
+For a finite mode space $E$ of recorded observables, quotient zero-norm
+linear combinations and choose a basis $e_1,\ldots,e_m$. Its exterior
+algebra is the canonical quotient
+
+$$
+\Lambda(E)=T(E)/\langle f\otimes f:f\in E\rangle.
+$$
+
+The image $\psi_i$ of $e_i$ satisfies
+$\psi_i\psi_j=-\psi_j\psi_i$ and $\psi_i^2=0$.
+The faithful identification with the existing alternating record
+insertions is proved in {prf:ref}`thm-lqft-oriented-word-algebra`.
+Thus the record insertion representation derives these relations.
+
+For Euclidean integration use the algebra $\Lambda(E\oplus E^\vee)$,
+where $E^\vee$ is the algebraic dual with basis $e^1,\ldots,e^m$.
+The symbols $\bar\psi_i$ are the images of $e^i$ in its second summand.
+All three relations follow in this one quotient:
 
 $$
 \psi_i\psi_j=-\psi_j\psi_i,\qquad
@@ -528,11 +570,12 @@ $$
 \psi_i\bar\psi_j=-\bar\psi_j\psi_i.
 $$
 
-This is the exterior algebra on the chosen generators, so each generator
-squares to zero. The bar denotes an independent algebraic generator in
-Euclidean Grassmann integration; it is not complex conjugation of an
-ordinary random variable. The operator CAR representation constructed below
-uses adjoints and satisfies a different mixed relation.
+The dual summand transforms contragrediently and supplies the barred
+integration coordinates. It is distinct from adjoint contraction on
+$\Lambda(E)$, whose mixed relation is the CAR. A declared vertex or
+internal index represents a record mode through its specified map into
+$E$; any linear dependence is quotiented before an independent basis
+is assigned.
 :::
 
 :::{prf:remark} Orientation of fermionic comparisons
@@ -1082,6 +1125,138 @@ This proves the annihilation formula first on finite products and then by
 the bounded operator extensions already proved. $\square$
 :::
 
+:::{div} feynman-prose
+The alternating insertion formula already tells us how a sign changes when
+two modes exchange places. To prove a faithful representation, we must also
+check that no further combinations disappear. Apply an ordered insertion
+word to the empty replica sector. Different sets of orthonormal modes give
+orthogonal vectors, so their coefficients can be recovered from the result.
+This is what makes the exterior algebra identification exact.
+
+Keep track of which operation carries that sign. Insertion combines modes
+in antisymmetric replica observables. A cloning transition combines
+replacement probabilities: applying it to the constant observable still
+gives one. The sum of the two composition orders gives two on that
+observable, so it cannot vanish. The cloning dynamics enters through the
+transition of each complete replica, while the alternating insertion rule specifies its observable
+algebra.
+:::
+
+:::{prf:theorem} Faithful exterior algebra of alternating recorded insertions
+:label: thm-lqft-oriented-word-algebra
+
+Let $E\subset L^2_0(\pi)$ be a finite-dimensional space of the recorded
+modes, after quotienting its zero-norm combinations, and let
+$e_1,\ldots,e_m$ be an orthonormal basis. On the antisymmetric replica
+space of {prf:ref}`thm-lqft-replica-isomorphism`, define
+$\mathsf C(f)=Ja^\dagger(f)J^{-1}$ by that theorem's explicit insertion
+formula. The algebra generated by these oriented insertions is faithfully
+isomorphic to $\Lambda(E)$:
+
+(eq-fg-lq-a1)=
+$$
+f_1\wedge\cdots\wedge f_k
+\longmapsto
+\mathsf C(f_1)\cdots\mathsf C(f_k).
+\tag{LQ.A1}
+$$
+
+Its ordered products $\mathsf C(e_{i_1})\cdots\mathsf C(e_{i_k})$,
+$i_1<\cdots<i_k$, together with $I$, are linearly independent.
+Consequently its only defining relations are linearity and
+
+(eq-fg-lq-a2)=
+$$
+\mathsf C(f)\mathsf C(g)=-\mathsf C(g)\mathsf C(f),
+\qquad \mathsf C(f)^2=0.
+\tag{LQ.A2}
+$$
+
+Every linear map $f\mapsto B(f)$ into an associative unital algebra
+whose products satisfy these relations factors uniquely through
+$\Lambda(E)$. For a different target this factorization can have a
+kernel; faithfulness here is supplied by the recorded replica norm.
+The adjoints $\mathsf A(f)=\mathsf C(f)^*$ are the already reconstructed
+contractions and satisfy
+
+(eq-fg-lq-a3)=
+$$
+\{\mathsf A(f),\mathsf C(g)\}=\langle f,g\rangle I,
+\qquad
+\{\mathsf A(f),\mathsf A(g)\}=0.
+\tag{LQ.A3}
+$$
+
+The doubled Euclidean symbols of {prf:ref}`post-grassmann` instead
+have the exterior multiplication law on $E\oplus E^\vee$.
+Their barred multiplication is not the contraction in
+{ref}`(LQ.A3) <eq-fg-lq-a3>`.
+:::
+
+:::{prf:proof}
+**Alternating operation and faithfulness.** The explicit replica
+insertion inserts $f$ into each slot with its alternating sign.
+Under the already proved unitary $J$, it is exactly left exterior
+multiplication. Two insertions therefore reverse sign on exchanging
+their order; a repeated insertion vanishes. Equivalently these
+relations follow by conjugating the proved creation CAR by $J$.
+
+Linearity first gives a homomorphism from $T(E)$ to the insertion
+algebra. Repeated insertions vanish, so the ideal generated by
+$f\otimes f$ lies in its kernel. It factors through $\Lambda(E)$,
+giving {ref}`(LQ.A1) <eq-fg-lq-a1>`.
+To test its remaining kernel, apply an ordered-word linear combination
+to the replica vacuum:
+
+$$
+\sum_I b_I\mathsf C(e_{i_1})\cdots\mathsf C(e_{i_k})J\Omega
+=J\sum_I b_I\,e_{i_1}\wedge\cdots\wedge e_{i_k}.
+$$
+
+The Gram-determinant identity gives squared norm $\sum_I|b_I|^2$;
+different degrees are orthogonal as well. A zero operator therefore
+forces every coefficient to vanish. Anticommutation sorts every word
+into one of these ordered words or zero, so they also span. This proves
+faithfulness and dimension $2^m$ without assuming that formal
+anticommutation alone excludes additional relations.
+
+**Universal property and duals.** For the asserted target map,
+$f_1\otimes\cdots\otimes f_k\mapsto B(f_1)\cdots B(f_k)$ is a
+homomorphism from $T(E)$. Since $B(f)^2=0$, it annihilates the
+defining ideal and has a unique quotient factorization. Its injectivity
+requires an argument such as the preceding norm calculation.
+
+Conjugating the explicit adjoint deletion formula by $J$ gives
+{ref}`(LQ.A3) <eq-fg-lq-a3>`; its contraction coefficient is the
+original $L^2(\pi)$ inner product. For the doubled symbols, apply
+the same tensor-quotient construction to $E\oplus E^\vee$.
+Polarizing the square of $f+\lambda$ with $f\in E$ and
+$\lambda\in E^\vee$ gives $f\lambda+\lambda f=0$.
+This proves the mixed exterior relation. If barred multiplication
+were identified with $\mathsf A(e_i)$ while unbarred multiplication
+were $\mathsf C(e_j)$, that mixed relation at $i=j$ would demand
+$I=0$. Thus the two dual constructions have the precisely different
+products displayed above.
+
+**Relation to stochastic replacement.** The cloning transition in
+{prf:ref}`def-cloning-operator-formal` is a positive probability
+kernel $K$ and obeys $K1=1$. For two conservative replacement kernels,
+
+$$
+(K_iK_j+K_jK_i)1=2,\qquad K_i^2 1=1.
+$$
+
+Their transition composition therefore cannot be the insertion
+product in {ref}`(LQ.A2) <eq-fg-lq-a2>`. More generally, if positive
+sub-Markov kernels anticommute, each of $K_iK_jf,K_jK_if$ is
+nonnegative for $f\ge0$ and their sum is zero. Both compositions
+then vanish. The alternating operation represented here is the
+oriented insertion on recorded replica sectors. The complete cloning
+transition supplies those sectors' evolution through $P_t^{\otimes k}$.
+This is the explicit correspondence between the two products.
+:::
+
+
 :::{prf:theorem} Directed-edge coefficients and number-preserving Fock operators
 :label: thm-lqft-edge-second-quantization
 
@@ -1153,6 +1328,408 @@ The one-particle restriction recovers $A$ exactly; two such lifts can be
 equal only when their one-particle operators are equal. $\square$
 :::
 
+:::{div} feynman-prose
+Think of a fermionic word as a sequence of instructions applied to a list
+of modes. Read from right to left: creation inserts a mode, a transition
+propagates every mode currently present, and annihilation removes each
+possible mode with its alternating sign and inner-product coefficient.
+Starting from the vacuum means starting with an empty list. The vacuum
+matrix element keeps the terms that return to that empty list.
+
+The numerical input to this calculation is the recorded conditional
+expectation kernel. In the two-mode example below, the two possible pairings
+give the two terms of a determinant. Independent copies of the complete swarm
+realize those products of covariances. This tells us exactly which recorded
+statistic the operator word computes.
+:::
+
+:::{prf:theorem} Computation of fermionic words from the complete recorded transition
+:label: thm-lqft-instantiated-word-evolution
+
+Use the actual conservative stationary transition of
+{prf:ref}`def-lqft-record-fock-space`. Its encoded realization is the
+explicit kernel in {prf:ref}`thm-sm-instantiated-record-transition`.
+Write $C_t=P_t|_{L^2_0(\pi)}$. For every mode $f$,
+
+(eq-fg-lq-r1)=
+$$
+\begin{aligned}
+\Gamma_-(C_t)a^\dagger(f)
+ &=a^\dagger(C_tf)\Gamma_-(C_t),\\
+a(f)\Gamma_-(C_t)
+ &=\Gamma_-(C_t)a(C_t^*f).
+\end{aligned}
+\tag{LQ.R1}
+$$
+
+Together with the CAR, these formulas evaluate every finite word of creation,
+annihilation, and recorded transition operators. They retain the actual
+whole-swarm dynamics inside every $C_t$.
+
+In continuous time let $\mathbb L$ generate $\Gamma_-(C_t)$. On finite
+wedges of generator-domain modes,
+
+(eq-fg-lq-r2)=
+$$
+\begin{aligned}
+[\mathbb L,a^\dagger(f)]\eta&=a^\dagger(Lf)\eta,
+ &&f\in\operatorname{Dom}L,\\
+[\mathbb L,a(f)]\eta&=-a(L^*f)\eta,
+ &&f\in\operatorname{Dom}L^*.
+\end{aligned}
+\tag{LQ.R2}
+$$
+
+If $U$ is the complete-record unitary, the encoded field generator and its
+domain are exactly
+
+(eq-fg-lq-r3)=
+$$
+\widehat{\mathbb L}=\Gamma_-(U)\mathbb L\Gamma_-(U)^{-1},\qquad
+\operatorname{Dom}\widehat{\mathbb L}
+=\Gamma_-(U)\operatorname{Dom}\mathbb L.
+\tag{LQ.R3}
+$$
+
+Thus the construction supplies a specified non-Dirac field evolution and
+its exact generator identity. Its adjoint and its decay estimates are those
+of the recorded contraction semigroup.
+:::
+
+:::{prf:proof}
+**Insertion and contraction.** Apply the first identity in {ref}`(LQ.R1) <eq-fg-lq-r1>` to
+$g_1\wedge\cdots\wedge g_k$. Both sides give
+$C_tf\wedge C_tg_1\wedge\cdots\wedge C_tg_k$.
+For the second identity, the coefficient of the wedge with the $r$th
+factor removed is
+
+$$
+(-1)^{r-1}\langle f,C_tg_r\rangle
+=(-1)^{r-1}\langle C_t^*f,g_r\rangle
+$$
+
+on both sides. Boundedness extends the identities to Fock space.
+
+For a finite word acting on $\Omega$, work from right to left. Creation
+inserts a mode, annihilation deletes one with its CAR coefficient, and a
+transition applies $C_t$ to each retained mode. After finitely many operations
+there is a finite sum of wedges; its vacuum component is the desired matrix
+element. Every scalar coefficient is an inner product of modes propagated
+by the recorded transitions or their adjoints. Such an inner product is
+computed by the conditional-expectation kernel {ref}`(SM.K1) <eq-fg-sm-k1>`, or equivalently by
+its original recorded law. For example,
+
+(eq-fg-lq-r4)=
+$$
+\begin{aligned}
+&\langle\Omega,a(f_2)a(f_1)\Gamma_-(C_t)
+       a^\dagger(g_1)a^\dagger(g_2)\Omega\rangle\\
+&\quad=\langle f_1,C_tg_1\rangle\langle f_2,C_tg_2\rangle
+       -\langle f_1,C_tg_2\rangle\langle f_2,C_tg_1\rangle.
+\end{aligned}
+\tag{LQ.R4}
+$$
+
+These products have the independent whole-swarm replica realization in
+{prf:ref}`thm-lqft-replica-isomorphism`. A classical four-time moment of a
+single swarm is instead the multiplication-and-transition product {ref}`(SM.K4) <eq-fg-sm-k4>`.
+Both are determined by the algorithm; the displayed determinant specifies
+which statistic represents the fermionic word.
+
+**Differentiation.** The already proved wedge generator differentiates
+each factor once. When applied to $f\wedge\eta$, its term differentiating
+$f$ is $Lf\wedge\eta$, while its remaining terms are
+$f\wedge\mathbb L\eta$. Subtraction proves the first commutator.
+For annihilation, differentiation of the deleted factor contributes
+$-\langle f,Lg_r\rangle=-\langle L^*f,g_r\rangle$ in the difference
+$\mathbb L a(f)-a(f)\mathbb L$. This is the second commutator, with the
+same deletion signs. All other differentiated factors cancel.
+
+**Encoding.** On a wedge, {ref}`(SM.K2) <eq-fg-sm-k2>` gives
+
+$$
+\Gamma_-(\widehat C_t)\Gamma_-(U)
+=\Gamma_-(U)\Gamma_-(C_t).
+$$
+
+Differentiate in the Fock norm. Since $\Gamma_-(U)$ is a unitary onto,
+existence of a derivative on either side is equivalent to existence on the
+other. This proves the full domain equality in {ref}`(LQ.R3) <eq-fg-lq-r3>`. It also gives the
+resolvent identity and transports every finite bounded-operator matrix
+element. The discrete-time formulas use powers of the actual kernel and
+require no infinitesimal generator.
+:::
+
+:::{div} feynman-prose
+So far the recorded transition has acted on Fock vectors. We can also use
+it to evolve the operators we measure. There is one detail to get right:
+propagating a mode can reduce its norm, so substituting propagated modes
+into every factor of an arbitrary product would change the scalar term in
+the CAR.
+
+The prescription below first moves creation operators to the left using
+the CAR, retaining every scalar contraction, and then propagates the modes
+in those normally ordered terms. The calculated multiplicative defect
+measures the correction to simple factor-by-factor substitution. The result
+preserves the identity and is completely positive: it preserves positivity
+for every positive matrix of operators. The proof realizes this using an
+extra Hilbert-space summand that accounts for the contraction's
+norm deficit. It leaves the recorded update and its time parameter intact;
+reversibility is not needed for this construction.
+
+The link to the previous calculation is exact. Acting on the vacuum, an
+evolved operator gives the same vector as propagating its original vacuum
+vector. Repeating this identity reproduces every ordered nested correlation
+in the theorem from the earlier Fock transition words.
+:::
+
+:::{prf:theorem} Completely positive CAR evolution of the recorded contraction
+:label: thm-lqft-record-car-channel
+
+Use the conservative stationary recorded process and centered mode space
+$\mathcal H=L^2_0(\pi)$ of
+{prf:ref}`thm-lqft-instantiated-word-evolution`. Let
+$\mathfrak A_{\mathrm{CAR}}(\mathcal H)$ be the norm-closed unital algebra
+generated by its bounded creation and annihilation operators. The actual
+contractions $C_t=P_t|_{\mathcal H}$ determine a unique unital completely
+positive map $\mathcal Q_t$ with the following action on normally ordered
+words:
+
+(eq-fg-lq-c1)=
+$$
+\mathcal Q_t\!\left(
+ a^\dagger(f_1)\cdots a^\dagger(f_p)a(g_q)\cdots a(g_1)\right)
+=a^\dagger(C_tf_1)\cdots a^\dagger(C_tf_p)
+ a(C_tg_q)\cdots a(C_tg_1).
+\tag{LQ.C1}
+$$
+
+The empty word maps to $I$. These maps preserve the Fock vacuum state
+$\omega$, obey $\mathcal Q_t\mathcal Q_s=\mathcal Q_{t+s}$, and are
+pointwise norm continuous when the recorded semigroup is strongly
+continuous. Their exact recorded two-point correspondence is
+
+(eq-fg-lq-c2)=
+$$
+\omega\!\left(a(f)\mathcal Q_t(a^\dagger(g))\right)
+=\langle f,C_tg\rangle
+=\mathbb E_\pi[\overline{f(S_0)}g(S_t)].
+\tag{LQ.C2}
+$$
+
+Its action on vacuum-generated vectors is the already constructed Fock
+contraction. In particular, for $A_j\in\mathfrak A_{\mathrm{CAR}}$ and
+nonnegative time increments $t_1,\ldots,t_n$,
+
+(eq-fg-lq-c4)=
+$$
+\begin{aligned}
+\mathcal Q_t(A)\Omega&=\Gamma_-(C_t)A\Omega,\\
+\omega\!\left(A_0\mathcal Q_{t_1}
+ \left(A_1\mathcal Q_{t_2}(\cdots\mathcal Q_{t_n}(A_n)\cdots)\right)\right)
+&=\langle\Omega,A_0\Gamma_-(C_{t_1})A_1
+          \cdots\Gamma_-(C_{t_n})A_n\Omega\rangle.
+\end{aligned}
+\tag{LQ.C4}
+$$
+
+Thus the complete positive algebra evolution and the previous Fock word
+calculation have exactly the same ordered regression matrix elements.
+In discrete time use $C_k=C_1^k$ and the corresponding powers
+of $\mathcal Q_1$. Encoding the complete record intertwines these maps
+through the CAR isomorphism induced by its unitary $U$.
+
+The multiplicative defect is calculated by
+
+(eq-fg-lq-c3)=
+$$
+\mathcal Q_t(a(f)a^\dagger(g))
+ -\mathcal Q_t(a(f))\mathcal Q_t(a^\dagger(g))
+=\langle f,(I-C_t^*C_t)g\rangle I.
+\tag{LQ.C3}
+$$
+
+Thus this completely positive evolution is multiplicative exactly when
+$C_t$ is an isometry. For a unitary $C_t$ it is a CAR automorphism.
+The recorded dissipative dynamics and its closed-system unitary special
+case are distinguished by this same calculated defect.
+:::
+
+:::{prf:proof}
+**An isometric realization from the recorded kernel.** Conditional Jensen
+and stationarity already give $\|C_t\|\le1$. Therefore
+$D_t=(I-C_tC_t^*)^{1/2}$ exists, and
+
+$$
+J_t:\mathcal H\longrightarrow\mathcal H\oplus\mathcal H,\qquad
+J_tf=(C_t^*f,D_tf)
+$$
+
+is an isometry:
+$J_t^*J_t=C_tC_t^*+D_t^2=I$. Its exterior lift
+$V_t=\Gamma_-(J_t)$ is consequently an isometry. Let $\iota$ denote
+the canonical CAR embedding into the first summand, defined by
+$\iota(a^\dagger(f))=a^\dagger(f\oplus0)$. Define
+
+$$
+\mathcal Q_t(A)=V_t^*\iota(A)V_t.
+$$
+
+For a positive matrix $[A_{ij}]$ of algebra elements and Fock vectors
+$\xi_1,\ldots,\xi_m$,
+
+$$
+\sum_{i,j}\langle\xi_i,\mathcal Q_t(A_{ij})\xi_j\rangle
+=\sum_{i,j}\langle V_t\xi_i,\iota(A_{ij})V_t\xi_j\rangle\ge0.
+$$
+
+This proves complete positivity at every matrix size. The isometry gives
+$\mathcal Q_t(I)=I$ and $\|\mathcal Q_t(A)\|\le\|A\|$.
+The additional Hilbert summand realizes this map mathematically; it
+introduces no change to the recorded swarm transition.
+
+**The full word formula.** The insertion and contraction proof of
+{ref}`(LQ.R1) <eq-fg-lq-r1>` also applies between two mode spaces. Since
+$J_t^*(f\oplus0)=C_tf$, it gives
+
+$$
+a(f\oplus0)V_t=V_ta(C_tf),\qquad
+V_t^*a^\dagger(f\oplus0)=a^\dagger(C_tf)V_t^*.
+$$
+
+Move all annihilators through $V_t$ from the right and all creators
+through $V_t^*$ from the left. The remaining factor is $V_t^*V_t=I$,
+proving {ref}`(LQ.C1) <eq-fg-lq-c1>`. Every finite CAR polynomial can be
+normally ordered by repeatedly using the CAR. Normally ordered
+polynomials are therefore norm dense in $\mathfrak A_{\mathrm{CAR}}$.
+The formula places their images in that same algebra, and the contraction
+bound extends this statement to its closure. Density also proves
+uniqueness.
+
+**Semigroup, state, and continuity.** On each normally ordered word,
+successive application replaces every mode by $C_tC_sf=C_{t+s}f$.
+Density and contraction give the semigroup identity on the full algebra.
+The vacuum maps under $V_t$ to the larger Fock vacuum. Hence
+$\omega(\mathcal Q_t(A))=\omega(A)$, first on polynomials and then by
+continuity. The two-point equality follows from
+$a^\dagger(C_tg)\Omega=C_tg$ and the existing conditional-expectation
+identity.
+
+For a fixed word, telescope the difference between its transformed
+factors at $t$ and at zero. The equality $\|a(f)\|=\|f\|$ and strong
+continuity of $C_t$ make each term tend to zero in operator norm.
+Approximation by polynomials and the uniform contraction bound prove
+pointwise norm continuity for arbitrary $A$. A finite nested regression
+expression is evaluated by normal ordering after each insertion and
+applying {ref}`(LQ.C1) <eq-fg-lq-c1>`; all contractions are the recorded
+inner products already evaluated in {ref}`(LQ.R4) <eq-fg-lq-r4>`.
+For a normally ordered word containing an annihilator, both sides of
+$\mathcal Q_t(A)\Omega=\Gamma_-(C_t)A\Omega$ vanish. For a word
+containing only creators, both are the wedge of its $C_t$-propagated
+modes. Normal ordering and norm density prove the first identity in
+{ref}`(LQ.C4) <eq-fg-lq-c4>` for every $A$ in the algebra. Apply it
+recursively to the nested expression to prove the second identity.
+This instantiates the entire ordered Fock-word correspondence as a
+completely positive algebra evolution. A single-swarm multiplication
+correlation retains its separately identified formula
+{ref}`(SM.K4) <eq-fg-sm-k4>`.
+
+**Multiplication and encoding.** The CAR gives
+$a(f)a^\dagger(g)=\langle f,g\rangle I-a^\dagger(g)a(f)$.
+Applying {ref}`(LQ.C1) <eq-fg-lq-c1>` and subtracting the product of
+the images proves {ref}`(LQ.C3) <eq-fg-lq-c3>`. Multiplicativity
+therefore forces $C_t^*C_t=I$. Conversely an isometry preserves the CAR,
+so substitution of its modes defines a $*$-homomorphism; normal ordering
+identifies it with $\mathcal Q_t$. A unitary has the inverse substitution.
+
+Finally $\widehat C_tU=UC_t$. On every normally ordered word the CAR
+isomorphism $\alpha_U(a^\dagger(f))=a^\dagger(Uf)$ therefore satisfies
+$\widehat{\mathcal Q}_t\alpha_U=\alpha_U\mathcal Q_t$.
+Norm density extends the identity. This constructs an algebra evolution
+for the same native two-point data in addition to the Fock-vector
+contraction $\Gamma_-(C_t)$.
+:::
+
+
+:::{div} feynman-prose
+There is another operator we can now build from the established estimates.
+The equilibrium construction in
+{prf:ref}`thm-ym-equilibrium-form-construction` starts with the particular
+law and gradient energy covered by the LSI. The completed energy gives a
+self-adjoint Hamiltonian. Its time parameter measures relaxation under this
+energy; the recorded transition retains its own algorithmic time.
+
+On exterior products, the Hamiltonian adds the energy contributions of the
+occupied modes. Centering removes the constant one-mode state, so the
+Poincare bound places every remaining mode above zero energy. The empty
+sector remains at zero, which explains the unique vacuum and the gap below.
+To compare this equilibrium evolution with the recorded one, first place
+both on the same law and in the same representation. Equality can then be
+checked on the one-mode sector.
+:::
+
+:::{prf:corollary} Equilibrium Hamiltonian on the same fermionic mode construction
+:label: cor-lqft-equilibrium-hamiltonian-lift
+
+For the equilibrium form constructed in
+{prf:ref}`thm-ym-equilibrium-form-construction`, use its identified law
+$\rho_N$ and set $\mathcal H_{\mathrm{eq}}=L^2_0(\rho_N)$ and
+$h=H_N^{\mathrm{eq}}|_{\mathcal H_{\mathrm{eq}}}$. On
+$\mathcal F_-(\mathcal H_{\mathrm{eq}})$ its fermionic Hamiltonian is
+
+(eq-fg-lq-r5)=
+$$
+\mathbb H_{\mathrm{eq}}=d\Gamma_-(h),\qquad
+e^{-\sigma\mathbb H_{\mathrm{eq}}}
+=\Gamma_-(e^{-\sigma h}),\qquad \sigma\ge0.
+\tag{LQ.R5}
+$$
+
+If $\mathcal H_{\mathrm{eq}}\ne\{0\}$, its vacuum is unique and its gap is at least
+$1/C_*$ in the energy normalization of that theorem. For every nonzero
+mode $f$ and $\sigma\ge0$,
+
+(eq-fg-lq-r6)=
+$$
+0<\langle\Omega,a(f)e^{-\sigma\mathbb H_{\mathrm{eq}}}
+                     a^\dagger(f)\Omega\rangle
+=\langle f,e^{-\sigma h}f\rangle
+\le e^{-\sigma/C_*}\|f\|^2.
+\tag{LQ.R6}
+$$
+
+When the recorded invariant law is this same $\rho_N$, encode both
+operators with the same $U$. The generator in {ref}`(LQ.R3) <eq-fg-lq-r3>` equals
+$-\Gamma_-(U)\mathbb H_{\mathrm{eq}}\Gamma_-(U)^{-1}$ exactly
+when the original one-particle generators satisfy $L=-h$. Restriction
+to the one-particle sector tests the equality. An equilibrium construction
+on a QSD or reference law retains that law and its own mode space.
+:::
+
+:::{prf:proof}
+On the $k$-particle tensor product the self-adjoint operators acting in
+different factors have commuting spectral resolutions. Their sum restricts
+to the exterior subspace and has spectrum bounded below by $k/C_*$ for
+$k\ge1$. Its exponential is the restriction of the tensor product of
+$e^{-\sigma h}$. The direct sum, with zero Hamiltonian on the vacuum,
+gives {ref}`(LQ.R5) <eq-fg-lq-r5>`. Every nonvacuum sector has energy at least $1/C_*$, so the
+vacuum is the sole zero-energy sector. Spectral integration gives
+
+$$
+\langle f,e^{-\sigma h}f\rangle
+=\int_{[1/C_*,\infty)}e^{-\sigma\lambda}
+                  d\langle f,E_h(\lambda)f\rangle.
+$$
+
+The integrand is strictly positive at every finite spectral value and the
+measure has total mass $\|f\|^2>0$. This proves both inequalities in
+{ref}`(LQ.R6) <eq-fg-lq-r6>`. The existing two-point reconstruction gives its vacuum expression.
+Equality of the two full generators implies equality on the one-particle
+sector; conversely one-particle equality makes all their sector sums and
+semigroups equal.
+:::
+
+
 :::{prf:corollary} Use of the existing LSI and transfer reconstruction
 :label: cor-lqft-fock-lsi-transfer
 
@@ -1201,6 +1778,338 @@ it. Take the direct sum of these sector generators, with domain given by
 square-summability of their applied norms. This yields the asserted
 self-adjoint Fock generator and exponential. $\square$
 :::
+
+:::{div} feynman-prose
+Choose the recorded values that describe a region, then form centered
+measurements from those values. To compare two regions, calculate the
+covariance of their measurements under the recorded law. That number is
+exactly the coefficient of their mixed CAR anticommutator. Repeating the
+calculation at two observation times measures how the actual update carries
+dependence between the regions.
+
+For a finite list of measurements, these calculations produce ordinary
+Gram and transition matrices. The Gram matrix identifies redundant modes
+and normalizes the independent ones. Its cross-region entries determine
+the operator relations, and the bound below carries those same entries
+into products of several operators. Every quantity comes from the chosen
+recorded measurements and their joint law.
+:::
+
+:::{prf:theorem} Local record algebras and their computed locality defect
+:label: thm-lqft-record-locality-defect
+
+Use the actual stationary record law and centered mode space of
+{prf:ref}`def-lqft-record-fock-space`. A recorded region $O$ specifies a
+measurable descriptor $q_O$ of the complete state. Define
+$\mathcal H_O=L^2_0(\sigma(q_O),\pi)\subset\mathcal H$ and let
+$\mathfrak A(O)$ be the CAR algebra generated by modes in $\mathcal H_O$.
+The orthogonal projection onto this closed subspace is
+$\Pi_Of=\mathbb E_\pi[f\mid\sigma(q_O)]$ for centered $f$.
+For nested descriptors these algebras are isotone. Their locality and their
+propagation under the *recorded* kernel are determined exactly by
+
+(eq-fg-lq-s1)=
+$$
+\begin{aligned}
+\{a(f),a^\dagger(g)\}
+ &=\operatorname{Cov}_\pi(\overline f,g)I,
+ &f\in\mathcal H_O,\quad g\in\mathcal H_V,\\
+\{a(f),\mathcal Q_t(a^\dagger(g))\}
+ &=\mathbb E_\pi[\overline{f(S_0)}g(S_t)]I
+ =\langle f,\Pi_OC_t\Pi_Vg\rangle I.
+\end{aligned}
+\tag{LQ.S1}
+$$
+
+Here $\operatorname{Cov}_\pi(\overline f,g)$ means
+$\pi(\overline f g)-\pi(\overline f)\pi(g)$, and $C_t$ and $\mathcal Q_t$
+are the already constructed recorded contractions and CAR channels.
+The norm of the block $\Pi_OC_t\Pi_V$ is precisely the largest absolute
+mixed anticommutator coefficient over unit modes in the two regions.
+At equal time the algebras are graded commuting exactly when
+$\mathcal H_O\perp\mathcal H_V$. In that case their even parts commute.
+
+For finite mode lists $f_1,\ldots,f_r$ and $g_1,\ldots,g_s$, all these
+coefficients are entries of the recorded matrices
+
+(eq-fg-lq-s2)=
+$$
+G_{ij}=\mathbb E_\pi[\overline{f_i(S_0)}f_j(S_0)],
+\qquad
+K_{ij}(t)=\mathbb E_\pi[\overline{f_i(S_0)}g_j(S_t)].
+\tag{LQ.S2}
+$$
+
+Thus neither spatial separation of the descriptor labels nor genealogy
+alone substitutes for the computed orthogonality condition.
+
+*Proof.* Conditional expectation is the orthogonal projection because,
+for every centered $\sigma(q_O)$-measurable $u$,
+$\langle u,f-\mathbb E[f\mid\sigma(q_O)]\rangle=0$.
+Measurability inclusion gives inclusion of the mode subspaces and hence of
+the generated algebras. The creation and annihilation calculation in
+{prf:ref}`thm-lqft-record-fock-reconstruction` gives the first line of
+{ref}`(LQ.S1) <eq-fg-lq-s1>`. The normally ordered channel formula in
+{prf:ref}`thm-lqft-record-car-channel` gives
+$\mathcal Q_t(a^\dagger(g))=a^\dagger(C_tg)$, proving the second.
+Stationarity and conditional expectation identify its coefficient with
+the displayed actual two-time expectation. Taking the supremum over unit
+$f,g$ is the definition of the norm of the cross block.
+
+For clarity, let $X=x_1\cdots x_p$ and $Y=y_1\cdots y_q$ be words of
+creation or annihilation operators with respective modes $f_i,g_j$.
+Successively interchange each $x_i$ with each $y_j$. Each interchange
+contributes its minus sign and possibly one scalar contraction. Therefore
+
+(eq-fg-lq-s3)=
+$$
+\|XY-(-1)^{pq}YX\|
+\le \sum_{i=1}^p\sum_{j=1}^q
+ |\langle f_i,g_j\rangle|
+ \prod_{\ell\ne i}\|f_\ell\|
+ \prod_{k\ne j}\|g_k\|.
+\tag{LQ.S3}
+$$
+
+Terms of equal creation/annihilation type have zero contraction and may
+be omitted from this upper bound. This follows also by induction on the
+number of interchanges, using the operator norm identity
+$\|a(f)\|=\|f\|$. Orthogonality makes every term zero; even degrees give
+ordinary commutation. Extend from words to the norm-closed even and odd
+subspaces. Conversely graded commutation applied to the two odd generators
+$a(f),a^\dagger(g)$ forces $\langle f,g\rangle=0$.
+
+The finite Gram matrix is positive semidefinite since
+$c^*Gc=\|\sum_i c_if_i\|^2$. Diagonalize its nonzero part as
+$G=V\Lambda V^*$, with $\Lambda>0$, and put
+$e_\alpha=\sum_i f_i(V\Lambda^{-1/2})_{i\alpha}$.
+Direct multiplication gives
+$\langle e_\alpha,e_\beta\rangle=\delta_{\alpha\beta}$.
+These give canonical finite CAR modes after quotienting the null modes.
+If this change of basis combines descriptors in different regions, the
+new modes have that combined dependence. Orthogonalizing the Gram matrix
+is an exact representation calculation, not a proof that the original
+geometric regions were local. $\square$
+:::
+
+:::{div} feynman-prose
+The established product equilibrium family gives a concrete regional
+construction. Choose a mode that vanishes outside a phase-space region
+and already has zero mean under the one-particle law. Modes chosen this
+way in disjoint regions have zero covariance: their pointwise product
+vanishes, and both mean terms vanish. Assigning the generated CAR algebra
+to each region therefore gives the stated graded commutation, with ordinary
+commutation for the even operators. The empirical fluctuation calculation
+proves the same covariance identity at every particle count.
+
+A finite mode cutoff can leave a small cross-region coefficient. The formula
+below computes it from the overlap of the two discarded components. Their
+norms bound the error, so keeping more modes gives a direct check of how
+closely the finite calculation recovers the regional operator relations.
+:::
+
+:::{prf:corollary} Locality in the established product limit and under its cutoffs
+:label: cor-lqft-product-locality-cutoff
+
+In the product equilibrium family of
+{prf:ref}`cor-ym-product-equilibrium-hierarchy`, let
+$m=m_U$, $F_N(\varphi)=N^{-1}\sum_i\varphi(Z_i)$, and
+$Y_N(\varphi)=\sqrt N(F_N(\varphi)-m\varphi)$.
+For real bounded tests, the equal-time one-mode Gram form, at every $N$
+and in the proved fluctuation limit, is
+
+(eq-fg-lq-s4)=
+$$
+\mathbb E[Y_N(\varphi)Y_N(\psi)]
+=m(\varphi\psi)-m\varphi\,m\psi.
+\tag{LQ.S4}
+$$
+
+Consequently, tests with disjoint phase-space supports and zero individual
+$m$-means generate orthogonal local mode spaces and graded commuting CAR
+algebras. For disjoint nonnegative tests of positive mean, the mixed
+coefficient equals $-m\varphi\,m\psi\ne0$. In particular, the centered
+empirical density modes with arbitrary disjoint tests are not an
+orthogonal spatial CAR net, even in this already proved product limit.
+
+For the centered Galerkin projections $E_M$ of
+{prf:ref}`cor-ym-galerkin-car-convergence`, any pair of orthogonal limiting
+modes satisfies the exact cutoff formula
+
+(eq-fg-lq-s5)=
+$$
+\begin{aligned}
+\{a(E_Mf),a^\dagger(E_Mg)\}
+ &=-\langle(I-E_M)f,(I-E_M)g\rangle I,\\
+\|\{a(E_Mf),a^\dagger(E_Mg)\}\|
+ &\le\|(I-E_M)f\|\,\|(I-E_M)g\|\longrightarrow0.
+\end{aligned}
+\tag{LQ.S5}
+$$
+
+Thus the existing form-dense cutoff approximation recovers every established
+orthogonal-mode locality relation, with an explicit error for each finite
+collection of words.
+
+*Proof.* Expanding the two sums gives $N$ terms with identical indices and
+$N(N-1)$ terms with different indices. Independence makes the latter
+centered terms zero, and each diagonal term is
+$m(\varphi\psi)-m\varphi\,m\psi$. The prefactor $N^{-1}$ cancels the
+number of diagonal terms. This proves
+{ref}`(LQ.S4) <eq-fg-lq-s4>` without an asymptotic argument. The established
+all-order convergence passes this second moment to the same limiting
+hierarchy. Disjoint support gives $m(\varphi\psi)=0$; the two asserted
+cases follow by substitution. For each phase-space region $O$, the
+closed subspace
+$\{f\in L^2(m):f=0\text{ off }O,\ mf=0\}$ therefore gives an explicit
+isotone orthogonal-mode net for disjoint regions in this product family.
+Its regions are phase-space regions, not reconstructed spacetime cones.
+
+Orthogonal decomposition gives
+$\langle f,g\rangle=\langle E_Mf,E_Mg\rangle+
+\langle(I-E_M)f,(I-E_M)g\rangle$. Since the left side is zero, the CAR
+identity proves {ref}`(LQ.S5) <eq-fg-lq-s5>`.
+The established strong convergence $E_M\to I$ makes the bound vanish.
+Insert it for each pair in {ref}`(LQ.S3) <eq-fg-lq-s3>` to obtain the
+finite-word bound. The same cutoff theorem already proves convergence of
+the associated transfer and regression products; no new continuum limit is
+introduced here. $\square$
+:::
+
+:::{div} feynman-prose
+Take a mode and calculate its conditional expected value after one complete
+algorithm step. This is the mode $Pf$ that enters the next CAR operator.
+For a normally ordered word, apply the same recorded transition to every
+mode. Selection, cloning, and kinetics enter through that complete update.
+In the established continuous-time model, differentiating this calculation
+gives the displayed sum of generator terms.
+
+We can also calculate how much of the evolved mode a chosen regional
+descriptor can express. Conditional expectation onto that descriptor gives
+the best approximation in the recorded norm; the residual is exactly the
+operator approximation error below. Encoding the complete record preserves
+these projections, transition coefficients, and errors. This makes both
+evolution and localization computable in either recorded representation.
+:::
+
+:::{prf:theorem} Native fermion evolution, localization, and record covariance
+:label: thm-lqft-native-local-fermion-evolution
+
+For the recorded semigroup of
+{prf:ref}`thm-sm-instantiated-record-transition`, its generator $L$ on
+centered modes determines the CAR-channel generator on normally ordered
+words whose modes lie in $D(L)$:
+
+(eq-fg-lq-s6)=
+$$
+\begin{aligned}
+\mathscr L_{\mathrm{CAR}}
+ \big[a^\dagger(f_1)\cdots a^\dagger(f_p)a(g_q)\cdots a(g_1)\big]
+={}&\sum_{i=1}^p
+ a^\dagger(f_1)\cdots a^\dagger(Lf_i)\cdots
+ a^\dagger(f_p)a(g_q)\cdots a(g_1)\\
+&+\sum_{j=1}^q
+ a^\dagger(f_1)\cdots a^\dagger(f_p)
+ a(g_q)\cdots a(Lg_j)\cdots a(g_1).
+\end{aligned}
+\tag{LQ.S6}
+$$
+
+For the implemented discrete update the exact statement is instead the
+normally ordered substitution $f_i\mapsto Pf_i$, $g_j\mapsto Pg_j$.
+All selection, cloning and kinetic terms enter through this complete $P$
+or its established continuous-time generator $L$.
+For a mode initially in $\mathcal H_O$, its distance after time $t$ from
+the modes of a target descriptor $V$ is exactly
+
+(eq-fg-lq-s7)=
+$$
+\inf_{u\in\mathcal H_V}
+ \|\mathcal Q_t(a^\dagger(f))-a^\dagger(u)\|
+ =\|(I-\Pi_V)C_tf\|.
+\tag{LQ.S7}
+$$
+
+The full recorded encoding unitary $U$ transports these algebras,
+localization errors and time correlations exactly: with
+$\widehat{\mathcal H}_O=U\mathcal H_O$ and
+$\widehat C_t=UC_tU^{-1}$, the induced CAR isomorphism obeys
+
+(eq-fg-lq-s8)=
+$$
+\alpha_U(a^\dagger(f))=a^\dagger(Uf),\qquad
+\alpha_U\mathcal Q_t=\widehat{\mathcal Q}_t\alpha_U,
+\qquad
+\widehat\Pi_O=U\Pi_OU^{-1}.
+\tag{LQ.S8}
+$$
+
+These identities establish covariance under the proved record
+identification. They do not identify a geometric transformation absent
+from that identification.
+
+*Proof.* For $f\in D(L)$, the semigroup definition gives
+$\|t^{-1}(C_tf-f)-Lf\|\to0$.
+The norm identity for creation and annihilation transfers this convergence
+to their bounded operators. Apply the finite product difference identity
+to the normally ordered formula of
+{prf:ref}`thm-lqft-record-car-channel`. Every unchanged factor stays bounded
+as $t\downarrow0$, so the terms with one difference quotient converge to
+{ref}`(LQ.S6) <eq-fg-lq-s6>`. No product rule on arbitrary unordered words
+is asserted: contractions must first be retained using the CAR. In
+particular the multiplicative defect already calculated in that theorem
+remains present.
+
+The same norm identity makes the infimum in
+{ref}`(LQ.S7) <eq-fg-lq-s7>` equal to
+$\inf_{u\in\mathcal H_V}\|C_tf-u\|$; orthogonal projection attains it.
+For a local mode $f\in D(L)\cap\mathcal H_V$, it also yields the explicit
+short-time calculation
+$\|(I-\Pi_V)C_tf-t(I-\Pi_V)Lf\|=o(t)$.
+Thus the cross component of the *actual* generator, or the exact
+one-step component $(I-\Pi_V)Pf$, determines leakage from the chosen
+region. These are the same conditional-expectation blocks used in
+{prf:ref}`thm-sm-direct-channel-memory`; discarded dependencies can be
+retained through its exact memory formula.
+
+Unitary preservation of the inner product preserves all CAR relations.
+Conjugation by $\Gamma_-(U)$ implements $\alpha_U$ on the represented
+algebras. On normally ordered words the identity $UC_t=\widehat C_tU$
+proves the intertwining in {ref}`(LQ.S8) <eq-fg-lq-s8>`; norm continuity
+extends it to the full algebra. Unitary transport of orthogonal projections
+proves its last identity, and hence preserves every norm and scalar in
+{ref}`(LQ.S1) <eq-fg-lq-s1>` and
+{ref}`(LQ.S7) <eq-fg-lq-s7>`.
+
+The Fractal Set causal order in
+{prf:ref}`thm-fractal-is-causal-set` and its finite reconstruction in
+{prf:ref}`prop-fractal-cst-framework-lift` assign recorded regions and
+ancestry, so they provide concrete descriptors for this theorem. The
+ancestral intervention identity of {prf:ref}`lem-no-signaling-fg` states
+which recorded updates are unchanged when their inputs are unchanged.
+It does not set the cross-covariance in
+{ref}`(LQ.S1) <eq-fg-lq-s1>` to zero: two regions can share random
+ancestors. Indeed {ref}`(LQ.S4) <eq-fg-lq-s4>` computes a nonzero
+coefficient for disjoint positive density tests in the established product
+family. Consequently a relativistic local-net identification must specify
+which of these actual mode spaces correspond to its spacelike regions
+and prove the corresponding zero cross blocks. The geometric consistency
+estimator and its derivative estimates do not change the mode inner
+product. This is an explicit compatibility calculation, not an extra
+continuum assumption.
+
+Finally, no Dirac matrices enter any step. For the equilibrium lift
+{prf:ref}`cor-lqft-equilibrium-hamiltonian-lift`, substituting $L=-h$
+into {ref}`(LQ.S6) <eq-fg-lq-s6>` gives the CAR-channel generator.
+On Fock vectors the corresponding transfer is
+$\Gamma_-(e^{-th})=e^{-t d\Gamma_-(h)}$, with Fock Hamiltonian
+$d\Gamma_-(h)$. This Hamiltonian is quadratic in these record modes. Its one-mode space consists of functions of the entire interacting
+swarm; calling it quadratic does not remove the interactions inside $L$.
+Conversely it does not determine local quartic fermion or gauge-matter
+vertices in a different spacetime field basis without calculating that
+basis and its generator correspondence. $\square$
+:::
+
 
 :::{prf:proposition} Product obstruction and the distinction from same-swarm moments
 :label: thm-lqft-product-obstruction
@@ -1873,13 +2782,25 @@ recorded law through that map. The orbit and observable-space isomorphisms
 preserve the direct correlations exactly. Channel averages are then computed
 as specified functions of these coordinates and the recorded auxiliary data.
 
-This identifies where the existing analytic machinery enters: reconstruction
-determines the fields, and the cited LSI and temporal estimates control the
-observables on their stated domains. The independent link actions, scalar
-approximations, and exterior-algebra integrals provide additional field models
-with explicitly specified measures. Keeping those measures visible makes
-every comparison a mathematical statement about the quantities the simulator
-actually computes.
+The complete transition record also determines the conditional expectations
+used in {prf:ref}`thm-lqft-instantiated-word-evolution`. Alternating
+insertions faithfully realize the exterior algebra on replica observables;
+their adjoint contractions complete the CAR. The doubled integration symbols
+retain their own exterior multiplication. Propagating the recorded modes
+gives both the stated covariance determinants and the completely positive
+CAR evolution of {prf:ref}`thm-lqft-record-car-channel`.
+
+Regional covariance matrices now determine the CAR locality coefficients,
+and the complete update determines their propagation. The established
+product family supplies explicit local algebras from supported zero-mean
+modes. At finite cutoff, the discarded components bound the error in
+their operator relations.
+
+The LSI energy separately constructs the equilibrium Hamiltonian and controls
+its gap. Matching laws and one-mode generators decides when its semigroup
+equals the recorded Fock evolution. The independent link actions, scalar
+approximations, and finite exterior-algebra integrals retain their explicitly
+specified measures, so their comparison with recorded measurements is equally precise.
 :::
 
 The group assignments and chiral models are developed in

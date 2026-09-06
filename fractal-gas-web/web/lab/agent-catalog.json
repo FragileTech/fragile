@@ -52,6 +52,28 @@
             "color": "#ffce70"
         }
     },
+    "harvester": {
+        "label": "Harvester · steam ore collector",
+        "extends": "kart",
+        "physics": {
+            "radius": 1.3,
+            "mass": 8,
+            "thrust": 36,
+            "drag": 0.8,
+            "angular_drag": 5,
+            "actuator": {
+                "kind": "kart",
+                "wheelbase": 1.7,
+                "steering_limit": 0.48,
+                "lateral_grip": 10,
+                "brake_deceleration": 12
+            }
+        },
+        "visual": {
+            "model": "harvester",
+            "color": "#b88a43"
+        }
+    },
     "thruster_tug": {
         "extends": "rocket",
         "label": "Kestrel \u00b7 independent thrusters",

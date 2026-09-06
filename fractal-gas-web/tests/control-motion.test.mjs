@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { loadNative, NativeEngine } from "../web/lab/native.js";
 import { MotionRecording, WorldCapture, bytesOf } from "../web/lab/motion.js";
 import { exportRecording, importRecording } from "../web/lab/archive.js";
@@ -14,6 +15,59 @@ import { WorldPlayback } from "../web/lab/playback.js";
 import * as T from "../web/lab/vendor/three.module.js";
 
 const module = await loadNative(false);
+const catalog = JSON.parse(await readFile(new URL("../web/lab/agent-catalog.json", import.meta.url), "utf8"));
+
+test("Harvester uses portable ground controls, collection and exact batch restoration", () => {
+    const config = {
+        size: [100, 100], task: "forage", agent_types: catalog,
+        bodies: [{ agent_type: "harvester", position: [50, 50] }],
+        pickups: [{ position: [50, 50], radius: 0.4 }],
+        respawn_seconds: 0.1,
+    };
+    const flat = { ...config, agent_types: undefined,
+        bodies: resolveBodies(config).map(({ agent_type, ...body }) => body) };
+    const a = new NativeEngine(module, config, 8, 1),
+        b = new NativeEngine(module, flat, 8, 1);
+    try {
+        assert.equal(a.dim, 3);
+        assert.equal(a.words, b.words);
+        const actions = Float32Array.from({ length: 24 }, (_, i) =>
+            i % 3 === 0 ? 0.8 : i % 3 === 1 ? (i - 12) / 24 : 0);
+        a.step(actions, 12);
+        b.step(actions, 12);
+        assert.deepEqual(bytesOf(a.states()), bytesOf(b.states()));
+        const rows = a.states();
+        assert(new Uint32Array(rows.buffer, rows.byteOffset)[5] > 0);
+        const saved = a.snapshot();
+        a.step(actions, 40);
+        const future = a.snapshot();
+        a.restore(saved);
+        a.step(actions, 40);
+        assert.deepEqual(a.snapshot(), future);
+        a.gather(Int32Array.from([1, 0, 2, 3, 4, 5, 6, 7]));
+        a.gather(Int32Array.from([1, 0, 2, 3, 4, 5, 6, 7]));
+        assert.deepEqual(a.snapshot(), future);
+    } finally { a.dispose(); b.dispose(); }
+});
+
+test("Harvester fits the common footprint and restores its animated pose when seeking", () => {
+    const model = createAgentModel(catalog.harvester.visual);
+    const parts = animatedParts(model);
+    assert.equal(parts.filter(({ part }) => part.userData.motion === "steer").length, 2);
+    assert.equal(parts.filter(({ part }) => part.userData.motion === "wheel").length, 7);
+    const bounds = new T.Box3().setFromObject(model);
+    assert(bounds.min.x >= -0.8 && bounds.max.x <= 0.8);
+    assert(bounds.min.y >= -0.8 && bounds.max.y <= 0.8);
+    const state = { time: 2, speed: 1.5, thrust: 0.4, steer: 0.2 };
+    animateAgent(parts, state);
+    model.updateMatrixWorld(true);
+    const pose = parts.map(({ part }) => [...part.matrixWorld.elements]);
+    animateAgent(parts, { ...state, time: 10, steer: -0.8 });
+    animateAgent(parts, state);
+    model.updateMatrixWorld(true);
+    assert.deepEqual(parts.map(({ part }) => [...part.matrixWorld.elements]), pose);
+});
+
 const scene = {
     version: 1,
     size: [80, 80],

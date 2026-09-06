@@ -4,6 +4,7 @@ import * as T from "./vendor/three.module.js";
 import { palette, metal, glow, prism, box } from "./visuals/primitives.js";
 export { palette, prism } from "./visuals/primitives.js";
 export { shipModel, kartModel, droneModel } from "./visuals/vehicles.js";
+export { harvesterModel } from "./visuals/harvester.js";
 export function rockModel(vertices, color = palette.violet) {
   const g = new T.Group();
   g.name = "Veined ore";

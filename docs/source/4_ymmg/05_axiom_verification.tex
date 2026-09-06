@@ -87,6 +87,22 @@ reconstructed four-dimensional interacting pure $SU(3)$ Yang--Mills gauge
 theory.
 \end{abstract}
 
+\begin{remark}[Scope of the physical reconstruction claims]
+The corrected recorded-law calculation is
+Proposition~\ref{prop:transfer-identification} and
+Lemma~\ref{lem:recorded-backward-update}. Proposition~\ref{prop:os2}
+now retains its exact reflection boundary defect. The advertised physical
+OS, reconstruction, and mass-gap conclusions in this paper depend on
+verifying positivity of that same physical reflected law; preservation
+of the observable algebra alone does not discharge this dependency.
+The corrected calculation verifies the square form for the previously
+constructed reversible equilibrium hierarchy. It does not identify that
+hierarchy with the physical readouts of the sampling path. Accordingly,
+the downstream physical conclusions are not certified by the revised
+boundary calculation alone.
+\end{remark}
+
+
 \paragraph{Dependency map of the proof.}
 \begin{enumerate}[leftmargin=1.5em]
 \item Proposition~\ref{prop:imports} isolates the four realization-specific
@@ -1108,96 +1124,178 @@ the conditioning sigma-algebra is $\mathcal F_0$.  Therefore the stated
 conditional-independence identity holds.
 \end{proof}
 
-\begin{proposition}[Reflection stability of the physical algebra]
+\begin{proposition}[Reflection and boundary measurability of recorded observables]
 \label{prop:reflection-stability}
-The gauge-invariant physical observable algebra is stable under $\Theta$ and
-under conditional expectation onto $\mathcal F_0$.
+Reflection of the recorded support and reversal of adjoint words sends
+future gauge-invariant loop observables to past gauge-invariant loop
+observables. For every bounded recorded $F$, the conditional expectation
+$\mathbb E[F\mid\mathcal F_0]$ is a bounded boundary-measurable function.
 \end{proposition}
 
 \begin{proof}
-Gauge-invariant observables are preserved by time reflection because $\Theta$
-acts by pullback on Euclidean time together with the $*$-operation, and both
-operations respect gauge invariance.  Conditional expectation onto the boundary
-sigma-algebra $\mathcal F_0$ preserves boundedness and gauge invariance because
-the Euclidean theory is already realized on the ordinary probability space
-$(\Omega,\mathcal F,\mathbb P)$ and the physical algebra is a positive subalgebra of
-that measure space.  Hence both
-$\Theta$ and $\mathbb E[\cdot\mid\mathcal F_0]$ preserve the physical algebra.
+The reflected loop retains its ordered transports with the corresponding
+orientation reversals. The internal frame factors cancel around that loop,
+so its trace remains gauge invariant. Complex conjugation and the adjoint
+reverse the order of represented words. Conditional expectation is the
+orthogonal projection in $L^2$ onto boundary-measurable functions, with
+$\|\mathbb E[F\mid\mathcal F_0]\|_\infty\le\|F\|_\infty$.
+This proves the stated support and measurability properties. Preservation
+of a smaller physical boundary algebra, or commutation of this projection
+with reflection, is not inferred from boundedness. The transfer formula
+below uses the actual conditional functions themselves.
 \end{proof}
 
-\begin{proposition}[Transfer semigroup identification on boundary observables]
+\begin{proposition}[Transfer identification with the recorded reflected boundary data]
 \label{prop:transfer-identification}
-Let $F$ and $G$ be bounded gauge-invariant positive-time observables, and set
+Use the stationary path law and its actual boundary semigroup $T_t$ in
+Definition~\ref{def:thermo-euclidean-space}. Our complex inner product is
+$\langle u,v\rangle=\int\overline u v\,d\pi_\infty$.
+For bounded future functionals define
 \[
-f:=\mathbb E[F\mid\mathcal F_0]-\mathbb E[F],
-\qquad
-g:=\mathbb E[G\mid\mathcal F_0]-\mathbb E[G].
+h_F^+=\mathbb E[F\mid\mathcal F_0],\qquad
+h_F^-=\overline{\mathbb E[\Theta F\mid\mathcal F_0]},\qquad
+d_F=h_F^--h_F^+.
 \]
-Then for every $t>0$,
-\[
-\langle \Theta F,\tau_t G\rangle_E-\langle F\rangle_E\langle G\rangle_E
-=
-\langle f,T_t g\rangle_{L^2(\pi_\infty)},
-\]
-where $T_t$ is the stationary mean-field Markov semigroup on centered boundary
-observables.
+Then
+\begin{equation}
+\mathbb E[(\Theta F)\tau_tG]=\langle h_F^-,T_t h_G^+\rangle,
+\qquad t\ge0.
+\label{eq:actual-reflected-transfer}
+\end{equation}
+The centered version subtracts
+$\mathbb E[\Theta F]\mathbb E[G]$ and replaces both boundary functions
+by their own centered versions. In particular its first boundary function
+is $h_F^--\pi_\infty h_F^-$.
 \end{proposition}
 
 \begin{proof}
-By Proposition~\ref{prop:hyperplane-factorization},
+Conditional independence of past and future gives
 \[
-\mathbb E[(\Theta F)\tau_t G]
-=
-\mathbb E\!\left[
-\mathbb E[\Theta F\mid\mathcal F_0]\,
-\mathbb E[\tau_t G\mid\mathcal F_0]
-\right].
+\mathbb E[(\Theta F)\tau_tG]
+=\int\mathbb E[\Theta F\mid\mathcal F_0]
+       \mathbb E[\tau_tG\mid\mathcal F_0]\,d\pi_\infty.
 \]
-By Proposition~\ref{prop:reflection-stability},
-\[
-\mathbb E[\Theta F\mid\mathcal F_0]
-=
-\overline{\mathbb E[F\mid\mathcal F_0]}.
-\]
-By stationarity and the Markov property,
-\[
-\mathbb E[\tau_t G\mid\mathcal F_0]=T_t\bigl(\mathbb E[G\mid\mathcal F_0]\bigr).
-\]
-Subtracting the product of expectations gives the stated identity on centered
-boundary observables.
+The future Markov property in the thermodynamic Euclidean paper gives
+$\mathbb E[\tau_tG\mid\mathcal F_0]=T_t h_G^+$.
+The definition of $h_F^-$ therefore proves
+\eqref{eq:actual-reflected-transfer}. At $t=0$ the same calculation uses
+$T_0=I$. Since $T_t1=1$ and $\pi_\infty T_t=\pi_\infty$, centering both
+boundary functions subtracts precisely the product of their means.
+No commutation of reflection with conditional expectation is used here.
 \end{proof}
 
-\begin{theorem}[Auxiliary-to-physical semigroup identification]
-\label{thm:aux-to-physical-semigroup}
-Let \(F\) and \(G\) be centered bounded gauge-invariant positive-time observables and
-let \(\widehat F,\widehat G\in\mcH\) denote their classes in the
-Osterwalder--Schrader reconstruction.  Then for every \(t>0\),
+\begin{lemma}[Backward conditioning of the complete recorded update]
+\label{lem:recorded-backward-update}
+Use a stationary conservative realization of the full recorded algorithm.
+Factor one executed update into its ordered conditional stage kernels
+$K_1,\ldots,K_m$, retaining the intermediate arrays and status data needed
+by each stage. Let $\mu_0=\pi_N$ and $\mu_j=\mu_{j-1}K_j$.
+The backward conditional kernels are determined, up to null sets, by
+\begin{equation}
+\mu_{j-1}(dz)K_j(z,dz')=\mu_j(dz')\check K_j(z',dz).
+\label{eq:recorded-stage-reversal}
+\end{equation}
+They give the backward full-step kernel
+$\check P_h=\check K_m\cdots\check K_1$, and stationarity gives
+$\mu_m=\mu_0$ and $\check P_h=P_h^*$ on $L^2(\pi_N)$.
+These are conditional distributions of the actual recorded step.
+\end{lemma}
+
+\begin{proof}
+Every complete stage space is standard Borel. Disintegrate the actual
+adjacent-stage joint measure on the left side of
+\eqref{eq:recorded-stage-reversal} over its second marginal $\mu_j$.
+This constructs $\check K_j$. Successive conditioning, starting at the
+last stage, reconstructs the conditional distribution of earlier stages
+in the order $m,m-1,\ldots,1$. Integrating the intermediate states proves
+the full-step formula. For bounded $a,b$, its two-endpoint joint law gives
 \[
-\langle \widehat F,e^{-tH}\widehat G\rangle_{\mcH}
-=
-\left\langle
-\mathbb E[F\mid\mathcal F_0]-\mathbb E[F],\,
-T_t\!\bigl(\mathbb E[G\mid\mathcal F_0]-\mathbb E[G]\bigr)
-\right\rangle_{L^2(\pi_\infty)}.
+\int\overline a\,P_hb\,d\pi_N
+=\int\overline{\check P_h a}\,b\,d\pi_N,
 \]
-Thus the boundary-transfer semigroup controlling reflected Euclidean
-correlations on the physical gauge sector is exactly the semigroup
-\(e^{-tH}\) of the reconstructed physical Hamiltonian, at the level of the
-physical matrix elements generated by positive-time observables.
+which identifies the adjoint. The intermediate $\mu_j$ are retained;
+no invariance of cloning or of an individual kinetic substep is used.
+Companion choices, clone gates, jitter, deterministic maps, and the
+thermostat remain their actual conditional kernels. A deterministic
+many-to-one stage is reversed by its conditional distribution, not by
+an invented inverse map. Encoding the complete record transports this
+same joint measure, so it also transports its forward and backward
+conditional kernels. The full-record isomorphism therefore preserves
+the defect calculation below.
+\end{proof}
+
+\begin{lemma}[Calculation of the reflection boundary defect]
+\label{lem:actual-reflection-boundary-defect}
+On the recorded stationary path with ordinary time reflection and complex
+conjugation, let $F=\prod_{j=1}^m f_j(Y_{s_j})$, where
+$0<s_1<\cdots<s_m$, $s_0=0$, and the $f_j$ are bounded.
+Write $\Delta_j=s_j-s_{j-1}$ and let $M_f$ denote multiplication by $f$.
+Then
+\begin{equation}
+ h_F^+=T_{\Delta_1}M_{f_1}\cdots T_{\Delta_m}M_{f_m}1,
+ \qquad
+ h_F^-=T_{\Delta_1}^*M_{f_1}\cdots T_{\Delta_m}^*M_{f_m}1.
+\label{eq:actual-forward-backward-cylinders}
+\end{equation}
+Put $K_j^-=T_{\Delta_j}^*M_{f_j}$ and
+$v_j=M_{f_j}T_{\Delta_{j+1}}M_{f_{j+1}}\cdots
+T_{\Delta_m}M_{f_m}1$, with $v_m=f_m$. The exact defect and bound are
+\begin{align}
+d_F&=\sum_{j=1}^mK_1^-\cdots K_{j-1}^-
+                       (T_{\Delta_j}^*-T_{\Delta_j})v_j,
+\label{eq:actual-reflection-telescoping}\\
+\|d_F\|_2
+&\le\sum_{j=1}^m\left(\prod_{\ell<j}\|f_\ell\|_\infty\right)
+                    \|(T_{\Delta_j}^*-T_{\Delta_j})v_j\|_2.
+\label{eq:actual-reflection-defect-bound}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+Stationarity identifies the backward conditional kernel with the adjoint:
+for bounded $a,b$,
+\[
+\mathbb E[a(Y_0)b(Y_{-t})]
+=\mathbb E[a(Y_t)b(Y_0)]
+=\int b\,T_ta\,d\pi_\infty
+=\int a\,T_t^*b\,d\pi_\infty.
+\]
+Here the displayed bilinear identity first holds for real functions and
+extends complex linearly. The adjoint Markov operator preserves complex
+conjugation. Successively conditioning the forward and backward cylinders
+therefore gives \eqref{eq:actual-forward-backward-cylinders}, including
+the conjugation in the definition of $h_F^-$. Subtract the two ordered
+products, replacing one transfer at a time, to obtain
+\eqref{eq:actual-reflection-telescoping}. Both $T_t$ and $T_t^*$ are
+$L^2(\pi_\infty)$ contractions, and $\|M_f\|\le\|f\|_\infty$;
+these bounds prove \eqref{eq:actual-reflection-defect-bound}.
+For one time, this specializes to $d_F=(T_t^*-T_t)f$.
+The computation uses the imported stationary path kernel, not a newly
+chosen reversible process.
+\end{proof}
+
+\begin{theorem}[Boundary formula in an OS reconstruction of the same law]
+\label{thm:aux-to-physical-semigroup}
+In an Osterwalder--Schrader reconstruction of the reflected law in
+\eqref{eq:actual-reflected-transfer}, the positive-time classes satisfy
+\[
+\langle\widehat F,e^{-tH}\widehat G\rangle
+=\langle h_F^-,T_t h_G^+\rangle.
+\]
+For vacuum-orthogonal classes use the centered boundary functions from
+Proposition~\ref{prop:transfer-identification}. This identifies physical
+matrix elements once the OS construction for that same reflected law has
+been established; it is not an input proving its reflection positivity.
 \end{theorem}
 
 \begin{proof}
-Proposition~\ref{prop:transfer-identification} identifies the reflected
-Euclidean correlation form with the boundary semigroup \(T_t\) on
-\(L^2(\pi_\infty)\).  Theorem~\ref{thm:os-reconstruction-standard} identifies
-that same reflected Euclidean correlation form with the Osterwalder--Schrader
-inner product after Euclidean-time translation has descended to the
-reconstructed contraction semigroup \(e^{-tH}\).  Combining these two
-identifications yields the stated formula.  Since the positive-time vectors are
-dense in the reconstructed Hilbert space, this is the exact bridge from the
-constructive boundary semigroup to the physical Hamiltonian semigroup used in
-the mass-gap argument.
+The defining translated OS form is $\mathbb E[(\Theta F)\tau_tG]$.
+Apply \eqref{eq:actual-reflected-transfer}. The equality extends from
+future cylinders on the dense domain of the reconstructed semigroup.
+An identification with a single boundary Gram representation additionally
+uses the square-form calculation in Proposition~\ref{prop:os2}.
 \end{proof}
+
 
 \subsection{OS0 and OS1}
 
@@ -1242,73 +1340,80 @@ For a positive-time observable $F$, $\Theta F$ is therefore a negative-time
 observable.
 \end{definition}
 
-\begin{proposition}[Direct reflection positivity on the physical algebra]
+\begin{proposition}[Exact OS2 verification on the selected boundary law]
 \label{prop:os2}
-The Euclidean measure of the emergent realization is reflection positive on the
-gauge-invariant physical algebra.
-Equivalently, the Schwinger functions satisfy OS2.
+For the actual stationary path law in
+Definition~\ref{def:thermo-euclidean-space}, the reflected matrix of any
+finite future family is
+\begin{equation}
+Q_{ij}=\mathbb E[(\Theta F_i)F_j]
+=\langle h_{F_i}^+,h_{F_j}^+\rangle
+ +\langle d_{F_i},h_{F_j}^+\rangle.
+\label{eq:actual-os2-matrix}
+\end{equation}
+Thus the boundary square-norm verification is valid on a future algebra
+precisely when
+\begin{equation}
+\langle d_F,h_G^+\rangle=0
+\quad\text{for all }F,G\text{ in that algebra}.
+\label{eq:actual-os2-square-check}
+\end{equation}
+In particular the established reversible equilibrium-transfer hierarchy
+satisfies this check. For the selected sampling law the defect must be
+calculated with its actual kernel as in
+Lemma~\ref{lem:actual-reflection-boundary-defect}.
 \end{proposition}
 
 \begin{proof}
-Let $\mathcal F_+$, $\mathcal F_0$, and $\mathcal F_-$ denote the positive-time,
-reflection-plane, and negative-time $\sigma$-algebras of the constructive
-Euclidean path measure.
-By Proposition~\ref{prop:ca4}, the constructive generating structure decomposes
-additively across the reflection hyperplane.
-By Proposition~\ref{prop:continuum-hyperplane}, the continuum Euclidean limit
-inherits the same hyperplane decomposition in theorem form.
-By Proposition~\ref{prop:hyperplane-factorization}, the past and future are
-conditionally independent given $\mathcal F_0$.
-Therefore, for every gauge-invariant positive-time observable $F$,
-\begin{align*}
-\langle \Theta F,F\rangle_E
-&=
-\mathbb E_{\pi_\infty}\!\bigl[(\Theta F)\,F\bigr]\\
-&=
-\mathbb E_{\pi_\infty}\!\Bigl[
-\mathbb E_{\pi_\infty}[\Theta F\mid \mathcal F_0]\,
-\mathbb E_{\pi_\infty}[F\mid \mathcal F_0]
-\Bigr].
-\end{align*}
-Since $\Theta$ is reflection together with $*$, conditional expectation commutes
-with $\Theta$ on the physical algebra by
-Proposition~\ref{prop:reflection-stability}, and
+Set $t=0$ in \eqref{eq:actual-reflected-transfer} and substitute
+$h_F^-=h_F^++d_F$ to obtain \eqref{eq:actual-os2-matrix}.
+For $F=\sum_i c_iF_i$, conjugate linearity of $\Theta$ makes $h_F^-$,
+$h_F^+$, and $d_F$ linear in $F$. Consequently
 \[
-\mathbb E_{\pi_\infty}[\Theta F\mid \mathcal F_0]
-=
-\overline{\mathbb E_{\pi_\infty}[F\mid \mathcal F_0]}.
+\mathbb E[(\Theta F)F]=\|h_F^+\|_2^2+\langle d_F,h_F^+\rangle,
+\qquad
+|\langle d_F,h_G^+\rangle|\le\|d_F\|_2\|h_G^+\|_2.
 \]
-Hence
-\[
-\langle \Theta F,F\rangle_E
-=
-\mathbb E_{\pi_\infty}\!\left[
-\left|\mathbb E_{\pi_\infty}[F\mid \mathcal F_0]\right|^2
-\right]
-\ge0.
-\]
-This is reflection positivity.
+Equality with the boundary Gram matrix for all pairs is exactly
+\eqref{eq:actual-os2-square-check}. Under that identity every finite
+reflected matrix is positive Hermitian. This criterion concerns the
+particular square-norm proof; other positive factorizations need not
+make $d_F$ vanish.
 
-By Proposition~\ref{prop:no-gauge-obstruction}, the constructive Euclidean
-measure is already the ordinary probability measure $\mathbb P$ on the
-stationary path space, with no extra indefinite density to control.  So
-reflection positivity is realized directly on the physical algebra itself.
+For the equilibrium transfer already constructed from the algorithmic
+LSI law in the Fractal Gas Yang--Mills chapter, the established operator
+is $T_\sigma^{\mathrm{eq}}=e^{-\sigma H_{\mathrm{eq}}}$ with
+$H_{\mathrm{eq}}$ self-adjoint. Every factor difference in
+\eqref{eq:actual-reflection-telescoping} is then zero. Hence $d_F=0$
+for all bounded future cylinders, giving the proved equilibrium OS
+form. Bounded monotone approximation extends the identity to bounded
+future functionals of that same equilibrium law.
 
-This proves OS2 in the same structural pattern isolated abstractly in
-\cite{axioms}: additive hyperplane decomposition from Core Axiom~4, positivity
-from Core Axiom~5, and realization-specific hyperplane factorization supplied
-here by the stationary Markov path law and the ordinary positive thermodynamic
-path measure.
+The calculation preserves which law is used. Its application to physical
+spacetime reflection requires the physical reflected readouts to have
+this same form. In the four-position-coordinate recorded construction,
+physical reflection changes $x^0$, while sampling time is $\tau$;
+a Markov cut at $\tau=0$ is not an identification with a cut at $x^0=0$.
+The recorded-readout construction in the Fractal Gas chapter explicitly
+computes the physical reflected matrix under the native law.
+Neither replacing that law by the equilibrium path law nor dropping
+$\langle d_F,h_G^+\rangle$ is part of this verification.
 \end{proof}
 
-\begin{remark}
-The proof above is the direct generator-and-Markov proof of reflection
-positivity in this realization.
-It is equivalent to the transfer-operator formulation isolated abstractly in the
-framework paper, while the needed factorization is supplied directly by the
-stationary Markov path law of the realization itself.  OS2 is therefore proved
-in this section.
+\begin{remark}[Dependency of the axiom package]
+Reflection stability in Proposition~\ref{prop:reflection-stability}
+asserts preservation of observable classes. It does not assert
+\eqref{eq:actual-os2-square-check}. Conditional independence of past
+and future supplies \eqref{eq:actual-reflected-transfer}; the backward
+conditional expectation still contains the adjoint transitions.
+Accordingly, uses of Proposition~\ref{prop:os2} in the all-axiom,
+reconstruction, and physical-gap claims below require verification of
+the positive reflected form for their specified physical hierarchy.
+The reversible equilibrium hierarchy has that verification. The
+sampling-path argument as written here computes its defect and does
+not establish its vanishing on the physical sector.
 \end{remark}
+
 
 \subsection{OS3: spectral gap and exponential clustering}
 

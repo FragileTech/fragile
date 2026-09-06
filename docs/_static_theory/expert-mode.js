@@ -1,5 +1,5 @@
 /**
- * Expert Mode Toggle for Fragile Docs
+ * Expert Mode Toggle for the Fragile Theory documentation
  *
  * This script provides a toggle switch that allows readers to switch between:
  * - Full Mode: Shows all content including Feynman-style explanatory prose

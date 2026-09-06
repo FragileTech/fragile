@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "name": "Violet Circuit \u00b7 kart racing",
+  "name": "Violet Circuit · kart racing",
   "task": "navigation",
   "description": "Drive the Mite R around the circuit. Reach all 16 checkpoints in order to complete a lap. W/S drive, A/D steer, Space brakes.",
   "size": [
@@ -19,8 +19,8 @@
   "gate_reward": 12,
   "boundary": [
     [
-      58.0,
-      6.0
+      58,
+      6
     ],
     [
       59.56827,
@@ -83,12 +83,12 @@
       20.43173
     ],
     [
-      74.0,
-      22.0
+      74,
+      22
     ],
     [
-      74.0,
-      34.0
+      74,
+      34
     ],
     [
       73.92296,
@@ -151,12 +151,12 @@
       49.92296
     ],
     [
-      58.0,
-      50.0
+      58,
+      50
     ],
     [
-      22.0,
-      50.0
+      22,
+      50
     ],
     [
       20.43173,
@@ -219,12 +219,12 @@
       35.56827
     ],
     [
-      6.0,
-      34.0
+      6,
+      34
     ],
     [
-      6.0,
-      22.0
+      6,
+      22
     ],
     [
       6.07704,
@@ -287,15 +287,15 @@
       6.07704
     ],
     [
-      22.0,
-      6.0
+      22,
+      6
     ]
   ],
   "holes": [
     [
       [
-        58.0,
-        14.0
+        58,
+        14
       ],
       [
         58.78414,
@@ -358,12 +358,12 @@
         21.21586
       ],
       [
-        66.0,
-        22.0
+        66,
+        22
       ],
       [
-        66.0,
-        34.0
+        66,
+        34
       ],
       [
         65.96148,
@@ -426,12 +426,12 @@
         41.96148
       ],
       [
-        58.0,
-        42.0
+        58,
+        42
       ],
       [
-        22.0,
-        42.0
+        22,
+        42
       ],
       [
         21.21586,
@@ -494,12 +494,12 @@
         34.78414
       ],
       [
-        14.0,
-        34.0
+        14,
+        34
       ],
       [
-        14.0,
-        22.0
+        14,
+        22
       ],
       [
         14.03852,
@@ -562,14 +562,14 @@
         14.03852
       ],
       [
-        22.0,
-        14.0
+        22,
+        14
       ]
     ]
   ],
   "agent_types": {
     "rocket": {
-      "label": "Kestrel \u00b7 vector rocket",
+      "label": "Kestrel · vector rocket",
       "physics": {
         "controlled": true,
         "radius": 0.65,
@@ -587,7 +587,7 @@
       }
     },
     "kart": {
-      "label": "Mite \u00b7 electric kart",
+      "label": "Mite · electric kart",
       "extends": "rocket",
       "physics": {
         "drag": 0.7,
@@ -605,7 +605,7 @@
       }
     },
     "drone": {
-      "label": "Wisp \u00b7 survey drone",
+      "label": "Wisp · survey drone",
       "extends": "rocket",
       "physics": {
         "mass": 0.7,
@@ -623,7 +623,7 @@
     },
     "thruster_tug": {
       "extends": "rocket",
-      "label": "Kestrel \u00b7 independent thrusters",
+      "label": "Kestrel · independent thrusters",
       "physics": {
         "actuator": {
           "kind": "thrusters",
@@ -668,7 +668,7 @@
     },
     "racing_kart": {
       "extends": "kart",
-      "label": "Mite R \u00b7 circuit kart",
+      "label": "Mite R · circuit kart",
       "physics": {
         "radius": 0.85,
         "thrust": 12,
@@ -687,6 +687,28 @@
         "model": "kart",
         "color": "#c69bd9",
         "scale": 1.2
+      }
+    },
+    "harvester": {
+      "label": "Harvester · steam ore collector",
+      "extends": "kart",
+      "physics": {
+        "radius": 1.3,
+        "mass": 8,
+        "thrust": 36,
+        "drag": 0.8,
+        "angular_drag": 5,
+        "actuator": {
+          "kind": "kart",
+          "wheelbase": 1.7,
+          "steering_limit": 0.48,
+          "lateral_grip": 10,
+          "brake_deceleration": 12
+        }
+      },
+      "visual": {
+        "model": "harvester",
+        "color": "#b88a43"
       }
     }
   },
@@ -717,7 +739,7 @@
     },
     {
       "position": [
-        64.0,
+        64,
         11.6077
       ],
       "radius": 3.4
@@ -725,7 +747,7 @@
     {
       "position": [
         68.3923,
-        16.0
+        16
       ],
       "radius": 3.4
     },
@@ -739,13 +761,13 @@
     {
       "position": [
         68.3923,
-        40.0
+        40
       ],
       "radius": 3.4
     },
     {
       "position": [
-        64.0,
+        64,
         44.3923
       ],
       "radius": 3.4
@@ -773,7 +795,7 @@
     },
     {
       "position": [
-        16.0,
+        16,
         44.3923
       ],
       "radius": 3.4
@@ -781,7 +803,7 @@
     {
       "position": [
         11.6077,
-        40.0
+        40
       ],
       "radius": 3.4
     },
@@ -795,13 +817,13 @@
     {
       "position": [
         11.6077,
-        16.0
+        16
       ],
       "radius": 3.4
     },
     {
       "position": [
-        16.0,
+        16,
         11.6077
       ],
       "radius": 3.4
@@ -835,8 +857,8 @@
     "kind": "circuit",
     "centerline": [
       [
-        58.0,
-        10.0
+        58,
+        10
       ],
       [
         59.17621,
@@ -899,12 +921,12 @@
         20.82379
       ],
       [
-        70.0,
-        22.0
+        70,
+        22
       ],
       [
-        70.0,
-        34.0
+        70,
+        34
       ],
       [
         69.94222,
@@ -967,12 +989,12 @@
         45.94222
       ],
       [
-        58.0,
-        46.0
+        58,
+        46
       ],
       [
-        22.0,
-        46.0
+        22,
+        46
       ],
       [
         20.82379,
@@ -1035,12 +1057,12 @@
         35.17621
       ],
       [
-        10.0,
-        34.0
+        10,
+        34
       ],
       [
-        10.0,
-        22.0
+        10,
+        22
       ],
       [
         10.05778,
@@ -1103,8 +1125,8 @@
         10.05778
       ],
       [
-        22.0,
-        10.0
+        22,
+        10
       ]
     ],
     "width": 8,

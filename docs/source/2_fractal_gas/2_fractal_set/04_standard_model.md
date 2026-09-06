@@ -7,18 +7,22 @@
 Start with the quantities the gas records: forces, velocities, fitness, and
 companions. The Fractal Set reconstruction supplies these inputs; explicit
 formulas turn them into complex vectors and their contractions. The complete
-Gram and determinant coordinates then recover the descriptor configuration
-up to a common special-unitary frame change. Carrying the recorded law
-through this map preserves every represented correlation exactly.
+Gram and determinant coordinates recover the descriptor configuration up to
+a common special-unitary frame change.
 
-The volume supplies more than coordinates. Its derivative bounds, ellipticity,
-and LSI estimates control the specified fields and laws, while the exterior
-construction identifies CAR operators with antisymmetric replicas of the
-whole swarm. We use these results through their explicit maps. Comparing the
-resulting dynamics with a coupled field action requires the corresponding
-measure and generator calculations. Keeping those maps visible tells the
-simulator precisely which observable to compute and which law to sample.
-Dirac matrices are an optional representation of the operator algebra.
+The complete record also lets us follow the update itself. Decode the state,
+run the implemented step with its random inputs, and encode the result.
+{prf:ref}`thm-sm-instantiated-record-transition` makes this recipe an exact
+transition kernel. Every integrable finite history observable covered by the
+record keeps its expectation, including the masks used to select samples.
+
+The derivative and LSI bounds then control the specified fields and laws.
+On its identified LSI law, the equilibrium energy construction supplies a
+further evolution with its own generator and time coordinate. The exterior
+construction carries record observables and their evolution to antisymmetric
+replicas of the whole swarm. Comparing these constructions with a proposed
+coupled field action uses the measure and generator calculations below.
+Dirac matrices provide an optional representation of the operator algebra.
 :::
 
 :::{prf:definition} Scope, dimensions, and phase conventions
@@ -76,13 +80,19 @@ complex oriented volumes as well, and the allowed transformations are exactly
 special unitary. For two components, the oriented volume is the alternating
 doublet contraction; for three, it is a three-vector determinant.
 
-The doublet frames also give genuine SU(2) transport matrices. Follow what
-this particular transport does: it carries the normalized doublet at one end
-of an edge exactly onto the doublet at the other end. Their covariant difference
-vanishes, and going around a closed loop returns the identity. Allow the
-doublet lengths to vary and the edge energy measures only that change in
-length. These are exact consequences of the frame formula, useful when
-choosing which link variables a simulator must retain.
+The companion draw makes these observables fluctuate. Fix the current state
+and fitness inputs, and compare the amplitudes produced by the eligible
+companions. Different distances give different amplitude magnitudes. When
+both companions have positive selection probability, this difference gives
+a strictly positive variance of the recorded component and hence of its
+doublet, as calculated below.
+
+Transport follows the Fractal Set's CST, IG, and IA edge operations. An
+interaction triangle compares its IA and IG matrices, with the CST factor
+retained outside temporal gauge. Its Wilson defect is calculated directly
+from those transports in {prf:ref}`prop-sm-attribution-holonomy-defect`.
+The complete companion, cloning, and kinetic update supplies the history
+law used for the doublets and the recorded transport observables.
 :::
 
 ### Companion amplitudes and phases
@@ -106,9 +116,9 @@ comparisons $U_{ij}\psi_j-\psi_i$.
 
 The diversity kernel may be used for the weights:
 $w_{ik}=\exp[-d_{\mathrm{alg}}(i,k)^2/(2\epsilon_d^2)]$, with its actual
-allowed-companion set and normalization. Assigning node phases
-$\theta_i=-\Phi_i/\hbar_{\mathrm{eff}}$ and
-$U_{ij}=e^{i(\theta_i-\theta_j)}$ gives trivial holonomy on every loop.
+allowed-companion set and normalization. The recorded IG, CST, and IA phase transports are those of
+{prf:ref}`def-fractal-set-gauge-connection`; their ordered interaction
+loop is evaluated in {prf:ref}`def-fractal-set-wilson-loop`.
 
 For $V_i+\varepsilon_{\mathrm{clone}}>0$, a common fitness shift $b$ with
 $V_i+b+\varepsilon_{\mathrm{clone}}>0$ preserves fitness differences and
@@ -129,8 +139,7 @@ particle update.
 :::{prf:proof}
 Normalization follows by summing $P_i(k)$. Taking moduli removes all phases.
 Substitution of the link transformation leaves the comparison multiplied by
-$e^{i\alpha_i}$. Products of node-difference links telescope around loops.
-Substitution of $V_i+b$ into the score gives the displayed positive row
+$e^{i\alpha_i}$. Substitution of $V_i+b$ into the score gives the displayed positive row
 factor. For example a score $1/2$ becomes $1/4$ if that factor is $1/2$;
 its Bernoulli acceptance probability changes under the usual unclipped
 score rule. $\square$
@@ -274,7 +283,12 @@ enough information to reconstruct the normalized vectors up to their common
 SU(2) or SU(3) frame, including configurations whose vectors fail to span
 the whole space. The proofs below construct that correspondence and carry
 the probability law through it. Every integrable correlation expressed in
-these invariant coordinates retains its value.
+these invariant coordinates retains its value. The complete encoded state
+also has the explicit transition of
+{prf:ref}`thm-sm-instantiated-record-transition`. For a selected collection
+of channels, the memory calculation keeps the effect of discarded state
+coordinates. The subsequent prediction construction extends those channels
+using the actual update until their observable space is preserved by it.
 
 A frame average combines many coordinates into one number. Retain the direct
 descriptors and auxiliary data before forming these averages. In the
@@ -665,6 +679,144 @@ All exponents require the stated dimensionless normalization of the scores
 and fitness variables. These are observable definitions at a fixed record.
 :::
 
+:::{div} feynman-prose
+Freeze the inputs just before drawing a companion. Each eligible choice
+now has a definite amplitude: distance sets its magnitude and the fitness
+difference sets its phase. If two choices have different distances, their
+amplitudes cannot coincide, whatever the phases. With positive probabilities
+for both choices, the draw therefore produces a fluctuating component.
+
+The variance formula below measures this directly by comparing pairs of
+possible outcomes. Its lower bound needs only those two choices and their
+actual probabilities. For the two-hop doublet, use the full joint companion
+assignment: the components can depend on one another, but the squared
+doublet fluctuation still includes the first component's variance. These
+are fluctuations before the later masked frame average.
+:::
+
+:::{prf:theorem} Nontrivial doublet fluctuations from the actual companion draw
+:label: thm-sm-native-doublet-fluctuations
+
+At the actual cloning-companion draw, condition on the complete current
+state and the already evaluated fitness inputs, denoting this information
+by $\mathcal G$. The companion law is the algorithmic law of
+{prf:ref}`def-fg-soft-companion-kernel`; write
+$p_{ij}=\mathbb P(K_i=j\mid\mathcal G)$. For the standard distance-weighted
+readout in {prf:ref}`def-sm-direct-companion-doublet`, all quantities
+
+(eq-fg-sm-u1)=
+$$
+r_{ij}=\exp[-D_{ij}^2/(4\ell_c^2)],\quad
+\vartheta_{ij}=\frac{F_j-F_i}{(|F_i|+\varepsilon_{\mathrm{clone}})h_S},
+\quad a_{ij}=r_{ij}e^{i\vartheta_{ij}},\quad a_i=a_{iK_i}
+\tag{SM.U1}
+$$
+
+are therefore evaluated directly from this draw and its recorded inputs.
+The conditional complex variance, defined using squared modulus, is
+
+(eq-fg-sm-u2)=
+$$
+\begin{aligned}
+\mathbb E[a_i\mid\mathcal G]&=\sum_jp_{ij}a_{ij},\\
+\operatorname{Var}(a_i\mid\mathcal G)
+ &=\frac12\sum_{j,k}p_{ij}p_{ik}|a_{ij}-a_{ik}|^2\\
+ &\ge p_{ij}p_{ik}(r_{ij}-r_{ik})^2
+ \qquad(j\ne k).
+\end{aligned}
+\tag{SM.U2}
+$$
+
+In particular every state with two eligible companions at different
+finite algorithmic distances has strictly positive conditional component
+variance. This strict inequality uses the positive Gaussian companion
+weights of the actual finite companion draw; no equilibrium law is needed.
+
+Retain the actual joint companion assignment $\mathbf K$ and form the
+two-hop doublet $d_i=(a_i,a_{K_i})^{\mathsf T}$ as in the existing readout.
+For each complete assignment $\mathbf k$, let $d_i(\mathbf k)$ denote
+its evaluated doublet and let $p(\mathbf k\mid\mathcal G)$ be its actual
+joint probability. Then
+
+(eq-fg-sm-u3)=
+$$
+\begin{aligned}
+\mathbb E\!\left[\|d_i-\mathbb E[d_i\mid\mathcal G]\|^2
+                         \mid\mathcal G\right]
+ &=\frac12\sum_{\mathbf k,\mathbf l}
+ p(\mathbf k\mid\mathcal G)p(\mathbf l\mid\mathcal G)
+                 \|d_i(\mathbf k)-d_i(\mathbf l)\|^2\\
+ &\ge\operatorname{Var}(a_i\mid\mathcal G).
+\end{aligned}
+\tag{SM.U3}
+$$
+
+Thus the recorded doublet has nontrivial stochastic fluctuations already
+at the companion substep on these states. Its Hermitian and alternating
+contractions are those of {prf:ref}`thm-sm-direct-su2-invariants`.
+
+*Proof.* Conditional on $\mathcal G$, the finite set of values $a_{ij}$
+is deterministic. Its conditional expectation and second moment are
+$\sum_jp_{ij}a_{ij}$ and $\sum_jp_{ij}|a_{ij}|^2$. Expanding the double sum,
+
+$$
+\begin{aligned}
+\frac12\sum_{j,k}p_{ij}p_{ik}|a_{ij}-a_{ik}|^2
+ &=\sum_jp_{ij}|a_{ij}|^2
+    -\operatorname{Re}\sum_{j,k}p_{ij}p_{ik}a_{ij}\overline{a_{ik}}\\
+ &=\sum_jp_{ij}|a_{ij}|^2-\left|\sum_jp_{ij}a_{ij}\right|^2.
+\end{aligned}
+$$
+
+The two terms indexed by $(j,k)$ and $(k,j)$ together contribute
+$p_{ij}p_{ik}|a_{ij}-a_{ik}|^2$. The reverse triangle inequality bounds
+this below by $p_{ij}p_{ik}(r_{ij}-r_{ik})^2$. Gaussian selection assigns
+positive probability to every eligible finite-distance companion, and
+$D\mapsto\exp[-D^2/(4\ell_c^2)]$ is strictly decreasing for $D\ge0$.
+This proves strict positivity at the stated actual states, without any
+restriction on their fitness phases.
+
+Apply the same expansion with the Hermitian norm on $\mathbb C^2$ to
+the finite joint companion law. This proves the equality in
+{ref}`(SM.U3) <eq-fg-sm-u3>` without independence of the components or
+of the two hops. Squared norm is the sum of the two component squared
+moduli, so its conditional variance dominates that of the first
+component, proving the inequality.
+
+For an actual law of $\mathcal G$, integration retains the explicit bound
+$\mathbb E[p_{ij}p_{ik}(r_{ij}-r_{ik})^2]$. It is strictly positive exactly
+when the nonnegative integrand is positive on a set of positive measure.
+This is the support calculation for the same recorded law, rather than
+a substitution of a separate equilibrium measure. It also gives a
+lower bound on unconditional doublet variance by conditional variance
+decomposition. For the mode without distance weighting, set $r_{ij}=1$:
+the exact variance identity remains valid, and distinct phases modulo
+$2\pi$ supply its nonzero terms. The distance lower bound itself then
+vanishes. Finally, masked frame averaging is a subsequent observable
+map; its possible cancellations do not alter the pre-average doublet
+variance calculated here.
+
+For the actual completed-record law, let
+$f=a_i-\mathbb E a_i\in L^2_0(P)$. The established record CAR
+construction gives
+
+$$
+\|a^\dagger(f)\Omega\|^2
+=\langle f,f\rangle
+=\operatorname{Var}_P(a_i)
+\ge\mathbb E_P\operatorname{Var}(a_i\mid\mathcal G).
+$$
+
+Thus the positive companion-variance calculation gives a nonzero vector
+in the fermionic representation of this same record law. Under the
+stationary completed-state realization, its ordered time correlations
+are the native CAR regression of
+{prf:ref}`thm-lqft-record-car-channel`, with the full algorithmic $P$.
+This connects the computed fluctuation to the existing quantum
+representation without changing the update. $\square$
+:::
+
+
 :::{prf:theorem} Sum and difference channels as exact doublet coordinates
 :label: thm-sm-direct-doublet-readout-isomorphism
 
@@ -803,93 +955,92 @@ convention. The identity $e(z,z)=0$ follows from commutativity of the two
 scalar components. $\square$
 :::
 
-:::{prf:proposition} Frame links constructed from normalized doublets
-:label: prop-sm-direct-su2-frames
+:::{div} feynman-prose
+Follow the two routes around one recorded interaction triangle. In temporal
+gauge its CST transport is the identity, leaving the comparison between the
+IA matrix $A$ and the IG matrix $G$. The Wilson defect measures their
+mismatch as a squared matrix distance. It vanishes exactly when the two
+transports agree, and its expectation measures that mismatch across the
+attributed records.
 
-For $z\in\mathbb C^2$ with $\|z\|=1$, define
-
-$$
-B(z)=\begin{pmatrix}z_1&-\overline{z_2}\\z_2&\overline{z_1}\end{pmatrix}.
-$$
-
-Then $B(z)\in SU(2)$ and $B(\Omega z)=\Omega B(z)$ for
-$\Omega\in SU(2)$. For a chosen graph on doublet indices,
-$U_{ij}=B(z_i)B(z_j)^\dagger$ has inverse reversal and transforms as
-$U_{ij}\mapsto\Omega_iU_{ij}\Omega_j^{-1}$. Every closed product of these
-links equals $I$. They realize a flat comparison convention from vertex
-frames. Nontrivial local $SU(2)$ holonomy requires a further transport
-construction, with its covariance and law established separately.
+To evaluate this observable, retain the transport matrices assigned by the
+Fractal Set's edge operations. Their ordered product determines the triangle
+holonomy. For adjacent triangles, retain the matrix products before taking
+the trace, so that their relative transport is included in the larger loop.
 :::
 
-:::{prf:proof}
-The second column is $Jz=(-\overline z_2,\overline z_1)^{\mathsf T}$.
-It satisfies
+:::{prf:proposition} Attribution holonomy and its exact nonflatness observable
+:label: prop-sm-attribution-holonomy-defect
 
+Use the Fractal Set attribution connection of
+{prf:ref}`def-fractal-set-gauge-connection`, with its prescribed edge
+orientations and temporal gauge. Write $A=U^{(2)}_{\mathrm{IA}}$ and
+$G=U^{(2)}_{\mathrm{IG}}$ for the two transports in one recorded
+interaction triangle. Its holonomy and Wilson defect satisfy
+
+(eq-fg-sm-g9)=
 $$
-z^\dagger Jz=-\overline z_1\overline z_2+
-\overline z_2\overline z_1=0,\qquad
-\|Jz\|^2=\|z\|^2=1,
-\qquad \det[z,Jz]=|z_1|^2+|z_2|^2=1.
-$$
-
-Thus $B(z)^\dagger B(z)=I$ and $\det B(z)=1$. Any unitary matrix
-with first column $z$ has second column $e^{i\beta}Jz$, since the
-orthogonal complement is one-dimensional. Its determinant is $e^{i\beta}$;
-requiring determinant one forces that column to equal $Jz$. This proves
-uniqueness of the completion. Both $B(\Omega z)$ and $\Omega B(z)$
-belong to $SU(2)$ and have first column $\Omega z$, so they coincide.
-
-Write $B_i=B(z_i)$. Then
-
-$$
-U_{ij}^\dagger=(B_iB_j^\dagger)^\dagger=B_jB_i^\dagger=U_{ji},
-\qquad U_{ij}U_{ji}=B_i(B_j^\dagger B_j)B_i^\dagger=I.
+H_\triangle=AG^\dagger,\qquad
+w_\triangle=1-\tfrac12\operatorname{Re}\operatorname{Tr}H_\triangle
+             =\tfrac14\|A-G\|_{\mathrm F}^2\in[0,2].
+\tag{SM.G9}
 $$
 
-Equivariance gives
-$U'_{ij}=(\Omega_iB_i)(\Omega_jB_j)^\dagger
-=\Omega_iU_{ij}\Omega_j^{-1}$.
-For a closed sequence $i_0,\ldots,i_r=i_0$,
+Consequently the interaction triangle has nonidentity holonomy exactly
+when its IA and IG transports differ. The CST, IG, and IA edge operations
+of the Fractal Set determine the transports used in this formula.
+
+For any law of the existing attributed records,
+
+(eq-fg-sm-g10)=
+$$
+\mathbb E w_\triangle
+ =\tfrac14\mathbb E\|U^{(2)}_{\mathrm{IA}}
+                            -U^{(2)}_{\mathrm{IG}}\|_{\mathrm F}^2,
+\qquad
+\mathbb E w_\triangle>0
+\ \Longleftrightarrow\
+\mathbb P(U^{(2)}_{\mathrm{IA}}\ne U^{(2)}_{\mathrm{IG}})>0.
+\tag{SM.G10}
+$$
+
+*Proof.* The triangle formula is
+{prf:ref}`def-fractal-set-wilson-loop`. Expanding the Frobenius norm gives
 
 $$
-\prod_{k=0}^{r-1}U_{i_ki_{k+1}}
-=B_{i_0}(B_{i_1}^\dagger B_{i_1})\cdots
- (B_{i_{r-1}}^\dagger B_{i_{r-1}})B_{i_0}^\dagger=I.
+\begin{aligned}
+\|A-G\|_{\mathrm F}^2
+ &=\operatorname{Tr}[(A-G)(A^\dagger-G^\dagger)]\\
+ &=4-\operatorname{Tr}(AG^\dagger)-\operatorname{Tr}(GA^\dagger)
+ =4-2\operatorname{Re}\operatorname{Tr}(AG^\dagger).
+\end{aligned}
 $$
 
-This establishes inverse reversal, covariance, and the exact flatness of
-this particular frame construction. $\square$
+The eigenvalues of $AG^\dagger\in SU(2)$ are $e^{i\theta},e^{-i\theta}$,
+so $w_\triangle=1-\cos\theta\in[0,2]$. Also $AG^\dagger=I$ exactly
+when $A=G$. Positivity and boundedness prove
+{ref}`(SM.G10) <eq-fg-sm-g10>`. Under a change of vertex frames each
+edge transforms at its two ends and the ordered triangle product
+transforms by conjugation at its basepoint. Its trace and hence
+{ref}`(SM.G9) <eq-fg-sm-g9>` are unchanged. The simplification $H=AG^\dagger$
+uses temporal gauge; after a general time-dependent frame change one
+retains the CST factor in the full triangle product.
+
+For adjacent triangles, the ordered multiplication and basepoint
+conjugation are exactly
+{prf:ref}`prop-fractal-set-wilson-factorization`; taking two separate
+traces before multiplication would lose this information. When these
+edge matrices are evaluated by the recorded attribution rule, retaining
+them in the descriptor map makes their action and all moments instances
+of {prf:ref}`thm-sm-effective-recorded-gauge-dynamics` and
+{prf:ref}`cor-sm-recorded-gauge-generating-functional`. The expectation in {ref}`(SM.G10) <eq-fg-sm-g10>` is evaluated
+by inserting the CST, IG, and IA attribution matrices from their recorded
+update rule into the complete descriptor likelihood. $\square$
 :::
 
-:::{prf:corollary} Covariant differences for the doublet-frame links
-:label: cor-sm-frame-link-radial-action
 
-For the links of {prf:ref}`prop-sm-direct-su2-frames`,
 
-$$
-U_{ij}z_j=z_i,\qquad U_{ij}z_j-z_i=0.
-$$
 
-For radii $r_i\ge0$ and fields $H_i=r_i z_i$, the spatial term of
-{prf:ref}`def-sm-scalar-action` reduces to
-
-$$
-\frac12\sum_{\{i,j\}}c_{ij}\|U_{ij}H_j-H_i\|^2
-=\frac12\sum_{\{i,j\}}c_{ij}(r_j-r_i)^2.
-$$
-
-Every weak Wilson-face term built from these links is zero. Thus this
-particular matrix construction supplies exact frame comparisons and radial
-kinetics. Its link variables have no independent curvature fluctuations.
-
-*Proof.* The first column identity is $B(z_j)e_1=z_j$. Unitarity gives
-$B(z_j)^\dagger z_j=e_1$, so
-$U_{ij}z_j=B(z_i)e_1=z_i$. Consequently
-$U_{ij}H_j-H_i=(r_j-r_i)z_i$, whose squared norm is $(r_j-r_i)^2$.
-The closed product is $I_2$ by the preceding proposition, and
-$1-\tfrac12\operatorname{ReTr}I_2=0$. These statements hold for every
-record before any averaging or limit. $\square$
-:::
 
 ### Observable symmetry, dynamics, and quantum interpretation
 
@@ -1371,6 +1522,421 @@ Then $\overline P(y,A)=P(s(y),q^{-1}A)$ is a measurable probability
 kernel independent of the chosen representative. $\square$
 :::
 
+:::{div} feynman-prose
+Suppose you display just one channel from the swarm. Several complete states
+can give the same displayed value. If their remaining coordinates affect the
+next readout, averaging those coordinates away after every step can change the
+predictions several steps ahead.
+
+We can keep that effect exactly. Start with an observable of the displayed
+channel and apply the actual transition operator. Its prediction may now
+depend on more of the swarm state. The projection $\Pi$ keeps the conditional
+average visible through the channel; $R$ keeps the remaining dependence.
+The four blocks below track how predictions pass between these two parts.
+Eliminating the second part gives an explicit memory sum built from the
+same recorded kernel. This computes the projected evolution for the chosen
+channel, including a masked state readout, without assuming that its present
+value suffices to predict its future.
+:::
+
+:::{prf:theorem} Exact recorded-channel dynamics with its eliminated-coordinate memory
+:label: thm-sm-direct-channel-memory
+
+Use the actual conservative stationary kernel $P$ represented in
+{prf:ref}`thm-sm-instantiated-record-transition`, and any recorded
+state descriptor $q$, including the invariant coordinates and their
+masked channel readouts. On $\mathcal H=L^2(\pi)$ let
+$\Pi f=\mathbb E_\pi[f\mid\sigma(q)]$,
+$R=I-\Pi$, and $\mathcal H_q=\operatorname{Ran}\Pi$. The existing
+unitary $V:L^2(q_*\pi)\to\mathcal H_q$ identifies this subspace with
+the descriptor law. Decompose the *same* recorded kernel as
+
+(eq-fg-sm-m1)=
+$$
+P=
+\begin{pmatrix}\mathsf A&\mathsf B\\
+                \mathsf C&\mathsf D\end{pmatrix},
+\quad
+\mathsf A=\Pi P|_{\mathcal H_q},\quad
+\mathsf B=\Pi P|_{\operatorname{Ran}R},\quad
+\mathsf C=RP|_{\mathcal H_q},\quad
+\mathsf D=RP|_{\operatorname{Ran}R}.
+\tag{SM.M1}
+$$
+
+All blocks are contractions. For $T_n=\Pi P^n|_{\mathcal H_q}$,
+the exact two-time channel transition obeys
+
+(eq-fg-sm-m2)=
+$$
+\begin{aligned}
+T_0&=I_{\mathcal H_q},\\
+T_{n+1}
+ &=\mathsf A T_n+
+   \sum_{j=0}^{n-1}\mathsf B\mathsf D^{\,n-1-j}\mathsf C T_j,
+ \qquad n\ge0.
+\end{aligned}
+\tag{SM.M2}
+$$
+
+The sum is empty at $n=0$. Every block is an operator of the complete
+algorithm; the memory terms specify the effect of the discarded state
+coordinates. In particular,
+
+(eq-fg-sm-m3)=
+$$
+T_2-\mathsf A^2=\Pi PRP|_{\mathcal H_q}
+                 =\mathsf B\mathsf C.
+\tag{SM.M3}
+$$
+
+For $|z|<1$ the norm-convergent generating function is
+
+(eq-fg-sm-m4)=
+$$
+\sum_{n=0}^\infty z^nT_n
+=\left[I-z\mathsf A
+ -z^2\mathsf B(I-z\mathsf D)^{-1}\mathsf C\right]^{-1}.
+\tag{SM.M4}
+$$
+
+The complete hierarchy of bounded channel insertions is obtained by
+the same block multiplication, including its hidden-state blocks.
+When $\mathsf C=0$, the represented channel subspace is invariant,
+the memory vanishes, and its exact transition is $\mathsf A^n$.
+This is the stationary $L^2$ realization of the already stated
+intertwining criterion. For the complete Fractal Set encoding $\Pi=I$,
+so this reduction recovers the exact kernel conjugation.
+:::
+
+:::{prf:proof}
+**Conditional law and decomposition.** Conditional expectation is an
+orthogonal projection, and the stationary $P$ is a contraction.
+This proves the block bounds. For a bounded descriptor test $f$,
+
+$$
+(V^{-1}T_nVf)(q(S_0))
+=\mathbb E_\pi[f(q(S_n))\mid q(S_0)].
+$$
+
+The equality follows by conditioning first on $S_0$ and then on $q(S_0)$.
+Thus $T_n$ is exactly the recorded two-time conditional operator.
+It also has a probability kernel on the standard Borel descriptor space.
+In particular $\mathsf A$ is its one-step operator; the following
+calculation determines whether its powers suffice.
+
+For $f\in\mathcal H_q$, put $x_n=\Pi P^nf$ and $y_n=RP^nf$.
+Their initial values are $x_0=f$, $y_0=0$. Block multiplication gives
+
+$$
+x_{n+1}=\mathsf A x_n+\mathsf B y_n,\qquad
+y_{n+1}=\mathsf C x_n+\mathsf D y_n.
+$$
+
+Iterating the second equation gives
+$y_n=\sum_{j=0}^{n-1}\mathsf D^{\,n-1-j}\mathsf Cx_j$.
+Insert it into the first equation to prove
+{ref}`(SM.M2) <eq-fg-sm-m2>`, and take $n=1$ to obtain
+{ref}`(SM.M3) <eq-fg-sm-m3>`.
+
+**Resolvent calculation.** Since $\|P\|\le1$ and $|z|<1$,
+$(I-zP)^{-1}=\sum_{n\ge0}z^nP^n$ in operator norm.
+To solve $(I-zP)(x,y)=(f,0)$, its second block gives
+$y=z(I-z\mathsf D)^{-1}\mathsf Cx$.
+Its first block then reads
+
+$$
+\left[I-z\mathsf A
+ -z^2\mathsf B(I-z\mathsf D)^{-1}\mathsf C\right]x=f.
+$$
+
+Both full and lower-block resolvents exist by their Neumann series;
+block elimination proves that the bracketed operator is invertible.
+Taking the resolved component proves
+{ref}`(SM.M4) <eq-fg-sm-m4>`.
+
+**All channel correlations.** Multiplication by a bounded $q$-measurable
+observable $a$ commutes with $\Pi$:
+$\Pi(af)=a\Pi f$. It is therefore block diagonal on
+$\mathcal H_q\oplus\operatorname{Ran}R$.
+The complete formula {ref}`(SM.K4) <eq-fg-sm-k4>` has initial and
+terminal vector $1\in\mathcal H_q$. Replace each $P$ by
+{ref}`(SM.M1) <eq-fg-sm-m1>` and each insertion by its two diagonal
+blocks. Expanding the finite product gives the identical scalar
+correlation, including every excursion into and return from
+$\operatorname{Ran}R$. This supplies the higher-time correspondence;
+two-time conditional operators alone need not determine it.
+
+Finally $\mathsf C=0$ says $P\mathcal H_q\subseteq\mathcal H_q$.
+All iterates then stay in that subspace, giving $T_n=\mathsf A^n$
+and closure of the inserted products. Encoding all coordinates makes
+$R=0$. For a time-scheduled implementation these formulas use the
+stationary completed state or its fixed-phase stroboscopic kernel from
+{prf:ref}`rem-sm-actual-step-and-clock`.
+:::
+
+
+:::{div} feynman-prose
+There is a direct way to retain the information needed for prediction.
+Start with the channels you intend to measure, including their masks. Apply
+the algorithm's transition to their observables: this gives their expected
+values one step later as functions of the current complete state. Keep those
+prediction functions as additional coordinates. Include products and repeat,
+so that joint readouts and their next-step predictions are retained too.
+
+The following construction carries out this procedure through all stages.
+It produces the smallest observable sigma-algebra containing the selected
+channels and preserved by the actual transition. That completed descriptor
+has an exact stationary Markov law and preserves the original channel
+correlations. The construction may require countably many coordinates;
+the finite partitions that follow provide its explicit approximations.
+:::
+
+:::{prf:theorem} Prediction-complete gauge descriptors from the actual transition
+:label: thm-sm-prediction-complete-descriptors
+
+Use the conservative stationary completed-state kernel $P$ and law $\pi$
+already represented in {prf:ref}`thm-sm-instantiated-record-transition`
+and {prf:ref}`thm-sm-direct-channel-memory`. Begin with the countable
+collection of bounded recorded channel coordinates $q_j$ under study,
+including their validity masks and the constant $1$. A finite collection
+is included. Let $\mathcal A_0$ be their unital algebra over
+$\mathbb Q+i\mathbb Q$, with complex conjugates included, and recursively
+form the countable algebras
+
+(eq-fg-sm-t1)=
+$$
+\mathcal A_{r+1}
+=\operatorname{alg}_{\mathbb Q+i\mathbb Q}
+  (\mathcal A_r\cup P\mathcal A_r\cup\overline{P\mathcal A_r}),
+\qquad
+\Sigma_{\mathrm{pred}}=\sigma\left(\bigcup_{r\ge0}\mathcal A_r\right).
+\tag{SM.T1}
+$$
+
+Enumerate that union as $(f_j)_{j\ge1}$ and set
+$\widehat q(s)=(f_j(s))_{j\ge1}\in\mathbb C^{\mathbb N}$.
+This descriptor is calculated from the original channels and the actual
+algorithmic kernel. Its observable space
+$\mathcal H_{\mathrm{pred}}=L^2(\Sigma_{\mathrm{pred}},\pi)$ is
+$P$-invariant. With $\widehat\nu=\widehat q_*\pi$ and the pullback
+unitary $Vf=f\circ\widehat q$, its exact kernel is
+
+(eq-fg-sm-t2)=
+$$
+\widehat P=V^{-1}P|_{\mathcal H_{\mathrm{pred}}}V,
+\qquad
+PV=V\widehat P,\qquad
+\widehat\nu\widehat P=\widehat\nu.
+\tag{SM.T2}
+$$
+
+The process $\widehat q(S_n)$ is Markov under the stationary recorded
+law, and every finite correlation of the original channels is unchanged.
+Moreover $\Sigma_{\mathrm{pred}}$ is the smallest completed observable
+sigma-algebra containing those channels whose bounded functions are
+preserved by $P$. The memory term in
+{ref}`(SM.M2) <eq-fg-sm-m2>` vanishes on this completed space.
+:::
+
+:::{prf:proof}
+**1. Close the observable space using the given update.** The algebras
+are countable because they use countably many finite rational operations.
+All their elements are bounded, since a Markov kernel preserves boundedness.
+Their union $\mathcal A$ is an algebra and satisfies $P\mathcal A\subseteq
+\mathcal A$. Bounded real functions $f$ measurable for
+$\Sigma_{\mathrm{pred}}$ with $Pf$ measurable for that sigma-algebra
+form a vector space closed under uniformly bounded pointwise limits:
+if $f_n\to f$, dominated convergence in $P(s,ds')$ gives
+$Pf_n(s)\to Pf(s)$. The functional monotone-class theorem applied to
+the real algebra generated by $\mathcal A$ therefore gives
+$P L^\infty(\Sigma_{\mathrm{pred}})\subseteq
+L^\infty(\Sigma_{\mathrm{pred}})$. Complexification gives the same
+statement for complex functions. Stationarity ensures that $P$ respects
+$\pi$-null modifications: for $\pi(A)=0$,
+$\int P(s,A)d\pi(s)=\pi(A)=0$.
+Finally, truncation and the $L^2(\pi)$ contraction property extend this
+invariance to $\mathcal H_{\mathrm{pred}}$.
+
+**2. Identify the actual conditional kernel.** The descriptor target is
+standard Borel. Disintegrate the stationary two-time law
+$\pi(ds)P(s,ds')$ conditional on $\widehat q(s)$ and push the second
+coordinate through $\widehat q$. This gives a probability kernel
+$\widehat P(y,dy')$. For bounded descriptor $g$, invariance from step 1
+means $P(g\circ\widehat q)=h\circ\widehat q$ for some measurable $h$.
+The disintegration identifies $h=\widehat Pg$, proving
+{ref}`(SM.T2) <eq-fg-sm-t2>`. Integrating that equality proves invariance
+of $\widehat\nu$. For the recorded history $\mathscr F_n$,
+
+$$
+\begin{aligned}
+\mathbb E[g(\widehat q(S_{n+1}))\mid
+             \widehat q(S_0),\ldots,\widehat q(S_n)]
+&=\mathbb E[P(g\circ\widehat q)(S_n)\mid
+             \widehat q(S_0),\ldots,\widehat q(S_n)]\\
+&=\widehat Pg(\widehat q(S_n)).
+\end{aligned}
+$$
+
+This proves the Markov property directly. Multiplication by any original
+channel preserves the completed space. Thus every ordered product of
+these multiplications and powers of $P$ stays there. Conjugating that
+product by $V$ gives its exact descriptor correlation, including the
+original source and terminal vector $1$.
+
+**3. Minimality and memory.** Any completed sigma-algebra containing
+$q_j$ and preserved by $P$ on bounded functions contains $\mathcal A_0$;
+induction gives every $\mathcal A_r$. It therefore contains
+$\Sigma_{\mathrm{pred}}$. Conversely step 1 proves that this sigma-algebra
+has the stated property. Its conditional projection satisfies
+$(I-\Pi_{\mathrm{pred}})P\Pi_{\mathrm{pred}}=0$, which sets
+$\mathsf C=0$ in {ref}`(SM.M1) <eq-fg-sm-m1>` and proves the memory
+assertion. This completes the existing channel intertwining criterion by
+constructing its invariant space from the recorded update itself.
+:::
+
+:::{div} feynman-prose
+To turn these predictions into a finite matrix, divide the completed
+descriptor values into cells. Each matrix entry is the probability that the
+next actual update lands in a destination cell, conditional on starting in
+the source cell under the stationary law. A channel is represented by its
+average within each cell. These probabilities and averages are quantities
+to evaluate from that same recorded law.
+
+Refining the cells and retaining more prediction coordinates gives the
+convergence proved below. At finite resolution, iterating the cell matrix
+performs an approximation. The theorem shows that each fixed finite sequence
+of transitions and observations converges to its recorded correlation as
+the partitions become finer; it also carries that limit to the CAR maps.
+:::
+
+:::{prf:theorem} Finite transition matrices converging to the completed channel theory
+:label: thm-sm-predictive-partition-convergence
+
+For the descriptor in {prf:ref}`thm-sm-prediction-complete-descriptors`,
+form nested finite partitions $\mathcal P_M$ by dyadically quantizing the
+real and imaginary parts of its first $M$ coordinates, using resolution
+$2^{-M}$ and outer tail cells beyond $[-M,M]$. Their generated
+sigma-algebras increase to $\Sigma_{\mathrm{pred}}$.
+Let $\Pi_M$ be conditional expectation onto this finite sigma-algebra.
+For its positive-probability cells $A_a$, define
+
+(eq-fg-sm-t3)=
+$$
+w_a=\pi(A_a),\qquad
+p_{ab}^{(M)}=\frac1{w_a}\int_{A_a}P(s,A_b)d\pi(s),\qquad
+b_a^{(M)}=\frac1{w_a}\int_{A_a}b(s)d\pi(s).
+\tag{SM.T3}
+$$
+
+These are the actual stationary cell probabilities, transition
+probabilities, and cell averages of a bounded channel $b$.
+The finite kernel has invariant law $(w_a)$ and represents
+$P_M=\Pi_M P\Pi_M$. Its bounded insertion is
+$B_M=\Pi_M M_b\Pi_M$, represented by the diagonal entries $b_a^{(M)}$.
+On $\mathcal H_{\mathrm{pred}}$,
+
+(eq-fg-sm-t4)=
+$$
+P_M\longrightarrow P|_{\mathcal H_{\mathrm{pred}}},\qquad
+B_M\longrightarrow M_b
+\quad\text{strongly}.
+\tag{SM.T4}
+$$
+
+Every fixed finite ordered correlation formed from these finite matrices
+therefore converges to the corresponding recorded channel correlation.
+The centered contractions also induce convergent CAR maps and convergent
+finite ordered CAR regression correlations by the construction in
+{prf:ref}`thm-lqft-record-car-channel`.
+:::
+
+:::{prf:proof}
+**1. Compute the finite matrices.** For a cell-constant function
+$f=\sum_bf_b\mathbf1_{A_b}$, conditional averaging gives
+
+$$
+(\Pi_M P\Pi_M f)|_{A_a}
+=\sum_b\frac{\int_{A_a}P(s,A_b)d\pi(s)}{w_a}f_b.
+$$
+
+Nonnegativity and $\sum_bp_{ab}^{(M)}=1$ follow from the kernel.
+Stationarity gives
+$\sum_aw_ap_{ab}^{(M)}=\int P(s,A_b)d\pi(s)=w_b$.
+Applying the same conditional average to $bf$ gives the stated diagonal
+insertion. Zero-probability cells contribute zero to all these integrals.
+The normalized indicators $\mathbf1_{A_a}/\sqrt{w_a}$ form an
+orthonormal basis; in that basis the transition entries are
+$\sqrt{w_a}\,p_{ab}^{(M)}/\sqrt{w_b}$.
+
+**2. Establish the strong limit.** The partitions separate all descriptor
+coordinates, so the increasing orthogonal projections satisfy
+$\Pi_M\to I$ strongly on $\mathcal H_{\mathrm{pred}}$.
+For completeness, their range union is dense: indicators of cells generate
+the sigma-algebra, and bounded simple approximation and the monotone-class
+argument give density in $L^2$. For $f$ in that space,
+
+$$
+\begin{aligned}
+\|(P_M-P)f\|_2
+&\le\|(\Pi_M-I)f\|_2+\|(\Pi_M-I)Pf\|_2,\\
+\|(B_M-M_b)f\|_2
+&\le\|b\|_\infty\|(\Pi_M-I)f\|_2
+                 +\|(\Pi_M-I)bf\|_2.
+\end{aligned}
+$$
+
+Every term tends to zero. Moreover $\|P_M\|\le1$ and
+$\|B_M\|\le\|b\|_\infty$. For any finite list of these factors,
+with limits $A_j$, the exact error is
+
+(eq-fg-sm-t5)=
+$$
+\left(\prod_{j=1}^rA_{j,M}-\prod_{j=1}^rA_j\right)f
+=\sum_{j=1}^r\left(\prod_{i<j}A_{i,M}\right)
+ (A_{j,M}-A_j)\left(\prod_{i>j}A_i\right)f.
+\tag{SM.T5}
+$$
+
+Each middle difference acts on a fixed vector, and all preceding factors
+are uniformly bounded. Every summand tends to zero. Taking the matrix
+element against $1$, which belongs to every partition space, proves the
+correlation limit with explicit finite-approximation error terms.
+
+**3. Carry the same limit into the fermionic representation.** On the
+centered mode space let $C_M=P_M|_{1^\perp}$ and
+$C=P|_{\mathcal H_{\mathrm{pred}}\cap1^\perp}$. Both are contractions,
+and $C_Mf\to Cf$. For a normally ordered CAR word, its image is the
+product of creation and annihilation operators with these propagated
+modes. The identity $\|a^\dagger(f)\|=\|a(f)\|=\|f\|$ and
+factor-by-factor telescoping show convergence in operator norm on every
+such fixed word. Their finite span is norm dense in the CAR algebra.
+The maps are unital completely positive contractions, so approximation by
+these words extends convergence to every fixed CAR observable.
+Iterating the contraction estimate proves convergence of each fixed
+nested regression expression. Thus both the finite transition matrices
+and their fermionic representation approximate the same recorded theory.
+The partition modes are used for transition matrices; no finite gradient
+energy is attributed to their discontinuous cell indicators.
+:::
+
+
+:::{div} feynman-prose
+For the original selected readout, the first memory term remains explicit:
+{ref}`(SM.M3) <eq-fg-sm-m3>` compares the exact two-step prediction with
+two applications of the channel's one-step conditional average. The
+additional term keeps the dependence that leaves the channel subspace and
+returns on the next step. Longer excursions produce the memory sum.
+
+The prediction completion retains enough observable functions to set
+$\mathsf C=0$ on the enlarged space. Its finite partitions then approximate
+that closed evolution with stationary transition matrices. Thus the same
+algorithm supplies both descriptions: exact memory for the selected readout,
+and an exact Markov extension with convergent finite approximations. The
+exact constructions retain the original correlations, and the finite
+matrices converge to them at each fixed observation sequence.
+:::
+
 :::{prf:theorem} Direct use of reconstruction, concentration, and transfer bounds
 :label: thm-sm-direct-existing-machinery
 
@@ -1739,6 +2305,550 @@ the real estimate to their two components. No $N^{-1}$ factor is asserted for
 an arbitrary whole-swarm readout. $\square$
 :::
 
+### The implemented transition in reconstructed coordinates
+
+:::{div} feynman-prose
+Imagine stopping the simulation just before an update. To restart it, you
+need everything the next step will read: walker states, the scheduling phase,
+and any retained geometry or auxiliary tensors. Given that state and the fresh
+random inputs, the code determines the next state. Encoding this complete
+state therefore gives a direct recipe for the next encoded state too.
+
+An observable can need more information than the next update does. A force
+alignment measured across a step may use intermediate arrays and a validity
+mask. Keep those in the transition record, and the same recipe carries their
+joint history law. The theorem below implements this construction for every
+finite recorded history.
+
+There is also an equilibrium evolution built from the energy form on its
+identified LSI law. Its time $\sigma$ measures that derived evolution. The
+table keeps it alongside the algorithm's update times so we can apply each
+estimate to the law and clock for which it was proved.
+:::
+
+:::{prf:definition} Complete update state and the two field evolutions
+:label: def-sm-complete-update-law
+
+Let $s$ contain the walker state and every retained variable read by the next
+update: the scheduling phase, retained geometry and auxiliary tensors when
+used, and the fixed run parameters. Time-dependent external inputs are indexed
+explicitly. Write $\xi$ for the fresh random inputs of one update and
+$m(d\xi)$ for their joint law. Companion draws can be realized by inverse
+cumulative probabilities applied to uniform variables; their state dependence
+then belongs to the update map $T_h(s,\xi)$.
+
+For a conservative step and a killed step, respectively, set
+
+$$
+P_hf(s)=\int f(T_h(s,\xi))m(d\xi),\qquad
+Q_hf(s)=\int\chi(s,\xi)f(T_h(s,\xi))m(d\xi),
+$$
+
+where $\chi$ is the survival indicator and the state after killing is excluded
+from $Q_h$. A retained random output is part of the corresponding recorded
+transition, even when it is unnecessary for the next update. This distinguishes
+the Markov state from a complete transition record.
+
+The notation in the following constructions is fixed by this table.
+
+| Object | Law or operator | Source of its identification |
+|---|---|---|
+| Finite recorded history | actual initial law and ordered $P_h$ or $Q_h$ kernels | implemented update and record coverage |
+| Conservative stationary evolution | $\pi_NP_h=\pi_N$ | the conservative convergence result in its established regime |
+| Quasi-stationary evolution | $\nu_NQ_h=\alpha_h\nu_N$ | the killed-chain QSD result |
+| Stationary Doob evolution | $P_h^\eta=\alpha_h^{-1}\eta^{-1}Q_h\eta$, $\pi_N^\eta=\eta\nu_N$ | {prf:ref}`prop-kl-doob-transform`, with $\nu_N\eta=1$ |
+| Equilibrium energy evolution | $T_\sigma^{\mathrm{eq}}=e^{-\sigma H_{\mathrm{eq}}}$ on the law of its established LSI | {prf:ref}`thm-ym-equilibrium-form-construction` |
+
+The last time coordinate is denoted by $\sigma$. The algorithmic observation
+time remains $h$, $mh$, or $t$ in the already specified continuous model.
+:::
+
+:::{prf:theorem} Exact transition and history isomorphism for the recorded algorithm
+:label: thm-sm-instantiated-record-transition
+
+Use the complete records of {prf:ref}`def-fractal-set-record-coverage` and
+their inverse maps $E=\operatorname{Enc}$, $D=\operatorname{Dec}$. At a
+Markov boundary, encode the complete state and its required header; for a
+transition observable, retain the complete transition record. On the encoded
+image the actual conservative transition is
+
+(eq-fg-sm-k1)=
+$$
+\widehat P_hg(c)
+=\int g\bigl(E T_h(Dc,\xi)\bigr)m(d\xi).
+\tag{SM.K1}
+$$
+
+The killed formula contains the additional factor $\chi(Dc,\xi)$. With
+$Uf=f\circ D$ and $\widehat\pi=E_\#\pi$, these kernels satisfy
+
+(eq-fg-sm-k2)=
+$$
+\widehat P_hU=UP_h,\qquad
+\widehat P_h^*=UP_h^*U^{-1}
+\quad\text{on }L^2(\widehat\pi)
+\tag{SM.K2}
+$$
+
+whenever $\pi$ is the identified invariant law. For the established
+strongly continuous realization the generator is
+
+(eq-fg-sm-k3)=
+$$
+\widehat L=ULU^{-1},\qquad
+\operatorname{Dom}\widehat L=U\operatorname{Dom}L.
+\tag{SM.K3}
+$$
+
+Every finite integrable history observable, including the direct channels
+and their recorded masks, has exactly the same expectation after encoding.
+For bounded state observables and $0=t_0<t_1<\cdots<t_n$ this identity reads
+
+(eq-fg-sm-k4)=
+$$
+\mathbb E_\pi\prod_{j=0}^n f_j(S_{t_j})
+=\left\langle1,M_{f_0}P_{t_1}M_{f_1}
+ P_{t_2-t_1}\cdots P_{t_n-t_{n-1}}M_{f_n}1\right\rangle_\pi.
+\tag{SM.K4}
+$$
+
+The encoded expression replaces each factor by its unitary transport.
+These identities identify the field evolution specified by the update
+itself, with no comparison to an independently chosen differential operator.
+:::
+
+:::{prf:proof}
+**One step.** Substitute $g=Uf$ in {ref}`(SM.K1) <eq-fg-sm-k1>`. The reconstruction identity
+$DEs'=s'$ on every covered output gives
+
+$$
+\widehat P_hUf(c)
+=\int f\bigl(DE T_h(Dc,\xi)\bigr)m(d\xi)
+=P_hf(Dc)=UP_hf(c).
+$$
+
+The killed identity has the same integrand multiplied by its unchanged
+survival indicator. Fresh random inputs can instead be integrated through
+their conditional kernels; inverse-cumulative sampling shows that this is
+the same integral. The completed intermediate state retains any pre-cloning
+data needed in a subsequent substep. Thus the implemented order, cloning
+followed by kinetics, gives the backward-operator order $P_h=C_hK_h$.
+
+**Hilbert space and domain.** The unitary is
+{prf:ref}`prop-fractal-set-analytic-transfer`. For $f,g\in L^2(\pi)$,
+
+$$
+\langle Uf,\widehat P_hUg\rangle_{\widehat\pi}
+=\langle f,P_hg\rangle_\pi
+=\langle UP_h^*f,Ug\rangle_{\widehat\pi},
+$$
+
+which proves the adjoint identity. In continuous time,
+
+$$
+\frac{\widehat P_tUf-Uf}{t}
+=U\frac{P_tf-f}{t}.
+$$
+
+An $L^2$ limit exists on one side exactly when it exists on the other,
+because $U$ is an isometry onto. This proves both the operator and its full
+domain in {ref}`(SM.K3) <eq-fg-sm-k3>`. An existing core $\mathcal C$ for $L$ is consequently
+carried to a core $U\mathcal C$; no derivative of a Borel decoding section
+is taken.
+
+**Histories.** Condition first on $S_{t_{n-1}}$ in the last observable in
+{ref}`(SM.K4) <eq-fg-sm-k4>`, then repeat toward $t_0$. This gives the displayed operator product.
+The identity $UM_fU^{-1}=M_{Uf}$ and {ref}`(SM.K2) <eq-fg-sm-k2>` cancel every intervening
+$U^{-1}U$. For a recorded block $r_j=R(s_{j-1},\xi_j)$ replace its step
+kernel by the signed or complex kernel
+
+$$
+K_h^{A_j}f(s)
+=\int A_j(R(s,\xi))f(T_h(s,\xi))m(d\xi).
+$$
+
+Applying the same decoder substitution to each $K_h^{A_j}$ proves the
+identity for block observables. General integrable history functions follow
+by equality of the pushforward history measures, first on cylinder sets and
+then on their generated sigma algebra. Independence of walkers is never
+used.
+
+**Conditioning.** For a QSD and a history ending at $mh$, its conditional
+expectation is the corresponding product of killed kernels divided by
+$\nu_NQ_h^m1=\alpha_h^m$. For the Doob process, multiplication of its
+one-step factors telescopes:
+
+(eq-fg-sm-k5)=
+$$
+\pi_N^\eta(ds_0)\prod_{j=1}^mP_h^\eta(s_{j-1},ds_j)
+=\alpha_h^{-m}\eta(s_m)\nu_N(ds_0)
+ \prod_{j=1}^mQ_h(s_{j-1},ds_j).
+\tag{SM.K5}
+$$
+
+The final factor $\eta(s_m)$ distinguishes this stationary history law
+from the QSD law conditioned on survival to $mh$. Encoding preserves this
+factor as well as the kernels. Invariance of $\eta\nu_N$ follows directly
+by integrating $\alpha_h^{-1}\eta^{-1}Q_h(\eta f)$ against it.
+:::
+
+:::{div} feynman-prose
+The history formula keeps each observation in its proper place between
+updates. This is why an intermediate force, a mask, or a companion draw can
+be included without treating the walkers or successive observations as
+independent. Encoding changes the coordinates of that same calculation.
+
+The survival weights make a useful distinction concrete. Start from the
+quasi-stationary law and keep only histories surviving $m$ steps: their
+normalizing factor is $\alpha_h^m$. For the stationary Doob process, the
+successive ratios of $\eta$ cancel, leaving an additional endpoint weight
+$\eta(s_m)$. Thus two equally weighted surviving histories can receive
+different Doob weights according to their endpoints. Formula {ref}`(SM.K5) <eq-fg-sm-k5>` carries
+that weight through the encoding exactly.
+
+For smooth readouts in the generator domain, we can also express the
+evolution through their derivatives. That is the purpose of the next formula;
+the integral transition already applies to bounded readouts with hard masks.
+:::
+
+:::{prf:proposition} Differential coefficients of the existing direct observables
+:label: prop-sm-direct-update-coefficients
+
+For the continuous realization in {prf:ref}`def-kl-full-generator`, let
+$y^\alpha=\mathscr D^\alpha(s)$ be direct descriptor coordinates on a
+chart where the actual pullback belongs to its generator domain and is
+twice differentiable. For a smooth scalar $f$ of these coordinates,
+
+(eq-fg-sm-k6)=
+$$
+\begin{aligned}
+L(f\circ\mathscr D)(s)
+&=\sum_\alpha\beta^\alpha(s)\partial_\alpha f(\mathscr D(s))
+ +\sum_{\alpha,\beta}A^{\alpha\beta}(s)
+       \partial_{\alpha\beta}f(\mathscr D(s))\\
+&\quad+\int[f(\mathscr D(s'))-f(\mathscr D(s))]r_N(s,ds'),\\
+\beta^\alpha
+&=b_N\cdot\nabla\mathscr D^\alpha
+  +\operatorname{tr}(a_N\nabla^2\mathscr D^\alpha),\qquad
+A^{\alpha\beta}
+=\nabla\mathscr D^\alpha{}^{\mathsf T}a_N\nabla\mathscr D^\beta.
+\end{aligned}
+\tag{SM.K6}
+$$
+
+The coefficients, jump images, and domains descend to a closed descriptor
+evolution precisely through the criterion in
+{prf:ref}`prop-sm-direct-markov-intertwining`. Formula {ref}`(SM.K1) <eq-fg-sm-k1>` applies
+directly to bounded masked channels without a differentiability assertion.
+:::
+
+:::{prf:proof}
+The first derivative is
+$\nabla(f\circ\mathscr D)=\sum_\alpha f_\alpha\nabla\mathscr D^\alpha$.
+The second derivative is
+
+$$
+\nabla^2(f\circ\mathscr D)
+=\sum_\alpha f_\alpha\nabla^2\mathscr D^\alpha
+ +\sum_{\alpha,\beta}f_{\alpha\beta}
+   \nabla\mathscr D^\alpha\nabla\mathscr D^\beta{}^{\mathsf T}.
+$$
+
+Insert both into the actual diffusion-jump generator. This produces
+{ref}`(SM.K6) <eq-fg-sm-k6>`, including the second-derivative drift and the entire jump
+displacement. The force-normalization differentials and probability
+derivatives are those already computed in
+{prf:ref}`prop-sm-channel-estimate-routes`. On a chart they enter these
+two derivatives; at a hard mask boundary the exact integral kernel remains
+the definition. Constancy of the transition probabilities on descriptor
+fibers is exactly the previously proved quotient criterion. Retaining the
+complete encoded state gives {ref}`(SM.K1) <eq-fg-sm-k1>` without requiring that constancy.
+:::
+
+:::{div} feynman-prose
+Now follow a collision through the common routine's assignments. A group
+update uses its walkers' velocities and their common mean. If the companion
+interface permits overlapping groups, a walker can be written twice. Each
+mean uses the original velocities, and the last visited group supplies that
+walker's final value. The three-walker calculation below shows why that
+general update must retain the group order.
+
+The current `make physics` application supplies mutual disjoint pairs to
+this routine. Its sampling law excludes the overlapping example. After the
+general calculation, {prf:ref}`cor-sm-physics-paired-cloning` specializes the
+update to those pairs and proves its momentum conservation and permutation
+equivariance.
+:::
+
+:::{prf:proposition} Selected collision increments in the implemented record
+:label: prop-sm-implemented-collision-increments
+
+For the common collision routine in
+`src/fragile/fractalai/core/cloning.py` and
+`src/fragile/physics/fractal_gas/cloning.py`, let $c_i$ be the sampled
+companion and $I_i$ the
+accepted-cloning indicator. The acceptance probability for an alive walker is
+
+$$
+p_i=\left[\frac{F_{c_i}-F_i}
+ {p_{\max}(F_i+\varepsilon_{\mathrm{clone}})}\right]_0^1,
+\qquad I_i=1_{\{U_i<p_i\}}.
+$$
+
+The status-bearing `fractalai` interface also has its specified forced
+revival branch; the current physics application uses an all-alive state.
+Conditional
+on the state, companions, and accepted indicators, the position increment is
+
+(eq-fg-sm-k7)=
+$$
+x_i'-x_i=I_i(x_{c_i}-x_i+\sigma_x\zeta_i),\qquad
+\mathbb E[x_i'-x_i\mid s,c,I]=I_i(x_{c_i}-x_i).
+\tag{SM.K7}
+$$
+
+For each active companion $j$, put
+$G_j=\{j\}\cup\{i:I_i=1,\ c_i=j,\ i\ne j\}$ and
+$\bar v_j=|G_j|^{-1}\sum_{i\in G_j}v_i$, using the pre-cloning velocities.
+The implementation visits the active companion indices in increasing order.
+If $j_*(i)$ is the last visited group containing $i$, its output is
+
+(eq-fg-sm-k8)=
+$$
+v_i'=\alpha v_i+(1-\alpha)\bar v_{j_*(i)},
+\tag{SM.K8}
+$$
+
+with $v_i'=v_i$ for walkers in no group. Within one disjoint group the
+relative kinetic energy is multiplied by $\alpha^2$. For overlapping
+groups, {ref}`(SM.K8) <eq-fg-sm-k8>` determines the full increment and its covariance.
+:::
+
+:::{prf:proof}
+The position assignment and centered Gaussian give {ref}`(SM.K7) <eq-fg-sm-k7>`. For each group,
+the code computes $u_i=v_i-\bar v_j$ from the original velocity array and
+writes $\bar v_j+\alpha u_i$ to the output array. The last write gives
+{ref}`(SM.K8) <eq-fg-sm-k8>`. For a single group,
+$\sum_{i\in G_j}u_i=0$, so its updated sum is unchanged and
+$\sum|u_i'|^2=\alpha^2\sum|u_i|^2$.
+
+For an explicit overlapping event, use indices $0,1,2$,
+$v=(0,2,8)$, $c=(1,2,0)$, $I=(1,1,0)$, and $\alpha=1/2$.
+The first group writes $(v_0',v_1')=(1/2,3/2)$.
+The second writes $(v_1',v_2')=(7/2,13/2)$. Thus the final vector is
+
+(eq-fg-sm-k9)=
+$$
+(1/2,7/2,13/2),\qquad \sum_i v_i'=21/2,
+\quad \sum_i v_i=10.
+\tag{SM.K9}
+$$
+
+Relabeling $0\leftrightarrow2$ reverses the order of these two group
+writes. Undoing the relabeling then gives $(1/2,3/2,13/2)$.
+Consequently the recorded collision map is not pathwise permutation
+equivariant on this event. For a general companion interface admitting the indicated draws, this
+event has positive gate probability for strictly increasing fitnesses.
+The mutual-pair law of the current physics application excludes it, as
+proved in {prf:ref}`cor-sm-physics-paired-cloning` below.
+The symmetry premise of {prf:ref}`thm-qsd-exchangeability` must therefore
+be checked for the actual averaged kernel; it cannot be discharged by
+claiming that these recorded group writes commute. The exact record and
+CAR constructions above do not require exchangeability.
+
+For two walkers in one nontrivial group and $0<\alpha<1$, velocity reversal
+preserves the length of the relative velocity. Another clone contracts it
+again, to $\alpha^2|u|$, whereas reversing the original jump would require
+expansion by $1/\alpha$. Thus the selected jump component has no such
+momentum-reversed jump on this event. A positive Doob weight multiplies
+existing jump rates and preserves their support. This calculation concerns
+the jump component. The complete finite-step transition also includes its
+kinetic kernel and is analyzed by {ref}`(SM.K1) <eq-fg-sm-k1>`, with the implemented order.
+:::
+
+:::{div} feynman-prose
+For `make physics`, picture the walkers arranged in pairs, with one walker
+left over when the population is odd. Within each pair, the two fitness
+differences have opposite signs, so at most one walker accepts cloning.
+That event updates the pair's velocities together: their sum stays fixed,
+and their relative velocity is multiplied by $\alpha$. The leftover walker's
+self-companion produces zero cloning probability.
+
+Because the pairs are disjoint, their assignments cannot overwrite one
+another. We can therefore sum their conservation identities over the swarm.
+Uniform random pairing also treats relabeled walkers alike, giving the
+cloning symmetry proved below when the fitness inputs are relabeled with
+them.
+:::
+
+:::{prf:corollary} Mutual-pair cloning in the current physics application
+:label: cor-sm-physics-paired-cloning
+
+The `make physics` application constructs its gas from
+`src/fragile/physics/fractal_gas/euclidean_gas.py`. Its companion sampler
+`random_pairing_fisher_yates` returns a uniformly random mutual pairing,
+with one self-companion when $N$ is odd. All walkers in this implementation
+are alive. For this sampling law the accepted collision groups are disjoint,
+and the complete cloning step satisfies
+
+(eq-fg-sm-k10)=
+$$
+\sum_i v_i'=\sum_i v_i,
+\qquad
+\sum_i|v_i'|^2
+=\sum_i|v_i|^2-(1-\alpha^2)
+ \sum_{\{i,j\}\ {\rm accepted}}\frac{|v_i-v_j|^2}{2}.
+\tag{SM.K10}
+$$
+
+Its cloning kernel is permutation equivariant when the input fitness vector
+is relabeled with the walker state. The overlapping event in {ref}`(SM.K9) <eq-fg-sm-k9>`
+belongs to the more general companion interface; it has probability zero
+under this particular mutual-pair law.
+:::
+
+:::{prf:proof}
+For $N=2m$, each fixed unordered matching is represented by $2^m m!$
+permutations: choose the order of its pairs and the order inside each pair.
+The shuffle is uniform over $(2m)!$ permutations. For $N=2m+1$, the
+unpaired walker is last and each matching with its specified singleton
+again has $2^m m!$ representatives among $(2m+1)!$ permutations. These
+counts are unchanged by relabeling. In particular $c_{c_i}=i$.
+
+For a mutual pair with unequal nonnegative fitnesses, the two score
+numerators are opposite. Their positive denominators preserve those signs,
+so at most the lower-fitness walker has a positive acceptance probability.
+Equal fitnesses give zero acceptance on both sides. A self-companion has
+score zero. Consequently an accepted event updates exactly the two members
+of one pair, and different events have disjoint members. In each pair the
+relative vectors are $(v_i-v_j)/2$ and its negative. Their squared norm
+sum is $|v_i-v_j|^2/2$. Apply the single-group calculation in
+{prf:ref}`prop-sm-implemented-collision-increments` and sum over the
+disjoint pairs to obtain {ref}`(SM.K10) <eq-fg-sm-k10>`.
+
+Relabel a realized mutual matching, its fitness vector, gate uniforms,
+and Gaussian position jitters together. Each two-member velocity update
+and each selected position assignment then gives the relabeled original
+output. The independent uniforms and Gaussian jitters have the same law,
+as does the uniform matching. This proves equivariance of the cloning
+kernel for these inputs. It identifies the cloning factor used by the
+physics application; the complete kernel also retains its geometry,
+fitness evaluation, scheduling phase, and kinetic step in {ref}`(SM.K1) <eq-fg-sm-k1>`.
+:::
+
+
+:::{div} feynman-prose
+For one doublet, keeping both the sum and the difference lets you recover
+its two amplitudes. Averaging over the swarm discards that information.
+Every mutual pair contributes a difference in each orientation: one is the
+negative of the other. With equal weights at the two ends, they cancel
+exactly, while the sum channel counts the component average twice. This
+argument works for the score-directed amplitudes too. A role mask can select
+the two ends differently; the weighted formula below retains that imbalance.
+
+The cancellation also tells us how to construct the simulator's mode space.
+A zero channel and a duplicate channel supply no additional independent
+modes. Their linear relations give null directions in the centered Gram
+matrix. Quotient those directions before normalizing a basis and constructing
+its exterior and CAR operators. Invertibility of the unaveraged doublet
+readout does not restore information removed by the frame average.
+:::
+
+:::{prf:corollary} Exact cancellation and redundancy of the paired doublet averages
+:label: cor-sm-paired-doublet-cancellation
+
+For the mutual-pair companion map $c_{c_i}=i$ of
+{prf:ref}`cor-sm-physics-paired-cloning`, use the recorded amplitudes
+$a_i$ and readouts $s_i^\pm=a_i\pm a_{c_i}$ of
+{prf:ref}`thm-sm-direct-doublet-readout-isomorphism`.
+For any nonnegative effective weights $w_i$ with
+$W=\sum_iw_i>0$,
+
+(eq-fg-sm-m5)=
+$$
+\frac1W\sum_iw_i s_i^-
+ =\frac1W\sum_i(w_i-w_{c_i})a_i.
+\tag{SM.M5}
+$$
+
+Consequently pair-symmetric weights give a zero difference average
+and a sum average twice the component average:
+
+(eq-fg-sm-m6)=
+$$
+\frac1W\sum_iw_i s_i^-=0,\qquad
+\frac1W\sum_iw_i s_i^+
+=\frac2W\sum_iw_i a_i
+\quad(w_i=w_{c_i}).
+\tag{SM.M6}
+$$
+
+In the current all-alive mutual-pair application, the unsplit valid
+frame averages in `_compute_su2_operators` have precisely these
+symmetric weights. Thus `su2_doublet_diff` is identically zero and
+`su2_doublet` is twice `su2_component` in exact arithmetic, in both
+standard and score-directed modes. Their directed variants have
+the same identities. Walker-role masks can break pair symmetry;
+their difference channels are given by
+{ref}`(SM.M5) <eq-fg-sm-m5>`.
+
+All autocorrelations of the unsplit difference series vanish, and
+the sum-series autocorrelation is four times the component-series
+autocorrelation, including connected subtraction with the same
+normalization. The corresponding centered mode space must quotient
+these zero and dependent directions before constructing its mass
+matrix or a faithful exterior basis.
+:::
+
+:::{prf:proof}
+An involution is a bijection. Reindexing $j=c_i$ gives
+$\sum_iw_i a_{c_i}=\sum_jw_{c_j}a_j$.
+Subtracting proves {ref}`(SM.M5) <eq-fg-sm-m5>`, and adding
+under $w_i=w_{c_i}$ proves the second identity in
+{ref}`(SM.M6) <eq-fg-sm-m6>`. Self-companions obey both formulas
+as well.
+
+The implementation forms the two-hop readout by gathering the
+already formed amplitude at the companion index. Every companion
+index of a complete mutual pairing is valid and every walker is
+alive. Its unsplit averaging mask therefore equals one at both
+ends of each pair. Replacing each amplitude by its score-directed
+version leaves the reindexing calculation unchanged. A role-restricted
+average uses the role indicator in $w_i$, which need not agree at
+the two ends; the general identity retains that indicator exactly.
+
+The series identities hold before temporal averaging. Multiplying
+the sum series at two times gives the factor four, and subtracting
+the product of its means gives the same factor. The zero series
+has zero covariance at every lag. Centering preserves all these
+linear relations, so the $L^2$ Gram matrix has the associated
+null directions. This explicitly supplies the zero-norm quotient
+required by {prf:ref}`thm-lqft-oriented-word-algebra` for these
+implemented channel modes. Floating-point summation may leave
+roundoff-sized residuals; it does not remove the exact relation.
+:::
+
+
+:::{prf:remark} Observation schedule and the already proved continuum scaling
+:label: rem-sm-actual-step-and-clock
+
+For `clone_every` equal to $q>1$, the homogeneous completed state includes
+$\ell\in\mathbb Z/q\mathbb Z$ with $\ell'=\ell+1$. Its observable
+$e^{2\pi i\ell/q}$ is an eigenfunction of the full transition with
+eigenvalue $e^{2\pi i/q}$. Hence a strict centered mixing estimate on the
+entire phase-augmented space would fail. A convergence estimate for observations
+at one scheduling phase uses the actual $q$-step kernel on that phase;
+intermediate observations retain their ordered phase-dependent kernels.
+
+The fixed-step gate in {ref}`(SM.K7) <eq-fg-sm-k7>` has order-one acceptance probability. The
+finite-attempt-rate equation of {prf:ref}`def-cloning-generator` is the
+continuous realization specified in
+{prf:ref}`rem-mean-field-attempt-scaling`. Its infinitesimal acceptance
+scaling is used only in that realization or a proved scaling limit.
+All finite-step identities above hold at the implemented timestep.
+:::
+
+
 :::{prf:corollary} Fermionic lift of the direct observable isomorphism
 :label: cor-sm-direct-fock-isomorphism
 
@@ -1925,25 +3035,28 @@ its determinant-of-covariances formula holds. $\square$
 ## 4. Optional Fermionic and Clifford Representations
 
 :::{div} feynman-prose
-The volume already constructs CAR operators and an exact isomorphism with
-antisymmetric replicas. A one-particle vector in that construction is a
-function of the complete swarm state. In the two-particle sector, imagine two
-independent copies of the entire swarm, then antisymmetrize their observables.
-Each copy retains all the interactions among its own walkers. Its evolution
-acts on each replica in turn, which explains the sum of generators appearing
-in the proof.
+Start with linearly independent recorded modes, after removing combinations with
+zero norm. Each mode is a function of a complete swarm state. To build an
+alternating two-mode observable, use two independent copies of the whole
+swarm and subtract the expression with the modes exchanged. Each copy keeps
+all the interactions among its own walkers.
 
-This identifies both an operator algebra and its replica evolution. To compare
-it with a specified gauge or Yukawa evolution, we must also intertwine the
-generators on the domains stated below. The formulas make that comparison
-an operator calculation. Clifford and Dirac matrices provide another
-representation of the algebra; the CAR construction itself does not depend
-on choosing them.
+Inserting another mode into these alternating observables gives the exterior
+product. Exchanging two insertions reverses the sign; repeating one gives
+zero. The replica inner product also distinguishes all the ordered basis
+products, so the representation is faithful: no further relation is hidden
+by the construction. These are the derived identities used in
+{prf:ref}`axm-sm-grassmann` below.
 
-Keep the products straight when implementing the formulas. Recorded amplitudes
-multiply as complex numbers; the exterior product alternates. The determinant
-observables give the explicit connection, with their expectations taken in
-the specified law.
+The stochastic update performs a different operation: it averages future
+observables with the transition probabilities. Composing updates advances
+the recorded process; composing insertions builds its alternating observable
+sectors. The exact encoded transition supplies the evolution of each replica,
+and the adjoint of insertion supplies the CAR contraction. The following
+corollary also identifies the separate dual symbols used in a Euclidean
+Grassmann integral. Clifford and Dirac matrices give further representations;
+comparison with a specified gauge or Yukawa evolution uses the stated
+generator domains and intertwining maps.
 :::
 
 :::{prf:theorem} Exact cloning antisymmetry and its error for raw scores
@@ -1984,27 +3097,57 @@ The score signs are the signs of $V_j-V_i$ and $V_i-V_j$, respectively.
 They are opposite unless both are zero. $\square$
 :::
 
-:::{prf:assumption} Exterior-algebra field representation
+:::{div} feynman-prose
+The bar on $\bar\psi$ needs care here. In the Euclidean polynomial algebra,
+it names a generator from the dual mode space. Multiplying by it adds an
+exterior factor, with the same alternating rule as the unbarred generators.
+On the Hilbert exterior space, the adjoint of insertion contracts a mode:
+it lowers the degree and uses the recorded inner product. This contraction
+produces the mixed CAR identity. The two operations therefore have different
+products and different jobs, even though both are built from the same
+recorded modes. The corollary makes each correspondence explicit.
+:::
+
+:::{prf:corollary} Derived exterior representation and Euclidean dual symbols
 :label: axm-sm-grassmann
 
-Choose independent generators $\psi_{i,a},\bar\psi_{i,a}$ in a finite
-exterior algebra, where $a$ indexes the supplied internal and spinor fields.
-Distinct generators anticommute and each squares to zero. The bar is an
-independent generator in Euclidean Grassmann integration. This is the finite Grassmann representation of {prf:ref}`post-grassmann`.
-For the recorded process, the CAR algebra, vacuum state, replica measure,
-and their exact correlation identities have already been constructed in
+For the finite recorded mode space $E$ in
+{prf:ref}`thm-lqft-oriented-word-algebra`, its alternating insertion
+operators have the faithful exterior representation
+$\mathsf C(e_i)\leftrightarrow\psi_i$.
+Anticommutation and nilpotency are the derived identities
+{ref}`(LQ.A2) <eq-fg-lq-a2>`, and independence of ordered monomials
+is proved by their replica norms. An index $(i,a)$ labels a basis
+mode only after the corresponding recorded functions have been
+identified and their zero-norm relations removed.
+
+The Euclidean polynomial algebra is $\Lambda(E\oplus E^\vee)$ from
+{prf:ref}`post-grassmann`. It gives
+$\{\psi_i,\psi_j\}=\{\bar\psi_i,\bar\psi_j\}
+=\{\psi_i,\bar\psi_j\}=0$ by exterior multiplication.
+The adjoint operators on the undoubled Hilbert exterior space instead
+obey $\{\mathsf A(e_i),\mathsf C(e_j)\}=\delta_{ij}I$.
+These formulas identify the barred integration symbols and the
+adjoint contraction as different constructions from the same mode space.
+
+The actual CAR algebra, positive vacuum state, replica law, and
+completely positive recorded evolution are supplied by
 {prf:ref}`thm-lqft-record-fock-reconstruction`,
 {prf:ref}`thm-lqft-replica-isomorphism`, and
-{prf:ref}`cor-sm-direct-fock-isomorphism`. A Berezin action with a separately
-chosen coefficient matrix uses its own measure; its equality with that
-recorded-process representation is checked through
-{prf:ref}`prop-sm-field-generator-comparison` and the finite measure comparison
-below.
+{prf:ref}`thm-lqft-record-car-channel`.
+A finite Berezin action also requires its coefficient matrix and
+integration orientation; its determinant identity is
+{prf:ref}`def-fermionic-action`.
 
-In particular $\bar\psi_j\psi_i=-\psi_i\bar\psi_j$.
-Anticommutation does not give
-$\bar\psi_j\psi_i=-\bar\psi_i\psi_j$, since those monomials involve
-different generators.
+*Proof.* The faithful homomorphism and its inverse are
+{ref}`(LQ.A1) <eq-fg-lq-a1>` and the coefficient expansion in its
+orthonormal replica wedges. Taking the direct sum with $E^\vee$
+and polarizing the defining squares gives the three Euclidean
+anticommutators. The adjoint deletion calculation gives the mixed CAR.
+Thus these are constructions and derived representation identities,
+rather than a further assumption on the cloning transition.
+In particular $\bar\psi_j\psi_i=-\psi_i\bar\psi_j$; interchanging the
+indices instead produces a different monomial in general.
 :::
 
 :::{prf:remark} Endpoint and gauge conventions
@@ -3227,20 +4370,20 @@ $\square$
 ## 8. Loop Observables and a Finite Field Action
 
 :::{div} feynman-prose
-A Wilson loop is a function of links; its expectation depends on their joint
-law. We have an exact path-likelihood formula for the algorithm. To obtain
-the likelihood seen by its descriptors, average that path likelihood over
-reference paths with the same descriptor data. This is the conditional
-expectation calculated below, and it gives the precise density to compare
-with a proposed field action.
+A recorded Wilson loop uses the transport matrices assigned to its edges.
+For the Fractal Set attribution connection, an interaction triangle compares
+the IA and IG transports through its CST edge. Its Wilson defect was
+calculated earlier from those matrices. We now follow its probability law,
+together with the companion doublets and color contractions, through the
+complete algorithmic update.
 
-The comparison includes the configurations each law can reach. Doublet-frame
-links close to the identity around every loop. Reweighting those samples
-changes their probabilities while preserving that constraint. Independent
-Haar links allow nonidentity holonomy, so an ordinary reweighting of the flat
-samples cannot sample their full law. The finite-action construction below
-specifies its own integration variables and measure, making this comparison
-explicit before a loop expectation is interpreted physically.
+The algorithm also supplies the probabilities of these readouts. Average its
+complete path likelihood over reference runs with the same descriptor
+history. The resulting density gives the effective action, while successive
+prefix densities give the next-observation probabilities. The same density
+generates channel moments and connected correlations. These formulas retain
+the companion draws, cloning, kinetic update, and masks in their implemented
+order.
 :::
 
 :::{prf:definition} Wilson observable with the chosen representation
@@ -3405,6 +4548,353 @@ $\mathcal L$ by $\mathcal L\mathbf1_E/P(E)$ before taking the conditional
 expectation. $\square$
 :::
 
+
+
+:::{div} feynman-prose
+Fix an observed channel history. Many complete runs can produce it, with
+different intermediate arrays and random choices. Conditional averaging of
+the complete likelihood assigns their combined weight to that history.
+Taking its negative logarithm gives the effective action relative to the
+specified reference law.
+
+For the next observation, first condition the current complete state on
+the history already seen. Then average the next implemented update over
+those states and its fresh random inputs. This gives both the predictive
+kernel and the moments of the channel increments below. The history enters
+through that conditional state distribution, preserving the memory carried
+by the selected channels. Companion selection, cloning, and kinetics all
+remain inside the same update calculation.
+:::
+
+:::{prf:theorem} Effective gauge-channel action and predictive kernel of the recorded algorithm
+:label: thm-sm-effective-recorded-gauge-dynamics
+
+Use the complete update and its random-input law in
+{prf:ref}`thm-sm-instantiated-record-transition`. Choose the descriptor
+$D_n$ to retain the direct contractions, projector triangles, companion
+doublets, and their recorded validity masks at observation $n$; any fixed
+subcollection gives the corresponding marginal construction. Transition
+descriptors are evaluated on the completed transition record, so their
+dependence on companions and intermediate stages is retained. Write
+$Y_{0:n}=(D_0,\ldots,D_n)$. Use the consistent reference path law and
+likelihood $L_n$ of {prf:ref}`thm-action-from-path-integral`, including the
+initial density. Define
+
+(eq-fg-sm-g1)=
+$$
+\lambda_n=(Y_{0:n})_*R_n,\qquad
+a_n(y_{0:n})=\mathbb E_{R_n}[L_n\mid Y_{0:n}=y_{0:n}],\qquad
+\nu_n=a_n\lambda_n.
+\tag{SM.G1}
+$$
+
+Let $k_n^R(y_{0:n},dy)$ be the conditional distribution of $D_{n+1}$
+under the reference descriptor law. The actual predictive kernel and
+effective path action are, on $a_n>0$,
+
+(eq-fg-sm-g2)=
+$$
+\begin{aligned}
+k_n^P(y_{0:n},dy)
+ &=\frac{a_{n+1}(y_{0:n},y)}{a_n(y_{0:n})}
+                  k_n^R(y_{0:n},dy),\\
+S_n^{\mathrm{eff}}&=-\log a_n,\\
+S_{n+1}^{\mathrm{eff}}-S_n^{\mathrm{eff}}
+ &=-\log\frac{a_{n+1}}{a_n}.
+\end{aligned}
+\tag{SM.G2}
+$$
+
+Thus the effective action and transition kernel of these gauge channels
+are fixed by the actual algorithm. The increment in
+{ref}`(SM.G2) <eq-fg-sm-g2>` is a function of the observed history;
+its construction does not discard the memory calculated in
+{prf:ref}`thm-sm-direct-channel-memory`.
+
+More explicitly, let $\eta_n(ds\mid y_{0:n})$ be the posterior of the
+complete Markov-boundary state. For a next-observation map
+$d_{n+1}(s,\xi)$ evaluated on the actual completed update, prediction is
+
+(eq-fg-sm-g3)=
+$$
+\begin{aligned}
+\eta_n(B\mid y_{0:n})
+ &=\frac{\mathbb E_{R_n}
+       [L_n\mathbf1_{\{S_n\in B\}}\mid Y_{0:n}=y_{0:n}]}{a_n(y_{0:n})},\\
+\mathbb E_P[f(D_{n+1})\mid Y_{0:n}=y_{0:n}]
+ &=\int\eta_n(ds\mid y_{0:n})
+              \int f(d_{n+1}(s,\xi))\,m(d\xi).
+\end{aligned}
+\tag{SM.G3}
+$$
+
+The random input contains the companion, cloning, and kinetic choices
+in their implemented order. For bounded real channel coordinates $q^a$,
+their conditional one-step drift and covariance are consequently
+
+(eq-fg-sm-g4)=
+$$
+\begin{aligned}
+\delta q^a(s,\xi;y_n)&=q^a(d_{n+1}(s,\xi))-q^a(y_n),\\
+b_n^a(y_{0:n})&=\int\eta_n(ds\mid y_{0:n})
+                         \int\delta q^a\,m(d\xi),\\
+C_n^{ab}(y_{0:n})
+ &=\int\eta_n(ds\mid y_{0:n})
+                         \int\delta q^a\delta q^b\,m(d\xi)
+                          -b_n^ab_n^b.
+\end{aligned}
+\tag{SM.G4}
+$$
+
+These are increments per recorded step. Dividing the first two raw
+increment moments by the recorded step length gives the corresponding
+scaled increment quantities; a diffusion limit is not used in these
+finite-step identities.
+
+*Proof.* The density statement is
+{prf:ref}`thm-sm-path-descriptor-density` applied to each prefix of the
+same path. Consistency of both path laws implies, for every bounded
+test $g$ on prefixes,
+
+$$
+\begin{aligned}
+\int g\,a_n\,d\lambda_n
+ &=\int g(y_{0:n})a_{n+1}(y_{0:n},y)
+                       k_n^R(y_{0:n},dy)\lambda_n(dy_{0:n}).
+\end{aligned}
+$$
+
+Uniqueness of densities gives
+$\int a_{n+1}(y_{0:n},y)k_n^R(y_{0:n},dy)=a_n(y_{0:n})$.
+The ratio in {ref}`(SM.G2) <eq-fg-sm-g2>` is therefore normalized.
+Testing it against a bounded function of both prefix and next observation
+proves that it is the actual conditional law. Prefixes with $a_n=0$
+have zero actual probability and require no transition identification.
+Taking logarithms on the positive-density set proves the action formula;
+zero conditional density gives infinite action.
+
+Bayes' identity, tested against bounded prefix functions, gives the
+first line of {ref}`(SM.G3) <eq-fg-sm-g3>`. Given the complete current
+state, the next fresh input has law $m$, and the recorded update is the
+map already proved in {ref}`(SM.K1) <eq-fg-sm-k1>`. Conditioning first
+on this state and then on the descriptor history proves the second line.
+Apply it to each increment and product of two increments to obtain
+{ref}`(SM.G4) <eq-fg-sm-g4>`. In particular
+$u_aC_n^{ab}u_b=\operatorname{Var}(\sum_a u_a\delta q^a\mid Y_{0:n})\ge0$.
+Bounded direct contractions and bounded masked averages make these
+integrals finite without an additional moment condition.
+
+For the conservative update $P_h=C_hK_h$, the inner integral is
+the composition of the actual cloning and kinetic kernels. Deterministic
+substeps and atomic outcomes stay inside these kernels. They are not
+replaced by Gaussian densities. For a separately specified conditioned
+finite path, the same argument uses its likelihood
+$L_n^E=\mathbb E_R[L_K\mathbf1_E\mid\mathcal F_n]/P(E)$ at prefix $n$.
+The future survival weight is then already present in the prefix
+likelihood; it is not replaced by an unconditioned fresh-input law in
+{ref}`(SM.G3) <eq-fg-sm-g3>`. This agrees with the chapter's distinction
+between conservative, killed, and Doob transitions. $\square$
+:::
+
+:::{div} feynman-prose
+The same recorded law can collect all joint moments in one expression.
+Multiply each history's weight by the exponential of a source times each
+chosen readout. Differentiating with respect to a source brings down that
+readout; several derivatives bring down their product. Differentiating the
+logarithm gives connected quantities, including the covariance. At zero
+source the weights are exactly those of the algorithm, with the original
+validity masks. This provides a common calculation for the moments of the
+selected gauge composites.
+:::
+
+:::{prf:corollary} Exact generating functional for the recorded gauge composites
+:label: cor-sm-recorded-gauge-generating-functional
+
+In {prf:ref}`thm-sm-effective-recorded-gauge-dynamics`, let
+$O_1,\ldots,O_r$ be bounded real direct channel observables on a fixed
+finite record. In particular one may use the real and imaginary parts
+of projector triangles, with the recorded zero convention at invalid
+vertices. Their source functional is
+
+(eq-fg-sm-g5)=
+$$
+Z(J)=\mathbb E_R\left[L_n
+                 e^{\sum_{\alpha=1}^rJ_\alpha O_\alpha}\right]
+     =\int e^{J\cdot O(y)}e^{-S_n^{\mathrm{eff}}(y)}\lambda_n(dy),
+\qquad Z(0)=1.
+\tag{SM.G5}
+$$
+
+It is entire in $J\in\mathbb C^r$. Its derivatives at zero are every
+joint moment of this selected collection. For real $J$, put $W(J)=\log Z(J)$.
+Then
+
+(eq-fg-sm-g6)=
+$$
+\partial_\alpha W(J)=\mathbb E_{P_J}O_\alpha,
+\qquad
+\partial_\alpha\partial_\beta W(J)
+ =\operatorname{Cov}_{P_J}(O_\alpha,O_\beta),\qquad
+dP_J=Z(J)^{-1}e^{J\cdot O}dP.
+\tag{SM.G6}
+$$
+
+Here the source is a tool for extracting the actual correlations;
+at $J=0$ the law is exactly the recorded algorithmic law.
+
+*Proof.* Since $|O_\alpha|\le M_\alpha$, every derivative of the
+integrand on a compact source set is bounded by a constant times $L_n$.
+The exponential power series is absolutely dominated by
+$L_n\exp(\sum_\alpha |J_\alpha|M_\alpha)$, whose integral is finite.
+Termwise integration proves entire dependence and the moment formula.
+For real sources $Z>0$. Direct differentiation of $\log Z$ gives
+
+$$
+\frac{\partial_\alpha\partial_\beta Z}{Z}
+ -\frac{\partial_\alpha Z\,\partial_\beta Z}{Z^2}
+=\mathbb E_{P_J}(O_\alpha O_\beta)
+ -\mathbb E_{P_J}O_\alpha\mathbb E_{P_J}O_\beta.
+$$
+
+The density identity proves the other expression in
+{ref}`(SM.G5) <eq-fg-sm-g5>`. Thus the effective action, the predictive
+kernel, and the channel generating functional are three expressions
+for one pushforward law. $\square$
+:::
+
+:::{div} feynman-prose
+The color formula stores force direction in its component magnitudes and
+velocity in its phases. Compare nearby recorded colors through their
+normalized overlaps: the accumulated phase around a small closed path
+measures the curvature computed below.
+
+The explicit example varies actual swarm velocities while keeping positions
+fixed. The full viscous force sum then produces a rotating force of fixed
+nonzero magnitude, so every sample on the chosen surface passes the force
+mask. Varying the force angle and the common velocity gives a nonzero
+curvature on this surface of swarm states. The finite overlap triangles
+and their history law provide the corresponding recorded observables.
+:::
+
+:::{prf:proposition} Curvature of the recorded color phase quotient
+:label: prop-sm-recorded-color-connection-curvature
+
+On the finite-dimensional valid descriptor domain $F\ne0$, write the
+recorded color formula as
+$c^a=r_a e^{i\kappa v^a}$, where
+$r_a=F_a/\|F\|$ and $\kappa=m\ell_0/\hbar_{\mathrm{eff}}$.
+The phase quotient in {prf:ref}`thm-sm-direct-phase-quotient` has the
+local connection one-form and curvature
+
+(eq-fg-sm-g7)=
+$$
+\begin{aligned}
+\mathcal A&=-i c^\dagger dc
+                 =\kappa\sum_a\frac{F_a^2}{\|F\|^2}\,dv^a,\\
+\mathcal F&=d\mathcal A
+ =\frac{2\kappa}{\|F\|^2}\sum_a
+ \left(F_a\,dF_a-\frac{F_a^2}{\|F\|^2}
+                           \sum_bF_b\,dF_b\right)\wedge dv^a.
+\end{aligned}
+\tag{SM.G7}
+$$
+
+Under a local representative change $c'=e^{i\alpha}c$,
+$\mathcal A'=\mathcal A+d\alpha$ and $\mathcal F'=\mathcal F$.
+The normalized overlap links already present in
+{prf:ref}`prop-sm-direct-triangle-projectors` have this connection
+as their infinitesimal comparison. It is the $U(1)$ connection of
+the recorded color line, not a new independent $SU(3)$ link variable.
+
+*Proof.* Since $\sum_ar_a^2=1$, differentiation gives
+$\sum_ar_a\,dr_a=0$. Therefore
+
+$$
+c^\dagger dc
+ =\sum_a r_a\,dr_a+i\kappa\sum_a r_a^2\,dv^a
+ =i\kappa\sum_a r_a^2\,dv^a.
+$$
+
+Furthermore
+
+$$
+d\left(\frac{F_a^2}{\|F\|^2}\right)
+=\frac{2F_a\,dF_a}{\|F\|^2}
+ -\frac{2F_a^2\sum_bF_b\,dF_b}{\|F\|^4},
+$$
+
+which proves {ref}`(SM.G7) <eq-fg-sm-g7>`. Substitution of
+$c'=e^{i\alpha}c$ gives $-ic'^\dagger dc'=d\alpha-ic^\dagger dc$;
+exterior differentiation proves curvature invariance.
+
+For a smooth parameter curve $s(t)=(F(t),v(t))$ in this descriptor domain,
+$c(s(t))^\dagger c(s(t+h))=1+ih\mathcal A_{s(t)}(\dot s(t))+O(h^2)$.
+Its modulus is $1+O(h^2)$, so normalization preserves the linear term.
+Products of the normalized overlaps around a partitioned smooth loop
+therefore converge to $\exp(i\oint\mathcal A)$. On a loop bounding a
+surface inside a representative chart this equals
+$\exp(i\int\mathcal F)$ by Stokes' formula. These are parameter-space
+identities for the recorded descriptor map.
+
+The nonzero curvature can be realized by the actual same-stage viscous
+feature map, rather than by varying $F$ independently of the swarm.
+Use the active viscous sector of
+{prf:ref}`cor-ym-nonzero-direct-color-sector`. Fix regular positions and
+an interacting pair $i,j$ with $\nu K_{ij}\ne0$, retaining all their
+position-dependent scalar weights. In the force convention of
+{prf:ref}`thm-sm-su3-emergence`, select a fixed $R>\delta_c$ and set
+
+$$
+v_i=u e_1,\qquad
+v_k=v_i\quad(k\ne j),\qquad
+v_j=v_i+\frac{R}{\nu K_{ij}}
+                  (\cos\theta\,e_1+\sin\theta\,e_2).
+$$
+
+Every summand of the actual force except $j$ vanishes, including any
+self-weight term. Thus the complete force sum on this state surface is
+
+$$
+F_i^{\mathrm{visc}}
+ =\nu\sum_kK_{ik}(v_k-v_i)
+ =R(\cos\theta\,e_1+\sin\theta\,e_2),\qquad
+\|F_i^{\mathrm{visc}}\|=R>\delta_c.
+$$
+
+The mask is one throughout this surface. Substitution into the recorded
+normalized phase formula gives
+$c_i=(\cos\theta\,e^{i\kappa u},\sin\theta,0)$, and hence
+
+(eq-fg-sm-g8)=
+$$
+\mathcal A=\kappa\cos^2\theta\,du,\qquad
+\mathcal F=-2\kappa\sin\theta\cos\theta\,d\theta\wedge du.
+\tag{SM.G8}
+$$
+
+For $\kappa\ne0$ and $0<\theta<\pi/2$ this is a nonzero curvature
+of the actual feature map on a finite-dimensional swarm-state surface.
+The fixed nonzero interaction weight makes that surface smooth in
+$(\theta,u)$; regular position neighborhoods preserve the nonzero-weight
+condition. Positive density of the established product reference, and
+the lower density comparison for its bounded-tilt family, give positive
+probability to open neighborhoods of these regular states. The
+two-dimensional surface itself need not have positive probability.
+This assertion concerns those identified laws; a separately selected
+law uses its own support identification.
+
+The finite triangle formula already records the corresponding
+nontrivial overlap phases without taking a limit. For actual constrained
+records, the forms in {ref}`(SM.G7) <eq-fg-sm-g7>` are pulled back along
+their existing feature map, as the explicit force-sum substitution above
+demonstrates. This state-space curvature is not an identification with
+spacetime Yang--Mills curvature. Its actual loop distribution and
+time evolution are precisely the pushforward law and prediction formulas
+{ref}`(SM.G1) <eq-fg-sm-g1>`--{ref}`(SM.G4) <eq-fg-sm-g4>`.
+$\square$
+:::
+
+
 :::{prf:proposition} Equality of field measures and weighted estimators
 :label: prop-sm-field-measure-comparison
 
@@ -3442,31 +4932,7 @@ Radon--Nikodym factor must be included in $b$ on this common space.
 $\square$
 :::
 
-:::{prf:proposition} Flat-link support cannot sample an independent-link model
-:label: prop-sm-flat-link-support
 
-Fix a finite graph containing a simple cycle and independent $SU(2)$ link
-variables on its unoriented edges, with reverse links defined as inverses.
-Let $\mathcal Z$ be the set for which the ordered holonomy of that cycle is
-$I_2$. Product Haar measure assigns $\mathcal Z$ measure zero. The pushforward
-of the doublet-frame construction assigns it probability one.
-Consequently no integrable weighting of only those flat-link samples can
-represent a normalized field measure absolutely continuous with respect to
-product Haar measure. This also holds for a finite complex field measure
-with nonzero total mass and such absolute continuity.
-
-*Proof.* Condition on all links except one edge occurring once in the simple
-cycle. Its holonomy is $AUB$ or $AU^{-1}B$ for fixed $A,B\in SU(2)$.
-Haar measure and its inverse are invariant under left and right translations,
-so this conditional holonomy is Haar distributed. A singleton has Haar measure
-zero: if it had mass $c>0$, translation invariance would give any $m$ distinct
-points mass $mc$, contradicting normalization for large $m$.
-Integrating the conditional probability proves the first assertion.
-Flatness in {prf:ref}`prop-sm-direct-su2-frames` proves the second.
-Every weighted direct measure remains supported on $\mathcal Z$, whereas
-absolute continuity of the field measure gives it mass zero there. A nonzero
-normalized measure cannot satisfy both properties. $\square$
-:::
 
 :::{prf:remark} Dependency order for the represented field theory
 :label: rem-sm-proof-dependency-order
@@ -3486,15 +4952,17 @@ same explicit determinant calculation; their conclusions need not be used
 as premises of one another. The generator is then
 {prf:ref}`prop-sm-replica-generator`.
 
-The complete-kernel likelihood yields the descriptor density independently
-of the supplied field action. Its comparison with that action uses
-{prf:ref}`prop-sm-field-measure-comparison`, including the support test.
-Equality of evolutions uses {prf:ref}`prop-sm-field-generator-comparison`.
-Only after these comparisons may properties of the field action be transferred
-back to the record process, or conversely. The flat-support calculation
-specifies why the doublet-frame links alone do not realize the independent-link
-integral. Representation, anomaly, and finite-action calculations remain
-available without making that identification circularly.
+The complete-kernel likelihood yields the descriptor density and the
+effective action in {prf:ref}`thm-sm-effective-recorded-gauge-dynamics`.
+Its successive prefix densities give the predictive kernel; source
+derivatives give all channel correlations. The interaction transports
+enter this same descriptor law through
+{prf:ref}`prop-sm-attribution-holonomy-defect`. The full recorded
+kernel also constructs the prediction-complete channel representation
+and its convergent transition matrices. A separately supplied field action
+is compared with this algorithm-derived law using
+{prf:ref}`prop-sm-field-measure-comparison` and
+{prf:ref}`prop-sm-field-generator-comparison`.
 :::
 
 (sec-sm-dictionary)=
@@ -3511,11 +4979,11 @@ model; a recorded identity is a statement about the actual finite data.
 |---|---|---|
 | Full color Gram matrix and complex triple determinants | Homeomorphism with the SU(3) orbit space and an explicit anchor-chart inverse | Identify any selected physical spectral sector |
 | Full doublet Hermitian and alternating contractions | Homeomorphism with the SU(2) orbit space, without Dirac matrices | Identify weak dynamics in the same law |
-| Invariant history coordinates | Unitary observable-space representation preserving all integrable correlations | Apply the established transfer theorem to its own law |
-| Direct descriptor law | Conditional-likelihood density and inherited LSI with its induced energy | Channel domain, support-compatible measure comparison, and generator intertwining |
+| Invariant history coordinates | Unitary representation of all integrable correlations; prediction-complete Markov extension and convergent finite transition matrices | Estimate the matrix entries under the actual recorded law |
+| Direct descriptor law | Exact prefix action, full-history predictive kernel, and generating functional from the complete likelihood | Evaluate the descriptor integrals in the chosen algorithm regime |
 | Color triangle product | Trace of three rank-one projectors; exact independent-phase invariance | Distinguish this composite from a unitary-link Wilson observable |
 | Companion amplitudes | Normalization and phase freedom | A nontrivial connection and field measure |
-| Cloning doublet and frame links | Exact SU(2) matrices, flat holonomy, and radial-only kinetic term | Connection dynamics satisfying the measure and generator comparisons |
+| Cloning doublet and Fractal Set attribution connection | SU(2) invariant doublet algebra; interaction holonomy and exact IA/IG Wilson mismatch | Evaluate the transports and their correlations through the complete recorded update |
 | Viscous force | Orthogonal covariance and exact force moments | Covariant internal color field |
 | Score antisymmetry and record modes | Weighted sign identity; exact CAR and antisymmetric-replica realization for centered record modes | Equality with the chosen interacting field generator and measure |
 | Exterior spinors | Faithful complex Clifford representation | Spin geometry and a Dirac operator limit |
@@ -3532,18 +5000,18 @@ model; a recorded identity is a statement about the actual finite data.
 
 :::{div} feynman-prose
 For the direct construction, we can follow an observable all the way through:
-reconstruct its inputs from the Fractal Set, compute its invariant coordinates,
-and evaluate it under the pushed-forward record law. The full-coordinate
-isomorphism preserves the represented information and its correlations.
-The established regularity and LSI results supply estimates through the
-specified pullbacks; the exterior isomorphism supplies the CAR replica
-representation and its evolution.
+reconstruct its inputs from the Fractal Set, apply the implemented update in
+complete encoded coordinates, and evaluate the readout. Retaining the required
+state and transition data makes this construction exact for every integrable
+finite history observable, including masked measurements. The exterior
+isomorphism also supplies the CAR replica representation and its evolution.
 
-An implementation can preserve these identities by retaining the descriptor
-data and masks before averaging, recording the reconstruction parameters,
-and associating each estimator with its law and time coordinate. The path
-likelihood and generator comparisons specify how to test a proposed coupled
-field model against that evolution. The charge and anomaly calculations
-then have a clear role: they establish the representation properties of the
+The established regularity and LSI results supply estimates through the
+specified pullbacks. The equilibrium energy construction uses its identified
+law to derive another generator, with evolution time $\sigma$. Associating
+each estimator with its law and clock tells us which of these estimates to
+use. The path likelihood and generator comparisons specify how to test a
+proposed coupled field model against the constructed evolution. The charge
+and anomaly calculations establish the representation properties of the
 fields used in that model.
 :::

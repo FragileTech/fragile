@@ -1,6 +1,6 @@
 # Fragile Tech · Control Laboratory
 
-Read the [published laboratory user guide](https://fragiletech.github.io/fragile/docs/source/project/control_laboratory.html) on GitHub Pages. The lab's **User guide ↗** link opens it in a new tab so your running session stays available.
+Read the [published laboratory user guide](https://fragiletech.github.io/fragile/docs/lab/) on GitHub Pages. The lab's **User guide ↗** link opens it in a new tab so your running session stays available.
 
 The guide's source pages are also available in the repository:
 
@@ -23,9 +23,10 @@ is used only for rendering.
 ## Run the laboratory
 
 On GitHub Pages the lab is published at `/fragile/lab/`, alongside the arcade
-at `/fragile/` and the book at `/fragile/docs/`. The Pages workflow builds the
-lab as a separate artifact containing both engine variants, renderer modules,
-scenes, and assets. It tests the project URL with an ordinary static server:
+at `/fragile/`, the documentation portal at `/fragile/docs/`, the lectures at
+`/fragile/docs/theory/`, and the lab guide at `/fragile/docs/lab/`. The Pages
+workflow builds the lab as a separate artifact containing both engine variants,
+renderer modules, scenes, and assets. It tests the project URL with an ordinary static server:
 the service worker supplies isolation for threaded planning, with a serial
 fallback when service workers are unavailable. Manual workflow runs on `main`
 can also deploy the complete site.

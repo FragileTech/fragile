@@ -75,11 +75,15 @@ Key arguments:
 | `--num-charts` | `8` | Number of atlas charts |
 | `--output-dir` | `outputs/` | Output directory |
 
-## Documentation (Jupyter Book)
+## Documentation
+
+The [documentation portal](https://fragiletech.github.io/fragile/docs/) links to the
+two-volume [Theory lectures](https://fragiletech.github.io/fragile/docs/theory/) and
+the independent [Control Laboratory guide](https://fragiletech.github.io/fragile/docs/lab/).
 
 ```bash
-uv run hatch run docs:build   # build only
-uv run hatch run docs:docs    # build and serve
+make docs    # build the portal, Theory, and Lab sites
+make serve   # build and serve the assembled documentation
 ```
 
 ## Development
@@ -100,7 +104,7 @@ src/fragile/
     robots/           # DM Control dashboard & environments
   physics/            # lattice QFT simulations & analysis dashboard
   learning/           # TopoEncoder, training script & dashboard
-docs/                 # Jupyter Book (source in docs/source/)
+docs/                 # Documentation portal and Jupyter Books
 tests/                # pytest suites
 ```
 

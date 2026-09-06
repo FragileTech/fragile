@@ -1,5 +1,5 @@
 /**
- * Prompt download menu for Fragile Docs.
+ * Prompt download menu for the Fragile Theory documentation.
  * Adds a top-right dropdown with volume + proofs + format selection.
  */
 (function() {
