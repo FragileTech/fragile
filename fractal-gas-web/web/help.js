@@ -4,6 +4,7 @@
 
 let tooltip = null;
 let pinnedIcon = null; // icon whose tooltip was opened by click/tap
+let listenersInstalled = false;
 
 function ensureTooltip() {
   if (tooltip) return tooltip;
@@ -104,12 +105,15 @@ export function initHelp(root = document) {
     else el.appendChild(icon);
   }
 
-  document.addEventListener("click", (e) => {
-    if (pinnedIcon && !tooltip.contains(e.target)) hide(true);
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") hide(true);
-  });
-  window.addEventListener("scroll", () => { if (pinnedIcon) place(pinnedIcon); }, true);
-  window.addEventListener("resize", () => { if (pinnedIcon) place(pinnedIcon); });
+  if (!listenersInstalled) {
+    document.addEventListener("click", (e) => {
+      if (pinnedIcon && !tooltip.contains(e.target)) hide(true);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") hide(true);
+    });
+    window.addEventListener("scroll", () => { if (pinnedIcon) place(pinnedIcon); }, true);
+    window.addEventListener("resize", () => { if (pinnedIcon) place(pinnedIcon); });
+    listenersInstalled = true;
+  }
 }

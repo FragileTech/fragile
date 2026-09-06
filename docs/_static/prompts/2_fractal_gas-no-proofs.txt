@@ -30297,8 +30297,10 @@ therefore do not make this change of volume implicitly.
 :::{prf:proposition} Recorded spacetime readouts and their induced transformations
 :label: prop-ym-recorded-physical-transformations
 
-Use the four-position-coordinate execution family of the realized-regulator
-construction in `03b_continuum_yang_mills.tex`. A complete record $\omega$
+Use the covered execution records of
+{prf:ref}`def-fractal-set-record-coverage` and the exact history law of
+{prf:ref}`thm-sm-instantiated-record-transition`, with four position
+coordinates. A complete record $\omega$
 contains each stage label, position $x_n(\omega)\in\mathbb R^4$, and
 recorded time $\tau_n(\omega)$. Its embedding and physical projection are
 
@@ -30310,12 +30312,9 @@ p_{\mathrm{sample}}\Xi_\omega(n)=\tau_n(\omega).
 \tag{YM.Z81}
 $$
 
-These are the coordinate maps in that paper's realized-regulator
-definition. In the older three-position-coordinate convention of
-`03_old_lattice_qft.tex`, the embedding is $(kh,x_i(k))\in\mathbb R^4$.
-That convention uses the recorded time as its zeroth coordinate.
-Here the four-position-coordinate convention is retained: $x^0$ and
-$\tau$ are separate stored coordinates.
+The positions, stage labels, units, and recorded times are retained in the
+complete record and its header. This section uses the four-position-coordinate
+convention: $x^0$ and $\tau$ are separate stored coordinates.
 
 For a recorded face $P=(n_0,n_1,n_2,n_3)$, recover
 $x_P=\frac14\sum_{a=0}^3x_{n_a}$ and its ordered holonomy $U_P$
@@ -30337,8 +30336,8 @@ s_P(\omega)=1-r^{-1}\operatorname{Re}\operatorname{Tr}U_P(\omega),\qquad
 $$
 
 The coefficients and masks are those of the specified recorded readout;
-this formula adds no scaling factor. In the localized $SU(3)$ functional
-of the continuum paper, $r=3$ and $\beta_P=6/g_3^2$.
+this formula adds no scaling factor. For the localized $SU(3)$ readout with Wilson convention
+$\beta_P=2r/g_3^2$, these are $r=3$ and $\beta_P=6/g_3^2$.
 Each finite measure is a tempered distribution. Let $\mathbb P_{N,h}$ here denote
 the actual complete execution probability law at the specified finite
 horizon, including the selected conditioning when used, and define
@@ -30355,6 +30354,24 @@ $$
 =\|F\|_{L^2(\nu_{N,h})}.
 \tag{YM.Z83}
 $$
+
+For the retained joint descriptor $Y=(G,D)$, disintegrate its actual law as
+$\mu_{N,h}(dg,dd)=\lambda_{N,h}(dg)\mu_{N,h}^g(dd)$.
+Here $\lambda_{N,h}$ is the actual geometry marginal. For every integrable
+recorded word $O$, including a reflected product, the same-law identity is
+
+$$
+\mathbb E_{\mathbb P_{N,h}}O(G,D)
+=\int\lambda_{N,h}(dg)\int\mu_{N,h}^g(dd)\,O(g,d).
+$$
+
+This is the unsourced disintegration already used in
+{prf:ref}`thm-ym-native-geometry-fiber-action`. A regulator-conditional
+correlation is integrated against this marginal before it is used as an
+unconditional physical correlation. For a QSD-derived surviving window,
+$\mathbb P_{N,h}$ includes exactly the interior and endpoint weights of
+{prf:ref}`prop-ym-qsd-history-identification`; the stationary Doob law
+retains instead the endpoint factor in {ref}`(SM.K5) <eq-fg-sm-k5>`.
 
 Thus the readout map into the algorithmic probability space is constructed,
 with its law and every finite bounded correlation fixed by the record.
@@ -30383,6 +30400,108 @@ In particular physical translations, rotations, and reflection are
 computed by transforming the test coordinates of the same recorded face
 readouts. Every $\tau_n$, companion index, clone mask, and likelihood
 factor remains inside the same execution expectation.
+:::
+
+:::{prf:lemma} Bounds for recorded gauge words and localized face sums
+:label: lem-ym-bounded-recorded-gauge-words
+
+Use the selected complete-record law in
+{prf:ref}`prop-ym-recorded-physical-transformations`. A normalized unitary
+loop readout $u_\gamma=r^{-1}\operatorname{Tr}U_\gamma$, set to zero
+on its recorded invalid slots, satisfies $|u_\gamma|\le1$. A valid
+Wilson defect $s_P=1-r^{-1}\operatorname{Re}\operatorname{Tr}U_P$
+satisfies $0\le s_P\le2$. Thus, for fixed coefficients and bounded
+tests, a finite word
+
+$$
+F=\sum_{a=1}^m c_a\prod_{b=1}^{d_a}
+   [v_{ab}\chi_{ab}u_{\gamma_{ab}}f_{ab}(x_{ab})]
+$$
+
+obeys $|F|\le M_F:=\sum_a|c_a|\prod_b\|f_{ab}\|_\infty$.
+Using a Wilson defect in place of a normalized trace multiplies the
+corresponding factor bound by two. Here $v_{ab}$ and $\chi_{ab}$ are
+the actual validity and full-support masks. The same bound holds for
+the reflected word, without an invariance assumption on the law. Hence
+
+$$
+\left|\overline{F_i(\vartheta Y_{N,h})}F_j(Y_{N,h})\right|
+\le M_{F_i}M_{F_j}.
+$$
+
+For a countable dictionary of these bounded words, retain their values
+and their reflected values among the bounded coordinates of
+{prf:ref}`thm-ym-native-fiber-continuum`. Their finite products have
+convergent expectations on a common further subsequence of that theorem's
+subsequence. This assertion concerns the retained word coordinates.
+Identification with a continuous physical field readout additionally requires
+its geometric continuity estimates.
+
+For the localized Wilson sum with its actual coefficients, define instead
+
+$$
+H_{N,h}(K)=\sum_{P:x_P\in K}
+ v_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2,
+\qquad U_P=e^{iX_P},\quad X_P=X_P^*.
+$$
+
+Then $|\Phi^+(f)|\le\|f\|_\infty H_{N,h}(\operatorname{supp}f)$.
+For a finite family of words of degrees at most $d$ in these localized
+sums, with support union $K$, an explicit sufficient bound for uniform
+integrability of their reflected products is
+
+$$
+\sup_{N,h}\mathbb E
+ [1+H_{N,h}(K\cup\vartheta K)]^{2d+\epsilon}<\infty
+\quad\text{for some }\epsilon>0.
+$$
+
+No such moment bound for the summed quantity is asserted by the bounded-loop
+estimate above. In the exact curvature coordinates $X_P=g_3A_PF_P$,
+$r=3$ and $\beta_P=6/g_3^2$ give the precise contribution
+$A_P^2\operatorname{Tr}F_P^2$ to $H_{N,h}$. With approximate curvature
+coordinates, the additional quadratic error is bounded by
+
+$$
+\sum_{P:x_P\in K}v_P\frac{\beta_P}{2}
+ \eta_P(\|X_P\|_{\mathrm{op}}+\|g_3A_PF_P\|_{\mathrm{op}}),
+\qquad \|X_P-g_3A_PF_P\|_{\mathrm{op}}\le\eta_P.
+$$
+
+These sums retain their face count, geometric weights, coefficients, and
+validity masks.
+:::
+
+:::{prf:lemma} Full-face localization and faces crossing the physical cut
+:label: lem-ym-physical-cut-face-error
+
+Keep the localized coefficients and masks of
+{prf:ref}`lem-ym-bounded-recorded-gauge-words`. Let $\Phi^{\mathrm{bar},+}(f)$
+use the barycenter condition $x_P^0>0$ and let $\Phi^+(f)$ use the
+full-face condition. For $f$ supported in the positive half-space, put
+$K=\operatorname{supp}f$ and
+$D_P=\max_{v,w\in P}|x_v-x_w|$. Then
+
+$$
+|\Phi^{\mathrm{bar},+}(f)-\Phi^+(f)|
+\le\|f\|_\infty
+\sum_{P:x_P\in K}v_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2
+ \mathbf1_{\{\min_{v\in P}x_v^0\le0<x_P^0\}}.
+$$
+
+For every $\rho>0$, the right-hand side is at most
+
+$$
+\|f\|_\infty\left[
+ H_{N,h}(K\cap\{0<x^0\le\rho\})
+ +\sum_{P:x_P\in K}v_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2
+                       \mathbf1_{\{D_P>\rho\}}\right].
+$$
+
+If $\operatorname{dist}(K,\{x^0=0\})=\delta>0$, only faces with
+$D_P\ge\delta$ contribute to the first displayed difference. Passage
+of the difference to zero in $L^p$ therefore requires the corresponding
+weighted large-face estimate, or the two estimates in the second display.
 :::
 
 :::{prf:proposition} Physical reflected correlations of the recorded Wilson readouts
@@ -30463,6 +30582,83 @@ family in that algebra. These are conditions on the recorded
 correlations, not on a replacement probability law.
 :::
 
+:::{prf:remark} Cross-plane dependence of companion and fitness normalization
+:label: rem-ym-native-cross-plane-kernel-calculation
+
+For the Gaussian companion branch of
+{prf:ref}`def-fg-soft-companion-kernel`, fix a preceding record and a
+positive-side alive walker $i$. Split the eligible indices by their physical
+positions, retaining zero-plane indices separately. Then its actual
+normalizer is
+
+$$
+Z_i=Z_i^++Z_i^-+Z_i^0,\qquad
+Z_i^\pm=\sum_{j\ne i:\,\pm x_j^0>0}
+             e^{-d_{\mathrm{alg}}(i,j)^2/(2\epsilon^2)}.
+$$
+
+Even when the selected companion $j$ lies on the positive side, the
+probability $\kappa_i(j)=w_{ij}/Z_i$ depends on negative-side records.
+On a stratum with fixed statuses and masks, a perturbation of only the
+negative-side distances, holding $w_{ij}$ fixed, gives
+
+$$
+\partial_-\log\kappa_i(j)=-\frac{\partial_-Z_i^-}{Z_i}.
+$$
+
+Every eligible finite-distance negative-side walker has strictly positive
+weight at fixed $\epsilon>0$. A proposed interface consisting only of faces
+meeting the physical plane therefore does not record all arguments of these
+conditional probabilities. A complete conditional factorization must retain
+these normalizers and the actual crossing choices, together with the input
+records on which their conditional laws depend.
+
+The empirical reward standardization adds another crossing dependence. On
+a smooth stratum with $n$ alive walkers and
+$\sigma^2=n^{-1}\sum_k(r_k-\bar r)^2+\varepsilon_{\mathrm{std}}^2$
+above the patch threshold, for $j\ne i$ one has
+
+$$
+\frac{\partial}{\partial r_j}\frac{r_i-\bar r}{\sigma}
+=-\frac1{n\sigma}
+ -\frac{(r_i-\bar r)(r_j-\bar r)}{n\sigma^3}.
+$$
+
+On a constant-scale patch the second term is zero and the first remains.
+Logistic rescaling and the fitness exponents feed these derivatives into
+both numerator and denominator of the clone gate in
+{ref}`(YM.Z60) <eq-fg-ym-z60>`. A single-coordinate factor $1/n$ does
+not bound the sum of the crossing contributions as $n$ grows.
+The subsequent collision groups and kinetic inputs depend on the resulting
+clone choices. Survival conditioning further retains
+$h_{K-k-1}(s')/h_{K-k}(s)$ from
+{prf:ref}`prop-ym-qsd-history-identification`.
+
+There is also no positive reflected kernel supplied by the Gaussian distance
+factor alone. In a flat metric, with equal remaining coordinates and
+velocities, its value between reflected positive coordinates $s,t>0$ is
+$k_\epsilon(s,t)=e^{-(s+t)^2/(2\epsilon^2)}$. For distinct $a,b>0$,
+
+$$
+\det\begin{pmatrix}
+k_\epsilon(a,a)&k_\epsilon(a,b)\\
+k_\epsilon(b,a)&k_\epsilon(b,b)
+\end{pmatrix}
+=e^{-(a+b)^2/\epsilon^2}
+ \left(e^{-(a-b)^2/\epsilon^2}-1\right)<0.
+$$
+
+This tests only the indicated companion factor. It neither evaluates the
+full physical reflected matrix nor disproves positivity after the complete
+recorded likelihood is integrated. It does exclude using that factor alone
+as the asserted positive cross-plane kernel. For the complete selected law,
+the comparison of the even and odd moments in
+{ref}`(YM.Z89) <eq-fg-ym-z89>` remains to be proved. The bounds in
+{prf:ref}`lem-ym-bounded-recorded-gauge-words` justify a passage of
+expectations for their specified retained words; they supply no sign for
+that difference.
+:::
+
 :::{prf:remark} Physical transformations and the selected random-regulator law
 :label: rem-ym-physical-symmetry-application
 
@@ -30524,9 +30720,10 @@ and then uniqueness of disintegration; sufficiency follows by substitution
 in {ref}`(YM.Z74) <eq-fg-ym-z74>`. Allowing the regulator to move is
 essential in this check.
 
-The uniqueness argument in the symmetry-restoration theorem of
-`05_axiom_verification.tex` applies after the transformed law is shown
-to solve the same equilibrium problem. For example, on a realization
+The uniqueness argument in {prf:ref}`thm-hk-vacuum-fg` applies after
+the transformed law is shown to solve the same selected problem.
+For QSDs, the complete-kernel and survival calculation is given in
+{prf:ref}`lem-ym-native-qsd-translation`. For example, on a realization
 where a physical transformation acts on the sampling state, write
 $\alpha_gF=F\circ g^{-1}$ as in
 {prf:ref}`prop-ym-recorded-physical-transformations`, let $P_t$ be its sampling semigroup, and put
@@ -30547,12 +30744,77 @@ A vanishing-defect route must also pass these invariant-law equations
 to the selected limit on a determining test class. This calculation
 does not identify $P_t$ with a physical time-transfer operator.
 
-**Application status.** The causal-set identity verifies the
-transformation of face observables. The current export theorem in
-`03b_continuum_yang_mills.tex` retains the random regulator and its
-conditional gauge law, whereas the import proposition in
-`04b_quantum_ym.tex` still specifies a deterministic flat regulator.
-The assertion of geometric equivariance in the symmetry-restoration
+**Application status.** The face identity verifies transport of the
+recorded observable. The actual physical law is the joint descriptor law
+and its geometry disintegration in
+{prf:ref}`prop-ym-recorded-physical-transformations`. Translating the
+complete spatial data transports its selected QSD and surviving histories by
+{prf:ref}`lem-ym-native-qsd-translation`. Invariance with data held fixed
+requires the stage defects in
+{prf:ref}`rem-ym-native-fixed-data-translation-defect` to vanish, or a
+proved vanishing-defect limit on the physical determining observables.
+Uniqueness supplies the final same-law implication only after that check.
+:::
+
+:::{prf:lemma} Translation of the native QSD and its selected recorded histories
+:label: lem-ym-native-qsd-translation
+
+Use the complete Euclidean Gas update of {prf:ref}`alg-euclidean-gas`
+and its recorded kernels in {prf:ref}`thm-ym-recorded-action-emergence`.
+Write $\mathfrak b$ for its configured spatial data: reward, force, metric
+and noise coefficients, validity domain, and any coordinate-dependent
+readout frames. For $a\in\mathbb R^4$, let $t_a$ be the existing
+translation of positions in
+{prf:ref}`prop-ym-recorded-physical-transformations`; velocities,
+recorded times, and walker indices are unchanged. Transport the data by
+
+$$
+R_{\mathfrak b_a}(x+a,v)=R_{\mathfrak b}(x,v),\qquad
+F_{\mathfrak b_a}(x+a,v)=F_{\mathfrak b}(x,v),\qquad
+\mathcal X_{\mathrm{valid},\mathfrak b_a}
+ =\mathcal X_{\mathrm{valid},\mathfrak b}+a,
+$$
+
+and the same pullback convention for metric, noise coefficients, and
+readout frames. Scalar algorithm parameters remain fixed. Let
+$Q_N^{\mathfrak b}$ be the killed one-step kernel. Then
+
+$$
+Q_N^{\mathfrak b_a}(t_as,t_aA)=Q_N^{\mathfrak b}(s,A).
+$$
+
+Consequently, if $\nu_N^{\mathfrak b}Q_N^{\mathfrak b}
+=\alpha_N\nu_N^{\mathfrak b}$ is the selected QSD, its translation
+$\nu_N^{\mathfrak b_a}=(t_a)_*\nu_N^{\mathfrak b}$ is a QSD for
+$Q_N^{\mathfrak b_a}$ with the same $\alpha_N$. Uniqueness identifies
+it with that translated model's selected QSD whenever the cited uniqueness
+hypotheses hold. The complete QSD histories conditioned on survival through
+the same $K$ steps obey the identical pushforward relation.
+
+Let $\mu_{\mathfrak b}$ be the joint regulator/gauge law of one such
+selected history, with regulator marginal $\lambda_{\mathfrak b}$ and
+conditional laws $\mu_{\mathfrak b}^{\mathsf r}$. The recorded readout
+translation, with its frames transported as above, satisfies
+
+$$
+\mu_{\mathfrak b_a}=(t_a)_*\mu_{\mathfrak b},\qquad
+\lambda_{\mathfrak b_a}=(t_a)_*\lambda_{\mathfrak b},\qquad
+\mu_{\mathfrak b_a}^{t_a\mathsf r}
+ =(t_a)_*\mu_{\mathfrak b}^{\mathsf r}
+\quad\text{for }\lambda_{\mathfrak b}\text{-almost every }\mathsf r.
+$$
+
+These are translation covariance identities for the QSD family. If the
+translation acts within the specified state space and the complete kernel
+with fixed data is equivariant, uniqueness gives same-law invariance by
+{prf:ref}`thm-hk-vacuum-fg`. Confinement does not prevent translating a
+QSD together with its confining data.
+:::
+
+:::{prf:remark} Fixed-data translation defects in the actual stages
+:label: rem-ym-native-fixed-data-translation-defect
+
+For an active translation with $\mathfrak b$ held fixed, the preceding
 :::
 
 :::{prf:remark} Common hierarchy and physical reflection check

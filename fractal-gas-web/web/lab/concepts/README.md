@@ -3,6 +3,12 @@
 Two complete design directions for the Fractal Gas laboratory. Each original PNG
 contains a hero view and smaller reference views. Click a sheet to open the full image.
 
+**3D models are available in the [Vehicle Workshop](../asset-gallery.html).**
+Rotate each model alongside its concept sheet and download the GLB or editable
+Blender source. In the lab, use the masthead's **Visual style** selector to switch
+the entire scene between futuristic and steampunk. See the
+[asset pipeline and runtime contract](../assets/README.md) for regeneration and LODs.
+
 | Vehicle | Futuristic | Steampunk |
 | --- | --- | --- |
 | Kestrel rocket / thruster tug | [Rocket](futuristic/rocket.png) | [Rocket](steampunk/rocket.png) |
@@ -44,9 +50,10 @@ and intake animation use the shared replay-aware model contract. Resource reward
 come from the scene's existing task; boiler pressure and hopper inventory are
 concept details, not additional simulated state.
 
-`build:lab` also exports `../assets/harvester.glb` for import into Blender. The PNGs
-are design references for further modeling; they are not texture maps or exact
-engineering orthographic drawings.
+`build:lab` retains the authored Blender collections and also exports the legacy
+`../assets/harvester.glb`. The PNGs are design references; they are not texture maps
+or exact engineering orthographic drawings. The Blender models preserve their
+characteristic forms with geometry optimized for the interactive laboratory.
 
 ## Provenance
 

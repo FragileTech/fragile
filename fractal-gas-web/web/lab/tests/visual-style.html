@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lab visual-style checks</title>
+    <style>
+      body {
+        background: #171b20;
+        color: #eee;
+        font: 14px monospace;
+      }
+      #views {
+        display: flex;
+        gap: 12px;
+      }
+      #views > div {
+        width: 640px;
+        height: 440px;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+      pre {
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Lab visual-style checks</h1>
+    <pre id="result">Running…</pre>
+    <div id="views">
+      <div><canvas id="a"></canvas></div>
+      <div><canvas id="b"></canvas></div>
+    </div>
+    <script type="module" src="./visual-style.js"></script>
+  </body>
+</html>

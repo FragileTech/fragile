@@ -42,11 +42,14 @@ reference material below supplies additional API examples and technical detail.
 The Lab guide always shows its practical explanations and examples; it does not use
 the Theory site's Full/Expert reading switch. From the repository root, `make docs`
 builds the documentation portal together with the separate Theory and Lab sites.
-`make serve` builds the same assembled documentation tree and serves its root at
-[http://localhost:8000/](http://localhost:8000/), where you can choose either site.
-`DOCS_PORT=8001 make serve` chooses another documentation port. The separate
-`make control-lab` server runs the laboratory application; it does not serve the
-generated documentation pages.
+`make serve` builds the same assembled documentation tree and opens access to its
+portal at [http://localhost:8000/docs/](http://localhost:8000/docs/), where you can
+choose either site. The server redirects `/` to `/docs/` and also serves the
+laboratory at `/lab/` when its browser build is available. Use `make docs-serve` to
+preview an existing documentation build without rebuilding, or
+`DOCS_PORT=8001 make serve` to choose another port. The `make control-lab` server
+also mounts locally built documentation at
+[http://localhost:8080/docs/](http://localhost:8080/docs/).
 :::
 
 (sec-control-laboratory-build)=
@@ -54,38 +57,24 @@ generated documentation pages.
 
 :::{div} feynman-prose
 Run these commands from the repository root. The native build needs a C++17 compiler,
-CMake, and the repository's Python environment. The browser build also needs Node.js,
-npm, and an activated Emscripten SDK that supplies `emcmake`.
+CMake, and the repository's Python environment. The browser build also needs Node.js
+and npm. `make control-web` reuses an active Emscripten SDK when available; otherwise
+it installs SDK 6.0.8 into `.cache/emsdk/6.0.8` in the repository. The first installation
+needs internet access. The build activates the SDK in its own subprocess, so you do
+not need to activate it in your shell. Set `EMSDK_DIR` to use a different SDK directory.
+You can run `make control-setup` separately to prepare the SDK before building.
 :::
 
 ```bash
-uv run python -m fragile.fractalai.control.build
-
-emcmake cmake -S fractal-gas-web -B fractal-gas-web/build-control-wasm \
-  -DFG_CONTROL_ONLY=ON -DCMAKE_BUILD_TYPE=Release
-cmake --build fractal-gas-web/build-control-wasm --parallel
-
-cd fractal-gas-web
-npm ci
-npm run build:lab
-cd ..
-uv run python fractal-gas-web/tools/serve-control.py
+make control-native
+make control-web
+make control-lab
 ```
 
 :::{div} feynman-prose
-Open [the local laboratory](http://127.0.0.1:8080/lab/). To enable parallel browser
-planning, build the additional pthread module in a separate directory:
-:::
-
-```bash
-emcmake cmake -S fractal-gas-web -B fractal-gas-web/build-control-threaded \
-  -DFG_CONTROL_ONLY=ON -DFG_CONTROL_THREADS=ON -DCMAKE_BUILD_TYPE=Release
-cmake --build fractal-gas-web/build-control-threaded --parallel
-```
-
-:::{div} feynman-prose
-Keep both browser builds: simulation uses the serial module, while planning can use
-the threaded module. The supplied server sends the HTTP isolation headers needed for
+Open [the local laboratory](http://127.0.0.1:8080/lab/). `make control-web` builds both
+WebAssembly variants automatically: simulation uses the serial module, while planning
+can use the threaded module. The supplied server sends the HTTP isolation headers needed for
 shared WebAssembly memory. Without isolation, or if the threaded module cannot load,
 the planner falls back to one thread. The interface reports the active backend.
 

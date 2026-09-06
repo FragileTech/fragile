@@ -3,6 +3,7 @@ import { SeededRandom, emptyTree } from "./registry.js";
 export const shootingParameters = {
   search_iterations: {
     label: "Search rounds",
+    help: "How many complete candidate-plan populations the controller evaluates before committing the first action. More rounds spend more simulation budget to refine the plan.",
     default: 3,
     min: 1,
     max: 128,

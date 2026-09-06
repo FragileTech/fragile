@@ -5,6 +5,14 @@ import { palette } from "./primitives.js";
 import { rockModel } from "../models.js";
 import { createAgentModel, animatedParts, animateAgent } from "./registry.js";
 import { resolveBodies } from "../agent-types.js";
+import { styleAssetsReady } from "./assets.js";
+import { vehicleModels } from "./asset-manifest.js";
+import { themeScenery } from "./style-palette.js";
+
+export function chooseLod(projectedPixels, current = "low", crowd = false) {
+  if (crowd || projectedPixels < 90) return "low";
+  return projectedPixels > 120 ? "high" : current;
+}
 
 function meshes(group) {
   const result = [];
@@ -19,7 +27,7 @@ function visibleInModel(part, model) {
   return true;
 }
 export class BodyLayer {
-  constructor(scene, info, parent, channels) {
+  constructor(scene, info, parent, channels, { style } = {}) {
     this.info = info;
     this.channels = channels || actionLayout(scene);
     this.dt = scene.physics?.dt || 1 / 60;
@@ -29,6 +37,7 @@ export class BodyLayer {
     this.parts = [];
     this.animations = [];
     this.instances = [];
+    this.lods = [];
     this.zero = new T.Matrix4().makeScale(0, 0, 0);
     const templates = new Map(),
       groups = new Map();
@@ -41,10 +50,33 @@ export class BodyLayer {
         const visual = b.visual || {
           model: scene.task === "forage" ? "kart" : "rocket",
         };
-        const key = JSON.stringify([visual, visual.color ?? color]);
-        if (!templates.has(key))
-          templates.set(key, createAgentModel(visual, color));
+        const key = JSON.stringify([visual, visual.color ?? color, style]);
+        const authored =
+          styleAssetsReady(style) &&
+          vehicleModels.includes(visual.model ?? "rocket");
+        if (!templates.has(key)) {
+          if (authored && !crowd) {
+            const levels = new T.Group();
+            levels.add(
+              createAgentModel(visual, color, { style, lod: "high" }),
+              createAgentModel(visual, color, { style, lod: "low" }),
+            );
+            templates.set(key, levels);
+          } else
+            templates.set(
+              key,
+              createAgentModel(visual, color, {
+                style,
+                lod: crowd ? "low" : "high",
+              }),
+            );
+        }
         model = templates.get(key).clone(true);
+        if (authored && !crowd) {
+          const [high, low] = model.children;
+          high.visible = false;
+          this.lods.push({ model, high, low, current: "low" });
+        }
         model.add(contactShadow());
         model.scale.setScalar(((b.radius || 0.5) / 0.8) * (visual.scale ?? 1));
         this.controlled.push(i);
@@ -57,7 +89,7 @@ export class BodyLayer {
             Math.cos((j * Math.PI * 2) / 7) * (b.radius || 0.5),
             Math.sin((j * Math.PI * 2) / 7) * (b.radius || 0.5),
           ]);
-        model = rockModel(vertices);
+        model = themeScenery(rockModel(vertices), style);
       }
       model.position.set(...(b.position || [0, 0]), 0.08);
       model.rotation.z = b.angle || 0;
@@ -94,6 +126,7 @@ export class BodyLayer {
       animateAgent(this.animations[b], {
         time,
         speed: Math.hypot(state[8 + 2 * n + b], state[8 + 3 * n + b]),
+        modelScale: this.models[b].scale.x,
         ...visualInput(this.channels, action, b),
       }),
     );
@@ -113,6 +146,17 @@ export class BodyLayer {
         mesh.instanceMatrix.needsUpdate = true;
       }
       for (const b of this.controlled) this.models[b].visible = false;
+    }
+  }
+  updateLod(camera, viewportHeight) {
+    const pixelsPerUnit = viewportHeight / (camera.top - camera.bottom);
+    for (const entry of this.lods) {
+      entry.current = chooseLod(
+        1.52 * entry.model.scale.x * pixelsPerUnit,
+        entry.current,
+      );
+      entry.high.visible = entry.current === "high";
+      entry.low.visible = entry.current === "low";
     }
   }
 }

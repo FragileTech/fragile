@@ -5,6 +5,7 @@ export const mppiParameters = {
   ...shootingParameters,
   mppi_temperature: {
     label: "Temperature (reward units)",
+    help: "Softmax temperature for MPPI's reward weighting. Lower values concentrate strongly on the best rollouts; higher values average more candidates.",
     default: 1,
     min: 0.000001,
     max: 1000000,
@@ -12,6 +13,7 @@ export const mppiParameters = {
   },
   mppi_sigma: {
     label: "Normalized exploration noise",
+    help: "Standard deviation of MPPI's normalized action perturbations. Larger values explore farther from the current mean plan.",
     default: 0.5,
     min: 0.001,
     max: 2,

@@ -4,9 +4,21 @@ The new [continuous-control laboratory](web/lab/README.md) runs a custom C++
 physics engine in the browser and Python. It supports packed state batches,
 joint continuous actions, Wave/FMC, extensible agent types, editable scenes,
 complete world-motion replay and exploration history.
-From the repository root, run `make control-native`, `make control-web`
-(with Emscripten activated), then `make control-lab` and open
+From the repository root, run `make control-native`, `make control-web`,
+then `make control-lab` and open
 `http://127.0.0.1:8080/lab/`.
+
+`make control-web` reuses an active Emscripten SDK or installs version 6.0.8 in
+`.cache/emsdk/6.0.8` automatically (internet required on first use). The build
+activates the SDK without changing your shell startup files. To prepare it
+separately, run `make control-setup`; for another installation, use
+`EMSDK_DIR=/path/to/emsdk make control-web`. Both serial and threaded engines
+are built. This follows the official [Emscripten SDK installation workflow](https://emscripten.org/docs/getting_started/downloads.html).
+
+Run `make serve` to build and preview the documentation at
+`http://127.0.0.1:8000/docs/`, or `make docs-serve` to preview an existing build.
+The same server serves the built simulator at `/lab/`; `make control-lab` also
+serves built documentation at `http://127.0.0.1:8080/docs/`.
 
 Start with the [published laboratory user guide](https://fragiletech.github.io/fragile/docs/lab/)
 for walkthroughs of the controls, scene editor, replay, experiments, and extension APIs.

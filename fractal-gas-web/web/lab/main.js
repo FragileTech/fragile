@@ -9,10 +9,13 @@ import { ReplayPanel } from "./replay-panel.js";
 import { createSceneEditor } from "./scene-editor.js";
 import { installManualControl } from "./manual-control.js";
 import { LabRenderer } from "./renderer.js";
+import { installStyleControls } from "./style-controls.js";
+import { initHelp } from "../help.js";
 import { Recording, exportRecording, importRecording } from "./archive.js";
 const $ = (id) => document.getElementById(id),
   copy = (value) => structuredClone(value);
 const renderer = new LabRenderer($("world"));
+installStyleControls();
 let worker,
   currentScene,
   currentInfo,

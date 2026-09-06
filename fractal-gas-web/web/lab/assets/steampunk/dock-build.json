@@ -1,0 +1,14 @@
+{
+  "high": {
+    "sourceTriangles": 2492,
+    "drawMeshes": 3,
+    "bytes": 865516
+  },
+  "low": {
+    "sourceTriangles": 572,
+    "drawMeshes": 3,
+    "bytes": 739480
+  },
+  "style": "steampunk",
+  "model": "dock"
+}

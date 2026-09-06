@@ -19,6 +19,27 @@ const units = {
   angle: "rad",
 };
 const pretty = (key) => key.replaceAll("_", " ");
+const propertyHelp = {
+  position: "World position in meters. Moving an entity changes the initial scene geometry.",
+  velocity: "Initial linear velocity in meters per second.",
+  angle: "Initial heading in radians.",
+  mass: "Body mass in kilograms. Heavier agents accelerate more slowly under the same thrust.",
+  radius: "Collision radius in meters.",
+  thrust: "Maximum forward force in newtons for this body.",
+  torque: "Maximum turning torque in newton-meters for this body.",
+  drag: "Linear damping coefficient. Higher values remove speed faster.",
+  angular_drag: "Angular damping coefficient. Higher values stop rotation faster.",
+  strength: "Gravity-well strength. Positive values attract bodies; negative values repel them.",
+  softening: "Gravity-well softening distance in meters; it avoids a singular force at the center.",
+  wheelbase: "Ground-vehicle wheelbase in meters, used to convert steering into turning.",
+  steering_limit: "Maximum steering angle in radians.",
+  lateral_grip: "How strongly a ground vehicle removes sideways slip.",
+  yaw_response: "Angular response of a ground vehicle to steering input.",
+  brake_deceleration: "Braking deceleration in meters per second squared.",
+  stiffness: "Tether spring stiffness in newtons per meter.",
+  damping: "Tether damping in newton-seconds per meter.",
+  rest_length: "Tether length at which the spring has no extension force.",
+};
 export class EntityProperties {
   constructor(container) {
     this.container = container;
@@ -40,6 +61,10 @@ export class EntityProperties {
                 ? "m/s"
                 : units[path.at(-1)];
         label.textContent = `${pretty(name)}${unit ? ` (${unit})` : ""}`;
+        label.dataset.help =
+          propertyHelp[path[0]] ||
+          propertyHelp[path.at(-1)] ||
+          "Numeric physical parameter for the selected entity.";
         const input = document.createElement("input");
         input.type = "number";
         input.step = "any";
@@ -79,6 +104,7 @@ export function actionSliders(container, channels) {
     const label = document.createElement("label");
     label.className = "channel-control";
     label.textContent = `Body ${channel.body} · ${channel.name}`;
+    label.dataset.help = `Manual ${channel.name} command for body ${channel.body}. The slider uses this actuator's native range from ${channel.low} to ${channel.high}.`;
     const output = document.createElement("output");
     output.textContent = action[index].toFixed(2);
     const input = document.createElement("input");

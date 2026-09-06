@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Vehicle workshop · Fragile Tech</title>
+    <link rel="icon" href="./branding/favicon.png" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./asset-gallery.css" />
+    <script type="module" src="./asset-gallery.js"></script>
+  </head>
+  <body class="workshop">
+    <header class="masthead">
+      <a class="brand" href="./"
+        ><img
+          class="brand-logo"
+          src="./branding/logo.png"
+          width="48"
+          height="48"
+          alt=""
+        /><span
+          >fragile.tech<span class="brand-sub">Vehicle workshop</span></span
+        ></a
+      >
+      <nav aria-label="Workshop navigation">
+        <a href="./">Back to the lab</a
+        ><a href="./concepts/README.md">Artwork and prompts</a>
+      </nav>
+      <div class="visual-style-control">
+        <fieldset class="style-switch">
+          <legend>Visual style</legend>
+          <label
+            ><input
+              type="radio"
+              name="visual-style"
+              value="futuristic"
+              checked
+            /><span>Futuristic</span></label
+          >
+          <label
+            ><input type="radio" name="visual-style" value="steampunk" /><span
+              >Steampunk</span
+            ></label
+          >
+        </fieldset>
+        <div class="style-feedback">
+          <span id="style-status" role="status" aria-live="polite"></span
+          ><button id="style-retry" hidden>Retry</button>
+        </div>
+      </div>
+    </header>
+    <main class="workshop-main">
+      <section class="workshop-model" aria-label="Interactive vehicle model">
+        <div class="workshop-toolbar">
+          <label
+            >Vehicle
+            <select id="vehicle">
+              <option value="rocket">Kestrel rocket</option>
+              <option value="kart">Mite kart</option>
+              <option value="drone">Wisp drone</option>
+              <option value="harvester">Harvester</option>
+            </select></label
+          >
+          <div>
+            <button data-view="hero">Perspective</button
+            ><button data-view="side">Side</button
+            ><button data-view="top">Top</button>
+          </div>
+        </div>
+        <div class="workshop-canvas">
+          <canvas
+            id="asset-world"
+            aria-label="Three-dimensional vehicle; drag to rotate"
+          ></canvas>
+        </div>
+        <div class="workshop-actions">
+          <span>Drag to rotate</span
+          ><label
+            ><input type="checkbox" id="animate-parts" /> Animate
+            machinery</label
+          ><a id="download-glb" download>Download 3D model</a
+          ><a id="download-blend" download>Blender source</a>
+        </div>
+      </section>
+      <aside class="workshop-reference">
+        <h1 id="asset-title">Kestrel rocket</h1>
+        <p>Concept reference</p>
+        <a id="concept-link" target="_blank" rel="noopener"
+          ><img id="concept-image" alt="Vehicle concept sheet"
+        /></a>
+        <p id="asset-description">
+          Select a vehicle to inspect its model alongside the original concept
+          sheet.
+        </p>
+      </aside>
+    </main>
+  </body>
+</html>

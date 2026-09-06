@@ -29,14 +29,34 @@
       <nav aria-label="Laboratory navigation">
         <span class="nav-active">Control laboratory</span
         ><a href="../">Arcade</a>
-        <a
-          href="../docs/lab/"
-          target="_blank"
-          rel="noopener noreferrer"
+        <a href="./asset-gallery.html">Models</a>
+        <a href="../docs/lab/" target="_blank" rel="noopener noreferrer"
           >User guide ↗</a
         >
         <a class="engine-notes" href="./README.md">Engine notes ↗</a>
       </nav>
+      <div class="visual-style-control">
+        <fieldset class="style-switch" data-help="Switch the presentation theme for the laboratory. Futuristic and Steampunk change the visual palette and vehicle materials without changing the physics or controller state.">
+          <legend>Visual style</legend>
+          <label
+            ><input
+              type="radio"
+              name="visual-style"
+              value="futuristic"
+              checked
+            /><span>Futuristic</span></label
+          >
+          <label
+            ><input type="radio" name="visual-style" value="steampunk" /><span
+              >Steampunk</span
+            ></label
+          >
+        </fieldset>
+        <div class="style-feedback">
+          <span id="style-status" role="status" aria-live="polite"></span
+          ><button id="style-retry" hidden>Retry</button>
+        </div>
+      </div>
       <span class="connection"
         ><i></i><span id="backend">INITIALIZING ENGINE</span></span
       >
@@ -48,7 +68,7 @@
         <p class="intro">
           A continuous-control laboratory<br />for Fractal Gas.
         </p>
-        <label class="field"
+        <label class="field" data-help="Select the task and world geometry used by the engine. Loading a new environment resets the live world and its replay history."
           >Environment<select
             id="scenario"
             aria-label="Environment"
@@ -66,17 +86,19 @@
             ↺
           </button>
         </div>
-        <label class="check keyboard-toggle">
+        <label class="check keyboard-toggle" data-help="Drive the selected agent directly with the keyboard instead of committing planner actions. W/S throttle, A/D steer, Q/E strafe when supported, and Space brakes."
+          >
           <input type="checkbox" id="manual" /> Keyboard control
         </label>
         <p class="keyboard-hint">
           Click the world to focus. W/S drive, A/D steer, Space brakes.
         </p>
-        <div class="control-heading">
+        <div class="control-heading" data-help="The controller chooses actions by evaluating possible future state batches. The selected algorithm can be changed before restarting the experiment."
+          >
           CONTROLLER <span id="controller-label">FMC</span>
         </div>
-        <label class="field">Controller<select id="algorithm"></select></label>
-        <label class="field"
+        <label class="field" data-help="Planning algorithm used to choose the next action. Each controller implements the same batched state and action interface.">Controller<select id="algorithm"></select></label>
+        <label class="field" data-help="Clock policy for planning. Reproducible waits for a complete plan; real time keeps the simulation clock moving while planning continues."
           >Clock<select id="clock">
             <option value="reproducible">
               Reproducible · wait for planning
@@ -85,28 +107,28 @@
           </select></label
         >
         <div class="fields-two">
-          <label class="field"
+          <label class="field" data-help="Number of parallel candidate worlds evaluated per planning round. More walkers improve coverage but increase memory and computation."
             >Walkers<input
               id="walkers"
               type="number"
               min="1"
               max="8192"
               value="128" /></label
-          ><label class="field"
+          ><label class="field" data-help="Number of action decisions simulated into each candidate future before the controller updates its plan. Larger horizons see farther ahead but cost more."
             >Horizon<input
               id="horizon"
               type="number"
               min="1"
               max="4096"
               value="16" /></label
-          ><label class="field"
+          ><label class="field" data-help="Physics frames for each committed action. At 60 Hz, six frames advance roughly 0.1 seconds. Larger values make actions coarser and cheaper to plan."
             >Action frames<input
               id="frames"
               type="number"
               min="1"
               max="60"
               value="6" /></label
-          ><label class="field"
+          ><label class="field" data-help="Random seed for planner sampling and world initialization. Reusing the same seed and settings makes a run reproducible."
             >Seed<input
               id="seed"
               type="number"
@@ -116,10 +138,10 @@
           /></label>
         </div>
         <details>
-          <summary>Planner settings</summary>
+          <summary data-help="Advanced controller-specific parameters appear here. They are supplied by the controller plugin, so new algorithms can add their own settings without changing the host UI.">Planner settings</summary>
           <div id="algorithm-settings" class="fields-two"></div>
           <div class="fields-two">
-            <label class="field"
+            <label class="field" data-help="Weight on how far a candidate moves from its reference state. Higher values favor diverse, exploratory futures."
               >Distance weight<input
                 id="distance"
                 type="number"
@@ -127,7 +149,7 @@
                 max="10"
                 step="0.1"
                 value="1" /></label
-            ><label class="field"
+            ><label class="field" data-help="Weight on accumulated task reward. Higher values favor exploiting candidates that already perform well."
               >Reward weight<input
                 id="reward"
                 type="number"
@@ -135,7 +157,7 @@
                 max="10"
                 step="0.1"
                 value="1" /></label
-            ><label class="field"
+            ><label class="field" data-help="Random action perturbation applied during planning. Zero is deterministic around the current plan; higher values explore more."
               >Action noise<input
                 id="noise"
                 type="number"
@@ -143,14 +165,14 @@
                 max="10"
                 step="0.05"
                 value="0.2" /></label
-            ><label class="field"
+            ><label class="field" data-help="Number of elite candidate plans retained by controllers that support an elite buffer. Zero disables the extra elite retention."
               >Elites<input
                 id="elites"
                 type="number"
                 min="0"
                 max="128"
                 value="0" /></label
-            ><label class="field"
+            ><label class="field" data-help="Number of WebAssembly worker threads available for batched simulation. Values up to 64 are supported; actual speed depends on the machine."
               >Worker threads<input
                 id="threads"
                 type="number"
@@ -159,23 +181,23 @@
                 value="4"
             /></label>
           </div>
-          <label class="check"
+          <label class="check" data-help="When enabled, inherited actions receive a small perturbation during rollouts. Disable it to preserve copied action sequences exactly."
             ><input id="inertial" type="checkbox" checked /> Perturb inherited
             actions</label
-          ><button id="wave">Advance Wave population</button>
+          ><button id="wave" data-help="Advance the Wave population once using the current world as its root. This is useful for inspecting a single planning generation.">Advance Wave population</button>
         </details>
-        <div class="control-heading">OBSERVATION LAYERS <span>LIVE</span></div>
-        <label class="check"
+        <div class="control-heading" data-help="Diagnostic overlays are visual only. Toggling them changes what is drawn, not the simulated state or controller result.">OBSERVATION LAYERS <span>LIVE</span></div>
+        <label class="check" data-help="Show candidate rollout paths from the selected decision tree."
           ><input id="layer-tree" type="checkbox" checked /> Rollout paths
           <span class="swatch green"></span></label
-        ><label class="check"
+        ><label class="check" data-help="Show the cloud of candidate future states returned by the controller."
           ><input id="layer-cloud" type="checkbox" checked /> Future-state cloud
           <span class="swatch cyan"></span></label
-        ><label class="check"
+        ><label class="check" data-help="Show tether constraints and formation links between bodies."
           ><input id="layer-tethers" type="checkbox" checked />
           Tethers & formation
           <span class="swatch violet"></span></label
-        ><label class="check"
+        ><label class="check" data-help="Show collision boundaries and physical geometry used by the engine."
           ><input id="layer-geometry" type="checkbox" /> Collision geometry
           <span class="swatch gold"></span
         ></label>
@@ -192,13 +214,13 @@
             ><span class="tag" id="run-state">LOADING</span>
           </div>
           <div class="view-buttons">
-            <button id="view" title="Switch between top and angled views">
+            <button id="view" title="Switch between top and angled views" data-help="Switch between the top-down physics view and the angled three-dimensional presentation.">
               2D / 3D</button
-            ><button id="clean" title="Toggle all diagnostic layers">
+            ><button id="clean" title="Toggle all diagnostic layers" data-help="Temporarily hide or restore diagnostic overlays so the world movement is easier to inspect.">
               Clean view</button
-            ><button id="focus">Follow agent</button
-            ><button id="experiments">Experiments</button
-            ><button id="edit">Edit scene</button>
+            ><button id="focus" data-help="Keep the camera centered on the selected or best agent.">Follow agent</button
+            ><button id="experiments" data-help="Compare controller variants on fixed seeds or fork the current world into independent outcomes.">Experiments</button
+            ><button id="edit" data-help="Open the scene editor to place agents, geometry, pickups, tethers, and reusable agent types.">Edit scene</button>
           </div>
         </div>
         <div id="viewport">
@@ -260,7 +282,7 @@
             ><span id="motion-position">No world frames</span>
           </div>
           <div class="motion-controls">
-            <button id="motion-play" disabled>▶ Play world</button>
+            <button id="motion-play" data-help="Play the recorded world movement at the selected replay speed." disabled>▶ Play world</button>
             <input
               id="motion-timeline"
               type="range"
@@ -270,15 +292,15 @@
               aria-label="Recorded world frame"
               disabled
             />
-            <select id="motion-speed" aria-label="Replay speed">
+            <select id="motion-speed" aria-label="Replay speed" data-help="Playback multiplier for recorded world frames. This changes viewing speed only, never the recorded state.">
               <option value="0.25">¼×</option>
               <option value="0.5">½×</option>
               <option value="1" selected>1×</option>
               <option value="2">2×</option>
               <option value="4">4×</option>
             </select>
-            <button id="motion-live" disabled>Back to live</button
-            ><button id="motion-resume" disabled>Continue here</button>
+            <button id="motion-live" data-help="Leave world replay and return to the current live simulation." disabled>Back to live</button
+            ><button id="motion-resume" data-help="Restore this recorded world frame and continue planning from it." disabled>Continue here</button>
           </div>
         </div>
         <div class="history-bar">
@@ -286,17 +308,17 @@
             <span class="eyebrow">EXPLORATION RECORD</span
             ><span id="record-count">No decisions recorded</span>
           </div>
-          <label
+          <label data-help="Choose how much planner ancestry is retained in the exploration record. Pruned is compact; Full keeps every recorded branch; Off disables decision recording."
             >Tree<select id="recording">
               <option value="1">Pruned</option>
               <option value="2">Full</option>
               <option value="0">Off</option>
             </select></label
-          ><label class="check"
+          ><label class="check" data-help="Keep every decision in the replay archive instead of pruning older branches. This uses more memory and storage."
             ><input type="checkbox" id="archive-all" /> Keep all
             decisions</label
-          ><button id="export-run">Export run ↓</button
-          ><button id="import-run">Open run ↑</button>
+          ><button id="export-run" data-help="Download the recorded world movement and planner trace as a portable run file.">Export run ↓</button
+          ><button id="import-run" data-help="Open a previously exported run file and restore its scene, settings, and replay data.">Open run ↑</button>
         </div>
         <div class="replay-bar">
           <input
@@ -308,19 +330,19 @@
             value="0"
           /><label
             >Node<input id="node" type="number" min="1" value="1" /></label
-          ><button id="replay">Replay branch</button
-          ><button id="save-state">Save state</button
-          ><button id="load-state">Load state</button>
+          ><button id="replay" data-help="Restore the selected recorded decision and replay its branch from the root world.">Replay branch</button
+          ><button id="save-state" data-help="Save the current complete world state for a later exact restore.">Save state</button
+          ><button id="load-state" data-help="Restore the most recently saved complete world state.">Load state</button>
         </div>
         <section class="storage-controls" aria-label="Recording storage">
-          <label class="check"
+          <label class="check" data-help="Persist long motion recordings in this browser's local storage. It applies after the next reset and can use substantial disk space."
             ><input id="persistent-recording" type="checkbox" /> Store long runs
             on this device · applies on reset</label
           >
-          <button id="flush-run">Save recording</button
-          ><button id="open-library">Saved runs</button>
-          <button id="save-checkpoint">Save planner checkpoint</button
-          ><button id="load-checkpoint">Load checkpoint</button>
+          <button id="flush-run" data-help="Write the current recording to the local run library.">Save recording</button
+          ><button id="open-library" data-help="Browse recordings saved on this device.">Saved runs</button>
+          <button id="save-checkpoint" data-help="Save the controller's exact planning checkpoint, including its random state and candidate distribution.">Save planner checkpoint</button
+          ><button id="load-checkpoint" data-help="Load a planner checkpoint and resume the same search from its saved state.">Load checkpoint</button>
           <select id="motion-events" aria-label="Replay event">
             <option>Jump to event…</option>
           </select>
@@ -329,8 +351,8 @@
             aria-label="Event note"
             placeholder="Event note"
             maxlength="120"
-          /><button id="add-event">Add marker</button>
-          <label class="check"
+          /><button id="add-event" data-help="Add a note to the selected replay event so interesting decisions can be found later.">Add marker</button>
+          <label class="check" data-help="Show velocities, forces, contacts, and tether forces for the selected body in the physics inspector."
             ><input type="checkbox" id="inspect-physics" /> Physics
             inspector</label
           >
@@ -339,7 +361,8 @@
         </section>
       </section>
       <aside id="editor" class="editor" hidden>
-        <div class="control-heading">
+        <div class="control-heading" data-help="Edit the current scene definition. Changes rebuild the world from a new root state and clear the current live trajectory."
+          >
           SCENE EDITOR
           <button id="close-editor" aria-label="Close editor">×</button>
         </div>
@@ -348,7 +371,7 @@
           Middle/right-drag to pan. Changes rebuild the scene and reset its
           state.
         </p>
-        <label class="field"
+        <label class="field" data-help="Choose what a click in the world creates or selects. Agent uses the selected reusable agent type; polygon tools compile geometry after Finish polygon."
           >Tool<select id="tool">
             <option value="select">Select & move</option>
             <option value="bodies">Agent</option>
@@ -362,12 +385,13 @@
             <option value="boundary">Draw outer boundary</option>
           </select></label
         >
-        <label class="field">Agent type<select id="agent-type"></select></label>
-        <button id="finish-polygon">Finish polygon</button>
+        <label class="field" data-help="Reusable agent archetype to place when the Agent tool is active. Archetypes define physics, actuator channels, and visuals."
+          >Agent type<select id="agent-type"></select></label>
+        <button id="finish-polygon" data-help="Compile the vertices drawn with the hole or boundary tool into scene geometry.">Finish polygon</button>
         <div class="fields-two">
-          <button id="undo">Undo</button><button id="redo">Redo</button>
+          <button id="undo" data-help="Restore the previous scene edit.">Undo</button><button id="redo" data-help="Reapply a scene edit that was undone.">Redo</button>
         </div>
-        <label class="field"
+        <label class="field" data-help="Complete JSON for the selected entity. Use Apply entity when you need to edit fields that are not exposed by the numeric property controls."
           >Selected entity <span id="selection-name">None</span
           ><textarea
             id="entity"
@@ -377,25 +401,25 @@
           ></textarea>
         </label>
         <div class="fields-two">
-          <button id="apply-entity">Apply entity</button
-          ><button id="delete-entity">Delete</button>
+          <button id="apply-entity" data-help="Validate and apply the selected entity JSON, rebuilding the scene.">Apply entity</button
+          ><button id="delete-entity" data-help="Remove the selected entities and any tethers attached to them.">Delete</button>
         </div>
         <div id="entity-properties" class="property-grid"></div>
-        <button id="apply-properties">Apply properties</button>
-        <button id="duplicate-entities">Duplicate selection</button>
-        <label class="field"
+        <button id="apply-properties" data-help="Apply the numeric physics values shown for the selected entity.">Apply properties</button>
+        <button id="duplicate-entities" data-help="Duplicate the selected entities with their visual and physical properties, offset in the world.">Duplicate selection</button>
+        <label class="field" data-help="Name for a reusable agent archetype created from the selected body."
           >Template name<input id="template-name" placeholder="My agent type"
         /></label>
-        <button id="save-template">Save selection as agent type</button>
+        <button id="save-template" data-help="Register the selected body as a reusable agent type for this scene.">Save selection as agent type</button>
         <details>
-          <summary>Actuator channels</summary>
+          <summary data-help="Inspect and manually set the selected agent's actuator channels. Channel ranges come from the agent archetype.">Actuator channels</summary>
           <div id="action-channels"></div>
-          <button id="apply-action">Apply action · 1 frame</button>
+          <button id="apply-action" data-help="Apply the current actuator slider values to the selected agent for one physics frame.">Apply action · 1 frame</button>
         </details>
-        <button id="edit-json">Edit complete scene JSON</button>
+        <button id="edit-json" data-help="Open the complete scene JSON editor for advanced changes to world, agents, task, and extensions.">Edit complete scene JSON</button>
         <div class="fields-two">
-          <button id="export-scene">Export JSON ↓</button
-          ><button id="import-scene">Import JSON ↑</button>
+          <button id="export-scene" data-help="Download the current scene as portable JSON.">Export JSON ↓</button
+          ><button id="import-scene" data-help="Load a scene JSON file and compile it into the laboratory.">Import JSON ↑</button>
         </div>
         <p>
           Keyboard control applies to the selected agent (or the first agent).
@@ -448,10 +472,10 @@
         independent outcomes.
       </p>
       <div class="experiment-fields">
-        <label>Variant A<select id="variant-a"></select></label
-        ><label>Variant B<select id="variant-b"></select></label>
-        <label>Seeds<input id="benchmark-seeds" value="7,11,19" /></label
-        ><label
+        <label data-help="Controller used for the first benchmark or comparison branch.">Variant A<select id="variant-a"></select></label
+        ><label data-help="Controller used for the second benchmark or comparison branch.">Variant B<select id="variant-b"></select></label>
+        <label data-help="Comma-separated random seeds. Every controller variant receives the same seeds for a fair comparison.">Seeds<input id="benchmark-seeds" value="7,11,19" /></label
+        ><label data-help="Maximum number of simulated physics frames per episode."
           >Episode limit · frames<input
             id="benchmark-frames"
             type="number"
@@ -459,14 +483,14 @@
             max="36000"
             value="240"
         /></label>
-        <label
+        <label data-help="Candidate-world population used by each benchmark controller. More worlds improve search coverage but require more memory and time."
           >Population<input
             id="benchmark-walkers"
             type="number"
             min="1"
             max="8192"
             value="32" /></label
-        ><label
+        ><label data-help="Number of action decisions each candidate controller can look ahead."
           >Lookahead · actions<input
             id="benchmark-horizon"
             type="number"
@@ -474,7 +498,7 @@
             max="4096"
             value="8"
         /></label>
-        <label
+        <label data-help="Physics frames represented by one benchmark action."
           >Action duration · frames<input
             id="benchmark-action-frames"
             type="number"
@@ -482,7 +506,7 @@
             max="4096"
             value="4"
         /></label>
-        <label
+        <label data-help="Quantity used to decide whether an episode succeeded. The available metrics depend on the scene task."
           >Success metric<select id="benchmark-goal">
             <option value="deliveries">Cargo deliveries</option>
             <option value="pickups">Food pickups</option>
@@ -491,7 +515,7 @@
             <option value="reward">Accumulated reward</option>
           </select></label
         >
-        <label
+        <label data-help="Threshold required by the selected success metric."
           >Success target<input
             id="benchmark-target"
             type="number"
@@ -500,7 +524,7 @@
         /></label>
       </div>
       <div class="fields-two">
-        <label class="field"
+        <label class="field" data-help="Optional JSON values that override the shared settings for Variant A."
           >Variant A parameter overrides (JSON)<textarea
             id="variant-settings-a"
             rows="2"
@@ -508,7 +532,7 @@
           >
 {}</textarea
           ></label
-        ><label class="field"
+        ><label class="field" data-help="Optional JSON values that override the shared settings for Variant B."
           >Variant B parameter overrides (JSON)<textarea
             id="variant-settings-b"
             rows="2"
@@ -519,14 +543,14 @@
         </label>
       </div>
       <div class="button-row">
-        <label class="check"
+        <label class="check" data-help="Run the benchmark over every preset scene instead of only the current scene."
           ><input id="benchmark-all-scenes" type="checkbox" /> All preset
           scenes</label
         >
-        <button id="run-benchmark">Run benchmark</button
-        ><button id="compare-branches">Fork and compare</button
-        ><button id="cancel-experiment" disabled>Cancel</button
-        ><button id="export-experiment">Export experiment</button>
+        <button id="run-benchmark" data-help="Run both controller variants over the selected seeds and report success, control effort, planning time, and simulated work.">Run benchmark</button
+        ><button id="compare-branches" data-help="Fork the selected world and replay both controller outcomes side by side.">Fork and compare</button
+        ><button id="cancel-experiment" data-help="Stop the running benchmark worker." disabled>Cancel</button
+        ><button id="export-experiment" data-help="Download the benchmark or branch comparison report as JSON.">Export experiment</button>
       </div>
       <p id="experiment-status" role="status">
         Choose a success criterion that matches the experiment.
@@ -551,7 +575,7 @@
       <section id="comparison-section" hidden>
         <div id="comparison-worlds"></div>
         <div class="button-row">
-          <button id="comparison-play">Play both</button
+          <button id="comparison-play" data-help="Play both comparison worlds together at the selected timeline speed.">Play both</button
           ><input
             id="comparison-timeline"
             type="range"
@@ -563,11 +587,11 @@
         </div>
       </section>
       <details>
-        <summary>Performance probe</summary>
+        <summary data-help="Measure state transfer and simulation throughput independently of the visual renderer.">Performance probe</summary>
         <p>
           Measure physics and state movement in an independent 256-world batch.
         </p>
-        <button id="profile-batch">Measure batch throughput</button>
+        <button id="profile-batch" data-help="Benchmark batched stepping, getting, setting, and gathering of complete world states.">Measure batch throughput</button>
         <p id="batch-profile">No measurements yet.</p>
       </details>
     </dialog>

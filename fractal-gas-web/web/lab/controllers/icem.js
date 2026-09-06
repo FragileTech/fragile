@@ -11,6 +11,7 @@ export const icemParameters = {
   ...shootingParameters,
   icem_elite_fraction: {
     label: "Elite fraction",
+    help: "Fraction of sampled plans retained as elites after each iCEM round. Higher values make updates steadier but less selective.",
     default: 0.1,
     min: 0.01,
     max: 0.5,
@@ -18,6 +19,7 @@ export const icemParameters = {
   },
   icem_keep_fraction: {
     label: "Reuse elite fraction",
+    help: "Fraction of the previous elite plans reused in the next round. Reuse reduces noise and computation while preserving promising sequences.",
     default: 0.3,
     min: 0,
     max: 1,
@@ -25,6 +27,7 @@ export const icemParameters = {
   },
   icem_decay: {
     label: "Population decay factor",
+    help: "How quickly iCEM reduces its active rollout population over search rounds. Larger values focus later rounds on fewer candidates.",
     default: 1.25,
     min: 1,
     max: 10,
@@ -32,6 +35,7 @@ export const icemParameters = {
   },
   icem_beta: {
     label: "Noise spectral exponent",
+    help: "Temporal correlation of iCEM exploration noise. Zero is white noise; larger values make neighboring actions vary more smoothly.",
     default: 2,
     min: 0,
     max: 4,
@@ -39,6 +43,7 @@ export const icemParameters = {
   },
   icem_alpha: {
     label: "Distribution momentum",
+    help: "How much of the previous mean and spread iCEM keeps when fitting the elites. Higher values damp sudden distribution changes.",
     default: 0.1,
     min: 0,
     max: 0.99,
@@ -46,6 +51,7 @@ export const icemParameters = {
   },
   icem_sigma: {
     label: "Initial normalized noise",
+    help: "Initial standard deviation of normalized action samples. Larger values explore more broadly at the start of each plan.",
     default: 0.5,
     min: 0.001,
     max: 2,
@@ -53,6 +59,7 @@ export const icemParameters = {
   },
   icem_min_sigma: {
     label: "Minimum normalized noise",
+    help: "Lower bound on iCEM's action spread. It prevents the search distribution from collapsing and losing exploration completely.",
     default: 0.01,
     min: 0.0001,
     max: 1,

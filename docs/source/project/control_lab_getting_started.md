@@ -57,10 +57,13 @@ their own rollout and optimization loops; see {doc}`control_lab_controls`.
 
 :::{div} feynman-prose
 Run the following from the repository root. You need a C++17 compiler, CMake 3.16
-or newer, Node.js 20 or newer with npm, the repository's `uv` Python environment,
-and an activated Emscripten SDK providing `emcmake` for the browser build. The lab
-has been built with Emscripten 6.0.8. No emulator ROMs or emulator submodules are
-needed for this continuous-control application.
+or newer, Node.js 20 or newer with npm, Git, and `uv`. The browser build reuses an
+active Emscripten SDK; otherwise, it installs Emscripten 6.0.8 in the repository's
+`.cache/emsdk/6.0.8/`. The build activates the SDK for its own commands, so you do
+not need to configure your shell or make `emcmake` available yourself. The first
+build needs internet access to download the SDK and JavaScript packages. No
+emulator ROMs or emulator submodules are needed for this continuous-control
+application.
 
 The first command builds the native library for Python and native checks. The
 second builds both browser engine variants, installs the pinned JavaScript
@@ -76,6 +79,10 @@ make control-lab
 
 :::{div} feynman-prose
 Open [http://127.0.0.1:8080/lab/](http://127.0.0.1:8080/lab/).
+To install or check the SDK before building, run `make control-setup`. To use a
+custom SDK directory, set `EMSDK_DIR`, for example
+`EMSDK_DIR=/path/to/emsdk make control-web`.
+
 For a different port, replace the last command with:
 :::
 
@@ -95,6 +102,20 @@ has produced its WebAssembly files. After changing C++ engine sources, rebuild
 `make control-web`; after changing only lab assets or the docs logo, run
 `npm --prefix fractal-gas-web run build:lab`. The server supplies local files
 without requiring an external asset service.
+
+To read the documentation locally, run `make serve` from the repository root.
+It builds the Theory site and Lab guide, assembles their portal, and serves
+[http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/). Opening the server root
+redirects to that portal. Documentation dependencies are installed through `uv`
+without requiring the simulation's Python dependencies. Once the documents have
+been built, `make docs-serve` previews them immediately without rebuilding;
+`DOCS_PORT=8001 make docs-serve` selects another port.
+
+Both servers provide the same local routes: `/docs/` for the assembled documents
+and `/lab/` for the browser application. Build the application with
+`make control-web` before opening `/lab/`, and build the documents with
+`make docs` before opening `/docs/` from `make control-lab`. You can then move
+between the lab and its guide on the same port.
 :::
 
 :::{figure} ../../_static/control_lab/circuit-overview.png
@@ -249,7 +270,8 @@ currently use one thread independently of this live setting.
 :::{div} feynman-added
 | Symptom | Check or next action |
 |---|---|
-| `emcmake` is missing | Activate your Emscripten SDK in the build terminal, then rerun `make control-web`. |
+| `emcmake` is missing | Run `make control-web`; it prepares the SDK automatically. Use `make control-setup` to check setup separately. If a download fails, check internet access; use `EMSDK_DIR=/path/to/emsdk` to select a custom SDK. |
+| Local documentation is missing or displays incorrectly | Run `make serve` to build and serve the assembled portal, then open `http://127.0.0.1:8000/docs/`. Use HTTP rather than opening generated HTML as a local file. After documentation edits, rebuild with `make docs`; `make docs-serve` only serves the existing build. |
 | The server reports its port is in use | Choose another port with `CONTROL_PORT=8089 make control-lab`, then open that port's `/lab/` URL. |
 | The engine remains unavailable or a module request fails | Build with `make control-web`, serve with `make control-lab`, and reload. Open the HTTP URL rather than opening `index.html` as a local file. Read the status message and browser console for the failing resource. |
 | The backend shows one thread after requesting more | Confirm the threaded build exists and use the supplied isolation-header server. Reload; the backend reports actual threads, not just the requested setting. |

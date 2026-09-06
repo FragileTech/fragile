@@ -52,7 +52,8 @@ CMake 3.16 or newer are needed for the browser build. No ROMs, emulator
 submodules, accounts, or external asset servers are needed by the lab.
 
 `make control-web` builds both single-thread and pthread WebAssembly modules,
-copies the pinned renderer into `vendor/`, and exports the original GLB assets.
+copies the pinned renderer and GLB loader into `vendor/`, retains the Blender
+collections, and exports the legacy procedural GLB assets.
 Generated engine and vendor files are ignored by Git and rebuilt by CI. The
 committed assets and scenes work offline once the application has loaded.
 
@@ -524,14 +525,26 @@ braking on the selected controlled body, or the first agent. Mouse wheel zoom,
 2D/3D switching and **Follow agent** (selected body, or the first controlled
 agent), and middle/right-drag panning are available independently of diagnostics. **Whole arena** resets the camera.
 
-`visuals/vehicles.js` authors distinct Kestrel rockets, Mite electric karts and
-Wisp survey drones, with engine bells, fins, cockpit glass, wheel hubs, roll
-cages, lights and rotors. `models.js` supplies veined ore, recovery docks, flux
-gates and gravity reactors. The runtime
-constructs these assets directly, adapting hull geometry to scene definitions.
-`tools/build-control-assets.mjs` also exports them as reusable files in `assets/`.
-No external images, fonts or asset services are needed. See
-[`assets/README.md`](assets/README.md) for provenance.
+The masthead's **Visual style** selector switches between **Futuristic** and
+**Steampunk** vehicles, props, scenery materials, lighting and interface accents.
+It preserves the running simulation, replay position, camera and selection, and
+updates comparison viewports together. The successful choice is remembered on
+this device. While models load the current view remains visible; failed loading
+offers Retry.
+
+**Models** opens the [Vehicle Workshop](asset-gallery.html), where all eight
+Blender-authored vehicles can be rotated beside their concept sheets and downloaded
+as GLB models or editable `.blend` sources. Each collection also supplies recovery
+docks, checkpoints and reactors. Small or crowded views use simplified geometry;
+close views reveal the detailed models. Native scene hulls still define collisions.
+
+`visuals/assets.js` caches the authored models, and `visual-style.js` coordinates
+style transitions across renderers. `visuals/vehicles.js` and `models.js` retain
+the procedural factories for older consumers and initial loading.
+`tools/build-control-assets.mjs` regenerates their root-level exports without
+overwriting the Blender collections. No external images, fonts or asset services
+are needed. See [`assets/README.md`](assets/README.md) for provenance, authoring,
+animation tags, LOD thresholds and verification instructions.
 
 ## Reproducible experiments and durable replay
 

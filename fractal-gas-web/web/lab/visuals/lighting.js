@@ -1,7 +1,8 @@
 // Small procedural studio environment gives metal and glass readable reflections.
 // No image downloads, post-processing passes, or per-agent lights are required.
 import * as T from "../vendor/three.module.js";
-export function laboratoryEnvironment(renderer) {
+import { retainResource } from "./resources.js";
+export function laboratoryEnvironment(renderer, style = "futuristic") {
   const width = 256,
     height = 128,
     data = new Uint8Array(width * height * 4);
@@ -14,6 +15,14 @@ export function laboratoryEnvironment(renderer) {
         rgb = [205, 228, 255];
       if (y > 32 && y < 78 && x > 204 && x < 222) rgb = [146, 75, 193];
       if (y > 35 && y < 64 && x > 82 && x < 90) rgb = [64, 193, 194];
+      if (style === "steampunk") {
+        const brightness = Math.max(...rgb);
+        rgb = [
+          brightness,
+          Math.round(brightness * 0.77),
+          Math.round(brightness * 0.49),
+        ];
+      }
       data.set([...rgb, 255], i);
     }
   const texture = new T.DataTexture(data, width, height);
@@ -43,6 +52,7 @@ export function contactShadow() {
       }
     shadowTexture = new T.DataTexture(data, size, size);
     shadowTexture.needsUpdate = true;
+    retainResource(shadowTexture);
   }
   const mesh = new T.Mesh(
     new T.PlaneGeometry(2.1, 1.6),

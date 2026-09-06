@@ -17,6 +17,31 @@ STALE_LECTURE_LINK = re.compile(
     r"(?:href|src)=[\"'](?:https://fragiletech\.github\.io/fragile)?"
     r"/docs/(?!theory/|lab/)[^\"']*[\"']"
 )
+HEAD_SCRIPT = re.compile(r"(<script\b[^>]*>).*?</script\s*>", re.IGNORECASE | re.DOTALL)
+
+
+def deduplicate_head_scripts(html: str) -> str:
+    """Keep one copy of identical inline head scripts emitted by extensions.
+
+    Jupyter Book/Sphinx can register Thebe's const declarations twice, even in
+    clean builds. Normalize the assembled output without changing script bodies,
+    their ordering, external resources, or scripts embedded in article content.
+    """
+    head, separator, body = html.partition("</head>")
+    if not separator:
+        return html
+    seen = set()
+
+    def unique(match: re.Match) -> str:
+        script = match.group(0)
+        if re.search(r"\bsrc\s*=", match.group(1), re.IGNORECASE):
+            return script
+        if script in seen:
+            return ""
+        seen.add(script)
+        return script
+
+    return HEAD_SCRIPT.sub(unique, head) + separator + body
 
 
 class _LocalLinkParser(HTMLParser):
@@ -122,6 +147,12 @@ def assemble_docs(theory: Path, lab: Path, portal: Path, output: Path) -> None:
     output.mkdir(parents=True)
     shutil.copytree(theory, output / "theory")
     shutil.copytree(lab, output / "lab")
+    for collection in ("theory", "lab"):
+        for page in (output / collection).rglob("*.html"):
+            original = page.read_text(encoding="utf-8")
+            normalized = deduplicate_head_scripts(original)
+            if normalized != original:
+                page.write_text(normalized, encoding="utf-8")
 
     for item in portal.iterdir():
         destination = output / item.name

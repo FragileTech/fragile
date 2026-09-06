@@ -1,0 +1,14 @@
+{
+  "high": {
+    "sourceTriangles": 2492,
+    "drawMeshes": 3,
+    "bytes": 891760
+  },
+  "low": {
+    "sourceTriangles": 572,
+    "drawMeshes": 3,
+    "bytes": 765744
+  },
+  "style": "futuristic",
+  "model": "dock"
+}

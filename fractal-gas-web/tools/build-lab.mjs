@@ -16,6 +16,20 @@ for (const file of ["three.module.js", "three.core.js"]) {
     new URL(`web/lab/vendor/${file}`, root),
   );
 }
+// Keep addon imports on the exact same local Three module instance.
+const { readFile, writeFile } = await import("node:fs/promises");
+for (const file of ["loaders/GLTFLoader.js", "utils/BufferGeometryUtils.js"]) {
+  const destination = new URL(`web/lab/vendor/addons/${file}`, root);
+  await mkdir(new URL("./", destination), { recursive: true });
+  const source = await readFile(
+    new URL(`node_modules/three/examples/jsm/${file}`, root),
+    "utf8",
+  );
+  await writeFile(
+    destination,
+    source.replaceAll("from 'three'", "from '../../three.module.js'"),
+  );
+}
 await copyFile(
   new URL("node_modules/three/LICENSE", root),
   new URL("web/lab/vendor/LICENSE-three.txt", root),

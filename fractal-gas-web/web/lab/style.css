@@ -12,6 +12,126 @@
   --rose: #ff729b;
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
+:root[data-visual-style="steampunk"] {
+  --bg: #211a15;
+  --panel: #2b221b;
+  --line: #64503a;
+  --muted: #c9b79e;
+  --ink: #f4e9d6;
+  --brand: #a8723b;
+  --accent: #e2b56b;
+  --cyan: #e2b56b;
+  --gold: #e9c486;
+  --rose: #e39076;
+}
+.visual-style-control {
+  position: relative;
+  flex-shrink: 0;
+}
+.style-switch {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 2px;
+}
+.style-switch legend {
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.style-switch label {
+  position: relative;
+  cursor: pointer;
+}
+.style-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.style-switch span {
+  display: block;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 12px;
+}
+.style-switch input:checked + span {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 650;
+}
+.style-switch input:focus-visible + span {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.style-feedback {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  top: 100%;
+  max-width: 280px;
+  min-width: 190px;
+  font-size: 11px;
+  color: var(--ink);
+  background: var(--panel);
+}
+.style-feedback:has(#style-status:not(:empty)) {
+  border: 1px solid var(--line);
+  padding: 8px;
+}
+.style-feedback button {
+  margin-top: 6px;
+}
+:root[data-visual-style="steampunk"] button,
+:root[data-visual-style="steampunk"] input,
+:root[data-visual-style="steampunk"] select,
+:root[data-visual-style="steampunk"] textarea {
+  background-color: #34291f;
+  border-color: var(--line);
+  color: var(--ink);
+}
+:root[data-visual-style="steampunk"] button:hover {
+  background-color: #493825;
+  border-color: var(--accent);
+}
+:root[data-visual-style="steampunk"] button.primary {
+  background: var(--accent);
+  color: #211a15;
+}
+:root[data-visual-style="steampunk"] button.primary:hover {
+  background: #f0cc91;
+}
+@media (max-width: 1100px) {
+  .masthead {
+    flex-wrap: wrap;
+    height: auto !important;
+    min-height: 78px;
+    gap: 12px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  .visual-style-control {
+    margin-left: auto;
+  }
+}
+@media (max-width: 460px) {
+  .masthead nav {
+    order: 3;
+    width: 100%;
+  }
+  .style-switch span {
+    padding: 6px;
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .style-switch span {
+    transition: none;
+  }
+}
 * {
   box-sizing: border-box;
 }
@@ -173,12 +293,17 @@ h1 {
   margin: 0 0 24px;
 }
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+  display: block;
+  position: relative;
   font-size: 10px;
   color: var(--muted);
   margin-bottom: 12px;
+}
+.field > input,
+.field > select,
+.field > textarea {
+  display: block;
+  margin-top: 7px;
 }
 .field input,
 .field select,
@@ -269,6 +394,62 @@ details .field {
   height: 12px;
   margin: 0;
 }
+
+/* Shared help treatment used by the arcade and the laboratory. The icon is
+   keyboard-focusable and the tooltip can be pinned with a click or tap. */
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  margin-left: 5px;
+  padding: 0;
+  vertical-align: middle;
+  background: #12141a;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: help;
+  flex-shrink: 0;
+}
+.help-icon:hover,
+.help-icon:focus-visible {
+  color: var(--ink);
+  border-color: var(--accent);
+  outline: none;
+}
+.check .help-icon,
+.control-heading .help-icon,
+.style-switch .help-icon {
+  margin-left: 6px;
+}
+#tooltip {
+  position: fixed;
+  z-index: 1000;
+  max-width: min(320px, calc(100vw - 16px));
+  padding: 8px 11px;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.45;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: normal;
+  box-shadow: 0 6px 20px #0009;
+  pointer-events: none;
+}
+#tooltip.pinned { pointer-events: auto; }
+#tooltip[hidden] { display: none; }
+#tooltip p { margin: 0; }
+#tooltip p + p { margin-top: 6px; }
 .swatch {
   width: 5px;
   height: 5px;
@@ -908,11 +1089,15 @@ dialog .control-heading {
   margin: 20px 0;
 }
 .experiment-fields label {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+  display: block;
+  position: relative;
   color: #a8c0ce;
   font-size: 12px;
+}
+.experiment-fields label > input,
+.experiment-fields label > select {
+  display: block;
+  margin-top: 7px;
 }
 .button-row {
   display: flex;

@@ -14,10 +14,26 @@ pytest.importorskip("yaml")
 DOCS = Path(__file__).resolve().parents[2] / "docs"
 sys.path.insert(0, str(DOCS))
 
-from assemble_docs import assemble_docs, broken_internal_links, stale_lecture_links
+from assemble_docs import (
+    assemble_docs,
+    broken_internal_links,
+    deduplicate_head_scripts,
+    stale_lecture_links,
+)
 from book_manifest import published_documents
 from collect_prf_directives import build_volume_output, extract_prf_blocks, volume_dirs
 from fragile_redirects import redirect_html, write_redirects
+
+
+def test_assembled_head_initializes_scripts_once_without_changing_article_scripts():
+    inline = '<script>const THEBE_JS_URL = "thebe.js";</script>'
+    external = '<script src="other.js"></script>'
+    other = '<script>const other = 1;</script>'
+    source = f"<html><head>{inline}{external}{inline}{other}</head><body>{inline}</body></html>"
+    expected = f"<html><head>{inline}{external}{other}</head><body>{inline}</body></html>"
+    assert deduplicate_head_scripts(source) == expected
+    assert deduplicate_head_scripts(expected) == expected
+    assert deduplicate_head_scripts(inline) == inline
 
 
 def test_exports_follow_toc_and_exclude_unpublished_sources(tmp_path):

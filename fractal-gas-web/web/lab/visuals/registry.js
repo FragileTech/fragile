@@ -2,6 +2,7 @@ import * as T from "../vendor/three.module.js";
 import { shipModel, kartModel, droneModel } from "./vehicles.js";
 import { harvesterModel } from "./harvester.js";
 import { metal, glow } from "./primitives.js";
+import { assetModel } from "./assets.js";
 
 // Register a factory once. Factories return a Three Group; hierarchy is unrestricted.
 const factories = new Map();
@@ -15,7 +16,11 @@ export function registerAgentModel(name, factory) {
     throw new Error(`Invalid or duplicate model: ${name}`);
   factories.set(name, factory);
 }
-export function createAgentModel(visual = {}, color) {
+export function createAgentModel(
+  visual = {},
+  color,
+  { style, lod = "high" } = {},
+) {
   if (
     visual.scale != null &&
     (!Number.isFinite(visual.scale) || visual.scale <= 0 || visual.scale > 100)
@@ -23,6 +28,15 @@ export function createAgentModel(visual = {}, color) {
     throw new Error("Visual scale must be in (0, 100]");
   const factory = factories.get(visual.model ?? "rocket");
   if (!factory) throw new Error(`Unknown agent model: ${visual.model}`);
+  if (style) {
+    const asset = assetModel(
+      style,
+      visual.model ?? "rocket",
+      lod,
+      visual.color ?? color,
+    );
+    if (asset) return asset;
+  }
   return factory(visual.color ?? color, visual);
 }
 // JSON-defined kits allow new silhouettes without changes to the engine or renderer.
@@ -104,7 +118,10 @@ export function animatedParts(model) {
   return parts;
 }
 // Animation derives from simulation time and state: scrubbing is deterministic.
-export function animateAgent(parts, { time, speed, thrust, steer }) {
+export function animateAgent(
+  parts,
+  { time, speed, thrust, steer, modelScale = 1 },
+) {
   for (const { part, rotation, scale } of parts) {
     part.rotation.copy(rotation);
     part.scale.copy(scale);
@@ -119,7 +136,8 @@ export function animateAgent(parts, { time, speed, thrust, steer }) {
         part.rotation.z += steer * 0.35;
         break;
       case "wheel":
-        part.rotation.y += (time * speed) / 0.215;
+        part.rotation.y +=
+          (time * speed) / ((part.userData.wheelRadius || 0.215) * modelScale);
         break;
       case "rotor":
         part.rotation.z += time * 32;

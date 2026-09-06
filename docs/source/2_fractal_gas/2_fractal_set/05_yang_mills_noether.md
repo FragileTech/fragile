@@ -4171,10 +4171,188 @@ of the action increments and their derivatives on the common
 subsequence. Consequently the source-score identities
 {ref}`(YM.Z66) <eq-fg-ym-z66>`–{ref}`(YM.Z68) <eq-fg-ym-z68>` have
 those same limiting versions, with the inherited $C_f$ bound and the
-retained limiting observables specified by that theorem. The additional
-term $X_fO$ in {ref}`(YM.Z69) <eq-fg-ym-z69>` is a connection derivative,
-not a derivative in the source parameter. Its identification and limit
-must be checked for the same observables when using that equation.
+retained limiting observables specified by that theorem. The actual source-induced update and readout derivatives are calculated
+in {prf:ref}`lem-ym-native-source-readout-tangent`. They include a
+geometry displacement and are defined on the specified differentiable
+branches. To use $X_fO$ in {ref}`(YM.Z69) <eq-fg-ym-z69>`, the
+fixed-geometry response must retain the contributions of geometry
+conditioning and branch boundaries for these same observables.
+:::
+
+:::{prf:lemma} Force-source tangent of the executed update and recorded channels
+:label: lem-ym-native-source-readout-tangent
+
+Use the force source of {prf:ref}`thm-ym-metric-force-sources` in the
+`KineticOperator.apply` execution of
+{prf:ref}`thm-ym-kinetic-metric-correspondence`. Fix a realized pre-O
+history and differentiate this step with respect to its source parameter
+at zero. Write a dot for that derivative and retain all Gaussian draws.
+The source contribution at this O stage and the following A stage is
+
+$$
+\dot v^{O}_{ki}=\frac{h}{c_h\sqrt N}\Sigma_{ki}f_{ki},
+\qquad
+\dot x^{\mathrm{end}}_{ki}
+=\frac{h^2}{2c_h\sqrt N}\Sigma_{ki}f_{ki}.
+$$
+
+The second formula uses the executed Euclidean A update
+$x\leftarrow x+(h/2)v$; the final B block and velocity squashing leave
+this position unchanged. On the full Hessian branch these quantities are
+$h g_{ki}^{-1/2}f_{ki}/\sqrt N$ and
+$h^2 g_{ki}^{-1/2}f_{ki}/(2\sqrt N)$, respectively. In particular, for
+an alive slot with invertible $\Sigma_{ki}$, this one-stage source keeps
+its recorded endpoint position fixed precisely when $f_{ki}=0$.
+
+On a differentiable branch of the remaining executed maps, its endpoint
+velocity derivative is
+
+$$
+\dot v^{\mathrm{end}}
+=D\psi_v\left[
+ D_x\mathcal B\,\dot x^{\mathrm{end}}
+ +D_v\mathcal B\,\dot v^O\right].
+$$
+
+Here $\mathcal B$ denotes the existing final `_apply_boris_kick` call,
+including both force half-kicks, its Boris rotation, and the second
+viscous-force evaluation. Its other arguments are held at the values
+supplied by this call. When velocity squashing is disabled,
+$D\psi_v=I$. For a source acting at several stages, apply the same chain
+rule to the actual chronological stage maps, adding
+$h\Sigma_{ki}f_{ki}/(c_h\sqrt N)$ at each O stage. Earlier changes in
+fitness, diffusion, geometry, and copied states enter through those
+maps' derivatives. A recorded force evaluated before the current O stage
+has zero derivative with respect to that stage's source when its preceding
+history is fixed.
+
+For a recorded viscous-force evaluation of
+{prf:ref}`thm-sm-su3-emergence`, retain its actual edge weights $K_{ij}$.
+On a fixed graph and validity branch its induced derivative is
+
+$$
+\dot F_i^{\mathrm{visc}}
+=\nu\sum_j K_{ij}(\dot v_j-\dot v_i)
+ +\nu\sum_j\dot K_{ij}(v_j-v_i).
+$$
+
+For the normalized Gaussian branch of
+{prf:ref}`def-latent-fractal-gas-viscous-force`, put
+$\ell=\ell_{\mathrm{visc}}$. Its normalization contributes exactly
+
+$$
+\begin{aligned}
+L_{ij}&=-\frac{(x_i-x_j)\cdot(\dot x_i-\dot x_j)}{\ell^2},\\
+\dot K_{ij}&=K_{ij}\left(L_{ij}-\sum_lK_{il}L_{il}\right).
+\end{aligned}
+$$
+
+Consequently, with $X=\max_j\|\dot x_j\|$,
+$V=\max_j\|v_j\|$, and $W=\max_j\|\dot v_j\|$ on its alive set,
+
+$$
+\|\dot F_i^{\mathrm{visc}}\|
+\le 2\nu W+
+ \frac{8\nu VX}{\ell^2}\sum_jK_{ij}\|x_i-x_j\|.
+$$
+
+For the other implemented weight branches, $\dot K_{ij}$ differentiates
+the supplied weight, its destination-volume factor, normalization, and
+cap on the chosen branch. A weight stored before the current source stage
+is constant in that stage's calculation. These evaluation conventions
+retain the actual force used in the record.
+
+Substitute these $\dot F_i^{\mathrm{visc}}$ and $\dot v_i$ into the
+color and contraction derivatives already calculated in
+{prf:ref}`thm-sm-direct-existing-machinery`. On valid colors the resulting
+quantitative bounds are
+
+$$
+\begin{aligned}
+\|\dot c_i\|&\le
+ \frac{\|\dot F_i^{\mathrm{visc}}\|}{\|F_i^{\mathrm{visc}}\|}
+ +|\kappa|\|\dot v_i\|,\\
+|\dot\Pi_{ijk}|&\le
+ 2\bigl(\|\dot c_i\|+\|\dot c_j\|+\|\dot c_k\|\bigr).
+\end{aligned}
+$$
+
+The denominator is bounded below by the recorded validity threshold
+$\delta_c$ on this branch. The direct pair, determinant, and doublet
+bounds are those of {prf:ref}`prop-sm-channel-estimate-routes` with these
+same induced directions.
+
+For a normalized metric readout
+$\Phi=\sum_i p_i B_i f(x_i)$ in
+{prf:ref}`thm-ym-same-record-metric-field`, restrict to a differentiable
+branch with positive retained cell weights and fixed masks. Set
+
+$$
+\ell_i=\frac{\dot b_i}{b_i}
+       +\frac12\operatorname{Tr}(g_i^{-1}\dot g_i).
+$$
+
+Then the actual readout derivative, including its normalization, is
+
+$$
+\dot\Phi
+=\sum_i p_i\left[\dot B_i f(x_i)
+             +B_i\nabla f(x_i)\cdot\dot x_i\right]
+ +\sum_i p_i\ell_i\bigl(B_i f(x_i)-\Phi\bigr).
+$$
+
+For $|B_i|\le C$ it obeys
+
+$$
+|\dot\Phi|
+\le\|f\|_\infty\max_i|\dot B_i|
+ +C\|\nabla f\|_\infty X
+ +2C\|f\|_\infty\max_i|\ell_i|.
+$$
+
+All derivatives in this statement concern the existing executed update
+and its readouts. Their image gives the realizable channel directions
+on the stated branch. The source also has the displayed geometry
+component. Its fixed-geometry weak response remains the conditional
+identity {ref}`(YM.Z67) <eq-fg-ym-z67>`, including the geometry score.
+:::
+
+:::{prf:proof}
+The pre-O state, noise amplitude, and predictable test are fixed in the
+one-stage calculation. Differentiating the added Gaussian mean gives
+$\dot v^O$; differentiating the following A update gives
+$\dot x^{\mathrm{end}}=(h/2)\dot v^O$. The final B and squashing calls
+change only velocity. Their chain rule proves the endpoint formula.
+The invertibility assertion follows from $h,c_h>0$ and invertibility of
+$\Sigma_{ki}$. Iterating this derivative through the chronological maps
+gives the multistage formula, at each step keeping the evaluation time
+of every recorded coefficient.
+
+Differentiate the recorded viscous sum term by term. For the Gaussian
+branch, differentiation of its numerator gives $L_{ij}$ and of its
+normalizer gives $\sum_lK_{il}L_{il}$. Since $\sum_jK_{ij}=1$,
+
+$$
+\sum_j|\dot K_{ij}|
+\le2\sum_jK_{ij}|L_{ij}|
+\le\frac{4X}{\ell^2}\sum_jK_{ij}\|x_i-x_j\|.
+$$
+
+Use $\|v_j-v_i\|\le2V$ and
+$\|\dot v_j-\dot v_i\|\le2W$ to obtain the force bound.
+The existing color and contraction estimates then give the asserted
+bounds without treating edge variations as independent inputs.
+
+Finally, differentiate
+$p_i=b_i\sqrt{\det g_i}/\sum_jb_j\sqrt{\det g_j}$ to obtain
+$\dot p_i=p_i(\ell_i-\sum_jp_j\ell_j)$. Substitution in the derivative
+of $\Phi$ gives its formula and bound. Zero weights, changes of graph,
+validity jumps, and cap boundaries retain their actual branch rules.
+For expectations involving those boundaries the complete likelihood
+response in {prf:ref}`thm-ym-metric-force-sources` applies; integrating
+only the interior derivatives calculated here requires a separate
+justification of the boundary contribution. The lemma makes no such
+interchange of derivative and expectation.
 :::
 
 :::{prf:remark} Coordinate form of the identification and the Yang–Mills force
@@ -8684,8 +8862,10 @@ therefore do not make this change of volume implicitly.
 :::{prf:proposition} Recorded spacetime readouts and their induced transformations
 :label: prop-ym-recorded-physical-transformations
 
-Use the four-position-coordinate execution family of the realized-regulator
-construction in `03b_continuum_yang_mills.tex`. A complete record $\omega$
+Use the covered execution records of
+{prf:ref}`def-fractal-set-record-coverage` and the exact history law of
+{prf:ref}`thm-sm-instantiated-record-transition`, with four position
+coordinates. A complete record $\omega$
 contains each stage label, position $x_n(\omega)\in\mathbb R^4$, and
 recorded time $\tau_n(\omega)$. Its embedding and physical projection are
 
@@ -8697,12 +8877,9 @@ p_{\mathrm{sample}}\Xi_\omega(n)=\tau_n(\omega).
 \tag{YM.Z81}
 $$
 
-These are the coordinate maps in that paper's realized-regulator
-definition. In the older three-position-coordinate convention of
-`03_old_lattice_qft.tex`, the embedding is $(kh,x_i(k))\in\mathbb R^4$.
-That convention uses the recorded time as its zeroth coordinate.
-Here the four-position-coordinate convention is retained: $x^0$ and
-$\tau$ are separate stored coordinates.
+The positions, stage labels, units, and recorded times are retained in the
+complete record and its header. This section uses the four-position-coordinate
+convention: $x^0$ and $\tau$ are separate stored coordinates.
 
 For a recorded face $P=(n_0,n_1,n_2,n_3)$, recover
 $x_P=\frac14\sum_{a=0}^3x_{n_a}$ and its ordered holonomy $U_P$
@@ -8724,8 +8901,8 @@ s_P(\omega)=1-r^{-1}\operatorname{Re}\operatorname{Tr}U_P(\omega),\qquad
 $$
 
 The coefficients and masks are those of the specified recorded readout;
-this formula adds no scaling factor. In the localized $SU(3)$ functional
-of the continuum paper, $r=3$ and $\beta_P=6/g_3^2$.
+this formula adds no scaling factor. For the localized $SU(3)$ readout with Wilson convention
+$\beta_P=2r/g_3^2$, these are $r=3$ and $\beta_P=6/g_3^2$.
 Each finite measure is a tempered distribution. Let $\mathbb P_{N,h}$ here denote
 the actual complete execution probability law at the specified finite
 horizon, including the selected conditioning when used, and define
@@ -8742,6 +8919,24 @@ $$
 =\|F\|_{L^2(\nu_{N,h})}.
 \tag{YM.Z83}
 $$
+
+For the retained joint descriptor $Y=(G,D)$, disintegrate its actual law as
+$\mu_{N,h}(dg,dd)=\lambda_{N,h}(dg)\mu_{N,h}^g(dd)$.
+Here $\lambda_{N,h}$ is the actual geometry marginal. For every integrable
+recorded word $O$, including a reflected product, the same-law identity is
+
+$$
+\mathbb E_{\mathbb P_{N,h}}O(G,D)
+=\int\lambda_{N,h}(dg)\int\mu_{N,h}^g(dd)\,O(g,d).
+$$
+
+This is the unsourced disintegration already used in
+{prf:ref}`thm-ym-native-geometry-fiber-action`. A regulator-conditional
+correlation is integrated against this marginal before it is used as an
+unconditional physical correlation. For a QSD-derived surviving window,
+$\mathbb P_{N,h}$ includes exactly the interior and endpoint weights of
+{prf:ref}`prop-ym-qsd-history-identification`; the stationary Doob law
+retains instead the endpoint factor in {ref}`(SM.K5) <eq-fg-sm-k5>`.
 
 Thus the readout map into the algorithmic probability space is constructed,
 with its law and every finite bounded correlation fixed by the record.
@@ -8846,6 +9041,251 @@ isometry. The OS isometry $V$ in
 {ref}`(YM.Z78) <eq-fg-ym-z78>` additionally preserves the reflected
 forms. These formulas identify the concrete algorithmic quantities in
 both checks without selecting a new hierarchy to satisfy them.
+:::
+
+:::{prf:lemma} Bounds for recorded gauge words and localized face sums
+:label: lem-ym-bounded-recorded-gauge-words
+
+Use the selected complete-record law in
+{prf:ref}`prop-ym-recorded-physical-transformations`. A normalized unitary
+loop readout $u_\gamma=r^{-1}\operatorname{Tr}U_\gamma$, set to zero
+on its recorded invalid slots, satisfies $|u_\gamma|\le1$. A valid
+Wilson defect $s_P=1-r^{-1}\operatorname{Re}\operatorname{Tr}U_P$
+satisfies $0\le s_P\le2$. Thus, for fixed coefficients and bounded
+tests, a finite word
+
+$$
+F=\sum_{a=1}^m c_a\prod_{b=1}^{d_a}
+   [v_{ab}\chi_{ab}u_{\gamma_{ab}}f_{ab}(x_{ab})]
+$$
+
+obeys $|F|\le M_F:=\sum_a|c_a|\prod_b\|f_{ab}\|_\infty$.
+Using a Wilson defect in place of a normalized trace multiplies the
+corresponding factor bound by two. Here $v_{ab}$ and $\chi_{ab}$ are
+the actual validity and full-support masks. The same bound holds for
+the reflected word, without an invariance assumption on the law. Hence
+
+$$
+\left|\overline{F_i(\vartheta Y_{N,h})}F_j(Y_{N,h})\right|
+\le M_{F_i}M_{F_j}.
+$$
+
+For a countable dictionary of these bounded words, retain their values
+and their reflected values among the bounded coordinates of
+{prf:ref}`thm-ym-native-fiber-continuum`. Their finite products have
+convergent expectations on a common further subsequence of that theorem's
+subsequence. This assertion concerns the retained word coordinates.
+Identification with a continuous physical field readout additionally requires
+its geometric continuity estimates.
+
+For the localized Wilson sum with its actual coefficients, define instead
+
+$$
+H_{N,h}(K)=\sum_{P:x_P\in K}
+ v_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2,
+\qquad U_P=e^{iX_P},\quad X_P=X_P^*.
+$$
+
+Then $|\Phi^+(f)|\le\|f\|_\infty H_{N,h}(\operatorname{supp}f)$.
+For a finite family of words of degrees at most $d$ in these localized
+sums, with support union $K$, an explicit sufficient bound for uniform
+integrability of their reflected products is
+
+$$
+\sup_{N,h}\mathbb E
+ [1+H_{N,h}(K\cup\vartheta K)]^{2d+\epsilon}<\infty
+\quad\text{for some }\epsilon>0.
+$$
+
+No such moment bound for the summed quantity is asserted by the bounded-loop
+estimate above. In the exact curvature coordinates $X_P=g_3A_PF_P$,
+$r=3$ and $\beta_P=6/g_3^2$ give the precise contribution
+$A_P^2\operatorname{Tr}F_P^2$ to $H_{N,h}$. With approximate curvature
+coordinates, the additional quadratic error is bounded by
+
+$$
+\sum_{P:x_P\in K}v_P\frac{\beta_P}{2}
+ \eta_P(\|X_P\|_{\mathrm{op}}+\|g_3A_PF_P\|_{\mathrm{op}}),
+\qquad \|X_P-g_3A_PF_P\|_{\mathrm{op}}\le\eta_P.
+$$
+
+These sums retain their face count, geometric weights, coefficients, and
+validity masks.
+:::
+
+:::{prf:proof}
+The normalized trace bound follows by summing the unit-modulus eigenvalues.
+Multiplication and the triangle inequality prove the word bounds, including
+their reflected versions. Bounded random variables are uniformly integrable
+under every selected probability law, independently of its survival
+probability. At finite cutoff the word coordinates are functions of the
+covered descriptor. If extra recorded coordinates are needed, first use the
+refinement in {prf:ref}`prop-ym-density-and-support` and condition the source
+likelihood on that refined descriptor; its projection has the original
+conditional density by the tower identity. The conditional likelihood bounds
+used in {prf:ref}`thm-ym-native-fiber-continuum` apply to the refinement by
+conditional contraction. Retain the countable bounded word coordinates in
+that theorem's existing compact-coordinate construction. Products are
+continuous functions of finitely many such coordinates, so joint weak
+convergence passes their expectations. This also retains the reflected
+products on the same further subsequence.
+
+For each eigenvalue $x$ of $X_P$, $0\le1-\cos x\le x^2/2$.
+Summation proves $v_P\beta_Ps_P\le
+v_P\beta_P\operatorname{Tr}X_P^2/(2r)$ and the localized bound.
+A product of two words of degrees at most $d$ is bounded by a fixed
+constant times $(1+H)^{2d}$. The stated $(2d+\epsilon)$ moment then
+bounds its $1+\epsilon/(2d)$ moment when $d>0$; constants need no
+extra estimate. Substitute the specified $SU(3)$ coefficient to obtain
+the curvature weight. The trace-difference calculation in
+{prf:ref}`lem-ym-recorded-face-action-remainder` gives exactly the
+additional quadratic error displayed above.
+:::
+
+:::{prf:lemma} Full-face localization and faces crossing the physical cut
+:label: lem-ym-physical-cut-face-error
+
+Keep the localized coefficients and masks of
+{prf:ref}`lem-ym-bounded-recorded-gauge-words`. Let $\Phi^{\mathrm{bar},+}(f)$
+use the barycenter condition $x_P^0>0$ and let $\Phi^+(f)$ use the
+full-face condition. For $f$ supported in the positive half-space, put
+$K=\operatorname{supp}f$ and
+$D_P=\max_{v,w\in P}|x_v-x_w|$. Then
+
+$$
+|\Phi^{\mathrm{bar},+}(f)-\Phi^+(f)|
+\le\|f\|_\infty
+\sum_{P:x_P\in K}v_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2
+ \mathbf1_{\{\min_{v\in P}x_v^0\le0<x_P^0\}}.
+$$
+
+For every $\rho>0$, the right-hand side is at most
+
+$$
+\|f\|_\infty\left[
+ H_{N,h}(K\cap\{0<x^0\le\rho\})
+ +\sum_{P:x_P\in K}v_P\frac{\beta_P}{2r}\operatorname{Tr}X_P^2
+                       \mathbf1_{\{D_P>\rho\}}\right].
+$$
+
+If $\operatorname{dist}(K,\{x^0=0\})=\delta>0$, only faces with
+$D_P\ge\delta$ contribute to the first displayed difference. Passage
+of the difference to zero in $L^p$ therefore requires the corresponding
+weighted large-face estimate, or the two estimates in the second display.
+:::
+
+:::{prf:proof}
+Subtract the two masks in the same finite sum and apply the preceding
+nonnegative face bound. On a contributing face, some vertex has
+$x_v^0\le0$ and $x_P^0>0$. Since its barycenter is a convex combination
+of its vertices, $0<x_P^0\le|x_P-x_v|\le D_P$. Splitting at
+$D_P=\rho$ proves the second bound. If $x_P\in K$ lies at distance
+at least $\delta$ from the cut, the same inequality gives
+$D_P\ge\delta$. Reflection gives the identical negative-side estimate.
+:::
+
+:::{prf:theorem} Common native hierarchy of the normalized geometric gauge readouts
+:label: thm-ym-native-normalized-gauge-hierarchy
+
+Use the existing normalized geometric weights of
+{prf:ref}`thm-ym-same-record-metric-field`, with that theorem's branch
+and validity conventions, including the empty-frame convention. For a fixed recorded gauge mark $b_i$ with $|b_i|\le C_b$,
+retain the site's complete face data whenever its support is a face, and set
+
+$$
+\Psi_{N,h}^\pm(f)
+=\sum_i p_i a_i\chi_i^\pm b_i f(x_i),\qquad
+p_i=\frac{b_i^{\mathrm{vol}}\sqrt{\det g_i}}
+ {\sum_j b_j^{\mathrm{vol}}\sqrt{\det g_j}},
+\qquad \sum_i p_i\le1.
+$$
+
+Here $b_i^{\mathrm{vol}}$ is the retained finite Voronoi volume times its
+existing site mask, $a_i$ is the gauge-readout validity mask, and $b_i$ is
+the gauge mark, not a volume. The point $x_i$ is that readout's recorded
+localization point. The mask $\chi_i^+$ requires every vertex of its
+recorded face to have $x^0>0$, and $\chi_i^-$ uses $x^0<0$.
+Normalized loop traces have $C_b=1$ and Wilson defects have $C_b=2$.
+Every finite polynomial word $F$ in these readouts has a deterministic
+bound $M_F$ independent of $N,h$. In particular,
+
+$$
+|\Psi_{N,h}^\pm(f)|\le C_b\|f\|_\infty,\qquad
+|\Psi_{N,h}^\pm(f)-\Psi_{N,h}^\pm(g)|
+ \le C_b\|f-g\|_\infty,\qquad
+|\overline{F_i(\vartheta Y_{N,h})}F_j(Y_{N,h})|
+ \le M_{F_i}M_{F_j}.
+$$
+
+Retain these normalized readouts for a countable uniformly dense dictionary
+of compactly supported continuous tests, together with their reflected
+values, in the descriptor of {prf:ref}`thm-ym-native-fiber-continuum`.
+On a common further subsequence, all finite polynomial words and reflected
+products converge in expectation. Their limits extend uniquely to all
+$C_0(\mathbb R^4)$ tests by the displayed continuity bound, and hence to
+the stated smooth compactly supported and Schwartz test classes. Every
+finite reflected matrix for this normalized class belongs to that same
+hierarchy. Positivity of these matrices is a separate property of their
+computed limits.
+
+The full-face convention is retained in this construction. Replacing its
+mask by a barycenter mask changes a readout by at most
+
+$$
+C_b\|f\|_\infty\sum_i p_i a_i
+ \mathbf1_{\{x_i\in\operatorname{supp}f,\,
+              \min_{v\in P_i}x_v^0\le0<x_i^0\}}.
+$$
+
+When $x_i$ is the face barycenter, this is bounded by the normalized
+weighted cut-layer and large-face terms from the geometric splitting in
+{prf:ref}`lem-ym-physical-cut-face-error`, with
+$p_i a_i C_b$ in place of
+$v_P\beta_P\operatorname{Tr}X_P^2/(2r)$. No localization convention
+is changed in the asserted convergence.
+:::
+
+:::{prf:proof}
+All normalization factors in this statement are those of
+{ref}`(YM.Z3) <eq-fg-ym-z3>`. On a nonempty frame the nonnegative weights
+sum to one; an empty frame contributes zero. Each validity or support mask
+can only reduce the sum of absolute values. This proves both bounds for
+$\Psi^\pm$ directly, without a face-count estimate or an inverse
+survival-probability factor. For a monomial, multiply its individual bounds;
+for a polynomial, sum these products multiplied by the absolute values of
+its coefficients. Reflection exchanges the full-face masks and preserves
+the normalized geometric weights under the recorded coordinate transport,
+so it has the same bound. Every reflected product is consequently uniformly
+integrable under the actual selected probability law.
+
+Apply the retained-coordinate conclusion of
+{prf:ref}`lem-ym-bounded-recorded-gauge-words` to these bounded normalized
+readouts. This uses the existing native subsequence construction and its
+likelihood refinement identity. A polynomial in finitely many retained
+coordinates is continuous on their compact range; convergence of its
+expectation follows. The same retained list includes both factors of every
+reflected product. Source curves, geometry, and the other original retained
+coordinates remain on that same subsequence.
+
+For arbitrary tests, approximate each by the countable dictionary in
+uniform norm. The second displayed estimate is uniform in the cutoff.
+For products use the exact telescoping identity in
+{ref}`(YM.Z5) <eq-fg-ym-z5>`; it bounds the expectation error by the sum
+of the individual test errors times the bounds for the other factors.
+First pass to the subsequence limit for dictionary tests, then let the
+test errors tend to zero. This defines the unique limit for every stated
+test and for every reflected word, with the same continuity estimate.
+For bounded continuous cylinder functions of finitely many pairings, uniform
+continuity on the compact range gives the same extension.
+
+Subtracting the two support masks proves the cut-error bound. For a
+barycenter at distance at least $\delta$ from the cut, a contributing
+face has diameter at least $\delta$, exactly as in
+{prf:ref}`lem-ym-physical-cut-face-error`. The estimate keeps the
+normalized geometric weights, including their validity masks. The
+unnormalized face-action sum in {ref}`(YM.Z87) <eq-fg-ym-z87>` remains
+a different recorded observable and retains the weighted moment estimate
+in {prf:ref}`lem-ym-bounded-recorded-gauge-words`.
 :::
 
 :::{prf:proposition} Physical reflected correlations of the recorded Wilson readouts
@@ -9008,6 +9448,84 @@ The comparison in {ref}`(YM.Z76) <eq-fg-ym-z76>` must evaluate these
 same entries. No sampling-time adjoint is used in the present calculation.
 :::
 
+:::{prf:remark} Cross-plane dependence of companion and fitness normalization
+:label: rem-ym-native-cross-plane-kernel-calculation
+
+For the Gaussian companion branch of
+{prf:ref}`def-fg-soft-companion-kernel`, fix a preceding record and a
+positive-side alive walker $i$. Split the eligible indices by their physical
+positions, retaining zero-plane indices separately. Then its actual
+normalizer is
+
+$$
+Z_i=Z_i^++Z_i^-+Z_i^0,\qquad
+Z_i^\pm=\sum_{j\ne i:\,\pm x_j^0>0}
+             e^{-d_{\mathrm{alg}}(i,j)^2/(2\epsilon^2)}.
+$$
+
+Even when the selected companion $j$ lies on the positive side, the
+probability $\kappa_i(j)=w_{ij}/Z_i$ depends on negative-side records.
+On a stratum with fixed statuses and masks, a perturbation of only the
+negative-side distances, holding $w_{ij}$ fixed, gives
+
+$$
+\partial_-\log\kappa_i(j)=-\frac{\partial_-Z_i^-}{Z_i}.
+$$
+
+Every eligible finite-distance negative-side walker has strictly positive
+weight at fixed $\epsilon>0$. A proposed interface consisting only of faces
+meeting the physical plane therefore does not record all arguments of these
+conditional probabilities. A complete conditional factorization must retain
+these normalizers and the actual crossing choices, together with the input
+records on which their conditional laws depend.
+
+The empirical reward standardization adds another crossing dependence. On
+a smooth stratum with $n$ alive walkers and
+$\sigma^2=n^{-1}\sum_k(r_k-\bar r)^2+\varepsilon_{\mathrm{std}}^2$
+above the patch threshold, for $j\ne i$ one has
+
+$$
+\frac{\partial}{\partial r_j}\frac{r_i-\bar r}{\sigma}
+=-\frac1{n\sigma}
+ -\frac{(r_i-\bar r)(r_j-\bar r)}{n\sigma^3}.
+$$
+
+On a constant-scale patch the second term is zero and the first remains.
+Logistic rescaling and the fitness exponents feed these derivatives into
+both numerator and denominator of the clone gate in
+{ref}`(YM.Z60) <eq-fg-ym-z60>`. A single-coordinate factor $1/n$ does
+not bound the sum of the crossing contributions as $n$ grows.
+The subsequent collision groups and kinetic inputs depend on the resulting
+clone choices. Survival conditioning further retains
+$h_{K-k-1}(s')/h_{K-k}(s)$ from
+{prf:ref}`prop-ym-qsd-history-identification`.
+
+There is also no positive reflected kernel supplied by the Gaussian distance
+factor alone. In a flat metric, with equal remaining coordinates and
+velocities, its value between reflected positive coordinates $s,t>0$ is
+$k_\epsilon(s,t)=e^{-(s+t)^2/(2\epsilon^2)}$. For distinct $a,b>0$,
+
+$$
+\det\begin{pmatrix}
+k_\epsilon(a,a)&k_\epsilon(a,b)\\
+k_\epsilon(b,a)&k_\epsilon(b,b)
+\end{pmatrix}
+=e^{-(a+b)^2/\epsilon^2}
+ \left(e^{-(a-b)^2/\epsilon^2}-1\right)<0.
+$$
+
+This tests only the indicated companion factor. It neither evaluates the
+full physical reflected matrix nor disproves positivity after the complete
+recorded likelihood is integrated. It does exclude using that factor alone
+as the asserted positive cross-plane kernel. For the complete selected law,
+{prf:ref}`prop-ym-translated-qsd-reflection-test` evaluates an actual
+future-word form for translated QSD histories and obtains a negative value
+under its stated nonzero-readout premise. The bounds in
+{prf:ref}`lem-ym-bounded-recorded-gauge-words` justify a passage of
+expectations for their specified retained words; they supply no sign for
+that difference.
+:::
+
 :::{prf:remark} Physical transformations and the selected random-regulator law
 :label: rem-ym-physical-symmetry-application
 
@@ -9069,9 +9587,10 @@ and then uniqueness of disintegration; sufficiency follows by substitution
 in {ref}`(YM.Z74) <eq-fg-ym-z74>`. Allowing the regulator to move is
 essential in this check.
 
-The uniqueness argument in the symmetry-restoration theorem of
-`05_axiom_verification.tex` applies after the transformed law is shown
-to solve the same equilibrium problem. For example, on a realization
+The uniqueness argument in {prf:ref}`thm-hk-vacuum-fg` applies after
+the transformed law is shown to solve the same selected problem.
+For QSDs, the complete-kernel and survival calculation is given in
+{prf:ref}`lem-ym-native-qsd-translation`. For example, on a realization
 where a physical transformation acts on the sampling state, write
 $\alpha_gF=F\circ g^{-1}$ as in
 {prf:ref}`prop-ym-recorded-physical-transformations`, let $P_t$ be its sampling semigroup, and put
@@ -9092,17 +9611,370 @@ A vanishing-defect route must also pass these invariant-law equations
 to the selected limit on a determining test class. This calculation
 does not identify $P_t$ with a physical time-transfer operator.
 
-**Application status.** The causal-set identity verifies the
-transformation of face observables. The current export theorem in
-`03b_continuum_yang_mills.tex` retains the random regulator and its
-conditional gauge law, whereas the import proposition in
-`04b_quantum_ym.tex` still specifies a deterministic flat regulator.
-The assertion of geometric equivariance in the symmetry-restoration
-proof does not calculate either the two law identities in
-{ref}`(YM.Z74) <eq-fg-ym-z74>` or the selected-kernel defect in
-{ref}`(YM.Z75) <eq-fg-ym-z75>` for that exported random law.
-Thus the cited uniqueness theorem supplies the last implication of the
-symmetry argument; its application requires this same-law verification.
+**Application status.** The face identity verifies transport of the
+recorded observable. The actual physical law is the joint descriptor law
+and its geometry disintegration in
+{prf:ref}`prop-ym-recorded-physical-transformations`. Translating the
+complete spatial data transports its selected QSD and surviving histories by
+{prf:ref}`lem-ym-native-qsd-translation`. Invariance with data held fixed
+requires the stage defects in
+{prf:ref}`rem-ym-native-fixed-data-translation-defect` to vanish, or a
+proved vanishing-defect limit on the physical determining observables.
+Uniqueness supplies the final same-law implication only after that check.
+For the full regulator law retaining an absolute-position anchor,
+{prf:ref}`prop-ym-anchored-regulator-translation-test` proves that this
+check fails for some fixed translation, including in any limit retaining
+that finite coordinate. Symmetry of a projected physical law requires its
+own observable-level identity.
+:::
+
+:::{prf:lemma} Translation of the native QSD and its selected recorded histories
+:label: lem-ym-native-qsd-translation
+
+Use the complete Euclidean Gas update of {prf:ref}`alg-euclidean-gas`
+and its recorded kernels in {prf:ref}`thm-ym-recorded-action-emergence`.
+Write $\mathfrak b$ for its configured spatial data: reward, force, metric
+and noise coefficients, validity domain, and any coordinate-dependent
+readout frames. For $a\in\mathbb R^4$, let $t_a$ be the existing
+translation of positions in
+{prf:ref}`prop-ym-recorded-physical-transformations`; velocities,
+recorded times, and walker indices are unchanged. Transport the data by
+
+$$
+R_{\mathfrak b_a}(x+a,v)=R_{\mathfrak b}(x,v),\qquad
+F_{\mathfrak b_a}(x+a,v)=F_{\mathfrak b}(x,v),\qquad
+\mathcal X_{\mathrm{valid},\mathfrak b_a}
+ =\mathcal X_{\mathrm{valid},\mathfrak b}+a,
+$$
+
+and the same pullback convention for metric, noise coefficients, and
+readout frames. Scalar algorithm parameters remain fixed. Let
+$Q_N^{\mathfrak b}$ be the killed one-step kernel. Then
+
+$$
+Q_N^{\mathfrak b_a}(t_as,t_aA)=Q_N^{\mathfrak b}(s,A).
+$$
+
+Consequently, if $\nu_N^{\mathfrak b}Q_N^{\mathfrak b}
+=\alpha_N\nu_N^{\mathfrak b}$ is the selected QSD, its translation
+$\nu_N^{\mathfrak b_a}=(t_a)_*\nu_N^{\mathfrak b}$ is a QSD for
+$Q_N^{\mathfrak b_a}$ with the same $\alpha_N$. Uniqueness identifies
+it with that translated model's selected QSD whenever the cited uniqueness
+hypotheses hold. The complete QSD histories conditioned on survival through
+the same $K$ steps obey the identical pushforward relation.
+
+Let $\mu_{\mathfrak b}$ be the joint regulator/gauge law of one such
+selected history, with regulator marginal $\lambda_{\mathfrak b}$ and
+conditional laws $\mu_{\mathfrak b}^{\mathsf r}$. The recorded readout
+translation, with its frames transported as above, satisfies
+
+$$
+\mu_{\mathfrak b_a}=(t_a)_*\mu_{\mathfrak b},\qquad
+\lambda_{\mathfrak b_a}=(t_a)_*\lambda_{\mathfrak b},\qquad
+\mu_{\mathfrak b_a}^{t_a\mathsf r}
+ =(t_a)_*\mu_{\mathfrak b}^{\mathsf r}
+\quad\text{for }\lambda_{\mathfrak b}\text{-almost every }\mathsf r.
+$$
+
+These are translation covariance identities for the QSD family. If the
+translation acts within the specified state space and the complete kernel
+with fixed data is equivariant, uniqueness gives same-law invariance by
+{prf:ref}`thm-hk-vacuum-fg`. Confinement does not prevent translating a
+QSD together with its confining data.
+:::
+
+:::{prf:proof}
+**Companion and selection stages.** Couple the two updates with identical
+random inputs. Under translated metric data every algorithmic pair distance
+is unchanged. Hence every companion weight, its sum over eligible indices,
+and its normalized probability are unchanged. Raw rewards agree at the
+translated positions. Their empirical mean, regularized standard deviation,
+patched standardized scores, logistic rescaling, and fitness vector therefore
+agree, including all global normalization factors. Alive sets agree because
+the validity domain is transported. The same companion inputs select the
+same indices and the same thresholds give the same clone masks. This
+argument also covers a configured matching sampler whose probabilities
+are functions of the same translated data.
+
+**Cloning and kinetic stages.** The cloning position update satisfies
+$(x_j+a)+\sigma_x\zeta=(x_j+\sigma_x\zeta)+a$.
+The collision groups, velocities, random rotations, and restitution
+parameters agree, so their velocity outputs agree. In BAOAB, the B stages
+use equal forces at corresponding positions, the A stages add the same
+velocity displacement, and the O stage has the same conditional coefficient
+$\Sigma$ and Gaussian input. Any configured deterministic stages must use
+the transported coordinate data specified in the statement. The final
+positions consequently differ by $a$ and the velocity outputs agree.
+The final validity tests and the cemetery event agree. This proves the
+killed-kernel identity, with every stage and its normalizing factor retained.
+
+**QSD and survival normalization.** Push forward the QSD identity using the
+kernel relation. This gives
+$\nu_N^{\mathfrak b_a}Q_N^{\mathfrak b_a}
+=\alpha_N\nu_N^{\mathfrak b_a}$.
+Writing $h_j^{\mathfrak b}=(Q_N^{\mathfrak b})^j1$, induction gives
+$h_j^{\mathfrak b_a}(t_as)=h_j^{\mathfrak b}(s)$.
+Thus the interior law and selected transition in
+{prf:ref}`prop-ym-qsd-history-identification` transform as
+
+$$
+\frac{h_{K-k}^{\mathfrak b_a}}{\alpha_N^{K-k}}
+ \nu_N^{\mathfrak b_a}
+=(t_a)_*\left(
+ \frac{h_{K-k}^{\mathfrak b}}{\alpha_N^{K-k}}
+ \nu_N^{\mathfrak b}\right),\qquad
+R_{k,K}^{\mathfrak b_a}(t_as,t_a ds')=R_{k,K}^{\mathfrak b}(s,ds').
+$$
+
+The survival denominator remains $\alpha_N^K$. This proves covariance
+of the whole conditioned episode, not only its terminal QSD marginal.
+If the chosen law is instead the stationary Doob law, transport its
+positive eigenfunction by $\eta_{\mathfrak b_a}(t_as)=\eta_{\mathfrak b}(s)$;
+the endpoint factor in {ref}`(SM.K5) <eq-fg-sm-k5>` then agrees as well.
+
+The existing record encoder retains the translated positions and header,
+the identical discrete decisions, and the correspondingly transported
+readouts. Pushforward gives the joint-law identity; its regulator marginal
+and uniqueness of disintegration give the last two identities. Every
+unconditional gauge word still integrates against that regulator marginal.
+:::
+
+:::{prf:remark} Fixed-data translation defects in the actual stages
+:label: rem-ym-native-fixed-data-translation-defect
+
+For an active translation with $\mathfrak b$ held fixed, the preceding
+proof identifies the quantities that must be compared. Raw reward and
+force defects are
+$\Delta_aR_i=R_{\mathfrak b}(x_i+a,v_i)-R_{\mathfrak b}(x_i,v_i)$
+and the corresponding $\Delta_aF_i$. A fixed validity domain contributes
+$\mathbf1_{\mathcal X_{\mathrm{valid}}}(x_i+a)
+-\mathbf1_{\mathcal X_{\mathrm{valid}}}(x_i)$.
+For unchanged eligible indices, put
+$d_{ij,a}^2=d_{\mathrm{alg},\mathfrak b}(t_as;i,j)^2$ and
+$Z_{i,a}=\sum_{j\ne i}\exp[-d_{ij,a}^2/(2\epsilon^2)]$.
+The configured Gaussian companion probabilities have exact defect
+
+$$
+\kappa_{i,a}(j)-\kappa_i(j)
+=\kappa_i(j)\left[
+ e^{-(d_{ij,a}^2-d_{ij}^2)/(2\epsilon^2)}\frac{Z_i}{Z_{i,a}}-1
+\right].
+$$
+
+When the metric is translation invariant this term is zero. On a fixed
+alive set, a standardized reward $z_i=(r_i-\bar r)/\sigma$ has defect
+
+$$
+z_{i,a}-z_i
+=\frac{\Delta_a r_i-\overline{\Delta_a r}}{\sigma_a}
+ +(r_i-\bar r)\left(\frac1{\sigma_a}-\frac1\sigma\right),
+$$
+
+with the actual patched scales $\sigma_a,\sigma$. The resulting
+fitnesses enter the clipped gate probability in
+{ref}`(YM.Z60) <eq-fg-ym-z60>`; its normalization remains
+$p_{\max}(V_i+\epsilon_{\mathrm{clone}})$.
+Cloning jitter, velocity collisions, and the A drift have zero direct
+translation defect when their inputs agree. The B and O stages retain the
+force and noise-coefficient defects at their actual intermediate positions.
+A change of alive set additionally changes every affected companion and
+empirical normalization.
+
+Thus translated QSDs are available by
+{prf:ref}`lem-ym-native-qsd-translation`. To infer invariance with fixed
+data, or restoration in a specified limit, these fixed-data defects must
+vanish exactly or in the required determining correlations. The physical
+readout algebra and a state space modulo translations must be specified if
+such a quotient is used; the complete record in
+{prf:ref}`def-fractal-set-record-coverage` retains absolute position anchors.
+:::
+
+:::{prf:proposition} Physical reflection test on translated native QSD histories
+:label: prop-ym-translated-qsd-reflection-test
+
+Fix a finite recorded cutoff and its selected QSD history law $P$ from
+{prf:ref}`prop-ym-qsd-history-identification`. Use the nonnegative Wilson
+face weights $w_P=v_P\beta_Ps_P$ of
+{prf:ref}`prop-ym-native-physical-reflection-calculation`, including the
+recorded validity masks. Suppose one nonnegative compactly supported smooth
+test $f$ has
+
+$$
+m=\mathbb E_P\sum_Pw_Pf(x_P)>0.
+$$
+
+Let $P_a$ be the actual QSD history law obtained by translating the spatial
+data and positions by $ae_0$ as in
+{prf:ref}`lem-ym-native-qsd-translation`, with the same survival horizon.
+Set $f_a(x)=f(x-ae_0)$. For sufficiently large $a$, $f_a$ is supported
+strictly in $x^0>0$. Define its full-face future readout
+$F_a=\sum_Pw_P\chi_P^+f_a(x_P)$ on the translated record and let
+$M=2B_{N,h}\|f\|_\infty$, so $0\le F_a\le M$.
+Then, for the two future words $(1,F_a)$, write
+
+$$
+u_a=\mathbb E_{P_a}F_a,\qquad
+v_a=\mathbb E_{P_a}F_a(\vartheta Y),\qquad
+q_a=\mathbb E_{P_a}[F_a(\vartheta Y)F_a(Y)].
+$$
+
+Their actual reflected matrix is
+
+$$
+Q_a=\begin{pmatrix}1&u_a\\v_a&q_a\end{pmatrix},\qquad
+u_a\longrightarrow m,\quad v_a\longrightarrow0,\quad
+0\le q_a\le Mv_a\longrightarrow0.
+$$
+
+In particular, for all sufficiently large $a$, the bounded future
+word $G_a=F_a-m/2$ has strictly negative physical reflected form:
+
+$$
+\mathbb E_{P_a}[\overline{G_a(\vartheta Y)}G_a(Y)]
+=q_a-\frac m2(u_a+v_a)+\frac{m^2}{4}
+\le-\frac{m^2}{16}<0.
+$$
+
+Thus translation covariance of native QSDs does not establish physical
+reflection positivity for every member of that translated family.
+The calculation uses the complete selected law and its actual face words.
+It makes no assertion that a finite-cutoff negative value persists in a
+continuum limit without uniform versions of its bounds.
+:::
+
+:::{prf:proof}
+Use the exact QSD history pushforward of
+{prf:ref}`lem-ym-native-qsd-translation` to express the three expectations
+under $P$. Translation leaves each $w_P$ unchanged and gives
+
+$$
+\begin{aligned}
+u_a&=\mathbb E_P\sum_Pw_P
+ \mathbf1_{\{\min_{v\in P}x_v^0>-a\}}f(x_P),\\
+v_a&=\mathbb E_P\sum_Pw_P
+ \mathbf1_{\{\max_{v\in P}x_v^0<-a\}}
+ f(\vartheta x_P-2ae_0).
+\end{aligned}
+$$
+
+These are integrations of the full companion, cloning, kinetic, and
+survival likelihood. No side independence is used. Every recorded finite
+face has finite vertex coordinates. Its first mask tends to one. In the
+second line the compactly supported test eventually vanishes on every
+fixed record. Both sums are bounded by $M$, so dominated convergence gives
+$u_a\to m$ and $v_a\to0$. Pointwise $F_a\le M$ gives
+$0\le q_a\le Mv_a$ under the same law. Choose $a$ so large that
+$u_a\ge3m/4$ and $Mv_a\le m^2/16$. The displayed bound for $G_a$
+follows by expanding its reflected form. The constants and the full-face
+masks remain in this calculation throughout.
+:::
+
+:::{prf:proposition} Translation invariance and the existing global geometric normalization
+:label: prop-ym-normalized-physical-translation-test
+
+Take the globally normalized geometric readout in
+{ref}`(YM.Z3) <eq-fg-ym-z3>` with a bounded nonnegative Wilson mark
+$0\le s_i\le2$, its existing validity mask, and a physical support test:
+
+$$
+\Phi_{N,h}(f)=\sum_i p_i a_i s_i f(x_i),\qquad
+p_i\ge0,\quad \sum_i p_i\le1.
+$$
+
+Here $a_i\in\{0,1\}$ is the recorded gauge-validity mask; the
+empty-frame readout is zero.
+Every continuum limit identified by the same normalized test pairings has
+$|\Phi(f)|\le2\|f\|_\infty$ and is a nonnegative finite measure of total
+mass at most two. If its physical law is invariant under all translations
+of $x\in\mathbb R^4$, then $\Phi=0$ almost surely.
+Consequently a nonzero physical gauge hierarchy built from these globally
+normalized nonnegative marks cannot satisfy both same-law translation
+invariance and the requested nonvacuum conclusion. A different scaling,
+such as a specified centered fluctuation hierarchy, requires its own
+physical reflected-product calculation.
+:::
+
+:::{prf:proof}
+The finite bound follows from the recorded normalized weights and $s_i\le2$.
+Retain the test pairings on a countable uniformly dense subspace of
+$C_0(\mathbb R^4)$ in the existing native continuum construction. Their
+linearity, positivity, and uniform norm bound pass jointly to the limit and
+extend to all of $C_0$ by continuity. The representing nonnegative measure
+has total mass at most two. This conclusion also allows mass to escape to
+infinity along the sequence.
+
+Let $\overline\Phi=\mathbb E\Phi$, a finite nonnegative measure. Invariance
+of the physical law makes $\overline\Phi$ translation invariant. If
+$\overline\Phi(K)>0$ for some compact $K$, place arbitrarily many disjoint
+translates of $K$ in $\mathbb R^4$. Invariance would give
+$\overline\Phi(\mathbb R^4)\ge n\overline\Phi(K)$ for every $n$,
+contradicting its bound by two. Thus $\overline\Phi$ vanishes on every
+compact set, hence is zero. A countable compact exhaustion and nonnegativity
+then give $\Phi=0$ almost surely. All its positive-degree gauge words vanish;
+the generated unital algebra supplies only the vacuum class.
+
+This concerns the fixed global normalization in (YM.Z3). For the
+unnormalized Wilson sum in {ref}`(YM.Z87) <eq-fg-ym-z87>`, a uniform
+bound on the total mass has not been obtained by this argument. For a
+$\sqrt N$-scaled centered field, the total-variation bound instead grows
+with $N$. Neither construction may be substituted for (YM.Z3) without
+tracking that change of observable and its correlations.
+:::
+
+:::{prf:proposition} Translation test for the retained absolute-position regulator law
+:label: prop-ym-anchored-regulator-translation-test
+
+Let $\lambda$ be a probability law for a recorded regulator that retains an
+absolute position $X(\mathsf r)\in\mathbb R^4$ of a specified vertex
+label, as in {prf:ref}`def-fractal-set-record-coverage`. Suppose the
+recorded translation preserves that label, so
+$X(t_a\mathsf r)=X(\mathsf r)+a$.
+Then $\lambda$ cannot be invariant under all $a\in\mathbb R^4$.
+More quantitatively, there are a fixed translation $a$ and a bounded smooth
+regulator observable $O(\mathsf r)=f(X(\mathsf r)-a)$, with
+$0\le f\le1$, such that
+
+$$
+\int O\,d((t_a)_*\lambda)-\int O\,d\lambda>\frac12.
+$$
+
+If a selected regulator sequence retains that position and its position
+marginals converge weakly to a probability on $\mathbb R^4$, the same
+observable and translation have a nonzero limiting defect. This applies to
+a QSD-derived selected history just as to any other probability law.
+It is consistent with the translation covariance of the QSD family in
+{prf:ref}`lem-ym-native-qsd-translation`.
+:::
+
+:::{prf:proof}
+Let $\rho=X_*\lambda$. Choose $f\in C_c^\infty(\mathbb R^4)$ with
+$0\le f\le1$ and $\rho(f)>3/4$, using a compact set carrying more
+than three quarters of this probability. Let $K=\operatorname{supp}f$.
+Choose $a$ so large that $K$ and $K+a$ are disjoint. Since
+$\rho(K)>3/4$, one has $\rho(K+a)<1/4$. Therefore
+
+$$
+\int O\,d((t_a)_*\lambda)=\rho(f)>\frac34,
+\qquad
+\int O\,d\lambda=\rho(f(\cdot-a))\le\rho(K+a)<\frac14.
+$$
+
+This proves the claimed defect on a bounded smooth determining observable.
+For weakly convergent position marginals, both integrands $f$ and
+$f(\cdot-a)$ are bounded continuous, so the same difference converges to
+a value greater than $1/2$. Thus this defect cannot vanish on the limiting
+anchored regulator algebra.
+
+In particular, the two-component same-law requirement
+$g_*\lambda=\lambda$ and
+$g_*\mu^{\mathsf r}=\mu^{g\mathsf r}$ from
+{ref}`(YM.Z74) <eq-fg-ym-z74>` cannot hold for all translations on a
+probability law retaining this absolute-position coordinate. A covariance
+statement transporting the background and its QSD is instead exactly the
+identity proved in {prf:ref}`lem-ym-native-qsd-translation`. A proposed
+unlabelled or relative-coordinate limiting law must be specified separately,
+with its physical observable correspondence, before applying a same-law
+translation argument to that different state space.
 :::
 
 :::{prf:remark} Common hierarchy and physical reflection check
@@ -9911,6 +10783,24 @@ equality of the full recorded generator with $-H_{\mathrm{eq}}$ nor a
 four-dimensional relativistic Yang--Mills identification. A use of the
 already cited OS reconstruction theorem keeps those exact spacetime and
 field-domain requirements for the same hierarchy.
+
+For the existing normalized geometric gauge readouts,
+{prf:ref}`thm-ym-native-normalized-gauge-hierarchy` now places all finite
+words and reflected products on a common native subsequence. The
+unnormalized face-action sums retain the separate weighted-moment estimate
+in {prf:ref}`lem-ym-bounded-recorded-gauge-words`.
+{prf:ref}`lem-ym-native-qsd-translation` transports the QSD, its survival
+weights, and both components of its regulator/gauge disintegration.
+{prf:ref}`prop-ym-translated-qsd-reflection-test` gives an actual negative
+physical reflected form for the specified translated finite-cutoff QSD
+family. Its continuum use requires uniform versions of its bounds.
+{prf:ref}`prop-ym-anchored-regulator-translation-test` excludes full
+translation invariance on a limiting regulator retaining an absolute anchor.
+For the globally normalized nonnegative physical readouts,
+{prf:ref}`prop-ym-normalized-physical-translation-test` further proves
+that a translation-invariant limiting law is zero. These conclusions fix
+the scope of any subsequent relativistic identification without replacing
+the selected law, its observable normalization, or its physical coordinates.
 :::
 
 

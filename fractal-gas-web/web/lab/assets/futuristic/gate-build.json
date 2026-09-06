@@ -1,0 +1,14 @@
+{
+  "high": {
+    "sourceTriangles": 2492,
+    "drawMeshes": 3,
+    "bytes": 892224
+  },
+  "low": {
+    "sourceTriangles": 572,
+    "drawMeshes": 3,
+    "bytes": 766208
+  },
+  "style": "futuristic",
+  "model": "gate"
+}

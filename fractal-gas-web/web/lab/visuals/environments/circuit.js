@@ -68,7 +68,7 @@ function checkedPoints(points) {
 
 // Physical limits always come from scene.boundary / holes. Environment metadata
 // only adds track dressing, never modifies the native simulation or action space.
-export function circuitEnvironment(scene) {
+export function circuitEnvironment(scene, { style = "futuristic" } = {}) {
   const spec = scene.environment,
     group = new T.Group();
   group.name = "Violet Circuit";
@@ -254,7 +254,9 @@ export function circuitEnvironment(scene) {
       const next = bits[info[6]] % markers.length;
       markers.forEach((m, i) => {
         m.material.opacity = i === next ? 0.95 : 0.12;
-        m.material.color.setHex(i === next ? 0xf1cd84 : 0x9a6fac);
+        m.material.color.setHex(
+          i === next ? 0xf1cd84 : style === "steampunk" ? 0xa47740 : 0x9a6fac,
+        );
       });
     },
   };

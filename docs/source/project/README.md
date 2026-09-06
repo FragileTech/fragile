@@ -84,7 +84,19 @@ the independent [Control Laboratory guide](https://fragiletech.github.io/fragile
 ```bash
 make docs    # build the portal, Theory, and Lab sites
 make serve   # build and serve the assembled documentation
+make docs-serve  # serve an existing build without rebuilding
 ```
+
+Open <http://127.0.0.1:8000/docs/>; the server root redirects to this portal.
+Theory lives at `/docs/theory/`, the lab guide at `/docs/lab/`, and the simulator
+at `/lab/`. Set `DOCS_PORT=8001` to use another port. Documentation dependencies
+run in an isolated `uv` environment, without installing the training stack.
+
+To build the simulator, run `make control-web`, then `make control-lab` and open
+<http://127.0.0.1:8080/lab/>. The browser build automatically activates an existing
+Emscripten SDK or downloads version 6.0.8 into `.cache/emsdk/6.0.8` on first use.
+Use `EMSDK_DIR=/path/to/emsdk make control-web` for a custom SDK. Both local
+servers also serve the documentation after `make docs`.
 
 ## Development
 

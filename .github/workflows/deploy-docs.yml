@@ -50,7 +50,7 @@ jobs:
 
       - name: Test documentation routes and redirects
         run: |
-          python -m pytest -q tests/docs/test_book_tools.py
+          python -m pytest -q tests/docs/
           test -s docs/_build/html/index.html
           test -s docs/_build/html/theory/index.html
           test -s docs/_build/html/lab/index.html

@@ -1,0 +1,159 @@
+import * as T from "./vendor/three.module.js";
+import { assetModel } from "./visuals/assets.js";
+import { animatedParts, animateAgent } from "./visuals/registry.js";
+import { laboratoryEnvironment, contactShadow } from "./visuals/lighting.js";
+import { disposeGroup } from "./visuals/resources.js";
+import { stylePalette } from "./visuals/style-palette.js";
+import { labStyle } from "./visual-style.js";
+import { installStyleControls } from "./style-controls.js";
+
+const canvas = document.getElementById("asset-world");
+const renderer = new T.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = T.ACESFilmicToneMapping;
+const world = new T.Scene();
+const camera = new T.OrthographicCamera(-1.5, 1.5, 1, -1, 0.01, 50);
+camera.up.set(0, 0, 1);
+const holder = new T.Group();
+world.add(holder);
+const key = new T.DirectionalLight(0xe4efff, 3);
+key.position.set(3, -4, 5);
+world.add(key, new T.HemisphereLight(0xdcecff, 0x33261e, 2));
+const rim = new T.DirectionalLight(0x99aaff, 2);
+rim.position.set(-2, 2, 3);
+world.add(rim);
+let environment,
+  model,
+  parts = [],
+  yaw = 0,
+  pitch = 0.58,
+  view = "hero";
+let center = new T.Vector3(0, 0, 0.4),
+  modelSpan = 2;
+const select = document.getElementById("vehicle");
+const descriptions = {
+  rocket:
+    "Twin engine pods, a closed canopy, swept stabilizers, and independent animated exhausts.",
+  kart: "Four exposed wheels, front steering, an open cockpit, and a chassis built around its power unit.",
+  drone:
+    "Four protected survey rotors surround a central optical instrument and compact hull.",
+  harvester:
+    "Six wheels carry the raised cab and ore hopper. The toothed mineral intake turns independently.",
+};
+function resize() {
+  const { width, height } = canvas.parentElement.getBoundingClientRect();
+  renderer.setSize(width, height, false);
+  const aspect = width / height,
+    span = modelSpan * 1.24;
+  camera.left = (-span * Math.max(1, aspect)) / 2;
+  camera.right = -camera.left;
+  camera.top = (span * Math.max(1, 1 / aspect)) / 2;
+  camera.bottom = -camera.top;
+  camera.updateProjectionMatrix();
+}
+function poseCamera() {
+  const angle =
+    view === "side" ? 0 : view === "top" ? Math.PI / 2 - 0.0001 : pitch;
+  const turn = view === "hero" ? yaw + 0.65 : 0;
+  camera.position
+    .copy(center)
+    .add(
+      new T.Vector3(
+        4 * Math.cos(angle) * Math.sin(turn),
+        -4 * Math.cos(angle) * Math.cos(turn),
+        4 * Math.sin(angle),
+      ),
+    );
+  camera.lookAt(center);
+}
+function prepare(style) {
+  const next = assetModel(style, select.value);
+  if (!next) throw new Error("The selected vehicle has not loaded");
+  const nextEnvironment = laboratoryEnvironment(renderer, style);
+  return {
+    cancel() {
+      nextEnvironment.dispose();
+      disposeGroup(next);
+    },
+    commit() {
+      disposeGroup(holder);
+      environment?.dispose();
+      environment = nextEnvironment;
+      world.environment = environment.texture;
+      world.background = new T.Color(stylePalette[style].background);
+      key.color.setHex(style === "steampunk" ? 0xffdfb4 : 0xe4efff);
+      rim.color.setHex(style === "steampunk" ? 0xe4ad68 : 0x99aaff);
+      model = next;
+      holder.add(model, contactShadow());
+      const bounds = new T.Box3().setFromObject(model),
+        size = bounds.getSize(new T.Vector3());
+      center = bounds.getCenter(new T.Vector3());
+      modelSpan = Math.max(size.x, size.y, size.z);
+      parts = animatedParts(model);
+      const name = select.selectedOptions[0].text;
+      document.getElementById("asset-title").textContent = name;
+      document.getElementById("asset-description").textContent =
+        descriptions[select.value];
+      const concept = `./concepts/${style}/${select.value}.png`;
+      const reference = document.getElementById("concept-image");
+      reference.hidden = true;
+      reference.onload = () => { reference.hidden = false; };
+      reference.src = concept;
+      reference.alt =
+        `${style} ${name} concept sheet`;
+      document.getElementById("concept-link").href = concept;
+      document.getElementById("download-glb").href =
+        `./assets/${style}/${select.value}-high.glb`;
+      document.getElementById("download-blend").href =
+        `./assets/sources/${style}/${select.value}.blend`;
+      resize();
+    },
+  };
+}
+labStyle.subscribe(prepare);
+select.addEventListener("change", () => {
+  if (labStyle.ready) prepare(labStyle.current).commit();
+});
+for (const button of document.querySelectorAll("[data-view]"))
+  button.addEventListener("click", () => {
+    view = button.dataset.view;
+    for (const other of document.querySelectorAll("[data-view]"))
+      other.setAttribute("aria-pressed", String(other === button));
+  });
+let drag;
+canvas.addEventListener("pointerdown", (event) => {
+  drag = [event.clientX, event.clientY];
+  canvas.setPointerCapture(event.pointerId);
+});
+canvas.addEventListener("pointermove", (event) => {
+  if (!drag) return;
+  view = "hero";
+  yaw -= (event.clientX - drag[0]) * 0.008;
+  pitch = T.MathUtils.clamp(
+    pitch + (event.clientY - drag[1]) * 0.006,
+    0.04,
+    1.5,
+  );
+  drag = [event.clientX, event.clientY];
+});
+canvas.addEventListener("pointerup", () => {
+  drag = null;
+});
+canvas.addEventListener("lostpointercapture", () => {
+  drag = null;
+});
+new ResizeObserver(resize).observe(canvas.parentElement);
+function animate(time) {
+  requestAnimationFrame(animate);
+  const moving = document.getElementById("animate-parts").checked;
+  animateAgent(parts, {
+    time: moving ? time / 1000 : 0,
+    speed: moving ? 0.4 : 0,
+    thrust: moving ? 0.6 : 0,
+    steer: moving ? Math.sin(time / 2000) * 0.6 : 0,
+  });
+  poseCamera();
+  renderer.render(world, camera);
+}
+installStyleControls();
+requestAnimationFrame(animate);

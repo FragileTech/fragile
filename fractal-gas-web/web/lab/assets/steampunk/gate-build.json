@@ -1,0 +1,14 @@
+{
+  "high": {
+    "sourceTriangles": 2492,
+    "drawMeshes": 3,
+    "bytes": 865984
+  },
+  "low": {
+    "sourceTriangles": 572,
+    "drawMeshes": 3,
+    "bytes": 739948
+  },
+  "style": "steampunk",
+  "model": "gate"
+}

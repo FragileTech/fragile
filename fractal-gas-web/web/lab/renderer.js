@@ -4,6 +4,10 @@ import { createEnvironment } from "./visuals/environments/index.js";
 import { BodyLayer } from "./visuals/body-layer.js";
 import * as T from "./vendor/three.module.js";
 import { palette, prism, zoneModel, reactorModel } from "./models.js";
+import { assetModel, preloadStyle } from "./visuals/assets.js";
+import { disposeGroup as dispose } from "./visuals/resources.js";
+import { stylePalette } from "./visuals/style-palette.js";
+import { labStyle } from "./visual-style.js";
 
 function line(points, color, dashed = false) {
   const geometry = new T.BufferGeometry().setFromPoints(
@@ -22,20 +26,24 @@ function line(points, color, dashed = false) {
   if (dashed) mesh.computeLineDistances();
   return mesh;
 }
-function dispose(group) {
-  group.traverse((o) => {
-    o.geometry?.dispose();
-    if (o.material)
-      for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
-        m.map?.dispose();
-        m.dispose();
-      }
-  });
-  group.clear();
+function prop(kind, style, radius = 1, color = palette.gold) {
+  const model = assetModel(style, kind, "high");
+  if (!model)
+    return kind === "reactor"
+      ? reactorModel()
+      : zoneModel(radius, color, kind === "dock" ? "base" : "gate");
+  const root = new T.Group();
+  model.scale.set(radius, radius, 1);
+  root.add(model);
+  return root;
 }
 export class LabRenderer {
   constructor(canvas) {
     this.canvas = canvas;
+    this.style = labStyle.current;
+    this.unsubscribeStyle = labStyle.subscribe((style) =>
+      this.prepareStyle(style),
+    );
     this.renderer = new T.WebGLRenderer({
       canvas,
       antialias: true,
@@ -49,23 +57,28 @@ export class LabRenderer {
     this.world = new T.Scene();
     this.world.background = new T.Color(0x0c1422);
     this.world.fog = new T.FogExp2(0x0c1422, 0.002);
-    this.environment = laboratoryEnvironment(this.renderer);
+    this.environment = laboratoryEnvironment(this.renderer, this.style);
     this.world.environment = this.environment.texture;
     this.world.environmentIntensity = 0.65;
-    canvas.addEventListener("webglcontextrestored", () => {
+    this.restoreContext = () => {
       this.environment.dispose();
-      this.environment = laboratoryEnvironment(this.renderer);
+      this.environment = laboratoryEnvironment(this.renderer, this.style);
       this.world.environment = this.environment.texture;
-    });
+    };
+    canvas.addEventListener("webglcontextrestored", this.restoreContext);
     this.camera = new T.OrthographicCamera(-40, 40, 30, -30, 0.1, 300);
     this.camera.up.set(0, 0, 1);
-    this.world.add(new T.HemisphereLight(0xbcecff, 0x3e204f, 1.6));
+    this.hemisphere = new T.HemisphereLight(0xbcecff, 0x3e204f, 1.6);
+    this.world.add(this.hemisphere);
     const key = new T.DirectionalLight(0xe0e4ff, 2.2);
     key.position.set(20, -30, 70);
     this.world.add(key);
     const rim = new T.DirectionalLight(0xad70ff, 2);
     rim.position.set(-40, 50, 30);
     this.world.add(rim);
+    this.keyLight = key;
+    this.rimLight = rim;
+    this.applyLighting(this.style);
     this.static = new T.Group();
     this.dynamic = new T.Group();
     this.overlays = new T.Group();
@@ -168,64 +181,34 @@ export class LabRenderer {
     dispose(this.overlays);
     this.config = scene;
     this.info = info;
+    this.channels = channels;
+    this.state = null;
+    this.action = null;
     this.size = scene.size || [64, 44];
     this.viewCenter = this.size.map((v) => v / 2);
     this.zoom = 1;
     this.followBody = null;
-    this.scenery = createEnvironment(scene);
-    this.static.add(this.scenery.group);
-    this.bases = [];
-    for (const [kind, color] of [
-      ["bases", palette.green],
-      ["gates", palette.gold],
-    ])
-      for (const [i, def] of (kind === "gates" && this.scenery.replacesGates
-        ? []
-        : scene[kind] || []
-      ).entries()) {
-        const mesh = zoneModel(
-          def.radius || 2,
-          color,
-          kind === "bases" ? "base" : "gate",
-        );
-        mesh.position.set(...def.position, 0);
-        this.static.add(mesh);
-        if (kind === "bases") this.bases.push(mesh);
-        this.label(
-          kind === "bases"
-            ? "RECOVERY / 01"
-            : `GATE / ${String(i + 1).padStart(2, "0")}`,
-          [...def.position, 0.3],
-          color,
-          4.2,
-        );
-      }
-    this.reactors = [];
-    for (const def of scene.gravity || []) {
-      const model = reactorModel();
-      model.position.set(...def.position, 0);
-      this.static.add(model);
-      this.reactors.push(model);
-      const ring = zoneModel((def.softening || 2) * 1.8, palette.rose);
-      ring.position.set(...def.position, 0.03);
-      this.static.add(ring);
-      this.label(
-        "GRAVITY WELL",
-        [def.position[0], def.position[1] - 4, 0.1],
-        palette.rose,
-        4,
-      );
-    }
-    this.bodyLayer = new BodyLayer(scene, info, this.dynamic, channels);
+    const presentation = this.makeStatic(scene, this.style);
+    this.static.add(presentation.group);
+    Object.assign(this, {
+      scenery: presentation.scenery,
+      bases: presentation.bases,
+      reactors: presentation.reactors,
+    });
+    this.bodyGroup = new T.Group();
+    this.dynamic.add(this.bodyGroup);
+    this.bodyLayer = new BodyLayer(scene, info, this.bodyGroup, channels, {
+      style: this.style,
+    });
     this.models = this.bodyLayer.models;
     this.controlled = this.bodyLayer.controlled;
     this.food = (scene.pickups || []).map((def) => {
       const food = new T.Mesh(
         new T.OctahedronGeometry(def.radius || 0.4),
         new T.MeshStandardMaterial({
-          color: palette.gold,
-          emissive: palette.gold,
-          emissiveIntensity: 1,
+          color: stylePalette[this.style].ore,
+          emissive: stylePalette[this.style].ore,
+          emissiveIntensity: this.style === "steampunk" ? 0.12 : 0.65,
         }),
       );
       food.position.set(...def.position, 0.6);
@@ -261,7 +244,136 @@ export class LabRenderer {
     this.resize();
     this.setLayers(this.layers);
   }
-  label(text, pos, color, size) {
+  makeStatic(scene, style) {
+    const group = new T.Group(),
+      bases = [],
+      reactors = [];
+    const scenery = createEnvironment(scene, { style });
+    group.add(scenery.group);
+    for (const [kind, color] of [
+      ["bases", palette.green],
+      ["gates", palette.gold],
+    ])
+      for (const [i, def] of (kind === "gates" && scenery.replacesGates
+        ? []
+        : scene[kind] || []
+      ).entries()) {
+        const mesh = prop(
+          kind === "bases" ? "dock" : "gate",
+          style,
+          def.radius || 2,
+          color,
+        );
+        mesh.position.set(...def.position, 0);
+        group.add(mesh);
+        if (kind === "bases") bases.push(mesh);
+        this.label(
+          kind === "bases"
+            ? "RECOVERY / 01"
+            : `GATE / ${String(i + 1).padStart(2, "0")}`,
+          [...def.position, 0.3],
+          style === "steampunk" ? stylePalette[style].accent : color,
+          4.2,
+          group,
+        );
+      }
+    for (const def of scene.gravity || []) {
+      const model = prop("reactor", style);
+      model.position.set(...def.position, 0);
+      group.add(model);
+      reactors.push(model);
+      const ring = zoneModel(
+        (def.softening || 2) * 1.8,
+        stylePalette[style].energy,
+      );
+      ring.position.set(...def.position, 0.03);
+      group.add(ring);
+      this.label(
+        "GRAVITY WELL",
+        [def.position[0], def.position[1] - 4, 0.1],
+        stylePalette[style].energy,
+        4,
+        group,
+      );
+    }
+    return { group, scenery, bases, reactors };
+  }
+  applyLighting(style) {
+    const steam = style === "steampunk";
+    this.world.background.setHex(stylePalette[style].background);
+    this.world.fog.color.copy(this.world.background);
+    this.hemisphere.color.setHex(steam ? 0xffdfac : 0xbcecff);
+    this.hemisphere.groundColor.setHex(steam ? 0x3b281b : 0x3e204f);
+    this.keyLight.color.setHex(steam ? 0xffdfb7 : 0xe0e4ff);
+    this.rimLight.color.setHex(steam ? 0xd79250 : 0xad70ff);
+  }
+  prepareStyle(style) {
+    const environment = laboratoryEnvironment(this.renderer, style);
+    const bodyGroup = new T.Group();
+    let presentation, bodyLayer;
+    try {
+      if (this.config) {
+        presentation = this.makeStatic(this.config, style);
+        bodyLayer = new BodyLayer(
+          this.config,
+          this.info,
+          bodyGroup,
+          this.channels,
+          { style },
+        );
+        if (this.state) bodyLayer.update(this.state, this.action);
+      }
+    } catch (error) {
+      environment.dispose();
+      if (presentation) dispose(presentation.group);
+      dispose(bodyGroup);
+      throw error;
+    }
+    return {
+      cancel: () => {
+        environment.dispose();
+        if (presentation) dispose(presentation.group);
+        dispose(bodyGroup);
+      },
+      commit: () => {
+        this.style = style;
+        this.environment.dispose();
+        this.environment = environment;
+        this.world.environment = environment.texture;
+        this.applyLighting(style);
+        if (!presentation) return;
+        dispose(this.static);
+        this.static.add(presentation.group);
+        Object.assign(this, {
+          scenery: presentation.scenery,
+          bases: presentation.bases,
+          reactors: presentation.reactors,
+        });
+        this.dynamic.remove(this.bodyGroup);
+        dispose(this.bodyGroup);
+        this.bodyGroup = bodyGroup;
+        this.dynamic.add(bodyGroup);
+        this.bodyLayer = bodyLayer;
+        this.models = bodyLayer.models;
+        this.controlled = bodyLayer.controlled;
+        for (const food of this.food) {
+          food.material.color.setHex(stylePalette[style].ore);
+          food.material.emissive.setHex(stylePalette[style].ore);
+          food.material.emissiveIntensity = style === "steampunk" ? 0.12 : 0.65;
+        }
+        if (this.state) this.update(this.state, this.action);
+      },
+    };
+  }
+  async setStyle(style) {
+    const request = (this.styleRequest || 0) + 1;
+    this.styleRequest = request;
+    await preloadStyle(style);
+    if (this.disposed || request !== this.styleRequest) return false;
+    this.prepareStyle(style).commit();
+    return true;
+  }
+  label(text, pos, color, size, parent = this.static) {
     const c = document.createElement("canvas");
     c.width = 512;
     c.height = 80;
@@ -280,11 +392,12 @@ export class LabRenderer {
       );
     sprite.position.set(pos[0], pos[1] - 1, pos[2]);
     sprite.scale.set(size, (size * 80) / 512, 1);
-    this.static.add(sprite);
+    parent.add(sprite);
   }
   update(state, action) {
     if (!this.info) return;
     this.state = state;
+    this.action = action;
     const n = this.models.length,
       bits = new Uint32Array(state.buffer, state.byteOffset, state.length);
     this.bodyLayer.update(state, action);
@@ -314,7 +427,7 @@ export class LabRenderer {
               [state[8 + def.a], state[8 + n + def.a], 0.5],
               [state[8 + b], state[8 + n + b], 0.5],
             ],
-            palette.violet,
+            stylePalette[this.style].energy,
             true,
           ),
         );
@@ -525,6 +638,12 @@ export class LabRenderer {
     this.resize();
   }
   dispose() {
+    this.disposed = true;
+    this.unsubscribeStyle();
+    this.canvas.removeEventListener(
+      "webglcontextrestored",
+      this.restoreContext,
+    );
     cancelAnimationFrame(this.frame);
     this.resizeObserver.disconnect();
     dispose(this.static);
@@ -537,8 +656,10 @@ export class LabRenderer {
   animate(time) {
     const start = performance.now();
     this.frame = requestAnimationFrame(this.animate);
+    this.bodyLayer?.updateLod(this.camera, this.canvas.clientHeight);
     for (const model of this.reactors || [])
-      model.children[0].rotation.z = (this.simulationTime || 0) * 0.3;
+      if (!model.children[0].userData.assetModel)
+        model.children[0].rotation.z = (this.simulationTime || 0) * 0.3;
     for (const food of this.food || [])
       food.rotation.z = this.simulationTime || 0;
     for (const base of this.bases || [])

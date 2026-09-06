@@ -1,4 +1,5 @@
 import { controllerDefinitions } from "./controllers/index.js";
+import { initHelp } from "../help.js";
 
 // Controller plugins own their parameter schema. The UI only renders numeric
 // descriptors; new algorithms need no branching in the application host.
@@ -39,6 +40,7 @@ export class ControllerSettings {
         input = document.createElement("input");
       label.className = "field";
       label.textContent = d.label;
+      label.dataset.help = d.help || `${d.label} controls this controller's planning behavior.`;
       input.type = "number";
       input.name = key;
       input.id = `planner-${key}`;
@@ -58,5 +60,6 @@ export class ControllerSettings {
       label.append(input);
       this.container.append(label);
     }
+    initHelp(this.container);
   }
 }
