@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Vehicle workshop · Fragile Tech</title>
+    <title>Asset workshop · Fragile Tech</title>
     <link rel="icon" href="./branding/favicon.png" />
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./asset-gallery.css" />
@@ -19,7 +19,7 @@
           height="48"
           alt=""
         /><span
-          >fragile.tech<span class="brand-sub">Vehicle workshop</span></span
+          >fragile.tech<span class="brand-sub">Asset workshop</span></span
         ></a
       >
       <nav aria-label="Workshop navigation">
@@ -50,10 +50,17 @@
       </div>
     </header>
     <main class="workshop-main">
-      <section class="workshop-model" aria-label="Interactive vehicle model">
+      <section class="workshop-model" aria-label="Interactive asset model">
         <div class="workshop-toolbar">
           <label
-            >Vehicle
+            >Detail
+            <select id="asset-lod">
+              <option value="high">Detailed</option>
+              <option value="low">Simplified</option>
+            </select></label
+          >
+          <label
+            >Asset
             <select id="vehicle">
               <option value="rocket">Kestrel rocket</option>
               <option value="kart">Mite kart</option>
@@ -78,6 +85,8 @@
           ><label
             ><input type="checkbox" id="animate-parts" /> Animate
             machinery</label
+          ><label
+            ><input type="checkbox" id="show-envelope" /> Shared envelope</label
           ><a id="download-glb" download>Download 3D model</a
           ><a id="download-blend" download>Blender source</a>
         </div>

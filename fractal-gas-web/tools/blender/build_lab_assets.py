@@ -47,9 +47,8 @@ def material(name, color, metallic=0.7, rough=0.36, emission=0, texture=None):
     return mat
 
 
-def panel_maps(style, pale=False):
+def panel_maps(style, pale=False, n=512):
     """Bake a deterministic original panel/rivet/wear atlas into packed PBR maps."""
-    n = 512
     y, x = np.mgrid[0:n, 0:n] / n
     rng = np.random.default_rng(1841)
     noise = rng.random((n, n))
@@ -1101,6 +1100,7 @@ class Builder:
             if self.low
             else (80000 if self.kind == "harvester" else 50000)
         )
+        budget = getattr(self, "triangle_budget", budget)
         if self.low and tris > budget:
             for obj in temp:
                 mod = obj.modifiers.new("Crowd LOD reduction", "DECIMATE")
@@ -1113,6 +1113,7 @@ class Builder:
             filepath=str(destination),
             export_format="GLB",
             use_selection=True,
+            use_active_scene=True,
             export_yup=False,
             export_extras=True,
             export_animations=False,

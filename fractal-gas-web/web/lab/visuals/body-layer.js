@@ -8,6 +8,7 @@ import { resolveBodies } from "../agent-types.js";
 import { styleAssetsReady } from "./assets.js";
 import { vehicleModels } from "./asset-manifest.js";
 import { themeScenery } from "./style-palette.js";
+import { worldModel } from "./world.js";
 
 export function chooseLod(projectedPixels, current = "low", crowd = false) {
   if (crowd || projectedPixels < 90) return "low";
@@ -89,7 +90,26 @@ export class BodyLayer {
             Math.cos((j * Math.PI * 2) / 7) * (b.radius || 0.5),
             Math.sin((j * Math.PI * 2) / 7) * (b.radius || 0.5),
           ]);
-        model = themeScenery(rockModel(vertices), style);
+        const lo = [0, 1].map((axis) =>
+          Math.min(...vertices.map((v) => v[axis])),
+        );
+        const hi = [0, 1].map((axis) =>
+          Math.max(...vertices.map((v) => v[axis])),
+        );
+        model = worldModel(
+          style,
+          ["ore-small", "ore-medium", "ore-large"][i % 3],
+          [
+            hi[0] - lo[0],
+            hi[1] - lo[1],
+            Math.max(hi[0] - lo[0], hi[1] - lo[1]) * 0.8,
+          ],
+        );
+        if (model) {
+          // Keep the native local hull origin, including asymmetric cargo hulls.
+          model.children[0].position.x += (hi[0] + lo[0]) / (2 * model.scale.x);
+          model.children[0].position.y += (hi[1] + lo[1]) / (2 * model.scale.y);
+        } else model = themeScenery(rockModel(vertices), style);
       }
       model.position.set(...(b.position || [0, 0]), 0.08);
       model.rotation.z = b.angle || 0;

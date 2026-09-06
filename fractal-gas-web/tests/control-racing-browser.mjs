@@ -6,7 +6,7 @@ const output = process.env.CONTROL_SCREENSHOTS || "/tmp/fractal-control-racing";
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
   headless: true,
-  args: ["--no-sandbox"],
+  args: ["--no-sandbox", "--use-angle=swiftshader"],
 });
 const page = await browser.newPage({ viewport: { width: 1536, height: 1050 } }),
   errors = [];
@@ -14,9 +14,9 @@ page.on("pageerror", (e) => errors.push(e.message));
 page.on("console", (m) => {
   if (m.type() === "error") errors.push(m.text());
 });
-page.setDefaultTimeout(30000);
+page.setDefaultTimeout(120000);
 const ready = () =>
-  page.waitForFunction(() => !document.getElementById("run").disabled);
+  page.waitForFunction(() => !document.getElementById("run").disabled, undefined, { polling: 100 });
 async function graphicsReady() {
   await page.waitForFunction(() => {
     const gl = document.getElementById("world").getContext("webgl2");
@@ -33,6 +33,23 @@ async function graphicsReady() {
     );
   });
 }
+async function capture(name) {
+  await graphicsReady();
+  // Avoid full-page captures: their temporary viewport resize can stall WebGL
+  // software rendering. Layout and overflow are checked separately below.
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await page.screenshot({
+        path: `${output}/${name}.png`,
+        fullPage: false,
+        timeout: 60000,
+      });
+      return;
+    } catch (error) {
+      if (error.name !== "TimeoutError" || attempt) throw error;
+    }
+  }
+}
 try {
   await page.goto(base);
   await ready();
@@ -43,7 +60,9 @@ try {
       .locator(".brand-logo")
       .evaluate((e) => e.complete && e.naturalWidth > 0),
   );
-  assert.equal(await page.locator("#scenario option").count(), 11);
+  assert.equal(await page.locator("#scenario option").count(), 6);
+  assert.equal(await page.locator("#track option").count(), 6);
+  assert.equal(await page.locator("#track-control").isVisible(), false);
   assert.equal(await page.locator("#circuit-preview").isVisible(), false);
   await page.evaluate(() => {
     for (const [id, value] of Object.entries({
@@ -70,10 +89,7 @@ try {
   );
   await page.locator("#view").click();
   await graphicsReady();
-  await page.screenshot({
-    path: `${output}/circuit-overview.png`,
-    fullPage: true,
-  });
+  await capture("circuit-overview");
   for (const algorithm of ["fmc", "icem", "mppi"]) {
     await page.locator("#algorithm").selectOption(algorithm);
     await ready();
@@ -95,7 +111,7 @@ try {
   await page.locator("#focus").click();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.wheel(0, -900);
-  await page.screenshot({ path: `${output}/kart-detail.png`, fullPage: true });
+  await capture("kart-detail");
   await page.locator("#experiments").click();
   assert.equal(await page.locator("#benchmark-goal").inputValue(), "gates");
   assert.equal(await page.locator("#benchmark-target").inputValue(), "16");
@@ -108,7 +124,7 @@ try {
   assert.equal(await page.locator("#score").textContent(), "0");
   await page.setViewportSize({ width: 768, height: 1024 });
   assert(await page.locator("#manual").isVisible());
-  await page.screenshot({ path: `${output}/tablet.png`, fullPage: true });
+  await capture("tablet");
   assert.equal(
     await page.evaluate(
       () => document.documentElement.scrollWidth > innerWidth,
@@ -131,13 +147,16 @@ try {
       "racing-obstacle-field",
       "racing",
     ]) {
-      await page.locator("#scenario").selectOption(id);
+      await page.locator("#track").selectOption(id);
       await ready();
+      assert.equal(await page.locator("#scenario").inputValue(), "racing");
+      assert.equal(await page.locator("#track-control").isVisible(), true);
       const scene = await (
         await page.request.get(new URL(`scenarios/${id}.json`, base).href)
       ).json();
       const preview = page.locator("#circuit-preview");
       assert.equal(await preview.isVisible(), true);
+      assert.equal(await page.locator("#description").isVisible(), true);
       assert.equal(
         await preview.locator("strong").textContent(),
         scene.circuit.name,
@@ -178,26 +197,33 @@ try {
         ),
         false,
       );
-      await page.screenshot({
-        path: `${output}/${id}-${viewport.width}.png`,
-        fullPage: true,
-      });
+      await capture(`${id}-${viewport.width}`);
+      console.log(
+        `Checked ${id}: selection, preview, manual control and ${viewport.width}px layout.`,
+      );
     }
   }
   await page.locator("#scenario").selectOption("harvest");
   await ready();
   assert.equal(await page.locator("#circuit-preview").isVisible(), false);
+  assert.equal(await page.locator("#track-control").isVisible(), false);
   assert.deepEqual(errors, []);
   console.log(
     "Browser passed: docs branding, racing preset, all planners, keyboard driving, circuit/kart rendering, lap readout, replay and tablet layout.",
   );
 } catch (e) {
+  console.error(e);
   console.error(
     "Lab status:",
-    await page.locator("#status").textContent(),
+    await page
+      .locator("#status")
+      .textContent({ timeout: 1000 })
+      .catch(() => "Page unavailable"),
     errors,
   );
-  await page.screenshot({ path: `${output}/error.png`, fullPage: true });
+  await page
+    .screenshot({ path: `${output}/error.png`, timeout: 10000 })
+    .catch(() => {});
   throw e;
 } finally {
   await browser.close();

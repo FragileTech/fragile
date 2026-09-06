@@ -7,6 +7,7 @@ import { palette, prism, zoneModel, reactorModel } from "./models.js";
 import { assetModel, preloadStyle } from "./visuals/assets.js";
 import { disposeGroup as dispose } from "./visuals/resources.js";
 import { stylePalette } from "./visuals/style-palette.js";
+import { WorldDynamics, animateWorld } from "./visuals/world.js";
 import { labStyle } from "./visual-style.js";
 
 function line(points, color, dashed = false) {
@@ -202,21 +203,18 @@ export class LabRenderer {
     });
     this.models = this.bodyLayer.models;
     this.controlled = this.bodyLayer.controlled;
-    this.food = (scene.pickups || []).map((def) => {
-      const food = new T.Mesh(
-        new T.OctahedronGeometry(def.radius || 0.4),
-        new T.MeshStandardMaterial({
-          color: stylePalette[this.style].ore,
-          emissive: stylePalette[this.style].ore,
-          emissiveIntensity: this.style === "steampunk" ? 0.12 : 0.65,
-        }),
-      );
-      food.position.set(...def.position, 0.6);
-      this.dynamic.add(food);
-      return food;
-    });
     this.tethers = new T.Group();
-    this.overlays.add(this.tethers);
+    this.tandemTethers = new T.Group();
+    this.overlays.add(this.tethers, this.tandemTethers);
+    this.worldDynamics = new WorldDynamics(
+      scene,
+      info,
+      this.style,
+      this.bodyLayer,
+      this.bodyGroup,
+      this.tethers,
+    );
+    this.food = this.worldDynamics.pickups;
     this.treeGroup = new T.Group();
     this.cloudGroup = new T.Group();
     this.hulls = new T.Group();
@@ -310,7 +308,8 @@ export class LabRenderer {
   prepareStyle(style) {
     const environment = laboratoryEnvironment(this.renderer, style);
     const bodyGroup = new T.Group();
-    let presentation, bodyLayer;
+    const tetherGroup = new T.Group();
+    let presentation, bodyLayer, worldDynamics;
     try {
       if (this.config) {
         presentation = this.makeStatic(this.config, style);
@@ -321,12 +320,24 @@ export class LabRenderer {
           this.channels,
           { style },
         );
-        if (this.state) bodyLayer.update(this.state, this.action);
+        worldDynamics = new WorldDynamics(
+          this.config,
+          this.info,
+          style,
+          bodyLayer,
+          bodyGroup,
+          tetherGroup,
+        );
+        if (this.state) {
+          bodyLayer.update(this.state, this.action);
+          worldDynamics.update(this.state, this.action);
+        }
       }
     } catch (error) {
       environment.dispose();
       if (presentation) dispose(presentation.group);
       dispose(bodyGroup);
+      dispose(tetherGroup);
       throw error;
     }
     return {
@@ -334,6 +345,7 @@ export class LabRenderer {
         environment.dispose();
         if (presentation) dispose(presentation.group);
         dispose(bodyGroup);
+        dispose(tetherGroup);
       },
       commit: () => {
         this.style = style;
@@ -356,11 +368,10 @@ export class LabRenderer {
         this.bodyLayer = bodyLayer;
         this.models = bodyLayer.models;
         this.controlled = bodyLayer.controlled;
-        for (const food of this.food) {
-          food.material.color.setHex(stylePalette[style].ore);
-          food.material.emissive.setHex(stylePalette[style].ore);
-          food.material.emissiveIntensity = style === "steampunk" ? 0.12 : 0.65;
-        }
+        dispose(this.tethers);
+        this.tethers.add(tetherGroup);
+        this.worldDynamics = worldDynamics;
+        this.food = worldDynamics.pickups;
         if (this.state) this.update(this.state, this.action);
       },
     };
@@ -412,26 +423,16 @@ export class LabRenderer {
       this.viewCenter = [model.position.x, model.position.y];
       this.resize();
     }
-    this.food.forEach((food, i) => {
-      const offset = this.info[8] + 3 * i;
-      food.position.set(state[offset], state[offset + 1], 0.55);
-      food.visible = state[offset + 2] <= 0;
-    });
-    dispose(this.tethers);
-    (this.config.tethers || []).forEach((def, i) => {
-      const b = bits[this.info[7] + 2 * i] - 1;
-      if (b >= 0)
-        this.tethers.add(
-          line(
-            [
-              [state[8 + def.a], state[8 + n + def.a], 0.5],
-              [state[8 + b], state[8 + n + b], 0.5],
-            ],
-            stylePalette[this.style].energy,
-            true,
-          ),
-        );
-    });
+    this.worldDynamics.update(state, action);
+    this.worldDynamics.pickupBatch.updateLod(
+      this.camera,
+      this.canvas.clientHeight,
+    );
+    this.bodyLayer.updateLod(this.camera, this.canvas.clientHeight);
+    this.scenery.updateLod?.(this.camera, this.canvas.clientHeight);
+    for (const reactor of this.reactors)
+      animateWorld(reactor, this.simulationTime);
+    dispose(this.tandemTethers);
     if (this.config.task === "tandem" && this.controlled.length >= 2) {
       const points = this.controlled.map((b) => [
         state[8 + b],
@@ -451,7 +452,7 @@ export class LabRenderer {
         center[1] + ((gate[1] - center[1]) * 3) / d,
         0.3,
       ];
-      this.tethers.add(
+      this.tandemTethers.add(
         line([points[0], anchor, points[1], points[0]], palette.gold, true),
       );
     }
@@ -554,6 +555,7 @@ export class LabRenderer {
       this.cloudGroup.visible = this.layers.cloud;
       this.hulls.visible = this.layers.geometry;
       this.tethers.visible = this.layers.tethers;
+      this.tandemTethers.visible = this.layers.tethers;
     }
   }
   select(position) {
@@ -657,16 +659,14 @@ export class LabRenderer {
     const start = performance.now();
     this.frame = requestAnimationFrame(this.animate);
     this.bodyLayer?.updateLod(this.camera, this.canvas.clientHeight);
+    this.scenery?.updateLod?.(this.camera, this.canvas.clientHeight);
+    this.worldDynamics?.pickupBatch.updateLod(
+      this.camera,
+      this.canvas.clientHeight,
+    );
     for (const model of this.reactors || [])
       if (!model.children[0].userData.assetModel)
         model.children[0].rotation.z = (this.simulationTime || 0) * 0.3;
-    for (const food of this.food || [])
-      food.rotation.z = this.simulationTime || 0;
-    for (const base of this.bases || [])
-      base.scale.setScalar(
-        1 +
-          Math.max(0, 1 - (time - (this.deliveryFlash || -10000)) / 500) * 0.15,
-      );
     this.renderer.render(this.world, this.camera);
     const previous = this.performance || {};
     this.performance = {

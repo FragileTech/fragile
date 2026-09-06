@@ -18,7 +18,8 @@ its motion. The original {doc}`control_laboratory` provides further technical re
 ## Choose an experiment
 
 :::{div} feynman-prose
-Use **Environment** to load one of eleven scenes, including six kart circuits.
+Use **Environment** to choose one of six tasks. **Racing** offers six kart circuits
+through its separate **Select track** dropdown.
 Loading a preset starts a fresh world and clears the editor's undo history.
 The **SCORE** panel shows a task counter, which
 is different from the accumulated reward that the controller optimizes. Reward can
@@ -33,12 +34,7 @@ include progress, collisions, and formation penalties as well as completed objec
 | **Tandem flight** | Guide a pair through ordered checkpoint zones while maintaining formation. | Gates crossed |
 | **Collaborative mining** | Move a heavy shared load with two thrusters and their tethers. | Cargo deliveries |
 | **Thinking graphs** | Use the harvesting task to inspect alternative futures, cloning, and ancestry. | Cargo deliveries |
-| **Violet Circuit · kart racing** | Easy: learn the controls on the broad original lab circuit; 16 checkpoints. | Laps completed; next checkpoint |
-| **Roots Oval · kart racing** | Easy: practise braking and steering on the historical oval; 50 checkpoints. | Laps completed; next checkpoint |
-| **Fearless Circuit · kart racing** | Medium: connect bends and negotiate a deep hairpin; 130 checkpoints. | Laps completed; next checkpoint |
-| **Sepang Kart · kart racing** | Hard: tackle the historical go-kart layout's close hairpins; 151 checkpoints. | Laps completed; next checkpoint |
-| **Original Obstacle Circuit · kart racing** | Hard: steer around bollards and edge intrusions; 133 checkpoints. | Laps completed; next checkpoint |
-| **Fearless Obstacle Field · kart racing** | Hard: thread the islands before returning to linked hairpins; 128 checkpoints. | Laps completed; next checkpoint |
+| **Racing** | Choose a circuit with **Select track**, then drive its checkpoint zones in order. | Laps completed; next checkpoint |
 :::
 
 ### Configure Ants & Drops
@@ -65,13 +61,14 @@ also pauses their timers.
 ### Choose a kart circuit
 
 :::{div} feynman-prose
-Start with Violet Circuit or Roots Oval to get a feel for steering. Then try Fearless
+Choose **Racing** in **Environment**, then use **Select track** to choose a circuit.
+The tracks are ordered from Easy to Hard. Start with Violet Circuit or Roots Oval to get a feel for steering. Then try Fearless
 Circuit: a corner now sets up the next one, so entering too quickly can leave you
 poorly placed for the following bend. The Hard circuits add close hairpins or
 obstacles that leave less room to recover. Every circuit uses the same kart physics;
 the difficulty labels describe the route you must drive.
 
-The preview beneath **Environment** shows the active scene's outline, difficulty,
+The preview beneath **Select track** shows the active scene's outline, difficulty,
 racing direction, and checkpoint count. Historical circuits also link to a reference
 video. Look at that outline before driving: a long straight followed by a tight bend
 calls for a different approach from an open oval. Selecting another circuit starts
@@ -83,6 +80,17 @@ with proportions traced by hand and scaled uniformly. Their distances are simula
 units, not surveyed track measurements. Sepang Kart uses the go-kart layout shown in
 the videos, not the Formula One circuit. Labyrinths, caves, and non-racing arenas are
 outside this circuit collection.
+:::
+
+:::{div} feynman-added
+| Track | Difficulty | What to try | Checkpoints per lap |
+|---|---|---|---|
+| **Violet Circuit** | Easy | Learn the controls on the broad original lab circuit. | 16 |
+| **Roots Oval** | Easy | Practise braking and steering on the historical oval. | 50 |
+| **Fearless Circuit** | Medium | Connect bends and negotiate a deep hairpin. | 130 |
+| **Sepang Kart** | Hard | Tackle the historical go-kart layout's close hairpins. | 151 |
+| **Original Obstacle Circuit** | Hard | Steer around bollards and edge intrusions. | 133 |
+| **Fearless Obstacle Field** | Hard | Thread the islands before returning to linked hairpins. | 128 |
 :::
 
 ### Drive a circuit

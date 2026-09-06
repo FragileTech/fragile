@@ -159,8 +159,8 @@ const catalog = JSON.parse(
 );
 const circuits = await Promise.all(
   catalog
-    .filter((entry) => entry.id.startsWith("racing"))
-    .map(async ({ id }) =>
+    .find((entry) => entry.id === "racing")
+    .tracks.map(async ({ id }) =>
       JSON.parse(
         await readFile(
           new URL(`../web/lab/scenarios/${id}.json`, import.meta.url),
@@ -171,6 +171,10 @@ const circuits = await Promise.all(
 );
 
 test("circuit catalog is ordered by difficulty and keeps common kart physics", () => {
+  assert.equal(
+    catalog.filter((entry) => entry.id.startsWith("racing")).length,
+    1,
+  );
   assert.equal(circuits.length, 6);
   assert.deepEqual(
     circuits.map((s) => s.circuit.difficulty),

@@ -4,6 +4,8 @@ import { retainAsset, disposeGroup } from "./resources.js";
 
 const cache = new Map();
 const pending = new Map();
+const packs = new Map();
+const packRequests = new Map();
 let loader;
 const keyOf = (style, model, lod) => `${style}/${model}/${lod}`;
 
@@ -31,9 +33,32 @@ export async function preloadStyle(style) {
         Object.entries(levels).map(async ([lod, url]) => {
           const key = keyOf(style, model, lod);
           if (cache.has(key)) return;
-          const gltf = await gltfLoader.loadAsync(url);
-          retainAsset(gltf.scene);
-          cache.set(key, gltf.scene);
+          const [file, assetKey] = url.split("#");
+          if (!packs.has(file)) {
+            if (!packRequests.has(file))
+              packRequests.set(
+                file,
+                gltfLoader
+                  .loadAsync(file)
+                  .then((gltf) => {
+                    retainAsset(gltf.scene);
+                    packs.set(file, gltf.scene);
+                  })
+                  .finally(() => packRequests.delete(file)),
+              );
+            await packRequests.get(file);
+          }
+          let source = packs.get(file);
+          if (assetKey) {
+            let found;
+            source.traverse((part) => {
+              if (part.userData.assetModel === assetKey) found = part;
+            });
+            if (!found)
+              throw new Error(`Asset ${assetKey} missing from ${file}`);
+            source = found;
+          }
+          cache.set(key, source);
         }),
       );
       const failure = results.find((result) => result.status === "rejected");
@@ -51,7 +76,9 @@ export async function preloadStyle(style) {
 export function assetModel(style, model, lod = "high", color) {
   const source = cache.get(keyOf(style, model, lod));
   if (!source) return null;
-  const root = source.clone(true);
+  // Keep the authored normalization transform below the caller's placement scale.
+  const root = new T.Group();
+  root.add(source.clone(true));
   root.userData.assetStyle = style;
   root.userData.assetModel = model;
   root.userData.lod = lod;
@@ -84,6 +111,7 @@ export function assetModel(style, model, lod = "high", color) {
 // the two bounded collections for instant reuse.
 export function disposeAssetCache() {
   if (pending.size) throw new Error("Cannot dispose assets while loading");
-  for (const asset of cache.values()) disposeGroup(asset, true);
+  for (const asset of packs.values()) disposeGroup(asset, true);
+  packs.clear();
   cache.clear();
 }

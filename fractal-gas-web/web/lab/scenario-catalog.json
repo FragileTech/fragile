@@ -1,22 +1,52 @@
 [
-  { "id": "harvest", "label": "Asteroid harvesting" },
-  { "id": "ants", "label": "Ants & drops" },
-  { "id": "tandem", "label": "Tandem flight" },
-  { "id": "mining", "label": "Collaborative mining" },
-  { "id": "rocket", "label": "Thinking graphs" },
-  { "id": "racing", "label": "Violet Circuit · kart racing · Easy" },
-  { "id": "racing-roots", "label": "Roots Oval · kart racing · Easy" },
   {
-    "id": "racing-fearless",
-    "label": "Fearless Circuit · kart racing · Medium"
-  },
-  { "id": "racing-sepang", "label": "Sepang Kart · kart racing · Hard" },
-  {
-    "id": "racing-original",
-    "label": "Original Obstacle Circuit · kart racing · Hard"
+    "id": "harvest",
+    "label": "Asteroid harvesting"
   },
   {
-    "id": "racing-obstacle-field",
-    "label": "Fearless Obstacle Field · kart racing · Hard"
+    "id": "ants",
+    "label": "Ants & drops"
+  },
+  {
+    "id": "tandem",
+    "label": "Tandem flight"
+  },
+  {
+    "id": "mining",
+    "label": "Collaborative mining"
+  },
+  {
+    "id": "rocket",
+    "label": "Thinking graphs"
+  },
+  {
+    "id": "racing",
+    "label": "Racing",
+    "tracks": [
+      {
+        "id": "racing",
+        "label": "Violet Circuit \u00b7 Easy"
+      },
+      {
+        "id": "racing-roots",
+        "label": "Roots Oval \u00b7 Easy"
+      },
+      {
+        "id": "racing-fearless",
+        "label": "Fearless Circuit \u00b7 Medium"
+      },
+      {
+        "id": "racing-sepang",
+        "label": "Sepang Kart \u00b7 Hard"
+      },
+      {
+        "id": "racing-original",
+        "label": "Original Obstacle Circuit \u00b7 Hard"
+      },
+      {
+        "id": "racing-obstacle-field",
+        "label": "Fearless Obstacle Field \u00b7 Hard"
+      }
+    ]
   }
 ]

@@ -29,6 +29,8 @@ export function themeScenery(group, style) {
   const vertexColor = new T.Color();
   group.traverse((object) => {
     if (object.name === "Fragile documentation logo") return;
+    for (let p = object; p; p = p.parent)
+      if (p.userData.authoredWorld || p.userData.assetModel) return;
     const colors = object.geometry?.getAttribute("color");
     if (colors && !seen.has(colors)) {
       seen.add(colors);

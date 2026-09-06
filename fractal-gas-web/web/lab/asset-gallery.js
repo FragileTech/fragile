@@ -6,6 +6,8 @@ import { disposeGroup } from "./visuals/resources.js";
 import { stylePalette } from "./visuals/style-palette.js";
 import { labStyle } from "./visual-style.js";
 import { installStyleControls } from "./style-controls.js";
+import { worldCatalog } from "./visuals/world-catalog.js";
+import { animateWorld } from "./visuals/world.js";
 
 const canvas = document.getElementById("asset-world");
 const renderer = new T.WebGLRenderer({ canvas, antialias: true });
@@ -31,6 +33,24 @@ let environment,
 let center = new T.Vector3(0, 0, 0.4),
   modelSpan = 2;
 const select = document.getElementById("vehicle");
+const groups = new Map();
+for (const [kind, spec] of Object.entries(worldCatalog)) {
+  if (!groups.has(spec.family)) {
+    const group = document.createElement("optgroup");
+    group.label = spec.family.replaceAll("-", " ");
+    groups.set(spec.family, group);
+    select.append(group);
+  }
+  const option = document.createElement("option");
+  option.value = kind;
+  option.textContent = kind
+    .replaceAll("-", " ")
+    .replace(/^./, (c) => c.toUpperCase());
+  groups.get(spec.family).append(option);
+}
+const requested = new URLSearchParams(location.search).get("asset");
+if ([...select.options].some((option) => option.value === requested))
+  select.value = requested;
 const descriptions = {
   rocket:
     "Twin engine pods, a closed canopy, swept stabilizers, and independent animated exhausts.",
@@ -67,8 +87,9 @@ function poseCamera() {
   camera.lookAt(center);
 }
 function prepare(style) {
-  const next = assetModel(style, select.value);
-  if (!next) throw new Error("The selected vehicle has not loaded");
+  const lod = document.getElementById("asset-lod").value;
+  const next = assetModel(style, select.value, lod);
+  if (!next) throw new Error("The selected asset has not loaded");
   const nextEnvironment = laboratoryEnvironment(renderer, style);
   return {
     cancel() {
@@ -89,12 +110,30 @@ function prepare(style) {
         size = bounds.getSize(new T.Vector3());
       center = bounds.getCenter(new T.Vector3());
       modelSpan = Math.max(size.x, size.y, size.z);
+      const spec = worldCatalog[select.value];
+      if (spec) {
+        const box = new T.Box3(
+          new T.Vector3(-spec.size[0] / 2, -spec.size[1] / 2, 0.025),
+          new T.Vector3(
+            spec.size[0] / 2,
+            spec.size[1] / 2,
+            spec.size[2] + 0.025,
+          ),
+        );
+        const helper = new T.Box3Helper(box, 0xf2c575);
+        helper.name = "Shared asset envelope";
+        helper.visible = document.getElementById("show-envelope").checked;
+        holder.add(helper);
+      }
       parts = animatedParts(model);
       const name = select.selectedOptions[0].text;
       document.getElementById("asset-title").textContent = name;
-      document.getElementById("asset-description").textContent =
-        descriptions[select.value];
-      const concept = `./concepts/${style}/${select.value}.png`;
+      document.getElementById("asset-description").textContent = spec
+        ? `Shared envelope: ${spec.size.join(" × ")} units. Both styles use the same scene-defined collisions. The GLB download contains all 42 individually addressable world assets.`
+        : descriptions[select.value];
+      const concept = spec
+        ? `./concepts/${style}/world/${spec.family}.png`
+        : `./concepts/${style}/${select.value}.png`;
       const reference = document.getElementById("concept-image");
       reference.hidden = true;
       reference.onload = () => {
@@ -104,9 +143,12 @@ function prepare(style) {
       reference.alt = `${style} ${name} concept sheet`;
       document.getElementById("concept-link").href = concept;
       document.getElementById("download-glb").href =
-        `./assets/${style}/${select.value}-high.glb`;
+        `./assets/${style}/${spec ? "world" : select.value}-${lod}.glb`;
+      document.getElementById("download-glb").textContent = spec
+        ? "Download world GLB collection"
+        : "Download 3D model";
       document.getElementById("download-blend").href =
-        `./assets/sources/${style}/${select.value}.blend`;
+        `./assets/sources/${style}/${spec ? "world" : select.value}.blend`;
       resize();
     },
   };
@@ -114,6 +156,13 @@ function prepare(style) {
 labStyle.subscribe(prepare);
 select.addEventListener("change", () => {
   if (labStyle.ready) prepare(labStyle.current).commit();
+});
+document.getElementById("asset-lod").addEventListener("change", () => {
+  if (labStyle.ready) prepare(labStyle.current).commit();
+});
+document.getElementById("show-envelope").addEventListener("change", (event) => {
+  const box = holder.getObjectByName("Shared asset envelope");
+  if (box) box.visible = event.target.checked;
 });
 for (const button of document.querySelectorAll("[data-view]"))
   button.addEventListener("click", () => {
@@ -153,6 +202,7 @@ function animate(time) {
     thrust: moving ? 0.6 : 0,
     steer: moving ? Math.sin(time / 2000) * 0.6 : 0,
   });
+  if (model) animateWorld(model, moving ? time / 1000 : 0);
   poseCamera();
   renderer.render(world, camera);
 }

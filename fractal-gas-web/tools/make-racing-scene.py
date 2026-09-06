@@ -18,6 +18,7 @@ from shapely.geometry import LineString, Point, Polygon
 from shapely.geometry.polygon import orient
 from shapely.validation import explain_validity
 
+
 ROOT = Path(__file__).resolve().parents[1] / "web/lab"
 
 
@@ -129,8 +130,10 @@ def smooth(points, closed=True):
             h00, h10 = 2 * t**3 - 3 * t**2 + 1, t**3 - 2 * t**2 + t
             h01, h11 = -2 * t**3 + 3 * t**2, t**3 - t**2
             result.append([
-                h00 * a[k] + h10 * 0.35 * (b[k] - before[k])
-                + h01 * b[k] + h11 * 0.35 * (after[k] - a[k])
+                h00 * a[k]
+                + h10 * 0.35 * (b[k] - before[k])
+                + h01 * b[k]
+                + h11 * 0.35 * (after[k] - a[k])
                 for k in range(2)
             ])
     return result
@@ -138,15 +141,14 @@ def smooth(points, closed=True):
 
 def replace_section(points, patch):
     start, end = points.index(patch["from"]), points.index(patch["to"])
-    return points[:start + 1] + patch["points"] + points[end:]
+    return points[: start + 1] + patch["points"] + points[end:]
 
 
 def trace_scene(spec, base):
     scale, height, padding = spec["scale"], spec["frame"][1], 5
 
     def world(p):
-        return [round(p[0] * scale + padding, 5),
-                round((height - p[1]) * scale + padding, 5)]
+        return [round(p[0] * scale + padding, 5), round((height - p[1]) * scale + padding, 5)]
 
     route = LineString([world(p) for p in smooth(spec["route"])])
     route = LineString([*route.coords, route.coords[0]])
@@ -156,8 +158,10 @@ def trace_scene(spec, base):
         for obstacle in spec.get("obstacles", []):
             rx, ry = obstacle.get("radii", [obstacle.get("radius")] * 2)
             x, y = obstacle["position"]
-            holes.append([world([x + rx * math.cos(i * math.tau / 24),
-                                 y + ry * math.sin(i * math.tau / 24)]) for i in range(24)])
+            holes.append([
+                world([x + rx * math.cos(i * math.tau / 24), y + ry * math.sin(i * math.tau / 24)])
+                for i in range(24)
+            ])
         road = Polygon([world(p) for p in smooth(spec["outer"])], holes)
     else:
         road = route.buffer(spec["width"] * scale / 2, quad_segs=8)
@@ -192,26 +196,39 @@ def trace_scene(spec, base):
         "size": [spec["frame"][0] * scale + 2 * padding, height * scale + 2 * padding],
         "boundary": list(road.exterior.coords)[:-1],
         "holes": [list(h.coords)[:-1] for h in road.interiors],
-        "bodies": [{"agent_type": "racing_kart", "position": list(spawn.coords[0]),
-                    "angle": spawn_angle}],
+        "bodies": [
+            {"agent_type": "racing_kart", "position": list(spawn.coords[0]), "angle": spawn_angle}
+        ],
         "gates": checkpoints,
         "evaluation": {"metric": "gates", "target": count},
-        "environment": {"kind": "circuit", "centerline": points,
-                        "width": spec["width"] * scale,
-                        "start": {"position": list(start.coords[0]), "angle": angle}},
+        "environment": {
+            "kind": "circuit",
+            "centerline": points,
+            "width": spec["width"] * scale,
+            "start": {"position": list(start.coords[0]), "angle": angle},
+        },
         "circuit": {
-            "id": spec["id"], "name": spec["name"], "difficulty": spec["difficulty"],
+            "id": spec["id"],
+            "name": spec["name"],
+            "difficulty": spec["difficulty"],
             "description": spec["description"],
             "direction": "counterclockwise" if Polygon(points).exterior.is_ccw else "clockwise",
             "scale_note": "Video reconstruction; distances are simulation units, not surveyed track dimensions.",
             "uncertainty": spec["uncertainty"],
-            "sources": [{"url": f"https://www.youtube.com/watch?v={s['video']}&t={s['seconds']}s",
-                         "title": s["title"], "seconds": s["seconds"]} for s in spec["sources"]],
+            "sources": [
+                {
+                    "url": f"https://www.youtube.com/watch?v={s['video']}&t={s['seconds']}s",
+                    "title": s["title"],
+                    "seconds": s["seconds"],
+                }
+                for s in spec["sources"]
+            ],
         },
     })
     scene["presentation"]["score"]["divisor"] = count
     scene["presentation"]["progress"]["cycle"] = count
     # Quantize once, including checkpoints and angles, for stable generated files.
+
     def rounded(value):
         if isinstance(value, float):
             return round(value, 5)
@@ -220,6 +237,7 @@ def trace_scene(spec, base):
         if isinstance(value, dict):
             return {k: rounded(v) for k, v in value.items()}
         return value
+
     result = rounded(scene)
     result["physics"] = copy.deepcopy(base["physics"])
     return result
@@ -227,7 +245,10 @@ def trace_scene(spec, base):
 
 def validate_scene(scene):
     road = Polygon(scene["boundary"], scene["holes"])
-    route = LineString([*scene["environment"]["centerline"], scene["environment"]["centerline"][0]])
+    route = LineString([
+        *scene["environment"]["centerline"],
+        scene["environment"]["centerline"][0],
+    ])
     if not road.is_valid:
         raise ValueError(explain_validity(road))
     if not road.buffer(-1.0).contains(route):
@@ -240,23 +261,28 @@ def validate_scene(scene):
         disk = Point(gate["position"]).buffer(gate["radius"])
         if not road.contains(disk):
             raise ValueError(f"{scene['name']}: checkpoint {i} crosses a wall")
-        for j, other in enumerate(gates[i + 1:], i + 1):
+        for j, other in enumerate(gates[i + 1 :], i + 1):
             # Violet's established adjacent gate disks overlap slightly. Preserve
             # that scene's physics and progression for existing recordings.
-            if scene["circuit"]["id"] == "racing" and (j - i in (1, len(gates) - 1)):
+            if scene["circuit"]["id"] == "racing" and (j - i in {1, len(gates) - 1}):
                 continue
             if math.dist(gate["position"], other["position"]) <= gate["radius"] + other["radius"]:
                 raise ValueError(f"{scene['name']}: overlapping checkpoints")
-    print(f"{scene['name']}: {len(gates)} checkpoints, {len(scene['holes'])} infield/obstacle holes, "
-          f"minimum route clearance {route.distance(road.boundary):.2f}")
+    print(
+        f"{scene['name']}: {len(gates)} checkpoints, {len(scene['holes'])} infield/obstacle holes, "
+        f"minimum route clearance {route.distance(road.boundary):.2f}"
+    )
 
 
 def library():
     violet = racing_scene()
     violet["circuit"] = {
-        "id": "racing", "name": "Violet Circuit", "difficulty": "Easy",
+        "id": "racing",
+        "name": "Violet Circuit",
+        "difficulty": "Easy",
         "description": "The original lab oval. Wide, consistent corners for learning the kart controls.",
-        "direction": "counterclockwise", "sources": [],
+        "direction": "counterclockwise",
+        "sources": [],
     }
     yield "racing", violet
     specs = json.loads(Path(__file__).with_name("kart-circuits.json").read_text())["circuits"]

@@ -1251,6 +1251,7 @@ dialog .control-heading {
 }
 
 /* Preview the active scene's physical road boundaries. */
+#track-control[hidden] { display: none; }
 .circuit-preview {
   margin: 12px 0;
   padding: 12px;
@@ -1270,3 +1271,12 @@ dialog .control-heading {
 .circuit-preview p, .circuit-preview a { font-size: 11px; line-height: 1.5; }
 .circuit-preview p { color: var(--muted); margin: 6px 0; }
 .circuit-preview a { color: var(--accent); }
+@media (max-width: 780px) {
+  #track-control { grid-column: 1 / -1; }
+  .circuit-preview { grid-column: 1 / -1; margin: 0; }
+  .circuit-preview:not([hidden]) + .scenario-description {
+    display: block;
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+}

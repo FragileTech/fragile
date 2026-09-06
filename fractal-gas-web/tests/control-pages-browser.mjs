@@ -104,8 +104,10 @@ try {
       // FMC has no controller-specific fields; CEM exercises dynamic help.
       await page.locator("#algorithm").selectOption("cem");
       await page.waitForFunction(
-        () => !document.getElementById("run").disabled &&
-          document.querySelectorAll("#algorithm-settings .help-icon").length > 0,
+        () =>
+          !document.getElementById("run").disabled &&
+          document.querySelectorAll("#algorithm-settings .help-icon").length >
+            0,
       );
       assert(
         (await page.locator("#algorithm-settings .help-icon").count()) > 0,
@@ -121,7 +123,9 @@ try {
       await page.keyboard.press("Escape");
       assert.equal(await page.locator("#tooltip").getAttribute("hidden"), "");
       await page.locator("#algorithm").selectOption("fmc");
-      await page.waitForFunction(() => !document.getElementById("run").disabled);
+      await page.waitForFunction(
+        () => !document.getElementById("run").disabled,
+      );
       await page.locator("#step").click();
       await page.waitForFunction(
         () => document.getElementById("tick").textContent === "TICK 000006",
@@ -149,6 +153,7 @@ try {
       );
       await arcade.close();
     } catch (error) {
+      console.error("Browser check failed:", error);
       console.error(
         "Pages smoke test failed:",
         serviceWorkers,
@@ -159,6 +164,7 @@ try {
           controller: navigator.serviceWorker?.controller?.scriptURL,
           backend: document.getElementById("backend")?.textContent,
           status: document.getElementById("status")?.textContent,
+          tick: document.getElementById("tick")?.textContent,
         })),
       );
       throw error;
@@ -202,30 +208,39 @@ async function checkAntsControls(page) {
   );
   assert.equal(await page.locator("#ants-vehicle-count").inputValue(), "48");
   const count = page.locator("#ants-vehicle-count");
+  // Keep validation checks cheap on headless software renderers after verifying
+  // the default fleet. Large-fleet rendering is checked separately below.
+  await count.fill("1");
+  await count.press("Tab");
+  await ready(1, "harvester");
   for (const invalid of ["", "0", "-1", "1.5", "129"]) {
+    console.log(`Ants & Drops: reject count ${JSON.stringify(invalid)}`);
     await count.fill(invalid);
     await count.dispatchEvent("change");
     assert.equal(await count.evaluate((input) => input.checkValidity()), false);
     assert.match(
       await page.locator("#footer-stats").textContent(),
-      /^48 BODIES/,
+      /^1 BODIES/,
     );
     assert.equal(await page.locator("#run").isEnabled(), true);
   }
   await count.fill("1");
-  await count.dispatchEvent("change");
+  console.log("Ants & Drops: loading one harvester");
+  await count.press("Tab");
   await ready(1, "harvester");
   await page.locator("#ants-vehicle-type").selectOption("drone");
+  console.log("Ants & Drops: loading one drone");
   await ready(1, "drone");
   await count.fill("128");
-  await count.dispatchEvent("change");
+  console.log("Ants & Drops: loading 128 drones");
+  await count.press("Tab");
   await ready(128, "drones");
   assert.match(
     await page.locator("#footer-stats").textContent(),
     /384 ACTION DIMENSIONS/,
   );
   await count.fill("3");
-  await count.dispatchEvent("change");
+  await count.press("Tab");
   await ready(3, "drones");
   console.log("Ants & Drops: count limits and vehicle switching passed");
   await page.locator("#step").click();

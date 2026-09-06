@@ -254,6 +254,18 @@ function stop() {
 }
 function loadScene(scene, autoStep = false) {
   ++presetRequest;
+  const isCircuit = scene.environment?.kind === "circuit";
+  $("track-control").hidden = !isCircuit;
+  if (isCircuit) {
+    $("scenario").value = "racing";
+    const trackId = scene.circuit?.id;
+    $("track").querySelector('option[value=""]')?.remove();
+    if ([...$("track").options].some((option) => option.value === trackId)) {
+      $("track").value = trackId;
+    } else {
+      $("track").add(new Option("Current / imported circuit", "", true, true));
+    }
+  }
   const loadedAntsOptions = antsOptionsFromScene(scene);
   $("ants-controls").hidden = !loadedAntsOptions;
   if (loadedAntsOptions) {
@@ -530,13 +542,14 @@ function upload(accept, callback) {
 }
 async function preset() {
   const request = ++presetRequest,
-    scenario = $("scenario").value;
+    scenario = $("scenario").value,
+    sceneId = scenario === "racing" ? $("track").value || "racing" : scenario;
   let applying = false;
   stop();
   ready = false;
   $("run").disabled = $("step").disabled = true;
   try {
-    const response = await fetch(`./scenarios/${scenario}.json`);
+    const response = await fetch(`./scenarios/${sceneId}.json`);
     if (!response.ok) throw new Error("Unable to load scenario");
     const template = await response.json();
     if (request !== presetRequest) return;
@@ -558,6 +571,10 @@ async function preset() {
   }
 }
 $("scenario").onchange = preset;
+$("track").onchange = () => {
+  $("scenario").value = "racing";
+  preset();
+};
 for (const id of ["ants-vehicle-type", "ants-vehicle-count"])
   $(id).onchange = () => {
     if (!$("ants-vehicle-count").checkValidity()) {
@@ -759,6 +776,20 @@ async function loadPresets() {
         (e, i) =>
           new Option(`${String(i + 1).padStart(2, "0")} · ${e.label}`, e.id),
       ),
+    );
+    const tracks = entries.find((entry) => entry.id === "racing")?.tracks || [];
+    if (
+      !tracks.length ||
+      tracks.some(
+        (track) =>
+          !/^[a-z][a-z0-9_-]*$/.test(track.id) ||
+          typeof track.label !== "string",
+      ) ||
+      new Set(tracks.map((track) => track.id)).size !== tracks.length
+    )
+      throw new Error("Invalid racing track catalog");
+    $("track").replaceChildren(
+      ...tracks.map((track) => new Option(track.label, track.id)),
     );
     $("scenario").disabled = false;
     await preset();

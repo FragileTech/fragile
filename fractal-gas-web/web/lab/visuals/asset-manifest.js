@@ -1,3 +1,4 @@
+import { worldModels } from "./world-catalog.js";
 export const vehicleModels = Object.freeze([
   "rocket",
   "kart",
@@ -11,14 +12,16 @@ export const assetManifest = Object.freeze(
       style,
       Object.freeze(
         Object.fromEntries(
-          [...vehicleModels, ...propModels].map((model) => [
+          [...vehicleModels, ...worldModels].map((model) => [
             model,
             Object.freeze(
               Object.fromEntries(
                 ["high", "low"].map((lod) => [
                   lod,
                   new URL(
-                    `../assets/${style}/${model}-${lod}.glb`,
+                    worldModels.includes(model)
+                      ? `../assets/${style}/world-${lod}.glb#${model}`
+                      : `../assets/${style}/${model}-${lod}.glb`,
                     import.meta.url,
                   ).href,
                 ]),

@@ -1,0 +1,274 @@
+{
+  "families": {
+    "collectible-drops": [
+      "drop-crystal",
+      "drop-nugget",
+      "drop-salvage",
+      "drop-capsule",
+      "drop-core",
+      "drop-pile"
+    ],
+    "ore-rocks": [
+      "ore-small",
+      "ore-medium",
+      "ore-large",
+      "ore-captured",
+      "capture-clamp"
+    ],
+    "gravity-well": [
+      "reactor"
+    ],
+    "recovery-dock": [
+      "dock",
+      "beacon"
+    ],
+    "checkpoints": [
+      "gate",
+      "gate-pylons",
+      "gate-marker",
+      "finish-arch"
+    ],
+    "arena-scenery": [
+      "rail",
+      "corner-inner",
+      "corner-outer",
+      "bollard",
+      "rock-obstacle",
+      "floor-tile",
+      "lamp",
+      "utility-column",
+      "deposit",
+      "gantry"
+    ],
+    "racing-scenery": [
+      "track-straight",
+      "track-bend",
+      "kerb",
+      "guardrail",
+      "start-light",
+      "pit-station",
+      "direction-board"
+    ],
+    "capture-effects": [
+      "tether-fitting",
+      "capture-latch",
+      "thrust-plume",
+      "intake-swirl",
+      "pickup-burst",
+      "rotor-airflow",
+      "path-trail"
+    ]
+  },
+  "envelopes": {
+    "drop-crystal": [
+      1,
+      1,
+      0.8
+    ],
+    "drop-nugget": [
+      1,
+      1,
+      0.8
+    ],
+    "drop-salvage": [
+      1,
+      1,
+      0.8
+    ],
+    "drop-capsule": [
+      1,
+      1,
+      0.8
+    ],
+    "drop-core": [
+      1,
+      1,
+      0.8
+    ],
+    "drop-pile": [
+      1,
+      1,
+      0.8
+    ],
+    "ore-small": [
+      2,
+      2,
+      1.6
+    ],
+    "ore-medium": [
+      2,
+      2,
+      1.6
+    ],
+    "ore-large": [
+      2,
+      2,
+      1.6
+    ],
+    "ore-captured": [
+      2,
+      2,
+      1.6
+    ],
+    "capture-clamp": [
+      0.6,
+      0.5,
+      0.35
+    ],
+    "reactor": [
+      2.4,
+      2.4,
+      2.8
+    ],
+    "dock": [
+      2,
+      2,
+      0.38
+    ],
+    "beacon": [
+      0.45,
+      0.45,
+      0.9
+    ],
+    "gate": [
+      0.45,
+      2,
+      2
+    ],
+    "gate-pylons": [
+      0.5,
+      2,
+      1.6
+    ],
+    "gate-marker": [
+      2,
+      2,
+      0.12
+    ],
+    "finish-arch": [
+      0.6,
+      2,
+      1.4
+    ],
+    "rail": [
+      2,
+      0.3,
+      0.75
+    ],
+    "guardrail": [
+      2,
+      0.3,
+      0.5
+    ],
+    "corner-inner": [
+      0.8,
+      0.8,
+      0.75
+    ],
+    "corner-outer": [
+      0.8,
+      0.8,
+      0.75
+    ],
+    "bollard": [
+      0.45,
+      0.45,
+      0.65
+    ],
+    "rock-obstacle": [
+      2,
+      2,
+      1.5
+    ],
+    "floor-tile": [
+      2,
+      2,
+      0.08
+    ],
+    "lamp": [
+      0.5,
+      0.5,
+      2
+    ],
+    "utility-column": [
+      0.8,
+      0.8,
+      1.8
+    ],
+    "deposit": [
+      1.8,
+      1.8,
+      1.4
+    ],
+    "gantry": [
+      0.65,
+      2,
+      1.8
+    ],
+    "track-straight": [
+      4,
+      3,
+      0.12
+    ],
+    "track-bend": [
+      4,
+      4,
+      0.12
+    ],
+    "kerb": [
+      2,
+      0.4,
+      0.12
+    ],
+    "start-light": [
+      0.5,
+      0.5,
+      2
+    ],
+    "pit-station": [
+      2,
+      1.5,
+      1.5
+    ],
+    "direction-board": [
+      0.5,
+      1.3,
+      1.4
+    ],
+    "tether-fitting": [
+      0.5,
+      0.4,
+      0.5
+    ],
+    "capture-latch": [
+      0.6,
+      0.28,
+      0.28
+    ],
+    "thrust-plume": [
+      1,
+      0.4,
+      0.4
+    ],
+    "intake-swirl": [
+      1,
+      1,
+      0.3
+    ],
+    "pickup-burst": [
+      1,
+      1,
+      1
+    ],
+    "rotor-airflow": [
+      1.5,
+      1.5,
+      0.4
+    ],
+    "path-trail": [
+      2,
+      0.4,
+      0.12
+    ]
+  }
+}

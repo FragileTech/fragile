@@ -1,5 +1,76 @@
 # Original laboratory assets
 
+## World collections
+
+The [Asset Workshop](../asset-gallery.html) now includes **42 world asset types in
+each style**. Choose a family in the Asset menu, compare Detailed and Simplified
+geometry, and enable **Shared envelope** to inspect the common dimensions.
+
+Each style's `world-high.glb` and `world-low.glb` contain all 42 individually
+addressable asset roots, sharing embedded PBR textures. The editable
+[`sources/futuristic/world.blend`](sources/futuristic/world.blend) and
+[`sources/steampunk/world.blend`](sources/steampunk/world.blend) files contain
+both levels, arranged on a grid. `assetModel` extras identify each root; the
+manifest uses `world-{lod}.glb#assetModel` to load it from the shared pack.
+
+The [catalog](world-catalog.json) lists every type and its dimensions: six resource
+drops, four ore rocks and their clamp, a gravity reactor, recovery dock and beacon,
+four checkpoints/arches, ten arena modules, seven racing modules and seven capture
+or motion assets. The world pack supersedes the first `dock`, `gate` and `reactor`
+exports in the runtime manifest. Those standalone files remain for older consumers.
+
+### Collision and presentation contract
+
+**Switching style never changes collision geometry.** Native scene body hulls,
+pickup radii, arena boundaries, holes and checkpoint positions remain authoritative.
+The two designs and their LODs carry identical `collisionEnvelope` metadata. These
+are fitting envelopes, not replacement physics hulls: gates retain open apertures,
+decorations remain nonphysical, and ore is fitted to its existing native hull bounds.
+
+The styles use different geometry: machined split cases, faceted emitters and inset
+lights versus boilers, gears, valves, leather straps, lanterns and copper pipework.
+Slate shapes and capture assemblies also differ. Small surface detail uses packed
+panel, roughness, normal and emissive mineral maps; service fittings remain editable.
+
+Repeated rails, kerbs and pickups are instanced per mesh/material. Detailed geometry
+appears above 120 projected pixels and simplified geometry below 90, with hysteresis.
+The asset cache owns shared GPU resources. Authored materials bypass palette remapping.
+Flat ground and road surfaces retain the exact scene polygons and use the kit's PBR
+surface material; modular scenery is fitted around their existing boundaries.
+
+Custom scenes can place any kit piece through their existing environment metadata:
+
+```json
+{"environment":{"kind":"arena","assets":[
+  {"model":"gantry","position":[12,18],"size":[0.65,4,2.8],"angle":0},
+  {"model":"deposit","position":[5,6]}
+]}}
+```
+
+These optional placements are decorative. Use ordinary native scene bodies and
+boundaries when a prop also needs collision behavior. Omit `size` for its shared
+catalog dimensions; both styles occupy the same declared placement envelope.
+
+Capture cables/fittings, three thrust stages, collection ribbons, pickup bursts,
+rotor airflow and trailing ribbons derive their poses from native state and actions.
+Reactor gimbals use simulation time. Pickup bursts use the native respawn countdown;
+all these poses can be reconstructed after a replay seek without event history.
+
+### Regenerate and verify world assets
+
+Run `tools/blender/build_world_assets.py` in Blender, or execute
+`build_world("futuristic", render=True)` / `build_world("steampunk", render=True)`
+through the Blender MCP after loading the script into a namespace. Use a background
+Blender authoring process for the complete pack and preview run; rendering a whole
+collection can exceed a single bridge request's timeout. User scenes are preserved.
+
+Family reference renders are `previews/{style}/world-{family}.png`.
+`world-build.json` records geometry counts, pack sizes and shared dimensions.
+Run `npm run test:lab`: the world suite validates every asset, embedded resources,
+triangle limits, shared bounds, different structural geometry and deterministic poses.
+The browser integration page also checks world loading, native-state preservation,
+resource/effect replay, comparisons, failures and context restoration.
+
 ## Blender collections
 
 Open the [Vehicle Workshop](../asset-gallery.html) to rotate each model beside its
@@ -79,16 +150,18 @@ viewports, deterministic replay, 64 mixed vehicles, context recovery, and a miss
 GLB followed by retry. It prints frame-time and draw-count measurements; these are
 observations on the current browser and machine, not portable performance promises.
 
-The [saved validation report](validation.json) contains 106 renderer assertions and
-twelve layout checks at 390 and 1440 CSS pixels. Re-run
+The [world validation report](world-validation.json) records the current renderer,
+asset and layout checks, including layouts at 390 and 1440 CSS pixels. The earlier
+[vehicle report](validation.json) remains available. Re-run
 [`tests/style-responsive.html`](../tests/style-responsive.html) to inspect the
 masthead selector and horizontal overflow in the lab, workshop and concept library. The
 [vehicle render collection](previews/collections.jpg) shows the final hero views;
 each vehicle's side and top views sit beside its hero PNG in `previews/{style}/`.
 
-For later world modeling, the [concept library](../concepts/index.html) adds
-sixteen paired sheets for resources, ore, gravity wells, docks, gates, scenery and
-effects, together with the exact generation prompts.
+The [world render collection](previews/world-collections.jpg) compares all eight
+world families in both styles. The [concept library](../concepts/index.html)
+contains the sixteen reference sheets and exact generation prompts beside links
+to the corresponding implemented assets.
 
 ## Legacy procedural exports
 

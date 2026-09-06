@@ -1,4 +1,5 @@
 import { themeScenery } from "../style-palette.js";
+import { dressWorld } from "./world-dressing.js";
 const registry = new Map();
 export function registerEnvironment(id, create) {
   if (!id || registry.has(id) || typeof create !== "function")
@@ -11,5 +12,5 @@ export function createEnvironment(scene, { style = "futuristic" } = {}) {
   if (!create) throw new Error(`Unknown environment renderer: ${kind}`);
   const environment = create(scene, { style });
   themeScenery(environment.group, style);
-  return environment;
+  return dressWorld(environment, scene, style);
 }

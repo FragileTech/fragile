@@ -172,7 +172,7 @@ The files under `scenarios/` are editable examples:
 | Tandem flight | 2 | Sequential checkpoint loop and formation penalty |
 | Collaborative mining | 2 | Two elastic tethers carrying the same heavy asteroid |
 | Mining rocket / thinking graphs | 1 | Tethered search, risk and tree diagnostics |
-| Violet Circuit / kart racing | 1 | Ordered checkpoints around a closed circuit, with lap progress and manual driving |
+| Racing / select track | 1 | Ordered checkpoints around a closed circuit, with lap progress and manual driving |
 
 ### Ants & drops
 
@@ -191,15 +191,19 @@ position after three **simulation seconds**, indefinitely—even after the entir
 pool has been collected. Pausing also pauses the timer; slow planning can make three
 simulation seconds take longer than three wall-clock seconds.
 
-### Violet Circuit
+### Kart circuit library
 
-Choose **Violet Circuit · kart racing**. The Mite R uses the native kart actuator:
+Choose **Racing** in **Environment**, then use **Select track** to choose one of
+the six circuits, ordered from Easy to Hard.
+The outline, difficulty, checkpoint count, driving description, and historical
+reference update with the selected scene. **Violet Circuit** retains the `racing`
+ID and its original geometry. The Mite R uses the native kart actuator:
 signed throttle, signed steering, and a brake channel. Enable **Keyboard control**
 in the main sidebar, click the world, and use W/S to drive, A/D to steer, and
 Space to brake. **Follow agent** and the mouse wheel give a closer kart view;
 **2D / 3D** switches the circuit view. All registered planners can drive it.
 
-The eight-metre-wide circuit has a physical outer boundary and an infield hole.
+Violet's eight-unit-wide circuit has a physical outer boundary and an infield hole.
 Curbs, asphalt, lane paint, the start gantry and the documentation logo are visual
 assets; native boundaries define collisions. Walls bounce and penalize contact.
 Sixteen native proximity checkpoints must be reached in order. The final zone
@@ -208,7 +212,18 @@ not directional timing lines. Waiting at the finish or skipping checkpoints does
 not complete a lap. The experiment's default goal is 16 checkpoints (one lap).
 Lap counters, the highlighted target, and kart/world movement restore during replay.
 
-Generate the preset with `python3 fractal-gas-web/tools/make-racing-scene.py`.
+The five historical layouts are Roots Oval (Easy), Fearless Circuit (Medium),
+Sepang Kart, Original Obstacle Circuit, and Fearless Obstacle Field (Hard).
+They use identical vehicle settings. Their uniformly scaled video traces preserve
+visible proportions; their dimensions are simulation units, not surveyed metres.
+See [circuit sources and reconstruction notes](circuits.md) for the inventory,
+uncertainties, difficulty criteria, and regeneration commands. Each circuit has
+its own ordered checkpoint count. Imported scenes and replay archives retain
+their own boundary, holes, route, checkpoints, and optional `circuit` metadata.
+
+Generate the library with
+`uv run --script fractal-gas-web/tools/make-racing-scene.py`; append `--check`
+to validate polygon geometry and verify the committed output without writing.
 No new engine task, agent-specific planner code or mutable state fields are needed:
 the kart world occupies 64 bytes, or 96 bytes including its snapshot header.
 
@@ -559,7 +574,11 @@ The workshop's **Artwork and prompts** link opens the
 [paired concept library](concepts/index.html): sixteen additional futuristic and
 steampunk sheets for drops, towable rocks, gravity wells, docks, checkpoints,
 arena and racing scenery, and capture/motion effects. Original PNG downloads and
-complete prompts accompany the sheets for future Blender asset work.
+complete prompts accompany the sheets. The Asset Workshop includes all 42 world
+asset types in both styles, a Detailed/Simplified selector and a shared-envelope
+overlay. Their structural designs differ while native collision geometry remains
+identical. See [world collections](assets/README.md#world-collections) for Blender
+sources, GLB packs, and optional custom-scene placements.
 
 `visuals/assets.js` caches the authored models, and `visual-style.js` coordinates
 style transitions across renderers. `visuals/vehicles.js` and `models.js` retain

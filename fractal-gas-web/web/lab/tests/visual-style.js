@@ -9,6 +9,7 @@ import {
 } from "../visuals/assets.js";
 import { animatedParts, animateAgent } from "../visuals/registry.js";
 import * as T from "../vendor/three.module.js";
+import { worldCatalog } from "../visuals/world-catalog.js";
 
 const output = document.getElementById("result");
 const checks = [],
@@ -44,6 +45,17 @@ try {
   b = new LabRenderer(document.getElementById("b"));
   await preloadStyle("futuristic");
   await preloadStyle("steampunk");
+  for (const style of ["futuristic", "steampunk"])
+    for (const [kind, spec] of Object.entries(worldCatalog)) {
+      const model = assetModel(style, kind);
+      check(!!model, `${style}/${kind}: world asset loaded`);
+      let envelope;
+      model.traverse((part) => {
+        if (part.userData.collisionEnvelope)
+          envelope = part.userData.collisionEnvelope;
+      });
+      check(same(envelope, spec.size), `${style}/${kind}: shared envelope`);
+    }
   for (const style of ["futuristic", "steampunk"]) {
     for (const model of ["rocket", "kart", "drone", "harvester"]) {
       const asset = assetModel(style, model);
@@ -102,9 +114,10 @@ try {
         `${id}: native and displayed state preserved`,
       );
       check(
-        a.models[a.controlled[0]].children.some(
-          (child) => child.userData.assetStyle === style,
-        ),
+        a.models[a.controlled[0]].userData.assetStyle === style ||
+          a.models[a.controlled[0]].children.some(
+            (child) => child.userData.assetStyle === style,
+          ),
         `${id}: authored asset active`,
       );
       performanceRows.push({ scene: id, style, ...(await measure(a)) });
@@ -117,6 +130,17 @@ try {
         part.visible,
       ]);
     };
+    const effectsPose = () => {
+      a.worldDynamics.group.updateMatrixWorld(true);
+      const values = [];
+      a.worldDynamics.group.traverse((part) =>
+        values.push([...part.matrixWorld.elements, part.visible]),
+      );
+      for (const p of a.worldDynamics.pickups)
+        if (p) values.push([...p.position, p.visible]);
+      return values;
+    };
+    const effectsBefore = effectsPose();
     const before = pose();
     engine.step(action, 20);
     a.update(engine.states(), action);
@@ -124,6 +148,10 @@ try {
     await labStyle.change("futuristic");
     a.update(state, action);
     check(same(before, pose()), `${id}: replay pose restored after switching`);
+    check(
+      same(effectsBefore, effectsPose()),
+      `${id}: resource and effect poses restored after switching`,
+    );
     engine.dispose();
     engine = null;
   }
