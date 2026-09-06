@@ -1,6 +1,8 @@
 # Fragile Tech · Control Laboratory
 
-The book includes a practical user guide:
+Read the [published laboratory user guide](https://fragiletech.github.io/fragile/docs/source/project/control_laboratory.html) on GitHub Pages. The lab's **User guide ↗** link opens it in a new tab so your running session stays available.
+
+The guide's source pages are also available in the repository:
 
 - [Getting started](../../../docs/source/project/control_lab_getting_started.md): build, first run, keyboard driving, and troubleshooting.
 - [Controls and planners](../../../docs/source/project/control_lab_controls.md): every planning setting, clock, view, and telemetry field.

@@ -163,6 +163,9 @@ jobs:
         run: |
           test -s site/index.html
           test -s site/docs/index.html
+          for guide in control_laboratory control_lab_getting_started control_lab_controls control_lab_scenes control_lab_replay control_lab_experiments control_lab_architecture; do
+            test -s "site/docs/source/project/$guide.html"
+          done
           test -s site/coi-serviceworker.min.js
           test -s site/lab/index.html
           test -s site/lab/engine/control.mjs

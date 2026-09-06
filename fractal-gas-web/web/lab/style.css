@@ -111,6 +111,7 @@ nav {
   height: 100%;
   font-size: 12px;
   color: var(--muted);
+  white-space: nowrap;
 }
 .nav-active {
   color: var(--ink);
@@ -694,6 +695,8 @@ dialog .control-heading {
 @media (max-width: 780px) {
   .masthead {
     height: 63px;
+    padding: 0 12px;
+    gap: 12px;
   }
   .brand {
     font-size: 13px;
@@ -705,7 +708,8 @@ dialog .control-heading {
     gap: 12px;
     font-size: 10px;
   }
-  nav a:last-child,
+  nav .engine-notes,
+  .nav-active,
   .connection {
     display: none;
   }
