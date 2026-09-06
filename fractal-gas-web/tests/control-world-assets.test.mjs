@@ -65,6 +65,39 @@ for (const [kind, spec] of Object.entries(worldCatalog))
         root.traverse((p) => {
           if (p.isMesh) {
             const positions = p.geometry.attributes.position;
+            if (
+              kind.startsWith("ore-") &&
+              p.name.includes("Veined natural slate")
+            ) {
+              p.geometry.computeBoundingBox();
+              const center = p.geometry.boundingBox.getCenter(new T.Vector3());
+              const normal = p.geometry.attributes.normal;
+              let outward = 0;
+              for (let i = 0; i < positions.count; i++) {
+                const direction = new T.Vector3()
+                  .fromBufferAttribute(positions, i)
+                  .sub(center)
+                  .normalize();
+                outward += direction.dot(
+                  new T.Vector3().fromBufferAttribute(normal, i),
+                );
+              }
+              assert(
+                outward / positions.count > 0.4,
+                `${style}/${kind}: mineral normals face outward`,
+              );
+              const uv = p.geometry.attributes.uv;
+              const index = p.geometry.index;
+              for (let i = 0; i < (index?.count || positions.count); i += 3) {
+                const u = [0, 1, 2].map((j) =>
+                  uv.getX(index ? index.getX(i + j) : i + j),
+                );
+                assert(
+                  Math.max(...u) - Math.min(...u) <= 0.51,
+                  `${style}/${kind}: mineral UVs do not stretch across the longitude seam`,
+                );
+              }
+            }
             vertices += positions.count;
             triangles += (p.geometry.index?.count || positions.count) / 3;
             for (let i = 0; i < positions.count; i++)

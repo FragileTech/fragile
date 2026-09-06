@@ -170,6 +170,7 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
     b.friction = number(j["friction"], .3f, 0, 2);
     b.controlled = j["controlled"].flag();
     b.cargo = j["cargo"].flag();
+    b.respawn = j["respawn"].flag();
     if (!s->inside(b.position))
       throw std::invalid_argument("Body centre outside playable region");
     if (j["vertices"].kind != Json::Null) {

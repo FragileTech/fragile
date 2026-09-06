@@ -564,6 +564,14 @@ void Physics::mechanics(float* r, StepResult& result) {
           for (size_t t = 0; t < s.tethers.size(); ++t)
             if (word(r, l.joints + 2 * t) == b + 1)
               word(r, l.joints + 2 * t, 0);
+          if (s.bodies[b].respawn) {
+            const auto& body = s.bodies[b];
+            position(r, l, b, body.position);
+            velocity(r, l, b, {});
+            angle(r, l, b) = body.angle;
+            omega(r, l, b) = 0;
+            word(r, l.flags + b, active_flag);
+          }
           break;
         }
   for (size_t t = 0; t < s.tethers.size(); ++t) {

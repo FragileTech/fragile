@@ -952,6 +952,7 @@ class Builder:
             self.prop()
         bpy.context.view_layer.update()
         if not self.low:
+            self.concept_details()
             self.surface_details()
         bpy.context.view_layer.update()
         # All meshes and motion origins share a uniform authoring-to-lab scale.
@@ -970,6 +971,291 @@ class Builder:
         self.root["normalizationScale"] = factor
         bpy.context.view_layer.update()
         return self
+
+    def concept_details(self):
+        """Static mechanical assemblies batch into existing material draws at export."""
+        if self.kind == "rocket":
+            for s in [-1, 1]:
+                for j in range(7):
+                    x = -1.38 + j * 0.17
+                    self.box(
+                        "Engine radiator vane",
+                        (x, s * 0.99, 0.66),
+                        (0.055, 0.11, 0.20),
+                        "copper" if self.steam else "dark",
+                        bevel=0.006,
+                    )
+                if self.steam:
+                    self.pipe(
+                        "Paired pressure return",
+                        [
+                            (-1.45, s * 0.57, 0.84),
+                            (-0.92, s * 0.57, 0.91),
+                            (-0.3, s * 0.72, 0.85),
+                            (-0.12, s * 0.72, 0.68),
+                        ],
+                        0.022,
+                        "copper",
+                    )
+                    for x in [-1.32, -0.28]:
+                        self.cyl(
+                            "Pod pressure regulator", (x, s * 0.78, 0.86), 0.06, 0.075, "trim"
+                        )
+                        self.ring("Regulator handwheel", (x, s * 0.78, 0.91), 0.075, 0.012, "trim")
+                else:
+                    self.plate(
+                        "Layered nose cheek",
+                        [(0.2, s * 0.41), (0.65, s * 0.34), (1.52, s * 0.12), (1.2, s * 0.23)],
+                        0.41,
+                        0.035,
+                        "plate",
+                    )
+                    self.box(
+                        "Recessed engine telemetry",
+                        (-1.12, s * 1.047, 0.55),
+                        (0.23, 0.014, 0.11),
+                        "dark",
+                    )
+                    for j in range(3):
+                        self.box(
+                            "Telemetry status segment",
+                            (-1.19 + j * 0.065, s * 1.06, 0.55),
+                            (0.038, 0.009, 0.025),
+                            "light",
+                            bevel=0,
+                        )
+        elif self.kind in {"kart", "harvester"}:
+            axles = [0.94, -1.02] if self.kind == "kart" else [0.93, -0.18, -1.27]
+            width, radius = (
+                (0.72, 0.48 if self.steam else 0.43) if self.kind == "kart" else (0.93, 0.58)
+            )
+            for x in axles:
+                for s in [-1, 1]:
+                    center = Vector((x - 0.08, s * (width - 0.14), radius + 0.08))
+                    self.cyl("Damper piston", center, 0.044, 0.38, "trim")
+                    self.cyl(
+                        "Suspension reservoir",
+                        center + Vector((-0.08, 0, 0.04)),
+                        0.055,
+                        0.2,
+                        "copper" if self.steam else "energy",
+                    )
+                    points = []
+                    for j in range(65):
+                        a = j * TAU * 5 / 64
+                        points.append(
+                            tuple(
+                                center
+                                + Vector((
+                                    0.065 * math.cos(a),
+                                    0.065 * math.sin(a),
+                                    -0.15 + j * 0.3 / 64,
+                                ))
+                            )
+                        )
+                    self.pipe("Coil suspension spring", points, 0.014, "trim")
+                    self.pipe(
+                        "Upper wishbone",
+                        [
+                            (x - 0.23, s * 0.32, radius + 0.14),
+                            (x, s * width, radius + 0.05),
+                            (x + 0.23, s * 0.32, radius + 0.14),
+                        ],
+                        0.029,
+                        "trim",
+                    )
+            if self.kind == "kart":
+                if self.steam:
+                    for s in [-1, 1]:
+                        self.cyl(
+                            "Steam drive cylinder",
+                            (-0.82, s * 0.43, 0.55),
+                            0.10,
+                            0.38,
+                            "copper",
+                            "x",
+                        )
+                        for x in [-1.0, -0.85, -0.7]:
+                            self.ring(
+                                "Drive cylinder flange",
+                                (x, s * 0.43, 0.55),
+                                0.105,
+                                0.014,
+                                "trim",
+                                "x",
+                            )
+                    for j in range(4):
+                        self.box(
+                            "Leather seat padded channel",
+                            (-0.48, -0.19 + j * 0.125, 0.484),
+                            (0.46, 0.095, 0.024),
+                            "seat",
+                            bevel=0.02,
+                        )
+                else:
+                    self.box("Nose recessed intake", (1.42, 0, 0.285), (0.12, 0.29, 0.15), "dark")
+                    for s in [-1, 1]:
+                        self.plate(
+                            "Front splitter wing",
+                            [(1.1, s * 0.22), (1.56, s * 0.22), (1.6, s * 0.51), (1.25, s * 0.49)],
+                            0.20,
+                            0.033,
+                            "trim",
+                        )
+                        self.pipe(
+                            "Nose inset light guide",
+                            [
+                                (1.43, s * 0.20, 0.36),
+                                (0.84, s * 0.30, 0.56),
+                                (0.18, s * 0.36, 0.71),
+                            ],
+                            0.012,
+                            "light",
+                        )
+                        self.cyl(
+                            "Sensor side optical pivot",
+                            (-0.32, s * 0.195, 0.93),
+                            0.085,
+                            0.035,
+                            "trim",
+                            "y",
+                        )
+                        self.cyl(
+                            "Sensor side lens",
+                            (-0.32, s * 0.215, 0.93),
+                            0.048,
+                            0.008,
+                            "glass",
+                            "y",
+                        )
+                        self.box(
+                            "Battery heat sink",
+                            (-1.12, s * 0.34, 0.59),
+                            (0.40, 0.06, 0.20),
+                            "trim",
+                        )
+                        for j in range(7):
+                            self.box(
+                                "Heat sink fin",
+                                (-1.28 + j * 0.05, s * 0.38, 0.61),
+                                (0.015, 0.065, 0.18),
+                                "dark",
+                                bevel=0,
+                            )
+            else:
+                for s in [-1, 1]:
+                    for j in range(11):
+                        t = j / 10
+                        x = 1.5 - t * 1.52
+                        z = 0.87 + t * 0.75
+                        tread = self.box(
+                            "Conveyor transverse cleat",
+                            (x, s * 0.75, z),
+                            (0.10, 0.22, 0.035),
+                            "trim",
+                            bevel=0,
+                        )
+                        tread.rotation_euler.y = 0.46
+                    self.pipe(
+                        "Hydraulic pressure hose",
+                        [(1.55, s * 0.99, 0.72), (0.9, s * 1.0, 1.05), (0.34, s * 0.94, 1.0)],
+                        0.022,
+                        "copper" if self.steam else "rubber",
+                    )
+                    for j in range(3):
+                        self.box(
+                            "Cab access step",
+                            (0.4, s * 0.72, 0.57 + j * 0.20),
+                            (0.31, 0.25, 0.04),
+                            "trim",
+                        )
+                    for x in [-1.5, -0.9, -0.3]:
+                        self.box(
+                            "Hopper lower hinge", (x, s * 0.86, 1.20), (0.16, 0.08, 0.10), "trim"
+                        )
+                self.pipe(
+                    "Cab windshield wiper",
+                    [(1.418, -0.38, 1.55), (1.425, 0.20, 1.88)],
+                    0.012,
+                    "rubber",
+                )
+        elif self.kind == "drone":
+            reach = 1.12 if self.steam else 0.83
+            for x in [-0.73, 0.70]:
+                for s in [-1, 1]:
+                    if self.steam:
+                        for dx in [-0.07, 0.07]:
+                            self.pipe(
+                                "Rotor torque linkage",
+                                [(x * 0.6 + dx, s * 0.4, 0.46), (x + dx, s * reach, 0.46)],
+                                0.025,
+                                "copper",
+                            )
+                        self.cyl("Rotor gearbox", (x, s * 0.74, 0.49), 0.105, 0.18, "trim", "y")
+                        for y in [0.66, 0.78]:
+                            self.ring(
+                                "Gearbox retaining flange",
+                                (x, s * y, 0.49),
+                                0.115,
+                                0.015,
+                                "trim",
+                                "y",
+                            )
+                    else:
+                        for j in range(6):
+                            a = j * TAU / 6
+                            self.box(
+                                "Duct service fastener",
+                                (x + 0.48 * math.cos(a), s * reach + 0.48 * math.sin(a), 0.555),
+                                (0.035, 0.035, 0.02),
+                                "trim",
+                                bevel=0,
+                            )
+            for s in [-1, 1]:
+                for j in range(7):
+                    self.box(
+                        "Avionics cooling slot",
+                        (-0.35 + j * 0.1, s * 0.39, 0.787),
+                        (0.045, 0.16, 0.015),
+                        "dark",
+                        bevel=0,
+                    )
+                if self.steam:
+                    self.cyl(
+                        "Upper auxiliary pressure vessel",
+                        (-0.25, s * 0.38, 0.88),
+                        0.073,
+                        0.56,
+                        "copper",
+                        "x",
+                    )
+                    for x in [-0.45, -0.15]:
+                        self.ring(
+                            "Auxiliary vessel strap",
+                            (x, s * 0.38, 0.88),
+                            0.078,
+                            0.012,
+                            "trim",
+                            "x",
+                        )
+                    self.pipe(
+                        "Pressure distributor",
+                        [(-0.42, s * 0.35, 1.0), (-0.42, s * 0.48, 0.95), (0.53, s * 0.44, 0.75)],
+                        0.024,
+                        "copper",
+                    )
+            for j in range(12):
+                a = j * TAU / 12
+                self.cyl(
+                    "Optical bezel screw",
+                    (1.183, 0.225 * math.cos(a), 0.49 + 0.225 * math.sin(a)),
+                    0.016,
+                    0.028,
+                    "trim",
+                    "x",
+                    segments=6,
+                )
+            self.ring("Optical iris surround", (1.23, 0, 0.49), 0.105, 0.014, "trim", "x")
 
     def surface_details(self):
         """Inset replaceable armor panels, fasteners, and pod cooling hardware."""

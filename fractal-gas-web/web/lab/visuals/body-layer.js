@@ -96,19 +96,29 @@ export class BodyLayer {
         const hi = [0, 1].map((axis) =>
           Math.max(...vertices.map((v) => v[axis])),
         );
-        model = worldModel(
-          style,
-          ["ore-small", "ore-medium", "ore-large"][i % 3],
-          [
-            hi[0] - lo[0],
-            hi[1] - lo[1],
-            Math.max(hi[0] - lo[0], hi[1] - lo[1]) * 0.8,
-          ],
-        );
-        if (model) {
-          // Keep the native local hull origin, including asymmetric cargo hulls.
-          model.children[0].position.x += (hi[0] + lo[0]) / (2 * model.scale.x);
-          model.children[0].position.y += (hi[1] + lo[1]) / (2 * model.scale.y);
+        const kind = ["ore-small", "ore-medium", "ore-large"][i % 3];
+        const size = [
+          hi[0] - lo[0],
+          hi[1] - lo[1],
+          Math.max(hi[0] - lo[0], hi[1] - lo[1]) * 0.8,
+        ];
+        const low = worldModel(style, kind, size);
+        if (low) {
+          const high = worldModel(style, kind, size, "high") || low.clone(true);
+          model = new T.Group();
+          for (const level of [high, low]) {
+            // Keep the native local hull origin, including asymmetric cargo hulls.
+            level.position.set((hi[0] + lo[0]) / 2, (hi[1] + lo[1]) / 2, 0);
+            model.add(level);
+          }
+          high.visible = false;
+          this.lods.push({
+            model,
+            high,
+            low,
+            current: "low",
+            span: Math.max(size[0], size[1]),
+          });
         } else model = themeScenery(rockModel(vertices), style);
       }
       model.position.set(...(b.position || [0, 0]), 0.08);
@@ -172,7 +182,7 @@ export class BodyLayer {
     const pixelsPerUnit = viewportHeight / (camera.top - camera.bottom);
     for (const entry of this.lods) {
       entry.current = chooseLod(
-        1.52 * entry.model.scale.x * pixelsPerUnit,
+        (entry.span ?? 1.52) * entry.model.scale.x * pixelsPerUnit,
         entry.current,
       );
       entry.high.visible = entry.current === "high";

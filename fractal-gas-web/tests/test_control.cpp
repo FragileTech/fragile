@@ -1,4 +1,7 @@
 #include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <stdexcept>
 
 #include "control/physics.hpp"
@@ -431,4 +434,58 @@ TEST_CASE(control_plugin_bounds_need_not_include_zero) {
   wave.step();
   CHECK(wave.select_action()[0] >= 2);
   CHECK(wave.select_action()[0] <= 3);
+}
+
+TEST_CASE(control_mining_heavy_load_and_replenishment) {
+  std::ifstream file(std::filesystem::path(__FILE__).parent_path() /
+                     "../web/lab/scenarios/mining.json");
+  CHECK(file.good());
+  std::ostringstream json;
+  json << file.rdbuf();
+  auto s = Scene::compile(json.str());
+  CHECK(s->bodies.size() == 3);
+  CHECK(s->bodies[2].mass == 24);
+  CHECK(s->bodies[2].drag == .8f);
+  CHECK(s->bodies[2].respawn);
+  Physics p(s);
+  StateBatch a(1, *s), b(1, *s), replay(1, *s);
+  const auto& l = s->layout;
+  float action[4] = {1, 0, 1, 0};
+  int32_t frames = 120;
+  StepResult result;
+  a.reset(*s, 0);
+  position(a.row(0), l, 0, {25, 11});
+  // Detach the second rocket and move it beyond automatic hook range.
+  word(a.row(0), l.joints + 2, 0);
+  position(a.row(0), l, 1, {40, 10});
+  p.step(a, nullptr, action, &frames, b, &result);
+  const float solo_distance = position(b.row(0), l, 2).x - s->bodies[2].position.x;
+  CHECK(solo_distance > .01f);
+  CHECK(word(b.row(0), 4) == 0);
+  // Two rockets haul the same rock substantially faster at full thrust.
+  a.reset(*s, 0);
+  position(a.row(0), l, 0, {25, 11});
+  position(a.row(0), l, 1, {25, 14});
+  p.step(a, nullptr, action, &frames, b, &result);
+  const float team_distance = position(b.row(0), l, 2).x - s->bodies[2].position.x;
+  CHECK(team_distance > 1.5f * solo_distance);
+  // Repeated deliveries reuse the one cargo slot immediately and replay exactly.
+  frames = 1;
+  for (int delivery = 1; delivery <= 5; ++delivery) {
+    position(a.row(0), l, 2, s->bases[0].position);
+    position(a.row(0), l, 0, {9, 10});
+    position(a.row(0), l, 1, {9, 15});
+    word(a.row(0), l.joints, 3);
+    word(a.row(0), l.joints + 2, 3);
+    p.step(a, nullptr, action, &frames, b, &result);
+    p.step(a, nullptr, action, &frames, replay, &result);
+    CHECK(std::memcmp(b.row(0), replay.row(0), l.words * sizeof(float)) == 0);
+    CHECK(word(b.row(0), 4) == uint32_t(delivery));
+    CHECK(word(b.row(0), l.flags + 2) == active_flag);
+    CHECK_CLOSE(length(position(b.row(0), l, 2) - s->bodies[2].position), 0, 1e-6);
+    CHECK_CLOSE(length(velocity(b.row(0), l, 2)), 0, 1e-6);
+    CHECK(word(b.row(0), l.joints) == 0);
+    CHECK(word(b.row(0), l.joints + 2) == 0);
+    std::memcpy(a.row(0), b.row(0), l.words * sizeof(float));
+  }
 }

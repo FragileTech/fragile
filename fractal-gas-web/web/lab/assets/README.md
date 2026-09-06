@@ -32,9 +32,17 @@ lights versus boilers, gears, valves, leather straps, lanterns and copper pipewo
 Slate shapes and capture assemblies also differ. Small surface detail uses packed
 panel, roughness, normal and emissive mineral maps; service fittings remain editable.
 
+The refinement pass adds coil suspension and hydraulic hoses, layered nose parts,
+engine radiator vanes, optical fasteners, pressure distributors, conveyor cleats,
+and dock heat exchangers. Static fittings merge into existing material batches.
+Ore uses outward-facing normals, seam-corrected spherical UVs, branching mineral
+fractures, and embedded capture sockets. Mineral maps are 1024 pixels in detailed
+packs and 512 pixels in simplified packs. Extra vehicle machinery is detailed-only.
+
 Repeated rails, kerbs and pickups are instanced per mesh/material. Detailed geometry
 appears above 120 projected pixels and simplified geometry below 90, with hysteresis.
 The asset cache owns shared GPU resources. Authored materials bypass palette remapping.
+Towable ore also changes LOD when zooming, preserving its native asymmetric hull origin.
 Flat ground and road surfaces retain the exact scene polygons and use the kit's PBR
 surface material; modular scenery is fitted around their existing boundaries.
 

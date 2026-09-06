@@ -15,7 +15,7 @@ struct BodyDef {
   float angle = 0, omega = 0, radius = .5f, mass = 1, inertia = 1, drag = .15f,
         angular_drag = 2;
   float thrust = 12, torque = 8, restitution = .25f, friction = .3f;
-  bool controlled = false, cargo = false;
+  bool controlled = false, cargo = false, respawn = false;
   std::vector<Vec2> vertices;
   ActuatorDef actuator;
 };

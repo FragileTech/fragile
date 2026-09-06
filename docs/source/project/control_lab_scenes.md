@@ -32,7 +32,7 @@ include progress, collisions, and formation penalties as well as completed objec
 | **Asteroid harvesting** | Guide the tug, acquire cargo with its automatic tether, and bring ore into the delivery base. | Cargo deliveries |
 | **Ants & drops** | Coordinate 1–128 harvesters or drones collecting food; defaults to 48 harvesters. | Food collected |
 | **Tandem flight** | Guide a pair through ordered checkpoint zones while maintaining formation. | Gates crossed |
-| **Collaborative mining** | Move a heavy shared load with two thrusters and their tethers. | Cargo deliveries |
+| **Collaborative mining** | Haul one heavy rock: slow with one rocket, faster with two; delivery immediately replenishes it. | Cargo deliveries |
 | **Thinking graphs** | Use the harvesting task to inspect alternative futures, cloning, and ancestry. | Cargo deliveries |
 | **Racing** | Choose a circuit with **Select track**, then drive its checkpoint zones in order. | Laps completed; next checkpoint |
 :::
@@ -192,6 +192,11 @@ parameters. They show units for position (m), velocity (m/s), angle and steering
 Strings, booleans, adding new fields, and collision `vertices` require JSON editing.
 For example, change `controlled`, `cargo`, an actuator's `kind`, or a visual model name
 in JSON. The numeric editor is not a complete scene schema.
+
+For cargo bodies, `respawn: true` immediately restores the body at its configured
+position after delivery, with zero velocity and detached tethers. The default is
+`false`. Collaborative mining uses one 24 kg rock with `drag: 0.8` and respawning
+enabled; each rocket has 16 N of thrust.
 
 **Duplicate selection** offsets copies by +2 m in both coordinates. If both endpoints
 of a tether are selected bodies, their connecting tether is duplicated with corrected

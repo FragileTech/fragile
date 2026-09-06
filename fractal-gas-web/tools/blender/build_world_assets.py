@@ -105,18 +105,25 @@ SIZES = {
 }
 
 
-def stone_maps(style):
-    n = 512
+def stone_maps(style, n=1024):
     y, x = np.mgrid[0:n, 0:n] / n
     rng = np.random.default_rng(972)
     noise = rng.random((n, n))
-    field = np.sin(x * 37 + np.sin(y * 18) * 2 + np.cos(x * 12 + y * 11))
-    vein = np.exp(-np.abs(field) * 95) + 0.45 * np.exp(
-        -np.abs(np.sin(y * 51 + np.sin(x * 15))) * 160
-    )
-    base = np.array([0.11, 0.09, 0.065] if style == "steampunk" else [0.07, 0.08, 0.10])
-    glow = np.array([0.8, 0.32, 0.045] if style == "steampunk" else [0.36, 0.11, 0.65])
-    color = base * (0.45 + noise[..., None]) + vein[..., None] * glow
+    # Periodic cellular seams give branching mineral fractures with no UV edge seam.
+    warped_x = (x + 0.012 * np.sin(y * TAU * 19) + 0.006 * np.sin((x + y) * TAU * 37)) % 1
+    warped_y = (y + 0.012 * np.sin(x * TAU * 17) + 0.006 * np.sin((x - y) * TAU * 41)) % 1
+    distances = []
+    for px, py in rng.random((22, 2)):
+        dx = np.minimum(abs(warped_x - px), 1 - abs(warped_x - px))
+        dy = np.minimum(abs(warped_y - py), 1 - abs(warped_y - py))
+        distances.append(dx * dx + dy * dy)
+    nearest = np.partition(np.stack(distances), 1, axis=0)[:2]
+    gap = np.sqrt(nearest[1]) - np.sqrt(nearest[0])
+    vein = np.exp(-gap * 500) * (0.55 + 0.45 * np.sin(x * 18 + y * 13) ** 2)
+    base = np.array([0.22, 0.18, 0.13] if style == "steampunk" else [0.21, 0.23, 0.27])
+    glow = np.array([1, 0.45, 0.06] if style == "steampunk" else [0.55, 0.18, 1])
+    grain = 0.65 + noise * 0.6 + 0.12 * np.sin(x * 220 + np.sin(y * 51))
+    color = base * grain[..., None] + vein[..., None] * glow
     height = noise * 0.06 - vein * 0.35
     dy, dx = np.gradient(height)
     normal = np.stack([-dx * 3, -dy * 3, np.ones_like(x)], -1)
@@ -149,17 +156,17 @@ class WorldBuilder(lab.Builder):
         self.roots = {}
         self.seg = 8 if low else 24
         self.triangle_budget = 100000 if low else 1000000
-        maps = stone_maps(style)
+        maps = stone_maps(style, n=512 if low else 1024)
         self.mats["stone"] = lab.material(
-            "Veined natural slate", (0.08, 0.07, 0.06), 0.08, 0.86, emission=0.8, texture=maps
+            "Veined natural slate", (0.15, 0.17, 0.21), 0.08, 0.86, emission=1.1, texture=maps
         )
         self.mats["crystal"] = lab.material(
             "Amber mineral" if self.steam else "Violet crystal",
             (0.40, 0.17, 0.015) if self.steam else (0.16, 0.035, 0.36),
             0.35,
             0.18,
-            1.2,
-            texture={k: v for k, v in maps.items() if k != "Roughness"},
+            0.65,
+            texture={"Normal": maps["Normal"]},
         )
         self.mats["road"] = lab.material(
             "Riveted iron road" if self.steam else "Quiet graphite road",
@@ -255,17 +262,25 @@ class WorldBuilder(lab.Builder):
                 b = j * n + (i + 1) % n
                 c = b + n
                 d = a + n
-                faces.extend([(a, b, c), (a, c, d)])
+                faces.extend([(a, c, b), (a, d, c)])
         o = self.mesh("Fractured mineral stone", v, faces, "stone", parent)
         o.location = pos
         for f in o.data.polygons:
             f.use_smooth = smooth
-            for li in f.loop_indices:
-                co = o.data.vertices[o.data.loops[li].vertex_index].co
-                o.data.uv_layers.active.data[li].uv = (
-                    math.atan2(co.y, co.x) / TAU + 0.5,
-                    co.z / (radius * 1.6),
-                )
+            indices = [o.data.loops[li].vertex_index for li in f.loop_indices]
+            uv = [[(index % n) / n, (index // n) / rows] for index in indices]
+            if max(p[0] for p in uv) - min(p[0] for p in uv) > 0.5:
+                for p in uv:
+                    if p[0] < 0.5:
+                        p[0] += 1
+            # Every pole triangle needs its own midpoint U, avoiding stretched stars.
+            for p in uv:
+                if p[1] in [0, 1]:
+                    others = [q[0] for q in uv if q[1] not in [0, 1]]
+                    if others:
+                        p[0] = sum(others) / len(others)
+            for li, point in zip(f.loop_indices, uv):
+                o.data.uv_layers.active.data[li].uv = point
         return o
 
     def gear(self, pos, r=0.18, axis="z", parent=None):
@@ -313,6 +328,39 @@ class WorldBuilder(lab.Builder):
             self.cyl(
                 "Energy cartridge interior", pos, r * 0.42, height * 0.9, "energy", parent=parent
             )
+        if not self.low:
+            for dz in [-0.35, 0.35]:
+                self.ring(
+                    "Service flange",
+                    (pos[0], pos[1], pos[2] + height * dz),
+                    r * 1.025,
+                    0.012,
+                    "trim",
+                    parent=parent,
+                )
+            if self.steam:
+                self.pipe(
+                    "Pressure bypass loop",
+                    [
+                        (pos[0] + r, pos[1], pos[2] - height * 0.3),
+                        (pos[0] + r * 1.4, pos[1], pos[2] - height * 0.3),
+                        (pos[0] + r * 1.4, pos[1], pos[2] + height * 0.3),
+                        (pos[0] + r, pos[1], pos[2] + height * 0.3),
+                    ],
+                    0.014,
+                    "copper",
+                    parent,
+                )
+            else:
+                for j in range(5):
+                    self.ring(
+                        "Capacitor cooling lamella",
+                        (pos[0], pos[1], pos[2] - height * 0.3 + j * height * 0.045),
+                        r * 1.04,
+                        0.008,
+                        "trim",
+                        parent=parent,
+                    )
 
     def pedestal(self, r=0.45):
         self.cyl(
@@ -448,6 +496,22 @@ class WorldBuilder(lab.Builder):
             "rock-obstacle": 11,
         }.get(kind, 5)
         self.rock(1, seed)
+        # The concept's embedded capture socket reads at normal simulation zoom.
+        self.cyl("Recessed ore socket", (0.76, 0, 0.74), 0.22, 0.075, "dark", "x")
+        self.ring("Ore docking collar", (0.81, 0, 0.74), 0.205, 0.037, "trim", "x")
+        self.cyl("Exposed mineral socket", (0.815, 0, 0.74), 0.145, 0.014, "crystal", "x")
+        if not self.low:
+            for j in range(6):
+                a = j * TAU / 6
+                self.cyl(
+                    "Socket locking stud",
+                    (0.86, 0.205 * math.cos(a), 0.74 + 0.205 * math.sin(a)),
+                    0.023,
+                    0.035,
+                    "gold" if self.steam else "trim",
+                    "x",
+                    segments=6,
+                )
         for j in range(3):
             a = j * 2.4
             self.crystal((0.62 * math.cos(a), 0.62 * math.sin(a), 0.42), 0.10, 0.25, j)
@@ -559,6 +623,8 @@ class WorldBuilder(lab.Builder):
 
     def dock(self):
         self.cyl("Clear recovery deck", (0, 0, 0.03), 0.9, 0.06, "road", segments=32)
+        self.polygon_band("Recessed machinery skirt", 0.94, 0.22, 0.075, 0.13, "dark")
+        self.polygon_band("Deck lower retaining flange", 1.015, 0.065, 0.018, 0.035, "trim")
         for j in range(12):
             a = j * TAU / 12
             o = self.box(
@@ -568,6 +634,43 @@ class WorldBuilder(lab.Builder):
                 "dark" if self.steam else "plate",
             )
             o.rotation_euler.z = a
+            if not self.low:
+                for dz in [0.07, 0.16]:
+                    p = (1.045 * math.cos(a), 1.045 * math.sin(a), dz)
+                    if self.steam:
+                        self.pipe(
+                            "Skirt pressure manifold",
+                            [
+                                (1.02 * math.cos(a - 0.10), 1.02 * math.sin(a - 0.10), dz),
+                                p,
+                                (1.02 * math.cos(a + 0.10), 1.02 * math.sin(a + 0.10), dz),
+                            ],
+                            0.016,
+                            "copper",
+                        )
+                    else:
+                        panel = self.box(
+                            "Dock inset heat exchanger", p, (0.015, 0.19, 0.045), "dark", bevel=0
+                        )
+                        panel.rotation_euler.z = a
+                for k in range(4):
+                    b = a + (k - 1.5) * 0.043
+                    part = self.box(
+                        "Skirt cooling fin",
+                        (1.055 * math.cos(b), 1.055 * math.sin(b), 0.115),
+                        (0.05, 0.012, 0.14),
+                        "trim",
+                        bevel=0,
+                    )
+                    part.rotation_euler.z = b
+                if j % 3 == 0:
+                    self.cyl(
+                        "Deck service reservoir",
+                        (0.98 * math.cos(a), 0.98 * math.sin(a), 0.22),
+                        0.065,
+                        0.11,
+                        "copper" if self.steam else "energy",
+                    )
             if self.steam:
                 self.cyl(
                     "Deck valve",

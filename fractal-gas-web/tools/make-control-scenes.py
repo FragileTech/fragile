@@ -143,16 +143,14 @@ save(
 save(
     "mining",
     "Collaborative mining",
-    "Two thrusters, shared momentum, one heavy load.",
+    "One heavy rock at a time. Team up to haul it faster; delivery spawns the next.",
     "harvest",
     boundary=cave,
     holes=holes,
     bodies=[
         ship(19, 10),
         ship(19, 15),
-        rock(22, 12.5, 1.4, 6),
-        rock(45, 30, 1.5, 5),
-        rock(48, 12, 1.1, 3),
+        dict(rock(22, 12.5, 1.4, 24), drag=0.8, respawn=True),
     ],
     bases=[{"position": [12, 12], "radius": 3}],
     gravity=[{"position": [47, 22], "strength": 18, "softening": 4}],

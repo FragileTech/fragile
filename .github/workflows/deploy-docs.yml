@@ -50,7 +50,8 @@ jobs:
 
       - name: Test documentation routes and redirects
         run: |
-          python -m pytest -q tests/docs/
+          # Docs tests do not use the package-wide simulation/doctest fixtures.
+          python -m pytest --confcutdir=tests/docs -q tests/docs/
           test -s docs/_build/html/index.html
           test -s docs/_build/html/theory/index.html
           test -s docs/_build/html/lab/index.html

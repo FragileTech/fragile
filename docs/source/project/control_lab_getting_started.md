@@ -176,7 +176,7 @@ success criterion specifies exactly what counts as a successful trial.
 | **Asteroid harvesting** | 1 | Hook ore and deliver it to a base; watch local gravity and tether motion. |
 | **Ants & drops** | 1–128 (default 48) | Choose harvesters or drones beneath **Environment**; each vehicle adds three action channels. Collected drops return after three simulation seconds at seeded random positions. |
 | **Tandem flight** | 2 | Visit ordered checkpoints while maintaining a formation; observe the cost of poor coordination. |
-| **Collaborative mining** | 2 | Move a shared heavy asteroid with two elastic tethers; both rockets affect the same load. |
+| **Collaborative mining** | 2 | Haul one heavy asteroid: slow with one rocket, faster with two; delivery immediately replenishes it. |
 | **Thinking graphs** | 1 | Inspect tethered rocket search, cloning, ancestry, and short continuation risk. |
 | **Violet Circuit · kart racing** | 1 | Reach 16 checkpoints in order for one lap; compare manual and planned kart control. |
 :::

@@ -2,7 +2,7 @@
 
 Browse the [visual concept library](./index.html) for sixteen additional world-asset
 sheets, paired by style. Each includes variants, construction studies or effect
-sequences suitable for later Blender authoring. The original PNGs are preserved.
+sequences used for Blender authoring. The original PNGs are preserved.
 All eight world families now have [Blender-authored 3D assets](../asset-gallery.html):
 42 types in each style, with the same visual envelopes and scene-defined collisions.
 See the [world asset pipeline](../assets/README.md#world-collections) for downloads,

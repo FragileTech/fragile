@@ -32,10 +32,25 @@ async function measure(renderer) {
     last = now;
   }
   times.sort((a, b) => a - b);
+  const geometry = [];
+  renderer.world.traverseVisible((object) => {
+    if (object.isMesh)
+      geometry.push({
+        name: object.name,
+        triangles:
+          ((object.geometry.index?.count ||
+            object.geometry.attributes.position.count) /
+            3) *
+          (object.count ?? 1),
+      });
+  });
   return {
     medianFrameMs: +times[7].toFixed(2),
     draws: renderer.performance.calls,
     triangles: renderer.performance.triangles,
+    largestGeometry: geometry
+      .sort((a, b) => b.triangles - a.triangles)
+      .slice(0, 5),
   };
 }
 let a, b, engine;

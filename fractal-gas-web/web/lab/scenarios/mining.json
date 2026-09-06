@@ -1,7 +1,7 @@
 {
   "version": 1,
   "name": "Collaborative mining",
-  "description": "Two thrusters, shared momentum, one heavy load.",
+  "description": "One heavy rock at a time. Team up to haul it faster; delivery spawns the next.",
   "task": "harvest",
   "size": [
     64,
@@ -132,9 +132,9 @@
         22,
         12.5
       ],
-      "mass": 6,
+      "mass": 24,
       "cargo": true,
-      "drag": 0.08,
+      "drag": 0.8,
       "vertices": [
         [
           1.4,
@@ -164,85 +164,8 @@
           0.87289,
           -1.09456
         ]
-      ]
-    },
-    {
-      "position": [
-        45,
-        30
       ],
-      "mass": 5,
-      "cargo": true,
-      "drag": 0.08,
-      "vertices": [
-        [
-          1.5,
-          0
-        ],
-        [
-          0.93523,
-          1.17275
-        ],
-        [
-          -0.33378,
-          1.46239
-        ],
-        [
-          -1.35145,
-          0.65083
-        ],
-        [
-          -1.35145,
-          -0.65083
-        ],
-        [
-          -0.33378,
-          -1.46239
-        ],
-        [
-          0.93523,
-          -1.17275
-        ]
-      ]
-    },
-    {
-      "position": [
-        48,
-        12
-      ],
-      "mass": 3,
-      "cargo": true,
-      "drag": 0.08,
-      "vertices": [
-        [
-          1.1,
-          0
-        ],
-        [
-          0.68584,
-          0.86001
-        ],
-        [
-          -0.24477,
-          1.07242
-        ],
-        [
-          -0.99107,
-          0.47727
-        ],
-        [
-          -0.99107,
-          -0.47727
-        ],
-        [
-          -0.24477,
-          -1.07242
-        ],
-        [
-          0.68584,
-          -0.86001
-        ]
-      ]
+      "respawn": true
     }
   ],
   "bases": [
@@ -286,7 +209,7 @@
   ],
   "agent_types": {
     "rocket": {
-      "label": "Kestrel · vector rocket",
+      "label": "Kestrel \u00b7 vector rocket",
       "physics": {
         "controlled": true,
         "radius": 0.65,
@@ -304,7 +227,7 @@
       }
     },
     "kart": {
-      "label": "Mite · electric kart",
+      "label": "Mite \u00b7 electric kart",
       "extends": "rocket",
       "physics": {
         "drag": 0.7,
@@ -322,7 +245,7 @@
       }
     },
     "drone": {
-      "label": "Wisp · survey drone",
+      "label": "Wisp \u00b7 survey drone",
       "extends": "rocket",
       "physics": {
         "mass": 0.7,
@@ -340,7 +263,7 @@
     },
     "thruster_tug": {
       "extends": "rocket",
-      "label": "Kestrel · independent thrusters",
+      "label": "Kestrel \u00b7 independent thrusters",
       "physics": {
         "actuator": {
           "kind": "thrusters",
@@ -384,7 +307,7 @@
       }
     },
     "harvester": {
-      "label": "Harvester · steam ore collector",
+      "label": "Harvester \u00b7 steam ore collector",
       "extends": "kart",
       "physics": {
         "radius": 1.3,

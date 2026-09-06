@@ -273,13 +273,13 @@
     ]
   },
   "high": {
-    "sourceTriangles": 81822,
-    "drawMeshes": 194,
-    "bytes": 7875792
+    "sourceTriangles": 92262,
+    "drawMeshes": 205,
+    "bytes": 12452460
   },
   "low": {
-    "sourceTriangles": 9514,
-    "drawMeshes": 167,
-    "bytes": 3424908
+    "sourceTriangles": 10250,
+    "drawMeshes": 177,
+    "bytes": 7352656
   }
 }
