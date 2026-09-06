@@ -3,6 +3,8 @@
 Unreleased
 ----------
 
+* Run control-engine Python integration checks in an isolated environment with the existing gas's complete import dependencies.
+
 * Build and verify a separate GitHub Pages lab artifact with both WebAssembly engines, test project-path service-worker isolation and serial fallback, restore missing book navigation sources, and fix control CI build/dependency failures.
 
 * Add a six-page control-laboratory user guide covering setup, every control, scene editing, replay and storage, experiments, diagnostics, and engine extension contracts, with browser screenshots and worked examples.

@@ -22,7 +22,13 @@ jobs:
       - name: Test Python batch bindings and existing gas integration
         env:
           PYTHONPATH: src
-        run: uv run --no-project --with pytest --with numpy --with networkx --with torch --with pydantic --with 'gymnasium[atari]>=1.2.3' pytest -q tests/fractalai/test_control_engine.py
+        # Existing gas imports also load the core tree/Panel configuration modules.
+        run: >-
+          uv run --isolated --no-project
+          --with pytest --with numpy --with networkx --with torch --with pydantic
+          --with 'gymnasium[atari]>=1.2.3' --with panel --with hydra-core
+          --with scipy --with einops
+          pytest -q tests/fractalai/test_control_engine.py
       - name: Check Python style
         run: |
           uv run --no-project --with ruff ruff check src/fragile/fractalai/control tests/fractalai/test_control_engine.py
