@@ -20,11 +20,11 @@
 3. Connect barriers to the intervention chapter (what to do when a barrier activates).
 
 :::{div} feynman-prose
-Here is a question that ought to bother you: if we have a good policy, a good world model, and a good critic, why would the control loop ever fail? The answer is that there are fundamental limits - walls you cannot break through no matter how clever your algorithms are. These are not implementation bugs; they are theorems about what is possible.
+Here is a question that ought to bother you: if we have a good policy, a good world model, and a good critic, why would the control loop ever fail? The answer is that some limits are built into the problem, while other rows below are operational barriers that identify a failing regime. A hard limit cannot be tuned away; an operational barrier tells you when the current design or approximation needs to change.
 
 Suppose you are driving at 60 mph and an obstacle appears 10 feet ahead. No matter how perfect your reflexes, no matter how sophisticated your planning, you are going to hit it. The physics simply does not permit otherwise. That is a barrier - a hard limit imposed by the structure of the problem, not by your intelligence.
 
-This section catalogs all the different ways a control system can hit such walls. Some are about actuators (you cannot push harder than physics allows). Some are about information (you cannot react to what you do not know). Some are about computation (you cannot predict faster than you can compute). Understanding these limits is not pessimism - it is wisdom. Once you know where the walls are, you can design systems that stay away from them, or at least fail gracefully when approaching.
+This section catalogs different ways a control system can hit such walls. Some are hard limits under explicit hypotheses; others are operational barriers or diagnostic proxies that mark a regime where the current design should stop, project, or change. Actuators, information, computation, and model class all matter. Understanding which kind of statement you are reading is part of using the table correctly.
 :::
 
 (rb-barriers-trust-regions)=
@@ -42,36 +42,38 @@ The table below is a periodic table of failure modes. Each row describes a diffe
 - **Bottleneck**: Which component (Policy, World Model, Critic, or VQ-VAE) gets stuck.
 - **Limit**: The fundamental constraint being violated.
 - **Mechanism**: Why things break down - the physical or computational reason.
-- **Regularization Factor**: A loss term to add to your training objective to stay away from this barrier.
+- **Constraint / regularizer**: either a hard constraint or a differentiable loss used to stay away from this barrier.
 - **Compute**: How expensive it is to monitor or enforce this constraint.
 
-Do not memorize all of these. Use the table as a reference when something goes wrong. Ask: "Which barrier did I hit?" The answer tells you what to fix.
+One detail prevents a common misdiagnosis: **BarrierScat** denotes the dispersion/saturation edge of the coupling window, where the macro posterior is too diffuse or $H(K)$ is too close to its upper limit. It is not codebook collapse; collapse is the opposite liveness problem. **Node 13 BoundaryCheck**, which is referenced in the diagnostics chapter, tests $I(X;K)>0$ as a non-collapse sanity check and does not by itself certify predictive grounding.
+
+Do not memorize all of these. Use the table as a reference when something goes wrong. Ask: "Which barrier did I hit, under which hypotheses?" The answer tells you what to measure and what to fix.
 :::
 
-| Barrier ID         | Name                    | Bottleneck        | Limit                             | Mechanism                                                                                     | Regularization Factor ($\mathcal{L}_{\text{barrier}}$)                                                             | Compute        |
+| Barrier ID         | Name                    | Bottleneck        | Limit                             | Mechanism                                                                                     | Constraint / Regularizer ($\mathcal{L}_{\text{barrier}}$)                                                             | Compute        |
 |--------------------|-------------------------|-------------------|-----------------------------------|-----------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|----------------|
-| **BarrierSat**     | Saturation              | **Policy**        | **Actuator Saturation**           | Policy cannot output enough control authority to counter disturbance.                         | $\Vert \pi(s) \Vert < F_{\text{max}}$ (Soft Clipping)                                                              | $O(BA)$ ✓      |
+| **BarrierSat**     | Saturation              | **Policy**        | **Actuator Saturation**           | Policy cannot output enough control authority to counter disturbance.                         | $a=F_{\text{max}}\tanh(u)$ componentwise, so $\lVert a\rVert_\infty\le F_{\text{max}}$ (architectural squashing; include the change-of-variables term when evaluating $\log\pi(a\mid z)$)                                                              | $O(BA)$ ✓      |
 | **BarrierCausal**  | Causal Censor           | **World Model**   | **Computational Horizon**         | Failure happens faster than WM can predict/compute.                                           | $T_{\text{horizon}}$ (Discount Factor $\gamma < 1$)                                                                | $O(1)$ ✓       |
-| **BarrierScat**    | Representation Collapse | **VQ-VAE**        | **Grounding Loss**                | Symbol channel loses grounding; macrostates become noise-like.                                | $\mathrm{ReLU}(\epsilon-I(X;K))^2 + \mathrm{ReLU}(H(K)-(\log\lvert\mathcal{K}\rvert-\epsilon))^2$ (Window Penalty) | $O(B)$ ✓       |
-| **BarrierTypeII**  | Type II Exclusion       | **Critic/Policy** | **Scaling Mismatch**              | $\beta>\alpha$ (Policy update scale outruns critic signal).                                   | $\max(0, \beta - \alpha)$ (Scaling Penalty)                                                                        | $O(P)$ ⚡       |
+| **BarrierScat**    | Symbol Dispersion / Grounding | **VQ-VAE**        | **Grounding Loss**                | Symbol channel loses grounding or the macro posterior becomes too diffuse.                                | $\mathrm{ReLU}(\epsilon_I-I(X;K))^2 + \mathrm{ReLU}(H(p_t)-(\log\lvert\mathcal{K}\rvert-\epsilon_H))^2$ (Coupling-window penalty) | $O(B)$ ✓       |
+| **BarrierTypeII**  | Type II Exclusion       | **Critic/Policy** | **Scaling Mismatch**              | $\beta_\pi>\alpha$ (Policy update scale outruns critic signal).                                   | $\max(0, \beta_\pi - \alpha)$ (Scaling Penalty)                                                                        | $O(P)$ ⚡       |
 | **BarrierVac**     | Model Stability Limit   | **World Model**   | **Regime Stability**              | Operational mode is metastable; WM predicts collapse.                                         | $\Vert \nabla^2 V(z) \Vert$ (Hessian Regularization)                                                               | $O(BZ^2)$ ✗    |
 | **BarrierCap**     | Capacity                | **Policy**        | **Fundamental Uncontrollability** | Unsafe region is too large for Policy to steer around.                                         | $V(z) \to \infty$ for $z \in \text{Bad}$ (Safe RL)                                                                 | $O(B)$ ⚡       |
-| **BarrierGap**     | Spectral Gap            | **Critic**        | **Convergence Stagnation**        | Error surface is too flat ($\nabla_A V \approx 0$).                                             | $\max(0, \epsilon - \Vert \nabla_A V \Vert)$ (Stiffness)                                                             | $O(BZ)$ ✓      |
+| **BarrierGap**     | Spectral Gap            | **Critic**        | **Convergence Stagnation**        | Error surface is too flat ($\nabla_A V \approx 0$).                                             | $\max(0, \epsilon - \lVert \nabla_A V \rVert_G)$ (Stiffness)                                                             | $O(BZ)$ ✓      |
 | **BarrierAction**  | Action Gap              | **Critic**        | **Cost Prohibitive**              | Correct move requires more cost budget ($V$) than affordable.                                 | $\Vert \nabla_\pi V(s, \pi) \Vert$ (Action Gradient)                                                               | $O(BAZ)$ ⚡     |
-| **BarrierOmin**    | O-Minimal               | **World Model**   | **Model Mismatch**                | World exhibits non-smooth or non-stationary structure outside the WM class.                   | $\Vert \nabla S_t \Vert$ for O-Minimality (Lipschitz)                                                              | $O(ZP_{WM})$ ⚡ |
+| **BarrierOmin**    | Lipschitz / Sensitivity               | **World Model**   | **Model Mismatch**                | World exhibits non-smooth or non-stationary structure outside the WM class.                   | $\lVert\nabla S_t\rVert$ (Lipschitz / sensitivity proxy)                                                              | $O(ZP_{WM})$ ⚡ |
 | **BarrierMix**     | Mixing                  | **Policy**        | **Exploration Trap**              | Policy converges to a local minimum with insufficient state coverage.                                                            | $-H(\pi)$ (Entropy Bonus)                                                                                          | $O(BA)$ ✓      |
 | **BarrierEpi**     | Epistemic               | **VQ-VAE/WM**     | **Information Overload**          | Environment ({prf:ref}`def-environment-as-generative-process`) complexity exceeds $\log\lvert\mathcal{K}\rvert$ and/or WM class; closure breaks. | $\mathcal{L}_{\text{recon}} + \mathcal{L}_{\text{Sync}_{K-W}}$ (Distortion + Closure)                              | $O(BD)$ ✓      |
 | **BarrierFreq**    | Frequency               | **World Model**   | **Loop Instability**              | Positive feedback causes oscillation amplification.                                           | $\Vert J_{WM} \Vert < 1$ (Jacobian Spectral Norm)                                                                  | $O(Z^2)$ ✗     |
-| **BarrierBode**    | Bode Sensitivity        | **Policy**        | **Waterbed Effect**               | Suppressing error in one domain increases it in another.                                      | $\int_{0}^{\infty} \log \lvert S(j\omega) \rvert d\omega = \text{const.}$ (Bode sensitivity integral)              | FFT ✗          |
+| **BarrierBode**    | Bode Sensitivity        | **Policy**        | **Waterbed Effect**               | In an LTI single-loop approximation, suppressing error in one domain increases it in another.                                      | $\int_{0}^{\infty} \log \lvert S(j\omega) \rvert d\omega = \pi\sum_k\operatorname{Re}p_k$ over open-loop unstable poles (zero for a stable open loop of relative degree at least two)              | FFT ✗          |
 | **BarrierInput**   | Input Stability         | **All**           | **Resource Exhaustion**           | Agent runs out of battery/compute/tokens.                                                     | $\text{Cost}(s) > \text{Budget}$ (Resource Penalty)                                                                | $O(B)$ ✓       |
-| **BarrierVariety** | Requisite Variety       | **Policy**        | **Ashby's Deficit**               | Policy states < Disturbance states.                                                           | $\dim(Z) \ge \dim(\mathcal{X})$ (Width Penalty)                                                                    | $O(1)$ ✓       |
+| **BarrierVariety** | Requisite Variety       | **Policy**        | **Ashby's Deficit**               | Policy actuation capacity is sufficient for the disturbance process.                                                           | $\log|\mathcal K^{\mathrm{act}}| \ge H(D)$, where $D$ is the disturbance macro (Actuator Variety)                                                                    | $O(1)$ ✓       |
 | **BarrierLock**    | Exclusion               | **World Model**   | **Hard-Coded Safety**             | Safety interlock successfully prevents illegal state.                                         | $\mathbb{I}(s \in \text{Forbidden}) \cdot \infty$                                                                  | $O(B)$ ✓       |
 
 **Compute Legend:** ✓ Low (typically online) | ⚡ Moderate (often amortized/approximated) | ✗ High (often offline or coarse approximations)
 
 :::{note}
 :class: feynman-added
-Notice something interesting: the barriers cheapest to monitor (marked ✓) are the ones we can handle in real-time during training. The expensive ones (marked ✗) require offline analysis or periodic checks. This is not a coincidence - the most dangerous barriers tend to be the hardest to detect. Keep this in mind when designing monitoring systems.
+Notice the engineering distinction in the legend: barriers marked ✓ are cheap enough for online monitoring, while ✗ barriers usually need offline or coarse approximations. That mark describes compute cost, not danger or mathematical strength. A cheap check can still be decisive, and an expensive proxy can still miss a failure outside its assumptions.
 :::
 
 (sec-barrier-implementation-details)=
@@ -98,10 +100,10 @@ This is why we use `tanh` to squash policy outputs rather than penalizing large 
 
 1.  **BarrierSat (Actuator Limit):**
     *   *Constraint:* $\lVert\pi(s)\rVert \le F_{\max}$.
-    *   *Implementation:* **Squashing Function**. Use `tanh` on the policy mean: $\mu(z) = F_{max} \cdot \tanh(f_\theta(z))$. Do not rely on clipping losses alone; the architecture must be incapable of exceeding limits.
+    *   *Implementation:* **Squashing Function**. Sample an unconstrained action $u\sim\pi_\theta(\cdot\mid z)$ and set $a=F_{\max}\tanh(u)$ componentwise. Include the change-of-variables term $-\sum_i\log(1-\tanh^2u_i)$ in the action log-density; this enforces $\lVert a\rVert_\infty\le F_{\max}$ exactly.
 
 2.  **BarrierTypeII (Scaling Mismatch):**
-    *   *Constraint:* $\alpha > \beta$ (Critic is steeper than Policy).
+    *   *Constraint:* $\alpha > \beta_\pi$ (Critic is steeper than Policy).
     *   *Implementation:* **Two-Time-Scale Updating**.
         *   If $\text{Scale}(\text{Critic}) \le \text{Scale}(\text{Policy})$, **skip** the Policy update step ($k_\pi = 0$).
         *   Resume policy updates only when the Critic has re-established a valid gradient (restored a usable value landscape).
@@ -123,19 +125,19 @@ Why care? Our world model predicts the future, and if predictions are too sensit
 :::
 
 4.  **BarrierGap (Spectral Gap):**
-    *   *Constraint:* $\lVert\nabla_A V\rVert \ge \epsilon$ (No flat plateaus).
+    *   *Constraint:* $\lVert\nabla_A V\rVert_G \ge \epsilon$ (No flat plateaus).
     *   *Implementation:* **Gradient Penalty**.
 
         $$
-        \mathcal{L}_{GP} = \mathbb{E}_{\hat{s}} [(\lVert\nabla_{\hat{s}} V(\hat{s})\rVert - K)^2]
+        \mathcal{L}_{GP} = \mathbb{E}_{\hat{s}} [\max(0,\epsilon-\lVert\nabla_A V(\hat{s})\rVert_G)^2]
 
         $$
         Gradient-norm penalties discourage vanishing gradients on sampled points and help avoid large flat regions; they do not provide a global guarantee without additional assumptions {cite}`gulrajani2017improved`.
 
 :::{div} feynman-prose
-This barrier is about having a value landscape you can navigate. Imagine finding the highest point while blindfolded - your only information is which direction is uphill. If the landscape is flat, you get nothing; you cannot tell which way to go. That is the spectral gap problem: when your value function has large flat regions, gradient-based learning halts.
+This barrier is about having a value landscape you can navigate. Imagine finding the lowest-cost direction while blindfolded---your only information is the local slope. If the covariant gradient is too small on the states you visit, you get little directional information; that is the local stiffness condition used by BarrierGap.
 
-The gradient penalty penalizes gradients that are too small (or too large). We want consistent "slope" so wherever we are, we can tell which direction improves things. Not a perfect solution - you cannot guarantee the whole landscape is well-behaved - but it prevents the most obvious failure modes.
+The one-sided gradient penalty penalizes slopes below the threshold. It can improve local responsiveness on sampled states, but it does not guarantee a global spectral gap or a well-behaved landscape without additional assumptions.
 :::
 
 (sec-b-cross-barrier-regularization)=
@@ -151,7 +153,7 @@ These are not bugs you can fix with cleverness. They are like the uncertainty pr
 
 1.  **The Information-Control Tradeoff (BarrierScat vs BarrierCap):**
     *   *Classes:* **Rate-Distortion Optimization.**
-    *   *Conflict:* High compression (anti-collapse) removes details needed for fine control (capacity/controllability).
+    *   *Conflict:* The posterior-dispersion edge of the coupling window can conflict with BarrierCap: bits added for controllability may increase posterior uncertainty while the policy is being adapted. Marginal code usage is monitored separately for liveness.
     *   *Regularization:*
 
         $$
@@ -159,7 +161,7 @@ These are not bugs you can fix with cleverness. They are like the uncertainty pr
         =
         \underbrace{\beta_K\,\mathbb{E}[-\log p_\psi(K)] + \beta_n D_{\mathrm{KL}}(q(z_n \mid x)\Vert p(z_n)) + \beta_{\mathrm{tex}} D_{\mathrm{KL}}(q(z_{\mathrm{tex}} \mid x)\Vert p(z_{\mathrm{tex}}))}_{\text{Compression (Rate)}}
         +
-        \underbrace{\gamma\,\mathbb{E}[\mathfrak{D}(Z,A)]}_{\text{Control Effort}}
+        \underbrace{\lambda_{\mathfrak{D}}\,\mathbb{E}[\mathfrak{D}(Z,A)]}_{\text{Control Effort}}
 
         $$
         where {math}`\mathfrak{D}` is an actuation cost (e.g. KL-control to a prior {math}`\pi_0`, or a calibrated norm/penalty on actions).
@@ -173,7 +175,7 @@ Think of a thermostat that only knows "hot" or "cold." Great for simple temperat
 The loss function balances these concerns: the first term rewards compression, the second penalizes control effort. When control starts struggling, decrease the compression coefficients ($\beta$) to let more information through.
 :::
 
-2.  **The Stability-Plasticity Dilemma (BarrierVac vs ZenoCheck (Node 2)):**
+2.  **BarrierVac vs. World-Model Plasticity (volatility scale $\gamma_{\mathrm{wm}}$ / forward-consistency drift, Node 5):**
     *   *Conflict:* A stable World Model (model stability limit) resists updating to new dynamics (plasticity / Zeno).
     *   *Regularization:* **Elastic Weight Consolidation (EWC)**.
 
@@ -192,7 +194,7 @@ Elastic Weight Consolidation uses Fisher Information to identify which weights m
 :::
 
 3.  **The Sensitivity Integral (BarrierBode):**
-    *   *Conflict:* Suppressing error in one frequency band amplifies it in another (Bode sensitivity integral constraint: $\int_{0}^{\infty} \log |S(j\omega)| d\omega = \text{const.}$; equal to $0$ under standard stable/minimum-phase assumptions).
+    *   *Conflict:* Suppressing error in one frequency band amplifies it in another (Bode sensitivity integral constraint: $\int_{0}^{\infty} \log |S(j\omega)| d\omega = \pi\sum_k\operatorname{Re}p_k$ over open-loop unstable poles, hence $0$ for a stable open loop of relative degree at least two).
     *   *Regularization:* **Frequency-Weighted Cost**.
 
         $$
@@ -202,9 +204,9 @@ Elastic Weight Consolidation uses Fisher Information to identify which weights m
     *   *Mechanism:* Explicitly decide *where* to be blind. We penalize high-frequency errors heavily (instability) while accepting low-frequency drift (steady-state error), or vice versa.
 
 :::{div} feynman-prose
-This is my favorite dilemma because it comes from a beautiful theorem in classical control theory. The Bode sensitivity integral says: the total area under your sensitivity curve is constant. You cannot reduce sensitivity everywhere; you can only move it around.
+This is my favorite dilemma because it comes from a beautiful theorem in classical control theory. In an LTI single-loop setting, with the stability and relative-degree hypotheses stated in the table, the Bode sensitivity integral fixes the signed area of $log|S(j\omega)|$ from the open-loop pole data. You cannot reduce sensitivity everywhere; you can only move it around within that theorem's scope.
 
-Practically: suppose you build a controller that perfectly tracks fast changes (high frequencies). The theorem says you must pay by being worse at tracking slow changes (low frequencies), or vice versa. It is like a waterbed - push down in one place, it bulges up elsewhere. Total volume (total sensitivity) is conserved.
+Practically: suppose, within that LTI approximation, you build a controller that suppresses sensitivity in one frequency band. The waterbed effect says the integral constraint must be paid elsewhere, with the exact balance depending on unstable poles and relative degree. A nonlinear, time-varying neural policy is not covered automatically.
 
-The question becomes: where do you want to be sensitive, where can you afford blindness? For a robot arm, you might care about high-frequency stability (no oscillations) but tolerate slow drift. For climate control, priorities might reverse. The frequency-weighted cost $W(\omega)$ encodes these priorities - it tells the optimizer which errors matter and which you can live with.
+The question becomes: where do you want to be sensitive, where can you afford blindness? For a robot arm, you might care about high-frequency stability (no oscillations) but tolerate slow drift. For climate control, priorities might reverse. The frequency-weighted cost $W(\omega)$ encodes these priorities; it is a design regularizer, not a replacement for checking the Bode hypotheses.
 :::

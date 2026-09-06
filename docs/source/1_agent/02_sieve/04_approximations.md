@@ -28,22 +28,22 @@ Many theoretical constraints are too expensive to compute directly. This section
 :::{div} feynman-prose
 Here is a situation that comes up constantly in physics and engineering: you derive a beautiful, exact criterion for detecting when something goes wrong, then realize that computing it would take longer than the age of the universe. What do you do?
 
-You find a cheaper test that catches the same failures. This is not cheating---it is the essence of good engineering. To know if my car engine is overheating, I do not need the temperature of every molecule. A single thermometer in the coolant tells me what I need.
+You find a cheaper test that measures a useful consequence of the failure. This is not cheating---it is the essence of good engineering. To know if my car engine is overheating, I do not need the temperature of every molecule. A single thermometer in the coolant can warn me, but it is not a proof about every component.
 
 The theoretical framework gives us exact criteria for instability, bifurcations, and non-tame dynamics. These are mathematically elegant but computationally ruinous. So we ask: what simpler measurement triggers an alarm at the same moments? What is the "thermometer" for each kind of failure?
 
-For each expensive theoretical test, we find a cheap surrogate that rings the same warning bells.
+For each expensive theoretical test, we use a cheap surrogate with a stated scope. It may miss failures or raise false alarms, so the result is a screening signal until coverage and regularity assumptions justify more.
 :::
 
 Several regularization terms from the theoretical framework are computationally infeasible for standard training. This section provides practical alternatives with full PyTorch implementations.
 
 (sec-barrierbode-temporal-gain-margin)=
-## BarrierBode → Temporal Gain Margin
+## BarrierFreq → Temporal Gain Margin
 
 :::{div} feynman-prose
-The Bode sensitivity integral from control theory says something remarkable: you cannot suppress disturbances at all frequencies simultaneously. Push down the response at one frequency, it pops up somewhere else. The integral of log-sensitivity over all frequencies is constant---like conservation of energy, but for control systems.
+Under the stability, relative-degree, and LTI hypotheses of the Bode sensitivity theorem, you cannot suppress disturbances at all frequencies simultaneously. Push down the response at one frequency, it pops up somewhere else. The integral of log-sensitivity is then fixed by the open-loop pole data---like a conservation relation for that specified control model.
 
-Why care about this for neural policies? It detects instability. If your controller oscillates wildly, if errors amplify instead of shrink, the Bode integral catches it.
+Why care about this for neural policies? It gives a reference picture for error amplification. If a neural controller oscillates wildly, the Bode integral does not automatically apply; direct error-growth measurements are the appropriate surrogate.
 
 The catch: computing that integral requires the transfer function $S(j\omega)$, which assumes a linear time-invariant system. Neural networks are neither. Even with FFT approximations, we would need long, stationary trajectories---but our agents are constantly exploring and changing.
 
@@ -61,7 +61,7 @@ $$
 **Replacement: Temporal Gain Margin**
 
 $$
-\mathcal{L}_{\text{gain}} = \sum_{k=1}^{K} \max\left(0, \frac{\Vert e_{t+k} \Vert}{\Vert e_t \Vert + \epsilon} - G_{\max}\right)^2
+\mathcal{L}_{\text{gain}} = \frac{1}{\min(K,T-1)}\sum_{k=1}^{\min(K,T-1)} \max\left(0, \frac{\Vert e_{t+k} \Vert}{\Vert e_t \Vert + \epsilon} - G_{\max}\right)^2
 
 $$
 
@@ -83,7 +83,7 @@ def compute_gain_margin_loss(
     eps: float = 1e-6,
 ) -> torch.Tensor:
     """
-    BarrierBode replacement: Temporal gain margin constraint.
+    BarrierFreq replacement: Temporal gain margin constraint.
 
     Penalizes trajectories where errors amplify over time,
     corresponding to the loop instability detected by Bode sensitivity analysis.
@@ -98,7 +98,7 @@ def compute_gain_margin_loss(
         Scalar loss penalizing gain violations
     """
     B, T = errors.shape
-    if T <= K:
+    if T < 2:
         return torch.tensor(0.0, device=errors.device)
 
     total_violation = 0.0
@@ -111,7 +111,7 @@ def compute_gain_margin_loss(
         violation = torch.relu(gain - G_max).pow(2)
         total_violation = total_violation + violation.mean()
 
-    return total_violation / K
+    return total_violation / min(K, T - 1)
 
 
 # Alternative: Peak gain detection
@@ -142,29 +142,31 @@ But the full Jacobian costs $O(Z^2)$ to form and $O(Z^3)$ for eigenvalues. For l
 **Original (Infeasible):**
 
 $$
-\det(J_{S_t}) \quad \text{where } J_{S_t} = \frac{\partial S_t(z)}{\partial z}
+\rho(J_{S_t}) \quad \text{where } J_{S_t} = \frac{\partial S_t(z)}{\partial z}
 
 $$
 **Problem:** Computing the full Jacobian is $O(Z^3)$. For $Z = 256$, this is ~16M operations per sample.
 
-**Replacement: Hutchinson-style Jacobian Probing**
+**Replacement: Random Jacobian gain-spread probing**
 
 $$
-\mathcal{L}_{\text{bifurcate}} = \text{Var}_v\left[\Vert J_{S_t} v \Vert^2\right] \quad \text{where } v \sim \mathcal{N}(0, I)
+\mathcal{L}_{\text{bifurcate}} = \operatorname{Var}_u\left[\Vert J_{S_t}^{\mathsf T} u \Vert^2\right] \quad \text{where } u \sim \mathcal{N}(0, I)
 
 $$
 
 :::{div} feynman-prose
-The trick: we do not need all eigenvalues, just whether they are suspiciously spread out. If eigenvalues are similar, the Jacobian stretches all directions roughly equally. If some are huge and others tiny, different random directions get stretched by wildly different amounts.
+The trick is to obtain a cheap gain-spread signal rather than the full spectrum. If the sampled output directions are stretched very differently, the Jacobian may have anisotropic sensitivity. Similar samples do not prove that all eigenvalues are clustered, and gain spread does not by itself locate a bifurcation.
 
-Instead of computing the full Jacobian, probe it with random vectors. Pick a random direction $v$, compute $Jv$ (just a gradient computation, cheap with autodiff), measure how much $v$ got stretched. Repeat a few times.
+Instead of computing the full Jacobian, probe it with random output directions. Pick $u$, compute $J^{\mathsf T}u$ (a vector--Jacobian product, cheap with autodiff), measure its norm, and repeat a few times. This samples local sensitivity in selected directions.
 
-If stretching amounts are similar, eigenvalues are clustered---probably safe. If they vary wildly, eigenvalue spread signals bifurcation sensitivity.
+If the sampled gains vary wildly, the result is a warning about local anisotropy. If they are similar, the probe has simply found no evidence in those directions; it is not a spectral-radius or bifurcation certificate.
 
-This is the Hutchinson trace estimator from numerical linear algebra: peek at a matrix's spectral properties without ever forming it explicitly.
+This is inspired by randomized matrix probing, but the displayed variance is not the Hutchinson estimator of a trace and does not recover the full spectrum without additional assumptions.
 :::
 
-High variance in the Jacobian-vector product norm indicates instability (eigenvalue spread).
+High variance in the probed vector-Jacobian-product norm is a stochastic gain-spread
+proxy. It can flag local sensitivity, but it is not by itself a spectral-radius or
+bifurcation certificate.
 
 ```python
 def compute_bifurcation_loss(
@@ -177,9 +179,9 @@ def compute_bifurcation_loss(
     """
     BifurcateCheck replacement: Stochastic Jacobian probing.
 
-    Uses Hutchinson trace estimator principle: instead of computing
-    full Jacobian, probe with random vectors. High variance in
-    ||J @ v|| indicates eigenvalue spread → bifurcation sensitivity.
+    Probes the Jacobian with random directions. High variance in
+    ||J^T v|| is a local gain-spread signal; it is a screening
+    statistic rather than a spectral-radius certificate.
 
     Args:
         world_model: S_t(z, a) -> z_next
@@ -243,7 +245,7 @@ $$
 $$
 **Problem:** Full Hessian is $O(Z^2 \times P_{WM})$ — prohibitive for large world models.
 
-**Replacement: Lipschitz of Gradient**
+**Replacement: Sampled Lipschitz-of-Gradient Probe**
 
 $$
 \mathcal{L}_{\text{tame}} = \frac{\Vert \nabla_z S_t(z_1) - \nabla_z S_t(z_2) \Vert}{\Vert z_1 - z_2 \Vert + \epsilon}
@@ -253,14 +255,16 @@ $$
 :::{div} feynman-prose
 Key insight: bounded Hessian means the gradient does not change too fast as you move through space. That is exactly a Lipschitz condition on the gradient.
 
-So check the Lipschitz constant directly. Take two nearby points $z_1$ and $z_2$. Compute the gradient at each. Measure how much the gradient changed relative to how much the input changed. Bounded ratio means bounded Hessian---that is literally what the Hessian measures.
+So sample a local Lipschitz-of-gradient ratio. Take two nearby points $z_1$ and $z_2$, compute the chosen directional gradients, and measure how much they changed relative to the input separation. A large ratio is evidence of non-tameness; a small finite collection of ratios is not a global Hessian bound without coverage and regularity assumptions.
 
-Computing $\nabla_z S_t(z)$ at one point is cheap (one backward pass). We need two gradients plus a tiny perturbation. The whole operation is $O(Z)$ instead of $O(Z^2)$.
+Computing a directional $\nabla_z S_t(z)$ at one point is cheap (one backward pass). We need two such gradients plus a perturbation. The operation is cheaper than forming the full Hessian, while its coverage and output-direction choices determine what it can detect.
 
 General pattern: when you cannot afford the whole matrix, probe its action on carefully chosen vectors.
 :::
 
-Bounded gradient Lipschitz constant implies bounded Hessian (by definition).
+The ratio is a directional, finite-difference estimate. A bounded collection of
+such probes is evidence for local Hessian control; it is not a global bound without
+coverage and regularity assumptions.
 
 ```python
 def compute_tame_loss(
@@ -273,9 +277,10 @@ def compute_tame_loss(
     """
     TameCheck replacement: Lipschitz gradient constraint.
 
-    Instead of computing full Hessian, we estimate the Lipschitz
-    constant of the gradient via finite differences. This bounds
-    the Hessian spectral norm (tameness).
+    Instead of computing full Hessian, we estimate a local directional
+    Lipschitz ratio for the gradient via finite differences. A finite set
+    of probes is evidence about local tameness; it is not a global Hessian
+    spectral-norm bound without coverage and regularity assumptions.
 
     Args:
         world_model: S_t(z, a) -> z_next
@@ -298,14 +303,16 @@ def compute_tame_loss(
     z1_next = world_model(z1, a)
     z2_next = world_model(z2, a)
 
-    # Compute gradients at both points
-    # Sum over output dims to get [B, Z] gradient
+    # Probe a random output direction so that each gradient is a
+    # directional Jacobian transpose, rather than the gradient of an
+    # arbitrary sum of output coordinates.
+    output_probe = torch.randn_like(z1_next)
     grad1 = torch.autograd.grad(
-        z1_next.sum(), z1, create_graph=True, retain_graph=True
+        (z1_next * output_probe).sum(), z1, create_graph=True, retain_graph=True
     )[0]  # [B, Z]
 
     grad2 = torch.autograd.grad(
-        z2_next.sum(), z2, create_graph=True, retain_graph=True
+        (z2_next * output_probe).sum(), z2, create_graph=True, retain_graph=True
     )[0]  # [B, Z]
 
     # Lipschitz estimate: ||grad1 - grad2|| / ||z1 - z2||
@@ -347,16 +354,18 @@ $$
 $$
 
 :::{div} feynman-prose
-A much cheaper test: does the value function's gradient point the right way for cost minimization? If $V$ is a cost minimized at the goal, gradient descent follows $-\nabla_z V(z)$. That means $\nabla_z V(z)$ should point away from $(z_{\text{goal}} - z)$ so that $-\nabla_z V(z)$ points toward the goal.
+A much cheaper test is a first-order value-direction check in the displayed flat-coordinate approximation. If $V$ is a cost minimized at the goal, gradient descent follows $-\nabla_z V(z)$. In a star-shaped, locally admissible setting, one can compare this direction with the goal chord; in a curved or obstructed space, the relevant direction is the admissible geodesic or closed-loop update.
 
-The inner product $\langle \nabla_z V, \hat{d}_{\text{goal}} \rangle$ measures alignment: positive means the gradient points toward the goal (wrong for a cost), negative means it points away (correct). We penalize positive alignment and leave negative alignment alone.
+The inner product $\langle \nabla_z V, \hat{d}_{\text{goal}} \rangle$ measures alignment with that local chord: positive means the gradient points toward the goal (wrong for a cost), negative means it points away (correct). We penalize positive alignment as a local consistency heuristic and leave negative alignment alone.
 
-This is necessary but not sufficient for reachability. If you cannot start moving the right direction, you certainly cannot arrive. Obstacles might still block the path---but this catches the common failure where the value function points the wrong way entirely.
+This is neither necessary nor sufficient for global reachability without a restriction such as a star-shaped reachable set and compatible dynamics. Obstacles, nonholonomic controls, and other basins can make the chord misleading. The probe catches a local sign mismatch, not the existence of a path.
 
 Cost: one gradient computation. No multi-step simulation.
 :::
 
-When $-\nabla_z V(z)$ aligns with the goal direction, gradient descent on $V$ yields a path to $z_{\text{goal}}$.
+The loss tests first-order local alignment only. Even perfect alignment does not
+establish global reachability in the presence of obstacles, nonholonomic dynamics,
+or disconnected basins.
 
 ```python
 def compute_topo_loss(
@@ -369,7 +378,8 @@ def compute_topo_loss(
 
     Instead of computing multi-step reachability, we check if
     the critic's value gradient points toward the goal. This is
-    a necessary condition for gradient-based reachability.
+    a first-order local consistency check for gradient-based motion;
+    it is not a reachability guarantee.
 
     Args:
         critic: V(z) -> scalar value
@@ -418,7 +428,7 @@ The problem: "all pairwise." Batch size $B$ means $B^2$ similarity computations.
 **Original (Expensive):**
 
 $$
-\mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k}))}{\sum_{j=1}^{B} \exp(\text{sim}(z_t, z_j))}
+\mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\operatorname{sim}(z_t, z_{t+k})/\tau)}{\exp(\operatorname{sim}(z_t, z_{t+k})/\tau)+\sum_{j\in\mathcal N_t} \exp(\operatorname{sim}(z_t, z_j^-)/\tau)}
 
 $$
 **Problem:** Full pairwise computation is $O(B^2 \times Z)$.
@@ -426,12 +436,12 @@ $$
 **Replacement: Sampled InfoNCE**
 
 $$
-\mathcal{L}_{\text{InfoNCE}}^{\text{eff}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k}))}{\exp(\text{sim}(z_t, z_{t+k})) + \sum_{j=1}^{K} \exp(\text{sim}(z_t, z_{\text{neg},j}))}
+\mathcal{L}_{\text{InfoNCE}}^{\text{eff}} = -\log \frac{\exp(\operatorname{sim}(z_t, z_{t+k})/\tau)}{\exp(\operatorname{sim}(z_t, z_{t+k})/\tau) + \sum_{j=1}^{K} \exp(\operatorname{sim}(z_t, z_{\text{neg},j})/\tau)}
 
 $$
 
 :::{div} feynman-prose
-We do not need every sample as a negative---just enough to make the task challenging. If the encoder distinguishes the true positive from 128 random negatives, it has learned something useful. Whether it could beat 1024 does not matter.
+We do not need every sample as a negative for a cheap training step, but the number matters for any information statement. With $K$ negatives, the usual contrastive lower-bound scale is capped by $\log(K+1)$; choose $K$ or a memory bank large enough for the capacity budget being checked. A good result with 128 negatives cannot certify the same quantity as one with 1024.
 
 Sample $K$ negatives instead of all $B$. Cost drops from $O(B^2)$ to $O(KB)$. With $K = 128$ and $B = 1024$, that is 8x faster.
 
@@ -498,17 +508,24 @@ class EfficientInfoNCE(nn.Module):
             negatives = z_bank[indices]  # [K, Z]
             negatives = F.normalize(self.projector(negatives), dim=-1)
         else:
-            # Use other batch elements as negatives (in-batch)
+            # Use other batch elements as negatives (in-batch), with
+            # row-wise indices that exclude the anchor itself.
             K = min(self.n_negatives, B - 1)
-            # Shuffle and take first K (excluding self)
-            perm = torch.randperm(B, device=z_anchor.device)
-            negatives = anchor[perm[:K]]  # [K, Z]
+            if K == 0:
+                raise ValueError("in-batch InfoNCE needs at least two anchors")
+            row = torch.arange(B, device=z_anchor.device).unsqueeze(1)
+            offsets = torch.randint(1, B, (B, K), device=z_anchor.device)
+            negative_indices = (row + offsets) % B
+            negatives = anchor[negative_indices]  # [B, K, Z]
 
         # Positive similarity: [B]
         pos_sim = (anchor * positive).sum(dim=-1) / self.tau
 
         # Negative similarities: [B, K]
-        neg_sim = torch.mm(anchor, negatives.T) / self.tau
+        if negatives.dim() == 2:
+            neg_sim = torch.mm(anchor, negatives.T) / self.tau
+        else:
+            neg_sim = (anchor.unsqueeze(1) * negatives).sum(dim=-1) / self.tau
 
         # InfoNCE: log(exp(pos) / (exp(pos) + sum(exp(neg))))
         # = pos - log(exp(pos) + sum(exp(neg)))
@@ -540,19 +557,19 @@ def compute_geom_loss(
 ## Summary: Replacement Mapping
 
 :::{div} feynman-prose
-Five expensive theoretical tests, five cheap surrogates that detect the same failures. The speedups are not incremental---orders of magnitude.
+Five expensive theoretical tests, five cheaper probes for related failure signals. The speedups can be substantial, but the replacements do not detect exactly the same events and must be interpreted with their stated hypotheses.
 
-The key insight: you do not need to compute everything, just enough. Enough random probes for eigenvalue spread. Enough negatives for contrastive learning. Enough gradient samples to bound Lipschitz constants. Full computation gives more information, but not more *useful* information for the purpose at hand.
+The key insight: you do not need to compute everything for every update, but you must know what the sample can support. Random probes estimate gain spread, negatives set the contrastive information scale, and gradient samples provide local evidence about smoothness. Full computation gives stronger information; the cheaper signal is a screening tool.
 
-This is a deep principle. In physics: "effective theories"---no need to simulate quarks to understand how a bridge stands. In computer science: "approximation algorithms"---good-enough answers suffice when they are much cheaper. Here: surrogate losses---cheap tests that catch the same failures as expensive exact criteria.
+This is a deep principle. In physics: effective theories are useful within their scale and error estimates. In computer science: approximation algorithms are useful when their error is controlled. Here, surrogate losses are cheap tests whose measured scope must be kept separate from the exact criteria they approximate.
 :::
 
 | Original                  | Replacement        | Speedup  | Preserved Property              |
 |---------------------------|--------------------|----------|---------------------------------|
-| BarrierBode (FFT)         | Temporal Gain      | ~100×    | Detects oscillatory instability |
-| BifurcateCheck ($O(Z^3)$) | Jacobian Probing   | ~$Z^2/K$ | Detects eigenvalue spread       |
-| TameCheck ($O(Z^2 P)$)    | Lipschitz Gradient | ~$ZP$    | Bounds Hessian norm             |
-| TopoCheck ($O(HBZ)$)      | Value Alignment    | ~$H$     | Ensures goal reachability       |
+| BarrierFreq (FFT)         | Temporal Gain      | trajectory-dependent | Screens for error amplification |
+| BifurcateCheck ($O(Z^3)$) | Jacobian Probing   | ~$Z^2/K$ | Probes local gain spread       |
+| TameCheck ($O(Z^2 P)$)    | Lipschitz Gradient | ~$ZP$    | Samples directional Hessian variation |
+| TopoCheck ($O(HBZ)$)      | Value Alignment    | one gradient | Tests first-order local consistency |
 | GeomCheck ($O(B^2 Z)$)    | Sampled NCE        | ~$B/K$   | Preserves slow features         |
 
 :::{note}

@@ -60,7 +60,7 @@ This chapter will close the thermodynamic loop. We will show that an agent is re
 (sec-thermodynamics-of-information-harvesting)=
 ## The Thermodynamics of Information Harvesting
 
-In {ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`, we established that computation dissipates energy: the Generalized Landauer Bound (Theorem {prf:ref}`thm-generalized-landauer-bound`) states $\dot{\mathcal{M}} \geq T_c |dH/ds|$. Here we establish the converse: **correct prediction extracts work**. This is the Szilard engine operating in the forward direction.
+In {ref}`sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics`, the conditional Generalized Landauer Bound (Theorem {prf:ref}`thm-generalized-landauer-bound`) gives $\dot{\mathcal{M}} \geq T_c |dH/ds|$ when its regularity, no-flux, mass-preservation, and calibration hypotheses hold. Here we establish the converse: **correct prediction extracts work**. This is the Szilard engine operating in the forward direction.
 
 :::{div} feynman-prose
 Let me explain what we are after. In the metabolism chapter, we proved that sharpening your beliefs—reducing uncertainty—costs energy. That is Landauer's principle in action. But Landauer's principle has a flip side, and it is this flip side that makes life possible.
@@ -487,7 +487,7 @@ where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`) 
    $$\frac{dH[\rho]}{dt} = \frac{1}{2} I_F[\rho]$$
    Entropy increases at rate proportional to Fisher Information.
 
-3. **Landauer cost:** By Theorem {prf:ref}`thm-generalized-landauer-bound`, maintaining entropy against diffusion requires:
+3. **Landauer cost:** Under the calibration hypotheses of Theorem {prf:ref}`thm-generalized-landauer-bound`, maintaining entropy against diffusion requires:
    $$\dot{E}_{\text{maintain}} \geq T_c \left| \frac{dH}{dt} \right| = \frac{1}{2} T_c \cdot I_F$$
 
 4. **Interpretation:** Sharp probability distributions (high $I_F$) cost more to maintain. $\square$
@@ -730,7 +730,8 @@ $$
 where:
 - $G^{\text{eff}} = f(B/B_{\text{crit}}) \cdot G$ is the faded metric (Theorem {prf:ref}`thm-fading-metric-law`)
 - $\rho_{\text{homeo}} = -\Delta \Phi_{\text{homeo}}$ is the homeostatic source term
-- The screening mass $\kappa = -\ln \gamma$ remains unchanged
+- In the stationary diffusion convention, the screening coefficient is $\kappa^2=\lambda/T_c$ with
+  $\lambda=-\ln\gamma/\Delta t$; it is unchanged by the battery-dependent source term.
 
 *Consequence:* Both the metric (geometry) and the source term (drive) depend on battery state.
 

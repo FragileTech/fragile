@@ -25,6 +25,7 @@ from fragile.physics.qft_utils import (
     safe_gather_3d,
 )
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.qft_utils.statistics import attach_statistics, record_lag
 
 
 @dataclass
@@ -99,11 +100,11 @@ def _compute_determinants_for_indices(
 ) -> tuple[Tensor, Tensor]:
     """Compute determinant observable for (i, companion_j, companion_k) triplets."""
     if vectors.ndim != 3 or vectors.shape[-1] != 3:
-        raise ValueError(f"Expected vectors with shape [T, N, 3], got {tuple(vectors.shape)}.")
+        msg = f"Expected vectors with shape [T, N, 3], got {tuple(vectors.shape)}."
+        raise ValueError(msg)
     if valid_vectors.shape != vectors.shape[:2]:
-        raise ValueError(
-            f"valid_vectors must have shape [T, N], got {tuple(valid_vectors.shape)}."
-        )
+        msg = f"valid_vectors must have shape [T, N], got {tuple(valid_vectors.shape)}."
+        raise ValueError(msg)
     if companion_j.shape != vectors.shape[:2] or companion_k.shape != vectors.shape[:2]:
         msg = "companion indices must have shape [T, N]."
         raise ValueError(msg)
@@ -142,11 +143,14 @@ def _compute_score_ordered_determinants_for_indices(
 ) -> tuple[Tensor, Tensor]:
     """Compute score-ordered determinant for companion triplets."""
     if color.ndim != 3 or color.shape[-1] != 3:
-        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+        msg = f"color must have shape [T, N, 3], got {tuple(color.shape)}."
+        raise ValueError(msg)
     if color_valid.shape != color.shape[:2]:
-        raise ValueError(f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}.")
+        msg = f"color_valid must have shape [T,N], got {tuple(color_valid.shape)}."
+        raise ValueError(msg)
     if scores.shape != color.shape[:2]:
-        raise ValueError(f"scores must have shape [T,N], got {tuple(scores.shape)}.")
+        msg = f"scores must have shape [T,N], got {tuple(scores.shape)}."
+        raise ValueError(msg)
     if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
         msg = "companion indices must have shape [T,N]."
         raise ValueError(msg)
@@ -205,9 +209,11 @@ def _compute_triplet_plaquette_for_indices(
 ) -> tuple[Tensor, Tensor]:
     """Compute companion-triplet plaquette Π_i and validity mask."""
     if color.ndim != 3 or color.shape[-1] != 3:
-        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+        msg = f"color must have shape [T, N, 3], got {tuple(color.shape)}."
+        raise ValueError(msg)
     if color_valid.shape != color.shape[:2]:
-        raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
+        msg = f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}."
+        raise ValueError(msg)
     if companion_j.shape != color.shape[:2] or companion_k.shape != color.shape[:2]:
         msg = "companion indices must have shape [T, N]."
         raise ValueError(msg)
@@ -299,9 +305,11 @@ def compute_baryon_correlator_from_color(
     where j_t(i), k_t(i) are defined at source time t from companion arrays.
     """
     if color.ndim != 3 or color.shape[-1] != 3:
-        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+        msg = f"color must have shape [T, N, 3], got {tuple(color.shape)}."
+        raise ValueError(msg)
     if color_valid.shape != color.shape[:2]:
-        raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
+        msg = f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}."
+        raise ValueError(msg)
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
@@ -311,9 +319,8 @@ def compute_baryon_correlator_from_color(
             msg = "scores is required when operator_mode is one of {'score_signed','score_abs'}."
             raise ValueError(msg)
         if scores.shape != color.shape[:2]:
-            raise ValueError(
-                f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
-            )
+            msg_0 = f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
+            raise ValueError(msg_0)
         scores = scores.to(device=color.device, dtype=torch.float32)
 
     t_total = int(color.shape[0])
@@ -414,6 +421,10 @@ def compute_baryon_correlator_from_color(
     correlator_connected = torch.zeros(n_lags, dtype=torch.float32, device=device)
     counts = torch.zeros(n_lags, dtype=torch.int64, device=device)
 
+    origin_counts = torch.zeros(t_total, n_lags, device=device, dtype=torch.float64)
+    origin_correlator_raw = torch.zeros_like(origin_counts)
+    origin_correlator_connected = torch.zeros_like(origin_counts)
+
     for lag in range(effective_lag + 1):
         source_len = t_total - lag
         if resolved_operator_mode in {"score_signed", "score_abs"}:
@@ -472,6 +483,12 @@ def compute_baryon_correlator_from_color(
             correlator_raw[lag] = raw_prod[valid_pair].mean().float()
             conn_prod = source_centered_scalar[:source_len] * (sink_obs - mean_obs)
             correlator_connected[lag] = conn_prod[valid_pair].mean().float()
+
+        record_lag(origin_correlator_raw, origin_counts, lag, raw_prod, valid_pair)
+        record_lag(origin_correlator_connected, origin_counts, lag, conn_prod, valid_pair)
+
+    attach_statistics(correlator_raw, origin_correlator_raw, origin_counts)
+    attach_statistics(correlator_connected, origin_correlator_connected, origin_counts)
 
     selected = correlator_connected if use_connected else correlator_raw
     return BaryonTripletCorrelatorOutput(
@@ -603,7 +620,8 @@ def compute_triplet_coherence_from_velocity(
 ) -> TripletCoherenceOutput:
     """Compute companion-chain triplet coherence diagnostic (vectorized)."""
     if velocities.ndim != 3 or velocities.shape[-1] != 3:
-        raise ValueError(f"velocities must have shape [T, N, 3], got {tuple(velocities.shape)}.")
+        msg = f"velocities must have shape [T, N, 3], got {tuple(velocities.shape)}."
+        raise ValueError(msg)
     if (
         companions_distance.shape != velocities.shape[:2]
         or companions_clone.shape != velocities.shape[:2]

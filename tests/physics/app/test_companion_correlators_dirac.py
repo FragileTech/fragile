@@ -29,7 +29,8 @@ def _find_named_widget(root, widget_type, name: str):
     for obj in _walk_panel_objects(root):
         if isinstance(obj, widget_type) and getattr(obj, "name", None) == name:
             return obj
-    raise AssertionError(f"Could not find widget {name!r} of type {widget_type.__name__}.")
+    msg = f"Could not find widget {name!r} of type {widget_type.__name__}."
+    raise AssertionError(msg)
 
 
 def _fake_color_states_batch(history, start_idx, h_eff, mass, ell0, end_idx=None):
@@ -90,17 +91,21 @@ def test_companion_tab_passes_full_pair_backbone_to_dirac(monkeypatch):
             spinor_valid_fraction=zeros.clone(),
         )
 
-    import fragile.physics.new_channels.dirac_spinors as dirac_spinors
+    from fragile.physics.new_channels import dirac_spinors
 
-    monkeypatch.setattr(dirac_spinors, "compute_dirac_operator_series", _fake_dirac_operator_series)
+    monkeypatch.setattr(
+        dirac_spinors, "compute_dirac_operator_series", _fake_dirac_operator_series
+    )
 
     def run_tab_computation(state_dict, status, label, callback):
         del state_dict, status, label
         callback(history)
 
+    completions = []
     section = cc.build_companion_correlator_tab(
         state=state,
         run_tab_computation=run_tab_computation,
+        on_computed=lambda: completions.append(True),
     )
 
     _find_named_widget(section.tab, pn.widgets.MultiSelect, "Scalar").value = ["dirac"]
@@ -111,7 +116,8 @@ def test_companion_tab_passes_full_pair_backbone_to_dirac(monkeypatch):
     _find_named_widget(section.tab, pn.widgets.MultiSelect, "Axial Vector").value = []
     _find_named_widget(section.tab, pn.widgets.MultiSelect, "Tensor").value = []
 
-    section.on_run(None)
+    section.run_button.clicks += 1
+    assert len(completions) == 1
 
     result = state["companion_correlator_output"]
     assert isinstance(result, PipelineResult)
@@ -133,3 +139,31 @@ def test_companion_tab_passes_full_pair_backbone_to_dirac(monkeypatch):
     expected_pairs = torch.stack([expected_distance, expected_clone], dim=-1)
 
     assert torch.equal(pair_indices, expected_pairs[: pair_indices.shape[0]])
+
+    section.on_history_changed(defer=True)
+    assert state["companion_correlator_output"] is None
+
+
+def test_multiscale_notifies_completion_once(monkeypatch):
+    from types import SimpleNamespace
+
+    state = {}
+    completions = []
+    corr = torch.exp(-torch.arange(8.0) / 3)
+    output = SimpleNamespace(
+        per_scale_results={"scalar": [SimpleNamespace(correlator=corr)]},
+        series_by_channel={"scalar": torch.ones(1, 20)},
+        scales=torch.ones(1),
+        best_results={"scalar": None},
+    )
+    monkeypatch.setattr(cc, "compute_multiscale_strong_force_channels", lambda *a, **k: output)
+    monkeypatch.setattr(cc, "build_summary_table", lambda *a, **k: pd.DataFrame())
+    monkeypatch.setattr(cc, "build_correlator_table", lambda *a, **k: pd.DataFrame())
+    section = cc.build_companion_correlator_tab(
+        state=state,
+        run_tab_computation=lambda state, status, label, callback: callback(None),
+        on_computed=lambda: completions.append(True),
+    )
+    _find_named_widget(section.tab, pn.widgets.Button, "Run Multiscale").clicks += 1
+    assert completions == [True]
+    assert state["companion_correlator_output"].correlators["scalar"].shape == (1, 8)

@@ -27,15 +27,15 @@ The equations of motion are the continuous-time limit of policy updates with sto
 :::{div} feynman-prose
 Now, here is where everything comes together. We have built up all this machinery in the previous sections---the geometry, the metric law, the WFR transport---and you might be wondering: what does the agent actually *do*? How does it move?
 
-This is the chapter where we write down the answer. And the beautiful thing is that once you have the geometry right, the equations of motion almost write themselves. They are not something we impose from outside; they *emerge* from the structure we have already established.
+This is the chapter where we write down the answer. Once the geometry, the potential, the control convention, and the noise law have been specified, the equations of motion can be written down and checked against those choices. The geometry constrains the form; it does not choose every modeling term for us.
 
-The key insight is this: **the agent's motion is geodesic motion on a curved manifold, with noise**. That is it. The agent follows the paths of least resistance through the latent space, but it gets jostled around by thermal fluctuations. And occasionally---this is the jump part---it can hop from one chart to another when it discovers a better representation.
+The useful picture is **controlled geodesic Langevin motion on a curved manifold, with jumps**. Between jumps, the agent carries a position and a covector momentum. The connection term accounts for the changing coordinates of a geodesic, while friction, control, curl, and noise alter that free motion. Occasionally---this is the jump part---it can hop from one chart to another when the declared rate law proposes a new representation.
 
-If you have ever studied classical mechanics, this should feel familiar. We are doing Lagrangian mechanics, but in a stochastic setting and on a curved space. The curvature comes from the metric law of Section 18. The noise comes from the exploration-exploitation tradeoff. And the jumps come from the discrete structure of the chart atlas.
+If you have ever studied classical mechanics, this should feel familiar. We use Hamiltonian and Langevin ideas in a stochastic setting on a curved space. The curvature comes from the metric law of Section 18. The noise comes from the chosen exploration-exploitation convention. And the jumps come from the discrete structure of the chart atlas.
 
-Let me emphasize something that might seem obvious but is actually profound: **the metric plays the role of mass**. In ordinary mechanics, mass tells you how hard it is to accelerate an object. Here, the metric tells you how hard it is to move through a region of latent space. High-curvature regions are "heavy"---the agent slows down there, takes smaller steps, is more cautious. Low-curvature regions are "light"---the agent moves freely.
+Let me emphasize a convention that will matter in the signs below: **the inertial mass tensor is chosen to be the metric**. In ordinary mechanics, mass tells you how momentum is converted into velocity. Here, $G$ does that job through $v^i=G^{ij}p_j$. A large metric can suppress coordinate response to a fixed covector force, but the resulting caution is a consequence of this chosen update law, not a universal statement about every discretization.
 
-Why is that the right thing? Because high curvature means high risk, high uncertainty, regions where the representation is strained. You want to be careful there. The geometry *is* the caution.
+When the Metric Law makes $G$ large in a high-risk region, this convention can therefore reduce coordinate step sizes. Keep the qualifier in mind: the geometry supplies the metric, while the mass identification and the control/noise schedules specify how the agent uses it.
 :::
 
 We derive the rigorous equation of motion (EoM) for the agent. This equation unifies the WFR geometry ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`, {prf:ref}`def-the-wfr-action`), the Metric Law ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`), and the Policy-driven Expansion ({ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`).
@@ -44,20 +44,20 @@ We derive the rigorous equation of motion (EoM) for the agent. This equation uni
 ## The Stochastic Action Principle (Mass = Metric)
 
 :::{div} feynman-prose
-Before we get into the formalism, let me tell you what we are really doing here. In classical mechanics, you have the action principle: Nature chooses the path that minimizes the action integral. But what does "minimize" mean when there is randomness involved?
+Before we get into the formalism, let me tell you what we are really doing here. In classical mechanics, an action can generate equations through a variational principle. Here we introduce a related path functional as an operational modeling objective. It is useful for organizing kinetic, potential, curvature, and entropy terms, but its status has to be stated precisely.
 
-The answer is the Onsager-Machlup functional. Instead of asking "which path does the particle take?", we ask "which path is *most probable*?" And it turns out that the most probable path is the one that minimizes a certain action---not the classical action, but a modified one that accounts for the noise.
+It is tempting to call this functional Onsager--Machlup and read its minimizer as a most-probable path. That inference is not available here. A genuine Onsager--Machlup functional depends on the particular drift, diffusion, reference measure, and path-tube convention. Those ingredients are not supplied by merely writing the operational functional below.
 
-Here is the picture I want you to have in your mind. Imagine you are looking at a particle undergoing Brownian motion in a potential. At any moment, the particle could go anywhere---the noise is pushing it in all directions. But some paths are more likely than others. The Onsager-Machlup functional tells you exactly how likely each path is: $P[\text{path}] \propto \exp(-\text{Action}/T)$, where $T$ is the temperature.
+Here is the picture I want you to have in your mind. Imagine a particle moving in a potential while a controller and a thermostat act on it. The displayed integral assigns a score to a proposed trajectory: fast motion costs kinetic energy, unfavorable regions cost potential energy, and the selected curvature and policy-entropy terms modify that score. It is a design objective, not by itself a probability density over paths.
 
-This is exactly the path-integral formulation of statistical mechanics. And the beautiful thing is that it works on curved spaces too, with one subtlety: on a curved manifold, you need a curvature correction term. The measure for path integration is not uniform---it gets distorted by the geometry.
+The analogy with stochastic mechanics is still helpful. On a curved space, a path measure can acquire geometry-dependent terms, but their coefficient depends on how the diffusion and path measure are defined. The $T_cR/12$ term here is the declared modeling correction; it should not be presented as a universal path-probability formula.
 
 Now, the key decision we have to make: what plays the role of mass? In ordinary mechanics, mass appears in the kinetic energy term, $\frac{1}{2}mv^2$. On a Riemannian manifold, the natural generalization is $\frac{1}{2}G_{ij}\dot{z}^i\dot{z}^j$---the metric-weighted norm of the velocity.
 
-So here is our choice, and it is the conceptually correct one: **Mass = Metric**. The inertial mass tensor *is* the metric tensor. This is not arbitrary; it is forced on us by the geometry. The metric already encodes how to measure distances. It should also encode how to measure kinetic energy.
+So here is our modeling choice: **Mass = Metric**. The metric already measures tangent vectors, and we use the same tensor to define kinetic cost and the momentum-to-velocity map. Geometry motivates this identification; it does not force it without that convention.
 :::
 
-The classical Lagrangian approach extends to stochastic systems via the **Onsager-Machlup functional**, which assigns a probability to paths based on their "action."
+Stochastic systems also admit **Onsager--Machlup functionals**, but their form depends on the drift, diffusion, reference measure, and path-tube convention. The operational path objective below is kept separate from that probabilistic construction.
 
 :::{prf:definition} Mass Tensor
 :label: def-mass-tensor
@@ -87,22 +87,22 @@ The metric-weighted step size decreases in high-curvature (high-risk) regions wi
 :::{admonition} The Causal Chain of Caution
 :class: feynman-added tip
 
-The Mass = Metric principle creates an automatic feedback loop for safe exploration:
+Under the stated Metric Law and the chosen Mass = Metric update convention, there is a useful feedback loop:
 
 1. **High risk** in a region $\Rightarrow$ Metric Law says curvature increases $\Rightarrow$ metric $G$ grows
 2. **Large metric** $\Rightarrow$ Mass = Metric says effective mass increases
-3. **Large mass** $\Rightarrow$ Same force produces smaller acceleration $\Rightarrow$ smaller step size
+3. **Large metric** $\Rightarrow$ the same covector force can produce a smaller coordinate velocity or step
 
-No explicit "safety penalty" needed---the geometry *is* the safety mechanism.
+This gives a geometric caution signal. It does not replace an explicit safety constraint when one is required, and the conclusion depends on the integrator and control law using the metric as specified.
 :::
 
-:::{prf:definition} Extended Onsager-Machlup Action
+:::{prf:definition} Free-energy Path Action (Operational)
 :label: def-extended-onsager-machlup-action
 
-Let $(\mathcal{Z}, G)$ be the latent Riemannian manifold with the capacity-constrained metric ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`). For a path $z: [0, T] \to \mathcal{Z}$, the extended Onsager-Machlup action is:
+Let $(\mathcal{Z}, G)$ be the latent Riemannian manifold with the capacity-constrained metric ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`). For a path $z: [0, T] \to \mathcal{Z}$, define the following free-energy path functional:
 
 $$
-S_{\mathrm{OM}}[z] = \int_0^T \left( \frac{1}{2}\mathbf{M}(z)\|\dot{z}\|^2 + \Phi_{\text{eff}}(z) + \frac{T_c}{12}\,R(z) + T_c \cdot H_{\pi}(z) \right) ds,
+S_{\mathrm{path}}[z] = \int_0^T \left( \frac{1}{2}\mathbf{M}(z)\|\dot{z}\|^2 + \Phi_{\text{eff}}(z) + \frac{T_c}{12}\,R(z) + T_c \cdot H_{\pi}(z) \right) ds,
 
 $$
 where:
@@ -112,7 +112,9 @@ where:
 - $H_{\pi}(z) = -\mathbb{E}_{a \sim \pi}[\log \pi(a|z)]$ is the policy entropy
 - $T_c > 0$ is the {prf:ref}`def-cognitive-temperature` (cf. {ref}`Section 21.2 <sec-policy-control-field>`)
 
-Units: $[S_{\mathrm{OM}}] = \mathrm{nat}$.
+This is an operational modeling objective, not the Onsager--Machlup functional of the diffusion below; no most-probable-path claim follows from this definition. A genuine Onsager--Machlup functional also requires the drift, reference measure, and path-tube convention.
+
+*Units.* The displayed expression uses dimensionless computational time and normalized latent coordinates. If a physical time scale is restored, all coefficients are rescaled together; from $dz^k=G^{kj}p_j\,ds$ and $[G]=[z]^{-2}$, the covector momentum has units $[p]=[z]^{-1}\,\mathrm{time}^{-1}$.
 
 *Remark (Curvature Correction).* The term $\frac{T_c}{12}R(z)$ is a stochastic correction that accounts for the path-measure distortion on curved spaces. In flat space ($R = 0$), this term vanishes. The entropy term $T_c H_{\pi}$ ensures the agent prefers stochastic policies in uncertain regions.
 
@@ -123,27 +125,29 @@ Let me decode this action functional term by term, because each piece is doing s
 
 **The kinetic term** $\frac{1}{2}G_{ij}\dot{z}^i\dot{z}^j$: This is "how fast am I moving?" in the curved geometry. Not Euclidean speed, but speed measured with the metric. If the metric is large, the same coordinate velocity costs more action.
 
-**The potential term** $\Phi_{\text{eff}}$: This is "where do I want to go?" We will unpack this later, but it combines the hyperbolic expansion drive with the learned value function and a risk penalty.
+**The potential term** $\Phi_{\text{eff}}$: This is the scalar landscape that supplies the conservative force. We will unpack it later: it combines the hyperbolic expansion drive with the critic cost and a risk penalty. With the convention used here, $V_{\text{critic}}$ is a cost-to-go, so lower values are better. Its positive contribution to $\Phi_{\text{eff}}$ therefore gives the descent $-G^{-1}dV_{\text{critic}}$ in the conservative control limit.
 
-**The curvature correction** $\frac{T_c}{12}R$: This is subtle. When you do path integrals on a curved manifold, you have to be careful about how you measure paths. The factor of 1/12 is not arbitrary---it comes from the mathematical analysis of the path measure. On a flat space this vanishes, so you can ignore it for Euclidean intuition.
+**The curvature correction** $\frac{T_c}{12}R$: This is a declared geometry-dependent correction in the operational objective. Curved-space path measures can produce curvature terms, but the coefficient is tied to the diffusion and measure convention. Here it vanishes in flat space; it is not, by itself, a derivation of a path probability.
 
-**The entropy term** $T_c H_\pi$: This is the exploration bonus. The agent *prefers* to have a stochastic policy---it gets rewarded for keeping its options open. The temperature $T_c$ controls how much this matters.
+**The entropy term** $T_c H_\pi$: This is intended to encode an exploration trade-off. The sign matters: in a path score that is minimized, the displayed positive term raises the score for high-entropy policies. Calling it a bonus requires the corresponding maximization convention or a sign change in the objective. The temperature $T_c$ controls the size of that declared term.
 
-Now, why does the most probable path minimize this action? Think of it this way: every path has an associated "cost." The kinetic term penalizes going fast. The potential term penalizes being in bad places. The entropy term rewards keeping options open. Nature---or rather, the stochastic dynamics---samples paths according to how costly they are, preferring low-cost paths exponentially.
+Now notice what this functional does and does not say. Every proposed path receives a score: the kinetic term penalizes going fast, the potential term penalizes high cost or potential, and the entropy term contributes with the displayed sign. One may optimize this score as part of the model. To say that it is a most-probable path or that paths are sampled with an exponential weight, however, would require a separate Onsager--Machlup derivation for the specified diffusion.
 :::
 
 (pi-onsager-machlup)=
-::::{admonition} Physics Isomorphism: Onsager-Machlup Action
+::::{admonition} Physics Analogy: Operational Path Objective
 :class: note
 
-**In Physics:** The Onsager-Machlup functional assigns probability to paths in stochastic thermodynamics: $P[\gamma] \propto \exp(-S_{OM}[\gamma]/k_B T)$ where $S_{OM}$ includes kinetic and potential terms plus a curvature correction {cite}`onsager1953fluctuations`.
+**In Physics:** An Onsager--Machlup functional can assign relative weight to paths after a drift, diffusion, reference measure, and tube convention have been fixed {cite}`onsager1953fluctuations`. Those choices are not made by the operational objective in this chapter.
 
-**In Implementation:** The extended Onsager-Machlup action (Definition {prf:ref}`def-extended-onsager-machlup-action`):
+**In Implementation:** The free-energy path objective (Definition {prf:ref}`def-extended-onsager-machlup-action`) is:
 
 $$
 S_{\text{OM}}[z] = \int_0^T \left(\frac{1}{2}G_{ij}\dot{z}^i\dot{z}^j + \Phi_{\text{eff}} + \frac{T_c}{12}R + T_c H_\pi\right)ds
 
 $$
+It is a declared score for comparing candidate paths. It is not a path probability and its minimizer is not identified with a most-probable diffusion path.
+
 **Correspondence Table:**
 
 | Statistical Mechanics | Agent (Path Integral) |
@@ -152,7 +156,7 @@ $$
 | Kinetic energy $\frac{1}{2}m\lvert\dot{x}\rvert^2$ | $\frac{1}{2}G_{ij}\dot{z}^i\dot{z}^j$ (mass = metric) |
 | Potential $U(x)$ | Effective potential $\Phi_{\text{eff}}$ |
 | Curvature correction $\frac{k_BT}{12}R$ | $\frac{T_c}{12}R$ |
-| Boltzmann weight $e^{-S/k_BT}$ | Path probability $e^{-S_{\text{OM}}/T_c}$ |
+| Boltzmann weight $e^{-S/k_BT}$ | Optional path weighting only after an OM derivation |
 ::::
 
 :::{div} feynman-prose
@@ -175,12 +179,12 @@ The metric diverges as $|z| \to 1$, which bounds all finite-action trajectories 
 :::
 
 :::{div} feynman-prose
-This is exactly what we want. The mass becomes infinite at the boundary. What does infinite mass mean? It means the agent *cannot* cross the boundary. No matter how much force you apply, an infinite mass cannot accelerate. The geometry itself enforces the boundary condition---no extra constraint needed.
+The divergence has a precise consequence: finite-action trajectories are confined to the interior. In the chosen momentum convention, the same covector force also produces less coordinate motion as the boundary is approached. That is the useful geometric picture; it is stronger and safer than treating an infinite coefficient as an ordinary numerical mass.
 
-This is the geometric version of a hard wall. But it is much better than just saying "stop at the boundary," because the agent feels the wall coming. As it approaches the boundary, it gets heavier and heavier, slower and slower. It is not a sudden stop; it is a gradual deceleration. The mathematics is smooth even though the boundary is impenetrable.
+Think of it as an interior barrier in the finite-action model. The coordinate motion can slow smoothly as the metric grows, while a numerical implementation still needs an explicit cutoff, projection, or boundary rule. The limiting statement does not by itself specify how a discretized trajectory behaves exactly at the cutoff.
 :::
 
-:::{prf:proposition} Most Probable Path
+:::{prf:remark} Onsager--Machlup Scope
 :label: prop-most-probable-path
 
 For the controlled diffusion
@@ -189,9 +193,9 @@ $$
 dz^k = b^k(z)\,ds + \sqrt{2T_c}\,\sigma^{kj}(z)\,dW^j_s,
 
 $$
-where $\sigma \sigma^T = G^{-1}$, the most probable path connecting $z(0) = z_0$ and $z(T) = z_1$ minimizes the Onsager-Machlup action $S_{\mathrm{OM}}[z]$ subject to the boundary conditions.
+where $\sigma \sigma^T = G^{-1}$. The path functional defined above does not identify the most probable path of this diffusion. That identification requires the drift $b$, the reference measure, and a specified path-tube convention.
 
-*Proof sketch.* This follows from the Girsanov theorem and the Cameron-Martin formula adapted to Riemannian manifolds. See {cite}`ikeda1989stochastic` Chapter V or {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for details. $\square$
+The singular-perturbation calculation in {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` establishes the overdamped reduction only; it is not an Onsager--Machlup derivation.
 
 :::
 
@@ -201,7 +205,7 @@ where $\sigma \sigma^T = G^{-1}$, the most probable path connecting $z(0) = z_0$
 :::{div} feynman-prose
 Alright, now we get to the actual equation of motion. This is where the rubber meets the road.
 
-The agent is not just a point in space. It is a **particle with mass**---and by "mass" here I mean the importance weight $m$, which is like the probability that this particular trajectory is the right one. You can think of it as how much "belief" the agent has invested in this particular path through latent space.
+The agent is not just a point in space. Its continuous state has a position $z$ and a momentum $p$; the separate scalar $m$ is an importance weight used by the jump/WFR part of the model. Calling both of them "mass" is convenient shorthand, but they do different jobs: $G$ controls the momentum-to-velocity map, while $m$ records particle weight.
 
 The dynamics have two parts:
 1. **Continuous motion**: The particle slides around on the manifold, pulled by gradients and pushed by noise
@@ -212,9 +216,9 @@ Why jumps? Because the latent space is not a single connected manifold. It is an
 Think of it like this: you are solving a problem, and you have been thinking about it one way, taking small incremental steps. Then suddenly you realize there is a completely different way to look at it. That is a jump. The continuous dynamics handle the incremental thinking; the jump process handles the conceptual leaps.
 :::
 
-The agent's state is not merely a point $z$ but a **particle with mass** $(z, m)$, where $m$ is the importance weight (belief probability). The dynamics couple continuous transport with discrete topological jumps.
+The agent's state is not merely a point $z$ but a **particle with position and weight** $(z, m)$, where $m$ is the importance weight (belief probability). The dynamics couple continuous transport with discrete topological jumps.
 
-*Cross-reference (WFR Boundary Conditions).* The SDE below assumes **Waking mode** boundary conditions (Definition {prf:ref}`def-waking-boundary-clamping`): Dirichlet on sensors (clamping observed position), Neumann on motors (clamping output flux). In **Dreaming mode** (Definition {prf:ref}`def-dreaming-reflective-boundary`), both boundaries become reflective and the flow recirculates internally without external grounding. See {ref}`Section 23.5 <sec-wfr-boundary-conditions-waking-vs-dreaming>` for the mode-switching table and the thermodynamic interpretation ({ref}`Section 23.4 <sec-the-belief-evolution-cycle-perception-dreaming-action>`).
+*Cross-reference (WFR Boundary Conditions).* The SDE below uses the **Waking mode** interface policy (Definition {prf:ref}`def-waking-boundary-clamping`): observations enter through an assimilation source and motors may prescribe a WFR flux. These are Dirichlet-like and Neumann-like labels; an exact PDE trace or normal derivative requires the additional domain and limiting hypotheses stated in that definition. In **Dreaming mode** (Definition {prf:ref}`def-dreaming-reflective-boundary`), the sensory channel is reflective and the motor boundary is chosen separately. See {ref}`Section 23.5 <sec-wfr-boundary-conditions-waking-vs-dreaming>` for the mode-switching table and the thermodynamic interpretation ({ref}`Section 23.4 <sec-the-belief-evolution-cycle-perception-dreaming-action>`).
 
 :::{prf:definition} Second-Order Geodesic Langevin Equation
 :label: def-bulk-drift-continuous-flow
@@ -224,7 +228,7 @@ The agent's state evolves as a **particle with position $z$ and momentum $p$** o
 $$
 \begin{cases}
 dz^k = G^{kj}(z)\, p_j\, ds \\[8pt]
-dp_k = \left[ -\partial_k \Phi_{\text{eff}} - \gamma\, p_k + \beta_{\text{curl}}\, \mathcal{F}_{kj}\, G^{j\ell}\, p_\ell - \Gamma^m_{k\ell}\, G^{\ell j}\, p_j\, p_m + u_{\pi,k} \right] ds + \sqrt{2\gamma T_c}\, (G^{1/2})_{kj}\, dW^j_s
+dp_k = \left[ -\partial_k \Phi_{\text{eff}} - \gamma\, p_k + \beta_{\text{curl}}\, \mathcal{F}_{kj}\, G^{j\ell}\, p_\ell + \Gamma^m_{k\ell}\, G^{\ell j}\, p_j\, p_m + \gamma G_{kj}u_\pi^j \right] ds + \sqrt{2\gamma T_c}\, (G^{1/2})_{kj}\, dW^j_s
 \end{cases}
 
 $$
@@ -234,28 +238,28 @@ where:
 - $\mathcal{F}_{ij} = \partial_i \mathcal{R}_j - \partial_j \mathcal{R}_i$ is the **Value Curl** tensor (Definition {prf:ref}`def-value-curl`)
 - $\beta_{\text{curl}} \ge 0$ is the **curl coupling strength** (dimensionless)
 - $\Gamma^m_{k\ell}$ are the **Christoffel symbols** of the Levi-Civita connection (Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`)
-- $u_{\pi,k}$ is the **control field** from the policy (Definition {prf:ref}`def-the-control-field`)
+- $u_\pi^j$ is the contravariant **policy velocity** from Definition {prf:ref}`def-the-control-field`; the momentum equation uses the covector force $\gamma G_{kj}u_\pi^j$
 - $T_c$ is the **cognitive temperature** (Definition {prf:ref}`def-cognitive-temperature`)
 - $W_s$ is a standard Wiener process
 
-*Units:* $[z] = \text{length}$, $[p] = \text{length}/\tau$, $[\gamma] = 1/\tau$, $[\Phi_{\text{eff}}] = \mathrm{nat}$, $[T_c] = \mathrm{nat}$.
+*Units.* In normalized computational units $s$, $\Phi_{\text{eff}}$, and $T_c$ are dimensionless. If a physical time scale $\tau$ is restored, $[p]=[z]^{-1}\tau^{-1}$ follows from the kinematic equation and the force coefficients are rescaled accordingly.
 
 **Interpretation:** The position evolves via the momentum (kinematic relation), while the momentum evolves under:
 
 1. **Gradient force**: $-\nabla\Phi_{\text{eff}}$ — force from effective potential
 2. **Friction**: $-\gamma p$ — damping toward equilibrium
 3. **Lorentz force**: $\beta_{\text{curl}} \mathcal{F} G^{-1} p$ — velocity-dependent force from Value Curl (perpendicular to velocity)
-4. **Geodesic correction**: $-\Gamma(G^{-1}p, G^{-1}p)$ — parallel transport on curved space
-5. **Control field**: $u_\pi$ — policy-induced force
+4. **Geodesic correction**: $+\Gamma^m_{k\ell}G^{\ell j}p_jp_m$ in covector momentum coordinates, which yields $-\Gamma(\dot z,\dot z)$ in the second-order position equation
+5. **Control field**: $\gamma G_{kj}u_\pi^j$ — the policy velocity converted to a covector force
 6. **Thermal noise**: $\sqrt{2\gamma T_c} G^{1/2} dW$ — fluctuation-dissipation balanced noise
 
-**Hamiltonian Structure:** The deterministic part ($T_c = 0$, $\gamma = 0$) derives from the Hamiltonian:
+**Hamiltonian Structure:** In the conservative, uncontrolled subcase ($T_c=0$, $\gamma=0$, $\beta_{\text{curl}}=0$, and $u_\pi=0$), the deterministic part derives from the Hamiltonian:
 
 $$
 H(z, p) = \frac{1}{2} G^{ij}(z)\, p_i\, p_j + \Phi_{\text{eff}}(z).
 
 $$
-The friction and noise terms implement an **Ornstein-Uhlenbeck thermostat** that samples the Boltzmann distribution $\rho(z,p) \propto \exp(-H(z,p)/T_c)$.
+With $\beta_{\text{curl}}=0$ and any policy force absorbed into a scalar potential, the friction and noise terms form the usual **Ornstein--Uhlenbeck thermostat** and the Boltzmann statement applies under the stated boundary and regularity conditions.
 
 **Conservative Limit:** When $\mathcal{F} = 0$ (Definition {prf:ref}`def-conservative-reward-field`), the Lorentz term vanishes and we recover the standard geodesic Langevin equation.
 
@@ -272,21 +276,21 @@ Let me break down this second-order system, because it looks intimidating but ea
 
 **The position equation** $dz = G^{-1}p\, ds$: This just says "position changes according to velocity." The $G^{-1}$ converts momentum (a covector) to velocity (a vector) using the metric.
 
-**The momentum equation** has several forces:
+**The momentum equation** has several covector forces. This word matters: $p_k$ and every term on its right-hand side carry a lower index. A policy is specified upstream as a contravariant velocity, so it must be lowered with the metric before it can be added to the momentum equation.
 
-**The gradient term** $-\nabla\Phi_{\text{eff}}$: This is "roll downhill." The agent feels a force pushing it toward lower potential.
+**The gradient term** $-\nabla\Phi_{\text{eff}}$: This is "roll downhill." The agent feels a force pushing it toward lower potential. In the pure conservative control limit, the $V_{\text{critic}}$ part becomes $-G^{-1}dV_{\text{critic}}$ at the velocity level, so the motion descends cost-to-go rather than seeking a larger reward-labelled value.
 
 **The friction term** $-\gamma p$: This is damping. Without it, the agent would coast forever. Friction brings it toward equilibrium, balancing against the thermal noise.
 
-**The control term** $u_\pi$: This is the policy. The agent can choose to go somewhere that is not just downhill. The policy provides intentional override of the gradient.
+**The control term** $\gamma G_{kj}u_\pi^j$: This is the policy. The agent can choose to go somewhere that is not just downhill. The policy provides a contravariant velocity $u_\pi^j$; multiplying by $G_{kj}$ converts it to the covector force that belongs in the momentum equation.
 
 **The Lorentz force** $\beta_{\text{curl}} \mathcal{F} G^{-1} p$: When the reward field has curl, the agent feels a sideways force perpendicular to its velocity---exactly like a charged particle in a magnetic field. It makes the agent spiral or orbit rather than just fall to the bottom.
 
-**The geodesic correction** $-\Gamma(v, v)$ where $v = G^{-1}p$: On a curved manifold, straight lines curve. This term corrects for that, keeping the trajectory on the manifold.
+**The geodesic correction** $+\Gamma^m_{k\ell}G^{\ell j}p_jp_m$ in the covector momentum equation: On a curved manifold, the components of a covector change as the base point moves. After converting back to the second-order position equation, the same connection contribution appears as $-\Gamma(v,v)$ with $v=G^{-1}p$. The signs differ because these are two coordinate descriptions of the same geodesic motion.
 
-**The thermal noise** $\sqrt{2\gamma T_c} G^{1/2} dW$: Exploration via random thermal fluctuations. The $\sqrt{2\gamma T_c}$ factor ensures **fluctuation-dissipation balance**: friction and noise are calibrated so the system samples the correct Boltzmann distribution.
+**The thermal noise** $\sqrt{2\gamma T_c} G^{1/2} dW$: Exploration via random thermal fluctuations. The $\sqrt{2\gamma T_c}$ factor is the fluctuation-dissipation normalization in the stated momentum convention. A Boltzmann conclusion still requires the conservative, uncontrolled hypotheses and the specified boundary and regularity conditions.
 
-The beautiful thing is that these are not six separate mechanisms bolted together. They all emerge from the same underlying structure: Hamiltonian mechanics on a Riemannian manifold plus an Ornstein-Uhlenbeck thermostat.
+The Hamiltonian picture applies to the conservative, uncontrolled subcase. Once curl or policy forcing is present, the dynamics are controlled and generally non-reversible; the OU thermostat and Boltzmann interpretation must be read with those restrictions in view.
 :::
 
 :::{admonition} The Six Terms in the Momentum Equation
@@ -296,12 +300,12 @@ The beautiful thing is that these are not six separate mechanisms bolted togethe
 |------|------------|------------------|--------|
 | **Gradient** | $-\nabla\Phi_{\text{eff}}$ | Gravity | Pulls toward low potential |
 | **Friction** | $-\gamma p$ | Viscous drag | Damps toward equilibrium |
-| **Control** | $u_\pi$ | Rocket thrust | Policy-directed force |
+| **Control** | $\gamma G_{kj}u_\pi^j$ | Rocket thrust | Policy velocity converted to a covector force |
 | **Lorentz** | $\beta_{\text{curl}} \mathcal{F} G^{-1} p$ | Magnetic force | Induces rotation/orbiting |
-| **Geodesic** | $-\Gamma(G^{-1}p, G^{-1}p)$ | Coriolis/centrifugal | Keeps motion on manifold |
+| **Geodesic** | $+\Gamma^m_{k\ell}G^{\ell j}p_jp_m$ in $dp_k$; $-\Gamma(v,v)$ in $\ddot z$ | Connection correction | Keeps the covector and velocity descriptions consistent |
 | **Noise** | $\sqrt{2\gamma T_c} G^{1/2} dW$ | Thermal fluctuation | Exploration + equilibrium sampling |
 
-The friction-noise pair implements an **Ornstein-Uhlenbeck thermostat**.
+The friction-noise pair is an **Ornstein--Uhlenbeck thermostat**. Its Boltzmann sampling claim is conditional on the conservative, uncontrolled, constant-temperature setting and an exact compatible splitting.
 :::
 
 :::{prf:proposition} Explicit Christoffel Symbols for Poincaré Disk
@@ -321,16 +325,16 @@ $$
 $$
 *Proof.* Direct computation from $\Gamma^k_{ij} = \frac{1}{2}G^{k\ell}(\partial_i G_{j\ell} + \partial_j G_{i\ell} - \partial_\ell G_{ij})$ using $\partial_m[(1-|z|^2)^{-2}] = 4z_m(1-|z|^2)^{-3}$. $\square$
 
-*Geometric interpretation:* The first term $(z \cdot \dot{z})\dot{z}$ accelerates motion radially when moving outward; the second term $|\dot{z}|^2 z$ provides centripetal correction. Together they ensure geodesics are circular arcs perpendicular to the boundary.
+*Geometric interpretation.* The first term corrects the radial component of an outward coordinate velocity; the second supplies the complementary centripetal correction. Together they ensure geodesics are circular arcs perpendicular to the boundary.
 
 :::
 
 :::{div} feynman-prose
 Why should you care about the explicit Christoffel symbols? Because they tell you something beautiful about the geometry.
 
-On the Poincare disk, the geodesics---the "straight lines"---are not straight at all in Euclidean terms. They are arcs of circles that hit the boundary at right angles. The Christoffel symbols encode this. When you are moving outward, you need to curve your trajectory to stay on a geodesic. When you are moving tangentially, you need a centripetal correction.
+On the Poincare disk, the geodesics---the "straight lines"---are not straight at all in Euclidean terms. They are arcs of circles that hit the boundary at right angles. The Christoffel symbols encode this. For an outward coordinate velocity, the first contraction term enters the geodesic equation with a minus sign and decelerates the coordinate motion; the hyperbolic speed can still remain constant. A tangential velocity receives the complementary centripetal correction.
 
-The formula might look complicated, but it is just saying: "adjust your direction so that you curve in the right way for this particular geometry."
+The formula might look complicated, but it is just saying: "adjust the coordinate components so that the velocity is transported in the right way for this particular geometry." A connection correction is not an additional physical force, and its sign depends on whether you are reading the momentum equation or the second-order position equation.
 :::
 
 :::{prf:definition} Mass Evolution - Jump Process
@@ -344,8 +348,10 @@ dm = m \cdot r(z, a)\,ds + m \cdot (\eta - 1)\,dN_s,
 $$
 where:
 - $r(z, a)$ is the **reaction rate** from the WFR dynamics ({ref}`Section 20.2 <sec-the-wfr-metric>`)
-- $N_s$ is a Poisson process with intensity $\lambda_{\text{jump}}(z)$
-- $\eta$ is the multiplicative jump factor (typically $\eta > 1$ for jumps to higher-value charts)
+- $N_s$ is a Poisson process with target-dependent intensity
+  $\lambda_{\text{jump}}(z\to z')$
+- $\eta$ is the multiplicative jump factor; its value is a declared
+  resampling convention rather than an implication of the critic cost
 
 *Interpretation:* Between jumps, mass evolves smoothly via the reaction term $r$. At jump times, the mass is rescaled by factor $\eta$, and the position is teleported via the chart transition operator $L_{i \to j}$.
 
@@ -354,26 +360,26 @@ where:
 :::{div} feynman-prose
 Now here is the discrete part of the dynamics. The mass $m$ is like a betting stake---it tells you how much probability weight this particular trajectory carries.
 
-Between jumps, the mass can grow or shrink according to the reaction rate $r$. If you are in a good region (positive $r$), your mass grows---you become more confident that this is the right trajectory. If you are in a bad region (negative $r$), your mass shrinks---you become less confident.
+Between jumps, the mass can grow or shrink according to the reaction rate $r$. Positive $r$ increases the particle weight under the displayed law and negative $r$ decreases it. Whether that weight represents better evidence is determined by how $r$ is calibrated to the target density; it cannot be inferred from the sign of the critic cost alone.
 
-At jump times, something more dramatic happens. You teleport to a different chart, and your mass gets rescaled by a factor $\eta$. Typically $\eta > 1$ because you only bother jumping if the new chart is better than the old one. The jump is like a sudden insight: "Wait, I should be thinking about this completely differently!" And when you have that insight, you become more confident.
+At jump times, something more dramatic happens. You teleport to a different chart, and your mass gets rescaled by the model's factor $\eta$. A choice such as $\eta>1$ can encode increased weight after a selected transition, but it is a convention of the resampling model rather than a consequence of the rate formula. The jump is like a sudden insight: "Wait, I should be thinking about this completely differently!"
 
-This is exactly the resampling step in particle filtering. If you are running multiple particles (multiple trajectories in parallel), the ones with high mass survive and the ones with low mass get killed off. Selection pressure, in a mathematical form.
+This is analogous to resampling in particle filtering. To make it literally equivalent to a sequential Monte Carlo step, one must also specify the target-selection law, normalization, and any killing or cloning rule. The rate here is target-dependent, so the total jump intensity and the selected chart have to be tracked separately.
 :::
 
-:::{prf:proposition} Jump Intensity from Value Discontinuity
+:::{prf:definition} Target-dependent Jump Intensity
 :label: prop-jump-intensity-from-value-discontinuity
 
-The jump intensity $\lambda_{\text{jump}}(z)$ is determined by the value difference across chart boundaries:
+For a proposed transition $z\mapsto L(z)$, one admissible target-dependent jump intensity is:
 
 $$
-\lambda_{\text{jump}}(z) = \lambda_0 \cdot \exp\left(\beta_{\text{ent}} \cdot \left( V_{\text{target}}(L(z)) - V_{\text{source}}(z) - c_{\text{transport}} \right) \right),
+\lambda_{\text{jump}}(z\to L(z)) = \lambda_0 \cdot \exp\left(\beta_{\text{ent}} \cdot \left( V_{\text{source}}(z) - V_{\text{target}}(L(z)) - c_{\text{transport}} \right) \right),
 
 $$
 where:
 - $\lambda_0 > 0$ is a base jump rate
 - $\beta_{\text{ent}} > 0$ is the inverse temperature (sharpness)
-- $V_{\text{target}}$ and $V_{\text{source}}$ are the value functions on the target and source charts
+- $V_{\text{target}}$ and $V_{\text{source}}$ are cost-to-go functions on the target and source charts; the displayed sign favors lower target cost
 - $L: \mathcal{Z}_{\text{source}} \to \mathcal{Z}_{\text{target}}$ is the chart transition operator
 - $c_{\text{transport}} \ge 0$ is the transport cost (WFR term)
 
@@ -384,13 +390,13 @@ where:
 :::
 
 :::{div} feynman-prose
-The jump intensity formula is a Boltzmann factor. The probability of jumping is exponential in the value difference, minus a transport cost. This is exactly the right behavior:
+The displayed jump intensity is one admissible score-to-rate rule. It is exponential in the source-cost minus target-cost improvement, reduced by a transport cost. It is a rate, not itself a probability; over a small interval $h$, the corresponding event probability is $1-e^{-\lambda h}$ once a target has been selected.
 
-- If the target chart has much higher value, $\lambda$ is large---you jump frequently
-- If the target chart has lower value, $\lambda$ is small---why bother?
+- With the displayed sign, a target with lower $V_{\text{target}}$ has a larger rate, all else being equal.
+- This is consistent with the cost-to-go convention: a positive source-minus-target difference records a reduction in predicted future cost, while a higher-cost target makes the rate smaller, though still positive for finite scores.
 - The transport cost $c_{\text{transport}}$ provides a barrier: even if the grass looks greener, there is a cost to jumping the fence
 
-The parameter $\beta_{\text{ent}}$ controls how "sharp" this decision is. At high $\beta_{\text{ent}}$, the agent is decisive: if the value difference is positive, jump; if negative, don't. At low $\beta_{\text{ent}}$, the agent is more exploratory: it might jump even to slightly worse charts, just to see what is there.
+$\beta_{\text{ent}}$ controls how sharply the rate responds to the cost improvement. At high $\beta_{\text{ent}}$, positive cost reductions are amplified and negative ones are suppressed; at low $\beta_{\text{ent}}$, the rates are less selective. The phrase "Boltzmann factor" is an analogy for this chosen rate law, not a claim that every chart transition obeys detailed balance.
 :::
 
 (sec-the-unified-effective-potential)=
@@ -403,11 +409,11 @@ It turns out there are three natural contributions:
 
 1. **The hyperbolic potential** $U$: This drives expansion from the origin toward the boundary. It is the "generation drive"---the urge to create, to produce output, to sample from the model.
 
-2. **The value function** $V_{\text{critic}}$: This is what RL calls the critic. It tells you how good a state is in terms of expected future reward. If you are doing pure control (trying to maximize reward), you roll down this potential.
+2. **The critic cost-to-go** $V_{\text{critic}}$: This is the cost convention used in this volume. Lower values mean lower predicted future cost. Its positive contribution to $\Phi_{\text{eff}}$ supplies the conservative descent $-G^{-1}dV_{\text{critic}}$ in the overdamped control limit; it is not a high-reward score.
 
 3. **The risk penalty** $\Psi_{\text{risk}}$: This is caution. Some regions are dangerous---high variance, unstable representations. You want to stay away from them.
 
-The effective potential is a weighted combination of these three. The weight $\alpha$ controls the balance between generation and control. When $\alpha = 1$, you are doing pure generation---expanding outward following the hyperbolic flow. When $\alpha = 0$, you are doing pure control---following the value gradient to maximize reward. In between, you are doing both at once.
+The effective potential is a weighted combination of these three. The weight $\alpha$ controls the balance between generation and cost descent. When $\alpha = 1$, and when the conservative overdamped hypotheses also hold, the generation calculation gives the prescribed outward flow. When $\alpha = 0$, the scalar term supplies the cost-gradient contribution $-G^{-1}dV_{\text{critic}}$; calling that optimal control requires a control objective and admissible-control class. In between, the declared forces are blended.
 
 This is the key to understanding the agent as a generative model: it is not *either* a generator *or* a controller. It is both, blended together through this unified potential.
 :::
@@ -425,7 +431,7 @@ $$
 $$
 where:
 - $U(z) = -d_{\mathbb{D}}(0, z) = -2\operatorname{artanh}(|z|)$ is the **hyperbolic information potential** (Definition {prf:ref}`def-hyperbolic-information-potential`)
-- $V_{\text{critic}}(z, K)$ is the **learned value/critic function** on chart $K$ ({ref}`Section 2.7 <sec-the-hjb-correspondence>`)
+- $V_{\text{critic}}(z, K)$ is the **learned cost-to-go/critic** on chart $K$ ({ref}`Section 2.7 <sec-the-hjb-correspondence>`; lower is better)
 - $\Psi_{\text{risk}}(z) = \frac{1}{2}\operatorname{tr}(T_{ij} G^{ij})$ is the **risk-stress contribution** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`)
 - $\alpha \in [0, 1]$ is the generation-vs-control hyperparameter
 - $\gamma_{risk} \ge 0$ is the risk aversion coefficient
@@ -443,9 +449,9 @@ Imagine the agent at position $z$ in the latent space:
 - The **value term** pulls it toward high-reward regions (control drive)
 - The **risk term** pushes it away from uncertain regions (caution)
 
-The effective potential is the superposition of these three force fields. The agent rolls downhill in this combined landscape.
+The effective potential is a scalar landscape, and its conservative contribution to the momentum equation is the covector force $-\partial_k\Phi_{\text{eff}}$. The agent rolls downhill in this combined landscape; an independently supplied policy velocity or curl field adds the corresponding non-gradient contribution.
 
-At $\alpha = 0.5$ (balanced): The agent generates while seeking reward, but avoids risky regions.
+At $\alpha = 0.5$ (balanced): the scalar potential combines generation, critic cost, and risk. The resulting trajectory generates while descending the selected cost and avoiding risky regions only to the extent that the specified fields and policy produce those forces.
 :::
 
 :::{prf:proposition} Mode Interpretation
@@ -496,9 +502,9 @@ $$
 
 $$
 
-What does this mean? It means the force points *outward*, toward the boundary, in the radial direction $\hat{z} = z/|z|$. And the magnitude scales like $(1-|z|^2)/2$, which is big near the center and goes to zero at the boundary.
+What does this mean? The gradient itself points inward because of the minus sign. The generation force is $-\nabla_G U$, so it points *outward*, toward the boundary, in the radial direction $\hat{z} = z/|z|$. Its coordinate magnitude is $(1-|z|^2)/2$, which is largest near the center and goes to zero at the boundary.
 
-This is exactly right. Near the center, there is a strong drive to expand outward---to generate, to differentiate, to create structure. Near the boundary, this drive weakens, because you are already at high specificity. You have already committed to a particular output.
+Under the declared pure-generation flow, this gives a strong coordinate drive near the center and a weaker one near the boundary. That is a modeling law for the radial generation schedule; it is not a statement that every policy on the disk must move radially.
 
 The factor of $(1-|z|^2)$ is the inverse of the conformal factor. It compensates for the metric blowup at the boundary. In terms of *coordinate* velocity, the force looks like it is weakening. But in terms of *proper* velocity (measured with the metric), the expansion drive stays roughly constant until you get very close to the boundary.
 :::
@@ -524,9 +530,9 @@ At high $T_c$: The agent explores aggressively. The noise term dominates, the po
 
 At low $T_c$: The agent exploits what it knows. The noise term is small, the policy becomes sharp, the free energy prefers energy over entropy. The agent is "cold"---it moves decisively toward the best known option.
 
-This is exactly the exploration-exploitation tradeoff, but now it has a thermodynamic interpretation. And it comes with all the machinery of statistical mechanics: the Boltzmann distribution, the free energy, the fluctuation-dissipation theorem.
+This gives the exploration-exploitation tradeoff a thermodynamic analogy. The fluctuation-dissipation relation is a precise covariance constraint, while a Boltzmann distribution is available only in the conservative, reversible setting spelled out below.
 
-One beautiful consequence: the agent can *cool down* as it learns. Start with high $T_c$ to explore the space. As you find good regions, lower $T_c$ to commit to them. This is simulated annealing, but it emerges naturally from the thermodynamic structure.
+The model may also choose to *cool down* as it learns: start with high $T_c$ to explore, then lower it to commit. That is a simulated-annealing schedule supplied by the model; it does not follow automatically from the constant-temperature equations.
 :::
 
 (sec-the-geodesic-baoab-integrator)=
@@ -541,11 +547,11 @@ The key insight is **operator splitting**. Instead of trying to handle everythin
 - **A** for "drift" (moving along the manifold)
 - **O** for "Ornstein-Uhlenbeck" (the thermostat, handling the noise)
 
-The name BAOAB tells you the order: half-kick, half-drift, full thermostat, half-drift, half-kick. This symmetric structure is important---it gives you better accuracy and better preservation of the equilibrium distribution.
+The name BAOAB tells you the order: half-kick, half-drift, full thermostat, half-drift, half-kick. This symmetric structure can give second-order invariant-measure accuracy when the subflows are implemented as stated. That guarantee belongs to the conservative, constant-temperature, reversible setting; it does not automatically survive control, curl, variable coefficients, or an approximate drift. The exact Hamiltonian B/A pieces can be symplectic on the phase-space lift, but the dissipative O-step makes the full thermostatted update stochastic rather than symplectic.
 
-Why add Boris to BAOAB? Because we have the Lorentz force, which depends on velocity. The standard kick step does not handle velocity-dependent forces correctly. The Boris algorithm is a trick from plasma physics: instead of applying the force directly, you rotate the momentum around the force axis. This preserves the norm of the momentum, which is exactly what the Lorentz force should do (it does no work, just changes direction).
+Why add a Boris-type step to BAOAB? Because the Lorentz force depends on velocity. A standard kick does not handle that velocity-dependent term symmetrically. In three dimensions one can use a cross-product rotation; in general dimension the analogous Cayley transform acts on the matrix $\beta_{\text{curl}}\mathcal{F}G^{-1}$ and preserves the kinetic norm $p^TG^{-1}p$ under the skew condition. It is this metric kinetic norm, rather than the Euclidean $|p|$, that the force leaves unchanged.
 
-The combination---Boris-BAOAB---handles everything: the potential gradient, the Lorentz force, the geodesic correction, and the thermal noise. It is a bit complicated, but it is the right way to do it.
+The combination is useful only when each piece matches the SDE. The A-step must move $(z,p)$ by the cotangent geodesic flow, including parallel transport of the covector momentum; an exponential map with frozen $p$ is an approximation. The reference code is therefore an implementation approximation, not evidence that all these subflows are exact.
 :::
 
 We provide the numerical integrator for the controlled geodesic SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`). The **Boris-BAOAB** scheme extends the standard BAOAB {cite}`leimkuhler2016computation` to handle the velocity-dependent Lorentz force from non-conservative reward fields.
@@ -555,14 +561,18 @@ We provide the numerical integrator for the controlled geodesic SDE (Definition 
 
 The Boris-BAOAB integrator splits the Lorentz-Langevin dynamics into five substeps per time step $h$:
 
-1. **B** (half kick + Boris rotation):
-   - Half-kick from gradient: $p^- \leftarrow p - \frac{h}{2}\nabla\Phi(z)$
-   - Boris rotation (if $\mathcal{F} \neq 0$):
-     - $t \leftarrow \frac{h}{2}\beta_{\text{curl}} G^{-1}\mathcal{F}$ (rotation vector)
-     - $p' \leftarrow p^- + p^- \times t$
-     - $s \leftarrow \frac{2t}{1 + |t|^2}$
-     - $p^+ \leftarrow p^- + p' \times s$
-   - Half-kick from gradient: $p \leftarrow p^+ - \frac{h}{2}\nabla\Phi(z)$
+1. **B** (half kick + optional curl rotation):
+   - Apply the covector half-kick
+     $p^- \leftarrow p - \frac{h}{2}(d\Phi-\gamma G u_\pi)$.
+   - If $\mathcal{F}\neq0$, apply the Cayley update for the velocity-dependent term. With
+     $A=\beta_{\text{curl}}\mathcal{F}G^{-1}$,
+     $$
+     p^+ \leftarrow \left(I-\frac{h}{2}A\right)^{-1}
+       \left(I+\frac{h}{2}A\right)p^-.
+     $$
+     In three dimensions this has the usual Boris cross-product form; the matrix form is the
+     definition in arbitrary dimension.
+   - The second half-kick is the B substep at the end of the symmetric composition.
 
 2. **A** (half drift): $z \leftarrow \operatorname{Exp}_z\left(\frac{h}{2} G^{-1}(z)\, p\right)$
 
@@ -574,9 +584,11 @@ The Boris-BAOAB integrator splits the Lorentz-Langevin dynamics into five subste
 
 where $c_1 = e^{-\gamma h}$ and $c_2 = \sqrt{(1 - c_1^2) T_c}$.
 
-**Conservative Limit:** When $\mathcal{F} = 0$, the Boris rotation is identity and we recover standard BAOAB.
+**Conservative Limit:** When $\mathcal{F} = 0$, the Boris rotation is identity and the idealized composition reduces to standard BAOAB.
 
-*Remark (Boris Rotation).* The Boris algorithm is a volume-preserving integrator for magnetic-like forces. It rotates the momentum around the local Value Curl axis, preserving the norm $|p|$ while changing direction. This ensures the Lorentz force does no net work, consistent with physics.
+The reference code below is an implementation approximation: it uses an exponential-map drift and a local Christoffel correction, and therefore should not be read as an exact geodesic substep or as a proof of the invariant measure.
+
+*Remark (Curl Rotation).* Under the skew condition $A^{\mathsf T}G^{-1}+G^{-1}A=0$, the Cayley update is a metric-orthogonal, volume-preserving rotation and preserves the kinetic norm $p^{\mathsf T}G^{-1}p$. It need not preserve the Euclidean norm $|p|$. The Lorentz force therefore does no work in the metric kinetic energy.
 
 *Remark (O-step).* The O-step implements the **Ornstein-Uhlenbeck thermostat**, which exactly preserves the Maxwell-Boltzmann momentum distribution $p \sim \mathcal{N}(0, T_c G)$.
 
@@ -585,12 +597,29 @@ where $c_1 = e^{-\gamma h}$ and $c_2 = \sqrt{(1 - c_1^2) T_c}$.
 :::{admonition} Why Splitting Works
 :class: feynman-added tip
 
-Each sub-step has an exact solution:
-- **B-step** (kick): $p \to p - \frac{h}{2}\nabla\Phi$ is just adding a constant to momentum
-- **A-step** (drift): $z \to \exp_z(\frac{h}{2}v)$ is following a geodesic
-- **O-step** (thermostat): $p \to c_1 p + c_2 \xi$ is an Ornstein-Uhlenbeck step
+The idealized subflows are the pieces for which exactness can be claimed:
+- **B-step** (kick): in a frozen position, the covector momentum receives the appropriate half-kick; with a Boris rotation, the force is applied using the corresponding symmetric substep
+- **A-step** (drift): $(z,p)$ follows the cotangent geodesic flow, so $z$ moves by the exponential map and $p$ is parallel-transported along that geodesic
+- **O-step** (thermostat): $p \to c_1 p + c_2 G^{1/2}\xi$ is the exact Ornstein--Uhlenbeck update for the stated local momentum law
 
-None of these is approximate---each sub-step is exact. The only approximation is in the splitting itself: we pretend the forces are constant during each sub-step. This is why symmetric splitting (B-A-O-A-B) is important: the errors from the first half cancel the errors from the second half, giving you $O(h^2)$ accuracy instead of $O(h)$.
+For exact subflows, symmetric splitting (B-A-O-A-B) cancels the leading odd error and yields the stated $O(h^2)$ invariant-measure result under the proposition's conservative hypotheses. If the code freezes the momentum during A, adds an extra Christoffel correction, omits the rotation, or reuses a stale gradient, that code is not the exact composition and inherits no such guarantee.
+:::
+
+:::{prf:definition} Möbius Translation on the Poincaré Disk
+:label: def-mobius-translation
+
+For $c,z\in\mathbb D^d$, the Möbius translation that sends $c$ to the
+origin is
+
+$$
+\phi_c(z):=(-c)\oplus z,
+$$
+
+where $\oplus$ is the Poincaré-disk Möbius addition used by the exponential
+map below.  In particular $\phi_c(c)=0$ and $\phi_c$ is an isometry of the
+Poincaré metric.  The map changes coordinates only; it does not alter a
+potential, a router, or a probability law.
+
 :::
 
 **Algorithm 22.4.2 (Full Geodesic BAOAB with Jump Step).**
@@ -714,7 +743,10 @@ def geodesic_baoab_step(
     h: float,                         # time step
     jump_rate_fn: Optional[Callable] = None,  # λ(z, K) -> [B]
     chart_transition_fn: Optional[Callable] = None,  # L(z, K_src, K_tgt) -> z'
-    value_fn: Optional[Callable] = None,  # V(z, K) -> [B]
+    grad_Phi_fn: Optional[Callable] = None,  # (z, K) -> [B, d], optional endpoint gradient
+    target_chart_fn: Optional[Callable] = None,  # (z, K) -> target chart indices
+    num_charts: Optional[int] = None,
+    mass_jump_factor: float = 1.0,
 ) -> GeodesicState:
     """
     Full Geodesic BAOAB integrator with Poisson jump process.
@@ -728,8 +760,8 @@ def geodesic_baoab_step(
     6. Jump-step: Poisson process for chart transitions
 
     Cross-references:
-        - Definition 22.2.1 (Bulk Drift SDE)
-        - Definition 22.2.2 (Jump Process)
+        - {prf:ref}`def-bulk-drift-continuous-flow` (bulk drift SDE)
+        - {prf:ref}`prop-jump-intensity-from-value-discontinuity` (target-dependent jump rate)
         - {ref}`Section 2.5.1 <sec-levi-civita-connection-and-parallel-transport>` (Christoffel symbols)
     """
     z, p, K, m = state.z, state.p, state.K, state.m
@@ -741,8 +773,10 @@ def geodesic_baoab_step(
     c2 = math.sqrt((1 - c1**2) * T_c) if T_c > 0 else 0.0
 
     # ===== B-step: half kick =====
-    # p ← p - (h/2) * (∇Φ_eff - u_π)
-    total_force = grad_Phi - u_pi  # Note: gradient is positive, so subtract
+    # u_pi is a contravariant velocity; lower it before adding the policy force.
+    G = poincare_metric(z)
+    control_covector = gamma * torch.einsum("bij,bj->bi", G, u_pi)
+    total_force = grad_Phi - control_covector
     p = p - (h / 2) * total_force
 
     # ===== A-step: half drift =====
@@ -750,11 +784,10 @@ def geodesic_baoab_step(
     G_inv = poincare_metric_inv(z)
     velocity = torch.einsum('bij,bj->bi', G_inv, p)  # contravariant velocity
 
-    # Apply geodesic correction to velocity
-    geodesic_corr = christoffel_contraction(z, velocity)
-    velocity_corrected = velocity - (h / 4) * geodesic_corr  # half of half-step
-
-    z = poincare_exp_map(z, (h / 2) * velocity_corrected)
+    # The exponential-map drift is a local approximation here. An exact A-step
+    # would also parallel-transport p along the geodesic; the reference code
+    # leaves p in its local frame and therefore carries no exact symplectic claim.
+    z = poincare_exp_map(z, (h / 2) * velocity)
 
     # ===== O-step: thermostat =====
     # p ← c₁ p + c₂ G^{1/2} ξ
@@ -769,15 +802,15 @@ def geodesic_baoab_step(
     # ===== A-step: half drift =====
     G_inv = poincare_metric_inv(z)
     velocity = torch.einsum('bij,bj->bi', G_inv, p)
-    geodesic_corr = christoffel_contraction(z, velocity)
-    velocity_corrected = velocity - (h / 4) * geodesic_corr
-
-    z = poincare_exp_map(z, (h / 2) * velocity_corrected)
+    z = poincare_exp_map(z, (h / 2) * velocity)
 
     # ===== B-step: half kick =====
-    # Recompute gradient at new position (for accuracy)
-    # In practice, often reuse grad_Phi for efficiency
-    p = p - (h / 2) * total_force
+    # A symmetric composition evaluates the endpoint force at the endpoint.
+    grad_end = grad_Phi_fn(z, K) if grad_Phi_fn is not None else grad_Phi
+    G_end = poincare_metric(z)
+    control_end = gamma * torch.einsum("bij,bj->bi", G_end, u_pi)
+    total_force_end = grad_end - control_end
+    p = p - (h / 2) * total_force_end
 
     # ===== Jump-step: Poisson process =====
     if jump_rate_fn is not None and chart_transition_fn is not None:
@@ -789,18 +822,24 @@ def geodesic_baoab_step(
         u = torch.rand(B, device=device)
         jumps = u < prob_jump  # [B] boolean
 
-        if jumps.any() and value_fn is not None:
-            # Determine target chart (simplified: assume single target)
-            K_target = (K + 1) % 4  # Example: cycle through 4 charts
+        if jumps.any():
+            # The rate function supplies the total intensity. A target selector
+            # supplies the sampled target; the fallback is only a finite-chart
+            # example and must be configured with ``num_charts``.
+            if target_chart_fn is not None:
+                K_target = target_chart_fn(z, K)
+            else:
+                if num_charts is None or num_charts < 2:
+                    raise ValueError("target_chart_fn or num_charts >= 2 is required for jumps")
+                K_target = (K + 1) % num_charts
 
             # Apply chart transition for jumping particles
             z_new = chart_transition_fn(z, K, K_target)
             z = torch.where(jumps.unsqueeze(-1), z_new, z)
             K = torch.where(jumps, K_target, K)
 
-            # Update mass (importance weight)
-            eta = 1.1  # Jump mass factor
-            m = torch.where(jumps, m * eta, m)
+            # Update mass (importance weight) using the declared resampling factor.
+            m = torch.where(jumps, m * mass_jump_factor, m)
 
     # Project to ensure we stay in disk
     z_norm = torch.sqrt((z ** 2).sum(dim=-1, keepdim=True))
@@ -813,7 +852,7 @@ def geodesic_baoab_step(
 :::{prf:proposition} BAOAB Preserves Boltzmann
 :label: prop-baoab-preserves-boltzmann
 
-The BAOAB integrator preserves the Boltzmann distribution $\rho(z, p) \propto \exp(-\Phi_{\text{eff}}(z)/T_c - \|p\|_G^2 / (2T_c))$ to second order in $h$.
+Under the conservative hypotheses $\beta_{\text{curl}}=0$, $u_\pi=0$, constant $T_c$, reversible boundary conditions, and an exact implementation of the stated symmetric splitting, the BAOAB integrator preserves the Boltzmann distribution $\rho(z, p) \propto \exp(-H(z,p)/T_c)$ to second order in $h$.
 
 *Proof sketch.* The symmetric splitting B-A-O-A-B ensures time-reversibility of the deterministic steps. The O-step exactly samples the Maxwell-Boltzmann momentum distribution. Together, these guarantee that $\rho$ is a fixed point of the numerical flow up to $O(h^3)$ errors. See {cite}`leimkuhler2016computation`. $\square$
 
@@ -824,11 +863,11 @@ The BAOAB integrator preserves the Boltzmann distribution $\rho(z, p) \propto \e
 :::{div} feynman-prose
 This result about preserving the Boltzmann distribution is crucial. When you run a simulation, you want it to sample from the correct distribution. If your integrator has a bias, your samples will be wrong---you will be over-sampling some regions and under-sampling others.
 
-Euler-Maruyama, the simplest integrator, has $O(h)$ bias. That means if you use a time step of $h = 0.01$, your distribution is wrong by about 1%. Sounds small? It adds up. Over a million steps, the errors compound.
+The comparison is conditional. For a fixed conservative Langevin problem, Euler-Maruyama generally has an $O(h)$ stationary bias, while an exact compatible BAOAB composition has the $O(h^2)$ bias stated in the proposition. An order symbol is an asymptotic scaling, not a promise that $h=0.01$ produces exactly a one-percent error.
 
-BAOAB has $O(h^2)$ bias. Same time step, $h = 0.01$, the error is about 0.01%. A hundred times smaller. This matters enormously for any application where you need accurate statistics---which is basically all of them.
+With the same small step, the second-order method can therefore be much less biased, but the constant depends on the potential, metric, boundary, and observable. Control, curl, state-dependent temperature, and approximate geodesic steps change the problem and require their own analysis.
 
-The price you pay is five sub-steps instead of one. But that is a small price for a hundred-fold improvement in accuracy.
+The price is the extra substeps and the need to implement their geometry correctly. That price is justified when the conservative sampling guarantee is the quantity being tested; outside that regime, the method remains a numerical integrator whose error must be measured directly.
 :::
 
 (pi-langevin-thermostat)=
@@ -862,7 +901,7 @@ The price you pay is five sub-steps instead of one. But that is a small price fo
 
 **In Physics:** A stochastic process satisfies detailed balance if transition rates satisfy $\pi(x)W(x \to y) = \pi(y)W(y \to x)$ for all states $x, y$. This implies the stationary distribution $\pi$ and time-reversibility {cite}`vanKampen1992stochastic`.
 
-**In Implementation:** The WFR dynamics satisfy detailed balance at equilibrium:
+**In Implementation:** The conservative, reversible WFR subcase can satisfy detailed balance at equilibrium:
 
 $$
 \rho_*(z) \cdot J(z \to z') = \rho_*(z') \cdot J(z' \to z)
@@ -879,7 +918,7 @@ where $\rho_* \propto \exp(-\Phi_{\text{eff}}/T_c)\sqrt{|G|}$ is the Boltzmann d
 | Entropy production $\dot{S}$ | Zero at equilibrium |
 | Fluctuation-dissipation | Einstein relation for $T_c$ |
 
-**Consequence (conservative case):** Detailed balance ensures the BAOAB thermostat samples the correct distribution. When $\mathcal{F} \neq 0$, detailed balance is broken and the steady state is a NESS.
+**Consequence (conservative case):** Under the compatible boundary, jump, and thermostat hypotheses, detailed balance ensures the BAOAB thermostat samples the correct distribution. Policy forcing, non-reversible jumps, or $\mathcal{F} \neq 0$ generally produce a NESS instead.
 ::::
 
 (sec-the-overdamped-limit)=
@@ -893,14 +932,16 @@ This is the **overdamped limit**, and it is important for two reasons:
 1. **Simplicity**: First-order dynamics are easier to simulate and analyze than second-order
 2. **Relevance**: Many real systems operate in this regime---diffusion models, Brownian motion in viscous fluids, biological processes
 
-The mathematical statement is: when friction $\gamma$ is large compared to the forces, the velocity quickly relaxes to
+The mathematical statement is a singular limit, not merely the instruction "set momentum to zero." When $m/\gamma\to0$ with the appropriate computation-time scaling, and in the conservative, uncontrolled, constant-temperature setting used by the theorem, the velocity quickly relaxes to
 
 $$
-\dot{z} \approx \mathcal{M}_\gamma\!\left(-G^{-1}\nabla\Phi\right), \qquad \mathcal{M}_\gamma := (\gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}.
+\dot{z} \approx -G^{-1}\nabla\Phi.
 $$
-You do not need to track the momentum explicitly; you can just compute it from the force using the curl-corrected mobility.
 
-The resulting dynamics are curl-corrected gradient flow with noise: roll downhill, get jostled by thermal fluctuations, and (if $\mathcal{F} \neq 0$) pick up sideways drift through $\mathcal{M}_\gamma$. No inertia, no coasting, no overshoot. The agent responds instantaneously to changes in the potential.
+In physical time before this rescaling, the leading drift carries the expected $1/\gamma$ factor.
+You can then eliminate momentum and compute the leading position drift from the force. A curl-corrected mobility is a useful formal extension, but it is outside the conservative limit proved here unless an additional scaling and proof are supplied.
+
+The resulting proved equation is a first-order Ito diffusion with the metric gradient drift, the geometry-induced Ito correction, and thermal noise. In a broader controlled or non-conservative model one may obtain extra mobility terms, but those terms are not covered by this theorem. "Instantaneous" means only that momentum relaxation is asymptotically faster than position evolution.
 
 When is this a good approximation? When the timescale of momentum relaxation ($\sim 1/\gamma$) is much shorter than the timescale of position changes. In that case, the momentum "slaves" to the position, and you can eliminate it.
 :::
@@ -910,76 +951,90 @@ In many applications (diffusion models, biological control), the system operates
 :::{prf:theorem} Overdamped Limit
 :label: thm-overdamped-limit
 
-Consider the second-order SDE from Definition {prf:ref}`def-bulk-drift-continuous-flow` with friction coefficient $\gamma$:
+Consider the conservative second-order SDE obtained from Definition {prf:ref}`def-bulk-drift-continuous-flow` by setting
+$\beta_{\text{curl}}=0$ and $u_\pi=0$, with inertial scale $m$ and friction $\gamma$:
 
 $$
-m\,\ddot{z}^k + \gamma\,\dot{z}^k - \beta_{\text{curl}} G^{km}\mathcal{F}_{mj}\dot{z}^j + G^{kj}\partial_j\Phi + \Gamma^k_{ij}\dot{z}^i\dot{z}^j = \sqrt{2T_c}\,\left(G^{-1/2}\right)^{kj}\,\xi^j,
+m\,\ddot{z}^k + \gamma\,\dot{z}^k + G^{kj}\partial_j\Phi_{\text{eff}} + \Gamma^k_{ij}\dot{z}^i\dot{z}^j = \sqrt{2\gamma T_c}\,\left(G^{-1/2}\right)^{kj}\,\xi^j,
 
 $$
-where $m$ is the "inertial mass" and $\xi$ is white noise. In the limit $\gamma \to \infty$ with $m$ fixed (or equivalently, $m \to 0$ with $\gamma$ fixed), the dynamics reduce to the first-order Langevin equation:
+where $\xi$ is white noise. In physical time, the Smoluchowski--Kramers limit gives
+$dz=-(1/\gamma)G^{-1}d\Phi_{\text{eff}}\,dt+\sqrt{2T_c/\gamma}\,G^{-1/2}dW_t$.
+After the declared computation-time rescaling $s=t/\gamma$, the formal limit $m/\gamma\to0$ is the Ito equation:
 
 $$
-dz^k = \left[\mathcal{M}_\gamma(z)\right]^{k}{}_{j}\left(-G^{j\ell}(z)\,\partial_\ell\Phi_{\text{gen}}(z)\right) ds + \sqrt{2T_c}\,\left(G^{-1/2}(z)\right)^{kj}\,dW^j_s.
+dz^k = \left[-G^{k\ell}(z)\,\partial_\ell\Phi_{\text{eff}}(z) - T_c G^{ij}(z)\Gamma^k_{ij}(z)\right] ds + \sqrt{2T_c}\,\left(G^{-1/2}(z)\right)^{kj}\,dW^j_s.
 
 $$
 *Proof sketch.* In the high-friction limit, velocity equilibrates instantaneously to
-$\dot{z} \approx \mathcal{M}_\gamma(-G^{-1}\nabla\Phi)$. The geodesic term
-$\Gamma(\dot{z},\dot{z}) \sim O(|\dot{z}|^2) = O(\gamma^{-2})$ is negligible. What remains is the curl-corrected
-gradient flow with diffusion. See {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for the full singular
-perturbation analysis. $\square$
+$\dot{z} \approx -(1/\gamma)G^{-1}\nabla\Phi_{\text{eff}}$ in physical time. The geodesic term
+$\Gamma(\dot{z},\dot{z}) \sim O(|\dot{z}|^2) = O(\gamma^{-2})$ is negligible. What remains is the conservative
+gradient flow with the fluctuation--dissipation noise. See {ref}`Appendix A.4 <sec-appendix-a-full-derivations>` for the
+singular perturbation analysis. $\square$
 
 :::
 
 :::{div} feynman-prose
-Notice what disappears in the overdamped limit: the geodesic correction term $\Gamma(\dot{z},\dot{z})$. This makes sense. The geodesic correction is about inertia---it tells you how to maintain your direction on a curved surface when you are coasting. But in the overdamped limit, you are not coasting. You are always being dragged to a halt by friction and then pushed by the force. There is no inertia to correct for.
+In the deterministic part of the overdamped limit, the inertial geodesic term $\Gamma(\dot{z},\dot{z})$ drops out because the velocity relaxation is fast. But noise on a curved manifold leaves a geometric trace: in Ito coordinates the limiting equation contains the drift $-T_cG^{ij}\Gamma^k_{ij}$. Dropping the inertial term does not mean that all Christoffel symbols disappear.
 
-This is why the overdamped equation is so much simpler: just
-$dz = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla\Phi\right) ds + \text{noise}$ with $\mathcal{M}_{\text{curl}} := (I - \beta_{\text{curl}} G^{-1}\mathcal{F})^{-1}$. The curvature still matters---it is hiding in the metric $G$---but the explicit Christoffel symbols are gone.
+Under the theorem's conservative hypotheses, the coordinate form is
+$dz^k = [-G^{k\ell}\partial_\ell\Phi - T_cG^{ij}\Gamma^k_{ij}]ds + \sqrt{2T_c}(G^{-1/2})^{kj}dW^j$.
+The metric still controls the drift and diffusion, while the displayed Christoffel contraction supplies the Ito correction needed for the chosen reference measure. A curl mobility can be studied separately, but it is not silently part of this proved reduction.
 :::
 
 :::{prf:corollary} Recovery of Holographic Flow
 :label: cor-recovery-of-holographic-flow
 
-Setting $\alpha = 1$ (pure generation), $T_c \to 0$ (deterministic limit), and $\mathcal{F} = 0$ (conservative case) in the overdamped equation recovers the holographic gradient flow from {ref}`Section 21.2 <sec-policy-control-field>`:
+Setting $\alpha = 1$ (pure generation), $T_c \to 0$, $\mathcal{F}=0$, $u_\pi=0$, and using the computation-time unit in the overdamped equation recovers the prescribed holographic gradient flow from {ref}`Section 21.2 <sec-policy-control-field>`:
 
 $$
 \dot{z} = -G^{-1}(z)\,\nabla U(z).
 
 $$
-For the Poincare disk, this gives $\dot{z} = \frac{(1-|z|^2)}{2}\,z$, which integrates to $|z(\tau)| = \tanh(\tau/2)$.
+For the Poincare disk and $z\neq0$, this gives $\dot{z} = \frac{(1-|z|^2)}{2}\,\frac{z}{|z|}$, which integrates to $|z(\tau)| = \tanh(\tau/2+\operatorname{artanh}r_0)$.
 
-*Proof.* Direct substitution of $\Phi_{\text{gen}} = U$ into the overdamped equation. The explicit solution for the radial coordinate $r(\tau) = |z(\tau)|$ satisfies $\dot{r} = \frac{1-r^2}{2}$, which integrates to $r(\tau) = \tanh(\tau/2 + \operatorname{artanh}(r_0))$. For $r_0 = 0$, we get $r(\tau) = \tanh(\tau/2)$. $\square$
+*Proof.* Direct substitution of $\Phi_{\mathrm{eff}}=U$ in the pure-generation
+limit. The explicit solution for the radial coordinate $r(\tau)=|z(\tau)|$
+satisfies $\dot r=(1-r^2)/2$, which integrates to
+$r(\tau)=\tanh(\tau/2+\operatorname{artanh}(r_0))$. For $r_0=0$, we get
+$r(\tau)=\tanh(\tau/2)$. $\square$
 
-*Remark.* This proves that the "ad-hoc" holographic law from {ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>` is actually the **optimal control trajectory** for the geometry defined in {ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, vindicating the intuition.
+*Remark.* This identifies the radial solution of the declared generation flow. It does not establish an optimal-control claim without a specified control objective and admissible-control class.
 
 :::
 
 :::{div} feynman-prose
 This is one of those beautiful moments where everything fits together. In Section 21, we introduced the holographic flow $|z(\tau)| = \tanh(\tau/2)$ as a kind of "natural" radial expansion. It looked like an ad-hoc choice.
 
-But now we see it is not ad-hoc at all. It is the *unique* geodesic flow for the hyperbolic potential on the Poincare disk in the overdamped, deterministic limit. The geometry *forces* this flow on us.
+Under the explicit choices $\alpha=1$, $T_c\to0$, $\mathcal{F}=0$, $u_\pi=0$, and the declared computation-time unit, direct substitution recovers that radial generation field. The radial solution is unique for the stated radial ODE and initial condition; this does not make it the unique geodesic or an optimal-control solution on the whole disk.
 
-This is the kind of consistency check that tells you the theory is on the right track. Different parts, derived independently, turn out to agree. The holographic law is not just one choice among many---it is the geometrically natural choice.
+This is a useful consistency check: the holographic prescription agrees with the conservative overdamped calculation in precisely that regime. It remains a selected modeling law, and other potentials or controls give other flows.
 :::
 
 :::{prf:corollary} Fokker-Planck Duality {cite}`risken1996fokkerplanck`
 :label: cor-fokker-planck-duality
 
-The stationary distribution of the overdamped SDE is:
+In the conservative overdamped subcase above, let $q(z,s)$ denote density
+with respect to the Riemannian volume $d\mu_G=\sqrt{|G|}\,dz$.  Its stationary
+density is
 
 $$
-p_*(z) \propto \exp\left(-\frac{\Phi_{\text{gen}}(z)}{T_c}\right)\,\sqrt{|G(z)|},
+q_*(z) \propto \exp\left(-\frac{\Phi_{\text{eff}}(z)}{T_c}\right).
 
 $$
-where $|G| = \det(G)$ is the metric determinant. This is the Boltzmann distribution on the curved manifold.
+The corresponding density with respect to coordinate Lebesgue volume is
+$p_*(z)=q_*(z)\sqrt{|G(z)|}$.  The two densities describe the same
+Boltzmann law; the factor $\sqrt{|G|}$ is a change of reference measure.
 
-*Proof.* The Fokker-Planck equation for the overdamped dynamics is:
+*Proof.* The Fokker--Planck equation for the Riemannian density $q$ is:
 
 $$
-\partial_s p = \nabla_i\left( G^{ij}\left( p\,\partial_j\Phi + T_c\,\partial_j p \right) \right).
+\partial_s q = \frac{1}{\sqrt{|G|}}\partial_i\!\left(\sqrt{|G|}G^{ij}\left( q\,\partial_j\Phi_{\text{eff}} + T_c\,\partial_j q \right)\right).
 
 $$
-Setting $\partial_s p = 0$ and using detailed balance gives $p \propto e^{-\Phi/T_c} \sqrt{|G|}$. The $\sqrt{|G|}$ factor accounts for the Riemannian volume form. $\square$
+Setting $\partial_s q=0$ and using detailed balance gives
+$q\propto e^{-\Phi_{\mathrm{eff}}/T_c}$.  Multiplying by $\sqrt{|G|}$
+gives the coordinate density stated above. $\square$
 
 **Cross-references:** {ref}`Section 21.2 <sec-policy-control-field>` (Langevin dynamics), Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`, {ref}`Section 2.11 <sec-variance-value-duality-and-information-conservation>` (Belief density evolution).
 
@@ -993,9 +1048,9 @@ p_*(z) \propto \exp\left(-\frac{\Phi}{T_c}\right)\,\sqrt{|G|}
 
 $$
 
-This is the Boltzmann distribution on a curved manifold. The $\exp(-\Phi/T_c)$ part is familiar from statistical mechanics: probability is exponentially suppressed in high-potential regions. The $\sqrt{|G|}$ part is the volume correction from the geometry: probability is enhanced in regions where the metric is large, because there is "more space" there in the intrinsic sense.
+Under the conservative overdamped hypotheses, and with the Ito drift and reference measure used in the corollary, this is the Boltzmann density with respect to coordinate volume. The $\exp(-\Phi/T_c)$ part suppresses high-potential regions; when the potential contains the positive $V_{\text{critic}}$ term, that means high cost-to-go is suppressed and lower-cost states receive more weight. This is a cost preference, not a high-reward interpretation unless one changes the convention to $V=-\text{reward}$. The $\sqrt{|G|}$ factor converts between coordinate volume and Riemannian volume; it is a measure factor, not an extra reward for large metric.
 
-Together, these give you the correct equilibrium. The agent, running the SDE for a long time, will sample from this distribution. Low potential, high probability. Large metric volume element, high probability. This is the target distribution for MCMC sampling on curved manifolds.
+Together they give the stated equilibrium only for that reversible subcase, with suitable boundary and regularity conditions. Curl, policy forcing, jumps, variable temperature, or a finite-step approximate integrator can produce a non-equilibrium law or sampling bias. The formula is therefore a target for a compatible MCMC implementation, not a guarantee for every version of the agent.
 :::
 
 (pi-fokker-planck)=
@@ -1030,7 +1085,7 @@ with stationary distribution $p_*(z) \propto \exp(-\Phi_{\text{eff}}(z)/T_c)\sqr
 :::{div} feynman-prose
 Now let me put all the pieces together. We have equations for continuous motion, for discrete jumps, for the potential, for the temperature. How do these combine into a coherent picture of what the agent does?
 
-The agent lifecycle has five phases, and they map beautifully onto a physical picture of phase transitions:
+The agent lifecycle has five operational phases. They can be pictured using the language of phase transitions, but that language is an interpretation of the schedule, not a thermodynamic theorem:
 
 1. **Init**: Start at the origin. This is the "gas phase"---maximum entropy, no commitment, all possibilities open.
 
@@ -1042,7 +1097,7 @@ The agent lifecycle has five phases, and they map beautifully onto a physical pi
 
 5. **Decode**: Map to the output space. The latent trajectory becomes an actual observable.
 
-The beautiful thing is that these phases are not imposed from outside. They *emerge* from the dynamics. The symmetry at the origin creates the need for a kick. The expansion drive creates the bulk flow. The boundary condition creates the stopping criterion. The geometry itself choreographs the whole dance.
+The phases are selected by the lifecycle rules and boundary policy. The symmetry at the origin motivates a kick, the expansion potential supplies a bulk tendency, and the cutoff supplies a stopping criterion. Geometry helps organize the schedule; it does not by itself prove a phase transition or determine the policy.
 :::
 
 The complete agent lifecycle integrates the components from Sections 21-22 into a coherent execution flow.
@@ -1089,24 +1144,33 @@ def run_agent_loop(
     state = GeodesicState(z=z, p=p, K=K, m=m, s=0.0)
 
     # ===== Phase 2: Kick =====
-    # Apply symmetry-breaking control at origin
-    u_pi = policy.symmetry_breaking_kick(z, mode='generation')
+    # Keep the initial symmetry-breaking velocity and include it in the first
+    # bulk control update instead of overwriting it before the first step.
+    u_kick = policy.symmetry_breaking_kick(z, mode='generation')
 
     # ===== Phase 3: Bulk (with Texture Firewall) =====
     for step in range(max_steps):
-        # Compute effective potential gradient
+        # Compute effective potential gradient.  The implementation must return
+        # the declared zero subgradient for the radial U term at z=0.
         grad_Phi = compute_effective_potential_gradient(
             state.z, state.K, policy.value_fn, alpha=0.5
         )
 
-        # Update control field
+        # Update control field.  The kick is applied on the first bulk step.
         u_pi = policy.control_field(state.z, state.K)
+        if step == 0:
+            u_pi = u_pi + u_kick
 
         # BAOAB step (texture is invisible here)
         state = geodesic_baoab_step(
             state, grad_Phi, u_pi, T_c, gamma, h,
             jump_rate_fn=policy.jump_rate,
-            chart_transition_fn=policy.chart_transition
+            chart_transition_fn=policy.chart_transition,
+            grad_Phi_fn=lambda z_, K_: compute_effective_potential_gradient(
+                z_, K_, policy.value_fn, alpha=0.5
+            ),
+            num_charts=getattr(policy, "num_charts", None),
+            mass_jump_factor=getattr(policy, "mass_jump_factor", 1.0),
         )
 
         # Check boundary condition
@@ -1136,10 +1200,10 @@ This is the **Texture Firewall**: texture is sampled only at the boundary, not d
 The firewall ensures the bulk dynamics remain finite-dimensional, with all the high-dimensional structure appearing only at the final step.
 :::
 
-:::{prf:proposition} Phase Transition Interpretation
+:::{prf:proposition} Lifecycle Schedule Interpretation
 :label: prop-phase-transition-interpretation
 
-The agent lifecycle corresponds to a thermodynamic phase transition:
+The agent lifecycle admits a thermodynamic phase-transition analogy for its schedule:
 
 | Phase | Thermodynamic Analogy | Order Parameter |
 |-------|----------------------|-----------------|
@@ -1156,14 +1220,14 @@ The agent lifecycle corresponds to a thermodynamic phase transition:
 :::{div} feynman-prose
 Up to now, we have been treating the temperature $T_c$ as a constant. But there is something unsatisfying about that. The metric $G$ varies across the manifold---should not the temperature vary too?
 
-The answer is yes, if you want to maintain the correct relationship between noise and dissipation. This is the **fluctuation-dissipation theorem**: in equilibrium, the noise and the friction are related by the temperature. If you change one, you have to change the others to stay in equilibrium.
+You may choose to vary the temperature with position, but that is a modeling decision. The **fluctuation-dissipation relation** then tells you how to match the noise covariance to the chosen temperature and friction. It does not choose the schedule, and matching the covariance alone does not guarantee equilibrium.
 
-On a curved manifold, this becomes the **Einstein relation**: $\sigma^2 = 2\gamma T_c / G$. The noise variance, the friction, the temperature, and the metric are all tied together.
+In the scalar shorthand, the relation reads $\sigma^2 = 2\gamma T_c / G$; in coordinates it is a covariance relation involving $G^{-1}$. The noise variance, friction, temperature, and metric are tied together after the schedule has been declared.
 
-What happens if you let the temperature adapt to the geometry? Something wonderful: the agent automatically transitions between exploration and exploitation based on where it is. Near the origin (small $G$), the effective noise is large---exploration. Near the boundary (large $G$), the effective noise is small---exploitation. No temperature schedule needed. The geometry does it for you.
+For the explicit schedule below, effective coordinate noise is larger near the origin and smaller near the boundary. That creates an exploration-to-exploitation operating schedule. It is a useful design, but the geometry does not supply it automatically, and no thermodynamic phase-transition claim follows without additional analysis.
 :::
 
-The temperature $T_c$ and friction $\gamma$ need not be constant---they can adapt to the local geometry to maintain the Einstein relation.
+The temperature $T_c$ and friction $\gamma$ may be chosen as state-dependent coefficients. The Einstein relation constrains the noise covariance once those coefficients are chosen; it does not select a temperature schedule.
 
 :::{prf:definition} Einstein Relation on Manifolds
 :label: def-einstein-relation-on-manifolds
@@ -1174,29 +1238,29 @@ $$
 \sigma^2(z) = \frac{2\gamma(z)\, T_c}{G(z)},
 
 $$
-where $\sigma^2$ is the noise variance. This ensures the correct equilibrium distribution.
+where $\sigma^2$ is the noise variance. This fixes the fluctuation--dissipation covariance for a chosen $T_c(z)$ and $\gamma(z)$; a Boltzmann equilibrium additionally requires constant coefficients (or the corresponding variable-coefficient correction terms).
 
 :::
-:::{prf:proposition} Automatic Phase Transitions
+:::{prf:proposition} Geometry-scaled Temperature Schedule
 :label: prop-automatic-phase-transitions
 
-With adaptive temperature $T_c(z)$ satisfying the Einstein relation:
+For the modeling choice $T_c(z)=T_0(1-|z|^2)^2/4$ on the Poincare disk, the effective coordinate noise decreases toward the boundary:
 
 | Regime                      | Metric $G(z)$ | Effective Noise | Phase Behavior                |
 |-----------------------------|---------------|-----------------|-------------------------------|
 | **Uncertain** (near origin) | Small         | Large           | Gas phase (exploration)       |
 | **Certain** (near boundary) | Large         | Small           | Solid phase (crystallization) |
 
-*Remark.* This automatic phase transition emerges from the geometry alone---no explicit temperature schedule is needed.
+*Remark.* This is an explicit geometry-scaled schedule, not a phase-transition theorem. The Einstein relation alone does not imply a thermodynamic phase transition.
 
 :::
 
 :::{div} feynman-prose
-This is worth pausing on. In standard machine learning, if you want to transition from exploration to exploitation, you have to design a temperature schedule. High temperature at the start, gradually lowering it. This is simulated annealing, and it requires hand-tuning.
+This is worth pausing on. In standard machine learning, an exploration-to-exploitation transition is implemented by choosing a temperature schedule. High temperature at the start and lower temperature later is simulated annealing, with parameters that must be selected.
 
-Here, the same effect emerges automatically. The geometry provides a "natural" temperature schedule: high effective noise near the center, low effective noise near the boundary. You do not have to tune it; it falls out of the mathematics.
+Here we make one such choice explicitly, $T_c(z)=T_0(1-|z|^2)^2/4$. Given the metric and the Einstein relation, this makes the effective coordinate noise high near the center and low near the boundary. The schedule still has a scale $T_0$ and other implementation choices to set; it is not forced by the Einstein relation.
 
-This is another instance of the general principle: **the geometry does the work**. Instead of adding explicit mechanisms for various behaviors, you build the right geometry and let the behaviors emerge.
+The geometry supplies the scale conversion, while the schedule supplies the desired behavior. Keeping those roles separate prevents a useful modeling interpretation from being mistaken for a theorem about automatic phase transitions.
 :::
 
 :::{prf:definition} Fisher-Covariance Duality
@@ -1223,7 +1287,8 @@ def adaptive_temperature(
 
     T_c(z) = base_T * (1 - |z|^2)^2 / 4
 
-    This maintains constant effective noise: sigma^2 * G = 2 * gamma * T_c
+    This is a modeling choice that decreases T_c toward the boundary;
+    Boltzmann-equilibrium guarantees for constant temperature do not apply.
     """
     r_sq = (z ** 2).sum(dim=-1, keepdim=True)
     # Conformal factor inverse: G^{-1} = (1-|z|^2)^2 / 4
@@ -1234,14 +1299,14 @@ def adaptive_temperature(
 :::
 
 :::{div} feynman-prose
-The Fisher-Covariance duality is one of those deep facts that keeps showing up in different guises. Here is the intuition:
+The Fisher-Covariance duality is a useful local modeling relation. Here is the intuition:
 
 - The **Fisher information** tells you how much information the data provides about the parameters. High Fisher information means the data is very informative.
 - The **posterior covariance** tells you how uncertain you are about the parameters after seeing the data. High covariance means high uncertainty.
 
-These are inversely related: $G \approx \Sigma^{-1}$. If the data is very informative (high $G$), you are very certain (low $\Sigma$). If the data is not informative (low $G$), you remain uncertain (high $\Sigma$).
+In the regime where the local metric is identified with information, these are approximately related by $G \approx \Sigma^{-1}$. If the data is very informative (high $G$), the posterior covariance is small; if it is not informative (low $G$), the covariance is larger. The approximation depends on the statistical model and local coordinates.
 
-This is why Mass = Metric makes sense. The metric *is* the Fisher information. Where you are certain (high Fisher, high metric), you should be cautious---you have committed to a representation, do not throw it away lightly. Where you are uncertain (low Fisher, low metric), you should be exploratory---you do not have much to lose.
+This explains why Mass = Metric can be a sensible convention. Where the local metric is high, the update law can make coordinate motion more cautious; where it is low, motion can be more exploratory. The metric need not equal a posterior Fisher matrix in every model, and this relation is separate from the chosen temperature schedule.
 :::
 
 :::{prf:corollary} Deterministic Boundary
@@ -1253,16 +1318,16 @@ $$
 T_c(z) \to 0, \qquad \text{noise} \to 0.
 
 $$
-The agent becomes deterministic at the boundary, ensuring reproducible outputs.
+The coordinate noise in the bulk position tends to zero under this schedule. This does not make separately sampled boundary texture deterministic.
 
 :::
 
 :::{div} feynman-prose
-This corollary is the final piece of the puzzle. At the boundary, the noise goes to zero. The agent becomes deterministic.
+This corollary is the final piece of the bulk picture. Under the explicit geometry-scaled schedule, the coordinate noise tends to zero as the boundary is approached. That makes the bulk position update increasingly deterministic.
 
-Why is this important? Because outputs need to be reproducible. If you generate an image, you want the same latent code to give the same image every time. If there were noise at the boundary, you would get different images each time---maybe good for "creative variability," but terrible for debugging and control.
+Why is this useful? A fixed latent path can then be easier to reproduce near the cutoff. But the decoder may still receive separately sampled boundary texture, so the final output is reproducible only after the texture sampling rule and random seed are fixed.
 
-The geometry gives you both: exploration in the bulk (where noise is large), and determinism at the boundary (where noise vanishes). The stochastic and deterministic regimes are unified in a single framework, with the transition happening smoothly as you approach the boundary.
+The model therefore has a stochastic-to-low-noise transition in the bulk coordinate. Calling the boundary output deterministic requires the additional texture and decoding conditions; it does not follow from the vanishing coordinate noise alone.
 :::
 
 (sec-summary-tables-and-diagnostic-nodes)=
@@ -1275,9 +1340,9 @@ Let me summarize what we have built. The equations of motion combine three ingre
 2. **Stochastic fluctuations** controlled by the cognitive temperature
 3. **Discrete jumps** between charts, enabling topological transitions
 
-The key insight is that these are not independent mechanisms. They all emerge from a single variational principle: minimize the Onsager-Machlup action. The geometry (metric, Christoffel symbols, curvature) comes from the capacity constraint. The noise comes from the entropy regularization. The jumps come from the multi-chart structure.
+These ingredients are related, but they do not all follow from one Onsager--Machlup principle. The displayed path functional is an operational objective. The metric and connection come from the geometric model; the noise, policy, jump rates, and temperature schedule are additional declared choices, with rigorous limits and invariant laws available only under their stated hypotheses.
 
-The diagnostic nodes below help you check that everything is working correctly. If the GeodesicCheck is high, your trajectory is not following the controlled geodesic---maybe a bug in the Christoffel computation. If the JumpConsistencyCheck is high, your jump rates are violating detailed balance---maybe the value functions are inconsistent across charts.
+The diagnostic nodes below help you check the implementation against the selected regime. A high GeodesicCheck can indicate an incorrect connection term, a force convention mismatch, or an integration error. A high JumpConsistencyCheck flags imbalance in the measured chart rates; it is evidence for investigating the rate and target-selection laws, not by itself proof that detailed balance should hold in a controlled or non-conservative model.
 
 These are the kinds of things you want to monitor in a running system. Not just "is the loss going down," but "are the geometric invariants being preserved."
 :::
@@ -1286,10 +1351,10 @@ These are the kinds of things you want to monitor in a running system. Not just 
 
 | Equation                 | Expression                                                                                                                  | Regime       | Units                |
 |--------------------------|-----------------------------------------------------------------------------------------------------------------------------|--------------|----------------------|
-| Extended Onsager-Machlup | $S_{\mathrm{OM}} = \int (\frac{1}{2}\mathbf{M}\lVert\dot{z}\rVert^2 + \Phi_{\text{eff}} + \frac{T_c}{12}R + T_c H_\pi)\,ds$ | Path-space   | nat                  |
-| Full Geodesic SDE        | $dz = (-G^{-1}\nabla\Phi_{\text{eff}} + u_\pi + \beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z} - \Gamma(\dot{z},\dot{z}))\,ds + \sqrt{2T_c}\,G^{-1/2}\,dW_s$                 | Second-order | $[z]$                |
-| Overdamped               | $dz = \mathcal{M}_{\text{curl}}\!\left(-G^{-1}\nabla\Phi_{\text{eff}} + u_\pi\right)\,ds + \sqrt{2T_c}\,G^{-1/2}\,dW_s$                                                      | First-order  | $[z]$                |
-| Jump Intensity           | $\lambda_{K\to j} = \lambda_0 \exp(\beta_{\text{ent}}\,\Delta V)$                                                           | Discrete     | step$^{-1}$          |
+| Free-energy path action | $S_{\mathrm{path}} = \int (\frac{1}{2}\mathbf{M}\lVert\dot{z}\rVert^2 + \Phi_{\text{eff}} + \frac{T_c}{12}R + T_c H_\pi)\,ds$ | Modeling objective | normalized units |
+| Full Geodesic SDE        | $dz=G^{-1}p\,ds,\;dp=[-\nabla\Phi_{\text{eff}}-\gamma p+\beta_{\text{curl}}\mathcal{F}G^{-1}p+\Gamma(G^{-1}p,G^{-1}p)+\gamma Gu_\pi]ds+\sqrt{2\gamma T_c}\,G^{1/2}dW_s$ | Second-order | normalized units |
+| Overdamped (conservative) | $dz^k=[-G^{k\ell}\partial_\ell\Phi_{\text{eff}}-T_cG^{ij}\Gamma^k_{ij}]ds+\sqrt{2T_c}G^{-1/2}dW_s$ | First-order | normalized units |
+| Jump Intensity           | $\lambda_{K\to j}(z)=\lambda_0\exp\{\beta_{\mathrm{ent}}[V_K(z)-V_j(L_{K\to j}z)-c_{Kj}]\}$ | Discrete     | step$^{-1}$          |
 | Mass = Metric            | $\mathbf{M}(z) \equiv G(z)$                                                                                                 | Kinematic    | $[z]^{-2}$           |
 | Texture Covariance       | $\Sigma_{\text{tex}}(z) = \sigma_{\text{tex}}^2\, G^{-1}(z)$                                                                | Boundary     | $[z_{\text{tex}}]^2$ |
 
@@ -1314,7 +1379,7 @@ $$
 
 | **#**  | **Name**          | **Component**            | **Type**                   | **Interpretation**                    | **Proxy**                                                                                  | **Cost**  |
 |--------|-------------------|--------------------------|----------------------------|---------------------------------------|--------------------------------------------------------------------------------------------|-----------|
-| **26** | **GeodesicCheck** | **World Model / Policy** | **Trajectory Consistency** | Is trajectory approximately geodesic? | $\lVert\ddot{z} + \Gamma(\dot{z},\dot{z}) + G^{-1}\nabla\Phi_{\text{eff}} - u_\pi - \beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}\rVert_G$ | $O(BZ^2)$ |
+| **26** | **GeodesicCheck** | **World Model / Policy** | **Trajectory Consistency** | Is trajectory approximately geodesic? | $\lVert\ddot{z} + \Gamma(\dot{z},\dot{z}) + \gamma\dot z + G^{-1}\nabla\Phi_{\text{eff}} - \beta_{\text{curl}}G^{-1}\mathcal{F}\dot z - \gamma u_\pi\rVert_G$ | $O(BZ^2)$ |
 
 **Trigger conditions:**
 - High GeodesicCheck: Trajectory deviates from controlled geodesic (unexpected forces or integration errors).
@@ -1325,12 +1390,16 @@ $$
 
 | **#**  | **Name**            | **Component** | **Type**            | **Interpretation**              | **Proxy**                                             | **Cost** |
 |--------|---------------------|---------------|---------------------|---------------------------------|-------------------------------------------------------|----------|
-| **27** | **OverdampedCheck** | **Policy**    | **Regime Validity** | Is friction dominating inertia? | $\gamma / \lVert \mathcal{M}_\gamma^{-1}\,v\rVert$ | $O(BZ)$  |
+| **27** | **OverdampedCheck** | **Policy**    | **Regime Validity** | Is inertia small relative to friction? | $\chi_{\mathrm{in}}:=\dfrac{m\lVert\dot v\rVert_G}{\gamma\lVert v\rVert_G+ m\lVert\dot v\rVert_G+\varepsilon}$ | $O(BZ)$  |
 
-Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F}$.
+Here $v := \dot{z}$, $m$ is the inertial scale in the overdamped limit, and
+$\chi_{\mathrm{in}}$ is small in the overdamped regime. The proxy is interpreted
+only when the force and acceleration are measured in compatible metric units. The curl mobility
+$\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}}G^{-1}\mathcal{F}$
+is a separate diagnostic quantity.
 
 **Trigger conditions:**
-- Low OverdampedCheck: Operating in inertial regime; use full BAOAB integrator.
+- High OverdampedCheck: Operating in an inertial regime; use the full BAOAB integrator.
 - Remedy: Increase friction $\gamma$ if overdamped limit desired; otherwise switch to second-order integrator.
 
 (node-28)=
@@ -1338,11 +1407,11 @@ Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}
 
 | **#**  | **Name**                 | **Component**   | **Type**        | **Interpretation**                  | **Proxy**                                                       | **Cost**  |
 |--------|--------------------------|-----------------|-----------------|-------------------------------------|-----------------------------------------------------------------|-----------|
-| **28** | **JumpConsistencyCheck** | **World Model** | **WFR Balance** | Are jump rates consistent with WFR? | $\lvert\sum_j \lambda_{K\to j} - \sum_i \lambda_{i\to K}\rvert$ | $O(BK^2)$ |
+| **28** | **JumpConsistencyCheck** | **World Model** | **Detailed-balance residual** | Are reversible jump rates balanced for the measured chart masses? | $\left(\sum_{K<j}\left\lvert\rho_K\lambda_{K\to j}-\rho_j\lambda_{j\to K}\right\rvert^2\right)^{1/2}$ | $O(BK^2)$ |
 
 **Trigger conditions:**
-- High JumpConsistencyCheck: Jump rates violate detailed balance; may cause mass accumulation/depletion.
-- Remedy: Recalibrate jump rates; verify value function consistency across charts.
+- High JumpConsistencyCheck: the reversible detailed-balance residual is large under the declared equilibrium model.
+- Remedy: verify the target-selection law and chart costs; use a separate mass-balance check when the process is intentionally non-reversible.
 
 (node-29)=
 **Node 29: TextureFirewallCheck**
@@ -1356,9 +1425,9 @@ Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}
 - Remedy: Review implementation; ensure texture sampled only at boundary; verify Axiom {prf:ref}`ax-bulk-boundary-decoupling`.
 
 :::{div} feynman-prose
-We have now assembled the complete dynamical picture. The agent is a particle on a curved manifold, carrying mass (belief weight), feeling forces (from the effective potential), being jostled by noise (exploration), and occasionally jumping between charts (conceptual transitions).
+We have now assembled the complete dynamical picture. The agent has a position and covector momentum on a curved manifold, while the separate scalar $m$ carries an importance weight. It feels covector forces from the effective potential, policy, and possibly curl field, is jostled by noise, and occasionally jumps between charts.
 
-The beautiful thing is how much emerges from the geometry. The caution in risky regions? That is Mass = Metric. The exploration-exploitation tradeoff? That is the Einstein relation. The boundary behavior? That is the metric divergence. The phase transitions? That is the natural temperature schedule.
+The geometry explains part of this picture. Mass = Metric is the selected momentum convention, and metric divergence gives the finite-action interior barrier. The Einstein relation constrains noise after a temperature and friction schedule have been chosen. The exploration-to-exploitation behavior comes from the explicit geometry-scaled schedule, while the phase-transition language remains an interpretation of the lifecycle.
 
-In the next sections, we will see how this dynamical picture connects to the boundary structure and the decoder. But the core message of this chapter is simple: **once you have the geometry right, the dynamics follow**.
+In the next sections, we will see how this dynamical picture connects to the boundary structure and the decoder. The core message is: **once the geometry and the remaining modeling choices are stated with their hypotheses, the dynamics can be checked rather than guessed**.
 :::

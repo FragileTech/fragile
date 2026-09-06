@@ -25,6 +25,9 @@ class ChannelMassResult:
     amplitudes: dict[str, Any] = field(default_factory=dict)
     dE: Any = None  # gvar array
     variant_keys: list[str] = field(default_factory=list)
+    # Index into ``energy_levels`` of the level reported as the ground state
+    # (the lowest level with an amplitude resolved from zero).
+    ground_state_index: int = 0
 
 
 @dataclass
@@ -101,15 +104,23 @@ def extract_channel_results(
             E_n = sum(dE[: n + 1])
             energy_levels.append(E_n)
 
-        ground = energy_levels[0] if energy_levels else gvar.gvar(0, 0)
-        excited = energy_levels[1:] if len(energy_levels) > 1 else []
-
         # Collect amplitudes per variant
         amplitudes = {}
         for key in variant_keys:
             amp_key = f"{gname}.{key}.a"
             if amp_key in p:
                 amplitudes[key] = p[amp_key]
+
+        # The lowest level is only the physical ground state if some variant
+        # actually couples to it. With a multi-exponential fit a level whose
+        # source*sink amplitude is consistent with zero is a prior artifact.
+        ground_index = _first_resolved_level(p, gname, variant_keys, len(energy_levels))
+        ground = energy_levels[ground_index] if energy_levels else gvar.gvar(0, 0)
+        excited = (
+            energy_levels[:ground_index] + energy_levels[ground_index + 1 :]
+            if len(energy_levels) > 1
+            else []
+        )
 
         results[gname] = ChannelMassResult(
             name=gname,
@@ -120,9 +131,29 @@ def extract_channel_results(
             amplitudes=amplitudes,
             dE=dE,
             variant_keys=variant_keys,
+            ground_state_index=ground_index,
         )
 
     return results
+
+
+def _first_resolved_level(
+    p: Any, gname: str, variant_keys: list[str], n_levels: int, n_sigma: float = 3.0
+) -> int:
+    """Index of the lowest level whose amplitude product is resolved from zero."""
+    for level in range(n_levels):
+        for key in variant_keys:
+            try:
+                a = p[f"{gname}.{key}.a"][level]
+                b = p[f"{gname}.{key}.b"][level]
+            except (KeyError, IndexError, TypeError):
+                continue
+            product = a * b
+            sdev = float(gvar.sdev(product))
+            mean = float(gvar.mean(product))
+            if np.isfinite(mean) and (sdev == 0.0 or abs(mean) > n_sigma * sdev):
+                return level
+    return 0
 
 
 def extract_diagnostics(fit: Any) -> FitDiagnostics:

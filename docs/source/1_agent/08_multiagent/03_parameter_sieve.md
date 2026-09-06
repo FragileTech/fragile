@@ -26,7 +26,7 @@ This chapter takes a different view. We ask: What if these constants are not arb
 
 The logic is almost embarrassingly simple once you see it. An agent must satisfy certain consistency conditions---it cannot receive messages from its own future, it cannot store infinite information in finite space, it cannot think hotter than its energy budget permits. Each condition carves out a region in parameter space. The intersection of all these regions---the *feasible region*---is where viable agents can exist.
 
-And here is the punchline: our universe sits inside that feasible region. Not because someone designed it that way, but because we could not be here asking the question if it did not.
+And here is the modest conclusion: any universe in which this kind of agent exists must sit inside the corresponding feasible region. Our universe supplies an example of an environment in which we can ask the question; that observation alone does not show that the Sieve selected its constants or that the region is unique.
 
 This is not mysticism. It is constraint satisfaction. The same logic that tells you a bridge must be strong enough to hold its own weight tells you that a universe must have constants compatible with agency. We are going to derive those constraints.
 :::
@@ -76,7 +76,10 @@ where:
 1. **$c_{\text{info}}$:** Information propagation speed (Axiom {prf:ref}`ax-information-speed-limit`)
 2. **$\sigma$:** Cognitive Action Scale (Definition {prf:ref}`def-cognitive-action-scale`)
 3. **$\ell_L$:** Levin Length, the minimal distinguishable scale (Definition {prf:ref}`def-levin-length`)
-4. **$T_c$:** Cognitive Temperature. The critical value $T_c^* \approx |u_\pi^\theta|^2 r_*^2$ separates the symmetric phase (isotropic direction) from the broken phase (policy-selected direction), where $r_*$ is the characteristic early-time radius (Theorem {prf:ref}`thm-angular-symmetry-breaking`).
+4. **$T_c$:** Cognitive Temperature. Its angular effect is monitored by the local Péclet diagnostic
+   $\mathrm{Pe}_\theta^2(r)=2r^2|u_\pi^\theta|^2/[T_c(1-r^2)^2]$ from Theorem
+   {prf:ref}`thm-angular-symmetry-breaking`; $\mathrm{Pe}_\theta\approx1$ is a finite-time crossover convention,
+   not a universal critical temperature.
 5. **$g_s$:** Binding coupling strength (Theorem {prf:ref}`thm-emergence-binding-field`)
 6. **$\gamma$:** Temporal discount factor, $\gamma \in (0,1)$
 
@@ -93,31 +96,34 @@ where:
 
 **Derived Quantities:**
 
-Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ with dimension $[L]$. Let the temporal discount rate be $\lambda := -\ln\gamma / \Delta t$ and identify the processing interval $\Delta t := \tau_{\text{proc}}$. The **Spatial Screening Mass** is then:
+Define the **Causal Horizon Length** $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ with dimension $[L]$. This is a propagation scale and is kept separate from the stationary diffusion scale. Let the temporal discount rate be $\lambda := -\ln\gamma / \Delta t$ and identify the processing interval $\Delta t := \tau_{\text{proc}}$. In the stationary diffusion convention proved for the Bellman generator, the **diffusion screening mass** and length are:
 
 $$
-\kappa = \frac{\lambda}{c_{\text{info}}} = \frac{-\ln\gamma}{\ell_0}
+\kappa_{\mathrm{diff}}^2=\frac{\lambda}{T_c}=\frac{-\ln\gamma}{T_c\Delta t},
+\qquad
+\ell_{\mathrm{diff}}=\kappa_{\mathrm{diff}}^{-1}=\sqrt{\frac{T_c\Delta t}{-\ln\gamma}}
 
 $$
 
-with dimension $[L^{-1}]$ (Corollary {prf:ref}`cor-discount-as-screening-length`).
+with $[\kappa_{\mathrm{diff}}]=[L^{-1}]$. A $c_{\text{info}}$-based conversion is a separate propagation model and is
+not used in this diffusion identity (Corollary {prf:ref}`cor-discount-as-screening-length`).
 
 These correspond to the physics constants $\{c, \hbar, \ell_P, k_B T, \alpha_s, \gamma_{\text{cosmo}}\}$ under the isomorphism of {ref}`sec-isomorphism-dictionary`.
 
 :::
 
 :::{div} feynman-prose
-Let me make sure you understand what each of these parameters means intuitively.
+Let me make sure you understand what each of these parameters means intuitively. The physics names below form a proposed dictionary; they are not identities supplied by the agent equations.
 
-**Information speed** $c_{\text{info}}$ is how fast a signal can propagate through the agent's internal state. In your brain, this is related to axon conduction velocities. In a computer, it is the speed of electrical signals through wires. In physics, it is $c$.
+**Information speed** $c_{\text{info}}$ is how fast a signal can propagate through the agent's internal state. In your brain, this is related to axon conduction velocities. In a computer, it is the speed of electrical signals through wires. A proposed physical identification with $c$ requires a map of units and observables.
 
-**Cognitive action scale** $\sigma$ sets the minimum "quantum" of action---the smallest distinguishable change in the agent's planning. Below this scale, different plans look identical. This is $\hbar$ in physics.
+**Cognitive action scale** $\sigma$ sets the minimum distinguishable change in the agent's planning. Below this scale, different plans look identical under the chosen resolution. Calling it $\hbar$ is a conjectural physical identification, not a consequence of the notation.
 
-**Levin length** $\ell_L$ is the smallest spatial scale the agent can resolve. You cannot pack information more densely than one bit per $\ell_L^{D-1}$ of boundary area. This is $\ell_P$ (Planck length) in physics.
+**Levin length** $\ell_L$ is the smallest spatial scale the agent can resolve under the declared capacity convention. The associated cell count is model-dependent. A correspondence with $\ell_P$ (Planck length) is a proposed physical dictionary entry.
 
-**Cognitive temperature** $T_c$ controls exploration versus exploitation. High temperature means the agent explores wildly; low temperature means it sticks to known good options. In physics, this is $k_B T$.
+**Cognitive temperature** $T_c$ controls exploration versus exploitation. High temperature means the agent explores more broadly; low temperature means it sticks to known good options. Its relation to a physical $k_B T$ is a units-and-observables question.
 
-**Binding coupling** $g_s$ determines how strongly features stick together to form objects. Too weak, and objects fall apart into meaningless features. Too strong, and everything clumps into one undifferentiated blob. In physics, this is $\alpha_s$ (the strong coupling).
+**Binding coupling** $g_s$ determines how strongly features stick together to form objects. Too weak, and objects can fall apart into meaningless features; too strong, and everything can clump into one undifferentiated blob. Its proposed correspondence with $\alpha_s$ (the strong coupling) remains an interpretation to test.
 
 **Discount factor** $\gamma$ determines how far into the future the agent plans. $\gamma \to 1$ means infinite planning horizon; $\gamma \to 0$ means totally myopic.
 
@@ -143,7 +149,9 @@ The mathematical notation $\mathcal{S}(\Lambda) \le \mathbf{0}$ is compact but t
 
 Think of it like building codes. A building must satisfy fire safety *and* structural integrity *and* electrical codes *and* plumbing codes. Failing any single one makes the building non-viable. You do not get to trade off "a bit less fire-safe" for "a bit more structural integrity."
 
-Same here. The agent cannot violate any single constraint. Each constraint corresponds to a specific failure mode, and each failure mode is catastrophic.
+Same here: the declared agent model cannot call a configuration viable while one of its constraints is violated. Each constraint
+points to a particular failure mode or diagnostic response. The consequence is model- and controller-dependent; a threshold
+violation is not automatically catastrophic in every implementation.
 :::
 
 
@@ -156,7 +164,7 @@ Now we get to the first constraint, and it is a beautiful one. It says: informat
 
 Too slow is obvious---if your left hand cannot tell your right hand what it is doing, you cannot coordinate. But too fast is subtler. If information travels so fast that you can receive messages from your own future, you get paradoxes. Your prediction depends on data you have not generated yet.
 
-Both extremes are forbidden. There is a window of viable information speeds, and physics has to live inside that window.
+Both extremes are forbidden for the declared agent interface. There is a window of viable information speeds for that model; comparing it with a physical propagation speed requires a separate map of units, observables, and mechanisms.
 :::
 
 We derive the bounds on information speed from the requirements of buffer coherence and synchronization.
@@ -214,18 +222,21 @@ $\square$
 :::{div} feynman-prose
 Let me give you a physical picture of what is happening here.
 
-**Lower bound (too slow):** Imagine a centipede trying to walk, but nerve signals travel so slowly that by the time leg 50 gets the "step now" signal, leg 1 has already taken three more steps. The legs cannot coordinate. The centipede freezes, each leg waiting for a coordination signal that arrives too late to be useful. This is the Zeno freeze.
+**Lower bound (too slow):** Imagine a centipede trying to walk, but nerve signals travel so slowly that by the time leg 50 gets the "step now" signal, leg 1 has already taken three more steps. The legs cannot coordinate. In the declared synchronous model, the update can then stall: each leg waits for a coordination signal that arrives too late to be useful. This is the model's Zeno-freeze diagnostic, under the stated timing and continuity assumptions.
 
-**Upper bound (too fast):** Now imagine the centipede's nerves are so fast that signals can travel the full length of its body in less time than it takes to complete one step. Leg 1 sends a signal, and before it finishes stepping, it receives a signal that says "leg 100 has already responded to your step." But leg 100 has not stepped yet---that signal came from the future. The centipede hallucinates a causal loop.
+**Upper bound (too fast):** Now imagine the centipede's nerves are so fast that signals can travel the full length of its body in less time than it takes to complete one step. In a model that treats the buffer as a causal history, this can create temporal aliasing: leg 1 receives a state tagged as if leg 100 had already responded, although that update has not been computed. That is a consistency failure of the declared history model, not a proof that a physical signal literally came from the future.
 
-The viable window is: fast enough to coordinate, slow enough to not hallucinate the future.
+The viable window is therefore: fast enough to coordinate, while respecting the history and processing conventions used by this agent model.
 
-And here is the remarkable thing: the speed of light in our universe is exactly in this window. It is fast enough for atoms to coordinate (electron shells can equilibrate), but slow enough that you cannot receive information from your own future light cone.
+The speed of light can be compared with this window after the agent's length, time, and causal observables have been specified. The comparison is suggestive, but the Sieve calculation does not by itself show that $c$ was selected by agency or that the two systems share a physical mechanism.
 :::
 
 :::{note}
 :class: feynman-added
-The Speed Window theorem explains why there must be a cosmic speed limit at all. A universe with no speed limit ($c_{\text{info}} = \infty$) would allow information from the future, creating paradoxes. A universe with zero speed limit would have no causal structure at all. The finite, nonzero speed of light is not a quirk---it is a necessity for coherent agents to exist.
+The Speed Window theorem is an agent-level result. Under its declared buffer, processing, synchronization, and causal-interval
+hypotheses, the model requires a finite nonzero $c_{\text{info}}$. Infinite or zero values violate those particular interface
+assumptions. The theorem does not establish a cosmic speed limit, identify $c_{\text{info}}$ with the physical speed of light,
+or show that the universe selected its constants for agency.
 :::
 
 :::{prf:corollary} The Speed Ratio Bound
@@ -256,11 +267,11 @@ For a single-module agent (a point), buffer depth equals synchronization distanc
 :::{div} feynman-prose
 Here is a deep constraint that seems almost magical at first, until you see where it comes from.
 
-Suppose you want to store information in some region of space. How much can you store? Your first guess might be: volume. A bigger region, more information. But that is wrong.
+Suppose you want to assign a capacity to some region of a model. Your first guess might be: volume. A bigger region, more information. The area-law convention used here makes a different assignment, but it applies only after the boundary, resolution, and channel have been declared.
 
-The correct answer is: area of the boundary.
+Under that convention, the capacity is proportional to the area of the chosen boundary.
 
-This is the holographic principle, and it was first discovered in the context of black holes. But we are going to derive it from pure information theory, without mentioning black holes at all. The argument is: if you pack information too densely, you cannot access it fast enough to use it. The retrieval bandwidth limits the storage capacity, and retrieval happens through the boundary.
+This borrows the language of the holographic principle, first discussed in black-hole physics. The information-theoretic intuition is that a finite retrieval channel can limit usable storage. Turning that intuition into an area-law bound requires the explicit counting model, units, dimensional normalization, and channel hypotheses; it is not a universal consequence of bandwidth alone.
 :::
 
 We derive the relationship between the Levin Length $\ell_L$ and the information capacity from the Area Law.
@@ -300,25 +311,31 @@ $\square$
 :::
 
 :::{div} feynman-prose
-The holographic bound tells you something profound: *information lives on boundaries, not in volumes.*
+The declared capacity model assigns the relevant information budget through a boundary interface; it does not say that information literally lives only on boundaries.
 
 Think about it this way. You have a room full of stuff. You want to know everything about what is in the room. But you can only look at the room through its walls (the boundary). How much can you learn?
 
 You might think: if I make the walls higher resolution (smaller $\ell_L$), I can see more detail. True. But there is a limit. At some point, the walls themselves are packed so densely with information that you cannot read them fast enough. The bandwidth of reading limits the resolution of storage.
 
-The result is that maximum information scales like boundary area divided by $\ell_L^{D-1}$---the number of resolution cells on the boundary. This is the holographic bound.
+With a specified cell-counting model, the resulting operational capacity scales like boundary area divided by $\ell_L^{D-1}$. That is the model's area-law diagnostic; extending it to another geometry or a physical system requires new estimates.
 :::
 
 :::{admonition} Intuition: Why Area, Not Volume?
 :class: feynman-added tip
 
-Here is a physical argument. Suppose you try to pack information at density $\rho_I$ (bits per unit volume). The total information is $\rho_I \cdot V$. But to read this information, you must access it through the boundary, which has area $A$. The maximum read rate is proportional to $A$, not $V$.
+Here is an interface-based intuition for the selected capacity convention. Suppose you try to pack information at density $\rho_I$
+(bits per unit volume). The total information is $\rho_I \cdot V$. If the declared read channel is attached to a boundary of area
+$A$ and its throughput is assumed to scale with $A$, access can become the bottleneck.
 
-If $\rho_I \cdot V > \text{const} \cdot A$, you cannot read your own memory fast enough to use it. Information you cannot access is information you do not have.
+If $\rho_I \cdot V > \text{const} \cdot A$, the model predicts that the channel cannot read the memory within the chosen operational window.
+Information that cannot be accessed is unusable for that controller.
 
-The constraint is: $\rho_I \lesssim A/V$. For a sphere, $A/V \sim 1/R$. So maximum density decreases as you make the region bigger. Total information $\sim \rho_I \cdot V \sim (A/V) \cdot V = A$.
+With the extra cell-counting, dimensional, and throughput assumptions, this gives $\rho_I \lesssim A/V$ and total usable
+information scaling like $A$. The scaling is an operational model for a declared interface; it is not a derivation of black-hole
+entropy or a universal area law.
 
-This is why black holes have entropy proportional to area: you cannot pack more information than you can read.
+The black-hole comparison is a separate physical analogy. Its entropy-area relation requires its own gravitational and
+semiclassical hypotheses.
 :::
 
 :::{prf:definition} The Planck-Levin Correspondence
@@ -338,16 +355,19 @@ S_{\text{BH}} = \frac{A}{4\ell_P^2}
 
 $$
 
-*Remark:* The coefficient $\nu_2 = 1/4$ is derived in Theorem {prf:ref}`thm-a-complete-derivation-area-law` from first principles, recovering the Bekenstein-Hawking result without invoking black hole physics.
+*Remark:* The coefficient $\nu_2 = 1/4$ is the declared operational
+normalization in Definition {prf:ref}`thm-a-complete-derivation-area-law`.
+The appendix records conditional counting and does not derive a physical
+Bekenstein--Hawking result for the agent model.
 
 :::
 
 :::{div} feynman-prose
-Now here is something that should make you sit up. The Planck length is $\ell_P \approx 1.6 \times 10^{-35}$ meters. This is fantastically small---about $10^{20}$ times smaller than a proton.
+Now here is something that should make you sit up. The Planck length is $\ell_P \approx 1.6 \times 10^{-35}$ meters. This is fantastically small---about $10^{20}$ times smaller than a proton. In this chapter it is a reference scale in the proposed physics dictionary, not an experimentally established value of the agent's resolution.
 
-Why is it that small? The Sieve answer is: because we need a lot of information to represent a complex world. The smaller $\ell_L$, the more bits per unit boundary area, the more detailed our world model can be. Evolution (or whatever process selects viable universes) pushed $\ell_L$ as small as it can go.
+Why might a small resolution scale be useful? Under the declared capacity convention, smaller $\ell_L$ permits more cells per boundary measure and potentially a more detailed model. The Sieve does not show that evolution selected the physical Planck scale or that agency explains its value.
 
-But it cannot go to zero. At some point, quantum gravity effects kick in, and the notion of "distance smaller than $\ell_P$" stops making sense. The Planck length is the smallest meaningful length---and therefore the highest information density---that physics permits.
+The physical statement that no distance below $\ell_P$ is meaningful belongs to a quantum-gravity hypothesis outside this agent model. Here $\ell_L>0$ is a declared resolution floor, and any identification with $\ell_P$ remains conjectural.
 :::
 
 :::{prf:theorem} The Capacity Horizon
@@ -376,13 +396,13 @@ $\square$
 :::
 
 :::{div} feynman-prose
-This theorem describes what happens when you try to exceed the holographic bound. You do not just get an error message---the geometry itself prevents you.
+This result describes the selected metric ansatz as the declared capacity threshold is approached. It does not turn every area-law diagnostic into a universal horizon or guarantee that geometry will prevent an over-capacity state.
 
-As you approach maximum information density, the metric (which measures distances in belief space) diverges. Movements that used to be easy become infinitely slow. You cannot cross into the forbidden region because, in a precise sense, *there is infinite distance to get there*.
+Under the radial, force, and boundary hypotheses of the cited result, a selected inverse metric component can tend to zero, so the corresponding radial update can slow. A full metric divergence, infinite distance, or exclusion of a forbidden region needs the additional estimates stated in that result.
 
-This is exactly what happens at a black hole horizon. From outside, an infalling object appears to slow down and freeze at the horizon, never quite crossing it. The metric diverges. The forbidden region (inside the black hole) is not reachable in finite proper time.
+The black-hole horizon is a useful analogy for that radial slowdown, but the agent calculation is not a black-hole solution. It does not imply freezing of all directions, an event horizon, or finite-proper-time inaccessibility.
 
-We derived this from information theory, not general relativity. The black hole connection is a *consequence*, not an input.
+The capacity expression is a declared operational model with conditional geometric consequences. The black-hole connection is a conjectural interpretation, not a consequence established by information theory alone.
 :::
 
 
@@ -391,9 +411,9 @@ We derived this from information theory, not general relativity. The black hole 
 ## The Metabolic Viability Constraint
 
 :::{div} feynman-prose
-Now we come to thermodynamics. Thinking costs energy. More precisely: *forgetting* costs energy.
+Now we come to thermodynamics. Thinking costs energy. More precisely: under the usual thermal and logical-irreversibility assumptions, erasing information has a Landauer lower bound.
 
-This is Landauer's principle, and it is one of the most important results in the thermodynamics of computation. Every bit you erase requires at least $k_B T \ln 2$ joules of work. There is no way around this---it is a consequence of the second law.
+This is Landauer's principle, and it is one of the important results in the thermodynamics of computation. An erased bit contributes at least $k_B T \ln 2$ of heat in that idealized setting; a physical implementation may use reversible steps or additional dissipation, so the formula is not a complete energy model.
 
 What does this have to do with cognitive temperature? Well, a "hotter" agent explores more possibilities, which means it forgets more possibilities (the ones it did not take). More forgetting, more energy. If the agent thinks hotter than it can afford, it starves.
 :::
@@ -434,7 +454,7 @@ where we use natural units with $k_B = 1$.
 
 *Proof.*
 
-**Step 1.** From the Generalized Landauer Bound (Theorem {prf:ref}`thm-generalized-landauer-bound`):
+**Step 1.** Under the regularity, no-flux, mass-preservation, and calibration hypotheses of the conditional Generalized Landauer Bound (Theorem {prf:ref}`thm-generalized-landauer-bound`):
 
 $$
 \dot{\mathcal{M}}(s) \ge T_c \left| \frac{dH}{ds} \right|
@@ -480,40 +500,46 @@ Why so far below? Because brains are not thermodynamically optimal computers. Th
 
 :::{warning}
 :class: feynman-added
-The Landauer bound is often stated as "$k_B T \ln 2$ per bit erased." But notice that we are talking about cognitive temperature $T_c$, which is not the same as physical temperature $T$. Cognitive temperature controls exploration in policy space; physical temperature is the thermal reservoir. The constraint relates them: you cannot explore (cognitively) hotter than your heat bath (physically) permits.
+The Landauer expression is a lower bound for logically irreversible erasure under its ideal thermal assumptions. Here $T_c$ is the
+agent's cognitive or exploration scale, not automatically the reservoir temperature $T$. Relating the two requires a calibrated
+map of units, erasure rates, hardware, and protocol. The displayed operational constraint therefore does not by itself say that
+an agent cannot explore cognitively hotter than every physical heat bath.
 :::
 
 :::{prf:corollary} The Computational Temperature Range
 :label: cor-computational-temperature-range
 
-Combining the Landauer constraint with the bifurcation dynamics, the Cognitive Temperature is bounded:
+Under the Landauer assumptions (positive erasure and metabolic rates), the Cognitive Temperature obeys the operational bound:
 
 $$
-0 < T_c \le \min\left( T_c^*, \frac{\dot{E}_{\text{met}}}{\dot{I}_{\text{erase}} \cdot \ln 2} \right)
-
-$$
-
-where the **Critical Temperature** is derived from the angular symmetry breaking (Theorem {prf:ref}`thm-angular-symmetry-breaking`):
-
-$$
-T_c^* \approx |u_\pi^\theta|^2 r_*^2
+0 < T_c \le \frac{\dot{E}_{\text{met}}}{\dot{I}_{\text{erase}} \cdot \ln 2}
 
 $$
 
-with $u_\pi^\theta$ the tangential policy control and $r_*$ the characteristic early-time radius at which direction selection occurs.
+The angular SDE supplies the local diagnostic $\mathrm{Pe}_\theta$ rather than a second universal temperature bound.
 
-*Remark:* For $T_c > T_c^*$, thermal fluctuations overcome the potential barrier and the system remains in the symmetric phase with no stable policy (random walk near origin). For $T_c$ exceeding the Landauer bound, the agent starves thermodynamically. Viable agents exist in the intersection of these constraints.
+$$
+\mathrm{Pe}_\theta(r)\approx1
+
+$$
+
+is a finite-time crossover convention; any use of it as an engineering constraint must report the chosen radius, horizon,
+and control field explicitly.
+
 
 :::
 
 :::{div} feynman-prose
-So there are two upper bounds on cognitive temperature, and you must satisfy both.
+The general budget stated here is the Landauer-style bound under its thermal and logical-erasure assumptions. The angular SDE
+supplies a second, local diagnostic rather than another universal temperature law.
 
-The **Landauer bound** says: you cannot think hotter than your energy budget permits. Think too hot, you starve.
+The **Landauer bound** says: under the declared erasure and thermal model, a hotter cognitive schedule requires a larger energy
+budget. If the schedule exceeds that budget, the selected implementation cannot sustain it; "starve" is shorthand for that model
+failure, not a universal law about cognition.
 
-The **bifurcation bound** $T_c^*$ says: you cannot think hotter than your decision landscape permits. Think too hot, and thermal fluctuations wash out the difference between options---you cannot make decisions, you just random walk.
+The Péclet crossover $\mathrm{Pe}_\theta\approx1$ asks whether angular drift competes with thermal diffusion at a chosen radius and finite horizon. It can motivate an engineering setpoint, but it is not a universal bifurcation temperature or a proof that decisions become a random walk.
 
-A viable agent must stay below both limits. And notice: these are completely different constraints, from different parts of the theory (thermodynamics vs. dynamical systems), yet both produce upper bounds on the same quantity. The fact that they give consistent, overlapping bounds is a non-trivial check that the framework is coherent.
+A viable agent must satisfy the Landauer inequality and report the radius, horizon, control field, and local geometry used for any Péclet-based decision diagnostic. The two checks concern different objects and should not be merged into a single temperature bound.
 :::
 
 
@@ -528,7 +554,7 @@ At the macro scale, you want strong glue. Objects should be stable---a chair sho
 
 At the micro scale, you want weak glue. Texture should not clump. Noise should remain noise, not spontaneously organize into spurious structure.
 
-This is exactly what happens in QCD: strong coupling at low energies (confinement---quarks bind into hadrons), weak coupling at high energies (asymptotic freedom---quarks inside a hadron barely interact). We are going to derive this from agent requirements, without mentioning quarks.
+This has a useful structural resemblance to the QCD vocabulary of infrared binding and ultraviolet decoupling. The resemblance does not identify the feature coupling with the QCD beta function; the agent inequalities describe a design regime, and any physical correspondence remains conjectural.
 :::
 
 We derive the constraints on the binding coupling $g_s$ from the requirements of object permanence and texture decoupling.
@@ -536,7 +562,7 @@ We derive the constraints on the binding coupling $g_s$ from the requirements of
 :::{prf:definition} The Coupling Function
 :label: def-coupling-function
 
-Let the binding coupling $g_s(\mu)$ (dimensionless) be a function of the **resolution scale** $\mu$, which has dimension $[L^{-1}]$ (inverse length). Equivalently, $\mu$ can be expressed as an energy scale via $\mu \sim E/(\sigma \cdot c_{\text{info}})$ where $\sigma$ is the Cognitive Action Scale and $c_{\text{info}}$ is the Information Speed (Definition {prf:ref}`def-information-speed`).
+Let the binding coupling $g_s(\mu)$ (dimensionless) be a function of the **resolution scale** $\mu$, which has dimension $[L^{-1}]$ (inverse length). Equivalently, $\mu$ can be expressed as an energy scale via $\mu \sim E/(\sigma \cdot c_{\text{info}})$ where $\sigma$ is the Cognitive Action Scale and $c_{\text{info}}$ is the Information Speed (Axiom {prf:ref}`ax-information-speed-limit`).
 
 The limits are:
 - $\mu \to 0$: Macro-scale (coarse representation, low in TopoEncoder hierarchy)
@@ -560,9 +586,9 @@ The coupling $g_s(\mu)$ tells you how strongly features interact at scale $\mu$.
 
 Think of the representation hierarchy: at the top (macro), you have abstract concepts---"chair," "face," "danger." At the bottom (micro), you have textures---pixel noise, high-frequency details. The coupling controls how strongly adjacent features attract each other at each level.
 
-The beta function describes how coupling changes as you zoom in or out. If $\beta < 0$, coupling decreases as you zoom in (look at smaller scales). This is called asymptotic freedom. If $\beta > 0$, coupling increases as you zoom in (infrared freedom, like QED).
+The scale derivative of a coupling describes how the chosen interaction changes as you zoom in or out. If that derivative is negative in the agent's convention, the interaction weakens toward fine scales; this has the shape of asymptotic freedom, but it is not a QCD beta-function calculation.
 
-For viable agents, we need $\beta < 0$: strong at macro scale, weak at micro scale.
+For viable agents, the desired schedule is strong binding at macro scale and weak coupling at micro scale.
 :::
 
 :::{prf:theorem} The Infrared Binding Constraint
@@ -592,7 +618,7 @@ where $r$ is the separation between features.
 
 **Step 4.** If $g_s(\mu_{\text{IR}}) < g_s^{\text{crit}}$, features escape confinement—"color-charged" states propagate to the boundary $\partial\mathcal{Z}$. This violates the Observability Constraint (Definition {prf:ref}`def-boundary-markov-blanket`): the agent cannot form stable objects.
 
-Node 40 (PurityCheck) enforces that only color-neutral bound states reach the macro-register.
+The DNN-local BindingConfinementCheck (DNN-B) enforces that only color-neutral bound states reach the macro-register; global Node 40 is the CapacitySaturationCheck.
 
 $\square$
 
@@ -605,7 +631,7 @@ Imagine building a tower from Lego bricks. If the bricks do not click firmly eno
 
 Same with cognitive features. If edge detectors and color patches do not bind strongly enough, you cannot perceive "cat"---you just see a soup of features. Object permanence requires strong binding at the scale where objects live.
 
-In QCD, this is confinement. Quarks bind so strongly at hadronic scales that you never see a free quark---only bound states (protons, neutrons, pions). The agent-theoretic version is: features bind so strongly at concept scales that you never perceive raw features---only bound concepts.
+In QCD, confinement is a dynamical statement about a quantum field theory. The agent-theoretic version is an architectural goal: feature interactions at concept scales should make bound representations useful and should suppress raw texture at the macro interface. The two mechanisms should not be identified without a map of states and observables.
 :::
 
 :::{prf:theorem} The Ultraviolet Decoupling Constraint
@@ -646,7 +672,7 @@ The UV Decoupling Constraint says: at texture scale, features must *not* stick t
 
 Why? Because texture is supposed to be disposable noise. If texture elements started binding, you would see spurious structure---faces in clouds, patterns in static. The compression algorithm would fail because "random noise" would actually contain structure that resists compression.
 
-In QCD, this is asymptotic freedom. At very high energies (small distances), quarks inside a proton barely interact---they fly around almost freely. Only when you try to pull them apart (large distances) does the glue strengthen.
+In QCD, asymptotic freedom is a statement about a particular renormalized quantum coupling. Here the desired decrease of feature coupling toward fine scales is an architectural schedule. It is analogous in shape, but it does not establish a QCD beta function or asymptotic freedom.
 
 The agent-theoretic version: at texture scale, features should not interact. Only when you zoom out to concept scale should binding appear.
 :::
@@ -654,13 +680,17 @@ The agent-theoretic version: at texture scale, features should not interact. Onl
 :::{admonition} The Deep Connection to QCD
 :class: feynman-added note
 
-This is not a metaphor. The mathematical structure is identical.
+This is a comparison, not an identity. QCD's running coupling and confinement come from a particular renormalized quantum field
+theory. The agent coupling $g_s(\mu)$ is an architectural schedule whose binding and decoupling properties must be checked in the
+declared representation.
 
 In QCD, the coupling $\alpha_s(\mu)$ runs with energy scale $\mu$. At $\mu = M_Z \approx 91$ GeV, $\alpha_s \approx 0.12$ (weak). At $\mu \approx \Lambda_{\text{QCD}} \approx 200$ MeV, $\alpha_s \to \infty$ (strong).
 
 In the agent framework, the binding coupling $g_s(\mu)$ runs with representation scale $\mu$. At UV (texture), $g_s \to 0$ (decoupled). At IR (concepts), $g_s > g_s^{\text{crit}}$ (bound).
 
-Same beta function sign. Same qualitative behavior. Same physical consequence (confinement at large scales, freedom at small scales). The difference is interpretation: QCD talks about quarks and gluons, the Sieve talks about features and binding fields. The math is isomorphic.
+The two profiles may have the same sign or qualitative shape in a chosen comparison. That resemblance does not establish the same
+beta function, physical consequence, or mathematical isomorphism. A physical identification would need a map of states,
+observables, scales, and dynamics.
 :::
 
 :::{prf:corollary} The Coupling Window
@@ -690,11 +720,14 @@ where $\mu_{\text{conf}}$ is the confinement scale separating bound states from 
 :::{div} feynman-prose
 Now we come to a constraint about memory---specifically, about the tradeoff between remembering and learning.
 
-If memories are too fragile, thermal noise erases them. You cannot maintain stable beliefs.
+In the selected metastable-state model, if memories are too fragile, thermal noise can erase them before the chosen observation
+horizon. Stable beliefs then cannot be maintained by that implementation.
 
-If memories are too rigid, you cannot update them. You are frozen in your initial state, unable to learn.
+If they are too rigid, the same model can suppress updates on that horizon. The agent may then appear frozen in its initial state,
+even though a different drive or a longer horizon could still permit transitions.
 
-The viable regime is in between: stiff enough to resist noise, flexible enough to change when evidence demands it. This is the Goldilocks zone of cognition.
+The viable regime is in between: stiff enough to resist the modeled noise, flexible enough to change when the modeled evidence and
+control field supply enough drive. This is a Goldilocks design regime, whose location depends on the rates and horizon.
 :::
 
 We derive the constraint on the separation between adjacent energy levels that enables both memory stability and dynamic flexibility.
@@ -714,13 +747,16 @@ This ratio determines the tradeoff between memory persistence and adaptability.
 :::
 
 :::{div} feynman-prose
-The stiffness ratio $\chi$ is the most important dimensionless number in cognitive thermodynamics.
+The stiffness ratio $\chi$ is a useful dimensionless number for the selected metastable-state model.
 
-**$\chi < 1$:** Energy barrier is smaller than thermal energy. The agent's beliefs flip randomly---it has no stable memory.
+**$\chi < 1$:** Energy barrier is smaller than thermal energy. In the corresponding Arrhenius model, transitions can be frequent
+on the chosen observation horizon, so stable memory may be lost.
 
-**$\chi \gg 1$:** Energy barrier is much larger than thermal energy. Beliefs are frozen---the agent cannot learn.
+**$\chi \gg 1$:** Energy barrier is much larger than thermal energy. In that same model, transitions can be suppressed on the
+chosen horizon, so updates may appear frozen; this does not prove that learning is impossible or that the state is eternally fixed.
 
-**$\chi \sim 1$ to $\chi \sim 10$:** The Goldilocks zone. Beliefs are stable against random fluctuations but can flip given sufficient evidence.
+**$\chi \sim 1$ to $\chi \sim 10$:** A possible Goldilocks range for the selected rates and horizon: beliefs can resist some
+random fluctuations while still changing when evidence supplies enough drive.
 
 Think of a marble in a bowl. If the bowl is too shallow (small $\chi$), thermal vibrations knock the marble out. If the bowl is too deep (large $\chi$), you cannot push the marble out even when you want to. You need a bowl of just the right depth.
 :::
@@ -772,13 +808,20 @@ $\square$
 :::{div} feynman-prose
 The Stiffness Theorem is really about timescales.
 
-A transition with $\chi = 10$ has probability $e^{-10} \approx 4 \times 10^{-5}$ per thermal fluctuation. If fluctuations happen at rate $\nu$, the expected waiting time for a transition is $\sim e^{\chi}/\nu$. For $\chi = 10$ and $\nu = 10^{12}$ Hz (a typical molecular vibration), you wait about $10^{-7}$ seconds---fast enough.
+A transition with $\chi = 10$ has probability $e^{-10} \approx 4 \times 10^{-5}$ per thermal fluctuation in the idealized
+Arrhenius estimate. If fluctuations happen at rate $\nu$, the corresponding waiting-time estimate is $\sim e^{\chi}/\nu$.
+For $\chi = 10$ and the illustrative choice $\nu = 10^{12}$ Hz, it is about $10^{-7}$ seconds; that number is a calibration
+example, not a universal molecular rate.
 
-For $\chi = 100$, you wait $e^{100}/\nu \approx 10^{31}$ seconds---longer than the age of the universe. This belief is frozen forever.
+For $\chi = 100$, the same Arrhenius estimate gives $e^{100}/\nu \approx 10^{31}$ seconds---longer than the chosen operational horizon. Under that model and rate estimate, the transition is effectively frozen for the application; it is not an assertion of eternal physical freezing.
 
-So $\chi_{\text{max}}$ is really about: how long can you wait for belief updates? Biological systems can wait maybe $10^8$ seconds (years) for certain updates. This sets $\chi_{\text{max}} \approx \ln(10^8 \times 10^{12}) \approx 46$.
+So $\chi_{\text{max}}$ is really about: how long can this application wait for belief updates? A horizon such as $10^8$ seconds
+and the rate above would give $\chi_{\text{max}} \approx \ln(10^8 \times 10^{12}) \approx 46$, but neither number is a
+biological universal.
 
-For chemical bonds at room temperature, $\chi \approx 500$. Way above this bound---but that is fine, because chemical bonds are not supposed to flip during your lifetime. The stiffness bound applies to *cognitive* states, not structural ones.
+For chemical bonds at room temperature, an order-of-magnitude comparison may give $\chi \approx 500$. That is a different
+timescale problem: chemical bonds are not supposed to flip during an agent's lifetime. The stiffness diagnostic applies to the
+declared cognitive states and rate model, not automatically to structural matter.
 :::
 
 :::{prf:corollary} The Goldilocks Coupling
@@ -804,17 +847,17 @@ At $T \approx 300$ K (biological temperature), $\chi \approx 500$, placing molec
 :::
 
 :::{div} feynman-prose
-Here is one of the most striking results. The fine structure constant $\alpha \approx 1/137$ has puzzled physicists for a century. Why this value? Is it arbitrary? Is it "fine-tuned"?
+Here is one of the most provocative comparisons. The fine-structure constant $\alpha \approx 1/137$ has puzzled physicists for a century. A cybernetic model can ask whether an analogous binding window would be compatible with chemistry, but that question is not yet a derivation of $\alpha$.
 
-The Sieve answer is: it is constrained by viability.
+The Sieve supplies a conditional viability diagnostic, not an answer for the physical constant.
 
-If $\alpha$ were much smaller, atomic binding energies would be much smaller (they scale like $\alpha^2$). Chemical bonds would be fragile. At room temperature, molecules would fall apart. No stable chemistry, no life.
+If $\alpha$ were changed in a specified atomic model, binding and reaction scales would change roughly like $\alpha^2$ in the simplest approximation. Whether chemistry becomes fragile requires solving that physical model, including other constants and reaction pathways.
 
-If $\alpha$ were much larger, atomic binding energies would be much larger. Chemical reactions would require enormous activation energies. Reactions that enable metabolism would be too slow. No flexible chemistry, no life.
+Whether larger binding scales make reactions too slow likewise requires a model of the relevant activation pathways; the Sieve does not establish “no life” from $\alpha$ alone.
 
-The value $\alpha \approx 1/137$ sits in the narrow window where chemistry works: stable enough to form molecules, flexible enough to rearrange them.
+The observed value can be compared with such a window only after the physical model and its uncertainty ranges are fixed.
 
-This is not anthropic hand-waving. It is a quantitative constraint. The stiffness $\chi = \Delta E/(k_B T) \propto \alpha^2 m_e c^2 / (k_B T)$ must satisfy $1 < \chi < \chi_{\text{max}}$. Given the other constants ($m_e$, $c$, $k_B$, and the temperature where chemistry happens), this pins down the allowed range of $\alpha$.
+The agent calculation gives a quantitative conditional statement: if a chosen energy scale obeys $\chi = \Delta E/(k_B T) \propto \alpha^2 m_e c^2/(k_B T)$ and must satisfy $1 < \chi < \chi_{\text{max}}$, it produces an allowed interval. Mapping that interval to the observed $\alpha$ is a conjectural physical identification, not a conclusion of the Sieve alone.
 :::
 
 
@@ -837,29 +880,37 @@ We derive the constraint on the discount factor from the requirements of causal 
 :::{prf:theorem} The Discount Window
 :label: thm-discount-window
 
-The temporal discount factor $\gamma$ must satisfy:
+Under the stationary diffusion convention, suppose the design declares a maximum screening length $L_{\mathrm{buf}}$ and
+a positive minimum planning length $\ell_{\min}$. Then the temporal discount factor must satisfy:
 
 $$
-\gamma_{\text{min}} < \gamma < 1
+\exp\!\left(-\frac{T_c\Delta t}{\ell_{\min}^2}\right)
+\le \gamma \le
+\exp\!\left(-\frac{T_c\Delta t}{L_{\mathrm{buf}}^2}\right)<1,
+\qquad
+\gamma_{\min}:=\exp\!\left(-\frac{T_c\Delta t}{\ell_{\min}^2}\right).
 
 $$
 
-with $\gamma_{\text{min}} > 0$.
+The lower endpoint encodes the declared planning requirement; without such a length scale the analysis proves only
+$0<\gamma<1$, not a universal numerical $\gamma_{\min}$.
 
 *Proof.*
 
 **Upper Bound ($\gamma < 1$):**
 
-**Step 1.** From the Helmholtz equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`), the Value function satisfies:
+**Step 1.** From the stationary-diffusion Bellman generator (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`), the Value function satisfies:
 
 $$
-(\kappa^2 - \nabla^2) V = \rho_r
+( -\Delta_G + \lambda/T_c ) V = \rho_r/T_c
 
 $$
 
-where the screening mass $\kappa = \lambda / c_{\text{info}} = (-\ln\gamma)/\ell_0$ has dimension $[L^{-1}]$, and $\ell_0 = c_{\text{info}} \cdot \tau_{\text{proc}}$ is the causal horizon length (Definition {prf:ref}`def-agent-parameter-vector`). This ensures dimensional consistency: $[\kappa^2] = [L^{-2}] = [\nabla^2]$.
+where $\kappa_{\mathrm{diff}}^2:=\lambda/T_c=(-\ln\gamma)/(T_c\Delta t)$ has dimension $[L^{-2}]$.
+The propagation scale $\ell_0=c_{\text{info}}\tau_{\text{proc}}$ is a separate quantity (Definition
+{prf:ref}`def-agent-parameter-vector`).
 
-**Step 2.** For $\gamma = 1$, we have $\kappa = 0$. The equation becomes Poisson's equation for the conservative
+**Step 2.** For $\gamma = 1$, we have $\lambda=\kappa_{\mathrm{diff}}=0$. The equation becomes Poisson's equation for the conservative
 component:
 
 $$
@@ -873,14 +924,16 @@ For $D>2$, the Green's function decays as $1/r^{D-2}$ (long-range); for $D=2$ it
 **Step 3.** Long-range value propagation violates locality: distant conservative reward sources dominate nearby
 decisions. The agent cannot form local value gradients for navigation.
 
-**Step 4.** From Corollary {prf:ref}`cor-discount-as-screening-length`, finite screening $\kappa > 0$ (i.e., $\gamma < 1$) is required for local goal-directedness.
+**Step 4.** From Corollary {prf:ref}`cor-discount-as-screening-length`, finite stationary screening
+$\kappa_{\mathrm{diff}}>0$ (i.e., $\gamma<1$) is required for local goal-directedness.
 
 **Lower Bound ($\gamma > \gamma_{\text{min}}$):**
 
-**Step 5.** For $\gamma \to 0$, we have $-\ln\gamma \to \infty$, hence $\kappa \to \infty$. The **Screening Length** (dimension $[L]$):
+**Step 5.** For $\gamma \to 0$, we have $-\ln\gamma \to \infty$, hence $\kappa_{\mathrm{diff}} \to \infty$. The **Screening Length** (dimension $[L]$):
 
 $$
-\ell_\gamma = \frac{1}{\kappa} = \frac{\ell_0}{-\ln\gamma} = \frac{c_{\text{info}} \tau_{\text{proc}}}{-\ln\gamma} \to 0
+\ell_{\mathrm{diff}} = \frac{1}{\kappa_{\mathrm{diff}}}
+ = \sqrt{\frac{T_c\Delta t}{-\ln\gamma}} \to 0
 
 $$
 
@@ -894,15 +947,13 @@ $\square$
 :::
 
 :::{div} feynman-prose
-The physics here is beautiful. The discount factor $\gamma$ creates a "screening mass" $\kappa$ for the value field, exactly like the photon mass in a superconductor creates a screening length for electromagnetic fields.
+The analogy here is useful. The discount factor $\gamma$ creates a model-dependent screening scale $\kappa$ for the value field, which resembles the way a photon mass produces a screening length in a specified electromagnetic medium. In the stationary diffusion convention used for the value equation, set $\lambda=-\ln\gamma/\Delta t$ and obtain $\kappa^2=\lambda/T_c$, so $\ell=1/\kappa=\sqrt{T_c/\lambda}$. A separate propagation convention may introduce a rate divided by $c_{\text{info}}$; it must not be identified with this diffusion coefficient without an additional derivation. The value equation is not a photon-mass calculation, and the correspondence needs its own units and boundary hypotheses.
 
 In electrostatics, the Coulomb potential is $V(r) \sim 1/r$---long range. In a superconductor, the photon gains a mass $m_\gamma$, and the potential becomes $V(r) \sim e^{-m_\gamma r}/r$---short range, decaying exponentially beyond the screening length $\ell = 1/m_\gamma$.
 
-Same here. With $\gamma = 1$ (no discounting), conservative reward sources propagate like Coulomb potentials---a source at
-distance $r$ contributes $1/r^{D-2}$ for $D>2$ (logarithmic in $D=2$) to the value function. Distant rewards dominate. The agent cannot focus.
+Same here in the flat, free-space reference calculation. With $\gamma = 1$ (no discounting), conservative reward sources solve a Poisson equation, so a source at distance $r$ contributes like $1/r^{D-2}$ for $D>2$ (logarithmically in $D=2$). A curved or bounded domain has a different Green kernel, and the agent's ability to focus must be checked there.
 
-With $\gamma < 1$, there is screening. Conservative rewards beyond the screening length $\ell_\gamma$ are exponentially
-suppressed. The agent can focus on local goals.
+With $\gamma < 1$, the selected diffusion operator has screening. Its Green response is controlled by $\ell=\sqrt{T_c/\lambda}$ in the stationary convention, subject to the geometry and boundary conditions. The agent can focus on local goals only when that response estimate applies.
 
 But if $\gamma$ is too small, the screening length is too short. The agent becomes myopic, unable to see past its nose. A deer with $\gamma = 0.1$ would walk into the lion's mouth because it only cares about the next few meters.
 :::
@@ -910,16 +961,18 @@ But if $\gamma$ is too small, the screening length is too short. The agent becom
 :::{admonition} Intuition: Discounting as Screening
 :class: feynman-added tip
 
-Think of conservative reward sources as electric charges distributed in spacetime. The value function $V(z)$ is like the
-electrostatic potential---it tells you how much "pull" you feel toward different states.
+Think of conservative reward sources as electric charges distributed in spacetime. This is a mathematical analogy, not a claim
+that the value field is an electromagnetic field. The value function $V(z)$ is like the electrostatic potential---it tells you how
+much "pull" you feel toward different states.
 
-With no discounting ($\gamma = 1$), all charges contribute equally regardless of distance. A conservative reward source a
-million steps away pulls just as hard as one next step away. You cannot prioritize.
+In a flat, free-space Green-kernel picture with no discounting ($\gamma = 1$), there is no exponential screening. Boundary
+conditions and geometry can still affect the solution, and a conservative reward source a million steps away need not be treated
+like one next step away by every model.
 
 With discounting ($\gamma < 1$), distant charges are screened. Their contribution decays exponentially with distance. You
 feel mostly the nearby conservative rewards.
 
-The screening length $\ell_\gamma \approx c_{\text{info}} \tau_{\text{proc}} / |\ln\gamma|$ sets the planning horizon. For $\gamma = 0.99$, $|\ln\gamma| \approx 0.01$, so $\ell_\gamma \approx 100 \ell_0$---you plan about 100 steps ahead. For $\gamma = 0.5$, $|\ln\gamma| \approx 0.7$, so $\ell_\gamma \approx 1.4 \ell_0$---you barely look ahead at all.
+In the stationary diffusion convention, the screening length $\ell=\sqrt{T_c/\lambda}$ sets the value-field scale, with $\lambda=-\ln\gamma/\Delta t$. A propagation-based length such as $c_{\text{info}}\tau_{\text{proc}}/|\ln\gamma|$ belongs to a separate convention and cannot be substituted for $\ell$ without matching the underlying generator and units. For $\gamma=0.99$, the numerical scale therefore depends on $T_c$ and $\Delta t$; it is not universally “about 100 steps.”
 :::
 
 :::{prf:corollary} The Screening-Buffer Consistency
@@ -928,24 +981,25 @@ The screening length $\ell_\gamma \approx c_{\text{info}} \tau_{\text{proc}} / |
 The screening length and buffer depth must satisfy:
 
 $$
-\ell_\gamma = \frac{c_{\text{info}} \tau_{\text{proc}}}{-\ln\gamma} \lesssim L_{\text{buf}}
+\ell_{\mathrm{diff}} = \sqrt{\frac{T_c\Delta t}{-\ln\gamma}} \lesssim L_{\text{buf}}
 
 $$
 
-Both sides have dimension $[L]$. For $\gamma \to 1$, the screening length $\ell_\gamma \to \infty$ (unlimited planning horizon). For $\gamma \to 0$, the screening length $\ell_\gamma \to 0$ (myopic behavior).
+Both sides have dimension $[L]$. For $\gamma\to1$, $\ell_{\mathrm{diff}}\to\infty$; for $\gamma\to0$,
+$\ell_{\mathrm{diff}}\to0$. The causal propagation scale $\ell_0$ is not substituted for $\ell_{\mathrm{diff}}$.
 
 *Remark:* The planning horizon cannot exceed the causal memory span. This connects the temporal discount to the spatial architecture.
 
 :::
 
 :::{div} feynman-prose
-This corollary ties together time and space. Your planning horizon (temporal: how far ahead you think) is bounded by your memory depth (spatial: how much history you can hold).
+This corollary ties together time and space. Your planning horizon (temporal: how far ahead you think) is bounded by your memory depth (spatial: how much history you can hold), but the two lengths must first be expressed in the same convention.
 
 Why? Because planning requires imagining future states, and imagining future states requires composing transitions from past experience. If your memory holds only 10 transitions, you cannot reliably plan 1000 steps ahead---you do not have the data to model that far.
 
-So there is a consistency condition: $\ell_\gamma \lesssim L_{\text{buf}}$. Do not try to plan farther than your memory permits.
+In the stationary diffusion convention, compare $\ell=\sqrt{T_c/\lambda}$ with the effective buffer depth after matching units. A causal propagation length built from $c_{\text{info}}$ is a separate bookkeeping scale. Do not infer a planning or memory bound by substituting one for the other without a generator-level relation.
 
-In practice, this means: if you build an agent with limited memory ($L_{\text{buf}}$ small), you should also discount the future steeply ($\gamma$ small, hence $\ell_\gamma$ small). A myopic agent with short memory is internally consistent. An agent trying to plan forever with finite memory is not.
+In practice, this means: if you build an agent with limited memory ($L_{\text{buf}}$ small), the value-field scale produced by the selected generator should be comparably short. A myopic agent with short memory can be internally consistent; an agent trying to plan forever with finite memory needs an additional state or approximation argument.
 :::
 
 
@@ -981,7 +1035,7 @@ where:
 | Causal Upper | $c_{\text{info}} \le L_{\text{buf}}/\tau_{\text{proc}}$ | 62 |
 | Holographic | $\ell_L^{D-1} \le \nu_D \text{Area}_\partial / I_{\text{req}}$ | 56 |
 | Landauer | $T_c \le \dot{E}_{\text{met}} / (\dot{I}_{\text{erase}} \ln 2)$ | 52 |
-| IR Binding | $g_s(\mu_{\text{IR}}) \ge g_s^{\text{crit}}$ | 40 |
+| IR Binding | $g_s(\mu_{\text{IR}}) \ge g_s^{\text{crit}}$ | DNN-B |
 | UV Decoupling | $g_s(\mu_{\text{UV}}) \le \epsilon$ (for $\epsilon \to 0$) | 29 |
 | Stiffness Lower | $\Delta E > T_c$ | 7 |
 | Stiffness Upper | $\Delta E < \chi_{\text{max}} T_c$ | 7 |
@@ -995,7 +1049,7 @@ Look at this table. Ten constraints, each coming from a different physical requi
 
 Some come from causality: you cannot send signals faster than $L_{\text{buf}}/\tau_{\text{proc}}$ or slower than $d_{\text{sync}}/\tau_{\text{proc}}$.
 
-Some come from information theory: you cannot store more than the holographic bound permits.
+Some come from information theory: under the declared boundary, resolution, and channel convention, the capacity diagnostic cannot exceed its stated budget. The holographic wording is a model-level analogy until those counting and normalization hypotheses are supplied.
 
 Some come from thermodynamics: you cannot think hotter than Landauer allows.
 
@@ -1033,18 +1087,25 @@ $\square$
 :::{div} feynman-prose
 The existence proof is almost embarrassingly simple: *we are here*. If the feasible region were empty, no agents could exist to ask the question.
 
-But this is not circular. We are not *assuming* we exist and therefore concluding the constraints are satisfiable. We are *deriving* the constraints from operational requirements, and then *observing* that our universe satisfies them.
+For the declared agent model, a witnessed configuration can show that its feasible set is nonempty. Applying that witness to the
+physical universe requires the proposed dictionary to map physical constants and observables to the agent quantities and to verify
+every hypothesis. Merely observing that agents exist does not establish that the physical constants satisfy this particular Sieve.
 
-The deeper question is: *why* does our universe sit inside the feasible region? The Sieve framework does not answer this directly. It says: wherever the constraints are satisfied, agents can exist. Wherever they are not, agents cannot exist. We find ourselves in the first kind of place because we could not find ourselves anywhere else.
+The deeper question is: *why* does a chosen agent implementation sit inside its feasible region? The Sieve answers this only at
+the level of the declared constraints: settings satisfying them are candidates for viability, while settings violating them fail
+the model's requirements. It does not select a physical universe or prove that the region is unique.
 
-This is not mysticism. It is logic. A fish asking "why is there water here?" gets the answer: "because you could not ask the question anywhere without water."
+The observer-selection analogy can still be useful, but it remains an interpretation of the model rather than a physical theorem.
 :::
 
 :::{note}
 :class: feynman-added
-The feasible region $\mathcal{F}$ is likely a low-dimensional surface in parameter space, not a thick region. Most of the 6-dimensional parameter space violates at least one constraint. The viable universes form a thin shell around the boundary of multiple constraint surfaces, all nearly saturated simultaneously.
+The shape of the feasible region is a model-dependent question. It may be thin if several independent constraints are active, but
+the present formulation does not prove low dimension, near-saturation, or a thin shell of viable universes. Those claims require
+rank, regularity, and sampling or measure assumptions for the declared agent parameterization.
 
-This explains the appearance of "fine-tuning" without requiring a tuner. The constraints are tight, so the viable region is small. But it exists, and we are in it.
+Such a geometry could offer a way to study apparent fine-tuning within the agent model. It does not show that physical constants
+are tuned, that the physical universe lies in this region, or that a tuner is unnecessary.
 :::
 
 
@@ -1084,7 +1145,7 @@ The objective $\mathcal{J}$ makes economic sense. You want to know as much as po
 
 The parameter $\beta$ sets the exchange rate: how many bits of knowledge are you willing to give up to save one joule of energy? This depends on the environment. In a resource-scarce environment, $\beta$ is large (energy is precious). In a resource-rich environment, $\beta$ is small (burn energy freely for more knowledge).
 
-Evolution (or selection over universes, if you want to go that far) presumably optimizes this objective subject to the Sieve constraints.
+An adaptive agent may optimize this objective subject to the Sieve constraints. Extending that optimization metaphor to biological evolution or to a selection over universes is an additional physical hypothesis, not a consequence of the agent model.
 :::
 
 :::{prf:theorem} The Constrained Optimum
@@ -1114,13 +1175,13 @@ $\square$
 :::
 
 :::{div} feynman-prose
-Here is the key insight: the optimum sits on the boundary, with at least one constraint active.
+Here is the key insight, when the additional monotonicity and boundary-attainment assumptions of the optimization argument hold: an optimum can sit on the boundary, with at least one constraint active. Continuity and compactness alone establish existence, not boundary saturation.
 
-Why? Because if you were strictly inside $\mathcal{F}$, you could push toward the boundary and do better---either increase representational power or decrease cost. You only stop when you hit a wall.
+Why might that happen? If the objective improves along a feasible direction from every interior point, you can push toward the boundary and do better—either increase representational power or decrease cost. Without that directional-improvement property, an interior optimum is possible.
 
-This explains why physics looks "fine-tuned." The constants are not arbitrary; they are pushed as far as they can go. Not too far (that violates a constraint), but right up to the edge.
+This supplies one possible explanation for apparent fine-tuning, but it does not show that physical constants are selected by this objective. The “right up to the edge” reading is a conjectural interpretation of the optimization model.
 
-A bridge engineer does not make beams five times stronger than needed. That wastes material. She makes them exactly strong enough, with a safety margin. The constants of physics are like optimal engineering: as extreme as possible while remaining viable.
+A bridge engineer may size beams near a design boundary after choosing loads and safety factors. That is a useful analogy for the constrained optimization; it does not establish that the constants of physics were engineered by the Sieve.
 :::
 
 :::{prf:corollary} The Pareto Surface
@@ -1137,16 +1198,16 @@ Moving off this surface triggers constraint violation:
 - Increasing $I_{\text{bulk}}$ beyond capacity → Holographic bound (Node 56)
 - Decreasing $\mathcal{V}_{\text{metabolic}}$ below threshold → Landauer bound (Node 52)
 - Violating causality → Speed bounds (Nodes 2, 62)
-- Losing binding → Confinement (Node 40)
+- Losing binding → Confinement (DNN-B)
 
 :::
 
 :::{div} feynman-prose
 A Pareto surface is the set of "you cannot improve one thing without making another thing worse." If you are on the Pareto surface, any movement either violates a constraint or trades off one objective against another.
 
-The claim is: our universe sits on this surface. The fundamental constants are Pareto-optimal for agent viability.
+The conjecture is that our universe may lie near such a surface when viewed through an agent-viability model. The Sieve proves an optimization problem for the declared constraints; it does not prove that observed fundamental constants are Pareto-optimal for agency.
 
-This is a strong prediction. It says: look for constraints that are nearly saturated. If the Sieve picture is correct, physics should be operating near its limits on multiple fronts simultaneously. And indeed, many "fine-tuning" observations have exactly this character---the constants seem to be just barely in the viable range, not comfortably in the middle.
+This is a testable conjecture, not a result of the Sieve. If the proposed physical identification is correct, one could look for several independently defined constraints that are nearly saturated. Apparent fine-tuning observations would be evidence to analyze only after the feasible set, priors, units, and uncertainty model had been fixed.
 :::
 
 
@@ -1155,7 +1216,7 @@ This is a strong prediction. It says: look for constraints that are nearly satur
 ## Physics Isomorphism: The Standard Model Constants
 
 :::{div} feynman-prose
-Finally, we translate. Everything we have derived uses agent-theoretic language: information speed, cognitive temperature, binding coupling. But these map onto familiar physics constants. This section makes the dictionary explicit.
+Finally, we translate. Everything we have derived uses agent-theoretic language: information speed, cognitive temperature, binding coupling. This section records a proposed dictionary to familiar physics constants; the dictionary is an isomorphism claim to test, not a theorem supplied by the notation.
 :::
 
 We tabulate the correspondence between agent parameters and physics constants.
@@ -1171,11 +1232,11 @@ We tabulate the correspondence between agent parameters and physics constants.
 | Discount Factor | $\gamma$ | Cosmological Horizon | Corollary {prf:ref}`cor-screening-buffer-consistency` |
 
 :::{div} feynman-prose
-Some of these correspondences are obvious. Information speed $\leftrightarrow$ speed of light is almost tautological. Cognitive action scale $\leftrightarrow$ Planck constant is the statement that quantum mechanics sets the minimum distinguishable action.
+Some of these correspondences are suggestive. Information speed $\leftrightarrow$ speed of light compares two finite-propagation scales, while cognitive action scale $\leftrightarrow$ Planck constant compares two resolution scales. A physical identification needs compatible units, state maps, and observables.
 
-Others are more surprising. The binding coupling $g_s$ corresponding to the strong force coupling $\alpha_s$ says that QCD confinement and cognitive feature-binding are the same mathematical phenomenon in different domains.
+Others are more surprising. The proposed pairing of the binding coupling $g_s$ with the strong-force coupling $\alpha_s$ invites a comparison between QCD confinement and cognitive feature-binding. The mechanisms are not thereby the same; the pairing remains a conjectural physical interpretation.
 
-The most provocative is the last row: the discount factor $\gamma$ corresponds to something about the cosmological horizon. This suggests that the finite age of the universe (or finite causal horizon) might be related to agents needing finite planning horizons. Highly speculative, but the math checks out.
+The most provocative is the last row: the discount factor $\gamma$ is paired with a cosmological-horizon scale. This suggests a hypothesis about finite causal horizons and finite planning horizons. It is highly speculative, and the agent mathematics alone does not validate the physical identification.
 :::
 
 :::{prf:remark} Why These Values?
@@ -1200,11 +1261,11 @@ Let me say this plainly. The claim of this chapter is:
 
 Not designed for agents. Not fine-tuned by a creator. But *constrained* by the requirements of agency, and *optimized* for representational power per unit metabolic cost.
 
-This is a strong claim. It might be wrong. But it is falsifiable: if you find fundamental constants that are comfortably in the middle of their viable ranges (not near any constraint boundary), that would be evidence against this picture. If you find constants that are near saturation on multiple constraints simultaneously, that would be evidence for it.
+This is a strong conjecture. It might be wrong. It is testable only after the feasible set, priors, units, and observational comparison have been specified: constants comfortably inside the set would count against a saturation story, while apparent proximity to several boundaries would be evidence to investigate rather than proof.
 
-Current observations suggest the latter. The fine structure constant, the cosmological constant, the strong coupling---all seem to be near critical values where small changes would render chemistry, large-scale structure, or nuclear physics non-viable.
+Claims about current observations and criticality require a separate empirical analysis of the relevant physical models. The Sieve chapter does not establish that the fine-structure constant, cosmological constant, or strong coupling lie at its own boundaries.
 
-The Sieve does not explain *why* these constraints exist. It derives them from operational requirements: causality, holography, thermodynamics, binding, stiffness, planning. Given those requirements, the constraints follow. Given the constraints, the observed constants are (nearly) the unique viable solution.
+The Sieve can derive constraints for the declared agent model. It does not derive the observed constants, their physical mechanisms, or a unique viable solution without an additional isomorphism theorem and data. Those identifications remain conjectural.
 :::
 
 
@@ -1217,21 +1278,21 @@ Let me gather the threads.
 
 We started with a question: why do the fundamental constants have the values they do? The traditional answers are either "they just do" (unsatisfying) or "they were fine-tuned for life" (mysterious).
 
-The Sieve offers a third answer: they are constrained by cybernetic viability. Any agent---biological, artificial, or physical---must satisfy certain consistency conditions. These conditions carve out a feasible region in parameter space. The observed constants sit in that region because agents asking the question can only exist inside it.
+The Sieve offers a third question: what parameter values are compatible with cybernetic viability? Any agent---biological or artificial---must satisfy the consistency conditions of its own model. These conditions carve out a feasible region in parameter space. Our existence supplies one physical example, but does not prove that observed constants were selected by this region.
 
 We derived six families of constraints:
 1. **Causal**: Information cannot travel too fast or too slow.
-2. **Holographic**: Storage capacity is bounded by boundary area.
+2. **Holographic**: Under a declared boundary and cell-counting convention, an operational storage diagnostic scales with boundary area.
 3. **Metabolic**: Cognition costs energy; temperature is capped.
 4. **Hierarchical**: Features must bind at macro scale, decouple at micro scale.
 5. **Stiffness**: Memories must be stable but updatable.
 6. **Temporal**: Planning horizons must be finite but nonzero.
 
-Each constraint corresponds to a Sieve node that enforces it at runtime. Violating any constraint is catastrophic, not just costly.
+Each constraint can correspond to a Sieve node that monitors the declared quantity at runtime. A threshold violation is a diagnostic event whose consequence depends on the controller; it is not automatically catastrophic.
 
-The feasible region is the intersection of all constraint half-spaces. Our universe sits inside it. Moreover, it sits on the Pareto-optimal surface: the constants are pushed as far as they can go, maximizing representational power per unit cost.
+The feasible region is the intersection of the declared constraint sets. An agent can be tested against that region. Whether our universe lies on a Pareto-optimal surface, and whether its constants maximize representational power per unit cost, are physical conjectures rather than results of this construction.
 
-This is not a complete theory of everything. It does not tell you why the constraints exist, only what they are. It does not derive the values of constants from first principles, only their relationships. But it offers a framework for understanding why physics looks the way it does: not arbitrary, not designed, but constrained by the requirements of coherent agency.
+This is not a complete theory of everything. It does not tell you why the constraints exist or derive physical constants from first principles. It offers a framework for comparing coherent-agent requirements with physical models; the proposed physics isomorphism needs separate mathematical and empirical support.
 :::
 
 This chapter has derived the constraints on fundamental constants from cybernetic first principles:

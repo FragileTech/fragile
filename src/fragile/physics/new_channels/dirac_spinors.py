@@ -1,8 +1,9 @@
 """Dirac spinor representation for strong-force meson operators.
 
 Maps the complex color states c_i ∈ ℂ³ (from viscous force complexification)
-to proper Dirac spinors ψ_i ∈ ℂ⁴, enabling meson operators ψ̄_i Γ ψ_j with
-guaranteed quantum numbers from the Clifford algebra.
+to parity-matched four-component features ψ_i ∈ ℂ⁴ for bilinears ψ̄_i Γ ψ_j.
+The Clifford algebra fixes their formal parity, but the embedding is not
+rotation-equivariant and does not establish physical spin or charge conjugation.
 
 Parity transformation of color states:
     c^α → -(c^α)*     (v → -v, F_visc → -F_visc)
@@ -17,11 +18,12 @@ Dirac spinor in standard representation (γ₀ = diag(I₂, -I₂)):
 
 Matching: Im(c) → ψ_L, Re(c) → ψ_R
 
-The map ℝ³ → ℂ² uses the Hopf fibration / spinor section:
+The map ℝ³ → ℂ² uses an odd embedding:
 
-    ξ(w) = 1/√(2|w|(|w|+w₃)) · (|w|+w₃, w₁+iw₂)ᵀ
+    E(w) = (w₁ + iw₂, w₃)ᵀ / √|w|.
 
-with chart switching near the south pole (w₃ ≈ -|w|).
+Thus E(-w) = -E(w), unlike a Hopf section. The standalone Hopf utility
+below remains available, but is not used for parity matching.
 
 Bilinear ψ̄Γψ = ψ†γ₀Γψ then gives:
     Γ = I₄         → scalar     (0⁺⁺)
@@ -82,16 +84,19 @@ def build_dirac_gamma_matrices(
     # γᵏ = [[0, σ_k], [-σ_k, 0]]
     gamma_k_list = []
     for k in range(3):
-        top = torch.cat([Z2, pauli[k]], dim=1)       # [2, 4]
-        bot = torch.cat([-pauli[k], Z2], dim=1)      # [2, 4]
+        top = torch.cat([Z2, pauli[k]], dim=1)  # [2, 4]
+        bot = torch.cat([-pauli[k], Z2], dim=1)  # [2, 4]
         gamma_k_list.append(torch.cat([top, bot], dim=0))  # [4, 4]
     gamma_k = torch.stack(gamma_k_list, dim=0)  # [3, 4, 4]
 
     # γ⁵ = iγ⁰γ¹γ²γ³ = [[0, I₂], [I₂, 0]]
-    gamma5 = torch.cat([
-        torch.cat([Z2, I2], dim=1),
-        torch.cat([I2, Z2], dim=1),
-    ], dim=0)
+    gamma5 = torch.cat(
+        [
+            torch.cat([Z2, I2], dim=1),
+            torch.cat([I2, Z2], dim=1),
+        ],
+        dim=0,
+    )
 
     # γ₅γ_k (axial vector)
     gamma5_k = torch.stack([gamma5 @ gamma_k_list[k] for k in range(3)], dim=0)
@@ -136,8 +141,9 @@ def verify_clifford_algebra(gamma: dict[str, Tensor], tol: float = 1e-10) -> dic
     I4 = torch.eye(4, device=gamma0.device, dtype=gamma0.dtype)
 
     all_gammas = [gamma0] + [gamma_k[k] for k in range(3)]
-    g_metric = torch.diag(torch.tensor([1.0, -1.0, -1.0, -1.0],
-                                        device=gamma0.device, dtype=gamma0.dtype))
+    g_metric = torch.diag(
+        torch.tensor([1.0, -1.0, -1.0, -1.0], device=gamma0.device, dtype=gamma0.dtype)
+    )
 
     results = {}
 
@@ -274,7 +280,7 @@ def color_to_dirac_spinor(
         Im(c) → ψ_L (upper 2 components, parity-even)
         Re(c) → ψ_R (lower 2 components, parity-odd)
 
-    via the Hopf fibration section on each 3-vector.
+    via the odd embedding E(w)=(w₁+iw₂,w₃)/√|w| on each 3-vector.
 
     Args:
         color: Complex color states [..., 3] (complex64 or complex128).
@@ -284,11 +290,26 @@ def color_to_dirac_spinor(
         Tuple of (spinor [..., 4] complex, valid [...] bool).
         Invalid where either Re(c) or Im(c) has vanishing norm.
     """
-    re_c = color.real.float()  # [..., 3] — parity-odd → ψ_R
-    im_c = color.imag.float()  # [..., 3] — parity-even → ψ_L
 
-    xi_L, valid_L = vector_to_weyl_spinor(im_c, eps=eps)  # [..., 2]
-    xi_R, valid_R = vector_to_weyl_spinor(re_c, eps=eps)  # [..., 2]
+    # An odd real-linear embedding is required: Hopf sections identify xi and
+    # -xi and therefore cannot implement inversion of the lower components.
+    # E(w)=(w0+i*w1,w2), divided by sqrt(|w|), preserves xi†xi=|w|.
+    # This fixes parity, but does not assert rotation equivariance of the map.
+    def embed(w):
+        norm = torch.linalg.vector_norm(w, dim=-1)
+        embedded = torch.stack(
+            (
+                torch.complex(w[..., 0], w[..., 1]),
+                torch.complex(w[..., 2], torch.zeros_like(w[..., 2])),
+            ),
+            -1,
+        )
+        valid = norm > eps
+        embedded = embedded / norm.clamp_min(eps).sqrt().unsqueeze(-1)
+        return torch.where(valid.unsqueeze(-1), embedded, 0), valid
+
+    xi_L, valid_L = embed(color.imag)
+    xi_R, valid_R = embed(color.real)
 
     # Stack into Dirac spinor: ψ = (ξ_L, ξ_R)ᵀ
     spinor = torch.cat([xi_L, xi_R], dim=-1)  # [..., 4]
@@ -309,12 +330,12 @@ class DiracOperatorSeries:
     Each field is [T] — the spatially averaged operator value at each MC timestep.
     """
 
-    scalar: Tensor        # ψ̄ψ = ψ†γ₀ψ
+    scalar: Tensor  # ψ̄ψ = ψ†γ₀ψ
     pseudoscalar: Tensor  # ψ̄γ₅ψ
-    vector: Tensor        # (1/3)Σ_k ψ̄γ_k ψ  (averaged over spatial directions)
+    vector: Tensor  # (1/3)Σ_k ψ̄γ_k ψ  (averaged over spatial directions)
     axial_vector: Tensor  # (1/3)Σ_k ψ̄γ₅γ_k ψ
-    tensor: Tensor        # (1/3)Σ_{j<k} ψ̄σ_jk ψ  (spatial-spatial only, parity-even)
-    tensor_0k: Tensor     # (1/3)Σ_k ψ̄σ_0k ψ  (temporal-spatial, parity-odd)
+    tensor: Tensor  # (1/3)Σ_{j<k} ψ̄σ_jk ψ  (spatial-spatial only, parity-even)
+    tensor_0k: Tensor  # (1/3)Σ_k ψ̄σ_0k ψ  (temporal-spatial, parity-odd)
 
     # Diagnostics
     n_valid_pairs: Tensor  # [T] number of valid (i,j) pairs per frame
@@ -349,11 +370,10 @@ def compute_dirac_bilinear(
         M = gamma0 @ Gamma
         # ψ_i†  M  ψ_j  =  Σ_{ab} (ψ_i^a)* M_{ab} ψ_j^b
         return torch.einsum("...a,ab,...b->...", psi_i.conj(), M, psi_j).real
-    else:
-        # Multiple Gammas: Gamma is [n, 4, 4], M = γ₀ Γ_n [n, 4, 4]
-        M = torch.einsum("ab,nbc->nac", gamma0, Gamma)  # [n, 4, 4]
-        # ψ̄_i Γ_n ψ_j = Σ_{ab} (ψ_i^a)* M_n_{ab} ψ_j^b
-        return torch.einsum("...a,nab,...b->...n", psi_i.conj(), M, psi_j).real
+    # Multiple Gammas: Gamma is [n, 4, 4], M = γ₀ Γ_n [n, 4, 4]
+    M = torch.einsum("ab,nbc->nac", gamma0, Gamma)  # [n, 4, 4]
+    # ψ̄_i Γ_n ψ_j = Σ_{ab} (ψ_i^a)* M_n_{ab} ψ_j^b
+    return torch.einsum("...a,nab,...b->...n", psi_i.conj(), M, psi_j).real
 
 
 def compute_dirac_operators_from_spinors(
@@ -384,26 +404,25 @@ def compute_dirac_operators_from_spinors(
     device = spinor.device
 
     if sample_indices.ndim != 2:
-        raise ValueError(
-            f"sample_indices must have shape [T, S], got {tuple(sample_indices.shape)}."
-        )
+        msg = f"sample_indices must have shape [T, S], got {tuple(sample_indices.shape)}."
+        raise ValueError(msg)
     if neighbor_indices.ndim == 2:
         neighbor_indices = neighbor_indices.unsqueeze(-1)
     if neighbor_indices.ndim != 3:
-        raise ValueError(
-            f"neighbor_indices must have shape [T, S, P], got {tuple(neighbor_indices.shape)}."
-        )
+        msg = f"neighbor_indices must have shape [T, S, P], got {tuple(neighbor_indices.shape)}."
+        raise ValueError(msg)
     if neighbor_indices.shape[:2] != sample_indices.shape:
-        raise ValueError(
+        msg = (
             "neighbor_indices must align with sample_indices in the first two dimensions, got "
             f"{tuple(neighbor_indices.shape)} vs {tuple(sample_indices.shape)}."
         )
+        raise ValueError(msg)
     if spinor_valid.shape != spinor.shape[:2]:
-        raise ValueError(
-            f"spinor_valid must have shape [T, N], got {tuple(spinor_valid.shape)}."
-        )
+        msg = f"spinor_valid must have shape [T, N], got {tuple(spinor_valid.shape)}."
+        raise ValueError(msg)
     if alive.shape != spinor.shape[:2]:
-        raise ValueError(f"alive must have shape [T, N], got {tuple(alive.shape)}.")
+        msg = f"alive must have shape [T, N], got {tuple(alive.shape)}."
+        raise ValueError(msg)
 
     P = neighbor_indices.shape[2]
 
@@ -444,8 +463,9 @@ def compute_dirac_operators_from_spinors(
     # Scalar: ψ̄ψ = ψ†γ₀ψ (Γ = I₄)
     op_scalar = compute_dirac_bilinear(psi_i, psi_j, gamma0, I4)  # [T, S, P]
 
-    # Pseudoscalar: Im[ψ̄ψ] (parity-odd component of scalar bilinear)
-    op_pseudo = torch.einsum("...a,ab,...b->...", psi_i.conj(), gamma0, psi_j).imag  # [T, S, P]
+    # gamma0 gamma5 is anti-Hermitian. Its imaginary component is real-valued,
+    # parity odd and symmetric under exchanging the pair endpoints.
+    op_pseudo = torch.einsum("...a,ab,...b->...", psi_i.conj(), gamma0 @ gamma5, psi_j).imag
 
     # Vector: (1/3)Σ_k ψ̄γ_k ψ
     op_vector_k = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma_k)  # [T, S, P, 3]
@@ -458,7 +478,7 @@ def compute_dirac_operators_from_spinors(
     # Tensor: split σ_0k (parity-odd) from σ_jk (parity-even)
     op_tensor_mn = compute_dirac_bilinear(psi_i, psi_j, gamma0, sigma_munu)  # [T, S, P, 6]
     op_tensor_0k = op_tensor_mn[..., :3].mean(dim=-1)  # [T, S, P] σ_0k: parity-odd
-    op_tensor = op_tensor_mn[..., 3:].mean(dim=-1)     # [T, S, P] σ_jk: parity-even
+    op_tensor = op_tensor_mn[..., 3:].mean(dim=-1)  # [T, S, P] σ_jk: parity-even
 
     # Mask invalid pairs
     zero = torch.zeros_like(op_scalar)
@@ -476,18 +496,17 @@ def compute_dirac_operators_from_spinors(
         elif weights.ndim == 3:
             w = weights
         else:
-            raise ValueError(
-                f"weights must have shape [T, S] or [T, S, P], got {tuple(weights.shape)}."
-            )
+            msg = f"weights must have shape [T, S] or [T, S, P], got {tuple(weights.shape)}."
+            raise ValueError(msg)
         if w.shape[:2] != sample_indices.shape:
-            raise ValueError(
+            msg = (
                 "weights must align with sample_indices in the first two dimensions, got "
                 f"{tuple(w.shape)} vs {tuple(sample_indices.shape)}."
             )
+            raise ValueError(msg)
         if w.shape[-1] not in {1, P}:
-            raise ValueError(
-                f"weights trailing dimension must be 1 or P={P}, got {tuple(w.shape)}."
-            )
+            msg = f"weights trailing dimension must be 1 or P={P}, got {tuple(w.shape)}."
+            raise ValueError(msg)
         if w.shape[-1] == 1 and P > 1:
             w = w.expand(-1, -1, P)
         w = w.to(device=device, dtype=op_scalar.dtype)
@@ -543,14 +562,15 @@ def compute_dirac_operator_series(
     Returns:
         DiracOperatorSeries with all meson channels.
     """
-    T, N, d = color.shape
+    _T, _N, d = color.shape
     device = color.device
 
     if d != 3:
-        raise ValueError(
+        msg = (
             f"Dirac spinor construction requires d=3, got d={d}. "
             "For d≠3, use the direct Re/Im operators instead."
         )
+        raise ValueError(msg)
 
     # Build gamma matrices
     gamma = build_dirac_gamma_matrices(device=device)
@@ -573,7 +593,7 @@ def compute_dirac_operator_series(
 
 
 def compute_dirac_operators_from_agg(
-    agg_data: "AggregatedTimeSeries",
+    agg_data: AggregatedTimeSeries,
 ) -> DiracOperatorSeries:
     """Compute Dirac operators from an AggregatedTimeSeries.
 

@@ -27,8 +27,8 @@ from fragile.physics.aic.multiscale_strong_force import (
 from fragile.physics.aic.plotting import (
     build_mass_spectrum_bar,
     build_window_heatmap,
-    ChannelPlot,
     CHANNEL_COLORS,
+    ChannelPlot,
 )
 from fragile.physics.app.algorithm import _algorithm_placeholder_plot
 from fragile.physics.fractal_gas.history import RunHistory
@@ -37,6 +37,7 @@ from fragile.physics.new_channels.correlator_channels import (
     CorrelatorConfig,
 )
 from fragile.physics.operators.pipeline import PipelineResult
+from fragile.physics.qft_utils.helpers import recorded_time_step
 
 
 # ---------------------------------------------------------------------------
@@ -174,7 +175,8 @@ def _get_mass_error(result: ChannelCorrelatorResult, mode: str) -> float:
     if mode == "Best Window":
         bw = fit.get("best_window", {})
         if isinstance(bw, dict):
-            return float(bw.get("mass_error", float("inf")))
+            err = bw.get("mass_error", float("nan"))
+            return float(err) if err is not None else float("nan")
     return float(fit.get("mass_error", float("inf")))
 
 
@@ -184,7 +186,7 @@ def _get_r2(result: ChannelCorrelatorResult, mode: str) -> float:
     if mode == "Best Window":
         bw = fit.get("best_window", {})
         if isinstance(bw, dict):
-            return float(bw.get("r_squared", float("nan")))
+            return float(bw.get("r2", bw.get("r_squared", float("nan"))))
     return float(fit.get("r_squared", float("nan")))
 
 
@@ -342,10 +344,15 @@ def _build_multiscale_mass_curves(output: MultiscaleStrongForceOutput) -> hv.Ove
             continue
         color = CHANNEL_COLORS.get(ch_name, "#1f77b4")
         curve = hv.Curve(
-            (scale_vals, masses), "Scale", "Mass", label=ch_name,
+            (scale_vals, masses),
+            "Scale",
+            "Mass",
+            label=ch_name,
         ).opts(color=color, line_width=2)
         scatter = hv.Scatter(
-            (scale_vals, masses), "Scale", "Mass",
+            (scale_vals, masses),
+            "Scale",
+            "Mass",
         ).opts(color=color, size=6)
         overlays.append(curve * scatter)
 
@@ -372,7 +379,7 @@ def _build_ratio_table(
     rows = []
     for i, name_a in enumerate(names):
         mass_a = _get_mass(results[name_a], mode)
-        for name_b in names[i + 1:]:
+        for name_b in names[i + 1 :]:
             mass_b = _get_mass(results[name_b], mode)
             if mass_a > 0 and mass_b > 0 and math.isfinite(mass_a) and math.isfinite(mass_b):
                 ratio = mass_a / mass_b
@@ -486,10 +493,14 @@ def build_strong_force_aic_tab(
 
     # -- Heatmap widgets --
     heatmap_color_metric = pn.widgets.Select(
-        name="Color metric", options=["mass", "aic", "r2"], value="mass",
+        name="Color metric",
+        options=["mass", "aic", "r2"],
+        value="mass",
     )
     heatmap_alpha_metric = pn.widgets.Select(
-        name="Alpha metric", options=["mass", "aic", "r2"], value="aic",
+        name="Alpha metric",
+        options=["mass", "aic", "r2"],
+        value="aic",
     )
     heatmap_container = pn.Column(sizing_mode="stretch_width")
 
@@ -561,9 +572,7 @@ def build_strong_force_aic_tab(
 
         # Filtered table
         if filtered:
-            filtered_summary.object = (
-                f"**{len(filtered)}** channels filtered out."
-            )
+            filtered_summary.object = f"**{len(filtered)}** channels filtered out."
             filtered_mass_table.value = _build_aic_mass_table(filtered, mode)
         else:
             filtered_summary.object = "*No channels filtered out.*"
@@ -576,8 +585,12 @@ def build_strong_force_aic_tab(
             error_getter=lambda r, _m=mode: _get_mass_error(r, _m),
             title="Strong Force Mass Spectrum",
         )
-        spectrum_plot.object = bar if bar is not None else _algorithm_placeholder_plot(
-            "No valid masses to display.",
+        spectrum_plot.object = (
+            bar
+            if bar is not None
+            else _algorithm_placeholder_plot(
+                "No valid masses to display.",
+            )
         )
 
         # Ratio table
@@ -593,8 +606,12 @@ def build_strong_force_aic_tab(
         per_scale_table.value = _build_multiscale_per_scale_table(ms_output)
 
         curves = _build_multiscale_mass_curves(ms_output)
-        mass_curves_plot.object = curves if curves is not None else _algorithm_placeholder_plot(
-            "No multiscale mass curves to display.",
+        mass_curves_plot.object = (
+            curves
+            if curves is not None
+            else _algorithm_placeholder_plot(
+                "No multiscale mass curves to display.",
+            )
         )
 
     def _refresh_heatmaps():
@@ -673,7 +690,9 @@ def build_strong_force_aic_tab(
                 return
 
             config = _build_correlator_config(settings)
-            dt = 1.0
+            # Same time unit as the Direct Multiscale button, which fits in
+            # recorded kinetic time; both write the same state key and table.
+            dt = float(recorded_time_step(_history))
             results: dict[str, ChannelCorrelatorResult] = {}
 
             for ch_name, correlator in pipeline_result.correlators.items():
@@ -709,9 +728,7 @@ def build_strong_force_aic_tab(
                 for r in results.values()
                 if math.isfinite(_get_mass(r, "AIC-Weighted")) and _get_mass(r, "AIC-Weighted") > 0
             )
-            status.object = (
-                f"**AIC Complete:** {n_valid}/{n_ch} channels with valid masses."
-            )
+            status.object = f"**AIC Complete:** {n_valid}/{n_ch} channels with valid masses."
             if on_aic_computed is not None:
                 on_aic_computed()
 
@@ -784,8 +801,6 @@ def build_strong_force_aic_tab(
             "**Strong Force AIC:** Run Companion Correlators first, "
             "then click *AIC from Correlators*; or click *Direct Multiscale*."
         )
-        if defer:
-            return
         state["strong_force_aic_output"] = None
         state["strong_force_aic_multiscale_output"] = None
         summary_md.object = ""

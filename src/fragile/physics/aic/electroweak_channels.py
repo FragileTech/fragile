@@ -35,6 +35,7 @@ from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.qft_utils.aggregation import (
     bin_by_euclidean_time,
 )
+from fragile.physics.qft_utils.helpers import recorded_time_step
 
 
 ELECTROWEAK_BASE_CHANNELS = (
@@ -1300,7 +1301,7 @@ def compute_electroweak_channels(
         if name in series_bundle.series_map
     }
     correlator_cfg = _to_correlator_config(cfg)
-    dt = float(history.delta_t * history.record_every)
+    dt = float(recorded_time_step(history))
     channel_results = _compute_channel_results_batched(
         series_map=selected_series,
         dt=dt,

@@ -18,15 +18,15 @@ from fragile.physics.app.coupling_diagnostics import (
     CouplingDiagnosticsConfig,
 )
 from fragile.physics.app.heff_sweep import (
-    CRITERION_LABELS,
-    compute_heff_sweep,
-    HeffSweepConfig,
-    build_heff_sweep_primary_plot,
-    build_heff_sweep_secondary_plot,
     build_heff_sweep_acf_plot,
+    build_heff_sweep_primary_plot,
     build_heff_sweep_ratios_plot,
-    build_heff_sweep_table,
+    build_heff_sweep_secondary_plot,
     build_heff_sweep_summary_text,
+    build_heff_sweep_table,
+    compute_heff_sweep,
+    CRITERION_LABELS,
+    HeffSweepConfig,
 )
 from fragile.physics.fractal_gas.history import RunHistory
 
@@ -514,7 +514,8 @@ def _build_overlay_plot(
         if frame.empty:
             continue
         overlays.append(
-            hv.Curve(frame, axis_name, "value")
+            hv
+            .Curve(frame, axis_name, "value")
             .relabel(label)
             .opts(
                 color=color,
@@ -646,7 +647,8 @@ def _build_coupling_diagnostics_kernel_plots(output: Any) -> dict[str, hv.Overla
 
     running_curves: list[Any] = []
     running_frame = (
-        pd.DataFrame({
+        pd
+        .DataFrame({
             "scale": _tensor_to_numpy(output.running_mid_scales),
             "value": _tensor_to_numpy(output.running_g2_by_mid_scale),
         })
@@ -655,13 +657,15 @@ def _build_coupling_diagnostics_kernel_plots(output: Any) -> dict[str, hv.Overla
     )
     if not running_frame.empty:
         running_curves.append(
-            hv.Curve(running_frame, "scale", "value")
+            hv
+            .Curve(running_frame, "scale", "value")
             .relabel("running_g2")
             .opts(color="#e45756", line_width=2)
         )
 
     creutz_frame = (
-        pd.DataFrame({
+        pd
+        .DataFrame({
             "scale": _tensor_to_numpy(output.creutz_mid_scales),
             "value": _tensor_to_numpy(output.creutz_ratio_by_mid_scale),
         })
@@ -670,7 +674,8 @@ def _build_coupling_diagnostics_kernel_plots(output: Any) -> dict[str, hv.Overla
     )
     if not creutz_frame.empty:
         running_curves.append(
-            hv.Curve(creutz_frame, "scale", "value")
+            hv
+            .Curve(creutz_frame, "scale", "value")
             .relabel("creutz")
             .opts(color="#72b7b2", line_width=2)
         )
@@ -722,7 +727,8 @@ def _build_wilson_flow_plots(
     # 2. t^2 * E(t) vs flow time + t0 marker
     t2e_curves: list[Any] = []
     t2e_frame = (
-        pd.DataFrame({"flow_time": flow_times, "value": t2_action})
+        pd
+        .DataFrame({"flow_time": flow_times, "value": t2_action})
         .replace(
             [np.inf, -np.inf],
             np.nan,
@@ -731,7 +737,8 @@ def _build_wilson_flow_plots(
     )
     if not t2e_frame.empty:
         t2e_curves.append(
-            hv.Curve(t2e_frame, "flow_time", "value")
+            hv
+            .Curve(t2e_frame, "flow_time", "value")
             .relabel("t^2 E(t)")
             .opts(color="#4c78a8", line_width=2, tools=["hover"])
         )
@@ -771,7 +778,8 @@ def _build_wilson_flow_plots(
     dt2_values = _tensor_to_numpy(wf_output.dt2_action)
     deriv_curves: list[Any] = []
     deriv_frame = (
-        pd.DataFrame({"flow_time": dt2_times, "value": dt2_values})
+        pd
+        .DataFrame({"flow_time": dt2_times, "value": dt2_values})
         .replace(
             [np.inf, -np.inf],
             np.nan,
@@ -780,7 +788,8 @@ def _build_wilson_flow_plots(
     )
     if not deriv_frame.empty:
         deriv_curves.append(
-            hv.Curve(deriv_frame, "flow_time", "value")
+            hv
+            .Curve(deriv_frame, "flow_time", "value")
             .relabel("d/dt[t^2 E]")
             .opts(color="#4c78a8", line_width=2, tools=["hover"])
         )
@@ -845,14 +854,8 @@ def _build_coupling_diagnostics_summary_text(output: Any) -> str:
             "- Mean local phase coherence: "
             f"`{_format_metric(summary.get('local_phase_coherence_mean'))}`"
         ),
-        (
-            "- Phase drift significance: "
-            f"`{_format_metric(summary.get('phase_drift_sigma'), 3)}σ`"
-        ),
-        (
-            "- String tension proxy σ: "
-            f"`{_format_metric(summary.get('string_tension_sigma'), 6)}`"
-        ),
+        (f"- Phase drift significance: `{_format_metric(summary.get('phase_drift_sigma'), 3)}σ`"),
+        (f"- String tension proxy σ: `{_format_metric(summary.get('string_tension_sigma'), 6)}`"),
         f"- Polyakov loop |L|: `{_format_metric(summary.get('polyakov_abs'), 6)}`",
         f"- Screening length ξ: `{_format_metric(summary.get('screening_length_xi'), 6)}`",
         (
@@ -1024,7 +1027,9 @@ def _build_layout(
         status,
         run_note,
         pn.Row(run_button, sizing_mode="stretch_width"),
-        pn.Accordion(("Diagnostics Settings", settings_panel), active=[0], sizing_mode="stretch_width"),
+        pn.Accordion(
+            ("Diagnostics Settings", settings_panel), active=[0], sizing_mode="stretch_width"
+        ),
         pn.layout.Divider(),
         widgets.summary,
         widgets.regime_evidence,
@@ -1200,8 +1205,9 @@ def build_coupling_diagnostics_tab(
         coupling_diagnostics_status.object = (
             "**Coupling Diagnostics ready:** click Compute Coupling Diagnostics."
         )
-        if defer:
-            return
+        # Outputs belong to the previous history; clear them even when the
+        # visual refresh is deferred (the dashboard always defers).
+        _ = defer
 
         state["coupling_diagnostics_output"] = None
         state["heff_sweep_result"] = None

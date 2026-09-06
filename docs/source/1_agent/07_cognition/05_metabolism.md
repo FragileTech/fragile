@@ -7,7 +7,7 @@
   dynamics**.
 - Use Landauer’s principle to derive a **cost functional for computation time** and an optimal stopping condition:
   stop thinking when marginal value gain equals marginal metabolic cost.
-- This yields principled “fast vs. slow” behavior (reflex vs. deliberation) as a phase transition in compute allocation.
+- This yields an operational “fast vs. slow” regime switch (reflex versus deliberation) in compute allocation.
 - Practical implication: track and regulate compute as part of control, not as an external budget afterthought.
 - Connects metabolism to stability: excessive deliberation can be as harmful as insufficient compute.
 
@@ -15,14 +15,14 @@
 
 1. Thermodynamic framing (Landauer cost for information updates).
 2. Derive the dual-horizon action and optimal compute allocation.
-3. Operational regimes, phase transition intuition, and implementation guidance.
+3. Operational regimes, crossover intuition, and implementation guidance.
 
 *Abstract.* We establish a thermodynamic foundation for internal inference by coupling computation time $s$ to an
 energetic cost functional. We model the agent as an open system where belief updates are dissipative processes. By
-applying Landauer's Principle {cite}`landauer1961irreversibility` to the Wasserstein-Fisher-Rao (WFR) flow, we prove that
-the optimal allocation of computation time $S^*$ emerges from the stationarity of a **Dual-Horizon Action**. We derive a
-rigorous phase transition between reflexive (fast) and deliberative (slow) regimes {cite}`kahneman2011thinking`,
-governed by the ratio of the task-gradient norm to the metabolic dissipation rate.
+applying the conditional entropy-dissipation permit below to the Wasserstein-Fisher-Rao (WFR) flow, we show that the
+optimal allocation of computation time $S^*$ emerges from the stationarity of a **Dual-Horizon Action**. The reflexive
+(fast) and deliberative (slow) regimes form an operational crossover governed by the ratio of the task-gradient norm to
+the metabolic dissipation rate; a thermodynamic phase transition would require an additional limiting argument.
 
 (rb-thinking-fast-slow)=
 :::{admonition} Researcher Bridge: Principled "Thinking Fast and Slow"
@@ -46,11 +46,19 @@ Now here is a question that I think is absolutely fundamental, and yet most peop
 
 You see, in most of our theories about intelligent agents, we treat thinking as if it were free. The agent can compute for as long as it wants, refine its beliefs to arbitrary precision, and only then decide what to do. But that is not how the real world works. Thinking costs something. Every bit of computation burns energy. Every moment spent deliberating is a moment you are not acting, and the world keeps changing around you.
 
-So there must be some sweet spot, some optimal duration of thought, where the benefit of thinking more is exactly balanced by the cost of that additional thinking. And what we are going to show in this section is that this optimal stopping time is not just a practical consideration---it is a fundamental law, derivable from thermodynamics.
+So there may be a sweet spot, some duration of thought where the modeled benefit of thinking more is balanced by the modeled cost
+of additional computation. Whether an optimum exists, and whether it is interior, depends on the regularity, calibration, and
+horizon assumptions of the chosen dynamics. Thermodynamics supplies an analogy and a conditional estimate; it does not by itself
+guarantee an optimal stopping time.
 
-The key insight comes from Landauer's Principle, which tells us something remarkable: there is a minimum energy cost to process information. When you update your beliefs---when you become more certain about something---you must pay an energy price. There is no free lunch in the thermodynamics of computation.
+The key insight comes from Landauer's Principle, which gives a minimum heat cost for logically irreversible erasure in an ideal
+thermal setting. A belief update is not automatically a physical bit erasure. To use the analogy quantitatively, the WFR cost,
+entropy convention, hardware, and temperature scale must be calibrated.
 
-And here is the beautiful thing: once we accept that thinking has a cost, the question of "when to stop thinking" becomes a variational problem. We can write down an action, take its derivative, set it to zero, and out pops the optimal deliberation time. System 1 (fast, reflexive) and System 2 (slow, deliberative) are not psychological categories---they are phases of a single physical system, separated by a phase transition.
+And here is the useful part: once a calibrated computation cost has been chosen, the question of "when to stop thinking" becomes a
+variational problem. An interior minimizer satisfies a stationarity condition when the required differentiability and boundary
+conditions hold. The resulting fast/slow split is a model-dependent allocation crossover, not automatically a phase transition
+of a physical system.
 :::
 
 
@@ -65,9 +73,12 @@ Before we dive into the formalism, let me explain what we are doing here in phys
 
 Imagine the agent's belief as a cloud of probability distributed over its latent space. When the agent thinks---when it processes information and updates its beliefs---this cloud moves and reshapes. Some probability mass flows from one region to another (that is the transport part). Some mass might appear or disappear (that is the reaction part, for when hypotheses are created or abandoned).
 
-Now, all of this motion costs energy. The question is: how much?
+Now, all of this motion has a cost in the selected WFR model. The question is: when may that cost be interpreted as energy?
 
-The metabolic flux we are about to define is the instantaneous rate of energy expenditure. Think of it as the agent's "caloric burn rate for thinking." It has two components: one for moving probability around (like dragging a weight across a floor), and one for creating or destroying probability mass (like the cost of building or demolishing a house). Both cost energy, and the WFR geometry tells us exactly how to measure those costs.
+The metabolic flux we are about to define is an instantaneous dissipation proxy. Think of it as the agent's "caloric burn rate for
+thinking" only after the coefficient and units have been calibrated. It has two components: one for moving probability around
+(like dragging a weight across a floor), and one for creating or destroying probability mass (like building or demolishing a
+house). The WFR geometry measures the selected costs; it does not by itself identify them with physical heat.
 :::
 
 :::{prf:definition} Metabolic Flux
@@ -99,7 +110,9 @@ where:
 :::{div} feynman-prose
 Let me unpack what this definition is really saying.
 
-The metabolic flux $\dot{\mathcal{M}}$ is an integral over all of latent space, weighted by the belief density $\rho$. This weighting is crucial: we only pay energy costs where we actually have probability mass. If some region of belief space is empty, we do not pay to move things there.
+The metabolic flux $\dot{\mathcal{M}}$ is an integral over all of latent space, weighted by the belief density $\rho$. This
+weighting is crucial: the model charges update cost where probability mass is present. If some region of belief space is empty, the
+integral assigns no cost there. Calling that quantity physical energy still requires the calibration of $\sigma_{\text{met}}$.
 
 The two terms inside the integral are the transport cost and the reaction cost:
 
@@ -107,71 +120,108 @@ The two terms inside the integral are the transport cost and the reaction cost:
 
 2. **Reaction cost** $\lambda^2 |r|^2$: This is the squared rate of mass creation or destruction, scaled by $\lambda^2$. Remember, $\lambda$ is the length scale where transport and reaction costs balance. If $\lambda$ is large, reactions are expensive relative to transport; if small, reactions are cheap.
 
-The coefficient $\sigma_{\text{met}}$ is the "metabolic resistance"---it converts the abstract WFR kinetic energy into physical energy units. Think of it as the agent's efficiency: a high $\sigma_{\text{met}}$ means the agent burns a lot of energy for each unit of belief update.
+The coefficient $\sigma_{\text{met}}$ is the "metabolic resistance." It can convert the abstract WFR kinetic quantity into
+chosen energy units only after a hardware or simulator calibration. A high value then means that the modeled implementation pays
+more per unit of belief update; it is not a universal biological constant.
 :::
 
-:::{prf:theorem} Generalized Landauer Bound
+:::{prf:theorem} Conditional Generalized Landauer Bound
 :label: thm-generalized-landauer-bound
 
-The metabolic flux $\dot{\mathcal{M}}$ provides a physical lower bound on the rate of entropy reduction within the agent. Specifically:
+Let $(\mathcal{Z},G)$ be a compact $C^2$ Riemannian domain with a positive $C^1$
+density $\rho_s$ and $C^1$ fields $v_s,r_s$ satisfying the WFR continuity equation.
+Assume no transport flux through $\partial\mathcal{Z}$ and mass preservation
+$\int_{\mathcal Z}\rho_s r_s\,d\mu_G=0$. Define
 
 $$
-\dot{\mathcal{M}}(s) \ge T_c \left| \frac{d}{ds} H(\rho_s) \right|,
+E_v:=\int_{\mathcal Z}\rho_s\|v_s\|_G^2\,d\mu_G,\quad
+E_r:=\int_{\mathcal Z}\rho_s r_s^2\,d\mu_G,\quad
+I_\rho:=\int_{\mathcal Z}\rho_s\|\nabla\ln\rho_s\|_G^2\,d\mu_G,
+\quad J_\rho:=\int_{\mathcal Z}\rho_s(\ln\rho_s)^2\,d\mu_G.
+$$
+
+Then, for $H(\rho_s)=-\int_{\mathcal Z}\rho_s\ln\rho_s\,d\mu_G$,
 
 $$
-where $H(\rho_s) = -\int_{\mathcal{Z}} \rho \ln \rho \, d\mu_G$ is the Shannon entropy and $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`, {ref}`sec-the-geodesic-baoab-integrator`).
+\left|\frac{d}{ds}H(\rho_s)\right|
+\le \sqrt{I_\rho E_v}+\sqrt{J_\rho E_r}.
+$$
 
-*Proof sketch.* The time derivative of the Shannon entropy is:
+Consequently, the Landauer-form lower bound
 
 $$
-\frac{d}{ds} H(\rho_s) = -\int_{\mathcal{Z}} (1 + \ln \rho) \partial_s \rho \, d\mu_G.
+\dot{\mathcal M}(s)\ge T_c\left|\frac{d}{ds}H(\rho_s)\right|
+$$
+
+holds on any calibrated regime where
 
 $$
-Substituting the WFR continuity equation and integrating by parts (assuming vanishing flux at $\partial\mathcal{Z}$):
+\sigma_{\mathrm{met}}(E_v+\lambda^2E_r)
+\ge T_c\big(\sqrt{I_\rho E_v}+\sqrt{J_\rho E_r}\big).
+$$
+
+The calibration, regularity, and boundary conditions are hypotheses of this
+statement; they do not follow from the WFR continuity equation alone.
+
+*Proof.* Differentiating $H$, substituting the continuity equation, using the
+no-flux condition and mass preservation, gives
 
 $$
-\frac{d}{ds} H = \int_{\mathcal{Z}} \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G - \int_{\mathcal{Z}} r \ln \rho \cdot \rho \, d\mu_G.
-
+\frac{d}{ds}H = -\int_{\mathcal Z}\rho_s\langle\nabla\ln\rho_s,v_s\rangle_G\,d\mu_G
+ -\int_{\mathcal Z}\rho_s r_s\ln\rho_s\,d\mu_G.
 $$
-By the Cauchy-Schwarz inequality on the tangent bundle $(T\mathcal{Z}, G)$:
 
-$$
-\left| \int_{\mathcal{Z}} \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G \right| \le \left( \int_{\mathcal{Z}} \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G \right)^{1/2} \left( \int_{\mathcal{Z}} \rho \|v\|_G^2 \, d\mu_G \right)^{1/2}.
+Cauchy--Schwarz in $L^2(\rho_s d\mu_G)$ bounds the two terms by
+$\sqrt{I_\rho E_v}$ and $\sqrt{J_\rho E_r}$, respectively. Their sum proves
+the entropy-rate inequality, and the displayed calibration gives the final
+Landauer-form inequality. This is an internal conditional estimate; the
+classical Landauer principle is a physical analogy that requires its own
+thermodynamic hypotheses. $\square$
 
-$$
-The first factor is the **Fisher Information** $\mathcal{I}(\rho) = \int \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G$ {cite}`amari2016information`. Under the optimal transport scaling $v = -T_c \nabla \ln \rho$ (gradient flow of the free energy), we recover the de Bruijn identity {cite}`stam1959some` and the bound follows. The reaction term satisfies an analogous inequality via the $L^2(\rho)$ norm. See {ref}`sec-appendix-e-rigorous-proof-sketches-for-ontological-and-metabolic-laws` for the full proof. $\square$
-
-*Remark (Landauer's Principle).* The classical Landauer bound states that erasing one bit of information requires dissipating at least $k_B T \ln 2$ joules of heat. Theorem {prf:ref}`thm-generalized-landauer-bound` is the information-geometric generalization: reducing belief entropy by $\Delta H$ nats requires dissipating at least $T_c \cdot |\Delta H|$ nats of metabolic energy.
+*Remark (Landauer's Principle).* The classical Landauer bound states that erasing one bit of information requires dissipating at least $k_B T \ln 2$ joules of heat. The conditional theorem above becomes an information-geometric Landauer statement only when its calibration and normalization hypotheses hold.
 
 :::
 
 :::{div} feynman-prose
-This theorem is really quite profound, and I want to make sure you appreciate what it is saying.
+This estimate is useful, but its scope matters. I want to make sure you see exactly what has been shown.
 
-Landauer discovered something remarkable in 1961: you cannot erase information for free. If you have a bit that could be 0 or 1, and you reset it to 0, you must dump at least $k_B T \ln 2$ of heat into the environment. This is not an engineering limitation---it is a fundamental law of physics, a consequence of the Second Law of Thermodynamics.
+Landauer's classical result concerns logically irreversible erasure of a physical bit coupled to a thermal reservoir. Under those
+assumptions, resetting a bit requires at least $k_B T\ln 2$ of dissipated heat. A continuous belief entropy and the cognitive
+scale $T_c$ are different mathematical objects until an interface and calibration identify them.
 
-What we have done here is generalize Landauer's insight to continuous belief distributions on a Riemannian manifold. Instead of bits, we have probability densities. Instead of erasure, we have entropy reduction (becoming more certain). And the bound says: the rate at which you can become more certain is limited by the rate at which you dissipate metabolic energy.
+The calculation here starts from the WFR continuity equation. Differentiating $H(\rho_s)$ and integrating the transport term by
+parts gives the displayed expression when the density and fields have the required regularity and the boundary flux vanishes. The
+Cauchy--Schwarz step is valid under the corresponding integrability assumptions. Turning it into
+$\dot{\mathcal M}\geq T_c|\dot H|$ additionally needs the stated gradient-flow or transport calibration, the analogous reaction
+estimate, and consistent normalization of the metabolic coefficient.
 
-Here is the intuitive picture. Your belief starts spread out (high entropy, uncertainty). As you think and process information, your belief concentrates (low entropy, certainty). But concentrating probability is like compressing a gas---you have to do work against the natural tendency for things to spread out. That work shows up as metabolic cost.
+Here is the intuitive picture. Your belief starts spread out (high entropy, uncertainty). As you think and process information, your
+belief may concentrate (low entropy, certainty). In the calibrated model, that entropy change is paired with a WFR dissipation
+budget. Without the calibration and no-flux hypotheses, concentration alone does not give a universal energy lower bound.
 
-The temperature $T_c$ plays the role of a conversion factor. At high cognitive temperature, the agent explores more freely; at low temperature, it exploits what it knows. The Landauer bound tells us that reducing entropy at high temperature costs more than at low temperature---which makes intuitive sense, because at high temperature the probability distribution is fighting harder to stay spread out.
+$T_c$ plays the role of a conversion factor in the selected gradient-flow model. At high cognitive temperature, the agent may explore
+more freely; at low temperature, it may exploit what it knows. The statement that a given entropy reduction costs more at higher
+$T_c$ is therefore conditional on this model and calibration, rather than a direct identification with a physical heat bath.
 :::
 
 :::{admonition} Example: The Cost of Certainty
 :class: feynman-added tip
 
-Suppose the agent starts with a uniform belief over 100 possible states (entropy $H = \ln 100 \approx 4.6$ nats) and wants to narrow down to just 10 possible states (entropy $H = \ln 10 \approx 2.3$ nats).
+Suppose the agent starts with a uniform belief over 100 possible states (entropy $H = \ln 100 \approx 4.6$ nats) and wants to narrow down to just 10 possible states (entropy $H = \ln 10 \approx 2.3$ nats). If the regularity, no-flux, gradient-flow, reaction, and calibration hypotheses of the conditional estimate hold along this path, then:
 
-The entropy reduction is $\Delta H \approx 2.3$ nats. By the Landauer bound, the minimum metabolic cost is:
+The entropy reduction is $\Delta H \approx 2.3$ nats. The model's integrated dissipation estimate is then:
 
 $$
 \Psi_{\text{met}} \ge T_c \cdot |\Delta H| = 2.3 \, T_c \text{ nats}
 
 $$
 
-If $T_c = 1$, that is about 2.3 nats of metabolic energy. If $T_c = 0.1$ (a more "decisive" agent), the cost drops to 0.23 nats---but recall that low temperature also means less exploration.
+If $T_c = 1$, that is about 2.3 model energy units in the declared nat normalization. If $T_c = 0.1$ (a more "decisive" agent),
+the estimate drops to 0.23 units. These numbers illustrate the calibrated inequality; they are not a hardware-independent energy
+prediction.
 
-This is the fundamental tradeoff: certainty costs energy, and the price depends on how "hot" your thinking process is.
+The modeling tradeoff is clear: under the selected calibration, certainty has a dissipation price that depends on how "hot" the
+thinking process is. The classical Landauer analogy should not be used beyond those hypotheses.
 :::
 
 (pi-landauer-principle)=
@@ -238,11 +288,17 @@ This recovers standard **Maximum Expected Utility**---the objective used in DQN,
 We introduce the metabolic cost as a coordinate in the agent's extended state space.
 
 :::{div} feynman-prose
-Now we come to the central construction of this section. We have established that thinking costs energy. The next question is: how does the agent decide when to stop?
+Now we come to the central construction of this section. We have specified a modeled computation cost. The next question is: how
+does the agent decide when to stop?
 
-The answer is beautiful in its simplicity. We define an **action**---in the physicist's sense, not the agent's sense---that captures the tradeoff between value gained and energy spent. The agent then finds the computation time $S^*$ that extremizes this action.
+The answer is useful in its simplicity. We define an **action**---in the physicist's sense, not the agent's sense---that captures
+the tradeoff between value gained and modeled dissipation. If a minimizer exists, the agent selects the computation time $S^*$ that
+minimizes this action.
 
-Think of it like this. Suppose you are trying to decide where to eat dinner. You could think about it for one second and pick something adequate. Or you could spend an hour researching restaurants and find something excellent. But at some point, the improvement in your dinner is not worth the additional time spent deciding. The Deliberation Action formalizes exactly this tradeoff.
+Think of it like this. Suppose you are trying to decide where to eat dinner. You could think about it for one second and pick
+something adequate. Or you could spend an hour researching restaurants and find something excellent. But at some point, the
+improvement in your dinner is not worth the additional time spent deciding. The Deliberation Action formalizes this tradeoff once
+the value and dissipation terms have been specified.
 :::
 
 :::{prf:definition} Metabolic Potential
@@ -289,9 +345,13 @@ The optimal $S^*$ is where these two competing effects balance. Think too little
 
 In physics, the action is a functional whose stationary points give the equations of motion. This is the Principle of Least Action, one of the most powerful ideas in all of physics.
 
-By framing deliberation as an action principle, we connect the agent's internal computation to the same variational framework that governs classical mechanics, quantum mechanics, and field theory. The optimal computation time $S^*$ is not found by gradient descent on a loss---it emerges from stationarity of the action, just like a particle's trajectory emerges from stationarity of the Lagrangian action.
+By framing deliberation as an action, we borrow variational calculus for a one-dimensional resource-allocation problem. An
+interior $S^*$ can be characterized by stationarity when differentiability and boundary conditions permit it. This does not make
+the agent a classical or quantum mechanical system, and it does not rule out a boundary optimum or a numerical optimization method.
 
-This is not just a fancy rebranding. The action formulation gives us access to all the machinery of variational calculus: Euler-Lagrange equations, Noether's theorem, Hamilton-Jacobi theory. The Deliberation Action is the starting point for a full Lagrangian mechanics of cognition.
+The action formulation gives access to the calculus needed for the stated objective. Broader tools such as Euler--Lagrange or
+Hamilton--Jacobi theory apply only when their hypotheses and the relevant dynamical structure have been supplied; no full Lagrangian
+mechanics of cognition follows from the notation alone.
 :::
 
 
@@ -302,9 +362,12 @@ This is not just a fancy rebranding. The action formulation gives us access to a
 We now prove the existence of an optimal "stopping time" for internal thought.
 
 :::{div} feynman-prose
-This is where it gets exciting. We are going to derive the precise condition for when the agent should stop thinking, and then show that this condition leads to two fundamentally different behavioral regimes---corresponding to "fast" and "slow" thinking.
+This is where the bookkeeping becomes useful. Under the regularity, boundary, and calibration assumptions of the variational
+problem, an interior minimizer satisfies a precise marginal-gain condition. Comparing the initial marginal gain with the initial
+cost can then define fast and slow allocation regimes for this model.
 
-The mathematics is going to tell us something that psychologists have observed empirically: sometimes you should think fast (System 1), and sometimes you should think slow (System 2). But unlike the psychological literature, we will derive the exact transition point between these regimes from first principles.
+That comparison may help organize the empirical distinction between fast and slow thinking, but it does not derive a universal
+psychological transition or an exact physical phase boundary from first principles.
 :::
 
 :::{prf:theorem} Deliberation Optimality Condition
@@ -355,17 +418,23 @@ The stationarity condition $\frac{d}{dS} \mathcal{S}_{\text{delib}} = 0$ yields 
 :::
 
 :::{div} feynman-prose
-This optimality condition is wonderfully intuitive once you see it.
+This optimality condition is wonderfully intuitive once you see it, provided we keep its hypotheses in view. If the calibrated
+variational problem has an interior minimizer and the relevant derivatives exist, first-order stationarity says that the marginal
+modeled value gain equals the marginal modeled dissipation. An optimum at the boundary need not satisfy this equality.
 
-The agent keeps thinking as long as each additional moment of thought produces more value than it costs. The moment the marginal value gain drops to equal the marginal metabolic cost, the agent stops and acts.
+Let me give you an analogy. Imagine you are mining gold. Each hour of digging costs you some amount in effort (the modeled
+dissipation), and each hour produces some amount of gold (the modeled value improvement). If the easy gold is extracted first, the
+return per hour falls. At some point the gold you expect from another hour is worth no more than the effort of digging. That is the
+allocation rule represented by the equation $\Gamma(S^*) = \dot{\mathcal{M}}(S^*)$.
 
-Let me give you an analogy. Imagine you are mining gold. Each hour of digging costs you some amount in effort (the metabolic cost). And each hour produces some amount of gold (the value improvement). As you dig, the easy gold gets extracted first, so the rate of gold production falls. At some point, the gold you are getting per hour is worth less than the effort of digging. That is when you stop.
+Now, here is what makes this subtle. The value improvement rate
+$\Gamma(s) = |\frac{d}{ds}\langle V \rangle|$ need not decay for an arbitrary task or flow; diminishing returns is an additional
+modeling or empirical assumption. Likewise, $\dot{\mathcal{M}}(s)$ may be constant, increasing, or otherwise shaped by the chosen
+cost and dynamics.
 
-The equation $\Gamma(S^*) = \dot{\mathcal{M}}(S^*)$ says exactly this: stop thinking when the marginal value of thought equals the marginal cost of thought.
-
-Now, here is what makes this subtle. The value improvement rate $\Gamma(s) = |\frac{d}{ds}\langle V \rangle|$ is not constant. It typically starts high (when you first start thinking, you quickly figure out the rough answer) and then decays (further thinking only refines details). Meanwhile, the metabolic cost $\dot{\mathcal{M}}(s)$ might be roughly constant or even increase (as the belief distribution becomes more concentrated and harder to refine).
-
-The intersection of these two curves determines $S^*$. If the value improvement curve starts above the metabolic cost curve, there is a positive $S^* > 0$ where they cross. If it starts below, then $S^* = 0$---you should act immediately without thinking at all.
+The intersection of these curves determines an interior $S^*$ only when continuity and the needed monotonicity, convexity, and
+horizon conditions make that conclusion valid. Without them, the minimizer may be at $S=0$ or $S=S_{\max}$, or there may be
+multiple stationary points.
 :::
 
 :::{prf:theorem} Fast/Slow Phase Transition
@@ -392,17 +461,17 @@ If $\Gamma(0) > \dot{\mathcal{M}}(0)$, then $\frac{d}{dS} \mathcal{S}_{\text{del
 :::
 
 :::{div} feynman-prose
-This is, I think, one of the most satisfying results in this entire framework. Let me explain why.
+This is a useful classification, provided we read it as a statement about the selected optimization model. Under the theorem's
+regularity and diminishing-returns assumptions, the initial comparison
+$\Gamma(0)\mathrel{\lessgtr}\dot{\mathcal{M}}(0)$ identifies whether the modeled optimum is at the fast boundary or in a
+deliberative region. It does not establish two physical phases of cognition.
 
-Psychologists have long observed that human cognition operates in two modes: fast, automatic, intuitive thinking (System 1) and slow, effortful, deliberate thinking (System 2). Kahneman won a Nobel Prize in part for characterizing these systems. But until now, this was an empirical observation---a description of how we think, not an explanation of why.
+The labels System 1 and System 2 are a helpful empirical analogy. A familiar task may have a small initial modeled gain, while a
+novel task may have a larger one, but those statements require task-specific value estimates and a calibrated cost. The theorem
+does not infer a human psychological mechanism from the labels.
 
-What we have shown is that these two modes are not separate cognitive systems. They are **phases** of a single physical system, like ice and water. The transition between them is governed by a simple ratio: the initial value improvement rate $\Gamma(0)$ versus the initial metabolic cost $\dot{\mathcal{M}}(0)$.
-
-When is System 1 optimal? When the task is familiar, the prior $\rho_0$ is already close to optimal, and thinking would only burn energy without much improvement. Then $\Gamma(0) < \dot{\mathcal{M}}(0)$, and the agent should act immediately.
-
-When is System 2 optimal? When the task is novel, the stakes are high, and the initial belief is far from optimal. Then $\Gamma(0) > \dot{\mathcal{M}}(0)$, and deliberation pays off.
-
-The beautiful thing is that the same agent, in the same moment, can be in either regime depending on the situation. There is no need for two separate systems, two separate neural architectures, two separate decision rules. The physics tells you which regime you are in.
+The same modeled agent can therefore occupy different allocation regimes as the task, prior, horizon, or calibration changes. The
+declared value and dissipation model supplies the decision rule; physics alone does not tell us which regime a real agent occupies.
 :::
 
 :::{admonition} Example: When to Think Fast vs. Slow
@@ -410,13 +479,18 @@ The beautiful thing is that the same agent, in the same moment, can be in either
 
 **Scenario 1: Catching a Ball**
 
-You see a ball flying toward you. Your prior $\rho_0$ (from years of catching balls) is already concentrated on the right action: put your hand where the ball will be. The value improvement from deliberation is tiny---$\Gamma(0) \approx 0$. Meanwhile, thinking costs time, and the ball is not going to wait. So $\Gamma(0) < \dot{\mathcal{M}}(0)$, and you catch reflexively.
+You see a ball flying toward you. If the prior $\rho_0$ is already concentrated on the right action and the short horizon is
+represented in the cost, the modeled value improvement from deliberation may be tiny---$\Gamma(0) \approx 0$. Under the theorem's
+hypotheses, this gives $\Gamma(0) < \dot{\mathcal{M}}(0)$ and a reflexive allocation.
 
 **Scenario 2: Buying a House**
 
-You are considering a major purchase. Your prior $\rho_0$ is vague---there are hundreds of relevant factors you have not considered. The value improvement from deliberation is huge---$\Gamma(0) \gg 0$. The metabolic cost of thinking is real but small compared to the cost of a bad decision. So $\Gamma(0) > \dot{\mathcal{M}}(0)$, and you deliberate for weeks.
+You are considering a major purchase. If the prior $\rho_0$ is vague and the value model assigns substantial improvement to
+examining omitted factors, then $\Gamma(0)$ may exceed the calibrated cost. Under the same hypotheses, the model favors
+deliberation, perhaps over a longer horizon.
 
-The same agent, the same decision rule, wildly different behavior---all determined by the initial ratio $\Gamma(0)/\dot{\mathcal{M}}(0)$.
+The same agent can therefore show different modeled behavior as the task and horizon change. The initial ratio is one input to that
+decision; it does not by itself determine behavior independently of the stated value, cost, and regularity assumptions.
 :::
 
 :::{prf:theorem} Generalized Stopping for Non-Conservative Fields
@@ -458,13 +532,21 @@ Now, here is a subtlety that most people miss.
 
 Everything I said about stopping when marginal value equals marginal cost assumes the value field is **conservative**---meaning there is a single scalar value function $V(z)$, and moving around closed loops collects zero net reward.
 
-But what if the value field has curl? What if there are cyclic preference structures, like rock-paper-scissors? In that case, there is no fixed point to converge to. The belief does not settle down; it orbits.
+But what if the value field has curl? What if there are cyclic preference structures, like rock-paper-scissors? Then a fixed point
+need not describe the long-run behavior, and a recurrent orbit can be a more appropriate object. A nonzero curl by itself does not
+prove that a limit cycle exists; that requires the additional dynamical assumptions behind the claimed steady state.
 
-Does this mean the agent should think forever? No! Even in the non-conservative case, there is an optimal stopping time. It is just that the criterion changes.
+Does this mean the agent should think forever? No such conclusion follows. If the dynamics admit a stable orbit and its parameters
+can be estimated, orbit stabilization can serve as an operational stopping diagnostic. The criterion changes because motion need not
+cease, but existence of an optimal stopping time still requires the relevant objective and horizon assumptions.
 
-Instead of waiting for the belief to stop moving, the agent waits for the **orbit to stabilize**. The belief might still be circulating around a limit cycle, but the shape and size of that cycle are no longer changing. At that point, further deliberation is not improving anything---the agent has found the best orbit it is going to find, and it should start harvesting reward by moving along it.
+Instead of waiting for the belief to stop moving, one may monitor whether an already observed orbit changes. A circulating belief can
+have nearly constant shape and scale, but that does not establish that it is the best orbit or that further deliberation has no
+value. Those are separate optimization claims.
 
-This is a subtle but important generalization. Standard RL assumes conservative rewards; real-world preferences often are not. The Fragile Agent handles both cases with a unified stopping criterion.
+This is a useful operational generalization: conservative and non-conservative models call for different diagnostics. The mathematics
+must still supply the existence, stability, and calibration conditions before either diagnostic is treated as a theorem about a real
+agent.
 :::
 
 :::{admonition} Connection to RL #15: UCB as Degenerate Thermodynamic VOI
@@ -510,7 +592,10 @@ You might be wondering: how does all this relate to the Second Law of Thermodyna
 
 The answer, of course, is no. The Second Law applies to **closed** systems. The agent is an **open** system---it takes in energy (metabolic fuel) and uses that energy to reduce its internal entropy while increasing entropy elsewhere.
 
-What we are going to show is that the total entropy production---internal entropy change plus the "entropy cost" of metabolic dissipation---is always non-negative. The agent can become more certain, but only by paying the thermodynamic piper.
+In the calibrated model, the conditional entropy-dissipation estimate lets us form a total-production residual: internal entropy change
+plus the selected dissipation divided by the selected temperature scale. Under its regularity, no-flux, and calibration hypotheses,
+that residual is non-negative. This is an open-system bookkeeping statement and an analogy to the Second Law; it is not a universal
+claim about every learned update or every physical implementation.
 :::
 
 :::{prf:theorem} Total Entropy Production
@@ -522,7 +607,7 @@ $$
 \sigma_{\text{tot}}(s) := \frac{d}{ds} H(\rho_s) + \frac{1}{T_c} \dot{\mathcal{M}}(s) \ge 0.
 
 $$
-*Proof.* From Theorem {prf:ref}`thm-generalized-landauer-bound`, $\dot{\mathcal{M}}(s) \ge T_c |\frac{d}{ds} H(\rho_s)|$. If $\frac{d}{ds} H < 0$ (entropy decreasing), then:
+*Proof.* Under the hypotheses of Theorem {prf:ref}`thm-generalized-landauer-bound`, $\dot{\mathcal{M}}(s) \ge T_c |\frac{d}{ds} H(\rho_s)|$. If $\frac{d}{ds} H < 0$ (entropy decreasing), then:
 
 $$
 \sigma_{\text{tot}} = \frac{dH}{ds} + \frac{\dot{\mathcal{M}}}{T_c} \ge \frac{dH}{ds} + \left| \frac{dH}{ds} \right| = \frac{dH}{ds} - \frac{dH}{ds} = 0.
@@ -541,11 +626,15 @@ An agent is "thermodynamically fragile" if it requires high metabolic flux for l
 :::
 
 :::{div} feynman-prose
-This theorem is the cognitive version of the H-theorem from statistical mechanics. Boltzmann showed that entropy increases for isolated systems; we are showing that total entropy production is non-negative for open cognitive systems.
+This theorem is a cognitive analogue of the H-theorem. The non-negativity follows here from the conditional entropy-dissipation
+estimate and its hypotheses, so it is best read as a consistency identity for the calibrated open-system model.
 
-The efficiency of thought $\eta_{\text{thought}}$ is a beautiful quantity. It measures how close the agent comes to the thermodynamic limit. An efficiency of 1 means the agent is operating reversibly---every bit of metabolic energy goes directly into reducing belief entropy, with no waste. An efficiency near 0 means the agent is terribly inefficient---burning lots of energy to achieve only small reductions in uncertainty.
+The efficiency of thought $\eta_{\text{thought}}$ measures how tightly an update approaches the selected lower bound. An efficiency of
+1 means that the calibrated estimate is saturated; it does not by itself prove a physically reversible computation. An efficiency near
+0 means that the modeled dissipation is large compared with the measured entropy decrease.
 
-Real agents, of course, operate somewhere in between. And here is the key insight: the Landauer bound gives us an absolute limit on efficiency. No matter how clever the agent's algorithms, it cannot exceed $\eta_{\text{thought}} = 1$. This is not an engineering constraint; it is a law of physics.
+Values above 1 signal a mismatch with the assumptions, normalization, or estimators used by this model. They call for checking the
+calibration and boundary bookkeeping; they are not, by themselves, evidence that a physical law has been violated.
 :::
 
 :::{prf:definition} Cognitive Carnot Efficiency
@@ -559,21 +648,23 @@ The **Carnot limit** for cognitive systems is $\eta_{\text{thought}} = 1$, achie
 :::
 
 :::{div} feynman-prose
-Why do we call this the "Carnot efficiency"?
+Why do we call this the "Carnot efficiency"? The name is an analogy. Carnot's result concerns a heat engine between
+thermodynamic reservoirs. Here $\eta_{\text{thought}}$ is a dimensionless ratio built from a calibrated entropy-rate estimate and a
+modeled dissipation; the notation does not identify the agent with a heat engine or $T_c$ with a physical reservoir.
 
-In thermodynamics, Carnot showed that heat engines have a maximum possible efficiency that depends only on the temperatures of the hot and cold reservoirs. No engine can exceed this limit, no matter how cleverly designed. It is a consequence of the Second Law.
+Within the stated model, $\eta_{\text{thought}}=1$ means that the conditional lower bound is saturated. The following sources of
+loss are useful interpretations only when the corresponding geometry and dynamics have been specified:
 
-The Cognitive Carnot Efficiency plays the same role for thinking agents. The Landauer bound tells us that reducing entropy by $|\Delta H|$ costs at least $T_c |\Delta H|$ in metabolic energy. An agent that achieves exactly this minimum is operating at Carnot efficiency.
+1. **Friction:** If the WFR action is the relevant cost with fixed endpoints, a path longer than a minimizing geodesic can cost more.
 
-In practice, there are three sources of inefficiency:
+2. **Irreversibility:** A finite-rate update can carry an additional cost when the model includes such a rate-dependent term. The
+   quasi-static heat-engine analogy does not establish this term by itself.
 
-1. **Friction:** The agent might not take the geodesic path through belief space. Imagine you are trying to concentrate your belief from point A to point B. The shortest path (the geodesic) costs the minimum energy. Any deviation costs more.
+3. **Exploration noise:** A stochastic update can change the entropy balance, and may counteract concentration, but the sign and size
+   of that effect depend on the chosen dynamics and calibration.
 
-2. **Irreversibility:** Quasi-static processes (infinitely slow changes) are reversible. Finite-rate processes are not. When the agent updates its beliefs quickly, it dissipates more energy than the Landauer minimum.
-
-3. **Exploration noise:** At finite temperature $T_c > 0$, the agent explores. This exploration injects entropy back into the belief, counteracting the entropy reduction from deliberation. It is like trying to cool a room while someone keeps opening the windows.
-
-Understanding these inefficiencies is crucial for designing efficient agents. The thermodynamic framework does not just give us limits; it tells us where the losses are coming from.
+This language helps diagnose where a calibrated implementation spends its modeled budget. It does not turn the analogy into a
+universal physical limit.
 :::
 
 :::{warning}
@@ -602,7 +693,10 @@ Following the diagnostic node convention ({ref}`sec-theory-thin-interfaces`), we
 :::{div} feynman-prose
 The theory is beautiful, but how do we know if an actual agent is behaving according to these principles? We need diagnostics---measurable quantities that tell us if things are working correctly.
 
-Here we define two diagnostic nodes. The first checks whether the agent is getting good "return on investment" from its thinking. The second checks whether the Landauer bound is being respected---a violation would indicate something is deeply wrong with the physics of the computation.
+Here we define two diagnostic nodes. The first checks whether the agent is getting a good modeled "return on investment" from its
+thinking. The second checks consistency with the conditional entropy-dissipation estimate. A negative residual is a reason to inspect
+the entropy estimator, calibration, boundary bookkeeping, or numerical solver; it is not by itself evidence that the physics of a
+computation has been violated.
 :::
 
 (node-51)=
@@ -639,13 +733,18 @@ Here we define two diagnostic nodes. The first checks whether the agent is getti
 *Cross-reference:* Node 52 extends the thermodynamic consistency checks of {ref}`sec-the-belief-evolution-cycle-perception-dreaming-action` (ThermoCycleCheck, Node 33) to the internal deliberation loop.
 
 :::{div} feynman-prose
-Let me say a word about the Landauer Violation Check, because it is unusual to have a diagnostic that checks for violations of physics.
+Let me say a word about the Landauer Violation Check, because it is unusual to have a diagnostic named after a physical bound.
 
-In most simulations, the laws of physics are hardcoded. Particles conserve momentum because the integrator is written to conserve momentum. But the Fragile Agent learns its dynamics, and learned dynamics can violate physical constraints.
+In most simulations, a consistency condition is built into the update rule. Here the agent may learn or approximate its dynamics, so
+the measured quantities can fall outside the calibrated estimate through numerical error, estimator bias, or a mismatch between the
+implemented and assumed dynamics.
 
-The Landauer bound is one such constraint. If the agent's belief entropy is decreasing faster than its metabolic energy expenditure permits, something is wrong. Either the entropy estimator is broken, or the metabolic cost computation is wrong, or the WFR solver has gone haywire.
+The diagnostic therefore asks whether the observed entropy decrease is compatible with the modeled metabolic expenditure. If the
+residual is negative, check the entropy estimator, the metabolic coefficient, the no-flux assumption, and the WFR solver before
+interpreting the result.
 
-When this diagnostic triggers, do not try to fix it by patching the numbers. Fix the underlying bug. The Landauer bound is a law of nature; if your agent is violating it, your agent is broken.
+When it triggers, repair the underlying mismatch rather than hiding it with a threshold. The conditional bound is a property of the
+declared model and calibration; it does not by itself certify that an implementation is physically impossible.
 :::
 
 
@@ -676,21 +775,29 @@ Let me wrap up by giving you the complete dictionary between thermodynamic conce
 **Conclusion.** Computational Metabolism provides the "biological" limit for the Fragile Agent. By deriving $S^*$ from first principles, we transform the "Thinking Fast vs. Slow" heuristic into a rigorous physical law. The agent acts not when it is "ready," but when it is no longer metabolically efficient to continue refining its belief. This framework connects to the free energy principle {cite}`friston2010free` and active inference {cite}`friston2017active`, providing a thermodynamic foundation for bounded rationality.
 
 :::{div} feynman-prose
-And there you have it. We started with a simple question---how long should you think before you act?---and ended up with a complete thermodynamic theory of deliberation.
+And there you have it. We started with a simple question---how long should you think before you act?---and obtained a conditional,
+operational account of deliberation.
 
-The key insights are:
+The key points are:
 
-1. **Thinking costs energy.** This is not a metaphor; it is a physical fact, grounded in Landauer's principle.
+1. **A modeled computation cost can be related to entropy change.** The Cauchy--Schwarz estimate and its Landauer form require the
+   stated regularity, boundary, normalization, and calibration hypotheses; the classical physical principle is an analogy until the
+   physical interface is supplied.
 
-2. **The optimal thinking time minimizes an action.** Value gained minus energy spent, with stationarity giving the stopping condition.
+2. **An optimal thinking time minimizes a declared action.** For an interior minimizer, stationarity gives the marginal condition.
+   Endpoint optima and multiple stationary points remain possible when the additional assumptions fail.
 
-3. **Fast and slow thinking are phases of a single system.** The transition is governed by the ratio of initial value improvement to initial metabolic cost.
+3. **Fast and slow thinking are allocation regimes in this model.** The initial marginal-gain comparison can classify those regimes
+   under the theorem's hypotheses, but it does not establish a universal psychological or physical phase transition.
 
-4. **The Second Law still holds.** Total entropy production is non-negative; agents can only reduce internal entropy by dissipating energy externally.
+4. **The entropy-production check is conditional.** Its non-negativity follows from the calibrated estimate; a negative residual asks
+   us to inspect the model, estimators, and numerics before drawing a physical conclusion.
 
-This framework does not just describe behavior; it constrains it. An agent that violates the Landauer bound is physically impossible. An agent that ignores metabolic costs will waste resources on pointless deliberation. The thermodynamics is not optional---it is the substrate on which all cognition must run.
+The framework therefore constrains the declared model and provides useful diagnostics. Ignoring a measured computation cost can still
+make deliberation wasteful, but a failed bound is evidence of a mismatch with the stated assumptions rather than proof of physical
+impossibility.
 
-For practical implementation, this means two things. First, track your metabolic costs. Know how much energy your agent is spending on computation, and make that part of the objective. Second, use the optimal stopping condition. Do not deliberate until some arbitrary timeout; stop when marginal value equals marginal cost.
-
-The physics will guide you if you let it.
+For implementation, track calibrated dissipation and entropy estimates, record the boundary and normalization assumptions, and use
+the stopping condition when its regularity and horizon hypotheses hold. Empirical validation is needed before transferring the result
+to a real cognitive or hardware system.
 :::

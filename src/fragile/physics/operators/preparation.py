@@ -35,6 +35,10 @@ def _resolve_frame_indices(
     start_idx = max(1, int(history.n_recorded * float(warmup_fraction)))
     end_idx = max(start_idx + 1, int(history.n_recorded * float(end_fraction)))
     end_idx = min(end_idx, history.n_recorded)
+    steps = getattr(history, "recorded_steps", [])
+    if len(steps) == history.n_recorded and len(steps) >= 3:
+        if steps[-1] - steps[-2] != getattr(history, "record_every", steps[1] - steps[0]):
+            end_idx = min(end_idx, history.n_recorded - 1)
 
     if end_idx <= start_idx:
         return []
@@ -47,18 +51,20 @@ def _resolve_3d_dims(
     """Resolve and validate exactly 3 component indices."""
     if dims is None:
         if total_dims < 3:
-            raise ValueError(f"{name} requires at least 3 dimensions, got d={total_dims}.")
+            msg = f"{name} requires at least 3 dimensions, got d={total_dims}."
+            raise ValueError(msg)
         return 0, 1, 2
     if len(dims) != 3:
-        raise ValueError(f"{name} must contain exactly 3 indices.")
+        msg = f"{name} must contain exactly 3 indices."
+        raise ValueError(msg)
     dims_tuple = tuple(int(d) for d in dims)
     if len(set(dims_tuple)) != 3:
-        raise ValueError(f"{name} indices must be unique, got {dims_tuple}.")
+        msg = f"{name} indices must be unique, got {dims_tuple}."
+        raise ValueError(msg)
     invalid = [d for d in dims_tuple if d < 0 or d >= total_dims]
     if invalid:
-        raise ValueError(
-            f"{name} has invalid indices {invalid}; valid range is [0, {total_dims - 1}]."
-        )
+        msg = f"{name} has invalid indices {invalid}; valid range is [0, {total_dims - 1}]."
+        raise ValueError(msg)
     return dims_tuple
 
 
@@ -214,10 +220,11 @@ def prepare_channel_data(
     projection_length: float | None = None
     if need_momentum_axis:
         if momentum_axis < 0 or momentum_axis >= int(history.d):
-            raise ValueError(
+            msg_0 = (
                 f"momentum_axis={momentum_axis} out of range for history.d={history.d}. "
                 f"Expected 0..{history.d - 1}."
             )
+            raise ValueError(msg_0)
         positions_axis = history.x_before_clone[start_idx:end_idx, :, momentum_axis].to(
             device=device, dtype=torch.float32
         )

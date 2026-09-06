@@ -8,8 +8,8 @@
   per-chart codebooks.
 - The discrete macro state is charted: $K_t = (K_{\mathrm{chart}}, K_{\mathrm{code}})$, with
   continuous nuisance $z_n$ and texture $z_{\mathrm{tex}}$; geometry uses $z_{\mathrm{geo}}$.
-- Routing uses CovariantChartRouter (Wilson-line transport + metric-aware temperature) with a
-  dot-product fallback when disabled.
+- Routing uses CovariantChartRouter (conformal-factor transport + metric-aware temperature) with a
+  hyperbolic-distance fallback when disabled.
 - Decoding mixes chart projectors with router weights and adds a separate texture residual path.
 - Training uses reconstruction + VQ + routing/consistency, plus tiered regularizers and optional
   jump and supervised topology losses.
@@ -54,6 +54,9 @@ where:
 2. $z_{n,t} \in \mathbb{R}^{d_n}$ is the structured nuisance (pose, basis, gauge residual).
 3. $z_{\mathrm{tex},t} \in \mathbb{R}^{d_{\mathrm{tex}}}$ is reconstruction-only texture.
 
+The implementation diagrams below use a common width $d_n=d_{\mathrm{tex}}=D$. If the nuisance or
+texture widths differ, insert learned embeddings into the $D$-dimensional decoder input.
+
 The geometry latent used by the decoder is
 
 $$
@@ -70,23 +73,12 @@ quantized code.
 The macro symbol must satisfy the causal enclosure property:
 
 $$
-P(K_{t+1} \mid K_t, a_t) \text{ is sharply concentrated}
+I\!\left(K_{t+1};(z_{n,t},z_{\mathrm{tex},t})\mid K_t,a_t\right)=0.
 $$
 
-and texture independence:
-
-$$
-I(K_{t+1}; Z_{\mathrm{tex},t} \mid K_t, a_t) = 0.
-$$
-
-Optionally, in the strongest form, nuisance independence also holds:
-
-$$
-I(K_{t+1}; Z_{n,t} \mid K_t, a_t) = 0.
-$$
-
-That is: nuisance and texture should not be required to predict the next macro symbol once action
-is accounted for.
+This is the joint enclosure condition: once the current macro state and action are given, neither
+residual channel carries additional predictive information about the next macro symbol. Predictive
+concentration of $P(K_{t+1}\mid K_t,a_t)$ is a separate model-quality diagnostic.
 :::
 
 (sec-architecture-the-disentangled-vq-vae-rnn)=
@@ -97,6 +89,13 @@ The encoder builds chart weights, per-chart VQ assignments, and the typed latent
 chart routing to mix per-chart projectors and produce the reconstruction. Implementation lives in
 `src/fragile/core/layers/atlas.py`.
 
+The encoder and decoder diagrams below are **flat reference schematics**. They show tensor shapes
+and data flow with ordinary sums and differences so that the wiring is easy to read. Production
+routing uses the metric-aware primitives in `atlas.py`: Poincare distances and barycenters,
+Möbius transport/addition, logarithm and exponential maps, and projection back to the ball. The
+flat expressions are placeholders for those operations, not a claim that the production router is
+Euclidean.
+
 ### Encoder Block
 
 ```{mermaid}
@@ -106,15 +105,15 @@ flowchart TD
         X["Input x [B, D_in]"] --> FE["Feature extractor\nSpectralLinear + NormGatedGELU\n(or CovariantRetina)"]
         FE --> F["features [B, H]"]
         F --> Vproj["val_proj -> v [B, D]"]
-        ChartCenters["chart_centers c_k [N_c, D]"] --> RouterEnc["Chart router\nCovariantChartRouter or dot-product"]
+        ChartCenters["chart_centers c_k [N_c, D]"] --> RouterEnc["Chart router\nCovariantChartRouter or hyperbolic-distance"]
         F --> RouterEnc
         Vproj --> RouterEnc
         RouterEnc --> Wenc["w_enc [B, N_c]"]
         RouterEnc --> Kchart["K_chart [B]"]
 
-        Wenc --> Cbar["c_bar = sum(w_enc * c_k) [B, D]"]
+        Wenc --> Cbar["reference c_bar = sum(w_enc * c_k) [B, D]\nproduction: Poincare barycenter"]
         ChartCenters --> Cbar
-        Vproj --> Vlocal["v_local = v - c_bar [B, D]"]
+        Vproj --> Vlocal["reference v_local = v - c_bar [B, D]\nproduction: Mobius subtraction"]
         Cbar --> Vlocal
 
         Codebook["Codebook (deltas) [N_c, K, D]"] --> Diff["diff = v_local - codebook [B, N_c, K, D]"]
@@ -137,7 +136,7 @@ flowchart TD
         DeltaBlend --> Ztex["z_tex = delta_blended - z_n"]
 
         ZqBlend --> ZqSt["z_q_st = v_local + (z_q_blended - v_local).detach"]
-        ZqSt --> Zgeo["z_geo = c_bar + z_q_st + z_n"]
+        ZqSt --> Zgeo["reference z_geo = c_bar + z_q_st + z_n\nproduction: Mobius addition + projection"]
         Zn --> Zgeo
         Cbar --> Zgeo
     end
@@ -149,33 +148,18 @@ flowchart TD
 %%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
 flowchart TD
     subgraph ROUTER["CovariantChartRouter (shared by encoder + decoder)"]
-        Z["z [B, D]"] --> Qz["q_z_proj(z) [B, K]"]
-        F["features [B, H]\n(encoder only)"] --> Qfeat["q_feat_proj(features) [B, K]"]
-        Z --> Gamma["Christoffel term (z_i z_j)\n-> gamma [B, K]"]
-        Qz --> Qsum["q = q_z + gamma (+ q_feat) [B, K]"]
-        Qfeat --> Qsum
-        Gamma --> Qsum
-
-        Z --> Transport["transport_proj(z) -> skew [B, K, K]\n(if use_transport)"]
-        Transport --> Cayley["Cayley: U(z) = (I+0.5S)^-1 (I-0.5S)"]
-        ChartTokens["chart_tokens c_k [N_c, D or K]\n(encoder: chart_centers)"] --> KeyProj["chart_key_proj [N_c, K]"]
-        ChartTokens -.->|if K| KeyMerge
-        ChartQ["chart_queries [N_c, K]\n(decoder default)"] --> KeyMerge["base_queries [N_c, K]"]
-        KeyProj --> KeyMerge
-        KeyMerge --> Keys["keys = U(z) * base_queries [B, N_c, K]\n(or base_queries if transport disabled)"]
-        Cayley --> Keys
-
-        Keys --> Scores["scores = sum(keys * q) [B, N_c]"]
+        Z["z [B, D]"] --> Dist["d_Poincare(z,c_k) [B, N_c]"]
+        ChartTokens["chart centers c_k [N_c, D]"] --> Dist
+        Dist --> Scores["scores = -d_Poincare(z,c_k) / tau(z)"]
         Z --> Tau["tau(z) = sqrt(K) * (1 - ||z||^2)/2\nclamp denom + tau_min"]
         Scores --> Scale["scores / tau"]
         Tau --> Scale
         Scale --> W["w = softmax(scores/tau) [B, N_c]"]
         W --> Kchart["K_chart [B]"]
-    end
 
-    subgraph TENS["Christoffel tensorization options"]
-        Full["full: gamma = einsum(z_i z_j, W_q_gamma[k,i,j])"]
-        Sum["sum: low-rank (U_k x V_k) with rank R"]
+        F["features [B, H]\n(encoder only)"] --> Corr["optional encoder correction\n0.1 <P_0->z(base_queries), q_z(z)+q_feat(f)+gamma(z)> / tau(z)"]
+        Z --> Corr
+        Corr --> Scale
     end
 ```
 
@@ -184,14 +168,14 @@ flowchart TD
 ```{mermaid}
 %%{init: {"themeVariables": {"background":"#0b111b","edgeLabelBackground":"#111827","textColor":"#e5e7eb","lineColor":"#9ca3af","primaryColor":"#1f2937","primaryTextColor":"#e5e7eb","clusterBkg":"#0f172a","clusterBorder":"#334155"}}}%%
 flowchart TD
-    subgraph DEC["PrimitiveTopologicalDecoder"]
-        Zgeo["z_geo [B, D]"] --> TanhG["tanh(z_geo)"]
-        TanhG --> RouterDec["Chart router\nCovariantChartRouter or latent_router"]
+    subgraph DEC["PrimitiveTopologicalDecoder (production metric routing)"]
+        Zgeo["z_geo [B, D]"] --> BallG["_project_to_ball(z_geo)"]
+        BallG --> RouterDec["Chart router\n_poincare_hyperbolic_score"]
         RouterDec --> Wdec["w_dec [B, N_c]"]
         ChartIdx["chart_index (optional)"] --> OneHot["one-hot -> w_hard"]
         OneHot --> Wdec
 
-        TanhG --> ChartProj["chart_projectors: SpectralLinear x N_c"]
+        BallG --> ChartProj["chart_projectors: SpectralLinear x N_c"]
         ChartProj --> Gate["NormGatedGELU on h_stack"]
         Gate --> Mix["h_global = sum(w_dec * h_stack)"]
         Wdec --> Mix
@@ -201,8 +185,7 @@ flowchart TD
         Renderer --> AddSkip["x_hat_base = renderer + skip"]
         Skip --> AddSkip
 
-        Ztex["z_tex [B, D]"] --> TanhT["tanh(z_tex)"]
-        TanhT --> TexRes["tex_residual: SpectralLinear"]
+        Ztex["z_tex [B, D]"] --> TexRes["tex_residual: SpectralLinear"]
         TexRes --> AddTex["x_hat = x_hat_base + tex_residual_scale * tex_residual"]
         AddSkip --> AddTex
         AddTex --> Xhat["x_hat [B, D_out]"]
@@ -264,7 +247,8 @@ Where:
 
 - $\mathcal{L}_{\text{recon}} = \|x - \hat{x}\|^2$ (MSE reconstruction).
 - $\mathcal{L}_{\text{vq}}$ is the codebook + commitment loss.
-- $\mathcal{L}_{\text{entropy}}$ is routing entropy (encourages sharp routing).
+- $\mathcal{L}_{\text{entropy}}=\log N_c-\frac1B\sum_bH(w_b)$ is an entropy-raising anti-collapse
+  regularizer; chart usage/diversity terms prevent dead charts.
 - $\mathcal{L}_{\text{consistency}}$ aligns encoder and decoder routing.
 - Tiered losses include variance, diversity, separation, codebook centering, chart center
   separation, residual scale, window, disentangle, orthogonality, code entropy, per-chart code
@@ -293,22 +277,23 @@ The training loop in `src/experiments/topoencoder_2d.py` follows a fixed sequenc
 Classifier readouts (if enabled) are trained on detached latents with their own optimizer.
 
 (sec-runtime-diagnostics-the-closure-ratio)=
-## Runtime Diagnostics: The Closure Ratio
+## Runtime Diagnostics: Routing Sharpness
 
-Closure is monitored through routing entropy, mutual information, and chart usage. A convenient
-normalized metric is the closure ratio:
+Routing sharpness is monitored through the conditional entropy of the soft router weights. It is
+distinct from the causal closure ratio, which compares transition-model cross-entropy with a
+marginal baseline ({prf:ref}`def-f-closure-ratio`).
 
-:::{prf:definition} The Closure Ratio
-:label: def-closure-ratio
+:::{prf:definition} Routing Sharpness
+:label: def-routing-sharpness
 
 Let $K$ be the chart assignment and $N_c$ the number of charts. Define
 
 $$
-\rho_{\text{close}} = 1 - \frac{H(K \mid X)}{\log N_c}
-\;=\; \frac{I(X;K)}{\log N_c}.
+\rho_{\text{route}} = 1 - \frac{H(K \mid X)}{\log N_c}.
 $$
 
-Values near 1 indicate sharp, informative routing; values near 0 indicate diffuse routing.
+Values near 1 indicate deterministic soft routing and values near 0 indicate diffuse routing. The
+quantity equals $I(X;K)/\log N_c$ only when the marginal chart usage is uniform.
 :::
 
 Additional diagnostics used in the TopoEncoder benchmark include:
@@ -339,6 +324,7 @@ structure.
 In practice this can be implemented by stacking TopoEncoder blocks or by sharing a base encoder
 with multiple chart routers and codebooks.
 
+(sec-literature-connections)=
 ## Literature Connections (Mapping + Differences)
 
 - Atlas models and mixture-of-experts: chart routing implements a learned partition of unity.
@@ -348,9 +334,14 @@ with multiple chart routers and codebooks.
 
 ## Computational Costs
 
-- Routing: $O(B N_c K)$ for key comparisons (per batch, per chart, per key dim).
-- Codebook distances: $O(B N_c K D)$ for per-chart VQ.
-- Soft-equivariant metric: per-chart SoftEquivariantLayer adds $O(B N_c D)$ plus hidden-size overhead.
+Let $K_{\mathrm{key}}$ be the router key width, $K_{\mathrm{code}}$ the number of codes per
+chart, and $H$ the hidden width of a soft-equivariant block. With a dense tensorized router, the
+leading costs are:
+
+- Routing: $O\!\left(B(N_cD+K_{\mathrm{key}}D^2)\right)$, plus the cost of the selected metric
+  transport.
+- Codebook distances: $O(BN_cK_{\mathrm{code}}D)$ for per-chart VQ.
+- Soft-equivariant metric: $O(BN_cK_{\mathrm{code}}DH)$ for a block with hidden width $H$.
 
 ## Control Theory Translation: Dictionary
 
@@ -362,12 +353,16 @@ with multiple chart routers and codebooks.
 | Transition map | Jump operator |
 | Partition of unity | Router weights $w$ |
 
+(sec-differential-geometry-view-curvature-as-conditioning)=
 ## Differential-Geometry View (No Physics): Curvature as Conditioning
 
 Charts are local coordinate systems; chart centers define anchor points, and routing weights define
 smooth transitions between charts. The metric-aware temperature in routing behaves like local
-conditioning, sharpening attention in high-curvature regions.
+conditioning, sharpening attention where the conformal factor
+$\lambda(z)=2/(1-\lVert z\rVert^2)$ is large near the ball boundary, where hyperbolic distances are
+stretched.
 
+(sec-the-entropy-regularized-objective-functional)=
 ## The Entropy-Regularized Objective Functional
 
 Routing entropy and policy entropy play parallel roles: both penalize collapse and stabilize

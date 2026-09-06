@@ -39,14 +39,22 @@ def compute_color_states_batch(
         Tuple of (color [T, N, d], valid [T, N]).
     """
     n_recorded = end_idx if end_idx is not None else history.n_recorded
-    n_recorded - start_idx
+    if start_idx < 1:
+        msg = (
+            "start_idx must be at least 1: recorded frame 0 is the initial state "
+            "and has no force/transition data (negative slices would wrap around)."
+        )
+        raise ValueError(msg)
 
     # Extract batched tensors
     v_pre = history.v_before_clone[start_idx:n_recorded]  # [T, N, d]
+    conventions = (getattr(history, "params", None) or {}).get("history_conventions", {})
+    if conventions.get("force_stage") == "after_clone":
+        v_pre = history.v_after_clone[start_idx - 1 : n_recorded - 1]
     force_visc = history.force_viscous[start_idx - 1 : n_recorded - 1]  # [T, N, d]
 
     phase = (mass * v_pre * ell0) / h_eff
-    complex_phase = torch.polar(torch.ones_like(phase), phase.float())
+    complex_phase = torch.polar(torch.ones_like(phase), phase)
 
     if force_visc.dtype == torch.float64:
         complex_dtype = torch.complex128

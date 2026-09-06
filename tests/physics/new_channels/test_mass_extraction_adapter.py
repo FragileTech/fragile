@@ -306,7 +306,7 @@ class TestExtractTensorMomentum:
         )
         assert set(corrs.keys()) == {"tensor"}
         assert corrs["tensor"].shape == (LAG,)
-        assert ops["tensor"].shape == (T,)
+        assert ops["tensor"].shape == (T, 10)
         expected = tensor_output.momentum_contracted_correlator_connected[0]
         assert torch.equal(corrs["tensor"], expected)
 
@@ -318,9 +318,13 @@ class TestExtractTensorMomentum:
         expected = tensor_output.momentum_contracted_correlator_connected[2]
         assert torch.equal(corrs["tensor"], expected)
 
-    def test_operator_is_positive(self, tensor_output):
+    def test_operator_preserves_quadratures(self, tensor_output):
         _, ops = extract_tensor_momentum(tensor_output)
-        assert (ops["tensor"] >= 0).all()
+        expected = torch.cat([
+            tensor_output.momentum_operator_cos_series[0],
+            tensor_output.momentum_operator_sin_series[0],
+        ]).t()
+        torch.testing.assert_close(ops["tensor"], expected)
 
 
 class TestExtractTwistorCompanion:

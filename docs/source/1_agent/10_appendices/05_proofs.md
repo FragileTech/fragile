@@ -6,7 +6,11 @@
 - This appendix contains rigorous proof sketches backing the ontology/metabolism results in the later cognition chapters.
 - Read it when you want the mathematical spine behind the narrative statements; otherwise treat it as a reference.
 
-This appendix provides the rigorous mathematical foundations for the theorems and propositions introduced in Sections 30, 31, and 32. We operate on the latent Riemannian manifold $(\mathcal{Z}, G)$ with belief measures $\rho \in \mathcal{P}(\mathcal{Z})$.
+:::{div} feynman-prose
+This appendix collects calculations for the cognition and multi-agent chapters. The multi-agent proofs track the operator, measure, and variational functional used in each result, so that changes of representation can be checked directly.
+:::
+
+We operate on the latent Riemannian manifold $(\mathcal{Z}, G)$ with belief measures $\rho \in \mathcal{P}(\mathcal{Z})$.
 
 
 
@@ -95,68 +99,58 @@ The bifurcation diagram: for $\Xi < \Xi_{\text{crit}}$, the system has a single 
 (sec-appendix-e-proof-of-theorem-prf-ref-b)=
 ## E.3 Proof of Theorem {prf:ref}`thm-generalized-landauer-bound`
 
-**Statement:** $\dot{\mathcal{M}}(s) \ge T_c \left| \frac{d}{ds} H(\rho_s) \right|$.
-
-**Hypothesis:** Belief evolution follows the {prf:ref}`def-the-wfr-action` continuity equation $\partial_s \rho = \mathcal{L}_{\text{WFR}} \rho = \rho r - \nabla \cdot (\rho v)$.
+**Statement.** Under the compact-domain, positive-density, no-flux, mass-preservation,
+and calibration hypotheses in the theorem, the conditional Landauer-form estimate is
+$\dot{\mathcal M}(s)\ge T_c\lvert dH(\rho_s)/ds\rvert$.
 
 (proof-thm-generalized-landauer-bound)=
 :::{prf:proof}
-
-The time derivative of the Shannon entropy is:
-
-$$
-\frac{d}{ds} H(\rho_s) = \frac{d}{ds}\left( -\int_{\mathcal{Z}} \rho \ln \rho \, d\mu_G \right) = -\int_{\mathcal{Z}} (1 + \ln \rho) \partial_s \rho \, d\mu_G.
+**Proof.** The WFR equation is
+$\partial_s\rho=-\nabla\!\cdot(\rho v)+\rho r$. For
+$H(\rho)=-\int\rho\ln\rho\,d\mu_G$, differentiation gives
 
 $$
-Substituting the WFR continuity equation:
+\frac{dH}{ds}=-\int_{\mathcal Z}(1+\ln\rho)\partial_s\rho\,d\mu_G.
+$$
+
+The no-flux condition removes the boundary contribution. Mass preservation removes
+the term $\int\rho r\,d\mu_G$, so
 
 $$
-\frac{d}{ds} H = -\int_{\mathcal{Z}} (1 + \ln \rho)(\rho r - \nabla \cdot (\rho v)) \, d\mu_G.
+\frac{dH}{ds}
+=-\int_{\mathcal Z}\rho\langle\nabla\ln\rho,v\rangle_G\,d\mu_G
+ -\int_{\mathcal Z}\rho r\ln\rho\,d\mu_G.
+$$
+
+Set
 
 $$
-**Transport term:** Integrating by parts (assuming $\rho v \cdot n|_{\partial\mathcal{Z}} = 0$):
+E_v=\int\rho\|v\|_G^2d\mu_G,\quad
+E_r=\int\rho r^2d\mu_G,\quad
+I_\rho=\int\rho\|\nabla\ln\rho\|_G^2d\mu_G,\quad
+J_\rho=\int\rho(\ln\rho)^2d\mu_G.
+$$
+
+Cauchy--Schwarz in $L^2(\rho d\mu_G)$ gives
 
 $$
--\int (1 + \ln \rho)(-\nabla \cdot (\rho v)) \, d\mu_G = \int \nabla(1 + \ln \rho) \cdot (\rho v) \, d\mu_G = \int \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G.
-
+\left|\int\rho\langle\nabla\ln\rho,v\rangle_Gd\mu_G\right|
+\le\sqrt{I_\rho E_v},\qquad
+\left|\int\rho r\ln\rho\,d\mu_G\right|
+\le\sqrt{J_\rho E_r}.
 $$
-**Reaction term:**
 
-$$
--\int (1 + \ln \rho) \rho r \, d\mu_G = -\int \rho r \, d\mu_G - \int \rho r \ln \rho \, d\mu_G.
-
-$$
-The first integral is the total mass change $\frac{d}{ds}\int \rho \, d\mu_G$. For normalized probabilities, this vanishes if we work in the cone representation. The second integral is bounded by the reaction energy.
-
-**Applying Cauchy-Schwarz:** For the transport term on $(T\mathcal{Z}, G)$:
-
-$$
-\left| \int_{\mathcal{Z}} \rho \langle \nabla \ln \rho, v \rangle_G \, d\mu_G \right| \le \left( \int \rho \|\nabla \ln \rho\|_G^2 \, d\mu_G \right)^{1/2} \left( \int \rho \|v\|_G^2 \, d\mu_G \right)^{1/2}.
-
-$$
-The first factor is the **Fisher Information** $\mathcal{I}(\rho)$. By the de Bruijn identity for diffusion processes:
-
-$$
-\frac{d}{ds} H(\rho_s) = -\frac{1}{2T_c} \mathcal{I}(\rho_s)
-
-$$
-under optimal transport scaling $v = -T_c G^{-1}\nabla \ln \rho$.
-
-Combining: $|\dot{H}| \le \frac{1}{T_c}\sqrt{\mathcal{I}(\rho) \cdot \int \rho \|v\|_G^2}$. With $\sigma_{\text{met}} = 1/T_c$, we obtain $\dot{\mathcal{M}} \ge T_c |\dot{H}|$.
-
-The reaction term follows by an identical argument using the $L^2(\rho)$ inner product:
-
-$$
-\left| \int \rho r \ln \rho \, d\mu_G \right| \le \|\sqrt{\rho} r\|_{L^2} \|\sqrt{\rho} \ln \rho\|_{L^2}.
-
-$$
-Adding both contributions yields the stated bound. $\square$
+Adding the estimates yields
+$|dH/ds|\le\sqrt{I_\rho E_v}+\sqrt{J_\rho E_r}$. The theorem's explicit
+calibration compares this right-hand side with
+$\dot{\mathcal M}=\sigma_{\mathrm{met}}(E_v+\lambda^2E_r)$ and therefore gives
+the claimed Landauer-form inequality. No de Bruijn identity or universal physical
+identification is required. $\square$
 
 :::
 
 
 
-(sec-appendix-e-proof-of-theorem-prf-ref-c)=
 ## E.4 Proof of Theorem {prf:ref}`thm-deliberation-optimality-condition`
 
 **Statement:** The optimal computation budget $S^*$ satisfies $\frac{d}{ds} \langle V \rangle_{\rho_s}|_{s=S^*} = \dot{\mathcal{M}}(S^*)$.
@@ -336,484 +330,176 @@ This path was confounded in observational data (the correlation between $Z_{\tex
 
 
 (sec-appendix-e-rigorous-proof-of-multi-agent-strategic-tunneling)=
-## E.7 Rigorous Proof of Multi-Agent Strategic Tunneling (Theorem {prf:ref}`thm-tunneling-probability`)
+(proof-thm-e7-ground-state-positivity)=
+(proof-thm-e7-agmon-decay-bound)=
+(proof-cor-e7-adversarial-suppression)=
+(proof-thm-e7-feynman-kac)=
+(sec-appendix-e-ground-state-existence)=
+(pi-spectral-gap)=
+(insight-tunneling-inevitable)=
+(pi-agmon-estimates)=
+(interpretation-adversarial-barrier)=
+(pi-feynman-kac)=
+(pi-large-deviation)=
+## E.7 Scalar spectral and barrier calculations
 
-**Title:** *Asymptotic Behavior of the Joint Belief Measure on Riemannian Product Manifolds under Metric Deformation by the Game Tensor.*
-
-This appendix provides the rigorous mathematical foundation for Theorem {prf:ref}`thm-tunneling-probability` (Strategic Tunneling Probability). We replace heuristic WKB arguments with rigorous results from **Spectral Theory of Elliptic Operators** and **Semi-Classical Analysis (Agmon Estimates)**.
-
-**Key rigorous tools:**
-1. **Perron-Frobenius / Krein-Rutman Theorem** for strict positivity
-2. **Agmon Estimates** {cite}`agmon1982lectures` for exponential decay bounds
-3. **Feynman-Kac Formula** for probabilistic representation
-4. **Metric Comparison Theorems** for Game Tensor effects
-
-
-
-### E.7.1 Mathematical Setup and Definitions
-
-Let the $N$-agent configuration space be the product manifold $\mathcal{M} = \prod_{i=1}^N \mathcal{Z}^{(i)}$. We assume each $\mathcal{Z}^{(i)}$ is a smooth, compact, connected Riemannian manifold with boundary (or without boundary if geodesically complete).
-
-:::{prf:definition} E.7.1 (The Strategic Metric)
+:::{prf:definition} The scalar metric realization
 :label: def-e7-strategic-metric
 
-Let $G^{(i)}$ be the capacity-constrained metric on $\mathcal{Z}^{(i)}$ (Theorem {prf:ref}`thm-capacity-constrained-metric-law`). The **Strategic Metric** $\mathbf{g}$ on $\mathcal{M}$ is the block-diagonal sum perturbed by the Game Tensor $\mathcal{G}$ (Definition {prf:ref}`def-the-game-tensor`):
-
-$$
-\mathbf{g}(\mathbf{z}) := \bigoplus_{i=1}^N G^{(i)}(z^{(i)}) + \alpha \sum_{i \neq j} \mathcal{G}_{ij}(\mathbf{z}),
-
-$$
-where the pullback of the cross-Hessian interaction acts on tangent vectors in the obvious way.
-
-*Assumption 1 (Ellipticity):* We assume $\alpha > 0$ is sufficiently small such that $\mathbf{g}$ remains positive-definite and defines a valid Riemannian structure on $\mathcal{M}$. This is guaranteed when $\|\alpha \mathcal{G}\|_{\text{op}} < \lambda_{\min}(\bigoplus G^{(i)})$.
-
+Use the compact connected smooth scalar manifold and its positive strategic
+metric from the existing Appendix E.7 setup. The same spectral margin is
+$\|G^{-1/2}hG^{-1/2}\|_{\mathrm{op}}<1$ for sign-indefinite perturbations;
+positive perturbations preserve positivity directly. The joint volume is
+$w=\sqrt{\det\widetilde G}$, as in
+{prf:ref}`thm-game-augmented-laplacian`. Compactness makes a fixed smooth
+positive metric uniformly elliptic. This statement concerns the compact
+realization already used here, not a replacement of unbounded confinement
+by an artificial compact domain.
 :::
 
-:::{prf:definition} E.7.2 (The Strategic Hamiltonian)
+:::{prf:definition} Scalar form realization
 :label: def-e7-strategic-hamiltonian
 
-The self-adjoint **Strategic Hamiltonian** operator $\hat{H}_\sigma: H^2(\mathcal{M}) \to L^2(\mathcal{M}, d\mu_{\mathbf{g}})$ acts on the joint wave-function $\Psi$:
-
-$$
-\hat{H}_\sigma := -\frac{\sigma^2}{2} \Delta_{\mathbf{g}} + \mathcal{V}(\mathbf{z}),
-
-$$
-where:
-- $\Delta_{\mathbf{g}}$ is the Laplace-Beltrami operator associated with the strategic metric $\mathbf{g}$
-- $\mathcal{V}(\mathbf{z}) := \sum_{i=1}^N \Phi^{(i)}_{\text{eff}}(z^{(i)}) + \sum_{i < j} \Phi_{ij}(z^{(i)}, z^{(j)})$ is the joint potential
-- $\sigma > 0$ is the cognitive action scale (Definition {prf:ref}`def-cognitive-action-scale`)
-
-*Assumption 2 (Regularity):* $\mathcal{V} \in C^2(\mathcal{M})$ and is bounded below.
-
+For the existing real $C^2$ potential $U$ bounded below, set
+$q_\sigma[u]=\tfrac{\sigma^2}{2}\int|\nabla u|^2+\int U|u|^2$.
+The form domain is $H^1$ on a closed manifold or for the Neumann realization,
+and $H_0^1$ for the Dirichlet realization. Its self-adjoint operator is
+$H_\sigma=-\sigma^2\Delta_{\widetilde G}/2+U$ with the selected boundary
+condition. The domain is the operator domain associated to this form,
+not unrestricted $H^2$ on a domain with boundary. Compact embedding gives
+compact resolvent for this fixed model.
 :::
 
-::::{admonition} Physics Isomorphism: Spectral Gap
-:class: note
-:name: pi-spectral-gap
-
-**In Physics:** The spectral gap $\Delta = E_1 - E_0$ of a Hamiltonian $H$ controls the mixing time to the ground state: $\|e^{-tH}\psi - \psi_0\| \leq e^{-\Delta t}$. The Poincare inequality bounds the gap from below {cite}`liggett1989exponential,diaconis1991geometric`.
-
-**In Implementation:** The spectral gap of the strategic Hamiltonian $\hat{H}_{\text{strat}}$ controls convergence to Nash:
-
-$$
-\|\Psi(s) - \Psi_0\|_{L^2} \leq e^{-\Delta s / \sigma^2} \|\Psi(0) - \Psi_0\|_{L^2}
-
-$$
-**Correspondence Table:**
-| Spectral Theory | Agent (Convergence) |
-|:----------------|:--------------------|
-| Ground state energy $E_0$ | Nash equilibrium value |
-| First excited state $E_1$ | Nearest sub-optimal equilibrium |
-| Spectral gap $\Delta$ | Convergence rate to Nash |
-| Poincare inequality | Lower bound on gap |
-| Mixing time $\tau_{\text{mix}} \sim 1/\Delta$ | Training time |
-
-**Diagnostic:** ConvergenceRateCheck monitors effective gap from eigenvalue estimates.
-::::
-
-:::{prf:definition} E.7.3 (The Forbidden Region and Nash Basins)
+:::{prf:definition} Forbidden and allowed regions
 :label: def-e7-forbidden-region
 
-Let $E_0 := \inf \text{spec}(\hat{H}_\sigma)$ be the ground state energy. The **Classically Forbidden Region** (Barrier) is:
-
-$$
-\mathcal{K} := \{ \mathbf{z} \in \mathcal{M} : \mathcal{V}(\mathbf{z}) > E_0 \}.
-
-$$
-Let $\Omega_A, \Omega_B \subset \mathcal{M} \setminus \mathcal{K}$ be disjoint open sets (Nash basins) where $\mathcal{V}(\mathbf{z}) \leq E_0$.
-
-*Geometric interpretation:* $\Omega_A$ and $\Omega_B$ are "potential wells" corresponding to distinct Nash equilibria (Theorem {prf:ref}`thm-nash-ground-state`). The barrier $\mathcal{K}$ separates these wells.
-
+For an energy $E$ define $A_E=\{U\le E\}$ and $K_E=\{U>E\}$.
+These are sets of a scalar potential. Their relation to payoff basins is
+tested separately by the unilateral inequalities of
+{prf:ref}`thm-nash-equilibrium-as-geometric-stasis`.
 :::
 
-
-
-### E.7.2 Strict Positivity of the Ground State (Existence of Tunneling)
-
-We first prove that tunneling is not merely possible—it is **inevitable** for any connected manifold.
-
-:::{prf:theorem} E.7.1 (Strict Positivity of the Ground State)
+:::{prf:theorem} Fixed scalar ground state
 :label: thm-e7-ground-state-positivity
 
-Let $\Psi_0$ be the ground state eigenfunction of $\hat{H}_\sigma$ (the eigenfunction with eigenvalue $E_0$). Then:
+The compact connected nonmagnetic scalar realization has a simple ground
+eigenvalue $E_0$ and an eigenfunction positive in the interior.
 
-$$
-|\Psi_0(\mathbf{z})| > 0 \quad \forall \mathbf{z} \in \mathcal{M}.
-
-$$
-*Consequence:* For any open set $\Omega_B \subset \mathcal{M}$, the probability measure satisfies:
-
-$$
-\mu(\Omega_B) = \int_{\Omega_B} |\Psi_0(\mathbf{z})|^2 \, d\mu_{\mathbf{g}}(\mathbf{z}) > 0.
-
-$$
-Therefore, if an agent is localized in $\Omega_A$, there is strictly positive probability of finding it in $\Omega_B$.
-
+*Proof.* Compact resolvent and the lower form bound give a minimizer of
+the normalized Rayleigh quotient. Replacing it by its modulus does not
+increase its gradient energy, so a nonnegative minimizer exists. Interior
+elliptic regularity and the strong maximum principle make it strictly
+positive there. The scalar heat kernel is positivity improving on a connected
+domain with the selected Dirichlet or Neumann realization; a bounded real
+potential preserves this through its positive Feynman--Kac weight.
+For compact positive time the leading eigenspace of this positivity-improving
+self-adjoint semigroup is one-dimensional, hence so is the ground eigenspace.
+In the Dirichlet case the eigenfunction vanishes on the boundary.
+Every nonempty interior open set contains a relatively compact ball on
+which its continuous square has a positive minimum, giving positive mass
+in that open set. This proves stationary positivity, not a dynamical
+crossing rate. Compact resolvent and simplicity also give $E_1>E_0$ for
+this fixed operator. $\square$
 :::
 
-(proof-thm-e7-ground-state-positivity)=
-:::{prf:proof}
-
-**Step 1 (Elliptic Regularity).** Since $\mathbf{g}$ is smooth and positive-definite (Assumption 1), and $\mathcal{V}$ is smooth (Assumption 2), the operator $\hat{H}_\sigma$ is uniformly elliptic. By standard elliptic regularity theory {cite}`gilbarg1977elliptic`, any $L^2$ eigenfunction $\Psi$ satisfying $\hat{H}_\sigma \Psi = E \Psi$ is in $C^\infty(\mathcal{M})$.
-
-**Step 2 (Heat Kernel Positivity).** Consider the heat semigroup $e^{-t\hat{H}_\sigma}$ for $t > 0$. By the **Harnack Inequality** for parabolic equations on manifolds {cite}`li1986parabolic`, the heat kernel $K_t(\mathbf{x}, \mathbf{y}) > 0$ for all $\mathbf{x}, \mathbf{y} \in \mathcal{M}$ and $t > 0$, provided $\mathcal{M}$ is connected.
-
-This implies: for any non-negative, non-zero $f \in L^2(\mathcal{M})$:
-
-$$
-(e^{-t\hat{H}_\sigma} f)(\mathbf{x}) = \int_{\mathcal{M}} K_t(\mathbf{x}, \mathbf{y}) f(\mathbf{y}) \, d\mu_{\mathbf{g}}(\mathbf{y}) > 0 \quad \forall \mathbf{x} \in \mathcal{M}.
-
-$$
-The heat kernel maps non-negative functions to **strictly positive** functions.
-
-**Step 3 (Perron-Frobenius / Krein-Rutman).** The operator $e^{-t\hat{H}_\sigma}$ is a positivity-improving compact operator on $L^2(\mathcal{M})$. By the **Krein-Rutman Theorem** (the infinite-dimensional generalization of Perron-Frobenius), the spectral radius is a simple eigenvalue with a strictly positive eigenfunction.
-
-Since $e^{-t\hat{H}_\sigma}$ has spectral radius $e^{-tE_0}$ with eigenfunction $\Psi_0$, and this eigenvalue is simple, we conclude:
-- $\Psi_0$ can be chosen to be real and non-negative
-- By positivity-improving property, $\Psi_0(\mathbf{z}) > 0$ for all $\mathbf{z} \in \mathcal{M}$
-
-**Step 4 (Conclusion).** For any open $\Omega_B \subset \mathcal{M}$:
-
-$$
-\mu(\Omega_B) = \int_{\Omega_B} |\Psi_0|^2 \, d\mu_{\mathbf{g}} \geq c \cdot \text{Vol}_{\mathbf{g}}(\Omega_B) > 0,
-
-$$
-where $c = \min_{\overline{\Omega}_B} |\Psi_0|^2 > 0$ by continuity and strict positivity. $\square$
-
-:::
-
-:::{admonition} Key Insight
-:class: tip
-:name: insight-tunneling-inevitable
-
-Theorem E.7.1 proves that **tunneling is inevitable**, not merely possible. On a connected manifold, the ground state wave-function has non-zero amplitude everywhere. The agent cannot be "trapped" in a Nash basin $\Omega_A$ with zero probability of being in $\Omega_B$—there is always leakage through the barrier.
-
-The relevant question becomes: **how fast** does tunneling occur? This is answered by the Agmon estimates.
-
-:::
-
-
-
-### E.7.3 Agmon Estimates: Quantifying the Tunneling Rate
-
-While Theorem E.7.1 proves existence, we need **quantitative bounds** on the decay rate through the barrier. We use Agmon's method {cite}`agmon1982lectures`.
-
-:::{prf:definition} E.7.4 (The Agmon Metric)
+:::{prf:definition} Barrier metric at a fixed energy
 :label: def-e7-agmon-metric
 
-Inside the barrier $\mathcal{K}$, we define the **Agmon Metric** $\rho_E$, a degenerate conformal rescaling of $\mathbf{g}$:
-
-$$
-(\rho_E)_{ij}(\mathbf{z}) := \max\left(0, \mathcal{V}(\mathbf{z}) - E_0\right) \cdot \mathbf{g}_{ij}(\mathbf{z}).
-
-$$
-The **Agmon distance** between points $\mathbf{x}, \mathbf{y} \in \mathcal{M}$ is:
-
-$$
-d_{\text{Ag}}(\mathbf{x}, \mathbf{y}) := \inf_{\gamma: \mathbf{x} \to \mathbf{y}} \int_0^1 \sqrt{\max(0, \mathcal{V}(\gamma(t)) - E_0)} \cdot \|\dot{\gamma}(t)\|_{\mathbf{g}} \, dt,
-
-$$
-where the infimum is over all piecewise smooth paths $\gamma$ from $\mathbf{x}$ to $\mathbf{y}$.
-
-*Properties:*
-1. $d_{\text{Ag}}(\mathbf{x}, \mathbf{y}) = 0$ if there exists a path entirely within $\mathcal{M} \setminus \mathcal{K}$ (the "classical" region)
-2. $d_{\text{Ag}}(\mathbf{x}, \mathbf{y}) > 0$ if all paths must traverse $\mathcal{K}$ (tunneling required)
-3. The Agmon distance is a pseudo-metric (satisfies triangle inequality)
-
+Define $g_E=2(U-E)_+\widetilde G$ and
+$d_E(x,A)=\inf_{\gamma:A\to x}\int\sqrt{2(U-E)_+}\,|\dot\gamma|_{\widetilde G}$.
+The factor two matches the kinetic normalization $-\sigma^2\Delta/2$.
+Distances may vanish within an allowed connected region.
 :::
 
-:::{prf:theorem} E.7.2 (Agmon Exponential Decay Bound)
+:::{prf:theorem} Exact weighted eigenfunction identity
 :label: thm-e7-agmon-decay-bound
 
-Let $\Psi_0$ be the ground state of $\hat{H}_\sigma$ with eigenvalue $E_0$. For any $\epsilon > 0$, there exists a constant $C_\epsilon > 0$ (depending on $\mathcal{M}$, $\mathcal{V}$, and $\epsilon$, but not on $\sigma$) such that:
-
+For an eigenfunction $(H_\sigma-E)u=0$ in the scalar realization and a
+bounded smooth real weight $f$, put $v=e^{f/\sigma}u$. Then
 $$
-|\Psi_0(\mathbf{z})| \leq C_\epsilon \exp\left( - \frac{1 - \epsilon}{\sigma} d_{\text{Ag}}(\mathbf{z}, \Omega_A) \right) \quad \forall \mathbf{z} \in \mathcal{M},
-
+\frac{\sigma^2}{2}\int|\nabla v|^2
++\int\left(U-E-\frac12|\nabla f|^2\right)|v|^2=0.
 $$
-where $d_{\text{Ag}}(\mathbf{z}, \Omega_A) := \inf_{\mathbf{y} \in \Omega_A} d_{\text{Ag}}(\mathbf{z}, \mathbf{y})$.
+All integrals use $d\mu_{\widetilde G}$; the weight is taken constant in
+the normal direction for the Neumann case. Compactly supported cutoffs
+give the local form, with their explicit derivative terms retained.
 
-*Interpretation:* The wave-function amplitude decays exponentially with rate $1/\sigma$ times the Agmon distance from the classical region. Deeper into the barrier (larger $d_{\text{Ag}}$), the amplitude is exponentially smaller.
-
+*Proof.* Test the weak eigenvalue equation against $e^{2f/\sigma}u$ and
+take real parts. The gradient product is
+$$
+\operatorname{Re}\langle\nabla u,\nabla(e^{2f/\sigma}u)\rangle
+=|\nabla(e^{f/\sigma}u)|^2
+-\sigma^{-2}|\nabla f|^2e^{2f/\sigma}|u|^2.
+$$
+Substitution proves the identity. For $0<\epsilon<1$ and a bounded Lipschitz approximation to
+$f=(1-\epsilon)d_E(\cdot,A_E)$, its gradient satisfies
+$|\nabla f|^2\le2(1-\epsilon)^2(U-E)_+$ almost everywhere.
+Weak approximation preserves the resulting energy inequality. On the
+forbidden region the remaining potential coefficient is at least
+$(2\epsilon-\epsilon^2)(U-E)$; the allowed-region negative term controls
+the weighted integral. For a region where $U-E\ge\delta>0$ and $f\ge a$,
+$$
+\int_{\mathrm{region}}|u|^2
+\le\frac{e^{-2a/\sigma}}{(2\epsilon-\epsilon^2)\delta}
+\int_{A_E}(E-U)|u|^2.
+$$
+This is a weighted stationary estimate, including its constants. No
+dimension-independent $H^1\to L^\infty$ embedding or uniform pointwise
+prefactor is used. $\square$
 :::
 
-(proof-thm-e7-agmon-decay-bound)=
-:::{prf:proof}
-
-We follow the standard Agmon method {cite}`agmon1982lectures,simon1983semiclassical`.
-
-**Step 1 (Twisted Function).** Define the twisted function:
-
-$$
-\phi(\mathbf{z}) := e^{f(\mathbf{z})/\sigma} \Psi_0(\mathbf{z}),
-
-$$
-where $f: \mathcal{M} \to \mathbb{R}$ is a Lipschitz weight function to be chosen.
-
-**Step 2 (Agmon Identity).** From the eigenvalue equation $(\hat{H}_\sigma - E_0)\Psi_0 = 0$, we derive:
-
-$$
--\frac{\sigma^2}{2}\Delta_{\mathbf{g}}\phi + (\mathcal{V} - E_0)\phi = \frac{1}{2}\|\nabla_{\mathbf{g}} f\|_{\mathbf{g}}^2 \phi + \sigma \langle \nabla_{\mathbf{g}} f, \nabla_{\mathbf{g}} \phi \rangle_{\mathbf{g}}.
-
-$$
-**Step 3 (Energy Estimate).** Multiply by $\bar{\phi}$ and integrate. Using integration by parts:
-
-$$
-\frac{\sigma^2}{2} \|\nabla_{\mathbf{g}}\phi\|_{L^2}^2 + \int_{\mathcal{M}} \left(\mathcal{V} - E_0 - \frac{1}{2}\|\nabla_{\mathbf{g}} f\|_{\mathbf{g}}^2\right) |\phi|^2 \, d\mu_{\mathbf{g}} \leq 0.
-
-$$
-**Step 4 (Optimal Weight).** Choose $f(\mathbf{z}) = (1-\epsilon) d_{\text{Ag}}(\mathbf{z}, \Omega_A)$. By construction of the Agmon metric:
-
-$$
-\|\nabla_{\mathbf{g}} f\|_{\mathbf{g}}^2 \leq (1-\epsilon)^2 (\mathcal{V} - E_0)_+ \quad \text{a.e.}
-
-$$
-**Step 5 (Pointwise Bound).** Substituting and using Sobolev embedding on the compact manifold $\mathcal{M}$:
-
-$$
-\sup_{\mathbf{z} \in \mathcal{M}} |\phi(\mathbf{z})|^2 \leq C_\epsilon' \|\phi\|_{H^1}^2 \leq C_\epsilon'' \|\Psi_0\|_{L^2}^2 = C_\epsilon''.
-
-$$
-Unwinding the twist gives:
-
-$$
-|\Psi_0(\mathbf{z})| = e^{-f(\mathbf{z})/\sigma} |\phi(\mathbf{z})| \leq C_\epsilon \exp\left(-\frac{(1-\epsilon)}{\sigma} d_{\text{Ag}}(\mathbf{z}, \Omega_A)\right). \quad \square
-
-$$
-:::
-
-::::{admonition} Physics Isomorphism: Agmon Estimates
-:class: note
-:name: pi-agmon-estimates
-
-**In Physics:** Agmon estimates give exponential decay bounds for eigenfunctions in classically forbidden regions. For a Schrödinger operator $-\hbar^2\Delta + V$, the ground state decays as $|\psi(x)| \lesssim \exp(-d_{\text{Ag}}(x, \Omega)/\hbar)$ where $d_{\text{Ag}}$ is the Agmon distance {cite}`agmon1982lectures`.
-
-**In Implementation:** The belief wave-function amplitude decays through Pareto barriers (Theorem {prf:ref}`thm-e7-agmon-decay-bound`):
-
-$$
-|\Psi_0(\mathbf{z})| \leq C_\epsilon \exp\left(-\frac{1-\epsilon}{\sigma} d_{\text{Ag}}(\mathbf{z}, \Omega_A)\right)
-
-$$
-**Correspondence Table:**
-| Semi-Classical Analysis | Agent (Tunneling) |
-|:------------------------|:------------------|
-| Agmon metric $(\rho_E)_{ij} = (V-E)_+ g_{ij}$ | Strategic Agmon metric |
-| Agmon distance $d_{\text{Ag}}$ | Barrier "thickness" |
-| Planck constant $\hbar$ | Cognitive scale $\sigma$ |
-| Forbidden region $\{V > E\}$ | Pareto barrier $\{\Phi > E_0\}$ |
-| Exponential decay rate | Tunneling suppression |
-
-**Consequence:** Agmon distance, not Euclidean distance, controls tunneling probability.
-::::
-
-
-
-### E.7.4 Game Tensor Effect: Adversarial Suppression of Tunneling
-
-We now prove that the Game Tensor $\mathcal{G}_{ij}$ (Definition {prf:ref}`def-the-game-tensor`) increases the effective barrier, suppressing tunneling.
-
-:::{prf:corollary} E.7.3 (Adversarial Suppression of Tunneling)
+:::{prf:corollary} Metric comparison at fixed potential and energy
 :label: cor-e7-adversarial-suppression
 
-Assume Agent $j$ is adversarial to Agent $i$, so the Game Tensor $\mathcal{G}_{ij}$ is positive semi-definite (Theorem {prf:ref}`thm-adversarial-mass-inflation`). Let:
-- $\mathbf{g}_0 := \bigoplus_{i=1}^N G^{(i)}$ be the **non-interacting** (decoupled) metric
-- $\mathbf{g}_{\text{adv}} := \mathbf{g}_0 + \alpha \sum_{i \neq j} \mathcal{G}_{ij}$ be the **adversarial** (Game-inflated) metric
-
-Then the Agmon distances satisfy:
-
-$$
-d_{\text{Ag}}^{\text{adv}}(\Omega_A, \Omega_B) \geq d_{\text{Ag}}^{0}(\Omega_A, \Omega_B),
-
-$$
-and consequently the tunneling probability is exponentially suppressed:
-
-$$
-P_{\text{tunnel}}^{\text{adv}} \lesssim \exp\left(-\frac{d_{\text{Ag}}^{\text{adv}}}{\sigma}\right) \leq \exp\left(-\frac{d_{\text{Ag}}^{0}}{\sigma}\right) \lesssim P_{\text{tunnel}}^{0}.
-
-$$
+For $g_1\succeq g_0$ and the same $U,E$, every path obeys
+$\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_1}
+\ge\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_0}$.
+Taking infima gives $d_E^{g_1}\ge d_E^{g_0}$. This compares barrier
+actions at the same energy. Changing a Hamiltonian generally changes its
+ground energy as well, so one cannot substitute two different ground
+energies into this fixed-energy inequality or deduce an ordering of
+transition probabilities from two upper bounds. $\square$
 :::
 
-(proof-cor-e7-adversarial-suppression)=
-:::{prf:proof}
-
-**Step 1 (Metric Comparison).** Since $\mathcal{G}_{ij} \succeq 0$ (positive semi-definite), for any tangent vector $\mathbf{v} \in T_{\mathbf{z}}\mathcal{M}$:
-
-$$
-\mathbf{v}^T \mathbf{g}_{\text{adv}} \mathbf{v} = \mathbf{v}^T \mathbf{g}_0 \mathbf{v} + \alpha \sum_{i \neq j} \mathbf{v}^T \mathcal{G}_{ij} \mathbf{v} \geq \mathbf{v}^T \mathbf{g}_0 \mathbf{v}.
-
-$$
-Thus $\mathbf{g}_{\text{adv}} \geq \mathbf{g}_0$ in the sense of quadratic forms.
-
-**Step 2 (Path Length Inequality).** For any path $\gamma: [0,1] \to \mathcal{M}$, the Agmon length satisfies:
-
-$$
-L_{\text{Ag}}^{\text{adv}}(\gamma) = \int_0^1 \sqrt{(\mathcal{V} - E_0)_+} \cdot \|\dot{\gamma}\|_{\mathbf{g}_{\text{adv}}} \, dt \geq \int_0^1 \sqrt{(\mathcal{V} - E_0)_+} \cdot \|\dot{\gamma}\|_{\mathbf{g}_0} \, dt = L_{\text{Ag}}^{0}(\gamma).
-
-$$
-**Step 3 (Distance Inequality).** Taking the infimum over all paths:
-
-$$
-d_{\text{Ag}}^{\text{adv}}(\mathbf{x}, \mathbf{y}) = \inf_{\gamma} L_{\text{Ag}}^{\text{adv}}(\gamma) \geq \inf_{\gamma} L_{\text{Ag}}^{0}(\gamma) = d_{\text{Ag}}^{0}(\mathbf{x}, \mathbf{y}).
-
-$$
-**Step 4 (Tunneling Suppression).** By Theorem E.7.2, the ground state amplitude at distance $d$ from $\Omega_A$ scales as $\exp(-d/\sigma)$. Since $d_{\text{Ag}}^{\text{adv}} \geq d_{\text{Ag}}^{0}$:
-
-$$
-|\Psi_0^{\text{adv}}(\mathbf{z})|^2 \lesssim \exp\left(-\frac{2 d_{\text{Ag}}^{\text{adv}}}{\sigma}\right) \leq \exp\left(-\frac{2 d_{\text{Ag}}^{0}}{\sigma}\right) \lesssim |\Psi_0^{0}(\mathbf{z})|^2.
-
-$$
-The tunneling probability $P_{\text{tunnel}} \approx \int_{\Omega_B} |\Psi_0|^2$ inherits this exponential suppression. $\square$
-
-:::
-
-:::{admonition} Geometric Interpretation
-:class: note
-:name: interpretation-adversarial-barrier
-
-**The Game Tensor inflates the metric, increasing geodesic and Agmon path lengths.**
-
-In an adversarial setting:
-- The metric satisfies $\mathbf{g}_{\text{adv}} \geq \mathbf{g}_0$ (in the sense of quadratic forms)
-- Path lengths satisfy $L_{\text{Ag}}^{\text{adv}}(\gamma) \geq L_{\text{Ag}}^0(\gamma)$ for all paths $\gamma$
-- The wave-function amplitude bound (Theorem E.7.2) yields smaller values under $\mathbf{g}_{\text{adv}}$
-- Tunneling probability is exponentially suppressed
-
-This proves that adversarial coupling increases Agmon distance (Corollary E.7.3), which by Theorem E.7.2 implies exponentially reduced tunneling probability.
-
-:::
-
-
-
-### E.7.5 Probabilistic Representation: Feynman-Kac Formula
-
-To connect the spectral results to the stochastic WFR dynamics ({ref}`Section 22 <sec-the-equations-of-motion-geodesic-jump-diffusion>`), we invoke the rigorous Feynman-Kac formula.
-
-:::{prf:theorem} E.7.4 (Feynman-Kac Representation)
+:::{prf:theorem} Feynman--Kac clock and normalization
 :label: thm-e7-feynman-kac
 
-Let $(\mathbf{X}_s)_{s \geq 0}$ be Brownian motion on the Riemannian manifold $(\mathcal{M}, \mathbf{g})$, starting at $\mathbf{X}_0 = \mathbf{z}$. Then the ground state $\Psi_0$ admits the representation:
-
+Let $X_s$ have generator $\Delta_{\widetilde G}/2$, killed at a Dirichlet
+boundary or reflected for the Neumann realization. Then
 $$
-\Psi_0(\mathbf{z}) = \lim_{t \to \infty} e^{E_0 t} \cdot \mathbb{E}_{\mathbf{z}}\left[ \exp\left( -\frac{1}{\sigma^2} \int_0^t \mathcal{V}(\mathbf{X}_s) \, ds \right) \phi(\mathbf{X}_t) \right],
-
+(e^{-tH_\sigma/\sigma^2}\phi)(x)
+=\mathbb E_x\left[e^{-\sigma^{-2}\int_0^tU(X_s)ds}\phi(X_t)\right],
 $$
-where $\phi \in L^2(\mathcal{M})$ is any function with $\langle \Psi_0, \phi \rangle \neq 0$.
-
-*Remark:* This is rigorous—not a heuristic "path integral." The expectation is over Brownian paths on the manifold.
-
+with the survival indicator in the killed case. To obtain the ground vector,
+$$
+e^{tE_0/\sigma^2}e^{-tH_\sigma/\sigma^2}\phi
+\longrightarrow\langle u_0,\phi\rangle u_0
+\quad\text{in }L^2.
+$$
+*Proof.* The diffusion generator and multiplication weight give
+$\partial_tu=(\Delta/2-U/\sigma^2)u=-H_\sigma u/\sigma^2$
+with the same initial and boundary data, which is the Feynman--Kac
+semigroup. The spectral expansion multiplies each eigencomponent by
+$e^{-t(E_n-E_0)/\sigma^2}$; dominated convergence leaves exactly its
+ground projection. Divide by the nonzero overlap to recover $u_0$.
+The original WFR generator is compared separately; Brownian motion here
+is the process associated to this displayed scalar semigroup. $\square$
 :::
 
-(proof-thm-e7-feynman-kac)=
-:::{prf:proof}
-
-**Step 1 (Semigroup Representation).** By the Feynman-Kac-Itô formula for Schrödinger operators on manifolds {cite}`simon1979functional`:
-
-$$
-(e^{-t\hat{H}_\sigma/\sigma^2} \phi)(\mathbf{z}) = \mathbb{E}_{\mathbf{z}}\left[ \exp\left( -\frac{1}{\sigma^2} \int_0^t \mathcal{V}(\mathbf{X}_s) \, ds \right) \phi(\mathbf{X}_t) \right].
-
-$$
-**Step 2 (Spectral Projection).** As $t \to \infty$, the semigroup projects onto the ground state:
-
-$$
-e^{-t\hat{H}_\sigma/\sigma^2} \phi \to e^{-tE_0/\sigma^2} \langle \Psi_0, \phi \rangle \Psi_0.
-
-$$
-**Step 3 (Normalization).** Multiplying by $e^{E_0 t/\sigma^2}$ and taking the limit gives the stated formula. $\square$
-
-:::
-
-::::{admonition} Physics Isomorphism: Feynman-Kac Formula
-:class: note
-:name: pi-feynman-kac
-
-**In Physics:** The Feynman-Kac formula represents solutions to the Schrödinger equation as expectations over Brownian paths: $\psi(x,t) = \mathbb{E}_x[\exp(-\int_0^t V(X_s)ds)\psi_0(X_t)]$ {cite}`kac1949distributions,simon2005functional`.
-
-**In Implementation:** The ground state wave-function admits the representation (Theorem {prf:ref}`thm-e7-feynman-kac`):
-
-$$
-\Psi_0(\mathbf{z}) = \lim_{t \to \infty} e^{E_0 t/\sigma^2} \cdot \mathbb{E}_{\mathbf{z}}\left[\exp\left(-\frac{1}{\sigma^2}\int_0^t \mathcal{V}(\mathbf{X}_s)ds\right)\phi(\mathbf{X}_t)\right]
-
-$$
-where $\mathbf{X}_s$ is Brownian motion on $(\mathcal{M}, \mathbf{g})$ and $E_0$ is the ground state energy.
-
-**Correspondence Table:**
-| Path Integral | Agent (Value Function) |
-|:--------------|:-----------------------|
-| Brownian motion $X_t$ | WFR diffusion |
-| Potential $V(x)$ | Effective potential $\mathcal{V}$ |
-| Imaginary time $\tau = it$ | Value iteration time |
-| Path weight $e^{-\int V ds}$ | Reward accumulation |
-| Ground state $\psi_0$ | Optimal belief amplitude |
-
-**Significance:** This is rigorous (not heuristic path integrals); tunneling = rare large-deviation fluctuations.
-::::
-
-:::{prf:corollary} E.7.5 (Tunneling via Large Deviations)
+:::{prf:corollary} Action-length inequality
 :label: cor-e7-large-deviations
 
-The tunneling probability is controlled by the **Large Deviation Principle** for Brownian paths on $(\mathcal{M}, \mathbf{g})$.
-
-The rate function (Freidlin-Wentzell action) is:
-
-$$
-I[\gamma] = \frac{1}{2} \int_0^T \|\dot{\gamma}(t)\|_{\mathbf{g}}^2 \, dt,
-
-$$
-and paths that cross the barrier $\mathcal{K}$ while minimizing $I[\gamma] + \int_0^T (\mathcal{V}(\gamma) - E_0) \, dt$ are precisely the **instantons** that govern tunneling.
-
-*Interpretation:* Tunneling is realized by rare stochastic fluctuations of the WFR diffusion process that penetrate the high-cost region. The probability of such fluctuations scales as $\exp(-S_{\text{inst}}/\sigma)$ where $S_{\text{inst}}$ is the instanton action—which equals the Agmon distance.
-
+For any absolutely continuous path in the forbidden region, set
+$a=|\dot\gamma|_{\widetilde G}$, $b=\sqrt{2(U-E)}$. Then
+$a^2/2+U-E-ab=(a-b)^2/2\ge0$.
+Integration gives
+$\int(|\dot\gamma|^2/2+U-E)dt
+\ge\int\sqrt{2(U-E)}|\dot\gamma|dt$.
+Equality is attained on a parametrization with $a=b$ wherever that
+parametrization is defined. This relates an action to barrier length.
+An asymptotic probability additionally belongs to a specified stochastic
+law and event; it is not furnished by this algebraic inequality.
 :::
-
-::::{admonition} Physics Isomorphism: Large Deviation Principle
-:class: note
-:name: pi-large-deviation
-
-**In Physics:** Large deviation theory quantifies rare events via rate functions: $P(X_n \in A) \asymp \exp(-n I(A))$ where $I$ is the rate function. In stochastic mechanics, instantons are paths minimizing the action that dominate rare transitions {cite}`freidlin1998random,varadhan1984large`.
-
-**In Implementation:** Tunneling probability is controlled by the Large Deviation Principle (Corollary {prf:ref}`cor-e7-large-deviations`):
-
-$$
-P_{\text{tunnel}} \asymp \exp\left(-\frac{d_{\text{Ag}}(\Omega_A, \Omega_B)}{\sigma}\right)
-
-$$
-where the rate function is the Agmon action.
-
-**Correspondence Table:**
-| Large Deviations | Agent (Barrier Crossing) |
-|:-----------------|:-------------------------|
-| Rate function $I$ | Agmon action |
-| Instanton path | Optimal tunneling trajectory |
-| Cramér's theorem | Exponential bound on transition |
-| Sanov's theorem | Entropy cost of belief shift |
-| $n \to \infty$ limit | $\sigma \to 0$ (classical Nash) |
-
-**Consequence:** Paths minimizing Brownian action are precisely the instantons governing tunneling.
-::::
-
-
-
-### E.7.6 Summary of Rigorous Results
-
-**Table E.7.1 (Summary of Tunneling Rigor).**
-
-| Result                 | Statement                                         | Method                     |
-|:-----------------------|:--------------------------------------------------|:---------------------------|
-| **Existence**          | $P(\Omega_B) > 0$ always                          | Perron-Frobenius / Harnack |
-| **Decay Rate**         | $\Psi_0 \lesssim e^{-d_{\text{Ag}}/\sigma}$ | Agmon estimates |
-| **Game Tensor Effect** | $d_{\text{Ag}}^{\text{adv}} \geq d_{\text{Ag}}^0$ | Metric comparison          |
-| **Probabilistic**      | Feynman-Kac representation                        | Semigroup theory           |
-| **Optimal Path**       | Instanton = Agmon geodesic                        | Large deviations           |
-
-**Rigorous version of Theorem {prf:ref}`thm-tunneling-probability`:**
-
-$$
-P_{\text{tunnel}}(\Omega_A \to \Omega_B) = \Theta\left(\exp\left(-\frac{2}{\sigma} d_{\text{Ag}}(\Omega_A, \Omega_B)\right)\right) \quad \text{as } \sigma \to 0,
-
-$$
-where $\Theta(\cdot)$ denotes asymptotic equality up to polynomial prefactors in $\sigma$.
-
-This completes the rigorous foundation for the strategic tunneling mechanism. $\square$
 
 
 
@@ -1057,1025 +743,270 @@ $$
 
 
 
-## E.12 Derivation of the HJB-Klein-Gordon Correspondence (Theorem {prf:ref}`thm-hjb-klein-gordon`)
-
-**Statement:** Under finite information propagation speed $c_{\text{info}}$, the Bellman equation generalizes to the hyperbolic Klein-Gordon equation:
-
-$$
-\left(\frac{1}{c_{\text{info}}^2}\partial_t^2 - \Delta_G + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \rho^{\text{ret}}_{ij}
-
-$$
-
 (proof-hjb-klein-gordon)=
-:::{prf:proof}
-
-**Step 1: Bellman Recursion with Temporal Structure.**
-
-The standard Bellman equation assumes instantaneous value propagation:
-
-$$
-V(z, t) = r(z)\Delta t + \gamma \mathbb{E}_{z' \sim P(\cdot|z,a)}[V(z', t + \Delta t)]
-
-$$
-
-where $\gamma = e^{-\kappa_t \Delta t}$ is the temporal discount factor with $\kappa_t = -\ln\gamma / \Delta t$ having units $[\kappa_t] = 1/[\text{time}]$.
-
-**Step 2: Second-Order Taylor Expansion.**
-
-Expand $V(z', t + \Delta t)$ to second order in both space and time. Let $z' = z + \delta z$ where $\delta z$ is the state transition:
-
-$$
-V(z', t + \Delta t) = V(z, t) + \partial_t V \cdot \Delta t + \frac{1}{2}\partial_t^2 V \cdot (\Delta t)^2 + \nabla V \cdot \delta z + \frac{1}{2}(\delta z)^\top \nabla^2 V (\delta z) + \partial_t \nabla V \cdot \Delta t \cdot \delta z + O(3)
-
-$$
-
-**Step 3: Expectations Under Diffusion.**
-
-For a diffusion process with drift $b(z)$ and diffusion tensor $\Sigma = 2T_c G^{-1}$:
-
-$$
-\mathbb{E}[\delta z] = b \Delta t, \quad \mathbb{E}[(\delta z)(\delta z)^\top] = \Sigma \Delta t
-
-$$
-
-Taking expectations:
-
-$$
-\mathbb{E}[V(z', t + \Delta t)] = V + \partial_t V \Delta t + \frac{1}{2}\partial_t^2 V (\Delta t)^2 + \nabla_A V \cdot b \Delta t + T_c \text{Tr}(G^{-1}\nabla^2 V) \Delta t + O((\Delta t)^{3/2})
-
-$$
-
-The trace term is the Laplace-Beltrami operator: $\text{Tr}(G^{-1}\nabla^2 V) = \Delta_G V$.
-
-**Step 4: Substitution into Bellman.**
-
-Substituting into the Bellman equation:
-
-$$
-V = r \Delta t + (1 - \kappa_t \Delta t)\left(V + \partial_t V \Delta t + \frac{1}{2}\partial_t^2 V (\Delta t)^2 + \nabla_A V \cdot b \Delta t + T_c \Delta_G V \Delta t\right)
-
-$$
-
-**Step 5: Instantaneous Limit (Elliptic Case).**
-
-Dividing by $\Delta t$ and taking $\Delta t \to 0$ while keeping only $O(\Delta t)$ terms:
-
-$$
-0 = r - \kappa_t V + \partial_t V + \nabla_A V \cdot b + T_c \Delta_G V
-
-$$
-
-For stationary states ($\partial_t V = 0$) with zero drift ($b = 0$):
-
-$$
--T_c \Delta_G V + \kappa_t V = r
-
-$$
-
-This is the **Helmholtz equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). Note that $\kappa_t$ here has temporal units.
-
-**Step 6: Finite Propagation Speed (Hyperbolic Case).**
-
-The key insight is that the above derivation assumes **instantaneous** information propagation: the value at time $t + \Delta t$ depends on rewards and transitions known at time $t$. When information propagates at finite speed $c_{\text{info}}$, two modifications occur:
-
-**(i) Retardation of Spatial Coupling:** Rewards at spatial distance $\ell$ are received with delay $\tau = \ell / c_{\text{info}}$. This is handled by the retarded potential $\Phi_{ij}^{\text{ret}}$.
-
-**(ii) Wave Propagation of Value:** The value function itself propagates as a wave, not instantaneously. The characteristic timescale for value changes over spatial scale $\ell$ is $\tau_\ell = \ell / c_{\text{info}}$.
-
-To derive the wave equation, we must retain the **second-order time derivative**. Define the **spatial screening mass**:
-
-$$
-\kappa := \kappa_t / c_{\text{info}} = -\ln\gamma / (c_{\text{info}} \Delta t)
-
-$$
-
-with units $[\kappa] = 1/[\text{length}]$.
-
-**Step 7: Wave Equation Derivation.**
-
-Consider the characteristic scales:
-- Temporal: $\Delta t \sim \ell / c_{\text{info}}$ (time for information to traverse distance $\ell$)
-- Spatial: $\ell$ (characteristic length scale)
-
-The ratio $(\Delta t)^2 / \ell^2 \sim 1/c_{\text{info}}^2$ is no longer negligible. Retaining the $(\Delta t)^2$ term in the expansion:
-
-$$
-\frac{1}{c_{\text{info}}^2}\partial_t^2 V + \partial_t V / c_{\text{info}} = r - \kappa^2 V + \Delta_G V + \text{(coupling terms)}
-
-$$
-
-In the **stationary wave regime** where $\partial_t V \ll c_{\text{info}} \partial_t^2 V / \kappa$, the first-order time derivative is negligible compared to the second-order term, yielding:
-
-$$
-\frac{1}{c_{\text{info}}^2}\partial_t^2 V - \Delta_G V + \kappa^2 V = \rho_r + \sum_j \rho^{\text{ret}}_{ij}
-
-$$
-
-This is the **Klein-Gordon equation** with mass $\kappa$.
-
-**Step 8: Physical Interpretation.**
-
-The transition from Helmholtz (elliptic) to Klein-Gordon (hyperbolic) parallels the transition in electromagnetism:
-
-| Regime | Equation | Value Propagation |
-|:-------|:---------|:------------------|
-| $c_{\text{info}} \to \infty$ | Helmholtz: $(-\Delta_G + \kappa^2)V = \rho_r$ | Instantaneous |
-| $c_{\text{info}} < \infty$ | Klein-Gordon: $(\frac{1}{c^2}\partial_t^2 - \Delta_G + \kappa^2)V = \rho_r$ | Wave at speed $c$ |
-
-The screening mass $\kappa$ determines the characteristic decay length $\ell_\gamma = 1/\kappa$: the distance over which value influence diminishes by factor $e$.
-
-**Step 9: Dimensional Verification.**
-
-- $[\partial_t^2 V] = [\text{nat}]/[\text{time}]^2$
-- $[c_{\text{info}}^{-2}\partial_t^2 V] = [\text{nat}]/[\text{length}]^2$
-- $[\Delta_G V] = [\text{nat}]/[\text{length}]^2$
-- $[\kappa^2 V] = [\text{nat}]/[\text{length}]^2$ (since $[\kappa] = 1/[\text{length}]$)
-- $[\rho_r] = [\text{nat}]/[\text{length}]^2$
-
-All terms have consistent units. $\square$
-
-:::
-
-
-
-## E.13 Derivation of the Madelung Transform (Theorem {prf:ref}`thm-madelung-transform`)
-
-**Statement:** The belief wave-function $\psi = \sqrt{\rho} e^{iV/\sigma}$ satisfies the Inference Schrödinger Equation with
-$D_i := \nabla_i - \frac{i}{\sigma}A_i$ and $\nabla_A V := \nabla V - A$ if and only if $(\rho, V)$ satisfy the WFR-HJB system.
-
 (proof-madelung-transform)=
-:::{prf:proof}
-
-**Step 1: Polar Decomposition.**
-
-Let the belief wave-function have polar form:
-
-$$
-\psi = R \, e^{i\phi}, \quad R := \sqrt{\rho}, \quad \phi := V/\sigma
-
-$$
-
-where $\rho = |\psi|^2$ is the belief density and $V$ is the value function. The parameter $\sigma > 0$ is the cognitive action scale (Definition {prf:ref}`def-cognitive-action-scale`).
-
-**Step 2: Compute Time Derivative.**
-
-$$
-\partial_s \psi = \partial_s(R e^{i\phi}) = (\partial_s R) e^{i\phi} + R \cdot i(\partial_s \phi) e^{i\phi} = \left(\frac{\partial_s R}{R} + i \partial_s \phi\right)\psi
-
-$$
-
-Since $R = \sqrt{\rho}$, we have $\partial_s R / R = \partial_s \rho / (2\rho)$. Thus:
-
-$$
-\partial_s \psi = \left(\frac{\partial_s \rho}{2\rho} + \frac{i}{\sigma}\partial_s V\right)\psi
-
-$$
-
-**Step 3: Compute the covariant Laplacian of $\psi$.**
-
-Let $D_i := \nabla_i - \frac{i}{\sigma}A_i$ and $\nabla_A V := \nabla V - A$. Then:
-
-$$
-D_i \psi = \left(\nabla_i R + \frac{i}{\sigma} R (\nabla_A V)_i\right) e^{i\phi}
-
-$$
-and
-
-$$
-D^i D_i \psi = \left[\Delta_G R + \frac{2i}{\sigma} G^{-1}(\nabla R, \nabla_A V) + \frac{i}{\sigma} R \nabla_G \cdot (G^{-1}\nabla_A V) - \frac{1}{\sigma^2} R \|\nabla_A V\|_G^2\right] e^{i\phi}.
-
-$$
-
-Dividing by $\psi = R e^{i\phi}$:
-
-$$
-\frac{D^i D_i \psi}{\psi} = \frac{\Delta_G R}{R} + \frac{2i}{\sigma} \frac{G^{-1}(\nabla R, \nabla_A V)}{R} + \frac{i}{\sigma}\nabla_G \cdot (G^{-1}\nabla_A V) - \frac{1}{\sigma^2}\|\nabla_A V\|_G^2.
-
-$$
-
-**Step 4: Define the Bohm Potential.**
-
-Using $R = \sqrt{\rho}$, we have:
-
-$$
-\frac{\Delta_G R}{R} = \frac{\Delta_G \sqrt{\rho}}{\sqrt{\rho}}
-
-$$
-
-Define the **Bohm quantum potential**:
-
-$$
-Q_B := -\frac{\sigma^2}{2} \frac{\Delta_G \sqrt{\rho}}{\sqrt{\rho}} = -\frac{\sigma^2}{2} \frac{\Delta_G R}{R}
-
-$$
-
-**Step 5: Inference Schrödinger Equation.**
-
-The Inference Schrödinger Equation is:
-
-$$
-i\sigma \partial_s \psi = \hat{H}_{\text{inf}} \psi, \quad \hat{H}_{\text{inf}} = -\frac{\sigma^2}{2} D^i D_i + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2}r
-
-$$
-
-Substituting our expressions:
-
-$$
-i\sigma \partial_s \psi = i\sigma\left(\frac{\partial_s \rho}{2\rho} + \frac{i}{\sigma}\partial_s V\right)\psi = \left(\frac{i\sigma \partial_s \rho}{2\rho} - \partial_s V\right)\psi
-
-$$
-
-$$
-\hat{H}_{\text{inf}}\psi = \left[-\frac{\sigma^2}{2}\frac{D^i D_i \psi}{\psi} + \Phi_{\text{eff}} + Q_B - \frac{i\sigma}{2}r\right]\psi
-
-$$
-
-**Step 6: Separate Real and Imaginary Parts.**
-
-Expanding $-\frac{\sigma^2}{2}\frac{D^i D_i \psi}{\psi}$:
-
-$$
--\frac{\sigma^2}{2}\frac{D^i D_i \psi}{\psi} = -\frac{\sigma^2}{2}\frac{\Delta_G R}{R} - i\sigma \frac{G^{-1}(\nabla R, \nabla_A V)}{R} - \frac{i\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) + \frac{1}{2}\|\nabla_A V\|_G^2
-
-$$
-
-$$
-= Q_B - i\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} - \frac{i\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) + \frac{1}{2}\|\nabla_A V\|_G^2
-
-$$
-
-The Schrödinger equation $i\sigma \partial_s \psi = \hat{H}_{\text{inf}}\psi$ becomes:
-
-$$
-\frac{i\sigma \partial_s \rho}{2\rho} - \partial_s V = Q_B + Q_B - i\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} - \frac{i\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) + \frac{1}{2}\|\nabla_A V\|_G^2 + \Phi_{\text{eff}} - \frac{i\sigma}{2}r
-
-$$
-
-Wait—there's a double $Q_B$. Let me redo this more carefully. The $Q_B$ in $\hat{H}_{\text{inf}}$ cancels with the $-\frac{\sigma^2}{2}\frac{\Delta_G R}{R}$ from the kinetic term:
-
-$$
-\hat{H}_{\text{inf}}\psi = \left[- i\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} - \frac{i\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) + \frac{1}{2}\|\nabla_A V\|_G^2 + \Phi_{\text{eff}} - \frac{i\sigma}{2}r\right]\psi
-
-$$
-
-**Real part (coefficient of $\psi$):**
-
-$$
--\partial_s V = \frac{1}{2}\|\nabla_A V\|_G^2 + \Phi_{\text{eff}}
-
-$$
-
-This is the **Hamilton-Jacobi-Bellman equation**:
-
-$$
-\partial_s V + \frac{1}{2}\|\nabla_A V\|_G^2 + \Phi_{\text{eff}} = 0 \quad \checkmark
-
-$$
-
-**Imaginary part (coefficient of $i\psi$):**
-
-$$
-\frac{\sigma \partial_s \rho}{2\rho} = -\sigma \frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} - \frac{\sigma}{2}\nabla_G \cdot (G^{-1}\nabla_A V) - \frac{\sigma}{2}r
-
-$$
-
-Simplifying: $\frac{G^{-1}(\nabla \sqrt{\rho}, \nabla_A V)}{\sqrt{\rho}} = \frac{G^{-1}(\nabla \rho, \nabla_A V)}{2\rho}$. Thus:
-
-$$
-\frac{\partial_s \rho}{2\rho} = -\frac{G^{-1}(\nabla \rho, \nabla_A V)}{2\rho} - \frac{1}{2}\nabla_G \cdot (G^{-1}\nabla_A V) - \frac{1}{2}r
-
-$$
-
-Multiplying by $2\rho$:
-
-$$
-\partial_s \rho = -G^{-1}(\nabla \rho, \nabla_A V) - \rho \nabla_G \cdot (G^{-1}\nabla_A V) - \rho r
-
-$$
-
-Using the velocity field $\mathbf{v} = -G^{-1}\nabla_A V$ (conservative case: $A=0$) and the identity $\nabla_G \cdot (\rho \mathbf{v}) = G^{-1}(\nabla \rho, \mathbf{v}) + \rho \nabla_G \cdot \mathbf{v}$:
-
-$$
-\partial_s \rho = G^{-1}(\nabla \rho, \mathbf{v}) + \rho \nabla_G \cdot \mathbf{v} - \rho r = \nabla_G \cdot (\rho \mathbf{v}) - \rho r
-
-$$
-
-This is the **WFR continuity equation** (unbalanced):
-
-$$
-\partial_s \rho + \nabla_G \cdot (\rho \mathbf{v}) = \rho r \quad \checkmark
-
-$$
-
-**Conclusion:** The Madelung transform $\psi = \sqrt{\rho} e^{iV/\sigma}$ is an exact equivalence between:
-- The Inference Schrödinger Equation for $\psi$
-- The coupled WFR-HJB system for $(\rho, V)$
-
-The Bohm potential $Q_B$ emerges naturally from the kinetic energy operator acting on the amplitude $R = \sqrt{\rho}$. $\square$
-
-:::
-
-
-
-## E.14 Proof of Markov Restoration on the Causal Bundle (Theorem {prf:ref}`thm-markov-restoration`)
-
-**Statement:** The augmented state $(z^{(N)}_t, \Xi_{<t})$ forms a Markov process even when the raw state $z^{(N)}_t$ does not.
-
 (proof-markov-restoration)=
-:::{prf:proof}
-
-**Step 1: Define the Information Content.**
-
-Let $\mathcal{I}_t$ denote the total information available to the system at time $t$:
-
-$$
-\mathcal{I}_t := \sigma(z^{(N)}_\tau, a^{(N)}_\tau, r^{(N)}_\tau : \tau \leq t)
-
-$$
-where $\sigma(\cdot)$ denotes the sigma-algebra generated by the random variables.
-
-**Step 2: Causal Factorization.**
-
-Under the finite information speed $c_{\text{info}}$, define the **causal past** of agent $i$ at time $t$:
-
-$$
-\mathcal{C}^{(i)}_t := \{(j, \tau) : \tau \leq t - d_{\mathcal{E}}(i,j)/c_{\text{info}}\}
-
-$$
-This is the set of (agent, time) pairs that can causally influence agent $i$ at time $t$.
-
-The transition kernel factorizes:
-
-$$
-P(z^{(i)}_{t+\Delta t} | \mathcal{I}_t) = P(z^{(i)}_{t+\Delta t} | z^{(i)}_t, \{z^{(j)}_\tau : (j,\tau) \in \mathcal{C}^{(i)}_t\})
-
-$$
-
-**Step 3: Memory Screen as Sufficient Statistic.**
-
-The Memory Screen $\Xi^{(i)}_{<t}$ is defined (Definition {prf:ref}`def-memory-screen`) as a compression of the causal past:
-
-$$
-\Xi^{(i)}_{<t} := f^{(i)}(\{z^{(j)}_\tau : (j,\tau) \in \mathcal{C}^{(i)}_t\})
-
-$$
-where $f^{(i)}$ is a sufficient statistic for predicting $z^{(i)}_{t+\Delta t}$.
-
-**Claim:** $\Xi^{(i)}_{<t}$ satisfies the **sufficiency condition**:
-
-$$
-P(z^{(i)}_{t+\Delta t} | z^{(i)}_t, \Xi^{(i)}_{<t}, \Xi^{(i)}_{<t'}) = P(z^{(i)}_{t+\Delta t} | z^{(i)}_t, \Xi^{(i)}_{<t}) \quad \forall t' < t
-
-$$
-
-**Step 4: Proof of Sufficiency.**
-
-By the definition of causal structure:
-1. Events at $(j, \tau)$ with $\tau < t - d_{\mathcal{E}}(i,j)/c_{\text{info}}$ are already incorporated into $\Xi^{(i)}_{<t}$
-2. Events at $(j, \tau)$ with $\tau \geq t - d_{\mathcal{E}}(i,j)/c_{\text{info}}$ cannot yet influence agent $i$
-
-Thus, all information from $\Xi^{(i)}_{<t'}$ for $t' < t$ that is relevant to $z^{(i)}_{t+\Delta t}$ is already contained in $\Xi^{(i)}_{<t}$ (by the nested structure of causal cones).
-
-**Step 5: Joint Markov Property.**
-
-Define the joint augmented state:
-
-$$
-\mathbf{X}_t := (z^{(N)}_t, \Xi_{<t}) \in \mathcal{Z}_{\text{causal}}
-
-$$
-
-The transition kernel for the augmented state is:
-
-$$
-P(\mathbf{X}_{t+\Delta t} | \mathbf{X}_t, \mathbf{X}_{t-\Delta t}, \ldots) = P(\mathbf{X}_{t+\Delta t} | \mathbf{X}_t)
-
-$$
-
-This follows because:
-- The current positions $z^{(N)}_t$ determine the local dynamics
-- The memory screens $\Xi_{<t}$ contain all causally relevant history
-- No additional information from $\mathbf{X}_{t-\Delta t}, \ldots$ can improve prediction beyond what $\mathbf{X}_t$ provides
-
-**Step 6: Formal Verification (Chapman-Kolmogorov).**
-
-The augmented process satisfies the Chapman-Kolmogorov equation:
-
-$$
-P(\mathbf{X}_{t+s} | \mathbf{X}_t) = \int P(\mathbf{X}_{t+s} | \mathbf{X}_{t+r}) P(\mathbf{X}_{t+r} | \mathbf{X}_t) \, d\mathbf{X}_{t+r}
-
-$$
-for all $0 < r < s$, which characterizes Markov processes. $\square$
-
-:::
-
-
-
-## E.15 Proof of Nash Equilibrium as Standing Wave (Theorem {prf:ref}`thm-nash-standing-wave`)
-
-**Statement:** A Nash equilibrium in the multi-agent Klein-Gordon system corresponds to a standing wave pattern with time-averaged zero flux.
-
 (proof-nash-standing-wave)=
+(proof-game-tensor-derivation)=
+(proof-bianchi-identity)=
+(proof-higgs-mechanism)=
+(proof-nash-ground-state)=
+(sec-references)=
+
+## E.12 Bellman generator and scalar wave variation
+
 :::{prf:proof}
 
-**Step 1: Standing Wave Ansatz.**
-
-Consider the coupled Klein-Gordon system for $N$ agents:
-
+For the diffusion and discount already used in
+{prf:ref}`thm-the-hjb-helmholtz-correspondence`, write
+$\mathcal L=b\cdot\nabla+T_c\Delta_G$ and $\gamma_h=e^{-\lambda h}$.
+The smooth Bellman equation has continuous-time form
 $$
-\left(\frac{1}{c^2}\partial_t^2 - \Delta_{G^{(i)}} + \kappa^2\right)V^{(i)} = \rho_r^{(i)} + \sum_{j \neq i} \rho^{\text{ret}}_{ij}
-
+\partial_tV+\mathcal LV-\lambda V+r=0.
 $$
-
-Seek standing wave solutions of the form:
-
+In its stationary zero-drift sector,
+$(-\Delta_G+\lambda/T_c)V=r/T_c$; denote this screening coefficient by
+$\kappa_B^2=\lambda/T_c$. The scalar field action used in this chapter
+instead defines the wave operator
 $$
-V^{(i)}(z, t) = \bar{V}^{(i)}(z) + \sum_{n=1}^\infty \left[a_n^{(i)}(z) \cos(\omega_n t) + b_n^{(i)}(z) \sin(\omega_n t)\right]
-
+\Box_g=-|g|^{-1/2}\partial_\mu(|g|^{1/2}g^{\mu\nu}\partial_\nu),
+\qquad(\Box_g+\kappa^2)V=\rho_r.
 $$
-where $\bar{V}^{(i)}$ is the time-averaged component.
+The stationary operators coincide under the coefficient identification
+$\kappa^2=\kappa_B^2$ and the same sources and boundary realization.
 
-**Step 2: Boundary Conditions.**
-
-On the product manifold $\mathcal{Z}^{(N)} = \prod_i \mathcal{Z}^{(i)}$, impose:
-- **Dirichlet at sensors:** $V^{(i)}|_{\partial_{\text{in}}} = V_{\text{obs}}$ (observations fix boundary values)
-- **Neumann at motors:** $\nabla_n V^{(i)}|_{\partial_{\text{out}}} = 0$ (no value flux at action boundary)
-
-These boundary conditions create a "cavity" that supports discrete eigenfrequencies.
-
-**Step 3: Eigenmode Expansion.**
-
-The D'Alembertian $\square_G = \frac{1}{c^2}\partial_t^2 - \Delta_G$ on the bounded domain has discrete spectrum. Let $\{\phi_n\}$ be the eigenfunctions of $-\Delta_G + \kappa^2$ with eigenvalues $\lambda_n$:
-
+*Proof.* Generator consistency gives
+$\mathbb E[V(Z_h,t+h)]=V+h(\partial_t+\mathcal L)V+o(h)$.
+Insert this and $e^{-\lambda h}=1-\lambda h+o(h)$ into
+$V=rh+e^{-\lambda h}\mathbb E[V(Z_h,t+h)]$, cancel $V$, and divide by $h$.
+The $\partial_t^2V$ Taylor term has coefficient $h/2$ after division and
+vanishes. Finite signal speed does not change that coefficient.
+For the wave model vary
 $$
-(-\Delta_G + \kappa^2)\phi_n = \lambda_n \phi_n, \quad \lambda_1 \leq \lambda_2 \leq \cdots
-
+S[V]=\int\left[-\tfrac12g^{\mu\nu}\partial_\mu V\partial_\nu V
+-\tfrac12\kappa^2V^2+\rho_rV\right]\sqrt{|g|}\,dx.
 $$
-
-The standing wave frequencies are $\omega_n = c\sqrt{\lambda_n}$.
-
-**Step 4: Time-Averaged Stationarity Implies Nash.**
-
-**Definition (Time-Averaged Nash):** A configuration $\mathbf{z}^* = (z^{(1)*}, \ldots, z^{(N)*})$ is a time-averaged Nash equilibrium if:
-
-$$
-\langle \mathbf{J}^{(i)} \rangle_T := \frac{1}{T}\int_0^T \mathbf{J}^{(i)}(z^{(i)*}, t) \, dt = 0 \quad \forall i
-
-$$
-where $\mathbf{J}^{(i)} = -\rho^{(i)} G^{-1} \nabla_A V^{(i)}$ is the probability current.
-
-**Claim:** At a standing wave equilibrium, $\langle \mathbf{J}^{(i)} \rangle_T = 0$.
-
-*Proof of Claim:* For the standing wave ansatz:
-
-$$
-\nabla_A V^{(i)} = \nabla_A \bar{V}^{(i)} + \sum_n \left[\nabla_A a_n^{(i)} \cos(\omega_n t) + \nabla_A b_n^{(i)} \sin(\omega_n t)\right]
-
-$$
-
-Time-averaging over period $T \gg 2\pi/\omega_1$:
-
-$$
-\langle \nabla_A V^{(i)} \rangle_T = \nabla_A \bar{V}^{(i)}
-
-$$
-since $\langle \cos(\omega_n t) \rangle_T = \langle \sin(\omega_n t) \rangle_T = 0$.
-
-At a stationary point of $\bar{V}^{(i)}$, we have $\nabla \bar{V}^{(i)} = 0$, hence $\langle \mathbf{J}^{(i)} \rangle_T = 0$.
-
-**Step 5: Connection to Game-Theoretic Nash.**
-
-The Nash equilibrium condition is:
-
-$$
-V^{(i)}(z^{(i)*}, z^{(-i)*}) \geq V^{(i)}(z^{(i)}, z^{(-i)*}) \quad \forall z^{(i)}, \forall i
-
-$$
-
-This is equivalent to $z^{(i)*}$ being a local maximum of $V^{(i)}(\cdot, z^{(-i)*})$, requiring:
-1. **First-order:** $\nabla_{z^{(i)}} V^{(i)}|_{z^*} = 0$
-2. **Second-order:** $\nabla^2_{z^{(i)}} V^{(i)}|_{z^*} \preceq 0$ (negative semi-definite Hessian)
-
-The standing wave equilibrium satisfies the first-order condition via $\langle \nabla_A V^{(i)} \rangle_T = 0$.
-
-**Step 6: Ground State Correspondence.**
-
-The **ground state** (lowest eigenvalue $\lambda_1$) corresponds to:
-- Minimal oscillation energy
-- Longest wavelength mode
-- Most stable equilibrium
-
-Higher modes ($n > 1$) are metastable—small perturbations can cause transitions to lower modes. The stable Nash equilibrium corresponds to the ground state of the coupled system. $\square$
-
+Integration by parts against a compactly supported variation $\eta$ gives
+$\delta S=\int\eta[-\Box_gV-\kappa^2V+\rho_r]\sqrt{|g|}\,dx$.
+Stationarity proves the field equation. For a fixed product metric
+$g=\operatorname{diag}(-c^2,G)$, $\Box_g=c^{-2}\partial_t^2-\Delta_G$.
+These are explicit equations for two defined evolutions; equality of their
+stationary operators is the comparison established here. $\square$
 :::
 
+## E.13 Polar WFR calculation with exact signs
 
-
-## E.16 Derivation of the Game Tensor and Strategic Jacobian (Definition {prf:ref}`def-the-game-tensor`)
-
-**Statement:** The Game Tensor $\mathcal{G}_{ij}$ arises from the second-order response of agent $i$'s value to agent $j$'s position, mediated by the Strategic Jacobian.
-
-(proof-game-tensor-derivation)=
 :::{prf:proof}
 
-**Step 1: Best-Response Correspondence.**
-
-In a multi-agent system, each agent $j$ has a **best-response correspondence**:
-
+On a smooth positive-density chart with the fixed spatial metric of the
+WFR equations, put $R=\sqrt\rho$, $p=dV-B$, $v=G^{-1}p$,
+$D=\nabla-iB/\sigma$, and $Q_B=-\sigma^2\Delta_GR/(2R)$.
+For the equations already stated,
+$\partial_s\rho+\operatorname{div}_G(\rho v)=r\rho$ and
+$\partial_sV+|p|_G^2/2+\Phi_{\mathrm{eff}}=0$, the exact amplitude equation is
 $$
-BR_j(z^{(-j)}) := \arg\max_{z^{(j)}} V^{(j)}(z^{(j)}, z^{(-j)})
-
+i\sigma\partial_s\psi=
+\left[-\tfrac{\sigma^2}{2}\Delta_B+\Phi_{\mathrm{eff}}-Q_B
++\tfrac{i\sigma}{2}r\right]\psi,
+\qquad\psi=Re^{iV/\sigma}.
 $$
-where $z^{(-j)}$ denotes the positions of all agents except $j$.
+*Proof.* The product rule gives
+$$
+\frac{\Delta_B\psi}{\psi}=\frac{\Delta_GR}{R}
+-\frac{|p|_G^2}{\sigma^2}
++\frac{i}{\sigma}\left(2\frac{\langle dR,p\rangle_G}{R}
++\operatorname{div}_Gv\right).
+$$
+Thus the kinetic real part is $Q_B+|p|_G^2/2$.
+The $-Q_B$ term cancels it to the given classical HJB expression.
+The imaginary part is
+$-\sigma\operatorname{div}_G(\rho v)/(2\rho)+\sigma r/2$,
+equal to $\sigma\partial_s\rho/(2\rho)$ by continuity.
+The time derivative is
+$i\sigma\partial_s\psi/\psi=i\sigma\partial_s\rho/(2\rho)-\partial_sV$,
+so both parts agree. Reading these two parts backwards proves the local
+equivalence. At zeros use the density/current equations without division by
+$R$; a global phase additionally retains its existing circulation data.
 
-**Assumption (Smooth Best-Response):** Assume $BR_j$ is single-valued and $C^1$ in a neighborhood of equilibrium. This holds when:
-- The value function $V^{(j)}$ is strictly concave in $z^{(j)}$
-- The equilibrium is isolated (non-degenerate Hessian)
+The compensating $Q_B$ depends on $|\psi|$, making this amplitude equation
+nonlinear. Omitting the compensation gives the distinct linear Schrödinger
+model with a $+Q_B$ term in its Hamilton--Jacobi equation. A curl-modified
+mobility must be substituted into its own continuity equation; the above
+Laplacian yields precisely the canonical velocity $G^{-1}p$.
+For time-dependent volume density $w_s$, conservation reads
+$\partial_s(w_s\rho)+\partial_i(w_s\rho v^i)=w_sr\rho$;
+the corresponding amplitude equation acquires
+$-i\sigma\partial_s\log w_s/2$. $\square$
+:::
 
-**Step 2: Strategic Jacobian Definition.**
+## E.14 Complete-history conditional kernels
 
-:::{prf:definition} Strategic Jacobian
+:::{prf:proof}
+
+On the standard measurable path spaces of the specified process, the complete
+history state $(t,\mathsf H_t)$ is Markov with its conditional extension kernel.
+Neither a positive delay alone nor the reward occupation screen determines
+whether a smaller state is Markov.
+
+*Proof.* The sigma-algebra generated by $(t,\mathsf H_t)$ contains the entire
+modeled history through $t$. Let $K_{t,u}(h,\cdot)$ be the regular conditional
+law of the extended history through $u$ given $\mathsf H_t=h$.
+For a bounded history functional $F$,
+$$
+\mathbb E[F(\mathsf H_u)\mid\sigma(\mathsf H_s:s\le t)]
+=\mathbb E[F(\mathsf H_u)\mid\mathsf H_t]
+=K_{t,u}F(\mathsf H_t).
+$$
+The tower property gives $K_{t,u}=K_{t,v}K_{v,u}$ on realized histories.
+Including $t$ in the state accounts for time-inhomogeneous coefficients.
+This proves the representation without identifying a finite compression.
+For the occupation screen take $\alpha=0$: every history has screen zero,
+while histories with the same current position can have different
+$z_{t-\tau}$ and therefore different delayed drifts. Conversely a delayed
+signal with zero coupling leaves a Markov local process Markov. These examples
+prove both limitations of the smaller-state claims. $\square$
+:::
+
+## E.15 Time averages and unilateral variations
+
+:::{prf:proof}
+
+For a bounded differentiable density trajectory,
+$T^{-1}\int_0^T\partial_t\rho\,dt=(\rho(T)-\rho(0))/T\to0$.
+This holds for many nonequilibrium trajectories and does not test unilateral
+payoff improvements. Moreover $\langle\rho v\rangle$ need not vanish when
+$\langle v\rangle=0$: on a periodic clock take $v=\sin t$ and
+$\rho=1+\epsilon\sin t$, $0<\epsilon<1$, giving
+$\langle\rho v\rangle=\epsilon/2$.
+Standing-wave expansions describe solutions of the defined wave operator;
+Nash conditions are the payoff inequalities in
+{prf:ref}`thm-nash-equilibrium-as-geometric-stasis`. $\square$
+:::
+
+## E.16 Strategic Hessian and response composition
+
+:::{prf:proof}
+
+Use the smooth local best-response branch and Strategic Jacobian already
+specified in {prf:ref}`def-strategic-jacobian`. With the intrinsic connection
+on agent $j$'s manifold define the covariant tensor
+$$
+H^{(i)}_{jj,mn}=\nabla^{(j)}_m\nabla^{(j)}_nV^{(i)},\qquad
+\mathcal G^{(i)}_{ij,ab}=\mathcal J_{ji}^{m}{}_{a}
+H^{(i)}_{jj,mn}\mathcal J_{ji}^{n}{}_{b}.
+$$
+No additional lowering of the Hessian indices is applied. The strategic
+metric prescription is $\widetilde G^{(i)}=G^{(i)}+h^{(i)}$ with
+$h^{(i)}=\sum_{j\ne i}\beta_{ij}\mathcal G^{(i)}_{ij}$.
+Its positive-definite domain is checked using the spectral margin already
+specified in {prf:ref}`def-e7-strategic-metric`.
+The curvature equation {prf:ref}`thm-capacity-constrained-metric-law` remains
+a separate differential identity; this algebraic prescription is not its solution.
+
+For a $C^2$ response $y=b(x)$, direct differentiation gives
+$$
+\partial_{ab}V(x,b(x))=V_{ab}+V_{am}b^m_b+V_{bm}b^m_a
++V_{mn}b^m_ab^n_b+V_m\partial_{ab}b^m.
+$$
+Thus the pulled-back $H_{jj}$ is one contribution, not the full Hessian of
+the composed value. The final term vanishes at a stationary point in $y$.
+For the positive metric $\widetilde G=G+h$, subtraction of the two
+metric-compatible torsion-free connections gives the exact identity
+$$
+\widetilde\Gamma^a_{bc}-\Gamma^a_{bc}
+=\tfrac12\widetilde G^{ad}
+(\nabla_bh_{dc}+\nabla_ch_{db}-\nabla_dh_{bc}).
+$$
+Replacing $\widetilde G^{-1}$ by $G^{-1}$ gives its first-order expansion,
+with a remainder controlled by the inverse-metric identity
+$\widetilde G^{-1}-G^{-1}=-G^{-1}h\widetilde G^{-1}$.
+:::
+
+:::{prf:definition} Strategic Jacobian on the established response branch
 :label: def-strategic-jacobian
 
-The **Strategic Jacobian** $\mathcal{J}_{ji} \in \mathbb{R}^{d \times d}$ is the derivative of agent $j$'s best response with respect to agent $i$'s position:
-
-$$
-\mathcal{J}_{ji} := \frac{\partial BR_j(z^{(-j)})}{\partial z^{(i)}} = \frac{\partial z^{(j)*}}{\partial z^{(i)}}\bigg|_{BR}
-
-$$
-where $z^{(j)*} = BR_j(z^{(-j)})$.
+On the smooth, nondegenerate local best-response branch specified in the
+original strategic construction, differentiate
+$\nabla_jV_j(b_j(z_{-j}),z_{-j})=0$. The chain rule gives
+$H_{jj}^{(j)}\mathcal J_{ji}+H_{ji}^{(j)}=0$, hence
+$\mathcal J_{ji}=-(H_{jj}^{(j)})^{-1}H_{ji}^{(j)}$.
+This identifies the branch derivative on the domain where the declared
+inverse exists. It is not a global selection of a multivalued best-response
+correspondence. Its pullback action on covariant Hessians is exactly that
+used in {prf:ref}`def-the-game-tensor`.
 :::
 
-**Step 3: Implicit Function Theorem Derivation.**
+## E.17 Curvature and Bianchi identity
 
-At a best response, the first-order condition is:
-
-$$
-\nabla_{z^{(j)}} V^{(j)}(z^{(j)*}, z^{(-j)}) = 0
-
-$$
-
-Differentiating with respect to $z^{(i)}$ using the implicit function theorem:
-
-$$
-\nabla^2_{z^{(j)}z^{(j)}} V^{(j)} \cdot \frac{\partial z^{(j)*}}{\partial z^{(i)}} + \nabla^2_{z^{(j)}z^{(i)}} V^{(j)} = 0
-
-$$
-
-Solving for the Strategic Jacobian:
-
-$$
-\mathcal{J}_{ji} = -\left(\nabla^2_{z^{(j)}z^{(j)}} V^{(j)}\right)^{-1} \nabla^2_{z^{(j)}z^{(i)}} V^{(j)}
-
-$$
-
-**Step 4: Second-Order Value Variation.**
-
-When agent $i$ moves by $\delta z^{(i)}$, agent $j$ responds with $\delta z^{(j)} \approx \mathcal{J}_{ji} \delta z^{(i)}$.
-
-The second-order variation of agent $i$'s value is:
-
-$$
-\delta^2 V^{(i)} = (\delta z^{(i)})^\top \underbrace{\nabla^2_{z^{(i)}z^{(i)}} V^{(i)}}_{\text{direct curvature}} (\delta z^{(i)}) + (\delta z^{(i)})^\top \underbrace{\nabla^2_{z^{(i)}z^{(j)}} V^{(i)} \cdot \mathcal{J}_{ji}}_{\text{strategic back-reaction}} (\delta z^{(i)})
-
-$$
-
-**Step 5: Game Tensor as Effective Curvature.**
-
-Define the **Game Tensor** as the strategic contribution to curvature:
-
-$$
-\mathcal{G}_{ij}^{kl} := \frac{\partial^2 V^{(i)}}{\partial z^{(j)}_k \partial z^{(j)}_l}\bigg|_{z^{(j)*}}
-
-$$
-
-The **perceived Hessian** including strategic back-reaction is:
-
-$$
-\tilde{H}^{(i)}_{kl} = \frac{\partial^2 V^{(i)}}{\partial z^{(i)}_k \partial z^{(i)}_l} + \sum_{j \neq i} \frac{\partial^2 V^{(i)}}{\partial z^{(i)}_k \partial z^{(j)}_m} (\mathcal{J}_{ji})^m_l
-
-$$
-
-**Step 6: Metric Modification.**
-
-The agent's perceived geometry is modified by the Game Tensor. Under the Capacity-Constrained Metric Law (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), risk increases effective metric:
-
-$$
-\tilde{G}^{(i)}_{kl} = G^{(i)}_{kl} + \sum_{j \neq i} \beta_{ij} \mathcal{G}_{ij,kl}
-
-$$
-
-where:
-- $\beta_{ij} > 0$ for adversarial agents (opponents increase perceived curvature)
-- $\beta_{ij} = 0$ for neutral agents
-- $\beta_{ij} < 0$ for cooperative agents (allies reduce perceived curvature)
-
-The lowered-index Game Tensor is:
-
-$$
-\mathcal{G}_{ij,kl} = G^{(i)}_{km} G^{(i)}_{ln} \mathcal{G}_{ij}^{mn}
-
-$$
-
-**Physical Interpretation:** The Game Tensor measures how "curved" agent $i$'s value landscape appears due to agent $j$'s presence. High $\|\mathcal{G}_{ij}\|$ regions are strategically volatile—small movements create large value changes. $\square$
-
-:::
-
-
-
-## E.17 Proof of the Bianchi Identity (Theorem {prf:ref}`thm-bianchi-identity`)
-
-**Statement:** The field strength tensor satisfies $D_{[\mu}\mathcal{F}_{\nu\rho]} = 0$ (cyclic sum vanishes).
-
-(proof-bianchi-identity)=
 :::{prf:proof}
 
-**Step 1: Jacobi Identity for Covariant Derivatives.**
-
-The covariant derivatives satisfy the Jacobi identity:
-
+For the defined connection, the adjoint covariant derivative is
+$\mathcal D_\rho F_{\mu\nu}=\partial_\rho F_{\mu\nu}-ig[A_\rho,F_{\mu\nu}]$.
+On a test section $u$, expansion gives
+$[D_\rho,F_{\mu\nu}]u=(\mathcal D_\rho F_{\mu\nu})u$.
+Insert $[D_\mu,D_\nu]=-igF_{\mu\nu}$ into
+$[D_\rho,[D_\mu,D_\nu]]+\mathrm{cyclic}=0$. Dividing by $-ig$ gives
 $$
-[[D_\mu, D_\nu], D_\rho] + [[D_\nu, D_\rho], D_\mu] + [[D_\rho, D_\mu], D_\nu] = 0
-
+\mathcal D_\rho F_{\mu\nu}+\mathcal D_\mu F_{\nu\rho}
++\mathcal D_\nu F_{\rho\mu}=0.
 $$
-
-**Step 2: Commutator in Terms of Field Strength.**
-
-From Theorem {prf:ref}`thm-curvature-commutator`:
-
-$$
-[D_\mu, D_\nu] = -ig\mathcal{F}_{\mu\nu}
-
-$$
-where $\mathcal{F}_{\mu\nu}$ acts on fields in the appropriate representation.
-
-**Step 3: Action on a Test Field.**
-
-Let $\psi$ be a field in the fundamental representation. Apply the Jacobi identity:
-
-$$
-[[D_\mu, D_\nu], D_\rho]\psi + \text{cyclic} = 0
-
-$$
-
-Compute the first term:
-
-$$
-[[D_\mu, D_\nu], D_\rho]\psi = [D_\mu, D_\nu](D_\rho \psi) - D_\rho([D_\mu, D_\nu]\psi)
-
-$$
-
-$$
-= -ig\mathcal{F}_{\mu\nu}(D_\rho \psi) - D_\rho(-ig\mathcal{F}_{\mu\nu}\psi)
-
-$$
-
-$$
-= -ig\mathcal{F}_{\mu\nu}D_\rho \psi + ig D_\rho(\mathcal{F}_{\mu\nu}\psi)
-
-$$
-
-$$
-= -ig\mathcal{F}_{\mu\nu}D_\rho \psi + ig (D_\rho \mathcal{F}_{\mu\nu})\psi + ig \mathcal{F}_{\mu\nu}D_\rho \psi
-
-$$
-
-$$
-= ig (D_\rho \mathcal{F}_{\mu\nu})\psi
-
-$$
-
-**Step 4: Covariant Derivative of Field Strength.**
-
-The covariant derivative acts on $\mathcal{F}_{\mu\nu}$ (an adjoint-valued 2-form) as:
-
-$$
-D_\rho \mathcal{F}_{\mu\nu} = \partial_\rho \mathcal{F}_{\mu\nu} - ig[A_\rho, \mathcal{F}_{\mu\nu}]
-
-$$
-
-**Step 5: Cyclic Sum.**
-
-From the Jacobi identity:
-
-$$
-ig(D_\mu \mathcal{F}_{\nu\rho} + D_\nu \mathcal{F}_{\rho\mu} + D_\rho \mathcal{F}_{\mu\nu})\psi = 0
-
-$$
-
-Since this holds for arbitrary $\psi$:
-
-$$
-D_\mu \mathcal{F}_{\nu\rho} + D_\nu \mathcal{F}_{\rho\mu} + D_\rho \mathcal{F}_{\mu\nu} = 0
-
-$$
-
-**Step 6: Component Form Verification.**
-
-In components, with $\mathcal{F}_{\mu\nu}^a = \partial_\mu A_\nu^a - \partial_\nu A_\mu^a + g f^{abc} A_\mu^b A_\nu^c$:
-
-$$
-D_\rho \mathcal{F}_{\mu\nu}^a = \partial_\rho \mathcal{F}_{\mu\nu}^a + g f^{abc} A_\rho^b \mathcal{F}_{\mu\nu}^c
-
-$$
-
-The cyclic sum:
-
-$$
-D_{[\mu}\mathcal{F}_{\nu\rho]}^a = \partial_{[\mu}\mathcal{F}_{\nu\rho]}^a + g f^{abc} A_{[\mu}^b \mathcal{F}_{\nu\rho]}^c
-
-$$
-
-The first term vanishes by the Jacobi identity for ordinary derivatives (applied to the definition of $\mathcal{F}$):
-
-$$
-\partial_{[\mu}\mathcal{F}_{\nu\rho]} = \partial_{[\mu}(\partial_\nu A_{\rho]} - \partial_\rho A_{\nu]}) + g f^{abc} \partial_{[\mu}(A_\nu^b A_{\rho]}^c) = 0
-
-$$
-
-The second term vanishes by antisymmetry:
-
-$$
-f^{abc} A_{[\mu}^b \mathcal{F}_{\nu\rho]}^c = f^{abc} \cdot \frac{1}{6}(A_\mu^b \mathcal{F}_{\nu\rho}^c + \text{5 cyclic permutations}) = 0
-
-$$
-
-by the Jacobi identity for structure constants and antisymmetry of $\mathcal{F}$. $\square$
-
+For $g=0$ the same identity is $d(dA)=0$. The geometric Christoffel
+terms cancel under cyclic antisymmetrization for the torsion-free connection.
+The identity holds in each smooth gauge chart and is preserved under
+transition functions by conjugation; nontrivial bundle topology does not
+violate it. $\square$
 :::
 
+## E.18 Vacuum expansion in the declared representation
 
-
-## E.18 Derivation of the Higgs Mechanism (Theorem {prf:ref}`thm-higgs-mechanism`)
-
-**Statement:** When $\mu^2 < 0$ in the Higgs potential, spontaneous symmetry breaking generates masses for gauge bosons and matter fields.
-
-(proof-higgs-mechanism)=
 :::{prf:proof}
 
-**Step 1: Higgs Potential Minimization.**
-
-The Higgs potential is:
-
+For the stable quartic potential already specified, $\lambda>0$ and
+$\mu^2<0$, write $\Phi_0=(v/\sqrt2)n$, $n^\dagger n=1$ and
+$v^2=-\mu^2/\lambda$. The radial mass is $m_h^2=2\lambda v^2$.
+The gauge quadratic term is $-\tfrac12A_\mu^a(M^2)_{ab}A^{\mu b}$ with
 $$
-V(\Phi) = \mu^2 |\Phi|^2 + \lambda |\Phi|^4
-
+(M^2)_{ab}=g^2\Phi_0^\dagger\{T_a,T_b\}\Phi_0.
 $$
-
-For $\mu^2 > 0$: Minimum at $\Phi = 0$ (symmetric phase).
-
-For $\mu^2 < 0$: The potential has the "Mexican hat" shape. Setting $\partial V / \partial |\Phi| = 0$:
-
-$$
-2\mu^2 |\Phi| + 4\lambda |\Phi|^3 = 0
-
-$$
-
-$$
-|\Phi|^2 = -\frac{\mu^2}{2\lambda} =: \frac{v^2}{2}
-
-$$
-
-The vacuum expectation value (VEV) is:
-
-$$
-\langle \Phi \rangle = \frac{v}{\sqrt{2}}, \quad v = \sqrt{-\frac{\mu^2}{\lambda}}
-
-$$
-
-**Step 2: Fluctuations Around the VEV.**
-
-Expand around the vacuum:
-
-$$
-\Phi(z) = \frac{1}{\sqrt{2}}(v + h(z))e^{i\theta(z)/v}
-
-$$
-
-where:
-- $h(z)$ is the **Higgs boson** (radial fluctuation, physical degree of freedom)
-- $\theta(z)$ is the **Goldstone mode** (angular fluctuation, will be "eaten")
-
-For small fluctuations, linearize:
-
-$$
-\Phi \approx \frac{1}{\sqrt{2}}(v + h + i\theta)
-
-$$
-
-**Step 3: Gauge Boson Mass Generation.**
-
-The kinetic term for the Higgs field is:
-
-$$
-|D_\mu \Phi|^2 = |(\partial_\mu - igA_\mu)\Phi|^2
-
-$$
-
-Substituting $\Phi = (v + h)/\sqrt{2}$ (unitary gauge, $\theta = 0$):
-
-$$
-D_\mu \Phi = \frac{1}{\sqrt{2}}(\partial_\mu h - igA_\mu(v + h))
-
-$$
-
-$$
-|D_\mu \Phi|^2 = \frac{1}{2}(\partial_\mu h)^2 + \frac{g^2}{2}(v + h)^2 A_\mu A^\mu - \frac{ig}{\sqrt{2}}(v+h)(A_\mu \partial^\mu h - \partial_\mu h A^\mu)
-
-$$
-
-The mass term for the gauge field emerges from the $(v^2)$ contribution:
-
-$$
-|D_\mu \Phi|^2 \supset \frac{g^2 v^2}{2} A_\mu A^\mu
-
-$$
-
-Comparing with the standard mass term $\frac{1}{2}m_A^2 A_\mu A^\mu$:
-
-$$
-m_A = gv
-
-$$
-
-**Step 4: Goldstone Boson Absorption.**
-
-In the unitary gauge, the Goldstone mode $\theta$ is absorbed into the longitudinal component of the massive gauge boson. The gauge field gains a third polarization state (longitudinal), as required for a massive spin-1 particle.
-
-**Counting degrees of freedom:**
-- Before SSB: 2 (massless gauge) + 2 (complex Higgs) = 4
-- After SSB: 3 (massive gauge) + 1 (real Higgs $h$) = 4 ✓
-
-**Step 5: Matter Field Mass Generation (Yukawa).**
-
-The Yukawa coupling is:
-
-$$
-\mathcal{L}_{\text{Yukawa}} = -y_{ij}\bar{\psi}^{(i)}\Phi\psi^{(j)}
-
-$$
-
-After SSB, substituting $\Phi = (v + h)/\sqrt{2}$:
-
-$$
-\mathcal{L}_{\text{Yukawa}} = -\frac{y_{ij}}{\sqrt{2}}(v + h)\bar{\psi}^{(i)}\psi^{(j)}
-
-$$
-
-$$
-= -\frac{y_{ij} v}{\sqrt{2}}\bar{\psi}^{(i)}\psi^{(j)} - \frac{y_{ij}}{\sqrt{2}}h\bar{\psi}^{(i)}\psi^{(j)}
-
-$$
-
-The first term is a mass term with:
-
-$$
-m_{ij} = \frac{y_{ij} v}{\sqrt{2}}
-
-$$
-
-For diagonal Yukawa ($y_{ij} = y_i \delta_{ij}$):
-
-$$
-m_i = \frac{y_i v}{\sqrt{2}}
-
-$$
-
-**Step 6: Symmetry Breaking Pattern.**
-
-The original symmetry group $G$ is broken to a subgroup $H$ that leaves the VEV invariant:
-
-$$
-U \langle \Phi \rangle = \langle \Phi \rangle \quad \text{for } U \in H
-
-$$
-
-The number of massive gauge bosons equals $\dim(G) - \dim(H)$ (the number of broken generators).
-
-**Example:** For $G = SO(D)$ broken to $H = SO(D-1)$:
-- Broken generators: $D - 1$
-- Each broken generator → one massive gauge boson
-- Remaining $SO(D-1)$ gauge bosons stay massless $\square$
-
+*Proof.* Put $q=\Phi^\dagger\Phi$. The minimum solves
+$\mu^2+2\lambda q=0$. Substitute $q=(v+h)^2/2$; the coefficient of
+$h^2$ in $U$ is $\lambda v^2=m_h^2/2$.
+For a constant vacuum, $D_\mu\Phi_0=-igA_\mu^aT_a\Phi_0$;
+the symmetric product of the commuting coefficients $A^aA^b$ gives the
+displayed anticommutator. For any real $u^a$,
+$u^a(M^2)_{ab}u^b=2g^2\|(u^aT_a)\Phi_0\|^2\ge0$.
+Its kernel is the stabilizer Lie algebra of the vacuum. For a single
+$SU(2)$ doublet with $T_a=\sigma_a/2$, this evaluates to
+$(M^2)_{ab}=g^2v^2\delta_{ab}/4$. It is this representation that gives
+$m_A=gv/2$. Other declared representations are evaluated by the same
+matrix formula. If $\lambda\le0$, the stated stable quartic expansion does
+not apply; the potential itself reveals the failure. $\square$
 :::
 
+## E.19 Spectral minimization and the Nash comparison
 
-
-## E.19 Proof of Nash Equilibrium as Ground State (Theorem {prf:ref}`thm-nash-ground-state`)
-
-**Statement:** In the semiclassical limit $\sigma \to 0$, the ground state wave-function concentrates on the Nash equilibrium.
-
-(proof-nash-ground-state)=
 :::{prf:proof}
 
-**Step 1: WKB/Semiclassical Ansatz.**
+The Rayleigh quotient of the scalar Hamiltonian minimizes its single joint
+energy. The Nash test instead compares each agent's own payoff under a
+unilateral change. Their equality must be checked by differentiating the
+actual objectives and by evaluating their global inequalities.
 
-For small $\sigma$, seek solutions of the form:
-
-$$
-\Psi(\mathbf{z}) = A(\mathbf{z}) \exp\left(-\frac{S(\mathbf{z})}{\sigma}\right)
-
-$$
-
-where $S(\mathbf{z}) \geq 0$ is the "action" and $A(\mathbf{z})$ is a slowly-varying amplitude.
-
-**Step 2: Substitution into Schrödinger.**
-
-The Strategic Hamiltonian acting on $\Psi$:
-
-$$
-\hat{H}_{\text{strat}}\Psi = \left[-\frac{\sigma^2}{2}\Delta_{\tilde{G}} + \Phi_{\text{eff}}\right]\Psi
-
-$$
-
-Compute the Laplacian of the WKB ansatz:
-
-$$
-\Delta_{\tilde{G}}(Ae^{-S/\sigma}) = e^{-S/\sigma}\left[\Delta_{\tilde{G}} A - \frac{2}{\sigma}\tilde{G}^{-1}(\nabla A, \nabla S) - \frac{A}{\sigma}\Delta_{\tilde{G}} S + \frac{A}{\sigma^2}\|\nabla S\|_{\tilde{G}}^2\right]
-
-$$
-
-**Step 3: Leading Order ($O(\sigma^{-2})$).**
-
-The leading term gives:
-
-$$
--\frac{\sigma^2}{2} \cdot \frac{A}{\sigma^2}\|\nabla S\|_{\tilde{G}}^2 = -\frac{A}{2}\|\nabla S\|_{\tilde{G}}^2
-
-$$
-
-For the ground state (minimum energy), we need:
-
-$$
-E_0 = \frac{1}{2}\|\nabla S\|_{\tilde{G}}^2 + \Phi_{\text{eff}}
-
-$$
-
-This is minimized when $\|\nabla S\|_{\tilde{G}}^2 = 0$ and $\Phi_{\text{eff}}$ is minimized.
-
-**Step 4: Concentration on Critical Points.**
-
-The condition $\nabla S = 0$ implies that $S$ is constant along directions where the wave-function has support. The wave-function $|\Psi|^2 = |A|^2 e^{-2S/\sigma}$ concentrates exponentially on the **minimum of $S$**.
-
-For the ground state, $S(\mathbf{z}) = S_0 + \frac{1}{2}(\mathbf{z} - \mathbf{z}^*)^\top H (\mathbf{z} - \mathbf{z}^*) + O(|\mathbf{z} - \mathbf{z}^*|^3)$
-
-where $\mathbf{z}^*$ is the minimum and $H$ is the Hessian.
-
-**Step 5: Gaussian Approximation.**
-
-Near the minimum:
-
-$$
-|\Psi(\mathbf{z})|^2 \approx |A(\mathbf{z}^*)|^2 \exp\left(-\frac{(\mathbf{z} - \mathbf{z}^*)^\top H (\mathbf{z} - \mathbf{z}^*)}{\sigma}\right)
-
-$$
-
-This is a Gaussian with width $\sim \sqrt{\sigma}$. As $\sigma \to 0$:
-
-$$
-|\Psi(\mathbf{z})|^2 \to \delta(\mathbf{z} - \mathbf{z}^*)
-
-$$
-
-**Step 6: Identification with Nash Equilibrium.**
-
-The minimum of $\Phi_{\text{eff}}(\mathbf{z})$ is the Nash equilibrium by definition:
-- $\Phi_{\text{eff}}^{(i)}(z^{(i)}, z^{(-i)}) = -V^{(i)}(z^{(i)}, z^{(-i)})$ (negative value = cost)
-- Nash: each agent maximizes their own value → minimizes their own cost
-- Joint minimum: $\nabla_{z^{(i)}} \Phi_{\text{eff}}^{(i)} = 0$ for all $i$
-
-**Step 7: Energy Correction.**
-
-The ground state energy is:
-
-$$
-E_0 = \Phi_{\text{eff}}(\mathbf{z}^*) + O(\sigma)
-
-$$
-
-The $O(\sigma)$ correction comes from zero-point energy:
-
-$$
-E_0 = \Phi_{\text{eff}}(\mathbf{z}^*) + \frac{\sigma}{2}\text{Tr}(\sqrt{H \tilde{G}^{-1}}) + O(\sigma^2)
-
-$$
-
-This is the sum of $\frac{\sigma \omega_n}{2}$ over all normal mode frequencies $\omega_n = \sqrt{\lambda_n}$ where $\lambda_n$ are eigenvalues of $H \tilde{G}^{-1}$.
-
-**Step 8: Stability from Spectral Gap.**
-
-The Nash equilibrium is **stable** if $H \succ 0$ (positive definite Hessian at the minimum). This ensures:
-1. The ground state is unique
-2. There is a spectral gap $\Delta = E_1 - E_0 > 0$
-3. The concentration is exponentially tight in $\sigma$
-
-Unstable critical points (saddles) have $H$ with negative eigenvalues, leading to **excited states** rather than ground states. $\square$
-
+*Proof by explicit comparison.* Let
+$V_1(x,y)=-(x-y)^2$ and $V_2(x,y)=-(y-1)^2-Kx$ with $K>0$.
+Both are strictly concave in their own coordinate; their best responses are
+$x=y$ and $y=1$, hence the unique Nash profile is $(1,1)$.
+The sum of costs is $U=(x-y)^2+(y-1)^2+Kx$.
+Its $x$ derivative at $(1,1)$ is $K$, so Nash is not a stationary point of
+this joint energy. This example meets the smooth nondegenerate best-response
+structure of the Strategic Jacobian. Thus that machinery cannot justify
+the former general identification of Nash with a joint ground state.
+The ground-state and variational calculations retain their meaning for
+the scalar operator actually defined. $\square$
 :::
 
 
 
-(sec-references)=
 ## References
 
 ```{bibliography}

@@ -340,19 +340,19 @@ analogue of a partition-of-unity on the atlas.
 ## 5. The Geodesic Boris-BAOAB Integrator
 
 :::{div} feynman-prose
-Here is where the physics happens. The BAOAB integrator
+Here is where the physics-inspired numerical model happens. The BAOAB integrator
 ({prf:ref}`def-baoab-splitting`) is a particular way of splitting the Hamiltonian
 dynamics into steps that can each be handled exactly or semi-exactly. The name tells you
 the order: **B**-step (momentum kick from forces), **A**-step (position drift), **O**-step
 (thermostat noise), **A**-step (position drift again), **B**-step (second force evaluation).
 
-Why this particular splitting? Because it has remarkable properties. The O-step in the middle
-acts as a thermostat --- it injects noise and damps momentum, maintaining the system at the
-cognitive temperature $T_c$. The symmetric placement of the A-steps and B-steps around the
-O-step gives second-order accuracy in the Hamiltonian limit ($T_c \to 0$). And crucially, the
-BAOAB scheme preserves the Boltzmann distribution
-({prf:ref}`prop-baoab-preserves-boltzmann`), meaning that in equilibrium the sampled states
-have the correct thermodynamic weights.
+Why this particular splitting? Under the conservative, constant-temperature, compatible
+splitting hypotheses of {prf:ref}`prop-baoab-preserves-boltzmann`, the O-step damps momentum
+and injects noise at the declared cognitive temperature $T_c$, the symmetric arrangement gives
+the stated second-order accuracy, and the invariant Boltzmann law follows. In this world model,
+learned forces, controls, chart jumps, curvature approximations, clipping, and finite step sizes
+are additional modelling choices. They can change the invariant law, so the proposition is a
+scope condition for interpreting the samples rather than an unconditional guarantee.
 
 But our BAOAB is not the textbook version. We are on a curved space, so the A-steps must use
 the Poincare exponential map. We add Christoffel corrections to account for geodesic drift.
@@ -432,18 +432,18 @@ p_plus = p_minus + s_vec  # |p_plus| = |p_minus| exactly
 ```
 
 :::{div} feynman-prose
-The Boris algorithm is a beautiful piece of numerical engineering. The antisymmetric matrix $T$
-rotates the momentum without changing its magnitude --- that is a property of antisymmetric
-matrices. But a naive rotation $p + T \cdot p$ is only first-order accurate. The Boris trick
-uses two half-steps with a correction factor $2/(1 + \|T\|_F^2)$ that makes the rotation
-exact to machine precision, regardless of the step size or field strength. This is why plasma
-physicists love it, and why we use it here for the curl forces from the value field
+The Boris algorithm is a beautiful piece of numerical engineering. For the compatible
+antisymmetric update, the rotation preserves the relevant momentum norm in exact arithmetic;
+the code should still monitor finite-precision and metric-dependent errors. A naive rotation
+$p + T \cdot p$ is only first-order accurate. The Boris correction improves the update for the
+chosen step and field scales, which is why it is useful for the curl forces from the value field
 $\mathcal{F}_{ij}$.
 
 The `CovariantValueCurl` module predicts the upper triangle of the antisymmetric tensor
 $\mathcal{F}_{ij}$ from the position and action via CovariantAttention. The lower triangle
-is filled by antisymmetry: $\mathcal{F}_{ji} = -\mathcal{F}_{ij}$. This guarantees the
-norm-preservation property by construction.
+is filled by antisymmetry: $\mathcal{F}_{ji} = -\mathcal{F}_{ij}$. This supplies the
+algebraic norm-preserving structure of the update; the implemented metric, finite precision,
+and learned field still determine the observed error.
 :::
 
 ### A Step: Geodesic Drift with Christoffel Correction
@@ -584,8 +584,9 @@ hyperbolic setting: the Laplace-Beltrami operator $\Delta_G$ on the Poincare bal
 conformal correction term that has no Euclidean analogue. The Hutchinson trace estimator for
 the Hessian (Hutchinson 1990) avoids second-order autograd, keeping the computational cost
 linear in the latent dimension. The screening mass $\kappa$ controls the decay length of the
-value function's response to reward signals, connecting to the discount factor $\gamma$ in
-standard RL via $\kappa^2 \sim 1/(1-\gamma)$.
+value function's response to reward signals. In the stationary diffusion convention, it connects to the discount factor
+through $\kappa^2=\lambda/T_c$ with $\lambda=-\ln\gamma/\Delta t$; for $\gamma$ close to one,
+$-\ln\gamma\approx1-\gamma$, subject to the stated normalization.
 :::
 
 
@@ -771,8 +772,10 @@ $$
 :::{div} feynman-prose
 This is genuinely subtle. The BAOAB integrator is *not* exactly symplectic --- the thermostat
 breaks time-reversal symmetry. So the Hamiltonian is not exactly conserved. But it should be
-*approximately* conserved between O-steps: the B and A steps are symplectic, and only the O-step
-injects noise. If $H$ varies wildly, the forces are producing unphysical trajectories.
+*approximately* conserved between O-steps when the B and A maps are implemented as compatible
+Hamiltonian substeps; only the O-step injects thermostat noise in that idealization. A large
+variation in $H$ is evidence of forcing, discretization, or model mismatch relative to the
+chosen diagnostic, not by itself a proof that a trajectory is physically impossible.
 
 There are two granularities of energy monitoring in the code. The `compute_energy_conservation_loss`
 function in `losses.py` measures the variance of $H$ across **horizon steps** (the $t$-axis).

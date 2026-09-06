@@ -32,6 +32,7 @@ from fragile.physics.qft_utils import (
     safe_gather_3d,
 )
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.qft_utils.statistics import attach_statistics, record_lag
 
 
 @dataclass
@@ -130,9 +131,11 @@ def _compute_color_plaquette_for_triplets(
         valid: Valid source/sink triplet mask [T, N].
     """
     if color.ndim != 3 or color.shape[-1] != 3:
-        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+        msg = f"color must have shape [T, N, 3], got {tuple(color.shape)}."
+        raise ValueError(msg)
     if color_valid.shape != color.shape[:2]:
-        raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
+        msg = f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}."
+        raise ValueError(msg)
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
@@ -347,9 +350,11 @@ def compute_glueball_color_correlator_from_color(
 ) -> GlueballColorCorrelatorOutput:
     """Compute companion-triplet glueball correlator from precomputed color states."""
     if color.ndim != 3 or color.shape[-1] != 3:
-        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+        msg = f"color must have shape [T, N, 3], got {tuple(color.shape)}."
+        raise ValueError(msg)
     if color_valid.shape != color.shape[:2]:
-        raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
+        msg = f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}."
+        raise ValueError(msg)
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
@@ -415,6 +420,10 @@ def compute_glueball_color_correlator_from_color(
     correlator_connected = torch.zeros(n_lags, dtype=torch.float32, device=device)
     counts = torch.zeros(n_lags, dtype=torch.int64, device=device)
 
+    origin_counts = torch.zeros(t_total, n_lags, device=device, dtype=torch.float64)
+    origin_correlator_raw = torch.zeros_like(origin_counts)
+    origin_correlator_connected = torch.zeros_like(origin_counts)
+
     for lag in range(effective_lag + 1):
         source_len = t_total - lag
         sink_pi, sink_valid = _compute_color_plaquette_for_triplets(
@@ -440,6 +449,11 @@ def compute_glueball_color_correlator_from_color(
 
         conn_prod = (source_obs[:source_len] - mean_glueball_t) * (sink_obs - mean_glueball_t)
         correlator_connected[lag] = conn_prod[valid_pair].mean().float()
+        record_lag(origin_correlator_raw, origin_counts, lag, raw_prod, valid_pair)
+        record_lag(origin_correlator_connected, origin_counts, lag, conn_prod, valid_pair)
+
+    attach_statistics(correlator_raw, origin_correlator_raw, origin_counts)
+    attach_statistics(correlator_connected, origin_correlator_connected, origin_counts)
 
     correlator = correlator_connected if use_connected else correlator_raw
 
@@ -590,7 +604,9 @@ def compute_companion_glueball_color_correlator(
             device=device, dtype=torch.float32
         )
 
-        low, high = _extract_axis_bounds(history.bounds, momentum_axis, device=device)
+        low, high = _extract_axis_bounds(
+            getattr(history, "bounds", None), momentum_axis, device=device
+        )
         if (
             low is not None
             and high is not None

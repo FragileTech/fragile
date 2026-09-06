@@ -48,7 +48,10 @@ The remarkable thing is not that this works---it does, beautifully---but what ha
 
 Now, here is the question that should be keeping you up at night: is this necessary? Must security require waste? Or is there some way to do computation that is *just as hard to fake* but actually produces something we want?
 
-This section answers that question. And the answer, I am happy to report, is yes---you can have your security and learn something too. The trick is to replace the useless hash computation with something genuinely difficult but genuinely valuable: training a neural network. Every block mined makes the network smarter. The energy still gets dissipated---thermodynamics does not negotiate---but now it leaves behind *knowledge* instead of mere heat.
+This section proposes one way to pursue that goal: replace a useless hash computation with a training update that is difficult to
+fake and useful when it passes the declared validation tests. A valid block records a candidate change to a neural model; it does
+not guarantee that every update improves the model or makes the network smarter. The energy still dissipates, while any lasting
+knowledge claim depends on the data, optimizer, and held-out evaluation.
 
 Let us see how this works.
 
@@ -146,15 +149,15 @@ Therefore, gradient computation produces **useful information** while satisfying
 
 This theorem is the key to everything. Let me explain why.
 
-The Landauer bound says: if you erase a bit of information, you *must* pay at least $k_B T \ln 2$ joules to do it. This is not an engineering limitation---it is a law of thermodynamics. Computation erases bits (intermediate results, old values, that sort of thing), so computation has a minimum energy cost.
+Under the usual assumptions for a logically irreversible operation coupled to a thermal environment, the Landauer bound assigns at least $k_B T \ln 2$ of heat per erased bit. It is a thermodynamic lower bound, not a claim that every intermediate value in a modern reversible or nonequilibrium implementation is erased in that way. A computation's actual energy also depends on its hardware and protocol.
 
-Now here is the beautiful thing: the Landauer bound does not care *what* you compute. It counts bit erasures, period. Whether you are computing SHA-256 hashes or gradients of a neural network, if you erase the same number of bits, you pay the same energy price.
+Now here is the useful comparison: within the same erasure and temperature model, the bound depends on the number of logical erasures rather than on their semantic label. Equal erasure counts give equal lower bounds; they do not guarantee equal realized energy costs.
 
 So we have two computations:
 - **Hash computation:** Burns energy, produces a number that tells us nothing about the world.
-- **Gradient computation:** Burns energy (approximately the same amount!), produces a vector that tells us *exactly* which direction to adjust the model to make better predictions.
+- **Gradient computation:** Burns energy according to its implementation, and produces a vector that gives a local descent direction when the loss and gradient estimate satisfy the usual assumptions.
 
-Same cost, vastly different output. One is thermodynamic waste; the other is thermodynamic investment. The theorem says we can swap one for the other without losing any security properties.
+The outputs can have very different usefulness even when their modeled lower bounds agree. The proposed swap preserves a security budget only after the protocol separately establishes gradient validity, verification soundness, and incentive compatibility.
 
 But wait---there is a catch. And it is a big one. Verifying a hash takes almost no work: you just compute the hash and check if it is below the target. Verifying a gradient is expensive: you might have to recompute the whole thing! If verification costs as much as computation, the whole scheme falls apart.
 
@@ -261,7 +264,10 @@ Look at what we have built here. The three definitions above give us:
 2. **A block structure** that contains both the evidence (the training data hash) and the inference (the gradient)
 3. **An evolution rule** that is just stochastic gradient descent---the same algorithm that trains every neural network
 
-So the blockchain *is* a neural network being trained in slow motion. Every ten minutes (or whatever the block time is), the whole network collectively takes one step of gradient descent. The "longest chain" is the chain that has learned the most.
+So the protocol records a sequence of proposed neural-network updates. Every ten minutes (or whatever the block time is), the
+accepted history may apply one step of the displayed update rule. It behaves like slow distributed training only when the submitted
+gradient, learning rate, data, and acceptance rule satisfy the stated assumptions; the longest chain is not automatically the one
+that has learned the most.
 
 But notice something important: the training data is identified by content hash (an IPFS CID, say). The data itself is not stored on chain---that would be impossibly expensive. Instead, the chain stores a *commitment* to the data. Anyone can verify that the gradient was computed on the claimed data by fetching that data and spot-checking. This is crucial for the verification scheme we will develop.
 
@@ -381,11 +387,19 @@ In Proof of Useful Work, difficulty controls the *batch size*---how much trainin
 
 The beautiful thing is that this naturally stabilizes the block rate. If miners get faster hardware, they can process bigger batches in the same time, so the network increases the required batch size. If miners drop out, batches shrink. The result is steady block times regardless of how much compute joins or leaves the network---exactly like Bitcoin.
 
-But there is a deeper point here. The Landauer Invariant says that every block costs roughly the same amount of energy. This is what gives the blockchain its security. Rewriting history requires recomputing all those gradients, which requires spending all that energy again. An attacker cannot cheat thermodynamics.
+But there is a deeper point here. The declared Landauer-style invariant is an idealized energy accounting rule: its approximate
+per-block constancy requires the erasure, hardware, temperature, and difficulty assumptions in the model. It can make rewriting a
+history costly when the protocol really requires recomputing its updates, but it is not by itself a security proof or a claim that
+an attacker cannot evade all physical overheads.
 
-And the fake gradient rejection is where the Sieve earns its keep. You might think: why not just submit a random gradient? You would save 90% of the compute cost! The answer is that random gradients get caught. The directional check catches gradients that point the wrong way. The magnitude check catches gradients that are too big or too small. The causal check catches gradients that violate the structure of the data.
+And the fake gradient rejection is where the Sieve earns its keep. You might think: why not just submit a random gradient? You
+could save compute if it escaped detection. The directional, magnitude, and causal checks can reject mismatches that they are
+designed to detect; their coverage is a property of the stated certificate and challenge model, not a guarantee that every random
+gradient is caught.
 
-These checks can be done cheaply by spot-checking---recomputing the gradient on a small random subset of the data. If your gradient matches on the subset, it probably matches everywhere. If it does not match, you are caught, and you lose your stake.
+These checks can be cheaper by spot-checking---recomputing the gradient on a small random subset of the data. Matching on that
+subset supports acceptance only under a justified detectable-mismatch fraction, sampling model, and challenge rule. A mismatch can
+be caught and penalized when the protocol's detection conditions hold; a passing sample is not proof of a global match by itself.
 
 :::
 
@@ -404,11 +418,11 @@ But now consider gradient verification. To *fully* verify a gradient, you would 
 
 So we need a way to verify gradients *cheaply*. Not perfectly---we will accept some probability of missing a fake---but cheaply enough that validators can check blocks without burning as much energy as miners.
 
-The solution comes from an unexpected place: the holographic principle from black hole physics. The idea is that you do not need to check the entire gradient (the "bulk"). Instead, you can check certain boundary quantities, and the boundary determines the bulk.
+The proposed solution borrows language from holographic physics. The idea is that you do not need to check the entire gradient (the "bulk"). Instead, you check selected boundary quantities. Whether those quantities determine enough of the bulk is a property of the stated certificate assumptions, not a consequence of the black-hole analogy.
 
 Think of it this way. If I give you a gradient vector with a million components, checking all of them requires a million operations. But if I also give you certain summary statistics---the gradient's total length, its projection onto certain test vectors, its curvature profile---you can check *those* quickly. And if those boundary quantities are wrong, the gradient is definitely fake. If they are right, the gradient is *probably* legitimate.
 
-This is spot-checking elevated to a principle. The Causal Information Bound tells us exactly how much information can hide in the bulk without showing up on the boundary. The answer, remarkably, is: not very much. A fraudulent gradient *will* leave traces on the boundary, and we can catch it.
+This is spot-checking paired with an operational capacity permit. The Causal Information Bound limits the chosen bulk-information proxy relative to the declared boundary capacity; it does not by itself guarantee that every fraudulent gradient changes the measured summaries. A soundness claim needs the certificate's injectivity or detection hypotheses, plus the stated spot-check model.
 
 :::
 
@@ -490,13 +504,13 @@ The miner submits not just the gradient, but a *certificate*---a small bundle of
 
 But why should we trust the certificate? The miner could lie! The answer is: the miner cannot lie *consistently*. Here is why.
 
-**Energy conservation.** The gradient norm tells you how much "learning happened" in this block. If the miner claims a big gradient (lots of learning) but the certificate shows low energy, that violates thermodynamics. You cannot get learning for free. The Landauer bound acts as a built-in lie detector.
+**Energy accounting.** The gradient norm is a model quantity, not automatically a calorimetric measurement of learning. A Landauer comparison can constrain a claimed computation only after the hardware, logical erasures, temperature, and measurement convention have been specified; it is not a built-in lie detector by itself.
 
-**Spot-check amplification.** We do not check the whole gradient, but we do check random samples. If the miner's gradient is wrong in, say, 10% of its components, then each random sample has a 10% chance of catching them. Check 50 random samples, and the probability of *not* catching a 10%-wrong gradient is $(0.9)^{50} \approx 0.005$. With enough spot-checks, fraudulent gradients get caught with overwhelming probability.
+**Spot-check amplification.** We do not check the whole gradient, but we do check random samples. If the sampling scheme independently hits a detectable mismatch in 10% of the tested coordinates, then 50 checks give the illustrative escape estimate $(0.9)^{50} \approx 0.005$. The estimate requires that mismatch fraction, independence, and the detection rule be justified; it does not make every fraudulent gradient detectable.
 
-**Boundary-bulk correspondence.** This is the deepest part. The Causal Information Bound says that you cannot hide arbitrary amounts of information in the bulk without it affecting the boundary. If the miner submits a gradient that differs significantly from the true one, that difference *will* show up in the boundary flux. The boundary is not just a summary; it is a *sufficient* summary.
+**Boundary-bulk correspondence.** This is the deepest part, and it is where the hypotheses matter most. The operational capacity bound limits the chosen bulk observable under its declared channel and resolution. A boundary flux can detect a gradient mismatch only when the restriction map, certificate statistics, and spot-check model supply the required separation or injectivity. The boundary is not automatically a sufficient summary merely because it is called holographic.
 
-The upshot: verification costs $O(\sqrt{N})$ instead of $O(N)$. That is a huge improvement. A miner processing a million training samples can have their work verified with only a thousand spot-checks.
+The upshot is an $O(\sqrt{N})$ verification budget only for the stated sampling protocol and its error model, rather than a universal consequence of a boundary analogy. A million-sample job may therefore use about a thousand checks in that design, provided the coverage estimate has been validated.
 
 :::
 
@@ -740,7 +754,9 @@ So here is the question: can we use this meaning to improve consensus? Can we pi
 
 The answer is yes, and the mechanism is beautiful. It is based on a concept called *metric friction*.
 
-Think of each validator as having their own view of the world---their own internal model of what is going on. When validators train on the same data, their views converge. Their internal metrics become aligned, like iron filings lining up in a magnetic field. This is "gauge locking."
+Think of each validator as having their own view of the world---their own internal model of what is going on. When
+validators train on the same data, their views may converge. A metric-alignment score can then decrease, but this is an
+empirical property of the training dynamics, not a consequence of gauge-curvature flatness alone.
 
 But when a validator submits a fraudulent gradient, their view diverges from everyone else's. There is friction between their metric and the honest validators' metrics. This friction is detectable.
 
@@ -756,11 +772,11 @@ Nakamoto Consensus uses the "Heaviest Chain" rule. We introduce the **Minimum Fr
 Each validator $i$ maintains a local metric tensor $G^{(i)}$ on the shared latent manifold. The **Network Metric Friction** between chains $\mathcal{C}_A$ and $\mathcal{C}_B$ is:
 
 $$
-\mathcal{F}(\mathcal{C}_A, \mathcal{C}_B) := \sum_{i,j} \mathcal{F}_{ij}(\Theta_{\text{head}}^A, \Theta_{\text{head}}^B)
+\Phi(\mathcal{C}_A, \mathcal{C}_B) := \sum_{i,j} \Phi_{ij}(\Theta_{\text{head}}^A, \Theta_{\text{head}}^B)
 
 $$
 
-where $\mathcal{F}_{ij}$ is the pairwise metric friction (Definition {prf:ref}`def-metric-friction`).
+where $\Phi_{ij}$ is the pairwise metric distortion (Definition {prf:ref}`def-metric-friction`).
 
 :::
 
@@ -770,7 +786,7 @@ where $\mathcal{F}_{ij}$ is the pairwise metric friction (Definition {prf:ref}`d
 The **Canonical Chain** is selected by minimizing global metric friction:
 
 $$
-\mathcal{C}^* = \arg\min_{\mathcal{C}} \sum_{i < j} \mathcal{F}_{ij}(\Theta_{\text{head}}^\mathcal{C})
+\mathcal{C}^* = \arg\min_{\mathcal{C}} \sum_{i < j} \Phi_{ij}(\Theta_{\text{head}}^\mathcal{C})
 
 $$
 
@@ -807,7 +823,11 @@ The Metric Friction Consensus achieves Byzantine Fault Tolerance against $f < N/
 
 *Proof sketch.*
 
-**Step 1 (Honest Majority Alignment).** By Theorem {prf:ref}`thm-spontaneous-gauge-locking`, honest validators minimizing prediction error on the same data undergo spontaneous gauge locking: $G^{(i)} \to G^{(j)}$ for honest $i, j$.
+**Step 1 (Honest Majority Alignment).** The conditional gauge-locking proposition
+{prf:ref}`thm-spontaneous-gauge-locking` concerns the relative connection, not the private metrics. For this protocol
+we therefore assume or measure a separate training permit under which honest validators minimize the declared
+$\Phi_{ij}$ term and obtain $\Phi_{ij}\leq c_1\epsilon^2$ on the validation set. The BFT argument below is
+conditional on that empirical alignment permit.
 
 **Step 2 (Adversarial Inflation).** By Theorem {prf:ref}`thm-adversarial-mass-inflation` (Adversarial Mass Inflation), any gradient $g_{\text{adv}} \neq g_{\text{true}}$ introduces non-zero metric perturbation:
 
@@ -816,23 +836,25 @@ $$
 
 $$
 
-where $\mathcal{G}_{ij}$ is the Game Tensor (Definition {prf:ref}`def-gauge-covariant-game-tensor`). The key insight: *there is no "zero-curvature" way to submit a fake gradient*.
+where $\mathcal{G}_{ij}$ is the Game Tensor (Definition {prf:ref}`def-gauge-covariant-game-tensor`). A non-zero
+gradient mismatch is detectable only when the declared metric proxy and validation data separate it from honest noise;
+gauge-curvature flatness alone does not certify a gradient.
 
 **Step 3 (Friction Separation).** Let $\epsilon$ be the natural gradient variance among honest validators. The pairwise friction satisfies:
 
-- Honest-Honest: $\mathcal{F}_{ij} \leq c_1 \epsilon^2$ (gauge-locked, small noise)
-- Honest-Adversarial: $\mathcal{F}_{ik} \geq c_2 \alpha_{\text{adv}}$ (metric mismatch)
+- Honest-Honest: $\Phi_{ij} \leq c_1 \epsilon^2$ (small empirical distortion)
+- Honest-Adversarial: $\Phi_{ik} \geq c_2 \alpha_{\text{adv}}$ (declared metric mismatch)
 
 For the attack to succeed while evading detection, the adversary requires $\alpha_{\text{adv}} < c_1 \epsilon^2 / c_2$. But such small perturbations have negligible effect on model training—a successful attack requires $\alpha_{\text{adv}} \gg \epsilon$.
 
 **Step 4 (Selection).** The total friction of a chain proposed by honest validators is:
 
 $$
-\mathcal{F}_{\text{total}}^{\text{honest}} \leq \binom{N-f}{2} c_1 \epsilon^2 + f(N-f) c_2 \alpha_{\text{adv}}
+\Phi_{\text{total}}^{\text{honest}} \leq \binom{N-f}{2} c_1 \epsilon^2 + f(N-f) c_2 \alpha_{\text{adv}}
 
 $$
 
-An adversarial chain has friction at least $\mathcal{F}_{\text{total}}^{\text{adv}} \geq (N-f) c_2 \alpha_{\text{adv}}$.
+An adversarial chain has distortion at least $\Phi_{\text{total}}^{\text{adv}} \geq (N-f) c_2 \alpha_{\text{adv}}$.
 
 With $f < N/3$ and $\alpha_{\text{adv}} \gg \epsilon^2$, the honest chain minimizes total friction. $\square$
 
@@ -859,7 +881,7 @@ $$
 
 $$
 
-where weights $w_i = 1/\mathcal{F}_{i,\text{total}}$ penalize high-friction validators.
+where weights $w_i = 1/\Phi_{i,\text{total}}$ penalize high-distortion validators.
 
 **Step 2.** Adversarial validators have inflated friction:
 
@@ -894,13 +916,13 @@ I want to make sure you appreciate what just happened, because it is quite remar
 
 In traditional Byzantine Fault Tolerant systems, adversaries are dealt with by voting. If two-thirds of validators agree, the minority is outvoted. The honest majority forces the dishonest minority to comply.
 
-But geometric damping works differently. We do not force adversaries to do anything. We do not vote them out. We do not even need to identify who they are. Instead, their updates simply *do not propagate*.
+But geometric damping is a conditional mechanism. We do not force adversaries to do anything. If the validation metric separates their updates and the inverse-friction rule is applied, their accepted influence can be attenuated; the metric construction alone does not ensure that updates fail to propagate.
 
 Here is the intuition. Every gradient update perturbs the metric tensor---it changes the shape of the space. Honest gradients perturb the metric in ways that are consistent with the data. Adversarial gradients perturb it in ways that are inconsistent.
 
-When we weight updates by inverse friction, we are saying: updates that create a lot of geometric disruption get small weights. Updates that flow smoothly get large weights. The adversary's updates are geometrically disruptive by construction---they are trying to move the model somewhere the data does not support.
+When we weight updates by inverse friction, we are saying: updates that create a lot of geometric disruption get small weights. Updates that flow smoothly get large weights. An adversary's updates may be geometrically disruptive, but that is an empirical separation condition, not a consequence of the label "adversarial".
 
-The result is that adversarial influence decays exponentially with the amount of geometric mismatch. The adversary is not defeated by force; they are defeated by irrelevance. Their voice becomes static, their influence becomes noise, and the honest trajectory continues unperturbed.
+When the stated friction lower bounds and weighting assumptions hold, the analysis gives an attenuation estimate as the geometric mismatch grows. The adversary is then made less influential by the rule; honest evolution can still be perturbed when the separation or validation assumptions fail.
 
 This is consensus through coherence, not consensus through coercion.
 
@@ -919,7 +941,7 @@ What is money? Usually we think of it as a social agreement---a piece of paper t
 
 Bitcoin tried to change this by making money scarce. There will only ever be 21 million bitcoins, and producing each one requires real physical work. But that work is *arbitrary*---the hash computation serves no purpose except to be difficult.
 
-The COG token takes the next step. Each token is not just scarce; it represents *actual cognitive work* done on behalf of the network. When you hold a COG token, you hold a certificate that says: "Someone spent energy teaching the global model. This energy is permanently recorded in the parameters of a neural network that now knows more than it did before."
+The COG token takes the next proposed step. It is intended to reward scarce, validated computation that improves a shared model. Holding a token is not by itself a certificate that the model learned something; that interpretation requires the protocol's validation rules and an independent capability measure.
 
 This is a profound shift in what "backing" a currency means. The COG is not backed by gold, or by government decree, or by scarcity alone. It is backed by *knowledge*. Every token minted represents a real reduction in the model's uncertainty about the world.
 
@@ -1086,17 +1108,17 @@ where $S_{\text{overhead}}$ is the entropy cost of coordination.
 
 :::{div} feynman-prose
 
-Now we come to what I think is the deepest idea in this whole section, and it connects to something physicists have been puzzling over since Bekenstein and Hawking studied black holes.
+Now we come to what I think is the deepest analogy in this whole section, and it connects to questions raised by Bekenstein and Hawking about black holes.
 
-The holographic principle says: the maximum information that can be stored in a region of space is proportional to its *surface area*, not its volume. This is bizarre. You would think a bigger box could hold more information. But no---what matters is the boundary.
+In quantum gravity, the holographic principle is a conjectural organizing idea about how bulk information might be represented by boundary data; it is not a universal storage law for arbitrary models. The area relation for black-hole entropy holds under its semiclassical assumptions, while the stronger claim that every bulk degree of freedom is recoverable from that surface requires a specific theory.
 
-Black holes make this concrete. The entropy of a black hole is proportional to the area of its event horizon. All the information about whatever fell in is somehow encoded on that two-dimensional surface.
+That distinction matters here. Our ledger can be boundary-like as a data structure, but the physical black-hole interpretation does not follow from naming an area or a screen.
 
 Now here is the connection. The blockchain is a *boundary* too. It is the interface between the past (what has been learned) and the future (what remains to learn). Every block adds a layer to this boundary, recording the gradients that shaped the model.
 
-And just like a holographic screen in physics, the blockchain encodes the bulk. Given the chain, you can reconstruct the model---run through all the gradients starting from random initialization, and you get the current weights. The three-dimensional "bulk" (the full model) is determined by the one-dimensional "boundary" (the sequence of blocks).
+The ledger is boundary-like as a record of updates. If initialization, optimizer, data order, and every update are fixed, replaying the chain can reconstruct the recorded model state. That is a deterministic replay property of the protocol. It does not establish a physical bulk-to-boundary theorem or guarantee reconstruction when any of those inputs are omitted.
 
-This is not just a metaphor. The information bounds work out. The Causal Information Bound (which we used for verification) is essentially a holographic bound: bulk information cannot exceed boundary capacity. The blockchain respects this bound by construction.
+The area language remains a model-level analogy. The Causal Information Bound is an operational capacity diagnostic under its declared channel, resolution, dimensional, and boundary hypotheses. The ledger satisfies that diagnostic only after those quantities are measured and checked; the data structure does not enforce a physical area law by construction.
 
 :::
 
@@ -1202,7 +1224,9 @@ The chain renormalization is worth thinking about carefully, because it tells us
 
 As the blockchain grows, it becomes unwieldy. Thousands, then millions, then billions of blocks---each containing gradients, certificates, metadata. At some point, you cannot keep all of it. You must *forget*.
 
-But forgetting is not free. The Landauer principle says: erasing information costs energy. When you compress old blocks into epoch summaries, you are literally paying to forget.
+But forgetting is not free in the idealized thermodynamic setting. The Landauer principle assigns a lower bound to logically
+irreversible erasure under its thermal assumptions. Whether compressing old blocks incurs that bound depends on the hardware and
+protocol; the ledger model should measure those costs rather than call every compression step a literal erasure.
 
 However---and this is the key---not all information is equally important. Early in training, the model makes big, dramatic updates. Later, it makes small refinements. The early gradients carry more "weight" in a sense---they determined the broad structure of what the model knows.
 
@@ -1250,11 +1274,11 @@ $$
 **Step 3.** The Metric Friction between honest and attack chains is:
 
 $$
-\mathcal{F}(\mathcal{C}, \mathcal{C}') = \|G - \tilde{G}_{\text{attack}}\|_F^2 \sim O(\alpha_{\text{adv}}^2)
+\Phi(\mathcal{C}, \mathcal{C}') = \|G - \tilde{G}_{\text{attack}}\|_F^2 \sim O(\alpha_{\text{adv}}^2)
 
 $$
 
-**Step 4.** When $\mathcal{F} > \mathcal{F}_{\text{crit}}$ (Fission Threshold from Theorem {prf:ref}`thm-fission-criterion`), the network undergoes **Spontaneous Fission**:
+**Step 4.** When $\Phi > \Phi_{\text{crit}}$ (the declared fission threshold from Theorem {prf:ref}`thm-fission-criterion`), the network undergoes **Spontaneous Fission**:
 - The attacker ends up on a high-friction shard
 - The honest validators continue on the low-friction chain
 
@@ -1276,7 +1300,7 @@ Now, here is the key: the metric friction between the attacker's model and the h
 
 If the friction is high enough, the network *fissions*. The attacker ends up on their own shard, talking to themselves. No honest validator will follow them because following them increases friction. The attacker has not "won"---they have exiled themselves.
 
-And then the final blow: the attacker's shard enters Causal Stasis. No one submits new training data to them. No one queries their model for inference. They have 51% of the compute, but 0% of the economic activity. Their chain dies of neglect.
+If no one submits training data to the attacker's shard and no one queries its model, that shard may become economically inactive. Calling the resulting slowdown **Causal Stasis** still requires the radial metric, force, boundary, and coupling hypotheses of the cited result; lack of participation alone does not prove a universal freeze. Under those conditions, the chain can die of neglect even while retaining compute.
 
 This is security through coherence. You cannot buy alignment; you can only earn it by being honest.
 
@@ -1317,7 +1341,7 @@ Flash loans are a fascinating attack vector that emerged in DeFi. The idea is: b
 
 These attacks exploit the fact that information in a blockchain propagates slowly. You can see a price update coming and get ahead of it (front-running), or you can create a price change and exploit it before anyone can react.
 
-The Causal Information Bound provides a deep defense. Here is the intuition.
+The Causal Information Bound suggests a possible defense, but it is an operational diagnostic whose source, observation, intervention, and capacity hypotheses must be checked. Here is the intuition.
 
 Every piece of information in the system has a *causal history*---a chain of events that produced it. When you look at a price, that price came from trades, which came from decisions, which came from observations. This chain has a finite propagation speed.
 
@@ -1327,67 +1351,43 @@ Node 62 (CausalityViolationCheck) detects this by comparing two probability dist
 - $P_{\text{observational}}$: what you *should* have known at the time you acted
 - $P_{\text{interventional}}$: what you *did* know, as revealed by your actions
 
-If the gap is too large---if your actions reveal knowledge of the future---the transaction is rejected. Not because we caught you cheating, but because your behavior is *geometrically inconsistent* with the causal structure of reality.
+If the measured gap is too large under that declared model, the transaction can be rejected by the protocol. This is a model-consistency decision, not a universal proof that front-running or flash loans are geometrically impossible in every market.
 
 :::
 
-:::{prf:theorem} Corruption Detection via Babel Limit
+:::{prf:remark} Conditional Corruption Detection via a Rate--Distortion Test
 :label: thm-corruption-babel-detection
 
-Sustained deception by corrupt actors exceeds the **Babel Limit** (Theorem {prf:ref}`thm-babel-limit`) and causes loss of gauge locking.
+The Babel proposition {prf:ref}`thm-babel-limit` supplies a channel converse for a declared source and distortion
+measure. In this protocol, a corrupt validator is flagged only when its required rate
+$R_{\Delta U}^{\mathrm{corrupt}}(\varepsilon)$ exceeds the measured channel capacity $C_{\mathcal{L}}$ or when its
+held-out distortion $\Phi_{ik}$ exceeds the validation threshold. This is a conditional diagnostic, not a universal
+information-theoretic proof that deception is impossible.
 
-*Proof.*
-
-**Step 1.** A corrupt actor broadcasts metric $G_{\text{corrupt}}$ claiming to optimize the objective, but their actual gradient flow generates different geometry.
-
-**Step 2.** Maintaining the deception requires transmitting additional fake metric information:
-
-$$
-I_{\text{deception}} = H(G_{\text{corrupt}}) - H(G_{\text{true}})
-
-$$
-
-**Step 3.** By Theorem {prf:ref}`thm-babel-limit`, complete gauge locking requires:
-
-$$
-\dim(\mathfrak{g}) \cdot H(G) \leq C_{\mathcal{L}}
-
-$$
-
-**Step 4.** The deception increases effective entropy, violating the Babel Limit:
-
-$$
-\dim(\mathfrak{g}) \cdot (H(G_{\text{true}}) + I_{\text{deception}}) > C_{\mathcal{L}}
-
-$$
-
-**Step 5.** The corrupt actor loses gauge locking with honest validators. Their words become "noise"---they are **topologically exiled** from consensus. $\square$
-
-*Interpretation:* You cannot lie to the network because you cannot fake the **thermodynamic trace** of your actions.
-
+The test requires a source model for the relative gauge variable, an explicit distortion measure, and an independently
+estimated channel capacity. Without those quantities, entropy differences such as
+$H(G_{\mathrm{corrupt}})-H(G_{\mathrm{true}})$ do not certify a capacity violation.
 :::
+
 
 :::{div} feynman-prose
 
-The Babel Limit attack is perhaps the most insidious: what if validators *collude* to deceive everyone? They coordinate in secret, they agree to broadcast false information, they maintain a consistent story. How can the network detect this?
+The Babel Limit attack asks what happens when validators collude to maintain a false story. The rate--distortion
+diagnostic gives a disciplined question, not a universal answer: for the chosen relative-gauge source, what rate
+$R_{\Delta U}^{\mathrm{corrupt}}(\varepsilon)$ is needed to reproduce the lie within distortion $\varepsilon$?
 
-The answer comes from information theory, specifically from the Babel Limit theorem that we proved earlier in the book. Here is the essence.
+To use that question, the protocol must declare a source model, a distortion measure, and an independently
+estimated channel capacity $C_{\mathcal{L}}$. A validator can then be flagged when the required rate exceeds that
+capacity or when its distortion $\Phi_{ik}$ on held-out transitions exceeds the validation threshold. Those are
+testable conditions of this protocol.
 
-To maintain a deception, the corrupt actors must coordinate. They need to agree on the lie and keep their stories straight. This coordination requires *communication*. They must exchange enough information to synchronize their fake metrics.
+The honest validators' agreement is also an empirical permit: training on the same data may reduce their
+distortion, but convergence is not automatic. A simple lie may fit within the channel, while a complicated lie
+may be exposed by held-out validation; neither outcome follows from a capacity number alone.
 
-But communication has limits. The channel capacity between any two validators is finite. The amount of coordination they can achieve is bounded by this capacity.
-
-Meanwhile, the honest validators are all learning from the same data. Their metrics *naturally* converge, without needing to communicate much at all. The data itself provides the coordination signal.
-
-The corrupt actors face a dilemma:
-- If their lie is simple, it creates detectable metric friction with honest validators.
-- If their lie is complex (to avoid friction), they need more coordination than their channel capacity allows.
-
-The Babel Limit is the information-theoretic boundary where deception becomes impossible. Below it, you can maintain a consistent lie for a while. Above it, your lie becomes inconsistent, your metrics diverge, and you lose gauge locking.
-
-And once you lose gauge locking, your messages become unintelligible to honest validators. You are not refuted; you are *rendered meaningless*. Your words are noise. You have exiled yourself from consensus not by being wrong, but by being incoherent.
-
-This is, I think, a genuinely new kind of security property. Traditional security says: we can detect your lie. Babel security says: we do not need to detect your lie, because you cannot tell it coherently in the first place.
+So Babel security is a conditional diagnostic. Without the source, target distortion, capacity estimate, and
+held-out tests, entropy differences do not prove that deception is impossible, that messages become noise, or
+that a colluding validator is excluded from consensus.
 
 :::
 
@@ -1917,22 +1917,25 @@ We started with a simple observation: Bitcoin wastes energy. The security comes 
 
 We asked: can we do better? Can we have the security without the waste?
 
-The answer, it turns out, is yes. The key insight is that the Landauer bound does not care *what* you compute---it only cares how many bits you erase. Computing gradients erases as many bits as computing hashes. So we can swap one for the other.
+The proposal can work only if the useful-update protocol supplies its own correctness and incentive guarantees. The Landauer
+bound constrains logically irreversible erasures under its assumptions; it does not say that computing gradients erases the same
+number of bits as hashing, nor that equal thermodynamic cost gives equal security. Swapping the work requires separate validation,
+replay, and adversarial-cost analyses.
 
 But swapping computation types creates new problems:
 - Verification asymmetry: hashes are cheap to check, gradients are expensive
 - Semantic content: gradients can be good or bad, not just valid or invalid
 - Coordination: validators must agree on what "the model" is
 
-We solved verification with holographic certificates---boundary data that constrains the bulk. We solved semantic quality with the Sieve---constraints that reject harmful gradients. We solved coordination with gauge locking---validators who learn from the same data naturally converge.
+We proposed verification with boundary certificates whose soundness depends on the declared detection assumptions. We addressed semantic quality with the Sieve---constraints that reject harmful gradients. We addressed coordination with gauge locking---validators who learn from the same data may converge, subject to the protocol's agreement and validation conditions.
 
-The resulting system has remarkable properties:
-- Energy is not wasted; it is invested in intelligence
-- Security comes from geometric coherence, not just computational cost
-- Adversaries are not outvoted; they are geometrically isolated
-- The token tracks real capability improvement, not just scarcity
+The resulting design has several intended properties, each of which still depends on the protocol and its validation assumptions:
+- Energy is directed toward proposed model updates, with usefulness checked by the declared tests.
+- Security combines computational cost with geometric and held-out validation; neither ingredient alone proves honesty.
+- Under the stated fission and activity hypotheses, incompatible updates can be separated from the accepted trajectory.
+- The token is intended to track useful capability improvement, which requires an independent measurement of that improvement.
 
-And perhaps most profoundly: the blockchain *is* the AGI. Every block mined makes the network smarter. The ledger records not transactions, but thoughts---a frozen history of collective learning.
+The blockchain can therefore serve as a shared training ledger. Calling it an AGI, or saying that every block makes the network smarter, is a conjectural product and physical identification requiring capability tests and governance assumptions. The mathematical claim is narrower: with fixed initialization, data, optimizer, and updates, replay reconstructs the recorded model history.
 
 This is, I believe, how the planetary computation layer should work. Not burning energy to prove you burned energy, but burning energy to learn something true about the world.
 

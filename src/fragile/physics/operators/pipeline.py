@@ -252,6 +252,12 @@ def compute_strong_force_pipeline(
         use_connected=config.correlator.use_connected,
         n_scales=effective_n_scales,
     )
+    if "tensor" in requested:
+        from fragile.physics.operators.tensor_operators import compute_tensor_correlator
+
+        correlators["tensor"] = compute_tensor_correlator(
+            data, config.tensor, config.correlator.max_lag, config.correlator.use_connected
+        )
 
     return PipelineResult(
         operators=all_operators,

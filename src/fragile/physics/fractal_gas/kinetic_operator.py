@@ -13,6 +13,8 @@ Mathematical notation:
 
 from __future__ import annotations
 
+import warnings
+
 import panel as pn
 import param
 import torch
@@ -63,7 +65,7 @@ class KineticOperator(PanelModel):
     )
     auto_thermostat = param.Boolean(
         default=False,
-        doc=("Enable temperature-based auto thermostat: " "use β_eff = 1/T instead of manual β."),
+        doc=("Enable temperature-based auto thermostat: use β_eff = 1/T instead of manual β."),
     )
     temperature = param.Number(
         default=0.5,
@@ -222,6 +224,9 @@ class KineticOperator(PanelModel):
         viscous_neighbor_weighting: str = "inverse_riemannian_distance",
         beta_curl: float = 2.0,
         curl_field=None,
+        auto_thermostat: bool = False,
+        n_kinetic_steps: int = 1,
+        integrator: str = "boris-baoab",
         device: torch.device = None,
         dtype: torch.dtype = None,
     ):
@@ -261,6 +266,9 @@ class KineticOperator(PanelModel):
             viscous_neighbor_weighting=viscous_neighbor_weighting,
             beta_curl=beta_curl,
             curl_field=curl_field,
+            auto_thermostat=auto_thermostat,
+            n_kinetic_steps=n_kinetic_steps,
+            integrator=integrator,
         )
         self.use_viscous_coupling = use_viscous_coupling
         self.device = device if device is not None else torch.device("cpu")
@@ -330,6 +338,8 @@ class KineticOperator(PanelModel):
 
         """
 
+        if not self.use_viscous_coupling or self.nu == 0:
+            return torch.zeros_like(v)
         if neighbor_edges is None or neighbor_edges.numel() == 0:
             import warnings
 
@@ -348,6 +358,17 @@ class KineticOperator(PanelModel):
         if not valid.any():
             return torch.zeros_like(v)
         i, j = i[valid], j[valid]
+        if edge_weights is None:
+            from fragile.physics.geometry.weights import compute_edge_weights
+
+            edge_weights = compute_edge_weights(
+                x,
+                edges.t(),
+                mode=self.viscous_neighbor_weighting,
+                length_scale=self.viscous_length_scale,
+                cell_volumes=torch.ones(x.shape[0], device=x.device, dtype=x.dtype),
+            )
+        edge_weights = edge_weights.to(device=v.device, dtype=v.dtype)
         edge_weights = edge_weights[valid]
 
         # Velocity coupling: F_visc_i = nu * sum_j w_ij (v_j - v_i)
@@ -413,21 +434,30 @@ class KineticOperator(PanelModel):
         A = A.reshape(N, d, d)
         B = B.reshape(N, d, d)
 
-        # Solve A = J @ B for J via J^T = lstsq(B, A^T)  (B is symmetric)
-        # lstsq handles rank-deficient B (e.g. walker with too few neighbors)
-        J_T = torch.linalg.lstsq(B, A.transpose(-1, -2)).solution  # [N, d, d]
+        # Solve A = J @ B for J via J^T = solve(B, A^T)  (B is symmetric PSD).
+        # A Tikhonov term relative to the local scale of B keeps rank-deficient
+        # systems (walkers with too few neighbours, coincident positions) finite
+        # and, unlike ``torch.linalg.lstsq``, the solve is deterministic, so a
+        # seeded run reproduces bit for bit.
+        trace_scale = torch.diagonal(B, dim1=-2, dim2=-1).sum(-1) / d  # [N]
+        eps = torch.finfo(dtype).eps ** 0.5
+        ridge = (trace_scale * eps).clamp_min(torch.finfo(dtype).tiny)  # [N]
+        eye = torch.eye(d, device=device, dtype=dtype)
+        B_reg = B + ridge[:, None, None] * eye
+        J_T = torch.linalg.solve(B_reg, A.transpose(-1, -2))  # [N, d, d]
 
         # Extract antisymmetric part: curl = (J - J^T) / 2
         # Since J = J_T^T, this is (J_T^T - J_T) / 2
         return (J_T.transpose(-1, -2) - J_T) / 2
 
-    def _boris_rotate(self, v: Tensor, curl: Tensor) -> Tensor:
+    def _boris_rotate(self, v: Tensor, curl: Tensor, duration: float | None = None) -> Tensor:
         """Apply Boris rotation for curl-driven velocity updates.
 
         Supports two curl representations:
         - Vector field [N, 3] (3D only), interpreted as a magnetic field.
         - Matrix field [N, d, d], interpreted as a skew-symmetric 2-form.
         """
+        duration = self.dt if duration is None else duration
         if curl.device != v.device or curl.dtype != v.dtype:
             curl = curl.to(device=v.device, dtype=v.dtype)
 
@@ -439,8 +469,10 @@ class KineticOperator(PanelModel):
                 msg = f"curl_field returned {tuple(curl.shape)}, expected {tuple(v.shape)}"
                 raise ValueError(msg)
 
-            t = 0.5 * self.beta_curl * self.dt * curl
+            t = 0.5 * self.beta_curl * duration * curl
             t_mag_sq = (t * t).sum(dim=-1, keepdim=True)
+            # Cayley rotation angle 2*atan(|t|): meaningful only when small.
+            self._last_boris_angle = 2.0 * torch.atan(t_mag_sq.sqrt().squeeze(-1))
             s = 2.0 * t / (1.0 + t_mag_sq)
             v_prime = v + torch.cross(v, t, dim=-1)
             return v + torch.cross(v_prime, s, dim=-1)
@@ -457,7 +489,9 @@ class KineticOperator(PanelModel):
                 msg = f"curl_field must be skew-symmetric (2-form); max asymmetry {max_sym:.2e}"
                 raise ValueError(msg)
 
-            A = 0.5 * self.beta_curl * self.dt * curl
+            A = 0.5 * self.beta_curl * duration * curl
+            # Rotation angle of the Cayley transform in the dominant 2-plane.
+            self._last_boris_angle = 2.0 * torch.atan(torch.linalg.matrix_norm(A, ord=2))
             eye = torch.eye(d, device=v.device, dtype=v.dtype).expand(N, d, d)
             rhs = torch.bmm(eye + A, v.unsqueeze(-1))
             return torch.linalg.solve(eye - A, rhs).squeeze(-1)
@@ -487,17 +521,25 @@ class KineticOperator(PanelModel):
                 edge_weights=edge_weights,
             )
 
-        v_minus = v + (self.dt / 2) * force_viscous
+        # This is one BAOAB half B-step, split around a half-step rotation.
+        duration = self.dt / 2
+        v_minus = v + (duration / 2) * force_viscous
 
         curl = None
-        if self.curl_field is not None and self.beta_curl > 0:
+        if self.integrator == "boris-baoab" and self.curl_field is not None and self.beta_curl > 0:
             # External curl field
             curl = self.curl_field(x)
-            v_rot = self._boris_rotate(v_minus, curl)
-        elif self.beta_curl > 0 and neighbor_edges is not None and edge_weights is not None:
+            v_rot = self._boris_rotate(v_minus, curl, duration=duration)
+        elif (
+            self.integrator == "boris-baoab"
+            and self.use_viscous_coupling
+            and self.beta_curl > 0
+            and neighbor_edges is not None
+            and edge_weights is not None
+        ):
             # Emergent curl from viscous force Jacobian
             curl = self._compute_viscous_curl(x, force_viscous, neighbor_edges, edge_weights)
-            v_rot = self._boris_rotate(v_minus, curl)
+            v_rot = self._boris_rotate(v_minus, curl, duration=duration)
         else:
             v_rot = v_minus
 
@@ -508,7 +550,7 @@ class KineticOperator(PanelModel):
             edge_weights=edge_weights,
         )
 
-        return v_rot + (self.dt / 2) * viscous_rot, curl
+        return v_rot + (duration / 2) * viscous_rot, curl
 
     def apply(
         self,
@@ -570,6 +612,7 @@ class KineticOperator(PanelModel):
             })
 
         # === FIRST B STEP: Apply forces + optional Boris rotation ===
+        self._last_boris_angle = None
         v, curl_1 = self._apply_boris_kick(
             x,
             v,
@@ -577,12 +620,29 @@ class KineticOperator(PanelModel):
             edge_weights=edge_weights,
             force_viscous=force_viscous,
         )
+        boris_angle = self._last_boris_angle
+        if boris_angle is not None:
+            # The emergent curl scales like 1/spacing, so from a coincident
+            # start the half-step rotation saturates near pi for many walkers:
+            # the velocity direction is reflected rather than rotated and the
+            # recorded forces no longer explain the recorded velocity change.
+            median_angle = float(boris_angle.median().item())
+            if median_angle > 1.0 and not getattr(self, "_warned_boris_angle", False):
+                self._warned_boris_angle = True
+                warnings.warn(
+                    f"Boris curl rotation angle is large (median {median_angle:.2f} rad per "
+                    "half step); the curl term is outside the small-angle regime of the "
+                    "integrator for this step. Reduce beta_curl/delta_t or spread the "
+                    "initial positions.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
         # === FIRST A STEP: Update positions ===
         x += (self.dt / 2) * v
 
         # === O STEP: Ornstein-Uhlenbeck with optional anisotropic noise ===
         # Isotropic: standard BAOAB with constant noise amplitude
-        xi = torch.randn(N, d, device=self.device, dtype=self.dtype)
+        xi = torch.randn(N, d, device=v.device, dtype=v.dtype)
         v = self.c1 * v + self.c2 * xi
         noise = self.c2 * xi
 
@@ -604,5 +664,7 @@ class KineticOperator(PanelModel):
             # Record the curl from the first B-step (representative of this timestep)
             if curl_1 is not None:
                 info["curl_field"] = curl_1
+            if boris_angle is not None:
+                info["boris_rotation_angle"] = boris_angle
             return new_state, info
         return new_state

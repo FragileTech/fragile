@@ -70,10 +70,17 @@ class TestBuildDelaunayEdges:
         assert edges.shape == (0, 2)
 
     def test_collinear_points(self) -> None:
-        """Collinear points in 2D cannot form a 2-simplex; returns empty."""
+        """Collinear sites have nearest-neighbor edges in their affine span."""
         points = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0], [3.0, 0.0]])
         edges = build_delaunay_edges(points)
-        assert edges.shape == (0, 2)
+        assert set(map(tuple, edges)) == {
+            (0, 1),
+            (1, 0),
+            (1, 2),
+            (2, 1),
+            (2, 3),
+            (3, 2),
+        }
 
     def test_deterministic(self, grid_2d_positions: Tensor) -> None:
         """Same input gives same output every time."""

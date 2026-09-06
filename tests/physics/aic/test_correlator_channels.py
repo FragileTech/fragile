@@ -1,10 +1,4 @@
-"""AIC parity tests for correlator_channels module.
-
-Verifies that the AIC copy (fragile.physics.aic.correlator_channels) produces
-identical outputs to the original (fragile.fractalai.qft.correlator_channels).
-Since the AIC files are verbatim copies that still import from the original
-path, all outputs must be bit-for-bit identical.
-"""
+"""Consistency tests for the two supported physics correlator APIs."""
 
 from __future__ import annotations
 
@@ -12,18 +6,6 @@ import pytest
 import torch
 from torch import Tensor
 
-from fragile.fractalai.qft.correlator_channels import (
-    bootstrap_correlator_error,
-    CHANNEL_REGISTRY,
-    compute_channel_correlator,
-    compute_correlator_fft,
-    compute_effective_mass_torch,
-    ConvolutionalAICExtractor,
-    CorrelatorConfig,
-    extract_mass_aic,
-    extract_mass_linear,
-    get_channel_class,
-)
 from fragile.physics.aic.correlator_channels import (
     bootstrap_correlator_error as new_bootstrap,
     CHANNEL_REGISTRY as NEW_CHANNEL_REGISTRY,
@@ -35,6 +17,18 @@ from fragile.physics.aic.correlator_channels import (
     extract_mass_aic as new_extract_aic,
     extract_mass_linear as new_extract_linear,
     get_channel_class as new_get_channel_class,
+)
+from fragile.physics.new_channels.correlator_channels import (
+    bootstrap_correlator_error,
+    CHANNEL_REGISTRY,
+    compute_channel_correlator,
+    compute_correlator_fft,
+    compute_effective_mass_torch,
+    ConvolutionalAICExtractor,
+    CorrelatorConfig,
+    extract_mass_aic,
+    extract_mass_linear,
+    get_channel_class,
 )
 from tests.physics.aic.conftest import (
     assert_mass_fit_equal,
@@ -61,9 +55,9 @@ def _assert_channel_result_equal(old_out, new_out) -> None:
         if old_val is None and new_val is None:
             continue
         if isinstance(old_val, Tensor):
-            assert isinstance(
-                new_val, Tensor
-            ), f"Field {f.name}: old is Tensor, new is {type(new_val)}"
+            assert isinstance(new_val, Tensor), (
+                f"Field {f.name}: old is Tensor, new is {type(new_val)}"
+            )
             assert_tensor_or_nan_equal(old_val, new_val, label=f"Field {f.name}")
         elif isinstance(old_val, dict) and isinstance(new_val, dict):
             assert_mass_fit_equal(old_val, new_val, label=f"Field {f.name}")
@@ -237,7 +231,8 @@ class TestParityBootstrap:
         series = torch.tensor([])
         old = bootstrap_correlator_error(series, 10, n_bootstrap=5)
         new = new_bootstrap(series, 10, n_bootstrap=5)
-        assert torch.equal(old, new)
+        assert torch.isnan(old).all()
+        assert torch.isnan(new).all()
 
 
 class TestParityAICExtractor:
@@ -291,15 +286,15 @@ class TestParityAICExtractor:
 
         # Compare scalar fields
         assert old_result["mass"] == new_result["mass"], f"seed={seed}: mass differs"
-        assert (
-            old_result["mass_error"] == new_result["mass_error"]
-        ), f"seed={seed}: mass_error differs"
-        assert (
-            old_result["n_valid_windows"] == new_result["n_valid_windows"]
-        ), f"seed={seed}: n_valid_windows differs"
-        assert (
-            old_result["window_widths"] == new_result["window_widths"]
-        ), f"seed={seed}: window_widths differs"
+        assert old_result["mass_error"] == new_result["mass_error"], (
+            f"seed={seed}: mass_error differs"
+        )
+        assert old_result["n_valid_windows"] == new_result["n_valid_windows"], (
+            f"seed={seed}: n_valid_windows differs"
+        )
+        assert old_result["window_widths"] == new_result["window_widths"], (
+            f"seed={seed}: window_widths differs"
+        )
 
         # Compare tensor fields
         for key in ["window_masses", "window_aic", "window_r2"]:
@@ -488,9 +483,8 @@ class TestParityRegistry:
     """Parity tests for CHANNEL_REGISTRY and get_channel_class."""
 
     def test_registry_keys_identical(self) -> None:
-        assert (
-            set(CHANNEL_REGISTRY.keys()) == set(NEW_CHANNEL_REGISTRY.keys())
-        ), f"Registry keys differ: {set(CHANNEL_REGISTRY.keys()) ^ set(NEW_CHANNEL_REGISTRY.keys())}"
+        assert set(NEW_CHANNEL_REGISTRY) == set(ALL_CHANNELS)
+        assert set(NEW_CHANNEL_REGISTRY) <= set(CHANNEL_REGISTRY)
 
     def test_registry_has_all_expected_channels(self) -> None:
         for ch in ALL_CHANNELS:
@@ -502,16 +496,14 @@ class TestParityRegistry:
         old_cls = get_channel_class(channel)
         new_cls = new_get_channel_class(channel)
 
-        assert (
-            old_cls.channel_name == new_cls.channel_name
-        ), f"{channel}: channel_name mismatch: {old_cls.channel_name} vs {new_cls.channel_name}"
+        assert old_cls.channel_name == new_cls.channel_name, (
+            f"{channel}: channel_name mismatch: {old_cls.channel_name} vs {new_cls.channel_name}"
+        )
         # Both should be the same class since the AIC copy imports from the same module
-        assert (
-            old_cls.__name__ == new_cls.__name__
-        ), f"{channel}: class name mismatch: {old_cls.__name__} vs {new_cls.__name__}"
+        assert old_cls.__name__ == new_cls.__name__, (
+            f"{channel}: class name mismatch: {old_cls.__name__} vs {new_cls.__name__}"
+        )
 
     def test_registry_length(self) -> None:
-        assert len(CHANNEL_REGISTRY) == len(
-            NEW_CHANNEL_REGISTRY
-        ), f"Registry lengths differ: {len(CHANNEL_REGISTRY)} vs {len(NEW_CHANNEL_REGISTRY)}"
-        assert len(CHANNEL_REGISTRY) == 7, f"Expected 7 channels, got {len(CHANNEL_REGISTRY)}"
+        assert len(NEW_CHANNEL_REGISTRY) == 7
+        assert len(CHANNEL_REGISTRY) == 13  # also exposes six Dirac channels

@@ -696,7 +696,9 @@ def compute_companion_tensor_momentum_correlator(
         dtype=torch.float32,
     )
 
-    low, high = _extract_axis_bounds(history.bounds, momentum_axis, device=device)
+    low, high = _extract_axis_bounds(
+        getattr(history, "bounds", None), momentum_axis, device=device
+    )
     projection_length = config.projection_length
     has_finite_bounds = (
         low is not None and high is not None and math.isfinite(low) and math.isfinite(high)
@@ -704,7 +706,7 @@ def compute_companion_tensor_momentum_correlator(
     if projection_length is None and has_finite_bounds and high > low:
         projection_length = float(high - low)
 
-    bounds = _slice_bounds(history.bounds, list(pos_dims))
+    bounds = _slice_bounds(getattr(history, "bounds", None), list(pos_dims))
     return compute_tensor_momentum_correlator_from_color_positions(
         color=color,
         color_valid=color_valid.to(dtype=torch.bool, device=device),
@@ -719,7 +721,7 @@ def compute_companion_tensor_momentum_correlator(
         momentum_mode_max=int(config.momentum_mode_max),
         projection_length=projection_length,
         bounds=bounds,
-        pbc=bool(history.pbc),
+        pbc=bool(getattr(history, "pbc", False)),
         compute_bootstrap_errors=bool(config.compute_bootstrap_errors),
         n_bootstrap=int(config.n_bootstrap),
         frame_indices=frame_indices,

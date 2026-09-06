@@ -63,7 +63,7 @@ def compute_correlators_batched(
             elif series.ndim == 3:
                 # Multi-component [S, T, C]: reshape to [S*C, T], FFT, contract
                 S, T, C = series.shape
-                flat = series.reshape(S * C, T)
+                flat = series.permute(0, 2, 1).reshape(S * C, T)
                 corr = _fft_correlator_batched(
                     flat,
                     max_lag=max_lag,

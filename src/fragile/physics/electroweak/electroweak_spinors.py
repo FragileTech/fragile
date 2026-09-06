@@ -26,8 +26,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import torch
-import torch.nn.functional as F
 from torch import Tensor
+import torch.nn.functional as F
 
 from fragile.physics.new_channels.dirac_spinors import (
     build_dirac_gamma_matrices,
@@ -182,33 +182,33 @@ class ElectroweakSpinorOutput:
     """
 
     # -- Chiral currents (no gauge dressing) --
-    j_vector_L: Tensor       # [T] left-handed vector current
-    j_vector_R: Tensor       # [T] right-handed vector current
-    j_vector_V: Tensor       # [T] full vector current (V = L + R)
-    o_scalar_L: Tensor       # [T] left-handed scalar
-    o_scalar_R: Tensor       # [T] right-handed scalar
+    j_vector_L: Tensor  # [T] left-handed vector current
+    j_vector_R: Tensor  # [T] right-handed vector current
+    j_vector_V: Tensor  # [T] full vector current (V = L + R)
+    o_scalar_L: Tensor  # [T] left-handed scalar
+    o_scalar_R: Tensor  # [T] right-handed scalar
 
     # -- Walker-role restricted --
-    j_vector_walkerL: Tensor   # [T] vector current, walker-L pairs
-    j_vector_walkerR: Tensor   # [T] vector current, walker-R pairs
+    j_vector_walkerL: Tensor  # [T] vector current, walker-L pairs
+    j_vector_walkerR: Tensor  # [T] vector current, walker-R pairs
     j_vector_L_walkerL: Tensor  # [T] Dirac-L on walker-L pairs
     j_vector_R_walkerR: Tensor  # [T] Dirac-R on walker-R pairs
 
     # -- Cross-chirality (Yukawa) --
-    o_yukawa_LR: Tensor      # [T] scalar P_L on L->R walker pairs
-    o_yukawa_RL: Tensor      # [T] scalar P_R on R->L walker pairs
+    o_yukawa_LR: Tensor  # [T] scalar P_L on L->R walker pairs
+    o_yukawa_RL: Tensor  # [T] scalar P_R on R->L walker pairs
 
     # -- Gauge-dressed --
-    j_vector_u1: Tensor       # [T] vector current x U(1) link
-    j_vector_L_u1: Tensor     # [T] left current x U(1) link
-    j_vector_L_su2: Tensor    # [T] left current x SU(2) link
-    j_vector_R_su2: Tensor    # [T] right current x SU(2) link
+    j_vector_u1: Tensor  # [T] vector current x U(1) link
+    j_vector_L_u1: Tensor  # [T] left current x U(1) link
+    j_vector_L_su2: Tensor  # [T] left current x SU(2) link
+    j_vector_R_su2: Tensor  # [T] right current x SU(2) link
 
     # -- Diagnostics --
-    n_valid_pairs: Tensor           # [T] total valid pairs
-    n_valid_pairs_LL: Tensor        # [T] both-L pairs
-    n_valid_pairs_RR: Tensor        # [T] both-R pairs
-    n_valid_pairs_LR: Tensor        # [T] cross-LR pairs
+    n_valid_pairs: Tensor  # [T] total valid pairs
+    n_valid_pairs_LL: Tensor  # [T] both-L pairs
+    n_valid_pairs_RR: Tensor  # [T] both-R pairs
+    n_valid_pairs_LR: Tensor  # [T] cross-LR pairs
     parity_violation_dirac: Tensor  # [T] (|j_L|^2 - |j_R|^2)/(|j_L|^2 + |j_R|^2)
     parity_violation_walker: Tensor  # [T] (|j_wL|^2 - |j_wR|^2)/(|j_wL|^2 + |j_wR|^2)
 
@@ -270,26 +270,23 @@ def compute_electroweak_spinor_operators(
 
     # --- Gather pairs ---
     t_idx = torch.arange(T, device=device).unsqueeze(1).expand(-1, S)
-    psi_i = spinor[t_idx, sample_indices]        # [T, S, 4]
-    first_nb = neighbor_indices[:, :, 0]          # [T, S]
-    psi_j = spinor[t_idx, first_nb]              # [T, S, 4]
+    psi_i = spinor[t_idx, sample_indices]  # [T, S, 4]
+    first_nb = neighbor_indices[:, :, 0]  # [T, S]
+    psi_j = spinor[t_idx, first_nb]  # [T, S, 4]
 
     # Validity
     v_i = (
         spinor_valid[t_idx, sample_indices]
         & alive[t_idx.clamp(max=alive.shape[0] - 1), sample_indices]
     )
-    v_j = (
-        spinor_valid[t_idx, first_nb]
-        & alive[t_idx.clamp(max=alive.shape[0] - 1), first_nb]
-    )
+    v_j = spinor_valid[t_idx, first_nb] & alive[t_idx.clamp(max=alive.shape[0] - 1), first_nb]
     valid = v_i & v_j & (first_nb != sample_indices)
 
     # Walker chirality for pairs
-    chi_i = walker_chi[t_idx, sample_indices]    # [T, S]  +1=L, -1=R
-    chi_j = walker_chi[t_idx, first_nb]          # [T, S]
+    chi_i = walker_chi[t_idx, sample_indices]  # [T, S]  +1=L, -1=R
+    chi_j = walker_chi[t_idx, first_nb]  # [T, S]
 
-    walker_L_i = chi_i > 0    # [T, S]
+    walker_L_i = chi_i > 0  # [T, S]
     walker_L_j = chi_j > 0
     walker_R_i = chi_i < 0
     walker_R_j = chi_j < 0
@@ -301,11 +298,11 @@ def compute_electroweak_spinor_operators(
     cross_RL = valid & walker_R_i & walker_L_j
 
     # Fitness for gauge links
-    fit_i = fitness[t_idx, sample_indices]        # [T, S]
-    fit_j = fitness[t_idx, first_nb]              # [T, S]
+    fit_i = fitness[t_idx, sample_indices]  # [T, S]
+    fit_j = fitness[t_idx, first_nb]  # [T, S]
 
     # Gauge links
-    u1_link = compute_u1_gauge_link(fit_i, fit_j, h_eff)        # [T, S] complex
+    u1_link = compute_u1_gauge_link(fit_i, fit_j, h_eff)  # [T, S] complex
     su2_link = compute_su2_gauge_link(fit_i, fit_j, h_eff, epsilon_clone)  # [T, S]
 
     # --- Weights ---
@@ -337,8 +334,12 @@ def compute_electroweak_spinor_operators(
         accum = zero.clone()
         for k in range(3):
             vals = _compute_chiral_bilinear(
-                psi_i, psi_j, gamma0, gamma_k[k],
-                P_chirality=P_chiral, gauge_link=gauge,
+                psi_i,
+                psi_j,
+                gamma0,
+                gamma_k[k],
+                P_chirality=P_chiral,
+                gauge_link=gauge,
             )
             accum = accum + vals
         return _avg(accum / 3.0, mask)
@@ -351,8 +352,12 @@ def compute_electroweak_spinor_operators(
     ) -> Tensor:
         """psi_bar P psi averaged over pairs in mask."""
         vals = _compute_chiral_bilinear(
-            psi_i, psi_j, gamma0, I4,
-            P_chirality=P_chiral, gauge_link=gauge,
+            psi_i,
+            psi_j,
+            gamma0,
+            I4,
+            P_chirality=P_chiral,
+            gauge_link=gauge,
         )
         return _avg(vals, mask)
 
@@ -387,12 +392,12 @@ def compute_electroweak_spinor_operators(
     # --- Diagnostics ---
     eps_pv = 1e-30
 
-    jL2 = j_vector_L ** 2
-    jR2 = j_vector_R ** 2
+    jL2 = j_vector_L**2
+    jR2 = j_vector_R**2
     pv_dirac = (jL2 - jR2) / (jL2 + jR2 + eps_pv)
 
-    jwL2 = j_vector_walkerL ** 2
-    jwR2 = j_vector_walkerR ** 2
+    jwL2 = j_vector_walkerL**2
+    jwR2 = j_vector_walkerR**2
     pv_walker = (jwL2 - jwR2) / (jwL2 + jwR2 + eps_pv)
 
     return ElectroweakSpinorOutput(
@@ -426,7 +431,7 @@ def compute_electroweak_spinor_operators(
 
 
 def compute_electroweak_spinor_from_history(
-    history: "RunHistory",
+    history: RunHistory,
     *,
     warmup_fraction: float = 0.1,
     end_fraction: float = 1.0,
@@ -451,7 +456,10 @@ def compute_electroweak_spinor_from_history(
         ElectroweakSpinorOutput.
     """
     from fragile.physics.electroweak.chirality import classify_walkers_vectorized
-    from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0_auto
+    from fragile.physics.qft_utils.color_states import (
+        compute_color_states_batch,
+        estimate_ell0_auto,
+    )
 
     device = history.fitness.device
     T_total = history.will_clone.shape[0]
@@ -496,8 +504,10 @@ def compute_electroweak_spinor_from_history(
         alive=alive_sel,
     )
 
-    # Compute color states for selected frames
-    frame_indices = torch.where(frame_mask)[0] + start_idx
+    # Compute color states for selected frames. ``will_clone``/``fitness`` are
+    # per-transition arrays (index i describes recorded frame i + 1), so the
+    # colour state of transition i lives at recorded frame i + 1.
+    frame_indices = torch.where(frame_mask)[0] + start_idx + 1
     T_eff = frame_indices.shape[0]
 
     # Estimate ell0
@@ -519,7 +529,7 @@ def compute_electroweak_spinor_from_history(
         color_list.append(c)
         valid_list.append(v)
 
-    color = torch.cat(color_list, dim=0)        # [T_eff, N, d]
+    color = torch.cat(color_list, dim=0)  # [T_eff, N, d]
     color_valid = torch.cat(valid_list, dim=0)  # [T_eff, N]
 
     # Build simple neighbor indices from companions
@@ -554,18 +564,18 @@ class ElectroweakMassSpectrum:
     """
 
     # Gauge boson masses
-    m_W: float          # from j_vector_L_su2 (left current x SU(2) link)
-    m_Z: float          # from mixed L/R neutral current
-    m_photon: float     # from j_vector_u1 (should be ~0)
+    m_W: float  # from j_vector_L_su2 (left current x SU(2) link)
+    m_Z: float  # from mixed L/R neutral current
+    m_photon: float  # from j_vector_u1 (should be ~0)
 
     # Fermion masses
     m_fermion_L: float  # from o_scalar_L autocorrelation
     m_fermion_R: float  # from o_scalar_R autocorrelation
-    m_yukawa: float     # from o_yukawa_LR (cross-chirality = Dirac mass)
+    m_yukawa: float  # from o_yukawa_LR (cross-chirality = Dirac mass)
 
     # Parity violation
-    mean_pv_dirac: float    # mean parity violation from Dirac projectors
-    mean_pv_walker: float   # mean parity violation from walker roles
+    mean_pv_dirac: float  # mean parity violation from Dirac projectors
+    mean_pv_walker: float  # mean parity violation from walker roles
 
     # Uncertainties
     m_W_err: float
@@ -609,7 +619,7 @@ def extract_ew_masses(
         power = torch.fft.fft(s_pad).abs() ** 2
         corr = torch.fft.ifft(power).real
         counts = torch.arange(T, T - eff - 1, -1, device=s.device, dtype=torch.float32)
-        result = corr[:eff + 1] / counts
+        result = corr[: eff + 1] / counts
         if result[0].abs() > 1e-30:
             result = result / result[0]
         if eff < max_lag:
@@ -630,10 +640,18 @@ def extract_ew_masses(
     m_Y, m_Y_e = _extract(ops.o_yukawa_LR)
 
     return ElectroweakMassSpectrum(
-        m_W=m_W, m_Z=m_Z, m_photon=m_photon,
-        m_fermion_L=m_fL, m_fermion_R=m_fR, m_yukawa=m_Y,
+        m_W=m_W,
+        m_Z=m_Z,
+        m_photon=m_photon,
+        m_fermion_L=m_fL,
+        m_fermion_R=m_fR,
+        m_yukawa=m_Y,
         mean_pv_dirac=float(ops.parity_violation_dirac.mean()),
         mean_pv_walker=float(ops.parity_violation_walker.mean()),
-        m_W_err=m_W_e, m_Z_err=m_Z_e, m_photon_err=m_photon_e,
-        m_fermion_L_err=m_fL_e, m_fermion_R_err=m_fR_e, m_yukawa_err=m_Y_e,
+        m_W_err=m_W_e,
+        m_Z_err=m_Z_e,
+        m_photon_err=m_photon_e,
+        m_fermion_L_err=m_fL_e,
+        m_fermion_R_err=m_fR_e,
+        m_yukawa_err=m_Y_e,
     )

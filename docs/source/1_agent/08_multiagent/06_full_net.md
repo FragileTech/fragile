@@ -14,7 +14,7 @@
 :::{div} feynman-prose
 Now we face the engineer's question.
 
-We have collected a beautiful toolkit. Spectral linear layers that bound capacity. Norm-gated activations that respect bundle geometry. Isotropic blocks that honor the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ derived in {ref}`sec-symplectic-multi-agent-field-theory`. We have dynamics—the Lorentz-Langevin equation on the WFR manifold, integrated via the Boris-BAOAB scheme with covariant cross-attention.
+We have collected a beautiful toolkit. Spectral linear layers that bound capacity. Norm-gated activations that respect bundle geometry. Isotropic blocks that implement the declared internal representation $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ from {ref}`sec-symplectic-multi-agent-field-theory`. We have dynamics—a Lorentz-Langevin-style equation on the WFR manifold, integrated by a Boris-BAOAB-style scheme with covariant cross-attention. These are mathematical design choices; they do not identify the latent variables with physical gauge fields.
 
 But here is the thing: having parts is not the same as having a machine. How do we assemble these pieces into a *complete* agent? Something that takes pixels at one end and produces motor commands at the other. An encoder mapping raw observations into structured latent bundles. A world model predicting how those bundles evolve under actions. A decoder translating internal states back into behavior. The full pipeline.
 
@@ -28,11 +28,11 @@ Now, these requirements *seem* incompatible. Universal means "can do anything." 
 
 Here is the resolution, and it is lovely: **strict equivariance belongs in the latent space, not at the boundaries**. The encoder and decoder are unconstrained—full neural network expressiveness, no geometric restrictions. They are the "interface layers" that translate between the messy external world and the clean internal geometry. But the latent dynamics in the middle? Those respect gauge structure, but *softly*, through L1 regularization that discovers geometric patterns when the task permits them.
 
-Think of it this way. The encoder picks a coordinate system—a "gauge"—for representing the observation. The dynamics evolve the representation according to geometric rules. The decoder translates back into the external world. The encoder and decoder have complete freedom because they are just choosing and interpreting coordinates. The dynamics have structure because physics happens in the middle.
+Think of it this way. The encoder picks a coordinate system—a "gauge"—for representing the observation. The dynamics evolve the representation according to the declared geometric rules. The decoder translates back into the external world. The encoder and decoder have complete freedom because they are choosing and interpreting coordinates. The middle has structure because the model imposes those rules; the analogy to physical dynamics requires a separate identification.
 
-This three-stage architecture—unconstrained boundaries, geometrically structured interior—is the **Universal Geometric Network**. It achieves universal approximation (we will prove this) while maintaining gauge-theoretic consistency (we will prove this too).
+This three-stage architecture—unconstrained boundaries, geometrically structured interior—is the **Universal Geometric Network**. Under the compact-domain and architecture hypotheses stated below, its representation class has a universal-approximation result; the geometric properties remain conditional on the corresponding implementation and training checks.
 
-And here is the surprise that should make you sit up: the network discovers structure *on its own*. With L1 regularization on the mixing weights, it learns **texture zeros**—forbidden interactions, couplings that get driven to zero—without being told which ones to suppress. The geometry is not a straitjacket forcing a particular structure. It is a *prior* that lets structure emerge when the task calls for it. When the task requires symmetry breaking, the network breaks symmetry. When it does not, the network stays equivariant. The L1 penalty finds the balance automatically.
+And here is the experimental question: with L1 regularization on the mixing weights, does training discover **texture zeros**—couplings driven close to zero—without being told which ones to suppress? The penalty supplies a sparsity prior, but it does not guarantee a particular pattern or that optimization finds the intended balance.
 :::
 
 *Roadmap:* This chapter proceeds in seven sections. First, we define the design space and the fundamental questions any complete architecture must answer (**Section 1**). Then we explore architectural tradeoffs—direct sum versus tensor product representations, levels of cross-bundle interaction, parameter efficiency (**Section 2**). We rigorously establish the limitations of strict equivariance through impossibility theorems (**Section 3**), then present relaxation strategies including approximate equivariance and L1-regularized soft equivariance (**Section 4**). The centerpiece is the Universal Geometric Network itself (**Section 5**), followed by complete implementation details and integration with the BAOAB integrator (**Section 6**). We conclude by connecting to Chapters 04-05 and positioning within the broader literature (**Section 7**).
@@ -58,7 +58,7 @@ The central object is the **latent space** $\mathcal{Z}$, where the agent's inte
 
 1. **Bundle decomposition**: $\mathcal{Z} = \bigoplus_{i=1}^{n_b} V_i$ where each $V_i \cong \mathbb{R}^{d_b}$ is a feature bundle. Think of these as different "aspects" of the internal state—one bundle might encode position-like information, another velocity-like, another something more abstract.
 
-2. **Gauge symmetry**: Transformations $\rho: G_{\text{Fragile}} \to \text{Aut}(\mathcal{Z})$ that leave physics invariant. You can rotate your coordinate system within each bundle, and nothing observable should change. This is the internal gauge freedom.
+2. **Gauge symmetry**: Transformations $\rho: G_{\text{Fragile}} \to \text{Aut}(\mathcal{Z})$ that leave the declared model observables invariant. You can rotate your coordinate system within each bundle, and the required outputs should not change. This is the internal gauge freedom of the representation.
 
 3. **Capacity constraint**: Total information $I(X; Z) \leq C$ enforced via spectral bounds. The agent has finite resources—it cannot store arbitrarily precise representations. Spectral normalization keeps signals from blowing up.
 
@@ -70,7 +70,7 @@ With this structure established, here are the three big design questions.
 
 Do we use **direct sum** $\mathcal{Z}_C \oplus \mathcal{Z}_L \oplus \mathcal{Z}_Y$ (independent subspaces sitting side by side) or **tensor product** $V_C \otimes V_L \otimes V_Y$ (entangled quantum numbers, the way particles work in physics)?
 
-The tensor product is "more physical"—it is how quarks carry color, isospin, and hypercharge simultaneously. But it has exponential dimension scaling: if each factor has dimension $d$, the product has dimension $d^3$. Direct sum scales linearly ($3d$). For neural networks with latent dimensions in the hundreds, this matters enormously.
+The tensor product is closer to the particle-physics representation in which quarks carry color, isospin, and hypercharge simultaneously. But it has exponential dimension scaling: if each factor has dimension $d$, the product has dimension $d^3$. Direct sum scales linearly ($3d$). For neural networks with latent dimensions in the hundreds, this matters enormously.
 
 **Question 2: How much symmetry breaking?**
 
@@ -327,7 +327,7 @@ Let me frame this around the three questions I mentioned.
 
 In particle physics, a quark is not "red" separately from being "up"—it carries color *and* isospin *and* hypercharge as a single, unified quantum state. The mathematical structure is a tensor product: the state space is $V_C \otimes V_L \otimes V_Y$. But tensor products have a terrible scaling property: dimensions multiply. If $V_C$ has dimension 64, $V_L$ has dimension 8, and $V_Y$ has dimension 4, the tensor product has dimension $64 \times 8 \times 4 = 2048$. Compare that to the direct sum, which gives $64 + 8 + 4 = 76$.
 
-This is not just a factor of 27—it is the difference between "tractable" and "forget it" for neural network architectures. So we face a tradeoff: the tensor product is more faithful to the physics, but the direct sum is actually implementable.
+This is not just a factor of 27—it is the difference between "tractable" and "forget it" for neural network architectures. So we face a tradeoff: the tensor product follows the particle-physics representation more closely, but the direct sum is actually implementable for this latent model.
 
 **The second question is about symmetry.** Strict equivariance—where the network exactly respects gauge transformations—has beautiful mathematical properties. But as we will prove shortly, it also has catastrophic limitations on expressiveness. A strictly equivariant network can only compute functions of a very specific form: each output bundle must be the input bundle scaled by some function of all the norms. No rotation within bundles. No direction-dependent cross-talk. Just scalar multiplication.
 
@@ -864,7 +864,7 @@ But $\mathcal{F}_{\text{norm}}$ has measure zero in $C(\mathbb{R}^{n_b d_b}, \ma
 :::{div} feynman-prose
 Here is the elegant resolution to the expressiveness limitation.
 
-We have just proved that strict equivariance is too limiting—your network can only compute functions of a very specific form, and that form cannot represent most of what you want to learn. But wait: abandoning geometric structure entirely throws away all the beautiful properties we worked so hard to derive. The gauge consistency, the capacity bounds, the connection to physics—all gone if we just treat latent space as flat $\mathbb{R}^n$.
+We have just proved, for the specified per-bundle action, that strict equivariance is too limiting—your network can only compute functions of a very specific form, and that form cannot represent most of what you want to learn. But wait: abandoning geometric structure entirely throws away the declared geometric properties we worked hard to establish. A physical interpretation of those properties remains separate from the latent model.
 
 What we need is a middle path. Not strict equivariance (too limiting) and not no equivariance (throws away structure). We need **approximate** or **soft** equivariance.
 
@@ -1086,9 +1086,9 @@ After all that exploration of the design space—direct sum versus tensor produc
 
 The **Universal Geometric Network** has three stages, and the three stages have different jobs.
 
-**Stage 1: The Encoder.** Raw observations come in—pixels, sensor readings, whatever the world presents. The encoder maps these to latent space. And here is the crucial point: the encoder is *unconstrained*. It is just a neural network (with spectral normalization for capacity bounds). It can represent any continuous function.
+**Stage 1: The Encoder.** Raw observations come in—pixels, sensor readings, whatever the task presents. The encoder maps these to latent space. And here is the crucial point: the encoder is *unconstrained* apart from the listed architecture choices. On compact domains, the usual universal-approximation theorem gives the stated representational result; it does not promise a trained encoder will learn every such map.
 
-What the encoder does, in the language of gauge theory, is **choose a gauge**. It picks an internal coordinate system for representing the observation. Different observations might use different gauges. That is fine—gauge choice is arbitrary, as long as you are consistent about how you handle it downstream.
+What the encoder does, in the language of gauge theory, is analogous to **choosing a gauge**. It picks an internal coordinate system for representing the observation. Different observations might use different coordinates. That is fine if the downstream maps transform or are trained consistently; the analogy does not by itself provide a gauge symmetry.
 
 **Stage 2: Latent Dynamics.** This is where the geometry lives. The latent layers respect gauge structure via soft equivariance: each layer combines an equivariant pathway (norm-based, strictly respecting bundle rotations) plus a mixing pathway (learned cross-bundle couplings with L1 regularization).
 
@@ -1096,15 +1096,15 @@ The L1 penalty is doing something subtle and important. It encourages most mixin
 
 **Stage 3: The Decoder.** Latent states get mapped to outputs—actions, predictions, whatever the task requires. The decoder is also *unconstrained*. It can represent any function from latent space to output space.
 
-The decoder's job, in gauge terms, is to **interpret the gauge**. It extracts observable quantities from the latent representation. Different latent states related by gauge transformations (internal reframings) should produce the same output, because gauge is a choice of description, not a physical difference.
+The decoder's job, in gauge terms, is to **interpret the representation**. It extracts observable quantities from the latent state. If gauge-related latent states are required to produce the same output, that invariance must be built into or tested for the decoder; it does not follow from calling the coordinates a gauge.
 
 Now, why does this three-stage structure solve our problem?
 
 Here is the insight: **gauge transformations in latent space are internal**. They do not affect what the encoder receives as input, and they do not affect what the decoder produces as output. The encoder picks a gauge. The dynamics respect that gauge (softly, with L1-discovered violations). The decoder reads off observables in whatever gauge was established.
 
-This is exactly how gauge theories work in physics. You pick a gauge (say, Lorenz gauge or Coulomb gauge for electromagnetism), write gauge-covariant equations for the dynamics, and compute gauge-invariant observables at the end. The choice of gauge is a convenience, not a physical fact.
+This mirrors a pattern from gauge theories in physics: choose coordinates, formulate covariant equations, and test invariant observables. The latent construction is an analogy unless a map to a physical field theory is supplied.
 
-The Universal Geometric Network implements this principle in neural architecture. Boundaries are free, the middle is geometric. And the combination achieves what seemed impossible: universal approximation *and* geometric consistency.
+The Universal Geometric Network implements this principle in neural architecture. Boundaries are flexible, the middle is geometric by design. The theorem supplies approximation on its stated domain; geometric consistency is a collection of conditional bounds and diagnostics.
 :::
 
 ### The Key Insight
@@ -1715,7 +1715,7 @@ Therefore, the UGN is a universal approximator. $\square$
 :::{div} feynman-prose
 Let me explain what just happened, because the proof strategy is illuminating.
 
-The theorem says: the UGN can approximate any continuous function. Any. Not "any equivariant function"—*any* function at all. This might seem to contradict what we said earlier about strict equivariance being limiting. But it does not, and understanding why reveals the whole trick.
+On a compact domain and with the architecture assumptions in the theorem, the UGN can approximate any continuous target in the stated norm. “Any” refers to representational existence; it does not say that finite training, a fixed regularization strength, or a particular optimizer will find those weights.
 
 The key is that the encoder and decoder are *unconstrained*. They can do anything. The latent dynamics in the middle are only *softly* equivariant—the L1 penalty encourages equivariance but does not enforce it absolutely.
 
@@ -1723,7 +1723,7 @@ Here is the strategy the proof uses. Suppose you want to approximate some arbitr
 
 The point is: the encoder and decoder do the "hard" work of representing arbitrary functions. The latent dynamics can stay close to equivariant because the hard work has been outsourced to the boundaries.
 
-Now, you might ask: if the encoder and decoder do all the work, what is the point of the geometric structure in the middle? Great question. The answer is *inductive bias*. When the task *does* have geometric structure—when it respects rotational symmetry, when bundles should not mix unnecessarily—the L1 regularization will find that structure. The latent dynamics will stay equivariant because that is the low-cost solution. But when the task requires symmetry breaking, the mixing pathway can activate, and the network can learn whatever it needs.
+Now, you might ask: if the encoder and decoder do all the work, what is the point of the geometric structure in the middle? Great question. The answer is *inductive bias*. When the task does have geometric structure, L1 regularization may favor it, but the optimizer, data, and regularization strength determine what is actually learned. When the task requires symmetry breaking, the mixing pathway can represent it if the finite architecture has enough capacity.
 
 The geometry is not a constraint that limits what you can learn. It is a *prior* that guides you toward structured solutions when they exist, while still allowing unstructured solutions when necessary.
 :::
@@ -1898,11 +1898,11 @@ The UGN provides the *default* latent dynamics for bounded agents. Covariant cro
 :::{div} feynman-prose
 Now let me show you how to actually build this thing.
 
-We have designed the Universal Geometric Network. We have proved it achieves universal approximation. We have proved it respects geometric consistency. But theory is cheap—paper accepts anything you write on it. The real question is: can you sit down at a keyboard, type in some code, train the network, and have it actually do what we claimed?
+We have specified the Universal Geometric Network and its conditional approximation and consistency statements. But theory is cheap—paper accepts anything you write on it. The real question is: can you sit down at a keyboard, type in the supplied code, train the network, and observe the claimed behavior?
 
-The answer is yes. And I want to show you exactly how.
+The code below gives a concrete implementation and the diagnostics needed to test that question.
 
-This section gives you production-ready code. Not pseudocode, not hand-waving—actual PyTorch that you can copy, run, and modify. It integrates everything: the spectral linear layers from Section 04 (for capacity bounds), the soft equivariance machinery we just designed (for geometric structure), and the BAOAB integrator from Section 05 (for geodesic dynamics). You will see exactly how the pieces fit together.
+This section gives executable PyTorch components and code templates. It integrates the spectral linear layers from Section 04, the soft-equivariance machinery, and the BAOAB-style update from Section 05. The stated capacity, covariance, and dynamical properties still need to be checked for the concrete configuration.
 
 I want to emphasize: this is the *engineer's* section. No more theorems. No more proofs. Just working code and the protocol to train it. You will get:
 
@@ -3025,7 +3025,7 @@ We started with what looked like an impossible demand. Universal approximation�
 
 The resolution came from asking: *where* do constraints belong? And the answer is beautiful in its simplicity: **constraints belong in the middle, freedom at the boundaries**. The encoder is free—it can map any observation to any latent state. The decoder is free—it can map any latent state to any action. But the latent dynamics in the middle? Those respect geometry, softly, through L1 regularization that discovers the minimal symmetry breaking required by the task.
 
-This is not a hack or a compromise. It is how gauge theories work in physics. You pick a gauge (the encoder's job). You write gauge-covariant dynamics (the latent layers' job). You compute gauge-invariant observables (the decoder's job). The gauge choice is arbitrary—that is the freedom. The dynamics are constrained—that is the geometry. And the observables come out independent of the arbitrary choice—that is consistency.
+This is a useful gauge-theoretic analogy. You choose coordinates in the encoder, impose covariant-looking dynamics in the latent layers, and ask the decoder for invariant observables. Independence from the coordinate choice is a property to enforce or test in the maps; it is not supplied by the analogy alone.
 
 The three levels of structure we synthesized are:
 
@@ -3035,7 +3035,7 @@ The three levels of structure we synthesized are:
 
 3. **Macro-architecture** (this chapter): the three-stage encoder-dynamics-decoder pipeline with soft equivariance—the overall shape that achieves universal approximation while preserving geometric consistency.
 
-The result is a complete architecture. It is universal (we proved it). It is geometrically consistent (we proved that too). And it is practical—you can build it in PyTorch and train it on real tasks. The next step is empirical validation: does the L1 regularization actually discover meaningful texture zeros? Do the emergent coupling patterns tell us something about the structure of the task? That is where theory meets experiment.
+The result is a concrete architecture with a compact-domain representational theorem and conditional geometric diagnostics. It can be built in PyTorch and tested on real tasks. The next step is empirical validation: does L1 regularization discover meaningful texture zeros, and do the coupling patterns reflect the task rather than optimization artifacts? That is where theory meets experiment.
 :::
 
 ### Relationship to Sections 04 and 05
@@ -3203,4 +3203,3 @@ The Universal Geometric Network is the **default architecture** for bounded agen
 - {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces` (WFR geometry) — latent space is the WFR manifold
 
 And it makes testable predictions: emergent texture zeros, hierarchical mixing patterns, learned symmetry breaking. The next step is empirical validation.
-

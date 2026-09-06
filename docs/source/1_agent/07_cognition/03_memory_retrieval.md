@@ -995,11 +995,11 @@ This closes the joint optimization problem by reducing it to a specific instanti
 ## The Safe Retrieval Bandwidth Corollary (Instability Resolution)
 
 :::{div} feynman-prose
-There's a limit to how much information you can stuff into the agent's latent space. This is the holographic bound from Section 33---the total information content must not exceed the interface capacity.
+There's a limit to how much information you can place in the agent's latent space under the declared capacity convention. The area-law expression from Section 33 is an operational diagnostic whose boundary, resolution, and channel assumptions must be checked.
 
-Retrieval adds information. If you retrieve too much, you can push the system past its capacity limit. When that happens, the metric becomes singular and the dynamics freeze up. It's like trying to pour a gallon of water into a pint glass---the excess has nowhere to go, and the system breaks.
+Retrieval adds information to the chosen proxy. If the proxy exceeds its declared capacity, the controller should flag the run and inspect the units and estimator. A singular metric or radial slowdown follows only under the additional metric ansatz, coupling, force, and overdamped hypotheses; saturation does not universally freeze the dynamics.
 
-This theorem tells you exactly when that happens and what to do about it: either increase your interface bandwidth (more sensors, bigger observation space) or reduce retrieval intensity. You can't have infinite knowledge in a finite system.
+This result gives a conditional trigger and possible interventions: increase interface bandwidth or reduce retrieval intensity when the measured proxy violates the declared capacity. It does not provide a universal theorem about infinite knowledge or an automatic metric singularity for every retrieval system.
 :::
 
 Retrieval-induced instability is identified as the violation of the **Causal Information Bound** ({ref}`sec-causal-information-bound`). Retrieval functions as a mass-injection source term; stability is preserved only if the total bulk information respects the interface area law.
@@ -1040,12 +1040,12 @@ The claim is this: if two different sensory channels (say, vision and language) 
 This is why you can train image embeddings and text embeddings separately and then use them together: if they're solving the same semantic tasks, they must be organizing concepts the same way. The isometry isn't a happy accident; it's a consequence of the physics.
 :::
 
-We prove that if two modalities allow for the solution of the same causal control task, their capacity-constrained geometries must be isometric in the bulk.
+Under uniqueness of the metric-law solution (for example, for the saturated Poincare-disk ansatz), we prove that if two modalities allow for the solution of the same causal control task, their capacity-constrained geometries are isometric in the bulk.
 
 :::{prf:theorem} Causal Isometry Theorem
 :label: thm-causal-isometry
 
-Let $\mathcal{M}_A$ and $\mathcal{M}_B$ be latent manifolds encoding modalities $A$ and $B$ of a common environment $\mathcal{E}$. Let $\Phi_{\text{causal}}$ be the Causal Information Potential ({ref}`sec-causal-discovery-interventional-geometry-and-the-singularity-of-action`). If both representations are **Interventionally Closed** ({prf:ref}`thm-interventional-closure`), then the induced metrics $G_A$ and $G_B$ are isometric.
+Let $\mathcal{M}_A$ and $\mathcal{M}_B$ be latent manifolds encoding modalities $A$ and $B$ of a common environment $\mathcal{E}$. Let $\Phi_{\text{causal}}$ be the Causal Information Potential ({ref}`sec-causal-discovery-interventional-geometry-and-the-singularity-of-action`). If both representations are **Interventionally Closed** ({prf:ref}`thm-interventional-closure`) and the metric-law solution is unique (as for the saturated Poincare-disk ansatz), then the induced metrics $G_A$ and $G_B$ are isometric.
 
 *Proof.*
 1. **Metric Genesis:** According to the Capacity-Constrained Metric Law ({prf:ref}`thm-capacity-constrained-metric-law`), the metric $G$ is determined by the solution to the Einstein-like equation $R_{ij} - \frac{1}{2}R G_{ij} + \Lambda G_{ij} = \kappa T_{ij}$, where the stress-energy tensor $T_{ij}$ is derived from the risk Lagrangian $\mathcal{L}_{\text{risk}}$.
@@ -1057,4 +1057,4 @@ Let $\mathcal{M}_A$ and $\mathcal{M}_B$ be latent manifolds encoding modalities 
 4. **Uniqueness:** Assuming the solution to the metric field equation is unique (guaranteed for the Poincare disk ansatz in the saturation limit), the geometries $G_A$ and $G_B$ are identical up to a diffeomorphism determined by the encoder parameterization. $\square$
 :::
 
-*Interpretation:* Latent representations of the same concept in different modalities (e.g., visual vs. textual) are geometrically isometric because the risk functional governing the metric depends only on the causal structure of the environment, not the sensory channel. This justifies cross-modal retrieval: information retrieved from one modality can inform reasoning in another if both are grounded in the same causal graph.
+*Interpretation:* Under the stated uniqueness condition, latent representations of the same concept in different modalities (e.g., visual vs. textual) are geometrically isometric because the risk functional governing the metric depends only on the causal structure of the environment, not the sensory channel. This justifies cross-modal retrieval: information retrieved from one modality can inform reasoning in another if both are grounded in the same causal graph.

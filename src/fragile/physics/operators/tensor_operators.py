@@ -139,8 +139,72 @@ def compute_tensor_operators(
             data.pairwise_distances,
             data.scales,
         )
-        tensor_series = per_frame_series_multiscale(op_tensor, valid_ms)
+        tensor_series = (
+            per_frame_series_multiscale(op_tensor.square(), valid_ms).clamp_min(0).sqrt()
+        )
     else:
-        tensor_series = _per_frame_series(op_tensor, valid)
+        tensor_series = _per_frame_series(op_tensor.square(), valid).clamp_min(0).sqrt()
 
+    # RMS is a diagnostic envelope only; use compute_tensor_correlator for
+    # the physical pair-propagated correlation, not an FFT of this envelope.
     return {"tensor": tensor_series}
+
+
+def compute_tensor_correlator(data, config, max_lag: int, use_connected: bool = True) -> Tensor:
+    """Contract tensor components after propagating fixed source pairs.
+
+    This uses the same imaginary Hermitian bilinear as the original operator;
+    exchange-odd pair values are multiplied before spatial averaging.
+    """
+    from fragile.physics.operators.multiscale import gate_pair_validity_by_scale
+    from fragile.physics.qft_utils.statistics import (
+        attach_statistics,
+        record_lag,
+        stack_correlators,
+    )
+
+    color, valid_color = data.color, data.color_valid
+    T = len(color)
+    pairs, structural = build_companion_pair_indices(
+        data.companions_distance, data.companions_clone, config.pair_selection
+    )
+    sigma = _build_sigma_matrices(color.shape[-1], color.device).to(color.dtype)
+
+    def values(c, v, indices, mask):
+        cj, in_range = safe_gather_pairs_3d(c, indices)
+        vj, _ = safe_gather_pairs_2d(v, indices)
+        valid = mask & in_range & v.unsqueeze(-1) & vj
+        op = torch.einsum("...i,pij,...j->...p", c.unsqueeze(2).conj(), sigma, cj).imag
+        valid &= torch.isfinite(op).all(-1)
+        return op, valid
+
+    source, source_valid = values(color, valid_color, pairs, structural)
+    scales = getattr(data, "scales", None)
+    distances = getattr(data, "pairwise_distances", None)
+    multiscale = scales is not None and distances is not None
+    masks = (
+        gate_pair_validity_by_scale(source_valid, pairs, distances, scales)
+        if multiscale
+        else source_valid.unsqueeze(1)
+    )
+    outputs = []
+    for scale_idx in range(masks.shape[1]):
+        mask = masks[:, scale_idx]
+        mean = source[mask].mean(0) if mask.any() else source.new_zeros(len(sigma))
+        if not use_connected:
+            mean = torch.zeros_like(mean)
+        sums = torch.zeros(T, max_lag + 1, device=color.device, dtype=torch.float64)
+        counts = torch.zeros_like(sums)
+        for lag in range(min(T, max_lag + 1)):
+            sink, valid = values(
+                color[lag:], valid_color[lag:], pairs[: T - lag], structural[: T - lag]
+            )
+            if multiscale:
+                valid = gate_pair_validity_by_scale(
+                    valid, pairs[: T - lag], distances[lag:], scales[scale_idx : scale_idx + 1]
+                )[:, 0]
+            products = ((source[: T - lag] - mean) * (sink - mean)).sum(-1)
+            record_lag(sums, counts, lag, products, valid & mask[: T - lag])
+        corr = sums.sum(0) / counts.sum(0).clamp_min(1)
+        outputs.append(attach_statistics(corr, sums, counts))
+    return stack_correlators(outputs) if multiscale else outputs[0]

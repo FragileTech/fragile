@@ -50,16 +50,20 @@ from fragile.physics.new_channels.multiscale_strong_force import (
     compute_multiscale_strong_force_channels,
     MultiscaleStrongForceConfig,
 )
-from fragile.physics.operators.tensor_operators import _build_sigma_matrices
-from fragile.physics.new_channels.vector_meson_channels import (
-    compute_vector_meson_correlator_from_color_positions,
-)
 from fragile.physics.new_channels.twistor_companion_channels import (
     compute_twistor_companion_correlator_from_geometry,
 )
+from fragile.physics.new_channels.vector_meson_channels import (
+    compute_vector_meson_correlator_from_color_positions,
+)
 from fragile.physics.operators.pipeline import PipelineResult
-from fragile.physics.qft_utils import build_companion_pair_indices, resolve_3d_dims, resolve_frame_indices
+from fragile.physics.qft_utils import (
+    build_companion_pair_indices,
+    resolve_3d_dims,
+    resolve_frame_indices,
+)
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0_auto
+from fragile.physics.qft_utils.statistics import stack_correlators
 
 
 # ---------------------------------------------------------------------------
@@ -194,10 +198,12 @@ def _parse_color_dims(spec: str, d: int) -> tuple[int, int, int] | None:
         return None
     parts = [int(x.strip()) for x in spec.split(",") if x.strip()]
     if len(parts) != 3:
-        raise ValueError(f"color_dims_spec must have exactly 3 integers, got {parts}")
+        msg = f"color_dims_spec must have exactly 3 integers, got {parts}"
+        raise ValueError(msg)
     for p in parts:
         if p < 0 or p >= d:
-            raise ValueError(f"color dim {p} out of range [0, {d - 1}]")
+            msg = f"color dim {p} out of range [0, {d - 1}]"
+            raise ValueError(msg)
     return (parts[0], parts[1], parts[2])
 
 
@@ -212,6 +218,7 @@ def build_companion_correlator_tab(
     run_tab_computation: Callable[
         [dict[str, Any], pn.pane.Markdown, str, Callable[[RunHistory], None]], None
     ],
+    on_computed: Callable[[], None] | None = None,
 ) -> CompanionCorrelatorSection:
     """Build the Companion Correlators tab with callbacks."""
 
@@ -447,6 +454,11 @@ def build_companion_correlator_tab(
     # -- Compute callback --
 
     def on_run(_):
+        state["companion_correlator_output"] = None
+        # A single-scale result has no scale axis; hide the selector left over
+        # from a previous multiscale run.
+        scale_selector.visible = False
+
         def _compute(history: RunHistory):
             d = history.d
             color_dims = _parse_color_dims(settings.color_dims_spec, d)
@@ -467,7 +479,14 @@ def build_companion_correlator_tab(
 
             needs_twistor = any(
                 "twistor" in selected_modes.get(family, [])
-                for family in ("scalar", "pseudoscalar", "vector", "glueball", "axial_vector", "tensor")
+                for family in (
+                    "scalar",
+                    "pseudoscalar",
+                    "vector",
+                    "glueball",
+                    "axial_vector",
+                    "tensor",
+                )
             )
             if needs_twistor and str(settings.pair_selection) != "both":
                 status.object = (
@@ -600,9 +619,15 @@ def build_companion_correlator_tab(
                         companions_clone=companions_clone,
                         pair_selection=str(settings.pair_selection),
                     )
-                    sample_indices = torch.arange(
-                        color.shape[1], device=device,
-                    ).unsqueeze(0).expand(color.shape[0], -1)
+                    sample_indices = (
+                        torch
+                        .arange(
+                            color.shape[1],
+                            device=device,
+                        )
+                        .unsqueeze(0)
+                        .expand(color.shape[0], -1)
+                    )
 
                     _dirac_result = compute_dirac_operator_series(
                         color=color,
@@ -693,8 +718,10 @@ def build_companion_correlator_tab(
             # -- Pseudoscalar: meson-based + fitness + dirac modes --
             ps_modes = selected_modes.get("pseudoscalar", [])
             meson_ps_modes = [
-                m for m in ps_modes
-                if m not in FITNESS_PSEUDOSCALAR_MODES and m != _DIRAC_MODE
+                m
+                for m in ps_modes
+                if m not in FITNESS_PSEUDOSCALAR_MODES
+                and m != _DIRAC_MODE
                 and m not in {"pion_tensor", "twistor"}
             ]
             fitness_ps_modes = [m for m in ps_modes if m in FITNESS_PSEUDOSCALAR_MODES]
@@ -771,17 +798,25 @@ def build_companion_correlator_tab(
                     from fragile.physics.new_channels.dirac_baryons import (
                         compute_dirac_baryon_operators,
                     )
+
                     alive_mask = torch.as_tensor(
                         history.alive_mask[start_idx - 1 : end_idx - 1],
                         dtype=torch.bool,
                         device=device,
                     )
-                    sample_indices = torch.arange(
-                        color.shape[1], device=device,
-                    ).unsqueeze(0).expand(color.shape[0], -1)
+                    sample_indices = (
+                        torch
+                        .arange(
+                            color.shape[1],
+                            device=device,
+                        )
+                        .unsqueeze(0)
+                        .expand(color.shape[0], -1)
+                    )
                     # Baryons need 2 neighbors: j from companions_distance, k from companions_clone
                     neighbor_indices = torch.stack(
-                        [companions_distance, companions_clone], dim=-1,
+                        [companions_distance, companions_clone],
+                        dim=-1,
                     )  # [T, N, 2]
                     _dirac_baryon_result = compute_dirac_baryon_operators(
                         color=color,
@@ -797,6 +832,7 @@ def build_companion_correlator_tab(
                 if color.shape[-1] < 3:
                     return
                 from fragile.physics.qft_utils import _fft_correlator_batched
+
                 dr = _get_dirac_baryon_result()
                 op_series = getattr(dr, field_name)  # [T]
                 merged_operators[key] = op_series
@@ -903,7 +939,7 @@ def build_companion_correlator_tab(
                         dtype=torch.float32,
                     )
                     low, high = _glueball_extract_axis_bounds(
-                        history.bounds,
+                        getattr(history, "bounds", None),
                         momentum_axis,
                         device=device,
                     )
@@ -966,58 +1002,31 @@ def build_companion_correlator_tab(
                     merged_correlators["tensor_twistor"] = corrs["tensor"]
                     merged_operators["tensor_twistor"] = ops["tensor"]
                     continue
-                # mode == "standard": bilinear sigma_{mu,nu} tensor
-                from fragile.physics.qft_utils import _fft_correlator_batched
-                from fragile.physics.qft_utils.helpers import (
-                    safe_gather_pairs_2d,
-                    safe_gather_pairs_3d,
+                from types import SimpleNamespace
+
+                from fragile.physics.operators.config import TensorOperatorConfig
+                from fragile.physics.operators.tensor_operators import (
+                    compute_tensor_correlator,
+                    compute_tensor_operators,
                 )
 
-                d = color.shape[-1]
-                sigma = _build_sigma_matrices(d, device).to(dtype=color.dtype)
-                pair_indices, structural_valid = build_companion_pair_indices(
+                tensor_data = SimpleNamespace(
+                    color=color,
+                    color_valid=color_valid,
+                    device=device,
                     companions_distance=companions_distance,
                     companions_clone=companions_clone,
-                    pair_selection=str(settings.pair_selection),
+                    scales=None,
+                    pairwise_distances=None,
                 )
-                color_j, in_range = safe_gather_pairs_3d(color, pair_indices)
-                valid_j, _ = safe_gather_pairs_2d(color_valid, pair_indices)
-                color_i = color.unsqueeze(2).expand_as(color_j)
-                finite_i = torch.isfinite(color_i.real) & torch.isfinite(color_i.imag)
-                finite_j = torch.isfinite(color_j.real) & torch.isfinite(color_j.imag)
-                valid = (
-                    structural_valid & in_range
-                    & color_valid.unsqueeze(-1) & valid_j
-                    & finite_i.all(dim=-1) & finite_j.all(dim=-1)
-                )
-                if sigma.shape[0] > 0:
-                    result_t = torch.einsum(
-                        "...i,pij,...j->...p", color_i.conj(), sigma, color_j,
-                    )
-                    op_tensor = result_t.mean(dim=-1).imag.float()
-                else:
-                    op_tensor = torch.zeros(color_i.shape[:-1], device=device)
-                op_tensor = torch.where(valid, op_tensor, torch.zeros_like(op_tensor))
-                # Per-frame average
-                weights = valid.to(op_tensor.dtype)
-                counts = valid.sum(dim=(1, 2)).to(torch.int64)
-                sums = (op_tensor * weights).sum(dim=(1, 2))
-                tensor_series = torch.zeros(
-                    op_tensor.shape[0], device=device, dtype=torch.float32,
-                )
-                valid_t = counts > 0
-                if torch.any(valid_t):
-                    tensor_series[valid_t] = (
-                        sums[valid_t] / counts[valid_t].to(op_tensor.dtype)
-                    ).float()
+                tensor_config = TensorOperatorConfig(pair_selection=str(settings.pair_selection))
                 key = "tensor_standard"
-                merged_operators[key] = tensor_series
-                corr = _fft_correlator_batched(
-                    tensor_series.unsqueeze(0),
-                    max_lag=max_lag,
-                    use_connected=use_connected,
+                merged_operators[key] = compute_tensor_operators(tensor_data, tensor_config)[
+                    "tensor"
+                ]
+                merged_correlators[key] = compute_tensor_correlator(
+                    tensor_data, tensor_config, max_lag, use_connected
                 )
-                merged_correlators[key] = corr.squeeze(0)
             if "tensor" in selected_modes:
                 channel_labels.append("tensor")
 
@@ -1031,6 +1040,8 @@ def build_companion_correlator_tab(
                 operators=merged_operators,
             )
             state["companion_correlator_output"] = result
+            if on_computed is not None:
+                on_computed()
 
             _refresh_overlay()
 
@@ -1053,13 +1064,24 @@ def build_companion_correlator_tab(
     # -- Multiscale compute callback --
 
     def on_multiscale_run(_):
+        state["companion_correlator_output"] = None
+
         def _compute(history: RunHistory):
+            # Resolve ell0 with the selected estimator; the multiscale config
+            # has no ``ell0_method`` field and would otherwise ignore it (its
+            # own automatic estimate is the companion-distance one).
+            if settings.ell0 is not None:
+                ell0_val: float | None = float(settings.ell0)
+            elif str(settings.ell0_method) != "companion":
+                ell0_val = float(estimate_ell0_auto(history, settings.ell0_method))
+            else:
+                ell0_val = None
             ms_config = MultiscaleStrongForceConfig(
                 warmup_fraction=float(settings.warmup_fraction),
                 end_fraction=float(settings.end_fraction),
                 h_eff=float(settings.h_eff),
                 mass=float(settings.mass),
-                ell0=float(settings.ell0) if settings.ell0 is not None else None,
+                ell0=ell0_val,
                 edge_weight_mode=str(settings.edge_weight_mode),
                 n_scales=int(settings.n_scales),
                 kernel_type=str(settings.kernel_type),
@@ -1079,7 +1101,7 @@ def build_companion_correlator_tab(
             merged_correlators: dict[str, torch.Tensor] = {}
             merged_operators: dict[str, torch.Tensor] = {}
             for ch_name, scale_results in ms_output.per_scale_results.items():
-                corrs = torch.stack([r.correlator for r in scale_results])  # [S, max_lag+1]
+                corrs = stack_correlators([r.correlator for r in scale_results])  # [S, max_lag+1]
                 merged_correlators[ch_name] = corrs
                 if ch_name in ms_output.series_by_channel:
                     merged_operators[ch_name] = ms_output.series_by_channel[ch_name]  # [S, T]
@@ -1090,6 +1112,8 @@ def build_companion_correlator_tab(
                 scales=ms_output.scales,
             )
             state["companion_correlator_output"] = result
+            if on_computed is not None:
+                on_computed()
 
             # Activate scale selector
             n_s = int(ms_output.scales.numel())
@@ -1100,10 +1124,12 @@ def build_companion_correlator_tab(
 
             _refresh_overlay()
 
-            n_ch = len(ms_output.best_results)
+            n_ch = len(merged_correlators)
+            n_best = len(ms_output.best_results)
             status.object = (
-                f"**Multiscale complete:** {n_ch} channels across "
-                f"{n_s} scales ({settings.kernel_type} kernel)."
+                f"**Multiscale complete:** {n_ch} correlators across "
+                f"{n_s} scales ({settings.kernel_type} kernel); "
+                f"{n_best} channels pass the best-scale filters."
             )
 
         run_tab_computation(state, status, "multiscale analysis", _compute)
@@ -1152,8 +1178,6 @@ def build_companion_correlator_tab(
         run_button.disabled = False
         multiscale_button.disabled = False
         status.object = "**Companion Correlators ready:** click Compute Companion Correlators."
-        if defer:
-            return
         state["companion_correlator_output"] = None
         summary_table.value = pd.DataFrame()
         correlator_table.value = pd.DataFrame()

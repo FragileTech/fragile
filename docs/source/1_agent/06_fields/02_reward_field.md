@@ -4,8 +4,8 @@
 ## TLDR
 
 - Treat reward as a **field / differential form**, not just a scalar: direction matters when moving through state space.
-- The critic/value becomes a geometric object (potential solving a Helmholtz/Poisson-style equation on the latent
-  manifold).
+- The critic/value can be treated as a geometric object (a potential solving a Helmholtz/Poisson-style equation on the
+  latent manifold) in the conservative diffusion regime.
 - Use Hodge-style decomposition to separate conservative (gradient) structure from cyclic/value-curl structure (games,
   non-equilibrium tasks).
 - This chapter gives a principled way to detect when the conservative scalar-reward model fails (curl ≠ 0) and what to
@@ -22,17 +22,17 @@
 {cite}`evans2010pde,sutton2018rl`
 
 :::{div} feynman-prose
-Now we come to reward, and I have to tell you something that might seem heretical at first: reward is not a number.
+Now we come to one useful representation of reward, and I have to tell you something that might seem heretical at first: in this model, reward is not only a number.
 
-In every RL textbook, you see $r_t$---a scalar. The agent does something, the environment gives back a number, and the goal is to maximize the sum of these numbers over time. Simple, clean, and completely inadequate for understanding what's really going on.
+In every RL textbook, you see $r_t$---a scalar. The agent does something, the environment gives back a number, and the goal is to maximize the sum of these numbers over time. That scalar description remains valid for ordinary discrete rewards; the 1-form below resolves the additional dependence on direction.
 
-Here's the problem: when you move through the world, the reward you collect depends not just on *where* you are, but on *which direction you're moving*. Walk toward the refrigerator, and you might get closer to food (good). Walk away from it, and you don't. Same position, different reward---because of the direction of motion.
+Here's the extra structure: when a reward component is attached to motion through the world, it depends not just on *where* you are, but on *which direction you're moving*. Walk toward the refrigerator, and you might get closer to food (good). Walk away from it, and you don't. Same position, different directional contribution.
 
 This means reward isn't a scalar field (a number at each point). It's a *1-form*---a mathematical object that eats a direction and spits out a number. The reward you get is the inner product of the reward 1-form with your velocity: $r_t = \langle \mathcal{R}, v \rangle$.
 
-Why does this matter? Because it opens up a whole world of structure that standard RL ignores. The 1-form can have a "curl"---non-zero circulation around closed loops. When it does, something remarkable happens: the optimal strategy might not be to converge to a fixed point. It might be to *orbit forever*, continuously harvesting reward from cycles in the value landscape.
+Why does this matter? Because it opens up a whole world of structure that a scalar potential cannot represent. The 1-form can have a "curl"---non-zero circulation around closed loops. When that circulation is present, an optimal strategy may involve cycling rather than converging to a fixed point, but that conclusion requires an objective and dynamical assumptions beyond the decomposition itself.
 
-Think of Rock-Paper-Scissors. There's no "best" move. The optimal strategy cycles: rock beats scissors beats paper beats rock. That cyclic structure is encoded in the curl of the reward 1-form.
+Think of Rock-Paper-Scissors. There is no dominant action in the cyclic game. The preference loop is a useful analogy for non-exact reward structure; identifying a particular RL optimum still requires specifying the game and policy dynamics.
 :::
 
 We have defined Observations as **Configuration Constraints** (manifold position, {ref}`sec-the-symplectic-interface-position-momentum-duality`) and Actions as **Momentum Constraints** (tangent vectors, {ref}`sec-the-symplectic-interface-position-momentum-duality`). We now define the third component of the interface: **Reward**.
@@ -54,13 +54,13 @@ We generalize by treating reward as a **1-form field** $\mathcal{R}$, with scala
 ## The Reward 1-Form
 
 :::{div} feynman-prose
-Let me make the mathematical setup precise. A 1-form is a linear map from tangent vectors to numbers. At each point $z$ on the manifold, you have a 1-form $\mathcal{R}(z)$ that takes any velocity vector $v$ and returns a real number: the instantaneous reward rate.
+Let me make the mathematical setup precise. A 1-form is a linear map from tangent vectors to numbers. At each point $z$ on the manifold, you have a 1-form $\mathcal{R}(z)$ that takes any velocity vector $v$ and returns a real number: the instantaneous directional reward rate. This is a model for that component of the signal; a separate scalar reward density can still be supplied as boundary or bulk data for a field equation.
 
-The beautiful thing about 1-forms is that they integrate naturally along paths. If you want to know the total reward collected along a trajectory, you just integrate: $R_{\text{cumulative}} = \int_\gamma \mathcal{R}$. This is a *line integral*, exactly like the work done by a force field in physics.
+The beautiful thing about 1-forms is that they integrate naturally along paths. If you want to know the directional reward collected along a trajectory, you just integrate: $R_{\text{cumulative}} = \int_\gamma \mathcal{R}$. This is a *line integral*, exactly like the work done by a force field in physics.
 
-Notice the remark: a stationary agent ($v = 0$) collects zero instantaneous reward. You have to *move* to harvest value. This captures something deep about agency: there's no such thing as passive reward collection. You have to act, explore, traverse the landscape.
+Notice the remark: this 1-form component gives zero instantaneous reward to a stationary agent ($v = 0$). A scalar source or terminal payoff is a different object and can represent reward that is not a directional line integral.
 
-This is different from the textbook picture, where you might imagine sitting in a "good state" and accumulating reward by existing. In the 1-form formulation, reward flows only when you're in motion. It's a rate, not a stock.
+This is different from the textbook picture, where you might imagine sitting in a "good state" and accumulating reward by existing. In the 1-form formulation, the directional contribution is a rate along motion; do not confuse it with a scalar source used by the value PDE.
 :::
 
 We begin with the most general formulation: reward is a **differential 1-form** on the latent manifold.
@@ -71,11 +71,12 @@ We begin with the most general formulation: reward is a **differential 1-form** 
 Let $\mathcal{R}$ be a differential 1-form on the latent manifold $(\mathcal{Z}, G)$. The **instantaneous reward rate** received by the agent moving with velocity $v \in T_z\mathcal{Z}$ is:
 
 $$
-r_t = \langle \mathcal{R}(z), v \rangle_G = \mathcal{R}_i(z) \dot{z}^i.
+r_t = \mathcal{R}(z)[v] = \mathcal{R}_i(z) \dot{z}^i.
 
 $$
 
-*Units:* $[\mathcal{R}] = \mathrm{nat}/[\text{length}]$.
+*Units:* $[\mathcal{R}] = \mathrm{nat}/[\text{length}]$ and $[r_t]=\mathrm{nat}/\text{time}$ for the
+continuous-time reward rate. A discrete sample is $r_t^{\text{step}}=r_t\,\Delta t$ and has units nat.
 
 The cumulative reward along a trajectory $\gamma: [0,T] \to \mathcal{Z}$ is the **line integral**:
 
@@ -100,22 +101,23 @@ $$
 \int_{\gamma_\partial} J_r = \text{Cumulative Boundary Reward}.
 
 $$
-In the discrete limit, this manifests as samples $r_t = J_r(\partial_t)$ deposited at the boundary
+In the discrete limit, this manifests as samples $r_t^{\text{step}} = J_r(\partial_t)\,\Delta t$ deposited at the boundary
 coordinates $(t, z_{\text{boundary}})$.
 
-*Units:* $[J_r] = \mathrm{nat}/[\text{length}]$, $[r_t] = \mathrm{nat}$.
+*Units:* $[J_r] = \mathrm{nat}/[\text{length}]$ and $[r_t^{\text{step}}] = \mathrm{nat}$.
 
 *Relation to 1-form:* For any surface $\Sigma$ with boundary $\partial\Sigma$, Stokes' theorem gives
-$\oint_{\partial\Sigma}\mathcal{R}=\int_\Sigma d\mathcal{R}$. In the conservative case
-($\mathcal{R}=d\Phi$), boundary reward reduces to Dirichlet/Neumann data for $\Phi$ (equivalently a
-boundary source density $\sigma_r$).
+$\oint_{\partial\Sigma}\mathcal{R}=\int_\Sigma d\mathcal{R}$. For a loop $\gamma=\partial\Sigma$, Stokes' theorem relates its circulation to $d\mathcal R$; a general closed loop need not bound a surface. The pullback $\iota^*\mathcal R$ is tangential boundary data;
+it is not by itself a Neumann flux or a source density for a value PDE.
 
 :::
 
 :::{prf:definition} Terminal Boundary (End/Death Flags)
 :label: def-terminal-boundary
 
-Let $\Gamma_{\text{term}} \subset \mathcal{Z}$ denote the terminal subset representing end/death flags.
+When termination is $\sigma(Z_t)$-measurable, let $\Gamma_{\text{term}} \subset \mathcal{Z}$ denote
+the terminal subset representing end/death flags. Under partial observability use the conditional
+killing rate instead of identifying the flag with a latent subset.
 Define the stopping time $\tau_{\text{term}} := \inf\{t \ge 0 : z_t \in \Gamma_{\text{term}}\}$ and
 kill the process upon hitting $\Gamma_{\text{term}}$. For the conservative value PDE, impose a
 Dirichlet condition $V|_{\Gamma_{\text{term}}} = V_{\text{term}}$ (often $0$ or a terminal payoff).
@@ -156,31 +158,32 @@ not a physical terminal set.
 ## The Hodge Decomposition of Value
 
 :::{div} feynman-prose
-Now we come to one of the most powerful theorems in differential geometry, applied to the reward landscape: the Hodge decomposition.
+Now we come to one of the most useful theorems in differential geometry, applied to the reward landscape: the Hodge--Morrey--Friedrichs decomposition.
 
-The idea is this: any vector field (or 1-form) can be split into three orthogonal pieces:
+The idea is this: after choosing the boundary realization and the function space, a sufficiently regular 1-form can be split into three orthogonal pieces:
 
-1. **Gradient part** ($d\Phi$): This is the "climb the hill" component. It points from low value to high value. If you only had this part, there would be a scalar potential $\Phi$ such that reward always flows downhill in $-\Phi$ space.
+1. **Gradient part** ($d\Phi$): This is the exact, path-independent component. Its line integral depends only on the endpoints. In the reward convention used here $V_{\mathrm{rew}}=\Phi$; the corresponding cost-to-go is $V_{\mathrm{cost}}=-\Phi$, so the sign must be handled consistently in the dynamics.
 
-2. **Solenoidal part** ($\delta\Psi$): This is the "swirl" component. It circulates around without converging to any fixed point. Think of stirring coffee---the flow goes round and round.
+2. **Solenoidal part** ($\delta\Psi$): This is the "swirl" component. It can support circulation and persistent currents, although whether trajectories orbit depends on the chosen dynamics.
 
-3. **Harmonic part** ($\eta$): This is the "topological" component. It comes from holes in the manifold---places you can loop around that aren't contractible. If your latent space has the topology of a donut, there's a harmonic component you can't get rid of.
+3. **Harmonic part** ($\eta$): This is the boundary-conditioned harmonic component. Only the appropriate absolute or relative harmonic subspace is identified with de Rham cohomology and hence with topological cycles. On the truncated disk with the stated relative condition, $H^1$ is trivial, so a nonzero harmonic field would be boundary-driven rather than hole-driven.
 
-Why does this matter? Because each component has different implications for optimal behavior:
-- The gradient part can be *optimized*. You can climb to the peak and stay there.
-- The solenoidal part must be *orbited*. There's no peak; you harvest reward by cycling.
-- The harmonic part is *topological*. It's determined by the shape of the space itself.
+Why does this matter? Because each component has different implications for analysis:
+- The exact part can be represented by a scalar potential and integrated by endpoint differences.
+- The solenoidal part is where circulation and non-equilibrium currents can enter.
+- The harmonic part records the selected boundary/cohomological sector.
 
-Standard RL assumes the solenoidal and harmonic parts are zero---that there's always a scalar value function you're climbing. When that assumption fails, standard methods break down, and you need the full Hodge structure.
+Standard scalar-value RL assumes that the reward field is exact. Vanishing curl is not enough on a domain with nontrivial periods; one must also remove the harmonic/period contribution. When that assumption fails, a scalar potential alone does not describe the full reward field.
 :::
 
-The central theorem of this section decomposes any reward 1-form into three orthogonal components: gradient, solenoidal, and harmonic. This decomposition separates the optimizable component from the inherently cyclic components.
+The central theorem of this section decomposes a sufficiently regular reward 1-form into three orthogonal components:
+gradient, solenoidal, and harmonic. On a manifold with boundary the boundary condition is part of the statement.
 
 :::{prf:theorem} Hodge Decomposition of the Reward Field
 :label: thm-hodge-decomposition
 
-On a compact latent Riemannian manifold $(\mathcal{Z}, G)$ with boundary (or on a complete manifold
-with suitable decay and boundary conditions), the Reward 1-form $\mathcal{R}$ decomposes into:
+On a compact latent Riemannian manifold $(\mathcal{Z}, G)$, after choosing the absolute or relative
+Hodge--Morrey--Friedrichs boundary condition, the Reward 1-form $\mathcal{R}$ decomposes into:
 
 $$
 \mathcal{R} = \underbrace{d\Phi}_{\text{Gradient}} + \underbrace{\delta \Psi}_{\text{Solenoidal}} + \underbrace{\eta}_{\text{Harmonic}}
@@ -189,15 +192,18 @@ $$
 where:
 1. **$\Phi \in \Omega^0(\mathcal{Z})$** (Scalar Potential): The conservative/optimizable component. $d\Phi$ is an exact form.
 2. **$\Psi \in \Omega^2(\mathcal{Z})$** (Vector Potential): The rotational/cyclic component. $\delta\Psi$ is a coexact form (divergence-free).
-3. **$\eta \in \mathcal{H}^1(\mathcal{Z})$** (Harmonic Flux): Topological cycles from manifold holes. Satisfies $d\eta = 0$ and $\delta\eta = 0$.
+3. **$\eta \in \mathcal{H}^1_{\mathrm{bc}}(\mathcal{Z})$** (Harmonic Flux): a boundary-conditioned harmonic
+field satisfying $d\eta = 0$ and $\delta\eta = 0$. Only the corresponding absolute/relative harmonic subspace
+is identified with de Rham cohomology and hence with topological cycles; on the truncated disk with the standard
+relative boundary condition, $H^1$ is trivial.
 
-We identify $\Phi$ with the critic value $V$ (the exact component), so $d\Phi = dV$; the conservative case corresponds
-to $A=0$.
+We use $\Phi$ for the reward-side potential and $V:=-\Phi$ for the cost-to-go convention used
+by the control-loop chapter. Thus $d\Phi=-dV$; the conservative case corresponds to $A=0$.
 Define the non-exact component $A := \delta\Psi + \eta$, so $\mathcal{R} = d\Phi + A$ and $\mathcal{F} = dA$.
 
 *Units:* $[\Phi] = \mathrm{nat}$, $[\Psi] = \mathrm{nat}$, $[\eta] = \mathrm{nat}/[\text{length}]$.
 
-*Proof sketch.* The Hodge decomposition follows from the orthogonal decomposition of $L^2(\Omega^1)$
+*Proof sketch.* The Hodge--Morrey--Friedrichs decomposition follows from the orthogonal decomposition of $L^2(\Omega^1)$
 into exact, coexact, and harmonic forms (with absolute/relative boundary conditions fixed when
 $\partial\mathcal{Z}\neq\varnothing$). The Hodge Laplacian $\Delta_H = d\delta + \delta d$ has kernel
 equal to the harmonic forms. The explicit solution uses the Green's operator
@@ -230,18 +236,19 @@ In coordinates: $\mathcal{F}_{ij} = \partial_i \mathcal{R}_j - \partial_j \mathc
 :::{prf:definition} Conservative Reward Field
 :label: def-conservative-reward-field
 
-The reward field $\mathcal{R}$ is **conservative** if and only if:
+The reward field $\mathcal{R}$ is **conservative** when it is exact, i.e. when there is a scalar $\Phi$ with
+$\mathcal{R}=d\Phi$. Equivalently, $d\mathcal R=0$ and all periods $\oint_\gamma\mathcal R$ vanish for closed
+loops. On a simply connected domain with the boundary condition above, vanishing curl is sufficient:
 
 $$
-\mathcal{F} = d\mathcal{R} = 0 \quad \text{(curl-free)}.
+\mathcal{R}=d\Phi.
 
 $$
-Equivalently, $\mathcal{R} = d\Phi$ for some scalar potential $\Phi$ (the solenoidal and harmonic components vanish).
-
-**Conservative Special Case:** When $\mathcal{F} = 0$ everywhere, we recover standard scalar value functions with $V(z) = \Phi(z)$. The cumulative reward around any closed loop vanishes:
+**Conservative Special Case:** In the reward convention $\mathcal{R}=d\Phi$; the cost-to-go used elsewhere is
+$V=-\Phi$. For a loop that bounds a surface, $\gamma=\partial\Sigma$, Stokes' theorem gives:
 
 $$
-\oint_\gamma \mathcal{R} = \int_\Sigma d\mathcal{R} = \int_\Sigma \mathcal{F} = 0.
+\oint_\gamma \mathcal{R} = \int_\Sigma d\mathcal{R} = 0.
 
 $$
 
@@ -255,7 +262,8 @@ $$
 The Value Curl $\mathcal{F}$ can be estimated from trajectory data. For a closed loop $\gamma$ in latent space:
 
 $$
-\oint_\gamma \mathcal{R} = \int_\Sigma \mathcal{F} \, d\Sigma \neq 0 \implies \text{Non-conservative rewards.}
+\oint_{\partial\Sigma} \mathcal{R} = \int_\Sigma \mathcal{F} \, d\Sigma \neq 0
+\implies \text{the reward field is not exact.}
 
 $$
 **Diagnostic:** Non-zero circulation $\oint_\gamma \mathcal{R}$ indicates non-conservative structure.
@@ -297,98 +305,92 @@ This recovers the **scalar Value function**, which exists precisely because rewa
 ## The Conservative Case: Scalar Potential and Screened Poisson Equation
 
 :::{div} feynman-prose
-Now let's focus on the special case that standard RL assumes: the curl vanishes. When $\mathcal{F} = 0$, the reward 1-form is exact---it's the gradient of some scalar function $\Phi$. This scalar is the value function, and suddenly everything becomes much simpler.
+Now let's focus on the special case that standard RL assumes: the reward field is exact. Vanishing curl is part of that condition, but on a domain with nontrivial periods it is not sufficient by itself. When the curl and all periods vanish, the reward 1-form is the gradient of a scalar function $\Phi$, and the scalar description becomes available.
 
-In this regime, the value function satisfies a beautiful partial differential equation: the Screened Poisson (or Helmholtz) equation. This is the continuum limit of the Bellman equation, and understanding it geometrically is one of the key insights of this framework.
+In this regime, the reward-side scalar $\Phi=V_{\mathrm{rew}}$ satisfies a Screened Poisson (or Helmholtz) equation in the particular conservative diffusion sector stated below. This is the continuum limit of a Bellman generator under those hypotheses, and the geometry determines how the field propagates. If you instead write the equation for the cost-to-go $V_{\mathrm{cost}}=-\Phi$, the source and score signs must be changed together.
 
-The equation looks like this:
-$$-\Delta_G V + \kappa^2 V = \rho_r$$
+The equation looks like this in the reward convention:
+$$-\Delta_G \Phi + \kappa^2 \Phi = \rho_r$$
 
 Let me parse that for you:
-- $\Delta_G$ is the Laplace-Beltrami operator---the generalization of the Laplacian to curved manifolds. It measures how $V$ differs from its local average.
-- $\kappa^2$ is the "screening mass." The discount factor sets a temporal rate $\lambda := -\ln\gamma / \Delta t$; the spatial screening mass is $\kappa := \lambda / c_{\text{info}}$. In natural units ($\Delta t = 1$, $c_{\text{info}} = 1$), $\kappa = -\ln\gamma$. This is the deep connection: the discount rate isn't just an arbitrary weighting---it's a *mass* for the value field.
+- $\Delta_G$ is the Laplace-Beltrami operator---the generalization of the Laplacian to curved manifolds. It measures how $\Phi$ differs from its local average.
+- $\kappa^2$ is the screening coefficient. For the stationary diffusion convention used below,
+  $\lambda:=-\ln\gamma/\Delta t$ gives $\kappa^2=\lambda/T_c$ (and hence
+  $\kappa=\sqrt{\lambda/T_c}$). This is the coefficient produced by the Bellman generator.
 - $\rho_r$ is the reward density---where rewards are being deposited.
 
-What does this equation mean physically? It says value *propagates* from reward sources, but the propagation is screened. Distant rewards contribute less, and the screening length is $\ell = 1/\kappa = c_{\text{info}} \Delta t / (-\ln\gamma)$. For $\gamma = 0.99$ with $c_{\text{info}} \Delta t = 1$, this is about 100 time steps. Beyond that distance, rewards are exponentially suppressed.
+What does this equation mean? Value propagates from the declared bulk sources with the Green kernel of the
+chosen geometry. In the stationary diffusion convention the characteristic length is
+$\ell=1/\kappa=\sqrt{T_c/\lambda}$. For $\gamma=0.99$, $T_c=\Delta t=1$, this is about
+$9.97$ in the corresponding latent-length units.
 
-This gives the discount factor a *spatial* meaning, not just a temporal one. In latent space, $\gamma$ controls how far reward "reaches."
+This gives the discount factor a *spatial* meaning in this selected diffusion model, not a universal conversion for every latent geometry. On a curved or bounded domain, the decay law and effective range must be recomputed.
 :::
 
-When the Value Curl vanishes ($\mathcal{F} = 0$), the reward field is conservative and we recover the
-standard scalar value function framework. In this regime, the Value function $V(z) = \Phi(z)$ obeys the
-Bellman Equation, which in the continuum limit becomes the **Screened Poisson (Helmholtz) Equation**.
+When the Value Curl vanishes ($\mathcal{F} = 0$) and the periods vanish, the reward field is exact and
+we recover the scalar value function framework. In this regime, the reward potential is $\Phi(z)$ and
+the cost-to-go used by the control loop is $V(z)=-\Phi(z)$. The Bellman equation, in the stationary
+diffusion sector, becomes the **Screened Poisson (Helmholtz) Equation**.
 In the general case, this PDE governs only the gradient component $d\Phi$ of the reward 1-form; the
 solenoidal/harmonic parts appear as circulation and are not captured by a scalar potential.
 
-:::{prf:theorem} The HJB-Helmholtz Correspondence {cite}`bellman1957dynamic,evans2010pde`
+:::{prf:theorem} Bellman generator and stationary screening
 :label: thm-the-hjb-helmholtz-correspondence
 
-Let the temporal discount rate be $\lambda := -\ln\gamma / \Delta t$ and define the **spatial screening mass** $\kappa := \lambda / c_{\text{info}}$ (so $\gamma = e^{-\lambda \Delta t}$). The Bellman condition
-
+For the diffusion and discount already used in
+the Bellman diffusion defined here, write
+$\mathcal L=b\cdot\nabla+T_c\Delta_G$ and $\gamma_h=e^{-\lambda h}$.
+In this theorem $V$ denotes the reward-side score $V_{\mathrm{rew}}=\Phi$;
+the control-loop cost critic is $V_{\mathrm{cost}}=-\Phi$ and has source
+$\rho_c=-\rho_r$.
+The smooth Bellman equation has continuous-time form
 $$
-V(z) = \mathbb{E}[r + \gamma V(z')]
-
+\partial_tV+\mathcal LV-\lambda V+r=0.
 $$
-approaches the following PDE in the limit $\Delta t \to 0$:
-
+In its stationary zero-drift sector,
+$(-\Delta_G+\lambda/T_c)V=r/T_c$; denote this screening coefficient by
+$\kappa_B^2=\lambda/T_c$. The scalar field action used in this chapter
+instead defines the wave operator
 $$
-\boxed{-\Delta_G V(z) + \kappa^2 V(z) = \rho_r(z)}
-
+\Box_g=-|g|^{-1/2}\partial_\mu(|g|^{1/2}g^{\mu\nu}\partial_\nu),
+\qquad(\Box_g+\kappa^2)V=\rho_r.
 $$
-where:
-- $\Delta_G = \frac{1}{\sqrt{|G|}} \partial_i \left( \sqrt{|G|} G^{ij} \partial_j \right)$ is the **Laplace-Beltrami operator** on the manifold $(\mathcal{Z}, G)$
-- $\kappa^2$ is the "mass" of the scalar field, causing the influence of distant rewards to decay exponentially
-- $\rho_r(z)$ is the scalar source density associated with the conservative component of $\mathcal{R}$
-  (bulk density plus boundary flux data; see Definition {prf:ref}`def-the-reward-flux`)
+The stationary operators coincide under the coefficient identification
+$\kappa^2=\kappa_B^2$ and the same sources and boundary realization.
 
-*Proof sketch.* Consider the continuous-time limit of the Bellman equation for a diffusion process
-$dz = b(z) dt + \sigma(z) dW$ with $\sigma\sigma^T = 2T_c G^{-1}$. Expanding
-$V(z') = V(z + dz)$ to second order and taking expectations, with instantaneous reward rate
-$r := \mathcal{R}_i(z) b^i(z,a)$:
-
+*Proof.* Generator consistency gives
+$\mathbb E[V(Z_h,t+h)]=V+h(\partial_t+\mathcal L)V+o(h)$.
+Insert this and $e^{-\lambda h}=1-\lambda h+o(h)$ into
+$V=rh+e^{-\lambda h}\mathbb E[V(Z_h,t+h)]$, cancel $V$, and divide by $h$.
+The $\partial_t^2V$ Taylor term has coefficient $h/2$ after division and
+vanishes. Finite signal speed does not change that coefficient.
+For the wave model vary
 $$
-V(z) = r \Delta t + \gamma \mathbb{E}[V(z')] \approx r \Delta t + (1 - \kappa \Delta t)\left(V + \nabla_A V \cdot b \Delta t + T_c \Delta_G V \Delta t\right).
-
+S[V]=\int\left[-\tfrac12g^{\mu\nu}\partial_\mu V\partial_\nu V
+-\tfrac12\kappa^2V^2+\rho_rV\right]\sqrt{|g|}\,dx.
 $$
-Rearranging and dividing by $\Delta t$, then taking $\Delta t \to 0$:
-
-$$
-\kappa V = r + \nabla_A V \cdot b + T_c \Delta_G V.
-Here $\nabla_A V := \nabla V - A$ with $A := \delta\Psi + \eta$ the non-conservative component of $\mathcal{R}$
-(conservative case: $A=0$).
-
-$$
-For the stationary case ($b = 0$) and absorbing the temperature into the source term, this yields the Helmholtz equation $-\Delta_G V + \kappa^2 V = \rho_r$. Details in {ref}`sec-appendix-a-full-derivations`. $\square$
-
-Units: $[\kappa] = 1/\text{length}$, $[\Delta_G V] = \mathrm{nat}/\text{length}^2$, $[\rho_r] = \mathrm{nat}/\text{length}^2$.
-
-*Cross-reference (Relativistic Extension):* This **elliptic** Helmholtz equation assumes instantaneous value propagation. When agents interact across spatial or computational separation with finite information speed $c_{\text{info}}$, the equation generalizes to the **hyperbolic Klein-Gordon equation**: $(\frac{1}{c^2}\partial_t^2 - \Delta_G + \kappa^2)V = \rho_r$. See Theorem {prf:ref}`thm-hjb-klein-gordon` in {ref}`sec-the-hyperbolic-value-equation`.
-
-*Cross-reference (Gauge-Covariant Generalization):* When dynamics must be invariant under local nuisance
-transformations ({ref}`sec-local-gauge-symmetry-nuisance-bundle`), covariant derivatives
-act on vector-valued belief fields (or nuisance orientation multiplets) rather than on the scalar
-value $V$. Only if $V$ is chosen to transform in a non-trivial representation does the Helmholtz
-operator become $-D_\mu D^\mu + \kappa^2$.
-
+Integration by parts against a compactly supported variation $\eta$ gives
+$\delta S=\int\eta[-\Box_gV-\kappa^2V+\rho_r]\sqrt{|g|}\,dx$.
+Stationarity proves the field equation. For a fixed product metric
+$g=\operatorname{diag}(-c^2,G)$, $\Box_g=c^{-2}\partial_t^2-\Delta_G$.
+These are explicit equations for two defined evolutions; equality of their
+stationary operators is the comparison established here. $\square$
 :::
-
 :::{prf:remark} Dimensional Consistency of the Helmholtz Equation
 :label: rem-helmholtz-dimensions
 
 The screened Poisson equation $-\Delta_G V + \kappa^2 V = \rho_r$ requires careful dimensional analysis. The naive expression $\kappa = -\ln\gamma$ appears dimensionless, which would be inconsistent with $[\Delta_G] = [\text{length}]^{-2}$.
 
-The resolution is to separate temporal and spatial scales. Define the temporal discount rate $\lambda := -\ln\gamma / \Delta t$ (units $1/[\text{time}]$), then convert to the spatial screening mass $\kappa := \lambda / c_{\text{info}}$ (units $1/[\text{length}]$). This makes $\kappa^2$ commensurate with $[\Delta_G] = [\text{length}]^{-2}$.
+The stationary Bellman generator fixes the coefficient by
+$\kappa^2=\lambda/T_c$. If a separate propagation speed or diffusion coefficient is introduced,
+it must be included in the generator before converting to a spatial coefficient; it is not an
+independent identification. In normalized units $T_c=\Delta t=1$, this gives
+$\kappa=\sqrt{-\ln\gamma}$, not $-\ln\gamma$.
 
-**In natural units** (used throughout this document): We set $\Delta t = 1$ and $c_{\text{info}} = 1$, making $\kappa = -\ln\gamma$ numerically equal to the screening mass.
-
-**In SI units**: The proper relationship is:
-
-$$
-\kappa_{\text{phys}} = \frac{-\ln\gamma}{c_{\text{info}} \Delta t}, \qquad [\kappa_{\text{phys}}] = \frac{1}{\text{length}}
-
-$$
-
-The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the temporal horizon ($\gamma$) and the information propagation speed $c_{\text{info}}$. Slower propagation (smaller $c_{\text{info}}$) shortens the effective horizon in latent space.
+If a separate physical propagation speed is used, its coefficient must be derived from the
+corresponding dimensional generator. It cannot be identified with $\lambda/c_{\text{info}}$ without
+adding that model explicitly. Under the normalized stationary convention,
+$\ell_{\text{screen}}=1/\kappa$ is not determined by $\gamma$ alone.
 
 :::
 
@@ -401,7 +403,7 @@ The screening length $\ell_{\text{screen}} = 1/\kappa$ thus depends on both the 
 **In Implementation:** The value function satisfies $(-\Delta_G + \kappa^2)V = \rho_r$ where (in natural units with $\Delta t = c_{\text{info}} = 1$):
 
 $$
-\kappa = -\ln\gamma, \quad \ell_\gamma = 1/\kappa
+\kappa = \sqrt{-\ln\gamma/T_c}, \quad \ell_\gamma = 1/\kappa
 
 $$
 **Correspondence Table:**
@@ -409,7 +411,7 @@ $$
 | Physics (Yukawa) | Agent (Bellman-Helmholtz) |
 |:-----------------|:--------------------------|
 | Scalar field $\phi$ | Value function $V(z)$ |
-| Mass $m$ | Screening mass $\kappa = \lambda / c_{\text{info}}$ (natural units: $-\ln\gamma$) |
+| Mass $m$ | Screening coefficient $\kappa=\sqrt{\lambda/T_c}$ (normalized units: $\sqrt{-\ln\gamma}$) |
 | Screening length $1/m$ | Reward horizon $\ell_\gamma = 1/\kappa$ |
 | Charge density $\rho$ | Reward density $\rho_r$ |
 | Laplacian $\nabla^2$ | Laplace-Beltrami $\Delta_G$ |
@@ -427,7 +429,10 @@ $$
 (-\Delta_G + \kappa^2) V(z) = \rho_r(z)
 
 $$
-where $\Delta_G$ is the Laplace-Beltrami operator on the Riemannian manifold and $\kappa$ is the screening mass (see Remark {prf:ref}`rem-helmholtz-dimensions` for the precise dimensional relationship with the discount factor $\gamma$ and information speed $c_{\text{info}}$).
+where $\Delta_G$ is the Laplace-Beltrami operator on the Riemannian manifold. In the stationary diffusion convention used
+here, $\lambda=-\ln\gamma/\Delta t$ and $\kappa^2=\lambda/T_c$ (see Remark
+{prf:ref}`rem-helmholtz-dimensions`). A $c_{\text{info}}$-based propagation length belongs to a separate model and is
+not substituted into this generator identity.
 
 **The Degenerate Limit:**
 Discretize space on a lattice. Replace $\Delta_G$ with the graph Laplacian $\mathcal{L}_{\text{graph}}$.
@@ -441,13 +446,17 @@ V(s) = \sum_{t=0}^\infty \gamma^t \mathbb{E}[r_t | s_0 = s] = (I - \gamma P)^{-1
 $$
 This recovers the **Bellman equation** $V = r + \gamma P V$.
 
-**Result:** The "screening mass" $\kappa$ encodes the discount factor $\gamma$ (in natural units where $\Delta t = c_{\text{info}} = 1$; see Remark {prf:ref}`rem-helmholtz-dimensions`). Standard RL is Field Theory on a discrete lattice with flat metric. The Fragile Agent solves the PDE on a learned Riemannian manifold.
+**Result:** Under the stationary diffusion convention, the screening coefficient $\kappa^2=\lambda/T_c$ encodes
+the discount factor $\gamma$ (in normalized units $\Delta t=T_c=1$; see Remark {prf:ref}`rem-helmholtz-dimensions`).
+The lattice and learned-manifold descriptions are useful mathematical analogies; the sampled critic below remains a
+TD proxy unless a spatial residual and boundary-value solver are supplied.
 
 **What the generalization offers:**
 - Geometric propagation: rewards propagate as sources in a scalar field, respecting manifold curvature
 - Conformal coupling: high-value-curvature regions modulate the metric ({ref}`sec-geometric-back-reaction-the-conformal-coupling`)
 - Continuous limit: natural extension to continuous state spaces without discretization artifacts
-- Physical interpretation: $\gamma$ has a spatial meaning (screening length), not just temporal (horizon)
+- Conditional interpretation: under this stationary diffusion model, $\gamma$ also fixes a spatial screening scale; a
+  propagation-based interpretation requires its own speed and unit matching.
 :::
 
 :::{prf:proposition} Green's Function Interpretation
@@ -461,8 +470,8 @@ V(z) = \int_{\Omega} G_\kappa(z, z') \rho_r(z') \, d\mu_G(z') + \mathcal{B}_{\pa
 $$
 where $G_\kappa(z, z')$ is the Green's function satisfying
 $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$, and $\mathcal{B}_{\partial\Omega}$ encodes the
-chosen boundary condition (Dirichlet/Neumann). In the pure boundary-source case with density
-$\sigma_r$:
+chosen boundary condition. A boundary source density $\sigma_r$ must be specified independently as a
+single-layer/Neumann datum; it is not the pullback $\iota^*\mathcal R$. Under that separate choice:
 
 $$
 V(z) = \int_{\partial\Omega} G_\kappa(z, z') \sigma_r(z') \, d\Sigma(z').
@@ -506,10 +515,11 @@ where $(-\Delta_G + \kappa^2) G_\kappa(z, \cdot) = \delta_z$.
 Green's function solver (for the conservative component).
 ::::
 
-:::{prf:proposition} Green's Function Decay
+:::{prf:remark} Green's Function Decay Scope
 :label: prop-green-s-function-decay
 
-On a manifold with bounded curvature, the Green's function decays exponentially:
+For the Euclidean screened operator (and for geometries with the corresponding asymptotic
+analysis), the Green's function has the familiar large-distance form:
 
 $$
 G_\kappa(z, z') \sim \frac{1}{d_G(z, z')^{(d-1)/2}} \exp\left(-\kappa \cdot d_G(z, z')\right),
@@ -524,23 +534,25 @@ where $d_G$ is the geodesic distance and $d$ is the dimension.
 The discount factor $\gamma$ determines a characteristic **screening length**:
 
 $$
-\ell_{\text{screen}} = \frac{1}{\kappa} = \frac{c_{\text{info}} \Delta t}{-\ln\gamma} = \frac{c_{\text{info}}}{\lambda}.
+\ell_{\text{screen}} = \frac{1}{\kappa} = \sqrt{\frac{T_c}{\lambda}}.
 
 $$
 where $\lambda := -\ln\gamma / \Delta t$.
-For $\gamma = 0.99$ and $c_{\text{info}} \Delta t = 1$: $\ell_{\text{screen}} \approx 100$ steps.
+For $\gamma=0.99$, $T_c=\Delta t=1$: $\ell_{\text{screen}}\approx 9.97$ in the normalized latent-length units.
 
-*Interpretation:* Rewards at geodesic distance $> \ell_{\text{screen}}$ from state $z$ are exponentially suppressed in their contribution to $V(z)$. This is the **temporal horizon** recast as a **spatial horizon** in latent space.
+*Interpretation:* Under the displayed Green-kernel hypotheses, rewards at geodesic distance
+$>\ell_{\text{screen}}$ are suppressed. On a hyperbolic or bounded domain, the decay rate and
+boundary terms must be recomputed rather than inferred from the flat-space asymptotic.
 
-*Note:* Numerical values below assume natural units ($c_{\text{info}} \Delta t = 1$).
+*Note:* Numerical values below assume the normalized stationary convention ($T_c=\Delta t=1$).
 
 **Table 24.2.5 (Discount-Screening Correspondence).**
 
 | Discount $\gamma$ | Screening Mass $\kappa$ | Screening Length $\ell$ | Interpretation                    |
 |-------------------|-------------------------|-------------------------|-----------------------------------|
 | $\gamma \to 1$    | $\kappa \to 0$          | $\ell \to \infty$       | Infinite horizon (massless field) |
-| $\gamma = 0.99$   | $\kappa \approx 0.01$   | $\ell \approx 100$      | Standard RL                       |
-| $\gamma = 0.9$    | $\kappa \approx 0.1$    | $\ell \approx 10$       | Short horizon                     |
+| $\gamma = 0.99$   | $\kappa \approx 0.100$   | $\ell \approx 9.97$      | Standard RL (normalized) |
+| $\gamma = 0.9$    | $\kappa \approx 0.325$    | $\ell \approx 3.08$       | Short horizon (normalized)                     |
 | $\gamma \to 0$    | $\kappa \to \infty$     | $\ell \to 0$            | Myopic (infinitely massive)       |
 
 **Cross-references:** {ref}`sec-the-hjb-correspondence` (HJB Equation), Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
@@ -554,7 +566,7 @@ For $\gamma = 0.99$ and $c_{\text{info}} \Delta t = 1$: $\ell_{\text{screen}} \a
 The discount factor $\gamma$ defines a **Screening Length** with geometric meaning:
 
 $$
-\kappa = \lambda / c_{\text{info}}, \quad \ell_{\text{screen}} = \frac{1}{\kappa}
+\kappa^2 = \lambda/T_c, \quad \ell_{\text{screen}} = \frac{1}{\kappa}
 
 $$
 Value correlations decay exponentially with **geodesic distance**:
@@ -589,27 +601,41 @@ This recovers the standard **temporal horizon interpretation** where $\gamma$ co
 :::{div} feynman-prose
 Now we have to deal with an old confusion: what *is* the value function? Is it an energy? A probability? A utility?
 
-Here's the answer: it's a *Gibbs free energy*. That sounds fancy, but it's actually clarifying. The Gibbs free energy in thermodynamics is $F = E - TS$: energy minus temperature times entropy. It balances energetic favorability against entropic disorder.
+Here the formal convention keeps the Hodge scalar $\Phi$ on the reward side. Write
+$V_{\mathrm{rew}}=\Phi$ and $V_{\mathrm{cost}}=-\Phi$ for the corresponding reward score and
+cost-to-go. The free-energy score is $F:=V_{\mathrm{cost}}$; it balances energetic cost against
+entropic disorder.
 
 For the agent, the analog is:
-$$\Phi(z) = E(z) - T_c S(z)$$
+$$F(z):=V_{\mathrm{cost}}(z)=E(z) - T_c S(z), \qquad \Phi(z)=-F(z).$$
 
-where $E(z)$ is the task cost (low is good), $S(z)$ is the exploration entropy (high means lots of options), and $T_c$ is the cognitive temperature (how much the agent values exploration).
+Here $E(z)$ is the task cost (low is good), $S(z)$ is the exploration entropy (high means lots of options), and $T_c$ is the cognitive temperature (how much the agent values exploration). The sign convention matters: low $F$ means low free energy, while high $\Phi=V_{\mathrm{rew}}$ means high reward.
 
-This explains why entropy-regularized RL works: it's not a hack or approximation. It's solving for the *free energy* minimum, which is the thermodynamically correct objective. The Boltzmann distribution $P(z) \propto \exp(V(z)/T_c)$ emerges naturally as the equilibrium.
+Under the invariant-measure and detailed-balance hypotheses stated below, entropy-regularized RL has a free-energy
+interpretation. The Boltzmann distribution $P(z) \propto \exp(\Phi(z)/T_c)=\exp(-F(z)/T_c)$ then describes the corresponding equilibrium;
+without those hypotheses it is a modeling convention rather than a consequence of the critic update.
 
-At high temperature ($T_c$ large), the agent spreads out, exploring broadly. At low temperature, the agent concentrates on the value peaks, exploiting. The temperature controls the tradeoff, and the free energy formulation tells you exactly how.
+Under the stated equilibrium hypotheses, high temperature ($T_c$ large) broadens the law and low temperature concentrates it near high-$\Phi$ (low-$F$) regions. Without those hypotheses, this is an intended modeling picture rather than a conclusion of the critic or WFR closure.
 :::
 
-We explicitly resolve the ambiguity between "Energy" and "Probability" in the value function interpretation. The scalar potential $\Phi(z)$ from the Hodge decomposition plays the role of Gibbs Free Energy in the conservative case.
+In this thermodynamic subsection the Boltzmann score is the reward-side quantity
+$V_{\mathrm{rew}}:=\Phi$. The control-loop critic uses the cost convention
+$V_{\mathrm{cost}}:=-V_{\mathrm{rew}}=-\Phi$ when it minimizes cost-to-go. We write the free-energy score as
+$F:=V_{\mathrm{cost}}=E-T_cS$. The canonical density below is therefore a conditional reward-side modeling convention;
+it must not be read as changing the control-loop sign convention.
 
-:::{prf:axiom} The Generalized Boltzmann-Value Law
+We explicitly resolve the ambiguity between "Energy" and "Probability" in the value function interpretation. The Hodge
+potential $\Phi(z)$ is the reward-side score, while its negative $F(z)=-\Phi(z)$ is the Gibbs free energy in the
+conservative case.
+
+:::{prf:axiom} Boltzmann-Value Modeling Convention
 :label: ax-the-boltzmann-value-law
 
-The scalar potential $\Phi(z)$ from the Hodge decomposition (Theorem {prf:ref}`thm-hodge-decomposition`) represents the **Gibbs Free Energy** of the state $z$:
+Let $F(z):=-\Phi(z)$ be the cost/free-energy scalar associated with the Hodge potential. The thermodynamic modeling
+convention is
 
 $$
-\Phi(z) = E(z) - T_c S(z),
+F(z) = E(z) - T_c S(z),
 
 $$
 where:
@@ -617,9 +643,10 @@ where:
 - $S(z)$ is the **exploration entropy** (measure of uncertainty/optionality)
 - $T_c$ is the **cognitive temperature** ({prf:ref}`def-cognitive-temperature`, {ref}`sec-hyperbolic-volume-and-entropic-drift`)
 
-*Units:* $[\Phi] = [E] = [T_c S] = \mathrm{nat}$.
+*Units:* $[F]=[\Phi]=[E]=[T_c S]=\mathrm{nat}$.
 
-**Conservative Case ($\mathcal{F} = 0$):** When the Value Curl vanishes, $\mathcal{R} = d\Phi$ and the scalar potential $\Phi$ is the complete value function $V(z)$.
+**Conservative Case ($\mathcal{F} = 0$):** When the Value Curl vanishes and periods vanish, $\mathcal{R}=d\Phi$.
+The cost convention used by the control loop is $V(z)=-\Phi(z)$.
 
 **Non-Conservative Case ($\mathcal{F} \neq 0$):** The scalar potential $\Phi$ captures only the optimizable component of the reward field. The solenoidal component $\delta\Psi$ creates additional cyclic dynamics.
 
@@ -627,15 +654,20 @@ where:
 :::{prf:definition} Canonical Ensemble {cite}`sutton2018rl`
 :label: def-canonical-ensemble
 
-This potential induces a probability measure on the manifold via the **Canonical Ensemble**:
+When an invariant measure exists and the drift and boundary conditions satisfy detailed balance,
+this potential induces a probability measure on the manifold via the **Canonical Ensemble**:
 
 $$
-P_{\text{stationary}}(z) = \frac{1}{Z} \exp\left(\frac{V(z)}{T_c}\right),
+P_{\text{stationary}}(z) = \frac{1}{Z} \exp\left(\frac{V_{\mathrm{rew}}(z)}{T_c}\right)
+ = \frac{1}{Z} \exp\left(\frac{\Phi(z)}{T_c}\right),
 
 $$
-where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition function.
+where $Z = \int_{\mathcal{Z}} \exp(V_{\mathrm{rew}}(z)/T_c) \, d\mu_G(z)$ is the partition function.
 
-*Sign Convention:* If $V$ is "Reward" (higher is better), use $+V/T_c$. If $V$ is "Cost" (lower is better), use $-V/T_c$. Throughout this document we use the **Reward convention** unless otherwise noted.
+*Sign Convention:* $V_{\mathrm{rew}}=\Phi$ is the reward-like quantity (higher is better) and
+$F=V_{\mathrm{cost}}=-\Phi$ is the cost/free-energy potential. The displayed ensemble therefore uses
+$+V_{\mathrm{rew}}/T_c=\Phi/T_c=-F/T_c$. This is a conditional modeling convention,
+not a consequence of the WFR reaction closure alone.
 
 :::
 
@@ -648,10 +680,10 @@ where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition func
 **In Implementation:** The stationary policy distribution (Definition {prf:ref}`def-canonical-ensemble`):
 
 $$
-P_{\text{stationary}}(z) = \frac{1}{Z} \exp\left(\frac{V(z)}{T_c}\right)
+P_{\text{stationary}}(z) = \frac{1}{Z} \exp\left(\frac{V_{\mathrm{rew}}(z)}{T_c}\right)
 
 $$
-where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition function.
+where $Z = \int_{\mathcal{Z}} \exp(V_{\mathrm{rew}}(z)/T_c) \, d\mu_G(z)$ is the partition function.
 
 **Correspondence Table:**
 | Statistical Mechanics | Agent (MaxEnt RL) |
@@ -663,10 +695,12 @@ where $Z = \int_{\mathcal{Z}} \exp(V(z)/T_c) \, d\mu_G(z)$ is the partition func
 | Boltzmann distribution | MaxEnt optimal policy $\pi^* \propto \exp(Q/T_c)$ |
 | Entropy $S = -k_B\sum p\log p$ | Policy entropy $H(\pi)$ |
 
-**Consequence:** MaxEnt RL is not an approximation—it is the exact solution to entropy-regularized control, recovering the Boltzmann distribution as the unique maximizer.
+**Scope:** Under the standard finite-action, fixed-temperature entropy-regularized control
+hypotheses, the Boltzmann policy is the unique pointwise maximizer. The state-space ensemble
+requires the additional invariant-measure and boundary hypotheses stated above.
 ::::
 
-:::{prf:theorem} WFR Consistency: Value Creates Mass
+:::{prf:definition} WFR Reaction Closure: Value Creates Mass
 :label: thm-wfr-consistency-value-creates-mass
 
 In the WFR dynamics ({prf:ref}`def-the-wfr-action`, {ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`), the reaction rate $r(z)$ in the unbalanced continuity equation is determined by the value function:
@@ -677,37 +711,47 @@ r(z) = \frac{1}{s_r} \left( V(z) - \bar{V} \right),
 $$
 where $\bar{V} = \mathbb{E}_\rho[V]$ is the mean value and $s_r$ is the reaction time scale (computation time).
 
-*Consequence:* The mass evolution satisfies:
+*Consequence:* The total mass satisfies:
 
 $$
-\dot{m}(s) = m(s) \cdot r(z(s)) \propto m(s) \cdot (V(z(s)) - \bar{V}).
+\frac{d}{ds}\int_{\mathcal Z}\rho\,d\mu_G
+ = \int_{\mathcal Z}\rho(z,s)r(z,s)\,d\mu_G
+ = \frac{1}{s_r}\int_{\mathcal Z}\rho\,(V-\bar V)\,d\mu_G.
 
 $$
 
-Probability density increases in regions where $V > \bar{V}$ and decreases where $V < \bar{V}$.
+Under this closure, the local reaction contribution is positive where $V>\bar V$ and negative
+where $V<\bar V$; transport and boundary flux can change the total mass separately.
 
-*Proof.* The WFR optimal reaction rate minimizes $\int \lambda^2 r^2 \, d\rho$ subject to the constraint that the endpoint marginals match. The solution is $r \propto (V - \bar{V})$, where $V$ appears because it determines the target stationary distribution. $\square$
+*Scope.* This is a chosen reaction closure. It becomes a consequence only after a WFR variational
+problem, endpoint constraints, and a target density have been specified; the WFR action alone does
+not determine $r$ from $V$.
 
 :::
-:::{prf:corollary} Conservative Equilibrium Distribution
+:::{prf:remark} Conditional Conservative Equilibrium
 :label: cor-equilibrium-distribution
 
-**Conservative Case ($\mathcal{F} = 0$):** At equilibrium ($\partial_s \rho = 0$), the WFR dynamics with reaction rate $r(z) \propto (\Phi(z) - \bar{\Phi})$ converge to the Boltzmann distribution:
+**Conditional statement:** If the transport drift, reaction law, boundary conditions, and invariant
+measure are chosen to satisfy detailed balance with the reward convention, then the stationary
+density is the Boltzmann form:
 
 $$
-\rho_\infty(z) \propto \exp\left(\frac{\Phi(z)}{T_c}\right),
+\rho_\infty(z) \propto \exp\left(-\frac{V_{\mathrm{cost}}(z)}{T_c}\right)
+ = \exp\left(\frac{\Phi(z)}{T_c}\right),
 
 $$
 which is exactly the canonical ensemble (Definition {prf:ref}`def-canonical-ensemble`).
 
-*Remark.* In the conservative case, the stationary distribution has zero probability current ($J = 0$). The distribution concentrates in high-$\Phi$ regions with concentration controlled by $T_c$.
+Without those detailed-balance hypotheses, the displayed reaction closure does not by itself imply
+stationarity or zero current.
 
 :::
 
-:::{prf:theorem} Non-Equilibrium Steady State (NESS)
+:::{prf:proposition} Conditional Non-Equilibrium Steady State (NESS)
 :label: thm-ness-existence
 
-**Non-Conservative Case ($\mathcal{F} \neq 0$):** If the Value Curl does not vanish, the stationary distribution $\rho_\infty$ is a **Non-Equilibrium Steady State** satisfying:
+If a stationary solution exists and detailed balance is broken (for example by a nonzero curl
+term or boundary drive), it is a **Non-Equilibrium Steady State** satisfying:
 
 1. **Stationarity:** $\partial_s \rho_\infty = 0$
 2. **Persistent Current:** The probability current $J = \rho v - D\nabla\rho$ is non-zero and divergence-free: $\nabla \cdot J = 0$ but $J \neq 0$
@@ -744,17 +788,17 @@ At stationarity, $\nabla \cdot J = 0$, but only $J_{\text{gradient}} = 0$ at tru
 | Thermodynamics         | RL / Control                               | Mathematical Object |
 |------------------------|--------------------------------------------|---------------------|
 | Energy $E$             | Negative reward $-r$                       | Instantaneous cost  |
-| Free Energy $F$        | Scalar potential $\Phi$                    | Gibbs free energy   |
+| Free Energy $F$        | Cost potential $V_{\mathrm{cost}}=-\Phi$   | Gibbs free energy   |
 | Temperature $T$        | Cognitive temperature $T_c$                | Entropy weighting   |
 | Entropy $S$            | Policy entropy $H(\pi)$                    | Exploration measure |
 | Partition function $Z$ | Soft value $\log \sum_a \exp(Q/T_c)$       | Normalization       |
 | Boltzmann distribution | MaxEnt policy $\pi^* \propto \exp(Q/T_c)$ | Conservative solution |
 | **Probability current $J$** | **Value harvesting flow** | **NESS circulation** |
-| **Entropy production $\dot{S}_i$** | **Cyclic reward rate** | **Perpetual motion** |
+| **Entropy production $\dot{S}_i$** | **Irreversibility diagnostic** | **Nonequilibrium dissipation** |
 
 **Cross-references:** {ref}`sec-the-wfr-metric` (WFR dynamics), {ref}`sec-the-belief-evolution-cycle-perception-dreaming-action` (Thermodynamic Cycle), {ref}`sec-the-equivalence-theorem` (MaxEnt control), Theorem {prf:ref}`thm-hodge-decomposition` (Hodge Decomposition).
 
-:::{prf:corollary} The Varentropy-Stability Relation (Cognitive Heat Capacity)
+:::{prf:remark} Varentropy as a Temperature-Sensitivity Diagnostic
 :label: cor-varentropy-stability
 
 Let $\mathcal{I}(a|z) = -\ln \pi(a|z)$ be the surprisal of an action. Define the **Policy Varentropy** $V_H(z)$ as the variance of the surprisal under the Boltzmann policy:
@@ -779,29 +823,25 @@ V_H(z) = T_c \frac{\partial H(\pi)}{\partial T_c}.
 $$
 **Operational Consequence:**
 1. **Thermal Stability:** $V_H$ measures the sensitivity of the agent's exploration strategy to changes in the cognitive temperature $T_c$.
-2. **Phase Transitions:** A divergence or spike in $V_H$ signals a second-order phase transition (critical point) where the policy is bifurcating from a single mode to multiple modes (or collapsing).
-3. **Governor Constraint:** To ensure quasi-static evolution (reversible learning), the annealing rate $\dot{T}_c$ must satisfy the adiabatic condition:
-
-$$
-|\dot{T}_c| \ll \frac{T_c}{\sqrt{V_H(z)}}.
-
-$$
-*Proof:* See Appendix {ref}`E.8 <sec-appendix-e-proof-of-corollary-varentropy-stability>`.
+2. A spike can flag sharp temperature sensitivity, but it is not by itself a phase-transition
+   theorem.
+3. Any annealing-rate condition requires a separate mixing-time or spectral-gap estimate; none is
+   implied by the varentropy identity.
 
 :::
 (sec-geometric-back-reaction-the-conformal-coupling)=
 ## Geometric Back-Reaction: The Conformal Coupling
 
 :::{div} feynman-prose
-Now I want to tell you about something that closes the loop in a beautiful way: the geometry affects the value field (through the Laplace-Beltrami operator), and *the value field affects the geometry back*.
+Now I want to tell you about a modeling choice that closes the loop: the geometry affects the value field (through the Laplace-Beltrami operator), and *the value field can be fed back into the geometry*.
 
-This is a back-reaction. In general relativity, matter curves spacetime, and curved spacetime tells matter how to move. Here, reward curves the latent geometry, and the curved geometry tells the agent how to move.
+This is analogous to back-reaction. In general relativity, matter curves spacetime, and curved spacetime tells matter how to move. Here, a value-dependent conformal rule changes the latent metric, and the changed metric enters the agent's dynamics. The analogy does not make the rule an Einstein equation.
 
-Specifically, in regions where the value function has high curvature---sharp ridges, steep valleys, critical decision points---the metric gets *rescaled*. The conformal factor $\Omega(z) = 1 + \alpha_{\text{conf}} \|\nabla^2 V\|$ inflates distances in those regions.
+Specifically, in regions where the value function has high metric Hessian norm---sharp ridges, steep valleys, critical decision points---the chosen model rescales the metric. The conformal factor $\Omega(z) = 1 + \alpha_{\text{conf}} \|\nabla^2_G V\|_{\text{op}}$ is computed in the stated metric convention.
 
-What does this mean practically? The agent *slows down* near important decisions. It can't rush through regions of high value curvature; the geometry forces it to be careful. This is automatic caution built into the dynamics---not a hand-tuned heuristic, but an emergent consequence of the geometric coupling.
+What does this mean practically? A larger conformal factor changes distances and can change the speed of a chosen integrator near important decisions. Whether the agent actually slows down, and by how much, depends on the equations, discretization, and boundary conditions. The coupling is a tunable modeling rule, not an automatic theorem of caution.
 
-Think about it: in a region where the value landscape is flat, the agent can zoom along freely. But near a cliff edge (high curvature), distances stretch out, effective mass increases, and the agent has to spend more computational effort to move. This is exactly what you want from a rational agent: be decisive in easy regions, be careful in risky ones.
+Think about it: in a region where the value landscape is flat, $\Omega$ is near one. Near a high-curvature region, the metric may stretch distances and increase the modeled effort of motion. The resulting caution is a hypothesis to measure, not something the conformal formula proves on its own.
 :::
 
 Does the Reward field change the Geometry? **Yes.** From Theorem {prf:ref}`thm-capacity-constrained-metric-law`, the curvature is driven by the Risk Tensor. Both the scalar potential $\Phi$ and the Value Curl $\mathcal{F}$ contribute to risk, and therefore modify the metric.
@@ -877,7 +917,7 @@ Near sharp ridges or valleys of $V$ (where $\|\nabla^2 V\|$ is large), the confo
 *Remark (Physical analogy).* The conformal scaling of effective velocity is mathematically analogous to gravitational time dilation in general relativity, where proper time dilates in regions of high gravitational potential.
 
 :::
-:::{prf:proposition} Conformal Laplacian Transformation
+:::{prf:remark} Conformal Laplacian Transformation
 :label: prop-conformal-laplacian-transformation
 
 Under the conformal transformation $G \to \tilde{G} = \Omega^2 G$, the Laplace-Beltrami operator acting on a scalar function $f$ transforms as:
@@ -896,7 +936,9 @@ with effective screening mass $\tilde{\kappa}^2 = \Omega^{-2} \kappa^2$.
 
 *Remark (Self-Consistency).* Since $\Omega$ depends on $\nabla^2 V$, the equation becomes nonlinear: the geometry adapts to the value landscape which in turn affects the geometry. In practice, we solve this iteratively or treat $\Omega$ as slowly-varying.
 
-*Interpretation:* In high-curvature regions ($\Omega$ large), the effective screening mass decreases, making the field more "massless" and allowing longer-range correlations. This is the **self-focusing** effect: important regions become more interconnected.
+*Interpretation:* The displayed coefficient is a coordinate rewriting of the conformally transformed
+operator. A self-focusing or longer-range-correlation conclusion requires solving the transformed
+boundary-value problem; it does not follow from the rescaling alone.
 
 **Cross-references:** Theorem {prf:ref}`thm-capacity-constrained-metric-law`, {ref}`sec-the-stochastic-action-principle` (Mass=Metric), Proposition {prf:ref}`prop-mass-scaling-near-boundary`.
 
@@ -940,18 +982,18 @@ Time to build the Critic. And I want you to think about it differently than you 
 
 In standard RL, the critic is a "value predictor"---a function approximator that learns to output $V(s)$ for each state $s$. You train it with TD-learning, bootstrap from targets, and try to minimize prediction error.
 
-Here, the critic is a *field solver*. It's computing the solution to a partial differential equation: the Screened Poisson equation. Rewards are the source terms, and the value function is the potential field they generate.
+Here, the critic is intended to play the role of a *field solver*. In the conservative continuum model it represents a solution of the Screened Poisson equation, with a declared reward density as source. The reference implementation below is a sampled consistency proxy, so the role is conditional.
 
-This isn't just a reframing. It changes how you think about training. The TD error isn't a prediction error---it's the *PDE residual*. When TD error is zero, the Helmholtz equation is satisfied. The critic network is an implicit neural PDE solver.
+This isn't just a reframing. It changes how you think about training. A TD error can be used as a residual-like diagnostic for the Bellman generator, but zero TD error alone does not establish a PDE solution unless the generator, source, boundary data, and sampling scheme match.
 
-The conformal coupling adds another layer: the critic also computes the Hessian of the value function, which feeds back into the metric. High-curvature regions get flagged, distances get stretched, and the agent naturally becomes more cautious there.
+The conformal coupling adds another layer: the critic can compute a metric Hessian proxy and feed it into the selected metric rule. High-curvature regions may then be flagged or rescaled; the dynamics need separate validation before calling that a slowdown or increased caution.
 
-Notice how the implementation computes both the TD error (PDE consistency) and the geometric gradient regularization (smoothness on the manifold). Both are necessary for a well-behaved solution.
+Notice how the implementation computes a TD consistency proxy and a geometric regularization term. These can encourage a well-behaved approximation, but they do not by themselves solve the full boundary-value PDE or guarantee the stated smoothness.
 :::
 
-We update the architecture to include the Critic as the third pillar of the Holographic Interface. The Critic is not
-merely a value predictor---it is the **Field Solver** that computes the potential landscape from boundary reward flux
-(scalar charges in the conservative case).
+We update the architecture to include the Critic as the third pillar of the Holographic Interface. In the conservative
+continuum model it can be interpreted as a field solver; the reference implementation below computes a sampled TD
+consistency proxy and a metric-weighted smoothness penalty, so it does not by itself solve a boundary-value PDE.
 
 ```python
 import torch
@@ -968,11 +1010,13 @@ class CriticConfig:
     gamma: float = 0.99           # Discount factor
     alpha_conf: float = 0.1       # Conformal coupling strength (Definition 24.4.1)
     grad_reg_weight: float = 0.01 # Geometric gradient regularization
+    T_c: float = 1.0          # Cognitive temperature in the diffusion convention
+    delta_t: float = 1.0      # Interaction-time step
 
     @property
     def screening_mass(self) -> float:
-        """Corollary 24.2.4: kappa = -ln(gamma)/Delta_t. Assumes Delta_t = 1."""
-        return -torch.log(torch.tensor(self.gamma)).item()
+        """Screening mass for the stationary Bellman coefficient kappa=sqrt(lambda/T_c)."""
+        return torch.sqrt(-torch.log(torch.tensor(self.gamma)) / self.T_c / self.delta_t).item()
 
 
 class HolographicCritic(nn.Module):
@@ -980,7 +1024,7 @@ class HolographicCritic(nn.Module):
     {ref}`sec-the-reward-field-value-forms-and-hodge-geometry`: The Reward Encoder / Field Solver.
 
     Maps Boundary Charges (rewards r) to Bulk Potential (value V).
-    Solves the Screened Poisson Equation on the latent manifold (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
+    Provides a TD consistency proxy for the screened Bellman equation on the latent manifold.
 
     The Critic does not "predict" reward—it PROPAGATES boundary conditions
     into the bulk to compute the resulting potential field.
@@ -1033,7 +1077,7 @@ class HolographicCritic(nn.Module):
         metric: 'PoincareDiskMetric'
     ) -> Tuple[Tensor, dict]:
         """
-        Enforce the Screened Poisson/Bellman equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
+        Compute a TD consistency proxy for the screened Poisson/Bellman equation.
 
         The loss has two components:
         1. TD Error: Enforces Bellman consistency (the PDE source term)
@@ -1056,8 +1100,8 @@ class HolographicCritic(nn.Module):
         with torch.no_grad():
             V_next = self(z_next)
 
-        # 1. TD Error (Bellman/Helmholtz source term)
-        # V(z) = r + gamma * V(z') corresponds to the PDE source
+        # 1. TD consistency proxy (the sampled Bellman relation)
+        # V(z) = r + gamma * V(z') is not, by itself, a spatial PDE residual.
         td_error = V - (r + gamma * V_next)
         loss_pde = td_error.pow(2).mean()
 
@@ -1091,7 +1135,7 @@ class HolographicCritic(nn.Module):
 
     def compute_hessian_norm(self, z: Tensor) -> Tensor:
         """
-        Compute ||nabla^2 V(z)||_op for conformal coupling (Definition 24.4.1).
+        Compute a coordinate-Hessian norm proxy for conformal coupling.
 
         Args:
             z: Latent positions [B, D]
@@ -1118,8 +1162,8 @@ class HolographicCritic(nn.Module):
 
         H = torch.stack(hessian, dim=1)  # [B, D, D]
 
-        # Operator norm = largest singular value
-        # For efficiency, use Frobenius norm as upper bound
+        # This is a coordinate Frobenius proxy; it is not the covariant
+        # operator norm of the Hessian on a general Riemannian manifold.
         hess_norm = torch.linalg.matrix_norm(H, ord='fro')  # [B]
 
         return hess_norm
@@ -1166,11 +1210,12 @@ def compute_wfr_reaction_rate(
     s_r: float = 1.0
 ) -> Tensor:
     """
-    Theorem {prf:ref}`thm-wfr-consistency-value-creates-mass`: Compute WFR reaction rate from Value function.
+    Chosen WFR reaction closure: compute a reaction rate from the value function.
 
     r(z) = (V(z) - mean(V)) / s_r
 
-    High value creates mass; low value depletes mass.
+    Positive values increase the local reaction rate under this convention; this is not a
+    consequence of the WFR action alone.
 
     Args:
         V: Value function evaluations [B, 1]
@@ -1195,7 +1240,7 @@ def train_critic_step(
 ) -> dict:
     """
     Single training step for the HolographicCritic.
-    Enforces the Screened Poisson equation (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`).
+    Optimizes the sampled TD consistency proxy used by ``compute_helmholtz_loss``.
     """
     z = batch['z']           # Current latent [B, D]
     z_next = batch['z_next'] # Next latent [B, D]
@@ -1215,22 +1260,19 @@ def train_critic_step(
 ## The Unified Holographic Dictionary
 
 :::{div} feynman-prose
-Let's step back and admire what we've built. We now have a complete translation between the language of RL and the language of field theory.
+Let's step back and admire the dictionary we have built. It is a set of useful correspondences between RL objects and field-theory objects, with a choice of boundary data and dynamics attached to each one.
 
-Every RL concept maps to a geometric/physical concept:
-- Observations are *Dirichlet boundary conditions* (clamping position)
-- Actions are *Neumann boundary conditions* (clamping flux)
-- Rewards are *source charges* for the Poisson equation
-- The value function is the *potential field* generated by those charges
-- The discount factor is the *screening mass* that controls correlation length
-- The policy is an *external force* that breaks symmetry
-- The temperature is the *thermal bath* that drives exploration
+Here is the careful version:
+- An observation trace can be treated as Dirichlet-like data when the model clamps a boundary value.
+- An action or WFR transport flux can be treated as Neumann-like data when a normal flux is actually prescribed.
+- A reward 1-form supplies directional line-integral data; a bulk reward density or an independently specified boundary source supplies the source term for a scalar PDE.
+- The value function is a potential field only in the conservative scalar sector.
+- The discount factor gives a screening coefficient in the stated diffusion convention; curved-space decay needs its own analysis.
+- A policy can be represented as an external force in the selected SDE, while temperature is a thermostat parameter only when the friction and noise satisfy the chosen fluctuation-dissipation convention.
 
-And crucially: the agent's motion through latent space follows a *geodesic SDE* on a *curved manifold* whose curvature is determined by the information it's processing and the value landscape it's navigating.
+The agent's motion may then be written as a geodesic SDE on a curved manifold, but that equation is an operational model with explicit friction, curl, metric, and boundary hypotheses. The electrodynamics language is an isomorphism of roles and intuition, not an identification theorem.
 
-This is RL as electrodynamics on a curved manifold. The Encoder is a coordinate chart. The Critic is a field solver. The Policy is an external force. And the whole thing is self-consistent: value curves the geometry, and geometry shapes value propagation.
-
-If you understand this dictionary, you understand the deep structure of agency.
+If you understand which object supplies each datum, the dictionary becomes a reliable guide rather than a source of accidental boundary conditions.
 :::
 
 This completes the **Holographic Dictionary** for the Fragile Agent. We now have a complete mapping between boundary data (observations, actions, rewards) and bulk objects (position, momentum, potential).
@@ -1245,28 +1287,32 @@ This completes the **Holographic Dictionary** for the Fragile Agent. We now have
 | **State**      | —                | $(q, p)$                                | Phase space point   | Full state       | Combined BCs               | [23.1](#sec-the-symplectic-interface-position-momentum-duality) |
 | **Dynamics**   | —                | Geodesic flow                           | Hamiltonian flow    | BAOAB integrator | —                          | [22.4](#sec-the-geodesic-baoab-integrator) |
 
-:::{prf:theorem} RL as Electrodynamics on a Curved Manifold
+:::{prf:remark} RL--Electrodynamics Correspondence (Formal Analogy)
 :label: thm-rl-as-electrodynamics-on-a-curved-manifold
 
-The complete agent dynamics can be summarized as follows:
+Under the conservative geodesic Langevin convention of the equations-of-motion chapter, the analogy can be written as:
 
 The agent is a **particle** with:
 - **Position** $q \in \mathcal{Z}$ (from Perception / Dirichlet BC)
 - **Momentum** $p \in T_q\mathcal{Z}$ (from Action / Neumann BC)
 - **Mass** $G(q)$ (the Riemannian metric = information geometry)
-- **Potential Energy** $V(q)$ (from Reward / Poisson source)
+- **Potential Energy** $\Phi_{\mathrm{eff}}(q)$ (from the conservative reward/cost potential)
 - **External Forces** $u_\pi(q)$ (from Policy / symmetry-breaking kick)
 
 moving according to the **geodesic SDE** (Definition {prf:ref}`def-bulk-drift-continuous-flow`):
 
 $$
 dq^k = G^{kj}(q) p_j \, ds, \qquad
-dp_k = -\frac{\partial V}{\partial q^k} ds - \frac{1}{2}\frac{\partial G^{ij}}{\partial q^k} p_i p_j \, ds + u_{\pi,k} \, ds + \sqrt{2T_c} \, (G^{1/2})_{kj} dW^j_s,
+dp_k = \left[-\partial_k\Phi_{\mathrm{eff}} - \gamma p_k
++\beta_{\text{curl}}\mathcal{F}_{kj}G^{j\ell}p_\ell
++\Gamma^m_{k\ell}G^{\ell j}p_jp_m + \gamma G_{kj}u_\pi^j\right]ds
++\sqrt{2\gamma T_c}\,(G^{1/2})_{kj}dW^j_s,
 
 $$
-on a **curved manifold** with metric $G$ satisfying the **capacity constraint** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`), in a **screened potential** $V$ satisfying the **Helmholtz equation** (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The term $\frac{1}{2}\frac{\partial G^{ij}}{\partial q^k} p_i p_j$ encodes the geodesic correction (equivalent to Christoffel symbols in the position formulation).
+on a **curved manifold** with metric $G$ satisfying the **capacity constraint** (Theorem {prf:ref}`thm-capacity-constrained-metric-law`). The Christoffel term is the geodesic correction in covector momentum coordinates. Treating the conservative component as a screened Helmholtz solution requires the conservative diffusion hypotheses of {prf:ref}`thm-the-hjb-helmholtz-correspondence`.
 
-*Conclusion:* **Reinforcement Learning is Electrodynamics on a Curved Manifold.** The standard RL components (encoder, critic, policy) are revealed to be the components of a field theory:
+This is a physics-inspired correspondence, not an identification theorem. The standard RL components can be
+organized using the following field-theory roles:
 
 | RL Component      | Field Theory Role                                         |
 |-------------------|-----------------------------------------------------------|
@@ -1277,14 +1323,16 @@ on a **curved manifold** with metric $G$ satisfying the **capacity constraint** 
 | Temperature $T_c$ | **Thermal Bath** (fluctuation-dissipation source)         |
 
 :::
-:::{prf:corollary} The Three Boundary Conditions
+:::{prf:remark} Three Interface Roles (Operational)
 :label: cor-the-three-boundary-conditions
 
 The agent-environment interface decomposes into exactly three types of boundary conditions:
 
 1. **Dirichlet** (Sensors): Clamp position $q = q_{\text{obs}}$. Information flows **in**.
 2. **Neumann** (Motors): Clamp flux $\nabla_n \cdot p = j_{\text{motor}}$. Information flows **out**.
-3. **Source** (Rewards): Inject charge $\sigma_r$ at boundary. Creates **potential field**.
+3. **Reward trace/source**: choose either a boundary trace for $\Phi$ or an independently specified Neumann/source
+   datum $\sigma_r$. The pullback $\iota^*\mathcal R$ supplies tangential (Dirichlet-type) data and is not itself
+   a charge density.
 
 These three conditions fully specify the agent's interaction with its environment.
 
@@ -1295,19 +1343,20 @@ These three conditions fully specify the agent's interaction with its environmen
 ## Diagnostic Nodes for the Reward Field
 
 :::{div} feynman-prose
-Finally, we need to know when things are going wrong. The Critic is a complex system---a PDE solver coupled to a geometric back-reaction. There are many ways it can fail, and we need diagnostics for each.
+Finally, we need to know when things are going wrong. The Critic is a complex system---a sampled Bellman consistency objective coupled to optional geometric back-reaction. There are many ways it can fail, and the diagnostics tell us which declared model assumption is under strain.
 
-Node 35 checks whether the Helmholtz equation is actually being satisfied. If the residual is large, the Critic hasn't converged---you're not getting the right potential field.
+Node 35 measures a residual for the selected Helmholtz/Bellman model. A large value says that the sampled critic is inconsistent with that residual; it does not by itself prove non-convergence of a full boundary-value solver.
 
-Node 36 checks whether value correlations are decaying at the right rate. The Green's function should decay exponentially with screening length $\ell = 1/\kappa$. If correlations extend further, something is wrong with the screening mass (discount factor) or metric computation.
+Node 36 fits the decay of a measured Green response over a declared asymptotic window. The flat-space exponential and $\ell=1/\kappa$ are reference formulas for the selected operator; on a hyperbolic or bounded domain, the geometry and boundary terms change the fitted rate.
 
-Node 37 checks whether the empirical distribution matches the Boltzmann distribution. If the agent isn't sampling from equilibrium, there's an exploration-exploitation imbalance.
+Node 37 compares empirical sampling with the declared Boltzmann model. Agreement is meaningful only when the invariant measure, drift, boundary conditions, and detailed balance hypotheses hold. Disagreement is not automatically an exploration-exploitation diagnosis.
 
-Node 38 checks the conformal back-reaction. Too little variation in $\Omega$ means the value landscape is flat and boring. Too much means the geometry is wildly distorted and the agent might be stuck.
+Node 38 monitors variation in the conformal factor. It can reveal weak coupling or excessive distortion; a claim that the
+agent is stuck requires trajectory or integrator evidence in addition to this diagnostic.
 
-Node 39 checks the WFR consistency: high value should create mass. If the correlation between mass and value is low, the WFR dynamics aren't properly coupling to the Critic.
+Node 39 checks the correlation predicted by the chosen value-based reaction closure. The WFR action alone does not say that high value creates mass; the correlation is a model diagnostic.
 
-Node 61 is new and crucial: it checks whether the reward field is actually conservative. If the Value Curl is non-zero, standard methods will fail, and you need to think about the full Hodge structure.
+Node 61 measures circulation on approximately closed sampled loops. Near-zero circulation on the tested family is evidence compatible with an exact reward field, while nonzero circulation detects a path-dependence signal. A NESS interpretation requires additional stationarity and detailed-balance assumptions, and a curl estimate requires local plaquette or differential data.
 :::
 
 We define six diagnostic nodes (35-39, 61) to monitor the health of the Critic/Value system, including the new ValueCurlCheck for non-conservative reward fields.
@@ -1317,7 +1366,7 @@ We define six diagnostic nodes (35-39, 61) to monitor the health of the Critic/V
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |-------|----------|---------------|----------|-------------------|-----------|----------|
-| **35** | **HelmholtzResidualCheck** | **Critic** | **PDE Consistency** | Is the Helmholtz equation satisfied? | $\lVert-\Delta_G V + \kappa^2 V - \rho_r\rVert$ | $O(B \cdot D)$ |
+| **35** | **HelmholtzResidualCheck** | **Critic** | **PDE Consistency** | Is the Helmholtz equation satisfied? | $\lVert-\Delta_G V + \kappa^2 V - \rho_r\rVert$ | $O(B \cdot D^2)$ |
 
 **Trigger conditions:**
 - High HelmholtzResidualCheck: Bellman equation not converged; Critic training unstable.
@@ -1328,10 +1377,10 @@ We define six diagnostic nodes (35-39, 61) to monitor the health of the Critic/V
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |-------|----------|---------------|----------|-------------------|-----------|----------|
-| **36** | **GreensFunctionDecayCheck** | **Critic** | **Screening Length** | Is value correlation decaying correctly? | $\mathbb{E}[\lVert V(z) - V(z')\rVert \cdot e^{\kappa d_G(z,z')}]$ | $O(B^2)$ |
+| **36** | **GreensFunctionDecayCheck** | **Critic** | **Screening Length** | Does a fitted decay agree with the selected geometry? | fit of $\log|G_\kappa|$ versus $d_G$ over a declared asymptotic window | $O(B^2)$ |
 
 **Trigger conditions:**
-- High GreensFunctionDecayCheck: Value correlations extending beyond screening length; potential "leaking".
+- High GreensFunctionDecayCheck: the fitted decay is inconsistent with the chosen screened-operator model; this is not a universal flat-space test.
 - Remedy: Check discount factor; verify metric computation; inspect reward structure.
 
 (node-37)=
@@ -1339,10 +1388,10 @@ We define six diagnostic nodes (35-39, 61) to monitor the health of the Critic/V
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |-------|----------|---------------|----------|-------------------|-----------|----------|
-| **37** | **BoltzmannConsistencyCheck** | **Critic + Policy** | **Equilibrium** | Does empirical distribution match Boltzmann? | $D_{\mathrm{KL}}(P_{\text{empirical}} \lVert P_{\text{Boltzmann}})$ | $O(B \cdot D)$ |
+| **37** | **BoltzmannConsistencyCheck** | **Critic + Policy** | **Conditional Equilibrium** | Does empirical sampling match the declared Boltzmann model? | $D_{\mathrm{KL}}(P_{\text{empirical}} \lVert P_{\text{Boltzmann}})$ | $O(B \cdot D)$ |
 
 **Trigger conditions:**
-- High BoltzmannConsistencyCheck: Agent not sampling from equilibrium distribution; exploration-exploitation imbalance.
+- High BoltzmannConsistencyCheck: sampling disagrees with the Boltzmann model under its detailed-balance and invariant-measure hypotheses.
 - Remedy: Adjust cognitive temperature $T_c$; check policy entropy; verify WFR reaction rate.
 
 (node-38)=
@@ -1362,10 +1411,10 @@ We define six diagnostic nodes (35-39, 61) to monitor the health of the Critic/V
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |-------|----------|---------------|----------|-------------------|-----------|----------|
-| **39** | **ValueMassCorrelationCheck** | **WFR + Critic** | **Mass Creation** | Is high value creating mass (WFR consistency)? | $\text{corr}(m_t, V(z_t))$ | $O(B)$ |
+| **39** | **ValueMassCorrelationCheck** | **WFR + Critic** | **Chosen Reaction Closure** | Does the selected reaction law correlate mass change with value? | $\text{corr}(\dot m_t, V(z_t)-\bar V)$ | $O(B)$ |
 
 **Trigger conditions:**
-- Low ValueMassCorrelationCheck: WFR reaction not aligned with value; agent not "materializing" in high-value regions.
+- Low ValueMassCorrelationCheck: the selected value-based reaction closure is not visible in the measured mass change; the WFR action alone makes no such prediction.
 - Remedy: Check reaction rate computation; verify WFR dynamics; inspect value function gradients.
 
 (node-61)=
@@ -1373,11 +1422,11 @@ We define six diagnostic nodes (35-39, 61) to monitor the health of the Critic/V
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
 |-------|----------|---------------|----------|-------------------|-----------|----------|
-| **61** | **ValueCurlCheck** | **Critic** | **Topology** | Is the value field conservative? | $\oint_\gamma \delta_{\text{TD}} \approx \int \|\nabla \times \mathcal{R}\|$ | $O(T)$ |
+| **61** | **ValueCurlCheck** | **Critic** | **Topology** | Is the reward 1-form exact on sampled loops? | $\left|\oint_{\partial\Sigma}\mathcal{R}\right|$ on approximately closed loops | $O(T)$ |
 
 **Trigger conditions:**
-- Near-zero ValueCurlCheck ($\mathcal{F} \approx 0$): Reward field is conservative; standard RL applies. Equilibrium is a fixed point distribution.
-- Non-zero ValueCurlCheck ($\mathcal{F} \neq 0$): Reward field is non-conservative; expect NESS with persistent probability currents. Consider:
+- Near-zero ValueCurlCheck on a family of contractible loops is consistent with a conservative reward model, subject to loop coverage and estimator error.
+- Non-zero ValueCurlCheck detects circulation. A NESS interpretation additionally requires a stationary solution and broken detailed balance. Consider:
   - **Productive curl:** Value cycles that harvest reward continuously (e.g., exploration-exploitation orbits)
   - **Pathological curl:** Indicates preference intransitivity or reward misspecification
 - Remedy: If unexpected non-conservative structure, verify reward function consistency; check for cyclic dependencies in multi-objective rewards.
@@ -1392,7 +1441,8 @@ def value_curl_check(
     Estimate Value Curl via loop integral of TD-errors.
     Non-zero return indicates non-conservative reward field.
     """
-    # Cumulative reward around loop should be zero for conservative field
+    # A loop integral is a circulation proxy; rewards must be interpreted as
+    # samples of a consistently estimated reward 1-form.
     loop_integral = rewards.sum().item()
     return abs(loop_integral)
 ```

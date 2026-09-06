@@ -17,8 +17,8 @@ from fragile.physics.app.electroweak_correlators import build_electroweak_correl
 from fragile.physics.app.electroweak_mass_tab import build_electroweak_mass_tab
 from fragile.physics.app.gravity import build_holographic_principle_tab
 from fragile.physics.app.mass_extraction_tab import build_mass_extraction_tab
-from fragile.physics.app.strong_force_aic_tab import build_strong_force_aic_tab
 from fragile.physics.app.simulation import SimulationTab
+from fragile.physics.app.strong_force_aic_tab import build_strong_force_aic_tab
 from fragile.physics.fractal_gas.history import RunHistory
 
 
@@ -129,11 +129,16 @@ def create_app() -> pn.template.FastListTemplate:
         companion_section = build_companion_correlator_tab(
             state=state,
             run_tab_computation=_run_tab_computation,
+            on_computed=lambda: (
+                companion_mass_section.on_correlators_ready(),
+                strong_force_aic_section.on_correlators_ready(),
+            ),
         )
 
         ew_correlator_section = build_electroweak_correlator_tab(
             state=state,
             run_tab_computation=_run_tab_computation,
+            on_computed=lambda: ew_mass_section.on_correlators_ready(),
         )
 
         companion_mass_section = build_mass_extraction_tab(
@@ -159,27 +164,6 @@ def create_app() -> pn.template.FastListTemplate:
             on_aic_computed=lambda: companion_mass_section.on_aic_ready(),
         )
 
-        # Wire companion correlator completion to enable mass button.
-        _orig_companion_on_run = companion_section.on_run
-
-        def _on_companion_run(event):
-            _orig_companion_on_run(event)
-            if state["companion_correlator_output"] is not None:
-                companion_mass_section.on_correlators_ready()
-                strong_force_aic_section.on_correlators_ready()
-
-        companion_section.run_button.on_click(_on_companion_run)
-
-        # Wire electroweak correlator completion to enable ew mass button.
-        _orig_ew_on_run = ew_correlator_section.on_run
-
-        def _on_ew_run(event):
-            _orig_ew_on_run(event)
-            if state["electroweak_correlator_output"] is not None:
-                ew_mass_section.on_correlators_ready()
-
-        ew_correlator_section.run_button.on_click(_on_ew_run)
-
         # Wire SimulationTab history changes to all analysis sections.
         def _on_history_changed(
             history: RunHistory,
@@ -191,8 +175,7 @@ def create_app() -> pn.template.FastListTemplate:
             state["_multiscale_geodesic_distance_by_frame"] = None
             state["_multiscale_geodesic_distribution"] = None
             algorithm_section.on_history_ready()
-            if not defer:
-                algorithm_section.reset_plots()
+            algorithm_section.reset_plots()
             holographic_section.on_history_changed(defer)
             coupling_section.on_history_changed(defer)
             companion_section.on_history_changed(defer)

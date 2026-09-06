@@ -52,6 +52,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import math
 from typing import Any, TYPE_CHECKING
 
 import torch
@@ -59,6 +60,7 @@ from torch import Tensor
 import torch.nn.functional as F
 
 from fragile.physics.qft_utils import _fft_correlator_batched
+from fragile.physics.qft_utils.helpers import recorded_time_step
 
 
 if TYPE_CHECKING:
@@ -167,17 +169,26 @@ class ChannelCorrelatorResult:
 
 
 class ConvolutionalAICExtractor:
-    """Extract mass using 1D convolutions for ALL windows simultaneously.
+    """Extract a mass from every fit window of ``log C(t)`` at once.
 
-    This class transforms the fitting problem into signal processing.
-    For a window of size W, it computes:
-    - Mass = -slope of linear fit to log(C(t))
-    - AIC = χ² + 2k (k=2 parameters)
+    For each window width ``W`` and start ``t0`` a weighted straight line is
+    fitted to ``log C(t)`` with weights ``1/sigma_t^2``.  All sufficient
+    statistics are convolution sums, so every window is processed in one pass.
 
-    All quantities decompose into convolution sums, enabling processing
-    of millions of windows per second.
+    Window quality is compared with the information criterion used for fit
+    range averaging in lattice spectroscopy,
 
-    Complexity: O(T * num_widths)
+        AIC_i = chi2_i + 2 k + 2 N_cut,
+
+    where ``k = 2`` parameters and ``N_cut`` is the number of valid points left
+    out of window ``i``.  Without the ``N_cut`` term every window whose chi2 is
+    consistent with its size receives the same weight, so pure-noise windows at
+    large ``t`` dominate the average.  Sums are accumulated in float64; the
+    naive float32 evaluation loses every digit of chi2 once ``|log C| > 10``.
+    Points with relative error above ``max_log_error`` are excluded before any
+    window is formed: below that signal-to-noise the logarithm of a noisy
+    correlator is biased, and a wide window over such a tail would otherwise be
+    preferred by the excluded-point penalty.
     """
 
     def __init__(
@@ -185,38 +196,99 @@ class ConvolutionalAICExtractor:
         window_widths: list[int] | None = None,
         min_mass: float = 0.0,
         max_mass: float = float("inf"),
+        penalize_excluded_points: bool = True,
+        max_log_error: float | None = 0.5,
     ):
-        """Initialize the AIC extractor.
-
-        Args:
-            window_widths: List of window sizes to try (default: 5 to 50).
-            min_mass: Minimum valid mass value.
-            max_mass: Maximum valid mass value.
-        """
         self.window_widths = window_widths or list(range(5, 51))
         self.min_mass = min_mass
         self.max_mass = max_mass
+        self.penalize_excluded_points = penalize_excluded_points
+        # Points whose relative error exceeds this are not resolved from zero;
+        # log C is then biased and non-Gaussian, so they never enter a window.
+        self.max_log_error = max_log_error
 
-    def _build_kernels(self, W: int, device: torch.device) -> tuple[Tensor, Tensor]:
-        """Build convolution kernels for window size W.
+    @staticmethod
+    def _conv(x: Tensor, kernel: Tensor) -> Tensor:
+        return F.conv1d(x, kernel)
+
+    def _fit_single_width_full(
+        self,
+        log_corr: Tensor,
+        log_err: Tensor,
+        W: int,
+    ) -> dict[str, Tensor]:
+        """Weighted least squares for all windows of width ``W``.
 
         Args:
-            W: Window size.
-            device: Compute device.
+            log_corr: Log correlator ``[1, 1, T]``; non-finite entries are invalid.
+            log_err: Log-space errors ``[1, 1, T]``; non-positive or non-finite
+                entries mark invalid points.
+            W: Window width.
 
         Returns:
-            Tuple of (sum kernel, time moment kernel).
+            Dict of ``[1, 1, T - W + 1]`` tensors: ``mass``, ``aic``, ``r2``,
+            ``chi2``, ``slope_var``, ``valid``.
         """
-        # Sum kernel: [1, 1, W] of ones
-        k_1 = torch.ones(1, 1, W, device=device)
+        device = log_corr.device
+        y = log_corr.to(torch.float64)
+        err = log_err.to(torch.float64)
+        point_valid = torch.isfinite(y) & torch.isfinite(err) & (err > 0)
+        if self.max_log_error is not None and math.isfinite(self.max_log_error):
+            point_valid &= err <= self.max_log_error
+        w = torch.where(point_valid, 1.0 / err.clamp_min(1e-300) ** 2, torch.zeros_like(err))
+        y = torch.where(point_valid, y, torch.zeros_like(y))
 
-        # Time moment kernel: [0, 1, ..., W-1]
-        # conv1d is cross-correlation (no flip), so kernel[k] * input[j+k]
-        # We want sum_k k * input[j+k], so kernel = [0, 1, 2, ..., W-1]
-        t_vec = torch.arange(W, device=device, dtype=torch.float32)
+        t_vec = torch.arange(W, device=device, dtype=torch.float64)
+        k_1 = torch.ones(1, 1, W, device=device, dtype=torch.float64)
         k_t = t_vec.view(1, 1, W)
+        k_tt = (t_vec**2).view(1, 1, W)
 
-        return k_1, k_t
+        n_valid = self._conv(point_valid.to(torch.float64), k_1)
+        S_w = self._conv(w, k_1)
+        S_wt = self._conv(w, k_t)
+        S_wtt = self._conv(w, k_tt)
+        S_wy = self._conv(w * y, k_1)
+        S_wty = self._conv(w * y, k_t)
+        S_wyy = self._conv(w * y * y, k_1)
+
+        det = S_w * S_wtt - S_wt**2
+        window_valid = (n_valid == W) & (det > 0)
+        safe_det = torch.where(window_valid, det, torch.ones_like(det))
+        safe_S_w = torch.where(window_valid, S_w, torch.ones_like(S_w))
+
+        slope = (S_w * S_wty - S_wt * S_wy) / safe_det
+        intercept = (S_wy - slope * S_wt) / safe_S_w
+        mass = -slope
+
+        # Weighted residual sum of squares via the normal-equation identity.
+        chi2 = (S_wyy - intercept * S_wy - slope * S_wty).clamp_min(0.0)
+        chi2_tot = S_wyy - S_wy**2 / safe_S_w
+        r2 = torch.where(
+            chi2_tot > 0,
+            1.0 - chi2 / chi2_tot.clamp_min(1e-300),
+            torch.full_like(chi2, float("nan")),
+        )
+        slope_var = S_w / safe_det
+
+        n_total_valid = point_valid.to(torch.float64).sum()
+        n_cut = (n_total_valid - W).clamp_min(0.0) if self.penalize_excluded_points else 0.0
+        aic = chi2 + 4.0 + 2.0 * n_cut
+
+        invalid = (
+            ~window_valid | (mass < self.min_mass) | (mass > self.max_mass) | ~torch.isfinite(mass)
+        )
+        aic = torch.where(invalid, torch.full_like(aic, float("inf")), aic)
+        r2 = torch.where(invalid, torch.full_like(r2, float("nan")), r2)
+        mass = torch.where(invalid, torch.full_like(mass, float("nan")), mass)
+        slope_var = torch.where(invalid, torch.full_like(slope_var, float("nan")), slope_var)
+        return {
+            "mass": mass,
+            "aic": aic,
+            "r2": r2,
+            "chi2": chi2,
+            "slope_var": slope_var,
+            "valid": ~invalid,
+        }
 
     def fit_single_width(
         self,
@@ -224,206 +296,133 @@ class ConvolutionalAICExtractor:
         log_err: Tensor,
         W: int,
     ) -> tuple[Tensor, Tensor, Tensor]:
-        """Compute mass and AIC for all start positions with window width W.
+        """Return ``(mass, aic, r2)`` for all windows of width ``W``.
 
-        Uses OLS fitting via convolutions:
-            slope = (W * S_ty - S_t * S_y) / denom
-            mass = -slope
-
-        Args:
-            log_corr: Log correlator [1, 1, T].
-            log_err: Log errors [1, 1, T].
-            W: Window width.
-
-        Returns:
-            Tuple of (mass [1, 1, T-W+1], aic [1, 1, T-W+1], r2 [1, 1, T-W+1]).
+        Shapes follow ``conv1d``: ``[1, 1, T - W + 1]``.  Invalid windows carry
+        ``nan`` mass, ``inf`` AIC and ``nan`` R².
         """
-        device = log_corr.device
-        k_1, k_t = self._build_kernels(W, device)
-
-        # Precompute constants
-        t_vec = torch.arange(W, device=device, dtype=torch.float32)
-        S_t = t_vec.sum()
-        S_tt = (t_vec**2).sum()
-        denom = W * S_tt - S_t**2
-
-        if denom.abs() < 1e-12:
-            # Degenerate case
-            inf_tensor = torch.full_like(
-                log_corr[:, :, : log_corr.shape[-1] - W + 1], float("inf")
-            )
-            nan_tensor = torch.full_like(inf_tensor, float("nan"))
-            return torch.zeros_like(inf_tensor), inf_tensor, nan_tensor
-
-        # Convolutions for sufficient statistics
-        S_y = F.conv1d(log_corr, k_1)  # [1, 1, T-W+1]
-        S_ty = F.conv1d(log_corr, k_t)  # [1, 1, T-W+1]
-        S_yy = F.conv1d(log_corr**2, k_1)  # [1, 1, T-W+1]
-
-        # OLS fit parameters
-        slope = (W * S_ty - S_t * S_y) / denom
-        intercept = (S_y - slope * S_t) / W
-        mass = -slope
-
-        # Sum of Squared Residuals
-        sse = (
-            S_yy
-            + slope**2 * S_tt
-            + W * intercept**2
-            - 2 * slope * S_ty
-            - 2 * intercept * S_y
-            + 2 * slope * intercept * S_t
-        )
-
-        # Total Sum of Squares for R^2 (unweighted, log-space)
-        sst = S_yy - (S_y**2) / W
-        r2 = 1.0 - sse / (sst + 1e-12)
-        r2 = torch.where(sst > 0, r2, torch.full_like(r2, float("nan")))
-
-        # Chi² with variance weighting
-        avg_var = F.conv1d(log_err**2, k_1) / W
-        chi2 = sse / (avg_var + 1e-9)
-
-        # AIC = χ² + 2k (k=2)
-        aic = chi2 + 4.0
-
-        # Invalidate non-physical masses
-        invalid = (mass < self.min_mass) | (mass > self.max_mass) | ~torch.isfinite(mass)
-        aic = torch.where(invalid, torch.full_like(aic, float("inf")), aic)
-        r2 = torch.where(invalid, torch.full_like(r2, float("nan")), r2)
-
-        return mass, aic, r2
+        out = self._fit_single_width_full(log_corr, log_err, W)
+        return out["mass"], out["aic"], out["r2"]
 
     def fit_all_widths(
         self,
         log_corr: Tensor,
         log_err: Tensor,
     ) -> dict[str, Any]:
-        """Fit ALL windows for ALL widths and compute AIC-weighted average.
+        """Fit every window of every width and form the AIC-weighted average.
 
         Args:
-            log_corr: Log correlator [T].
-            log_err: Log errors [T].
+            log_corr: Log correlator ``[T]``.
+            log_err: Log-space errors ``[T]``.
 
         Returns:
-            Dict with mass, mass_error, best_window, n_valid_windows.
+            Dict with ``mass`` (AIC-weighted), ``mass_error`` (statistical
+            error of the weighted average combined with the window spread),
+            ``window_spread``, ``statistical_error``, ``r_squared``,
+            ``n_valid_windows``, ``best_window`` and the per-window tensors.
         """
-        T = log_corr.shape[0]
+        T = int(log_corr.shape[0])
+        log_corr = log_corr.reshape(1, 1, -1)
+        log_err = log_err.reshape(1, 1, -1)
 
-        # Reshape for conv1d: [1, 1, T]
-        log_corr = log_corr.view(1, 1, -1)
-        log_err = log_err.view(1, 1, -1)
-
-        all_masses = []
-        all_aics = []
-        all_r2 = []
-        valid_widths = []
-
+        masses, aics, r2s, variances, valid_widths = [], [], [], [], []
         for W in self.window_widths:
-            if W > T:
+            if W > T or W < 3:
                 continue
-
-            mass, aic, r2 = self.fit_single_width(log_corr, log_err, W)
-
-            # Pad to length T (conv output is T-W+1)
-            pad_right = T - mass.shape[-1]
-            mass = F.pad(mass, (0, pad_right), value=float("nan"))
-            aic = F.pad(aic, (0, pad_right), value=float("inf"))
-            r2 = F.pad(r2, (0, pad_right), value=float("nan"))
-
-            all_masses.append(mass)
-            all_aics.append(aic)
-            all_r2.append(r2)
+            out = self._fit_single_width_full(log_corr, log_err, W)
+            pad_right = T - out["mass"].shape[-1]
+            masses.append(F.pad(out["mass"], (0, pad_right), value=float("nan")))
+            aics.append(F.pad(out["aic"], (0, pad_right), value=float("inf")))
+            r2s.append(F.pad(out["r2"], (0, pad_right), value=float("nan")))
+            variances.append(F.pad(out["slope_var"], (0, pad_right), value=float("nan")))
             valid_widths.append(W)
 
-        if not all_masses:
+        if not masses:
             return {
                 "mass": 0.0,
                 "mass_error": float("inf"),
+                "window_spread": float("inf"),
+                "statistical_error": float("inf"),
                 "r_squared": float("nan"),
                 "n_valid_windows": 0,
                 "window_masses": None,
                 "window_aic": None,
                 "window_widths": [],
                 "window_r2": None,
+                "window_mass_variance": None,
             }
 
-        # Stack: [num_widths, T]
-        mass_stack = torch.cat(all_masses, dim=0).squeeze(1)  # [num_widths, T]
-        aic_stack = torch.cat(all_aics, dim=0).squeeze(1)  # [num_widths, T]
-        r2_stack = torch.cat(all_r2, dim=0).squeeze(1)  # [num_widths, T]
+        mass_stack = torch.cat(masses, dim=0).squeeze(1)  # [num_widths, T]
+        aic_stack = torch.cat(aics, dim=0).squeeze(1)
+        r2_stack = torch.cat(r2s, dim=0).squeeze(1)
+        var_stack = torch.cat(variances, dim=0).squeeze(1)
 
-        # Flatten to [num_widths * T]
         flat_mass = mass_stack.flatten()
         flat_aic = aic_stack.flatten()
         flat_r2 = r2_stack.flatten()
-
-        # Filter valid (finite AIC, positive mass)
-        valid = torch.isfinite(flat_aic) & (flat_mass > 0)
+        flat_var = var_stack.flatten()
+        valid = torch.isfinite(flat_aic) & torch.isfinite(flat_mass) & (flat_mass > 0)
 
         if not valid.any():
             return {
                 "mass": 0.0,
                 "mass_error": float("inf"),
+                "window_spread": float("inf"),
+                "statistical_error": float("inf"),
                 "r_squared": float("nan"),
                 "n_valid_windows": 0,
                 "window_masses": mass_stack,
                 "window_aic": aic_stack,
                 "window_widths": valid_widths,
                 "window_r2": r2_stack,
+                "window_mass_variance": var_stack,
             }
 
-        # AIC weights: w_i = exp(-0.5 * (AIC_i - AIC_min))
         aic_valid = flat_aic[valid]
         mass_valid = flat_mass[valid]
-
-        aic_min = aic_valid.min()
-        delta_aic = aic_valid - aic_min
-        weights = torch.exp(-0.5 * delta_aic)
+        var_valid = flat_var[valid]
+        weights = torch.exp(-0.5 * (aic_valid - aic_valid.min()))
         weights = weights / weights.sum()
 
-        # Weighted average
-        mass_final = (weights * mass_valid).sum().item()
-        mass_var = (weights * (mass_valid - mass_final) ** 2).sum()
-        mass_error = mass_var.sqrt().item()
+        mass_final = float((weights * mass_valid).sum().item())
+        window_spread = float((weights * (mass_valid - mass_final) ** 2).sum().sqrt().item())
+        stat_var = torch.where(torch.isfinite(var_valid), var_valid, torch.zeros_like(var_valid))
+        statistical_error = float((weights * stat_var).sum().sqrt().item())
+        mass_error = float(math.sqrt(statistical_error**2 + window_spread**2))
 
         r2_final = float("nan")
-        valid_r2 = valid & torch.isfinite(flat_r2)
-        if valid_r2.any():
-            aic_r2 = flat_aic[valid_r2]
-            r2_vals = flat_r2[valid_r2]
-            aic_min_r2 = aic_r2.min()
-            delta_aic_r2 = aic_r2 - aic_min_r2
-            weights_r2 = torch.exp(-0.5 * delta_aic_r2)
-            weights_r2 = weights_r2 / weights_r2.sum()
-            r2_final = (weights_r2 * r2_vals).sum().item()
+        r2_ok = torch.isfinite(flat_r2[valid])
+        if r2_ok.any():
+            w_r2 = weights[r2_ok] / weights[r2_ok].sum()
+            r2_final = float((w_r2 * flat_r2[valid][r2_ok]).sum().item())
 
-        # Best window
-        best_flat_idx = flat_aic.argmin().item()
-        best_w_idx = best_flat_idx // T
-        best_t_idx = best_flat_idx % T
-        best_r2 = (
-            flat_r2[best_flat_idx].item()
-            if torch.isfinite(flat_r2[best_flat_idx])
-            else float("nan")
+        best_flat_idx = int(
+            torch.where(valid, flat_aic, torch.full_like(flat_aic, float("inf"))).argmin().item()
         )
+        best_w_idx, best_t_idx = best_flat_idx // T, best_flat_idx % T
+        best_var = float(flat_var[best_flat_idx].item())
+        best_r2 = float(flat_r2[best_flat_idx].item())
 
         return {
             "mass": mass_final,
             "mass_error": mass_error,
+            "window_spread": window_spread,
+            "statistical_error": statistical_error,
             "r_squared": r2_final,
             "n_valid_windows": int(valid.sum().item()),
             "best_window": {
                 "width": valid_widths[best_w_idx] if best_w_idx < len(valid_widths) else 0,
                 "t_start": best_t_idx,
-                "mass": flat_mass[best_flat_idx].item(),
-                "aic": flat_aic[best_flat_idx].item(),
-                "r2": best_r2,
+                "mass": float(flat_mass[best_flat_idx].item()),
+                "mass_error": math.sqrt(best_var) if math.isfinite(best_var) else float("nan"),
+                "aic": float(flat_aic[best_flat_idx].item()),
+                "r2": best_r2 if math.isfinite(best_r2) else float("nan"),
             },
             "window_masses": mass_stack,
             "window_aic": aic_stack,
             "window_widths": valid_widths,
             "window_r2": r2_stack,
+            "window_mass_variance": var_stack,
         }
 
 
@@ -456,34 +455,25 @@ def bootstrap_correlator_error(
     n_bootstrap: int = 100,
     use_connected: bool = True,
 ) -> Tensor:
-    """Compute bootstrap standard error for correlator.
+    """Block-bootstrap the original lag products without shuffling time points."""
+    import numpy as np
 
-    Uses block bootstrap resampling to estimate uncertainty in the correlator.
-    The series is resampled with replacement and the correlator is computed
-    for each resample. The standard deviation across resamples gives the
-    standard error estimate.
+    from fragile.physics.qft_utils.statistics import (
+        resample_statistics,
+        sample_covariance,
+        series_statistics,
+    )
 
-    Args:
-        series: Operator time series [T].
-        max_lag: Maximum lag to compute.
-        n_bootstrap: Number of bootstrap resamples.
-        use_connected: Subtract mean (connected correlator).
-
-    Returns:
-        Bootstrap standard error for C(t) [max_lag+1].
-    """
-    if series.numel() == 0:
-        return torch.zeros(max_lag + 1, device=series.device, dtype=series.dtype)
-
-    T = series.shape[0]
-    device = series.device
-    # Draw all bootstrap resamples at once: [n_bootstrap, T].
-    indices = torch.randint(0, T, (n_bootstrap, T), device=device)
-    resampled = series[indices]
-
-    # Compute all bootstrap correlators in one batched FFT pass.
-    bootstrap_corrs = _fft_correlator_batched(resampled, max_lag, use_connected)
-    return bootstrap_corrs.std(dim=0)
+    if len(series) < 4:
+        return torch.full((max_lag + 1,), float("nan"), device=series.device, dtype=series.dtype)
+    block_size = max(1, int(len(series) ** 0.5))
+    safe_lag = min(max_lag, max(0, len(series) - 2 * block_size - 1))
+    stats = series_statistics(series, safe_lag, use_connected)
+    samples = resample_statistics(stats, "bootstrap", block_size, n_bootstrap, 42)
+    errors = np.sqrt(np.maximum(0, np.diag(sample_covariance(samples, "bootstrap"))))
+    result = torch.full((max_lag + 1,), float("nan"), device=series.device, dtype=series.dtype)
+    result[: safe_lag + 1] = torch.as_tensor(errors, device=series.device, dtype=series.dtype)
+    return result
 
 
 def compute_correlator_fft(
@@ -542,46 +532,149 @@ def extract_mass_aic(
     correlator: Tensor,
     dt: float,
     config: CorrelatorConfig,
+    correlator_err: Tensor | None = None,
 ) -> dict[str, Any]:
-    """Extract mass using convolutional AIC.
+    """Fit decay windows in the supplied time unit.
 
-    Extracted from ChannelCorrelator.extract_mass_aic().
-
-    Args:
-        correlator: Correlator C(t) [max_lag+1].
-        dt: Time step.
-        config: CorrelatorConfig.
-
-    Returns:
-        Dict with mass, mass_error, and fitting details.
+    Statistical error uses measured origin-block covariance where available.
+    Without measurement errors, only a point estimate and window spread are
+    reported; ``mass_error`` is NaN, never a fabricated confidence interval.
+    A correlator whose statistics are too sparse for covariance estimation is
+    still fitted; the result is flagged with ``uncertainty_method="unavailable"``
+    and an ``uncertainty_note`` instead of aborting the caller.
     """
-    # Filter positive values for log
-    mask = correlator > 0
+    import numpy as np
+
+    from fragile.physics.qft_utils.statistics import resample_statistics, sample_covariance
+
+    if not dt > 0:
+        msg = "dt must be positive"
+        raise ValueError(msg)
+    stats = getattr(correlator, "correlator_statistics", None)
+    covariance = None
+    uncertainty_note: str | None = None
+    if stats is not None:
+        try:
+            samples = resample_statistics(stats, "block_jackknife", 10, 200, 42)
+        except ValueError as exc:
+            samples = None
+            uncertainty_note = str(exc)
+        if samples is not None:
+            supported = np.isfinite(samples).all(0)
+            last_supported = (
+                int(np.flatnonzero(~supported)[0]) if not supported.all() else len(correlator)
+            )
+            if last_supported >= 3:
+                correlator = correlator[:last_supported]
+                samples = samples[:, :last_supported]
+                covariance = sample_covariance(samples, "block_jackknife")
+                correlator_err = torch.as_tensor(
+                    np.sqrt(np.maximum(0, np.diag(covariance))),
+                    device=correlator.device,
+                    dtype=correlator.dtype,
+                )
+            else:
+                uncertainty_note = (
+                    "fewer than three lags have origin statistics in every jackknife block"
+                )
+    measured = correlator_err is not None
+    mask = torch.isfinite(correlator) & (correlator > 0)
+    if measured:
+        correlator_err = correlator_err.to(correlator)
+        mask &= torch.isfinite(correlator_err)
+    unavailable = {
+        "mass": 0.0,
+        "mass_error": float("nan"),
+        "window_spread": float("nan"),
+        "statistical_error": float("nan"),
+        "r_squared": float("nan"),
+        "n_valid_windows": 0,
+        "uncertainty_method": "unavailable",
+    }
     if not mask.any():
-        return {"mass": 0.0, "mass_error": float("inf"), "n_valid_windows": 0}
-
-    log_corr = torch.full_like(correlator, float("nan"))
-    log_corr[mask] = torch.log(correlator[mask])
-
-    # Estimate errors (simple bootstrap proxy)
-    log_err = torch.ones_like(log_corr) * 0.1
-
-    # Find first NaN to trim series
-    finite_mask = torch.isfinite(log_corr)
-    if not finite_mask.any():
-        return {"mass": 0.0, "mass_error": float("inf"), "n_valid_windows": 0}
-
-    last_valid = finite_mask.nonzero()[-1].item()
-    log_corr = log_corr[: last_valid + 1]
-    log_err = log_err[: last_valid + 1]
-
+        if uncertainty_note:
+            unavailable["uncertainty_note"] = uncertainty_note
+        return unavailable
+    log_corr = torch.full_like(correlator, float("nan"), dtype=torch.float64)
+    log_corr[mask] = correlator[mask].double().log()
+    if measured:
+        log_err = torch.full_like(log_corr, float("nan"))
+        log_err[mask] = correlator_err[mask].double() / correlator[mask].double().abs()
+        # A zero error would carry infinite weight; treat such points as unusable.
+        log_err = torch.where(log_err > 0, log_err, torch.full_like(log_err, float("nan")))
+    else:
+        # Unit residual weights define an unweighted point fit, not 10% errors.
+        log_err = torch.ones_like(log_corr)
+    last = int(mask.nonzero()[-1]) + 1
+    log_corr, log_err = log_corr[:last], log_err[:last]
     extractor = ConvolutionalAICExtractor(
         window_widths=config.window_widths,
-        min_mass=config.min_mass,
-        max_mass=config.max_mass,
+        min_mass=config.min_mass * dt,
+        max_mass=config.max_mass * dt,
+        # Unit weights carry no signal-to-noise information to cut on.
+        max_log_error=None if not measured else 0.5,
     )
-
-    return extractor.fit_all_widths(log_corr, log_err)
+    result = extractor.fit_all_widths(log_corr, log_err)
+    for key in ("mass", "mass_error", "window_spread", "statistical_error"):
+        if key in result and math.isfinite(result[key]):
+            result[key] /= dt
+    if result.get("window_masses") is not None:
+        result["window_masses"] = result["window_masses"] / dt
+    if result.get("window_mass_variance") is not None:
+        result["window_mass_variance"] = result["window_mass_variance"] / (dt * dt)
+    best_window = result.get("best_window")
+    if isinstance(best_window, dict):
+        for key in ("mass", "mass_error"):
+            if key in best_window and math.isfinite(best_window[key]):
+                best_window[key] /= dt
+    result["uncertainty_method"] = (
+        "origin_block_jackknife"
+        if covariance is not None
+        else ("supplied_diagonal_errors" if measured else "unavailable")
+    )
+    if uncertainty_note:
+        result["uncertainty_note"] = uncertainty_note
+    if not measured:
+        result["mass_error"] = float("nan")
+        result["statistical_error"] = float("nan")
+        if isinstance(best_window, dict):
+            best_window["mass_error"] = float("nan")
+    elif covariance is not None and result.get("n_valid_windows", 0):
+        # Propagate the full lag covariance through the weighted-slope
+        # coefficients of every valid window, then AIC-average the variances.
+        corr_np = correlator[:last].detach().double().cpu().numpy()
+        denominator = corr_np[:, None] * corr_np[None, :]
+        log_cov = np.divide(
+            covariance[:last, :last],
+            denominator,
+            out=np.zeros_like(denominator),
+            where=denominator != 0,
+        )
+        w_np = log_err.detach().cpu().numpy()
+        w_np = np.where(np.isfinite(w_np) & (w_np > 0), 1.0 / w_np**2, 0.0)
+        variances, aics = [], []
+        for wi, width in enumerate(result["window_widths"]):
+            t = np.arange(width, dtype=float)
+            for start in range(last - width + 1):
+                aic = float(result["window_aic"][wi, start])
+                mass = float(result["window_masses"][wi, start])
+                if not (np.isfinite(aic) and np.isfinite(mass) and mass > 0):
+                    continue
+                w = w_np[start : start + width]
+                if not np.all(w > 0):
+                    continue
+                t_bar = np.sum(w * t) / np.sum(w)
+                coeff = w * (t - t_bar) / np.sum(w * (t - t_bar) ** 2) / dt
+                sub = log_cov[start : start + width, start : start + width]
+                variances.append(max(0.0, float(coeff @ sub @ coeff)))
+                aics.append(aic)
+        if aics:
+            weights = np.exp(-0.5 * (np.asarray(aics) - min(aics)))
+            weights /= weights.sum()
+            statistical = float(np.sqrt(weights @ np.asarray(variances)))
+            result["statistical_error"] = statistical
+            result["mass_error"] = float(np.sqrt(statistical**2 + result["window_spread"] ** 2))
+    return result
 
 
 def extract_mass_linear(
@@ -717,6 +810,9 @@ def compute_channel_correlator(
         )
 
     # Effective mass
+    from fragile.physics.qft_utils.statistics import ensure_statistics
+
+    correlator = ensure_statistics(correlator, series)
     effective_mass = compute_effective_mass_torch(correlator, dt)
 
     # Mass extraction
@@ -727,7 +823,7 @@ def compute_channel_correlator(
         mass_fit = extract_mass_linear(correlator, dt, config)
         window_data = {}
     else:
-        mass_fit = extract_mass_aic(correlator, dt, config)
+        mass_fit = extract_mass_aic(correlator, dt, config, correlator_err)
         window_data = {
             "window_masses": mass_fit.pop("window_masses", None),
             "window_aic": mass_fit.pop("window_aic", None),
@@ -980,7 +1076,7 @@ class ChannelCorrelator(ABC):
             ChannelCorrelatorResult with all computed quantities.
         """
         series = self.compute_series()
-        dt = float(self.history.delta_t * self.history.record_every)
+        dt = recorded_time_step(self.history)
 
         # Use the new pure function API
         return compute_channel_correlator(
@@ -1383,7 +1479,9 @@ class _DiracBilinearBase(BilinearChannelCorrelator):
         return self._dirac_gamma
 
     def _color_to_spinor_pair(
-        self, color_i: Tensor, color_j: Tensor,
+        self,
+        color_i: Tensor,
+        color_j: Tensor,
     ) -> tuple[Tensor, Tensor, Tensor]:
         """Convert color pair to Dirac spinor pair, returning (psi_i, psi_j, valid)."""
         from .dirac_spinors import color_to_dirac_spinor

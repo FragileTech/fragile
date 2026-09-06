@@ -47,6 +47,7 @@ from fragile.physics.new_channels.vector_meson_channels import (
     VectorMesonCorrelatorOutput,
 )
 from fragile.physics.operators.pipeline import PipelineResult
+from fragile.physics.qft_utils.statistics import stack_correlators
 
 
 # Type alias for the (correlators, operators) pair returned by extractors
@@ -155,9 +156,8 @@ def extract_tensor_momentum(
     ``momentum_contracted_correlator*``.  We select a single momentum mode
     (default 0, the lowest non-zero mode).
 
-    For the operator series we combine cos and sin quadratures via
-    ``sqrt(cos^2 + sin^2)`` summed over components to produce a scalar
-    time series ``[T]``.
+    Preserve all cos/sin quadratures as a ``[T, 10]`` series so covariance
+    estimation contracts components after lag products, like the correlator.
     """
     corr_suffix = "connected" if use_connected else "raw"
     # momentum_contracted_correlator_* has shape [n_modes, max_lag+1]
@@ -165,11 +165,13 @@ def extract_tensor_momentum(
     correlators: dict[str, Tensor] = {
         f"{prefix}tensor": contracted[momentum_mode],  # [max_lag+1]
     }
-    # Operator: combine cos/sin across components → scalar [T]
+    # Operator: retain cos/sin components.
     # cos/sin shapes: [n_modes, 5, T]
     cos = output.momentum_operator_cos_series[momentum_mode]  # [5, T]
     sin = output.momentum_operator_sin_series[momentum_mode]  # [5, T]
-    amplitude = (cos**2 + sin**2).sqrt().sum(dim=0)  # [T]
+    import torch
+
+    amplitude = torch.cat([cos, sin], dim=0).t()  # [T, 10], contract after products
     operators: dict[str, Tensor] = {
         f"{prefix}tensor": amplitude,
     }
@@ -191,12 +193,11 @@ def extract_multiscale(
     """
     correlators: dict[str, Tensor] = {}
     operators: dict[str, Tensor] = {}
-    import torch
 
     for channel_name, scale_results in output.per_scale_results.items():
         key = f"{prefix}{channel_name}"
         # Stack correlators across scales → [S, max_lag+1]
-        corr_stack = torch.stack([r.correlator for r in scale_results])
+        corr_stack = stack_correlators([r.correlator for r in scale_results])
         correlators[key] = corr_stack
         # Operator series [S, T]
         if channel_name in output.series_by_channel:
@@ -322,10 +323,11 @@ def collect_correlators(
     for out in outputs:
         extractor = _EXTRACTORS.get(type(out))
         if extractor is None:
-            raise TypeError(
+            msg = (
                 f"Unsupported output type {type(out).__name__}. "
                 f"Supported: {', '.join(t.__name__ for t in _EXTRACTORS)}"
             )
+            raise TypeError(msg)
         # MultiscaleStrongForceOutput does not accept use_connected
         if isinstance(out, MultiscaleStrongForceOutput):
             corrs, ops = extractor(out, prefix=prefix)
@@ -335,9 +337,8 @@ def collect_correlators(
         # Check for key collisions
         for key in corrs:
             if key in all_correlators:
-                raise ValueError(
-                    f"Duplicate correlator key '{key}'. " "Use `prefix` to disambiguate."
-                )
+                msg = f"Duplicate correlator key '{key}'. Use `prefix` to disambiguate."
+                raise ValueError(msg)
         all_correlators.update(corrs)
         all_operators.update(ops)
 

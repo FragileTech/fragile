@@ -26,13 +26,14 @@ def _fft_correlator_batched(
         Correlator C(t) for t=0 to max_lag [B, max_lag+1].
     """
     if series.ndim != 2:
-        raise ValueError(f"Expected 2D tensor [B, T], got shape {tuple(series.shape)}")
+        msg = f"Expected 2D tensor [B, T], got shape {tuple(series.shape)}"
+        raise ValueError(msg)
 
     if series.numel() == 0:
         return torch.zeros(series.shape[0], max_lag + 1, device=series.device, dtype=series.dtype)
 
     _, T = series.shape
-    work = series.float()
+    work = series if series.dtype in (torch.float32, torch.float64) else series.float()
     if use_connected:
         work = work - work.mean(dim=1, keepdim=True)
 
@@ -47,7 +48,7 @@ def _fft_correlator_batched(
     corr = torch.fft.ifft(fft_s * fft_s.conj(), dim=1).real
 
     # Normalize by number of overlapping samples.
-    counts = torch.arange(T, T - effective_lag - 1, -1, device=series.device, dtype=torch.float32)
+    counts = torch.arange(T, T - effective_lag - 1, -1, device=series.device, dtype=work.dtype)
     result = corr[:, : effective_lag + 1] / counts.unsqueeze(0)
 
     # Pad with zeros if max_lag > T-1.

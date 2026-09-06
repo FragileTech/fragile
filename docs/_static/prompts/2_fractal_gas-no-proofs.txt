@@ -3556,6 +3556,120 @@ $$
 
 :::
 
+:::{prf:definition} Standardization constants (Sasaki geometry)
+:label: def-sasaki-standardization-constants
+
+Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the uniform lower bound on the regularized standard deviation, and let $L_{\sigma'_{\mathrm{patch}}}$ be its global Lipschitz constant from Lemma {prf:ref}`lem-sigma-patch-derivative-bound`.
+
+##### Value Error Coefficients
+The following coefficients bound the error in the standardization operator when the swarm structure is fixed but the raw values change due to positional displacement. They are notably independent of the number of alive walkers, `k`.
+
+-   **Direct Shift Coefficient ($C_{V,\mathrm{direct}}$):** Bounding the error from the direct change in the raw value vector.
+
+    $$
+    C_{V,\mathrm{direct}} := \frac{1}{\sigma_{\min,\mathrm{patch}}}
+
+    $$
+
+-   **Mean Shift Coefficient ($C_{V,\mathrm{mean}}$):** Bounding the error from the resulting change in the empirical mean.
+
+    $$
+    C_{V,\mathrm{mean}} := \frac{1}{\sigma_{\min,\mathrm{patch}}}
+
+    $$
+
+-   **Denominator Shift Coefficient ($C_{V,\mathrm{denom}}$):** Bounding the error from the resulting change in the regularized standard deviation.
+
+    $$
+    C_{V,\mathrm{denom}} := \frac{8\big(V_{\mathrm{max}}^{(R)}\big)^2 L_{\sigma'_{\mathrm{patch}}}}{\sigma_{\min,\mathrm{patch}}^2}
+
+    $$
+
+-   **Total Value Error Coefficient (Linear Form) ($C_{V,\mathrm{total,lin}}^{\mathrm{Sasaki}}$):** The composite coefficient for the full (unsquared) Lipschitz bound on the value error, which aggregates the component-wise effects.
+
+    $$
+    C_{V,\mathrm{total,lin}}^{\mathrm{Sasaki}} := L_R^{\mathrm{Sasaki}} \left( C_{V,\mathrm{direct}} + C_{V,\mathrm{mean}} + C_{V,\mathrm{denom}} \right) = L_R^{\mathrm{Sasaki}} \left( \frac{2}{\sigma_{\min,\mathrm{patch}}} + \frac{8\big(V_{\mathrm{max}}^{(R)}\big)^2 L_{\sigma'_{\mathrm{patch}}}}{\sigma_{\min,\mathrm{patch}}^2} \right)
+
+    $$
+
+##### Structural Error Coefficients
+The structural error coefficients, which are used in the subsequent theorem for structural continuity, remain as defined:
+
+$$
+C_{S,\mathrm{direct}}^{\mathrm{Sasaki}}(k_{\min}):=\frac{V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}+\frac{2\big(V_{\mathrm{max}}^{(R)}\big)^2}{\sigma_{\min,\mathrm{patch}}^2},
+\qquad C_{S,\mathrm{indirect}}^{\mathrm{Sasaki}}(k_{\min}):=\frac{3V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}k_{\min}}+\frac{6\big(V_{\mathrm{max}}^{(R)}\big)^2}{\sigma_{\min,\mathrm{patch}}^2k_{\min}}L_{\sigma',M}^{\mathrm{Sasaki}}(k_{\min}).
+
+$$
+:::
+
+:::{prf:theorem} Value continuity of patched standardization (Sasaki)
+:label: thm-sasaki-standardization-value-sq
+
+Suppose $\mathcal S_1$ and $\mathcal S_2$ share the same alive set $\mathcal A$ of size $k\ge 1$ (so $n_c(\mathcal S_1,\mathcal S_2)=0$). Let $\mathbf r^{(r)}$ denote the raw reward vectors on $\mathcal A$. The N-dimensional standardization operator is Lipschitz continuous with respect to positional changes in the Sasaki metric. The squared L2-norm of the output error is bounded as follows:
+
+$$
+\big\|z(\mathcal S_1)-z(\mathcal S_2)\big\|_2^2 \le C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)\cdot\big\|\mathbf r^{(1)}-\mathbf r^{(2)}\big\|_2^2 \le C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S_1)\cdot\left(L_R^{\mathrm{Sasaki}}\right)^2 \Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2).
+
+$$
+
+where $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$ is the **Total Value Error Coefficient**, a deterministic constant defined in {prf:ref}`def-sasaki-standardization-constants-sq`. The proof is provided in the subsequent sections by decomposing the total error into its constituent parts.
+:::
+
+:::{prf:definition} Value Error Coefficients (Squared Form)
+:label: def-sasaki-standardization-constants-sq
+
+Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \ge 1$, and let $M$ be the chosen **Swarm Aggregation Operator**. The coefficients for the bounds on the squared value error are defined as follows:
+
+Referenced by {prf:ref}`thm-sasaki-standardization-value-sq`.
+
+1.  **The Squared Direct Shift Coefficient ($C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S)$):**
+
+    $$
+    C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S) := \frac{1}{\sigma_{\min,\mathrm{patch}}^2}
+
+    $$
+
+2.  **The Squared Mean Shift Coefficient ($C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S)$):**
+
+    $$
+    C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) := \frac{k \cdot (L_{\mu,M}^{\mathrm{Sasaki}}(k))^2}{\sigma_{\min,\mathrm{patch}}^2}
+
+    $$
+
+3.  **The Squared Denominator Shift Coefficient ($C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S)$):**
+
+    $$
+    C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S) := k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \left( \frac{L_{\sigma',M}^{\mathrm{Sasaki}}(k)}{\sigma_{\min,\mathrm{patch}}} \right)^2
+
+    $$
+
+4.  **The Total Value Error Coefficient ($C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S)$):** The composite coefficient that bounds the total squared value error, incorporating the factor of 3 from the error decomposition.
+
+    $$
+    C_{V,\mathrm{total}}^{\mathrm{Sasaki}}(\mathcal S) := 3 \cdot \left( C_{V,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) + C_{V,\mathrm{denom}}^{\mathrm{sq}}(\mathcal S) \right)
+
+    $$
+
+    When raw values are induced by positions, the positional coefficient in Theorem {prf:ref}`thm-sasaki-standardization-value-sq` is $\left(L_R^{\mathrm{Sasaki}}\right)^2 C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$.
+
+where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ and $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively. For the canonical empirical aggregator, these coefficients simplify, notably making the mean shift coefficient independent of $k$: $C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) = 1/\sigma_{\min,\mathrm{patch}}^2$.
+:::
+
+:::{prf:theorem} Structural Continuity of Patched Standardization (Sasaki)
+:label: thm-sasaki-standardization-structural-sq
+
+For general swarms $\mathcal S_1,\mathcal S_2$ with alive counts $k_r\ge 1$, the squared L2-norm of the output error of the standardization operator is bounded by a function of the number of status changes, $n_c(\mathcal S_1,\mathcal S_2)$.
+
+Referenced by {prf:ref}`def-sasaki-structural-coeffs-sq` and {prf:ref}`lem-sasaki-standardization-lipschitz`.
+
+$$
+\|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2 \le C_{S,\mathrm{direct}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2) + C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2)^2
+
+$$
+
+where $C_{S,\mathrm{direct}}^{\mathrm{sq}}$ and $C_{S,\mathrm{indirect}}^{\mathrm{sq}}$ are the **Squared Structural Error Coefficients** defined in {prf:ref}`def-sasaki-structural-coeffs-sq`. The proof is provided in the subsequent sections.
+:::
+
 :::{prf:definition} Structural Error Coefficients (Squared Form)
 :label: def-sasaki-structural-coeffs-sq
 
@@ -17709,7 +17823,7 @@ A vector-to-spinor map $\iota$ is then a choice of section of $\pi$ (a gauge-fix
 :::{prf:definition} Vector-to-Spinor Map
 :label: def-fractal-set-vec-to-spinor
 
-The **vector-to-spinor embedding** $\iota: \mathbb{R}^d \to \mathbb{S}_d$ encodes vectors as spinors with a **canonical phase convention**. For $v = \sum_i v_i e_i \in \mathbb{R}^d$:
+The **vector-to-spinor embedding** $\iota: \mathbb{R}^d \to \mathbb{S}_d$ encodes vectors as spinors with a **specified representative convention**. For $v = \sum_i v_i e_i \in \mathbb{R}^d$:
 
 **Case $d = 2$**: Spinor square representation. Write $v = v_1 + i v_2 = r e^{i\phi}$ with $\phi \in (-\pi, \pi]$ and define
 
@@ -17726,9 +17840,25 @@ where $(\|v\|, \theta, \phi)$ are spherical coordinates: $v = \|v\|(\sin\theta\c
 
 **For $v = 0$**: $\iota(0) = 0$ in any dimension.
 
-**General $d \geq 3$**: The embedding extends via the chosen Clifford representation on $\mathbb{S}_d$, with analogous phase conventions ensuring a unique representative in each gauge class.
+**General $d\geq3$**: For $v\ne0$, set $r=\|v\|$, $n=v/r$, and
+$P_+(n)=(I+n\cdot\Gamma)/2$. In the fixed orthonormal basis $(e_a)$ of
+$\mathbb S_d$, let $a(n)$ be the first index maximizing $\|P_+(n)e_a\|$ and set
 
-**Remark**: For $d \geq 3$, the map $\iota$ is not linear. Any global phase convention introduces a branch cut; $\iota$ is smooth on each gauge patch but cannot be globally continuous because the $\mathrm{U}(1)$ bundle $S^{2n+1} \to \mathbb{C}P^n$ is nontrivial.
+$$
+\iota(v)=\sqrt r\,\frac{P_+(n)e_{a(n)}}{\|P_+(n)e_{a(n)}\|}.
+$$
+
+This prescription fixes the representative in the entire positive eigenspace.
+For $d=3$ one may instead use the displayed spherical section, taking
+$\iota(0,0,-r)=\sqrt r(0,1)^{\mathsf T}$ at its exceptional pole. The selected
+section is part of the serialization convention.
+
+**Remark**: The projector section is measurable and smooth wherever its selected
+pivot remains fixed. Since $\operatorname{tr}P_+=s_d/2$, its maximal column
+has squared norm at least $1/2$. Thus its normalization is defined for every
+nonzero $v$. The Pauli section in $d=3$ has the familiar Hopf-fibration patch
+transition. Higher-dimensional positive eigenspaces can have dimension greater
+than one; a phase alone does not select their representatives.
 :::
 
 :::{prf:definition} Spinor-to-Vector Map
@@ -17751,13 +17881,48 @@ $$\pi(\psi)_i = \psi^\dagger \Gamma_i \psi,$$
 which is equivariant under $\mathrm{Spin}(d)$ and reduces to the low-dimensional formulas above.
 :::
 
+:::{prf:lemma} Exact vector encoding and its frame convention
+:label: lem-fractal-set-vector-roundtrip
+
+The section in {prf:ref}`def-fractal-set-vec-to-spinor` satisfies
+$\pi\circ\iota=\mathrm{id}_{\mathbb R^d}$. Its numerical representation includes
+the chosen Clifford matrices, spinor basis, physical frame, units, and section
+rule. In a manifold chart it also includes the chart and local frame identifiers.
+
+:::
+
+:::{prf:definition} Matrix encoding by spinor columns
+:label: def-fractal-set-tensor-codec
+
+For a real $d\times d$ matrix $A$ in specified output and input frames, define
+
+$$
+\mathcal I_2(A)=(\iota(Ae_1),\ldots,\iota(Ae_d))\in(\mathbb S_d)^d,
+\qquad
+\mathcal P_2(\psi_1,\ldots,\psi_d)
+=\sum_{j=1}^d\pi(\psi_j)e_j^{\mathsf T}.
+$$
+
+Then $\mathcal P_2\mathcal I_2(A)=A$ column by column by
+{prf:ref}`lem-fractal-set-vector-roundtrip`. The code stores $d s_d$ complex
+components, with their frame convention. For diffusion amplitudes the input
+frame is the noise frame. A change of output and input frames gives
+$A'=R_{\mathrm{out}}AR_{\mathrm{in}}^{\mathsf T}$; encoding $A'$ uses these
+transformed columns. This specifies the tensor decoder used below.
+:::
+
 :::{prf:proposition} Transformation Covariance
 :label: prop-fractal-set-spinor-covariance
 
-For any rotation $R \in \mathrm{SO}(d)$ with spinor lift $U \in \mathrm{Spin}(d)$ (either of the two preimages), the following holds:
+For $R\in\mathrm{SO}(d)$ and its spinor lift $U$, represented on $\mathbb S_d$,
 
-$$\pi(U \psi) = R \cdot \pi(\psi) \quad \text{and} \quad \pi(U \cdot \iota(v)) = Rv$$
-for all $v \in \mathbb{R}^d$ and $\psi \in \mathbb{S}_d$ in the image of $\iota$. With a fixed phase convention, $U \cdot \iota(v)$ represents $Rv$ and may differ from $\iota(Rv)$ by a unit phase.
+$$
+\pi(U\psi)=R\pi(\psi),\qquad \pi(U\iota(v))=Rv.
+$$
+
+Both $U\iota(v)$ and $\iota(Rv)$ decode to $Rv$. In $d=2$ they differ by a
+sign, and in $d=3$ nonzero representatives differ by a unit phase. In general
+they lie in the same decoder fiber, which can be larger than a phase orbit.
 
 :::
 
@@ -17787,7 +17952,7 @@ Each node $n_{i,t} \in \mathcal{N}$ carries the following scalar attributes:
 
 | Attribute | Symbol | Type | Unit | Description |
 |-----------|--------|------|------|-------------|
-| Proper time | $\tau(n)$ | $\mathbb{R}_{\geq 0}$ | [time] | Continuous time: $\tau = t \cdot \Delta t$ |
+| Algorithmic time | $\tau(n)$ | $\mathbb{R}_{\geq 0}$ | [time] | Continuous time: $\tau = t \cdot \Delta t$ |
 | Timestep duration | $\Delta t$ | $\mathbb{R}_{>0}$ | [time] | Time between consecutive steps |
 
 **Status attributes:**
@@ -17871,7 +18036,11 @@ At timestep $t$, the **alive walker set** is:
 $$\mathcal{A}(t) := \{i \in \{1, \ldots, N\} : s(n_{i,t}) = 1\}.$$
 The number of alive walkers is $k_t := |\mathcal{A}(t)|$.
 
-In the Fractal Gas algorithm the population is conserved, so $k_t = N$ for all $t$ (walkers may change state, but slots persist).
+The number of allocated walker slots is $N$, while $0\leq k_t\leq N$ is
+computed from the recorded alive mask. A revival update can change that mask;
+slot persistence alone does not set $k_t=N$. For the killed convention,
+$k_t<2$ ends the nonabsorbing evolution as specified in
+{prf:ref}`def-latent-fractal-gas-cloning` and the algorithm's companion rule.
 :::
 
 :::{prf:definition} Causal Set Axioms
@@ -17937,7 +18106,7 @@ Each CST edge $e = (n_{i,t}, n_{i,t+1}) \in E_{\mathrm{CST}}$ carries the follow
 
 | Attribute | Symbol | Type | Unit | Description |
 |-----------|--------|------|------|-------------|
-| Diffusion tensor | $\psi_{\Sigma_{\mathrm{reg}}}(e)$ | $\mathbb{S}_d^{\otimes 2}$ | [distance/time^{3/2}] | Spinor encoding of $\Sigma_{\mathrm{reg}}(x_i, S)$ |
+| Diffusion tensor | $\psi_{\Sigma_{\mathrm{reg}}}(e)$ | $(\mathbb{S}_d)^d$ | [distance/time^{3/2}] | Column encoding $\mathcal I_2(\Sigma_{\mathrm{reg}})$ |
 | Noise realization | $\psi_{\mathrm{noise}}(e)$ | $\mathbb{S}_d$ | [distance/time] | Spinor of the stochastic increment $\Sigma_{\mathrm{reg}} \circ dW_i$ |
 
 **Gradient spinors:**
@@ -17955,6 +18124,16 @@ Each CST edge $e = (n_{i,t}, n_{i,t+1}) \in E_{\mathrm{CST}}$ carries the follow
 | Velocity norm change | $\|\Delta v\|(e)$ | $\mathbb{R}_{\geq 0}$ | [distance/time] | $\|\Delta v\|$ |
 | Displacement norm | $\|\Delta x\|(e)$ | $\mathbb{R}_{\geq 0}$ | [distance] | $\|\Delta x\|$ |
 | Timestep | $\Delta t(e)$ | $\mathbb{R}_{>0}$ | [time] | Time duration of this step |
+:::
+
+:::{prf:remark} Payload units and evaluation stages
+:label: rem-fractal-set-payload-units
+
+The unit column in the vector and matrix tables gives the unit of the decoded
+quantity. Since $\pi$ is quadratic, $[\iota(v)]=[v]^{1/2}$, and each column
+of $\mathcal I_2(A)$ has unit $[A]^{1/2}$. Every force and noise payload carries
+its evaluation-stage identifier. Endpoint state data and intermediate force
+evaluations are distinct samples of the split update.
 :::
 
 :::{prf:definition} Adaptive Gas SDE
@@ -18184,11 +18363,12 @@ We attach asymmetric data to **oriented** edges; $E_{\mathrm{IG}}$ and $E_{\math
 - $\omega_{\mathrm{IG}}: E_{\mathrm{IG}} \to \mathbb{R}$ — cloning potential $V_{\mathrm{clone}}(i \to j)$
 - $\omega_{\mathrm{IA}}: E_{\mathrm{IA}} \to [0,1]$ — influence attribution weight $w_{ij}$
 
-**Attribute data** $\mathcal{D} = (\mathcal{D}_{\mathcal{N}}, \mathcal{D}_{\mathrm{CST}}, \mathcal{D}_{\mathrm{IG}}, \mathcal{D}_{\mathrm{IA}})$:
+**Attribute data** $\mathcal{D} = (\mathcal{D}_{\mathcal{N}}, \mathcal{D}_{\mathrm{CST}}, \mathcal{D}_{\mathrm{IG}}, \mathcal{D}_{\mathrm{IA}},\mathcal M,\mathcal B)$:
 - **$\mathcal{D}_{\mathcal{N}}$**: Node attributes — {prf:ref}`def-fractal-set-node-attributes`
 - **$\mathcal{D}_{\mathrm{CST}}$**: CST edge attributes — {prf:ref}`def-fractal-set-cst-attributes`
 - **$\mathcal{D}_{\mathrm{IG}}$**: IG edge attributes — {prf:ref}`def-fractal-set-ig-attributes`
 - **$\mathcal{D}_{\mathrm{IA}}$**: IA edge attributes — {prf:ref}`def-fractal-set-ia-attributes`
+- **$\mathcal M,\mathcal B$**: Serialization header and indexed boundary/reference payloads — {prf:ref}`def-fractal-set-record-coverage`
 :::
 
 :::{prf:theorem} Frame-Invariance of Scalar Data
@@ -18201,16 +18381,19 @@ All scalar attributes stored in $\mathcal{D}_{\mathcal{N}}$, $\mathcal{D}_{\math
 :::{prf:theorem} Frame-Covariance of Spinor Data
 :label: thm-fractal-set-spinor-covariance
 
-All spinor attributes stored in $\mathcal{D}_{\mathrm{CST}}$ and $\mathcal{D}_{\mathrm{IG}}$ transform covariantly under $\mathrm{SO}(d)$: if the coordinate system is rotated by $R$, and $U \in \mathrm{Spin}(d)$ is a lift of $R$, then each spinor $\psi$ transforms as $\psi \mapsto U\psi$.
+In the recorded frame convention, vector payloads transform by $\psi\mapsto U\psi$
+and decode by $\pi(U\psi)=R\pi(\psi)$. Re-encoding the transformed vector with
+the canonical section gives an equivalent decoder representative. Matrix
+payloads transform according to {prf:ref}`def-fractal-set-tensor-codec`.
 
 :::
 
-:::{prf:corollary} Coordinate-Free Reconstruction
+:::{prf:corollary} Reconstruction in related frames
 :label: cor-fractal-set-coordinate-free
 
-Two observers using coordinate systems related by $R \in \mathrm{SO}(d)$ can independently reconstruct all vector quantities from the Fractal Set. Their reconstructions are related by $R$:
-
-$$\mathbf{v}^{(2)} = R \mathbf{v}^{(1)}.$$
+For a record carrying the frame convention of
+{prf:ref}`lem-fractal-set-vector-roundtrip`, two observers with known rotation
+$R$ reconstruct vector components related by $v^{(2)}=Rv^{(1)}$.
 
 :::
 
@@ -18422,12 +18605,12 @@ let $M := \sum_{t=0}^{T} m_t$.
 | Component | Count | Size per Element | Total Size |
 |-----------|-------|------------------|------------|
 | Nodes | $N(T+1)$ | $O(1)$ scalars | $O(NT)$ |
-| CST edges | $O(NT)$ | $O(s_d)$ spinors + $O(1)$ scalars | $O(NT \cdot s_d)$ |
+| CST edges and boundary payloads | $O(N(T+1))$ | $O(d s_d)$ with full diffusion columns | $O(N(T+1)d s_d)$ |
 | IG edges | $O(M)$ | $O(s_d)$ spinors + $O(1)$ scalars | $O(M \cdot s_d)$ |
 | IA edges | $O(M)$ | $O(1)$ scalars + $SU(2)$ element | $O(M)$ |
 | Triangles | $O(M)$ | $O(1)$ pointers | $O(M)$ |
 
-Total memory: $O(NT \cdot s_d + M \cdot s_d)$.
+Total memory, including full diffusion samples and state anchors: $O(N(T+1)d s_d + M s_d)$, plus the shared codec header. The vector-only part is $O((N(T+1)+M)s_d)$.
 
 Note: IA edges and triangles add only $O(M)$ scalar storage plus $O(M)$ group elements—negligible compared to the spinor-heavy
 IG edges.
@@ -18440,74 +18623,149 @@ dense bound is recovered.
 :::{prf:definition} Reconstruction Target Set
 :label: def-fractal-set-reconstruction-targets
 
-The **reconstruction targets** are the quantities that characterize the Fractal Gas algorithm:
+The **reconstruction targets** are the following quantities, indexed by the recorded state and evaluation sets of {prf:ref}`def-fractal-set-record-coverage`:
 
-1. **Phase-space trajectories**: $(x_i(t), v_i(t))$ for all $i \in \{1, \ldots, N\}$, $t \in \{0, \ldots, T\}$
-2. **Force fields**: $\mathbf{F}_{\mathrm{stable}}$, $\mathbf{F}_{\mathrm{adapt}}$, $\mathbf{F}_{\mathrm{viscous}}$, $\mathbf{F}_{\mathrm{friction}}$, $\mathbf{F}_{\mathrm{total}}$ at each walker position and time
-3. **Diffusion tensor field**: $\Sigma_{\mathrm{reg}}(x, S, t)$ at each walker position and time
-4. **Fitness landscape**: $\Phi(x)$ sampled at all walker positions
-5. **Virtual reward field**: $V_{\mathrm{fit}}[f_k, \rho](x)$ sampled at all walker positions
-6. **Localized statistics**: $\mu_\rho$, $\sigma_\rho$, $Z_\rho$ at all walker positions
-7. **Population dynamics**: $\mathcal{A}(t)$, $k_t = |\mathcal{A}(t)|$ at all timesteps
-8. **Empirical measure**: $f_k(t) = \frac{1}{k_t}\sum_{i \in \mathcal{A}(t)} \delta_{(x_i(t), v_i(t))}$ at all timesteps
-9. **Cloning events**: Which walker cloned from which, at which timestep
+1. **Phase-space trajectories**: $(x_i(t,a), v_i(t,a))$ at every recorded state label
+2. **Force fields**: $\mathbf{F}_{\mathrm{stable}}$, $\mathbf{F}_{\mathrm{adapt}}$, $\mathbf{F}_{\mathrm{viscous}}$, $\mathbf{F}_{\mathrm{friction}}$, $\mathbf{F}_{\mathrm{total}}$ at each retained evaluation label
+3. **Diffusion tensor field**: $\Sigma_{\mathrm{reg}}(x, S, t)$ at each retained evaluation label
+4. **Fitness landscape**: $\Phi(x)$ on their recorded evaluation sets
+5. **Virtual reward field**: $V_{\mathrm{fit}}[f_k, \rho](x)$ on their recorded evaluation sets
+6. **Localized statistics**: $\mu_\rho$, $\sigma_\rho$, $Z_\rho$ on their recorded evaluation sets
+7. **Population dynamics**: $\mathcal{A}(t)$, $k_t = |\mathcal{A}(t)|$ at recorded status stages
+8. **Empirical measure**: $f_k(t) = \frac{1}{k_t}\sum_{i \in \mathcal{A}(t)} \delta_{(x_i(t), v_i(t))}$ at recorded status stages with $k_t>0$
+9. **Cloning events**: Which walker cloned from which, at each recorded update
+:::
+
+:::{prf:definition} Recorded samples, boundary data, and coverage
+:label: def-fractal-set-record-coverage
+
+Let $\mathscr S$ be the finite set of recorded state labels $(i,t,a)$, with
+stage $a$ distinguishing pre-cloning, post-cloning, and post-kinetic states
+when these are recorded. Let $\mathscr Q_q$ be the finite set of labels where
+a field $q$ was evaluated and retained. The coarse notation $n_{i,t}$ suppresses
+$a$ when only one state per step is under discussion.
+
+The attribute data $\mathcal D$ of a complete record include a header
+$\mathcal M$ and an auxiliary table $\mathcal B$, in addition to the graph
+attributes. $\mathcal M$ specifies actual recorded steps, stages, units,
+coordinate and noise frames, codec, periodic-coordinate convention, and the
+sample sets $\mathscr S,\mathscr Q_q$. The table $\mathcal B$ supplies indexed
+payloads not covered by incident edges. Thus node attributes remain scalar.
+Completeness means the following explicit coverage rules:
+
+1. Every label in $\mathscr S$ has an indexed absolute position and velocity
+   payload, either on an incident edge or in $\mathcal B$. In particular,
+   initial, isolated, revived, and terminal states have direct anchors.
+2. Every $\ell\in\mathscr Q_q$ has an indexed payload of $q(\ell)$, on its
+   evaluation edge or in $\mathcal B$. A terminal field value belongs to this
+   set precisely when it was evaluated and retained.
+3. Scalars, alive masks, companion and clone-source indices, and realized
+   increments are stored with their stage and availability labels. An absent
+   evaluation is marked absent, independently of its possible numerical value.
+4. Vector payloads use $\iota$ and matrix payloads use $\mathcal I_2$, or use
+   raw arrays with the identity decoder declared in $\mathcal M$.
+
+The target list in {prf:ref}`def-fractal-set-reconstruction-targets` is evaluated
+on these recorded sample sets. A full-step recording includes every executed
+step; a subsampled recording includes only its declared samples. When
+$k_t=0$, the normalized alive empirical measure is undefined; the alive mask
+and absorbing status remain reconstructible.
+:::
+
+:::{prf:remark} Relation to the current implementation
+:label: rem-fractal-set-history-codec
+
+`src/fragile/fractalai/core/fractal_set.py` retains its `RunHistory` and builds
+`pre`, `clone`, and `final` nodes. Its `psi_*` arrays currently contain raw
+vectors for later spinor conversion. The retained state arrays supply absolute
+anchors independently of IG incidence. `recorded_steps` and `record_every`
+define the recording schedule. The theoretical table $\mathcal B$ can therefore
+be backed by the retained history, with the raw-array decoder.
+
+The optional `sigma_reg_diag` and `sigma_reg_full` fields specify which diffusion
+samples are available. A full diffusion reconstruction uses a full matrix or
+an explicitly diagonal amplitude; a diagonal of a general matrix does not
+encode its off-diagonal entries. The complete spinor serialization above is an
+explicit representation contract; the current raw-array history is evaluated
+against its actual field availability and recording schedule.
 :::
 
 :::{prf:theorem} Trajectory Reconstruction
 :label: thm-fractal-set-trajectory
 
-Given the Fractal Set $\mathcal{F}$, the complete phase-space trajectory $(x_i(t), v_i(t))$ for any walker $i$ can be reconstructed.
+A complete record in {prf:ref}`def-fractal-set-record-coverage` reconstructs
+$(x_i(t,a),v_i(t,a))$ at every label $(i,t,a)\in\mathscr S$.
 
 :::
 
 :::{prf:theorem} Force Field Reconstruction
 :label: thm-fractal-set-force
 
-All force components at any walker position and time can be reconstructed from CST edge spinors.
+Every retained force evaluation is reconstructible at its recorded position
+and evaluation stage.
 
 :::
 
 :::{prf:theorem} Diffusion Tensor Reconstruction
 :label: thm-fractal-set-diffusion
 
-The diffusion tensor $\Sigma_{\mathrm{reg}}(x, S, t)$ can be reconstructed at sampled positions from CST edge data.
+At each retained full diffusion evaluation $\ell$, the amplitude
+$\Sigma_{\mathrm{reg}}(\ell)$ is reconstructed in its recorded output and noise
+frames.
 
 :::
 
 :::{prf:theorem} Landscape Reconstruction
 :label: thm-fractal-set-landscape
 
-The fitness $\Phi(x)$ and virtual reward $V_{\mathrm{fit}}(x)$ fields can be reconstructed at all sampled positions.
+The fitness $\Phi$ and virtual reward $V_{\mathrm{fit}}$ evaluations can be reconstructed on their recorded sample sets.
 
 :::
 
 :::{prf:theorem} Population Reconstruction
 :label: thm-fractal-set-population
 
-The alive walker set $\mathcal{A}(t)$ and empirical measure $f_k(t)$ can be reconstructed at all timesteps.
+The alive walker set $\mathcal{A}(t)$ can be reconstructed at every recorded status stage, and $f_k(t)$ at those stages with $k_t>0$.
 
 :::
 
 :::{prf:theorem} Cloning Event Reconstruction
 :label: thm-fractal-set-cloning
 
-The complete cloning history—which walker cloned from which, at which timestep—can be reconstructed from node attributes.
+The cloning events at recorded update labels can be reconstructed from clone-source attributes; full-step recording gives the complete executed cloning history.
 
 :::
 
 :::{prf:theorem} Lossless Reconstruction
 :label: thm-fractal-set-lossless
 
-The Fractal Set $\mathcal{F}$ contains **complete information** to reconstruct all Fractal Gas dynamics at discrete timesteps, including the realized stochastic increments $\Sigma_{\mathrm{reg}} \circ dW_i$ stored on CST edges. The only missing information is interpolation between sampled positions (the landscapes are known only at walker-visited points).
+Let $\mathscr R$ be the record of states, evaluated fields, scalar measurements,
+statuses, decisions, and realized increments on the sample sets in
+{prf:ref}`def-fractal-set-record-coverage`. Its complete Fractal Set encoding
+$\operatorname{Enc}$ has an explicit decoder $\operatorname{Dec}$ satisfying
 
-Formally: given $\mathcal{F}$, one can reconstruct all quantities in {prf:ref}`def-fractal-set-reconstruction-targets` exactly for discrete-time values and at sampled positions.
+$$
+\operatorname{Dec}\circ\operatorname{Enc}=\mathrm{id}_{\mathscr R}.
+$$
+
+Thus $\operatorname{Enc}$ is injective and is an isomorphism of measurable
+record spaces onto its image, equipped with the transported sigma algebra.
+The identities are exact in real arithmetic.
 
 :::
 
 :::{prf:corollary} Frame-Independent Physics
 :label: cor-fractal-set-physics
 
-Any physical observable computed from the Fractal Gas dynamics—energy, work, entropy, convergence metrics—is recoverable from $\mathcal{F}$ and yields the same value regardless of which coordinate system the recovering observer uses.
+Every measurable observable $O$ of the recorded targets is recovered by
+$O\circ\operatorname{Dec}$ on the encoded image. Frame-invariant observables
+have identical values in frames related by the recorded transition maps.
+For any law $\mu$ on complete records,
+
+$$
+\int O\,d\mu
+=\int O\circ\operatorname{Dec}\,d(\operatorname{Enc}_\#\mu).
+$$
 
 :::
 
@@ -18540,30 +18798,31 @@ $$P_i(j; t) := \frac{w_{ij}}{\sum_{l \in \mathcal{A}(t) \setminus \{i\}} w_{il}}
 :::{prf:definition} Two-Channel Fitness
 :label: def-fractal-set-two-channel-fitness
 
-The **fitness potential** for walker $i$ combines reward and diversity:
+Use the reward, diversity, and regularization conventions of
+{prf:ref}`def-latent-fractal-gas-fitness` and
+{prf:ref}`def-c3-fitness-laws`. For fixed companion assignment $c$,
 
-$$V_i := (d_i')^{\beta_{\mathrm{fit}}} (r_i')^{\alpha_{\mathrm{fit}}},$$
+$$
+r_i=\mathcal R_{z_i}(v_i),\qquad
+ d_i^c=\sqrt{\|z_i-z_{c_i}\|^2+
+ \lambda_{\mathrm{alg}}\|v_i-v_{c_i}\|^2+\epsilon_{\mathrm{dist}}^2},
+$$
 
-where:
+$$
+Z_i[m]=\frac{m_i-\mu_i[m]}{\sqrt{V_i[m]+\sigma_{\min}^2}},\qquad
+F_i^c=(g_A(Z_i[d^c])+\eta)^{\beta_{\mathrm{fit}}}
+      (g_A(Z_i[r])+\eta)^{\alpha_{\mathrm{fit}}},
+\qquad g_A(z)=\frac{A}{1+e^{-z}}.
+$$
 
-**Reward channel**:
-
-$$r_i := \langle \mathcal{R}(z_i), v_i \rangle_{G(z_i)},$$
-
-the metric contraction of the reward 1-form $\mathcal{R}$ with velocity.
-
-**Diversity channel**:
-
-$$d_i := d_G(z_i, z_{c_i^{\mathrm{dist}}}),$$
-
-the geodesic distance to the distance companion.
-
-Both are standardized and transformed:
-
-$$r_i' := g_A((\tilde{r}_i - \mu_r) / \sigma_r), \quad d_i' := g_A((\tilde{d}_i - \mu_d) / \sigma_d),$$
-where $g_A(z) := A / (1 + e^{-z})$ is the logistic function with range $[0, A]$.
-
-The exponents $\alpha_{\mathrm{fit}}, \beta_{\mathrm{fit}} > 0$ balance exploitation (reward) vs. exploration (diversity).
+Here $\mu_i,V_i$ are the alive-only normalized moments in the cited definition,
+and the distance, variance, and channel floors are positive. The stored fitness
+is the realized $F_i^c$. An expected-field construction uses
+$\overline F_i=\sum_cp_cF_i^c$ with the actual companion law. The
+expected-measurement surrogate $\widetilde F_i$ has its separate definition
+there. Their respective derivative bounds are already proved in
+{prf:ref}`thm-c3-regularity` and
+{prf:ref}`thm-unified-cinf-regularity-both-mechanisms`.
 :::
 
 :::{prf:definition} Cloning Score and Probability
@@ -18578,7 +18837,7 @@ where $\varepsilon_{\mathrm{clone}} > 0$ prevents division by zero.
 The **cloning probability** is:
 
 $$p_i := \min\left(1, \max\left(0, \frac{S_i}{p_{\max}}\right)\right),$$
-where $p_{\max}$ is the maximum cloning probability.
+where $p_{\max}>0$ is the score scale; clipping bounds the probability by one. Alive decisions use this probability, while dead-slot revival follows {prf:ref}`def-latent-fractal-gas-cloning`.
 :::
 
 :::{prf:definition} Momentum-Conserving Cloning Update
@@ -18607,39 +18866,134 @@ $$\sum_{k \in G} v_k' = \sum_{k \in G} v_k.$$
 
 :::
 
+:::{prf:remark} Collision groups and the complete update
+:label: rem-fractal-set-collision-scope
+
+The identity above concerns one group's output before any subsequent overwrite.
+For disjoint groups, summing it gives global coordinate-momentum conservation.
+The actual recipient-group policy reads each group from the original velocities
+and writes in recipient order, as specified in
+{prf:ref}`def-latent-fractal-gas-cloning`. Overlapping writes retain that policy.
+The accompanying relative-energy identity is
+{prf:ref}`lem-latent-fractal-gas-collision-energy`. On a variable metric, coordinate
+velocity sums and sums of covectors in distinct tangent spaces are different
+quantities; comparisons use the specified transport convention.
+:::
+
 :::{prf:definition} Fitness-Adaptive Diffusion Tensor
 :label: def-fractal-set-anisotropic-diffusion
 
-The **regularized diffusion tensor** at position $z$ is:
+For the selected fitness field and Hessian $H_i$ of the canonical algorithm,
+use its existing spectral-margin convention:
 
-$$\Sigma_{\mathrm{reg}}(z) := \left(\nabla_z^2 V_{\mathrm{fit}}(z) + \varepsilon_\Sigma I\right)^{-1/2},$$
-where $\nabla_z^2 V_{\mathrm{fit}}$ is the Hessian of the virtual fitness potential and $\varepsilon_\Sigma > 0$ ensures uniform ellipticity for a positive-semidefinite Hessian. If the Hessian is indefinite, use a positive-semidefinite proxy (for example, absolute eigenvalues) before taking the inverse square root. In dimensional units, a scalar scale factor may be applied so the noise term $\Sigma_{\mathrm{reg}} \circ dW$ matches the velocity SDE.
+$$
+g_i=H_i+\varepsilon_\Sigma I,\qquad
+\Sigma_i=g_i^{-1/2},\qquad D_i=\Sigma_i\Sigma_i^{\mathsf T}=g_i^{-1}.
+$$
+
+The field, derivative coordinate, and any declared spectral proxy are recorded
+with the diffusion sample. The two-sided covariance bounds are supplied by
+{prf:ref}`thm-gg-ueph-construction` and
+{prf:ref}`thm-uniform-ellipticity-latent`, using the full-fitness constants as
+identified below. Dimensional noise prefactors multiply $D_i$ by their squares.
+:::
+
+:::{prf:corollary} Import of the established fitness and ellipticity bounds
+:label: cor-fractal-set-inherited-ellipticity
+
+Use the field and configuration regime covered by
+{prf:ref}`thm-c3-regularity` and the positive spectral margin of
+{prf:ref}`axiom-gg-ueph`. Its sampled Hessian bound is
+
+$$
+K_2=F_2=B_0^{d,\beta}B_2^{r,\alpha}
++2B_1^{d,\beta}B_1^{r,\alpha}+B_2^{d,\beta}B_0^{r,\alpha}.
+$$
+
+For the expected fitness under the joint law treated there, use
+$K_2=J_0F_2+2J_1F_1+J_2F_0$; for the other proved companion laws use the
+order-two majorant in {prf:ref}`thm-unified-cinf-regularity-both-mechanisms`.
+For the resulting $-\Lambda_-I\preceq H_i\preceq\Lambda_+I$ and
+$a_*=\varepsilon_\Sigma-\Lambda_->0$,
+
+$$
+\frac{1}{\varepsilon_\Sigma+\Lambda_+}I
+\preceq D_i\preceq\frac1{a_*}I.
+$$
+
+The constants inherit the population uniformity and parameter dependence of
+those upstream theorems. These are velocity-block covariance bounds.
+
+:::
+
+:::{prf:proposition} Transport of record observables and established estimates
+:label: prop-fractal-set-analytic-transfer
+
+Let $\mu$ be a law on the complete records of
+{prf:ref}`def-fractal-set-record-coverage` and
+$\widehat\mu=\operatorname{Enc}_\#\mu$. The map
+
+$$
+\mathcal U:L^2(\mu)\longrightarrow L^2(\widehat\mu),\qquad
+\mathcal U f=f\circ\operatorname{Dec},
+$$
+
+is unitary, with inverse $g\mapsto g\circ\operatorname{Enc}$. An established
+Dirichlet form $\mathcal E$ transports to the encoded record by
+$\widehat{\mathcal E}(\mathcal U f,\mathcal U f)=\mathcal E(f,f)$ on
+$\mathcal U\operatorname{Dom}(\mathcal E)$. Its LSI and Poincaré constants
+are unchanged in this transported form.
+
+:::
+
+:::{prf:remark} Use of the Volume 2 estimates
+:label: rem-fractal-set-volume2-support
+
+For a state observable under a law covered by {prf:ref}`cor-n-uniform-lsi`,
+{prf:ref}`cor-quantitative-lsi-final` already supplies the joint Poincaré
+inequality. For an empirical average, its squared gradient sums as
+$N^{-2}\sum_i|\nabla\varphi(Y_i)|^2$, giving the established $N^{-1}$ variance
+factor. The exact-record isomorphism transports this observable and its
+statistics to the Fractal Set without changing that law.
+
+For the continuum estimator, {prf:ref}`lem-cst-poincare-variance` calculates
+the shrinking-bandwidth gradient, and
+{prf:ref}`cor-cst-inherited-lsi-consistency` combines it with the proved local
+bias. Fitness regularity and ellipticity are supplied independently by
+{prf:ref}`thm-c3-regularity`,
+{prf:ref}`thm-main-complete-cinf-geometric-gas-full`, and
+{prf:ref}`thm-gg-ueph-construction`. The geometric comparison and sampling law
+are identified in {prf:ref}`rem-cst-proof-dependency-order`. These imports
+retain their field, law, and scale conventions and require no reconstruction
+claim as an input to their upstream proofs.
 :::
 
 :::{prf:definition} Boris-BAOAB Integrator
 :label: def-fractal-set-boris-baoab
 
-The **Boris-BAOAB** integrator for Lorentz-Langevin dynamics on $(\mathcal{Z}, G)$ consists of five substeps per timestep $h$:
+Use exactly {prf:ref}`def-latent-fractal-gas-kinetic`. Starting from the
+post-cloning state, put $p=G(z)v$ and execute $B\!A\!O\!A\!B$:
 
-Let $p = G(z)v$ be the metric momentum and $\Phi_{\mathrm{eff}}$ the effective potential.
+1. **B:** Apply
+   $p\leftarrow p-\frac h2\nabla\Phi_{\mathrm{eff}}(z)
+   +\frac h2G(z)\mathbf F_{\mathrm{viscous},i}(S)$,
+   perform the specified Boris rotation when $\mathcal F=d\mathcal R\ne0$,
+   and repeat that force kick.
+2. **A:** Set
+   $z\leftarrow\operatorname{Exp}_z(\frac h2\psi_v(G^{-1}(z)p))$,
+   with $\psi_v$ from {prf:ref}`def-latent-velocity-squashing`.
+3. **O:** Set
+   $p\leftarrow c_1p+c_2G^{1/2}(z)\Sigma_{\mathrm{reg}}(z,S)\xi$,
+   where $c_1=e^{-\gamma h}$, $c_2=\sqrt{(1-c_1^2)T_c}$, and
+   $\xi\sim\mathcal N(0,I)$.
+4. **A:** Repeat step 2.
+5. **B:** Repeat step 1 at the updated position with the algorithm's force
+   evaluation policy. Store $v\leftarrow\psi_v(G^{-1}(z)p)$.
 
-**B (half kick + Boris rotation)**:
-1. $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\mathrm{eff}}(z)$
-2. If the reward has curl ($\mathcal{F} = d\mathcal{R} \neq 0$): Apply Boris rotation with parameter $\beta_{\mathrm{curl}} G^{-1}\mathcal{F}$
-3. $p \leftarrow p - \frac{h}{2}\nabla\Phi_{\mathrm{eff}}(z)$
-
-**A (half drift)**:
-
-$$z \leftarrow \mathrm{Exp}_z\left(\frac{h}{2}G^{-1}(z)p\right),$$
-
-where $\mathrm{Exp}_z$ is the Riemannian exponential map (geodesic flow).
-
-**O (thermostat)**:
-
-$$p \leftarrow c_1 p + c_2 G^{1/2}(z) \Sigma_{\mathrm{reg}}(z) \xi,$$
-where $\xi \sim \mathcal{N}(0, I)$, $c_1 = e^{-\gamma h}$, $c_2 = \sqrt{(1 - c_1^2)T_c}$.
-
-**A (half drift)**: Repeat the A step.
+Momentum coordinates, chart transitions, and covector transport follow the
+policy in the cited algorithm definition. Record each evaluated force at its
+actual substep. Each B block contains two $h/2$ kicks; its force normalization
+is the one discussed in {prf:ref}`rem-latent-fractal-gas-splitting-normalization`.
 :::
 
 :::{prf:proposition} Spinor Storage Overhead
@@ -18664,13 +19018,22 @@ For $d > 4$, the spinor dimension grows exponentially (Dirac scales as $2^{\lflo
 :::{prf:theorem} Reconstruction Precision
 :label: thm-fractal-set-precision
 
-Reconstruction from the Fractal Set has the following accuracy:
+The real-arithmetic reconstruction identity is
+{prf:ref}`thm-fractal-set-lossless`. A lossless serialization of raw scalar
+or array payloads preserves their stored bit patterns. For a spinor payload
+$\psi$ perturbed by $e$, a Hermitian Clifford matrix of operator norm one gives
 
-| Quantity | Reconstruction Error |
-|----------|---------------------|
-| Scalars (node attributes) | Exact (0 error) |
-| Vectors from spinors | Machine precision ($\sim 10^{-15}$ relative) |
-| Trajectories (accumulated) | $O(T \cdot \epsilon_{\mathrm{machine}})$ |
+$$
+|\pi(\psi+e)_j-\pi(\psi)_j|
+\le 2\|\psi\|\|e\|+\|e\|^2.
+$$
+
+For $d=2$, the complex absolute error obeys the same bound with scalar moduli.
+Floating evaluation of the quadratic form adds its own rounding error.
+If each increment has error at most $\eta_s$, accumulation in a common chart
+has absolute error at most
+$\eta_0+\sum_s\eta_s+\eta_{\mathrm{sum}}$, where $\eta_0$ is the anchor error
+and $\eta_{\mathrm{sum}}$ the summation rounding error.
 
 :::
 
@@ -18688,7 +19051,7 @@ Common queries on the Fractal Set have the following time complexity:
 | Full reconstruction | $O(NT + |E_{\mathrm{IG}}|)$ | All edges |
 | Alive walkers at $t$ | $O(N)$ | Node status scan |
 
-Here $\deg_t(i)$ is the number of sampled IG edges incident to walker $i$ at time $t$.
+These bounds hold at fixed state dimension and a fixed number of recorded substeps, with indexed direct state and evaluation payloads as in {prf:ref}`def-fractal-set-record-coverage`. Here $\deg_t(i)$ is the number of sampled IG edges incident to walker $i$ at time $t$.
 
 With indexing (hash tables on $(i, t)$ pairs), lookups become $O(1)$ expected time. $\square$
 :::
@@ -21442,20 +21805,32 @@ particle update or an identification of the existing reconstruction kernel.
 :::{prf:lemma} Spatial metric regularity from the existing fitness estimates
 :label: lem-cst-existing-spatial-regularity
 
-Suppose the selected spatial potential is the mean-field expected fitness
-field covered by
-{prf:ref}`thm-main-complete-cinf-geometric-gas-full`, with all its denominator,
-density, rescaling-function, and companion-selection hypotheses satisfied.
-Keep the smoothing and localization parameters fixed. Its spatial derivative
-bounds supply
+Use the selected spatial fitness field and regularity regime of
+{prf:ref}`thm-main-complete-cinf-geometric-gas-full`. For the expected field,
+use its actual companion-law majorant from
+{prf:ref}`thm-unified-cinf-regularity-both-mechanisms`; for mean-field integrals,
+use the normalized-integral transfer in
+{prf:ref}`thm-cinf-mean-field-integrals`. Keep algorithmic smoothing and
+localization scales fixed. Write $\mathcal A$ for the corresponding proved
+majorant. Its spatial bounds are
 
 $$
 \|\nabla_x^m V_{\mathrm{fit}}\|_\infty
-\le B_m:=C_{V,m}m!\max(\rho^{-m},\varepsilon_d^{1-m}).
+\le B_m:=m![t^m]\mathcal A(t)
+\le C_V B_V^m m!,\qquad
+C_V=\mathcal A(t_*),\quad B_V=t_*^{-1},
 $$
 
+for a common $t_*>0$ in its established convergence region. For smooth inputs
+without the factorial regime, use the finite-order bounds through $m=6$ from
+the same derivative recursions. The derivative coordinate and uniformity region
+are those of the selected field; a one-walker block estimate is used for that
+spatial derivative, rather than as a full configuration-space Hessian bound.
+
 For the Hessian metric $g_R=\nabla_x^2V_{\mathrm{fit}}+\epsilon_\Sigma I$,
-assume the existing two-sided spectral bounds $aI\preceq g_R\preceq bI$.
+import its existing two-sided spectral bounds $aI\preceq g_R\preceq bI$ from
+{prf:ref}`thm-uniform-ellipticity-latent` with the constants of
+{prf:ref}`cor-fractal-set-inherited-ellipticity`.
 Then
 
 $$
@@ -21532,11 +21907,48 @@ $$
 
 An LSI $D_{\mathrm{KL}}(\nu\|\Pi_N)\le C_L I(\nu\|\Pi_N)$ implies
 the displayed Poincaré inequality with $C_P=2C_L$ under the same gradient
-convention. Thus an N-uniform LSI, such as
-{prf:ref}`thm-kl-convergence-euclidean` under its full analytical hypotheses,
-can supply the joint-law input when its measure and observation variables
-match the sampling statement. A one-time particle law must not be replaced
+convention. Thus the established joint-law LSI in
+{prf:ref}`cor-n-uniform-lsi`, with its Poincaré consequence
+{prf:ref}`cor-quantitative-lsi-final`, supplies this input for its specified law
+when the observation variables and gradient form match the sampling statement.
+The inherited marginal and weak-limit inequalities are
+{prf:ref}`cor-kl-lsi-mean-field-limit`. A one-time particle law must not be replaced
 by a spacetime-history law without this identification.
+:::
+
+:::{prf:corollary} Continuum estimator error from the established joint LSI
+:label: cor-cst-inherited-lsi-consistency
+
+For the observation law and smooth summand in
+{prf:ref}`lem-cst-poincare-variance`, take the existing joint LSI convention
+
+$$
+\operatorname{Ent}_{\Pi_N}(f^2)
+\le2C_*\mathbb E_{\Pi_N}\sum_i|\nabla_i f|^2.
+$$
+
+Use the exact normalized sampling law of A3 and the local consistency
+calculation of {prf:ref}`lem-continuum-local-bias`. For
+$A_{N,\varepsilon}=N^{-1}\sum_iH_{\varepsilon,p}(Y_i)$ these give
+
+$$
+\mathbb E|A_{N,\varepsilon}-\Box_gf(p)|^2
+\le C_b^2\varepsilon^4+
+\frac{C_*C_\nabla}{N\varepsilon^{D+4}}.
+$$
+
+With fixed algorithmic regularizers and uniform constants on the observation
+region, $\varepsilon\to0$ and $N\varepsilon^{D+4}\to\infty$ imply mean-square
+consistency. Choosing $\varepsilon=N^{-1/(D+8)}$ gives
+$O(N^{-4/(D+8)})$. Here $\varepsilon$ is the estimator bandwidth; it is
+separate from the algorithmic scales entering the fitness majorants.
+
+:::
+
+:::{prf:remark} Order of the analytical and geometric dependencies
+:label: rem-cst-proof-dependency-order
+
+The fitness derivative recursions precede metric inversion. The joint-law LSI
 :::
 
 :::{prf:remark} Which analytical error estimates transfer
@@ -23279,10 +23691,30 @@ of the three particle mechanisms is neither assumed nor inferred.
 Fix a finite observation schedule, all reconstruction parameters, and the
 complete law $\mathbb P_{\mathrm{rec}}$ of the recorded particle history
 $\mathcal F$. This law includes companion choices, cloning indicators,
-kinetic noise, and any survival conditioning. On valid force samples use
-$c_i\in\mathbb C^3$ from {prf:ref}`thm-sm-su3-emergence`; on invalid
-samples set its numerical value to zero and retain a separate validity mask.
-The mathematical unit-vector formulas below concern valid samples.
+kinetic noise, and any survival conditioning. For the direct three-component color path in this chapter set $d=3$ and
+use $c_i\in\mathbb C^3$ from {prf:ref}`thm-sm-su3-emergence` on valid force
+samples. The general routine returns $\mathbb C^d$; a different latent dimension
+requires a separately specified map into $\mathbb C^3$ before these determinant
+channels are evaluated. The baryon routine enforces three components.
+
+Distinguish the raw numerical color from its masked extension. In real
+arithmetic, with the routine's threshold $\delta_c=10^{-12}$ in its numerical
+force units, put
+
+$$
+\widetilde c_i^a=F_i^{\mathrm{visc},a}e^{i\kappa v_i^a},\qquad
+c_i^{\mathrm{raw}}=\frac{\widetilde c_i}{\max(\|\widetilde c_i\|,\delta_c)},
+\qquad m_i=\mathbf1_{\{\|\widetilde c_i\|>\delta_c\}},
+\qquad c_i=m_ic_i^{\mathrm{raw}},
+\quad\kappa=\frac{m\ell_0}{\hbar_{\mathrm{eff}}}.
+$$
+
+`compute_color_states_batch` returns $c_i^{\mathrm{raw}}$ and $m_i$, rather
+than the zero extension $c_i$. Downstream masks implement the latter convention
+for the valid contractions. For example $F=(\delta_c/2,0,0)$, $v=0$ gives
+$c^{\mathrm{raw}}=(1/2,0,0)$ and $m=0$. The unit-vector formulas below concern
+valid samples. Floating-point phase evaluation and normalization retain their
+numerical errors; the identities specify the real-arithmetic observable.
 
 Let $\mathscr O(\mathcal F)$ collect the specified direct observables and
 their masks at all recorded times. Their finite field law is
@@ -23557,6 +23989,29 @@ frames. Nontrivial local $SU(2)$ holonomy requires a further transport
 construction, with its covariance and law established separately.
 :::
 
+:::{prf:corollary} Covariant differences for the doublet-frame links
+:label: cor-sm-frame-link-radial-action
+
+For the links of {prf:ref}`prop-sm-direct-su2-frames`,
+
+$$
+U_{ij}z_j=z_i,\qquad U_{ij}z_j-z_i=0.
+$$
+
+For radii $r_i\ge0$ and fields $H_i=r_i z_i$, the spatial term of
+{prf:ref}`def-sm-scalar-action` reduces to
+
+$$
+\frac12\sum_{\{i,j\}}c_{ij}\|U_{ij}H_j-H_i\|^2
+=\frac12\sum_{\{i,j\}}c_{ij}(r_j-r_i)^2.
+$$
+
+Every weak Wilson-face term built from these links is zero. Thus this
+particular matrix construction supplies exact frame comparisons and radial
+kinetics. Its link variables have no independent curvature fluctuations.
+
+:::
+
 :::{prf:proposition} Local frame covariance and symmetry of the record law
 :label: prop-sm-direct-law-symmetry
 
@@ -23792,6 +24247,76 @@ and entropy term; a static state-space LSI is not applied as a path-space
 LSI. The block calculation in item 3 uses the actual path law instead.
 :::
 
+:::{prf:proposition} Channel derivatives and the applicable statistical bounds
+:label: prop-sm-channel-estimate-routes
+
+Use the actual law, gradient form, and evaluation-stage conventions of
+{prf:ref}`thm-sm-direct-existing-machinery`. On a differentiable valid-color
+chart, write $u_i=F_i^{\mathrm{visc}}$, $r_i=\|u_i\|$, and
+$\kappa=m\ell_0/\hbar_{\mathrm{eff}}$. For a real coordinate variation,
+
+$$
+\|\delta c_i\|
+\le\frac{\|\delta u_i\|}{r_i}+|\kappa|\|\delta v_i\|.
+$$
+
+For valid unit colors this implies
+
+$$
+\begin{aligned}
+|\delta q_{ij}|&\le\|\delta c_i\|+\|\delta c_j\|,\\
+|\delta b_{ijk}|&\le\|\delta c_i\|+\|\delta c_j\|+\|\delta c_k\|,\\
+|\delta\Pi_{ijk}|&\le2(\|\delta c_i\|+\|\delta c_j\|+\|\delta c_k\|).
+\end{aligned}
+$$
+
+For fixed companion indices, the direct doublet amplitude has derivative
+
+$$
+\delta a_i=a_i\left[-\frac{\delta(D_i^2)}{4\ell_c^2}
++i\,\delta\theta_i\right],\qquad
+\delta\theta_i=
+\frac{\delta F_{k(i)}-\delta F_i}{h_S A_i}
+-\frac{(F_{k(i)}-F_i)\operatorname{sgn}(F_i)\delta F_i}{h_S A_i^2},
+\quad A_i=|F_i|+\varepsilon_{\mathrm{clone}},
+$$
+
+where the displayed derivative is used away from $F_i=0$. For the canonical
+positive fitness, $F_i>0$ and $\operatorname{sgn}(F_i)=1$. The full fitness
+bounds for these derivatives are {prf:ref}`thm-c3-regularity` and
+{prf:ref}`thm-unified-cinf-regularity-both-mechanisms`; the force derivative is
+that of the actual viscous kernel and recorded force evaluation.
+For $z=d/\|d\|$ on a nonzero doublet, the real derivative norm is bounded by
+$\|\delta d\|/\|d\|$.
+
+These calculations select the following existing estimate routes.
+
+| Recorded observable | Applicable proved estimate | Quantity to evaluate |
+|---|---|---|
+| A Sobolev function of the continuous state, including smooth color or doublet contractions | {prf:ref}`cor-quantitative-lsi-final` and {prf:ref}`thm-sm-direct-existing-machinery` | The integrated squared full-state derivative of its actual pullback |
+| A real globally Lipschitz pullback | {prf:ref}`lem-ym-lsi-moments` | Its full-state Lipschitz constant, including all normalization factors |
+| An average $N^{-1}\sum_i g(Z_i)$ of a fixed bounded single-coordinate test | {prf:ref}`thm-mixing-variance-corrected` | The total entropy relative to the stated product reference and the bound on $g$ |
+| A bounded masked whole-swarm channel in a stationary record, including a fixed-length transition block | {prf:ref}`thm-cluster-decomposition` and the temporal-block proof above | Its variance and the separation between the recorded blocks |
+| A smooth spatial or spacetime reconstruction | {prf:ref}`thm-sm-laplacian-convergence` or {prf:ref}`cor-cst-inherited-lsi-consistency` | The specified sampling law, kernel bandwidth, derivative constants, and normalized reconstruction error |
+
+For a real bounded state channel $|O|\le B$ and a stationary semigroup with
+the constants $M,\lambda$ in {prf:ref}`thm-cluster-decomposition`, sampling
+$K$ times at spacing $h>0$ gives the explicit bound
+
+$$
+\operatorname{Var}\left(\frac1K\sum_{a=0}^{K-1}O(S_{ah})\right)
+\le\frac{B^2}{K}\left(1+
+\frac{2M e^{-\lambda h}}{1-e^{-\lambda h}}\right).
+$$
+
+The unit-color real and imaginary pair and determinant channels have $B=1$;
+$1-\operatorname{Re}\Pi$ has $B=2$. Positive weighted averages with the
+zero-denominator convention preserve these bounds. Standard doublet sums
+and differences satisfy $|a_i\pm a_{k(i)}|\le2$. Unnormalized displacement
+weights or exponential score weights retain their actual moment bounds.
+
+:::
+
 :::{prf:corollary} Fermionic lift of the direct observable isomorphism
 :label: cor-sm-direct-fock-isomorphism
 
@@ -23821,6 +24346,60 @@ are identical in the two representations. The record-process Fock space
 and its replica realization are those of
 {prf:ref}`thm-lqft-record-fock-reconstruction` and
 {prf:ref}`thm-lqft-replica-isomorphism`.
+:::
+
+:::{prf:proposition} Generator of the established replica lift
+:label: prop-sm-replica-generator
+
+For a strongly continuous contraction semigroup $P_t$ on the centered mode
+space $\mathcal H$ of {prf:ref}`thm-lqft-record-fock-reconstruction`, let $L$
+be its generator. On wedges with $f_r\in\operatorname{Dom}L$,
+
+$$
+L^{(k)}(f_1\wedge\cdots\wedge f_k)
+=\sum_{r=1}^k f_1\wedge\cdots\wedge Lf_r\wedge\cdots\wedge f_k,
+\qquad L^{(0)}=0.
+$$
+
+The same formula holds after the invariant-coordinate unitary in
+{prf:ref}`cor-sm-direct-fock-isomorphism`. Each factor $f_r$ is an observable
+of a complete swarm state; its $L$ contains the interactions in that original
+process. Under {prf:ref}`thm-lqft-replica-isomorphism`, the different factors
+are independent replicas before antisymmetrization.
+
+:::
+
+:::{prf:proposition} Criterion for equality with a specified field evolution
+:label: prop-sm-field-generator-comparison
+
+Let $\mathcal W$ be a specified unitary from the represented record Hilbert
+space, or its Fock lift, onto a proposed field Hilbert space. Let $K$ be the
+record generator and $K_{\mathrm{field}}$ the field generator, both generating
+strongly continuous semigroups. If a common dense domain $\mathcal C$ is a
+core for $\mathcal W K\mathcal W^{-1}$ and $K_{\mathrm{field}}$, and
+
+$$
+K_{\mathrm{field}}f=\mathcal W K\mathcal W^{-1}f
+\qquad(f\in\mathcal C),
+$$
+
+then their semigroups intertwine, their spectra agree, and corresponding
+operator correlations agree when the state and observables are also transported
+by $\mathcal W$.
+
+:::
+
+:::{prf:example} An interaction not supplied by second quantization alone
+:label: ex-sm-replica-interaction-comparison
+
+On $\Lambda^*\mathbb C^2$, put $n_j=a_j^\dagger a_j$ and
+$V=\lambda n_1n_2$, with $\lambda\ne0$. This operator is zero on the vacuum
+and on the one-mode sector, and equals $\lambda I$ on the two-mode sector.
+It cannot equal $d\Gamma(A)$ for a one-mode operator $A$: restriction to the
+one-mode sector would force $A=0$, whereas the two-mode restriction is nonzero.
+Consequently adding a proposed inter-mode interaction to a lifted field
+generator requires the generator comparison above. This does not remove the
+interactions already present within each complete-swarm generator $L$.
 :::
 
 :::{prf:proposition} Exact exterior meaning of the implemented baryon correlator
@@ -23880,10 +24459,16 @@ occupancy of a spatial state and does not cover a separate forced-revival rule.
 Choose independent generators $\psi_{i,a},\bar\psi_{i,a}$ in a finite
 exterior algebra, where $a$ indexes the supplied internal and spinor fields.
 Distinct generators anticommute and each squares to zero. The bar is an
-independent generator in Euclidean Grassmann integration. This is the field
-representation of {prf:ref}`post-grassmann`; an identification of its field
-correlators with recorded particle statistics requires a specified map and
-measure.
+independent generator in Euclidean Grassmann integration. This is the finite Grassmann representation of {prf:ref}`post-grassmann`.
+For the recorded process, the CAR algebra, vacuum state, replica measure,
+and their exact correlation identities have already been constructed in
+{prf:ref}`thm-lqft-record-fock-reconstruction`,
+{prf:ref}`thm-lqft-replica-isomorphism`, and
+{prf:ref}`cor-sm-direct-fock-isomorphism`. A Berezin action with a separately
+chosen coefficient matrix uses its own measure; its equality with that
+recorded-process representation is checked through
+{prf:ref}`prop-sm-field-generator-comparison` and the finite measure comparison
+below.
 
 In particular $\bar\psi_j\psi_i=-\psi_i\bar\psi_j$.
 Anticommutation does not give
@@ -24151,6 +24736,18 @@ it does not descend to $SO(10)$ because the central element $-1$ acts as
 minus the identity. Choosing this internal field space realizes the stated
 branching. Dimension counting of $(x,v)$ or the CST does not identify it
 with the recorded walker state space.
+:::
+
+:::{prf:proposition} Local anomaly coefficients of the stated generation
+:label: prop-sm-generation-anomaly-cancellation
+
+For the left-handed representations in {prf:ref}`thm-sm-so10-isomorphism`,
+the four-dimensional perturbative gauge and mixed gauge-gravitational anomaly
+coefficients vanish. Normalize the cubic color index of $3$ to one and the
+quadratic index of $3$ and $2$ to $1/2$. The usual mod-two $SU(2)$ doublet
+count is even. These conclusions hold generation by generation, including
+the neutral singlet, and hence for every $n_g$.
+
 :::
 
 :::{prf:definition} Recorded walker-role partition
@@ -24723,6 +25320,105 @@ or an appropriate weighted estimator. Its continuum application retains
 and the additional spinor, gauge-holonomy, and field-measure requirements.
 :::
 
+:::{prf:theorem} Descriptor density from the complete path likelihood
+:label: thm-sm-path-descriptor-density
+
+On a standard Borel finite-path space, take the normalized reference path law
+$R$ of {prf:ref}`thm-action-from-path-integral` and the actual path law
+$P=\mathcal L R$, where $\mathcal L\ge0$, $\int\mathcal L\,dR=1$.
+Thus $\mathcal L=e^{-\mathcal S_h}$ with the complete likelihood, including
+its initial factor, when written in that theorem's notation. For a measurable
+descriptor map $\mathscr D$ into a standard Borel space, set
+
+$$
+\lambda=\mathscr D_*R,\qquad \nu=\mathscr D_*P.
+$$
+
+Then $\nu=a\lambda$, where a version of its density is
+
+$$
+a(y)=\mathbb E_R[\mathcal L\mid\mathscr D=y].
+$$
+
+In particular the effective descriptor action is $-\log a$ where $a>0$,
+with value $+\infty$ where $a=0$. It is the conditional integral of the
+likelihood, followed by the logarithm.
+
+:::
+
+:::{prf:proposition} Equality of field measures and weighted estimators
+:label: prop-sm-field-measure-comparison
+
+Use the same descriptor space and base measure $\lambda$ as in
+{prf:ref}`thm-sm-path-descriptor-density`. Suppose the integrated finite field
+model is represented there by an integrable density $b$, with
+$Z_b=\int b\,d\lambda\ne0$. Its normalized functional is
+$\langle f\rangle_b=Z_b^{-1}\int fb\,d\lambda$.
+Equality with the direct law for every bounded measurable $f$ holds precisely
+when $b/Z_b=a$ almost everywhere.
+
+An integrable weighting of the direct samples represents this functional
+precisely when $b=0$ almost everywhere on $\{a=0\}$. In that case define
+$w=b/a$ on $\{a>0\}$ and zero elsewhere. For $\int|fb|d\lambda<\infty$,
+
+$$
+\langle f\rangle_b=\frac{\mathbb E_\nu[wf]}{\mathbb E_\nu[w]},
+\qquad \mathbb E_\nu[w]=Z_b,\qquad
+\mathbb E_\nu|w|=\int|b|\,d\lambda.
+$$
+
+For a finite-variance estimator one also checks, for example,
+$\mathbb E_\nu|wf|^2=\int_{a>0}|bf|^2/a\,d\lambda<\infty$.
+These identities concern expectations; a ratio of finite empirical means
+has its own sampling error. A complex fermion density produces complex weights
+and a normalized functional, rather than a positive probability law.
+
+:::
+
+:::{prf:proposition} Flat-link support cannot sample an independent-link model
+:label: prop-sm-flat-link-support
+
+Fix a finite graph containing a simple cycle and independent $SU(2)$ link
+variables on its unoriented edges, with reverse links defined as inverses.
+Let $\mathcal Z$ be the set for which the ordered holonomy of that cycle is
+$I_2$. Product Haar measure assigns $\mathcal Z$ measure zero. The pushforward
+of the doublet-frame construction assigns it probability one.
+Consequently no integrable weighting of only those flat-link samples can
+represent a normalized field measure absolutely continuous with respect to
+product Haar measure. This also holds for a finite complex field measure
+with nonzero total mass and such absolute continuity.
+
+:::
+
+:::{prf:remark} Dependency order for the represented field theory
+:label: rem-sm-proof-dependency-order
+
+The finite reconstruction identity is proved first, using the codec and
+recorded-sample coverage. Gram and determinant algebra then proves orbit
+separation and the explicit inverse. Pushforward integration proves the
+observable-space unitary; it uses no Standard Model action or gauge-law
+invariance. The static LSI and sampling estimates enter from their own
+Volume 2 proofs through the actual pullback and the channel calculations in
+{prf:ref}`prop-sm-channel-estimate-routes`.
+
+For the fermionic route, the order is exterior inner product, creation and
+contraction, CAR, determinant integration on independent replicas, and finally
+transition intertwining. The two replica/Fock theorems cross-reference the
+same explicit determinant calculation; their conclusions need not be used
+as premises of one another. The generator is then
+{prf:ref}`prop-sm-replica-generator`.
+
+The complete-kernel likelihood yields the descriptor density independently
+of the supplied field action. Its comparison with that action uses
+{prf:ref}`prop-sm-field-measure-comparison`, including the support test.
+Equality of evolutions uses {prf:ref}`prop-sm-field-generator-comparison`.
+Only after these comparisons may properties of the field action be transferred
+back to the record process, or conversely. The flat-support calculation
+specifies why the doublet-frame links alone do not realize the independent-link
+integral. Representation, anomaly, and finite-action calculations remain
+available without making that identification circularly.
+:::
+
 :::{prf:definition} Mathematical correspondence table
 :label: def-sm-dictionary
 
@@ -24735,15 +25431,15 @@ model; a recorded identity is a statement about the actual finite data.
 | Full color Gram matrix and complex triple determinants | Homeomorphism with the SU(3) orbit space and an explicit anchor-chart inverse | Identify any selected physical spectral sector |
 | Full doublet Hermitian and alternating contractions | Homeomorphism with the SU(2) orbit space, without Dirac matrices | Identify weak dynamics in the same law |
 | Invariant history coordinates | Unitary observable-space representation preserving all integrable correlations | Apply the established transfer theorem to its own law |
-| Direct descriptor law | Pushforward of the record law; inherited LSI with its induced energy | Retain the original energy domain and time evolution |
+| Direct descriptor law | Conditional-likelihood density and inherited LSI with its induced energy | Channel domain, support-compatible measure comparison, and generator intertwining |
 | Color triangle product | Trace of three rank-one projectors; exact independent-phase invariance | Distinguish this composite from a unitary-link Wilson observable |
 | Companion amplitudes | Normalization and phase freedom | A nontrivial connection and field measure |
-| Cloning doublet | A normalized vector and chosen SU(2) frame action | Weak representation and dynamics |
+| Cloning doublet and frame links | Exact SU(2) matrices, flat holonomy, and radial-only kinetic term | Connection dynamics satisfying the measure and generator comparisons |
 | Viscous force | Orthogonal covariance and exact force moments | Covariant internal color field |
-| Score antisymmetry | Weighted sign identity and opposing eligibility | Fermionic correlators of the particle law |
+| Score antisymmetry and record modes | Weighted sign identity; exact CAR and antisymmetric-replica realization for centered record modes | Equality with the chosen interacting field generator and measure |
 | Exterior spinors | Faithful complex Clifford representation | Spin geometry and a Dirac operator limit |
 | Quartic potential | Minima, Hessian, and chosen Higgs mass matrix | Fractal Gas reduction and field normalization |
-| Spin(10) half-spin field | Explicit sixteen-state branching | A map from recorded states and its dynamics |
+| Spin(10) half-spin field | Sixteen-state branching, vanishing local anomaly coefficients, and even weak-doublet count | A map from recorded states and its dynamics |
 | Generation space | Arbitrary representation multiplicity | A principle determining $n_g$ |
 | Role observables | Exact partition and zero same-frame delta-to-right statistic | A physical spectral channel for another measured statistic |
 | Coupling proxies | Defined moments, units, and bounds | Canonical coupling matching |
@@ -24950,6 +25646,24 @@ $i$. A phase formula symmetric under $i\leftrightarrow j$ must be oriented
 before it supplies such comparisons.
 :::
 
+:::{prf:proposition} Wilson and matter terms for the reconstructed frame links
+:label: prop-ym-recorded-frame-sector
+
+Use the normalized doublets and $B(z)\in SU(2)$ of
+{prf:ref}`prop-sm-direct-su2-frames`. On their valid vertex graph set
+$B_i=B(z_i)$ and $U_{ij}=B_iB_j^\dagger$. These links obey inverse reversal
+and local frame covariance. For every closed path $C$ and every declared face,
+
+$$
+U_C=I_2,\qquad W(C)=1,\qquad S_W=0.
+$$
+
+For $H_i=r_i z_i$, $r_i\ge0$, their covariant difference satisfies
+$\|U_{ij}H_j-H_i\|^2=(r_j-r_i)^2$. These identities concern this specific
+frame construction; the separately chosen lift above has its own holonomies.
+
+:::
+
 :::{prf:definition} Covariant derivative and curvature
 :label: def-covariant-derivative-ym
 
@@ -25018,6 +25732,26 @@ $$
 where $M_n$ is a martingale. In particular, a total fitness
 $Q(S)=\sum_i a_i(S)F_i(S)$ is conserved in conditional expectation precisely
 when $P_hQ=Q$ on the states considered.
+:::
+
+:::{prf:proposition} Identification of the drift and the stopped balance
+:label: prop-ym-generator-balance
+
+In (YM.9), $b$ is the Itô velocity drift. With the geometric kinetic
+coefficients of {prf:ref}`def-gg-generator-decomp`, it is
+
+$$
+b_i=-\nabla U_i+F_i-\gamma v_i-\nu(L_XV)_i+b_{\mathrm{geo},i},
+\qquad b_{\mathrm{geo}}=\frac12\sum_\ell(DB_\ell)B_\ell.
+$$
+
+Here $B_\ell$ are the full phase-space noise columns, and the covariance
+in (YM.9) is that of the same columns. The jump kernel contains the complete
+selected cloning update. For $Q\in C^2$ with locally integrable jump
+increments, the process stopped before explosion, boundary exit, and failure
+of the coefficient chart satisfies the localized Dynkin martingale identity.
+Removing localization requires integrability of that martingale and drift.
+
 :::
 
 :::{prf:theorem} Internal current identity, including chiral sources
@@ -25193,7 +25927,7 @@ On the matter equations $R_i=0$. This identity holds on the finite graph.
 :label: def-partition-function-ym
 
 Give each independently oriented link normalized Haar measure $dU_e$. For a
-real, integrable matter measure $d\mu_m$ and total action bounded below with
+positive matter measure $d\mu_m$ and real total action bounded below with
 finite nonzero integral, define
 
 $$
@@ -25215,6 +25949,48 @@ If $S_m$ and its measure transform invariantly, (YM.17) is invariant under all
 local frame changes. In a finite vectorlike Grassmann model, the paired
 transformation $\Psi\mapsto\Omega\Psi$,
 $\overline\Psi\mapsto\overline\Psi\Omega^{-1}$ has Berezin Jacobian one.
+:::
+
+:::{prf:corollary} Anomaly tests for the established generation
+:label: cor-ym-inherited-anomaly-tests
+
+For the left-handed generation in {prf:ref}`thm-sm-so10-isomorphism`,
+the perturbative gauge and mixed gauge-gravitational coefficients vanish,
+and the ordinary $SU(2)$ doublet parity test is satisfied on spin backgrounds.
+These are the tests established in
+{prf:ref}`prop-sm-generation-anomaly-cancellation`.
+
+:::
+
+:::{prf:proposition} Exact recorded density and comparison with the field integral
+:label: prop-ym-density-and-support
+
+Let $R$ be the normalized reference path law, $P=\mathcal L R$ the complete
+algorithm path law, and $\mathcal L=e^{-S_h}$ its likelihood. Use the same
+descriptor $\mathscr D$ as in {prf:ref}`thm-sm-path-descriptor-density` and set
+$\lambda=\mathscr D_\#R$, $\nu=\mathscr D_\#P$. Then
+
+$$
+\nu=a\lambda,\qquad
+a(y)=\mathbb E_R[\mathcal L\mid\mathscr D=y],\qquad \int a\,d\lambda=1.
+$$
+
+If the integrated field model has density $b$ against this same $\lambda$,
+with $\int|b|d\lambda<\infty$ and $Z_b=\int b\,d\lambda\ne0$, equality
+of all bounded observable expectations holds exactly when $b/Z_b=a$ almost
+everywhere. An integrable weighting of the direct samples represents that
+field functional exactly when $b=0$ almost everywhere on $\{a=0\}$.
+
+:::
+
+:::{prf:corollary} Support obstruction for frame-link sampling
+:label: cor-ym-flat-support
+
+On a finite graph containing a simple cycle, no integrable weighting of the
+frame links in {prf:ref}`prop-ym-recorded-frame-sector` represents a normalized
+independent-link field measure absolutely continuous with respect to product
+Haar measure. This includes integrable complex densities of nonzero total mass.
+
 :::
 
 :::{prf:definition} Wilson loop
@@ -25354,7 +26130,7 @@ For a reference action unit $\hbar_0$ and speed unit $c$, define the
 parameter proxy
 
 $$
- \widehat g_2^{\,2}
+ \widehat g_{2,\mathrm{clock}}^{\,2}
  =\frac{mc^2\tau}{\hbar_0}\left(\frac\rho{\epsilon_c}\right)^2.
 \tag{YM.29}
 $$
@@ -25363,6 +26139,25 @@ It is dimensionless. In units $c=\hbar_0=1$ it has the recorded dictionary
 form $m\tau\rho^2/\epsilon_c^2$. It equals a physical gauge coupling when
 action or correlation matching establishes that equality in the same
 normalization.
+:::
+
+:::{prf:proposition} Relation between the two weak-coupling proxies
+:label: prop-ym-weak-proxy-comparison
+
+Denote the $n=3$ proxy of {prf:ref}`def-sm-coupling-definition` by
+$\widehat g_{2,\mathrm{Cas}}^2=9\widehat\hbar/(8\widehat\epsilon_c^2)$.
+Use its scales $\ell_0,t_0,m_0$ and
+$\hbar_{\mathrm{eff}}=m\epsilon_c^2/(2\tau)$ from (YM.28). Then
+
+$$
+\widehat g_{2,\mathrm{Cas}}^2=\frac{9mt_0}{16m_0\tau},\qquad
+\frac{\widehat g_{2,\mathrm{clock}}^2}
+     {\widehat g_{2,\mathrm{Cas}}^2}
+=\frac{16m_0c^2\tau^2\rho^2}{9\hbar_0t_0\epsilon_c^2}.
+$$
+
+For positive scales they agree precisely when the displayed ratio is one.
+
 :::
 
 :::{prf:theorem} Dimensionless fitness-coupling proxy
@@ -25438,7 +26233,7 @@ channel-identification conditions.
 At fixed $m,c,\hbar_0$, the rescaling
 $\tau\mapsto s\tau$, $\epsilon_c\mapsto\sqrt s\epsilon_c$,
 $\rho\mapsto\sqrt s\rho$ preserves (YM.28) and $\rho/\epsilon_c$, and
-sends $\widehat g_2^{\,2}\mapsto s\widehat g_2^{\,2}$.
+sends $\widehat g_{2,\mathrm{clock}}^{\,2}\mapsto s\widehat g_{2,\mathrm{clock}}^{\,2}$.
 If an ultraviolet momentum is proportional to $1/\rho$, this power law
 has a different form from the logarithmic law (YM.27).
 :::
@@ -25606,6 +26401,53 @@ $$
 In particular, for $k>0$,
 $\mathbb E|F-\pi F|^k\le
 2(2C_*L^2)^{k/2}\Gamma(1+k/2)$.
+:::
+
+:::{prf:corollary} Uniform moments of centered empirical fluctuations
+:label: cor-ym-empirical-fluctuations
+
+Use the actual joint law $\pi_N$ covered by (YM.1), with a common $C_*$.
+For a real single-particle function $f$ with $\|\nabla f\|\le L_f$,
+define $F_N=N^{-1}\sum_i f(S_i)$ and
+$Z_N(f)=\sqrt N(F_N-\pi_NF_N)$. Then
+
+$$
+\begin{aligned}
+\operatorname{Var}_{\pi_N}F_N&\le C_*L_f^2/N,\\
+\log\mathbb E e^{tZ_N(f)}&\le C_*L_f^2t^2/2,\\
+\mathbb P(|Z_N(f)|\ge r)&\le2e^{-r^2/(2C_*L_f^2)},\\
+\mathbb E|Z_N(f)|^k&\le
+2(2C_*L_f^2)^{k/2}\Gamma(1+k/2)\quad(k>0).
+\end{aligned}
+$$
+
+For each fixed finite collection $f_1,\ldots,f_m$, the vectors
+$(Z_N(f_1),\ldots,Z_N(f_m))$ form a tight family in $\mathbb R^m$.
+The statements apply on the continuous state space of the cited LSI;
+status-dependent or masked observables use their established entropy and
+channel estimates in {prf:ref}`prop-sm-channel-estimate-routes`.
+
+:::
+
+:::{prf:proposition} Established fermionic generator and transport to field coordinates
+:label: prop-ym-fermionic-generator-transport
+
+Let $P_t$ be the strongly continuous contraction semigroup on the centered
+complete-swarm mode space in {prf:ref}`thm-lqft-record-fock-reconstruction`,
+with generator $L$. Its established antisymmetric replica lift has
+
+$$
+L^{(k)}(f_1\wedge\cdots\wedge f_k)
+=\sum_{r=1}^k f_1\wedge\cdots\wedge Lf_r\wedge\cdots\wedge f_k,
+\qquad f_r\in\operatorname{Dom}L,\qquad L^{(0)}=0.
+$$
+
+Let $K$ denote the represented generator and $\mathcal W$ a specified unitary
+onto a field Hilbert space. If $K_{\mathrm{field}}$ and
+$\mathcal W K\mathcal W^{-1}$ generate strongly continuous semigroups and
+agree on a common core, their semigroups, spectra, and transported bounded
+operator correlations agree.
+
 :::
 
 :::{prf:theorem} Covariance under a symmetry of the actual law
@@ -26066,6 +26908,24 @@ $\theta=0$ without adding another variable to that optimization problem.
 An inference about the physical strong-CP problem or the presence or absence
 of axion fields requires the additional physical identifications stated in
 {prf:ref}`thm-strong-cp-spectral`.
+:::
+
+:::{prf:remark} Dependency order of the Yang--Mills comparisons
+:label: rem-ym-proof-dependency-order
+
+The Fractal Set codec and record coverage precede the invariant-coordinate
+and measure isomorphisms. Frame-link flatness is finite matrix algebra.
+The complete-kernel likelihood precedes conditional descriptor integration,
+which in turn gives the field-density and support comparisons. The CAR and
+replica construction precedes its generator differentiation and the
+common-core comparison with any specified field evolution. Uniform
+ellipticity, full-gradient LSI, and channel fluctuation estimates enter with
+the laws, coefficient conventions, and domains already established upstream.
+The Wilson variation, independent-plaquette area law, and smooth-connection
+continuum limit apply to their specified link sectors. Reflection positivity
+and the limiting transfer gap apply to their stated path laws and operators.
+Thus no Wilson law, field Hamiltonian, or continuum conclusion is used to
+prove the record representation subsequently compared with it.
 :::
 
 ## 2_fractal_set/08_twistor_formulation.md

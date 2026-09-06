@@ -22,14 +22,14 @@ def test_default_config():
 
 def test_covariance_config_defaults():
     cfg = CovarianceConfig()
-    assert cfg.method == "uncorrelated"
+    assert cfg.method == "block_jackknife"
     assert cfg.n_bootstrap == 200
 
 
 def test_channel_fit_config_defaults():
     cfg = ChannelFitConfig()
     assert cfg.tmin == 2
-    assert cfg.nexp == 2
+    assert cfg.nexp == 1
     assert cfg.use_log_dE is True
 
 

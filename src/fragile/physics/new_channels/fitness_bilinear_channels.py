@@ -38,6 +38,7 @@ from fragile.physics.new_channels.meson_phase_channels import (
 )
 from fragile.physics.qft_utils import resolve_3d_dims, resolve_frame_indices
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.qft_utils.statistics import attach_statistics, record_lag
 
 
 @dataclass
@@ -309,6 +310,16 @@ def compute_fitness_bilinear_from_color(
     ax_connected = torch.zeros(n_lags, dtype=torch.float32, device=device)
     counts = torch.zeros(n_lags, dtype=torch.int64, device=device)
 
+    # Origin-resolved lag contributions, so the correlators can be fitted with
+    # measured (block-jackknife) uncertainties like the other pair channels.
+    origin_counts = torch.zeros(t_total, n_lags, device=device, dtype=torch.float64)
+    origin_ps_raw = torch.zeros_like(origin_counts)
+    origin_ps_connected = torch.zeros_like(origin_counts)
+    origin_sv_raw = torch.zeros_like(origin_counts)
+    origin_sv_connected = torch.zeros_like(origin_counts)
+    origin_ax_raw = torch.zeros_like(origin_counts)
+    origin_ax_connected = torch.zeros_like(origin_counts)
+
     # Source-pair propagation loop
     for lag in range(effective_lag + 1):
         source_len = t_total - lag
@@ -349,14 +360,34 @@ def compute_fitness_bilinear_from_color(
         src_ax_l = source_ax[:source_len]
 
         # Raw correlators: <O_src * O_sink>
-        ps_raw[lag] = (src_ps_l * sink_ps)[valid_pair].mean().float()
-        sv_raw[lag] = (src_sv_l * sink_sv)[valid_pair].mean().float()
-        ax_raw[lag] = (src_ax_l * sink_ax)[valid_pair].mean().float()
+        ps_raw_prod = src_ps_l * sink_ps
+        sv_raw_prod = src_sv_l * sink_sv
+        ax_raw_prod = src_ax_l * sink_ax
+        ps_raw[lag] = ps_raw_prod[valid_pair].mean().float()
+        sv_raw[lag] = sv_raw_prod[valid_pair].mean().float()
+        ax_raw[lag] = ax_raw_prod[valid_pair].mean().float()
 
         # Connected correlators: <(O_src - <O>) * (O_sink - <O>)>
-        ps_connected[lag] = ((src_ps_l - mean_ps) * (sink_ps - mean_ps))[valid_pair].mean().float()
-        sv_connected[lag] = ((src_sv_l - mean_sv) * (sink_sv - mean_sv))[valid_pair].mean().float()
-        ax_connected[lag] = ((src_ax_l - mean_ax) * (sink_ax - mean_ax))[valid_pair].mean().float()
+        ps_conn_prod = (src_ps_l - mean_ps) * (sink_ps - mean_ps)
+        sv_conn_prod = (src_sv_l - mean_sv) * (sink_sv - mean_sv)
+        ax_conn_prod = (src_ax_l - mean_ax) * (sink_ax - mean_ax)
+        ps_connected[lag] = ps_conn_prod[valid_pair].mean().float()
+        sv_connected[lag] = sv_conn_prod[valid_pair].mean().float()
+        ax_connected[lag] = ax_conn_prod[valid_pair].mean().float()
+
+        record_lag(origin_ps_raw, origin_counts, lag, ps_raw_prod, valid_pair)
+        record_lag(origin_sv_raw, origin_counts, lag, sv_raw_prod, valid_pair)
+        record_lag(origin_ax_raw, origin_counts, lag, ax_raw_prod, valid_pair)
+        record_lag(origin_ps_connected, origin_counts, lag, ps_conn_prod, valid_pair)
+        record_lag(origin_sv_connected, origin_counts, lag, sv_conn_prod, valid_pair)
+        record_lag(origin_ax_connected, origin_counts, lag, ax_conn_prod, valid_pair)
+
+    attach_statistics(ps_raw, origin_ps_raw, origin_counts)
+    attach_statistics(sv_raw, origin_sv_raw, origin_counts)
+    attach_statistics(ax_raw, origin_ax_raw, origin_counts)
+    attach_statistics(ps_connected, origin_ps_connected, origin_counts)
+    attach_statistics(sv_connected, origin_sv_connected, origin_counts)
+    attach_statistics(ax_connected, origin_ax_connected, origin_counts)
 
     ps_final = ps_connected if use_connected else ps_raw
     sv_final = sv_connected if use_connected else sv_raw

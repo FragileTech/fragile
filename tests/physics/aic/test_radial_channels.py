@@ -38,9 +38,9 @@ class TestParityGammaMatrices:
         old = _build_gamma_matrices(dim=3, device=device, dtype=dtype)
         new = new_gamma(dim=3, device=device, dtype=dtype)
 
-        assert set(old.keys()) == set(
-            new.keys()
-        ), f"Key mismatch: {set(old.keys()) ^ set(new.keys())}"
+        assert set(old.keys()) == set(new.keys()), (
+            f"Key mismatch: {set(old.keys()) ^ set(new.keys())}"
+        )
         for key in old:
             assert torch.equal(old[key], new[key]), f"gamma[{key!r}] differs for dim=3"
 
@@ -50,9 +50,9 @@ class TestParityGammaMatrices:
         old = _build_gamma_matrices(dim=4, device=device, dtype=dtype)
         new = new_gamma(dim=4, device=device, dtype=dtype)
 
-        assert set(old.keys()) == set(
-            new.keys()
-        ), f"Key mismatch: {set(old.keys()) ^ set(new.keys())}"
+        assert set(old.keys()) == set(new.keys()), (
+            f"Key mismatch: {set(old.keys()) ^ set(new.keys())}"
+        )
         for key in old:
             assert torch.equal(old[key], new[key]), f"gamma[{key!r}] differs for dim=4"
 
@@ -90,7 +90,15 @@ class TestParityApplyProjection:
         old_result = _apply_projection(channel, color_i, color_j, gamma_old)
         new_result = new_projection(channel, color_i, color_j, gamma_new)
 
-        assert_tensor_or_nan_equal(old_result, new_result, label=f"projection({channel})")
+        if channel == "pseudoscalar":
+            # The corrected definition is Im(c_i†c_j), not the legacy
+            # diagonal gamma projection. Verify its physical parity directly.
+            expected = (color_i.conj() * color_j).sum(-1).imag
+            torch.testing.assert_close(new_result, expected)
+            transformed = new_projection(channel, -color_i.conj(), -color_j.conj(), gamma_new)
+            torch.testing.assert_close(transformed, -new_result)
+        else:
+            assert_tensor_or_nan_equal(old_result, new_result, label=f"projection({channel})")
 
 
 # ---------------------------------------------------------------------------

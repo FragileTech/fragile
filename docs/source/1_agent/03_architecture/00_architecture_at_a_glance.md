@@ -3,15 +3,16 @@
 
 ## TLDR
 
-- The representation stack is the TopoEncoder (Attentive Atlas) with typed latents: chart id $K$,
-  nuisance $z_n$, texture $z_{\mathrm{tex}}$, and geometry $z_{\mathrm{geo}}$.
-- Routing is chart-based (CovariantChartRouter or dot-product fallback) and produces chart weights
+- The representation stack is the TopoEncoder (Attentive Atlas) with typed latents: macro state
+  $K=(K_{\mathrm{chart}},K_{\mathrm{code}})$, nuisance $z_n$, texture $z_{\mathrm{tex}}$, and the
+  derived decoder input $z_{\mathrm{geo}}=c_{\mathrm{bar}}+z_{q,\mathrm{st}}+z_n$.
+- Routing is chart-based (CovariantChartRouter or hyperbolic-distance fallback) and produces chart weights
   that gate codebooks and decoder projectors.
 - Each chart has its own codebook; optional SoftEquivariant metrics and soft straight-through
   assignments shape distances and gradients.
 - Decoding uses chart projectors + a shared renderer, with a separate texture residual path.
-- Training combines reconstruction + VQ + routing/consistency terms, with optional jump and
-  supervised topology losses.
+- Training combines reconstruction + VQ + routing/consistency terms, tiered regularizers, and optional
+  jump and supervised topology losses.
 
 ## Pipeline Overview
 
@@ -26,14 +27,19 @@ flowchart TD
         V --> Router
         Router --> Wenc["w_enc"]
         Router --> Kchart["K_chart"]
+        Kchart --> Kcode["K_code"]
         Wenc --> Cbar["c_bar"]
         V --> Vlocal["v_local = v - c_bar"]
         Cbar --> Vlocal
         Codebook["codebook per chart"] --> VQ["per-chart VQ\n(+ soft equiv metric)"]
         Vlocal --> VQ
-        VQ --> Zgeo["z_geo"]
+        VQ --> ZqSt["z_q_st"]
+        ZqSt --> Zgeo["z_geo = c_bar + z_q_st + z_n"]
+        Cbar --> Zgeo
+        Zn --> Zgeo
         VQ --> Ztex["z_tex"]
         VQ --> Zn["z_n"]
+        VQ --> ZnAll["z_n_all_charts"]
     end
 
     subgraph DEC["Decoder (PrimitiveTopologicalDecoder)"]
@@ -45,7 +51,8 @@ flowchart TD
         Tex --> Add
     end
 
-    Zn --> Jump["Jump operator (optional)"]
+    ZnAll --> Jump["Jump operator (optional)"]
+    Wenc --> Jump
     Wenc --> Sup["Supervised topology (optional)"]
     Zgeo --> Sup
     Wenc --> Cls["Invariant classifier (optional)"]

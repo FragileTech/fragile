@@ -66,14 +66,15 @@ Definition {prf:ref}`def-total-disentangled-loss`
 :label: def-f-closure-loss
 
 $$
-\mathcal{L}_{\text{entropy}} = -\frac{1}{B}\sum_{b=1}^{B}\sum_{k=1}^{N_c} w_{bk}\,\log(w_{bk} + \epsilon)
+\mathcal{L}_{\text{entropy}} = \log N_c - \frac{1}{B}\sum_{b=1}^{B}\sum_{k=1}^{N_c} w_{bk}\,\log(w_{bk} + \epsilon)
 $$
 
 **Parameters:**
 - $w_{bk}$ – router weights over charts
 - $N_c$ – number of charts
 
-**Purpose:** Penalizes diffuse routing. Lower entropy corresponds to sharper chart assignments.
+**Purpose:** Raises per-sample routing entropy and discourages chart collapse. Batch-level usage and
+diversity losses are still needed to prevent dead charts.
 
 **Units:** $[\mathrm{nat}]$
 
@@ -346,7 +347,7 @@ $$
 
 **Units:** $[\mathrm{nat}]$
 
-**Source:** {ref}`Section 3.2 <sec-the-entropy-regularized-objective-functional>`, Definition {prf:ref}`def-instantaneous-objective`
+**Source:** {ref}`Section 3.2 <sec-the-entropy-regularized-objective-functional>`, Definition {prf:ref}`def-f-instantaneous-objective`
 
 :::
 
@@ -383,7 +384,8 @@ $$
 
 **Units:** Dimensionless.
 
-**Source:** {ref}`Section 3.2 <sec-runtime-diagnostics-the-closure-ratio>`, Definition {prf:ref}`def-closure-ratio`
+**Source:** {ref}`Runtime routing diagnostics <sec-runtime-diagnostics-the-closure-ratio>`,
+Definition {prf:ref}`def-f-closure-ratio`
 
 :::
 
@@ -421,7 +423,7 @@ $$
 $$
 
 **Components:**
-- $d\Phi$ – Gradient/conservative component (optimizable via value function $V = \Phi$)
+- $d\Phi$ – Gradient/conservative reward component (the control-loop cost critic is $V=-\Phi$)
 - $\delta\Psi$ – Solenoidal/rotational component (cyclic reward structure)
 - $\eta$ – Harmonic component (topological cycles from manifold holes)
 
@@ -476,24 +478,27 @@ $$
 (sec-appendix-f-multi-agent-losses)=
 ## F.5 Multi-Agent and Gauge Losses
 
-These govern multi-agent alignment ({ref}`Section 37 <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`).
+These govern multi-agent alignment ({ref}`the inter-subjective metric chapter <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`).
 
 :::{prf:definition} F.5.1 (Synchronization Potential)
 :label: def-f-sync-potential
 
 $$
-\mathcal{L}_{\text{sync}} = \beta \Psi_{\text{sync}} = \beta \int_{\partial\Omega} \mathcal{F}_{AB}^{\mu\nu} \mathcal{F}_{AB\,\mu\nu} \, dA
+\mathcal{L}_{\text{sync}} = \beta \Psi_{\text{sync}},
+\qquad
+\Psi_{\text{sync}}=\int_{\mathcal{D}_{AB}}\operatorname{tr}\!\left(\mathcal{F}_{AB}\wedge *_{{G_{AB}}}\mathcal{F}_{AB}\right)
 $$
 
 **Parameters:**
 - $\beta$ – coupling strength
-- $\mathcal{F}_{AB}$ – Locking curvature (geometric disagreement between agents $A$ and $B$)
+- $\mathcal{F}_{AB}$ – Locking curvature of the selected relative connection
 
-**Purpose:** Penalizes disagreement in representations between agents. Drives gauge locking (synchronized metrics). In the strong coupling limit ($\beta \to \infty$), forces $\mathcal{F}_{AB} \to 0$ (perfect synchronization).
+**Purpose:** Penalizes curvature of the selected relative connection and can drive gauge locking under the hypotheses
+of the conditional strong-coupling proposition. It does not by itself synchronize the private metrics.
 
 **Units:** $[\mathrm{nat}]$
 
-**Source:** {ref}`Section 37 <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`
+**Source:** {ref}`the inter-subjective metric chapter <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`
 
 :::
 
@@ -660,7 +665,7 @@ $$
 
 **Flat limit:** When $G_{ij}^{\text{obs}} = \delta_{ij}$, recovers $\|\hat{x}^A - x\|^2 + \|\hat{x}^B - x\|^2 + \beta\Psi_{\text{sync}}$.
 
-**Source:** {ref}`Section 37 <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`
+**Source:** {ref}`the inter-subjective metric chapter <sec-the-inter-subjective-metric-gauge-locking-and-the-emergence-of-objective-reality>`
 
 :::
 
@@ -755,7 +760,30 @@ $$
 
 These losses enforce geometric laws derived from capacity constraints ({ref}`Section 18 <sec-the-reward-field-value-forms-and-hodge-geometry>`, {ref}`Section 20 <sec-wfr-dynamics-with-memory-sources>`).
 
-:::{prf:definition} F.11.1 (WFR Consistency Loss)
+:::{prf:definition} F.11.1 (Metric-law residual)
+:label: def-f-efe-loss
+
+Let
+
+$$
+E_{ij}:=R_{ij}-\frac12R\,G_{ij}+\Lambda G_{ij}-\kappa T_{ij}.
+$$
+
+The coordinate-invariant metric-law loss is
+
+$$
+\mathcal{L}_{\mathrm{EFE}}
+:=\int_{\mathcal Z}G^{ik}G^{jl}E_{ij}E_{kl}\,d\mu_G,
+$$
+
+or its minibatch approximation. It measures violation of the curvature--risk
+stationarity identity; it does not replace the separate capacity diagnostic.
+
+**Source:** {ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`
+
+:::
+
+:::{prf:definition} F.11.2 (WFR Consistency Loss)
 :label: def-f-wfr-consistency
 
 $$
@@ -779,15 +807,17 @@ $$
 :::{prf:definition} F.11.2 (Critic TD Loss with PDE Regularization)
 :label: def-f-critic-td
 
+In the control-loop cost convention, write $c_t:=-r_t$ and $\rho_c:=-\rho_r$. The critic loss is
+
 $$
-\mathcal{L}_{\text{critic}} = \|\text{TD-Error}\|^2 + \lambda_{\text{PDE}} \| -\Delta_G V + \kappa^2 V - \rho_r \|^2
+\mathcal{L}_{\text{critic}} = \|c_t + \gamma V(s') - V(s)\|^2 + \lambda_{\text{PDE}} \| -\Delta_G V + \kappa^2 V - \rho_c \|^2.
 $$
 
 **Parameters:**
-- TD-Error $= r + \gamma V(s') - V(s)$ – temporal difference error
+- TD-Error $= c + \gamma V(s') - V(s)$ – cost-convention temporal difference error
 - $\Delta_G$ – Laplace-Beltrami operator on manifold
-- $\kappa^2 = -\ln \gamma$ – screening mass from discount factor
-- $\rho_r$ – reward density
+- $\lambda = -\ln\gamma/\Delta t$ and $\kappa^2=\lambda/T_c$ – stationary-diffusion screening coefficient from the discount factor
+- $\rho_c=-\rho_r$ – cost density (the reward-side equation uses $\Phi=-V$ and $\rho_r$)
 
 **Purpose:** Combines TD learning with Helmholtz PDE regularization. The PDE term enforces that the critic satisfies the continuum Bellman equation.
 
@@ -890,6 +920,6 @@ All distance-based losses use the metric tensor $G_{ij}$. Flat limits recover st
 | **Governor Regret** | 26 | $\sum_t (\mathcal{L}_{\text{task}} + \gamma \text{ReLU}(C_k)^2)$ | Meta-learning objective |
 | **Causal Info** | 29 | $\mathbb{E}[D_{\text{KL}}(p(\theta_W \mid z') \| p(\theta_W))]$ | Exploration via EIG |
 | **Ontological Stress** | 33 | $(z_{\text{tex}}^{(\ell)})^i G^{(\ell)}_{ij} (z_{\text{tex}}^{(\ell)})^j$ | Texture predictability |
-| **Sync Potential** | 37 | $\beta \int \mathcal{F}_{AB}^2 dA$ | Multi-agent alignment |
+| **Sync Potential** | Gauge chapter | $\beta\Psi_{\text{sync}}$ on $\mathcal{D}_{AB}$ | Relative-gauge alignment |
 | **Joint Prediction** | 37 | $d_G(\hat{x}^A, x)^2 + d_G(\hat{x}^B, x)^2$ | Multi-agent world model |
 | **Waste Quotient** | 38 | $1 - \Delta I / \int \dot{\mathcal{M}} dt$ | Consensus efficiency |

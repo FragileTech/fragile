@@ -8,6 +8,7 @@ import torch
 
 from fragile.physics.mass_extraction.config import (
     ChannelGroupConfig,
+    CovarianceConfig,
     MassExtractionConfig,
 )
 from fragile.physics.mass_extraction.pipeline import (
@@ -16,6 +17,22 @@ from fragile.physics.mass_extraction.pipeline import (
 )
 
 from .conftest import KNOWN_MASS_0, make_synthetic_correlator, MockPipelineResult
+
+
+def test_unselected_channel_without_statistics_does_not_block_fit():
+    from fragile.physics.operators.pipeline import PipelineResult
+    from fragile.physics.qft_utils.statistics import attach_statistics, series_statistics
+
+    series = torch.randn(100, generator=torch.Generator().manual_seed(13))
+    stats = series_statistics(series, 12)
+    corr = attach_statistics(stats.mean(), stats.sums, stats.counts)
+    result = extract_masses(
+        PipelineResult(correlators={"scalar": corr, "scalar_twistor": torch.ones(13)}),
+        MassExtractionConfig(
+            channel_groups=[ChannelGroupConfig(name="scalar", correlator_keys=["scalar"])]
+        ),
+    )
+    assert set(result.data) == {"scalar"}
 
 
 def test_auto_detect_channel_groups():
@@ -50,6 +67,7 @@ def test_extract_masses_end_to_end():
     )
 
     config = MassExtractionConfig(
+        covariance=CovarianceConfig(method="assumed_relative"),
         channel_groups=[
             ChannelGroupConfig(
                 name="scalar",
@@ -64,9 +82,9 @@ def test_extract_masses_end_to_end():
     assert "scalar" in result.channels
     extracted = gvar.mean(result.channels["scalar"].ground_state_mass)
     # Should recover ground state mass within ~30%
-    assert (
-        abs(extracted - mass0) / mass0 < 0.3
-    ), f"Extracted mass {extracted:.4f} too far from true {mass0}"
+    assert abs(extracted - mass0) / mass0 < 0.3, (
+        f"Extracted mass {extracted:.4f} too far from true {mass0}"
+    )
     assert result.diagnostics.chi2_per_dof > 0
 
 
@@ -80,14 +98,18 @@ def test_extract_masses_auto_detect():
         operators={},
     )
 
-    result = extract_masses(pr)
+    result = extract_masses(
+        pr, MassExtractionConfig(covariance=CovarianceConfig(method="assumed_relative"))
+    )
     assert len(result.channels) > 0
 
 
 def test_extract_masses_empty():
     """Empty pipeline result should return empty results."""
     pr = MockPipelineResult(correlators={}, operators={})
-    result = extract_masses(pr)
+    result = extract_masses(
+        pr, MassExtractionConfig(covariance=CovarianceConfig(method="assumed_relative"))
+    )
     assert len(result.channels) == 0
 
 
@@ -221,7 +243,9 @@ def test_extract_masses_mode_suffixed():
         operators={},
     )
 
-    result = extract_masses(pr)
+    result = extract_masses(
+        pr, MassExtractionConfig(covariance=CovarianceConfig(method="assumed_relative"))
+    )
     assert "scalar" in result.channels
     assert "vector" in result.channels
     # scalar group should have 2 variant keys
@@ -272,7 +296,9 @@ def test_extract_masses_twistor_mode_suffixed():
         operators={},
     )
 
-    result = extract_masses(pr)
+    result = extract_masses(
+        pr, MassExtractionConfig(covariance=CovarianceConfig(method="assumed_relative"))
+    )
 
     assert "scalar" in result.channels
     assert result.channels["scalar"].variant_keys == ["scalar_twistor"]

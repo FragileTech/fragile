@@ -732,7 +732,7 @@ def _symbol_usage_stats(K_chart, K_code_dyn, num_charts, codes_per_chart):
 
 ### Closure Ratio Monitoring
 
-The closure ratio ({prf:ref}`def-closure-ratio`) measures how well the transition model predicts
+The closure ratio ({prf:ref}`def-f-closure-ratio`) measures how well the transition model predicts
 the next macro state. In the training loop, the key diagnostics are:
 
 - **`dyn_trans_ce`:** Cross-entropy of the transition predictions. Should decrease over training.

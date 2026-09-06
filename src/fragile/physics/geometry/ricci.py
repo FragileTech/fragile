@@ -141,12 +141,14 @@ def compute_ricci_proxy_full_metric(
     )
 
     lap = torch.diagonal(hess_u, dim1=1, dim2=2).sum(dim=1)
-    g_inv_grad = torch.linalg.solve(metric_tensors, grad_u.unsqueeze(-1)).squeeze(-1)
-    grad_norm_sq = (grad_u * g_inv_grad).sum(dim=1)
+    # For g = e^{2u} delta the scalar curvature is
+    #   R = -2 (d-1) e^{-2u} [ Laplacian(u) + (d-2)/2 |grad u|^2 ],
+    # with the flat-metric gradient norm (the conformal factor is applied once).
+    grad_norm_sq = (grad_u * grad_u).sum(dim=1)
 
     scale = torch.exp(-2.0 * u) if include_conformal_factor else 1.0
     d = float(spatial_dim)
-    return -2.0 * (d - 1.0) * scale * (lap + (d - 2.0) * grad_norm_sq)
+    return -2.0 * (d - 1.0) * scale * (lap + 0.5 * (d - 2.0) * grad_norm_sq)
 
 
 def compute_ricci_tensor_proxy(
@@ -221,8 +223,7 @@ def compute_ricci_tensor_proxy_full_metric(
     )
 
     lap = torch.diagonal(hess_u, dim1=1, dim2=2).sum(dim=1)
-    g_inv_grad = torch.linalg.solve(metric_tensors, grad_u.unsqueeze(-1)).squeeze(-1)
-    grad_norm_sq = (grad_u * g_inv_grad).sum(dim=1)
+    grad_norm_sq = (grad_u * grad_u).sum(dim=1)
 
     d = float(spatial_dim)
     eye = torch.eye(spatial_dim, device=positions.device, dtype=positions.dtype).unsqueeze(0)
@@ -230,7 +231,9 @@ def compute_ricci_tensor_proxy_full_metric(
     ricci_tensor = -(d - 2.0) * (hess_u - grad_u[:, :, None] * grad_u[:, None, :])
     ricci_tensor = ricci_tensor - (lap + (d - 2.0) * grad_norm_sq)[:, None, None] * eye
 
+    # Trace of the tensor above with g^{-1} = e^{-2u} delta:
+    # R = -2 (d-1) e^{-2u} [ Laplacian(u) + (d-2)/2 |grad u|^2 ].
     scale = torch.exp(-2.0 * u) if include_conformal_factor else 1.0
-    ricci_scalar = -2.0 * (d - 1.0) * scale * (lap + (d - 2.0) * grad_norm_sq)
+    ricci_scalar = -2.0 * (d - 1.0) * scale * (lap + 0.5 * (d - 2.0) * grad_norm_sq)
 
     return ricci_tensor, ricci_scalar

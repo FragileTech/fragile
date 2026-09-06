@@ -8,7 +8,7 @@
   resolves the concern.
 - It is intentionally blunt: if the responses are unconvincing, the framework should be treated skeptically.
 
-This appendix addresses forty rigorous objections that a skeptical reviewer might raise. Each question is stated in its strongest form; the answers point to specific mechanisms and sections. If the responses are unconvincing, the framework deserves skepticism.
+This appendix addresses fifty rigorous objections that a skeptical reviewer might raise. Each question is stated in its strongest form; the answers point to specific mechanisms and sections. If the responses are unconvincing, the framework deserves skepticism.
 
 (rb-fragile-lexicon)=
 :::{admonition} Researcher Bridge: The Fragile Agent Lexicon
@@ -64,9 +64,9 @@ No. We use the **Physics-Informed Neural Network (PINN)** paradigm: the neural n
 3. **Implicit Green's function.** Training on temporal TD-error teaches the network the Green's function of the operator without explicitly inverting the Laplacian.
 
 (sec-appendix-d-real-time-latency)=
-### D.1.3 Real-Time Latency (The 29 Checks)
+### D.1.3 Real-Time Latency (The Registered Checks)
 
-**Objection:** *Evaluating 29 diagnostic nodes per step—some involving Jacobian spectral norms or counterfactual rollouts—creates unacceptable latency for millisecond-scale robotics or trading.*
+**Objection:** *Evaluating every registered diagnostic at every step—some involving Jacobian spectral norms or counterfactual rollouts—creates unacceptable latency for millisecond-scale robotics or trading.*
 
 **Response:**
 
@@ -99,7 +99,7 @@ The **Universal Governor** ({ref}`Section 3.5 <sec-adaptive-multipliers-learned-
 (sec-appendix-d-multi-objective-gradient-fighting)=
 ### D.2.1 Multi-Objective Gradient Fighting
 
-**Objection:** *With dozens of loss terms (task, 29 constraints, entropy, consistency), gradient interference will produce Pareto-suboptimal deadlocks or oscillatory instability.*
+**Objection:** *With dozens of loss terms (task, registered constraints, entropy, consistency), gradient interference will produce Pareto-suboptimal deadlocks or oscillatory instability.*
 
 **Response:**
 
@@ -152,7 +152,7 @@ We enforce **Information-Theoretic Liveness**, not just a loss term.
 
 1. **Codebook resetting (Lazarus Protocol).** If a code $k$ has usage frequency below threshold $\epsilon$ for window $W$, it is hard-reset to a random encoder output from the current batch. This guarantees 100% codebook utilization. See {ref}`Section 3.3 <sec-defect-functionals-implementing-regulation>`.
 
-2. **Entropy monitoring.** Theorem {prf:ref}`thm-information-stability-window-operational` requires $H(K) \approx \log |\mathcal{K}|$. If entropy drops (collapse), **ScaleCheck (Node 4)** fails. The Governor increases the commitment loss $\beta$ and injects encoder noise until entropy is restored.
+2. **Entropy monitoring.** Codebook liveness keeps the marginal usage entropy $H(\bar p(K))$ near $\log |\mathcal{K}|$; this is separate from the operational coupling window (Definition {prf:ref}`thm-information-stability-window-operational`), which bounds the macro posterior entropy $H(p_t)$ from above and enforces a positive grounding margin. If usage entropy drops (collapse), the codebook-liveness check and its reset policy respond; the window criterion is not a code-usage setpoint.
 
 3. **Geometric separation.** We apply **VICReg** regularization on embeddings *before* quantization, forcing the continuous space to span the full codebook. See {ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`.
 
@@ -345,11 +345,19 @@ We enforce **Liveness** via ergodicity and thermodynamic cycles.
 
 The framework makes specific, counter-intuitive predictions.
 
-1. **Prediction 1: Pitchfork bifurcation.** Learning should exhibit a discrete phase transition at critical temperature $T_c$ where latent symmetry spontaneously breaks ({ref}`Section 21.2 <sec-policy-control-field>`). *Falsification:* If geometry-level diagnostics (e.g., eigen/singular-value spectra of $G$ or latent covariance) show no symmetry-breaking signature or eigenvalue gap where the model predicts one, the symmetry-breaking model is wrong. The scalar loss can still decrease smoothly.
+1. **Prediction 1: finite-time angular crossover.** In the $D=2$ overdamped model, the local diagnostic
+   $\mathrm{Pe}_\theta(r)$ compares policy drift with angular diffusion ({ref}`Section 21.2 <sec-policy-control-field>`).
+   It predicts a crossover near $\mathrm{Pe}_\theta\approx1$ for a declared radius and observation window, not a universal
+   phase transition. *Falsification:* report directional statistics and $\mathrm{Pe}_\theta$ over that window; a persistent
+   mismatch refutes the selected SDE or its calibration.
 
 2. **Prediction 2: Texture immunity.** The Texture Firewall (Node 29) decouples high-frequency residuals from control. *Falsification:* Apply an adversarial patch (high-frequency noise) that does not alter the macro-state $K$. If the policy $\pi(a|z)$ changes significantly despite $z_n$ remaining constant, the Firewall is refuted.
 
-3. **Prediction 3: Screening-length decay.** Value propagation decays exponentially with geodesic distance at rate $\kappa = \lambda / c_{\text{info}}$ with $\lambda = -\ln\gamma / \Delta t$ (natural units: $\kappa = -\ln\gamma$) (Proposition {prf:ref}`prop-green-s-function-decay`, Corollary {prf:ref}`cor-discount-as-screening-length`). *Falsification:* Measure empirical value correlation as a function of latent distance. If decay does not match $\exp(-\kappa \cdot d_G(z, z'))$, the Helmholtz-Bellman correspondence is false.
+3. **Prediction 3: Screening-length decay.** In the stationary diffusion convention, the screened response has
+   $\kappa^2=\lambda/T_c$ with $\lambda=-\ln\gamma/\Delta t$ (Proposition
+   {prf:ref}`prop-green-s-function-decay`, Corollary {prf:ref}`cor-discount-as-screening-length`). *Falsification:* measure
+   empirical value correlation as a function of latent distance and compare it with the Green kernel for the selected
+   metric and boundary conditions. A propagation-based $c_{\text{info}}$ scale requires a separately derived model.
 
 (sec-appendix-d-philosophical-naming-premise)=
 ## D.6 The Philosophical and Naming Premise
@@ -374,7 +382,7 @@ The name **Fragile** is an intentional portmanteau encoding the four pillars of 
 
 4. **FRAGILE (Fail-Fast Design).**
    - **Learning to be Robust:** The agent starts "thin"—few parameters, sparse latent bundle. Robustness is not given but *earned* by navigating the Sieve.
-   - **Fail Loudly:** The most dangerous AI failure is silent. The 60 diagnostic nodes ({ref}`Section 3 <sec-diagnostics-stability-checks>`) ensure constraint violations trigger immediate halts or alerts.
+   - **Fail Loudly:** The most dangerous AI failure is silent. The registered diagnostic nodes ({ref}`Section 3 <sec-diagnostics-stability-checks>`) ensure declared constraint violations trigger immediate halts or alerts.
    - **Path to Robustness:** We do not treat the agent as a magical black box with infinite capacity that will inevitably converge. Imperfection and failure are first-class citizens; acknowledging fragility is the only way to ensure behavior remains auditable and predictable, with explicit recovery mechanisms ({ref}`Section 6 <sec-interventions>`).
 
 The name encodes a design philosophy: start with explicit fragility, instrument it completely, and build robustness through verified operation.
@@ -407,7 +415,10 @@ charges), is there any room for genuine "agency," or is the agent just a sophist
 
 The framework does not eliminate agency—it *geometrizes* it.
 
-1. **The Policy as symmetry-breaking.** At the origin (Semantic Vacuum), the system is $SO(D)$-symmetric: all directions are equally likely. The policy $\pi$ breaks this angular symmetry by selecting a direction during the initial expansion ({ref}`Section 21.2 <sec-policy-control-field>`, Theorem {prf:ref}`thm-angular-symmetry-breaking`). This is not passive resistance; it is an active *choice* of direction, analogous to spontaneous magnetization.
+1. **The Policy as directional selection.** At the origin (Semantic Vacuum), the model is $SO(D)$-symmetric. During
+   finite-time radial expansion, a realized policy kick can bias the angular diffusion toward a direction ({ref}`Section
+   21.2 <sec-policy-control-field>`, Theorem {prf:ref}`thm-angular-symmetry-breaking`). This is an intervention in a
+   stochastic trajectory, not a claim of spontaneous magnetization or a phase transition.
 
 2. **The Equations of Motion are not deterministic.** Definition {prf:ref}`def-bulk-drift-continuous-flow` defines a *stochastic* differential equation with diffusion term $\sigma dW$. The PDE (Helmholtz) determines the *expected* value landscape; the agent navigates this landscape under noise. Stochasticity provides the "degrees of freedom" for exploration.
 
@@ -421,13 +432,13 @@ The framework does not eliminate agency—it *geometrizes* it.
 (sec-appendix-d-the-meta-tuning-paradox)=
 ### D.7.1 The Meta-Tuning Paradox
 
-**Objection:** *The Sieve contains 60 diagnostic nodes. Even with the Universal Governor, doesn't this just move the "hyperparameter hell" problem up one level? Who tunes the Governor's initial constraints?*
+**Objection:** *The Sieve contains many registered diagnostic nodes. Even with the Universal Governor, doesn't this just move the "hyperparameter hell" problem up one level? Who tunes the Governor's initial constraints?*
 
 **Response:**
 
 The Governor reduces hyperparameter count, not shifts it.
 
-1. **From 60 thresholds to 3 meta-parameters.** The Universal Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) is a bilevel optimization: the inner loop is the agent; the outer loop adjusts Lagrange multipliers $\lambda_i$ via dual ascent. The Governor has only 3 meta-parameters: (a) initial $\lambda_0$ (typically uniform), (b) dual learning rate $\eta_\lambda$, (c) constraint tolerance $\epsilon$. All 60 node thresholds are *derived* from these via the Lagrangian.
+1. **From node-specific thresholds to 3 meta-parameters.** The Universal Governor ({ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>`) is a bilevel optimization: the inner loop is the agent; the outer loop adjusts Lagrange multipliers $\lambda_i$ via dual ascent. The Governor has only 3 meta-parameters: (a) initial $\lambda_0$ (typically uniform), (b) dual learning rate $\eta_\lambda$, (c) constraint tolerance $\epsilon$. Thresholds are *derived* from these via the Lagrangian only for the registered constraints included in that implementation.
 
 2. **Self-tuning dynamics.** Constraints that are satisfied have $\lambda_i \to 0$ automatically—the Governor "turns off" passing checks. Constraints that are violated see $\lambda_i$ increase until the violation is corrected. This is not "tuning"; it is a dynamical equilibrium.
 
@@ -463,9 +474,9 @@ We use numerically stable hyperbolic primitives.
 
 1. **Poincare ball parameterization.** All operations stay inside the unit ball $|z| < 1$. The Christoffel symbols (Proposition {prf:ref}`prop-explicit-christoffel-symbols-for-poincare-disk`) are computed in closed form; no iterative inversion is required.
 
-2. **Geodesic BAOAB integrator.** The BAOAB splitting scheme ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`) is a symplectic integrator designed for Riemannian manifolds. Proposition {prf:ref}`prop-baoab-preserves-boltzmann` proves it preserves the Boltzmann distribution to $O(\Delta t^2)$. Symplectic integrators do not accumulate energy drift over long trajectories.
+2. **Geodesic BAOAB integrator.** The BAOAB splitting scheme ({ref}`Section 22.4 <sec-the-geodesic-baoab-integrator>`) has a symplectic deterministic Hamiltonian substep when the stated smoothness and exact-flow hypotheses hold. The full method includes a stochastic Ornstein--Uhlenbeck thermostat for $\gamma>0$, so it is not a symplectic map. Proposition {prf:ref}`prop-baoab-preserves-boltzmann` gives the conditional $O(\Delta t^2)$ stationary-distribution statement; bounded long-time energy error belongs to the deterministic symplectic limit and its step-size hypotheses.
 
-3. **Boundary clamping.** States approaching $|z| > 1 - \epsilon$ are projected back via the exponential map. This "soft wall" prevents numerical overflow without introducing discontinuities.
+3. **Boundary clamping.** States approaching $|z| > 1 - \epsilon$ are projected back by the declared numerical safeguard. The safeguard prevents overflow but its projection rule must be checked for continuity and bias.
 
 4. **Mixed-precision with Kahan summation.** For high-precision curvature computations, we use Kahan summation to reduce floating-point error accumulation. The metric $G(z) = 4I/(1-|z|^2)^2$ is computed in float64 where necessary; the policy and encoder use float16/bfloat16.
 
@@ -482,7 +493,7 @@ Self-consistency is necessary but not sufficient—the Sieve has external anchor
 
 2. **Interventional gap detection.** **Node 53 (InterventionalGapCheck)** ({ref}`Section 32.5 <sec-implementation-the-experimental-sieve>`) measures $\Delta_{\text{causal}} = D_{\text{KL}}(P_{\text{int}} \| P_{\text{obs}})$. If the model is self-consistent but causally wrong, interventions will produce surprises that violate this check.
 
-3. **WFR consistency.** **Node 23 (WFRCheck)** verifies that belief updates satisfy the Wasserstein-Fisher-Rao continuity equation (Definition {prf:ref}`def-wfr-world-model`). A hallucinated model that violates mass conservation or produces negative densities will fail.
+3. **WFR consistency.** The auxiliary **WFRCheck** verifies that belief updates satisfy the Wasserstein-Fisher-Rao continuity equation (Definition {prf:ref}`def-wfr-world-model`). Node 23 remains NEPCheck in the global Sieve registry. A hallucinated model that violates mass conservation or produces negative densities will fail.
 
 4. **The Sieve is skeptical by design.** The framework assumes the World Model is *always* wrong to some degree (partial observability, model mismatch). The Sieve monitors the *rate* of being wrong. Stable wrongness is tolerable; accelerating wrongness triggers intervention.
 
@@ -532,13 +543,13 @@ The Firewall operates on gradients, not pixels—adversarial texture cannot infl
 
 The WFR metric is designed precisely for discrete/continuous hybrids.
 
-1. **WFR interpolates discreteness.** The Wasserstein-Fisher-Rao metric ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) is the *unique* metric that simultaneously handles mass transport (Wasserstein, for continuous flow) and mass teleportation (Fisher-Rao, for discrete jumps). The STE gradient is a *special case* of WFR dynamics with teleportation length $\lambda \to 0$.
+1. **WFR interpolates discreteness.** The Wasserstein-Fisher-Rao metric ({ref}`Section 20 <sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces>`) is one established unbalanced-transport metric that combines mass transport with local reaction. It is a useful choice for continuous/discrete hybrids, but uniqueness is not claimed here. A straight-through estimator is an optimization surrogate; identifying it with a WFR limit such as $\lambda\to0$ would require a separate convergence theorem.
 
-2. **Gumbel-Softmax relaxation.** During training, we use temperature-annealed Gumbel-Softmax rather than hard STE. This provides smooth gradients at high temperature, converging to discrete codes as $\tau \to 0$. The manifold assumption holds for $\tau > 0$; at $\tau = 0$, the geometry is a disjoint union of charts.
+2. **Optional soft relaxation.** If training uses temperature-annealed Gumbel-Softmax, it provides smooth gradients at positive temperature and can approach discrete codes as $\tau \to 0$. The implementation may instead use hard VQ with a straight-through estimator; the smooth-manifold interpretation then applies only to the chosen relaxation, not automatically to the hard update.
 
 3. **Codebook as atlas.** The discrete codebook $\mathcal{K}$ defines the **atlas** of the latent manifold. Each code $k$ indexes a chart $\mathcal{Z}_k$. Transitions between charts are discrete jumps; dynamics within charts are smooth. The WFR metric makes this precise.
 
-4. **Empirical smoothness.** VQ-VAE gradients are noisy but *unbiased* under STE. The accumulated gradient over batches converges to the true gradient. The manifold structure emerges in expectation, not per-sample.
+4. **Empirical smoothness.** Straight-through gradients are generally biased estimators of the hard quantizer derivative. Their usefulness and any approximate smoothness must therefore be checked empirically; no unbiased-gradient or convergence guarantee follows from the estimator alone.
 
 (sec-appendix-d-semantic-compression-hallucination)=
 ### D.8.4 Semantic Compression vs. Hallucination
@@ -667,7 +678,7 @@ Interventions are bounded by the Sieve; hardware safety is a separate layer.
 
 The Sieve provides layered explanations from technical to intuitive.
 
-1. **Diagnostic Node → Plain English mapping.** Each of the 60 nodes has a human-readable interpretation column in the registry ({ref}`Section 3.1 <sec-diagnostics-stability-checks>`):
+1. **Diagnostic Node → Plain English mapping.** Each registered node has a human-readable interpretation column in the registry ({ref}`Section 3.1 <sec-diagnostics-stability-checks>`):
    - "Helmholtz Residual Violation" → "The agent's value predictions are inconsistent with how rewards spread."
    - "Ontological Stress" → "The agent is detecting patterns it cannot explain with its current concepts."
    - "CapacityHorizonCheck" → "The agent's memory is nearly full."
@@ -676,7 +687,7 @@ The Sieve provides layered explanations from technical to intuitive.
 
 3. **Intervention log.** {ref}`Section 6 <sec-interventions>` defines the remediation for each failure mode. When a check fails, the system logs: (a) which check failed, (b) the current value vs. threshold, (c) the prescribed intervention. The operator sees "Node 35 (HelmholtzResidual) exceeded 0.5; reducing learning rate."
 
-4. **Dashboard visualization.** The 60 diagnostic outputs can be rendered as a heatmap, gauge cluster, or time series. An operator trained on the dashboard can monitor agent health without understanding the underlying geometry.
+4. **Dashboard visualization.** Registered diagnostic outputs can be rendered as a heatmap, gauge cluster, or time series. An operator trained on the dashboard can monitor agent health without understanding the underlying geometry.
 
 (sec-appendix-d-physical-metabolic-reality)=
 ## D.11 Physical and Metabolic Reality
@@ -711,7 +722,7 @@ The framework runs on commodity GPUs; specialized hardware helps but is not requ
 
 Yes—this is an intended design property.
 
-1. **Metabolic balance equation.** Theorem {prf:ref}`thm-generalized-landauer-bound` states $\dot{\mathcal{M}} \ge T_c |dH/ds|$: information updates cost energy. If the environment provides reward flux $\Phi_r$ and the agent spends metabolic flux $\dot{\mathcal{M}} > \Phi_r$, the agent is *unsustainable* ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`).
+1. **Metabolic balance equation.** Under the theorem's regularity, boundary, and calibration hypotheses, {prf:ref}`thm-generalized-landauer-bound` gives $\dot{\mathcal{M}} \ge T_c |dH/ds|$: information updates cost energy. If the environment provides reward flux $\Phi_r$ and the agent spends metabolic flux $\dot{\mathcal{M}} > \Phi_r$, the agent is *unsustainable* ({ref}`Section 31 <sec-computational-metabolism-the-landauer-bound-and-deliberation-dynamics>`).
 
 2. **Ontological pruning.** When metabolic cost exceeds reward, the **Fission Criterion** ({ref}`Section 30.3 <sec-the-fission-criterion>`) drives the agent to *reduce* complexity: merge charts, forget states, simplify the codebook. This is "downsizing," not death.
 
@@ -728,7 +739,7 @@ Yes—this is an intended design property.
 
 The coefficient is geometry-dependent; the *structure* of the bound is universal.
 
-1. **Origin of 1/4.** {ref}`Appendix A.6 <sec-appendix-a-area-law>` derives the coefficient via Fisher metric normalization: the geodesic distance on the probability simplex is $\pi/2$, yielding a unit cell area of $4\ell_L^2$ (Proposition {prf:ref}`prop-a-area-minimal-cell`). The factor $1/4$ comes from the Poincare disk normalization $G^{-1}(0) = I/4$ (Lemma {prf:ref}`lem-a-geodesic-distance-simplex`).
+1. **Origin of 1/4.** {ref}`Appendix A.6 <sec-appendix-a-area-law>` records a conditional two-dimensional chart-cell convention: the geodesic normalization gives $G(0)=4I$, so a coordinate cell has Riemannian area $4\ell_L^2$ (Proposition {prf:ref}`prop-a-area-minimal-cell`). The factor is a normalization in that counting model, not a consequence of the Fisher metric alone.
 
 2. **Dimension-dependence.** For a $D$-dimensional latent manifold, the Holographic Coefficient is (Definition {prf:ref}`def-holographic-coefficient`):
 
@@ -740,7 +751,7 @@ The coefficient is geometry-dependent; the *structure* of the bound is universal
 
 3. **Why hyperbolic is canonical.** The Poincare disk is the *unique* simply-connected Riemannian manifold with constant negative curvature—the natural geometry for hierarchical, tree-like data ({ref}`Section 21 <sec-radial-generation-entropic-drift-and-policy-control>`). For 2D latent spaces, $\nu_2 = 1/4$ is exact.
 
-4. **Bekenstein-Hawking analogy.** In general relativity, the coefficient $1/4$ in $S = A / 4\ell_P^2$ arises from the Einstein-Hilbert action normalization. The structural parallel ({ref}`Remark A.6.6 <sec-appendix-a-remark-bekenstein-hawking>`) suggests that $1/4$ is a universal feature of holographic bounds in field theories with second-order curvature terms.
+4. **Bekenstein-Hawking analogy.** In general relativity, the coefficient $1/4$ in $S = A / 4\ell_P^2$ is a physical gravitational result. The structural parallel ({ref}`Remark A.6.6 <sec-appendix-a-remark-bekenstein-hawking>`) is a mathematical analogy; it does not establish a universal coefficient for other field theories.
 
 (sec-appendix-d-circularity-of-area-law)=
 ### D.11.4 Circularity of the Area Law Derivation
@@ -749,38 +760,34 @@ The coefficient is geometry-dependent; the *structure* of the bound is universal
 
 **Response:**
 
-This objection conflates two distinct issues. The derivation is **not circular**, though the logical structure requires careful examination.
+This objection identifies a real scope issue. The volume separates the operational capacity convention from the conditional counting model.
 
-1. **What the Levin Length defines.** Definition {prf:ref}`def-levin-length` sets $\ell_L := \sqrt{\eta_\ell}$ where $\eta_\ell$ is "area-per-nat." This is a *qualitative* definition: it says $\ell_L$ is the characteristic length scale of distinguishability, **not** that the coefficient is 1.
+1. **What the Levin Length defines.** Definition {prf:ref}`def-levin-length` fixes $\ell_L$ from the boundary $(D-1)$-volume per nat and the declared coefficient $\nu_D$. This is an operational normalization, not an independent derivation of the coefficient.
 
-2. **Where the 1/4 comes from.** The coefficient arises from:
-   - **Chentsov's theorem** (Theorem {prf:ref}`thm-a-chentsov-uniqueness`): The Fisher metric is unique up to scale.
+2. **Where the local factor comes from.** The conditional chart convention uses:
    - **Curvature normalization:** The Poincare disk with $K = -1$ has metric $G(0) = 4I$ (Lemma {prf:ref}`lem-a-curvature-normalization-factor-4`).
-   - **Cell counting:** A coordinate cell of side $\ell_L$ has Riemannian area $4\ell_L^2$.
+   - **Cell convention:** A coordinate cell of side $\ell_L$ has Riemannian area $4\ell_L^2$.
 
-   The factor of 4 is **derived from geometry**, not assumed.
+   The factor of 4 is a local geometric conversion; assigning one nat to the cell is a separate channel permit.
 
-3. **The non-circular derivation.** {ref}`Section A.6.0 <sec-appendix-a-foundational-axioms>` provides a microstate counting derivation:
-   - Count boundary-distinguishable configurations (Theorem {prf:ref}`thm-a-microstate-count-area-law`)
-   - Use Shannon's channel capacity (Theorem {prf:ref}`thm-a-boundary-channel-capacity`)
-   - Obtain $I_{\max} = A/(4\ell_L^2)$ **without invoking the Metric Law**
+3. **The conditional counting model.** {ref}`Section A.6.0 <sec-appendix-a-foundational-axioms>` counts boundary messages only after assuming independent cells and an achievable one-nat-per-cell code (Propositions {prf:ref}`thm-a-microstate-count-area-law` and {prf:ref}`thm-a-boundary-channel-capacity`).
 
-4. **The actual structure.** The derivation has two independent paths:
+4. **The actual structure.** The appendix distinguishes the counting permit from the unproved field-theoretic route:
 
    | Path                | Method                          | Uses Metric Law? |
    |---------------------|---------------------------------|------------------|
-   | Microstate counting | Cell tiling + Shannon           | **No**           |
-   | Field-theoretic     | Divergence theorem + Metric Law | Yes              |
+   | Conditional counting | Cell tiling + Shannon           | **No**           |
+   | Field-theoretic route | Requires additional bulk-to-boundary and metric lemmas | Not established |
 
-   Both yield the same coefficient. This is a **consistency check**, not a tautology.
+   Only the first row is used as a conditional normalization; no agreement between the rows is claimed.
 
 5. **Analogy to physics.** In black hole thermodynamics:
    - Hawking (1975) derived $S = A/4\ell_P^2$ thermodynamically
    - Strominger-Vafa (1996) derived it by counting D-brane microstates
 
-   Neither is circular; their agreement validates string theory. The microstate counting here (Section A.6.0) is analogous to Strominger-Vafa.
+   Those physical derivations are separate from the conditional counting model here. The analogy does not transfer their physical conclusions to the agent geometry.
 
-*Remark (What would be circular).* A truly circular derivation would be: "Define $\ell_L^2 := A/(4I)$, then observe $I = A/(4\ell_L^2)$." This is **not** what happens. The 1/4 emerges from the curvature normalization $K = -1$, which is a geometric fact independent of capacity constraints.
+*Remark (What would be circular).* Defining $\ell_L$ directly from a target capacity and then presenting the same equation as a derived theorem would be circular. The operational convention and the conditional cell model are therefore stated explicitly.
 
 (sec-appendix-d-foundational-rigor)=
 ## D.12 Foundational Rigor and Analytic Conditions

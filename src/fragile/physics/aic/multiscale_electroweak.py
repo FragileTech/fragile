@@ -32,6 +32,7 @@ from fragile.physics.aic.correlator_channels import (
 from fragile.physics.electroweak.electroweak_observables import classify_walker_types
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.qft_utils import resolve_frame_indices
+from fragile.physics.qft_utils.helpers import recorded_time_step
 
 
 SU2_BASE_CHANNELS = (
@@ -759,7 +760,7 @@ def compute_multiscale_electroweak_channels(
             alias = ALL_COMPANION_CHANNEL_MAP[base]
             series_by_channel[alias][:, pos_t] = chunk_series[alias]
 
-    dt = float(history.delta_t * history.record_every)
+    dt = float(recorded_time_step(history))
     correlator_cfg = CorrelatorConfig(
         max_lag=int(config.max_lag),
         use_connected=bool(config.use_connected),

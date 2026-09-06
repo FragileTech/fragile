@@ -87,7 +87,12 @@ class RunHistory(BaseModel):
     # ========================================================================
     x_final: Tensor = Field(description="Final positions after kinetic update")
     v_final: Tensor = Field(description="Final velocities after kinetic update")
-    U_final: Tensor = Field(description="Potential energy after kinetic update")
+    U_final: Tensor = Field(
+        description=(
+            "Potential energy of the post-cloning state (identical to U_after_clone; "
+            "the kinetic update does not re-evaluate the potential)"
+        )
+    )
 
     # ========================================================================
     # Per-Step Scalar Data [n_recorded]
@@ -349,7 +354,8 @@ class RunHistory(BaseModel):
             f"  Recorded: {self.n_recorded} timesteps (every {self.record_every} steps)",
             f"  Final step: {self.final_step} (terminated_early={self.terminated_early})",
             f"  Total cloning events: {self.will_clone.sum().item()}",
-            f"  Timing: {self.total_time:.3f}s total, {self.total_time / self.n_steps:.4f}s/step",
+            f"  Timing: {self.total_time:.3f}s total, "
+            f"{self.total_time / max(1, self.final_step):.4f}s/step",
         ]
         if self.fitness_gradients is not None:
             lines.append("  Adaptive kinetics: gradients recorded")
@@ -535,7 +541,9 @@ class VectorizedHistoryRecorder:
         # -- Chunking state --------------------------------------------------
         self._chunk_size = chunk_size
         if chunk_size is not None:
-            self._buf_capacity = min(chunk_size, n_recorded)
+            # The after-clone buffers hold buf_cap - 1 rows, so a chunk must
+            # cover at least two recorded steps.
+            self._buf_capacity = max(2, min(int(chunk_size), n_recorded))
         else:
             self._buf_capacity = n_recorded
         self._chunk_dir: Path | None = None  # created lazily on first flush
@@ -924,6 +932,7 @@ class VectorizedHistoryRecorder:
         params: dict | None = None,
         rng_seed: int | None = None,
         rng_state: dict | None = None,
+        n_steps: int | None = None,
     ):
         """Construct final RunHistory with trimming to actual recorded size.
 
@@ -942,6 +951,11 @@ class VectorizedHistoryRecorder:
         Returns:
             RunHistory object with complete execution trace
         """
+
+        # ``n_steps`` is the requested run length; ``final_step`` is where the
+        # run actually stopped. Reporting the latter as the former hides early
+        # termination ("terminated at step 30/30").
+        requested_steps = int(n_steps) if n_steps is not None else int(final_step)
 
         # ----- Chunked path: merge all flushed chunks -----------------------
         if self._flushed_chunks:
@@ -966,7 +980,7 @@ class VectorizedHistoryRecorder:
             return RunHistory(
                 N=self.N,
                 d=self.d,
-                n_steps=final_step,
+                n_steps=requested_steps,
                 n_recorded=actual_recorded,
                 record_every=record_every,
                 terminated_early=terminated_early,
@@ -987,7 +1001,7 @@ class VectorizedHistoryRecorder:
         return RunHistory(
             N=self.N,
             d=self.d,
-            n_steps=final_step,
+            n_steps=requested_steps,
             n_recorded=actual_recorded,
             record_every=record_every,
             terminated_early=terminated_early,

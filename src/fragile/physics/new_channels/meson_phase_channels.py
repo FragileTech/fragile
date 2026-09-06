@@ -31,6 +31,7 @@ from fragile.physics.qft_utils import (
     safe_gather_3d,
 )
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.qft_utils.statistics import attach_statistics, record_lag
 
 
 PAIR_SELECTION_MODES = ("distance", "clone", "both")
@@ -79,10 +80,11 @@ class MesonPhaseCorrelatorOutput:
 def _safe_gather_pairs_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
     """Safely gather values[:, idx] for indices [T,N,P] using baryon helpers."""
     if values.ndim != 2 or indices.ndim != 3:
-        raise ValueError(
+        msg = (
             f"_safe_gather_pairs_2d expects values [T,N] and indices [T,N,P], got "
             f"{tuple(values.shape)} and {tuple(indices.shape)}."
         )
+        raise ValueError(msg)
     t, n, p = indices.shape
     idx_flat = indices.reshape(t, n * p)
     gathered_flat, in_range_flat = safe_gather_2d(values, idx_flat)
@@ -92,10 +94,11 @@ def _safe_gather_pairs_2d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tens
 def _safe_gather_pairs_3d(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
     """Safely gather values[:, idx, :] for indices [T,N,P] using baryon helpers."""
     if values.ndim != 3 or indices.ndim != 3:
-        raise ValueError(
+        msg = (
             f"_safe_gather_pairs_3d expects values [T,N,C] and indices [T,N,P], got "
             f"{tuple(values.shape)} and {tuple(indices.shape)}."
         )
+        raise ValueError(msg)
     t, n, p = indices.shape
     c = values.shape[-1]
     idx_flat = indices.reshape(t, n * p)
@@ -124,7 +127,8 @@ def build_companion_pair_indices(
     """
     mode = str(pair_selection).strip().lower()
     if mode not in PAIR_SELECTION_MODES:
-        raise ValueError(f"pair_selection must be one of {PAIR_SELECTION_MODES}.")
+        msg = f"pair_selection must be one of {PAIR_SELECTION_MODES}."
+        raise ValueError(msg)
     anchor_idx, companion_j, companion_k, _ = build_companion_triplets(
         companions_distance=companions_distance,
         companions_clone=companions_clone,
@@ -150,19 +154,23 @@ def _compute_inner_products_for_pairs(
 ) -> tuple[Tensor, Tensor]:
     """Compute z_ij = c_i^† c_j for companion pairs and validity mask."""
     if color.ndim != 3 or color.shape[-1] != 3:
-        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+        msg = f"color must have shape [T, N, 3], got {tuple(color.shape)}."
+        raise ValueError(msg)
     if color_valid.shape != color.shape[:2]:
-        raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
+        msg = f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}."
+        raise ValueError(msg)
     if pair_indices.shape[:2] != color.shape[:2]:
-        raise ValueError(
+        msg = (
             f"pair_indices must have shape [T, N, P] aligned with color, got "
             f"{tuple(pair_indices.shape)}."
         )
+        raise ValueError(msg)
     if structural_valid.shape != pair_indices.shape:
-        raise ValueError(
+        msg = (
             "structural_valid must have the same shape as pair_indices, got "
             f"{tuple(structural_valid.shape)} vs {tuple(pair_indices.shape)}."
         )
+        raise ValueError(msg)
 
     color_j, in_range = _safe_gather_pairs_3d(color, pair_indices)
     valid_j, _ = _safe_gather_pairs_2d(color_valid, pair_indices)
@@ -261,9 +269,11 @@ def compute_meson_phase_correlator_from_color(
     where X in {scalar, pseudoscalar}, and j_t(i) is from the source frame.
     """
     if color.ndim != 3 or color.shape[-1] != 3:
-        raise ValueError(f"color must have shape [T, N, 3], got {tuple(color.shape)}.")
+        msg = f"color must have shape [T, N, 3], got {tuple(color.shape)}."
+        raise ValueError(msg)
     if color_valid.shape != color.shape[:2]:
-        raise ValueError(f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}.")
+        msg = f"color_valid must have shape [T, N], got {tuple(color_valid.shape)}."
+        raise ValueError(msg)
     if companions_distance.shape != color.shape[:2] or companions_clone.shape != color.shape[:2]:
         msg = "companion arrays must have shape [T, N] aligned with color."
         raise ValueError(msg)
@@ -273,14 +283,14 @@ def compute_meson_phase_correlator_from_color(
             msg = "scores is required when operator_mode is one of {'score_directed','score_weighted'}."
             raise ValueError(msg)
         if scores.shape != color.shape[:2]:
-            raise ValueError(
-                f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
-            )
+            msg_0 = f"scores must have shape [T,N] aligned with color, got {tuple(scores.shape)}."
+            raise ValueError(msg_0)
         scores = scores.to(device=color.device, dtype=torch.float32)
 
     mode = str(pair_selection).strip().lower()
     if mode not in PAIR_SELECTION_MODES:
-        raise ValueError(f"pair_selection must be one of {PAIR_SELECTION_MODES}.")
+        msg_0 = f"pair_selection must be one of {PAIR_SELECTION_MODES}."
+        raise ValueError(msg_0)
 
     t_total = int(color.shape[0])
     max_lag = max(0, int(max_lag))
@@ -364,6 +374,12 @@ def compute_meson_phase_correlator_from_color(
     pseudoscalar_connected = torch.zeros(n_lags, dtype=torch.float32, device=device)
     counts = torch.zeros(n_lags, dtype=torch.int64, device=device)
 
+    origin_counts = torch.zeros(t_total, n_lags, device=device, dtype=torch.float64)
+    origin_scalar_raw = torch.zeros_like(origin_counts)
+    origin_scalar_connected = torch.zeros_like(origin_counts)
+    origin_pseudoscalar_raw = torch.zeros_like(origin_counts)
+    origin_pseudoscalar_connected = torch.zeros_like(origin_counts)
+
     for lag in range(effective_lag + 1):
         source_len = t_total - lag
         sink_inner, sink_valid = _compute_inner_products_for_pairs(
@@ -411,6 +427,15 @@ def compute_meson_phase_correlator_from_color(
         ps_conn_prod = (src_ps_l - mean_pseudoscalar_t) * (sink_pseudoscalar - mean_pseudoscalar_t)
         scalar_connected[lag] = scalar_conn_prod[valid_pair].mean().float()
         pseudoscalar_connected[lag] = ps_conn_prod[valid_pair].mean().float()
+        record_lag(origin_scalar_raw, origin_counts, lag, scalar_raw_prod, valid_pair)
+        record_lag(origin_pseudoscalar_raw, origin_counts, lag, ps_raw_prod, valid_pair)
+        record_lag(origin_scalar_connected, origin_counts, lag, scalar_conn_prod, valid_pair)
+        record_lag(origin_pseudoscalar_connected, origin_counts, lag, ps_conn_prod, valid_pair)
+
+    attach_statistics(scalar_raw, origin_scalar_raw, origin_counts)
+    attach_statistics(scalar_connected, origin_scalar_connected, origin_counts)
+    attach_statistics(pseudoscalar_raw, origin_pseudoscalar_raw, origin_counts)
+    attach_statistics(pseudoscalar_connected, origin_pseudoscalar_connected, origin_counts)
 
     scalar = scalar_connected if use_connected else scalar_raw
     pseudoscalar = pseudoscalar_connected if use_connected else pseudoscalar_raw

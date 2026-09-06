@@ -100,7 +100,9 @@ def _fit_channel(
     Returns:
         Fully populated :class:`ChannelCorrelatorResult`.
     """
-    corr_t = correlator.float()
+    from fragile.physics.qft_utils.statistics import ensure_statistics
+
+    corr_t = ensure_statistics(correlator, series)
     effective_mass = compute_effective_mass_torch(corr_t, dt)
 
     if config.fit_mode == "linear_abs":
@@ -376,10 +378,11 @@ def collect_correlator_pairs(
     for out in outputs:
         extractor = _AIC_EXTRACTORS.get(type(out))
         if extractor is None:
-            raise TypeError(
+            msg = (
                 f"Unsupported output type {type(out).__name__}. "
                 f"Supported: {', '.join(t.__name__ for t in _AIC_EXTRACTORS)}"
             )
+            raise TypeError(msg)
         # MultiscaleStrongForceOutput does not accept use_connected
         if isinstance(out, MultiscaleStrongForceOutput):
             pairs = extractor(out, prefix=prefix)
@@ -388,9 +391,8 @@ def collect_correlator_pairs(
 
         for key in pairs:
             if key in merged:
-                raise ValueError(
-                    f"Duplicate correlator key '{key}'. Use `prefix` to disambiguate."
-                )
+                msg = f"Duplicate correlator key '{key}'. Use `prefix` to disambiguate."
+                raise ValueError(msg)
         merged.update(pairs)
 
     return merged

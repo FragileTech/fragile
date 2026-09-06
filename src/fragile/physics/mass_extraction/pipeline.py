@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 import re
+from typing import Any
 
 from fragile.physics.operators.pipeline import PipelineResult
 
@@ -23,6 +24,7 @@ from .priors import build_combined_prior
 from .results import (
     extract_channel_results,
     extract_diagnostics,
+    FitDiagnostics,
     MassExtractionResult,
 )
 
@@ -162,29 +164,152 @@ def extract_masses(
     correlators = pipeline_result.correlators
     operators = pipeline_result.operators
 
+    # Expand scale keys before grouping, without mutating caller configuration.
+    from dataclasses import replace
+
+    expanded_keys = [
+        f"{key}_scale_{s}" if corr.ndim == 2 else key
+        for key, corr in correlators.items()
+        for s in range(corr.shape[0] if corr.ndim == 2 else 1)
+    ]
     # Step 1: Determine channel groups
     if config.channel_groups:
-        groups = config.channel_groups
+        groups = [
+            replace(
+                group,
+                correlator_keys=[
+                    expanded
+                    for key in group.correlator_keys
+                    for expanded in expanded_keys
+                    if expanded == key or expanded.startswith(key + "_scale_")
+                ],
+            )
+            for group in config.channel_groups
+        ]
     else:
         groups = _auto_detect_channel_groups(
-            list(correlators.keys()),
+            expanded_keys,
             include_multiscale=config.include_multiscale,
         )
 
     if not groups:
         return MassExtractionResult()
 
-    # Step 2-3: Convert to gvar with covariance
-    data = correlators_to_gvar(correlators, operators, config)
+    if config.joint_fit:
+        return _extract_masses_joint(correlators, operators, groups, config)
+
+    # Groups share no fit parameters, so fitting them together only couples
+    # them through the data covariance while the cost grows as the cube of the
+    # total number of points (a 37-correlator run took 16 minutes jointly).
+    # Fit each group on its own block of the measured covariance instead.
+    channels: dict = {}
+    data_all: dict = {}
+    fits: dict[str, Any] = {}
+    chi2_total, dof_total, logGBF_total, nit_total, svdcut = 0.0, 0, 0.0, 0, 0.0
+    for group in groups:
+        selected_keys = set(group.correlator_keys)
+        data = correlators_to_gvar(correlators, operators, config, selected_keys=selected_keys)
+        if not data:
+            continue
+        available_keys = list(data.keys())
+        max_lags = {k: len(v) - 1 for k, v in data.items()}
+        active_keys = [k for k in group.correlator_keys if k in available_keys]
+        if not active_keys:
+            continue
+        group.correlator_keys = active_keys
+        keys_per_group = {group.name: active_keys}
+        models = build_all_models([group], available_keys, max_lags)
+        if not models:
+            continue
+        prior = build_combined_prior([group], data, keys_per_group)
+        n_points = sum(
+            max(0, min(max_lags[k], group.fit.tmax or max_lags[k]) - group.fit.tmin + 1)
+            for k in active_keys
+        )
+        if n_points < 2 * group.fit.nexp + 1:
+            msg = (
+                f"{group.name}: only {n_points} data points in the fit window "
+                f"(tmin={group.fit.tmin}, lags available up to "
+                f"{max(max_lags[k] for k in active_keys)}); not enough for "
+                f"{group.fit.nexp} exponential(s). Lower tmin or use more frames."
+            )
+            raise ValueError(msg)
+        try:
+            fit = run_fit(data, models, prior, config.fit)
+        except ValueError as exc:
+            msg = f"{group.name}: fit failed ({exc})"
+            raise ValueError(msg) from exc
+        channels.update(extract_channel_results(fit, [group], keys_per_group))
+        diag = extract_diagnostics(fit)
+        chi2_total += diag.chi2
+        dof_total += diag.dof
+        logGBF_total += diag.logGBF
+        nit_total = max(nit_total, diag.nit)
+        svdcut = diag.svdcut
+        fits[group.name] = fit
+        data_all.update(data)
+
+    if not data_all:
+        return MassExtractionResult()
+
+    diagnostics = FitDiagnostics(
+        chi2=chi2_total,
+        dof=dof_total,
+        chi2_per_dof=chi2_total / dof_total if dof_total > 0 else 0.0,
+        Q=_chi2_q_value(chi2_total, dof_total),
+        logGBF=logGBF_total,
+        nit=nit_total,
+        svdcut=svdcut,
+        fit_parameters={key: value for fit in fits.values() for key, value in fit.p.items()},
+    )
+
+    effective_masses = {}
+    if config.compute_effective_mass:
+        effective_masses = compute_effective_mass_for_all(
+            data_all,
+            dt=config.effective_mass_dt,
+            method=config.effective_mass_method,
+        )
+
+    return MassExtractionResult(
+        channels=channels,
+        diagnostics=diagnostics,
+        effective_masses=effective_masses,
+        data=data_all,
+        fit=fits,
+    )
+
+
+def _chi2_q_value(chi2: float, dof: int) -> float:
+    """Upper-tail probability of a chi-square variable."""
+    if dof <= 0 or not chi2 >= 0:
+        return 0.0
+    try:
+        import lsqfit
+
+        return float(lsqfit.gammaQ(dof / 2.0, chi2 / 2.0))
+    except Exception:
+        from scipy.special import gammaincc
+
+        return float(gammaincc(dof / 2.0, chi2 / 2.0))
+
+
+def _extract_masses_joint(
+    correlators: dict,
+    operators: dict | None,
+    groups: list[ChannelGroupConfig],
+    config: MassExtractionConfig,
+) -> MassExtractionResult:
+    """Single simultaneous fit of all groups (shares the data covariance)."""
+    selected_keys = {key for group in groups for key in group.correlator_keys}
+    data = correlators_to_gvar(correlators, operators, config, selected_keys=selected_keys)
 
     if not data:
         return MassExtractionResult(data=data)
 
-    # Determine available keys and max lags
     available_keys = list(data.keys())
     max_lags = {k: len(v) - 1 for k, v in data.items()}
 
-    # Update group correlator_keys to only include available ones
     keys_per_group: dict[str, list[str]] = {}
     active_groups = []
     for group in groups:
@@ -197,23 +322,15 @@ def extract_masses(
     if not active_groups:
         return MassExtractionResult(data=data)
 
-    # Step 4: Build models
     models = build_all_models(active_groups, available_keys, max_lags)
-
     if not models:
         return MassExtractionResult(data=data)
 
-    # Step 5: Build priors
     prior = build_combined_prior(active_groups, data, keys_per_group)
-
-    # Step 6: Run fit
     fit = run_fit(data, models, prior, config.fit)
-
-    # Step 7: Extract results
     channels = extract_channel_results(fit, active_groups, keys_per_group)
     diagnostics = extract_diagnostics(fit)
 
-    # Step 8: Effective masses (optional)
     effective_masses = {}
     if config.compute_effective_mass:
         effective_masses = compute_effective_mass_for_all(

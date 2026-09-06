@@ -38,7 +38,7 @@ The mask $M(t, t') = \mathbf{1}[t' \leq t]$ treats time as a simple ordering. Bu
 
 Why does this matter? Because information propagates at finite speed. If you moved far across the latent space between time $t'$ and time $t$, the memory at $(z', t')$ might not have had time to reach you at $(z, t)$. The relevant question is not "is $t' < t$?" but "is $(z', t')$ in my causal past $J^-(z, t)$?"
 
-This chapter makes that distinction precise. We are going to build attention mechanisms that respect the full causal structure of spacetime, not just temporal ordering. The result is a world model for memory that is physically correct by construction.
+This chapter makes that distinction precise within a declared Lorentzian model. We are going to build attention mechanisms that respect its causal mask, not just temporal ordering. The result is a world model whose retrieval rule is causally compliant relative to those assumptions; whether that model describes a physical environment is a separate empirical question.
 :::
 
 *Abstract.* This chapter derives **Covariant Self-Attention** and **Lorentzian Cross-Attention** for memory retrieval, extending the gauge-covariant attention architecture of {ref}`sec-covariant-cross-attention-architecture` to include causal structure. We equip the memory manifold with a Lorentzian metric of signature $(-,+,\ldots,+)$, derive the light cone structure that determines which past events can influence the present, and implement attention mechanisms that enforce causality by construction. The causal mask emerges from the metric geometry rather than being imposed ad hoc. Retarded attention weights ensure that information propagates at finite speed $c_{\text{info}}$, connecting to the multi-agent ghost interface framework of {ref}`sec-symplectic-multi-agent-field-theory`.
@@ -56,7 +56,7 @@ This chapter makes that distinction precise. We are going to build attention mec
 ## Why Standard Self-Attention Fails for Memory
 
 :::{div} feynman-prose
-Let me enumerate the failures of standard self-attention when applied to memory. Each failure corresponds to a physical principle that the standard mechanism violates.
+Let me enumerate the failures of standard self-attention when applied to memory. Each failure corresponds to a modelling principle that the standard mechanism omits or violates.
 
 **Failure 1: Acausality.** Standard self-attention computes $\text{softmax}(QK^T/\sqrt{d_k})V$ over all positions. The Query at position $t$ can attend to Keys at positions $t' > t$. This violates causality. Memory cannot see the future.
 
@@ -275,7 +275,7 @@ The light cone structure has an important geometric property. Near the boundary 
 
 At the origin, where $\lambda(0) = 2$, coordinate and geodesic distances are more similar. The light cone in coordinate terms is wider.
 
-The key insight is that the causal structure depends on *geodesic* distance, not coordinate distance. This is physically correct: information travels through the manifold, not through the coordinate chart.
+The key insight is that the causal structure depends on *geodesic* distance, not coordinate distance. This is correct for the declared propagation model: the mask uses the metric distance, rather than treating coordinate differences as travel distances.
 :::
 
 :::{figure} ../../../svg_images/lorentzian_light_cone_mask.svg
@@ -420,7 +420,7 @@ Therefore $\alpha(z, t; z', t')$ is gauge-invariant. $\square$
 :::
 
 :::{div} feynman-prose
-The theorem confirms that our causal self-attention is physically consistent. No matter what coordinate system you use, no matter how you parameterize the gauge bundle, you get the same attention weights. The Wilson lines do the heavy lifting of ensuring gauge covariance, while the causal mask ensures physical causality.
+The theorem confirms the stated covariance and causal-support properties of our self-attention. No matter what permitted coordinate system you use, no matter how you parameterize the gauge bundle, you get the same attention weights. The Wilson lines supply the gauge-covariance calculation, while the causal mask enforces the model's declared causal relation; this is a mathematical guarantee for that construction, not a claim about physical spacetime.
 
 Notice that the softmax normalization is only over the causal past $J^-(z, t)$, not over all positions. This is important: if you normalize over all positions (including those outside the light cone), the attention weights would change when you expand the context window to include more positions. By normalizing only over the causal past, the weights are stable.
 :::
@@ -517,7 +517,7 @@ In Section 33, we introduced the ghost interface: when agent $i$ observes agent 
 
 When you retrieve a memory from an archive, you are not accessing it "now." You are accessing how it was when it was stored, plus whatever propagation delay exists. For an internal memory buffer with negligible delay, this is not important. But for external knowledge bases, distributed systems, or multi-agent settings, the delay matters.
 
-Lorentzian Cross-Attention formalizes this. The Query at $(z, t)$ attends to Keys at $(z', t')$ only if $(z', t')$ is in the causal past. The attention weight includes a **retarded factor** that accounts for propagation delay. The result is a retrieval mechanism that respects relativistic causality.
+Lorentzian Cross-Attention formalizes this. The Query at $(z, t)$ attends to Keys at $(z', t')$ only if $(z', t')$ is in the declared causal past. The attention weight includes a **retarded factor** that accounts for the model's propagation delay. The result is a retrieval mechanism that enforces the chosen causal rule; calling it relativistic requires a separate physical identification.
 :::
 
 :::{prf:definition} Lorentzian Cross-Attention
@@ -605,9 +605,9 @@ $$
 :::
 
 :::{div} feynman-prose
-The connection to retarded Green's functions is beautiful. In electrodynamics, the retarded Green's function gives the field at $(x, t)$ due to a source at $(x', t')$. It is zero unless the source is in the past light cone, and it is concentrated on the light cone itself (for massless fields).
+The connection to retarded Green's functions is a useful comparison. In electrodynamics, a retarded Green's function gives the field at $(x, t)$ due to a source at $(x', t')$, with support restricted by the physical light cone in the specified field equation. Our attention weight shares the support restriction, but it is a learned softmax weight, not a Green's function or a solution of Maxwell's equations.
 
-Our attention weight has exactly the same structure. It is zero outside the light cone (causal mask) and peaks for sources that are "just barely" in the causal past (the softmax concentrates on nearby memories). This is not a coincidence---both are solutions to the same mathematical problem: propagating influence through spacetime while respecting causality.
+Our attention weight is zero outside the *declared* causal region, and its softmax ranking depends on relevance, temperature, and the available memories; it need not peak on the light cone. The shared support property is the useful analogy. The two constructions solve different mathematical problems, so the attention mechanism should not be identified with a field propagator.
 
 The ghost memory interface makes this operational. When you query an external knowledge base, you are not seeing its current state. You are seeing the state that has had time to propagate to you. For fast systems with short delays, this is negligible. For distributed systems with significant latency, it matters.
 :::
@@ -752,11 +752,11 @@ where the gradient is with respect to the spatial coordinates $z$, holding $t$ f
 ## BAOAB-Style Integration for Memory Dynamics
 
 :::{div} feynman-prose
-Now we integrate the memory force into the equations of motion. The structure is the same as Section 35: the Boris-BAOAB integrator with five steps. The key difference is that the memory potential $\Psi_{\text{mem}}$ is now the causal version, and the attention mechanism uses the Lorentzian structure.
+Now we integrate the memory force into the equations of motion. The structure is the same as Section 35: a Boris-BAOAB-style five-step update. The key difference is that the memory potential $\Psi_{\text{mem}}$ is now the causal version, and the attention mechanism uses the Lorentzian structure.
 
-The B-steps (kicks) apply forces from the total potential gradient, including both the effective potential $\Phi_{\text{eff}}$ and the causal memory potential $\Psi_{\text{mem}}^{\text{causal}}$. If the reward field has curl, insert the Boris rotation from Definition {prf:ref}`def-baoab-splitting` between the half-kicks to account for the Lorentz term. The A-steps (drifts) move along geodesics. The O-step (thermostat) maintains temperature.
+The B-steps (kicks) apply forces from the total potential gradient, including both the effective potential $\Phi_{\text{eff}}$ and the causal memory potential $\Psi_{\text{mem}}^{\text{causal}}$. If the reward field has curl, insert the Boris rotation from Definition {prf:ref}`def-baoab-splitting` between the half-kicks to account for the Lorentz term. The A-steps (drifts) move along geodesics. The O-step (thermostat) sets the declared noise and friction scale.
 
-The causal mask ensures that when computing the memory gradient, only contributions from the past light cone are included. This is enforced at the attention level, not as a post-hoc correction.
+The causal mask ensures that when computing the memory gradient, only contributions from the declared past light cone are included. This is enforced at the attention level, not as a post-hoc correction. Because the history and hence the potential depend on time, the full process is generally nonstationary and need not satisfy detailed balance. The stochastic O-step also means that the full BAOAB update is not symplectic; only the deterministic substeps can inherit that structure under their compatibility hypotheses.
 :::
 
 :::{prf:definition} Causal BAOAB Steps for Memory
@@ -805,30 +805,30 @@ The gradient $\nabla_z \Psi_{\text{mem}}^{\text{causal}}$ is computed via Covari
 
 :::
 
-:::{prf:theorem} Boltzmann Preservation with Causal Memory
+:::{prf:proposition} Conditional frozen-time Boltzmann tracking with causal memory
 :label: thm-boltzmann-causal-memory
 
-The Causal BAOAB integrator (Definition {prf:ref}`def-causal-baoab-memory`) preserves the stationary distribution:
+Fix a time $t$ and suppose that the dynamics are conservative
+($\mathcal{F}=0$, $u_\pi=0$), $T_c$ is constant, the metric and boundary
+conditions satisfy the hypotheses of the compatible BAOAB result, and the
+frozen potential
+$\Phi_t:=\Phi_{\mathrm{eff}}+\Psi_{\mathrm{mem}}^{\mathrm{causal}}(\cdot,t)$
+is smooth with a normalizable Gibbs density.  Then the frozen-time Causal
+BAOAB step has the formal target
 
 $$
-\rho(z, p, t) \propto \exp\left( -\frac{\Phi_{\text{eff}}(z) + \Psi_{\text{mem}}^{\text{causal}}(z, t)}{T_c} - \frac{\|p\|_G^2}{2 T_c} \right)
+\rho_t(z,p) \propto \exp\left(-\frac{\Phi_t(z)}{T_c}
+                              -\frac{\|p\|_G^2}{2T_c}\right).
 $$
+For a time-dependent memory potential, a slowly varying assumption can support
+an adiabatic tracking estimate, with an error controlled by the chosen
+$C^2$-variation bound and the mixing rate of the frozen chain.  It does not
+give a stationary distribution for the full history-dependent process.
 
-to second order in $h$, provided the causal memory potential varies slowly on the timescale $h$.
-
-*Proof sketch.*
-
-**Step 1.** The BAOAB splitting preserves the Boltzmann distribution for any potential $\Phi(z)$ (Theorem {prf:ref}`thm-baoab-attention-boltzmann`).
-
-**Step 2.** The causal memory potential $\Psi_{\text{mem}}^{\text{causal}}$ adds to the effective potential. As long as the potential is well-defined and smooth, the preservation property extends.
-
-**Step 3.** The causal mask introduces a time-dependence: as $t$ advances, more events enter the past light cone and can contribute to $\Psi_{\text{mem}}^{\text{causal}}$. This causes $\Psi_{\text{mem}}^{\text{causal}}(z, t)$ to change over time.
-
-**Step 4.** For slowly varying $\Psi_{\text{mem}}^{\text{causal}}$ (change per timestep $\ll T_c$), the adiabatic approximation holds and the distribution tracks the instantaneous Boltzmann form.
-
-**Step 5.** The causal mask does not break detailed balance because it is one-directional (past influences present, not vice versa). This is consistent with time-irreversibility of memory accumulation. $\square$
-
-*Caveat:* Unlike standard BAOAB where the potential is time-independent, the causal memory potential grows as the agent accumulates history. The "stationary" distribution is actually quasi-stationary, tracking the evolving potential.
+*Scope.* The compatible BAOAB result is the frozen, reversible calculation;
+the causal mask itself does not preserve detailed balance.  Curl forcing,
+policy forcing, state-dependent temperature, or an uncontrolled boundary
+requires a separate estimate.
 
 :::
 
@@ -849,9 +849,15 @@ to second order in $h$, provided the causal memory potential varies slowly on th
 
 1. PINNs enforce PDEs as soft constraints via loss terms
 2. We enforce *causal structure* as a hard architectural constraint (mask before softmax)
-3. The geometry is not learned but derived from first principles (information-theoretic bounds)
+3. The geometry is chosen or learned under declared information-theoretic
+   constraints; the bounds motivate the parameterization but do not derive a
+   unique geometry for every task.
 
-**Symplectic integrators** {cite}`leimkuhler2016computation` preserve phase space structure in Hamiltonian systems. Our BAOAB integrator is symplectic, ensuring that the causal memory dynamics preserve the Boltzmann distribution (up to adiabatic corrections).
+**Symplectic integrators** {cite}`leimkuhler2016computation` preserve phase
+space structure in Hamiltonian systems.  The deterministic BAOAB substeps have
+that structure under their stated hypotheses; the full method includes a
+stochastic thermostat and is therefore not itself symplectic.  Its conditional
+Boltzmann statement belongs to the frozen conservative calculation above.
 :::
 
 

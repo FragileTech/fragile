@@ -59,8 +59,13 @@ def patched_standardization(
         mu = mu.detach()
         sigma_reg = sigma_reg.detach()
 
-    # Compute Z-scores for all walkers
-    z_scores = (values - mu) / sigma_reg
+    # Compute Z-scores for all walkers. A constant channel with sigma_min=0 has
+    # zero spread; every walker is then exactly average (z=0), not NaN.
+    z_scores = torch.where(
+        sigma_reg > 0,
+        (values - mu) / sigma_reg.clamp_min(torch.finfo(values.dtype).tiny),
+        torch.zeros_like(values),
+    )
 
     if return_statistics:
         return z_scores, mu, sigma_reg

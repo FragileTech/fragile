@@ -278,9 +278,13 @@ class EuclideanGas(PanelModel):
                     dtype=self.torch_dtype,
                 ),
                 spatial_dims=spatial_dims,
-                weight_modes=tuple(self.neighbor_weight_modes)
-                if self.neighbor_weight_modes
-                else None,
+                weight_modes=tuple(
+                    dict.fromkeys([
+                        *self.neighbor_weight_modes,
+                        self.kinetic_op.viscous_neighbor_weighting,
+                    ])
+                ),
+                length_scale=self.kinetic_op.viscous_length_scale,
             )
             edges = delaunay_data.edge_index.t().contiguous()
             edge_geodesic = delaunay_data.edge_geodesic_distances
@@ -301,7 +305,8 @@ class EuclideanGas(PanelModel):
             else:
                 spatial_d = diffusion_data.shape[-1]
                 diffusion = (
-                    torch.eye(d, device=self.device, dtype=positions.dtype)
+                    torch
+                    .eye(d, device=self.device, dtype=positions.dtype)
                     .unsqueeze(0)
                     .expand(N, d, d)
                     .clone()
@@ -374,7 +379,10 @@ class EuclideanGas(PanelModel):
         """
         update_every = max(1, int(self.neighbor_graph_update_every))
         step_idx = getattr(self, "_current_step", None)
-        recompute = step_idx is None or (step_idx % update_every == 0)
+        cached = getattr(self, "_cached_delaunay_data", None)
+        # Steps are 1-based; the first step always has to build the graph, or
+        # the first ``update_every - 1`` steps run without any coupling.
+        recompute = step_idx is None or cached is None or ((step_idx - 1) % update_every == 0)
 
         if recompute:
             tess = self._compute_tessellation(state_cloned.x)
@@ -424,12 +432,12 @@ class EuclideanGas(PanelModel):
         # Step 3: Cloning
         companions_clone = random_pairing_fisher_yates(self.N, device=self.device)
         clone_tensor_kwargs = {
-            "fitness_cloned": fitness,
-            "ricci_scalar": reward_ricci,
-            "riemannian_volume": reward_volume,
+            "fitness_cloned": fitness.clone(),
+            "ricci_scalar": reward_ricci.clone(),
+            "riemannian_volume": reward_volume.clone(),
         }
 
-        x_cloned, v_cloned, other_cloned, clone_info = self.cloning(
+        x_cloned, v_cloned, _other_cloned, clone_info = self.cloning(
             positions=state.x,
             velocities=state.v,
             fitness=fitness,
@@ -443,8 +451,11 @@ class EuclideanGas(PanelModel):
             state_cloned = SwarmState(x_cloned, v_cloned)
         else:
             state_cloned = state.clone()
+            for key in ("will_clone", "clone_jitter", "clone_delta_x", "clone_delta_v"):
+                clone_info[key] = torch.zeros_like(clone_info[key])
+            clone_info["num_cloned"] = 0
         clone_info["cloning_applied"] = apply_clone
-        fitness = other_cloned.get("fitness_cloned", fitness)
+        # Fitness/rewards/scores in RunHistory all describe the pre-clone state.
 
         # Step 4: Delaunay tessellation on post-cloning positions
         tess = self._get_kinetic_tessellation(state_cloned)
@@ -468,12 +479,14 @@ class EuclideanGas(PanelModel):
         state_final = state_cloned
         kinetic_info = {}
         for _ in range(n_kinetic_steps):
-            state_final, kinetic_info = self.kinetic_op.apply(
+            state_final, substep_info = self.kinetic_op.apply(
                 state_final,
                 neighbor_edges=neighbor_edges,
                 edge_weights=delaunay_edge_weights,
                 return_info=True,
             )
+            if not kinetic_info:
+                kinetic_info = substep_info
 
         if delaunay_volume is not None:
             kinetic_info["riemannian_volume_weights"] = delaunay_volume
@@ -603,6 +616,7 @@ class EuclideanGas(PanelModel):
                     "dtype": self.dtype,
                     "eh_scale": self.eh_scale,
                     "clone_every": self.clone_every,
+                    "tessellation_timing": self.tessellation_timing,
                 },
                 "cloning": {
                     "p_max": self.cloning.p_max if self.cloning else None,
@@ -613,6 +627,11 @@ class EuclideanGas(PanelModel):
                 "kinetic": {
                     "gamma": self.kinetic_op.gamma,
                     "beta": self.kinetic_op.beta,
+                    "auto_thermostat": self.kinetic_op.auto_thermostat,
+                    "temperature": self.kinetic_op.temperature,
+                    "beta_effective": self.kinetic_op.effective_beta(),
+                    "integrator": self.kinetic_op.integrator,
+                    "viscous_length_scale": self.kinetic_op.viscous_length_scale,
                     "delta_t": self.kinetic_op.delta_t,
                     "n_kinetic_steps": getattr(self.kinetic_op, "n_kinetic_steps", 1),
                     "nu": self.kinetic_op.nu,
@@ -626,6 +645,12 @@ class EuclideanGas(PanelModel):
                     "eta": self.fitness_op.eta if self.fitness_op else None,
                     "sigma_min": self.fitness_op.sigma_min if self.fitness_op else None,
                     "A": self.fitness_op.A if self.fitness_op else None,
+                },
+                "history_conventions": {
+                    "version": 2,
+                    "force_stage": "after_clone",
+                    "delta_t_unit": "iteration",
+                    "fitness_stage": "before_clone",
                 },
                 "neighbor_graph": {
                     "update_every": self.neighbor_graph_update_every,
@@ -725,7 +750,7 @@ class EuclideanGas(PanelModel):
             progress_callback(final_step, n_steps, total_time)
 
         # Build final RunHistory with automatic trimming to actual recorded size
-        recorded_steps = recorded_steps[: recorder.recorded_idx]
+        recorded_steps = [step for step in recorded_steps if step <= final_step]
         rng_state = _capture_rng_state()
         params = _build_params()
 
@@ -736,8 +761,9 @@ class EuclideanGas(PanelModel):
             total_time=total_time,
             init_time=init_time,
             recorded_steps=recorded_steps,
-            delta_t=self.kinetic_op.delta_t,
+            delta_t=self.kinetic_op.delta_t * self.kinetic_op.n_kinetic_steps,
             params=params,
             rng_seed=seed,
             rng_state=rng_state,
+            n_steps=n_steps,
         )

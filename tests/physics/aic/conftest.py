@@ -59,9 +59,9 @@ def assert_mass_fit_equal(
 ) -> None:
     """Compare mass_fit dicts: tensor values via torch.equal, scalars via ==, NaN-tolerant."""
     prefix = f"{label}: " if label else ""
-    assert set(old_fit.keys()) == set(
-        new_fit.keys()
-    ), f"{prefix}key mismatch: {set(old_fit.keys()) ^ set(new_fit.keys())}"
+    assert set(old_fit.keys()) == set(new_fit.keys()), (
+        f"{prefix}key mismatch: {set(old_fit.keys()) ^ set(new_fit.keys())}"
+    )
     for key in old_fit:
         old_val = old_fit[key]
         new_val = new_fit[key]
@@ -75,6 +75,8 @@ def assert_mass_fit_equal(
             assert old_val == new_val, f"{prefix}fit[{key}]: {old_val!r} != {new_val!r}"
         elif isinstance(old_val, list) and isinstance(new_val, list):
             assert old_val == new_val, f"{prefix}fit[{key}]: lists differ"
+        elif isinstance(old_val, dict) and isinstance(new_val, dict):
+            assert_mass_fit_equal(old_val, new_val, label=f"{prefix}fit[{key}]")
         else:
             assert old_val == new_val, f"{prefix}fit[{key}]: {old_val!r} != {new_val!r}"
 
@@ -91,9 +93,9 @@ def assert_dict_results_equal(
 ) -> None:
     """Compare dict[str, ChannelCorrelatorResult] field-by-field."""
     prefix = f"{label}: " if label else ""
-    assert set(old.keys()) == set(
-        new.keys()
-    ), f"{prefix}channel key mismatch: {set(old.keys()) ^ set(new.keys())}"
+    assert set(old.keys()) == set(new.keys()), (
+        f"{prefix}channel key mismatch: {set(old.keys()) ^ set(new.keys())}"
+    )
     for ch in old:
         assert_outputs_equal(old[ch], new[ch])
 

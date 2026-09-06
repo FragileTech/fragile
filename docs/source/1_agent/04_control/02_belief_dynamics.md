@@ -35,7 +35,7 @@ The predict-update loop is standard HMM/POMDP filtering. The extra step is proje
 :::
 
 :::{div} feynman-prose
-Sections 2-9 describe geometry, metrics, and effective macro dynamics. What they do *not* yet encode is the irreversibility of online learning: boundary observations and constraint enforcement are not invertible operations. This section states the belief-evolution template directly as **filtering + projection** on the discrete macro register.
+The geometry chapters (Part V) describe geometry, metrics, and effective macro dynamics. What they do *not* yet encode is the irreversibility of online learning: boundary observations and constraint enforcement are not invertible operations. This section states the belief-evolution template directly as **filtering + projection** on the discrete macro register.
 :::
 
 :::{div} feynman-prose
@@ -230,7 +230,7 @@ Too little coupling, and your agent starts living in its own head. Its internal 
 
 Too much coupling, and your agent becomes reactive and forgetful. Every little observation overwhelms its beliefs, the macro register can't maintain stable structure, and the agent loses the ability to reason about the future. This is **symbol dispersion**---the agent's internal "currency" of macro-states stops meaning anything coherent.
 
-The coupling window we'll discuss in Theorem {prf:ref}`thm-information-stability-window-operational` is the Goldilocks zone: enough coupling to stay grounded, not so much that you lose structure. The Sieve (Sections 3-6) is the control layer that keeps the agent inside this window.
+The coupling window we'll discuss in Definition {prf:ref}`thm-information-stability-window-operational` is the Goldilocks zone: enough coupling to stay grounded, not so much that you lose structure. The Sieve ({ref}`sec-diagnostics-stability-checks`) is the control layer that keeps the agent inside this window.
 :::
 
 :::{admonition} The Coupling Dilemma
@@ -249,55 +249,61 @@ There's no free lunch here. You must balance grounding against stability.
 :::{div} feynman-prose
 This section is optional, and I want to be upfront about why it's here. The mathematics of GKSL (Lindblad) evolution comes from quantum mechanics, where it describes how open quantum systems evolve when they interact with an environment. But you don't need to care about quantum physics to find this useful.
 
-Here's why I think it's worth knowing about: the GKSL form is a *constrained parametrization*. When you write your belief dynamics in this form, positivity and normalization are *structural*---they hold automatically, not because you've carefully tuned things. And you get a clean separation between "conservative prediction" (reversible internal rollouts) and "dissipative grounding" (irreversible assimilation of boundary information).
+Here's why I think it's worth knowing about: under the finite-dimensional, time-homogeneous Markovian semigroup assumptions, the GKSL form is a *constrained parametrization*. With a Hermitian $H$ and nonnegative rates, complete positivity and trace preservation are structural---they hold by the generator theorem, rather than because you've carefully tuned an arbitrary update. The observation instrument and Sieve projection remain separate operations; the dissipator is a model for dissipative evolution, not automatically the Bayesian assimilation step.
 
-Think of it as an elegant way to write down belief dynamics that are guaranteed to be well-behaved. You don't have to use it, but it's good to know it exists.
+Think of it as an elegant way to write down one class of well-posed belief dynamics. You don't have to use it, and using the notation does not make a learned time-dependent or non-Markovian update GKSL.
 :::
 
 :::{prf:definition} Belief operator
 :label: def-belief-operator
 
-Let $\varrho_t\in\mathbb{C}^{d\times d}$ satisfy $\varrho_t\succeq 0$ and $\mathrm{Tr}(\varrho_t)=1$. Diagonal $\varrho_t$ reduces to a classical probability vector; non-diagonal terms can be used to encode correlations/uncertainty structure in a learned feature basis.
+Let $d=|\mathcal K|$ and let $\varrho_t\in\mathbb{C}^{d\times d}$ satisfy $\varrho_t\succeq 0$ and $\mathrm{Tr}(\varrho_t)=1$. Diagonal $\varrho_t$ in the macro basis reduces to a classical probability vector; non-diagonal terms can be used to encode correlations/uncertainty structure in a learned feature basis.
 
 :::
 
 :::{div} feynman-prose
-The definition above says: instead of representing belief as a vector $p \in \mathbb{R}^n$, represent it as a matrix $\varrho \in \mathbb{C}^{d \times d}$. Why would you do this? Because a matrix can encode *more* than just marginal probabilities---the off-diagonal terms can represent correlations, coherences, or structured uncertainty. If you only want classical probabilities, use a diagonal matrix and you're back to a vector.
+The definition above says: instead of representing belief as a vector $p \in \mathbb{R}^n$, represent it as a matrix $\varrho \in \mathbb{C}^{d \times d}$. Why would you do this? Because a matrix can encode *more* than just marginal probabilities---the off-diagonal terms can represent correlations, coherences, or structured uncertainty in an auxiliary feature basis. They are not classical probabilities by themselves. If you only want classical probabilities, use a diagonal matrix and you're back to a vector.
 :::
 
 :::{prf:definition} GKSL generator
 :label: def-gksl-generator
 
-A continuous-time, Markovian, completely-positive trace-preserving (CPTP) evolution has a generator of the Gorini-Kossakowski-Sudarshan-Lindblad (GKSL) form {cite}`gorini1976completely,lindblad1976generators`:
+A time-homogeneous, norm-continuous CPTP semigroup on $\mathbb C^{d\times d}$ has a generator of the Gorini-Kossakowski-Sudarshan-Lindblad (GKSL) form {cite}`gorini1976completely,lindblad1976generators`:
 
 $$
-\frac{d\varrho}{ds}
+\frac{d\varrho}{dt}
 =
 \underbrace{-i[H,\varrho]}_{\text{conservative drift}}
 \;+\;
 \underbrace{\sum_{j} \gamma_j\left(L_j\varrho L_j^\dagger-\frac12\{L_j^\dagger L_j,\varrho\}\right)}_{\text{dissipative update}},
 
 $$
-where {math}`H=H^\dagger` is Hermitian, {math}`\gamma_j\ge 0` are rates, and {math}`\{L_j\}` are (learned) operators.
+where {math}`H=H^\dagger` is Hermitian, {math}`\gamma_j\ge 0` are rates per interaction time, and {math}`\{L_j\}` are (learned) operators.
 
 **Operational interpretation (within this document).**
 - The commutator term is a structured way to represent **reversible internal prediction** (it preserves $\mathrm{Tr}(\varrho)$ and the spectrum of $\varrho$).
-- The dissipator is a structured way to represent **irreversible assimilation / disturbance** while preserving positivity and trace.
+- The dissipator is a structured way to represent **irreversible disturbance / decoherence** while preserving positivity and trace.
 
 This is a modeling choice, not a claim about literal quantum physics: it is used here purely as a convenient, well-posed parametrization of CPTP belief updates.
 
-*Note (WFR Correspondence).* In the **classical limit** (diagonal density matrix $\varrho = \mathrm{diag}(p)$), the GKSL generator reduces to a Markov jump process on the diagonal probabilities $p_k$. This classical master equation is **rigorously equivalent** to a gradient flow in the Wasserstein-Fisher-Rao metric ({prf:ref}`def-the-wfr-action`, {ref}`sec-connection-to-gksl-master-equation`): transport corresponds to continuous probability flow, reaction corresponds to jump-induced mass redistribution {cite}`maas2011gradient,mielke2011gradient`. The commutator term vanishes for diagonal states (no coherences to rotate). For full quantum states, see {cite}`carlen2014wasserstein` for the quantum Wasserstein gradient flow theory.
+*Note (WFR Correspondence).* If $H$ is diagonal in the macro basis and the $L_j$ are jump operators
+$|j\rangle\langle k|$, diagonal states are invariant and the GKSL equation reduces to a classical master
+equation with rates $W_{jk}$. If, in addition, $W$ satisfies detailed balance with respect to a stationary
+law $\pi$, the resulting chain is a gradient flow of relative entropy in the discrete transport metric of
+{cite}`maas2011gradient,mielke2011gradient`. Identifying that metric with the full WFR action
+({prf:ref}`def-the-wfr-action`) requires a separate metric comparison. For diagonal $\varrho$, the commutator
+vanishes only under the stated diagonal-$H$ hypothesis; otherwise it generates coherences.
 
 :::
 
 :::{div} feynman-prose
-Let me unpack that equation because it has a beautiful structure:
+Let me unpack that equation because it has a beautiful structure, while keeping its hypotheses in view:
 
 **The commutator term** $-i[H, \varrho]$ is the "conservative" part. If this were the whole equation, belief would evolve *reversibly*---like a Hamiltonian system rolling forward. Nothing is created or destroyed; structure is preserved. This is your internal simulation running forward in its own head.
 
-**The dissipator term** is the "irreversible" part. The operators $L_j$ represent different kinds of "disturbances" or "jumps" that can happen. Each one has a rate $\gamma_j$. This is where boundary information enters---where reality pokes holes in your internal model and forces corrections.
+**The dissipator term** is the "irreversible" part. The operators $L_j$ represent different kinds of "disturbances" or "jumps" that can happen. Each one has a rate $\gamma_j$. In this document it is a structured model for dissipative or decohering evolution. Boundary information enters through the separate observation instrument, followed by any Sieve projection; it should not be identified with the dissipator without an additional construction.
 
-The magic is that this decomposition is *complete*: any Markovian, completely-positive, trace-preserving (CPTP) evolution can be written this way. So you're not restricting what dynamics are possible; you're just organizing them into "reversible" and "irreversible" buckets.
+The theorem-level statement is also specific: every finite-dimensional, norm-continuous, time-homogeneous CPTP semigroup has a generator of this form. That is a powerful classification, but it does not say that arbitrary time-dependent, non-Markovian, or observation-conditioned dynamics have this form without extra work.
 :::
 
 (pi-lindblad)=
@@ -306,7 +312,7 @@ The magic is that this decomposition is *complete*: any Markovian, completely-po
 
 **In Physics:** The GKSL (Gorini-Kossakowski-Sudarshan-Lindblad) equation describes the evolution of open quantum systems: $\dot{\varrho} = -i[H,\varrho] + \sum_k \gamma_k(L_k\varrho L_k^\dagger - \frac{1}{2}\{L_k^\dagger L_k, \varrho\})$. It is the most general Markovian, completely positive, trace-preserving (CPTP) evolution {cite}`lindblad1976generators,gorini1976completely`.
 
-**In Implementation:** The belief density evolution (Definition {prf:ref}`def-gksl-generator`):
+**In Implementation:** The unconditional prediction/decoherence evolution (Definition {prf:ref}`def-gksl-generator`):
 
 $$
 \mathcal{L}_{\text{GKSL}}(\varrho) = -i[H_{\text{eff}}, \varrho] + \sum_k \gamma_k \left( L_k \varrho L_k^\dagger - \frac{1}{2}\{L_k^\dagger L_k, \varrho\} \right)
@@ -321,26 +327,30 @@ $$
 | Decoherence rate $\gamma_k$ | Transition rates |
 | CPTP evolution | Probability-preserving dynamics |
 
-**Diagnostic:** MECCheck (Node 22) monitors $\|\dot{\varrho} - \mathcal{L}_{\text{GKSL}}(\varrho)\|_F^2$.
+**Diagnostic:** MECCheck (Node 22) monitors the unconditional prediction residual
+$\|\dot{\varrho} - \mathcal{L}_{\text{GKSL}}(\varrho)\|_F^2$ before an observation is assimilated.
 ::::
 
 (sec-master-equation-consistency-defect)=
 ### Master-Equation Consistency Defect (Node 22)
 
 :::{div} feynman-prose
-Now here's where the rubber meets the road. We have this beautiful GKSL form that tells us what a *consistent* belief update should look like. The actual agent is doing some update---Bayesian filtering, Sieve projection, whatever. How do we know if the actual update is consistent with the GKSL template?
+Now here's where the rubber meets the road. We have this beautiful GKSL form that tells us what a *consistent unconditional prediction* should look like. The actual agent may also perform a Bayesian observation update or a Sieve projection. How do we know whether the model-driven prediction is consistent with the GKSL template?
 
-We compare them. The **consistency defect** is simply the squared Frobenius norm of the difference between what the agent actually did and what the GKSL equation predicts. If this is small, the agent's belief dynamics are well-behaved. If it's large, something is wrong---maybe the agent is updating too aggressively, or the parametrization is missing important structure.
+We compare those two prediction steps. The **consistency defect** is the squared Frobenius norm of the difference between the observed finite difference of the unconditional prediction and the GKSL generator. If it is small, that prediction agrees with the chosen generator; it does not by itself certify the later instrument or projection. If it is large, the step may be too coarse, the update may be too aggressive, or the parametrization may be missing important structure.
 :::
 
 :::{div} feynman-prose
-If an implementation maintains an operator belief $\varrho_t$ and produces an empirical update $\varrho_{t+1}$ (e.g., after a boundary update + Sieve projection), then a **consistency defect** compares it to the GKSL-predicted infinitesimal update:
+If an implementation maintains an operator belief $\varrho_t$ and produces an unconditional predicted
+operator $\widetilde\varrho_{t+1}$, then a **consistency defect** compares the prediction to the GKSL
+infinitesimal update. Boundary assimilation is a separate nonlinear instrument step
+$\varrho\mapsto M_x\varrho M_x^\dagger/\mathrm{Tr}(M_x\varrho M_x^\dagger)$, followed by any Sieve projection:
 
 $$
 \mathcal{L}_{\text{MEC}}
 :=
 \left\|
-\frac{\varrho_{t+1}-\varrho_t}{\Delta t}
+\frac{\widetilde\varrho_{t+1}-\varrho_t}{\Delta t}
 \;-\;
 \mathcal{L}_{\text{GKSL}}(\varrho_t)
 \right\|_F^2,
@@ -384,9 +394,9 @@ The core engineering benefit is identifiability: the agent exposes a discrete la
 ### Update vs Evidence Check (Node 23) and Metric Speed Limit (Node 24)
 
 :::{div} feynman-prose
-Even if you don't want to go full operator-valued beliefs, you can still monitor the "no free update" principle. The idea is simple: your beliefs shouldn't change faster than your observations justify.
+Even if you don't want to go full operator-valued beliefs, you can still monitor the "no free update" principle. The idea is simple: the observation-driven change in belief should be compared with the evidence available at that same step.
 
-Think of it this way. You're receiving a certain amount of information from the boundary per timestep---call it $I(X_t; K_t)$, the mutual information between observations and macro-states. That's like a budget. Your belief update should not "spend" more than you have. If your beliefs are changing by more KL-divergence than you're receiving in mutual information, you're hallucinating---updating based on internal fantasies rather than external evidence.
+Think of it this way. The model first produces a prediction, and then the new observation supplies an evidence budget---represented operationally by $\widehat I_{t+1}$. The KL change from the prediction to the posterior is the amount spent by assimilation. If that change repeatedly exceeds the matched evidence estimate, the update is not supported by the boundary data; the model-driven prediction itself is audited separately.
 
 Similarly, there's a speed limit on how fast your internal state can move. If $z_t$ is jumping around wildly from step to step, something is wrong. Either your representation is unstable, or your updates are too aggressive. The metric speed limit says: "under the geometry of your state space, don't move faster than $v_{\max}$ per step."
 :::
@@ -398,18 +408,22 @@ Even without operator beliefs, the same "no free update" principle can be monito
 :::{admonition} Update vs Evidence (NEPCheck)
 :class: feynman-added note
 
-Penalize belief updates that change faster than boundary information supports:
+Audit the assimilation step separately from model prediction. Let $\widetilde p_{t+1}$ be the predicted
+belief and let $\widehat I_{t+1}$ estimate the one-step evidence budget (with the same time index):
 
 $$
 \mathcal{L}_{\text{NEP}}
 :=
-\mathrm{ReLU}\!\left(D_{\mathrm{KL}}(p_{t+1}\Vert p_t)-I(X_t;K_t)\right)^2.
+\mathrm{ReLU}\!\left(D_{\mathrm{KL}}(p_{t+1}\Vert\widetilde p_{t+1})-\widehat I_{t+1}\right)^2.
 
 $$
 
-**In plain words:** "The KL-divergence from old belief to new belief is how much your mind changed. The mutual information $I(X_t; K_t)$ is how much evidence you received. If you changed your mind more than your evidence justified, that's a problem."
+**In plain words:** "The KL-divergence from the prediction to the posterior is an operational measure of the
+information gained from the current observation. The evidence budget uses $X_{t+1}$ and is compared in expectation
+(or as a calibrated per-sample likelihood bound); the model-driven prediction step is exempt from this audit."
 
-This is a conservative audit metric: it does not assert a physical entropy law, but it detects ungrounded internal updating relative to measured boundary coupling (Node 13).
+This is a conservative audit metric: it does not assert a physical entropy law, but it detects excess
+assimilation relative to a matched boundary-information estimate (Node 13).
 :::
 
 :::{admonition} Metric Speed Limit (QSLCheck)
@@ -424,7 +438,7 @@ $$
 
 **In plain words:** "Measure the distance traveled in state space using the metric $G$. If it exceeds the speed limit $v_{\max}$, penalize."
 
-This is a geometry-consistent generalization of KL-per-update constraints (ZenoCheck).
+This is the state-space counterpart of KL-per-update constraints (cf. ZenoCheck on the policy and NEPCheck on the belief).
 :::
 
 ::::{admonition} Connection to RL #19: POMDP Belief Updates as Degenerate Belief Dynamics
@@ -440,7 +454,7 @@ $$
 with **Sieve projections** applied after each update: hard masking or soft reweighting to enforce feasibility constraints.
 
 **The Degenerate Limit:**
-Remove the Sieve projections ($\text{feasible}(k) = 1$ for all $k$). Use continuous beliefs without discrete macro-register.
+Remove the Sieve projections ($\text{feasible}(k) = 1$ for all $k$). This recovers ordinary finite-state POMDP filtering.
 
 **The Special Case (Standard RL):**
 
@@ -452,7 +466,7 @@ This recovers standard **POMDP belief updates** {cite}`kaelbling1998planning` wi
 
 **What the generalization offers:**
 - **Safety-aware beliefs**: Sieve projections ({ref}`sec-sieve-events-as-projections-reweightings`) remove probability mass from unsafe states *before* action selection
-- **Discrete auditable symbols**: $H(K) \le \log|\mathcal{K}|$ provides hard capacity bound; standard POMDPs have unbounded continuous beliefs
+- **Discrete auditable symbols**: $H(K) \le \log|\mathcal{K}|$ provides a hard capacity bound, shared by finite-state POMDP beliefs; the Sieve adds explicit projection and auditability
 - **Constraint enforcement**: Gate Nodes trigger belief reweighting when diagnostics fail (NEPCheck, QSLCheck)
 - **Operator-valued updates**: {ref}`sec-optional-operator-valued-belief-updates` extends to GKSL/Lindblad form for quantum-like belief decoherence
 ::::

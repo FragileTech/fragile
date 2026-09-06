@@ -54,6 +54,7 @@ from fragile.physics.qft_utils import (
     safe_gather_3d,
 )
 from fragile.physics.qft_utils.color_states import compute_color_states_batch, estimate_ell0
+from fragile.physics.qft_utils.helpers import recorded_time_step
 
 
 BASE_CHANNELS = (
@@ -191,7 +192,9 @@ def _build_result_from_precomputed_correlator(
     correlator_err: Tensor | None,
 ) -> ChannelCorrelatorResult:
     """Build a `ChannelCorrelatorResult` from precomputed correlator data."""
-    corr_t = correlator.float()
+    from fragile.physics.qft_utils.statistics import ensure_statistics
+
+    corr_t = ensure_statistics(correlator, series)
     effective_mass = compute_effective_mass_torch(corr_t, dt)
     if config.fit_mode == "linear_abs":
         mass_fit = extract_mass_linear(corr_t.abs(), dt, config)
@@ -200,7 +203,7 @@ def _build_result_from_precomputed_correlator(
         mass_fit = extract_mass_linear(corr_t, dt, config)
         window_data = {}
     else:
-        mass_fit = extract_mass_aic(corr_t, dt, config)
+        mass_fit = extract_mass_aic(corr_t, dt, config, correlator_err)
         window_data = {
             "window_masses": mass_fit.pop("window_masses", None),
             "window_aic": mass_fit.pop("window_aic", None),
@@ -222,7 +225,7 @@ def _build_result_from_precomputed_correlator(
 
 def _fit_mass_only(correlator: Tensor, dt: float, config: CorrelatorConfig) -> float:
     """Fit mass from a single correlator for bootstrap spread estimates."""
-    corr_t = correlator.float()
+    corr_t = correlator
     if config.fit_mode == "linear_abs":
         fit = extract_mass_linear(corr_t.abs(), dt, config)
     elif config.fit_mode == "linear":
@@ -362,16 +365,18 @@ def _masked_mean_multi(values: Tensor, mask: Tensor, *, dims: tuple[int, ...]) -
 def _safe_gather_4d_by_2d_indices(values: Tensor, indices: Tensor) -> tuple[Tensor, Tensor]:
     """Safely gather walker features from [T,S,N,D] using [T,N] indices."""
     if values.ndim != 4 or indices.ndim != 2:
-        raise ValueError(
+        msg = (
             "_safe_gather_4d_by_2d_indices expects values [T,S,N,D] and indices [T,N], got "
             f"{tuple(values.shape)} and {tuple(indices.shape)}."
         )
+        raise ValueError(msg)
     t_len, s_count, n_walkers, n_feat = values.shape
     if indices.shape[0] != t_len or indices.shape[1] != n_walkers:
-        raise ValueError(
+        msg = (
             "_safe_gather_4d_by_2d_indices expects indices [T,N] aligned with values walker axis, got "
             f"{tuple(indices.shape)} vs [T={t_len},N={n_walkers}]."
         )
+        raise ValueError(msg)
     in_range = (indices >= 0) & (indices < n_walkers)
     idx_safe = indices.clamp(min=0, max=max(n_walkers - 1, 0))
     idx_exp = idx_safe[:, None, :, None].expand(t_len, s_count, n_walkers, n_feat)
@@ -386,27 +391,30 @@ def _safe_gather_pairwise_distances(
 ) -> tuple[Tensor, Tensor]:
     """Safely gather distances[t, row_idx[t,i], col_idx[t,i]] for [T,N] indices."""
     if distances.ndim != 3:
-        raise ValueError(f"distances must have shape [T,N,N], got {tuple(distances.shape)}.")
+        msg = f"distances must have shape [T,N,N], got {tuple(distances.shape)}."
+        raise ValueError(msg)
     if row_idx.ndim != 2 or col_idx.ndim != 2:
-        raise ValueError(
+        msg = (
             "row_idx and col_idx must have shape [T,N], got "
             f"{tuple(row_idx.shape)} and {tuple(col_idx.shape)}."
         )
+        raise ValueError(msg)
     if row_idx.shape != col_idx.shape:
-        raise ValueError(
+        msg = (
             "row_idx and col_idx must have the same shape, got "
             f"{tuple(row_idx.shape)} and {tuple(col_idx.shape)}."
         )
+        raise ValueError(msg)
     t_len, n, n2 = distances.shape
     if n != n2:
-        raise ValueError(
-            f"distances must be square on last two axes, got {tuple(distances.shape)}."
-        )
+        msg = f"distances must be square on last two axes, got {tuple(distances.shape)}."
+        raise ValueError(msg)
     if row_idx.shape != (t_len, n):
-        raise ValueError(
+        msg = (
             "row_idx/col_idx must align with distances [T,N,N], got "
             f"{tuple(row_idx.shape)} vs [T={t_len},N={n}]."
         )
+        raise ValueError(msg)
     in_row = (row_idx >= 0) & (row_idx < n)
     in_col = (col_idx >= 0) & (col_idx < n)
     valid = in_row & in_col
@@ -434,15 +442,17 @@ def _remap_companion_indices_for_bootstrap(
         Remapped companions [T,N] in bootstrap indexing; invalid/unmapped entries are -1.
     """
     if companions.ndim != 2 or bootstrap_idx.ndim != 1:
-        raise ValueError(
+        msg = (
             "_remap_companion_indices_for_bootstrap expects companions [T,N] and bootstrap_idx [N], got "
             f"{tuple(companions.shape)} and {tuple(bootstrap_idx.shape)}."
         )
+        raise ValueError(msg)
     if companions.shape[1] != bootstrap_idx.shape[0]:
-        raise ValueError(
+        msg = (
             "_remap_companion_indices_for_bootstrap expects aligned walker dimensions, got "
             f"{companions.shape[1]} vs {bootstrap_idx.shape[0]}."
         )
+        raise ValueError(msg)
     if int(n_walkers) <= 0:
         return torch.full_like(companions, -1)
 
@@ -486,7 +496,8 @@ def _compute_channel_series_from_kernels(
     geodesic gating at each scale.
     """
     if kernels.ndim != 4:
-        raise ValueError(f"kernels must have shape [T,S,N,N], got {tuple(kernels.shape)}.")
+        msg = f"kernels must have shape [T,S,N,N], got {tuple(kernels.shape)}."
+        raise ValueError(msg)
     t_len, n_scales, _, _ = kernels.shape
     device = kernels.device
     color = color.to(device=device)
@@ -599,25 +610,28 @@ def _compute_channel_series_from_kernels(
 
         scales_t = torch.as_tensor(scales, device=device, dtype=torch.float32).reshape(-1)
         if int(scales_t.numel()) != int(n_scales):
-            raise ValueError(
+            msg = (
                 "scales must align with kernel scale axis, got "
                 f"{int(scales_t.numel())} scales for kernels with S={n_scales}."
             )
+            raise ValueError(msg)
         dist = pairwise_distances.to(device=device, dtype=torch.float32)
         n_walkers = int(color.shape[1])
         if dist.shape != (t_len, n_walkers, n_walkers):
-            raise ValueError(
+            msg = (
                 "pairwise_distances must have shape [T,N,N] aligned with kernels, got "
                 f"{tuple(dist.shape)} vs [T={t_len},N={n_walkers},N={n_walkers}]."
             )
+            raise ValueError(msg)
 
         comp_j = companions_distance.to(device=device, dtype=torch.long)
         comp_k = companions_clone.to(device=device, dtype=torch.long)
         if comp_j.shape != color.shape[:2] or comp_k.shape != color.shape[:2]:
-            raise ValueError(
+            msg = (
                 "companion arrays must have shape [T,N] aligned with color tensors, got "
                 f"{tuple(comp_j.shape)} and {tuple(comp_k.shape)} vs {tuple(color.shape[:2])}."
             )
+            raise ValueError(msg)
         needs_score_pair_channels = any(
             name in channels
             for name in (
@@ -645,10 +659,11 @@ def _compute_channel_series_from_kernels(
                 raise ValueError(msg)
             scores = cloning_scores.to(device=device, dtype=torch.float32)
             if scores.shape != color.shape[:2]:
-                raise ValueError(
+                msg_0 = (
                     "cloning_scores must have shape [T,N] aligned with color tensors, got "
                     f"{tuple(scores.shape)} vs {tuple(color.shape[:2])}."
                 )
+                raise ValueError(msg_0)
 
         # Companion channels use original (non-smoothed) operators gated by
         # geodesic hard thresholds at each scale.
@@ -1070,7 +1085,8 @@ def _time_bootstrap_correlator_errors(
         (correlator_err [C,S,L], mass_std [C,S])
     """
     if series_stack.ndim != 3:
-        raise ValueError(f"Expected series_stack [C,S,T], got {tuple(series_stack.shape)}.")
+        msg = f"Expected series_stack [C,S,T], got {tuple(series_stack.shape)}."
+        raise ValueError(msg)
     c_count, s_count, t_len = series_stack.shape
     l_count = int(max_lag) + 1
     corr_err = torch.zeros(
@@ -1127,15 +1143,17 @@ def _walker_bootstrap_mass_std(
     """
     t_len, s_count, n_walkers, _ = kernels.shape
     if pairwise_distances.shape != (t_len, n_walkers, n_walkers):
-        raise ValueError(
+        msg = (
             "pairwise_distances must align with kernels [T,N,N], got "
             f"{tuple(pairwise_distances.shape)} vs [T={t_len},N={n_walkers},N={n_walkers}]."
         )
+        raise ValueError(msg)
     if int(torch.as_tensor(scales).numel()) != int(s_count):
-        raise ValueError(
+        msg = (
             "scales must align with kernels scale axis, got "
             f"{int(torch.as_tensor(scales).numel())} vs S={s_count}."
         )
+        raise ValueError(msg)
     if t_len <= 0 or s_count <= 0 or n_walkers <= 0 or n_bootstrap <= 0:
         return {
             channel: torch.full((s_count,), float("nan"), device=kernels.device)
@@ -1251,10 +1269,11 @@ def _compute_companion_per_scale_results_preserving_original(
     device = color.device
     cloning_scores = cloning_scores.to(device=device, dtype=torch.float32)
     if cloning_scores.shape != color.shape[:2]:
-        raise ValueError(
+        msg = (
             "cloning_scores must have shape [T,N] aligned with color, got "
             f"{tuple(cloning_scores.shape)} vs {tuple(color.shape[:2])}."
         )
+        raise ValueError(msg)
     out: dict[str, list[ChannelCorrelatorResult]] = {name: [] for name in requested}
 
     if t_len == 0 or n_walkers == 0:
@@ -1940,11 +1959,11 @@ def compute_multiscale_strong_force_channels(
 ) -> MultiscaleStrongForceOutput:
     """Compute multiscale strong-force channel results and select best scales."""
     if config.kernel_type not in KERNEL_TYPES:
-        raise ValueError(f"kernel_type must be one of {KERNEL_TYPES}, got {config.kernel_type!r}.")
+        msg = f"kernel_type must be one of {KERNEL_TYPES}, got {config.kernel_type!r}."
+        raise ValueError(msg)
     if config.bootstrap_mode not in BOOTSTRAP_MODES:
-        raise ValueError(
-            f"bootstrap_mode must be one of {BOOTSTRAP_MODES}, got {config.bootstrap_mode!r}."
-        )
+        msg = f"bootstrap_mode must be one of {BOOTSTRAP_MODES}, got {config.bootstrap_mode!r}."
+        raise ValueError(msg)
     frame_indices = resolve_frame_indices(
         history=history,
         warmup_fraction=float(config.warmup_fraction),
@@ -2080,7 +2099,8 @@ def compute_multiscale_strong_force_channels(
             comp_j_chunk = companions_distance.index_select(0, pos_t)
             comp_k_chunk = companions_clone.index_select(0, pos_t)
             anchor_rows = (
-                torch.arange(n_walkers, device=color.device, dtype=torch.long)
+                torch
+                .arange(n_walkers, device=color.device, dtype=torch.long)
                 .view(1, -1)
                 .expand(comp_j_chunk.shape[0], -1)
             )
@@ -2112,7 +2132,7 @@ def compute_multiscale_strong_force_channels(
         for channel in requested:
             series_by_channel[channel][:, pos_t] = chunk_series[channel]
 
-    dt = float(history.delta_t * history.record_every)
+    dt = recorded_time_step(history)
     correlator_cfg = CorrelatorConfig(
         max_lag=int(config.max_lag),
         use_connected=bool(config.use_connected),
@@ -2203,10 +2223,11 @@ def compute_multiscale_strong_force_channels(
                 dtype=torch.float32,
             )
             if dist_frame_ids != frame_indices:
-                raise RuntimeError(
+                msg = (
                     "Pairwise-distance frame order mismatch during walker bootstrap: "
                     f"{dist_frame_ids} vs {frame_indices}."
                 )
+                raise RuntimeError(msg)
             kernels_all = compute_smeared_kernels_from_distances(
                 distances_all,
                 scales,

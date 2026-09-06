@@ -21,16 +21,16 @@
 :::{div} feynman-prose
 Now we come to what might seem like a technical detail but is actually fundamental to the entire framework. You see, in most deep learning, people throw together networks without much thought about the geometric properties of the operations they're using. Linear layers with biases, ReLU activations applied element-wise—these are treated as universal primitives, LEGO blocks you can snap together however you like.
 
-But here's the thing: those primitives make hidden assumptions about your space. They assume it's flat. They assume the coordinate axes mean something special. When you apply ReLU element-wise to a vector, you're saying "kill the negative components based on the current choice of coordinates." But what if you rotate your mental axes? Suddenly different components get killed. The physics changes depending on an arbitrary choice.
+But here's the thing: those primitives make hidden assumptions about the chosen representation. They treat coordinate axes as meaningful. When you apply ReLU element-wise to a vector, you're saying "kill the negative components based on the current choice of coordinates." If the representation is supposed to be rotation-equivariant, a change of basis can alter that operation. The represented map changes with the bookkeeping choice.
 
-This is not a metaphor. In Chapters 1-3 of this section, we derived that the agent's latent space must have a specific gauge structure—$SU(N_f)_C \times SU(2)_L \times U(1)_Y$—to ensure consistent multi-agent interactions and capacity constraints. If we build neural operators that violate this structure at the microscopic level, the macroscopic theory falls apart. The geodesic integrator requires smooth, well-defined tangent vectors. The metric law requires isometric transformations. The WFR geometry requires mass-conserving updates.
+The comparison group is a declared architectural choice, not a physical necessity. The preceding chapters specify circumstances in which a latent action, metric compatibility, or WFR conservation is useful. If a neural operator is meant to preserve one of those properties, its intertwining and regularity conditions must be checked; violating them can invalidate the corresponding downstream theorem. The geodesic integrator requires smooth, well-defined tangent vectors, while metric and WFR claims require their own hypotheses.
 
-Standard DL primitives violate all of these. This chapter fixes that. We're going to build neural operators from scratch, starting with the requirement that they respect gauge symmetry. The result will be a new set of primitives—`IsotropicBlock`, `SteerableConv`—that play nice with the geometry we've spent three chapters deriving.
+Standard DL primitives generally do not satisfy all of these chosen conditions automatically. This chapter addresses that gap. We're going to build neural operators from scratch, starting with the requirement that they respect the declared group action. The result will be a new set of primitives—`IsotropicBlock`, `SteerableConv`—whose local properties can be checked against the chosen geometry.
 
-And here's the beautiful part: once you have gauge-covariant primitives, the architecture almost writes itself. The constraints are so tight that there's essentially only one way to build each component. This is the deep learning equivalent of the Standard Model in physics: a unique structure that emerges from symmetry requirements alone.
+And here's the useful part: once the desired covariance and regularity conditions are explicit, they narrow the architectural choices. They do not select a unique network, and the analogy with the Standard Model is only a comparison of organizing principles. Approximation, optimization, and global physical interpretations still require separate arguments and tests.
 :::
 
-*Cross-references:* This chapter builds on gauge theory foundations ({ref}`sec-symplectic-multi-agent-field-theory`), the capacity-constrained metric law ({ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits`), WFR geometry ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`), and feeds into the geodesic integrator implementation ({ref}`sec-equations-of-motion-langevin-sdes-on-information-manifolds`).
+*Cross-references:* This chapter builds on gauge theory foundations ({ref}`sec-symplectic-multi-agent-field-theory`), the capacity-constrained metric law ({ref}`sec-capacity-constrained-metric-law-geometry-from-interface-limits`), WFR geometry ({ref}`sec-wasserstein-fisher-rao-geometry-unified-transport-on-hybrid-state-spaces`), and feeds into the geodesic integrator implementation ({ref}`sec-the-equations-of-motion-geodesic-jump-diffusion`).
 
 
 
@@ -44,7 +44,7 @@ This is gauge symmetry: the requirement that *physics* be independent of *bookke
 
 Think of it like this: imagine a GPS system that gave you different directions depending on whether you held the phone facing north or east. That would be broken, obviously. Yet this is precisely what standard neural networks do—their internal computations depend on the orientation of an arbitrary coordinate frame.
 
-In Chapter 8.1, we derived that agents interacting under capacity constraints must respect a specific gauge structure: $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. Every neural operation that violates this symmetry is like a GPS that gives inconsistent directions. The errors might be small on any single forward pass, but they accumulate catastrophically when you try to integrate geodesics or maintain consistent beliefs across time. We need to fix the primitives.
+In Chapter 8.1, we chose a comparison structure for agents with these capacity and interaction requirements: $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. A neural operation that is intended to be equivariant but violates the declared action can produce inconsistent coordinates for downstream calculations. Whether that error accumulates depends on the integrator, metric, and training assumptions, so each claimed preservation property needs its own check.
 :::
 
 ### Formal Definitions
@@ -258,7 +258,7 @@ The choice of direct sum over tensor product is **architectural**, not fundament
 
 **Implementation note:** In practice, neural network architectures do NOT implement the full gauge group action explicitly. Instead, we build **equivariant primitives**:
 - IsotropicBlock (Definition {prf:ref}`def-isotropic-block`) is equivariant w.r.t. $\rho_C$ (bundle mixing, Theorem {prf:ref}`thm-isotropic-preserves-color`)
-- SteerableConv (Section {ref}`sec-covariant-retina`) is equivariant w.r.t. $\rho_L$ (obs-action doublet, Proposition {prf:ref}`prop-obs-action-doublet`)
+- SteerableConv (Section {ref}`sec-covariant-retina`) is equivariant w.r.t. $\rho_L$ (obs-action doublet, Definition {prf:ref}`def-obs-action-doublet`)
 - SpectralLinear (Definition {prf:ref}`def-spectral-linear`) preserves $\rho_Y$ (hypercharge bound, Theorem {prf:ref}`thm-spectral-preserves-hypercharge`)
 
 **Remark on complex vs. real:** Physicists typically work with complex representations because quantum mechanics is inherently complex (wavefunctions are in $\mathbb{C}$). Neural networks are real-valued (weights in $\mathbb{R}$), so we use real forms. The **isomorphism** $SU(2) \cong \text{Spin}(3) \to SO(3)$ and $SU(N) \supset SO(N)$ (via embedding) allow translation between complex and real pictures. See Section {ref}`sec-symplectic-multi-agent-field-theory` for the complex gauge field formulation; here we use the real neural implementation.
@@ -285,9 +285,9 @@ Now let me show you exactly what goes wrong with ReLU, because this is not abstr
 
 ReLU says: "Look at each component of the vector. If it is negative, kill it. If it is positive, keep it." This sounds innocent enough. But notice what is hidden in that instruction: *which* components? The answer depends entirely on what coordinate axes you chose. And that choice was arbitrary.
 
-Here is the picture to hold in your mind. Imagine the latent space as a room, and your coordinate axes as lines painted on the floor. ReLU creates "walls" along those painted lines—whenever a vector crosses from the positive side to the negative side of an axis, that component gets chopped to zero. Now rotate the room. The painted lines move, and the walls move with them. A vector that passed through freely before now hits a wall and gets truncated. *The physics has changed because you rotated your bookkeeping.*
+Here is the picture to hold in your mind. Imagine the latent space as a room, and your coordinate axes as lines painted on the floor. ReLU creates "walls" along those painted lines—whenever a vector crosses from the positive side to the negative side of an axis, that component gets chopped to zero. Now rotate the room. The painted lines move, and the walls move with them. A vector that passed through freely before now hits a wall and gets truncated. *The represented map has changed because you rotated your bookkeeping.*
 
-There is another way to see this. ReLU creates kinks in the function—sharp corners where the derivative is undefined. These kinks are aligned with the coordinate axes. In a gauge-invariant world, there are no preferred directions, so there should be no preferred locations for kinks. But ReLU puts them exactly along the axes, breaking the smooth differential structure that the geodesic integrator requires.
+There is another way to see this. ReLU creates kinks in the function—sharp corners where the derivative is undefined. These kinks are aligned with the coordinate axes. If the declared latent action has no preferred directions, there should be no preferred locations for kinks. ReLU puts them along the axes, so it fails the smooth equivariance or regularity requirement needed by a compatible geodesic integrator.
 
 The proof that follows makes this precise: apply ReLU, then rotate; versus rotate, then apply ReLU. You get different answers. That is the definition of gauge violation.
 :::
@@ -477,7 +477,7 @@ $$
 **Step 2. WFR action functional dependence:**
 The WFR action $\mathcal{L}_{\text{WFR}}[z]$ depends on the value function $V(z)$ and policy $\pi(a|z)$.
 
-**Illustrative functional form:** For a capacity-constrained agent (Chapter 4, Theorem {prf:ref}`thm-equivalence-entropy-regularized-control`), a typical action functional is:
+**Illustrative functional form:** For a capacity-constrained agent (Chapter 4, Theorem {prf:ref}`thm-equivalence-of-entropy-regularized-control-forms-discrete-macro`), a typical action functional is:
 
 $$
 \mathcal{L}_{\text{WFR}}[z] = V(f(z)) + \lambda I(\pi(\cdot|f(z)))
@@ -488,7 +488,7 @@ where:
 - $\lambda$ is the Lagrange multiplier enforcing capacity constraint $I(A; Z) \leq C$ (nat/step)
 - $f$ represents the network transformation pipeline (which may contain ReLU non-differentiability)
 
-**Source:** This form derives from the bounded-rationality variational principle (see Chapter 5, Section {ref}`sec-wfr-action-functional`, Equation 5.12). The argument below applies to **any** action functional requiring smooth gradients; we use this as a concrete example to demonstrate ReLU incompatibility.
+**Source:** This form derives from the bounded-rationality variational principle (see Chapter 5, Section {ref}`sec-the-wfr-metric`). The argument below applies to **any** action functional requiring smooth gradients; we use this as a concrete example to demonstrate ReLU incompatibility.
 
 **Step 3. Chain rule breakdown:**
 To compute $\nabla_z \mathcal{L}_{\text{WFR}}$, we need:
@@ -590,7 +590,7 @@ $$
 
 **Note on bundle permutations:** If bundles are **semantically distinguished** (e.g., bundle 1 = edges, bundle 2 = textures, bundle 3 = colors), we cannot permute them. If all bundles are **identical** (homogeneous feature space), the symmetry group extends to $(\prod_{i=1}^{n_b} SO(d_b)) \rtimes S_{n_b}$ where $S_{n_b}$ is the permutation group. For this architecture, we assume distinguished bundles.
 
-**Units:** $[V_i] = [\mathcal{Z}] = \sqrt{\text{nat}}$ (from capacity constraint, see Section {ref}`sec-dimensional-analysis`).
+**Units:** $[V_i] = [\mathcal{Z}] = \sqrt{\text{nat}}$ (from the capacity convention in {ref}`sec-dimensional-analysis`).
 
 **Remark:** This is a **direct sum decomposition with group action**, not a fiber bundle in the differential-geometric sense (which would require a base manifold and projection map). Analogous to gauge fields in physics (Chapter {ref}`sec-symplectic-multi-agent-field-theory`): just as the Error field $W_\mu$ transforms under $SU(2)_L$, bundles transform under their respective $SO(d_b)$ factors.
 :::
@@ -1315,7 +1315,7 @@ For $\ell \in \mathbb{Z}_{\geq 0}$ (non-negative integers), the $\ell$-th irredu
 ### Associated Bundle Construction
 
 **Mathematical prerequisites:** The construction below uses the language of **principal bundles** and **associated vector bundles** from differential geometry. We do not develop the full theory here; readers unfamiliar with fiber bundles should consult:
-- **Chapter 8.5** ({ref}`sec-wilson-lines-parallel-transport`): Rigorous treatment of principal bundles, Wilson lines, curvature forms, and parallel transport
+- **Chapter 8.5** ({ref}`sec-covariant-cross-attention-architecture`): Rigorous treatment of principal bundles, Wilson lines, curvature forms, and parallel transport
 - **Standard references**: Kobayashi & Nomizu, *Foundations of Differential Geometry*; Nakahara, *Geometry, Topology and Physics*
 
 **What is provided in this section:** We give the **direct construction** of the steerable feature bundle using the quotient $SE(2) \times_{SO(2)} V^{(\ell)}$ and verify its transformation properties. The bundle axioms (local triviality, transition functions, fiber structure) are assumed; full proofs appear in Chapter 8.5.
@@ -1760,17 +1760,17 @@ def test_rotation_equivariance(retina: CovariantRetina, img: torch.Tensor):
 ## Connection to Gauge Structure
 
 :::{div} feynman-prose
-Now we come to the connection that ties everything together. We have built three primitives—SpectralLinear, NormGate, SteerableConv—each carefully designed to preserve some symmetry. But in Chapter 8.1, we derived that agents must respect the full gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. How do our primitives relate to this structure?
+Now we come to the connection that ties everything together. We have built three primitives—SpectralLinear, NormGate, SteerableConv—each carefully designed to preserve some declared symmetry. Chapter 8.1 supplies a gauge-theoretic comparison model, with $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. How do our primitives relate to that model?
 
-Here is the correspondence. Each primitive preserves one factor of the gauge group:
+Here is the correspondence. Each primitive supplies an architectural proxy for one part of the comparison model:
 
-The *bundle structure* with $n_b$ bundles implements $SU(N_f)_C$—the "color" symmetry that keeps features confined within their bundles. Just as quarks in QCD cannot exist in isolation (they must bind into color-neutral hadrons), features in IsotropicBlocks cannot propagate independently (they must form bound states across bundles). Node 40 in the diagnostics enforces this confinement.
+The *bundle structure* with $n_b$ bundles realizes the declared bundle-index action and serves as a neural analogue of an $SU(N_f)_C$ "color" sector. It can encourage features to combine across bundles, but that architectural condition is not QCD confinement. The DNN-local **BindingConfinementCheck (DNN-B)** monitors the chosen local binding condition; global Node 40 is **CapacitySaturationCheck**, a separate capacity diagnostic.
 
-*Spectral normalization* implements $U(1)_Y$—the hypercharge symmetry associated with a capacity bound. The constraint $\sigma_{\max}(W) \leq 1$ ensures that the total "hypercharge" (roughly, the squared norm of the latent state) cannot grow without bound. This is the capacity constraint from the holographic bound in Chapter 8.1.
+*Spectral normalization* is used as an operational capacity and Lipschitz proxy in the slot labelled $U(1)_Y$. The constraint $\sigma_{\max}(W) \leq 1$ bounds the chosen linear operator; it does not define a physical hypercharge or import a holographic bound without the separate capacity hypotheses.
 
-*Steerable convolutions* implement $SU(2)_L$—the "weak" symmetry that mixes observation and action. Visual features from the retina form doublets with action planning, just as left-handed particles in the Standard Model form $SU(2)$ doublets.
+*Steerable convolutions* realize the selected spatial rotation and translation equivariance, used here as a reduced analogue of the $SU(2)_L$ observation--action slot. That equivariance does not make visual features Standard Model doublets or create a weak interaction.
 
-Three primitives, three gauge factors. This is not coincidence—it is the architecture being forced into a unique form by symmetry requirements.
+Three primitives, three labelled correspondences. The declared symmetry requirements restrict the design, while representation choices, dimensions, losses, and couplings remain modelling decisions; the dictionary is not a uniqueness theorem.
 :::
 
 ### Mapping Primitives to Gauge Fields
@@ -1970,7 +1970,7 @@ The norm-gating schedule $\{b_\ell\}_{\ell=0}^L$ implements this by construction
 
 $\square$
 
-**Connection to Node 40 (PurityCheck):** Measures $\sum_a |Q_C^a|^2$ at the final layer. Violation indicates non-neutral states reaching the macro register, breaking confinement.
+**DNN-local BindingConfinementCheck:** Measures $\sum_a |Q_C^a|^2$ at the final layer. Violation indicates non-neutral states reaching the macro register, breaking confinement. It is separate from global Node 40 (CapacitySaturationCheck) and from the supervised S-P purity diagnostic.
 :::
 
 :::{prf:proposition} Coupling Strength from Norm-Gating Barriers
@@ -2840,7 +2840,7 @@ So when $L_J \le 1$ the defect accumulates at most linearly in $\sum_\ell e_\ell
 
 *Proof.* Induction on $L$.
 
-**Remark (Geodesic integrator):** The Boris-BAOAB integrator (Chapter 4, Section {ref}`sec-geodesic-integrator`) recomputes the metric $G(z_t)$ at each timestep $t$ and does not assume layer-wise isometries (it does not require $f^*G=G$ for each layer).
+**Remark (Geodesic integrator):** The Boris-BAOAB integrator (Chapter 4, Section {ref}`sec-the-geodesic-baoab-integrator`) recomputes the metric $G(z_t)$ at each timestep $t$ and does not assume layer-wise isometries (it does not require $f^*G=G$ for each layer).
 :::
 
 :::{admonition} Connection to RL: Implicit Regularization via Architecture
@@ -3160,7 +3160,7 @@ class GaugeInvarianceCheck(DiagnosticNode):
 
 | Node | Name | Verifies | Trigger Condition |
 |:-----|:-----|:---------|:------------------|
-| 40 | PurityCheck | $SU(N_f)_C$ confinement | Non-neutral bundles at macro boundary |
+| DNN-B | BindingConfinementCheck | $SU(N_f)_C$ confinement | Non-neutral bundles at macro boundary |
 | 56 | CapacityHorizonCheck | $U(1)_Y$ bound | Hypercharge $Y \to Y_{\max}$ |
 | 62 | CausalityViolationCheck | Light cone preservation | $\sigma_{\max}(W) > 1 + \epsilon$ |
 | 67 | GaugeInvarianceCheck | $G$-equivariance | $\delta_{\text{gauge}} > \epsilon_{\text{gauge}}$ |
@@ -3205,7 +3205,7 @@ class IsotropicBlock(nn.Module):
     **Diagnostics:**
         - Node 67: Gauge invariance (test random rotations)
         - Node 62: Causality (verify σ_max ≤ 1)
-        - Node 40: Confinement (check bundle binding)
+        - DNN-B: Binding confinement (check bundle binding)
 
     Args:
         in_dim: Input dimension D_in [dimensionless]
@@ -3326,7 +3326,7 @@ class IsotropicBlock(nn.Module):
         # Step 3: Compute energy (SO(d_b)-invariant norm)
         energy = torch.norm(h_bundles, dim=2, keepdim=True)  # [B, n_b, 1]
         # Natural units: energy ∈ [0, √d_b] (dimensionless); with explicit units: [energy] = √nat
-        # (see Section {ref}`sec-natural-units`: z₀=1√nat absorbed in implementation)
+        # (see {ref}`sec-dimensional-analysis`: z₀=1√nat absorbed in implementation)
 
         # Step 4: Energy gate (smooth approximation to barrier function)
         # GELU is C^∞; note f(v)=v·g(||v||+b) is only C^1 at v=0 unless ||v|| is smoothed (Def. {prf:ref}`def-norm-gated-activation`)
@@ -3371,7 +3371,7 @@ class IsotropicBlock(nn.Module):
 
 | Gauge Field | Group | DNN Primitive | Physical Interpretation | Cross-Reference | Implementation Note |
 |:------------|:------|:--------------|:------------------------|:----------------|:--------------------|
-| Binding $G_\mu^a$ | $SU(N_f)_C$ | Isotropic bundles ($n_b$ bundles) | Feature confinement (color charge) | {ref}`sec-symplectic-multi-agent-field-theory`, Node 40 | Discrete subgroup: signed permutations |
+| Binding $G_\mu^a$ | $SU(N_f)_C$ | Isotropic bundles ($n_b$ bundles) | Feature confinement (color charge) | {ref}`sec-symplectic-multi-agent-field-theory`, DNN-B | Discrete subgroup: signed permutations |
 | Error $W_\mu^b$ | $SU(2)_L$ | Steerable conv (observation-action coupling) | Sensor-motor mixing (weak force) | {ref}`sec-symplectic-multi-agent-field-theory` | **Reduced to $SO(2) \cong U(1)$** (2D rotation subgroup) |
 | Opportunity $B_\mu$ | $U(1)_Y$ | Spectral norm (hypercharge bound) | Capacity bound | {ref}`sec-parameter-space-sieve`, Node 56 | Bounded quantity $Y \propto \|z\|^2$, not explicit rotation |
 
@@ -3389,15 +3389,15 @@ class IsotropicBlock(nn.Module):
 | Higgs | $(1, 2, 1/2)$ | Activation threshold bias | Mass generation via symmetry breaking |
 
 :::{div} feynman-prose
-Let me be precise about something: the table above is not poetry. It is not a loose analogy where we squint and things sort of look similar. The mathematical structures are *identical*.
+Let me be precise about something: the table above is a translation dictionary, not an identity claim. The mathematical structures on the two sides are different, even when a neural operator has a useful matching transformation law or diagnostic.
 
-Consider confinement. In QCD, quarks carry color charge—red, green, or blue. A fundamental principle says you can never observe an isolated quark; they must always bind into color-neutral combinations (three quarks in a baryon, quark-antiquark in a meson). This is not optional; it is enforced by the theory. Similarly, features in our IsotropicBlocks carry bundle indices. Node 40 in the diagnostics explicitly checks that only bound states—combinations that are "neutral" across bundles—reach the macro register. Features cannot propagate independently; they must bind.
+Consider the confinement row. In QCD, the statement about color-neutral hadrons belongs to an interacting quantum field theory and its dynamics. In our IsotropicBlocks, bundle indices define a finite representation and the DNN-local **BindingConfinementCheck (DNN-B)** tests whether the chosen non-neutral states reach the macro register. That is a local architectural diagnostic. Global Node 40 is **CapacitySaturationCheck** and monitors capacity saturation; it does not perform the local binding check.
 
-Consider mass generation. In the Standard Model, particles acquire mass through the Higgs mechanism: a field with a potential that has its minimum away from zero, spontaneously breaking symmetry. In our architecture, the activation potential $b_i$ plays exactly this role. It creates an energy barrier that signals must overcome, and the height of this barrier determines how strongly features are suppressed—analogous to how the Higgs coupling determines particle masses.
+Consider the mass-generation row. In the Standard Model, particle masses arise from a specified field theory and symmetry-breaking vacuum. In our architecture, the activation potential $b_i$ creates a tunable response threshold that can be compared with that picture. It is an energy-barrier analogy for feature suppression, not a Higgs field or a mass-generation theorem.
 
-The correspondence runs deep. Physics constants map to architecture hyperparameters. Coupling strengths map to weight magnitudes. The QCD confinement scale $\Lambda_{\text{QCD}}$ maps to the bundle binding scale set by activation thresholds. You do not get to choose these independently; they are locked together by the gauge structure.
+The correspondence can guide experiments. Coupling strengths may be compared with weight or threshold scales after units and observables are declared, but the parameters are not numerically locked to $\Lambda_{\text{QCD}}$ by the gauge notation.
 
-This is what it means to derive architecture from first principles.
+This is what it means to derive an architecture from declared mathematical requirements. Any identification with the Standard Model remains a conjectural interpretation that needs an explicit map and empirical tests.
 :::
 
 
@@ -3406,17 +3406,17 @@ This is what it means to derive architecture from first principles.
 ## Connection to Chapter 5 (Macroscopic Integration)
 
 :::{div} feynman-prose
-We have now built the atoms—the microscopic primitives that respect gauge symmetry. SpectralLinear for light-cone preservation. NormGate for rotation-invariant activation. SteerableConv for equivariant vision. Each one carefully designed to preserve its piece of $G_{\text{Fragile}}$.
+We have now built the atoms—the microscopic primitives that respect the declared architectural symmetries. SpectralLinear supplies an operator-norm bound. NormGate supplies bundle-rotation equivariance. SteerableConv supplies the selected spatial equivariance. Each one is associated with a piece of the comparison group $G_{\text{Fragile}}$.
 
-But atoms are not an agent. You need to compose them into molecules—full architectures that can actually do something. Chapter 5 shows how to do this, and here is the remarkable thing: once you have gauge-covariant primitives, the integrator almost writes itself.
+But atoms are not an agent. You need to compose them into molecules—full architectures that can actually do something. Chapter 5 shows how to do this, and the declared primitive properties provide useful interfaces for that composition; they do not determine an integrator automatically.
 
-The Boris-BAOAB scheme for geodesic integration has specific requirements. It needs metric-preserving steps—IsotropicBlock provides these. It needs light-cone preservation so information does not travel faster than $c_{\text{info}}$—spectral normalization provides this. It needs symplectic structure so phase space volume is conserved—the bundle structure provides this. Each requirement maps directly to a primitive we have already built.
+The Boris-BAOAB scheme for geodesic integration has specific requirements. Metric-compatible steps, any information-speed bound, and symplectic structure must each be checked under their own hypotheses. IsotropicBlock and spectral normalization can supply useful local ingredients, but neither alone proves a metric flow or a physical light cone, and bundle structure does not supply symplecticity. The integrator and its approximation errors therefore need an independent analysis.
 
-What remains to be shown is how *attention* fits into this picture. When an agent attends to different parts of its observation, it is implementing *parallel transport*—moving vectors from one location on the manifold to another without them leaving the tangent bundle.
+What remains to be shown is how *attention* fits into this picture. With a declared connection and compatible transport rule, attention can implement a parallel-transport analogue—moving represented vectors between local fibres. The analogy becomes a geometric theorem only after those connection and equivariance conditions are verified.
 
 **Remark on gauge connections:** The full gauge-theoretic formulation—including Wilson lines (path-ordered exponentials of gauge connections), curvature forms, and parallel transport—is developed rigorously in Chapter 8.5 (Macroscopic Integration). At the DNN block level, we have established the *local* gauge covariance properties of primitives. The *global* integration of these local symmetries via attention mechanisms requires the machinery of principal bundles and connection forms, which is beyond the scope of this chapter.
 
-We have the atoms. Chapter 8.5 builds the molecules through Covariant Cross-Attention. And from molecules, we get agents that move smoothly along geodesics in a gauge-invariant way.
+We have the atoms. Chapter 8.5 builds the molecules through Covariant Cross-Attention. Whether the resulting agents follow the intended geodesics or achieve global gauge invariance is then a theorem or an empirical question under the stated implementation assumptions.
 :::
 
 **Preview of Architecture:**
@@ -3431,9 +3431,9 @@ Output (action a_t)
 ```
 
 **Forward cross-references:**
-- **Covariant Cross-Attention** ({ref}`sec-covariant-cross-attention`): Implements Wilson lines for parallel transport along geodesics.
-- **Boris-BAOAB Integrator** ({ref}`sec-equations-of-motion-langevin-sdes-on-information-manifolds`): Macroscopic integration scheme that requires microscopic primitives to preserve gauge structure.
-- **Temperature Schedule** ({ref}`sec-the-belief-wave-function-schrodinger-representation`): Cognitive temperature $T_c$ varies with inverse conformal factor $1/\lambda(z)$ to maintain consistent exploration across curved manifold.
+- **Covariant Cross-Attention** ({ref}`sec-covariant-cross-attention-architecture`): Implements Wilson lines for parallel transport along geodesics.
+- **Boris-BAOAB Integrator** ({ref}`sec-the-geodesic-baoab-integrator`): Macroscopic integration scheme that requires microscopic primitives to preserve gauge structure.
+- **Temperature Schedule** ({ref}`sec-adaptive-thermodynamics`): Cognitive temperature $T_c$ is a declared schedule; the adaptive section states the hypotheses needed before interpreting it as a geometric compensation.
 
 
 
@@ -3447,17 +3447,17 @@ We started with a problem: standard deep learning primitives—the bread-and-but
 
 So we built replacements. Three primitives, each designed from the ground up to respect gauge symmetry:
 
-1. **SpectralLinear** removes bias and constrains the singular values. This preserves the light cone structure—information cannot propagate faster than $c_{\text{info}}$, and there is no artificial preferred origin in the tangent space.
+1. **SpectralLinear** removes bias and constrains the singular values. This bounds a chosen operator norm; a light-cone interpretation additionally requires a time scale, metric, and propagation estimate. Removing bias avoids one source of an affine offset, but does not establish a universal coordinate invariance.
 
-2. **NormGate** applies activation based on bundle norms, not individual components. The gate decision "is there enough energy to pass?" has the same answer regardless of how you orient your coordinate axes within each bundle.
+2. **NormGate** applies activation based on bundle norms, not individual components. The gate decision "is there enough magnitude to pass?" has the same answer under the declared rotations within each bundle.
 
-3. **SteerableConv** lifts images to the group $SE(2)$ and convolves with steerable filters. Rotate the input, get rotated features—exactly, not approximately through data augmentation.
+3. **SteerableConv** lifts images to the declared $SE(2)$ representation and convolves with steerable filters. Under the specified group action and exact arithmetic, rotating the input gives the corresponding rotated features; implementation and sampling errors must still be measured.
 
-Each primitive preserves one factor of the gauge group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. Bundle structure implements color confinement. Spectral normalization enforces a hypercharge bound. Steerable convolutions implement the observation-action doublet structure. Three primitives, three gauge factors, one unified theory.
+The chapter associates each primitive with one factor of the comparison group $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$. Bundle structure supplies a local binding proxy and DNN-B; spectral normalization supplies an operator or capacity diagnostic; steerable convolutions supply a declared spatial equivariance. These correspondences organize the architecture, while physical confinement, hypercharge, and weak-doublet identifications remain conjectural.
 
-And here is what I find most satisfying: the constraints are so tight that the architecture essentially writes itself. Once you demand gauge invariance, there is only one way to build each component. You do not get to make arbitrary design choices; the symmetry requirements dictate the structure. This is the hallmark of good physics: not many knobs to tune, but few parameters that must take specific values.
+And here is what I find most satisfying: the constraints make some design choices transparent. Once you demand the declared equivariance or operator bounds, many constructions are ruled out, but dimensions, parameterizations, schedules, and approximation methods remain available. The mathematics narrows the search; it does not select a unique physical theory.
 
 We now have the atoms. What remains is to show how these atoms compose into molecules—full architectures that can actually be trained and deployed. That is the subject of Chapter 5, where we connect these microscopic primitives to the macroscopic geodesic integrator.
 
-The bridge from gauge theory to neural network implementation is complete.
+The translation from the declared comparison model to neural-network implementation is documented. A physical identification would require a separate map, matching observables, and tests beyond these architectural identities.
 :::

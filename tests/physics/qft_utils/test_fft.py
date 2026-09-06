@@ -41,15 +41,15 @@ class TestFftCorrelatorBatchedBasic:
         result = _fft_correlator_batched(series, max_lag=10, use_connected=True)
         assert torch.allclose(result, torch.zeros_like(result), atol=1e-7)
 
-    def test_dtype_is_float32(self):
-        """dtype is float32 regardless of input dtype."""
+    def test_preserves_floating_precision(self):
+        """Integer input is promoted; double input is not downcast."""
         series_int = torch.randint(0, 10, (2, 50))
         result_int = _fft_correlator_batched(series_int, max_lag=10)
         assert result_int.dtype == torch.float32
 
         series_double = torch.randn(2, 50, dtype=torch.float64)
         result_double = _fft_correlator_batched(series_double, max_lag=10)
-        assert result_double.dtype == torch.float32
+        assert result_double.dtype == torch.float64
 
     def test_max_lag_zero(self):
         """max_lag=0 returns shape [B, 1]."""

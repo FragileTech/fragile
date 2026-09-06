@@ -42,7 +42,7 @@ But there is more. The softmax temperature $\sqrt{d_k}$ in standard attention is
 
 And the geodesic correction? The Christoffel symbols? Those come from geometric terms in the Query projection. The standard linear $Q = W_Q x$ (with $x$ encoding $z$) becomes $Q = W_Q x + W_{Qz} z + W_{Qv} x_v + W_{Q,\Gamma}(z \otimes z)$, optionally with a velocity-conditioned $W_{Qzv}(z \odot v)$ term. The geometric coefficients encode the connection.
 
-The result is a single module that performs one complete step of the Boris-BAOAB integrator. Four heads handle B-A-A-B, while the O-step is a closed-form OU update by default (or a fifth, learned thermostat head when you want non-Gaussian noise). In the idealized setting, it is gauge-covariant by construction; it inherits the symplectic/time-reversible structure of the BAOAB splitting for the deterministic substeps and the thermodynamic consistency of the OU thermostat.
+The result is a single module that implements one proposed step of the Boris-BAOAB update. Four heads handle B-A-A-B, while the O-step is a closed-form OU update by default (or a fifth, learned thermostat head when you want non-Gaussian noise). In the idealized exact-transport setting it can satisfy the declared covariance identities. The deterministic substeps inherit symplectic or time-reversible properties only under compatible Hamiltonian hypotheses; the full stochastic method is not symplectic, and a learned thermostat has no automatic Gibbs guarantee.
 :::
 
 *Abstract.* This chapter derives the **Covariant Cross-Attention** architecture for the world model, replacing standard sequence models (GRU, Transformer) with a mechanism that respects the gauge structure $G_{\text{Fragile}} = SU(N_f)_C \times SU(2)_L \times U(1)_Y$ derived in {ref}`the Standard Model of cognition <sec-standard-model-cognition>`. The architecture implements a single-step integrator for the Lorentz-Langevin geodesic equations ({ref}`the equations of motion <sec-the-equations-of-motion-geodesic-jump-diffusion>`) using Wilson lines for parallel transport, position-dependent temperature for metric encoding, and linear + quadratic Query projections for Christoffel symbols. In the idealized mathematical construction, the attention weights are gauge-invariant by design; in practical implementations, approximations (e.g., linearized Wilson lines) introduce controlled deviations that can be monitored diagnostically.
@@ -104,7 +104,7 @@ When you regularize, you are saying "please try to satisfy this constraint, here
 The right approach is to build the constraints into the architecture itself, so violations are structurally prevented in the idealized construction (and tightly controlled/diagnosable in practical approximations), rather than merely *discouraged* by regularization.
 :::
 
-(rb-world-model-as-integrator)=
+(rb-world-models)=
 :::{admonition} Researcher Bridge: World Models as Numerical Integrators
 :class: info
 Standard world models learn a generic function $z_{t+1} = f(z_t, a_t)$ without structure. But we know the dynamics---they are the Lorentz-Langevin SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`). The world model should be a *numerical integrator* for this SDE, respecting its geometric structure. This perspective shifts the design problem from "learn any function" to "implement a gauge-covariant integrator."
@@ -393,9 +393,9 @@ The second term is the **gauge correction** to the attention score.
 
 :::
 
-:::{admonition} Connection to RL #35: Gauge-Covariant World Models
+:::{admonition} Connection to RL #38: Gauge-Covariant World Models
 :class: note
-:name: conn-rl-35
+:name: conn-rl-38
 
 **The General Law (Fragile Agent):**
 World model predictions use **covariant cross-attention** with Wilson line preprocessing in Q, K, V:
@@ -811,11 +811,11 @@ This has a nice interpretation: the commitment strength is the "correlation" bet
 ## $SU(N_f)_C$ Texture Firewall: Area Law Screening for Confinement
 
 :::{div} feynman-prose
-The final gauge structure we implement is the texture firewall: the confinement mechanism that prevents raw features from leaking to the macro level.
+The final architectural ingredient is the texture firewall: a screening rule that is intended to prevent raw features from leaking to the macro level. We use confinement language as an analogy for this learned representation constraint.
 
 In QCD, quarks are confined by the strong force. If you try to pull a quark out of a proton, the energy cost grows linearly with distance (the "string" between quarks stretches and stores energy). Eventually it is cheaper to create new quark-antiquark pairs than to keep stretching the string. You never see a free quark.
 
-We want the same behavior for texture. The agent should only observe *concepts* (bound states of features), not raw features. If attention tries to access texture directly, the attention score should be suppressed---screened by an area-law factor.
+We want a related behavior for texture. The agent should preferentially observe *concepts* (bound states of features), rather than raw features. If attention tries to access texture directly, the attention score can be suppressed---screened by an area-law-inspired factor. This is an architectural proxy, not QCD dynamics.
 
 The implementation uses the string tension $\sigma$ from the binding field (not to be confused with the Pauli matrices $\sigma^b$ used as $SU(2)$ generators above). The attention score between positions $z$ and $z'$ is modified by:
 
@@ -825,7 +825,7 @@ $$
 
 where $A_{\text{string}}$ is an area-law-inspired *proxy* for the cost of coupling distant texture degrees of freedom. In lattice gauge theory, the area law is a statement about **closed Wilson loops**; here we use a distance-dependent surrogate (typically quadratic in separation) to implement exponential screening in attention.
 
-At the macro level (coarse features), the string tension is large, so screening is strong. At the texture level (fine features), the string tension is small (asymptotic freedom), so features can interact freely within the texture layer---they just cannot propagate to the macro level.
+At the macro level (coarse features), the chosen string-tension schedule can make screening strong. At the texture level (fine features), a smaller schedule can permit texture-to-texture interaction while still limiting the macro path. Calling that schedule "asymptotic freedom" is a physical analogy, not a proved renormalization result.
 :::
 
 We implement the $SU(N_f)_C$ confinement mechanism that screens texture from macro-level access.
@@ -915,7 +915,7 @@ At texture level with $\sigma(L) \approx 0.01$: $r_{\text{conf}}(L) \approx 14$ 
 :::{div} feynman-prose
 This area-law-inspired screening is a natural architectural proxy for the texture firewall: it implements an exponential suppression of macro-level attention into texture features without requiring hard masks.
 
-And notice that this is not a hard cutoff. The screening is exponential in the area proxy, so nearby texture *can* influence macro attention weakly, while long-range texture correlations are exponentially suppressed. This matches the physics intuition: you can sometimes see texture details if you look closely, but the overall macro prediction does not depend on texture noise.
+And notice that this is not a hard cutoff. The screening is exponential in the chosen area proxy, so nearby texture *can* influence macro attention weakly, while long-range texture correlations are suppressed when the proxy and coefficient make that estimate valid. The resulting macro independence is an empirical property to test, not a consequence of the QCD analogy.
 :::
 
 (pi-area-law)=
@@ -1791,7 +1791,7 @@ The problem is that attention is inherently $O(N^2)$---every query attends to ev
 
 For a context of $N = 1000$ positions and latent dimension $d = 64$, the naive complexity is $O(N^2 d^2) \approx 4 \times 10^9$ operations per attention layer. That is not practical.
 
-But here is the good news: we can achieve $O(N)$ complexity while preserving the essential gauge structure. The key insight is that gauge invariance is a *local* property. The Wilson line from $z$ to $z'$ only matters when $z$ and $z'$ are close enough to interact significantly. Far-away pairs are screened by the area law anyway. So we can use sparse attention patterns that respect the geometric locality.
+But here is the useful engineering possibility: under an explicit decay estimate for the chosen screening proxy, we can approximate the interaction with $O(N)$ or $O(N \log N)$ sparse patterns while controlling the discarded tail. Gauge covariance is a local identity, but locality alone does not supply a complexity bound; the Wilson-line and screening errors must be measured.
 
 Let me show you how to do this systematically.
 :::
@@ -1819,14 +1819,14 @@ For $N = 1000$, $d = 64$: approximately $4 \times 10^9$ operations per layer.
 ### Principle: Gauge-Locality Correspondence
 
 :::{div} feynman-prose
-The crucial observation is that gauge invariance and locality are deeply connected. The Wilson line $U(z, z')$ is close to the identity when $z$ and $z'$ are nearby (in geodesic distance). The area law screening $\exp(-\sigma A)$ suppresses attention to distant keys exponentially. The metric temperature $\tau(z) \propto 1/\lambda(z)$ makes attention sharper in high-curvature (boundary) regions where long-range correlations are suppressed.
+The crucial observation for this approximation is that the chosen transport and screening rules can be local. The Wilson line $U(z, z')$ may be close to the identity when $z$ and $z'$ are nearby (in geodesic distance), while the area-law-inspired factor $\exp(-\sigma A)$ suppresses distant keys when its coefficient and proxy satisfy the stated bounds. The metric temperature $\tau(z) \propto 1/\lambda(z)$ changes the score scale; it does not by itself prove boundary localization.
 
 All of these effects conspire to make the attention matrix *effectively sparse*. Most entries are either:
 1. Nearly identity (Wilson line ≈ I for nearby points)
 2. Exponentially suppressed (area law screening)
 3. Concentrated on local neighbors (sharp temperature near boundary)
 
-We can exploit this effective sparsity to achieve linear complexity.
+If these decay and truncation estimates hold, we can exploit the effective sparsity to reduce complexity while recording the approximation error.
 :::
 
 :::{prf:proposition} Gauge-Locality Correspondence (Practical Bound)
@@ -2039,11 +2039,11 @@ With typical values $k = 64$, $L = 8$, $R = 3$, $d = 64$: **O(N · 264)** operat
 :::
 
 :::{div} feynman-prose
-Let me summarize what we have achieved. The full covariant cross-attention, implemented naively, would be hopelessly slow. But by exploiting the *physical structure* of the problem---the locality of gauge interactions, the exponential suppression from area laws, the low-rank structure of Christoffel symbols---we can achieve linear complexity.
+Let me summarize what we have achieved. The full covariant cross-attention, implemented naively, would be hopelessly slow. Under the chosen locality, screening, and low-rank approximations, we can design a sparse implementation with lower cost; the complexity and approximation error need to be measured for the actual data and geometry.
 
-The key insight is that gauge invariance is not about comparing everything with everything. It is about comparing *nearby* things correctly. Far-away things do not interact strongly anyway (that is what confinement means!). So sparse attention is not just an approximation---it is *more faithful* to the physics than dense attention would be.
+The key insight is that the declared gauge covariance and screening rules need not compare everything with everything. If the distance-dependent proxy genuinely suppresses far-away pairs, sparse attention is a useful approximation to that model. It is not automatically more faithful to physical gauge theory than dense attention.
 
-This is a general principle: when you understand the structure of your problem, efficiency and accuracy align. The shortcuts that make computation fast are often the same shortcuts that the physics takes.
+This is a useful engineering principle: when the approximation error is controlled, the structure that makes computation fast can also preserve the quantities we care about. The physical analogy does not supply that error bound by itself.
 :::
 
 **Table 35.9.1 (Complexity Comparison).**
@@ -2080,7 +2080,7 @@ The resulting architecture runs in **O(N)** time with approximation error that c
 
 Following the diagnostic node convention ({ref}`thin interfaces <sec-theory-thin-interfaces>`), we define monitors for the covariant attention architecture.
 
-(node-67)=
+(node-67-gauge)=
 **Node 67: GaugeInvarianceCheck**
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
@@ -2094,7 +2094,7 @@ Following the diagnostic node convention ({ref}`thin interfaces <sec-theory-thin
 **Trigger conditions:**
 - High GaugeInvarianceCheck: Wilson line approximation is too coarse for the curvature scale. Remedy: use higher-order path-ordered product or reduce context distance.
 
-(node-68)=
+(node-68-temperature)=
 **Node 68: MetricTemperatureConsistencyCheck**
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
@@ -2108,7 +2108,7 @@ Following the diagnostic node convention ({ref}`thin interfaces <sec-theory-thin
 **Trigger conditions:**
 - High MetricTemperatureConsistencyCheck: Temperature and metric are desynchronized. Remedy: recalibrate temperature module or check metric computation.
 
-(node-69)=
+(node-69-chirality)=
 **Node 69: ChiralityViolationCheck**
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
@@ -2122,7 +2122,7 @@ Following the diagnostic node convention ({ref}`thin interfaces <sec-theory-thin
 **Trigger conditions:**
 - High ChiralityViolationCheck: Projector is not idempotent. Remedy: renormalize value gradient; check for numerical precision issues.
 
-(node-70)=
+(node-70-texture)=
 **Node 70: TextureLeakageCheck**
 
 | **#** | **Name** | **Component** | **Type** | **Interpretation** | **Proxy** | **Cost** |
@@ -2145,7 +2145,7 @@ Node 68 verifies the metric-temperature correspondence. This is a sanity check t
 
 Node 69 monitors the chiral projector. The projector must be idempotent---applying it twice should give the same result as applying it once. Violations indicate numerical problems.
 
-Node 70 is the texture firewall check. If macro-level attention is accessing texture details, the area law screening is not working. This is a confinement violation.
+Node 70 is the texture firewall check. If macro-level attention is accessing texture details, the chosen screening rule is not working as intended. This is an architectural firewall violation; the QCD word "confinement" is only an analogy here.
 
 Together, these nodes let you diagnose gauge-structure failures at runtime and take corrective action.
 :::

@@ -25,8 +25,8 @@
 |---|---|
 | $x_t$ | Observation at time $t$ (incoming boundary signal) |
 | $a_t$ | Action at time $t$ (outgoing boundary signal) |
-| $r_t$ | Reward sample (boundary flux; scalar in conservative case) |
-| $d_t$ | Termination / absorbing event indicator (terminal subset $\Gamma_{\text{term}}$) |
+| $r_t$ | Reward sample (pairing of the boundary reward flux with the step) |
+| $d_t$ | Termination / absorbing event indicator (represented by $\Gamma_{\text{term}}$ only when latent-measurable) |
 | $\iota_t$ | Auxiliary side channels (costs, constraint reasons, privileged signals) |
 | $B_t=(x_t,r_t,d_t,\iota_t,a_t)$ | Boundary / Markov blanket interface tuple |
 | $Z_t=(K_t,z_{n,t},z_{\mathrm{tex},t})$ | Internal state split (macro / nuisance / texture) |
@@ -124,8 +124,8 @@ B_t := (x_t,\ r_t,\ d_t,\ \iota_t,\ a_t),
 $$
 where:
 - $x_t\in\mathcal{X}$ is the observation (input sample),
-- $r_t\in\mathbb{R}$ is the boundary reward sample (evaluation of the reward 1-form/flux; scalar in the conservative case),
-- $d_t\in\{0,1\}$ is termination (absorbing event / task boundary; corresponds to $\Gamma_{\text{term}}$ and $\tau_{\text{term}}$ in Definition {prf:ref}`def-terminal-boundary`),
+- $r_t\in\mathbb{R}$ is the boundary reward sample (the pairing of the reward 1-form with the latent step; its cumulative integral is path-independent only in the conservative case),
+- $d_t\in\{0,1\}$ is termination (an exogenous absorbing-event flag; on the latent side it is represented by $\Gamma_{\text{term}}$ only when termination is $\sigma(Z_t)$-measurable),
 - $\iota_t$ denotes any additional side channels (costs, constraints, termination reasons, privileged signals),
 - $a_t\in\mathcal{A}$ is action (control signal sent outward).
 
@@ -229,7 +229,7 @@ Now let's go through the standard RL vocabulary and see how each term looks from
    - *Boundary gate nodes ({ref}`sec-diagnostics-stability-checks`):*
      - **Node 14 (InputSaturationCheck):** input saturation (sensor dynamic range exceeded).
      - **Node 15 (SNRCheck):** low signal-to-noise (SNR too low to support stable inference).
-     - **Node 13 (BoundaryCheck):** the channel is open in the only well-typed sense: $I(X;K)>0$ (symbolic mutual information).
+     - **Node 13 (BoundaryCheck):** the channel is not collapsed when the monitored signal gives $I(X;K)>0$ (a non-collapse sanity condition; it does not by itself certify external grounding).
 
 :::{div} feynman-prose
    The observation isn't just "data." It's the only window the agent has into the world. And notice the decomposition: we immediately split what we see into "what kind of thing is this" ($K$), "where/how is it positioned" ($Z_n$), and "fine details for reconstruction" ($Z_{\text{tex}}$). This structured representation is crucial for efficiency and robustness.
@@ -241,25 +241,25 @@ Now let's go through the standard RL vocabulary and see how each term looks from
    - *Cybernetic constraints:*
      - **Node 2 (ZenoCheck):** limits chattering (bounded variation in control outputs).
      - **BarrierSat:** actuator saturation (finite control authority).
-   - *Boundary interpretation ({ref}`sec-the-symplectic-interface-position-momentum-duality`):* Actions impose **Neumann boundary conditions** (clamping flux/momentum) on the agent's internal manifold, dual to the Dirichlet conditions imposed by sensors.
+   - *Boundary interpretation ({ref}`sec-the-symplectic-interface-position-momentum-duality`):* Actions may be represented by a declared **Neumann-like flux limit** (clamping a boundary flux or momentum) in an interface model. This is dual in the variational pairing to a sensor assimilation target; it is not an automatic PDE boundary condition.
 
 :::{div} feynman-prose
-   Actions aren't free. You can't jitter infinitely fast (Zeno check). You can't push infinitely hard (saturation). And there's a beautiful duality here: sensors tell you "where you are" (Dirichlet), while actions tell you "which way you're pushing" (Neumann). Together they close the boundary conditions on the agent's internal dynamics.
+   Actions aren't free. You can't jitter infinitely fast (Zeno check). You can't push infinitely hard (saturation). In a model that explicitly lifts the interface to phase space, it can be useful to describe sensor traces as Dirichlet-like data and controlled fluxes as Neumann-like data. That is an operational analogy; the two signals do not automatically impose a PDE boundary-value problem or prove a Dirichlet--Neumann duality.
 :::
 
 4. **Reward $r_t$ (Utility / Negative Cost Signal).**
    - *Standard:* a scalar to maximize.
    - *Fragile:* boundary reward flux (a 1-form) evaluated along the trajectory. In continuous time it appears as an
-     instantaneous **cost rate** $r_t=\langle\mathcal{R},\dot{z}\rangle$; in discrete time it appears as an
+     instantaneous **reward rate** $\rho_t=\langle\mathcal{R},\dot{z}\rangle$ (the cost rate is $-\rho_t$); in discrete time it appears as an
      incremental term in the Bellman/HJB consistency relation ({ref}`sec-the-hjb-correspondence`).
    - *Mechanism:* the critic's $V$ is the internal value/cost-to-go for the **exact (conservative) component**; the
      non-conservative component remains as a curl/connection term in the dynamics ({ref}`sec-the-reward-1-form`).
    - *Boundary interpretation ({ref}`sec-the-reward-1-form`):* Reward is a boundary reward flux
      1-form $J_r$ defined by the pullback $J_r=\iota^*\mathcal{R}$ of the bulk reward 1-form $\mathcal{R}$.
-     By Hodge decomposition, $\mathcal{R} = d\Phi + \delta \Psi + \eta$; only the exact part $d\Phi$ (identified with
-     $dV$, the critic's exact component) yields a scalar charge density $\sigma_r$ and a **Screened Poisson Equation**
-     (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). Define the non-exact component
-     $A := \delta\Psi + \eta$, so $\mathcal{R} = d\Phi + A$ and $dA = \mathcal{F}$. The solenoidal/harmonic parts
+     By Hodge decomposition, $\mathcal{R} = d\Phi + \delta \Psi + \eta$; the cost-to-go is $V:=-\Phi$ and the
+     cost 1-form is $\mathcal C:=-\mathcal R=dV-A$ with $A:=\delta \Psi+\eta$. Only the exact part $d\Phi$
+     yields a scalar charge density $\sigma_r$ and a **Screened Poisson Equation**
+     (Theorem {prf:ref}`thm-the-hjb-helmholtz-correspondence`). The solenoidal/harmonic parts
      encode path-dependent reward and are carried by the connection/field strength.
 
 :::{div} feynman-prose
@@ -272,8 +272,10 @@ Now let's go through the standard RL vocabulary and see how each term looks from
 5. **Termination $d_t$ (Absorbing Boundary Event).**
    - *Standard:* end-of-episode flag.
    - *Fragile:* an absorbing event: the trajectory has entered a terminal region (failure/success) or exited the modeled
-     domain. Formally this is a terminal subset $\Gamma_{\text{term}}$ with stopping time $\tau_{\text{term}}$ and
-     Dirichlet data $V|_{\Gamma_{\text{term}}}=V_{\text{term}}$ (Definition {prf:ref}`def-terminal-boundary`).
+     domain. On the latent side, represent it by a terminal subset $\Gamma_{\text{term}}$ with stopping time
+     $\tau_{\text{term}}$ and Dirichlet data $V|_{\Gamma_{\text{term}}}=V_{\text{term}}$ only when termination is
+     $\sigma(Z_t)$-measurable (Definition {prf:ref}`def-terminal-boundary`). Otherwise use the killing rate
+     $\kappa_{\text{term}}(z):=\bar P(d_t=1\mid z)/\Delta t$.
 
 6. **Episode / Rollout (Finite-Horizon Segment).**
    - *Standard:* a finite trajectory segment.
@@ -305,12 +307,12 @@ Let:
 - $G_{\text{obj}}$ be an **objective/feedback gauge** acting on scalar feedback signals (e.g., change of units or baseline shift). A common choice is the positive affine group
 
   $$
-  G_{\text{obj}} := \{(a,b): a>0,\ r\mapsto ar+b\}.
+  G_{\text{obj}} := \{(\alpha,\beta_0): \alpha>0,\ r\mapsto \alpha r+\beta_0\}.
 
   $$
-  (If representing value as a unit-norm phase variable, one may instead use $U(1)$; {ref}`sec-defect-functionals-implementing-regulation`.C treats the real-valued case via projective heads.)
+  (For a fixed-temperature entropy-regularized objective, this is an operational reparameterization: the scale must be co-scaled with $T_c$, and an offset is a symmetry only when terminal data and horizon conventions are co-transformed.)
 - $G_{\text{spatial}}$ be an **observation gauge** acting on raw observations $x$ (e.g., pose/translation/rotation; choose $SE(3)$, $SE(2)$, $\mathrm{Sim}(2)$, or a task-specific subgroup depending on sensors).
-- $S_{|\mathcal{K}|}$ be the **symbol-permutation symmetry** of the discrete macro register: relabeling code indices is unobservable if downstream components depend only on embeddings $\{e_k\}$.
+- $S_{\mathcal K}$ be the **symbol-permutation symmetry** of the discrete macro register: it is $S_{|\mathcal K|}$ for a flat codebook and $S_{N_v}\wr S_{N_c}$ (chart permutations and within-chart code permutations) for the two-level Attentive Atlas register.
 - $\mathrm{Symp}(2n,\mathbb{R})$ be an optional **phase-space symmetry** acting on canonical latent coordinates $z=(q,p)\in\mathbb{R}^{2n}$ when the world model is parameterized as a symplectic/Hamiltonian system {cite}`greydanus2019hamiltonian` ({ref}`sec-defect-functionals-implementing-regulation`.B).
 
 The (candidate) total symmetry group is the direct product
@@ -322,16 +324,16 @@ G_{\text{obj}}
 \times
 G_{\text{spatial}}
 \times
-S_{|\mathcal{K}|}
+S_{\mathcal K}
 \times
 \mathrm{Symp}(2n,\mathbb{R}).
 
 $$
 **Internal vs. external symmetries.**
-- **Internal (objective) gauge:** transformations of the scalar feedback scale/offset (and any potentials) that should not qualitatively change the policy update direction.
+- **Internal (objective) gauge:** co-transformations of the scalar feedback and its temperature/terminal conventions that preserve the chosen objective; a fixed-$T_c$ or fixed-terminal task need not be invariant under the full affine group.
 - **External (observation) gauge:** transformations of the input stream that change *pose* but not *identity*.
 
-**Principle of covariance (engineering requirement).** The internal maps of the agent should be invariant/equivariant under $\mathcal{G}_{\mathbb{A}}$ in the following typed sense:
+**Principle of covariance (engineering requirement).** The internal maps of the agent should be equivariant under $\mathcal{G}_{\mathbb{A}}$ in the following typed sense:
 - **Shutter $E$**: canonicalize or quotient $G_{\text{spatial}}$ before discretization, so the macro register is approximately invariant:
 
   $$
@@ -339,7 +341,7 @@ $$
 
   $$
   while $z_n$ carries structured nuisance parameters (pose/basis/disturbance coordinates) and $z_{\mathrm{tex}}$ carries reconstruction-only texture ({ref}`sec-the-shutter-as-a-vq-vae`, {ref}`sec-defect-functionals-implementing-regulation`.A).
-- **World model $S$ and policy $\pi$:** be covariant to symbol permutations $S_{|\mathcal{K}|}$ by treating $K$ only through its embedding $e_K$ (not the integer label) and by using permutation-invariant diagnostics.
+- **World model $S$ and policy $\pi$:** be covariant to symbol permutations $S_{\mathcal K}$ by treating $K$ only through its embedding $e_K$ (not the integer label) and by using permutation-invariant diagnostics.
 - **Critic/value and dual variables:** enforce stability and constraint satisfaction in a way that is robust to re-scaling/offset of the scalar feedback ({ref}`sec-defect-functionals-implementing-regulation`.C, {ref}`sec-adaptive-multipliers-learned-penalties-setpoints-and-calibration`).
 
 These are *requirements on representations and interfaces*, not philosophical claims: if an invariance is not enforced, the corresponding failure modes (symmetry blindness, brittle scaling, uncontrolled drift) become more likely and harder to debug.
@@ -379,12 +381,12 @@ Why nats? Because natural logarithms are easier to work with in calculus ($d/dx 
 
 **Discrete vs continuous reward.**
 - Per-step reward $r_t$ (or cost $c_t=-r_t$) has units $\mathrm{nat}$.
-- A continuous-time cost rate $\mathcal{R}$ has units $\mathrm{nat\,s^{-1}}$ and links to discrete time by $r_t \approx \int_{t}^{t+\Delta t}\mathcal{R}(u)\,du$.
+- The reward 1-form has component units $\mathrm{nat}/[z]$; its pairing $\rho(u):=\langle\mathcal{R},\dot z(u)\rangle$ is a rate in $\mathrm{nat\,s^{-1}}$ and links to discrete time by $r_{t+1}\approx\int_{t\Delta t}^{(t+1)\Delta t}\rho(u)\,du$.
 
 **Regularization / precision coefficients.**
 - MaxEnt / entropy-regularized control introduces a trade-off coefficient (often written $T_c$ or $\alpha_{\text{ent}}$) multiplying an entropy term. Because entropy is in nats, this coefficient is dimensionless and simply sets relative weight in the objective.
 - Exponential-family (softmax/logit) policies use a dimensionless precision parameter $\beta_{\text{ent}}$ so that $\exp(\beta_{\text{ent}}\,\cdot)$ is dimensionless; $\beta_{\text{ent}}$ is an inverse-variance / "sharpness" control knob.
-- The metric coupling coefficient $\beta_{\text{cpl}}$ (Definition {prf:ref}`def-local-conditioning-scale`) carries units $\mathrm{nat}/[z]^2$, and the curl coefficient $\beta_{\text{curl}}$ appears in the dynamics.
+- The metric coupling coefficient $\beta_{\text{cpl}}$ (Definition {prf:ref}`def-local-conditioning-scale`) is dimensionless when latents are normalised so that $[G]=\mathrm{nat}$; in that convention $\beta_{\text{cpl}}=1/T_c$, and the curl coefficient $\beta_{\text{curl}}$ appears in the dynamics.
 
 **Conventions for generic coefficients.**
 - Numerical stabilizers like $\epsilon$ always inherit the units of the quantity they are added to.
@@ -412,7 +414,7 @@ We distinguish four temporal dimensions. They are orthogonal (or nested) and mus
 | **$t$**    | **Interaction Time** | $\mathbb{Z}_{\ge 0}$             | External environment clock ($x_t, a_t$).          | Coordinate time (observer clock) |
 | **$s$**    | **Computation Time** | $\mathbb{R}_{\ge 0}$             | Internal solver time for belief/planning updates. | Proper time (agent thinking)     |
 | **$\tau$** | **Scale Time**       | $\mathbb{R}_{\ge 0}$             | Resolution depth (root to leaf).                  | Renormalization scale            |
-| **$t'$**   | **Memory Time**      | $\{t' \in \mathbb{Z} : t' < t\}$ | Index of stored past states on the screen.        | Retarded time                    |
+| **$t'$**   | **Memory Time**      | $\{0,1,\ldots,t-1\}$ | Index of stored past states on the screen.        | Retarded time                    |
 
 :::{div} feynman-prose
 Let me explain each one.
@@ -475,11 +477,13 @@ Imagine you're looking at a photograph. You can look at the overall scene (coars
 In our framework, this becomes a formal dimension. We use $\tau$ to parameterize how "deep" we are in the representation hierarchy.
 :::
 
-This is the radial coordinate in the Poincare disk (Sections 21, 7.12). It corresponds to resolution depth.
+This is the radial coordinate in the Poincare disk ({prf:ref}`prop-isotropic-radial-expansion`). It corresponds to resolution depth.
 - **Dynamics:** $dr/d\tau = \tfrac{1}{2}\operatorname{sech}^2(\tau/2)$ (the holographic law).
 - **Discretization:** in stacked TopoEncoders, layer $\ell$ corresponds to scale time $\tau_\ell$.
 - **Direction:** $\tau \to \infty$ (UV) is high energy, fine detail; $\tau \to 0$ (IR) is low energy, coarse structure.
 - **Process:** generation flows in $+\tau$ (root to boundary); inference flows in $-\tau$.
+
+In the generative regime the scale coordinate is traversed by the computation-time flow, $\tau=s$ along a generation pass ({prf:ref}`cor-recovery-of-holographic-flow`); $\tau$ is an independent coordinate only when indexing a fixed hierarchy (layers $\tau_\ell$).
 
 :::{div} feynman-prose
 Think of it this way: if you're generating an image, you start with a rough sketch ($\tau$ small) and progressively add detail ($\tau$ large). If you're analyzing an image, you start with the raw pixels ($\tau$ large) and progressively extract more abstract features ($\tau$ small). The variable $\tau$ indexes where you are in this hierarchy.

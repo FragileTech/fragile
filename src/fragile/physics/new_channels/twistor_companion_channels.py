@@ -203,7 +203,10 @@ def compute_twistor_companion_correlator_from_geometry(
         )
     if alive_mask.shape != positions.shape[:2]:
         raise ValueError(f"alive_mask must have shape [T, N], got {tuple(alive_mask.shape)}.")
-    if companions_distance.shape != positions.shape[:2] or companions_clone.shape != positions.shape[:2]:
+    if (
+        companions_distance.shape != positions.shape[:2]
+        or companions_clone.shape != positions.shape[:2]
+    ):
         raise ValueError(
             "companion arrays must have shape [T, N] aligned with positions, got "
             f"{tuple(companions_distance.shape)} and {tuple(companions_clone.shape)}."
@@ -285,6 +288,23 @@ def compute_twistor_companion_correlator_from_geometry(
     tensor_connected = torch.zeros(n_lags, dtype=torch.float32, device=device)
     counts = torch.zeros(n_lags, dtype=torch.int64, device=device)
 
+    from fragile.physics.qft_utils.statistics import attach_statistics, record_lag
+
+    # Keep the original fixed-triplet products, not the spatially averaged
+    # diagnostic series, for measured covariance in the mass-fitting adapter.
+    correlators = [
+        (scalar_raw, scalar_connected),
+        (pseudoscalar_raw, pseudoscalar_connected),
+        (glueball_raw, glueball_connected),
+        (vector_raw, vector_connected),
+        (axial_vector_raw, axial_vector_connected),
+        (tensor_raw, tensor_connected),
+    ]
+    origin_counts = torch.zeros(t_total, n_lags, dtype=torch.float64, device=device)
+    origin_sums = [
+        [torch.zeros_like(origin_counts), torch.zeros_like(origin_counts)] for _ in correlators
+    ]
+
     for lag in range(effective_lag + 1):
         source_len = t_total - lag
         (
@@ -320,37 +340,27 @@ def compute_twistor_companion_correlator_from_geometry(
         src_axial_vector_l = source_axial_vector[:source_len]
         src_tensor_l = source_tensor[:source_len]
 
-        scalar_raw[lag] = (src_scalar_l * sink_scalar)[valid_pair].mean().float()
-        pseudoscalar_raw[lag] = (src_pseudoscalar_l * sink_pseudoscalar)[valid_pair].mean().float()
-        glueball_raw[lag] = (src_glueball_l * sink_glueball)[valid_pair].mean().float()
-        vector_raw[lag] = ((src_vector_l * sink_vector).sum(dim=-1))[valid_pair].mean().float()
-        axial_vector_raw[lag] = (
-            (src_axial_vector_l * sink_axial_vector).sum(dim=-1)
-        )[valid_pair].mean().float()
-        tensor_raw[lag] = (src_tensor_l * sink_tensor)[valid_pair].mean().float()
+        fields = [
+            (src_scalar_l, sink_scalar, mean_scalar_t),
+            (src_pseudoscalar_l, sink_pseudoscalar, mean_pseudoscalar_t),
+            (src_glueball_l, sink_glueball, mean_glueball_t),
+            (src_vector_l, sink_vector, mean_vector_t),
+            (src_axial_vector_l, sink_axial_vector, mean_axial_vector_t),
+            (src_tensor_l, sink_tensor, mean_tensor_t),
+        ]
+        for index, (source, sink, mean) in enumerate(fields):
+            raw_product = source * sink
+            connected_product = (source - mean) * (sink - mean)
+            if raw_product.ndim == valid_pair.ndim + 1:
+                raw_product = raw_product.sum(dim=-1)
+                connected_product = connected_product.sum(dim=-1)
+            for mode, product in enumerate((raw_product, connected_product)):
+                correlators[index][mode][lag] = product[valid_pair].mean().float()
+                record_lag(origin_sums[index][mode], origin_counts, lag, product, valid_pair)
 
-        scalar_connected[lag] = (
-            (src_scalar_l - mean_scalar_t) * (sink_scalar - mean_scalar_t)
-        )[valid_pair].mean().float()
-        pseudoscalar_connected[lag] = (
-            (src_pseudoscalar_l - mean_pseudoscalar_t)
-            * (sink_pseudoscalar - mean_pseudoscalar_t)
-        )[valid_pair].mean().float()
-        glueball_connected[lag] = (
-            (src_glueball_l - mean_glueball_t) * (sink_glueball - mean_glueball_t)
-        )[valid_pair].mean().float()
-        vector_connected[lag] = (
-            ((src_vector_l - mean_vector_t) * (sink_vector - mean_vector_t)).sum(dim=-1)
-        )[valid_pair].mean().float()
-        axial_vector_connected[lag] = (
-            (
-                (src_axial_vector_l - mean_axial_vector_t)
-                * (sink_axial_vector - mean_axial_vector_t)
-            ).sum(dim=-1)
-        )[valid_pair].mean().float()
-        tensor_connected[lag] = (
-            (src_tensor_l - mean_tensor_t) * (sink_tensor - mean_tensor_t)
-        )[valid_pair].mean().float()
+    for index, variants in enumerate(correlators):
+        for mode, correlator in enumerate(variants):
+            attach_statistics(correlator, origin_sums[index][mode], origin_counts)
 
     return TwistorCompanionCorrelatorOutput(
         scalar=scalar_connected if use_connected else scalar_raw,
@@ -437,8 +447,10 @@ def compute_companion_twistor_correlator(
         device=positions.device,
     )
 
-    delta_t = float(config.delta_t) if config.delta_t is not None else float(
-        getattr(history, "delta_t", 1.0)
+    delta_t = (
+        float(config.delta_t)
+        if config.delta_t is not None
+        else float(getattr(history, "delta_t", 1.0))
     )
 
     return compute_twistor_companion_correlator_from_geometry(

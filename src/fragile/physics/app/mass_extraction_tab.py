@@ -7,8 +7,8 @@ effective-mass plots, and correlator-vs-fit overlays.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
+import math
 from typing import Any, Callable
 
 import gvar
@@ -58,10 +58,10 @@ class MassExtractionSettings(param.Parameterized):
     """Settings for the mass extraction pipeline."""
 
     covariance_method = param.ObjectSelector(
-        default="uncorrelated",
-        objects=["uncorrelated", "block_jackknife", "bootstrap"],
+        default="block_jackknife",
+        objects=["uncorrelated", "block_jackknife", "bootstrap", "assumed_relative"],
     )
-    nexp = param.Integer(default=2, bounds=(1, 6))
+    nexp = param.Integer(default=1, bounds=(1, 6))
     tmin = param.Integer(default=2, bounds=(1, 20))
     tmax = param.Integer(
         default=0,
@@ -1162,9 +1162,7 @@ def build_mass_extraction_tab(
 
     def on_history_changed(defer: bool) -> None:
         run_button.disabled = True
-        status.object = (
-            f"**{tab_label}:** Run {source_label} first, " f"then click {button_label}."
-        )
+        status.object = f"**{tab_label}:** Run {source_label} first, then click {button_label}."
         # Always reset channel key selectors and fit widgets when history changes
         channel_key_selectors.clear()
         channel_max_corr_len.clear()
@@ -1183,8 +1181,6 @@ def build_mass_extraction_tab(
                 sizing_mode="stretch_width",
             ),
         )
-        if defer:
-            return
         state[output_state_key] = None
         mass_spectrum_plot.object = _algorithm_placeholder_plot(
             "Run extraction to show mass spectrum.",
@@ -1211,9 +1207,7 @@ def build_mass_extraction_tab(
 
     def on_correlators_ready() -> None:
         run_button.disabled = False
-        status.object = (
-            f"**{tab_label} ready:** {source_label} available. " f"Click {button_label}."
-        )
+        status.object = f"**{tab_label} ready:** {source_label} available. Click {button_label}."
 
         # Populate channel key selection widgets from pipeline result
         pipeline_result = state.get(correlator_state_key)
@@ -1415,13 +1409,32 @@ def build_mass_extraction_tab(
         aic_output = state.get(aic_state_key)
         if not aic_output:
             return
-        seeded = []
-        for g_name, w in channel_fit_widgets.items():
-            result = aic_output.get(g_name)
-            if result is None:
+        from fragile.physics.mass_extraction.pipeline import _auto_detect_channel_groups
+
+        # AIC results are keyed by correlator key (``scalar_standard``,
+        # ``nucleon_companion``...) while the fit widgets are keyed by physical
+        # group; map keys to groups and convert the AIC mass (per unit kinetic
+        # time) into the per-lag unit used by the Bayesian fit.
+        group_of_key: dict[str, str] = {}
+        for group in _auto_detect_channel_groups(list(aic_output.keys())):
+            for key in group.correlator_keys:
+                group_of_key[key] = group.name
+        seeds: dict[str, list[float]] = {}
+        for key, result in aic_output.items():
+            g_name = group_of_key.get(key)
+            if g_name is None or g_name not in channel_fit_widgets:
                 continue
             mass_fit = getattr(result, "mass_fit", None) or {}
             mass = float(mass_fit.get("mass", 0.0))
+            dt = float(getattr(result, "dt", 1.0) or 1.0)
+            if mass > 0 and math.isfinite(mass) and dt > 0:
+                seeds.setdefault(g_name, []).append(mass * dt)
+        seeded = []
+        for g_name, w in channel_fit_widgets.items():
+            masses = seeds.get(g_name)
+            if not masses:
+                continue
+            mass = float(sorted(masses)[len(masses) // 2])
             if mass > 0 and math.isfinite(mass):
                 dE_str = str(gvar.gvar(mass, mass))
                 if "dE_ground" in w:

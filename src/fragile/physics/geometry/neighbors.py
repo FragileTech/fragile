@@ -261,8 +261,9 @@ def compute_companion_batch(
     companions_clone = history.companions_clone[start_idx - 1 : n_recorded - 1]
 
     # Build dense neighbor matrix [T, N, k] from companion data.
-    # Columns 0 and 1 are the distance and clone companions; columns 2+ are 0.
-    neighbor_matrix = torch.zeros(T, N, k, device=device, dtype=torch.long)
+    # Columns 0 and 1 are the distance and clone companions; columns 2+ are
+    # unfilled (-1, later replaced by the sample itself), never walker 0.
+    neighbor_matrix = torch.full((T, N, k), -1, device=device, dtype=torch.long)
     neighbor_matrix[:, :, 0] = companions_distance
     neighbor_matrix[:, :, 1] = companions_clone
 

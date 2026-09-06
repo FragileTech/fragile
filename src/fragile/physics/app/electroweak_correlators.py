@@ -30,6 +30,7 @@ from fragile.physics.electroweak.electroweak_channels import (
 )
 from fragile.physics.fractal_gas.history import RunHistory
 from fragile.physics.operators import PipelineResult
+from fragile.physics.qft_utils.statistics import correlators_with_statistics
 
 
 # ---------------------------------------------------------------------------
@@ -124,11 +125,16 @@ def _electroweak_output_to_pipeline_result(ew_output: ElectroweakChannelOutput) 
 def _compute_dirac_spinor_channels(
     *,
     history: RunHistory,
-    settings: "ElectroweakCorrelatorSettings",
+    settings: ElectroweakCorrelatorSettings,
     selected_channels: list[str],
     result: PipelineResult,
+    frame_filter: list[int] | None = None,
 ) -> int:
     """Compute EW Dirac spinor channels and merge into *result* in-place.
+
+    ``frame_filter`` restricts the operator series to the recorded frames the
+    standard electroweak channels used (their cloning-frame subset), so every
+    correlator in ``result`` shares one time axis and lag unit.
 
     Returns the number of new channels added.
     """
@@ -136,7 +142,7 @@ def _compute_dirac_spinor_channels(
     from fragile.physics.electroweak.electroweak_spinors import (
         compute_electroweak_spinor_operators,
     )
-    from fragile.physics.qft_utils import _fft_correlator_batched, resolve_frame_indices
+    from fragile.physics.qft_utils import resolve_frame_indices
     from fragile.physics.qft_utils.color_states import (
         compute_color_states_batch,
         estimate_ell0_auto,
@@ -223,9 +229,7 @@ def _compute_dirac_spinor_channels(
     neighbor_indices = companions_distance.unsqueeze(-1)  # [T, N, 1]
 
     # Compute electroweak spinor operators
-    epsilon_clone = (
-        float(settings.epsilon_clone) if settings.epsilon_clone is not None else 1e-8
-    )
+    epsilon_clone = float(settings.epsilon_clone) if settings.epsilon_clone is not None else 1e-8
     ew_spinor = compute_electroweak_spinor_operators(
         color=color,
         color_valid=color_valid,
@@ -238,8 +242,19 @@ def _compute_dirac_spinor_channels(
         epsilon_clone=epsilon_clone,
     )
 
-    # FFT each selected operator -> correlator and merge
-    max_lag = int(settings.max_lag)
+    # Restrict to the frames used by the standard electroweak channels.
+    keep = torch.ones(T, dtype=torch.bool, device=device)
+    if frame_filter:
+        wanted = set(int(f) for f in frame_filter)
+        keep = torch.tensor(
+            [frame in wanted for frame in range(start_idx, end_idx)],
+            dtype=torch.bool,
+            device=device,
+        )
+        if not keep.any():
+            return 0
+    n_frames = int(keep.sum().item())
+    max_lag = min(int(settings.max_lag), max(n_frames - 1, 0))
     use_connected = bool(settings.use_connected)
     count = 0
 
@@ -248,13 +263,14 @@ def _compute_dirac_spinor_channels(
         op_series = getattr(ew_spinor, ch_name, None)
         if op_series is None:
             continue
+        op_series = op_series[keep]
         result.operators[ch_name] = op_series
-        corr = _fft_correlator_batched(
-            op_series.unsqueeze(0),
+        result.correlators[ch_name] = correlators_with_statistics(
+            op_series.reshape(1, n_frames, -1),
             max_lag=max_lag,
-            use_connected=use_connected,
-        )
-        result.correlators[ch_name] = corr.squeeze(0)
+            connected=use_connected,
+            dtype=torch.float32,
+        )[0]
         count += 1
 
     return count
@@ -344,6 +360,7 @@ def build_electroweak_correlator_tab(
     run_tab_computation: Callable[
         [dict[str, Any], pn.pane.Markdown, str, Callable[[RunHistory], None]], None
     ],
+    on_computed: Callable[[], None] | None = None,
 ) -> ElectroweakCorrelatorSection:
     """Build the Electroweak Correlators tab with callbacks."""
 
@@ -561,6 +578,8 @@ def build_electroweak_correlator_tab(
     # -- Compute callback --
 
     def on_run(_):
+        state["electroweak_correlator_output"] = None
+
         def _compute(history: RunHistory):
             # Collect user-selected channels from the MultiSelect widgets
             selected_channels: list[str] = []
@@ -613,6 +632,7 @@ def build_electroweak_correlator_tab(
                             settings=settings,
                             selected_channels=dirac_selected,
                             result=result,
+                            frame_filter=list(ew_output.frame_indices),
                         )
                     except Exception as exc:
                         status.object = (
@@ -620,6 +640,8 @@ def build_electroweak_correlator_tab(
                         )
 
             state["electroweak_correlator_output"] = result
+            if on_computed is not None:
+                on_computed()
 
             _refresh_overlay()
 
@@ -705,8 +727,6 @@ def build_electroweak_correlator_tab(
     def on_history_changed(defer: bool) -> None:
         run_button.disabled = False
         status.object = "**Electroweak Correlators ready:** click Compute Electroweak Correlators."
-        if defer:
-            return
         state["electroweak_correlator_output"] = None
         summary_table.value = pd.DataFrame()
         correlator_table.value = pd.DataFrame()

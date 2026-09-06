@@ -23,19 +23,19 @@
 :::{div} feynman-prose
 Here is the central idea: instead of hoping your agent behaves well and debugging after it fails, you build in runtime contracts that catch problems as they happen. Think of a car dashboard. The engine does not just explode when oil pressure drops. A sensor notices, a light comes on, and you pull over before the damage is done.
 
-The Fragile Agent has 29 such warning lights for stability alone. Each watches for a specific pathology: Is the agent switching actions too fast? Has the representation drifted? Is the value function flat where it should not be? When any check fails, the system takes action---halting, reverting, or triggering remediation. It does not accumulate a penalty and hope for the best.
+The stability table contains 32 checks: 27 numbered nodes and five lettered sub-nodes. Each watches for a specific pathology: Is the agent switching actions too fast? Has the representation drifted? Is the value function flat where it should not be? When any check fails, the system takes the declared action---halting, reverting, or triggering remediation. A check is a contract with an operational response, not just another scalar to add to a loss.
 
 This is a fundamentally different philosophy from standard RL, where safety constraints are soft. Here, the constraints are hard. The checks are mathematical contracts, not suggestions.
 :::
 
-Stability and data-quality are monitored via 29 distinct checks (Gate Nodes). Each corresponds to a specific, testable condition on the interaction between the agent and its environment.
+Stability and data-quality are monitored via 32 checks (27 numbered nodes plus five lettered sub-nodes). Each corresponds to a specific, testable condition on the interaction between the agent and its environment.
 
 **Relation to prior work.** Many safe-RL formulations express safety as one (or a few) expected-cost constraints in a constrained MDP {cite}`altman1999constrained,achiam2017constrained`. The Fragile Agent keeps that spirit but broadens the constraint surface to include **representation and interface diagnostics** (grounding, mixing, saturation, switching, stiffness) that can be audited online, alongside Lyapunov-style stability constraints {cite}`chow2018lyapunov`.
 
 (rb-safety-unit-test)=
 :::{admonition} Researcher Bridge: Safety as a Unit Test
 :class: warning
-Standard RL safety relies on reward shaping, which provides no formal guarantee that the agent avoids bad states. The Sieve replaces probabilistic incentives with **Hard Runtime Assertions**. Each of the 60 nodes is a mathematical contract. If a check fails (e.g., the agent exhibits chattering or its belief decouples from the sensors), the system does not receive a penalty; it **halts or reverts**. This architecture enforces safety constraints in the same manner that a type system enforces invariants at compile time.
+Standard RL safety relies on reward shaping, which provides no formal guarantee that the agent avoids bad states. The Sieve replaces probabilistic incentives with **Hard Runtime Assertions**. Each registered node is a mathematical contract. If a check fails (e.g., the agent exhibits chattering or its belief decouples from the sensors), the system does not receive a penalty; it **halts or reverts**. This architecture enforces safety constraints in the same manner that a type system enforces invariants at compile time.
 :::
 
 :::{admonition} Connection to RL #8: Constrained MDPs as Soft Sieve
@@ -45,7 +45,7 @@ Standard RL safety relies on reward shaping, which provides no formal guarantee 
 Safety is a **topological constraint** enforced by the Sieve—a hard binary filter:
 
 $$
-\text{Sieve}(a \mid z) = \begin{cases} \text{PASS} & \text{if all 60 diagnostics pass} \\ \text{BLOCK} & \text{otherwise} \end{cases}
+\text{Sieve}(a \mid z) = \begin{cases} \text{PASS} & \text{if all registered diagnostics pass} \\ \text{BLOCK} & \text{otherwise} \end{cases}
 
 $$
 Actions failing any diagnostic are **blocked**, not penalized. The Sieve is not subject to reward-cost trade-offs.
@@ -65,7 +65,7 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 
 **What the generalization offers:**
 - Hard guarantees: topological constraints cannot be circumvented by high rewards
-- Typed diagnostics: 59 constraints with semantic identity (what/where/why), not just scalar cost
+- Typed diagnostics: the registered constraints with semantic identity (what/where/why), not just scalar cost
 - Fail-fast semantics: violations halt execution and trigger remediation, not gradual penalty accumulation
 - Auditable: each check has known compute cost and clear interpretation (Sections 3–6)
 :::
@@ -74,16 +74,18 @@ This recovers **Constrained MDPs** (CMDPs) with penalty-based constraint satisfa
 :name: fig-sieve-diagnostics
 :width: 100%
 
-**The Sieve: 60 Runtime Contracts.** The diagnostic monitoring architecture organized into six categories: Stability, Capacity, Grounding, Safety, Multi-Agent, and Ontology. Each diagnostic feeds into three intervention levels (WARN, HALT, KILL). The design principle: failure modes must be observable and trigger explicit remediation.
+**The Sieve: registered runtime contracts.** The diagnostic monitoring architecture organized into six categories: Stability, Capacity, Grounding, Safety, Multi-Agent, and Ontology. Each diagnostic feeds into three intervention levels (WARN, HALT, KILL). The design principle: failure modes must be observable and trigger explicit remediation.
 :::
 
 (sec-the-stability-checks)=
-## The 29 Stability Checks
+## The 32 Stability Checks
 
 :::{div} feynman-prose
-This table might look intimidating, but there is a logic to it. Each row asks one question about the agent's behavior, and each has a regularization term that penalizes violations.
+This table might look intimidating, but there is a logic to it. Each row asks one question about the agent's behavior and records the corresponding monitor, defect, or regularizer. Some entries are direct runtime checks; others are expensive proxies or training signals, so do not read every formula as a theorem-producing loss.
 
 Think of the checks in groups. *Stability*: Is the agent changing its mind too fast? Is the value function giving useful signals? *Capacity*: Is the representation using its symbols efficiently, or has it collapsed to just a few? *Grounding*: Is the agent paying attention to its sensors, or has it decoupled from reality?
+
+Node 13 is a good example of why the object matters: $I(X;K)>0$ is a non-collapse sanity check for the symbolic channel. It does not by itself certify predictive grounding. The stronger coupling-window and dispersion checks use their own mutual-information and posterior-entropy hypotheses.
 
 The "Compute" column tells you the cost. Checkmarks are cheap enough to run every step. Lightning bolts need cleverness---amortization or approximation. X marks are expensive, reserved for periodic or offline analysis.
 :::
@@ -98,17 +100,17 @@ The "Compute" column tells you the cost. Checkmarks are cheap enough to run ever
 | **5**   | **ParamCheck ($\mathrm{SC}_{\partial c}$)**       | **World Model**          | **Stationarity Check**          | Dynamics stable?                            | $\Vert \nabla_t S_t \Vert^2$ (Time Derivative Penalty)                                                                                     | $O(P_{WM})$ ⚡                   |
 | **6**   | **GeomCheck ($\mathrm{Cap}_H$)**                  | **VQ-VAE / WM**          | **Blind Spot Check**            | Unobservable states negligible?             | $\mathcal{L}_{\text{contrastive}}$ (InfoNCE)                                                                                               | $O(B^2Z)$ ⚡                     |
 | **7**   | **StiffnessCheck ($\mathrm{LS}_\sigma$)**         | **Critic**               | **Responsiveness / Gain**       | Gradient signal strong enough?              | $\max(0, \epsilon - \Vert \nabla_A V \Vert)$ (Gain > $\epsilon$)                                                                             | $O(BZ)$ ✓                       |
-| **7a**  | **BifurcateCheck ($\mathrm{LS}_{\partial^2 V}$)** | **World Model**          | **Instability Check**           | Bifurcation point?                          | $\det(J_{S_t})$ (Jacobian Determinant)                                                                                                     | $O(Z^3)$ ✗                      |
+| **7a**  | **BifurcateCheck ($\mathrm{LS}_{\partial^2 V}$)** | **World Model**          | **Instability Check**           | Bifurcation point?                          | $\rho(J_{S_t})$ (spectral-radius proxy)                                                                                                     | $O(Z^3)$ ✗                      |
 | **7b**  | **SymCheck ($G_{\mathrm{act}}$)**                 | **Policy**               | **Alternative Strategy Search** | Symmetric strategies available?             | $-\sum \pi(a_i) \log \pi(a_i)$ (Policy Entropy)                                                                                            | $O(BA)$ ✓                       |
-| **7c**  | **CheckSC ($\mathrm{SC}_{\partial c}$)**          | **Critic**               | **New Mode Viability**          | New mode stable?                            | $\text{Var}(V(z'))$ (Variance Check)                                                                                                       | $O(B)$ ✓                        |
+| **7c**  | **CheckSC ($\mathrm{SC}_{\sigma^2}$)**          | **Critic**               | **New Mode Viability**          | New mode stable?                            | $\text{Var}(V(z'))$ (Variance Check)                                                                                                       | $O(B)$ ✓                        |
 | **7d**  | **CheckTB ($\mathrm{TB}_S$)**                     | **Policy**               | **Transition Feasibility**      | Switching cost affordable?                  | $\Vert V(\pi') - V(\pi) \Vert - B_{\text{switch}}$                                                                                         | $O(B)$ ⚡                        |
 | **8**   | **TopoCheck ($\mathrm{TB}_\pi$)**                 | **Policy**               | **Sector Reachability**         | Goal reachable?                             | $T_{\text{reach}}(z_{\text{goal}})$ (Reachability Map)                                                                                     | $O(HBZ)$ ✗                      |
-| **9**   | **TameCheck ($\mathrm{TB}_O$)**                   | **World Model**          | **Interpretability Check**      | Dynamics Lipschitz-bounded?                               | $\Vert \nabla^2 S_t \Vert$ (Hessian Norm / Smoothness)                                                                                     | $O(Z^2 P_{WM})$ ✗               |
+| **9**   | **TameCheck ($\mathrm{TB}_O$)**                   | **World Model**          | **Interpretability Check**      | Dynamics sensitivity bounded?                             | $\Vert \nabla^2 S_t \Vert$ (sampled smoothness proxy)                                                                                     | $O(Z^2 P_{WM})$ ✗               |
 | **10**  | **ErgoCheck ($\mathrm{TB}_\rho$)**                | **Policy**               | **Exploration/Mixing**          | Sufficient exploration?                     | $-H(\pi)$ (Max Entropy)                                                                                                                    | $O(BA)$ ✓                       |
 | **11**  | **ComplexCheck ($\mathrm{Rep}_K$)**               | **VQ-VAE**               | **Model Capacity Check**        | Symbolic rate within budget?                | $1 - H(K)/\log\lvert\mathcal{K}\rvert$ (Capacity Gap)                                                                                      | $O(B)$ ✓                        |
 | **12**  | **OscillateCheck ($\mathrm{GC}_\nabla$)**         | **WM / Policy**          | **Oscillation / Chattering**    | Limit cycles?                               | $\Vert z_t - z_{t-2} \Vert$ (Period-2 Penalty)                                                                                             | $O(BZ)$ ✓                       |
 | **12a** | **HolonomyCheck ($\mathrm{GC}_{\mathrm{holo}}$)** | **WM / Policy**          | **Loop Drift**                  | Near-closed loop changes policy/value?      | $\mathbb{I}[d_G(z_t,z_{t-L})<\epsilon_z]\cdot \mathrm{ReLU}(D_{\mathrm{KL}}(\pi(\cdot\mid z_t)\Vert \pi(\cdot\mid z_{t-L}))-\epsilon_h)^2$ | $O(BA)$ ✓                       |
-| **13**  | **BoundaryCheck ($\mathrm{Bound}_\partial$)**     | **VQ-VAE**               | **Input Informativeness**       | External signal present at boundary ({prf:ref}`def-boundary-markov-blanket`)?                    | $I(X;K)$ (Symbolic MI $>0$)                                                                                                                | $O(B)$ ✓                        |
+| **13**  | **BoundaryCheck ($\mathrm{Bound}_\partial$)**     | **VQ-VAE**               | **Input Informativeness**       | Symbolic channel not collapsed ({prf:ref}`def-boundary-markov-blanket`)?                    | $I(X;K)>0$ (non-collapse sanity check; grounding needs a predictive test)                                                                                                                | $O(B)$ ✓                        |
 | **14**  | **InputSaturationCheck ($\mathrm{Bound}_B$)**     | **Boundary**             | **Input Saturation**            | Inputs clipping?                            | $\mathbb{I}(\lvert x \rvert > x_{\text{max}})$ (Saturation Flag)                                                                           | $O(BD)$ ✓                       |
 | **15**  | **SNRCheck ($\mathrm{Bound}_{\Sigma}$)**          | **Boundary**             | **Signal-to-Noise**             | Signal strength sufficient?                 | $\text{SNR} < \epsilon$ (Noise Floor Check)                                                                                                | $O(BD)$ ✓                       |
 | **16**  | **AlignCheck ($\mathrm{GC}_T$)**                  | **Critic**               | **Objective Alignment**         | Proxy matches objective?                    | $\lvert V_{\text{proxy}} - V_{\text{true}} \rvert$ (Alignment Error)                                                                       | $O(B)$ ✗                        |
@@ -117,14 +119,17 @@ The "Compute" column tells you the cost. Checkmarks are cheap enough to run ever
 | **19**  | **DisentanglementCheck ($\mathrm{Decorr}_{Kn}$)** | **Shutter / WM**         | **Macro–Nuisance Leakage**      | Macro correlated with nuisance residual?    | $\left\lVert\mathrm{Cov}(z_{\text{macro}},z_n)\right\rVert_F^2$                                                                            | $O(Bd_md_n)$ ✓                  |
 | **20**  | **LipschitzCheck ($\mathrm{Lip}_\Theta$)**        | **WM / Critic**          | **Gain Control**                | Operator norms bounded?                     | $\max_\ell \sigma(W_\ell)$ (spectral norm monitor)                                                                                         | $O(P)$ ⚡                        |
 | **21**  | **SymplecticCheck ($\mathrm{Symp}$)**             | **World Model**          | **Volume Preservation**         | Transition approximately symplectic?        | $\left\lVert J_S^\top J J_S - J\right\rVert_F^2$                                                                                           | $O(BZ^2)$ ✗                     |
-| **22**  | **MECCheck ($\mathrm{MEC}$)**                     | **Belief / WM**          | **CPTP Consistency**            | Operator update matches GKSL ({prf:ref}`def-gksl-generator`) form?          | $\left\lVert\frac{\varrho_{t+1}-\varrho_t}{\Delta t}-\mathcal{L}_{\text{GKSL}}(\varrho_t)\right\rVert_F^2$                                 | $O(BZ^3)$ ✗                     |
-| **23**  | **NEPCheck ($\mathrm{NEP}$)**                     | **Belief / Boundary**    | **Update vs Evidence**          | Internal update supported by boundary info? | $\mathrm{ReLU}(D_{\mathrm{KL}}(p_{t+1}\Vert p_t)-I(X_t;K_t))^2$                                                                            | $O(B\lvert\mathcal{K}\rvert)$ ✓ |
+| **22**  | **MECCheck ($\mathrm{MEC}$)**                     | **Belief / WM**          | **CPTP Consistency**            | Prediction operator matches GKSL ({prf:ref}`def-gksl-generator`) form before assimilation? | $\left\lVert\frac{\widetilde\varrho_{t+1}-\varrho_t}{\Delta t}-\mathcal{L}_{\text{GKSL}}(\varrho_t)\right\rVert_F^2$                                 | $O(BZ^3)$ ✗                     |
+| **23**  | **NEPCheck ($\mathrm{NEP}$)**                     | **Belief / Boundary**    | **Update vs Evidence**          | Assimilation supported by matched boundary information? | $\mathrm{ReLU}(D_{\mathrm{KL}}(p_{t+1}\Vert \widetilde p_{t+1})-\widehat I_{t+1})^2$                                                                            | $O(B\lvert\mathcal{K}\rvert)$ ✓ |
 | **24**  | **QSLCheck ($\mathrm{QSL}$)**                     | **All**                  | **Update Speed Limit**          | Step too large in $d_G$?                    | $\mathrm{ReLU}(d_G(z_{t+1},z_t)-v_{\max})^2$                                                                                               | $O(BZ)$ ✓                       |
 | **25**  | **HoloGenCheck**                                  | **Generator**            | **Generation Validity**         | Did flow reach boundary?                    | $\mathbb{I}(\lvert z_{\text{final}}\rvert \ge R_{\text{cutoff}})$                                                                          | $O(B)$ ✓                        |
-| **26**  | **GeodesicCheck**                                 | **World Model / Policy** | **Trajectory Consistency**      | Is trajectory approximately geodesic?       | $\lVert\ddot{z} + \Gamma(\dot{z},\dot{z}) + G^{-1}\nabla\Phi - \beta_{\text{curl}} G^{-1}\mathcal{F}\dot{z}\rVert_G$                      | $O(BZ^2)$ ✗                     |
-| **27**  | **OverdampedCheck**                               | **Policy**               | **Regime Validity**             | Is friction >> 1 satisfied?                 | $\gamma / \lVert \mathcal{M}_\gamma^{-1}\,v\rVert$                                                     | $O(BZ)$ ✓                       |
+| **26**  | **GeodesicCheck**                                 | **World Model / Policy** | **Trajectory Consistency**      | Is trajectory approximately geodesic?       | $\lVert\ddot z+\gamma\dot z+\Gamma(\dot z,\dot z)+G^{-1}\nabla\Phi_{\mathrm{eff}}-\gamma u_\pi-\beta_{\mathrm{curl}}G^{-1}\mathcal F\dot z\rVert_G$                      | $O(BZ^2)$ ✗                     |
+| **27**  | **OverdampedCheck**                               | **Policy**               | **Regime Validity**             | Is inertia small relative to friction?                 | $\chi_{\mathrm{in}}:=m\lVert\ddot z\rVert_G/(\gamma\lVert\dot z\rVert_G+m\lVert\ddot z\rVert_G+\varepsilon)$                                                     | $O(BZ)$ ✓                       |
 
-Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F}$.
+Here $v := \dot{z}$, $m$ is the inertial scale, and
+$\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}} G^{-1}\mathcal{F}$.
+The OverdampedCheck is small when the inertial contribution is negligible; the
+curl mobility is monitored separately.
 
 **Compute Legend:** ✓ Low (typically online) | ⚡ Moderate (often amortized/approximated) | ✗ High (often offline or coarse approximations)
 **Variables:** $B$ = batch, $Z$ = latent dim, $A$ = actions, $P$ = params, $H$ = horizon, $D$ = observation dim
@@ -135,7 +140,7 @@ Here $v := \dot{z}$ and $\mathcal{M}_\gamma^{-1} = \gamma I - \beta_{\text{curl}
 | Node | Space | Formal Property | Verification Criterion |
 |------|-------|-----------------|------------------------|
 | **1 (CostBound)** | $V \in \mathcal{F}(\mathcal{Z})$ | Sublevel Set Compactness | Is $\{z \mid V(z) \leq c\}$ compact? |
-| **7 (Stiffness)** | $G \in T^*_2(\mathcal{Z})$ | Spectral Gap | Is $\lambda_{\min}(G) > \epsilon$? (No flat directions) |
+| **7 (Stiffness)** | $V$ on $\mathcal{Z}$ | Gradient lower bound | Is $\lVert\nabla_A V\rVert_{G^{-1}}>\epsilon$ away from the goal set? |
 | **9 (Tameness)** | $f: \mathcal{Z} \to T\mathcal{Z}$ | Lipschitz Continuity | Is $\lVert\nabla_z f\rVert_G < K$? (Bounded sensitivity) |
 | **17 (Lock)** | $H_n(\mathcal{Z})$ | Homological Obstruction | Does the prohibited configuration induce a non-trivial cycle? |
 
@@ -172,7 +177,7 @@ A **thin interface** specifies the minimal coupling between components and the c
 *   **Mechanism:** Each component minimizes its own objective *subject to* the cybernetic constraints imposed by the others.
 
 (sec-scaling-exponents-characterizing-the-agent)=
-## Scaling Exponents: Characterizing the Agent
+## Scaling Coefficients: Characterizing the Agent
 
 :::{div} feynman-prose
 Here is something beautiful. Instead of staring at dozens of metrics, we summarize system health with just four numbers: the scaling exponents. They tell you whether components are changing at compatible rates.
@@ -190,28 +195,37 @@ Stable training requires these in the right relationship. Representation should 
 
 We characterize the training dynamics of the Fragile Agent using four **scaling coefficients**. These are *diagnostic* summaries of state-space behavior, not optimizer statistics.
 
-The geometric metric $G$ is a **state-space sensitivity metric** combining value curvature and control sensitivity (see {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`). In practice we often approximate it with a Fisher-based diagonal; common diagonal approximations include:
-- `policy_fisher`: $G_{ii} = \mathbb{E}[(\partial \log \pi / \partial z_i)^2]$
-- `state_fisher`: $G_{ii} = \mathbb{E}[(\partial \log \pi / \partial z_i)^2] + \text{Hess}_z(V)_{ii}$ (Hessian + Fisher sensitivity)
-- `grad_rms`: $G_{ii} = \mathbb{E}[(\partial V / \partial z_i)^2]^{1/2}$
-- `obs_var`: $G_{ii} = \text{Var}(z_i)$
+The geometric metric $G$ is a **state-space sensitivity metric** combining value curvature and control sensitivity (see {ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`). In practice we often approximate it with a diagonal. The units are fixed by the declared metric convention; the following are distinct estimators, not interchangeable definitions:
+- `policy_fisher`: $G^{\pi}_{ii}=\mathbb{E}[(\partial_i\log\pi)^2]$ (Fisher-only policy sensitivity).
+- `state_fisher`: $G_{ii}=\lambda_G\mathbb{E}[(\partial_i\log\pi)^2]+[\operatorname{Hess}_zV]_{ii,+}$, with a declared $\lambda_G>0$ and a positive-semidefinite Hessian projection. If the Hessian term is omitted, call this the Fisher-only state estimate.
+- `grad_rms`: $G_{ii}=c_V\mathbb{E}[(\partial_iV)^2]$, where the positive calibration factor $c_V$ supplies the inverse-natural units; the square root is not part of the metric coefficient.
+- `obs_var`: $G_{ii}=(\operatorname{Var}(z_i)+\epsilon)^{-1}$ when observation variance is used as a whitening proxy.
 
-| Component       | Exponent              | Symbol   | Units         | Interpretation                                               | Diagnostics                                                                                 |
+| Component       | Coefficient              | Symbol   | Units         | Interpretation                                               | Diagnostics                                                                                 |
 |:----------------|:----------------------|:---------|:--------------|:-------------------------------------------------------------|:--------------------------------------------------------------------------------------------|
 | **Critic**      | **Curvature scale**   | $\alpha$ | dimensionless | **Value curvature:** magnitude of value gradients/curvature. | High $\alpha$: strong supervision.<br>Low $\alpha$: flat value surface (BarrierGap).            |
 | **Policy**      | **Exploration scale** | $\beta_{\pi}$  | dimensionless | **Policy variance / update scale.**                          | High $\beta_{\pi}$: high noise/plasticity.<br>Low $\beta_{\pi}$: near-deterministic/frozen.             |
-| **World Model** | **Volatility scale**  | $\gamma$ | dimensionless | **Dynamics non-stationarity / rollout volatility.**          | High $\gamma$: unstable/chaotic predictions.<br>Low $\gamma$: stable dynamics.              |
+| **World Model** | **Volatility scale**  | $\gamma_{\text{wm}}$ | dimensionless | **Dynamics non-stationarity / rollout volatility.**          | High $\gamma$: unstable/chaotic predictions.<br>Low $\gamma$: stable dynamics.              |
 | **VQ-VAE**      | **Drift scale**       | $\delta$ | dimensionless | **Representation drift:** codebook/encoder stability.        | High $\delta$: symbol churn (representation drift).<br>Low $\delta$: stable representation. |
 
 **The Stability Hierarchy (BarrierTypeII):**
-Stable training requires separation of timescales: the representation should change slowest, the world model should not drift faster than the critic can track, and the policy should not update faster than the critic’s usable signal. A practical regime is:
+Stable training requires separation of timescales: the representation should change slowest, the world model should not drift faster than the critic can track, and the policy should not update faster than the critic’s usable signal. Define positive reference scales $s_{\mathrm{crit}},s_{\mathrm{wm}},s_{\mathrm{code}}$ and $\varepsilon_{\mathrm{KL}}$ and normalize the online measurements as
 
 $$
-\delta \ll \gamma \ll \alpha,\qquad \beta_{\pi} \le \alpha
+\alpha:=\frac{\|\nabla_A V\|_{G^{-1}}}{s_{\mathrm{crit}}},\qquad
+\beta_\pi:=\frac{\operatorname{EMA}\,D_{\mathrm{KL}}(\pi_t\|\pi_{t-1})}{\varepsilon_{\mathrm{KL}}},\qquad
+\gamma_{\mathrm{wm}}:=\frac{\operatorname{EMA}\,\|S_t-S_{t-1}\|_G}{s_{\mathrm{wm}}},\qquad
+\delta:=\frac{\operatorname{EMA}\,\mathrm{code\_drift}}{s_{\mathrm{code}}}.
+$$
+
+These scales are declared or calibrated from a reference window. The resulting hierarchy is an operational gating rule, not a theorem about arbitrary optimizers:
 
 $$
-1.  **$\delta \ll \gamma$ (Representation Stability):** the representation (encoder/codebook) drifts slower than the learned dynamics model.
-2.  **$\gamma \ll \alpha$ (Predictability / Trackability):** the learned dynamics do not drift faster than the value function can track.
+\delta \ll \gamma_{\text{wm}} \ll \alpha,\qquad \beta_{\pi} \le \alpha
+
+$$
+1.  **$\delta \ll \gamma_{\text{wm}}$ (Representation Stability):** the representation (encoder/codebook) drifts slower than the learned dynamics model.
+2.  **$\gamma_{\text{wm}} \ll \alpha$ (Predictability / Trackability):** the learned dynamics do not drift faster than the value function can track.
 3.  **$\beta_{\pi} \le \alpha$ (Two-Time-Scale Actor–Critic):** policy updates stay within the critic's validity region. If $\beta_{\pi}>\alpha$, skip or shrink the policy update (BarrierTypeII; see {ref}`Section 4.1 <sec-barrier-implementation-details>`).
 
 (sec-defect-functionals-implementing-regulation)=
@@ -255,7 +269,7 @@ The table below summarizes a minimal, implementable set of **gauge-invariant reg
 | **Symplectic / Hamiltonian world model (optional)** | phase-space distortion                        | parameterize $\dot{z}=J\nabla H(z,a)$ or penalize symplectic defect                                                                                 | Mode D.E (oscillation) / numeric blow-up | Appropriate when the latent dynamics are well-modeled as near-Hamiltonian; otherwise treat as optional structure.                                                                                              |
 | **Hodge-style alignment (optional)**                | solenoidal loop component in induced flow     | $\mathcal{L}_{\text{Hodge}}=1-\cos(\Delta z,\ -G^{-1}\nabla_A V)$                                                                                     | Mode D.E (oscillatory)                   | Encourages the policy-induced state velocity to align with value descent, suppressing circular components that cause chattering.                                                                               |
 | **Canonicalization shutter (STN) (optional)**       | input frame / pose gauge                      | $x\mapsto \tilde x=C_\psi(x)$, then VQ on $\tilde x$ {cite}`jaderberg2015stn`                                                                       | Mode S.D / Node 11 (capacity)            | Reduces the effective entropy of $K$ by canonicalizing nuisance transforms before discretization.                                                                                                              |
-| **Diagonal metric law**                             | coordinate basis choice                       | natural-gradient / trust region with state metric $G$                                                                                               | Mode B.C (control deficit)               | Enforces coordinate-invariant update geometry in latent state space (Sections 2.5–2.6).                                                                                                                        |
+| **Diagonal metric law**                             | coordinate basis choice                       | natural-gradient / trust region with state metric $G$                                                                                               | Mode B.C (control deficit; policy-side subcase) | Enforces coordinate-invariant update geometry in latent state space; pair it with AlignCheck when the deficit is a critic/boundary mismatch (Sections 2.5–2.6). |
 
 (sec-a-vq-vae-regulation)=
 ### A. VQ-VAE Regulation (The Shutter)
@@ -311,7 +325,7 @@ The loss terms below prevent both pathologies. The VQ codebook loss keeps the en
 *   **Contrastive Anchoring (Node 6):**
 
     $$
-    \mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k}))}{\sum \exp(\text{sim}(z_t, z_{neg}))}
+    \mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\mathrm{sim}(z_t,z_{t+k})/\tau)}{\exp(\mathrm{sim}(z_t,z_{t+k})/\tau)+\sum_j\exp(\mathrm{sim}(z_t,z^-_j)/\tau)}
 
     $$
     *   *Effect:* Ensures the latent space captures long-term structural dependencies (slow features), not just pixel reconstruction.
@@ -389,7 +403,7 @@ Units: $\lambda,\mu,\nu$ are dimensionless weights; each component loss is taken
 **InfoNCE** anchors the latent space to capture long-term structural dependencies:
 
 $$
-\mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\text{sim}(z_t, z_{t+k})/\tau)}{\sum_j \exp(\text{sim}(z_t, z^-_j)/\tau)}
+\mathcal{L}_{\text{InfoNCE}} = -\log \frac{\exp(\mathrm{sim}(z_t,z_{t+k})/\tau)}{\exp(\mathrm{sim}(z_t,z_{t+k})/\tau)+\sum_j\exp(\mathrm{sim}(z_t,z^-_j)/\tau)}
 
 $$
 This is one of *multiple* anchoring signals in the Fragile Agent, applied specifically to the **macro channel** $K$ to ensure slow features dominate over fast texture.
@@ -409,7 +423,7 @@ This recovers **Contrastive Predictive Coding (CPC)** {cite}`oord2018cpc` and **
 - **Macro-micro split**: InfoNCE anchors the macro channel $K$; texture $z_{\text{tex}}$ is separate ({ref}`Section 2.2b <sec-the-shutter-as-a-vq-vae>`)
 - **Multiple anchoring signals**: InfoNCE + VICReg + disentanglement losses work together (Table above)
 - **Structural filtering**: Slow features → $K$; fast features → $z_n$, $z_{\text{tex}}$
-- **Audit-friendly**: Node 6 (CollapseCheck) monitors whether contrastive loss is preventing collapse
+- **Audit-friendly**: Node 6 (GeomCheck) monitors whether contrastive loss is preventing collapse
 ::::
 
 *   **Whitening / Orthogonality (Node 6 — Identifiability):**
@@ -429,9 +443,11 @@ The world model is the agent's internal simulator. Given current state and actio
 
 What can go wrong? The most dangerous failure is unbounded sensitivity: a tiny state change causes a huge prediction change. The butterfly effect run amok. Planning becomes meaningless because small errors explode exponentially.
 
-The Lipschitz constraint addresses this directly: the world model's Jacobian (output change per input change) must be bounded. Smooth dynamics. No sudden cliffs.
+The Lipschitz constraint addresses this locally: a Jacobian bound over the declared domain limits output amplification there. A
+sampled penalty is evidence about the sampled pairs, not a global smoothness certificate; coverage and regularity are still needed
+before ruling out sudden cliffs elsewhere.
 
-Another useful structure is the Hamiltonian or symplectic parameterization, appropriate when the environment obeys conservation laws. By building this in, the world model cannot violate conservation, giving stability guarantees for free.
+Another useful structure is a Hamiltonian or symplectic parameterization when the environment is modelled by conservative dynamics. It can preserve the relevant two-form for an exact compatible flow or integrator, but the parameterization alone does not enforce every conservation law or provide stability for free. Friction, noise, controls, discretization, and approximation errors still need their own hypotheses and diagnostics.
 :::
 
 *   **Lipschitz Constraint (BarrierOmin / Node 9):**
@@ -486,7 +502,9 @@ Another useful structure is the Hamiltonian or symplectic parameterization, appr
 :::{div} feynman-prose
 Here is a beautiful unification. In standard RL, the critic predicts cumulative reward. In the Fragile Agent, it has a deeper role: it is a Lyapunov function.
 
-What is a Lyapunov function? The mathematician's way of proving stability without solving dynamics explicitly. Find a function $V$ that always decreases along trajectories (like a ball rolling downhill). If $V$ decreases everywhere, the system converges---even without knowing exactly where.
+What is a Lyapunov function? It is one way to prove stability without solving the dynamics explicitly. Find a function $V$ that
+decreases along every admissible trajectory, with the required positivity, regularity, and invariant-set hypotheses. Under those
+conditions a Lyapunov theorem can give stability or convergence; a decrease observed on sampled rollouts alone cannot.
 
 For the Fragile Agent, the critic should not just predict reward but guide the system toward good states in a provably stable way. The Lyapunov constraints say: value must decrease along trajectories. If it does not, something has failed---the critic is wrong, the policy is not following the gradient, or something else broke.
 
@@ -539,7 +557,7 @@ regularization in Section 24.5.
 *   **Eikonal-style Gradient Regularization (BarrierGap - Geometric Constraint):**
 
     $$
-    \mathcal{L}_{\text{Eikonal}} = (\lVert\nabla_z V\rVert - 1)^2
+    \mathcal{L}_{\text{Eikonal}} = (\lVert\nabla_z V\rVert_{G^{-1}} - \kappa)^2,\qquad [\kappa]=\mathrm{nat}/\text{(G-length)}
 
     $$
     * *Effect:* Encourages distance-like scaling of $V$ and mitigates exploding/vanishing gradients. It does not, by itself, guarantee that $V$ is an exact geodesic distance without additional conditions (e.g. boundary conditions and regularity).
@@ -547,17 +565,17 @@ regularization in Section 24.5.
 *   **Lyapunov Stiffness (Node 7):**
 
     $$
-    \mathcal{L}_{\text{Stiff}} = \max(0, \epsilon - \lVert\nabla_A V(z)\rVert)^2 + \lVert\nabla_A V(z)\rVert^2_{\text{reg}}
+    \mathcal{L}_{\text{Stiff}} = \max(0, \epsilon - \lVert\nabla_A V(z)\rVert)^2 + \lambda_{\text{cap}}\max(0,\lVert\nabla_A V(z)\rVert-\kappa_{\max})^2
 
     $$
     *   *Effect:* The gradient $\nabla_A V$ must be non-zero (to drive the policy) but bounded (to prevent explosion).
 *   **Safety Budget (Node 1):**
 
     $$
-    \mathcal{L}_{\text{Risk}} = \lambda_{\text{safety}} \cdot \mathbb{E}[\max(0, V(z) - V_{\text{max}})]
+    \mathcal{L}_{\text{Risk}} = \mathbb{E}[\max(0, V(z) - V_{\text{max}})^2]\quad\text{(dual multiplier }\lambda_1\text{ enforces this constraint)}
 
     $$
-    *   *Effect:* Hard Lagrangian enforcement of the risk budget.
+    *   *Effect:* Soft penalty for training; the runtime CostBoundCheck remains the hard gate for the risk budget.
 
 (sec-d-policy-regulation)=
 ### D. Policy Regulation (Controller / Geometry-Aware Updates)
@@ -578,7 +596,7 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
 
 | Loss Type                   | Euclidean (Standard)                            | Geometry-aware (Natural)                                                                                  |
 |-----------------------------|-------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
-| **Primary**                 | $\mathcal{L} = -\log \pi(a\mid z) \cdot A(z,a)$ | $\mathcal{L}_{\text{nat}} = -\mathbb{E}\left[\frac{\nabla_z V(z) \cdot f(z, a)}{\sqrt{G_{ii}(z)}}\right]$ |
+| **Primary**                 | $\mathcal{L} = -\log \pi(a\mid z) \cdot A(z,a)$ | $\mathcal{L}_{\text{nat}} = \mathbb{E}\left[\frac{dV_z(f(z,a))}{\lVert dV_z\rVert_{G^{-1}}\lVert f(z,a)\rVert_G+\varepsilon}\right]$ |
 | **What it maximizes**       | Advantage (scalar)                              | Value-decrease rate normalized by $G$                                                                     |
 | **Geometry**                | Ignores local conditioning                      | Uses Fisher/Hessian sensitivity metric $G$                                                                |
 | **Ill-conditioned regions** | Aggressive steps can destabilize                | Geometry-scaled steps are conservative                                                                    |
@@ -587,11 +605,13 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
 *   **Value-Decrease Maximization (Node 10 — Natural Gradient):**
 
     $$
-    \mathcal{L}_{\text{nat}} = -\mathbb{E}_{z, a \sim \pi} \left[ \frac{\nabla_z V(z) \cdot f(z, a)}{\sqrt{G_{ii}(z)}} \right]
+    \mathcal{L}_{\text{nat}} = \mathbb{E}_{z, a \sim \pi} \left[
+    \frac{dV_z(f(z,a))}{\lVert dV_z\rVert_{G^{-1}}\lVert f(z,a)\rVert_G+\varepsilon}
+    \right]
 
     $$
-    * *Mechanism:* Maximize the alignment between the value gradient $\nabla_A V$ and the realized dynamics $f(z,a)$, normalized by the local sensitivity scale ($G_{ii}$).
-    * *Effect:* Where the metric indicates high sensitivity or ill-conditioning (large $G$), effective steps shrink; where it is well-conditioned (small $G$), steps can be larger.
+    * *Mechanism:* Minimize the normalized directional derivative of the cost-to-go. A negative value means that the realized dynamics descend $V$; the denominator makes the diagnostic dimensionless and uses the state-space metric.
+    * *Effect:* The sign follows the cost convention: actions that decrease $V$ reduce this loss. Geometry is used to compare the covector $dV$ and tangent vector $f$ without treating a policy distribution as a state-space vector.
 
 *   **Hodge-style alignment (optional; complements Node 10 and BarrierBode).**
     View the policy-induced state change as a vector field on latent space (either the true environment dynamics $f$ or the world-model prediction $S(z,a)-z$). A simple alignment surrogate encourages the task-relevant component of the flow to be gradient-like:
@@ -609,10 +629,12 @@ The Policy is the controller. Its objective is to choose actions that reduce exp
 *   **Geodesic Stiffness (Node 2 - Zeno Constraint):**
 
     $$
-    \mathcal{L}_{\text{Zeno}} = \lVert\pi_t - \pi_{t-1}\rVert^2_{G}
+    w_G(z_t):=\frac{\operatorname{tr}G(z_t)}{\operatorname{tr}G_{\mathrm{ref}}+\varepsilon},\qquad
+    \mathcal{L}_{\text{Zeno}}^{G} = w_G(z_t)
+    D_{\mathrm{KL}}(\pi(\cdot\mid z_t)\Vert\pi(\cdot\mid z_{t-1}))
 
     $$
-    * *Effect:* Penalizes high-frequency switching, weighted by geometry. Switching is penalized more strongly in regions where the metric indicates high sensitivity (large $G$).
+    * *Effect:* Penalizes high-frequency switching with the declared dimensionless scalar weight $w_G$. The Euclidean fallback below is used when no state-space metric is available.
 
 *   **Standard Zeno Constraint (Euclidean fallback):**
 
@@ -657,7 +679,7 @@ A key design choice in the Fragile Agent is to make inter-component alignment ex
     *   The Critic is the risk auditor. If the Policy acts in a way the Critic didn't anticipate, there is a control gap.
 
         $$
-        \mathcal{L}_{\text{Sync}_{V-\pi}} = \lVert V(z) - (r + \gamma V(z')) \rVert^2 \quad (\text{TD-Error})
+        \mathcal{L}_{\text{Sync}_{V-\pi}} = \lVert V(z) - (c + \gamma V(z')) \rVert^2,\qquad c:=-r\quad (\text{cost TD error})
 
         $$
     *   *Critically:* We track the **Advantage Gap** $\Delta A = |A^{\pi}(s, a) - A^{\text{Buffer}}(s, a)|$. If $\Delta A$ grows, the policy has drifted off-manifold (BarrierTypeII).
@@ -679,9 +701,13 @@ One more family deserves attention: information constraints. These govern how mu
 
 The KL-control term is about effort. Every deviation from a reference policy (usually uniform) costs information---literally the bits needed to specify "do this, not that." When control effort is expensive, the agent prefers simpler policies that do not require precise action specification.
 
-The path entropy term is about exploration. An agent that always goes to the same place has low future flexibility. One that keeps options open has high path entropy. Maximizing this encourages exploration---not random, but in a way that preserves ability to reach diverse futures.
+The path entropy term is about exploration. An agent that always goes to the same place has low future flexibility. One that keeps
+options open has high path entropy. Maximizing it can encourage diverse futures under the chosen dynamics and horizon, but entropy
+alone does not guarantee reachability, useful exploration, or task progress.
 
-The coupling window is the most subtle. The agent should not be too tightly coupled to sensors (overfitting to noise) nor too loosely (ignoring important signals). There is a Goldilocks zone of information transfer, and the window penalty keeps the agent in it.
+The coupling window is the most subtle. The agent should not be too tightly coupled to sensors (overfitting to noise) nor too
+loosely (ignoring important signals). A Goldilocks zone can be a useful engineering target, and the window penalty can encourage
+it; its existence and location depend on the measured information channels and the chosen thresholds.
 :::
 
 The synchronization and component losses above enforce internal consistency. The following regularizers make information/coupling constraints explicit in online-auditable form.
@@ -706,17 +732,16 @@ The synchronization and component losses above enforce internal consistency. The
     $$
     with weights $w_h\ge 0$. In practice, a computable proxy is the entropy of the WM-predicted horizon marginals $\hat{P}_\phi(K_{t+h}\mid K_t)$ obtained by rollout or dynamic programming.
 
-*   **Information–Stability Window (Theorem {prf:ref}`thm-information-stability-window-operational`).** Penalize both under-coupling (loss of grounding) and over-coupling (symbol dispersion / saturation). With thresholds $0<\epsilon<\log|\mathcal{K}|$,
+*   **Information–Stability Window (Definition {prf:ref}`thm-information-stability-window-operational`).** Penalize both under-coupling (loss of grounding) and posterior dispersion. Use separate margins $\epsilon_I>0$ and $\epsilon_H>0$,
 
     $$
     \mathcal{L}_{\text{window}}
     :=
-    \mathrm{ReLU}\!\big(\epsilon - I(X_t;K_t)\big)^2
-    +
-    \mathrm{ReLU}\!\big(H(K_t)-(\log|\mathcal{K}|-\epsilon)\big)^2.
+    \mathrm{ReLU}\!\big(\epsilon_I - I(X_t;K_t)\big)^2
+    +\mathrm{ReLU}\!\big(H(p_t)-(\log|\mathcal{K}|-\epsilon_H)\big)^2.
 
     $$
-    This is an explicit online enforcement of the coupling window: $I(X;K)$ must not collapse, and $H(K)$ must not saturate.
+    This is an explicit online enforcement of the coupling window: $I(X_t;K_t)$ must not collapse, while posterior entropy $H(p_t)$ must remain below its dispersion edge. Marginal code-usage entropy $H(\bar p(K))$ is monitored separately for dead-code liveness, and per-sample router entropy $H(q(K\mid x_t))$ for compactness.
 
 *   **Regularized Objective Descent (Sections 9.11 and 11–14).** Define an instantaneous (per-step) regularized objective
 
@@ -863,7 +888,7 @@ This is exactly how SAC (Soft Actor-Critic) handles its entropy coefficient. Not
 Some metrics should be regulated around a target value or rate. Typical examples:
 - **Policy KL per update** (trust region): keep $D_{\mathrm{KL}}(\pi_t\Vert\pi_{t-1})$ in a target band.
 - **Entropy / mixing:** keep $H(\pi(\cdot\mid K))$ within a target range.
-- **Code usage:** keep $H(K)$ away from collapse and away from saturation.
+- **Code usage:** keep $H(\bar p(K))$ near $\log|\mathcal K|$ while keeping per-sample entropy $H(q(K\mid x_t))$ low enough for a compact assignment.
 
 Let $m_t$ be a measured scalar metric and $m^\star$ its target. Define the error $e_t := m^\star - m_t$. A discrete PID update for a positive coefficient $\lambda$ is:
 
@@ -995,36 +1020,36 @@ This is not ad-hoc. It directly implements the timescale hierarchy needed for st
 The result: self-correcting training. Instead of manually tuning learning rates, the system slows when something is wrong and speeds up when healthy.
 :::
 
-The scaling exponents $(\alpha,\beta_{\pi},\gamma,\delta)$ ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`) become actionable when treated as **online diagnostics** driving a simple update scheduler {cite}`konda2000actor`:
+The scaling coefficients $(\alpha,\beta_{\pi},\gamma_{\text{wm}},\delta)$ ({ref}`Section 3.2 <sec-scaling-exponents-characterizing-the-agent>`) become actionable when treated as **online diagnostics** driving a simple update scheduler {cite}`konda2000actor`:
 - If representation drift $\delta$ is high, freeze downstream learning (policy/critic/world) until the shutter stabilizes.
-- If world-model volatility $\gamma$ is high, avoid policy learning on shifting dynamics (freeze or reduce policy step size).
+- If world-model volatility $\gamma_{\text{wm}}$ is high, avoid policy learning on shifting dynamics (freeze or reduce policy step size).
 - If the policy update scale $\beta_{\pi}$ exceeds critic signal strength $\alpha$ (BarrierTypeII), skip policy updates until the critic recovers.
 
-One implementable pattern is a “gate + ratio” rule with EMA-smoothed exponents:
+One implementable pattern is a “gate + ratio” rule with EMA-smoothed, normalized coefficients:
 ```python
 # Sketch: gate policy updates if actor outruns critic
-alpha = ema(alpha)              # critic signal / curvature proxy
-beta_pi = ema(beta_pi_kl)       # mean KL(π_t || π_{t-1}) per update
-gamma = ema(world_drift)    # WM parameter drift proxy
-delta = ema(code_drift)     # codebook/encoder drift proxy
+alpha = ema(critic_signal / critic_scale)
+beta_pi = ema(mean_kl / kl_target)
+gamma_wm = ema(world_drift / wm_scale)
+delta = ema(code_drift / code_scale)
 
 if delta > delta_max:
     lr_policy = 0.0
     lr_world *= 0.5
     lr_critic *= 0.5
-elif gamma > gamma_max:
+elif gamma_wm > gamma_max:
     lr_policy = 0.0
 elif beta_pi > min(beta_pi_max, alpha):
     lr_policy *= 0.98
     lr_critic *= 1.02
 ```
 
-This is not ad-hoc tuning; it is a direct operationalization of the two-time-scale requirement already encoded as BarrierTypeII ({ref}`Section 4.1 <sec-barrier-implementation-details>`).
+The positive scales are part of the configuration and must be reported with the run. This is an operationalization of the two-time-scale requirement encoded as BarrierTypeII ({ref}`Section 4.1 <sec-barrier-implementation-details>`), not a universal convergence guarantee.
 
 :::{admonition} The Big Picture: Diagnostics as a Design Philosophy
 :class: feynman-added note
 
-Most RL systems are black boxes. Train them, evaluate performance, and when something breaks you have little insight into why. The Fragile Agent is different: 29 stability checks give real-time visibility into every component's health.
+Most RL systems are black boxes. Train them, evaluate performance, and when something breaks you have little insight into why. The Fragile Agent's 32 stability checks (27 numbered nodes plus five sub-nodes) give structured visibility into each component's health.
 
 This is not just debugging. It is a different approach to reliability. Instead of hoping things work and reacting to failures, you specify upfront what "working" means (contracts), measure continuously (diagnostics), and correct automatically (adaptive multipliers).
 
@@ -1038,7 +1063,7 @@ If you take one thing from this chapter: visibility into your system is not a lu
 
 The three adaptive multiplier methods above (Primal–Dual, PID, Learned Precisions) are **special cases** of a more general neural meta-controller. {ref}`Section 26 <sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller>` introduces the **Universal Governor** $\pi_{\mathfrak{G}}$, which learns a temporal policy over the diagnostic stream $s_t = [C_1(\theta_t), \ldots, C_K(\theta_t)]$ and outputs all hyperparameters $\Lambda_t = (\eta_t, \vec{\lambda}_t, T_{c,t})$ jointly:
 
-- **Primal–Dual (Method A)** = affine policy, memoryless ($H=0$)
+- **Primal–Dual (Method A)** = integral controller: an affine recursion in the previous multiplier; **PID (Method B)** adds proportional and derivative terms.
 - **PID (Method B)** = linear temporal filter with hand-tuned $(K_p, K_i, K_d)$
 - **Learned Precisions (Method C)** = diagonal covariance, no temporal processing
 

@@ -88,7 +88,10 @@ Here's the beautiful idea. Instead of asking "where is the agent's belief *point
 
 This distribution can do two things: it can *flow* (mass moves from here to there while conserving total probability) or it can *react* (mass appears or disappears locally). The first is what happens when you track a moving object. The second is what happens when you suddenly realize "wait, I was wrong about which scenario I'm in."
 
-The WFR metric gives us a principled way to measure the "cost" of any combination of flowing and reacting. And here's the punchline: finding the optimal path in this space of distributions turns out to be a convex optimization problem. No more combinatorial explosion. No more arbitrary choices about when to "jump."
+The WFR metric gives us a principled way to measure the "cost" of any combination of flowing and reacting. For
+fixed endpoints, metric, and reaction scale, the Benamou--Brenier formulation is convex in the appropriate flux
+variables such as $(\rho,\rho v,\rho r)$. That removes a combinatorial search from the variational problem, but the
+choice of model, chart maps, and $\lambda$ remains a modelling decision.
 :::
 
 (sec-the-wfr-metric)=
@@ -105,10 +108,10 @@ Let $\rho(s, z)$ be a time-varying density on the latent bundle $\mathcal{Z}$, e
 :::{prf:definition} The Generalized WFR Action
 :label: def-the-wfr-action
 
-The squared WFR distance $d^2_{\mathrm{WFR}}(\rho_0, \rho_1)$ is the infimum of the generalized energy functional:
+The squared WFR distance $d^2_{\mathrm{WFR}}(\rho_0, \rho_1)$ is the infimum of the undriven generalized energy functional:
 
 $$
-\mathcal{E}[\rho, v, r] = \int_0^1 \int_{\mathcal{Z}} \left( \underbrace{\|v_s(z)\|_G^2}_{\text{Transport Cost}} + \underbrace{\lambda^2 |r_s(z)|^2}_{\text{Reaction Cost}} - \underbrace{2\langle \mathbf{A}(z), v_s(z) \rangle}_{\text{Vector Potential}} \right) d\rho_s(z) \, ds
+\mathcal{E}_{\mathrm{WFR}}[\rho, v, r] = \int_0^1 \int_{\mathcal{Z}} \left( \underbrace{\|v_s(z)\|_G^2}_{\text{Transport Cost}} + \underbrace{\lambda^2 |r_s(z)|^2}_{\text{Reaction Cost}} \right) d\rho_s(z) \, ds
 
 $$
 subject to the **Unbalanced Continuity Equation**:
@@ -122,15 +125,10 @@ where:
 - $r_s(z) \in \mathbb{R}$ is the **reaction rate** (growth/decay of mass)
 - $\lambda > 0$ is the **length-scale parameter** balancing transport and reaction
 - $G$ is the Riemannian metric on the continuous fibres ({ref}`Section 2.5 <sec-second-order-sensitivity-value-defines-a-local-metric>`)
-- $\mathbf{A}(z)$ is the **vector potential** satisfying $d\mathbf{A} = \mathcal{F}$ (the {prf:ref}`def-value-curl`)
+**Conservative and driven cases.** The displayed distance contains no vector potential. A non-conservative reward field is represented by the separately defined driven action
+$\mathcal S_{\mathbf A}:=\mathcal E_{\mathrm{WFR}}-2\beta_{\mathrm{curl}}\int\!\langle\mathbf A,v\rangle\,d\rho\,ds$; it is a control objective, not a squared distance. Only the curvature $\mathcal F=d\mathbf A$ is gauge invariant. If $H^1_{\mathrm{dR}}(\mathcal Z)=0$ (or the harmonic component is set to zero) and $\mathcal F=0$, a gauge with $\mathbf A=0$ may be chosen; otherwise a harmonic component remains.
 
-*Units:* $[\mathbf{A}] = \mathrm{nat}/[\text{length}]$.
-
-**Conservative Limit:** When $\mathcal{F} = 0$ (Definition {prf:ref}`def-conservative-reward-field`), we can choose the gauge $\mathbf{A} = 0$ and recover the standard WFR action without the vector potential term.
-
-**Non-Conservative Case:** When $\mathcal{F} \neq 0$, the vector potential term couples the transport velocity to the solenoidal component of the reward field. The Euler-Lagrange equations of this action yield the Lorentz-Langevin equation (Definition {prf:ref}`def-bulk-drift-continuous-flow`).
-
-*Remark (Gauge Invariance).* The action is invariant under gauge transformations $\mathbf{A} \to \mathbf{A} + d\chi$ for any scalar $\chi$, since $d(d\chi) = 0$. We fix the gauge via the Coulomb condition $\delta\mathbf{A} = 0$ (divergence-free).
+The driven action is not claimed to be gauge invariant or to yield the second-order Lorentz--Langevin SDE without an additional reduction and noise model. The SDE is defined independently in Definition {prf:ref}`def-bulk-drift-continuous-flow`.
 
 *Forward reference (Boundary Conditions).* {ref}`Section 23.5 <sec-wfr-boundary-conditions-waking-vs-dreaming>` specifies how boundary conditions on $\partial\mathcal{Z}$ (sensory and motor boundaries) constrain the WFR dynamics: **Waking** imposes Dirichlet (sensors) + Neumann (motors) BCs; **Dreaming** imposes reflective BCs on both, enabling recirculating flow without external input.
 
@@ -145,7 +143,10 @@ In ordinary optimal transport, the right side is zero: mass is conserved, it jus
 
 The **action functional** measures the total cost of a path. You pay for velocity (moving mass around) and you pay for reaction (creating or destroying mass). The parameter $\lambda$ sets the exchange rate: how much is one unit of transport worth compared to one unit of reaction?
 
-And that **vector potential** term? That's for situations where the reward landscape has "curl"---where going around in a circle doesn't bring you back to the same value. In that case, the optimal path isn't just about minimizing distance; it's about exploiting the curl, like a sailor tacking against the wind.
+And that **vector potential** term? It belongs to a separately driven action for situations where the reward
+one-form has curl---where going around a loop need not return the same value. It is a linear bias on candidate paths,
+not part of the squared WFR distance defined above. Only its curvature $\mathcal{F}=d\mathbf A$ is gauge invariant;
+interpreting the bias as reward requires the declared field, units, and control reduction.
 :::
 
 :::{admonition} Example: Belief Update as WFR Flow
@@ -166,12 +167,12 @@ The WFR metric finds the optimal mix. If $x_1$ is close to $x_0$, transport domi
 ::::{admonition} Physics Isomorphism: Wasserstein-Fisher-Rao Geometry
 :class: note
 
-**In Physics:** The Wasserstein-Fisher-Rao (WFR) metric on probability measures combines optimal transport (Wasserstein) with information geometry (Fisher-Rao). It is the unique metric allowing both mass transport and creation/annihilation {cite}`liero2018optimal,chizat2018interpolating`.
+**In Physics:** The Wasserstein-Fisher-Rao (WFR) or Hellinger--Kantorovich metric is a distinguished cone-space/Benamou--Brenier construction that combines optimal transport with Hellinger reaction geometry. It is one member of a broader family of unbalanced transport metrics {cite}`liero2018optimal,chizat2018interpolating`.
 
-**In Implementation:** The belief density $\rho$ evolves under the WFR metric on $\mathcal{P}(\mathcal{Z})$:
+**In Implementation:** The finite non-negative belief measure $\rho$ evolves under the WFR metric on $\mathcal{M}^+(\mathcal{Z})$:
 
 $$
-d_{\text{WFR}}^2(\rho_0, \rho_1) = \inf_{\rho, v, r} \int_0^1 \int_{\mathcal{Z}} \left( \|v\|_G^2 + \lambda^2 r^2 \right) \rho \, d\mu_G \, dt
+d_{\text{WFR}}^2(\rho_0, \rho_1) = \inf_{\rho, v, r} \int_0^1 \int_{\mathcal{Z}} \left( \|v\|_G^2 + \lambda^2 r^2 \right) \rho \, d\mu_G \, ds
 
 $$
 **Correspondence Table:**
@@ -184,22 +185,25 @@ $$
 | Benamou-Brenier formula | Dynamic formulation |
 | Geodesic interpolation | Optimal belief transition |
 
-**Significance:** WFR unifies transport (Wasserstein) and reweighting (Fisher-Rao) in a single Riemannian geometry.
+**Significance:** WFR unifies transport and reaction on the cone of non-negative finite measures $\mathcal M^+(\mathcal Z)$. The pure-reaction restriction is the scaled Hellinger geometry on measures; its tangent tensor restricts to Fisher--Rao after fixing total mass, while a finite simplex requires an additional discrete-state restriction.
 ::::
 
 :::{prf:remark} Units
 :label: rem-units
 
-$[v] = \text{length}/\text{time}$, $[r] = 1/\text{time}$, and $[\lambda] = \text{length}$. The ratio $\|v\|/(\lambda |r|)$ determines whether transport or reaction dominates.
+$[v] = \text{length}/\text{time}$, $[r] = 1/\text{time}$, and $[\lambda] = \text{length}$ after taking the metric coordinates as length units. The ratio $\|v\|/(\lambda |r|)$ is a local cost ratio; the exact crossover for a pair of Dirac masses depends on the normalization of the Hellinger term.
 
 :::
 
 :::{div} feynman-prose
 The units tell you something important. Velocity has units of length per time---that's obvious. Reaction rate has units of inverse time---it's a growth rate, like an interest rate. And $\lambda$, the crossover parameter, has units of length.
 
-So when is transport preferred over reaction? When $\|v\|/(\lambda |r|) > 1$, which means when the actual transport velocity is larger than $\lambda$ times the reaction rate. Since $\lambda$ is a length scale, this is saying: if the distance to travel is less than $\lambda$, transport wins; if it's more than $\lambda$, reaction wins.
+So how do we compare transport and reaction? The ratio $\|v\|/(\lambda |r|)$ is a useful local cost
+indicator when both fields and their units have been fixed. It is not a universal decision rule: the pairwise
+crossover for two measures also depends on mass normalization and the convention used for the Hellinger term.
 
-This is beautiful. The physics tells you exactly when to "teleport" versus when to "walk."
+The picture of "walking" versus "teleporting" is therefore a way to inspect a calibrated model. The variational
+problem, rather than the slogan, decides which admissible combination is cheaper.
 :::
 
 (sec-transport-vs-reaction-components)=
@@ -214,8 +218,8 @@ The belief state $\rho_s$ evolves on the bundle $\mathcal{Z}$ via two mechanisms
 **1. Transport (Wasserstein Component):**
 The density evolves via the continuity equation $\partial_s\rho + \nabla\cdot(\rho v) = 0$ along the continuous coordinates $z_n$. The transport cost is $\int \|v\|_G^2\, d\rho$. In the limit $r \to 0$, the dynamics reduce to the standard Wasserstein-2 ($W_2$) optimal transport on the Riemannian manifold.
 
-**2. Reaction (Fisher-Rao Component):**
-The density undergoes local mass creation/annihilation via the source term $\rho r$. This corresponds to discrete chart transitions: mass decreases on Chart A ($r < 0$) and increases on Chart B ($r > 0$). The reaction cost is $\int \lambda^2|r|^2\, d\rho$. In the limit $v \to 0$, the dynamics reduce to the Fisher-Rao metric on the probability simplex $\Delta^{|\mathcal{K}|}$.
+**2. Reaction (Hellinger Component):**
+The density undergoes local mass creation/annihilation via the source term $\rho r$. This corresponds to discrete chart transitions: mass decreases on Chart A ($r < 0$) and increases on Chart B ($r > 0$). The reaction cost is $\int \lambda^2|r|^2\, d\rho$. In the limit $v \to 0$, the induced distance is the scaled Hellinger geometry on $\mathcal M^+(\mathcal Z)$; its Fisher--Rao tensor appears only after restricting to fixed total mass (and, for a simplex, a finite chart register).
 
 :::{div} feynman-prose
 Here's a way to think about the difference.
@@ -241,40 +245,53 @@ Most interesting agent behavior lives in the "general" regime. A robot tracking 
 
 **3. The Coupling Constant $\lambda$ (Reaction-Transport Crossover Scale):**
 
-This parameter defines the characteristic length scale at which transport cost exceeds reaction cost:
-- If $\|z_A - z_B\|_G < \lambda$: Transport is preferred (continuous regime)
-- If $\|z_A - z_B\|_G > \lambda$: Reaction is preferred (discrete chart transition)
+This parameter sets the characteristic length scale in the action. It does not by itself put the pairwise crossover at $\|z_A-z_B\|_G=\lambda$; the numerical threshold depends on the mass normalization and, for Dirac endpoints, on the cone-angle convention.
 
-**Operational interpretation:** $\lambda$ is exactly the **radius of the chart overlap region** ({ref}`Section 7.13 <sec-factorized-jump-operators-efficient-chart-transitions>`). Within overlaps, transport is efficient; across non-overlapping regions, reaction dominates.
+**Operational interpretation:** choose $\lambda$ as a declared WFR hyperparameter. It may be calibrated against a router-overlap scale, but the atlas overlap is not an intrinsic radius and is not identical to $\lambda$ by definition.
 
 :::{div} feynman-prose
-The parameter $\lambda$ is the key to the whole thing. It answers the question: "How far can you walk before it's cheaper to teleport?"
+The parameter $\lambda$ sets the relative price of transport and reaction in the chosen action. The road and
+airline picture is useful, but the crossover is determined by the full variational cost, mass normalization, and cone
+convention, not by a universal distance equal to $\lambda$.
 
-Think about it this way. If you're in San Francisco and you want to get to Oakland, you might drive across the bridge. But if you want to get to Tokyo, you're going to fly. The crossover distance where flying becomes preferable to driving is analogous to $\lambda$.
-
-In the agent's latent space, $\lambda$ is (roughly) the size of the overlap between neighboring charts. If two hypotheses are "close" in the sense that they share similar predictions, transport between them is cheap. If they're "far"---if they represent totally different interpretations of the situation---reaction is cheaper. You don't smoothly walk from "this is a cup" to "this is a cat"; you teleport.
+A router-overlap scale can help calibrate $\lambda$, but the two quantities are not identical by definition. Reaction
+is a local source term on the measure cone, so a transition need not be a literal jump between two discrete charts; in
+a finite chart register, the same mechanism can represent a change of hypothesis.
 :::
 
 :::{prf:definition} Canonical length-scale
 :label: def-canonical-length-scale
 
-Let $G$ be the latent metric on $\mathcal{Z}$. The canonical choice for $\lambda$ is the **geodesic injectivity radius**:
+Let $G_n(\cdot;K)$ be the metric on the continuous fibre of chart $K$. If the
+interior fibres have a positive uniform injectivity-radius lower bound, a
+geometric calibration is
 
 $$
-\lambda := \min_{z \in \mathcal{Z}} \text{inj}_G(z),
+\lambda_{\mathrm{inj}} := \inf_{K}\inf_{z\in \mathcal Z_{n,K}^{\circ}}
+\operatorname{inj}_{G_n(\cdot;K)}(z),
 
 $$
-where $\text{inj}_G(z)$ is the injectivity radius at $z$ -- the largest $r$ such that the exponential map $\exp_z: T_z\mathcal{Z} \to \mathcal{Z}$ is a diffeomorphism on $B_r(0)$.
+where the infimum is taken over the chosen chart interiors. The discrete
+factor has no exponential map, and on an untrimmed open chart the infimum may
+be zero; in either case use a calibrated positive hyperparameter instead of
+calling this quantity canonical.
 
 *Default value.* If the injectivity radius is unknown or the metric is learned, a practical default is:
 
 $$
-\lambda_{\text{default}} = \sqrt{\frac{\text{tr}(G^{-1})}{n}} \approx \text{mean characteristic length of } \mathcal{Z}.
+\lambda_{\text{default}} := \ell_{\mathrm{step}}\sqrt{\frac{1}{n}\operatorname{tr}\!\left(\bar G_n\right)},
 
 $$
-This corresponds to the RMS geodesic step size in an isotropic metric.
+where $\ell_{\mathrm{step}}$ is a declared coordinate step and $\bar G_n$ is
+the metric averaged over the sampled chart interiors. This is a calibration
+heuristic, not an intrinsic injectivity-radius identity.
 
-*Cross-reference:* The screening length $\ell_{\text{screen}} = 1/\kappa$ from {ref}`Section 24.2 <sec-the-bulk-potential-screened-poisson-equation>` plays an analogous role for temporal horizons; $\lambda$ plays the corresponding role for spatial horizons in the WFR geometry.
+*Cross-reference:* The screening length $\ell_{\text{screen}} =
+1/\kappa_{\mathrm{scr}}$ from {ref}`Section 24.2
+<sec-the-bulk-potential-screened-poisson-equation>` is a spatial
+discount-induced/value-field scale. It is distinct from the WFR reaction
+length $\lambda$ (and from the temporal discount rate used to define
+$\kappa_{\mathrm{scr}}$).
 
 :::
 
@@ -300,21 +317,30 @@ The WFR metric seamlessly unifies discrete and continuous dynamics:
 
 1. **Continuous Movement (Flow):** When moving within a chart, $r \approx 0$. The dynamics are dominated by $\nabla \cdot (\rho v)$, and the metric reduces to $W_2$ (Wasserstein-2). This recovers the Riemannian manifold structure of the nuisance fibres.
 
-2. **Discrete Movement (Jump):** When the flow reaches a topological obstruction (chart boundary without overlap), transport becomes infinitely expensive. It becomes cheaper to use the source term $r$:
+2. **Discrete Movement (Jump):** When the flow reaches a topological obstruction (chart boundary without overlap), transport can become prohibitively expensive. It can then be cheaper to use the source term $r$:
    - $r < 0$ on the old chart (mass destruction)
    - $r > 0$ on the new chart (mass creation)
-   This recovers the **Fisher-Rao metric** on the discrete simplex $\Delta^{|\mathcal{K}|}$.
+   On the full non-negative-measure cone this gives the Hellinger/Fisher--Rao-type pure-reaction metric; a Fisher--Rao simplex is obtained only after restricting to a finite normalized chart register.
 
 3. **Mixed Regime (Overlap):** In chart overlaps, both $v$ and $r$ are active. The optimal path smoothly interpolates between transport and reaction.
 
-*Proof sketch.* The cone-space representation of WFR (lifting $\rho$ to $(\sqrt{\rho}, \sqrt{\rho} \cdot z)$) shows that the WFR geodesic projects to a $W_2$ geodesic when $r = 0$, and to a Fisher-Rao geodesic when $v = 0$. $\square$
+*Proof sketch.* The cone-space representation lifts a pointwise measure to
+$(z,2\lambda\sqrt{\rho})$ with the cone metric. With $r=0$ the projection is
+the $W_2$ geodesic; with $v=0$ it is the Hellinger geodesic on
+$\mathcal M^+(\mathcal Z)$. A finite Fisher--Rao simplex is the discrete
+normalized special case. $\square$
 
 :::
 
 :::{div} feynman-prose
-This is really beautiful. The WFR metric is like a universal adapter. When you're doing ordinary tracking, it acts like a Wasserstein metric. When you're doing hypothesis switching, it acts like a Fisher-Rao metric. And when you're doing both---which is most of the time---it finds the optimal blend.
+This is the useful picture: WFR contains transport and reaction in one variational problem. With $r=0$ it gives
+the Wasserstein transport restriction; with $v=0$ it gives the Hellinger/Fisher--Rao-type cone geometry. A finite
+Fisher--Rao simplex appears only after restricting to a finite normalized chart register. In a mixed regime the
+minimizer can use both terms, subject to the stated endpoints and regularity assumptions.
 
-The "cone-space representation" mentioned in the proof is a technical trick that linearizes the problem. Instead of working with densities $\rho$, you work with $\sqrt{\rho}$. This turns the nonlinear WFR geodesic equation into something much more tractable. But the conceptual point stands without the technical details: WFR smoothly interpolates between the two limiting geometries.
+The "cone-space representation" is a technical change of variables involving $\sqrt{\rho}$. It makes the local
+formula easier to analyze, but it does not mean that every coordinate representation is linear or that supports move
+smoothly in the ordinary Euclidean sense. The continuity is in the measure geometry.
 :::
 
 :::{admonition} Analogy: Highway vs. Airplane
@@ -323,13 +349,16 @@ The "cone-space representation" mentioned in the proof is a technical trick that
 Imagine you're in a landscape of cities connected by highways and airports.
 
 - **Transport (Wasserstein):** Driving on highways. You can go anywhere, but it takes time proportional to distance.
-- **Reaction (Fisher-Rao):** Flying between airports. Near-instant, but airports are only at discrete locations (the charts).
+- **Reaction (Fisher-Rao):** Taking a locally priced shortcut in weight, pictured as flying; in the full cone it can occur throughout the domain, while a finite chart register supplies the airport analogy.
 - **WFR:** Finding the optimal combination. For short trips, drive. For long trips, drive to the nearest airport, fly, then drive from the destination airport.
 
-The length scale $\lambda$ is like the maximum distance where driving is still cheaper than the overhead of flying. And the WFR metric automatically finds the optimal combination for any origin-destination pair.
+The length scale $\lambda$ is like the crossover set by the relative price of driving and flying. In the actual
+model it is a declared WFR parameter, possibly calibrated against chart geometry. Reaction is a local source term on
+the whole measure cone; discrete "airports" are only an analogy for the finite chart-register specialization. The
+variational problem chooses a combination only after the endpoints, metric, and admissible fields have been fixed.
 :::
 
-::::{admonition} Connection to RL #26: Distributional RL as Degenerate WFR Geometry
+::::{admonition} Connection to RL #26: Distributional RL as a related limit
 :class: note
 :name: conn-rl-26
 **The General Law (Fragile Agent):**
@@ -344,13 +373,15 @@ subject to the unbalanced continuity equation $\partial_s \rho + \nabla \cdot (\
 **The Degenerate Limit:**
 Restrict to value distributions at single states (no spatial transport). Use Euclidean metric ($G \to I$).
 
-**The Special Case (Standard RL):**
+**Related Standard-RL equation:**
 
 $$
 Z(s, a) \stackrel{D}{=} R + \gamma Z(S', A'), \quad Q(s,a) = \mathbb{E}[Z(s,a)]
 
 $$
-This recovers **Distributional RL**: C51, QR-DQN, IQN {cite}`bellemare2017c51,dabney2018qrdqn`.
+The distributional Bellman equation is a useful comparison, but it is not
+derived from the reaction-only WFR action. C51, QR-DQN, and IQN add their own
+projection or quantile objectives {cite}`bellemare2017c51,dabney2018qrdqn`.
 
 **What the generalization offers:**
 - **Unified transport-reaction**: WFR handles continuous flow (within charts) and discrete jumps (between charts) in one framework
@@ -363,14 +394,16 @@ This recovers **Distributional RL**: C51, QR-DQN, IQN {cite}`bellemare2017c51,da
 ## Connection to GKSL / Master Equation ({ref}`Section 12.5 <sec-optional-operator-valued-belief-updates>`)
 
 :::{div} feynman-prose
-Now let me show you a connection that has rigorous mathematical foundations: the WFR framework and the Lindblad master equation are both gradient flows, and in the classical limit they coincide exactly.
-
-You might ask: what does quantum mechanics have to do with our classical agent? The answer is structural. Both frameworks solve the same problem: how to describe dynamics that combine smooth evolution with sudden jumps, while preserving probability. The mathematics turns out to be the same.
+Now let me show you a connection that has rigorous mathematical foundations, but only after we restrict the
+objects. A finite reversible classical master equation is a gradient flow in a discrete Wasserstein-type geometry.
+A GKSL equation reduces to that setting when the density matrix stays diagonal and the Hamiltonian and jump operators
+satisfy the stated hypotheses. That restricted classical limit is the connection; an arbitrary GKSL evolution is not
+automatically a WFR gradient flow.
 :::
 
 The WFR framework connects rigorously to the GKSL (Lindblad) master equation via the **classical limit**. We state this precisely.
 
-:::{prf:theorem} Classical Master Equation as WFR Gradient Flow
+:::{prf:theorem} Classical Master Equation as a Discrete-Wasserstein Gradient Flow
 :label: thm-classical-master-equation-wfr
 
 Let $\mathcal{K} = \{1, \ldots, K\}$ be a finite state space with transition rates $W_{jk} \geq 0$ (rate of jumping from $k$ to $j$). The classical master equation
@@ -379,20 +412,20 @@ $$
 \dot{p}_j = \sum_{k} W_{jk} p_k - W_{kj} p_j
 $$
 
-is the **gradient flow** of the relative entropy $H(p \| \pi) = \sum_j p_j \log(p_j / \pi_j)$ with respect to a discrete Wasserstein-type metric, where $\pi$ is the stationary distribution satisfying detailed balance {cite}`maas2011gradient,mielke2011gradient,chow2012fokker`.
+If the chain is reversible with respect to a strictly positive stationary distribution $\pi$ (detailed balance $W_{jk}\pi_k=W_{kj}\pi_j$), this is the **gradient flow** of the relative entropy $H(p \| \pi) = \sum_j p_j \log(p_j / \pi_j)$ with respect to a discrete Wasserstein-type metric. It is not, by this statement alone, a WFR reaction flow {cite}`maas2011gradient,mielke2011gradient,chow2012fokker`.
 
 :::
 
 :::{prf:corollary} GKSL Classical Limit
 :label: cor-gksl-classical-limit
 
-When the GKSL density matrix is diagonal, $\varrho = \mathrm{diag}(p_1, \ldots, p_K)$, the GKSL equation reduces to a classical master equation with rates
+Assume that $\varrho = \mathrm{diag}(p_1, \ldots, p_K)$, that $H$ is diagonal in the same basis, and that the jump operators preserve diagonal matrices (for example, they are linear combinations of matrix units). Then the GKSL equation reduces to a classical master equation with rates
 
 $$
 W_{jk} = \sum_\ell \gamma_\ell |\langle j | L_\ell | k \rangle|^2.
 $$
 
-The commutator term $-i[H, \varrho]$ vanishes identically for diagonal states. By Theorem {prf:ref}`thm-classical-master-equation-wfr`, this evolution is a gradient flow in WFR geometry.
+The commutator term vanishes under the diagonal-$H$ hypothesis. If the resulting rates satisfy detailed balance, Theorem {prf:ref}`thm-classical-master-equation-wfr` identifies the evolution as a gradient flow in the discrete-Wasserstein geometry.
 
 :::
 
@@ -400,9 +433,9 @@ The commutator term $-i[H, \varrho]$ vanishes identically for diagonal states. B
 
 | GKSL Component (diagonal $\varrho$)                                                               | WFR Interpretation                                           |
 |---------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
-| $-i[H, \varrho]$ (Commutator)                                                                     | **Vanishes** (no off-diagonal elements to rotate)            |
-| $\sum_j \gamma_j(L_j \varrho L_j^\dagger - \frac{1}{2}\{L_j^\dagger L_j, \varrho\})$ (Dissipator) | Reaction rate $r$ (jump-induced mass redistribution)         |
-| Probability conservation $\sum_k \dot{p}_k = 0$                                                   | Balanced reaction ($\int r \, d\mu = 0$ globally)            |
+| $-i[H, \varrho]$ (Commutator)                                                                     | Vanishes when $H$ is diagonal in the belief basis            |
+| $\sum_j \gamma_j(L_j \varrho L_j^\dagger - \frac{1}{2}\{L_j^\dagger L_j, \varrho\})$ (Dissipator) | Graph transport on $\mathcal K$ (Maas metric), distinct from pointwise WFR reaction |
+| Probability conservation $\sum_k \dot{p}_k = 0$                                                   | Balanced reaction ($\int \rho r \, d\mu = 0$ globally)            |
 | Jump operators $L_j$                                                                              | Transition kernels (where mass teleports to)                 |
 
 :::{prf:remark} Full Quantum Case
@@ -415,34 +448,39 @@ For non-diagonal density matrices (quantum coherences), the appropriate geometri
 :::{div} feynman-prose
 Let me be precise about what is rigorous and what is not.
 
-**Rigorous:** When beliefs are classical probability distributions (no quantum coherences), the master equation dynamics are *exactly* a gradient flow in a Wasserstein-type metric. This is a theorem, not an analogy. Maas (2011) and Mielke (2011) proved it for discrete state spaces; Chizat et al. (2018) extended it to continuous spaces with the full WFR metric.
+**Rigorous in the stated setting:** A finite reversible classical master equation is a gradient flow of relative
+entropy in a discrete Wasserstein-type metric. Under the diagonal-density, diagonal-Hamiltonian, and
+jump-preservation assumptions, the GKSL equation reduces to that master equation. This is a theorem, not a claim
+about every Lindblad model.
 
-**Also rigorous but different:** For full quantum states with coherences, Carlen \& Maas (2014, 2017) constructed a quantum Wasserstein distance. GKSL is a gradient flow there too. But this is a different metric space (density matrices, not probability measures).
+**Rigorous but different:** For full quantum states with coherences, Carlen \& Maas constructed a quantum Wasserstein
+framework in which suitable GKSL dynamics are gradient flows of quantum relative entropy. That space contains density
+matrices, not classical probability measures. The continuous WFR results concern their own measure-valued variational
+problem; they do not automatically convert a coherent GKSL evolution into the classical WFR problem.
 
-**The practical upshot:** If your agent uses classical beliefs (probability distributions over states), WFR geometry is the *correct* geometric structure---not an approximation or analogy. If you want to extend to quantum-like coherent beliefs, the mathematics exists but requires the quantum Wasserstein framework.
+**The practical upshot:** Use the classical WFR geometry when the belief state, rates, reversibility, and boundary
+conditions meet its hypotheses. For coherent or nonreversible dynamics, retain the appropriate quantum or nonequilibrium
+analysis instead of importing the WFR conclusion.
 :::
 
 :::{admonition} Why This Connection Matters
 :class: feynman-added tip
 
-The GKSL/Lindblad structure isn't just mathematical elegance for its own sake. It comes with important guarantees:
-
-1. **Complete positivity:** The evolution preserves valid probability distributions. You never get negative probabilities.
-
-2. **Trace preservation (optional):** If you want total probability conserved, you can enforce it. If you want to allow mass creation/destruction, you can do that too.
-
-3. **Markovianity:** The evolution depends only on the current state, not the entire history. This makes computation tractable.
-
-4. **Composability:** GKSL evolutions compose nicely. Running one evolution after another gives another valid GKSL evolution.
-
-These are exactly the properties you want for belief dynamics in a well-behaved agent.
+The GKSL/Lindblad structure is useful when one actually has a quantum state and a GKSL generator. It then
+supplies structural properties such as complete positivity, trace preservation for a trace-preserving generator, and
+Markovian composition. A WFR implementation over classical densities does not inherit those guarantees merely by using
+similar symbols. Its positivity, normalization, and Markov properties must be enforced or proved for the chosen
+ discretization and update.
 :::
 
 (sec-the-unified-world-model)=
 ## The Unified World Model
 
 :::{div} feynman-prose
-Now let's see how all this theory translates into something you can actually implement. The payoff is striking: instead of having separate "macro predictor" and "micro dynamics" modules that you somehow have to coordinate, you get a single unified world model.
+Now let's see how this theory translates into something you can implement. A world-model component can expose a
+velocity and a reaction rate in one interface, while a separate planner or loss trains those fields against a target.
+Whether the macro predictor and micro dynamics share parameters is an architectural choice; the WFR definition does
+not require one monolithic network.
 :::
 
 The WFR formulation enables a **single World Model** that predicts both transport and reaction, eliminating the need for separate "macro predictor" and "micro dynamics" modules.
@@ -450,7 +488,7 @@ The WFR formulation enables a **single World Model** that predicts both transpor
 :::{prf:definition} WFR World Model
 :label: def-wfr-world-model
 
-The policy outputs a generalized velocity field $(v, r)$ to minimize the WFR path length to the target distribution (goal).
+The action-conditioned world model outputs a generalized velocity field $(v,r)$; the policy selects actions, and a separate planner or loss can train it to minimize WFR path length to a target distribution.
 
 ```python
 import torch
@@ -536,26 +574,31 @@ class WFRWorldModel(nn.Module):
 :::
 
 :::{div} feynman-prose
-Look at how clean this is. The network takes in a state and outputs two things: a velocity $v$ and a reaction rate $r$. Then you integrate forward using simple Euler steps:
+Look at what this reference implementation exposes. The network outputs a velocity $v$ and a reaction rate $r$, and
+a simple Euler step gives
 - Position updates additively: $z' = z + v \cdot dt$
-- Mass updates multiplicatively: $m' = m \cdot \exp(r \cdot dt)$
+- Particle masses multiplicatively: $m' = m \cdot \exp(r \cdot dt)$
 
-The multiplicative update for mass is key. If $r > 0$, the mass grows exponentially. If $r < 0$, it decays exponentially. And if $r = 0$, mass is conserved. This is exactly the dynamics you want for belief: probability mass being redistributed among hypotheses.
+The multiplicative update is the local reaction law: $r>0$ grows a particle weight, $r<0$ shrinks it, and $r=0$
+leaves that weight unchanged. It does not by itself conserve the total mass or implement the spatial divergence in the
+continuity equation; normalization, boundary flux, and a discretized divergence must be supplied by the chosen solver.
 
-The beautiful thing is that the network learns *when* to use transport and when to use reaction. Deep inside a chart, where the continuous dynamics are predictable, it learns $r \approx 0$ and uses transport. Near chart boundaries, where prediction error rises, it learns to shed mass ($r < 0$) and create mass elsewhere ($r > 0$). No hard-coded switching logic. No combinatorial explosion of cases. Just smooth, learned dynamics.
+A trained model may learn small reaction rates in predictable regions and larger rates near a chart transition, but
+that behavior is a modelling hypothesis to validate. The code is an illustrative world-model component, not a proof
+that the learned fields select the WFR minimizer or switch charts correctly.
 :::
 
 :::{admonition} Particle Filter Interpretation
 :class: feynman-added note
 
-You can think of this as a kind of **differentiable particle filter**. Traditional particle filters maintain a swarm of particles, each with a weight (probability mass). Particles move according to the dynamics model, and weights are updated by reweighting. Occasionally, low-weight particles are "killed" and high-weight particles are "duplicated" (resampling).
+You can use this implementation as a particle-filter analogy, provided you keep the distinction clear. Particles carry
+weights and move with $v$; the local update $m' = m \cdot \exp(r \cdot dt)$ changes those weights. There is no literal
+resampling in this code, and the particle approximation still needs normalization and a rule for representing the
+spatial divergence.
 
-The WFR world model does essentially the same thing, but continuously and differentiably:
-- **Particle movement** corresponds to transport velocity $v$
-- **Weight updates** correspond to $m' = m \cdot \exp(r \cdot dt)$
-- **Resampling** is implicit: particles with $r < 0$ gradually lose weight; particles with $r > 0$ gain weight
-
-The advantage: everything is differentiable, so you can backprop through the dynamics to train end-to-end.
+The differentiable update makes end-to-end training possible for this component. It does not establish convergence to
+the WFR geodesic, preservation of total probability, or consistency with a boundary-value problem; those are separate
+numerical and analytic checks.
 :::
 
 (sec-scale-renormalization)=
@@ -574,7 +617,7 @@ For stacked TopoEncoders ({ref}`Section 7.12 <sec-stacked-topoencoders-deep-reno
 Recall the WFR action:
 
 $$
-\mathcal{E} = \int \left( \|v\|_G^2 + \lambda^2 |r|^2 \right) d\rho
+\mathcal{E}_{\mathrm{WFR}} = \int_0^1\!\int_{\mathcal Z} \left( \|v\|_G^2 + \lambda^2 |r|^2 \right) d\rho_s\,ds
 
 $$
 For a hierarchy of layers $\ell = 0, \ldots, L$:
@@ -583,17 +626,17 @@ For a hierarchy of layers $\ell = 0, \ldots, L$:
 :label: def-scale-dependent-teleportation-cost
 
 $$
-\lambda^{(\ell)} \propto \sigma^{(\ell)} \quad \text{(jump cost scales with residual variance)}
+\lambda^{(\ell)} \propto \Pi^{(\ell)}:=\prod_{j<\ell}\sigma^{(j)} \quad \text{(cumulative residual scale)}
 
 $$
 where $\sigma^{(\ell)}$ is the scale factor from Definition {prf:ref}`def-the-rescaling-operator-renormalization`.
 
 **Interpretation:**
-- **Layer 0 (Bulk / IR):** High $\lambda^{(0)}$. Jumping is expensive; macro-structure is rigid. Transport dominates.
-- **Layer $L$ (Texture / UV):** Low $\lambda^{(L)}$. "Mass" (texture details) can appear/disappear cheaply. Reaction dominates.
+- **Layer 0 (Bulk / IR):** $\Pi^{(0)}=1$ sets the reference scale. Jumping is expensive relative to later residual scales when the cumulative factors decrease.
+- **Layer $L$ (Texture / UV):** the cumulative factor $\Pi^{(L)}$ carries the absolute residual scale; a per-layer ordering must be checked from the measured factors rather than assumed from a single $\sigma^{(\ell)}$.
 
 **Correspondence with Cosmological Constant:**
-In the capacity-constrained metric law ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`, Theorem {prf:ref}`thm-capacity-constrained-metric-law`), the term $\Lambda G_{ij}$ plays the role of a baseline curvature. The correspondence is:
+If the capacity-constrained metric law is applied separately at each layer, the term $\Lambda^{(\ell)}G_{ij}$ plays the role of a baseline curvature. The correspondence is:
 
 $$
 \Lambda^{(\ell)} \sim \frac{1}{(\lambda^{(\ell)})^2}
@@ -605,39 +648,50 @@ $$
 :::
 
 :::{div} feynman-prose
-This is saying something profound about multi-scale representations. At coarse scales (the "IR" or "bulk"), the structure is rigid. The macro-classification of a scene---"this is a kitchen, not a forest"---doesn't change easily. The teleportation cost $\lambda$ is high, so transport dominates. You don't jump between macro-hypotheses without strong evidence.
+This gives a useful way to discuss multi-scale representations, provided the measured residual scales support the
+ordering. The schedule uses the cumulative factors $\Pi^{(\ell)}$, so a coarse layer is more transport-dominated or a
+fine layer more reaction-dominated only when those factors and the metric normalization make it so. The words "IR" and
+"UV" describe the intended interpretation; they do not prove an ordering for arbitrary encoders.
 
-At fine scales (the "UV" or "boundary"), the structure is fluid. The exact texture of a surface, the precise shade of a color---these can change rapidly without violating any fundamental constraints. The teleportation cost $\lambda$ is low, so reaction dominates. Fine details can pop in and out without affecting the big picture.
-
-This matches intuition about perception. The "gist" of a scene is established quickly and changes slowly. The fine details are filled in later and can be revised easily.
+If the factors decrease with depth, a macro representation may carry a larger reaction scale and fine residuals a
+smaller one. That can make coarse hypotheses harder to replace and fine details easier to revise. Check the learned
+scales and the WFR residuals before assigning that physical picture to a particular model.
 :::
 
 :::{admonition} The Cosmological Constant Analogy
 :class: feynman-added note
 
-The correspondence with the cosmological constant $\Lambda$ is more than just an analogy---it reflects deep mathematical structure.
+The correspondence with the cosmological constant $\Lambda$ is a controlled analogy. In general relativity, $\Lambda$
+sets a baseline curvature. In this model, the same role can be assigned layer by layer only if the capacity-constrained
+metric law is applied at each layer and the units and coupling have been declared.
 
-In general relativity, $\Lambda$ sets the baseline curvature of spacetime. Large $\Lambda$ means highly curved, dynamic spacetime. Small $\Lambda$ means nearly flat, rigid spacetime.
-
-In our framework:
-- **Small $\Lambda$ (bulk):** The latent space is nearly flat. Geodesics are almost straight lines. Transport is efficient.
-- **Large $\Lambda$ (boundary):** The latent space is highly curved. Geodesics bend strongly. The "landscape" is rough, and jumping becomes preferable to navigating the complex terrain.
-
-The formula $\Lambda \sim 1/\lambda^2$ makes this precise: small teleportation length means large effective curvature.
+Under that additional schedule, a smaller $\lambda^{(\ell)}$ corresponds to a larger nominal $\Lambda^{(\ell)}$
+through $\Lambda^{(\ell)}\sim 1/(\lambda^{(\ell)})^2$. It does not by itself prove that the latent layer is more
+curved, that reaction is preferred, or that the bulk and boundary have the stated ordering. Those are diagnostics to
+check against the learned metric and admissible WFR paths.
 :::
 
 (sec-connection-to-einstein-equations)=
 ## Connection to Einstein Equations ({ref}`Section 18 <sec-capacity-constrained-metric-law-geometry-from-interface-limits>`)
 
 :::{div} feynman-prose
-We've been talking about the geometry of belief space as if it were fixed. But here's the punchline: the geometry itself is determined by the belief dynamics. This is exactly like Einstein's general relativity, where mass tells spacetime how to curve, and curved spacetime tells mass how to move.
+We've been talking about the geometry of belief space as if it were fixed. Here is the careful version of the
+connection. Varying the WFR action with the density, velocity, and reaction fields held fixed produces an auxiliary
+stress tensor. It can be coupled to the metric-law equation only after an additional source identification and unit
+conversion have been declared.
 
-In our case: belief flow tells the latent metric how to curve, and the curved latent metric tells belief how to flow. The mathematics is the same.
+So the useful analogy with Einstein's equations is structural: one variational stress tensor can act as a source in a
+separate metric equation. The WFR action alone does not determine the latent metric, and the metric-law theorem does
+not automatically identify its Risk Tensor with this WFR tensor.
 :::
 
-The WFR dynamics provide the **stress-energy tensor** $T_{ij}$ that drives curvature in Theorem {prf:ref}`thm-capacity-constrained-metric-law`.
+The WFR dynamics provide an auxiliary variational stress tensor. The metric
+law's $T_{ij}$ is the reward Risk Tensor in {ref}`Section 18
+<sec-capacity-constrained-metric-law-geometry-from-interface-limits>`; the WFR
+tensor is not that source unless an additional coupling and unit conversion
+are declared.
 
-:::{prf:theorem} WFR Stress-Energy Tensor; variational form
+:::{prf:theorem} Auxiliary WFR variational stress tensor
 :label: thm-wfr-stress-energy-tensor-variational-form
 
 Let the WFR action be
@@ -655,10 +709,10 @@ $$
 \partial_s\rho+\nabla\!\cdot(\rho v)=\rho r.
 
 $$
-Define
+Define, under the explicit density-fixed convention,
 
 $$
-T_{ij}:=
+T^{\mathrm{WFR}}_{ij}:=
 -\frac{2}{\sqrt{|G|}}\frac{\delta(\sqrt{|G|}\,\mathcal{L}_{\mathrm{WFR}})}{\delta G^{ij}}
 \quad\text{(holding }\rho,v,r\text{ fixed).}
 
@@ -666,30 +720,37 @@ $$
 Then
 
 $$
-T_{ij}=\rho\,v_i v_j + P\,G_{ij},
+T^{\mathrm{WFR}}_{ij}=\rho\,v_i v_j + P\,G_{ij},
 \qquad
 P=\frac12\,\rho\left(\|v\|_G^2+\lambda^2 r^2\right),
 
 $$
-which is the perfect-fluid form with reaction contributing an additive pressure term
+which is a perfect-fluid form under this density-fixed convention, with reaction contributing an additive pressure term
 {math}`P_{\mathrm{react}}=\tfrac12\lambda^2\rho r^2`.
 
 *Proof sketch.* Vary $\mathcal{S}_{\mathrm{WFR}}$ with respect to $G^{ij}$ while holding
 $(\rho,v,r)$ fixed. Use $\delta\|v\|_G^2=-v_i v_j\,\delta G^{ij}$ and
 $\delta d\mu_G=-\tfrac12 G_{ij}\delta G^{ij}d\mu_G$, then collect terms to match
-$\delta\mathcal{S}_{\mathrm{WFR}}=-\tfrac12\int T_{ij}\delta G^{ij}d\mu_G\,ds$.
-See {ref}`Appendix C <sec-appendix-c-wfr-stress-energy-tensor>` for the full derivation. $\square$
+$\delta\mathcal{S}_{\mathrm{WFR}}=-\tfrac12\int T^{\mathrm{WFR}}_{ij}\delta G^{ij}d\mu_G\,ds$.
+See {ref}`Appendix C <sec-appendix-c-wfr-stress-energy-tensor>` for the full derivation. Holding the belief measure fixed instead removes this pressure term and changes the mass variation, so the convention is part of the statement. $\square$
 
 :::
 
 :::{div} feynman-prose
-Let me decode this. The stress-energy tensor $T_{ij}$ measures "how much stuff is here and how fast is it moving." In relativity, it's the source term in Einstein's equations---it tells spacetime how to curve.
+Let me decode this. The auxiliary tensor $T_{ij}^{\mathrm{WFR}}$ records how belief mass, transport, and reaction enter the
+variation of the selected WFR action. In relativity, a stress-energy tensor is a source in Einstein's equations; here the same
+word describes a diagnostic with a different domain and derivation.
 
-The result has the "perfect fluid" form, which is the simplest physically reasonable stress-energy tensor. There's a density times velocity-squared term (kinetic energy) and a pressure term.
+The result has a perfect-fluid-like algebraic form: a density times velocity-squared term and a pressure-like term. Calling it
+"perfect fluid" describes that algebraic shape; it does not import relativistic matter dynamics.
 
-The beautiful thing is that the **reaction** contributes to the pressure. When the agent is doing a lot of hypothesis-switching (high $r$), that creates "pressure" in the latent space, which through the Einstein-like equations causes the geometry to curve.
+The reaction contribution is worth noticing. High $r$ increases the pressure-like term in this auxiliary tensor. It can influence
+curvature only after a separate metric-law coupling is declared and its hypotheses are checked; the WFR variation alone does not
+make geometry curve.
 
-What does this mean in practice? Regions of high belief dynamics---where the agent is uncertain, where hypotheses are competing---become geometrically different from regions of certainty. The metric literally adapts to where the interesting action is happening.
+What does this mean in practice? Regions of high belief dynamics can be flagged as carrying a larger auxiliary load. Whether they
+become geometrically different from regions of certainty is a modeling or control response that must be measured, not a consequence
+of this tensor alone.
 :::
 
 (pi-stress-energy)=
@@ -698,13 +759,15 @@ What does this mean in practice? Regions of high belief dynamics---where the age
 
 **In Physics:** The stress-energy tensor $T_{\mu\nu}$ is derived from the variation of the matter action with respect to the metric: $T_{\mu\nu} = -\frac{2}{\sqrt{-g}}\frac{\delta S_M}{\delta g^{\mu\nu}}$ {cite}`wald1984general`.
 
-**In Implementation:** The WFR stress-energy tensor (Theorem {prf:ref}`thm-wfr-stress-energy-tensor-variational-form`) is:
+**In Implementation:** The auxiliary WFR tensor (Theorem {prf:ref}`thm-wfr-stress-energy-tensor-variational-form`) is:
 
 $$
-T_{ij} = \rho v_i v_j + \frac{1}{2}\rho\left(\|v\|_G^2 + \lambda^2 r^2\right) G_{ij}
+T^{\mathrm{WFR}}_{ij} = \rho v_i v_j + \frac{1}{2}\rho\left(\|v\|_G^2 + \lambda^2 r^2\right) G_{ij}
 
 $$
-derived from $\delta \mathcal{S}_{\text{WFR}}/\delta G^{ij}$. This has the standard perfect-fluid form with positive pressure $P = \frac{1}{2}\rho(\|v\|_G^2 + \lambda^2 r^2)$.
+derived from $\delta \mathcal{S}_{\text{WFR}}/\delta G^{ij}$ under the
+density-fixed convention. It is an auxiliary perfect-fluid diagnostic, not the
+Risk Tensor in the capacity metric law, with pressure $P = \frac{1}{2}\rho(\|v\|_G^2 + \lambda^2 r^2)$.
 
 **Correspondence Table:**
 
@@ -717,16 +780,23 @@ derived from $\delta \mathcal{S}_{\text{WFR}}/\delta G^{ij}$. This has the stand
 ::::
 
 **Implications:**
-1. **High velocity ($v$):** Agent moves fast through a region → $T_{ij}$ large → curvature $R_{ij}$ increases → latent space contracts. This is the **Natural Gradient** effect derived from first principles.
+1. **High velocity ($v$):** Agent moves fast through a region, so the auxiliary stress contribution $T_{ij}$ can be
+   large under the density-fixed convention. Any resulting curvature response or contraction is conditional on the
+   selected metric-law coupling; the natural-gradient interpretation is a modeling interpretation, not a first-principles
+   consequence of the WFR variation alone.
 
 2. **High reaction ($r$):** Agent jumps frequently → $P_{\mathrm{react}}$ increases → capacity stress increases. This triggers the boundary-capacity constraint (Definition {prf:ref}`def-dpi-boundary-capacity-constraint`).
 
 :::{div} feynman-prose
-These implications deserve emphasis.
+These implications deserve emphasis, with the convention in the theorem kept in view.
 
-The first one says: if the agent moves quickly through some region of latent space, that region effectively shrinks. This is exactly what the Natural Gradient does in optimization---it warps parameter space so that steps are appropriately sized regardless of the local geometry. But here it emerges from first principles, not as a heuristic.
+The variation says that, under the density-fixed convention, transport and reaction enter an auxiliary stress tensor and
+that reaction contributes the nonnegative term $\tfrac12\lambda^2\rho r^2$ to its pressure component. It does not say
+that high velocity has a universal curvature sign, that the latent space must contract, or that this tensor is already
+the state-space natural-gradient metric.
 
-The second one says: if the agent is doing a lot of hypothesis switching, that creates computational "pressure" that eventually hits capacity limits. You can't infinitely subdivide your hypotheses; there's a cost. And the WFR framework quantifies that cost through the reaction pressure term.
+A capacity response can be tested after a separate coupling to the metric law has been specified. High reaction may
+then be a useful load indicator, but it is not by itself a proof of capacity saturation.
 :::
 
 **Consistency with existing losses:**
@@ -735,25 +805,21 @@ The second one says: if the agent is doing a lot of hypothesis switching, that c
 |--------------------------------------------------|------------------------------------------------|------------|
 | $\mathcal{L}_{\mathrm{pred}}$ (Prediction)       | Minimizing transport cost $\lVert v\rVert_G^2$ | Compatible |
 | $\mathcal{L}_{\mathrm{closure}}$ (Macro closure) | Penalizing reaction $r$ in macro channel       | Compatible |
-| Dissipation (Axiom D)                            | $r < 0$ (entropy production)                   | Compatible |
+| Mass reaction                                     | $r<0$ annihilates belief mass; entropy monotonicity requires a separate gradient-flow hypothesis | Compatible |
 | Capacity ($I < C$)                               | Metric curves to keep WFR path within budget   | Compatible |
-
-:::
 
 :::{admonition} Why This Matters for Implementation
 :class: feynman-added tip
 
-The compatibility table above is not just theory---it tells you something practical. The WFR framework doesn't throw away your existing loss functions; it reinterprets them.
+The compatibility table is a map of possible correspondences, not an identity between losses. A prediction loss can
+serve as a transport proxy only when its residual and units have been related to $\|v\|_G^2$. A closure loss can
+penalize reaction only when the chart model defines reaction through that loss. Entropy monotonicity requires a separate
+reversible or gradient-flow hypothesis.
 
-- Your **prediction loss** is already (implicitly) penalizing transport cost. The better your world model predicts, the less "velocity" is needed to correct the belief.
-
-- Your **closure loss** (keeping the macro-channel predictive) is penalizing unnecessary reaction. If you're switching hypotheses when you don't need to, you're paying reaction cost.
-
-- Your **entropy losses** relate to dissipation. The WFR framework makes explicit when entropy production is "good" (exploring) versus "bad" (inefficient switching).
-
-- Your **capacity constraints** relate to the metric adaptation. The latent geometry curves to keep everything within budget.
-
-So adopting WFR isn't a rewrite; it's a unification of things you're probably already doing.
+Likewise, the capacity row does not say that WFR automatically curves the metric or enforces $I<C$. That requires the
+capacity proxy, the metric-law coupling, and the boundary conditions to be specified. WFR can be added as a
+variational layer or consistency regularizer; whether it replaces existing modules is an implementation choice to be
+validated.
 :::
 
 (sec-comparison-sasaki-vs-wfr)=
@@ -768,25 +834,35 @@ Let me summarize the comparison between the old approach (Sasaki-like product me
 | **State representation**    | Fixed point                      | Probability mass / belief              |
 | **Topology changes**        | Manual patching required         | Handled natively via $r$               |
 | **Path type**               | "Walk then Jump" (discontinuous) | Smooth interpolation                   |
-| **Optimization**            | Combinatorial + Gradient descent | Convex (generalized geodesics)         |
-| **Theoretical consistency** | Ad-hoc construction              | Gradient flow of entropy (rigorous)    |
+| **Optimization**            | Combinatorial + Gradient descent | Convex in $(\rho,\rho v,\rho r)$ with fixed endpoints and metric |
+| **Theoretical consistency** | Ad-hoc construction              | Gradient flow under the stated reversibility hypotheses    |
 | **Multi-scale**             | Separate metrics per scale       | Unified with scale-dependent $\lambda$ |
 
 :::{div} feynman-prose
-Every row in this table represents a significant improvement. Let me highlight the most important ones.
+Every row in this table compares a different modelling choice. Let me highlight the useful distinction.
 
-**Optimization**: The Sasaki approach leads to combinatorial explosions. You have to decide: do I stay in this chart or jump to that one? With $K$ charts and $T$ time steps, you have $K^T$ possible sequences to consider. The WFR approach is convex---you're just finding a geodesic in a well-defined metric space.
+**Optimization**: A product construction may require an external search over chart sequences. For fixed WFR
+endpoints, metric, and reaction scale, the flux formulation is convex and avoids that combinatorial enumeration. The
+claim is about this constrained variational problem; learning the endpoints, chart maps, or metric is still generally
+nonconvex.
 
-**Path type**: "Walk then Jump" is what happens when you don't have a principled way to mix discrete and continuous. You walk until you can't anymore, then you jump. But where's the boundary? How do you decide when to jump? With WFR, there's no discontinuity. The path smoothly interpolates between transport-dominated and reaction-dominated regimes.
+**Path type**: WFR gives a continuous curve in the metric space of measures when the admissible action is finite. Its
+transport and reaction components can trade off along that curve, but a coordinate trajectory or chart support need not
+look smooth, and a numerical scheme can still introduce discontinuities.
 
-**Theoretical consistency**: The Sasaki construction was always a hack. You take a metric here, a metric there, multiply them together, and hope for the best. The WFR metric comes from a variational principle---it's the unique metric with certain desirable properties. There's nothing ad-hoc about it.
+**Theoretical consistency**: WFR is a specified variational metric with a well-defined cone construction under its
+assumptions. Calling it "unique" without naming the class of metrics is too strong. Its usefulness comes from the
+stated action, continuity equation, endpoints, and boundary conditions, not from a universal replacement theorem.
 :::
 
 (sec-implementation-wfr-consistency-loss)=
 ## Implementation: WFR Consistency Loss
 
 :::{div} feynman-prose
-Now let's get concrete about how to train models with this framework. The key idea is a **consistency loss** that penalizes violations of the unbalanced continuity equation.
+Now let's get concrete about how to train models with this framework. The key idea is a **consistency loss** that
+measures a time-discretized residual of the unbalanced continuity equation. It is a local diagnostic for the chosen
+representation and discretization, not the WFR distance itself and not a substitute for solving the full boundary-value
+problem.
 :::
 
 :::{prf:definition} WFR Consistency Loss / WFRCheck
@@ -838,11 +914,17 @@ def compute_wfr_consistency_loss(
 :::
 
 :::{div} feynman-prose
-Why work with $\sqrt{\rho}$ instead of $\rho$? This is the "cone-space" trick I mentioned earlier. The original unbalanced continuity equation is nonlinear, which makes optimization hard. But if you change variables to $u = \sqrt{\rho}$, the resulting equation is much better behaved.
+Why work with $\sqrt{\rho}$ instead of $\rho$? This is the "cone-space" change of variables. It gives the local
+identity used by the residual and often improves numerical conditioning, but it does not remove the need to define a
+spatial discretization or boundary treatment.
 
-The consistency loss is simple: you predict what $\sqrt{\rho_{t+1}}$ should be based on the current state and the $(v, r)$ outputs, then you penalize the squared difference from the actual $\sqrt{\rho_{t+1}}$.
+The consistency loss compares the observed one-step change in $\sqrt{\rho}$ with the change predicted by the current
+$(v,r)$ fields. A small value means those sampled transitions agree with the discretized equation. It does not prove
+that the fields are a global WFR minimizer or that the density remains normalized.
 
-The divergence term $\nabla \cdot (\rho v)$ is the trickiest part computationally. In practice, you can approximate it with finite differences, or use automatic differentiation if your velocity field is differentiable.
+The divergence term $\nabla \cdot (\rho v)$ is the delicate part computationally. Finite differences or automatic
+differentiation can approximate it only after a grid, mesh, or differentiable spatial representation has been chosen;
+the placeholder in the example intentionally omits that choice.
 :::
 
 :::{admonition} Implementation Notes
@@ -863,7 +945,7 @@ A few practical considerations:
 :::
 
 (sec-node-wfrcheck)=
-## Node 23: WFRCheck
+## Auxiliary diagnostic: WFRCheck
 
 :::{div} feynman-prose
 Finally, we define a diagnostic node that monitors WFR consistency at runtime. This fits into the larger diagnostic framework described in Section 3.
@@ -871,38 +953,44 @@ Finally, we define a diagnostic node that monitors WFR consistency at runtime. T
 
 Following the diagnostic node convention ({ref}`Section 3.1 <sec-theory-thin-interfaces>`), we define:
 
-| **#**  | **Name**     | **Component**   | **Type**                 | **Interpretation**          | **Proxy**                    | **Cost** |
+| **ID**  | **Name**     | **Component**   | **Type**                 | **Interpretation**          | **Proxy**                    | **Cost** |
 |--------|--------------|-----------------|--------------------------|-----------------------------|------------------------------|----------|
-| **23** | **WFRCheck** | **World Model** | **Dynamics Consistency** | Transport-Reaction balance? | $\mathcal{L}_{\mathrm{WFR}}$ | $O(BK)$  |
+| **aux-WFR** | **WFRCheck** | **World Model** | **Dynamics Consistency** | Transport-Reaction balance? | $\mathcal{L}_{\mathrm{WFR}}$ | $O(BK)$  |
 
 **Trigger conditions:**
 - High $\mathcal{L}_{\mathrm{WFR}}$: World model's $(v, r)$ predictions violate continuity
 - Remedy: Increase training on transitions; check for distribution shift
 
 :::{div} feynman-prose
-When should you worry about this diagnostic? A high WFRCheck loss means your world model is predicting belief dynamics that don't satisfy the continuity equation. There are two common causes:
+When should you worry about this diagnostic? A high WFRCheck residual means the sampled one-step prediction disagrees
+with the discretized continuity equation. Insufficient training and distribution shift are two possibilities, but so are
+an inaccurate divergence approximation, a mismatched time step, boundary leakage, or an inconsistent density convention.
 
-1. **Insufficient training:** The model simply hasn't learned the dynamics well enough. Solution: more training data, more model capacity, or longer training.
-
-2. **Distribution shift:** The environment has changed in a way the model wasn't trained for. The model is applying its learned $(v, r)$ predictions to situations where they don't apply. Solution: detect the shift and trigger adaptation or re-training.
-
-In either case, high WFRCheck is a warning sign that belief updates may be inconsistent or erratic.
+Treat the number as a warning and inspect those choices before changing the model. A low residual supports local
+one-step consistency for the samples and discretization used; it does not certify a global WFR geodesic, normalization,
+or convergence of the learned world model.
 :::
 
 :::{admonition} Summary: What WFR Buys You
 :class: feynman-added tip
 
-Let me summarize the key benefits of the WFR framework:
+Let me summarize the useful benefits of the WFR framework:
 
-1. **Unified treatment of discrete and continuous:** No more separate modules, no more ad-hoc switching logic.
+1. **One variational language:** Transport and reaction can be priced together for fixed endpoints, metric, and
+   admissible fields. An implementation may still use separate modules for convenience.
 
-2. **Principled cost for "jumps":** The parameter $\lambda$ determines when transport beats reaction, derived from the geometry rather than chosen arbitrarily.
+2. **Declared jump cost:** The parameter $\lambda$ sets the relative scale of reaction and transport. It can be
+   calibrated from geometry, but it is not derived from geometry without an additional calibration argument.
 
-3. **Convex optimization:** Finding optimal belief trajectories is a convex problem, not a combinatorial nightmare.
+3. **Convex subproblem:** The flux formulation is convex for the fixed-data variational problem. Training a neural
+   world model and learning a metric need not be convex.
 
-4. **Connects to physics:** The same mathematical structures that describe fluid dynamics, thermodynamics, and general relativity describe belief dynamics. This isn't coincidence---it reflects deep structure.
+4. **Careful physical analogies:** Fluid, thermodynamic, and quantum language can suggest useful constructions, while
+   the corresponding physical identifications require their own hypotheses.
 
-5. **Enables diagnosis:** The WFRCheck loss gives you a principled way to monitor whether your world model is behaving consistently.
+5. **A runtime residual:** WFRCheck monitors the selected discretization and samples. It is a diagnostic, not a proof of
+   global consistency.
 
-The framework is mathematically sophisticated, but the core intuition is simple: treat belief as a fluid that can flow and react, measure the cost of both, and find the cheapest path.
+The core picture remains simple: let belief flow and react, charge for both, and check that the numerical path obeys
+the continuity equation and the declared boundary conditions.
 :::

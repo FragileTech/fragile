@@ -18,13 +18,13 @@
 2. Show the KL-control equivalence and what it means for implementation.
 
 :::{div} feynman-prose
-Before we get into the coupling window theorem, I want to give you a beautiful piece of optional machinery. It's not required for what follows, but if you understand it, you'll see the whole story from a different angle---a path-space angle.
+Before we get into the coupling-window criterion, I want to give you a beautiful piece of optional machinery. It's not required for what follows, but if you understand it, you'll see the whole story from a different angle---a path-space angle.
 
 Here's the setup. You have a reference dynamics---say, your learned macro kernel $\bar{P}$, or a diffusion on your latent space. You have two "boundary conditions": a prior belief (where you think you are) and a posterior belief (where the observations say you are). The question is: what's the most natural way to connect these two?
 
 The answer comes from optimal transport theory: find the path measure that's closest (in KL divergence) to your reference dynamics, subject to matching the boundary conditions. This is called a **Schrödinger bridge**, and it's the rigorous version of "most likely flow under entropy regularization."
 
-Why should you care? Because this is exactly what KL-regularized control does, just stated in path space. When you do soft policy iteration, when you use SAC, when you add entropy bonuses to your objective---you're implicitly solving a Schrödinger bridge problem. The path-space view makes this crystal clear.
+Why should you care? KL-regularized control is the one-endpoint specialization of this path-space problem. Soft policy iteration and SAC fix the initial law while leaving the terminal law free; imposing a terminal marginal as well gives the full Schrödinger bridge. The distinction matters when the endpoint belief is part of the specification.
 :::
 
 (rb-kl-control-bridge)=
@@ -56,15 +56,15 @@ so each training update can be read as an entropic optimal transport step on bel
 ## Theorem: The Information-Stability Threshold (Coupling Window)
 
 :::{div} feynman-prose
-Now we arrive at one of the central results: the **coupling window theorem**. This is the formal statement of the Goldilocks principle I mentioned earlier. Your agent must be coupled to its boundary strongly enough to stay grounded in reality, but not so strongly that it loses coherent internal structure.
+Now we arrive at one of the central operating criteria: the **coupling window**. This is the measurable version of the Goldilocks principle I mentioned earlier. Your agent should be coupled to its boundary strongly enough to stay grounded in reality, while monitoring whether posterior uncertainty is becoming too diffuse.
 
 Let me give you the physical picture first, then we'll state it precisely.
 
 Imagine your agent as a spinning top. The boundary observations are like a hand that occasionally taps the top to keep it aligned. Too few taps, and the top wobbles off into some random orientation---this is **ungrounded inference**. Too many taps, too hard, and the top never settles into a stable spin at all---this is **symbol dispersion**.
 
-The coupling window is the range of tap frequencies and strengths where the top spins stably *and* stays aligned with the external reference. Outside this window, something breaks.
+The coupling window is the range of tap frequencies and strengths where the top remains aligned with the external reference while its posterior retains structure. Outside this operating range, a diagnostic or penalty calls for intervention; the definition itself is not a stability theorem.
 
-What makes this theorem useful is that the quantities involved are **measurable**. We're not asking you to verify some abstract condition. We're saying: measure the mutual information between observations and macro-states (that's your grounding rate), measure the entropy of your macro distribution (that's your mixing/dispersion), and check that they're in the right relationship. If they're not, a specific diagnostic fires, and you know what went wrong.
+What makes this criterion useful is that the quantities involved are **measurable**. We're not asking you to verify some abstract condition. We estimate the mutual information between observations and macro-states (the grounding signal), the entropy of the macro posterior (the mixing/dispersion signal), and their windowed rates. If a threshold is missed, a specific diagnostic or penalty identifies what needs attention.
 :::
 
 (rb-stable-learning-window)=
@@ -74,7 +74,7 @@ The coupling window is the stability region where representation and dynamics st
 :::
 
 :::{div} feynman-prose
-The coupling-window view implies a necessary **window condition**: coupling must be strong enough to remain grounded (BoundaryCheck) but not so strong that the macro register loses coherence (dispersion/mixing).
+The coupling-window view gives an operational **window condition**: coupling must be strong enough to remain grounded (BoundaryCheck) while posterior uncertainty remains below the dispersion threshold. It is a monitored regime, not a standalone necessity or sufficiency theorem.
 
 We state this as a rate balance rather than an ill-typed scalar comparison.
 :::
@@ -82,7 +82,7 @@ We state this as a rate balance rather than an ill-typed scalar comparison.
 :::{prf:definition} Grounding rate
 :label: def-grounding-rate
 
-Let $G_t:=I(X_t;K_t)$ be the symbolic mutual information injected through the boundary (Node 13). The *grounding rate* is the average information inflow per step:
+Let $G_t:=I(X_t;K_t)$ be the symbolic mutual information injected through the boundary (Node 13). For a time window or minibatch, the *grounding rate* is the corresponding average information inflow per step:
 
 $$
 \lambda_{\text{in}} := \mathbb{E}[G_t].
@@ -93,7 +93,7 @@ Units: $[\lambda_{\text{in}}]=\mathrm{nat/step}$.
 :::
 
 :::{div} feynman-prose
-What is this $\lambda_{\text{in}}$, really? It's measuring how much your observations tell you about your macro-state. If $\lambda_{\text{in}}$ is high, each observation carries a lot of information about which macro-symbol is active---your boundary is informative. If $\lambda_{\text{in}}$ is low, observations are mostly noise relative to macro-state identity---your boundary is not telling you much.
+What is this $\lambda_{\text{in}}$, really? It's the time-window or minibatch average of how much your observations tell you about your macro-state. If $\lambda_{\text{in}}$ is high, the estimated boundary channel is informative about which macro-symbol is active. If it is low, the observations carry little estimated information about macro-state identity.
 
 Think of it as the bandwidth of the "reality channel" into your agent. You need this channel to have enough capacity to correct drift in your internal model.
 :::
@@ -101,7 +101,7 @@ Think of it as the bandwidth of the "reality channel" into your agent. You need 
 :::{prf:definition} Mixing rate
 :label: def-mixing-rate
 
-Let $S_t:=H(K_t)$ be the macro entropy. The *mixing rate* is the expected entropy growth not attributable to purposeful exploration:
+Let $p_t\in\Delta^{|\mathcal K|-1}$ be the macro posterior from the belief update and set $S_t:=H(p_t)$. The *mixing rate* is the average positive growth of posterior uncertainty:
 
 $$
 \lambda_{\text{mix}} := \mathbb{E}[(S_{t+1}-S_t)_+].
@@ -112,94 +112,108 @@ Units: $[\lambda_{\text{mix}}]=\mathrm{nat/step}$.
 :::
 
 :::{div} feynman-prose
-And $\lambda_{\text{mix}}$? That's the rate at which your macro-state distribution is spreading out, becoming more uncertain. Some spreading is fine---it's called exploration. But spreading that happens *despite* your observations, spreading that the grounding signal can't counteract, that's bad. It means your internal structure is dissolving.
+And $\lambda_{\text{mix}}$? That's the rate at which the **posterior** macro distribution is becoming more uncertain, averaged over the selected time window or minibatch. Some increase can be a legitimate consequence of exploration or ambiguous observations. The rate alone does not identify its cause, so interpret it together with the grounding signal and the update diagnostics before calling it a failure.
 
 The $(\cdot)_+$ notation means we only count positive entropy changes. We're interested in how fast the distribution spreads, not how fast it concentrates.
 :::
 
-:::{prf:theorem} Information-stability window; operational
+:::{prf:definition} Information-stability window; operational
 :label: thm-information-stability-window-operational
 
-A necessary condition for stable, grounded macrostates is the existence of constants $0<\epsilon<\log|\mathcal{K}|$ such that, along typical trajectories,
+Choose information and posterior-dispersion margins $\epsilon_I>0$ and $\epsilon_H>0$. The *operational coupling window* is the set of time windows for which
 
 $$
-\epsilon \le I(X_t;K_t) \quad\text{and}\quad H(K_t)\le \log|\mathcal{K}|-\epsilon,
+\epsilon_I \le I(X_t;K_t) \quad\text{and}\quad H(p_t)\le \log|\mathcal{K}|-\epsilon_H,
 
 $$
 and the net entropy balance satisfies
 
 $$
-\lambda_{\text{in}} \gtrsim \lambda_{\text{mix}}.
+\lambda_{\text{in}}\ge \lambda_{\text{mix}}-\delta.
 
 $$
 Violations correspond to identifiable barrier modes:
 - If $I(X;K)\approx 0$: under-coupling - ungrounded inference / decoupling (Mode D.C).
-- If $H(K)\approx \log|\mathcal{K}|$: over-coupling or dispersion - symbol dispersion (BarrierScat).
+- If $H(p_t)\approx \log|\mathcal{K}|$: over-aggressive updating or posterior dispersion (BarrierScat).
 
-*Remark.* This theorem is intentionally stated at the level of measurable information quantities (Gate Nodes) so it can be audited online; strengthening it to a sufficient condition requires specifying the macro kernel class and a contraction inequality (e.g. log-Sobolev / Doeblin-type conditions).
+*Remark.* This definition is stated at the level of measurable information quantities so it can be audited online. It is an operating criterion, not a sufficiency theorem for stability; such a theorem would require a specified macro-kernel class and a contraction inequality (for example, a log-Sobolev or Doeblin condition).
 
+:::
+
+:::{prf:proposition} Information upper bound for the grounding margin
+:label: prop-grounding-information-upper-bound
+
+For a discrete macro register,
+
+$$
+I(X_t;K_t)=H(K_t)-H(K_t\mid X_t)\le H(K_t).
+$$
+
+Consequently, the lower window condition $I(X_t;K_t)\ge\epsilon_I$ implies
+$H(K_t)\ge\epsilon_I$ and $H(K_t\mid X_t)\le H(K_t)-\epsilon_I$. This implication concerns the marginal code-usage entropy $H(K_t)$; it does not identify that entropy with the posterior entropy $H(p_t)$ used in the dispersion condition.
 :::
 
 :::{div} feynman-prose
-Let me unpack this theorem in plain language.
+Let me unpack this operational definition in plain language.
 
 **The two inequalities** say:
-1. **You must have grounding**: $I(X_t; K_t) \ge \epsilon$ means observations must carry at least $\epsilon$ nats of information about the macro-state. If this fails, you're flying blind---your observations aren't telling you where you are.
+1. **You must have grounding**: $I(X_t; K_t) \ge \epsilon_I$ means the estimated observation/macro coupling carries at least $\epsilon_I$ nats per sampled step. If this fails, you're flying blind---your observations aren't telling you much about which macro-state is active.
 
-2. **You must not have dispersion**: $H(K_t) \le \log|\mathcal{K}| - \epsilon$ means your belief can't be spread uniformly over all macro-states. If this fails, your agent is completely uncertain about everything, which means the macro-symbol has lost all meaning.
+2. **You must monitor posterior dispersion**: $H(p_t) \le \log|\mathcal{K}| - \epsilon_H$ means the macro posterior is kept away from a uniform distribution. If this fails, the current belief is nearly indifferent among all macro-states; that is a posterior-dispersion signal, distinct from marginal code-usage entropy.
 
-**The rate condition** $\lambda_{\text{in}} \gtrsim \lambda_{\text{mix}}$ says the grounding signal must keep up with natural spreading. Information flows in through the boundary; entropy tends to increase through various sources (model uncertainty, stochasticity, numerical errors). If inflow can't keep up with spreading, you'll eventually drift into bad territory.
+**The rate condition** $\lambda_{\text{in}}\ge\lambda_{\text{mix}}-\delta$ says the estimated grounding inflow should not fall more than the named slack $\delta$ below positive posterior-entropy growth. It is a local balance used for monitoring; it does not by itself imply long-time stability.
 
 **The failure modes** are diagnostic gold:
 - **Mode D.C (Decoupling)**: Your observations stopped being informative. Maybe your encoder broke. Maybe the environment changed in a way your shutter can't detect. Either way, you're ungrounded.
-- **BarrierScat (Dispersion)**: Your belief is spread over everything. Maybe your updates are too aggressive. Maybe there's too much noise. Either way, your symbols have stopped meaning anything.
+- **BarrierScat (Dispersion)**: Your posterior is spread over nearly everything. Maybe your updates are too aggressive. Maybe the evidence is ambiguous. Either way, the current belief is not selecting a coherent macro-state.
 :::
 
-:::{admonition} Why This Theorem is Useful
+:::{admonition} Why This Operational Criterion is Useful
 :class: feynman-added tip
 
-Notice what's special here: both conditions are **measurable at runtime**. You can compute $I(X_t; K_t)$ from your encoder and decoder. You can compute $H(K_t)$ from your belief distribution. You don't need ground truth, you don't need access to the "real" environment state---everything is defined in terms of quantities the agent can observe and compute.
+Notice what's special here: both conditions are **auditable at runtime**. You can estimate $I(X_t; K_t)$ from boundary samples and the encoder, and compute $H(p_t)$ from the current macro posterior. Marginal code-usage entropy $H(K_t)$ is a separate liveness statistic. No hidden environment state is required for the operational checks, although mutual-information estimates still require data and calibration.
 
-This is by design. The theorem is meant to be *operational*---something you can actually check, not just a theoretical guarantee that requires omniscience to verify.
+This is by design. The definition is meant to be *operational*---something you can actually check, not a theoretical guarantee that requires omniscience to verify.
 :::
 
 ::::{admonition} Connection to RL #9: Conservative Q-Learning as Soft Coupling Window
 :class: note
 :name: conn-rl-9
 **The General Law (Fragile Agent):**
-The **Coupling Window** (Theorem {prf:ref}`thm-information-stability-window-operational`) imposes a **hard constraint** on information flow:
+The **Coupling Window** (Definition {prf:ref}`thm-information-stability-window-operational`) specifies an information-flow operating range:
 
 $$
-\epsilon \le I(X_t; K_t) \quad \text{and} \quad H(K_t) \le \log|\mathcal{K}| - \epsilon.
+\epsilon_I \le I(X_t; K_t) \quad \text{and} \quad H(p_t) \le \log|\mathcal{K}| - \epsilon_H.
 
 $$
-If violated, the Sieve halts execution (BoundaryCheck failure). This ensures that offline data cannot drive the agent into ungrounded regions of state space.
+Node 13 (BoundaryCheck) gates on $I(X;K)>0$ at WARN/HALT level. The quantitative window is enforced by the differentiable penalty $\mathcal L_{\rm window}$ in the Sieve, so an offline-data violation is logged and penalized rather than described as an automatic halt.
 
 **The Degenerate Limit:**
-Replace the hard constraint with a soft Q-value penalty. Allow violations if reward is high enough.
+Replace the window constraint by a finite-weight penalty in the training objective, allowing a controlled trade-off between information regularization and task return.
 
 **The Special Case (Standard RL - CQL):**
 Conservative Q-Learning {cite}`kumar2020conservative` adds a penalty for out-of-distribution actions:
 
 $$
-\min_Q \mathbb{E}_{s \sim \mathcal{D}, a \sim \mu}\left[\log \sum_a \exp Q(s,a)\right] - \mathbb{E}_{s,a \sim \mathcal{D}}[Q(s,a)] + \text{Bellman}.
+\min_Q\; \alpha\,\mathbb{E}_{s\sim\mathcal D}\!\left[\log\!\sum_{a}\exp Q(s,a)-\mathbb{E}_{a\sim\hat\pi_\beta(\cdot\mid s)}Q(s,a)\right]
+ +\frac12\,\mathbb{E}_{(s,a,s')\sim\mathcal D}\!\left[(Q(s,a)-\mathcal B^\pi\hat Q(s,a))^2\right].
 
 $$
 This softly penalizes overestimation on unseen actions but **does not prevent** the agent from taking them.
 
-**Result:** CQL is the $\epsilon \to 0$ limit where coupling constraints become soft penalties rather than hard firewalls.
+**Result:** A finite Lagrange multiplier turns a hard window constraint into a soft penalty. CQL is analogous in form---it penalizes unsupported value estimates---but it is not a limit of the coupling-window definition.
 
 **What the generalization offers:**
-- **Hard guarantees**: BoundaryCheck halts execution when grounding fails---the agent cannot "pay the fine" and proceed
+- **Boundary gate**: Node 13 can warn or halt when the basic condition $I(X;K)>0$ fails; the quantitative window remains a soft training penalty
 - **Auditable thresholds**: $I(X_t; K_t)$ is computed at runtime; failures are logged with specific diagnostic codes
-- **Information-theoretic grounding**: The constraint is derived from the Data Processing Inequality, not a heuristic penalty term
+- **Information-theoretic quantities**: the monitored thresholds use $I$ and entropy rather than a value-function surrogate; the DPI supplies upper bounds on $I$, not the lower grounding threshold
 - **Bidirectional protection**: Both under-coupling (ungrounded) and over-coupling (dispersion) are detected and blocked
 ::::
 
 :::{div} feynman-prose
-The connection to Conservative Q-Learning is illuminating. CQL says: "penalize Q-values for actions you haven't seen data for." That's a soft version of "don't be confident about things you're not grounded in." Our coupling window makes this hard: if you're not grounded, you halt. You can't pay a penalty and proceed into uncharted territory.
+The connection to Conservative Q-Learning is illuminating. CQL says: "penalize Q-values for actions you haven't seen data for." That is analogous to asking a learner not to be overconfident beyond its support. In the Fragile implementation, Node 13 can warn or halt when the basic grounding check fails, while the quantitative coupling window is enforced as a differentiable penalty. A finite penalty lets training continue while recording the violation.
 
-Is the hard version better? It depends on your risk tolerance. For safety-critical applications, hard constraints are essential---you don't want your robot to say "I'll take the penalty" and drive off a cliff. For more forgiving domains, soft penalties may give you more flexibility.
+Which response is appropriate depends on the intervention policy. A gate is available for the basic BoundaryCheck failure; finite penalties provide a softer response for quantitative threshold violations and make the trade-off visible during training.
 :::
 
 
@@ -215,9 +229,9 @@ Let me step back and show you the big picture. We've been building up a framewor
 | :--- | :--- | :--- |
 | Geometry | Riemannian $(\mathcal{Z},G)$ | Distance measured by a sensitivity metric (Fisher/Hessian) |
 | Boundary | Markov blanket $B_t$ ({prf:ref}`def-boundary-markov-blanket`) | Environment = boundary law $P_{\partial}$ ({ref}`sec-definitions-interaction-under-partial-observability`) |
-| Exploration | Causal entropy / MaxEnt RL | Reachability pressure via path entropy on $\mathcal{K}$ ({ref}`sec-intrinsic-motivation-maximum-entropy-exploration`) |
+| Exploration | Causal entropy / MaxEnt RL | Agent-controlled reachability pressure via policy path entropy on $\mathcal{K}$ ({ref}`sec-intrinsic-motivation-maximum-entropy-exploration`) |
 | Belief Dynamics | Filtering + projection | Predict - update - project ({ref}`sec-belief-dynamics-prediction-update-projection`) |
-| Optimality | Soft Bellman / log-normalizer | Soft value = log-normalizer; exploration gradient from path entropy ({ref}`sec-correspondence-table-filtering-control-template`) |
+| Optimality | Soft Bellman / log-normalizer | Under the finite-horizon deterministic-kernel convention, soft value = log-normalizer plus the stated uniform-prior offset; exploration gradient from causal path entropy ({ref}`sec-correspondence-table-filtering-control-template`) |
 :::
 
 :::{div} feynman-prose
@@ -231,7 +245,7 @@ Each row in this table is a different lens on the same underlying system:
 
 **Belief Dynamics** is the engine that keeps your internal model synchronized with reality. Predict what you expect to see, update based on what you actually see, project away anything that violates your constraints.
 
-**Optimality** ties it all together. The soft Bellman equation says: your value function is a log-normalizer over exponentially weighted paths. Maximizing entropy and maximizing expected reward are dual views of the same optimization problem.
+**Optimality** ties it all together. In the finite-horizon deterministic-kernel setting, the soft Bellman value and the exponentially tilted path log-normalizer are dual descriptions, with the uniform-prior offset stated in the exploration chapter. Outside those hypotheses, entropy-regularized control remains useful but the exact path identity needs its own assumptions.
 
 The Fragile Agent is a system that implements all of these layers, with explicit capacity limits and safety constraints woven throughout.
 :::
@@ -239,7 +253,7 @@ The Fragile Agent is a system that implements all of these layers, with explicit
 :::{admonition} The Fragile Conclusion
 :class: feynman-added important
 
-The agent is a Bounded-Rationality Controller ({prf:ref}`def-bounded-rationality-controller`) with explicit information and stability constraints. Macro symbols remain meaningful only inside the coupling window (Theorem {prf:ref}`thm-information-stability-window-operational`); outside it, the system either exhibits ungrounded inference (under-coupling) or loses macro structure through excessive mixing/dispersion (over-coupling).
+The agent is a Bounded-Rationality Controller ({prf:ref}`def-bounded-rationality-controller`) with explicit information and stability constraints. The operational coupling window (Definition {prf:ref}`thm-information-stability-window-operational`) records a regime with grounding above $\epsilon_I$ and posterior entropy below $\log|\mathcal K|-\epsilon_H$, together with the stated rate slack. Outside it, the system reports under-coupling or excessive posterior mixing for intervention.
 
 This is not a bug to be fixed; it's a feature to be monitored. The boundaries of the coupling window tell you exactly where your agent's competence ends.
 :::

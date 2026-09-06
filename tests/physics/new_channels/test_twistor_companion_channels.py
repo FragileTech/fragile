@@ -6,10 +6,10 @@ import pytest
 import torch
 
 from fragile.physics.new_channels.twistor_companion_channels import (
-    TwistorCompanionCorrelatorConfig,
-    TwistorCompanionCorrelatorOutput,
     compute_companion_twistor_correlator,
     compute_twistor_companion_correlator_from_geometry,
+    TwistorCompanionCorrelatorConfig,
+    TwistorCompanionCorrelatorOutput,
 )
 
 
@@ -63,6 +63,56 @@ class TestFromGeometryOutput:
 
     def test_counts_positive_at_zero_lag(self, output):
         assert output.counts[0].item() > 0
+
+
+@pytest.mark.parametrize("connected", [True, False])
+@pytest.mark.parametrize("method", ["block_jackknife", "bootstrap", "uncorrelated"])
+def test_twistor_adapter_preserves_measured_covariance(connected, method):
+    import gvar
+    import numpy as np
+
+    from fragile.physics.mass_extraction.config import CovarianceConfig, MassExtractionConfig
+    from fragile.physics.mass_extraction.data_preparation import correlators_to_gvar
+    from fragile.physics.new_channels.mass_extraction_adapter import extract_twistor_companion
+
+    generator = torch.Generator().manual_seed(47)
+    frames, walkers = 80, 12
+    out = compute_twistor_companion_correlator_from_geometry(
+        positions=torch.randn(frames, walkers, 3, generator=generator),
+        velocities=torch.randn(frames, walkers, 3, generator=generator),
+        alive_mask=torch.ones(frames, walkers, dtype=torch.bool),
+        companions_distance=torch.arange(walkers).roll(1).expand(frames, -1),
+        companions_clone=torch.arange(walkers).roll(2).expand(frames, -1),
+        delta_t=0.1,
+        max_lag=5,
+    )
+    corrs, ops = extract_twistor_companion(out, use_connected=connected)
+    config = MassExtractionConfig(covariance=CovarianceConfig(method=method, n_bootstrap=40))
+    # No diagnostic series is needed: original triplet statistics travel through
+    # the same adapter and key renaming used by the dashboard.
+    renamed = {f"{key}_twistor": value for key, value in corrs.items()}
+    data = correlators_to_gvar(renamed, config=config)
+    assert len(data) == 6
+    for key, corr in renamed.items():
+        torch.testing.assert_close(
+            corr.correlator_statistics.mean().to(corr), corr, rtol=2e-4, atol=1e-7
+        )
+        np.testing.assert_allclose(gvar.mean(data[key]), corr.numpy())
+        assert np.isfinite(gvar.sdev(data[key])).all()
+        assert gvar.sdev(data[key][0]) > 0
+    assert ops["vector"].shape == (frames, 3)
+    if connected and method == "block_jackknife":
+        from fragile.physics.mass_extraction.pipeline import extract_masses
+        from fragile.physics.operators.pipeline import PipelineResult
+
+        result = extract_masses(
+            PipelineResult(
+                correlators=renamed,
+                operators={f"{key}_twistor": value for key, value in ops.items()},
+            ),
+            config,
+        )
+        assert set(result.data) == set(renamed)
 
 
 class TestFromGeometryEmpty:

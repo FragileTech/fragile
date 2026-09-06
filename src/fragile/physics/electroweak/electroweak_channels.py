@@ -32,6 +32,8 @@ from fragile.physics.new_channels.correlator_channels import (
     extract_mass_aic,
     extract_mass_linear,
 )
+from fragile.physics.qft_utils.helpers import recorded_time_step
+from fragile.physics.qft_utils.statistics import correlators_with_statistics
 
 
 ELECTROWEAK_BASE_CHANNELS = (
@@ -249,12 +251,15 @@ def _resolve_electroweak_params(
     history: RunHistory, cfg: ElectroweakChannelConfig
 ) -> dict[str, float]:
     params = history.params if isinstance(history.params, dict) else None
-    # Interaction ranges are sourced from run parameters only; they are not
-    # user-overridden in the electroweak analysis path.
-    epsilon_d = _nested_param(params, "companion_selection", "epsilon", default=None)
+    # Interaction ranges default to the run parameters; an explicit
+    # configuration value overrides them (the dashboard exposes both).
+    epsilon_d = cfg.epsilon_d
+    if epsilon_d is None:
+        epsilon_d = _nested_param(params, "companion_selection", "epsilon", default=None)
     epsilon_c = _nested_param(params, "companion_selection_clone", "epsilon", default=None)
-    # Keep velocity-weight contribution pinned off for this pipeline.
-    lambda_alg = 0.0
+    if cfg.epsilon_d is not None:
+        epsilon_c = float(cfg.epsilon_d) if epsilon_c is None else epsilon_c
+    lambda_alg = cfg.lambda_alg
     epsilon_clone = cfg.epsilon_clone
     if epsilon_clone is None:
         epsilon_clone = _nested_param(params, "cloning", "epsilon_clone", default=1e-8)
@@ -271,7 +276,7 @@ def _resolve_electroweak_params(
     epsilon_d = float(max(epsilon_d, 1e-8))
     epsilon_c = float(max(epsilon_c, 1e-8))
     epsilon_clone = float(max(epsilon_clone, 1e-8))
-    lambda_alg = 0.0
+    lambda_alg = float(max(lambda_alg, 0.0))
 
     return {
         "epsilon_d": epsilon_d,
@@ -285,8 +290,8 @@ def _resolve_lambda_alg(
     history: RunHistory,
     lambda_alg: float | None = None,
 ) -> float:
-    _ = (history, lambda_alg)
-    return 0.0
+    _ = history
+    return float(max(lambda_alg, 0.0)) if lambda_alg is not None else 0.0
 
 
 def _resolve_transition_frames(
@@ -902,7 +907,15 @@ def _compute_chirality_series(
     history: RunHistory,
     cfg: ElectroweakChannelConfig,
 ) -> dict[str, Tensor]:
-    """Compute chirality-derived operator time series.
+    """Compute chirality-derived operator time series (see the bundle variant)."""
+    return _compute_chirality_bundle(history, cfg).series_map
+
+
+def _compute_chirality_bundle(
+    history: RunHistory,
+    cfg: ElectroweakChannelConfig,
+) -> _ElectroweakSeriesBundle:
+    """Compute chirality-derived operator time series with their frame indices.
 
     Classifies walkers into left-handed (delta + strong resister) and
     right-handed (weak resister + persister) at each frame. Returns
@@ -910,9 +923,14 @@ def _compute_chirality_series(
     """
     from fragile.physics.electroweak.chirality import classify_walkers_vectorized
 
+    empty = _ElectroweakSeriesBundle(
+        series_map={}, frame_indices=[], n_valid_frames=0, avg_edges=0.0
+    )
     start_idx = max(1, int(history.n_recorded * cfg.warmup_fraction))
     end_fraction = getattr(cfg, "end_fraction", 1.0)
     end_idx = max(start_idx + 1, int(history.n_recorded * end_fraction))
+    end_idx = min(end_idx, int(history.n_recorded))
+    frames = list(range(start_idx, end_idx))
 
     info_start = start_idx - 1
     info_end = end_idx - 1
@@ -927,7 +945,8 @@ def _compute_chirality_series(
 
     T, N = will_clone.shape
     if T < 2:
-        return {}
+        return empty
+    frames = frames[:T]
 
     # Pad alive if shorter than will_clone
     if alive.shape[0] < T:
@@ -973,8 +992,14 @@ def _compute_chirality_series(
         frame_has_cloning = will_clone.any(dim=1)  # [T]
         if frame_has_cloning.any() and not frame_has_cloning.all():
             series = {name: s[frame_has_cloning] for name, s in series.items()}
+            frames = [f for f, keep in zip(frames, frame_has_cloning.tolist()) if keep]
 
-    return series
+    return _ElectroweakSeriesBundle(
+        series_map=series,
+        frame_indices=[int(f) for f in frames],
+        n_valid_frames=len(frames),
+        avg_edges=0.0,
+    )
 
 
 def _compute_electroweak_series(
@@ -1095,6 +1120,27 @@ def _compute_electroweak_series(
     )
 
 
+def electroweak_lag_duration(history: RunHistory, frame_indices: list[int]) -> float:
+    """Kinetic time spanned by one lag of a (possibly subsampled) frame series.
+
+    With ``cloning_frames_only`` the series keeps only frames where cloning
+    happened, so one lag is ``clone_every`` recordings, not one.  Using the
+    recording interval there reports every electroweak mass ``clone_every``
+    times too large.
+    """
+    base = float(recorded_time_step(history))
+    frames = [int(f) for f in frame_indices]
+    if len(frames) < 2:
+        return base
+    spacing = torch.tensor(frames[1:], dtype=torch.float64) - torch.tensor(
+        frames[:-1], dtype=torch.float64
+    )
+    spacing = spacing[spacing > 0]
+    if spacing.numel() == 0:
+        return base
+    return base * float(spacing.median().item())
+
+
 def _to_correlator_config(cfg: ElectroweakChannelConfig) -> CorrelatorConfig:
     return CorrelatorConfig(
         max_lag=int(cfg.max_lag),
@@ -1188,10 +1234,14 @@ def _compute_channel_results_batched(
         series_stack = torch.stack(
             [series_buffers[name][valid_t] for name in names], dim=0
         ).float()
-        correlators = _fft_correlator_batched(
+        # Lags beyond the number of frames carry no data; the FFT would zero-pad
+        # them and a downstream fit would then see zero-variance points.
+        max_lag = min(int(config.max_lag), max(int(series_stack.shape[1]) - 1, 0))
+        correlators = correlators_with_statistics(
             series_stack,
-            max_lag=int(config.max_lag),
-            use_connected=bool(config.use_connected),
+            max_lag=max_lag,
+            connected=bool(config.use_connected),
+            dtype=series_stack.dtype,
         )
 
         correlator_errs: Tensor | None = None
@@ -1207,7 +1257,7 @@ def _compute_channel_results_batched(
             )
             boot_corr = _fft_correlator_batched(
                 sampled.reshape(-1, t_len),
-                max_lag=int(config.max_lag),
+                max_lag=max_lag,
                 use_connected=bool(config.use_connected),
             )
             correlator_errs = boot_corr.reshape(n_bootstrap, series_stack.shape[0], -1).std(dim=0)
@@ -1259,7 +1309,10 @@ def compute_electroweak_channels(
         series_bundle = _compute_electroweak_series(history, cfg)
     else:
         series_bundle = _ElectroweakSeriesBundle(
-            series_map={}, frame_indices=[], n_valid_frames=0, avg_edges=0.0,
+            series_map={},
+            frame_indices=[],
+            n_valid_frames=0,
+            avg_edges=0.0,
         )
 
     selected_series = {
@@ -1270,22 +1323,17 @@ def compute_electroweak_channels(
 
     # Compute chirality-derived series if any were requested
     if chi_channels:
-        chi_series = _compute_chirality_series(history, cfg)
+        chi_bundle = _compute_chirality_bundle(history, cfg)
+        chi_series = chi_bundle.series_map
         for name in chi_channels:
             if name in chi_series:
                 selected_series[name] = chi_series[name]
         # Update frame info if only chirality channels were requested
         if not ew_channels and chi_series:
-            n_frames = len(next(iter(chi_series.values())))
-            series_bundle = _ElectroweakSeriesBundle(
-                series_map=chi_series,
-                frame_indices=list(range(n_frames)),
-                n_valid_frames=n_frames,
-                avg_edges=0.0,
-            )
+            series_bundle = chi_bundle
 
     correlator_cfg = _to_correlator_config(cfg)
-    dt = float(history.delta_t * history.record_every)
+    dt = electroweak_lag_duration(history, series_bundle.frame_indices)
     channel_results = _compute_channel_results_batched(
         series_map=selected_series,
         dt=dt,

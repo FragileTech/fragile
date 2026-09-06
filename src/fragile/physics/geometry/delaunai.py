@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Iterable, Literal
+import warnings
 
 import numpy as np
 from scipy.spatial import Delaunay
@@ -67,13 +68,47 @@ class DelaunayGeometryData:
 
 def build_delaunay_edges(positions: np.ndarray) -> np.ndarray:
     """Compute symmetric Delaunay edges from numpy positions."""
+    # Triangulate unique sites, then lift every edge to all particles at its
+    # endpoints. Coincident particles are mutual neighbors, without jitter.
+    unique, inverse = np.unique(positions, axis=0, return_inverse=True)
+    if len(unique) < len(positions):
+        site_edges = build_delaunay_edges(unique)
+        groups = [np.flatnonzero(inverse == i) for i in range(len(unique))]
+        lifted = []
+        for i, j in site_edges:
+            a, b = np.meshgrid(groups[i], groups[j], indexing="ij")
+            lifted.append(np.stack([a.ravel(), b.ravel()], axis=1))
+        for group in groups:
+            a, b = np.meshgrid(group, group, indexing="ij")
+            keep = a != b
+            lifted.append(np.stack([a[keep], b[keep]], axis=1))
+        return np.unique(np.concatenate(lifted), axis=0)
     n, d = positions.shape
-    if n < d + 1:
+    if n < 2:
         return np.zeros((0, 2), dtype=np.int64)
+
+    # Degenerate swarms still have a Delaunay graph in their affine span.
+    # Project orthogonally (distance preserving); never perturb the particles.
+    centered = positions - positions.mean(axis=0)
+    _, singular, basis = np.linalg.svd(centered, full_matrices=False)
+    tolerance = singular[0] * max(centered.shape) * np.finfo(float).eps
+    rank = int((singular > tolerance).sum())
+    if rank == 1:
+        order = np.argsort(centered @ basis[0])
+        forward = np.stack([order[:-1], order[1:]], axis=1)
+        return np.concatenate([forward, forward[:, ::-1]])
+    if rank < d:
+        positions = centered @ basis[:rank].T
 
     try:
         delaunay = Delaunay(positions)
-    except Exception:
+    except Exception as exc:  # Qhull precision / degeneracy failures
+        warnings.warn(
+            f"Delaunay triangulation failed ({exc!s}); recording an empty edge set "
+            "for this step (no viscous coupling, zero curvature).",
+            RuntimeWarning,
+            stacklevel=2,
+        )
         return np.zeros((0, 2), dtype=np.int64)
 
     simplices = np.asarray(delaunay.simplices, dtype=np.int64)
@@ -178,6 +213,7 @@ def compute_delaunay_data(
     weight_modes: Iterable[WeightMode] | None = None,
     normalize_weights: bool = True,
     compute_full_ricci: bool = False,
+    length_scale: float = 1.0,
 ) -> DelaunayGeometryData:
     """Compute Delaunay neighbors, metric tensors, and curvature proxies.
 
@@ -237,7 +273,8 @@ def compute_delaunay_data(
         hessian_diag = hess_result["hessian_diagonal"]
         hessian_valid = hess_result["valid_mask"]
     elif hessian_mode != "none":
-        raise ValueError(f"Unknown hessian_mode: {hessian_mode}")
+        msg_0 = f"Unknown hessian_mode: {hessian_mode}"
+        raise ValueError(msg_0)
 
     if metric_mode == "covariance":
         metric_tensors = compute_emergent_metric(pos, edge_index, alive=None)
@@ -256,7 +293,8 @@ def compute_delaunay_data(
             max_eig=max_eig,
         )
     else:
-        raise ValueError(f"Unknown metric_mode: {metric_mode}")
+        msg_0 = f"Unknown metric_mode: {metric_mode}"
+        raise ValueError(msg_0)
 
     # Edge distances
     if edge_index.numel() == 0:
@@ -287,6 +325,7 @@ def compute_delaunay_data(
             metric_tensors=metric_tensors,
             riemannian_volumes=volume_weights,
             normalize=normalize_weights,
+            length_scale=length_scale,
         )
 
     ricci_weights = edge_weights.get("inverse_riemannian_distance")

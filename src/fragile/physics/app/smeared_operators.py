@@ -13,6 +13,8 @@ frames in chunks and avoid allocating all distance matrices at once.
 
 from __future__ import annotations
 
+import warnings
+
 from collections.abc import Iterator, Sequence
 from typing import TYPE_CHECKING
 
@@ -307,6 +309,84 @@ def _resolve_frame_edge_weights(
     return frame_weights_t
 
 
+_INVERSE_LENGTH_MODES = frozenset({
+    "inverse_distance",
+    "inverse_volume",
+    "inverse_riemannian_distance",
+    "inverse_riemannian_volume",
+})
+
+
+def _edge_lengths_for_frame(
+    history: RunHistory,
+    *,
+    frame_idx: int,
+    edges: Tensor,
+    edge_weight_mode: str,
+    weights: Tensor | None,
+    device: torch.device,
+    dtype: torch.dtype,
+) -> Tensor | None:
+    """Convert recorded neighbour weights into shortest-path edge lengths.
+
+    Recorded weights are either similarities (``kernel``-type modes, larger for
+    closer neighbours) or inverse lengths (``inverse_*`` modes); neither is a
+    length.  Feeding them to the all-pairs shortest path as if they were makes
+    every edge of a well-coupled graph vanishingly short, so the smearing scales
+    collapse onto the clamp floor and every scale returns the same channel.
+
+    * ``uniform``: unit lengths.
+    * ``inverse_*``: ``1 / w``.
+    * kernel-type modes: the recorded geodesic (Riemannian) edge distance when
+      available, otherwise the Euclidean edge length of the post-cloning
+      positions the graph was built on.
+    """
+    mode = _normalize_edge_weight_mode(edge_weight_mode)
+    n_edges = int(edges.shape[0])
+    if mode == "uniform" or n_edges == 0:
+        return None
+    if mode in _INVERSE_LENGTH_MODES:
+        if weights is None:
+            return None
+        w = weights.to(device=device, dtype=dtype)
+        return torch.where(
+            w > 0, 1.0 / w.clamp_min(torch.finfo(dtype).tiny), torch.full_like(w, float("inf"))
+        )
+
+    geodesic_all = getattr(history, "geodesic_edge_distances", None)
+    if geodesic_all is not None and 0 <= frame_idx < len(geodesic_all):
+        geo = geodesic_all[frame_idx]
+        if torch.is_tensor(geo) and geo.numel() == n_edges:
+            lengths = geo.to(device=device, dtype=dtype).reshape(-1)
+            if bool(torch.isfinite(lengths).all()) and bool((lengths > 0).any()):
+                return torch.where(lengths > 0, lengths, torch.full_like(lengths, float("inf")))
+
+    positions = None
+    x_after = getattr(history, "x_after_clone", None)
+    x_before = getattr(history, "x_before_clone", None)
+    if frame_idx >= 1 and torch.is_tensor(x_after) and frame_idx - 1 < x_after.shape[0]:
+        positions = x_after[frame_idx - 1]
+    elif torch.is_tensor(x_before) and frame_idx < x_before.shape[0]:
+        positions = x_before[frame_idx]
+    if positions is None:
+        # No geometry recorded (test stubs): keep the raw weights, but say so.
+        if weights is None:
+            return None
+        warnings.warn(
+            f"edge_weight_mode={mode!r} weights are similarities, not lengths, and the "
+            "history records neither geodesic edge distances nor positions; using the raw "
+            "weights as edge lengths.",
+            RuntimeWarning,
+            stacklevel=3,
+        )
+        return weights.to(device=device, dtype=dtype)
+    pos = positions.to(device=device, dtype=dtype)
+    src = edges[:, 0].clamp(0, pos.shape[0] - 1)
+    dst = edges[:, 1].clamp(0, pos.shape[0] - 1)
+    lengths = torch.linalg.vector_norm(pos[dst] - pos[src], dim=-1)
+    return torch.where(lengths > 0, lengths, torch.full_like(lengths, float("inf")))
+
+
 def _resolve_alive_mask_for_frame(
     history: RunHistory,
     *,
@@ -403,10 +483,19 @@ def build_adjacency_batch_from_history(
                 edges_t = edges_t[valid_edges]
                 if weights is not None:
                     weights = weights[valid_edges]
+        lengths = _edge_lengths_for_frame(
+            history,
+            frame_idx=frame_idx,
+            edges=edges_t,
+            edge_weight_mode=resolved_edge_weight_mode,
+            weights=weights,
+            device=dev,
+            dtype=dtype,
+        )
         adjacency_batch[out_idx] = build_adjacency_from_edges(
             num_nodes=n_nodes,
             edges=edges_t,
-            edge_weights=weights,
+            edge_weights=lengths,
             undirected=undirected,
             device=dev,
             dtype=dtype,

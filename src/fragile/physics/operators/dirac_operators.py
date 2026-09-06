@@ -136,9 +136,7 @@ def compute_dirac_operators(
     # Reshape back
     psi_i = psi_i.reshape(*flat_shape, 4)  # [T, N, P, 4]
     psi_j = psi_j.reshape(*flat_shape, 4)
-    spinor_valid = (
-        valid_i_spinor.reshape(flat_shape) & valid_j_spinor.reshape(flat_shape)
-    )
+    spinor_valid = valid_i_spinor.reshape(flat_shape) & valid_j_spinor.reshape(flat_shape)
 
     # Combined validity
     valid = valid & spinor_valid
@@ -153,15 +151,15 @@ def compute_dirac_operators(
     I4 = torch.eye(4, device=device, dtype=gamma0.dtype)
 
     # 5. Compute bilinears
-    op_scalar = compute_dirac_bilinear(psi_i, psi_j, gamma0, I4)         # [T, N, P]
-    op_pseudo = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma5)     # [T, N, P]
+    op_scalar = compute_dirac_bilinear(psi_i, psi_j, gamma0, I4)  # [T, N, P]
+    op_pseudo = torch.einsum("...a,ab,...b->...", psi_i.conj(), gamma0 @ gamma5, psi_j).imag
     op_vector_k = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma_k)  # [T, N, P, 3]
-    op_vector = op_vector_k.mean(dim=-1)                                  # [T, N, P]
+    op_vector = op_vector_k.mean(dim=-1)  # [T, N, P]
     op_axial_k = compute_dirac_bilinear(psi_i, psi_j, gamma0, gamma5_k)  # [T, N, P, 3]
-    op_axial = op_axial_k.mean(dim=-1)                                    # [T, N, P]
+    op_axial = op_axial_k.mean(dim=-1)  # [T, N, P]
     op_tensor_mn = compute_dirac_bilinear(psi_i, psi_j, gamma0, sigma_munu)  # [T, N, P, 6]
-    op_tensor_0k = op_tensor_mn[..., :3].mean(dim=-1)                        # [T, N, P] σ_0k: parity-odd
-    op_tensor = op_tensor_mn[..., 3:].mean(dim=-1)                           # [T, N, P] σ_jk: parity-even
+    op_tensor_0k = op_tensor_mn[..., :3].mean(dim=-1)  # [T, N, P] σ_0k: parity-odd
+    op_tensor = op_tensor_mn[..., 3:].mean(dim=-1)  # [T, N, P] σ_jk: parity-even
 
     # 6. Mask invalid pairs
     zero = torch.zeros_like(op_scalar)

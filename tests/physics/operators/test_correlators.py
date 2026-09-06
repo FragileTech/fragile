@@ -325,10 +325,15 @@ class TestComputeCorrelatorsMultiscale:
             {"op": series}, max_lag=max_lag, n_scales=S, use_connected=True
         )["op"]  # [S, max_lag+1]
 
-        # Reproduce the internal reshape logic manually
-        flat = series.reshape(S * C, T)
-        corr = _fft_correlator_batched(flat, max_lag=max_lag, use_connected=True)
-        manual = corr.reshape(S, C, -1).sum(dim=1)
+        # Independent direct lag products, not a copy of the reshape logic.
+        centered = series - series.mean(dim=1, keepdim=True)
+        manual = torch.stack(
+            [
+                (centered[:, : T - lag] * centered[:, lag:]).sum(-1).mean(-1)
+                for lag in range(max_lag + 1)
+            ],
+            dim=-1,
+        )
 
         torch.testing.assert_close(full_result, manual, atol=1e-6, rtol=1e-6)
 

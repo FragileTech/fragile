@@ -49,9 +49,9 @@ Let me give you the bottom line first, then we'll dig into the details.
 
 Think of these interface checks like a medical triage system. You've got the vitals---pulse, breathing, blood pressure---that you check on everyone, every time. Those are cheap, fast, and catch the most common life-threatening conditions. Then you've got the specialized tests---MRIs, genetic screens---that you only run when you have reason to suspect something specific, because they're expensive and time-consuming.
 
-The "Essential" tier catches 6 out of 14 failure modes with low overhead. That's your vital signs. Run these every timestep. The "Important" tier catches 3 more for medium cost---run these periodically or when you see warning signs. The "Advanced" tier is your full diagnostic suite: expensive, but comprehensive.
+The "Essential" tier covers 6 of the 14 listed failure modes with low overhead. That's your vital signs. Run these every timestep. The "Important" tier raises the listed coverage to 9 of 14 at medium cost---run these periodically or when you see warning signs. The "Advanced" tier raises it to 13 of 14; it is broad, but it still leaves the remaining mode to the verification pass.
 
-The key insight is that failure modes don't happen with equal frequency or equal severity. The cheap checks catch the common, dangerous ones. The expensive checks catch the rare, subtle ones. That's not an accident---that's good engineering.
+The key insight is that the tiers are a scheduling choice, not a frequency theorem. Cheap checks are suitable for frequent monitoring; expensive checks buy broader coverage and deeper evidence when run periodically or offline. Which failures are common or dangerous depends on the application and must be measured.
 :::
 
 | Tier          | Interfaces                                                                       | Relative Cost | Failure Modes Covered |
@@ -66,11 +66,11 @@ The key insight is that failure modes don't happen with equal frequency or equal
 :::{div} feynman-prose
 Now let's talk about barriers---the guardrails that keep your agent from running off a cliff.
 
-Here's a wonderful fact: some of the most important barriers are *free*. They're built into the architecture itself. Use a tanh activation? Congratulations, you've bounded your outputs. Use a finite-dimensional latent space? Congratulations, you've limited representational variety. These constraints protect you without costing a single extra FLOP at runtime.
+Some barriers are architectural: they are built into the forward map rather than evaluated by a separate monitor. A tanh or Poincare-ball projection bounds the coordinates on the path where it is applied; a finite-dimensional latent limits capacity, but does not guarantee that the representation uses that capacity. The operation still has its ordinary runtime cost, but it needs no additional barrier pass.
 
-The "Standard RL" barriers are things like entropy regularization and causal masking. If you're doing modern RL, you're probably already paying for these. They're not extra overhead---they're baseline good practice that happens to also provide safety.
+The "Standard RL" barriers are things like entropy regularization and causal masking. If you're doing modern RL, you're probably already paying for these. They are baseline mechanisms that can support exploration and causal data flow; their safety effect remains conditional on the rest of the system.
 
-The "Specialized" barriers require auxiliary computation. Not free, but tractable. The "Infeasible" barriers---well, let's be honest. Checking frequency-domain stability exactly would require Fourier transforms on every timestep. That's ridiculous. So we use proxies. I'll tell you what those proxies are in {ref}`the Approximations chapter <sec-infeasible-implementation-replacements>`.
+The "Specialized" barriers require auxiliary computation. Not free, but tractable. The "Infeasible" barriers need a more careful qualification: a Bode sensitivity calculation belongs to an LTI or explicitly linearized loop with the required stability and pole/zero hypotheses. A changing nonlinear policy is not covered automatically, so we use temporal or local proxies. I'll tell you what those proxies are in {ref}`the Approximations chapter <sec-infeasible-implementation-replacements>`.
 :::
 
 | Tier              | Barriers                                           | Implementation       | Notes                           |
@@ -122,11 +122,11 @@ The core loss function has five terms. Let me tell you what each one does and wh
 
 **The entropy term** $-H(\pi)$ (note the negative sign, so we're adding a *positive* penalty for low entropy) keeps your policy from collapsing to a deterministic choice too quickly. You want some exploration, some spread in your action distribution.
 
-**The Zeno term** $D_{\text{KL}}(\pi_t \| \pi_{t-1})$ is beautiful. It penalizes the policy for changing too rapidly from one timestep to the next. Why? Because in continuous time, if your policy oscillates infinitely fast, you get a phenomenon called "Zeno behavior"---like Zeno's paradox, you take infinitely many infinitely small steps and never get anywhere. This term prevents that pathology.
+**The Zeno term** $D_{\text{KL}}(\pi_t \| \pi_{t-1})$ is beautiful. It penalizes the policy distribution for changing too rapidly from one timestep to the next. Why? Because in continuous time, infinitely rapid switching is a real pathology. This term supplies a local smoothness signal; ruling out Zeno behavior still requires the step-size and regularity hypotheses of the continuous-time argument.
 
-**The stiffness term** $\max(0, \epsilon - \|\nabla_A V\|)^2$ is a little less obvious. It penalizes the critic for being *too flat*. If the value function has zero gradient everywhere, your policy has no information about which direction to go. This ensures the critic maintains enough curvature to be useful.
+**The stiffness term** $\max(0, \epsilon - \|\nabla_z V\|)^2$ is a little less obvious. It is a lower-gradient diagnostic: it penalizes a critic that is too flat in the state variable $z$ used by the critic evaluation. That variable must be the same state that produced $V$; otherwise the autograd calculation is not the stated quantity. Even with that alignment, the penalty encourages a local signal but does not prove curvature or useful control directions everywhere.
 
-With these five terms, you cover the six most common failure modes. That's good bang for your computational buck.
+With these five terms, you monitor the six failure modes listed below. They are inexpensive signals and regularizers, not a guarantee that every mode is prevented.
 :::
 
 For production systems with tight compute budgets.
@@ -192,13 +192,13 @@ def compute_fragile_core_loss(
 :::{div} feynman-prose
 Now we step up to the research-grade version. Everything from Tier 1, plus three new ingredients.
 
-**The scale check** $\max(0, \beta_{\pi} - \alpha)$ is a fascinating one. It's monitoring the relationship between two different "scaling exponents" in your system. The $\alpha$ measures how sharply your loss landscape curves. The $\beta_{\pi}$ measures how aggressively your policy changes. If $\beta_{\pi} > \alpha$, your policy is changing faster than your value estimates can track---you're flying blind. This term penalizes that mismatch.
+**The scale check** $\max(0, \beta_{\pi} - \alpha)$ is a diagnostic for two estimated scaling proxies. In the accompanying tracker, $\alpha$ comes from loss-versus-parameter-norm history and $\beta_{\pi}$ is a policy-update proxy; neither is automatically a physical curvature or a measured tracking speed. A positive gap is a warning about the chosen estimates, not a proof that the policy is flying blind.
 
-**The sync loss** $\mathcal{L}_{\text{Sync}_{K-W}}$ keeps your shutter (encoder) and world model aligned. Remember the jazz band analogy? This is making sure the drummer and bassist agree on the beat.
+**The sync loss** $\mathcal{L}_{\text{Sync}_{K-W}}$ compares the world model's macro-code prediction with the encoder's observed next code. It is a sampled closure check: it can reveal drift, but a small cross-entropy does not establish exact agreement away from the sampled data.
 
-**The oscillation term** $\|z_t - z_{t-2}\|$ catches a subtle pathology: period-2 oscillations. Your system might look stable if you only compare consecutive states, but it's actually bouncing back and forth between two configurations. By comparing $z_t$ to $z_{t-2}$, you catch this ping-pong behavior.
+**The oscillation term** $\mathbb{E}\big[\lVert z_t-z_{t-2}\rVert^2\big]$ checks for period-2 behavior. Comparing states two steps apart is a useful ping-pong monitor, but it is still a finite-sample diagnostic and does not rule out other frequencies or trajectories.
 
-This tier is what I'd recommend for most serious research. It catches the subtle failure modes that the minimal tier misses, without going overboard on computational cost.
+This tier adds useful evidence for research without making a stability or coverage guarantee out of any one monitor.
 :::
 
 For research and safety-conscious applications.
@@ -206,7 +206,7 @@ For research and safety-conscious applications.
 **Additional Terms:**
 
 $$
-\mathcal{L}_{\text{Fragile}}^{\text{std}} = \mathcal{L}_{\text{Fragile}}^{\text{core}} + \lambda_{\text{scale}} \max(0, \beta_{\pi} - \alpha) + \lambda_{\text{sync}}\,\mathcal{L}_{\text{Sync}_{K-W}} + \lambda_{\text{osc}} \Vert z_t - z_{t-2} \Vert
+\mathcal{L}_{\text{Fragile}}^{\text{std}} = \mathcal{L}_{\text{Fragile}}^{\text{core}} + \lambda_{\text{scale}} \max(0, \beta_{\pi} - \alpha) + \lambda_{\text{sync}}\,\mathcal{L}_{\text{Sync}_{K-W}} + \lambda_{\text{osc}}\,\mathbb{E}\big[\lVert z_t-z_{t-2}\rVert^2\big]
 
 $$
 **Additional Implementation (Diagnostics Only):**
@@ -222,7 +222,7 @@ class ScalingExponentTracker:
     Track α (curvature proxy) and β_π (policy-change proxy) for diagnostics.
 
     Note: this estimates parameter-space proxies for monitoring training health.
-    It is not the state-space metric G; compute G via compute_state_space_fisher()
+    It is not the state-space metric G; compute G with the learner's `_compute_state_fisher()`
     in state space ({ref}`sec-the-metric-hierarchy-fixing-the-category-error`).
     """
     def __init__(self, ema_decay: float = 0.99):
@@ -284,13 +284,13 @@ def compute_oscillation_loss(
 :::{div} feynman-prose
 Now we're getting into the expensive stuff. This tier is for when you *really* care about safety---medical robots, autonomous vehicles, anything where a failure has serious consequences.
 
-**The Lipschitz loss** $\mathcal{L}_{\text{Lipschitz}}$ constrains how rapidly your network outputs can change as inputs vary. If a network is Lipschitz-bounded, small perturbations can only cause small changes in behavior. This is robustness against adversarial inputs and sensor noise.
+**The Lipschitz loss** $\mathcal{L}_{\text{Lipschitz}}$ constrains how rapidly a specified network map can change as its inputs vary. Under a bound for the complete deployed map, small perturbations have a controlled effect; a layer or local estimate alone does not establish robustness to every adversarial input or sensor disturbance.
 
-**The InfoNCE loss** $\mathcal{L}_{\text{InfoNCE}}$ is a contrastive learning objective that ensures your representations preserve useful geometric structure. Points that should be similar end up nearby; points that should be different end up far apart.
+**The InfoNCE loss** $\mathcal{L}_{\text{InfoNCE}}$ is a contrastive objective that encourages separation for the chosen positives and negatives. It can support useful geometric structure, but it does not by itself ensure that the learned representation preserves the intended manifold.
 
-**The gain loss** $\mathcal{L}_{\text{gain}}$ monitors the input-output gain of your system---essentially, how much does the output change per unit change in input? Unbounded gain leads to instability.
+**The gain loss** $\mathcal{L}_{\text{gain}}$ monitors input-output amplification. Whether a large measured gain implies instability depends on the loop, operating regime, and time horizon, so this is a warning signal unless those hypotheses are supplied.
 
-These terms aren't cheap. The Lipschitz constraint, done properly, requires computing or bounding singular values. InfoNCE requires comparing your sample against negatives. But for safety-critical applications, you pay the price.
+These terms aren't cheap. A useful Lipschitz bound requires computing or bounding singular values for the relevant map, and InfoNCE requires comparisons with negatives. For high-assurance work, the extra evidence can justify the cost.
 :::
 
 For safety-critical applications with verification requirements.
@@ -315,13 +315,13 @@ If you're doing standard gradient descent, you'd say "a small step is one where 
 
 But here's the problem: a small change in parameters might cause a *huge* change in behavior in some regions of state space, and almost no change in others. Parameter distance isn't the same as behavioral distance.
 
-The Riemannian approach says: "Let's measure distance in terms of how much the policy *actually changes*, not how much the parameters change." To do this, we use a **state-space sensitivity metric** $G$, whose Fisher component measures how sensitive the policy distribution is to changes in the latent state.
+The Riemannian approach says: "Let's measure changes in the behavior induced by a latent-state displacement, not just changes in the parameters." To do this, we use a **state-space sensitivity metric** $G$, whose Fisher component measures how sensitive the policy distribution is to changes in the latent state. This metric can define a trust region or precondition an update.
 
 But wait---there's a subtlety here that trips up a lot of people. TRPO and PPO use the *parameter-space* Fisher: "How does the policy change when I change $\theta$?" What we're doing here is different. We're using the *state-space* Fisher component $G_\pi$: "How does the policy change when the *state* changes?"
 
-Why does this matter? Because the state-space Fisher component tells you about the control authority at each location. In regions where small state changes cause big policy changes, you should be conservative. In regions where the policy is insensitive to state, you can be more aggressive. The state-space geometry is about the physics of your problem, not the parameterization of your neural network.
+Why does this matter? Because the state-space Fisher component tells you about the control authority at each location. In regions where small state changes cause big policy changes, you should be conservative. In regions where the policy is insensitive to state, you can be more aggressive. The state-space geometry is about the sensitivity of the modeled behavior, not the parameterization of your neural network.
 
-This distinction is subtle and important. The parameter-space Fisher gives you a natural gradient for *learning*. The state-space Fisher component gives you a natural gradient for *control*. They're not the same thing.
+This distinction is subtle and important. The parameter-space Fisher gives you a natural gradient for *learning*. The state-space Fisher component can precondition *control* updates. The directional derivative of a value or cost along a state velocity is still the metric-free pairing $dV[v]$; the metric belongs in the update geometry or trust region, not as an inverse weight inserted into that pairing.
 :::
 
 This tier implements a **Riemannian / information-geometric** view, replacing Euclidean losses with geometry-aware equivalents. This approach is inspired by Natural Gradient methods {cite}`amari1998natural,martens2015kfac,martens2020natural` and Safe RL literature {cite}`chow2018lyapunov,kolter2019safe`.
@@ -357,7 +357,7 @@ def compute_natural_gradient_loss(
     """
     # 1. Compute a Fisher-based diagonal approximation to G
     # G_ii ≈ E[(∂log π/∂z_i)²] — measures control authority at each state dim
-    fisher_diag = compute_state_space_fisher(regulator, state, include_value_hessian=False)
+    fisher_diag = regulator._compute_state_fisher(state)
     metric_inv = 1.0 / (fisher_diag + epsilon)  # G^{-1} (approx)
 
     # 2. Compute the Value Gradient (nabla_z V)
@@ -372,13 +372,12 @@ def compute_natural_gradient_loss(
     # 3. Compute State Velocity (z_dot)
     state_velocity = next_state - state  # [Batch, Latent_Dim]
 
-    # 4. Compute the Natural Inner Product (Covariant Derivative)
-    # EUCLIDEAN would be: (grad_v * state_velocity).sum()
-    # RIEMANNIAN: weight by inverse metric
-    natural_decrease = (grad_v * state_velocity * metric_inv).sum(dim=-1)
+    # 4. The Lie derivative is metric-free; G^{-1} belongs in the
+    # controlled update/preconditioner rather than in dV(state_velocity).
+    cost_rate = (grad_v * state_velocity).sum(dim=-1)
 
-    # 5. The Loss: maximize value decrease (make V decrease fast)
-    return -natural_decrease.mean()
+    # 5. Minimise the cost increase (the critic uses the cost convention V).
+    return cost_rate.mean()
 ```
 
 **B. compute_control_theory_loss(): Neural Lyapunov with Sensitivity Metric**
@@ -404,9 +403,9 @@ def compute_control_theory_loss(
     """
     # 1. Compute state-space metric G (Fisher + optional value Hessian)
     if metric_mode == "state_fisher":
-        g_metric = compute_state_space_fisher(regulator, states, include_value_hessian=True)
+        g_metric = regulator._compute_state_fisher(states)
     else:
-        g_metric = compute_state_space_fisher(regulator, states, include_value_hessian=False)
+        g_metric = regulator._compute_state_fisher(states)
     metric_inv = 1.0 / (g_metric + 1e-6)
 
     # 2. Compute Time-Derivative of Value (V_dot)
@@ -416,12 +415,10 @@ def compute_control_theory_loss(
         critic_values.sum(), states_grad, create_graph=True
     )[0]
 
-    # 3. Geometry-aware value decrease (Policy Loss)
-    # EUCLIDEAN: value_change = (grad_v * dynamics).sum()
-    # RIEMANNIAN: scale by inverse metric
+    # 3. Cost rate along the realised dynamics (metric-free Lie derivative)
     dynamics = next_states - states
-    value_change_geo = (grad_v * dynamics * metric_inv).sum(dim=-1)
-    loss_policy = -value_change_geo.mean()
+    value_change = (grad_v * dynamics).sum(dim=-1)
+    loss_policy = value_change.mean()
 
     # 4. Lyapunov Constraint (Critic Loss)
     # Ensure V_dot <= -alpha * V (Exponential Stability)
@@ -490,7 +487,7 @@ class GeometryAwareLearner:
         metric_g = self._compute_state_fisher(s)
 
         # Phase 3: Actor update (geometry-aware)
-        # Goal: maximize value decrease under the metric
+        # Goal: minimize the directional derivative of the cost-to-go
 
         for p in self.critic.parameters():
             p.requires_grad = False
@@ -502,11 +499,12 @@ class GeometryAwareLearner:
         pred_action = self.actor(s)
         s_velocity = self.world_model(s, pred_action) - s
 
-        # Geometry-aware: value change = <Grad_V, Velocity>_G (weighted by sensitivity)
-        # EUCLIDEAN would be: value_change = (grad_v * s_velocity).sum()
-        value_change_geo = (grad_v * s_velocity / (metric_g + 1e-6)).sum(dim=-1)
+        # The Lie derivative is the plain covector-vector pairing.  The
+        # state-space metric is used by the update/preconditioner, not by
+        # changing the definition of dV(v).
+        value_change_geo = (grad_v * s_velocity).sum(dim=-1)
 
-        actor_loss = -value_change_geo.mean()
+        actor_loss = value_change_geo.mean()
 
         self.actor_opt.zero_grad()
         actor_loss.backward()
@@ -532,7 +530,9 @@ class GeometryAwareLearner:
         # Assuming Gaussian policy with fixed std
         action_std = torch.ones_like(action_mean) * 0.5
         dist = torch.distributions.Normal(action_mean, action_std)
-        action = dist.rsample()
+        # Draw a score-function sample; differentiating through rsample()
+        # would cancel the Gaussian score in this Fisher estimate.
+        action = dist.sample()
         log_prob = dist.log_prob(action).sum(dim=-1)
         grad_z = torch.autograd.grad(log_prob.sum(), state_grad, create_graph=False)[0]
         fisher_diag = grad_z.pow(2).mean(dim=0)
@@ -583,20 +583,20 @@ class RiemannianFragileAgent(nn.Module):
         if regime == "NOISE":
             return "REJECT"
 
-        # === PHASE II: METRIC EXTRACTION ===
-        # Compute state-space Fisher component (not optimizer statistics)
-        # G_inv acts as a trust-region / step-size limit for the update
-        with torch.no_grad():
-            fisher_diag = compute_state_space_fisher(self, batch.obs)
-            G_inv = 1.0 / (fisher_diag + 1e-8)
-
-        # === PHASE III: SHUTTER UPDATE (VQ-VAE) ===
+        # === PHASE II: SHUTTER UPDATE (VQ-VAE) ===
         # Enforce Causal Enclosure: discrete macro K carries the predictive signal.
         # Structured nuisance is typed; texture is reconstruction-only.
         K_t, z_macro, z_nuis, z_tex = self.shutter(batch.obs)  # z_macro := e_{K_t}
 
         # Encode next observation for closure loss
         K_t_next, z_macro_next, _, _ = self.shutter(batch.next_obs)
+
+        # === PHASE III: METRIC EXTRACTION ===
+        # Compute the state-space Fisher in latent coordinates. A metric
+        # estimated on observations cannot be applied to z_macro or actions.
+        with torch.no_grad():
+            fisher_diag = self._compute_state_fisher(z_macro)
+            G_inv = 1.0 / (fisher_diag + 1e-8)
 
         # Store policy before update for Zeno constraint
         with torch.no_grad():
@@ -630,15 +630,15 @@ class RiemannianFragileAgent(nn.Module):
             grad_V = torch.autograd.grad(V, z_macro)[0]
             velocity = self.world_model(z_macro, self.policy(z_macro)) - z_macro
 
-            # Geometry-aware: value decrease weighted by sensitivity
-            # EUCLIDEAN would be: L = -(grad_V * velocity).mean()
-            L_nat = -torch.mean((grad_V * velocity) * G_inv)
+            # Lie derivative of the cost-to-go (metric-free); the metric
+            # preconditions the update itself.
+            L_nat = torch.mean(grad_V * velocity)
 
             # Get new policy for Zeno constraint
             policy_new = self.policy(z_macro)
 
             # Geodesic Stiffness (Zeno Constraint)
-            L_zeno = self._geodesic_dist(policy_new, policy_old, G_inv)
+            L_zeno = self._geodesic_dist(policy_new, policy_old)
 
             self.actor_opt.step(L_nat + L_zeno)
         else:
@@ -677,15 +677,16 @@ class RiemannianFragileAgent(nn.Module):
 
         return predict_loss + self.lambda_ind * independence_loss
 
-    def _geodesic_dist(self, policy_new, policy_old, G_inv):
+    def _geodesic_dist(self, policy_new, policy_old):
         """
-        Geodesic distance under the sensitivity metric.
+        Policy-space distance used by the Zeno monitor.
 
         EUCLIDEAN: ||π_new - π_old||²
-        RIEMANNIAN: ||π_new - π_old||²_G = (π_new - π_old)ᵀ G⁻¹ (π_new - π_old)
+        For deterministic actions this is a squared Euclidean proxy. For
+        distribution-valued policies use their KL divergence instead.
         """
         diff = policy_new - policy_old
-        return (diff * diff * G_inv).sum(dim=-1).mean()
+        return diff.pow(2).sum(dim=-1).mean()
 ```
 
 (sec-cost-benefit-decision-matrix)=
@@ -694,11 +695,11 @@ class RiemannianFragileAgent(nn.Module):
 :::{div} feynman-prose
 Let me give you a decision guide. You know your compute budget. Here's what to pick.
 
-If you're tight on compute---running on an embedded system, training at massive scale, or just prototyping---use Tier 1. You'll cover the basics. Most agents won't blow up. You might miss subtle pathologies, but you'll get something working.
+If you're tight on compute---running on an embedded system, training at massive scale, or just prototyping---use Tier 1. You'll cover the listed basics. You will miss subtle pathologies, and the tier is a monitoring budget rather than a stability guarantee.
 
-If you have moderate resources and care about getting things right, use Tier 2. This is my recommendation for most research work. The extra diagnostics catch problems that would otherwise waste weeks of your time debugging.
+If you have moderate resources and care about getting things right, use Tier 2. This is a reasonable default for research work. The extra diagnostics can expose problems that would otherwise waste weeks of debugging, provided they are evaluated on representative data.
 
-If you're building something safety-critical---a medical device, an autonomous vehicle, anything where failure has real consequences---use Tier 3. Pay the computational cost. It's cheaper than lawsuits.
+If you're building something safety-critical---a medical device, an autonomous vehicle, anything where failure has real consequences---use Tier 3. Pay the computational cost, then validate the complete deployed loop under its domain-specific hypotheses.
 
 And if you can do expensive analysis offline---between training runs, during validation---run the full verification suite. Catch everything you can before deployment.
 :::
@@ -711,7 +712,7 @@ And if you can do expensive analysis offline---between training runs, during val
 | **Offline (post-hoc)** | Full + verification | Enables expensive verification and audit passes |
 
 (sec-defect-functional-costs)=
-## Defect Functional Costs (from metalearning.md)
+## Defect Functional Costs (from the metric-learning notes)
 
 For training-time defect minimization:
 
@@ -757,13 +758,13 @@ A single neural network encoder defines a single coordinate chart on the latent 
 
 | Manifold | Minimum Charts | Why |
 |----------|----------------|-----|
-| **Sphere $S^2$** | 2 | No global flat coordinates (Hairy Ball Theorem) |
-| **Torus $T^2$** | 4 | Non-trivial first homology |
-| **Klein Bottle** | ∞ | Non-orientable |
+| **Sphere $S^2$** | 2 | Compactness / invariance of domain |
+| **Torus $T^2$** | 2 | Compactness (two annular charts suffice) |
+| **Klein Bottle** | 2 | Compactness (two annular charts suffice) |
 | **Swiss Roll** | 1 | Topologically trivial but geometrically challenging |
 
 :::{div} feynman-prose
-Look at that table. A sphere needs at least 2 charts---you can't put coordinates on the whole sphere without a singularity somewhere (that's the Hairy Ball Theorem: you can't comb a hairy ball flat without a cowlick). A torus needs 4. And so on.
+Look at that table carefully. A sphere cannot be covered by one global coordinate chart: compactness together with invariance of domain rules that out. That is a different statement from the Hairy Ball Theorem, which concerns nowhere-vanishing tangent vector fields. In the atlas convention used here, the torus and the Klein bottle also use two charts, while the Swiss Roll is topologically trivial and can use one.
 
 The Swiss Roll is interesting---it's topologically trivial (just a twisted rectangle), but geometrically it's hard to unfold without distortion. A single chart *can* cover it, but it'll have to stretch and compress in awkward ways.
 :::
@@ -839,10 +840,10 @@ class OrthogonalLinear(nn.Module):
 | Property | Orthogonal $W$ | Arbitrary $W$ |
 |----------|----------------|---------------|
 | **Singular values** | All = 1 | Can be 0 or ∞ |
-| **Gradient flow** | Preserved | Explodes or vanishes |
-| **Distance preservation** | $\lVert Wx\rVert = \lVert x\rVert$ | $\lVert Wx\rVert \neq \lVert x\rVert$ |
-| **Inverse stability** | $W^{-1} = W^T$ | May not exist |
-| **Information loss** | None | Possible |
+| **Gradient flow** | Preserved for square $W$; one-sided for rectangular $W$ | Explodes or vanishes |
+| **Distance preservation** | Exact for square $W$; one-sided for rectangular $W$ | $\lVert Wx\rVert \neq \lVert x\rVert$ |
+| **Inverse stability** | $W^{-1} = W^T$ only when square | May not exist |
+| **Information loss** | None when square; possible when rectangular | Possible |
 
 (sec-vicreg-geometric-collapse-prevention)=
 ### VICReg: Geometric Collapse Prevention
@@ -852,15 +853,15 @@ Here's a problem that plagues representation learning: *collapse*. Your encoder 
 
 Why does this happen? Because the easiest way to make your representations "similar" (low loss on invariance objectives) is to make them *identical*. The network finds the lazy solution.
 
-VICReg is a clever trick to prevent this. It has three terms---Variance, Invariance, and Covariance (that's the VIC):
+VICReg is a clever way to push against this failure mode. It has three terms---Variance, Invariance, and Covariance (that's the VIC):
 
-**Variance:** Each dimension of your embedding must have variance above a threshold. This forces spread---things can't all collapse to one point.
+**Variance:** Each dimension of your embedding is penalized when its batch variance falls below a threshold. This encourages spread, although the effect depends on the threshold and optimization.
 
 **Invariance:** Augmented versions of the same input should map to similar embeddings. This is the useful part---learning that rotations and crops of the same image are "the same thing."
 
-**Covariance:** Different dimensions of your embedding should be uncorrelated. This forces the network to use all its dimensions, not just project everything onto a line.
+**Covariance:** Different dimensions of your embedding should be uncorrelated. Together with the variance term, this discourages redundant dimensions; it does not by itself prove that every feature is useful.
 
-Together, these three terms prevent both collapse (variance) and redundancy (covariance) while maintaining useful similarity structure (invariance). No negative samples needed---the constraints do the work.
+Together, these three terms are designed to discourage collapse (variance) and redundancy (covariance) while maintaining useful similarity structure (invariance). No negative samples are needed for this objective, but the result still depends on the data, weights, and optimization.
 :::
 
 Each chart must produce non-degenerate embeddings. We enforce this via **VICReg** {cite}`bardes2022vicreg`.
@@ -939,12 +940,12 @@ Now let's put all the pieces together into one unified loss function.
 
 This is a good place to step back and appreciate what we're doing. We're not just throwing regularizers at a network and hoping something works. Each term has a specific geometric purpose:
 
-- **VICReg** ensures the data manifold is represented faithfully (no collapse, no redundancy)
-- **Topology** ensures the atlas structure is clean (sharp chart boundaries, balanced usage)
-- **Separation** ensures charts cover different regions (no overlap without purpose)
-- **Orthogonality** ensures each chart preserves local geometry (distances and angles)
+- **VICReg** discourages collapse and redundancy in the sampled representation
+- **Topology** encourages a clean atlas structure (sharp chart boundaries, balanced usage)
+- **Separation** encourages charts to cover different regions (no overlap without purpose)
+- **Orthogonality** encourages each compatible chart layer to preserve local geometry (distances and angles)
 
-Each term addresses a different failure mode. Without VICReg, you get collapse. Without topology, you get mushy boundaries. Without separation, charts pile up on top of each other. Without orthogonality, you get distortion.
+Each term targets a different failure mode. Without VICReg, collapse is easier; without topology, boundaries may become mushy; without separation, charts may pile up; without orthogonality, conditioning can deteriorate. These are training pressures, not independent guarantees. The orthogonality term is a regularizer: exact norm preservation requires the appropriate square or compatible linear map, and approximate training penalties do not guarantee an isometry by themselves.
 
 The coefficients I'm giving you aren't magic---they're starting points that have worked empirically. You'll need to tune them for your specific domain. But the structure of the loss is principled: each term does one job.
 :::
@@ -1263,7 +1264,7 @@ def train_atlas_model(
 - Separation should increase to margin value
 
 (sec-tier-the-attentive-atlas)=
-## Tier 6: The Attentive Atlas (Permutation-Invariant Routing)
+## Tier 6: The Attentive Atlas (Permutation-Equivariant Routing)
 
 :::{div} feynman-prose
 Here's a subtle problem with the atlas architecture as described so far.
@@ -1274,7 +1275,7 @@ This is called *permutation sensitivity*, and it's ugly for a few reasons. First
 
 The solution is attention-based routing. Instead of having the router output "use index 3," we have each chart be represented by a *learnable chart token (center)*. The router computes the similarity between the input and each chart token, then routes based on which chart is most similar.
 
-Now the charts are identified by *what they represent*, not by *where they're stored*. You can shuffle the memory indices around and the routing behavior doesn't change. You can add a new chart by adding a new chart center and codebook slice. The system is permutation-invariant.
+Now the charts are identified by *what they represent*, not by *where they're stored*. If you shuffle the memory indices, the corresponding routing outputs shuffle in the same way while the underlying assignment stays the same. You can add a new chart by adding a new chart center and codebook slice. This is permutation-equivariance, rather than literal invariance of the indexed output vector.
 
 This is the same idea behind transformers and slot attention: let similarity determine routing, not fixed indices.
 :::
@@ -1298,7 +1299,7 @@ $$
 w_i(x) := \frac{\exp\left(\frac{\langle k_i(z), q(z,f) \rangle}{\tau(z)}\right)}{\sum_{j=1}^{N_c} \exp\left(\frac{\langle k_j(z), q(z,f) \rangle}{\tau(z)}\right)}
 
 $$
-where $k_i(z) = U(z)\,\text{base\_query}_i$ and $\tau(z)$ is the metric-aware temperature. With `covariant_attn=False`, $U(z)=I$ and $\text{base\_query}_i = c_i$, reducing to dot-product routing on chart centers. This mechanism is **permutation invariant**: shuffling the memory order of the chart tokens merely shuffles the output indices without changing the underlying topology or geometry.
+where $k_i(z) = U(z)\,\text{base\_query}_i$ and $\tau(z)$ is the metric-aware temperature. With `covariant_attn=False`, $U(z)=I$ and $\text{base\_query}_i = c_i$, reducing to dot-product routing on chart centers. This mechanism is **permutation equivariant**: shuffling the memory order of the chart tokens shuffles the output indices without changing the underlying topology or geometry.
 
 :::
 (sec-the-hierarchical-state-tuple)=
@@ -1328,10 +1329,13 @@ $$
 where $z_n$ is a filtered residual (structured, predictable) and $z_{\text{tex}}$ is the residual of that residual (stochastic detail).
 
 (sec-architecture-specification)=
-### Architecture Specification: `PrimitiveAttentiveAtlasEncoder` (current implementation)
+### Architecture Specification: `PrimitiveAttentiveAtlasEncoder` (reference pseudocode)
 
 The production implementation lives in `src/fragile/core/layers/atlas.py` and is wired through
-`TopoEncoderPrimitives`. The forward pass returns the typed latents and routing diagnostics:
+`TopoEncoderPrimitives`. The following block is a Euclidean reference pseudocode for the returned
+typed latents and routing diagnostics; the production path additionally projects values to the
+Poincare ball and uses Möbius centering. The decoder signature also accepts optional router weights
+and hard-routing controls.
 
 ```python
 from fragile.core.layers.atlas import PrimitiveAttentiveAtlasEncoder
@@ -1587,8 +1591,8 @@ flowchart TD
         end
 
         subgraph DEC["Decoder (PrimitiveTopologicalDecoder)"]
-            Zgeo --> TanhGeo["tanh(z_geo)"]
-            TanhGeo --> RouterDec["Chart router\nCovariantChartRouter or latent_router"]
+            Zgeo --> TanhGeo["_project_to_ball(z_geo)"]
+            TanhGeo --> RouterDec["Chart router\n_poincare_hyperbolic_score or latent_router"]
             RouterDec --> Wdec["w_dec [B, N_c]"]
             ChartIdx["Chart index (optional)"] --> OneHot["one-hot -> w_hard"]
             OneHot --> Wdec
@@ -1635,10 +1639,10 @@ from geometry alone during dreaming, or accept a discrete chart index during pla
 %%{init: {"themeVariables": {"edgeLabelBackground":"#ffffff","textColor":"#1a1a1a","lineColor":"#666666"}}}%%
 flowchart TD
     subgraph DEC["Inverse atlas decoder (autonomous, gauge-covariant)"]
-        Zgeo["Geometry (input)"] -- "z_geo = c_bar + z_q_st + z_n [B, D]" --> TanhGeo["tanh (module)"]
+        Zgeo["Geometry (input)"] -- "z_geo = c_bar + z_q_st + z_n [B, D]" --> TanhGeo["_project_to_ball (module)"]
         TanhGeo -- "z_geo [B, D]" --> ChartProj["Chart projectors (SpectralLinear x N_c)"]
         ChartProj -- "h_i [B, N_c, H]" --> ChartGate["NormGatedGELU (bundle gating)"]
-        TanhGeo -- "z_geo [B, D]" --> Router["Chart router\nCovariantChartRouter or latent_router"]
+        TanhGeo -- "z_geo [B, D]" --> Router["Chart router\n_poincare_hyperbolic_score or latent_router"]
         ChartIdx["Chart index (optional)"] -- "K_chart [B]" --> OneHot["One-hot (module)"]
         Router -- "w_dec [B, N_c]" --> Mix["Chart blend (module)"]
         OneHot -- "w_hard [B, N_c]" --> Mix
@@ -1680,7 +1684,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from fragile.core.layers.atlas import CovariantChartRouter, _resolve_bundle_params
+from fragile.core.layers.atlas import (
+    CovariantChartRouter,
+    _project_to_ball,
+    _resolve_bundle_params,
+)
 from fragile.core.layers.primitives import NormGatedGELU, SpectralLinear
 
 
@@ -1750,7 +1758,7 @@ class PrimitiveTopologicalDecoder(nn.Module):
         chart_index: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Decode from latent geometry."""
-        z_geo = torch.tanh(z_geo)
+        z_geo = _project_to_ball(z_geo)
         if chart_index is not None:
             router_weights = F.one_hot(
                 chart_index, num_classes=self.num_charts
@@ -1798,7 +1806,7 @@ Now we come to something that might seem like pure mathematics, but I promise yo
 
 We've been building up this hierarchical state representation: macro-symbols $K$ at the top, structured nuisance $z_n$ in the middle, texture $z_{\text{tex}}$ at the bottom. But what *kind* of geometry does this hierarchy have?
 
-Here's the key insight: hierarchies are naturally *hyperbolic*. Not Euclidean, hyperbolic.
+Here's the key insight: hyperbolic geometry is often a useful model for hierarchies. Not Euclidean by default, but hyperbolic when the branching structure calls for it.
 
 Let me explain what that means. In Euclidean geometry, if you walk in a straight line, parallel lines stay parallel. The circumference of a circle grows like $2\pi r$. Things are flat.
 
@@ -1808,9 +1816,9 @@ Why does this matter for hierarchies? Think about a tree. At the root, there's o
 
 A tree naturally fits in hyperbolic space, because hyperbolic space *has* that exponential growth of volume. Trying to fit a deep tree into Euclidean space is like trying to fit an orange peel flat on a table---something has to stretch or tear.
 
-So when we say our latent space is "hyperbolic," we're saying its geometry naturally accommodates the hierarchical structure we're building. The macro-symbols live near the "center" (the bulk). As you add finer and finer detail, you're moving toward the "edge" (the boundary at infinity). The texture lives at that boundary---it's the infinitely fine detail that you can never quite reach with finite resolution.
+So when we say our latent space is "hyperbolic," we're saying its geometry is a useful model for the hierarchical structure we're building. The macro-symbols live near the "center" (the bulk). As you add finer and finer detail, you can represent the refinement as moving toward an ideal boundary. A finite $z_{\text{tex}}$, however, is the residual at a finite cutoff; identifying it with a point or field at infinity requires an explicit infinite-depth refinement and boundary construction.
 
-This isn't just a metaphor. It has practical consequences for how distances work, how gradients flow, and what kinds of structure the network can represent.
+This is more than a metaphor for the chosen model: it changes how distances work, how gradients flow, and what kinds of structure the network can represent. It is still a modeling choice, not a theorem that every hierarchy must be hyperbolic.
 :::
 
 :::{admonition} Researcher Bridge: Hyperbolic Hierarchy = Tree-Like Abstraction
@@ -1849,7 +1857,7 @@ The tree metric space $(\mathcal{T}, d_{\mathcal{T}})$ is $0$-hyperbolic in the 
 :::{prf:corollary} The Hyperbolic Embedding
 :label: cor-the-hyperbolic-embedding
 
-There exists a quasi-isometric embedding $\iota: V(\mathcal{T}) \hookrightarrow \mathbb{H}^n$ into $n$-dimensional hyperbolic space such that the depth in the tree correlates with the hyperbolic distance from a basepoint. In the upper half-space model $\mathbb{H}^n = \{(x, y) : y > 0\}$ with metric $ds^2 = (dx^2 + dy^2)/y^2$, tree depth $\ell$ maps to $\log(1/y)$; equivalently, in the Poincare ball model, depth maps to $\tanh^{-1}(r)$ where $r \in [0,1)$ is the radial coordinate.
+There exists a quasi-isometric embedding $\iota: V(\mathcal{T}) \hookrightarrow \mathbb{H}^n$ into $n$-dimensional hyperbolic space such that the depth in the tree correlates with the hyperbolic distance from a basepoint. In the upper half-space model $\mathbb{H}^n = \{(x, y) : y > 0\}$ with metric $ds^2 = (dx^2 + dy^2)/y^2$, tree depth $\ell$ maps to $\log(1/y)$; equivalently, in the Poincare ball model, depth maps to $2\tanh^{-1}(r)$ where $r \in [0,1)$ is the radial coordinate.
 
 This identifies the **discrete macro-register** $K_t = (K_{\text{chart}}, K_{\text{code}})$ as the bulk of a hyperbolic geometry. Navigating from the root to a leaf corresponds to moving from the interior of $\mathbb{H}^n$ toward the ideal boundary $\partial_\infty \mathbb{H}^n$, increasing information resolution at each step.
 
@@ -1858,13 +1866,13 @@ This identifies the **discrete macro-register** $K_t = (K_{\text{chart}}, K_{\te
 ### The Bulk-Boundary Decomposition (Holographic Latents)
 
 :::{div} feynman-prose
-This section might remind you of something from physics: the holographic principle. In theoretical physics, there's this wild idea that all the information about what's happening inside a volume might be encoded on the boundary of that volume. Black hole thermodynamics suggested it; string theory formalized it with AdS/CFT.
+This section might remind you of something from physics: the holographic principle. In theoretical physics, it is a conjectural organizing idea that bulk information may be represented by boundary data. Black-hole thermodynamics motivates the area relation under specific assumptions, and AdS/CFT realizes a precise duality for particular theories; neither is a universal rule for arbitrary latent models.
 
-We're not doing quantum gravity here, but the mathematical structure is similar. The "bulk" of our latent space---the macro-symbols $K$ and structured nuisance $z_n$---is where the dynamics happen, where control operates, where decisions are made. The "boundary"---the texture $z_{\text{tex}}$---is where we observe the infinitely fine details that the finite-capacity bulk can't resolve.
+We're not doing quantum gravity here, and the analogy has a finite-cutoff interpretation. The operational bulk of our latent space---the macro-symbols $K$ and structured nuisance $z_n$---is where dynamics and control are defined. The texture $z_{\text{tex}}$ is a reconstruction-only residual channel that records detail left at the chosen finite resolution. Calling it a boundary at infinity requires an additional infinite-depth construction and a limit theorem.
 
-The bulk is where your agent *thinks*. The boundary is what your agent *sees but can't fully represent*. The relationship between them---how boundary observations propagate into bulk dynamics---is the fundamental data flow of the system.
+The bulk is where the policy is allowed to make decisions; the residual is what the decoder uses to restore detail. Their separation is a causal-enclosure design choice, not a physical bulk-boundary identity. The data flow is useful precisely because it can be inspected and tested.
 
-This isn't just a pretty analogy. It has practical consequences: texture must not leak into dynamics. If your control law depends on texture (boundary data), you're trying to control at infinite resolution with finite capacity. That's a recipe for instability.
+The practical consequence is an architectural firewall: texture should not enter the transition or control maps. Leakage is a violation of that declared enclosure and may produce sensitivity or instability, but the firewall alone is not a stability theorem.
 :::
 
 We now rigorously situate the continuous components $(z_n, z_{\text{tex}})$ relative to this structure.
@@ -1883,22 +1891,19 @@ For each macro-symbol $k \in \mathcal{K}$, the fibre $\mathcal{Z}_n^{(k)}$ repre
 The interpolation of this discrete structure into a continuous manifold is achieved by the Attentive Atlas ({ref}`sec-tier-the-attentive-atlas`), which provides soft transition functions (partitions of unity) $\{w_i(x)\}$ that interpolate between fibres in overlap regions.
 
 :::
-:::{prf:proposition} Texture as the Ideal Boundary
+:::{prf:remark} Texture as an Idealized Boundary
 :label: prop-texture-as-the-ideal-boundary
 
-Let $\mathcal{M}$ be the Riemannian manifold constructed above. The **texture residual** $z_{\text{tex}}$ corresponds to the behavior of the state at the **conformal boundary at infinity**, $\partial_\infty \mathbb{H}^n$.
+The intended architecture treats the **texture residual** $z_{\text{tex}}$ as a boundary-like,
+reconstruction-only channel, while $(K,z_n)$ carry the operational macro state. The current
+implementation has a finite stack of refinement blocks, so it does not construct an infinite tree,
+its limit set, or a conformal boundary at infinity. A literal identification of $z_{\text{tex}}$
+with such a boundary requires an explicit infinite-depth refinement and a convergence theorem.
 
-*Proof (Construction).*
-
-1. Consider a sequence of refining codes $(K_{\text{chart}}^{(n)}, K_{\text{code}}^{(n)})$ representing a path $\gamma$ in the tree $\mathcal{T}$ extending to infinite depth.
-2. As the depth $n \to \infty$, the volume of the region covered by code $K^{(n)}$ in the observation space $\mathcal{X}$ shrinks to zero (assuming a non-degenerate shutter).
-3. In the hyperbolic metric of the latent space, the distance from the basepoint $d(o, \gamma(n)) \to \infty$.
-4. The residual $z_{\text{tex}}$ is defined as the information remaining after finite truncation at level $n$. Specifically, $z_{\text{tex}} = \Delta_{\text{total}} - z_n$.
-5. If we interpret the encoding process as a flow toward the boundary of $\mathbb{H}^n$, then $z_{\text{tex}}$ represents the **transverse coordinates** at the cutoff surface $\Sigma_\epsilon$.
-6. Taking the limit $\epsilon \to 0$, $z_{\text{tex}}$ maps to the **limit set** $\Lambda \subset \partial_\infty \mathbb{H}^n$. The mathematical structure parallels the AdS/CFT bulk-boundary correspondence: the fields $(K, z_n)$ reconstruct $(x)$ up to a cutoff; $z_{\text{tex}}$ is the UV (high-frequency) data living strictly at the conformal boundary. $\square$
-
-**Operational Implication:**
-This formalizes why $z_{\text{tex}}$ must be excluded from dynamics ($S_t$) and control ($\pi_\theta$). The dynamics $S_t$ operate on the **bulk** (finite-energy excitations inside the hyperbolic volume). The texture $z_{\text{tex}}$ lives at the **boundary at infinity** (infinite energy / zero scale). Coupling the bulk dynamics to the boundary fluctuations violates the separation of scales and leads to the Labyrinthine failure mode (Mode T.C).
+The causal-enclosure condition is therefore an architectural constraint imposed on the decoder and
+transition model, not a consequence of the finite stack alone. This idealized boundary picture is
+useful for organizing the latent channels, but it should not be read as a theorem about the finite
+implementation.
 
 :::
 (sec-the-induced-riemannian-geometry)=
@@ -1912,7 +1917,7 @@ The separation of nuisance and texture implies a specific structure for the Riem
 Working in the upper half-space model where depth $\rho \in [0, \infty)$ corresponds to $y = e^{-\rho}$, the metric $ds^2$ on the global latent space $\mathcal{Z}$ takes the form:
 
 $$
-ds^2 = d\rho^2 + d\sigma_{\mathcal{K}}^2 + e^{-2\rho} \|dz_n\|^2
+ds^2 = d\rho^2 + d\sigma_{\mathcal{K}}^2 + e^{2\rho} \|dz_n\|^2
 
 $$
 where:
@@ -1920,10 +1925,14 @@ where:
 * $\rho$ is the resolution depth (hierarchy level), with $\rho = 0$ at the root and $\rho \to \infty$ at the boundary.
 * $d\sigma_{\mathcal{K}}^2$ is the (discrete) metric on tree branches at fixed depth—operationally, it counts the number of chart/code transitions.
 * $\|dz_n\|^2$ is the Euclidean metric on the structured nuisance $z_n$.
-* The factor $e^{-2\rho}$ indicates that as resolution increases (deeper in the tree), the effective magnitude of nuisance variations shrinks exponentially relative to the macroscopic decision branches.
+* A unit metric displacement in the horospherical coordinate $z_n$ is an $e^{-\rho}$ coordinate displacement;
+  the factor $e^{2\rho}$ records the corresponding metric stretching at greater depth.
 
 **Rigorous Interpretation of $z_n$:**
 The structured nuisance $z_n$ is not stochastic noise; it is the **tangent space coordinate** on the horosphere (surface of constant depth $\rho$) determined by the active macro-symbol $K$. Horospheres in hyperbolic space are intrinsically flat (zero curvature), which is why local linear control theory (LTI approximations) applies within a single chart, even though the global geometry is hyperbolic.
+
+This upper-half-space metric is a geometric model for the latent hierarchy; it is distinct from the
+learned sensitivity metric $G$ used to precondition control updates.
 
 :::
 
@@ -1966,13 +1975,13 @@ Now I want to tell you about something from physics that, surprisingly, gives us
 
 In physics, there's a technique called the *Renormalization Group* (RG). It was developed to handle problems where physics operates differently at different scales. Think about a magnet: at the atomic scale, you have individual electron spins. At the macroscopic scale, you have bulk magnetization. The RG tells you how to systematically "zoom out"---how to go from fine-scale physics to coarse-scale physics.
 
-The key idea is this: at each scale, you identify what's *relevant* (what matters for the larger-scale behavior) and what's *irrelevant* (what gets washed out as you zoom out). You keep the relevant stuff and discard the irrelevant stuff. Then you zoom out and repeat.
+The key idea is this: at each scale, you identify what's *relevant* (what matters for the larger-scale behavior) and what's *irrelevant* (what gets washed out as you zoom out). You keep the relevant stuff and pass the residual to the next scale. Then you zoom out and repeat. In our network this is an RG-like design pattern; it becomes a literal RG identification only if the corresponding coarse-graining assumptions are established.
 
-This is exactly what we want our deep network to do. Each layer should capture what's important at one scale, remove it from the signal, and pass only the unexplained residual to the next layer. Block 0 captures the global structure. Block 1 captures large-scale details that Block 0 missed. Block 2 captures finer details. And so on, until the final block is left with just noise---the irreducible randomness that no amount of structure can explain.
+This is the behavior we want our deep network to approximate. Each layer should capture what's important at one scale, remove that reconstruction from the signal, and pass the residual to the next layer. Block 0 is intended to capture global structure; later blocks address what earlier blocks missed. The final residual may be texture or unresolved structure, but the architecture and losses alone do not prove that it is pure irreducible noise.
 
 Here's the crucial difference from standard deep learning: *no skip connections*. In a ResNet, information can flow directly from input to output, bypassing intermediate layers. That's great for gradient flow, but it breaks the semantic hierarchy. A deep layer might learn global features that should have been captured by a shallow layer, because the skip connection lets the input "leak through."
 
-We want a strict hierarchy. Each layer *must* explain its portion of the variance. It can't pass the buck. So we remove skip connections and instead use careful normalization to maintain gradient flow. The result is a network where depth corresponds to semantic scale in a principled way.
+We want a strict hierarchy. Each layer is *asked* to explain its portion of the variance; it cannot simply pass the buck through a skip connection. Careful normalization is intended to maintain gradient flow. The correspondence between depth and semantic scale is a design target that still needs to be checked on the trained representation.
 :::
 
 We extend the single-block Attentive Atlas into a deep, hierarchical architecture by stacking TopoEncoder blocks. Crucially, we depart from the standard ResNet paradigm: we do **not** use skip connections to carry the input forward. Instead, we pass only the **rescaled texture** (the unexplained residual) to the next block.
@@ -2048,16 +2057,19 @@ The vanishing gradient problem happens when you multiply many numbers together a
 
 Skip connections solve this by adding an identity path: even if the main path vanishes, the gradient can flow through the shortcut. But that shortcut lets information bypass processing, which breaks our semantic hierarchy.
 
-Our solution is different: instead of adding shortcuts, we make sure the numbers we're multiplying are all *close to 1*. This is called "dynamical isometry"---the Jacobian of each layer has singular values near 1, so neither vanishing nor exploding happens.
+Our solution is different in spirit: instead of adding shortcuts, we try to keep the relevant Jacobian factors well-conditioned. Exact "dynamical isometry" means singular values near 1, but variance normalization and spectral upper bounds alone do not supply the required lower bound.
 
-We achieve this through three mechanisms. First, orthogonality: if the weight matrix is orthogonal, its singular values are exactly 1. Second, variance rescaling: we renormalize activations to unit variance at each layer, keeping everything in a healthy range. Third, spectral normalization: we explicitly bound the largest singular value.
+We use three mechanisms. First, a square orthogonal weight matrix has singular values exactly 1; rectangular layers need a separate restricted-subspace argument. Second, variance rescaling keeps activation statistics in a controlled range, but it does not by itself control every Jacobian singular value. Third, spectral normalization bounds the largest singular value; with GELU, the activation factor is about $1.13$, so the stack still needs a depth-aware estimate.
 
-Together, these keep the gradient magnitude stable without skip connections. The hierarchy stays strict, and training still works.
+Together, these are conditioning mechanisms that may support stable gradients without skip connections. A theorem of dynamical isometry needs explicit lower and upper singular-value hypotheses for the complete input-output Jacobian; the stated upper-bound result is not that theorem.
 :::
 
 Standard deep learning uses skip connections ($y = f(x) + x$) to allow gradients to flow through identity paths, avoiding the vanishing gradient problem. However, skip connections allow information to bypass a layer without processing, violating our requirement for a strict hierarchy (interpretability).
 
-We achieve **Dynamical Isometry**---the condition that the input-output Jacobian has singular values concentrated near unity {cite}`saxe2014exact,pennington2017resurrecting`---through three complementary mechanisms already defined in the framework:
+We target **well-conditioned Jacobians** using three complementary mechanisms already defined in the framework. Exact
+**dynamical isometry**---singular values of the complete input-output Jacobian concentrated near unity
+{cite}`saxe2014exact,pennington2017resurrecting`---requires the explicit lower and upper singular-value hypotheses
+stated in the conditional proposition below.
 
 (sec-mechanism-orthogonality-regularization)=
 #### Mechanism 1: Orthogonality Regularization ({ref}`sec-orthonormal-constraints-for-atlas-charts`)
@@ -2068,15 +2080,16 @@ $$
 \mathcal{L}_{\text{orth}} = \sum_{\ell} \|W_\ell^T W_\ell - I\|_F^2
 
 $$
-:::{prf:proposition} Gradient Preservation via Orthogonality
+:::{prf:proposition} Gradient Preservation via Square Orthogonality
 :label: prop-gradient-preservation-via-orthogonality
 
-Let $W$ be a weight matrix satisfying $W^T W = I$ (semi-orthogonality). Then:
+Let $W$ be a **square** weight matrix satisfying $W^T W = I$. Then:
 1. All singular values of $W$ equal 1.
 2. The backward gradient $\nabla_x \mathcal{L} = W^T \nabla_y \mathcal{L}$ satisfies $\|\nabla_x \mathcal{L}\| = \|\nabla_y \mathcal{L}\|$.
 3. Neither explosion nor vanishing occurs across the layer.
 
-*Proof.* For semi-orthogonal $W$, the singular values are exactly 1. The Jacobian $\partial y / \partial x = W$ has $\|W\|_2 = 1$. By the chain rule, gradient norms are preserved. $\square$
+*Proof.* A square matrix with $W^T W=I$ is orthogonal, so all singular values are one and
+$W^{-1}=W^T$. The chain rule therefore preserves both forward and backward Euclidean norms. $\square$
 
 This is why the gradient flow table ({ref}`sec-orthonormal-constraints-for-atlas-charts`) shows Preserved for orthogonal $W$ versus Explodes or vanishes for arbitrary $W$.
 
@@ -2089,8 +2102,8 @@ The rescaling $x^{(\ell+1)} = z_{\text{tex}}^{(\ell)} / \sigma^{(\ell)}$ ensures
 :::{prf:proposition} Forward Activation Stability
 :label: prop-forward-activation-stability
 
-With variance rescaling:
-1. $\mathrm{Var}(x^{(\ell)}) = 1$ for all $\ell$ (by construction).
+Assume the input is standardized and each rescaling factor is computed from the preceding residual. Then:
+1. $\mathrm{Var}(x^{(\ell)}) \approx 1$ for $\ell\ge1$ (up to the stabilizer and batch-estimation error).
 2. Non-linearities (GELU) operate in their active region, avoiding saturation.
 3. The backward gradient is scaled by $1/\sigma^{(\ell)}$, amplifying gradients for fine-scale layers.
 
@@ -2100,7 +2113,8 @@ $$
 \frac{\partial x^{(\ell)}}{\partial z_{\text{tex}}^{(\ell-1)}} = \frac{1}{\sigma^{(\ell-1)}}
 
 $$
-Since each block successfully explains part of the signal, the residual standard deviation $\sigma^{(\ell)} < 1$ (the texture has less variance than the unit-normalized input). This implies:
+This scalar expression is exact only when $\sigma^{(\ell-1)}$ is detached from the forward graph. If it is estimated with gradients enabled, the Jacobian also contains the rank-one derivative of the variance estimate.
+If training achieves variance reduction, assume $\sigma^{(\ell)}<1$ (the texture has less variance than the unit-normalized input). Under this additional hypothesis:
 - **Without rescaling:** inputs to deeper layers decay exponentially ($\|x^{(\ell)}\| \to 0$), killing activations.
 - **With rescaling:** inputs $x^{(\ell)}$ remain $O(1)$ (unit variance), keeping non-linearities in their active region.
 - **Gradient amplification:** the backward gradient includes the factor $1/\sigma^{(\ell-1)} > 1$, counteracting the natural decay of fine-scale influence on the global loss.
@@ -2117,7 +2131,9 @@ $$
 W_{\text{SN}} = \frac{W}{\sigma_{\max}(W)}
 
 $$
-This ensures $\|W_{\text{SN}}\|_2 = 1$, making each layer 1-Lipschitz. Combined with 1-Lipschitz activations (e.g., GELU), this bounds the network Lipschitz constant by the product of per-layer spectral norms.
+This ensures $\|W_{\text{SN}}\|_2 = 1$, making each linear layer 1-Lipschitz. If the activation is
+$L_\phi$-Lipschitz (GELU has $L_\phi\approx1.13$; ReLU has $L_\phi=1$), a depth-$L$ stack is
+bounded by $L_\phi^L$ times the product of the layer spectral norms.
 
 The framework's **LipschitzCheck** (Node 20) monitors $\max_\ell \sigma(W_\ell)$ at runtime, and the spectral (Lipschitz) barrier ({ref}`sec-defect-functionals-implementing-regulation`, Table; {cite}`miyato2018spectral`) enforces:
 
@@ -2134,40 +2150,41 @@ $$
 | **Variance Rescaling**                        | $\mathrm{Var}(x^{(\ell)}) = 1$     | Gradient amplified by $1/\sigma$      | Definition {prf:ref}`def-the-rescaling-operator-renormalization` |
 | **Spectral Norm**                             | $\lVert W\rVert_2 \leq K$          | Bounded gradient explosion            | {ref}`sec-joint-optimization`, Node 20                                             |
 
-:::{prf:theorem} Dynamical Isometry without Skip Connections
+:::{prf:proposition} Conditional upper bound for the continuous encoder path
 :label: thm-dynamical-isometry-without-skip-connections
 
-A stacked TopoEncoder with:
-1. OrthogonalLinear layers satisfying $\|W^T W - I\|_F < \epsilon_{\text{orth}}$,
-2. Variance rescaling at each scale transition,
-3. Spectral normalization with $\sigma_{\max}(W_\ell) \leq K$,
+Assume the continuous encoder path (with the VQ step replaced by its straight-through surrogate) has square or explicitly isometric linear maps, each with operator norm at most $K$, and activations with Lipschitz constant at most $L_\phi$. Then its Jacobian $J_{\mathrm{enc}}$ satisfies the one-sided bound
 
-achieves approximate dynamical isometry: the singular values of the input-output Jacobian $J = \partial \hat{x} / \partial x$ satisfy $\sigma_i(J) \in [1/\kappa, \kappa]$ for a condition number $\kappa = O(K^L \cdot \prod_\ell (1 + \epsilon_{\text{orth}}))$.
+$$
+\sigma_{\max}(J_{\mathrm{enc}}) \le (K L_\phi)^L\prod_\ell(1+\epsilon_{\mathrm{orth}})^{1/2}.
+$$
 
-*Proof sketch.* Each layer contributes a factor with singular values in $[1-\epsilon, 1+\epsilon]$ (orthogonality) or $[0, K]$ (spectral norm). The variance rescaling ensures activations remain $O(1)$, preventing saturation. The product of $L$ such factors yields the stated bound. $\square$
+These hypotheses do not supply a positive lower singular-value bound. In particular, the full reconstruction map can be an identity by the algebraic peeling/reconstruction definitions, while the encoder path can still be contractive.
+
+*Proof.* Apply the submultiplicativity of the operator norm to the layer Jacobians and use the stated bounds. $\square$
 
 :::
 (sec-rigorous-interpretation-renormalization-group-flow)=
-### Rigorous Interpretation: Renormalization Group (RG) Flow
+### Multiresolution Interpretation (RG Analogy)
 
-This architecture is a direct algorithmic implementation of Kadanoff's block-spin transformation or Wilsonian RG flow {cite}`mehta2014exact`.
+This architecture is a coarse-to-fine multiresolution (analysis--synthesis) decomposition. It is analogous to a Wilsonian RG flow, but the residual passed to the next block is the detail channel rather than an effective action; the analogy should not be read as a literal block-spin construction {cite}`mehta2014exact`.
 
 | RG Concept | TopoEncoder Implementation |
 |------------|---------------------------|
 | **Hamiltonian $H[\phi]$** | The input distribution $p(x^{(\ell)})$ at layer $\ell$. |
 | **Coarse-Graining** | The Encoder $\mathcal{E}^{(\ell)}$ mapping continuous $x^{(\ell)}$ to discrete $K^{(\ell)}$. |
 | **Effective Action** | The Decoder $\mathcal{D}^{(\ell)}$ predicting the mean field $\hat{x}^{(\ell)}$. |
-| **Integrating Out** | Subtracting the mean field: $z_{\text{tex}}^{(\ell)} = x^{(\ell)} - \hat{x}^{(\ell)}$. |
+| **Detail extraction** | Subtracting the mean field: $z_{\text{tex}}^{(\ell)} = x^{(\ell)} - \hat{x}^{(\ell)}$. |
 | **Rescaling** | Mapping $z_{\text{tex}}^{(\ell)} \mapsto x^{(\ell+1)}$ to restore the energy scale. |
 | **Relevant Operators** | The macro-symbols $K^{(\ell)}$ (grow/stay constant under flow). |
 | **Irrelevant Operators** | The texture $z_{\text{tex}}^{(\ell)}$ (suppressed/pushed to next scale). |
-| **Fixed Point** | The texture distribution $p(x^{(L)})$ at the deepest layer. |
+| **Terminal residual** | The texture distribution $p(x^{(L)})$ at the deepest layer; a fixed-point interpretation requires an additional limit in the number of blocks. |
 
 **The Hierarchy of Scales:**
 
-- **Block 0 (IR / Infrared):** Captures the global topology (e.g., the Swiss Roll manifold). $K^{(0)}$ is the coarse manifold structure.
+- **Block 0 (coarse scale):** Captures the global topology (e.g., the Swiss Roll manifold). $K^{(0)}$ is the coarse manifold structure.
 - **Block 1:** Captures large deformations of the coarse structure.
-- **Block $L-1$ (UV / Ultraviolet):** Captures the finest irreducible noise.
+- **Block $L-1$ (finest retained scale):** Captures the residual detail left after the finite stack.
 
 By strictly passing the *residual* and not the *original signal*, we enforce **Causal Separability of Scales**:
 
@@ -2210,7 +2227,7 @@ class StackedTopoEncoder(nn.Module):
         # Each block is a PrimitiveAttentiveAtlasEncoder ({ref}`sec-tier-the-attentive-atlas`)
         self.encoders = nn.ModuleList([
             PrimitiveAttentiveAtlasEncoder(
-                input_dim=input_dim if i == 0 else latent_dim,
+                input_dim=input_dim,
                 hidden_dim=hidden_dim,
                 latent_dim=latent_dim,
                 num_charts=num_charts,
@@ -2224,7 +2241,7 @@ class StackedTopoEncoder(nn.Module):
             PrimitiveTopologicalDecoder(
                 latent_dim=latent_dim,
                 num_charts=num_charts,
-                output_dim=input_dim if i == 0 else latent_dim,
+                output_dim=input_dim,
             )
             for i in range(num_blocks)
         ])
@@ -2315,17 +2332,11 @@ class StackedTopoEncoder(nn.Module):
 
         return x_recon
 
-    def orthogonality_loss(self, device: torch.device = None) -> torch.Tensor:
-        """Total orthogonality defect across all blocks ({ref}`sec-orthonormal-constraints-for-atlas-charts`)."""
-        if device is None:
-            device = next(self.parameters()).device
-        total = torch.tensor(0.0, device=device)
-        for encoder in self.encoders:
-            total = total + encoder.orthogonality_loss()
-        for decoder in self.decoders:
-            if hasattr(decoder, 'orthogonality_loss'):
-                total = total + decoder.orthogonality_loss()
-        return total
+    def orthogonality_loss(self) -> torch.Tensor:
+        """Optional defect for the SpectralLinear/IsotropicBlock primitives."""
+        from fragile.core.layers.topology import compute_orthogonality_loss
+
+        return compute_orthogonality_loss([*self.encoders, *self.decoders])
 ```
 
 (sec-training-losses-for-scale-separation)=
@@ -2341,13 +2352,15 @@ $$
 \right) + \lambda_{\text{decay}} \mathcal{L}_{\text{scale-decay}}
 
 $$
-where the **scale decay loss** encourages the residual variance to decrease with depth:
+where the **scale decay loss** encourages residual variance to decrease as depth increases (deeper
+blocks explain progressively less of their input):
 
 $$
 \mathcal{L}_{\text{scale-decay}} = \sum_{\ell=0}^{L-2} \max(0, \sigma^{(\ell+1)} - \sigma^{(\ell)})^2
 
 $$
-This ensures that deeper blocks explain progressively less variance—the RG flow moves toward a fixed point.
+This penalizes a deeper block whose residual scale is larger than its predecessor; the desired
+monotone approach to a noise floor is a design target, not a fixed-point theorem.
 
 
 
@@ -2365,9 +2378,9 @@ For neural networks, we need to *learn* these transition functions. That's what 
 
 Now, the naive way to do this would be to learn a separate function for every pair of charts. If you have $K$ charts, that's $K(K-1)$ transition functions. With 64 charts, you'd need about 4000 separate learned maps. That's a lot of parameters, and it doesn't enforce any consistency---going from A to B to C might give you different coordinates than going directly from A to C.
 
-The clever trick is *factorization*. Instead of learning $K^2$ pairwise maps, we learn a shared "global tangent space" and teach each chart how to project into and out of it. To go from chart A to chart B, you lift A's coordinates into the global space, then project down into B's coordinates. This reduces the parameter count from $O(K^2)$ to $O(K)$, and it automatically ensures consistency because everything goes through the same intermediate representation.
+The clever trick is *factorization*. Instead of learning $K^2$ pairwise maps, we learn a shared "global tangent space" and teach each chart how to project into and out of it. To go from chart A to chart B, you lift A's coordinates into the global space, then project down into B's coordinates. This reduces the parameter count from $O(K^2)$ to $O(K)$ and makes consistency cheap to enforce through the overlap loss below; the shared representation alone does not guarantee the cocycle identities.
 
-Think of it like currency exchange. Instead of having exchange rates for every pair of currencies (dollars to euros, euros to yen, yen to pounds, etc.), you express everything in terms of a universal unit (like SDRs or gold), then convert from that. Fewer rates to track, and no arbitrage opportunities.
+Think of it like currency exchange. Instead of having exchange rates for every pair of currencies (dollars to euros, euros to yen, yen to pounds, etc.), you express everything in terms of a universal unit (like SDRs or gold), then convert from that. Fewer rates to track. But the shared unit does not by itself prevent arbitrage: the overlap or cycle-consistency loss is what tests whether the learned conversions agree around a loop.
 :::
 
 :::{admonition} Researcher Bridge: Jump Operators as Skill Switches
@@ -2522,7 +2535,7 @@ $$
 |---------------------------|--------------------|---------------------------|---------------------------------------------------|
 | **Parameters**            | $K^2 d_n^2$        | $O(K r d_n)$              | $\sim 58\times$ reduction for typical $K, r, d_n$ |
 | **Forward (single pair)** | $O(d_n^2)$         | $O(r d_n)$                | One matmul in global space                        |
-| **Forward (all pairs)**   | $O(K^2 d_n^2)$     | $O(K r d_n)$              | Batch lift + project                              |
+| **Forward (all pairs)**   | $O(K^2 d_n^2)$     | $O(K^2 r d_n)$            | Batch lift + project                              |
 | **Memory**                | $O(K^2 d_n^2)$     | $O(K r d_n)$              | Significant for large $K$                         |
 | **Cycle consistency**     | N/A (not enforced) | $O(\lvert S\rvert r d_n)$ | $\lvert S\rvert$ = sampled overlaps               |
 
@@ -2752,7 +2765,7 @@ class PrimitiveAtlasEncoderWithJumps(nn.Module):
         self.encoder = PrimitiveAttentiveAtlasEncoder(...)
         self.jump_op = FactorizedJumpOperator(
             num_charts=self.encoder.num_charts,
-            latent_dim=self.encoder.latent_dim,
+            nuisance_dim=self.encoder.latent_dim,
             global_rank=global_rank,
         )
 
@@ -2777,7 +2790,7 @@ class PrimitiveAtlasEncoderWithJumps(nn.Module):
         # ... standard losses ...
 
         # Jump consistency loss
-        jump_loss = compute_jump_consistency_loss(
+        jump_loss, jump_info = compute_jump_consistency_loss(
             z_n_all_charts, router_weights, self.jump_op
         )
 

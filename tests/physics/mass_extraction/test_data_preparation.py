@@ -31,7 +31,7 @@ def test_correlator_tensor_to_numpy_2d():
 
 
 def test_correlators_to_gvar_uncorrelated(synthetic_correlators):
-    cfg = MassExtractionConfig(covariance=CovarianceConfig(method="uncorrelated"))
+    cfg = MassExtractionConfig(covariance=CovarianceConfig(method="assumed_relative"))
     data = correlators_to_gvar(synthetic_correlators, config=cfg)
     assert "scalar" in data
     assert "pseudoscalar" in data
@@ -43,7 +43,7 @@ def test_correlators_to_gvar_uncorrelated(synthetic_correlators):
 
 
 def test_correlators_to_gvar_multiscale(multiscale_correlators):
-    cfg = MassExtractionConfig(covariance=CovarianceConfig(method="uncorrelated"))
+    cfg = MassExtractionConfig(covariance=CovarianceConfig(method="assumed_relative"))
     data = correlators_to_gvar(multiscale_correlators, config=cfg)
     # Should expand [3, L] into scalar_scale_0, scalar_scale_1, scalar_scale_2
     assert "scalar_scale_0" in data
@@ -85,7 +85,7 @@ def test_multi_run_correlators_to_gvar(synthetic_correlators):
 
 def test_multiscale_operator_scale_slicing():
     """Verify that [S,T] operator + _scale_N key → resampled covariance."""
-    from fragile.physics.mass_extraction.data_preparation import _single_correlator_to_gvar
+    from fragile.physics.operators.correlators import compute_correlators_batched
 
     n_scales = 3
     T = 500
@@ -97,12 +97,15 @@ def test_multiscale_operator_scale_slicing():
     operators = {"scalar": torch.from_numpy(series_np).float()}
 
     # Create a 1D correlator (as if already expanded from [S,L])
-    corr_np = np.abs(rng.normal(size=max_lag + 1)) + 0.1
+    corr = compute_correlators_batched(operators, max_lag, n_scales=n_scales)["scalar"]
+    corr_np = corr[1].numpy()
 
     cov_config = CovarianceConfig(method="block_jackknife", block_size=25)
 
     # With _scale_1 key, should slice series[1] and use resampling
-    result = _single_correlator_to_gvar("scalar_scale_1", corr_np, operators, cov_config)
+    result = correlators_to_gvar(
+        {"scalar": corr}, operators, MassExtractionConfig(covariance=cov_config)
+    )["scalar_scale_1"]
     assert len(result) == max_lag + 1
     assert isinstance(result[0], gvar.GVar)
 
@@ -111,6 +114,6 @@ def test_multiscale_operator_scale_slicing():
         sdev = gvar.sdev(result[i])
         fallback_err = abs(corr_np[i]) * 0.1 + 1e-15
         # The resampled error should differ from the naive 10% fallback
-        assert (
-            abs(sdev - fallback_err) / max(fallback_err, 1e-15) > 0.01
-        ), f"Error at lag {i} looks like 10% fallback — slicing may not have worked"
+        assert abs(sdev - fallback_err) / max(fallback_err, 1e-15) > 0.01, (
+            f"Error at lag {i} looks like 10% fallback — slicing may not have worked"
+        )

@@ -26,11 +26,12 @@ def test_build_prior_for_group():
         name="pion",
         correlator_keys=["scalar"],
     )
+    group.fit.nexp = 2
     prior = build_prior_for_group(group, data, ["scalar"])
     assert "log(pion.dE)" in prior
     assert "pion.scalar.a" in prior
     assert "pion.scalar.b" in prior
-    assert len(prior["log(pion.dE)"]) == 2  # nexp default is 2
+    assert len(prior["log(pion.dE)"]) == 2
     assert len(prior["pion.scalar.a"]) == 2
 
 

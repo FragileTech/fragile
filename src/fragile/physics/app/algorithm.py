@@ -204,18 +204,26 @@ def _compute_interwalker_distance_stats(
     if n_walkers < 2:
         return np.full(n_steps, np.nan), np.full(n_steps, np.nan)
 
-    sq_norm = np.sum(x * x, axis=-1)
-    gram = np.einsum("tid,tjd->tij", x, x)
-    dist_sq = sq_norm[:, :, None] + sq_norm[:, None, :] - 2.0 * gram
-    np.maximum(dist_sq, 0.0, out=dist_sq)
-    distances = np.sqrt(dist_sq)
-
-    valid = alive[:, :, None] & alive[:, None, :]
+    # Process a few frames at a time: the [T, N, N] float64 distance tensor of
+    # a 750-frame, 500-walker run alone is 1.5 GB, and the intermediates below
+    # multiply that several times over.
     upper = np.triu(np.ones((n_walkers, n_walkers), dtype=bool), k=1)
-    valid &= upper[None, :, :]
-
-    counts = valid.sum(axis=(1, 2)).astype(float)
-    sums = np.where(valid, distances, 0.0).sum(axis=(1, 2))
+    counts = np.zeros(n_steps, dtype=float)
+    sums = np.zeros(n_steps, dtype=float)
+    sq_sums = np.zeros(n_steps, dtype=float)
+    chunk = max(1, int(2_000_000 // max(n_walkers * n_walkers, 1)))
+    for start in range(0, n_steps, chunk):
+        stop = min(n_steps, start + chunk)
+        xc = x[start:stop]
+        sq_norm = np.sum(xc * xc, axis=-1)
+        gram = np.einsum("tid,tjd->tij", xc, xc)
+        dist_sq = sq_norm[:, :, None] + sq_norm[:, None, :] - 2.0 * gram
+        np.maximum(dist_sq, 0.0, out=dist_sq)
+        distances = np.sqrt(dist_sq)
+        valid = alive[start:stop, :, None] & alive[start:stop, None, :] & upper[None, :, :]
+        counts[start:stop] = valid.sum(axis=(1, 2))
+        sums[start:stop] = np.where(valid, distances, 0.0).sum(axis=(1, 2))
+        sq_sums[start:stop] = np.where(valid, dist_sq, 0.0).sum(axis=(1, 2))
     means = np.divide(
         sums,
         counts,
@@ -223,7 +231,6 @@ def _compute_interwalker_distance_stats(
         where=counts > 0,
     )
 
-    sq_sums = np.where(valid, distances * distances, 0.0).sum(axis=(1, 2))
     second_moment = np.divide(
         sq_sums,
         counts,
@@ -258,23 +265,27 @@ def _build_companion_distance_plot(
     overlays: list[Any] = []
     if not clone_df.empty:
         overlays.append(
-            hv.ErrorBars(clone_df, "step", ["mean", "err95"])
+            hv
+            .ErrorBars(clone_df, "step", ["mean", "err95"])
             .relabel("Clone p95")
             .opts(color="#e45756", alpha=0.4, line_width=1)
         )
         overlays.append(
-            hv.Curve(clone_df, "step", "mean")
+            hv
+            .Curve(clone_df, "step", "mean")
             .relabel("Clone mean")
             .opts(color="#e45756", line_width=2, tools=["hover"])
         )
     if not random_df.empty:
         overlays.append(
-            hv.ErrorBars(random_df, "step", ["mean", "err95"])
+            hv
+            .ErrorBars(random_df, "step", ["mean", "err95"])
             .relabel("Random p95")
             .opts(color="#4c78a8", alpha=0.4, line_width=1)
         )
         overlays.append(
-            hv.Curve(random_df, "step", "mean")
+            hv
+            .Curve(random_df, "step", "mean")
             .relabel("Random mean")
             .opts(color="#4c78a8", line_width=2, tools=["hover"])
         )

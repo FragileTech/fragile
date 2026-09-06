@@ -9,7 +9,7 @@
   - **Supervised Topology** ({ref}`Section 25 <sec-supervised-topology-semantic-potentials-and-metric-segmentation>`)
   - **Lorentzian Memory Attention** ({ref}`Part VII <sec-covariant-memory-attention-architecture>`)
   - **Gauge-Covariant Attention** ({ref}`Section 05 <sec-covariant-cross-attention-architecture>`)
-  - **Gauge-Covariant Primitives** ({ref}`Section 04 <sec-dnn-blocks>`)
+  - **Gauge-Covariant Primitives** ({ref}`Section 04 <sec-geometric-micro-architecture>`)
   - **Universal Geometric Network** ({ref}`Section 06 <sec-universal-geometric-network>`)
 - Each module includes: class signature, key parameters, input/output shapes, purpose, and source reference
 - Use as a single reference when implementing the Fragile Agent architecture
@@ -1080,7 +1080,7 @@ $$c_1 = e^{-\gamma h}, \quad c_2 = \sqrt{(1-c_1^2)T_c}$$
 
 ## G.5 Gauge-Covariant Primitives (Section 04)
 
-These modules implement the fundamental gauge-covariant building blocks from {ref}`Section 04 <sec-dnn-blocks>`, ensuring spectral normalization, rotational equivariance, and light cone preservation.
+These modules implement the fundamental gauge-covariant building blocks from {ref}`Section 04 <sec-geometric-micro-architecture>`, ensuring spectral normalization, rotational equivariance, and light cone preservation.
 
 ### G.5.1 SpectralLinear
 
@@ -1115,7 +1115,7 @@ $$y = W_{\text{normalized}} \cdot x \quad \text{where} \quad \sigma_{\max}(W_{\t
 
 **Diagnostic node:** Node 62 (CausalityViolationCheck) verifies $\sigma_{\max}(W) \leq 1 + \epsilon$ during training.
 
-**Source:** {ref}`Section 04 <sec-dnn-blocks>`, Definition {prf:ref}`def-spectral-linear`, line 569.
+**Source:** {ref}`Section 04 <sec-geometric-micro-architecture>`, Definition {prf:ref}`def-spectral-linear`, line 569.
 :::
 
 ### G.5.2 NormGatedActivation
@@ -1165,7 +1165,7 @@ where:
 
 **Alternative activations:** Softplus ($C^\infty$, always positive), Sigmoid/Tanh (saturate, reduced dynamic range).
 
-**Source:** {ref}`Section 04 <sec-dnn-blocks>`, Definition {prf:ref}`def-norm-gated-activation`, line 714.
+**Source:** {ref}`Section 04 <sec-geometric-micro-architecture>`, Definition {prf:ref}`def-norm-gated-activation`, line 714.
 :::
 
 ### G.5.3 IsotropicBlock
@@ -1216,9 +1216,9 @@ $$\text{IsotropicBlock}(z) = \text{NormGate}(\text{Reshape}(\text{SpectralLinear
 By Schur's lemma, any linear map commuting with all $g \in SO(d_b)$ must be a scalar multiple of identity:
 $$W_i \cdot g_i = g_i \cdot W_i \quad \forall g_i \in SO(d_b) \quad \Rightarrow \quad W_i = \lambda_i I_{d_b}$$
 
-**Diagnostic nodes:** Node 67 (GaugeInvarianceCheck), Node 62 (CausalityViolationCheck), Node 40 (PurityCheck).
+**Diagnostic nodes:** Node 67 (GaugeInvarianceCheck), Node 62 (CausalityViolationCheck), and the DNN-local BindingConfinementCheck (DNN-B). Global Node 40 is CapacitySaturationCheck.
 
-**Source:** {ref}`Section 04 <sec-dnn-blocks>`, Definition {prf:ref}`def-isotropic-block`, line 803.
+**Source:** {ref}`Section 04 <sec-geometric-micro-architecture>`, Definition {prf:ref}`def-isotropic-block`, line 803.
 :::
 
 ### G.5.4 GaugeInvarianceCheck
@@ -1256,7 +1256,7 @@ where $g$ is a randomly sampled group element (e.g., rotation matrix for $SO(d)$
 - Large violation ($\delta > 0.1$): Symmetry breaking without L1 regularization
 - Asymmetric violation: Equivariant under some $g$ but not others (indicates partial symmetry)
 
-**Source:** {ref}`Section 04 <sec-dnn-blocks>`, line 2908.
+**Source:** {ref}`Section 04 <sec-geometric-micro-architecture>`, line 2908.
 :::
 
 ### G.5.5 CovariantRetina
@@ -1303,7 +1303,7 @@ where $R_\theta$ is a rotation by angle $\theta$ and $D^{(\ell)}$ is the represe
 
 **Diagnostic node:** Node 68 (RotationEquivarianceCheck) verifies $\|f(R \cdot I) - R \cdot f(I)\| < \epsilon$ for random rotations.
 
-**Source:** {ref}`Section 04 <sec-dnn-blocks>`, line 1464.
+**Source:** {ref}`Section 04 <sec-geometric-micro-architecture>`, line 1464.
 :::
 
 

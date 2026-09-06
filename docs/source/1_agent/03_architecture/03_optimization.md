@@ -70,7 +70,9 @@ We state the assumptions required for the guarantees in this chapter.
 $\mathcal{V}(y) \le \mathcal{V}(x) + \nabla\mathcal{V}(x)^\top (y-x) + \frac{L}{2}\|y-x\|^2$.
 
 **A2 (Preconditioner bounds).** $M_t$ is SPD with eigenvalues in $[m_{\min}, m_{\max}]$ for all $t$, with
-$0 < m_{\min} \le m_{\max} < \infty$.
+$0 < m_{\min} \le m_{\max} < \infty$. For the stochastic gate, $M_t$ is measurable with respect to the
+past information $\sigma(\theta_t,\hat g_{t-1},\hat g_{t-2},\ldots)$ and is therefore independent of the current
+noise conditional on $\theta_t$.
 
 **A3 (Stochastic gradients).** The observed gradient is $\hat g_t = g_t + \xi_t$ with
 $\mathbb{E}[\xi_t \mid \theta_t] = 0$ and $\mathbb{E}[\|\xi_t\|^2 \mid \theta_t] \le \sigma^2$.
@@ -160,9 +162,9 @@ $$
 \mathcal{V}(\theta_t - s d_t)
 \le \mathcal{V}(\theta_t) - s g_t^\top d_t + \frac{L}{2}s^2 \|d_t\|^2.
 $$
-The right-hand side is a quadratic in $s$ with positive linear term and nonnegative curvature. Since
-Theorem {prf:ref}`thm-preconditioned-descent` guarantees descent at $s=1$, any smaller $s$ preserves
-nonincreasing $\mathcal{V}$. \qedhere
+The right-hand side minus $\mathcal{V}(\theta_t)$ equals
+$s\,(-g_t^\top d_t+\tfrac{L}{2}s\|d_t\|^2)$. The bracket is nondecreasing in $s$ and is nonpositive at
+$s=1$ by Theorem {prf:ref}`thm-preconditioned-descent`, hence nonpositive for all $s\in[0,1]$. \qedhere
 :::
 
 *Interpretation.* The Mach limit is a trust-region enforcement consistent with the Zeno/step-size constraint
@@ -181,24 +183,28 @@ Let $T_t > 0$ be the cognitive temperature and $V_H(\theta_t)$ the varentropy. D
 $$
 T_{t+1} = T_t\left(1 - \frac{\eta_T}{1 + \gamma V_H(\theta_t)}\right),
 $$
-with $\eta_T \in (0,1)$ and $\gamma > 0$. Then
+with $\eta_T \in (0,1)$ and $\gamma > 0$. If a relaxation constant $C>0$ is available and
+$\eta_T\le 2C\sqrt{\gamma}$, then
 
 1. $0 < T_{t+1} \le T_t$ (temperature is positive and nonincreasing), and
-2. $|T_{t+1} - T_t| \le \eta_T T_t / (1 + \gamma V_H(\theta_t))$ (cooling is slowed when $V_H$ is large).
+2. $|T_{t+1} - T_t| \le C T_t / \sqrt{V_H(\theta_t)}$ whenever $V_H(\theta_t)>0$ (cooling is slowed when
+   $V_H$ is large).
 :::
 
 :::{prf:proof}
 Since $\eta_T \in (0,1)$ and $V_H \ge 0$, the multiplier lies in $(0,1]$, proving positivity and monotone
-nonincrease. The second statement follows immediately from the update definition. \qedhere
+nonincrease. The update gives the first bound, and the condition $\eta_T\le2C\sqrt\gamma$ together with
+$1+\gamma V_H\ge2\sqrt{\gamma V_H}$ gives the second. \qedhere
 :::
 
-*Implementation note.* When we identify $\eta_t = \eta_0 \tau_t$ with $\tau_t \propto T_t$, this yields an explicit
-annealing schedule that satisfies the varentropy brake and prevents quenching near critical points.
+*Implementation note.* When we identify $\eta_t = \eta_0 \tau_t$ with $\tau_t \propto T_t$, this gives an
+admissible annealing schedule when the displayed $C$-bound holds and A4's slow-change condition has been
+checked. Governor-initiated reheating is outside this monotone-brake proposition.
 
 ## 4. Alignment Damping: Oscillation Suppression
 
-Alignment damping prevents updates that oppose the local gradient, matching the oscillation remedies in the
-Sieve ({ref}`sec-d-policy-regulation`).
+Alignment damping is a step-size shrinkage rule. It preserves the local descent bound when the underlying
+update is already a descent step; it does not by itself prove a momentum-oscillation bound.
 
 :::{prf:definition} Gradient-Momentum Alignment
 :label: def-gradient-alignment
@@ -231,8 +237,8 @@ in step size preserves nonincreasing $\mathcal{V}$ as long as the original step 
 Equivalently, this is a special case of the scaling argument in Lemma {prf:ref}`lem-trust-region-scaling`. \qedhere
 :::
 
-*Interpretation.* When momentum opposes the gradient, reducing $\eta_t$ acts as a rigorous oscillation brake without
-changing the descent direction.
+*Interpretation.* When the alignment trigger fires, reducing $\eta_t$ preserves the descent bound of the
+underlying gradient step. A separate momentum analysis is required to claim oscillation suppression.
 
 ## 5. SNR Gate: Stochastic Stability
 
@@ -262,7 +268,9 @@ with $\mathrm{SNR} := \|g_t\|^2 / \sigma^2$. If $g_t = 0$, the sufficient bound 
 :::
 
 :::{prf:proof}
-Apply the smoothness bound with $d_t = \eta_t M_t \hat g_t$ and take conditional expectations.
+Apply the smoothness bound with $d_t = \eta_t M_t \hat g_t$ and take conditional expectations. The measurability
+clause in A2 makes $M_t$ independent of the current noise, so
+$\mathbb{E}[g_t^\top M_t\xi_t\mid\theta_t]=0$.
 Use $\mathbb{E}[\hat g_t] = g_t$ and
 $\mathbb{E}[\|\hat g_t\|^2] = \|g_t\|^2 + \mathbb{E}[\|\xi_t\|^2] \le \|g_t\|^2 + \sigma^2$.
 Then apply the eigenvalue bounds from A2 and solve for $\eta_t$ to make the coefficient negative. \qedhere
@@ -312,7 +320,9 @@ mixing separate physical subsystems.
 
 :::{prf:theorem} Thermodynamic Governor Stability (Conditional)
 :label: thm-optimizer-conditional-stability
-Under A1--A5, with updates that apply:
+Under A1--A5, with updates that apply in the order: conduction on log learning rates, SNR/alignment gates,
+the preconditioned step, and trust-region clipping last, and with $M_t$ block-diagonal across parameter groups,
+assume:
 1. preconditioned descent (Theorem {prf:ref}`thm-preconditioned-descent`),
 2. trust-region scaling (Lemma {prf:ref}`lem-trust-region-scaling`),
 3. alignment-triggered step damping (Proposition {prf:ref}`prop-alignment-step-damping`),
@@ -320,9 +330,11 @@ Under A1--A5, with updates that apply:
 5. SNR gating (Proposition {prf:ref}`prop-snr-gate`), and
 6. log-LR conduction (Proposition {prf:ref}`prop-conduction-contracts`),
 
-the optimizer produces a nonincreasing Lyapunov objective in the deterministic case and ensures expected descent
-under bounded noise. Learning rates remain positive and coherent across adjacent groups, and the temperature schedule
-obeys the adiabatic (varentropy) constraint.
+the optimizer produces a nonincreasing Lyapunov objective in the deterministic case. The expected-descent claim
+under noise applies only to the unscaled stochastic step in Proposition {prf:ref}`prop-snr-gate`; trust-region
+clipping and alignment damping are covered there only in the deterministic regime. Learning rates remain positive
+and coherent across adjacent groups, and the temperature schedule obeys the adiabatic constraint during annealing
+phases with no Governor-initiated heating.
 :::
 
 :::{prf:remark}
@@ -336,12 +348,15 @@ Violations of A1--A5 (e.g., non-smooth losses, unbounded noise, misordered group
 The theory uses metric-aware updates and diagnostic signals. Practical implementations may use the following
 surrogates, which are explicitly permitted in {ref}`sec-infeasible-implementation-replacements`:
 
-- Use Adam second-moment statistics as a diagonal proxy for the trust-region regulator (bounded SPD $M_t$) to satisfy A2.
+- Use a **lagged** Adam second-moment statistic
+  $M_t=\operatorname{diag}(1/(\sqrt{\hat v_{t-1}}+\epsilon))$, clipped to $[m_{\min},m_{\max}]$, as a
+  diagonal proxy for the trust-region regulator. The usual current-step Adam direction lies outside the
+  measurability class analysed by Proposition {prf:ref}`prop-snr-gate`.
 - Estimate $\mathrm{SNR}$ with running averages of gradient norms.
 - Replace exact varentropy with a windowed variance of the chosen metric signal (loss or grad RMS).
 - Implement conduction on param groups ordered by data-flow to satisfy A5.
 
-Each surrogate preserves the theoretical intent: bounded step sizes, adiabatic annealing, oscillation damping,
+Each surrogate preserves the theoretical intent: bounded step sizes, adiabatic annealing, step-size damping,
 noise-aware cooling, and cross-layer coherence.
 
 ## 9. Summary Checklist
@@ -349,9 +364,8 @@ noise-aware cooling, and cross-layer coherence.
 1. Verify A1--A5 for your setting (or document violations).
 2. Enforce trust-region scaling when relative step sizes exceed $\kappa$.
 3. Apply varentropy brake to $T_c$ (and thus $\eta_t$) for safe annealing.
-4. Use alignment-triggered step damping to prevent momentum-induced oscillations.
+4. Use alignment-triggered step damping as a descent-preserving shrinkage rule; verify any momentum claim separately.
 5. Gate $\eta_t$ by SNR to maintain expected descent.
 6. Apply log-LR conduction only within a single physical subsystem.
 
-This chapter closes the loop between the Governor theory and an optimizer that is provably stable under the stated
-assumptions.
+This chapter connects the Governor theory to local optimizer guarantees under the stated assumptions and scope.

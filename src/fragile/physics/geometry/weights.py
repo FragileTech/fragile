@@ -60,9 +60,10 @@ def compute_uniform_weights(
     n_nodes: int | None = None,
     alive: Tensor | None = None,
     normalize: bool = True,
+    dtype: torch.dtype = torch.float32,
 ) -> Tensor:
-    """Compute uniform neighbor weights."""
-    raw_weights = torch.ones(edge_index.shape[1], device=edge_index.device)
+    """Compute uniform neighbor weights in the requested floating dtype."""
+    raw_weights = torch.ones(edge_index.shape[1], device=edge_index.device, dtype=dtype)
     raw_weights = _apply_alive_mask(edge_index, raw_weights, alive)
     if not normalize:
         return raw_weights
@@ -355,7 +356,11 @@ def compute_edge_weights(
     """
     if mode == "uniform":
         return compute_uniform_weights(
-            edge_index, n_nodes=positions.shape[0], alive=alive, normalize=normalize
+            edge_index,
+            n_nodes=positions.shape[0],
+            alive=alive,
+            normalize=normalize,
+            dtype=positions.dtype,
         )
     if mode == "inverse_distance":
         return compute_inverse_distance_weights(

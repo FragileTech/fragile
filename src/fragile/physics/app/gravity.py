@@ -273,7 +273,16 @@ def build_holographic_principle_tab(
 
             n_frames = int(points_df["info_idx"].nunique())
             n_samples = len(points_df)
-            all_frames = list(range(1, int(getattr(history, "n_recorded", 0))))
+            # Geodesic matrices are only needed for the transitions that were
+            # analysed (after warmup / stride / max_frames subsampling); an
+            # all-pairs shortest path over every recorded frame of a 500-walker
+            # run takes tens of minutes and holds hundreds of MB in state.
+            n_recorded = int(getattr(history, "n_recorded", 0))
+            all_frames = sorted({
+                int(info_idx) + 1
+                for info_idx in points_df["info_idx"].unique()
+                if 1 <= int(info_idx) + 1 < n_recorded
+            })
             if new_dirac_ew_settings is not None:
                 kernel_distance_method = str(new_dirac_ew_settings.kernel_distance_method)
                 edge_weight_mode = str(new_dirac_ew_settings.edge_weight_mode)
@@ -340,9 +349,45 @@ def build_holographic_principle_tab(
         run_tab_computation(state, fractal_set_status, "fractal set", _compute)
 
     def on_history_changed(defer_dashboard_updates: bool) -> None:
-        """Update holographic-section controls when a new history is loaded."""
+        """Reset holographic outputs when a new history is loaded.
+
+        Results always belong to one history, so they are cleared whether or not
+        the visual refresh is deferred; otherwise the previous run's tables stay
+        on screen under a "ready" status.
+        """
+        _ = defer_dashboard_updates
         fractal_set_run_button.disabled = False
         fractal_set_status.object = "**Holographic Principle ready:** click Compute Fractal Set."
+        for key in (
+            "fractal_set_points",
+            "fractal_set_regressions",
+            "fractal_set_frame_summary",
+            "einstein_test_result",
+            "_multiscale_geodesic_distance_by_frame",
+            "_multiscale_geodesic_distribution",
+        ):
+            state[key] = None
+        fractal_set_summary.object = (
+            "## Fractal Set Summary\n_Run Compute Fractal Set to populate._"
+        )
+        for table in (
+            fractal_set_regression_table,
+            fractal_set_baseline_table,
+            fractal_set_frame_table,
+            fractal_set_points_table,
+        ):
+            table.value = pd.DataFrame()
+        for plot in (
+            fractal_set_plot_dist,
+            fractal_set_plot_fit,
+            fractal_set_plot_total,
+            fractal_set_plot_dist_geom,
+            fractal_set_plot_fit_geom,
+            fractal_set_plot_total_geom,
+            fractal_set_geodesic_distribution_plot,
+            einstein_scalar_log_plot,
+        ):
+            plot.object = None
 
     fractal_set_note = pn.pane.Alert(
         """

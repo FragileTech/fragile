@@ -117,7 +117,15 @@ def test_build_ratio_comparison_smoke():
     overlay, df = _build_ratio_comparison(result)
     assert isinstance(overlay, hv.Overlay | hv.NdOverlay)
     assert len(df) == 3  # C(3,2) = 3
-    assert set(df.columns) == {"Ratio", "Extracted", "Error", "PDG", "Tension (\u03c3)"}
+    assert set(df.columns) == {
+        "Ratio",
+        "Extracted",
+        "Error",
+        "PDG",
+        "Tension (\u03c3)",
+        "Matches",
+        "Error (%)",
+    }
 
 
 def test_ratio_values_match_gvar():

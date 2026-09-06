@@ -26,7 +26,7 @@ Let me tell you about one of the most frustrating aspects of training neural net
 
 So what do we do? We write papers with titles like "Scheduled Learning Rate Annealing" or "Adaptive Entropy Coefficient" and we feel clever. But really, we're doing something profoundly unsatisfying: we're hard-coding policies for adjusting hyperparameters based on our intuitions about what *might* work. There's no principled foundation.
 
-This section changes that. We're going to introduce a **Governor**---a meta-controller that watches the training process and adjusts hyperparameters in real time based on what's actually happening. And here's the beautiful part: we can prove this Governor drives training toward stable equilibria using Lyapunov stability theory. The same mathematics that tells us a pendulum will settle to the bottom tells us our training will converge.
+This section changes that. We're going to introduce a **Governor**---a meta-controller that watches the training process and adjusts hyperparameters in real time based on what's actually happening. Lyapunov theory gives conditional descent and stability statements when the update map, compactness, and regularity hypotheses hold. Those hypotheses describe when training approaches a stationary set; they do not promise convergence for every learned Governor.
 :::
 
 The Fragile Agent architecture relies on the strict satisfaction of information-theoretic and geometric constraints (The Sieve, {ref}`sec-diagnostics-stability-checks`). Manual tuning of the associated Lagrange multipliers is intractable due to the non-stationary coupling between the Representation ($G$), the Dynamics ($S$), and the Value ($V$). We formalize the training process as a dynamical system and introduce the **Universal Governor**, a meta-controller that regulates the learning dynamics. The Governor solves a bilevel optimization problem; convergence is characterized via a training Lyapunov function (Definition {prf:ref}`def-training-lyapunov-function`).
@@ -361,11 +361,11 @@ Now we reach the theoretical heart of the matter. We've built this Governor, we'
 
 The tool we need is Lyapunov stability theory, which dates back to the 19th century Russian mathematician Aleksandr Lyapunov. The core idea is beautiful in its simplicity:
 
-**If you can find a function that always decreases along trajectories and is bounded below, then the trajectory must converge.**
+If you can find a function that decreases along trajectories, is bounded below, and has the required compactness and continuity hypotheses, then the trajectory approaches the corresponding invariant or stationary set. A decreasing scalar value alone guarantees only convergence of that scalar.
 
-Think about it. If $V(\theta)$ keeps going down and it can't go below zero, it *has* to stop decreasing eventually. And when it stops decreasing, you've reached an equilibrium.
+Think about it. If $V(\theta)$ keeps going down and it cannot go below a finite lower bound, its values settle. Reaching an equilibrium for $\theta$ requires the additional compactness and update-map assumptions in the theorem.
 
-For our training dynamics, we'll construct a Lyapunov function that combines the task loss with constraint violation penalties. Then we'll show that a good Governor keeps this function decreasing. That's our convergence guarantee.
+For our training dynamics, we'll construct a Lyapunov candidate that combines task loss with constraint violation penalties. Under the stated descent and compactness hypotheses, a suitable Governor drives the iterate toward the theorem's stationary set. That is a conditional convergence statement.
 :::
 
 We establish convergence guarantees using Lyapunov stability theory {cite}`khalil2002nonlinear,lasalle1960invariance`.
@@ -402,7 +402,7 @@ Why is this a valid Lyapunov function? Two requirements:
 
 2. **Decreases along trajectories**: This is what the Governor must ensure.
 
-If the Governor keeps $V_{\mathfrak{L}}$ decreasing, we're guaranteed to converge to somewhere. The question is: *where*?
+If the Governor keeps $V_{\mathfrak{L}}$ decreasing and the required sublevel-set and continuity assumptions hold, the iterate approaches the theorem's target set. The question is: *where*?
 :::
 
 :::{prf:theorem} Stable Training Trajectory
@@ -421,15 +421,15 @@ then the training process converges to the largest invariant set $\Omega$ where 
 :::
 
 :::{div} feynman-prose
-This theorem is saying something profound: **if the Governor can maintain descent, convergence is guaranteed**.
+This theorem is saying something precise: **if the Governor maintains the stated descent condition on a compact invariant sublevel set, the iterate approaches the theorem's target set**. Without those hypotheses, descent of the scalar objective alone is not enough.
 
-The target set $\Omega$ is where we end up---it's the set of points where the Lyapunov function stops decreasing. What are these points?
+The target set $\Omega$ is the invariant or stationary set specified by the theorem---the points where the descent signal vanishes under its hypotheses. What are these points?
 
-1. **Local minima of the task loss where all constraints are satisfied**: These are the "good" equilibria. We've minimized the loss and we're not violating anything.
+1. **Stationary points of the penalized objective with all constraints satisfied**: These may be useful equilibria, but they need not be global optima.
 
-2. **Points on constraint boundaries where the gradient is balanced by constraint forces**: These are constrained optima. We can't go further downhill without violating a constraint, so we stay on the boundary.
+2. **Other stationary points of the penalized dynamics**: A constraint boundary can be part of the target set only when the specified update and penalty actually make it stationary.
 
-Both of these are KKT (Karush-Kuhn-Tucker) points---the standard first-order optimality conditions for constrained optimization. So the theorem tells us: if the Governor maintains descent, we converge to a KKT point.
+These points are stationary points of the finite-penalty objective. They coincide with KKT points only under an augmented-Lagrangian or limiting-penalty argument with the necessary constraint qualifications. The theorem therefore does not by itself give convergence to a KKT point.
 
 Now, KKT points include local minima, saddle points on the constraint boundary, and other stationary configurations. We haven't proven convergence to a *global* minimum---that's a much harder problem. But we've proven convergence to a *stationary* point, which is more than most training procedures can guarantee.
 :::
@@ -446,11 +446,11 @@ At any non-stationary point $\theta$ where LICQ holds (the gradients $\{\nabla C
 :::
 
 :::{div} feynman-prose
-This corollary is the existence guarantee: at any point that's not already optimal, there *exists* a way to descend. The Governor doesn't have to be infinitely clever---it just has to find settings that achieve descent, and those settings always exist (under regularity conditions).
+This corollary is an existence statement for a descent direction under its exact nonzero-gradient and smoothness hypotheses. It does not say that every non-KKT or infeasible point admits a descent of the finite penalty, nor that a learned Governor will find it automatically.
 
-The condition LICQ (Linear Independence Constraint Qualification) is technical but important. It says the constraint gradients should be linearly independent at the boundary. This fails in degenerate cases where multiple constraints become parallel. In practice, this is rare, and when it happens, slight perturbations fix it.
+Constraint qualifications such as LICQ matter only for the constrained problem to which they are applied. They do not turn a finite exterior penalty into an augmented Lagrangian, and degenerate cases cannot be repaired by assuming that a small perturbation preserves the same target.
 
-What's powerful here is that the corollary is *constructive* in principle: if you're not at a KKT point, there's a direction you can go. The Governor's job is to find it. And since the neural network Governor is trained on many trajectories, it learns to find these directions efficiently.
+What's useful here is that the corollary is *constructive* in the regime it covers: if the penalized gradient is nonzero, a sufficiently small compatible step can descend. The Governor still needs training and validation to find such steps reliably.
 :::
 
 :::{prf:corollary} The Varentropy Brake (Annealing Safety Margin)
@@ -487,11 +487,11 @@ If you lower the temperature too fast, you can get trapped in a bad local minimu
 
 The **Varentropy** $V_H$ measures uncertainty about the entropy itself---how "spread out" is the distribution of log-probabilities? When $V_H$ is high, the agent is at a decision point. Some options look good, others look bad, and it's not clear which way to go. It's like standing at a fork in the road in the fog.
 
-The Varentropy Brake says: **when the agent is at a critical decision point, slow down the cooling**. Don't force a choice. Let the agent explore more, gather information, and *then* commit.
+The Varentropy Brake says: **when the agent is at a critical decision point, slow down the cooling**. The proved statement is an adiabatic rate inequality; a particular rational schedule is one design choice that is admissible only when its constants satisfy that inequality.
 
-The formula $\dot{T}_c \propto T_c / (1 + \gamma V_H)$ implements this directly. When $V_H$ is small (clear decision), the denominator is close to 1, and cooling proceeds normally. When $V_H$ is large (unclear decision), the denominator is large, and cooling slows to a crawl.
+The formula $\dot{T}_c \propto T_c / (1 + \gamma V_H)$ is an intuitive schedule. To use it as an admissible annealing rule, the rate, units, aggregation of $V_H$, and constants must satisfy the proved bound; the bound does not require this rational form.
 
-This prevents the "spontaneous symmetry breaking" problem where the agent randomly picks one of several equally good options and then, because temperature is too low, can't reconsider if it picked wrong.
+This can reduce rapid-quench risk in a chosen optimization model. It does not prove avoidance of spontaneous symmetry breaking, selection of a global basin, or recovery from a bad local minimum.
 :::
 
 :::{admonition} Analogy: The Careful Metallurgist
@@ -655,7 +655,7 @@ The conditions are:
 
 3. **Strong convexity**: Near the optimal policy, small deviations lead to small regret. You don't fall off a cliff.
 
-If these hold, the Governor learns a general skill. The caveat about peer review is honest and important---these results aren't yet published in a refereed venue. But the mathematical arguments are standard, so there's good reason to believe them.
+If these hold and the stated complexity and sampling assumptions are verified, the proposition gives the corresponding meta-generalization bound. It does not establish transfer for every Governor or optimization family; the caveat about the external result and peer review remains material.
 :::
 
 :::{prf:proposition} Dimensional Analysis
@@ -908,13 +908,13 @@ Let me pull everything together. The Universal Governor is a meta-controller tha
 1. **Observes** the Sieve diagnostic stream $s_t = [C_1(\theta_t), \ldots, C_K(\theta_t)]$
 2. **Processes** a history of these observations using a recurrent network
 3. **Outputs** control signals: learning rate $\eta_t$, constraint multipliers $\lambda_{k,t}$, and cognitive temperature $T_{c,t}$
-4. **Guarantees** (under mild conditions) convergence to a KKT point by maintaining Lyapunov descent
+4. **Conditional guarantee**: under the theorem's descent, compactness, regularity, and penalty hypotheses, approaches the stated stationary set
 
 It's trained via bilevel optimization: the outer loop optimizes Governor parameters to minimize training regret across a suite of canonical optimization problems.
 
-The key theoretical contribution is connecting hyperparameter adaptation to Lyapunov stability theory. The key practical contribution is a neural architecture that subsumes and extends previous methods (primal-dual, PID, learned precisions) while enabling transfer across tasks via geometric invariants.
+The key theoretical contribution is connecting hyperparameter adaptation to conditional Lyapunov statements. The practical contribution is a neural architecture that combines several control ideas; claims of subsumption or transfer require the matching interfaces and validation assumptions.
 
-And at the end of the day, it just works: plug in your Sieve diagnostics, let the Governor run, and watch training converge.
+In practice, plug in the Sieve diagnostics, verify the hypotheses, and monitor the descent and target-set diagnostics; convergence remains a property to establish for the chosen run.
 :::
 
 **Table 26.9.1 (Summary of Meta-Stability Theory).**

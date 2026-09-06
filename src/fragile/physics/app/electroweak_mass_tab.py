@@ -63,10 +63,10 @@ class ElectroweakMassSettings(param.Parameterized):
     """Settings for the electroweak mass extraction pipeline."""
 
     covariance_method = param.ObjectSelector(
-        default="uncorrelated",
-        objects=["uncorrelated", "block_jackknife", "bootstrap"],
+        default="block_jackknife",
+        objects=["uncorrelated", "block_jackknife", "bootstrap", "assumed_relative"],
     )
-    nexp = param.Integer(default=2, bounds=(1, 6))
+    nexp = param.Integer(default=1, bounds=(1, 6))
     tmin = param.Integer(default=2, bounds=(1, 20))
     tmax = param.Integer(
         default=0,
@@ -362,15 +362,11 @@ def build_electroweak_mass_tab(
                     ),
                 )
                 g.prior = PriorConfig(
-                    dE_ground=(
-                        str(ch_w["dE_ground"].value) if "dE_ground" in ch_w else "0.5(5)"
-                    ),
+                    dE_ground=(str(ch_w["dE_ground"].value) if "dE_ground" in ch_w else "0.5(5)"),
                     dE_excited=(
                         str(ch_w["dE_excited"].value) if "dE_excited" in ch_w else "0.5(5)"
                     ),
-                    amplitude=(
-                        str(ch_w["amplitude"].value) if "amplitude" in ch_w else "0.5(5)"
-                    ),
+                    amplitude=(str(ch_w["amplitude"].value) if "amplitude" in ch_w else "0.5(5)"),
                     use_fastfit_seeding=(
                         bool(ch_w["use_fastfit_seeding"].value)
                         if "use_fastfit_seeding" in ch_w
@@ -423,8 +419,6 @@ def build_electroweak_mass_tab(
                 sizing_mode="stretch_width",
             ),
         )
-        if defer:
-            return
         state["electroweak_mass_output"] = None
         mass_spectrum_plot.object = _algorithm_placeholder_plot(
             "Run extraction to show mass spectrum.",

@@ -17,10 +17,11 @@ class CovarianceConfig:
     from the raw data.
     """
 
-    method: str = "uncorrelated"  # block_jackknife | bootstrap | uncorrelated
+    method: str = "block_jackknife"  # bootstrap | uncorrelated | assumed_relative
     n_bootstrap: int = 200
     block_size: int = 10
     seed: int = 42
+    relative_error: float = 0.1  # only used by explicitly selected assumed_relative
 
 
 @dataclass
@@ -33,7 +34,9 @@ class ChannelFitConfig:
     tmin: int = 2
     tmax: int | None = None  # None = use full range
     tp: int | None = None  # periodic boundary time extent (None = no folding)
-    nexp: int = 2
+    # One exponential by default: with a second state and the weak default
+    # priors, the fitted "ground state" can be a zero-amplitude prior artifact.
+    nexp: int = 1
     nexp_osc: int = 0  # oscillating states (staggered fermions)
     use_log_dE: bool = True
     use_log_amplitudes: bool = False
@@ -50,6 +53,10 @@ class PriorConfig:
     dE_excited: str = "0.5(5)"
     amplitude: str = "0.5(5)"
     use_fastfit_seeding: bool = True
+    # Rescale the amplitude prior to the magnitude of the data (sqrt of the
+    # correlator at tmin extrapolated to t=0). A fixed 0.5(5) prior biases the
+    # mass low whenever C(0) is far from unity.
+    scale_amplitude_prior: bool = True
 
 
 @dataclass
@@ -94,3 +101,6 @@ class MassExtractionConfig:
     effective_mass_method: str = "log_ratio"  # log_ratio | cosh
     effective_mass_dt: float = 1.0
     include_multiscale: bool = True
+    # Fit all groups in one simultaneous fit (shares the data covariance across
+    # groups, cost ~ (total points)^3). Off by default: groups share no parameters.
+    joint_fit: bool = False

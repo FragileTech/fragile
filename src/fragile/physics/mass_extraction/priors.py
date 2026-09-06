@@ -7,12 +7,16 @@ ground-state energy from ``corrfitter.fastfit``.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import gvar
 import numpy as np
 
 from .config import ChannelGroupConfig
+
+
+_log = logging.getLogger(__name__)
 
 
 def build_prior_for_group(
@@ -60,8 +64,13 @@ def build_prior_for_group(
     # Build amplitude priors per variant (source a and sink b)
     for key in group.correlator_keys:
         if key in available_keys:
-            prior[f"{group.name}.{key}.a"] = _build_amplitude_prior(nexp, prior_cfg.amplitude)
-            prior[f"{group.name}.{key}.b"] = _build_amplitude_prior(nexp, prior_cfg.amplitude)
+            amplitude_spec = prior_cfg.amplitude
+            if getattr(prior_cfg, "scale_amplitude_prior", True) and key in data:
+                amplitude_spec = _scaled_amplitude_spec(
+                    data[key], fit_cfg.tmin, dE, fit_cfg.use_log_dE, amplitude_spec
+                )
+            prior[f"{group.name}.{key}.a"] = _build_amplitude_prior(nexp, amplitude_spec)
+            prior[f"{group.name}.{key}.b"] = _build_amplitude_prior(nexp, amplitude_spec)
 
     # Oscillating states if needed
     if fit_cfg.nexp_osc > 0:
@@ -127,16 +136,52 @@ def _estimate_ground_energy(
         import corrfitter as cf
 
         corr = data[key]
-        tdata = range(len(corr))
-
-        kwargs = {"data": corr, "tdata": tdata, "tmin": tmin}
+        # ``fastfit(G, ...)`` takes the correlator positionally and infers the
+        # time axis from its length; a ``data=``/``tdata=`` call raises
+        # ``TypeError`` and used to be swallowed silently, so seeding never ran.
+        kwargs: dict[str, Any] = {"tmin": tmin}
         if tp is not None:
             kwargs["tp"] = tp
-
-        ff = cf.fastfit(**kwargs)
-        return ff.E
-    except Exception:
+        ff = cf.fastfit(corr, **kwargs)
+        energy = ff.E
+        mean = float(gvar.mean(energy))
+        if not np.isfinite(mean) or mean <= 0:
+            return None
+        return energy
+    except Exception as exc:  # corrfitter raises on non-decaying or noisy data
+        _log.debug("fastfit seeding failed for %s: %s", key, exc)
         return None
+
+
+def _scaled_amplitude_spec(
+    corr: Any,
+    tmin: int,
+    dE: np.ndarray,
+    use_log: bool,
+    fallback: str,
+) -> str:
+    """Amplitude prior of the size implied by the data, with 100% width.
+
+    ``C(t) = a b e^{-E t}`` with ``a = b`` gives ``a ~ sqrt(C(tmin) e^{E tmin})``.
+    The fixed default ``0.5(5)`` is only appropriate for correlators of order one.
+    """
+    try:
+        values = np.asarray([float(gvar.mean(v)) for v in corr], dtype=float)
+        t0 = int(min(max(tmin, 0), len(values) - 1))
+        c_t0 = float(values[t0])
+        if not np.isfinite(c_t0) or c_t0 <= 0:
+            return fallback
+        e0 = float(gvar.mean(dE[0]))
+        if use_log:
+            e0 = float(np.exp(e0))
+        if not np.isfinite(e0) or e0 <= 0:
+            e0 = 0.0
+        scale = float(np.sqrt(c_t0 * np.exp(min(e0 * t0, 50.0))))
+        if not np.isfinite(scale) or scale <= 0:
+            return fallback
+        return str(gvar.gvar(scale, scale))
+    except Exception:
+        return fallback
 
 
 def _build_dE_prior(
