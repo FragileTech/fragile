@@ -190,6 +190,15 @@ void PackedWave::update_elites() {
   }
   has_elite_ = true;
 }
+uint32_t PackedWave::best_leaf() const {
+  if (tree.mode == RecordingMode::Off || stats.iterations == 0)
+    throw std::logic_error("Best leaf requires a recorded search");
+  size_t best = 0;
+  for (size_t i = 1; i < rewards.size(); ++i)
+    if (rewards[i] > rewards[best]) best = i;
+  return node_ids[best];
+}
+
 std::vector<float> PackedWave::select_action() const {
   std::vector<float> action(physics.scene->channels.size(), 0);
   if (!stats.alive || !stats.iterations) {

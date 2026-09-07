@@ -39,7 +39,7 @@ function prop(kind, style, radius = 1, color = palette.gold) {
   return root;
 }
 export class LabRenderer {
-  constructor(canvas) {
+  constructor(canvas, { isEditing = () => false } = {}) {
     this.canvas = canvas;
     this.style = labStyle.current;
     this.unsubscribeStyle = labStyle.subscribe((style) =>
@@ -97,10 +97,17 @@ export class LabRenderer {
     this.plane = new T.Plane(new T.Vector3(0, 0, 1), 0);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas.parentElement);
-    canvas.addEventListener(
+    this.inputController = new AbortController();
+    const listen = (type, handler, options = {}) =>
+      canvas.addEventListener(type, handler, {
+        ...options,
+        signal: this.inputController.signal,
+      });
+    listen(
       "wheel",
       (e) => {
         e.preventDefault();
+        this.clearPan();
         this.zoom = T.MathUtils.clamp(
           this.zoom * Math.exp(-e.deltaY * 0.001),
           0.6,
@@ -110,36 +117,75 @@ export class LabRenderer {
       },
       { passive: false },
     );
-    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
-    canvas.addEventListener("pointerdown", (e) => {
-      if (e.button === 1 || e.button === 2 || e.altKey) {
-        this.panAnchor = this.worldPoint(e);
-        this.followBody = null;
-        canvas.setPointerCapture(e.pointerId);
-        e.preventDefault();
-        e.stopImmediatePropagation();
-      }
+    listen("contextmenu", (e) => e.preventDefault());
+    listen("pointerdown", (e) => {
+      if (this.panGesture) return;
+      const shortcut =
+        e.button === 1 || e.button === 2 || (e.button === 0 && e.altKey);
+      if (!shortcut && (e.button !== 0 || isEditing())) return;
+      const anchor = this.worldPoint(e);
+      if (!anchor) return;
+      this.panGesture = {
+        id: e.pointerId,
+        anchor,
+        x: e.clientX,
+        y: e.clientY,
+        dragging: false,
+        click: !shortcut,
+      };
+      canvas.setPointerCapture(e.pointerId);
+      if (shortcut) e.preventDefault();
+      e.stopImmediatePropagation();
     });
-    canvas.addEventListener("pointermove", (e) => {
-      if (this.panAnchor) {
+    const move = (e) => {
+      const gesture = this.panGesture;
+      if (!gesture || gesture.id !== e.pointerId) return;
+      if (
+        !gesture.dragging &&
+        Math.hypot(e.clientX - gesture.x, e.clientY - gesture.y) >= 4
+      ) {
+        gesture.dragging = true;
+        this.followBody = null;
+        canvas.classList.add("panning");
+        canvas.dispatchEvent(new Event("camerachange"));
+      }
+      if (gesture.dragging) {
         const point = this.worldPoint(e);
         if (point) {
           this.viewCenter = this.viewCenter.map(
-            (v, i) => v + this.panAnchor[i] - point[i],
+            (v, i) => v + gesture.anchor[i] - point[i],
           );
           this.resize();
         }
-        e.stopImmediatePropagation();
       }
+      e.stopImmediatePropagation();
+    };
+    listen("pointermove", move);
+    listen("pointerup", (e) => {
+      const gesture = this.panGesture;
+      if (!gesture || gesture.id !== e.pointerId) return;
+      move(e);
+      const point =
+        !gesture.dragging && gesture.click && !isEditing()
+          ? this.worldPoint(e)
+          : null;
+      this.clearPan();
+      if (point)
+        canvas.dispatchEvent(new CustomEvent("worldclick", { detail: point }));
     });
-    canvas.addEventListener("pointerup", () => {
-      this.panAnchor = null;
-    });
-    canvas.addEventListener("lostpointercapture", () => {
-      this.panAnchor = null;
-    });
+    for (const type of ["pointercancel", "lostpointercapture"])
+      listen(type, (e) => {
+        if (this.panGesture?.id === e.pointerId) this.clearPan();
+      });
     this.animate = this.animate.bind(this);
     this.frame = requestAnimationFrame(this.animate);
+  }
+  clearPan() {
+    const gesture = this.panGesture;
+    this.panGesture = null;
+    this.canvas.classList.remove("panning");
+    if (gesture && this.canvas.hasPointerCapture(gesture.id))
+      this.canvas.releasePointerCapture(gesture.id);
   }
   resize() {
     const { width, height } = this.canvas.parentElement.getBoundingClientRect();
@@ -165,7 +211,9 @@ export class LabRenderer {
     this.camera.updateProjectionMatrix();
   }
   worldPoint(event) {
+    this.camera.updateMatrixWorld(true);
     const r = this.canvas.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
     this.ray.setFromCamera(
       new T.Vector2(
         ((event.clientX - r.left) / r.width) * 2 - 1,
@@ -177,6 +225,7 @@ export class LabRenderer {
     return p ? [p.x, p.y] : null;
   }
   load(scene, info, channels) {
+    this.clearPan();
     dispose(this.static);
     dispose(this.dynamic);
     dispose(this.overlays);
@@ -671,6 +720,7 @@ export class LabRenderer {
     }
   }
   focus(body = null) {
+    this.clearPan();
     this.followBody = body;
     this.viewCenter =
       body == null
@@ -678,9 +728,12 @@ export class LabRenderer {
         : [this.models[body].position.x, this.models[body].position.y];
     this.zoom = body == null ? 1 : 7;
     this.resize();
+    this.canvas.dispatchEvent(new Event("camerachange"));
   }
   dispose() {
     this.disposed = true;
+    this.clearPan();
+    this.inputController.abort();
     this.unsubscribeStyle();
     this.canvas.removeEventListener(
       "webglcontextrestored",

@@ -55,6 +55,7 @@ export function createSceneEditor({
   }
   $("edit").onclick = () => {
     stop();
+    renderer.clearPan();
     $("editor").hidden = !$("editor").hidden;
     document.body.classList.toggle("editing", !$("editor").hidden);
   };
@@ -104,14 +105,14 @@ export function createSceneEditor({
     renderer.selectMany(selections.map((s) => s.pos));
     onSelection?.();
   }
+  $("world").addEventListener("worldclick", (event) => {
+    if (isReady() && $("editor").hidden) onWorldClick(event.detail);
+  });
   $("world").addEventListener("pointerdown", (event) => {
     if (!isReady() || event.button !== 0 || event.altKey) return;
     const point = renderer.worldPoint(event);
     if (!point) return;
-    if ($("editor").hidden) {
-      onWorldClick(point);
-      return;
-    }
+    if ($("editor").hidden) return;
     const tool = $("tool").value;
     if (tool === "select") {
       const hit = nearest(point);

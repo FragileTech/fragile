@@ -116,8 +116,8 @@ world. The worker records the branch's physical frames in a new segment named
 to watch that alternative or **Step** to plan from its endpoint. Branch replay
 reconstructs physics; ordinary world playback only reads recorded states.
 
-FMC and direct Wave exploration provide native ancestry trees. iCEM and MPPI
-provide candidate clouds and world motion but do not export search trees. Their
+FMC, Wave Jump, and direct Wave exploration provide native ancestry trees. iCEM and
+MPPI provide candidate clouds and world motion but do not export search trees. Their
 lack of branches does not prevent recording or replaying their executed actions.
 :::
 
@@ -126,7 +126,7 @@ lack of branches does not prevent recording or replaying their executed actions.
 |---|---|
 | **Pruned** | Record the search, removing orphan leaves while protecting current walkers, elites, and the ancestry they require. This is the default. |
 | **Full** | Keep all recorded search nodes within each decision; tree memory grows more quickly. |
-| **Off** | Disable native search-tree recording; executed world frames still record. |
+| **Off** | Disable exported search trees; executed world frames still record. Wave Jump retains at least pruned ancestry internally to recover its selected trajectory. |
 | **Keep all decisions** | For an in-memory run, retain decisions until the separate 64 MiB tree budget is reached instead of retaining a recent window. |
 :::
 
@@ -278,11 +278,20 @@ paused world before it is checkpointed.
 
 Press **Load checkpoint**, choose the file, and wait for the restoration message.
 The lab reloads its scene and controller settings. **Step** then continues the
-saved search rather than beginning an unrelated search from the visible pose.
+saved search rather than beginning an unrelated search from the visible pose. For
+Wave Jump saved during trajectory execution, it continues the unexecuted remainder
+of that trajectory.
 Checkpoints preserve controller-specific data: FMC's population, ancestry, elites,
 and random state, or the shooting controllers' partial rollouts, optimizer state,
 randomness, and warm-start sequences. Use the same compatible engine/backend and
 controller implementation for checkpoint continuation.
+
+Wave Jump checkpoints retain its FMC search state while searching. During execution,
+they retain the selected trajectory, current action index, and remaining physics
+frames alongside the world state. Loading resumes from that position without
+repeating completed actions or starting another search before the trajectory ends.
+A scene, reward, controller, or world-state change discards the queued trajectory;
+ordinary **Pause experiment** preserves it.
 
 A checkpoint made after **Advance Wave population** preserves that active Wave
 population. On load, the message explicitly says to use **Advance Wave population**

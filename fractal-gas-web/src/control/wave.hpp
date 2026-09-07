@@ -30,6 +30,7 @@ class PackedWave {
   void reseed(uint64_t seed) { rng_ = std::make_unique<Mt19937Rng>(seed); }
   void step();
   std::vector<float> select_action() const;
+  uint32_t best_leaf() const;
   StateBatch replay(uint32_t node_id);
   void save_checkpoint(CheckpointWriter& out) const;
   void load_checkpoint(CheckpointReader& in);

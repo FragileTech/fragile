@@ -3,13 +3,23 @@
 Unreleased
 ----------
 
+* Express the smaller physical-gauge descriptor's projected source covariance through its native polynomial Gram matrices and source responses, with projection-error and occupation bounds.
+
+* Prove exact disjoint-source covariance cancellation from the native likelihood and occupation identities, to all derivative orders, retaining the descriptor projection and survival normalization formulas.
+
+* Enable left-drag camera panning in the Lab, preserve click selection and scene editing, and add Reset view.
+
+* Derive the inherited-history covariance of regional readouts as exact native-kernel integrals, with update contributions and predictable-variance bounds retaining survival conditioning; carry both covariance terms into the full even-observable commutator bound.
+
+* Add Wave Jump to the Lab: execute the highest-reward final FMC trajectory between searches, with pause/resume, trajectory checkpoints and experiment comparisons.
+
 * Expose Lab reward and diversity sliders with a shared Apply settings action that preserves the world; enable the mean per-frame squared-distance vehicle bonus by default.
 
 * Bring Lab vehicle, world and refinery shapes and surfaces closer to their concept sheets; freeze the preceding 24 runtime packs as geometry, draw-batch, texture-memory and download-size regression budgets.
 
 * Refine all 94 styled Lab assets with distinct mechanical assemblies, exposed refinery conveyors, mineral chambers and capture claws; reduce vehicle triangle counts within their existing rendering budgets, preserve shared collision envelopes, and add complete background regeneration commands.
 
-* Prove locality of the existing native multiplication representation for the configured recorded readouts; distinguish the unevaluated quantum commutator and remove unrelated locality diagnostics.
+* Correct the locality analysis to use squashing before both position transports; derive the exact capped kinetic support and remove the mismatched equilibrium-density obstruction.
 
 * Fix Lab native-control help markup and label targeting in Firefox; add Firefox and Chromium dropdown, checkbox, button, and tooltip regression coverage.
 

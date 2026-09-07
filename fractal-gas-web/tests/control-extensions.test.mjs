@@ -37,7 +37,7 @@ const presetIds = JSON.parse(
   ),
 ).map((p) => p.id);
 const module = await loadNative(false);
-for (const algorithm of ["fmc", "random", "cem", "icem", "mppi"])
+for (const algorithm of ["fmc", "wave-jump", "random", "cem", "icem", "mppi"])
   test(`${algorithm} restores its internal search state exactly with variable channels`, () => {
     const root = new NativeEngine(module, scene),
       a = createController(module, scene, { ...settings, algorithm });

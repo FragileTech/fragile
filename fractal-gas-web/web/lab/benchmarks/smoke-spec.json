@@ -15,6 +15,14 @@
       "recording": 0
     },
     {
+      "algorithm": "wave-jump",
+      "walkers": 32,
+      "horizon": 8,
+      "frames": 4,
+      "elites": 2,
+      "recording": 0
+    },
+    {
       "algorithm": "cem",
       "walkers": 32,
       "horizon": 8,

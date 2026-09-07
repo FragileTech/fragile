@@ -1,6 +1,12 @@
 import { loadNative, NativeEngine } from "./native.js";
 import { WorldCapture } from "./motion.js";
 import { acceptPlan, branchActions } from "./timing.js";
+import { TrajectoryCursor } from "./trajectory.js";
+let trajectoryCursor, trajectoryRoot, selectedReward;
+const isJump = () => settings?.algorithm === "wave-jump";
+function clearTrajectory() {
+  trajectoryCursor = trajectoryRoot = selectedReward = undefined;
+}
 let engine,
   predict,
   planner,
@@ -24,7 +30,7 @@ let tick = 0,
 let waveStarted = false,
   capture;
 const sendError = (error) => {
-  running = false;
+  running = single = false;
   postMessage({ type: "error", message: String(error.message || error) });
 };
 function publish(extra = {}) {
@@ -41,6 +47,14 @@ function publish(extra = {}) {
       decisions,
       action,
       running,
+      trajectoryProgress: trajectoryCursor
+        ? {
+            index: trajectoryCursor.index,
+            total: trajectoryCursor.trajectory.length,
+            remaining: trajectoryCursor.remaining,
+            reward: selectedReward,
+          }
+        : undefined,
       profile: engine.profile(),
       ...extra,
     },
@@ -48,10 +62,15 @@ function publish(extra = {}) {
   );
 }
 function request() {
-  if (busy || !ready || (!running && !single)) return;
+  if (busy || trajectoryCursor || !ready || (!running && !single)) return;
+  if (isJump() && engine.metrics()[3] > 0) {
+    running = single = false;
+    publish();
+    return;
+  }
   let root = engine.snapshot();
   target = tick;
-  if (mode === "realtime" && !single) {
+  if (mode === "realtime" && !single && !isJump()) {
     predict.restore(root);
     predict.step(action, settings.frames);
     root = predict.snapshot();
@@ -65,7 +84,7 @@ function request() {
     revision,
     seed: (seed + decisions) >>> 0,
     budget:
-      mode === "realtime" && !single
+      mode === "realtime" && !single && !isJump()
         ? Math.max(
             1,
             settings.frames * (scene.physics?.dt || 1 / 60) * 1000 - 20,
@@ -75,10 +94,52 @@ function request() {
 }
 function commit(result) {
   action = result.action;
+  if (result.trajectory) {
+    trajectoryCursor = new TrajectoryCursor(result.trajectory, engine.channels);
+    trajectoryRoot = result.root;
+    selectedReward = result.selectedReward;
+    nextTime = performance.now();
+  }
   decisions++;
   postMessage({ ...result, type: "diagnostics", decision: decisions });
 }
+function trajectoryTick() {
+  if (busy || (!running && !single) || !trajectoryCursor) return;
+  const paced = mode === "realtime" && !single;
+  const now = performance.now(),
+    dt = (scene.physics?.dt || 1 / 60) * 1000;
+  for (let i = 0; i < (paced ? 4 : 32) && trajectoryCursor; i++) {
+    if (paced && now < nextTime) break;
+    if (engine.metrics()[3] > 0) {
+      clearTrajectory();
+      running = single = false;
+      break;
+    }
+    action = trajectoryCursor.action;
+    capture.step(action, 1, decisions);
+    trajectoryCursor.advance();
+    nextTime += dt;
+    if (trajectoryCursor.done || engine.metrics()[3] > 0) {
+      const dead = engine.metrics()[3] > 0;
+      clearTrajectory();
+      single = false;
+      if (dead) running = false;
+      break;
+    }
+  }
+  if (paced && nextTime < now - 4 * dt) nextTime = now + dt;
+  publish();
+  request();
+}
 function realtimeTick() {
+  if (isJump()) {
+    try {
+      trajectoryTick();
+    } catch (error) {
+      sendError(error);
+    }
+    return;
+  }
   if (!running || mode !== "realtime") return;
   try {
     const now = performance.now(),
@@ -174,6 +235,9 @@ self.onmessage = async ({ data }) => {
               root: engine.snapshot(),
               decisions,
               seed,
+              execution: trajectoryCursor
+                ? { ...trajectoryCursor.checkpoint(), selectedReward }
+                : undefined,
             });
             return;
           }
@@ -184,7 +248,7 @@ self.onmessage = async ({ data }) => {
           }
           if (result.type !== "plan") return;
           busy = false;
-          if (mode === "realtime" && !single) {
+          if (mode === "realtime" && !single && !isJump()) {
             if (result.target >= tick && result.revision === revision)
               pending = result;
             else {
@@ -194,6 +258,13 @@ self.onmessage = async ({ data }) => {
               });
               request();
             }
+            return;
+          }
+          if (isJump()) {
+            if (acceptPlan(result, tick, revision, engine.snapshot())) {
+              commit(result);
+              publish();
+            } else request();
             return;
           }
           if (
@@ -221,6 +292,7 @@ self.onmessage = async ({ data }) => {
       return;
     }
     if (data.type === "reward-state") {
+      clearTrajectory();
       const wasRunning = running;
       running = single = ready = false;
       revision++;
@@ -244,6 +316,7 @@ self.onmessage = async ({ data }) => {
       request();
     }
     if (data.type === "manual") {
+      clearTrajectory();
       running = false;
       single = false;
       revision++;
@@ -254,6 +327,7 @@ self.onmessage = async ({ data }) => {
       publish();
     }
     if (data.type === "wave") {
+      clearTrajectory();
       running = false;
       single = false;
       revision++;
@@ -288,6 +362,18 @@ self.onmessage = async ({ data }) => {
       });
     }
     if (data.type === "checkpoint") {
+      if (trajectoryCursor) {
+        running = single = false;
+        busy = true;
+        planner.postMessage({
+          type: "checkpoint",
+          id: data.id,
+          root: trajectoryRoot,
+          seed: (seed + decisions - 1) >>> 0,
+        });
+        publish();
+        return;
+      }
       running = single = false;
       revision++;
       pending = undefined;
@@ -310,6 +396,18 @@ self.onmessage = async ({ data }) => {
       });
     }
     if (data.type === "restore-checkpoint") {
+      clearTrajectory();
+      if (data.execution) {
+        if (!isJump() || data.checkpoint?.algorithm !== "wave-jump")
+          throw new Error("Trajectory checkpoint type mismatch");
+        trajectoryCursor = new TrajectoryCursor(
+          data.execution.trajectory,
+          engine.channels,
+          data.execution,
+        );
+        trajectoryRoot = data.checkpoint.root;
+        selectedReward = data.execution.selectedReward;
+      }
       running = single = false;
       revision++;
       pending = undefined;
@@ -329,6 +427,7 @@ self.onmessage = async ({ data }) => {
       }
       decisions = data.decisions;
       seed = data.seed;
+      busy = true;
       planner.postMessage({
         type: "restore-checkpoint",
         checkpoint: data.checkpoint,
@@ -339,6 +438,7 @@ self.onmessage = async ({ data }) => {
     if (data.type === "snapshot")
       postMessage({ type: "snapshot", bytes: engine.snapshot() });
     if (data.type === "restore") {
+      clearTrajectory();
       running = false;
       single = false;
       revision++;
@@ -350,6 +450,7 @@ self.onmessage = async ({ data }) => {
       publish();
     }
     if (data.type === "resume-motion") {
+      clearTrajectory();
       running = single = false;
       revision++;
       pending = undefined;
@@ -360,6 +461,7 @@ self.onmessage = async ({ data }) => {
       publish();
     }
     if (data.type === "replay") {
+      clearTrajectory();
       running = false;
       single = false;
       revision++;

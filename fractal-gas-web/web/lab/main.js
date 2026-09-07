@@ -27,7 +27,7 @@ import { initHelp } from "../help.js";
 import { Recording, exportRecording, importRecording } from "./archive.js";
 const $ = (id) => document.getElementById(id),
   copy = (value) => structuredClone(value);
-const renderer = new LabRenderer($("world"));
+const renderer = new LabRenderer($("world"), { isEditing: () => !$("editor").hidden });
 installStyleControls();
 const vehicleCounts = new Map();
 const miningOptions = new Map();
@@ -434,7 +434,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
       status(
         data.wave
           ? "Wave restored. Advance Wave continues the saved population."
-          : "Planner restored. Step continues the saved search.",
+          : "Planner restored. Step continues the saved search or trajectory.",
       );
       return;
     }
@@ -534,6 +534,11 @@ function updateCargoReadout(
   } else $("cargo-status").hidden = true;
 }
 function updateFrame(data) {
+  const progress = data.trajectoryProgress;
+  $("trajectory-progress").hidden = settings().algorithm !== "wave-jump";
+  $("trajectory-progress").textContent = progress
+    ? `Wave Jump · action ${progress.index + 1}/${progress.total} · ${progress.remaining} frames left · path reward ${progress.reward.toFixed(3)}`
+    : "Wave Jump · search → execute full path → search";
   const m = data.metrics,
     dt = currentScene.physics?.dt || 1 / 60;
   $("time").innerHTML = `${(data.tick * dt).toFixed(2)} <small>s</small>`;
@@ -570,7 +575,10 @@ function updateDiagnostics(data) {
   $("used").textContent =
     `${Math.min(100, (data.budgetUsed ?? m[8] / +$("horizon").value) * 100).toFixed(0)}%`;
   $("latency").textContent =
-    `${m[8]} ITERATIONS · ${data.elapsed.toFixed(0)} MS`;
+    `${m[8]} ITERATIONS · ${data.elapsed.toFixed(0)} MS` +
+    (data.selectedReward == null
+      ? ""
+      : ` · PATH REWARD ${data.selectedReward.toFixed(3)}`);
 }
 function updateRecordUI() {
   $("record-count").textContent =
@@ -760,6 +768,10 @@ $("clean").onclick = () => {
   } else renderer.setLayers(oldLayers);
   $("clean").textContent = clean ? "Show diagnostics" : "Clean view";
 };
+$("world").addEventListener("camerachange", () => {
+  $("focus").textContent = renderer.followBody == null ? "Follow agent" : "Whole arena";
+});
+$("reset-view").onclick = () => renderer.focus(null);
 $("focus").onclick = () => {
   const body =
     renderer.followBody == null

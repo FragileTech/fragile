@@ -58,6 +58,9 @@ jobs:
       - name: Test the interactive laboratory
         timeout-minutes: 15
         run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-browser.mjs
+      - name: Test Wave Jump trajectories and checkpoints
+        timeout-minutes: 5
+        run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-wave-jump-browser.mjs
       - name: Test laboratory replay
         timeout-minutes: 15
         run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-replay-browser.mjs

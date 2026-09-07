@@ -1298,3 +1298,18 @@ dialog .control-heading {
 #reward-terms > button { margin: .3rem .3rem .3rem 0; }
 .reward-field { position: relative; }
 .reward-field > .help-icon { position: absolute; top: 0; right: 0; }
+
+/* Camera gestures are available outside the scene editor. */
+body:not(.editing) #world { cursor: grab; }
+body #world.panning { cursor: grabbing; }
+#world { touch-action: none; }
+.camera-hint {
+  position: absolute;
+  bottom: 38px;
+  left: 26px;
+  color: #b8c4d8;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.editing .camera-hint { display: none; }

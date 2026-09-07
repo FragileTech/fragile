@@ -413,6 +413,13 @@ FGC_EXPORT int fgc_plan_advance(void* p) {
     return int(done);
   });
 }
+FGC_EXPORT int fgc_plan_best_leaf(void* p) {
+  return guard(-1, [&] {
+    auto& r = runtime(p);
+    if (!r.planner) throw std::logic_error("No plan");
+    return int(r.planner->wave.best_leaf());
+  });
+}
 FGC_EXPORT float* fgc_plan_action(void* p) {
   return guard<float*>(nullptr, [&] {
     auto& r = runtime(p);

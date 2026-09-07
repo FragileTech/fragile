@@ -206,6 +206,9 @@ export class NativeEngine {
   waveStep() {
     this.check(this.m._fgc_wave_step(this.h));
   }
+  bestLeaf() {
+    return this.check(this.m._fgc_plan_best_leaf(this.h));
+  }
   action() {
     const p = this.m._fgc_plan_action(this.h);
     if (!p) throw new Error(this.m.UTF8ToString(this.m._fgc_error()));

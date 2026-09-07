@@ -570,3 +570,26 @@ TEST_CASE(control_cargo_respawn_with_no_free_location_is_bounded) {
   CHECK(word(b.row(0), s->layout.flags + 1) == delivered_flag);
   CHECK(std::memcmp(b.row(0), replay.row(0), s->layout.words * sizeof(float)) == 0);
 }
+
+TEST_CASE(control_wave_best_leaf_uses_final_rewards_and_stable_ties) {
+  auto scene = Scene::compile(free_scene);
+  Physics physics(scene, 1);
+  StateBatch root(1, *scene);
+  root.reset(*scene, 7);
+  WaveConfig config;
+  config.walkers = 4;
+  config.recording = fg::RecordingMode::Pruned;
+  PackedWave wave(physics, config, 13);
+  wave.reset(root);
+  CHECK(throws([&] { wave.best_leaf(); }));
+  wave.step();
+  wave.step();
+  wave.rewards = {-5, -2, -2, -10};
+  CHECK(wave.best_leaf() == wave.node_ids[1]);
+  word(wave.current.row(3), 7, 1);
+  wave.rewards[3] = 4;
+  CHECK(wave.best_leaf() == wave.node_ids[3]);
+  const auto branch = wave.tree.branch(wave.best_leaf());
+  CHECK(branch.size() == 3);
+  CHECK(wave.tree.node(branch.back()).id == wave.node_ids[3]);
+}

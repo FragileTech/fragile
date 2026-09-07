@@ -99,7 +99,7 @@
         </p>
         <div class="run-controls">
           <button id="run" class="primary" disabled>▶ Run experiment</button
-          ><button id="step" title="Plan and commit one action" disabled>
+          ><button id="step" title="Plan and execute one action, or one complete Wave Jump trajectory" disabled>
             Step</button
           ><button id="reset" title="Reset the scene with the same seed">
             ↺
@@ -121,7 +121,8 @@
           >
           CONTROLLER <span id="controller-label">FMC</span>
         </div>
-        <label class="field" data-help="Planning algorithm used to choose the next action. Each controller implements the same batched state and action interface.">Controller<select id="algorithm"></select></label>
+        <label class="field" data-help="Planning algorithm used to choose actions. Wave Jump executes the best final trajectory before searching again; Step runs one complete trajectory and physics pauses during search. Each controller implements the same batched state and action interface.">Controller<select id="algorithm"></select></label>
+        <p id="trajectory-progress" hidden aria-live="polite"></p>
         <label class="field" data-help="Clock policy for planning. Reproducible waits for a complete plan; real time keeps the simulation clock moving while planning continues."
           >Clock<select id="clock">
             <option value="reproducible">
@@ -227,6 +228,7 @@
             ><button id="clean" title="Toggle all diagnostic layers" data-help="Temporarily hide or restore diagnostic overlays so the world movement is easier to inspect.">
               Clean view</button
             ><button id="focus" data-help="Keep the camera centered on the selected or best agent.">Follow agent</button
+            ><button id="reset-view" title="Restore the centered whole-arena view">Reset view</button
             ><button id="experiments" data-help="Compare controller variants on fixed seeds or fork the current world into independent outcomes.">Experiments</button
             ><button id="edit" data-help="Open the scene editor to place agents, geometry, pickups, tethers, and reusable agent types.">Edit scene</button>
           </div>
@@ -247,6 +249,7 @@
           <div id="status" role="status" aria-live="polite">
             Compiling possible futures…
           </div>
+          <div class="camera-hint">Scroll to zoom · Drag to pan</div>
           <div class="compass"><span>Y</span><i></i><span>X</span></div>
           <div class="legend">
             <span><i class="green"></i>High reward</span

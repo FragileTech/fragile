@@ -27,6 +27,19 @@ The live **Clock** setting does not impose deadlines here.
 The experiment worker loads the serial WebAssembly module. Setting the live
 **Worker threads** field to 64 does not make these benchmarks use 64 threads.
 Keep this distinction in mind when comparing their timing with the live planner.
+
+Select **Wave Jump** (`wave-jump`) in either variant to compare trajectory commitment
+with FMC. Both use the same FMC search parameters. Wave Jump selects the final
+walker with the highest accumulated reward and follows its ancestral action
+sequence for the recorded duration of every edge before searching again. Terminal
+final walkers remain eligible; ties go to the lower walker index. Selection uses
+accumulated reward even when FMC resampling uses a different reward setting.
+
+Imagine the search proposes three turns. FMC commits to one action and asks again;
+Wave Jump commits to the selected sequence. A Wave Jump decision therefore means
+one search and its trajectory, which can contain several actions. Compare executed
+frames and simulated planning work alongside decision counts: an equal number of
+decisions does not imply an equal amount of movement.
 :::
 
 :::{div} feynman-added
@@ -62,6 +75,10 @@ change even `algorithm`, `walkers`, or `recording`. Live algorithm-specific fiel
 only exist for the currently selected live controller; absent options for another
 variant use that algorithm's defaults. Set both JSON objects explicitly when the
 comparison depends on those values.
+
+Wave Jump retains at least a pruned tree internally, including with `recording: 0`,
+because parent links are needed to recover the selected sequence. That internal
+ancestry does not turn an ordinary benchmark into an exported motion recording.
 :::
 
 ```json
@@ -84,6 +101,8 @@ An episode ends at the first successful physics frame, terminal state, or frame
 limit. The runner checks after every frame, even when an action was planned to last
 longer. A terminal frame cannot also count as success: the implementation requires
 the world to be nonterminal when its goal threshold is met.
+These checks also apply to every frame inside a Wave Jump trajectory: reaching the
+goal or frame limit stops execution without finishing the remaining sequence.
 :::
 
 :::{div} feynman-added
@@ -155,8 +174,8 @@ than declaring the smaller number universally better.
 Planning time includes worker yields and depends on hardware and scheduling.
 It excludes the authoritative-world execution loop, and the benchmark does not run
 the live selected-action risk probes. `simulatorFrames` counts completed native
-physics frames across planning worlds, including FMC. Terminal worlds and iCEM's
-zero-duration inactive slots reduce the count. Copying inactive rows still costs
+physics frames across planning worlds, including FMC and Wave Jump. Terminal worlds
+and iCEM's zero-duration inactive slots reduce the count. Copying inactive rows still costs
 time. Equal population and horizon can therefore give different measured work,
 especially when search-round counts differ.
 
@@ -286,8 +305,7 @@ useful racing performance claim.
   "goal": {"metric": "survival", "target": 12},
   "variants": [
     {"algorithm": "fmc", "walkers": 8, "horizon": 2, "frames": 2, "recording": 0},
-    {"algorithm": "mppi", "walkers": 8, "horizon": 2, "frames": 2,
-     "search_iterations": 1, "recording": 0}
+    {"algorithm": "wave-jump", "walkers": 8, "horizon": 2, "frames": 2, "recording": 0}
   ]
 }
 ```
@@ -310,7 +328,7 @@ specification accepts 1–8 variants, whereas the UI exposes two. Each variant m
 provide integer `walkers`, `horizon`, and `frames` within the ranges listed above.
 There are no inherited live UI settings in the CLI. Omit `goal` to use each scene's
 evaluation or the survival fallback. The repository also supplies
-`fractal-gas-web/web/lab/benchmarks/smoke-spec.json`, covering all five controllers.
+`fractal-gas-web/web/lab/benchmarks/smoke-spec.json`, supplying a ready-made controller suite.
 An omitted output argument writes `control-benchmark.json` in the current directory.
 
 For a native C++ throughput matrix rather than controller episodes, build and run

@@ -3,9 +3,10 @@
 
 :::{div} feynman-prose
 The laboratory has one executed world and a collection of possible futures. **Step**
-asks the controller to examine those futures, choose an action, and apply it to the
-executed world. The bright vehicle shows what happened; the paths and cloud show
-what the planner considered. Keeping those two roles separate makes the controls
+asks the controller to examine those futures and apply its decision to the executed
+world: one action for FMC, or a complete selected trajectory for Wave Jump. The
+bright vehicle shows what happened; the paths and cloud show what the planner
+considered. Keeping those two roles separate makes the controls
 much easier to understand.
 
 Start with {doc}`control_lab_getting_started` for installation and a first run.
@@ -31,8 +32,8 @@ and resets leave the new world paused.
 | **Vehicle type** | Choose **Harvesters** or **Drones** in Ants & Drops. | Rebuilds the original preset with one type for all vehicles, clears run and editor history, and leaves the world paused. Defaults to **Harvesters**. |
 | **Vehicle count** | Set the Ants & Drops vehicle count to a whole number from 1 to 128. | Defaults to 5. Applies the same rebuild as **Vehicle type**; invalid entries leave the scene intact. |
 | **Run experiment** | Repeatedly plan and execute actions using the selected clock. | Button becomes **Pause experiment**. |
-| **Pause experiment** | Stop further execution. | The displayed state remains available for inspection and export. |
-| **Step** | Plan once, then execute **Action frames** physics frames. | Pauses continuous running; always waits for this plan, including with the real-time clock selected. |
+| **Pause experiment** | Stop further execution. | The displayed state remains available for inspection and export. Wave Jump preserves its remaining trajectory for resumption. |
+| **Step** | Plan once, then execute one action, or the complete selected trajectory for Wave Jump. | Pauses continuous running and waits for planning with either clock. A paused Wave Jump trajectory finishes its remaining actions. |
 | **↺** (Reset) | Rebuild the current scene with the current seed. | Resets task progress and recordings; preserves scene edits and selected settings. |
 | **Advance Wave population** | Advance the native FMC population by one Wave iteration. | Displays population row zero as the world, with a labeled **Wave selection** recording cut. |
 :::
@@ -49,7 +50,9 @@ advance that same population. It runs native FMC even when another controller is
 selected. It does not execute the usual mean first action in the original world.
 The displayed row is one population member, not a declaration of the best future.
 Wave runs in the serial simulation worker; **Worker threads** controls the separate
-live planner. Selected-action risk is not evaluated in this mode.
+live planner. Selected-action risk is not evaluated in this mode. This inspection
+button is separate from the **Wave Jump** controller, which executes the chosen
+branch through ordinary physics steps in the original world.
 
 Use **Reset** before switching from a Wave demonstration to an ordinary control
 trial. Wave checkpoints can preserve its population; see
@@ -74,7 +77,8 @@ requested search finishes. It then applies the action for the configured duratio
 Simulation can run faster or slower than wall time. Use this mode to compare
 decisions without making CPU scheduling part of the control problem.
 
-**Real time · fixed simulation clock** advances the world on a scheduled physics
+**Real time · fixed simulation clock**, for controllers other than Wave Jump,
+advances the world on a scheduled physics
 clock while the planner works separately. The planner starts from a prediction of
 the next action boundary under the current action. A result is accepted only when
 its scene revision, target tick, and complete root snapshot match the executed
@@ -87,6 +91,12 @@ of 1 ms. The planner checks this budget between incremental advances; one advanc
 and the subsequent risk probes can overrun it. The simulation catches up at most
 four physics steps per timer callback, then reschedules if still behind. Browser
 throttling therefore prevents this mode from being a hard real-time guarantee.
+
+Wave Jump waits for the complete search with either clock: the executed world stays
+still while it plans. Real-time mode paces only the selected trajectory's execution.
+Each action uses its recorded edge duration, which can be shorter than **Action
+frames** when a sampled world terminates. Zero-duration edges are skipped. The
+trajectory duration is the sum of these frame counts times `scene.physics.dt`.
 :::
 
 :::{div} feynman-added
@@ -127,10 +137,10 @@ UI ranges; lower-level APIs can have different limits.
 :::{div} feynman-added
 | UI label | Settings key | Default; UI range | Meaning and applicability |
 |---|---|---|---|
-| **Controller** | `algorithm` | `fmc` | `fmc`, `random`, `cem`, `icem`, or `mppi`. |
-| **Walkers** | `walkers` | 128; integers 1–8192 | FMC population or shooting batch capacity. Random control does not use a rollout population. |
-| **Horizon** | `horizon` | 32; integers 1–4096 | FMC iterations per decision; action depth per shooting round. Ignored by random action selection. |
-| **Action frames** | `frames` | 12; integers 1–60 | Physics frames per candidate action and executed control action. Applies to all controllers. |
+| **Controller** | `algorithm` | `fmc` | `fmc`, `wave-jump`, `random`, `cem`, `icem`, or `mppi`. |
+| **Walkers** | `walkers` | 128; integers 1–8192 | FMC/Wave Jump population or shooting batch capacity. Random control does not use a rollout population. |
+| **Horizon** | `horizon` | 32; integers 1–4096 | FMC/Wave Jump iterations per search; action depth per shooting round. Ignored by random action selection. |
+| **Action frames** | `frames` | 12; integers 1–60 | Physics frames per candidate action. Wave Jump executes each selected edge for its actual recorded duration; other controllers execute one action for this count. |
 | **Seed** | `seed` | 7; integers 0–4294967295 | World reset seed and base planner seed; successive decisions derive seeds by adding the decision count modulo `2^32`. |
 | **Diversity coefficient** (in **Reward terms**) | `distance_coef` | 1; 0–10, increment 0.1 | FMC exponent on rescaled observation distance in cloning fitness. |
 | **Reward coefficient** (in **Reward terms**) | `reward_coef` | 1; 0–10, increment 0.1 | FMC exponent on rescaled reward signal in cloning fitness. Does not edit scene reward weights. |
@@ -146,6 +156,27 @@ their actions. The first actions travel with their descendants. At the end, the
 controller averages those inherited first actions over the final population;
 cloning supplies the implicit weighting. If no population members survive, it
 returns the neutral action. It does not simply choose the highest-reward leaf.
+
+**Wave Jump** uses the same search parameters and cloning procedure as FMC. After
+the search, it selects the final walker with the highest accumulated path reward,
+including terminal walkers; ties choose the lower walker index. It follows that
+walker's recorded parent links back to the root and executes the resulting action
+sequence in forward order. This follows the ancestry through cloning, rather than
+reading successive actions from one walker slot. Selection always uses accumulated
+reward, independently of any reward-signal setting used by resampling.
+
+Imagine the search finds a useful sequence of turns. FMC uses its population to
+choose the next turn, then searches again. Wave Jump commits to the whole selected
+sequence before it searches again. It therefore makes one planning decision per
+trajectory. The best final walker need not be the best node ever sampled, and a
+large accumulated reward does not guarantee that its endpoint is nonterminal.
+Execution stops if the actual world terminates. An empty executable path stops
+with a status message instead of starting repeated searches.
+
+**Pause** retains the action index and remaining frames. A planner checkpoint
+preserves these alongside the world and search state, so restoration can resume
+either a search or a partly executed trajectory. Changing the scene, applied
+rewards, algorithm, or world state discards the queued trajectory.
 
 The two **coefficient** fields are exponents in a product of rescaled distance and reward
 signals, not an additive meter of distance plus points. Setting an exponent to zero
@@ -167,8 +198,8 @@ in {doc}`control_lab_architecture` and {doc}`control_laboratory`.
 :::{div} feynman-prose
 **Reward terms** is expanded by default. **Diversity coefficient** and **Reward
 coefficient** each have a synchronized slider and numeric input. They control how
-FMC selects possible futures. The term weights beneath them control the reward
-earned by the simulated world: movement, target progress, collisions, pickups,
+FMC and Wave Jump select possible futures. The term weights beneath them control
+the reward earned by the simulated world: movement, target progress, collisions, pickups,
 deliveries, checkpoints, formation, and full loads. Those reward weights also
 affect the futures evaluated by the shooting controllers.
 
@@ -269,9 +300,14 @@ and elapsed planning time on the same tasks and seeds.
 :::{div} feynman-prose
 Camera and layer controls change presentation without changing physics or resetting
 the run. **2D / 3D** switches between overhead and angled views of the same planar
-world. Scroll to zoom; middle/right-drag or Alt-drag pans. **Follow agent** follows
-the selected body, or the first controlled body when none is selected. Its
-**Whole arena** state returns to the arena view. Panning disengages following.
+world. Scroll to zoom, then left-drag to bring another part of the environment
+into view without changing the zoom. A click without dragging still selects an
+exploration node. With **Edit scene** open, left-drag moves scene objects; use
+middle/right-drag or Alt-drag to pan instead. These pan shortcuts also work with
+the editor closed. **Follow agent** follows the selected body, or the first
+controlled body when none is selected. Panning disengages following so the camera
+stays where you put it. The follow button's **Whole arena** state and **Reset view**
+return to the centered view of the entire arena.
 
 For manual driving, enable **Keyboard control**, then click the world so a text,
 numeric, or selection input no longer has focus. Select a body in **Edit scene**
@@ -307,7 +343,7 @@ the world.
 :::{div} feynman-added
 | Layer/control | Default | Visible meaning |
 |---|---|---|
-| **Rollout paths** | On | Recorded controlled-body paths, available for FMC. Green is at/above mean recorded reward; rose indicates terminal state; violet indicates a tethered path; blue shows other alternatives. Terminal color takes precedence over tether color. |
+| **Rollout paths** | On | Recorded controlled-body paths, available for FMC and Wave Jump. Green is at/above mean recorded reward; rose indicates terminal state; violet indicates a tethered path; blue shows other alternatives. Terminal color takes precedence over tether color. |
 | **Future-state cloud** | On | Controlled-body positions in the planner's returned world batch, which may be at a partial horizon in deadline mode. |
 | **Tethers & formation** | On | Current tether geometry linking bodies. |
 | **Collision geometry** | Off | Native hull outlines, useful when a decorative model differs from its collider. |
@@ -324,6 +360,10 @@ disable recording. For that, change **Tree** below the world view.
 ## Read the telemetry and choose recording detail
 
 :::{div} feynman-prose
+For Wave Jump, the selected path reward describes the chosen final walker and
+trajectory progress describes execution of that path. These are separate from
+search progress: completing the search starts the journey.
+
 Three measurements answer different questions: simulation time measures what the
 world has done, planning progress measures search work, and risk probes examine
 short random continuations of the chosen action. A cloud with many dead worlds
@@ -334,11 +374,11 @@ does not by itself measure the risk of the action ultimately selected.
 | Readout | Exact interpretation |
 |---|---|
 | **SIMULATION / TICK** | Executed or replayed world tick times `physics.dt`; not wall-clock runtime. |
-| **DEAD RATIO** | FMC final Wave terminal fraction. Shooting reports terminal rows divided by allocated Walkers; iCEM's inactive capacity can dilute this fraction. Random has no searched population, so its zero is not evidence of safe exploration. |
+| **DEAD RATIO** | FMC/Wave Jump final Wave terminal fraction. Shooting reports terminal rows divided by allocated Walkers; iCEM's inactive capacity can dilute this fraction. Random has no searched population, so its zero is not evidence of safe exploration. |
 | **SELECTED-ACTION RISK** | Fraction terminal in 16 separate continuations: chosen action for `F` frames, then independently sampled uniform joint actions held for `2F` frames, where `F = Action frames`. Display includes sample count and total horizon. |
-| **EVAPORATED / CLONED** | Nodes removed by the latest FMC pruning pass, and fraction cloned in the latest Wave iteration. Other controllers do not perform these operations. |
-| **AI BUDGET USED** | FMC iterations / Horizon; shooting completed depth advances / (Horizon × Search rounds); random reports 100%. Capped at 100% in the HUD. This is search progress, not CPU utilization. |
-| **ITERATIONS / MS** | FMC Wave iterations or shooting depth advances, with measured planner elapsed milliseconds. Live elapsed time includes worker yields and risk evaluation. |
+| **EVAPORATED / CLONED** | Nodes removed by the latest FMC pruning pass, and fraction cloned in the latest Wave iteration. Wave Jump shares these operations; shooting and random controllers do not. |
+| **AI BUDGET USED** | FMC/Wave Jump iterations / Horizon; shooting completed depth advances / (Horizon × Search rounds); random reports 100%. Capped at 100% in the HUD. This is search progress, not CPU utilization. |
+| **ITERATIONS / MS** | FMC/Wave Jump Wave iterations or shooting depth advances, with measured planner elapsed milliseconds. Live elapsed time includes worker yields and risk evaluation. |
 | **SCORE** | Scene-defined task readout: for example deliveries, pickups, gates, or completed laps. See each task in {doc}`control_lab_scenes`. |
 | **BYTES / WORLD** | Unpadded mutable world-state size. Excludes shared scene data, serialization header, planning arrays, and graphics. |
 | Footer | Body count, joint action dimension, and missed real-time action deadlines. |
@@ -370,8 +410,8 @@ world-frame counts and throughput probes provide separate work measurements.
 | Recording control | Operation |
 |---|---|
 | **Tree → Pruned** (`recording = 1`, default) | Remove orphan leaves while protecting current walkers, elites, and their ancestors. |
-| **Tree → Full** (`recording = 2`) | Retain all FMC search nodes; useful for examining alternatives, with higher memory use. |
-| **Tree → Off** (`recording = 0`) | Disable search-tree recording. Executed-world recording continues. |
+| **Tree → Full** (`recording = 2`) | Retain all FMC/Wave Jump search nodes; useful for examining alternatives, with higher memory use. |
+| **Tree → Off** (`recording = 0`) | Disable visible search-tree recording. Wave Jump still uses at least pruned recording internally to reconstruct its trajectory. Executed-world recording continues. |
 | **Keep all decisions** | For memory-backed recordings, replace the usual latest-32-decisions window with retention up to the 64 MiB tree payload budget. Capacity stops control with an export prompt; it does not silently discard the oldest retained decision. |
 :::
 

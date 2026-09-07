@@ -1,6 +1,7 @@
 import "./controllers/index.js";
 import { createController, emptyTree } from "./controllers/registry.js";
 import { loadNative, NativeEngine, controlThreads } from "./native.js";
+import { validateTrajectory } from "./trajectory.js";
 let engine,
   strategy,
   riskEngine,
@@ -98,6 +99,9 @@ self.onmessage = async ({ data }) => {
       )
     )
       throw new Error("Controller returned an invalid action");
+    const trajectory = result.trajectory
+      ? validateTrajectory(result.trajectory, engine.channels)
+      : undefined;
     const tree = result.tree || emptyTree(engine, data.root),
       metrics = result.metrics || engine.metrics(),
       cloud = result.cloud || engine.states();
@@ -127,6 +131,9 @@ self.onmessage = async ({ data }) => {
         target: data.target,
         root: data.root,
         action,
+        trajectory,
+        selectedLeaf: result.selectedLeaf,
+        selectedReward: result.selectedReward,
         tree,
         cloud,
         metrics,
@@ -142,6 +149,7 @@ self.onmessage = async ({ data }) => {
       },
       [
         action.buffer,
+        ...(trajectory?.map((edge) => edge.action.buffer) || []),
         tree.meta.buffer,
         tree.values.buffer,
         tree.root.buffer,

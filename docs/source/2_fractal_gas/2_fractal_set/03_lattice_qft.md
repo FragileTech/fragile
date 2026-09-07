@@ -1892,6 +1892,244 @@ is an exact representation calculation, not a proof that the original
 geometric regions were local. $\square$
 :::
 
+:::{prf:theorem} Exact inherited-history covariance of native regional readouts
+:label: thm-lqft-inherited-history-covariance
+
+Fix the existing finite execution law of
+{prf:ref}`thm-sm-instantiated-record-transition`, including its prescribed
+survival conditioning when present. Denote expectation under this same law
+by $\mathbb E$. Let $F,G$ be bounded cylinders of the original regional
+readouts, retaining their masks and normalizations. Let $\mathcal F_j$
+be the history through the $j$th recorded update, with $\mathcal F_0$
+containing the initial record and $\mathcal F_T$ the complete record used
+by these cylinders. Write
+
+$$
+\begin{gathered}
+f=F-\mathbb EF,\qquad g=G-\mathbb EG,\qquad
+m_j^F=\mathbb E[f\mid\mathcal F_j],\quad
+m_j^G=\mathbb E[g\mid\mathcal F_j],\\
+d_j^F=m_j^F-m_{j-1}^F,\qquad d_j^G=m_j^G-m_{j-1}^G,\qquad
+B_k=\mathbb E[\overline{m_k^F}m_k^G].
+\end{gathered}
+$$
+
+Thus $B_k$ is precisely the covariance of the two conditional means,
+with the first argument conjugated. No change of regional modes is made.
+Its exact value and an update-resolved bound are
+
+$$
+\begin{aligned}
+B_k&=B_0+\sum_{j=1}^k
+             \mathbb E[\overline{d_j^F}d_j^G],\\
+|B_k|&\le |B_0|+\sum_{j=1}^k\sqrt{e_j^F e_j^G},
+\qquad e_j^F=\mathbb E|d_j^F|^2,\quad
+e_j^G=\mathbb E|d_j^G|^2.
+\end{aligned}
+$$
+
+Define complex variance by $\operatorname{Var}(F)=\mathbb E|f|^2$ and
+conditional variance by the corresponding conditional squared modulus.
+The bound retaining the total predictable variance is
+
+$$
+\begin{gathered}
+v_k^F:=\operatorname{Var}(F)
+       -\mathbb E\operatorname{Var}(F\mid\mathcal F_k)
+       =\|m_0^F\|_2^2+\sum_{j=1}^k e_j^F,\\
+|B_k|\le\sqrt{v_k^Fv_k^G}
+       \le\sqrt{\operatorname{Var}(F)\operatorname{Var}(G)}.
+\end{gathered}
+$$
+
+For positive variances, set
+$\eta_k^F=v_k^F/\operatorname{Var}(F)$ and similarly for $G$. Then
+$0\le\eta_k^F,\eta_k^G\le1$ and
+
+$$
+\frac{|B_k|}{\sqrt{\operatorname{Var}(F)\operatorname{Var}(G)}}
+\le\sqrt{\eta_k^F\eta_k^G}.
+$$
+
+If either variance is zero, $B_k=0$. For the full cross coefficient the
+same decomposition gives the exact remainder
+
+$$
+\mathbb E[\overline f g]-B_k
+=\sum_{j=k+1}^T\mathbb E[\overline{d_j^F}d_j^G]
+=\mathbb E\operatorname{Cov}(\overline F,G\mid\mathcal F_k).
+$$
+
+**Evaluation with the recorded update.** Let $R_j$ denote the already
+retained history through update $j$, and let
+$K_j(r,dr')$ be its conditional next-history kernel under the selected
+execution law. These are the original kernels acting on retained histories.
+Starting from $m_T^F(r)=F(r)-\mathbb EF$, backward integration gives
+
+$$
+\begin{aligned}
+m_{j-1}^F(r)&=\int m_j^F(r')K_j(r,dr'),\\
+b_j(r)&=\int
+ \overline{\bigl(m_j^F(r')-m_{j-1}^F(r)\bigr)}
+ \bigl(m_j^G(r')-m_{j-1}^G(r)\bigr)K_j(r,dr'),\\
+B_k&=\int\overline{m_0^F(r)}m_0^G(r)\,\mathcal L(R_0)(dr)
+     +\sum_{j=1}^k\int b_j(r)\,\mathcal L(R_{j-1})(dr).
+\end{aligned}
+$$
+
+Replacing the mixed integrand in $b_j$ by its first squared modulus
+gives $e_j^F$ after integration over $R_{j-1}$, and likewise for $G$.
+For an unselected update, the kernel integral is exactly integration of
+the recorded update map against its fresh-input law in
+{prf:ref}`def-sm-complete-update-law`. For the specified latent kinetic
+stages this map includes squashing before both A transports, as in
+{prf:ref}`cor-ym-squashed-kinetic-support`.
+
+For a history conditioned to survive through $T$, the conditional kernel
+is instead the already specified survival-weighted kernel of
+{prf:ref}`prop-ym-qsd-history-identification`. Explicitly, if
+$Q_j(r,dr')$ is the killed history-extension kernel, put
+$h_T=1$ and $h_{j-1}=Q_jh_j$. On histories of positive selected
+probability,
+
+$$
+K_j(r,dr')=\frac{Q_j(r,dr')h_j(r')}{h_{j-1}(r)}.
+$$
+
+Its initial law is weighted by $h_0$ and normalized by the original
+survival probability. Thus the covariance calculation includes the same
+selection in both its backward integrals and its outer expectations.
+
+For terminal state readouts $F=A(S_{k+r})$, $G=B(S_{k+s})$ under
+the existing conservative stationary law $\pi$, the formula specializes to
+
+$$
+B_k=\langle C_r a,C_s b\rangle_\pi
+   =\langle a,C_r^*C_s b\rangle_\pi,\qquad
+a=A-\pi A,\quad b=B-\pi B.
+$$
+
+Here $C_r$ is the centered native $r$-update contraction, not the
+equilibrium transfer in $\sigma$. In particular, the inherited term uses
+$C_r^*C_s$, whereas the unequal-time cross coefficient in
+{prf:ref}`thm-lqft-record-locality-defect` uses the recorded time lag.
+
+*Proof.* Conditional expectation makes $m_j^F,m_j^G$ square-integrable
+martingales. For $i<j$, the tower identity gives
+
+$$
+\mathbb E[\overline{d_i^F}d_j^G]
+=\mathbb E[\overline{d_i^F}
+                 \mathbb E(d_j^G\mid\mathcal F_{j-1})]=0.
+$$
+
+The same argument handles $i>j$ and the cross terms with the initial
+conditional means. Expanding the two martingale sums proves the formula
+for $B_k$; Cauchy--Schwarz bounds each term. Applying this orthogonality
+to a single readout proves the sum for $v_k^F$. The conditional mean and
+its residual are orthogonal, so their squared norms sum to
+$\operatorname{Var}(F)$. This gives its other expression and
+$0\le v_k^F\le\operatorname{Var}(F)$. Cauchy--Schwarz applied directly
+to $m_k^F,m_k^G$ proves the predictable-variance bound. Since
+$m_T^F=f$ and $m_T^G=g$, subtracting the two martingale expansions
+gives the remainder; expanding the two conditional residuals identifies
+it with the conditional covariance.
+
+The backward formula is the tower identity for the actual history
+extension. Its difference is $d_j^F$, so integration of its mixed
+product proves the displayed expression for $b_j$ and $B_k$.
+Bayes' rule gives the survival-weighted kernel and initial law; the
+recursion for $h_j$ verifies that each such kernel has mass one.
+Finally, the Markov property gives
+$\mathbb E[a(S_{k+r})\mid\mathcal F_k]=C_ra(S_k)$.
+Stationarity and the definition of the adjoint prove the last identity.
+All these steps use the same execution law as the two readouts. $\square$
+:::
+
+:::{prf:corollary} Full covariance bound from the recorded history increments
+:label: cor-lqft-full-history-locality-bound
+
+Use the readouts and the same law of
+{prf:ref}`thm-lqft-inherited-history-covariance`. For positive variances,
+write $\sigma_F^2=\operatorname{Var}(F)$,
+$\sigma_G^2=\operatorname{Var}(G)$, and set
+
+$$
+\begin{gathered}
+\alpha_0=\|m_0^F\|_2^2/\sigma_F^2,\quad
+\alpha_j=e_j^F/\sigma_F^2\quad(1\le j\le T),\\
+\beta_0=\|m_0^G\|_2^2/\sigma_G^2,\quad
+\beta_j=e_j^G/\sigma_G^2\quad(1\le j\le T),\qquad
+\varepsilon_{FG}=\sum_{j=0}^T\sqrt{\alpha_j\beta_j}.
+\end{gathered}
+$$
+
+These numbers are computed by the native-kernel recursion in that theorem.
+They obey $\sum_j\alpha_j=\sum_j\beta_j=1$ and
+$0\le\varepsilon_{FG}\le1$. In particular, $\varepsilon_{FG}=0$
+exactly when $\alpha_j\beta_j=0$ for every $j$, including $j=0$.
+The exact signed covariance can also vanish by cancellation when this
+nonnegative upper bound is positive. For the original normalized centered modes,
+the complete cross coefficient satisfies
+
+$$
+\begin{aligned}
+s_{FG}
+&=\frac{B_k+
+  \mathbb E\operatorname{Cov}(\overline F,G\mid\mathcal F_k)}
+ {\sigma_F\sigma_G}
+ =\frac{B_0+\sum_{j=1}^T\mathbb E[\overline{d_j^F}d_j^G]}
+ {\sigma_F\sigma_G},\\
+|s_{FG}|&\le\varepsilon_{FG}
+\le\sqrt{\eta_k^F\eta_k^G}
+ +\sqrt{(1-\eta_k^F)(1-\eta_k^G)}\le1
+\qquad(0\le k\le T).
+\end{aligned}
+$$
+
+For terminal-state readouts under the conservative stationary law used
+by the existing CAR representation, apply this calculation to their
+stationary recorded histories. Their terminal marginal is that same law.
+For its unit modes
+$f=(F-\mathbb EF)/\sigma_F$, $g=(G-\mathbb EG)/\sigma_G$, substitution
+in the exact even-observable relation gives
+
+$$
+[n_f,n_g]=s_{FG}a^\dagger(f)a(g)
+             -\overline{s_{FG}}a^\dagger(g)a(f),\qquad
+\|[n_f,n_g]\|\le b(\varepsilon_{FG}),
+$$
+
+where
+
+$$
+b(\varepsilon)=
+\begin{cases}
+\varepsilon\sqrt{1-\varepsilon^2},&0\le\varepsilon\le1/\sqrt2,\\
+1/2,&1/\sqrt2\le\varepsilon\le1.
+\end{cases}
+$$
+
+The bound also holds on the reducing observable vacuum sector of
+{prf:ref}`thm-ym-hk-record-instantiation`. For arbitrary even words,
+replace each cross inner product in its word estimate by
+$\varepsilon_{F_iG_j}\|f_i\|\|g_j\|$, with the corresponding normalized
+readouts used to compute $\varepsilon_{F_iG_j}$.
+
+*Proof.* The terminal predictable variance is the full variance, proving
+the two sum identities. The exact covariance decomposition and
+Cauchy--Schwarz on each increment give the first bound. Group the indices
+$0,\ldots,k$ and $k+1,\ldots,T$ and apply Cauchy--Schwarz to each group.
+Their respective sums are $\eta_k^F,1-\eta_k^F$ and
+$\eta_k^G,1-\eta_k^G$. A final two-dimensional Cauchy--Schwarz inequality
+gives the upper bound one. The even CAR identity is
+{prf:ref}`thm-ym-hk-record-instantiation`; on full Fock space its norm is
+$|s_{FG}|\sqrt{1-|s_{FG}|^2}$. Maximizing this expression over
+$0\le|s_{FG}|\le\varepsilon_{FG}$ gives the stated piecewise function.
+Restriction to a reducing subspace cannot increase the norm. Substitution
+in the established even-word estimate proves the last statement. $\square$
+:::
+
 :::{div} feynman-prose
 The established product equilibrium family gives a concrete regional
 construction. Choose a mode that vanishes outside a phase-space region

@@ -3457,6 +3457,258 @@ identities with its recorded occupation and descriptor.
 :::
 
 
+:::{prf:theorem} Exact cancellation for disjoint native source likelihoods
+:label: thm-ym-disjoint-source-cancellation
+
+Use the native unselected execution law and its common limiting law in
+{prf:ref}`thm-ym-continuum-source-action`, with the occupation identity of
+{prf:ref}`thm-ym-occupation-source-identification`. Let $f,g$ be real
+sources with disjoint supports in the recorded source coordinates
+$(\tau,x)$. Retain the existing source currents $M_f,M_g$, energies
+$E_{ff},E_{gg}$, and likelihoods
+
+$$
+L_f(a)=\exp(aM_f-a^2E_{ff}/2),\qquad
+L_g(b)=\exp(bM_g-b^2E_{gg}/2).
+$$
+
+At finite size and on the same constructed limit, for every real $a,b$,
+
+$$
+E_{fg}=0,\qquad L_f(a)L_g(b)=L_{af+bg}(1),\qquad
+\mathbb E[(L_f(a)-1)(L_g(b)-1)]=0.
+$$
+
+For $p,q\ge1$, their already defined likelihood derivatives
+$H_{f,p}=\partial_a^pL_f(0)$ and $H_{g,q}=\partial_b^qL_g(0)$
+therefore satisfy
+
+$$
+\mathbb EH_{f,p}=\mathbb EH_{g,q}=0,\qquad
+\mathbb E[H_{f,p}H_{g,q}]=0.
+$$
+
+In particular $H_{f,1}=M_f$, $H_{g,1}=M_g$, and for every cut
+$\mathcal F_k$ of the finite execution history both terms in the
+total covariance formula vanish:
+
+$$
+\operatorname{Cov}\bigl(\mathbb E[M_f\mid\mathcal F_k],
+                         \mathbb E[M_g\mid\mathcal F_k]\bigr)
+=0,\qquad
+\operatorname{Cov}(M_f,M_g\mid\mathcal F_k)=0
+\quad\text{almost surely}.
+$$
+
+The same identities hold for $H_{f,p},H_{g,q}$. Thus their full
+covariance is zero even when a variance-only bound is positive.
+This evaluates the signed sum underlying
+{prf:ref}`cor-lqft-full-history-locality-bound` for these existing source
+variables. Their integrability follows from the likelihood derivative
+envelopes, so the square-integrable martingale proof applies directly.
+
+For the original descriptor $Y$ at finite size, or $\widehat Y$ in
+the common limit, write $r_f(a)=\mathbb E[L_f(a)\mid Y]$ with the
+corresponding descriptor understood. Its exact projected identity is
+
+$$
+\mathbb E[(r_f(a)-1)(r_g(b)-1)]
+=-\mathbb E[(L_f(a)-r_f(a))(L_g(b)-r_g(b))].
+$$
+
+At first derivative order this is the existing information decomposition
+specialized to disjoint sources:
+
+$$
+\mathbb E[J_fJ_g]
+=-\mathbb E[(M_f-J_f)(M_g-J_g)],\qquad
+J_f=\mathbb E[M_f\mid Y].
+$$
+
+For a complete lossless record retaining the source inputs and occupation,
+the likelihoods are measurable in that record and the residuals vanish.
+For the prescribed smaller gauge descriptor the displayed residual uses
+that descriptor itself.
+
+For the existing survival selection $\ell$, retain its normalization and
+write $Z_f(a)=\mathbb E[\ell L_f(a)]/\mathbb E\ell$ and
+$Z_{f,g}(a,b)=\mathbb E[\ell L_{af+bg}(1)]/\mathbb E\ell$.
+Under $\mathbb P^\ell$, the normalized source densities obey instead
+the exact formula
+
+$$
+\mathbb E_{\mathbb P^\ell}
+ \left[\left(\frac{L_f(a)}{Z_f(a)}-1\right)
+       \left(\frac{L_g(b)}{Z_g(b)}-1\right)\right]
+=\frac{Z_{f,g}(a,b)}{Z_f(a)Z_g(b)}-1.
+$$
+
+*Proof.* Disjoint support gives $f\cdot g=0$ pointwise. The occupation
+identity gives $E_{fg}=\kappa_h\zeta_{N,h}(f\cdot g)=0$ at finite size
+and $E_{fg}=\kappa\zeta(f\cdot g)=0$ in the limit. Linearity of the
+source current and expansion of the source energy now prove the
+likelihood product identity pointwise. The already proved normalization
+of the likelihood for the combined source gives expectation one for
+this product; each separate likelihood also has expectation one.
+Expanding their centered product proves its vanishing.
+
+The derivative envelopes (YM.Z37) hold in every finite $L^p$ norm
+on bounded parameter sets. Hölder's inequality therefore justifies
+differentiating the product expectation to every finite order. Its
+mixed derivatives vanish, giving the asserted derivative pairings and
+their zero means. The same envelopes and the established joint source
+limit justify these statements for the limiting likelihoods.
+
+For the finite-history assertion, let $L_f^{\le k}(a)$ denote the
+product of the already executed source likelihood factors through the
+cut. Each next factor has conditional expectation one by the Gaussian
+exponential identity with its predictable coefficient. Backward conditional
+integration of future factors therefore gives
+
+$$
+\begin{aligned}
+\mathbb E[L_f(a)\mid\mathcal F_k]&=L_f^{\le k}(a),\\
+\mathbb E[L_f(a)L_g(b)\mid\mathcal F_k]
+ &=L_{af+bg}^{\le k}(1)
+  =L_f^{\le k}(a)L_g^{\le k}(b).
+\end{aligned}
+$$
+
+The second equality uses the zero cross energy at every executed stage,
+not independence of the adaptive coefficients. Conditional expectation
+is an $L^p$ contraction, so the same derivative envelopes justify
+differentiating these identities. Their mixed derivatives state
+that the conditional covariance of $H_{f,p},H_{g,q}$ is zero almost
+surely. Moreover, the two prefix likelihoods each have mean one and
+their product has mean one by the same martingale normalization.
+Differentiating this prefix identity proves that their conditional-mean
+derivatives have covariance zero. This proves both asserted vanishings
+without estimating either term by a positive variance bound.
+
+Conditional-expectation residuals are orthogonal to every square-integrable
+function of the descriptor. Decompose each centered likelihood into its
+centered projection and residual. The cross terms have expectation zero,
+so the zero raw pairing equals the sum of the two displayed pairings.
+Differentiation gives the current identity. Lossless reconstruction makes
+each likelihood an explicit function of the complete recorded inputs,
+which proves its measurability assertion. Finally, retain the same
+pointwise likelihood product under selection and divide by the two
+normalizations. Each normalized density has selected expectation one;
+expanding their product proves the last formula. $\square$
+:::
+
+:::{prf:theorem} Projected source covariance from the smaller physical gauge readout
+:label: thm-ym-physical-gauge-score-projection
+
+Use the unselected native source law of
+{prf:ref}`thm-ym-disjoint-source-cancellation` and the prescribed smaller
+physical gauge descriptor $Y_{\mathrm{phys}}$: the retained bounded
+masked and normalized readouts in
+{prf:ref}`thm-ym-native-physical-gauge-hierarchy`. All expectations below
+use their joint law with the source currents, at finite size or on the
+same constructed joint limit. Set
+
+$$
+J_f^{\mathrm{phys}}=\mathbb E[M_f\mid Y_{\mathrm{phys}}],\qquad
+J_g^{\mathrm{phys}}=\mathbb E[M_g\mid Y_{\mathrm{phys}}].
+$$
+
+Enumerate the monomials in the retained countable gauge-coordinate
+dictionary and its conjugates, and center them under this same law.
+Let $p_1,\ldots,p_m$ be the first $m$ centered polynomials. They retain
+the original masks, weights, and normalizations inside their coordinates.
+Define the native moment matrix and source-response columns
+
+$$
+\begin{gathered}
+(G_m)_{ij}=\mathbb E[\overline{p_i}p_j],\qquad
+(d_{f,m})_i=\mathbb E[\overline{p_i}M_f]
+ =\left.\frac{d}{da}\mathbb E[\overline{p_i}L_f(a)]\right|_{a=0},\\
+J_{f,m}=\sum_{i=1}^m p_i(G_m^+d_{f,m})_i,\qquad
+q_{f,m}=d_{f,m}^*G_m^+d_{f,m},\qquad
+z_m=d_{f,m}^*G_m^+d_{g,m}.
+\end{gathered}
+$$
+
+Here $G_m^+$ is the Moore--Penrose inverse of the finite recorded Gram
+matrix, including its null modes. These polynomials are an expansion
+of the fixed descriptor projection, not a reassignment of regional modes.
+The exact evaluation of its cross coefficient is
+
+$$
+\begin{gathered}
+J_{f,m}\longrightarrow J_f^{\mathrm{phys}}\quad\text{in }L^2,\qquad
+q_{f,m}\uparrow q_f:=\mathbb E|J_f^{\mathrm{phys}}|^2,\\
+z_m\longrightarrow z:=\mathbb E[J_f^{\mathrm{phys}}J_g^{\mathrm{phys}}],\qquad
+|z-z_m|\le\sqrt{(q_f-q_{f,m})(q_g-q_{g,m})}.
+\end{gathered}
+$$
+
+The matrices and response columns are respectively the native polynomial
+moments and source derivatives already constructed in
+{prf:ref}`thm-ym-native-physical-gauge-hierarchy` and
+{prf:ref}`thm-ym-continuum-source-action`.
+
+For disjoint source supports put
+$a_f=\mathbb EM_f^2=\kappa_h\mathbb E\zeta_{N,h}(|f|^2)$ at finite
+size, or $a_f=\kappa\mathbb E\zeta(|f|^2)$ in the limit, and similarly
+for $g$. The occupation and information identities give
+
+$$
+\begin{gathered}
+z=-\mathbb E[(M_f-J_f^{\mathrm{phys}})
+             (M_g-J_g^{\mathrm{phys}})],\\
+|z|\le\min\left\{\sqrt{q_fq_g},
+                 \sqrt{(a_f-q_f)(a_g-q_g)}\right\}
+\le\tfrac12\sqrt{a_fa_g},\\
+|z-z_m|\le\sqrt{(a_f-q_{f,m})(a_g-q_{g,m})}.
+\end{gathered}
+$$
+
+Thus the zero-coefficient calculation for this smaller descriptor is
+the signed native-moment limit $\lim_m d_{f,m}^*G_m^+d_{g,m}$.
+The occupation identity sets the raw cross coefficient to zero; its
+projected coefficient is the displayed limit.
+
+*Proof.* The retained bounded coordinate ranges have compact closure.
+Cylinder polynomials in coordinates and their conjugates separate points
+of that closure and contain constants. The polynomial density established
+in {prf:ref}`thm-ym-native-physical-gauge-hierarchy`, followed by density
+of continuous functions in $L^2$ of the retained Borel probability law,
+shows that the centered polynomial spans are dense in
+$L^2_0(\sigma(Y_{\mathrm{phys}}))$.
+
+For a null vector $c$ of $G_m$, the polynomial $\sum_i c_ip_i$ is zero
+in $L^2$, so $c^*d_{f,m}=0$. Hence $d_{f,m}$ lies in the range of
+$G_m$. The normal equations $G_mc=d_{f,m}$ show that $J_{f,m}$ is
+the orthogonal projection of $M_f$ onto this polynomial span; the
+pseudoinverse chooses its coefficients without changing the projected
+vector. The Gram formula gives its squared norm $q_{f,m}$ and mixed
+inner product $z_m$. Increasing dense spans give the stated strong
+convergence and monotone squared norms. Orthogonality eliminates the
+cross terms between the span and its complement, yielding
+
+$$
+z-z_m=\langle J_f^{\mathrm{phys}}-J_{f,m},
+                 J_g^{\mathrm{phys}}-J_{g,m}\rangle.
+$$
+
+Cauchy--Schwarz proves the error bound. Differentiation of the likelihood
+expectation is justified by (YM.Z37) and boundedness of each finite
+polynomial on the retained coordinate range, giving the native-response
+formula for $d_{f,m}$.
+
+The raw orthogonality theorem and orthogonality of conditional residuals
+give the formula for $z$. Cauchy--Schwarz applied once to the projections
+and once to the residuals gives the two bounds. For $a_f,a_g>0$, put
+$x=q_f/a_f$, $y=q_g/a_g$. Both belong to $[0,1]$. If $x+y\le1$,
+$\sqrt{xy}\le1/2$; otherwise
+$\sqrt{(1-x)(1-y)}\le1/2$. This proves the factor $1/2$ bound.
+If either raw variance is zero, all its projections and mixed coefficients
+are zero. Finally $q_f\le a_f$, $q_g\le a_g$ gives the computable
+occupation-based error bound. $\square$
+:::
+
 :::{prf:theorem} Continuum entropy of the recorded source and its descriptor
 :label: thm-ym-source-entropy-identification
 
@@ -6812,6 +7064,74 @@ includes the intervening fitness and cloning updates; their rules remain
 fixed, while their state arguments follow the perturbed execution.
 :::
 
+:::{prf:corollary} Exact support bound for the squashed kinetic transition
+:label: cor-ym-squashed-kinetic-support
+
+Use the A--O--A stages already defined in
+{prf:ref}`def-latent-fractal-gas-kinetic`, with $c=V_{\mathrm{alg}}$.
+Condition on the complete pre-O record $Y$, whose position is $z$ and
+whose momentum is $p$. The next transported position is exactly
+
+$$
+\begin{aligned}
+p^+&=c_1p+c_2G^{1/2}(z)\Sigma_{\mathrm{reg}}(z,S)\xi,
+       \qquad \xi\sim\mathcal N(0,I),\\
+u^+&=\psi_v(G^{-1}(z)p^+),\\
+z^+&=\operatorname{Exp}_z\!\left(\frac h2u^+\right).
+\end{aligned}
+$$
+
+In particular its conditional transition probability is the native
+Gaussian integral through this exact map:
+
+$$
+K_A(Y,D)=\int\mathbf1_D\!\left(
+\operatorname{Exp}_z\!\left[\frac h2\psi_v\!\left(
+G^{-1}(z)(c_1p+c_2G^{1/2}(z)\Sigma_{\mathrm{reg}}(z,S)\xi)
+\right)\right]\right)\,\gamma_d(d\xi).
+$$
+
+Here $\gamma_d$ is the Gaussian draw already present in the O stage.
+For the metric of this A substep,
+
+$$
+d_G(z,z^+)<\frac{ch}{2},\qquad
+K_A\bigl(Y,\{w:d_G(z,w)\ge ch/2\}\bigr)=0.
+$$
+
+Both A stages obey this bound, including the one immediately after the
+Gaussian draw. In a common time-independent $G$, a complete kinetic step
+from its recorded post-cloning start satisfies
+$d_G(z_{\mathrm{start}},z_{\mathrm{end}})<ch$.
+With stage-dependent metrics, the recorded path is timelike on each
+stage for the piecewise metric in {prf:ref}`lem-no-signaling-fg`.
+
+*Proof.* For every finite value of the O-stage momentum, put
+$r=\|G^{-1}p^+\|_G$. The specified squashing map gives
+
+$$
+\|u^+\|_G=\frac{cr}{c+r}<c.
+$$
+
+This includes every Gaussian draw except a null set; no bound on the
+Gaussian momentum itself is needed. The exponential-map segment
+$s\mapsto\operatorname{Exp}_z(su^+)$, $0\le s\le h/2$, has constant
+metric speed $\|u^+\|_G$ by geodesic metric compatibility. Its length
+is therefore less than $ch/2$, and distance is at most path length.
+The integrand of $K_A$ is zero for the stated exterior set, proving the
+conditional zero-probability identity. Applying the same calculation to
+the first A stage and adding the two lengths proves the complete-step
+bound; B and O do not move position. The Lorentzian norm of each tangent
+is $-c^2+\|u\|_G^2<0$, proving the stagewise causal assertion.
+
+These are identities and bounds for each recorded kinetic path.
+Integration over the preceding native history, or restriction to the
+algorithm's surviving paths, preserves them. At a clone replacement,
+the trajectory restarts at the recorded post-cloning state as specified
+in {prf:ref}`lem-no-signaling-fg`; the bound is applied to that kinetic
+segment. $\square$
+:::
+
 :::{prf:theorem} Positive energy and the full spectrum condition
 :label: thm-wightman-w2-fg
 
@@ -6846,21 +7166,23 @@ $L^2$ space; positive static entropy bounds alone do not give reversibility.
 :::{prf:theorem} Locality of the available operator constructions
 :label: thm-wightman-w3-fg
 
-The bounded multiplication fields {ref}`(YM.35) <eq-fg-ym-35>` commute for every pair of tests.
-A reconstructed quantum field satisfies microcausality when its operators
-commute on a common invariant domain for spacelike separated supports; this
-is an additional property of that reconstruction. Equal-time multiplication
-commutativity does not identify its Heisenberg time evolution.
+The bounded multiplication fields {ref}`(YM.35) <eq-fg-ym-35>` commute
+for every pair of tests. The corresponding local von Neumann algebra
+identity is proved for the native readouts in
+{prf:ref}`thm-ym-native-multiplication-locality`.
+The actual squashed kinetic support is calculated separately in
+{prf:ref}`cor-ym-squashed-kinetic-support` from the prescribed update.
 :::
 
 :::{prf:proof}
 For any $\psi\in L^2(\pi)$,
 $\Phi_N(f)\Phi_N(g)\psi=\Phi_N(g)\Phi_N(f)\psi$ because scalar
 multiplication commutes. This proves the finite statement for all supports.
-For a separately supplied field with the stated spacelike commutator
-identity, integrating that identity against spacelike separated test supports
-is precisely microcausality on the common domain. Unbounded operators need
-this domain control; their formal symbols alone cannot be multiplied freely.
+The double-commutant proof in
+{prf:ref}`thm-ym-native-multiplication-locality` extends this equality
+to the native local algebras and their bounded spectral generators.
+All operator products in this argument are defined on the whole
+observable Hilbert space.
 :::
 
 :::{prf:corollary} Local gauge observables and even CAR observables
@@ -11390,10 +11712,17 @@ record. Their commutator therefore vanishes before any averaging. This
 holds under each retained native law and in the existing limiting
 probability representation; statistical independence is unnecessary.
 The double-commutant argument carries this commutation to the generated
-local algebras. Quantum evolution requires its own check: conjugating an
-insertion by the OS Hamiltonian changes the represented operator. The
-pointwise multiplication calculation does not establish commutation of
-those Heisenberg operators at unequal times.
+local algebras.
+
+For propagation, follow the specified latent A step:
+$z\mapsto\operatorname{Exp}_z((h/2)\psi_v(G^{-1}p))$.
+The algorithm applies this squashed velocity both before and after O.
+A Gaussian draw can make momentum arbitrarily large, but the velocity
+entering either position update stays below $V_{\mathrm{alg}}$.
+The sampling-path cone therefore follows from the actual update, as proved
+in {prf:ref}`lem-no-signaling-fg`. This path bound and the multiplication
+identity each retain their precise meaning; neither by itself establishes
+unequal-time commutation of reconstructed quantum operators.
 :::
 
 :::{prf:theorem} Exact HK locality of the native multiplication representation
@@ -11469,35 +11798,26 @@ it does not infer operator convergence from correlation convergence.
 $\square$
 :::
 
-:::{prf:remark} Operator identity still required for quantum microcausality
+:::{prf:remark} Dynamics and support in the recorded locality calculation
 :label: rem-ym-hk-microcausality-verdict
 
-{prf:ref}`thm-ym-native-multiplication-locality` proves HK locality for
-the native multiplication representation. The existing equilibrium
-quantum representation in
-{prf:ref}`thm-ym-equilibrium-quantum-net-inputs` represents its evolved
-insertions by $A(t)=e^{itH}M_Ae^{-itH}$. Its commutator is
+The kinetic transition is the squashed update of
+{prf:ref}`def-latent-fractal-gas-kinetic`. Its exact conditional support
+is computed in {prf:ref}`cor-ym-squashed-kinetic-support` using the
+recorded clock $\tau$ and metric $G$. Both A stages apply $\psi_v$
+before transporting position. Its position transition is therefore the
+pushforward through that squashed exponential map, with zero probability
+outside the reachable kinetic ball.
 
-$$
-[A(t),B(s)]
-=e^{isH}\bigl[e^{i(t-s)H}M_Ae^{-i(t-s)H},M_B\bigr]e^{-isH}.
-$$
-
-For $t=s$ the bracket vanishes by the multiplication calculation.
-For unequal times the middle operator is not the multiplier by the
-recorded random variable $A(S_t)$. The algorithmic path-space identity
-$M_{A(S_t)}M_{B(S_s)}=M_{B(S_s)}M_{A(S_t)}$ therefore does not evaluate
-this quantum commutator. Likewise, encoding transports an existing
-operator identity and cannot change that middle operator into a multiplier.
-
-The native hierarchy fixes its recorded correlations and the equilibrium
-construction fixes $H$. No unequal-time spacelike vanishing identity for
-the displayed quantum bracket is established here. The physical $x^0$
-application also retains the observable correspondence distinguished in
-{prf:ref}`rem-ym-physical-hierarchy-application`. Neither a change to the
-full labeled CAR algebra nor an assumed correspondence supplies a proof
-for the prescribed gauge readout. Thus the native multiplication locality
-proved above is not a completed quantum HK reconstruction.
+The original recorded readouts have the multiplication-algebra identity
+of {prf:ref}`thm-ym-native-multiplication-locality`. Recorded temporal
+correlations use the complete native kernel in
+{prf:ref}`thm-sm-instantiated-record-transition`; interventions use the
+same-kernel source likelihood in {prf:ref}`lem-no-signaling-fg`.
+The equilibrium Hamiltonian in
+{prf:ref}`thm-ym-equilibrium-quantum-net-inputs` retains its own transfer
+coordinate $\sigma$. Its unitary group is not substituted for the native
+update or for translation in the recorded physical coordinate $x^0$.
 :::
 
 :::{prf:theorem} Covariance of the local net
@@ -11684,6 +12004,14 @@ passes that locality to the corresponding identified limit. An application
 to other regions or another law evaluates their actual cross covariances.
 The causal episode map specifies which regions are spacelike; the
 operator commutators use these covariance coefficients.
+For a split at an existing recorded history, the inherited contribution
+to each coefficient is evaluated by the backward native-kernel integrals
+in {prf:ref}`thm-lqft-inherited-history-covariance`. That theorem gives
+its exact update contributions and its bound by the two predictable
+variances, retaining the chosen survival law.
+The substitution for the full covariance, including its conditional
+remainder, and the resulting even-observable norm bound are proved in
+{prf:ref}`cor-lqft-full-history-locality-bound`.
 
 **Covariance of this representation.**
 For an actual same-law symmetry $g$ satisfying
@@ -12317,8 +12645,10 @@ lifts the actual same-law symmetries to that sector. The recorded channel
 and the equilibrium Hamiltonian retain their computed, distinct dynamics.
 The native multiplication representation satisfies HK locality by
 {prf:ref}`thm-ym-native-multiplication-locality`, directly for the
-configured recorded readouts and their law. The distinct quantum
-commutator still to be established is displayed in
+configured recorded readouts and their law. The prescribed kinetic
+transition has the exact squashed support in
+{prf:ref}`cor-ym-squashed-kinetic-support`. Its dynamics and clocks
+are retained as specified in
 {prf:ref}`rem-ym-hk-microcausality-verdict`.
 {prf:ref}`lem-ym-pullback-translation-spectrum` checks the physical
 spectrum condition specifically for the pullback implementers.

@@ -277,9 +277,31 @@ handled between calls. `result()` must remain usable when a deadline ends search
 A result needs one finite, bounded joint `action` of length `engine.dim`. Optional
 `tree`, `cloud`, `metrics`, and `budgetUsed` populate diagnostics; the planner supplies
 defaults when omitted. Action dimension is independent of the tree's pose dimension.
+
+Wave Jump (`wave-jump`) additionally returns `trajectory: [{ action, frames }, ...]`,
+`selectedLeaf`, and `selectedReward`. Each edge has a finite, bounded joint action
+and a positive integer physics-frame duration; the controller removes zero-duration
+edges before returning it. The ordinary `action` remains the trajectory's first
+action. `selectedLeaf` is the selected final walker's native tree node ID, and
+`selectedReward` is its accumulated path reward. The adapter's `bestLeaf()` calls
+`fgc_plan_best_leaf`, which ranks final walkers by accumulated reward, includes
+terminal walkers, and breaks ties by lower walker index. Wave Jump retains at least
+pruned native ancestry internally even when public tree recording is disabled.
+
+The planner worker validates and transfers the trajectory. Live Wave Jump hosts
+keep physics paused throughout search, including with the real-time clock, then
+execute all edges through ordinary physics stepping before requesting another
+search. Experiment hosts also check their stopping conditions after every executed
+frame. Controllers that omit `trajectory` retain the single-action contract.
+
 Optional `checkpoint()`/`restore(saved)` preserve algorithm memory, RNG, partial work,
 and root; `dispose()` releases controller-owned resources. Native engine checkpoints
-alone do not save a JavaScript optimizer's arrays or warm-start plan.
+alone do not save a JavaScript optimizer's arrays or warm-start plan. Wave Jump's
+planner checkpoint preserves its native search separately from the host execution
+checkpoint, whose cursor stores `trajectory`, `index`, and `remaining` frames with
+the executed world. Restore the cursor to finish a partly executed trajectory
+without repeating actions or planning again. These additions are browser Lab and
+experiment-runner interfaces; they add no Python-facing algorithm API.
 :::
 
 ### A complete small controller plugin

@@ -1,3 +1,4 @@
+import { validateTrajectory } from "./trajectory.js";
 import "./controllers/index.js";
 import { createController } from "./controllers/registry.js";
 import { NativeEngine } from "./native.js";
@@ -123,29 +124,37 @@ export async function runEpisode({
       const decision = strategy.controller.result();
       stats.planningMs += performance.now() - start;
       stats.decisions++;
-      const duration = Math.min(settings.frames, maxFrames - stats.frames);
-      for (let frame = 0; frame < duration; ) {
-        // One physical frame permits exact event times and stops at success/death.
-        if (capture) capture.step(decision.action, 1, stats.decisions);
-        else world.step(decision.action, 1);
-        const m = world.metrics();
-        stats.frames++;
-        stats.reward += m[0];
-        stats.collisions += m[2];
-        stats.dead = m[3] > 0;
-        stats.controlEffort +=
-          decision.action.reduce((sum, u) => sum + u * u, 0) * dt;
-        stats.success =
-          !stats.dead &&
-          goals.get(evaluation.metric)(m, stats) >= evaluation.target;
-        frame++;
-        if (
-          stats.success ||
-          stats.dead ||
-          frame >= settings.frames ||
-          stats.frames >= maxFrames
-        )
-          break;
+      const trajectory = decision.trajectory
+        ? validateTrajectory(decision.trajectory, world.channels)
+        : [{ action: decision.action, frames: settings.frames }];
+      for (const edge of trajectory) {
+        if (stats.frames >= maxFrames || stats.dead || stats.success) break;
+        const duration = Math.min(edge.frames, maxFrames - stats.frames);
+        for (let frame = 0; frame < duration; ) {
+          // One physical frame permits exact event times and stops at success/death.
+          if (capture) capture.step(edge.action, 1, stats.decisions);
+          else world.step(edge.action, 1);
+          if (cancelled()) throw new Error("Experiment cancelled");
+          if (stats.frames % 32 === 0) await yieldTask();
+          const m = world.metrics();
+          stats.frames++;
+          stats.reward += m[0];
+          stats.collisions += m[2];
+          stats.dead = m[3] > 0;
+          stats.controlEffort +=
+            edge.action.reduce((sum, u) => sum + u * u, 0) * dt;
+          stats.success =
+            !stats.dead &&
+            goals.get(evaluation.metric)(m, stats) >= evaluation.target;
+          frame++;
+          if (
+            stats.success ||
+            stats.dead ||
+            frame >= duration ||
+            stats.frames >= maxFrames
+          )
+            break;
+        }
       }
     }
     stats.simulationSeconds = stats.frames * dt;
