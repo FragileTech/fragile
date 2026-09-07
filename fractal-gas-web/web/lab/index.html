@@ -146,14 +146,14 @@
               type="number"
               min="1"
               max="4096"
-              value="16" /></label
+              value="32" /></label
           ><label class="field" data-help="Physics frames for each committed action. At 60 Hz, six frames advance roughly 0.1 seconds. Larger values make actions coarser and cheaper to plan."
             >Action frames<input
               id="frames"
               type="number"
               min="1"
               max="60"
-              value="6" /></label
+              value="12" /></label
           ><label class="field" data-help="Random seed for planner sampling and world initialization. Reusing the same seed and settings makes a run reproducible."
             >Seed<input
               id="seed"
@@ -204,7 +204,7 @@
                 type="number"
                 min="1"
                 max="64"
-                value="4"
+                value="8"
             /></label>
           </div>
           <label class="check" data-help="When enabled, inherited actions receive a small perturbation during rollouts. Disable it to preserve copied action sequences exactly."

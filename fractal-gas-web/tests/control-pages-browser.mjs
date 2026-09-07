@@ -70,7 +70,7 @@ try {
           !document.getElementById("run").disabled &&
           document
             .getElementById("backend")
-            .textContent.startsWith(isolated ? "4 THREADS" : "1 THREAD"),
+            .textContent.startsWith(isolated ? "8 THREADS" : "1 THREAD"),
         serviceWorkers === "allow",
       );
       assert.equal(new URL(page.url()).pathname, `${prefix}lab/`);
@@ -89,10 +89,11 @@ try {
           .evaluate((i) => i.complete && i.naturalWidth > 0),
       );
       // Exercise real planning in both backends with a small smoke-test budget.
-      // Keep the six action frames so tick and replay assertions stay meaningful.
+      // Set six action frames so tick and replay assertions stay meaningful.
       for (const [id, value] of [
         ["walkers", "8"],
         ["horizon", "2"],
+        ["frames", "6"],
       ]) {
         await page.locator(`#${id}`).fill(value);
         await page.locator(`#${id}`).press("Tab");

@@ -3,6 +3,8 @@
 Unreleased
 ----------
 
+* Fix Lab builds by exporting the geometry helpers used by mining controls; default to 8 worker threads, 12 action frames, and horizon 32.
+
 * Add mining rock-size controls and a 1–20 rock count for asteroid harvesting, with clear placement and replenishment after delivery.
 
 * Add adjustable Lab reward terms and an optional per-frame squared-distance vehicle reward; applying weights preserves the live world, replans, and starts a new recording.

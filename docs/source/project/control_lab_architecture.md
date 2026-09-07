@@ -232,7 +232,7 @@ shared. A setting of 64 means the caller plus up to 63 worker threads. Empty blo
 are allowed when the batch is smaller than the pool. Threads advance independent
 worlds; they do not distribute one world's contact solve across 64 workers.
 
-In the browser, **Worker threads** selects 1–64 slots for live planning, default 4.
+In the browser, **Worker threads** selects 1–64 slots for live planning, default 8.
 The threaded WebAssembly module prewarms the requested pool. It needs cross-origin
 isolation and the separate `control-threaded` build. The planner falls back to the
 serial module if those requirements are unavailable. Its 16-world risk diagnostic

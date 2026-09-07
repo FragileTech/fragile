@@ -1,7 +1,7 @@
 export const DEFAULT_ANTS_OPTIONS = { agentType: "harvester", count: 5 };
 export const MAX_ANTS_VEHICLES = 128;
 
-function inside(point, ring) {
+export function inside(point, ring) {
   let result = false;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
     const [x, y] = ring[i],
@@ -15,7 +15,7 @@ function inside(point, ring) {
   return result;
 }
 
-function clearance(point, ring) {
+export function clearance(point, ring) {
   return Math.min(
     ...ring.map((a, i) => {
       const b = ring[(i + 1) % ring.length];
