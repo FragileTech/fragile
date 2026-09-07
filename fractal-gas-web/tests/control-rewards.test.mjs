@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   REWARD_TERMS,
+  coefficientValues,
   rewardValues,
   withRewards,
 } from "../web/lab/reward-settings.js";
@@ -22,7 +23,7 @@ test("reward edits preserve scene geometry and cargo configuration", () => {
   };
   const values = rewardValues(source);
   assert.equal(values.full_reward, 17);
-  assert.equal(values.distance_squared, 0);
+  assert.equal(values.distance_squared, 1);
   const updated = withRewards(source, {
     ...values,
     distance_squared: 2,
@@ -57,7 +58,7 @@ test("reweighting preserves every state byte and changes future rewards", () => 
     engine.reset(73);
     engine.step(engine.neutralAction(), 5);
     const oldState = engine.states();
-    assert.equal(engine.results()[0], 0);
+    assert.ok(Math.abs(engine.results()[0] - 0.65) < 0.0001);
     const next = withRewards(scene, {
       ...rewardValues(scene),
       distance_squared: 2,
@@ -99,5 +100,28 @@ test("reweighting preserves every state byte and changes future rewards", () => 
   } finally {
     engine.dispose();
     updated?.dispose();
+  }
+});
+
+test("coefficient defaults and limits preserve explicit zero", () => {
+  assert.deepEqual(coefficientValues(), { distance_coef: 1, reward_coef: 1 });
+  assert.deepEqual(coefficientValues({ distance_coef: 0, reward_coef: 10 }), {
+    distance_coef: 0,
+    reward_coef: 10,
+  });
+  for (const key of ["distance_coef", "reward_coef"])
+    for (const value of [-1, 11, Infinity, NaN, "2"])
+      assert.throws(() => coefficientValues({ [key]: value }), RangeError);
+});
+test("explicit zero disables default movement reward", () => {
+  const engine = new NativeEngine(module, {
+    ...scene,
+    rewards: { distance_squared: 0 },
+  });
+  try {
+    engine.step(engine.neutralAction(), 5);
+    assert.equal(engine.results()[0], 0);
+  } finally {
+    engine.dispose();
   }
 });

@@ -3,7 +3,7 @@ export const REWARD_TERMS = Object.freeze([
   {
     key: "distance_squared",
     label: "Distance travelled²",
-    def: 0,
+    def: 1,
     max: 1000,
     slider: 10,
     step: 0.01,
@@ -73,6 +73,37 @@ export const REWARD_TERMS = Object.freeze([
     help: "Additional reward when cargo storage first becomes full. Has no effect without cargo storage.",
   },
 ]);
+export const COEFFICIENTS = Object.freeze([
+  {
+    key: "distance_coef",
+    label: "Diversity coefficient",
+    def: 1,
+    max: 10,
+    slider: 10,
+    step: 0.1,
+    help: "FMC exponent on rescaled observation distance. Higher values favor diverse futures; zero ignores diversity. Apply settings to replan from the current world.",
+  },
+  {
+    key: "reward_coef",
+    label: "Reward coefficient",
+    def: 1,
+    max: 10,
+    slider: 10,
+    step: 0.1,
+    help: "FMC exponent on rescaled accumulated reward. Higher values favor exploitation; zero ignores reward in cloning fitness. Apply settings to replan from the current world.",
+  },
+]);
+const SETTINGS_TERMS = [...COEFFICIENTS, ...REWARD_TERMS];
+export function coefficientValues(values = {}) {
+  return Object.fromEntries(
+    COEFFICIENTS.map((term) => {
+      const value = values[term.key] ?? term.def;
+      if (!Number.isFinite(value) || value < 0 || value > term.max)
+        throw new RangeError(`${term.label} must be between 0 and ${term.max}`);
+      return [term.key, value];
+    }),
+  );
+}
 export function rewardValues(scene) {
   return Object.fromEntries(
     REWARD_TERMS.map((t) => [
@@ -99,7 +130,7 @@ export function withRewards(scene, values) {
 export class RewardSettings {
   constructor(container, apply) {
     this.inputs = new Map();
-    for (const term of REWARD_TERMS) {
+    for (const term of SETTINGS_TERMS) {
       const label = document.createElement("label");
       label.className = "field reward-field";
       label.dataset.help = term.help;
@@ -135,7 +166,7 @@ export class RewardSettings {
     }
     this.apply = document.createElement("button");
     this.apply.type = "button";
-    this.apply.textContent = "Apply rewards";
+    this.apply.textContent = "Apply settings";
     this.apply.onclick = () => {
       for (const { number } of this.inputs.values())
         if (!number.reportValidity()) return;
@@ -150,10 +181,10 @@ export class RewardSettings {
     };
     const reset = document.createElement("button");
     reset.type = "button";
-    reset.textContent = "Reset reward defaults";
+    reset.textContent = "Reset defaults";
     reset.onclick = () =>
       this.setValues(
-        Object.fromEntries(REWARD_TERMS.map((t) => [t.key, t.def])),
+        Object.fromEntries(SETTINGS_TERMS.map((t) => [t.key, t.def])),
       );
     container.append(this.apply, reset);
   }
@@ -164,10 +195,16 @@ export class RewardSettings {
       slider.value = values[key];
     }
   }
-  render(scene) {
-    this.setValues(rewardValues(scene));
+  render(scene, coefficients = {}) {
+    this.setValues({
+      ...rewardValues(scene),
+      ...coefficientValues(coefficients),
+    });
   }
   setEnabled(enabled) {
     this.apply.disabled = !enabled;
+    for (const { number, slider } of this.inputs.values()) {
+      number.disabled = slider.disabled = !enabled;
+    }
   }
 }

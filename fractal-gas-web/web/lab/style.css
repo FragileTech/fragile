@@ -936,6 +936,14 @@ dialog .control-heading {
   .controls-footer {
     display: none;
   }
+  .controls #reward-settings {
+    display: block;
+    grid-column: 1/-1;
+    min-width: 0;
+  }
+  #reward-settings .scenario-description {
+    display: block;
+  }
   .controls > .field {
     margin: 0;
   }

@@ -86,16 +86,19 @@ TEST_CASE(control_squared_distance_is_per_frame_and_vehicle_mean) {
   p.step_world(serial.row(0), action, 3, single_result);
   CHECK_CLOSE(batch_result.reward, single_result.reward, 1e-6);
 }
-TEST_CASE(control_squared_distance_defaults_off_and_validates) {
+TEST_CASE(control_squared_distance_defaults_on_and_validates) {
   auto s = Scene::compile(free_scene);
-  CHECK(s->distance_squared_reward == 0);
+  CHECK(s->distance_squared_reward == 1);
   Physics p(s);
   StateBatch a(1, *s);
   a.reset(*s, 7);
   float action[2] = {};
   StepResult result;
   p.step_world(a.row(0), action, 10, result);
-  CHECK_CLOSE(result.reward, 0, 1e-6);
+  CHECK_CLOSE(result.reward, 10.f * 13.f / 3600.f, 1e-4);
+  auto disabled = Scene::compile(
+      R"({"rewards":{"distance_squared":0},"bodies":[{"controlled":true}]})");
+  CHECK(disabled->distance_squared_reward == 0);
   CHECK(throws([] { Scene::compile(R"({"rewards":{"distance_squared":-1}})"); }));
   CHECK(throws([] { Scene::compile(R"({"rewards":{"distance_squared":1001}})"); }));
 }

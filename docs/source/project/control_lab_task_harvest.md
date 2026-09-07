@@ -63,8 +63,9 @@ will always deliver cargo with these settings.
 2. Set **Walkers** to **128**, **Horizon** to **16**, **Action frames** to **6**,
    and **Seed** to **7**. Under **Planner settings**, set **Worker threads** to
    **1**. This deliberately changes the UI default of 4 to a portable serial
-   baseline. Leave **Distance weight** and **Reward weight** at 1,
-   **Action noise** at 0.2, **Elites** at 0, and **Perturb inherited actions** checked.
+   baseline. In the visible **Reward terms** panel, leave **Diversity coefficient**
+   and **Reward coefficient** at 1. Leave **Action noise** at 0.2, **Elites** at 0,
+   and **Perturb inherited actions** checked.
 3. Select **Pruned** under **Tree** and press **↺** after setting the fields.
    Settings changes rebuild the world and clear its recording, so finish setup
    before starting a run you intend to save.

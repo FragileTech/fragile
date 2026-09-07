@@ -105,10 +105,10 @@
             ↺
           </button>
         </div>
-        <details id="reward-settings">
+        <details id="reward-settings" open>
           <summary>Reward terms</summary>
           <div id="reward-terms"></div>
-          <p class="scenario-description">Apply to keep the current world, replan, and start a new recording. Weights are saved with the scene. Distance travelled² is off by default.</p>
+          <p class="scenario-description">Edit coefficients and reward weights, then Apply settings to keep the current world, replan, and start a new recording. Reward weights are saved with the scene. Distance travelled² defaults to 1; zero disables it.</p>
         </details>
         <label class="check keyboard-toggle" data-help="Drive the selected agent directly with the keyboard instead of committing planner actions. W/S throttle, A/D steer, Q/E strafe when supported, and Space brakes."
           >
@@ -165,23 +165,7 @@
           <summary data-help="Advanced controller-specific parameters appear here. They are supplied by the controller plugin, so new algorithms can add their own settings without changing the host UI.">Planner settings</summary>
           <div id="algorithm-settings" class="fields-two"></div>
           <div class="fields-two">
-            <label class="field" data-help="Weight on how far a candidate moves from its reference state. Higher values favor diverse, exploratory futures."
-              >Distance weight<input
-                id="distance"
-                type="number"
-                min="0"
-                max="10"
-                step="0.1"
-                value="1" /></label
-            ><label class="field" data-help="Weight on accumulated task reward. Higher values favor exploiting candidates that already perform well."
-              >Reward weight<input
-                id="reward"
-                type="number"
-                min="0"
-                max="10"
-                step="0.1"
-                value="1" /></label
-            ><label class="field" data-help="Random action perturbation applied during planning. Zero is deterministic around the current plan; higher values explore more."
+            <label class="field" data-help="Random action perturbation applied during planning. Zero is deterministic around the current plan; higher values explore more."
               >Action noise<input
                 id="noise"
                 type="number"

@@ -488,7 +488,7 @@ and duplicate operations do the corresponding remapping for you.
 | `rewards` field | Default; range | Contribution |
 |---|---|---|
 | `progress` | `1`; `[0,1000]` | Multiplies the frame's change in progress potential, including formation shaping. |
-| `distance_squared` | `0`; `[0,1000]` | Multiplies the mean squared displacement of controlled vehicles in each physics frame, measured in m². |
+| `distance_squared` | `1`; `[0,1000]` | Multiplies the mean squared displacement of controlled vehicles in each physics frame, measured in m². |
 | `collision` | `2`; `[0,10000]` | Penalty for qualifying contacts involving controlled bodies; a collision need not be lethal. |
 | `pickup` | `10`; `[0,10000]` | Reward per collected food slot. |
 | `delivery` | `100`; `[0,10000]` | Reward per cargo-body delivery, or total reward distributed across unloading one full vehicle load. |
@@ -522,7 +522,7 @@ for an entire crash. Progress is measured before event bookkeeping updates the n
 target. Gate, food, and delivery bonuses are then added independently. A large task
 counter and a low total reward are therefore compatible.
 
-The optional `distance_squared` term pays for motion in any direction. In each
+The `distance_squared` term pays for motion in any direction. In each
 physics frame, measure each controlled vehicle's displacement $(\Delta x_i,
 \Delta y_i)$ and add
 
@@ -533,23 +533,31 @@ r_{\mathrm{distance},t}
 $$
 
 where $N$ is the number of controlled vehicles and $w_{\mathrm{distance}}$ is
-`rewards.distance_squared`. With no controlled vehicles, the contribution is zero.
+`rewards.distance_squared`. Stationary vehicles contribute zero, and cargo bodies
+are excluded. With no controlled vehicles, the contribution is zero.
 The runtime measures this motion before scene mechanics and respawns, so a respawn
 does not earn a travel bonus. It sums these frame rewards; it does not square the
 total path length. For example, two frames with a 1 m displacement each contribute
 $2w_{\mathrm{distance}}$, whereas one frame with a 2 m displacement contributes
 $4w_{\mathrm{distance}}$. Changing the physics timestep therefore changes this
 reward's scale, even for the same path and speed. The coefficient converts m² per
-frame into reward per frame. Its default is zero, so enable it explicitly when
-motion itself should be valuable, including motion away from a target.
+frame into reward per frame. Its default is one, so motion is valuable even away
+from a target. Set it explicitly to zero to disable this bonus. Older scenes that
+omit `distance_squared` also receive the default weight of one.
 
-In the Lab's **Reward terms** panel, use the sliders or numeric inputs to set these
-weights and `cargo.full_reward`, the bonus for first filling vehicle storage.
-**Apply rewards** keeps the current physical state, replans with the new weights,
-and starts a new recording. If the simulation was running, it continues running.
-Resetting the reward controls restores the engine defaults, including zero for
-`distance_squared`. The formation control still acts through the progress
-potential: increasing it has no effect while `progress` is zero.
+The Lab's **Reward terms** panel is expanded by default. Use its synchronized
+sliders and numeric inputs to set these weights and `cargo.full_reward`, the bonus
+for first filling vehicle storage. The same panel exposes **Diversity coefficient**
+and **Reward coefficient**, which control FMC selection.
+
+Edits remain pending until you press **Apply settings**. This shared button applies
+both the coefficients and reward weights, keeps the current physical state,
+discards previous plans, replans, and starts a new recording. If the simulation was
+running, it resumes running. Recordings and exports retain the settings actually
+applied rather than pending edits. **Reset defaults** stages the engine defaults,
+including one for `distance_squared`; press **Apply settings** to use them. The
+formation control still acts through the progress potential: increasing it has no
+effect while `progress` is zero.
 :::
 
 (sec-lab-json-appearance)=

@@ -73,7 +73,7 @@ struct Scene {
   float dt = 1.f / 60.f;
   int substeps = 4, solver_iterations = 8;
   float collision_penalty = 2, progress_reward = 1, pickup_reward = 10,
-        delivery_reward = 100, distance_squared_reward = 0;
+        delivery_reward = 100, distance_squared_reward = 1;
   float gate_reward = 30, formation_reward = .15f, formation_distance = 3,
         respawn_seconds = 4;
   bool lethal_walls = false, lethal_bodies = false;

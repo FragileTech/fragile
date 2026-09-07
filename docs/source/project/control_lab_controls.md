@@ -116,9 +116,10 @@ portable planner-settings object. Set them explicitly when reproducing a run.
 ## Shared settings and FMC controls
 
 :::{div} feynman-prose
-Changing a planner field, controller, seed, clock, thread count, or **Tree** mode
-rebuilds the scene and clears its current in-memory history. Export anything you
-want to keep first. Algorithm-specific values are remembered while switching
+Changing a field in **Planner settings**, controller, seed, clock, thread count,
+or **Tree** mode rebuilds the scene and clears its current in-memory history.
+The coefficients in **Reward terms** instead use **Apply settings**, described
+below. Export anything you want to keep first. Algorithm-specific values are remembered while switching
 controllers within the current page session. The table gives browser defaults and
 UI ranges; lower-level APIs can have different limits.
 :::
@@ -131,8 +132,8 @@ UI ranges; lower-level APIs can have different limits.
 | **Horizon** | `horizon` | 32; integers 1–4096 | FMC iterations per decision; action depth per shooting round. Ignored by random action selection. |
 | **Action frames** | `frames` | 12; integers 1–60 | Physics frames per candidate action and executed control action. Applies to all controllers. |
 | **Seed** | `seed` | 7; integers 0–4294967295 | World reset seed and base planner seed; successive decisions derive seeds by adding the decision count modulo `2^32`. |
-| **Distance weight** | `distance_coef` | 1; 0–10, increment 0.1 | FMC exponent on rescaled observation distance in cloning fitness. |
-| **Reward weight** | `reward_coef` | 1; 0–10, increment 0.1 | FMC exponent on rescaled reward signal in cloning fitness. Does not edit scene reward coefficients. |
+| **Diversity coefficient** (in **Reward terms**) | `distance_coef` | 1; 0–10, increment 0.1 | FMC exponent on rescaled observation distance in cloning fitness. |
+| **Reward coefficient** (in **Reward terms**) | `reward_coef` | 1; 0–10, increment 0.1 | FMC exponent on rescaled reward signal in cloning fitness. Does not edit scene reward weights. |
 | **Action noise** | `noise` | 0.2; 0–10, increment 0.05 | FMC Gaussian standard deviation in each channel's action units when perturbing inherited actions. |
 | **Elites** | `elites` | 0; integer 0–Walkers | FMC elite-bank size. The UI initially caps at 128 and updates that cap when Walkers changes. |
 | **Perturb inherited actions** | `inertial` | Checked (`true`) | FMC: after the first iteration, perturb the selected companion's inherited action; unchecked samples fresh uniform actions every iteration. |
@@ -146,17 +147,52 @@ controller averages those inherited first actions over the final population;
 cloning supplies the implicit weighting. If no population members survive, it
 returns the neutral action. It does not simply choose the highest-reward leaf.
 
-The two **weight** fields are exponents in a product of rescaled distance and reward
+The two **coefficient** fields are exponents in a product of rescaled distance and reward
 signals, not an additive meter of distance plus points. Setting an exponent to zero
 removes that factor's variation from this product. **Elites** retains high-reward
 states together with their actions and ancestry for reinsertion into later Wave
 iterations. It is separate from a shooting controller's elite fraction.
 
-These FMC-specific controls remain visible under **Planner settings** when another
-algorithm is selected, but random, CEM, iCEM, and MPPI do not consume them. In
+The coefficients remain visible in **Reward terms** and the other FMC-specific
+controls remain under **Planner settings** when another algorithm is selected,
+but random, CEM, iCEM, and MPPI do not consume them. In
 particular, changing **Action noise** does not change iCEM or MPPI exploration.
 Their own noise fields are listed next. The algorithm-engine contract is described
 in {doc}`control_lab_architecture` and {doc}`control_laboratory`.
+:::
+
+(sec-lab-controls-rewards)=
+## Reward coefficients and term weights
+
+:::{div} feynman-prose
+**Reward terms** is expanded by default. **Diversity coefficient** and **Reward
+coefficient** each have a synchronized slider and numeric input. They control how
+FMC selects possible futures. The term weights beneath them control the reward
+earned by the simulated world: movement, target progress, collisions, pickups,
+deliveries, checkpoints, formation, and full loads. Those reward weights also
+affect the futures evaluated by the shooting controllers.
+
+Edits stay pending until you press **Apply settings**. This applies the coefficients
+and term weights together, preserves the current physical world, discards previous
+plans, and starts a new recording under the applied settings. An experiment that
+was running resumes; a paused experiment stays paused. Export the previous
+recording first if you want to keep it. Recordings and exports use applied settings,
+so typing a pending value does not relabel an existing run.
+
+**Distance travelled²** defaults to weight **1**; set it explicitly to **0** to
+disable the movement bonus. At each physics frame, each controlled vehicle
+contributes its squared displacement, `Δx² + Δy²`, in square metres. The reward is
+the weight times the mean of these contributions across the vehicles. Cargo bodies
+do not contribute, stationary vehicles contribute zero, and respawn teleportation
+does not count as travel. These frame rewards are summed over an action or journey;
+the total journey distance is not squared. Movement in any direction earns this
+bonus, while **Target progress** separately rewards approaching the task target.
+
+Term weights are saved with the scene; the FMC coefficients retain the planner
+settings keys `distance_coef` and `reward_coef`. A scene that omits
+`rewards.distance_squared` receives the default weight of 1, including older scene
+files. An explicit zero remains disabled. See {doc}`control_lab_scene_reference`
+for the scene fields.
 :::
 
 (sec-lab-controls-shooting)=

@@ -64,8 +64,9 @@ current in-memory recording, so finish configuration before collecting motion.
 2. Set **Controller** to **Fractal Monte Carlo**, **Walkers** to `128`, **Horizon**
    to `16`, **Action frames** to `6`, and **Seed** to `7`.
 3. Set **Clock** to **Reproducible · wait for planning** and **Worker threads** to
-   `1`. Leave the remaining FMC settings at their defaults, including **Distance
-   weight** `1`, **Reward weight** `1`, **Action noise** `0.2`, and **Elites** `0`.
+   `1`. Leave the remaining FMC settings at their defaults, including **Diversity
+   coefficient** `1` and **Reward coefficient** `1` in **Reward terms**, plus
+   **Action noise** `0.2` and **Elites** `0` in **Planner settings**.
    Keep **Perturb inherited actions** checked and **Tree** at **Pruned**.
 4. Disable **Keyboard control**, then press **↺** to reset. This also removes any
    automatic first action from the initial page load. Confirm the pair is back at
@@ -187,7 +188,7 @@ that potential term. Moving closer to the preferred gap improves the term; movin
 away worsens it. Gate approach and collisions also affect the decision, so doubling
 the preferred gap need not make the observed gap double.
 
-Do not change **Reward weight** to perform this experiment. That planner control
+Do not change **Reward coefficient** in **Reward terms** to perform this experiment. That planner control
 changes FMC fitness weighting, whereas `rewards.formation` changes the scene's
 reward definition. The {doc}`control_lab_scene_reference` explains their underlying
 scene fields and defaults.

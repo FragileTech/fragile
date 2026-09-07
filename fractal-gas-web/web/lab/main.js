@@ -1,6 +1,10 @@
 import { configureRocks, rockOptions } from "./rock-scene.js";
 import { configureVehicleCount, vehicleCount } from "./vehicle-scene.js";
-import { RewardSettings, withRewards } from "./reward-settings.js";
+import {
+  RewardSettings,
+  withRewards,
+  coefficientValues,
+} from "./reward-settings.js";
 import { treePoseDim, treeWidth } from "./actions.js";
 import {
   configureAntsScene,
@@ -200,12 +204,16 @@ const controllerSettings = new ControllerSettings(
   () => loadScene(currentScene),
 );
 let rewardChangePending;
+let appliedCoefficients = coefficientValues();
 const rewardSettings = new RewardSettings($("reward-terms"), (values) => {
   if (!ready || rewardChangePending) return;
   try {
-    rewardChangePending = withRewards(currentScene, values);
+    rewardChangePending = {
+      scene: withRewards(currentScene, values),
+      coefficients: coefficientValues(values),
+    };
     rewardSettings.setEnabled(false);
-    status("Applying reward weights at the current world state…");
+    status("Applying reward settings at the current world state…");
     worker.postMessage({ type: "reward-state" });
   } catch (e) {
     rewardChangePending = undefined;
@@ -233,10 +241,10 @@ function currentRows() {
   return rows;
 }
 function applySettings(values = {}) {
+  appliedCoefficients = coefficientValues({ ...appliedCoefficients, ...values });
   for (const [key, value] of Object.entries(values)) {
-    const node = $(
-      { distance_coef: "distance", reward_coef: "reward" }[key] || key,
-    );
+    if (key in appliedCoefficients) continue;
+    const node = $(key);
     if (node?.tagName === "INPUT" && node.type === "checkbox")
       node.checked = value;
     else if (node && ["INPUT", "SELECT"].includes(node.tagName))
@@ -259,8 +267,7 @@ function settings() {
     walkers: +$("walkers").value,
     horizon: +$("horizon").value,
     frames: +$("frames").value,
-    distance_coef: +$("distance").value,
-    reward_coef: +$("reward").value,
+    ...appliedCoefficients,
     noise: +$("noise").value,
     elites: +$("elites").value,
     inertial: $("inertial").checked,
@@ -275,7 +282,7 @@ function stop() {
 function loadScene(scene, autoStep = false, continuation = undefined) {
   ++presetRequest;
   rewardChangePending = undefined;
-  rewardSettings.render(scene);
+  rewardSettings.render(scene, appliedCoefficients);
   rewardSettings.setEnabled(false);
   const isCircuit = scene.environment?.kind === "circuit";
   $("track-control").hidden = !isCircuit;
@@ -349,7 +356,8 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
     }
     if (data.type === "reward-state" && rewardChangePending) {
       const next = rewardChangePending;
-      loadScene(next, false, {
+      appliedCoefficients = next.coefficients;
+      loadScene(next.scene, false, {
         rows: data.rows,
         info: currentInfo,
         running: data.running,
@@ -717,8 +725,6 @@ for (const id of [
   "horizon",
   "frames",
   "seed",
-  "distance",
-  "reward",
   "noise",
   "elites",
   "threads",
