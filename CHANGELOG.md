@@ -3,6 +3,8 @@
 Unreleased
 ----------
 
+* Reward hooked rock travel by distinct-rock distance, with an adjustable weight and no credit for respawn teleportation or duplicate tow hooks.
+
 * Expose mining hook stiffness, allow rock sizes down to 0.1×, and prevent false target-progress reward when tow hooks break.
 
 * Mark unapplied Lab reward-slider edits explicitly and verify that applying a zero movement reward preserves the running world.

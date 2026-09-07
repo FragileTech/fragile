@@ -116,6 +116,7 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
   s->gate_reward = number(reward["gate"], 30, 0, 10000);
   s->formation_reward = number(reward["formation"], .15f, 0, 1000);
   s->distance_squared_reward = number(reward["distance_squared"], 1, 0, 1000);
+  s->hooked_rock_distance_reward = number(reward["hooked_rock_distance"], 1, 0, 1000);
   s->formation_distance = number(root["formation_distance"], 3, .1f, 1000);
   s->respawn_seconds = number(root["respawn_seconds"], 4, 0, 10000);
   if (root["boundary"].kind == Json::Null)

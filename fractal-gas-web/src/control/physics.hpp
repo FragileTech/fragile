@@ -19,9 +19,10 @@ struct Scratch {
   std::vector<Contact> contacts;
   std::vector<int> order, edge_ids;
   std::vector<Aabb> bounds;
-  std::vector<Vec2> old_positions, frame_positions;
+  std::vector<Vec2> old_positions, frame_positions, frame_rock_positions;
   std::vector<float> old_angles, bounded_actions;
   std::vector<uint32_t> edge_marks, frame_tethers;
+  std::vector<uint8_t> frame_hooked_rocks;
   uint32_t stamp = 0;
   explicit Scratch(const Scene& s);
 };

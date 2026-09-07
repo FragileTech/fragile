@@ -239,6 +239,18 @@ does not count as travel. These frame rewards are summed over an action or journ
 the total journey distance is not squared. Movement in any direction earns this
 bonus, while **Target progress** separately rewards approaching the task target.
 
+**Hooked rock travel** defaults to **1 reward per metre**. Its slider runs from
+**0–10** in increments of **0.1**; the numeric input accepts **0–1,000**. Set it
+to **0** to disable this term, then press **Apply settings** to apply the change
+while preserving the physical world. At the start of each physics frame, the
+engine identifies cargo rocks hooked to an active controlled vehicle. It sums
+their distances travelled during that frame, `sqrt(Δx² + Δy²)`, and multiplies
+the sum by this weight. Each distinct rock counts once, even when several hooks
+hold it. Moving a rocket around a stationary rock earns none of this bonus, and
+respawn teleportation does not count as travel. Rock motion in any direction
+earns it, including circular motion; **Target progress** and **Delivery bonus**
+provide the incentive to bring the rock to the refinery.
+
 In mining, **Delivery bonus** pays for bringing a rock into the refinery;
 **Target progress** rewards approaching a rock and, once attached, moving the
 hauled rock toward the refinery. Progress now measures both ends of each physics
@@ -253,6 +265,9 @@ settings keys `distance_coef` and `reward_coef`. A scene that omits
 `rewards.distance_squared` receives the default weight of 1, including older scene
 files. An explicit zero remains disabled. See {doc}`control_lab_scene_reference`
 for the scene fields.
+
+The hooked-rock weight is saved as `rewards.hooked_rock_distance`, also with a
+default of **1** when omitted and with an explicit **0** preserved.
 :::
 
 (sec-lab-controls-shooting)=

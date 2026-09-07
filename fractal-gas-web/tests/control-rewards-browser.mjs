@@ -38,6 +38,7 @@ try {
   const diversity = page.locator("#lab-reward-distance_coef");
   const reward = page.locator("#lab-reward-reward_coef");
   const movement = page.locator("#lab-reward-distance_squared");
+  const rockTravel = page.locator("#lab-reward-hooked_rock_distance");
   const apply = page.getByRole("button", {
     name: "Apply settings",
     exact: true,
@@ -70,6 +71,8 @@ try {
   );
   await reward.fill("3");
   await movement.fill("2");
+  assert.equal(await rockTravel.inputValue(), "1");
+  await rockTravel.fill("4");
   assert.match(
     await page.locator("#reward-settings-status").textContent(),
     /Changes not applied/,
@@ -105,6 +108,7 @@ try {
   assert.equal(init.settings.distance_coef, 2.5);
   assert.equal(init.settings.reward_coef, 3);
   assert.equal(init.scene.rewards.distance_squared, 2);
+  assert.equal(init.scene.rewards.hooked_rock_distance, 4);
   assert.match(
     await page.locator("#reward-settings-status").textContent(),
     /^Settings applied/,
@@ -123,6 +127,10 @@ try {
     await page.locator("#reward-settings-status").textContent(),
     /Changes not applied/,
   );
+  await page
+    .getByRole("slider", { name: "Hooked rock travel slider", exact: true })
+    .press("Home");
+  assert.equal(await rockTravel.inputValue(), "0");
   const second = await initCount();
   await apply.click();
   await page.waitForFunction(
@@ -146,6 +154,7 @@ try {
   assert.equal(appliedExport.settings.distance_coef, 2.5);
   assert.equal(appliedExport.settings.reward_coef, 3);
   assert.equal(appliedExport.scene.rewards.distance_squared, 0);
+  assert.equal(appliedExport.scene.rewards.hooked_rock_distance, 0);
   await page
     .getByRole("button", { name: "Reset defaults", exact: true })
     .click();

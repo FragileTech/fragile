@@ -500,6 +500,7 @@ does not prevent a rocket from moving around its cargo.
 |---|---|---|
 | `progress` | `1`; `[0,1000]` | Multiplies the frame's change in progress potential, including formation shaping. |
 | `distance_squared` | `1`; `[0,1000]` | Multiplies the mean squared displacement of controlled vehicles in each physics frame, measured in m². |
+| `hooked_rock_distance` | `1`; `[0,1000]` | Reward per metre of travel summed over distinct active cargo bodies hooked to active controlled vehicles at the start of each physics frame. |
 | `collision` | `2`; `[0,10000]` | Penalty for qualifying contacts involving controlled bodies; a collision need not be lethal. |
 | `pickup` | `10`; `[0,10000]` | Reward per collected food slot. |
 | `delivery` | `100`; `[0,10000]` | Reward per cargo-body delivery, or total reward distributed across unloading one full vehicle load. |
@@ -561,6 +562,24 @@ reward's scale, even for the same path and speed. The coefficient converts m² p
 frame into reward per frame. Its default is one, so motion is valuable even away
 from a target. Set it explicitly to zero to disable this bonus. Older scenes that
 omit `distance_squared` also receive the default weight of one.
+
+The **Hooked rock travel** weight, `rewards.hooked_rock_distance`, pays for the
+rock's movement. At the start of each physics frame, collect the distinct active
+cargo bodies attached by a hook to an active controlled vehicle. For each of
+these rocks, measure its centre displacement during physics integration and add
+the travelled distance times the weight. Two rockets attached to the same rock
+earn this contribution once, while two attached rocks contribute their summed
+distances. A rocket circling a stationary rock earns zero from this term; moving
+the rock in any direction earns reward, including moving it in circles. Progress
+and delivery rewards supply the incentive to move it toward a base.
+
+This distance is Euclidean, in metres: it is neither squared nor multiplied by
+the timestep. Measurements happen before scene mechanics and respawns, so a
+teleport on delivery earns no travel bonus. Hook attachment or release changes
+which rocks qualify on the next frame. The coefficient defaults to one reward
+unit per metre, including for scenes that omit it. Set **Hooked rock travel** to
+zero and press **Apply settings** to disable it independently of vehicle motion
+and target progress rewards.
 
 The Lab's **Reward terms** panel is expanded by default. Use its synchronized
 sliders and numeric inputs to set these weights and `cargo.full_reward`, the bonus

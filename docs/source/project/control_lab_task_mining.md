@@ -202,6 +202,27 @@ start, using that same target before and after movement. Breaking a tether
 therefore does not earn a bonus merely by switching from the distant base to a
 nearby rock. The next frame can select a new target for the disconnected rocket.
 
+**Hooked rock travel** adds a separate reward for moving the cargo itself. Open
+the reward settings to adjust it from 0 to 1000 reward units per metre; the
+default is 1. Its scene field is `rewards.hooked_rock_distance`. Press **Apply
+settings** to activate a change while preserving the current world. Setting it
+to zero and applying disables this term.
+
+At the start of each physics frame, the model identifies active cargo rocks
+hooked to an active controlled vehicle. It then adds their centre-to-centre
+travel distances over that frame and multiplies the sum by the coefficient.
+Each rock counts once, even when both rockets hook it. At the default setting,
+moving one hooked rock's centre 0.2 m earns 0.2 reward units. Hook attachments
+and detachments change eligibility on the next frame; a respawn contributes no
+travel reward.
+
+This measures linear distance, not squared distance. Flying around a stationary
+rock earns nothing from this term, and spinning a rock without moving its centre
+earns nothing either. Moving the rock in any direction does earn reward, however,
+including taking it around a loop. Keep **Target progress** and **Delivery
+bonus** active to give that motion a destination; cargo travel alone does not
+distinguish hauling toward the base from hauling away.
+
 For a controlled benchmark, open **Experiments** with this scene selected, leave
 **All preset scenes** unchecked, and explicitly select **Success metric → Cargo
 deliveries** and **Success target → 1**. Check these fields even if you previously

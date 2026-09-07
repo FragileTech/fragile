@@ -215,6 +215,8 @@ Scratch::Scratch(const Scene& s) {
   old_positions.resize(n);
   frame_positions.resize(s.controlled.size());
   frame_tethers.resize(s.tethers.size());
+  frame_rock_positions.resize(n);
+  frame_hooked_rocks.resize(n);
   old_angles.resize(n);
   bounded_actions.resize(s.channels.size());
   edge_marks.resize(s.edges.size());
@@ -686,6 +688,21 @@ void Physics::step_world(float* r, const float* actions, int frames,
     auto& attachments = scratch_[slot].frame_tethers;
     for (size_t t = 0; t < s.tethers.size(); ++t)
       attachments[t] = word(r, s.layout.joints + 2 * t);
+    auto& hooked = scratch_[slot].frame_hooked_rocks;
+    auto& rock_starts = scratch_[slot].frame_rock_positions;
+    if (s.hooked_rock_distance_reward > 0) {
+      std::fill(hooked.begin(), hooked.end(), 0);
+      for (size_t t = 0; t < s.tethers.size(); ++t) {
+        if (!attachments[t] || !s.bodies[s.tethers[t].a].controlled ||
+            !(word(r, s.layout.flags + s.tethers[t].a) & active_flag)) continue;
+        const size_t b = attachments[t] - 1;
+        if (b < s.bodies.size() && s.bodies[b].cargo &&
+            (word(r, s.layout.flags + b) & active_flag) && !hooked[b]) {
+          hooked[b] = 1;
+          rock_starts[b] = position(r, s.layout, b);
+        }
+      }
+    }
     auto& starts = scratch_[slot].frame_positions;
     if (s.distance_squared_reward > 0)
       for (size_t c = 0; c < s.controlled.size(); ++c)
@@ -703,6 +720,14 @@ void Physics::step_world(float* r, const float* actions, int frames,
       for (size_t c = 0; c < s.controlled.size(); ++c)
         squared_distance += length2(position(r, s.layout, s.controlled[c]) - starts[c]);
       result.reward += s.distance_squared_reward * squared_distance / float(s.controlled.size());
+    }
+    // Sum actual translation of each distinct rock hooked at frame start.
+    // Run before delivery/respawn mechanics so teleports never earn reward.
+    if (s.hooked_rock_distance_reward > 0) {
+      float distance = 0;
+      for (size_t b = 0; b < s.bodies.size(); ++b)
+        if (hooked[b]) distance += length(position(r, s.layout, b) - rock_starts[b]);
+      result.reward += s.hooked_rock_distance_reward * distance;
     }
     mechanics(r, result);
     for (const auto& extension : s.extensions)

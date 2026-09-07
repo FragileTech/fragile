@@ -10,6 +10,15 @@ export const REWARD_TERMS = Object.freeze([
     help: "Weight × mean vehicle displacement squared (Δx² + Δy²), in metres squared per physics frame. Rewards movement in any direction. Summed over frames, not squared over an entire action or journey. Zero disables it.",
   },
   {
+    key: "hooked_rock_distance",
+    label: "Hooked rock travel",
+    def: 1,
+    max: 1000,
+    slider: 10,
+    step: 0.1,
+    help: "Reward per metre travelled by rocks hooked to an active vehicle at the start of each physics frame. Each rock counts once even with several tow hooks. Linear distance in any direction; excludes vehicle-only movement and delivery respawns. Zero disables it. Click Apply settings to use edits.",
+  },
+  {
     key: "progress",
     label: "Target progress",
     def: 1,
