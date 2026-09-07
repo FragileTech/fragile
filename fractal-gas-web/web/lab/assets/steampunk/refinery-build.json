@@ -10,13 +10,13 @@
     10.2
   ],
   "high": {
-    "sourceTriangles": 10864,
-    "drawMeshes": 8,
-    "bytes": 1716476
+    "sourceTriangles": 9812,
+    "drawMeshes": 7,
+    "bytes": 1214088
   },
   "low": {
-    "sourceTriangles": 1808,
-    "drawMeshes": 8,
-    "bytes": 1121700
+    "sourceTriangles": 3576,
+    "drawMeshes": 7,
+    "bytes": 802336
   }
 }

@@ -1,5 +1,14 @@
 # Original laboratory assets
 
+The latest collection pass covers **94 styled assets**: eight vehicles, 84 world
+pieces and two refineries, each with detailed and simplified geometry. Refinements
+include folded armor, pressure plumbing, mineral trays and sockets, service bays,
+checkpoint sectors, road fittings, lighting fixtures and articulated capture gear.
+The styles retain their common collision envelopes. See the
+[collection review](VEHICLE_REVIEW.md) for export budgets and measured performance.
+The [latest concept review](CONCEPT_REVIEW.md) describes the subsequent shape and
+surface refinements and the stricter budgets for every runtime pack and world prop.
+
 ## World collections
 
 The [Asset Workshop](../asset-gallery.html) now includes **42 world asset types in
@@ -70,6 +79,29 @@ all these poses can be reconstructed after a replay seek without event history.
 
 ### Regenerate and verify world assets
 
+From `fractal-gas-web/`, rebuild the complete editable collection and GLBs with:
+
+```sh
+blender --background --threads 4 --python tools/blender/regenerate.py --
+```
+
+Add `--render` for reference images, or select a subset such as
+`--style steampunk --models world refinery`. For parallel production, run one
+process per style; keep the total rendering thread count within the host's capacity.
+To refresh images from the saved `.blend` files without rebuilding geometry:
+
+```sh
+blender --background --threads 4 --python tools/blender/render_previews.py -- --style futuristic
+blender --background --threads 4 --python tools/blender/render_previews.py -- --style steampunk
+```
+
+The resource/machinery and scenery/effect passes live in
+`tools/blender/world_machinery_refinement.py` and
+`tools/blender/world_scenery_refinement.py`. Refineries use
+`tools/blender/build_refinery_assets.py`; their 12 × 12 unloading aprons stay open,
+with all processing machinery behind the drive-through area. Exports replace each
+GLB only after writing finishes, so an active lab cannot read a partially written file.
+
 Run `tools/blender/build_world_assets.py` in Blender, or execute
 `build_world("futuristic", render=True)` / `build_world("steampunk", render=True)`
 through the Blender MCP after loading the script into a namespace. Use a background
@@ -78,7 +110,7 @@ collection can exceed a single bridge request's timeout. User scenes are preserv
 
 Family reference renders are `previews/{style}/world-{family}.png`.
 After rendering, run `python3 tools/blender/make_contact_sheets.py` (Pillow required)
-to regenerate the paired vehicle and world overview images.
+to regenerate the paired vehicle, world, refinery and orthographic overview images.
 `world-build.json` records geometry counts, pack sizes and shared dimensions.
 Run `npm run test:lab`: the world suite validates every asset, embedded resources,
 triangle limits, shared bounds, different structural geometry and deterministic poses.
@@ -188,6 +220,20 @@ exports. It does **not** require Blender or regenerate the authored collections.
   Failed loading retains the active collection and exposes a Retry control.
 
 ### Verification
+
+The concept-fidelity pass freezes all 24 preceding runtime exports in
+`tests/fixtures/lab-render-budgets.json`. The regression suite checks triangles,
+material batches, materials, embedded image count, decoded texture pixels and
+download bytes. `world-render-budgets.json` also limits each individual world
+prop, so reductions elsewhere in a pack cannot conceal a more expensive repeated
+asset. These budgets are measured export costs, not frame-rate guarantees.
+
+Run the real-browser integration page from the command line against the preview
+server with `node tests/control-style-browser.mjs`. Set `CONTROL_TEST_URL` for a
+server other than `http://127.0.0.1:8080/lab/` and `CONTROL_STYLE_REPORT` to save its
+JSON results. Software-GPU hosts can set `CONTROL_PIXEL_RATIO=0.5` to reduce raster
+work while preserving the CSS viewport and projected-pixel LOD thresholds; report
+that setting alongside any timings.
 
 Run `npm run test:lab` after `npm run build:lab`. The asset suite validates actual
 GLB geometry, packed resources, budgets, bounds, animation metadata and replay,

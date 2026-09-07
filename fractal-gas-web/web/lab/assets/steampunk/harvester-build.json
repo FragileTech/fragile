@@ -1,13 +1,13 @@
 {
   "high": {
-    "sourceTriangles": 45628,
+    "sourceTriangles": 35064,
     "drawMeshes": 23,
-    "bytes": 3889792
+    "bytes": 2770712
   },
   "low": {
-    "sourceTriangles": 4616,
+    "sourceTriangles": 4772,
     "drawMeshes": 21,
-    "bytes": 1121212
+    "bytes": 657816
   },
   "style": "steampunk",
   "model": "harvester"

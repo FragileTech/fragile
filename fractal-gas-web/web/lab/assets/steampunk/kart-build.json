@@ -1,13 +1,13 @@
 {
   "high": {
-    "sourceTriangles": 26672,
+    "sourceTriangles": 19124,
     "drawMeshes": 16,
-    "bytes": 2724388
+    "bytes": 1789664
   },
   "low": {
-    "sourceTriangles": 3056,
+    "sourceTriangles": 3404,
     "drawMeshes": 15,
-    "bytes": 1017548
+    "bytes": 549504
   },
   "style": "steampunk",
   "model": "kart"

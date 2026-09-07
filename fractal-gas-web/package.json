@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build:lab": "node tools/build-lab.mjs",
-    "test:lab": "node tests/control-web.test.mjs && node tests/control-rewards.test.mjs && node tests/control-rocks.test.mjs && node tests/control-motion.test.mjs && node tests/control-ants.test.mjs && node tests/control-cargo.test.mjs && node tests/control-refinery-assets.test.mjs && node tests/control-extensions.test.mjs && node tests/control-shooting.test.mjs && node tests/control-racing.test.mjs && node tests/control-assets.test.mjs && node tests/control-world-assets.test.mjs",
+    "test:lab": "node tests/control-web.test.mjs && node tests/control-rewards.test.mjs && node tests/control-rocks.test.mjs && node tests/control-motion.test.mjs && node tests/control-ants.test.mjs && node tests/control-cargo.test.mjs && node tests/control-refinery-assets.test.mjs && node tests/control-extensions.test.mjs && node tests/control-shooting.test.mjs && node tests/control-racing.test.mjs && node tests/control-assets.test.mjs && node tests/control-render-budgets.test.mjs && node tests/control-world-assets.test.mjs",
     "test:lab-docs": "node tests/control-doc-examples.test.mjs",
     "capture:lab-docs": "node tools/capture-lab-docs.mjs"
   },

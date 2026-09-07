@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-09-06T22:19:38.456470+00:00",
+  "generatedAt": "2026-09-07T07:02:32.775395+00:00",
   "status": "passed",
-  "scope": "Eight vehicles and 42 world asset types per style, detailed and simplified exports",
-  "collisionContract": "Style and LOD preserve native scene collision geometry; world fitting envelopes are identical across styles.",
+  "scope": "94 styled assets: eight vehicles, 84 world models and two refineries; 188 detailed/simplified variants in 24 runtime GLBs.",
+  "collisionContract": "Native scene hulls remain authoritative. All paired world assets preserve catalog envelopes; both refinery aprons remain open.",
   "commands": [
     {
       "command": "npm --prefix fractal-gas-web run test:lab",
@@ -11,17 +11,6 @@
     {
       "command": "npm --prefix fractal-gas-web run build:lab",
       "status": "passed"
-    },
-    {
-      "command": "node fractal-gas-web/tests/control-assets.test.mjs",
-      "status": "passed",
-      "checks": 19,
-      "note": "Includes outward tread normals and inexpensive high/low rocket glazing, alongside footprint, LOD budgets, motion pivots and replay."
-    },
-    {
-      "command": "node fractal-gas-web/tests/control-world-assets.test.mjs",
-      "status": "passed",
-      "checks": 43
     }
   ],
   "browser": {
@@ -31,430 +20,430 @@
       {
         "scene": "harvest",
         "style": "steampunk",
-        "medianFrameMs": 16.86,
-        "medianRenderCpuMs": 2.61,
+        "medianFrameMs": 18.44,
+        "medianRenderCpuMs": 3.34,
         "pageVisibility": "visible",
-        "draws": 28,
-        "triangles": 16523,
+        "draws": 29,
+        "triangles": 20523,
         "largestGeometry": [
           {
             "name": "dock-root__Machined_brass",
-            "triangles": 7208
+            "triangles": 9068
           },
           {
             "name": "reactor-root__Machined_brass",
-            "triangles": 5912
+            "triangles": 8108
+          },
+          {
+            "name": "dock-root__Riveted_iron",
+            "triangles": 3112
           },
           {
             "name": "dock-root__Copper_feed_lines",
-            "triangles": 2440
+            "triangles": 2584
           },
           {
-            "name": "Gimbal_bearing__Copper_feed_lines",
-            "triangles": 1664
-          },
-          {
-            "name": "Gimbal_bearing001__Copper_feed_lines",
-            "triangles": 1664
+            "name": "reactor-root__Riveted_iron",
+            "triangles": 2272
           }
         ]
       },
       {
         "scene": "harvest",
         "style": "futuristic",
-        "medianFrameMs": 16.6,
-        "medianRenderCpuMs": 2.17,
+        "medianFrameMs": 18.36,
+        "medianRenderCpuMs": 2.72,
         "pageVisibility": "visible",
-        "draws": 28,
-        "triangles": 12103,
+        "draws": 30,
+        "triangles": 16605,
         "largestGeometry": [
           {
             "name": "dock-root__Titanium_edges",
-            "triangles": 5292
+            "triangles": 6820
           },
           {
             "name": "reactor-root__Titanium_edges",
-            "triangles": 4320
+            "triangles": 6268
           },
           {
             "name": "dock-root__Brushed_pale_alloy",
-            "triangles": 1404
+            "triangles": 2268
           },
           {
-            "name": "Gimbal_bearing__Titanium_edges",
-            "triangles": 1296
+            "name": "reactor-root__Brushed_pale_alloy",
+            "triangles": 2120
           },
           {
-            "name": "Gimbal_bearing001__Titanium_edges",
-            "triangles": 1296
+            "name": "reactor-root__Ceramic_graphite",
+            "triangles": 1876
           }
         ]
       },
       {
         "scene": "ants",
         "style": "steampunk",
-        "medianFrameMs": 15.91,
-        "medianRenderCpuMs": 2.69,
+        "medianFrameMs": 20.13,
+        "medianRenderCpuMs": 3.3,
         "pageVisibility": "visible",
-        "draws": 49,
-        "triangles": 61674,
+        "draws": 51,
+        "triangles": 58330,
         "largestGeometry": [
           {
             "name": "harvester-root__Machined_brass",
-            "triangles": 24672
+            "triangles": 17608
           },
           {
             "name": "harvester-root__Machined_brass",
-            "triangles": 24672
+            "triangles": 17608
           },
           {
             "name": "harvester-root__Machined_brass",
-            "triangles": 24672
+            "triangles": 17608
           },
           {
             "name": "harvester-root__Machined_brass",
-            "triangles": 24672
+            "triangles": 17608
           },
           {
             "name": "harvester-root__Machined_brass",
-            "triangles": 24672
+            "triangles": 17608
           }
         ]
       },
       {
         "scene": "ants",
         "style": "futuristic",
-        "medianFrameMs": 19.66,
-        "medianRenderCpuMs": 3.35,
+        "medianFrameMs": 16.54,
+        "medianRenderCpuMs": 3.29,
         "pageVisibility": "visible",
-        "draws": 49,
-        "triangles": 56636,
-        "largestGeometry": [
-          {
-            "name": "harvester-root__Titanium_edges",
-            "triangles": 20278
-          },
-          {
-            "name": "harvester-root__Titanium_edges",
-            "triangles": 20278
-          },
-          {
-            "name": "harvester-root__Titanium_edges",
-            "triangles": 20278
-          },
-          {
-            "name": "harvester-root__Titanium_edges",
-            "triangles": 20278
-          },
-          {
-            "name": "harvester-root__Titanium_edges",
-            "triangles": 20278
-          }
-        ]
-      },
-      {
-        "scene": "tandem",
-        "style": "steampunk",
-        "medianFrameMs": 22.33,
-        "medianRenderCpuMs": 5.05,
-        "pageVisibility": "visible",
-        "draws": 39,
-        "triangles": 15123,
-        "largestGeometry": [
-          {
-            "name": "gate-root__Machined_brass",
-            "triangles": 3744
-          },
-          {
-            "name": "gate-root__Machined_brass",
-            "triangles": 3744
-          },
-          {
-            "name": "gate-root__Machined_brass",
-            "triangles": 3744
-          },
-          {
-            "name": "gate-root__Machined_brass",
-            "triangles": 3744
-          },
-          {
-            "name": "gate-root__Machined_brass",
-            "triangles": 3744
-          }
-        ]
-      },
-      {
-        "scene": "tandem",
-        "style": "futuristic",
-        "medianFrameMs": 24.5,
-        "medianRenderCpuMs": 5.02,
-        "pageVisibility": "visible",
-        "draws": 41,
-        "triangles": 11489,
+        "draws": 53,
+        "triangles": 60352,
         "largestGeometry": [
           {
             "name": "World instances / rail",
-            "triangles": 1760
+            "triangles": 18240
+          },
+          {
+            "name": "harvester-root__Titanium_edges",
+            "triangles": 13670
+          },
+          {
+            "name": "harvester-root__Titanium_edges",
+            "triangles": 13670
+          },
+          {
+            "name": "harvester-root__Titanium_edges",
+            "triangles": 13670
+          },
+          {
+            "name": "harvester-root__Titanium_edges",
+            "triangles": 13670
+          }
+        ]
+      },
+      {
+        "scene": "tandem",
+        "style": "steampunk",
+        "medianFrameMs": 16.56,
+        "medianRenderCpuMs": 3.08,
+        "pageVisibility": "visible",
+        "draws": 40,
+        "triangles": 17043,
+        "largestGeometry": [
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          },
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          },
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          },
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          },
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          }
+        ]
+      },
+      {
+        "scene": "tandem",
+        "style": "futuristic",
+        "medianFrameMs": 15.27,
+        "medianRenderCpuMs": 3.24,
+        "pageVisibility": "visible",
+        "draws": 43,
+        "triangles": 15021,
+        "largestGeometry": [
+          {
+            "name": "World instances / rail",
+            "triangles": 3040
           },
           {
             "name": "gate-root__Titanium_edges",
-            "triangles": 1600
+            "triangles": 2296
           },
           {
             "name": "gate-root__Titanium_edges",
-            "triangles": 1600
+            "triangles": 2296
           },
           {
             "name": "gate-root__Titanium_edges",
-            "triangles": 1600
+            "triangles": 2296
           },
           {
             "name": "gate-root__Titanium_edges",
-            "triangles": 1600
+            "triangles": 2296
           }
         ]
       },
       {
         "scene": "mining",
         "style": "steampunk",
-        "medianFrameMs": 23.7,
-        "medianRenderCpuMs": 3.91,
+        "medianFrameMs": 16.21,
+        "medianRenderCpuMs": 3.3,
         "pageVisibility": "visible",
-        "draws": 58,
-        "triangles": 20829,
+        "draws": 63,
+        "triangles": 25177,
         "largestGeometry": [
           {
             "name": "dock-root__Machined_brass",
-            "triangles": 7208
+            "triangles": 9068
           },
           {
             "name": "reactor-root__Machined_brass",
-            "triangles": 5912
+            "triangles": 8108
+          },
+          {
+            "name": "dock-root__Riveted_iron",
+            "triangles": 3112
           },
           {
             "name": "dock-root__Copper_feed_lines",
-            "triangles": 2440
+            "triangles": 2584
           },
           {
-            "name": "Gimbal_bearing__Copper_feed_lines",
-            "triangles": 1664
-          },
-          {
-            "name": "Gimbal_bearing001__Copper_feed_lines",
-            "triangles": 1664
+            "name": "reactor-root__Riveted_iron",
+            "triangles": 2272
           }
         ]
       },
       {
         "scene": "mining",
         "style": "futuristic",
-        "medianFrameMs": 20.48,
-        "medianRenderCpuMs": 3.78,
+        "medianFrameMs": 16.67,
+        "medianRenderCpuMs": 1.79,
         "pageVisibility": "visible",
-        "draws": 65,
-        "triangles": 14349,
+        "draws": 68,
+        "triangles": 19353,
         "largestGeometry": [
           {
             "name": "dock-root__Titanium_edges",
-            "triangles": 5292
+            "triangles": 6820
           },
           {
             "name": "reactor-root__Titanium_edges",
-            "triangles": 4320
+            "triangles": 6268
           },
           {
             "name": "dock-root__Brushed_pale_alloy",
-            "triangles": 1404
+            "triangles": 2268
           },
           {
-            "name": "Gimbal_bearing__Titanium_edges",
-            "triangles": 1296
+            "name": "reactor-root__Brushed_pale_alloy",
+            "triangles": 2120
           },
           {
-            "name": "Gimbal_bearing001__Titanium_edges",
-            "triangles": 1296
+            "name": "reactor-root__Ceramic_graphite",
+            "triangles": 1876
           }
         ]
       },
       {
         "scene": "rocket",
         "style": "steampunk",
-        "medianFrameMs": 19.2,
-        "medianRenderCpuMs": 3.5,
-        "pageVisibility": "visible",
-        "draws": 42,
-        "triangles": 17851,
-        "largestGeometry": [
-          {
-            "name": "dock-root__Machined_brass",
-            "triangles": 7208
-          },
-          {
-            "name": "reactor-root__Machined_brass",
-            "triangles": 5912
-          },
-          {
-            "name": "dock-root__Copper_feed_lines",
-            "triangles": 2440
-          },
-          {
-            "name": "Gimbal_bearing__Copper_feed_lines",
-            "triangles": 1664
-          },
-          {
-            "name": "Gimbal_bearing001__Copper_feed_lines",
-            "triangles": 1664
-          }
-        ]
-      },
-      {
-        "scene": "rocket",
-        "style": "futuristic",
-        "medianFrameMs": 28.41,
-        "medianRenderCpuMs": 4.9,
-        "pageVisibility": "visible",
-        "draws": 44,
-        "triangles": 12523,
-        "largestGeometry": [
-          {
-            "name": "dock-root__Titanium_edges",
-            "triangles": 5292
-          },
-          {
-            "name": "reactor-root__Titanium_edges",
-            "triangles": 4320
-          },
-          {
-            "name": "dock-root__Brushed_pale_alloy",
-            "triangles": 1404
-          },
-          {
-            "name": "Gimbal_bearing__Titanium_edges",
-            "triangles": 1296
-          },
-          {
-            "name": "Gimbal_bearing001__Titanium_edges",
-            "triangles": 1296
-          }
-        ]
-      },
-      {
-        "scene": "racing",
-        "style": "steampunk",
-        "medianFrameMs": 25,
-        "medianRenderCpuMs": 3.5,
+        "medianFrameMs": 16.38,
+        "medianRenderCpuMs": 2.8,
         "pageVisibility": "visible",
         "draws": 45,
-        "triangles": 25392,
+        "triangles": 22263,
+        "largestGeometry": [
+          {
+            "name": "dock-root__Machined_brass",
+            "triangles": 9068
+          },
+          {
+            "name": "reactor-root__Machined_brass",
+            "triangles": 8108
+          },
+          {
+            "name": "dock-root__Riveted_iron",
+            "triangles": 3112
+          },
+          {
+            "name": "dock-root__Copper_feed_lines",
+            "triangles": 2584
+          },
+          {
+            "name": "reactor-root__Riveted_iron",
+            "triangles": 2272
+          }
+        ]
+      },
+      {
+        "scene": "rocket",
+        "style": "futuristic",
+        "medianFrameMs": 15.79,
+        "medianRenderCpuMs": 2.92,
+        "pageVisibility": "visible",
+        "draws": 47,
+        "triangles": 17401,
+        "largestGeometry": [
+          {
+            "name": "dock-root__Titanium_edges",
+            "triangles": 6820
+          },
+          {
+            "name": "reactor-root__Titanium_edges",
+            "triangles": 6268
+          },
+          {
+            "name": "dock-root__Brushed_pale_alloy",
+            "triangles": 2268
+          },
+          {
+            "name": "reactor-root__Brushed_pale_alloy",
+            "triangles": 2120
+          },
+          {
+            "name": "reactor-root__Ceramic_graphite",
+            "triangles": 1876
+          }
+        ]
+      },
+      {
+        "scene": "racing",
+        "style": "steampunk",
+        "medianFrameMs": 17.27,
+        "medianRenderCpuMs": 2.26,
+        "pageVisibility": "visible",
+        "draws": 49,
+        "triangles": 34540,
         "largestGeometry": [
           {
             "name": "World instances / gate-pylons",
-            "triangles": 7488
+            "triangles": 8352
           },
           {
             "name": "World instances / finish-arch",
-            "triangles": 5260
+            "triangles": 6248
           },
           {
             "name": "World instances / guardrail",
-            "triangles": 2664
+            "triangles": 5832
+          },
+          {
+            "name": "World instances / guardrail",
+            "triangles": 2016
           },
           {
             "name": "World instances / gate-pylons",
-            "triangles": 1376
-          },
-          {
-            "name": "World instances / guardrail",
-            "triangles": 1008
+            "triangles": 1808
           }
         ]
       },
       {
         "scene": "racing",
         "style": "futuristic",
-        "medianFrameMs": 28.38,
-        "medianRenderCpuMs": 3.81,
+        "medianFrameMs": 17.03,
+        "medianRenderCpuMs": 3.02,
         "pageVisibility": "visible",
-        "draws": 56,
-        "triangles": 15254,
+        "draws": 62,
+        "triangles": 23574,
         "largestGeometry": [
           {
             "name": "World instances / gate-pylons",
-            "triangles": 3200
+            "triangles": 4704
           },
           {
             "name": "World instances / finish-arch",
-            "triangles": 2800
+            "triangles": 3568
           },
           {
             "name": "World instances / guardrail",
-            "triangles": 792
+            "triangles": 1656
           },
           {
-            "name": "",
-            "triangles": 720
+            "name": "World instances / guardrail",
+            "triangles": 1512
           },
           {
-            "name": "",
-            "triangles": 720
+            "name": "World instances / finish-arch",
+            "triangles": 972
           }
         ]
       },
       {
         "scene": "64 mixed vehicles",
         "style": "steampunk",
-        "medianFrameMs": 16.54,
-        "medianRenderCpuMs": 9.01,
+        "medianFrameMs": 15.72,
+        "medianRenderCpuMs": 6.62,
         "pageVisibility": "visible",
-        "draws": 122,
-        "triangles": 216964,
+        "draws": 124,
+        "triangles": 225952,
         "largestGeometry": [
           {
             "name": "",
-            "triangles": 23616
+            "triangles": 19968
+          },
+          {
+            "name": "World instances / rail",
+            "triangles": 19440
           },
           {
             "name": "",
-            "triangles": 22528
+            "triangles": 19264
           },
           {
             "name": "",
-            "triangles": 18688
+            "triangles": 17568
           },
           {
             "name": "",
-            "triangles": 15392
-          },
-          {
-            "name": "",
-            "triangles": 11520
+            "triangles": 15712
           }
         ]
       },
       {
         "scene": "64 mixed vehicles / close view",
         "style": "steampunk",
-        "medianFrameMs": 29.73,
-        "medianRenderCpuMs": 5.46,
+        "medianFrameMs": 17.03,
+        "medianRenderCpuMs": 3.4,
         "pageVisibility": "visible",
-        "draws": 41,
-        "triangles": 29162,
+        "draws": 42,
+        "triangles": 37578,
         "largestGeometry": [
           {
             "name": "World instances / rail",
-            "triangles": 15328
-          },
-          {
-            "name": "",
-            "triangles": 2816
-          },
-          {
-            "name": "",
-            "triangles": 1924
+            "triangles": 22496
           },
           {
             "name": "World instances / rail",
-            "triangles": 1472
+            "triangles": 2944
+          },
+          {
+            "name": "",
+            "triangles": 2496
+          },
+          {
+            "name": "",
+            "triangles": 1964
           },
           {
             "name": "World instances / rail",
@@ -465,62 +454,62 @@
       {
         "scene": "64 mixed vehicles",
         "style": "futuristic",
-        "medianFrameMs": 22.03,
-        "medianRenderCpuMs": 9.08,
+        "medianFrameMs": 16.59,
+        "medianRenderCpuMs": 8.58,
         "pageVisibility": "visible",
-        "draws": 127,
-        "triangles": 182828,
+        "draws": 146,
+        "triangles": 183064,
         "largestGeometry": [
           {
             "name": "",
-            "triangles": 14144
+            "triangles": 13344
           },
           {
             "name": "",
-            "triangles": 11136
+            "triangles": 9792
           },
           {
             "name": "",
-            "triangles": 10752
+            "triangles": 9344
           },
           {
             "name": "",
-            "triangles": 7360
+            "triangles": 9184
           },
           {
             "name": "",
-            "triangles": 7296
+            "triangles": 6720
           }
         ]
       },
       {
         "scene": "64 mixed vehicles / close view",
         "style": "futuristic",
-        "medianFrameMs": 21.38,
-        "medianRenderCpuMs": 4.3,
+        "medianFrameMs": 20.74,
+        "medianRenderCpuMs": 3.95,
         "pageVisibility": "visible",
-        "draws": 45,
-        "triangles": 27638,
+        "draws": 48,
+        "triangles": 44754,
         "largestGeometry": [
           {
             "name": "World instances / rail",
-            "triangles": 14080
+            "triangles": 24320
           },
           {
             "name": "World instances / rail",
-            "triangles": 2592
+            "triangles": 6048
           },
           {
             "name": "World instances / rail",
-            "triangles": 2176
+            "triangles": 5632
           },
           {
             "name": "",
-            "triangles": 1344
+            "triangles": 1168
           },
           {
             "name": "",
-            "triangles": 912
+            "triangles": 840
           }
         ]
       }
@@ -543,877 +532,2473 @@
       "../concepts/ steampunk: no horizontal overflow at 1440px"
     ]
   },
-  "performanceNotes": [
-    "Measured in the local in-app browser after all task-owned Blender renders completed; other host work may affect timings.",
-    "Each row uses 15 animation frames after three warm-up frames. Frame intervals include browser scheduling; render submission CPU time does not measure asynchronous GPU completion.",
-    "Crowd overview and close-view rows have different camera framing. Their triangle and draw counts demonstrate visibility culling, not a controlled before/after frame-time benchmark.",
-    "No portable frame-rate guarantee is inferred from this machine."
+  "exports": [
+    {
+      "file": "futuristic/rocket-high.glb",
+      "sha256": "dc813ce72e56c40b4bcdd44979f5304866d12cf0f630dc5a2a4fd80fedab4bdf",
+      "bytes": 1576284,
+      "sourceTriangles": 8022,
+      "exportTriangles": 8022,
+      "drawMeshes": 9
+    },
+    {
+      "file": "futuristic/rocket-low.glb",
+      "sha256": "7a6bd3adcbb4ccbdf53a19b3049b1620ed5aeb58b91adf1b1cb6241e9827e811",
+      "bytes": 867088,
+      "sourceTriangles": 1544,
+      "exportTriangles": 1338,
+      "drawMeshes": 8
+    },
+    {
+      "file": "futuristic/kart-high.glb",
+      "sha256": "e9e610c03605ce32b9ff8814c137238bc682c1c0cf1f3dbaa87ff825897f09f2",
+      "bytes": 2119040,
+      "sourceTriangles": 17520,
+      "exportTriangles": 17520,
+      "drawMeshes": 20
+    },
+    {
+      "file": "futuristic/kart-low.glb",
+      "sha256": "f326c664267c06d8ffd6a4612be563a93dd18c470d54af566abe7ddc3930a3e0",
+      "bytes": 945796,
+      "sourceTriangles": 2684,
+      "exportTriangles": 2456,
+      "drawMeshes": 19
+    },
+    {
+      "file": "futuristic/drone-high.glb",
+      "sha256": "74c666c6487d6586477ae049e5517dd91bb58f6451bd845dadfdd7ae9fa237c9",
+      "bytes": 1788576,
+      "sourceTriangles": 12384,
+      "exportTriangles": 12384,
+      "drawMeshes": 14
+    },
+    {
+      "file": "futuristic/drone-low.glb",
+      "sha256": "a4da11f5d43a0169ed5255c0a84f1ce32d62718224a007d78839ea8e438eadf3",
+      "bytes": 877272,
+      "sourceTriangles": 2544,
+      "exportTriangles": 1960,
+      "drawMeshes": 14
+    },
+    {
+      "file": "futuristic/harvester-high.glb",
+      "sha256": "f808efe3821af462510e9689adfba42d9fbeb7f00cf5ff8011ba3921bedbb034",
+      "bytes": 2968680,
+      "sourceTriangles": 31222,
+      "exportTriangles": 31222,
+      "drawMeshes": 21
+    },
+    {
+      "file": "futuristic/harvester-low.glb",
+      "sha256": "849915d7cff2ce672081b85a6230661f72161bee08a7fde3fa70db9df8399b4e",
+      "bytes": 1050856,
+      "sourceTriangles": 4528,
+      "exportTriangles": 4066,
+      "drawMeshes": 20
+    },
+    {
+      "file": "futuristic/world-high.glb",
+      "sha256": "f7433ca4374f3774f2576862d7cd70fe6d77ac5d43b33a1ec7cfeb4d206fa459",
+      "bytes": 17215028,
+      "sourceTriangles": 162704,
+      "exportTriangles": 162704,
+      "drawMeshes": 236
+    },
+    {
+      "file": "futuristic/world-low.glb",
+      "sha256": "7e68e16c93abc692153c17df0bdbebb97cc1c3d0baa5f4f2df4af9ae7edd757a",
+      "bytes": 3663988,
+      "sourceTriangles": 16892,
+      "exportTriangles": 16892,
+      "drawMeshes": 218
+    },
+    {
+      "file": "futuristic/refinery-high.glb",
+      "sha256": "d7c9174c2ce488e2a65a046fcd0a9676bb3b6f0e9804268877d49d20f064cc17",
+      "bytes": 2066184,
+      "sourceTriangles": 19736,
+      "exportTriangles": 19736,
+      "drawMeshes": 6
+    },
+    {
+      "file": "futuristic/refinery-low.glb",
+      "sha256": "7677ea2d1f7ed7d17935a5eba48b07b3c313cafd7e6f9febf0a4ecee4a5a1fdf",
+      "bytes": 984144,
+      "sourceTriangles": 3596,
+      "exportTriangles": 3596,
+      "drawMeshes": 6
+    },
+    {
+      "file": "steampunk/rocket-high.glb",
+      "sha256": "55d7180d9638ce237cf5e410c7e27a75008f3e5ae8a110fbe2b65b26a36b1c8f",
+      "bytes": 1459560,
+      "sourceTriangles": 9672,
+      "exportTriangles": 9672,
+      "drawMeshes": 10
+    },
+    {
+      "file": "steampunk/rocket-low.glb",
+      "sha256": "3a389be3141c9099c7e5b155da464011051274ddb414d3000fa3373b9bc1b118",
+      "bytes": 713492,
+      "sourceTriangles": 2216,
+      "exportTriangles": 1904,
+      "drawMeshes": 8
+    },
+    {
+      "file": "steampunk/kart-high.glb",
+      "sha256": "447dcab7d089287c1a94984410a8a6f24621d09a093e02b226d15ef2f2976c5f",
+      "bytes": 2010028,
+      "sourceTriangles": 19124,
+      "exportTriangles": 19124,
+      "drawMeshes": 16
+    },
+    {
+      "file": "steampunk/kart-low.glb",
+      "sha256": "0c8ecad22bc797ec64971814be5c6991f5e5dad5f0f4efe1faa50dae656087a1",
+      "bytes": 769904,
+      "sourceTriangles": 3404,
+      "exportTriangles": 2610,
+      "drawMeshes": 15
+    },
+    {
+      "file": "steampunk/drone-high.glb",
+      "sha256": "67be5f42360c98276d14d21f7daef1551ae124a1379a8679cefc6ed4fad3be56",
+      "bytes": 1830984,
+      "sourceTriangles": 15996,
+      "exportTriangles": 15996,
+      "drawMeshes": 15
+    },
+    {
+      "file": "steampunk/drone-low.glb",
+      "sha256": "4ed8555bc9d93246d392710bdb3ae5f1a789be2ec7b49e6d00bd0195dab10e67",
+      "bytes": 752992,
+      "sourceTriangles": 2908,
+      "exportTriangles": 2288,
+      "drawMeshes": 14
+    },
+    {
+      "file": "steampunk/harvester-high.glb",
+      "sha256": "d82774f91aedb1c075d5bf43f7b8a8e1ec121afb1b1bee00a27af552a0d03044",
+      "bytes": 2990912,
+      "sourceTriangles": 35064,
+      "exportTriangles": 35064,
+      "drawMeshes": 23
+    },
+    {
+      "file": "steampunk/harvester-low.glb",
+      "sha256": "fa13ed74f44feb15d4460d7fa63a9a5d767c6e6c0f604074394f101b9a71170a",
+      "bytes": 878216,
+      "sourceTriangles": 4772,
+      "exportTriangles": 4318,
+      "drawMeshes": 21
+    },
+    {
+      "file": "steampunk/world-high.glb",
+      "sha256": "10c6f131f16e3d4edd4439ffaec0b2acc2b2781d58a404bedc4d2a7e3781e911",
+      "bytes": 18043428,
+      "sourceTriangles": 181440,
+      "exportTriangles": 181440,
+      "drawMeshes": 207
+    },
+    {
+      "file": "steampunk/world-low.glb",
+      "sha256": "636c3842a02e82ac58089f638706d2c6cfbee47c1d54eedc0fb675d28cd54f9c",
+      "bytes": 4080344,
+      "sourceTriangles": 28354,
+      "exportTriangles": 28354,
+      "drawMeshes": 188
+    },
+    {
+      "file": "steampunk/refinery-high.glb",
+      "sha256": "1d91a205f10a13569979c970c5efe67c31d1d267a3a26688ea8dc2996451453b",
+      "bytes": 1720968,
+      "sourceTriangles": 17700,
+      "exportTriangles": 17700,
+      "drawMeshes": 8
+    },
+    {
+      "file": "steampunk/refinery-low.glb",
+      "sha256": "eff01dfacf56ead23853ee39644b190cf96d28e740f88283a17c7d5429ba40a9",
+      "bytes": 802724,
+      "sourceTriangles": 3640,
+      "exportTriangles": 3640,
+      "drawMeshes": 8
+    }
+  ],
+  "models": {
+    "futuristic/rocket/high": {
+      "triangles": 8022,
+      "drawMeshes": 9
+    },
+    "futuristic/rocket/low": {
+      "triangles": 1338,
+      "drawMeshes": 8
+    },
+    "futuristic/kart/high": {
+      "triangles": 17520,
+      "drawMeshes": 20
+    },
+    "futuristic/kart/low": {
+      "triangles": 2456,
+      "drawMeshes": 19
+    },
+    "futuristic/drone/high": {
+      "triangles": 12384,
+      "drawMeshes": 14
+    },
+    "futuristic/drone/low": {
+      "triangles": 1960,
+      "drawMeshes": 14
+    },
+    "futuristic/harvester/high": {
+      "triangles": 31222,
+      "drawMeshes": 21
+    },
+    "futuristic/harvester/low": {
+      "triangles": 4066,
+      "drawMeshes": 20
+    },
+    "futuristic/beacon/high": {
+      "triangles": 1318,
+      "drawMeshes": 5,
+      "envelope": [
+        0.45,
+        0.45,
+        0.9
+      ]
+    },
+    "futuristic/bollard/high": {
+      "triangles": 1616,
+      "drawMeshes": 5,
+      "envelope": [
+        0.45,
+        0.45,
+        0.65
+      ]
+    },
+    "futuristic/capture-clamp/high": {
+      "triangles": 1984,
+      "drawMeshes": 6,
+      "envelope": [
+        0.6,
+        0.5,
+        0.35
+      ]
+    },
+    "futuristic/capture-latch/high": {
+      "triangles": 1192,
+      "drawMeshes": 3,
+      "envelope": [
+        0.6,
+        0.28,
+        0.28
+      ]
+    },
+    "futuristic/corner-inner/high": {
+      "triangles": 9096,
+      "drawMeshes": 10,
+      "envelope": [
+        0.8,
+        0.8,
+        0.75
+      ]
+    },
+    "futuristic/corner-outer/high": {
+      "triangles": 9096,
+      "drawMeshes": 10,
+      "envelope": [
+        0.8,
+        0.8,
+        0.75
+      ]
+    },
+    "futuristic/deposit/high": {
+      "triangles": 1318,
+      "drawMeshes": 4,
+      "envelope": [
+        1.8,
+        1.8,
+        1.4
+      ]
+    },
+    "futuristic/direction-board/high": {
+      "triangles": 2324,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        1.3,
+        1.4
+      ]
+    },
+    "futuristic/dock/high": {
+      "triangles": 12610,
+      "drawMeshes": 7,
+      "envelope": [
+        2.0,
+        2.0,
+        0.38
+      ]
+    },
+    "futuristic/drop-capsule/high": {
+      "triangles": 4866,
+      "drawMeshes": 8,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-core/high": {
+      "triangles": 4740,
+      "drawMeshes": 7,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-crystal/high": {
+      "triangles": 1678,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-nugget/high": {
+      "triangles": 4234,
+      "drawMeshes": 7,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-pile/high": {
+      "triangles": 13258,
+      "drawMeshes": 7,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-salvage/high": {
+      "triangles": 4694,
+      "drawMeshes": 4,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/finish-arch/high": {
+      "triangles": 5946,
+      "drawMeshes": 4,
+      "envelope": [
+        0.6,
+        2.0,
+        1.4
+      ]
+    },
+    "futuristic/floor-tile/high": {
+      "triangles": 1542,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        2.0,
+        0.08
+      ]
+    },
+    "futuristic/gantry/high": {
+      "triangles": 5558,
+      "drawMeshes": 5,
+      "envelope": [
+        0.65,
+        2.0,
+        1.8
+      ]
+    },
+    "futuristic/gate-marker/high": {
+      "triangles": 2172,
+      "drawMeshes": 3,
+      "envelope": [
+        2.0,
+        2.0,
+        0.12
+      ]
+    },
+    "futuristic/gate-pylons/high": {
+      "triangles": 3272,
+      "drawMeshes": 5,
+      "envelope": [
+        0.5,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/gate/high": {
+      "triangles": 5532,
+      "drawMeshes": 8,
+      "envelope": [
+        0.45,
+        2.0,
+        2.0
+      ]
+    },
+    "futuristic/guardrail/high": {
+      "triangles": 4548,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        0.3,
+        0.5
+      ]
+    },
+    "futuristic/intake-swirl/high": {
+      "triangles": 192,
+      "drawMeshes": 2,
+      "envelope": [
+        1.0,
+        1.0,
+        0.3
+      ]
+    },
+    "futuristic/kerb/high": {
+      "triangles": 1518,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        0.4,
+        0.12
+      ]
+    },
+    "futuristic/lamp/high": {
+      "triangles": 1812,
+      "drawMeshes": 5,
+      "envelope": [
+        0.5,
+        0.5,
+        2.0
+      ]
+    },
+    "futuristic/ore-captured/high": {
+      "triangles": 3542,
+      "drawMeshes": 9,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/ore-large/high": {
+      "triangles": 2410,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/ore-medium/high": {
+      "triangles": 2366,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/ore-small/high": {
+      "triangles": 2344,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/path-trail/high": {
+      "triangles": 192,
+      "drawMeshes": 2,
+      "envelope": [
+        2.0,
+        0.4,
+        0.12
+      ]
+    },
+    "futuristic/pickup-burst/high": {
+      "triangles": 392,
+      "drawMeshes": 2,
+      "envelope": [
+        1,
+        1,
+        1
+      ]
+    },
+    "futuristic/pit-station/high": {
+      "triangles": 5886,
+      "drawMeshes": 7,
+      "envelope": [
+        2.0,
+        1.5,
+        1.5
+      ]
+    },
+    "futuristic/rail/high": {
+      "triangles": 4548,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        0.3,
+        0.75
+      ]
+    },
+    "futuristic/reactor/high": {
+      "triangles": 20508,
+      "drawMeshes": 22,
+      "envelope": [
+        2.4,
+        2.4,
+        2.8
+      ]
+    },
+    "futuristic/rock-obstacle/high": {
+      "triangles": 2202,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        2.0,
+        1.5
+      ]
+    },
+    "futuristic/rotor-airflow/high": {
+      "triangles": 512,
+      "drawMeshes": 2,
+      "envelope": [
+        1.5,
+        1.5,
+        0.4
+      ]
+    },
+    "futuristic/start-light/high": {
+      "triangles": 2868,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.5,
+        2.0
+      ]
+    },
+    "futuristic/tether-fitting/high": {
+      "triangles": 976,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.4,
+        0.5
+      ]
+    },
+    "futuristic/thrust-plume/high": {
+      "triangles": 672,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        0.4,
+        0.4
+      ]
+    },
+    "futuristic/track-bend/high": {
+      "triangles": 1104,
+      "drawMeshes": 5,
+      "envelope": [
+        4.0,
+        4.0,
+        0.12
+      ]
+    },
+    "futuristic/track-straight/high": {
+      "triangles": 3170,
+      "drawMeshes": 5,
+      "envelope": [
+        4.0,
+        3.0,
+        0.12
+      ]
+    },
+    "futuristic/utility-column/high": {
+      "triangles": 2896,
+      "drawMeshes": 5,
+      "envelope": [
+        0.8,
+        0.8,
+        1.8
+      ]
+    },
+    "futuristic/beacon/low": {
+      "triangles": 226,
+      "drawMeshes": 5,
+      "envelope": [
+        0.45,
+        0.45,
+        0.9
+      ]
+    },
+    "futuristic/bollard/low": {
+      "triangles": 304,
+      "drawMeshes": 4,
+      "envelope": [
+        0.45,
+        0.45,
+        0.65
+      ]
+    },
+    "futuristic/capture-clamp/low": {
+      "triangles": 176,
+      "drawMeshes": 6,
+      "envelope": [
+        0.6,
+        0.5,
+        0.35
+      ]
+    },
+    "futuristic/capture-latch/low": {
+      "triangles": 184,
+      "drawMeshes": 3,
+      "envelope": [
+        0.6,
+        0.28,
+        0.28
+      ]
+    },
+    "futuristic/corner-inner/low": {
+      "triangles": 448,
+      "drawMeshes": 8,
+      "envelope": [
+        0.8,
+        0.8,
+        0.75
+      ]
+    },
+    "futuristic/corner-outer/low": {
+      "triangles": 448,
+      "drawMeshes": 8,
+      "envelope": [
+        0.8,
+        0.8,
+        0.75
+      ]
+    },
+    "futuristic/deposit/low": {
+      "triangles": 458,
+      "drawMeshes": 4,
+      "envelope": [
+        1.8,
+        1.8,
+        1.4
+      ]
+    },
+    "futuristic/direction-board/low": {
+      "triangles": 180,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        1.3,
+        1.4
+      ]
+    },
+    "futuristic/dock/low": {
+      "triangles": 1196,
+      "drawMeshes": 7,
+      "envelope": [
+        2.0,
+        2.0,
+        0.38
+      ]
+    },
+    "futuristic/drop-capsule/low": {
+      "triangles": 702,
+      "drawMeshes": 8,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-core/low": {
+      "triangles": 596,
+      "drawMeshes": 7,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-crystal/low": {
+      "triangles": 402,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-nugget/low": {
+      "triangles": 374,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-pile/low": {
+      "triangles": 1006,
+      "drawMeshes": 7,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/drop-salvage/low": {
+      "triangles": 300,
+      "drawMeshes": 4,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "futuristic/finish-arch/low": {
+      "triangles": 328,
+      "drawMeshes": 4,
+      "envelope": [
+        0.6,
+        2.0,
+        1.4
+      ]
+    },
+    "futuristic/floor-tile/low": {
+      "triangles": 260,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        2.0,
+        0.08
+      ]
+    },
+    "futuristic/gantry/low": {
+      "triangles": 292,
+      "drawMeshes": 5,
+      "envelope": [
+        0.65,
+        2.0,
+        1.8
+      ]
+    },
+    "futuristic/gate-marker/low": {
+      "triangles": 380,
+      "drawMeshes": 3,
+      "envelope": [
+        2.0,
+        2.0,
+        0.12
+      ]
+    },
+    "futuristic/gate-pylons/low": {
+      "triangles": 232,
+      "drawMeshes": 5,
+      "envelope": [
+        0.5,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/gate/low": {
+      "triangles": 892,
+      "drawMeshes": 8,
+      "envelope": [
+        0.45,
+        2.0,
+        2.0
+      ]
+    },
+    "futuristic/guardrail/low": {
+      "triangles": 224,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        0.3,
+        0.5
+      ]
+    },
+    "futuristic/intake-swirl/low": {
+      "triangles": 80,
+      "drawMeshes": 2,
+      "envelope": [
+        1.0,
+        1.0,
+        0.3
+      ]
+    },
+    "futuristic/kerb/low": {
+      "triangles": 156,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        0.4,
+        0.12
+      ]
+    },
+    "futuristic/lamp/low": {
+      "triangles": 292,
+      "drawMeshes": 5,
+      "envelope": [
+        0.5,
+        0.5,
+        2.0
+      ]
+    },
+    "futuristic/ore-captured/low": {
+      "triangles": 466,
+      "drawMeshes": 9,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/ore-large/low": {
+      "triangles": 430,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/ore-medium/low": {
+      "triangles": 394,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/ore-small/low": {
+      "triangles": 376,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "futuristic/path-trail/low": {
+      "triangles": 80,
+      "drawMeshes": 2,
+      "envelope": [
+        2.0,
+        0.4,
+        0.12
+      ]
+    },
+    "futuristic/pickup-burst/low": {
+      "triangles": 172,
+      "drawMeshes": 2,
+      "envelope": [
+        1,
+        1,
+        1
+      ]
+    },
+    "futuristic/pit-station/low": {
+      "triangles": 360,
+      "drawMeshes": 7,
+      "envelope": [
+        2.0,
+        1.5,
+        1.5
+      ]
+    },
+    "futuristic/rail/low": {
+      "triangles": 224,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        0.3,
+        0.75
+      ]
+    },
+    "futuristic/reactor/low": {
+      "triangles": 1292,
+      "drawMeshes": 13,
+      "envelope": [
+        2.4,
+        2.4,
+        2.8
+      ]
+    },
+    "futuristic/rock-obstacle/low": {
+      "triangles": 358,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        2.0,
+        1.5
+      ]
+    },
+    "futuristic/rotor-airflow/low": {
+      "triangles": 224,
+      "drawMeshes": 2,
+      "envelope": [
+        1.5,
+        1.5,
+        0.4
+      ]
+    },
+    "futuristic/start-light/low": {
+      "triangles": 484,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.5,
+        2.0
+      ]
+    },
+    "futuristic/tether-fitting/low": {
+      "triangles": 296,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.4,
+        0.5
+      ]
+    },
+    "futuristic/thrust-plume/low": {
+      "triangles": 240,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        0.4,
+        0.4
+      ]
+    },
+    "futuristic/track-bend/low": {
+      "triangles": 768,
+      "drawMeshes": 5,
+      "envelope": [
+        4.0,
+        4.0,
+        0.12
+      ]
+    },
+    "futuristic/track-straight/low": {
+      "triangles": 288,
+      "drawMeshes": 5,
+      "envelope": [
+        4.0,
+        3.0,
+        0.12
+      ]
+    },
+    "futuristic/utility-column/low": {
+      "triangles": 304,
+      "drawMeshes": 4,
+      "envelope": [
+        0.8,
+        0.8,
+        1.8
+      ]
+    },
+    "futuristic/refinery/high": {
+      "triangles": 19736,
+      "drawMeshes": 6
+    },
+    "futuristic/refinery/low": {
+      "triangles": 3596,
+      "drawMeshes": 6
+    },
+    "steampunk/rocket/high": {
+      "triangles": 9672,
+      "drawMeshes": 10
+    },
+    "steampunk/rocket/low": {
+      "triangles": 1904,
+      "drawMeshes": 8
+    },
+    "steampunk/kart/high": {
+      "triangles": 19124,
+      "drawMeshes": 16
+    },
+    "steampunk/kart/low": {
+      "triangles": 2610,
+      "drawMeshes": 15
+    },
+    "steampunk/drone/high": {
+      "triangles": 15996,
+      "drawMeshes": 15
+    },
+    "steampunk/drone/low": {
+      "triangles": 2288,
+      "drawMeshes": 14
+    },
+    "steampunk/harvester/high": {
+      "triangles": 35064,
+      "drawMeshes": 23
+    },
+    "steampunk/harvester/low": {
+      "triangles": 4318,
+      "drawMeshes": 21
+    },
+    "steampunk/beacon/high": {
+      "triangles": 2560,
+      "drawMeshes": 4,
+      "envelope": [
+        0.45,
+        0.45,
+        0.9
+      ]
+    },
+    "steampunk/bollard/high": {
+      "triangles": 2208,
+      "drawMeshes": 3,
+      "envelope": [
+        0.45,
+        0.45,
+        0.65
+      ]
+    },
+    "steampunk/capture-clamp/high": {
+      "triangles": 2344,
+      "drawMeshes": 3,
+      "envelope": [
+        0.6,
+        0.5,
+        0.35
+      ]
+    },
+    "steampunk/capture-latch/high": {
+      "triangles": 1396,
+      "drawMeshes": 4,
+      "envelope": [
+        0.6,
+        0.28,
+        0.28
+      ]
+    },
+    "steampunk/corner-inner/high": {
+      "triangles": 6796,
+      "drawMeshes": 8,
+      "envelope": [
+        0.8,
+        0.8,
+        0.75
+      ]
+    },
+    "steampunk/corner-outer/high": {
+      "triangles": 6796,
+      "drawMeshes": 8,
+      "envelope": [
+        0.8,
+        0.8,
+        0.75
+      ]
+    },
+    "steampunk/deposit/high": {
+      "triangles": 2822,
+      "drawMeshes": 5,
+      "envelope": [
+        1.8,
+        1.8,
+        1.4
+      ]
+    },
+    "steampunk/direction-board/high": {
+      "triangles": 2308,
+      "drawMeshes": 2,
+      "envelope": [
+        0.5,
+        1.3,
+        1.4
+      ]
+    },
+    "steampunk/dock/high": {
+      "triangles": 15906,
+      "drawMeshes": 6,
+      "envelope": [
+        2.0,
+        2.0,
+        0.38
+      ]
+    },
+    "steampunk/drop-capsule/high": {
+      "triangles": 3354,
+      "drawMeshes": 7,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-core/high": {
+      "triangles": 4460,
+      "drawMeshes": 5,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-crystal/high": {
+      "triangles": 3586,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-nugget/high": {
+      "triangles": 4310,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-pile/high": {
+      "triangles": 13306,
+      "drawMeshes": 5,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-salvage/high": {
+      "triangles": 6286,
+      "drawMeshes": 5,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/finish-arch/high": {
+      "triangles": 7586,
+      "drawMeshes": 4,
+      "envelope": [
+        0.6,
+        2.0,
+        1.4
+      ]
+    },
+    "steampunk/floor-tile/high": {
+      "triangles": 2154,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        2.0,
+        0.08
+      ]
+    },
+    "steampunk/gantry/high": {
+      "triangles": 13082,
+      "drawMeshes": 4,
+      "envelope": [
+        0.65,
+        2.0,
+        1.8
+      ]
+    },
+    "steampunk/gate-marker/high": {
+      "triangles": 2284,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        0.12
+      ]
+    },
+    "steampunk/gate-pylons/high": {
+      "triangles": 5352,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/gate/high": {
+      "triangles": 7516,
+      "drawMeshes": 7,
+      "envelope": [
+        0.45,
+        2.0,
+        2.0
+      ]
+    },
+    "steampunk/guardrail/high": {
+      "triangles": 3398,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        0.3,
+        0.5
+      ]
+    },
+    "steampunk/intake-swirl/high": {
+      "triangles": 192,
+      "drawMeshes": 1,
+      "envelope": [
+        1.0,
+        1.0,
+        0.3
+      ]
+    },
+    "steampunk/kerb/high": {
+      "triangles": 1106,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        0.4,
+        0.12
+      ]
+    },
+    "steampunk/lamp/high": {
+      "triangles": 1012,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.5,
+        2.0
+      ]
+    },
+    "steampunk/ore-captured/high": {
+      "triangles": 3994,
+      "drawMeshes": 9,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/ore-large/high": {
+      "triangles": 2410,
+      "drawMeshes": 6,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/ore-medium/high": {
+      "triangles": 2366,
+      "drawMeshes": 6,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/ore-small/high": {
+      "triangles": 2344,
+      "drawMeshes": 6,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/path-trail/high": {
+      "triangles": 192,
+      "drawMeshes": 1,
+      "envelope": [
+        2.0,
+        0.4,
+        0.12
+      ]
+    },
+    "steampunk/pickup-burst/high": {
+      "triangles": 392,
+      "drawMeshes": 2,
+      "envelope": [
+        1,
+        1,
+        1
+      ]
+    },
+    "steampunk/pit-station/high": {
+      "triangles": 5972,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        1.5,
+        1.5
+      ]
+    },
+    "steampunk/rail/high": {
+      "triangles": 3398,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        0.3,
+        0.75
+      ]
+    },
+    "steampunk/reactor/high": {
+      "triangles": 22732,
+      "drawMeshes": 17,
+      "envelope": [
+        2.4,
+        2.4,
+        2.8
+      ]
+    },
+    "steampunk/rock-obstacle/high": {
+      "triangles": 2202,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.5
+      ]
+    },
+    "steampunk/rotor-airflow/high": {
+      "triangles": 512,
+      "drawMeshes": 1,
+      "envelope": [
+        1.5,
+        1.5,
+        0.4
+      ]
+    },
+    "steampunk/start-light/high": {
+      "triangles": 2840,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.5,
+        2.0
+      ]
+    },
+    "steampunk/tether-fitting/high": {
+      "triangles": 1844,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.4,
+        0.5
+      ]
+    },
+    "steampunk/thrust-plume/high": {
+      "triangles": 672,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        0.4,
+        0.4
+      ]
+    },
+    "steampunk/track-bend/high": {
+      "triangles": 1376,
+      "drawMeshes": 4,
+      "envelope": [
+        4.0,
+        4.0,
+        0.12
+      ]
+    },
+    "steampunk/track-straight/high": {
+      "triangles": 2998,
+      "drawMeshes": 4,
+      "envelope": [
+        4.0,
+        3.0,
+        0.12
+      ]
+    },
+    "steampunk/utility-column/high": {
+      "triangles": 3076,
+      "drawMeshes": 5,
+      "envelope": [
+        0.8,
+        0.8,
+        1.8
+      ]
+    },
+    "steampunk/beacon/low": {
+      "triangles": 556,
+      "drawMeshes": 4,
+      "envelope": [
+        0.45,
+        0.45,
+        0.9
+      ]
+    },
+    "steampunk/bollard/low": {
+      "triangles": 588,
+      "drawMeshes": 3,
+      "envelope": [
+        0.45,
+        0.45,
+        0.65
+      ]
+    },
+    "steampunk/capture-clamp/low": {
+      "triangles": 400,
+      "drawMeshes": 3,
+      "envelope": [
+        0.6,
+        0.5,
+        0.35
+      ]
+    },
+    "steampunk/capture-latch/low": {
+      "triangles": 356,
+      "drawMeshes": 4,
+      "envelope": [
+        0.6,
+        0.28,
+        0.28
+      ]
+    },
+    "steampunk/corner-inner/low": {
+      "triangles": 920,
+      "drawMeshes": 8,
+      "envelope": [
+        0.8,
+        0.8,
+        0.75
+      ]
+    },
+    "steampunk/corner-outer/low": {
+      "triangles": 920,
+      "drawMeshes": 8,
+      "envelope": [
+        0.8,
+        0.8,
+        0.75
+      ]
+    },
+    "steampunk/deposit/low": {
+      "triangles": 846,
+      "drawMeshes": 4,
+      "envelope": [
+        1.8,
+        1.8,
+        1.4
+      ]
+    },
+    "steampunk/direction-board/low": {
+      "triangles": 332,
+      "drawMeshes": 2,
+      "envelope": [
+        0.5,
+        1.3,
+        1.4
+      ]
+    },
+    "steampunk/dock/low": {
+      "triangles": 1720,
+      "drawMeshes": 6,
+      "envelope": [
+        2.0,
+        2.0,
+        0.38
+      ]
+    },
+    "steampunk/drop-capsule/low": {
+      "triangles": 738,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-core/low": {
+      "triangles": 788,
+      "drawMeshes": 5,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-crystal/low": {
+      "triangles": 706,
+      "drawMeshes": 5,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-nugget/low": {
+      "triangles": 482,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-pile/low": {
+      "triangles": 1022,
+      "drawMeshes": 5,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/drop-salvage/low": {
+      "triangles": 952,
+      "drawMeshes": 4,
+      "envelope": [
+        1.0,
+        1.0,
+        0.8
+      ]
+    },
+    "steampunk/finish-arch/low": {
+      "triangles": 1312,
+      "drawMeshes": 3,
+      "envelope": [
+        0.6,
+        2.0,
+        1.4
+      ]
+    },
+    "steampunk/floor-tile/low": {
+      "triangles": 312,
+      "drawMeshes": 3,
+      "envelope": [
+        2.0,
+        2.0,
+        0.08
+      ]
+    },
+    "steampunk/gantry/low": {
+      "triangles": 1368,
+      "drawMeshes": 3,
+      "envelope": [
+        0.65,
+        2.0,
+        1.8
+      ]
+    },
+    "steampunk/gate-marker/low": {
+      "triangles": 396,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        0.12
+      ]
+    },
+    "steampunk/gate-pylons/low": {
+      "triangles": 1104,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/gate/low": {
+      "triangles": 1700,
+      "drawMeshes": 6,
+      "envelope": [
+        0.45,
+        2.0,
+        2.0
+      ]
+    },
+    "steampunk/guardrail/low": {
+      "triangles": 460,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        0.3,
+        0.5
+      ]
+    },
+    "steampunk/intake-swirl/low": {
+      "triangles": 80,
+      "drawMeshes": 1,
+      "envelope": [
+        1.0,
+        1.0,
+        0.3
+      ]
+    },
+    "steampunk/kerb/low": {
+      "triangles": 144,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        0.4,
+        0.12
+      ]
+    },
+    "steampunk/lamp/low": {
+      "triangles": 404,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.5,
+        2.0
+      ]
+    },
+    "steampunk/ore-captured/low": {
+      "triangles": 742,
+      "drawMeshes": 8,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/ore-large/low": {
+      "triangles": 486,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/ore-medium/low": {
+      "triangles": 450,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/ore-small/low": {
+      "triangles": 432,
+      "drawMeshes": 5,
+      "envelope": [
+        2.0,
+        2.0,
+        1.6
+      ]
+    },
+    "steampunk/path-trail/low": {
+      "triangles": 80,
+      "drawMeshes": 1,
+      "envelope": [
+        2.0,
+        0.4,
+        0.12
+      ]
+    },
+    "steampunk/pickup-burst/low": {
+      "triangles": 172,
+      "drawMeshes": 2,
+      "envelope": [
+        1,
+        1,
+        1
+      ]
+    },
+    "steampunk/pit-station/low": {
+      "triangles": 980,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        1.5,
+        1.5
+      ]
+    },
+    "steampunk/rail/low": {
+      "triangles": 460,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        0.3,
+        0.75
+      ]
+    },
+    "steampunk/reactor/low": {
+      "triangles": 2164,
+      "drawMeshes": 13,
+      "envelope": [
+        2.4,
+        2.4,
+        2.8
+      ]
+    },
+    "steampunk/rock-obstacle/low": {
+      "triangles": 358,
+      "drawMeshes": 4,
+      "envelope": [
+        2.0,
+        2.0,
+        1.5
+      ]
+    },
+    "steampunk/rotor-airflow/low": {
+      "triangles": 224,
+      "drawMeshes": 1,
+      "envelope": [
+        1.5,
+        1.5,
+        0.4
+      ]
+    },
+    "steampunk/start-light/low": {
+      "triangles": 536,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.5,
+        2.0
+      ]
+    },
+    "steampunk/tether-fitting/low": {
+      "triangles": 500,
+      "drawMeshes": 4,
+      "envelope": [
+        0.5,
+        0.4,
+        0.5
+      ]
+    },
+    "steampunk/thrust-plume/low": {
+      "triangles": 240,
+      "drawMeshes": 6,
+      "envelope": [
+        1.0,
+        0.4,
+        0.4
+      ]
+    },
+    "steampunk/track-bend/low": {
+      "triangles": 896,
+      "drawMeshes": 4,
+      "envelope": [
+        4.0,
+        4.0,
+        0.12
+      ]
+    },
+    "steampunk/track-straight/low": {
+      "triangles": 276,
+      "drawMeshes": 4,
+      "envelope": [
+        4.0,
+        3.0,
+        0.12
+      ]
+    },
+    "steampunk/utility-column/low": {
+      "triangles": 752,
+      "drawMeshes": 4,
+      "envelope": [
+        0.8,
+        0.8,
+        1.8
+      ]
+    },
+    "steampunk/refinery/high": {
+      "triangles": 17700,
+      "drawMeshes": 8
+    },
+    "steampunk/refinery/low": {
+      "triangles": 3640,
+      "drawMeshes": 8
+    }
+  },
+  "worldGeometryCoverage": {
+    "futuristic/beacon/high": true,
+    "futuristic/bollard/high": true,
+    "futuristic/capture-clamp/high": true,
+    "futuristic/capture-latch/high": true,
+    "futuristic/corner-inner/high": true,
+    "futuristic/corner-outer/high": true,
+    "futuristic/deposit/high": true,
+    "futuristic/direction-board/high": true,
+    "futuristic/dock/high": true,
+    "futuristic/drop-capsule/high": true,
+    "futuristic/drop-core/high": true,
+    "futuristic/drop-crystal/high": true,
+    "futuristic/drop-nugget/high": true,
+    "futuristic/drop-pile/high": true,
+    "futuristic/drop-salvage/high": true,
+    "futuristic/finish-arch/high": true,
+    "futuristic/floor-tile/high": true,
+    "futuristic/gantry/high": true,
+    "futuristic/gate-marker/high": true,
+    "futuristic/gate-pylons/high": true,
+    "futuristic/gate/high": true,
+    "futuristic/guardrail/high": true,
+    "futuristic/intake-swirl/high": true,
+    "futuristic/kerb/high": true,
+    "futuristic/lamp/high": true,
+    "futuristic/ore-captured/high": true,
+    "futuristic/ore-large/high": true,
+    "futuristic/ore-medium/high": true,
+    "futuristic/ore-small/high": true,
+    "futuristic/path-trail/high": true,
+    "futuristic/pickup-burst/high": true,
+    "futuristic/pit-station/high": true,
+    "futuristic/rail/high": true,
+    "futuristic/reactor/high": true,
+    "futuristic/rock-obstacle/high": true,
+    "futuristic/rotor-airflow/high": true,
+    "futuristic/start-light/high": true,
+    "futuristic/tether-fitting/high": true,
+    "futuristic/thrust-plume/high": true,
+    "futuristic/track-bend/high": true,
+    "futuristic/track-straight/high": true,
+    "futuristic/utility-column/high": true,
+    "futuristic/beacon/low": true,
+    "futuristic/bollard/low": true,
+    "futuristic/capture-clamp/low": true,
+    "futuristic/capture-latch/low": true,
+    "futuristic/corner-inner/low": true,
+    "futuristic/corner-outer/low": true,
+    "futuristic/deposit/low": true,
+    "futuristic/direction-board/low": true,
+    "futuristic/dock/low": true,
+    "futuristic/drop-capsule/low": true,
+    "futuristic/drop-core/low": true,
+    "futuristic/drop-crystal/low": true,
+    "futuristic/drop-nugget/low": true,
+    "futuristic/drop-pile/low": true,
+    "futuristic/drop-salvage/low": true,
+    "futuristic/finish-arch/low": true,
+    "futuristic/floor-tile/low": true,
+    "futuristic/gantry/low": true,
+    "futuristic/gate-marker/low": true,
+    "futuristic/gate-pylons/low": true,
+    "futuristic/gate/low": true,
+    "futuristic/guardrail/low": true,
+    "futuristic/intake-swirl/low": true,
+    "futuristic/kerb/low": true,
+    "futuristic/lamp/low": true,
+    "futuristic/ore-captured/low": true,
+    "futuristic/ore-large/low": true,
+    "futuristic/ore-medium/low": true,
+    "futuristic/ore-small/low": true,
+    "futuristic/path-trail/low": true,
+    "futuristic/pickup-burst/low": true,
+    "futuristic/pit-station/low": true,
+    "futuristic/rail/low": true,
+    "futuristic/reactor/low": true,
+    "futuristic/rock-obstacle/low": true,
+    "futuristic/rotor-airflow/low": true,
+    "futuristic/start-light/low": true,
+    "futuristic/tether-fitting/low": true,
+    "futuristic/thrust-plume/low": true,
+    "futuristic/track-bend/low": true,
+    "futuristic/track-straight/low": true,
+    "futuristic/utility-column/low": true,
+    "steampunk/beacon/high": true,
+    "steampunk/bollard/high": true,
+    "steampunk/capture-clamp/high": true,
+    "steampunk/capture-latch/high": true,
+    "steampunk/corner-inner/high": true,
+    "steampunk/corner-outer/high": true,
+    "steampunk/deposit/high": true,
+    "steampunk/direction-board/high": true,
+    "steampunk/dock/high": true,
+    "steampunk/drop-capsule/high": true,
+    "steampunk/drop-core/high": true,
+    "steampunk/drop-crystal/high": true,
+    "steampunk/drop-nugget/high": true,
+    "steampunk/drop-pile/high": true,
+    "steampunk/drop-salvage/high": true,
+    "steampunk/finish-arch/high": true,
+    "steampunk/floor-tile/high": true,
+    "steampunk/gantry/high": true,
+    "steampunk/gate-marker/high": true,
+    "steampunk/gate-pylons/high": true,
+    "steampunk/gate/high": true,
+    "steampunk/guardrail/high": true,
+    "steampunk/intake-swirl/high": true,
+    "steampunk/kerb/high": true,
+    "steampunk/lamp/high": true,
+    "steampunk/ore-captured/high": true,
+    "steampunk/ore-large/high": true,
+    "steampunk/ore-medium/high": true,
+    "steampunk/ore-small/high": true,
+    "steampunk/path-trail/high": true,
+    "steampunk/pickup-burst/high": true,
+    "steampunk/pit-station/high": true,
+    "steampunk/rail/high": true,
+    "steampunk/reactor/high": true,
+    "steampunk/rock-obstacle/high": true,
+    "steampunk/rotor-airflow/high": true,
+    "steampunk/start-light/high": true,
+    "steampunk/tether-fitting/high": true,
+    "steampunk/thrust-plume/high": true,
+    "steampunk/track-bend/high": true,
+    "steampunk/track-straight/high": true,
+    "steampunk/utility-column/high": true,
+    "steampunk/beacon/low": true,
+    "steampunk/bollard/low": true,
+    "steampunk/capture-clamp/low": true,
+    "steampunk/capture-latch/low": true,
+    "steampunk/corner-inner/low": true,
+    "steampunk/corner-outer/low": true,
+    "steampunk/deposit/low": true,
+    "steampunk/direction-board/low": true,
+    "steampunk/dock/low": true,
+    "steampunk/drop-capsule/low": true,
+    "steampunk/drop-core/low": true,
+    "steampunk/drop-crystal/low": true,
+    "steampunk/drop-nugget/low": true,
+    "steampunk/drop-pile/low": true,
+    "steampunk/drop-salvage/low": true,
+    "steampunk/finish-arch/low": true,
+    "steampunk/floor-tile/low": true,
+    "steampunk/gantry/low": true,
+    "steampunk/gate-marker/low": true,
+    "steampunk/gate-pylons/low": true,
+    "steampunk/gate/low": true,
+    "steampunk/guardrail/low": true,
+    "steampunk/intake-swirl/low": true,
+    "steampunk/kerb/low": true,
+    "steampunk/lamp/low": true,
+    "steampunk/ore-captured/low": true,
+    "steampunk/ore-large/low": true,
+    "steampunk/ore-medium/low": true,
+    "steampunk/ore-small/low": true,
+    "steampunk/path-trail/low": true,
+    "steampunk/pickup-burst/low": true,
+    "steampunk/pit-station/low": true,
+    "steampunk/rail/low": true,
+    "steampunk/reactor/low": true,
+    "steampunk/rock-obstacle/low": true,
+    "steampunk/rotor-airflow/low": true,
+    "steampunk/start-light/low": true,
+    "steampunk/tether-fitting/low": true,
+    "steampunk/thrust-plume/low": true,
+    "steampunk/track-bend/low": true,
+    "steampunk/track-straight/low": true,
+    "steampunk/utility-column/low": true
+  },
+  "performanceBaseline": [
+    {
+      "scene": "harvest",
+      "style": "steampunk",
+      "medianFrameMs": 16.94,
+      "medianRenderCpuMs": 2.54,
+      "pageVisibility": "visible",
+      "draws": 28,
+      "triangles": 16523,
+      "largestGeometry": [
+        {
+          "name": "dock-root__Machined_brass",
+          "triangles": 7208
+        },
+        {
+          "name": "reactor-root__Machined_brass",
+          "triangles": 5912
+        },
+        {
+          "name": "dock-root__Copper_feed_lines",
+          "triangles": 2440
+        },
+        {
+          "name": "Gimbal_bearing__Copper_feed_lines",
+          "triangles": 1664
+        },
+        {
+          "name": "Gimbal_bearing001__Copper_feed_lines",
+          "triangles": 1664
+        }
+      ]
+    },
+    {
+      "scene": "harvest",
+      "style": "futuristic",
+      "medianFrameMs": 30.92,
+      "medianRenderCpuMs": 6.56,
+      "pageVisibility": "visible",
+      "draws": 28,
+      "triangles": 12103,
+      "largestGeometry": [
+        {
+          "name": "dock-root__Titanium_edges",
+          "triangles": 5292
+        },
+        {
+          "name": "reactor-root__Titanium_edges",
+          "triangles": 4320
+        },
+        {
+          "name": "dock-root__Brushed_pale_alloy",
+          "triangles": 1404
+        },
+        {
+          "name": "Gimbal_bearing__Titanium_edges",
+          "triangles": 1296
+        },
+        {
+          "name": "Gimbal_bearing001__Titanium_edges",
+          "triangles": 1296
+        }
+      ]
+    },
+    {
+      "scene": "ants",
+      "style": "steampunk",
+      "medianFrameMs": 16.75,
+      "medianRenderCpuMs": 1.52,
+      "pageVisibility": "visible",
+      "draws": 48,
+      "triangles": 8352,
+      "largestGeometry": [
+        {
+          "name": "refinery-root__Machined_brass",
+          "triangles": 4596
+        },
+        {
+          "name": "refinery-root__Riveted_iron",
+          "triangles": 2096
+        },
+        {
+          "name": "refinery-root__Ore_gold__optics",
+          "triangles": 2004
+        },
+        {
+          "name": "harvester-root001__Machined_brass001",
+          "triangles": 1168
+        },
+        {
+          "name": "harvester-root001__Machined_brass001",
+          "triangles": 1168
+        }
+      ]
+    },
+    {
+      "scene": "ants",
+      "style": "futuristic",
+      "medianFrameMs": 16.75,
+      "medianRenderCpuMs": 1.6,
+      "pageVisibility": "visible",
+      "draws": 48,
+      "triangles": 6488,
+      "largestGeometry": [
+        {
+          "name": "refinery-root002__Titanium_edges",
+          "triangles": 4044
+        },
+        {
+          "name": "refinery-root002__Ceramic_graphite",
+          "triangles": 2344
+        },
+        {
+          "name": "refinery-root002__Ore_gold__optics002",
+          "triangles": 1944
+        },
+        {
+          "name": "refinery-root002__Violet_processing",
+          "triangles": 924
+        },
+        {
+          "name": "harvester-root001__Titanium_edges001",
+          "triangles": 884
+        }
+      ]
+    },
+    {
+      "scene": "tandem",
+      "style": "steampunk",
+      "medianFrameMs": 16.82,
+      "medianRenderCpuMs": 2.31,
+      "pageVisibility": "visible",
+      "draws": 40,
+      "triangles": 13501,
+      "largestGeometry": [
+        {
+          "name": "gate-root__Machined_brass",
+          "triangles": 3744
+        },
+        {
+          "name": "gate-root__Machined_brass",
+          "triangles": 3744
+        },
+        {
+          "name": "gate-root__Machined_brass",
+          "triangles": 3744
+        },
+        {
+          "name": "gate-root__Machined_brass",
+          "triangles": 3744
+        },
+        {
+          "name": "gate-root__Machined_brass",
+          "triangles": 3744
+        }
+      ]
+    },
+    {
+      "scene": "tandem",
+      "style": "futuristic",
+      "medianFrameMs": 17.1,
+      "medianRenderCpuMs": 2.14,
+      "pageVisibility": "visible",
+      "draws": 41,
+      "triangles": 9433,
+      "largestGeometry": [
+        {
+          "name": "gate-root__Titanium_edges",
+          "triangles": 1600
+        },
+        {
+          "name": "gate-root__Titanium_edges",
+          "triangles": 1600
+        },
+        {
+          "name": "gate-root__Titanium_edges",
+          "triangles": 1600
+        },
+        {
+          "name": "gate-root__Titanium_edges",
+          "triangles": 1600
+        },
+        {
+          "name": "gate-root__Titanium_edges",
+          "triangles": 1600
+        }
+      ]
+    },
+    {
+      "scene": "mining",
+      "style": "steampunk",
+      "medianFrameMs": 16.7,
+      "medianRenderCpuMs": 1.75,
+      "pageVisibility": "visible",
+      "draws": 61,
+      "triangles": 20189,
+      "largestGeometry": [
+        {
+          "name": "dock-root__Machined_brass",
+          "triangles": 7208
+        },
+        {
+          "name": "reactor-root__Machined_brass",
+          "triangles": 5912
+        },
+        {
+          "name": "dock-root__Copper_feed_lines",
+          "triangles": 2440
+        },
+        {
+          "name": "Gimbal_bearing__Copper_feed_lines",
+          "triangles": 1664
+        },
+        {
+          "name": "Gimbal_bearing001__Copper_feed_lines",
+          "triangles": 1664
+        }
+      ]
+    },
+    {
+      "scene": "mining",
+      "style": "futuristic",
+      "medianFrameMs": 16.39,
+      "medianRenderCpuMs": 1.75,
+      "pageVisibility": "visible",
+      "draws": 68,
+      "triangles": 13089,
+      "largestGeometry": [
+        {
+          "name": "dock-root__Titanium_edges",
+          "triangles": 5292
+        },
+        {
+          "name": "reactor-root__Titanium_edges",
+          "triangles": 4320
+        },
+        {
+          "name": "dock-root__Brushed_pale_alloy",
+          "triangles": 1404
+        },
+        {
+          "name": "Gimbal_bearing__Titanium_edges",
+          "triangles": 1296
+        },
+        {
+          "name": "Gimbal_bearing001__Titanium_edges",
+          "triangles": 1296
+        }
+      ]
+    },
+    {
+      "scene": "rocket",
+      "style": "steampunk",
+      "medianFrameMs": 16.67,
+      "medianRenderCpuMs": 2.56,
+      "pageVisibility": "visible",
+      "draws": 41,
+      "triangles": 16071,
+      "largestGeometry": [
+        {
+          "name": "dock-root__Machined_brass",
+          "triangles": 7208
+        },
+        {
+          "name": "reactor-root__Machined_brass",
+          "triangles": 5912
+        },
+        {
+          "name": "dock-root__Copper_feed_lines",
+          "triangles": 2440
+        },
+        {
+          "name": "Gimbal_bearing__Copper_feed_lines",
+          "triangles": 1664
+        },
+        {
+          "name": "Gimbal_bearing001__Copper_feed_lines",
+          "triangles": 1664
+        }
+      ]
+    },
+    {
+      "scene": "rocket",
+      "style": "futuristic",
+      "medianFrameMs": 16.77,
+      "medianRenderCpuMs": 1.5,
+      "pageVisibility": "visible",
+      "draws": 44,
+      "triangles": 10743,
+      "largestGeometry": [
+        {
+          "name": "dock-root__Titanium_edges",
+          "triangles": 5292
+        },
+        {
+          "name": "reactor-root__Titanium_edges",
+          "triangles": 4320
+        },
+        {
+          "name": "dock-root__Brushed_pale_alloy",
+          "triangles": 1404
+        },
+        {
+          "name": "Gimbal_bearing__Titanium_edges",
+          "triangles": 1296
+        },
+        {
+          "name": "Gimbal_bearing001__Titanium_edges",
+          "triangles": 1296
+        }
+      ]
+    },
+    {
+      "scene": "racing",
+      "style": "steampunk",
+      "medianFrameMs": 16.82,
+      "medianRenderCpuMs": 2.32,
+      "pageVisibility": "visible",
+      "draws": 45,
+      "triangles": 25392,
+      "largestGeometry": [
+        {
+          "name": "World instances / gate-pylons",
+          "triangles": 7488
+        },
+        {
+          "name": "World instances / finish-arch",
+          "triangles": 5260
+        },
+        {
+          "name": "World instances / guardrail",
+          "triangles": 2664
+        },
+        {
+          "name": "World instances / gate-pylons",
+          "triangles": 1376
+        },
+        {
+          "name": "World instances / guardrail",
+          "triangles": 1008
+        }
+      ]
+    },
+    {
+      "scene": "racing",
+      "style": "futuristic",
+      "medianFrameMs": 16.73,
+      "medianRenderCpuMs": 1.53,
+      "pageVisibility": "visible",
+      "draws": 56,
+      "triangles": 15254,
+      "largestGeometry": [
+        {
+          "name": "World instances / gate-pylons",
+          "triangles": 3200
+        },
+        {
+          "name": "World instances / finish-arch",
+          "triangles": 2800
+        },
+        {
+          "name": "World instances / guardrail",
+          "triangles": 792
+        },
+        {
+          "name": "",
+          "triangles": 720
+        },
+        {
+          "name": "",
+          "triangles": 720
+        }
+      ]
+    },
+    {
+      "scene": "64 mixed vehicles",
+      "style": "steampunk",
+      "medianFrameMs": 16.71,
+      "medianRenderCpuMs": 2.97,
+      "pageVisibility": "visible",
+      "draws": 122,
+      "triangles": 216964,
+      "largestGeometry": [
+        {
+          "name": "",
+          "triangles": 23616
+        },
+        {
+          "name": "",
+          "triangles": 22528
+        },
+        {
+          "name": "",
+          "triangles": 18688
+        },
+        {
+          "name": "",
+          "triangles": 15392
+        },
+        {
+          "name": "",
+          "triangles": 11520
+        }
+      ]
+    },
+    {
+      "scene": "64 mixed vehicles / close view",
+      "style": "steampunk",
+      "medianFrameMs": 16.6,
+      "medianRenderCpuMs": 1.79,
+      "pageVisibility": "visible",
+      "draws": 41,
+      "triangles": 29162,
+      "largestGeometry": [
+        {
+          "name": "World instances / rail",
+          "triangles": 15328
+        },
+        {
+          "name": "",
+          "triangles": 2816
+        },
+        {
+          "name": "",
+          "triangles": 1924
+        },
+        {
+          "name": "World instances / rail",
+          "triangles": 1472
+        },
+        {
+          "name": "World instances / rail",
+          "triangles": 880
+        }
+      ]
+    },
+    {
+      "scene": "64 mixed vehicles",
+      "style": "futuristic",
+      "medianFrameMs": 16.73,
+      "medianRenderCpuMs": 3.25,
+      "pageVisibility": "visible",
+      "draws": 127,
+      "triangles": 182828,
+      "largestGeometry": [
+        {
+          "name": "",
+          "triangles": 14144
+        },
+        {
+          "name": "",
+          "triangles": 11136
+        },
+        {
+          "name": "",
+          "triangles": 10752
+        },
+        {
+          "name": "",
+          "triangles": 7360
+        },
+        {
+          "name": "",
+          "triangles": 7296
+        }
+      ]
+    },
+    {
+      "scene": "64 mixed vehicles / close view",
+      "style": "futuristic",
+      "medianFrameMs": 16.63,
+      "medianRenderCpuMs": 1.9,
+      "pageVisibility": "visible",
+      "draws": 45,
+      "triangles": 27638,
+      "largestGeometry": [
+        {
+          "name": "World instances / rail",
+          "triangles": 14080
+        },
+        {
+          "name": "World instances / rail",
+          "triangles": 2592
+        },
+        {
+          "name": "World instances / rail",
+          "triangles": 2176
+        },
+        {
+          "name": "",
+          "triangles": 1344
+        },
+        {
+          "name": "",
+          "triangles": 912
+        }
+      ]
+    }
   ],
   "visualReview": {
-    "vehicles": "Reviewed hero, side and top renders of both collections. Refined round pressure hulls, swept armor, tinted canopies and thruster mounts; cockpit armor, rounded bonnet and bucket seat; low futuristic drone hull and visible diamond steampunk shell; articulated harvester intake, wheel arches, conveyors and cab framing.",
-    "world": "Reviewed all eight family render pairs and ore/workshop collision envelopes.",
-    "live": "Reviewed futuristic and steampunk live scene dressing with the same camera and paused simulation state.",
-    "previews": [
-      "previews/collections.jpg",
-      "previews/world-collections.jpg"
-    ]
+    "vehicles": "Hero, side and top views in both styles; preserve open ducts, closed canopies, tire profiles and moving assemblies.",
+    "world": "All eight family previews in both styles; mineral chambers, refinery intake, steam claws and pressure tether corrected after review. Direction symbols verified by rotating the live workshop.",
+    "refineries": "Hero, side and top views; inclined belt exposed and drive-through apron clear.",
+    "limitation": "Original stylized interpretations; faceted minerals and inexpensive mesh effects approximate the more photorealistic concept sheets."
   },
-  "assets": {
-    "futuristic": {
-      "rocket": {
-        "high": {
-          "sourceTriangles": 11166,
-          "drawMeshes": 9,
-          "bytes": 2176208,
-          "sha256": "59911c0956085f43a1ab33a87d806936819b242ea1925a1e75bf5ec2893695ca",
-          "exportTriangles": 11166
-        },
-        "low": {
-          "sourceTriangles": 1432,
-          "drawMeshes": 8,
-          "bytes": 1254940,
-          "sha256": "c29dd36ca6218e4e716294600f9fe2cb8c523663192a3ceb5d03eb3d9c8300d4",
-          "exportTriangles": 1432
-        },
-        "style": "futuristic",
-        "model": "rocket"
-      },
-      "kart": {
-        "high": {
-          "sourceTriangles": 23620,
-          "drawMeshes": 20,
-          "bytes": 2860656,
-          "sha256": "702f4f65c77124a5693effda791c968fe5079c7bced84c0fc13f8c0f5973873d",
-          "exportTriangles": 23620
-        },
-        "low": {
-          "sourceTriangles": 2636,
-          "drawMeshes": 19,
-          "bytes": 1330496,
-          "sha256": "3991ea716328335ac179ad3f66801f32f40259525c8b674abb42ad58a57167dd",
-          "exportTriangles": 2636
-        },
-        "style": "futuristic",
-        "model": "kart"
-      },
-      "drone": {
-        "high": {
-          "sourceTriangles": 14000,
-          "drawMeshes": 14,
-          "bytes": 2312980,
-          "sha256": "33bd375a587819a0c1a37d7ac5c256e677c84c68aa4b4e9396a99c5ee2c9a2ec",
-          "exportTriangles": 14000
-        },
-        "low": {
-          "sourceTriangles": 2128,
-          "drawMeshes": 14,
-          "bytes": 1275136,
-          "sha256": "90e6c50e1a4522693f0cc416b42c9870bdd4e65a0aaedb79c37d5d58f9d50191",
-          "exportTriangles": 2128
-        },
-        "style": "futuristic",
-        "model": "drone"
-      },
-      "harvester": {
-        "high": {
-          "sourceTriangles": 40954,
-          "drawMeshes": 21,
-          "bytes": 3942848,
-          "sha256": "15a726dbef05e34d1520f8657ca1cec6cc2db6506f80ecd191717f921b0b208d",
-          "exportTriangles": 40954
-        },
-        "low": {
-          "sourceTriangles": 4356,
-          "drawMeshes": 20,
-          "bytes": 1436012,
-          "sha256": "b76aa34e0e2dc8086d8e54ef0802a3b8bd7bc5323ffebe97e74accc964fb3242",
-          "exportTriangles": 4356
-        },
-        "style": "futuristic",
-        "model": "harvester"
-      },
-      "world": {
-        "style": "futuristic",
-        "families": {
-          "collectible-drops": [
-            "drop-crystal",
-            "drop-nugget",
-            "drop-salvage",
-            "drop-capsule",
-            "drop-core",
-            "drop-pile"
-          ],
-          "ore-rocks": [
-            "ore-small",
-            "ore-medium",
-            "ore-large",
-            "ore-captured",
-            "capture-clamp"
-          ],
-          "gravity-well": [
-            "reactor"
-          ],
-          "recovery-dock": [
-            "dock",
-            "beacon"
-          ],
-          "checkpoints": [
-            "gate",
-            "gate-pylons",
-            "gate-marker",
-            "finish-arch"
-          ],
-          "arena-scenery": [
-            "rail",
-            "corner-inner",
-            "corner-outer",
-            "bollard",
-            "rock-obstacle",
-            "floor-tile",
-            "lamp",
-            "utility-column",
-            "deposit",
-            "gantry"
-          ],
-          "racing-scenery": [
-            "track-straight",
-            "track-bend",
-            "kerb",
-            "guardrail",
-            "start-light",
-            "pit-station",
-            "direction-board"
-          ],
-          "capture-effects": [
-            "tether-fitting",
-            "capture-latch",
-            "thrust-plume",
-            "intake-swirl",
-            "pickup-burst",
-            "rotor-airflow",
-            "path-trail"
-          ]
-        },
-        "envelopes": {
-          "drop-crystal": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-nugget": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-salvage": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-capsule": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-core": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-pile": [
-            1,
-            1,
-            0.8
-          ],
-          "ore-small": [
-            2,
-            2,
-            1.6
-          ],
-          "ore-medium": [
-            2,
-            2,
-            1.6
-          ],
-          "ore-large": [
-            2,
-            2,
-            1.6
-          ],
-          "ore-captured": [
-            2,
-            2,
-            1.6
-          ],
-          "capture-clamp": [
-            0.6,
-            0.5,
-            0.35
-          ],
-          "reactor": [
-            2.4,
-            2.4,
-            2.8
-          ],
-          "dock": [
-            2,
-            2,
-            0.38
-          ],
-          "beacon": [
-            0.45,
-            0.45,
-            0.9
-          ],
-          "gate": [
-            0.45,
-            2,
-            2
-          ],
-          "gate-pylons": [
-            0.5,
-            2,
-            1.6
-          ],
-          "gate-marker": [
-            2,
-            2,
-            0.12
-          ],
-          "finish-arch": [
-            0.6,
-            2,
-            1.4
-          ],
-          "rail": [
-            2,
-            0.3,
-            0.75
-          ],
-          "guardrail": [
-            2,
-            0.3,
-            0.5
-          ],
-          "corner-inner": [
-            0.8,
-            0.8,
-            0.75
-          ],
-          "corner-outer": [
-            0.8,
-            0.8,
-            0.75
-          ],
-          "bollard": [
-            0.45,
-            0.45,
-            0.65
-          ],
-          "rock-obstacle": [
-            2,
-            2,
-            1.5
-          ],
-          "floor-tile": [
-            2,
-            2,
-            0.08
-          ],
-          "lamp": [
-            0.5,
-            0.5,
-            2
-          ],
-          "utility-column": [
-            0.8,
-            0.8,
-            1.8
-          ],
-          "deposit": [
-            1.8,
-            1.8,
-            1.4
-          ],
-          "gantry": [
-            0.65,
-            2,
-            1.8
-          ],
-          "track-straight": [
-            4,
-            3,
-            0.12
-          ],
-          "track-bend": [
-            4,
-            4,
-            0.12
-          ],
-          "kerb": [
-            2,
-            0.4,
-            0.12
-          ],
-          "start-light": [
-            0.5,
-            0.5,
-            2
-          ],
-          "pit-station": [
-            2,
-            1.5,
-            1.5
-          ],
-          "direction-board": [
-            0.5,
-            1.3,
-            1.4
-          ],
-          "tether-fitting": [
-            0.5,
-            0.4,
-            0.5
-          ],
-          "capture-latch": [
-            0.6,
-            0.28,
-            0.28
-          ],
-          "thrust-plume": [
-            1,
-            0.4,
-            0.4
-          ],
-          "intake-swirl": [
-            1,
-            1,
-            0.3
-          ],
-          "pickup-burst": [
-            1,
-            1,
-            1
-          ],
-          "rotor-airflow": [
-            1.5,
-            1.5,
-            0.4
-          ],
-          "path-trail": [
-            2,
-            0.4,
-            0.12
-          ]
-        },
-        "high": {
-          "sourceTriangles": 107222,
-          "drawMeshes": 205,
-          "bytes": 14010524,
-          "sha256": "ec329a52e6c9b96443f54d6d22d44d713b42f086b574a07b6a0d8a66575c6613",
-          "exportTriangles": 107222
-        },
-        "low": {
-          "sourceTriangles": 9910,
-          "drawMeshes": 177,
-          "bytes": 3543780,
-          "sha256": "357099862967bb4fa99d79c59696f37d941a1e905a80937445ed998eff4b7b43",
-          "exportTriangles": 9910
-        }
-      }
-    },
-    "steampunk": {
-      "rocket": {
-        "high": {
-          "sourceTriangles": 13760,
-          "drawMeshes": 10,
-          "bytes": 2187664,
-          "sha256": "7bc971cfde5da632db45df39c6677761e81692853355617de6f31e4f6277fafd",
-          "exportTriangles": 13760
-        },
-        "low": {
-          "sourceTriangles": 2032,
-          "drawMeshes": 8,
-          "bytes": 1144776,
-          "sha256": "f027bc92534885244a315bb01ca1362a23ce8bbab66d53e3a54c29e9eabef8f9",
-          "exportTriangles": 2032
-        },
-        "style": "steampunk",
-        "model": "rocket"
-      },
-      "kart": {
-        "high": {
-          "sourceTriangles": 26672,
-          "drawMeshes": 16,
-          "bytes": 2910312,
-          "sha256": "ab6bcd6a333a8d4588e3b0db24867a68f38f54a8b5ca0b8bc078aafe491b8b89",
-          "exportTriangles": 26672
-        },
-        "low": {
-          "sourceTriangles": 3056,
-          "drawMeshes": 15,
-          "bytes": 1203500,
-          "sha256": "d4dc31492826e5abd0783c9e7fd3a8b0b0361c8ea0f417e648d50f632540d1f0",
-          "exportTriangles": 2810
-        },
-        "style": "steampunk",
-        "model": "kart"
-      },
-      "drone": {
-        "high": {
-          "sourceTriangles": 21044,
-          "drawMeshes": 15,
-          "bytes": 2652500,
-          "sha256": "353ef909813e790db86f2a3dd1db1d86db7906735d88015d1bda3294898bc4c6",
-          "exportTriangles": 21044
-        },
-        "low": {
-          "sourceTriangles": 2468,
-          "drawMeshes": 14,
-          "bytes": 1180704,
-          "sha256": "6e17351291f2871e2285cc569b50fed1f6a51bb142ff3d3393c0ed493502ccb4",
-          "exportTriangles": 2468
-        },
-        "style": "steampunk",
-        "model": "drone"
-      },
-      "harvester": {
-        "high": {
-          "sourceTriangles": 45628,
-          "drawMeshes": 23,
-          "bytes": 4075792,
-          "sha256": "0fdfa38bccea7239d8369f0d7b27a86a99b12e710c3473bc021cf430022242ac",
-          "exportTriangles": 45628
-        },
-        "low": {
-          "sourceTriangles": 4616,
-          "drawMeshes": 21,
-          "bytes": 1307220,
-          "sha256": "9a0175fe9178d4d56be10409555ed46c0b4b8d40b53457945a04090a3909b6eb",
-          "exportTriangles": 4616
-        },
-        "style": "steampunk",
-        "model": "harvester"
-      },
-      "world": {
-        "style": "steampunk",
-        "families": {
-          "collectible-drops": [
-            "drop-crystal",
-            "drop-nugget",
-            "drop-salvage",
-            "drop-capsule",
-            "drop-core",
-            "drop-pile"
-          ],
-          "ore-rocks": [
-            "ore-small",
-            "ore-medium",
-            "ore-large",
-            "ore-captured",
-            "capture-clamp"
-          ],
-          "gravity-well": [
-            "reactor"
-          ],
-          "recovery-dock": [
-            "dock",
-            "beacon"
-          ],
-          "checkpoints": [
-            "gate",
-            "gate-pylons",
-            "gate-marker",
-            "finish-arch"
-          ],
-          "arena-scenery": [
-            "rail",
-            "corner-inner",
-            "corner-outer",
-            "bollard",
-            "rock-obstacle",
-            "floor-tile",
-            "lamp",
-            "utility-column",
-            "deposit",
-            "gantry"
-          ],
-          "racing-scenery": [
-            "track-straight",
-            "track-bend",
-            "kerb",
-            "guardrail",
-            "start-light",
-            "pit-station",
-            "direction-board"
-          ],
-          "capture-effects": [
-            "tether-fitting",
-            "capture-latch",
-            "thrust-plume",
-            "intake-swirl",
-            "pickup-burst",
-            "rotor-airflow",
-            "path-trail"
-          ]
-        },
-        "envelopes": {
-          "drop-crystal": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-nugget": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-salvage": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-capsule": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-core": [
-            1,
-            1,
-            0.8
-          ],
-          "drop-pile": [
-            1,
-            1,
-            0.8
-          ],
-          "ore-small": [
-            2,
-            2,
-            1.6
-          ],
-          "ore-medium": [
-            2,
-            2,
-            1.6
-          ],
-          "ore-large": [
-            2,
-            2,
-            1.6
-          ],
-          "ore-captured": [
-            2,
-            2,
-            1.6
-          ],
-          "capture-clamp": [
-            0.6,
-            0.5,
-            0.35
-          ],
-          "reactor": [
-            2.4,
-            2.4,
-            2.8
-          ],
-          "dock": [
-            2,
-            2,
-            0.38
-          ],
-          "beacon": [
-            0.45,
-            0.45,
-            0.9
-          ],
-          "gate": [
-            0.45,
-            2,
-            2
-          ],
-          "gate-pylons": [
-            0.5,
-            2,
-            1.6
-          ],
-          "gate-marker": [
-            2,
-            2,
-            0.12
-          ],
-          "finish-arch": [
-            0.6,
-            2,
-            1.4
-          ],
-          "rail": [
-            2,
-            0.3,
-            0.75
-          ],
-          "guardrail": [
-            2,
-            0.3,
-            0.5
-          ],
-          "corner-inner": [
-            0.8,
-            0.8,
-            0.75
-          ],
-          "corner-outer": [
-            0.8,
-            0.8,
-            0.75
-          ],
-          "bollard": [
-            0.45,
-            0.45,
-            0.65
-          ],
-          "rock-obstacle": [
-            2,
-            2,
-            1.5
-          ],
-          "floor-tile": [
-            2,
-            2,
-            0.08
-          ],
-          "lamp": [
-            0.5,
-            0.5,
-            2
-          ],
-          "utility-column": [
-            0.8,
-            0.8,
-            1.8
-          ],
-          "deposit": [
-            1.8,
-            1.8,
-            1.4
-          ],
-          "gantry": [
-            0.65,
-            2,
-            1.8
-          ],
-          "track-straight": [
-            4,
-            3,
-            0.12
-          ],
-          "track-bend": [
-            4,
-            4,
-            0.12
-          ],
-          "kerb": [
-            2,
-            0.4,
-            0.12
-          ],
-          "start-light": [
-            0.5,
-            0.5,
-            2
-          ],
-          "pit-station": [
-            2,
-            1.5,
-            1.5
-          ],
-          "direction-board": [
-            0.5,
-            1.3,
-            1.4
-          ],
-          "tether-fitting": [
-            0.5,
-            0.4,
-            0.5
-          ],
-          "capture-latch": [
-            0.6,
-            0.28,
-            0.28
-          ],
-          "thrust-plume": [
-            1,
-            0.4,
-            0.4
-          ],
-          "intake-swirl": [
-            1,
-            1,
-            0.3
-          ],
-          "pickup-burst": [
-            1,
-            1,
-            1
-          ],
-          "rotor-airflow": [
-            1.5,
-            1.5,
-            0.4
-          ],
-          "path-trail": [
-            2,
-            0.4,
-            0.12
-          ]
-        },
-        "high": {
-          "sourceTriangles": 143938,
-          "drawMeshes": 180,
-          "bytes": 15481744,
-          "sha256": "073a894a3141b3ae90372b8bacd2c8a866ea1038627634e2537ffc1f6feea694",
-          "exportTriangles": 143938
-        },
-        "low": {
-          "sourceTriangles": 20188,
-          "drawMeshes": 161,
-          "bytes": 3925936,
-          "sha256": "33013bf0101cd4d8a3c7d374a5cbf5d9f9677b64a57e085f2118f11d1c28b83d",
-          "exportTriangles": 20188
-        }
-      }
-    }
-  },
-  "fidelityPerformanceComparison": [
-    {
-      "scene": "harvest",
-      "style": "steampunk",
-      "previousDraws": 28,
-      "currentDraws": 28,
-      "previousTriangles": 15623,
-      "currentTriangles": 16523
-    },
-    {
-      "scene": "harvest",
-      "style": "futuristic",
-      "previousDraws": 28,
-      "currentDraws": 28,
-      "previousTriangles": 11891,
-      "currentTriangles": 12103
-    },
-    {
-      "scene": "ants",
-      "style": "steampunk",
-      "previousDraws": 75,
-      "currentDraws": 49,
-      "previousTriangles": 36900,
-      "currentTriangles": 61674
-    },
-    {
-      "scene": "ants",
-      "style": "futuristic",
-      "previousDraws": 74,
-      "currentDraws": 49,
-      "previousTriangles": 34772,
-      "currentTriangles": 56636
-    },
-    {
-      "scene": "tandem",
-      "style": "steampunk",
-      "previousDraws": 39,
-      "currentDraws": 39,
-      "previousTriangles": 13323,
-      "currentTriangles": 15123
-    },
-    {
-      "scene": "tandem",
-      "style": "futuristic",
-      "previousDraws": 41,
-      "currentDraws": 41,
-      "previousTriangles": 11065,
-      "currentTriangles": 11489
-    },
-    {
-      "scene": "mining",
-      "style": "steampunk",
-      "previousDraws": 58,
-      "currentDraws": 58,
-      "previousTriangles": 19029,
-      "currentTriangles": 20829
-    },
-    {
-      "scene": "mining",
-      "style": "futuristic",
-      "previousDraws": 65,
-      "currentDraws": 65,
-      "previousTriangles": 13925,
-      "currentTriangles": 14349
-    },
-    {
-      "scene": "rocket",
-      "style": "steampunk",
-      "previousDraws": 42,
-      "currentDraws": 42,
-      "previousTriangles": 16951,
-      "currentTriangles": 17851
-    },
-    {
-      "scene": "rocket",
-      "style": "futuristic",
-      "previousDraws": 44,
-      "currentDraws": 44,
-      "previousTriangles": 12311,
-      "currentTriangles": 12523
-    },
-    {
-      "scene": "racing",
-      "style": "steampunk",
-      "previousDraws": 45,
-      "currentDraws": 45,
-      "previousTriangles": 25222,
-      "currentTriangles": 25392
-    },
-    {
-      "scene": "racing",
-      "style": "futuristic",
-      "previousDraws": 56,
-      "currentDraws": 56,
-      "previousTriangles": 14986,
-      "currentTriangles": 15254
-    },
-    {
-      "scene": "64 mixed vehicles",
-      "style": "steampunk",
-      "previousDraws": 122,
-      "currentDraws": 122,
-      "previousTriangles": 183268,
-      "currentTriangles": 216964
-    },
-    {
-      "scene": "64 mixed vehicles / close view",
-      "style": "steampunk",
-      "previousDraws": 41,
-      "currentDraws": 41,
-      "previousTriangles": 27022,
-      "currentTriangles": 29162
-    },
-    {
-      "scene": "64 mixed vehicles",
-      "style": "futuristic",
-      "previousDraws": 127,
-      "currentDraws": 127,
-      "previousTriangles": 155436,
-      "currentTriangles": 182828
-    },
-    {
-      "scene": "64 mixed vehicles / close view",
-      "style": "futuristic",
-      "previousDraws": 45,
-      "currentDraws": 45,
-      "previousTriangles": 26678,
-      "currentTriangles": 27638
-    }
+  "measurementNotes": [
+    "Browser measurements taken after all owned Blender jobs completed.",
+    "Frame intervals include browser scheduling and host activity; render CPU timing does not measure asynchronous GPU completion.",
+    "Vehicle rendering fixtures were preserved: no increased triangles, material batches, image count, decoded texture pixels or download bytes.",
+    "Added world machinery can increase world draw/triangle counts; report records current measurements rather than asserting uniform speedups.",
+    "Preset contents were being edited independently during this pass; only the fixed 64-vehicle fixture is intended for direct before/after comparison."
   ]
 }

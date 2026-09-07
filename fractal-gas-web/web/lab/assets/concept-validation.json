@@ -1,0 +1,983 @@
+{
+  "baseline": "Working-tree runtime GLBs at start of concept fidelity pass, 2026-09-07",
+  "assets": {
+    "futuristic/rocket-high": {
+      "before": {
+        "triangles": 8022,
+        "primitives": 9,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1576284,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 8022,
+        "primitives": 9,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1358188,
+        "texturePixels": 1310720
+      },
+      "sha256": "2bf8306e49a53098f457fd16d3936dcbef7ae75988f19544d85a59a35dd6a3da"
+    },
+    "futuristic/rocket-low": {
+      "before": {
+        "triangles": 1338,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 867088,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 1338,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 648996,
+        "texturePixels": 1064960
+      },
+      "sha256": "7f4fcc4840ba030baf712c481d180d8c24a5b9336a694777d71e056748bcdeda"
+    },
+    "futuristic/kart-high": {
+      "before": {
+        "triangles": 17520,
+        "primitives": 20,
+        "materials": 8,
+        "images": 5,
+        "bytes": 2119040,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 17520,
+        "primitives": 20,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1900940,
+        "texturePixels": 1310720
+      },
+      "sha256": "6f31415c2062493fc698732287356accf4c494141cf4f142ceae4a501b010775"
+    },
+    "futuristic/kart-low": {
+      "before": {
+        "triangles": 2456,
+        "primitives": 19,
+        "materials": 7,
+        "images": 5,
+        "bytes": 945796,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 2456,
+        "primitives": 19,
+        "materials": 7,
+        "images": 5,
+        "bytes": 727940,
+        "texturePixels": 1064960
+      },
+      "sha256": "a39ed1821a853f3d975c7c81c063b0ceeef17bf67137028d1eab268e8c9c1f3c"
+    },
+    "futuristic/drone-high": {
+      "before": {
+        "triangles": 12384,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 1788576,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 12384,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 1569748,
+        "texturePixels": 1310720
+      },
+      "sha256": "520758b4cdd73114a1b2b74c517c293f2ab75c82ad773a0a43265bf141425259"
+    },
+    "futuristic/drone-low": {
+      "before": {
+        "triangles": 1960,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 877272,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 1960,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 658452,
+        "texturePixels": 1064960
+      },
+      "sha256": "9bd1f491c1c5b23519e79a5e469c380a87d8be560e61b771ca27da3a91785009"
+    },
+    "futuristic/harvester-high": {
+      "before": {
+        "triangles": 31222,
+        "primitives": 21,
+        "materials": 7,
+        "images": 5,
+        "bytes": 2968680,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 31222,
+        "primitives": 21,
+        "materials": 7,
+        "images": 5,
+        "bytes": 2750576,
+        "texturePixels": 1310720
+      },
+      "sha256": "4600855a79f8a12fa36c757bff4a45832f1af20690c956226bf982c0ff31541a"
+    },
+    "futuristic/harvester-low": {
+      "before": {
+        "triangles": 4066,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1050856,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 4066,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 832748,
+        "texturePixels": 1064960
+      },
+      "sha256": "dacc535b782be6804b1b75bc50aa2e1da59b46b5c8799ca20a0f48625617b4dc"
+    },
+    "futuristic/world-high": {
+      "before": {
+        "triangles": 162704,
+        "primitives": 236,
+        "materials": 12,
+        "images": 11,
+        "bytes": 17215028,
+        "texturePixels": 5439488
+      },
+      "after": {
+        "triangles": 144072,
+        "primitives": 231,
+        "materials": 12,
+        "images": 11,
+        "bytes": 11247876,
+        "texturePixels": 5439488
+      },
+      "sha256": "cb0e64002a8e7e9b2d5867041a7b1d287d7f0482372d62a21c13a973c1dcad44"
+    },
+    "futuristic/world-low": {
+      "before": {
+        "triangles": 16892,
+        "primitives": 218,
+        "materials": 12,
+        "images": 11,
+        "bytes": 3663988,
+        "texturePixels": 2293760
+      },
+      "after": {
+        "triangles": 16660,
+        "primitives": 213,
+        "materials": 12,
+        "images": 11,
+        "bytes": 2512888,
+        "texturePixels": 2293760
+      },
+      "sha256": "15779cfe32eb1075036c5584e52415ebc95411ee65c8b8753c253a059896a82c"
+    },
+    "futuristic/refinery-high": {
+      "before": {
+        "triangles": 19736,
+        "primitives": 6,
+        "materials": 6,
+        "images": 4,
+        "bytes": 2066184,
+        "texturePixels": 1048576
+      },
+      "after": {
+        "triangles": 7228,
+        "primitives": 6,
+        "materials": 6,
+        "images": 4,
+        "bytes": 1248112,
+        "texturePixels": 1048576
+      },
+      "sha256": "18d13eddc4c8f1f1ecb86504c1059b8d86d7c0195bd38005ea77d46c30b72fea"
+    },
+    "futuristic/refinery-low": {
+      "before": {
+        "triangles": 3596,
+        "primitives": 6,
+        "materials": 6,
+        "images": 4,
+        "bytes": 984144,
+        "texturePixels": 1048576
+      },
+      "after": {
+        "triangles": 2848,
+        "primitives": 6,
+        "materials": 6,
+        "images": 4,
+        "bytes": 945456,
+        "texturePixels": 1048576
+      },
+      "sha256": "f84adc4d5ee88d89ac443deabfee95b7a27c61be224a2925ca6d5a6420eeefa5"
+    },
+    "steampunk/rocket-high": {
+      "before": {
+        "triangles": 9672,
+        "primitives": 10,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1459560,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 9672,
+        "primitives": 10,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1239156,
+        "texturePixels": 1310720
+      },
+      "sha256": "4db088a3bdcd9300a7299707ea3e16c80d47c7e30034b8ed3ae8eb18b08f9b8d"
+    },
+    "steampunk/rocket-low": {
+      "before": {
+        "triangles": 1904,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 713492,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 1904,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 493092,
+        "texturePixels": 1064960
+      },
+      "sha256": "fcb106faafb23705130795cf212525f2138c8d600227fe67afcf1a26edf85513"
+    },
+    "steampunk/kart-high": {
+      "before": {
+        "triangles": 19124,
+        "primitives": 16,
+        "materials": 8,
+        "images": 5,
+        "bytes": 2010028,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 19124,
+        "primitives": 16,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1789664,
+        "texturePixels": 1310720
+      },
+      "sha256": "0d15d59c1f12dad67223123b076322209d4c90dd23d61a5fc8c014db5790261c"
+    },
+    "steampunk/kart-low": {
+      "before": {
+        "triangles": 2610,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 769904,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 2610,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 549504,
+        "texturePixels": 1064960
+      },
+      "sha256": "7c8a2d70ab30e3c621d64da5fa1bb7fd520d692499189a23046814fe11f2999d"
+    },
+    "steampunk/drone-high": {
+      "before": {
+        "triangles": 15996,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1830984,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 15996,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1663296,
+        "texturePixels": 1310720
+      },
+      "sha256": "1712917e318e7a3d228030b71e1628c60f9d5438fcff2f33c670c0db980cea36"
+    },
+    "steampunk/drone-low": {
+      "before": {
+        "triangles": 2288,
+        "primitives": 14,
+        "materials": 6,
+        "images": 5,
+        "bytes": 752992,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 2288,
+        "primitives": 14,
+        "materials": 6,
+        "images": 5,
+        "bytes": 585304,
+        "texturePixels": 1064960
+      },
+      "sha256": "b5c7e83a53370c7fe2fa38d156197b6b9589feeaf00c70085ca4490a4862a069"
+    },
+    "steampunk/harvester-high": {
+      "before": {
+        "triangles": 35064,
+        "primitives": 23,
+        "materials": 9,
+        "images": 5,
+        "bytes": 2990912,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 35064,
+        "primitives": 23,
+        "materials": 9,
+        "images": 5,
+        "bytes": 2770712,
+        "texturePixels": 1310720
+      },
+      "sha256": "c3e053084a9e8c0ec61bacda5029b9c40ca07af7394231e45f4f83129d6d1ec1"
+    },
+    "steampunk/harvester-low": {
+      "before": {
+        "triangles": 4318,
+        "primitives": 21,
+        "materials": 8,
+        "images": 5,
+        "bytes": 878216,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 4318,
+        "primitives": 21,
+        "materials": 8,
+        "images": 5,
+        "bytes": 657816,
+        "texturePixels": 1064960
+      },
+      "sha256": "cea654add00e747db4c2bdca434bc05fdba66143b1a83ea34da73ab6113e48e3"
+    },
+    "steampunk/world-high": {
+      "before": {
+        "triangles": 181440,
+        "primitives": 207,
+        "materials": 15,
+        "images": 11,
+        "bytes": 18043428,
+        "texturePixels": 5439488
+      },
+      "after": {
+        "triangles": 162920,
+        "primitives": 204,
+        "materials": 15,
+        "images": 11,
+        "bytes": 12163388,
+        "texturePixels": 5439488
+      },
+      "sha256": "842a22c69c782bf4263d8c1a163cc38a09070a45b6a6498af88908f340027937"
+    },
+    "steampunk/world-low": {
+      "before": {
+        "triangles": 28354,
+        "primitives": 188,
+        "materials": 13,
+        "images": 11,
+        "bytes": 4080344,
+        "texturePixels": 2293760
+      },
+      "after": {
+        "triangles": 28106,
+        "primitives": 185,
+        "materials": 13,
+        "images": 11,
+        "bytes": 2957676,
+        "texturePixels": 2293760
+      },
+      "sha256": "a46d70fa54e8e9686a580aee35274946852f8dbfd7eaf3ecb24a8164225dee7c"
+    },
+    "steampunk/refinery-high": {
+      "before": {
+        "triangles": 17700,
+        "primitives": 8,
+        "materials": 8,
+        "images": 4,
+        "bytes": 1720968,
+        "texturePixels": 1048576
+      },
+      "after": {
+        "triangles": 9812,
+        "primitives": 7,
+        "materials": 7,
+        "images": 4,
+        "bytes": 1214088,
+        "texturePixels": 1048576
+      },
+      "sha256": "d6e0c8672b6c93cdf762f8ccff05f5beb1a9a03465dafc505366eb6431b00534"
+    },
+    "steampunk/refinery-low": {
+      "before": {
+        "triangles": 3640,
+        "primitives": 8,
+        "materials": 8,
+        "images": 4,
+        "bytes": 802724,
+        "texturePixels": 1048576
+      },
+      "after": {
+        "triangles": 3576,
+        "primitives": 7,
+        "materials": 7,
+        "images": 4,
+        "bytes": 802336,
+        "texturePixels": 1048576
+      },
+      "sha256": "6ca36506c799e822b653ccb409df889324d81665c708a9e3e1fa94bc6eebd5b4"
+    }
+  },
+  "totals": {
+    "before": {
+      "triangles": 604006,
+      "primitives": 1124,
+      "bytes": 72176488
+    },
+    "after": {
+      "triangles": 545166,
+      "primitives": 1106,
+      "bytes": 53287952
+    }
+  },
+  "browser": {
+    "status": "passed",
+    "checks": 372,
+    "performance": [
+      {
+        "scene": "harvest",
+        "style": "steampunk",
+        "medianFrameMs": 1297.87,
+        "medianRenderCpuMs": 19.77,
+        "pageVisibility": "visible",
+        "draws": 29,
+        "triangles": 19563,
+        "largestGeometry": [
+          {
+            "name": "dock-root__Machined_brass",
+            "triangles": 9068
+          },
+          {
+            "name": "reactor-root__Machined_brass",
+            "triangles": 8108
+          },
+          {
+            "name": "dock-root__Riveted_iron",
+            "triangles": 3112
+          },
+          {
+            "name": "dock-root__Copper_feed_lines",
+            "triangles": 2584
+          },
+          {
+            "name": "reactor-root__Riveted_iron",
+            "triangles": 2272
+          }
+        ]
+      },
+      {
+        "scene": "harvest",
+        "style": "futuristic",
+        "medianFrameMs": 1162.26,
+        "medianRenderCpuMs": 14.35,
+        "pageVisibility": "visible",
+        "draws": 30,
+        "triangles": 15645,
+        "largestGeometry": [
+          {
+            "name": "dock-root__Titanium_edges",
+            "triangles": 6820
+          },
+          {
+            "name": "reactor-root__Titanium_edges",
+            "triangles": 6268
+          },
+          {
+            "name": "dock-root__Brushed_pale_alloy",
+            "triangles": 2268
+          },
+          {
+            "name": "reactor-root__Brushed_pale_alloy",
+            "triangles": 2120
+          },
+          {
+            "name": "reactor-root__Ceramic_graphite",
+            "triangles": 1876
+          }
+        ]
+      },
+      {
+        "scene": "ants",
+        "style": "steampunk",
+        "medianFrameMs": 2637.77,
+        "medianRenderCpuMs": 13.38,
+        "pageVisibility": "visible",
+        "draws": 51,
+        "triangles": 58330,
+        "largestGeometry": [
+          {
+            "name": "harvester-root__Machined_brass",
+            "triangles": 17608
+          },
+          {
+            "name": "harvester-root__Machined_brass",
+            "triangles": 17608
+          },
+          {
+            "name": "harvester-root__Machined_brass",
+            "triangles": 17608
+          },
+          {
+            "name": "harvester-root__Machined_brass",
+            "triangles": 17608
+          },
+          {
+            "name": "harvester-root__Machined_brass",
+            "triangles": 17608
+          }
+        ]
+      },
+      {
+        "scene": "ants",
+        "style": "futuristic",
+        "medianFrameMs": 507.97,
+        "medianRenderCpuMs": 4.56,
+        "pageVisibility": "visible",
+        "draws": 53,
+        "triangles": 60352,
+        "largestGeometry": [
+          {
+            "name": "World instances / rail",
+            "triangles": 18240
+          },
+          {
+            "name": "harvester-root__Titanium_edges",
+            "triangles": 13670
+          },
+          {
+            "name": "harvester-root__Titanium_edges",
+            "triangles": 13670
+          },
+          {
+            "name": "harvester-root__Titanium_edges",
+            "triangles": 13670
+          },
+          {
+            "name": "harvester-root__Titanium_edges",
+            "triangles": 13670
+          }
+        ]
+      },
+      {
+        "scene": "tandem",
+        "style": "steampunk",
+        "medianFrameMs": 80.41,
+        "medianRenderCpuMs": 1.67,
+        "pageVisibility": "visible",
+        "draws": 40,
+        "triangles": 17043,
+        "largestGeometry": [
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          },
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          },
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          },
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          },
+          {
+            "name": "gate-root__Machined_brass",
+            "triangles": 4120
+          }
+        ]
+      },
+      {
+        "scene": "tandem",
+        "style": "futuristic",
+        "medianFrameMs": 74.71,
+        "medianRenderCpuMs": 1.8,
+        "pageVisibility": "visible",
+        "draws": 43,
+        "triangles": 15021,
+        "largestGeometry": [
+          {
+            "name": "World instances / rail",
+            "triangles": 3040
+          },
+          {
+            "name": "gate-root__Titanium_edges",
+            "triangles": 2296
+          },
+          {
+            "name": "gate-root__Titanium_edges",
+            "triangles": 2296
+          },
+          {
+            "name": "gate-root__Titanium_edges",
+            "triangles": 2296
+          },
+          {
+            "name": "gate-root__Titanium_edges",
+            "triangles": 2296
+          }
+        ]
+      },
+      {
+        "scene": "mining",
+        "style": "steampunk",
+        "medianFrameMs": 772.78,
+        "medianRenderCpuMs": 7.42,
+        "pageVisibility": "visible",
+        "draws": 63,
+        "triangles": 24217,
+        "largestGeometry": [
+          {
+            "name": "dock-root__Machined_brass",
+            "triangles": 9068
+          },
+          {
+            "name": "reactor-root__Machined_brass",
+            "triangles": 8108
+          },
+          {
+            "name": "dock-root__Riveted_iron",
+            "triangles": 3112
+          },
+          {
+            "name": "dock-root__Copper_feed_lines",
+            "triangles": 2584
+          },
+          {
+            "name": "reactor-root__Riveted_iron",
+            "triangles": 2272
+          }
+        ]
+      },
+      {
+        "scene": "mining",
+        "style": "futuristic",
+        "medianFrameMs": 334.95,
+        "medianRenderCpuMs": 5.22,
+        "pageVisibility": "visible",
+        "draws": 68,
+        "triangles": 18393,
+        "largestGeometry": [
+          {
+            "name": "dock-root__Titanium_edges",
+            "triangles": 6820
+          },
+          {
+            "name": "reactor-root__Titanium_edges",
+            "triangles": 6268
+          },
+          {
+            "name": "dock-root__Brushed_pale_alloy",
+            "triangles": 2268
+          },
+          {
+            "name": "reactor-root__Brushed_pale_alloy",
+            "triangles": 2120
+          },
+          {
+            "name": "reactor-root__Ceramic_graphite",
+            "triangles": 1876
+          }
+        ]
+      },
+      {
+        "scene": "rocket",
+        "style": "steampunk",
+        "medianFrameMs": 209.18,
+        "medianRenderCpuMs": 4.37,
+        "pageVisibility": "visible",
+        "draws": 45,
+        "triangles": 21303,
+        "largestGeometry": [
+          {
+            "name": "dock-root__Machined_brass",
+            "triangles": 9068
+          },
+          {
+            "name": "reactor-root__Machined_brass",
+            "triangles": 8108
+          },
+          {
+            "name": "dock-root__Riveted_iron",
+            "triangles": 3112
+          },
+          {
+            "name": "dock-root__Copper_feed_lines",
+            "triangles": 2584
+          },
+          {
+            "name": "reactor-root__Riveted_iron",
+            "triangles": 2272
+          }
+        ]
+      },
+      {
+        "scene": "rocket",
+        "style": "futuristic",
+        "medianFrameMs": 268.37,
+        "medianRenderCpuMs": 4.54,
+        "pageVisibility": "visible",
+        "draws": 47,
+        "triangles": 16441,
+        "largestGeometry": [
+          {
+            "name": "dock-root__Titanium_edges",
+            "triangles": 6820
+          },
+          {
+            "name": "reactor-root__Titanium_edges",
+            "triangles": 6268
+          },
+          {
+            "name": "dock-root__Brushed_pale_alloy",
+            "triangles": 2268
+          },
+          {
+            "name": "reactor-root__Brushed_pale_alloy",
+            "triangles": 2120
+          },
+          {
+            "name": "reactor-root__Ceramic_graphite",
+            "triangles": 1876
+          }
+        ]
+      },
+      {
+        "scene": "racing",
+        "style": "steampunk",
+        "medianFrameMs": 571.08,
+        "medianRenderCpuMs": 2.54,
+        "pageVisibility": "visible",
+        "draws": 49,
+        "triangles": 35144,
+        "largestGeometry": [
+          {
+            "name": "World instances / gate-pylons",
+            "triangles": 8352
+          },
+          {
+            "name": "World instances / finish-arch",
+            "triangles": 6248
+          },
+          {
+            "name": "World instances / guardrail",
+            "triangles": 6156
+          },
+          {
+            "name": "World instances / guardrail",
+            "triangles": 2128
+          },
+          {
+            "name": "World instances / gate-pylons",
+            "triangles": 1808
+          }
+        ]
+      },
+      {
+        "scene": "racing",
+        "style": "futuristic",
+        "medianFrameMs": 970.83,
+        "medianRenderCpuMs": 4.18,
+        "pageVisibility": "visible",
+        "draws": 62,
+        "triangles": 23954,
+        "largestGeometry": [
+          {
+            "name": "World instances / gate-pylons",
+            "triangles": 4704
+          },
+          {
+            "name": "World instances / finish-arch",
+            "triangles": 3568
+          },
+          {
+            "name": "World instances / guardrail",
+            "triangles": 1748
+          },
+          {
+            "name": "World instances / guardrail",
+            "triangles": 1596
+          },
+          {
+            "name": "World instances / finish-arch",
+            "triangles": 972
+          }
+        ]
+      },
+      {
+        "scene": "64 mixed vehicles",
+        "style": "steampunk",
+        "medianFrameMs": 529.5,
+        "medianRenderCpuMs": 4.05,
+        "pageVisibility": "visible",
+        "draws": 124,
+        "triangles": 225952,
+        "largestGeometry": [
+          {
+            "name": "",
+            "triangles": 19968
+          },
+          {
+            "name": "World instances / rail",
+            "triangles": 19440
+          },
+          {
+            "name": "",
+            "triangles": 19264
+          },
+          {
+            "name": "",
+            "triangles": 17568
+          },
+          {
+            "name": "",
+            "triangles": 15712
+          }
+        ]
+      },
+      {
+        "scene": "64 mixed vehicles / close view",
+        "style": "steampunk",
+        "medianFrameMs": 304.42,
+        "medianRenderCpuMs": 1.78,
+        "pageVisibility": "visible",
+        "draws": 42,
+        "triangles": 37578,
+        "largestGeometry": [
+          {
+            "name": "World instances / rail",
+            "triangles": 22496
+          },
+          {
+            "name": "World instances / rail",
+            "triangles": 2944
+          },
+          {
+            "name": "",
+            "triangles": 2496
+          },
+          {
+            "name": "",
+            "triangles": 1964
+          },
+          {
+            "name": "World instances / rail",
+            "triangles": 880
+          }
+        ]
+      },
+      {
+        "scene": "64 mixed vehicles",
+        "style": "futuristic",
+        "medianFrameMs": 466.75,
+        "medianRenderCpuMs": 6.88,
+        "pageVisibility": "visible",
+        "draws": 146,
+        "triangles": 183064,
+        "largestGeometry": [
+          {
+            "name": "",
+            "triangles": 13344
+          },
+          {
+            "name": "",
+            "triangles": 9792
+          },
+          {
+            "name": "",
+            "triangles": 9344
+          },
+          {
+            "name": "",
+            "triangles": 9184
+          },
+          {
+            "name": "",
+            "triangles": 6720
+          }
+        ]
+      },
+      {
+        "scene": "64 mixed vehicles / close view",
+        "style": "futuristic",
+        "medianFrameMs": 570.92,
+        "medianRenderCpuMs": 3.85,
+        "pageVisibility": "visible",
+        "draws": 48,
+        "triangles": 44754,
+        "largestGeometry": [
+          {
+            "name": "World instances / rail",
+            "triangles": 24320
+          },
+          {
+            "name": "World instances / rail",
+            "triangles": 6048
+          },
+          {
+            "name": "World instances / rail",
+            "triangles": 5632
+          },
+          {
+            "name": "",
+            "triangles": 1168
+          },
+          {
+            "name": "",
+            "triangles": 840
+          }
+        ]
+      }
+    ],
+    "deviceScaleFactor": 0.5
+  },
+  "browserNotes": "Headless Chromium with deviceScaleFactor 0.5 while Blender renders ran concurrently. Frame timings are not representative of normal interactive performance. Final storage and geometry checks were repeated after the last material and source resaves.",
+  "validation": {
+    "labBuild": "passed",
+    "fullLabTests": 160,
+    "finalAffectedTests": 86,
+    "browserChecks": 372
+  }
+}

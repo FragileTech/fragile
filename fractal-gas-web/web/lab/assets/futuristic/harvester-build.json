@@ -1,13 +1,13 @@
 {
   "high": {
-    "sourceTriangles": 40954,
+    "sourceTriangles": 31222,
     "drawMeshes": 21,
-    "bytes": 3782040
+    "bytes": 2750576
   },
   "low": {
-    "sourceTriangles": 4356,
+    "sourceTriangles": 4528,
     "drawMeshes": 20,
-    "bytes": 1275208
+    "bytes": 832748
   },
   "style": "futuristic",
   "model": "harvester"

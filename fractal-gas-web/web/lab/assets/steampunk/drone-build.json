@@ -1,13 +1,13 @@
 {
   "high": {
-    "sourceTriangles": 21044,
+    "sourceTriangles": 15996,
     "drawMeshes": 15,
-    "bytes": 2466580
+    "bytes": 1610588
   },
   "low": {
-    "sourceTriangles": 2468,
+    "sourceTriangles": 2908,
     "drawMeshes": 14,
-    "bytes": 994756
+    "bytes": 532596
   },
   "style": "steampunk",
   "model": "drone"

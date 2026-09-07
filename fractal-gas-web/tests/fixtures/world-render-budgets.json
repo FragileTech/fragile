@@ -1,0 +1,690 @@
+{
+  "futuristic/beacon-high": {
+    "triangles": 1318,
+    "primitives": 5
+  },
+  "futuristic/bollard-high": {
+    "triangles": 1616,
+    "primitives": 5
+  },
+  "futuristic/capture-clamp-high": {
+    "triangles": 1984,
+    "primitives": 6
+  },
+  "futuristic/capture-latch-high": {
+    "triangles": 1192,
+    "primitives": 3
+  },
+  "futuristic/corner-inner-high": {
+    "triangles": 9096,
+    "primitives": 10
+  },
+  "futuristic/corner-outer-high": {
+    "triangles": 9096,
+    "primitives": 10
+  },
+  "futuristic/deposit-high": {
+    "triangles": 1318,
+    "primitives": 4
+  },
+  "futuristic/direction-board-high": {
+    "triangles": 2324,
+    "primitives": 4
+  },
+  "futuristic/dock-high": {
+    "triangles": 12610,
+    "primitives": 7
+  },
+  "futuristic/drop-capsule-high": {
+    "triangles": 4866,
+    "primitives": 8
+  },
+  "futuristic/drop-core-high": {
+    "triangles": 4740,
+    "primitives": 7
+  },
+  "futuristic/drop-crystal-high": {
+    "triangles": 1678,
+    "primitives": 6
+  },
+  "futuristic/drop-nugget-high": {
+    "triangles": 4234,
+    "primitives": 7
+  },
+  "futuristic/drop-pile-high": {
+    "triangles": 13258,
+    "primitives": 7
+  },
+  "futuristic/drop-salvage-high": {
+    "triangles": 4694,
+    "primitives": 4
+  },
+  "futuristic/finish-arch-high": {
+    "triangles": 5946,
+    "primitives": 4
+  },
+  "futuristic/floor-tile-high": {
+    "triangles": 1542,
+    "primitives": 4
+  },
+  "futuristic/gantry-high": {
+    "triangles": 5558,
+    "primitives": 5
+  },
+  "futuristic/gate-marker-high": {
+    "triangles": 2172,
+    "primitives": 3
+  },
+  "futuristic/gate-pylons-high": {
+    "triangles": 3272,
+    "primitives": 5
+  },
+  "futuristic/gate-high": {
+    "triangles": 5532,
+    "primitives": 8
+  },
+  "futuristic/guardrail-high": {
+    "triangles": 4548,
+    "primitives": 5
+  },
+  "futuristic/intake-swirl-high": {
+    "triangles": 192,
+    "primitives": 2
+  },
+  "futuristic/kerb-high": {
+    "triangles": 1518,
+    "primitives": 5
+  },
+  "futuristic/lamp-high": {
+    "triangles": 1812,
+    "primitives": 5
+  },
+  "futuristic/ore-captured-high": {
+    "triangles": 3542,
+    "primitives": 9
+  },
+  "futuristic/ore-large-high": {
+    "triangles": 2410,
+    "primitives": 5
+  },
+  "futuristic/ore-medium-high": {
+    "triangles": 2366,
+    "primitives": 5
+  },
+  "futuristic/ore-small-high": {
+    "triangles": 2344,
+    "primitives": 5
+  },
+  "futuristic/path-trail-high": {
+    "triangles": 192,
+    "primitives": 2
+  },
+  "futuristic/pickup-burst-high": {
+    "triangles": 392,
+    "primitives": 2
+  },
+  "futuristic/pit-station-high": {
+    "triangles": 5886,
+    "primitives": 7
+  },
+  "futuristic/rail-high": {
+    "triangles": 4548,
+    "primitives": 5
+  },
+  "futuristic/reactor-high": {
+    "triangles": 20508,
+    "primitives": 22
+  },
+  "futuristic/rock-obstacle-high": {
+    "triangles": 2202,
+    "primitives": 4
+  },
+  "futuristic/rotor-airflow-high": {
+    "triangles": 512,
+    "primitives": 2
+  },
+  "futuristic/start-light-high": {
+    "triangles": 2868,
+    "primitives": 4
+  },
+  "futuristic/tether-fitting-high": {
+    "triangles": 976,
+    "primitives": 4
+  },
+  "futuristic/thrust-plume-high": {
+    "triangles": 672,
+    "primitives": 6
+  },
+  "futuristic/track-bend-high": {
+    "triangles": 1104,
+    "primitives": 5
+  },
+  "futuristic/track-straight-high": {
+    "triangles": 3170,
+    "primitives": 5
+  },
+  "futuristic/utility-column-high": {
+    "triangles": 2896,
+    "primitives": 5
+  },
+  "futuristic/world-high": {
+    "triangles": 162704,
+    "primitives": 236
+  },
+  "futuristic/beacon-low": {
+    "triangles": 226,
+    "primitives": 5
+  },
+  "futuristic/bollard-low": {
+    "triangles": 304,
+    "primitives": 4
+  },
+  "futuristic/capture-clamp-low": {
+    "triangles": 176,
+    "primitives": 6
+  },
+  "futuristic/capture-latch-low": {
+    "triangles": 184,
+    "primitives": 3
+  },
+  "futuristic/corner-inner-low": {
+    "triangles": 448,
+    "primitives": 8
+  },
+  "futuristic/corner-outer-low": {
+    "triangles": 448,
+    "primitives": 8
+  },
+  "futuristic/deposit-low": {
+    "triangles": 458,
+    "primitives": 4
+  },
+  "futuristic/direction-board-low": {
+    "triangles": 180,
+    "primitives": 4
+  },
+  "futuristic/dock-low": {
+    "triangles": 1196,
+    "primitives": 7
+  },
+  "futuristic/drop-capsule-low": {
+    "triangles": 702,
+    "primitives": 8
+  },
+  "futuristic/drop-core-low": {
+    "triangles": 596,
+    "primitives": 7
+  },
+  "futuristic/drop-crystal-low": {
+    "triangles": 402,
+    "primitives": 6
+  },
+  "futuristic/drop-nugget-low": {
+    "triangles": 374,
+    "primitives": 6
+  },
+  "futuristic/drop-pile-low": {
+    "triangles": 1006,
+    "primitives": 7
+  },
+  "futuristic/drop-salvage-low": {
+    "triangles": 300,
+    "primitives": 4
+  },
+  "futuristic/finish-arch-low": {
+    "triangles": 328,
+    "primitives": 4
+  },
+  "futuristic/floor-tile-low": {
+    "triangles": 260,
+    "primitives": 4
+  },
+  "futuristic/gantry-low": {
+    "triangles": 292,
+    "primitives": 5
+  },
+  "futuristic/gate-marker-low": {
+    "triangles": 380,
+    "primitives": 3
+  },
+  "futuristic/gate-pylons-low": {
+    "triangles": 232,
+    "primitives": 5
+  },
+  "futuristic/gate-low": {
+    "triangles": 892,
+    "primitives": 8
+  },
+  "futuristic/guardrail-low": {
+    "triangles": 224,
+    "primitives": 4
+  },
+  "futuristic/intake-swirl-low": {
+    "triangles": 80,
+    "primitives": 2
+  },
+  "futuristic/kerb-low": {
+    "triangles": 156,
+    "primitives": 5
+  },
+  "futuristic/lamp-low": {
+    "triangles": 292,
+    "primitives": 5
+  },
+  "futuristic/ore-captured-low": {
+    "triangles": 466,
+    "primitives": 9
+  },
+  "futuristic/ore-large-low": {
+    "triangles": 430,
+    "primitives": 5
+  },
+  "futuristic/ore-medium-low": {
+    "triangles": 394,
+    "primitives": 5
+  },
+  "futuristic/ore-small-low": {
+    "triangles": 376,
+    "primitives": 5
+  },
+  "futuristic/path-trail-low": {
+    "triangles": 80,
+    "primitives": 2
+  },
+  "futuristic/pickup-burst-low": {
+    "triangles": 172,
+    "primitives": 2
+  },
+  "futuristic/pit-station-low": {
+    "triangles": 360,
+    "primitives": 7
+  },
+  "futuristic/rail-low": {
+    "triangles": 224,
+    "primitives": 4
+  },
+  "futuristic/reactor-low": {
+    "triangles": 1292,
+    "primitives": 13
+  },
+  "futuristic/rock-obstacle-low": {
+    "triangles": 358,
+    "primitives": 4
+  },
+  "futuristic/rotor-airflow-low": {
+    "triangles": 224,
+    "primitives": 2
+  },
+  "futuristic/start-light-low": {
+    "triangles": 484,
+    "primitives": 4
+  },
+  "futuristic/tether-fitting-low": {
+    "triangles": 296,
+    "primitives": 4
+  },
+  "futuristic/thrust-plume-low": {
+    "triangles": 240,
+    "primitives": 6
+  },
+  "futuristic/track-bend-low": {
+    "triangles": 768,
+    "primitives": 5
+  },
+  "futuristic/track-straight-low": {
+    "triangles": 288,
+    "primitives": 5
+  },
+  "futuristic/utility-column-low": {
+    "triangles": 304,
+    "primitives": 4
+  },
+  "futuristic/world-low": {
+    "triangles": 16892,
+    "primitives": 218
+  },
+  "steampunk/beacon-high": {
+    "triangles": 2560,
+    "primitives": 4
+  },
+  "steampunk/bollard-high": {
+    "triangles": 2208,
+    "primitives": 3
+  },
+  "steampunk/capture-clamp-high": {
+    "triangles": 2344,
+    "primitives": 3
+  },
+  "steampunk/capture-latch-high": {
+    "triangles": 1396,
+    "primitives": 4
+  },
+  "steampunk/corner-inner-high": {
+    "triangles": 6796,
+    "primitives": 8
+  },
+  "steampunk/corner-outer-high": {
+    "triangles": 6796,
+    "primitives": 8
+  },
+  "steampunk/deposit-high": {
+    "triangles": 2822,
+    "primitives": 5
+  },
+  "steampunk/direction-board-high": {
+    "triangles": 2308,
+    "primitives": 2
+  },
+  "steampunk/dock-high": {
+    "triangles": 15906,
+    "primitives": 6
+  },
+  "steampunk/drop-capsule-high": {
+    "triangles": 3354,
+    "primitives": 7
+  },
+  "steampunk/drop-core-high": {
+    "triangles": 4460,
+    "primitives": 5
+  },
+  "steampunk/drop-crystal-high": {
+    "triangles": 3586,
+    "primitives": 6
+  },
+  "steampunk/drop-nugget-high": {
+    "triangles": 4310,
+    "primitives": 6
+  },
+  "steampunk/drop-pile-high": {
+    "triangles": 13306,
+    "primitives": 5
+  },
+  "steampunk/drop-salvage-high": {
+    "triangles": 6286,
+    "primitives": 5
+  },
+  "steampunk/finish-arch-high": {
+    "triangles": 7586,
+    "primitives": 4
+  },
+  "steampunk/floor-tile-high": {
+    "triangles": 2154,
+    "primitives": 4
+  },
+  "steampunk/gantry-high": {
+    "triangles": 13082,
+    "primitives": 4
+  },
+  "steampunk/gate-marker-high": {
+    "triangles": 2284,
+    "primitives": 5
+  },
+  "steampunk/gate-pylons-high": {
+    "triangles": 5352,
+    "primitives": 4
+  },
+  "steampunk/gate-high": {
+    "triangles": 7516,
+    "primitives": 7
+  },
+  "steampunk/guardrail-high": {
+    "triangles": 3398,
+    "primitives": 4
+  },
+  "steampunk/intake-swirl-high": {
+    "triangles": 192,
+    "primitives": 1
+  },
+  "steampunk/kerb-high": {
+    "triangles": 1106,
+    "primitives": 4
+  },
+  "steampunk/lamp-high": {
+    "triangles": 1012,
+    "primitives": 4
+  },
+  "steampunk/ore-captured-high": {
+    "triangles": 3994,
+    "primitives": 9
+  },
+  "steampunk/ore-large-high": {
+    "triangles": 2410,
+    "primitives": 6
+  },
+  "steampunk/ore-medium-high": {
+    "triangles": 2366,
+    "primitives": 6
+  },
+  "steampunk/ore-small-high": {
+    "triangles": 2344,
+    "primitives": 6
+  },
+  "steampunk/path-trail-high": {
+    "triangles": 192,
+    "primitives": 1
+  },
+  "steampunk/pickup-burst-high": {
+    "triangles": 392,
+    "primitives": 2
+  },
+  "steampunk/pit-station-high": {
+    "triangles": 5972,
+    "primitives": 5
+  },
+  "steampunk/rail-high": {
+    "triangles": 3398,
+    "primitives": 4
+  },
+  "steampunk/reactor-high": {
+    "triangles": 22732,
+    "primitives": 17
+  },
+  "steampunk/rock-obstacle-high": {
+    "triangles": 2202,
+    "primitives": 5
+  },
+  "steampunk/rotor-airflow-high": {
+    "triangles": 512,
+    "primitives": 1
+  },
+  "steampunk/start-light-high": {
+    "triangles": 2840,
+    "primitives": 4
+  },
+  "steampunk/tether-fitting-high": {
+    "triangles": 1844,
+    "primitives": 4
+  },
+  "steampunk/thrust-plume-high": {
+    "triangles": 672,
+    "primitives": 6
+  },
+  "steampunk/track-bend-high": {
+    "triangles": 1376,
+    "primitives": 4
+  },
+  "steampunk/track-straight-high": {
+    "triangles": 2998,
+    "primitives": 4
+  },
+  "steampunk/utility-column-high": {
+    "triangles": 3076,
+    "primitives": 5
+  },
+  "steampunk/world-high": {
+    "triangles": 181440,
+    "primitives": 207
+  },
+  "steampunk/beacon-low": {
+    "triangles": 556,
+    "primitives": 4
+  },
+  "steampunk/bollard-low": {
+    "triangles": 588,
+    "primitives": 3
+  },
+  "steampunk/capture-clamp-low": {
+    "triangles": 400,
+    "primitives": 3
+  },
+  "steampunk/capture-latch-low": {
+    "triangles": 356,
+    "primitives": 4
+  },
+  "steampunk/corner-inner-low": {
+    "triangles": 920,
+    "primitives": 8
+  },
+  "steampunk/corner-outer-low": {
+    "triangles": 920,
+    "primitives": 8
+  },
+  "steampunk/deposit-low": {
+    "triangles": 846,
+    "primitives": 4
+  },
+  "steampunk/direction-board-low": {
+    "triangles": 332,
+    "primitives": 2
+  },
+  "steampunk/dock-low": {
+    "triangles": 1720,
+    "primitives": 6
+  },
+  "steampunk/drop-capsule-low": {
+    "triangles": 738,
+    "primitives": 6
+  },
+  "steampunk/drop-core-low": {
+    "triangles": 788,
+    "primitives": 5
+  },
+  "steampunk/drop-crystal-low": {
+    "triangles": 706,
+    "primitives": 5
+  },
+  "steampunk/drop-nugget-low": {
+    "triangles": 482,
+    "primitives": 6
+  },
+  "steampunk/drop-pile-low": {
+    "triangles": 1022,
+    "primitives": 5
+  },
+  "steampunk/drop-salvage-low": {
+    "triangles": 952,
+    "primitives": 4
+  },
+  "steampunk/finish-arch-low": {
+    "triangles": 1312,
+    "primitives": 3
+  },
+  "steampunk/floor-tile-low": {
+    "triangles": 312,
+    "primitives": 3
+  },
+  "steampunk/gantry-low": {
+    "triangles": 1368,
+    "primitives": 3
+  },
+  "steampunk/gate-marker-low": {
+    "triangles": 396,
+    "primitives": 5
+  },
+  "steampunk/gate-pylons-low": {
+    "triangles": 1104,
+    "primitives": 4
+  },
+  "steampunk/gate-low": {
+    "triangles": 1700,
+    "primitives": 6
+  },
+  "steampunk/guardrail-low": {
+    "triangles": 460,
+    "primitives": 4
+  },
+  "steampunk/intake-swirl-low": {
+    "triangles": 80,
+    "primitives": 1
+  },
+  "steampunk/kerb-low": {
+    "triangles": 144,
+    "primitives": 4
+  },
+  "steampunk/lamp-low": {
+    "triangles": 404,
+    "primitives": 4
+  },
+  "steampunk/ore-captured-low": {
+    "triangles": 742,
+    "primitives": 8
+  },
+  "steampunk/ore-large-low": {
+    "triangles": 486,
+    "primitives": 5
+  },
+  "steampunk/ore-medium-low": {
+    "triangles": 450,
+    "primitives": 5
+  },
+  "steampunk/ore-small-low": {
+    "triangles": 432,
+    "primitives": 5
+  },
+  "steampunk/path-trail-low": {
+    "triangles": 80,
+    "primitives": 1
+  },
+  "steampunk/pickup-burst-low": {
+    "triangles": 172,
+    "primitives": 2
+  },
+  "steampunk/pit-station-low": {
+    "triangles": 980,
+    "primitives": 4
+  },
+  "steampunk/rail-low": {
+    "triangles": 460,
+    "primitives": 4
+  },
+  "steampunk/reactor-low": {
+    "triangles": 2164,
+    "primitives": 13
+  },
+  "steampunk/rock-obstacle-low": {
+    "triangles": 358,
+    "primitives": 4
+  },
+  "steampunk/rotor-airflow-low": {
+    "triangles": 224,
+    "primitives": 1
+  },
+  "steampunk/start-light-low": {
+    "triangles": 536,
+    "primitives": 4
+  },
+  "steampunk/tether-fitting-low": {
+    "triangles": 500,
+    "primitives": 4
+  },
+  "steampunk/thrust-plume-low": {
+    "triangles": 240,
+    "primitives": 6
+  },
+  "steampunk/track-bend-low": {
+    "triangles": 896,
+    "primitives": 4
+  },
+  "steampunk/track-straight-low": {
+    "triangles": 276,
+    "primitives": 4
+  },
+  "steampunk/utility-column-low": {
+    "triangles": 752,
+    "primitives": 4
+  },
+  "steampunk/world-low": {
+    "triangles": 28354,
+    "primitives": 188
+  }
+}

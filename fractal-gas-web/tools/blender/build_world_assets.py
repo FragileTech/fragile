@@ -11,8 +11,11 @@ import math
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 import numpy as np
+from vehicle_refinement import precision_panel_finish
+from world_machinery_refinement import refine_world_machinery
+from world_scenery_refinement import refine_world_scenery
 
 
 SCRIPT = Path(__file__).with_name("build_lab_assets.py")
@@ -108,23 +111,24 @@ SIZES = {
 def stone_maps(style, n=1024):
     y, x = np.mgrid[0:n, 0:n] / n
     rng = np.random.default_rng(972)
-    noise = rng.random((n, n))
-    # Periodic cellular seams give branching mineral fractures with no UV edge seam.
-    warped_x = (x + 0.012 * np.sin(y * TAU * 19) + 0.006 * np.sin((x + y) * TAU * 37)) % 1
-    warped_y = (y + 0.012 * np.sin(x * TAU * 17) + 0.006 * np.sin((x - y) * TAU * 41)) % 1
+    # Straight cellular fractures and broad mineral planes reproduce the concept
+    # swatches. Quantized grain compresses well and avoids shimmering white noise.
+    noise = np.repeat(np.repeat(rng.integers(0, 8, (n // 4, n // 4)), 4, 0), 4, 1) / 7
     distances = []
-    for px, py in rng.random((22, 2)):
-        dx = np.minimum(abs(warped_x - px), 1 - abs(warped_x - px))
-        dy = np.minimum(abs(warped_y - py), 1 - abs(warped_y - py))
+    for px, py in rng.random((28, 2)):
+        dx = np.minimum(abs(x - px), 1 - abs(x - px))
+        dy = np.minimum(abs(y - py), 1 - abs(y - py))
         distances.append(dx * dx + dy * dy)
-    nearest = np.partition(np.stack(distances), 1, axis=0)[:2]
+    cells = np.stack(distances)
+    nearest = np.partition(cells, 1, axis=0)[:2]
     gap = np.sqrt(nearest[1]) - np.sqrt(nearest[0])
-    vein = np.exp(-gap * 500) * (0.55 + 0.45 * np.sin(x * 18 + y * 13) ** 2)
-    base = np.array([0.22, 0.18, 0.13] if style == "steampunk" else [0.21, 0.23, 0.27])
-    glow = np.array([1, 0.45, 0.06] if style == "steampunk" else [0.55, 0.18, 1])
-    grain = 0.65 + noise * 0.6 + 0.12 * np.sin(x * 220 + np.sin(y * 51))
-    color = base * grain[..., None] + vein[..., None] * glow
-    height = noise * 0.06 - vein * 0.35
+    vein = np.exp(-gap * 340)
+    facet = rng.uniform(0.55, 1.35, 28)[np.argmin(cells, axis=0)]
+    base = np.array([0.13, 0.078, 0.033] if style == "steampunk" else [0.075, 0.062, 0.115])
+    glow = np.array([1, 0.42, 0.045] if style == "steampunk" else [0.48, 0.12, 1])
+    grain = facet * (0.90 + noise * 0.16)
+    color = base * grain[..., None] + vein[..., None] * glow * 0.8
+    height = facet * 0.015 - vein * 0.12
     dy, dx = np.gradient(height)
     normal = np.stack([-dx * 3, -dy * 3, np.ones_like(x)], -1)
     normal /= np.linalg.norm(normal, axis=-1, keepdims=True)
@@ -132,7 +136,7 @@ def stone_maps(style, n=1024):
     for key, data in [
         ("Base Color", color),
         ("Normal", normal * 0.5 + 0.5),
-        ("Roughness", np.repeat((0.75 + noise * 0.2)[..., None], 3, 2)),
+        ("Roughness", np.repeat((0.48 + noise * 0.09)[..., None], 3, 2)),
         ("Emission Color", vein[..., None] * glow),
     ]:
         image = bpy.data.images.new(f"{style} mineral {key}", width=n, height=n)
@@ -149,9 +153,57 @@ def stone_maps(style, n=1024):
     return maps
 
 
+def road_maps(style, n=256):
+    """A quiet graphite tread with plated seams in the existing three-map budget."""
+    maps = lab.panel_maps(style, n=n)
+    y, x = np.mgrid[0:n, 0:n] / n
+    edge = np.minimum.reduce([x, y, 1 - x, 1 - y])
+    seam = (edge < 0.014) | (abs(x - 0.5) < 0.004)
+    border = (edge > 0.026) & (edge < 0.037)
+    grain = ((np.sin(x * 1508) + np.cos(y * 1234)) * 0.012)
+    base = np.array([0.085, 0.070, 0.053] if style == "steampunk" else [0.060, 0.070, 0.082])
+    rgb = np.broadcast_to(base, (n, n, 3)).copy() * (1 + grain[..., None])
+    rgb[seam] *= 0.32
+    rgb[border] *= 1.7
+    rough = np.repeat((0.67 + grain)[..., None], 3, 2)
+    height = seam * -0.045
+    dy, dx = np.gradient(height)
+    normals = np.stack([-dx * 4, -dy * 4, np.ones_like(x)], -1)
+    normals /= np.linalg.norm(normals, axis=-1, keepdims=True)
+    for key, data in [("Base Color", rgb), ("Roughness", rough), ("Normal", normals * 0.5 + 0.5)]:
+        image = maps[key]
+        rgba = np.concatenate([data, np.ones((n, n, 1))], -1).astype(np.float32)
+        image.pixels.foreach_set(rgba.ravel())
+        image.pack()
+    return maps
+
+
+def world_metal_finish(builder):
+    """Apply the concept metal swatches without adding textures or materials."""
+    # Restrained metal values match the aged brass / graphite concept swatches.
+    palette = (
+        {"trim": (0.27, 0.18, 0.065), "copper": (0.24, 0.075, 0.027), "gold": (0.34, 0.23, 0.085)}
+        if builder.steam
+        else {
+            "trim": (0.105, 0.135, 0.165),
+            "copper": (0.065, 0.038, 0.105),
+            "gold": (0.32, 0.24, 0.10),
+        }
+    )
+    for key, color in palette.items():
+        material = builder.mats[key]
+        shader = material.node_tree.nodes["Principled BSDF"]
+        material.diffuse_color = (*color, 1)
+        shader.inputs["Base Color"].default_value = (*color, 1)
+        shader.inputs["Metallic"].default_value = 0.82
+        shader.inputs["Roughness"].default_value = 0.34
+
+
 class WorldBuilder(lab.Builder):
     def __init__(self, style, low=False):
         super().__init__(style, "world", low)
+        precision_panel_finish(self)
+        world_metal_finish(self)
         self.pack = self.root
         self.roots = {}
         self.seg = 8 if low else 24
@@ -166,14 +218,14 @@ class WorldBuilder(lab.Builder):
             0.35,
             0.18,
             0.65,
-            texture={"Normal": maps["Normal"]},
+            texture={key: maps[key] for key in ["Base Color", "Normal", "Emission Color"]},
         )
         self.mats["road"] = lab.material(
             "Riveted iron road" if self.steam else "Quiet graphite road",
             (0.085, 0.07, 0.06) if self.steam else (0.065, 0.075, 0.09),
             0.35,
             0.78,
-            texture=lab.panel_maps(style, n=256),
+            texture=road_maps(style),
         )
         self.mats["window"] = lab.material(
             "Pressure glass" if self.steam else "Field glass",
@@ -186,7 +238,7 @@ class WorldBuilder(lab.Builder):
         glass.diffuse_color = (*glass.diffuse_color[:3], 0.24)
         self.mats["vapor"] = lab.material(
             "Steam ribbons" if self.steam else "Field ribbons",
-            (0.65, 0.48, 0.27) if self.steam else (0.15, 0.62, 0.95),
+            (0.44, 0.39, 0.31) if self.steam else (0.055, 0.40, 0.68),
             0,
             0.8,
             0.6,
@@ -233,6 +285,9 @@ class WorldBuilder(lab.Builder):
             j = (i + 1) % n
             faces.extend([(i, j, j + n, i + n), (i + n, j + n, 2 * n)])
         o = self.mesh("Mineral prism", v, faces, "crystal", parent)
+        # A few long fractures on each cut plane remain legible at lab zoom.
+        for uv in o.data.uv_layers.active.data:
+            uv.uv = uv.uv * 0.40
         o.location = pos
         o.rotation_euler = (rng.uniform(-0.18, 0.18), rng.uniform(-0.18, 0.18), seed * 0.7)
         return o
@@ -240,12 +295,14 @@ class WorldBuilder(lab.Builder):
     def rock(self, radius=1, seed=1, pos=(0, 0, 0), parent=None, smooth=False):
         seed += 13 if self.steam else 0
         # An icosphere distributes facets evenly and avoids the UV-sphere's polar spikes.
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2 if self.low else 4, radius=1)
+        bpy.ops.mesh.primitive_ico_sphere_add(
+            subdivisions=2 if self.low or smooth else 3, radius=1
+        )
         o = bpy.context.object
         o.name = "Fractured mineral stone"
         o.parent = parent or self.root
         o.location = pos
-        o.data.materials.append(self.mats["stone"])
+        o.data.materials.append(self.mats["crystal" if smooth else "stone"])
         directions = [v.co.normalized().copy() for v in o.data.vertices]
         for vertex, direction in zip(o.data.vertices, directions):
             x, y, z = direction
@@ -254,11 +311,15 @@ class WorldBuilder(lab.Builder):
                 + 0.10 * math.sin(x * 5 + seed) * math.cos(y * 6 + z * 4)
                 + 0.05 * math.sin(x * 13 + z * 7 + seed)
             )
-            vertex.co = (x * r, y * r, max(0, z * r * 0.85 + radius * 0.65))
+            if smooth:
+                # Suspended cores are cut geodesic crystals, not rounded boulders.
+                vertex.co = (x * radius, y * radius, z * radius + radius * 0.65)
+            else:
+                vertex.co = (x * r, y * r, max(0, z * r * 0.85 + radius * 0.65))
         o.data.update()
         layer = o.data.uv_layers.new()
         for face in o.data.polygons:
-            face.use_smooth = smooth
+            face.use_smooth = False
             uv = []
             for index in face.vertices:
                 direction = directions[index]
@@ -967,6 +1028,7 @@ class WorldBuilder(lab.Builder):
                     if self.steam
                     else 0.018 + math.sin(t * math.pi) * 0.045
                 )
+                width *= 0.12 + 0.88 * math.sin(t * math.pi)
                 wx, wy = (
                     (0, width)
                     if kind == "path-trail"
@@ -1020,6 +1082,39 @@ class WorldBuilder(lab.Builder):
                         obj.parent,
                     )
 
+    def concept_finish(self, kind):
+        """Refine silhouettes using existing vertices, materials and assemblies."""
+        if kind == "drop-capsule":
+            # The reference capsule lies across its tray with a long visible chamber.
+            transform = (
+                Matrix.Translation((0, 0, 0.38))
+                @ Matrix.Rotation(math.pi / 2, 4, "Y")
+                @ Matrix.Translation((0, 0, -0.42))
+            )
+            fixed = (
+                "Low armored base",
+                "Perimeter retaining band",
+                "Pressure feed",
+                "Recessed light guide",
+            )
+            for obj in self.root.children:
+                if obj.type == "MESH" and not obj.name.startswith(fixed):
+                    obj.matrix_local = transform @ obj.matrix_local
+        elif kind == "drop-pile":
+            # Loose ore should read as scattered rubble rather than another machine.
+            prefixes = (
+                "Octagonal mineral tray",
+                "Segmented tray rim",
+                "Tray clasp",
+                "Recovered ore clasp",
+                "Pressure feed",
+                "Recessed light guide",
+            )
+            for obj in list(self.root.children_recursive):
+                if obj.type == "MESH" and obj.name.startswith(prefixes):
+                    bpy.data.objects.remove(obj, do_unlink=True)
+        self.root["surfaceRevision"] = "concept-mineral-planes-3"
+
     def build(self):
         for family, kinds in FAMILIES.items():
             for kind in kinds:
@@ -1061,7 +1156,10 @@ class WorldBuilder(lab.Builder):
                     self.station(kind)
                 elif family == "capture-effects":
                     self.effects(kind)
+                refine_world_machinery(self, kind)
+                refine_world_scenery(self, kind)
                 self.detail_pass()
+                self.concept_finish(kind)
                 bpy.context.view_layer.update()
                 nodes = list(self.root.children_recursive)
                 coords = [
@@ -1082,8 +1180,67 @@ class WorldBuilder(lab.Builder):
                     -lo.z * factors.z + 0.025,
                 )
         self.root = self.pack
+        lab.repair_vehicle_normals(self)
         bpy.context.view_layer.update()
         return self
+
+
+def render_world(high, preview_families=None):
+    """Render family comparisons from either a fresh builder or its saved scene."""
+    style = high.style
+    for family, kinds in FAMILIES.items():
+        if preview_families and family not in preview_families:
+            continue
+        spacing = 3.2
+        for root in high.roots.values():
+            for o in root.children_recursive:
+                o.hide_render = root.get("assetModel") not in kinds
+        # Temporarily frame only the current family, leaving source poses intact.
+        visible = [o for o in high.scene.objects if o.type == "MESH" and not o.hide_render]
+        old_locations = {r: r.location.copy() for r in high.roots.values()}
+        old_scales = {r: r.scale.copy() for r in high.roots.values()}
+        for i, kind in enumerate(kinds):
+            r = high.roots[kind]
+            # Inspection thumbnails give small props equal visual weight; restore
+            # their exact scene scale immediately after rendering each family.
+            factor = 2.5 / max(SIZES[kind])
+            r.scale *= factor
+            source_index = list(high.roots).index(kind)
+            r.location.x = (r.location.x - (source_index % 7) * 5) * factor + (i % 3) * spacing
+            r.location.y = (r.location.y - (source_index // 7) * 5) * factor + (i // 3) * spacing
+            r.location.z *= factor
+        bpy.context.window.scene = high.scene
+        bpy.context.view_layer.update()
+        corners = [o.matrix_world @ Vector(v) for o in visible for v in o.bound_box]
+        lo = Vector(tuple(min(v[i] for v in corners) for i in range(3)))
+        hi = Vector(tuple(max(v[i] for v in corners) for i in range(3)))
+        center = (lo + hi) / 2
+        camera = high.scene.camera
+        camera.location = center + Vector((3, -4, 3.4)).normalized() * 20
+        camera.rotation_euler = (center - camera.location).to_track_quat("-Z", "Y").to_euler()
+        bpy.context.view_layer.update()
+        projected = [camera.matrix_world.inverted() @ v for v in corners]
+        camera.data.ortho_scale = (
+            max(
+                max(v.x for v in projected) - min(v.x for v in projected),
+                (max(v.y for v in projected) - min(v.y for v in projected)) * 4 / 3,
+            )
+            * 1.15
+        )
+        for light in [o for o in high.scene.objects if o.type == "LIGHT"]:
+            light.location += center
+            light.rotation_euler = (center - light.location).to_track_quat("-Z", "Y").to_euler()
+        dest = ROOT / "previews" / style / f"world-{family}.png"
+        high.scene.render.filepath = str(dest)
+        bpy.ops.render.render(write_still=True)
+        for light in [o for o in high.scene.objects if o.type == "LIGHT"]:
+            light.location -= center
+        for r, p in old_locations.items():
+            r.location = p
+            r.scale = old_scales[r]
+    for o in high.scene.objects:
+        o.hide_render = False
+    lab.frame_camera(high.scene, (3, -4, 5))
 
 
 def build_world(style, render=False, preview_families=None):
@@ -1102,60 +1259,15 @@ def build_world(style, render=False, preview_families=None):
         builder.scene.render.threads = 4
         builder.scene.cycles.samples = 12
         lab.frame_camera(builder.scene, (3, -4, 5))
-    if render:
-        for family, kinds in FAMILIES.items():
-            if preview_families and family not in preview_families:
-                continue
-            spacing = max(max(SIZES[k][0:2]) for k in kinds) + 0.5
-            for root in high.roots.values():
-                for o in root.children_recursive:
-                    o.hide_render = root.get("assetModel") not in kinds
-            # Temporarily frame only the current family, leaving source poses intact.
-            visible = [o for o in high.scene.objects if o.type == "MESH" and not o.hide_render]
-            old_locations = {r: r.location.copy() for r in high.roots.values()}
-            for i, kind in enumerate(kinds):
-                r = high.roots[kind]
-                r.location.x += (i % 3) * spacing - (list(high.roots).index(kind) % 7) * 5
-                r.location.y += (i // 3) * spacing - (list(high.roots).index(kind) // 7) * 5
-            bpy.context.window.scene = high.scene
-            bpy.context.view_layer.update()
-            corners = [o.matrix_world @ Vector(v) for o in visible for v in o.bound_box]
-            lo = Vector(tuple(min(v[i] for v in corners) for i in range(3)))
-            hi = Vector(tuple(max(v[i] for v in corners) for i in range(3)))
-            center = (lo + hi) / 2
-            camera = high.scene.camera
-            camera.location = center + Vector((3, -4, 5)).normalized() * 20
-            camera.rotation_euler = (center - camera.location).to_track_quat("-Z", "Y").to_euler()
-            bpy.context.view_layer.update()
-            projected = [camera.matrix_world.inverted() @ v for v in corners]
-            camera.data.ortho_scale = (
-                max(
-                    max(v.x for v in projected) - min(v.x for v in projected),
-                    (max(v.y for v in projected) - min(v.y for v in projected)) * 4 / 3,
-                )
-                * 1.15
-            )
-            for light in [o for o in high.scene.objects if o.type == "LIGHT"]:
-                light.location += center
-                light.rotation_euler = (
-                    (center - light.location).to_track_quat("-Z", "Y").to_euler()
-                )
-            dest = ROOT / "previews" / style / f"world-{family}.png"
-            high.scene.render.filepath = str(dest)
-            bpy.ops.render.render(write_still=True)
-            for light in [o for o in high.scene.objects if o.type == "LIGHT"]:
-                light.location -= center
-            for r, p in old_locations.items():
-                r.location = p
-        for o in high.scene.objects:
-            o.hide_render = False
-        lab.frame_camera(high.scene, (3, -4, 5))
     source = ROOT / "sources" / style / "world.blend"
     bpy.data.libraries.write(str(source), {high.scene, low.scene}, fake_user=True, compress=True)
     (ROOT / style / "world-build.json").write_text(json.dumps(info, indent=2) + "\n")
     (ROOT / "world-catalog.json").write_text(
         json.dumps({"families": FAMILIES, "envelopes": SIZES}, indent=2) + "\n"
     )
+    # Persist runtime/source outputs before the optional, slower visual review.
+    if render:
+        render_world(high, preview_families)
     return info
 
 

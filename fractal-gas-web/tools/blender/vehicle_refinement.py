@@ -617,13 +617,591 @@ def harvester(b):
                     )
 
 
+def precision_panel_finish(b):
+    """Repaint existing packed maps; restrained seams survive reduced screen size."""
+    n = 512
+    y, x = np.mgrid[0:n, 0:n] / n
+    rng = np.random.default_rng(947)
+    noise = rng.random((n, n)) - 0.5
+    edge = np.minimum.reduce([x, 1 - x, y, 1 - y])
+    # Straight folded seams replace the previous large decorative curved hatch.
+    chamfer = np.minimum(x + y, 2 - x - y)
+    seam = (edge < 0.008) | ((chamfer > 0.20) & (chamfer < 0.208))
+    rivets = np.zeros_like(x, dtype=bool)
+    for u in [0.045, 0.955]:
+        for v in [0.07, 0.35, 0.65, 0.93]:
+            rivets |= np.hypot(x - u, y - v) < (0.006 if b.steam else 0.004)
+    wear = (edge < 0.021) & (noise > 0.34)
+    hairline = (np.abs(np.sin(y * 317 + x * 4)) < 0.01) & (noise > 0.40)
+    height = np.zeros_like(x)
+    height[seam] = -0.09
+    height[rivets] = 0.08
+    dy, dx = np.gradient(height)
+    normals = np.stack([-dx * 12, -dy * 12, np.ones_like(x)], -1)
+    normals /= np.linalg.norm(normals, axis=-1, keepdims=True)
+    for key in ["plate", "dark"]:
+        base = np.array(
+            ([0.39, 0.43, 0.47] if key == "plate" else [0.075, 0.093, 0.11])
+            if not b.steam
+            else ([0.12, 0.023, 0.018] if key == "plate" else [0.073, 0.066, 0.050])
+        )
+        metal = np.array([0.48, 0.50, 0.51] if not b.steam else [0.36, 0.24, 0.105])
+        rgb = np.broadcast_to(base, (n, n, 3)).copy()
+        rgb *= (1 + noise * 0.045 + np.sin(y * 53) * 0.012)[..., None]
+        rgb[seam] *= 0.35
+        rgb[rivets | wear] = metal * 0.72
+        rgb[hairline & ~seam] = metal * 0.60
+        rough = np.repeat((0.37 + noise * 0.045 + (edge < 0.03) * 0.07)[..., None], 3, 2)
+        shader = b.mats[key].node_tree.nodes.get("Principled BSDF")
+        images = {
+            "Base Color": shader.inputs["Base Color"].links[0].from_node.image,
+            "Roughness": shader.inputs["Roughness"].links[0].from_node.image,
+            "Normal": shader
+            .inputs["Normal"]
+            .links[0]
+            .from_node.inputs["Color"]
+            .links[0]
+            .from_node.image,
+        }
+        for field, data in [
+            ("Base Color", rgb),
+            ("Roughness", rough),
+            ("Normal", normals * 0.5 + 0.5),
+        ]:
+            image = images[field]
+            rgba = np.concatenate([data, np.ones((n, n, 1))], -1).astype(np.float32)
+            image.pixels.foreach_set(rgba.ravel())
+            image.pack()
+
+
+def annular_panel(b, name, center, radius, width, z, depth, start, end, mat):
+    """Closed angular duct armor; six faces per span without torus tessellation."""
+    count = 2 if b.low else 6
+    vertices = []
+    for zz in [z, z + depth]:
+        for rr in [radius - width, radius]:
+            vertices.extend(
+                (
+                    center[0] + rr * math.cos(start + (end - start) * i / count),
+                    center[1] + rr * math.sin(start + (end - start) * i / count),
+                    zz,
+                )
+                for i in range(count + 1)
+            )
+    stride = count + 1
+    faces = []
+    for i in range(count):
+        j = i + 1
+        faces.extend([
+            (i, j, stride + j, stride + i),
+            (2 * stride + i, 3 * stride + i, 3 * stride + j, 2 * stride + j),
+            (i, 2 * stride + i, 2 * stride + j, j),
+            (stride + i, stride + j, 3 * stride + j, 3 * stride + i),
+        ])
+    faces.extend([
+        (0, stride, 3 * stride, 2 * stride),
+        (count, 2 * stride + count, 3 * stride + count, stride + count),
+    ])
+    return b.mesh(name, vertices, faces, mat)
+
+
+def rocket_equipment(b):
+    for s in [-1, 1]:
+        if b.steam:
+            # Broad enamel wing inserts and the nose's brass service framing.
+            b.plate(
+                "Inset burgundy pressure wing",
+                [(-1.39, s * 0.52), (-0.61, s * 0.52), (-0.48, s * 0.90), (-1.24, s * 1.08)],
+                0.341,
+                0.025,
+                "plate",
+            )
+            b.pipe(
+                "Nose brass service rail",
+                [(0.54, s * 0.27, 0.42), (1.45, s * 0.14, 0.38)],
+                0.016,
+                "trim",
+            )
+            b.pipe(
+                "Lower pressure supply",
+                [
+                    (-1.20, s * 0.38, 0.31),
+                    (-0.63, s * 0.49, 0.30),
+                    (0.27, s * 0.43, 0.36),
+                    (0.49, s * 0.35, 0.44),
+                ],
+                0.030,
+                "copper",
+            )
+            if not b.low:
+                for x in [0.72, 0.89, 1.06]:
+                    side_plate(
+                        b,
+                        "Nose inset ventilation grille",
+                        [(x, 0.37), (x, 0.48), (x + 0.055, 0.465), (x + 0.055, 0.365)],
+                        s * (0.31 - (x - 0.72) * 0.18),
+                        0.012,
+                        "rubber",
+                    )
+                for x in [-0.94, -0.53, 0.04]:
+                    b.cyl(
+                        "Pressure line union",
+                        (x, s * 0.45, 0.32),
+                        0.05,
+                        0.075,
+                        "trim",
+                        "x",
+                        segments=8,
+                    )
+        else:
+            b.loft(
+                "Raised arrowhead canopy shoulder",
+                [
+                    (-0.48, 0.105, 0.48, 0.69),
+                    (0.24, 0.12, 0.46, 0.64),
+                    (0.83, 0.06, 0.41, 0.50),
+                    (1.39, 0.01, 0.38, 0.40),
+                ],
+                "plate",
+            ).location.y = s * 0.32
+            b.box(
+                "Engine recessed collar band",
+                (-0.39, s * 0.78, 0.77),
+                (0.15, 0.31, 0.035),
+                "dark",
+                bevel=0,
+            )
+            if not b.low:
+                side_plate(
+                    b,
+                    "Dorsal violet identification inset",
+                    [(-1.48, 1.30), (-1.48, 1.37), (-1.39, 1.45), (-1.39, 1.38)],
+                    s * 0.039,
+                    0.008,
+                    "copper",
+                )
+                for x in [-1.27, -0.91]:
+                    b.box(
+                        "Engine armor service hatch",
+                        (x, s * 0.78, 0.815),
+                        (0.20, 0.19, 0.018),
+                        "dark",
+                        bevel=0.009,
+                    )
+
+
+def kart_equipment(b):
+    if b.steam:
+        # A full-height round grille and the cylindrical lamps anchor the front view.
+        for s in [-1, 1]:
+            b.cyl("Deep brass headlamp housing", (1.10, s * 0.35, 0.43), 0.13, 0.16, "copper", "x")
+            b.ring("Headlamp retaining rim", (1.21, s * 0.35, 0.43), 0.096, 0.014, "trim", "x")
+            b.cyl("Side pressure accumulator", (-0.63, s * 0.44, 0.49), 0.065, 0.32, "copper")
+            b.pipe(
+                "Accumulator return pipe",
+                [(-0.63, s * 0.44, 0.34), (-0.63, s * 0.50, 0.27), (0.31, s * 0.43, 0.28)],
+                0.022,
+                "trim",
+            )
+            if not b.low:
+                for j in range(4):
+                    x = 0.27 + j * 0.13
+                    side_plate(
+                        b,
+                        "Bonnet recessed louver",
+                        [(x, 0.38), (x, 0.47), (x + 0.08, 0.45), (x + 0.08, 0.37)],
+                        s * (0.363 - j * 0.014),
+                        0.015,
+                        "rubber",
+                    )
+                b.pipe(
+                    "Lamp protective crossbar",
+                    [(1.222, s * 0.35 - 0.073, 0.43), (1.222, s * 0.35 + 0.073, 0.43)],
+                    0.007,
+                    "trim",
+                )
+        b.cyl("Bonnet filler neck", (0.66, 0, 0.66), 0.057, 0.032, "trim", segments=8)
+    else:
+        for s in [-1, 1]:
+            # Separate folded shoulder plates create the concept's wide armored snout.
+            b.plate(
+                "Nose folded shoulder plate",
+                [(0.30, s * 0.26), (0.54, s * 0.44), (1.28, s * 0.31), (1.46, s * 0.21)],
+                0.41,
+                0.065,
+                "plate",
+            )
+            b.box(
+                "Sensor dark wraparound visor",
+                (-0.091, s * 0.105, 0.936),
+                (0.035, 0.11, 0.116),
+                "glass",
+                bevel=0.016,
+            )
+            if not b.low:
+                side_plate(
+                    b,
+                    "Rocker lower cooling aperture",
+                    [(-0.70, 0.39), (-0.59, 0.43), (-0.30, 0.43), (-0.37, 0.38)],
+                    s * 0.499,
+                    0.014,
+                    "rubber",
+                )
+                b.box(
+                    "Battery service plate",
+                    (-1.14, s * 0.16, 0.697),
+                    (0.30, 0.20, 0.025),
+                    "plate",
+                    bevel=0.008,
+                )
+        if not b.low:
+            for y in [-0.045, 0, 0.045]:
+                for z in [0.91, 0.945, 0.98]:
+                    b.box(
+                        "Autonomous optical pixel",
+                        (-0.069, y, z),
+                        (0.008, 0.012, 0.012),
+                        "light",
+                        bevel=0,
+                    )
+
+
+def drone_equipment(b):
+    # Replace skinny toroidal rims with broad segmented armor that leaves every
+    # aperture open. Motion children remain on their original rotor pivots.
+    reach = 1.12 if b.steam else 0.83
+    for x in [-0.73, 0.70]:
+        for s in [-1, 1]:
+            for j in range(4):
+                a = j * math.pi / 2 + 0.055
+                annular_panel(
+                    b,
+                    "Segmented pressure shroud" if b.steam else "Faceted duct armor",
+                    (x, s * reach),
+                    0.535,
+                    0.094,
+                    0.39,
+                    0.17 if b.steam else 0.19,
+                    a,
+                    a + math.pi / 2 - 0.11,
+                    "plate",
+                )
+            if not b.low:
+                for j in [-1, 1]:
+                    b.box(
+                        "Duct recessed service slot",
+                        (x + j * 0.29, s * (reach + 0.36), 0.455),
+                        (0.13, 0.045, 0.060),
+                        "dark",
+                        bevel=0,
+                    )
+    if b.steam:
+        for s in [-1, 1]:
+            b.cyl("Diamond side accumulator", (0.24, s * 0.43, 0.61), 0.073, 0.48, "copper", "x")
+            if not b.low:
+                for x in [0.05, 0.40]:
+                    b.cyl(
+                        "Accumulator hex union",
+                        (x, s * 0.43, 0.61),
+                        0.085,
+                        0.055,
+                        "trim",
+                        "x",
+                        segments=6,
+                    )
+        b.ring("Survey lens rolled brass lip", (1.207, 0, 0.49), 0.19, 0.020, "trim", "x")
+    else:
+        remove(b, "Survey avionics", "Avionics status")
+        b.loft(
+            "Stepped central flight computer",
+            [
+                (-0.72, 0.19, 0.715, 0.80),
+                (-0.53, 0.26, 0.72, 0.85),
+                (0.29, 0.26, 0.72, 0.85),
+                (0.52, 0.17, 0.69, 0.78),
+            ],
+            "dark",
+        )
+        b.box(
+            "Flight computer cyan status", (0.39, 0, 0.797), (0.08, 0.20, 0.021), "light", bevel=0
+        )
+        b.ring("Gold iris concentric bezel", (1.303, 0, 0.49), 0.119, 0.014, "trim", "x")
+        if not b.low:
+            for s in [-1, 1]:
+                b.plate(
+                    "Flight computer service armor",
+                    [(-0.43, s * 0.04), (-0.43, s * 0.21), (0.17, s * 0.21), (0.24, s * 0.04)],
+                    0.854,
+                    0.015,
+                    "plate",
+                )
+
+
+def harvester_equipment(b):
+    for s in [-1, 1]:
+        # Service compartments give the chassis depth beneath the hopper sides.
+        side_plate(
+            b,
+            "Recessed chassis equipment bay",
+            [(-1.45, 0.91), (-1.34, 1.15), (-0.43, 1.15), (-0.31, 0.93)],
+            s * 0.97,
+            0.06,
+            "dark",
+        )
+        b.pipe(
+            "Intake crossbeam mounting",
+            [(1.42, s * 0.74, 1.05), (1.57, s * 0.74, 1.16)],
+            0.075,
+            "trim",
+        )
+        side_plate(
+            b,
+            "Cab angular lower sill",
+            [(0.51, 1.39), (0.60, 1.29), (1.32, 1.29), (1.45, 1.39)],
+            s * 0.59,
+            0.05,
+            "dark" if b.steam else "plate",
+        )
+        if b.steam:
+            b.cyl(
+                "Conveyor hydraulic pressure vessel",
+                (0.52, s * 0.93, 1.02),
+                0.075,
+                0.45,
+                "copper",
+                "x",
+            )
+            if not b.low:
+                b.pipe(
+                    "Chassis copper bypass",
+                    [
+                        (-1.52, s * 0.96, 0.89),
+                        (-1.49, s * 0.98, 0.76),
+                        (-0.39, s * 0.98, 0.76),
+                        (-0.31, s * 0.96, 0.93),
+                    ],
+                    0.034,
+                    "copper",
+                )
+                b.ring(
+                    "Cab oval service porthole", (0.70, s * 0.62, 1.43), 0.083, 0.016, "trim", "y"
+                )
+        else:
+            side_plate(
+                b,
+                "Hopper graphite inset field",
+                [(-1.50, 1.40), (-1.50, 1.77), (-0.26, 1.77), (-0.27, 1.42)],
+                s * 0.88,
+                0.015,
+                "dark",
+            )
+            b.box(
+                "Cab panoramic lower scanner",
+                (1.46, -0.05, 1.40),
+                (0.08, 0.43, 0.085),
+                "dark",
+                bevel=0.01,
+            )
+            b.box(
+                "Cab cyan scanner slit",
+                (1.505, -0.05, 1.40),
+                (0.014, 0.31, 0.021),
+                "light",
+                bevel=0,
+            )
+            if not b.low:
+                for x in [-1.37, -1.0, -0.63]:
+                    b.box(
+                        "Conduit protective saddle",
+                        (x, s * 1.00, 1.00),
+                        (0.055, 0.11, 0.24),
+                        "trim",
+                        bevel=0,
+                    )
+        if not b.low:
+            for x in [1.49, 1.96]:
+                b.cyl(
+                    "Intake hydraulic hinge cap",
+                    (x, s * 1.061, 0.62),
+                    0.065,
+                    0.022,
+                    "copper" if b.steam else "energy",
+                    "y",
+                    segments=8,
+                )
+    b.box(
+        "Collector armored crossbeam",
+        (1.58, 0, 1.12),
+        (0.20, 1.53, 0.15),
+        "dark" if b.steam else "plate",
+        bevel=0.025,
+    )
+
+
+def concept_materials_and_profiles(b):
+    """Refine existing surfaces and profiles without extra meshes or texture memory."""
+    n = 512
+    y, x = np.mgrid[0:n, 0:n] / n
+    edge = np.minimum.reduce([x, 1 - x, y, 1 - y])
+    bloom = (np.sin(x * 19 + np.sin(y * 11)) * np.sin(y * 23 - x * 7) + 1) / 2
+    streak = (np.sin(x * 163 + np.sin(y * 17) * 0.7) + 1) / 2
+    dirt = np.clip((0.07 - edge) / 0.07, 0, 1)
+    for key in ["plate", "dark"]:
+        shader = b.mats[key].node_tree.nodes.get("Principled BSDF")
+        for field in ["Base Color", "Roughness"]:
+            im = shader.inputs[field].links[0].from_node.image
+            pixels = np.empty(len(im.pixels), dtype=np.float32)
+            im.pixels.foreach_get(pixels)
+            rgba = pixels.reshape(n, n, 4)
+            if field == "Base Color":
+                rgba[:, :, :3] *= (0.98 + bloom * 0.025 - dirt * 0.12)[..., None]
+                scrape = (edge < 0.014) & (streak > 0.65) & (bloom > 0.35)
+                metal = [0.27, 0.18, 0.07] if b.steam else [0.29, 0.32, 0.35]
+                rgba[scrape, :3] = metal
+                # Quantization removes expensive invisible noise from packed PNGs.
+                rgba[:, :, :3] = np.round(rgba[:, :, :3] * 255) / 255
+            else:
+                rough = 0.40 + bloom * 0.015 + dirt * 0.045 + streak * 0.005
+                rgba[:, :, :3] = (np.round(rough * 47) / 47)[..., None]
+            im.pixels.foreach_set(rgba.ravel())
+            im.pack()
+    colors = (
+        {"trim": (0.27, 0.18, 0.065), "copper": (0.24, 0.075, 0.027)}
+        if b.steam
+        else {"trim": (0.105, 0.135, 0.165), "copper": (0.065, 0.038, 0.105)}
+    )
+    for key, color in colors.items():
+        shader = b.mats[key].node_tree.nodes.get("Principled BSDF")
+        shader.inputs["Base Color"].default_value = (*color, 1)
+        shader.inputs["Metallic"].default_value = 0.82
+    if b.kind == "kart":
+        for obj in b.scene.objects:
+            if obj.name.startswith("Tire tread block"):
+                # Shallow road tread with rounded shoulders, not mining paddles.
+                obj.scale.x *= 0.72
+                obj.scale.y *= 0.82
+            elif obj.name.startswith("Rubber tire"):
+                obj.scale.z *= 0.85
+            elif b.steam and obj.name.startswith("Leather bucket seat back"):
+                obj.scale.y *= 1.09
+    elif b.kind == "rocket":
+        for obj in b.scene.objects:
+            if obj.name.startswith("Dorsal inset panel"):
+                obj.scale.x *= 1.07
+    elif b.kind == "harvester":
+        for obj in b.scene.objects:
+            if obj.name.startswith(("Collected mineral", "Collected ore nugget")):
+                if obj.name.startswith("Collected mineral"):
+                    obj.scale.z *= 0.76
+                # Re-seat the irregular load after reprofiling: preserve the bed
+                # contact rather than shrinking each stone about its floating center.
+                rotation = obj.rotation_euler.to_matrix()
+                bottom = min(
+                    sum(rotation[2][axis] * v.co[axis] * obj.scale[axis] for axis in range(3))
+                    for v in obj.data.vertices
+                )
+                obj.location.z = 1.245 - bottom
+            elif obj.name.startswith("Flared cargo hopper side"):
+                for vertex in obj.data.vertices:
+                    if vertex.co.z < 0:
+                        vertex.co.x *= 0.94
+    elif b.kind == "drone":
+        shader = b.mats["gold"].node_tree.nodes.get("Principled BSDF")
+        shader.inputs["Base Color"].default_value = (0.48, 0.245, 0.028, 1)
+        shader.inputs["Metallic"].default_value = 0.78
+        shader.inputs["Roughness"].default_value = 0.19
+
+
 def refine_vehicle(builder):
     mechanical_finish(builder)
+    precision_panel_finish(builder)
     {"rocket": rocket, "kart": kart, "drone": drone, "harvester": harvester}[builder.kind](builder)
+    {
+        "rocket": rocket_equipment,
+        "kart": kart_equipment,
+        "drone": drone_equipment,
+        "harvester": harvester_equipment,
+    }[builder.kind](builder)
+    concept_materials_and_profiles(builder)
+
+
+def optimize_small_fittings(builder):
+    """Spend triangles on armor forms instead of invisible tube cross-sections.
+
+    Keep tire geometry, every motion transform and major circumference sampling.
+    The small hoses are smooth-shaded hexagonal tubes; static torus fittings use
+    four tube sides while retaining all 24 major-circle samples.
+    """
+    if builder.kind not in {"rocket", "kart", "drone", "harvester"}:
+        return
+    # Existing crowd render ceilings remain fixed as detail is redistributed.
+    crowd = {
+        "futuristic": {"rocket": 1432, "kart": 2636, "drone": 2128, "harvester": 4356},
+        "steampunk": {"rocket": 2032, "kart": 2810, "drone": 2468, "harvester": 4616},
+    }
+    if builder.low:
+        builder.triangle_budget = crowd[builder.style][builder.kind]
+        return
+    for obj in list(builder.scene.objects):
+        if obj.type != "MESH":
+            continue
+        old = obj.data
+        material = old.materials[0]
+        key = next((k for k, m in builder.mats.items() if m == material), None)
+        if key is None or key in {"rubber", "glass"}:
+            continue
+        vertices, faces, smooth = None, None, True
+        # Builder.pipe uses a ten-sided cylinder aligned along its local Z axis.
+        # All main pressure vessels, wheel hubs and engine pods use 24 sides.
+        if len(old.vertices) == 20 and len(old.polygons) == 12:
+            ring = [old.vertices[i].co for i in range(10)]
+            radius = math.hypot(ring[0].x, ring[0].y)
+            if radius < 0.10:
+                zlo, zhi = old.vertices[0].co.z, old.vertices[10].co.z
+                vertices = [
+                    (radius * math.cos(j * math.tau / 6), radius * math.sin(j * math.tau / 6), z)
+                    for z in [zlo, zhi]
+                    for j in range(6)
+                ]
+                faces = [tuple(reversed(range(6))), tuple(range(6, 12))]
+                faces += [(i, (i + 1) % 6, (i + 1) % 6 + 6, i + 6) for i in range(6)]
+        elif (
+            len(old.vertices) == 192
+            and len(old.polygons) == 192
+            and all(len(poly.vertices) == 4 for poly in old.polygons)
+        ):
+            # Torus topology from Builder.ring: 24 major sectors × 8 tube sides.
+            # Retain cardinal tube samples exactly so its envelope is unchanged.
+            vertices = [tuple(old.vertices[i * 8 + j].co) for i in range(24) for j in [0, 2, 4, 6]]
+            faces = [
+                (
+                    i * 4 + j,
+                    ((i + 1) % 24) * 4 + j,
+                    ((i + 1) % 24) * 4 + (j + 1) % 4,
+                    i * 4 + (j + 1) % 4,
+                )
+                for i in range(24)
+                for j in range(4)
+            ]
+        if vertices is not None:
+            temporary = builder.mesh(obj.name + " efficient fitting", vertices, faces, key)
+            obj.data = temporary.data
+            for poly in obj.data.polygons:
+                poly.use_smooth = smooth and (len(faces) != 8 or poly.index > 1)
+            bpy.data.objects.remove(temporary, do_unlink=True)
+            if old.users == 0:
+                bpy.data.meshes.remove(old)
+        # One bevel segment is sufficient on sub-pixel service covers. Large
+        # bodywork and the road tire profiles retain their original construction.
+        if max(obj.dimensions) < 0.8:
+            for modifier in obj.modifiers:
+                if modifier.type == "BEVEL" and modifier.width <= 0.035:
+                    modifier.segments = 1
 
 
 def repair_vehicle_normals(builder):
     """Reorient closed shells after mirrored panels and Y-axis primitives."""
+    optimize_small_fittings(builder)
     for obj in builder.scene.objects:
         if obj.type != "MESH" or len(obj.data.polygons) < 2:
             continue

@@ -42,5 +42,16 @@ if __name__ == "__main__":
         ["rocket", "kart", "drone", "harvester"],
         lambda name: f"{name}-hero.png",
     )
+    contact_sheet("refinery-collection.jpg", ["refinery"], lambda name: f"{name}-hero.png")
+    contact_sheet(
+        "vehicle-orthographic.jpg",
+        [
+            f"{kind}-{view}"
+            for kind in ["rocket", "kart", "drone", "harvester"]
+            for view in ["side", "top"]
+        ],
+        lambda name: f"{name}.png",
+        400,
+    )
     families = json.loads((ROOT / "world-catalog.json").read_text())["families"]
     contact_sheet("world-collections.jpg", list(families), lambda name: f"world-{name}.png", 600)

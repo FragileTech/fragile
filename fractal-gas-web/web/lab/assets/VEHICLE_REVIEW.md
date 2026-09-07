@@ -1,46 +1,67 @@
-# Vehicle concept refinement
+# Complete collection refinement
 
-The eight vehicles have been rebuilt from their concept sheets with revised silhouettes and mechanical assemblies. Native collision hulls, model identifiers, controls and replay remain unchanged.
+For the subsequent concept-fidelity update and its stricter performance budgets,
+see [Concept fidelity and rendering costs](CONCEPT_REVIEW.md). The measurements
+below record the preceding collection pass.
 
-The main changes are rounded pressure hulls and tinted closed rocket canopies; integrated futuristic drone armor and a steampunk diamond shell; cockpit side armor, a rounded bonnet and bucket seat; and articulated harvester intake housings, wheel arches, conveyor covers and cab framing.
+This pass improves all **94 styled assets**: eight vehicles, 84 world pieces and two refineries. Each has detailed and simplified geometry. The runtime uses 24 self-contained GLBs; the editable Blender sources and regeneration scripts are included.
 
-The meshes remain stylized interpretations. Fine surface variation uses packed PBR maps; silhouette details appear in both LODs, while small service fittings use detailed geometry only.
+The styles have different construction, with folded alloy armor and sensor equipment for futuristic scenes, and pressure vessels, brass framing, exposed copper plumbing and open claw mechanisms for steampunk scenes. Native collision hulls remain unchanged. Every world pair retains its shared fitting envelope, and refinery machinery leaves the unloading apron open.
+
+## What changed
+
+| Family | Refinement |
+| --- | --- |
+| Rockets | Canopy shoulders, pod hatches, pressure supply lines and enamel wing inserts |
+| Karts | Folded nose armor, wrapped sensor visor, deeper lamp housings, pressure accumulators and bonnet louvers |
+| Drones | Broad segmented rotor shrouds, stepped avionics, pressure equipment and optical housings, with clear rotor apertures |
+| Harvesters | Chassis equipment bays, cab framing, hopper panels, scanner and bypass plumbing |
+| Collectibles and ore | Octagonal trays, crate hardware, capsule chambers, locking lugs, mineral fractures, sockets and outcrops |
+| Reactors, docks and checkpoints | Layered governors, service bays, pressure cages and segmented gate assemblies |
+| Arena and racing scenery | Reinforced rails, service hatches, road joints, protected lamps, hoists, pit roofs and framed signs |
+| Capture and motion effects | Pressure-column tethers, open brass claws, layered flow particles and inexpensive faceted steam billows |
+| Refineries | Exposed inclined conveyors, open rear hoppers, distinct processing tanks, control consoles and service rails |
+
+Surface maps use restrained panel seams, fasteners and wear. The refined vehicle forms stay within the previous rendering workload: small hose cross-sections and fitting bevels were simplified while tire profiles, canopies, motion pivots and major circular silhouettes were retained. Detailed vehicles use about 12–30% fewer triangles than their existing limits; crowd LODs use about 6–8% fewer. The rendering-budget fixtures were not relaxed.
+
+These are stylized interpretations of the concept sheets. Faceted minerals and mesh-based flow effects preserve readability and performance; they do not reproduce the concept art's photorealistic surface detail or volumetric smoke.
 
 ## Export budgets
 
-| Style | Vehicle | Detailed triangles | Simplified triangles | Detailed mesh batches |
+| Style | Model | Detailed triangles | Simplified triangles | Detailed batches |
 | --- | --- | ---: | ---: | ---: |
-| Futuristic | Rocket | 11,166 | 1,432 | 9 |
-| Futuristic | Kart | 23,620 | 2,636 | 20 |
-| Futuristic | Drone | 14,000 | 2,128 | 14 |
-| Futuristic | Harvester | 40,954 | 4,356 | 21 |
-| Steampunk | Rocket | 13,760 | 2,032 | 10 |
-| Steampunk | Kart | 26,672 | 2,810 | 16 |
-| Steampunk | Drone | 21,044 | 2,468 | 15 |
-| Steampunk | Harvester | 45,628 | 4,616 | 23 |
+| Futuristic | Rocket | 8,022 | 1,338 | 9 |
+| Futuristic | Kart | 17,520 | 2,456 | 20 |
+| Futuristic | Drone | 12,384 | 1,960 | 14 |
+| Futuristic | Harvester | 31,222 | 4,066 | 21 |
+| Futuristic | Refinery | 19,736 | 3,596 | 6 |
+| Steampunk | Rocket | 9,672 | 1,904 | 10 |
+| Steampunk | Kart | 19,124 | 2,610 | 16 |
+| Steampunk | Drone | 15,996 | 2,288 | 15 |
+| Steampunk | Harvester | 35,064 | 4,318 | 23 |
+| Steampunk | Refinery | 17,700 | 3,640 | 8 |
 
-All vehicles fit the original 1.52-unit authoring envelope before native body scaling. Detailed limits are 50,000 triangles (80,000 for harvesters); simplified limits are 3,000 (6,000 for harvesters). The steampunk harvester’s detailed-only rear fitting was corrected to pass the existing LOD-proportion check.
+All previous per-vehicle limits pass for triangles, draw batches, materials, image count, decoded texture pixels and download bytes. World assets remain below 50,000 detailed and 6,000 simplified triangles per model. Refineries remain below 50,000 / 6,000.
 
-## Renderer observations
+## Runtime measurements
 
-The fixed 64-vehicle fixture retains the previous draw-call counts: 127 for futuristic and 122 for steampunk. Instancing and per-instance visibility culling remain active.
-
-| View | Style | Draw calls | Submitted triangles | Median render submission CPU | Median frame interval |
+| View | Style | Draw calls | Submitted triangles | Median render CPU | Median frame interval |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Overview | Steampunk | 122 | 216,964 | 9.01 ms | 16.54 ms |
-| Close | Steampunk | 41 | 29,162 | 5.46 ms | 29.73 ms |
-| Overview | Futuristic | 127 | 182,828 | 9.08 ms | 22.03 ms |
-| Close | Futuristic | 45 | 27,638 | 4.30 ms | 21.38 ms |
+| Overview | Steampunk | 124 | 225,952 | 6.62 ms | 15.72 ms |
+| Close | Steampunk | 42 | 37,578 | 3.40 ms | 17.03 ms |
+| Overview | Futuristic | 146 | 183,064 | 8.58 ms | 16.59 ms |
+| Close | Futuristic | 48 | 44,754 | 3.95 ms | 20.74 ms |
 
-These observations use 15 sampled frames after warm-up in the local browser, after Blender rendering finished. They include browser scheduling and other host activity; CPU submission timing does not measure asynchronous GPU completion.
+Measurements use the fixed 64-vehicle fixture, with 15 sampled frames after warm-up, after Blender rendering finished. Frame intervals include browser scheduling and host activity; render CPU timing does not measure asynchronous GPU completion. New world equipment adds world draws even when vehicle batches remain unchanged. The overview measured 124 / 146 draws for steampunk / futuristic, versus 122 / 127 before this pass. Preset scene contents were also being edited independently during the pass; the fixed 64-vehicle fixture is the useful before/after comparison.
 
-## Verification and review
+## Validation and delivery
 
-- Full `npm run test:lab` and `npm run build:lab` passed.
-- All 19 asset tests passed, including triangle budgets, embedded resources, proportions, motion pivots, outward wheel normals and replay.
-- All 372 browser checks and 12 responsive checks passed.
-- Hero, side and top renders of both collections were inspected.
+- Full `npm --prefix fractal-gas-web run test:lab` and `npm --prefix fractal-gas-web run build:lab` passed.
+- All 19 vehicle, 43 world and 2 refinery asset checks passed, including the final exports.
+- All 372 browser integration checks and 12 desktop/narrow layout checks passed.
+- Actual exported geometry changed for all 168 world style/LOD combinations.
+- Source compilation, Ruff and whitespace checks passed.
 
-Rocket detail uses ordinary tinted alpha glazing, with no refraction pass. The crowd LOD keeps opaque glazing. Shared metal roughness maps add no material batches.
+Hero, side and top vehicle/refinery renders and all eight world family previews in both styles were reviewed. Direction symbols were also checked from the front in the live workshop. Final exports, source files and preview images correspond to the reviewed geometry.
 
-[Open the workshop](../asset-gallery.html) · [Paired vehicle renders](previews/collections.jpg) · [Measurements and export hashes](world-validation.json) · [Regeneration instructions](README.md#regeneration)
+[Asset workshop](../asset-gallery.html) · [Vehicles](previews/collections.jpg) · [Vehicle side/top views](previews/vehicle-orthographic.jpg) · [World kit](previews/world-collections.jpg) · [Refineries](previews/refinery-collection.jpg) · [Measurements and export hashes](world-validation.json) · [Regeneration](README.md#regenerate-and-verify-world-assets)

@@ -1475,8 +1475,10 @@ class Builder:
         for obj in [*temp, *[o for o in self.scene.objects if o.type == "EMPTY"]]:
             obj.select_set(True)
         destination.parent.mkdir(parents=True, exist_ok=True)
+        # Keep the running lab's previous GLB readable until its replacement is complete.
+        staging = destination.with_name(f".{destination.stem}.pending.glb")
         bpy.ops.export_scene.gltf(
-            filepath=str(destination),
+            filepath=str(staging),
             export_format="GLB",
             use_selection=True,
             use_active_scene=True,
@@ -1487,6 +1489,7 @@ class Builder:
             export_cameras=False,
             export_lights=False,
         )
+        staging.replace(destination)
         for obj in temp:
             bpy.data.objects.remove(obj, do_unlink=True)
         return {
