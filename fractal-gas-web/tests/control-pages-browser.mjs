@@ -1,7 +1,7 @@
 // Exercise the actual static files under a GitHub Pages project prefix. This
 // server deliberately sends no COOP/COEP headers: the shipped service worker
 // must establish isolation, and a browser without service workers must fall back.
-import { chromium } from "playwright";
+import { chromium, firefox } from "playwright";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
@@ -44,7 +44,13 @@ const server = createServer(async (request, response) => {
 await new Promise((done) => server.listen(0, "127.0.0.1", done));
 let browser;
 try {
-  browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+  const browserName = process.env.CONTROL_BROWSER || "chromium";
+  const browserType = { chromium, firefox }[browserName];
+  assert(browserType, `Unsupported browser: ${browserName}`);
+  browser = await browserType.launch({
+    headless: true,
+    executablePath: process.env.CONTROL_BROWSER_EXECUTABLE,
+  });
   const url = `http://127.0.0.1:${server.address().port}${prefix}lab/`;
   for (const serviceWorkers of ["allow", "block"]) {
     console.log(`Pages smoke test: service workers ${serviceWorkers}`);
@@ -258,6 +264,9 @@ async function checkAntsControls(page) {
   );
   await page.locator("#reset").click();
   await ready(3, "drones");
+  await page.waitForFunction(
+    () => document.getElementById("tick").textContent === "TICK 000000",
+  );
   assert.equal(await page.locator("#tick").textContent(), "TICK 000000");
   await page.locator("#edit").click();
   const downloading = page.waitForEvent("download");

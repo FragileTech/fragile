@@ -49,9 +49,12 @@ jobs:
         run: make control-web
       - name: Test WebAssembly state and recording contracts
         run: npm --prefix fractal-gas-web run test:lab
-      - name: Install test browser
+      - name: Install test browsers
         working-directory: fractal-gas-web
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium firefox
+      - name: Test native controls in Firefox and Chromium
+        timeout-minutes: 5
+        run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-help-browser.mjs
       - name: Test the interactive laboratory
         timeout-minutes: 15
         run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-browser.mjs

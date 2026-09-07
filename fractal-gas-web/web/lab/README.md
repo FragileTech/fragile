@@ -37,6 +37,7 @@ Run that deployment smoke test after building the browser targets:
 
 ```sh
 node fractal-gas-web/tests/control-pages-browser.mjs
+CONTROL_BROWSER=firefox node fractal-gas-web/tests/control-pages-browser.mjs
 ```
 
 From the repository root:
@@ -653,8 +654,9 @@ from real-time mode may therefore restart at that world before checkpointing.
 ```sh
 make control-test
 npm --prefix fractal-gas-web run test:lab
-# With the local server running and Chromium installed for Playwright:
+# With the local server running and Chromium/Firefox installed for Playwright:
 cd fractal-gas-web
+CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-help-browser.mjs
 CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-browser.mjs
 CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-replay-browser.mjs
 CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-experiments-browser.mjs

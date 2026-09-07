@@ -1,10 +1,12 @@
-// Tooltip help: every element carrying a `data-help` attribute gets a small
-// "?" icon; hovering, focusing or tapping it shows the text in one shared
-// floating tooltip. Dependency-free, so it deploys with the rest of web/.
+// Tooltip help: captions get a small "?" button; native controls show help
+// directly on hover/focus so their content and activation remain intact.
+// Dependency-free, so it deploys with the rest of web/.
 
 let tooltip = null;
 let pinnedIcon = null; // icon whose tooltip was opened by click/tap
 let listenersInstalled = false;
+const initialized = new WeakSet();
+let labelId = 0;
 
 function ensureTooltip() {
   if (tooltip) return tooltip;
@@ -67,9 +69,13 @@ function makeIcon(text) {
   btn.textContent = "?";
   btn.setAttribute("aria-label", "Help");
   btn.dataset.help = text;
-  btn.addEventListener("mouseenter", () => { if (!pinnedIcon) show(btn, false); });
+  btn.addEventListener("mouseenter", () => {
+    if (!pinnedIcon) show(btn, false);
+  });
   btn.addEventListener("mouseleave", () => hide(false));
-  btn.addEventListener("focus", () => { if (!pinnedIcon) show(btn, false); });
+  btn.addEventListener("focus", () => {
+    if (!pinnedIcon) show(btn, false);
+  });
   btn.addEventListener("blur", () => hide(false));
   btn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -81,7 +87,7 @@ function makeIcon(text) {
 }
 
 /**
- * Attach a "?" help icon to every `[data-help]` element under `root`.
+ * Attach help to every `[data-help]` element under `root`.
  * The icon is inserted right after the element's first text node (label /
  * heading text) so it sits inline with the caption, before any input.
  */
@@ -89,7 +95,47 @@ export function initHelp(root = document) {
   ensureTooltip();
   for (const el of root.querySelectorAll("[data-help]")) {
     if (el.classList.contains("help-icon")) continue;
+    // Native controls cannot contain interactive help buttons. In particular,
+    // select/textarea/input content is owned by the browser, and a nested
+    // button can interfere with activation and focus in Firefox.
+    if (el.matches("button, input, select, textarea, a")) {
+      if (initialized.has(el)) continue;
+      initialized.add(el);
+      const describedBy = new Set(
+        (el.getAttribute("aria-describedby") || "")
+          .split(/\s+/)
+          .filter(Boolean),
+      );
+      describedBy.add("tooltip");
+      el.setAttribute("aria-describedby", [...describedBy].join(" "));
+      el.addEventListener("mouseenter", () => {
+        if (!pinnedIcon) show(el, false);
+      });
+      el.addEventListener("mouseleave", () => hide(false));
+      el.addEventListener("focus", () => {
+        if (!pinnedIcon) show(el, false);
+      });
+      el.addEventListener("blur", () => hide(false));
+      el.addEventListener("pointerdown", () => hide(true));
+      el.addEventListener("keydown", () => hide(true));
+      continue;
+    }
     if (el.querySelector(":scope > .help-icon")) continue;
+    // Preserve an implicit label's original control before inserting another
+    // labelable element (the help button) ahead of it.
+    if (el.matches("label") && !el.hasAttribute("for")) {
+      const target = el.control;
+      if (target) {
+        if (!target.id) {
+          let id;
+          do {
+            id = `help-control-${++labelId}`;
+          } while (document.getElementById(id));
+          target.id = id;
+        }
+        el.htmlFor = target.id;
+      }
+    }
     const icon = makeIcon(el.dataset.help);
     icon.setAttribute("aria-describedby", "tooltip");
     // Place after the caption (text plus inline value spans), i.e. right
@@ -99,7 +145,9 @@ export function initHelp(root = document) {
       (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
     );
     const control = hasCaption
-      ? el.querySelector(":scope > :is(input, select, textarea, canvas, div, p, button)")
+      ? el.querySelector(
+          ":scope > :is(input, select, textarea, canvas, div, p, button)",
+        )
       : null;
     if (control) control.before(icon);
     else el.appendChild(icon);
@@ -112,8 +160,16 @@ export function initHelp(root = document) {
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") hide(true);
     });
-    window.addEventListener("scroll", () => { if (pinnedIcon) place(pinnedIcon); }, true);
-    window.addEventListener("resize", () => { if (pinnedIcon) place(pinnedIcon); });
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (pinnedIcon) place(pinnedIcon);
+      },
+      true,
+    );
+    window.addEventListener("resize", () => {
+      if (pinnedIcon) place(pinnedIcon);
+    });
     listenersInstalled = true;
   }
 }
