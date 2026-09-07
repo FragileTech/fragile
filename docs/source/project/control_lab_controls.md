@@ -157,7 +157,7 @@ UI ranges; lower-level APIs can have different limits.
 | **Controller** | `algorithm` | `fmc` | `fmc`, `wave-jump`, `random`, `cem`, `icem`, or `mppi`. |
 | **Walkers** | `walkers` | 128; integers 1–8192 | FMC/Wave Jump population or shooting batch capacity. Random control does not use a rollout population. |
 | **Horizon** | `horizon` | 32; integers 1–4096 | FMC/Wave Jump normal search depth; Wave Jump can extend it when shared-path execution is enabled. Action depth per shooting round. Ignored by random action selection. |
-| **Stop at first bifurcation** | `consensus_prefix` | Unchecked (`false`) | Wave Jump only: execute the recorded ancestral path shared by every alive final walker, stopping before their branches diverge. |
+| **Stop at first bifurcation** | `consensus_prefix` | Checked (`true`) | Wave Jump only: execute the recorded ancestral path shared by every alive final walker, stopping before their branches diverge. |
 | **Maximum search horizon** | `max_horizon` | 0 (automatic); integers 0–4096 | Wave Jump shared-path mode only. Zero means twice Horizon, capped at 4096. An explicit nonzero value must be at least Horizon. |
 | **Action frames** | `frames` | 12; integers 1–60 | Physics frames per candidate action. Wave Jump executes each selected edge for its actual recorded duration; other controllers execute one action for this count. |
 | **Seed** | `seed` | 7; integers 0–4294967295 | World reset seed and base planner seed; successive decisions derive seeds by adding the decision count modulo `2^32`. |
@@ -176,7 +176,9 @@ controller averages those inherited first actions over the final population;
 cloning supplies the implicit weighting. If no population members survive, it
 returns the neutral action. It does not simply choose the highest-reward leaf.
 
-**Wave Jump** uses the same population search parameters and cloning procedure as FMC. With
+**Wave Jump** uses the same population search parameters and cloning procedure as FMC.
+**Stop at first bifurcation** is checked by default, including when saved settings omit
+this option. An explicitly saved unchecked setting remains unchecked. With
 **Stop at first bifurcation** unchecked, after
 the search, it selects the alive final walker with the highest accumulated path
 reward; ties choose the lower walker index. Alive means nonterminal according to
@@ -187,7 +189,7 @@ reading successive actions from one walker slot. Selection always uses accumulat
 reward, independently of any reward-signal setting used by resampling.
 
 Imagine the search finds a useful sequence of turns. FMC uses its population to
-choose the next turn, then searches again. Wave Jump commits to the whole selected
+choose the next turn, then searches again. With the toggle unchecked, Wave Jump commits to the whole selected
 sequence before it searches again. If every final walker is dead, it selects the
 highest accumulated-reward final walker, with the same tie rule, but executes only
 the first positive-duration action for its recorded frame count before replanning.
@@ -220,7 +222,8 @@ shared prefix or fallback, then pauses.
 preserves these alongside the world and search state, so restoration can resume
 either a search, including its extension, or a partly executed trajectory without
 repeating completed work. Checkpoints retain the shared-path setting and effective
-search limits; older checkpoints default to the toggle being off. Changing the scene, applied
+search limits; legacy in-flight planner checkpoints without a saved shared-path
+setting restore with the toggle off to preserve their original execution. Changing the scene, applied
 rewards, algorithm, or world state discards the queued trajectory.
 
 The two **coefficient** fields are exponents in a product of rescaled distance and reward

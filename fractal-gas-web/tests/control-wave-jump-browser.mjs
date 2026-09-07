@@ -17,6 +17,15 @@ try {
   });
   await page.locator("#algorithm").selectOption("wave-jump");
   await page.waitForFunction(() => !document.getElementById("run").disabled);
+  await page
+    .locator("details")
+    .filter({ has: page.locator("#algorithm-settings") })
+    .locator("summary")
+    .click();
+  const toggle = page.locator("#planner-consensus_prefix");
+  assert.equal(await toggle.isChecked(), true);
+  await toggle.uncheck();
+  await page.waitForFunction(() => !document.getElementById("run").disabled);
   await page.locator("#step").click();
   await page.waitForFunction(
     () => document.getElementById("tick").textContent === "TICK 000015",
@@ -27,12 +36,6 @@ try {
   await page.waitForFunction(
     () => document.getElementById("tick").textContent === "TICK 000030",
   );
-  await page
-    .locator("details")
-    .filter({ has: page.locator("#algorithm-settings") })
-    .locator("summary")
-    .click();
-  const toggle = page.locator("#planner-consensus_prefix");
   assert.equal(await toggle.isChecked(), false);
   await toggle.check();
   await page.waitForFunction(() => !document.getElementById("run").disabled);

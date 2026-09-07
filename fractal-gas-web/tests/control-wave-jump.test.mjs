@@ -11,6 +11,7 @@ const scene = {
 };
 const settings = {
   algorithm: "wave-jump",
+  consensus_prefix: false,
   walkers: 12,
   horizon: 5,
   frames: 3,
@@ -357,5 +358,31 @@ test("native consensus checkpoints resume and experiments respect frame limits",
     );
   } finally {
     invalid.dispose();
+  }
+});
+
+test("Wave Jump defaults to shared-prefix mode and preserves explicit full-path settings", () => {
+  for (const choice of [undefined, true, false]) {
+    const config = { ...settings, consensus_prefix: choice };
+    const strategy = createController(module, scene, config);
+    try {
+      strategy.controller.begin(strategy.engine.snapshot(), 19);
+      const saved = strategy.controller.checkpoint();
+      assert.equal(saved.consensus, choice ?? true);
+      assert.equal(saved.maxHorizon, settings.horizon * 2);
+      while (!strategy.controller.advance()) {}
+      assert.equal(
+        strategy.controller.result().executionMode === "full path",
+        choice === false,
+      );
+      // Older in-flight checkpoints retain their original full-path semantics.
+      if (choice === false) {
+        delete saved.consensus;
+        strategy.controller.restore(saved);
+        assert.equal(strategy.controller.checkpoint().consensus, false);
+      }
+    } finally {
+      strategy.dispose();
+    }
   }
 });

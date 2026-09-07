@@ -3,6 +3,8 @@
 Unreleased
 ----------
 
+* Make shared-prefix execution the default for new Wave Jump searches while preserving explicit full-path settings and legacy in-flight checkpoints.
+
 * Add optional Wave Jump shared-prefix execution with bounded search extension and single-action fallback.
 
 * Evaluate native gauge locality coefficients by signed history cancellation and full-face tuple products, retaining original weights, masks, and selected laws.

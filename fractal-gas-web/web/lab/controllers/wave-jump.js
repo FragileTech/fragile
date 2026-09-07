@@ -7,7 +7,7 @@ registerController("wave-jump", {
     consensus_prefix: {
       type: "boolean",
       label: "Stop at first bifurcation",
-      default: false,
+      default: true,
       help: "Execute the exact path shared by surviving final walkers. Extend the search if they disagree immediately; at the maximum horizon take one best-path action.",
     },
     max_horizon: {
@@ -22,7 +22,7 @@ registerController("wave-jump", {
   create: ({ engine, settings }) => ({
     begin(root, seed) {
       this.root = root;
-      this.consensus = settings.consensus_prefix ?? false;
+      this.consensus = settings.consensus_prefix ?? true;
       if (typeof this.consensus !== "boolean")
         throw new Error("Invalid consensus_prefix setting");
       this.normalHorizon = settings.horizon;
