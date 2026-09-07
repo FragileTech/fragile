@@ -1,4 +1,5 @@
 import { configureRocks, rockOptions } from "./rock-scene.js";
+import { configureVehicleCount, vehicleCount } from "./vehicle-scene.js";
 import { RewardSettings, withRewards } from "./reward-settings.js";
 import { treePoseDim, treeWidth } from "./actions.js";
 import {
@@ -24,6 +25,7 @@ const $ = (id) => document.getElementById(id),
   copy = (value) => structuredClone(value);
 const renderer = new LabRenderer($("world"));
 installStyleControls();
+const vehicleCounts = new Map();
 const miningOptions = new Map();
 let antsOptions = { ...DEFAULT_ANTS_OPTIONS },
   presetRequest = 0;
@@ -294,6 +296,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
     $("rock-count").value = rocks.count;
     $("rock-count-field").hidden = scene.rock_options?.collaborative ?? scene.name === "Collaborative mining";
   }
+  $("ants-vehicle-count").value = vehicleCount(scene);
   const loadedAntsOptions = antsOptionsFromScene(scene);
   $("ants-controls").hidden = !loadedAntsOptions;
   if (loadedAntsOptions) {
@@ -626,7 +629,10 @@ async function preset() {
     let scene =
       scenario === "ants"
         ? configureAntsScene(template, antsOptions)
-        : template;
+        : configureVehicleCount(
+            template,
+            vehicleCounts.get(scenario) ?? vehicleCount(template),
+          );
     if (rockOptions(scene))
       scene = configureRocks(scene, miningOptions.get(scenario) ?? rockOptions(scene));
     $("toy").textContent = String($("scenario").selectedIndex + 1).padStart(
@@ -647,19 +653,32 @@ $("track").onchange = () => {
   $("scenario").value = "racing";
   preset();
 };
-for (const id of ["ants-vehicle-type", "ants-vehicle-count"])
-  $(id).onchange = () => {
-    if (!$("ants-vehicle-count").checkValidity()) {
-      $("ants-vehicle-count").reportValidity();
-      return;
-    }
-    antsOptions = {
-      agentType: $("ants-vehicle-type").value,
-      count: +$("ants-vehicle-count").value,
-    };
-    $("scenario").value = "ants";
-    preset();
-  };
+$("ants-vehicle-type").onchange = () => {
+  antsOptions.agentType = $("ants-vehicle-type").value;
+  $("scenario").value = "ants";
+  preset();
+};
+$("ants-vehicle-count").onchange = () => {
+  const input = $("ants-vehicle-count");
+  if (!input.checkValidity()) {
+    input.reportValidity();
+    return;
+  }
+  try {
+    const count = +input.value;
+    const loadedAnts = antsOptionsFromScene(currentScene);
+    const scene = loadedAnts
+      ? configureAntsScene(currentScene, { ...loadedAnts, count })
+      : configureVehicleCount(currentScene, count);
+    vehicleCounts.set($("scenario").value, count);
+    if (antsOptionsFromScene(currentScene)) antsOptions.count = count;
+    editor.clearHistory();
+    loadScene(scene);
+  } catch (e) {
+    input.value = vehicleCount(currentScene);
+    error(e);
+  }
+};
 $("apply-rocks").onclick = () => {
   if (!currentScene || !rockOptions(currentScene)) return;
   for (const id of ["rock-size", "rock-count"]) {

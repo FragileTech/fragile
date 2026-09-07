@@ -7,6 +7,8 @@ Unreleased
 
 * Refine all 94 styled Lab assets with distinct mechanical assemblies, exposed refinery conveyors, mineral chambers and capture claws; reduce vehicle triangle counts within their existing rendering budgets, preserve shared collision envelopes, and add complete background regeneration commands.
 
+* Prove locality of the existing native multiplication representation for the configured recorded readouts; distinguish the unevaluated quantum commutator and remove unrelated locality diagnostics.
+
 * Fix Lab native-control help markup and label targeting in Firefox; add Firefox and Chromium dropdown, checkbox, button, and tooltip regression coverage.
 
 * Fix Lab builds by exporting the geometry helpers used by mining controls; default to 8 worker threads, 12 action frames, and horizon 32.
@@ -14,6 +16,10 @@ Unreleased
 * Add mining rock-size controls and a 1–20 rock count for asteroid harvesting, with clear placement and replenishment after delivery.
 
 * Add adjustable Lab reward terms and an optional per-frame squared-distance vehicle reward; applying weights preserves the live world, replans, and starts a new recording.
+
+* Set Lab defaults to 8 worker threads, 12 action frames, and horizon 32.
+
+* Allow choosing 1–128 vehicles in every Lab environment, with clear spawn positions and preserved cargo, obstacles, and automatic tow hooks.
 
 * Refine all eight Lab vehicle designs with concept-inspired armor panels, baked fasteners and wear, aged metals, darker glazing, and adjusted drone and hopper shapes; enforce their previous geometry, draw-batch, texture-memory and download budgets.
 

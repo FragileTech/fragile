@@ -76,17 +76,15 @@
           ></select
         ></label>
         <div id="ants-controls" hidden>
-          <div class="fields-two">
-            <label class="field" data-help="Choose the vehicle model and physics for the whole group. Changing this rebuilds Ants & Drops and clears the current run."
-              >Vehicle type<select id="ants-vehicle-type">
-                <option value="harvester">Harvesters</option>
-                <option value="drone">Drones</option>
-              </select></label>
-            <label class="field" data-help="Number of vehicles in the live world, from 1 to 128. This differs from the planner population of candidate worlds. Changing it rebuilds the preset and clears the current run."
-              >Vehicle count<input id="ants-vehicle-count" type="number" min="1" max="128" step="1" value="5" required /></label>
-          </div>
-          <p class="scenario-description">Changing vehicles restarts the preset paused.</p>
+          <label class="field" data-help="Choose the vehicle model and physics for the whole group. Changing this rebuilds Ants & Drops and clears the current run."
+            >Vehicle type<select id="ants-vehicle-type">
+              <option value="harvester">Harvesters</option>
+              <option value="drone">Drones</option>
+            </select></label>
         </div>
+        <label class="field" data-help="Number of vehicles in the live world, from 1 to 128. This differs from the planner population of candidate worlds. Changing it restarts the scene and clears the current run."
+          >Vehicle count<input id="ants-vehicle-count" type="number" min="1" max="128" step="1" value="5" required /></label>
+        <p class="scenario-description">Changing vehicles restarts the scene paused.</p>
         <div id="rock-controls" hidden>
           <label class="field">Rock size (×)<input id="rock-size" type="number" min="0.5" max="2" step="0.1" value="1" required /></label>
           <label class="field" id="rock-count-field">Rock count<input id="rock-count" type="number" min="1" max="20" step="1" value="5" required /></label>
@@ -517,14 +515,14 @@
             type="number"
             min="1"
             max="8192"
-            value="16" /></label
+            value="32" /></label
         ><label data-help="Number of action decisions each candidate controller can look ahead."
           >Lookahead · actions<input
             id="benchmark-horizon"
             type="number"
             min="1"
             max="4096"
-            value="4"
+            value="8"
         /></label>
         <label data-help="Physics frames represented by one benchmark action."
           >Action duration · frames<input

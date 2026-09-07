@@ -6607,6 +6607,36 @@ projections and the dimension of the invariant subspace.
 :::{prf:lemma} Recorded interventions and operational no-signaling
 :label: lem-no-signaling-fg
 
+For the latent kinetic step of
+{prf:ref}`def-latent-fractal-gas-kinetic`, set $c=V_{\mathrm{alg}}$
+and use its spatial metric $G$ and step clock $\tau$. On each A substep,
+the position interpolation is timelike for
+
+$$
+\mathfrak g=-c^2d\tau^2+G.
+$$
+
+Here $G$ is the metric used by that exponential map, held fixed as a
+metric field during the substep. Where the metric changes between stages,
+the assertion applies to the corresponding piecewise metric. If the
+O-stage noise amplitude is invertible and $c_2>0$, the support of the
+initial slopes of its following A substep is the closed $G$-ball of radius
+$c$. Its interior consists of timelike slopes; its boundary is the null
+cone section. The cone and the given spatial metric determine the displayed
+Lorentzian quadratic form uniquely. In a $G$-orthonormal frame its matrix
+is $\operatorname{diag}(-c^2,1,\ldots,1)$.
+
+A kinetic trajectory starts at the recorded post-cloning position. At a
+subsequent cloning event the old trajectory terminates and the new kinetic
+trajectory starts at the new post-cloning position. Thus this assertion
+applies to the perturbative trajectories, without assigning a transport
+segment to a clone replacement. The pre-cloning and post-cloning states
+and the clone mask are the existing coordinates of
+{prf:ref}`def-fractal-set-record-coverage`; their recovery uses
+{prf:ref}`thm-fractal-set-lossless`. The clock in this assertion is the
+clock of the specified latent kinetic update. Application to a physical
+spacetime embedding uses its stated clock and spatial-metric correspondence.
+
 In a finite acyclic update graph, every updated variable is a measurable
 function of its parent variables and its assigned exogenous noise. If an
 intervention changes none of the variables or noises in the ancestral set
@@ -6679,6 +6709,44 @@ retained, irrespective of their correlations.
 :::
 
 :::{prf:proof}
+Write $u=\psi_v(G^{-1}p)$. The A interpolation is
+$\gamma(s)=\operatorname{Exp}_z(su)$ for $0\le s\le h/2$.
+Geodesic metric compatibility gives
+$\|\dot\gamma(s)\|_{G(\gamma(s))}=\|u\|_{G(z)}<c$.
+Consequently
+
+$$
+\mathfrak g((1,\dot\gamma),(1,\dot\gamma))
+=-c^2+\|u\|_G^2<0.
+$$
+
+The B and O stages change momentum at fixed position. Both A segments
+have the stated bound, including after an arbitrarily large finite
+Gaussian momentum draw. Their concatenation is a piecewise timelike
+kinetic path. In a common time-independent spatial metric its endpoints
+satisfy $d_G(z_{\mathrm{start}},z_{\mathrm{end}})<ch$.
+
+For any $u$ with $r=\|u\|_G<c$, the vector
+$w=cu/(c-r)$ satisfies $\psi_v(w)=u$. Hence the radial map in
+{prf:ref}`def-latent-velocity-squashing` maps the entire tangent space
+onto the open speed ball. Conditional on the pre-O state, invertibility
+of $c_2G^{1/2}\Sigma_{\mathrm{reg}}$ gives momentum full support.
+Applying $G^{-1}$ and then $\psi_v$ gives precisely the asserted slope
+support. This argument uses $G$ from the kinetic specification; it does
+not identify it with the inverse adaptive-noise covariance.
+
+To verify uniqueness, write a quadratic form with spatial restriction $G$
+as $q(a,u)=\alpha a^2+2a b(u)+G(u,u)$. Its null values at
+$(1,u)$ and $(1,-u)$ for every $\|u\|_G=c$ give $b(u)=0$
+and $\alpha=-c^2$. The sphere spans the tangent space, so $b=0$.
+Positive definiteness of $G$ proves Lorentzian signature. This identifies
+the local metric and cone; the argument makes no flatness assertion.
+The recorded clone mask specifies the trajectory endpoints described in
+the statement. The speed bound and causal character of the kinetic paths
+are pathwise, so restricting to a positive-probability survival event
+preserves them. The full-support assertion above concerns the native
+conditional O kernel before future survival selection.
+
 For the ancestral statement, order the ancestral vertices topologically.
 Source values and noises agree. If the parents of the next vertex agree,
 the same update function and noise give the same value there. Induction
@@ -11314,6 +11382,124 @@ assuming joint weak-operator continuity of multiplication, which need not
 hold.
 :::
 
+:::{div} feynman-prose
+Take two of the constructed gauge readouts, with their existing regional
+masks. In the multiplication representation, applying their bounded
+functions in either order multiplies by the same two numbers on each
+record. Their commutator therefore vanishes before any averaging. This
+holds under each retained native law and in the existing limiting
+probability representation; statistical independence is unnecessary.
+The double-commutant argument carries this commutation to the generated
+local algebras. Quantum evolution requires its own check: conjugating an
+insertion by the OS Hamiltonian changes the represented operator. The
+pointwise multiplication calculation does not establish commutation of
+those Heisenberg operators at unequal times.
+:::
+
+:::{prf:theorem} Exact HK locality of the native multiplication representation
+:label: thm-ym-native-multiplication-locality
+
+Use the recorded fields and their multiplication representation from
+{prf:ref}`def-wightman-field-fg`. For the physical gauge readout, use
+exactly the existing map (YM.Z82)--(YM.Z83) and the bounded cylinders of
+{prf:ref}`prop-ym-recorded-physical-transformations`, with their configured
+full-face masks. Keep the native law and the observable space of that
+readout. For its bounded regional generators, the local algebras in
+{prf:ref}`def-local-algebra-fg` satisfy
+
+$$
+[\mathfrak A(O_1),\mathfrak A(O_2)]=0
+$$
+
+for spacelike separated regions. In this representation the identity
+holds for every pair of regions. It holds at each recorded particle count
+and horizon and on the native limiting probability law already constructed
+in {prf:ref}`thm-ym-native-fiber-continuum`, for its retained bounded
+cylinders. No independence, factorization, or new geometric assumption
+is required for this commutator identity.
+
+*Proof.* A bounded cylinder of the actual readout is already the scalar
+random variable
+
+$$
+F(\omega)=B(\Phi_\omega(f_1),\ldots,\Phi_\omega(f_m)).
+$$
+
+The multiplication realization is $(M_F\psi)(\omega)=F(\omega)\psi(\omega)$.
+For two such actual regional readouts $F,G$ and every vector in the
+existing observable space,
+
+$$
+([M_F,M_G]\psi)(\omega)
+=\bigl(F(\omega)G(\omega)-G(\omega)F(\omega)\bigr)\psi(\omega)=0.
+$$
+
+This equality holds separately for every execution. Companion choices,
+cloning, Gaussian draws, and the original selection weights can change
+$F$, $G$, and their joint distribution, but not this product identity.
+All masks remain inside $F,G$; no labeled occupancy is substituted for a
+summed field. For complex invariant coordinates, their real and imaginary
+parts and conjugates obey the same calculation. Boundedness makes both
+products defined on the whole Hilbert space.
+
+The existing observable space is invariant under these multipliers and
+their adjoints because their products remain measurable in the same
+readout sigma algebra. Its orthogonal complement is invariant as well:
+for $u$ in that complement and $v$ in the observable space,
+$\langle M_Fu,v\rangle=\langle u,M_{\overline F}v\rangle=0$.
+Thus restriction preserves the identity without changing the
+representation. For a real recorded field, every bounded Borel spectral
+function is multiplication by that same function of its scalar value.
+Consequently the spectral generators also commute.
+
+Apply the two commutant inclusions proved in
+{prf:ref}`thm-hk-locality-fg` to these now explicitly commuting bounded
+generators. This gives the claimed von Neumann algebra identity.
+The complete-record unitary of
+{prf:ref}`prop-fractal-set-analytic-transfer` carries the identity to
+its encoded realization by
+$[\mathcal U M_F\mathcal U^{-1},\mathcal U M_G\mathcal U^{-1}]
+=\mathcal U[M_F,M_G]\mathcal U^{-1}=0$.
+
+Finally, on the already constructed native limiting law, the retained
+bounded cylinder coordinates are again scalar random variables. The
+same pointwise calculation proves their multiplication-operator identity
+directly. This uses that existing limiting law and its original readout;
+it does not infer operator convergence from correlation convergence.
+$\square$
+:::
+
+:::{prf:remark} Operator identity still required for quantum microcausality
+:label: rem-ym-hk-microcausality-verdict
+
+{prf:ref}`thm-ym-native-multiplication-locality` proves HK locality for
+the native multiplication representation. The existing equilibrium
+quantum representation in
+{prf:ref}`thm-ym-equilibrium-quantum-net-inputs` represents its evolved
+insertions by $A(t)=e^{itH}M_Ae^{-itH}$. Its commutator is
+
+$$
+[A(t),B(s)]
+=e^{isH}\bigl[e^{i(t-s)H}M_Ae^{-i(t-s)H},M_B\bigr]e^{-isH}.
+$$
+
+For $t=s$ the bracket vanishes by the multiplication calculation.
+For unequal times the middle operator is not the multiplier by the
+recorded random variable $A(S_t)$. The algorithmic path-space identity
+$M_{A(S_t)}M_{B(S_s)}=M_{B(S_s)}M_{A(S_t)}$ therefore does not evaluate
+this quantum commutator. Likewise, encoding transports an existing
+operator identity and cannot change that middle operator into a multiplier.
+
+The native hierarchy fixes its recorded correlations and the equilibrium
+construction fixes $H$. No unequal-time spacelike vanishing identity for
+the displayed quantum bracket is established here. The physical $x^0$
+application also retains the observable correspondence distinguished in
+{prf:ref}`rem-ym-physical-hierarchy-application`. Neither a change to the
+full labeled CAR algebra nor an assumed correspondence supplies a proof
+for the prescribed gauge readout. Thus the native multiplication locality
+proved above is not a completed quantum HK reconstruction.
+:::
+
 :::{prf:theorem} Covariance of the local net
 :label: thm-hk-covariance-fg
 
@@ -12129,6 +12315,11 @@ positivity, and global cyclicity in the even observable vacuum sector,
 uses the existing regional covariance coefficients for locality, and
 lifts the actual same-law symmetries to that sector. The recorded channel
 and the equilibrium Hamiltonian retain their computed, distinct dynamics.
+The native multiplication representation satisfies HK locality by
+{prf:ref}`thm-ym-native-multiplication-locality`, directly for the
+configured recorded readouts and their law. The distinct quantum
+commutator still to be established is displayed in
+{prf:ref}`rem-ym-hk-microcausality-verdict`.
 {prf:ref}`lem-ym-pullback-translation-spectrum` checks the physical
 spectrum condition specifically for the pullback implementers.
 

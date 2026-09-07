@@ -342,3 +342,5 @@ browser. The nes-py submodule ships test ROMs under
 `third_party/nes-py/nes_py/tests/games/`. Any plain `http.server` will NOT
 work: SharedArrayBuffer needs the cross-origin-isolation headers serve.py
 sets.
+
+The Lab’s **Vehicle count** control selects 1–128 vehicles in every environment, including racing tracks. Changing it restarts the scene paused and clears replay history. Added vehicles use the scene’s existing vehicle types and clear starting positions; cargo and obstacles remain in place. Each environment remembers its selected count for the session.
