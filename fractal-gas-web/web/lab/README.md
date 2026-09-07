@@ -713,3 +713,5 @@ delivery counter. Cargo observations add normalized load, return phase and the
 normalized vector to the nearest refinery. Motion recordings accept the appended
 layout and record full, unloading/resumed, and empty events. Legacy recordings
 without cargo retain their original layout.
+
+Mining environments provide **Rock size (×)** from 0.5 to 2. Asteroid harvesting also provides **Rock count** from 1 to 20; collaborative mining keeps one shared rock. Apply rock settings restarts paused and clears the run. Size scales collision geometry and visuals while preserving mass. Delivered rocks respawn in clear space, reusing their existing body slots. These settings are saved with exported scenes.

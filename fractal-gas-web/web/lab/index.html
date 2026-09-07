@@ -87,6 +87,12 @@
           </div>
           <p class="scenario-description">Changing vehicles restarts the preset paused.</p>
         </div>
+        <div id="rock-controls" hidden>
+          <label class="field">Rock size (×)<input id="rock-size" type="number" min="0.5" max="2" step="0.1" value="1" required /></label>
+          <label class="field" id="rock-count-field">Rock count<input id="rock-count" type="number" min="1" max="20" step="1" value="5" required /></label>
+          <button id="apply-rocks">Apply rock settings</button>
+          <p class="scenario-description">Size changes the rock hull; mass stays the same. Delivered rocks respawn. Applying restarts the scene paused.</p>
+        </div>
         <label id="track-control" class="field" hidden
           >Select track<select id="track" aria-label="Select track"></select></label>
         <section id="circuit-preview" class="circuit-preview" aria-label="Selected circuit" hidden></section>
@@ -101,6 +107,11 @@
             ↺
           </button>
         </div>
+        <details id="reward-settings">
+          <summary>Reward terms</summary>
+          <div id="reward-terms"></div>
+          <p class="scenario-description">Apply to keep the current world, replan, and start a new recording. Weights are saved with the scene. Distance travelled² is off by default.</p>
+        </details>
         <label class="check keyboard-toggle" data-help="Drive the selected agent directly with the keyboard instead of committing planner actions. W/S throttle, A/D steer, Q/E strafe when supported, and Space brakes."
           >
           <input type="checkbox" id="manual" /> Keyboard control
@@ -506,14 +517,14 @@
             type="number"
             min="1"
             max="8192"
-            value="32" /></label
+            value="16" /></label
         ><label data-help="Number of action decisions each candidate controller can look ahead."
           >Lookahead · actions<input
             id="benchmark-horizon"
             type="number"
             min="1"
             max="4096"
-            value="8"
+            value="4"
         /></label>
         <label data-help="Physics frames represented by one benchmark action."
           >Action duration · frames<input

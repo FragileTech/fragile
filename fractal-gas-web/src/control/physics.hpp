@@ -19,7 +19,7 @@ struct Scratch {
   std::vector<Contact> contacts;
   std::vector<int> order, edge_ids;
   std::vector<Aabb> bounds;
-  std::vector<Vec2> old_positions;
+  std::vector<Vec2> old_positions, frame_positions;
   std::vector<float> old_angles, bounded_actions;
   std::vector<uint32_t> edge_marks;
   uint32_t stamp = 0;

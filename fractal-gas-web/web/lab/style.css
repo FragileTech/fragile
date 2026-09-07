@@ -1283,3 +1283,10 @@ dialog .control-heading {
 }
 
 #cargo-status { position: absolute; bottom: 3.2rem; left: 1rem; z-index: 3; padding: .45rem .7rem; background: #111a25e8; color: #f1d8a1; border: 1px solid #86734c; font: 12px monospace; pointer-events: none; }
+
+#reward-settings { grid-column: 1 / -1; }
+.reward-inputs { display: grid; grid-template-columns: minmax(0, 1fr) 5.5rem; gap: .6rem; align-items: center; }
+.reward-inputs input { min-width: 0; width: 100%; }
+#reward-terms > button { margin: .3rem .3rem .3rem 0; }
+.reward-field { position: relative; }
+.reward-field > .help-icon { position: absolute; top: 0; right: 0; }

@@ -120,6 +120,14 @@ self.onmessage = async ({ data }) => {
       engine = new NativeEngine(module, scene);
       predict = new NativeEngine(module, scene);
       engine.reset(seed);
+      if (data.continuationRows) {
+        if (
+          !data.continuationInfo ||
+          data.continuationInfo.some((v, i) => v !== engine.info[i])
+        )
+          throw new Error("Reward update changed the world layout");
+        engine.restoreRows(data.continuationRows);
+      }
       if (data.recordingRoot) {
         if (
           !data.recordingInfo ||
@@ -210,6 +218,17 @@ self.onmessage = async ({ data }) => {
         threads: data.threads,
       });
       timer = setInterval(realtimeTick, 8);
+      return;
+    }
+    if (data.type === "reward-state") {
+      const wasRunning = running;
+      running = single = ready = false;
+      revision++;
+      pending = undefined;
+      const rows = engine.states();
+      postMessage({ type: "reward-state", rows, running: wasRunning }, [
+        rows.buffer,
+      ]);
       return;
     }
     if (data.type === "run") {

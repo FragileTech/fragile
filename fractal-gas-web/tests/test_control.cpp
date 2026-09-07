@@ -54,6 +54,51 @@ TEST_CASE(control_free_flight) {
   CHECK_CLOSE(position(b.row(0), s->layout, 0).y, 53, 1e-5);
   CHECK(result.frames == 60);
 }
+TEST_CASE(control_squared_distance_is_per_frame_and_vehicle_mean) {
+  auto s = Scene::compile(R"({"size":[100,100],
+    "physics":{"dt":0.1,"substeps":4},
+    "rewards":{"progress":0,"distance_squared":2},
+    "bodies":[
+      {"position":[20,20],"velocity":[2,3],"drag":0,"controlled":true},
+      {"position":[60,60],"drag":0,"controlled":true},
+      {"position":[80,80],"velocity":[10,0],"drag":0,"cargo":true}]})");
+  Physics p(s, 2);
+  StateBatch a(1, *s), b(1, *s), serial(1, *s);
+  a.reset(*s, 7);
+  serial.reset(*s, 7);
+  float action[4] = {};
+  int32_t frames = 5;
+  StepResult batch_result, single_result;
+  p.step(a, nullptr, action, &frames, b, &batch_result);
+  float total = 0;
+  for (int i = 0; i < frames; ++i) {
+    p.step_world(serial.row(0), action, 1, single_result);
+    total += single_result.reward;
+  }
+  // 2 * ((0.2² + 0.3²) + 0) / 2 per frame. Cargo movement is excluded.
+  CHECK_CLOSE(batch_result.reward, .65f, 1e-4);
+  CHECK_CLOSE(batch_result.reward, total, 1e-6);
+  CHECK(std::memcmp(b.row(0), serial.row(0), b.bytes()) == 0);
+  std::vector<uint8_t> snapshot(b.serialized_size());
+  b.serialize(snapshot.data(), snapshot.size());
+  serial.deserialize(snapshot.data(), snapshot.size());
+  p.step_world(b.row(0), action, 3, batch_result);
+  p.step_world(serial.row(0), action, 3, single_result);
+  CHECK_CLOSE(batch_result.reward, single_result.reward, 1e-6);
+}
+TEST_CASE(control_squared_distance_defaults_off_and_validates) {
+  auto s = Scene::compile(free_scene);
+  CHECK(s->distance_squared_reward == 0);
+  Physics p(s);
+  StateBatch a(1, *s);
+  a.reset(*s, 7);
+  float action[2] = {};
+  StepResult result;
+  p.step_world(a.row(0), action, 10, result);
+  CHECK_CLOSE(result.reward, 0, 1e-6);
+  CHECK(throws([] { Scene::compile(R"({"rewards":{"distance_squared":-1}})"); }));
+  CHECK(throws([] { Scene::compile(R"({"rewards":{"distance_squared":1001}})"); }));
+}
 TEST_CASE(control_gather_has_simultaneous_semantics) {
   auto s = Scene::compile(free_scene);
   StateBatch a(3, *s);

@@ -213,6 +213,7 @@ Scratch::Scratch(const Scene& s) {
   order.resize(n);
   bounds.resize(n);
   old_positions.resize(n);
+  frame_positions.resize(s.controlled.size());
   old_angles.resize(n);
   bounded_actions.resize(s.channels.size());
   edge_marks.resize(s.edges.size());
@@ -679,9 +680,21 @@ void Physics::step_world(float* r, const float* actions, int frames,
   actions = bounded.data();
   for (int frame = 0; frame < frames && !word(r, 7); ++frame) {
     float before = potential(r);
+    auto& starts = scratch_[slot].frame_positions;
+    if (s.distance_squared_reward > 0)
+      for (size_t c = 0; c < s.controlled.size(); ++c)
+        starts[c] = position(r, s.layout, s.controlled[c]);
     for (int k = 0; k < s.substeps; ++k)
       substep(r, actions, s.dt / s.substeps, scratch_[slot], result);
     result.reward += s.progress_reward * (potential(r) - before);
+    // Per-physics-frame displacement, averaged over vehicles. Evaluate before
+    // mechanics/extension respawns, so teleportation never earns travel reward.
+    if (s.distance_squared_reward > 0 && !s.controlled.empty()) {
+      float squared_distance = 0;
+      for (size_t c = 0; c < s.controlled.size(); ++c)
+        squared_distance += length2(position(r, s.layout, s.controlled[c]) - starts[c]);
+      result.reward += s.distance_squared_reward * squared_distance / float(s.controlled.size());
+    }
     mechanics(r, result);
     for (const auto& extension : s.extensions)
       if (extension.step) extension.step(s, extension, r, actions, result);

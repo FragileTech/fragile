@@ -1,3 +1,5 @@
+import { configureRocks, rockOptions } from "./rock-scene.js";
+import { RewardSettings, withRewards } from "./reward-settings.js";
 import { treePoseDim, treeWidth } from "./actions.js";
 import {
   configureAntsScene,
@@ -22,6 +24,7 @@ const $ = (id) => document.getElementById(id),
   copy = (value) => structuredClone(value);
 const renderer = new LabRenderer($("world"));
 installStyleControls();
+const miningOptions = new Map();
 let antsOptions = { ...DEFAULT_ANTS_OPTIONS },
   presetRequest = 0;
 let worker,
@@ -194,6 +197,20 @@ const controllerSettings = new ControllerSettings(
   $("algorithm"),
   () => loadScene(currentScene),
 );
+let rewardChangePending;
+const rewardSettings = new RewardSettings($("reward-terms"), (values) => {
+  if (!ready || rewardChangePending) return;
+  try {
+    rewardChangePending = withRewards(currentScene, values);
+    rewardSettings.setEnabled(false);
+    status("Applying reward weights at the current world state…");
+    worker.postMessage({ type: "reward-state" });
+  } catch (e) {
+    rewardChangePending = undefined;
+    error(e);
+  }
+});
+rewardSettings.setEnabled(false);
 const inspector = new PhysicsInspector({
   renderer,
   getState: () => currentState,
@@ -253,8 +270,11 @@ function stop() {
   if (ready) worker?.postMessage({ type: "run", value: false });
   $("run").textContent = "▶ Run experiment";
 }
-function loadScene(scene, autoStep = false) {
+function loadScene(scene, autoStep = false, continuation = undefined) {
   ++presetRequest;
+  rewardChangePending = undefined;
+  rewardSettings.render(scene);
+  rewardSettings.setEnabled(false);
   const isCircuit = scene.environment?.kind === "circuit";
   $("track-control").hidden = !isCircuit;
   if (isCircuit) {
@@ -266,6 +286,13 @@ function loadScene(scene, autoStep = false) {
     } else {
       $("track").add(new Option("Current / imported circuit", "", true, true));
     }
+  }
+  const rocks = rockOptions(scene);
+  $("rock-controls").hidden = !rocks;
+  if (rocks) {
+    $("rock-size").value = rocks.scale;
+    $("rock-count").value = rocks.count;
+    $("rock-count-field").hidden = scene.rock_options?.collaborative ?? scene.name === "Collaborative mining";
   }
   const loadedAntsOptions = antsOptionsFromScene(scene);
   $("ants-controls").hidden = !loadedAntsOptions;
@@ -312,7 +339,18 @@ function loadScene(scene, autoStep = false) {
   worker.onmessage = ({ data }) => {
     if (id !== revision) return;
     if (data.type === "error") {
+      rewardChangePending = undefined;
+      rewardSettings.setEnabled(ready);
       error(data.message);
+      return;
+    }
+    if (data.type === "reward-state" && rewardChangePending) {
+      const next = rewardChangePending;
+      loadScene(next, false, {
+        rows: data.rows,
+        info: currentInfo,
+        running: data.running,
+      });
       return;
     }
     if (data.type === "ready") {
@@ -336,6 +374,7 @@ function loadScene(scene, autoStep = false) {
         return;
       }
       $("run").disabled = $("step").disabled = false;
+      rewardSettings.setEnabled(true);
       $("backend").textContent =
         `${data.threads} ${data.threads === 1 ? "THREAD" : "THREADS"} / WEBASSEMBLY`;
       $("state-size").textContent = `${data.info[4] * 4} BYTES / WORLD`;
@@ -358,6 +397,10 @@ function loadScene(scene, autoStep = false) {
       } else if (autoStep) {
         status("Growing the first search tree…");
         worker.postMessage({ type: "step" });
+      } else if (continuation?.running) {
+        running = true;
+        $("run").textContent = "Ⅱ Pause experiment";
+        worker.postMessage({ type: "run", value: true });
       }
       return;
     }
@@ -452,6 +495,8 @@ function loadScene(scene, autoStep = false) {
     recordingInfo: importPending?.motion?.info,
     recordingRoot: importPending?.motion?.root,
     recordingLast: importPending?.lastRows,
+    continuationRows: continuation?.rows,
+    continuationInfo: continuation?.info,
   });
 }
 function updateCargoReadout(
@@ -578,10 +623,12 @@ async function preset() {
     if (!response.ok) throw new Error("Unable to load scenario");
     const template = await response.json();
     if (request !== presetRequest) return;
-    const scene =
+    let scene =
       scenario === "ants"
         ? configureAntsScene(template, antsOptions)
         : template;
+    if (rockOptions(scene))
+      scene = configureRocks(scene, miningOptions.get(scenario) ?? rockOptions(scene));
     $("toy").textContent = String($("scenario").selectedIndex + 1).padStart(
       2,
       "0",
@@ -613,6 +660,19 @@ for (const id of ["ants-vehicle-type", "ants-vehicle-count"])
     $("scenario").value = "ants";
     preset();
   };
+$("apply-rocks").onclick = () => {
+  if (!currentScene || !rockOptions(currentScene)) return;
+  for (const id of ["rock-size", "rock-count"]) {
+    if (!$(id).reportValidity()) return;
+  }
+  try {
+    const options = { scale: +$("rock-size").value, count: +$("rock-count").value };
+    const scene = configureRocks(currentScene, options);
+    miningOptions.set($("scenario").value, options);
+    editor.clearHistory();
+    loadScene(scene);
+  } catch (e) { error(e); }
+};
 $("run").onclick = () => {
   replay.playback.live();
   running = !running;

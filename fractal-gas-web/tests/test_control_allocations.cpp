@@ -19,7 +19,7 @@ void operator delete[](void* p, size_t) noexcept { ::operator delete(p); }
 using namespace fg::control;
 int main() {
   auto scene = Scene::compile(
-      R"({"bodies":[{"position":[10,10],"controlled":true},{"position":[13,10],"cargo":true}],"tethers":[{"a":0,"b":1}],"pickups":[{"position":[10,10]}]})");
+      R"({"rewards":{"distance_squared":1},"bodies":[{"position":[10,10],"controlled":true},{"position":[13,10],"cargo":true}],"tethers":[{"a":0,"b":1}],"pickups":[{"position":[10,10]}]})");
   for (int threads : {1, 4}) {
     size_t small = 0;
     for (int worlds : {16, 256}) {
