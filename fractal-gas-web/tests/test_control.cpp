@@ -602,3 +602,33 @@ TEST_CASE(control_wave_best_leaf_uses_final_rewards_and_stable_ties) {
   CHECK(branch.size() == 3);
   CHECK(wave.tree.node(branch.back()).id == wave.node_ids[3]);
 }
+
+TEST_CASE(control_wave_common_ancestor_uses_alive_final_population) {
+  auto scene = Scene::compile(free_scene);
+  Physics physics(scene, 1);
+  StateBatch root(1, *scene);
+  root.reset(*scene, 7);
+  WaveConfig config;
+  config.walkers = 4;
+  PackedWave wave(physics, config, 13);
+  wave.reset(root);
+  CHECK(throws([&] { wave.common_ancestor(); }));
+  wave.step();
+  const auto root_id = wave.tree.branch(wave.node_ids[0]).front();
+  const auto shared = wave.node_ids[0];
+  float action[2] = {0, 0}, pose[2] = {0, 0};
+  const auto a = wave.tree.append(shared, 2, action, pose, -3, 0, 0, 0);
+  const auto b = wave.tree.append(shared, 1, action, pose, -4, 0, 0, 0);
+  const auto other = wave.node_ids[1];
+  wave.node_ids = {a, b, other, other};
+  CHECK(wave.common_ancestor() == root_id);
+  word(wave.current.row(2), 7, 1);
+  word(wave.current.row(3), 7, 1);
+  CHECK(wave.common_ancestor() == shared);
+  word(wave.current.row(1), 7, 1);
+  CHECK(wave.common_ancestor() == a);
+  wave.tree.prune(wave.node_ids);
+  CHECK(wave.common_ancestor() == a);
+  word(wave.current.row(0), 7, 1);
+  CHECK(wave.common_ancestor() == 0);
+}

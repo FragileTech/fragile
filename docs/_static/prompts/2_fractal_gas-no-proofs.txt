@@ -30345,6 +30345,80 @@ has a unique QSD $\nu_N$, that QSD is group invariant. This is an assertion
 about the killed stochastic process, independent of identifying a field vacuum.
 :::
 
+:::{prf:proposition} Signed locality coefficient of the original recorded gauge readouts
+:label: prop-ym-native-signed-gauge-locality
+
+Use the original bounded normalized gauge channels of
+{prf:ref}`thm-ym-native-physical-gauge-hierarchy`, with the tuple marks,
+weights, and localization points in
+{prf:ref}`prop-ym-native-color-reflected-matrices`. For two disjoint
+physical regions $O,V$, write their original full-face masks as
+$\chi_I^O,\chi_J^V$. The readouts are
+
+$$
+F=\sum_I\rho_I^A\chi_I^O z_I^A f(x_I),\qquad
+G=\sum_J\rho_J^B\chi_J^V z_J^B g(x_J).
+$$
+
+All expectations below use their same native execution law, including
+its prescribed survival normalization. Their signed centered product is
+exactly
+
+$$
+\begin{aligned}
+\mathbb E[\overline{(F-\mathbb EF)}(G-\mathbb EG)]
+={}&\mathbb E\sum_{I\cap J=\varnothing}
+ \rho_I^A\rho_J^B\chi_I^O\chi_J^V
+ \overline{z_I^A}z_J^B\,
+ \overline{f(x_I)}g(x_J)
+ -\overline{\mathbb EF}\,\mathbb EG.
+\end{aligned}
+$$
+
+The condition $I\cap J=\varnothing$ concerns recorded vertices, including
+their stage labels. Every omitted overlapping-tuple term is zero for
+each execution. The retained weights and marks are jointly evaluated in
+that execution. For the existing determinant channels,
+$\overline{z_I^A}z_J^B=\overline{b_I}b_J
+=\det(q_{i_a j_b})_{a,b=1}^3$ in their common color frame.
+Thus the determinant identity retains the cross-tuple Gram entries.
+
+The signed history calculation of
+{prf:ref}`thm-lqft-inherited-history-covariance` evaluates the left-hand
+side without absolute-value estimates:
+
+$$
+B_0+\sum_{j=1}^T\mathbb E[\overline{d_j^F}d_j^G]
+=\mathbb E[\overline F G]-\overline{\mathbb EF}\,\mathbb EG.
+$$
+
+In particular, for its stationary native specialization
+$F=A(S_{k+r})$, $G=B(S_{k+s})$, $0\le r\le s$, set
+$a=A-\pi A$, $b=B-\pi B$ as in that theorem. The second term in the
+conditional covariance formula evaluates to
+
+$$
+\begin{aligned}
+\mathbb E\operatorname{Cov}(\overline F,G\mid\mathcal F_k)
+&=\langle a,C_{s-r}b\rangle_\pi
+  -\langle C_ra,C_sb\rangle_\pi,\\
+B_k+\mathbb E\operatorname{Cov}(\overline F,G\mid\mathcal F_k)
+&=\langle a,C_{s-r}b\rangle_\pi.
+\end{aligned}
+$$
+
+Here $C_{s-r}$ is the original recorded contraction, with the original
+cloning, companion, and kinetic stages. The indices $r,s$ count those
+updates; the regions retain their physical recorded coordinates.
+For the original modes in the stationary CAR application of
+{prf:ref}`thm-ym-hk-record-instantiation`, division by
+$\sigma_F\sigma_G$ gives its coefficient $s_{FG}$ when both variances
+are positive. At one common recorded state the full-face formula above
+therefore evaluates that coefficient directly. Zero-variance readouts
+give the zero centered mode.
+
+:::
+
 :::{prf:theorem} Separate local-net application to the recorded CAR representation
 :label: thm-ym-hk-record-instantiation
 

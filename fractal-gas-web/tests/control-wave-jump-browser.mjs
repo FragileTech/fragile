@@ -13,6 +13,7 @@ try {
     document.getElementById("horizon").value = "5";
     document.getElementById("frames").value = "3";
     document.getElementById("elites").value = "0";
+    document.getElementById("threads").value = "1";
   });
   await page.locator("#algorithm").selectOption("wave-jump");
   await page.waitForFunction(() => !document.getElementById("run").disabled);
@@ -26,14 +27,41 @@ try {
   await page.waitForFunction(
     () => document.getElementById("tick").textContent === "TICK 000030",
   );
-  const results = await page.evaluate(async () => {
+  await page
+    .locator("details")
+    .filter({ has: page.locator("#algorithm-settings") })
+    .locator("summary")
+    .click();
+  const toggle = page.locator("#planner-consensus_prefix");
+  assert.equal(await toggle.isChecked(), false);
+  await toggle.check();
+  await page.waitForFunction(() => !document.getElementById("run").disabled);
+  assert.equal(await toggle.isChecked(), true);
+  assert.equal(await page.locator("#planner-max_horizon").inputValue(), "0");
+  await page.locator("#planner-max_horizon").fill("1");
+  await page.locator("#planner-max_horizon").press("Tab");
+  await page.waitForFunction(() => !document.getElementById("run").disabled);
+  await page.locator("#step").click();
+  await page.waitForFunction(() =>
+    document
+      .getElementById("status")
+      .textContent.includes("Maximum search horizon"),
+  );
+  await page.locator("#planner-max_horizon").fill("0");
+  await page.locator("#planner-max_horizon").press("Tab");
+  await page.waitForFunction(() => !document.getElementById("run").disabled);
+  await toggle.uncheck();
+  await page.waitForFunction(() => !document.getElementById("run").disabled);
+  const results = await page.evaluate(async (consensus) => {
     const scene = {
       size: [1000, 1000],
       bodies: [{ controlled: true, position: [500, 500], velocity: [2, 1] }],
     };
     const settings = {
       algorithm: "wave-jump",
-      walkers: 12,
+      walkers: consensus ? 1 : 12,
+      consensus_prefix: consensus,
+      max_horizon: 24,
       horizon: 12,
       frames: 11,
       elites: 0,
@@ -248,7 +276,7 @@ try {
     } finally {
       a.worker.terminate();
     }
-  });
+  }, process.env.CONSENSUS === "1");
   assert.equal(results.fallbackResult.deadRatio, 1);
   assert.equal(results.fallbackResult.edges, 1);
   assert.equal(results.fallbackResult.completedTick, 60);

@@ -44,6 +44,7 @@ int fgc_plan_begin(void* p, const char* settings, uint32_t seed);
 int fgc_plan_advance(void* p);
 float* fgc_plan_action(void* p);
 int fgc_plan_best_leaf(void* p);
+int fgc_plan_common_ancestor(void* p);
 int fgc_wave_step(void* p);
 float* fgc_wave_states(void* p);
 int fgc_tree_export(void* p);

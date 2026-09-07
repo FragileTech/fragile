@@ -134,6 +134,8 @@ self.onmessage = async ({ data }) => {
         trajectory,
         selectedLeaf: result.selectedLeaf,
         selectedReward: result.selectedReward,
+        executionMode: result.executionMode,
+        searchDepth: result.searchDepth,
         tree,
         cloud,
         metrics,

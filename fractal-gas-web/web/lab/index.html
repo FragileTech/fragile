@@ -125,7 +125,7 @@
           >
           CONTROLLER <span id="controller-label">FMC</span>
         </div>
-        <label class="field" data-help="Planning algorithm used to choose actions. Wave Jump executes the best final trajectory before searching again; Step runs one complete trajectory and physics pauses during search. Each controller implements the same batched state and action interface.">Controller<select id="algorithm"></select></label>
+        <label class="field" data-help="Planning algorithm used to choose actions. Wave Jump executes the best final trajectory, or the shared surviving prefix when Stop at first bifurcation is enabled, before searching again; Step runs one complete trajectory and physics pauses during search. Each controller implements the same batched state and action interface.">Controller<select id="algorithm"></select></label>
         <p id="trajectory-progress" hidden aria-live="polite"></p>
         <label class="field" data-help="Clock policy for planning. Reproducible waits for a complete plan; real time keeps the simulation clock moving while planning continues."
           >Clock<select id="clock">

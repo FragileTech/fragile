@@ -190,6 +190,24 @@ void PackedWave::update_elites() {
   }
   has_elite_ = true;
 }
+uint32_t PackedWave::common_ancestor() const {
+  if (tree.mode == RecordingMode::Off || stats.iterations == 0)
+    throw std::logic_error("Common ancestor requires a recorded search");
+  uint32_t common = 0;
+  for (size_t i = 0; i < node_ids.size(); ++i) {
+    if (word(current.row(i), 7)) continue;
+    uint32_t node = node_ids[i];
+    if (!common) { common = node; continue; }
+    while (common != node) {
+      if (tree.node(common).depth >= tree.node(node).depth)
+        common = tree.node(common).parent;
+      else
+        node = tree.node(node).parent;
+    }
+  }
+  return common;
+}
+
 uint32_t PackedWave::best_leaf() const {
   if (tree.mode == RecordingMode::Off || stats.iterations == 0)
     throw std::logic_error("Best leaf requires a recorded search");

@@ -156,7 +156,9 @@ UI ranges; lower-level APIs can have different limits.
 |---|---|---|---|
 | **Controller** | `algorithm` | `fmc` | `fmc`, `wave-jump`, `random`, `cem`, `icem`, or `mppi`. |
 | **Walkers** | `walkers` | 128; integers 1–8192 | FMC/Wave Jump population or shooting batch capacity. Random control does not use a rollout population. |
-| **Horizon** | `horizon` | 32; integers 1–4096 | FMC/Wave Jump iterations per search; action depth per shooting round. Ignored by random action selection. |
+| **Horizon** | `horizon` | 32; integers 1–4096 | FMC/Wave Jump normal search depth; Wave Jump can extend it when shared-path execution is enabled. Action depth per shooting round. Ignored by random action selection. |
+| **Stop at first bifurcation** | `consensus_prefix` | Unchecked (`false`) | Wave Jump only: execute the recorded ancestral path shared by every alive final walker, stopping before their branches diverge. |
+| **Maximum search horizon** | `max_horizon` | 0 (automatic); integers 0–4096 | Wave Jump shared-path mode only. Zero means twice Horizon, capped at 4096. An explicit nonzero value must be at least Horizon. |
 | **Action frames** | `frames` | 12; integers 1–60 | Physics frames per candidate action. Wave Jump executes each selected edge for its actual recorded duration; other controllers execute one action for this count. |
 | **Seed** | `seed` | 7; integers 0–4294967295 | World reset seed and base planner seed; successive decisions derive seeds by adding the decision count modulo `2^32`. |
 | **Diversity coefficient** (in **Reward terms**) | `distance_coef` | 1; 0–10, increment 0.1 | FMC exponent on rescaled observation distance in cloning fitness. |
@@ -174,7 +176,8 @@ controller averages those inherited first actions over the final population;
 cloning supplies the implicit weighting. If no population members survive, it
 returns the neutral action. It does not simply choose the highest-reward leaf.
 
-**Wave Jump** uses the same search parameters and cloning procedure as FMC. After
+**Wave Jump** uses the same population search parameters and cloning procedure as FMC. With
+**Stop at first bifurcation** unchecked, after
 the search, it selects the alive final walker with the highest accumulated path
 reward; ties choose the lower walker index. Alive means nonterminal according to
 the native physics. It follows that
@@ -193,9 +196,31 @@ one-action fallback. The best final walker need not be the best node ever sample
 Execution stops if the actual world terminates. An empty executable path stops
 with a status message instead of starting repeated searches.
 
+With **Stop at first bifurcation** checked, trace the ancestry of every alive final
+walker back toward the root. Execute their shared initial chain and stop before
+the first branch where these surviving futures disagree. Agreement means the same
+recorded ancestors; two independently sampled edges with similar actions do not
+count as agreement. Discarded branches and archived elites outside the current
+population do not enter this comparison. A single survivor shares its entire
+path with itself, so its full path is executable.
+
+The search first reaches the normal **Horizon**. If the shared chain contains no
+positive-duration action, it continues the same population search one iteration at
+a time, stopping as soon as an executable shared prefix appears. **Maximum search
+horizon** bounds this extension: zero chooses twice the normal horizon, capped at
+4096; a nonzero value must lie between the normal horizon and 4096. If agreement
+is still absent at that limit, execute just the best surviving path's first
+positive-duration action for its recorded duration. If all walkers die, use the
+highest-score single-action fallback immediately. Either fallback searches again
+after that action unless the actual world terminates. The world stays still
+throughout the search and any extension. **Step** completes one search and its
+shared prefix or fallback, then pauses.
+
 **Pause** retains the action index and remaining frames. A planner checkpoint
 preserves these alongside the world and search state, so restoration can resume
-either a search or a partly executed trajectory. Changing the scene, applied
+either a search, including its extension, or a partly executed trajectory without
+repeating completed work. Checkpoints retain the shared-path setting and effective
+search limits; older checkpoints default to the toggle being off. Changing the scene, applied
 rewards, algorithm, or world state discards the queued trajectory.
 
 The two **coefficient** fields are exponents in a product of rescaled distance and reward
@@ -405,8 +430,9 @@ disable recording. For that, change **Tree** below the world view.
 
 :::{div} feynman-prose
 For Wave Jump, the selected path reward describes the chosen final walker and
-trajectory progress describes execution of the full path or its one-action
-all-dead fallback. These are separate from
+trajectory progress describes execution of the full path, shared prefix, or
+one-action fallback. The status identifies shared-prefix execution or fallback
+and shows search depth. These are separate from
 search progress: completing the search starts the journey.
 
 Three measurements answer different questions: simulation time measures what the

@@ -2,10 +2,19 @@ import { loadNative, NativeEngine } from "./native.js";
 import { WorldCapture } from "./motion.js";
 import { acceptPlan, branchActions } from "./timing.js";
 import { TrajectoryCursor } from "./trajectory.js";
-let trajectoryCursor, trajectoryRoot, selectedReward;
+let trajectoryCursor,
+  trajectoryRoot,
+  selectedReward,
+  executionMode,
+  searchDepth;
 const isJump = () => settings?.algorithm === "wave-jump";
 function clearTrajectory() {
-  trajectoryCursor = trajectoryRoot = selectedReward = undefined;
+  trajectoryCursor =
+    trajectoryRoot =
+    selectedReward =
+    executionMode =
+    searchDepth =
+      undefined;
 }
 let engine,
   predict,
@@ -53,6 +62,8 @@ function publish(extra = {}) {
             total: trajectoryCursor.trajectory.length,
             remaining: trajectoryCursor.remaining,
             reward: selectedReward,
+            executionMode,
+            searchDepth,
           }
         : undefined,
       profile: engine.profile(),
@@ -98,6 +109,8 @@ function commit(result) {
     trajectoryCursor = new TrajectoryCursor(result.trajectory, engine.channels);
     trajectoryRoot = result.root;
     selectedReward = result.selectedReward;
+    executionMode = result.executionMode;
+    searchDepth = result.searchDepth;
     nextTime = performance.now();
   }
   decisions++;
@@ -236,7 +249,12 @@ self.onmessage = async ({ data }) => {
               decisions,
               seed,
               execution: trajectoryCursor
-                ? { ...trajectoryCursor.checkpoint(), selectedReward }
+                ? {
+                    ...trajectoryCursor.checkpoint(),
+                    selectedReward,
+                    executionMode,
+                    searchDepth,
+                  }
                 : undefined,
             });
             return;
@@ -407,6 +425,8 @@ self.onmessage = async ({ data }) => {
         );
         trajectoryRoot = data.checkpoint.root;
         selectedReward = data.execution.selectedReward;
+        executionMode = data.execution.executionMode;
+        searchDepth = data.execution.searchDepth;
       }
       running = single = false;
       revision++;

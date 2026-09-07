@@ -248,3 +248,114 @@ test("all-dead lookahead commits one safe action and experiments replan", async 
     world.dispose();
   }
 });
+
+test("consensus extends the same search, stops at agreement, and bounds fallback", () => {
+  for (const agreement of [3, Infinity]) {
+    let depth = 0,
+      begins = 0,
+      limit;
+    const tree = {
+      dim: 1,
+      poseDim: 0,
+      root: new Uint8Array(),
+      meta: new Uint32Array([1, 0, 0, 0, 0, 2, 1, 1, 2, 0, 3, 2, 2, 4, 0]),
+      values: new Float32Array([0, 0, 0, 0, 1, 1, 0, 0.25, 2, 1, 0, 0.75]),
+    };
+    const engine = {
+      restore() {},
+      begin(s) {
+        begins++;
+        limit = s.horizon;
+      },
+      advance() {
+        return ++depth >= limit;
+      },
+      commonAncestor: () => (depth >= agreement ? 2 : 1),
+      bestLeaf: () => 3,
+      tree: () => tree,
+      states: () => new Float32Array(),
+      metrics() {
+        const m = new Float32Array(16);
+        m[8] = depth;
+        return m;
+      },
+      checkpoint: () => depth,
+      restoreCheckpoint: (saved) => {
+        depth = saved;
+      },
+    };
+    const controller = instantiateController("wave-jump", engine, {
+      ...settings,
+      horizon: 2,
+      consensus_prefix: true,
+    });
+    controller.begin(new Uint8Array(), 1);
+    assert.equal(controller.advance(), false);
+    assert.equal(controller.advance(), false);
+    if (agreement === Infinity) assert.equal(controller.advance(), false);
+    const saved = controller.checkpoint();
+    while (!controller.advance()) {}
+    const result = controller.result();
+    assert.equal(depth, agreement === 3 ? 3 : 4);
+    assert.equal(begins, 1);
+    assert.equal(
+      result.executionMode,
+      agreement === 3 ? "shared prefix" : "horizon fallback",
+    );
+    assert.deepEqual(
+      result.trajectory.map((e) => [e.action[0], e.frames]),
+      [[0.25, 2]],
+    );
+    controller.restore(saved);
+    while (!controller.advance()) {}
+    assert.deepEqual(controller.result(), result);
+  }
+});
+
+test("native consensus checkpoints resume and experiments respect frame limits", async () => {
+  const config = {
+    ...settings,
+    consensus_prefix: true,
+    horizon: 2,
+    max_horizon: 4,
+    elites: 0,
+  };
+  const strategy = createController(module, scene, config);
+  try {
+    strategy.controller.begin(strategy.engine.snapshot(), 19);
+    strategy.controller.advance();
+    const saved = strategy.controller.checkpoint();
+    while (!strategy.controller.advance()) {}
+    const result = strategy.controller.result();
+    assert.ok(result.searchDepth >= 2 && result.searchDepth <= 4);
+    strategy.controller.restore(saved);
+    while (!strategy.controller.advance()) {}
+    assert.deepEqual(
+      strategy.controller.result().trajectory,
+      result.trajectory,
+    );
+    const { stats } = await runEpisode({
+      module,
+      scene,
+      settings: config,
+      seed: 19,
+      maxFrames: 7,
+    });
+    assert.equal(stats.frames, 7);
+    assert.ok(stats.decisions >= 1);
+  } finally {
+    strategy.dispose();
+  }
+  const invalid = createController(module, scene, {
+    ...config,
+    max_horizon: 1,
+  });
+  try {
+    assert.throws(
+      () => invalid.controller.begin(invalid.engine.snapshot(), 1),
+      /Maximum search horizon/,
+    );
+  } finally {
+    invalid.dispose();
+  }
+});

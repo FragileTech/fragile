@@ -413,6 +413,13 @@ FGC_EXPORT int fgc_plan_advance(void* p) {
     return int(done);
   });
 }
+FGC_EXPORT int fgc_plan_common_ancestor(void* p) {
+  return guard(-1, [&] {
+    auto& r = runtime(p);
+    if (!r.planner) throw std::logic_error("No plan");
+    return int(r.planner->wave.common_ancestor());
+  });
+}
 FGC_EXPORT int fgc_plan_best_leaf(void* p) {
   return guard(-1, [&] {
     auto& r = runtime(p);

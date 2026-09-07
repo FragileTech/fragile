@@ -206,6 +206,9 @@ export class NativeEngine {
   waveStep() {
     this.check(this.m._fgc_wave_step(this.h));
   }
+  commonAncestor() {
+    return this.check(this.m._fgc_plan_common_ancestor(this.h));
+  }
   bestLeaf() {
     return this.check(this.m._fgc_plan_best_leaf(this.h));
   }

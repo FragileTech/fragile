@@ -31,6 +31,7 @@ class PackedWave {
   void step();
   std::vector<float> select_action() const;
   uint32_t best_leaf() const;
+  uint32_t common_ancestor() const;
   StateBatch replay(uint32_t node_id);
   void save_checkpoint(CheckpointWriter& out) const;
   void load_checkpoint(CheckpointReader& in);

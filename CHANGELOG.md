@@ -3,6 +3,10 @@
 Unreleased
 ----------
 
+* Add optional Wave Jump shared-prefix execution with bounded search extension and single-action fallback.
+
+* Evaluate native gauge locality coefficients by signed history cancellation and full-face tuple products, retaining original weights, masks, and selected laws.
+
 * Reward hooked rock travel by distinct-rock distance, with an adjustable weight and no credit for respawn teleportation or duplicate tow hooks.
 
 * Expose mining hook stiffness, allow rock sizes down to 0.1×, and prevent false target-progress reward when tow hooks break.

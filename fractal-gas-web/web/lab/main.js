@@ -541,8 +541,10 @@ function updateFrame(data) {
   const progress = data.trajectoryProgress;
   $("trajectory-progress").hidden = settings().algorithm !== "wave-jump";
   $("trajectory-progress").textContent = progress
-    ? `Wave Jump · action ${progress.index + 1}/${progress.total} · ${progress.remaining} frames left · path reward ${progress.reward.toFixed(3)}`
-    : "Wave Jump · search → execute full path → search";
+    ? `Wave Jump · ${progress.executionMode || "full path"} · depth ${progress.searchDepth ?? "—"} · action ${progress.index + 1}/${progress.total} · ${progress.remaining} frames left · path reward ${progress.reward.toFixed(3)}`
+    : settings().consensus_prefix
+      ? "Wave Jump · search for shared prefix → execute → search"
+      : "Wave Jump · search → execute full path → search";
   const m = data.metrics,
     dt = currentScene.physics?.dt || 1 / 60;
   $("time").innerHTML = `${(data.tick * dt).toFixed(2)} <small>s</small>`;
@@ -582,7 +584,7 @@ function updateDiagnostics(data) {
     `${m[8]} ITERATIONS · ${data.elapsed.toFixed(0)} MS` +
     (data.selectedReward == null
       ? ""
-      : ` · PATH REWARD ${data.selectedReward.toFixed(3)}`);
+      : ` · PATH REWARD ${data.selectedReward.toFixed(3)}${data.executionMode ? ` · ${data.executionMode}` : ""}`);
 }
 function updateRecordUI() {
   $("record-count").textContent =
