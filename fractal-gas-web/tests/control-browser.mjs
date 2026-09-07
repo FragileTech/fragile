@@ -144,7 +144,7 @@ try {
   );
   assert.deepEqual(errors, []);
   await page.setViewportSize({ width: 1536, height: 1000 });
-  await page.locator(".controls summary").click();
+  await page.locator(".controls summary").filter({ hasText: "Planner settings" }).click();
   assert.equal(await page.locator("#threads").getAttribute("max"), "64");
   await page.locator("#threads").fill("64");
   await page.locator("#threads").press("Tab");

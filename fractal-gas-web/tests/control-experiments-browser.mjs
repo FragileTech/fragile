@@ -111,7 +111,7 @@ try {
   assert.deepEqual(await readFile(restored), await readFile(expected));
   await page.locator("#inspect-physics").uncheck();
   await page
-    .locator(".controls summary")
+    .locator(".controls summary").filter({ hasText: "Planner settings" })
     .evaluate((e) => (e.parentElement.open = true));
   await page.locator("#wave").click();
   await page.waitForFunction(
