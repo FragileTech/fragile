@@ -3,6 +3,7 @@ import * as T from "../vendor/three.module.js";
 // Instanced cargo and transfer particles reconstruct directly from packed state.
 export class CargoVisuals {
   constructor(scene, info, bodyLayer, parent, style) {
+    this.animationsEnabled = true;
     this.scene = scene;
     this.info = info;
     this.bodies = bodyLayer;
@@ -38,6 +39,33 @@ export class CargoVisuals {
       mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
     }
     this.pose = new T.Object3D();
+    this.fillPoses = bodyLayer.controlled.map(() => ({
+      base: new T.Matrix4(),
+      local: new T.Matrix4(),
+    }));
+    this.matrix = new T.Matrix4();
+    this.bodyPose = new T.Object3D();
+  }
+  setAnimationsEnabled(enabled) {
+    this.animationsEnabled = !!enabled;
+    if (this.transfer) this.transfer.visible = !!enabled;
+    this.animate();
+  }
+  animate() {
+    if (!this.fill || !this.hasState) return;
+    for (let c = 0; c < this.bodies.controlled.length; c++) {
+      const b = this.bodies.controlled[c];
+      const presentation = this.bodies.presentations?.[b];
+      const { base, local } = this.fillPoses[c];
+      this.matrix.copy(base);
+      if (this.animationsEnabled && presentation) {
+        presentation.updateMatrix();
+        this.matrix.multiply(presentation.matrix);
+      }
+      this.matrix.multiply(local);
+      this.fill.setMatrixAt(c, this.matrix);
+    }
+    this.fill.instanceMatrix.needsUpdate = true;
   }
   update(state) {
     if (!this.fill) return;
@@ -62,17 +90,20 @@ export class CargoVisuals {
       const scale = this.bodies.models[b].scale.x;
       const drone = this.bodies.bodies[b].visual?.model === "drone";
       const back = drone ? 0 : -0.22 * scale;
-      set(
-        this.fill,
-        c,
-        x + Math.cos(a) * back,
-        y + Math.sin(a) * back,
-        (drone ? 0.85 : 0.48) * scale + 0.12 * fraction * scale,
-        0.48 * scale,
-        0.36 * scale,
-        Math.max(0, fraction) * 0.25 * scale,
-        a,
+      this.bodyPose.position.set(x, y, 0);
+      this.bodyPose.rotation.set(0, 0, a);
+      this.bodyPose.scale.setScalar(scale);
+      this.bodyPose.updateMatrix();
+      this.fillPoses[c].base.copy(this.bodyPose.matrix);
+      this.pose.position.set(
+        back / scale,
+        0,
+        (drone ? 0.85 : 0.48) + 0.12 * fraction,
       );
+      this.pose.rotation.set(0, 0, 0);
+      this.pose.scale.set(0.48, 0.36, Math.max(0, fraction) * 0.25);
+      this.pose.updateMatrix();
+      this.fillPoses[c].local.copy(this.pose.matrix);
       for (let j = 0; j < 5; j++) {
         const dx = (j - 2) * 0.14 * scale;
         set(
@@ -86,6 +117,7 @@ export class CargoVisuals {
           j < fraction * 5 ? 0.06 : 0,
         );
       }
+      if (!this.animationsEnabled) return;
       const zone = (this.scene.refineries || []).find(
         (z) => Math.hypot(x - z.position[0], y - z.position[1]) <= z.radius,
       );
@@ -104,7 +136,9 @@ export class CargoVisuals {
         );
       }
     });
-    for (const mesh of [this.fill, this.meter, this.transfer])
-      mesh.instanceMatrix.needsUpdate = true;
+    this.hasState = true;
+    this.animate();
+    this.meter.instanceMatrix.needsUpdate = true;
+    if (this.animationsEnabled) this.transfer.instanceMatrix.needsUpdate = true;
   }
 }

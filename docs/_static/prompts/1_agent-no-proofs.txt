@@ -8775,12 +8775,14 @@ $D=\nabla-iB/\sigma$, and $Q_B=-\sigma^2\Delta_GR/(2R)$.
 For the equations already stated,
 $\partial_s\rho+\operatorname{div}_G(\rho v)=r\rho$ and
 $\partial_sV+|p|_G^2/2+\Phi_{\mathrm{eff}}=0$, the exact amplitude equation is
+
 $$
 i\sigma\partial_s\psi=
 \left[-\tfrac{\sigma^2}{2}\Delta_B+\Phi_{\mathrm{eff}}-Q_B
 +\tfrac{i\sigma}{2}r\right]\psi,
 \qquad\psi=Re^{iV/\sigma}.
 $$
+
 :::
 
 :::{prf:definition} Bohm Quantum Potential (Information Resolution Limit)

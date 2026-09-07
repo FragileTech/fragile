@@ -8,6 +8,11 @@ force, the rock keeps its momentum, and a gravity well bends both trajectories.
 Learn to recognize an approach, an attachment, and a delivery as three different
 stages. Then the planner's decisions become much easier to interpret.
 
+The shipped rocket scene now starts in side-on flight with gravity pointing
+downward. That changes how the motion looks and how you must read the trajectories,
+but it does not change the lesson: acquire the cargo, tow it, and bring its center
+into the base.
+
 Start the application using {doc}`control_lab_getting_started`. This tutorial uses
 the stock **Asteroid harvesting** environment. Find the other tasks in
 {doc}`control_lab_tasks`, the complete controls in {doc}`control_lab_controls`, and
@@ -20,7 +25,8 @@ scene customization in {doc}`control_lab_scenes`.
 :::{div} feynman-prose
 Choose **Asteroid harvesting** from **Environment**, wait for the backend to become
 ready, and press **↺** (Reset). This removes any movement from the initial page
-load. Use **2D / 3D** to compare the overhead map with the angled view. Scroll to
+load. The shipped scene presents the flight side-on, with downward gravity; use
+**Side / overhead** to compare that view with the overhead map. Scroll to
 zoom; middle/right-drag or Alt-drag pans. These camera operations preserve physics.
 
 The scene occupies a 64-by-44 world-coordinate rectangle, but its irregular outer
@@ -43,10 +49,10 @@ but bumping a rock can still spoil an approach or throw the tow toward a wall.
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/harvest-overview.png
-:alt: Angled view of the reset asteroid harvesting arena showing the rocket, cargo rocks, base, central obstacle, and gravity well.
+:alt: Side-on view of the reset asteroid harvesting arena showing the rocket, cargo rocks, base, central obstacle, and gravity well.
 :class: feynman-added
 
-The reset arena in the angled view. Locate the base and nearby cargo before
+The reset arena in the side-on view. Locate the base and nearby cargo before
 turning on continuous control; this image shows the starting layout, not a delivery.
 :::
 
@@ -89,10 +95,10 @@ It does not add 128 rockets to the arena. The nominal 16-action lookahead spans
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/harvest-detail.png
-:alt: Top-down asteroid harvesting view after one planner Step with candidate paths and diagnostic overlays.
+:alt: Overhead asteroid harvesting view after one planner Step with candidate paths and diagnostic overlays.
 :class: feynman-added
 
-One decision viewed from above. Compare the executed rocket with the planning
+One decision viewed overhead. Compare the executed rocket with the planning
 overlays. This early inspection frame does not show a completed cargo delivery.
 :::
 

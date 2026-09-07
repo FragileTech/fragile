@@ -56,3 +56,20 @@ export function resolveBodies(scene) {
     };
   });
 }
+
+export function flightMode(scene) {
+  const environment = scene.environment;
+  if (
+    environment != null &&
+    (Array.isArray(environment) || typeof environment !== "object")
+  )
+    throw new Error("environment must be an object");
+  if (environment?.flight != null) {
+    if (typeof environment.flight !== "boolean")
+      throw new Error("environment.flight must be a boolean");
+    return environment.flight;
+  }
+  return resolveBodies(scene).some(
+    (body) => body.controlled && body.flight_capable === true,
+  );
+}

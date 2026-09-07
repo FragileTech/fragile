@@ -24,12 +24,22 @@ Wait until the backend indicator reports **WEBASSEMBLY** and the run buttons bec
 available. The first page load automatically plans and commits one action, so the
 initial view can already contain movement and a search tree. Later preset changes
 and resets leave the new world paused.
+
+Flight is a three-way scene choice hiding behind one field. If
+`environment.flight` is omitted (or null), the lab detects flight when at least one
+controlled body is marked `flight_capable`; setting it to `true` forces flight on,
+and setting it to `false` forces it off, even for a flight-capable body. In flight,
+the environment applies a downward acceleration of **9.81 m/s²** by default (the
+`environment.downward_gravity` value). A rocket or drone must therefore spend some
+of its thrust countering gravity before that thrust can produce upward acceleration.
 :::
 
 :::{div} feynman-added
 | Control | Operation | What to expect |
 |---|---|---|
 | **Environment** | Load a preset from the scene catalog. | Rebuilds physics and clears the current in-memory history. |
+| **Flight override** (`environment.flight`) | Omitted/null, `true`, or `false` | Omitted/null auto-detects flight from a controlled `flight_capable` body; `true` enables flight; `false` disables it. |
+| **Downward gravity** (`environment.downward_gravity`) | 9.81 m/s²; scene value | Downward acceleration used in flight mode. A rocket or drone's propulsion must counter it to climb or hover. |
 | **Vehicle type** | Choose **Harvesters** or **Drones** in Ants & Drops. | Rebuilds the original preset with one type for all vehicles, clears run and editor history, and leaves the world paused. Defaults to **Harvesters**. |
 | **Vehicle count** | Set the Ants & Drops vehicle count to a whole number from 1 to 128. | Defaults to 5. Applies the same rebuild as **Vehicle type**; invalid entries leave the scene intact. |
 | **Run experiment** | Repeatedly plan and execute actions using the selected clock. | Button becomes **Pause experiment**. |
@@ -371,8 +381,12 @@ and elapsed planning time on the same tasks and seeds.
 
 :::{div} feynman-prose
 Camera and layer controls change presentation without changing physics or resetting
-the run. **2D / 3D** switches between overhead and angled views of the same planar
-world. Scroll to zoom, then left-drag to bring another part of the environment
+the run. In an ordinary planar scene, **2D / 3D** switches between overhead and
+angled views of the same world. In flight mode the control instead switches between
+a side-on view (showing altitude against the horizontal direction) and an overhead
+view (showing the physics plane from above). These are two projections of the same
+state, not two different simulations; the side-on view does not turn a planar
+flight model into full three-dimensional physics. Scroll to zoom, then left-drag to bring another part of the environment
 into view without changing the zoom. A click without dragging still selects an
 exploration node. With **Edit scene** open, left-drag moves scene objects; use
 middle/right-drag or Alt-drag to pan instead. These pan shortcuts also work with
@@ -393,7 +407,7 @@ an independent clock. Disable the checkbox before resuming autonomous control.
 :::{div} feynman-added
 | Input | Channel mapping |
 |---|---|
-| **W / S** | Positive/negative `thrust`, `throttle`, or body-local `force_x`, clamped to bounds. A forward-only rocket cannot reverse its thrust channel. |
+| **W / S** | Positive/negative `thrust`, `throttle`, or body-local `force_x`, clamped to bounds. A forward-only rocket cannot reverse its thrust channel; in flight, thrust must also supply the upward force needed to counter downward gravity. |
 | **A / D** | Positive/negative `torque` or `steering`. |
 | **Q / E** | Positive/negative body-local `force_y`. |
 | **Space** | `brake = 1` where a brake channel exists. |
@@ -415,6 +429,9 @@ the world.
 :::{div} feynman-added
 | Layer/control | Default | Visible meaning |
 |---|---|---|
+| **Animations** (beside **Visual style**) | On; off when the system requests reduced motion and no explicit choice is saved | Enables cosmetic vehicle motion and effects across live views, replay, comparisons, and the workshop. Your explicit choice persists in this browser. Off skips cosmetic animation updates; native movement, cargo amounts, pickup visibility, tether connections, and diagnostics still update. Toggling does not reset the simulation or change recordings. |
+| **Pause experiment** with animations on | Gentle idle motion continues | Stops simulation-dependent wheel motion and event progression while retaining small hover and engine motion. Turn **Animations** off for a still presentation of the paused world. |
+| Workshop **Play animation / Pause animation** | Stopped initially | Runs or stops a repeatable asset demonstration. The global **Animations** switch takes precedence; it must be on to play. Selecting **Side** or **Top** stops playback and resets the asset pose for inspection. |
 | **Rollout paths** | On | Recorded controlled-body paths, available for FMC and Wave Jump. Green is at/above mean recorded reward; rose indicates terminal state; violet indicates a tethered path; blue shows other alternatives. Terminal color takes precedence over tether color. |
 | **Future-state cloud** | On | Controlled-body positions in the planner's returned world batch, which may be at a partial horizon in deadline mode. |
 | **Tethers & formation** | On | Current tether geometry linking bodies. |

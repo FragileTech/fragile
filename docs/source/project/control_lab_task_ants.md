@@ -15,7 +15,10 @@ a pickup count alone does not tell you how much material the fleet has brought
 home.
 
 Start here to learn how physical vehicle count differs from planner population,
-how harvesters and drones move, and how to measure a foraging trial. Launch the
+how harvesters and drones move, and how to measure a foraging trial. Harvesters
+remain planar kart vehicles. Selecting **Drones** automatically enables their
+side-on flight mode and downward gravity, so a drone must use thrust to stay
+aloft. Launch the
 application using {doc}`control_lab_getting_started`; return to
 {doc}`control_lab_tasks` for the other tasks. Keep
 {doc}`control_lab_controls` nearby for the complete operating reference.
@@ -112,27 +115,31 @@ clear the current run and editor history, and discard local scene edits.
    short run. Four bodies are easier to distinguish from their search overlays.
 3. Change **Vehicle type** to **Drones**. Observe the second reset: these drones
    start a new run rather than transforming the moving harvesters in place.
-4. Switch the **2D / 3D** control to its overhead view, then press **Step** once.
-   Compare the state with the figure. Counts and settings matter more than an
-   exact pixel match, which also depends on camera and display size.
+4. Selecting **Drones** automatically enables side-on 3D flight and downward
+   gravity. Let the camera switch to its side-on view, then press **Step** once.
+   Use the **Side / overhead** control when you want to inspect the same scene from
+   above. Compare the state with the figure. Counts and settings matter more
+   than an exact pixel match, which also depends on camera and display size.
 5. Continue for a fixed number of ticks, then reset and repeat with harvesters
    if you want a like-for-like observation. Keep seed, planner settings, and
    simulated duration fixed, and write down the vehicle type for each trial.
 
-Harvesters use a kart actuator: throttle, steering, and brake. Drones use a
-holonomic actuator: two body-local force components and torque. This changes both
-motion and physical parameters, including radius and mass. A type comparison is
-therefore a comparison of these complete vehicle definitions, not an isolated
-test of steering alone. Their appearance does not create a third spatial motion
-axis: the simulated world remains planar.
+Harvesters use a planar kart actuator: throttle, steering, and brake. Drones use
+a holonomic flight actuator: two body-local force components and torque. In the
+drone flight plane, downward gravity is always acting, so the vertical force
+component is also what keeps a drone from sinking. This changes both motion and
+physical parameters, including radius and mass. A type comparison is therefore
+a comparison of these complete vehicle definitions, not an isolated test of
+steering alone.
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/ants-detail.png
-:alt: Overhead Ants and drops view with four drones after one planned six-frame Step.
+:alt: Side-on Ants and drops flight view with four drones after one planned six-frame Step.
 :class: feynman-added
 
-Four drones after one Step with the tutorial baseline. The smaller fleet makes
-individual bodies easier to inspect; a single decision need not yield a pickup.
+Four drones after one Step with the tutorial baseline, shown in the automatically
+enabled side-on flight view. The smaller fleet makes individual bodies easier to
+inspect; a single decision need not yield a pickup.
 :::
 
 (sec-lab-ants-manual)=
@@ -148,10 +155,13 @@ For a harvester, **W / S** sends positive/negative throttle, **A / D** sends
 positive/negative steering, and **Space** applies its brake. For a drone,
 **W / S** controls body-local `force_x`, **Q / E** controls body-local `force_y`,
 and **A / D** controls torque. Rotate the drone and notice that its local axes
-rotate with it. Space does not create a brake channel on a drone.
+rotate with it. In side-on flight, use its upward force to counter downward
+gravity; releasing that force lets the drone lose altitude. Space does not create
+a brake channel on a drone.
 
-Hold inputs briefly, observe the result, and steer toward a drop. A pickup is
-registered when the vehicle's circular pickup reach overlaps the drop radius
+Hold inputs briefly, observe the result, and guide the vehicle toward a drop:
+steer a harvester or use the drone's force channels. A pickup is registered when
+the vehicle's circular pickup reach overlaps the drop radius
 and its deposit can accept another unit; you do not need to align a decorative
 harvester attachment. Other vehicles get
 neutral keyboard inputs, but their momentum and collisions can still move them.
@@ -230,6 +240,7 @@ wall-clock time.
 | Delivery total increases while pickup count stays flat | The fleet is unloading previously collected cargo; these counters measure different parts of the cycle. |
 | Keyboard has no effect | Enable its checkbox, remove focus from text/numeric fields, and select a controlled body. Check actuator-specific mappings. |
 | A drone will not brake with Space | Use its force channels to counter motion; this actuator has no kart brake. |
+| A drone drops out of the side-on view | It is falling under the preset's downward gravity. Apply the upward body-local force and keep advancing physics. |
 | Scene edits disappeared | Vehicle count/type reconstruct the original preset. Reimport your saved scene and use Reset for subsequent trials. |
 | A count is rejected | Enter a whole number from 1 through 128. Invalid input leaves the existing scene intact. |
 | Planning feels slow | Pause and use four vehicles first. Reduce Walkers only as a documented new configuration; changing it resets the run. |

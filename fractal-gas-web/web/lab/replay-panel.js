@@ -2,11 +2,20 @@ import { WorldPlayback } from "./playback.js";
 
 // DOM adapter for the independent playback clock. No physics or archive code.
 export class ReplayPanel {
-  constructor({ stop, show, live, resume, decision, error }) {
+  constructor({
+    stop,
+    show,
+    live,
+    resume,
+    decision,
+    error,
+    animationChanged = () => {},
+  }) {
+    this.animationChanged = animationChanged;
     this.$ = (id) => document.getElementById(id);
     this.playback = new WorldPlayback({
       show: (frame, index) => {
-        show(frame);
+        show(frame, { seek: !this.playback.playing });
         decision(frame.decision);
         this.$("motion-timeline").value = index;
       },
@@ -24,8 +33,10 @@ export class ReplayPanel {
       if (this.playback.playing) this.playback.pause();
       else this.playback.play();
     };
-    this.$("motion-speed").onchange = () =>
-      (this.playback.speed = +this.$("motion-speed").value);
+    this.$("motion-speed").onchange = () => {
+      this.playback.speed = +this.$("motion-speed").value;
+      this.update();
+    };
     this.$("motion-live").onclick = () => {
       this.playback.live();
       live();
@@ -76,6 +87,11 @@ export class ReplayPanel {
     const p = this.playback,
       r = this.recording,
       length = r?.length || 0;
+    this.animationChanged({
+      active: p.active,
+      playing: p.playing,
+      speed: p.speed,
+    });
     this.$("motion-timeline").max = Math.max(0, length - 1);
     if (!p.active) this.$("motion-timeline").value = Math.max(0, length - 1);
     this.$("motion-play").textContent = p.playing

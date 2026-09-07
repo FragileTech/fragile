@@ -3,7 +3,15 @@
 Unreleased
 ----------
 
+* Add auto-detected and explicitly configurable rocket/drone flight mode with downward gravity and side-on/overhead camera views.
+
+* Add optional vehicle and world animations with a persistent reduced-motion-aware switch, paused idle motion, and Workshop preview controls.
+
 * Make shared-prefix execution the default for new Wave Jump searches while preserving explicit full-path settings and legacy in-flight checkpoints.
+
+* Derive the exact commutation criterion for the existing even quantum regional algebras, including low-dimensional vacuum sectors and the equivalent native descriptor-independence test in the nondegenerate case.
+* Verify the recorded Wilson multiplication commutator by expanding its original holonomy traces, weights, and full-face masks before extending to bounded cylinders and local von Neumann algebras.
+* Remove the failed pair-covariance counterexample from the HK argument and explicitly track multiplication locality and CAR commutators through their respective existing record transports.
 
 * Add optional Wave Jump shared-prefix execution with bounded search extension and single-action fallback.
 

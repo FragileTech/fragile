@@ -6,6 +6,8 @@ import { disposeGroup } from "./visuals/resources.js";
 import { stylePalette } from "./visuals/style-palette.js";
 import { labStyle } from "./visual-style.js";
 import { installStyleControls } from "./style-controls.js";
+import { labAnimations } from "./animations.js";
+import { installAnimationControls } from "./animation-controls.js";
 import { worldCatalog } from "./visuals/world-catalog.js";
 import { animateWorld } from "./visuals/world.js";
 
@@ -33,6 +35,59 @@ let environment,
 let center = new T.Vector3(0, 0, 0.4),
   modelSpan = 2;
 const select = document.getElementById("vehicle");
+const playButton = document.getElementById("animate-parts");
+let previewPlaying = false,
+  previewTime = 0,
+  lastTime;
+const motion = {
+  time: 0,
+  idleTime: 0,
+  speed: 0,
+  thrust: 0,
+  steer: 0,
+  enabled: false,
+  playing: false,
+  wheelTravel: 0,
+};
+function resetPreview() {
+  previewTime = 0;
+  lastTime = undefined;
+  motion.time =
+    motion.idleTime =
+    motion.speed =
+    motion.thrust =
+    motion.steer =
+    motion.wheelTravel =
+      0;
+  motion.enabled = motion.playing = false;
+  animateAgent(parts, motion);
+  if (model) animateWorld(model, 0, { enabled: false });
+}
+function syncPlayback() {
+  playButton.disabled = !labAnimations.enabled;
+  playButton.textContent = previewPlaying
+    ? "Pause animation"
+    : "Play animation";
+  playButton.setAttribute("aria-pressed", String(previewPlaying));
+  playButton.title = labAnimations.enabled
+    ? "Preview this asset’s motion"
+    : "Enable Animations above to preview motion";
+}
+playButton.addEventListener("click", () => {
+  previewPlaying = !previewPlaying;
+  lastTime = undefined;
+  syncPlayback();
+});
+labAnimations.subscribe(() => {
+  if (!labAnimations.enabled) {
+    previewPlaying = false;
+    resetPreview();
+  }
+  syncPlayback();
+});
+document.addEventListener("visibilitychange", () => {
+  lastTime = undefined;
+});
 const groups = new Map();
 for (const [kind, spec] of Object.entries(worldCatalog)) {
   if (!groups.has(spec.family)) {
@@ -52,7 +107,8 @@ const requested = new URLSearchParams(location.search).get("asset");
 if ([...select.options].some((option) => option.value === requested))
   select.value = requested;
 const descriptions = {
-  refinery: "Shared unloading apron, receiving hopper, twin processing tanks and transfer machinery. Full vehicles discharge gradually over two simulation seconds.",
+  refinery:
+    "Shared unloading apron, receiving hopper, twin processing tanks and transfer machinery. Full vehicles discharge gradually over two simulation seconds.",
   rocket:
     "Twin engine pods, a closed canopy, swept stabilizers, and independent animated exhausts.",
   kart: "Four exposed wheels, front steering, an open cockpit, and a chassis built around its power unit.",
@@ -126,7 +182,8 @@ function prepare(style) {
         helper.visible = document.getElementById("show-envelope").checked;
         holder.add(helper);
       }
-      parts = animatedParts(model);
+      parts = animatedParts(model, { kind: select.value, style });
+      resetPreview();
       const name = select.selectedOptions[0].text;
       document.getElementById("asset-title").textContent = name;
       document.getElementById("asset-description").textContent = spec
@@ -168,6 +225,11 @@ document.getElementById("show-envelope").addEventListener("change", (event) => {
 for (const button of document.querySelectorAll("[data-view]"))
   button.addEventListener("click", () => {
     view = button.dataset.view;
+    if (view !== "hero") {
+      previewPlaying = false;
+      resetPreview();
+      syncPlayback();
+    }
     for (const other of document.querySelectorAll("[data-view]"))
       other.setAttribute("aria-pressed", String(other === button));
   });
@@ -196,16 +258,25 @@ canvas.addEventListener("lostpointercapture", () => {
 new ResizeObserver(resize).observe(canvas.parentElement);
 function animate(time) {
   requestAnimationFrame(animate);
-  const moving = document.getElementById("animate-parts").checked;
-  animateAgent(parts, {
-    time: moving ? time / 1000 : 0,
-    speed: moving ? 0.4 : 0,
-    thrust: moving ? 0.6 : 0,
-    steer: moving ? Math.sin(time / 2000) * 0.6 : 0,
-  });
-  if (model) animateWorld(model, moving ? time / 1000 : 0);
+  if (document.hidden) return;
+  if (previewPlaying && labAnimations.enabled) {
+    const dt =
+      lastTime === undefined ? 0 : Math.min((time - lastTime) / 1000, 0.05);
+    previewTime += dt;
+    motion.time = motion.idleTime = previewTime;
+    motion.speed = 0.4 + Math.sin(previewTime * 0.7) * 0.18;
+    motion.thrust = 0.5 + Math.sin(previewTime * 0.7) * 0.2;
+    motion.steer = Math.sin(previewTime * 0.5) * 0.6;
+    motion.wheelTravel += motion.speed * dt;
+    motion.enabled = motion.playing = true;
+    animateAgent(parts, motion);
+    if (model) animateWorld(model, previewTime);
+  }
+  lastTime = time;
   poseCamera();
   renderer.render(world, camera);
 }
 installStyleControls();
+installAnimationControls();
+syncPlayback();
 requestAnimationFrame(animate);

@@ -12,6 +12,9 @@ const catalog = JSON.parse(
 );
 function config(type = "harvester") {
   return {
+    // Cargo tests exercise collection/unloading semantics, not flight dynamics.
+    // Keep this shared fixture planar now that drones auto-enable flight mode.
+    environment: { flight: false },
     size: [64, 44],
     task: "forage",
     agent_types: catalog,

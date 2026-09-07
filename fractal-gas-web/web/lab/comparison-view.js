@@ -38,6 +38,7 @@ export class ComparisonView {
     this.branches?.forEach((b, i) => {
       const frame = b.motion.frame(Math.min(index, b.motion.length - 1));
       this.renderers[i].update(frame.state, frame.action);
+      this.renderers[i].setAnimationPlayback({ playing: false, seek: true });
     });
   }
   dispose() {

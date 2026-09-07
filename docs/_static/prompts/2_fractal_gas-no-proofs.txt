@@ -30419,6 +30419,37 @@ give the zero centered mode.
 
 :::
 
+:::{prf:theorem} Exact commutation test for the existing quantum regional algebras
+:label: thm-ym-quantum-regional-commutation-test
+
+Use exactly the regional mode spaces $\mathcal H_O,\mathcal H_V$, global
+mode space $\mathcal K$, and even observable vacuum representation of
+{prf:ref}`thm-ym-hk-record-instantiation`, with its same stationary law.
+The following exhausts the possibilities for these two regional algebras.
+
+1. If $\dim\mathcal K\le1$, they commute.
+2. If $\dim\mathcal K=2$, they commute exactly when one regional mode
+   space is zero or both regional mode spaces have dimension at most one.
+3. If $\dim\mathcal K\ge3$, they commute exactly when
+   $\mathcal H_O\perp\mathcal H_V$ or both regional mode spaces are the
+   same one-dimensional subspace.
+
+In the third case, whenever either regional mode space has dimension at
+least two, the commutation test is therefore precisely
+
+$$
+\Pi_O\Pi_V=0
+\quad\Longleftrightarrow\quad
+\mathbb E_\pi[G\mid\sigma(q_O)]=\mathbb E_\pi G
+\quad\text{for every bounded }\sigma(q_V)\text{-measurable }G.
+$$
+
+Equivalently, the two existing descriptor sigma algebras are independent
+under this same $\pi$. This equivalence is a test of the prescribed
+quantum net, not an independence assumption on the algorithm.
+
+:::
+
 :::{prf:theorem} Separate local-net application to the recorded CAR representation
 :label: thm-ym-hk-record-instantiation
 
@@ -30496,6 +30527,22 @@ Hence $0<|s|<1$ is an explicit failure of observable locality if these
 two descriptors are assigned spacelike separated regions. This checks
 even observables themselves, rather than inferring their noncommutation
 from a nonzero odd anticommutator.
+
+The existing fermionic lift in
+{prf:ref}`cor-sm-direct-fock-isomorphism` transports these same operators
+and coefficients: for its one-mode unitary $V$,
+
+$$
+\langle Vf,Vg\rangle=\langle f,g\rangle,\qquad
+\Gamma_-(V)[n_f,n_g]\Gamma_-(V)^{-1}=[n_{Vf},n_{Vg}].
+$$
+
+Thus encoding the modes preserves the computed commutator, including its
+norm. The multiplication identity in
+{prf:ref}`thm-ym-native-multiplication-locality` applies to $M_F,M_G$;
+it cannot be substituted for this CAR identity. This follows from the
+already established product distinction in
+{prf:ref}`thm-lqft-product-obstruction`.
 
 The causal episode map specifies which regions are spacelike; the
 operator commutators use these covariance coefficients.

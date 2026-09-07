@@ -346,6 +346,7 @@
       "label": "Kestrel · vector rocket",
       "physics": {
         "controlled": true,
+        "flight_capable": true,
         "radius": 0.65,
         "mass": 1,
         "thrust": 16,
@@ -364,6 +365,7 @@
       "label": "Mite · electric kart",
       "extends": "rocket",
       "physics": {
+        "flight_capable": false,
         "drag": 0.7,
         "angular_drag": 4,
         "actuator": {
@@ -382,6 +384,7 @@
       "label": "Wisp · survey drone",
       "extends": "rocket",
       "physics": {
+        "flight_capable": true,
         "mass": 0.7,
         "thrust": 11,
         "torque": 2,

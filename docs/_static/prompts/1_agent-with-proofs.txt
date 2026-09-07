@@ -9501,19 +9501,23 @@ $D=\nabla-iB/\sigma$, and $Q_B=-\sigma^2\Delta_GR/(2R)$.
 For the equations already stated,
 $\partial_s\rho+\operatorname{div}_G(\rho v)=r\rho$ and
 $\partial_sV+|p|_G^2/2+\Phi_{\mathrm{eff}}=0$, the exact amplitude equation is
+
 $$
 i\sigma\partial_s\psi=
 \left[-\tfrac{\sigma^2}{2}\Delta_B+\Phi_{\mathrm{eff}}-Q_B
 +\tfrac{i\sigma}{2}r\right]\psi,
 \qquad\psi=Re^{iV/\sigma}.
 $$
+
 *Proof.* The product rule gives
+
 $$
 \frac{\Delta_B\psi}{\psi}=\frac{\Delta_GR}{R}
 -\frac{|p|_G^2}{\sigma^2}
 +\frac{i}{\sigma}\left(2\frac{\langle dR,p\rangle_G}{R}
 +\operatorname{div}_Gv\right).
 $$
+
 Thus the kinetic real part is $Q_B+|p|_G^2/2$.
 The $-Q_B$ term cancels it to the given classical HJB expression.
 The imaginary part is
@@ -18466,19 +18470,23 @@ $D=\nabla-iB/\sigma$, and $Q_B=-\sigma^2\Delta_GR/(2R)$.
 For the equations already stated,
 $\partial_s\rho+\operatorname{div}_G(\rho v)=r\rho$ and
 $\partial_sV+|p|_G^2/2+\Phi_{\mathrm{eff}}=0$, the exact amplitude equation is
+
 $$
 i\sigma\partial_s\psi=
 \left[-\tfrac{\sigma^2}{2}\Delta_B+\Phi_{\mathrm{eff}}-Q_B
 +\tfrac{i\sigma}{2}r\right]\psi,
 \qquad\psi=Re^{iV/\sigma}.
 $$
+
 *Proof.* The product rule gives
+
 $$
 \frac{\Delta_B\psi}{\psi}=\frac{\Delta_GR}{R}
 -\frac{|p|_G^2}{\sigma^2}
 +\frac{i}{\sigma}\left(2\frac{\langle dR,p\rangle_G}{R}
 +\operatorname{div}_Gv\right).
 $$
+
 Thus the kinetic real part is $Q_B+|p|_G^2/2$.
 The $-Q_B$ term cancels it to the given classical HJB expression.
 The imaginary part is

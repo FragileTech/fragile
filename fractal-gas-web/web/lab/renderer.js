@@ -9,6 +9,9 @@ import { disposeGroup as dispose } from "./visuals/resources.js";
 import { stylePalette } from "./visuals/style-palette.js";
 import { WorldDynamics, animateWorld } from "./visuals/world.js";
 import { labStyle } from "./visual-style.js";
+import { flightMode } from "./agent-types.js";
+import { labAnimations } from "./animations.js";
+import { AnimationClock } from "./animation-clock.js";
 
 function line(points, color, dashed = false) {
   const geometry = new T.BufferGeometry().setFromPoints(
@@ -41,6 +44,12 @@ function prop(kind, style, radius = 1, color = palette.gold) {
 export class LabRenderer {
   constructor(canvas, { isEditing = () => false } = {}) {
     this.canvas = canvas;
+    this.animationClock = new AnimationClock();
+    this.animationStep = { playing: false, speed: 1 };
+    this.animationsEnabled = labAnimations.enabled;
+    this.unsubscribeAnimations = labAnimations.subscribe((enabled) =>
+      this.setAnimationsEnabled(enabled),
+    );
     this.style = labStyle.current;
     this.unsubscribeStyle = labStyle.subscribe((style) =>
       this.prepareStyle(style),
@@ -83,7 +92,9 @@ export class LabRenderer {
     this.static = new T.Group();
     this.dynamic = new T.Group();
     this.overlays = new T.Group();
-    this.world.add(this.static, this.dynamic, this.overlays);
+    this.coordinateFrame = new T.Group();
+    this.coordinateFrame.add(this.static, this.dynamic, this.overlays);
+    this.world.add(this.coordinateFrame);
     this.layers = {
       tree: true,
       cloud: true,
@@ -92,6 +103,7 @@ export class LabRenderer {
     };
     this.zoom = 1;
     this.top = false;
+    this.flightMode = false;
     this.viewCenter = [32, 22];
     this.ray = new T.Raycaster();
     this.plane = new T.Plane(new T.Vector3(0, 0, 1), 0);
@@ -202,12 +214,21 @@ export class LabRenderer {
     this.camera.right = (span * width) / height;
     this.camera.top = span;
     this.camera.bottom = -span;
-    this.camera.position.set(
-      this.viewCenter[0],
-      this.viewCenter[1] - (this.top ? 0.001 : 45),
-      this.top ? 90 : 60,
-    );
-    this.camera.lookAt(this.viewCenter[0], this.viewCenter[1], 0);
+    const side = this.flightMode && !this.top;
+    this.coordinateFrame.rotation.x = side ? Math.PI / 2 : 0;
+    this.plane.normal.set(0, side ? 1 : 0, side ? 0 : 1);
+    this.plane.constant = 0;
+    if (side) {
+      this.camera.position.set(this.viewCenter[0], -90, this.viewCenter[1]);
+      this.camera.lookAt(this.viewCenter[0], 0, this.viewCenter[1]);
+    } else {
+      this.camera.position.set(
+        this.viewCenter[0],
+        this.viewCenter[1] - (this.top ? 0.001 : 45),
+        this.top ? 90 : 60,
+      );
+      this.camera.lookAt(this.viewCenter[0], this.viewCenter[1], 0);
+    }
     this.camera.updateProjectionMatrix();
   }
   worldPoint(event) {
@@ -222,10 +243,38 @@ export class LabRenderer {
       this.camera,
     );
     const p = this.ray.ray.intersectPlane(this.plane, new T.Vector3());
-    return p ? [p.x, p.y] : null;
+    return p ? [p.x, this.flightMode && !this.top ? p.z : p.y] : null;
+  }
+  setAnimationsEnabled(enabled) {
+    this.animationsEnabled = !!enabled;
+    this.animationClock.reset(this.simulationTime || 0);
+    this.bodyLayer?.setAnimationsEnabled(this.animationsEnabled);
+    this.worldDynamics?.setAnimationsEnabled(this.animationsEnabled);
+    if (this.state) this.update(this.state, this.action);
+    if (!this.animationsEnabled) {
+      for (const model of this.reactors || []) {
+        animateWorld(model, 0, { enabled: false });
+        if (!model.children[0].userData.assetModel)
+          model.children[0].rotation.z = 0;
+      }
+    }
+  }
+  setAnimationPlayback({ seek = false, ...playback } = {}) {
+    this.animationClock.setPlayback(playback);
+    if (seek) {
+      this.animationClock.reset(this.simulationTime || 0);
+      this.bodyLayer?.resetAnimation();
+      this.animationPulseUntil = 0;
+    }
+  }
+  pulseAnimation() {
+    this.animationPulseUntil = performance.now() + 120;
   }
   load(scene, info, channels) {
     this.clearPan();
+    this.simulationTime = 0;
+    this.animationPulseUntil = 0;
+    this.animationClock.reset();
     dispose(this.static);
     dispose(this.dynamic);
     dispose(this.overlays);
@@ -234,6 +283,8 @@ export class LabRenderer {
     this.channels = channels;
     this.state = null;
     this.action = null;
+    this.flightMode = flightMode(scene);
+    this.top = false;
     this.size = scene.size || [64, 44];
     this.viewCenter = this.size.map((v) => v / 2);
     this.zoom = 1;
@@ -264,6 +315,7 @@ export class LabRenderer {
       this.tethers,
     );
     this.food = this.worldDynamics.pickups;
+    this.setAnimationsEnabled(this.animationsEnabled);
     this.treeGroup = new T.Group();
     this.cloudGroup = new T.Group();
     this.hulls = new T.Group();
@@ -403,6 +455,8 @@ export class LabRenderer {
           bodyGroup,
           tetherGroup,
         );
+        bodyLayer.setAnimationsEnabled(this.animationsEnabled);
+        worldDynamics.setAnimationsEnabled(this.animationsEnabled);
         if (this.state) {
           bodyLayer.update(this.state, this.action);
           worldDynamics.update(this.state, this.action);
@@ -520,7 +574,9 @@ export class LabRenderer {
     });
     this.scenery.updateLod?.(this.camera, this.canvas.clientHeight);
     for (const reactor of this.reactors)
-      animateWorld(reactor, this.simulationTime);
+      animateWorld(reactor, this.simulationTime, {
+        enabled: this.animationsEnabled,
+      });
     dispose(this.tandemTethers);
     if (this.config.task === "tandem" && this.controlled.length >= 2) {
       const points = this.controlled.map((b) => [
@@ -735,6 +791,7 @@ export class LabRenderer {
     this.clearPan();
     this.inputController.abort();
     this.unsubscribeStyle();
+    this.unsubscribeAnimations();
     this.canvas.removeEventListener(
       "webglcontextrestored",
       this.restoreContext,
@@ -751,15 +808,34 @@ export class LabRenderer {
   animate(time) {
     const start = performance.now();
     this.frame = requestAnimationFrame(this.animate);
+    const visible =
+      !document.hidden && !this.renderer.getContext().isContextLost();
+    const motion = this.animationClock.tick(
+      time,
+      visible && this.animationsEnabled,
+    );
+    if (!visible) return;
     this.bodyLayer?.updateLod(this.camera, this.canvas.clientHeight);
     this.scenery?.updateLod?.(this.camera, this.canvas.clientHeight);
     this.worldDynamics?.pickupBatch.updateLod(
       this.camera,
       this.canvas.clientHeight,
     );
-    for (const model of this.reactors || [])
-      if (!model.children[0].userData.assetModel)
-        model.children[0].rotation.z = (this.simulationTime || 0) * 0.3;
+    let animationCpuMs = 0;
+    if (this.animationsEnabled) {
+      const animationStart = performance.now();
+      this.animationStep.playing =
+        motion.playing || time < (this.animationPulseUntil || 0);
+      this.animationStep.speed = motion.speed;
+      this.bodyLayer?.animate(motion.dt, motion.idleTime, this.animationStep);
+      this.worldDynamics?.animate(motion.idleTime, this.animationStep);
+      for (const model of this.reactors || []) {
+        if (!model.children[0].userData.assetModel)
+          model.children[0].rotation.z = motion.idleTime * 0.3;
+        else animateWorld(model, motion.idleTime);
+      }
+      animationCpuMs = performance.now() - animationStart;
+    }
     this.renderer.render(this.world, this.camera);
     const previous = this.performance || {};
     this.performance = {
@@ -768,6 +844,7 @@ export class LabRenderer {
           (0.1 * 1000) / Math.max(1, time - this.lastFrame)
         : 0,
       cpuMs: performance.now() - start,
+      animationCpuMs,
       calls: this.renderer.info.render.calls,
       triangles: this.renderer.info.render.triangles,
     };

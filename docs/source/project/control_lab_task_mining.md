@@ -2,10 +2,14 @@
 # Collaborative mining: haul a heavy rock together
 
 :::{div} feynman-prose
-Two rockets pull one rock toward a delivery base. The useful question is not simply
-whether both engines are firing: are their forces helping the same journey? A
-rocket pulling across its partner's path can stretch the connections and waste
-motion. Watch the rock, both tethers, and the destination together.
+The two shipped rockets pull one rock toward a delivery base. They now fly
+side-on in a downward gravitational field, so altitude is part of the job: an
+engine must spend thrust not only on hauling but also on keeping its rocket from
+falling.
+The useful question is not simply whether both engines are firing: are their
+forces helping the same journey? A rocket pulling across its partner's path can
+stretch the connections and waste motion. Watch the rock, both tethers, the
+altitude, and the destination together.
 
 This tutorial starts with the supplied **Collaborative mining** environment. You
 will inspect its connections, run a planner, compare one powered rocket with two,
@@ -30,17 +34,20 @@ The rock's center must enter that zone to register a delivery. Merely flying a
 rocket into the base does not deliver its cargo.
 
 The irregular outer boundary and central polygonal hole are lethal wall geometry.
-The gravity well at `[47, 22]` attracts bodies; it is a force source, not another
-base. The direct starting journey is toward the nearby base, away from the
-central obstacle. Later pursuit of respawned cargo can bring the team into more
-awkward configurations. After reset, the whole arena is already visible and the
-camera button reads **Follow agent**. Pressing it follows a rocket and changes
-the label to **Whole arena**; press that to return to the overview. Use
-**2D / 3D** to switch between an angled view and top-down inspection.
+Downward gravity pulls the rockets and cargo toward lower altitude, so a rocket
+that stops thrusting will descend; propulsion is needed to hold altitude while
+hauling. The gravity well at `[47, 22]` attracts bodies too; it is a force
+source, not another base. The direct starting journey is toward the nearby base,
+away from the central obstacle. Later pursuit of respawned cargo can bring the
+team into more awkward configurations. After reset, the whole arena is already
+visible and the camera button reads **Follow agent**. Pressing it follows a
+rocket and changes the label to **Whole arena**; press that to return to the
+overview. Use **Side / overhead** to switch between the side view and overhead
+inspection.
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/mining-overview.png
-:alt: Angled reset view of Collaborative mining showing two rockets, the heavy rock, delivery base, central obstacle, and gravity well.
+:alt: Side reset view of Collaborative mining showing two rockets, the heavy rock, delivery base, central obstacle, and gravity well.
 :class: feynman-added
 
 The reset scene has one cargo rock and two connections. Identify the delivery base before watching the planner's paths.
@@ -66,8 +73,9 @@ collecting a trial.
    for six physics frames, or 0.1 simulated seconds at this scene's 60 Hz rate.
    Look for a small change in positions and tether shape. One step is an
    inspection exercise, not a promised delivery.
-5. Switch to top-down view. Compare the rock's position with its starting position
-   and the base. Distinguish the bright executed bodies from candidate paths:
+5. Switch to overhead view. Compare the rock's position with its starting position
+   and the base, and check whether the rockets are losing altitude. Distinguish
+   the bright executed bodies from candidate paths:
    the paths describe futures considered during planning.
 6. Press **Run experiment**, watch several decisions, then **Pause experiment**.
    Check whether the cargo has approached the base, whether both connections
@@ -83,7 +91,7 @@ candidates; it does not add towing force to the executed world.
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/mining-detail.png
-:alt: Top-down Collaborative mining view after one planned Step, showing the nearby rockets, cargo, and base.
+:alt: Overhead Collaborative mining view after one planned Step, showing the nearby rockets, cargo, and base.
 :class: feynman-added
 
 After one Step, inspect the cargo and both tethers against the base. This capture illustrates an early decision, not a completed delivery.
@@ -155,7 +163,7 @@ rockets initially point away from the base, so it is not a delivery recipe.
 
 1. Reset the unchanged preset. Press **Save state** and keep the downloaded
    snapshot. This stores the same physical starting point for both trials.
-2. Open **Edit scene**, choose a top-down view, and expand **Actuator channels**.
+2. Open **Edit scene**, choose an overhead view, and expand **Actuator channels**.
    Do not move or edit any entities. Editing the scene would change the experiment
    and can invalidate the snapshot's scene fingerprint.
 3. Set every channel to zero. Set body 0's **thrust** to `1`, leaving its **torque**
@@ -173,9 +181,12 @@ rockets initially point away from the base, so it is not a delivery recipe.
    discontinuity in the recording; it is not physical travel back to the start.
 
 This compares one *powered* rocket with two in the same connected system. The
-unpowered rocket still has mass, drag, and a tether; it has not been removed.
-Do not infer a universal speed ratio from this brief transient. Turning,
-connection geometry, drag, and collisions all matter over a longer journey.
+unpowered rocket still has mass, drag, gravity, and a tether; it has not been
+removed. In the one-engine trial, the powered rocket also has to spend thrust
+to maintain altitude, so some of its force is not available for hauling. Do not
+infer a universal speed ratio from this brief transient. Turning, connection
+geometry, drag, gravity, altitude control, and collisions all matter over a
+longer journey.
 
 For freehand practice, enable **Keyboard control**, choose **Select & move**, and
 click a rocket without dragging it. Click away from form fields before using
@@ -245,9 +256,10 @@ clock and thread selection separately.
 ## Recover from common problems
 
 :::{div} feynman-prose
-If the rock barely moves, inspect the actual thrust direction and whether both
-rockets are helping. A heavy load responds gradually, and increasing planner
-population does not increase engine strength. If a connection disappears, inspect
+If the rock barely moves, inspect the actual thrust direction, altitude, and
+whether both rockets are helping. A heavy load responds gradually, and each
+rocket must also counter downward gravity; increasing planner population does
+not increase engine strength. If a connection disappears, inspect
 for a delivery or force-induced break, then approach the active cargo within hook
 range. Advancing physics is necessary for reacquisition.
 

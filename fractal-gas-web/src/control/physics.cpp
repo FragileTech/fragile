@@ -296,6 +296,7 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
     if (!(word(r, l.flags + b) & active_flag)) continue;
     const auto& def = s.bodies[b];
     Vec2 p = position(r, l, b), v = velocity(r, l, b);
+    if (s.flight_mode) v.y -= h * s.downward_gravity;
     for (const auto& g : s.gravity) {
       Vec2 d = g.position - p;
       float d2 = length2(d) + g.softening * g.softening;
@@ -815,6 +816,7 @@ std::vector<float> Physics::inspect(const float* r,
     const auto& def = s.bodies[b];
     const Vec2 p = position(r, l, b), v = velocity(r, l, b);
     Vec2 force = v * (-def.drag * def.mass);
+    if (s.flight_mode) force.y -= def.mass * s.downward_gravity;
     for (const auto& g : s.gravity) {
       Vec2 d = g.position - p;
       float d2 = length2(d) + g.softening * g.softening;

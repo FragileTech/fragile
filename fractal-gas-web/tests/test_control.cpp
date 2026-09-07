@@ -54,6 +54,60 @@ TEST_CASE(control_free_flight) {
   CHECK_CLOSE(position(b.row(0), s->layout, 0).y, 53, 1e-5);
   CHECK(result.frames == 60);
 }
+TEST_CASE(control_flight_mode_gravity_and_propulsion) {
+  const auto falling = Scene::compile(R"({"size":[100,100],"physics":{"dt":0.1,"substeps":1},
+    "environment":{"flight":true,"downward_gravity":10},
+    "bodies":[{"position":[50,50],"drag":0,"angular_drag":0,
+      "controlled":true,"flight_capable":false}]})");
+  Physics p(falling);
+  StateBatch a(1, *falling), b(1, *falling);
+  a.reset(*falling, 0);
+  float action[2] = {};
+  int32_t frames = 1;
+  StepResult result;
+  p.step(a, nullptr, action, &frames, b, &result);
+  CHECK(falling->flight_mode);
+  CHECK_CLOSE(position(b.row(0), falling->layout, 0).x, 50, 1e-5);
+  CHECK_CLOSE(position(b.row(0), falling->layout, 0).y, 49.9, 1e-5);
+  CHECK_CLOSE(velocity(b.row(0), falling->layout, 0).y, -1, 1e-5);
+
+  const auto rocket = Scene::compile(R"({"size":[100,100],"physics":{"dt":0.1,"substeps":1},
+    "environment":{"flight":true,"downward_gravity":9},
+    "bodies":[{"position":[50,50],"angle":1.57079632679,"drag":0,
+      "angular_drag":0,"controlled":true,"flight_capable":true}]})");
+  Physics rocket_physics(rocket);
+  StateBatch rocket_a(1, *rocket), rocket_b(1, *rocket);
+  rocket_a.reset(*rocket, 0);
+  float thrust[2] = {1, 0};
+  rocket_physics.step(rocket_a, nullptr, thrust, &frames, rocket_b, &result);
+  CHECK(position(rocket_b.row(0), rocket->layout, 0).y > 50);
+}
+TEST_CASE(control_flight_mode_auto_detection_and_override) {
+  const auto automatic = Scene::compile(R"({"bodies":[
+    {"position":[10,10],"controlled":true,"flight_capable":true}]})");
+  CHECK(automatic->flight_mode);
+  const auto passive = Scene::compile(R"({"bodies":[
+    {"position":[10,10],"flight_capable":true}]})");
+  CHECK(!passive->flight_mode);
+  const auto disabled = Scene::compile(R"({"environment":{"flight":false},"bodies":[
+    {"position":[10,10],"controlled":true,"flight_capable":true}]})");
+  CHECK(!disabled->flight_mode);
+  const auto forced = Scene::compile(R"({"environment":{"flight":true},"bodies":[
+    {"position":[10,10],"controlled":true}]})");
+  CHECK(forced->flight_mode);
+}
+TEST_CASE(control_flight_mode_is_reported_by_inspection) {
+  const auto s = Scene::compile(R"({"size":[100,100],"physics":{"dt":0.1,"substeps":1},
+    "environment":{"flight":true,"downward_gravity":10},
+    "bodies":[{"position":[50,50],"drag":0}]})");
+  Physics p(s);
+  StateBatch state(1, *s);
+  state.reset(*s, 0);
+  const auto rows = p.inspect(state.row(0), nullptr);
+  CHECK(rows.size() >= 8);
+  CHECK_CLOSE(rows[5], 0, 1e-5);
+  CHECK_CLOSE(rows[6], -10, 1e-5);
+}
 TEST_CASE(control_squared_distance_is_per_frame_and_vehicle_mean) {
   auto s = Scene::compile(R"({"size":[100,100],
     "physics":{"dt":0.1,"substeps":4},

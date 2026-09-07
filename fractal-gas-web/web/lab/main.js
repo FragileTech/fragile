@@ -23,12 +23,16 @@ import { createSceneEditor } from "./scene-editor.js";
 import { installManualControl } from "./manual-control.js";
 import { LabRenderer } from "./renderer.js";
 import { installStyleControls } from "./style-controls.js";
+import { installAnimationControls } from "./animation-controls.js";
 import { initHelp } from "../help.js";
 import { Recording, exportRecording, importRecording } from "./archive.js";
 const $ = (id) => document.getElementById(id),
   copy = (value) => structuredClone(value);
-const renderer = new LabRenderer($("world"), { isEditing: () => !$("editor").hidden });
+const renderer = new LabRenderer($("world"), {
+  isEditing: () => !$("editor").hidden,
+});
 installStyleControls();
+installAnimationControls();
 const vehicleCounts = new Map();
 const miningOptions = new Map();
 let antsOptions = { ...DEFAULT_ANTS_OPTIONS },
@@ -54,9 +58,16 @@ let importPending,
 const replay = new ReplayPanel({
   stop,
   error,
-  show(frame) {
+  animationChanged({ active, playing, speed }) {
+    renderer.setAnimationPlayback({
+      playing: active ? playing : running,
+      speed: active ? speed : 1,
+    });
+  },
+  show(frame, { seek = false } = {}) {
     currentState = frame.state;
     renderer.update(frame.state, frame.action);
+    if (seek) renderer.setAnimationPlayback({ seek: true });
     const bits = new Uint32Array(
       frame.state.buffer,
       frame.state.byteOffset,
@@ -241,7 +252,10 @@ function currentRows() {
   return rows;
 }
 function applySettings(values = {}) {
-  appliedCoefficients = coefficientValues({ ...appliedCoefficients, ...values });
+  appliedCoefficients = coefficientValues({
+    ...appliedCoefficients,
+    ...values,
+  });
   for (const [key, value] of Object.entries(values)) {
     if (key in appliedCoefficients) continue;
     const node = $(key);
@@ -260,6 +274,20 @@ function error(value) {
   status(value.message || String(value), true);
   stop();
 }
+function updateViewControls() {
+  const flight = renderer.flightMode;
+  const view = $("view");
+  view.textContent = flight ? "Side / overhead" : "2D / 3D";
+  view.title = flight
+    ? "Switch between side-on and overhead flight views"
+    : "Switch between top and angled views";
+  view.dataset.help = flight
+    ? "Switch between the horizontal side-on flight view and the overhead physics view."
+    : "Switch between the top-down physics view and the angled three-dimensional presentation.";
+  $("hint").textContent = flight
+    ? "SCROLL TO ZOOM · SIDE / OVERHEAD TO CHANGE VIEW"
+    : "SCROLL TO ZOOM · 2D / 3D TO CHANGE VIEW";
+}
 function settings() {
   return {
     ...controllerSettings.values(),
@@ -276,6 +304,7 @@ function settings() {
 }
 function stop() {
   running = false;
+  renderer.setAnimationPlayback({ playing: false });
   if (ready) worker?.postMessage({ type: "run", value: false });
   $("run").textContent = "▶ Run experiment";
 }
@@ -305,7 +334,9 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
     $("hook-stiffness-slider").value = Math.log10(stiffness + 1);
     $("rock-size").value = rocks.scale;
     $("rock-count").value = rocks.count;
-    $("rock-count-field").hidden = scene.rock_options?.collaborative ?? scene.name === "Collaborative mining";
+    $("rock-count-field").hidden =
+      scene.rock_options?.collaborative ??
+      scene.name === "Collaborative mining";
   }
   $("ants-vehicle-count").value = vehicleCount(scene);
   const loadedAntsOptions = antsOptionsFromScene(scene);
@@ -327,6 +358,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
   updateDiagnostics();
   running = false;
   currentScene = copy(scene);
+  renderer.setAnimationPlayback({ playing: false, seek: true });
   editor.setScene(scene);
   $("focus").textContent = "Follow agent";
   record = new Recording();
@@ -375,6 +407,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
       $("controller-label").textContent = settings().algorithm.toUpperCase();
       try {
         renderer.load(currentScene, data.info, data.channels);
+        updateViewControls();
         replay.attach(
           importPending?.motion ||
             storage.create(
@@ -414,6 +447,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
         worker.postMessage({ type: "step" });
       } else if (continuation?.running) {
         running = true;
+        renderer.setAnimationPlayback({ playing: true, speed: 1 });
         $("run").textContent = "Ⅱ Pause experiment";
         worker.postMessage({ type: "run", value: true });
       }
@@ -452,6 +486,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
       if (replay.active) return;
       currentState = data.state;
       renderer.update(data.state, data.action);
+      if ($("manual").checked) renderer.pulseAnimation();
       updateFrame(data);
       if (ready && !data.running)
         $("run-state").textContent = data.replay ? "REPLAY" : "PAUSED";
@@ -656,7 +691,10 @@ async function preset() {
             vehicleCounts.get(scenario) ?? vehicleCount(template),
           );
     if (rockOptions(scene))
-      scene = configureRocks(scene, miningOptions.get(scenario) ?? rockOptions(scene));
+      scene = configureRocks(
+        scene,
+        miningOptions.get(scenario) ?? rockOptions(scene),
+      );
     $("toy").textContent = String($("scenario").selectedIndex + 1).padStart(
       2,
       "0",
@@ -703,7 +741,8 @@ $("ants-vehicle-count").onchange = () => {
 };
 $("hook-stiffness-slider").oninput = () => {
   const value = +$("hook-stiffness-slider").value;
-  $("hook-stiffness").value = value === 6 ? 1000000 : Math.round(10 ** value - 1);
+  $("hook-stiffness").value =
+    value === 6 ? 1000000 : Math.round(10 ** value - 1);
 };
 $("hook-stiffness").oninput = () => {
   $("hook-stiffness-slider").value = Math.log10(
@@ -729,11 +768,14 @@ $("apply-rocks").onclick = () => {
     miningOptions.set($("scenario").value, options);
     editor.clearHistory();
     loadScene(scene);
-  } catch (e) { error(e); }
+  } catch (e) {
+    error(e);
+  }
 };
 $("run").onclick = () => {
   replay.playback.live();
   running = !running;
+  renderer.setAnimationPlayback({ playing: running, speed: 1 });
   $("run").textContent = running ? "Ⅱ Pause experiment" : "▶ Run experiment";
   worker.postMessage({ type: "run", value: running });
   status();
@@ -792,7 +834,8 @@ $("clean").onclick = () => {
   $("clean").textContent = clean ? "Show diagnostics" : "Clean view";
 };
 $("world").addEventListener("camerachange", () => {
-  $("focus").textContent = renderer.followBody == null ? "Follow agent" : "Whole arena";
+  $("focus").textContent =
+    renderer.followBody == null ? "Follow agent" : "Whole arena";
 });
 $("reset-view").onclick = () => renderer.focus(null);
 $("focus").onclick = () => {

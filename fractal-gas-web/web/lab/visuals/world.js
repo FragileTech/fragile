@@ -30,6 +30,7 @@ export class WorldInstances {
     this.frustum = new T.Frustum();
     this.viewProjection = new T.Matrix4();
     this.bounds = new T.Sphere();
+    this.instanceTransform = new T.Matrix4();
   }
   add(kind, position, size = worldCatalog[kind]?.size, angle = 0) {
     if (!this.templates.has(kind)) {
@@ -98,7 +99,7 @@ export class WorldInstances {
     return this;
   }
   update() {
-    const matrix = new T.Matrix4();
+    const matrix = this.instanceTransform;
     for (const e of this.entries) e.updateMatrix();
     for (const { mesh, entries, matrix: local, lod } of this.batches) {
       let count = 0;
@@ -139,15 +140,30 @@ export class WorldInstances {
   }
 }
 
-export function animateWorld(root, time) {
-  root.traverse((part) => {
-    const motion = part.userData.motion;
-    if (motion === "world-spin") part.rotation.z = time * 0.16;
-    if (motion === "world-gimbal") {
-      const axis = ["x", "y", "z"][part.userData.axisIndex];
-      part.rotation[axis] = time * part.userData.speed;
-    }
-  });
+const worldMotion = new WeakMap();
+export function animateWorld(root, time, { enabled = true } = {}) {
+  let bindings = worldMotion.get(root);
+  if (!bindings) {
+    bindings = [];
+    root.traverse((part) => {
+      const motion = part.userData.motion;
+      if (motion !== "world-spin" && motion !== "world-gimbal") return;
+      const axis =
+        motion === "world-spin"
+          ? "z"
+          : ["x", "y", "z"][part.userData.axisIndex];
+      if (axis)
+        bindings.push({
+          part,
+          axis,
+          rest: part.rotation[axis],
+          speed: motion === "world-spin" ? 0.16 : part.userData.speed,
+        });
+    });
+    worldMotion.set(root, bindings);
+  }
+  for (const { part, axis, rest, speed } of bindings)
+    part.rotation[axis] = enabled ? rest + time * speed : rest;
 }
 
 export function worldSurface(style, kind = "floor-tile") {
@@ -187,6 +203,12 @@ const Z = new T.Vector3(0, 0, 1);
 // without event queues, wall-clock timers, simulation mutations or GPU readback.
 export class WorldDynamics {
   constructor(scene, info, style, bodyLayer, parent, tetherParent) {
+    this.animationsEnabled = true;
+    this.offset = new T.Vector3();
+    this.start = new T.Vector3();
+    this.end = new T.Vector3();
+    this.delta = new T.Vector3();
+    this.direction = new T.Vector3();
     this.scene = scene;
     this.info = info;
     this.style = style;
@@ -247,8 +269,97 @@ export class WorldDynamics {
       const thrust =
         model === "rocket" ? worldModel(style, "thrust-plume") : null;
       if (thrust) this.group.add(thrust);
-      return { i, model, effect, thrust };
+      const stages = [];
+      thrust?.traverse((part) => {
+        if (part.userData.motion === "effect-stage") stages.push(part);
+      });
+      return {
+        i,
+        model,
+        effect,
+        thrust,
+        stages,
+        active: false,
+        speed: 0,
+        power: 0,
+      };
     });
+  }
+  setAnimationsEnabled(enabled) {
+    this.animationsEnabled = !!enabled;
+    this.cargo.setAnimationsEnabled(enabled);
+    if (!enabled) {
+      for (const burst of this.bursts)
+        if (burst) {
+          burst.visible = false;
+          burst.rotation.z = 0;
+          burst.scale.setScalar(1);
+        }
+      for (const { effect, thrust } of this.effects) {
+        if (effect) {
+          effect.visible = false;
+          effect.scale.setScalar(1);
+        }
+        if (thrust) {
+          thrust.visible = false;
+          thrust.scale.setScalar(1);
+        }
+      }
+    }
+  }
+  // Simulation time drives events; idle time adds restrained engine motion.
+  animate(idleTime, { playing = false } = {}) {
+    if (!this.animationsEnabled) return;
+    this.cargo.animate();
+    for (const entry of this.effects) {
+      const { i, model, effect, thrust, active, speed, power } = entry;
+      const source = this.bodyLayer.models[i];
+      if (
+        !source ||
+        this.bodyLayer.inView?.[i] === false ||
+        (!this.bodyLayer.instances?.length && source.visible === false)
+      ) {
+        if (effect) effect.visible = false;
+        if (thrust) thrust.visible = false;
+        continue;
+      }
+      if (effect) {
+        effect.visible =
+          active && (model === "drone" || (playing && speed > 0.05));
+        effect.position.copy(source.position);
+        effect.rotation.z =
+          source.rotation.z + (model === "harvester" ? this.time * 0.8 : 0);
+        effect.scale.setScalar(source.scale.x);
+        if (model === "drone")
+          effect.scale.z *= 0.8 + 0.08 * Math.sin(idleTime * 6 + i);
+        if (model !== "drone")
+          effect.position.add(
+            this.offset
+              .set(
+                (model === "harvester" ? 0.7 : -0.6) * source.scale.x,
+                0,
+                model === "harvester" ? 0.12 : 0.02,
+              )
+              .applyAxisAngle(Z, source.rotation.z),
+          );
+      }
+      if (thrust) {
+        thrust.visible = active && playing && power > 0.01;
+        thrust.position
+          .copy(source.position)
+          .add(
+            this.offset
+              .set(-0.7 * source.scale.x, 0, 0.22)
+              .applyAxisAngle(Z, source.rotation.z),
+          );
+        thrust.rotation.z = source.rotation.z;
+        thrust.scale.set(
+          source.scale.x * (1 + 0.04 * Math.sin(idleTime * 19 + i)),
+          source.scale.x,
+          source.scale.x,
+        );
+      }
+    }
   }
   update(state, action) {
     const { info, scene, bodyLayer } = this;
@@ -256,6 +367,7 @@ export class WorldDynamics {
     const bits = new Uint32Array(state.buffer, state.byteOffset, state.length),
       n = bodyLayer.models.length;
     const time = bits[0] * (scene.physics?.dt || 1 / 60);
+    this.time = time;
     this.pickups.forEach((model, i) => {
       const at = info[8] + i * 3;
       if (model) {
@@ -264,7 +376,7 @@ export class WorldDynamics {
       }
       const burst = this.bursts[i],
         elapsed = (scene.respawn_seconds ?? 4) - state[at + 2];
-      if (burst) {
+      if (burst && this.animationsEnabled) {
         burst.visible = state[at + 2] > 0 && elapsed >= 0 && elapsed < 0.45;
         burst.position.set(state[at], state[at + 1], 0.15);
         burst.scale.setScalar(0.2 + Math.max(0, Math.min(0.45, elapsed)) * 1.5);
@@ -277,13 +389,16 @@ export class WorldDynamics {
         a = scene.tethers[i].a;
       entry.group.visible = b >= 0;
       if (b < 0) return;
-      const start = new T.Vector3(state[8 + a], state[8 + n + a], 0.4),
-        end = new T.Vector3(state[8 + b], state[8 + n + b], 0.4);
-      const delta = end.clone().sub(start),
+      const start = this.start.set(state[8 + a], state[8 + n + a], 0.4),
+        end = this.end.set(state[8 + b], state[8 + n + b], 0.4);
+      const delta = this.delta.copy(end).sub(start),
         length = delta.length(),
         angle = Math.atan2(delta.y, delta.x);
       entry.cable.position.copy(start).addScaledVector(delta, 0.5);
-      entry.cable.quaternion.setFromUnitVectors(Z, delta.clone().normalize());
+      entry.cable.quaternion.setFromUnitVectors(
+        Z,
+        this.direction.copy(delta).normalize(),
+      );
       entry.cable.scale.set(1, 1, length);
       for (const [object, point] of [
         [entry.clamp, end],
@@ -295,54 +410,20 @@ export class WorldDynamics {
           object.rotation.z = angle;
         }
     });
-    this.effects.forEach(({ i, model, effect, thrust }) => {
-      const source = bodyLayer.models[i],
-        speed = Math.hypot(state[8 + 2 * n + i], state[8 + 3 * n + i]);
-      const input = visualInput(bodyLayer.channels, action, i);
-      const active = !!(bits[info[5] + i] & 1);
-      if (effect) {
-        effect.position.copy(source.position);
-        effect.rotation.z = source.rotation.z;
-        if (model === "harvester") effect.rotation.z += time * 0.8;
-        const scale = source.scale.x;
-        effect.scale.setScalar(scale);
-        if (model === "drone")
-          effect.scale.z *= 0.8 + 0.15 * Math.sin(time * 8);
-        effect.visible = active && (model === "drone" || speed > 0.05);
-        if (model !== "drone" && model !== "harvester")
-          effect.position.add(
-            new T.Vector3(-0.6 * scale, 0, 0.02).applyAxisAngle(
-              Z,
-              source.rotation.z,
-            ),
-          );
-        if (model === "harvester")
-          effect.position.add(
-            new T.Vector3(0.7 * scale, 0, 0.12).applyAxisAngle(
-              Z,
-              source.rotation.z,
-            ),
-          );
+    if (this.animationsEnabled) {
+      for (const entry of this.effects) {
+        const { i, stages } = entry;
+        entry.speed = Math.hypot(state[8 + 2 * n + i], state[8 + 3 * n + i]);
+        entry.power = Math.abs(
+          visualInput(bodyLayer.channels, action, i).thrust || 0,
+        );
+        entry.active = !!(bits[info[5] + i] & 1);
+        for (const part of stages)
+          part.visible =
+            part.userData.stage === Math.min(2, Math.floor(entry.power * 3));
       }
-      if (thrust) {
-        const power = Math.abs(input.thrust || 0);
-        thrust.position
-          .copy(source.position)
-          .add(
-            new T.Vector3(-0.7 * source.scale.x, 0, 0.22).applyAxisAngle(
-              Z,
-              source.rotation.z,
-            ),
-          );
-        thrust.rotation.z = source.rotation.z;
-        thrust.scale.setScalar(source.scale.x);
-        thrust.visible = active && power > 0.01;
-        thrust.traverse((p) => {
-          if (p.userData.motion === "effect-stage")
-            p.visible = p.userData.stage === Math.min(2, Math.floor(power * 3));
-        });
-      }
-    });
+      this.animate(time, { playing: true });
+    }
     return time;
   }
 }

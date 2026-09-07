@@ -27,6 +27,28 @@
 .visual-style-control {
   position: relative;
   flex-shrink: 0;
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+.animation-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.animation-control input {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  margin: 0;
+}
+.animation-control input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
 }
 .style-switch {
   border: 0;

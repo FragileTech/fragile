@@ -127,6 +127,14 @@ cloning. Each 64-byte-aligned world row contains six float32 body arrays plus
 only the mutable task data. All bodies in a world form one joint FMC meta-agent.
 Parallelism is across worlds; a world is solved in canonical body/contact order.
 
+Flight mode keeps this same 2D state and collision contract while interpreting
+the source `x` axis as horizontal travel and `y` as altitude. Set
+`environment.flight` to `true` to force it, `false` to disable it, or omit it to
+auto-enable the mode when a controlled body has `flight_capable: true`. Flight
+scenes apply `environment.downward_gravity` (default `9.81 m/s²`) to every body;
+there is no hover assist, so rockets and drones must use their existing actuator
+forces to stay aloft.
+
 For B bodies, C controlled bodies, T tether slots, P pickups and A optional extension fields:
 
 | Row data | Bytes |
@@ -272,9 +280,9 @@ Important JSON fields and defaults:
 
 | Object | Fields |
 | --- | --- |
-| Root | `version:1`, `name`, `task`, `size:[64,44]`, `boundary`, `holes`, `bodies`, `gravity`, `bases`, `gates`, `pickups`, `tethers` |
+| Root | `version:1`, `name`, `task`, `size:[64,44]`, `boundary`, `holes`, `bodies`, `gravity`, `bases`, `gates`, `pickups`, `tethers`, optional `environment.flight` and `environment.downward_gravity` |
 | `physics` | `dt:1/60`, `substeps:4`, `solver_iterations:8`, `lethal_walls:false`, `lethal_bodies:false` |
-| Body | `position`, `velocity:[0,0]`, `angle:0`, `omega:0`, `radius:0.5`, optional convex local `vertices`, `mass:1`, optional `inertia`, `drag:0.15`, `angular_drag:2`, `thrust:12`, `torque:8`, `restitution:0.25`, `friction:0.3`, `controlled:false`, `cargo:false` |
+| Body | `position`, `velocity:[0,0]`, `angle:0`, `omega:0`, `radius:0.5`, optional convex local `vertices`, `mass:1`, optional `inertia`, `drag:0.15`, `angular_drag:2`, `thrust:12`, `torque:8`, `restitution:0.25`, `friction:0.3`, `controlled:false`, `cargo:false`, `flight_capable:false` |
 | Gravity | `position`, `strength:10`, `softening:2`; negative strength repels |
 | Base/gate/pickup | `position`, `radius:1` |
 | Tether | `a` source body, `b:-1` for disconnected, `rest_length`, `stiffness:25`, `damping:6`, `break_force:500`, `hook_range:2`, `automatic:false` |
@@ -422,7 +430,10 @@ and `visual` defaults; `extends` inherits another type, and each body names its
 world batches. Instance fields override defaults, and array fields replace the
 inherited array. Unknown types, cycles and malformed definitions are errors.
 All supplied presets include the editable catalog from `agent-catalog.json`.
-Old scenes with explicit body fields continue to work.
+Old scenes with explicit body fields continue to work. Set
+`physics.flight_capable: true` on a controlled custom rocket or drone to opt it
+into automatic flight detection; an explicit scene-level `environment.flight`
+value always wins.
 
 For example, add this definition alongside the preset types and place a body
 `{"agent_type": "courier", "position": [12, 14]}`:
@@ -557,8 +568,10 @@ selection copies internal tethers, and numeric properties show physical units.
 Save a selected body as an agent template; channel sliders support all compiled
 actuators. Keyboard W/S, A/D, Q/E and Space control drive, steering, strafe and
 braking on the selected controlled body, or the first agent. Mouse wheel zoom,
-2D/3D switching and **Follow agent** (selected body, or the first controlled
-agent), and middle/right-drag panning are available independently of diagnostics. **Whole arena** resets the camera.
+side/overhead switching for flight scenes, 2D/3D switching for standard scenes,
+and **Follow agent** (selected body, or the first controlled agent), and
+middle/right-drag panning are available independently of diagnostics. **Whole
+arena** resets the camera.
 
 The masthead's **Visual style** selector switches between **Futuristic** and
 **Steampunk** vehicles, props, scenery materials, lighting and interface accents.
@@ -566,6 +579,16 @@ It preserves the running simulation, replay position, camera and selection, and
 updates comparison viewports together. The successful choice is remembered on
 this device. While models load the current view remains visible; failed loading
 offers Retry.
+
+**Animations** beside the style selector enables vehicle suspension, banking,
+rotors, wheels, engine motion and world effects. Paused scenes keep gentle idle
+motion. Turn it off to stop cosmetic updates; physics, steering, cargo levels,
+pickups and diagnostics continue normally. The preference is remembered across
+Lab tabs and defaults off when your system requests reduced motion. Crowds above
+16 agents update secondary vehicle motion at 30 Hz, and hidden tabs skip it.
+The Workshop starts with its preview paused; **Play animation** enables motion,
+while **Side** and **Top** restore a still inspection pose. The master switch
+also controls previews.
 
 **Models** opens the [Vehicle Workshop](asset-gallery.html), where all eight
 Blender-authored vehicles can be rotated beside their concept sheets and downloaded
@@ -664,8 +687,8 @@ CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-experiments-brows
 CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-racing-browser.mjs
 ```
 
-Native tests cover conservation/free flight, gravity, elastic and breaking
-tethers, restitution, fast collisions, holes, task/RNG restoration, simultaneous
+Native tests cover conservation/free flight, downward flight gravity, gravity
+wells, elastic and breaking tethers, restitution, fast collisions, holes, task/RNG restoration, simultaneous
 gather, thread-count determinism, exact clone/elite branch replay, input
 validation and allocation scaling. Python tests cover leases, buffer reuse,
 state identity, history round trips and compatibility with the existing gas.

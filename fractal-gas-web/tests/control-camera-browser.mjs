@@ -192,6 +192,43 @@ try {
     r.renderer.render(r.world, r.camera);
   });
   await page.screenshot({ path: "/tmp/lab-camera.png" });
+  await page.locator("#scenario").selectOption("rocket");
+  await page.waitForFunction(
+    () => cameraTest.renderer.state && cameraTest.renderer.flightMode,
+  );
+  const flightView = await page.evaluate(() => {
+    const r = cameraTest.renderer;
+    r.resize();
+    const center = r.worldPoint({
+      clientX: r.canvas.getBoundingClientRect().left + r.canvas.clientWidth / 2,
+      clientY: r.canvas.getBoundingClientRect().top + r.canvas.clientHeight / 2,
+    });
+    return {
+      top: r.top,
+      frameRotation: r.coordinateFrame.rotation.x,
+      camera: [r.camera.position.x, r.camera.position.y, r.camera.position.z],
+      center,
+      label: document.querySelector("#view").textContent.trim(),
+    };
+  });
+  assert.equal(flightView.top, false);
+  assert(Math.abs(flightView.frameRotation - Math.PI / 2) < 1e-8);
+  assert(flightView.camera[1] < -80);
+  assert(Math.abs(flightView.center[0] - 32) < 0.02);
+  assert(Math.abs(flightView.center[1] - 22) < 0.02);
+  assert.equal(flightView.label, "Side / overhead");
+  await page.locator("#view").click();
+  const overheadView = await page.evaluate(() => {
+    const r = cameraTest.renderer;
+    return {
+      top: r.top,
+      frameRotation: r.coordinateFrame.rotation.x,
+      camera: [r.camera.position.x, r.camera.position.y, r.camera.position.z],
+    };
+  });
+  assert.equal(overheadView.top, true);
+  assert(Math.abs(overheadView.frameRotation) < 1e-8);
+  assert(overheadView.camera[2] > 80);
   await page.evaluate(() => cameraTest.renderer.dispose());
   assert.equal((await state()).dragging, false);
   console.log("Camera browser regression passed");

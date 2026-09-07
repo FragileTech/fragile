@@ -86,12 +86,18 @@ Use **Import JSON ↑** to load them; use **Export JSON ↓** to save your edite
 ## World, geometry, and numerical settings
 
 :::{div} feynman-prose
-Physical coordinates are planar `[x, y]` vectors in metres. Angle zero points along
-positive x; positive angles rotate toward positive y. The angled camera adds visual
-depth but does not introduce vertical physics. Numbers are finite JSON numbers;
-booleans are `true` and `false`, not strings. An omitted optional number uses the
-listed default. Use omission rather than `null` when sharing files between the
-native compiler and browser renderer.
+Physical coordinates are always planar `[x, y]` vectors in metres. In ordinary
+scenes these are simply the two axes of the map. In flight mode, the same two
+coordinates are interpreted as horizontal travel `x` and altitude `y`; flight
+mode changes the interpretation and presentation, not the dimension of the state
+model. It may be selected explicitly or inferred automatically from the scene.
+Angle zero points along positive x; positive angles rotate toward positive y. The
+angled camera adds visual depth but does not add a third physical coordinate.
+Flight mode starts with a side-on view, which makes altitude visible; use **Side /
+overhead** to inspect the same motion overhead. Numbers are finite JSON numbers; booleans
+are `true` and `false`, not strings. An omitted optional number uses the listed
+default. Use omission rather than `null` when sharing files between the native
+compiler and browser renderer.
 :::
 
 :::{div} feynman-added
@@ -113,7 +119,9 @@ native compiler and browser renderer.
 | `formation_distance` | Number, `3` | Desired pair separation in metres, `[0.1, 1000]`; formation interpretation for larger groups appears below. |
 | `respawn_seconds` | Number, `4` | Pickup cooldown in simulation seconds, `[0, 10000]`. Cargo uses its own `respawn` flag instead. |
 | `presentation`, `evaluation` | Optional objects | Display and batch-experiment success settings. |
-| `environment`, `circuit` | Optional objects | Rendering and circuit-preview metadata. |
+| `environment`, `circuit` | Optional objects | Rendering, flight, and circuit-preview metadata. |
+| `environment.flight` | Optional Boolean; auto-detected when omitted | `true` enables side-on flight dynamics, `false` keeps legacy planar behavior. Automatic mode activates when a controlled body resolves with `flight_capable: true`. |
+| `environment.downward_gravity` | `9.81` m/s²; `[0, 1000]` | Constant downward acceleration used when flight mode is active. |
 | `extensions` | Array, `[]` | Definitions for native extensions already registered in the engine build. |
 :::
 
@@ -189,6 +197,7 @@ to this complete array, starting at zero, including passive bodies.
 | `restitution` | `0.25`; `[0, 1]` | Contact bounce coefficient. |
 | `friction` | `0.3`; `[0, 2]` | Contact friction coefficient. |
 | `controlled` | Boolean `false` | Compile action channels for this body. |
+| `flight_capable` | Boolean `false` | Marks a controlled body as eligible for automatic flight-mode detection. It does not add an action channel or provide hover assistance. |
 | `cargo` | Boolean `false` | Eligible for delivery and automatic cargo hooking. |
 | `respawn` | Boolean `false` | Respawn delivered cargo at a random clear position throughout the playable map. |
 | `actuator` | Vector actuator if omitted | Applied only to controlled bodies; options below. |
@@ -446,9 +455,12 @@ vehicle unloads and delivered cargo bodies.
 :::{div} feynman-prose
 For displacement `d = source_position - body_position`, gravity adds acceleration
 `strength × d / (|d|² + softening²)^(3/2)`. Every active body receives this acceleration,
-regardless of mass. The glowing source is a marker, not automatically a solid
-obstacle. Add a hole if you also want an impassable central region. Larger softening
-spreads and weakens the near-source field; it is not a collision radius.
+regardless of mass. In flight mode, keep the picture of a constant downward pull:
+a rocket or drone must continually produce enough upward propulsion to avoid
+falling, while horizontal travel still lives in the same planar state. The glowing
+source is a marker, not automatically a solid obstacle. Add a hole if you also
+want an impassable central region. Larger softening spreads and weakens the
+near-source field; it is not a collision radius.
 :::
 
 ### Tethers
@@ -644,7 +656,9 @@ A minimal visual kit is
 Thrust parts appear with positive thrust and stretch; steering parts rotate around
 local z, wheels around local y, and rotors around local z. These animation tags do
 not add actuator channels or torque. The visual model has three coordinates because
-it is a 3D drawing of a planar body.
+it is a 3D drawing of a planar body. In flight mode, the default side-on rendering
+lets you read `x` as horizontal travel and `y` as altitude; the overhead **2D** view
+is useful for inspecting the route without changing the underlying planar physics.
 :::
 
 ### Environment renderer
@@ -653,6 +667,8 @@ it is a 3D drawing of a planar body.
 | `environment` field | Values/default | Meaning |
 |---|---|---|
 | `kind` | `"arena"` by default, or `"circuit"` | Registered environment renderer. Arena needs no additional metadata. |
+| `flight` | Optional Boolean; auto-detected when omitted | Selects the side-on flight presentation and constant downward gravity; explicit `false` disables automatic flight detection. |
+| `downward_gravity` | `9.81` m/s²; `[0,1000]` | Downward acceleration used by flight physics. It is ignored when flight mode is disabled. |
 | `centerline` | Required for circuit: 3–4096 finite `[x,y]` points | Closed decorative route guide; not a collision boundary or checkpoint generator. |
 | `width` | Required for circuit: `[1,100]` m | Decorative circuit/start-line width. Actual road bounds remain `boundary` and `holes`. |
 | `start.position` | Optional start object; position required within it | Finite `[x,y]` location of the checkered start decoration. |

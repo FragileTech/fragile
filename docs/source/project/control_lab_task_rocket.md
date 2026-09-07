@@ -35,6 +35,14 @@ so turning the rocket does not instantly turn the whole assembly. Watch the
 cargo and tether as well as the controlled body when judging a candidate route.
 A rocket path alone cannot show whether the dragged rock clears a corner.
 
+The shipped scene now automatically enables side-on flight with downward gravity.
+That changes what a useful action means: propulsion pushes along the rocket's
+orientation, while gravity pulls downward, so both thrust and turning matter.
+The rocket is not merely a marker sliding across an overhead map. Use the side
+view to judge its nose and vertical motion; use the overhead view to understand
+where the branch travels across the arena. The two views show the same planar
+physics from different directions.
+
 The **SCORE** readout counts deliveries. Search reward can improve before cargo
 arrives at the base, so an attractive search branch is not a completed delivery.
 The scene itself has no one-delivery stopping instruction. If you later use
@@ -67,7 +75,9 @@ scene and clears the session history.
 4. Below the world, choose **Tree → Full**, then check **Keep all decisions**.
    Do this before collecting any decisions you want to preserve.
 5. Keep **Rollout paths** enabled under **OBSERVATION LAYERS** and close the scene
-   editor if it is open. Use **2D / 3D** to select the top-down view for easier branch selection.
+   editor if it is open. Use the camera toggle to select the **overhead** view
+   for easier branch selection; return to the **side** view when checking
+   orientation and downward motion.
 6. Press **Step** once and wait for planning to finish. Inspect the decision
    count under **EXPLORATION RECORD**, the visible paths, and the world-frame
    count under **WORLD REPLAY**.
@@ -87,7 +97,7 @@ the world recording is more useful than expecting an immediate delivery.
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/rocket-detail.png
-:alt: Top-down Thinking graphs view after one FMC Step, with Full tree recording and Keep all decisions enabled.
+:alt: Overhead Thinking graphs view after one FMC Step, with Full tree recording and Keep all decisions enabled.
 :class: feynman-added
 
 One recorded decision contains alternative futures. The rocket's short executed

@@ -1,5 +1,6 @@
 #include "control/scene.hpp"
 
+#include <algorithm>
 #include <cstring>
 #include <limits>
 
@@ -108,6 +109,12 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
   s->solver_iterations = integer(physics["solver_iterations"], 8, 1, 32);
   s->lethal_walls = physics["lethal_walls"].flag();
   s->lethal_bodies = physics["lethal_bodies"].flag();
+  const auto& environment = root["environment"];
+  if (environment.kind != Json::Null && environment.kind != Json::Object)
+    throw std::invalid_argument("environment must be an object");
+  const bool has_flight_override = environment["flight"].kind != Json::Null;
+  const bool flight_override = environment["flight"].flag();
+  s->downward_gravity = number(environment["downward_gravity"], 9.81f, 0, 1000);
   const auto& reward = root["rewards"];
   s->progress_reward = number(reward["progress"], 1, 0, 1000);
   s->collision_penalty = number(reward["collision"], 2, 0, 10000);
@@ -173,6 +180,7 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
     b.controlled = j["controlled"].flag();
     b.cargo = j["cargo"].flag();
     b.respawn = j["respawn"].flag();
+    b.flight_capable = j["flight_capable"].flag();
     if (!s->inside(b.position))
       throw std::invalid_argument("Body centre outside playable region");
     if (j["vertices"].kind != Json::Null) {
@@ -212,6 +220,12 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
   }
   if (s->bodies.empty() || s->bodies.size() > 4096)
     throw std::invalid_argument("Scene requires 1–4096 bodies");
+  s->flight_mode = has_flight_override
+                        ? flight_override
+                        : std::any_of(s->bodies.begin(), s->bodies.end(),
+                                      [](const BodyDef& b) {
+                                        return b.controlled && b.flight_capable;
+                                      });
   auto zones = [&](const Json& list, std::vector<Zone>& dest) {
     for (const auto& j : list.items()) {
       Zone z{vec(j["position"]), number(j["radius"], 1, .01f, 1000)};

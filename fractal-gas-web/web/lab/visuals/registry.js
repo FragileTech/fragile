@@ -105,43 +105,167 @@ registerAgentModel("kart", kartModel);
 registerAgentModel("drone", droneModel);
 registerAgentModel("harvester", harvesterModel);
 
-export function animatedParts(model) {
+function animationVisible(binding) {
+  for (const ancestor of binding.ancestors) if (!ancestor.visible) return false;
+  return true;
+}
+function animationAncestors(part, model) {
+  const ancestors = [];
+  for (let p = part.parent; p && p !== model; p = p.parent) ancestors.push(p);
+  return ancestors;
+}
+
+export function animatedParts(
+  model,
+  { kind = model.userData.assetModel, style = model.userData.assetStyle } = {},
+) {
   const parts = [];
+  const airborne = kind === "drone" || kind === "rocket";
+  if (airborne) {
+    const presentation = new T.Group();
+    presentation.name = "Vehicle cosmetic presentation";
+    for (const child of [...model.children])
+      if (!/marker|shadow/i.test(child.name)) presentation.add(child);
+    model.add(presentation);
+    parts.pose = presentation;
+  } else parts.pose = new T.Object3D();
   model.traverse((part) => {
     if (part.userData.motion)
       parts.push({
         part,
         rotation: part.rotation.clone(),
         scale: part.scale.clone(),
+        ancestors: animationAncestors(part, model),
+        intake: /intake/i.test(part.name),
       });
   });
+  // Cache independent child branches once. Wheels and their steering carriers
+  // stay planted; markers and caller-owned attachments keep authoritative poses.
+  parts.presentation = [];
+  parts.kind = kind;
+  parts.style = style;
+  function bind(node) {
+    if (/marker|shadow/i.test(node.name)) return;
+    if (node.userData.motion) return;
+    if (node.isMesh) {
+      parts.presentation.push({
+        part: node,
+        position: node.position.clone(),
+        rotation: node.rotation.clone(),
+        ancestors: animationAncestors(node, model),
+        engine:
+          /engine|chimney|cab/i.test(node.name) ||
+          (node.position.x > 0.25 && node.position.z > 0.5),
+      });
+      return;
+    }
+    for (const child of node.children) bind(child);
+  }
+  if (!airborne) bind(model);
   return parts;
 }
 // Animation derives from simulation time and state: scrubbing is deterministic.
 export function animateAgent(
   parts,
-  { time, speed, thrust, steer, modelScale = 1 },
+  {
+    time = 0,
+    speed = 0,
+    thrust = 0,
+    steer = 0,
+    modelScale = 1,
+    enabled = true,
+    idleTime,
+    playing = true,
+    wheelTravel,
+    mechanicalTime = time,
+    throttle = thrust,
+    brake = 0,
+  },
 ) {
-  for (const { part, rotation, scale } of parts) {
+  for (const binding of parts) {
+    if (enabled && idleTime != null && !animationVisible(binding)) continue;
+    const { part, rotation, scale } = binding;
     part.rotation.copy(rotation);
     part.scale.copy(scale);
     part.visible = true;
     switch (part.userData.motion) {
       case "thrust":
-        part.visible = thrust > 0.01;
-        part.scale.x =
-          scale.x * (0.35 + thrust * (0.85 + 0.1 * Math.sin(time * 45)));
+        part.visible = enabled && thrust > 0.01;
+        part.scale.x = enabled
+          ? scale.x *
+            (0.35 +
+              thrust *
+                (0.85 +
+                  0.1 *
+                    Math.sin(
+                      (idleTime ?? time) *
+                        (parts.style === "steampunk" ? 23 : 45),
+                    )))
+          : scale.x;
         break;
       case "steer":
         part.rotation.z += steer * 0.35;
         break;
       case "wheel":
-        part.rotation.y +=
-          (time * speed) / ((part.userData.wheelRadius || 0.215) * modelScale);
+        part.rotation.y += enabled
+          ? (wheelTravel ?? time * speed) /
+            ((part.userData.wheelRadius || 0.215) * modelScale)
+          : 0;
+        if (enabled && idleTime != null && binding.intake)
+          part.rotation.y +=
+            mechanicalTime * (parts.style === "steampunk" ? 1.4 : 2);
         break;
       case "rotor":
-        part.rotation.z += time * 32;
+        part.rotation.z += enabled ? (idleTime ?? time) * 32 : 0;
         break;
+    }
+  }
+  if (
+    parts.presentation &&
+    ((enabled && idleTime != null) || parts.cosmeticActive)
+  ) {
+    const active = enabled && idleTime != null;
+    parts.cosmeticActive = active;
+    const clock = idleTime ?? 0;
+    const heavy = parts.style === "steampunk";
+    const drone = parts.kind === "drone",
+      rocket = parts.kind === "rocket";
+    const airborne = drone || rocket;
+    const ground = parts.kind === "kart" || parts.kind === "harvester";
+    const weight = parts.kind === "harvester" ? 0.4 : 1;
+    const bank = active
+      ? airborne
+        ? -steer * (drone ? 0.07 : 0.045)
+        : ground
+          ? -steer * Math.min(1, Math.abs(speed)) * 0.012 * weight
+          : 0
+      : 0;
+    const pitch = active
+      ? airborne
+        ? thrust * 0.025
+        : ground
+          ? (-throttle + brake * 1.4) * 0.009 * weight
+          : 0
+      : 0;
+    const lift = active
+      ? airborne
+        ? Math.sin(clock * (heavy ? 1.8 : 2.4)) * (drone ? 0.022 : 0.006)
+        : parts.kind === "kart"
+          ? Math.sin(clock * (heavy ? 8 : 12)) * 0.0015 - thrust * 0.004
+          : 0
+      : 0;
+    parts.pose.position.z = lift;
+    parts.pose.rotation.set(bank, pitch, 0);
+    for (const binding of parts.presentation) {
+      if (active && !animationVisible(binding)) continue;
+      const { part, position, rotation } = binding;
+      part.position.copy(position);
+      part.rotation.copy(rotation);
+      part.position.z += lift + bank * position.y - pitch * position.x;
+      if (active && parts.kind === "harvester" && binding.engine)
+        part.position.z += Math.sin(clock * (heavy ? 9 : 14)) * 0.0015;
+      part.rotation.x += bank;
+      part.rotation.y += pitch;
     }
   }
 }

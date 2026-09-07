@@ -15,7 +15,7 @@ struct BodyDef {
   float angle = 0, omega = 0, radius = .5f, mass = 1, inertia = 1, drag = .15f,
         angular_drag = 2;
   float thrust = 12, torque = 8, restitution = .25f, friction = .3f;
-  bool controlled = false, cargo = false, respawn = false;
+  bool controlled = false, cargo = false, respawn = false, flight_capable = false;
   std::vector<Vec2> vertices;
   ActuatorDef actuator;
 };
@@ -76,7 +76,8 @@ struct Scene {
         delivery_reward = 100, distance_squared_reward = 1, hooked_rock_distance_reward = 1;
   float gate_reward = 30, formation_reward = .15f, formation_distance = 3,
         respawn_seconds = 4;
-  bool lethal_walls = false, lethal_bodies = false;
+  float downward_gravity = 9.81f;
+  bool lethal_walls = false, lethal_bodies = false, flight_mode = false;
   Layout layout;
   uint64_t fingerprint = 0;
   // Immutable uniform-grid index for boundary edges; one copy per compiled
